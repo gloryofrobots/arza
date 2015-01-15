@@ -1,0 +1,7 @@
+.cproject
+CMakeFiles/*
+.project
+CMakeCache.txt
+*.cmake
+Makefile
+obin
