@@ -11,6 +11,7 @@ obin_pointer obin_malloc(obin_mem_t size) {
 	}
 
 	new_pointer = ObinMem_MALLOC(size);
+	//run gc here
 	assert(new_pointer!=0);
 
 	return new_pointer;

@@ -1,8 +1,47 @@
 #ifndef OBIN_OCONF_H
 #define OBIN_OCONF_H
-#include "otypes.h"
+#include <limits.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <assert.h>
+#ifndef INT32_MAX
+# define INT32_MAX (0x7fffffffL)
+#endif
+#ifndef INT32_MIN
+# define INT32_MIN INT32_C(0x80000000)
+#endif
+#ifndef UINT8_MAX
+# define UINT8_MAX 0xff
+#endif
 
-//C++ support
+#ifndef UINT32_MAX
+# define UINT32_MAX (0xffffffffUL)
+#endif
+
+#define obin_mem_t	size_t
+#define OBIN_MEM_MAX SSIZE_MAX
+
+#define obin_int32t int32_t
+#define obin_uint32t uint32_t
+
+
+typedef int obin_bool;
+typedef double obin_float;
+typedef void* obin_pointer;
+
+/* TODO rename to boin_integer */
+/*
+ * @@ obin_number defines small integer representation in obin, every value which iverflow it will be storen
+ * in big number
+ */
+typedef long obin_integer;
+typedef const char* obin_string;
+typedef char obin_char;
+/* Needed for convertion between numbers and strings */
+#define OBIN_INTEGER_FORMATTER "%ld"
+#define OBIN_FLOAT_FORMATTER "%f"
+/* STOLEN from LUA */
+/* C++ support */
 #ifdef __cplusplus
 # define OBIN_BEGIN_DECLARATIONS  extern "C" {
 # define OBIN_END_DECLARATIONS    }
@@ -11,52 +50,25 @@
 # define OBIN_END_DECLARATIONS
 #endif
 
-
-//DIRECTORY_SEPARATOR
+/* DIRECTORY_SEPARATOR */
 #if defined(_WIN32)
 #define OBIN_DIR_SEPARATOR	"\\"
 #else
 #define OBIN_DIR_SEPARATOR	"/"
 #endif
 
-/*
-@@ OBINI_BITSINT defines the number of bits in an int.
-** CHANGE here if Lua cannot automatically detect the number of bits of
-** your machine. Probably you do not need to change this.
-*/
-/* avoid overflows in comparison */
-#if INT_MAX-20 < 32760		/* { */
-#define OBIN_BITSINT	16
-#elif INT_MAX > 2147483640L	/* }{ */
-/* int has at least 32 bits */
-#define OBIN_BITSINT	32
-#else				/* }{ */
-#error "you must define OBIN_BITSINT with number of bits in an integer"
-#endif				/* } */
+#define OBIN_DEFAULT_ARRAY_SIZE 10
+#define OBIN_DEFAULT_DICT_SIZE 4
 
-#define obin_mem_t	size_t
-#define OBIN_MEM_MAX SSIZE_MAX
 
-#define obin_int int32_t
-#define obin_uint uint32_t
-
-#define obin_double double
-
-typedef void* obin_pointer;
 /*
 @@ OBINI_MAXSTACK limits the size of the Lua stack.
 ** CHANGE it if you need a different limit. This limit is arbitrary;
 ** its only purpose is to stop Lua to consume unlimited stack
 ** space (and to reserve some numbers for pseudo-indices).
 */
-#if OBINI_BITSINT >= 32
-#define OBIN_MAXSTACK		1000000
-#else
-#define OBIN_MAXSTACK		15000
-#endif
+#define OBIN_STACK_MAX_SIZE  (INT_MAX / 2)
 
-#define OBIN_DEFAULT_ARRAY_SIZE 10
-#define OBIN_DEFAULT_DICT_SIZE 4
 
 /*
 @@ OBIN_API is a mark for all core API functions.
@@ -107,5 +119,7 @@ typedef void* obin_pointer;
 #define OBIN_DDEF	/* empty */
 #endif				/* } */
 
+/* END STOLEN from LUA */
 
+#define obin_assert assert
 #endif

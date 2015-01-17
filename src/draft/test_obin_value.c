@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "otypes.h"
-#include "debug_utils.h"
+#include "../otypes.h"
+#include "../debug_utils.h"
 
 /* immediate values macros */
 #define IMMEDIATE(X)      (X==TR_NIL || X==TR_TRUE || X==TR_FALSE || X==TR_UNDEF || TR_IS_FIX(X))
@@ -32,6 +32,10 @@ int main() {
     PRINT_NUMBER(SSIZE_MAX);
     PRINT_NUMBER(INT_MAX);
 
+    void * p = malloc(1);
+    PRINT_NUMBER((int)p);
+
+    PRINT_BITS((int)p, buffer, BUF_SIZE);
 
     uintptr_t int2fix_check = INT2FIX(1073741823);
     PRINT_NUMBER((int2fix_check & 1));

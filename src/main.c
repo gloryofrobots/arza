@@ -1,24 +1,22 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "otypes.h"
+#include "ointernal.h"
 
-typedef struct {
-
-} Cell;
-
-
-typedef struct {
-	int8_t type;
-
-	union{
-		long number;
-		void * cell;
-	};
-} Any;
+#include "devutils.h"
+int xx() { return 2; }
 
 
 int main() {
-	printf("size = %d\n", sizeof(Any));
-	printf("size double = %d\n", sizeof(double));
-	printf("size int32 = %d\n", sizeof(int32_t));
+	ObinAny num = obin_number_new(2);
+	ObinAny fl = obin_float_new(67.3f);
+
+	PRINT_NUMBER(sizeof(ObinAny));
+	ObinAny t = __t();
+
+	PRINT_NUMBER(obin_any_is_true(ObinTrue));
+	PRINT_NUMBER(obin_any_is_true(ObinFalse));
+
+	PRINT_NUMBER(obin_any_is_nil(ObinFalse));
+	PRINT_NUMBER(obin_any_is_true(t));
+	return 0;
 }

@@ -1,10 +1,16 @@
 #ifndef DEBUG_UTILS_H_
 #define DEBUG_UTILS_H_
 
-// buffer must have length >= sizeof(int) + 1
-// Write to the buffer backwards so that the binary representation
-// is in the correct order i.e.  the LSB is on the far right
-// instead of the far left of the printed string
+#include "otypes.h"
+
+ObinAny __t () {
+	return ObinTrue;
+}
+/* buffer must have length >= sizeof(int) + 1
+ Write to the buffer backwards so that the binary representation
+ is in the correct order i.e.  the LSB is on the far right
+ instead of the far left of the printed string
+*/
 char *int2bin(int a, char *buffer, int buf_size) {
 	int i = 0;
     buffer += (buf_size - 1);
