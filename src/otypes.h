@@ -41,10 +41,11 @@ typedef enum _EOBIN_TYPE {
 	EOBIN_TYPE_STRING,
 	EOBIN_TYPE_ARRAY,
 	EOBIN_TYPE_DICT,
+	EOBIN_TYPE_TUPLE,
 	EOBIN_TYPE_END_COLLECTION_TYPES,
 
 	EOBIN_TYPE_COMPOSITE_CELL,
-	EOBIN_TYPE_ERROR,
+	EOBIN_TYPE_BIG_INTEGER,
 
 	EOBIN_TYPE_END_CELL_TYPES
 
@@ -100,8 +101,10 @@ ObinAny ObinSuccess = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_SUCCESS);
 ObinAny ObinFailure = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FAILURE);
 
 /********************** ERRORS ************************************/
-ObinAny ObinInvalidSizeError;
-ObinAny ObinInvalidArgumentError;
 
+ObinAny ObinMemoryError;
+ObinAny ObinInternalError;
+ObinAny ObinInvalidSliceError;
+ObinAny ObinInvalidArgumentError;
 
 #endif

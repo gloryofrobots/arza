@@ -1,46 +1,15 @@
 #include "../ointernal.h"
+#include <ocontext.h>
+#include <stdarg.h>
 
-/*
- *
- //native
- str.startswith(prefix[, start[, end]])
+/* ALIASES */
+#define _strlen strlen
+#define _strstr strstr
+#define _snprintf snprintf
 
- Return True if string starts with the prefix, otherwise return False. prefix can also be a tuple of prefixes to look for. With optional start, test string beginning at that position. With optional end, stop comparing string at that position.
+/* SIZE FOR BUFFER IN STACK USED TO WRITE INTS AND FLOATS TO STRING */
 
- Changed in version 2.5: Accept tuples as prefix.
-
- //native
- str.lstrip([chars])
-
- Return a copy of the string with leading characters removed. The chars argument is a string specifying the set of characters to be removed. If omitted or None, the chars argument defaults to removing whitespace. The chars argument is not a prefix; rather, all combinations of its values are stripped:
- >>>
-
- >>> '   spacious   '.lstrip()
- 'spacious   '
- >>> 'www.example.com'.lstrip('cmowz.')
- 'example.com'
-
- Changed in version 2.2.2: Support for the chars argument.
- //native
- str.rstrip([chars])
-
- Return a copy of the string with trailing characters removed. The chars argument is a string specifying the set of characters to be removed. If omitted or None, the chars argument defaults to removing whitespace. The chars argument is not a suffix; rather, all combinations of its values are stripped:
-
-
- //native
- str.splitlines([keepends])
-
- Return a list of the lines in the string, breaking at line boundaries. This method uses the universal newlines approach to splitting lines. Line breaks are not included in the resulting list unless keepends is given and true.
-
- For example, 'ab c\n\nde fg\rkl\r\n'.splitlines() returns ['ab c', '', 'de fg', 'kl'], while the same call with splitlines(True) returns ['ab c\n', '\n', 'de fg\r', 'kl\r\n'].
-
- Unlike split() when a delimiter string sep is given, this method returns an empty list for the empty string, and a terminal line break does not result in an extra line.
- str.endswith(suffix[, start[, end]])
-
- Return True if the string ends with the specified suffix, otherwise return False. suffix can also be a tuple of suffixes to look for. With optional start, test beginning at that position. With optional end, stop comparing at that position.
-
- Changed in version 2.5: Accept tuples as suffix.
- */
+#define _TEMP_BUFFER_SIZE 256
 
 typedef struct {
 	OBIN_CELL_HEADER;
@@ -56,7 +25,6 @@ typedef struct {
 	OBIN_ANY_CHECK_TYPE(string, EOBIN_TYPE_STRING)
 
 #define IS_CHARACTER(str) (str.capacity == str.size && str.capacity == 1)
-#define _strlen strlen
 
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data) {
@@ -64,7 +32,7 @@ ObinAny obin_string_new(ObinState* state, obin_string data) {
 
 	len = _strlen(data);
 	if (len == 0) {
-		return obin_raise_error(state, ObinInvalidArgumentError);
+		obin_raise_internal(state);
 	}
 
 	return obin_string_new_from_char_array(state, data, len);
@@ -74,7 +42,7 @@ ObinAny obin_string_new_from_char_array(ObinState* state, obin_char* data,
 obin_mem_t size) {
 	ObinString* self;
 
-	self = obin_malloc_type(ObinString);
+	self = obin_malloc_type(state, ObinString);
 
 	self->capacity = size + 1;
 	self->size = size;
@@ -83,7 +51,7 @@ obin_mem_t size) {
 	if (size == 1) {
 		self->data[0] = data[0];
 	} else {
-		self->data = obin_malloc_collection(obin_char, self->capacity);
+		self->data = obin_malloc_collection(state, obin_char, self->capacity);
 		obin_memcpy(self->data, data, size);
 	}
 
@@ -95,6 +63,11 @@ ObinAny obin_string_new_from_string(ObinState* state, ObinAny string) {
 	ObinString * other;
 
 	CHECK_STRING_TYPE(string);
+
+	/* bitwise copy is good for 1-size strings */
+	if(IS_CHARACTER(string)) {
+		return string;
+	}
 
 	other = obin_any_cast_cell(other, ObinString);
 	return obin_string_new_from_char_array(state, other.data, other->size);
@@ -256,7 +229,6 @@ static int _is_space_condition(obin_string data, obin_mem_t index) {
 ObinAny obin_string_is_space(ObinState* state, ObinAny self) {
 	return _check_condition(state, self, &_is_space_condition);
 }
-#define _strstr strstr
 /************************* SEARCH ***************************************/
 typedef ObinAny (*_string_finder)(ObinString* haystack, ObinString* needle,
 obin_mem_t start, obin_mem_t end);
@@ -279,10 +251,11 @@ ObinAny _obin_string_find(ObinState* state, ObinAny self, ObinAny other,
 	} else {
 		if (obin_any_number(start) < 0
 				|| obin_any_number(start) > haystack->size) {
-			return obin_raise(state, ObinInvalidArgumentError,
-					obin_string_new(state, "Invalid start index for search"),
+			obin_raise_invalid_argument(state,
+					"String search error -> Invalid start index for search",
 					start);
 		}
+
 		pstart = (obin_mem_t) obin_any_number(start);
 	}
 
@@ -291,23 +264,26 @@ ObinAny _obin_string_find(ObinState* state, ObinAny self, ObinAny other,
 	} else {
 		if (obin_any_number(end) < 0 || obin_any_number(end) > haystack->size
 				|| obin_any_number(end) < pstart) {
-			return obin_raise(state, ObinInvalidArgumentError,
-					obin_string_new(state, "Invalid end index for search"), end);
+			obin_raise_invalid_argument(state,
+					"String search error -> Invalid end index for search", end);
 		}
+
 		pend = (obin_mem_t) obin_any_number(end);
 	}
 
 	if ((pend - pstart) > needle->size) {
-		return obin_raise(state, ObinInvalidArgumentError,
-				obin_string_new(state, "Invalid search range"),
+		obin_raise_invalid_slice(state,
+				"String search error -> Invalid search range",
 				obin_number_new(pstart), obin_number_new(pend));
 	}
 
 	return finder(haystack, needle, start, end);
 }
+#define STRING_INDEX_NOT_FOUND -1
 /* ****************************** INDEXOF *************************************************************/
 ObinAny _string_finder_left(ObinString* haystack, ObinString* needle,
 obin_mem_t start, obin_mem_t end) {
+
 	obin_mem_t i;
 	obin_char *h;
 	obin_char *n;
@@ -325,7 +301,7 @@ obin_mem_t start, obin_mem_t end) {
 		// Didn't match here.  Try again further along haystack.
 	}
 
-	return obin_number_new(-1);
+	return obin_number_new(STRING_INDEX_NOT_FOUND);
 }
 
 ObinAny obin_string_index_of(ObinState* state, ObinAny self, ObinAny other,
@@ -339,7 +315,7 @@ ObinAny obin_string_index_of(ObinState* state, ObinAny self, ObinAny other,
  Return the highest index in the string
  where substring sub is found, such that sub is contained
  within s[start:end]. Optional arguments start and end
- are interpreted as in slice notation. Return -1 on failure.
+ are interpreted as in slice notation. Return STRING_INDEX_NOT_FOUND on failure.
  */
 ObinAny _string_finder_right(ObinString* haystack, ObinString* needle,
 obin_mem_t start, obin_mem_t end) {
@@ -368,7 +344,7 @@ obin_mem_t start, obin_mem_t end) {
 		// Didn't match here.  Try again further along haystack.
 	}
 
-	return obin_number_new(-1);
+	return obin_number_new(STRING_INDEX_NOT_FOUND);
 }
 
 ObinAny obin_string_last_index_of(ObinState* state, ObinAny self, ObinAny other,
@@ -389,12 +365,17 @@ ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count) {
 	CHECK_STRING_TYPE(self);
 
 	str = (ObinString*) obin_any_cell(self);
-	count = obin_any_number(_count);
+	if( obin_any_is_nil(_count)){
+		count = 0;
+	} else {
+		obin_assert(obin_any_is_integer(_count));
+		count = obin_any_integer(_count);
+	}
 
-	result = obin_malloc_type(ObinString);
+	result = obin_malloc_type(state, ObinString);
 	result->size = str->size * count;
 	result->capacity = str->size + 1;
-	result->data = obin_malloc_collection(obin_char, result->capacity);
+	result->data = obin_malloc_collection(state, obin_char, result->capacity);
 
 	for (; count > 0; count--, result->data += str->size) {
 		obin_memcpy(result->data, str->data, str->size);
@@ -403,19 +384,19 @@ ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count) {
 	result->data[result->capacity] = '\0';
 	return obin_cell_new(EOBIN_TYPE_STRING, result);
 }
-#define _snprintf snprintf
-#define _TEMP_BUFFER_SIZE 256
 
-ObinAny obin_cell_to_string(ObinState* state, ObinAny any){
-	ObinCell* cell;
-
+static ObinAny _obin_cell_to_string(ObinState* state, ObinAny any) {
 	obin_assert(obin_any_is_cell(any));
-
-	cell = obin_any_cell(any);
+	return obin_any_cell(any)->type_trait.__str__(any);
 }
+
 ObinAny obin_any_to_string(ObinState* state, ObinAny any) {
 	char temp[_TEMP_BUFFER_SIZE] = '\0';
-	switch(any.type) {
+	ObinContext* ctx;
+
+	ctx = obin_ctx_get();
+
+	switch (any.type) {
 	case EOBIN_TYPE_INTEGER:
 		_snprintf(temp, _TEMP_BUFFER_SIZE, OBIN_INTEGER_FORMATTER,
 				obin_any_integer(any));
@@ -427,24 +408,83 @@ ObinAny obin_any_to_string(ObinState* state, ObinAny any) {
 		return obin_string_new(state, temp);
 		break;
 	case EOBIN_TYPE_TRUE:
-		_snprintf(temp, _TEMP_BUFFER_SIZE, OBIN_TRUE_REPR);
-		return obin_string_new(state, OBIN_TRUE_REPR);
+		return ctx->internal_strings.True;
+		break;
+	case EOBIN_TYPE_FALSE:
+		return ctx->internal_strings.False;
+		break;
+	case EOBIN_TYPE_NIL:
+		return ctx->internal_strings.Nil;
+		break;
+	case EOBIN_TYPE_NOTHING:
+		return ctx->internal_strings.Nothing;
 		break;
 
-	}
-	if (obin_any_is_integer(any)) {
-	} else if(obin_any_is_float(any)){
-	} else if(obin_any_is_float(any)){
-		_snprintf(temp, _TEMP_BUFFER_SIZE, OBIN_FLOAT_FORMATTER,
-				obin_any_float(any));
-		return obin_string_new(state, temp);
-	}
-
-
-	else{
-		return obin_cell_to_string(state, any);
+	case EOBIN_TYPE_BIG_INTEGER:
+	case EOBIN_TYPE_STRING:
+	case EOBIN_TYPE_ARRAY:
+	case EOBIN_TYPE_DICT:
+	case EOBIN_TYPE_TUPLE:
+	case EOBIN_TYPE_COMPOSITE_CELL:
+		return _obin_cell_to_string(state, any);
+		break;
+	default:
+		obin_raise_invalid_argument(state,
+				"Any to string convertion error -> unprintable internal type",
+				obin_integer_new(any.type));
 	}
 }
-ObinAny obin_string_concat(ObinState* state, ObinAny first_part, ...);
+
+ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
+	ObinString* str;
+	ObinAny result;
+	CHECK_STRING_TYPE(self);
+
+	str = (ObinString*) obin_any_cell(self);
+
+}
+
 ObinAny obin_string_join(ObinState* state, ObinAny collection);
-ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator);
+
+/*
+ *
+ *
+ //native
+ str.startswith(prefix[, start[, end]])
+
+ Return True if string starts with the prefix, otherwise return False. prefix can also be a tuple of prefixes to look for. With optional start, test string beginning at that position. With optional end, stop comparing string at that position.
+
+ Changed in version 2.5: Accept tuples as prefix.
+
+ //native
+ str.lstrip([chars])
+
+ Return a copy of the string with leading characters removed. The chars argument is a string specifying the set of characters to be removed. If omitted or None, the chars argument defaults to removing whitespace. The chars argument is not a prefix; rather, all combinations of its values are stripped:
+ >>>
+
+ >>> '   spacious   '.lstrip()
+ 'spacious   '
+ >>> 'www.example.com'.lstrip('cmowz.')
+ 'example.com'
+
+ Changed in version 2.2.2: Support for the chars argument.
+ //native
+ str.rstrip([chars])
+
+ Return a copy of the string with trailing characters removed. The chars argument is a string specifying the set of characters to be removed. If omitted or None, the chars argument defaults to removing whitespace. The chars argument is not a suffix; rather, all combinations of its values are stripped:
+
+
+ //native
+ str.splitlines([keepends])
+
+ Return a list of the lines in the string, breaking at line boundaries. This method uses the universal newlines approach to splitting lines. Line breaks are not included in the resulting list unless keepends is given and true.
+
+ For example, 'ab c\n\nde fg\rkl\r\n'.splitlines() returns ['ab c', '', 'de fg', 'kl'], while the same call with splitlines(True) returns ['ab c\n', '\n', 'de fg\r', 'kl\r\n'].
+
+ Unlike split() when a delimiter string sep is given, this method returns an empty list for the empty string, and a terminal line break does not result in an extra line.
+ str.endswith(suffix[, start[, end]])
+
+ Return True if the string ends with the specified suffix, otherwise return False. suffix can also be a tuple of suffixes to look for. With optional start, test beginning at that position. With optional end, stop comparing at that position.
+
+ Changed in version 2.5: Accept tuples as suffix.
+ */

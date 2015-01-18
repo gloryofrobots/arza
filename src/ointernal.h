@@ -15,8 +15,7 @@
 #endif
 
 /* NEVER FORGET TO CALL THIS BEFORE SETTING TYPE*/
-static ObinAny
-obin_any_new() {
+static ObinAny obin_any_new() {
 	ObinAny proto;
 	proto.type = EOBIN_TYPE_UNKNOWN;
 	return proto;
@@ -63,8 +62,7 @@ obin_any_new() {
 #define OBIN_END_PROC return ObinNothing
 
 /********************************************** CELL ******************************************/
-static ObinAny
-obin_cell_new(EOBIN_TYPE type, ObinCell* cell){
+static ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell) {
 	ObinAny result;
 	obin_assert(obin_type_is_cell(type));
 
@@ -75,18 +73,59 @@ obin_cell_new(EOBIN_TYPE type, ObinCell* cell){
 	return result;
 }
 
+/******************************* COLLECTION **************************************/
+
+typedef ObinAny (*obin_collection_iterator)(ObinAny self);
+
+#define OBIN_COLLECTION_TRAIT \
+	OBIN_CELL_TRAIT \
+	obin_collection_iterator __iter__;
+
+typedef struct {
+	OBIN_COLLECTION_TRAIT
+} ObinCollectionTrait;
+
+typedef struct {
+	OBIN_CELL_HEADER;OBIN_DEFINE_TYPE_TRAIT(ObinCollectionTrait);
+} ObinCollection;
+
+/******************************************* TUPLE  ***************************************************/
+ObinAny obin_tuple_new(ObinState* state, ObinAny size);
+ObinAny obin_tuple_add(ObinState* state, ObinAny item);
+ObinAny obin_tuple_build(ObinState* state, obin_mem_t count, ...);
 /********************************************** ERROR AND LOG ******************************************/
-ObinAny obin_error_new(ObinState* state, ObinAny proto, ObinAny message);
-ObinAny obin_raise_error(ObinState* state, ObinAny exception);
-ObinAny obin_raise(ObinState* state, ObinAny proto, ObinAny message, ...);
+ObinAny obin_error_new(ObinState* state, ObinAny proto, ObinAny message,
+		ObinAny args);
+ObinAny obin_raise(ObinState* state, ObinAny exception);
 
+#define _OBIN_RAISE(state, proto, message, argtuple) \
+		obin_raise(state, obin_error_new(state, proto, obin_string_new(state, message), argtuple))
 
+#define _OBIN_RAISE_1(state, proto, message, argument) \
+		_OBIN_RAISE(state, proto, message, obin_tuple_build(state, 1, argument))
+
+#define _OBIN_RAISE_2(state, proto, message, arg1, arg2) \
+		_OBIN_RAISE(state, proto, message, obin_tuple_build(state, 2, arg1, arg2))
+
+#define _OBIN_RAISE_3(state, proto, message, arg1, arg2, arg3) \
+		_OBIN_RAISE(state, proto, message, obin_tuple_build(state, 3, arg1, arg2, arg3))
+
+/* constructors */
+/* TODO add __func__ to error and maybe do something like const strings */
+#define obin_raise_internal(state) \
+		obin_raise(state, ObinInternalError)
+
+#define obin_raise_invalid_argument(state, message, arg) \
+		_OBIN_RAISE_1(state, ObinInvalidArgumentError, message, arg)
+
+#define obin_raise_invalid_slice(state, message, start, end) \
+		_OBIN_RAISE_2(state, ObinInvalidSliceError, message, start, end)
 /******************************************* STRING  ***************************************************/
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data);
-ObinAny obin_string_new_from_char_array(ObinState* state, obin_char* data, obin_mem_t size);
+ObinAny obin_string_new_from_char_array(ObinState* state, obin_char* data,
+		obin_mem_t size);
 ObinAny obin_string_new_from_string(ObinState* state, ObinAny string);
-
 
 /* API */
 ObinAny obin_string_length(ObinState* state, ObinAny self);
@@ -104,19 +143,21 @@ ObinAny obin_string_is_upper(ObinState* state, ObinAny self);
 ObinAny obin_string_is_space(ObinState* state, ObinAny self);
 
 /*
-    Return the lowest index in the string
-    where substring sub is found, such that sub is contained
-    within s[start:end]. Optional arguments start and end
-    are interpreted as in slice notation. Return -1 on failure.
-*/
-ObinAny obin_string_index_of(ObinState* state, ObinAny self, ObinAny other, ObinAny start, ObinAny end);
+ Return the lowest index in the string
+ where substring sub is found, such that sub is contained
+ within s[start:end]. Optional arguments start and end
+ are interpreted as in slice notation. Return -1 on failure.
+ */
+ObinAny obin_string_index_of(ObinState* state, ObinAny self, ObinAny other,
+		ObinAny start, ObinAny end);
 /*
-    Return the highest index in the string
-    where substring sub is found, such that sub is contained
-    within s[start:end]. Optional arguments start and end
-    are interpreted as in slice notation. Return -1 on failure.
-*/
-ObinAny obin_string_last_index_of(ObinState* state, ObinAny self, ObinAny other, ObinAny start, ObinAny end);
+ Return the highest index in the string
+ where substring sub is found, such that sub is contained
+ within s[start:end]. Optional arguments start and end
+ are interpreted as in slice notation. Return -1 on failure.
+ */
+ObinAny obin_string_last_index_of(ObinState* state, ObinAny self, ObinAny other,
+		ObinAny start, ObinAny end);
 
 ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count);
 ObinAny obin_string_format(ObinState* state, ObinAny format, ...);
@@ -129,8 +170,7 @@ ObinAny obin_any_to_string(ObinState* state, ObinAny any);
 #define ONUM(state, num) obin_number_new(state, num)
 
 /********************************************** NUMBER **************************************************/
-static ObinAny
-obin_number_new(obin_integer number) {
+static ObinAny obin_number_new(obin_integer number) {
 	ObinAny result;
 
 	result = obin_any_new();
@@ -143,7 +183,7 @@ obin_number_new(obin_integer number) {
 
 /********************************************** FLOAT *******************************************/
 
-ObinAny obin_float_new(obin_float number){
+ObinAny obin_float_new(obin_float number) {
 	ObinAny result;
 
 	result = obin_any_new();
@@ -151,27 +191,9 @@ ObinAny obin_float_new(obin_float number){
 	return result;
 }
 
-/******************************* COLLECTION **************************************/
-
-typedef ObinAny (*obin_collection_iterator) (ObinAny self);
-
-#define OBIN_COLLECTION_TRAIT \
-	OBIN_CELL_TRAIT \
-	obin_collection_iterator __iter__;
-
-typedef struct {
-	OBIN_COLLECTION_TRAIT
-} ObinCollectionTrait;
-
-typedef struct {
-	OBIN_CELL_HEADER;
-	OBIN_DEFINE_TYPE_TRAIT(ObinCollectionTrait);
-} ObinCollection;
-
 /********************************************** ARRAY *******************************************/
 
 ObinAny obin_array_new(ObinState* state, ObinAny _size);
-
 
 #endif
 
