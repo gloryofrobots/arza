@@ -7,7 +7,7 @@ int xx() { return 2; }
 
 
 int main() {
-	ObinAny num = obin_number_new(2);
+	ObinAny num = obin_integer_new(2);
 	ObinAny fl = obin_float_new(67.3f);
 
 	PRINT_NUMBER(sizeof(ObinAny));

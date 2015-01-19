@@ -13,23 +13,52 @@
 
 typedef struct {
 	OBIN_CELL_HEADER;
-	OBIN_DEFINE_TYPE_TRAIT(ObinCollectionTrait);
-
-	obin_mem_t size;
+	obin_integer hash;
 	obin_mem_t capacity;
-
 	/* we have array here to store both single chars and pointers to malloced data */
+	obin_mem_t size;
 	obin_char data[1];
 } ObinString;
 
-#define _string_data(any) (((ObinString*) obin_any_cell(any))->data)
-#define _string_size(any) (((ObinString*) obin_any_cell(any))->size)
-#define _string_capacity(any) (((ObinString*) obin_any_cell(any))->capacity)
+#define _string(any) ((ObinString*) obin_any_cell(any))
+#define _string_data(any) (_string(any)->data)
+#define _string_size(any) (_string(any)->size)
+#define _string_capacity(any) (_string(any)->capacity)
 
 #define CHECK_STRING_TYPE(string) \
 	OBIN_ANY_CHECK_TYPE(string, EOBIN_TYPE_STRING)
 
-#define IS_CHARACTER(str) (str->size == 1)
+#define IS_CHARACTER(any) (_string_size(any) == 1)
+
+/********************************** TYPE TRAIT ***********************************************/
+
+static ObinAny method__string__(ObinState* state, ObinAny self) {
+	return  self;
+}
+
+static ObinAny method__destroy__(ObinState* state, ObinAny self) {
+	ObinString * str;
+	CHECK_STRING_TYPE(self);
+	if(!IS_CHARACTER(self)) {
+		obin_free(_string_data(self));
+	}
+
+	obin_free(obin_any_cell(self));
+	return ObinNothing;
+}
+
+static ObinAny method__iterator__(ObinState* state, ObinAny self) {
+
+	return ObinNothing;
+}
+
+static struct ObinTypeTrait ObinStringTypeTrait = {
+		method__string__,
+		method__destroy__,
+		obin_string_clone,
+		method__iterator__,
+		0 /* __next__ */
+};
 
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data) {
@@ -37,27 +66,31 @@ ObinAny obin_string_new(ObinState* state, obin_string data) {
 
 	len = _strlen(data);
 	if (len == 0) {
-		obin_raise_internal(state);
+		return obin_string_new_char_array(state, 0, 0);
 	}
 
-	return obin_string_new_from_char_array(state, data, len);
+	return obin_string_new_char_array(state, data, len);
 }
 
 ObinAny obin_string_new_char(ObinState* state, obin_char ch) {
 	obin_char temp[1];
 	temp[0] = ch;
-	return obin_string_new_from_char_array(state, temp, 1);
+	return obin_string_new_char_array(state, temp, 1);
 }
 
-ObinAny _obin_string_new_from_char_array(ObinState* state, obin_char* data,
+ObinAny _obin_string_new_char_array(ObinState* state, obin_char* data,
 obin_mem_t size, int is_shared) {
 	ObinString* self;
 
 	self = obin_malloc_type(state, ObinString);
-
-
-	/*we be char now */
-	if (size == 1) {
+	self->type_trait = &ObinStringTypeTrait;
+	/*empty string*/
+	if(size == 0) {
+		self->capacity = 1;
+		self->size = 0;
+		self->data[0] = '\0';
+	} else if (size == 1) {
+		/*we be char now */
 		self->capacity = size;
 		self->size = size;
 		self->data[0] = data[0];
@@ -80,12 +113,12 @@ obin_mem_t size, int is_shared) {
 /*@param data array without \0
  *@param size array size
  */
-ObinAny obin_string_new_from_char_array(ObinState* state, obin_char* data,
+ObinAny obin_string_new_char_array(ObinState* state, obin_char* data,
 obin_mem_t size) {
-	return _obin_string_new_from_char_array(state, data, size, OFALSE);
+	return _obin_string_new_char_array(state, data, size, OFALSE);
 }
 
-ObinAny obin_string_new_from_string(ObinState* state, ObinAny string) {
+ObinAny obin_string_clone(ObinState* state, ObinAny string) {
 	ObinString * source;
 
 	CHECK_STRING_TYPE(string);
@@ -97,13 +130,13 @@ ObinAny obin_string_new_from_string(ObinState* state, ObinAny string) {
 		return string;
 	}
 
-	return obin_string_new_from_char_array(state, source->data, source->size);
+	return obin_string_new_char_array(state, source->data, source->size);
 }
 
 /* ******************** ATTRIBUTES ***********************************************/
 ObinAny obin_string_length(ObinState* state, ObinAny self) {
 	CHECK_STRING_TYPE(self);
-	return obin_number_new(_string_size(self));
+	return obin_integer_new(_string_size(self));
 }
 
 /******************************** MODIFICATIONS *************************************/
@@ -292,7 +325,7 @@ ObinAny _obin_string_find(ObinState* state, ObinAny self, ObinAny other,
 	if ((pend - pstart) > needle->size) {
 		obin_raise_invalid_slice(state,
 				"String search error -> Invalid search range",
-				obin_number_new(pstart), obin_number_new(pend));
+				obin_integer_new(pstart), obin_integer_new(pend));
 	}
 
 	return finder(haystack, needle, start, end);
@@ -314,12 +347,12 @@ obin_mem_t start, obin_mem_t end) {
 		}
 		if (*n == '\0') {
 			// Found match!
-			return obin_number_new(i);
+			return obin_integer_new(i);
 		}
 		// Didn't match here.  Try again further along haystack.
 	}
 
-	return obin_number_new(STRING_INDEX_NOT_FOUND);
+	return obin_integer_new(STRING_INDEX_NOT_FOUND);
 }
 
 ObinAny obin_string_index_of(ObinState* state, ObinAny self, ObinAny other,
@@ -357,12 +390,12 @@ obin_mem_t start, obin_mem_t end) {
 		}
 		if (ni == 0) {
 			// Found match!
-			return obin_number_new(i - needle->size - 1);
+			return obin_integer_new(i - needle->size - 1);
 		}
 		// Didn't match here.  Try again further along haystack.
 	}
 
-	return obin_number_new(STRING_INDEX_NOT_FOUND);
+	return obin_integer_new(STRING_INDEX_NOT_FOUND);
 }
 
 ObinAny obin_string_last_index_of(ObinState* state, ObinAny self, ObinAny other,
@@ -398,14 +431,15 @@ ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count) {
 		obin_memcpy(data, str->data, str->size);
 	}
 
-	return obin_string_new_from_char_array(state, data, size, OTRUE);
+	return obin_string_new_char_array(state, data, size, OTRUE);
 }
 
 static ObinAny _obin_cell_to_string(ObinState* state, ObinAny any) {
 	obin_assert(obin_any_is_cell(any));
-	return obin_any_cell(any)->type_trait.__str__(any);
+    return obin_type_call(any, __string__);
 }
 
+/* TODO make chars and strings the same i think */
 ObinAny obin_any_to_string(ObinState* state, ObinAny any) {
 	char temp[_TEMP_BUFFER_SIZE] = '\0';
 	ObinContext* ctx;
@@ -490,7 +524,7 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 		}
 
 		obin_array_add(state, result,
-				obin_string_new_from_char_array(state, _string_data(self) + previous, current - previous));
+				obin_string_new_char_array(state, _string_data(self) + previous, current - previous));
 
 		previous = current + _string_size(separator);
 	}
@@ -527,7 +561,7 @@ ObinAny _obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
 	obin_memcpy(data, _string_data(str1), _string_size(str1));
 	obin_memcpy(data + _string_size(str1), _string_data(str2), _string_size(str2));
 
-	return _obin_string_new_from_char_array(state, data, size, OTRUE);
+	return _obin_string_new_char_array(state, data, size, OTRUE);
 }
 
 ObinAny obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
@@ -544,10 +578,11 @@ ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection) {
 	/*TODO EMPTY STRINGS WILL CRASH NOW */
 	result = obin_ctx_get()->internal_strings.Empty;
 
-	iterator = obin_iterator_get(state, collection);
+	iterator = obin_iterator(state, collection);
 	while(1){
-		value = obin_iterator_next(state, iterator);
+		value = obin_next(state, iterator);
 		if(obin_any_is_nothing(value)){
+			obin_del(iterator);
 			return result;
 		}
 
@@ -557,44 +592,9 @@ ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection) {
 }
 
 /*
- *
- *
  //native
  str.startswith(prefix[, start[, end]])
-
- Return True if string starts with the prefix, otherwise return False. prefix can also be a tuple of prefixes to look for. With optional start, test string beginning at that position. With optional end, stop comparing string at that position.
-
- Changed in version 2.5: Accept tuples as prefix.
-
- //native
  str.lstrip([chars])
-
- Return a copy of the string with leading characters removed. The chars argument is a string specifying the set of characters to be removed. If omitted or None, the chars argument defaults to removing whitespace. The chars argument is not a prefix; rather, all combinations of its values are stripped:
- >>>
-
- >>> '   spacious   '.lstrip()
- 'spacious   '
- >>> 'www.example.com'.lstrip('cmowz.')
- 'example.com'
-
- Changed in version 2.2.2: Support for the chars argument.
- //native
  str.rstrip([chars])
-
- Return a copy of the string with trailing characters removed. The chars argument is a string specifying the set of characters to be removed. If omitted or None, the chars argument defaults to removing whitespace. The chars argument is not a suffix; rather, all combinations of its values are stripped:
-
-
- //native
  str.splitlines([keepends])
-
- Return a list of the lines in the string, breaking at line boundaries. This method uses the universal newlines approach to splitting lines. Line breaks are not included in the resulting list unless keepends is given and true.
-
- For example, 'ab c\n\nde fg\rkl\r\n'.splitlines() returns ['ab c', '', 'de fg', 'kl'], while the same call with splitlines(True) returns ['ab c\n', '\n', 'de fg\r', 'kl\r\n'].
-
- Unlike split() when a delimiter string sep is given, this method returns an empty list for the empty string, and a terminal line break does not result in an extra line.
- str.endswith(suffix[, start[, end]])
-
- Return True if the string ends with the specified suffix, otherwise return False. suffix can also be a tuple of suffixes to look for. With optional start, test beginning at that position. With optional end, stop comparing at that position.
-
- Changed in version 2.5: Accept tuples as suffix.
  */

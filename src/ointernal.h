@@ -26,10 +26,11 @@ static ObinAny obin_any_new() {
 		any.type=type; \
 		any.data.cell=cell
 
-#define obin_any_init_number(any, num) \
+#define obin_any_init_integer(any, num) \
 		OBIN_ANY_BEFORE_SET(any); \
 		any.type=EOBIN_TYPE_INTEGER; \
 		any.data.integer_value=num
+
 
 #define obin_any_init_float(any, num) \
 		OBIN_ANY_BEFORE_SET(any); \
@@ -59,6 +60,9 @@ static ObinAny obin_any_new() {
 #define obin_any_is_cell(any) obin_type_is_cell(any.type)
 #define obin_any_is_collection(any) obin_type_is_collection(any.type)
 
+#define obin_type_call(any, method) (obin_any_cell(any)->type_trait->method(any))
+//#define obin_type_has_method(any, method) (obin_any_cell(any)->type_trait->__destroy__) == NULL
+#define obin_type_has_method(any, method) ((obin_any_cell(any)->type_trait->method) == NULL)
 #define OBIN_END_PROC return ObinNothing
 
 /********************************************** CELL ******************************************/
@@ -73,41 +77,7 @@ static ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell) {
 	return result;
 }
 
-/******************************* COLLECTION **************************************/
-typedef ObinAny (*obin_collection_iterator_next)(ObinAny iterator, ObinAny source);
-typedef ObinAny (*obin_collection_iterator)(ObinAny self);
-typedef ObinAny (*obin_function)(ObinAny arg);
-typedef ObinAny (*obin_function_2)(ObinAny arg1, ObinAny arg2);
-
-/* it will return Nothing for stop interation, but you need to refactor it to StopIteration later */
-#define OBIN_ITERATOR_HEADER \
-		obin_collection_iterator_next __next__
-
-typedef struct  {
-	OBIN_CELL_TRAIT;
-	OBIN_ITERATOR_HEADER;
-} ObinIterator;
-
-#define OBIN_COLLECTION_TRAIT \
-	OBIN_CELL_TRAIT \
-	obin_collection_iterator __iter__;
-
-typedef struct {
-	OBIN_COLLECTION_TRAIT;
-} ObinCollectionTrait;
-
-typedef struct {
-	OBIN_CELL_HEADER;
-	OBIN_DEFINE_TYPE_TRAIT(ObinCollectionTrait);
-} ObinCollection;
-
-/*Returns true if object is iterable*/
-ObinAny obin_any_is_iterable(ObinAny iterable);
-/*Returns iterator if can, else raise InvalidArgumentError*/
-ObinAny obin_iterator_get(ObinState * state, ObinAny iterable);
-/*Returns next value from iterator, Nothing if end*/
-ObinAny obin_iterator_next(ObinState * state, ObinAny iterator);
-
+/**************************** BUILTINS *******************************************/
 /*@return list of results from function applied to iterable */
 ObinAny obin_map(obin_function function, ObinAny iterable);
 
@@ -118,6 +88,16 @@ ObinAny obin_filter(obin_function function, ObinAny iterable);
  *  from left to right, so as to reduce the iterable to a single value..*/
 ObinAny obin_reduce(obin_function_2 function, ObinAny iterable);
 
+/*Returns true if object is iterable*/
+ObinAny obin_any_is_iterable(ObinAny iterable);
+
+ObinAny obin_destroy(ObinState * state, ObinAny dead);
+
+/*Returns iterator if can, else raise InvalidArgumentError*/
+ObinAny obin_iterator(ObinState * state, ObinAny iterable);
+/*Returns next value from iterator, Nothing if end*/
+ObinAny obin_next(ObinState * state, ObinAny iterator);
+/******************************* COLLECTION **************************************/
 /******************************************* TUPLE  ***************************************************/
 ObinAny obin_tuple_new(ObinState* state, ObinAny size);
 ObinAny obin_tuple_add(ObinState* state, ObinAny item);
@@ -152,7 +132,7 @@ ObinAny obin_raise(ObinState* state, ObinAny exception);
 /******************************************* STRING  ***************************************************/
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data);
-ObinAny obin_string_new_from_char_array(ObinState* state, obin_char* data,
+ObinAny obin_string_new_char_array(ObinState* state, obin_char* data,
 		obin_mem_t size);
 ObinAny obin_string_new_from_string(ObinState* state, ObinAny string);
 
@@ -199,11 +179,11 @@ ObinAny obin_any_to_string(ObinState* state, ObinAny any);
 #define ONUM(state, num) obin_number_new(state, num)
 
 /********************************************** NUMBER **************************************************/
-static ObinAny obin_number_new(obin_integer number) {
+static ObinAny obin_integer_new(obin_integer number) {
 	ObinAny result;
 
 	result = obin_any_new();
-	obin_any_init_number(result, number);
+	obin_any_init_integer(result, number);
 	return result;
 }
 

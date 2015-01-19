@@ -2,21 +2,17 @@
 #define OBIN_OMEMORY_H_
 #include "otypes.h"
 
-
-
 typedef struct{
 	obin_integer mark;
 } ObinCellGCInfo;
 
 /*IT EMPTY FOR NOW */
 #define OBIN_CELL_HEADER \
+	ObinTypeTrait* type_trait; \
 	ObinCellGCInfo gc_info
-
-#define OBIN_DEFINE_TYPE_TRAIT(type) type type_trait
 
 struct _ObinCell {
 	OBIN_CELL_HEADER;
-	OBIN_DEFINE_TYPE_TRAIT(ObinCellTrait);
 };
 
 /*
@@ -35,6 +31,8 @@ struct _ObinCell {
 #define obin_memcpy memcpy
 
 #ifndef OBIN_MEMORY_DEBUG
+
+void obin_free(obin_pointer ptr);
 
 obin_pointer obin_malloc(ObinState* state, obin_mem_t size);
 

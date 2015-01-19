@@ -46,7 +46,6 @@ typedef enum _EOBIN_TYPE {
 	EOBIN_TYPE_TUPLE,
 	EOBIN_TYPE_END_COLLECTION_TYPES,
 
-	EOBIN_TYPE_ITERATOR,
 	EOBIN_TYPE_COMPOSITE_CELL,
 	EOBIN_TYPE_BIG_INTEGER,
 
@@ -55,19 +54,6 @@ typedef enum _EOBIN_TYPE {
 } EOBIN_TYPE;
 
 typedef struct _ObinCell ObinCell;
-
-typedef ObinAny (*obin_method_tostring) (ObinAny self);
-typedef ObinAny (*obin_method_clone) (ObinAny self);
-typedef void (*obin_method_del) (ObinAny self);
-
-#define OBIN_CELL_TRAIT \
-	obin_method_tostring __str__; \
-	obin_method_del __del__; \
-	obin_method_clone __clone__;
-
-typedef struct {
-	OBIN_CELL_TRAIT
-} ObinCellTrait;
 
 typedef union {
 	obin_integer integer_value;
@@ -79,6 +65,24 @@ typedef struct {
 	EOBIN_TYPE type;
 	ObinValue data;
 } ObinAny;
+/************************* INTERFACES ************************************/
+typedef ObinAny (*obin_function)(ObinAny arg);
+typedef ObinAny (*obin_function_2)(ObinAny arg1, ObinAny arg2);
+
+typedef ObinAny (*obin_method)(ObinState* state, ObinAny arg);
+/********************** TYPE_TRAIT **************************************/
+/* EACH TYPE MUST DEFINE type_trait with this macro */
+#define OBIN_DEFINE_TYPE_TRAIT(type) type type_trait
+
+/* METHODS */
+
+typedef struct {
+	obin_method __string__;
+	obin_method __destroy__;
+	obin_method __clone__;
+	obin_method __iterator__;
+	obin_method __next__;
+} ObinTypeTrait;
 
 /************************* STATE *************************************/
 typedef struct _ObinState ObinState;
@@ -96,8 +100,6 @@ struct _ObinState {
 ObinAny ObinFalse = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FALSE);
 ObinAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
 ObinAny ObinNil = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NIL);
-ObinAny ObinNothing = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NOTHING);
-
 ObinAny ObinNothing = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NOTHING);
 
 ObinAny ObinSuccess = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_SUCCESS);

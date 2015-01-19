@@ -63,7 +63,7 @@ obin_array_size(ObinState* state, const ObinAny array) {
 
 	self = (ObinArray*) obin_to_cell(array);
 
-	return obin_number_new(self->size);
+	return obin_integer_new(self->size);
 }
 
 
