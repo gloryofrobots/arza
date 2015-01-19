@@ -13,6 +13,8 @@ ObinAny a reg
  */
 #include "oconf.h"
 
+#define OFALSE 0
+#define OTRUE 1
 /*
  *   WARNING DO NOT SWAP TYPE SECTIONS,
  *   SPECIAL FIELDS ARE USED TO DETERMINE TYPE RANGES IN CHECKS
@@ -44,6 +46,7 @@ typedef enum _EOBIN_TYPE {
 	EOBIN_TYPE_TUPLE,
 	EOBIN_TYPE_END_COLLECTION_TYPES,
 
+	EOBIN_TYPE_ITERATOR,
 	EOBIN_TYPE_COMPOSITE_CELL,
 	EOBIN_TYPE_BIG_INTEGER,
 
@@ -106,5 +109,4 @@ ObinAny ObinMemoryError;
 ObinAny ObinInternalError;
 ObinAny ObinInvalidSliceError;
 ObinAny ObinInvalidArgumentError;
-
 #endif

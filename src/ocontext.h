@@ -8,6 +8,7 @@ typedef struct {
 	ObinAny False;
 	ObinAny Nothing;
 	ObinAny PrintSeparator;
+	ObinAny Empty;
 } ObinInternalStrings;
 
 typedef struct {

@@ -74,20 +74,49 @@ static ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell) {
 }
 
 /******************************* COLLECTION **************************************/
-
+typedef ObinAny (*obin_collection_iterator_next)(ObinAny iterator, ObinAny source);
 typedef ObinAny (*obin_collection_iterator)(ObinAny self);
+typedef ObinAny (*obin_function)(ObinAny arg);
+typedef ObinAny (*obin_function_2)(ObinAny arg1, ObinAny arg2);
+
+/* it will return Nothing for stop interation, but you need to refactor it to StopIteration later */
+#define OBIN_ITERATOR_HEADER \
+		obin_collection_iterator_next __next__
+
+typedef struct  {
+	OBIN_CELL_TRAIT;
+	OBIN_ITERATOR_HEADER;
+} ObinIterator;
 
 #define OBIN_COLLECTION_TRAIT \
 	OBIN_CELL_TRAIT \
 	obin_collection_iterator __iter__;
 
 typedef struct {
-	OBIN_COLLECTION_TRAIT
+	OBIN_COLLECTION_TRAIT;
 } ObinCollectionTrait;
 
 typedef struct {
-	OBIN_CELL_HEADER;OBIN_DEFINE_TYPE_TRAIT(ObinCollectionTrait);
+	OBIN_CELL_HEADER;
+	OBIN_DEFINE_TYPE_TRAIT(ObinCollectionTrait);
 } ObinCollection;
+
+/*Returns true if object is iterable*/
+ObinAny obin_any_is_iterable(ObinAny iterable);
+/*Returns iterator if can, else raise InvalidArgumentError*/
+ObinAny obin_iterator_get(ObinState * state, ObinAny iterable);
+/*Returns next value from iterator, Nothing if end*/
+ObinAny obin_iterator_next(ObinState * state, ObinAny iterator);
+
+/*@return list of results from function applied to iterable */
+ObinAny obin_map(obin_function function, ObinAny iterable);
+
+/*Construct a list from those elements of iterable for which function returns True.*/
+ObinAny obin_filter(obin_function function, ObinAny iterable);
+
+/*Apply function of two arguments cumulatively to the items of iterable,
+ *  from left to right, so as to reduce the iterable to a single value..*/
+ObinAny obin_reduce(obin_function_2 function, ObinAny iterable);
 
 /******************************************* TUPLE  ***************************************************/
 ObinAny obin_tuple_new(ObinState* state, ObinAny size);
