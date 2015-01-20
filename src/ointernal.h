@@ -53,10 +53,13 @@ static ObinAny obin_any_new() {
 #define obin_any_is_success(any) (any.type == EOBIN_TYPE_SUCCESS)
 #define obin_any_is_nil(any) (any.type == EOBIN_TYPE_NIL)
 #define obin_any_is_nothing(any) (any.type == EOBIN_TYPE_NOTHING)
+
 #define obin_any_is_integer(any) (any.type == EOBIN_TYPE_INTEGER)
 #define obin_any_is_float(any) (any.type == EOBIN_TYPE_FLOAT)
+#define obin_any_is_char(any) (any.type == EOBIN_TYPE_CHAR)
+
+#define obin_any_is_string(any) (any.type == EOBIN_TYPE_STRING || any.type == EOBIN_TYPE_CHAR)
 #define obin_any_is_array(any) (any.type == EOBIN_TYPE_ARRAY)
-#define obin_any_is_string(any) (any.type == EOBIN_TYPE_STRING)
 #define obin_any_is_dict(any) (any.type == EOBIN_TYPE_DICT)
 #define obin_any_is_cell(any) obin_type_is_cell(any.type)
 #define obin_any_is_collection(any) obin_type_is_collection(any.type)
@@ -67,18 +70,6 @@ static ObinAny obin_any_new() {
 #define obin_type_has_method(any, method) ((obin_any_cell(any)->type_trait->method) == NULL)
 #define OBIN_END_PROC return ObinNothing
 
-/********************************************** CELL ******************************************/
-static ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell) {
-	ObinAny result;
-	obin_assert(obin_type_is_cell(type));
-
-	result = obin_any_new();
-
-	obin_any_init_cell(result, type, cell);
-
-	return result;
-}
-ObinAny obin_cell_destroy(ObinAny cell);
 /**************************** BUILTINS *******************************************/
 /*@return list of results from function applied to iterable */
 ObinAny obin_map(obin_function function, ObinAny iterable);
@@ -132,8 +123,25 @@ ObinAny obin_raise(ObinState* state, ObinAny exception);
 #define obin_raise_type_error(state, message, obj) \
 		_OBIN_RAISE_1(state, ObinTypeError, message, obj)
 
+#define obin_raise_index_error(state, message, obj) \
+		_OBIN_RAISE_1(state, ObinIndexError, message, obj)
+
 #define obin_raise_invalid_slice(state, message, start, end) \
 		_OBIN_RAISE_2(state, ObinInvalidSliceError, message, start, end)
+/********************************************** CELL ******************************************/
+static ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell) {
+	ObinAny result;
+	obin_assert(obin_type_is_cell(type));
+
+	result = obin_any_new();
+
+	obin_any_init_cell(result, type, cell);
+
+	return result;
+}
+ObinAny obin_cell_destroy(ObinAny cell);
+/******************************************* CHAR  ***************************************************/
+ObinTypeTrait* obin_char_type_trait(ObinState* state);
 /******************************************* STRING  ***************************************************/
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data);

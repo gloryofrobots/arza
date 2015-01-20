@@ -38,7 +38,7 @@ typedef enum _EOBIN_TYPE {
 	/* FIXED TYPES STORED IN ObinAny::data*/
 	EOBIN_TYPE_INTEGER,
 	EOBIN_TYPE_FLOAT,
-
+	EOBIN_TYPE_CHAR,
 	/* CELL TYPES ALLOCATED IN HEAP */
 	EOBIN_TYPE_BEGIN_CELL_TYPES,
 
@@ -58,9 +58,15 @@ typedef enum _EOBIN_TYPE {
 
 typedef struct _ObinCell ObinCell;
 
+
 typedef union {
 	obin_integer integer_value;
 	obin_float float_value;
+	struct {
+		obin_char is_null;
+		obin_char data[1];
+	} char_value;
+
 	ObinCell * cell;
 } ObinValue;
 
@@ -86,8 +92,8 @@ typedef struct {
 	obin_method __clone__;
 	obin_method_2 __equal__;
 	obin_method_2 __compare__;
-	obin_method_2 __item__;
 	obin_method __iterator__;
+	obin_method_2 __item__;
 	obin_method __next__;
 } ObinTypeTrait;
 
@@ -122,4 +128,5 @@ ObinAny ObinInternalError;
 ObinAny ObinInvalidSliceError;
 ObinAny ObinTypeError;
 ObinAny ObinValueError;
+ObinAny ObinIndexError;
 #endif
