@@ -47,6 +47,7 @@ static ObinAny obin_any_new() {
 #define obin_type_is_cell(type) OBIN_CHECK_TYPE_RANGE(type, EOBIN_TYPE_BEGIN_CELL_TYPES, EOBIN_TYPE_END_CELL_TYPES)
 #define obin_type_is_collection(type) OBIN_CHECK_TYPE_RANGE(type, EOBIN_TYPE_BEGIN_COLLECTION_TYPES, EOBIN_TYPE_END_COLLECTION_TYPES)
 
+#define obin_any_is_equal(any) (any.type == EOBIN_TYPE_EQUAL)
 #define obin_any_is_bool(any) ((any.type == EOBIN_TYPE_TRUE) || (any.type == EOBIN_TYPE_FALSE))
 #define obin_any_is_true(any) (any.type == EOBIN_TYPE_TRUE)
 #define obin_any_is_success(any) (any.type == EOBIN_TYPE_SUCCESS)
@@ -60,7 +61,8 @@ static ObinAny obin_any_new() {
 #define obin_any_is_cell(any) obin_type_is_cell(any.type)
 #define obin_any_is_collection(any) obin_type_is_collection(any.type)
 
-#define obin_type_call(any, method) (obin_any_cell(any)->type_trait->method(any))
+#define obin_type_call(state, any, method) (obin_any_cell(any)->type_trait->method(state, any))
+#define obin_type_call_1(state, any, method, arg) (obin_any_cell(any)->type_trait->method(state, any, arg))
 //#define obin_type_has_method(any, method) (obin_any_cell(any)->type_trait->__destroy__) == NULL
 #define obin_type_has_method(any, method) ((obin_any_cell(any)->type_trait->method) == NULL)
 #define OBIN_END_PROC return ObinNothing
@@ -76,7 +78,7 @@ static ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell) {
 
 	return result;
 }
-
+ObinAny obin_cell_destroy(ObinAny cell);
 /**************************** BUILTINS *******************************************/
 /*@return list of results from function applied to iterable */
 ObinAny obin_map(obin_function function, ObinAny iterable);
@@ -124,8 +126,11 @@ ObinAny obin_raise(ObinState* state, ObinAny exception);
 #define obin_raise_internal(state) \
 		obin_raise(state, ObinInternalError)
 
-#define obin_raise_invalid_argument(state, message, arg) \
-		_OBIN_RAISE_1(state, ObinInvalidArgumentError, message, arg)
+#define obin_raise_value_error(state, message, obj) \
+		_OBIN_RAISE_1(state, ObinValueError, message, obj)
+
+#define obin_raise_type_error(state, message, obj) \
+		_OBIN_RAISE_1(state, ObinTypeError, message, obj)
 
 #define obin_raise_invalid_slice(state, message, start, end) \
 		_OBIN_RAISE_2(state, ObinInvalidSliceError, message, start, end)

@@ -31,7 +31,10 @@ typedef enum _EOBIN_TYPE {
 	EOBIN_TYPE_TRUE,
 	EOBIN_TYPE_NIL,
 	EOBIN_TYPE_NOTHING,
-
+	/** compare types **/
+	EOBIN_TYPE_EQUAL,
+	EOBIN_TYPE_LESSER,
+	EOBIN_TYPE_GREATER,
 	/* FIXED TYPES STORED IN ObinAny::data*/
 	EOBIN_TYPE_INTEGER,
 	EOBIN_TYPE_FLOAT,
@@ -70,6 +73,7 @@ typedef ObinAny (*obin_function)(ObinAny arg);
 typedef ObinAny (*obin_function_2)(ObinAny arg1, ObinAny arg2);
 
 typedef ObinAny (*obin_method)(ObinState* state, ObinAny arg);
+typedef ObinAny (*obin_method_2)(ObinState* state, ObinAny arg1, ObinAny arg2);
 /********************** TYPE_TRAIT **************************************/
 /* EACH TYPE MUST DEFINE type_trait with this macro */
 #define OBIN_DEFINE_TYPE_TRAIT(type) type type_trait
@@ -80,6 +84,9 @@ typedef struct {
 	obin_method __string__;
 	obin_method __destroy__;
 	obin_method __clone__;
+	obin_method_2 __equal__;
+	obin_method_2 __compare__;
+	obin_method_2 __item__;
 	obin_method __iterator__;
 	obin_method __next__;
 } ObinTypeTrait;
@@ -105,10 +112,14 @@ ObinAny ObinNothing = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NOTHING);
 ObinAny ObinSuccess = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_SUCCESS);
 ObinAny ObinFailure = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FAILURE);
 
+ObinAny ObinLesser = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_LESSER);
+ObinAny ObinGreater = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_GREATER);
+ObinAny ObinEqual = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_EQUAL);
 /********************** ERRORS ************************************/
 
 ObinAny ObinMemoryError;
 ObinAny ObinInternalError;
 ObinAny ObinInvalidSliceError;
-ObinAny ObinInvalidArgumentError;
+ObinAny ObinTypeError;
+ObinAny ObinValueError;
 #endif

@@ -45,14 +45,19 @@ ObinAny obin_next(ObinState * state, ObinAny any){
 
 /* destroy cell */
 ObinAny obin_destroy(ObinState * state, ObinAny any){
-
 	if(!obin_any_is_cell(any)){
 		obin_raise_invalid_argument(state, "Cell expected", any);
 	}
 
 	if(!obin_type_has_method(any, __destroy__)) {
-		obin_raise_invalid_argument(state, "Method invokation error -> __destroy__ not exist", any);
+		return obin_cell_destroy(state, any);
 	}
 
-	return obin_type_call(any, __destroy__);
+	return obin_type_call(state, any, __destroy__);
+}
+
+ObinAny obin_cell_destroy(ObinState * state, ObinAny any){
+	obin_assert(obin_any_is_cell(any));
+	obin_free(obin_any_cell(any));
+	return ObinNothing;
 }

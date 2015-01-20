@@ -1,12 +1,13 @@
 #include "../ointernal.h"
 #include <ocontext.h>
 #include <stdarg.h>
+#include <string.h>
 
 /* ALIASES */
 #define _strlen strlen
 #define _strstr strstr
 #define _snprintf snprintf
-
+#define _strncmp strncmp
 /* SIZE FOR BUFFER IN STACK USED TO WRITE INTS AND FLOATS TO STRING */
 
 #define _TEMP_BUFFER_SIZE 256
@@ -33,13 +34,13 @@ typedef struct {
 /********************************** TYPE TRAIT ***********************************************/
 
 static ObinAny method__string__(ObinState* state, ObinAny self) {
-	return  self;
+	return self;
 }
 
 static ObinAny method__destroy__(ObinState* state, ObinAny self) {
 	ObinString * str;
 	CHECK_STRING_TYPE(self);
-	if(!IS_CHARACTER(self)) {
+	if (!IS_CHARACTER(self)) {
 		obin_free(_string_data(self));
 	}
 
@@ -47,15 +48,111 @@ static ObinAny method__destroy__(ObinState* state, ObinAny self) {
 	return ObinNothing;
 }
 
-static ObinAny method__iterator__(ObinState* state, ObinAny self) {
+static ObinAny method__item__(ObinState* state, ObinAny self, ObinAny key){
+	CHECK_STRING_TYPE(self);
+	obin_mem_t index;
+	obin_char result;
 
-	return ObinNothing;
+	if(!obin_any_is_integer(key)){
+		obin_raise_type_error(state, "Integer expected", index);
+	}
+	index = obin_any_integer(key);
+	if(index < 0 || index >= _string_size(self)) {
+		obin_raise_value_error(state, "String __item__ invalid index", key);
+	}
+
+	result = _string_data(self)[index];
+	return obin_string_new_char(state, result);
+}
+/**************************** ITERATOR **********************************************/
+typedef struct {
+	OBIN_CELL_HEADER;
+	ObinAny source;
+	obin_mem_t current;
+} StringIterator;
+
+
+static ObinAny iterator_method__next__(ObinState* state, ObinAny self) {
+	StringIterator * it;
+	ObinAny result;
+
+	it = (StringIterator*) obin_any_cell(self);
+	if(it->current >= _string_size(it->source)){
+		return ObinNothing;
+	}
+
+	result = obin_type_call_1(state, self, __item__, obin_new_integer(it->current));
+	it->current++;
+	return result;
+}
+
+struct ObinTypeTrait ObinStringIteratorTypeTrait = {
+		0, /* __string__ */
+		obin_cell_destroy,
+		0, /* __clone__ */
+		0, /*  __equal__   */
+		0, /* __compare  */
+		0, /*  __iterator__ */
+		iterator_method__next__
+};
+
+static ObinAny method__iterator__(ObinState* state, ObinAny self) {
+	StringIterator * iterator;
+
+	CHECK_STRING_TYPE(self);
+
+	iterator = obin_malloc_type(state, StringIterator);
+	iterator->source = self;
+	iterator->current = 0;
+
+	return obin_cell_new(iterator);
+}
+
+static ObinAny method__compare__(ObinState* state, ObinAny self, ObinAny other) {
+	obin_mem_t result;
+
+	CHECK_STRING_TYPE(self);
+	if (!obin_any_is_string(other)) {
+		obin_raise_type_error(state, "string __compare__ expect string", other);
+	}
+	if (_string_size(self) < _string_size(other)) {
+		return ObinLesser;
+	}
+	if (_string_size(self) > _string_size(other)) {
+		return ObinGreater;
+	}
+
+	result = _strncmp(_string_data(self), _string_data(other),
+			_string_size(self));
+
+	if (result < 0) {
+		return ObinLesser;
+	}
+	if (result > 0) {
+		return ObinGreater;
+	}
+
+	return ObinEqual;
+}
+
+static ObinAny method__equal__(ObinState* state, ObinAny self, ObinAny other) {
+	CHECK_STRING_TYPE(self);
+	int result = 0;
+	if (!obin_any_is_string(other)) {
+		obin_raise_type_error(state, "string __equal__ expect string", other);
+	}
+	if (obin_any_is_equal(method__compare__(state, self, other))) {
+		return ObinTrue;
+	}
+	return ObinFalse;
 }
 
 static struct ObinTypeTrait ObinStringTypeTrait = {
 		method__string__,
 		method__destroy__,
 		obin_string_clone,
+		method__equal__,
+		method__compare__,
 		method__iterator__,
 		0 /* __next__ */
 };
@@ -85,7 +182,7 @@ obin_mem_t size, int is_shared) {
 	self = obin_malloc_type(state, ObinString);
 	self->type_trait = &ObinStringTypeTrait;
 	/*empty string*/
-	if(size == 0) {
+	if (size == 0) {
 		self->capacity = 1;
 		self->size = 0;
 		self->data[0] = '\0';
@@ -97,11 +194,11 @@ obin_mem_t size, int is_shared) {
 	} else {
 		self->capacity = size + 1;
 		self->size = size;
-		if(is_shared == 1) {
-			self->data = obin_malloc_collection(state, obin_char, self->capacity);
+		if (is_shared == 1) {
+			self->data = obin_malloc_collection(state, obin_char,
+					self->capacity);
 			obin_memcpy(self->data, data, size);
-		}
-		else{
+		} else {
 			self->data = data;
 		}
 		self->data[self.size] = '\0';
@@ -221,7 +318,6 @@ ObinAny _check_condition(ObinState* state, ObinAny self,
 	obin_mem_t i;
 
 	CHECK_STRING_TYPE(self);
-
 
 	for (i = 0; i < _string_size(self); i++) {
 		if (condition(_string_data(self), i) == 0) {
@@ -436,7 +532,7 @@ ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count) {
 
 static ObinAny _obin_cell_to_string(ObinState* state, ObinAny any) {
 	obin_assert(obin_any_is_cell(any));
-    return obin_type_call(any, __string__);
+	return obin_type_call(any, __string__);
 }
 
 /* TODO make chars and strings the same i think */
@@ -509,11 +605,9 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 	previous = 0;
 
 	while (1) {
-		current = obin_any_integer(
-						_string_finder_left(_string_data(self),
-								_string_data(separator),
-								previous,
-								_string_size(self)));
+		current =
+				obin_any_integer(
+						_string_finder_left(_string_data(self), _string_data(separator), previous, _string_size(self)));
 
 		if (current == STRING_INDEX_NOT_FOUND) {
 			return result;
@@ -524,7 +618,8 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 		}
 
 		obin_array_add(state, result,
-				obin_string_new_char_array(state, _string_data(self) + previous, current - previous));
+				obin_string_new_char_array(state, _string_data(self) + previous,
+						current - previous));
 
 		previous = current + _string_size(separator);
 	}
@@ -539,27 +634,29 @@ ObinAny _obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
 	OBIN_CHECK_STRING_TYPE(str1);
 	OBIN_CHECK_STRING_TYPE(str2);
 
-	if(_string_size(str1) == 0){
+	if (_string_size(str1) == 0) {
 		return obin_string_from_string(str2);
 	}
-	if(_string_size(str2) == 0){
+	if (_string_size(str2) == 0) {
 		return obin_string_from_string(str1);
 	}
 
 	size = _string_size(str1) + _string_size(str2);
 
-	if(size == 0) {
+	if (size == 0) {
 		return obin_ctx_get()->internal_strings.Empty;
 	}
 
-	if(size == 1) {
-		return obin_string_new_char(_string_size(str1) == 0
-				? _string_data(str2)[0] : _string_data(str1)[0]);
+	if (size == 1) {
+		return obin_string_new_char(
+				_string_size(str1) == 0 ?
+						_string_data(str2)[0] : _string_data(str1)[0]);
 	}
 
 	data = obin_malloc_collection(state, obin_char, size);
 	obin_memcpy(data, _string_data(str1), _string_size(str1));
-	obin_memcpy(data + _string_size(str1), _string_data(str2), _string_size(str2));
+	obin_memcpy(data + _string_size(str1), _string_data(str2),
+			_string_size(str2));
 
 	return _obin_string_new_char_array(state, data, size, OTRUE);
 }
@@ -579,9 +676,9 @@ ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection) {
 	result = obin_ctx_get()->internal_strings.Empty;
 
 	iterator = obin_iterator(state, collection);
-	while(1){
+	while (1) {
 		value = obin_next(state, iterator);
-		if(obin_any_is_nothing(value)){
+		if (obin_any_is_nothing(value)) {
 			obin_del(iterator);
 			return result;
 		}
