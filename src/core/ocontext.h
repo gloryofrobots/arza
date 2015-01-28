@@ -1,6 +1,6 @@
 #ifndef OBIN_OCONTEXT_H_
 #define OBIN_OCONTEXT_H_
-#include <ointernal.h>
+#include "obuiltin.h"
 
 typedef struct {
 	ObinAny Nil;

@@ -1,7 +1,11 @@
-#include "../ointernal.h"
-#include <ocontext.h>
 #include <stdarg.h>
-#include <string.h>
+
+#include <core/orandom.h>
+#include <core/ocontext.h>
+#include <core/omemory.h>
+#include <core/obuiltin.h>
+#include <types/oerror.h>
+#include <types/ostring.h>
 
 /* ALIASES */
 #define _strlen strlen
@@ -11,6 +15,7 @@
 /* SIZE FOR BUFFER IN STACK USED TO WRITE INTS AND FLOATS TO STRING */
 
 #define _TEMP_BUFFER_SIZE 256
+#define OBIN_SPLIT_STRING_DEFAULT_ARRAY_SIZE 8
 
 typedef struct {
 	OBIN_CELL_HEADER;
@@ -39,7 +44,7 @@ static obin_char* _string_size(ObinAny any) {
 		return _string(any)->size;
 		break;
 	case EOBIN_TYPE_CHAR:
-		return 1;
+		return any.data.char_value.size;
 		break;
 	}
 }
@@ -57,7 +62,7 @@ static obin_char* _string_capacity(ObinAny any) {
 
 #define IS_CHAR(any) (any.type == EOBIN_TYPE_CHAR)
 #define IS_STRING(any) (any.type == EOBIN_TYPE_STRING)
-#define IS_EMPTY_CHAR(any) (any.data.char_value.is_null)
+#define IS_EMPTY(any) (IS_CHAR(any) && any.data.char_value.size == 0)
 
 /********************************** STRING TYPE TRAIT ***********************************************/
 
@@ -150,6 +155,47 @@ static ObinAny string_method__equal__(ObinState* state, ObinAny self, ObinAny ot
 	return ObinFalse;
 }
 
+static ObinAny string_method__hash__(ObinState* state, ObinAny self) {
+	register obin_integer hash = 0;
+	register obin_char * cursor = 0;
+	register obin_integer length = 0;
+	ObinHashSecret secret;
+
+	if(!obin_any_is_string(self)) {
+		return obin_raise_type_error(state, "String.__hash__ call from other type", self);
+	}
+
+	if(IS_EMPTY(self)){
+		return obin_integer_new(0);
+	}
+
+	if(IS_CHAR(self)) {
+		return obin_integer_new((obin_integer) _string_data(self)[0]);
+	}
+
+	/* return already hashed value */
+	hash = _string(self)->hash;
+	if(hash){
+		return obin_integer_new(hash);
+	}
+
+	secret = obin_hash_secret();
+	cursor = _string_data(self);
+    hash = secret.prefix;
+	hash ^= (*(cursor) << 7);
+	length = _string_length(self);
+	while(--length >= 0){
+		hash = (1000003 * hash) ^ *cursor;
+		cursor++;
+	}
+
+	hash ^= length;
+	hash ^= secret.suffix;
+
+	_string(self)->hash = hash;
+	return obin_integer_new(hash);
+}
+
 /**************************** ITERATOR **********************************************/
 typedef struct {
 	OBIN_CELL_HEADER;
@@ -177,6 +223,7 @@ struct ObinTypeTrait ObinStringIteratorTypeTrait = {
 		obin_cell_destroy,
 		0, /* __clone__ */
 		0, /*  __equal__   */
+		0, /* __hash__ */
 		0, /* __compare  */
 		0, /*  __iterator__ */
 		iterator_method__next__,
@@ -202,6 +249,7 @@ static struct ObinTypeTrait ObinStringTypeTrait = {
 		string_method__destroy__,
 		obin_string_clone,
 		string_method__equal__,
+		string_method__hash__,
 		string_method__compare__,
 		string_method__iterator__,
 		string_method__item__,
@@ -228,15 +276,15 @@ ObinAny obin_char_new(ObinState* state, obin_char ch) {
 	result = obin_any_new();
 	result.type = EOBIN_TYPE_CHAR;
 	result.data.char_value.data[0] = ch;
-	result.data.char_value.is_null = OFALSE;
+	result.data.char_value.size = 1;
 	return result;
 }
 
-ObinAny obin_empty_string(ObinState* state) {
+ObinAny obin_string_empty(ObinState* state) {
 	ObinAny result;
 
 	result = obin_char_new(state, 0);
-	result.data.char_value.is_null = OTRUE;
+	result.data.char_value.size = 0;
 	return result;
 }
 
@@ -246,7 +294,7 @@ obin_mem_t size, int is_shared) {
 
 	/*empty string*/
 	if (size == 0) {
-		return obin_empty_string(state);
+		return obin_string_empty(state);
 	}
 	if (size == 1) {
 		return obin_char_new(state, data[0]);
@@ -293,7 +341,7 @@ ObinAny obin_string_length(ObinState* state, ObinAny self) {
 	}
 
 	if(IS_CHAR(self)){
-		if(IS_EMPTY_CHAR(self)){
+		if(IS_EMPTY(self)){
 			return 0;
 		}
 		return 1;
@@ -725,16 +773,18 @@ ObinAny obin_any_to_string(ObinState* state, ObinAny any) {
 	}
 }
 
-#define OBIN_SPLIT_STRING_DEFAULT_ARRAY_SIZE 8
-
 ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 	ObinAny result;
 
 	obin_mem_t current;
 	obin_mem_t previous;
 
-	CHECK_STRING_TYPE(self);
-	CHECK_STRING_TYPE(separator);
+	if(!obin_any_is_string(self)) {
+		return obin_raise_type_error(state, "obin_string_split call from other type", self);
+	}
+	if(!obin_any_is_string(separator)) {
+		return obin_raise_type_error(state, "String.split invalid argument type, String expected", self);
+	}
 
 	result = obin_array_new(state, OBIN_SPLIT_STRING_DEFAULT_ARRAY_SIZE);
 
@@ -746,10 +796,10 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 	current = 0;
 	previous = 0;
 
-	while (1) {
-		current =
-				obin_any_integer(
-						_string_finder_left(_string_data(self), _string_data(separator), previous, _string_size(self)));
+	while (OTRUE) {
+		current = obin_any_integer(
+				_string_finder_left(self, separator, previous, _string_size(self))
+				);
 
 		if (current == STRING_INDEX_NOT_FOUND) {
 			return result;
@@ -769,12 +819,16 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 	return result;
 }
 
-ObinAny _obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
+ObinAny obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
 	obin_char* data;
 	obin_mem_t size;
 
-	OBIN_CHECK_STRING_TYPE(str1);
-	OBIN_CHECK_STRING_TYPE(str2);
+	if(!obin_any_is_string(str1)) {
+		return obin_raise_type_error(state, "obin_string_concat call from other type", str1);
+	}
+	if(!obin_any_is_string(str2)) {
+		return obin_raise_type_error(state, "String.concat invalid argument type, String expected", str2);
+	}
 
 	if (_string_size(str1) == 0) {
 		return obin_string_from_string(str2);
@@ -786,7 +840,7 @@ ObinAny _obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
 	size = _string_size(str1) + _string_size(str2);
 
 	if (size == 0) {
-		return obin_ctx_get()->internal_strings.Empty;
+		return obin_string_empty();
 	}
 
 	if (size == 1) {
@@ -796,6 +850,7 @@ ObinAny _obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
 	}
 
 	data = obin_malloc_collection(state, obin_char, size);
+
 	obin_memcpy(data, _string_data(str1), _string_size(str1));
 	obin_memcpy(data + _string_size(str1), _string_data(str2),
 			_string_size(str2));
@@ -803,35 +858,33 @@ ObinAny _obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
 	return _obin_string_new_char_array(state, data, size, OTRUE);
 }
 
-ObinAny obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
-	OBIN_CHECK_STRING_TYPE(str1);
-	return _obin_string_concat(state, str1, obin_any_to_string(str2));
-}
-
 ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection) {
 	ObinAny iterator;
 	ObinAny value;
 	ObinAny result;
 
-	CHECK_STRING_TYPE(self);
-	/*TODO EMPTY STRINGS WILL CRASH NOW */
-	result = obin_ctx_get()->internal_strings.Empty;
+	if(!obin_any_is_string(self)) {
+		return obin_raise_type_error(state, "obin_string_join call from other type", self);
+	}
 
+	result = obin_ctx_get()->internal_strings.Empty;
 	iterator = obin_iterator(state, collection);
-	while (1) {
+
+	while (OTRUE) {
 		value = obin_next(state, iterator);
 		if (obin_any_is_nothing(value)) {
-			obin_del(iterator);
+			obin_destroy(iterator);
 			return result;
 		}
 
 		result = obin_string_concat(result, value);
 		result = obin_string_concat(result, self);
 	}
+
+	return result;
 }
 
-/*
- //native
+/* //native
  str.startswith(prefix[, start[, end]])
  str.lstrip([chars])
  str.rstrip([chars])

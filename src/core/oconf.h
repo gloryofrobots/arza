@@ -36,6 +36,7 @@ typedef void* obin_pointer;
 typedef long obin_integer;
 typedef const char* obin_string;
 typedef char obin_char;
+typedef unsigned char obin_byte;
 /* Needed for convertion between numbers and strings */
 #define OBIN_INTEGER_FORMATTER "%ld"
 #define OBIN_FLOAT_FORMATTER "%f"

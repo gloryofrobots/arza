@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "ointernal.h"
-
 #include "devutils.h"
+#include "obin.h"
+
 int xx() { return 2; }
 
 

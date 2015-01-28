@@ -63,7 +63,7 @@ typedef union {
 	obin_integer integer_value;
 	obin_float float_value;
 	struct {
-		obin_char is_null;
+		obin_byte size;
 		obin_char data[1];
 	} char_value;
 
@@ -91,6 +91,7 @@ typedef struct {
 	obin_method __destroy__;
 	obin_method __clone__;
 	obin_method_2 __equal__;
+	obin_method __hash__;
 	obin_method_2 __compare__;
 	obin_method __iterator__;
 	obin_method_2 __item__;
@@ -129,4 +130,73 @@ ObinAny ObinInvalidSliceError;
 ObinAny ObinTypeError;
 ObinAny ObinValueError;
 ObinAny ObinIndexError;
+
+#define OBIN_MODULE_NAME(name) OBIN_MODULE_##name##_INIT
+
+#define OBIN_MODULE_DECLARE(name) static int  OBIN_MODULE_NAME(name) = 0
+#define OBIN_MODULE_INIT(name) OBIN_MODULE_NAME(name) = 1
+#define OBIN_MODULE_CHECK(name) obin_assert(OBIN_MODULE_NAME(name))
+
+/* we mark cells once we initialized them with special type to prevent overwriting types
+ *  and values*/
+#ifndef NDEBUG
+#define OBIN_ANY_CHECK_TYPE(any, type) obin_assert(any.type==type)
+#define OBIN_ANY_BEFORE_SET(any) obin_assert(any.type == EOBIN_TYPE_UNKNOWN)
+#else
+#define OBIN_ANY_CHECK_TYPE(any, type)
+#define OBIN_ANY_BEFORE_SET(any)
+#endif
+
+/* NEVER FORGET TO CALL THIS BEFORE SETTING TYPE*/
+static ObinAny obin_any_new() {
+	ObinAny proto;
+	proto.type = EOBIN_TYPE_UNKNOWN;
+	return proto;
+}
+
+#define obin_any_init_cell(any, type, cell) \
+		OBIN_ANY_BEFORE_SET(any); \
+		any.type=type; \
+		any.data.cell=cell
+
+#define obin_any_init_integer(any, num) \
+		OBIN_ANY_BEFORE_SET(any); \
+		any.type=EOBIN_TYPE_INTEGER; \
+		any.data.integer_value=num
+
+
+#define obin_any_init_float(any, num) \
+		OBIN_ANY_BEFORE_SET(any); \
+		any.type=EOBIN_TYPE_FLOAT; \
+		any.data.float_value=num
+
+#define obin_any_cell(any) (any.data.cell)
+#define obin_any_integer(any) (any.data.integer_value)
+#define obin_any_float(any) (any.data.float_value)
+
+#define obin_any_cast_cell(any, type) ((type*) (any.data.cell))
+
+#define OBIN_CHECK_TYPE_RANGE(type, min, max) (type > min && type < max)
+#define obin_type_is_cell(type) OBIN_CHECK_TYPE_RANGE(type, EOBIN_TYPE_BEGIN_CELL_TYPES, EOBIN_TYPE_END_CELL_TYPES)
+#define obin_type_is_collection(type) OBIN_CHECK_TYPE_RANGE(type, EOBIN_TYPE_BEGIN_COLLECTION_TYPES, EOBIN_TYPE_END_COLLECTION_TYPES)
+
+#define obin_any_is_equal(any) (any.type == EOBIN_TYPE_EQUAL)
+#define obin_any_is_bool(any) ((any.type == EOBIN_TYPE_TRUE) || (any.type == EOBIN_TYPE_FALSE))
+#define obin_any_is_true(any) (any.type == EOBIN_TYPE_TRUE)
+#define obin_any_is_success(any) (any.type == EOBIN_TYPE_SUCCESS)
+#define obin_any_is_nil(any) (any.type == EOBIN_TYPE_NIL)
+#define obin_any_is_nothing(any) (any.type == EOBIN_TYPE_NOTHING)
+
+#define obin_any_is_integer(any) (any.type == EOBIN_TYPE_INTEGER)
+#define obin_any_is_float(any) (any.type == EOBIN_TYPE_FLOAT)
+#define obin_any_is_char(any) (any.type == EOBIN_TYPE_CHAR)
+
+#define obin_any_is_string(any) (any.type == EOBIN_TYPE_STRING || any.type == EOBIN_TYPE_CHAR)
+#define obin_any_is_array(any) (any.type == EOBIN_TYPE_ARRAY)
+#define obin_any_is_dict(any) (any.type == EOBIN_TYPE_DICT)
+#define obin_any_is_cell(any) obin_type_is_cell(any.type)
+#define obin_any_is_collection(any) obin_type_is_collection(any.type)
+
+#define OBIN_END_PROC return ObinNothing
+
 #endif

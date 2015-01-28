@@ -1,4 +1,4 @@
-#include <ointernal.h>
+#include "../obuiltin.h"
 
 #define obin_array_new_default obin_create_array(OBIN_DEFAULT_ARRAY_SIZE)
 

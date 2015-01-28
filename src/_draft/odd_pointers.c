@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "otypes.h"
+
+#include "../core/oany.h"
 
 #define ST_TAG_SIZE 2
 

@@ -1,6 +1,6 @@
 #ifndef OBIN_OMEMORY_H_
 #define OBIN_OMEMORY_H_
-#include "otypes.h"
+#include "oany.h"
 
 typedef struct{
 	obin_integer mark;
