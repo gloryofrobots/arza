@@ -1,17 +1,18 @@
-#include "../obuiltin.h"
+#include <stdarg.h>
+
+#include <core/orandom.h>
+#include <core/ocontext.h>
+#include <core/omemory.h>
+#include <core/obuiltin.h>
+
+#include <types/oerror.h>
 
 #define obin_array_new_default obin_create_array(OBIN_DEFAULT_ARRAY_SIZE)
 
 #define OBIN_ARRAY_MAX_CAPACITY OBIN_MEM_MAX - 1
 
-#define _array_last_index(array) (array->size - 1)
-
-#define CHECK_ARRAY_TYPE(array) OBIN_ANY_CHECK_TYPE(array, EOBIN_TYPE_ARRAY)
-
-
 typedef struct {
 	OBIN_CELL_HEADER;
-	OBIN_DEFINE_TYPE_TRAIT(ObinCollectionTrait);
 
 	obin_mem_t size;
 	obin_mem_t capacity;
@@ -19,52 +20,131 @@ typedef struct {
 	ObinAny* data;
 } ObinArray;
 
+#define _array(any) ((ObinArray*) (any.data.cell))
+#define _array_size(any) ((_array(any))->size)
+#define _array_capacity(any) ((_array(array))->capacity)
+#define _array_data(any) ((_array(any))->data)
+#define _array_item(any, index) ((_array_data(any))[index])
+#define _array_last_index(any) (_array_size(any) - 1)
+/* TRAIT */
+/* DO it with map */
+static ObinAny __tostring__(ObinState* state, ObinAny self) {
+	ObinAny result;
+	ObinAny iterator;
+	ObinAny item;
+	obin_integer size;
+
+	size =_array_size(self) + 2;
+	result = obin_array_new(state, size);
+	obin_setitem(result, obin_string_new(state, "["));
+
+	iterator = obin_iterator(state, self);
+
+	while (OTRUE) {
+		item = obin_next(state, iterator);
+		if (obin_is_stop_iteration(item)) {
+			break;
+		}
+
+		obin_setitem(result, obin_tostring(state, item));
+	}
+
+	obin_destroy(iterator);
+	obin_setitem(result, obin_string_new(state, "]"));
+	return obin_string_join(state, obin_string_new(state, ","), result);
+}
+
+static ObinAny __destroy__(ObinState* state, ObinAny self) {
+	obin_free(_array_data(self));
+	obin_free(obin_any_cell(self));
+	return ObinNothing;
+}
+
+static ObinAny __clone__(ObinState* state, ObinAny self) {
+	ObinAny result;
+	ObinAny iterator;
+	ObinAny item;
+
+	result = obin_array_new(state, _array_capacity(self));
+	obin_memcpy(_array_data(result), _array_data(self), _array_capacity(self) * sizeof(ObinAny));
+	_array_size(result) = _array_size(self);
+	return result;
+}
+
+static ObinNativeTraits __TRAITS__ = {
+    &__tostring__,
+    &__destroy__,
+	&__clone__,
+	&obin_collection_compare,
+	0, /*__hash__*/
+
+	 __iterator__,
+	 __next__,
+	 __length__,
+	 __getitem__,
+	 __setitem__,
+	 __hasitem__,
+
+	 0, /*__next__*/
+};
+
+ObinAny
+array_trait__item__(ObinState* state, ObinAny self, ObinAny pos){
+	obin_integer index;
+
+	if (!obin_any_is_array(self)){
+		return obin_raise_type_error(state, "Array.__item__  invalid call", self);
+	}
+
+	if(!obin_any_is_integer(pos)){
+		return obin_raise_type_error(state, "Array.__item__ index must be integer", pos);
+	}
+
+	index = obin_any_integer(pos);
+	if( index < 0){
+		index = _array_size(self) - index;
+	} else{
+		index = obin_any_integer(pos);
+	}
+
+	if (index > _array_size(self) || index < 0) {
+		return obin_raise_index_error(state, "Array.__item__ invalid index ", pos);
+	}
+
+	return _array_item(self, index);
+}
+
+static ObinAny
+array_trait__length__(ObinState* state, ObinAny self) {
+	if (!obin_any_is_array(self)){
+		return obin_raise_type_error(state, "Array.__length__  invalid call", self);
+	}
+
+	return obin_integer_new(_array_size(self));
+}
+
 /* PUBLIC */
 ObinAny
 obin_array_new(ObinState* state, ObinAny size) {
 	ObinArray * self;
 	obin_mem_t capacity;
+	if(obin_any_is_nil(size)){
+		size = obin_integer_new(OBIN_DEFAULT_ARRAY_SIZE);
+	}
 	if (!obin_is_number_fit_to_memsize(size)) {
-		return obin_raise(state, ObinInvalidSizeError,
-				obin_string_new(state, "obin_array_new:: size not fit to memory"), size);
+		return obin_raise_memory_error(state, "obin_array_new:: size not fit to memory", size );
 	}
 
-	self = obin_malloc_type(ObinArray);
+	self = obin_malloc_type(state, ObinArray);
 
 	capacity = (obin_mem_t) obin_any_number(size);
-	self->data = obin_malloc_collection(ObinAny, capacity);
+	self->data = obin_malloc_collection(state, ObinAny, capacity);
 
 	self->capacity = capacity;
 	self->size = 0;
 	return obin_cell_new(EOBIN_TYPE_ARRAY, self);
 }
 
-ObinAny
-obin_array_get(ObinState* state, ObinAny array, ObinAny index){
-	ObinArray* self;
-
-	CHECK_ARRAY_TYPE(array);
-
-	self = (ObinArray*) obin_to_cell(array);
-
-	if (index > self->size) {
-		//TODO ERROR HERE
-		return NULL;
-	}
-
-	return self->data[index];
-}
-
-ObinAny
-obin_array_size(ObinState* state, const ObinAny array) {
-	ObinArray* self;
-
-	CHECK_ARRAY_TYPE(array);
-
-	self = (ObinArray*) obin_to_cell(array);
-
-	return obin_integer_new(self->size);
-}
 
 
 ObinAny
@@ -79,7 +159,7 @@ obin_array_set(ObinState* state, ObinAny array, const ObinAny index, const ObinA
 		//CHECK ERROR
 		obin_array_append(self, value);
 
-		OBIN_END_PROC;_
+		return ObinNothing;
 	}
 
 
@@ -90,7 +170,7 @@ obin_array_set(ObinState* state, ObinAny array, const ObinAny index, const ObinA
 
 	self->data[index] = value;
 
-	OBIN_END_PROC;
+	return ObinNothing;
 }
 
 //MUST RETURN INDEX REALLY, DO SOMETHING FOR CACHING INTEGERS
@@ -114,7 +194,7 @@ obin_array_add(ObinState* state, ObinAny array, ObinAny value) {
 	self->data[self->size] = value;
 	self->size = new_size;
 
-	return ObinNoValue;
+	return ObinNothing;
 }
 
 //MUST RETURN INDEX REALLY, DO SOMETHING FOR CACHING INTEGERS
@@ -138,7 +218,7 @@ obin_array_insert(ObinState* state, ObinAny array, ObinAny index, ObinAny value)
 	self->data[self->size] = value;
 	self->size = new_size;
 
-	return ObinNoValue;
+	return ObinNothing;
 }
 ObinAny
 obin_array_has_item(ObinState* state, ObinAny array, ObinAny item) {
@@ -190,7 +270,7 @@ ObinAny obin_array_pop(ObinState* state, ObinAny array) {
 	item = obin_array_get(array, _array_last_index(self));
 	self->size -= 1;
 
-	OBIN_END_PROC;
+	return ObinNothing;
 }
 
 
@@ -202,13 +282,9 @@ ObinAny obin_array_clear(ObinState* state, ObinAny array) {
 	self = (ObinArray*) array;
 	self->size = 0;
 
-	OBIN_END_PROC;
+	return ObinNothing;
 }
 
-ObinAny obin_array_to_string(ObinState* state, ObinAny array) {
-	//TODO IMPLEMENT
-	return NULL;
-}
 /* PRIVATE */
 static ObinAny
 _array_grow(ObinState* state, ObinArray* self) {

@@ -11,7 +11,7 @@ ObinAny obin_bool_new(obin_bool condition){
 	return ObinFalse;
 }
 
-ObinTypeTrait* obin_bool_type_trait();
+ObinNativeTraits* obin_bool_type_trait();
 
 
 

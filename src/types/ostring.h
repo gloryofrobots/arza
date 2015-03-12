@@ -1,14 +1,9 @@
 #ifndef OSTRING_H_
 #define OSTRING_H_
-#include "oany.h"
+#include <core/obuiltin.h>
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data);
-ObinAny obin_string_new_char_array(ObinState* state, obin_char* data,
-		obin_mem_t size);
-ObinAny obin_string_new_from_string(ObinState* state, ObinAny string);
-
-/* API */
-ObinAny obin_string_length(ObinState* state, ObinAny self);
+ObinAny obin_string_new_char_array(ObinState* state, obin_char* data, obin_mem_t size);
 
 ObinAny obin_string_capitalize(ObinState* state, ObinAny self);
 ObinAny obin_string_capitalize_words(ObinState* state, ObinAny self);
@@ -48,6 +43,5 @@ ObinAny obin_any_to_string(ObinState* state, ObinAny any);
 
 #define OSTR(state, data) obin_string_new(state, data)
 #define ONUM(state, num) obin_number_new(state, num)
-
 
 #endif /* OSTRING_H_ */

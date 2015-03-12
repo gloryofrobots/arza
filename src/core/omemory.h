@@ -1,6 +1,6 @@
 #ifndef OBIN_OMEMORY_H_
 #define OBIN_OMEMORY_H_
-#include "oany.h"
+#include "obuiltin.h"
 
 typedef struct{
 	obin_integer mark;
@@ -8,13 +8,14 @@ typedef struct{
 
 /*IT EMPTY FOR NOW */
 #define OBIN_CELL_HEADER \
-	ObinTypeTrait* type_trait; \
+	ObinNativeTraits* native_traits; \
 	ObinCellGCInfo gc_info
 
 struct _ObinCell {
 	OBIN_CELL_HEADER;
 };
 
+#define obin_cell_set_native_traits(cell, traits) cell->native_traits = traits
 /*
  * Stolen from Python.
  * here we have safe guards for malloc(0) that can have unexpected behavior on many platforms

@@ -30,6 +30,9 @@ ObinAny obin_raise(ObinState* state, ObinAny exception);
 #define obin_raise_type_error(state, message, obj) \
 		_OBIN_RAISE_1(state, ObinTypeError, message, obj)
 
+#define obin_raise_memory_error(state, message, obj) \
+		_OBIN_RAISE_1(state, ObinTypeError, message, obj)
+
 #define obin_raise_index_error(state, message, obj) \
 		_OBIN_RAISE_1(state, ObinIndexError, message, obj)
 
