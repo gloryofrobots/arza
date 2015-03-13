@@ -4,6 +4,10 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <assert.h>
+
+#define OFALSE 0
+#define OTRUE 1
+
 #ifndef INT32_MAX
 # define INT32_MAX (0x7fffffffL)
 #endif
@@ -60,6 +64,8 @@ typedef unsigned char obin_byte;
 #define OBIN_DEFAULT_ARRAY_SIZE 10
 #define OBIN_DEFAULT_DICT_SIZE 4
 
+#define OBIN_MAX_CAPACITY OBIN_MEM_MAX - 1
+#define OBIN_INVALID_INDEX -1
 
 /*
 @@ OBINI_MAXSTACK limits the size of the Lua stack.

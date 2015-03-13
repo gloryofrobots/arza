@@ -1,11 +1,9 @@
 #include <stdarg.h>
 
 #include <core/orandom.h>
-#include <core/ocontext.h>
-#include <core/omemory.h>
-#include <core/obuiltin.h>
-#include <types/oerror.h>
-#include <types/ostring.h>
+#include <core/obin.h>
+
+/* TODO INTERNATION */
 
 /* ALIASES */
 #define _strlen strlen
@@ -222,12 +220,13 @@ static ObinNativeTraits __TRAITS__ = {
 	 __hash__,
 	 /*collection*/
 	 __iterator__,
-	 0, /*__next__*/
 	 __length__,
 	 __getitem__,
 	 0, /*__setitem__*/
 	 __hasitem__,
+	 0, /*__delitem__,*/
 	 /* generator */
+
 	 0/*__next__*/
 };
 /***********************************************************************************/

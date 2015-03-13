@@ -11,13 +11,13 @@ ObinAny obin_raise(ObinState* state, ObinAny exception);
 		obin_raise(state, obin_error_new(state, proto, obin_string_new(state, message), argtuple))
 
 #define _OBIN_RAISE_1(state, proto, message, argument) \
-		_OBIN_RAISE(state, proto, message, obin_tuple_build(state, 1, argument))
+		_OBIN_RAISE(state, proto, message, obin_tuple_pack(state, 1, argument))
 
 #define _OBIN_RAISE_2(state, proto, message, arg1, arg2) \
-		_OBIN_RAISE(state, proto, message, obin_tuple_build(state, 2, arg1, arg2))
+		_OBIN_RAISE(state, proto, message, obin_tuple_pack(state, 2, arg1, arg2))
 
 #define _OBIN_RAISE_3(state, proto, message, arg1, arg2, arg3) \
-		_OBIN_RAISE(state, proto, message, obin_tuple_build(state, 3, arg1, arg2, arg3))
+		_OBIN_RAISE(state, proto, message, obin_tuple_pack(state, 3, arg1, arg2, arg3))
 
 /* constructors */
 /* TODO add __func__ to error and maybe do something like const strings */

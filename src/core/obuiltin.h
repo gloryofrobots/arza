@@ -1,6 +1,6 @@
 #ifndef OBIN_OBUILTIN_H_
 #define OBIN_OBUILTIN_H_
-
+/* TODO remove obin_any_xxx to obin_to_xxx */
 /*
 Obin q reg
 obin_ w reg
@@ -15,9 +15,6 @@ ObinAny a reg
 
 #include "oconf.h"
 
-#define OFALSE 0
-#define OTRUE 1
-
 /*
  *   WARNING DO NOT SWAP TYPE SECTIONS,
  *   SPECIAL FIELDS ARE USED TO DETERMINE TYPE RANGES IN CHECKS
@@ -25,9 +22,7 @@ ObinAny a reg
  */
 typedef enum _EOBIN_TYPE {
 	/* INTERNAL TYPES */
-	EOBIN_TYPE_INTERRUPT = -4,
-	EOBIN_TYPE_FAILURE = -3,
-	EOBIN_TYPE_SUCCESS = -2,
+	EOBIN_TYPE_INTERRUPT = -2,
 
 	/* SINGLETON TYPES */
 	EOBIN_TYPE_UNKNOWN = -1,
@@ -95,9 +90,6 @@ ObinAny ObinFalse = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FALSE);
 ObinAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
 ObinAny ObinNil = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NIL);
 ObinAny ObinNothing = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NOTHING);
-
-ObinAny ObinSuccess = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_SUCCESS);
-ObinAny ObinFailure = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FAILURE);
 
 ObinAny ObinLesser = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_LESSER);
 ObinAny ObinGreater = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_GREATER);
@@ -167,7 +159,6 @@ static ObinAny obin_any_new() {
 #define obin_any_is_bool(any) ((any.type == EOBIN_TYPE_TRUE) || (any.type == EOBIN_TYPE_FALSE))
 #define obin_any_is_true(any) (any.type == EOBIN_TYPE_TRUE)
 #define obin_any_is_false(any) (any.type == EOBIN_TYPE_FALSE)
-#define obin_any_is_success(any) (any.type == EOBIN_TYPE_SUCCESS)
 #define obin_any_is_nil(any) (any.type == EOBIN_TYPE_NIL)
 #define obin_any_is_nothing(any) (any.type == EOBIN_TYPE_NOTHING)
 
@@ -183,7 +174,12 @@ static ObinAny obin_any_new() {
 
 #define obin_cast(type, value) ((type) value)
 
-#define obin_is_stop_iteration(any) (obin_is_interrupt(any))
+#define obin_is_fit_to_memsize(size) (size > 0 && size < OBIN_MAX_CAPACITY)
+#define obin_integer_is_fit_to_memsize(any) (obin_is_fit_to_memsize(obin_any_integer(any)))
+
+#define obin_is_stop_iteration(any) (obin_any_is_interrupt(any))
+
+
 /********************** NATIVE_TRAIT **************************************/
 typedef ObinAny (*obin_function)(ObinAny arg);
 typedef ObinAny (*obin_function_2)(ObinAny arg1, ObinAny arg2);
@@ -206,6 +202,7 @@ static ObinNativeTraits __TRAITS__ = {
 	 __getitem__,
 	 __setitem__,
 	 __hasitem__,
+	 __delitem__,
 
 	 __next__
 };
@@ -219,49 +216,43 @@ typedef struct {
 	obin_method __hash__;
 	/*collection*/
 	obin_method __iterator__;
-	obin_method __next__;
 	obin_method __length__;
 	obin_method_2 __getitem__;
 	obin_method_3 __setitem__;
 	obin_method_2 __hasitem__;
+	obin_method_2 __delitem__;
 	/* generator */
 	obin_method __next__;
 } ObinNativeTraits;
 
 /**************************** BUILTINS *******************************************/
-ObinAny obin_destroy(ObinState * state, ObinAny self);
-
-ObinAny obin_clone(ObinState * state, ObinAny self);
-
-ObinAny obin_length(ObinState* state, ObinAny self);
-
 ObinAny obin_tostring(ObinState* state, ObinAny self);
+ObinAny obin_destroy(ObinState * state, ObinAny self);
+ObinAny obin_clone(ObinState * state, ObinAny self);
+ObinAny obin_compare(ObinState * state, ObinAny self, ObinAny other);
+ObinAny obin_hash(ObinState * state, ObinAny any);
+ObinAny obin_equal(ObinState * state, ObinAny any);
 
-ObinAny obin_getitem(ObinState* state, ObinAny self, ObinAny key);
-
-ObinAny obin_setitem(ObinState* state, ObinAny self, ObinAny key, ObinAny value);
-
-/*Returns iterator if can, else raise InvalidArgumentError*/
 ObinAny obin_iterator(ObinState * state, ObinAny iterable);
-/*Returns next value from iterator, Nothing if end*/
+ObinAny obin_length(ObinState* state, ObinAny self);
+ObinAny obin_getitem(ObinState* state, ObinAny self, ObinAny key);
+ObinAny obin_setitem(ObinState* state, ObinAny self, ObinAny key, ObinAny value);
+ObinAny obin_hasitem(ObinState* state, ObinAny self, ObinAny key);
+ObinAny obin_delitem(ObinState* state, ObinAny self, ObinAny key);
+
 ObinAny obin_next(ObinState * state, ObinAny iterator);
 
-ObinAny obin_hash(ObinState * state, ObinAny any);
+ObinAny obin_is(ObinState * state, ObinAny first, ObinAny second);
 
-ObinAny obin_equal(ObinState * state, ObinAny any);
-ObinAny obin_compare(ObinState * state, ObinAny self, ObinAny other);
-
-ObinAny obin_is(ObinState * state, ObinAny any);
-
-/*@return list of results from function applied to iterable */
-ObinAny obin_map(ObinState * state, obin_function function, ObinAny iterable);
-
-/*Construct a list from those elements of iterable for which function returns True.*/
-ObinAny obin_filter(ObinState * state, obin_function function, ObinAny iterable);
-
-/*Apply function of two arguments cumulatively to the items of iterable,
- *  from left to right, so as to reduce the iterable to a single value..*/
-ObinAny obin_reduce(ObinState * state, obin_function_2 function, ObinAny iterable);
+///*@return list of results from function applied to iterable */
+//ObinAny obin_map(ObinState * state, obin_function function, ObinAny iterable);
+//
+///*Construct a list from those elements of iterable for which function returns True.*/
+//ObinAny obin_filter(ObinState * state, obin_function function, ObinAny iterable);
+//
+///*Apply function of two arguments cumulatively to the items of iterable,
+// *  from left to right, so as to reduce the iterable to a single value..*/
+//ObinAny obin_reduce(ObinState * state, obin_function_2 function, ObinAny iterable);
 
 
 #endif

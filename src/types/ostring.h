@@ -3,6 +3,7 @@
 #include <core/obuiltin.h>
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data);
+ObinAny obin_char_new(ObinState* state, obin_char ch);
 ObinAny obin_string_new_char_array(ObinState* state, obin_char* data, obin_mem_t size);
 
 ObinAny obin_string_capitalize(ObinState* state, ObinAny self);
@@ -36,8 +37,8 @@ ObinAny obin_string_last_index_of(ObinState* state, ObinAny self, ObinAny other,
 
 ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count);
 ObinAny obin_string_format(ObinState* state, ObinAny format, ...);
-ObinAny obin_string_concat(ObinState* state, ObinAny first_part, ...);
-ObinAny obin_string_join(ObinState* state, ObinAny collection);
+ObinAny obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2);
+ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection);
 ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator);
 ObinAny obin_any_to_string(ObinState* state, ObinAny any);
 

@@ -29,11 +29,12 @@ static ObinNativeTraits __SEQUENCE_ITERATOR_TRAITS__ = {
 	 0, /*__hash__,*/
 
 	 0, /*__iterator__,*/
-	 0, /*__next__,*/
 	 0, /*__length__,*/
 	 0, /*__getitem__,*/
 	 0, /*__setitem__,*/
 	 0, /*__hasitem__,*/
+	 0, /*__delitem__,*/
+
 	 _sequence_iterator__next__
 };
 

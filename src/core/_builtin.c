@@ -52,6 +52,16 @@ obin_native_traits(ObinState* state, ObinAny any) {
 	return _embedded_type_traits(state, any);
 }
 
+ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell) {
+	ObinAny result;
+	obin_assert(obin_type_is_cell(type));
+
+	result = obin_any_new();
+
+	obin_any_init_cell(result, type, cell);
+
+	return result;
+}
 
 /*Returns iterator if can, else raise InvalidArgumentError*/
 ObinAny obin_iterator(ObinState * state, ObinAny any) {
@@ -201,6 +211,17 @@ ObinAny obin_hasitem(ObinState* state, ObinAny any, ObinAny key){
 	method = _method(state, any, __hasitem__);
 	if (!method) {
 		return obin_raise_type_error(state, "__hasitem__ protocol not supported", any);
+	}
+
+	return method(state, any, key);
+}
+
+ObinAny obin_delitem(ObinState* state, ObinAny any, ObinAny key){
+	obin_method_2 method;
+
+	method = _method(state, any, __delitem__);
+	if (!method) {
+		return obin_raise_type_error(state, "__delitem__ protocol not supported", any);
 	}
 
 	return method(state, any, key);

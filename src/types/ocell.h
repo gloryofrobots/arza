@@ -1,7 +1,6 @@
 #ifndef OCELL_H_
 #define OCELL_H_
-
-#include "oany.h"
+#include <core/obuiltin.h>
 
 static ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell) {
 	ObinAny result;
@@ -13,6 +12,5 @@ static ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell) {
 
 	return result;
 }
-ObinAny obin_cell_destroy(ObinAny cell);
 
 #endif /* OCELL_H_ */
