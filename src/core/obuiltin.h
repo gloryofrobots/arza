@@ -51,8 +51,9 @@ typedef enum _EOBIN_TYPE {
 	EOBIN_TYPE_COMPOSITE_CELL,
 	EOBIN_TYPE_BIG_INTEGER,
 
-	EOBIN_TYPE_END_CELL_TYPES
+	EOBIN_TYPE_END_CELL_TYPES,
 
+	EOBIN_TYPE_EXCEPTION,
 } EOBIN_TYPE;
 
 typedef struct _ObinCell ObinCell;
@@ -77,6 +78,18 @@ typedef struct {
 typedef struct _ObinState ObinState;
 
 struct _ObinState {
+	struct {
+        struct {
+                ObinAny Nil;
+                ObinAny True;
+                ObinAny False;
+                ObinAny Nothing;
+                ObinAny PrintSeparator;
+                ObinAny Empty;
+        } strings;
+
+	} interns;
+
 	ObinAny root;
 };
 
@@ -85,6 +98,7 @@ struct _ObinState {
 */
 
 #define OBIN_ANY_STATIC_INIT(type) {type, {type}}
+#define OBIN_ANY_INT_INIT(type, value) {type, {value}}
 
 ObinAny ObinFalse = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FALSE);
 ObinAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
@@ -96,14 +110,12 @@ ObinAny ObinGreater = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_GREATER);
 ObinAny ObinEqual = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_EQUAL);
 
 ObinAny ObinInterrupt = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_INTERRUPT);
-/********************** ERRORS ************************************/
+ObinAny ObinZero = OBIN_ANY_INT_INIT(EOBIN_TYPE_INTEGER, 0);
+ObinAny ObinOne = OBIN_ANY_INT_INIT(EOBIN_TYPE_INTEGER, 1);
+ObinAny ObinTwo = OBIN_ANY_INT_INIT(EOBIN_TYPE_INTEGER, 2);
+ObinAny ObinThree = OBIN_ANY_INT_INIT(EOBIN_TYPE_INTEGER, 3);
 
-ObinAny ObinMemoryError;
-ObinAny ObinInternalError;
-ObinAny ObinInvalidSliceError;
-ObinAny ObinTypeError;
-ObinAny ObinValueError;
-ObinAny ObinIndexError;
+/********************** ERRORS ************************************/
 
 #define OBIN_MODULE_NAME(name) OBIN_MODULE_##name##_INIT
 
@@ -146,6 +158,8 @@ static ObinAny obin_any_new() {
 
 #define obin_any_cell(any) (any.data.cell)
 #define obin_any_integer(any) (any.data.integer_value)
+#define obin_any_mem_t(any) (obin_mem_t)(any.data.integer_value)
+
 #define obin_any_float(any) (any.data.float_value)
 
 #define obin_any_cast_cell(any, type) ((type*) (any.data.cell))
@@ -188,41 +202,37 @@ typedef ObinAny (*obin_method)(ObinState* state, ObinAny arg);
 typedef ObinAny (*obin_method_2)(ObinState* state, ObinAny arg1, ObinAny arg2);
 typedef ObinAny (*obin_method_3)(ObinState* state, ObinAny arg1, ObinAny arg2, ObinAny arg3);
 
-/*
-static ObinNativeTraits __TRAITS__ = {
-	 __tostring__,
-	 __destroy__,
-	 __clone__,
-	 __compare__,
-	 __hash__,
+ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell);
 
-	 __iterator__,
-	 __next__,
-	 __length__,
-	 __getitem__,
-	 __setitem__,
-	 __hasitem__,
-	 __delitem__,
-
-	 __next__
-};
-*/
 typedef struct {
-	/*base*/
-	obin_method __tostring__;
-	obin_method __destroy__;
-	obin_method __clone__;
-	obin_method_2 __compare__;
-	obin_method __hash__;
-	/*collection*/
 	obin_method __iterator__;
 	obin_method __length__;
 	obin_method_2 __getitem__;
 	obin_method_3 __setitem__;
 	obin_method_2 __hasitem__;
 	obin_method_2 __delitem__;
-	/* generator */
+} ObinCollectionTrait;
+
+typedef struct {
 	obin_method __next__;
+} ObinGeneratorTrait;
+
+typedef struct {
+	obin_method __tointeger__;
+} ObinNumberTrait;
+
+typedef struct {
+	obin_string name;
+	/*base*/
+	obin_method __tostring__;
+	obin_method __destroy__;
+	obin_method __clone__;
+	obin_method_2 __compare__;
+	obin_method __hash__;
+
+	ObinCollectionTrait* collection;
+	ObinGeneratorTrait* generator;
+	ObinNumberTrait* number;
 } ObinNativeTraits;
 
 /**************************** BUILTINS *******************************************/
@@ -235,7 +245,13 @@ ObinAny obin_equal(ObinState * state, ObinAny any);
 
 ObinAny obin_iterator(ObinState * state, ObinAny iterable);
 ObinAny obin_length(ObinState* state, ObinAny self);
+
 ObinAny obin_getitem(ObinState* state, ObinAny self, ObinAny key);
+/*shortcuts for tuples and arrays*/
+#define obin_getfirst(state, item) obin_getitem(state, item, ObinZero)
+#define obin_getsecond(state, item) obin_getitem(state, item, ObinOne)
+#define obin_getthird(state, item) obin_getitem(state, item, ObinTwo)
+
 ObinAny obin_setitem(ObinState* state, ObinAny self, ObinAny key, ObinAny value);
 ObinAny obin_hasitem(ObinState* state, ObinAny self, ObinAny key);
 ObinAny obin_delitem(ObinState* state, ObinAny self, ObinAny key);
@@ -243,6 +259,9 @@ ObinAny obin_delitem(ObinState* state, ObinAny self, ObinAny key);
 ObinAny obin_next(ObinState * state, ObinAny iterator);
 
 ObinAny obin_is(ObinState * state, ObinAny first, ObinAny second);
+
+/* return hexademical string for number */
+ObinAny obin_hex(ObinState * state, ObinAny number);
 
 ///*@return list of results from function applied to iterable */
 //ObinAny obin_map(ObinState * state, obin_function function, ObinAny iterable);

@@ -15,6 +15,8 @@
 #define STRING_INDEX_NOT_FOUND -1
 #define OBIN_SPLIT_STRING_DEFAULT_ARRAY_SIZE 8
 
+static ObinNativeTraits __TRAITS__;
+
 typedef struct {
 	OBIN_CELL_HEADER;
 	obin_char* data;
@@ -62,173 +64,6 @@ static obin_integer _string_capacity(ObinAny any) {
 #define IS_STRING(any) (any.type == EOBIN_TYPE_STRING)
 #define IS_EMPTY(any) (IS_CHAR(any) && any.data.char_value.size == 0)
 
-/********************************** STRING TYPE TRAIT ***********************************************/
-
-static ObinAny __tostring__(ObinState* state, ObinAny self) {
-	return self;
-}
-
-static ObinAny __destroy__(ObinState* state, ObinAny self) {
-	if(IS_CHAR(self)){
-		return ObinNothing;
-	}
-
-	if(!IS_STRING(self)) {
-		return obin_raise_type_error(state, "String.__destroy__ call from other type", self);
-	}
-
-	obin_free(_string_data(self));
-	obin_free(obin_any_cell(self));
-	return ObinNothing;
-}
-
-static ObinAny __length__(ObinState* state, ObinAny self) {
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_length call from other type", self);
-	}
-
-	if(IS_CHAR(self)){
-		if(IS_EMPTY(self)){
-			return 0;
-		}
-		return 1;
-	}
-
-	return obin_integer_new(_string_size(self));
-}
-
-static ObinAny __hasitem__(ObinState* state, ObinAny self, ObinAny character) {
-	ObinAny result;
-	result = obin_string_index_of(state, self, character, ObinNil, ObinNil);
-
-	if(obin_any_integer(result) == STRING_INDEX_NOT_FOUND) {
-		return ObinFalse;
-	}
-
-	return ObinTrue;
-}
-
-static ObinAny __getitem__(ObinState* state, ObinAny self, ObinAny key) {
-	obin_mem_t index;
-	obin_char result;
-
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "String.__item__ call from other type", self);
-	}
-
-	if(!obin_any_is_integer(key)){
-		return obin_raise_type_error(state, "String.__item__ key must be integer", index);
-	}
-
-	index = obin_any_integer(key);
-	if(index < 0 || index >= _string_size(self)) {
-		return obin_raise_value_error(state, "String.__item__ invalid index", key);
-	}
-
-	result = _string_data(self)[index];
-	return obin_char_new(state, result);
-}
-
-static ObinAny __compare__(ObinState* state, ObinAny self, ObinAny other) {
-	obin_mem_t result;
-
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "String.__compare__ call from other type", self);
-	}
-
-	if (!obin_any_is_string(other)) {
-		return obin_raise_type_error(state, "String.__compare__ invalid argument type", other);
-	}
-
-	if (_string_size(self) < _string_size(other)) {
-		return ObinLesser;
-	}
-
-	if (_string_size(self) > _string_size(other)) {
-		return ObinGreater;
-	}
-
-	result = _strncmp(_string_data(self), _string_data(other),
-			_string_size(self));
-
-	if (result < 0) {
-		return ObinLesser;
-	}
-	if (result > 0) {
-		return ObinGreater;
-	}
-
-	return ObinEqual;
-}
-
-static ObinAny __hash__(ObinState* state, ObinAny self) {
-	register obin_integer hash = 0;
-	register obin_char * cursor = 0;
-	register obin_integer length = 0;
-	ObinHashSecret secret;
-
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "String.__hash__ call from other type", self);
-	}
-
-	if(IS_EMPTY(self)){
-		return obin_integer_new(0);
-	}
-
-	if(IS_CHAR(self)) {
-		return obin_integer_new((obin_integer) _string_data(self)[0]);
-	}
-
-	/* return already hashed value */
-	hash = _string(self)->hash;
-	if(hash){
-		return obin_integer_new(hash);
-	}
-
-	secret = obin_hash_secret();
-	cursor = _string_data(self);
-    hash = secret.prefix;
-	hash ^= (*(cursor) << 7);
-	length = _string_length(self);
-	while(--length >= 0){
-		hash = (1000003 * hash) ^ *cursor;
-		cursor++;
-	}
-
-	hash ^= length;
-	hash ^= secret.suffix;
-
-	_string(self)->hash = hash;
-	return obin_integer_new(hash);
-}
-
-static ObinAny __iterator__(ObinState* state, ObinAny self) {
-	return obin_sequence_iterator_new(state, self);
-}
-
-static ObinAny __clone__(ObinState* state, ObinAny self) {
-	return obin_string_new_char_array(state, _string_data(self), _string_size(self));
-}
-
-
-static ObinNativeTraits __TRAITS__ = {
-	 /*base*/
-	 __tostring__,
-	 __destroy__,
-	 __clone__,
-	 __compare__,
-	 __hash__,
-	 /*collection*/
-	 __iterator__,
-	 __length__,
-	 __getitem__,
-	 0, /*__setitem__*/
-	 __hasitem__,
-	 0, /*__delitem__,*/
-	 /* generator */
-
-	 0/*__next__*/
-};
 /***********************************************************************************/
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data) {
@@ -768,7 +603,8 @@ ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection) {
 		return obin_raise_type_error(state, "obin_string_join call from other type", self);
 	}
 
-	result = obin_ctx_get()->internal_strings.Empty;
+	result = state->interns.strings.Empty;
+
 	iterator = obin_iterator(state, collection);
 
 	while (OTRUE) {
@@ -785,9 +621,200 @@ ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection) {
 	return result;
 }
 
+ObinAny obin_string_pack(ObinState* state, obin_mem_t size, ...){
+	ObinAny array;
+	obin_mem_t i;
+	ObinAny item;
+    va_list vargs;
+
+	if(!obin_is_fit_to_memsize(size)) {
+		return obin_raise_memory_error(state, "String.pack -> invalid size", obin_integer_new(size));
+	}
+	array = obin_array_new(state, obin_integer_new(size));
+
+
+    va_start(vargs, size);
+    for (i = 0; i < size; i++) {
+    	item = va_arg(vargs, ObinAny);
+    	obin_array_append(state, array, item);
+    }
+    va_end(vargs);
+
+    return obin_string_join(state, state.interns.strings.PrintSeparator, array);
+}
 /* //native
  str.startswith(prefix[, start[, end]])
  str.lstrip([chars])
  str.rstrip([chars])
  str.splitlines([keepends])
  */
+
+/**********************************  TYPETRAIT ***********************************************/
+
+static ObinAny __tostring__(ObinState* state, ObinAny self) {
+	return self;
+}
+
+static ObinAny __destroy__(ObinState* state, ObinAny self) {
+	if(IS_CHAR(self)){
+		return ObinNothing;
+	}
+
+	if(!IS_STRING(self)) {
+		return obin_raise_type_error(state, "String.__destroy__ call from other type", self);
+	}
+
+	obin_free(_string_data(self));
+	obin_free(obin_any_cell(self));
+	return ObinNothing;
+}
+
+static ObinAny __length__(ObinState* state, ObinAny self) {
+	if(!obin_any_is_string(self)) {
+		return obin_raise_type_error(state, "obin_string_length call from other type", self);
+	}
+
+	if(IS_CHAR(self)){
+		if(IS_EMPTY(self)){
+			return 0;
+		}
+		return 1;
+	}
+
+	return obin_integer_new(_string_size(self));
+}
+
+static ObinAny __hasitem__(ObinState* state, ObinAny self, ObinAny character) {
+	ObinAny result;
+	result = obin_string_index_of(state, self, character, ObinNil, ObinNil);
+
+	if(obin_any_integer(result) == STRING_INDEX_NOT_FOUND) {
+		return ObinFalse;
+	}
+
+	return ObinTrue;
+}
+
+static ObinAny __getitem__(ObinState* state, ObinAny self, ObinAny key) {
+	obin_mem_t index;
+	obin_char result;
+
+	if(!obin_any_is_string(self)) {
+		return obin_raise_type_error(state, "String.__item__ call from other type", self);
+	}
+
+	if(!obin_any_is_integer(key)){
+		return obin_raise_type_error(state, "String.__item__ key must be integer", index);
+	}
+
+	index = obin_any_integer(key);
+	if(index < 0 || index >= _string_size(self)) {
+		return obin_raise_value_error(state, "String.__item__ invalid index", key);
+	}
+
+	result = _string_data(self)[index];
+	return obin_char_new(state, result);
+}
+
+static ObinAny __compare__(ObinState* state, ObinAny self, ObinAny other) {
+	obin_mem_t result;
+
+	if(!obin_any_is_string(self)) {
+		return obin_raise_type_error(state, "String.__compare__ call from other type", self);
+	}
+
+	if (!obin_any_is_string(other)) {
+		return obin_raise_type_error(state, "String.__compare__ invalid argument type", other);
+	}
+
+	if (_string_size(self) < _string_size(other)) {
+		return ObinLesser;
+	}
+
+	if (_string_size(self) > _string_size(other)) {
+		return ObinGreater;
+	}
+
+	result = _strncmp(_string_data(self), _string_data(other),
+			_string_size(self));
+
+	if (result < 0) {
+		return ObinLesser;
+	}
+	if (result > 0) {
+		return ObinGreater;
+	}
+
+	return ObinEqual;
+}
+
+static ObinAny __hash__(ObinState* state, ObinAny self) {
+	register obin_integer hash = 0;
+	register obin_char * cursor = 0;
+	register obin_integer length = 0;
+	ObinHashSecret secret;
+
+	if(!obin_any_is_string(self)) {
+		return obin_raise_type_error(state, "String.__hash__ call from other type", self);
+	}
+
+	if(IS_EMPTY(self)){
+		return obin_integer_new(0);
+	}
+
+	if(IS_CHAR(self)) {
+		return obin_integer_new((obin_integer) _string_data(self)[0]);
+	}
+
+	/* return already hashed value */
+	hash = _string(self)->hash;
+	if(hash){
+		return obin_integer_new(hash);
+	}
+
+	secret = obin_hash_secret();
+	cursor = _string_data(self);
+    hash = secret.prefix;
+	hash ^= (*(cursor) << 7);
+	length = _string_length(self);
+	while(--length >= 0){
+		hash = (1000003 * hash) ^ *cursor;
+		cursor++;
+	}
+
+	hash ^= length;
+	hash ^= secret.suffix;
+
+	_string(self)->hash = hash;
+	return obin_integer_new(hash);
+}
+
+static ObinAny __iterator__(ObinState* state, ObinAny self) {
+	return obin_sequence_iterator_new(state, self);
+}
+
+static ObinAny __clone__(ObinState* state, ObinAny self) {
+	return obin_string_new_char_array(state, _string_data(self), _string_size(self));
+}
+ObinCollectionTrait __COLLECTION__ = {
+	 __iterator__,
+	 __length__,
+	 __getitem__,
+	 0, /*__setitem__*/
+	 __hasitem__,
+	 0, /*__delitem__,*/
+} ;
+
+static ObinNativeTraits __TRAITS__ = {
+	"__string",
+	 /*base*/
+	 __tostring__,
+	 __destroy__,
+	 __clone__,
+	 __compare__,
+	 __hash__,
+
+	 &__COLLECTION__, /*collection*/
+	 0, /*generator*/
+	 0, /*number*/
+};

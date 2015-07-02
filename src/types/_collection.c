@@ -1,6 +1,8 @@
 #include <core/omemory.h>
 #include "ocollection.h"
 
+/*TODO Avoid infinite recursion in _tostring__ and others in recursive vollections */
+
 typedef struct {
 	OBIN_CELL_HEADER;
 	ObinAny source;

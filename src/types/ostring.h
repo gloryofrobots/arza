@@ -42,7 +42,8 @@ ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection);
 ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator);
 ObinAny obin_any_to_string(ObinState* state, ObinAny any);
 
+ObinAny obin_string_pack(ObinState* state, obin_mem_t size, ...);
+
 #define OSTR(state, data) obin_string_new(state, data)
-#define ONUM(state, num) obin_number_new(state, num)
 
 #endif /* OSTRING_H_ */

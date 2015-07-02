@@ -18,8 +18,5 @@ typedef enum{
 
 void _log(ObinState* state, LogLevel level, ObinAny message, ...);
 
-#endif
-
-
 
 #endif /* OLOG_H_ */

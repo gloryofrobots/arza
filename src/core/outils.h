@@ -33,6 +33,6 @@ abort ();								\
 ST_STMT_END
 #endif
 
-void st_log (const char * restrict domain, const char * restrict format, ...);
+void st_log (const char * domain, const char * format, ...);
 
 #endif /* __GUARD_OBIN_UTILS_H_ */

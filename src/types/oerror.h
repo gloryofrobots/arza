@@ -1,14 +1,23 @@
 #ifndef OERROR_H_
 #define OERROR_H_
 
-#include "oany.h"
+#include <core/obuiltin.h>
+
+ObinAny ObinMemoryError;
+ObinAny ObinInternalError;
+ObinAny ObinInvalidSliceError;
+ObinAny ObinTypeError;
+ObinAny ObinValueError;
+ObinAny ObinIndexError;
+ObinAny ObinKeyError;
 
 ObinAny obin_error_new(ObinState* state, ObinAny proto, ObinAny message,
 		ObinAny args);
+
 ObinAny obin_raise(ObinState* state, ObinAny exception);
 
-#define _OBIN_RAISE(state, proto, message, argtuple) \
-		obin_raise(state, obin_error_new(state, proto, obin_string_new(state, message), argtuple))
+#define _OBIN_RAISE(state, proto, message, arguments) \
+		obin_raise(state, obin_error_new(state, proto, obin_string_new(state, message), arguments))
 
 #define _OBIN_RAISE_1(state, proto, message, argument) \
 		_OBIN_RAISE(state, proto, message, obin_tuple_pack(state, 1, argument))
@@ -21,8 +30,8 @@ ObinAny obin_raise(ObinState* state, ObinAny exception);
 
 /* constructors */
 /* TODO add __func__ to error and maybe do something like const strings */
-#define obin_raise_internal(state) \
-		obin_raise(state, ObinInternalError)
+#define obin_raise_internal(state, message, obj) \
+		_OBIN_RAISE_1(state, ObinInternalError, message, obj)
 
 #define obin_raise_value_error(state, message, obj) \
 		_OBIN_RAISE_1(state, ObinValueError, message, obj)
@@ -39,6 +48,8 @@ ObinAny obin_raise(ObinState* state, ObinAny exception);
 #define obin_raise_invalid_slice(state, message, start, end) \
 		_OBIN_RAISE_2(state, ObinInvalidSliceError, message, start, end)
 
+#define obin_raise_key_error(state, message, obj) \
+		_OBIN_RAISE_1(state, ObinKeyError, message, obj)
 
 
 #endif /* OERROR_H_ */

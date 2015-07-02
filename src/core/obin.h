@@ -1,9 +1,8 @@
 #ifndef OBIN_H_
 #define OBIN_H_
 #include <core/obuiltin.h>
-#include <core/ocontext.h>
 #include <core/omemory.h>
-#include <types/ocell.h>
+#include <types/ocomposite.h>
 #include <types/ocollection.h>
 #include <types/ostring.h>
 #include <types/ointeger.h>

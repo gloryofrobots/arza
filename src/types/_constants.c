@@ -1,23 +1,21 @@
+/*EACH Embedded type must have its own trait  delete this method afterwords*/
 
 ObinAny obin_tostring(ObinState* state, ObinAny any) {
 	ObinNativeTraits* traits;
 	obin_method method;
-	ObinContext* ctx;
-
-	ctx = obin_ctx_get();
 
 	switch (any.type) {
 	case EOBIN_TYPE_TRUE:
-		return ctx->internal_strings.True;
+		return state->interns.strings.True;
 		break;
 	case EOBIN_TYPE_FALSE:
-		return ctx->internal_strings.False;
+		return state->interns.strings.False;
 		break;
 	case EOBIN_TYPE_NIL:
-		return ctx->internal_strings.Nil;
+		return state->interns.strings.Nil;
 		break;
 	case EOBIN_TYPE_NOTHING:
-		return ctx->internal_strings.Nothing;
+		return state->interns.strings.Nothing;
 		break;
 
 	default:

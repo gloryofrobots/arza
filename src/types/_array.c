@@ -171,8 +171,7 @@ static ObinNativeTraits __TRAITS__ = {
 /* PUBLIC */
 ObinAny
 obin_array_new(ObinState* state, ObinAny size) {
-	ObinArray * self;
-	obin_mem_t capacity;
+	ObinArray * self; obin_mem_t capacity;
 	if(obin_any_is_nil(size)){
 		size = obin_integer_new(OBIN_DEFAULT_ARRAY_SIZE);
 	}

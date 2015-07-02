@@ -30,6 +30,9 @@ struct _ObinCell {
 #define ObinMem_FREE free
 
 #define obin_memcpy memcpy
+#define obin_strcpy strcpy
+#define obin_sprintf sprintf
+#define obin_memset memset
 
 #ifndef OBIN_MEMORY_DEBUG
 

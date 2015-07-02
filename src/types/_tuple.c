@@ -14,6 +14,62 @@ typedef struct {
 #define _data(any) ((_tuple(any))->data)
 #define _get(any, index) ((_data(any))[index])
 
+static ObinNativeTraits __TRAITS__;
+
+static ObinTuple*
+_obin_tuple_new(ObinState* state, obin_mem_t size) {
+	ObinTuple * self;
+	self = obin_malloc_type(state, ObinTuple);
+	self->size = size;
+	self->native_traits = &__TRAITS__;
+	self->data = obin_malloc_collection(state, ObinAny, size);
+	return self;
+}
+
+ObinAny obin_tuple_new(ObinState* state, ObinAny* items, ObinAny size) {
+	ObinTuple * self;
+	obin_mem_t capacity;
+
+	if(!obin_any_is_integer(size)){
+		return obin_raise_memory_error(state, "Tuple.new -> integer size expected", size );
+	}
+
+	if(!obin_integer_is_fit_to_memsize(size)) {
+		return obin_raise_memory_error(state, "Tuple.new -> invalid size", size );
+	}
+
+	capacity = (obin_mem_t) obin_any_integer(size);
+	self = _obin_tuple_new(state , capacity);
+	obin_memcpy(self->data, items, capacity);
+
+	return obin_cell_new(EOBIN_TYPE_TUPLE, (ObinCell*) self);
+}
+
+ObinAny obin_tuple_pack(ObinState* state, obin_mem_t size, ...){
+	ObinTuple * self;
+	obin_mem_t i;
+	ObinAny item;
+    va_list vargs;
+
+	if(!obin_is_fit_to_memsize(size)) {
+		return obin_raise_memory_error(state, "Tuple.new -> invalid size", obin_integer_new(size));
+	}
+
+	self = _obin_tuple_new(state , size);
+
+    va_start(vargs, size);
+    for (i = 0; i < size; i++) {
+    	item = va_arg(vargs, ObinAny);
+    	self->data[i] = item;
+    }
+    va_end(vargs);
+
+	return obin_cell_new(EOBIN_TYPE_TUPLE, (ObinCell*) self);
+}
+
+
+/****************************************  TYPETRAIT  *************************************************/
+
 static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	ObinAny array;
 	ObinAny iterator;
@@ -138,71 +194,25 @@ __hash__(ObinState* state, ObinAny self){
     return obin_integer_new(x);
 }
 
-static ObinNativeTraits __TRAITS__ = {
-    &__tostring__,
-    &__destroy__,
-	&__clone__,
-	&obin_collection_compare,
-	__hash__,
-
+ObinCollectionTrait __COLLECTION__ = {
 	 __iterator__,
 	 __length__,
 	 __getitem__,
 	 0 ,/*__setitem__,*/
 	 __hasitem__,
 	 0, /*__delitem__,*/
+} ;
 
-	 0, /*__next__*/
+static ObinNativeTraits __TRAITS__ = {
+	"__tuple",
+    &__tostring__,
+    &__destroy__,
+	&__clone__,
+	&obin_collection_compare,
+	__hash__,
+
+	&__COLLECTION__,
+
+	 0, /* iterator */
+	 0, /* number */
 };
-
-static ObinTuple*
-_obin_tuple_new(ObinState* state, obin_mem_t size) {
-	ObinTuple * self;
-	self = obin_malloc_type(state, ObinTuple);
-	self->size = size;
-	self->native_traits = &__TRAITS__;
-	self->data = obin_malloc_collection(state, ObinAny, size);
-	return self;
-}
-
-ObinAny obin_tuple_new(ObinState* state, ObinAny* items, ObinAny size) {
-	ObinTuple * self;
-	obin_mem_t capacity;
-
-	if(!obin_any_is_integer(size)){
-		return obin_raise_memory_error(state, "Tuple.new -> integer size expected", size );
-	}
-
-	if(!obin_integer_is_fit_to_memsize(size)) {
-		return obin_raise_memory_error(state, "Tuple.new -> invalid size", size );
-	}
-
-	capacity = (obin_mem_t) obin_any_integer(size);
-	self = _obin_tuple_new(state , capacity);
-	obin_memcpy(self->data, items, capacity);
-
-	return obin_cell_new(EOBIN_TYPE_TUPLE, (ObinCell*) self);
-}
-
-ObinAny obin_tuple_pack(ObinState* state, obin_mem_t size, ...){
-	ObinTuple * self;
-	obin_mem_t i;
-	ObinAny item;
-    va_list vargs;
-
-	if(!obin_is_fit_to_memsize(size)) {
-		return obin_raise_memory_error(state, "Tuple.new -> invalid size", obin_integer_new(size));
-	}
-
-	self = _obin_tuple_new(state , size);
-
-    va_start(vargs, size);
-    for (i = 0; i < size; i++) {
-    	item = va_arg(vargs, ObinAny);
-    	self->data[i] = item;
-    }
-    va_end(vargs);
-
-	return obin_cell_new(EOBIN_TYPE_TUPLE, (ObinCell*) self);
-}
-
