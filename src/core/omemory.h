@@ -18,26 +18,19 @@ struct _ObinCell {
 };
 
 #define obin_cell_set_native_traits(cell, traits) cell->native_traits = traits
-/*
- * Stolen from Python.
- * here we have safe guards for malloc(0) that can have unexpected behavior on many platforms
-*/
 
-#define ObinMem_MALLOC(n) ((obin_mem_t)(n) > OBIN_MEM_MAX? NULL \
-				: malloc((n) ? (n) : 1))
-
-#define ObinMem_REALLOC(p, n)	((obin_mem_t)(n) > (obin_mem_t)OBIN_MEM_MAX  ? NULL \
-				: realloc((p), (n) ? (n) : 1))
-
-#define ObinMem_FREE free
-
+ObinAny obin_incref(ObinState* state, ObinAny any);
+ObinAny obin_decref(ObinState* state, ObinAny any);
 
 #ifndef OBIN_MEMORY_DEBUG
 
 void obin_free(obin_pointer ptr);
 
-void obin_incref(ObinState* state, ObinAny any);
-void obin_decref(ObinState* state, ObinAny any);
+#define obin_sincref(state, any) \
+	(obin_any_is_cell(any) ? obin_incref(any) : any)
+
+#define obin_sdecref(state, any) \
+	(obin_any_is_cell(any) ? obin_decref(any) : any)
 
 obin_pointer obin_malloc(ObinState* state, obin_mem_t size);
 

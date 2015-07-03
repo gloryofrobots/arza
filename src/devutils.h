@@ -1,7 +1,7 @@
 #ifndef DEBUG_UTILS_H_
 #define DEBUG_UTILS_H_
 
-#include "otypes.h"
+#include <core/obuiltin.h>
 
 ObinAny __t () {
 	return ObinTrue;

@@ -1,5 +1,5 @@
-#ifndef OBIN_OBUILTIN_H_
-#define OBIN_OBUILTIN_H_
+#ifndef OBUILTIN_H_
+#define OBUILTIN_H_
 /* TODO remove obin_any_xxx to obin_to_xxx */
 /*
 Obin q reg
@@ -96,19 +96,19 @@ struct _ObinState {
 #define OBIN_ANY_STATIC_INIT(type) {type, {type}}
 #define OBIN_ANY_INTEGER_INIT(type, value) {type, {value}}
 
-ObinAny ObinFalse = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FALSE);
-ObinAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
-ObinAny ObinNil = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NIL);
-ObinAny ObinNothing = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NOTHING);
+static ObinAny ObinFalse = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FALSE);
+static ObinAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
+static ObinAny ObinNil = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NIL);
+static ObinAny ObinNothing = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NOTHING);
 
-ObinAny ObinLesser = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, -1);
-ObinAny ObinGreater = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 1);
-ObinAny ObinEqual = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 0);
+static ObinAny ObinLesser = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, -1);
+static ObinAny ObinGreater = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 1);
+static ObinAny ObinEqual = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 0);
 
-ObinAny ObinZero = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 0);
-ObinAny ObinOne = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 1);
-ObinAny ObinTwo = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 2);
-ObinAny ObinThree = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 3);
+static ObinAny ObinZero = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 0);
+static ObinAny ObinOne = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 1);
+static ObinAny ObinTwo = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 2);
+static ObinAny ObinThree = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 3);
 
 /********************** ERRORS ************************************/
 
@@ -129,11 +129,7 @@ ObinAny ObinThree = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 3);
 #endif
 
 /* NEVER FORGET TO CALL THIS BEFORE SETTING TYPE*/
-static ObinAny obin_any_new() {
-	ObinAny proto;
-	proto.type = EOBIN_TYPE_UNKNOWN;
-	return proto;
-}
+ObinAny obin_any_new();
 
 #define obin_any_init_cell(any, type, cell) \
 		OBIN_ANY_BEFORE_SET(any); \
@@ -255,15 +251,15 @@ ObinAny obin_next(ObinState * state, ObinAny iterator);
 
 ObinAny obin_is(ObinState * state, ObinAny first, ObinAny second);
 
-///*@return list of results from function applied to iterable */
-//ObinAny obin_map(ObinState * state, obin_function function, ObinAny iterable);
-//
-///*Construct a list from those elements of iterable for which function returns True.*/
-//ObinAny obin_filter(ObinState * state, obin_function function, ObinAny iterable);
-//
-///*Apply function of two arguments cumulatively to the items of iterable,
-// *  from left to right, so as to reduce the iterable to a single value..*/
-//ObinAny obin_reduce(ObinState * state, obin_function_2 function, ObinAny iterable);
+/*@return list of results from function applied to iterable
+ObinAny obin_map(ObinState * state, obin_function function, ObinAny iterable);
 
+//Construct a list from those elements of iterable for which function returns True.
+ObinAny obin_filter(ObinState * state, obin_function function, ObinAny iterable);
+
+Apply function of two arguments cumulatively to the items of iterable,
+ from left to right, so as to reduce the iterable to a single value..
+ObinAny obin_reduce(ObinState * state, obin_function_2 function, ObinAny iterable);
+*/
 
 #endif

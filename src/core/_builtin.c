@@ -3,13 +3,10 @@
 #include <types/oerror.h>
 #include <types/ostring.h>
 
-ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell) {
-	ObinAny result;
-	obin_assert(obin_type_is_cell(type));
-
-	result = obin_any_new();
-	obin_any_init_cell(result, type, cell);
-	return result;
+ObinAny obin_any_new() {
+	ObinAny proto;
+	proto.type = EOBIN_TYPE_UNKNOWN;
+	return proto;
 }
 
 #define _cell_traits(any) (obin_any_cell(any)->native_traits)

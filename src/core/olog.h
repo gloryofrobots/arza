@@ -6,9 +6,9 @@
 #define OLOGINFO(message)
 #define OLOGERROR(message)
 #else
-#define OLOGDEBUG(message)
-#define OLOGINFO(message)
-#define OLOGERROR(message)
+#define OLOG_DBG(message)
+#define OLOG_INFO(message)
+#define OLOG_ERROR(message)
 
 typedef enum{
 	EOBIN_LOGLEVEL_DEBUG,

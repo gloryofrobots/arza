@@ -1,5 +1,5 @@
-#ifndef OBIN_OCONF_H
-#define OBIN_OCONF_H
+#ifndef OCONF_H
+#define OCONF_H
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -23,7 +23,7 @@
 #endif
 
 #define obin_mem_t	size_t
-#define OBIN_MEM_MAX SSIZE_MAX
+#define OBIN_MEM_MAX SIZE_MAX
 
 #define obin_int32t int32_t
 #define obin_uint32t uint32_t
