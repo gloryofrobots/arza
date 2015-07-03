@@ -11,6 +11,8 @@ static ObinAny obin_integer_new(obin_integer number) {
 	return result;
 }
 
+ObinAny obin_integer_to_hex_string(ObinState* S, ObinAny self);
+
 #define OINT(number) obin_integer_new(number)
 
 #define obin_is_integer_fit_to_memsize(number) \
@@ -28,7 +30,6 @@ static ObinAny obin_integer_new(obin_integer number) {
 		break;
 */
 ObinNativeTraits* obin_integer_traits();
-
 
 
 #endif /* OINTEGER_H_ */

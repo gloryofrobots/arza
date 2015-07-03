@@ -30,25 +30,21 @@ typedef enum _EOBIN_TYPE {
 	EOBIN_TYPE_TRUE,
 	EOBIN_TYPE_NIL,
 	EOBIN_TYPE_NOTHING,
-	/** compare types **/
-	EOBIN_TYPE_EQUAL,
-	EOBIN_TYPE_LESSER,
-	EOBIN_TYPE_GREATER,
 	/* FIXED TYPES STORED IN ObinAny::data*/
 	EOBIN_TYPE_INTEGER,
 	EOBIN_TYPE_CHAR,
 	EOBIN_TYPE_FLOAT,
-	/* CELL TYPES ALLOCATED IN HEAP */
+	/* TYPES ALLOCATED IN HEAP WE CALL THEM CELLS */
 	EOBIN_TYPE_BEGIN_CELL_TYPES,
 
 	EOBIN_BEGIN_COLLECTION_TYPES,
 	EOBIN_TYPE_STRING,
 	EOBIN_TYPE_ARRAY,
-	EOBIN_TYPE_DICT,
+	EOBIN_TYPE_TABLE,
 	EOBIN_TYPE_TUPLE,
 	EOBIN_TYPE_END_COLLECTION_TYPES,
 
-	EOBIN_TYPE_COMPOSITE_CELL,
+	EOBIN_TYPE_OBJECT,
 	EOBIN_TYPE_BIG_INTEGER,
 
 	EOBIN_TYPE_END_CELL_TYPES,
@@ -98,22 +94,21 @@ struct _ObinState {
 */
 
 #define OBIN_ANY_STATIC_INIT(type) {type, {type}}
-#define OBIN_ANY_INT_INIT(type, value) {type, {value}}
+#define OBIN_ANY_INTEGER_INIT(type, value) {type, {value}}
 
 ObinAny ObinFalse = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FALSE);
 ObinAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
 ObinAny ObinNil = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NIL);
 ObinAny ObinNothing = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NOTHING);
 
-ObinAny ObinLesser = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_LESSER);
-ObinAny ObinGreater = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_GREATER);
-ObinAny ObinEqual = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_EQUAL);
+ObinAny ObinLesser = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, -1);
+ObinAny ObinGreater = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 1);
+ObinAny ObinEqual = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 0);
 
-ObinAny ObinInterrupt = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_INTERRUPT);
-ObinAny ObinZero = OBIN_ANY_INT_INIT(EOBIN_TYPE_INTEGER, 0);
-ObinAny ObinOne = OBIN_ANY_INT_INIT(EOBIN_TYPE_INTEGER, 1);
-ObinAny ObinTwo = OBIN_ANY_INT_INIT(EOBIN_TYPE_INTEGER, 2);
-ObinAny ObinThree = OBIN_ANY_INT_INIT(EOBIN_TYPE_INTEGER, 3);
+ObinAny ObinZero = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 0);
+ObinAny ObinOne = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 1);
+ObinAny ObinTwo = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 2);
+ObinAny ObinThree = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 3);
 
 /********************** ERRORS ************************************/
 
@@ -169,7 +164,6 @@ static ObinAny obin_any_new() {
 #define obin_type_is_collection(type) OBIN_CHECK_TYPE_RANGE(type, EOBIN_TYPE_BEGIN_COLLECTION_TYPES, EOBIN_TYPE_END_COLLECTION_TYPES)
 
 #define obin_any_is_interrupt(any) (any.type == EOBIN_TYPE_INTERRUPT)
-#define obin_any_is_equal(any) (any.type == EOBIN_TYPE_EQUAL)
 #define obin_any_is_bool(any) ((any.type == EOBIN_TYPE_TRUE) || (any.type == EOBIN_TYPE_FALSE))
 #define obin_any_is_true(any) (any.type == EOBIN_TYPE_TRUE)
 #define obin_any_is_false(any) (any.type == EOBIN_TYPE_FALSE)
@@ -182,21 +176,22 @@ static ObinAny obin_any_new() {
 
 #define obin_any_is_string(any) (any.type == EOBIN_TYPE_STRING || any.type == EOBIN_TYPE_CHAR)
 #define obin_any_is_array(any) (any.type == EOBIN_TYPE_ARRAY)
-#define obin_any_is_dict(any) (any.type == EOBIN_TYPE_DICT)
+#define obin_any_is_table(any) (any.type == EOBIN_TYPE_TABLE)
+#define obin_any_is_object(any) (any.type == EOBIN_TYPE_OBJECT)
 #define obin_any_is_cell(any) obin_type_is_cell(any.type)
 #define obin_any_is_collection(any) obin_type_is_collection(any.type)
 
 #define obin_cast(type, value) ((type) value)
-
 #define obin_is_fit_to_memsize(size) (size > 0 && size < OBIN_MAX_CAPACITY)
 #define obin_integer_is_fit_to_memsize(any) (obin_is_fit_to_memsize(obin_any_integer(any)))
 
-#define obin_is_stop_iteration(any) (obin_any_is_interrupt(any))
+#define obin_is_stop_iteration(any) (obin_any_is_nothing(any))
 
 
 /********************** NATIVE_TRAIT **************************************/
 typedef ObinAny (*obin_function)(ObinAny arg);
 typedef ObinAny (*obin_function_2)(ObinAny arg1, ObinAny arg2);
+typedef ObinAny (*obin_function_3)(ObinAny arg1, ObinAny arg2, ObinAny arg3);
 
 typedef ObinAny (*obin_method)(ObinState* state, ObinAny arg);
 typedef ObinAny (*obin_method_2)(ObinState* state, ObinAny arg1, ObinAny arg2);
@@ -259,9 +254,6 @@ ObinAny obin_delitem(ObinState* state, ObinAny self, ObinAny key);
 ObinAny obin_next(ObinState * state, ObinAny iterator);
 
 ObinAny obin_is(ObinState * state, ObinAny first, ObinAny second);
-
-/* return hexademical string for number */
-ObinAny obin_hex(ObinState * state, ObinAny number);
 
 ///*@return list of results from function applied to iterable */
 //ObinAny obin_map(ObinState * state, obin_function function, ObinAny iterable);

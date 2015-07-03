@@ -6,10 +6,6 @@
 /* TODO INTERNATION */
 
 /* ALIASES */
-#define _strlen strlen
-#define _strstr strstr
-#define _snprintf snprintf
-#define _strncmp strncmp
 /* SIZE FOR BUFFER IN STACK USED TO WRITE INTS AND FLOATS TO STRING */
 
 #define STRING_INDEX_NOT_FOUND -1
@@ -69,7 +65,7 @@ static obin_integer _string_capacity(ObinAny any) {
 ObinAny obin_string_new(ObinState* state, obin_string data) {
 	int len;
 
-	len = _strlen(data);
+	len = obin_strlen(data);
 	if (len == 0) {
 		return obin_string_new_char_array(state, 0, 0);
 	}
@@ -735,7 +731,7 @@ static ObinAny __compare__(ObinState* state, ObinAny self, ObinAny other) {
 		return ObinGreater;
 	}
 
-	result = _strncmp(_string_data(self), _string_data(other),
+	result = obin_strncmp(_string_data(self), _string_data(other),
 			_string_size(self));
 
 	if (result < 0) {

@@ -15,7 +15,7 @@ static ObinAny _sequence_iterator__next__(ObinState* state, ObinAny self) {
 
 	it = (SequenceIterator*) obin_any_cell(self);
 	if(it->current >= _string_size(it->source)){
-		return ObinInterrupt;
+		return ObinNothing;
 	}
 
 	result = obin_getitem(state, it->source, obin_new_integer(it->current));
@@ -44,7 +44,7 @@ ObinAny obin_sequence_iterator_new(ObinState* state, ObinAny sequence){
 	SequenceIterator * iterator;
 
 	if(!obin_can_it_be_collection(sequence)){
-		obin_raise_type_error(state, "Collection expected", sequence);
+		return obin_raise_type_error(state, "Collection expected", sequence);
 	}
 
 	iterator = obin_malloc_type(state, SequenceIterator);

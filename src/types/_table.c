@@ -16,7 +16,7 @@ typedef struct _Bucket {
 
 typedef struct {
 	OBIN_CELL_HEADER;
-	/*count items in dict */
+	/*count items in table */
 	obin_mem_t size;
 	/* count of bucket */
 	obin_mem_t capacity;
@@ -25,13 +25,13 @@ typedef struct {
 
 	obin_mem_t load_factor;
 	Bucket* buckets;
-} ObinDict;
+} ObinTable;
 
-#define _dict(any) ((ObinDict*) (any.data.cell))
-#define _size(any) ((_dict(any))->size)
-#define _capacity(any) ((_dict(any))->capacity)
-#define _buckets(any) ((_dict(any))->buckets)
-#define _bucket(any, index) ((_dict(any))->buckets)
+#define _table(any) ((ObinTable*) (any.data.cell))
+#define _size(any) ((_table(any))->size)
+#define _capacity(any) ((_table(any))->capacity)
+#define _buckets(any) ((_table(any))->buckets)
+#define _bucket(any, index) ((_table(any))->buckets)
 
 static obin_mem_t _next_power_of_2(obin_mem_t v){
 	v--;
@@ -83,7 +83,7 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 }
 
 static ObinAny __destroy__(ObinState* state, ObinAny self) {
-	obin_dict_clear(state, self);
+	obin_table_clear(state, self);
 
 	obin_free(_buckets(self));
 	obin_free(obin_any_cell(self));
@@ -139,7 +139,7 @@ static ObinAny __clone__(ObinState* state, ObinAny self) {
 	obin_integer i;
 
 	size = _capacity(self);
-	result = obin_dict_new(state, obin_integer_new(size));
+	result = obin_table_new(state, obin_integer_new(size));
 
 	for(i=0; i<size; i++){
 		_bucket(result, i) = _bucket_clone(state, _bucket(self, i));
@@ -153,28 +153,28 @@ typedef struct {
 	ObinAny source;
 	Pair* pair;
 	obin_mem_t bucket;
-} DictLazyIterator;
+} TableLazyIterator;
 
-static ObinAny _dict_lazy_iterator__next__(ObinState* state, ObinAny self) {
-	DictLazyIterator * it;
+static ObinAny _table_lazy_iterator__next__(ObinState* state, ObinAny self) {
+	TableLazyIterator * it;
 	ObinAny result;
 
-	it = (DictLazyIterator*) obin_any_cell(self);
+	it = (TableLazyIterator*) obin_any_cell(self);
 	if(it->pair) {
 		result = obin_tuple_new(state, 2, it->pair->key, it->pair->value);
 		it->pair = it->pair->next;
 		return result;
 	} else {
 		if(it->bucket >= _size(it->source)) {
-			return ObinInterrupt;
+			return ObinNothing;
 		}
 		it->bucket++;
 		it->pair = (_bucket(it->source, it->bucket)).head;
-		return _dict_lazy_iterator__next__(state, self);
+		return _table_lazy_iterator__next__(state, self);
 	}
 }
 
-static ObinNativeTraits __DICT_LAZY_ITERATOR_TRAITS__ = {
+static ObinNativeTraits __TABLE_LAZY_ITERATOR_TRAITS__ = {
 	 0, /*__tostring__,*/
 	 0, /*__destroy__,*/
 	 0, /*__clone__,*/
@@ -188,18 +188,18 @@ static ObinNativeTraits __DICT_LAZY_ITERATOR_TRAITS__ = {
 	 0, /*__hasitem__,*/
 	 0, /*__delitem__,*/
 
-	 _dict_lazy_iterator__next__
+	 _table_lazy_iterator__next__
 };
 
 static ObinAny __iterator__(ObinState* state, ObinAny self) {
-	DictLazyIterator * iterator;
+	TableLazyIterator * iterator;
 
-	iterator = obin_malloc_type(state, DictLazyIterator);
+	iterator = obin_malloc_type(state, TableLazyIterator);
 	iterator->source = self;
 	iterator->bucket = 0;
 	iterator->pair = _bucket(self, 0).head;
 
-	obin_cell_set_native_traits(iterator, __DICT_LAZY_ITERATOR_TRAITS__);
+	obin_cell_set_native_traits(iterator, __TABLE_LAZY_ITERATOR_TRAITS__);
 	return obin_cell_new(iterator);
 }
 
@@ -250,7 +250,7 @@ __getitem__(ObinState* state, ObinAny self, ObinAny key){
 	info = _get_key_info(state, self, key);
 
 	if (info.pair == NULL) {
-		return obin_raise_key_error(state, "Dict.__getitem__ invalid key", key);
+		return obin_raise_key_error(state, "Table.__getitem__ invalid key", key);
 	}
 
 	return info.pair->value;
@@ -274,7 +274,7 @@ static ObinNothing _insert_into_buckets(ObinState* state, Bucket* buckets, obin_
 		info.bucket->head = pair;
 	} else {
 		if(!info.place) {
-			return obin_raise_internal(state, "Dict.__setitem__ Invalid KeyInfo place in unknown", key);
+			return obin_raise_internal(state, "Table.__setitem__ Invalid KeyInfo place in unknown", key);
 		}
 
 		info.place->next = pair;
@@ -291,7 +291,7 @@ static ObinAny __setitem__(ObinState* state, ObinAny self, ObinAny key, ObinAny 
 	_size(self) += 1;
 
     if(_is_excided_load(self)) {
-    	_obin_dict_resize(state, self, _capacity(self) * 2);
+    	_obin_table_resize(state, self, _capacity(self) * 2);
     }
 
     return result;
@@ -314,7 +314,7 @@ __delitem__(ObinState* state, ObinAny self, ObinAny key){
 	info = _get_key_info(state, self, key);
 
 	if (info.pair == NULL) {
-		return obin_raise_key_error(state, "Dict.__delitem__ invalid key", key);
+		return obin_raise_key_error(state, "Table.__delitem__ invalid key", key);
 	}
 
 	pair = info.pair;
@@ -350,18 +350,18 @@ static ObinNativeTraits __TRAITS__ = {
 	 0, /*__next__*/
 };
 
-ObinAny obin_dict_new(ObinState* state, ObinAny size){
-	ObinDict * self;
+ObinAny obin_table_new(ObinState* state, ObinAny size){
+	ObinTable * self;
 	obin_integer i;
 
 	if(obin_any_is_nil(size)){
-		size = obin_integer_new(OBIN_DEFAULT_DICT_SIZE);
+		size = obin_integer_new(OBIN_DEFAULT_TABLE_SIZE);
 	}
 	if (!obin_integer_is_fit_to_memsize(size)) {
-		return obin_raise_memory_error(state, "obin_dict_new:: size not fit to memory", size );
+		return obin_raise_memory_error(state, "obin_table_new:: size not fit to memory", size );
 	}
 
-	self = obin_malloc_type(state, ObinDict);
+	self = obin_malloc_type(state, ObinTable);
 
 	self->capacity = _next_power_of_2(obin_any_mem_t(size));
 
@@ -373,10 +373,10 @@ ObinAny obin_dict_new(ObinState* state, ObinAny size){
 		obin_memset(self->buckets[i], 0, sizeof(Bucket));
 	}
 
-	return obin_cell_new(EOBIN_TYPE_DICT, self);
+	return obin_cell_new(EOBIN_TYPE_TABLE, self);
 }
 
-static ObinAny _obin_dict_resize(ObinState* state, ObinAny self, obin_mem_t new_capacity) {
+static ObinAny _obin_table_resize(ObinState* state, ObinAny self, obin_mem_t new_capacity) {
 	Bucket* new_buckets;
 	Pair* pair;
 	obin_mem_t i;
@@ -427,10 +427,10 @@ static void _clear_buckets(Bucket* buckets, obin_mem_t size) {
 		_clear_bucket(buckets[i]);
 	}
 }
-ObinAny obin_dict_clear(ObinState* state, ObinAny self){
+ObinAny obin_table_clear(ObinState* state, ObinAny self){
 
-	if(!obin_any_is_dict(self)){
-		return obin_raise_type_error(state, "Dict.clear invalid call", self);
+	if(!obin_any_is_table(self)){
+		return obin_raise_type_error(state, "Table.clear invalid call", self);
 	}
 
 	_clear_buckets(_buckets(self), _capacity(self));
@@ -440,11 +440,11 @@ ObinAny obin_dict_clear(ObinState* state, ObinAny self){
 	return ObinNothing;
 }
 
-ObinAny obin_dict_update(ObinState* state, ObinAny self, ObinAny other) {
+ObinAny obin_table_update(ObinState* state, ObinAny self, ObinAny other) {
 	ObinAny iterator, item;
 
-	if(!obin_any_is_dict(self)){
-		return obin_raise_type_error(state, "Dict.update invalid call", self);
+	if(!obin_any_is_table(self)){
+		return obin_raise_type_error(state, "Table.update invalid call", self);
 	}
 
 	iterator = obin_iterator(state, other);
@@ -464,11 +464,11 @@ ObinAny obin_dict_update(ObinState* state, ObinAny self, ObinAny other) {
 	return ObinNothing;
 }
 
-ObinAny obin_dict_items(ObinState* state, ObinAny self){
+ObinAny obin_table_items(ObinState* state, ObinAny self){
 	ObinAny result, iterator, item;
 
-	if(!obin_any_is_dict(self)){
-		return obin_raise_type_error(state, "Dict.items invalid call", self);
+	if(!obin_any_is_table(self)){
+		return obin_raise_type_error(state, "Table.items invalid call", self);
 	}
 
 	result = obin_array_new(state, _size(self));
@@ -487,11 +487,11 @@ ObinAny obin_dict_items(ObinState* state, ObinAny self){
 	return result;
 }
 
-ObinAny obin_dict_keys(ObinState* state, ObinAny self){
+ObinAny obin_table_keys(ObinState* state, ObinAny self){
 	ObinAny result, iterator, item;
 
-	if(!obin_any_is_dict(self)){
-		return obin_raise_type_error(state, "Dict.keys invalid call", self);
+	if(!obin_any_is_table(self)){
+		return obin_raise_type_error(state, "Table.keys invalid call", self);
 	}
 
 	result = obin_array_new(state, _size(self));
@@ -511,11 +511,11 @@ ObinAny obin_dict_keys(ObinState* state, ObinAny self){
 	return result;
 }
 
-ObinAny obin_dict_values(ObinState* state, ObinAny self){
+ObinAny obin_table_values(ObinState* state, ObinAny self){
 	ObinAny result, iterator, item;
 
-	if(!obin_any_is_dict(self)){
-		return obin_raise_type_error(state, "Dict.values invalid call", self);
+	if(!obin_any_is_table(self)){
+		return obin_raise_type_error(state, "Table.values invalid call", self);
 	}
 
 	result = obin_array_new(state, _size(self));

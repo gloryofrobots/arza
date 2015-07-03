@@ -3,7 +3,9 @@
 #include "obuiltin.h"
 
 typedef struct{
-	obin_integer mark;
+	obin_integer lives;
+	obin_integer deads;
+	obin_integer rc;
 } ObinCellGCInfo;
 
 /*IT EMPTY FOR NOW */
@@ -29,14 +31,13 @@ struct _ObinCell {
 
 #define ObinMem_FREE free
 
-#define obin_memcpy memcpy
-#define obin_strcpy strcpy
-#define obin_sprintf sprintf
-#define obin_memset memset
 
 #ifndef OBIN_MEMORY_DEBUG
 
 void obin_free(obin_pointer ptr);
+
+void obin_incref(ObinState* state, ObinAny any);
+void obin_decref(ObinState* state, ObinAny any);
 
 obin_pointer obin_malloc(ObinState* state, obin_mem_t size);
 
@@ -46,10 +47,14 @@ obin_pointer obin_realloc(ObinState* state, obin_pointer ptr, obin_mem_t size) ;
 
 obin_pointer obin_memdup(ObinState* state, obin_pointer ptr, obin_mem_t elements, obin_mem_t element_size );
 
+obin_pointer obin_gc_register(ObinState* state, ObinCell* cell);
+
 #else
 /* Redirect all memory operations debugging allocator. */
 #endif
 
+#define obin_new(state, type) \
+		((type*) obin_gc_register(state, (ObinCell*) obin_malloc_type(state, type)))
 
 #define obin_malloc_type(state, type) \
 	 ( (type *) obin_malloc(state, sizeof(type)) )
