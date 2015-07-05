@@ -1,6 +1,19 @@
 #ifndef OSTRING_H_
 #define OSTRING_H_
-#include <core/obuiltin.h>
+#include "obuiltin.h"
+
+typedef struct {
+        ObinAny Nil;
+        ObinAny True;
+        ObinAny False;
+        ObinAny Nothing;
+        ObinAny PrintSeparator;
+        ObinAny Empty;
+} __ObinStrings;
+
+static __ObinStrings ObinStrings;
+obin_bool obin_module_string_init(ObinState* state);
+
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data);
 ObinAny obin_char_new(ObinState* state, obin_char ch);
@@ -40,7 +53,8 @@ ObinAny obin_string_format(ObinState* state, ObinAny format, ...);
 ObinAny obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2);
 ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection);
 ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator);
-ObinAny obin_any_to_string(ObinState* state, ObinAny any);
+
+obin_string obin_string_cstr(ObinState* state, ObinAny self);
 
 ObinAny obin_string_pack(ObinState* state, obin_mem_t size, ...);
 

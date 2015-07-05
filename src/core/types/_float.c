@@ -1,6 +1,4 @@
-#ifndef OFLOAT_H_
-#define OFLOAT_H_
-#include <core/obuiltin.h>
+#include <obin.h>
 
 ObinAny obin_float_new(obin_float number) {
 	ObinAny result;
@@ -10,7 +8,6 @@ ObinAny obin_float_new(obin_float number) {
 	return result;
 }
 
-ObinNativeTraits* obin_float_traits();
-
-
-#endif
+ObinNativeTraits* obin_float_traits() {
+	return ONULL;
+}

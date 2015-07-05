@@ -1,3 +1,4 @@
+#include <obin.h>
 /*EACH Embedded type must have its own trait  delete this method afterwords*/
 
 ObinAny obin_tostring(ObinState* state, ObinAny any) {

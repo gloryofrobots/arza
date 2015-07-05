@@ -1,7 +1,7 @@
 #ifndef OCONSTANTS_H_
 #define OCONSTANTS_H_
 
-#include <core/obuiltin.h>
+#include "obuiltin.h"
 
 
 ObinNativeTraits* obin_nil_traits();

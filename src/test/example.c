@@ -28,6 +28,12 @@
 #include <string.h>
 #include <assert.h>
 
+/*if suite return 0 than tests
+ * will proceed else not, if clean will return 1 than tests will be counted as failure
+static int suite_base_init(void) { return 0; }
+static int suite_base_clean(void) { return 0; }
+*/
+
 static int suite_success_init(void) { return 0; }
 static int suite_success_clean(void) { return 0; }
 

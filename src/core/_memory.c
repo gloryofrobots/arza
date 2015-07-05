@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "omemory.h"
+#include <omemory.h>
 
 #define ObinMem_MALLOC(n) ((obin_mem_t)(n) > OBIN_MEM_MAX? NULL \
 				: malloc((n) ? (n) : 1))
@@ -23,6 +23,7 @@ obin_pointer obin_malloc(ObinState * state, obin_mem_t size) {
 /*	run gc here*/
 	assert(new_pointer != 0);
 
+	memset(new_pointer, 0, size);
 	return new_pointer;
 }
 

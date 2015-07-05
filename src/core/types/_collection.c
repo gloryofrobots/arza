@@ -1,5 +1,4 @@
-#include <core/omemory.h>
-#include "ocollection.h"
+#include <obin.h>
 
 /*TODO Avoid infinite recursion in _tostring__ and others in recursive vollections */
 

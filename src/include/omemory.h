@@ -17,8 +17,19 @@ struct _ObinCell {
 	OBIN_CELL_HEADER;
 };
 
+
 #define obin_cell_set_native_traits(cell, traits) cell->native_traits = traits
 
+static ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinNativeTraits* traits) {
+	ObinAny result;
+	obin_assert(obin_type_is_cell(type));
+
+	obin_cell_set_native_traits(cell, traits);
+
+	result = obin_any_new();
+	obin_any_init_cell(result, type, cell);
+	return result;
+}
 ObinAny obin_incref(ObinState* state, ObinAny any);
 ObinAny obin_decref(ObinState* state, ObinAny any);
 

@@ -1,7 +1,4 @@
-#include <stdarg.h>
-
-#include <core/orandom.h>
-#include <core/obin.h>
+#include <obin.h>
 
 /* TODO INTERNATION */
 
@@ -115,6 +112,7 @@ obin_mem_t size, obin_bool is_shared) {
 	} else {
 		self->data = data;
 	}
+
 	self->data[self.size] = '\0';
 
 	return obin_cell_new(EOBIN_TYPE_STRING, self);
@@ -645,6 +643,9 @@ ObinAny obin_string_pack(ObinState* state, obin_mem_t size, ...){
  str.splitlines([keepends])
  */
 
+obin_string obin_string_cstr(ObinState* state, ObinAny self){
+	return _string_data(self);
+}
 /**********************************  TYPETRAIT ***********************************************/
 
 static ObinAny __tostring__(ObinState* state, ObinAny self) {
@@ -801,15 +802,17 @@ ObinCollectionTrait __COLLECTION__ = {
 	 0, /*__delitem__,*/
 } ;
 
-static ObinNativeTraits __TRAITS__ = {
-	"__string",
-	 /*base*/
+ObinBaseTrait __BASE__ = {
 	 __tostring__,
 	 __destroy__,
 	 __clone__,
 	 __compare__,
 	 __hash__,
-
+} ;
+static ObinNativeTraits __TRAITS__ = {
+	"__string",
+	 /*base*/
+	 &__BASE__
 	 &__COLLECTION__, /*collection*/
 	 0, /*generator*/
 	 0, /*number*/

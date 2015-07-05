@@ -21,9 +21,6 @@ ObinAny a reg
  *   #define obin_is_cell_type(type) (type > EOBIN_TYPE_BEGIN_CELL_TYPES && type < EOBIN_TYPE_END_ENUM)
  */
 typedef enum _EOBIN_TYPE {
-	/* INTERNAL TYPES */
-	EOBIN_TYPE_INTERRUPT = -2,
-
 	/* SINGLETON TYPES */
 	EOBIN_TYPE_UNKNOWN = -1,
 	EOBIN_TYPE_FALSE = 0,
@@ -45,7 +42,6 @@ typedef enum _EOBIN_TYPE {
 	EOBIN_TYPE_END_COLLECTION_TYPES,
 
 	EOBIN_TYPE_OBJECT,
-	EOBIN_TYPE_BIG_INTEGER,
 
 	EOBIN_TYPE_END_CELL_TYPES,
 
@@ -74,18 +70,6 @@ typedef struct {
 typedef struct _ObinState ObinState;
 
 struct _ObinState {
-	struct {
-        struct {
-                ObinAny Nil;
-                ObinAny True;
-                ObinAny False;
-                ObinAny Nothing;
-                ObinAny PrintSeparator;
-                ObinAny Empty;
-        } strings;
-
-	} interns;
-
 	ObinAny root;
 };
 
@@ -105,11 +89,6 @@ static ObinAny ObinLesser = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, -1);
 static ObinAny ObinGreater = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 1);
 static ObinAny ObinEqual = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 0);
 
-static ObinAny ObinZero = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 0);
-static ObinAny ObinOne = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 1);
-static ObinAny ObinTwo = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 2);
-static ObinAny ObinThree = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 3);
-
 /********************** ERRORS ************************************/
 
 #define OBIN_MODULE_NAME(name) OBIN_MODULE_##name##_INIT
@@ -128,8 +107,8 @@ static ObinAny ObinThree = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 3);
 #define OBIN_ANY_BEFORE_SET(any)
 #endif
 
-/* NEVER FORGET TO CALL THIS BEFORE SETTING TYPE*/
-ObinAny obin_any_new();
+
+#define obin_any_type(any) (any.type)
 
 #define obin_any_init_cell(any, type, cell) \
 		OBIN_ANY_BEFORE_SET(any); \
@@ -193,7 +172,6 @@ typedef ObinAny (*obin_method)(ObinState* state, ObinAny arg);
 typedef ObinAny (*obin_method_2)(ObinState* state, ObinAny arg1, ObinAny arg2);
 typedef ObinAny (*obin_method_3)(ObinState* state, ObinAny arg1, ObinAny arg2, ObinAny arg3);
 
-ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell);
 
 typedef struct {
 	obin_method __iterator__;
@@ -213,20 +191,38 @@ typedef struct {
 } ObinNumberTrait;
 
 typedef struct {
-	obin_string name;
-	/*base*/
 	obin_method __tostring__;
 	obin_method __destroy__;
 	obin_method __clone__;
 	obin_method_2 __compare__;
 	obin_method __hash__;
+} ObinBaseTrait;
 
+typedef struct {
+	obin_string name;
+
+	ObinBaseTrait* base;
 	ObinCollectionTrait* collection;
 	ObinGeneratorTrait* generator;
 	ObinNumberTrait* number;
 } ObinNativeTraits;
 
+
 /**************************** BUILTINS *******************************************/
+/* NEVER FORGET TO CALL THIS BEFORE SETTING TYPE*/
+
+/*ObinAny obin_any_new();
+ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell);*/
+
+static ObinAny obin_any_new() {
+	ObinAny proto;
+	proto.type = EOBIN_TYPE_UNKNOWN;
+	return proto;
+}
+
+
+ObinState* obin_init();
+
 ObinAny obin_tostring(ObinState* state, ObinAny self);
 ObinAny obin_destroy(ObinState * state, ObinAny self);
 ObinAny obin_clone(ObinState * state, ObinAny self);

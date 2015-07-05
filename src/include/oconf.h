@@ -1,12 +1,24 @@
 #ifndef OCONF_H
 #define OCONF_H
+
+#include <stdarg.h>
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
 
 #define OFALSE 0
 #define OTRUE 1
+#define ONULL NULL
+
+#ifndef ODEBUG
+#ifndef NDEBUG
+#define ODEBUG 1
+#endif
+#endif
+
 
 #ifndef INT32_MAX
 # define INT32_MAX (0x7fffffffL)
@@ -31,6 +43,7 @@
 typedef int obin_bool;
 typedef double obin_float;
 typedef void* obin_pointer;
+typedef FILE* obin_file;
 
 typedef long obin_integer;
 typedef const char* obin_string;
@@ -39,6 +52,7 @@ typedef unsigned char obin_byte;
 
 /* Needed for convertion between numbers and strings */
 #define OBIN_INTEGER_FORMATTER "%ld"
+#define OBIN_POINTER_FORMATTER "%p"
 #define OBIN_FLOAT_FORMATTER "%f"
 
 /* DIRECTORY_SEPARATOR */
@@ -89,15 +103,55 @@ typedef unsigned char obin_byte;
 #endif				/* } */
 
 
+#ifdef __GNUC__
+#define OBIN_STMT_START  ({
+#define OBIN_STMT_END    })
+#else
+#define OBIN_STMT_START  do {
+#define OBIN_STMT_END    } while (0)
+#endif
+
+#ifndef ODEBUG
+#define obin_abort() abort()
+#else
+#define obin_abort()						\
+OBIN_STMT_START						        	\
+fprintf (stderr, "%s:%i: %s: should not reach here\n",			\
+	 __FILE__, __LINE__, __FUNCTION__);				\
+abort ();								\
+OBIN_STMT_END
+#endif
+
+#define obin_panic(message)      \
+OBIN_STMT_START						        	\
+fprintf (stderr, "%s:%i: %s: should not reach here\n" message,			\
+	 __FILE__, __LINE__, __FUNCTION__);				\
+abort ();								\
+OBIN_STMT_END
+
+#ifndef ODEBUG
 #define obin_assert assert
+#else
+#define obin_assert(condition)						\
+OBIN_STMT_START						         	\
+if (!(condition)) {						       	\
+    fprintf (stderr, "%s:%i: %s: assertion `" #condition "' failed\n",	\
+	     __FILE__, __LINE__, __FUNCTION__);				\
+    abort();								\
+ }									\
+OBIN_STMT_END
+#endif
+
+#define obin_vfprintf vfprintf
+#define obin_sprintf sprintf
+#define obin_snprintf snprintf
+#define obin_vprintf vprintf
 
 #define obin_strlen strlen
 #define obin_strstr strstr
-#define obin_snprintf snprintf
 #define obin_strncmp strncmp
 
 #define obin_memcpy memcpy
 #define obin_strcpy strcpy
-#define obin_sprintf sprintf
 #define obin_memset memset
 #endif

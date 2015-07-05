@@ -1,7 +1,7 @@
 #ifndef OARRAY_H_
 #define OARRAY_H_
 
-#include <core/obuiltin.h>
+#include "obuiltin.h"
 
 
 ObinAny obin_array_new(ObinState* state, ObinAny size);

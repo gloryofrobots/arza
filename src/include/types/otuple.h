@@ -1,6 +1,6 @@
 #ifndef OTUPLE_H_
 #define OTUPLE_H_
-#include <core/obuiltin.h>
+#include "obuiltin.h"
 
 
 ObinAny obin_tuple_new(ObinState* state, ObinAny* items, obin_integer size);

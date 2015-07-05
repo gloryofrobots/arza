@@ -1,13 +1,10 @@
-#include <core/omemory.h>
-#include <core/obuiltin.h>
+#include <omemory.h>
+#include <obuiltin.h>
 #include <types/oerror.h>
-#include <types/ostring.h>
+#include <types/ointeger.h>
+#include <types/ofloat.h>
+/*#include <types/ostring.h>*/
 
-ObinAny obin_any_new() {
-	ObinAny proto;
-	proto.type = EOBIN_TYPE_UNKNOWN;
-	return proto;
-}
 
 #define _cell_traits(any) (obin_any_cell(any)->native_traits)
 
@@ -21,22 +18,11 @@ ObinAny obin_any_new() {
 			(_traits_method(_traits(state, any)->traitname, method)) \
 			: 0 )
 
+#define _base_method(state, any, method) _subtrait_method(state, any, base, method)
 #define _collection_method(state, any, method) _subtrait_method(state, any, collection, method)
 #define _generator_method(state, any, method) _subtrait_method(state, any, generator, method)
 #define _number_method(state, any, method) _subtrait_method(state, any, number, method)
 
-static ObinNativeTraits __EMPTY_TRAITS__ = {
-	"undefined",
-	 0, /*__tostring__,*/
-	 0, /*__destroy__,*/
-	 0, /*__clone__,*/
-	 0, /*__compare__,*/
-	 0, /*__hash__,*/
-
-     0, /*collection*/
-	 0, /*iterator*/
-	 0 /*number*/
-};
 
 static ObinNativeTraits*
 _embedded_type_traits(ObinState* state, ObinAny any) {
@@ -47,24 +33,10 @@ _embedded_type_traits(ObinState* state, ObinAny any) {
 	case EOBIN_TYPE_FLOAT:
 		return obin_float_traits();
 		break;
-	case EOBIN_TYPE_BIG_INTEGER:
-		return obin_big_integer_traits();
-		break;
 	default:
 		obin_raise_type_error(state, "There are no native traits in this type", any);
-		return &__EMPTY_TRAITS__;
+		return NULL;
 	}
-}
-
-ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell) {
-	ObinAny result;
-	obin_assert(obin_type_is_cell(type));
-
-	result = obin_any_new();
-
-	obin_any_init_cell(result, type, cell);
-
-	return result;
 }
 
 /*Returns iterator if can, else raise InvalidArgumentError*/
@@ -104,7 +76,7 @@ ObinAny obin_destroy(ObinState * state, ObinAny any) {
 		return obin_raise_type_error(state, "Cell expected", any);
 	}
 
-	method = _method(state, any, __destroy__);
+	method = _base_method(state, any, __destroy__);
 	if (!method) {
 		method = &obin_cell_destroy;
 	}
@@ -121,7 +93,7 @@ ObinAny obin_equal(ObinState * state, ObinAny any, ObinAny other) {
 ObinAny obin_compare(ObinState * state, ObinAny any, ObinAny other) {
 	obin_method_2 method;
 
-	method = _method(state, any, __compare__);
+	method = _base_method(state, any, __compare__);
 	if (!method) {
 		return obin_raise_type_error(state, "__compare__ protocol not supported", any);
 	}
@@ -156,7 +128,7 @@ ObinAny obin_is(ObinState * state, ObinAny any, ObinAny other) {
 ObinAny obin_hash(ObinState* state, ObinAny any) {
 	obin_method method;
 
-	method = _method(state, any, __hash__);
+	method = _base_method(state, any, __hash__);
 	if (!method) {
 		return obin_raise_type_error(state, "__hash__ protocol not supported", any);
 	}
@@ -167,7 +139,7 @@ ObinAny obin_hash(ObinState* state, ObinAny any) {
 ObinAny obin_clone(ObinState * state, ObinAny any){
 	obin_method method;
 
-	method = _method(state, any, __clone__);
+	method = _base_method(state, any, __clone__);
 	if (!method) {
 		return obin_raise_type_error(state, "__clone__ protocol not supported", any);
 	}
@@ -178,7 +150,7 @@ ObinAny obin_clone(ObinState * state, ObinAny any){
 ObinAny obin_tostring(ObinState* state, ObinAny any) {
 	obin_method method;
 
-	method = _method(state, any, __tostring__);
+	method = _base_method(state, any, __tostring__);
 	if (!method) {
 		return obin_raise_type_error(state, "__tostring__ protocol not supported", any);
 	}

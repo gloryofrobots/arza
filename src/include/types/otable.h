@@ -1,6 +1,6 @@
 #ifndef OTABLE_H
 #define OTABLE_H
-#include <core/obuiltin.h>
+#include "obuiltin.h"
 
 ObinAny obin_table_new(ObinState* state, ObinAny size);
 

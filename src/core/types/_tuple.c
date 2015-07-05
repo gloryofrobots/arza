@@ -1,6 +1,4 @@
-#include <stdarg.h>
-#include <core/orandom.h>
-#include <core/obin.h>
+#include <obin.h>
 /* TODO INTERNATION */
 
 typedef struct {

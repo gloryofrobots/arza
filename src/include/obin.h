@@ -1,21 +1,22 @@
 #ifndef OBIN_H_
 #define OBIN_H_
 
-#include <core/oconf.h>
-#include <core/obuiltin.h>
-#include <core/omemory.h>
+#include "oconf.h"
+#include "obuiltin.h"
+#include "omemory.h"
+
 
 /*
+#include "types/ofstream.h"
 #include <types/ointeger.h>
 #include <types/ofloat.h>
-
+#include <types/oerror.h>
 #include <types/ocollection.h>
 #include <types/ostring.h>
 #include <types/oarray.h>
 #include <types/otable.h>
 #include <types/oobject.h>
 #include <types/otuple.h>
-#include <types/oerror.h>
 */
 
 
