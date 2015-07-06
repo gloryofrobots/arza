@@ -170,6 +170,7 @@ typedef ObinAny (*obin_function_2)(ObinAny arg1, ObinAny arg2);
 typedef ObinAny (*obin_function_3)(ObinAny arg1, ObinAny arg2, ObinAny arg3);
 
 typedef void (*obin_proc)(ObinState* state, ObinAny arg);
+typedef void (*obin_cell_proc)(ObinState* state, ObinCell* self);
 typedef ObinAny (*obin_method_2_proc)(ObinState* state, ObinAny arg, obin_proc each);
 
 typedef ObinAny (*obin_method)(ObinState* state, ObinAny arg);
@@ -196,7 +197,7 @@ typedef struct {
 
 typedef struct {
 	obin_method __tostring__;
-	obin_method __destroy__;
+	obin_cell_proc __destroy__;
 	obin_method __clone__;
 	obin_method_2 __compare__;
 	obin_method __hash__;
@@ -229,7 +230,7 @@ static ObinAny obin_any_new() {
 ObinState* obin_init();
 
 ObinAny obin_tostring(ObinState* state, ObinAny self);
-ObinAny obin_destroy(ObinState * state, ObinAny self);
+void obin_destroy(ObinState * state, ObinCell* self);
 ObinAny obin_clone(ObinState * state, ObinAny self);
 ObinAny obin_compare(ObinState * state, ObinAny self, ObinAny other);
 ObinAny obin_hash(ObinState * state, ObinAny any);

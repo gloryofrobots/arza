@@ -6,11 +6,10 @@
  * free_list_entries are used to manage the space freed after the sweep phase.
  * these entries contain their own size and a reference of the entry next to them
  */
-typedef struct _free_list_entry free_list_entry;
-struct _free_list_entry {
-    free_list_entry* next;
+typedef struct free_list_entry {
+	struct free_list_entry* next;
     size_t size;
-};
+} free_list_entry;
 
 int BUFFERSIZE_FOR_UNINTERRUPTABLE = 50000;
 int OBJECT_SPACE_SIZE = 1048576;
@@ -19,23 +18,23 @@ struct _ObinMemory {
 	void* object_space;
 	int OBJECT_SPACE_SIZE;
 	int BUFFERSIZE_FOR_UNINTERRUPTABLE;
-	free_list_entry* first_free_entry = NULL;
+	free_list_entry* first_free_entry;
         /*
          * if this counter equals 0, only then it is safe to collect the
          * garbage. The counter is increased during initializations of
          * VMObjects and the generation of classes
          */
-    int uninterruptable_counter = 0;
+    int uninterruptable_counter;
 
-    int size_of_free_heap = 0;
+    int size_of_free_heap;
 
-	uint32_t num_collections; // the number of collections performed
-	uint32_t num_live;        // number of live objects (per collection)
-	uint32_t spc_live;        // space consumed by live objects (per collection)
-	uint32_t num_freed;       // number of freed objects (per collection)
-	uint32_t spc_freed;       // freed space (per collection)
-	uint32_t num_alloc;       // number of allocated objects (since last collection)
-	uint32_t spc_alloc;       // allocated space (since last collection)
+	uint32_t num_collections; /* the number of collections performed */
+	uint32_t num_live;        /* number of live objects (per collection) */
+	uint32_t spc_live;        /* space consumed by live objects (per collection) */
+	uint32_t num_freed;       /* number of freed objects (per collection) */
+	uint32_t spc_freed;       /* freed space (per collection) */
+	uint32_t num_alloc;       /* number of allocated objects (since last collection) */
+	uint32_t spc_alloc;       /* allocated space (since last collection) */
 };
 
 typedef struct{
@@ -70,7 +69,7 @@ static ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinNativeTraits* 
 void obin_memory_create(ObinState* state, obin_mem_t heap_size);
 void obin_memory_destroy(ObinState* state);
 
-ObinCell* obin_allocate_cell(ObinState* state, obin_mem_t size);
+void* obin_allocate_cell(ObinState* state, obin_mem_t size);
 
 obin_pointer obin_malloc(ObinState* state, obin_mem_t size);
 

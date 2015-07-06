@@ -1,5 +1,8 @@
 #include <obin.h>
 
+#define _end_heap(memory)  (memory->object_space + memory->OBJECT_SPACE_SIZE)
+#define _heap(memory)  (memory->object_space)
+
 #define ObinMem_Padding(N) ((sizeof(obin_pointer) - ((N) % sizeof(obin_pointer))) % sizeof(obin_pointer))
 
 #define ObinMem_Malloc(n) ((obin_mem_t)(n) > OBIN_MEM_MAX? NULL \
@@ -18,11 +21,11 @@
 	if(!M) { obin_panic("ObinState memory is NULL!"); }
 
 /*FORWARDS */
-void gc_merge_free_spaces();
+void gc_merge_free_spaces(ObinState*);
 
-void init_collect_stat(void);
-void collect_stat(void);
-void reset_alloc_stat(void);
+void init_collect_stat(ObinState*);
+void collect_stat(ObinState*);
+void reset_alloc_stat(ObinState*);
 
 /* LOG */
 void _log(ObinState* state, obin_string format, ...) {
@@ -150,22 +153,6 @@ void obin_memory_destroy(ObinState* state) {
 }
 
 
-void gc_mark_reachable_objects(ObinState * state) {
-	ObinAny globals = state->globals;
-	gc_mark_object(state, globals);
-
-/*    /* Get the current frame and mark it.
-    /* Since marking is done recursively, this automatically
-    /* marks the whole stack
-    pVMFrame current_frame = (pVMFrame) Interpreter_get_frame();
-    if (current_frame != NULL) {
-        gc_mark_object(current_frame);
-    }*/
-}
-
-#define _end_heap(memory)  (memory->object_space + memory->OBJECT_SPACE_SIZE)
-#define _heap(memory)  (memory->object_space)
-
 /**
  *  check whether the object is inside the managed heap
  *  if it isn't, there is no VMObject to mark, otherwise
@@ -210,6 +197,20 @@ void gc_mark_object(ObinState* state, ObinAny object) {
 	cell->native_traits->base->__foreach_internal_objects__(state, object, &gc_mark_object);
 }
 
+void gc_mark_reachable_objects(ObinState * state) {
+	ObinAny globals = state->globals;
+	gc_mark_object(state, globals);
+
+	/*     Get the current frame and mark it.
+    Since marking is done recursively, this automatically
+	marks the whole stack
+    pVMFrame current_frame = (pVMFrame) Interpreter_get_frame();
+    if (current_frame != NULL) {
+        gc_mark_object(current_frame);
+    }*/
+}
+
+
 /**
  * For debugging - the layout of the heap is shown.
  * This function uses
@@ -225,7 +226,6 @@ void gc_show_memory(ObinState* state) {
     int object_aligner = 0;
     int line_count = 2;
     ObinCell* object;
-    ObinAny repr;
 	CATCH_STATE_MEMORY(state);
 
     pointer = M->object_space;
@@ -252,10 +252,10 @@ void gc_show_memory(ObinState* state) {
             object = pointer;
 
             /*here we need recursive function maybe*/
-            object_size = object->memory->size;
+            object_size = object->memory.size;
 
             /* is this object marked or not? */
-            if (object->memory->mark == 1) {
+            if (object->memory.mark == 1) {
             	_log(state, "-xx-");
             }
 
@@ -271,22 +271,22 @@ void gc_show_memory(ObinState* state) {
     } while ((void*)pointer < (void*)(_end_heap(M)));
 }
 
-
-void _gc_collect() {
-    num_collections++;
-    init_collect_stat();
-
-    if(gc_verbosity > 2) {
-        fprintf(stderr, "-- pre-collection heap dump --\n");
-        gc_show_memory();
-    }
-
-    gc_mark_reachable_objects();
-    /*gc_show_memory(); */
-    pVMObject pointer = object_space;
-    free_list_entry* current_entry = first_free_entry;
+void _gc_collect(ObinState* state) {
+	obin_pointer pointer;
+	ObinCell* object;
+	free_list_entry* current_entry, *new_entry;
     int object_size = 0;
+	CATCH_STATE_MEMORY(state);
 
+    M->num_collections++;
+    init_collect_stat(state);
+
+    gc_mark_reachable_objects(state);
+	_log(state, "-- pre-collection heap dump --\n");
+	gc_show_memory(state);
+
+    pointer = M->object_space;
+    current_entry = M->first_free_entry;
     do {
         /* we need to find the last free entry before the pointer */
         /* whose 'next' lies behind or is the pointer */
@@ -306,28 +306,26 @@ void _gc_collect() {
             /* nothing else to be done here */
         } else {
             /* in this case the pointer is a VMObject */
-            pVMObject object = (pVMObject) pointer;
-            object_size = SEND(object, object_size);
-
+            object = (ObinCell*) pointer;
+            object_size = object->memory.size;
             /* is this object marked or not? */
-            if (object->gc_field == 1) {
+            if (object->memory.mark == 1) {
                 /* remove the marking */
-                object->gc_field = 0;
+                object->memory.mark = 0;
             } else {
-                num_freed++;
-                spc_freed += object_size;
-
+                M->num_freed++;
+                M->spc_freed += object_size;
                 /* add new entry containing this object to the free_list */
-                SEND(object, free);
+                obin_destroy(state, object);
                 memset(object, 0, object_size);
-                free_list_entry* new_entry = (free_list_entry*) pointer;
+                new_entry = ((free_list_entry*) pointer);
                 new_entry->size = object_size;
 
                 /* if the new entry lies before the first entry, */
                 /* adjust the pointer to the first one */
-                if (new_entry < first_free_entry) {
-                    new_entry->next = first_free_entry;
-                    first_free_entry = new_entry;
+                if (new_entry < M->first_free_entry) {
+                    new_entry->next = M->first_free_entry;
+                    M->first_free_entry = new_entry;
                     current_entry = new_entry;
                 } else {
                     /* insert the newly created entry right after the current entry */
@@ -339,24 +337,20 @@ void _gc_collect() {
         /* set the pointer to the next object in the heap */
         pointer = (void*)((int)pointer + object_size);
 
-    } while ((void*)pointer < (void*)(object_space + OBJECT_SPACE_SIZE));
+    } while ((void*)pointer < (void*)(_end_heap(M)));
 
     /* combine free_entries, which are next to each other */
-    gc_merge_free_spaces();
+    gc_merge_free_spaces(state);
 
-    if(gc_verbosity > 1)
-        collect_stat();
-    if(gc_verbosity > 2) {
-        fprintf(stderr, "-- post-collection heap dump --\n");
-        gc_show_memory();
-    }
-
-    reset_alloc_stat();
+    collect_stat(state);
+	_log(state, "-- post-collection heap dump --\n");
+	gc_show_memory(state);
+    reset_alloc_stat(state);
 }
 
 void* _allocate_cell(ObinState* state, obin_mem_t size) {
     void* result = NULL;
-	free_list_entry* entry, before_entry, old_next, replace_entry;
+	free_list_entry* entry, *before_entry, *old_next, *replace_entry;
 	int old_entry_size;
 	CATCH_STATE_MEMORY(state);
 
@@ -364,7 +358,7 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
     	return NULL;
     }
 
-    if(size < sizeof(struct _free_list_entry)) {
+    if(size < sizeof(free_list_entry)) {
     	_panic(state, "Can`t allocate so small chunk in allocator %d", size);
     	return NULL;
     }
@@ -373,7 +367,7 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
     /* than BUFFERSIZE_FOR_UNINTERRUPTABLE Bytes and this */
     /* allocation is interruptable */
     if (M->size_of_free_heap <= M->BUFFERSIZE_FOR_UNINTERRUPTABLE) {
-    	_gc_collect();
+    	_gc_collect(state);
     }
 
     /* initialize variables to search through the free_list */
@@ -383,7 +377,7 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
     /* don't look for the perfect match, but for the first-fit */
     while (! ((entry->size == size)
                || (entry->next == NULL)
-               || (entry->size >= (size + sizeof(struct _free_list_entry))))) {
+               || (entry->size >= (size + sizeof(free_list_entry))))) {
         before_entry = entry;
         entry = entry->next;
     }
@@ -403,7 +397,7 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
     } else {
         /* did we find an entry big enough for the request and a new */
         /* free_entry? */
-        if (entry->size >= (size + sizeof(struct _free_list_entry))) {
+        if (entry->size >= (size + sizeof(free_list_entry))) {
             /* save data from found entry */
             old_entry_size = entry->size;
             old_next = entry->next;
@@ -426,7 +420,7 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
             _log(state, "FREE-Size: %d, uninterruptable_counter: %d\n",
                 M->size_of_free_heap, M->uninterruptable_counter);
 
-            _gc_collect();
+            _gc_collect(state);
             /*fulfill initial request */
             result = _allocate_cell(state, size);
         }
@@ -442,9 +436,9 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
     return result;
 }
 
-void* obin_allocate_cell(ObinState* state, size_t size) {
-    size_t aligned_size = size + PAD_BYTES(size);
-    ObinCell* object = (ObinCell*)_allocate_cell(aligned_size);
+void* obin_allocate_cell(ObinState* state, obin_mem_t size) {
+	obin_mem_t aligned_size = size + ObinMem_Padding(size);
+    ObinCell* object = (ObinCell*)_allocate_cell(state, aligned_size);
 
     if(!object) {
     	return NULL;
@@ -502,7 +496,7 @@ void gc_merge_free_spaces(ObinState* state) {
     if (entry->next == NULL) {
         M->size_of_free_heap += entry->size;
     } else {
-    	_panic("Missed last free_entry of GC\n");
+    	_panic(state, "Missed last free_entry of GC\n");
     }
 }
 /**
@@ -525,16 +519,13 @@ void gc_end_uninterruptable_allocation(ObinState* state) {
 }
 
 /*
-/* functions for GC statistics and debugging output
-/*
-
-/*
+ functions for GC statistics and debugging output
  * initialise per-collection statistics
  */
 void init_collect_stat(ObinState* state) {
 	CATCH_STATE_MEMORY(state);
     /* num_alloc and spc_alloc are not initialised here - they are reset after
-    /* the collection in reset_alloc_stat() */
+     * the collection in reset_alloc_stat() */
     M->num_live = 0;
     M->spc_live = 0;
     M->num_freed = 0;

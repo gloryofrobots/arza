@@ -62,26 +62,19 @@ ObinAny obin_next(ObinState * state, ObinAny any) {
 	return method(state, any);
 }
 
-/* destroy cell */
-ObinAny obin_cell_destroy(ObinState * state, ObinAny any) {
-	obin_assert(obin_any_is_cell(any));
-	obin_free(obin_any_cell(any));
-	return ObinNothing;
-}
-
-ObinAny obin_destroy(ObinState * state, ObinAny any) {
-	obin_method method;
-
-	if (!obin_any_is_cell(any)) {
-		return obin_raise_type_error(state, "Cell expected", any);
+void obin_destroy(ObinState * state, ObinCell* cell) {
+	if (!cell) {
+		obin_panic("cell is null");
 	}
 
-	method = _base_method(state, any, __destroy__);
-	if (!method) {
-		method = &obin_cell_destroy;
+	if(!cell->native_traits
+			|| !cell->native_traits->base
+			|| !cell->native_traits->base->__destroy__) {
+
+		obin_panic("cell destroy is empty");
 	}
 
-	return method(state, any);
+	cell->native_traits->base->__destroy__(state, cell);
 }
 
 ObinAny obin_equal(ObinState * state, ObinAny any, ObinAny other) {
