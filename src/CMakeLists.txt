@@ -9,14 +9,22 @@ SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules)
 set(CMAKE_C_FLAGS "-std=c89") 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall")
 
+FILE(GLOB_RECURSE HEADERS "include/*.h")
+
 SET(OBIN_LIB_SRC
+  ${HEADERS}
    core/_memory.c
-   #core/_builtin.c
-   #core/types/_integer.c
-   #core/types/_float.c
+   core/_builtin.c
+   #core/_error.c
+   core/types/_integer.c
+   core/types/_float.c
+   core/types/_bool.c
    #core/types/_fstream.c
    #core/types/_string.c
    #core/types/_error.c
+   include/obin.h
+   include/obuiltin.h
+   include/omemory.h
    )
    
 SET(OBIN_EXE_SRC

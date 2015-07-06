@@ -1,18 +1,11 @@
 #ifndef OBOOL_H_
 #define OBOOL_H_
 
-#include "oany.h"
+#include "obuiltin.h"
 
-ObinAny obin_bool_new(obin_bool condition){
-	if(condition){
-		return ObinTrue;
-	}
+ObinAny obin_bool_new(obin_bool condition);
 
-	return ObinFalse;
-}
-
-ObinNativeTraits* obin_bool_type_trait();
-
+ObinNativeTraits* obin_bool_traits();
 
 
 #endif /* OBOOL_H_ */

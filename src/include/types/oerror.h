@@ -14,13 +14,13 @@ static ObinAny ObinKeyError;
 
 ObinAny obin_module_error_init(ObinState* state);
 
-ObinAny obin_error_new(ObinState* state, ObinAny proto, ObinAny message,
+ObinAny obin_error_new(ObinState* state, ObinAny proto, obin_string message,
 		ObinAny argument);
 
 ObinAny obin_raise(ObinState* state, ObinAny exception);
 
 #define _OBIN_RAISE(state, proto, message, arguments) \
-		obin_raise(state, obin_error_new(state, proto, obin_string_new(state, message), arguments))
+		obin_raise(state, obin_error_new(state, proto, message, arguments))
 
 #define _OBIN_RAISE_1(state, proto, message, argument) \
 		_OBIN_RAISE(state, proto, message, obin_tuple_pack(state, 1, argument))

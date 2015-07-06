@@ -108,7 +108,6 @@ static ObinAny ObinEqual = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 0);
 #define OBIN_ANY_BEFORE_SET(any)
 #endif
 
-
 #define obin_any_type(any) (any.type)
 
 #define obin_any_init_cell(any, type, cell) \
@@ -121,7 +120,6 @@ static ObinAny ObinEqual = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 0);
 		any.type=EOBIN_TYPE_INTEGER; \
 		any.data.integer_value=num
 
-
 #define obin_any_init_float(any, num) \
 		OBIN_ANY_BEFORE_SET(any); \
 		any.type=EOBIN_TYPE_FLOAT; \
@@ -129,6 +127,7 @@ static ObinAny ObinEqual = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 0);
 
 #define obin_any_cell(any) (any.data.cell)
 #define obin_any_integer(any) (any.data.integer_value)
+#define obin_any_char(any) (any.data.char_value.data[0])
 #define obin_any_mem_t(any) (obin_mem_t)(any.data.integer_value)
 
 #define obin_any_float(any) (any.data.float_value)
@@ -171,7 +170,7 @@ typedef ObinAny (*obin_function_3)(ObinAny arg1, ObinAny arg2, ObinAny arg3);
 
 typedef void (*obin_proc)(ObinState* state, ObinAny arg);
 typedef void (*obin_cell_proc)(ObinState* state, ObinCell* self);
-typedef ObinAny (*obin_method_2_proc)(ObinState* state, ObinAny arg, obin_proc each);
+typedef void (*obin_method_2_proc)(ObinState* state, ObinAny arg, obin_proc each);
 
 typedef ObinAny (*obin_method)(ObinState* state, ObinAny arg);
 typedef ObinAny (*obin_method_2)(ObinState* state, ObinAny arg1, ObinAny arg2);
@@ -234,7 +233,7 @@ void obin_destroy(ObinState * state, ObinCell* self);
 ObinAny obin_clone(ObinState * state, ObinAny self);
 ObinAny obin_compare(ObinState * state, ObinAny self, ObinAny other);
 ObinAny obin_hash(ObinState * state, ObinAny any);
-ObinAny obin_equal(ObinState * state, ObinAny any);
+ObinAny obin_equal(ObinState * state, ObinAny any, ObinAny other);
 
 ObinAny obin_iterator(ObinState * state, ObinAny iterable);
 ObinAny obin_length(ObinState* state, ObinAny self);
@@ -244,7 +243,6 @@ ObinAny obin_getitem(ObinState* state, ObinAny self, ObinAny key);
 #define obin_getfirst(state, item) obin_getitem(state, item, ObinZero)
 #define obin_getsecond(state, item) obin_getitem(state, item, ObinOne)
 #define obin_getthird(state, item) obin_getitem(state, item, ObinTwo)
-
 ObinAny obin_setitem(ObinState* state, ObinAny self, ObinAny key, ObinAny value);
 ObinAny obin_hasitem(ObinState* state, ObinAny self, ObinAny key);
 ObinAny obin_delitem(ObinState* state, ObinAny self, ObinAny key);

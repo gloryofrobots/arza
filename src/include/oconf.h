@@ -20,6 +20,8 @@
 #endif
 #endif
 
+#define OBIN_MEMORY_DEBUG 1
+
 
 #ifndef INT32_MAX
 # define INT32_MAX (0x7fffffffL)
@@ -66,6 +68,9 @@ typedef unsigned char obin_byte;
 
 #define OBIN_DEFAULT_ARRAY_SIZE 10
 #define OBIN_DEFAULT_TABLE_SIZE 4
+
+static int OBIN_DEFAULT_HEAP_SIZE = 1048576;
+static int OBIN_MAX_HEAP_SIZE = 2048576;
 
 #define OBIN_MAX_CAPACITY OBIN_MEM_MAX - 1
 #define OBIN_INVALID_INDEX -1
@@ -126,9 +131,9 @@ OBIN_STMT_END
 
 #define obin_panic(message)      \
 OBIN_STMT_START						        	\
-fprintf (stderr, "%s:%i: %s: should not reach here\n" message,			\
+fprintf (stderr, "%s:%i: %s: should not reach here"message"\n",			\
 	 __FILE__, __LINE__, __FUNCTION__);				\
-abort ();								\
+exit(-1);								\
 OBIN_STMT_END
 
 #ifndef ODEBUG

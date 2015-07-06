@@ -11,8 +11,6 @@ typedef struct free_list_entry {
     size_t size;
 } free_list_entry;
 
-int BUFFERSIZE_FOR_UNINTERRUPTABLE = 50000;
-int OBJECT_SPACE_SIZE = 1048576;
 
 struct _ObinMemory {
 	void* object_space;
@@ -66,10 +64,11 @@ static ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinNativeTraits* 
 	return result;
 }
 
-void obin_memory_create(ObinState* state, obin_mem_t heap_size);
-void obin_memory_destroy(ObinState* state);
+ObinState* obin_state_new();
+void obin_state_destroy(ObinState* state);
 
 void* obin_allocate_cell(ObinState* state, obin_mem_t size);
+void obin_gc_collect(ObinState* state);
 
 obin_pointer obin_malloc(ObinState* state, obin_mem_t size);
 
@@ -92,7 +91,7 @@ ObinAny obin_release(ObinState* state, ObinAny any);
 
 
 #define obin_new(state, type) \
-		((type*) obin_allocate_cell(state, sizeof(type))
+		((type*) obin_allocate_cell(state, sizeof(type)))
 
 #define obin_malloc_type(state, type) \
 	 ( (type *) obin_malloc(state, sizeof(type)) )

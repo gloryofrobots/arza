@@ -104,7 +104,7 @@ ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other){
 		}
 
 		compare_result = obin_compare(self_item, other_item);
-		if(!obin_any_is_equal(compare_result)){
+		if(!obin_is(state, compare_result, ObinEqual)){
 			break;
 		}
 	}

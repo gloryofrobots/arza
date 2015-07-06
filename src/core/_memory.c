@@ -13,8 +13,10 @@
 
 #define ObinMem_Free free
 
-#define _KB(B) (B/1024)
-#define _MB(B) ((double)B/(1024.0*1024.0))
+#define OBIN_B_TO_KB(B) (B/1024)
+#define OBIN_B_TO_MB(B) ((double)B/(1024.0*1024.0))
+#define OBIN_KB_TO_B(KB) (KB * 1024)
+#define OBIN_MB_TO_B(MB) (MB * 1024 * 1024)
 
 #define CATCH_STATE_MEMORY(state) \
 	ObinMemory* M = state->memory; \
@@ -22,7 +24,6 @@
 
 /*FORWARDS */
 void gc_merge_free_spaces(ObinState*);
-
 void init_collect_stat(ObinState*);
 void collect_stat(ObinState*);
 void reset_alloc_stat(ObinState*);
@@ -31,7 +32,7 @@ void reset_alloc_stat(ObinState*);
 void _log(ObinState* state, obin_string format, ...) {
 	va_list myargs;
 	va_start(myargs, format);
-	obin_vfprintf(stderr, format, myargs);
+	obin_vfprintf(stdout, format, myargs);
 	va_end(myargs);
 }
 
@@ -56,7 +57,7 @@ obin_pointer obin_malloc(ObinState * state, obin_mem_t size) {
 /*	run gc here*/
 	if(!new_pointer) {
     	_panic(state, "Failed to allocate the initial %d bytes for the GC. Panic.\n",
-                (int) OBJECT_SPACE_SIZE);
+                (int) size);
 
     	return NULL;
 	}
@@ -104,10 +105,9 @@ ObinAny obin_release(ObinState* state, ObinAny any) {
 
 	return any;
 }
-
 /* GC and Allocator */
 
-void obin_memory_create(ObinState* state, obin_mem_t heap_size) {
+void _memory_create(ObinState* state, obin_mem_t heap_size) {
 	ObinMemory* M;
 	state->memory = (ObinMemory*) obin_malloc(state, sizeof(ObinMemory));
 	M = state->memory;
@@ -116,25 +116,25 @@ void obin_memory_create(ObinState* state, obin_mem_t heap_size) {
 		obin_panic("Not enough memory to allocate State");
 	}
 
-    M->OBJECT_SPACE_SIZE = 1024 * 1024 * heap_size;
+    M->OBJECT_SPACE_SIZE = heap_size;
 
     /* Buffersize is adjusted to the size of the heap (10%) */
-    M->BUFFERSIZE_FOR_UNINTERRUPTABLE = (int) (OBJECT_SPACE_SIZE * 0.1);
+    M->BUFFERSIZE_FOR_UNINTERRUPTABLE = (int) (M->OBJECT_SPACE_SIZE * 0.1);
 
     /* allocation of the heap */
-    M->object_space = ObinMem_Malloc(OBJECT_SPACE_SIZE);
+    M->object_space = ObinMem_Malloc(M->OBJECT_SPACE_SIZE);
     if (!M->object_space) {
     	_panic(state, "Failed to allocate the initial %d bytes for the GC. Panic.\n",
-                (int) OBJECT_SPACE_SIZE);
+                (int) M->OBJECT_SPACE_SIZE);
     }
 
-    obin_memset(M->object_space, 0, OBJECT_SPACE_SIZE);
-    M->size_of_free_heap = OBJECT_SPACE_SIZE;
+    obin_memset(M->object_space, 0, M->OBJECT_SPACE_SIZE);
+    M->size_of_free_heap = M->OBJECT_SPACE_SIZE;
 
     /* initialize free_list by creating the first */
     /* entry, which contains the whole object_space */
     M->first_free_entry = (free_list_entry*) M->object_space;
-    M->first_free_entry->size = OBJECT_SPACE_SIZE;
+    M->first_free_entry->size = M->OBJECT_SPACE_SIZE;
     M->first_free_entry->next = NULL;
 
     /* initialise statistical counters */
@@ -146,12 +146,32 @@ void obin_memory_create(ObinState* state, obin_mem_t heap_size) {
     M->spc_alloc = 0;
 }
 
-void obin_memory_destroy(ObinState* state) {
+void _memory_destroy(ObinState* state) {
 	ObinMem_Free(state->memory->object_space);
 	ObinMem_Free(state->memory);
 	state->memory = 0;
 }
 
+ObinState* obin_state_new() {
+	ObinState* state;
+	obin_mem_t size;
+    size = sizeof(ObinState);
+	state = ObinMem_Malloc(size);
+	if(!state) {
+    	obin_panic("Failed to allocate ObinState");
+    	return NULL;
+	}
+
+	memset(state, 0, size);
+	_memory_create(state, OBIN_DEFAULT_HEAP_SIZE);
+	return state;
+}
+
+void obin_state_destroy(ObinState* state) {
+	ObinMem_Free(state->memory->object_space);
+    ObinMem_Free(state->memory);
+	ObinMem_Free(state);
+}
 
 /**
  *  check whether the object is inside the managed heap
@@ -231,7 +251,7 @@ void gc_show_memory(ObinState* state) {
     pointer = M->object_space;
     current_entry = M->first_free_entry;
 
-    _log(state, "\n########\n# SHOW #\n########\n1 ");
+    _log(state, "\n########\n# SHOW #\n########\n");
 
     do {
         while (((void*)pointer > (void*)current_entry->next) && (current_entry->next != NULL)) {
@@ -267,11 +287,12 @@ void gc_show_memory(ObinState* state) {
             _log(state, "\n%d ", line_count++);
             object_aligner = 0;
         }
+        _log(state, "\n");
         pointer = (void*)((int)pointer + object_size);
     } while ((void*)pointer < (void*)(_end_heap(M)));
 }
 
-void _gc_collect(ObinState* state) {
+void obin_gc_collect(ObinState* state) {
 	obin_pointer pointer;
 	ObinCell* object;
 	free_list_entry* current_entry, *new_entry;
@@ -367,7 +388,7 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
     /* than BUFFERSIZE_FOR_UNINTERRUPTABLE Bytes and this */
     /* allocation is interruptable */
     if (M->size_of_free_heap <= M->BUFFERSIZE_FOR_UNINTERRUPTABLE) {
-    	_gc_collect(state);
+    	obin_gc_collect(state);
     }
 
     /* initialize variables to search through the free_list */
@@ -420,7 +441,7 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
             _log(state, "FREE-Size: %d, uninterruptable_counter: %d\n",
                 M->size_of_free_heap, M->uninterruptable_counter);
 
-            _gc_collect(state);
+            obin_gc_collect(state);
             /*fulfill initial request */
             result = _allocate_cell(state, size);
         }
@@ -461,7 +482,7 @@ void obin_free(ObinState* state, obin_pointer ptr) {
 	CATCH_STATE_MEMORY(state);
     /* check if called for an object inside the object_space */
     if ((   ptr >= (void*)  M->object_space)
-        || (ptr < (void*) (M->object_space + M->OBJECT_SPACE_SIZE)))
+        && (ptr < (void*) (M->object_space + M->OBJECT_SPACE_SIZE)))
     {
     	obin_panic("free called for an object in allocator");
     }
@@ -549,7 +570,7 @@ void gc_stat(ObinState* state) {
 	CATCH_STATE_MEMORY(state);
     _log(state, "-- GC statistics --\n");
     _log(state, "* heap size %d B (%d kB, %.2f MB)\n",
-        M->OBJECT_SPACE_SIZE, _KB(M->OBJECT_SPACE_SIZE), _MB(M->OBJECT_SPACE_SIZE));
+        M->OBJECT_SPACE_SIZE, OBIN_B_TO_KB(M->OBJECT_SPACE_SIZE), OBIN_B_TO_MB(M->OBJECT_SPACE_SIZE));
     _log(state, "* performed %d collections\n", M->num_collections);
 }
 
@@ -560,6 +581,6 @@ void collect_stat(ObinState* state) {
 	CATCH_STATE_MEMORY(state);
     _log(state, "\n[GC %d, %d alloc (%d kB), %d live (%d kB), %d freed "\
         "(%d kB)]\n",
-        M->num_collections, M->num_alloc, _KB(M->spc_alloc), M->num_live, _KB(M->spc_live),
-        M->num_freed, _KB(M->spc_freed));
+        M->num_collections, M->num_alloc, OBIN_B_TO_KB(M->spc_alloc), M->num_live, OBIN_B_TO_KB(M->spc_live),
+        M->num_freed, OBIN_B_TO_KB(M->spc_freed));
 }
