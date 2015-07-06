@@ -182,7 +182,7 @@ obin_array_new(ObinState* state, ObinAny size) {
 	self = obin_malloc_type(state, ObinArray);
 
 	capacity = (obin_mem_t) obin_any_number(size);
-	self->data = obin_malloc_collection(state, ObinAny, capacity);
+	self->data = obin_malloc_array(state, ObinAny, capacity);
 
 	self->capacity = capacity;
 	self->size = 0;

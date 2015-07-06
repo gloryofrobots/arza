@@ -106,7 +106,7 @@ obin_mem_t size, obin_bool is_shared) {
 	self->size = size;
 
 	if (is_shared == 1) {
-		self->data = obin_malloc_collection(state, obin_char,
+		self->data = obin_malloc_array(state, obin_char,
 				self->capacity);
 		obin_memcpy(self->data, data, size);
 	} else {
@@ -494,7 +494,7 @@ ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count) {
 	}
 
 	size = _string_size(self) * count;
-	data = obin_malloc_collection(state, obin_char, size + 1);
+	data = obin_malloc_array(state, obin_char, size + 1);
 
 	for (; count > 0; count--, data += _string_size(self)) {
 		obin_memcpy(data, _string_data(self), _string_size(self));
@@ -579,7 +579,7 @@ ObinAny obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
 						_string_data(str2)[0] : _string_data(str1)[0]);
 	}
 
-	data = obin_malloc_collection(state, obin_char, size);
+	data = obin_malloc_array(state, obin_char, size);
 
 	obin_memcpy(data, _string_data(str1), _string_size(str1));
 	obin_memcpy(data + _string_size(str1), _string_data(str2),

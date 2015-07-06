@@ -20,7 +20,7 @@ _obin_tuple_new(ObinState* state, obin_mem_t size) {
 	self = obin_malloc_type(state, ObinTuple);
 	self->size = size;
 	self->native_traits = &__TRAITS__;
-	self->data = obin_malloc_collection(state, ObinAny, size);
+	self->data = obin_malloc_array(state, ObinAny, size);
 	return self;
 }
 

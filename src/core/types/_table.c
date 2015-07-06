@@ -363,7 +363,7 @@ ObinAny obin_table_new(ObinState* state, ObinAny size){
 
 	self->capacity = _next_power_of_2(obin_any_mem_t(size));
 
-	self->buckets = obin_malloc_collection(state, Bucket, self->capacity);
+	self->buckets = obin_malloc_array(state, Bucket, self->capacity);
 	self->size = 0;
 	self->native_traits = &__TRAITS__;
 
@@ -379,7 +379,7 @@ static ObinAny _obin_table_resize(ObinState* state, ObinAny self, obin_mem_t new
 	Pair* pair;
 	obin_mem_t i;
 
-	new_buckets = obin_malloc_collection(state, Bucket, new_capacity);
+	new_buckets = obin_malloc_array(state, Bucket, new_capacity);
 
 	for(i=0; i < _capacity(self); i++) {
 		pair = _bucket(self, i)->head;

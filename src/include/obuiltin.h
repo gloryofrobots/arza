@@ -68,9 +68,10 @@ typedef struct {
 
 /************************* STATE *************************************/
 typedef struct _ObinState ObinState;
-
+typedef struct _ObinMemory ObinMemory;
 struct _ObinState {
-	ObinAny root;
+	ObinAny globals;
+	ObinMemory* memory;
 };
 
 /* we set type value to data enum too,
@@ -168,6 +169,9 @@ typedef ObinAny (*obin_function)(ObinAny arg);
 typedef ObinAny (*obin_function_2)(ObinAny arg1, ObinAny arg2);
 typedef ObinAny (*obin_function_3)(ObinAny arg1, ObinAny arg2, ObinAny arg3);
 
+typedef void (*obin_proc)(ObinState* state, ObinAny arg);
+typedef ObinAny (*obin_method_2_proc)(ObinState* state, ObinAny arg, obin_proc each);
+
 typedef ObinAny (*obin_method)(ObinState* state, ObinAny arg);
 typedef ObinAny (*obin_method_2)(ObinState* state, ObinAny arg1, ObinAny arg2);
 typedef ObinAny (*obin_method_3)(ObinState* state, ObinAny arg1, ObinAny arg2, ObinAny arg3);
@@ -196,6 +200,7 @@ typedef struct {
 	obin_method __clone__;
 	obin_method_2 __compare__;
 	obin_method __hash__;
+	obin_method_2_proc __foreach_internal_objects__;
 } ObinBaseTrait;
 
 typedef struct {

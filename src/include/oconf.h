@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 #define OFALSE 0
 #define OTRUE 1
@@ -37,8 +38,9 @@
 #define obin_mem_t	size_t
 #define OBIN_MEM_MAX SIZE_MAX
 
-#define obin_int32t int32_t
-#define obin_uint32t uint32_t
+#define obin_int8_t int8_t
+#define obin_int32_t int32_t
+#define obin_uint32_t uint32_t
 
 typedef int obin_bool;
 typedef double obin_float;
