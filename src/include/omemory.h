@@ -14,32 +14,27 @@ typedef struct free_list_entry {
 
 struct _ObinMemory {
 	void* object_space;
-	int OBJECT_SPACE_SIZE;
-	int BUFFERSIZE_FOR_UNINTERRUPTABLE;
+	obin_mem_t heap_size;
+	obin_mem_t heap_gc_threshold;
 	free_list_entry* first_free_entry;
-        /*
-         * if this counter equals 0, only then it is safe to collect the
-         * garbage. The counter is increased during initializations of
-         * VMObjects and the generation of classes
-         */
-    int uninterruptable_counter;
 
-    int size_of_free_heap;
+	obin_mem_t size_of_free_heap;
+	/*
+	 * if this counter equals 0, only then it is safe to collect the
+	 * garbage. The counter is increased in cell constructors
+	 */
+	obin_integer transaction_count; /* the number of collections performed */
 
-	uint32_t num_collections; /* the number of collections performed */
-	uint32_t num_live;        /* number of live objects (per collection) */
-	uint32_t spc_live;        /* space consumed by live objects (per collection) */
-	uint32_t num_freed;       /* number of freed objects (per collection) */
-	uint32_t spc_freed;       /* freed space (per collection) */
-	uint32_t num_alloc;       /* number of allocated objects (since last collection) */
-	uint32_t spc_alloc;       /* allocated space (since last collection) */
+	obin_mem_t collections_count; /* the number of collections performed */
+	obin_mem_t live_count;        /* number of live objects (per collection) */
+	obin_mem_t live_space;        /* space consumed by live objects (per collection) */
+	obin_mem_t killed_count;       /* number of freed objects (per collection) */
+	obin_mem_t killed_space;       /* freed space (per collection) */
+	obin_mem_t allocated_count;       /* number of allocated objects (since last collection) */
+	obin_mem_t allocated_space;       /* allocated space (since last collection) */
 };
 
 typedef struct{
-	obin_integer lives;
-	obin_integer deads;
-	obin_integer rc;
-
 	obin_bool mark;
 	obin_mem_t size;
 } ObinCellMemoryInfo;
@@ -53,19 +48,10 @@ struct _ObinCell {
 	OBIN_CELL_HEADER;
 };
 
-static ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinNativeTraits* traits) {
-	ObinAny result;
-	obin_assert(obin_type_is_cell(type));
-
-	cell->native_traits = traits;
-
-	result = obin_any_new();
-	obin_any_init_cell(result, type, cell);
-	return result;
-}
-
+ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinNativeTraits* traits);
 ObinState* obin_state_new(obin_mem_t heap_size);
 void obin_state_destroy(ObinState* state);
+
 
 void* obin_allocate_cell(ObinState* state, obin_mem_t size);
 void obin_gc_collect(ObinState* state);
@@ -77,18 +63,15 @@ obin_pointer obin_realloc(ObinState* state, obin_pointer ptr, obin_mem_t size) ;
 obin_pointer obin_memdup(ObinState* state, obin_pointer ptr, obin_mem_t elements, obin_mem_t element_size );
 
 void obin_free(ObinState* state, obin_pointer ptr);
+void obin_memory_debug_trace(ObinState* state);
 
-/*Reference counter */
-ObinAny obin_hold(ObinState* state, ObinAny any);
-ObinAny obin_release(ObinState* state, ObinAny any);
-
-
-#define obin_sincref(state, any) \
-	(obin_any_is_cell(any) ? obin_incref(any) : any)
-
-#define obin_sdecref(state, any) \
-	(obin_any_is_cell(any) ? obin_decref(any) : any)
-
+/*
+ * During memory transactions gc collection will not occur.
+ * There are no support for rollbacks now.
+ * If the memory is not enough, the system will fall
+ * */
+void obin_memory_start_transaction(ObinState* state);
+void obin_memory_end_transaction(ObinState* state);
 
 #define obin_new(state, type) \
 		((type*) obin_allocate_cell(state, sizeof(type)))
@@ -104,8 +87,4 @@ ObinAny obin_release(ObinState* state, ObinAny any);
   ( (p) = ((obin_mem_t)(n) > OBIN_MEM_MAX / sizeof(type)) ? NULL :	\
 	(type *) obin_realloc(state, (p), (n) * sizeof(type)) )
 
-
-
-/*void gc_start_uninterruptable_allocation();
-void gc_end_uninterruptable_allocation();*/
 #endif
