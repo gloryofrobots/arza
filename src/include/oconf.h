@@ -20,7 +20,7 @@
 #endif
 #endif
 
-#define OBIN_MEMORY_DEBUG 1
+/*#define OBIN_MEMORY_DEBUG 1*/
 
 
 #ifndef INT32_MAX
@@ -69,8 +69,8 @@ typedef unsigned char obin_byte;
 #define OBIN_DEFAULT_ARRAY_SIZE 10
 #define OBIN_DEFAULT_TABLE_SIZE 4
 
-static int OBIN_DEFAULT_HEAP_SIZE = 1048576;
-static int OBIN_MAX_HEAP_SIZE = 2048576;
+static int OBIN_DEFAULT_HEAP_SIZE = 1024 * 1024;
+static int OBIN_MAX_HEAP_SIZE = 1024 * 1024 * 5;
 
 #define OBIN_MAX_CAPACITY OBIN_MEM_MAX - 1
 #define OBIN_INVALID_INDEX -1
@@ -123,7 +123,7 @@ static int OBIN_MAX_HEAP_SIZE = 2048576;
 #else
 #define obin_abort()						\
 OBIN_STMT_START						        	\
-fprintf (stderr, "%s:%i: %s: should not reach here\n",			\
+fprintf (stderr, "%s:%i: %s: Fatal error in spaceship core. Emergency landing...  \n",			\
 	 __FILE__, __LINE__, __FUNCTION__);				\
 abort ();								\
 OBIN_STMT_END
@@ -131,7 +131,7 @@ OBIN_STMT_END
 
 #define obin_panic(message)      \
 OBIN_STMT_START						        	\
-fprintf (stderr, "%s:%i: %s: should not reach here"message"\n",			\
+fprintf (stderr, "%s:%i: %s: Warp engine destroyed and we have one message before ship will blown up: "message"\n",			\
 	 __FILE__, __LINE__, __FUNCTION__);				\
 exit(-1);								\
 OBIN_STMT_END

@@ -68,6 +68,7 @@ void obin_destroy(ObinState * state, ObinCell* cell) {
 			|| !cell->native_traits->base
 			|| !cell->native_traits->base->__destroy__) {
 
+		printf("[%p]", cell);
 		obin_panic("cell __destroy__ is not implemented");
 	}
 

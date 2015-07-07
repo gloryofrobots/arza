@@ -1,5 +1,8 @@
 #include <obin.h>
 
+/*#define OBIN_MEMORY_DEBUG*/
+#define OBIN_MEMORY_VERBOSE_LEVEL 2
+
 #define _end_heap(memory)  (memory->object_space + memory->OBJECT_SPACE_SIZE)
 #define _heap(memory)  (memory->object_space)
 
@@ -13,7 +16,7 @@
 
 #define ObinMem_Free free
 
-#define OBIN_B_TO_KB(B) (B/1024)
+#define OBIN_B_TO_KB(B) (B/(1024.0))
 #define OBIN_B_TO_MB(B) ((double)B/(1024.0*1024.0))
 #define OBIN_KB_TO_B(KB) (KB * 1024)
 #define OBIN_MB_TO_B(MB) (MB * 1024 * 1024)
@@ -26,6 +29,7 @@
 void gc_merge_free_spaces(ObinState*);
 void init_collect_stat(ObinState*);
 void collect_stat(ObinState*);
+void gc_stat(ObinState*);
 void reset_alloc_stat(ObinState*);
 
 /* LOG */
@@ -109,6 +113,12 @@ ObinAny obin_release(ObinState* state, ObinAny any) {
 
 void _memory_create(ObinState* state, obin_mem_t heap_size) {
 	ObinMemory* M;
+	if(heap_size >= OBIN_MAX_HEAP_SIZE) {
+		_panic(state, "obin_state_new heap_size %d too big for current configuration,"
+				" check OBIN_MAX_HEAP_SIZE in oconf.h",
+				heap_size);
+	}
+
 	state->memory = (ObinMemory*) obin_malloc(state, sizeof(ObinMemory));
 	M = state->memory;
 
@@ -152,7 +162,7 @@ void _memory_destroy(ObinState* state) {
 	state->memory = 0;
 }
 
-ObinState* obin_state_new() {
+ObinState* obin_state_new(obin_mem_t heap_size) {
 	ObinState* state;
 	obin_mem_t size;
     size = sizeof(ObinState);
@@ -163,7 +173,8 @@ ObinState* obin_state_new() {
 	}
 
 	memset(state, 0, size);
-	_memory_create(state, OBIN_DEFAULT_HEAP_SIZE);
+
+	_memory_create(state, heap_size > 0 ? heap_size: OBIN_DEFAULT_HEAP_SIZE);
 	return state;
 }
 
@@ -184,6 +195,9 @@ void obin_state_destroy(ObinState* state) {
 void gc_mark_object(ObinState* state, ObinAny object) {
 	ObinCell* cell = obin_any_cell(object);
 	CATCH_STATE_MEMORY(state);
+	if(!cell) {
+		return;
+	}
 
     if (   ((void*) cell < (void*)  _heap(M))
         || ((void*) cell > (void*) _end_heap(M)))
@@ -303,8 +317,11 @@ void obin_gc_collect(ObinState* state) {
     init_collect_stat(state);
 
     gc_mark_reachable_objects(state);
+
+#ifdef OBIN_MEMORY_DEBUG
 	_log(state, "-- pre-collection heap dump --\n");
 	gc_show_memory(state);
+#endif
 
     pointer = M->object_space;
     current_entry = M->first_free_entry;
@@ -364,8 +381,11 @@ void obin_gc_collect(ObinState* state) {
     gc_merge_free_spaces(state);
 
     collect_stat(state);
+    gc_stat(state);
+#ifdef OBIN_MEMORY_DEBUG
 	_log(state, "-- post-collection heap dump --\n");
 	gc_show_memory(state);
+#endif
     reset_alloc_stat(state);
 }
 
@@ -437,11 +457,16 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
         }  else {
             /* no space was left */
             /* running the GC here will most certainly result in data loss! */
-            _log(state ,"Not enough heap! Data loss is possible\n");
-            _log(state, "FREE-Size: %d, uninterruptable_counter: %d\n",
-                M->size_of_free_heap, M->uninterruptable_counter);
+            _log(state ,"Not enough heap!\n");
+            _log(state, "FREE-Size: %d Perfoming garbage collection\n", M->size_of_free_heap);
 
             obin_gc_collect(state);
+
+            _log(state, "FREE-Size after collection: %d,\n", M->size_of_free_heap);
+            if(M->size_of_free_heap < size) {
+            	_panic(state, "Failed to allocate %d bytes. Memory heap is full of shit. I get drunk.\n", (int)size);
+            }
+
             /*fulfill initial request */
             result = _allocate_cell(state, size);
         }
@@ -569,7 +594,7 @@ void reset_alloc_stat(ObinState* state) {
 void gc_stat(ObinState* state) {
 	CATCH_STATE_MEMORY(state);
     _log(state, "-- GC statistics --\n");
-    _log(state, "* heap size %d B (%d kB, %.2f MB)\n",
+    _log(state, "* heap size %d B (%.2f kB, %.2f MB)\n",
         M->OBJECT_SPACE_SIZE, OBIN_B_TO_KB(M->OBJECT_SPACE_SIZE), OBIN_B_TO_MB(M->OBJECT_SPACE_SIZE));
     _log(state, "* performed %d collections\n", M->num_collections);
 }
@@ -579,8 +604,8 @@ void gc_stat(ObinState* state) {
  */
 void collect_stat(ObinState* state) {
 	CATCH_STATE_MEMORY(state);
-    _log(state, "\n[GC %d, %d alloc (%d kB), %d live (%d kB), %d freed "\
-        "(%d kB)]\n",
+    _log(state, "\n[GC %d, %d alloc (%.2f kB), %d live (%.2f kB), %d freed "\
+        "(%.2f kB)]\n",
         M->num_collections, M->num_alloc, OBIN_B_TO_KB(M->spc_alloc), M->num_live, OBIN_B_TO_KB(M->spc_live),
         M->num_freed, OBIN_B_TO_KB(M->spc_freed));
 }

@@ -22,14 +22,14 @@
 #include <string.h>
 
 #include "CUnit/Console.h"
+#include "CUnit/Basic.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <obin.h>
-#include "test_base_types.c"
-#include "test_memory.c"
-
+#include "types/test_base_types.c"
+#include "memory/test_memory.c"
 
 static CU_SuiteInfo suites[] = {
   { "Suite_BaseTypes",  NULL, NULL,    TestGroup_BaseTypes },
@@ -74,6 +74,7 @@ void print_example_results(void)
 int main(int argc, char* argv[])
 {
   CU_BOOL Run = CU_FALSE ;
+  CU_BasicRunMode mode = CU_BRM_VERBOSE;
 
   setvbuf(stdout, NULL, _IONBF, 0);
 
@@ -113,7 +114,9 @@ int main(int argc, char* argv[])
     }
     else {
       AddTests();
-      CU_console_run_tests();
+      CU_basic_set_mode(mode);
+      printf("\nTests completed with return value %d.\n", CU_basic_run_tests());
+/*      CU_console_run_tests();*/
       CU_cleanup_registry();
     }
   }

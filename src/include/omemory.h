@@ -64,7 +64,7 @@ static ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinNativeTraits* 
 	return result;
 }
 
-ObinState* obin_state_new();
+ObinState* obin_state_new(obin_mem_t heap_size);
 void obin_state_destroy(ObinState* state);
 
 void* obin_allocate_cell(ObinState* state, obin_mem_t size);
