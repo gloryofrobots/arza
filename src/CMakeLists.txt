@@ -16,7 +16,8 @@ SET(OBIN_LIB_SRC
    core/_memory.c
    core/_builtin.c
    core/_log.c
-   #core/_error.c
+   core/_error.c
+   #core/types/_string.c
    core/types/_integer.c
    core/types/_float.c
    core/types/_bool.c

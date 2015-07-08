@@ -17,6 +17,22 @@
 #define _generator_method(state, any, method) _subtrait_method(state, any, generator, method)
 #define _number_method(state, any, method) _subtrait_method(state, any, number, method)
 
+ObinAny ObinFalse = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FALSE);
+ObinAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
+ObinAny ObinNil = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NIL);
+ObinAny ObinNothing = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NOTHING);
+
+ObinAny ObinLesser = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, -1);
+ObinAny ObinGreater = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 1);
+ObinAny ObinEqual = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 0);
+
+ObinAny obin_any_new() {
+	ObinAny proto;
+	proto.type = EOBIN_TYPE_UNKNOWN;
+	return proto;
+}
+
+/******************************************************************/
 
 static ObinNativeTraits*
 _embedded_type_traits(ObinState* state, ObinAny any) {

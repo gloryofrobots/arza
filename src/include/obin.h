@@ -5,9 +5,11 @@
 #include "obuiltin.h"
 #include "olog.h"
 #include "omemory.h"
+#include "oerror.h"
 #include "types/obool.h"
 #include "types/ointeger.h"
 #include "types/ofloat.h"
+#include "types/ostring.h"
 
 
 /*

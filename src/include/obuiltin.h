@@ -81,14 +81,14 @@ struct _ObinState {
 #define OBIN_ANY_STATIC_INIT(type) {type, {type}}
 #define OBIN_ANY_INTEGER_INIT(type, value) {type, {value}}
 
-static ObinAny ObinFalse = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FALSE);
-static ObinAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
-static ObinAny ObinNil = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NIL);
-static ObinAny ObinNothing = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NOTHING);
+extern ObinAny ObinFalse;
+extern ObinAny ObinTrue;
+extern ObinAny ObinNil;
+extern ObinAny ObinNothing;
 
-static ObinAny ObinLesser = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, -1);
-static ObinAny ObinGreater = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 1);
-static ObinAny ObinEqual = OBIN_ANY_INTEGER_INIT(EOBIN_TYPE_INTEGER, 0);
+extern ObinAny ObinLesser;
+extern ObinAny ObinGreater;
+extern ObinAny ObinEqual;
 
 /********************** ERRORS ************************************/
 
@@ -219,13 +219,7 @@ typedef struct {
 /*ObinAny obin_any_new();
 ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell);*/
 
-static ObinAny obin_any_new() {
-	ObinAny proto;
-	proto.type = EOBIN_TYPE_UNKNOWN;
-	return proto;
-}
-
-
+ObinAny obin_any_new();
 ObinState* obin_init();
 
 ObinAny obin_tostring(ObinState* state, ObinAny self);

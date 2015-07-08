@@ -65,6 +65,8 @@ typedef unsigned char obin_byte;
 #else
 #define OBIN_DIR_SEPARATOR	"/"
 #endif
+#define OBIN_PRINT_SEPARATOR '\44'
+#define OBIN_COUNT_TAB_SPACES 4
 
 #define OBIN_DEFAULT_ARRAY_SIZE 10
 #define OBIN_DEFAULT_TABLE_SIZE 4
@@ -150,6 +152,7 @@ if (!(condition)) {						       	\
 OBIN_STMT_END
 #endif
 
+/*************ALIASES******/
 #define obin_vfprintf vfprintf
 #define obin_sprintf sprintf
 #define obin_snprintf snprintf
@@ -163,7 +166,7 @@ OBIN_STMT_END
 #define obin_strcpy strcpy
 #define obin_memset memset
 
-
+/**********LOG***********/
 #define OBIN_LOG_ENABLE
 #ifdef OBIN_LOG_ENABLE
 /* LOG_LEVELS
@@ -179,5 +182,9 @@ OBIN_STMT_END
 #define OBIN_LOG_MEMORY 2
 #define OBIN_LOG_COMMON 2
 #endif
+
+/*************STRING*********/
+#define OBIN_STRING_NOT_FOUND -1
+
 
 #endif

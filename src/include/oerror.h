@@ -3,14 +3,14 @@
 
 #include "obuiltin.h"
 
-static ObinAny ObinMemoryError;
-static ObinAny ObinIOError;
-static ObinAny ObinInternalError;
-static ObinAny ObinInvalidSliceError;
-static ObinAny ObinTypeError;
-static ObinAny ObinValueError;
-static ObinAny ObinIndexError;
-static ObinAny ObinKeyError;
+extern ObinAny ObinMemoryError;
+extern ObinAny ObinIOError;
+extern ObinAny ObinInternalError;
+extern ObinAny ObinInvalidSliceError;
+extern ObinAny ObinTypeError;
+extern ObinAny ObinValueError;
+extern ObinAny ObinIndexError;
+extern ObinAny ObinKeyError;
 
 ObinAny obin_module_error_init(ObinState* state);
 

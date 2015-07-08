@@ -14,7 +14,6 @@
 #ifdef OBIN_LOG_ENABLE
 #define OBIN_MODULE_LOG(module_name)\
 /* YOU MUST DEFINE OBIN_##module_name##LOG_LEVEL in oconf.h*/ \
-static obin_integer _RAW = 3; \
 static obin_integer _INFO = 2; \
 static obin_integer _WARN = 1; \
 static obin_integer _ERR = 0; \

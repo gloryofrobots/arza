@@ -8,6 +8,6 @@ typedef struct{
 } ObinHashSecret;
 
 ObinHashSecret obin_hash_secret();
-void obin_random_init();
+obin_bool obin_random_init();
 
 #endif /* OBIN_ORANDOM_H_ */

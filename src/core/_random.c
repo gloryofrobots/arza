@@ -9,9 +9,11 @@ ObinHashSecret obin_hash_secret(){
 	return _ObinHashSecret;
 }
 
-void obin_random_init(){
+obin_bool obin_random_init(){
 	_ObinHashSecret.prefix = (obin_integer) time(NULL);
 	//suffix whill contain garbage
+
 	OBIN_MODULE_INIT(RANDOM);
+	return OTRUE;
 }
 

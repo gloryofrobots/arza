@@ -25,6 +25,7 @@
 	if(!M) { obin_panic("ObinState memory is NULL!"); }
 
 /*FORWARDS */
+
 void gc_merge_free_spaces(ObinState*);
 void init_collection_stat(ObinState*);
 void reset_allocation_stat(ObinState*);
@@ -77,9 +78,10 @@ obin_pointer obin_malloc(ObinState * state, obin_mem_t size) {
 
 	new_pointer = ObinMem_Malloc(size);
 	if(!new_pointer) {
-    	_panic(state, "Failed to allocate the initial %d bytes for the GC. Panic.\n",
+    	_log(state, _ERR,"Failed to allocate the initial %d bytes for the GC. Panic.\n",
                 (int) size);
 
+    	obin_abort();
     	return NULL;
 	}
 
@@ -255,7 +257,7 @@ void obin_gc_collect(ObinState* state) {
 	CATCH_STATE_MEMORY(state);
 
 	if(state->memory->transaction_count != 0) {
-		_log(state, "obin_gc_collect skip collection because memory transaction [%d] is in progress \n",
+		_log(state, _INFO, "obin_gc_collect skip collection because memory transaction [%d] is in progress \n",
 				state->memory->transaction_count);
 		return;
 	}
@@ -546,7 +548,7 @@ void reset_allocation_stat(ObinState* state) {
  */
 static void _log_memory_stat(ObinState* state) {
 	CATCH_STATE_MEMORY(state);
-    _log(state, "\n[State %p memory. Heap size %d B (%.2f kB, %.2f MB)\n"
+    _log(state, _ALL, "\n[State %p memory. Heap size %d B (%.2f kB, %.2f MB)\n"
     		" collections:%d,\n %d allocated in (%d B %.2f kB), \n %d live in (%d B %.2f kB), %d killed in "\
             "(%d B %.2f kB)]\n ", state,
         M->heap_size, OBIN_B_TO_KB(M->heap_size), OBIN_B_TO_MB(M->heap_size),

@@ -2,11 +2,39 @@
 
 /* TODO INTERNATION */
 
+OBIN_MODULE_DECLARE(STRING);
+
+static __ObinConstStrings ObinStrings;
+
+__ObinConstStrings* obin_const_strings() {
+	OBIN_MODULE_CHECK(STRING);
+	return &ObinStrings;
+}
+
+static ObinAny _obin_string_empty(ObinState* state) {
+	ObinAny result;
+
+	result = obin_char_new(state, 0);
+	result.data.char_value.size = 0;
+	return result;
+}
+
+obin_bool obin_module_string_init(ObinState* state) {
+	ObinStrings.Nil = obin_string_new(state, "Nil");
+	ObinStrings.True = obin_string_new(state, "True");
+	ObinStrings.False = obin_string_new(state, "False");
+	ObinStrings.Nothing = obin_string_new(state, "Nothing");
+	ObinStrings.PrintSeparator = obin_char_new(state, OBIN_PRINT_SEPARATOR);
+	ObinStrings.Empty = _obin_string_empty(state);
+	ObinStrings.Space = obin_char_new(state, '\32');
+	ObinStrings.TabSpaces = obin_string_dublicate(state, ObinStrings.Space, obin_integer_new(OBIN_COUNT_TAB_SPACES));
+
+	OBIN_MODULE_INIT(STRING);
+	return OTRUE;
+}
+
 /* ALIASES */
 /* SIZE FOR BUFFER IN STACK USED TO WRITE INTS AND FLOATS TO STRING */
-
-#define STRING_INDEX_NOT_FOUND -1
-#define OBIN_SPLIT_STRING_DEFAULT_ARRAY_SIZE 8
 
 static ObinNativeTraits __TRAITS__;
 
@@ -26,8 +54,10 @@ static obin_char* _string_data(ObinAny any) {
 		return  _string(any)->data;
 		break;
 	case EOBIN_TYPE_CHAR:
-		return any.data.char_value;
+		return any.data.char_value.data;
 		break;
+	default:
+		return NULL;
 	}
 }
 
@@ -42,20 +72,9 @@ static obin_integer _string_size(ObinAny any) {
 	}
 }
 
-static obin_integer _string_capacity(ObinAny any) {
-	switch(any.type) {
-	case EOBIN_TYPE_STRING:
-		return  _string(any)->size + 1;
-		break;
-	case EOBIN_TYPE_CHAR:
-		return 1;
-		break;
-	}
-}
-
-#define IS_CHAR(any) (any.type == EOBIN_TYPE_CHAR)
-#define IS_STRING(any) (any.type == EOBIN_TYPE_STRING)
-#define IS_EMPTY(any) (IS_CHAR(any) && any.data.char_value.size == 0)
+#define _is_char(any) (any.type == EOBIN_TYPE_CHAR)
+#define _is_string(any) (any.type == EOBIN_TYPE_STRING)
+#define _is_empty(any) (_is_char(any) && any.data.char_value.size == 0)
 
 /***********************************************************************************/
 /* constructors */
@@ -64,10 +83,10 @@ ObinAny obin_string_new(ObinState* state, obin_string data) {
 
 	len = obin_strlen(data);
 	if (len == 0) {
-		return obin_string_new_char_array(state, 0, 0);
+		return obin_string_from_carr(state, 0, 0);
 	}
 
-	return obin_string_new_char_array(state, data, len);
+	return obin_string_from_carr(state, (obin_char*) data, len);
 }
 
 ObinAny obin_char_new(ObinState* state, obin_char ch) {
@@ -80,50 +99,44 @@ ObinAny obin_char_new(ObinState* state, obin_char ch) {
 	return result;
 }
 
-ObinAny obin_string_empty(ObinState* state) {
-	ObinAny result;
-
-	result = obin_char_new(state, 0);
-	result.data.char_value.size = 0;
-	return result;
-}
-
-static ObinAny _obin_string_new_char_array(ObinState* state, obin_char* data,
-obin_mem_t size, obin_bool is_shared) {
+static ObinAny _obin_string_from_carr(ObinState* state, obin_char* data, obin_mem_t size) {
+	obin_mem_t capacity, body_size;
 	ObinString* self;
 
-	/*empty string*/
-	if (size == 0) {
-		return obin_string_empty(state);
-	}
-	if (size == 1) {
-		return obin_char_new(state, data[0]);
-	}
+	body_size = sizeof(ObinString);
+	capacity = body_size + size + 1;
+	self = (ObinString*) obin_allocate_cell(state, capacity);
 
-	self = obin_malloc_type(state, ObinString);
-	obin_cell_set_native_traits(self, __TRAITS__);
-	self->capacity = size + 1;
+	self->capacity = capacity;
 	self->size = size;
-
-	if (is_shared == 1) {
-		self->data = obin_malloc_array(state, obin_char,
-				self->capacity);
-		obin_memcpy(self->data, data, size);
-	} else {
-		self->data = data;
+	self->data = (obin_char*) self + body_size;
+	if(data != NULL) {
+		obin_memcpy(self->data, data, self->size);
 	}
 
-	self->data[self.size] = '\0';
+	self->data[self->size] = '\0';
 
-	return obin_cell_new(EOBIN_TYPE_STRING, self);
+	return obin_cell_new(EOBIN_TYPE_STRING, (ObinCell*) self, &__TRAITS__);
+}
+
+ObinAny _obin_string_blank(ObinState* state, obin_mem_t length) {
+	return _obin_string_from_carr(state, NULL, length);
 }
 
 /*@param data array without \0
  *@param size array size
  */
-ObinAny obin_string_new_char_array(ObinState* state, obin_char* data,
+ObinAny obin_string_from_carr(ObinState* state, obin_char* data,
 obin_mem_t size) {
-	return _obin_string_new_char_array(state, data, size, OFALSE);
+	/*empty string*/
+	if (size == 0) {
+		return _obin_string_empty(state);
+	}
+	if (size == 1) {
+		return obin_char_new(state, data[0]);
+	}
+
+	return _obin_string_from_carr(state, data, size);
 }
 
 
@@ -500,7 +513,7 @@ ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count) {
 		obin_memcpy(data, _string_data(self), _string_size(self));
 	}
 
-	return obin_string_new_char_array(state, data, size, OTRUE);
+	return obin_string_from_carr(state, data, size, OTRUE);
 }
 
 ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
@@ -540,7 +553,7 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 		}
 
 		obin_array_add(state, result,
-				obin_string_new_char_array(state, _string_data(self) + previous,
+				obin_string_from_carr(state, _string_data(self) + previous,
 						current - previous));
 
 		previous = current + _string_size(separator);
@@ -585,7 +598,7 @@ ObinAny obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
 	obin_memcpy(data + _string_size(str1), _string_data(str2),
 			_string_size(str2));
 
-	return _obin_string_new_char_array(state, data, size, OTRUE);
+	return _obin_string_ar_array(state, data, size, OTRUE);
 }
 
 ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection) {
@@ -597,7 +610,7 @@ ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection) {
 		return obin_raise_type_error(state, "obin_string_join call from other type", self);
 	}
 
-	result = state->interns.strings.Empty;
+	result = ObinConstStrings->Empty;
 
 	iterator = obin_iterator(state, collection);
 
@@ -634,7 +647,7 @@ ObinAny obin_string_pack(ObinState* state, obin_mem_t size, ...){
     }
     va_end(vargs);
 
-    return obin_string_join(state, state.interns.strings.PrintSeparator, array);
+    return obin_string_join(state, ObinConstStrings->PrintSeparator, array);
 }
 /* //native
  str.startswith(prefix[, start[, end]])
@@ -653,11 +666,11 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 }
 
 static ObinAny __destroy__(ObinState* state, ObinAny self) {
-	if(IS_CHAR(self)){
+	if(_is_char(self)){
 		return ObinNothing;
 	}
 
-	if(!IS_STRING(self)) {
+	if(!_is_string(self)) {
 		return obin_raise_type_error(state, "String.__destroy__ call from other type", self);
 	}
 
@@ -671,8 +684,8 @@ static ObinAny __length__(ObinState* state, ObinAny self) {
 		return obin_raise_type_error(state, "obin_string_length call from other type", self);
 	}
 
-	if(IS_CHAR(self)){
-		if(IS_EMPTY(self)){
+	if(_is_char(self)){
+		if(_is_empty(self)){
 			return 0;
 		}
 		return 1;
@@ -755,11 +768,11 @@ static ObinAny __hash__(ObinState* state, ObinAny self) {
 		return obin_raise_type_error(state, "String.__hash__ call from other type", self);
 	}
 
-	if(IS_EMPTY(self)){
+	if(_is_empty(self)){
 		return obin_integer_new(0);
 	}
 
-	if(IS_CHAR(self)) {
+	if(_is_char(self)) {
 		return obin_integer_new((obin_integer) _string_data(self)[0]);
 	}
 
@@ -791,7 +804,7 @@ static ObinAny __iterator__(ObinState* state, ObinAny self) {
 }
 
 static ObinAny __clone__(ObinState* state, ObinAny self) {
-	return obin_string_new_char_array(state, _string_data(self), _string_size(self));
+	return obin_string_from_carr(state, _string_data(self), _string_size(self));
 }
 ObinCollectionTrait __COLLECTION__ = {
 	 __iterator__,
@@ -808,6 +821,7 @@ ObinBaseTrait __BASE__ = {
 	 __clone__,
 	 __compare__,
 	 __hash__,
+	 0,
 } ;
 static ObinNativeTraits __TRAITS__ = {
 	"__string",

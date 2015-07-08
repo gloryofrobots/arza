@@ -9,15 +9,19 @@ typedef struct {
         ObinAny Nothing;
         ObinAny PrintSeparator;
         ObinAny Empty;
-} __ObinStrings;
+        ObinAny Space;
+        ObinAny TabSpaces;
+} __ObinConstStrings;
 
-static __ObinStrings ObinStrings;
+__ObinConstStrings* obin_const_strings();
+#define ObinConstStrings obin_const_strings()
+
 obin_bool obin_module_string_init(ObinState* state);
 
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data);
 ObinAny obin_char_new(ObinState* state, obin_char ch);
-ObinAny obin_string_new_char_array(ObinState* state, obin_char* data, obin_mem_t size);
+ObinAny obin_string_from_carr(ObinState* state, obin_char* data, obin_mem_t size);
 
 ObinAny obin_string_capitalize(ObinState* state, ObinAny self);
 ObinAny obin_string_capitalize_words(ObinState* state, ObinAny self);
@@ -56,7 +60,7 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator);
 
 obin_string obin_string_cstr(ObinState* state, ObinAny self);
 
-ObinAny obin_string_pack(ObinState* state, obin_mem_t size, ...);
+ObinAny obin_string_pack(ObinState* state, obin_string format, ...);
 
 #define OSTR(state, data) obin_string_new(state, data)
 
