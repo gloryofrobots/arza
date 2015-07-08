@@ -3,6 +3,7 @@
 
 #include "oconf.h"
 #include "obuiltin.h"
+#include "olog.h"
 #include "omemory.h"
 #include "types/obool.h"
 #include "types/ointeger.h"

@@ -15,6 +15,7 @@ SET(OBIN_LIB_SRC
   ${HEADERS}
    core/_memory.c
    core/_builtin.c
+   core/_log.c
    #core/_error.c
    core/types/_integer.c
    core/types/_float.c
@@ -22,9 +23,6 @@ SET(OBIN_LIB_SRC
    #core/types/_fstream.c
    #core/types/_string.c
    #core/types/_error.c
-   include/obin.h
-   include/obuiltin.h
-   include/omemory.h
    )
    
 SET(OBIN_EXE_SRC

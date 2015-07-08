@@ -162,4 +162,22 @@ OBIN_STMT_END
 #define obin_memcpy memcpy
 #define obin_strcpy strcpy
 #define obin_memset memset
+
+
+#define OBIN_LOG_ENABLE
+#ifdef OBIN_LOG_ENABLE
+/* LOG_LEVELS
+ * you can use such values for level verbosity
+ * 3 = RAW
+ * 2 = INFO
+ * 1 = WARNING
+ * 0 = ERROR
+ * each module which want to log messages send verbosity to log function
+ * log occured only if verbosity <= OBIN_LOG_##MODULENAME
+ * using of log function are not permitted in header files
+ *  */
+#define OBIN_LOG_MEMORY 2
+#define OBIN_LOG_COMMON 2
+#endif
+
 #endif

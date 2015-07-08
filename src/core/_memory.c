@@ -30,12 +30,8 @@ void init_collection_stat(ObinState*);
 void reset_allocation_stat(ObinState*);
 
 /* LOG */
-void _log(ObinState* state, obin_string format, ...) {
-	va_list myargs;
-	va_start(myargs, format);
-	obin_vfprintf(stdout, format, myargs);
-	va_end(myargs);
-}
+
+OBIN_MODULE_LOG(MEMORY);
 
 void _panic(ObinState* state, obin_string format, ...) {
 	va_list myargs;
@@ -221,12 +217,12 @@ void gc_mark_object(ObinState* state, ObinAny object) {
 	M->live_space += cell->memory.size;
 
 	if(!cell->native_traits) {
-		_log(state, "GC encountered object without traits");
+		_log(state, _WARN, "GC encountered object without traits");
 		return;
 	}
 
 	if(!cell->native_traits->base) {
-		_log(state, "GC encountered object without traits");
+		_log(state, _WARN, "GC encountered object without traits");
 		return;
 	}
 
@@ -414,12 +410,12 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
         }  else {
             /* no space was left */
             /* running the GC here will most certainly result in data loss! */
-            _log(state ,"Not enough heap!\n");
-            _log(state, "FREE-Size: %d Perfoming garbage collection\n", M->heap_free_size);
+            _log(state, _WARN, "Not enough heap!\n");
+            _log(state, _WARN, "FREE-Size: %d Perfoming garbage collection\n", M->heap_free_size);
 
             obin_gc_collect(state);
 
-            _log(state, "FREE-Size after collection: %d,\n", M->heap_free_size);
+            _log(state, _WARN, "FREE-Size after collection: %d,\n", M->heap_free_size);
             if(M->heap_free_size <= size) {
             	_panic(state, "Failed to allocate %d bytes. Heap size %d \n", (int)size, M->heap_free_size);
             }
@@ -583,7 +579,7 @@ static void _memory_trace(ObinState* state) {
     	return;
     }
 
-    _log(state, "\n########\n# SHOW #\n########\n");
+    _log(state, _ALL, "\n########\n# SHOW #\n########\n");
 
     do {
         while (((void*)pointer > (void*)current_entry->next) && (current_entry->next != NULL)) {
@@ -599,7 +595,7 @@ static void _memory_trace(ObinState* state) {
                 ObinMemoryFreeNode* next = current_entry->next;
                 object_size = next->size;
             }
-            _log(state, "[%d]",object_size);
+            _log(state, _ALL, "[%d]",object_size);
         } else {
             object = pointer;
 
@@ -608,20 +604,20 @@ static void _memory_trace(ObinState* state) {
 
             /* is this object marked or not? */
             if (_is_marked(object)) {
-            	_log(state, "-xx-");
+            	_log(state, _ALL, "-xx-");
             } else if (_is_new(object)) {
-            	_log(state, "-++-");
+            	_log(state, _ALL, "-++-");
             }
 
-            _log(state, "-%d %s %p-", object_size, _is_new(object) ? "" : object->native_traits->name, object);
+            _log(state, _ALL, "-%d %s %p-", object_size, _is_new(object) ? "" : object->native_traits->name, object);
         }
         /* aligns the output by inserting a line break after 36 objects */
         object_aligner++;
         if (object_aligner == 36) {
-            _log(state, "\n%d ", line_count++);
+            _log(state, _ALL, "\n%d ", line_count++);
             object_aligner = 0;
         }
-        _log(state, "\n");
+        _log(state, _ALL, "\n");
         pointer = (void*)((int)pointer + object_size);
     } while ((void*)pointer < (void*)(_end_heap(M)));
 }

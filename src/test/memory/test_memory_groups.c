@@ -1,7 +1,7 @@
 #include <obin.h>
 #include "test_memory.h"
 
-static int TMG_VERBOSE = 1;
+static int TMG_VERBOSE = 0;
 
 ObinNativeTraits __TMG_TRAITS__;
 
@@ -128,7 +128,7 @@ static void Test_MemoryGroups(void) {
 	tmg_counter = tm_counter_new();
 	ObinState * state = obin_state_new(1024 * 1024 * 90);
 /*	obin_memory_start_transaction(state);*/
-/*	tmg_test(state, 5, 0.5);
+	tmg_test(state, 5, 0.5);
 	tmg_test(state, 2, 0.5);
 	tmg_test(state, 3, 0.5);
 	tmg_test(state, 4, 0.5);
@@ -139,7 +139,7 @@ static void Test_MemoryGroups(void) {
 	tmg_test(state, 4, 0.4);
 	tmg_test(state, 5, 0.2);
 	tmg_test(state, 6, 0.8);
-	tmg_test(state, 7, 0.7)*/;
+	tmg_test(state, 7, 0.7);
 	tmg_test(state, 2, 0.7);
 	tmg_test(state, 9, 0.7);
 
