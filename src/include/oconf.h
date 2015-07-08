@@ -69,8 +69,9 @@ typedef unsigned char obin_byte;
 #define OBIN_DEFAULT_ARRAY_SIZE 10
 #define OBIN_DEFAULT_TABLE_SIZE 4
 
-static int OBIN_DEFAULT_HEAP_SIZE = 1024 * 1024;
-static int OBIN_MAX_HEAP_SIZE = 1024 * 1024 * 100;
+/*TODO replace it with bytes */
+#define OBIN_DEFAULT_HEAP_SIZE 1024 * 1024
+#define OBIN_MAX_HEAP_SIZE 1024 * 1024 * 100
 
 #define OBIN_MAX_CAPACITY OBIN_MEM_MAX - 1
 #define OBIN_INVALID_INDEX -1

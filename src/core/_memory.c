@@ -1,7 +1,6 @@
 #include <obin.h>
 
 /*#define OBIN_MEMORY_DEBUG*/
-#define OBIN_MEMORY_VERBOSE_LEVEL 2
 
 #define _end_heap(memory)  (memory->heap + memory->heap_size)
 #define _heap(memory)  (memory->heap)
