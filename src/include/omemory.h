@@ -3,22 +3,22 @@
 #include "obuiltin.h"
 
 /*
- * free_list_entries are used to manage the space freed after the sweep phase.
+ * ObinMemoryFreeNode are used to manage the space freed after the sweep phase.
  * these entries contain their own size and a reference of the entry next to them
  */
-typedef struct free_list_entry {
-	struct free_list_entry* next;
+typedef struct ObinMemoryFreeNode {
+	struct ObinMemoryFreeNode* next;
     size_t size;
-} free_list_entry;
-
+} ObinMemoryFreeNode;
 
 struct _ObinMemory {
-	void* object_space;
+	void* heap;
 	obin_mem_t heap_size;
+	obin_mem_t heap_capacity;
 	obin_mem_t heap_gc_threshold;
-	free_list_entry* first_free_entry;
+	ObinMemoryFreeNode* free_node;
 
-	obin_mem_t size_of_free_heap;
+	obin_mem_t heap_free_size;
 	/*
 	 * if this counter equals 0, only then it is safe to collect the
 	 * garbage. The counter is increased in cell constructors
@@ -34,12 +34,14 @@ struct _ObinMemory {
 	obin_mem_t allocated_space;       /* allocated space (since last collection) */
 };
 
+#define obin_any_cell_size(any) (obin_any_cell(any)->memory.size)
+
 typedef struct{
 	obin_bool mark;
 	obin_mem_t size;
 } ObinCellMemoryInfo;
 
-/*IT EMPTY FOR NOW */
+/*IT EMPTY FOR NOW*/
 #define OBIN_CELL_HEADER \
 	ObinNativeTraits* native_traits; \
 	ObinCellMemoryInfo memory;
@@ -52,7 +54,6 @@ ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinNativeTraits* traits)
 ObinState* obin_state_new(obin_mem_t heap_size);
 void obin_state_destroy(ObinState* state);
 
-
 void* obin_allocate_cell(ObinState* state, obin_mem_t size);
 void obin_gc_collect(ObinState* state);
 
@@ -63,6 +64,7 @@ obin_pointer obin_realloc(ObinState* state, obin_pointer ptr, obin_mem_t size) ;
 obin_pointer obin_memdup(ObinState* state, obin_pointer ptr, obin_mem_t elements, obin_mem_t element_size );
 
 void obin_free(ObinState* state, obin_pointer ptr);
+
 void obin_memory_debug_trace(ObinState* state);
 
 /*

@@ -3,8 +3,8 @@
 /*#define OBIN_MEMORY_DEBUG*/
 #define OBIN_MEMORY_VERBOSE_LEVEL 2
 
-#define _end_heap(memory)  (memory->object_space + memory->heap_size)
-#define _heap(memory)  (memory->object_space)
+#define _end_heap(memory)  (memory->heap + memory->heap_size)
+#define _heap(memory)  (memory->heap)
 
 #define ObinMem_Padding(N) ((sizeof(obin_pointer) - ((N) % sizeof(obin_pointer))) % sizeof(obin_pointer))
 
@@ -139,20 +139,20 @@ void _memory_create(ObinState* state, obin_mem_t heap_size) {
     M->heap_gc_threshold = (int) (M->heap_size * 0.1);
 
     /* allocation of the heap */
-    M->object_space = ObinMem_Malloc(M->heap_size);
-    if (!M->object_space) {
+    M->heap = ObinMem_Malloc(M->heap_size);
+    if (!M->heap) {
     	_panic(state, "Failed to allocate the initial %d bytes for the GC. Panic.\n",
                 (int) M->heap_size);
     }
 
-    obin_memset(M->object_space, 0, M->heap_size);
-    M->size_of_free_heap = M->heap_size;
+    obin_memset(M->heap, 0, M->heap_size);
+    M->heap_free_size = M->heap_size;
 
     /* initialize free_list by creating the first */
     /* entry, which contains the whole object_space */
-    M->first_free_entry = (free_list_entry*) M->object_space;
-    M->first_free_entry->size = M->heap_size;
-    M->first_free_entry->next = NULL;
+    M->free_node = (ObinMemoryFreeNode*) M->heap;
+    M->free_node->size = M->heap_size;
+    M->free_node->next = NULL;
 
     /* initialise statistical counters */
     M->collections_count = 0;
@@ -164,7 +164,7 @@ void _memory_create(ObinState* state, obin_mem_t heap_size) {
 }
 
 void _memory_destroy(ObinState* state) {
-	ObinMem_Free(state->memory->object_space);
+	ObinMem_Free(state->memory->heap);
 	ObinMem_Free(state->memory);
 	state->memory = 0;
 }
@@ -186,7 +186,7 @@ ObinState* obin_state_new(obin_mem_t heap_size) {
 }
 
 void obin_state_destroy(ObinState* state) {
-	ObinMem_Free(state->memory->object_space);
+	ObinMem_Free(state->memory->heap);
     ObinMem_Free(state->memory);
 	ObinMem_Free(state);
 }
@@ -209,11 +209,11 @@ void gc_mark_object(ObinState* state, ObinAny object) {
     if (   ((void*) cell < (void*)  _heap(M))
         || ((void*) cell > (void*) _end_heap(M)))
     {
-		_log(state, "GC encountered object not belong to allocator heap");
+    	/*ObinNil, ObinFalse, ObinTrue, integers etc */
 		return;
     }
 
-	if (_is_marked(cell)) {
+	if (_is_marked(cell) || _is_new(cell)) {
 		return;
 	}
 
@@ -255,7 +255,7 @@ void gc_mark_reachable_objects(ObinState * state) {
 void obin_gc_collect(ObinState* state) {
 	obin_pointer pointer;
 	ObinCell* object;
-	free_list_entry* current_entry, *new_entry;
+	ObinMemoryFreeNode* current_entry, *new_entry;
     int object_size = 0;
 	CATCH_STATE_MEMORY(state);
 
@@ -275,8 +275,8 @@ void obin_gc_collect(ObinState* state) {
 	obin_memory_debug_trace(state);
 #endif
 
-    pointer = M->object_space;
-    current_entry = M->first_free_entry;
+    pointer = M->heap;
+    current_entry = M->free_node;
     do {
         /* we need to find the last free entry before the pointer */
         /* whose 'next' lies behind or is the pointer */
@@ -289,7 +289,7 @@ void obin_gc_collect(ObinState* state) {
             if ((void*)current_entry == (void*)pointer) {
                 object_size = current_entry->size;
             } else {
-                free_list_entry* next = current_entry->next;
+                ObinMemoryFreeNode* next = current_entry->next;
                 object_size = next->size;
             }
             /*fprintf(stderr,"[%d]",object_size); */
@@ -309,14 +309,17 @@ void obin_gc_collect(ObinState* state) {
                 /* add new entry containing this object to the free_list */
                 obin_destroy(state, object);
                 memset(object, 0, object_size);
-                new_entry = ((free_list_entry*) pointer);
+                new_entry = ((ObinMemoryFreeNode*) pointer);
                 new_entry->size = object_size;
 
                 /* if the new entry lies before the first entry, */
                 /* adjust the pointer to the first one */
-                if (new_entry < M->first_free_entry) {
-                    new_entry->next = M->first_free_entry;
-                    M->first_free_entry = new_entry;
+                if (new_entry < M->free_node) {
+                    new_entry->next = M->free_node;
+                    M->free_node = new_entry;
+                    if(!M->free_node) {
+                    	_panic(state, "free node is NULL");
+                    }
                     current_entry = new_entry;
                 } else {
                     /* insert the newly created entry right after the current entry */
@@ -340,14 +343,10 @@ void obin_gc_collect(ObinState* state) {
     reset_allocation_stat(state);
 }
 
-static obin_bool _increase_heap(ObinState* state) {
-	obin_mem_t new_size;
-	return OTRUE;
-}
 
 void* _allocate_cell(ObinState* state, obin_mem_t size) {
     void* result = NULL;
-	free_list_entry* entry, *before_entry, *old_next, *replace_entry;
+	ObinMemoryFreeNode* entry, *before_entry, *old_next, *replace_entry;
 	int old_entry_size;
 	CATCH_STATE_MEMORY(state);
 
@@ -355,33 +354,36 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
     	return NULL;
     }
 
-    if(size < sizeof(free_list_entry)) {
+    if(size < sizeof(ObinMemoryFreeNode)) {
     	_panic(state, "Can`t allocate so small chunk in allocator %d", size);
     	return NULL;
     }
 
-    if (M->size_of_free_heap <= M->heap_gc_threshold) {
+    if (M->heap_free_size <= M->heap_gc_threshold) {
     	obin_gc_collect(state);
     }
 
     /* initialize variables to search through the free_list */
-    entry = M->first_free_entry;
+    entry = M->free_node;
     before_entry = NULL;
 
     /* don't look for the perfect match, but for the first-fit */
     while (! ((entry->size == size)
                || (entry->next == NULL)
-               || (entry->size >= (size + sizeof(free_list_entry))))) {
+               || (entry->size >= (size + sizeof(ObinMemoryFreeNode))))) {
         before_entry = entry;
         entry = entry->next;
     }
 
     /* did we find a perfect fit? */
     /* if so, we simply remove this entry from the list */
-    if (entry->size == size) {
-        if (entry == M->first_free_entry) {
+    if (entry->size == size &&  entry->next != NULL) {
+        if (entry == M->free_node) {
             /* first one fitted - adjust the 'first-entry' pointer */
-            M->first_free_entry = entry->next;
+            M->free_node = entry->next;
+            if(!M->free_node) {
+            	_panic(state, "Free node is null");
+            }
         } else {
             /* simply remove the reference to the found entry */
             before_entry->next = entry->next;
@@ -391,19 +393,22 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
     } else {
         /* did we find an entry big enough for the request and a new */
         /* free_entry? */
-        if (entry->size >= (size + sizeof(free_list_entry))) {
+        if (entry->size >= (size + sizeof(ObinMemoryFreeNode))) {
             /* save data from found entry */
             old_entry_size = entry->size;
             old_next = entry->next;
 
             result = entry;
             /* create new entry and assign data */
-            replace_entry =  (free_list_entry*) ((int)entry + size);
+            replace_entry =  (ObinMemoryFreeNode*) ((int)entry + size);
 
             replace_entry->size = old_entry_size - size;
             replace_entry->next = old_next;
-            if (entry == M->first_free_entry) {
-                M->first_free_entry = replace_entry;
+            if (entry == M->free_node) {
+                M->free_node = replace_entry;
+				if(!M->free_node) {
+					_panic(state, "free node is NULL");
+				}
             } else {
                 before_entry->next = replace_entry;
             }
@@ -411,13 +416,13 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
             /* no space was left */
             /* running the GC here will most certainly result in data loss! */
             _log(state ,"Not enough heap!\n");
-            _log(state, "FREE-Size: %d Perfoming garbage collection\n", M->size_of_free_heap);
+            _log(state, "FREE-Size: %d Perfoming garbage collection\n", M->heap_free_size);
 
             obin_gc_collect(state);
 
-            _log(state, "FREE-Size after collection: %d,\n", M->size_of_free_heap);
-            if(M->size_of_free_heap < size) {
-            	_panic(state, "Failed to allocate %d bytes. Heap size %d \n", (int)size, M->size_of_free_heap);
+            _log(state, "FREE-Size after collection: %d,\n", M->heap_free_size);
+            if(M->heap_free_size <= size) {
+            	_panic(state, "Failed to allocate %d bytes. Heap size %d \n", (int)size, M->heap_free_size);
             }
 
             /*fulfill initial request */
@@ -425,13 +430,13 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
         }
     }
 
-    if(!result) {
+	if(!result) {
         _panic(state, "Failed to allocate %d bytes. Panic.\n", (int)size);
     }
 
     memset(result, 0, size);
     /* update the available size */
-    M->size_of_free_heap -= size;
+    M->heap_free_size -= size;
     return result;
 }
 
@@ -459,8 +464,8 @@ void obin_free(ObinState* state, obin_pointer ptr) {
 #ifdef ODEBUG
 	CATCH_STATE_MEMORY(state);
     /* check if called for an object inside the object_space */
-    if ((   ptr >= (void*)  M->object_space)
-        && (ptr < (void*) (M->object_space + M->heap_size)))
+    if ((   ptr >= (void*)  M->heap)
+        && (ptr < (void*) (M->heap + M->heap_size)))
     {
     	obin_panic("free called for an object in allocator");
     }
@@ -471,12 +476,12 @@ void obin_free(ObinState* state, obin_pointer ptr) {
 /* free entries which are next to each other are merged into one entry */
 void gc_merge_free_spaces(ObinState* state) {
 	ObinMemory* M = state->memory;
-    free_list_entry* entry = M->first_free_entry;
-    free_list_entry* entry_to_append = NULL;
+    ObinMemoryFreeNode* entry = M->free_node;
+    ObinMemoryFreeNode* entry_to_append = NULL;
     int new_size = 0;
-    free_list_entry* new_next = NULL;
+    ObinMemoryFreeNode* new_next = NULL;
 
-    M->size_of_free_heap = 0;
+    M->heap_free_size = 0;
 
     while (entry->next != NULL) {
         if (((int)entry + (int)(entry->size)) == (int)(entry->next)) {
@@ -489,12 +494,12 @@ void gc_merge_free_spaces(ObinState* state) {
             entry->next = new_next;
             entry->size = new_size;
         } else {
-            M->size_of_free_heap += entry->size;
+            M->heap_free_size += entry->size;
             entry = entry->next;
         }
     }
     if (entry->next == NULL) {
-        M->size_of_free_heap += entry->size;
+        M->heap_free_size += entry->size;
     } else {
     	_panic(state, "Missed last free_entry of GC\n");
     }
@@ -547,13 +552,13 @@ void reset_allocation_stat(ObinState* state) {
 static void _log_memory_stat(ObinState* state) {
 	CATCH_STATE_MEMORY(state);
     _log(state, "\n[State %p memory. Heap size %d B (%.2f kB, %.2f MB)\n"
-    		" collections:%d,\n %d allocated in (%.2f kB), \n %d live in (%.2f kB), %d killed in "\
-            "(%.2f kB)]\n ", state,
+    		" collections:%d,\n %d allocated in (%d B %.2f kB), \n %d live in (%d B %.2f kB), %d killed in "\
+            "(%d B %.2f kB)]\n ", state,
         M->heap_size, OBIN_B_TO_KB(M->heap_size), OBIN_B_TO_MB(M->heap_size),
         M->collections_count,
-		M->allocated_count,
-		OBIN_B_TO_KB(M->allocated_space), M->live_count, OBIN_B_TO_KB(M->live_space),
-        M->killed_count, OBIN_B_TO_KB(M->killed_space));
+		M->allocated_count, M->allocated_space, OBIN_B_TO_KB(M->allocated_space),
+		M->live_count, M->live_space, OBIN_B_TO_KB(M->live_space),
+        M->killed_count, M->killed_space, OBIN_B_TO_KB(M->killed_space));
 }
 /**
  * For debugging - the layout of the heap is shown.
@@ -566,15 +571,18 @@ static void _log_memory_stat(ObinState* state) {
  */
 static void _memory_trace(ObinState* state) {
     ObinCell* pointer;
-    free_list_entry* current_entry;
+    ObinMemoryFreeNode* current_entry;
     int object_size = 0;
     int object_aligner = 0;
     int line_count = 2;
     ObinCell* object;
 	CATCH_STATE_MEMORY(state);
 
-    pointer = M->object_space;
-    current_entry = M->first_free_entry;
+    pointer = M->heap;
+    current_entry = M->free_node;
+    if(!current_entry) {
+    	return;
+    }
 
     _log(state, "\n########\n# SHOW #\n########\n");
 
@@ -589,7 +597,7 @@ static void _memory_trace(ObinState* state) {
             if ((void*)current_entry == (void*)pointer) {
                 object_size = current_entry->size;
             } else {
-                free_list_entry* next = current_entry->next;
+                ObinMemoryFreeNode* next = current_entry->next;
                 object_size = next->size;
             }
             _log(state, "[%d]",object_size);
@@ -606,7 +614,7 @@ static void _memory_trace(ObinState* state) {
             	_log(state, "-++-");
             }
 
-            _log(state, "-%d %s %p-", object_size, object->native_traits->name, object);
+            _log(state, "-%d %s %p-", object_size, _is_new(object) ? "" : object->native_traits->name, object);
         }
         /* aligns the output by inserting a line break after 36 objects */
         object_aligner++;

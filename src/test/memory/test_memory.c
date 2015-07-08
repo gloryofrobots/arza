@@ -3,6 +3,6 @@
 
 static CU_TestInfo TestGroup_Memory[] = {
   { "Test_MemoryGroups", Test_MemoryGroups },
-/*  { "Test_MemoryTree", Test_MemoryTree },*/
+  { "Test_MemoryTree", Test_MemoryTree },
 	CU_TEST_INFO_NULL,
 };

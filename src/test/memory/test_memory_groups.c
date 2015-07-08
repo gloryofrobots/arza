@@ -1,7 +1,7 @@
 #include <obin.h>
 #include "test_memory.h"
 
-static int TMG_VERBOSE = 2;
+static int TMG_VERBOSE = 1;
 
 ObinNativeTraits __TMG_TRAITS__;
 
@@ -103,31 +103,32 @@ ObinNativeTraits __TMG_TRAITS__ = {
 };
 
 void tmg_test(ObinState* state, obin_mem_t data_size, double garbage_percentage) {
-	int old_marked = tmg_counter->Marked,
-		destroyed = 0;
+	int destroyed = 0;
+	printf("\ntmg_test data_size:%d garbage_percentage:%.2f\n", data_size, garbage_percentage);
+/*    obin_memory_debug_trace(state);*/
 
+	tm_counter_remember(tmg_counter);
 	tm_counter_refresh(tmg_counter);
 
     state->globals = tmg_cell_new(state, data_size, garbage_percentage, tmg_counter->TotalCount);
     printf("Test cells count before collection %d \n", tmg_counter->Count);
 
     obin_gc_collect(state);
+    destroyed = tm_counter_predict_destroyed(tmg_counter);
 
     if(TMG_VERBOSE > 0) {
-    	 printf("Test cells count %d \n", tmg_counter->Count);
-    	 printf("Test cells count marked %d \n", tmg_counter->Marked);
-    	 printf("Test cells destroyed %d \n", tmg_counter->Destroyed);
+    	tm_counter_info(tmg_counter);
+    	obin_memory_debug_trace(state);
     }
 
-    destroyed = (tmg_counter->Count -  tmg_counter->Marked) + old_marked;
     CU_ASSERT_EQUAL(destroyed, tmg_counter->Destroyed);
 }
 
 static void Test_MemoryGroups(void) {
 	tmg_counter = tm_counter_new();
-	ObinState * state = obin_state_new(0);
+	ObinState * state = obin_state_new(1024 * 1024 * 90);
 /*	obin_memory_start_transaction(state);*/
-	tmg_test(state, 5, 0.5);
+/*	tmg_test(state, 5, 0.5);
 	tmg_test(state, 2, 0.5);
 	tmg_test(state, 3, 0.5);
 	tmg_test(state, 4, 0.5);
@@ -138,8 +139,9 @@ static void Test_MemoryGroups(void) {
 	tmg_test(state, 4, 0.4);
 	tmg_test(state, 5, 0.2);
 	tmg_test(state, 6, 0.8);
-	tmg_test(state, 7, 0.7);
-/*	tmg_test(state, 8, 0.7);*/
+	tmg_test(state, 7, 0.7)*/;
+	tmg_test(state, 2, 0.7);
+	tmg_test(state, 9, 0.7);
 
 /*	obin_memory_end_transaction(state);*/
 	obin_state_destroy(state);
