@@ -134,8 +134,8 @@ OBIN_STMT_END
 
 #define obin_panic(message)      \
 OBIN_STMT_START						        	\
-fprintf (stderr, "Panic %s:%i: %s: message: "message"\n",			\
-	 __FILE__, __LINE__, __FUNCTION__);				\
+fprintf (stderr, "Panic %s:%i: %s: message:%s\n",			\
+	 __FILE__, __LINE__, __FUNCTION__, message);				\
 exit(-1);								\
 OBIN_STMT_END
 

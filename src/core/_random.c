@@ -11,7 +11,7 @@ ObinHashSecret obin_hash_secret(){
 
 obin_bool obin_random_init(){
 	_ObinHashSecret.prefix = (obin_integer) time(NULL);
-	//suffix whill contain garbage
+	/*suffix whill contain garbage */
 
 	OBIN_MODULE_INIT(RANDOM);
 	return OTRUE;

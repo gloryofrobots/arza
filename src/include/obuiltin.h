@@ -86,9 +86,6 @@ extern ObinAny ObinTrue;
 extern ObinAny ObinNil;
 extern ObinAny ObinNothing;
 
-extern ObinAny ObinLesser;
-extern ObinAny ObinGreater;
-extern ObinAny ObinEqual;
 
 /********************** ERRORS ************************************/
 
@@ -196,6 +193,7 @@ typedef struct {
 
 typedef struct {
 	obin_method __tostring__;
+	obin_method __tobool__;
 	obin_cell_proc __destroy__;
 	obin_method __clone__;
 	obin_method_2 __compare__;
@@ -223,6 +221,9 @@ ObinAny obin_any_new();
 ObinState* obin_init();
 
 ObinAny obin_tostring(ObinState* state, ObinAny self);
+
+ObinAny obin_tobool(ObinState* state, ObinAny self);
+
 void obin_destroy(ObinState * state, ObinCell* self);
 ObinAny obin_clone(ObinState * state, ObinAny self);
 ObinAny obin_compare(ObinState * state, ObinAny self, ObinAny other);

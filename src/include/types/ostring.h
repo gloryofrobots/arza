@@ -14,7 +14,6 @@ typedef struct {
 } __ObinConstStrings;
 
 __ObinConstStrings* obin_const_strings();
-#define ObinConstStrings obin_const_strings()
 
 obin_bool obin_module_string_init(ObinState* state);
 

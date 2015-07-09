@@ -11,3 +11,29 @@ ObinAny obin_integer_new(obin_integer number) {
 ObinNativeTraits* obin_integer_traits() {
 	return NULL;
 }
+
+typedef struct _ObinIntegers {
+	ObinAny NotFound;
+    ObinAny Lesser;
+    ObinAny Greater;
+    ObinAny Equal;
+} ObinIntegers;
+
+static ObinIntegers _Integers = {
+		 {EOBIN_TYPE_INTEGER, {-1}},
+		 {EOBIN_TYPE_INTEGER, {-1}},
+		 {EOBIN_TYPE_INTEGER, {1}},
+		 {EOBIN_TYPE_INTEGER, {0}},
+};
+
+obin_bool obin_module_integer_init(ObinState* state) {
+/*	_Integers.NotFound = obin_integer_new(-1);
+	_Integers.Lesser = obin_integer_new(-1);
+	_Integers.Greater = obin_integer_new(1);
+	_Integers.Equal = obin_integer_new(0);*/
+	return OTRUE;
+}
+
+ObinIntegers obin_integers() {
+	return &_Integers;
+}

@@ -17,13 +17,12 @@ SET(OBIN_LIB_SRC
    core/_builtin.c
    core/_log.c
    core/_error.c
-   #core/types/_string.c
+   core/_random.c
+   core/types/_string.c
    core/types/_integer.c
    core/types/_float.c
    core/types/_bool.c
    #core/types/_fstream.c
-   #core/types/_string.c
-   #core/types/_error.c
    )
    
 SET(OBIN_EXE_SRC
