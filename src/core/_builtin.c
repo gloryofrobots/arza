@@ -33,6 +33,10 @@ ObinAny obin_any_new() {
 static ObinNativeTraits*
 _embedded_type_traits(ObinState* state, ObinAny any) {
 	switch (any.type) {
+	case EOBIN_TYPE_TRUE:
+	case EOBIN_TYPE_FALSE:
+		return obin_bool_traits();
+		break;
 	case EOBIN_TYPE_INTEGER:
 		return obin_integer_traits();
 		break;
@@ -71,22 +75,8 @@ ObinAny obin_next(ObinState * state, ObinAny any) {
 	return method(state, any);
 }
 
-void obin_destroy(ObinState * state, ObinCell* cell) {
-	if (!cell) {
-		obin_panic("cell is null");
-	}
-
-	if(!cell->native_traits
-			|| !cell->native_traits->base
-			|| !cell->native_traits->base->__destroy__) {
-
-		obin_raise_vargs(state, obin_errors()->TypeError,
-				"__destroy__ protocol not supported [%p].", cell);
-
-		return;
-	}
-
-	cell->native_traits->base->__destroy__(state, cell);
+void obin_release(ObinState * state, ObinAny self) {
+	/*TODO IMPLEMENT*/
 }
 
 ObinAny obin_equal(ObinState * state, ObinAny any, ObinAny other) {
@@ -174,8 +164,12 @@ ObinAny obin_tostring(ObinState* state, ObinAny any) {
 
 	method = _base_method(state, any, __tostring__);
 	if (!method) {
-		obin_raise(state, obin_errors()->TypeError,
+		if(_traits(state, any)) {
+			return obin_string_new(state, _traits(state, any)->name);
+		} else {
+			obin_raise(state, obin_errors()->TypeError,
 				"__tostring__ protocol not supported", any);
+		}
 	}
 
 	return method(state, any);

@@ -1,5 +1,5 @@
 #include <obin.h>
-
+/*TODO remove limitations to full heap allocation */
 /*#define OBIN_MEMORY_DEBUG*/
 
 #define _end_heap(memory)  (memory->heap + memory->heap_size)
@@ -228,11 +228,11 @@ void gc_mark_object(ObinState* state, ObinAny object) {
 		return;
 	}
 
-	if(!cell->native_traits->base->__foreach_internal_objects__) {
+	if(!cell->native_traits->base->__mark__) {
 		return;
 	}
 
-	cell->native_traits->base->__foreach_internal_objects__(state, object, &gc_mark_object);
+	cell->native_traits->base->__mark__(state, object, &gc_mark_object);
 }
 
 void gc_mark_reachable_objects(ObinState * state) {
@@ -246,6 +246,21 @@ void gc_mark_reachable_objects(ObinState * state) {
     if (current_frame != NULL) {
         gc_mark_object(current_frame);
     }*/
+}
+
+static void _destroy_cell(ObinState * state, ObinCell* cell) {
+	if (!cell) {
+		obin_panic("cell is null");
+	}
+
+	if(!cell->native_traits
+			|| !cell->native_traits->base
+			|| !cell->native_traits->base->__destroy__) {
+
+		return;
+	}
+
+	cell->native_traits->base->__destroy__(state, cell);
 }
 
 
@@ -304,7 +319,7 @@ void obin_gc_collect(ObinState* state) {
                 M->killed_count++;
                 M->killed_space += object_size;
                 /* add new entry containing this object to the free_list */
-                obin_destroy(state, object);
+                _destroy_cell(state, object);
                 memset(object, 0, object_size);
                 new_entry = ((ObinMemoryFreeNode*) pointer);
                 new_entry->size = object_size;

@@ -91,10 +91,12 @@ static ObinAny __destroy__(ObinState* state, ObinAny self) {
 
 ObinBaseTrait __BASE__ = {
 	 __tostring__,
+	 0, /*__tobool__ */
 	 __destroy__,
 	 0, /* clone */
 	 0, /*__compare__ */
 	 0,/* _hash__ */
+	 0, /* __mark__ */
 } ;
 static ObinNativeTraits __TRAITS__ = {
 	 "__fstream__",

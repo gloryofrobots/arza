@@ -198,7 +198,7 @@ typedef struct {
 	obin_method __clone__;
 	obin_method_2 __compare__;
 	obin_method __hash__;
-	obin_method_2_proc __foreach_internal_objects__;
+	obin_method_2_proc __mark__;
 } ObinBaseTrait;
 
 typedef struct {
@@ -224,7 +224,10 @@ ObinAny obin_tostring(ObinState* state, ObinAny self);
 
 ObinAny obin_tobool(ObinState* state, ObinAny self);
 
+/*TODO REMOVE IT FROM API*/
 void obin_destroy(ObinState * state, ObinCell* self);
+
+void obin_release(ObinState * state, ObinAny self);
 ObinAny obin_clone(ObinState * state, ObinAny self);
 ObinAny obin_compare(ObinState * state, ObinAny self, ObinAny other);
 ObinAny obin_hash(ObinState * state, ObinAny any);

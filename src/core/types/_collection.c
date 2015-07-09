@@ -6,52 +6,59 @@ typedef struct {
 	OBIN_CELL_HEADER;
 	ObinAny source;
 	obin_mem_t current;
+	obin_mem_t length;
 } SequenceIterator;
 
-static ObinAny _sequence_iterator__next__(ObinState* state, ObinAny self) {
+static ObinAny __si__next__(ObinState* state, ObinAny self) {
 	SequenceIterator * it;
 	ObinAny result;
 
 	it = (SequenceIterator*) obin_any_cell(self);
-	if(it->current >= _string_size(it->source)){
+	if(it->current >= it->length){
 		return ObinNothing;
 	}
 
-	result = obin_getitem(state, it->source, obin_new_integer(it->current));
+	result = obin_getitem(state, it->source, obin_integer_new(it->current));
 	it->current++;
 	return result;
 }
 
-static ObinNativeTraits __SEQUENCE_ITERATOR_TRAITS__ = {
-	 0, /*__tostring__,*/
-	 0, /*__destroy__,*/
-	 0, /*__clone__,*/
-	 0, /*__compare__,*/
-	 0, /*__hash__,*/
-
-	 0, /*__iterator__,*/
-	 0, /*__length__,*/
-	 0, /*__getitem__,*/
-	 0, /*__setitem__,*/
-	 0, /*__hasitem__,*/
-	 0, /*__delitem__,*/
-
-	 _sequence_iterator__next__
+ObinGeneratorTrait __SI_GEN_TRAIT__  = {
+		__si__next__
 };
+
+ObinNativeTraits __SI_TRAIT__ = {
+	"SequenceIterator",
+
+	0, /*base*/
+	0, /* collection */
+	&__SI_GEN_TRAIT__,
+	0, /*number */
+};
+
+static obin_bool _is_collection(ObinAny any) {
+	return (obin_any_cell(any)->native_traits != NULL &&
+			obin_any_cell(any)->native_traits->collection != NULL);
+}
 
 ObinAny obin_sequence_iterator_new(ObinState* state, ObinAny sequence){
 	SequenceIterator * iterator;
+	if(!obin_any_is_cell(sequence)) {
+		obin_raise(state, obin_errors()->TypeError,
+				"Cell type expected", sequence);
+	}
 
-	if(!obin_can_it_be_collection(sequence)){
-		return obin_raise_type_error(state, "Collection expected", sequence);
+	if(!_is_collection(sequence)){
+		obin_raise(state, obin_errors()->TypeError,
+				"Collection expected", sequence);
 	}
 
 	iterator = obin_malloc_type(state, SequenceIterator);
 	iterator->source = sequence;
 	iterator->current = 0;
+	iterator->length = (obin_mem_t) obin_any_integer(obin_length(state, sequence));
 
-	obin_cell_set_native_traits(iterator, __SEQUENCE_ITERATOR_TRAITS__);
-	return obin_cell_new(iterator);
+	return obin_cell_new(EOBIN_TYPE_OBJECT, (ObinCell*)iterator, &__SI_TRAIT__);
 }
 
 ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other){
@@ -64,52 +71,54 @@ ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other){
 	ObinAny compare_result;
 
 	self_length = obin_length(state, self);
-	if(!obin_can_it_be_collection(self)){
-		return obin_raise_type_error(state, "Collection.__compare__  collection expected", self);
+
+	if(!_is_collection(self)){
+		obin_raise(state, obin_errors()->TypeError,
+				"Collection.__compare__ expected", self);
 	}
 
-	if (!obin_can_it_be_collection(other)) {
+	if(!_is_collection(other)){
 		if(obin_any_integer(self_length) > 0){
-			return ObinGreater;
+			return obin_integers()->Greater;
 		}
 
 		if(obin_any_is_nil(other) || obin_any_is_false(other)) {
-				return ObinEqual;
+				return obin_integers()->Equal;
 		}
 
-		return ObinLesser;
+		return obin_integers()->Lesser;
 	}
 
 	other_length = obin_length(state, other);
 
 	if (obin_any_integer(self_length) < obin_any_integer(other_length)) {
-		return ObinLesser;
+		return obin_integers()->Lesser;
 	}
 
 	if (obin_any_integer(self_length) > obin_any_integer(other_length)) {
-		return ObinGreater;
+		return obin_integers()->Greater;
 	}
 
 	self_iterator = obin_iterator(state, self);
 	other_iterator = obin_iterator(state, other);
 
-	compare_result = ObinEqual;
+	compare_result = obin_integers()->Equal;
 
 	while(OTRUE) {
-		self_item = obin_next(self_iterator);
-		other_item = obin_next(other_iterator);
+		self_item = obin_next(state, self_iterator);
+		other_item = obin_next(state, other_iterator);
 
 		if(obin_is_stop_iteration(self_item) || obin_is_stop_iteration(other_item)){
 			break;
 		}
 
-		compare_result = obin_compare(self_item, other_item);
-		if(!obin_is(state, compare_result, ObinEqual)){
+		compare_result = obin_compare(state, self_item, other_item);
+		if(obin_any_is_true(obin_is(state, compare_result, obin_integers()->Equal))){
 			break;
 		}
 	}
 
-	obin_destroy(self_iterator);
-	obin_destroy(other_iterator);
+	obin_release(state, self_iterator);
+	obin_release(state, other_iterator);
 	return compare_result;
 }
