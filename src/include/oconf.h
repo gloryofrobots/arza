@@ -39,6 +39,7 @@
 #endif
 
 #define obin_mem_t	size_t
+#define obin_index	obin_mem_t
 #define OBIN_MEM_MAX SIZE_MAX
 
 #define obin_int8_t int8_t

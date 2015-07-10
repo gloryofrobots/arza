@@ -1,6 +1,12 @@
 #include <obin.h>
 /* TODO INTERNATION */
 
+#define _CHECK_SELF_TYPE(state, self, method) \
+	if(!obin_any_is_tuple(self)) { \
+		return obin_raise(state, obin_errors()->TypeError, \
+				"__Tuple." #method "call from other type", self); \
+	} \
+
 typedef struct {
 	OBIN_CELL_HEADER;
 	obin_mem_t size;
@@ -14,33 +20,25 @@ typedef struct {
 
 static ObinNativeTraits __TRAITS__;
 
-static ObinTuple*
-_obin_tuple_new(ObinState* state, obin_mem_t size) {
-	ObinTuple * self;
-	self = obin_malloc_type(state, ObinTuple);
-	self->size = size;
-	self->native_traits = &__TRAITS__;
-	self->data = obin_malloc_array(state, ObinAny, size);
-	return self;
-}
-
 ObinAny obin_tuple_new(ObinState* state, ObinAny* items, ObinAny size) {
 	ObinTuple * self;
 	obin_mem_t capacity;
 
 	if(!obin_any_is_integer(size)){
-		return obin_raise_memory_error(state, "Tuple.new -> integer size expected", size );
+		return obin_raise(state, obin_errors()->TypeError,
+				"Tuple.new integer size expected", size);
 	}
 
 	if(!obin_integer_is_fit_to_memsize(size)) {
-		return obin_raise_memory_error(state, "Tuple.new -> invalid size", size );
+		return obin_raise(state, obin_errors()->TypeError,
+				"Tuple.new invalid size", size);
 	}
 
 	capacity = (obin_mem_t) obin_any_integer(size);
 	self = _obin_tuple_new(state , capacity);
 	obin_memcpy(self->data, items, capacity);
 
-	return obin_cell_new(EOBIN_TYPE_TUPLE, (ObinCell*) self);
+	return obin_cell_new(EOBIN_TYPE_TUPLE, (ObinCell*) self, __TRAITS__);
 }
 
 ObinAny obin_tuple_pack(ObinState* state, obin_mem_t size, ...){
@@ -67,6 +65,9 @@ ObinAny obin_tuple_pack(ObinState* state, obin_mem_t size, ...){
 
 
 /****************************************  TYPETRAIT  *************************************************/
+static ObinAny __tobool__(ObinState* state, ObinAny self) {
+	return obin_bool_new(_size(self) > 0);
+}
 
 static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	ObinAny array;
@@ -96,11 +97,6 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	return result;
 }
 
-static ObinAny __destroy__(ObinState* state, ObinAny self) {
-	obin_free(_data(self));
-	obin_free(obin_any_cell(self));
-	return ObinNothing;
-}
 
 static ObinAny __clone__(ObinState* state, ObinAny self) {
 	ObinAny result;
@@ -192,7 +188,7 @@ __hash__(ObinState* state, ObinAny self){
     return obin_integer_new(x);
 }
 
-ObinCollectionTrait __COLLECTION__ = {
+static ObinCollectionTrait __COLLECTION__ = {
 	 __iterator__,
 	 __length__,
 	 __getitem__,
@@ -201,16 +197,20 @@ ObinCollectionTrait __COLLECTION__ = {
 	 0, /*__delitem__,*/
 } ;
 
+static ObinBaseTrait __BASE__ = {
+	 __tostring__,
+	 __tobool__,
+	 0, /*__destroy__*/
+	 __clone__,
+	 obin_collection_compare,
+	 __hash__,
+	 0, /*__mark__*/
+} ;
 static ObinNativeTraits __TRAITS__ = {
-	"__tuple",
-    &__tostring__,
-    &__destroy__,
-	&__clone__,
-	&obin_collection_compare,
-	__hash__,
-
-	&__COLLECTION__,
-
-	 0, /* iterator */
-	 0, /* number */
+	"__Tuple__",
+	 /*base*/
+	 &__BASE__,
+	 &__COLLECTION__, /*collection*/
+	 0, /*generator*/
+	 0, /*number*/
 };

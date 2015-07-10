@@ -59,7 +59,7 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator);
 
 obin_string obin_string_cstr(ObinState* state, ObinAny self);
 
-ObinAny obin_string_pack(ObinState* state, obin_string format, ...);
+ObinAny obin_string_pack(ObinState* state, obin_index count, ...);
 
 #define OSTR(state, data) obin_string_new(state, data)
 
