@@ -20,11 +20,11 @@ ObinAny obin_fstream_from_file(ObinState* state, obin_file file, obin_bool is_di
 
 	self = obin_new(state, ObinFStream);
 
-	self->path = obin_string_empty(state);
+	self->path = obin_strings()->Empty;
 
 	self->file = file;
 	self->is_disposable = is_disposable;
-	return obin_cell_new(EOBIN_TYPE_OBJECT, self, __TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_OBJECT, (ObinCell*)self, &__TRAITS__);
 }
 
 ObinAny obin_fstream_from_path(ObinState* state, ObinAny path, obin_string mode){
@@ -32,7 +32,8 @@ ObinAny obin_fstream_from_path(ObinState* state, ObinAny path, obin_string mode)
 	obin_file file = fopen(obin_string_cstr(state, path), mode);
 
 	if(file == NULL) {
-		return obin_raise_io_error(state, "Unable to open file", path);
+		obin_raise(state, obin_errors()->IOError,
+				"Unable to open file", path);
 	}
 
 	result = obin_fstream_from_file(state, file, OTRUE);
@@ -57,7 +58,8 @@ ObinAny obin_fstream_write(ObinState* state, ObinAny self, ObinAny any){
 
 ObinAny obin_fstream_close(ObinState* state, ObinAny self){
 	if(!_fstream_is_disposable(self)) {
-		return obin_raise_io_error(state, "Resource is not disposable", ObinNil);
+		obin_raise(state, obin_errors()->IOError,
+				"Resource is not disposable", ObinNil);
 	}
 
 	fclose(_fstream_file(self));
@@ -78,14 +80,13 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	return obin_string_new(state, "<File: "OBIN_POINTER_FORMATTER" >");
 }
 
-static ObinAny __destroy__(ObinState* state, ObinAny self) {
-	if(obin_any_is_true(obin_fstream_is_open(state, self))
-			&& _fstream_is_disposable(self)) {
+static void __destroy__(ObinState* state, ObinCell* cell) {
+	ObinFStream* self = (ObinFStream*) cell;
 
-		obin_fstream_close(state, self);
+	if(self->file && self->is_disposable) {
+		obin_fstream_close(state,
+				obin_cell_to_any(EOBIN_TYPE_OBJECT, (ObinCell*)self));
 	}
-
-	return ObinNothing;
 }
 
 
@@ -99,7 +100,7 @@ ObinBaseTrait __BASE__ = {
 	 0, /* __mark__ */
 } ;
 static ObinNativeTraits __TRAITS__ = {
-	 "__fstream__",
+	 "__FStream__",
 	 &__BASE__, /*base*/
 	 0, /*collection*/
 	 0, /*generator*/

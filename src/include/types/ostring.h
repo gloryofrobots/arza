@@ -11,16 +11,16 @@ typedef struct {
         ObinAny Empty;
         ObinAny Space;
         ObinAny TabSpaces;
-} __ObinConstStrings;
+} ObinConstStrings;
 
-__ObinConstStrings* obin_const_strings();
+ObinConstStrings* obin_strings();
 
 obin_bool obin_module_string_init(ObinState* state);
 
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data);
-ObinAny obin_char_new(ObinState* state, obin_char ch);
-ObinAny obin_string_from_carr(ObinState* state, obin_char* data, obin_mem_t size);
+ObinAny obin_char_new(obin_char ch);
+ObinAny obin_string_from_carray(ObinState* state, obin_char* data, obin_mem_t size);
 
 ObinAny obin_string_capitalize(ObinState* state, ObinAny self);
 ObinAny obin_string_capitalize_words(ObinState* state, ObinAny self);

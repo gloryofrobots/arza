@@ -10,6 +10,9 @@
 #include "types/obool.h"
 #include "types/ointeger.h"
 #include "types/ofloat.h"
+#include "types/ocollection.h"
+#include "types/otuple.h"
+#include "types/oarray.h"
 #include "types/ostring.h"
 
 

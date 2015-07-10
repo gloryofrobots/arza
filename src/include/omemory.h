@@ -51,6 +51,10 @@ struct _ObinCell {
 };
 
 ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinNativeTraits* traits);
+
+/*TRAITS HERE MUST EXIST IN CELL */
+ObinAny obin_cell_to_any(EOBIN_TYPE type, ObinCell* cell);
+
 ObinState* obin_state_new(obin_mem_t heap_size);
 void obin_state_destroy(ObinState* state);
 

@@ -12,13 +12,6 @@ ObinNativeTraits* obin_integer_traits() {
 	return NULL;
 }
 
-typedef struct _ObinIntegers {
-	ObinAny NotFound;
-    ObinAny Lesser;
-    ObinAny Greater;
-    ObinAny Equal;
-} ObinIntegers;
-
 static ObinIntegers _Integers = {
 		 {EOBIN_TYPE_INTEGER, {-1}},
 		 {EOBIN_TYPE_INTEGER, {-1}},
@@ -34,6 +27,6 @@ obin_bool obin_module_integer_init(ObinState* state) {
 	return OTRUE;
 }
 
-ObinIntegers obin_integers() {
+ObinIntegers* obin_integers() {
 	return &_Integers;
 }

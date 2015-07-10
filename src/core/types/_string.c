@@ -10,9 +10,9 @@ OBIN_MODULE_DECLARE(STRING);
 				"String." #method "call from other type", self); \
 	} \
 
-static __ObinConstStrings ObinStrings;
+static ObinConstStrings ObinStrings;
 
-__ObinConstStrings* obin_const_strings() {
+ObinConstStrings* obin_strings() {
 	OBIN_MODULE_CHECK(STRING);
 	return &ObinStrings;
 }
@@ -20,7 +20,7 @@ __ObinConstStrings* obin_const_strings() {
 static ObinAny _obin_string_empty(ObinState* state) {
 	ObinAny result;
 
-	result = obin_char_new(state, 0);
+	result = obin_char_new(0);
 	result.data.char_value.size = 0;
 	return result;
 }
@@ -30,9 +30,9 @@ obin_bool obin_module_string_init(ObinState* state) {
 	ObinStrings.True = obin_string_new(state, "True");
 	ObinStrings.False = obin_string_new(state, "False");
 	ObinStrings.Nothing = obin_string_new(state, "Nothing");
-	ObinStrings.PrintSeparator = obin_char_new(state, OBIN_PRINT_SEPARATOR);
+	ObinStrings.PrintSeparator = obin_char_new(OBIN_PRINT_SEPARATOR);
 	ObinStrings.Empty = _obin_string_empty(state);
-	ObinStrings.Space = obin_char_new(state, '\32');
+	ObinStrings.Space = obin_char_new('\32');
 	ObinStrings.TabSpaces = obin_string_dublicate(state, ObinStrings.Space, obin_integer_new(OBIN_COUNT_TAB_SPACES));
 
 	OBIN_MODULE_INIT(STRING);
@@ -90,17 +90,8 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	return self;
 }
 
-static ObinAny __destroy__(ObinState* state, ObinAny self) {
-	if(_is_char(self)){
-		return ObinNothing;
-	}
-
-	if(!_is_string(self)) {
-		return obin_raise(state, obin_errors()->TypeError,
-				"String.__destroy__ call from other type", self);
-	}
-
-	return ObinNothing;
+static ObinAny __tobool__(ObinState* state, ObinAny self) {
+	return obin_bool_new(!_is_empty(self));
 }
 
 static ObinAny __length__(ObinState* state, ObinAny self) {
@@ -142,7 +133,7 @@ static ObinAny __getitem__(ObinState* state, ObinAny self, ObinAny key) {
 	}
 
 	result = _string_data(self)[index];
-	return obin_char_new(state, result);
+	return obin_char_new(result);
 }
 
 static ObinAny __compare__(ObinState* state, ObinAny self, ObinAny other) {
@@ -219,7 +210,7 @@ static ObinAny __iterator__(ObinState* state, ObinAny self) {
 }
 
 static ObinAny __clone__(ObinState* state, ObinAny self) {
-	return obin_string_from_carr(state, _string_data(self), _string_size(self));
+	return obin_string_from_carray(state, _string_data(self), _string_size(self));
 }
 ObinCollectionTrait __COLLECTION__ = {
 	 __iterator__,
@@ -232,16 +223,17 @@ ObinCollectionTrait __COLLECTION__ = {
 
 ObinBaseTrait __BASE__ = {
 	 __tostring__,
-	 __destroy__,
+	 __tobool__,
+	 0, /*__destroy__*/
 	 __clone__,
 	 __compare__,
 	 __hash__,
-	 0,
+	 0, /*__mark__*/
 } ;
 static ObinNativeTraits __TRAITS__ = {
-	"__string",
+	"__String__",
 	 /*base*/
-	 &__BASE__
+	 &__BASE__,
 	 &__COLLECTION__, /*collection*/
 	 0, /*generator*/
 	 0, /*number*/
@@ -253,13 +245,13 @@ ObinAny obin_string_new(ObinState* state, obin_string data) {
 
 	len = obin_strlen(data);
 	if (len == 0) {
-		return obin_string_from_carr(state, 0, 0);
+		return obin_string_from_carray(state, 0, 0);
 	}
 
-	return obin_string_from_carr(state, (obin_char*) data, len);
+	return obin_string_from_carray(state, (obin_char*) data, len);
 }
 
-ObinAny obin_char_new(ObinState* state, obin_char ch) {
+ObinAny obin_char_new(obin_char ch) {
 	ObinAny result;
 
 	result = obin_any_new();
@@ -296,14 +288,14 @@ ObinAny _obin_string_blank(ObinState* state, obin_mem_t length) {
 /*@param data array without \0
  *@param size array size
  */
-ObinAny obin_string_from_carr(ObinState* state, obin_char* data,
+ObinAny obin_string_from_carray(ObinState* state, obin_char* data,
 obin_mem_t size) {
 	/*empty string*/
 	if (size == 0) {
 		return _obin_string_empty(state);
 	}
 	if (size == 1) {
-		return obin_char_new(state, data[0]);
+		return obin_char_new(data[0]);
 	}
 
 	return _obin_string_from_carr(state, data, size);
@@ -316,13 +308,11 @@ ObinAny obin_string_is_empty(ObinState* state, ObinAny self){
 		return obin_raise(state, obin_errors()->InternalError,
 				"obin_string_is_empty call from other type", self);
 	}
-	return obin_bool_new(
-				obin_tobool(state, __length__(state, self))
-			);
+	return obin_tobool(state, __length__(state, self));
 }
 /******************************** MODIFICATIONS *************************************/
 /*  function for modify char arrays , return 0 for stop iteration */
-typedef int (*_string_modifier)(obin_string data, obin_mem_t index);
+typedef int (*_string_modifier)(obin_char* data, obin_mem_t index);
 
 /* clone string and modify it`s content by modifier */
 ObinAny _clone_and_modify(ObinState* state, ObinAny self,
@@ -342,7 +332,7 @@ ObinAny _clone_and_modify(ObinState* state, ObinAny self,
 }
 
 /*********************** CAPITALIZE *************************/
-static int _capitalize_modify(obin_string data, obin_mem_t index) {
+static int _capitalize_modify(obin_char* data, obin_mem_t index) {
 	if (!isalpha(data[index])) {
 		return OTRUE;
 	}
@@ -352,16 +342,14 @@ static int _capitalize_modify(obin_string data, obin_mem_t index) {
 }
 
 ObinAny obin_string_capitalize(ObinState* state, ObinAny self) {
-	static _string_modifier modifier = _capitalize_modify;
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_capitalize call from other type", self);
-	}
+	static _string_modifier modifier = &_capitalize_modify;
+	_CHECK_STRING_TYPE(state, self, capitalize);
 
 	return _clone_and_modify(state, self, modifier);
 }
 
 /*********************** CAPITALIZE WORDS*************************/
-static int _capitalize_words_modify(obin_string data, obin_mem_t index) {
+static int _capitalize_words_modify(obin_char* data, obin_mem_t index) {
 	if ((index == 0 || isspace(data[index - 1])) && isalpha(data[index])) {
 		data[index] = toupper(data[index]);
 	}
@@ -370,47 +358,39 @@ static int _capitalize_words_modify(obin_string data, obin_mem_t index) {
 
 ObinAny obin_string_capitalize_words(ObinState* state, ObinAny self) {
 	static _string_modifier modifier = _capitalize_words_modify;
-
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_capitalize_words call from other type", self);
-	}
+	_CHECK_STRING_TYPE(state, self, capitalize_words);
 
 	return _clone_and_modify(state, self, modifier);
 }
 /********************* UPPERCASE *************************/
-static int _uppercase_modify(obin_string data, obin_mem_t index) {
+static int _uppercase_modify(obin_char* data, obin_mem_t index) {
 	data[index] = toupper(data[index]);
 	return OTRUE;
 }
 
 ObinAny obin_string_to_uppercase(ObinState* state, ObinAny self) {
 	static _string_modifier modifier = _uppercase_modify;
-
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_to_uppercase call from other type", self);
-	}
+	_CHECK_STRING_TYPE(state, self, to_uppercase);
 
 	return _clone_and_modify(state, self, modifier);
 }
 
 /********************* LOWERCASE ***************************/
-static int _lowercase_modify(obin_string data, obin_mem_t index) {
+static int _lowercase_modify(obin_char* data, obin_mem_t index) {
 	data[index] = tolower(data[index]);
 	return OTRUE;
 }
 
 ObinAny obin_string_to_lowercase(ObinState* state, ObinAny self) {
 	static _string_modifier modifier = _lowercase_modify;
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_lowercase call from other type", self);
-	}
+	_CHECK_STRING_TYPE(state, self, to_lowercase);
 
 	return _clone_and_modify(state, self, modifier);
 }
 
 /************** CONDITIONS **************************************/
 /*  function for checking string content by some condition*/
-typedef int (*_string_condition)(obin_string data, obin_mem_t index);
+typedef int (*_string_condition)(obin_char* data, obin_mem_t index);
 
 /* check string content for condition */
 ObinAny _check_condition(ObinState* state, ObinAny self,
@@ -426,71 +406,60 @@ ObinAny _check_condition(ObinState* state, ObinAny self,
 	return ObinTrue;
 }
 /*************************** IS_ALL_ALPHANUM **********************************/
-static int _is_alphanum_condition(obin_string data, obin_mem_t index) {
+static int _is_alphanum_condition(obin_char* data, obin_mem_t index) {
 	return isdigit(data[index]) || isalpha(data[index]);
 }
 
 ObinAny obin_string_is_alphanum(ObinState* state, ObinAny self) {
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_is_alphanum call from other type", self);
-	}
+	_CHECK_STRING_TYPE(state, self, is_alphanum);
+
 	return _check_condition(state, self, &_is_alphanum_condition);
 }
 
 /*************************** ISALPHA **********************************/
-static int _is_alpha_condition(obin_string data, obin_mem_t index) {
+static int _is_alpha_condition(obin_char* data, obin_mem_t index) {
 	return isalpha(data[index]);
 }
 
 ObinAny obin_string_is_alpha(ObinState* state, ObinAny self) {
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_is_alpha call from other type", self);
-	}
+	_CHECK_STRING_TYPE(state, self, is_alpha);
 	return _check_condition(state, self, &_is_alpha_condition);
 }
 
 /*************************** ISDIGIT **********************************/
-static int _is_digit_condition(obin_string data, obin_mem_t index) {
+static int _is_digit_condition(obin_char* data, obin_mem_t index) {
 	return isdigit(data[index]);
 }
 
 ObinAny obin_string_is_digit(ObinState* state, ObinAny self) {
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_is_digit call from other type", self);
-	}
+	_CHECK_STRING_TYPE(state, self, is_digit);
 	return _check_condition(state, self, &_is_digit_condition);
 }
 /*************************** IS LOWER **********************************/
-static int _is_lower_condition(obin_string data, obin_mem_t index) {
+static int _is_lower_condition(obin_char* data, obin_mem_t index) {
 	return islower(data[index]);
 }
 
 ObinAny obin_string_is_lower(ObinState* state, ObinAny self) {
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_is_lower call from other type", self);
-	}
+	_CHECK_STRING_TYPE(state, self, is_lower);
 	return _check_condition(state, self, &_is_lower_condition);
 }
 /*************************** IS UPPER **********************************/
-static int _is_upper_condition(obin_string data, obin_mem_t index) {
+static int _is_upper_condition(obin_char* data, obin_mem_t index) {
 	return isupper(data[index]);
 }
 
 ObinAny obin_string_is_upper(ObinState* state, ObinAny self) {
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_is_upper call from other type", self);
-	}
+	_CHECK_STRING_TYPE(state, self, is_upper);
 	return _check_condition(state, self, &_is_upper_condition);
 }
 /*************************** IS SPACE **********************************/
-static int _is_space_condition(obin_string data, obin_mem_t index) {
+static int _is_space_condition(obin_char* data, obin_mem_t index) {
 	return isspace(data[index]);
 }
 
 ObinAny obin_string_is_space(ObinState* state, ObinAny self) {
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_is_space call from other type", self);
-	}
+	_CHECK_STRING_TYPE(state, self, is_space);
 	return _check_condition(state, self, &_is_space_condition);
 }
 /************************* SEARCH ***************************************/
@@ -507,40 +476,40 @@ ObinAny _obin_string_find(ObinState* state, ObinAny haystack, ObinAny needle,
 	if (obin_any_is_nil(start)) {
 		pstart = 0;
 	} else {
-		if (obin_any_number(start) < 0
-				|| obin_any_number(start) > haystack_size) {
-			obin_raise_invalid_argument(state,
-					"String search error -> Invalid start index for search",
-					start);
+		if (obin_any_integer(start) < 0
+				|| obin_any_integer(start) > haystack_size) {
+
+			return obin_raise(state, obin_errors()->InvalidSliceError,
+					"String.search Invalid start index for search ", start);
 		}
 
-		pstart = (obin_mem_t) obin_any_number(start);
+		pstart = (obin_mem_t) obin_any_integer(start);
 	}
 
 	if (obin_any_is_nil(end)) {
 		pend = haystack_size;
 	} else {
-		if (obin_any_number(end) < 0 || obin_any_number(end) > haystack_size
-				|| obin_any_number(end) < pstart) {
-			obin_raise_invalid_argument(state,
-					"String search error -> Invalid end index for search", end);
+		if (obin_any_integer(end) < 0 || obin_any_integer(end) > haystack_size
+				|| obin_any_integer(end) < pstart) {
+
+			return obin_raise(state, obin_errors()->InvalidSliceError,
+					"String.search Invalid end index for search ", end);
 		}
 
-		pend = (obin_mem_t) obin_any_number(end);
+		pend = (obin_mem_t) obin_any_integer(end);
 	}
 
 	if ((pend - pstart) > _string_size(needle)) {
-		obin_raise_invalid_slice(state,
-				"String search error -> Invalid search range",
-				obin_integer_new(pstart), obin_integer_new(pend));
+		return obin_raise(state, obin_errors()->InvalidSliceError,
+					"String.search Invalid search range ",
+					obin_tuple2(state, obin_integer_new(pstart), obin_integer_new(pend)));
 	}
 
-	return finder(_string_data(haystack), _string_data(needle), start, end);
+	return finder(haystack, needle, pstart, pend);
 }
 /* ****************************** INDEXOF *************************************************************/
 ObinAny _string_finder_left(ObinAny haystack, ObinAny needle,
 										obin_mem_t start, obin_mem_t end) {
-
 	obin_mem_t size_h;
 	obin_mem_t size_n;
 	obin_mem_t i;
@@ -555,7 +524,7 @@ ObinAny _string_finder_left(ObinAny haystack, ObinAny needle,
     size_n = _string_size(needle);
 
 	for (i = start; i < end; i++) {
-		// Is the needle at this point in the haystack?
+		/*Is the needle at this point in the haystack?*/
 		hi = i;
 		ni = 0;
 		while(ni < size_n && hi < size_h
@@ -564,24 +533,22 @@ ObinAny _string_finder_left(ObinAny haystack, ObinAny needle,
 			hi++;
 		}
 		if (ni == size_n) {
-			// Found match!
+			/* Found match! */
 			return obin_integer_new(i);
 		}
-		// Didn't match here.  Try again further along haystack.
+		/* Didn't match here.  Try again further along haystack. */
 	}
 
-	return obin_integer_new(STRING_INDEX_NOT_FOUND);
+	return obin_integers()->NotFound;
 }
 
 ObinAny obin_string_index_of(ObinState* state, ObinAny self, ObinAny other,
 		ObinAny start, ObinAny end) {
-
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_indexof call from other type", self);
-	}
+	_CHECK_STRING_TYPE(state, self, index_of);
 
 	if(!obin_any_is_string(other)) {
-		return obin_raise_type_error(state, "String.indexof invalid argument type", other);
+		return obin_raise(state, obin_errors()->TypeError,
+				"String.indexof invalid argument type, string expected ", other);
 	}
 
 	return _obin_string_find(state, self, other, start, end,
@@ -597,8 +564,6 @@ ObinAny obin_string_index_of(ObinState* state, ObinAny self, ObinAny other,
  */
 ObinAny _string_finder_right(ObinAny haystack, ObinAny needle,
 obin_mem_t start, obin_mem_t end) {
-	obin_mem_t size_h;
-	obin_mem_t size_n;
 	obin_mem_t i;
 	obin_mem_t hi;
 	obin_mem_t ni;
@@ -607,76 +572,64 @@ obin_mem_t start, obin_mem_t end) {
 
     data_h = _string_data(haystack);
     data_n = _string_data(needle);
-    size_h = _string_size(haystack);
-    size_n = _string_size(needle);
-
 	for (i = end - 1; i <= start; i--) {
 		/*for is to creepy in that case, while is more readable */
 		hi = i;
-		ni = size_n - 1;
+		ni = _string_size(needle) - 1;
 		while (hi > 0 && ni > 0 && (data_h[hi] == data_n[ni])) {
 				--hi;
 				--ni;
 		}
 
 		if (ni == 0) {
-			// Found match!
-			return obin_integer_new(i - size_n - 1);
+			/*Found match! */
+			return obin_integer_new(i - _string_size(needle) - 1);
 		}
-		// Didn't match here.  Try again further along haystack.
+		/* Didn't match here.  Try again further along haystack. */
 	}
 
-	return obin_integer_new(STRING_INDEX_NOT_FOUND);
+	return obin_integers()->NotFound;
 }
 
 ObinAny obin_string_last_index_of(ObinState* state, ObinAny self, ObinAny other,
 		ObinAny start, ObinAny end) {
-
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_last_indexof call from other type", self);
-	}
+	_CHECK_STRING_TYPE(state, self, last_index_of);
 
 	if(!obin_any_is_string(other)) {
-		return obin_raise_type_error(state, "String.last_indexof invalid argument type", other);
+		return obin_raise(state, obin_errors()->TypeError,
+				"String.last_indexof invalid argument type, string expected ", other);
 	}
 
 	return _obin_string_find(state, self, other, start, end,
 			&_string_finder_right);
 }
 
-ObinAny obin_string_at(ObinState* state, ObinAny self, ObinAny index){
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_last_indexof call from other type", self);
-	}
-}
-/*
- /********************** BUILDERS ******************************************/
-/* TODO IMPLEMENT
- ObinAny obin_string_format(ObinState* state, ObinAny format, ...);*/
+/*********************** BUILDERS *******************************************/
+/* TODO IMPLEMENT */
+/*ObinAny obin_string_format(ObinState* state, ObinAny format, ...);*/
 
 ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count) {
 	obin_mem_t size;
 	obin_mem_t count;
 	obin_char* data;
 
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_dublicate call from other type", self);
-	}
+	_CHECK_STRING_TYPE(state, self, dublicate);
 
-	if(obin_string_is_empty(state, self)) {
+	if(_is_empty(self)) {
 		return self;
 	}
 
 	if (obin_any_is_nil(_count)) {
-		count = 1;
-	} else {
-		if(!obin_any_is_integer(_count)) {
-			return obin_raise_type_error(state, "String.dublicate count must be integer", self);
-		}
-
-		obin_assert(obin_any_is_integer(_count));
-		count = obin_any_integer(_count);
+		return obin_clone(state, self);
 	}
+
+	if(!obin_any_is_integer(_count)) {
+		return obin_raise(state, obin_errors()->TypeError,
+				"String.dublicate invalid argument type, integer expected ", _count);
+	}
+
+	obin_assert(obin_any_is_integer(_count));
+	count = obin_any_integer(_count);
 
 	size = _string_size(self) * count;
 	data = obin_malloc_array(state, obin_char, size + 1);
@@ -685,26 +638,27 @@ ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count) {
 		obin_memcpy(data, _string_data(self), _string_size(self));
 	}
 
-	return obin_string_from_carr(state, data, size, OTRUE);
+	return obin_string_from_carray(state, data, size);
 }
 
 ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 	ObinAny result;
-
+	ObinAny curPos;
 	obin_mem_t current;
 	obin_mem_t previous;
 
-	if(!obin_any_is_string(self)) {
-		return obin_raise_type_error(state, "obin_string_split call from other type", self);
-	}
+	_CHECK_STRING_TYPE(state, self, split);
+
 	if(!obin_any_is_string(separator)) {
-		return obin_raise_type_error(state, "String.split invalid argument type, String expected", self);
+		return obin_raise(state, obin_errors()->TypeError,
+						"String.split invalid argument type, String expected ", separator);
 	}
 
-	result = obin_array_new(state, OBIN_SPLIT_STRING_DEFAULT_ARRAY_SIZE);
+	result = obin_array_new(state, ObinNil);
 
 	if (_string_size(separator) > _string_size(self)) {
 		/*can`t split */
+		obin_array_append(state, result, obin_clone(state, self));
 		return result;
 	}
 
@@ -712,20 +666,23 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 	previous = 0;
 
 	while (OTRUE) {
-		current = obin_any_integer(
-				_string_finder_left(self, separator, previous, _string_size(self))
-				);
+		curPos = _string_finder_left(self, separator, previous, _string_size(self));
 
-		if (current == STRING_INDEX_NOT_FOUND) {
+		if (obin_any_is_true(obin_equal(state, curPos, obin_integers()->NotFound))) {
+
+			obin_array_append(state, result,
+						obin_string_from_carray(state, _string_data(self) + previous,
+								_string_size(self) - previous));
 			return result;
 		}
+		current = obin_any_integer(curPos);
 		if (current == 0) {
 			previous = current + _string_size(separator);
 			continue;
 		}
 
-		obin_array_add(state, result,
-				obin_string_from_carr(state, _string_data(self) + previous,
+		obin_array_append(state, result,
+				obin_string_from_carray(state, _string_data(self) + previous,
 						current - previous));
 
 		previous = current + _string_size(separator);
@@ -738,24 +695,24 @@ ObinAny obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
 	obin_char* data;
 	obin_mem_t size;
 
-	if(!obin_any_is_string(str1)) {
-		return obin_raise_type_error(state, "obin_string_concat call from other type", str1);
-	}
+	_CHECK_STRING_TYPE(state, str1, concat);
+
 	if(!obin_any_is_string(str2)) {
-		return obin_raise_type_error(state, "String.concat invalid argument type, String expected", str2);
+		return obin_raise(state, obin_errors()->TypeError,
+						"String.concat invalid argument type, String expected ", str2);
 	}
 
 	if (_string_size(str1) == 0) {
-		return obin_string_from_string(str2);
+		return obin_clone(state, str2);
 	}
 	if (_string_size(str2) == 0) {
-		return obin_string_from_string(str1);
+		return obin_clone(state, str1);
 	}
 
 	size = _string_size(str1) + _string_size(str2);
 
 	if (size == 0) {
-		return obin_string_empty();
+		return obin_strings()->Empty;
 	}
 
 	if (size == 1) {
@@ -770,7 +727,7 @@ ObinAny obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
 	obin_memcpy(data + _string_size(str1), _string_data(str2),
 			_string_size(str2));
 
-	return _obin_string_ar_array(state, data, size, OTRUE);
+	return _obin_string_from_carray(state, data, size);
 }
 
 ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection) {
