@@ -506,7 +506,7 @@ ObinAny _obin_string_find(ObinState* state, ObinAny haystack, ObinAny needle,
 	if ((pend - pstart) > _string_size(needle)) {
 		return obin_raise(state, obin_errors()->InvalidSliceError,
 					"String.search Invalid search range ",
-					obin_tuple2(state, obin_integer_new(pstart), obin_integer_new(pend)));
+					obin_tuple_pack(state, 2, obin_integer_new(pstart), obin_integer_new(pend)));
 	}
 
 	return finder(haystack, needle, pstart, pend);

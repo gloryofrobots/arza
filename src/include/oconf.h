@@ -78,6 +78,7 @@ typedef unsigned char obin_byte;
 #define OBIN_MAX_HEAP_SIZE 1024 * 1024 * 100
 
 #define OBIN_MAX_CAPACITY OBIN_MEM_MAX - 1
+/*TODO rename to OBIN_INDEX_NOT_FOUND */
 #define OBIN_INVALID_INDEX -1
 
 /*

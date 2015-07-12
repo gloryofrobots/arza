@@ -148,6 +148,7 @@ extern ObinAny ObinNothing;
 
 #define obin_any_is_string(any) (any.type == EOBIN_TYPE_STRING || any.type == EOBIN_TYPE_CHAR)
 #define obin_any_is_array(any) (any.type == EOBIN_TYPE_ARRAY)
+#define obin_any_is_tuple(any) (any.type == EOBIN_TYPE_TUPLE)
 #define obin_any_is_table(any) (any.type == EOBIN_TYPE_TABLE)
 #define obin_any_is_object(any) (any.type == EOBIN_TYPE_OBJECT)
 #define obin_any_is_cell(any) obin_type_is_cell(any.type)
