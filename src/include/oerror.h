@@ -8,7 +8,7 @@ typedef struct _ObinErrors {
 	ObinAny MemoryError;
 	ObinAny IOError;
 	ObinAny InternalError;
-	ObinAny InvalidSliceError;
+	ObinAny RangeError;
 	ObinAny TypeError;
 	ObinAny ValueError;
 	ObinAny IndexError;

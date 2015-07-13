@@ -190,8 +190,32 @@ obin_array_new(ObinState* state, ObinAny size) {
 	return obin_cell_new(EOBIN_TYPE_ARRAY, self);
 }
 
+ObinAny obin_array_indexof(ObinState* state, ObinAny self, ObinAny item);
+ObinAny obin_array_lastindexof(ObinState* state, ObinAny self, ObinAny item);
+ObinAny obin_array_pop(ObinState* state, ObinAny self);
+ObinAny obin_array_clear(ObinState* state, ObinAny self);
+ObinAny obin_array_removeitem(ObinState* state, ObinAny self, ObinAny item);
+ObinAny obin_array_removeat(ObinState* state, ObinAny self, ObinAny position);
+ObinAny obin_array_insert(ObinState* state, ObinAny self, ObinAny item, ObinAny position);
+ObinAny obin_array_merge(ObinState* state, ObinAny self, ObinAny sequence,
+		ObinAny start, ObinAny end);
+ObinAny obin_array_fill(ObinState* state, ObinAny self, ObinAny item,
+		ObinAny start, ObinAny end);
+ObinAny obin_array_reverse(ObinState* state, ObinAny self);
+/*
+ * implemented __add__
+ * */
+/*
+MAYBE IMPLEMENT IT IN SOURCE
+Array.prototype.sort()
+Array.prototype.splice()
+Array.prototype.concat()
+Array.prototype.slice()
+MAY BE INTERESTING THING
+Array.prototype.toSource()
+*/
 ObinAny
-obin_array_append(ObinState* state, ObinAny self, ObinAny value) {
+obin_array_push(ObinState* state, ObinAny self, ObinAny value) {
 	obin_mem_t new_size;
 	if(!obin_any_is_array(self)){
 		return obin_raise_type_error(state, "Array.append invalid call", self);

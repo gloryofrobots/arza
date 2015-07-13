@@ -13,7 +13,7 @@ obin_bool obin_module_error_init(ObinState* state) {
 	_Errors.MemoryError = ObinNil;
 	_Errors.IOError = ObinNil;
 	_Errors.InternalError = ObinNil;
-	_Errors.InvalidSliceError = ObinNil;
+	_Errors.RangeError = ObinNil;
 	_Errors.TypeError = ObinNil;
 	_Errors.ValueError = ObinNil;
 	_Errors.IndexError = ObinNil;

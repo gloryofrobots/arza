@@ -483,7 +483,7 @@ ObinAny _obin_string_find(ObinState* state, ObinAny haystack, ObinAny needle,
 		if (obin_any_integer(start) < 0
 				|| obin_any_integer(start) > haystack_size) {
 
-			return obin_raise(state, obin_errors()->InvalidSliceError,
+			return obin_raise(state, obin_errors()->RangeError,
 					"String.search Invalid start index for search ", start);
 		}
 
@@ -496,7 +496,7 @@ ObinAny _obin_string_find(ObinState* state, ObinAny haystack, ObinAny needle,
 		if (obin_any_integer(end) < 0 || obin_any_integer(end) > haystack_size
 				|| obin_any_integer(end) < pstart) {
 
-			return obin_raise(state, obin_errors()->InvalidSliceError,
+			return obin_raise(state, obin_errors()->RangeError,
 					"String.search Invalid end index for search ", end);
 		}
 
@@ -504,9 +504,10 @@ ObinAny _obin_string_find(ObinState* state, ObinAny haystack, ObinAny needle,
 	}
 
 	if ((pend - pstart) > _string_size(needle)) {
-		return obin_raise(state, obin_errors()->InvalidSliceError,
+		return obin_raise(state, obin_errors()->RangeError,
 					"String.search Invalid search range ",
-					obin_tuple_pack(state, 2, obin_integer_new(pstart), obin_integer_new(pend)));
+					obin_tuple_pack(state, 2,
+							obin_integer_new(pstart), obin_integer_new(pend)));
 	}
 
 	return finder(haystack, needle, pstart, pend);
