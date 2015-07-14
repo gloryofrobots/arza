@@ -166,6 +166,7 @@ OBIN_STMT_END
 #define obin_strncmp strncmp
 
 #define obin_memcpy memcpy
+#define obin_memmove memmove
 #define obin_strcpy strcpy
 #define obin_memset memset
 

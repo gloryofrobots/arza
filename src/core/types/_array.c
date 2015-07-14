@@ -9,6 +9,12 @@ typedef struct {
 	ObinAny* data;
 } ObinArray;
 
+#define _CHECK_SELF_TYPE(state, self, method) \
+	if(!obin_any_is_array(self)) { \
+		return obin_raise(state, obin_errors()->TypeError, \
+				"Array." #method "call from other type", self); \
+	} \
+
 #define _array(any) ((ObinArray*) (any.data.cell))
 #define _array_size(any) ((_array(any))->size)
 #define _array_capacity(any) ((_array(any))->capacity)
@@ -190,23 +196,91 @@ obin_array_new(ObinState* state, ObinAny size) {
 	return obin_cell_new(EOBIN_TYPE_ARRAY, self);
 }
 
-ObinAny obin_array_indexof(ObinState* state, ObinAny self, ObinAny item);
-ObinAny obin_array_lastindexof(ObinState* state, ObinAny self, ObinAny item);
-ObinAny obin_array_pop(ObinState* state, ObinAny self);
-ObinAny obin_array_clear(ObinState* state, ObinAny self);
-ObinAny obin_array_removeitem(ObinState* state, ObinAny self, ObinAny item);
-ObinAny obin_array_removeat(ObinState* state, ObinAny self, ObinAny position);
-ObinAny obin_array_insert(ObinState* state, ObinAny self, ObinAny item, ObinAny position);
-ObinAny obin_array_merge(ObinState* state, ObinAny self, ObinAny sequence,
-		ObinAny start, ObinAny end);
-ObinAny obin_array_fill(ObinState* state, ObinAny self, ObinAny item,
-		ObinAny start, ObinAny end);
-ObinAny obin_array_reverse(ObinState* state, ObinAny self);
+static obin_mem_t _array_inflate(ObinState* state, ObinAny self, obin_index start, obin_index end) {
+	obin_mem_t new_size, old_size;
+	obin_mem_t length;
+	obin_index i, j;
+
+	length = end - start;
+	old_size = _array_size(self);
+	new_size = old_size + length;
+
+	if (new_size > _array_capacity(self)) {
+		if ( !_array_grow(state, self, length) ){
+			obin_raise(state, obin_errors()->MemoryError,
+				"__array_inflate __Array__ can't grow", obin_integer_new(length));
+			return 0;
+		}
+	}
+
+	obin_memmove(_array_data(self) + length, _array_data(self), old_size * sizeof(ObinAny));
+	return new_size;
+}
+
+ObinAny obin_array_insert_collection(ObinState* state, ObinAny self, ObinAny collection, ObinAny position) {
+	ObinAny item;
+	obin_index start, end, new_size, collection_size, i, j;
+
+	start = obin_any_integer(position);
+	collection_size = obin_any_integer(obin_length(state, collection));
+	end = start + collection_size;
+
+	if(start > _array_size(self)) {
+		return obin_raise(state, obin_errors()->KeyError, "obin_array_insert_collection invalid index", position);
+	} else if(start == _array_size(self)) {
+		return obin_add(state, self, item);
+	}
+
+	new_size = _array_inflate(state, self, start, end);
+	if(!new_size) {
+		return obin_raise(state, obin_errors()->KeyError,
+				"obin_array_insert inflate error", position);
+	}
+
+	for(i=start, j =0; i<end, j<collection_size; ++i,++j) {
+		_array_setitem(self, i, obin_getitem(state, collection, obin_integer_new(j)));
+	}
+
+	_array_size(self) = new_size;
+
+	return obin_integer_new(new_size);
+}
+
+ObinAny obin_array_insert(ObinState* state, ObinAny self, ObinAny item, ObinAny position) {
+	obin_mem_t new_size;
+	obin_mem_t insert_index;
+
+	_CHECK_SELF_TYPE(state, self, obin_array_insert);
+
+	insert_index = obin_any_integer(position);
+	if(insert_index > _array_size(self)) {
+		return obin_raise(state, obin_errors()->KeyError, "obin_array_insert invalid index", position);
+	} else if(insert_index == _array_size(self)) {
+		return obin_array_push(state, self, item);
+	}
+
+	new_size = _array_inflate(state, self, insert_index, insert_index + 1);
+	if(!new_size) {
+		return obin_raise(state, obin_errors()->KeyError,
+				"obin_array_insert inflate error", position);
+	}
+
+	_array_setitem(self, insert_index, item);
+
+	_array_size(self) = new_size;
+	return obin_integer_new(new_size);
+}
+
 /*
  * implemented __add__
  * */
 /*
 MAYBE IMPLEMENT IT IN SOURCE
+ObinAny obin_array_merge(ObinState* state, ObinAny self, ObinAny sequence,
+		ObinAny start, ObinAny end);
+ObinAny obin_array_fill(ObinState* state, ObinAny self, ObinAny item,
+		ObinAny start, ObinAny end);
+ObinAny obin_array_reverse(ObinState* state, ObinAny self);
 Array.prototype.sort()
 Array.prototype.splice()
 Array.prototype.concat()
@@ -234,6 +308,20 @@ obin_array_push(ObinState* state, ObinAny self, ObinAny value) {
 	_array_size(self) = new_size;
 
 	return obin_integer_new(new_size);
+}
+
+ObinAny obin_array_lastindexof(ObinState* state, ObinAny self, ObinAny item){
+	obin_mem_t i;
+
+	_CHECK_SELF_TYPE(state, self, lastindexof);
+
+	for(i=_array_last_index(self); i>=0; --i) {
+		if (obin_any_is_true(obin_equal(state, _array_item(self, i), item))) {
+			return obin_integer_new(i);
+		}
+	}
+
+	return obin_integers()->NotFound;
 }
 
 ObinAny obin_array_indexof(ObinState* state, ObinAny self, ObinAny item) {
@@ -286,32 +374,32 @@ ObinAny obin_array_remove(ObinState* state, ObinAny self, ObinAny item) {
 	}
 
 	if(!find) {
-		return ObinNothing;
+		return ObinFalse;
 	}
 
 	obin_delitem(state, self, obin_integer_new(i));
-	return ObinNothing;
+	return ObinTrue;
 }
 
 /* PRIVATE */
-static ObinAny
-_array_grow(ObinState* state, ObinAny self) {
+static obin_bool
+_array_grow(ObinState* state, ObinAny self, obin_index count_elements) {
 	obin_mem_t new_capacity;
-    if (_array_capacity(self) > OBIN_MAX_CAPACITY - OBIN_DEFAULT_ARRAY_SIZE) {
+    if (_array_capacity(self) > OBIN_MAX_CAPACITY - (OBIN_DEFAULT_ARRAY_SIZE + count_elements)) {
     	//TODO DETAILED EXPR
     	new_capacity = OBIN_MAX_CAPACITY;
     } else {
-    	new_capacity = _array_capacity(self) + OBIN_DEFAULT_ARRAY_SIZE;
+    	new_capacity = _array_capacity(self) + OBIN_DEFAULT_ARRAY_SIZE + count_elements;
     }
 
 	if (new_capacity <= _array_capacity(self)) {
-		return ObinFalse;
+		return OFALSE;
 	}
 
 	obin_realloc(_array_data(self), new_capacity);
 	_array_capacity(self) = new_capacity;
 
-	return ObinTrue;
+	return OTRUE;
 }
 
 
