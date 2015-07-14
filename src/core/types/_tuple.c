@@ -92,35 +92,16 @@ static ObinAny __tobool__(ObinState* state, ObinAny self) {
 }
 
 static ObinAny __tostring__(ObinState* state, ObinAny self) {
-	ObinAny array;
-	ObinAny iterator;
-	ObinAny item;
-	obin_integer size;
     ObinAny result;
 
     _CHECK_SELF_TYPE(state, self, __tostring__);
 
-	size =_size(self) + 2;
-	array = obin_array_new(state, obin_integer_new(size));
-
-	iterator = obin_iterator(state, self);
-
-	while (OTRUE) {
-		item = obin_next(state, iterator);
-		if (obin_is_stop_iteration(item)) {
-			break;
-		}
-
-		obin_array_append(state, array, obin_tostring(state, item));
-	}
-
-	result = obin_string_join(state, obin_char_new(','), array);
+	result = obin_string_join(state, obin_char_new(','), self);
 	result = obin_string_concat(state, obin_char_new('('), result);
 	result = obin_string_concat(state, result, obin_string_new(state, ",)"));
 
 	return result;
 }
-
 
 static ObinAny __clone__(ObinState* state, ObinAny self) {
 	ObinAny result;

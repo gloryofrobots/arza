@@ -87,6 +87,7 @@ static void __tmg_cell_destroy__(ObinState* state, ObinCell* self) {
 
 ObinBaseTrait __BASE__ = {
 	 0,
+	 0,
 	 __tmg_cell_destroy__,
 	 0, /* clone */
 	 0, /*__compare__ */

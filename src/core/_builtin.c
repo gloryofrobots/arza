@@ -223,6 +223,19 @@ ObinAny obin_delitem(ObinState* state, ObinAny any, ObinAny key){
 	return method(state, any, key);
 }
 
+ObinAny obin_add(ObinState* state, ObinAny first, ObinAny second) {
+	obin_method_2 method;
+
+	method = _number_method(state, first, __add__);
+	if (!method) {
+		obin_raise(state, obin_errors()->TypeError,
+				"__add__ protocol not supported", first);
+	}
+
+	return method(state, first, second);
+
+}
+
 ObinAny obin_setitem(ObinState* state, ObinAny any, ObinAny key, ObinAny value){
 	obin_method_3 method;
 

@@ -4,9 +4,9 @@ static void Test_BaseTypes(void) {
 	CU_ASSERT_EQUAL(obin_any_type(ObinNil), EOBIN_TYPE_NIL);
 	CU_ASSERT_EQUAL(obin_any_type(ObinNothing), EOBIN_TYPE_NOTHING);
 	CU_ASSERT_EQUAL(obin_any_type(ObinTrue), EOBIN_TYPE_TRUE);
-	CU_ASSERT_EQUAL(obin_any_integer(ObinLesser), -1);
-	CU_ASSERT_EQUAL(obin_any_integer(ObinGreater), 1);
-	CU_ASSERT_EQUAL(obin_any_integer(ObinEqual), 0);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_integers()->Lesser), -1);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_integers()->Greater), 1);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_integers()->Equal), 0);
 }
 static void Test_BaseAnyNew(void) {
 	ObinAny any = obin_any_new();

@@ -190,6 +190,7 @@ typedef struct {
 
 typedef struct {
 	obin_method __tointeger__;
+	obin_method_2 __add__;
 } ObinNumberTrait;
 
 typedef struct {
@@ -249,6 +250,8 @@ ObinAny obin_delitem(ObinState* state, ObinAny self, ObinAny key);
 ObinAny obin_next(ObinState * state, ObinAny iterator);
 
 ObinAny obin_is(ObinState * state, ObinAny first, ObinAny second);
+/*Number*/
+ObinAny obin_add(ObinState* state, ObinAny first, ObinAny second);
 
 /*@return list of results from function applied to iterable
 ObinAny obin_map(ObinState * state, obin_function function, ObinAny iterable);

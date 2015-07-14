@@ -212,7 +212,8 @@ static ObinAny __iterator__(ObinState* state, ObinAny self) {
 static ObinAny __clone__(ObinState* state, ObinAny self) {
 	return obin_string_from_carray(state, _string_data(self), _string_size(self));
 }
-ObinCollectionTrait __COLLECTION__ = {
+
+static ObinCollectionTrait __COLLECTION__ = {
 	 __iterator__,
 	 __length__,
 	 __getitem__,
@@ -221,7 +222,7 @@ ObinCollectionTrait __COLLECTION__ = {
 	 0, /*__delitem__,*/
 } ;
 
-ObinBaseTrait __BASE__ = {
+static ObinBaseTrait __BASE__ = {
 	 __tostring__,
 	 __tobool__,
 	 0, /*__destroy__*/
@@ -663,7 +664,7 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 
 	if (_string_size(separator) > _string_size(self)) {
 		/*can`t split */
-		obin_array_append(state, result, obin_clone(state, self));
+		obin_array_push(state, result, obin_clone(state, self));
 		return result;
 	}
 
@@ -675,7 +676,7 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 
 		if (obin_any_is_true(obin_equal(state, curPos, obin_integers()->NotFound))) {
 
-			obin_array_append(state, result,
+			obin_array_push(state, result,
 						obin_string_from_carray(state, _string_data(self) + previous,
 								_string_size(self) - previous));
 			return result;
@@ -686,7 +687,7 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 			continue;
 		}
 
-		obin_array_append(state, result,
+		obin_array_push(state, result,
 				obin_string_from_carray(state, _string_data(self) + previous,
 						current - previous));
 
@@ -786,7 +787,7 @@ ObinAny obin_string_pack(ObinState* state, obin_index count, ...){
     va_start(vargs, count);
     for (i = 0; i < count; i++) {
     	item = va_arg(vargs, ObinAny);
-    	obin_array_append(state, array, item);
+    	obin_array_push(state, array, item);
     }
 
     va_end(vargs);
