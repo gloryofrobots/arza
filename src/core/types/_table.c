@@ -1,6 +1,8 @@
 #include <obin.h>
 #define __Table__ "__Table__"
 
+static ObinNativeTraits __TRAITS__;
+
 typedef struct _Pair {
 	ObinAny key;
 	ObinAny value;
@@ -26,7 +28,7 @@ typedef struct {
 	Bucket* buckets;
 } ObinTable;
 
-#define _table(any) ((ObinTable*) (any.data.cell))
+#define _table(any) ((ObinTable*) obin_any_cell(any))
 #define _size(any) ((_table(any))->size)
 #define _capacity(any) ((_table(any))->capacity)
 #define _buckets(any) ((_table(any))->buckets)
@@ -46,6 +48,191 @@ static obin_mem_t _next_power_of_2(obin_mem_t v){
 	}
 	v++;
 	return v;
+}
+
+ObinAny obin_table_new(ObinState* state, ObinAny size){
+	ObinTable * self;
+	obin_integer i;
+
+	if(obin_any_is_nil(size)){
+		size = obin_integer_new(OBIN_DEFAULT_TABLE_SIZE);
+	}
+	if (!obin_integer_is_fit_to_memsize(size)) {
+		return obin_raise_memory_error(state, "obin_table_new:: size not fit to memory", size );
+	}
+
+	self = obin_malloc_type(state, ObinTable);
+
+	self->capacity = _next_power_of_2(obin_any_mem_t(size));
+
+	self->buckets = obin_malloc_array(state, Bucket, self->capacity);
+	self->size = 0;
+	self->native_traits = &__TRAITS__;
+
+	for (i=0; i < self->capacity; i++) {
+		obin_memset(self->buckets[i], 0, sizeof(Bucket));
+	}
+
+	return obin_cell_new(EOBIN_TYPE_TABLE, self);
+}
+
+static ObinAny _obin_table_resize(ObinState* state, ObinAny self, obin_mem_t new_capacity) {
+	Bucket* new_buckets;
+	Pair* pair;
+	obin_mem_t i;
+
+	new_buckets = obin_malloc_array(state, Bucket, new_capacity);
+
+	for(i=0; i < _capacity(self); i++) {
+		pair = _bucket(self, i)->head;
+		while(pair) {
+			_insert_into_buckets(state, new_buckets, new_capacity, pair->key, pair->value);
+			pair = pair->next;
+		}
+	}
+
+	_clear_buckets(_buckets(self), _capacity(self));
+	obin_free(_buckets(self));
+
+	_buckets(self) = new_buckets;
+	_capacity(self) = new_capacity;
+
+	return ObinNothing;
+}
+
+static obin_bool _is_excided_load(ObinAny self) {
+	return  _size(self) > (_capacity(self) * 4);
+}
+
+static void _clear_bucket(Bucket* bucket){
+	Pair* current;
+	Pair* next;
+
+	current = bucket->head;
+	next = current;
+	while(current) {
+		next = current->next;
+		obin_free(current);
+		current = next;
+	}
+
+	bucket->head = 0;
+	bucket->size = 0;
+}
+
+static void _clear_buckets(Bucket* buckets, obin_mem_t size) {
+	obin_mem_t i;
+
+	for(i = 0; i > size; i++) {
+		_clear_bucket(buckets[i]);
+	}
+}
+ObinAny obin_table_clear(ObinState* state, ObinAny self){
+
+	if(!obin_any_is_table(self)){
+		return obin_raise_type_error(state, "Table.clear invalid call", self);
+	}
+
+	_clear_buckets(_buckets(self), _capacity(self));
+
+	_size(self) = 0;
+
+	return ObinNothing;
+}
+
+ObinAny obin_table_update(ObinState* state, ObinAny self, ObinAny other) {
+	ObinAny iterator, item;
+
+	if(!obin_any_is_table(self)){
+		return obin_raise_type_error(state, "Table.update invalid call", self);
+	}
+
+	iterator = obin_iterator(state, other);
+
+	while (OTRUE) {
+		/*tuple*/
+		item = obin_next(state, iterator);
+		if (obin_is_stop_iteration(item)) {
+			break;
+		}
+
+		obin_setitem(state, self,
+				obin_getfirst(state, item),
+				obin_getsecond(state, item));
+	}
+
+	return ObinNothing;
+}
+
+ObinAny obin_table_items(ObinState* state, ObinAny self){
+	ObinAny result, iterator, item;
+
+	if(!obin_any_is_table(self)){
+		return obin_raise_type_error(state, "Table.items invalid call", self);
+	}
+
+	result = obin_array_new(state, _size(self));
+
+	iterator = obin_iterator(state, self);
+
+	while (OTRUE) {
+		/*tuple*/
+		item = obin_next(state, iterator);
+		if (obin_is_stop_iteration(item)) {
+			break;
+		}
+		obin_array_append(state, result, item);
+	}
+
+	return result;
+}
+
+ObinAny obin_table_keys(ObinState* state, ObinAny self){
+	ObinAny result, iterator, item;
+
+	if(!obin_any_is_table(self)){
+		return obin_raise_type_error(state, "Table.keys invalid call", self);
+	}
+
+	result = obin_array_new(state, _size(self));
+
+	iterator = obin_iterator(state, self);
+
+	while (OTRUE) {
+		/*tuple*/
+		item = obin_next(state, iterator);
+		if (obin_is_stop_iteration(item)) {
+			break;
+		}
+		obin_array_append(state, result, obin_getfirst(state, item));
+
+	}
+
+	return result;
+}
+
+ObinAny obin_table_values(ObinState* state, ObinAny self){
+	ObinAny result, iterator, item;
+
+	if(!obin_any_is_table(self)){
+		return obin_raise_type_error(state, "Table.values invalid call", self);
+	}
+
+	result = obin_array_new(state, _size(self));
+
+	iterator = obin_iterator(state, self);
+
+	while (OTRUE) {
+		/*tuple*/
+		item = obin_next(state, iterator);
+		if (obin_is_stop_iteration(item)) {
+			break;
+		}
+		obin_array_append(state, result, obin_getsecond(state, item));
+
+	}
+
+	return result;
 }
 
 /* TRAIT */
@@ -140,6 +327,14 @@ static ObinAny __destroy__(ObinState* state, ObinAny self) {
 	obin_free(_buckets(self));
 	obin_free(obin_any_cell(self));
 	return ObinNothing;
+}
+static void __mark__(ObinState* state, ObinAny self, obin_proc mark) {
+	/*TODO each here*/
+	obin_index i;
+
+	for(i=0; i<_array_size(self); ++i) {
+		mark(state, _array_item(self, i));
+	}
 }
 
 static Pair* _pair_new(ObinState* state, Pair* previous, Pair* next, ObinAny key, ObinAny value) {
@@ -358,187 +553,3 @@ static ObinNativeTraits __TRAITS__ = {
 	 0, /*generator*/
 	 0, /*number*/
 };
-ObinAny obin_table_new(ObinState* state, ObinAny size){
-	ObinTable * self;
-	obin_integer i;
-
-	if(obin_any_is_nil(size)){
-		size = obin_integer_new(OBIN_DEFAULT_TABLE_SIZE);
-	}
-	if (!obin_integer_is_fit_to_memsize(size)) {
-		return obin_raise_memory_error(state, "obin_table_new:: size not fit to memory", size );
-	}
-
-	self = obin_malloc_type(state, ObinTable);
-
-	self->capacity = _next_power_of_2(obin_any_mem_t(size));
-
-	self->buckets = obin_malloc_array(state, Bucket, self->capacity);
-	self->size = 0;
-	self->native_traits = &__TRAITS__;
-
-	for (i=0; i < self->capacity; i++) {
-		obin_memset(self->buckets[i], 0, sizeof(Bucket));
-	}
-
-	return obin_cell_new(EOBIN_TYPE_TABLE, self);
-}
-
-static ObinAny _obin_table_resize(ObinState* state, ObinAny self, obin_mem_t new_capacity) {
-	Bucket* new_buckets;
-	Pair* pair;
-	obin_mem_t i;
-
-	new_buckets = obin_malloc_array(state, Bucket, new_capacity);
-
-	for(i=0; i < _capacity(self); i++) {
-		pair = _bucket(self, i)->head;
-		while(pair) {
-			_insert_into_buckets(state, new_buckets, new_capacity, pair->key, pair->value);
-			pair = pair->next;
-		}
-	}
-
-	_clear_buckets(_buckets(self), _capacity(self));
-	obin_free(_buckets(self));
-
-	_buckets(self) = new_buckets;
-	_capacity(self) = new_capacity;
-
-	return ObinNothing;
-}
-
-static obin_bool _is_excided_load(ObinAny self) {
-	return  _size(self) > (_capacity(self) * 4);
-}
-
-static void _clear_bucket(Bucket* bucket){
-	Pair* current;
-	Pair* next;
-
-	current = bucket->head;
-	next = current;
-	while(current) {
-		next = current->next;
-		obin_free(current);
-		current = next;
-	}
-
-	bucket->head = 0;
-	bucket->size = 0;
-}
-
-static void _clear_buckets(Bucket* buckets, obin_mem_t size) {
-	obin_mem_t i;
-
-	for(i = 0; i > size; i++) {
-		_clear_bucket(buckets[i]);
-	}
-}
-ObinAny obin_table_clear(ObinState* state, ObinAny self){
-
-	if(!obin_any_is_table(self)){
-		return obin_raise_type_error(state, "Table.clear invalid call", self);
-	}
-
-	_clear_buckets(_buckets(self), _capacity(self));
-
-	_size(self) = 0;
-
-	return ObinNothing;
-}
-
-ObinAny obin_table_update(ObinState* state, ObinAny self, ObinAny other) {
-	ObinAny iterator, item;
-
-	if(!obin_any_is_table(self)){
-		return obin_raise_type_error(state, "Table.update invalid call", self);
-	}
-
-	iterator = obin_iterator(state, other);
-
-	while (OTRUE) {
-		/*tuple*/
-		item = obin_next(state, iterator);
-		if (obin_is_stop_iteration(item)) {
-			break;
-		}
-
-		obin_setitem(state, self,
-				obin_getfirst(state, item),
-				obin_getsecond(state, item));
-	}
-
-	return ObinNothing;
-}
-
-ObinAny obin_table_items(ObinState* state, ObinAny self){
-	ObinAny result, iterator, item;
-
-	if(!obin_any_is_table(self)){
-		return obin_raise_type_error(state, "Table.items invalid call", self);
-	}
-
-	result = obin_array_new(state, _size(self));
-
-	iterator = obin_iterator(state, self);
-
-	while (OTRUE) {
-		/*tuple*/
-		item = obin_next(state, iterator);
-		if (obin_is_stop_iteration(item)) {
-			break;
-		}
-		obin_array_append(state, result, item);
-	}
-
-	return result;
-}
-
-ObinAny obin_table_keys(ObinState* state, ObinAny self){
-	ObinAny result, iterator, item;
-
-	if(!obin_any_is_table(self)){
-		return obin_raise_type_error(state, "Table.keys invalid call", self);
-	}
-
-	result = obin_array_new(state, _size(self));
-
-	iterator = obin_iterator(state, self);
-
-	while (OTRUE) {
-		/*tuple*/
-		item = obin_next(state, iterator);
-		if (obin_is_stop_iteration(item)) {
-			break;
-		}
-		obin_array_append(state, result, obin_getfirst(state, item));
-
-	}
-
-	return result;
-}
-
-ObinAny obin_table_values(ObinState* state, ObinAny self){
-	ObinAny result, iterator, item;
-
-	if(!obin_any_is_table(self)){
-		return obin_raise_type_error(state, "Table.values invalid call", self);
-	}
-
-	result = obin_array_new(state, _size(self));
-
-	iterator = obin_iterator(state, self);
-
-	while (OTRUE) {
-		/*tuple*/
-		item = obin_next(state, iterator);
-		if (obin_is_stop_iteration(item)) {
-			break;
-		}
-		obin_array_append(state, result, obin_getsecond(state, item));
-
-	}
-
-	return result;
-}
