@@ -56,7 +56,7 @@ obin_array_new(ObinState* state, ObinAny size) {
 				"obin_array_new " __Array__ "size not fit to memory", size);
 	}
 
-	self = obin_malloc_type(state, ObinArray);
+	self = obin_new(state, ObinArray);
 
 	capacity = (obin_mem_t) obin_any_integer(size);
 	self->data = obin_malloc_array(state, ObinAny, capacity);

@@ -1,4 +1,5 @@
 #include <obin.h>
+#define __Table__ "__Table__"
 
 typedef struct _Pair {
 	ObinAny key;
@@ -48,6 +49,57 @@ static obin_mem_t _next_power_of_2(obin_mem_t v){
 }
 
 /* TRAIT */
+typedef struct {
+	OBIN_CELL_HEADER;
+	ObinAny source;
+	Pair* pair;
+	obin_mem_t bucket;
+} TableLazyIterator;
+
+static ObinAny _table_lazy_iterator__next__(ObinState* state, ObinAny self) {
+	TableLazyIterator * it;
+	ObinAny result;
+
+	it = (TableLazyIterator*) obin_any_cell(self);
+	if(it->pair) {
+		result = obin_tuple_new(state, 2, it->pair->key, it->pair->value);
+		it->pair = it->pair->next;
+		return result;
+	} else {
+		if(it->bucket >= _size(it->source)) {
+			return ObinNothing;
+		}
+		it->bucket++;
+		it->pair = (_bucket(it->source, it->bucket)).head;
+		return _table_lazy_iterator__next__(state, self);
+	}
+}
+
+static ObinGeneratorTrait __TABLE_LAZY_ITERATOR_GENERATOR__ = {
+	_table_lazy_iterator__next__
+};
+
+static ObinNativeTraits __TABLE_LAZY_ITERATOR_TRAITS__ = {
+	"__TableIterator__",
+	 0, /*base*/
+	 0, /*collection*/
+	 &__TABLE_LAZY_ITERATOR_GENERATOR__, /*generator*/
+	 0, /*number*/
+};
+
+static ObinAny __iterator__(ObinState* state, ObinAny self) {
+	TableLazyIterator * iterator;
+
+	iterator = obin_new(state, TableLazyIterator);
+	iterator->source = self;
+	iterator->bucket = 0;
+	iterator->pair = _bucket(self, 0).head;
+	return obin_cell_new(EOBIN_TYPE_OBJECT, iterator, &__TABLE_LAZY_ITERATOR_TRAITS__);
+}
+
+static ObinAny __tobool__(ObinState* state, ObinAny self) {
+	return obin_bool_new(_size(self) > 0);
+}
 static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	ObinAny array;
 	ObinAny iterator;
@@ -59,7 +111,7 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
     kv_separator = obin_string_new(state, ": ");
     items_separator = obin_string_new(state, ", ");
 
-	array = obin_array_new(state, _size(self));
+	array = obin_array_new(state, obin_integer_new(_size(self)));
 
 	iterator = obin_iterator(state, self);
 
@@ -74,9 +126,11 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	}
 
 	result = obin_string_join(state, items_separator, array);
-	result = obin_string_concat(state, obin_char_new(state, '{'), result);
-	result = obin_string_concat(state, result, obin_char_new(state, '}'));
+	result = obin_string_concat(state, obin_char_new('{'), result);
+	result = obin_string_concat(state, result, obin_char_new('}'));
 
+	obin_release(state, iterator);
+	obin_release(state, array);
 	return result;
 }
 
@@ -146,60 +200,6 @@ static ObinAny __clone__(ObinState* state, ObinAny self) {
 	return result;
 }
 
-typedef struct {
-	OBIN_CELL_HEADER;
-	ObinAny source;
-	Pair* pair;
-	obin_mem_t bucket;
-} TableLazyIterator;
-
-static ObinAny _table_lazy_iterator__next__(ObinState* state, ObinAny self) {
-	TableLazyIterator * it;
-	ObinAny result;
-
-	it = (TableLazyIterator*) obin_any_cell(self);
-	if(it->pair) {
-		result = obin_tuple_new(state, 2, it->pair->key, it->pair->value);
-		it->pair = it->pair->next;
-		return result;
-	} else {
-		if(it->bucket >= _size(it->source)) {
-			return ObinNothing;
-		}
-		it->bucket++;
-		it->pair = (_bucket(it->source, it->bucket)).head;
-		return _table_lazy_iterator__next__(state, self);
-	}
-}
-
-static ObinNativeTraits __TABLE_LAZY_ITERATOR_TRAITS__ = {
-	 0, /*__tostring__,*/
-	 0, /*__destroy__,*/
-	 0, /*__clone__,*/
-	 0, /*__compare__,*/
-	 0, /*__hash__,*/
-
-	 0, /*__iterator__,*/
-	 0, /*__length__,*/
-	 0, /*__getitem__,*/
-	 0, /*__setitem__,*/
-	 0, /*__hasitem__,*/
-	 0, /*__delitem__,*/
-
-	 _table_lazy_iterator__next__
-};
-
-static ObinAny __iterator__(ObinState* state, ObinAny self) {
-	TableLazyIterator * iterator;
-
-	iterator = obin_malloc_type(state, TableLazyIterator);
-	iterator->source = self;
-	iterator->bucket = 0;
-	iterator->pair = _bucket(self, 0).head;
-
-	obin_cell_set_native_traits(iterator, __TABLE_LAZY_ITERATOR_TRAITS__);
-	return obin_cell_new(iterator);
-}
 
 static ObinAny __length__(ObinState* state, ObinAny self) {
 	return obin_integer_new(_size(self));
@@ -331,23 +331,33 @@ __delitem__(ObinState* state, ObinAny self, ObinAny key){
 	return ObinNothing;
 }
 
-static ObinNativeTraits __TRAITS__ = {
-    &__tostring__,
-    &__destroy__,
-	&__clone__,
-	&obin_collection_compare,
-	0, /*__hash__*/
-
+static ObinCollectionTrait __COLLECTION__ = {
 	 __iterator__,
 	 __length__,
 	 __getitem__,
 	 __setitem__,
 	 __hasitem__,
 	 __delitem__,
+} ;
 
-	 0, /*__next__*/
+static ObinBaseTrait __BASE__ = {
+	 __tostring__,
+	 __tobool__,
+	 __destroy__,
+	 __clone__,
+	 obin_collection_compare,
+	 0,
+	 __mark__
 };
 
+static ObinNativeTraits __TRAITS__ = {
+	__Table__,
+	 /*base*/
+	 &__BASE__,
+	 &__COLLECTION__, /*collection*/
+	 0, /*generator*/
+	 0, /*number*/
+};
 ObinAny obin_table_new(ObinState* state, ObinAny size){
 	ObinTable * self;
 	obin_integer i;

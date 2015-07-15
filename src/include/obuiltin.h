@@ -240,9 +240,10 @@ ObinAny obin_length(ObinState* state, ObinAny self);
 
 ObinAny obin_getitem(ObinState* state, ObinAny self, ObinAny key);
 /*shortcuts for tuples and arrays*/
-#define obin_getfirst(state, item) obin_getitem(state, item, ObinZero)
-#define obin_getsecond(state, item) obin_getitem(state, item, ObinOne)
-#define obin_getthird(state, item) obin_getitem(state, item, ObinTwo)
+#define obin_getfirst(state, coll) obin_getitem(state, coll, obin_integer_new(0))
+#define obin_getsecond(state, coll) obin_getitem(state, coll, obin_integer_new(1))
+#define obin_getthird(state, coll) obin_getitem(state, coll, obin_integer_new(2))
+
 ObinAny obin_setitem(ObinState* state, ObinAny self, ObinAny key, ObinAny value);
 ObinAny obin_hasitem(ObinState* state, ObinAny self, ObinAny key);
 ObinAny obin_delitem(ObinState* state, ObinAny self, ObinAny key);
