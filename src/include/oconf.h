@@ -72,6 +72,7 @@ typedef unsigned char obin_byte;
 
 #define OBIN_DEFAULT_ARRAY_SIZE 10
 #define OBIN_DEFAULT_TABLE_SIZE 4
+#define OBIN_TABLE_LOAD_FACTOR 0.8
 
 /*TODO replace it with bytes */
 #define OBIN_DEFAULT_HEAP_SIZE 1024 * 1024
