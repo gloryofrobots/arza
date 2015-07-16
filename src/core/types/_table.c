@@ -50,7 +50,6 @@ static ObinAny __setitem__(ObinState* state, ObinAny self, ObinAny key, ObinAny 
 
 ObinAny obin_table_new(ObinState* state, ObinAny size){
 	ObinTable * self;
-	obin_integer i;
 
 	if(obin_any_is_nil(size)){
 		size = obin_integer_new(OBIN_DEFAULT_TABLE_SIZE);
@@ -68,7 +67,7 @@ ObinAny obin_table_new(ObinState* state, ObinAny size){
 	self->body = obin_malloc_array(state, _ObinHashTableEntry, self->capacity);
 	self->size = 0;
 
-	return obin_cell_new(EOBIN_TYPE_TABLE, self, &__TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_TABLE, (ObinCell*)self, &__TRAITS__);
 }
 
 static void _obin_table_resize(ObinState* state, ObinAny self, obin_mem_t new_capacity) {
@@ -79,13 +78,13 @@ static void _obin_table_resize(ObinState* state, ObinAny self, obin_mem_t new_ca
 	_body(self) = obin_malloc_array(state, _ObinHashTableEntry, new_capacity);
 	_capacity(self) = new_capacity;
 
-	for (int i = 0; i < old_capacity; i++) {
+	for (i = 0; i < old_capacity; i++) {
 		if (old_body[i].isset) {
 			__setitem__(state, self, old_body[i].key, old_body[i].value);
 		}
 	}
 
-	obin_free(old_body);
+	obin_free(state, old_body);
 }
 
 static obin_bool _is_excided_load(ObinAny self) {
@@ -93,11 +92,11 @@ static obin_bool _is_excided_load(ObinAny self) {
 }
 
 ObinAny obin_table_clear(ObinState* state, ObinAny self){
-	obin_mem_t i;
+	obin_index i;
 
 	_CHECK_SELF_TYPE(state, self, obin_table_clear);
 
-	for (int i = 0; i < _capacity(self); i++) {
+	for (i = 0; i < _capacity(self); i++) {
 		_body(self)[i].isset = OFALSE;
 	}
 
@@ -133,7 +132,7 @@ ObinAny obin_table_items(ObinState* state, ObinAny self){
 
 	_CHECK_SELF_TYPE(state, self, obin_table_items);
 
-	result = obin_array_new(state, _size(self));
+	result = obin_array_new(state, obin_integer_new(_size(self)));
 
 	iterator = obin_iterator(state, self);
 
@@ -143,7 +142,7 @@ ObinAny obin_table_items(ObinState* state, ObinAny self){
 		if (obin_is_stop_iteration(item)) {
 			break;
 		}
-		obin_array_append(state, result, item);
+		obin_array_push(state, result, item);
 	}
 
 	return result;
@@ -154,7 +153,7 @@ ObinAny obin_table_keys(ObinState* state, ObinAny self){
 
 	_CHECK_SELF_TYPE(state, self, obin_table_keys);
 
-	result = obin_array_new(state, _size(self));
+	result = obin_array_new(state, obin_integer_new(_size(self)));
 
 	iterator = obin_iterator(state, self);
 
@@ -164,7 +163,7 @@ ObinAny obin_table_keys(ObinState* state, ObinAny self){
 		if (obin_is_stop_iteration(item)) {
 			break;
 		}
-		obin_array_append(state, result, obin_getfirst(state, item));
+		obin_array_push(state, result, obin_getfirst(state, item));
 
 	}
 
@@ -176,7 +175,7 @@ ObinAny obin_table_values(ObinState* state, ObinAny self){
 
 	_CHECK_SELF_TYPE(state, self, obin_table_values);
 
-	result = obin_array_new(state, _size(self));
+	result = obin_array_new(state, obin_integer_new(_size(self)));
 
 	iterator = obin_iterator(state, self);
 
@@ -186,7 +185,7 @@ ObinAny obin_table_values(ObinState* state, ObinAny self){
 		if (obin_is_stop_iteration(item)) {
 			break;
 		}
-		obin_array_append(state, result, obin_getsecond(state, item));
+		obin_array_push(state, result, obin_getsecond(state, item));
 
 	}
 
@@ -241,7 +240,7 @@ static ObinAny __iterator__(ObinState* state, ObinAny self) {
 	iterator = obin_new(state, TableIterator);
 	iterator->source = self;
 	iterator->index = 0;
-	return obin_cell_new(EOBIN_TYPE_OBJECT, iterator, &__TABLE_ITERATOR_TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_OBJECT, (ObinCell*)iterator, &__TABLE_ITERATOR_TRAITS__);
 }
 
 static ObinAny __tobool__(ObinState* state, ObinAny self) {
@@ -249,6 +248,7 @@ static ObinAny __tobool__(ObinState* state, ObinAny self) {
 
 	return obin_bool_new(_size(self) > 0);
 }
+
 static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	ObinAny array;
 	ObinAny iterator;
@@ -273,7 +273,7 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 			break;
 		}
 
-		obin_array_append(state, array, obin_string_join(state, kv_separator, item));;
+		obin_array_push(state, array, obin_string_join(state, kv_separator, item));
 	}
 
 	result = obin_string_join(state, items_separator, array);
@@ -285,19 +285,19 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	return result;
 }
 
-static ObinAny __destroy__(ObinState* state, ObinCell* table) {
+static void __destroy__(ObinState* state, ObinCell* table) {
 	ObinTable* self = (ObinTable*) table;
-	obin_free(self->body);
+	obin_free(state, self->body);
 	self->body = NULL;
-	return ObinNothing;
 }
 
 static void __mark__(ObinState* state, ObinAny self, obin_proc mark) {
 	obin_index i;
 
 	for(i = 0; i < _capacity(self); ++i) {
-		if(_body(self)[index].isset) {
-			mark(_body(self)[index]);
+		if(_body(self)[i].isset) {
+			mark(state, _body(self)[i].key);
+			mark(state, _body(self)[i].value);
 		}
 	}
 }
@@ -325,7 +325,7 @@ static ObinAny __length__(ObinState* state, ObinAny self) {
  */
 obin_index _find_slot(ObinState* state, ObinAny self, ObinAny key)
 {
-obin_integer hash = obin_any_integer(obin_hash(key));
+	obin_integer hash = obin_any_integer(obin_hash(state, key));
 	obin_index index;
 
 	index =  hash % _capacity(self);
@@ -389,7 +389,7 @@ __delitem__(ObinState* state, ObinAny self, ObinAny key){
 	_CHECK_SELF_TYPE(state, self, __delitem__);
 
 	if (!_body(self)[index].isset) {
-		obin_raise(state, obin_errors()->KeyError, __Table__ "__delitem__ unknown key");
+		obin_raise(state, obin_errors()->KeyError, __Table__ "__delitem__ unknown key", key);
 	}
 
 	_body(self)[index].isset = OFALSE;
