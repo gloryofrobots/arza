@@ -12,21 +12,11 @@ ObinNativeTraits* obin_integer_traits() {
 	return NULL;
 }
 
-static ObinIntegers _Integers = {
-		 {EOBIN_TYPE_INTEGER, {-1}},
-		 {EOBIN_TYPE_INTEGER, {-1}},
-		 {EOBIN_TYPE_INTEGER, {1}},
-		 {EOBIN_TYPE_INTEGER, {0}},
-};
-
-obin_bool obin_module_integer_init(ObinState* state) {
-	state->internals.integers.NotFound = obin_integer_new(-1);
-	state->internals.integers.Lesser = obin_integer_new(-1);
-	state->internals.integers.Greater = obin_integer_new(1);
-	state->internals.integers.Equal = obin_integer_new(0);
+obin_bool obin_module_integer_init(ObinState* state, ObinInternals* internals) {
+	internals->integers.NotFound = obin_integer_new(-1);
+	internals->integers.Lesser = obin_integer_new(-1);
+	internals->integers.Greater = obin_integer_new(1);
+	internals->integers.Equal = obin_integer_new(0);
 	return OTRUE;
 }
 
-ObinIntegers* obin_integers() {
-	return &_Integers;
-}

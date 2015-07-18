@@ -15,6 +15,7 @@ SET(OBIN_LIB_SRC
   ${HEADERS}
    core/_memory.c
    core/_builtin.c
+   core/_bootstrap.c
    core/_log.c
    core/_error.c
    core/_random.c

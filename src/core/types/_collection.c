@@ -44,12 +44,12 @@ static obin_bool _is_collection(ObinAny any) {
 ObinAny obin_sequence_iterator_new(ObinState* state, ObinAny sequence){
 	SequenceIterator * iterator;
 	if(!obin_any_is_cell(sequence)) {
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"Cell type expected", sequence);
 	}
 
 	if(!_is_collection(sequence)){
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"Collection expected", sequence);
 	}
 
@@ -73,36 +73,36 @@ ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other){
 	self_length = obin_length(state, self);
 
 	if(!_is_collection(self)){
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"Collection.__compare__ expected", self);
 	}
 
 	if(!_is_collection(other)){
 		if(obin_any_integer(self_length) > 0){
-			return obin_integers()->Greater;
+			return obin_integers(state)->Greater;
 		}
 
 		if(obin_any_is_nil(other) || obin_any_is_false(other)) {
-				return obin_integers()->Equal;
+				return obin_integers(state)->Equal;
 		}
 
-		return obin_integers()->Lesser;
+		return obin_integers(state)->Lesser;
 	}
 
 	other_length = obin_length(state, other);
 
 	if (obin_any_integer(self_length) < obin_any_integer(other_length)) {
-		return obin_integers()->Lesser;
+		return obin_integers(state)->Lesser;
 	}
 
 	if (obin_any_integer(self_length) > obin_any_integer(other_length)) {
-		return obin_integers()->Greater;
+		return obin_integers(state)->Greater;
 	}
 
 	self_iterator = obin_iterator(state, self);
 	other_iterator = obin_iterator(state, other);
 
-	compare_result = obin_integers()->Equal;
+	compare_result = obin_integers(state)->Equal;
 
 	while(OTRUE) {
 		self_item = obin_next(state, self_iterator);
@@ -113,7 +113,7 @@ ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other){
 		}
 
 		compare_result = obin_compare(state, self_item, other_item);
-		if(obin_any_is_true(obin_is(state, compare_result, obin_integers()->Equal))){
+		if(obin_any_is_true(obin_is(state, compare_result, obin_integers(state)->Equal))){
 			break;
 		}
 	}

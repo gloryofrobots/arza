@@ -11,7 +11,7 @@ static ObinNativeTraits __TRAITS__;
 
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!obin_any_is_array(self)) { \
-		return obin_raise(state, obin_errors()->TypeError, \
+		return obin_raise(state, obin_errors(state)->TypeError, \
 				__Array__ #method "call from other type", self); \
 	} \
 
@@ -50,7 +50,7 @@ obin_array_new(ObinState* state, ObinAny size) {
 		size = obin_integer_new(OBIN_DEFAULT_ARRAY_SIZE);
 	}
 	if (!obin_integer_is_fit_to_memsize(size)) {
-			obin_raise(state, obin_errors()->MemoryError,
+			obin_raise(state, obin_errors(state)->MemoryError,
 				"obin_array_new " __Array__ "size not fit to memory", size);
 	}
 
@@ -74,7 +74,7 @@ static obin_mem_t _array_inflate(ObinState* state, ObinAny self, obin_index star
 
 	if (new_size > _array_capacity(self)) {
 		if ( !_array_grow(state, self, length) ){
-			obin_raise(state, obin_errors()->MemoryError,
+			obin_raise(state, obin_errors(state)->MemoryError,
 				"__array_inflate " __Array__ "can't grow", obin_integer_new(length));
 			return 0;
 		}
@@ -95,14 +95,14 @@ ObinAny obin_array_insert_collection(ObinState* state, ObinAny self, ObinAny col
 	end = start + collection_size;
 
 	if(start > _array_size(self)) {
-		return obin_raise(state, obin_errors()->KeyError, "obin_array_insert_collection invalid index", position);
+		return obin_raise(state, obin_errors(state)->KeyError, "obin_array_insert_collection invalid index", position);
 	} else if(start == _array_size(self)) {
 		return obin_add(state, self, item);
 	}
 
 	new_size = _array_inflate(state, self, start, end);
 	if(!new_size) {
-		return obin_raise(state, obin_errors()->KeyError,
+		return obin_raise(state, obin_errors(state)->KeyError,
 				"obin_array_insert inflate error", position);
 	}
 
@@ -125,14 +125,14 @@ ObinAny obin_array_insert(ObinState* state, ObinAny self, ObinAny item, ObinAny 
 
 	insert_index = obin_any_integer(position);
 	if(insert_index > _array_size(self)) {
-		return obin_raise(state, obin_errors()->KeyError, "obin_array_insert invalid index", position);
+		return obin_raise(state, obin_errors(state)->KeyError, "obin_array_insert invalid index", position);
 	} else if(insert_index == _array_size(self)) {
 		return obin_array_push(state, self, item);
 	}
 
 	new_size = _array_inflate(state, self, insert_index, insert_index + 1);
 	if(!new_size) {
-		return obin_raise(state, obin_errors()->KeyError,
+		return obin_raise(state, obin_errors(state)->KeyError,
 				"obin_array_insert inflate error", position);
 	}
 
@@ -168,7 +168,7 @@ obin_array_push(ObinState* state, ObinAny self, ObinAny value) {
 
 	if (new_size > _array_capacity(self)){
 		if (!_array_grow(state, self, 1) ){
-			obin_raise(state, obin_errors()->MemoryError,
+			obin_raise(state, obin_errors(state)->MemoryError,
 				"obin_array_push " __Array__ "can't grow", obin_integer_new(new_size));
 		}
 	}
@@ -191,7 +191,7 @@ ObinAny obin_array_lastindexof(ObinState* state, ObinAny self, ObinAny item){
 		}
 	}
 
-	return obin_integers()->NotFound;
+	return obin_integers(state)->NotFound;
 }
 
 ObinAny obin_array_indexof(ObinState* state, ObinAny self, ObinAny item) {
@@ -205,7 +205,7 @@ ObinAny obin_array_indexof(ObinState* state, ObinAny self, ObinAny item) {
 		}
 	}
 
-	return obin_integers()->NotFound;
+	return obin_integers(state)->NotFound;
 }
 
 ObinAny obin_array_pop(ObinState* state, ObinAny self) {
@@ -214,7 +214,7 @@ ObinAny obin_array_pop(ObinState* state, ObinAny self) {
 	_CHECK_SELF_TYPE(state, self, obin_array_pop);
 
 	if(_array_size(self) == 0) {
-			obin_raise(state, obin_errors()->IndexError,
+			obin_raise(state, obin_errors(state)->IndexError,
 				"obin_array_pop " __Array__ " empty array", ObinNil);
 	}
 
@@ -331,7 +331,7 @@ __getitem__(ObinState* state, ObinAny self, ObinAny pos){
 	index = _get_index(state, self, pos);
 
 	if (index == OBIN_INVALID_INDEX) {
-		return obin_raise(state, obin_errors()->IndexError,
+		return obin_raise(state, obin_errors(state)->IndexError,
 				__Array__ "__getitem__ invalid index", pos);
 	}
 
@@ -345,7 +345,7 @@ __setitem__(ObinState* state, ObinAny self, ObinAny pos, ObinAny value){
 	index = _get_index(state, self, pos);
 
 	if (index == OBIN_INVALID_INDEX) {
-		return obin_raise(state, obin_errors()->IndexError,
+		return obin_raise(state, obin_errors(state)->IndexError,
 				__Array__ "__setitem__   invalid index", pos);
 	}
 
@@ -371,7 +371,7 @@ __delitem__(ObinState* state, ObinAny self, ObinAny pos){
 	index = _get_index(state, self, pos);
 
 	if (index == OBIN_INVALID_INDEX) {
-		return obin_raise(state, obin_errors()->IndexError,
+		return obin_raise(state, obin_errors(state)->IndexError,
 				__Array__ "__delitem__ invalid index", pos);
 	}
 

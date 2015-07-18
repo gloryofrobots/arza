@@ -2,20 +2,7 @@
 #define OSTRING_H_
 #include "obuiltin.h"
 
-typedef struct {
-        ObinAny Nil;
-        ObinAny True;
-        ObinAny False;
-        ObinAny Nothing;
-        ObinAny PrintSeparator;
-        ObinAny Empty;
-        ObinAny Space;
-        ObinAny TabSpaces;
-} ObinConstStrings;
-
-ObinConstStrings* obin_strings();
-
-obin_bool obin_module_string_init(ObinState* state);
+obin_bool obin_module_string_init(ObinState* state, ObinInternals* internals);
 
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data);

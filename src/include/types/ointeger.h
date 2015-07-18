@@ -3,14 +3,7 @@
 
 #include "obuiltin.h"
 
-struct _ObinInternalIntegers {
-	ObinAny NotFound;
-    ObinAny Lesser;
-    ObinAny Greater;
-    ObinAny Equal;
-};
-
-obin_bool obin_module_integer_init(ObinState* state);
+obin_bool obin_module_integer_init(ObinState* state, ObinInternals* internals);
 
 
 ObinAny obin_integer_new(obin_integer number);

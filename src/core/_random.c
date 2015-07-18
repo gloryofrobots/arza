@@ -9,7 +9,7 @@ ObinHashSecret obin_hash_secret(){
 	return _ObinHashSecret;
 }
 
-obin_bool obin_random_init(){
+obin_bool obin_module_random_init(){
 	_ObinHashSecret.prefix = (obin_integer) time(NULL);
 	/*suffix whill contain garbage */
 

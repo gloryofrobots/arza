@@ -17,6 +17,8 @@
 #define _generator_method(state, any, method) _subtrait_method(state, any, generator, method)
 #define _number_method(state, any, method) _subtrait_method(state, any, number, method)
 
+
+
 ObinAny ObinFalse = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FALSE);
 ObinAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
 ObinAny ObinNil = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NIL);
@@ -44,7 +46,7 @@ _embedded_type_traits(ObinState* state, ObinAny any) {
 		return obin_float_traits();
 		break;
 	default:
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"There are no native traits in this type", any);
 		return NULL;
 	}
@@ -55,7 +57,7 @@ ObinAny obin_iterator(ObinState * state, ObinAny any) {
 	obin_method method;
 	method = _collection_method(state, any, __iterator__);
 	if (!method) {
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"__iterator__ protocol not supported", any);
 	}
 
@@ -68,7 +70,7 @@ ObinAny obin_next(ObinState * state, ObinAny any) {
 
 	method = _generator_method(state, any, __next__);
 	if (!method) {
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"__next__ protocol not supported", any);
 	}
 
@@ -82,7 +84,7 @@ void obin_release(ObinState * state, ObinAny self) {
 ObinAny obin_equal(ObinState * state, ObinAny any, ObinAny other) {
 	ObinAny result;
 	result = obin_compare(state, any, other);
-	return obin_is(state, result, obin_integers()->Equal);
+	return obin_is(state, result, obin_integers(state)->Equal);
 }
 
 ObinAny obin_compare(ObinState * state, ObinAny any, ObinAny other) {
@@ -90,7 +92,7 @@ ObinAny obin_compare(ObinState * state, ObinAny any, ObinAny other) {
 
 	method = _base_method(state, any, __compare__);
 	if (!method) {
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"__compare__ protocol not supported", any);
 	}
 
@@ -126,7 +128,7 @@ ObinAny obin_hash(ObinState* state, ObinAny any) {
 
 	method = _base_method(state, any, __hash__);
 	if (!method) {
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"__hash__ protocol not supported", any);
 	}
 
@@ -138,7 +140,7 @@ ObinAny obin_clone(ObinState * state, ObinAny any){
 
 	method = _base_method(state, any, __clone__);
 	if (!method) {
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"__clone__ protocol not supported", any);
 	}
 
@@ -152,7 +154,7 @@ ObinAny obin_tobool(ObinState* state, ObinAny any) {
 	method = _base_method(state, any, __tobool__);
 	if (!method) {
 
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"__tobool__ protocol not supported", any);
 	}
 
@@ -167,7 +169,7 @@ ObinAny obin_tostring(ObinState* state, ObinAny any) {
 		if(_traits(state, any)) {
 			return obin_string_new(state, _traits(state, any)->name);
 		} else {
-			obin_raise(state, obin_errors()->TypeError,
+			obin_raise(state, obin_errors(state)->TypeError,
 				"__tostring__ protocol not supported", any);
 		}
 	}
@@ -180,7 +182,7 @@ ObinAny obin_length(ObinState* state, ObinAny any){
 
 	method = _collection_method(state, any, __length__);
 	if (!method) {
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"__length__ protocol not supported", any);
 	}
 
@@ -192,7 +194,7 @@ ObinAny obin_getitem(ObinState* state, ObinAny any, ObinAny key){
 
 	method = _collection_method(state, any, __getitem__);
 	if (!method) {
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"__getitem__ protocol not supported", any);
 	}
 
@@ -204,7 +206,7 @@ ObinAny obin_hasitem(ObinState* state, ObinAny any, ObinAny key){
 
 	method = _collection_method(state, any, __hasitem__);
 	if (!method) {
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"__hasitem__ protocol not supported", any);
 	}
 
@@ -216,7 +218,7 @@ ObinAny obin_delitem(ObinState* state, ObinAny any, ObinAny key){
 
 	method = _collection_method(state, any, __delitem__);
 	if (!method) {
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"__delitem__ protocol not supported", any);
 	}
 
@@ -228,7 +230,7 @@ ObinAny obin_add(ObinState* state, ObinAny first, ObinAny second) {
 
 	method = _number_method(state, first, __add__);
 	if (!method) {
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"__add__ protocol not supported", first);
 	}
 
@@ -241,7 +243,7 @@ ObinAny obin_setitem(ObinState* state, ObinAny any, ObinAny key, ObinAny value){
 
 	method = _collection_method(state, any, __setitem__);
 	if (!method) {
-		obin_raise(state, obin_errors()->TypeError,
+		obin_raise(state, obin_errors(state)->TypeError,
 				"__setitem__ protocol not supported", any);
 	}
 

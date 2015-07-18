@@ -20,7 +20,7 @@ ObinAny obin_fstream_from_file(ObinState* state, obin_file file, obin_bool is_di
 
 	self = obin_new(state, ObinFStream);
 
-	self->path = obin_strings()->Empty;
+	self->path = obin_strings(state)->Empty;
 
 	self->file = file;
 	self->is_disposable = is_disposable;
@@ -32,7 +32,7 @@ ObinAny obin_fstream_from_path(ObinState* state, ObinAny path, obin_string mode)
 	obin_file file = fopen(obin_string_cstr(state, path), mode);
 
 	if(file == NULL) {
-		obin_raise(state, obin_errors()->IOError,
+		obin_raise(state, obin_errors(state)->IOError,
 				"Unable to open file", path);
 	}
 
@@ -58,7 +58,7 @@ ObinAny obin_fstream_write(ObinState* state, ObinAny self, ObinAny any){
 
 ObinAny obin_fstream_close(ObinState* state, ObinAny self){
 	if(!_fstream_is_disposable(self)) {
-		obin_raise(state, obin_errors()->IOError,
+		obin_raise(state, obin_errors(state)->IOError,
 				"Resource is not disposable", ObinNil);
 	}
 

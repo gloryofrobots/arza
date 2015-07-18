@@ -3,7 +3,7 @@
 
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!obin_any_is_array(self)) { \
-		return obin_raise(state, obin_errors()->TypeError, \
+		return obin_raise(state, obin_errors(state)->TypeError, \
 				__Table__ #method "call from other type", self); \
 	} \
 
@@ -56,7 +56,7 @@ ObinAny obin_table_new(ObinState* state, ObinAny size){
 	}
 
 	if (!obin_integer_is_fit_to_memsize(size)) {
-		return obin_raise(state, obin_errors()->MemoryError,
+		return obin_raise(state, obin_errors(state)->MemoryError,
 				"obin_table_new:: size not fit to memory", size);
 	}
 
@@ -344,7 +344,7 @@ __getitem__(ObinState* state, ObinAny self, ObinAny key){
 	_CHECK_SELF_TYPE(state, self, __getitem__);
 
 	if (!_body(self)[index].isset) {
-		obin_raise(state, obin_errors()->KeyError, __Table__ ".__getitem__ invalid key", key);
+		obin_raise(state, obin_errors(state)->KeyError, __Table__ ".__getitem__ invalid key", key);
 	}
 
 	return _body(self)[index].value;
@@ -389,7 +389,7 @@ __delitem__(ObinState* state, ObinAny self, ObinAny key){
 	_CHECK_SELF_TYPE(state, self, __delitem__);
 
 	if (!_body(self)[index].isset) {
-		obin_raise(state, obin_errors()->KeyError, __Table__ "__delitem__ unknown key", key);
+		obin_raise(state, obin_errors(state)->KeyError, __Table__ "__delitem__ unknown key", key);
 	}
 
 	_body(self)[index].isset = OFALSE;

@@ -2,22 +2,16 @@
 
 OBIN_MODULE_DECLARE(ERROR);
 
-static ObinInternalErrors _Errors;
-
-ObinInternalErrors* obin_errors() {
-	return &_Errors;
-}
-
-obin_bool obin_module_error_init(ObinState* state) {
+obin_bool obin_module_error_init(ObinState* state, ObinInternals* internals) {
 	OBIN_MODULE_INIT(ERROR);
-	_Errors.MemoryError = ObinNil;
-	_Errors.IOError = ObinNil;
-	_Errors.InternalError = ObinNil;
-	_Errors.RangeError = ObinNil;
-	_Errors.TypeError = ObinNil;
-	_Errors.ValueError = ObinNil;
-	_Errors.IndexError = ObinNil;
-	_Errors.KeyError = ObinNil;
+	internals->errors.MemoryError = ObinNil;
+	internals->errors.IOError = ObinNil;
+	internals->errors.InternalError = ObinNil;
+	internals->errors.RangeError = ObinNil;
+	internals->errors.TypeError = ObinNil;
+	internals->errors.ValueError = ObinNil;
+	internals->errors.IndexError = ObinNil;
+	internals->errors.KeyError = ObinNil;
 
 	return OTRUE;
 }

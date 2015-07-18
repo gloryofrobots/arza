@@ -68,25 +68,50 @@ typedef struct {
 
 /************************* STATE *************************************/
 typedef struct _ObinMemory ObinMemory;
-typedef struct _ObinInternalIntegers ObinInternalIntegers;
-typedef struct _ObinInternalStrings ObinInternalStrings;
-typedef struct _ObinInternalErrors ObinInternalErrors;
 
-typedef struct _ObinStateInternals {
-	ObinInternalIntegers integers;
-	ObinInternalStrings strings;
-	ObinInternalErrors errors;
-} ObinStateInternals;
+typedef struct _ObinInternals {
+	struct _ObinInternalIntegers {
+		ObinAny NotFound;
+		ObinAny Lesser;
+		ObinAny Greater;
+		ObinAny Equal;
+	} integers;
+
+	struct _ObinInternalStrings{
+		ObinAny Nil;
+		ObinAny True;
+		ObinAny False;
+		ObinAny Nothing;
+		ObinAny PrintSeparator;
+		ObinAny Empty;
+		ObinAny Space;
+		ObinAny TabSpaces;
+	} strings;
+
+	struct _ObinInternalErrors{
+		ObinAny Error;
+		ObinAny MemoryError;
+		ObinAny IOError;
+		ObinAny InternalError;
+		ObinAny RangeError;
+		ObinAny TypeError;
+		ObinAny ValueError;
+		ObinAny IndexError;
+		ObinAny KeyError;
+	} errors;
+} ObinInternals;
+
 
 typedef struct _ObinState {
 	ObinAny globals;
 	ObinMemory* memory;
-	ObinStateInternals internals;
-
+	ObinInternals* internals;
 } ObinState;
 
 
-
+#define obin_errors(state) (&state->internals->errors)
+#define obin_integers(state) (&state->internals->integers)
+#define obin_strings(state) (&state->internals->strings)
 /* we set type value to data enum too,
  * without any reason, just for debugging
 */
