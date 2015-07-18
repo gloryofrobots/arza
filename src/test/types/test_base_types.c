@@ -1,6 +1,6 @@
 
 static void Test_BaseTypes(void) {
-	ObinState * state = obin_state_new(1024 * 1024 * 90);
+	ObinState * state = obin_init(1024 * 1024 * 90);
 	CU_ASSERT_EQUAL(obin_any_type(ObinFalse), EOBIN_TYPE_FALSE);
 	CU_ASSERT_EQUAL(obin_any_type(ObinNil), EOBIN_TYPE_NIL);
 	CU_ASSERT_EQUAL(obin_any_type(ObinNothing), EOBIN_TYPE_NOTHING);

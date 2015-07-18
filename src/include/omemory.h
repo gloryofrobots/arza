@@ -56,9 +56,6 @@ typedef struct _##CELLNAME { \
 	body \
 } CELLNAME;
 
-
-
-
 ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinNativeTraits* traits);
 
 /*TRAITS HERE MUST EXIST IN CELL */

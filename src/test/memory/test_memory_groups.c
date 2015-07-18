@@ -127,7 +127,7 @@ void tmg_test(ObinState* state, obin_mem_t data_size, double garbage_percentage)
 
 static void Test_MemoryGroups(void) {
 	tmg_counter = tm_counter_new();
-	ObinState * state = obin_state_new(1024 * 1024 * 90);
+	ObinState * state = obin_init(1024 * 1024 * 90);
 /*	obin_memory_start_transaction(state);*/
 	tmg_test(state, 5, 0.5);
 	tmg_test(state, 2, 0.5);

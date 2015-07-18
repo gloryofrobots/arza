@@ -258,7 +258,10 @@ typedef struct {
 ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell);*/
 
 ObinAny obin_any_new();
-ObinState* obin_init();
+
+ObinState* obin_init(obin_mem_t heap_size);
+
+void obin_finalise(ObinState* state);
 
 ObinAny obin_tostring(ObinState* state, ObinAny self);
 

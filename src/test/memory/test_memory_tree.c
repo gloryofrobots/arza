@@ -269,7 +269,7 @@ void tmt_test() {
 	ObinState * state;
     int heap_size  = 1024;
 
-	state = obin_state_new(heap_size);
+	state = obin_init(heap_size);
 
 	stat = _tmt_make_test(state, _test1);
 	_test_clear(state, stat);
