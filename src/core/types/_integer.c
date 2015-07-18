@@ -20,10 +20,10 @@ static ObinIntegers _Integers = {
 };
 
 obin_bool obin_module_integer_init(ObinState* state) {
-/*	_Integers.NotFound = obin_integer_new(-1);
-	_Integers.Lesser = obin_integer_new(-1);
-	_Integers.Greater = obin_integer_new(1);
-	_Integers.Equal = obin_integer_new(0);*/
+	state->internals.integers.NotFound = obin_integer_new(-1);
+	state->internals.integers.Lesser = obin_integer_new(-1);
+	state->internals.integers.Greater = obin_integer_new(1);
+	state->internals.integers.Equal = obin_integer_new(0);
 	return OTRUE;
 }
 

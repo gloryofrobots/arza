@@ -67,12 +67,25 @@ typedef struct {
 } ObinAny;
 
 /************************* STATE *************************************/
-typedef struct _ObinState ObinState;
 typedef struct _ObinMemory ObinMemory;
-struct _ObinState {
+typedef struct _ObinInternalIntegers ObinInternalIntegers;
+typedef struct _ObinInternalStrings ObinInternalStrings;
+typedef struct _ObinInternalErrors ObinInternalErrors;
+
+typedef struct _ObinStateInternals {
+	ObinInternalIntegers integers;
+	ObinInternalStrings strings;
+	ObinInternalErrors errors;
+} ObinStateInternals;
+
+typedef struct _ObinState {
 	ObinAny globals;
 	ObinMemory* memory;
-};
+	ObinStateInternals internals;
+
+} ObinState;
+
+
 
 /* we set type value to data enum too,
  * without any reason, just for debugging
@@ -97,7 +110,7 @@ extern ObinAny ObinNothing;
 
 /* we mark cells once we initialized them with special type to prevent overwriting types
  *  and values*/
-#ifndef NDEBUG
+#ifdef ODEBUG
 #define OBIN_ANY_CHECK_TYPE(any, type) obin_assert(any.type==type)
 #define OBIN_ANY_BEFORE_SET(any) obin_assert(any.type == EOBIN_TYPE_UNKNOWN)
 #else

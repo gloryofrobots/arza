@@ -3,16 +3,15 @@
 
 #include "obuiltin.h"
 
-typedef struct _ObinIntegers {
+struct _ObinInternalIntegers {
 	ObinAny NotFound;
     ObinAny Lesser;
     ObinAny Greater;
     ObinAny Equal;
-} ObinIntegers;
+};
 
 obin_bool obin_module_integer_init(ObinState* state);
 
-ObinIntegers* obin_integers();
 
 ObinAny obin_integer_new(obin_integer number);
 
