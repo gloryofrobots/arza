@@ -1,13 +1,11 @@
 #include <obin.h>
 #define __Array__ "__Array__"
-typedef struct {
-	OBIN_CELL_HEADER;
 
+OBIN_DECLARE_CELL(ObinArray,
 	obin_mem_t size;
 	obin_mem_t capacity;
-
 	ObinAny* data;
-} ObinArray;
+);
 
 static ObinNativeTraits __TRAITS__;
 

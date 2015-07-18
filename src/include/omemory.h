@@ -50,6 +50,15 @@ struct _ObinCell {
 	OBIN_CELL_HEADER;
 };
 
+#define OBIN_DECLARE_CELL(CELLNAME, body) \
+typedef struct _##CELLNAME { \
+	OBIN_CELL_HEADER \
+	body \
+} CELLNAME;
+
+
+
+
 ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinNativeTraits* traits);
 
 /*TRAITS HERE MUST EXIST IN CELL */

@@ -8,15 +8,14 @@ static TMCounter* tmt_counter;
 #define TMTCELL_DATA_SIZE 256
 ObinNativeTraits __TMTCELL_TRAITS__;
 
-typedef struct {
-	OBIN_CELL_HEADER;
+OBIN_DECLARE_CELL(TMTCell,
 	int id;
 	ObinAny left;
 	ObinAny right;
 	obin_mem_t size;
 	obin_mem_t capacity;
 	obin_char* data;
-} TMTCell;
+);
 
 #define tmtcell(any)   ((TMTCell*) obin_any_cell(any))
 #define tmtcell_left(any)   tmtcell(any)->left
