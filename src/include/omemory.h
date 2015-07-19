@@ -34,12 +34,12 @@ struct _ObinMemory {
 	obin_mem_t allocated_space;       /* allocated space (since last collection) */
 };
 
-#define obin_any_cell_size(any) (obin_any_cell(any)->memory.size)
-
-typedef struct{
+struct _ObinCellMemoryInfo{
 	obin_bool mark;
 	obin_mem_t size;
-} ObinCellMemoryInfo;
+};
+
+typedef struct _ObinCellMemoryInfo ObinCellMemoryInfo;
 
 /*IT EMPTY FOR NOW*/
 #define OBIN_CELL_HEADER \
@@ -50,11 +50,7 @@ struct _ObinCell {
 	OBIN_CELL_HEADER;
 };
 
-#define OBIN_DECLARE_CELL(CELLNAME, body) \
-typedef struct _##CELLNAME { \
-	OBIN_CELL_HEADER \
-	body \
-} CELLNAME;
+#define obin_any_cell_size(any) (obin_any_cell(any)->memory.size)
 
 ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinNativeTraits* traits);
 
