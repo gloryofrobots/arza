@@ -13,7 +13,7 @@ FILE(GLOB_RECURSE HEADERS "include/*.h")
 
 SET(OBIN_LIB_SRC
   ${HEADERS}
-   core/_memory.c
+   core/mark_and_sweep/_memory.c
    core/_builtin.c
    core/_bootstrap.c
    core/_log.c

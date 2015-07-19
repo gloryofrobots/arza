@@ -1,6 +1,7 @@
 #ifndef OCELL_H_
 #define OCELL_H_
 #include "ostate.h"
+#include "memory/ocellmemory.h"
 
 /********************** NATIVE_TRAIT **************************************/
 typedef ObinAny (*obin_function)(ObinAny arg);
@@ -14,7 +15,6 @@ typedef void (*obin_method_2_proc)(ObinState* state, ObinAny arg, obin_proc each
 typedef ObinAny (*obin_method)(ObinState* state, ObinAny arg);
 typedef ObinAny (*obin_method_2)(ObinState* state, ObinAny arg1, ObinAny arg2);
 typedef ObinAny (*obin_method_3)(ObinState* state, ObinAny arg1, ObinAny arg2, ObinAny arg3);
-
 
 typedef struct {
 	obin_method __iterator__;
@@ -53,6 +53,15 @@ typedef struct {
 	ObinNumberTrait* number;
 } ObinNativeTraits;
 
+
+/*IT EMPTY FOR NOW*/
+#define OBIN_CELL_HEADER \
+	ObinNativeTraits* native_traits; \
+	ObinCellMemoryInfo memory;
+
+struct _ObinCell {
+	OBIN_CELL_HEADER;
+};
 
 #define OBIN_DECLARE_CELL(CELLNAME, body) \
 typedef struct _##CELLNAME { \

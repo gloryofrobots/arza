@@ -1,6 +1,6 @@
 #ifndef OBIN_OMEMORY_H_
 #define OBIN_OMEMORY_H_
-#include "obuiltin.h"
+#include "../obuiltin.h"
 
 /*
  * ObinMemoryFreeNode are used to manage the space freed after the sweep phase.
@@ -34,21 +34,7 @@ struct _ObinMemory {
 	obin_mem_t allocated_space;       /* allocated space (since last collection) */
 };
 
-struct _ObinCellMemoryInfo{
-	obin_bool mark;
-	obin_mem_t size;
-};
 
-typedef struct _ObinCellMemoryInfo ObinCellMemoryInfo;
-
-/*IT EMPTY FOR NOW*/
-#define OBIN_CELL_HEADER \
-	ObinNativeTraits* native_traits; \
-	ObinCellMemoryInfo memory;
-
-struct _ObinCell {
-	OBIN_CELL_HEADER;
-};
 
 #define obin_any_cell_size(any) (obin_any_cell(any)->memory.size)
 

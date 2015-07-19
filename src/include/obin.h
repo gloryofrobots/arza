@@ -4,7 +4,7 @@
 #include "oconf.h"
 #include "obuiltin.h"
 #include "olog.h"
-#include "omemory.h"
+#include "memory/omemory.h"
 #include "oerror.h"
 #include "orandom.h"
 #include "types/obool.h"
