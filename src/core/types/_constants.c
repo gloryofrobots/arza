@@ -3,7 +3,7 @@
 
 ObinAny obin_tostring(ObinState* state, ObinAny any) {
 	ObinNativeTraits* traits;
-	obin_method method;
+	obin_func_1 method;
 
 	switch (any.type) {
 	case EOBIN_TYPE_TRUE:

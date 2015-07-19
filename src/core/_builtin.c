@@ -54,7 +54,7 @@ _embedded_type_traits(ObinState* state, ObinAny any) {
 
 /*Returns iterator if can, else raise InvalidArgumentError*/
 ObinAny obin_iterator(ObinState * state, ObinAny any) {
-	obin_method method;
+	obin_func_1 method;
 	method = _collection_method(state, any, __iterator__);
 	if (!method) {
 		obin_raise(state, obin_errors(state)->TypeError,
@@ -66,7 +66,7 @@ ObinAny obin_iterator(ObinState * state, ObinAny any) {
 
 /*Returns next value from iterator, Nothing if end*/
 ObinAny obin_next(ObinState * state, ObinAny any) {
-	obin_method method;
+	obin_func_1 method;
 
 	method = _generator_method(state, any, __next__);
 	if (!method) {
@@ -88,7 +88,7 @@ ObinAny obin_equal(ObinState * state, ObinAny any, ObinAny other) {
 }
 
 ObinAny obin_compare(ObinState * state, ObinAny any, ObinAny other) {
-	obin_method_2 method;
+	obin_func_2 method;
 
 	method = _base_method(state, any, __compare__);
 	if (!method) {
@@ -124,7 +124,7 @@ ObinAny obin_is(ObinState * state, ObinAny any, ObinAny other) {
 }
 
 ObinAny obin_hash(ObinState* state, ObinAny any) {
-	obin_method method;
+	obin_func_1 method;
 
 	method = _base_method(state, any, __hash__);
 	if (!method) {
@@ -136,7 +136,7 @@ ObinAny obin_hash(ObinState* state, ObinAny any) {
 }
 
 ObinAny obin_clone(ObinState * state, ObinAny any){
-	obin_method method;
+	obin_func_1 method;
 
 	method = _base_method(state, any, __clone__);
 	if (!method) {
@@ -149,7 +149,7 @@ ObinAny obin_clone(ObinState * state, ObinAny any){
 
 
 ObinAny obin_tobool(ObinState* state, ObinAny any) {
-	obin_method method;
+	obin_func_1 method;
 
 	method = _base_method(state, any, __tobool__);
 	if (!method) {
@@ -162,7 +162,7 @@ ObinAny obin_tobool(ObinState* state, ObinAny any) {
 }
 
 ObinAny obin_tostring(ObinState* state, ObinAny any) {
-	obin_method method;
+	obin_func_1 method;
 
 	method = _base_method(state, any, __tostring__);
 	if (!method) {
@@ -178,7 +178,7 @@ ObinAny obin_tostring(ObinState* state, ObinAny any) {
 }
 
 ObinAny obin_length(ObinState* state, ObinAny any){
-	obin_method method;
+	obin_func_1 method;
 
 	method = _collection_method(state, any, __length__);
 	if (!method) {
@@ -190,7 +190,7 @@ ObinAny obin_length(ObinState* state, ObinAny any){
 }
 
 ObinAny obin_getitem(ObinState* state, ObinAny any, ObinAny key){
-	obin_method_2 method;
+	obin_func_2 method;
 
 	method = _collection_method(state, any, __getitem__);
 	if (!method) {
@@ -202,7 +202,7 @@ ObinAny obin_getitem(ObinState* state, ObinAny any, ObinAny key){
 }
 
 ObinAny obin_hasitem(ObinState* state, ObinAny any, ObinAny key){
-	obin_method_2 method;
+	obin_func_2 method;
 
 	method = _collection_method(state, any, __hasitem__);
 	if (!method) {
@@ -214,7 +214,7 @@ ObinAny obin_hasitem(ObinState* state, ObinAny any, ObinAny key){
 }
 
 ObinAny obin_delitem(ObinState* state, ObinAny any, ObinAny key){
-	obin_method_2 method;
+	obin_func_2 method;
 
 	method = _collection_method(state, any, __delitem__);
 	if (!method) {
@@ -226,7 +226,7 @@ ObinAny obin_delitem(ObinState* state, ObinAny any, ObinAny key){
 }
 
 ObinAny obin_add(ObinState* state, ObinAny first, ObinAny second) {
-	obin_method_2 method;
+	obin_func_2 method;
 
 	method = _number_method(state, first, __add__);
 	if (!method) {
@@ -239,7 +239,7 @@ ObinAny obin_add(ObinState* state, ObinAny first, ObinAny second) {
 }
 
 ObinAny obin_setitem(ObinState* state, ObinAny any, ObinAny key, ObinAny value){
-	obin_method_3 method;
+	obin_func_3 method;
 
 	method = _collection_method(state, any, __setitem__);
 	if (!method) {
