@@ -55,6 +55,8 @@ ObinState* obin_init(obin_mem_t heap_size) {
 	if(!is_initialised
 		&& !_init_internals(state)) {
 		return NULL;
+	} else {
+		state->internals = &__INTERNALS__;
 	}
 
 

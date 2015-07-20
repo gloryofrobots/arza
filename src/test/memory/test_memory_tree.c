@@ -258,7 +258,7 @@ void tmt_test() {
 	_TMTTestStat stat;
 	tmt_counter = tm_counter_new();
 	ObinState * state;
-    int heap_size  = 1024;
+    int heap_size  = 2048;
 
 	state = obin_init(heap_size);
 
@@ -272,5 +272,7 @@ void tmt_test() {
 }
 
 static void Test_MemoryTree(void) {
+/*	printf("\n---%d\n", sizeof(ObinCell));
+	printf("---%d\n", sizeof(TMTCell));*/
 	tmt_test();
 }
