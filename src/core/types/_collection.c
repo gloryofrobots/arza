@@ -58,7 +58,7 @@ ObinAny obin_sequence_iterator_new(ObinState* state, ObinAny sequence){
 	iterator->current = 0;
 	iterator->length = (obin_mem_t) obin_any_integer(obin_length(state, sequence));
 
-	return obin_cell_new(EOBIN_TYPE_OBJECT, (ObinCell*)iterator, &__SI_TRAIT__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*)iterator, &__SI_TRAIT__);
 }
 
 ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other){

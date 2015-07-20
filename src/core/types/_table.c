@@ -2,7 +2,7 @@
 #define __Table__ "__Table__"
 
 #define _CHECK_SELF_TYPE(state, self, method) \
-	if(!obin_any_is_array(self)) { \
+	if(!obin_any_is_table(self)) { \
 		return obin_raise(state, obin_errors(state)->TypeError, \
 				__Table__ #method "call from other type", self); \
 	} \
@@ -240,7 +240,7 @@ static ObinAny __iterator__(ObinState* state, ObinAny self) {
 	iterator = obin_new(state, TableIterator);
 	iterator->source = self;
 	iterator->index = 0;
-	return obin_cell_new(EOBIN_TYPE_OBJECT, (ObinCell*)iterator, &__TABLE_ITERATOR_TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*)iterator, &__TABLE_ITERATOR_TRAITS__);
 }
 
 static ObinAny __tobool__(ObinState* state, ObinAny self) {

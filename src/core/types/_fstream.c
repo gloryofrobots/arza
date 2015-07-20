@@ -24,7 +24,7 @@ ObinAny obin_fstream_from_file(ObinState* state, obin_file file, obin_bool is_di
 
 	self->file = file;
 	self->is_disposable = is_disposable;
-	return obin_cell_new(EOBIN_TYPE_OBJECT, (ObinCell*)self, &__TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*)self, &__TRAITS__);
 }
 
 ObinAny obin_fstream_from_path(ObinState* state, ObinAny path, obin_string mode){
@@ -85,7 +85,7 @@ static void __destroy__(ObinState* state, ObinCell* cell) {
 
 	if(self->file && self->is_disposable) {
 		obin_fstream_close(state,
-				obin_cell_to_any(EOBIN_TYPE_OBJECT, (ObinCell*)self));
+				obin_cell_to_any(EOBIN_TYPE_CELL, (ObinCell*)self));
 	}
 }
 

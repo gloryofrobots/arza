@@ -20,6 +20,8 @@ _init_internals(ObinState* state) {
 		obin_panic("Can't init random module");
 		return OFALSE;
 	}
+	ObinCell* protocell = obin_new(state, ObinCell);
+	__INTERNALS__->cells.__Cell__ = obin_cell_new(state, EOBIN_TYPE_CELL, protocell, 0, ObinNil);
 
 	return OTRUE;
 }
@@ -39,6 +41,7 @@ ObinState* obin_init(obin_mem_t heap_size) {
 	}
 
 	state->internals = &__INTERNALS__;
+
 	is_initialised = 1;
 	return state;
 }

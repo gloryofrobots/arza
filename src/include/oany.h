@@ -28,11 +28,9 @@ typedef enum _EOBIN_TYPE {
 	EOBIN_TYPE_TUPLE,
 	EOBIN_TYPE_END_COLLECTION_TYPES,
 
-	EOBIN_TYPE_OBJECT,
+	EOBIN_TYPE_CELL,
 
 	EOBIN_TYPE_END_CELL_TYPES,
-
-	EOBIN_TYPE_EXCEPTION,
 } EOBIN_TYPE;
 
 typedef struct _ObinCell ObinCell;
@@ -86,13 +84,9 @@ typedef struct {
 
 #define obin_any_float(any) (any.data.float_value)
 
-#define obin_any_cast_cell(any, type) ((type*) (any.data.cell))
-
 #define OBIN_CHECK_TYPE_RANGE(type, min, max) (type > min && type < max)
 #define obin_type_is_cell(type) OBIN_CHECK_TYPE_RANGE(type, EOBIN_TYPE_BEGIN_CELL_TYPES, EOBIN_TYPE_END_CELL_TYPES)
-#define obin_type_is_collection(type) OBIN_CHECK_TYPE_RANGE(type, EOBIN_TYPE_BEGIN_COLLECTION_TYPES, EOBIN_TYPE_END_COLLECTION_TYPES)
 
-#define obin_any_is_interrupt(any) (any.type == EOBIN_TYPE_INTERRUPT)
 #define obin_any_is_bool(any) ((any.type == EOBIN_TYPE_TRUE) || (any.type == EOBIN_TYPE_FALSE))
 #define obin_any_is_true(any) (any.type == EOBIN_TYPE_TRUE)
 #define obin_any_is_false(any) (any.type == EOBIN_TYPE_FALSE)
@@ -107,24 +101,20 @@ typedef struct {
 #define obin_any_is_array(any) (any.type == EOBIN_TYPE_ARRAY)
 #define obin_any_is_tuple(any) (any.type == EOBIN_TYPE_TUPLE)
 #define obin_any_is_table(any) (any.type == EOBIN_TYPE_TABLE)
-#define obin_any_is_object(any) (any.type == EOBIN_TYPE_OBJECT)
 #define obin_any_is_cell(any) obin_type_is_cell(any.type)
-#define obin_any_is_collection(any) obin_type_is_collection(any.type)
 
-#define obin_cast(type, value) ((type) value)
 #define obin_is_fit_to_memsize(size) (size > 0 && size < OBIN_MAX_CAPACITY)
 #define obin_integer_is_fit_to_memsize(any) (obin_is_fit_to_memsize(obin_any_integer(any)))
 
 #define obin_is_stop_iteration(any) (obin_any_is_nothing(any))
 
 #define OBIN_ANY_STATIC_INIT(type) {type, {type}}
-#define OBIN_ANY_INTEGER_INIT(type, value) {type, {value}}
+#define OBIN_ANY_INTEGER_INIT(value) {EOBIN_TYPE_INTEGER, {value}}
 
 extern ObinAny ObinFalse;
 extern ObinAny ObinTrue;
 extern ObinAny ObinNil;
 extern ObinAny ObinNothing;
-
 
 
 #endif /* OANY_H_ */

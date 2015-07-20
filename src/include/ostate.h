@@ -6,6 +6,17 @@
 typedef struct _ObinMemory ObinMemory;
 
 typedef struct _ObinInternals {
+	struct _ObinInternalCells {
+		ObinAny __Cell__;
+		ObinAny __String__;
+		ObinAny __Array__;
+		ObinAny __Table__;
+		ObinAny __ProtoCell__;
+		ObinAny __Tuple__;
+		ObinAny __List__;
+		ObinAny __Stream__;
+	} cells;
+
 	struct _ObinInternalIntegers {
 		ObinAny NotFound;
 		ObinAny Lesser;

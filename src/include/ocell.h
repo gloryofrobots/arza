@@ -13,7 +13,7 @@ typedef ObinAny (*obin_func_4)(ObinState* state, ObinAny arg1, ObinAny arg2, Obi
 typedef ObinAny (*obin_func_1_func_1)(ObinState* state, ObinAny arg, obin_func_1 func);
 
 typedef struct _ObinBehavior{
-	obin_string name;
+	obin_string __name__;
 	obin_destructor __destroy__;
 	/*BASE */
 	obin_func_1 __tostring__;
@@ -37,11 +37,12 @@ typedef struct _ObinBehavior{
 	obin_func_2 __add__;
 } ObinBehavior;
 
-#define obin_behavior_set(any, method, pointer) obin_any_cell(any)->behavior->method = pointer
 
 /*IT EMPTY FOR NOW*/
 #define OBIN_CELL_HEADER \
 	ObinBehavior* behavior; \
+	ObinAny origin; \
+	ObinAny traits; \
 	ObinCellMemoryInfo memory;
 
 struct _ObinCell {
@@ -53,4 +54,5 @@ typedef struct _##CELLNAME { \
 	OBIN_CELL_HEADER \
 	body \
 } CELLNAME
+
 #endif /* OCELL_H_ */

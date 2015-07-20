@@ -66,7 +66,7 @@ ObinAny tmtcell_new(ObinState* state, obin_string data, obin_mem_t capacity) {
 
 	tmtcell_print(cell, "tmtcell_new");
 
-	return obin_cell_new(EOBIN_TYPE_OBJECT, (ObinCell*) cell, &__TMTCELL_TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*) cell, &__TMTCELL_TRAITS__);
 }
 
 

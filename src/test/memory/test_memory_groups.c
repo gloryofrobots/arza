@@ -52,7 +52,7 @@ ObinAny tmg_cell_new(ObinState* state, int data_size, double garbage_pecentage, 
 		}
 	}
 
-	return obin_cell_new(EOBIN_TYPE_OBJECT, (ObinCell*) cell, &__TMG_TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*) cell, &__TMG_TRAITS__);
 }
 
 

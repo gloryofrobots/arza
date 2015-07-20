@@ -4,6 +4,8 @@
 
 OBIN_MODULE_DECLARE(STRING);
 
+static ObinBehavior __BEHAVIOR__ = {0};
+
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!obin_any_is_string(self)) { \
 		return obin_raise(state, obin_errors(state)->TypeError, \
@@ -20,6 +22,25 @@ static ObinAny _obin_string_empty(ObinState* state) {
 }
 
 obin_bool obin_module_string_init(ObinState* state, ObinInternals* internals) {
+	__BEHAVIOR__.__name__ = "__String__";
+	__BEHAVIOR__.__tostring__ = __tostring__;
+	__BEHAVIOR__.__tobool__ = __tobool__;
+	__BEHAVIOR__.__clone__ = __clone__;
+	__BEHAVIOR__.__compare__ = __compare__;
+	__BEHAVIOR__.__hash__ = __hash__;
+
+	__BEHAVIOR__.__tostring__ = __tostring__;
+	__BEHAVIOR__.__tostring__ = __tostring__;
+	__BEHAVIOR__.__tostring__ = __tostring__;
+
+	__BEHAVIOR__.__iterator__ = __iterator__;
+	__BEHAVIOR__.__length__ = __length__;
+	__BEHAVIOR__.__getitem__ = __getitem__;
+	__BEHAVIOR__.__hasitem__ = __hasitem__;
+
+	internals->cells.__String__ = obin_cell_new()
+
+
 	internals->strings.Nil = obin_string_new(state, "Nil");
 	internals->strings.True = obin_string_new(state, "True");
 	internals->strings.False = obin_string_new(state, "False");
@@ -207,32 +228,8 @@ static ObinAny __clone__(ObinState* state, ObinAny self) {
 	return obin_string_from_carray(state, _string_data(self), _string_size(self));
 }
 
-static ObinCollectionTrait __COLLECTION__ = {
-	 __iterator__,
-	 __length__,
-	 __getitem__,
-	 0, /*__setitem__*/
-	 __hasitem__,
-	 0, /*__delitem__,*/
-} ;
 
-static ObinBaseTrait __BASE__ = {
-	 __tostring__,
-	 __tobool__,
-	 0, /*__destroy__*/
-	 __clone__,
-	 __compare__,
-	 __hash__,
-	 0, /*__mark__*/
-} ;
-static ObinNativeTraits __TRAITS__ = {
-	"__String__",
-	 /*base*/
-	 &__BASE__,
-	 &__COLLECTION__, /*collection*/
-	 0, /*generator*/
-	 0, /*number*/
-};
+
 /***********************************************************************************/
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data) {

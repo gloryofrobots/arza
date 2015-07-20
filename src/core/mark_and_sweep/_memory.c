@@ -64,11 +64,11 @@ ObinAny obin_cell_to_any(EOBIN_TYPE type, ObinCell* cell) {
 	return result;
 }
 
-ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinNativeTraits* traits) {
+ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinBehavior* behavior, ObinAny origin) {
 	ObinAny result;
 	obin_assert(obin_type_is_cell(type));
-
-	cell->native_traits = traits;
+	cell->origin = origin;
+	cell->behavior = behavior;
 	_unmark(cell);
 	result = obin_any_new();
 	obin_any_init_cell(result, type, cell);
@@ -225,21 +225,16 @@ void gc_mark_object(ObinState* state, ObinAny object) {
 	M->live_count++;
 	M->live_space += cell->memory.size;
 
-	if(!cell->native_traits) {
-		_log(state, _WARN, "GC encountered object without traits");
+	if(!cell->behavior) {
+		_log(state, _WARN, "GC encountered object without behavior");
 		return;
 	}
 
-	if(!cell->native_traits->base) {
-		_log(state, _WARN, "GC encountered object without traits");
+	if(!cell->behavior->__mark__) {
 		return;
 	}
 
-	if(!cell->native_traits->base->__mark__) {
-		return;
-	}
-
-	cell->native_traits->base->__mark__(state, object, &gc_mark_object);
+	cell->behavior->__mark__(state, object, &gc_mark_object);
 }
 
 void gc_mark_reachable_objects(ObinState * state) {
@@ -260,14 +255,13 @@ static void _destroy_cell(ObinState * state, ObinCell* cell) {
 		obin_panic("cell is null");
 	}
 
-	if(!cell->native_traits
-			|| !cell->native_traits->base
-			|| !cell->native_traits->base->__destroy__) {
+	if(!cell->behavior
+			|| !cell->behavior->__destroy__) {
 
 		return;
 	}
 
-	cell->native_traits->base->__destroy__(state, cell);
+	cell->behavior->__destroy__(state, cell);
 }
 
 
@@ -633,7 +627,7 @@ static void _memory_trace(ObinState* state) {
             	_log(state, _ALL, "-++-");
             }
 
-            _log(state, _ALL, "-%d %s %p-", object_size, _is_new(object) ? "" : object->native_traits->name, object);
+            _log(state, _ALL, "-%d %s %p-", object_size, _is_new(object) ? "" : object->behavior->__name__, object);
         }
         /* aligns the output by inserting a line break after 36 objects */
         object_aligner++;
