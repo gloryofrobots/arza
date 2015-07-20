@@ -7,7 +7,7 @@ typedef ObinAny (*obin_func_1)(ObinState* state, ObinAny arg);
 typedef ObinAny (*obin_func_2)(ObinState* state, ObinAny arg1, ObinAny arg2);
 typedef ObinAny (*obin_func_3)(ObinState* state, ObinAny arg1, ObinAny arg2, ObinAny arg3);
 typedef ObinAny (*obin_func_4)(ObinState* state, ObinAny arg1, ObinAny arg2, ObinAny arg3, ObinAny arg4);
-typedef ObinAny (*obin_func_1_func_1)(ObinState* state, ObinAny arg, obin_func_1 func);
+typedef void (*obin_each)(ObinState* state, ObinAny arg, obin_func_1 func);
 
 /*BELOW IS AUTOGEN CODE FROM behavior.py */
 
@@ -15,7 +15,7 @@ typedef struct _ObinBehavior {
     obin_string __name__;
     /*MEMORY*/
     obin_destructor __destroy__;
-    obin_func_1_func_1 __mark__;
+    obin_each __mark__;
     /*BASE*/
     obin_func_1 __tostring__;
     obin_func_1 __tobool__;

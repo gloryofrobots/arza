@@ -1,5 +1,5 @@
 #include <obin.h>
-#define __Array__ "__Array__"
+#define __TypeName__ "__Array__"
 
 OBIN_DECLARE_CELL(ObinArray,
 	obin_mem_t size;
@@ -12,7 +12,7 @@ static ObinBehavior __BEHAVIOR__ = {0};
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!obin_any_is_array(self)) { \
 		return obin_raise(state, obin_errors(state)->TypeError, \
-				__Array__ #method "call from other type", self); \
+				__TypeName__ #method "call from other type", self); \
 	} \
 
 #define _array(any) ((ObinArray*) obin_any_cell(any))
@@ -51,7 +51,7 @@ obin_array_new(ObinState* state, ObinAny size) {
 	}
 	if (!obin_integer_is_fit_to_memsize(size)) {
 			obin_raise(state, obin_errors(state)->MemoryError,
-				"obin_array_new " __Array__ "size not fit to memory", size);
+				"obin_array_new " __TypeName__ "size not fit to memory", size);
 	}
 
 	self = obin_new(state, ObinArray);
@@ -75,7 +75,7 @@ static obin_mem_t _array_inflate(ObinState* state, ObinAny self, obin_index star
 	if (new_size > _array_capacity(self)) {
 		if ( !_array_grow(state, self, length) ){
 			obin_raise(state, obin_errors(state)->MemoryError,
-				"__array_inflate " __Array__ "can't grow", obin_integer_new(length));
+				"__array_inflate " __TypeName__ "can't grow", obin_integer_new(length));
 			return 0;
 		}
 	}
@@ -169,7 +169,7 @@ obin_array_push(ObinState* state, ObinAny self, ObinAny value) {
 	if (new_size > _array_capacity(self)){
 		if (!_array_grow(state, self, 1) ){
 			obin_raise(state, obin_errors(state)->MemoryError,
-				"obin_array_push " __Array__ "can't grow", obin_integer_new(new_size));
+				"obin_array_push " __TypeName__ "can't grow", obin_integer_new(new_size));
 		}
 	}
 
@@ -215,7 +215,7 @@ ObinAny obin_array_pop(ObinState* state, ObinAny self) {
 
 	if(_array_size(self) == 0) {
 			obin_raise(state, obin_errors(state)->IndexError,
-				"obin_array_pop " __Array__ " empty array", ObinNil);
+				"obin_array_pop " __TypeName__ " empty array", ObinNil);
 	}
 
 	item = obin_getitem(state, self, obin_integer_new(_array_last_index(self)));
@@ -276,7 +276,7 @@ static void __destroy__(ObinState* state, ObinCell* self) {
 	obin_free(state, array->data);
 }
 
-static void __mark__(ObinState* state, ObinAny self, obin_func_1_func_1 mark) {
+static void __mark__(ObinState* state, ObinAny self, obin_func_1 mark) {
 	/*TODO each here*/
 	obin_index i;
 
@@ -332,7 +332,7 @@ __getitem__(ObinState* state, ObinAny self, ObinAny pos){
 
 	if (index == OBIN_INVALID_INDEX) {
 		return obin_raise(state, obin_errors(state)->IndexError,
-				__Array__ "__getitem__ invalid index", pos);
+				__TypeName__ "__getitem__ invalid index", pos);
 	}
 
 	return _array_item(self, index);
@@ -346,7 +346,7 @@ __setitem__(ObinState* state, ObinAny self, ObinAny pos, ObinAny value){
 
 	if (index == OBIN_INVALID_INDEX) {
 		return obin_raise(state, obin_errors(state)->IndexError,
-				__Array__ "__setitem__   invalid index", pos);
+				__TypeName__ "__setitem__   invalid index", pos);
 	}
 
 	if (_array_size(self) == 0 && index == 0) {
@@ -372,7 +372,7 @@ __delitem__(ObinState* state, ObinAny self, ObinAny pos){
 
 	if (index == OBIN_INVALID_INDEX) {
 		return obin_raise(state, obin_errors(state)->IndexError,
-				__Array__ "__delitem__ invalid index", pos);
+				__TypeName__ "__delitem__ invalid index", pos);
 	}
 
 	new_size = _array_size(self) - 1;
@@ -385,7 +385,7 @@ __delitem__(ObinState* state, ObinAny self, ObinAny pos){
 }
 
 obin_bool obin_module_array_init(ObinState* state) {
-	__BEHAVIOR__.__name__ = __Array__;
+	__BEHAVIOR__.__name__ = __TypeName__;
 	__BEHAVIOR__.__tostring__ = __tostring__;
 	__BEHAVIOR__.__tobool__ = __tobool__;
 	__BEHAVIOR__.__destroy__ = __destroy__;
@@ -399,7 +399,7 @@ obin_bool obin_module_array_init(ObinState* state) {
 	__BEHAVIOR__.__delitem__ = __delitem__;
 	__BEHAVIOR__.__mark__ = __mark__;
 
-	obin_cells(state)->__Array__ = obin_cell_new(state, EOBIN_TYPE_CELL,
+	obin_cells(state)->__Array__ = obin_cell_new(EOBIN_TYPE_CELL,
 			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
 
 	return OTRUE;

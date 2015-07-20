@@ -1,10 +1,10 @@
 #include <obin.h>
 /* TODO INTERNATION */
-#define __Tuple__ "__Tuple__"
+#define __TypeName__  "__Tuple__"
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!obin_any_is_tuple(self)) { \
 		return obin_raise(state, obin_errors(state)->TypeError, \
-				__Tuple__"."#method "call from other type", self); \
+				__TypeName__"."#method "call from other type", self); \
 	} \
 
 typedef struct {
@@ -112,7 +112,7 @@ static ObinAny __clone__(ObinState* state, ObinAny self) {
 	return result;
 }
 
-static void __mark__(ObinState* state, ObinAny self, obin_func_1_func_1 mark) {
+static void __mark__(ObinState* state, ObinAny self, obin_func_1 mark) {
 	obin_index i;
 
 	for(i=0; i<_size(self); ++i) {
@@ -214,7 +214,7 @@ __hash__(ObinState* state, ObinAny self){
 
 
 obin_bool obin_module_tuple_init(ObinState* state) {
-	__BEHAVIOR__.__name__ = __Tuple__;
+	__BEHAVIOR__.__name__ = __TypeName__;
 
 	__BEHAVIOR__.__mark__ = __mark__;
 
@@ -229,7 +229,7 @@ obin_bool obin_module_tuple_init(ObinState* state) {
 	__BEHAVIOR__.__getitem__ = __getitem__;
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
 
-	obin_cells(state)->__Tuple__ = obin_cell_new(state, EOBIN_TYPE_CELL,
+	obin_cells(state)->__Tuple__ = obin_cell_new(EOBIN_TYPE_CELL,
 			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
 
 	return OTRUE;

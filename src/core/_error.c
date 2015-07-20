@@ -1,9 +1,6 @@
 #include <obin.h>
 
-OBIN_MODULE_DECLARE(ERROR);
-
 obin_bool obin_module_error_init(ObinState* state) {
-	OBIN_MODULE_INIT(ERROR);
 	obin_errors(state)->MemoryError = ObinNil;
 	obin_errors(state)->IOError = ObinNil;
 	obin_errors(state)->InternalError = ObinNil;

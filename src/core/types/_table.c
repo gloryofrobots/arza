@@ -1,10 +1,10 @@
 #include <obin.h>
-#define __Table__ "__Table__"
+#define __TypeName__ "__Table__"
 
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!obin_any_is_table(self)) { \
 		return obin_raise(state, obin_errors(state)->TypeError, \
-				__Table__ #method "call from other type", self); \
+				__TypeName__ #method "call from other type", self); \
 	} \
 
 /*TODO OPTIMIZE ITERATORS SO THEY DON'T CREATE ARRAYS AND BE COMPLETELY LAZY*/
@@ -288,7 +288,7 @@ static void __destroy__(ObinState* state, ObinCell* table) {
 	self->body = NULL;
 }
 
-static void __mark__(ObinState* state, ObinAny self, obin_func_1_func_1 mark) {
+static void __mark__(ObinState* state, ObinAny self, obin_func_1 mark) {
 	obin_index i;
 
 	for(i = 0; i < _capacity(self); ++i) {
@@ -341,7 +341,7 @@ __getitem__(ObinState* state, ObinAny self, ObinAny key){
 	_CHECK_SELF_TYPE(state, self, __getitem__);
 
 	if (!_body(self)[index].isset) {
-		obin_raise(state, obin_errors(state)->KeyError, __Table__ ".__getitem__ invalid key", key);
+		obin_raise(state, obin_errors(state)->KeyError, __TypeName__ ".__getitem__ invalid key", key);
 	}
 
 	return _body(self)[index].value;
@@ -386,7 +386,7 @@ __delitem__(ObinState* state, ObinAny self, ObinAny key){
 	_CHECK_SELF_TYPE(state, self, __delitem__);
 
 	if (!_body(self)[index].isset) {
-		obin_raise(state, obin_errors(state)->KeyError, __Table__ "__delitem__ unknown key", key);
+		obin_raise(state, obin_errors(state)->KeyError, __TypeName__ "__delitem__ unknown key", key);
 	}
 
 	_body(self)[index].isset = OFALSE;
@@ -396,7 +396,7 @@ __delitem__(ObinState* state, ObinAny self, ObinAny key){
 }
 
 obin_bool obin_module_table_init(ObinState* state) {
-	__BEHAVIOR__.__name__ = __Table__;
+	__BEHAVIOR__.__name__ = __TypeName__;
 	__BEHAVIOR__.__destroy__ = __destroy__;
 	__BEHAVIOR__.__mark__ = __mark__;
 
@@ -412,7 +412,7 @@ obin_bool obin_module_table_init(ObinState* state) {
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
 	__BEHAVIOR__.__delitem__ = __delitem__;
 
-	obin_cells(state)->__Table__ = obin_cell_new(state, EOBIN_TYPE_CELL,
+	obin_cells(state)->__Table__ = obin_cell_new(EOBIN_TYPE_CELL,
 			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
 
 	return OTRUE;

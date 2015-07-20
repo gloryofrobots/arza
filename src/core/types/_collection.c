@@ -2,12 +2,11 @@
 
 /*TODO Avoid infinite recursion in _tostring__ and others in recursive vollections */
 
-typedef struct {
-	OBIN_CELL_HEADER;
+OBIN_DECLARE_CELL(SequenceIterator,
 	ObinAny source;
 	obin_mem_t current;
 	obin_mem_t length;
-} SequenceIterator;
+);
 
 static ObinAny __si__next__(ObinState* state, ObinAny self) {
 	SequenceIterator * it;
@@ -23,42 +22,24 @@ static ObinAny __si__next__(ObinState* state, ObinAny self) {
 	return result;
 }
 
-ObinGeneratorTrait __SI_GEN_TRAIT__  = {
-		__si__next__
-};
-
-ObinNativeTraits __SI_TRAIT__ = {
-	"SequenceIterator",
-
-	0, /*base*/
-	0, /* collection */
-	&__SI_GEN_TRAIT__,
-	0, /*number */
-};
-
-static obin_bool _is_collection(ObinAny any) {
-	return (obin_any_cell(any)->native_traits != NULL &&
-			obin_any_cell(any)->native_traits->collection != NULL);
-}
+OBIN_BEHAVIOR_DEFINE(__SEQUENCE_ITERATOR_BEHAVIOR__,
+		"__SequenceIterator__",
+		OBIN_BEHAVIOR_MEMORY_NULL,
+		OBIN_BEHAVIOR_BASE_NULL,
+		OBIN_BEHAVIOR_COLLECTION_NULL,
+		OBIN_BEHAVIOR_GENERATOR(__si__next__),
+		OBIN_BEHAVIOR_NUMBER_NULL
+);
 
 ObinAny obin_sequence_iterator_new(ObinState* state, ObinAny sequence){
 	SequenceIterator * iterator;
-	if(!obin_any_is_cell(sequence)) {
-		obin_raise(state, obin_errors(state)->TypeError,
-				"Cell type expected", sequence);
-	}
 
-	if(!_is_collection(sequence)){
-		obin_raise(state, obin_errors(state)->TypeError,
-				"Collection expected", sequence);
-	}
-
-	iterator = obin_malloc_type(state, SequenceIterator);
+	iterator = obin_new(state, SequenceIterator);
 	iterator->source = sequence;
 	iterator->current = 0;
 	iterator->length = (obin_mem_t) obin_any_integer(obin_length(state, sequence));
 
-	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*)iterator, &__SI_TRAIT__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*)iterator, &__SEQUENCE_ITERATOR_BEHAVIOR__, obin_cells(state)->__Cell__);
 }
 
 ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other){
@@ -72,12 +53,8 @@ ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other){
 
 	self_length = obin_length(state, self);
 
-	if(!_is_collection(self)){
-		obin_raise(state, obin_errors(state)->TypeError,
-				"Collection.__compare__ expected", self);
-	}
-
-	if(!_is_collection(other)){
+	/*TODO ADD TYPE CHECK HERE FOR __COLLECTION__ cell*/
+	if(!obin_any_is_cell(other)){
 		if(obin_any_integer(self_length) > 0){
 			return obin_integers(state)->Greater;
 		}

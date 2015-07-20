@@ -1,11 +1,13 @@
 #include <obin.h>
 
+#define __TypeName__ "__String__"
+
 static ObinBehavior __BEHAVIOR__ = {0};
 
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!obin_any_is_string(self)) { \
 		return obin_raise(state, obin_errors(state)->TypeError, \
-				"String." #method "call from other type", self); \
+				__TypeName__"."#method "call from other type", self); \
 	} \
 
 static ObinAny _obin_string_empty(ObinState* state) {
@@ -765,7 +767,7 @@ obin_bool obin_module_string_init(ObinState* state) {
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
 
 	/*strings proto*/
-	obin_cells(state)->__String__ =  obin_cell_new(state, EOBIN_TYPE_CELL,
+	obin_cells(state)->__String__ =  obin_cell_new(EOBIN_TYPE_CELL,
 			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
 
 

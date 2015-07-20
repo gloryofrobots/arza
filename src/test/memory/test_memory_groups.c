@@ -56,7 +56,7 @@ ObinAny tmg_cell_new(ObinState* state, int data_size, double garbage_pecentage, 
 }
 
 
-static void __tmg_cell_mark__(ObinState* state, ObinAny self, obin_func_1_func_1 callback ) {
+static void __tmg_cell_mark__(ObinState* state, ObinAny self, obin_func_1 callback ) {
 	int i = 0, count_marked = 0;
 	TMGCell* cell = (TMGCell*) obin_any_cell(self);
 	TMGCell* child;

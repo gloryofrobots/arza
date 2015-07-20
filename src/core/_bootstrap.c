@@ -11,7 +11,7 @@ typedef struct {
 	obin_bootstrap_finaliser finalise;
 } ObinModule;
 
-static ObinModule __MODULES__ = {
+static ObinModule __MODULES__[] = {
 		{"Integer", &obin_module_integer_init, 0},
 		{"String", &obin_module_string_init, 0},
 		{"Error", &obin_module_error_init, 0},
@@ -29,7 +29,7 @@ _init_internals(ObinState* state) {
 	obin_index i;
 
 	state->internals = &__INTERNALS__;
-	state->internals->cells.__Cell__ = obin_cell_new(state, EOBIN_TYPE_CELL, obin_new(state, ObinCell), 0, ObinNil);
+	state->internals->cells.__Cell__ = obin_cell_new(EOBIN_TYPE_CELL, obin_new(state, ObinCell), 0, ObinNil);
 
 	for(i=0; i < count_modules; i++) {
 		module = __MODULES__ + i;
