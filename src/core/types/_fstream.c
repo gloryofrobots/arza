@@ -1,6 +1,5 @@
 #include <obin.h>
-
-static ObinNativeTraits __TRAITS__;
+OBIN_BEHAVIOR_DECLARE(__BEHAVIOR__);
 
 typedef struct {
 	OBIN_CELL_HEADER;
@@ -24,7 +23,7 @@ ObinAny obin_fstream_from_file(ObinState* state, obin_file file, obin_bool is_di
 
 	self->file = file;
 	self->is_disposable = is_disposable;
-	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*)self, &__TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*)self, &__BEHAVIOR__, obin_cells(state)->__Cell__);
 }
 
 ObinAny obin_fstream_from_path(ObinState* state, ObinAny path, obin_string mode){
@@ -89,24 +88,12 @@ static void __destroy__(ObinState* state, ObinCell* cell) {
 	}
 }
 
-
-ObinBaseTrait __BASE__ = {
-	 __tostring__,
-	 0, /*__tobool__ */
-	 __destroy__,
-	 0, /* clone */
-	 0, /*__compare__ */
-	 0,/* _hash__ */
-	 0, /* __mark__ */
-} ;
-static ObinNativeTraits __TRAITS__ = {
-	 "__FStream__",
-	 &__BASE__, /*base*/
-	 0, /*collection*/
-	 0, /*generator*/
-	 0, /*number*/
-};
-
-
-
+OBIN_BEHAVIOR_DEFINE(__BEHAVIOR__,
+		"__FStream__",
+		OBIN_BEHAVIOR_MEMORY(__destroy__, 0),
+		OBIN_BEHAVIOR_BASE(__tostring__, 0, 0, 0, 0),
+		OBIN_BEHAVIOR_COLLECTION_NULL,
+		OBIN_BEHAVIOR_GENERATOR_NULL,
+		OBIN_BEHAVIOR_NUMBER_NULL
+);
 

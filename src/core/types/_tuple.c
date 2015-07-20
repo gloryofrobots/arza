@@ -1,10 +1,10 @@
 #include <obin.h>
 /* TODO INTERNATION */
-
+#define __Tuple__ "__Tuple__"
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!obin_any_is_tuple(self)) { \
 		return obin_raise(state, obin_errors(state)->TypeError, \
-				"__Tuple." #method "call from other type", self); \
+				__Tuple__"."#method "call from other type", self); \
 	} \
 
 typedef struct {
@@ -18,7 +18,7 @@ typedef struct {
 #define _data(any) ((_tuple(any))->data)
 #define _get(any, index) ((_data(any))[index])
 
-static ObinNativeTraits __TRAITS__;
+static ObinBehavior __BEHAVIOR__ = {0};
 
 ObinTuple* _obin_tuple_new(ObinState* state,  obin_mem_t size) {
 	ObinTuple * self;
@@ -58,7 +58,7 @@ ObinAny obin_tuple_new(ObinState* state,  ObinAny size, ObinAny* items) {
 		obin_memcpy(self->data, items, obin_any_integer(size));
 	}
 
-	return obin_cell_new(EOBIN_TYPE_TUPLE, (ObinCell*) self, &__TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_TUPLE, (ObinCell*) self, &__BEHAVIOR__, obin_cells(state)->__Tuple__);
 }
 
 ObinAny obin_tuple_pack(ObinState* state, obin_mem_t size, ...){
@@ -81,7 +81,7 @@ ObinAny obin_tuple_pack(ObinState* state, obin_mem_t size, ...){
     }
     va_end(vargs);
 
-	return obin_cell_new(EOBIN_TYPE_TUPLE, (ObinCell*) self, &__TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_TUPLE, (ObinCell*) self, &__BEHAVIOR__, obin_cells(state)->__Tuple__);
 }
 
 /****************************************  TYPETRAIT  *************************************************/
@@ -110,6 +110,14 @@ static ObinAny __clone__(ObinState* state, ObinAny self) {
 
 	result = obin_tuple_new(state,  obin_integer_new(_size(self)), _data(self));
 	return result;
+}
+
+static void __mark__(ObinState* state, ObinAny self, obin_func_1_func_1 mark) {
+	obin_index i;
+
+	for(i=0; i<_size(self); ++i) {
+		mark(state, _get(self, i));
+	}
 }
 
 static ObinAny __iterator__(ObinState* state, ObinAny self) {
@@ -204,29 +212,26 @@ __hash__(ObinState* state, ObinAny self){
     return obin_integer_new(x);
 }
 
-static ObinCollectionTrait __COLLECTION__ = {
-	 __iterator__,
-	 __length__,
-	 __getitem__,
-	 0 ,/*__setitem__,*/
-	 __hasitem__,
-	 0, /*__delitem__,*/
-} ;
 
-static ObinBaseTrait __BASE__ = {
-	 __tostring__,
-	 __tobool__,
-	 0, /*__destroy__*/
-	 __clone__,
-	 obin_collection_compare,
-	 __hash__,
-	 0, /*__mark__*/
-} ;
-static ObinNativeTraits __TRAITS__ = {
-	"__Tuple__",
-	 /*base*/
-	 &__BASE__,
-	 &__COLLECTION__, /*collection*/
-	 0, /*generator*/
-	 0, /*number*/
-};
+obin_bool obin_module_tuple_init(ObinState* state) {
+	__BEHAVIOR__.__name__ = __Tuple__;
+
+	__BEHAVIOR__.__mark__ = __mark__;
+
+	__BEHAVIOR__.__tostring__ = __tostring__;
+	__BEHAVIOR__.__tobool__ = __tobool__;
+	__BEHAVIOR__.__clone__ = __clone__;
+	__BEHAVIOR__.__compare__ = obin_collection_compare;
+	__BEHAVIOR__.__hash__ = __hash__;
+
+	__BEHAVIOR__.__iterator__ = __iterator__;
+	__BEHAVIOR__.__length__ = __length__;
+	__BEHAVIOR__.__getitem__ = __getitem__;
+	__BEHAVIOR__.__hasitem__ = __hasitem__;
+
+	obin_cells(state)->__Tuple__ = obin_cell_new(state, EOBIN_TYPE_CELL,
+			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
+
+	return OTRUE;
+
+}

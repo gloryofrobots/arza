@@ -203,22 +203,22 @@ void obin_state_destroy(ObinState* state) {
  *  it is told to 'mark_references', recursively using this
  *  function for all its references.
  */
-void gc_mark_object(ObinState* state, ObinAny object) {
+static ObinAny gc_mark_object(ObinState* state, ObinAny object) {
 	ObinCell* cell = obin_any_cell(object);
 	CATCH_STATE_MEMORY(state);
 	if(!cell) {
-		return;
+		return ObinNil;
 	}
 
     if (   ((void*) cell < (void*)  _heap(M))
         || ((void*) cell > (void*) _end_heap(M)))
     {
     	/*ObinNil, ObinFalse, ObinTrue, integers etc */
-		return;
+		return ObinNil;
     }
 
 	if (_is_marked(cell) || _is_new(cell)) {
-		return;
+		return ObinNil;
 	}
 
 	_mark(cell);
@@ -227,14 +227,16 @@ void gc_mark_object(ObinState* state, ObinAny object) {
 
 	if(!cell->behavior) {
 		_log(state, _WARN, "GC encountered object without behavior");
-		return;
+		return ObinNil;
 	}
 
 	if(!cell->behavior->__mark__) {
-		return;
+		return ObinNil;
 	}
 
 	cell->behavior->__mark__(state, object, &gc_mark_object);
+
+	return ObinNil;
 }
 
 void gc_mark_reachable_objects(ObinState * state) {

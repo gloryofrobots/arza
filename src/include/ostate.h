@@ -60,10 +60,5 @@ typedef struct _ObinState {
 #define obin_integers(state) (&state->internals->integers)
 #define obin_strings(state) (&state->internals->strings)
 #define obin_cells(state) (&state->internals->cells)
-/* we set type value to data enum too,
- * without any reason, just for debugging
-*/
-
-
 
 #endif /* OSTATE_H_ */

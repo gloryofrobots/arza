@@ -1,9 +1,5 @@
 #include <obin.h>
 
-/* TODO INTERNATION */
-
-OBIN_MODULE_DECLARE(STRING);
-
 static ObinBehavior __BEHAVIOR__ = {0};
 
 #define _CHECK_SELF_TYPE(state, self, method) \
@@ -12,7 +8,6 @@ static ObinBehavior __BEHAVIOR__ = {0};
 				"String." #method "call from other type", self); \
 	} \
 
-
 static ObinAny _obin_string_empty(ObinState* state) {
 	ObinAny result;
 
@@ -20,39 +15,6 @@ static ObinAny _obin_string_empty(ObinState* state) {
 	result.data.char_value.size = 0;
 	return result;
 }
-
-obin_bool obin_module_string_init(ObinState* state) {
-	__BEHAVIOR__.__name__ = "__String__";
-	__BEHAVIOR__.__tostring__ = __tostring__;
-	__BEHAVIOR__.__tobool__ = __tobool__;
-	__BEHAVIOR__.__clone__ = __clone__;
-	__BEHAVIOR__.__compare__ = __compare__;
-	__BEHAVIOR__.__hash__ = __hash__;
-
-	__BEHAVIOR__.__iterator__ = __iterator__;
-	__BEHAVIOR__.__length__ = __length__;
-	__BEHAVIOR__.__getitem__ = __getitem__;
-	__BEHAVIOR__.__hasitem__ = __hasitem__;
-
-	/*strings proto*/
-
-	obin_cells(state)->__String__ =  obin_cell_new(state, EOBIN_TYPE_CELL,
-			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
-
-
-	obin_strings(state)->Nil = obin_string_new(state, "Nil");
-	obin_strings(state)->True = obin_string_new(state, "True");
-	obin_strings(state)->False = obin_string_new(state, "False");
-	obin_strings(state)->Nothing = obin_string_new(state, "Nothing");
-	obin_strings(state)->PrintSeparator = obin_char_new(OBIN_PRINT_SEPARATOR);
-	obin_strings(state)->Empty = _obin_string_empty(state);
-	obin_strings(state)->Space = obin_char_new('\32');
-	obin_strings(state)->TabSpaces = obin_string_dublicate(state, obin_strings(state)->Space, obin_integer_new(OBIN_COUNT_TAB_SPACES));
-
-	OBIN_MODULE_INIT(STRING);
-	return OTRUE;
-}
-
 
 typedef struct {
 	OBIN_CELL_HEADER;
@@ -789,3 +751,32 @@ ObinAny obin_string_pack(ObinState* state, obin_index count, ...){
  str.splitlines([keepends])
  */
 
+obin_bool obin_module_string_init(ObinState* state) {
+	__BEHAVIOR__.__name__ = "__String__";
+	__BEHAVIOR__.__tostring__ = __tostring__;
+	__BEHAVIOR__.__tobool__ = __tobool__;
+	__BEHAVIOR__.__clone__ = __clone__;
+	__BEHAVIOR__.__compare__ = __compare__;
+	__BEHAVIOR__.__hash__ = __hash__;
+
+	__BEHAVIOR__.__iterator__ = __iterator__;
+	__BEHAVIOR__.__length__ = __length__;
+	__BEHAVIOR__.__getitem__ = __getitem__;
+	__BEHAVIOR__.__hasitem__ = __hasitem__;
+
+	/*strings proto*/
+	obin_cells(state)->__String__ =  obin_cell_new(state, EOBIN_TYPE_CELL,
+			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
+
+
+	obin_strings(state)->Nil = obin_string_new(state, "Nil");
+	obin_strings(state)->True = obin_string_new(state, "True");
+	obin_strings(state)->False = obin_string_new(state, "False");
+	obin_strings(state)->Nothing = obin_string_new(state, "Nothing");
+	obin_strings(state)->PrintSeparator = obin_char_new(OBIN_PRINT_SEPARATOR);
+	obin_strings(state)->Empty = _obin_string_empty(state);
+	obin_strings(state)->Space = obin_char_new('\32');
+	obin_strings(state)->TabSpaces = obin_string_dublicate(state, obin_strings(state)->Space, obin_integer_new(OBIN_COUNT_TAB_SPACES));
+
+	return OTRUE;
+}

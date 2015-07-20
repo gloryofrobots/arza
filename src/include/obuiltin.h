@@ -18,10 +18,12 @@ ObinAny a reg
 #include "ostate.h"
 #include "ocell.h"
 
+/*
 #define OBIN_MODULE_NAME(name) OBIN_MODULE_##name##_INIT
 #define OBIN_MODULE_DECLARE(name) static int  OBIN_MODULE_NAME(name) = 0
 #define OBIN_MODULE_INIT(name) OBIN_MODULE_NAME(name) = 1
 #define OBIN_MODULE_CHECK(name) obin_assert(OBIN_MODULE_NAME(name))
+*/
 
 /**************************** BUILTINS *******************************************/
 /* NEVER FORGET TO CALL THIS BEFORE SETTING TYPE*/

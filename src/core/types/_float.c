@@ -8,6 +8,6 @@ ObinAny obin_float_new(obin_float number) {
 	return result;
 }
 
-ObinNativeTraits* obin_float_traits() {
+ObinBehavior* obin_float_behavior() {
 	return ONULL;
 }

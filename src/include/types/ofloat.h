@@ -4,7 +4,7 @@
 
 ObinAny obin_float_new(obin_float number);
 
-ObinNativeTraits* obin_float_traits();
+ObinBehavior* obin_bool_behavior();
 
 
 #endif

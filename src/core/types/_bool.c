@@ -8,6 +8,6 @@ ObinAny obin_bool_new(obin_bool condition){
 	return ObinFalse;
 }
 
-ObinNativeTraits* obin_bool_traits() {
+ObinBehavior* obin_bool_behavior() {
 	return NULL;
 }

@@ -52,14 +52,17 @@ typedef struct _ObinBehavior {
 } ObinBehavior;
 
 """
-BEHAVIOR_DECL_TPL = """
-#define OBIN_DECLARE_BEHAVIOR(structname, name, %s) \
-    static ObinBehavior structname = {
-        name, 
-        %s
-    };
+BEHAVIOR_DEF_TPL = """
+#define OBIN_BEHAVIOR_DEFINE(structname, name, %s)  \\ 
+static ObinBehavior structname = { \\ 
+    name, %s  \\ 
+};
 """
 
+BEHAVIOR_DECL_TPL = """
+#define OBIN_BEHAVIOR_DECLARE(structname) \
+static ObinBehavior structname;
+"""
 
 MACROS_BODY = []
 BEHAVIOR_BODY = []
@@ -73,7 +76,7 @@ for part in BEHAVIOR_PARTS:
     MACROS = "%s(%s)  %s \n" %(MACROS_NAME, ",".join(MACROSES), ", ".join(MACROSES))
     MACROS_BODY.append(MACROS)
 
-    MACROS_NAME = "#define OBIN_BEHAVIOR_%s_EMPTY" % part['name']
+    MACROS_NAME = "#define OBIN_BEHAVIOR_%s_NULL" % part['name']
     MACROS = "%s %s \n" %(MACROS_NAME, ", ".join(['0']*len(part['methods'])))
     MACROS_BODY.append(MACROS)
 
@@ -85,6 +88,8 @@ print BEHAVIOR
 MACROS = "\n".join(MACROS_BODY)
 print MACROS
 
+print BEHAVIOR_DECL_TPL
+
 names = [part['name'] for part in BEHAVIOR_PARTS]
-BEHAVIOR_DECL = BEHAVIOR_DECL_TPL % (", ".join(names), ", \n".join(names))
-print BEHAVIOR_DECL
+BEHAVIOR_DEF = BEHAVIOR_DEF_TPL % (", ".join(names), ", ".join(names))
+print BEHAVIOR_DEF

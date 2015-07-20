@@ -6,7 +6,7 @@ static TMCounter* tmt_counter;
 
 /********************* TMT CELL ************************************************/
 #define TMTCELL_DATA_SIZE 256
-ObinNativeTraits __TMTCELL_TRAITS__;
+OBIN_BEHAVIOR_DECLARE(__TMTCELL_BEHAVIOR__);
 
 OBIN_DECLARE_CELL(TMTCell,
 	int id;
@@ -66,11 +66,11 @@ ObinAny tmtcell_new(ObinState* state, obin_string data, obin_mem_t capacity) {
 
 	tmtcell_print(cell, "tmtcell_new");
 
-	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*) cell, &__TMTCELL_TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*) cell, &__TMTCELL_BEHAVIOR__, obin_cells(state)->__Cell__);
 }
 
 
-static void __tmtcell_mark__(ObinState* state, ObinAny self, obin_proc callback ) {
+static void __tmtcell_mark__(ObinState* state, ObinAny self, obin_func_1_func_1 callback ) {
 	TMTCell* cell = (TMTCell*) obin_any_cell(self);
 	tmtcell_print(cell, "__tmtcell_mark__");
 	tm_counter_mark(tmt_counter);
@@ -90,23 +90,14 @@ static void __tmtcell_destroy__(ObinState* state, ObinCell* self) {
 	tmtcell_print(cell, "__tmtcell_destroy__");
 }
 
-ObinBaseTrait __TMTCELL_BASE__ = {
-	 0,
-	 0,
-	 __tmtcell_destroy__,
-	 0, /* clone */
-	 0, /*__compare__ */
-	 0,/* _hash__ */
-	 __tmtcell_mark__
-};
-
-ObinNativeTraits __TMTCELL_TRAITS__ = {
-	 "tmtcell",
-	 &__TMTCELL_BASE__, /*base*/
-	 0, /*collection*/
-	 0, /*generator*/
-	 0, /*number*/
-};
+OBIN_BEHAVIOR_DEFINE(__TMTCELL_BEHAVIOR__,
+		"tmtcell",
+		OBIN_BEHAVIOR_MEMORY(__tmtcell_destroy__, __tmtcell_mark__),
+		OBIN_BEHAVIOR_BASE_NULL,
+		OBIN_BEHAVIOR_COLLECTION_NULL,
+		OBIN_BEHAVIOR_GENERATOR_NULL,
+		OBIN_BEHAVIOR_NUMBER_NULL
+);
 
 typedef struct _TMTTestRequests {
 	obin_integer live_count;

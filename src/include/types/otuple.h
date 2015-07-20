@@ -2,6 +2,7 @@
 #define OTUPLE_H_
 #include "obuiltin.h"
 
+/*TODO RENAME IT TO obin_tuple_init */
 obin_bool obin_module_tuple_init(ObinState* state);
 
 ObinAny obin_tuple_new(ObinState* state,  ObinAny size, ObinAny* items);

@@ -1,8 +1,6 @@
 #include <obin.h>
 #define __Array__ "__Array__"
 
-OBIN_MODULE_DECLARE(Array);
-
 OBIN_DECLARE_CELL(ObinArray,
 	obin_mem_t size;
 	obin_mem_t capacity;
@@ -63,7 +61,7 @@ obin_array_new(ObinState* state, ObinAny size) {
 
 	self->capacity = capacity;
 	self->size = 0;
-	return obin_cell_new(EOBIN_TYPE_ARRAY, (ObinCell*)self, &__TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_ARRAY, (ObinCell*)self, &__BEHAVIOR__, obin_cells(state)->__Array__);
 }
 
 static obin_mem_t _array_inflate(ObinState* state, ObinAny self, obin_index start, obin_index end) {
@@ -278,7 +276,7 @@ static void __destroy__(ObinState* state, ObinCell* self) {
 	obin_free(state, array->data);
 }
 
-static void __mark__(ObinState* state, ObinAny self, obin_proc mark) {
+static void __mark__(ObinState* state, ObinAny self, obin_func_1_func_1 mark) {
 	/*TODO each here*/
 	obin_index i;
 
@@ -404,6 +402,5 @@ obin_bool obin_module_array_init(ObinState* state) {
 	obin_cells(state)->__Array__ = obin_cell_new(state, EOBIN_TYPE_CELL,
 			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
 
-	OBIN_MODULE_INIT(Array);
 	return OTRUE;
 }

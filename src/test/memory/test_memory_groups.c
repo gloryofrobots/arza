@@ -3,7 +3,7 @@
 
 static int TMG_VERBOSE = 0;
 
-ObinNativeTraits __TMG_TRAITS__;
+OBIN_BEHAVIOR_DECLARE(__TMGCELL_BEHAVIOR__);
 
 #define tmg_print_cell(cell, message) \
 	if(TMG_VERBOSE > 1) { \
@@ -52,11 +52,11 @@ ObinAny tmg_cell_new(ObinState* state, int data_size, double garbage_pecentage, 
 		}
 	}
 
-	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*) cell, &__TMG_TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*) cell, &__TMGCELL_BEHAVIOR__, obin_cells(state)->__Cell__);
 }
 
 
-static void __tmg_cell_mark__(ObinState* state, ObinAny self, obin_proc callback ) {
+static void __tmg_cell_mark__(ObinState* state, ObinAny self, obin_func_1_func_1 callback ) {
 	int i = 0, count_marked = 0;
 	TMGCell* cell = (TMGCell*) obin_any_cell(self);
 	TMGCell* child;
@@ -85,23 +85,14 @@ static void __tmg_cell_destroy__(ObinState* state, ObinCell* self) {
 	obin_free(state, cell->chunk);
 }
 
-ObinBaseTrait __BASE__ = {
-	 0,
-	 0,
-	 __tmg_cell_destroy__,
-	 0, /* clone */
-	 0, /*__compare__ */
-	 0,/* _hash__ */
-	 __tmg_cell_mark__
-};
-
-ObinNativeTraits __TMG_TRAITS__ = {
-	 "tmg_cell",
-	 &__BASE__, /*base*/
-	 0, /*collection*/
-	 0, /*generator*/
-	 0, /*number*/
-};
+OBIN_BEHAVIOR_DEFINE(__TMGCELL_BEHAVIOR__,
+		"tmgcell",
+		OBIN_BEHAVIOR_MEMORY(__tmg_cell_destroy__, __tmg_cell_mark__),
+		OBIN_BEHAVIOR_BASE_NULL,
+		OBIN_BEHAVIOR_COLLECTION_NULL,
+		OBIN_BEHAVIOR_GENERATOR_NULL,
+		OBIN_BEHAVIOR_NUMBER_NULL
+);
 
 void tmg_test(ObinState* state, obin_mem_t data_size, double garbage_percentage) {
 	int destroyed = 0;

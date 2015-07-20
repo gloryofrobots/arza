@@ -8,7 +8,7 @@
 	} \
 
 /*TODO OPTIMIZE ITERATORS SO THEY DON'T CREATE ARRAYS AND BE COMPLETELY LAZY*/
-static ObinNativeTraits __TRAITS__;
+static ObinBehavior __BEHAVIOR__;
 
 typedef struct {
 	obin_bool isset;
@@ -67,7 +67,7 @@ ObinAny obin_table_new(ObinState* state, ObinAny size){
 	self->body = obin_malloc_array(state, _ObinHashTableEntry, self->capacity);
 	self->size = 0;
 
-	return obin_cell_new(EOBIN_TYPE_TABLE, (ObinCell*)self, &__TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_TABLE, (ObinCell*)self, &__BEHAVIOR__, obin_cells(state)->__Table__);
 }
 
 static void _obin_table_resize(ObinState* state, ObinAny self, obin_mem_t new_capacity) {
@@ -220,17 +220,14 @@ static ObinAny __iterator__next__(ObinState* state, ObinAny self) {
 	return result;
 }
 
-static ObinGeneratorTrait __TABLE_ITERATOR_GENERATOR__ = {
-	__iterator__next__
-};
-
-static ObinNativeTraits __TABLE_ITERATOR_TRAITS__ = {
-	"__TableIterator__",
-	 0, /*base*/
-	 0, /*collection*/
-	 &__TABLE_ITERATOR_GENERATOR__, /*generator*/
-	 0, /*number*/
-};
+OBIN_BEHAVIOR_DEFINE(__TABLE_ITERATOR_BEHAVIOR__,
+		"__TableIterator__",
+		OBIN_BEHAVIOR_MEMORY_NULL,
+		OBIN_BEHAVIOR_BASE_NULL,
+		OBIN_BEHAVIOR_COLLECTION_NULL,
+		OBIN_BEHAVIOR_GENERATOR(__iterator__next__),
+		OBIN_BEHAVIOR_NUMBER_NULL
+);
 
 static ObinAny __iterator__(ObinState* state, ObinAny self) {
 	TableIterator * iterator;
@@ -240,7 +237,7 @@ static ObinAny __iterator__(ObinState* state, ObinAny self) {
 	iterator = obin_new(state, TableIterator);
 	iterator->source = self;
 	iterator->index = 0;
-	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*)iterator, &__TABLE_ITERATOR_TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*)iterator, &__TABLE_ITERATOR_BEHAVIOR__, ObinNil);
 }
 
 static ObinAny __tobool__(ObinState* state, ObinAny self) {
@@ -291,7 +288,7 @@ static void __destroy__(ObinState* state, ObinCell* table) {
 	self->body = NULL;
 }
 
-static void __mark__(ObinState* state, ObinAny self, obin_proc mark) {
+static void __mark__(ObinState* state, ObinAny self, obin_func_1_func_1 mark) {
 	obin_index i;
 
 	for(i = 0; i < _capacity(self); ++i) {
@@ -398,30 +395,25 @@ __delitem__(ObinState* state, ObinAny self, ObinAny key){
 	return ObinNothing;
 }
 
-static ObinCollectionTrait __COLLECTION__ = {
-	 __iterator__,
-	 __length__,
-	 __getitem__,
-	 __setitem__,
-	 __hasitem__,
-	 __delitem__,
-} ;
+obin_bool obin_module_table_init(ObinState* state) {
+	__BEHAVIOR__.__name__ = __Table__;
+	__BEHAVIOR__.__destroy__ = __destroy__;
+	__BEHAVIOR__.__mark__ = __mark__;
 
-static ObinBaseTrait __BASE__ = {
-	 __tostring__,
-	 __tobool__,
-	 __destroy__,
-	 __clone__,
-	 obin_collection_compare,
-	 0,
-	 __mark__
-};
+	__BEHAVIOR__.__tostring__ = __tostring__;
+	__BEHAVIOR__.__tobool__ = __tobool__;
+	__BEHAVIOR__.__clone__ = __clone__;
+	__BEHAVIOR__.__compare__ = obin_collection_compare;
 
-static ObinNativeTraits __TRAITS__ = {
-	__Table__,
-	 /*base*/
-	 &__BASE__,
-	 &__COLLECTION__, /*collection*/
-	 0, /*generator*/
-	 0, /*number*/
-};
+	__BEHAVIOR__.__iterator__ = __iterator__;
+	__BEHAVIOR__.__length__ = __length__;
+	__BEHAVIOR__.__getitem__ = __getitem__;
+	__BEHAVIOR__.__setitem__ = __setitem__;
+	__BEHAVIOR__.__hasitem__ = __hasitem__;
+	__BEHAVIOR__.__delitem__ = __delitem__;
+
+	obin_cells(state)->__Table__ = obin_cell_new(state, EOBIN_TYPE_CELL,
+			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
+
+	return OTRUE;
+}
