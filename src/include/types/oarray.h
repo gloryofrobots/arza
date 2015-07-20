@@ -3,6 +3,9 @@
 
 #include "obuiltin.h"
 
+
+obin_bool obin_module_array_init(ObinState* state);
+
 ObinAny obin_array_new(ObinState* state, ObinAny size);
 ObinAny obin_array_push(ObinState* state, ObinAny self, ObinAny value);
 ObinAny obin_array_indexof(ObinState* state, ObinAny self, ObinAny item);

@@ -1,13 +1,15 @@
 #include <obin.h>
 #define __Array__ "__Array__"
 
+OBIN_MODULE_DECLARE(Array);
+
 OBIN_DECLARE_CELL(ObinArray,
 	obin_mem_t size;
 	obin_mem_t capacity;
 	ObinAny* data;
 );
 
-static ObinNativeTraits __TRAITS__;
+static ObinBehavior __BEHAVIOR__ = {0};
 
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!obin_any_is_array(self)) { \
@@ -384,30 +386,24 @@ __delitem__(ObinState* state, ObinAny self, ObinAny pos){
 	return ObinNothing;
 }
 
-static ObinCollectionTrait __COLLECTION__ = {
-	obin_sequence_iterator_new,
-	 __length__,
-	 __getitem__,
-	 __setitem__,
-	 __hasitem__,
-	 __delitem__,
-} ;
+obin_bool obin_module_array_init(ObinState* state) {
+	__BEHAVIOR__.__name__ = __Array__;
+	__BEHAVIOR__.__tostring__ = __tostring__;
+	__BEHAVIOR__.__tobool__ = __tobool__;
+	__BEHAVIOR__.__destroy__ = __destroy__;
+	__BEHAVIOR__.__clone__ = __clone__;
+	__BEHAVIOR__.__compare__ = obin_collection_compare;
+	__BEHAVIOR__.__iterator__ = obin_sequence_iterator_new;
+	__BEHAVIOR__.__length__ = __length__;
+	__BEHAVIOR__.__getitem__ = __getitem__;
+	__BEHAVIOR__.__setitem__ = __setitem__;
+	__BEHAVIOR__.__hasitem__ = __hasitem__;
+	__BEHAVIOR__.__delitem__ = __delitem__;
+	__BEHAVIOR__.__mark__ = __mark__;
 
-static ObinBaseTrait __BASE__ = {
-	 __tostring__,
-	 __tobool__,
-	 __destroy__,
-	 __clone__,
-	 obin_collection_compare,
-	 0,
-	 __mark__
-};
+	obin_cells(state)->__Array__ = obin_cell_new(state, EOBIN_TYPE_CELL,
+			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
 
-static ObinNativeTraits __TRAITS__ = {
-	__Array__,
-	 /*base*/
-	 &__BASE__,
-	 &__COLLECTION__, /*collection*/
-	 0, /*generator*/
-	 0, /*number*/
-};
+	OBIN_MODULE_INIT(Array);
+	return OTRUE;
+}

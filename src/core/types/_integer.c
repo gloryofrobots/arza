@@ -8,15 +8,15 @@ ObinAny obin_integer_new(obin_integer number) {
 	return result;
 }
 
-ObinNativeTraits* obin_integer_traits() {
+ObinBehavior* obin_integer_behavior() {
 	return NULL;
 }
 
-obin_bool obin_module_integer_init(ObinState* state, ObinInternals* internals) {
-	internals->integers.NotFound = obin_integer_new(-1);
-	internals->integers.Lesser = obin_integer_new(-1);
-	internals->integers.Greater = obin_integer_new(1);
-	internals->integers.Equal = obin_integer_new(0);
+obin_bool obin_module_integer_init(ObinState* state) {
+	obin_integers(state) = obin_integer_new(-1);
+	obin_integers(state) = obin_integer_new(-1);
+	obin_integers(state) = obin_integer_new(1);
+	obin_integers(state) = obin_integer_new(0);
 	return OTRUE;
 }
 

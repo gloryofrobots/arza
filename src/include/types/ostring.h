@@ -2,7 +2,7 @@
 #define OSTRING_H_
 #include "obuiltin.h"
 
-obin_bool obin_module_string_init(ObinState* state, ObinInternals* internals);
+obin_bool obin_module_string_init(ObinState* state);
 
 /* constructors */
 ObinAny obin_string_new(ObinState* state, obin_string data);

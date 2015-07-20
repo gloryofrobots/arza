@@ -40,7 +40,7 @@ _embedded_type_traits(ObinState* state, ObinAny any) {
 		return obin_bool_traits();
 		break;
 	case EOBIN_TYPE_INTEGER:
-		return obin_integer_traits();
+		return obin_integer_behavior();
 		break;
 	case EOBIN_TYPE_FLOAT:
 		return obin_float_traits();

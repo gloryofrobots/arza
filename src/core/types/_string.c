@@ -21,7 +21,7 @@ static ObinAny _obin_string_empty(ObinState* state) {
 	return result;
 }
 
-obin_bool obin_module_string_init(ObinState* state, ObinInternals* internals) {
+obin_bool obin_module_string_init(ObinState* state) {
 	__BEHAVIOR__.__name__ = "__String__";
 	__BEHAVIOR__.__tostring__ = __tostring__;
 	__BEHAVIOR__.__tobool__ = __tobool__;
@@ -29,35 +29,30 @@ obin_bool obin_module_string_init(ObinState* state, ObinInternals* internals) {
 	__BEHAVIOR__.__compare__ = __compare__;
 	__BEHAVIOR__.__hash__ = __hash__;
 
-	__BEHAVIOR__.__tostring__ = __tostring__;
-	__BEHAVIOR__.__tostring__ = __tostring__;
-	__BEHAVIOR__.__tostring__ = __tostring__;
-
 	__BEHAVIOR__.__iterator__ = __iterator__;
 	__BEHAVIOR__.__length__ = __length__;
 	__BEHAVIOR__.__getitem__ = __getitem__;
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
 
-	internals->cells.__String__ = obin_cell_new()
+	/*strings proto*/
+
+	obin_cells(state)->__String__ =  obin_cell_new(state, EOBIN_TYPE_CELL,
+			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
 
 
-	internals->strings.Nil = obin_string_new(state, "Nil");
-	internals->strings.True = obin_string_new(state, "True");
-	internals->strings.False = obin_string_new(state, "False");
-	internals->strings.Nothing = obin_string_new(state, "Nothing");
-	internals->strings.PrintSeparator = obin_char_new(OBIN_PRINT_SEPARATOR);
-	internals->strings.Empty = _obin_string_empty(state);
-	internals->strings.Space = obin_char_new('\32');
-	internals->strings.TabSpaces = obin_string_dublicate(state, internals->strings.Space, obin_integer_new(OBIN_COUNT_TAB_SPACES));
+	obin_strings(state)->Nil = obin_string_new(state, "Nil");
+	obin_strings(state)->True = obin_string_new(state, "True");
+	obin_strings(state)->False = obin_string_new(state, "False");
+	obin_strings(state)->Nothing = obin_string_new(state, "Nothing");
+	obin_strings(state)->PrintSeparator = obin_char_new(OBIN_PRINT_SEPARATOR);
+	obin_strings(state)->Empty = _obin_string_empty(state);
+	obin_strings(state)->Space = obin_char_new('\32');
+	obin_strings(state)->TabSpaces = obin_string_dublicate(state, obin_strings(state)->Space, obin_integer_new(OBIN_COUNT_TAB_SPACES));
 
 	OBIN_MODULE_INIT(STRING);
 	return OTRUE;
 }
 
-/* ALIASES */
-/* SIZE FOR BUFFER IN STACK USED TO WRITE INTS AND FLOATS TO STRING */
-
-static ObinNativeTraits __TRAITS__;
 
 typedef struct {
 	OBIN_CELL_HEADER;
@@ -81,6 +76,8 @@ static obin_char* _string_data(ObinAny any) {
 		return NULL;
 	}
 }
+
+/* SIZE FOR BUFFER IN STACK USED TO WRITE INTS AND FLOATS TO STRING */
 
 static obin_integer _string_size(ObinAny any) {
 	switch(any.type) {
@@ -270,7 +267,7 @@ static ObinAny _obin_string_from_carr(ObinState* state, obin_char* data, obin_me
 
 	self->data[self->size] = '\0';
 
-	return obin_cell_new(EOBIN_TYPE_STRING, (ObinCell*) self, &__TRAITS__);
+	return obin_cell_new(EOBIN_TYPE_STRING, (ObinCell*) self, &__BEHAVIOR__, obin_cells(state)->__String__);
 }
 
 ObinAny _obin_string_blank(ObinState* state, obin_mem_t length) {
