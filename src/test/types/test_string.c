@@ -17,7 +17,7 @@ static void Test_Char(void) {
 static void Test_String(void) {
 	ObinState * state = obin_init(1024 * 1024 * 90);
 	char str_arr[STR_ARR_SIZE] = {'\0'};
-	ObinAny str1, str2, str3;
+	ObinAny str1, str2, str3, str4;
 	/*******************************/
 	str1 = obin_string_new(state, "Hello!");
 	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str1), "Hello!");
@@ -113,8 +113,8 @@ static void Test_String(void) {
 	#undef TEXT
 	#define TEXT_ALPHA "octopus"
 	#define TEXT_NOTALPHA "octopus ..."
-	#define TEXT_ALPHANUM "octopus1488"
-	#define TEXT_NOTALPHANUM "octopus1488..."
+	#define TEXT_ALPHANUM "octopus42"
+	#define TEXT_NOTALPHANUM "octopus42..."
 	#define TEXT_DIGIT "42"
 	#define TEXT_NOTDIGIT "42o"
 	#define TEXT_SPACE " \
@@ -141,32 +141,71 @@ static void Test_String(void) {
 	str2 = obin_string_new(state, TEXT_NOTSPACE);
 	CU_ASSERT_TRUE(obin_any_is_true(obin_string_is_space(state, str1)));
 	CU_ASSERT_FALSE(obin_any_is_true(obin_string_is_space(state, str2)));
+	/************************INDEXOF************************************/
+	#undef TEXT
+	#define TEXT "The Squid are cephalopods 12 Squid are cephalopods"
+
+	str1 = obin_string_new(state, TEXT);
+	str2 = obin_string_new(state, "Squid");
+	CU_ASSERT_EQUAL(obin_any_integer(obin_string_index_of(state, str1, str2, ObinNil, ObinNil)), 4);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_string_index_of(state, str1, str2, obin_integer_new(6), ObinNil)), 29);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_string_index_of(state, str1, str2, obin_integer_new(6),
+									obin_integer_new(10))),-1);
+
+	CU_ASSERT_EQUAL(obin_any_integer(obin_string_last_index_of(state, str1, str2, ObinNil, ObinNil)), 29);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_string_last_index_of(state, str1, str2, obin_integer_new(0), obin_integer_new(10))), 4);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_string_last_index_of(state, str1, str2, obin_integer_new(6),
+									obin_integer_new(10))),-1);
+
+	/******************DUPLICATE*******************************/
+	#undef TEXT
+	#define TEXT "squid"
+	#define TEXT4 TEXT TEXT TEXT TEXT
+	str1 = obin_string_new(state, TEXT);
+	str2 = obin_string_dublicate(state, str1, obin_integer_new(4));
+	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str2), TEXT4);
+	/*******************CONCAT***********************************/
+	#undef TEXT
+	#undef TEXT2
+	#define TEXT "CLASS CEPHALOPODA: \n"
+	#define TEXT2 "		-Subclass Nautiloidea: nautilus\n"
+	#define TEXT3 "		-Subclass Coleoidea: squid, octopus, cuttlefish\n"
+	#define TEXTALL TEXT TEXT2 TEXT3
+
+	str1 = obin_string_new(state, TEXT);
+	str2 = obin_string_new(state, TEXT2);
+	str3 = obin_string_new(state, TEXT3);
+	str4 = obin_string_concat(state, str1, str2);
+	str4 = obin_string_concat(state, str4, str3);
+	print_str(state, str4);
+	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str4), TEXTALL);
+
+	/*******************FORMAT***********************************/
+	/*
+	#undef TEXT
+	#undef TEXT2
+	#define TEXT "%d %p %s %.2f"
+	obin_memset(str_arr, 0, STR_ARR_SIZE);
+	sprintf(str_arr, TEXT, 42, (void*)obin_any_cell(str1), "SQUID", 99.1799999999999);
+	printf(str_arr);
+	str2 = obin_string_new(state, TEXT);
+	str3 = obin_string_format(state, str2, 42, (void*)obin_any_cell(str1), "SQUID", 99.1799999999999);
+	*/
+	/*#undef TEXT
+	#undef TEXT2
+	#define TEXT "SQUID"
+	#define TEXT2 "OCTOPUS"
+
+	str1 = obin_string_new(state, TEXT);
+	str2 = obin_string_new(state, TEXT2);
+	str3 = obin_string_pack(state, 2, str1, str2);
+	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str3), TEXT TEXT2);*/
+
 	/*
 	 *
- Return the lowest index in the string
- where substring sub is found, such that sub is contained
- within s[start:end]. Optional arguments start and end
- are interpreted as in slice notation. Return -1 on failure.
-
-ObinAny obin_string_index_of(ObinState* state, ObinAny self, ObinAny other,
-		ObinAny start, ObinAny end);
-
- Return the highest index in the string
- where substring sub is found, such that sub is contained
- within s[start:end]. Optional arguments start and end
- are interpreted as in slice notation. Return -1 on failure.
-
-ObinAny obin_string_last_index_of(ObinState* state, ObinAny self, ObinAny other,
-		ObinAny start, ObinAny end);
-
-ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count);
 ObinAny obin_string_format(ObinState* state, ObinAny format, ...);
-ObinAny obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2);
 ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection);
 ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator);
-
-obin_string obin_string_cstr(ObinState* state, ObinAny self);
-
 ObinAny obin_string_pack(ObinState* state, obin_index count, ...);
 	 *
 	 * */

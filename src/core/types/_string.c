@@ -470,7 +470,7 @@ ObinAny _obin_string_find(ObinState* state, ObinAny haystack, ObinAny needle,
 		pend = (obin_mem_t) obin_any_integer(end);
 	}
 
-	if ((pend - pstart) > _string_size(needle)) {
+	if ((pend - pstart) > _string_size(haystack)) {
 		return obin_raise(state, obin_errors(state)->RangeError,
 					"String.search Invalid search range ",
 					obin_tuple_pack(state, 2,
@@ -544,18 +544,18 @@ obin_mem_t start, obin_mem_t end) {
 
     data_h = _string_data(haystack);
     data_n = _string_data(needle);
-	for (i = end - 1; i <= start; i--) {
+	for (i = end - 1; i >= start; i--) {
 		/*for is to creepy in that case, while is more readable */
 		hi = i;
 		ni = _string_size(needle) - 1;
-		while (hi > 0 && ni > 0 && (data_h[hi] == data_n[ni])) {
+		while (hi >= start && ni > 0 && (data_h[hi] == data_n[ni])) {
 				--hi;
 				--ni;
 		}
 
 		if (ni == 0) {
 			/*Found match! */
-			return obin_integer_new(i - _string_size(needle) - 1);
+			return obin_integer_new(i - _string_size(needle) + 1);
 		}
 		/* Didn't match here.  Try again further along haystack. */
 	}
@@ -584,6 +584,7 @@ ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count) {
 	obin_mem_t size;
 	obin_mem_t count;
 	obin_char* data;
+	ObinAny result;
 
 	_CHECK_SELF_TYPE(state, self, dublicate);
 
@@ -600,17 +601,16 @@ ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count) {
 				"String.dublicate invalid argument type, integer expected ", _count);
 	}
 
-	obin_assert(obin_any_is_integer(_count));
 	count = obin_any_integer(_count);
 
 	size = _string_size(self) * count;
-	data = obin_malloc_array(state, obin_char, size + 1);
-
+	result = _obin_string_blank(state, size);
+	data = _string_data(result);
 	for (; count > 0; count--, data += _string_size(self)) {
 		obin_memcpy(data, _string_data(self), _string_size(self));
 	}
 
-	return obin_string_from_carray(state, data, size);
+	return result;
 }
 
 ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
