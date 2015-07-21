@@ -209,7 +209,9 @@ ObinAny obin_char_new(obin_char ch) {
 
 	result = obin_any_new();
 	result.type = EOBIN_TYPE_CHAR;
+	/*We add \0 in char for valid conversion to cstring */
 	result.data.char_value.data[0] = ch;
+	result.data.char_value.data[1] = '\0';
 	result.data.char_value.size = 1;
 	return result;
 }
@@ -394,7 +396,13 @@ ObinAny obin_string_is_digit(ObinState* state, ObinAny self) {
 }
 /*************************** IS LOWER **********************************/
 static int _is_lower_condition(obin_char* data, obin_mem_t index) {
-	return islower(data[index]);
+	char ch = data[index];
+	if(!isalpha(ch)) {
+		/*skip other stuff*/
+		return 1;
+	}
+
+	return islower(ch);
 }
 
 ObinAny obin_string_is_lower(ObinState* state, ObinAny self) {
@@ -403,7 +411,13 @@ ObinAny obin_string_is_lower(ObinState* state, ObinAny self) {
 }
 /*************************** IS UPPER **********************************/
 static int _is_upper_condition(obin_char* data, obin_mem_t index) {
-	return isupper(data[index]);
+	char ch = data[index];
+	if(!isalpha(ch)) {
+		/*skip other stuff*/
+		return 1;
+	}
+
+	return isupper(ch);
 }
 
 ObinAny obin_string_is_upper(ObinState* state, ObinAny self) {

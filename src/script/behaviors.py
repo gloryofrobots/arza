@@ -4,7 +4,7 @@ BEHAVIOR_PARTS = [
             'name':'MEMORY',
             'methods': [
                 {'type':'obin_destructor', 'name':'__destroy__'},
-                {'type':'obin_func_1_func_1', 'name':'__mark__'},
+                {'type':'obin_each', 'name':'__mark__'},
             ]
         },
         {
@@ -38,6 +38,7 @@ BEHAVIOR_PARTS = [
             'name':'NUMBER',
             'methods': [
                 {'type':'obin_func_1', 'name':'__tointeger__'},
+                {'type':'obin_func_1', 'name':'__tofloat__'},
                 {'type':'obin_func_2', 'name':'__add__'},
             ]
         }, 

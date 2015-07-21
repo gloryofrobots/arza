@@ -1,6 +1,12 @@
 
 static void Test_BaseTypes(void) {
 	ObinState * state = obin_init(1024 * 1024 * 90);
+	printf("\n *************************** Internal sizes ******************************** \n");
+	printf("Size of ObinState %d \n", sizeof(ObinState));
+	printf("Size of ObinAny %d \n", sizeof(ObinAny));
+	printf("Size of ObinValue %d \n", sizeof(ObinValue));
+	printf("Size of ObinCell %d \n", sizeof(ObinCell));
+
 	CU_ASSERT_EQUAL(obin_any_type(ObinFalse), EOBIN_TYPE_FALSE);
 	CU_ASSERT_EQUAL(obin_any_type(ObinNil), EOBIN_TYPE_NIL);
 	CU_ASSERT_EQUAL(obin_any_type(ObinNothing), EOBIN_TYPE_NOTHING);
@@ -14,8 +20,3 @@ static void Test_BaseAnyNew(void) {
 	CU_ASSERT_EQUAL(obin_any_type(any), EOBIN_TYPE_UNKNOWN);
 }
 
-static CU_TestInfo TestGroup_BaseTypes[] = {
-  { "Test_BaseTypes", Test_BaseTypes },
-  { "Test_BaseAnyNew", Test_BaseAnyNew },
-	CU_TEST_INFO_NULL,
-};

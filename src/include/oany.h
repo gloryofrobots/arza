@@ -40,7 +40,7 @@ typedef union {
 	obin_float float_value;
 	struct {
 		obin_byte size;
-		obin_char data[1];
+		obin_char data[2];
 	} char_value;
 
 	ObinCell * cell;

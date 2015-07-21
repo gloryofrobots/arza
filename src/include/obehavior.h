@@ -10,7 +10,6 @@ typedef ObinAny (*obin_func_4)(ObinState* state, ObinAny arg1, ObinAny arg2, Obi
 typedef void (*obin_each)(ObinState* state, ObinAny arg, obin_func_1 func);
 
 /*BELOW IS AUTOGEN CODE FROM behavior.py */
-
 typedef struct _ObinBehavior {
     obin_string __name__;
     /*MEMORY*/
@@ -33,6 +32,7 @@ typedef struct _ObinBehavior {
     obin_func_1 __next__;
     /*NUMBER*/
     obin_func_1 __tointeger__;
+    obin_func_1 __tofloat__;
     obin_func_2 __add__;
 
 } ObinBehavior;
@@ -54,9 +54,9 @@ typedef struct _ObinBehavior {
 
 #define OBIN_BEHAVIOR_GENERATOR_NULL 0
 
-#define OBIN_BEHAVIOR_NUMBER(__tointeger__,__add__)  __tointeger__, __add__
+#define OBIN_BEHAVIOR_NUMBER(__tointeger__,__tofloat__,__add__)  __tointeger__, __tofloat__, __add__
 
-#define OBIN_BEHAVIOR_NUMBER_NULL 0, 0
+#define OBIN_BEHAVIOR_NUMBER_NULL 0, 0, 0
 
 #define OBIN_BEHAVIOR_DECLARE(structname) static ObinBehavior structname;
 
@@ -64,5 +64,4 @@ typedef struct _ObinBehavior {
 static ObinBehavior structname = { \
     name, MEMORY, BASE, COLLECTION, GENERATOR, NUMBER  \
 };
-
 #endif /* OBEHAVIOR_H_ */
