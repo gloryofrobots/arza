@@ -43,11 +43,12 @@
 #define OBIN_MEM_MAX SIZE_MAX
 
 #define obin_int8_t int8_t
+#define obin_uint8_t uint8_t
 #define obin_int32_t int32_t
 #define obin_uint32_t uint32_t
 
-typedef obin_int8_t obin_byte;
-typedef obin_int8_t obin_bool;
+typedef obin_uint8_t obin_byte;
+typedef obin_byte obin_bool;
 typedef double obin_float;
 typedef void* obin_pointer;
 typedef FILE* obin_file;
@@ -55,7 +56,6 @@ typedef FILE* obin_file;
 typedef long obin_integer;
 typedef const char* obin_string;
 typedef char obin_char;
-typedef unsigned char obin_byte;
 
 /* Needed for convertion between numbers and strings */
 #define OBIN_INTEGER_FORMATTER "%ld"
