@@ -46,6 +46,7 @@
 #define obin_int32_t int32_t
 #define obin_uint32_t uint32_t
 
+typedef obin_int8_t obin_byte;
 typedef obin_int8_t obin_bool;
 typedef double obin_float;
 typedef void* obin_pointer;
