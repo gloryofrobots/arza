@@ -4,6 +4,7 @@
 
 static ObinBehavior __BEHAVIOR__ = {0};
 
+
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!obin_any_is_string(self)) { \
 		return obin_raise(state, obin_errors(state)->TypeError, \
@@ -34,7 +35,8 @@ static obin_char* _string_data(ObinAny any) {
 		return  _string(any)->data;
 		break;
 	case EOBIN_TYPE_CHAR:
-		return any.data.char_value.data;
+		printf("\n**** %p ****", any.data.char_value.char_data);
+		return any.data.char_value.char_data;
 		break;
 	default:
 		return NULL;
@@ -252,8 +254,8 @@ ObinAny obin_char_new(obin_char ch) {
 	result = obin_any_new();
 	result.type = EOBIN_TYPE_CHAR;
 	/*We add \0 in char for valid conversion to cstring */
-	result.data.char_value.data[0] = ch;
-	result.data.char_value.data[1] = 0;
+	result.data.char_value.char_data[0] = ch;
+	result.data.char_value.char_data[1] = 0;
 	result.data.char_value.size = 1;
 	return result;
 }
@@ -301,6 +303,7 @@ obin_mem_t size) {
 
 /* ******************** ATTRIBUTES ***********************************************/
 obin_string obin_string_cstr(ObinState* state, ObinAny self){
+	printf("\n** %p **", self.data.char_value.char_data);
 	return _string_data(self);
 }
 
@@ -313,7 +316,7 @@ ObinAny obin_string_is_empty(ObinState* state, ObinAny self){
 }
 /******************************** MODIFICATIONS *************************************/
 /*  function for modify char arrays , return 0 for stop iteration */
-typedef int (*_string_modifier)(obin_char* data, obin_mem_t index);
+typedef int (*_string_modifier)(obin_char* char_data, obin_mem_t index);
 
 /* clone string and modify it`s content by modifier */
 ObinAny _clone_and_modify(ObinState* state, ObinAny self,
@@ -391,7 +394,7 @@ ObinAny obin_string_to_lowercase(ObinState* state, ObinAny self) {
 
 /************** CONDITIONS **************************************/
 /*  function for checking string content by some condition*/
-typedef int (*_string_condition)(obin_char* data, obin_mem_t index);
+typedef int (*_string_condition)(obin_char* char_data, obin_mem_t index);
 
 /* check string content for condition */
 ObinAny _check_condition(ObinState* state, ObinAny self,

@@ -229,12 +229,25 @@ static void Test_String(void) {
 	str2 = obin_string_new(state, TEXT2);
 
 	CU_ASSERT_STRING_NOT_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, str1));
+/*	str1.data.char_value.char_data[0] = 'A';
+	str1.data.char_value.char_data[1] = 0;
+	str2.data.char_value.char_data[0] = 'B';
+	str2.data.char_value.char_data[1] = 0;*/
 
-	printf("\n\n %s  %s ",
-			obin_string_cstr(state, str1),
-			obin_string_cstr(state, str2));
 	cstr1 = obin_string_cstr(state, str1);
 	cstr2 = obin_string_cstr(state, str2);
+	printf("\n\n %p  %p -- %p %p ",
+			str1.data.char_value.char_data,
+			cstr1,
+			str2.data.char_value.char_data,
+			cstr2);
+
+	printf("\n\n %s  %s ",
+			str1.data.char_value.char_data,
+			str2.data.char_value.char_data);
+	printf("\n\n %s  %s ",
+			cstr1,
+			cstr2);
 
 
 	str3 = obin_string_new(state, "C");

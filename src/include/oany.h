@@ -40,7 +40,7 @@ typedef union {
 	obin_float float_value;
 	struct {
 		obin_byte size;
-		obin_char data[2];
+		obin_char char_data[2];
 	} char_value;
 
 	ObinCell * cell;
@@ -79,7 +79,7 @@ typedef struct {
 
 #define obin_any_cell(any) (any.data.cell)
 #define obin_any_integer(any) (any.data.integer_value)
-#define obin_any_char(any) (any.data.char_value.data[0])
+#define obin_any_char(any) (any.data.char_value.char_data[0])
 #define obin_any_mem_t(any) (obin_mem_t)(any.data.integer_value)
 
 #define obin_any_float(any) (any.data.float_value)
