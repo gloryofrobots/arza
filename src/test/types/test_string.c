@@ -222,8 +222,8 @@ static void Test_String(void) {
 	#undef TEXT
 	#undef TEXT2
 	#undef TEXT3
-	#define TEXT "A"
-	#define TEXT2 "B"
+	#define TEXT "Aaa"
+	#define TEXT2 "Bbb"
 
 	str1 = obin_string_new(state, TEXT);
 	str2 = obin_string_new(state, TEXT2);
@@ -231,7 +231,9 @@ static void Test_String(void) {
 	CU_ASSERT_STRING_NOT_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, str1));
 	val1 = obin_hash(state, str1);
 	val2 = obin_hash(state, str2);
-	printf(" hash %s = %ld; hash %s = %ld;",
+	CU_ASSERT_NOT_EQUAL(obin_any_integer(val1), obin_any_integer(val2));
+
+	printf(" {HASH TEST: hash %s = %ld; hash %s = %ld; }",
 			obin_string_cstr(state, str1), obin_any_integer(val1),
 			obin_string_cstr(state, str2), obin_any_integer(val2));
 

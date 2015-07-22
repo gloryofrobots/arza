@@ -671,7 +671,7 @@ ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count) {
 	result = _obin_string_blank(state, size);
 	data = _string_data(result);
 	for (; count > 0; count--, data += _string_size(self)) {
-		obin_memcpy(data, _string_data(self), _string_size(self));
+		obin_memcpy(data, _string_const_data(self), _string_size(self));
 	}
 
 	return result;
