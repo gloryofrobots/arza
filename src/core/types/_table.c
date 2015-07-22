@@ -84,7 +84,7 @@ static void _obin_table_resize(ObinState* state, ObinAny self, obin_mem_t new_ca
 		}
 	}
 
-	obin_free(state, old_body);
+	obin_memory_free(state, old_body);
 }
 
 static obin_bool _is_excided_load(ObinAny self) {
@@ -284,7 +284,7 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 
 static void __destroy__(ObinState* state, ObinCell* table) {
 	ObinTable* self = (ObinTable*) table;
-	obin_free(state, self->body);
+	obin_memory_free(state, self->body);
 	self->body = NULL;
 }
 

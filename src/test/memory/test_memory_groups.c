@@ -82,7 +82,7 @@ static void __tmg_cell_destroy__(ObinState* state, ObinCell* self) {
 	tm_counter_destroy(tmg_counter);
 
 	tmg_print_cell(cell, "__test_mem_destroy__");
-	obin_free(state, cell->chunk);
+	obin_memory_free(state, cell->chunk);
 }
 
 OBIN_BEHAVIOR_DEFINE(__TMGCELL_BEHAVIOR__,

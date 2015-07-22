@@ -8,12 +8,12 @@
 #define ObinMem_Padding(N) ((sizeof(obin_pointer) - ((N) % sizeof(obin_pointer))) % sizeof(obin_pointer))
 
 #define ObinMem_Malloc(n) ((obin_mem_t)(n) > OBIN_MEM_MAX? NULL \
-				: malloc((n) ? (n) : 1))
+				: obin_malloc((n) ? (n) : 1))
 
 #define ObinMem_Realloc(p, n)	((obin_mem_t)(n) > (obin_mem_t)OBIN_MEM_MAX  ? NULL \
-				: realloc((p), (n) ? (n) : 1))
+				: obin_realloc((p), (n) ? (n) : 1))
 
-#define ObinMem_Free free
+#define ObinMem_Free obin_free
 
 #define OBIN_B_TO_KB(B) (B/(1024.0))
 #define OBIN_B_TO_MB(B) ((double)B/(1024.0*1024.0))
@@ -76,7 +76,7 @@ ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinBehavior* behavior, O
 }
 
 /* MEMORY PRIMITIVES */
-obin_pointer obin_malloc(ObinState * state, obin_mem_t size) {
+obin_pointer obin_memory_malloc(ObinState * state, obin_mem_t size) {
 	obin_pointer new_pointer;
 
 	if (!size) {
@@ -96,7 +96,7 @@ obin_pointer obin_malloc(ObinState * state, obin_mem_t size) {
 	return new_pointer;
 }
 
-obin_pointer obin_realloc(ObinState * state, obin_pointer ptr, obin_mem_t size) {
+obin_pointer obin_memory_realloc(ObinState * state, obin_pointer ptr, obin_mem_t size) {
 	obin_pointer new_pointer;
 	if (!size) {
 		return NULL;
@@ -114,7 +114,7 @@ obin_pointer obin_memory_duplicate(ObinState * state, obin_pointer ptr,
 
 	size = element_size * elements;
 
-	new_pointer = obin_malloc(state, size);
+	new_pointer = obin_memory_malloc(state, size);
 	memcpy(new_pointer, ptr, size);
 
 	return new_pointer;
@@ -130,7 +130,7 @@ void _memory_create(ObinState* state, obin_mem_t heap_size) {
 				heap_size);
 	}
 
-	state->memory = (ObinMemory*) obin_malloc(state, sizeof(ObinMemory));
+	state->memory = (ObinMemory*) obin_memory_malloc(state, sizeof(ObinMemory));
 	M = state->memory;
 
 	if(!M) {
@@ -475,7 +475,7 @@ void* obin_allocate_cell(ObinState* state, obin_mem_t size) {
  * this function must not do anything, since the heap management
  * is done inside gc_collect.
  */
-void obin_free(ObinState* state, obin_pointer ptr) {
+void obin_memory_free(ObinState* state, obin_pointer ptr) {
 #ifdef ODEBUG
 	CATCH_STATE_MEMORY(state);
     /* check if called for an object inside the object_space */

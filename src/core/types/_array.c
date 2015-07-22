@@ -37,7 +37,7 @@ _array_grow(ObinState* state, ObinAny self, obin_index count_elements) {
 		return OFALSE;
 	}
 
-	_array_data(self) = obin_realloc(state, _array_data(self), new_capacity);
+	_array_data(self) = obin_memory_realloc(state, _array_data(self), new_capacity);
 	_array_capacity(self) = new_capacity;
 
 	return OTRUE;
@@ -273,7 +273,7 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 static void __destroy__(ObinState* state, ObinCell* self) {
 	ObinArray* array = (ObinArray*) self;
 
-	obin_free(state, array->data);
+	obin_memory_free(state, array->data);
 }
 
 static void __mark__(ObinState* state, ObinAny self, obin_func_1 mark) {

@@ -49,13 +49,14 @@ void obin_state_destroy(ObinState* state);
 void* obin_allocate_cell(ObinState* state, obin_mem_t size);
 void obin_gc_collect(ObinState* state);
 
-obin_pointer obin_malloc(ObinState* state, obin_mem_t size);
+/*TODO REMOVE IT LATER TO statics in c source */
+obin_pointer obin_memory_malloc(ObinState* state, obin_mem_t size);
 
-obin_pointer obin_realloc(ObinState* state, obin_pointer ptr, obin_mem_t size) ;
+obin_pointer obin_memory_realloc(ObinState* state, obin_pointer ptr, obin_mem_t size) ;
 
-obin_pointer obin_memdup(ObinState* state, obin_pointer ptr, obin_mem_t elements, obin_mem_t element_size );
+obin_pointer obin_memory_memdup(ObinState* state, obin_pointer ptr, obin_mem_t elements, obin_mem_t element_size );
 
-void obin_free(ObinState* state, obin_pointer ptr);
+void obin_memory_free(ObinState* state, obin_pointer ptr);
 
 void obin_memory_debug_trace(ObinState* state);
 
@@ -75,10 +76,10 @@ void obin_memory_end_transaction(ObinState* state);
 
 #define obin_malloc_array(state, type, n) \
   ( ((obin_mem_t)(n) > OBIN_MEM_MAX / sizeof(type)) ? NULL :	\
-	( (type *) obin_malloc(state, (n) * sizeof(type)) ) )
+	( (type *) obin_memory_malloc(state, (n) * sizeof(type)) ) )
 
 #define obin_realloc_type(state, p, type, n) \
   ( (p) = ((obin_mem_t)(n) > OBIN_MEM_MAX / sizeof(type)) ? NULL :	\
-	(type *) obin_realloc(state, (p), (n) * sizeof(type)) )
+	(type *) obin_memory_realloc(state, (p), (n) * sizeof(type)) )
 
 #endif

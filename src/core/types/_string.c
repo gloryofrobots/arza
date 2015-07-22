@@ -4,6 +4,7 @@
 
 static ObinBehavior __BEHAVIOR__ = {0};
 
+static obin_byte* __CHARS__[SCHAR_MAX] = {0};
 
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!obin_any_is_string(self)) { \
@@ -35,8 +36,20 @@ static obin_char* _string_data(ObinAny any) {
 		return  _string(any)->data;
 		break;
 	case EOBIN_TYPE_CHAR:
-		printf("\n**** %p ****", any.data.char_value.char_data);
-		return any.data.char_value.char_data;
+		obin_panic("CHAR TYPE ARE NOT MUTABLE");
+		return NULL;
+		break;
+	default:
+		return NULL;
+	}
+}
+static obin_string _string_const_data(ObinAny any) {
+	switch(any.type) {
+	case EOBIN_TYPE_STRING:
+		return  _string(any)->data;
+		break;
+	case EOBIN_TYPE_CHAR:
+		return (obin_string)__CHARS__[any.data.char_value.char_data];
 		break;
 	default:
 		return NULL;
@@ -110,7 +123,7 @@ static ObinAny __getitem__(ObinState* state, ObinAny self, ObinAny key) {
 				"String.__item__ invalid index", key);
 	}
 
-	result = _string_data(self)[index];
+	result = _string_const_data(self)[index];
 	return obin_char_new(result);
 }
 
@@ -131,7 +144,7 @@ static ObinAny __compare__(ObinState* state, ObinAny self, ObinAny other) {
 		return obin_integers(state)->Greater;
 	}
 
-	result = obin_strncmp(_string_data(self), _string_data(other),
+	result = obin_strncmp(_string_const_data(self), _string_const_data(other),
 			_string_size(self));
 
 	if (result < 0) {
@@ -157,7 +170,7 @@ static ObinAny __hash__(ObinState* state, ObinAny self) {
 	}
 
 	if(_is_char(self)) {
-		return obin_integer_new((obin_integer) _string_data(self)[0]);
+		return obin_integer_new((obin_integer) _string_const_data(self)[0]);
 	}
 
 	/* return already hashed value */
@@ -167,7 +180,7 @@ static ObinAny __hash__(ObinState* state, ObinAny self) {
 	}
 
 	secret = obin_hash_secret();
-	cursor = _string_data(self);
+	cursor = _string_const_data(self);
     hash = secret.prefix;
 	hash ^= (*(cursor) << 7);
 	length = _string_size(self);
@@ -188,7 +201,7 @@ static ObinAny __iterator__(ObinState* state, ObinAny self) {
 }
 
 static ObinAny __clone__(ObinState* state, ObinAny self) {
-	return obin_string_from_carray(state, _string_data(self), _string_size(self));
+	return obin_string_from_carray(state, _string_const_data(self), _string_size(self));
 }
 
 static ObinAny _obin_string_blank(ObinState* state, obin_mem_t length);
@@ -221,7 +234,7 @@ static ObinAny __add__(ObinState* state, ObinAny str1, ObinAny str2) {
 	if (size == 1) {
 		return obin_char_new(
 				_string_size(str1) == 0 ?
-						_string_data(str2)[0] : _string_data(str1)[0]);
+						_string_const_data(str2)[0] : _string_const_data(str1)[0]);
 	}
 
 	result = _obin_string_blank(state, size);
@@ -253,9 +266,7 @@ ObinAny obin_char_new(obin_char ch) {
 
 	result = obin_any_new();
 	result.type = EOBIN_TYPE_CHAR;
-	/*We add \0 in char for valid conversion to cstring */
-	result.data.char_value.char_data[0] = ch;
-	result.data.char_value.char_data[1] = 0;
+	result.data.char_value.char_data = ch;
 	result.data.char_value.size = 1;
 	return result;
 }
@@ -287,7 +298,7 @@ static ObinAny _obin_string_blank(ObinState* state, obin_mem_t length) {
 /*@param data array without \0
  *@param size array size
  */
-ObinAny obin_string_from_carray(ObinState* state, obin_char* data,
+ObinAny obin_string_from_carray(ObinState* state, obin_string data,
 obin_mem_t size) {
 	/*empty string*/
 	if (size == 0) {
@@ -303,7 +314,6 @@ obin_mem_t size) {
 
 /* ******************** ATTRIBUTES ***********************************************/
 obin_string obin_string_cstr(ObinState* state, ObinAny self){
-	printf("\n** %p **", self.data.char_value.char_data);
 	return _string_data(self);
 }
 
@@ -776,7 +786,18 @@ ObinBehavior* obin_char_behavior() {
 	return &__BEHAVIOR__;
 }
 
+static void _init_chars_cache() {
+	int c = 0;
+
+	for(c=0; c<=CHAR_MAX; c++) {
+		__CHARS__[c] = obin_calloc(2, sizeof(obin_char));
+		__CHARS__[c][0] = c;
+		__CHARS__[c][1] = 0;
+	}
+}
 obin_bool obin_module_string_init(ObinState* state) {
+	_init_chars_cache();
+
 	__BEHAVIOR__.__name__ = "__String__";
 	__BEHAVIOR__.__tostring__ = __tostring__;
 	__BEHAVIOR__.__tobool__ = __tobool__;

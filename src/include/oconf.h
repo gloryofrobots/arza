@@ -37,6 +37,14 @@
 #ifndef UINT32_MAX
 # define UINT32_MAX (0xffffffffUL)
 #endif
+#ifndef CHAR_MIN
+#define CHAR_MIN 0
+#endif
+
+#ifndef CHAR_MAX
+#define CHAR_MAX 255
+#endif
+
 
 #define obin_mem_t	size_t
 #define obin_index	obin_mem_t
@@ -56,6 +64,7 @@ typedef FILE* obin_file;
 typedef long obin_integer;
 typedef const char* obin_string;
 typedef char obin_char;
+typedef unsigned char obin_uchar;
 
 /* Needed for convertion between numbers and strings */
 #define OBIN_INTEGER_FORMATTER "%ld"
@@ -171,6 +180,10 @@ OBIN_STMT_END
 #define obin_memmove memmove
 #define obin_strcpy strcpy
 #define obin_memset memset
+#define obin_malloc malloc
+#define obin_calloc calloc
+#define obin_realloc realloc
+#define obin_free free
 
 /**********LOG***********/
 #define OBIN_LOG_ENABLE
