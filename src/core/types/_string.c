@@ -159,7 +159,7 @@ static ObinAny __compare__(ObinState* state, ObinAny self, ObinAny other) {
 
 static ObinAny __hash__(ObinState* state, ObinAny self) {
 	register obin_integer hash = 0;
-	register obin_char * cursor = 0;
+	register const obin_char * cursor = 0;
 	register obin_integer length = 0;
 	ObinHashSecret secret;
 
@@ -271,7 +271,7 @@ ObinAny obin_char_new(obin_char ch) {
 	return result;
 }
 
-static ObinAny _obin_string_from_carr(ObinState* state, obin_char* data, obin_mem_t size) {
+static ObinAny _obin_string_from_carr(ObinState* state, obin_string data, obin_mem_t size) {
 	obin_mem_t capacity, body_size;
 	ObinString* self;
 
@@ -314,7 +314,7 @@ obin_mem_t size) {
 
 /* ******************** ATTRIBUTES ***********************************************/
 obin_string obin_string_cstr(ObinState* state, ObinAny self){
-	return _string_data(self);
+	return _string_const_data(self);
 }
 
 ObinAny obin_string_is_empty(ObinState* state, ObinAny self){
@@ -333,6 +333,15 @@ ObinAny _clone_and_modify(ObinState* state, ObinAny self,
 		_string_modifier modify) {
 	ObinAny clone;
 	obin_mem_t i;
+	if(_is_empty(self)) {
+		return self;
+	}
+	if(_is_char(self)) {
+		clone = self;
+		/**Tricky part we send pointer to char value wit 0 index*/
+		clone.data.char_value.char_data = modify((obin_char*)&clone.data.char_value.char_data, 0);
+		return clone;
+	}
 
 	clone = __clone__(state, self);
 
@@ -404,7 +413,7 @@ ObinAny obin_string_to_lowercase(ObinState* state, ObinAny self) {
 
 /************** CONDITIONS **************************************/
 /*  function for checking string content by some condition*/
-typedef int (*_string_condition)(obin_char* char_data, obin_mem_t index);
+typedef int (*_string_condition)(obin_string char_data, obin_mem_t index);
 
 /* check string content for condition */
 ObinAny _check_condition(ObinState* state, ObinAny self,
@@ -412,7 +421,7 @@ ObinAny _check_condition(ObinState* state, ObinAny self,
 	obin_mem_t i;
 
 	for (i = 0; i < _string_size(self); i++) {
-		if (condition(_string_data(self), i) == OFALSE) {
+		if (condition(_string_const_data(self), i) == OFALSE) {
 			return ObinFalse;
 		}
 	}
@@ -420,7 +429,7 @@ ObinAny _check_condition(ObinState* state, ObinAny self,
 	return ObinTrue;
 }
 /*************************** IS_ALL_ALPHANUM **********************************/
-static int _is_alphanum_condition(obin_char* data, obin_mem_t index) {
+static int _is_alphanum_condition(obin_string data, obin_mem_t index) {
 	return isdigit(data[index]) || isalpha(data[index]);
 }
 
@@ -431,7 +440,7 @@ ObinAny obin_string_is_alphanum(ObinState* state, ObinAny self) {
 }
 
 /*************************** ISALPHA **********************************/
-static int _is_alpha_condition(obin_char* data, obin_mem_t index) {
+static int _is_alpha_condition(obin_string data, obin_mem_t index) {
 	return isalpha(data[index]);
 }
 
@@ -441,7 +450,7 @@ ObinAny obin_string_is_alpha(ObinState* state, ObinAny self) {
 }
 
 /*************************** ISDIGIT **********************************/
-static int _is_digit_condition(obin_char* data, obin_mem_t index) {
+static int _is_digit_condition(obin_string data, obin_mem_t index) {
 	return isdigit(data[index]);
 }
 
@@ -450,7 +459,7 @@ ObinAny obin_string_is_digit(ObinState* state, ObinAny self) {
 	return _check_condition(state, self, &_is_digit_condition);
 }
 /*************************** IS LOWER **********************************/
-static int _is_lower_condition(obin_char* data, obin_mem_t index) {
+static int _is_lower_condition(obin_string data, obin_mem_t index) {
 	char ch = data[index];
 	if(!isalpha(ch)) {
 		/*skip other stuff*/
@@ -465,7 +474,7 @@ ObinAny obin_string_is_lower(ObinState* state, ObinAny self) {
 	return _check_condition(state, self, &_is_lower_condition);
 }
 /*************************** IS UPPER **********************************/
-static int _is_upper_condition(obin_char* data, obin_mem_t index) {
+static int _is_upper_condition(obin_string data, obin_mem_t index) {
 	char ch = data[index];
 	if(!isalpha(ch)) {
 		/*skip other stuff*/
@@ -480,7 +489,7 @@ ObinAny obin_string_is_upper(ObinState* state, ObinAny self) {
 	return _check_condition(state, self, &_is_upper_condition);
 }
 /*************************** IS SPACE **********************************/
-static int _is_space_condition(obin_char* data, obin_mem_t index) {
+static int _is_space_condition(obin_string data, obin_mem_t index) {
 	return isspace(data[index]);
 }
 
@@ -542,11 +551,11 @@ ObinAny _string_finder_left(ObinState* state, ObinAny haystack, ObinAny needle,
 	obin_mem_t i;
 	obin_mem_t hi;
 	obin_mem_t ni;
-	obin_char* data_h;
-    obin_char* data_n;
+	const obin_char* data_h;
+    const obin_char* data_n;
 
-    data_h = _string_data(haystack);
-    data_n = _string_data(needle);
+    data_h = _string_const_data(haystack);
+    data_n = _string_const_data(needle);
     size_h = _string_size(haystack);
     size_n = _string_size(needle);
 
@@ -594,11 +603,11 @@ obin_mem_t start, obin_mem_t end) {
 	obin_mem_t i;
 	obin_mem_t hi;
 	obin_mem_t ni;
-	obin_char* data_h;
-    obin_char* data_n;
+	const obin_char* data_h;
+    const obin_char* data_n;
 
-    data_h = _string_data(haystack);
-    data_n = _string_data(needle);
+    data_h = _string_const_data(haystack);
+    data_n = _string_const_data(needle);
 	for (i = end - 1; i >= start; i--) {
 		/*for is to creepy in that case, while is more readable */
 		hi = i;
@@ -698,7 +707,7 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 		if (obin_any_is_true(obin_equal(state, curPos, obin_integers(state)->NotFound))) {
 
 			obin_array_push(state, result,
-						obin_string_from_carray(state, _string_data(self) + previous,
+						obin_string_from_carray(state, _string_const_data(self) + previous,
 								_string_size(self) - previous));
 			return result;
 		}
@@ -709,7 +718,7 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 		}
 
 		obin_array_push(state, result,
-				obin_string_from_carray(state, _string_data(self) + previous,
+				obin_string_from_carray(state, _string_const_data(self) + previous,
 						current - previous));
 
 		previous = current + _string_size(separator);

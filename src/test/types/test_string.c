@@ -6,12 +6,12 @@ static void print_str(ObinState* state, ObinAny str) {
 }
 
 static void Test_Char(void) {
-	ObinState * state = obin_init(1024 * 1024 * 90);
+/*	ObinState * state = obin_init(1024 * 1024 * 90);
 	char str_arr[STR_ARR_SIZE] = {'\0'};
 	ObinAny str1, str2;
-	/*******************************/
+	*****************************
 	str1 = obin_char_new('T');
-	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str1), "T");
+	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str1), "T");*/
 }
 
 static void Test_String(void) {
@@ -19,7 +19,7 @@ static void Test_String(void) {
 	obin_char str_arr[STR_ARR_SIZE] = {'\0'};
 	ObinAny str1, str2, str3, str4;
 	ObinAny val1, val2;
-	obin_string cstr1, cstr2;
+/*	obin_string cstr1, cstr2;*/
 	/*******************************/
 	str1 = obin_string_new(state, "Hello!");
 	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str1), "Hello!");
@@ -229,9 +229,6 @@ static void Test_String(void) {
 	str2 = obin_string_new(state, TEXT2);
 
 	CU_ASSERT_STRING_NOT_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, str1));
-	cstr1 = obin_string_cstr(state, str1);
-	cstr2 = obin_string_cstr(state, str2);
-
 	val1 = obin_hash(state, str1);
 	val2 = obin_hash(state, str2);
 	printf(" hash %s = %ld; hash %s = %ld;",
