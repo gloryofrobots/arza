@@ -264,8 +264,8 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 
 	_CHECK_SELF_TYPE(state, self, __tostring__);
 	result = obin_string_join(state, obin_char_new(','), self);
-	result = obin_string_concat(state, obin_char_new('['), result);
-	result = obin_string_concat(state, result, obin_char_new(']'));
+	result = obin_add(state, obin_char_new('['), result);
+	result = obin_add(state, result, obin_char_new(']'));
 
 	return result;
 }

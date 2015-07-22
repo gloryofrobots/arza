@@ -16,8 +16,10 @@ static void Test_Char(void) {
 
 static void Test_String(void) {
 	ObinState * state = obin_init(1024 * 1024 * 90);
-	char str_arr[STR_ARR_SIZE] = {'\0'};
+	obin_char str_arr[STR_ARR_SIZE] = {'\0'};
 	ObinAny str1, str2, str3, str4;
+	ObinAny val1, val2;
+	obin_string cstr1, cstr2;
 	/*******************************/
 	str1 = obin_string_new(state, "Hello!");
 	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str1), "Hello!");
@@ -164,7 +166,7 @@ static void Test_String(void) {
 	str1 = obin_string_new(state, TEXT);
 	str2 = obin_string_dublicate(state, str1, obin_integer_new(4));
 	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str2), TEXT4);
-	/*******************CONCAT***********************************/
+	/*******************__add__***********************************/
 	#undef TEXT
 	#undef TEXT2
 	#define TEXT "CLASS CEPHALOPODA: \n"
@@ -175,11 +177,88 @@ static void Test_String(void) {
 	str1 = obin_string_new(state, TEXT);
 	str2 = obin_string_new(state, TEXT2);
 	str3 = obin_string_new(state, TEXT3);
-	str4 = obin_string_concat(state, str1, str2);
-	str4 = obin_string_concat(state, str4, str3);
-	print_str(state, str4);
+	str4 = obin_add(state, str1, str2);
+	str4 = obin_add(state, str4, str3);
 	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str4), TEXTALL);
+	/************tostring******************************/
+	CU_ASSERT_STRING_NOT_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, str1));
+	str2 = obin_tostring(state, str1);
+	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, str1));
+	/****************tobool********************************************/
+	str2 = obin_string_new(state, "");
+	str3 = obin_string_new(state, "0");
+	CU_ASSERT_FALSE(obin_any_is_true(obin_tobool(state, str2)));
+	CU_ASSERT_TRUE(obin_any_is_true(obin_tobool(state, str1)));
+	CU_ASSERT_TRUE(obin_any_is_true(obin_tobool(state, str3)));
 
+	/****************clone********************************************/
+	CU_ASSERT_STRING_NOT_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, str1));
+	str2 = obin_clone(state, str1);
+	str3 = obin_clone(state, str2);
+	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, str1));
+	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, str3));
+	/****************compare********************************************/
+	#undef TEXT
+	#undef TEXT2
+	#undef TEXT3
+	#define TEXT "AA"
+	#define TEXT2 "B"
+	#define TEXT3 "AAA"
+
+	str1 = obin_string_new(state, TEXT);
+	str2 = obin_string_new(state, TEXT2);
+	str3 = obin_string_new(state, TEXT3);
+	str4 = obin_string_new(state, TEXT);
+
+	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str1, str2)), 1);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str2, str1)), -1);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str1, str3)), -1);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str3, str1)), 1);
+
+	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str1, str4)), 0);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str4, str1)), 0);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str4, str4)), 0);
+	/****************hash******************************************/
+	#undef TEXT
+	#undef TEXT2
+	#undef TEXT3
+	#define TEXT "A"
+	#define TEXT2 "B"
+
+	str1 = obin_string_new(state, TEXT);
+	str2 = obin_string_new(state, TEXT2);
+
+	CU_ASSERT_STRING_NOT_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, str1));
+
+	printf("\n\n %s  %s ",
+			obin_string_cstr(state, str1),
+			obin_string_cstr(state, str2));
+	cstr1 = obin_string_cstr(state, str1);
+	cstr2 = obin_string_cstr(state, str2);
+
+
+	str3 = obin_string_new(state, "C");
+	return;
+	val1 = obin_hash(state, str1);
+	val2 = obin_hash(state, str2);
+	printf("\n\n %s  %s ",
+			obin_string_cstr(state, str1),
+			obin_string_cstr(state, str2));
+	print_str(state, str1);
+	print_str(state, str2);
+	printf(" hash %s = %ld; hash %s = %ld;",
+			obin_string_cstr(state, str1), obin_any_integer(val1),
+			obin_string_cstr(state, str2), obin_any_integer(val2));
+
+/*
+
+	__BEHAVIOR__.__hash__ = __hash__;
+
+	__BEHAVIOR__.__iterator__ = __iterator__;
+	__BEHAVIOR__.__length__ = __length__;
+	__BEHAVIOR__.__getitem__ = __getitem__;
+	__BEHAVIOR__.__hasitem__ = __hasitem__;
+	*/
 	/*******************FORMAT***********************************/
 	/*
 	#undef TEXT

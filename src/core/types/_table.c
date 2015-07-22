@@ -274,8 +274,8 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	}
 
 	result = obin_string_join(state, items_separator, array);
-	result = obin_string_concat(state, obin_char_new('{'), result);
-	result = obin_string_concat(state, result, obin_char_new('}'));
+	result = obin_add(state, obin_char_new('{'), result);
+	result = obin_add(state, result, obin_char_new('}'));
 
 	obin_release(state, iterator);
 	obin_release(state, array);

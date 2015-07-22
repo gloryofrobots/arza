@@ -34,9 +34,12 @@ _embedded_type_behavior(ObinState* state, ObinAny any) {
 	case EOBIN_TYPE_FLOAT:
 		return obin_float_behavior();
 		break;
+	case EOBIN_TYPE_CHAR:
+		return obin_char_behavior();
+		break;
 	default:
 		obin_raise(state, obin_errors(state)->TypeError,
-				"There are no native traits in this type", any);
+				"There are no native behavior in this type", any);
 		return NULL;
 	}
 }

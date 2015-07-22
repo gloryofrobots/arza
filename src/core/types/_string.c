@@ -63,7 +63,7 @@ static obin_integer _string_size(ObinAny any) {
 /**********************************  TYPETRAIT ***********************************************/
 
 static ObinAny __tostring__(ObinState* state, ObinAny self) {
-	return self;
+	return obin_clone(state, self);
 }
 
 static ObinAny __tobool__(ObinState* state, ObinAny self) {
@@ -189,6 +189,48 @@ static ObinAny __clone__(ObinState* state, ObinAny self) {
 	return obin_string_from_carray(state, _string_data(self), _string_size(self));
 }
 
+static ObinAny _obin_string_blank(ObinState* state, obin_mem_t length);
+
+static ObinAny __add__(ObinState* state, ObinAny str1, ObinAny str2) {
+	obin_char* data;
+	obin_mem_t size;
+	ObinAny result;
+
+	_CHECK_SELF_TYPE(state, str1, __add__);
+
+	if(!obin_any_is_string(str2)) {
+		return obin_raise(state, obin_errors(state)->TypeError,
+						"String.__add__ invalid argument type, String expected ", str2);
+	}
+
+	if (_string_size(str1) == 0) {
+		return obin_clone(state, str2);
+	}
+	if (_string_size(str2) == 0) {
+		return obin_clone(state, str1);
+	}
+
+	size = _string_size(str1) + _string_size(str2);
+
+	if (size == 0) {
+		return obin_strings(state)->Empty;
+	}
+
+	if (size == 1) {
+		return obin_char_new(
+				_string_size(str1) == 0 ?
+						_string_data(str2)[0] : _string_data(str1)[0]);
+	}
+
+	result = _obin_string_blank(state, size);
+	data = _string_data(result);
+	obin_memcpy(data, _string_data(str1), _string_size(str1));
+	obin_memcpy(data + _string_size(str1), _string_data(str2),
+			_string_size(str2));
+
+	return result;
+}
+
 
 
 /***********************************************************************************/
@@ -211,7 +253,7 @@ ObinAny obin_char_new(obin_char ch) {
 	result.type = EOBIN_TYPE_CHAR;
 	/*We add \0 in char for valid conversion to cstring */
 	result.data.char_value.data[0] = ch;
-	result.data.char_value.data[1] = '\0';
+	result.data.char_value.data[1] = 0;
 	result.data.char_value.size = 1;
 	return result;
 }
@@ -236,7 +278,7 @@ static ObinAny _obin_string_from_carr(ObinState* state, obin_char* data, obin_me
 	return obin_cell_new(EOBIN_TYPE_STRING, (ObinCell*) self, &__BEHAVIOR__, obin_cells(state)->__String__);
 }
 
-ObinAny _obin_string_blank(ObinState* state, obin_mem_t length) {
+static ObinAny _obin_string_blank(ObinState* state, obin_mem_t length) {
 	return _obin_string_from_carr(state, NULL, length);
 }
 
@@ -663,46 +705,6 @@ ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator) {
 	return result;
 }
 
-ObinAny obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2) {
-	obin_char* data;
-	obin_mem_t size;
-	ObinAny result;
-
-	_CHECK_SELF_TYPE(state, str1, concat);
-
-	if(!obin_any_is_string(str2)) {
-		return obin_raise(state, obin_errors(state)->TypeError,
-						"String.concat invalid argument type, String expected ", str2);
-	}
-
-	if (_string_size(str1) == 0) {
-		return obin_clone(state, str2);
-	}
-	if (_string_size(str2) == 0) {
-		return obin_clone(state, str1);
-	}
-
-	size = _string_size(str1) + _string_size(str2);
-
-	if (size == 0) {
-		return obin_strings(state)->Empty;
-	}
-
-	if (size == 1) {
-		return obin_char_new(
-				_string_size(str1) == 0 ?
-						_string_data(str2)[0] : _string_data(str1)[0]);
-	}
-
-	result = _obin_string_blank(state, size);
-	data = _string_data(result);
-	obin_memcpy(data, _string_data(str1), _string_size(str1));
-	obin_memcpy(data + _string_size(str1), _string_data(str2),
-			_string_size(str2));
-
-	return result;
-}
-
 ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection) {
 	ObinAny iterator;
 	ObinAny value;
@@ -727,13 +729,13 @@ ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection) {
 		}
 
 		value = obin_next(state, iterator);
-		result = obin_string_concat(state, result, value);
-		result = obin_string_concat(state, result, self);
+		result = __add__(state, result, value);
+		result = __add__(state, result, self);
 	}
 
 	/*append last element*/
 	value = obin_next(state, iterator);
-	result = obin_string_concat(state, result, value);
+	result = __add__(state, result, value);
 	return result;
 }
 
@@ -745,7 +747,7 @@ ObinAny obin_string_pack(ObinState* state, obin_index count, ...){
 
 	if(!obin_is_fit_to_memsize(count)) {
 		return obin_raise(state, obin_errors(state)->TypeError,
-						"String.concat invalid argument type, Invalid size", obin_integer_new(count));
+						"String.pack invalid argument type, Invalid size", obin_integer_new(count));
 	}
 
 	array = obin_array_new(state, obin_integer_new(count));
@@ -767,6 +769,10 @@ ObinAny obin_string_pack(ObinState* state, obin_index count, ...){
  str.splitlines([keepends])
  */
 
+ObinBehavior* obin_char_behavior() {
+	return &__BEHAVIOR__;
+}
+
 obin_bool obin_module_string_init(ObinState* state) {
 	__BEHAVIOR__.__name__ = "__String__";
 	__BEHAVIOR__.__tostring__ = __tostring__;
@@ -779,6 +785,7 @@ obin_bool obin_module_string_init(ObinState* state) {
 	__BEHAVIOR__.__length__ = __length__;
 	__BEHAVIOR__.__getitem__ = __getitem__;
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
+	__BEHAVIOR__.__add__ = __add__;
 
 	/*strings proto*/
 	obin_cells(state)->__String__ =  obin_cell_new(EOBIN_TYPE_CELL,
