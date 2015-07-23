@@ -4,6 +4,7 @@
 static CU_TestInfo TestGroup_BaseTypes[] = {
   { "Test_BaseTypes", Test_BaseTypes },
   { "Test_BaseAnyNew", Test_BaseAnyNew },
+  {"Test_Char", Test_Char},
   {"Test_String", Test_String},
 	CU_TEST_INFO_NULL,
 };

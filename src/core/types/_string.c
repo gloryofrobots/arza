@@ -239,8 +239,8 @@ static ObinAny __add__(ObinState* state, ObinAny str1, ObinAny str2) {
 
 	result = _obin_string_blank(state, size);
 	data = _string_data(result);
-	obin_memcpy(data, _string_data(str1), _string_size(str1));
-	obin_memcpy(data + _string_size(str1), _string_data(str2),
+	obin_memcpy(data, _string_const_data(str1), _string_size(str1));
+	obin_memcpy(data + _string_size(str1), _string_const_data(str2),
 			_string_size(str2));
 
 	return result;
@@ -798,7 +798,7 @@ ObinBehavior* obin_char_behavior() {
 static void _init_chars_cache() {
 	int c = 0;
 
-	for(c=0; c<=CHAR_MAX; c++) {
+	for(c=0; c<=UCHAR_MAX; c++) {
 		__CHARS__[c] = obin_calloc(2, sizeof(obin_char));
 		__CHARS__[c][0] = c;
 		__CHARS__[c][1] = 0;

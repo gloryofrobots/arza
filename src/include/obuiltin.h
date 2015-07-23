@@ -66,7 +66,30 @@ ObinAny obin_next(ObinState * state, ObinAny iterator);
 
 ObinAny obin_is(ObinState * state, ObinAny first, ObinAny second);
 /*Number*/
+
 ObinAny obin_add(ObinState* state, ObinAny first, ObinAny second);
+
+/*
+ObinAny obin_tointeger(ObinState* state, ObinAny self);
+ObinAny obin_tofloat(ObinState* state, ObinAny self);
+ObinAny obin_topositive(ObinState* state, ObinAny self);
+ObinAny obin_tonegative(ObinState* state, ObinAny self);
+
+ObinAny obin_abs(ObinState* state, ObinAny self);
+ObinAny obin_invert(ObinState* state, ObinAny self);
+ObinAny obin_subtract(ObinState* state, ObinAny first, ObinAny second);
+
+ObinAny obin_divide(ObinState* state, ObinAny first, ObinAny second);
+ObinAny obin_multiply(ObinState* state, ObinAny first, ObinAny second);
+ObinAny obin_pow(ObinState* state, ObinAny first, ObinAny second);
+ObinAny obin_leftshift(ObinState* state, ObinAny first, ObinAny second);
+ObinAny obin_rightshift(ObinState* state, ObinAny first, ObinAny second);
+
+ObinAny obin_mod(ObinState* state, ObinAny first, ObinAny second);
+ObinAny obin_and(ObinState* state, ObinAny first, ObinAny second);
+ObinAny obin_or(ObinState* state, ObinAny first, ObinAny second);
+ObinAny obin_xor(ObinState* state, ObinAny first, ObinAny second);
+*/
 
 /*@return list of results from function applied to iterable
 ObinAny obin_map(ObinState * state, obin_function function, ObinAny iterable);

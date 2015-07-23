@@ -19,7 +19,8 @@ static void Test_String(void) {
 	obin_char str_arr[STR_ARR_SIZE] = {'\0'};
 	ObinAny str1, str2, str3, str4;
 	ObinAny val1, val2;
-/*	obin_string cstr1, cstr2;*/
+	obin_integer i;
+	obin_string cstr1;
 	/*******************************/
 	str1 = obin_string_new(state, "Hello!");
 	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str1), "Hello!");
@@ -236,16 +237,57 @@ static void Test_String(void) {
 	printf(" {HASH TEST: hash %s = %ld; hash %s = %ld; }",
 			obin_string_cstr(state, str1), obin_any_integer(val1),
 			obin_string_cstr(state, str2), obin_any_integer(val2));
+	/***********************iterator ***********************************/
+	#undef TEXT
+	#undef TEXT2
+	#undef TEXT3
+	#define TEXT "The molluscs or mollusks[note 1] /ˈmɒləsks/ compose the large phylum of invertebrate animals known as the Mollusca."
+	str1 = obin_string_new(state, TEXT);
+	str3 = obin_string_new(state, "");
+	cstr1 = TEXT;
+	val1 = obin_iterator(state, str1);
+	i = 0;
 
-/*
+	while(OTRUE) {
+		val2 = obin_next(state, val1);
+		if(obin_is_stop_iteration(val2)) {
+			break;
+		}
 
-	__BEHAVIOR__.__hash__ = __hash__;
+		str2 = obin_string_from_carray(state, &cstr1[i], 1);
+		CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, val2));
+		CU_ASSERT_EQUAL((obin_char)cstr1[i], (obin_char)obin_any_char(val2));
+		str3 = obin_add(state, str3, val2);
+		i++;
+	}
 
-	__BEHAVIOR__.__iterator__ = __iterator__;
-	__BEHAVIOR__.__length__ = __length__;
-	__BEHAVIOR__.__getitem__ = __getitem__;
-	__BEHAVIOR__.__hasitem__ = __hasitem__;
+	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str1), obin_string_cstr(state, str3));
+	/*******************length***********************************************/
+	#undef TEXT
+	#undef TEXT2
+	#undef TEXT3
+	#define TEXT "a"
+	#define TEXT2 "Good evidence exists for the appearance of gastropods, cephalopods and bivalves in the Cambrian period 541 to 485.4 million years ago."
+	#define TEXT3 ""
+	str1 = obin_string_new(state, TEXT);
+	str2 = obin_string_new(state, TEXT2);
+	str3 = obin_string_new(state, TEXT3);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_length(state, str1)), 1);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_length(state, str2)), 134);
+	CU_ASSERT_EQUAL(obin_any_integer(obin_length(state, str3)), 0);
+	/*********************getitem************************************/
+	val1 = obin_getitem(state, str1, obin_integer_new(0));
+	CU_ASSERT_EQUAL(obin_any_char(val1), 'a');
+
+	val1 = obin_getitem(state, str2, obin_integer_new(100));
+	CU_ASSERT_EQUAL(obin_any_char(val1), 'o');
+
+	/*need to implement integer behavior to use has_item*/
+	/*
+	val1 = obin_hasitem(state, str1, obin_char_new('b'));
+	CU_ASSERT_TRUE(obin_any_is_true(val1));
 	*/
+
 	/*******************FORMAT***********************************/
 	/*
 	#undef TEXT
