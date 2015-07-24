@@ -61,18 +61,18 @@ static void Test_String(void) {
 	str2 = obin_string_to_uppercase(state, str1);
 	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str2), TEXT_UPPERCASE);
 
-	CU_ASSERT_FALSE(obin_any_is_true(obin_string_is_upper(state, str1)));
-	CU_ASSERT_TRUE(obin_any_is_true(obin_string_is_upper(state, str2)));
+	CU_ASSERT_FALSE(OAny_isTrue(obin_string_is_upper(state, str1)));
+	CU_ASSERT_TRUE(OAny_isTrue(obin_string_is_upper(state, str2)));
 
 	/* to lower both */
 	str1 = obin_string_to_lowercase(state, str1);
 	str2 = obin_string_to_lowercase(state, str2);
 
-	CU_ASSERT_TRUE(obin_any_is_true(obin_string_is_lower(state, str1)));
-	CU_ASSERT_TRUE(obin_any_is_true(obin_string_is_lower(state, str2)));
+	CU_ASSERT_TRUE(OAny_isTrue(obin_string_is_lower(state, str1)));
+	CU_ASSERT_TRUE(OAny_isTrue(obin_string_is_lower(state, str2)));
 
-	CU_ASSERT_FALSE(obin_any_is_true(obin_string_is_upper(state, str1)));
-	CU_ASSERT_FALSE(obin_any_is_true(obin_string_is_upper(state, str2)));
+	CU_ASSERT_FALSE(OAny_isTrue(obin_string_is_upper(state, str1)));
+	CU_ASSERT_FALSE(OAny_isTrue(obin_string_is_upper(state, str2)));
 
 	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str2), TEXT_LOWERCASE);
 	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, str1));
@@ -82,11 +82,11 @@ static void Test_String(void) {
 	str2 = obin_string_to_uppercase(state, str1);
 	str1 = obin_string_to_uppercase(state, str2);
 
-	CU_ASSERT_TRUE(obin_any_is_true(obin_string_is_upper(state, str1)));
-	CU_ASSERT_TRUE(obin_any_is_true(obin_string_is_upper(state, str2)));
+	CU_ASSERT_TRUE(OAny_isTrue(obin_string_is_upper(state, str1)));
+	CU_ASSERT_TRUE(OAny_isTrue(obin_string_is_upper(state, str2)));
 
-	CU_ASSERT_FALSE(obin_any_is_true(obin_string_is_lower(state, str1)));
-	CU_ASSERT_FALSE(obin_any_is_true(obin_string_is_lower(state, str2)));
+	CU_ASSERT_FALSE(OAny_isTrue(obin_string_is_lower(state, str1)));
+	CU_ASSERT_FALSE(OAny_isTrue(obin_string_is_lower(state, str2)));
 
 	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, str1));
 	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str2), TEXT_UPPERCASE);
@@ -127,37 +127,37 @@ static void Test_String(void) {
 
 	str1 = obin_string_new(state, TEXT_ALPHA);
 	str2 = obin_string_new(state, TEXT_NOTALPHA);
-	CU_ASSERT_TRUE(obin_any_is_true(obin_string_is_alpha(state, str1)));
-	CU_ASSERT_FALSE(obin_any_is_true(obin_string_is_alpha(state, str2)));
+	CU_ASSERT_TRUE(OAny_isTrue(obin_string_is_alpha(state, str1)));
+	CU_ASSERT_FALSE(OAny_isTrue(obin_string_is_alpha(state, str2)));
 
 	str1 = obin_string_new(state, TEXT_ALPHANUM);
 	str2 = obin_string_new(state, TEXT_NOTALPHANUM);
-	CU_ASSERT_TRUE(obin_any_is_true(obin_string_is_alphanum(state, str1)));
-	CU_ASSERT_FALSE(obin_any_is_true(obin_string_is_alphanum(state, str2)));
+	CU_ASSERT_TRUE(OAny_isTrue(obin_string_is_alphanum(state, str1)));
+	CU_ASSERT_FALSE(OAny_isTrue(obin_string_is_alphanum(state, str2)));
 
 	str1 = obin_string_new(state, TEXT_DIGIT);
 	str2 = obin_string_new(state, TEXT_NOTDIGIT);
-	CU_ASSERT_TRUE(obin_any_is_true(obin_string_is_digit(state, str1)));
-	CU_ASSERT_FALSE(obin_any_is_true(obin_string_is_digit(state, str2)));
+	CU_ASSERT_TRUE(OAny_isTrue(obin_string_is_digit(state, str1)));
+	CU_ASSERT_FALSE(OAny_isTrue(obin_string_is_digit(state, str2)));
 
 	str1 = obin_string_new(state, TEXT_SPACE);
 	str2 = obin_string_new(state, TEXT_NOTSPACE);
-	CU_ASSERT_TRUE(obin_any_is_true(obin_string_is_space(state, str1)));
-	CU_ASSERT_FALSE(obin_any_is_true(obin_string_is_space(state, str2)));
+	CU_ASSERT_TRUE(OAny_isTrue(obin_string_is_space(state, str1)));
+	CU_ASSERT_FALSE(OAny_isTrue(obin_string_is_space(state, str2)));
 	/************************INDEXOF************************************/
 	#undef TEXT
 	#define TEXT "The Squid are cephalopods 12 Squid are cephalopods"
 
 	str1 = obin_string_new(state, TEXT);
 	str2 = obin_string_new(state, "Squid");
-	CU_ASSERT_EQUAL(obin_any_integer(obin_string_index_of(state, str1, str2, ObinNil, ObinNil)), 4);
-	CU_ASSERT_EQUAL(obin_any_integer(obin_string_index_of(state, str1, str2, obin_integer_new(6), ObinNil)), 29);
-	CU_ASSERT_EQUAL(obin_any_integer(obin_string_index_of(state, str1, str2, obin_integer_new(6),
+	CU_ASSERT_EQUAL(OAny_toInt(obin_string_index_of(state, str1, str2, ObinNil, ObinNil)), 4);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_string_index_of(state, str1, str2, obin_integer_new(6), ObinNil)), 29);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_string_index_of(state, str1, str2, obin_integer_new(6),
 									obin_integer_new(10))),-1);
 
-	CU_ASSERT_EQUAL(obin_any_integer(obin_string_last_index_of(state, str1, str2, ObinNil, ObinNil)), 29);
-	CU_ASSERT_EQUAL(obin_any_integer(obin_string_last_index_of(state, str1, str2, obin_integer_new(0), obin_integer_new(10))), 4);
-	CU_ASSERT_EQUAL(obin_any_integer(obin_string_last_index_of(state, str1, str2, obin_integer_new(6),
+	CU_ASSERT_EQUAL(OAny_toInt(obin_string_last_index_of(state, str1, str2, ObinNil, ObinNil)), 29);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_string_last_index_of(state, str1, str2, obin_integer_new(0), obin_integer_new(10))), 4);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_string_last_index_of(state, str1, str2, obin_integer_new(6),
 									obin_integer_new(10))),-1);
 
 	/******************DUPLICATE*******************************/
@@ -188,9 +188,9 @@ static void Test_String(void) {
 	/****************tobool********************************************/
 	str2 = obin_string_new(state, "");
 	str3 = obin_string_new(state, "0");
-	CU_ASSERT_FALSE(obin_any_is_true(obin_tobool(state, str2)));
-	CU_ASSERT_TRUE(obin_any_is_true(obin_tobool(state, str1)));
-	CU_ASSERT_TRUE(obin_any_is_true(obin_tobool(state, str3)));
+	CU_ASSERT_FALSE(OAny_isTrue(obin_tobool(state, str2)));
+	CU_ASSERT_TRUE(OAny_isTrue(obin_tobool(state, str1)));
+	CU_ASSERT_TRUE(OAny_isTrue(obin_tobool(state, str3)));
 
 	/****************clone********************************************/
 	CU_ASSERT_STRING_NOT_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, str1));
@@ -211,14 +211,14 @@ static void Test_String(void) {
 	str3 = obin_string_new(state, TEXT3);
 	str4 = obin_string_new(state, TEXT);
 
-	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str1, str2)), 1);
-	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str2, str1)), -1);
-	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str1, str3)), -1);
-	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str3, str1)), 1);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_compare(state, str1, str2)), 1);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_compare(state, str2, str1)), -1);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_compare(state, str1, str3)), -1);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_compare(state, str3, str1)), 1);
 
-	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str1, str4)), 0);
-	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str4, str1)), 0);
-	CU_ASSERT_EQUAL(obin_any_integer(obin_compare(state, str4, str4)), 0);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_compare(state, str1, str4)), 0);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_compare(state, str4, str1)), 0);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_compare(state, str4, str4)), 0);
 	/****************hash******************************************/
 	#undef TEXT
 	#undef TEXT2
@@ -232,11 +232,11 @@ static void Test_String(void) {
 	CU_ASSERT_STRING_NOT_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, str1));
 	val1 = obin_hash(state, str1);
 	val2 = obin_hash(state, str2);
-	CU_ASSERT_NOT_EQUAL(obin_any_integer(val1), obin_any_integer(val2));
+	CU_ASSERT_NOT_EQUAL(OAny_toInt(val1), OAny_toInt(val2));
 
 	printf(" {HASH TEST: hash %s = %ld; hash %s = %ld; }",
-			obin_string_cstr(state, str1), obin_any_integer(val1),
-			obin_string_cstr(state, str2), obin_any_integer(val2));
+			obin_string_cstr(state, str1), OAny_toInt(val1),
+			obin_string_cstr(state, str2), OAny_toInt(val2));
 	/***********************iterator ***********************************/
 	#undef TEXT
 	#undef TEXT2
@@ -256,7 +256,7 @@ static void Test_String(void) {
 
 		str2 = obin_string_from_carray(state, &cstr1[i], 1);
 		CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, val2));
-		CU_ASSERT_EQUAL((obin_char)cstr1[i], (obin_char)obin_any_char(val2));
+		CU_ASSERT_EQUAL((obin_char)cstr1[i], (obin_char)OAny_toChar(val2));
 		str3 = obin_add(state, str3, val2);
 		i++;
 	}
@@ -272,15 +272,15 @@ static void Test_String(void) {
 	str1 = obin_string_new(state, TEXT);
 	str2 = obin_string_new(state, TEXT2);
 	str3 = obin_string_new(state, TEXT3);
-	CU_ASSERT_EQUAL(obin_any_integer(obin_length(state, str1)), 1);
-	CU_ASSERT_EQUAL(obin_any_integer(obin_length(state, str2)), 134);
-	CU_ASSERT_EQUAL(obin_any_integer(obin_length(state, str3)), 0);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_length(state, str1)), 1);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_length(state, str2)), 134);
+	CU_ASSERT_EQUAL(OAny_toInt(obin_length(state, str3)), 0);
 	/*********************getitem************************************/
 	val1 = obin_getitem(state, str1, obin_integer_new(0));
-	CU_ASSERT_EQUAL(obin_any_char(val1), 'a');
+	CU_ASSERT_EQUAL(OAny_toChar(val1), 'a');
 
 	val1 = obin_getitem(state, str2, obin_integer_new(100));
-	CU_ASSERT_EQUAL(obin_any_char(val1), 'o');
+	CU_ASSERT_EQUAL(OAny_toChar(val1), 'o');
 
 	/*need to implement integer behavior to use has_item*/
 	/*

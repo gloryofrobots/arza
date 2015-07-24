@@ -75,10 +75,10 @@ static void __tmtcell_mark__(ObinState* state, ObinAny self, obin_func_1 callbac
 	tmtcell_print(cell, "__tmtcell_mark__");
 	tm_counter_mark(tmt_counter);
 
-	if(!obin_any_is_nil(cell->left)) {
+	if(!OAny_isNil(cell->left)) {
 		callback(state, cell->left);
 	}
-	if(!obin_any_is_nil(cell->right)) {
+	if(!OAny_isNil(cell->right)) {
 		callback(state, cell->right);
 	}
 

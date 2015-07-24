@@ -78,35 +78,35 @@ typedef struct {
 		any.data.float_value=num
 
 #define OAny_toCell(any) (any.data.cell)
-#define obin_any_integer(any) (any.data.integer_value)
-#define obin_any_char(any) (any.data.char_value.char_data)
-#define obin_any_mem_t(any) (obin_mem_t)(any.data.integer_value)
+#define OAny_toInt(any) (any.data.integer_value)
+#define OAny_toChar(any) (any.data.char_value.char_data)
+#define OAny_toMem_t(any) (obin_mem_t)(any.data.integer_value)
 
-#define obin_any_float(any) (any.data.float_value)
+#define OAny_toFloat(any) (any.data.float_value)
 
-#define OBIN_CHECK_TYPE_RANGE(type, min, max) (type > min && type < max)
-#define obin_type_is_cell(type) OBIN_CHECK_TYPE_RANGE(type, EOBIN_TYPE_BEGIN_CELL_TYPES, EOBIN_TYPE_END_CELL_TYPES)
+#define OCHECK_TYPE_RANGE(type, min, max) (type > min && type < max)
+#define OType_isCell(type) OCHECK_TYPE_RANGE(type, EOBIN_TYPE_BEGIN_CELL_TYPES, EOBIN_TYPE_END_CELL_TYPES)
 
-#define obin_any_is_bool(any) ((any.type == EOBIN_TYPE_TRUE) || (any.type == EOBIN_TYPE_FALSE))
-#define obin_any_is_true(any) (any.type == EOBIN_TYPE_TRUE)
-#define obin_any_is_false(any) (any.type == EOBIN_TYPE_FALSE)
-#define obin_any_is_nil(any) (any.type == EOBIN_TYPE_NIL)
-#define obin_any_is_nothing(any) (any.type == EOBIN_TYPE_NOTHING)
+#define OAny_isBool(any) ((any.type == EOBIN_TYPE_TRUE) || (any.type == EOBIN_TYPE_FALSE))
+#define OAny_isTrue(any) (any.type == EOBIN_TYPE_TRUE)
+#define OAny_isFalse(any) (any.type == EOBIN_TYPE_FALSE)
+#define OAny_isNil(any) (any.type == EOBIN_TYPE_NIL)
+#define OAny_isNothing(any) (any.type == EOBIN_TYPE_NOTHING)
 
-#define obin_any_is_integer(any) (any.type == EOBIN_TYPE_INTEGER)
-#define obin_any_is_float(any) (any.type == EOBIN_TYPE_FLOAT)
-#define obin_any_is_char(any) (any.type == EOBIN_TYPE_CHAR)
+#define OAny_isInt(any) (any.type == EOBIN_TYPE_INTEGER)
+#define OAny_isFloat(any) (any.type == EOBIN_TYPE_FLOAT)
+#define OAny_isChar(any) (any.type == EOBIN_TYPE_CHAR)
 
-#define obin_any_is_string(any) (any.type == EOBIN_TYPE_STRING || any.type == EOBIN_TYPE_CHAR)
-#define obin_any_is_array(any) (any.type == EOBIN_TYPE_ARRAY)
-#define obin_any_is_tuple(any) (any.type == EOBIN_TYPE_TUPLE)
+#define OAny_isString(any) (any.type == EOBIN_TYPE_STRING || any.type == EOBIN_TYPE_CHAR)
+#define OAny_isArray(any) (any.type == EOBIN_TYPE_ARRAY)
+#define OAny_isTuple(any) (any.type == EOBIN_TYPE_TUPLE)
 #define obin_any_is_table(any) (any.type == EOBIN_TYPE_TABLE)
-#define obin_any_is_cell(any) obin_type_is_cell(any.type)
+#define obin_any_is_cell(any) OType_isCell(any.type)
 
 #define obin_is_fit_to_memsize(size) (size > 0 && size < OBIN_MAX_CAPACITY)
-#define obin_integer_is_fit_to_memsize(any) (obin_is_fit_to_memsize(obin_any_integer(any)))
+#define obin_integer_is_fit_to_memsize(any) (obin_is_fit_to_memsize(OAny_toInt(any)))
 
-#define obin_is_stop_iteration(any) (obin_any_is_nothing(any))
+#define obin_is_stop_iteration(any) (OAny_isNothing(any))
 
 #define OBIN_ANY_STATIC_INIT(type) {type, {type}}
 #define OBIN_ANY_INTEGER_INIT(value) {EOBIN_TYPE_INTEGER, {value}}

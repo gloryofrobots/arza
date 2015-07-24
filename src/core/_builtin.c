@@ -60,9 +60,9 @@ ObinAny obin_is(ObinState * state, ObinAny any, ObinAny other) {
 	case EOBIN_TYPE_NOTHING:
 		return obin_bool_new(any.type == other.type);
 	case EOBIN_TYPE_INTEGER:
-		return obin_bool_new(obin_any_integer(any) == obin_any_integer(other));
+		return obin_bool_new(OAny_toInt(any) == OAny_toInt(other));
 	case EOBIN_TYPE_CHAR:
-		return obin_bool_new(obin_any_char(any) == obin_any_char(other));
+		return obin_bool_new(OAny_toChar(any) == OAny_toChar(other));
 	default:
 		/*Other things are definitely not the same including floats*/
 		return ObinFalse;

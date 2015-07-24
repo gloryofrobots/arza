@@ -38,7 +38,7 @@ ObinAny obin_sequence_iterator_new(ObinState* state, ObinAny sequence){
 	iterator = obin_new(state, SequenceIterator);
 	iterator->source = sequence;
 	iterator->current = 0;
-	iterator->length = (obin_mem_t) obin_any_integer(obin_length(state, sequence));
+	iterator->length = (obin_mem_t) OAny_toInt(obin_length(state, sequence));
 
 	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__SEQUENCE_ITERATOR_BEHAVIOR__, obin_cells(state)->__Cell__);
 }
@@ -56,11 +56,11 @@ ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other){
 
 	/*TODO ADD TYPE CHECK HERE FOR __COLLECTION__ cell*/
 	if(!obin_any_is_cell(other)){
-		if(obin_any_integer(self_length) > 0){
+		if(OAny_toInt(self_length) > 0){
 			return obin_integers(state)->Greater;
 		}
 
-		if(obin_any_is_nil(other) || obin_any_is_false(other)) {
+		if(OAny_isNil(other) || OAny_isFalse(other)) {
 				return obin_integers(state)->Equal;
 		}
 
@@ -69,11 +69,11 @@ ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other){
 
 	other_length = obin_length(state, other);
 
-	if (obin_any_integer(self_length) < obin_any_integer(other_length)) {
+	if (OAny_toInt(self_length) < OAny_toInt(other_length)) {
 		return obin_integers(state)->Lesser;
 	}
 
-	if (obin_any_integer(self_length) > obin_any_integer(other_length)) {
+	if (OAny_toInt(self_length) > OAny_toInt(other_length)) {
 		return obin_integers(state)->Greater;
 	}
 
@@ -91,7 +91,7 @@ ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other){
 		}
 
 		compare_result = obin_compare(state, self_item, other_item);
-		if(obin_any_is_true(obin_is(state, compare_result, obin_integers(state)->Equal))){
+		if(OAny_isTrue(obin_is(state, compare_result, obin_integers(state)->Equal))){
 			break;
 		}
 	}

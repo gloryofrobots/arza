@@ -10,7 +10,7 @@ OBIN_DECLARE_CELL(ObinArray,
 static ObinBehavior __BEHAVIOR__ = {0};
 
 #define _CHECK_SELF_TYPE(state, self, method) \
-	if(!obin_any_is_array(self)) { \
+	if(!OAny_isArray(self)) { \
 		return obin_raise(state, obin_errors(state)->TypeError, \
 				__TypeName__ #method "call from other type", self); \
 	} \
@@ -46,7 +46,7 @@ _array_grow(ObinState* state, ObinAny self, obin_index count_elements) {
 ObinAny
 obin_array_new(ObinState* state, ObinAny size) {
 	ObinArray * self; obin_mem_t capacity;
-	if(obin_any_is_nil(size)){
+	if(OAny_isNil(size)){
 		size = obin_integer_new(OBIN_DEFAULT_ARRAY_SIZE);
 	}
 	if (!obin_integer_is_fit_to_memsize(size)) {
@@ -56,7 +56,7 @@ obin_array_new(ObinState* state, ObinAny size) {
 
 	self = obin_new(state, ObinArray);
 
-	capacity = (obin_mem_t) obin_any_integer(size);
+	capacity = (obin_mem_t) OAny_toInt(size);
 	self->data = obin_malloc_array(state, ObinAny, capacity);
 
 	self->capacity = capacity;
@@ -90,8 +90,8 @@ ObinAny obin_array_insert_collection(ObinState* state, ObinAny self, ObinAny col
 
 	_CHECK_SELF_TYPE(state, self, obin_array_insert_collection);
 
-	start = obin_any_integer(position);
-	collection_size = obin_any_integer(obin_length(state, collection));
+	start = OAny_toInt(position);
+	collection_size = OAny_toInt(obin_length(state, collection));
 	end = start + collection_size;
 
 	if(start > _array_size(self)) {
@@ -123,7 +123,7 @@ ObinAny obin_array_insert(ObinState* state, ObinAny self, ObinAny item, ObinAny 
 
 	_CHECK_SELF_TYPE(state, self, obin_array_insert);
 
-	insert_index = obin_any_integer(position);
+	insert_index = OAny_toInt(position);
 	if(insert_index > _array_size(self)) {
 		return obin_raise(state, obin_errors(state)->KeyError, "obin_array_insert invalid index", position);
 	} else if(insert_index == _array_size(self)) {
@@ -186,7 +186,7 @@ ObinAny obin_array_lastindexof(ObinState* state, ObinAny self, ObinAny item){
 	_CHECK_SELF_TYPE(state, self, lastindexof);
 
 	for(i=_array_last_index(self); i>=0; --i) {
-		if (obin_any_is_true(obin_equal(state, _array_item(self, i), item))) {
+		if (OAny_isTrue(obin_equal(state, _array_item(self, i), item))) {
 			return obin_integer_new(i);
 		}
 	}
@@ -200,7 +200,7 @@ ObinAny obin_array_indexof(ObinState* state, ObinAny self, ObinAny item) {
 	_CHECK_SELF_TYPE(state, self, obin_array_indexof);
 
 	for(i=0; i<_array_size(self); ++i) {
-		if (obin_any_is_true(obin_equal(state, _array_item(self, i), item))) {
+		if (OAny_isTrue(obin_equal(state, _array_item(self, i), item))) {
 			return obin_integer_new(i);
 		}
 	}
@@ -238,7 +238,7 @@ ObinAny obin_array_remove(ObinState* state, ObinAny self, ObinAny item) {
 	_CHECK_SELF_TYPE(state, self, obin_array_remove);
 
 	for (i=0; i<_array_size(self); i++) {
-		if(obin_any_is_true(obin_equal(state, self, item))) {
+		if(OAny_isTrue(obin_equal(state, self, item))) {
 			find = OTRUE;
 			break;
 		}
@@ -306,15 +306,15 @@ static obin_integer
 _get_index(ObinState* state, ObinAny self, ObinAny pos){
 	obin_integer index;
 
-	if(!obin_any_is_integer(pos)){
+	if(!OAny_isInt(pos)){
 		return OBIN_INVALID_INDEX;
 	}
 
-	index = obin_any_integer(pos);
+	index = OAny_toInt(pos);
 	if( index < 0){
 		index = _array_size(self) - index;
 	} else{
-		index = obin_any_integer(pos);
+		index = OAny_toInt(pos);
 	}
 
 	if (index > _array_size(self) || index < 0) {
@@ -360,7 +360,7 @@ __setitem__(ObinState* state, ObinAny self, ObinAny pos, ObinAny value){
 
 static ObinAny
 __hasitem__(ObinState* state, ObinAny self, ObinAny item){
-	return obin_bool_new(obin_any_integer(obin_array_indexof(state, self, item)) != OBIN_INVALID_INDEX);
+	return obin_bool_new(OAny_toInt(obin_array_indexof(state, self, item)) != OBIN_INVALID_INDEX);
 }
 
 static ObinAny

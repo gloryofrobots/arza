@@ -2,7 +2,7 @@
 /* TODO INTERNATION */
 #define __TypeName__  "__Tuple__"
 #define _CHECK_SELF_TYPE(state, self, method) \
-	if(!obin_any_is_tuple(self)) { \
+	if(!OAny_isTuple(self)) { \
 		return obin_raise(state, obin_errors(state)->TypeError, \
 				__TypeName__"."#method "call from other type", self); \
 	} \
@@ -42,7 +42,7 @@ ObinTuple* _obin_tuple_new(ObinState* state,  obin_mem_t size) {
 ObinAny obin_tuple_new(ObinState* state,  ObinAny size, ObinAny* items) {
 	ObinTuple * self;
 
-	if(!obin_any_is_integer(size)){
+	if(!OAny_isInt(size)){
 		return obin_raise(state, obin_errors(state)->TypeError,
 				"Tuple.new integer size expected", size);
 	}
@@ -52,10 +52,10 @@ ObinAny obin_tuple_new(ObinState* state,  ObinAny size, ObinAny* items) {
 				"Tuple.new invalid size", size);
 	}
 
-	self = _obin_tuple_new(state , obin_any_integer(size));
+	self = _obin_tuple_new(state , OAny_toInt(size));
 
 	if(items != NULL) {
-		obin_memcpy(self->data, items, obin_any_integer(size));
+		obin_memcpy(self->data, items, OAny_toInt(size));
 	}
 
 	return obin_cell_new(EOBIN_TYPE_TUPLE, (OCell*) self, &__BEHAVIOR__, obin_cells(state)->__Tuple__);
@@ -136,15 +136,15 @@ static obin_integer
 _get_index(ObinState* state, ObinAny self, ObinAny pos){
 	obin_integer index;
 
-	if(!obin_any_is_integer(pos)){
+	if(!OAny_isInt(pos)){
 		return OBIN_INVALID_INDEX;
 	}
 
-	index = obin_any_integer(pos);
+	index = OAny_toInt(pos);
 	if( index < 0){
 		index = _size(self) - index;
 	} else{
-		index = obin_any_integer(pos);
+		index = OAny_toInt(pos);
 	}
 
 	if (index > _size(self) || index < 0) {
@@ -193,7 +193,7 @@ __hash__(ObinState* state, ObinAny self){
     ObinAny * items = _data(self);
 
     while (--length >= 0) {
-    	y = obin_any_integer(obin_hash(state, *items));
+    	y = OAny_toInt(obin_hash(state, *items));
     	items++;
 
         if (y == -1)

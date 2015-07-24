@@ -51,7 +51,7 @@ static ObinAny __setitem__(ObinState* state, ObinAny self, ObinAny key, ObinAny 
 ObinAny obin_table_new(ObinState* state, ObinAny size){
 	ObinTable * self;
 
-	if(obin_any_is_nil(size)){
+	if(OAny_isNil(size)){
 		size = obin_integer_new(OBIN_DEFAULT_TABLE_SIZE);
 	}
 
@@ -62,7 +62,7 @@ ObinAny obin_table_new(ObinState* state, ObinAny size){
 
 	self = obin_new(state, ObinTable);
 
-	self->capacity = _next_power_of_2(obin_any_mem_t(size));
+	self->capacity = _next_power_of_2(OAny_toMem_t(size));
 
 	self->body = obin_malloc_array(state, _ObinHashTableEntry, self->capacity);
 	self->size = 0;
@@ -323,13 +323,13 @@ static ObinAny __length__(ObinState* state, ObinAny self) {
  */
 obin_index _find_slot(ObinState* state, ObinAny self, ObinAny key)
 {
-	obin_integer hash = obin_any_integer(obin_hash(state, key));
+	obin_integer hash = OAny_toInt(obin_hash(state, key));
 	obin_index index;
 
 	index =  hash % _capacity(self);
 
 	while (_body(self)[index].isset
-			&&  obin_any_is_true(obin_equal(state, _body(self)[index].key, key))) {
+			&&  OAny_isTrue(obin_equal(state, _body(self)[index].key, key))) {
 		index = (index + 1) % _capacity(self);
 	}
 	return index;

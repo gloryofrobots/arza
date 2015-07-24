@@ -30,10 +30,10 @@ ObinAny __clone__(ObinState* state, ObinAny self) {
 
 ObinAny __true_compare__(ObinState* state, ObinAny self, ObinAny arg1) {
 	ObinAny other = obin_tobool(state, arg1);
-	if(obin_any_is_false(other)) {
+	if(OAny_isFalse(other)) {
 		return obin_integers(state)->Greater;
 	}
-	if(obin_any_is_true(other)) {
+	if(OAny_isTrue(other)) {
 		return obin_integers(state)->Equal;
 	}
 
@@ -54,10 +54,10 @@ ObinAny __false_tobool__(ObinState* state, ObinAny self) {
 
 ObinAny __false_compare__(ObinState* state, ObinAny self, ObinAny arg1) {
 	ObinAny other = obin_tobool(state, arg1);
-	if(obin_any_is_true(other)) {
+	if(OAny_isTrue(other)) {
 		return obin_integers(state)->Lesser;
 	}
-	if(obin_any_is_false(other)) {
+	if(OAny_isFalse(other)) {
 		return obin_integers(state)->Equal;
 	}
 
