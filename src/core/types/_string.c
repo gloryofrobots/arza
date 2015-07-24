@@ -690,11 +690,11 @@ OAny obin_string_split(OState* state, OAny self, OAny separator) {
 						"String.split invalid argument type, String expected ", separator);
 	}
 
-	result = obin_array_new(state, ObinNil);
+	result = OArray_new(state, ObinNil);
 
 	if (_string_size(separator) > _string_size(self)) {
 		/*can`t split */
-		obin_array_push(state, result, oclone(state, self));
+		OArray_push(state, result, oclone(state, self));
 		return result;
 	}
 
@@ -706,7 +706,7 @@ OAny obin_string_split(OState* state, OAny self, OAny separator) {
 
 		if (OAny_isTrue(oequal(state, curPos, ointegers(state)->NotFound))) {
 
-			obin_array_push(state, result,
+			OArray_push(state, result,
 						obin_string_from_carray(state, _string_const_data(self) + previous,
 								_string_size(self) - previous));
 			return result;
@@ -717,7 +717,7 @@ OAny obin_string_split(OState* state, OAny self, OAny separator) {
 			continue;
 		}
 
-		obin_array_push(state, result,
+		OArray_push(state, result,
 				obin_string_from_carray(state, _string_const_data(self) + previous,
 						current - previous));
 
@@ -772,12 +772,12 @@ OAny obin_string_pack(OState* state, oindex_t count, ...){
 						"String.pack invalid argument type, Invalid size", obin_integer_new(count));
 	}
 
-	array = obin_array_new(state, obin_integer_new(count));
+	array = OArray_new(state, obin_integer_new(count));
 
     va_start(vargs, count);
     for (i = 0; i < count; i++) {
     	item = va_arg(vargs, OAny);
-    	obin_array_push(state, array, item);
+    	OArray_push(state, array, item);
     }
 
     va_end(vargs);

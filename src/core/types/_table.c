@@ -132,7 +132,7 @@ OAny obin_table_items(OState* state, OAny self){
 
 	_CHECK_SELF_TYPE(state, self, obin_table_items);
 
-	result = obin_array_new(state, obin_integer_new(_size(self)));
+	result = OArray_new(state, obin_integer_new(_size(self)));
 
 	iterator = oiterator(state, self);
 
@@ -142,7 +142,7 @@ OAny obin_table_items(OState* state, OAny self){
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
-		obin_array_push(state, result, item);
+		OArray_push(state, result, item);
 	}
 
 	return result;
@@ -153,7 +153,7 @@ OAny obin_table_keys(OState* state, OAny self){
 
 	_CHECK_SELF_TYPE(state, self, obin_table_keys);
 
-	result = obin_array_new(state, obin_integer_new(_size(self)));
+	result = OArray_new(state, obin_integer_new(_size(self)));
 
 	iterator = oiterator(state, self);
 
@@ -163,7 +163,7 @@ OAny obin_table_keys(OState* state, OAny self){
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
-		obin_array_push(state, result, ogetfirst(state, item));
+		OArray_push(state, result, ogetfirst(state, item));
 
 	}
 
@@ -175,7 +175,7 @@ OAny obin_table_values(OState* state, OAny self){
 
 	_CHECK_SELF_TYPE(state, self, obin_table_values);
 
-	result = obin_array_new(state, obin_integer_new(_size(self)));
+	result = OArray_new(state, obin_integer_new(_size(self)));
 
 	iterator = oiterator(state, self);
 
@@ -185,7 +185,7 @@ OAny obin_table_values(OState* state, OAny self){
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
-		obin_array_push(state, result, ogetsecond(state, item));
+		OArray_push(state, result, ogetsecond(state, item));
 
 	}
 
@@ -260,7 +260,7 @@ static OAny __tostring__(OState* state, OAny self) {
     kv_separator = obin_string_new(state, ": ");
     items_separator = obin_string_new(state, ", ");
 
-	array = obin_array_new(state, obin_integer_new(_size(self)));
+	array = OArray_new(state, obin_integer_new(_size(self)));
 
 	iterator = oiterator(state, self);
 
@@ -271,7 +271,7 @@ static OAny __tostring__(OState* state, OAny self) {
 			break;
 		}
 
-		obin_array_push(state, array, obin_string_join(state, kv_separator, item));
+		OArray_push(state, array, obin_string_join(state, kv_separator, item));
 	}
 
 	result = obin_string_join(state, items_separator, array);
