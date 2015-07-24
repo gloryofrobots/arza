@@ -18,7 +18,7 @@ class Method(object):
             self.args.append(Arg("arg%d" % i))
 
         name = self.name.replace("__", "")
-        self.generic_name = "obin_%s" % name
+        self.generic_name = "o%s" % name
 
     def as_dict(self):
         return self.__dict__

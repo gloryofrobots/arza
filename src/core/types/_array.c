@@ -91,13 +91,13 @@ OAny obin_array_insert_collection(OState* state, OAny self, OAny collection, OAn
 	_CHECK_SELF_TYPE(state, self, obin_array_insert_collection);
 
 	start = OAny_toInt(position);
-	collection_size = OAny_toInt(obin_length(state, collection));
+	collection_size = OAny_toInt(olength(state, collection));
 	end = start + collection_size;
 
 	if(start > _array_size(self)) {
 		return oraise(state, oerrors(state)->KeyError, "obin_array_insert_collection invalid index", position);
 	} else if(start == _array_size(self)) {
-		return obin_add(state, self, item);
+		return oadd(state, self, item);
 	}
 
 	new_size = _array_inflate(state, self, start, end);
@@ -108,7 +108,7 @@ OAny obin_array_insert_collection(OState* state, OAny self, OAny collection, OAn
 
 	i=start;j=0;
 	while(i<end && j<collection_size) {
-		_array_setitem(self, i, obin_getitem(state, collection, obin_integer_new(j)));
+		_array_setitem(self, i, ogetitem(state, collection, obin_integer_new(j)));
 		++i; ++j;
 	}
 
@@ -186,7 +186,7 @@ OAny obin_array_lastindexof(OState* state, OAny self, OAny item){
 	_CHECK_SELF_TYPE(state, self, lastindexof);
 
 	for(i=_array_last_index(self); i>=0; --i) {
-		if (OAny_isTrue(obin_equal(state, _array_item(self, i), item))) {
+		if (OAny_isTrue(oequal(state, _array_item(self, i), item))) {
 			return obin_integer_new(i);
 		}
 	}
@@ -200,7 +200,7 @@ OAny obin_array_indexof(OState* state, OAny self, OAny item) {
 	_CHECK_SELF_TYPE(state, self, obin_array_indexof);
 
 	for(i=0; i<_array_size(self); ++i) {
-		if (OAny_isTrue(obin_equal(state, _array_item(self, i), item))) {
+		if (OAny_isTrue(oequal(state, _array_item(self, i), item))) {
 			return obin_integer_new(i);
 		}
 	}
@@ -218,7 +218,7 @@ OAny obin_array_pop(OState* state, OAny self) {
 				"obin_array_pop " __TypeName__ " empty array", ObinNil);
 	}
 
-	item = obin_getitem(state, self, obin_integer_new(_array_last_index(self)));
+	item = ogetitem(state, self, obin_integer_new(_array_last_index(self)));
 	_array_size(self) -= 1;
 
 	return item;
@@ -238,7 +238,7 @@ OAny obin_array_remove(OState* state, OAny self, OAny item) {
 	_CHECK_SELF_TYPE(state, self, obin_array_remove);
 
 	for (i=0; i<_array_size(self); i++) {
-		if(OAny_isTrue(obin_equal(state, self, item))) {
+		if(OAny_isTrue(oequal(state, self, item))) {
 			find = OTRUE;
 			break;
 		}
@@ -248,7 +248,7 @@ OAny obin_array_remove(OState* state, OAny self, OAny item) {
 		return ObinFalse;
 	}
 
-	obin_delitem(state, self, obin_integer_new(i));
+	odelitem(state, self, obin_integer_new(i));
 	return ObinTrue;
 }
 
@@ -264,8 +264,8 @@ static OAny __tostring__(OState* state, OAny self) {
 
 	_CHECK_SELF_TYPE(state, self, __tostring__);
 	result = obin_string_join(state, obin_char_new(','), self);
-	result = obin_add(state, obin_char_new('['), result);
-	result = obin_add(state, result, obin_char_new(']'));
+	result = oadd(state, obin_char_new('['), result);
+	result = oadd(state, result, obin_char_new(']'));
 
 	return result;
 }

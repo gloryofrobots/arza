@@ -17,7 +17,7 @@ static OAny __si__next__(OState* state, OAny self) {
 		return ObinNothing;
 	}
 
-	result = obin_getitem(state, it->source, obin_integer_new(it->current));
+	result = ogetitem(state, it->source, obin_integer_new(it->current));
 	it->current++;
 	return result;
 }
@@ -38,7 +38,7 @@ OAny obin_sequence_iterator_new(OState* state, OAny sequence){
 	iterator = obin_new(state, SequenceIterator);
 	iterator->source = sequence;
 	iterator->current = 0;
-	iterator->length = (omem_t) OAny_toInt(obin_length(state, sequence));
+	iterator->length = (omem_t) OAny_toInt(olength(state, sequence));
 
 	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__SEQUENCE_ITERATOR_BEHAVIOR__, ocells(state)->__Cell__);
 }
@@ -52,7 +52,7 @@ OAny obin_collection_compare(OState * state, OAny self, OAny other){
 	OAny other_item;
 	OAny compare_result;
 
-	self_length = obin_length(state, self);
+	self_length = olength(state, self);
 
 	/*TODO ADD TYPE CHECK HERE FOR __COLLECTION__ cell*/
 	if(!OAny_isCell(other)){
@@ -67,7 +67,7 @@ OAny obin_collection_compare(OState * state, OAny self, OAny other){
 		return ointegers(state)->Lesser;
 	}
 
-	other_length = obin_length(state, other);
+	other_length = olength(state, other);
 
 	if (OAny_toInt(self_length) < OAny_toInt(other_length)) {
 		return ointegers(state)->Lesser;
@@ -77,26 +77,26 @@ OAny obin_collection_compare(OState * state, OAny self, OAny other){
 		return ointegers(state)->Greater;
 	}
 
-	self_iterator = obin_iterator(state, self);
-	other_iterator = obin_iterator(state, other);
+	self_iterator = oiterator(state, self);
+	other_iterator = oiterator(state, other);
 
 	compare_result = ointegers(state)->Equal;
 
 	while(OTRUE) {
-		self_item = obin_next(state, self_iterator);
-		other_item = obin_next(state, other_iterator);
+		self_item = onext(state, self_iterator);
+		other_item = onext(state, other_iterator);
 
 		if(OBIN_IS_STOP_ITERATION(self_item) || OBIN_IS_STOP_ITERATION(other_item)){
 			break;
 		}
 
-		compare_result = obin_compare(state, self_item, other_item);
-		if(OAny_isTrue(obin_is(state, compare_result, ointegers(state)->Equal))){
+		compare_result = ocompare(state, self_item, other_item);
+		if(OAny_isTrue(ois(state, compare_result, ointegers(state)->Equal))){
 			break;
 		}
 	}
 
-	obin_release(state, self_iterator);
-	obin_release(state, other_iterator);
+	orelease(state, self_iterator);
+	orelease(state, other_iterator);
 	return compare_result;
 }

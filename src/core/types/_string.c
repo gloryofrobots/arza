@@ -78,7 +78,7 @@ static oint _string_size(OAny any) {
 /**********************************  TYPETRAIT ***********************************************/
 
 static OAny __tostring__(OState* state, OAny self) {
-	return obin_clone(state, self);
+	return oclone(state, self);
 }
 
 static OAny __tobool__(OState* state, OAny self) {
@@ -104,7 +104,7 @@ static OAny __hasitem__(OState* state, OAny self, OAny character) {
 
 	result = obin_string_index_of(state, self, character, ObinNil, ObinNil);
 
-	return obin_equal(state, result, ointegers(state)->NotFound);
+	return oequal(state, result, ointegers(state)->NotFound);
 }
 
 static OAny __getitem__(OState* state, OAny self, OAny key) {
@@ -219,10 +219,10 @@ static OAny __add__(OState* state, OAny str1, OAny str2) {
 	}
 
 	if (_string_size(str1) == 0) {
-		return obin_clone(state, str2);
+		return oclone(state, str2);
 	}
 	if (_string_size(str2) == 0) {
-		return obin_clone(state, str1);
+		return oclone(state, str1);
 	}
 
 	size = _string_size(str1) + _string_size(str2);
@@ -322,7 +322,7 @@ OAny obin_string_is_empty(OState* state, OAny self){
 		return oraise(state, oerrors(state)->InternalError,
 				"obin_string_is_empty call from other type", self);
 	}
-	return obin_tobool(state, __length__(state, self));
+	return otobool(state, __length__(state, self));
 }
 /******************************** MODIFICATIONS *************************************/
 /*  function for modify char arrays , return 0 for stop iteration */
@@ -657,7 +657,7 @@ OAny obin_string_dublicate(OState* state, OAny self, OAny _count) {
 	}
 
 	if (OAny_isNil(_count)) {
-		return obin_clone(state, self);
+		return oclone(state, self);
 	}
 
 	if(!OAny_isInt(_count)) {
@@ -694,7 +694,7 @@ OAny obin_string_split(OState* state, OAny self, OAny separator) {
 
 	if (_string_size(separator) > _string_size(self)) {
 		/*can`t split */
-		obin_array_push(state, result, obin_clone(state, self));
+		obin_array_push(state, result, oclone(state, self));
 		return result;
 	}
 
@@ -704,7 +704,7 @@ OAny obin_string_split(OState* state, OAny self, OAny separator) {
 	while (OTRUE) {
 		curPos = _string_finder_left(state, self, separator, previous, _string_size(self));
 
-		if (OAny_isTrue(obin_equal(state, curPos, ointegers(state)->NotFound))) {
+		if (OAny_isTrue(oequal(state, curPos, ointegers(state)->NotFound))) {
 
 			obin_array_push(state, result,
 						obin_string_from_carray(state, _string_const_data(self) + previous,
@@ -737,12 +737,12 @@ OAny obin_string_join(OState* state, OAny self, OAny collection) {
 
 	result = ostrings(state)->Empty;
 
-	counter = OAny_toInt(obin_length(state, collection));
+	counter = OAny_toInt(olength(state, collection));
 	if(counter==0) {
 		return result;
 	}
 
-	iterator = obin_iterator(state, collection);
+	iterator = oiterator(state, collection);
 
 	while (OTRUE) {
 		/*avoid appending self at end of string*/
@@ -750,13 +750,13 @@ OAny obin_string_join(OState* state, OAny self, OAny collection) {
 			break;
 		}
 
-		value = obin_next(state, iterator);
+		value = onext(state, iterator);
 		result = __add__(state, result, value);
 		result = __add__(state, result, self);
 	}
 
 	/*append last element*/
-	value = obin_next(state, iterator);
+	value = onext(state, iterator);
 	result = __add__(state, result, value);
 	return result;
 }

@@ -110,18 +110,18 @@ OAny obin_table_update(OState* state, OAny self, OAny other) {
 
 	_CHECK_SELF_TYPE(state, self, obin_table_update);
 
-	iterator = obin_iterator(state, other);
+	iterator = oiterator(state, other);
 
 	while (OTRUE) {
 		/*tuple*/
-		item = obin_next(state, iterator);
+		item = onext(state, iterator);
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
 
-		obin_setitem(state, self,
-				obin_getfirst(state, item),
-				obin_getsecond(state, item));
+		osetitem(state, self,
+				ogetfirst(state, item),
+				ogetsecond(state, item));
 	}
 
 	return ObinNothing;
@@ -134,11 +134,11 @@ OAny obin_table_items(OState* state, OAny self){
 
 	result = obin_array_new(state, obin_integer_new(_size(self)));
 
-	iterator = obin_iterator(state, self);
+	iterator = oiterator(state, self);
 
 	while (OTRUE) {
 		/*tuple*/
-		item = obin_next(state, iterator);
+		item = onext(state, iterator);
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
@@ -155,15 +155,15 @@ OAny obin_table_keys(OState* state, OAny self){
 
 	result = obin_array_new(state, obin_integer_new(_size(self)));
 
-	iterator = obin_iterator(state, self);
+	iterator = oiterator(state, self);
 
 	while (OTRUE) {
 		/*tuple*/
-		item = obin_next(state, iterator);
+		item = onext(state, iterator);
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
-		obin_array_push(state, result, obin_getfirst(state, item));
+		obin_array_push(state, result, ogetfirst(state, item));
 
 	}
 
@@ -177,15 +177,15 @@ OAny obin_table_values(OState* state, OAny self){
 
 	result = obin_array_new(state, obin_integer_new(_size(self)));
 
-	iterator = obin_iterator(state, self);
+	iterator = oiterator(state, self);
 
 	while (OTRUE) {
 		/*tuple*/
-		item = obin_next(state, iterator);
+		item = onext(state, iterator);
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
-		obin_array_push(state, result, obin_getsecond(state, item));
+		obin_array_push(state, result, ogetsecond(state, item));
 
 	}
 
@@ -262,11 +262,11 @@ static OAny __tostring__(OState* state, OAny self) {
 
 	array = obin_array_new(state, obin_integer_new(_size(self)));
 
-	iterator = obin_iterator(state, self);
+	iterator = oiterator(state, self);
 
 	while (OTRUE) {
 		/*tuple*/
-		item = obin_next(state, iterator);
+		item = onext(state, iterator);
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
@@ -275,11 +275,11 @@ static OAny __tostring__(OState* state, OAny self) {
 	}
 
 	result = obin_string_join(state, items_separator, array);
-	result = obin_add(state, obin_char_new('{'), result);
-	result = obin_add(state, result, obin_char_new('}'));
+	result = oadd(state, obin_char_new('{'), result);
+	result = oadd(state, result, obin_char_new('}'));
 
-	obin_release(state, iterator);
-	obin_release(state, array);
+	orelease(state, iterator);
+	orelease(state, array);
 	return result;
 }
 
@@ -323,13 +323,13 @@ static OAny __length__(OState* state, OAny self) {
  */
 oindex_t _find_slot(OState* state, OAny self, OAny key)
 {
-	oint hash = OAny_toInt(obin_hash(state, key));
+	oint hash = OAny_toInt(ohash(state, key));
 	oindex_t index;
 
 	index =  hash % _capacity(self);
 
 	while (_body(self)[index].isset
-			&&  OAny_isTrue(obin_equal(state, _body(self)[index].key, key))) {
+			&&  OAny_isTrue(oequal(state, _body(self)[index].key, key))) {
 		index = (index + 1) % _capacity(self);
 	}
 	return index;

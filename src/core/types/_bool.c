@@ -29,7 +29,7 @@ OAny __clone__(OState* state, OAny self) {
 }
 
 OAny __true_compare__(OState* state, OAny self, OAny arg1) {
-	OAny other = obin_tobool(state, arg1);
+	OAny other = otobool(state, arg1);
 	if(OAny_isFalse(other)) {
 		return ointegers(state)->Greater;
 	}
@@ -53,7 +53,7 @@ OAny __false_tobool__(OState* state, OAny self) {
 }
 
 OAny __false_compare__(OState* state, OAny self, OAny arg1) {
-	OAny other = obin_tobool(state, arg1);
+	OAny other = otobool(state, arg1);
 	if(OAny_isTrue(other)) {
 		return ointegers(state)->Lesser;
 	}

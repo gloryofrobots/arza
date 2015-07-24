@@ -4,7 +4,7 @@ OAny {{generic_name}}(OState* state{% for arg in args %}, {{arg.type}} {{arg.nam
     method = _method(state, {{ args[0].name }}, {{ name }});
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        oraise(state, oerrors(state)->TypeError,
                 "{{ name }} protocol not supported", {{ args[0].name }});
     }
 

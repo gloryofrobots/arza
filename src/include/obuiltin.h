@@ -32,18 +32,18 @@ OState* obin_init(omem_t heap_size);
 
 void obin_finalise(OState* state);
 /*TODO REMOVE obin_destroy FROM API*/
-void obin_destroy(OState * state, OCell* self);
+void odestroy(OState * state, OCell* self);
 
-void obin_release(OState * state, OAny self);
+void orelease(OState * state, OAny self);
 
-OAny obin_equal(OState * state, OAny any, OAny other);
+OAny oequal(OState * state, OAny any, OAny other);
 
-OAny obin_is(OState * state, OAny first, OAny second);
+OAny ois(OState * state, OAny first, OAny second);
 
 /*shortcuts for tuples and arrays*/
-#define obin_getfirst(state, coll) obin_getitem(state, coll, obin_integer_new(0))
-#define obin_getsecond(state, coll) obin_getitem(state, coll, obin_integer_new(1))
-#define obin_getthird(state, coll) obin_getitem(state, coll, obin_integer_new(2))
+#define ogetfirst(state, coll) ogetitem(state, coll, obin_integer_new(0))
+#define ogetsecond(state, coll) ogetitem(state, coll, obin_integer_new(1))
+#define ogetthird(state, coll) ogetitem(state, coll, obin_integer_new(2))
 
 /*@return list of results from function applied to iterable
 ObinAny obin_map(ObinState * state, obin_function function, ObinAny iterable);
@@ -60,70 +60,71 @@ ObinAny obin_reduce(ObinState * state, obin_function_2 function, ObinAny iterabl
 
 /************************* BASE **********************************/
 
-OAny obin_tostring(OState* state, OAny self);
+OAny otostring(OState* state, OAny self);
 
-OAny obin_tobool(OState* state, OAny self);
+OAny otobool(OState* state, OAny self);
 
-OAny obin_clone(OState* state, OAny self);
+OAny oclone(OState* state, OAny self);
 
-OAny obin_compare(OState* state, OAny self, OAny arg1);
+OAny ocompare(OState* state, OAny self, OAny arg1);
 
-OAny obin_hash(OState* state, OAny self);
+OAny ohash(OState* state, OAny self);
 
 /************************* COLLECTION **********************************/
 
-OAny obin_iterator(OState* state, OAny self);
+OAny oiterator(OState* state, OAny self);
 
-OAny obin_length(OState* state, OAny self);
+OAny olength(OState* state, OAny self);
 
-OAny obin_getitem(OState* state, OAny self, OAny arg1);
+OAny ogetitem(OState* state, OAny self, OAny arg1);
 
-OAny obin_hasitem(OState* state, OAny self, OAny arg1);
+OAny ohasitem(OState* state, OAny self, OAny arg1);
 
-OAny obin_delitem(OState* state, OAny self, OAny arg1);
+OAny odelitem(OState* state, OAny self, OAny arg1);
 
-OAny obin_setitem(OState* state, OAny self, OAny arg1, OAny arg2);
+OAny osetitem(OState* state, OAny self, OAny arg1, OAny arg2);
 
 /************************* GENERATOR **********************************/
 
-OAny obin_next(OState* state, OAny self);
+OAny onext(OState* state, OAny self);
 
 /************************* NUMBER_CAST **********************************/
 
-OAny obin_tointeger(OState* state, OAny self);
+OAny otointeger(OState* state, OAny self);
 
-OAny obin_tofloat(OState* state, OAny self);
+OAny otofloat(OState* state, OAny self);
 
-OAny obin_topositive(OState* state, OAny self);
+OAny otopositive(OState* state, OAny self);
 
-OAny obin_tonegative(OState* state, OAny self);
+OAny otonegative(OState* state, OAny self);
 
 /************************* NUMBER_OPERATIONS **********************************/
 
-OAny obin_abs(OState* state, OAny self);
+OAny oabs(OState* state, OAny self);
 
-OAny obin_invert(OState* state, OAny self);
+OAny oinvert(OState* state, OAny self);
 
-OAny obin_add(OState* state, OAny self, OAny arg1);
+OAny oadd(OState* state, OAny self, OAny arg1);
 
-OAny obin_subtract(OState* state, OAny self, OAny arg1);
+OAny osubtract(OState* state, OAny self, OAny arg1);
 
-OAny obin_divide(OState* state, OAny self, OAny arg1);
+OAny odivide(OState* state, OAny self, OAny arg1);
 
-OAny obin_multiply(OState* state, OAny self, OAny arg1);
+OAny omultiply(OState* state, OAny self, OAny arg1);
 
-OAny obin_pow(OState* state, OAny self, OAny arg1);
+OAny opow(OState* state, OAny self, OAny arg1);
 
-OAny obin_leftshift(OState* state, OAny self, OAny arg1);
+OAny oleftshift(OState* state, OAny self, OAny arg1);
 
-OAny obin_rightshift(OState* state, OAny self, OAny arg1);
+OAny orightshift(OState* state, OAny self, OAny arg1);
 
-OAny obin_mod(OState* state, OAny self, OAny arg1);
+OAny omod(OState* state, OAny self, OAny arg1);
 
-OAny obin_and(OState* state, OAny self, OAny arg1);
+OAny oand(OState* state, OAny self, OAny arg1);
 
-OAny obin_or(OState* state, OAny self, OAny arg1);
+OAny oor(OState* state, OAny self, OAny arg1);
 
-OAny obin_xor(OState* state, OAny self, OAny arg1);
+OAny oxor(OState* state, OAny self, OAny arg1);
+
 
 #endif

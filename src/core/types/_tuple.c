@@ -97,8 +97,8 @@ static OAny __tostring__(OState* state, OAny self) {
     _CHECK_SELF_TYPE(state, self, __tostring__);
 
 	result = obin_string_join(state, obin_char_new(','), self);
-	result = obin_add(state, obin_char_new('('), result);
-	result = obin_add(state, result, obin_string_new(state, ",)"));
+	result = oadd(state, obin_char_new('('), result);
+	result = oadd(state, result, obin_string_new(state, ",)"));
 
 	return result;
 }
@@ -193,7 +193,7 @@ __hash__(OState* state, OAny self){
     OAny * items = _data(self);
 
     while (--length >= 0) {
-    	y = OAny_toInt(obin_hash(state, *items));
+    	y = OAny_toInt(ohash(state, *items));
     	items++;
 
         if (y == -1)
