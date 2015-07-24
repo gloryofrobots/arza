@@ -7,10 +7,10 @@ obin_bool obin_module_float_init(ObinState* state) {
 	return OTRUE;
 }
 
-ObinAny obin_float_new(obin_float number) {
-	ObinAny result;
+OAny obin_float_new(obin_float number) {
+	OAny result;
 
-	result = obin_any_new();
+	result = OAny_new();
 	OAny_initFloat(result, number);
 	return result;
 }

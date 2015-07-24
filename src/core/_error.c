@@ -13,20 +13,20 @@ obin_bool obin_module_error_init(ObinState* state) {
 	return OTRUE;
 }
 
-ObinAny _obin_error_new(ObinState* state, ObinAny proto, obin_string message, ObinAny argument) {
+OAny _obin_error_new(ObinState* state, OAny proto, obin_string message, OAny argument) {
 	return proto;
 }
 
-ObinAny obin_raise_error(ObinState* state, ObinAny exception) {
+OAny obin_raise_error(ObinState* state, OAny exception) {
 	return exception;
 }
 
-ObinAny obin_raise(ObinState* state, ObinAny trait, obin_string message, ObinAny argument) {
+OAny obin_raise(ObinState* state, OAny trait, obin_string message, OAny argument) {
 	obin_panic(message);
 	return trait;
 }
 
-ObinAny obin_raise_vargs(ObinState* state, ObinAny trait, obin_string message, ...) {
+OAny obin_raise_vargs(ObinState* state, OAny trait, obin_string message, ...) {
 	va_list myargs;
 	va_start(myargs, message);
 	obin_log(state, message, myargs);

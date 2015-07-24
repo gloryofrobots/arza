@@ -53,11 +53,11 @@ def write_behavior_h(filename):
         for method in part.methods:
             BEHAVIOR_BODY.append("    %s %s;" % (method.type, method.name))
             MACROSES.append(method.name)
-        MACROS_NAME = "#define OBIN_BEHAVIOR_%s" % part.name
+        MACROS_NAME = "#define OBEHAVIOR_%s" % part.name
         MACROS = "%s(%s)  %s \n" %(MACROS_NAME, ",".join(MACROSES), ", ".join(MACROSES))
         MACROS_BODY.append(MACROS)
 
-        MACROS_NAME = "#define OBIN_BEHAVIOR_%s_NULL" % part.name
+        MACROS_NAME = "#define OBEHAVIOR_%s_NULL" % part.name
         MACROS = "%s %s " %(MACROS_NAME, ", ".join(['0']*len(part.methods)))
         MACROS_BODY.append(MACROS)
 

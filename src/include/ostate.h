@@ -7,44 +7,44 @@ typedef struct _ObinMemory ObinMemory;
 
 typedef struct _ObinInternals {
 	struct _ObinInternalCells {
-		ObinAny __Cell__;
-		ObinAny __String__;
-		ObinAny __Array__;
-		ObinAny __Table__;
-		ObinAny __ProtoCell__;
-		ObinAny __Tuple__;
-		ObinAny __List__;
-		ObinAny __Stream__;
+		OAny __Cell__;
+		OAny __String__;
+		OAny __Array__;
+		OAny __Table__;
+		OAny __ProtoCell__;
+		OAny __Tuple__;
+		OAny __List__;
+		OAny __Stream__;
 	} cells;
 
 	struct _ObinInternalIntegers {
-		ObinAny NotFound;
-		ObinAny Lesser;
-		ObinAny Greater;
-		ObinAny Equal;
+		OAny NotFound;
+		OAny Lesser;
+		OAny Greater;
+		OAny Equal;
 	} integers;
 
 	struct _ObinInternalStrings{
-		ObinAny Nil;
-		ObinAny True;
-		ObinAny False;
-		ObinAny Nothing;
-		ObinAny PrintSeparator;
-		ObinAny Empty;
-		ObinAny Space;
-		ObinAny TabSpaces;
+		OAny Nil;
+		OAny True;
+		OAny False;
+		OAny Nothing;
+		OAny PrintSeparator;
+		OAny Empty;
+		OAny Space;
+		OAny TabSpaces;
 	} strings;
 
 	struct _ObinInternalErrors{
-		ObinAny Error;
-		ObinAny MemoryError;
-		ObinAny IOError;
-		ObinAny InternalError;
-		ObinAny RangeError;
-		ObinAny TypeError;
-		ObinAny ValueError;
-		ObinAny IndexError;
-		ObinAny KeyError;
+		OAny Error;
+		OAny MemoryError;
+		OAny IOError;
+		OAny InternalError;
+		OAny RangeError;
+		OAny TypeError;
+		OAny ValueError;
+		OAny IndexError;
+		OAny KeyError;
 	} errors;
 
 	struct _ObinInternalBehaviors {
@@ -61,7 +61,7 @@ typedef struct _ObinInternals {
 
 
 typedef struct _ObinState {
-	ObinAny globals;
+	OAny globals;
 	ObinMemory* memory;
 	ObinInternals* internals;
 } ObinState;

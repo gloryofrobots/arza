@@ -18,13 +18,13 @@ typedef struct {
 	int id;
 	int parent_id;
 	obin_byte* chunk;
-	ObinAny* data;
+	OAny* data;
 } TMGCell;
 
 static TMCounter* tmg_counter;
 
 
-ObinAny tmg_cell_new(ObinState* state, int data_size, double garbage_pecentage, int parent_id) {
+OAny tmg_cell_new(ObinState* state, int data_size, double garbage_pecentage, int parent_id) {
 	TMGCell* cell = obin_new(state, TMGCell);
 	int i = 0;
 
@@ -45,7 +45,7 @@ ObinAny tmg_cell_new(ObinState* state, int data_size, double garbage_pecentage, 
 
 	if(data_size > 0) {
 
-		cell->data = obin_malloc_array(state, ObinAny, data_size);
+		cell->data = obin_malloc_array(state, OAny, data_size);
 		for(i=0; i < data_size; i++) {
 			cell->data[i] = tmg_cell_new(state, data_size-1, garbage_pecentage, cell->id);
 
@@ -56,7 +56,7 @@ ObinAny tmg_cell_new(ObinState* state, int data_size, double garbage_pecentage, 
 }
 
 
-static void __tmg_cell_mark__(ObinState* state, ObinAny self, obin_func_1 callback ) {
+static void __tmg_cell_mark__(ObinState* state, OAny self, obin_func_1 callback ) {
 	int i = 0, count_marked = 0;
 	TMGCell* cell = (TMGCell*) OAny_toCell(self);
 	TMGCell* child;

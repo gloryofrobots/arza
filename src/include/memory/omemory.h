@@ -38,10 +38,10 @@ struct _ObinMemory {
 
 #define obin_any_cell_size(any) (OAny_toCell(any)->memory.size)
 
-ObinAny obin_cell_new(EOTYPE type, OCell* cell, ObinBehavior* behavior, ObinAny root);
+OAny obin_cell_new(EOTYPE type, OCell* cell, ObinBehavior* behavior, OAny root);
 
 /*TRAITS HERE MUST EXIST IN CELL */
-ObinAny obin_cell_to_any(EOTYPE type, OCell* cell);
+OAny obin_cell_to_any(EOTYPE type, OCell* cell);
 
 ObinState* obin_state_new(obin_mem_t heap_size);
 void obin_state_destroy(ObinState* state);

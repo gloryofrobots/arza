@@ -57,20 +57,20 @@ typedef enum _EOBIN_CELL_MARK{
 #define _is_not_marked(cell) (cell->memory.mark == EOBIN_CELL_MARK_MARKED)
 #define _is_new(cell) (cell->memory.mark == EOBIN_CELL_MARK_NEW)
 
-ObinAny obin_cell_to_any(EOTYPE type, OCell* cell) {
-	ObinAny result = obin_any_new();
+OAny obin_cell_to_any(EOTYPE type, OCell* cell) {
+	OAny result = OAny_new();
 	obin_assert(OType_isCell(type));
 	OAny_initCell(result, type, cell);
 	return result;
 }
 
-ObinAny obin_cell_new(EOTYPE type, OCell* cell, ObinBehavior* behavior, ObinAny origin) {
-	ObinAny result;
+OAny obin_cell_new(EOTYPE type, OCell* cell, ObinBehavior* behavior, OAny origin) {
+	OAny result;
 	obin_assert(OType_isCell(type));
 	cell->origin = origin;
 	cell->behavior = behavior;
 	_unmark(cell);
-	result = obin_any_new();
+	result = OAny_new();
 	OAny_initCell(result, type, cell);
 	return result;
 }
@@ -203,7 +203,7 @@ void obin_state_destroy(ObinState* state) {
  *  it is told to 'mark_references', recursively using this
  *  function for all its references.
  */
-static ObinAny gc_mark_object(ObinState* state, ObinAny object) {
+static OAny gc_mark_object(ObinState* state, OAny object) {
 	OCell* cell = OAny_toCell(object);
 	CATCH_STATE_MEMORY(state);
 	if(!cell) {
@@ -240,7 +240,7 @@ static ObinAny gc_mark_object(ObinState* state, ObinAny object) {
 }
 
 void gc_mark_reachable_objects(ObinState * state) {
-	ObinAny globals = state->globals;
+	OAny globals = state->globals;
 	gc_mark_object(state, globals);
 
 	/*     Get the current frame and mark it.

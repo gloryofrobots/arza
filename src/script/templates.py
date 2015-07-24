@@ -1,5 +1,5 @@
 BUILTIN_MEHOD_TPL = """
-ObinAny {{generic_name}}(ObinState* state{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %}) {
+OAny {{generic_name}}(OState* state{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %}) {
     {{ type }} method;
     method = _method(state, {{ args[0].name }}, {{ name }});
 
@@ -12,27 +12,27 @@ ObinAny {{generic_name}}(ObinState* state{% for arg in args %}, {{arg.type}} {{a
 }"""
 
 BUILTIN_MEHOD_TPL_DECLARATION = """
-ObinAny {{generic_name}}(ObinState* state{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %});
+OAny {{generic_name}}(OState* state{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %});
 """
 
 METHOD_IMPLEMENTATION_DECLARATION = """
-ObinAny {{name}}(ObinState* state{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %});
+OAny {{name}}(OState* state{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %});
 """
 
 
 BEHAVIOR_TPL = """
-typedef struct _ObinBehavior {
+typedef struct _OBehavior {
     obin_string __name__;
 %s
-} ObinBehavior;
+} OBehavior;
     """
 
 BEHAVIOR_DEF_TPL = """
-#define OBIN_BEHAVIOR_DEFINE(structname, name, %s)  \\ 
-static ObinBehavior structname = { \\ 
+#define OBEHAVIOR_DEFINE(structname, name, %s)  \\ 
+static OBehavior structname = { \\ 
     name, %s  \\ 
 };"""
 
 BEHAVIOR_DECL_TPL = """
-#define OBIN_BEHAVIOR_DECLARE(structname) \
-static ObinBehavior structname;"""
+#define OBEHAVIOR_DECLARE(structname) \
+static OBehavior structname;"""

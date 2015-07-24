@@ -1,68 +1,68 @@
 
 /************************* BASE **********************************/
 
-ObinAny obin_tostring(ObinState* state, ObinAny self);
+OAny obin_tostring(ObinState* state, OAny self);
 
-ObinAny obin_tobool(ObinState* state, ObinAny self);
+OAny obin_tobool(ObinState* state, OAny self);
 
-ObinAny obin_clone(ObinState* state, ObinAny self);
+OAny obin_clone(ObinState* state, OAny self);
 
-ObinAny obin_compare(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_compare(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_hash(ObinState* state, ObinAny self);
+OAny obin_hash(ObinState* state, OAny self);
 
 /************************* COLLECTION **********************************/
 
-ObinAny obin_iterator(ObinState* state, ObinAny self);
+OAny obin_iterator(ObinState* state, OAny self);
 
-ObinAny obin_length(ObinState* state, ObinAny self);
+OAny obin_length(ObinState* state, OAny self);
 
-ObinAny obin_getitem(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_getitem(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_hasitem(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_hasitem(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_delitem(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_delitem(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_setitem(ObinState* state, ObinAny self, ObinAny arg1, ObinAny arg2);
+OAny obin_setitem(ObinState* state, OAny self, OAny arg1, OAny arg2);
 
 /************************* GENERATOR **********************************/
 
-ObinAny obin_next(ObinState* state, ObinAny self);
+OAny obin_next(ObinState* state, OAny self);
 
 /************************* NUMBER_CAST **********************************/
 
-ObinAny obin_tointeger(ObinState* state, ObinAny self);
+OAny obin_tointeger(ObinState* state, OAny self);
 
-ObinAny obin_tofloat(ObinState* state, ObinAny self);
+OAny obin_tofloat(ObinState* state, OAny self);
 
-ObinAny obin_topositive(ObinState* state, ObinAny self);
+OAny obin_topositive(ObinState* state, OAny self);
 
-ObinAny obin_tonegative(ObinState* state, ObinAny self);
+OAny obin_tonegative(ObinState* state, OAny self);
 
 /************************* NUMBER_OPERATIONS **********************************/
 
-ObinAny obin_abs(ObinState* state, ObinAny self);
+OAny obin_abs(ObinState* state, OAny self);
 
-ObinAny obin_invert(ObinState* state, ObinAny self);
+OAny obin_invert(ObinState* state, OAny self);
 
-ObinAny obin_add(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_add(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_subtract(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_subtract(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_divide(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_divide(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_multiply(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_multiply(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_pow(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_pow(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_leftshift(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_leftshift(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_rightshift(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_rightshift(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_mod(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_mod(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_and(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_and(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_or(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_or(ObinState* state, OAny self, OAny arg1);
 
-ObinAny obin_xor(ObinState* state, ObinAny self, ObinAny arg1);
+OAny obin_xor(ObinState* state, OAny self, OAny arg1);

@@ -1,7 +1,7 @@
 class Arg(object):
     def __init__(self, name):
         self.name = name
-        self.type = "ObinAny"
+        self.type = "OAny"
     pass
 
 class Method(object):

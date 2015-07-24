@@ -1,11 +1,11 @@
 #include <obin.h>
 
-ObinAny ObinFalse = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FALSE);
-ObinAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
-ObinAny ObinNil = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NIL);
-ObinAny ObinNothing = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NOTHING);
+OAny ObinFalse = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FALSE);
+OAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
+OAny ObinNil = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NIL);
+OAny ObinNothing = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NOTHING);
 
-ObinAny obin_bool_new(obin_bool condition){
+OAny obin_bool_new(obin_bool condition){
 	if(condition){
 		return ObinTrue;
 	}
@@ -16,20 +16,20 @@ ObinAny obin_bool_new(obin_bool condition){
 static ObinBehavior __TRUE_BEHAVIOR__ = {0};
 static ObinBehavior __FALSE_BEHAVIOR__ = {0};
 
-ObinAny __true_tostring__(ObinState* state, ObinAny self) {
+OAny __true_tostring__(ObinState* state, OAny self) {
 	return obin_strings(state)->True;
 }
 
-ObinAny __true_tobool__(ObinState* state, ObinAny self){
+OAny __true_tobool__(ObinState* state, OAny self){
 	return self;
 }
 
-ObinAny __clone__(ObinState* state, ObinAny self) {
+OAny __clone__(ObinState* state, OAny self) {
 	return self;
 }
 
-ObinAny __true_compare__(ObinState* state, ObinAny self, ObinAny arg1) {
-	ObinAny other = obin_tobool(state, arg1);
+OAny __true_compare__(ObinState* state, OAny self, OAny arg1) {
+	OAny other = obin_tobool(state, arg1);
 	if(OAny_isFalse(other)) {
 		return obin_integers(state)->Greater;
 	}
@@ -40,20 +40,20 @@ ObinAny __true_compare__(ObinState* state, ObinAny self, ObinAny arg1) {
 	return obin_integers(state)->Lesser;
 }
 
-ObinAny __true_hash__(ObinState* state, ObinAny self) {
+OAny __true_hash__(ObinState* state, OAny self) {
 	return obin_integer_new(1);
 }
 
-ObinAny __false_tostring__(ObinState* state, ObinAny self){
+OAny __false_tostring__(ObinState* state, OAny self){
 	return obin_strings(state)->False;
 }
 
-ObinAny __false_tobool__(ObinState* state, ObinAny self) {
+OAny __false_tobool__(ObinState* state, OAny self) {
 	return self;
 }
 
-ObinAny __false_compare__(ObinState* state, ObinAny self, ObinAny arg1) {
-	ObinAny other = obin_tobool(state, arg1);
+OAny __false_compare__(ObinState* state, OAny self, OAny arg1) {
+	OAny other = obin_tobool(state, arg1);
 	if(OAny_isTrue(other)) {
 		return obin_integers(state)->Lesser;
 	}
@@ -64,7 +64,7 @@ ObinAny __false_compare__(ObinState* state, ObinAny self, ObinAny arg1) {
 	return obin_integers(state)->Lesser;
 }
 
-ObinAny __false_hash__(ObinState* state, ObinAny self) {
+OAny __false_hash__(ObinState* state, OAny self) {
 	return obin_integer_new(1);
 }
 

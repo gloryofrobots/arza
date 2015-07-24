@@ -3,6 +3,6 @@
 
 #include "obuiltin.h"
 
-ObinAny obin_sequence_iterator_new(ObinState* state, ObinAny sequence);
-ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other);
+OAny obin_sequence_iterator_new(ObinState* state, OAny sequence);
+OAny obin_collection_compare(ObinState * state, OAny self, OAny other);
 #endif

@@ -1,7 +1,7 @@
 #include <obin.h>
 /*EACH Embedded type must have its own trait  delete this method afterwords*/
 
-ObinAny obin_tostring(ObinState* state, ObinAny any) {
+OAny obin_tostring(ObinState* state, OAny any) {
 	ObinNativeTraits* traits;
 	obin_func_1 method;
 

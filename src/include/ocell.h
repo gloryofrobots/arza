@@ -6,8 +6,8 @@
 
 #define OBIN_CELL_HEADER \
 	ObinBehavior* behavior; \
-	ObinAny origin; \
-	ObinAny traits; \
+	OAny origin; \
+	OAny traits; \
 	ObinCellMemoryInfo memory;
 
 struct _ObinCell {

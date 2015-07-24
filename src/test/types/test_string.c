@@ -1,6 +1,6 @@
 #define STR_ARR_SIZE 1024 * 4
 
-static void print_str(ObinState* state, ObinAny str) {
+static void print_str(ObinState* state, OAny str) {
 	static int c = 0;
 	printf("\n%d. %s\n", ++c, obin_string_cstr(state, str));
 }
@@ -17,8 +17,8 @@ static void Test_Char(void) {
 static void Test_String(void) {
 	ObinState * state = obin_init(1024 * 1024 * 90);
 	obin_char str_arr[STR_ARR_SIZE] = {'\0'};
-	ObinAny str1, str2, str3, str4;
-	ObinAny val1, val2;
+	OAny str1, str2, str3, str4;
+	OAny val1, val2;
 	obin_integer i;
 	obin_string cstr1;
 	/*******************************/
@@ -250,7 +250,7 @@ static void Test_String(void) {
 
 	while(OTRUE) {
 		val2 = obin_next(state, val1);
-		if(obin_is_stop_iteration(val2)) {
+		if(OBIN_IS_STOP_ITERATION(val2)) {
 			break;
 		}
 

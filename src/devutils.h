@@ -3,7 +3,7 @@
 
 #include <obuiltin.h>
 
-ObinAny __t () {
+OAny __t () {
 	return ObinTrue;
 }
 /* buffer must have length >= sizeof(int) + 1

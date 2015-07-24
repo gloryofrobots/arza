@@ -4,13 +4,13 @@
 
 obin_bool obin_module_table_init(ObinState* state);
 
-ObinAny obin_table_new(ObinState* state, ObinAny size);
+OAny obin_table_new(ObinState* state, OAny size);
 
-ObinAny obin_table_clear(ObinState* state, ObinAny self);
-ObinAny obin_table_update(ObinState* state, ObinAny self, ObinAny other);
+OAny obin_table_clear(ObinState* state, OAny self);
+OAny obin_table_update(ObinState* state, OAny self, OAny other);
 
 /*return iterators*/
-ObinAny obin_table_items(ObinState* state, ObinAny self);
-ObinAny obin_table_keys(ObinState* state, ObinAny self);
-ObinAny obin_table_values(ObinState* state, ObinAny self);
+OAny obin_table_items(ObinState* state, OAny self);
+OAny obin_table_keys(ObinState* state, OAny self);
+OAny obin_table_values(ObinState* state, OAny self);
 #endif

@@ -10,7 +10,7 @@
 typedef struct {
 	OBIN_CELL_HEADER;
 	obin_mem_t size;
-	ObinAny* data;
+	OAny* data;
 } ObinTuple;
 
 #define _tuple(any) ((ObinTuple*) (any.data.cell))
@@ -28,10 +28,10 @@ ObinTuple* _obin_tuple_new(ObinState* state,  obin_mem_t size) {
 		return NULL;
 	}
 
-	if(!obin_is_fit_to_memsize(size)) {
+	if(!OBIN_IS_FIT_TO_MEMSIZE(size)) {
 		return NULL;
 	}
-	capacity = sizeof(ObinTuple) + sizeof(ObinAny) * size;
+	capacity = sizeof(ObinTuple) + sizeof(OAny) * size;
 	self = (ObinTuple*) obin_allocate_cell(state, capacity);
 	self->size = size;
 	self->data = (obin_pointer)self + sizeof(ObinTuple);
@@ -39,7 +39,7 @@ ObinTuple* _obin_tuple_new(ObinState* state,  obin_mem_t size) {
 	return self;
 }
 
-ObinAny obin_tuple_new(ObinState* state,  ObinAny size, ObinAny* items) {
+OAny obin_tuple_new(ObinState* state,  OAny size, OAny* items) {
 	ObinTuple * self;
 
 	if(!OAny_isInt(size)){
@@ -47,7 +47,7 @@ ObinAny obin_tuple_new(ObinState* state,  ObinAny size, ObinAny* items) {
 				"Tuple.new integer size expected", size);
 	}
 
-	if(!obin_integer_is_fit_to_memsize(size)) {
+	if(!OInt_isFitToMemsize(size)) {
 		return obin_raise(state, obin_errors(state)->TypeError,
 				"Tuple.new invalid size", size);
 	}
@@ -61,13 +61,13 @@ ObinAny obin_tuple_new(ObinState* state,  ObinAny size, ObinAny* items) {
 	return obin_cell_new(EOBIN_TYPE_TUPLE, (OCell*) self, &__BEHAVIOR__, obin_cells(state)->__Tuple__);
 }
 
-ObinAny obin_tuple_pack(ObinState* state, obin_mem_t size, ...){
+OAny obin_tuple_pack(ObinState* state, obin_mem_t size, ...){
 	ObinTuple * self;
 	obin_mem_t i;
-	ObinAny item;
+	OAny item;
     va_list vargs;
 
-	if(!obin_is_fit_to_memsize(size)) {
+	if(!OBIN_IS_FIT_TO_MEMSIZE(size)) {
 		return obin_raise(state, obin_errors(state)->TypeError,
 				"Tuple.pack invalid size", obin_integer_new(size));
 	}
@@ -76,7 +76,7 @@ ObinAny obin_tuple_pack(ObinState* state, obin_mem_t size, ...){
 
     va_start(vargs, size);
     for (i = 0; i < size; i++) {
-    	item = va_arg(vargs, ObinAny);
+    	item = va_arg(vargs, OAny);
     	self->data[i] = item;
     }
     va_end(vargs);
@@ -85,14 +85,14 @@ ObinAny obin_tuple_pack(ObinState* state, obin_mem_t size, ...){
 }
 
 /****************************************  TYPETRAIT  *************************************************/
-static ObinAny __tobool__(ObinState* state, ObinAny self) {
+static OAny __tobool__(ObinState* state, OAny self) {
     _CHECK_SELF_TYPE(state, self, __tobool__);
 
 	return obin_bool_new(_size(self) > 0);
 }
 
-static ObinAny __tostring__(ObinState* state, ObinAny self) {
-    ObinAny result;
+static OAny __tostring__(ObinState* state, OAny self) {
+    OAny result;
 
     _CHECK_SELF_TYPE(state, self, __tostring__);
 
@@ -103,8 +103,8 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	return result;
 }
 
-static ObinAny __clone__(ObinState* state, ObinAny self) {
-	ObinAny result;
+static OAny __clone__(ObinState* state, OAny self) {
+	OAny result;
 
     _CHECK_SELF_TYPE(state, self, __clone__);
 
@@ -112,7 +112,7 @@ static ObinAny __clone__(ObinState* state, ObinAny self) {
 	return result;
 }
 
-static void __mark__(ObinState* state, ObinAny self, obin_func_1 mark) {
+static void __mark__(ObinState* state, OAny self, obin_func_1 mark) {
 	obin_index i;
 
 	for(i=0; i<_size(self); ++i) {
@@ -120,20 +120,20 @@ static void __mark__(ObinState* state, ObinAny self, obin_func_1 mark) {
 	}
 }
 
-static ObinAny __iterator__(ObinState* state, ObinAny self) {
+static OAny __iterator__(ObinState* state, OAny self) {
     _CHECK_SELF_TYPE(state, self, __iterator__);
 
 	return obin_sequence_iterator_new(state, self);
 }
 
-static ObinAny __length__(ObinState* state, ObinAny self) {
+static OAny __length__(ObinState* state, OAny self) {
     _CHECK_SELF_TYPE(state, self, __length__);
 
 	return obin_integer_new(_size(self));
 }
 
 static obin_integer
-_get_index(ObinState* state, ObinAny self, ObinAny pos){
+_get_index(ObinState* state, OAny self, OAny pos){
 	obin_integer index;
 
 	if(!OAny_isInt(pos)){
@@ -154,8 +154,8 @@ _get_index(ObinState* state, ObinAny self, ObinAny pos){
 	return index;
 }
 
-static ObinAny
-__getitem__(ObinState* state, ObinAny self, ObinAny pos){
+static OAny
+__getitem__(ObinState* state, OAny self, OAny pos){
 	obin_integer index;
 
     _CHECK_SELF_TYPE(state, self, __getitem__);
@@ -170,8 +170,8 @@ __getitem__(ObinState* state, ObinAny self, ObinAny pos){
 	return _get(self, index);
 }
 
-static ObinAny
-__hasitem__(ObinState* state, ObinAny self, ObinAny item){
+static OAny
+__hasitem__(ObinState* state, OAny self, OAny item){
     _CHECK_SELF_TYPE(state, self, __hasitem__);
 	return obin_bool_new(_get_index(state, self, item) != OBIN_INVALID_INDEX);
 }
@@ -186,11 +186,11 @@ __hasitem__(ObinState* state, ObinAny self, ObinAny item){
      1330111, 1412633, 1165069, 1247599, 1495177, 1577699
 */
 
-static ObinAny
-__hash__(ObinState* state, ObinAny self){
+static OAny
+__hash__(ObinState* state, OAny self){
     obin_integer mult = 1000003L, x = 0x345678L, y;
     obin_mem_t length = _size(self);
-    ObinAny * items = _data(self);
+    OAny * items = _data(self);
 
     while (--length >= 0) {
     	y = OAny_toInt(obin_hash(state, *items));

@@ -6,16 +6,16 @@
 
 obin_bool obin_module_array_init(ObinState* state);
 
-ObinAny obin_array_new(ObinState* state, ObinAny size);
-ObinAny obin_array_push(ObinState* state, ObinAny self, ObinAny value);
-ObinAny obin_array_indexof(ObinState* state, ObinAny self, ObinAny item);
-ObinAny obin_array_lastindexof(ObinState* state, ObinAny self, ObinAny item);
-ObinAny obin_array_pop(ObinState* state, ObinAny self);
-ObinAny obin_array_clear(ObinState* state, ObinAny self);
+OAny obin_array_new(ObinState* state, OAny size);
+OAny obin_array_push(ObinState* state, OAny self, OAny value);
+OAny obin_array_indexof(ObinState* state, OAny self, OAny item);
+OAny obin_array_lastindexof(ObinState* state, OAny self, OAny item);
+OAny obin_array_pop(ObinState* state, OAny self);
+OAny obin_array_clear(ObinState* state, OAny self);
 /*return true if removes something*/
-ObinAny obin_array_remove(ObinState* state, ObinAny self, ObinAny item);
-ObinAny obin_array_insert(ObinState* state, ObinAny self, ObinAny item, ObinAny position);
-ObinAny obin_array_insert_collection(ObinState* state, ObinAny self, ObinAny collection, ObinAny position);
+OAny obin_array_remove(ObinState* state, OAny self, OAny item);
+OAny obin_array_insert(ObinState* state, OAny self, OAny item, OAny position);
+OAny obin_array_insert_collection(ObinState* state, OAny self, OAny collection, OAny position);
 /*
  * implemented __add__
  * */

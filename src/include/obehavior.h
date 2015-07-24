@@ -3,11 +3,11 @@
 
 typedef void (*obin_destructor)(ObinState* state, OCell* self);
 
-typedef ObinAny (*obin_func_1)(ObinState* state, ObinAny arg);
-typedef ObinAny (*obin_func_2)(ObinState* state, ObinAny arg1, ObinAny arg2);
-typedef ObinAny (*obin_func_3)(ObinState* state, ObinAny arg1, ObinAny arg2, ObinAny arg3);
-typedef ObinAny (*obin_func_4)(ObinState* state, ObinAny arg1, ObinAny arg2, ObinAny arg3, ObinAny arg4);
-typedef void (*obin_each)(ObinState* state, ObinAny arg, obin_func_1 func);
+typedef OAny (*obin_func_1)(ObinState* state, OAny arg);
+typedef OAny (*obin_func_2)(ObinState* state, OAny arg1, OAny arg2);
+typedef OAny (*obin_func_3)(ObinState* state, OAny arg1, OAny arg2, OAny arg3);
+typedef OAny (*obin_func_4)(ObinState* state, OAny arg1, OAny arg2, OAny arg3, OAny arg4);
+typedef void (*obin_each)(ObinState* state, OAny arg, obin_func_1 func);
 
 /*BELOW IS AUTOGEN CODE FROM behavior.py */
 

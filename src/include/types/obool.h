@@ -3,8 +3,8 @@
 
 #include "obuiltin.h"
 
-ObinAny obin_bool_new(obin_bool condition);
-ObinAny obin_bool_from_any(ObinAny condition);
+OAny obin_bool_new(obin_bool condition);
+OAny obin_bool_from_any(OAny condition);
 
 obin_bool obin_module_bool_init(ObinState* state);
 

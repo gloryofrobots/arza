@@ -3,7 +3,7 @@ OBIN_BEHAVIOR_DECLARE(__BEHAVIOR__);
 
 typedef struct {
 	OBIN_CELL_HEADER;
-	ObinAny path;
+	OAny path;
 	obin_file file;
 	obin_bool is_disposable;
 } ObinFStream;
@@ -13,7 +13,7 @@ typedef struct {
 #define _fstream_path(any) (_fstream(any)->path)
 #define _fstream_is_disposable(any) (_fstream(any)->is_disposable)
 
-ObinAny obin_fstream_from_file(ObinState* state, obin_file file, obin_bool is_disposable){
+OAny obin_fstream_from_file(ObinState* state, obin_file file, obin_bool is_disposable){
 
 	ObinFStream* self;
 
@@ -26,8 +26,8 @@ ObinAny obin_fstream_from_file(ObinState* state, obin_file file, obin_bool is_di
 	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*)self, &__BEHAVIOR__, obin_cells(state)->__Cell__);
 }
 
-ObinAny obin_fstream_from_path(ObinState* state, ObinAny path, obin_string mode){
-	ObinAny result;
+OAny obin_fstream_from_path(ObinState* state, OAny path, obin_string mode){
+	OAny result;
 	obin_file file = fopen(obin_string_cstr(state, path), mode);
 
 	if(file == NULL) {
@@ -40,7 +40,7 @@ ObinAny obin_fstream_from_path(ObinState* state, ObinAny path, obin_string mode)
 	return ObinNil;
 }
 
-ObinAny obin_fstream_write_va(ObinState* state, ObinAny self, obin_string format, ...){
+OAny obin_fstream_write_va(ObinState* state, OAny self, obin_string format, ...){
 		int result;
 
 	    va_list myargs;
@@ -51,11 +51,11 @@ ObinAny obin_fstream_write_va(ObinState* state, ObinAny self, obin_string format
 	    return obin_integer_new(result);
 }
 
-ObinAny obin_fstream_write(ObinState* state, ObinAny self, ObinAny any){
+OAny obin_fstream_write(ObinState* state, OAny self, OAny any){
 	return ObinNil;
 }
 
-ObinAny obin_fstream_close(ObinState* state, ObinAny self){
+OAny obin_fstream_close(ObinState* state, OAny self){
 	if(!_fstream_is_disposable(self)) {
 		obin_raise(state, obin_errors(state)->IOError,
 				"Resource is not disposable", ObinNil);
@@ -67,7 +67,7 @@ ObinAny obin_fstream_close(ObinState* state, ObinAny self){
 	return ObinNothing;
 }
 
-ObinAny obin_fstream_is_open(ObinState* state, ObinAny self) {
+OAny obin_fstream_is_open(ObinState* state, OAny self) {
 	if(_fstream_file(self) == NULL) {
 		return ObinFalse;
 	}
@@ -75,7 +75,7 @@ ObinAny obin_fstream_is_open(ObinState* state, ObinAny self) {
 	return ObinTrue;
 }
 
-static ObinAny __tostring__(ObinState* state, ObinAny self) {
+static OAny __tostring__(ObinState* state, OAny self) {
 	return obin_string_new(state, "<File: "OBIN_POINTER_FORMATTER" >");
 }
 

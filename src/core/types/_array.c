@@ -4,7 +4,7 @@
 OBIN_DECLARE_CELL(ObinArray,
 	obin_mem_t size;
 	obin_mem_t capacity;
-	ObinAny* data;
+	OAny* data;
 );
 
 static ObinBehavior __BEHAVIOR__ = {0};
@@ -24,7 +24,7 @@ static ObinBehavior __BEHAVIOR__ = {0};
 
 #define _array_last_index(any) (_array_size(any) - 1)
 static obin_bool
-_array_grow(ObinState* state, ObinAny self, obin_index count_elements) {
+_array_grow(ObinState* state, OAny self, obin_index count_elements) {
 	/*TODO IT IS DANGEROUS OPERATION NEED SAFE CHECKS*/
 	obin_mem_t new_capacity;
     if (_array_capacity(self) > OBIN_MAX_CAPACITY - (OBIN_DEFAULT_ARRAY_SIZE + count_elements)) {
@@ -43,13 +43,13 @@ _array_grow(ObinState* state, ObinAny self, obin_index count_elements) {
 	return OTRUE;
 }
 
-ObinAny
-obin_array_new(ObinState* state, ObinAny size) {
+OAny
+obin_array_new(ObinState* state, OAny size) {
 	ObinArray * self; obin_mem_t capacity;
 	if(OAny_isNil(size)){
 		size = obin_integer_new(OBIN_DEFAULT_ARRAY_SIZE);
 	}
-	if (!obin_integer_is_fit_to_memsize(size)) {
+	if (!OInt_isFitToMemsize(size)) {
 			obin_raise(state, obin_errors(state)->MemoryError,
 				"obin_array_new " __TypeName__ "size not fit to memory", size);
 	}
@@ -57,14 +57,14 @@ obin_array_new(ObinState* state, ObinAny size) {
 	self = obin_new(state, ObinArray);
 
 	capacity = (obin_mem_t) OAny_toInt(size);
-	self->data = obin_malloc_array(state, ObinAny, capacity);
+	self->data = obin_malloc_array(state, OAny, capacity);
 
 	self->capacity = capacity;
 	self->size = 0;
 	return obin_cell_new(EOBIN_TYPE_ARRAY, (OCell*)self, &__BEHAVIOR__, obin_cells(state)->__Array__);
 }
 
-static obin_mem_t _array_inflate(ObinState* state, ObinAny self, obin_index start, obin_index end) {
+static obin_mem_t _array_inflate(ObinState* state, OAny self, obin_index start, obin_index end) {
 	obin_mem_t new_size, old_size;
 	obin_mem_t length;
 
@@ -80,12 +80,12 @@ static obin_mem_t _array_inflate(ObinState* state, ObinAny self, obin_index star
 		}
 	}
 
-	obin_memmove(_array_data(self) + length, _array_data(self), old_size * sizeof(ObinAny));
+	obin_memmove(_array_data(self) + length, _array_data(self), old_size * sizeof(OAny));
 	return new_size;
 }
 
-ObinAny obin_array_insert_collection(ObinState* state, ObinAny self, ObinAny collection, ObinAny position) {
-	ObinAny item;
+OAny obin_array_insert_collection(ObinState* state, OAny self, OAny collection, OAny position) {
+	OAny item;
 	obin_index start, end, new_size, collection_size, i, j;
 
 	_CHECK_SELF_TYPE(state, self, obin_array_insert_collection);
@@ -117,7 +117,7 @@ ObinAny obin_array_insert_collection(ObinState* state, ObinAny self, ObinAny col
 	return obin_integer_new(new_size);
 }
 
-ObinAny obin_array_insert(ObinState* state, ObinAny self, ObinAny item, ObinAny position) {
+OAny obin_array_insert(ObinState* state, OAny self, OAny item, OAny position) {
 	obin_mem_t new_size;
 	obin_mem_t insert_index;
 
@@ -159,8 +159,8 @@ Array.prototype.slice()
 MAY BE INTERESTING THING
 Array.prototype.toSource()
 */
-ObinAny
-obin_array_push(ObinState* state, ObinAny self, ObinAny value) {
+OAny
+obin_array_push(ObinState* state, OAny self, OAny value) {
 	obin_mem_t new_size;
 	_CHECK_SELF_TYPE(state, self, obin_array_push);
 
@@ -180,7 +180,7 @@ obin_array_push(ObinState* state, ObinAny self, ObinAny value) {
 	return obin_integer_new(new_size);
 }
 
-ObinAny obin_array_lastindexof(ObinState* state, ObinAny self, ObinAny item){
+OAny obin_array_lastindexof(ObinState* state, OAny self, OAny item){
 	obin_mem_t i;
 
 	_CHECK_SELF_TYPE(state, self, lastindexof);
@@ -194,7 +194,7 @@ ObinAny obin_array_lastindexof(ObinState* state, ObinAny self, ObinAny item){
 	return obin_integers(state)->NotFound;
 }
 
-ObinAny obin_array_indexof(ObinState* state, ObinAny self, ObinAny item) {
+OAny obin_array_indexof(ObinState* state, OAny self, OAny item) {
 	obin_mem_t i;
 
 	_CHECK_SELF_TYPE(state, self, obin_array_indexof);
@@ -208,8 +208,8 @@ ObinAny obin_array_indexof(ObinState* state, ObinAny self, ObinAny item) {
 	return obin_integers(state)->NotFound;
 }
 
-ObinAny obin_array_pop(ObinState* state, ObinAny self) {
-    ObinAny item;
+OAny obin_array_pop(ObinState* state, OAny self) {
+    OAny item;
 
 	_CHECK_SELF_TYPE(state, self, obin_array_pop);
 
@@ -224,13 +224,13 @@ ObinAny obin_array_pop(ObinState* state, ObinAny self) {
 	return item;
 }
 
-ObinAny obin_array_clear(ObinState* state, ObinAny self) {
+OAny obin_array_clear(ObinState* state, OAny self) {
 	_CHECK_SELF_TYPE(state, self, obin_array_clear);
 	_array_size(self) = 0;
 	return ObinNothing;
 }
 
-ObinAny obin_array_remove(ObinState* state, ObinAny self, ObinAny item) {
+OAny obin_array_remove(ObinState* state, OAny self, OAny item) {
 	obin_integer i;
 	obin_bool find;
 	find = OFALSE;
@@ -254,13 +254,13 @@ ObinAny obin_array_remove(ObinState* state, ObinAny self, ObinAny item) {
 
 /* PRIVATE */
 
-static ObinAny __tobool__(ObinState* state, ObinAny self) {
+static OAny __tobool__(ObinState* state, OAny self) {
 	_CHECK_SELF_TYPE(state, self, __tobool__);
 	return obin_bool_new(_array_size(self)>0);
 }
 
-static ObinAny __tostring__(ObinState* state, ObinAny self) {
-    ObinAny result;
+static OAny __tostring__(ObinState* state, OAny self) {
+    OAny result;
 
 	_CHECK_SELF_TYPE(state, self, __tostring__);
 	result = obin_string_join(state, obin_char_new(','), self);
@@ -276,7 +276,7 @@ static void __destroy__(ObinState* state, OCell* self) {
 	obin_memory_free(state, array->data);
 }
 
-static void __mark__(ObinState* state, ObinAny self, obin_func_1 mark) {
+static void __mark__(ObinState* state, OAny self, obin_func_1 mark) {
 	/*TODO each here*/
 	obin_index i;
 
@@ -285,25 +285,25 @@ static void __mark__(ObinState* state, ObinAny self, obin_func_1 mark) {
 	}
 }
 
-static ObinAny __clone__(ObinState* state, ObinAny self) {
-	ObinAny result;
+static OAny __clone__(ObinState* state, OAny self) {
+	OAny result;
 
 	_CHECK_SELF_TYPE(state, self, __clone__);
 
 	result = obin_array_new(state, obin_integer_new(_array_capacity(self)));
-	obin_memcpy(_array_data(result), _array_data(self), _array_capacity(self) * sizeof(ObinAny));
+	obin_memcpy(_array_data(result), _array_data(self), _array_capacity(self) * sizeof(OAny));
 	_array_size(result) = _array_size(self);
 	return result;
 }
 
-static ObinAny __length__(ObinState* state, ObinAny self) {
+static OAny __length__(ObinState* state, OAny self) {
 	_CHECK_SELF_TYPE(state, self, __length__);
 
 	return obin_integer_new(_array_size(self));
 }
 
 static obin_integer
-_get_index(ObinState* state, ObinAny self, ObinAny pos){
+_get_index(ObinState* state, OAny self, OAny pos){
 	obin_integer index;
 
 	if(!OAny_isInt(pos)){
@@ -324,8 +324,8 @@ _get_index(ObinState* state, ObinAny self, ObinAny pos){
 	return index;
 }
 
-static ObinAny
-__getitem__(ObinState* state, ObinAny self, ObinAny pos){
+static OAny
+__getitem__(ObinState* state, OAny self, OAny pos){
 	obin_integer index;
 
 	index = _get_index(state, self, pos);
@@ -338,8 +338,8 @@ __getitem__(ObinState* state, ObinAny self, ObinAny pos){
 	return _array_item(self, index);
 }
 
-static ObinAny
-__setitem__(ObinState* state, ObinAny self, ObinAny pos, ObinAny value){
+static OAny
+__setitem__(ObinState* state, OAny self, OAny pos, OAny value){
 	obin_integer index;
 
 	index = _get_index(state, self, pos);
@@ -358,13 +358,13 @@ __setitem__(ObinState* state, ObinAny self, ObinAny pos, ObinAny value){
 	return obin_integer_new(index);
 }
 
-static ObinAny
-__hasitem__(ObinState* state, ObinAny self, ObinAny item){
+static OAny
+__hasitem__(ObinState* state, OAny self, OAny item){
 	return obin_bool_new(OAny_toInt(obin_array_indexof(state, self, item)) != OBIN_INVALID_INDEX);
 }
 
-static ObinAny
-__delitem__(ObinState* state, ObinAny self, ObinAny pos){
+static OAny
+__delitem__(ObinState* state, OAny self, OAny pos){
 	obin_integer index, i;
 	obin_mem_t new_size;
 

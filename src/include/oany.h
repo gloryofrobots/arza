@@ -49,7 +49,10 @@ typedef union {
 typedef struct {
 	EOTYPE type;
 	OValue data;
-} ObinAny;
+} OAny;
+
+OAny OAny_new();
+
 /* we mark cells once we initialized them with special type to prevent overwriting types
  *  and values*/
 #ifdef ODEBUG
@@ -60,7 +63,8 @@ typedef struct {
 #define OANY_BEFORE_SET(any)
 #endif
 
-#define oany_type(any) (any.type)
+#define OAny_type(any) (any.type)
+
 
 #define OAny_initCell(any, type, cell) \
 		OANY_BEFORE_SET(any); \
@@ -100,21 +104,21 @@ typedef struct {
 #define OAny_isString(any) (any.type == EOBIN_TYPE_STRING || any.type == EOBIN_TYPE_CHAR)
 #define OAny_isArray(any) (any.type == EOBIN_TYPE_ARRAY)
 #define OAny_isTuple(any) (any.type == EOBIN_TYPE_TUPLE)
-#define obin_any_is_table(any) (any.type == EOBIN_TYPE_TABLE)
-#define obin_any_is_cell(any) OType_isCell(any.type)
+#define OAny_isTable(any) (any.type == EOBIN_TYPE_TABLE)
+#define OAny_isCell(any) OType_isCell(any.type)
 
-#define obin_is_fit_to_memsize(size) (size > 0 && size < OBIN_MAX_CAPACITY)
-#define obin_integer_is_fit_to_memsize(any) (obin_is_fit_to_memsize(OAny_toInt(any)))
+#define OBIN_IS_FIT_TO_MEMSIZE(size) (size > 0 && size < OBIN_MAX_CAPACITY)
+#define OInt_isFitToMemsize(any) (OBIN_IS_FIT_TO_MEMSIZE(OAny_toInt(any)))
 
-#define obin_is_stop_iteration(any) (OAny_isNothing(any))
+#define OBIN_IS_STOP_ITERATION(any) (OAny_isNothing(any))
 
 #define OBIN_ANY_STATIC_INIT(type) {type, {type}}
 #define OBIN_ANY_INTEGER_INIT(value) {EOBIN_TYPE_INTEGER, {value}}
 
-extern ObinAny ObinFalse;
-extern ObinAny ObinTrue;
-extern ObinAny ObinNil;
-extern ObinAny ObinNothing;
+extern OAny ObinFalse;
+extern OAny ObinTrue;
+extern OAny ObinNil;
+extern OAny ObinNothing;
 
 
 #endif /* OANY_H_ */

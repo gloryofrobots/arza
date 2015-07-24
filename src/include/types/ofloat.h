@@ -2,7 +2,7 @@
 #define OFLOAT_H_
 #include "obuiltin.h"
 
-ObinAny obin_float_new(obin_float number);
+OAny obin_float_new(obin_float number);
 obin_bool obin_module_float_init(ObinState* state);
 
 #endif

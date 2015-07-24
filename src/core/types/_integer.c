@@ -1,9 +1,9 @@
 #include <obin.h>
 
-ObinAny obin_integer_new(obin_integer number) {
-	ObinAny result;
+OAny obin_integer_new(obin_integer number) {
+	OAny result;
 
-	result = obin_any_new();
+	result = OAny_new();
 	OAny_initInteger(result, number);
 	return result;
 }

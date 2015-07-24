@@ -5,24 +5,24 @@
 obin_bool obin_module_string_init(ObinState* state);
 
 /* constructors */
-ObinAny obin_string_new(ObinState* state, obin_string data);
-ObinAny obin_char_new(obin_char ch);
+OAny obin_string_new(ObinState* state, obin_string data);
+OAny obin_char_new(obin_char ch);
 
 ObinBehavior* obin_char_behavior();
 
-ObinAny obin_string_from_carray(ObinState* state, obin_string data, obin_mem_t size);
+OAny obin_string_from_carray(ObinState* state, obin_string data, obin_mem_t size);
 
-ObinAny obin_string_capitalize(ObinState* state, ObinAny self);
-ObinAny obin_string_capitalize_words(ObinState* state, ObinAny self);
-ObinAny obin_string_to_lowercase(ObinState* state, ObinAny self);
-ObinAny obin_string_to_uppercase(ObinState* state, ObinAny self);
+OAny obin_string_capitalize(ObinState* state, OAny self);
+OAny obin_string_capitalize_words(ObinState* state, OAny self);
+OAny obin_string_to_lowercase(ObinState* state, OAny self);
+OAny obin_string_to_uppercase(ObinState* state, OAny self);
 
-ObinAny obin_string_is_alphanum(ObinState* state, ObinAny self);
-ObinAny obin_string_is_alpha(ObinState* state, ObinAny self);
-ObinAny obin_string_is_digit(ObinState* state, ObinAny self);
-ObinAny obin_string_is_lower(ObinState* state, ObinAny self);
-ObinAny obin_string_is_upper(ObinState* state, ObinAny self);
-ObinAny obin_string_is_space(ObinState* state, ObinAny self);
+OAny obin_string_is_alphanum(ObinState* state, OAny self);
+OAny obin_string_is_alpha(ObinState* state, OAny self);
+OAny obin_string_is_digit(ObinState* state, OAny self);
+OAny obin_string_is_lower(ObinState* state, OAny self);
+OAny obin_string_is_upper(ObinState* state, OAny self);
+OAny obin_string_is_space(ObinState* state, OAny self);
 
 /*
  Return the lowest index in the string
@@ -30,25 +30,25 @@ ObinAny obin_string_is_space(ObinState* state, ObinAny self);
  within s[start:end]. Optional arguments start and end
  are interpreted as in slice notation. Return -1 on failure.
  */
-ObinAny obin_string_index_of(ObinState* state, ObinAny self, ObinAny other,
-		ObinAny start, ObinAny end);
+OAny obin_string_index_of(ObinState* state, OAny self, OAny other,
+		OAny start, OAny end);
 /*
  Return the highest index in the string
  where substring sub is found, such that sub is contained
  within s[start:end]. Optional arguments start and end
  are interpreted as in slice notation. Return -1 on failure.
  */
-ObinAny obin_string_last_index_of(ObinState* state, ObinAny self, ObinAny other,
-		ObinAny start, ObinAny end);
+OAny obin_string_last_index_of(ObinState* state, OAny self, OAny other,
+		OAny start, OAny end);
 
-ObinAny obin_string_dublicate(ObinState* state, ObinAny self, ObinAny _count);
-ObinAny obin_string_format(ObinState* state, ObinAny format, ...);
-ObinAny obin_string_concat(ObinState* state, ObinAny str1, ObinAny str2);
-ObinAny obin_string_join(ObinState* state, ObinAny self, ObinAny collection);
-ObinAny obin_string_split(ObinState* state, ObinAny self, ObinAny separator);
+OAny obin_string_dublicate(ObinState* state, OAny self, OAny _count);
+OAny obin_string_format(ObinState* state, OAny format, ...);
+OAny obin_string_concat(ObinState* state, OAny str1, OAny str2);
+OAny obin_string_join(ObinState* state, OAny self, OAny collection);
+OAny obin_string_split(ObinState* state, OAny self, OAny separator);
 
-obin_string obin_string_cstr(ObinState* state, ObinAny self);
+obin_string obin_string_cstr(ObinState* state, OAny self);
 
-ObinAny obin_string_pack(ObinState* state, obin_index count, ...);
+OAny obin_string_pack(ObinState* state, obin_index count, ...);
 
 #endif /* OSTRING_H_ */

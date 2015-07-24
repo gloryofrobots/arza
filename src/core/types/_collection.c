@@ -3,14 +3,14 @@
 /*TODO Avoid infinite recursion in _tostring__ and others in recursive vollections */
 
 OBIN_DECLARE_CELL(SequenceIterator,
-	ObinAny source;
+	OAny source;
 	obin_mem_t current;
 	obin_mem_t length;
 );
 
-static ObinAny __si__next__(ObinState* state, ObinAny self) {
+static OAny __si__next__(ObinState* state, OAny self) {
 	SequenceIterator * it;
-	ObinAny result;
+	OAny result;
 
 	it = (SequenceIterator*) OAny_toCell(self);
 	if(it->current >= it->length){
@@ -32,7 +32,7 @@ OBIN_BEHAVIOR_DEFINE(__SEQUENCE_ITERATOR_BEHAVIOR__,
 		OBIN_BEHAVIOR_NUMBER_OPERATIONS_NULL
 );
 
-ObinAny obin_sequence_iterator_new(ObinState* state, ObinAny sequence){
+OAny obin_sequence_iterator_new(ObinState* state, OAny sequence){
 	SequenceIterator * iterator;
 
 	iterator = obin_new(state, SequenceIterator);
@@ -43,19 +43,19 @@ ObinAny obin_sequence_iterator_new(ObinState* state, ObinAny sequence){
 	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__SEQUENCE_ITERATOR_BEHAVIOR__, obin_cells(state)->__Cell__);
 }
 
-ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other){
-	ObinAny self_length;
-	ObinAny other_length;
-	ObinAny self_iterator;
-	ObinAny other_iterator;
-	ObinAny self_item;
-	ObinAny other_item;
-	ObinAny compare_result;
+OAny obin_collection_compare(ObinState * state, OAny self, OAny other){
+	OAny self_length;
+	OAny other_length;
+	OAny self_iterator;
+	OAny other_iterator;
+	OAny self_item;
+	OAny other_item;
+	OAny compare_result;
 
 	self_length = obin_length(state, self);
 
 	/*TODO ADD TYPE CHECK HERE FOR __COLLECTION__ cell*/
-	if(!obin_any_is_cell(other)){
+	if(!OAny_isCell(other)){
 		if(OAny_toInt(self_length) > 0){
 			return obin_integers(state)->Greater;
 		}
@@ -86,7 +86,7 @@ ObinAny obin_collection_compare(ObinState * state, ObinAny self, ObinAny other){
 		self_item = obin_next(state, self_iterator);
 		other_item = obin_next(state, other_iterator);
 
-		if(obin_is_stop_iteration(self_item) || obin_is_stop_iteration(other_item)){
+		if(OBIN_IS_STOP_ITERATION(self_item) || OBIN_IS_STOP_ITERATION(other_item)){
 			break;
 		}
 

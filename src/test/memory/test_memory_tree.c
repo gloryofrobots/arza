@@ -10,8 +10,8 @@ OBIN_BEHAVIOR_DECLARE(__TMTCELL_BEHAVIOR__);
 
 OBIN_DECLARE_CELL(TMTCell,
 	int id;
-	ObinAny left;
-	ObinAny right;
+	OAny left;
+	OAny right;
 	obin_mem_t size;
 	obin_mem_t capacity;
 	obin_char* data;
@@ -43,7 +43,7 @@ void _tmtcell_print(TMTCell* cell, obin_string format) {
 		_tmtcell_print(cell, message " cell: id=%d  data=%s \n")
 
 
-ObinAny tmtcell_new(ObinState* state, obin_string data, obin_mem_t capacity) {
+OAny tmtcell_new(ObinState* state, obin_string data, obin_mem_t capacity) {
 	TMTCell* cell;
 	obin_mem_t size, body_size, data_size;
 
@@ -70,7 +70,7 @@ ObinAny tmtcell_new(ObinState* state, obin_string data, obin_mem_t capacity) {
 }
 
 
-static void __tmtcell_mark__(ObinState* state, ObinAny self, obin_func_1 callback ) {
+static void __tmtcell_mark__(ObinState* state, OAny self, obin_func_1 callback ) {
 	TMTCell* cell = (TMTCell*) OAny_toCell(self);
 	tmtcell_print(cell, "__tmtcell_mark__");
 	tm_counter_mark(tmt_counter);
@@ -125,7 +125,7 @@ _TMTTestStat tmt_stat_new(obin_bool live, obin_bool killed, obin_bool allocated)
 	}
 	return stat;
 }
-ObinAny tmt_stat_add_cell(_TMTTestStat* requests, ObinAny node, obin_bool is_alive) {
+OAny tmt_stat_add_cell(_TMTTestStat* requests, OAny node, obin_bool is_alive) {
 	if(is_alive) {
         requests->live_count++;
         requests->live_space += obin_any_cell_size(node);
@@ -139,14 +139,14 @@ ObinAny tmt_stat_add_cell(_TMTTestStat* requests, ObinAny node, obin_bool is_ali
 	return node;
 }
 
-ObinAny tmt_stat_create_cell(_TMTTestStat* requests, obin_bool is_alive, ObinState* state,  obin_string data, obin_mem_t capacity) {
-	ObinAny node = tmtcell_new(state, data, capacity);
+OAny tmt_stat_create_cell(_TMTTestStat* requests, obin_bool is_alive, ObinState* state,  obin_string data, obin_mem_t capacity) {
+	OAny node = tmtcell_new(state, data, capacity);
 	return tmt_stat_add_cell(requests, node, is_alive);
 }
 
 
 _TMTTestStat _test1(ObinState* state) {
-	ObinAny root;
+	OAny root;
 	_TMTTestStat requests = tmt_stat_new(OTRUE, OTRUE, OTRUE);
 
     root = tmt_stat_create_cell(&requests, OTRUE, state, "RootNode", 192);
@@ -160,7 +160,7 @@ _TMTTestStat _test1(ObinState* state) {
 	return requests;
 }
 _TMTTestStat _test2(ObinState* state) {
-	ObinAny leftnode, rightnode, node, node2;
+	OAny leftnode, rightnode, node, node2;
 	_TMTTestStat requests = tmt_stat_new(OTRUE, OTRUE, OTRUE);
 
 	node = tmt_stat_create_cell(&requests, OTRUE, state, "R", 10);
