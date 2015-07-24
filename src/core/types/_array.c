@@ -15,7 +15,7 @@ static ObinBehavior __BEHAVIOR__ = {0};
 				__TypeName__ #method "call from other type", self); \
 	} \
 
-#define _array(any) ((ObinArray*) obin_any_cell(any))
+#define _array(any) ((ObinArray*) OAny_toCell(any))
 #define _array_size(any) ((_array(any))->size)
 #define _array_capacity(any) ((_array(any))->capacity)
 #define _array_data(any) ((_array(any))->data)

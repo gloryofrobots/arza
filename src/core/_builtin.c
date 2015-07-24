@@ -1,6 +1,6 @@
 #include <obin.h>
 
-#define _cell_behavior(any) (obin_any_cell(any)->behavior)
+#define _cell_behavior(any) (OAny_toCell(any)->behavior)
 
 #define _behavior_method(traits, method) (traits->method)
 #define _behavior(state, any) (obin_any_is_cell(any) ? _cell_behavior(any) : _embedded_type_behavior(state, any))
@@ -48,7 +48,7 @@ ObinAny obin_equal(ObinState * state, ObinAny any, ObinAny other) {
 ObinAny obin_is(ObinState * state, ObinAny any, ObinAny other) {
 	if (obin_any_is_cell(any)) {
 		if (obin_any_is_cell(other)) {
-			return obin_bool_new(obin_any_cell(any) == obin_any_cell(other));
+			return obin_bool_new(OAny_toCell(any) == OAny_toCell(other));
 		}
 
 		return ObinFalse;

@@ -60,7 +60,7 @@ typedef enum _EOBIN_CELL_MARK{
 ObinAny obin_cell_to_any(EOTYPE type, OCell* cell) {
 	ObinAny result = obin_any_new();
 	obin_assert(obin_type_is_cell(type));
-	obin_any_init_cell(result, type, cell);
+	OAny_initCell(result, type, cell);
 	return result;
 }
 
@@ -71,7 +71,7 @@ ObinAny obin_cell_new(EOTYPE type, OCell* cell, ObinBehavior* behavior, ObinAny 
 	cell->behavior = behavior;
 	_unmark(cell);
 	result = obin_any_new();
-	obin_any_init_cell(result, type, cell);
+	OAny_initCell(result, type, cell);
 	return result;
 }
 
@@ -204,7 +204,7 @@ void obin_state_destroy(ObinState* state) {
  *  function for all its references.
  */
 static ObinAny gc_mark_object(ObinState* state, ObinAny object) {
-	OCell* cell = obin_any_cell(object);
+	OCell* cell = OAny_toCell(object);
 	CATCH_STATE_MEMORY(state);
 	if(!cell) {
 		return ObinNil;

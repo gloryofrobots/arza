@@ -60,24 +60,24 @@ typedef struct {
 #define OANY_BEFORE_SET(any)
 #endif
 
-#define obin_any_type(any) (any.type)
+#define oany_type(any) (any.type)
 
-#define obin_any_init_cell(any, type, cell) \
+#define OAny_initCell(any, type, cell) \
 		OANY_BEFORE_SET(any); \
 		any.type=type; \
 		any.data.cell=cell
 
-#define obin_any_init_integer(any, num) \
+#define OAny_initInteger(any, num) \
 		OANY_BEFORE_SET(any); \
 		any.type=EOBIN_TYPE_INTEGER; \
 		any.data.integer_value=num
 
-#define obin_any_init_float(any, num) \
+#define OAny_initFloat(any, num) \
 		OANY_BEFORE_SET(any); \
 		any.type=EOBIN_TYPE_FLOAT; \
 		any.data.float_value=num
 
-#define obin_any_cell(any) (any.data.cell)
+#define OAny_toCell(any) (any.data.cell)
 #define obin_any_integer(any) (any.data.integer_value)
 #define obin_any_char(any) (any.data.char_value.char_data)
 #define obin_any_mem_t(any) (obin_mem_t)(any.data.integer_value)

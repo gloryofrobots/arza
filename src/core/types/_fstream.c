@@ -8,7 +8,7 @@ typedef struct {
 	obin_bool is_disposable;
 } ObinFStream;
 
-#define _fstream(any) ((ObinFStream*) obin_any_cell(any))
+#define _fstream(any) ((ObinFStream*) OAny_toCell(any))
 #define _fstream_file(any) (_fstream(any)->file)
 #define _fstream_path(any) (_fstream(any)->path)
 #define _fstream_is_disposable(any) (_fstream(any)->is_disposable)

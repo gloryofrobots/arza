@@ -12,7 +12,7 @@ static ObinAny __si__next__(ObinState* state, ObinAny self) {
 	SequenceIterator * it;
 	ObinAny result;
 
-	it = (SequenceIterator*) obin_any_cell(self);
+	it = (SequenceIterator*) OAny_toCell(self);
 	if(it->current >= it->length){
 		return ObinNothing;
 	}

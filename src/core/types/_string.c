@@ -28,7 +28,7 @@ typedef struct {
 	obin_integer hash;
 } ObinString;
 
-#define _string(any) ((ObinString*) obin_any_cell(any))
+#define _string(any) ((ObinString*) OAny_toCell(any))
 
 static obin_char* _string_data(ObinAny any) {
 	switch(any.type) {

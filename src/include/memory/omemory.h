@@ -36,7 +36,7 @@ struct _ObinMemory {
 
 
 
-#define obin_any_cell_size(any) (obin_any_cell(any)->memory.size)
+#define obin_any_cell_size(any) (OAny_toCell(any)->memory.size)
 
 ObinAny obin_cell_new(EOTYPE type, OCell* cell, ObinBehavior* behavior, ObinAny root);
 

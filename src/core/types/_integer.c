@@ -4,7 +4,7 @@ ObinAny obin_integer_new(obin_integer number) {
 	ObinAny result;
 
 	result = obin_any_new();
-	obin_any_init_integer(result, number);
+	OAny_initInteger(result, number);
 	return result;
 }
 

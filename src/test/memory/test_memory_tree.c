@@ -17,7 +17,7 @@ OBIN_DECLARE_CELL(TMTCell,
 	obin_char* data;
 );
 
-#define tmtcell(any)   ((TMTCell*) obin_any_cell(any))
+#define tmtcell(any)   ((TMTCell*) OAny_toCell(any))
 #define tmtcell_left(any)   tmtcell(any)->left
 #define tmtcell_right(any)  tmtcell(any)->right
 #define tmtcell_id(any)   tmtcell(any)->id
@@ -71,7 +71,7 @@ ObinAny tmtcell_new(ObinState* state, obin_string data, obin_mem_t capacity) {
 
 
 static void __tmtcell_mark__(ObinState* state, ObinAny self, obin_func_1 callback ) {
-	TMTCell* cell = (TMTCell*) obin_any_cell(self);
+	TMTCell* cell = (TMTCell*) OAny_toCell(self);
 	tmtcell_print(cell, "__tmtcell_mark__");
 	tm_counter_mark(tmt_counter);
 

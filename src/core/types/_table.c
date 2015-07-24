@@ -24,7 +24,7 @@ typedef struct {
 	obin_integer iter_count;
 } ObinTable;
 
-#define _table(any) ((ObinTable*) obin_any_cell(any))
+#define _table(any) ((ObinTable*) OAny_toCell(any))
 #define _size(any) ((_table(any))->size)
 #define _capacity(any) ((_table(any))->capacity)
 #define _body(any) ((_table(any))->body)
@@ -203,7 +203,7 @@ static ObinAny __iterator__next__(ObinState* state, ObinAny self) {
 	TableIterator * it;
 	ObinAny result = ObinNothing;
 
-	it = (TableIterator*) obin_any_cell(self);
+	it = (TableIterator*) OAny_toCell(self);
 
 	while(it->index < _capacity(it->source)) {
 		if(_body(self)[it->index].isset) {
