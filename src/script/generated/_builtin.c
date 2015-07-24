@@ -3,7 +3,7 @@
 
 ObinAny obin_tostring(ObinState* state, ObinAny self) {
     obin_func_1 method;
-    method = _method(state, any, __tostring__);
+    method = _method(state, self, __tostring__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -15,7 +15,7 @@ ObinAny obin_tostring(ObinState* state, ObinAny self) {
 
 ObinAny obin_tobool(ObinState* state, ObinAny self) {
     obin_func_1 method;
-    method = _method(state, any, __tobool__);
+    method = _method(state, self, __tobool__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -27,7 +27,7 @@ ObinAny obin_tobool(ObinState* state, ObinAny self) {
 
 ObinAny obin_clone(ObinState* state, ObinAny self) {
     obin_func_1 method;
-    method = _method(state, any, __clone__);
+    method = _method(state, self, __clone__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -39,7 +39,7 @@ ObinAny obin_clone(ObinState* state, ObinAny self) {
 
 ObinAny obin_compare(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __compare__);
+    method = _method(state, self, __compare__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -51,7 +51,7 @@ ObinAny obin_compare(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_hash(ObinState* state, ObinAny self) {
     obin_func_1 method;
-    method = _method(state, any, __hash__);
+    method = _method(state, self, __hash__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -65,7 +65,7 @@ ObinAny obin_hash(ObinState* state, ObinAny self) {
 
 ObinAny obin_iterator(ObinState* state, ObinAny self) {
     obin_func_1 method;
-    method = _method(state, any, __iterator__);
+    method = _method(state, self, __iterator__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -77,7 +77,7 @@ ObinAny obin_iterator(ObinState* state, ObinAny self) {
 
 ObinAny obin_length(ObinState* state, ObinAny self) {
     obin_func_1 method;
-    method = _method(state, any, __length__);
+    method = _method(state, self, __length__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -89,7 +89,7 @@ ObinAny obin_length(ObinState* state, ObinAny self) {
 
 ObinAny obin_getitem(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __getitem__);
+    method = _method(state, self, __getitem__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -101,7 +101,7 @@ ObinAny obin_getitem(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_hasitem(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __hasitem__);
+    method = _method(state, self, __hasitem__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -113,7 +113,7 @@ ObinAny obin_hasitem(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_delitem(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __delitem__);
+    method = _method(state, self, __delitem__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -125,7 +125,7 @@ ObinAny obin_delitem(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_setitem(ObinState* state, ObinAny self, ObinAny arg1, ObinAny arg2) {
     obin_func_3 method;
-    method = _method(state, any, __setitem__);
+    method = _method(state, self, __setitem__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -139,7 +139,7 @@ ObinAny obin_setitem(ObinState* state, ObinAny self, ObinAny arg1, ObinAny arg2)
 
 ObinAny obin_next(ObinState* state, ObinAny self) {
     obin_func_1 method;
-    method = _method(state, any, __next__);
+    method = _method(state, self, __next__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -153,7 +153,7 @@ ObinAny obin_next(ObinState* state, ObinAny self) {
 
 ObinAny obin_tointeger(ObinState* state, ObinAny self) {
     obin_func_1 method;
-    method = _method(state, any, __tointeger__);
+    method = _method(state, self, __tointeger__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -165,7 +165,7 @@ ObinAny obin_tointeger(ObinState* state, ObinAny self) {
 
 ObinAny obin_tofloat(ObinState* state, ObinAny self) {
     obin_func_1 method;
-    method = _method(state, any, __tofloat__);
+    method = _method(state, self, __tofloat__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -177,7 +177,7 @@ ObinAny obin_tofloat(ObinState* state, ObinAny self) {
 
 ObinAny obin_topositive(ObinState* state, ObinAny self) {
     obin_func_1 method;
-    method = _method(state, any, __topositive__);
+    method = _method(state, self, __topositive__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -189,7 +189,7 @@ ObinAny obin_topositive(ObinState* state, ObinAny self) {
 
 ObinAny obin_tonegative(ObinState* state, ObinAny self) {
     obin_func_1 method;
-    method = _method(state, any, __tonegative__);
+    method = _method(state, self, __tonegative__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -203,7 +203,7 @@ ObinAny obin_tonegative(ObinState* state, ObinAny self) {
 
 ObinAny obin_abs(ObinState* state, ObinAny self) {
     obin_func_1 method;
-    method = _method(state, any, __abs__);
+    method = _method(state, self, __abs__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -215,7 +215,7 @@ ObinAny obin_abs(ObinState* state, ObinAny self) {
 
 ObinAny obin_invert(ObinState* state, ObinAny self) {
     obin_func_1 method;
-    method = _method(state, any, __invert__);
+    method = _method(state, self, __invert__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -227,7 +227,7 @@ ObinAny obin_invert(ObinState* state, ObinAny self) {
 
 ObinAny obin_add(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __add__);
+    method = _method(state, self, __add__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -239,7 +239,7 @@ ObinAny obin_add(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_subtract(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __subtract__);
+    method = _method(state, self, __subtract__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -251,7 +251,7 @@ ObinAny obin_subtract(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_divide(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __divide__);
+    method = _method(state, self, __divide__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -263,7 +263,7 @@ ObinAny obin_divide(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_multiply(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __multiply__);
+    method = _method(state, self, __multiply__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -275,7 +275,7 @@ ObinAny obin_multiply(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_pow(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __pow__);
+    method = _method(state, self, __pow__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -287,7 +287,7 @@ ObinAny obin_pow(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_leftshift(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __leftshift__);
+    method = _method(state, self, __leftshift__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -299,7 +299,7 @@ ObinAny obin_leftshift(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_rightshift(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __rightshift__);
+    method = _method(state, self, __rightshift__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -311,7 +311,7 @@ ObinAny obin_rightshift(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_mod(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __mod__);
+    method = _method(state, self, __mod__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -323,7 +323,7 @@ ObinAny obin_mod(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_and(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __and__);
+    method = _method(state, self, __and__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -335,7 +335,7 @@ ObinAny obin_and(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_or(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __or__);
+    method = _method(state, self, __or__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
@@ -347,7 +347,7 @@ ObinAny obin_or(ObinState* state, ObinAny self, ObinAny arg1) {
 
 ObinAny obin_xor(ObinState* state, ObinAny self, ObinAny arg1) {
     obin_func_2 method;
-    method = _method(state, any, __xor__);
+    method = _method(state, self, __xor__);
 
     if (!method) {
         obin_raise(state, obin_errors(state)->TypeError,
