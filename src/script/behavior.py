@@ -9,7 +9,7 @@ class Method(object):
         self.name = name
         self.arity = arity
         if not methodType:
-            self.type = 'obin_func_%d' % self.arity
+            self.type = 'ofunc_%d' % self.arity
         else:
             self.type = methodType
         
@@ -32,8 +32,8 @@ class Methods(object):
         return self.methods.__iter__()
 
 __MEMORY__ = Methods("MEMORY", 
-    Method('__destroy__', 1, "obin_destructor"),
-    Method('__mark__', 1, "obin_each")
+    Method('__destroy__', 1, "odestructor"),
+    Method('__mark__', 1, "ofunc_each")
     )
 
 __BASE__ = Methods("BASE", 

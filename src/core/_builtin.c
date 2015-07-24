@@ -72,7 +72,7 @@ OAny obin_is(ObinState * state, OAny any, OAny other) {
 /************************* BASE **********************************/
 
 OAny obin_tostring(ObinState* state, OAny self) {
-    obin_func_1 method;
+    ofunc_1 method;
     method = _method(state, self, __tostring__);
 
     if (!method) {
@@ -84,7 +84,7 @@ OAny obin_tostring(ObinState* state, OAny self) {
 }
 
 OAny obin_tobool(ObinState* state, OAny self) {
-    obin_func_1 method;
+    ofunc_1 method;
     method = _method(state, self, __tobool__);
 
     if (!method) {
@@ -96,7 +96,7 @@ OAny obin_tobool(ObinState* state, OAny self) {
 }
 
 OAny obin_clone(ObinState* state, OAny self) {
-    obin_func_1 method;
+    ofunc_1 method;
     method = _method(state, self, __clone__);
 
     if (!method) {
@@ -108,7 +108,7 @@ OAny obin_clone(ObinState* state, OAny self) {
 }
 
 OAny obin_compare(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __compare__);
 
     if (!method) {
@@ -120,7 +120,7 @@ OAny obin_compare(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_hash(ObinState* state, OAny self) {
-    obin_func_1 method;
+    ofunc_1 method;
     method = _method(state, self, __hash__);
 
     if (!method) {
@@ -134,7 +134,7 @@ OAny obin_hash(ObinState* state, OAny self) {
 /************************* COLLECTION **********************************/
 
 OAny obin_iterator(ObinState* state, OAny self) {
-    obin_func_1 method;
+    ofunc_1 method;
     method = _method(state, self, __iterator__);
 
     if (!method) {
@@ -146,7 +146,7 @@ OAny obin_iterator(ObinState* state, OAny self) {
 }
 
 OAny obin_length(ObinState* state, OAny self) {
-    obin_func_1 method;
+    ofunc_1 method;
     method = _method(state, self, __length__);
 
     if (!method) {
@@ -158,7 +158,7 @@ OAny obin_length(ObinState* state, OAny self) {
 }
 
 OAny obin_getitem(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __getitem__);
 
     if (!method) {
@@ -170,7 +170,7 @@ OAny obin_getitem(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_hasitem(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __hasitem__);
 
     if (!method) {
@@ -182,7 +182,7 @@ OAny obin_hasitem(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_delitem(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __delitem__);
 
     if (!method) {
@@ -194,7 +194,7 @@ OAny obin_delitem(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_setitem(ObinState* state, OAny self, OAny arg1, OAny arg2) {
-    obin_func_3 method;
+    ofunc_3 method;
     method = _method(state, self, __setitem__);
 
     if (!method) {
@@ -208,7 +208,7 @@ OAny obin_setitem(ObinState* state, OAny self, OAny arg1, OAny arg2) {
 /************************* GENERATOR **********************************/
 
 OAny obin_next(ObinState* state, OAny self) {
-    obin_func_1 method;
+    ofunc_1 method;
     method = _method(state, self, __next__);
 
     if (!method) {
@@ -222,7 +222,7 @@ OAny obin_next(ObinState* state, OAny self) {
 /************************* NUMBER_CAST **********************************/
 
 OAny obin_tointeger(ObinState* state, OAny self) {
-    obin_func_1 method;
+    ofunc_1 method;
     method = _method(state, self, __tointeger__);
 
     if (!method) {
@@ -234,7 +234,7 @@ OAny obin_tointeger(ObinState* state, OAny self) {
 }
 
 OAny obin_tofloat(ObinState* state, OAny self) {
-    obin_func_1 method;
+    ofunc_1 method;
     method = _method(state, self, __tofloat__);
 
     if (!method) {
@@ -246,7 +246,7 @@ OAny obin_tofloat(ObinState* state, OAny self) {
 }
 
 OAny obin_topositive(ObinState* state, OAny self) {
-    obin_func_1 method;
+    ofunc_1 method;
     method = _method(state, self, __topositive__);
 
     if (!method) {
@@ -258,7 +258,7 @@ OAny obin_topositive(ObinState* state, OAny self) {
 }
 
 OAny obin_tonegative(ObinState* state, OAny self) {
-    obin_func_1 method;
+    ofunc_1 method;
     method = _method(state, self, __tonegative__);
 
     if (!method) {
@@ -272,7 +272,7 @@ OAny obin_tonegative(ObinState* state, OAny self) {
 /************************* NUMBER_OPERATIONS **********************************/
 
 OAny obin_abs(ObinState* state, OAny self) {
-    obin_func_1 method;
+    ofunc_1 method;
     method = _method(state, self, __abs__);
 
     if (!method) {
@@ -284,7 +284,7 @@ OAny obin_abs(ObinState* state, OAny self) {
 }
 
 OAny obin_invert(ObinState* state, OAny self) {
-    obin_func_1 method;
+    ofunc_1 method;
     method = _method(state, self, __invert__);
 
     if (!method) {
@@ -296,7 +296,7 @@ OAny obin_invert(ObinState* state, OAny self) {
 }
 
 OAny obin_add(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __add__);
 
     if (!method) {
@@ -308,7 +308,7 @@ OAny obin_add(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_subtract(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __subtract__);
 
     if (!method) {
@@ -320,7 +320,7 @@ OAny obin_subtract(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_divide(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __divide__);
 
     if (!method) {
@@ -332,7 +332,7 @@ OAny obin_divide(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_multiply(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __multiply__);
 
     if (!method) {
@@ -344,7 +344,7 @@ OAny obin_multiply(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_pow(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __pow__);
 
     if (!method) {
@@ -356,7 +356,7 @@ OAny obin_pow(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_leftshift(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __leftshift__);
 
     if (!method) {
@@ -368,7 +368,7 @@ OAny obin_leftshift(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_rightshift(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __rightshift__);
 
     if (!method) {
@@ -380,7 +380,7 @@ OAny obin_rightshift(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_mod(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __mod__);
 
     if (!method) {
@@ -392,7 +392,7 @@ OAny obin_mod(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_and(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __and__);
 
     if (!method) {
@@ -404,7 +404,7 @@ OAny obin_and(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_or(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __or__);
 
     if (!method) {
@@ -416,7 +416,7 @@ OAny obin_or(ObinState* state, OAny self, OAny arg1) {
 }
 
 OAny obin_xor(ObinState* state, OAny self, OAny arg1) {
-    obin_func_2 method;
+    ofunc_2 method;
     method = _method(state, self, __xor__);
 
     if (!method) {

@@ -7,10 +7,10 @@
 
 #include "../oconf.h"
 
-typedef struct _ObinCellMemoryInfo{
+typedef struct _OCellMemoryInfo{
 	obin_bool mark;
 	obin_mem_t size;
-} ObinCellMemoryInfo;
+} OCellMemoryInfo;
 
 
 #endif /* OCELLMEMORY_H_ */

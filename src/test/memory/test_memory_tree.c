@@ -70,7 +70,7 @@ OAny tmtcell_new(ObinState* state, obin_string data, obin_mem_t capacity) {
 }
 
 
-static void __tmtcell_mark__(ObinState* state, OAny self, obin_func_1 callback ) {
+static void __tmtcell_mark__(ObinState* state, OAny self, ofunc_1 callback ) {
 	TMTCell* cell = (TMTCell*) OAny_toCell(self);
 	tmtcell_print(cell, "__tmtcell_mark__");
 	tm_counter_mark(tmt_counter);

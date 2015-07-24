@@ -8,7 +8,7 @@
 	OBehavior* behavior; \
 	OAny origin; \
 	OAny traits; \
-	ObinCellMemoryInfo memory;
+	OCellMemoryInfo memory;
 
 struct _ObinCell {
 	OBIN_CELL_HEADER;

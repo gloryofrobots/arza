@@ -276,7 +276,7 @@ static void __destroy__(ObinState* state, OCell* self) {
 	obin_memory_free(state, array->data);
 }
 
-static void __mark__(ObinState* state, OAny self, obin_func_1 mark) {
+static void __mark__(ObinState* state, OAny self, ofunc_1 mark) {
 	/*TODO each here*/
 	obin_index i;
 

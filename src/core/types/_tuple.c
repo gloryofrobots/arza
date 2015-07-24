@@ -112,7 +112,7 @@ static OAny __clone__(ObinState* state, OAny self) {
 	return result;
 }
 
-static void __mark__(ObinState* state, OAny self, obin_func_1 mark) {
+static void __mark__(ObinState* state, OAny self, ofunc_1 mark) {
 	obin_index i;
 
 	for(i=0; i<_size(self); ++i) {

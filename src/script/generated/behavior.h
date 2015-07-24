@@ -2,42 +2,42 @@
 typedef struct _OBehavior {
     obin_string __name__;
     /*MEMORY*/
-    obin_destructor __destroy__;
-    obin_each __mark__;
+    odestructor __destroy__;
+    ofunc_each __mark__;
     /*BASE*/
-    obin_func_1 __tostring__;
-    obin_func_1 __tobool__;
-    obin_func_1 __clone__;
-    obin_func_2 __compare__;
-    obin_func_1 __hash__;
+    ofunc_1 __tostring__;
+    ofunc_1 __tobool__;
+    ofunc_1 __clone__;
+    ofunc_2 __compare__;
+    ofunc_1 __hash__;
     /*COLLECTION*/
-    obin_func_1 __iterator__;
-    obin_func_1 __length__;
-    obin_func_2 __getitem__;
-    obin_func_2 __hasitem__;
-    obin_func_2 __delitem__;
-    obin_func_3 __setitem__;
+    ofunc_1 __iterator__;
+    ofunc_1 __length__;
+    ofunc_2 __getitem__;
+    ofunc_2 __hasitem__;
+    ofunc_2 __delitem__;
+    ofunc_3 __setitem__;
     /*GENERATOR*/
-    obin_func_1 __next__;
+    ofunc_1 __next__;
     /*NUMBER_CAST*/
-    obin_func_1 __tointeger__;
-    obin_func_1 __tofloat__;
-    obin_func_1 __topositive__;
-    obin_func_1 __tonegative__;
+    ofunc_1 __tointeger__;
+    ofunc_1 __tofloat__;
+    ofunc_1 __topositive__;
+    ofunc_1 __tonegative__;
     /*NUMBER_OPERATIONS*/
-    obin_func_1 __abs__;
-    obin_func_1 __invert__;
-    obin_func_2 __add__;
-    obin_func_2 __subtract__;
-    obin_func_2 __divide__;
-    obin_func_2 __multiply__;
-    obin_func_2 __pow__;
-    obin_func_2 __leftshift__;
-    obin_func_2 __rightshift__;
-    obin_func_2 __mod__;
-    obin_func_2 __and__;
-    obin_func_2 __or__;
-    obin_func_2 __xor__;
+    ofunc_1 __abs__;
+    ofunc_1 __invert__;
+    ofunc_2 __add__;
+    ofunc_2 __subtract__;
+    ofunc_2 __divide__;
+    ofunc_2 __multiply__;
+    ofunc_2 __pow__;
+    ofunc_2 __leftshift__;
+    ofunc_2 __rightshift__;
+    ofunc_2 __mod__;
+    ofunc_2 __and__;
+    ofunc_2 __or__;
+    ofunc_2 __xor__;
 } OBehavior;
     
 #define OBEHAVIOR_MEMORY(__destroy__,__mark__)  __destroy__, __mark__ 
