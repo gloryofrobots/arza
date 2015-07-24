@@ -15,6 +15,11 @@ BUILTIN_MEHOD_TPL_DECLARATION = """
 ObinAny {{generic_name}}(ObinState* state{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %});
 """
 
+METHOD_IMPLEMENTATION_DECLARATION = """
+ObinAny {{name}}(ObinState* state{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %});
+"""
+
+
 BEHAVIOR_TPL = """
 typedef struct _ObinBehavior {
     obin_string __name__;

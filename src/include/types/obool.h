@@ -6,7 +6,6 @@
 ObinAny obin_bool_new(obin_bool condition);
 ObinAny obin_bool_from_any(ObinAny condition);
 
-ObinBehavior* obin_bool_behavior();
-
+obin_bool obin_module_bool_init(ObinState* state);
 
 #endif /* OBOOL_H_ */

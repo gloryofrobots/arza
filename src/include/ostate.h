@@ -1,7 +1,7 @@
 #ifndef OSTATE_H_
 #define OSTATE_H_
 #include "oany.h"
-
+typedef struct _ObinBehavior ObinBehavior;
 /************************* STATE *************************************/
 typedef struct _ObinMemory ObinMemory;
 
@@ -46,6 +46,17 @@ typedef struct _ObinInternals {
 		ObinAny IndexError;
 		ObinAny KeyError;
 	} errors;
+
+	struct _ObinInternalBehaviors {
+		ObinBehavior* True;
+		ObinBehavior* False;
+		ObinBehavior* Nil;
+		ObinBehavior* Nothing;
+		ObinBehavior* Float;
+		ObinBehavior* Integer;
+		ObinBehavior* Char;
+	} behaviors;
+
 } ObinInternals;
 
 
@@ -60,5 +71,6 @@ typedef struct _ObinState {
 #define obin_integers(state) (&state->internals->integers)
 #define obin_strings(state) (&state->internals->strings)
 #define obin_cells(state) (&state->internals->cells)
+#define obin_behaviors(state) (&state->internals->behaviors)
 
 #endif /* OSTATE_H_ */

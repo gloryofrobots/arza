@@ -3,8 +3,6 @@
 #include "obuiltin.h"
 
 ObinAny obin_float_new(obin_float number);
-
-ObinBehavior* obin_float_behavior();
-
+obin_bool obin_module_float_init(ObinState* state);
 
 #endif

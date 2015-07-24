@@ -820,6 +820,8 @@ obin_bool obin_module_string_init(ObinState* state) {
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
 	__BEHAVIOR__.__add__ = __add__;
 
+	obin_behaviors(state)->Char = &__BEHAVIOR__;
+
 	/*strings proto*/
 	obin_cells(state)->__String__ =  obin_cell_new(EOBIN_TYPE_CELL,
 			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);

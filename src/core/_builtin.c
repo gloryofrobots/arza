@@ -7,12 +7,6 @@
 
 #define _method(state, any, method) (_behavior_method(_behavior(state, any), method))
 
-
-ObinAny ObinFalse = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FALSE);
-ObinAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
-ObinAny ObinNil = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NIL);
-ObinAny ObinNothing = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NOTHING);
-
 ObinAny obin_any_new() {
 	ObinAny proto;
 	proto.type = EOBIN_TYPE_UNKNOWN;
@@ -25,18 +19,15 @@ static ObinBehavior*
 _embedded_type_behavior(ObinState* state, ObinAny any) {
 	switch (any.type) {
 	case EOBIN_TYPE_TRUE:
+		return obin_behaviors(state)->True;
 	case EOBIN_TYPE_FALSE:
-		return obin_bool_behavior();
-		break;
+		return obin_behaviors(state)->False;
 	case EOBIN_TYPE_INTEGER:
-		return obin_integer_behavior();
-		break;
+		return obin_behaviors(state)->Integer;
 	case EOBIN_TYPE_FLOAT:
-		return obin_float_behavior();
-		break;
+		return obin_behaviors(state)->Float;
 	case EOBIN_TYPE_CHAR:
-		return obin_char_behavior();
-		break;
+		return obin_behaviors(state)->Char;
 	default:
 		obin_raise(state, obin_errors(state)->TypeError,
 				"There are no native behavior in this type", any);

@@ -19,6 +19,7 @@ SET(OBIN_LIB_SRC
    core/_log.c
    core/_error.c
    core/_random.c
+   core/types/_bool.c
    core/types/_collection.c
    core/types/_tuple.c
    core/types/_table.c
@@ -26,7 +27,6 @@ SET(OBIN_LIB_SRC
    core/types/_string.c
    core/types/_integer.c
    core/types/_float.c
-   core/types/_bool.c
    core/types/_fstream.c
    )
    
