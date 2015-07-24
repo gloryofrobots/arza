@@ -13,25 +13,25 @@ typedef struct ObinMemoryFreeNode {
 
 struct _OMemory {
 	void* heap;
-	obin_mem_t heap_size;
-	obin_mem_t heap_capacity;
-	obin_mem_t heap_gc_threshold;
+	omem_t heap_size;
+	omem_t heap_capacity;
+	omem_t heap_gc_threshold;
 	ObinMemoryFreeNode* free_node;
 
-	obin_mem_t heap_free_size;
+	omem_t heap_free_size;
 	/*
 	 * if this counter equals 0, only then it is safe to collect the
 	 * garbage. The counter is increased in cell constructors
 	 */
-	obin_integer transaction_count; /* the number of collections performed */
+	oint transaction_count; /* the number of collections performed */
 
-	obin_mem_t collections_count; /* the number of collections performed */
-	obin_mem_t live_count;        /* number of live objects (per collection) */
-	obin_mem_t live_space;        /* space consumed by live objects (per collection) */
-	obin_mem_t killed_count;       /* number of freed objects (per collection) */
-	obin_mem_t killed_space;       /* freed space (per collection) */
-	obin_mem_t allocated_count;       /* number of allocated objects (since last collection) */
-	obin_mem_t allocated_space;       /* allocated space (since last collection) */
+	omem_t collections_count; /* the number of collections performed */
+	omem_t live_count;        /* number of live objects (per collection) */
+	omem_t live_space;        /* space consumed by live objects (per collection) */
+	omem_t killed_count;       /* number of freed objects (per collection) */
+	omem_t killed_space;       /* freed space (per collection) */
+	omem_t allocated_count;       /* number of allocated objects (since last collection) */
+	omem_t allocated_space;       /* allocated space (since last collection) */
 };
 
 
@@ -43,20 +43,20 @@ OAny obin_cell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny root);
 /*TRAITS HERE MUST EXIST IN CELL */
 OAny obin_cell_to_any(EOTYPE type, OCell* cell);
 
-OState* obin_state_new(obin_mem_t heap_size);
+OState* obin_state_new(omem_t heap_size);
 void obin_state_destroy(OState* state);
 
-void* obin_allocate_cell(OState* state, obin_mem_t size);
+void* obin_allocate_cell(OState* state, omem_t size);
 void obin_gc_collect(OState* state);
 
 /*TODO REMOVE IT LATER TO statics in c source */
-obin_pointer obin_memory_malloc(OState* state, obin_mem_t size);
+opointer obin_memory_malloc(OState* state, omem_t size);
 
-obin_pointer obin_memory_realloc(OState* state, obin_pointer ptr, obin_mem_t size) ;
+opointer obin_memory_realloc(OState* state, opointer ptr, omem_t size) ;
 
-obin_pointer obin_memory_memdup(OState* state, obin_pointer ptr, obin_mem_t elements, obin_mem_t element_size );
+opointer obin_memory_memdup(OState* state, opointer ptr, omem_t elements, omem_t element_size );
 
-void obin_memory_free(OState* state, obin_pointer ptr);
+void obin_memory_free(OState* state, opointer ptr);
 
 void obin_memory_debug_trace(OState* state);
 
@@ -75,11 +75,11 @@ void obin_memory_end_transaction(OState* state);
 	 ( (type *) obin_malloc(state, sizeof(type)) )
 
 #define obin_malloc_array(state, type, n) \
-  ( ((obin_mem_t)(n) > OBIN_MEM_MAX / sizeof(type)) ? NULL :	\
+  ( ((omem_t)(n) > OBIN_MEM_MAX / sizeof(type)) ? NULL :	\
 	( (type *) obin_memory_malloc(state, (n) * sizeof(type)) ) )
 
 #define obin_realloc_type(state, p, type, n) \
-  ( (p) = ((obin_mem_t)(n) > OBIN_MEM_MAX / sizeof(type)) ? NULL :	\
+  ( (p) = ((omem_t)(n) > OBIN_MEM_MAX / sizeof(type)) ? NULL :	\
 	(type *) obin_memory_realloc(state, (p), (n) * sizeof(type)) )
 
 #endif

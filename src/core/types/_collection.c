@@ -4,8 +4,8 @@
 
 OCELL_DECLARE(SequenceIterator,
 	OAny source;
-	obin_mem_t current;
-	obin_mem_t length;
+	omem_t current;
+	omem_t length;
 );
 
 static OAny __si__next__(OState* state, OAny self) {
@@ -38,7 +38,7 @@ OAny obin_sequence_iterator_new(OState* state, OAny sequence){
 	iterator = obin_new(state, SequenceIterator);
 	iterator->source = sequence;
 	iterator->current = 0;
-	iterator->length = (obin_mem_t) OAny_toInt(obin_length(state, sequence));
+	iterator->length = (omem_t) OAny_toInt(obin_length(state, sequence));
 
 	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__SEQUENCE_ITERATOR_BEHAVIOR__, ocells(state)->__Cell__);
 }

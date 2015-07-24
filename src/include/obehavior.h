@@ -11,7 +11,7 @@ typedef void (*ofunc_each)(OState* state, OAny arg, ofunc_1 func);
 
 /*BELOW IS AUTOGEN CODE FROM behavior.py */
 typedef struct _OBehavior {
-    obin_string __name__;
+    ostring __name__;
     /*MEMORY*/
     odestructor __destroy__;
     ofunc_each __mark__;

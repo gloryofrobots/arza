@@ -3,11 +3,11 @@
 #include "obuiltin.h"
 
 typedef struct{
-	obin_integer prefix;
-	obin_integer suffix;
+	oint prefix;
+	oint suffix;
 } ObinHashSecret;
 
 ObinHashSecret obin_hash_secret();
-obin_bool obin_module_random_init(OState* state);
+obool obin_module_random_init(OState* state);
 
 #endif /* OBIN_ORANDOM_H_ */

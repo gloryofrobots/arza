@@ -9,7 +9,7 @@
 
 typedef struct {
 	OCELL_HEADER;
-	obin_mem_t size;
+	omem_t size;
 	OAny* data;
 } ObinTuple;
 
@@ -20,9 +20,9 @@ typedef struct {
 
 static OBehavior __BEHAVIOR__ = {0};
 
-ObinTuple* _obin_tuple_new(OState* state,  obin_mem_t size) {
+ObinTuple* _obin_tuple_new(OState* state,  omem_t size) {
 	ObinTuple * self;
-	obin_mem_t capacity;
+	omem_t capacity;
 
 	if(!size){
 		return NULL;
@@ -34,7 +34,7 @@ ObinTuple* _obin_tuple_new(OState* state,  obin_mem_t size) {
 	capacity = sizeof(ObinTuple) + sizeof(OAny) * size;
 	self = (ObinTuple*) obin_allocate_cell(state, capacity);
 	self->size = size;
-	self->data = (obin_pointer)self + sizeof(ObinTuple);
+	self->data = (opointer)self + sizeof(ObinTuple);
 
 	return self;
 }
@@ -61,9 +61,9 @@ OAny obin_tuple_new(OState* state,  OAny size, OAny* items) {
 	return obin_cell_new(EOBIN_TYPE_TUPLE, (OCell*) self, &__BEHAVIOR__, ocells(state)->__Tuple__);
 }
 
-OAny obin_tuple_pack(OState* state, obin_mem_t size, ...){
+OAny obin_tuple_pack(OState* state, omem_t size, ...){
 	ObinTuple * self;
-	obin_mem_t i;
+	omem_t i;
 	OAny item;
     va_list vargs;
 
@@ -113,7 +113,7 @@ static OAny __clone__(OState* state, OAny self) {
 }
 
 static void __mark__(OState* state, OAny self, ofunc_1 mark) {
-	obin_index i;
+	oindex_t i;
 
 	for(i=0; i<_size(self); ++i) {
 		mark(state, _get(self, i));
@@ -132,9 +132,9 @@ static OAny __length__(OState* state, OAny self) {
 	return obin_integer_new(_size(self));
 }
 
-static obin_integer
+static oint
 _get_index(OState* state, OAny self, OAny pos){
-	obin_integer index;
+	oint index;
 
 	if(!OAny_isInt(pos)){
 		return OBIN_INVALID_INDEX;
@@ -156,7 +156,7 @@ _get_index(OState* state, OAny self, OAny pos){
 
 static OAny
 __getitem__(OState* state, OAny self, OAny pos){
-	obin_integer index;
+	oint index;
 
     _CHECK_SELF_TYPE(state, self, __getitem__);
 
@@ -188,8 +188,8 @@ __hasitem__(OState* state, OAny self, OAny item){
 
 static OAny
 __hash__(OState* state, OAny self){
-    obin_integer mult = 1000003L, x = 0x345678L, y;
-    obin_mem_t length = _size(self);
+    oint mult = 1000003L, x = 0x345678L, y;
+    omem_t length = _size(self);
     OAny * items = _data(self);
 
     while (--length >= 0) {
@@ -200,7 +200,7 @@ __hash__(OState* state, OAny self){
             return obin_integer_new(-1);
         x = (x ^ y) * mult;
         /* the cast might truncate len; that doesn't change hash stability */
-        mult += (obin_integer)(82520L + length + length);
+        mult += (oint)(82520L + length + length);
     }
 
     x += 97531L;
@@ -213,7 +213,7 @@ __hash__(OState* state, OAny self){
 }
 
 
-obin_bool obin_module_tuple_init(OState* state) {
+obool obin_module_tuple_init(OState* state) {
 	__BEHAVIOR__.__name__ = __TypeName__;
 
 	__BEHAVIOR__.__mark__ = __mark__;

@@ -10,10 +10,10 @@
 #define OBIN_FSTREAM_MODE_WRITE "w"
 #define OBIN_FSTREAM_MODE_WRITE_UPDATE "w+"
 
-OAny obin_fstream_from_file(OState* state, obin_file file,
-		obin_bool is_disposable);
-OAny obin_fstream_from_path(OState* state, OAny path, obin_string mode);
-OAny obin_fstream_write_va(OState* state, OAny self, obin_string format, ...);
+OAny obin_fstream_from_file(OState* state, ofile file,
+		obool is_disposable);
+OAny obin_fstream_from_path(OState* state, OAny path, ostring mode);
+OAny obin_fstream_write_va(OState* state, OAny self, ostring format, ...);
 OAny obin_fstream_write(OState* state, OAny self, OAny any);
 OAny obin_fstream_close(OState* state, OAny self);
 OAny obin_fstream_is_open(OState* state, OAny self);

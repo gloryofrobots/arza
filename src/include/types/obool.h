@@ -3,9 +3,9 @@
 
 #include "obuiltin.h"
 
-OAny obin_bool_new(obin_bool condition);
+OAny obin_bool_new(obool condition);
 OAny obin_bool_from_any(OAny condition);
 
-obin_bool obin_module_bool_init(OState* state);
+obool obin_module_bool_init(OState* state);
 
 #endif /* OBOOL_H_ */

@@ -2,7 +2,7 @@
 #define OTABLE_H
 #include "obuiltin.h"
 
-obin_bool obin_module_table_init(OState* state);
+obool obin_module_table_init(OState* state);
 
 OAny obin_table_new(OState* state, OAny size);
 

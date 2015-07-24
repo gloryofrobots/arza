@@ -46,25 +46,25 @@
 #endif
 
 
-#define obin_mem_t	size_t
-#define obin_index	obin_mem_t
+#define omem_t	size_t
+#define oindex_t	omem_t
 #define OBIN_MEM_MAX SIZE_MAX
 
-#define obin_int8_t int8_t
-#define obin_uint8_t uint8_t
-#define obin_int32_t int32_t
-#define obin_uint32_t uint32_t
+#define oint8_t int8_t
+#define ouint8_t uint8_t
+#define oint32_t int32_t
+#define ouint32_t uint32_t
 
-typedef obin_uint8_t obin_byte;
-typedef obin_byte obin_bool;
-typedef double obin_float;
-typedef void* obin_pointer;
-typedef FILE* obin_file;
+typedef ouint8_t obyte;
+typedef obyte obool;
+typedef double ofloat;
+typedef void* opointer;
+typedef FILE* ofile;
 
-typedef long obin_integer;
-typedef const char* obin_string;
-typedef char obin_char;
-typedef unsigned char obin_uchar;
+typedef long oint;
+typedef const char* ostring;
+typedef char ochar;
+typedef unsigned char ouchar;
 
 /* Needed for convertion between numbers and strings */
 #define OBIN_INTEGER_FORMATTER "%ld"

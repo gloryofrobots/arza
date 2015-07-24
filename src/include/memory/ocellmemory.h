@@ -8,8 +8,8 @@
 #include "../oconf.h"
 
 typedef struct _OCellMemoryInfo{
-	obin_bool mark;
-	obin_mem_t size;
+	obool mark;
+	omem_t size;
 } OCellMemoryInfo;
 
 

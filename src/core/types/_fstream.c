@@ -4,8 +4,8 @@ OBEHAVIOR_DECLARE(__BEHAVIOR__);
 typedef struct {
 	OCELL_HEADER;
 	OAny path;
-	obin_file file;
-	obin_bool is_disposable;
+	ofile file;
+	obool is_disposable;
 } ObinFStream;
 
 #define _fstream(any) ((ObinFStream*) OAny_toCell(any))
@@ -13,7 +13,7 @@ typedef struct {
 #define _fstream_path(any) (_fstream(any)->path)
 #define _fstream_is_disposable(any) (_fstream(any)->is_disposable)
 
-OAny obin_fstream_from_file(OState* state, obin_file file, obin_bool is_disposable){
+OAny obin_fstream_from_file(OState* state, ofile file, obool is_disposable){
 
 	ObinFStream* self;
 
@@ -26,9 +26,9 @@ OAny obin_fstream_from_file(OState* state, obin_file file, obin_bool is_disposab
 	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*)self, &__BEHAVIOR__, ocells(state)->__Cell__);
 }
 
-OAny obin_fstream_from_path(OState* state, OAny path, obin_string mode){
+OAny obin_fstream_from_path(OState* state, OAny path, ostring mode){
 	OAny result;
-	obin_file file = fopen(obin_string_cstr(state, path), mode);
+	ofile file = fopen(obin_string_cstr(state, path), mode);
 
 	if(file == NULL) {
 		obin_raise(state, oerrors(state)->IOError,
@@ -40,7 +40,7 @@ OAny obin_fstream_from_path(OState* state, OAny path, obin_string mode){
 	return ObinNil;
 }
 
-OAny obin_fstream_write_va(OState* state, OAny self, obin_string format, ...){
+OAny obin_fstream_write_va(OState* state, OAny self, ostring format, ...){
 		int result;
 
 	    va_list myargs;

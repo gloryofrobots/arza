@@ -4,7 +4,7 @@
 #include "obuiltin.h"
 
 
-obin_bool obin_module_array_init(OState* state);
+obool obin_module_array_init(OState* state);
 
 OAny obin_array_new(OState* state, OAny size);
 OAny obin_array_push(OState* state, OAny self, OAny value);

@@ -12,12 +12,12 @@ OBEHAVIOR_DECLARE(__TMGCELL_BEHAVIOR__);
 
 typedef struct {
 	OCELL_HEADER;
-	obin_mem_t data_size;
-	obin_mem_t garbage_size;
-	obin_mem_t marked_size;
+	omem_t data_size;
+	omem_t garbage_size;
+	omem_t marked_size;
 	int id;
 	int parent_id;
-	obin_byte* chunk;
+	obyte* chunk;
 	OAny* data;
 } TMGCell;
 
@@ -31,11 +31,11 @@ OAny tmg_cell_new(OState* state, int data_size, double garbage_pecentage, int pa
 	tm_counter_add(tmg_counter);
 	cell->id = tmg_counter->TotalCount;
 	cell->parent_id = parent_id;
-	cell->chunk = obin_malloc_array(state, obin_byte, 1024);
+	cell->chunk = obin_malloc_array(state, obyte, 1024);
 
 	cell->data_size = data_size;
 
-	cell->garbage_size = (obin_mem_t) data_size * garbage_pecentage;
+	cell->garbage_size = (omem_t) data_size * garbage_pecentage;
 	if(cell->garbage_size > cell->data_size) {
 			cell->garbage_size = cell->data_size;
 	}
@@ -95,7 +95,7 @@ OBEHAVIOR_DEFINE(__TMGCELL_BEHAVIOR__,
 		OBEHAVIOR_NUMBER_OPERATIONS_NULL
 );
 
-void tmg_test(OState* state, obin_mem_t data_size, double garbage_percentage) {
+void tmg_test(OState* state, omem_t data_size, double garbage_percentage) {
 	int destroyed = 0;
 	printf("\ntmg_test data_size:%d garbage_percentage:%.2f\n", data_size, garbage_percentage);
 /*    obin_memory_debug_trace(state);*/

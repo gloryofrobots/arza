@@ -2,7 +2,7 @@
 
 static OInternals __INTERNALS__;
 
-typedef obin_bool (*obin_bootstrap_initialiser)(OState* state);
+typedef obool (*obin_bootstrap_initialiser)(OState* state);
 typedef void (*obin_bootstrap_finaliser)(OState* state);
 
 typedef struct {
@@ -22,11 +22,11 @@ static ObinModule __MODULES__[] = {
 };
 
 
-static obin_bool
+static obool
 _init_internals(OState* state) {
 	ObinModule* module = __MODULES__;
-	obin_index count_modules = sizeof(__MODULES__) / sizeof(ObinModule);
-	obin_index i;
+	oindex_t count_modules = sizeof(__MODULES__) / sizeof(ObinModule);
+	oindex_t i;
 
 	state->internals = &__INTERNALS__;
 	state->internals->cells.__Cell__ = obin_cell_new(EOBIN_TYPE_CELL, obin_new(state, OCell), 0, ObinNil);
@@ -43,7 +43,7 @@ _init_internals(OState* state) {
 	return OTRUE;
 }
 
-OState* obin_init(obin_mem_t heap_size) {
+OState* obin_init(omem_t heap_size) {
 	static int is_initialised = 0;
 
 	if(heap_size == 0) {

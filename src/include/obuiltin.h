@@ -28,7 +28,7 @@ ObinAny a reg
 /**************************** BUILTINS *******************************************/
 /* NEVER FORGET TO CALL THIS BEFORE SETTING TYPE*/
 
-OState* obin_init(obin_mem_t heap_size);
+OState* obin_init(omem_t heap_size);
 
 void obin_finalise(OState* state);
 /*TODO REMOVE obin_destroy FROM API*/

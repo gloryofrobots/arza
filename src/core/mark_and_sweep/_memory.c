@@ -5,12 +5,12 @@
 #define _end_heap(memory)  (memory->heap + memory->heap_size)
 #define _heap(memory)  (memory->heap)
 
-#define ObinMem_Padding(N) ((sizeof(obin_pointer) - ((N) % sizeof(obin_pointer))) % sizeof(obin_pointer))
+#define ObinMem_Padding(N) ((sizeof(opointer) - ((N) % sizeof(opointer))) % sizeof(opointer))
 
-#define ObinMem_Malloc(n) ((obin_mem_t)(n) > OBIN_MEM_MAX? NULL \
+#define ObinMem_Malloc(n) ((omem_t)(n) > OBIN_MEM_MAX? NULL \
 				: obin_malloc((n) ? (n) : 1))
 
-#define ObinMem_Realloc(p, n)	((obin_mem_t)(n) > (obin_mem_t)OBIN_MEM_MAX  ? NULL \
+#define ObinMem_Realloc(p, n)	((omem_t)(n) > (omem_t)OBIN_MEM_MAX  ? NULL \
 				: obin_realloc((p), (n) ? (n) : 1))
 
 #define ObinMem_Free obin_free
@@ -34,7 +34,7 @@ void reset_allocation_stat(OState*);
 
 OBIN_MODULE_LOG(MEMORY);
 
-void _panic(OState* state, obin_string format, ...) {
+void _panic(OState* state, ostring format, ...) {
 	va_list myargs;
 	va_start(myargs, format);
 	obin_vfprintf(stderr, format, myargs);
@@ -76,8 +76,8 @@ OAny obin_cell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny origin) {
 }
 
 /* MEMORY PRIMITIVES */
-obin_pointer obin_memory_malloc(OState * state, obin_mem_t size) {
-	obin_pointer new_pointer;
+opointer obin_memory_malloc(OState * state, omem_t size) {
+	opointer new_pointer;
 
 	if (!size) {
 		return NULL;
@@ -96,8 +96,8 @@ obin_pointer obin_memory_malloc(OState * state, obin_mem_t size) {
 	return new_pointer;
 }
 
-obin_pointer obin_memory_realloc(OState * state, obin_pointer ptr, obin_mem_t size) {
-	obin_pointer new_pointer;
+opointer obin_memory_realloc(OState * state, opointer ptr, omem_t size) {
+	opointer new_pointer;
 	if (!size) {
 		return NULL;
 	}
@@ -107,10 +107,10 @@ obin_pointer obin_memory_realloc(OState * state, obin_pointer ptr, obin_mem_t si
 	return new_pointer;
 }
 
-obin_pointer obin_memory_duplicate(OState * state, obin_pointer ptr,
-		obin_mem_t elements, obin_mem_t element_size) {
-	obin_pointer new_pointer;
-	obin_mem_t size;
+opointer obin_memory_duplicate(OState * state, opointer ptr,
+		omem_t elements, omem_t element_size) {
+	opointer new_pointer;
+	omem_t size;
 
 	size = element_size * elements;
 
@@ -122,7 +122,7 @@ obin_pointer obin_memory_duplicate(OState * state, obin_pointer ptr,
 
 /* GC and Allocator */
 
-void _memory_create(OState* state, obin_mem_t heap_size) {
+void _memory_create(OState* state, omem_t heap_size) {
 	OMemory* M;
 	if(heap_size >= OBIN_MAX_HEAP_SIZE) {
 		_panic(state, "obin_state_new heap_size %d too big for current configuration,"
@@ -173,9 +173,9 @@ void _memory_destroy(OState* state) {
 	state->memory = 0;
 }
 
-OState* obin_state_new(obin_mem_t heap_size) {
+OState* obin_state_new(omem_t heap_size) {
 	OState* state;
-	obin_mem_t size;
+	omem_t size;
     size = sizeof(OState);
 	state = ObinMem_Malloc(size);
 	if(!state) {
@@ -268,7 +268,7 @@ static void _destroy_cell(OState * state, OCell* cell) {
 
 
 void obin_gc_collect(OState* state) {
-	obin_pointer pointer;
+	opointer pointer;
 	OCell* object;
 	ObinMemoryFreeNode* current_entry, *new_entry;
     int object_size = 0;
@@ -359,7 +359,7 @@ void obin_gc_collect(OState* state) {
 }
 
 
-void* _allocate_cell(OState* state, obin_mem_t size) {
+void* _allocate_cell(OState* state, omem_t size) {
     void* result = NULL;
 	ObinMemoryFreeNode* entry, *before_entry, *old_next, *replace_entry;
 	int old_entry_size;
@@ -455,8 +455,8 @@ void* _allocate_cell(OState* state, obin_mem_t size) {
     return result;
 }
 
-void* obin_allocate_cell(OState* state, obin_mem_t size) {
-	obin_mem_t aligned_size = size + ObinMem_Padding(size);
+void* obin_allocate_cell(OState* state, omem_t size) {
+	omem_t aligned_size = size + ObinMem_Padding(size);
     OCell* object = (OCell*)_allocate_cell(state, aligned_size);
 
     if(!object) {
@@ -475,7 +475,7 @@ void* obin_allocate_cell(OState* state, obin_mem_t size) {
  * this function must not do anything, since the heap management
  * is done inside gc_collect.
  */
-void obin_memory_free(OState* state, obin_pointer ptr) {
+void obin_memory_free(OState* state, opointer ptr) {
 #ifdef ODEBUG
 	CATCH_STATE_MEMORY(state);
     /* check if called for an object inside the object_space */

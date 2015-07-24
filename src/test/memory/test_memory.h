@@ -3,14 +3,14 @@
 #include <obin.h>
 
 typedef struct {
- obin_mem_t Count;
- obin_mem_t TotalCount;
- obin_mem_t Marked;
- obin_mem_t TotalMarked;
- obin_mem_t Destroyed;
- obin_mem_t TotalDestroyed;
+ omem_t Count;
+ omem_t TotalCount;
+ omem_t Marked;
+ omem_t TotalMarked;
+ omem_t Destroyed;
+ omem_t TotalDestroyed;
 
- obin_mem_t OldMarked;
+ omem_t OldMarked;
 } TMCounter;
 
 void tm_counter_destroy(TMCounter* counter) {
@@ -38,7 +38,7 @@ void tm_counter_remember(TMCounter* counter) {
 	counter->OldMarked = counter->Marked;
 }
 
-obin_mem_t tm_counter_predict_destroyed(TMCounter* counter) {
+omem_t tm_counter_predict_destroyed(TMCounter* counter) {
 	return (counter->Count - counter->Marked) + counter->OldMarked;
 }
 

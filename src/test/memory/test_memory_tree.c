@@ -12,9 +12,9 @@ OCELL_DECLARE(TMTCell,
 	int id;
 	OAny left;
 	OAny right;
-	obin_mem_t size;
-	obin_mem_t capacity;
-	obin_char* data;
+	omem_t size;
+	omem_t capacity;
+	ochar* data;
 );
 
 #define tmtcell(any)   ((TMTCell*) OAny_toCell(any))
@@ -24,7 +24,7 @@ OCELL_DECLARE(TMTCell,
 #define tmtcell_size(any)   tmtcell(any)->size
 #define tmtcell_data(any)   tmtcell(any)->data
 
-void _tmtcell_print(TMTCell* cell, obin_string format) {
+void _tmtcell_print(TMTCell* cell, ostring format) {
 	if(TMT_VERBOSE > 1) {
 		printf(format,
 				cell->id, cell->data);
@@ -43,9 +43,9 @@ void _tmtcell_print(TMTCell* cell, obin_string format) {
 		_tmtcell_print(cell, message " cell: id=%d  data=%s \n")
 
 
-OAny tmtcell_new(OState* state, obin_string data, obin_mem_t capacity) {
+OAny tmtcell_new(OState* state, ostring data, omem_t capacity) {
 	TMTCell* cell;
-	obin_mem_t size, body_size, data_size;
+	omem_t size, body_size, data_size;
 
 	body_size = sizeof(TMTCell);
 	size = body_size + capacity;
@@ -59,7 +59,7 @@ OAny tmtcell_new(OState* state, obin_string data, obin_mem_t capacity) {
 		obin_panic("Size of TMTCell data too big");
 	}
 
-	cell->data = (obin_char*) cell + body_size;
+	cell->data = (ochar*) cell + body_size;
 	obin_memcpy(cell->data, data, data_size);
 	cell->capacity = capacity;
 	cell->size = data_size;
@@ -101,15 +101,15 @@ OBEHAVIOR_DEFINE(__TMTCELL_BEHAVIOR__,
 );
 
 typedef struct _TMTTestRequests {
-	obin_integer live_count;
-	obin_integer live_space;
-	obin_integer killed_count;
-	obin_integer killed_space;
-	obin_integer allocated_count;
-	obin_integer allocated_space;
+	oint live_count;
+	oint live_space;
+	oint killed_count;
+	oint killed_space;
+	oint allocated_count;
+	oint allocated_space;
 } _TMTTestStat;
 
-_TMTTestStat tmt_stat_new(obin_bool live, obin_bool killed, obin_bool allocated) {
+_TMTTestStat tmt_stat_new(obool live, obool killed, obool allocated) {
 	_TMTTestStat stat = {0};
 	if(!live) {
 		stat.live_count = -1;
@@ -125,7 +125,7 @@ _TMTTestStat tmt_stat_new(obin_bool live, obin_bool killed, obin_bool allocated)
 	}
 	return stat;
 }
-OAny tmt_stat_add_cell(_TMTTestStat* requests, OAny node, obin_bool is_alive) {
+OAny tmt_stat_add_cell(_TMTTestStat* requests, OAny node, obool is_alive) {
 	if(is_alive) {
         requests->live_count++;
         requests->live_space += obin_any_cell_size(node);
@@ -139,7 +139,7 @@ OAny tmt_stat_add_cell(_TMTTestStat* requests, OAny node, obin_bool is_alive) {
 	return node;
 }
 
-OAny tmt_stat_create_cell(_TMTTestStat* requests, obin_bool is_alive, OState* state,  obin_string data, obin_mem_t capacity) {
+OAny tmt_stat_create_cell(_TMTTestStat* requests, obool is_alive, OState* state,  ostring data, omem_t capacity) {
 	OAny node = tmtcell_new(state, data, capacity);
 	return tmt_stat_add_cell(requests, node, is_alive);
 }

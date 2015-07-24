@@ -16,11 +16,11 @@ static void Test_Char(void) {
 
 static void Test_String(void) {
 	OState * state = obin_init(1024 * 1024 * 90);
-	obin_char str_arr[STR_ARR_SIZE] = {'\0'};
+	ochar str_arr[STR_ARR_SIZE] = {'\0'};
 	OAny str1, str2, str3, str4;
 	OAny val1, val2;
-	obin_integer i;
-	obin_string cstr1;
+	oint i;
+	ostring cstr1;
 	/*******************************/
 	str1 = obin_string_new(state, "Hello!");
 	CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str1), "Hello!");
@@ -256,7 +256,7 @@ static void Test_String(void) {
 
 		str2 = obin_string_from_carray(state, &cstr1[i], 1);
 		CU_ASSERT_STRING_EQUAL(obin_string_cstr(state, str2), obin_string_cstr(state, val2));
-		CU_ASSERT_EQUAL((obin_char)cstr1[i], (obin_char)OAny_toChar(val2));
+		CU_ASSERT_EQUAL((ochar)cstr1[i], (ochar)OAny_toChar(val2));
 		str3 = obin_add(state, str3, val2);
 		i++;
 	}

@@ -1,6 +1,6 @@
 
 typedef struct _OBehavior {
-    obin_string __name__;
+    ostring __name__;
     /*MEMORY*/
     odestructor __destroy__;
     ofunc_each __mark__;

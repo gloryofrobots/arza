@@ -4,7 +4,7 @@
 
 static OBehavior __BEHAVIOR__ = {0};
 
-static obin_byte* __CHARS__[SCHAR_MAX] = {0};
+static obyte* __CHARS__[SCHAR_MAX] = {0};
 
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!OAny_isString(self)) { \
@@ -22,15 +22,15 @@ static OAny _obin_string_empty(OState* state) {
 
 typedef struct {
 	OCELL_HEADER;
-	obin_char* data;
-	obin_mem_t capacity;
-	obin_mem_t size;
-	obin_integer hash;
+	ochar* data;
+	omem_t capacity;
+	omem_t size;
+	oint hash;
 } ObinString;
 
 #define _string(any) ((ObinString*) OAny_toCell(any))
 
-static obin_char* _string_data(OAny any) {
+static ochar* _string_data(OAny any) {
 	switch(any.type) {
 	case EOBIN_TYPE_STRING:
 		return  _string(any)->data;
@@ -43,13 +43,13 @@ static obin_char* _string_data(OAny any) {
 		return NULL;
 	}
 }
-static obin_string _string_const_data(OAny any) {
+static ostring _string_const_data(OAny any) {
 	switch(any.type) {
 	case EOBIN_TYPE_STRING:
 		return  _string(any)->data;
 		break;
 	case EOBIN_TYPE_CHAR:
-		return (obin_string)__CHARS__[any.data.char_value.char_data];
+		return (ostring)__CHARS__[any.data.char_value.char_data];
 		break;
 	default:
 		return NULL;
@@ -58,7 +58,7 @@ static obin_string _string_const_data(OAny any) {
 
 /* SIZE FOR BUFFER IN STACK USED TO WRITE INTS AND FLOATS TO STRING */
 
-static obin_integer _string_size(OAny any) {
+static oint _string_size(OAny any) {
 	switch(any.type) {
 	case EOBIN_TYPE_STRING:
 		return _string(any)->size;
@@ -108,8 +108,8 @@ static OAny __hasitem__(OState* state, OAny self, OAny character) {
 }
 
 static OAny __getitem__(OState* state, OAny self, OAny key) {
-	obin_mem_t index;
-	obin_char result;
+	omem_t index;
+	ochar result;
 	_CHECK_SELF_TYPE(state, self, __item__);
 
 	if(!OAny_isInt(key)){
@@ -128,7 +128,7 @@ static OAny __getitem__(OState* state, OAny self, OAny key) {
 }
 
 static OAny __compare__(OState* state, OAny self, OAny other) {
-	obin_mem_t result;
+	omem_t result;
 	_CHECK_SELF_TYPE(state, self, __compare__);
 
 	if (!OAny_isString(other)) {
@@ -158,9 +158,9 @@ static OAny __compare__(OState* state, OAny self, OAny other) {
 }
 
 static OAny __hash__(OState* state, OAny self) {
-	register obin_integer hash = 0;
-	register const obin_char * cursor = 0;
-	register obin_integer length = 0;
+	register oint hash = 0;
+	register const ochar * cursor = 0;
+	register oint length = 0;
 	ObinHashSecret secret;
 
 	_CHECK_SELF_TYPE(state, self, __hash__);
@@ -170,7 +170,7 @@ static OAny __hash__(OState* state, OAny self) {
 	}
 
 	if(_is_char(self)) {
-		return obin_integer_new((obin_integer) _string_const_data(self)[0]);
+		return obin_integer_new((oint) _string_const_data(self)[0]);
 	}
 
 	/* return already hashed value */
@@ -204,11 +204,11 @@ static OAny __clone__(OState* state, OAny self) {
 	return obin_string_from_carray(state, _string_const_data(self), _string_size(self));
 }
 
-static OAny _obin_string_blank(OState* state, obin_mem_t length);
+static OAny _obin_string_blank(OState* state, omem_t length);
 
 static OAny __add__(OState* state, OAny str1, OAny str2) {
-	obin_char* data;
-	obin_mem_t size;
+	ochar* data;
+	omem_t size;
 	OAny result;
 
 	_CHECK_SELF_TYPE(state, str1, __add__);
@@ -250,7 +250,7 @@ static OAny __add__(OState* state, OAny str1, OAny str2) {
 
 /***********************************************************************************/
 /* constructors */
-OAny obin_string_new(OState* state, obin_string data) {
+OAny obin_string_new(OState* state, ostring data) {
 	int len;
 
 	len = obin_strlen(data);
@@ -258,10 +258,10 @@ OAny obin_string_new(OState* state, obin_string data) {
 		return obin_string_from_carray(state, 0, 0);
 	}
 
-	return obin_string_from_carray(state, (obin_char*) data, len);
+	return obin_string_from_carray(state, (ochar*) data, len);
 }
 
-OAny obin_char_new(obin_char ch) {
+OAny obin_char_new(ochar ch) {
 	OAny result;
 
 	result = OAny_new();
@@ -271,8 +271,8 @@ OAny obin_char_new(obin_char ch) {
 	return result;
 }
 
-static OAny _obin_string_from_carr(OState* state, obin_string data, obin_mem_t size) {
-	obin_mem_t capacity, body_size;
+static OAny _obin_string_from_carr(OState* state, ostring data, omem_t size) {
+	omem_t capacity, body_size;
 	ObinString* self;
 
 	body_size = sizeof(ObinString);
@@ -281,7 +281,7 @@ static OAny _obin_string_from_carr(OState* state, obin_string data, obin_mem_t s
 
 	self->capacity = capacity;
 	self->size = size;
-	self->data = (obin_char*) self + body_size;
+	self->data = (ochar*) self + body_size;
 	if(data != NULL) {
 		obin_memcpy(self->data, data, self->size);
 	}
@@ -291,15 +291,15 @@ static OAny _obin_string_from_carr(OState* state, obin_string data, obin_mem_t s
 	return obin_cell_new(EOBIN_TYPE_STRING, (OCell*) self, &__BEHAVIOR__, ocells(state)->__String__);
 }
 
-static OAny _obin_string_blank(OState* state, obin_mem_t length) {
+static OAny _obin_string_blank(OState* state, omem_t length) {
 	return _obin_string_from_carr(state, NULL, length);
 }
 
 /*@param data array without \0
  *@param size array size
  */
-OAny obin_string_from_carray(OState* state, obin_string data,
-obin_mem_t size) {
+OAny obin_string_from_carray(OState* state, ostring data,
+omem_t size) {
 	/*empty string*/
 	if (size == 0) {
 		return _obin_string_empty(state);
@@ -313,7 +313,7 @@ obin_mem_t size) {
 
 
 /* ******************** ATTRIBUTES ***********************************************/
-obin_string obin_string_cstr(OState* state, OAny self){
+ostring obin_string_cstr(OState* state, OAny self){
 	return _string_const_data(self);
 }
 
@@ -326,20 +326,20 @@ OAny obin_string_is_empty(OState* state, OAny self){
 }
 /******************************** MODIFICATIONS *************************************/
 /*  function for modify char arrays , return 0 for stop iteration */
-typedef int (*_string_modifier)(obin_char* char_data, obin_mem_t index);
+typedef int (*_string_modifier)(ochar* char_data, omem_t index);
 
 /* clone string and modify it`s content by modifier */
 OAny _clone_and_modify(OState* state, OAny self,
 		_string_modifier modify) {
 	OAny clone;
-	obin_mem_t i;
+	omem_t i;
 	if(_is_empty(self)) {
 		return self;
 	}
 	if(_is_char(self)) {
 		clone = self;
 		/**Tricky part we send pointer to char value wit 0 index*/
-		clone.data.char_value.char_data = modify((obin_char*)&clone.data.char_value.char_data, 0);
+		clone.data.char_value.char_data = modify((ochar*)&clone.data.char_value.char_data, 0);
 		return clone;
 	}
 
@@ -355,7 +355,7 @@ OAny _clone_and_modify(OState* state, OAny self,
 }
 
 /*********************** CAPITALIZE *************************/
-static int _capitalize_modify(obin_char* data, obin_mem_t index) {
+static int _capitalize_modify(ochar* data, omem_t index) {
 	if (!isalpha(data[index])) {
 		return OTRUE;
 	}
@@ -372,7 +372,7 @@ OAny obin_string_capitalize(OState* state, OAny self) {
 }
 
 /*********************** CAPITALIZE WORDS*************************/
-static int _capitalize_words_modify(obin_char* data, obin_mem_t index) {
+static int _capitalize_words_modify(ochar* data, omem_t index) {
 	if ((index == 0 || isspace(data[index - 1])) && isalpha(data[index])) {
 		data[index] = toupper(data[index]);
 	}
@@ -386,7 +386,7 @@ OAny obin_string_capitalize_words(OState* state, OAny self) {
 	return _clone_and_modify(state, self, modifier);
 }
 /********************* UPPERCASE *************************/
-static int _uppercase_modify(obin_char* data, obin_mem_t index) {
+static int _uppercase_modify(ochar* data, omem_t index) {
 	data[index] = toupper(data[index]);
 	return OTRUE;
 }
@@ -399,7 +399,7 @@ OAny obin_string_to_uppercase(OState* state, OAny self) {
 }
 
 /********************* LOWERCASE ***************************/
-static int _lowercase_modify(obin_char* data, obin_mem_t index) {
+static int _lowercase_modify(ochar* data, omem_t index) {
 	data[index] = tolower(data[index]);
 	return OTRUE;
 }
@@ -413,12 +413,12 @@ OAny obin_string_to_lowercase(OState* state, OAny self) {
 
 /************** CONDITIONS **************************************/
 /*  function for checking string content by some condition*/
-typedef int (*_string_condition)(obin_string char_data, obin_mem_t index);
+typedef int (*_string_condition)(ostring char_data, omem_t index);
 
 /* check string content for condition */
 OAny _check_condition(OState* state, OAny self,
 		_string_condition condition) {
-	obin_mem_t i;
+	omem_t i;
 
 	for (i = 0; i < _string_size(self); i++) {
 		if (condition(_string_const_data(self), i) == OFALSE) {
@@ -429,7 +429,7 @@ OAny _check_condition(OState* state, OAny self,
 	return ObinTrue;
 }
 /*************************** IS_ALL_ALPHANUM **********************************/
-static int _is_alphanum_condition(obin_string data, obin_mem_t index) {
+static int _is_alphanum_condition(ostring data, omem_t index) {
 	return isdigit(data[index]) || isalpha(data[index]);
 }
 
@@ -440,7 +440,7 @@ OAny obin_string_is_alphanum(OState* state, OAny self) {
 }
 
 /*************************** ISALPHA **********************************/
-static int _is_alpha_condition(obin_string data, obin_mem_t index) {
+static int _is_alpha_condition(ostring data, omem_t index) {
 	return isalpha(data[index]);
 }
 
@@ -450,7 +450,7 @@ OAny obin_string_is_alpha(OState* state, OAny self) {
 }
 
 /*************************** ISDIGIT **********************************/
-static int _is_digit_condition(obin_string data, obin_mem_t index) {
+static int _is_digit_condition(ostring data, omem_t index) {
 	return isdigit(data[index]);
 }
 
@@ -459,7 +459,7 @@ OAny obin_string_is_digit(OState* state, OAny self) {
 	return _check_condition(state, self, &_is_digit_condition);
 }
 /*************************** IS LOWER **********************************/
-static int _is_lower_condition(obin_string data, obin_mem_t index) {
+static int _is_lower_condition(ostring data, omem_t index) {
 	char ch = data[index];
 	if(!isalpha(ch)) {
 		/*skip other stuff*/
@@ -474,7 +474,7 @@ OAny obin_string_is_lower(OState* state, OAny self) {
 	return _check_condition(state, self, &_is_lower_condition);
 }
 /*************************** IS UPPER **********************************/
-static int _is_upper_condition(obin_string data, obin_mem_t index) {
+static int _is_upper_condition(ostring data, omem_t index) {
 	char ch = data[index];
 	if(!isalpha(ch)) {
 		/*skip other stuff*/
@@ -489,7 +489,7 @@ OAny obin_string_is_upper(OState* state, OAny self) {
 	return _check_condition(state, self, &_is_upper_condition);
 }
 /*************************** IS SPACE **********************************/
-static int _is_space_condition(obin_string data, obin_mem_t index) {
+static int _is_space_condition(ostring data, omem_t index) {
 	return isspace(data[index]);
 }
 
@@ -499,13 +499,13 @@ OAny obin_string_is_space(OState* state, OAny self) {
 }
 /************************* SEARCH ***************************************/
 typedef OAny (*_string_finder)(OState* state, OAny haystack, OAny needle,
-obin_mem_t start, obin_mem_t end);
+omem_t start, omem_t end);
 
 OAny _obin_string_find(OState* state, OAny haystack, OAny needle,
 		OAny start, OAny end, _string_finder finder) {
-	obin_mem_t pstart;
-	obin_mem_t pend;
-	obin_mem_t haystack_size;
+	omem_t pstart;
+	omem_t pend;
+	omem_t haystack_size;
 
 	haystack_size = _string_size(haystack);
 	if (OAny_isNil(start)) {
@@ -518,7 +518,7 @@ OAny _obin_string_find(OState* state, OAny haystack, OAny needle,
 					"String.search Invalid start index for search ", start);
 		}
 
-		pstart = (obin_mem_t) OAny_toInt(start);
+		pstart = (omem_t) OAny_toInt(start);
 	}
 
 	if (OAny_isNil(end)) {
@@ -531,7 +531,7 @@ OAny _obin_string_find(OState* state, OAny haystack, OAny needle,
 					"String.search Invalid end index for search ", end);
 		}
 
-		pend = (obin_mem_t) OAny_toInt(end);
+		pend = (omem_t) OAny_toInt(end);
 	}
 
 	if ((pend - pstart) > _string_size(haystack)) {
@@ -545,14 +545,14 @@ OAny _obin_string_find(OState* state, OAny haystack, OAny needle,
 }
 /* ****************************** INDEXOF *************************************************************/
 OAny _string_finder_left(OState* state, OAny haystack, OAny needle,
-										obin_mem_t start, obin_mem_t end) {
-	obin_mem_t size_h;
-	obin_mem_t size_n;
-	obin_mem_t i;
-	obin_mem_t hi;
-	obin_mem_t ni;
-	const obin_char* data_h;
-    const obin_char* data_n;
+										omem_t start, omem_t end) {
+	omem_t size_h;
+	omem_t size_n;
+	omem_t i;
+	omem_t hi;
+	omem_t ni;
+	const ochar* data_h;
+    const ochar* data_n;
 
     data_h = _string_const_data(haystack);
     data_n = _string_const_data(needle);
@@ -599,12 +599,12 @@ OAny obin_string_index_of(OState* state, OAny self, OAny other,
  are interpreted as in slice notation. Return STRING_INDEX_NOT_FOUND on failure.
  */
 OAny _string_finder_right(OState* state, OAny haystack, OAny needle,
-obin_mem_t start, obin_mem_t end) {
-	obin_mem_t i;
-	obin_mem_t hi;
-	obin_mem_t ni;
-	const obin_char* data_h;
-    const obin_char* data_n;
+omem_t start, omem_t end) {
+	omem_t i;
+	omem_t hi;
+	omem_t ni;
+	const ochar* data_h;
+    const ochar* data_n;
 
     data_h = _string_const_data(haystack);
     data_n = _string_const_data(needle);
@@ -645,9 +645,9 @@ OAny obin_string_last_index_of(OState* state, OAny self, OAny other,
 /*ObinAny obin_string_format(ObinState* state, ObinAny format, ...);*/
 
 OAny obin_string_dublicate(OState* state, OAny self, OAny _count) {
-	obin_mem_t size;
-	obin_mem_t count;
-	obin_char* data;
+	omem_t size;
+	omem_t count;
+	ochar* data;
 	OAny result;
 
 	_CHECK_SELF_TYPE(state, self, dublicate);
@@ -680,8 +680,8 @@ OAny obin_string_dublicate(OState* state, OAny self, OAny _count) {
 OAny obin_string_split(OState* state, OAny self, OAny separator) {
 	OAny result;
 	OAny curPos;
-	obin_mem_t current;
-	obin_mem_t previous;
+	omem_t current;
+	omem_t previous;
 
 	_CHECK_SELF_TYPE(state, self, split);
 
@@ -731,7 +731,7 @@ OAny obin_string_join(OState* state, OAny self, OAny collection) {
 	OAny iterator;
 	OAny value;
 	OAny result;
-	obin_index counter;
+	oindex_t counter;
 
 	_CHECK_SELF_TYPE(state, self, join);
 
@@ -761,9 +761,9 @@ OAny obin_string_join(OState* state, OAny self, OAny collection) {
 	return result;
 }
 
-OAny obin_string_pack(OState* state, obin_index count, ...){
+OAny obin_string_pack(OState* state, oindex_t count, ...){
 	OAny array;
-	obin_index i;
+	oindex_t i;
 	OAny item;
     va_list vargs;
 
@@ -799,12 +799,12 @@ static void _init_chars_cache() {
 	int c = 0;
 
 	for(c=0; c<=UCHAR_MAX; c++) {
-		__CHARS__[c] = obin_calloc(2, sizeof(obin_char));
+		__CHARS__[c] = obin_calloc(2, sizeof(ochar));
 		__CHARS__[c][0] = c;
 		__CHARS__[c][1] = 0;
 	}
 }
-obin_bool obin_module_string_init(OState* state) {
+obool obin_module_string_init(OState* state) {
 	_init_chars_cache();
 
 	__BEHAVIOR__.__name__ = "__String__";

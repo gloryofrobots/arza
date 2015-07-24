@@ -1,6 +1,6 @@
 #include <obin.h>
 
-void obin_log(OState* state, obin_string format, ...) {
+void obin_log(OState* state, ostring format, ...) {
 	va_list myargs;
 	va_start(myargs, format);
 	obin_vfprintf(stdout, format, myargs);

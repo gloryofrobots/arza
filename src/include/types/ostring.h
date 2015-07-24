@@ -2,15 +2,15 @@
 #define OSTRING_H_
 #include "obuiltin.h"
 
-obin_bool obin_module_string_init(OState* state);
+obool obin_module_string_init(OState* state);
 
 /* constructors */
-OAny obin_string_new(OState* state, obin_string data);
-OAny obin_char_new(obin_char ch);
+OAny obin_string_new(OState* state, ostring data);
+OAny obin_char_new(ochar ch);
 
 OBehavior* obin_char_behavior();
 
-OAny obin_string_from_carray(OState* state, obin_string data, obin_mem_t size);
+OAny obin_string_from_carray(OState* state, ostring data, omem_t size);
 
 OAny obin_string_capitalize(OState* state, OAny self);
 OAny obin_string_capitalize_words(OState* state, OAny self);
@@ -47,8 +47,8 @@ OAny obin_string_concat(OState* state, OAny str1, OAny str2);
 OAny obin_string_join(OState* state, OAny self, OAny collection);
 OAny obin_string_split(OState* state, OAny self, OAny separator);
 
-obin_string obin_string_cstr(OState* state, OAny self);
+ostring obin_string_cstr(OState* state, OAny self);
 
-OAny obin_string_pack(OState* state, obin_index count, ...);
+OAny obin_string_pack(OState* state, oindex_t count, ...);
 
 #endif /* OSTRING_H_ */

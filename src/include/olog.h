@@ -14,11 +14,11 @@
 #ifdef OBIN_LOG_ENABLE
 #define OBIN_MODULE_LOG(module_name)\
 /* YOU MUST DEFINE OBIN_##module_name##LOG_LEVEL in oconf.h*/ \
-static obin_integer _INFO = 2; \
-static obin_integer _WARN = 1; \
-static obin_integer _ERR = 0; \
-static obin_integer _ALL = -1; \
-static void _log(OState* state, obin_integer verbosity, obin_string format, ...) { \
+static oint _INFO = 2; \
+static oint _WARN = 1; \
+static oint _ERR = 0; \
+static oint _ALL = -1; \
+static void _log(OState* state, oint verbosity, ostring format, ...) { \
 	if(OBIN_LOG_##module_name < verbosity) { \
 		return; \
 	} \
@@ -29,14 +29,14 @@ static void _log(OState* state, obin_integer verbosity, obin_string format, ...)
 }
 #else
 #define OBIN_MODULE_LOG(module_name)\
-static obin_integer _INFO = 2; \
-static obin_integer _WARN = 1; \
-static obin_integer _ERR = 0; \
-static obin_integer _ALL = -1; \
-static void _log(ObinState* state, obin_integer verbosity, obin_string format, ...) { }
+static oint _INFO = 2; \
+static oint _WARN = 1; \
+static oint _ERR = 0; \
+static oint _ALL = -1; \
+static void _log(ObinState* state, oint verbosity, ostring format, ...) { }
 #endif
 
-void obin_log(OState* state, obin_string message, ...);
+void obin_log(OState* state, ostring message, ...);
 
 
 #endif /* OLOG_H_ */

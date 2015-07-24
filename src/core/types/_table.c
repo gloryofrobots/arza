@@ -11,7 +11,7 @@
 static OBehavior __BEHAVIOR__;
 
 typedef struct {
-	obin_bool isset;
+	obool isset;
 	OAny key;
 	OAny value;
 } _ObinHashTableEntry;
@@ -19,9 +19,9 @@ typedef struct {
 typedef struct {
 	OCELL_HEADER;
 	_ObinHashTableEntry* body;
-	obin_mem_t size;
-	obin_mem_t capacity;
-	obin_integer iter_count;
+	omem_t size;
+	omem_t capacity;
+	oint iter_count;
 } ObinTable;
 
 #define _table(any) ((ObinTable*) OAny_toCell(any))
@@ -30,16 +30,16 @@ typedef struct {
 #define _body(any) ((_table(any))->body)
 #define _iter_count(any, index) ((_table(any))->iter_count)
 
-static obin_mem_t _next_power_of_2(obin_mem_t v){
+static omem_t _next_power_of_2(omem_t v){
 	v--;
 	v |= v >> 1;
 	v |= v >> 2;
 	v |= v >> 4;
 	v |= v >> 8;
-	if(sizeof(obin_mem_t) > 16){
+	if(sizeof(omem_t) > 16){
 		v |= v >> 16;
 	}
-	if(sizeof(obin_mem_t) > 32){
+	if(sizeof(omem_t) > 32){
 		v |= v >> 32;
 	}
 	v++;
@@ -70,9 +70,9 @@ OAny obin_table_new(OState* state, OAny size){
 	return obin_cell_new(EOBIN_TYPE_TABLE, (OCell*)self, &__BEHAVIOR__, ocells(state)->__Table__);
 }
 
-static void _obin_table_resize(OState* state, OAny self, obin_mem_t new_capacity) {
-	obin_mem_t i;
-	obin_mem_t old_capacity = _capacity(self);
+static void _obin_table_resize(OState* state, OAny self, omem_t new_capacity) {
+	omem_t i;
+	omem_t old_capacity = _capacity(self);
 	_ObinHashTableEntry* old_body = _body(self);
 
 	_body(self) = obin_malloc_array(state, _ObinHashTableEntry, new_capacity);
@@ -87,12 +87,12 @@ static void _obin_table_resize(OState* state, OAny self, obin_mem_t new_capacity
 	obin_memory_free(state, old_body);
 }
 
-static obin_bool _is_excided_load(OAny self) {
+static obool _is_excided_load(OAny self) {
 	return (float)_size(self) / _capacity(self) > OBIN_TABLE_LOAD_FACTOR;
 }
 
 OAny obin_table_clear(OState* state, OAny self){
-	obin_index i;
+	oindex_t i;
 
 	_CHECK_SELF_TYPE(state, self, obin_table_clear);
 
@@ -196,7 +196,7 @@ OAny obin_table_values(OState* state, OAny self){
 typedef struct {
 	OCELL_HEADER;
 	OAny source;
-	obin_index index;
+	oindex_t index;
 } TableIterator;
 
 static OAny __iterator__next__(OState* state, OAny self) {
@@ -290,7 +290,7 @@ static void __destroy__(OState* state, OCell* table) {
 }
 
 static void __mark__(OState* state, OAny self, ofunc_1 mark) {
-	obin_index i;
+	oindex_t i;
 
 	for(i = 0; i < _capacity(self); ++i) {
 		if(_body(self)[i].isset) {
@@ -302,7 +302,7 @@ static void __mark__(OState* state, OAny self, ofunc_1 mark) {
 
 static OAny __clone__(OState* state, OAny self) {
 	OAny result;
-	obin_mem_t capacity;
+	omem_t capacity;
 
 	_CHECK_SELF_TYPE(state, self, __clone__);
 
@@ -321,10 +321,10 @@ static OAny __length__(OState* state, OAny self) {
 /**
  * Find an available slot for the given key, using linear probing.
  */
-obin_index _find_slot(OState* state, OAny self, OAny key)
+oindex_t _find_slot(OState* state, OAny self, OAny key)
 {
-	obin_integer hash = OAny_toInt(obin_hash(state, key));
-	obin_index index;
+	oint hash = OAny_toInt(obin_hash(state, key));
+	oindex_t index;
 
 	index =  hash % _capacity(self);
 
@@ -337,7 +337,7 @@ obin_index _find_slot(OState* state, OAny self, OAny key)
 
 static OAny
 __getitem__(OState* state, OAny self, OAny key){
-	obin_integer index = _find_slot(state, self, key);
+	oint index = _find_slot(state, self, key);
 
 	_CHECK_SELF_TYPE(state, self, __getitem__);
 
@@ -352,7 +352,7 @@ static OAny __setitem__(OState* state, OAny self, OAny key, OAny value){
 
 	_CHECK_SELF_TYPE(state, self, __getitem__);
 
-	obin_integer index = _find_slot(state, self, key);
+	oint index = _find_slot(state, self, key);
 	if (_body(self)[index].isset) {
 		/* Entry exists; update it. */
 		_body(self)[index].value = value;
@@ -373,7 +373,7 @@ static OAny __setitem__(OState* state, OAny self, OAny key, OAny value){
 
 static OAny
 __hasitem__(OState* state, OAny self, OAny key){
-	obin_index index = _find_slot(state, self, key);
+	oindex_t index = _find_slot(state, self, key);
 
 	_CHECK_SELF_TYPE(state, self, __hasitem__);
 
@@ -382,7 +382,7 @@ __hasitem__(OState* state, OAny self, OAny key){
 
 static OAny
 __delitem__(OState* state, OAny self, OAny key){
-	obin_index index = _find_slot(state, self, key);
+	oindex_t index = _find_slot(state, self, key);
 
 	_CHECK_SELF_TYPE(state, self, __delitem__);
 
@@ -396,7 +396,7 @@ __delitem__(OState* state, OAny self, OAny key){
 	return ObinNothing;
 }
 
-obin_bool obin_module_table_init(OState* state) {
+obool obin_module_table_init(OState* state) {
 	__BEHAVIOR__.__name__ = __TypeName__;
 	__BEHAVIOR__.__destroy__ = __destroy__;
 	__BEHAVIOR__.__mark__ = __mark__;

@@ -36,11 +36,11 @@ typedef enum _EOBIN_TYPE {
 typedef struct _ObinCell OCell;
 
 typedef union {
-	obin_integer integer_value;
-	obin_float float_value;
+	oint integer_value;
+	ofloat float_value;
 	struct {
-		obin_byte size;
-		obin_byte char_data;
+		obyte size;
+		obyte char_data;
 	} char_value;
 
 	OCell * cell;
@@ -84,7 +84,7 @@ OAny OAny_new();
 #define OAny_toCell(any) (any.data.cell)
 #define OAny_toInt(any) (any.data.integer_value)
 #define OAny_toChar(any) (any.data.char_value.char_data)
-#define OAny_toMem_t(any) (obin_mem_t)(any.data.integer_value)
+#define OAny_toMem_t(any) (omem_t)(any.data.integer_value)
 
 #define OAny_toFloat(any) (any.data.float_value)
 

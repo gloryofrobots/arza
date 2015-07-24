@@ -7,8 +7,8 @@ ObinHashSecret obin_hash_secret(){
 	return _ObinHashSecret;
 }
 
-obin_bool obin_module_random_init(OState* state){
-	_ObinHashSecret.prefix = (obin_integer) time(NULL);
+obool obin_module_random_init(OState* state){
+	_ObinHashSecret.prefix = (oint) time(NULL);
 	/*suffix whill contain garbage */
 
 	return OTRUE;
