@@ -3,10 +3,10 @@
 
 #include "obuiltin.h"
 
-obin_bool obin_module_error_init(ObinState* state);
-OAny obin_raise_error(ObinState* state, OAny exception);
-OAny obin_raise(ObinState* state, OAny trait, obin_string message, OAny argument);
-OAny obin_raise_vargs(ObinState* state, OAny trait, obin_string message, ...);
+obin_bool obin_module_error_init(OState* state);
+OAny obin_raise_error(OState* state, OAny exception);
+OAny obin_raise(OState* state, OAny trait, obin_string message, OAny argument);
+OAny obin_raise_vargs(OState* state, OAny trait, obin_string message, ...);
 
 
 #endif /* OERROR_H_ */

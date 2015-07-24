@@ -1,9 +1,9 @@
 #include <obin.h>
 
-static ObinInternals __INTERNALS__;
+static OInternals __INTERNALS__;
 
-typedef obin_bool (*obin_bootstrap_initialiser)(ObinState* state);
-typedef void (*obin_bootstrap_finaliser)(ObinState* state);
+typedef obin_bool (*obin_bootstrap_initialiser)(OState* state);
+typedef void (*obin_bootstrap_finaliser)(OState* state);
 
 typedef struct {
 	const char* name;
@@ -23,7 +23,7 @@ static ObinModule __MODULES__[] = {
 
 
 static obin_bool
-_init_internals(ObinState* state) {
+_init_internals(OState* state) {
 	ObinModule* module = __MODULES__;
 	obin_index count_modules = sizeof(__MODULES__) / sizeof(ObinModule);
 	obin_index i;
@@ -43,14 +43,14 @@ _init_internals(ObinState* state) {
 	return OTRUE;
 }
 
-ObinState* obin_init(obin_mem_t heap_size) {
+OState* obin_init(obin_mem_t heap_size) {
 	static int is_initialised = 0;
 
 	if(heap_size == 0) {
 		heap_size = OBIN_DEFAULT_HEAP_SIZE;
 	}
 
-	ObinState* state = obin_state_new(heap_size);
+	OState* state = obin_state_new(heap_size);
 
 	if(!is_initialised
 		&& !_init_internals(state)) {

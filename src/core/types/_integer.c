@@ -12,11 +12,11 @@ OBehavior* obin_integer_behavior() {
 	return NULL;
 }
 
-obin_bool obin_module_integer_init(ObinState* state) {
-	obin_integers(state)->NotFound = obin_integer_new(-1);
-	obin_integers(state)->Lesser = obin_integer_new(-1);
-	obin_integers(state)->Greater = obin_integer_new(1);
-	obin_integers(state)->Equal = obin_integer_new(0);
+obin_bool obin_module_integer_init(OState* state) {
+	ointegers(state)->NotFound = obin_integer_new(-1);
+	ointegers(state)->Lesser = obin_integer_new(-1);
+	ointegers(state)->Greater = obin_integer_new(1);
+	ointegers(state)->Equal = obin_integer_new(0);
 	return OTRUE;
 }
 

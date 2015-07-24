@@ -2,8 +2,8 @@
 
 OBehavior __BEHAVIOR__ = {0};
 
-obin_bool obin_module_float_init(ObinState* state) {
-	obin_behaviors(state)->Float = &__BEHAVIOR__;
+obin_bool obin_module_float_init(OState* state) {
+	obehaviors(state)->Float = &__BEHAVIOR__;
 	return OTRUE;
 }
 

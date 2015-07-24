@@ -3,7 +3,7 @@
 
 #include "obuiltin.h"
 
-obin_bool obin_module_integer_init(ObinState* state);
+obin_bool obin_module_integer_init(OState* state);
 
 
 OAny obin_integer_new(obin_integer number);

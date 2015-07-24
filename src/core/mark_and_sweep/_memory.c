@@ -21,20 +21,20 @@
 #define OBIN_MB_TO_B(MB) (MB * 1024 * 1024)
 
 #define CATCH_STATE_MEMORY(state) \
-	ObinMemory* M = state->memory; \
+	OMemory* M = state->memory; \
 	if(!M) { obin_panic("ObinState memory is NULL!"); }
 
 /*FORWARDS */
 
-void gc_merge_free_spaces(ObinState*);
-void init_collection_stat(ObinState*);
-void reset_allocation_stat(ObinState*);
+void gc_merge_free_spaces(OState*);
+void init_collection_stat(OState*);
+void reset_allocation_stat(OState*);
 
 /* LOG */
 
 OBIN_MODULE_LOG(MEMORY);
 
-void _panic(ObinState* state, obin_string format, ...) {
+void _panic(OState* state, obin_string format, ...) {
 	va_list myargs;
 	va_start(myargs, format);
 	obin_vfprintf(stderr, format, myargs);
@@ -76,7 +76,7 @@ OAny obin_cell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny origin) {
 }
 
 /* MEMORY PRIMITIVES */
-obin_pointer obin_memory_malloc(ObinState * state, obin_mem_t size) {
+obin_pointer obin_memory_malloc(OState * state, obin_mem_t size) {
 	obin_pointer new_pointer;
 
 	if (!size) {
@@ -96,7 +96,7 @@ obin_pointer obin_memory_malloc(ObinState * state, obin_mem_t size) {
 	return new_pointer;
 }
 
-obin_pointer obin_memory_realloc(ObinState * state, obin_pointer ptr, obin_mem_t size) {
+obin_pointer obin_memory_realloc(OState * state, obin_pointer ptr, obin_mem_t size) {
 	obin_pointer new_pointer;
 	if (!size) {
 		return NULL;
@@ -107,7 +107,7 @@ obin_pointer obin_memory_realloc(ObinState * state, obin_pointer ptr, obin_mem_t
 	return new_pointer;
 }
 
-obin_pointer obin_memory_duplicate(ObinState * state, obin_pointer ptr,
+obin_pointer obin_memory_duplicate(OState * state, obin_pointer ptr,
 		obin_mem_t elements, obin_mem_t element_size) {
 	obin_pointer new_pointer;
 	obin_mem_t size;
@@ -122,15 +122,15 @@ obin_pointer obin_memory_duplicate(ObinState * state, obin_pointer ptr,
 
 /* GC and Allocator */
 
-void _memory_create(ObinState* state, obin_mem_t heap_size) {
-	ObinMemory* M;
+void _memory_create(OState* state, obin_mem_t heap_size) {
+	OMemory* M;
 	if(heap_size >= OBIN_MAX_HEAP_SIZE) {
 		_panic(state, "obin_state_new heap_size %d too big for current configuration,"
 				" check OBIN_MAX_HEAP_SIZE in oconf.h",
 				heap_size);
 	}
 
-	state->memory = (ObinMemory*) obin_memory_malloc(state, sizeof(ObinMemory));
+	state->memory = (OMemory*) obin_memory_malloc(state, sizeof(OMemory));
 	M = state->memory;
 
 	if(!M) {
@@ -167,16 +167,16 @@ void _memory_create(ObinState* state, obin_mem_t heap_size) {
     M->allocated_space = 0;
 }
 
-void _memory_destroy(ObinState* state) {
+void _memory_destroy(OState* state) {
 	ObinMem_Free(state->memory->heap);
 	ObinMem_Free(state->memory);
 	state->memory = 0;
 }
 
-ObinState* obin_state_new(obin_mem_t heap_size) {
-	ObinState* state;
+OState* obin_state_new(obin_mem_t heap_size) {
+	OState* state;
 	obin_mem_t size;
-    size = sizeof(ObinState);
+    size = sizeof(OState);
 	state = ObinMem_Malloc(size);
 	if(!state) {
     	obin_panic("Failed to allocate ObinState");
@@ -189,7 +189,7 @@ ObinState* obin_state_new(obin_mem_t heap_size) {
 	return state;
 }
 
-void obin_state_destroy(ObinState* state) {
+void obin_state_destroy(OState* state) {
 	ObinMem_Free(state->memory->heap);
     ObinMem_Free(state->memory);
 	ObinMem_Free(state);
@@ -203,7 +203,7 @@ void obin_state_destroy(ObinState* state) {
  *  it is told to 'mark_references', recursively using this
  *  function for all its references.
  */
-static OAny gc_mark_object(ObinState* state, OAny object) {
+static OAny gc_mark_object(OState* state, OAny object) {
 	OCell* cell = OAny_toCell(object);
 	CATCH_STATE_MEMORY(state);
 	if(!cell) {
@@ -239,7 +239,7 @@ static OAny gc_mark_object(ObinState* state, OAny object) {
 	return ObinNil;
 }
 
-void gc_mark_reachable_objects(ObinState * state) {
+void gc_mark_reachable_objects(OState * state) {
 	OAny globals = state->globals;
 	gc_mark_object(state, globals);
 
@@ -252,7 +252,7 @@ void gc_mark_reachable_objects(ObinState * state) {
     }*/
 }
 
-static void _destroy_cell(ObinState * state, OCell* cell) {
+static void _destroy_cell(OState * state, OCell* cell) {
 	if (!cell) {
 		obin_panic("cell is null");
 	}
@@ -267,7 +267,7 @@ static void _destroy_cell(ObinState * state, OCell* cell) {
 }
 
 
-void obin_gc_collect(ObinState* state) {
+void obin_gc_collect(OState* state) {
 	obin_pointer pointer;
 	OCell* object;
 	ObinMemoryFreeNode* current_entry, *new_entry;
@@ -359,7 +359,7 @@ void obin_gc_collect(ObinState* state) {
 }
 
 
-void* _allocate_cell(ObinState* state, obin_mem_t size) {
+void* _allocate_cell(OState* state, obin_mem_t size) {
     void* result = NULL;
 	ObinMemoryFreeNode* entry, *before_entry, *old_next, *replace_entry;
 	int old_entry_size;
@@ -455,7 +455,7 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
     return result;
 }
 
-void* obin_allocate_cell(ObinState* state, obin_mem_t size) {
+void* obin_allocate_cell(OState* state, obin_mem_t size) {
 	obin_mem_t aligned_size = size + ObinMem_Padding(size);
     OCell* object = (OCell*)_allocate_cell(state, aligned_size);
 
@@ -475,7 +475,7 @@ void* obin_allocate_cell(ObinState* state, obin_mem_t size) {
  * this function must not do anything, since the heap management
  * is done inside gc_collect.
  */
-void obin_memory_free(ObinState* state, obin_pointer ptr) {
+void obin_memory_free(OState* state, obin_pointer ptr) {
 #ifdef ODEBUG
 	CATCH_STATE_MEMORY(state);
     /* check if called for an object inside the object_space */
@@ -489,8 +489,8 @@ void obin_memory_free(ObinState* state, obin_pointer ptr) {
 }
 
 /* free entries which are next to each other are merged into one entry */
-void gc_merge_free_spaces(ObinState* state) {
-	ObinMemory* M = state->memory;
+void gc_merge_free_spaces(OState* state) {
+	OMemory* M = state->memory;
     ObinMemoryFreeNode* entry = M->free_node;
     ObinMemoryFreeNode* entry_to_append = NULL;
     int new_size = 0;
@@ -526,7 +526,7 @@ void gc_merge_free_spaces(ObinState* state) {
  * the garbage collection would result in data loss and must
  * not be started!
  */
-void obin_memory_start_transaction(ObinState* state) {
+void obin_memory_start_transaction(OState* state) {
     state->memory->transaction_count++;
 }
 
@@ -534,7 +534,7 @@ void obin_memory_start_transaction(ObinState* state) {
  * only if the counter reaches zero, it is safe to start the
  * garbage collection.
  */
-void obin_memory_end_transaction(ObinState* state) {
+void obin_memory_end_transaction(OState* state) {
     state->memory->transaction_count--;
 }
 
@@ -542,7 +542,7 @@ void obin_memory_end_transaction(ObinState* state) {
  functions for GC statistics and debugging output
  * initialise per-collection statistics
  */
-void init_collection_stat(ObinState* state) {
+void init_collection_stat(OState* state) {
 	CATCH_STATE_MEMORY(state);
     /* num_alloc and spc_alloc are not initialised here - they are reset after
      * the collection in reset_alloc_stat() */
@@ -555,7 +555,7 @@ void init_collection_stat(ObinState* state) {
 /*
  * reset allocation statistics
  */
-void reset_allocation_stat(ObinState* state) {
+void reset_allocation_stat(OState* state) {
 	CATCH_STATE_MEMORY(state);
     M->allocated_count = 0;
     M->allocated_space = 0;
@@ -564,7 +564,7 @@ void reset_allocation_stat(ObinState* state) {
 /*
  * output per-collection statistics
  */
-static void _log_memory_stat(ObinState* state) {
+static void _log_memory_stat(OState* state) {
 	CATCH_STATE_MEMORY(state);
     _log(state, _ALL, "\n[State %p memory. Heap size %d B (%.2f kB, %.2f MB)\n"
     		" collections:%d,\n %d allocated in (%d B %.2f kB), \n %d live in (%d B %.2f kB), %d killed in "\
@@ -584,7 +584,7 @@ static void _log_memory_stat(ObinState* state) {
  * - '-size-' for unmarked objects.
  * The output is also aligned to improve readability.
  */
-static void _memory_trace(ObinState* state) {
+static void _memory_trace(OState* state) {
     OCell* pointer;
     ObinMemoryFreeNode* current_entry;
     int object_size = 0;
@@ -642,7 +642,7 @@ static void _memory_trace(ObinState* state) {
     } while ((void*)pointer < (void*)(_end_heap(M)));
 }
 
-void obin_memory_debug_trace(ObinState* state) {
+void obin_memory_debug_trace(OState* state) {
 	_log_memory_stat(state);
 	_memory_trace(state);
 }

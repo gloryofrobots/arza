@@ -3,9 +3,9 @@
 #include "oany.h"
 typedef struct _OBehavior OBehavior;
 /************************* STATE *************************************/
-typedef struct _ObinMemory ObinMemory;
+typedef struct _OMemory OMemory;
 
-typedef struct _ObinInternals {
+typedef struct _OInternals {
 	struct _ObinInternalCells {
 		OAny __Cell__;
 		OAny __String__;
@@ -57,20 +57,19 @@ typedef struct _ObinInternals {
 		OBehavior* Char;
 	} behaviors;
 
-} ObinInternals;
+} OInternals;
 
 
 typedef struct _ObinState {
 	OAny globals;
-	ObinMemory* memory;
-	ObinInternals* internals;
-} ObinState;
+	OMemory* memory;
+	OInternals* internals;
+} OState;
 
-
-#define obin_errors(state) (&state->internals->errors)
-#define obin_integers(state) (&state->internals->integers)
-#define obin_strings(state) (&state->internals->strings)
-#define obin_cells(state) (&state->internals->cells)
-#define obin_behaviors(state) (&state->internals->behaviors)
+#define oerrors(state) (&state->internals->errors)
+#define ointegers(state) (&state->internals->integers)
+#define ostrings(state) (&state->internals->strings)
+#define ocells(state) (&state->internals->cells)
+#define obehaviors(state) (&state->internals->behaviors)
 
 #endif /* OSTATE_H_ */

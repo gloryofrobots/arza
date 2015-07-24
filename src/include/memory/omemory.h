@@ -11,7 +11,7 @@ typedef struct ObinMemoryFreeNode {
     size_t size;
 } ObinMemoryFreeNode;
 
-struct _ObinMemory {
+struct _OMemory {
 	void* heap;
 	obin_mem_t heap_size;
 	obin_mem_t heap_capacity;
@@ -43,30 +43,30 @@ OAny obin_cell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny root);
 /*TRAITS HERE MUST EXIST IN CELL */
 OAny obin_cell_to_any(EOTYPE type, OCell* cell);
 
-ObinState* obin_state_new(obin_mem_t heap_size);
-void obin_state_destroy(ObinState* state);
+OState* obin_state_new(obin_mem_t heap_size);
+void obin_state_destroy(OState* state);
 
-void* obin_allocate_cell(ObinState* state, obin_mem_t size);
-void obin_gc_collect(ObinState* state);
+void* obin_allocate_cell(OState* state, obin_mem_t size);
+void obin_gc_collect(OState* state);
 
 /*TODO REMOVE IT LATER TO statics in c source */
-obin_pointer obin_memory_malloc(ObinState* state, obin_mem_t size);
+obin_pointer obin_memory_malloc(OState* state, obin_mem_t size);
 
-obin_pointer obin_memory_realloc(ObinState* state, obin_pointer ptr, obin_mem_t size) ;
+obin_pointer obin_memory_realloc(OState* state, obin_pointer ptr, obin_mem_t size) ;
 
-obin_pointer obin_memory_memdup(ObinState* state, obin_pointer ptr, obin_mem_t elements, obin_mem_t element_size );
+obin_pointer obin_memory_memdup(OState* state, obin_pointer ptr, obin_mem_t elements, obin_mem_t element_size );
 
-void obin_memory_free(ObinState* state, obin_pointer ptr);
+void obin_memory_free(OState* state, obin_pointer ptr);
 
-void obin_memory_debug_trace(ObinState* state);
+void obin_memory_debug_trace(OState* state);
 
 /*
  * During memory transactions gc collection will not occur.
  * There are no support for rollbacks now.
  * If the memory is not enough, the system will fall
  * */
-void obin_memory_start_transaction(ObinState* state);
-void obin_memory_end_transaction(ObinState* state);
+void obin_memory_start_transaction(OState* state);
+void obin_memory_end_transaction(OState* state);
 
 #define obin_new(state, type) \
 		((type*) obin_allocate_cell(state, sizeof(type)))

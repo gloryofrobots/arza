@@ -33,7 +33,7 @@
 
 static CU_SuiteInfo suites[] = {
   { "Suite_BaseTypes",  NULL, NULL,    TestGroup_BaseTypes },
-  /*{ "Suite_Memory",  NULL, NULL,    TestGroup_Memory },*/
+  { "Suite_Memory",  NULL, NULL,    TestGroup_Memory },
 
   /*  { "suite_success_both",  suite_base_init, suite_base_clean,    tests_base_types },
   { "suite_success_init",  suite_base_init, NULL,                tests_base_types },

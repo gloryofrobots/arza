@@ -8,7 +8,7 @@ OCELL_DECLARE(SequenceIterator,
 	obin_mem_t length;
 );
 
-static OAny __si__next__(ObinState* state, OAny self) {
+static OAny __si__next__(OState* state, OAny self) {
 	SequenceIterator * it;
 	OAny result;
 
@@ -32,7 +32,7 @@ OBEHAVIOR_DEFINE(__SEQUENCE_ITERATOR_BEHAVIOR__,
 		OBEHAVIOR_NUMBER_OPERATIONS_NULL
 );
 
-OAny obin_sequence_iterator_new(ObinState* state, OAny sequence){
+OAny obin_sequence_iterator_new(OState* state, OAny sequence){
 	SequenceIterator * iterator;
 
 	iterator = obin_new(state, SequenceIterator);
@@ -40,10 +40,10 @@ OAny obin_sequence_iterator_new(ObinState* state, OAny sequence){
 	iterator->current = 0;
 	iterator->length = (obin_mem_t) OAny_toInt(obin_length(state, sequence));
 
-	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__SEQUENCE_ITERATOR_BEHAVIOR__, obin_cells(state)->__Cell__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__SEQUENCE_ITERATOR_BEHAVIOR__, ocells(state)->__Cell__);
 }
 
-OAny obin_collection_compare(ObinState * state, OAny self, OAny other){
+OAny obin_collection_compare(OState * state, OAny self, OAny other){
 	OAny self_length;
 	OAny other_length;
 	OAny self_iterator;
@@ -57,30 +57,30 @@ OAny obin_collection_compare(ObinState * state, OAny self, OAny other){
 	/*TODO ADD TYPE CHECK HERE FOR __COLLECTION__ cell*/
 	if(!OAny_isCell(other)){
 		if(OAny_toInt(self_length) > 0){
-			return obin_integers(state)->Greater;
+			return ointegers(state)->Greater;
 		}
 
 		if(OAny_isNil(other) || OAny_isFalse(other)) {
-				return obin_integers(state)->Equal;
+				return ointegers(state)->Equal;
 		}
 
-		return obin_integers(state)->Lesser;
+		return ointegers(state)->Lesser;
 	}
 
 	other_length = obin_length(state, other);
 
 	if (OAny_toInt(self_length) < OAny_toInt(other_length)) {
-		return obin_integers(state)->Lesser;
+		return ointegers(state)->Lesser;
 	}
 
 	if (OAny_toInt(self_length) > OAny_toInt(other_length)) {
-		return obin_integers(state)->Greater;
+		return ointegers(state)->Greater;
 	}
 
 	self_iterator = obin_iterator(state, self);
 	other_iterator = obin_iterator(state, other);
 
-	compare_result = obin_integers(state)->Equal;
+	compare_result = ointegers(state)->Equal;
 
 	while(OTRUE) {
 		self_item = obin_next(state, self_iterator);
@@ -91,7 +91,7 @@ OAny obin_collection_compare(ObinState * state, OAny self, OAny other){
 		}
 
 		compare_result = obin_compare(state, self_item, other_item);
-		if(OAny_isTrue(obin_is(state, compare_result, obin_integers(state)->Equal))){
+		if(OAny_isTrue(obin_is(state, compare_result, ointegers(state)->Equal))){
 			break;
 		}
 	}

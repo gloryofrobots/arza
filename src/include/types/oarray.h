@@ -4,18 +4,18 @@
 #include "obuiltin.h"
 
 
-obin_bool obin_module_array_init(ObinState* state);
+obin_bool obin_module_array_init(OState* state);
 
-OAny obin_array_new(ObinState* state, OAny size);
-OAny obin_array_push(ObinState* state, OAny self, OAny value);
-OAny obin_array_indexof(ObinState* state, OAny self, OAny item);
-OAny obin_array_lastindexof(ObinState* state, OAny self, OAny item);
-OAny obin_array_pop(ObinState* state, OAny self);
-OAny obin_array_clear(ObinState* state, OAny self);
+OAny obin_array_new(OState* state, OAny size);
+OAny obin_array_push(OState* state, OAny self, OAny value);
+OAny obin_array_indexof(OState* state, OAny self, OAny item);
+OAny obin_array_lastindexof(OState* state, OAny self, OAny item);
+OAny obin_array_pop(OState* state, OAny self);
+OAny obin_array_clear(OState* state, OAny self);
 /*return true if removes something*/
-OAny obin_array_remove(ObinState* state, OAny self, OAny item);
-OAny obin_array_insert(ObinState* state, OAny self, OAny item, OAny position);
-OAny obin_array_insert_collection(ObinState* state, OAny self, OAny collection, OAny position);
+OAny obin_array_remove(OState* state, OAny self, OAny item);
+OAny obin_array_insert(OState* state, OAny self, OAny item, OAny position);
+OAny obin_array_insert_collection(OState* state, OAny self, OAny collection, OAny position);
 /*
  * implemented __add__
  * */

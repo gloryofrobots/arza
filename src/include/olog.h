@@ -18,7 +18,7 @@ static obin_integer _INFO = 2; \
 static obin_integer _WARN = 1; \
 static obin_integer _ERR = 0; \
 static obin_integer _ALL = -1; \
-static void _log(ObinState* state, obin_integer verbosity, obin_string format, ...) { \
+static void _log(OState* state, obin_integer verbosity, obin_string format, ...) { \
 	if(OBIN_LOG_##module_name < verbosity) { \
 		return; \
 	} \
@@ -36,7 +36,7 @@ static obin_integer _ALL = -1; \
 static void _log(ObinState* state, obin_integer verbosity, obin_string format, ...) { }
 #endif
 
-void obin_log(ObinState* state, obin_string message, ...);
+void obin_log(OState* state, obin_string message, ...);
 
 
 #endif /* OLOG_H_ */

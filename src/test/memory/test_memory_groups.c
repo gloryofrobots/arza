@@ -24,7 +24,7 @@ typedef struct {
 static TMCounter* tmg_counter;
 
 
-OAny tmg_cell_new(ObinState* state, int data_size, double garbage_pecentage, int parent_id) {
+OAny tmg_cell_new(OState* state, int data_size, double garbage_pecentage, int parent_id) {
 	TMGCell* cell = obin_new(state, TMGCell);
 	int i = 0;
 
@@ -52,11 +52,11 @@ OAny tmg_cell_new(ObinState* state, int data_size, double garbage_pecentage, int
 		}
 	}
 
-	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*) cell, &__TMGCELL_BEHAVIOR__, obin_cells(state)->__Cell__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*) cell, &__TMGCELL_BEHAVIOR__, ocells(state)->__Cell__);
 }
 
 
-static void __tmg_cell_mark__(ObinState* state, OAny self, ofunc_1 callback ) {
+static void __tmg_cell_mark__(OState* state, OAny self, ofunc_1 callback ) {
 	int i = 0, count_marked = 0;
 	TMGCell* cell = (TMGCell*) OAny_toCell(self);
 	TMGCell* child;
@@ -76,7 +76,7 @@ static void __tmg_cell_mark__(ObinState* state, OAny self, ofunc_1 callback ) {
 	}
 }
 
-static void __tmg_cell_destroy__(ObinState* state, OCell* self) {
+static void __tmg_cell_destroy__(OState* state, OCell* self) {
 	TMGCell* cell = (TMGCell*) self;
 
 	tm_counter_destroy(tmg_counter);
@@ -95,7 +95,7 @@ OBEHAVIOR_DEFINE(__TMGCELL_BEHAVIOR__,
 		OBEHAVIOR_NUMBER_OPERATIONS_NULL
 );
 
-void tmg_test(ObinState* state, obin_mem_t data_size, double garbage_percentage) {
+void tmg_test(OState* state, obin_mem_t data_size, double garbage_percentage) {
 	int destroyed = 0;
 	printf("\ntmg_test data_size:%d garbage_percentage:%.2f\n", data_size, garbage_percentage);
 /*    obin_memory_debug_trace(state);*/
@@ -119,7 +119,7 @@ void tmg_test(ObinState* state, obin_mem_t data_size, double garbage_percentage)
 
 static void Test_MemoryGroups(void) {
 	tmg_counter = tm_counter_new();
-	ObinState * state = obin_init(1024 * 1024 * 90);
+	OState * state = obin_init(1024 * 1024 * 90);
 /*	obin_memory_start_transaction(state);*/
 	tmg_test(state, 5, 0.5);
 	tmg_test(state, 2, 0.5);
@@ -134,7 +134,7 @@ static void Test_MemoryGroups(void) {
 	tmg_test(state, 6, 0.8);
 	tmg_test(state, 7, 0.7);
 	tmg_test(state, 2, 0.7);
-	tmg_test(state, 9, 0.7);
+	/*tmg_test(state, 9, 0.7);*/
 
 /*	obin_memory_end_transaction(state);*/
 	obin_state_destroy(state);

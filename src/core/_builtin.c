@@ -16,36 +16,36 @@ OAny OAny_new() {
 /******************************************************************/
 
 static OBehavior*
-_embedded_type_behavior(ObinState* state, OAny any) {
+_embedded_type_behavior(OState* state, OAny any) {
 	switch (any.type) {
 	case EOBIN_TYPE_TRUE:
-		return obin_behaviors(state)->True;
+		return obehaviors(state)->True;
 	case EOBIN_TYPE_FALSE:
-		return obin_behaviors(state)->False;
+		return obehaviors(state)->False;
 	case EOBIN_TYPE_INTEGER:
-		return obin_behaviors(state)->Integer;
+		return obehaviors(state)->Integer;
 	case EOBIN_TYPE_FLOAT:
-		return obin_behaviors(state)->Float;
+		return obehaviors(state)->Float;
 	case EOBIN_TYPE_CHAR:
-		return obin_behaviors(state)->Char;
+		return obehaviors(state)->Char;
 	default:
-		obin_raise(state, obin_errors(state)->TypeError,
+		obin_raise(state, oerrors(state)->TypeError,
 				"There are no native behavior in this type", any);
 		return NULL;
 	}
 }
 
-void obin_release(ObinState * state, OAny self) {
+void obin_release(OState * state, OAny self) {
 	/*TODO IMPLEMENT*/
 }
 
-OAny obin_equal(ObinState * state, OAny any, OAny other) {
+OAny obin_equal(OState * state, OAny any, OAny other) {
 	OAny result;
 	result = obin_compare(state, any, other);
-	return obin_is(state, result, obin_integers(state)->Equal);
+	return obin_is(state, result, ointegers(state)->Equal);
 }
 
-OAny obin_is(ObinState * state, OAny any, OAny other) {
+OAny obin_is(OState * state, OAny any, OAny other) {
 	if (OAny_isCell(any)) {
 		if (OAny_isCell(other)) {
 			return obin_bool_new(OAny_toCell(any) == OAny_toCell(other));
@@ -71,60 +71,60 @@ OAny obin_is(ObinState * state, OAny any, OAny other) {
 
 /************************* BASE **********************************/
 
-OAny obin_tostring(ObinState* state, OAny self) {
+OAny obin_tostring(OState* state, OAny self) {
     ofunc_1 method;
     method = _method(state, self, __tostring__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__tostring__ protocol not supported", self);
     }
 
     return method(state, self);
 }
 
-OAny obin_tobool(ObinState* state, OAny self) {
+OAny obin_tobool(OState* state, OAny self) {
     ofunc_1 method;
     method = _method(state, self, __tobool__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__tobool__ protocol not supported", self);
     }
 
     return method(state, self);
 }
 
-OAny obin_clone(ObinState* state, OAny self) {
+OAny obin_clone(OState* state, OAny self) {
     ofunc_1 method;
     method = _method(state, self, __clone__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__clone__ protocol not supported", self);
     }
 
     return method(state, self);
 }
 
-OAny obin_compare(ObinState* state, OAny self, OAny arg1) {
+OAny obin_compare(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __compare__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__compare__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_hash(ObinState* state, OAny self) {
+OAny obin_hash(OState* state, OAny self) {
     ofunc_1 method;
     method = _method(state, self, __hash__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__hash__ protocol not supported", self);
     }
 
@@ -133,72 +133,72 @@ OAny obin_hash(ObinState* state, OAny self) {
 
 /************************* COLLECTION **********************************/
 
-OAny obin_iterator(ObinState* state, OAny self) {
+OAny obin_iterator(OState* state, OAny self) {
     ofunc_1 method;
     method = _method(state, self, __iterator__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__iterator__ protocol not supported", self);
     }
 
     return method(state, self);
 }
 
-OAny obin_length(ObinState* state, OAny self) {
+OAny obin_length(OState* state, OAny self) {
     ofunc_1 method;
     method = _method(state, self, __length__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__length__ protocol not supported", self);
     }
 
     return method(state, self);
 }
 
-OAny obin_getitem(ObinState* state, OAny self, OAny arg1) {
+OAny obin_getitem(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __getitem__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__getitem__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_hasitem(ObinState* state, OAny self, OAny arg1) {
+OAny obin_hasitem(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __hasitem__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__hasitem__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_delitem(ObinState* state, OAny self, OAny arg1) {
+OAny obin_delitem(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __delitem__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__delitem__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_setitem(ObinState* state, OAny self, OAny arg1, OAny arg2) {
+OAny obin_setitem(OState* state, OAny self, OAny arg1, OAny arg2) {
     ofunc_3 method;
     method = _method(state, self, __setitem__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__setitem__ protocol not supported", self);
     }
 
@@ -207,12 +207,12 @@ OAny obin_setitem(ObinState* state, OAny self, OAny arg1, OAny arg2) {
 
 /************************* GENERATOR **********************************/
 
-OAny obin_next(ObinState* state, OAny self) {
+OAny obin_next(OState* state, OAny self) {
     ofunc_1 method;
     method = _method(state, self, __next__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__next__ protocol not supported", self);
     }
 
@@ -221,48 +221,48 @@ OAny obin_next(ObinState* state, OAny self) {
 
 /************************* NUMBER_CAST **********************************/
 
-OAny obin_tointeger(ObinState* state, OAny self) {
+OAny obin_tointeger(OState* state, OAny self) {
     ofunc_1 method;
     method = _method(state, self, __tointeger__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__tointeger__ protocol not supported", self);
     }
 
     return method(state, self);
 }
 
-OAny obin_tofloat(ObinState* state, OAny self) {
+OAny obin_tofloat(OState* state, OAny self) {
     ofunc_1 method;
     method = _method(state, self, __tofloat__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__tofloat__ protocol not supported", self);
     }
 
     return method(state, self);
 }
 
-OAny obin_topositive(ObinState* state, OAny self) {
+OAny obin_topositive(OState* state, OAny self) {
     ofunc_1 method;
     method = _method(state, self, __topositive__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__topositive__ protocol not supported", self);
     }
 
     return method(state, self);
 }
 
-OAny obin_tonegative(ObinState* state, OAny self) {
+OAny obin_tonegative(OState* state, OAny self) {
     ofunc_1 method;
     method = _method(state, self, __tonegative__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__tonegative__ protocol not supported", self);
     }
 
@@ -271,156 +271,156 @@ OAny obin_tonegative(ObinState* state, OAny self) {
 
 /************************* NUMBER_OPERATIONS **********************************/
 
-OAny obin_abs(ObinState* state, OAny self) {
+OAny obin_abs(OState* state, OAny self) {
     ofunc_1 method;
     method = _method(state, self, __abs__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__abs__ protocol not supported", self);
     }
 
     return method(state, self);
 }
 
-OAny obin_invert(ObinState* state, OAny self) {
+OAny obin_invert(OState* state, OAny self) {
     ofunc_1 method;
     method = _method(state, self, __invert__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__invert__ protocol not supported", self);
     }
 
     return method(state, self);
 }
 
-OAny obin_add(ObinState* state, OAny self, OAny arg1) {
+OAny obin_add(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __add__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__add__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_subtract(ObinState* state, OAny self, OAny arg1) {
+OAny obin_subtract(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __subtract__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__subtract__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_divide(ObinState* state, OAny self, OAny arg1) {
+OAny obin_divide(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __divide__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__divide__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_multiply(ObinState* state, OAny self, OAny arg1) {
+OAny obin_multiply(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __multiply__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__multiply__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_pow(ObinState* state, OAny self, OAny arg1) {
+OAny obin_pow(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __pow__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__pow__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_leftshift(ObinState* state, OAny self, OAny arg1) {
+OAny obin_leftshift(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __leftshift__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__leftshift__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_rightshift(ObinState* state, OAny self, OAny arg1) {
+OAny obin_rightshift(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __rightshift__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__rightshift__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_mod(ObinState* state, OAny self, OAny arg1) {
+OAny obin_mod(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __mod__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__mod__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_and(ObinState* state, OAny self, OAny arg1) {
+OAny obin_and(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __and__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__and__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_or(ObinState* state, OAny self, OAny arg1) {
+OAny obin_or(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __or__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__or__ protocol not supported", self);
     }
 
     return method(state, self, arg1);
 }
 
-OAny obin_xor(ObinState* state, OAny self, OAny arg1) {
+OAny obin_xor(OState* state, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(state, self, __xor__);
 
     if (!method) {
-        obin_raise(state, obin_errors(state)->TypeError,
+        obin_raise(state, oerrors(state)->TypeError,
                 "__xor__ protocol not supported", self);
     }
 

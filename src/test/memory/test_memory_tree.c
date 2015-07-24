@@ -43,7 +43,7 @@ void _tmtcell_print(TMTCell* cell, obin_string format) {
 		_tmtcell_print(cell, message " cell: id=%d  data=%s \n")
 
 
-OAny tmtcell_new(ObinState* state, obin_string data, obin_mem_t capacity) {
+OAny tmtcell_new(OState* state, obin_string data, obin_mem_t capacity) {
 	TMTCell* cell;
 	obin_mem_t size, body_size, data_size;
 
@@ -66,11 +66,11 @@ OAny tmtcell_new(ObinState* state, obin_string data, obin_mem_t capacity) {
 
 	tmtcell_print(cell, "tmtcell_new");
 
-	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*) cell, &__TMTCELL_BEHAVIOR__, obin_cells(state)->__Cell__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*) cell, &__TMTCELL_BEHAVIOR__, ocells(state)->__Cell__);
 }
 
 
-static void __tmtcell_mark__(ObinState* state, OAny self, ofunc_1 callback ) {
+static void __tmtcell_mark__(OState* state, OAny self, ofunc_1 callback ) {
 	TMTCell* cell = (TMTCell*) OAny_toCell(self);
 	tmtcell_print(cell, "__tmtcell_mark__");
 	tm_counter_mark(tmt_counter);
@@ -84,7 +84,7 @@ static void __tmtcell_mark__(ObinState* state, OAny self, ofunc_1 callback ) {
 
 }
 
-static void __tmtcell_destroy__(ObinState* state, OCell* self) {
+static void __tmtcell_destroy__(OState* state, OCell* self) {
 	TMTCell* cell = (TMTCell*) self;
 	tm_counter_destroy(tmt_counter);
 	tmtcell_print(cell, "__tmtcell_destroy__");
@@ -139,13 +139,13 @@ OAny tmt_stat_add_cell(_TMTTestStat* requests, OAny node, obin_bool is_alive) {
 	return node;
 }
 
-OAny tmt_stat_create_cell(_TMTTestStat* requests, obin_bool is_alive, ObinState* state,  obin_string data, obin_mem_t capacity) {
+OAny tmt_stat_create_cell(_TMTTestStat* requests, obin_bool is_alive, OState* state,  obin_string data, obin_mem_t capacity) {
 	OAny node = tmtcell_new(state, data, capacity);
 	return tmt_stat_add_cell(requests, node, is_alive);
 }
 
 
-_TMTTestStat _test1(ObinState* state) {
+_TMTTestStat _test1(OState* state) {
 	OAny root;
 	_TMTTestStat requests = tmt_stat_new(OTRUE, OTRUE, OTRUE);
 
@@ -159,7 +159,7 @@ _TMTTestStat _test1(ObinState* state) {
 
 	return requests;
 }
-_TMTTestStat _test2(ObinState* state) {
+_TMTTestStat _test2(OState* state) {
 	OAny leftnode, rightnode, node, node2;
 	_TMTTestStat requests = tmt_stat_new(OTRUE, OTRUE, OTRUE);
 
@@ -195,7 +195,7 @@ _TMTTestStat _test2(ObinState* state) {
 	return requests;
 }
 
-void _test_clear(ObinState* state, _TMTTestStat stat) {
+void _test_clear(OState* state, _TMTTestStat stat) {
 	state->globals = ObinNil;
 	obin_gc_collect(state);
 
@@ -208,9 +208,9 @@ void _test_clear(ObinState* state, _TMTTestStat stat) {
 	CU_ASSERT_EQUAL(state->memory->killed_space, stat.live_space);
 }
 
-typedef _TMTTestStat (*__tmt_test)(ObinState* );
+typedef _TMTTestStat (*__tmt_test)(OState* );
 /******************** TEST *****************/
-_TMTTestStat _tmt_make_test(ObinState* state, __tmt_test test) {
+_TMTTestStat _tmt_make_test(OState* state, __tmt_test test) {
 	int destroyed = 0;
 	_TMTTestStat requests;
 
@@ -258,7 +258,7 @@ _TMTTestStat _tmt_make_test(ObinState* state, __tmt_test test) {
 void tmt_test() {
 	_TMTTestStat stat;
 	tmt_counter = tm_counter_new();
-	ObinState * state;
+	OState * state;
     int heap_size  = 2048;
 
 	state = obin_init(heap_size);
