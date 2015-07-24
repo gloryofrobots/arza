@@ -1,13 +1,13 @@
 #include <orandom.h>
 #include <time.h>
-static ObinHashSecret _ObinHashSecret;
+static OHashSecret _ObinHashSecret;
 
 
-ObinHashSecret obin_hash_secret(){
+OHashSecret ohash_secret(){
 	return _ObinHashSecret;
 }
 
-obool obin_module_random_init(OState* state){
+obool ORandom_init(OState* state){
 	_ObinHashSecret.prefix = (oint) time(NULL);
 	/*suffix whill contain garbage */
 

@@ -3,7 +3,7 @@
 
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!OAny_isTable(self)) { \
-		return obin_raise(state, oerrors(state)->TypeError, \
+		return oraise(state, oerrors(state)->TypeError, \
 				__TypeName__ #method "call from other type", self); \
 	} \
 
@@ -56,7 +56,7 @@ OAny obin_table_new(OState* state, OAny size){
 	}
 
 	if (!OInt_isFitToMemsize(size)) {
-		return obin_raise(state, oerrors(state)->MemoryError,
+		return oraise(state, oerrors(state)->MemoryError,
 				"obin_table_new:: size not fit to memory", size);
 	}
 
@@ -342,7 +342,7 @@ __getitem__(OState* state, OAny self, OAny key){
 	_CHECK_SELF_TYPE(state, self, __getitem__);
 
 	if (!_body(self)[index].isset) {
-		obin_raise(state, oerrors(state)->KeyError, __TypeName__ ".__getitem__ invalid key", key);
+		oraise(state, oerrors(state)->KeyError, __TypeName__ ".__getitem__ invalid key", key);
 	}
 
 	return _body(self)[index].value;
@@ -387,7 +387,7 @@ __delitem__(OState* state, OAny self, OAny key){
 	_CHECK_SELF_TYPE(state, self, __delitem__);
 
 	if (!_body(self)[index].isset) {
-		obin_raise(state, oerrors(state)->KeyError, __TypeName__ "__delitem__ unknown key", key);
+		oraise(state, oerrors(state)->KeyError, __TypeName__ "__delitem__ unknown key", key);
 	}
 
 	_body(self)[index].isset = OFALSE;

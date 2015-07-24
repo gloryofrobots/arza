@@ -8,7 +8,7 @@ static obyte* __CHARS__[SCHAR_MAX] = {0};
 
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!OAny_isString(self)) { \
-		return obin_raise(state, oerrors(state)->TypeError, \
+		return oraise(state, oerrors(state)->TypeError, \
 				__TypeName__"."#method "call from other type", self); \
 	} \
 
@@ -113,13 +113,13 @@ static OAny __getitem__(OState* state, OAny self, OAny key) {
 	_CHECK_SELF_TYPE(state, self, __item__);
 
 	if(!OAny_isInt(key)){
-		return obin_raise(state, oerrors(state)->TypeError,
+		return oraise(state, oerrors(state)->TypeError,
 				"String.__item__ key must be integer", key);
 	}
 
 	index = OAny_toInt(key);
 	if(index < 0 || index >= _string_size(self)) {
-		return obin_raise(state, oerrors(state)->TypeError,
+		return oraise(state, oerrors(state)->TypeError,
 				"String.__item__ invalid index", key);
 	}
 
@@ -132,7 +132,7 @@ static OAny __compare__(OState* state, OAny self, OAny other) {
 	_CHECK_SELF_TYPE(state, self, __compare__);
 
 	if (!OAny_isString(other)) {
-		return obin_raise(state, oerrors(state)->TypeError,
+		return oraise(state, oerrors(state)->TypeError,
 				"String.__compare__ argument is not string", other);
 	}
 
@@ -161,7 +161,7 @@ static OAny __hash__(OState* state, OAny self) {
 	register oint hash = 0;
 	register const ochar * cursor = 0;
 	register oint length = 0;
-	ObinHashSecret secret;
+	OHashSecret secret;
 
 	_CHECK_SELF_TYPE(state, self, __hash__);
 
@@ -179,7 +179,7 @@ static OAny __hash__(OState* state, OAny self) {
 		return obin_integer_new(hash);
 	}
 
-	secret = obin_hash_secret();
+	secret = ohash_secret();
 	cursor = _string_const_data(self);
     hash = secret.prefix;
 	hash ^= (*(cursor) << 7);
@@ -214,7 +214,7 @@ static OAny __add__(OState* state, OAny str1, OAny str2) {
 	_CHECK_SELF_TYPE(state, str1, __add__);
 
 	if(!OAny_isString(str2)) {
-		return obin_raise(state, oerrors(state)->TypeError,
+		return oraise(state, oerrors(state)->TypeError,
 						"String.__add__ invalid argument type, String expected ", str2);
 	}
 
@@ -319,7 +319,7 @@ ostring obin_string_cstr(OState* state, OAny self){
 
 OAny obin_string_is_empty(OState* state, OAny self){
 	if(!OAny_isString(self)) {
-		return obin_raise(state, oerrors(state)->InternalError,
+		return oraise(state, oerrors(state)->InternalError,
 				"obin_string_is_empty call from other type", self);
 	}
 	return obin_tobool(state, __length__(state, self));
@@ -514,7 +514,7 @@ OAny _obin_string_find(OState* state, OAny haystack, OAny needle,
 		if (OAny_toInt(start) < 0
 				|| OAny_toInt(start) > haystack_size) {
 
-			return obin_raise(state, oerrors(state)->RangeError,
+			return oraise(state, oerrors(state)->RangeError,
 					"String.search Invalid start index for search ", start);
 		}
 
@@ -527,7 +527,7 @@ OAny _obin_string_find(OState* state, OAny haystack, OAny needle,
 		if (OAny_toInt(end) < 0 || OAny_toInt(end) > haystack_size
 				|| OAny_toInt(end) < pstart) {
 
-			return obin_raise(state, oerrors(state)->RangeError,
+			return oraise(state, oerrors(state)->RangeError,
 					"String.search Invalid end index for search ", end);
 		}
 
@@ -535,7 +535,7 @@ OAny _obin_string_find(OState* state, OAny haystack, OAny needle,
 	}
 
 	if ((pend - pstart) > _string_size(haystack)) {
-		return obin_raise(state, oerrors(state)->RangeError,
+		return oraise(state, oerrors(state)->RangeError,
 					"String.search Invalid search range ",
 					obin_tuple_pack(state, 2,
 							obin_integer_new(pstart), obin_integer_new(pend)));
@@ -583,7 +583,7 @@ OAny obin_string_index_of(OState* state, OAny self, OAny other,
 	_CHECK_SELF_TYPE(state, self, index_of);
 
 	if(!OAny_isString(other)) {
-		return obin_raise(state, oerrors(state)->TypeError,
+		return oraise(state, oerrors(state)->TypeError,
 				"String.indexof invalid argument type, string expected ", other);
 	}
 
@@ -632,7 +632,7 @@ OAny obin_string_last_index_of(OState* state, OAny self, OAny other,
 	_CHECK_SELF_TYPE(state, self, last_index_of);
 
 	if(!OAny_isString(other)) {
-		return obin_raise(state, oerrors(state)->TypeError,
+		return oraise(state, oerrors(state)->TypeError,
 				"String.last_indexof invalid argument type, string expected ", other);
 	}
 
@@ -661,7 +661,7 @@ OAny obin_string_dublicate(OState* state, OAny self, OAny _count) {
 	}
 
 	if(!OAny_isInt(_count)) {
-		return obin_raise(state, oerrors(state)->TypeError,
+		return oraise(state, oerrors(state)->TypeError,
 				"String.dublicate invalid argument type, integer expected ", _count);
 	}
 
@@ -686,7 +686,7 @@ OAny obin_string_split(OState* state, OAny self, OAny separator) {
 	_CHECK_SELF_TYPE(state, self, split);
 
 	if(!OAny_isString(separator)) {
-		return obin_raise(state, oerrors(state)->TypeError,
+		return oraise(state, oerrors(state)->TypeError,
 						"String.split invalid argument type, String expected ", separator);
 	}
 
@@ -768,7 +768,7 @@ OAny obin_string_pack(OState* state, oindex_t count, ...){
     va_list vargs;
 
 	if(!OBIN_IS_FIT_TO_MEMSIZE(count)) {
-		return obin_raise(state, oerrors(state)->TypeError,
+		return oraise(state, oerrors(state)->TypeError,
 						"String.pack invalid argument type, Invalid size", obin_integer_new(count));
 	}
 

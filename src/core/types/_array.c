@@ -11,7 +11,7 @@ static OBehavior __BEHAVIOR__ = {0};
 
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!OAny_isArray(self)) { \
-		return obin_raise(state, oerrors(state)->TypeError, \
+		return oraise(state, oerrors(state)->TypeError, \
 				__TypeName__ #method "call from other type", self); \
 	} \
 
@@ -50,7 +50,7 @@ obin_array_new(OState* state, OAny size) {
 		size = obin_integer_new(OBIN_DEFAULT_ARRAY_SIZE);
 	}
 	if (!OInt_isFitToMemsize(size)) {
-			obin_raise(state, oerrors(state)->MemoryError,
+			oraise(state, oerrors(state)->MemoryError,
 				"obin_array_new " __TypeName__ "size not fit to memory", size);
 	}
 
@@ -74,7 +74,7 @@ static omem_t _array_inflate(OState* state, OAny self, oindex_t start, oindex_t 
 
 	if (new_size > _array_capacity(self)) {
 		if ( !_array_grow(state, self, length) ){
-			obin_raise(state, oerrors(state)->MemoryError,
+			oraise(state, oerrors(state)->MemoryError,
 				"__array_inflate " __TypeName__ "can't grow", obin_integer_new(length));
 			return 0;
 		}
@@ -95,14 +95,14 @@ OAny obin_array_insert_collection(OState* state, OAny self, OAny collection, OAn
 	end = start + collection_size;
 
 	if(start > _array_size(self)) {
-		return obin_raise(state, oerrors(state)->KeyError, "obin_array_insert_collection invalid index", position);
+		return oraise(state, oerrors(state)->KeyError, "obin_array_insert_collection invalid index", position);
 	} else if(start == _array_size(self)) {
 		return obin_add(state, self, item);
 	}
 
 	new_size = _array_inflate(state, self, start, end);
 	if(!new_size) {
-		return obin_raise(state, oerrors(state)->KeyError,
+		return oraise(state, oerrors(state)->KeyError,
 				"obin_array_insert inflate error", position);
 	}
 
@@ -125,14 +125,14 @@ OAny obin_array_insert(OState* state, OAny self, OAny item, OAny position) {
 
 	insert_index = OAny_toInt(position);
 	if(insert_index > _array_size(self)) {
-		return obin_raise(state, oerrors(state)->KeyError, "obin_array_insert invalid index", position);
+		return oraise(state, oerrors(state)->KeyError, "obin_array_insert invalid index", position);
 	} else if(insert_index == _array_size(self)) {
 		return obin_array_push(state, self, item);
 	}
 
 	new_size = _array_inflate(state, self, insert_index, insert_index + 1);
 	if(!new_size) {
-		return obin_raise(state, oerrors(state)->KeyError,
+		return oraise(state, oerrors(state)->KeyError,
 				"obin_array_insert inflate error", position);
 	}
 
@@ -168,7 +168,7 @@ obin_array_push(OState* state, OAny self, OAny value) {
 
 	if (new_size > _array_capacity(self)){
 		if (!_array_grow(state, self, 1) ){
-			obin_raise(state, oerrors(state)->MemoryError,
+			oraise(state, oerrors(state)->MemoryError,
 				"obin_array_push " __TypeName__ "can't grow", obin_integer_new(new_size));
 		}
 	}
@@ -214,7 +214,7 @@ OAny obin_array_pop(OState* state, OAny self) {
 	_CHECK_SELF_TYPE(state, self, obin_array_pop);
 
 	if(_array_size(self) == 0) {
-			obin_raise(state, oerrors(state)->IndexError,
+			oraise(state, oerrors(state)->IndexError,
 				"obin_array_pop " __TypeName__ " empty array", ObinNil);
 	}
 
@@ -331,7 +331,7 @@ __getitem__(OState* state, OAny self, OAny pos){
 	index = _get_index(state, self, pos);
 
 	if (index == OBIN_INVALID_INDEX) {
-		return obin_raise(state, oerrors(state)->IndexError,
+		return oraise(state, oerrors(state)->IndexError,
 				__TypeName__ "__getitem__ invalid index", pos);
 	}
 
@@ -345,7 +345,7 @@ __setitem__(OState* state, OAny self, OAny pos, OAny value){
 	index = _get_index(state, self, pos);
 
 	if (index == OBIN_INVALID_INDEX) {
-		return obin_raise(state, oerrors(state)->IndexError,
+		return oraise(state, oerrors(state)->IndexError,
 				__TypeName__ "__setitem__   invalid index", pos);
 	}
 
@@ -371,7 +371,7 @@ __delitem__(OState* state, OAny self, OAny pos){
 	index = _get_index(state, self, pos);
 
 	if (index == OBIN_INVALID_INDEX) {
-		return obin_raise(state, oerrors(state)->IndexError,
+		return oraise(state, oerrors(state)->IndexError,
 				__TypeName__ "__delitem__ invalid index", pos);
 	}
 

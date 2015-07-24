@@ -5,9 +5,9 @@
 typedef struct{
 	oint prefix;
 	oint suffix;
-} ObinHashSecret;
+} OHashSecret;
 
-ObinHashSecret obin_hash_secret();
-obool obin_module_random_init(OState* state);
+OHashSecret ohash_secret();
+obool ORandom_init(OState* state);
 
 #endif /* OBIN_ORANDOM_H_ */

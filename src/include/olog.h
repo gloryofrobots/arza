@@ -24,7 +24,7 @@ static void _log(OState* state, oint verbosity, ostring format, ...) { \
 	} \
 	va_list myargs; \
 	va_start(myargs, format); \
-	obin_log(state, format, myargs); \
+	olog(state, format, myargs); \
 	va_end(myargs); \
 }
 #else
@@ -36,7 +36,7 @@ static oint _ALL = -1; \
 static void _log(ObinState* state, oint verbosity, ostring format, ...) { }
 #endif
 
-void obin_log(OState* state, ostring message, ...);
+void olog(OState* state, ostring message, ...);
 
 
 #endif /* OLOG_H_ */

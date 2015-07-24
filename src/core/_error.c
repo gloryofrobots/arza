@@ -1,6 +1,6 @@
 #include <obin.h>
 
-obool obin_module_error_init(OState* state) {
+obool OError_Init(OState* state) {
 	oerrors(state)->MemoryError = ObinNil;
 	oerrors(state)->IOError = ObinNil;
 	oerrors(state)->InternalError = ObinNil;
@@ -17,19 +17,19 @@ OAny _obin_error_new(OState* state, OAny proto, ostring message, OAny argument) 
 	return proto;
 }
 
-OAny obin_raise_error(OState* state, OAny exception) {
+OAny OError_raise(OState* state, OAny exception) {
 	return exception;
 }
 
-OAny obin_raise(OState* state, OAny trait, ostring message, OAny argument) {
+OAny oraise(OState* state, OAny trait, ostring message, OAny argument) {
 	opanic(message);
 	return trait;
 }
 
-OAny obin_raise_vargs(OState* state, OAny trait, ostring message, ...) {
+OAny oraise_vargs(OState* state, OAny trait, ostring message, ...) {
 	va_list myargs;
 	va_start(myargs, message);
-	obin_log(state, message, myargs);
+	olog(state, message, myargs);
 	va_end(myargs);
 	oabort();
 	return trait;

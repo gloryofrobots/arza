@@ -31,7 +31,7 @@ OAny obin_fstream_from_path(OState* state, OAny path, ostring mode){
 	ofile file = fopen(obin_string_cstr(state, path), mode);
 
 	if(file == NULL) {
-		obin_raise(state, oerrors(state)->IOError,
+		oraise(state, oerrors(state)->IOError,
 				"Unable to open file", path);
 	}
 
@@ -57,7 +57,7 @@ OAny obin_fstream_write(OState* state, OAny self, OAny any){
 
 OAny obin_fstream_close(OState* state, OAny self){
 	if(!_fstream_is_disposable(self)) {
-		obin_raise(state, oerrors(state)->IOError,
+		oraise(state, oerrors(state)->IOError,
 				"Resource is not disposable", ObinNil);
 	}
 

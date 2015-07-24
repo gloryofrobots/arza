@@ -3,7 +3,7 @@
 #define __TypeName__  "__Tuple__"
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!OAny_isTuple(self)) { \
-		return obin_raise(state, oerrors(state)->TypeError, \
+		return oraise(state, oerrors(state)->TypeError, \
 				__TypeName__"."#method "call from other type", self); \
 	} \
 
@@ -43,12 +43,12 @@ OAny obin_tuple_new(OState* state,  OAny size, OAny* items) {
 	ObinTuple * self;
 
 	if(!OAny_isInt(size)){
-		return obin_raise(state, oerrors(state)->TypeError,
+		return oraise(state, oerrors(state)->TypeError,
 				"Tuple.new integer size expected", size);
 	}
 
 	if(!OInt_isFitToMemsize(size)) {
-		return obin_raise(state, oerrors(state)->TypeError,
+		return oraise(state, oerrors(state)->TypeError,
 				"Tuple.new invalid size", size);
 	}
 
@@ -68,7 +68,7 @@ OAny obin_tuple_pack(OState* state, omem_t size, ...){
     va_list vargs;
 
 	if(!OBIN_IS_FIT_TO_MEMSIZE(size)) {
-		return obin_raise(state, oerrors(state)->TypeError,
+		return oraise(state, oerrors(state)->TypeError,
 				"Tuple.pack invalid size", obin_integer_new(size));
 	}
 
@@ -163,7 +163,7 @@ __getitem__(OState* state, OAny self, OAny pos){
 	index = _get_index(state, self, pos);
 
 	if (index == OBIN_INVALID_INDEX) {
-		return obin_raise(state, oerrors(state)->IndexError,
+		return oraise(state, oerrors(state)->IndexError,
 				"Tuple.__getitem__ invalid index", pos);
 	}
 

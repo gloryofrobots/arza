@@ -14,11 +14,11 @@ typedef struct {
 static ObinModule __MODULES__[] = {
 		{"Integer", &obin_module_integer_init, 0},
 		{"String", &obin_module_string_init, 0},
-		{"Error", &obin_module_error_init, 0},
+		{"Error", &OError_Init, 0},
 		{"Array", &obin_module_array_init, 0},
 		{"Tuple", &obin_module_tuple_init, 0},
 		{"Table", &obin_module_table_init, 0},
-		{"Random", &obin_module_random_init, 0},
+		{"Random", &ORandom_init, 0},
 };
 
 
@@ -34,7 +34,7 @@ _init_internals(OState* state) {
 	for(i=0; i < count_modules; i++) {
 		module = __MODULES__ + i;
 		if(!module->initialise(state)) {
-			obin_log(state, "Can't init module %s", module->name);
+			olog(state, "Can't init module %s", module->name);
 			opanic("Can't bootstrap obin");
 			return OFALSE;
 		}
