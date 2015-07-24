@@ -2,7 +2,7 @@
 
 /*TODO Avoid infinite recursion in _tostring__ and others in recursive vollections */
 
-OBIN_DECLARE_CELL(SequenceIterator,
+OCELL_DECLARE(SequenceIterator,
 	OAny source;
 	obin_mem_t current;
 	obin_mem_t length;

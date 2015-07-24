@@ -21,7 +21,7 @@ static OAny _obin_string_empty(ObinState* state) {
 }
 
 typedef struct {
-	OBIN_CELL_HEADER;
+	OCELL_HEADER;
 	obin_char* data;
 	obin_mem_t capacity;
 	obin_mem_t size;

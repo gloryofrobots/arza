@@ -8,7 +8,7 @@
 	} \
 
 typedef struct {
-	OBIN_CELL_HEADER;
+	OCELL_HEADER;
 	obin_mem_t size;
 	OAny* data;
 } ObinTuple;

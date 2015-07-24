@@ -4,19 +4,19 @@
 #include "memory/ocellmemory.h"
 #include "obehavior.h"
 
-#define OBIN_CELL_HEADER \
+#define OCELL_HEADER \
 	OBehavior* behavior; \
 	OAny origin; \
 	OAny traits; \
 	OCellMemoryInfo memory;
 
 struct _ObinCell {
-	OBIN_CELL_HEADER;
+	OCELL_HEADER;
 };
 
-#define OBIN_DECLARE_CELL(CELLNAME, body) \
+#define OCELL_DECLARE(CELLNAME, body) \
 typedef struct _##CELLNAME { \
-	OBIN_CELL_HEADER \
+	OCELL_HEADER \
 	body \
 } CELLNAME
 

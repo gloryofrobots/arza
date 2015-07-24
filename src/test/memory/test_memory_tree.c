@@ -8,7 +8,7 @@ static TMCounter* tmt_counter;
 #define TMTCELL_DATA_SIZE 256
 OBEHAVIOR_DECLARE(__TMTCELL_BEHAVIOR__);
 
-OBIN_DECLARE_CELL(TMTCell,
+OCELL_DECLARE(TMTCell,
 	int id;
 	OAny left;
 	OAny right;

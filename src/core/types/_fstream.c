@@ -2,7 +2,7 @@
 OBEHAVIOR_DECLARE(__BEHAVIOR__);
 
 typedef struct {
-	OBIN_CELL_HEADER;
+	OCELL_HEADER;
 	OAny path;
 	obin_file file;
 	obin_bool is_disposable;

@@ -17,7 +17,7 @@ typedef struct {
 } _ObinHashTableEntry;
 
 typedef struct {
-	OBIN_CELL_HEADER;
+	OCELL_HEADER;
 	_ObinHashTableEntry* body;
 	obin_mem_t size;
 	obin_mem_t capacity;
@@ -194,7 +194,7 @@ OAny obin_table_values(ObinState* state, OAny self){
 
 /* TRAIT */
 typedef struct {
-	OBIN_CELL_HEADER;
+	OCELL_HEADER;
 	OAny source;
 	obin_index index;
 } TableIterator;

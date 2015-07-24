@@ -1,7 +1,7 @@
 #include <obin.h>
 #define __TypeName__ "__Array__"
 
-OBIN_DECLARE_CELL(ObinArray,
+OCELL_DECLARE(ObinArray,
 	obin_mem_t size;
 	obin_mem_t capacity;
 	OAny* data;

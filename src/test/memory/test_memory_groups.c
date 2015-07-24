@@ -11,7 +11,7 @@ OBEHAVIOR_DECLARE(__TMGCELL_BEHAVIOR__);
 				(void*)cell, cell->id, cell->parent_id, cell->data_size, cell->garbage_size, cell->data_size - cell->garbage_size); }
 
 typedef struct {
-	OBIN_CELL_HEADER;
+	OCELL_HEADER;
 	obin_mem_t data_size;
 	obin_mem_t garbage_size;
 	obin_mem_t marked_size;
