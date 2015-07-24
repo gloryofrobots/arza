@@ -4,7 +4,7 @@ static void Test_BaseTypes(void) {
 	printf("\n *************************** Internal sizes ******************************** \n");
 	printf("Size of ObinState %d \n", sizeof(ObinState));
 	printf("Size of ObinAny %d \n", sizeof(ObinAny));
-	printf("Size of ObinValue %d \n", sizeof(ObinValue));
+	printf("Size of ObinValue %d \n", sizeof(OValue));
 	printf("Size of ObinCell %d \n", sizeof(OCell));
 
 	CU_ASSERT_EQUAL(obin_any_type(ObinFalse), EOBIN_TYPE_FALSE);

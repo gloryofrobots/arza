@@ -57,14 +57,14 @@ typedef enum _EOBIN_CELL_MARK{
 #define _is_not_marked(cell) (cell->memory.mark == EOBIN_CELL_MARK_MARKED)
 #define _is_new(cell) (cell->memory.mark == EOBIN_CELL_MARK_NEW)
 
-ObinAny obin_cell_to_any(EOBIN_TYPE type, OCell* cell) {
+ObinAny obin_cell_to_any(EOTYPE type, OCell* cell) {
 	ObinAny result = obin_any_new();
 	obin_assert(obin_type_is_cell(type));
 	obin_any_init_cell(result, type, cell);
 	return result;
 }
 
-ObinAny obin_cell_new(EOBIN_TYPE type, OCell* cell, ObinBehavior* behavior, ObinAny origin) {
+ObinAny obin_cell_new(EOTYPE type, OCell* cell, ObinBehavior* behavior, ObinAny origin) {
 	ObinAny result;
 	obin_assert(obin_type_is_cell(type));
 	cell->origin = origin;

@@ -31,7 +31,7 @@ typedef enum _EOBIN_TYPE {
 	EOBIN_TYPE_CELL,
 
 	EOBIN_TYPE_END_CELL_TYPES,
-} EOBIN_TYPE;
+} EOTYPE;
 
 typedef struct _ObinCell OCell;
 
@@ -44,36 +44,36 @@ typedef union {
 	} char_value;
 
 	OCell * cell;
-} ObinValue;
+} OValue;
 
 typedef struct {
-	EOBIN_TYPE type;
-	ObinValue data;
+	EOTYPE type;
+	OValue data;
 } ObinAny;
 /* we mark cells once we initialized them with special type to prevent overwriting types
  *  and values*/
 #ifdef ODEBUG
-#define OBIN_ANY_CHECK_TYPE(any, type) obin_assert(any.type==type)
-#define OBIN_ANY_BEFORE_SET(any) obin_assert(any.type == EOBIN_TYPE_UNKNOWN)
+#define OANY_CHECK_TYPE(any, type) obin_assert(any.type==type)
+#define OANY_BEFORE_SET(any) obin_assert(any.type == EOBIN_TYPE_UNKNOWN)
 #else
-#define OBIN_ANY_CHECK_TYPE(any, type)
-#define OBIN_ANY_BEFORE_SET(any)
+#define OANY_CHECK_TYPE(any, type)
+#define OANY_BEFORE_SET(any)
 #endif
 
 #define obin_any_type(any) (any.type)
 
 #define obin_any_init_cell(any, type, cell) \
-		OBIN_ANY_BEFORE_SET(any); \
+		OANY_BEFORE_SET(any); \
 		any.type=type; \
 		any.data.cell=cell
 
 #define obin_any_init_integer(any, num) \
-		OBIN_ANY_BEFORE_SET(any); \
+		OANY_BEFORE_SET(any); \
 		any.type=EOBIN_TYPE_INTEGER; \
 		any.data.integer_value=num
 
 #define obin_any_init_float(any, num) \
-		OBIN_ANY_BEFORE_SET(any); \
+		OANY_BEFORE_SET(any); \
 		any.type=EOBIN_TYPE_FLOAT; \
 		any.data.float_value=num
 
