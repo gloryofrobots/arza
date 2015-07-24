@@ -29,7 +29,7 @@ _init_internals(ObinState* state) {
 	obin_index i;
 
 	state->internals = &__INTERNALS__;
-	state->internals->cells.__Cell__ = obin_cell_new(EOBIN_TYPE_CELL, obin_new(state, ObinCell), 0, ObinNil);
+	state->internals->cells.__Cell__ = obin_cell_new(EOBIN_TYPE_CELL, obin_new(state, OCell), 0, ObinNil);
 
 	for(i=0; i < count_modules; i++) {
 		module = __MODULES__ + i;

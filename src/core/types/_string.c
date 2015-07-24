@@ -288,7 +288,7 @@ static ObinAny _obin_string_from_carr(ObinState* state, obin_string data, obin_m
 
 	self->data[self->size] = '\0';
 
-	return obin_cell_new(EOBIN_TYPE_STRING, (ObinCell*) self, &__BEHAVIOR__, obin_cells(state)->__String__);
+	return obin_cell_new(EOBIN_TYPE_STRING, (OCell*) self, &__BEHAVIOR__, obin_cells(state)->__String__);
 }
 
 static ObinAny _obin_string_blank(ObinState* state, obin_mem_t length) {
@@ -824,7 +824,7 @@ obin_bool obin_module_string_init(ObinState* state) {
 
 	/*strings proto*/
 	obin_cells(state)->__String__ =  obin_cell_new(EOBIN_TYPE_CELL,
-			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
+			obin_new(state, OCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
 
 
 	obin_strings(state)->Nil = obin_string_new(state, "Nil");

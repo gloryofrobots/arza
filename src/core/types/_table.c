@@ -67,7 +67,7 @@ ObinAny obin_table_new(ObinState* state, ObinAny size){
 	self->body = obin_malloc_array(state, _ObinHashTableEntry, self->capacity);
 	self->size = 0;
 
-	return obin_cell_new(EOBIN_TYPE_TABLE, (ObinCell*)self, &__BEHAVIOR__, obin_cells(state)->__Table__);
+	return obin_cell_new(EOBIN_TYPE_TABLE, (OCell*)self, &__BEHAVIOR__, obin_cells(state)->__Table__);
 }
 
 static void _obin_table_resize(ObinState* state, ObinAny self, obin_mem_t new_capacity) {
@@ -238,7 +238,7 @@ static ObinAny __iterator__(ObinState* state, ObinAny self) {
 	iterator = obin_new(state, TableIterator);
 	iterator->source = self;
 	iterator->index = 0;
-	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*)iterator, &__TABLE_ITERATOR_BEHAVIOR__, ObinNil);
+	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__TABLE_ITERATOR_BEHAVIOR__, ObinNil);
 }
 
 static ObinAny __tobool__(ObinState* state, ObinAny self) {
@@ -283,7 +283,7 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	return result;
 }
 
-static void __destroy__(ObinState* state, ObinCell* table) {
+static void __destroy__(ObinState* state, OCell* table) {
 	ObinTable* self = (ObinTable*) table;
 	obin_memory_free(state, self->body);
 	self->body = NULL;
@@ -414,7 +414,7 @@ obin_bool obin_module_table_init(ObinState* state) {
 	__BEHAVIOR__.__delitem__ = __delitem__;
 
 	obin_cells(state)->__Table__ = obin_cell_new(EOBIN_TYPE_CELL,
-			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
+			obin_new(state, OCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
 
 	return OTRUE;
 }

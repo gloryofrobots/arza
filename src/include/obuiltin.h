@@ -33,7 +33,7 @@ ObinState* obin_init(obin_mem_t heap_size);
 
 void obin_finalise(ObinState* state);
 /*TODO REMOVE obin_destroy FROM API*/
-void obin_destroy(ObinState * state, ObinCell* self);
+void obin_destroy(ObinState * state, OCell* self);
 
 void obin_release(ObinState * state, ObinAny self);
 

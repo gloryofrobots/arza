@@ -52,7 +52,7 @@ ObinAny tmg_cell_new(ObinState* state, int data_size, double garbage_pecentage, 
 		}
 	}
 
-	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*) cell, &__TMGCELL_BEHAVIOR__, obin_cells(state)->__Cell__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*) cell, &__TMGCELL_BEHAVIOR__, obin_cells(state)->__Cell__);
 }
 
 
@@ -76,7 +76,7 @@ static void __tmg_cell_mark__(ObinState* state, ObinAny self, obin_func_1 callba
 	}
 }
 
-static void __tmg_cell_destroy__(ObinState* state, ObinCell* self) {
+static void __tmg_cell_destroy__(ObinState* state, OCell* self) {
 	TMGCell* cell = (TMGCell*) self;
 
 	tm_counter_destroy(tmg_counter);

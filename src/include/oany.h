@@ -33,7 +33,7 @@ typedef enum _EOBIN_TYPE {
 	EOBIN_TYPE_END_CELL_TYPES,
 } EOBIN_TYPE;
 
-typedef struct _ObinCell ObinCell;
+typedef struct _ObinCell OCell;
 
 typedef union {
 	obin_integer integer_value;
@@ -43,7 +43,7 @@ typedef union {
 		obin_byte char_data;
 	} char_value;
 
-	ObinCell * cell;
+	OCell * cell;
 } ObinValue;
 
 typedef struct {

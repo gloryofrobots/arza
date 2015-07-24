@@ -58,7 +58,7 @@ ObinAny obin_tuple_new(ObinState* state,  ObinAny size, ObinAny* items) {
 		obin_memcpy(self->data, items, obin_any_integer(size));
 	}
 
-	return obin_cell_new(EOBIN_TYPE_TUPLE, (ObinCell*) self, &__BEHAVIOR__, obin_cells(state)->__Tuple__);
+	return obin_cell_new(EOBIN_TYPE_TUPLE, (OCell*) self, &__BEHAVIOR__, obin_cells(state)->__Tuple__);
 }
 
 ObinAny obin_tuple_pack(ObinState* state, obin_mem_t size, ...){
@@ -81,7 +81,7 @@ ObinAny obin_tuple_pack(ObinState* state, obin_mem_t size, ...){
     }
     va_end(vargs);
 
-	return obin_cell_new(EOBIN_TYPE_TUPLE, (ObinCell*) self, &__BEHAVIOR__, obin_cells(state)->__Tuple__);
+	return obin_cell_new(EOBIN_TYPE_TUPLE, (OCell*) self, &__BEHAVIOR__, obin_cells(state)->__Tuple__);
 }
 
 /****************************************  TYPETRAIT  *************************************************/
@@ -230,7 +230,7 @@ obin_bool obin_module_tuple_init(ObinState* state) {
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
 
 	obin_cells(state)->__Tuple__ = obin_cell_new(EOBIN_TYPE_CELL,
-			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
+			obin_new(state, OCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
 
 	return OTRUE;
 

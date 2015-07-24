@@ -66,7 +66,7 @@ ObinAny tmtcell_new(ObinState* state, obin_string data, obin_mem_t capacity) {
 
 	tmtcell_print(cell, "tmtcell_new");
 
-	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*) cell, &__TMTCELL_BEHAVIOR__, obin_cells(state)->__Cell__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*) cell, &__TMTCELL_BEHAVIOR__, obin_cells(state)->__Cell__);
 }
 
 
@@ -84,7 +84,7 @@ static void __tmtcell_mark__(ObinState* state, ObinAny self, obin_func_1 callbac
 
 }
 
-static void __tmtcell_destroy__(ObinState* state, ObinCell* self) {
+static void __tmtcell_destroy__(ObinState* state, OCell* self) {
 	TMTCell* cell = (TMTCell*) self;
 	tm_counter_destroy(tmt_counter);
 	tmtcell_print(cell, "__tmtcell_destroy__");

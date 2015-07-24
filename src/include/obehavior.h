@@ -1,7 +1,7 @@
 #ifndef OBEHAVIOR_H_
 #define OBEHAVIOR_H_
 
-typedef void (*obin_destructor)(ObinState* state, ObinCell* self);
+typedef void (*obin_destructor)(ObinState* state, OCell* self);
 
 typedef ObinAny (*obin_func_1)(ObinState* state, ObinAny arg);
 typedef ObinAny (*obin_func_2)(ObinState* state, ObinAny arg1, ObinAny arg2);

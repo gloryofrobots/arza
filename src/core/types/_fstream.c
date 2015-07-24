@@ -23,7 +23,7 @@ ObinAny obin_fstream_from_file(ObinState* state, obin_file file, obin_bool is_di
 
 	self->file = file;
 	self->is_disposable = is_disposable;
-	return obin_cell_new(EOBIN_TYPE_CELL, (ObinCell*)self, &__BEHAVIOR__, obin_cells(state)->__Cell__);
+	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*)self, &__BEHAVIOR__, obin_cells(state)->__Cell__);
 }
 
 ObinAny obin_fstream_from_path(ObinState* state, ObinAny path, obin_string mode){
@@ -79,12 +79,12 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	return obin_string_new(state, "<File: "OBIN_POINTER_FORMATTER" >");
 }
 
-static void __destroy__(ObinState* state, ObinCell* cell) {
+static void __destroy__(ObinState* state, OCell* cell) {
 	ObinFStream* self = (ObinFStream*) cell;
 
 	if(self->file && self->is_disposable) {
 		obin_fstream_close(state,
-				obin_cell_to_any(EOBIN_TYPE_CELL, (ObinCell*)self));
+				obin_cell_to_any(EOBIN_TYPE_CELL, (OCell*)self));
 	}
 }
 

@@ -61,7 +61,7 @@ obin_array_new(ObinState* state, ObinAny size) {
 
 	self->capacity = capacity;
 	self->size = 0;
-	return obin_cell_new(EOBIN_TYPE_ARRAY, (ObinCell*)self, &__BEHAVIOR__, obin_cells(state)->__Array__);
+	return obin_cell_new(EOBIN_TYPE_ARRAY, (OCell*)self, &__BEHAVIOR__, obin_cells(state)->__Array__);
 }
 
 static obin_mem_t _array_inflate(ObinState* state, ObinAny self, obin_index start, obin_index end) {
@@ -270,7 +270,7 @@ static ObinAny __tostring__(ObinState* state, ObinAny self) {
 	return result;
 }
 
-static void __destroy__(ObinState* state, ObinCell* self) {
+static void __destroy__(ObinState* state, OCell* self) {
 	ObinArray* array = (ObinArray*) self;
 
 	obin_memory_free(state, array->data);
@@ -400,7 +400,7 @@ obin_bool obin_module_array_init(ObinState* state) {
 	__BEHAVIOR__.__mark__ = __mark__;
 
 	obin_cells(state)->__Array__ = obin_cell_new(EOBIN_TYPE_CELL,
-			obin_new(state, ObinCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
+			obin_new(state, OCell), &__BEHAVIOR__, obin_cells(state)->__Cell__);
 
 	return OTRUE;
 }

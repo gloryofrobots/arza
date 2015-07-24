@@ -57,14 +57,14 @@ typedef enum _EOBIN_CELL_MARK{
 #define _is_not_marked(cell) (cell->memory.mark == EOBIN_CELL_MARK_MARKED)
 #define _is_new(cell) (cell->memory.mark == EOBIN_CELL_MARK_NEW)
 
-ObinAny obin_cell_to_any(EOBIN_TYPE type, ObinCell* cell) {
+ObinAny obin_cell_to_any(EOBIN_TYPE type, OCell* cell) {
 	ObinAny result = obin_any_new();
 	obin_assert(obin_type_is_cell(type));
 	obin_any_init_cell(result, type, cell);
 	return result;
 }
 
-ObinAny obin_cell_new(EOBIN_TYPE type, ObinCell* cell, ObinBehavior* behavior, ObinAny origin) {
+ObinAny obin_cell_new(EOBIN_TYPE type, OCell* cell, ObinBehavior* behavior, ObinAny origin) {
 	ObinAny result;
 	obin_assert(obin_type_is_cell(type));
 	cell->origin = origin;
@@ -204,7 +204,7 @@ void obin_state_destroy(ObinState* state) {
  *  function for all its references.
  */
 static ObinAny gc_mark_object(ObinState* state, ObinAny object) {
-	ObinCell* cell = obin_any_cell(object);
+	OCell* cell = obin_any_cell(object);
 	CATCH_STATE_MEMORY(state);
 	if(!cell) {
 		return ObinNil;
@@ -252,7 +252,7 @@ void gc_mark_reachable_objects(ObinState * state) {
     }*/
 }
 
-static void _destroy_cell(ObinState * state, ObinCell* cell) {
+static void _destroy_cell(ObinState * state, OCell* cell) {
 	if (!cell) {
 		obin_panic("cell is null");
 	}
@@ -269,7 +269,7 @@ static void _destroy_cell(ObinState * state, ObinCell* cell) {
 
 void obin_gc_collect(ObinState* state) {
 	obin_pointer pointer;
-	ObinCell* object;
+	OCell* object;
 	ObinMemoryFreeNode* current_entry, *new_entry;
     int object_size = 0;
 	CATCH_STATE_MEMORY(state);
@@ -311,7 +311,7 @@ void obin_gc_collect(ObinState* state) {
             /* nothing else to be done here */
         } else {
             /* in this case the pointer is a VMObject */
-            object = (ObinCell*) pointer;
+            object = (OCell*) pointer;
             object_size = object->memory.size;
             /* is this object marked or not? */
             if (_is_marked(object)) {
@@ -457,7 +457,7 @@ void* _allocate_cell(ObinState* state, obin_mem_t size) {
 
 void* obin_allocate_cell(ObinState* state, obin_mem_t size) {
 	obin_mem_t aligned_size = size + ObinMem_Padding(size);
-    ObinCell* object = (ObinCell*)_allocate_cell(state, aligned_size);
+    OCell* object = (OCell*)_allocate_cell(state, aligned_size);
 
     if(!object) {
     	return NULL;
@@ -585,12 +585,12 @@ static void _log_memory_stat(ObinState* state) {
  * The output is also aligned to improve readability.
  */
 static void _memory_trace(ObinState* state) {
-    ObinCell* pointer;
+    OCell* pointer;
     ObinMemoryFreeNode* current_entry;
     int object_size = 0;
     int object_aligner = 0;
     int line_count = 2;
-    ObinCell* object;
+    OCell* object;
 	CATCH_STATE_MEMORY(state);
 
     pointer = M->heap;
