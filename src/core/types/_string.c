@@ -2,7 +2,7 @@
 
 #define __TypeName__ "__String__"
 
-static ObinBehavior __BEHAVIOR__ = {0};
+static OBehavior __BEHAVIOR__ = {0};
 
 static obin_byte* __CHARS__[SCHAR_MAX] = {0};
 
@@ -791,7 +791,7 @@ OAny obin_string_pack(ObinState* state, obin_index count, ...){
  str.splitlines([keepends])
  */
 
-ObinBehavior* obin_char_behavior() {
+OBehavior* obin_char_behavior() {
 	return &__BEHAVIOR__;
 }
 

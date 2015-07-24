@@ -13,8 +13,8 @@ OAny obin_bool_new(obin_bool condition){
 	return ObinFalse;
 }
 
-static ObinBehavior __TRUE_BEHAVIOR__ = {0};
-static ObinBehavior __FALSE_BEHAVIOR__ = {0};
+static OBehavior __TRUE_BEHAVIOR__ = {0};
+static OBehavior __FALSE_BEHAVIOR__ = {0};
 
 OAny __true_tostring__(ObinState* state, OAny self) {
 	return obin_strings(state)->True;
@@ -90,10 +90,10 @@ obin_bool obin_module_bool_init(ObinState* state) {
 	return OTRUE;
 }
 
-ObinBehavior* obin_false_behavior(){
+OBehavior* obin_false_behavior(){
 	return &__FALSE_BEHAVIOR__;
 }
 
-ObinBehavior* obin_true_behavior() {
+OBehavior* obin_true_behavior() {
 	return &__TRUE_BEHAVIOR__;
 }

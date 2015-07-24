@@ -7,7 +7,7 @@ OBIN_DECLARE_CELL(ObinArray,
 	OAny* data;
 );
 
-static ObinBehavior __BEHAVIOR__ = {0};
+static OBehavior __BEHAVIOR__ = {0};
 
 #define _CHECK_SELF_TYPE(state, self, method) \
 	if(!OAny_isArray(self)) { \

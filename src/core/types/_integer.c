@@ -8,7 +8,7 @@ OAny obin_integer_new(obin_integer number) {
 	return result;
 }
 
-ObinBehavior* obin_integer_behavior() {
+OBehavior* obin_integer_behavior() {
 	return NULL;
 }
 

@@ -18,7 +18,7 @@ typedef struct {
 #define _data(any) ((_tuple(any))->data)
 #define _get(any, index) ((_data(any))[index])
 
-static ObinBehavior __BEHAVIOR__ = {0};
+static OBehavior __BEHAVIOR__ = {0};
 
 ObinTuple* _obin_tuple_new(ObinState* state,  obin_mem_t size) {
 	ObinTuple * self;

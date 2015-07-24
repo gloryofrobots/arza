@@ -5,7 +5,7 @@
 #include "obehavior.h"
 
 #define OBIN_CELL_HEADER \
-	ObinBehavior* behavior; \
+	OBehavior* behavior; \
 	OAny origin; \
 	OAny traits; \
 	ObinCellMemoryInfo memory;

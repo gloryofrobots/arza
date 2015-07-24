@@ -8,7 +8,7 @@ obin_bool obin_module_string_init(ObinState* state);
 OAny obin_string_new(ObinState* state, obin_string data);
 OAny obin_char_new(obin_char ch);
 
-ObinBehavior* obin_char_behavior();
+OBehavior* obin_char_behavior();
 
 OAny obin_string_from_carray(ObinState* state, obin_string data, obin_mem_t size);
 

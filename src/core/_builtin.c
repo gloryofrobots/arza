@@ -15,7 +15,7 @@ OAny OAny_new() {
 
 /******************************************************************/
 
-static ObinBehavior*
+static OBehavior*
 _embedded_type_behavior(ObinState* state, OAny any) {
 	switch (any.type) {
 	case EOBIN_TYPE_TRUE:

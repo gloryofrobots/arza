@@ -1,6 +1,6 @@
 #include <obin.h>
 
-ObinBehavior __BEHAVIOR__ = {0};
+OBehavior __BEHAVIOR__ = {0};
 
 obin_bool obin_module_float_init(ObinState* state) {
 	obin_behaviors(state)->Float = &__BEHAVIOR__;

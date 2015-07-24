@@ -3,7 +3,7 @@
 
 static int TMG_VERBOSE = 0;
 
-OBIN_BEHAVIOR_DECLARE(__TMGCELL_BEHAVIOR__);
+OBEHAVIOR_DECLARE(__TMGCELL_BEHAVIOR__);
 
 #define tmg_print_cell(cell, message) \
 	if(TMG_VERBOSE > 1) { \
@@ -85,14 +85,14 @@ static void __tmg_cell_destroy__(ObinState* state, OCell* self) {
 	obin_memory_free(state, cell->chunk);
 }
 
-OBIN_BEHAVIOR_DEFINE(__TMGCELL_BEHAVIOR__,
+OBEHAVIOR_DEFINE(__TMGCELL_BEHAVIOR__,
 		"tmgcell",
-		OBIN_BEHAVIOR_MEMORY(__tmg_cell_destroy__, __tmg_cell_mark__),
-		OBIN_BEHAVIOR_BASE_NULL,
-		OBIN_BEHAVIOR_COLLECTION_NULL,
-		OBIN_BEHAVIOR_GENERATOR_NULL,
-		OBIN_BEHAVIOR_NUMBER_CAST_NULL,
-		OBIN_BEHAVIOR_NUMBER_OPERATIONS_NULL
+		OBEHAVIOR_MEMORY(__tmg_cell_destroy__, __tmg_cell_mark__),
+		OBEHAVIOR_BASE_NULL,
+		OBEHAVIOR_COLLECTION_NULL,
+		OBEHAVIOR_GENERATOR_NULL,
+		OBEHAVIOR_NUMBER_CAST_NULL,
+		OBEHAVIOR_NUMBER_OPERATIONS_NULL
 );
 
 void tmg_test(ObinState* state, obin_mem_t data_size, double garbage_percentage) {

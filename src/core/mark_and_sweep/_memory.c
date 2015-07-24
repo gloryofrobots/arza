@@ -64,7 +64,7 @@ OAny obin_cell_to_any(EOTYPE type, OCell* cell) {
 	return result;
 }
 
-OAny obin_cell_new(EOTYPE type, OCell* cell, ObinBehavior* behavior, OAny origin) {
+OAny obin_cell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny origin) {
 	OAny result;
 	obin_assert(OType_isCell(type));
 	cell->origin = origin;

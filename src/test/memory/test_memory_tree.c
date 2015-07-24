@@ -6,7 +6,7 @@ static TMCounter* tmt_counter;
 
 /********************* TMT CELL ************************************************/
 #define TMTCELL_DATA_SIZE 256
-OBIN_BEHAVIOR_DECLARE(__TMTCELL_BEHAVIOR__);
+OBEHAVIOR_DECLARE(__TMTCELL_BEHAVIOR__);
 
 OBIN_DECLARE_CELL(TMTCell,
 	int id;
@@ -90,14 +90,14 @@ static void __tmtcell_destroy__(ObinState* state, OCell* self) {
 	tmtcell_print(cell, "__tmtcell_destroy__");
 }
 
-OBIN_BEHAVIOR_DEFINE(__TMTCELL_BEHAVIOR__,
+OBEHAVIOR_DEFINE(__TMTCELL_BEHAVIOR__,
 		"tmtcell",
-		OBIN_BEHAVIOR_MEMORY(__tmtcell_destroy__, __tmtcell_mark__),
-		OBIN_BEHAVIOR_BASE_NULL,
-		OBIN_BEHAVIOR_COLLECTION_NULL,
-		OBIN_BEHAVIOR_GENERATOR_NULL,
-		OBIN_BEHAVIOR_NUMBER_CAST_NULL,
-		OBIN_BEHAVIOR_NUMBER_OPERATIONS_NULL
+		OBEHAVIOR_MEMORY(__tmtcell_destroy__, __tmtcell_mark__),
+		OBEHAVIOR_BASE_NULL,
+		OBEHAVIOR_COLLECTION_NULL,
+		OBEHAVIOR_GENERATOR_NULL,
+		OBEHAVIOR_NUMBER_CAST_NULL,
+		OBEHAVIOR_NUMBER_OPERATIONS_NULL
 );
 
 typedef struct _TMTTestRequests {

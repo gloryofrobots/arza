@@ -1,7 +1,7 @@
 #ifndef OSTATE_H_
 #define OSTATE_H_
 #include "oany.h"
-typedef struct _ObinBehavior ObinBehavior;
+typedef struct _OBehavior OBehavior;
 /************************* STATE *************************************/
 typedef struct _ObinMemory ObinMemory;
 
@@ -48,13 +48,13 @@ typedef struct _ObinInternals {
 	} errors;
 
 	struct _ObinInternalBehaviors {
-		ObinBehavior* True;
-		ObinBehavior* False;
-		ObinBehavior* Nil;
-		ObinBehavior* Nothing;
-		ObinBehavior* Float;
-		ObinBehavior* Integer;
-		ObinBehavior* Char;
+		OBehavior* True;
+		OBehavior* False;
+		OBehavior* Nil;
+		OBehavior* Nothing;
+		OBehavior* Float;
+		OBehavior* Integer;
+		OBehavior* Char;
 	} behaviors;
 
 } ObinInternals;
