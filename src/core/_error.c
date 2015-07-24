@@ -22,7 +22,7 @@ OAny obin_raise_error(OState* state, OAny exception) {
 }
 
 OAny obin_raise(OState* state, OAny trait, ostring message, OAny argument) {
-	obin_panic(message);
+	opanic(message);
 	return trait;
 }
 
@@ -31,6 +31,6 @@ OAny obin_raise_vargs(OState* state, OAny trait, ostring message, ...) {
 	va_start(myargs, message);
 	obin_log(state, message, myargs);
 	va_end(myargs);
-	obin_abort();
+	oabort();
 	return trait;
 }

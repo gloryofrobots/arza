@@ -136,9 +136,9 @@ typedef unsigned char ouchar;
 #endif
 
 #ifndef ODEBUG
-#define obin_abort() abort()
+#define oabort() abort()
 #else
-#define obin_abort()						\
+#define oabort()						\
 OBIN_STMT_START						        	\
 fprintf (stderr, "Panic in %s:%i: %s \n",			\
 	 __FILE__, __LINE__, __FUNCTION__);				\
@@ -146,7 +146,7 @@ abort ();								\
 OBIN_STMT_END
 #endif
 
-#define obin_panic(message)      \
+#define opanic(message)      \
 OBIN_STMT_START						        	\
 fprintf (stderr, "Panic %s:%i: %s: message:%s\n",			\
 	 __FILE__, __LINE__, __FUNCTION__, message);				\
@@ -154,9 +154,9 @@ exit(-1);								\
 OBIN_STMT_END
 
 #ifndef ODEBUG
-#define obin_assert assert
+#define oassert assert
 #else
-#define obin_assert(condition)						\
+#define oassert(condition)						\
 OBIN_STMT_START						         	\
 if (!(condition)) {						       	\
     fprintf (stderr, "%s:%i: %s: assertion `" #condition "' failed\n",	\
@@ -167,23 +167,23 @@ OBIN_STMT_END
 #endif
 
 /*************ALIASES******/
-#define obin_vfprintf vfprintf
-#define obin_sprintf sprintf
-#define obin_snprintf snprintf
-#define obin_vprintf vprintf
+#define ovfprintf vfprintf
+#define osprintf sprintf
+#define osnprintf snprintf
+#define ovprintf vprintf
 
-#define obin_strlen strlen
-#define obin_strstr strstr
-#define obin_strncmp strncmp
+#define ostrlen strlen
+#define ostrstr strstr
+#define ostrncmp strncmp
 
-#define obin_memcpy memcpy
-#define obin_memmove memmove
-#define obin_strcpy strcpy
-#define obin_memset memset
-#define obin_malloc malloc
-#define obin_calloc calloc
-#define obin_realloc realloc
-#define obin_free free
+#define omemcpy memcpy
+#define omemmove memmove
+#define ostrcpy strcpy
+#define omemset memset
+#define omalloc malloc
+#define ocalloc calloc
+#define orealloc realloc
+#define ofree free
 
 /**********LOG***********/
 #define OBIN_LOG_ENABLE

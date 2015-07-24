@@ -55,7 +55,7 @@ OAny obin_tuple_new(OState* state,  OAny size, OAny* items) {
 	self = _obin_tuple_new(state , OAny_toInt(size));
 
 	if(items != NULL) {
-		obin_memcpy(self->data, items, OAny_toInt(size));
+		omemcpy(self->data, items, OAny_toInt(size));
 	}
 
 	return obin_cell_new(EOBIN_TYPE_TUPLE, (OCell*) self, &__BEHAVIOR__, ocells(state)->__Tuple__);

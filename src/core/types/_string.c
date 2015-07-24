@@ -36,7 +36,7 @@ static ochar* _string_data(OAny any) {
 		return  _string(any)->data;
 		break;
 	case EOBIN_TYPE_CHAR:
-		obin_panic("CHAR TYPE ARE NOT MUTABLE");
+		opanic("CHAR TYPE ARE NOT MUTABLE");
 		return NULL;
 		break;
 	default:
@@ -144,7 +144,7 @@ static OAny __compare__(OState* state, OAny self, OAny other) {
 		return ointegers(state)->Greater;
 	}
 
-	result = obin_strncmp(_string_const_data(self), _string_const_data(other),
+	result = ostrncmp(_string_const_data(self), _string_const_data(other),
 			_string_size(self));
 
 	if (result < 0) {
@@ -239,8 +239,8 @@ static OAny __add__(OState* state, OAny str1, OAny str2) {
 
 	result = _obin_string_blank(state, size);
 	data = _string_data(result);
-	obin_memcpy(data, _string_const_data(str1), _string_size(str1));
-	obin_memcpy(data + _string_size(str1), _string_const_data(str2),
+	omemcpy(data, _string_const_data(str1), _string_size(str1));
+	omemcpy(data + _string_size(str1), _string_const_data(str2),
 			_string_size(str2));
 
 	return result;
@@ -253,7 +253,7 @@ static OAny __add__(OState* state, OAny str1, OAny str2) {
 OAny obin_string_new(OState* state, ostring data) {
 	int len;
 
-	len = obin_strlen(data);
+	len = ostrlen(data);
 	if (len == 0) {
 		return obin_string_from_carray(state, 0, 0);
 	}
@@ -283,7 +283,7 @@ static OAny _obin_string_from_carr(OState* state, ostring data, omem_t size) {
 	self->size = size;
 	self->data = (ochar*) self + body_size;
 	if(data != NULL) {
-		obin_memcpy(self->data, data, self->size);
+		omemcpy(self->data, data, self->size);
 	}
 
 	self->data[self->size] = '\0';
@@ -671,7 +671,7 @@ OAny obin_string_dublicate(OState* state, OAny self, OAny _count) {
 	result = _obin_string_blank(state, size);
 	data = _string_data(result);
 	for (; count > 0; count--, data += _string_size(self)) {
-		obin_memcpy(data, _string_const_data(self), _string_size(self));
+		omemcpy(data, _string_const_data(self), _string_size(self));
 	}
 
 	return result;
@@ -799,7 +799,7 @@ static void _init_chars_cache() {
 	int c = 0;
 
 	for(c=0; c<=UCHAR_MAX; c++) {
-		__CHARS__[c] = obin_calloc(2, sizeof(ochar));
+		__CHARS__[c] = ocalloc(2, sizeof(ochar));
 		__CHARS__[c][0] = c;
 		__CHARS__[c][1] = 0;
 	}

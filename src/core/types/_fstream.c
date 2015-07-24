@@ -45,7 +45,7 @@ OAny obin_fstream_write_va(OState* state, OAny self, ostring format, ...){
 
 	    va_list myargs;
 	    va_start(myargs, format);
-	    result = obin_vfprintf(_fstream_file(self), format, myargs);
+	    result = ovfprintf(_fstream_file(self), format, myargs);
 	    va_end(myargs);
 
 	    return obin_integer_new(result);

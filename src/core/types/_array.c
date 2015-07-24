@@ -80,7 +80,7 @@ static omem_t _array_inflate(OState* state, OAny self, oindex_t start, oindex_t 
 		}
 	}
 
-	obin_memmove(_array_data(self) + length, _array_data(self), old_size * sizeof(OAny));
+	omemmove(_array_data(self) + length, _array_data(self), old_size * sizeof(OAny));
 	return new_size;
 }
 
@@ -291,7 +291,7 @@ static OAny __clone__(OState* state, OAny self) {
 	_CHECK_SELF_TYPE(state, self, __clone__);
 
 	result = obin_array_new(state, obin_integer_new(_array_capacity(self)));
-	obin_memcpy(_array_data(result), _array_data(self), _array_capacity(self) * sizeof(OAny));
+	omemcpy(_array_data(result), _array_data(self), _array_capacity(self) * sizeof(OAny));
 	_array_size(result) = _array_size(self);
 	return result;
 }

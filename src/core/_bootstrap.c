@@ -35,7 +35,7 @@ _init_internals(OState* state) {
 		module = __MODULES__ + i;
 		if(!module->initialise(state)) {
 			obin_log(state, "Can't init module %s", module->name);
-			obin_panic("Can't bootstrap obin");
+			opanic("Can't bootstrap obin");
 			return OFALSE;
 		}
 	}

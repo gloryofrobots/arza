@@ -56,11 +56,11 @@ OAny tmtcell_new(OState* state, ostring data, omem_t capacity) {
 	cell->id = tmt_counter->TotalCount;
 	data_size = strlen(data);
 	if(data_size > capacity) {
-		obin_panic("Size of TMTCell data too big");
+		opanic("Size of TMTCell data too big");
 	}
 
 	cell->data = (ochar*) cell + body_size;
-	obin_memcpy(cell->data, data, data_size);
+	omemcpy(cell->data, data, data_size);
 	cell->capacity = capacity;
 	cell->size = data_size;
 

@@ -308,7 +308,7 @@ static OAny __clone__(OState* state, OAny self) {
 
 	capacity = _capacity(self);
 	result = obin_table_new(state, obin_integer_new(capacity));
-	obin_memcpy(_body(result), _body(self), sizeof(_ObinHashTableEntry) * capacity);
+	omemcpy(_body(result), _body(self), sizeof(_ObinHashTableEntry) * capacity);
 	return result;
 }
 

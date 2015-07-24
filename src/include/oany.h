@@ -56,8 +56,8 @@ OAny OAny_new();
 /* we mark cells once we initialized them with special type to prevent overwriting types
  *  and values*/
 #ifdef ODEBUG
-#define OANY_CHECK_TYPE(any, type) obin_assert(any.type==type)
-#define OANY_BEFORE_SET(any) obin_assert(any.type == EOBIN_TYPE_UNKNOWN)
+#define OANY_CHECK_TYPE(any, type) oassert(any.type==type)
+#define OANY_BEFORE_SET(any) oassert(any.type == EOBIN_TYPE_UNKNOWN)
 #else
 #define OANY_CHECK_TYPE(any, type)
 #define OANY_BEFORE_SET(any)

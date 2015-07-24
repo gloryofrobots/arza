@@ -8,12 +8,12 @@
 #define ObinMem_Padding(N) ((sizeof(opointer) - ((N) % sizeof(opointer))) % sizeof(opointer))
 
 #define ObinMem_Malloc(n) ((omem_t)(n) > OBIN_MEM_MAX? NULL \
-				: obin_malloc((n) ? (n) : 1))
+				: omalloc((n) ? (n) : 1))
 
 #define ObinMem_Realloc(p, n)	((omem_t)(n) > (omem_t)OBIN_MEM_MAX  ? NULL \
-				: obin_realloc((p), (n) ? (n) : 1))
+				: orealloc((p), (n) ? (n) : 1))
 
-#define ObinMem_Free obin_free
+#define ObinMem_Free ofree
 
 #define OBIN_B_TO_KB(B) (B/(1024.0))
 #define OBIN_B_TO_MB(B) ((double)B/(1024.0*1024.0))
@@ -22,7 +22,7 @@
 
 #define CATCH_STATE_MEMORY(state) \
 	OMemory* M = state->memory; \
-	if(!M) { obin_panic("ObinState memory is NULL!"); }
+	if(!M) { opanic("ObinState memory is NULL!"); }
 
 /*FORWARDS */
 
@@ -37,9 +37,9 @@ OBIN_MODULE_LOG(MEMORY);
 void _panic(OState* state, ostring format, ...) {
 	va_list myargs;
 	va_start(myargs, format);
-	obin_vfprintf(stderr, format, myargs);
+	ovfprintf(stderr, format, myargs);
 	va_end(myargs);
-	obin_abort();
+	oabort();
 }
 
 /************** cell initalisztion ************************************/
@@ -59,14 +59,14 @@ typedef enum _EOBIN_CELL_MARK{
 
 OAny obin_cell_to_any(EOTYPE type, OCell* cell) {
 	OAny result = OAny_new();
-	obin_assert(OType_isCell(type));
+	oassert(OType_isCell(type));
 	OAny_initCell(result, type, cell);
 	return result;
 }
 
 OAny obin_cell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny origin) {
 	OAny result;
-	obin_assert(OType_isCell(type));
+	oassert(OType_isCell(type));
 	cell->origin = origin;
 	cell->behavior = behavior;
 	_unmark(cell);
@@ -88,7 +88,7 @@ opointer obin_memory_malloc(OState * state, omem_t size) {
     	_log(state, _ERR,"Failed to allocate the initial %d bytes for the GC. Panic.\n",
                 (int) size);
 
-    	obin_abort();
+    	oabort();
     	return NULL;
 	}
 
@@ -134,7 +134,7 @@ void _memory_create(OState* state, omem_t heap_size) {
 	M = state->memory;
 
 	if(!M) {
-		obin_panic("Not enough memory to allocate State");
+		opanic("Not enough memory to allocate State");
 	}
 
     M->heap_size = heap_size;
@@ -149,7 +149,7 @@ void _memory_create(OState* state, omem_t heap_size) {
                 (int) M->heap_size);
     }
 
-    obin_memset(M->heap, 0, M->heap_size);
+    omemset(M->heap, 0, M->heap_size);
     M->heap_free_size = M->heap_size;
 
     /* initialize free_list by creating the first */
@@ -179,7 +179,7 @@ OState* obin_state_new(omem_t heap_size) {
     size = sizeof(OState);
 	state = ObinMem_Malloc(size);
 	if(!state) {
-    	obin_panic("Failed to allocate ObinState");
+    	opanic("Failed to allocate ObinState");
     	return NULL;
 	}
 
@@ -254,7 +254,7 @@ void gc_mark_reachable_objects(OState * state) {
 
 static void _destroy_cell(OState * state, OCell* cell) {
 	if (!cell) {
-		obin_panic("cell is null");
+		opanic("cell is null");
 	}
 
 	if(!cell->behavior
@@ -482,7 +482,7 @@ void obin_memory_free(OState* state, opointer ptr) {
     if ((   ptr >= (void*)  M->heap)
         && (ptr < (void*) (M->heap + M->heap_size)))
     {
-    	obin_panic("free called for an object in allocator");
+    	opanic("free called for an object in allocator");
     }
 #endif
     ObinMem_Free(ptr);
