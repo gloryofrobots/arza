@@ -282,6 +282,7 @@ static void Test_String(void) {
 	val1 = ogetitem(state, str2, OInteger(100));
 	CU_ASSERT_EQUAL(OAny_toChar(val1), 'o');
 
+	omemory_collect(state);
 	/*need to implement integer behavior to use has_item*/
 	/*
 	val1 = obin_hasitem(state, str1, obin_char_new('b'));
