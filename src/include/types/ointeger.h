@@ -3,7 +3,7 @@
 
 #include "obuiltin.h"
 
-obool ointeger_init(OState* state);
+obool ointeger_init(OState* S);
 
 
 OAny OInteger(oint number);

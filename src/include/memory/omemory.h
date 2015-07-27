@@ -43,43 +43,43 @@ OAny OCell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny root);
 /*TRAITS HERE MUST EXIST IN CELL */
 OAny OCell_toAny(EOTYPE type, OCell* cell);
 
-OState* OState_new(omem_t heap_size);
-void OState_destroy(OState* state);
+OState* OState_create(omem_t heap_size);
+void OState_destroy(OState* S);
 
-void* omemory_allocate_cell(OState* state, omem_t size);
-void omemory_collect(OState* state);
+void* omemory_allocate_cell(OState* S, omem_t size);
+void omemory_collect(OState* S);
 
 /*TODO REMOVE IT LATER TO statics in c source */
-opointer omemory_malloc(OState* state, omem_t size);
+opointer omemory_malloc(OState* S, omem_t size);
 
-opointer omemory_realloc(OState* state, opointer ptr, omem_t size) ;
+opointer omemory_realloc(OState* S, opointer ptr, omem_t size) ;
 
-opointer omemory_memdup(OState* state, opointer ptr, omem_t elements, omem_t element_size );
+opointer omemory_memdup(OState* S, opointer ptr, omem_t elements, omem_t element_size );
 
-void omemory_free(OState* state, opointer ptr);
+void omemory_free(OState* S, opointer ptr);
 
-void omemory_debug_trace(OState* state);
+void omemory_debug_trace(OState* S);
 
 /*
  * During memory transactions gc collection will not occur.
  * There are no support for rollbacks now.
  * If the memory is not enough, the system will fall
  * */
-void omemory_start_transaction(OState* state);
-void omemory_end_transaction(OState* state);
+void omemory_start_transaction(OState* S);
+void omemory_end_transaction(OState* S);
 
-#define obin_new(state, type) \
-		((type*) omemory_allocate_cell(state, sizeof(type)))
+#define obin_new(S, type) \
+		((type*) omemory_allocate_cell(S, sizeof(type)))
 
-#define omemory_malloc_type(state, type) \
-	 ( (type *) omemory_malloc(state, sizeof(type)) )
+#define omemory_malloc_type(S, type) \
+	 ( (type *) omemory_malloc(S, sizeof(type)) )
 
-#define omemory_malloc_array(state, type, n) \
+#define omemory_malloc_array(S, type, n) \
   ( ((omem_t)(n) > OBIN_MEM_MAX / sizeof(type)) ? NULL :	\
-	( (type *) omemory_malloc(state, (n) * sizeof(type)) ) )
+	( (type *) omemory_malloc(S, (n) * sizeof(type)) ) )
 
-#define omemory_realloc_type(state, p, type, n) \
+#define omemory_realloc_type(S, p, type, n) \
   ( (p) = ((omem_t)(n) > OBIN_MEM_MAX / sizeof(type)) ? NULL :	\
-	(type *) omemory_realloc(state, (p), (n) * sizeof(type)) )
+	(type *) omemory_realloc(S, (p), (n) * sizeof(type)) )
 
 #endif

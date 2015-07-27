@@ -3,10 +3,10 @@
 
 #include "obuiltin.h"
 
-obool OError_init(OState* state);
-OAny OError_raise(OState* state, OAny exception);
-OAny oraise(OState* state, OAny trait, ostring message, OAny argument);
-OAny oraise_vargs(OState* state, OAny trait, ostring message, ...);
+obool OError_init(OState* S);
+OAny OError_raise(OState* S, OAny exception);
+OAny oraise(OState* S, OAny trait, ostring message, OAny argument);
+OAny oraise_vargs(OState* S, OAny trait, ostring message, ...);
 
 
 #endif /* OERROR_H_ */

@@ -13,34 +13,34 @@ typedef struct {
 #define _fstream_path(any) (_fstream(any)->path)
 #define _fstream_is_disposable(any) (_fstream(any)->is_disposable)
 
-OAny OFstream_fromFile(OState* state, ofile file, obool is_disposable){
+OAny OFstream_fromFile(OState* S, ofile file, obool is_disposable){
 
 	ObinFStream* self;
 
-	self = obin_new(state, ObinFStream);
+	self = obin_new(S, ObinFStream);
 
-	self->path = ostrings(state)->Empty;
+	self->path = ostrings(S)->Empty;
 
 	self->file = file;
 	self->is_disposable = is_disposable;
-	return OCell_new(EOBIN_TYPE_CELL, (OCell*)self, &__BEHAVIOR__, ocells(state)->__Cell__);
+	return OCell_new(EOBIN_TYPE_CELL, (OCell*)self, &__BEHAVIOR__, ocells(S)->__Cell__);
 }
 
-OAny OFstream_fromPath(OState* state, OAny path, ostring mode){
+OAny OFstream_fromPath(OState* S, OAny path, ostring mode){
 	OAny result;
-	ofile file = fopen(OString_cstr(state, path), mode);
+	ofile file = fopen(OString_cstr(S, path), mode);
 
 	if(file == NULL) {
-		oraise(state, oerrors(state)->IOError,
+		oraise(S, oerrors(S)->IOError,
 				"Unable to open file", path);
 	}
 
-	result = OFstream_fromFile(state, file, OTRUE);
+	result = OFstream_fromFile(S, file, OTRUE);
 	_fstream_path(result) = path;
 	return ObinNil;
 }
 
-OAny OFstream_writeVA(OState* state, OAny self, ostring format, ...){
+OAny OFstream_writeVA(OState* S, OAny self, ostring format, ...){
 		int result;
 
 	    va_list myargs;
@@ -51,13 +51,13 @@ OAny OFstream_writeVA(OState* state, OAny self, ostring format, ...){
 	    return OInteger(result);
 }
 
-OAny OFstream_write(OState* state, OAny self, OAny any){
+OAny OFstream_write(OState* S, OAny self, OAny any){
 	return ObinNil;
 }
 
-OAny OFstream_close(OState* state, OAny self){
+OAny OFstream_close(OState* S, OAny self){
 	if(!_fstream_is_disposable(self)) {
-		oraise(state, oerrors(state)->IOError,
+		oraise(S, oerrors(S)->IOError,
 				"Resource is not disposable", ObinNil);
 	}
 
@@ -67,7 +67,7 @@ OAny OFstream_close(OState* state, OAny self){
 	return ObinNothing;
 }
 
-OAny OFstream_isOpen(OState* state, OAny self) {
+OAny OFstream_isOpen(OState* S, OAny self) {
 	if(_fstream_file(self) == NULL) {
 		return ObinFalse;
 	}
@@ -75,15 +75,15 @@ OAny OFstream_isOpen(OState* state, OAny self) {
 	return ObinTrue;
 }
 
-static OAny __tostring__(OState* state, OAny self) {
-	return OString(state, "<File: "OBIN_POINTER_FORMATTER" >");
+static OAny __tostring__(OState* S, OAny self) {
+	return OString(S, "<File: "OBIN_POINTER_FORMATTER" >");
 }
 
-static void __destroy__(OState* state, OCell* cell) {
+static void __destroy__(OState* S, OCell* cell) {
 	ObinFStream* self = (ObinFStream*) cell;
 
 	if(self->file && self->is_disposable) {
-		OFstream_close(state,
+		OFstream_close(S,
 				OCell_toAny(EOBIN_TYPE_CELL, (OCell*)self));
 	}
 }

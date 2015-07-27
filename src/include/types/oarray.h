@@ -4,27 +4,27 @@
 #include "obuiltin.h"
 
 
-obool oarray_init(OState* state);
+obool oarray_init(OState* S);
 
-OAny OArray(OState* state, OAny size);
-OAny OArray_push(OState* state, OAny self, OAny value);
-OAny OArray_indexOf(OState* state, OAny self, OAny item);
-OAny OArray_lastIndexOf(OState* state, OAny self, OAny item);
-OAny OArray_pop(OState* state, OAny self);
-OAny OArray_clear(OState* state, OAny self);
+OAny OArray(OState* S, OAny size);
+OAny OArray_push(OState* S, OAny self, OAny value);
+OAny OArray_indexOf(OState* S, OAny self, OAny item);
+OAny OArray_lastIndexOf(OState* S, OAny self, OAny item);
+OAny OArray_pop(OState* S, OAny self);
+OAny OArray_clear(OState* S, OAny self);
 /*return true if removes something*/
-OAny OArray_remove(OState* state, OAny self, OAny item);
-OAny OArray_insert(OState* state, OAny self, OAny item, OAny position);
-OAny OArray_insertCollection(OState* state, OAny self, OAny collection, OAny position);
+OAny OArray_remove(OState* S, OAny self, OAny item);
+OAny OArray_insert(OState* S, OAny self, OAny item, OAny position);
+OAny OArray_insertCollection(OState* S, OAny self, OAny collection, OAny position);
 /*
  * implemented __add__
  * */
 /*
-ObinAny obin_array_merge(ObinState* state, ObinAny self, ObinAny sequence,
+ObinAny obin_array_merge(ObinState* S, ObinAny self, ObinAny sequence,
 		ObinAny start, ObinAny end);
-ObinAny obin_array_fill(ObinState* state, ObinAny self, ObinAny item,
+ObinAny obin_array_fill(ObinState* S, ObinAny self, ObinAny item,
 		ObinAny start, ObinAny end);
-ObinAny obin_array_reverse(ObinState* state, ObinAny self);
+ObinAny obin_array_reverse(ObinState* S, ObinAny self);
 MAYBE IMPLEMENT IT IN SOURCE
 Array.prototype.sort()
 Array.prototype.splice()

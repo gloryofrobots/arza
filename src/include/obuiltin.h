@@ -30,101 +30,101 @@ ObinAny a reg
 
 OState* obin_init(omem_t heap_size);
 
-void obin_finalise(OState* state);
+void obin_finalise(OState* S);
 /*TODO REMOVE obin_destroy FROM API*/
-void odestroy(OState * state, OCell* self);
+void odestroy(OState * S, OCell* self);
 
-void orelease(OState * state, OAny self);
+void orelease(OState * S, OAny self);
 
-OAny oequal(OState * state, OAny any, OAny other);
+OAny oequal(OState * S, OAny any, OAny other);
 
-OAny ois(OState * state, OAny first, OAny second);
+OAny ois(OState * S, OAny first, OAny second);
 
 /*shortcuts for tuples and arrays*/
-#define ogetfirst(state, coll) ogetitem(state, coll, OInteger(0))
-#define ogetsecond(state, coll) ogetitem(state, coll, OInteger(1))
-#define ogetthird(state, coll) ogetitem(state, coll, OInteger(2))
+#define ogetfirst(S, coll) ogetitem(S, coll, OInteger(0))
+#define ogetsecond(S, coll) ogetitem(S, coll, OInteger(1))
+#define ogetthird(S, coll) ogetitem(S, coll, OInteger(2))
 
 /*@return list of results from function applied to iterable
-ObinAny obin_map(ObinState * state, obin_function function, ObinAny iterable);
+ObinAny obin_map(ObinState * S, obin_function function, ObinAny iterable);
 
 //Construct a list from those elements of iterable for which function returns True.
-ObinAny obin_filter(ObinState * state, obin_function function, ObinAny iterable);
+ObinAny obin_filter(ObinState * S, obin_function function, ObinAny iterable);
 
 Apply function of two arguments cumulatively to the items of iterable,
  from left to right, so as to reduce the iterable to a single value..
-ObinAny obin_reduce(ObinState * state, obin_function_2 function, ObinAny iterable);
+ObinAny obin_reduce(ObinState * S, obin_function_2 function, ObinAny iterable);
 */
 
 /*AUTO GENERATED CODE BELOW */
 
 /************************* BASE **********************************/
 
-OAny otostring(OState* state, OAny self);
+OAny otostring(OState* S, OAny self);
 
-OAny otobool(OState* state, OAny self);
+OAny otobool(OState* S, OAny self);
 
-OAny oclone(OState* state, OAny self);
+OAny oclone(OState* S, OAny self);
 
-OAny ocompare(OState* state, OAny self, OAny arg1);
+OAny ocompare(OState* S, OAny self, OAny arg1);
 
-OAny ohash(OState* state, OAny self);
+OAny ohash(OState* S, OAny self);
 
 /************************* COLLECTION **********************************/
 
-OAny oiterator(OState* state, OAny self);
+OAny oiterator(OState* S, OAny self);
 
-OAny olength(OState* state, OAny self);
+OAny olength(OState* S, OAny self);
 
-OAny ogetitem(OState* state, OAny self, OAny arg1);
+OAny ogetitem(OState* S, OAny self, OAny arg1);
 
-OAny ohasitem(OState* state, OAny self, OAny arg1);
+OAny ohasitem(OState* S, OAny self, OAny arg1);
 
-OAny odelitem(OState* state, OAny self, OAny arg1);
+OAny odelitem(OState* S, OAny self, OAny arg1);
 
-OAny osetitem(OState* state, OAny self, OAny arg1, OAny arg2);
+OAny osetitem(OState* S, OAny self, OAny arg1, OAny arg2);
 
 /************************* GENERATOR **********************************/
 
-OAny onext(OState* state, OAny self);
+OAny onext(OState* S, OAny self);
 
 /************************* NUMBER_CAST **********************************/
 
-OAny otointeger(OState* state, OAny self);
+OAny otointeger(OState* S, OAny self);
 
-OAny otofloat(OState* state, OAny self);
+OAny otofloat(OState* S, OAny self);
 
-OAny otopositive(OState* state, OAny self);
+OAny otopositive(OState* S, OAny self);
 
-OAny otonegative(OState* state, OAny self);
+OAny otonegative(OState* S, OAny self);
 
 /************************* NUMBER_OPERATIONS **********************************/
 
-OAny oabs(OState* state, OAny self);
+OAny oabs(OState* S, OAny self);
 
-OAny oinvert(OState* state, OAny self);
+OAny oinvert(OState* S, OAny self);
 
-OAny oadd(OState* state, OAny self, OAny arg1);
+OAny oadd(OState* S, OAny self, OAny arg1);
 
-OAny osubtract(OState* state, OAny self, OAny arg1);
+OAny osubtract(OState* S, OAny self, OAny arg1);
 
-OAny odivide(OState* state, OAny self, OAny arg1);
+OAny odivide(OState* S, OAny self, OAny arg1);
 
-OAny omultiply(OState* state, OAny self, OAny arg1);
+OAny omultiply(OState* S, OAny self, OAny arg1);
 
-OAny opow(OState* state, OAny self, OAny arg1);
+OAny opow(OState* S, OAny self, OAny arg1);
 
-OAny oleftshift(OState* state, OAny self, OAny arg1);
+OAny oleftshift(OState* S, OAny self, OAny arg1);
 
-OAny orightshift(OState* state, OAny self, OAny arg1);
+OAny orightshift(OState* S, OAny self, OAny arg1);
 
-OAny omod(OState* state, OAny self, OAny arg1);
+OAny omod(OState* S, OAny self, OAny arg1);
 
-OAny oand(OState* state, OAny self, OAny arg1);
+OAny oand(OState* S, OAny self, OAny arg1);
 
-OAny oor(OState* state, OAny self, OAny arg1);
+OAny oor(OState* S, OAny self, OAny arg1);
 
-OAny oxor(OState* state, OAny self, OAny arg1);
+OAny oxor(OState* S, OAny self, OAny arg1);
 
 
 #endif

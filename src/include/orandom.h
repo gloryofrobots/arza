@@ -8,6 +8,6 @@ typedef struct{
 } OHashSecret;
 
 OHashSecret ohash_secret();
-obool ORandom_init(OState* state);
+obool ORandom_init(OState* S);
 
 #endif /* OBIN_ORANDOM_H_ */

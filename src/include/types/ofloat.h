@@ -3,6 +3,6 @@
 #include "obuiltin.h"
 
 OAny OFloat(ofloat number);
-obool ofloat_init(OState* state);
+obool ofloat_init(OState* S);
 
 #endif

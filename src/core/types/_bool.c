@@ -16,59 +16,59 @@ OAny OBool(obool condition){
 static OBehavior __TRUE_BEHAVIOR__ = {0};
 static OBehavior __FALSE_BEHAVIOR__ = {0};
 
-OAny __true_tostring__(OState* state, OAny self) {
-	return ostrings(state)->True;
+OAny __true_tostring__(OState* S, OAny self) {
+	return ostrings(S)->True;
 }
 
-OAny __true_tobool__(OState* state, OAny self){
+OAny __true_tobool__(OState* S, OAny self){
 	return self;
 }
 
-OAny __clone__(OState* state, OAny self) {
+OAny __clone__(OState* S, OAny self) {
 	return self;
 }
 
-OAny __true_compare__(OState* state, OAny self, OAny arg1) {
-	OAny other = otobool(state, arg1);
+OAny __true_compare__(OState* S, OAny self, OAny arg1) {
+	OAny other = otobool(S, arg1);
 	if(OAny_isFalse(other)) {
-		return ointegers(state)->Greater;
+		return ointegers(S)->Greater;
 	}
 	if(OAny_isTrue(other)) {
-		return ointegers(state)->Equal;
+		return ointegers(S)->Equal;
 	}
 
-	return ointegers(state)->Lesser;
+	return ointegers(S)->Lesser;
 }
 
-OAny __true_hash__(OState* state, OAny self) {
+OAny __true_hash__(OState* S, OAny self) {
 	return OInteger(1);
 }
 
-OAny __false_tostring__(OState* state, OAny self){
-	return ostrings(state)->False;
+OAny __false_tostring__(OState* S, OAny self){
+	return ostrings(S)->False;
 }
 
-OAny __false_tobool__(OState* state, OAny self) {
+OAny __false_tobool__(OState* S, OAny self) {
 	return self;
 }
 
-OAny __false_compare__(OState* state, OAny self, OAny arg1) {
-	OAny other = otobool(state, arg1);
+OAny __false_compare__(OState* S, OAny self, OAny arg1) {
+	OAny other = otobool(S, arg1);
 	if(OAny_isTrue(other)) {
-		return ointegers(state)->Lesser;
+		return ointegers(S)->Lesser;
 	}
 	if(OAny_isFalse(other)) {
-		return ointegers(state)->Equal;
+		return ointegers(S)->Equal;
 	}
 
-	return ointegers(state)->Lesser;
+	return ointegers(S)->Lesser;
 }
 
-OAny __false_hash__(OState* state, OAny self) {
+OAny __false_hash__(OState* S, OAny self) {
 	return OInteger(1);
 }
 
-obool obool_init(OState* state) {
+obool obool_init(OState* S) {
 	__TRUE_BEHAVIOR__.__name__ = "__True__";
 	__TRUE_BEHAVIOR__.__tostring__ = __true_tostring__;
 	__TRUE_BEHAVIOR__.__tobool__ = __true_tobool__;
@@ -76,7 +76,7 @@ obool obool_init(OState* state) {
 	__TRUE_BEHAVIOR__.__compare__ = __true_compare__;
 	__TRUE_BEHAVIOR__.__hash__ = __true_hash__;
 
-	obehaviors(state)->True = &__TRUE_BEHAVIOR__;
+	obehaviors(S)->True = &__TRUE_BEHAVIOR__;
 
 	__FALSE_BEHAVIOR__.__name__ = "__False__";
 	__FALSE_BEHAVIOR__.__tostring__ = __false_tostring__;
@@ -85,7 +85,7 @@ obool obool_init(OState* state) {
 	__FALSE_BEHAVIOR__.__compare__ = __false_compare__;
 	__FALSE_BEHAVIOR__.__hash__ = __false_hash__;
 
-	obehaviors(state)->True = &__FALSE_BEHAVIOR__;
+	obehaviors(S)->True = &__FALSE_BEHAVIOR__;
 
 	return OTRUE;
 }

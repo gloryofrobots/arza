@@ -1,7 +1,7 @@
 
 /*
-OAny OTuple_fromArray(OState* state,  OAny size, OAny* items);
-OAny OTuple(OState* state, oindex_t size, ...);
+OAny OTuple_fromArray(OState* S,  OAny size, OAny* items);
+OAny OTuple(OState* S, oindex_t size, ...);
 __BEHAVIOR__.__name__ = __TypeName__;
 
 	__BEHAVIOR__.__mark__ = __mark__;
@@ -18,7 +18,7 @@ __BEHAVIOR__.__name__ = __TypeName__;
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
 */
 static void Test_Tuple(void) {
-	OState * state = obin_init(1024 * 1024 * 90);
+	OState * S = obin_init(1024 * 1024 * 90);
 	OAny any1, any2, any3, any4, any5, any6, any7;
 
 }

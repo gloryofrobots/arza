@@ -2,8 +2,8 @@
 
 static OInternals __INTERNALS__;
 
-typedef obool (*obin_bootstrap_initialiser)(OState* state);
-typedef void (*obin_bootstrap_finaliser)(OState* state);
+typedef obool (*obin_bootstrap_initialiser)(OState* S);
+typedef void (*obin_bootstrap_finaliser)(OState* S);
 
 typedef struct {
 	const char* name;
@@ -23,18 +23,18 @@ static ObinModule __MODULES__[] = {
 
 
 static obool
-_init_internals(OState* state) {
+_init_internals(OState* S) {
 	ObinModule* module = __MODULES__;
 	oindex_t count_modules = sizeof(__MODULES__) / sizeof(ObinModule);
 	oindex_t i;
 
-	state->internals = &__INTERNALS__;
-	state->internals->cells.__Cell__ = OCell_new(EOBIN_TYPE_CELL, obin_new(state, OCell), 0, ObinNil);
+	S->internals = &__INTERNALS__;
+	S->internals->cells.__Cell__ = OCell_new(EOBIN_TYPE_CELL, obin_new(S, OCell), 0, ObinNil);
 
 	for(i=0; i < count_modules; i++) {
 		module = __MODULES__ + i;
-		if(!module->initialise(state)) {
-			olog(state, "Can't init module %s", module->name);
+		if(!module->initialise(S)) {
+			olog(S, "Can't init module %s", module->name);
 			opanic("Can't bootstrap obin");
 			return OFALSE;
 		}
@@ -50,16 +50,16 @@ OState* obin_init(omem_t heap_size) {
 		heap_size = OBIN_DEFAULT_HEAP_SIZE;
 	}
 
-	OState* state = OState_new(heap_size);
+	OState* S = OState_create(heap_size);
 
 	if(!is_initialised
-		&& !_init_internals(state)) {
+		&& !_init_internals(S)) {
 		return NULL;
 	} else {
-		state->internals = &__INTERNALS__;
+		S->internals = &__INTERNALS__;
 	}
 
 
 	is_initialised = 1;
-	return state;
+	return S;
 }

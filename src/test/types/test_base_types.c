@@ -1,6 +1,6 @@
 
 static void Test_BaseTypes(void) {
-	OState * state = obin_init(1024 * 1024 * 90);
+	OState * S = obin_init(1024 * 1024 * 90);
 	printf("\n *************************** Internal sizes ******************************** \n");
 	printf("Size of ObinState %d \n", sizeof(OState));
 	printf("Size of ObinAny %d \n", sizeof(OAny));
@@ -11,9 +11,9 @@ static void Test_BaseTypes(void) {
 	CU_ASSERT_EQUAL(OAny_type(ObinNil), EOBIN_TYPE_NIL);
 	CU_ASSERT_EQUAL(OAny_type(ObinNothing), EOBIN_TYPE_NOTHING);
 	CU_ASSERT_EQUAL(OAny_type(ObinTrue), EOBIN_TYPE_TRUE);
-	CU_ASSERT_EQUAL(OAny_toInt(ointegers(state)->Lesser), -1);
-	CU_ASSERT_EQUAL(OAny_toInt(ointegers(state)->Greater), 1);
-	CU_ASSERT_EQUAL(OAny_toInt(ointegers(state)->Equal), 0);
+	CU_ASSERT_EQUAL(OAny_toInt(ointegers(S)->Lesser), -1);
+	CU_ASSERT_EQUAL(OAny_toInt(ointegers(S)->Greater), 1);
+	CU_ASSERT_EQUAL(OAny_toInt(ointegers(S)->Equal), 0);
 }
 static void Test_BaseAnyNew(void) {
 	OAny any = OAny_new();

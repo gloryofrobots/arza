@@ -2,15 +2,15 @@
 #define OTABLE_H
 #include "obuiltin.h"
 
-obool otable_init(OState* state);
+obool otable_init(OState* S);
 
-OAny OTable(OState* state, OAny size);
+OAny OTable(OState* S, OAny size);
 
-OAny OTable_clear(OState* state, OAny self);
-OAny OTable_merge(OState* state, OAny self, OAny other);
+OAny OTable_clear(OState* S, OAny self);
+OAny OTable_merge(OState* S, OAny self, OAny other);
 
 /*return iterators*/
-OAny OTable_items(OState* state, OAny self);
-OAny OTable_keys(OState* state, OAny self);
-OAny OTable_values(OState* state, OAny self);
+OAny OTable_items(OState* S, OAny self);
+OAny OTable_keys(OState* S, OAny self);
+OAny OTable_values(OState* S, OAny self);
 #endif

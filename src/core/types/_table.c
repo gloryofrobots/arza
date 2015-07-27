@@ -1,9 +1,9 @@
 #include <obin.h>
 #define __TypeName__ "__Table__"
 
-#define _CHECK_SELF_TYPE(state, self, method) \
+#define _CHECK_SELF_TYPE(S, self, method) \
 	if(!OAny_isTable(self)) { \
-		return oraise(state, oerrors(state)->TypeError, \
+		return oraise(S, oerrors(S)->TypeError, \
 				__TypeName__ #method "call from other type", self); \
 	} \
 
@@ -46,9 +46,9 @@ static omem_t _next_power_of_2(omem_t v){
 	return v;
 }
 
-static OAny __setitem__(OState* state, OAny self, OAny key, OAny value);
+static OAny __setitem__(OState* S, OAny self, OAny key, OAny value);
 
-OAny OTable(OState* state, OAny size){
+OAny OTable(OState* S, OAny size){
 	ObinTable * self;
 
 	if(OAny_isNil(size)){
@@ -56,45 +56,45 @@ OAny OTable(OState* state, OAny size){
 	}
 
 	if (!OInt_isFitToMemsize(size)) {
-		return oraise(state, oerrors(state)->MemoryError,
+		return oraise(S, oerrors(S)->MemoryError,
 				"obin_table_new:: size not fit to memory", size);
 	}
 
-	self = obin_new(state, ObinTable);
+	self = obin_new(S, ObinTable);
 
 	self->capacity = _next_power_of_2(OAny_toMem_t(size));
 
-	self->body = omemory_malloc_array(state, _ObinHashTableEntry, self->capacity);
+	self->body = omemory_malloc_array(S, _ObinHashTableEntry, self->capacity);
 	self->size = 0;
 
-	return OCell_new(EOBIN_TYPE_TABLE, (OCell*)self, &__BEHAVIOR__, ocells(state)->__Table__);
+	return OCell_new(EOBIN_TYPE_TABLE, (OCell*)self, &__BEHAVIOR__, ocells(S)->__Table__);
 }
 
-static void _obin_table_resize(OState* state, OAny self, omem_t new_capacity) {
+static void _obin_table_resize(OState* S, OAny self, omem_t new_capacity) {
 	omem_t i;
 	omem_t old_capacity = _capacity(self);
 	_ObinHashTableEntry* old_body = _body(self);
 
-	_body(self) = omemory_malloc_array(state, _ObinHashTableEntry, new_capacity);
+	_body(self) = omemory_malloc_array(S, _ObinHashTableEntry, new_capacity);
 	_capacity(self) = new_capacity;
 
 	for (i = 0; i < old_capacity; i++) {
 		if (old_body[i].isset) {
-			__setitem__(state, self, old_body[i].key, old_body[i].value);
+			__setitem__(S, self, old_body[i].key, old_body[i].value);
 		}
 	}
 
-	omemory_free(state, old_body);
+	omemory_free(S, old_body);
 }
 
 static obool _is_excided_load(OAny self) {
 	return (float)_size(self) / _capacity(self) > OBIN_TABLE_LOAD_FACTOR;
 }
 
-OAny OTable_clear(OState* state, OAny self){
+OAny OTable_clear(OState* S, OAny self){
 	oindex_t i;
 
-	_CHECK_SELF_TYPE(state, self, OTable_clear);
+	_CHECK_SELF_TYPE(S, self, OTable_clear);
 
 	for (i = 0; i < _capacity(self); i++) {
 		_body(self)[i].isset = OFALSE;
@@ -105,87 +105,87 @@ OAny OTable_clear(OState* state, OAny self){
 	return ObinNothing;
 }
 
-OAny OTable_merge(OState* state, OAny self, OAny other) {
+OAny OTable_merge(OState* S, OAny self, OAny other) {
 	OAny iterator, item;
 
-	_CHECK_SELF_TYPE(state, self, OTable_clear);
+	_CHECK_SELF_TYPE(S, self, OTable_clear);
 
-	iterator = oiterator(state, other);
+	iterator = oiterator(S, other);
 
 	while (OTRUE) {
 		/*tuple*/
-		item = onext(state, iterator);
+		item = onext(S, iterator);
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
 
-		osetitem(state, self,
-				ogetfirst(state, item),
-				ogetsecond(state, item));
+		osetitem(S, self,
+				ogetfirst(S, item),
+				ogetsecond(S, item));
 	}
 
 	return ObinNothing;
 }
 
-OAny OTable_items(OState* state, OAny self){
+OAny OTable_items(OState* S, OAny self){
 	OAny result, iterator, item;
 
-	_CHECK_SELF_TYPE(state, self, OTable_items);
+	_CHECK_SELF_TYPE(S, self, OTable_items);
 
-	result = OArray(state, OInteger(_size(self)));
+	result = OArray(S, OInteger(_size(self)));
 
-	iterator = oiterator(state, self);
+	iterator = oiterator(S, self);
 
 	while (OTRUE) {
 		/*tuple*/
-		item = onext(state, iterator);
+		item = onext(S, iterator);
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
-		OArray_push(state, result, item);
+		OArray_push(S, result, item);
 	}
 
 	return result;
 }
 
-OAny OTable_keys(OState* state, OAny self){
+OAny OTable_keys(OState* S, OAny self){
 	OAny result, iterator, item;
 
-	_CHECK_SELF_TYPE(state, self, OTable_keys);
+	_CHECK_SELF_TYPE(S, self, OTable_keys);
 
-	result = OArray(state, OInteger(_size(self)));
+	result = OArray(S, OInteger(_size(self)));
 
-	iterator = oiterator(state, self);
+	iterator = oiterator(S, self);
 
 	while (OTRUE) {
 		/*tuple*/
-		item = onext(state, iterator);
+		item = onext(S, iterator);
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
-		OArray_push(state, result, ogetfirst(state, item));
+		OArray_push(S, result, ogetfirst(S, item));
 
 	}
 
 	return result;
 }
 
-OAny OTable_values(OState* state, OAny self){
+OAny OTable_values(OState* S, OAny self){
 	OAny result, iterator, item;
 
-	_CHECK_SELF_TYPE(state, self, OTable_values);
+	_CHECK_SELF_TYPE(S, self, OTable_values);
 
-	result = OArray(state, OInteger(_size(self)));
+	result = OArray(S, OInteger(_size(self)));
 
-	iterator = oiterator(state, self);
+	iterator = oiterator(S, self);
 
 	while (OTRUE) {
 		/*tuple*/
-		item = onext(state, iterator);
+		item = onext(S, iterator);
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
-		OArray_push(state, result, ogetsecond(state, item));
+		OArray_push(S, result, ogetsecond(S, item));
 
 	}
 
@@ -199,7 +199,7 @@ typedef struct {
 	oindex_t index;
 } TableIterator;
 
-static OAny __iterator__next__(OState* state, OAny self) {
+static OAny __iterator__next__(OState* S, OAny self) {
 	TableIterator * it;
 	OAny result = ObinNothing;
 
@@ -207,7 +207,7 @@ static OAny __iterator__next__(OState* state, OAny self) {
 
 	while(it->index < _capacity(it->source)) {
 		if(_body(self)[it->index].isset) {
-			result = OTuple(state, 2,
+			result = OTuple(S, 2,
 					_body(it->source)[it->index].key,
 					_body(it->source)[it->index].key);
 			it->index++;
@@ -230,24 +230,24 @@ OBEHAVIOR_DEFINE(__TABLE_ITERATOR_BEHAVIOR__,
 		OBEHAVIOR_NUMBER_OPERATIONS_NULL
 );
 
-static OAny __iterator__(OState* state, OAny self) {
+static OAny __iterator__(OState* S, OAny self) {
 	TableIterator * iterator;
 
-	_CHECK_SELF_TYPE(state, self, __iterator__);
+	_CHECK_SELF_TYPE(S, self, __iterator__);
 
-	iterator = obin_new(state, TableIterator);
+	iterator = obin_new(S, TableIterator);
 	iterator->source = self;
 	iterator->index = 0;
 	return OCell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__TABLE_ITERATOR_BEHAVIOR__, ObinNil);
 }
 
-static OAny __tobool__(OState* state, OAny self) {
-	_CHECK_SELF_TYPE(state, self, __tobool__);
+static OAny __tobool__(OState* S, OAny self) {
+	_CHECK_SELF_TYPE(S, self, __tobool__);
 
 	return OBool(_size(self) > 0);
 }
 
-static OAny __tostring__(OState* state, OAny self) {
+static OAny __tostring__(OState* S, OAny self) {
 	OAny array;
 	OAny iterator;
 	OAny item;
@@ -255,65 +255,65 @@ static OAny __tostring__(OState* state, OAny self) {
     OAny kv_separator;
     OAny items_separator;
 
-	_CHECK_SELF_TYPE(state, self, __tostring__);
+	_CHECK_SELF_TYPE(S, self, __tostring__);
 
-    kv_separator = OString(state, ": ");
-    items_separator = OString(state, ", ");
+    kv_separator = OString(S, ": ");
+    items_separator = OString(S, ", ");
 
-	array = OArray(state, OInteger(_size(self)));
+	array = OArray(S, OInteger(_size(self)));
 
-	iterator = oiterator(state, self);
+	iterator = oiterator(S, self);
 
 	while (OTRUE) {
 		/*tuple*/
-		item = onext(state, iterator);
+		item = onext(S, iterator);
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
 
-		OArray_push(state, array, OString_join(state, kv_separator, item));
+		OArray_push(S, array, OString_join(S, kv_separator, item));
 	}
 
-	result = OString_join(state, items_separator, array);
-	result = oadd(state, OChar_new('{'), result);
-	result = oadd(state, result, OChar_new('}'));
+	result = OString_join(S, items_separator, array);
+	result = oadd(S, OChar_new('{'), result);
+	result = oadd(S, result, OChar_new('}'));
 
-	orelease(state, iterator);
-	orelease(state, array);
+	orelease(S, iterator);
+	orelease(S, array);
 	return result;
 }
 
-static void __destroy__(OState* state, OCell* table) {
+static void __destroy__(OState* S, OCell* table) {
 	ObinTable* self = (ObinTable*) table;
-	omemory_free(state, self->body);
+	omemory_free(S, self->body);
 	self->body = NULL;
 }
 
-static void __mark__(OState* state, OAny self, ofunc_1 mark) {
+static void __mark__(OState* S, OAny self, ofunc_1 mark) {
 	oindex_t i;
 
 	for(i = 0; i < _capacity(self); ++i) {
 		if(_body(self)[i].isset) {
-			mark(state, _body(self)[i].key);
-			mark(state, _body(self)[i].value);
+			mark(S, _body(self)[i].key);
+			mark(S, _body(self)[i].value);
 		}
 	}
 }
 
-static OAny __clone__(OState* state, OAny self) {
+static OAny __clone__(OState* S, OAny self) {
 	OAny result;
 	omem_t capacity;
 
-	_CHECK_SELF_TYPE(state, self, __clone__);
+	_CHECK_SELF_TYPE(S, self, __clone__);
 
 	capacity = _capacity(self);
-	result = OTable(state, OInteger(capacity));
+	result = OTable(S, OInteger(capacity));
 	omemcpy(_body(result), _body(self), sizeof(_ObinHashTableEntry) * capacity);
 	return result;
 }
 
-static OAny __length__(OState* state, OAny self) {
-	_CHECK_SELF_TYPE(state, self, __length__);
+static OAny __length__(OState* S, OAny self) {
+	_CHECK_SELF_TYPE(S, self, __length__);
 
 	return OInteger(_size(self));
 }
@@ -321,38 +321,38 @@ static OAny __length__(OState* state, OAny self) {
 /**
  * Find an available slot for the given key, using linear probing.
  */
-oindex_t _find_slot(OState* state, OAny self, OAny key)
+oindex_t _find_slot(OState* S, OAny self, OAny key)
 {
-	oint hash = OAny_toInt(ohash(state, key));
+	oint hash = OAny_toInt(ohash(S, key));
 	oindex_t index;
 
 	index =  hash % _capacity(self);
 
 	while (_body(self)[index].isset
-			&&  OAny_isTrue(oequal(state, _body(self)[index].key, key))) {
+			&&  OAny_isTrue(oequal(S, _body(self)[index].key, key))) {
 		index = (index + 1) % _capacity(self);
 	}
 	return index;
 }
 
 static OAny
-__getitem__(OState* state, OAny self, OAny key){
-	oint index = _find_slot(state, self, key);
+__getitem__(OState* S, OAny self, OAny key){
+	oint index = _find_slot(S, self, key);
 
-	_CHECK_SELF_TYPE(state, self, __getitem__);
+	_CHECK_SELF_TYPE(S, self, __getitem__);
 
 	if (!_body(self)[index].isset) {
-		oraise(state, oerrors(state)->KeyError, __TypeName__ ".__getitem__ invalid key", key);
+		oraise(S, oerrors(S)->KeyError, __TypeName__ ".__getitem__ invalid key", key);
 	}
 
 	return _body(self)[index].value;
 }
 
-static OAny __setitem__(OState* state, OAny self, OAny key, OAny value){
+static OAny __setitem__(OState* S, OAny self, OAny key, OAny value){
 
-	_CHECK_SELF_TYPE(state, self, __getitem__);
+	_CHECK_SELF_TYPE(S, self, __getitem__);
 
-	oint index = _find_slot(state, self, key);
+	oint index = _find_slot(S, self, key);
 	if (_body(self)[index].isset) {
 		/* Entry exists; update it. */
 		_body(self)[index].value = value;
@@ -362,8 +362,8 @@ static OAny __setitem__(OState* state, OAny self, OAny key, OAny value){
 
 		if (_is_excided_load(self)) {
 			/* Resize the hash table */
-			_obin_table_resize(state, self, _capacity(self) * 2);
-			index = _find_slot(state, self, key);
+			_obin_table_resize(S, self, _capacity(self) * 2);
+			index = _find_slot(S, self, key);
 		}
 		_body(self)[index].key = key;
 		_body(self)[index].value = value;
@@ -372,22 +372,22 @@ static OAny __setitem__(OState* state, OAny self, OAny key, OAny value){
 }
 
 static OAny
-__hasitem__(OState* state, OAny self, OAny key){
-	oindex_t index = _find_slot(state, self, key);
+__hasitem__(OState* S, OAny self, OAny key){
+	oindex_t index = _find_slot(S, self, key);
 
-	_CHECK_SELF_TYPE(state, self, __hasitem__);
+	_CHECK_SELF_TYPE(S, self, __hasitem__);
 
 	return OBool(_body(self)[index].isset);
 }
 
 static OAny
-__delitem__(OState* state, OAny self, OAny key){
-	oindex_t index = _find_slot(state, self, key);
+__delitem__(OState* S, OAny self, OAny key){
+	oindex_t index = _find_slot(S, self, key);
 
-	_CHECK_SELF_TYPE(state, self, __delitem__);
+	_CHECK_SELF_TYPE(S, self, __delitem__);
 
 	if (!_body(self)[index].isset) {
-		oraise(state, oerrors(state)->KeyError, __TypeName__ "__delitem__ unknown key", key);
+		oraise(S, oerrors(S)->KeyError, __TypeName__ "__delitem__ unknown key", key);
 	}
 
 	_body(self)[index].isset = OFALSE;
@@ -396,7 +396,7 @@ __delitem__(OState* state, OAny self, OAny key){
 	return ObinNothing;
 }
 
-obool otable_init(OState* state) {
+obool otable_init(OState* S) {
 	__BEHAVIOR__.__name__ = __TypeName__;
 	__BEHAVIOR__.__destroy__ = __destroy__;
 	__BEHAVIOR__.__mark__ = __mark__;
@@ -413,8 +413,8 @@ obool otable_init(OState* state) {
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
 	__BEHAVIOR__.__delitem__ = __delitem__;
 
-	ocells(state)->__Table__ = OCell_new(EOBIN_TYPE_CELL,
-			obin_new(state, OCell), &__BEHAVIOR__, ocells(state)->__Cell__);
+	ocells(S)->__Table__ = OCell_new(EOBIN_TYPE_CELL,
+			obin_new(S, OCell), &__BEHAVIOR__, ocells(S)->__Cell__);
 
 	return OTRUE;
 }

@@ -3,6 +3,6 @@
 
 #include "obuiltin.h"
 
-OAny OSequence_iterator(OState* state, OAny sequence);
-OAny OCollection_compare(OState * state, OAny self, OAny other);
+OAny OSequence_iterator(OState* S, OAny sequence);
+OAny OCollection_compare(OState * S, OAny self, OAny other);
 #endif

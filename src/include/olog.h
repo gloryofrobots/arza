@@ -4,7 +4,7 @@
 
 
 
-/*void _panic(ObinState* state, obin_string format, ...) {
+/*void _panic(ObinState* S, obin_string format, ...) {
 	va_list myargs;
 	va_start(myargs, format);
 	obin_vfprintf(stderr, format, myargs);
@@ -18,13 +18,13 @@ static oint _INFO = 2; \
 static oint _WARN = 1; \
 static oint _ERR = 0; \
 static oint _ALL = -1; \
-static void _log(OState* state, oint verbosity, ostring format, ...) { \
+static void _log(OState* S, oint verbosity, ostring format, ...) { \
 	if(OBIN_LOG_##module_name < verbosity) { \
 		return; \
 	} \
 	va_list myargs; \
 	va_start(myargs, format); \
-	olog(state, format, myargs); \
+	olog(S, format, myargs); \
 	va_end(myargs); \
 }
 #else
@@ -33,10 +33,10 @@ static oint _INFO = 2; \
 static oint _WARN = 1; \
 static oint _ERR = 0; \
 static oint _ALL = -1; \
-static void _log(ObinState* state, oint verbosity, ostring format, ...) { }
+static void _log(ObinState* S, oint verbosity, ostring format, ...) { }
 #endif
 
-void olog(OState* state, ostring message, ...);
+void olog(OState* S, ostring message, ...);
 
 
 #endif /* OLOG_H_ */

@@ -9,9 +9,9 @@ OCELL_DECLARE(ObinArray,
 
 static OBehavior __BEHAVIOR__ = {0};
 
-#define _CHECK_SELF_TYPE(state, self, method) \
+#define _CHECK_SELF_TYPE(S, self, method) \
 	if(!OAny_isArray(self)) { \
-		return oraise(state, oerrors(state)->TypeError, \
+		return oraise(S, oerrors(S)->TypeError, \
 				__TypeName__ #method "call from other type", self); \
 	} \
 
@@ -24,7 +24,7 @@ static OBehavior __BEHAVIOR__ = {0};
 
 #define _array_last_index(any) (_array_size(any) - 1)
 static obool
-_array_grow(OState* state, OAny self, oindex_t count_elements) {
+_array_grow(OState* S, OAny self, oindex_t count_elements) {
 	/*TODO IT IS DANGEROUS OPERATION NEED SAFE CHECKS*/
 	omem_t new_capacity;
     if (_array_capacity(self) > OBIN_MAX_CAPACITY - (OBIN_DEFAULT_ARRAY_SIZE + count_elements)) {
@@ -37,34 +37,34 @@ _array_grow(OState* state, OAny self, oindex_t count_elements) {
 		return OFALSE;
 	}
 
-	_array_data(self) = omemory_realloc(state, _array_data(self), new_capacity);
+	_array_data(self) = omemory_realloc(S, _array_data(self), new_capacity);
 	_array_capacity(self) = new_capacity;
 
 	return OTRUE;
 }
 
 OAny
-OArray(OState* state, OAny size) {
+OArray(OState* S, OAny size) {
 	ObinArray * self; omem_t capacity;
 	if(OAny_isNil(size)){
 		size = OInteger(OBIN_DEFAULT_ARRAY_SIZE);
 	}
 	if (!OInt_isFitToMemsize(size)) {
-			oraise(state, oerrors(state)->MemoryError,
+			oraise(S, oerrors(S)->MemoryError,
 				"obin_array_new " __TypeName__ "size not fit to memory", size);
 	}
 
-	self = obin_new(state, ObinArray);
+	self = obin_new(S, ObinArray);
 
 	capacity = (omem_t) OAny_toInt(size);
-	self->data = omemory_malloc_array(state, OAny, capacity);
+	self->data = omemory_malloc_array(S, OAny, capacity);
 
 	self->capacity = capacity;
 	self->size = 0;
-	return OCell_new(EOBIN_TYPE_ARRAY, (OCell*)self, &__BEHAVIOR__, ocells(state)->__Array__);
+	return OCell_new(EOBIN_TYPE_ARRAY, (OCell*)self, &__BEHAVIOR__, ocells(S)->__Array__);
 }
 
-static omem_t _array_inflate(OState* state, OAny self, oindex_t start, oindex_t end) {
+static omem_t _array_inflate(OState* S, OAny self, oindex_t start, oindex_t end) {
 	omem_t new_size, old_size;
 	omem_t length;
 
@@ -73,8 +73,8 @@ static omem_t _array_inflate(OState* state, OAny self, oindex_t start, oindex_t 
 	new_size = old_size + length;
 
 	if (new_size > _array_capacity(self)) {
-		if ( !_array_grow(state, self, length) ){
-			oraise(state, oerrors(state)->MemoryError,
+		if ( !_array_grow(S, self, length) ){
+			oraise(S, oerrors(S)->MemoryError,
 				"__array_inflate " __TypeName__ "can't grow", OInteger(length));
 			return 0;
 		}
@@ -84,31 +84,31 @@ static omem_t _array_inflate(OState* state, OAny self, oindex_t start, oindex_t 
 	return new_size;
 }
 
-OAny OArray_insertCollection(OState* state, OAny self, OAny collection, OAny position) {
+OAny OArray_insertCollection(OState* S, OAny self, OAny collection, OAny position) {
 	OAny item;
 	oindex_t start, end, new_size, collection_size, i, j;
 
-	_CHECK_SELF_TYPE(state, self, OArray_insertCollection);
+	_CHECK_SELF_TYPE(S, self, OArray_insertCollection);
 
 	start = OAny_toInt(position);
-	collection_size = OAny_toInt(olength(state, collection));
+	collection_size = OAny_toInt(olength(S, collection));
 	end = start + collection_size;
 
 	if(start > _array_size(self)) {
-		return oraise(state, oerrors(state)->KeyError, "obin_array_insert_collection invalid index", position);
+		return oraise(S, oerrors(S)->KeyError, "obin_array_insert_collection invalid index", position);
 	} else if(start == _array_size(self)) {
-		return oadd(state, self, item);
+		return oadd(S, self, item);
 	}
 
-	new_size = _array_inflate(state, self, start, end);
+	new_size = _array_inflate(S, self, start, end);
 	if(!new_size) {
-		return oraise(state, oerrors(state)->KeyError,
+		return oraise(S, oerrors(S)->KeyError,
 				"obin_array_insert inflate error", position);
 	}
 
 	i=start;j=0;
 	while(i<end && j<collection_size) {
-		_array_setitem(self, i, ogetitem(state, collection, OInteger(j)));
+		_array_setitem(self, i, ogetitem(S, collection, OInteger(j)));
 		++i; ++j;
 	}
 
@@ -117,22 +117,22 @@ OAny OArray_insertCollection(OState* state, OAny self, OAny collection, OAny pos
 	return OInteger(new_size);
 }
 
-OAny OArray_insert(OState* state, OAny self, OAny item, OAny position) {
+OAny OArray_insert(OState* S, OAny self, OAny item, OAny position) {
 	omem_t new_size;
 	omem_t insert_index;
 
-	_CHECK_SELF_TYPE(state, self, OArray_insert);
+	_CHECK_SELF_TYPE(S, self, OArray_insert);
 
 	insert_index = OAny_toInt(position);
 	if(insert_index > _array_size(self)) {
-		return oraise(state, oerrors(state)->KeyError, "obin_array_insert invalid index", position);
+		return oraise(S, oerrors(S)->KeyError, "obin_array_insert invalid index", position);
 	} else if(insert_index == _array_size(self)) {
-		return OArray_push(state, self, item);
+		return OArray_push(S, self, item);
 	}
 
-	new_size = _array_inflate(state, self, insert_index, insert_index + 1);
+	new_size = _array_inflate(S, self, insert_index, insert_index + 1);
 	if(!new_size) {
-		return oraise(state, oerrors(state)->KeyError,
+		return oraise(S, oerrors(S)->KeyError,
 				"obin_array_insert inflate error", position);
 	}
 
@@ -147,11 +147,11 @@ OAny OArray_insert(OState* state, OAny self, OAny item, OAny position) {
  * */
 /*
 MAYBE IMPLEMENT IT IN SOURCE
-ObinAny obin_array_merge(ObinState* state, ObinAny self, ObinAny sequence,
+ObinAny obin_array_merge(ObinState* S, ObinAny self, ObinAny sequence,
 		ObinAny start, ObinAny end);
-ObinAny obin_array_fill(ObinState* state, ObinAny self, ObinAny item,
+ObinAny obin_array_fill(ObinState* S, ObinAny self, ObinAny item,
 		ObinAny start, ObinAny end);
-ObinAny obin_array_reverse(ObinState* state, ObinAny self);
+ObinAny obin_array_reverse(ObinState* S, ObinAny self);
 Array.prototype.sort()
 Array.prototype.splice()
 Array.prototype.concat()
@@ -160,15 +160,15 @@ MAY BE INTERESTING THING
 Array.prototype.toSource()
 */
 OAny
-OArray_push(OState* state, OAny self, OAny value) {
+OArray_push(OState* S, OAny self, OAny value) {
 	omem_t new_size;
-	_CHECK_SELF_TYPE(state, self, OArray_push);
+	_CHECK_SELF_TYPE(S, self, OArray_push);
 
 	new_size = _array_size(self) + 1;
 
 	if (new_size > _array_capacity(self)){
-		if (!_array_grow(state, self, 1) ){
-			oraise(state, oerrors(state)->MemoryError,
+		if (!_array_grow(S, self, 1) ){
+			oraise(S, oerrors(S)->MemoryError,
 				"obin_array_push " __TypeName__ "can't grow", OInteger(new_size));
 		}
 	}
@@ -180,65 +180,65 @@ OArray_push(OState* state, OAny self, OAny value) {
 	return OInteger(new_size);
 }
 
-OAny obin_array_lastindexof(OState* state, OAny self, OAny item){
+OAny obin_array_lastindexof(OState* S, OAny self, OAny item){
 	omem_t i;
 
-	_CHECK_SELF_TYPE(state, self, lastindexof);
+	_CHECK_SELF_TYPE(S, self, lastindexof);
 
 	for(i=_array_last_index(self); i>=0; --i) {
-		if (OAny_isTrue(oequal(state, _array_item(self, i), item))) {
+		if (OAny_isTrue(oequal(S, _array_item(self, i), item))) {
 			return OInteger(i);
 		}
 	}
 
-	return ointegers(state)->NotFound;
+	return ointegers(S)->NotFound;
 }
 
-OAny OArray_indexOf(OState* state, OAny self, OAny item) {
+OAny OArray_indexOf(OState* S, OAny self, OAny item) {
 	omem_t i;
 
-	_CHECK_SELF_TYPE(state, self, OArray_indexOf);
+	_CHECK_SELF_TYPE(S, self, OArray_indexOf);
 
 	for(i=0; i<_array_size(self); ++i) {
-		if (OAny_isTrue(oequal(state, _array_item(self, i), item))) {
+		if (OAny_isTrue(oequal(S, _array_item(self, i), item))) {
 			return OInteger(i);
 		}
 	}
 
-	return ointegers(state)->NotFound;
+	return ointegers(S)->NotFound;
 }
 
-OAny OArray_pop(OState* state, OAny self) {
+OAny OArray_pop(OState* S, OAny self) {
     OAny item;
 
-	_CHECK_SELF_TYPE(state, self, OArray_pop);
+	_CHECK_SELF_TYPE(S, self, OArray_pop);
 
 	if(_array_size(self) == 0) {
-			oraise(state, oerrors(state)->IndexError,
+			oraise(S, oerrors(S)->IndexError,
 				"obin_array_pop " __TypeName__ " empty array", ObinNil);
 	}
 
-	item = ogetitem(state, self, OInteger(_array_last_index(self)));
+	item = ogetitem(S, self, OInteger(_array_last_index(self)));
 	_array_size(self) -= 1;
 
 	return item;
 }
 
-OAny OArray_clear(OState* state, OAny self) {
-	_CHECK_SELF_TYPE(state, self, OArray_clear);
+OAny OArray_clear(OState* S, OAny self) {
+	_CHECK_SELF_TYPE(S, self, OArray_clear);
 	_array_size(self) = 0;
 	return ObinNothing;
 }
 
-OAny OArray_remove(OState* state, OAny self, OAny item) {
+OAny OArray_remove(OState* S, OAny self, OAny item) {
 	oint i;
 	obool find;
 	find = OFALSE;
 
-	_CHECK_SELF_TYPE(state, self, OArray_remove);
+	_CHECK_SELF_TYPE(S, self, OArray_remove);
 
 	for (i=0; i<_array_size(self); i++) {
-		if(OAny_isTrue(oequal(state, self, item))) {
+		if(OAny_isTrue(oequal(S, self, item))) {
 			find = OTRUE;
 			break;
 		}
@@ -248,62 +248,62 @@ OAny OArray_remove(OState* state, OAny self, OAny item) {
 		return ObinFalse;
 	}
 
-	odelitem(state, self, OInteger(i));
+	odelitem(S, self, OInteger(i));
 	return ObinTrue;
 }
 
 /* PRIVATE */
 
-static OAny __tobool__(OState* state, OAny self) {
-	_CHECK_SELF_TYPE(state, self, __tobool__);
+static OAny __tobool__(OState* S, OAny self) {
+	_CHECK_SELF_TYPE(S, self, __tobool__);
 	return OBool(_array_size(self)>0);
 }
 
-static OAny __tostring__(OState* state, OAny self) {
+static OAny __tostring__(OState* S, OAny self) {
     OAny result;
 
-	_CHECK_SELF_TYPE(state, self, __tostring__);
-	result = OString_join(state, OChar_new(','), self);
-	result = oadd(state, OChar_new('['), result);
-	result = oadd(state, result, OChar_new(']'));
+	_CHECK_SELF_TYPE(S, self, __tostring__);
+	result = OString_join(S, OChar_new(','), self);
+	result = oadd(S, OChar_new('['), result);
+	result = oadd(S, result, OChar_new(']'));
 
 	return result;
 }
 
-static void __destroy__(OState* state, OCell* self) {
+static void __destroy__(OState* S, OCell* self) {
 	ObinArray* array = (ObinArray*) self;
 
-	omemory_free(state, array->data);
+	omemory_free(S, array->data);
 }
 
-static void __mark__(OState* state, OAny self, ofunc_1 mark) {
+static void __mark__(OState* S, OAny self, ofunc_1 mark) {
 	/*TODO each here*/
 	oindex_t i;
 
 	for(i=0; i<_array_size(self); ++i) {
-		mark(state, _array_item(self, i));
+		mark(S, _array_item(self, i));
 	}
 }
 
-static OAny __clone__(OState* state, OAny self) {
+static OAny __clone__(OState* S, OAny self) {
 	OAny result;
 
-	_CHECK_SELF_TYPE(state, self, __clone__);
+	_CHECK_SELF_TYPE(S, self, __clone__);
 
-	result = OArray(state, OInteger(_array_capacity(self)));
+	result = OArray(S, OInteger(_array_capacity(self)));
 	omemcpy(_array_data(result), _array_data(self), _array_capacity(self) * sizeof(OAny));
 	_array_size(result) = _array_size(self);
 	return result;
 }
 
-static OAny __length__(OState* state, OAny self) {
-	_CHECK_SELF_TYPE(state, self, __length__);
+static OAny __length__(OState* S, OAny self) {
+	_CHECK_SELF_TYPE(S, self, __length__);
 
 	return OInteger(_array_size(self));
 }
 
 static oint
-_get_index(OState* state, OAny self, OAny pos){
+_get_index(OState* S, OAny self, OAny pos){
 	oint index;
 
 	if(!OAny_isInt(pos)){
@@ -325,13 +325,13 @@ _get_index(OState* state, OAny self, OAny pos){
 }
 
 static OAny
-__getitem__(OState* state, OAny self, OAny pos){
+__getitem__(OState* S, OAny self, OAny pos){
 	oint index;
 
-	index = _get_index(state, self, pos);
+	index = _get_index(S, self, pos);
 
 	if (index == OBIN_INVALID_INDEX) {
-		return oraise(state, oerrors(state)->IndexError,
+		return oraise(S, oerrors(S)->IndexError,
 				__TypeName__ "__getitem__ invalid index", pos);
 	}
 
@@ -339,18 +339,18 @@ __getitem__(OState* state, OAny self, OAny pos){
 }
 
 static OAny
-__setitem__(OState* state, OAny self, OAny pos, OAny value){
+__setitem__(OState* S, OAny self, OAny pos, OAny value){
 	oint index;
 
-	index = _get_index(state, self, pos);
+	index = _get_index(S, self, pos);
 
 	if (index == OBIN_INVALID_INDEX) {
-		return oraise(state, oerrors(state)->IndexError,
+		return oraise(S, oerrors(S)->IndexError,
 				__TypeName__ "__setitem__   invalid index", pos);
 	}
 
 	if (_array_size(self) == 0 && index == 0) {
-		return OArray_push(state, self, value);
+		return OArray_push(S, self, value);
 	}
 
 	_array_setitem(self, index, value);
@@ -359,19 +359,19 @@ __setitem__(OState* state, OAny self, OAny pos, OAny value){
 }
 
 static OAny
-__hasitem__(OState* state, OAny self, OAny item){
-	return OBool(OAny_toInt(OArray_indexOf(state, self, item)) != OBIN_INVALID_INDEX);
+__hasitem__(OState* S, OAny self, OAny item){
+	return OBool(OAny_toInt(OArray_indexOf(S, self, item)) != OBIN_INVALID_INDEX);
 }
 
 static OAny
-__delitem__(OState* state, OAny self, OAny pos){
+__delitem__(OState* S, OAny self, OAny pos){
 	oint index, i;
 	omem_t new_size;
 
-	index = _get_index(state, self, pos);
+	index = _get_index(S, self, pos);
 
 	if (index == OBIN_INVALID_INDEX) {
-		return oraise(state, oerrors(state)->IndexError,
+		return oraise(S, oerrors(S)->IndexError,
 				__TypeName__ "__delitem__ invalid index", pos);
 	}
 
@@ -384,7 +384,7 @@ __delitem__(OState* state, OAny self, OAny pos){
 	return ObinNothing;
 }
 
-obool oarray_init(OState* state) {
+obool oarray_init(OState* S) {
 	__BEHAVIOR__.__name__ = __TypeName__;
 	__BEHAVIOR__.__tostring__ = __tostring__;
 	__BEHAVIOR__.__tobool__ = __tobool__;
@@ -399,8 +399,8 @@ obool oarray_init(OState* state) {
 	__BEHAVIOR__.__delitem__ = __delitem__;
 	__BEHAVIOR__.__mark__ = __mark__;
 
-	ocells(state)->__Array__ = OCell_new(EOBIN_TYPE_CELL,
-			obin_new(state, OCell), &__BEHAVIOR__, ocells(state)->__Cell__);
+	ocells(S)->__Array__ = OCell_new(EOBIN_TYPE_CELL,
+			obin_new(S, OCell), &__BEHAVIOR__, ocells(S)->__Cell__);
 
 	return OTRUE;
 }

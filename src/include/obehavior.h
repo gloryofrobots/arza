@@ -1,13 +1,13 @@
 #ifndef OBEHAVIOR_H_
 #define OBEHAVIOR_H_
 
-typedef void (*odestructor)(OState* state, OCell* self);
+typedef void (*odestructor)(OState* S, OCell* self);
 
-typedef OAny (*ofunc_1)(OState* state, OAny arg);
-typedef OAny (*ofunc_2)(OState* state, OAny arg1, OAny arg2);
-typedef OAny (*ofunc_3)(OState* state, OAny arg1, OAny arg2, OAny arg3);
-typedef OAny (*ofunc_4)(OState* state, OAny arg1, OAny arg2, OAny arg3, OAny arg4);
-typedef void (*ofunc_each)(OState* state, OAny arg, ofunc_1 func);
+typedef OAny (*ofunc_1)(OState* S, OAny arg);
+typedef OAny (*ofunc_2)(OState* S, OAny arg1, OAny arg2);
+typedef OAny (*ofunc_3)(OState* S, OAny arg1, OAny arg2, OAny arg3);
+typedef OAny (*ofunc_4)(OState* S, OAny arg1, OAny arg2, OAny arg3, OAny arg4);
+typedef void (*ofunc_each)(OState* S, OAny arg, ofunc_1 func);
 
 /*BELOW IS AUTOGEN CODE FROM behavior.py */
 typedef struct _OBehavior {

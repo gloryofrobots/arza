@@ -2,8 +2,8 @@
 
 OBehavior __BEHAVIOR__ = {0};
 
-obool ofloat_init(OState* state) {
-	obehaviors(state)->Float = &__BEHAVIOR__;
+obool ofloat_init(OState* S) {
+	obehaviors(S)->Float = &__BEHAVIOR__;
 	return OTRUE;
 }
 

@@ -7,7 +7,7 @@ OHashSecret ohash_secret(){
 	return _ObinHashSecret;
 }
 
-obool ORandom_init(OState* state){
+obool ORandom_init(OState* S){
 	_ObinHashSecret.prefix = (oint) time(NULL);
 	/*suffix whill contain garbage */
 

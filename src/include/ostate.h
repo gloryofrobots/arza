@@ -66,10 +66,10 @@ typedef struct _ObinState {
 	OInternals* internals;
 } OState;
 
-#define oerrors(state) (&state->internals->errors)
-#define ointegers(state) (&state->internals->integers)
-#define ostrings(state) (&state->internals->strings)
-#define ocells(state) (&state->internals->cells)
-#define obehaviors(state) (&state->internals->behaviors)
+#define oerrors(S) (&S->internals->errors)
+#define ointegers(S) (&S->internals->integers)
+#define ostrings(S) (&S->internals->strings)
+#define ocells(S) (&S->internals->cells)
+#define obehaviors(S) (&S->internals->behaviors)
 
 #endif /* OSTATE_H_ */

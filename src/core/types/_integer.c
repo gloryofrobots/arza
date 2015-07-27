@@ -12,11 +12,11 @@ OBehavior* obin_integer_behavior() {
 	return NULL;
 }
 
-obool ointeger_init(OState* state) {
-	ointegers(state)->NotFound = OInteger(-1);
-	ointegers(state)->Lesser = OInteger(-1);
-	ointegers(state)->Greater = OInteger(1);
-	ointegers(state)->Equal = OInteger(0);
+obool ointeger_init(OState* S) {
+	ointegers(S)->NotFound = OInteger(-1);
+	ointegers(S)->Lesser = OInteger(-1);
+	ointegers(S)->Greater = OInteger(1);
+	ointegers(S)->Equal = OInteger(0);
 	return OTRUE;
 }
 
