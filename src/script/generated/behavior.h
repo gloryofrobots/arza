@@ -1,6 +1,6 @@
 
 typedef struct _OBehavior {
-    obin_string __name__;
+    ostring __name__;
     /*MEMORY*/
     odestructor __destroy__;
     ofunc_each __mark__;
@@ -22,7 +22,6 @@ typedef struct _OBehavior {
     /*NUMBER*/
     ofunc_1 __tointeger__;
     ofunc_1 __tofloat__;
-    ofunc_1 __topositive__;
     ofunc_1 __tonegative__;
     ofunc_1 __invert__;
     ofunc_2 __add__;
@@ -49,9 +48,9 @@ typedef struct _OBehavior {
 #define OBEHAVIOR_GENERATOR(__next__)  __next__ 
 
 #define OBEHAVIOR_GENERATOR_NULL 0 
-#define OBEHAVIOR_NUMBER(__tointeger__,__tofloat__,__topositive__,__tonegative__,__invert__,__add__,__subtract__,__divide__,__multiply__,__leftshift__,__rightshift__,__mod__,__bitand__,__bitor__,__bitxor__)  __tointeger__, __tofloat__, __topositive__, __tonegative__, __invert__, __add__, __subtract__, __divide__, __multiply__, __leftshift__, __rightshift__, __mod__, __bitand__, __bitor__, __bitxor__ 
+#define OBEHAVIOR_NUMBER(__tointeger__,__tofloat__,__tonegative__,__invert__,__add__,__subtract__,__divide__,__multiply__,__leftshift__,__rightshift__,__mod__,__bitand__,__bitor__,__bitxor__)  __tointeger__, __tofloat__, __tonegative__, __invert__, __add__, __subtract__, __divide__, __multiply__, __leftshift__, __rightshift__, __mod__, __bitand__, __bitor__, __bitxor__ 
 
-#define OBEHAVIOR_NUMBER_NULL 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
+#define OBEHAVIOR_NUMBER_NULL 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
 
 #define OBEHAVIOR_DECLARE(structname) static OBehavior structname;
 

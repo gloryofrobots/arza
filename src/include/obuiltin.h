@@ -93,8 +93,6 @@ OAny otointeger(OState* S, OAny self);
 
 OAny otofloat(OState* S, OAny self);
 
-OAny otopositive(OState* S, OAny self);
-
 OAny otonegative(OState* S, OAny self);
 
 OAny oinvert(OState* S, OAny self);

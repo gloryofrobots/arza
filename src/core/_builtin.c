@@ -248,18 +248,6 @@ OAny otofloat(OState* S, OAny self) {
     return method(S, self);
 }
 
-OAny otopositive(OState* S, OAny self) {
-    ofunc_1 method;
-    method = _method(S, self, __topositive__);
-
-    if (!method) {
-        oraise(S, oerrors(S)->TypeError,
-                "__topositive__ protocol not supported", self);
-    }
-
-    return method(S, self);
-}
-
 OAny otonegative(OState* S, OAny self) {
     ofunc_1 method;
     method = _method(S, self, __tonegative__);

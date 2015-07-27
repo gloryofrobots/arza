@@ -79,11 +79,6 @@ static OAny __tofloat__(OState* S, OAny self) {
 	return OFloat((ofloat) _int(self));
 }
 
-static OAny __topositive__(OState* S, OAny self) {
-	_CHECK_SELF_TYPE(S, self, __topositive__);
-	return self;
-}
-
 static obool _isOverflowOnNegate(oint a) {
 	if(a == OINT_MIN) {
 		return OTRUE;
@@ -233,7 +228,6 @@ obool ointeger_init(OState* S) {
 	__BEHAVIOR__.__compare__ = __compare__;
 	__BEHAVIOR__.__tointeger__ = __tointeger__;
 	__BEHAVIOR__.__tofloat__ = __tofloat__;
-	__BEHAVIOR__.__topositive__ = __topositive__;
 	__BEHAVIOR__.__tonegative__ = __tonegative__;
 	__BEHAVIOR__.__invert__ = __invert__;
 	__BEHAVIOR__.__add__ = __add__;

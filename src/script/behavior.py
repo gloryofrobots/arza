@@ -58,7 +58,6 @@ GENERATOR = Methods("GENERATOR", Method('__next__', 1))
 NUMBER = Methods("NUMBER", 
     Method('__tointeger__', 1),
     Method('__tofloat__', 1),
-    Method('__topositive__', 1),
     Method('__tonegative__', 1),
     Method('__invert__', 1),
 
