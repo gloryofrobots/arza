@@ -48,11 +48,11 @@ static omem_t _next_power_of_2(omem_t v){
 
 static OAny __setitem__(OState* state, OAny self, OAny key, OAny value);
 
-OAny OTable_new(OState* state, OAny size){
+OAny OTable(OState* state, OAny size){
 	ObinTable * self;
 
 	if(OAny_isNil(size)){
-		size = OInteger_new(OBIN_DEFAULT_TABLE_SIZE);
+		size = OInteger(OBIN_DEFAULT_TABLE_SIZE);
 	}
 
 	if (!OInt_isFitToMemsize(size)) {
@@ -132,7 +132,7 @@ OAny OTable_items(OState* state, OAny self){
 
 	_CHECK_SELF_TYPE(state, self, OTable_items);
 
-	result = OArray_new(state, OInteger_new(_size(self)));
+	result = OArray(state, OInteger(_size(self)));
 
 	iterator = oiterator(state, self);
 
@@ -153,7 +153,7 @@ OAny OTable_keys(OState* state, OAny self){
 
 	_CHECK_SELF_TYPE(state, self, OTable_keys);
 
-	result = OArray_new(state, OInteger_new(_size(self)));
+	result = OArray(state, OInteger(_size(self)));
 
 	iterator = oiterator(state, self);
 
@@ -175,7 +175,7 @@ OAny OTable_values(OState* state, OAny self){
 
 	_CHECK_SELF_TYPE(state, self, OTable_values);
 
-	result = OArray_new(state, OInteger_new(_size(self)));
+	result = OArray(state, OInteger(_size(self)));
 
 	iterator = oiterator(state, self);
 
@@ -207,7 +207,7 @@ static OAny __iterator__next__(OState* state, OAny self) {
 
 	while(it->index < _capacity(it->source)) {
 		if(_body(self)[it->index].isset) {
-			result = OTuple_pack(state, 2,
+			result = OTuple(state, 2,
 					_body(it->source)[it->index].key,
 					_body(it->source)[it->index].key);
 			it->index++;
@@ -244,7 +244,7 @@ static OAny __iterator__(OState* state, OAny self) {
 static OAny __tobool__(OState* state, OAny self) {
 	_CHECK_SELF_TYPE(state, self, __tobool__);
 
-	return OBool_new(_size(self) > 0);
+	return OBool(_size(self) > 0);
 }
 
 static OAny __tostring__(OState* state, OAny self) {
@@ -257,10 +257,10 @@ static OAny __tostring__(OState* state, OAny self) {
 
 	_CHECK_SELF_TYPE(state, self, __tostring__);
 
-    kv_separator = OString_new(state, ": ");
-    items_separator = OString_new(state, ", ");
+    kv_separator = OString(state, ": ");
+    items_separator = OString(state, ", ");
 
-	array = OArray_new(state, OInteger_new(_size(self)));
+	array = OArray(state, OInteger(_size(self)));
 
 	iterator = oiterator(state, self);
 
@@ -307,7 +307,7 @@ static OAny __clone__(OState* state, OAny self) {
 	_CHECK_SELF_TYPE(state, self, __clone__);
 
 	capacity = _capacity(self);
-	result = OTable_new(state, OInteger_new(capacity));
+	result = OTable(state, OInteger(capacity));
 	omemcpy(_body(result), _body(self), sizeof(_ObinHashTableEntry) * capacity);
 	return result;
 }
@@ -315,7 +315,7 @@ static OAny __clone__(OState* state, OAny self) {
 static OAny __length__(OState* state, OAny self) {
 	_CHECK_SELF_TYPE(state, self, __length__);
 
-	return OInteger_new(_size(self));
+	return OInteger(_size(self));
 }
 
 /**
@@ -377,7 +377,7 @@ __hasitem__(OState* state, OAny self, OAny key){
 
 	_CHECK_SELF_TYPE(state, self, __hasitem__);
 
-	return OBool_new(_body(self)[index].isset);
+	return OBool(_body(self)[index].isset);
 }
 
 static OAny
@@ -396,7 +396,7 @@ __delitem__(OState* state, OAny self, OAny key){
 	return ObinNothing;
 }
 
-obool OTable_init(OState* state) {
+obool otable_init(OState* state) {
 	__BEHAVIOR__.__name__ = __TypeName__;
 	__BEHAVIOR__.__destroy__ = __destroy__;
 	__BEHAVIOR__.__mark__ = __mark__;

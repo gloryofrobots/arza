@@ -1,6 +1,6 @@
 #include <obin.h>
 
-OAny OInteger_new(oint number) {
+OAny OInteger(oint number) {
 	OAny result;
 
 	result = OAny_new();
@@ -12,11 +12,11 @@ OBehavior* obin_integer_behavior() {
 	return NULL;
 }
 
-obool OInteger_init(OState* state) {
-	ointegers(state)->NotFound = OInteger_new(-1);
-	ointegers(state)->Lesser = OInteger_new(-1);
-	ointegers(state)->Greater = OInteger_new(1);
-	ointegers(state)->Equal = OInteger_new(0);
+obool ointeger_init(OState* state) {
+	ointegers(state)->NotFound = OInteger(-1);
+	ointegers(state)->Lesser = OInteger(-1);
+	ointegers(state)->Greater = OInteger(1);
+	ointegers(state)->Equal = OInteger(0);
 	return OTRUE;
 }
 

@@ -82,7 +82,7 @@ static OAny __tostring__(OState* state, OAny self) {
 }
 
 static OAny __tobool__(OState* state, OAny self) {
-	return OBool_new(!_is_empty(self));
+	return OBool(!_is_empty(self));
 }
 
 static OAny __length__(OState* state, OAny self) {
@@ -90,12 +90,12 @@ static OAny __length__(OState* state, OAny self) {
 
 	if(_is_char(self)){
 		if(_is_empty(self)){
-			return OInteger_new(0);
+			return OInteger(0);
 		}
-		return OInteger_new(1);
+		return OInteger(1);
 	}
 
-	return OInteger_new(_string_size(self));
+	return OInteger(_string_size(self));
 }
 
 static OAny __hasitem__(OState* state, OAny self, OAny character) {
@@ -166,17 +166,17 @@ static OAny __hash__(OState* state, OAny self) {
 	_CHECK_SELF_TYPE(state, self, __hash__);
 
 	if(_is_empty(self)){
-		return OInteger_new(0);
+		return OInteger(0);
 	}
 
 	if(_is_char(self)) {
-		return OInteger_new((oint) _string_const_data(self)[0]);
+		return OInteger((oint) _string_const_data(self)[0]);
 	}
 
 	/* return already hashed value */
 	hash = _string(self)->hash;
 	if(hash){
-		return OInteger_new(hash);
+		return OInteger(hash);
 	}
 
 	secret = ohash_secret();
@@ -193,7 +193,7 @@ static OAny __hash__(OState* state, OAny self) {
 	hash ^= secret.suffix;
 
 	_string(self)->hash = hash;
-	return OInteger_new(hash);
+	return OInteger(hash);
 }
 
 static OAny __iterator__(OState* state, OAny self) {
@@ -250,7 +250,7 @@ static OAny __add__(OState* state, OAny str1, OAny str2) {
 
 /***********************************************************************************/
 /* constructors */
-OAny OString_new(OState* state, ostring data) {
+OAny OString(OState* state, ostring data) {
 	int len;
 
 	len = ostrlen(data);
@@ -537,8 +537,8 @@ OAny _obin_string_find(OState* state, OAny haystack, OAny needle,
 	if ((pend - pstart) > _string_size(haystack)) {
 		return oraise(state, oerrors(state)->RangeError,
 					"String.search Invalid search range ",
-					OTuple_pack(state, 2,
-							OInteger_new(pstart), OInteger_new(pend)));
+					OTuple(state, 2,
+							OInteger(pstart), OInteger(pend)));
 	}
 
 	return finder(state, haystack, needle, pstart, pend);
@@ -570,7 +570,7 @@ OAny _string_finder_left(OState* state, OAny haystack, OAny needle,
 		}
 		if (ni == size_n) {
 			/* Found match! */
-			return OInteger_new(i);
+			return OInteger(i);
 		}
 		/* Didn't match here.  Try again further along haystack. */
 	}
@@ -619,7 +619,7 @@ omem_t start, omem_t end) {
 
 		if (ni == 0) {
 			/*Found match! */
-			return OInteger_new(i - _string_size(needle) + 1);
+			return OInteger(i - _string_size(needle) + 1);
 		}
 		/* Didn't match here.  Try again further along haystack. */
 	}
@@ -690,7 +690,7 @@ OAny OString_split(OState* state, OAny self, OAny separator) {
 						"String.split invalid argument type, String expected ", separator);
 	}
 
-	result = OArray_new(state, ObinNil);
+	result = OArray(state, ObinNil);
 
 	if (_string_size(separator) > _string_size(self)) {
 		/*can`t split */
@@ -769,10 +769,10 @@ OAny OString_pack(OState* state, oindex_t count, ...){
 
 	if(!OBIN_IS_FIT_TO_MEMSIZE(count)) {
 		return oraise(state, oerrors(state)->TypeError,
-						"String.pack invalid argument type, Invalid size", OInteger_new(count));
+						"String.pack invalid argument type, Invalid size", OInteger(count));
 	}
 
-	array = OArray_new(state, OInteger_new(count));
+	array = OArray(state, OInteger(count));
 
     va_start(vargs, count);
     for (i = 0; i < count; i++) {
@@ -827,14 +827,14 @@ obool ostring_init(OState* state) {
 			obin_new(state, OCell), &__BEHAVIOR__, ocells(state)->__Cell__);
 
 
-	ostrings(state)->Nil = OString_new(state, "Nil");
-	ostrings(state)->True = OString_new(state, "True");
-	ostrings(state)->False = OString_new(state, "False");
-	ostrings(state)->Nothing = OString_new(state, "Nothing");
+	ostrings(state)->Nil = OString(state, "Nil");
+	ostrings(state)->True = OString(state, "True");
+	ostrings(state)->False = OString(state, "False");
+	ostrings(state)->Nothing = OString(state, "Nothing");
 	ostrings(state)->PrintSeparator = OChar_new(OBIN_PRINT_SEPARATOR);
 	ostrings(state)->Empty = _obin_string_empty(state);
 	ostrings(state)->Space = OChar_new('\32');
-	ostrings(state)->TabSpaces = OString_dublicate(state, ostrings(state)->Space, OInteger_new(OBIN_COUNT_TAB_SPACES));
+	ostrings(state)->TabSpaces = OString_dublicate(state, ostrings(state)->Space, OInteger(OBIN_COUNT_TAB_SPACES));
 
 	return OTRUE;
 }

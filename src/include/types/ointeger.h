@@ -3,10 +3,10 @@
 
 #include "obuiltin.h"
 
-obool OInteger_init(OState* state);
+obool ointeger_init(OState* state);
 
 
-OAny OInteger_new(oint number);
+OAny OInteger(oint number);
 
 #define OInteger_isFitToMemsize(number) \
 	(obin_any_integer(number) > 0 && obin_any_integer(number) < OBIN_MEM_MAX)

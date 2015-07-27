@@ -4,9 +4,9 @@
 #include "obuiltin.h"
 
 
-obool OArray_init(OState* state);
+obool oarray_init(OState* state);
 
-OAny OArray_new(OState* state, OAny size);
+OAny OArray(OState* state, OAny size);
 OAny OArray_push(OState* state, OAny self, OAny value);
 OAny OArray_indexOf(OState* state, OAny self, OAny item);
 OAny OArray_lastIndexOf(OState* state, OAny self, OAny item);

@@ -48,7 +48,7 @@ OAny OFstream_writeVA(OState* state, OAny self, ostring format, ...){
 	    result = ovfprintf(_fstream_file(self), format, myargs);
 	    va_end(myargs);
 
-	    return OInteger_new(result);
+	    return OInteger(result);
 }
 
 OAny OFstream_write(OState* state, OAny self, OAny any){
@@ -76,7 +76,7 @@ OAny OFstream_isOpen(OState* state, OAny self) {
 }
 
 static OAny __tostring__(OState* state, OAny self) {
-	return OString_new(state, "<File: "OBIN_POINTER_FORMATTER" >");
+	return OString(state, "<File: "OBIN_POINTER_FORMATTER" >");
 }
 
 static void __destroy__(OState* state, OCell* cell) {

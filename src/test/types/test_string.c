@@ -22,7 +22,7 @@ static void Test_String(void) {
 	oint i;
 	ostring cstr1;
 	/*******************************/
-	str1 = OString_new(state, "Hello!");
+	str1 = OString(state, "Hello!");
 	CU_ASSERT_STRING_EQUAL(OString_cstr(state, str1), "Hello!");
 	/********************C ARRAY CREATION***********/
 	#define TEXT "Octopuses inhabit diverse regions of the ocean," \
@@ -100,7 +100,7 @@ static void Test_String(void) {
 	#define TEXT_CAPITALIZE "Octopus is eaten in many cultures. 123 sd"
 	#define TEXT_CAPITALIZE_WORDS "Octopus Is Eaten In Many Cultures. 123 Sd"
 
-	str1 = OString_new(state, TEXT);
+	str1 = OString(state, TEXT);
 	CU_ASSERT_STRING_EQUAL(OString_cstr(state, str1), TEXT);
 	CU_ASSERT_STRING_NOT_EQUAL(OString_cstr(state, str1), TEXT_CAPITALIZE);
 	str2 = OString_capitalize(state, str1);
@@ -125,47 +125,47 @@ static void Test_String(void) {
 	#define TEXT_NOTSPACE " \
 							 	 	 	 	 	  ."			
 
-	str1 = OString_new(state, TEXT_ALPHA);
-	str2 = OString_new(state, TEXT_NOTALPHA);
+	str1 = OString(state, TEXT_ALPHA);
+	str2 = OString(state, TEXT_NOTALPHA);
 	CU_ASSERT_TRUE(OAny_isTrue(OString_isAlpha(state, str1)));
 	CU_ASSERT_FALSE(OAny_isTrue(OString_isAlpha(state, str2)));
 
-	str1 = OString_new(state, TEXT_ALPHANUM);
-	str2 = OString_new(state, TEXT_NOTALPHANUM);
+	str1 = OString(state, TEXT_ALPHANUM);
+	str2 = OString(state, TEXT_NOTALPHANUM);
 	CU_ASSERT_TRUE(OAny_isTrue(OString_isAlphanum(state, str1)));
 	CU_ASSERT_FALSE(OAny_isTrue(OString_isAlphanum(state, str2)));
 
-	str1 = OString_new(state, TEXT_DIGIT);
-	str2 = OString_new(state, TEXT_NOTDIGIT);
+	str1 = OString(state, TEXT_DIGIT);
+	str2 = OString(state, TEXT_NOTDIGIT);
 	CU_ASSERT_TRUE(OAny_isTrue(OString_isDigit(state, str1)));
 	CU_ASSERT_FALSE(OAny_isTrue(OString_isDigit(state, str2)));
 
-	str1 = OString_new(state, TEXT_SPACE);
-	str2 = OString_new(state, TEXT_NOTSPACE);
+	str1 = OString(state, TEXT_SPACE);
+	str2 = OString(state, TEXT_NOTSPACE);
 	CU_ASSERT_TRUE(OAny_isTrue(OString_isSpace(state, str1)));
 	CU_ASSERT_FALSE(OAny_isTrue(OString_isSpace(state, str2)));
 	/************************INDEXOF************************************/
 	#undef TEXT
 	#define TEXT "The Squid are cephalopods 12 Squid are cephalopods"
 
-	str1 = OString_new(state, TEXT);
-	str2 = OString_new(state, "Squid");
+	str1 = OString(state, TEXT);
+	str2 = OString(state, "Squid");
 	CU_ASSERT_EQUAL(OAny_toInt(OString_indexOf(state, str1, str2, ObinNil, ObinNil)), 4);
-	CU_ASSERT_EQUAL(OAny_toInt(OString_indexOf(state, str1, str2, OInteger_new(6), ObinNil)), 29);
-	CU_ASSERT_EQUAL(OAny_toInt(OString_indexOf(state, str1, str2, OInteger_new(6),
-									OInteger_new(10))),-1);
+	CU_ASSERT_EQUAL(OAny_toInt(OString_indexOf(state, str1, str2, OInteger(6), ObinNil)), 29);
+	CU_ASSERT_EQUAL(OAny_toInt(OString_indexOf(state, str1, str2, OInteger(6),
+									OInteger(10))),-1);
 
 	CU_ASSERT_EQUAL(OAny_toInt(OString_lastIndexOf(state, str1, str2, ObinNil, ObinNil)), 29);
-	CU_ASSERT_EQUAL(OAny_toInt(OString_lastIndexOf(state, str1, str2, OInteger_new(0), OInteger_new(10))), 4);
-	CU_ASSERT_EQUAL(OAny_toInt(OString_lastIndexOf(state, str1, str2, OInteger_new(6),
-									OInteger_new(10))),-1);
+	CU_ASSERT_EQUAL(OAny_toInt(OString_lastIndexOf(state, str1, str2, OInteger(0), OInteger(10))), 4);
+	CU_ASSERT_EQUAL(OAny_toInt(OString_lastIndexOf(state, str1, str2, OInteger(6),
+									OInteger(10))),-1);
 
 	/******************DUPLICATE*******************************/
 	#undef TEXT
 	#define TEXT "squid"
 	#define TEXT4 TEXT TEXT TEXT TEXT
-	str1 = OString_new(state, TEXT);
-	str2 = OString_dublicate(state, str1, OInteger_new(4));
+	str1 = OString(state, TEXT);
+	str2 = OString_dublicate(state, str1, OInteger(4));
 	CU_ASSERT_STRING_EQUAL(OString_cstr(state, str2), TEXT4);
 	/*******************__add__***********************************/
 	#undef TEXT
@@ -175,9 +175,9 @@ static void Test_String(void) {
 	#define TEXT3 "		-Subclass Coleoidea: squid, octopus, cuttlefish\n"
 	#define TEXTALL TEXT TEXT2 TEXT3
 
-	str1 = OString_new(state, TEXT);
-	str2 = OString_new(state, TEXT2);
-	str3 = OString_new(state, TEXT3);
+	str1 = OString(state, TEXT);
+	str2 = OString(state, TEXT2);
+	str3 = OString(state, TEXT3);
 	str4 = oadd(state, str1, str2);
 	str4 = oadd(state, str4, str3);
 	CU_ASSERT_STRING_EQUAL(OString_cstr(state, str4), TEXTALL);
@@ -186,8 +186,8 @@ static void Test_String(void) {
 	str2 = otostring(state, str1);
 	CU_ASSERT_STRING_EQUAL(OString_cstr(state, str2), OString_cstr(state, str1));
 	/****************tobool********************************************/
-	str2 = OString_new(state, "");
-	str3 = OString_new(state, "0");
+	str2 = OString(state, "");
+	str3 = OString(state, "0");
 	CU_ASSERT_FALSE(OAny_isTrue(otobool(state, str2)));
 	CU_ASSERT_TRUE(OAny_isTrue(otobool(state, str1)));
 	CU_ASSERT_TRUE(OAny_isTrue(otobool(state, str3)));
@@ -206,10 +206,10 @@ static void Test_String(void) {
 	#define TEXT2 "B"
 	#define TEXT3 "AAA"
 
-	str1 = OString_new(state, TEXT);
-	str2 = OString_new(state, TEXT2);
-	str3 = OString_new(state, TEXT3);
-	str4 = OString_new(state, TEXT);
+	str1 = OString(state, TEXT);
+	str2 = OString(state, TEXT2);
+	str3 = OString(state, TEXT3);
+	str4 = OString(state, TEXT);
 
 	CU_ASSERT_EQUAL(OAny_toInt(ocompare(state, str1, str2)), 1);
 	CU_ASSERT_EQUAL(OAny_toInt(ocompare(state, str2, str1)), -1);
@@ -226,8 +226,8 @@ static void Test_String(void) {
 	#define TEXT "Aaa"
 	#define TEXT2 "Bbb"
 
-	str1 = OString_new(state, TEXT);
-	str2 = OString_new(state, TEXT2);
+	str1 = OString(state, TEXT);
+	str2 = OString(state, TEXT2);
 
 	CU_ASSERT_STRING_NOT_EQUAL(OString_cstr(state, str2), OString_cstr(state, str1));
 	val1 = ohash(state, str1);
@@ -242,8 +242,8 @@ static void Test_String(void) {
 	#undef TEXT2
 	#undef TEXT3
 	#define TEXT "The molluscs or mollusks[note 1] /ˈmɒləsks/ compose the large phylum of invertebrate animals known as the Mollusca."
-	str1 = OString_new(state, TEXT);
-	str3 = OString_new(state, "");
+	str1 = OString(state, TEXT);
+	str3 = OString(state, "");
 	cstr1 = TEXT;
 	val1 = oiterator(state, str1);
 	i = 0;
@@ -269,17 +269,17 @@ static void Test_String(void) {
 	#define TEXT "a"
 	#define TEXT2 "Good evidence exists for the appearance of gastropods, cephalopods and bivalves in the Cambrian period 541 to 485.4 million years ago."
 	#define TEXT3 ""
-	str1 = OString_new(state, TEXT);
-	str2 = OString_new(state, TEXT2);
-	str3 = OString_new(state, TEXT3);
+	str1 = OString(state, TEXT);
+	str2 = OString(state, TEXT2);
+	str3 = OString(state, TEXT3);
 	CU_ASSERT_EQUAL(OAny_toInt(olength(state, str1)), 1);
 	CU_ASSERT_EQUAL(OAny_toInt(olength(state, str2)), 134);
 	CU_ASSERT_EQUAL(OAny_toInt(olength(state, str3)), 0);
 	/*********************getitem************************************/
-	val1 = ogetitem(state, str1, OInteger_new(0));
+	val1 = ogetitem(state, str1, OInteger(0));
 	CU_ASSERT_EQUAL(OAny_toChar(val1), 'a');
 
-	val1 = ogetitem(state, str2, OInteger_new(100));
+	val1 = ogetitem(state, str2, OInteger(100));
 	CU_ASSERT_EQUAL(OAny_toChar(val1), 'o');
 
 	/*need to implement integer behavior to use has_item*/

@@ -17,7 +17,7 @@ static OAny __si__next__(OState* state, OAny self) {
 		return ObinNothing;
 	}
 
-	result = ogetitem(state, it->source, OInteger_new(it->current));
+	result = ogetitem(state, it->source, OInteger(it->current));
 	it->current++;
 	return result;
 }

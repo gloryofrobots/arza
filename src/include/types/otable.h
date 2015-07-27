@@ -2,9 +2,9 @@
 #define OTABLE_H
 #include "obuiltin.h"
 
-obool OTable_init(OState* state);
+obool otable_init(OState* state);
 
-OAny OTable_new(OState* state, OAny size);
+OAny OTable(OState* state, OAny size);
 
 OAny OTable_clear(OState* state, OAny self);
 OAny OTable_merge(OState* state, OAny self, OAny other);
