@@ -12,14 +12,6 @@ static obyte* __CHARS__[SCHAR_MAX] = {0};
 				__TypeName__"."#method "call from other type", self); \
 	} \
 
-static OAny _obin_string_empty(OState* S) {
-	OAny result;
-
-	result = OChar_new(0);
-	result.data.char_value.size = 0;
-	return result;
-}
-
 typedef struct {
 	OCELL_HEADER;
 	ochar* data;
@@ -34,11 +26,9 @@ static ochar* _string_data(OAny any) {
 	switch(any.type) {
 	case EOBIN_TYPE_STRING:
 		return  _string(any)->data;
-		break;
 	case EOBIN_TYPE_CHAR:
 		opanic("CHAR TYPE ARE NOT MUTABLE");
 		return NULL;
-		break;
 	default:
 		return NULL;
 	}
@@ -49,7 +39,7 @@ static ostring _string_const_data(OAny any) {
 		return  _string(any)->data;
 		break;
 	case EOBIN_TYPE_CHAR:
-		return (ostring)__CHARS__[any.data.char_value.char_data];
+		return (ostring)__CHARS__[any.data.char_value];
 		break;
 	default:
 		return NULL;
@@ -64,7 +54,7 @@ static oint _string_size(OAny any) {
 		return _string(any)->size;
 		break;
 	case EOBIN_TYPE_CHAR:
-		return any.data.char_value.size;
+		return 1;
 		break;
 	default:
 		return -1;
@@ -73,7 +63,7 @@ static oint _string_size(OAny any) {
 
 #define _is_char(any) (any.type == EOBIN_TYPE_CHAR)
 #define _is_string(any) (any.type == EOBIN_TYPE_STRING)
-#define _is_empty(any) (_is_char(any) && any.data.char_value.size == 0)
+#define _is_empty(any) (_is_string(any) && _string(any)->size == 0)
 
 /**********************************  TYPETRAIT ***********************************************/
 
@@ -266,8 +256,7 @@ OAny OChar_new(ochar ch) {
 
 	result = OAny_new();
 	result.type = EOBIN_TYPE_CHAR;
-	result.data.char_value.char_data = ch;
-	result.data.char_value.size = 1;
+	result.data.char_value = ch;
 	return result;
 }
 
@@ -302,7 +291,7 @@ OAny OString_fromCArray(OState* S, ostring data,
 omem_t size) {
 	/*empty string*/
 	if (size == 0) {
-		return _obin_string_empty(S);
+		return ostrings(S)->Empty;
 	}
 	if (size == 1) {
 		return OChar_new(data[0]);
@@ -339,7 +328,7 @@ OAny _clone_and_modify(OState* S, OAny self,
 	if(_is_char(self)) {
 		clone = self;
 		/**Tricky part we send pointer to char value wit 0 index*/
-		clone.data.char_value.char_data = modify((ochar*)&clone.data.char_value.char_data, 0);
+		clone.data.char_value = modify((ochar*)&clone.data.char_value, 0);
 		return clone;
 	}
 
@@ -804,6 +793,7 @@ static void _init_chars_cache() {
 		__CHARS__[c][1] = 0;
 	}
 }
+
 obool ostring_init(OState* S) {
 	_init_chars_cache();
 
@@ -832,7 +822,7 @@ obool ostring_init(OState* S) {
 	ostrings(S)->False = OString(S, "False");
 	ostrings(S)->Nothing = OString(S, "Nothing");
 	ostrings(S)->PrintSeparator = OChar_new(OBIN_PRINT_SEPARATOR);
-	ostrings(S)->Empty = _obin_string_empty(S);
+	ostrings(S)->Empty = _obin_string_from_carr(S, "", 0);
 	ostrings(S)->Space = OChar_new('\32');
 	ostrings(S)->TabSpaces = OString_dublicate(S, ostrings(S)->Space, OInteger(OBIN_COUNT_TAB_SPACES));
 
