@@ -35,10 +35,6 @@ static void Test_Float(void) {
 	CU_ASSERT_DOUBLE_EQUAL(OAny_toFloat(otonegative(S, OFloat(-990909999.909222))), 990909999.909222);
 	CU_ASSERT_DOUBLE_EQUAL(OAny_toFloat(otonegative(S, OFloat(0))), 0);
 
-	CU_ASSERT_EQUAL(OAny_toInteger(otonegative(S, OFloat(42.00042))), 42);
-	CU_ASSERT_EQUAL(OAny_toInteger(otointeger(S, OFloat(-42.00042))), -42);
-	CU_ASSERT_EQUAL(OAny_toInteger(otointeger(S, OFloat(0.9912020))), 0);
-
 	/**__compare__**/
 	var1 = ocompare(S, intmax, intmin);
 	CU_ASSERT_EQUAL(OAny_toFloat(var1), 1);
@@ -50,44 +46,12 @@ static void Test_Float(void) {
 	CU_ASSERT_EQUAL(OAny_toFloat(var1), 0);
 	var1 = ocompare(S, int0, int0);
 	CU_ASSERT_EQUAL(OAny_toFloat(var1), 0);
-	/*__invert__*/
-	CU_ASSERT_EQUAL(OAny_toFloat(oinvert(S, int1)), -2);
-	CU_ASSERT_EQUAL(OAny_toFloat(oinvert(S, int0)), -1);
-	CU_ASSERT_EQUAL(OAny_toFloat(oinvert(S, intmax)), OINT_MIN);
-	CU_ASSERT_EQUAL(OAny_toFloat(oinvert(S, intmin)), OINT_MAX);
-	/*__leftshift__*/
-	CU_ASSERT_EQUAL(OAny_toFloat(oleftshift(S, int1, int0)), 1);
-	CU_ASSERT_EQUAL(OAny_toFloat(oleftshift(S, int0, int1)), 0);
-	CU_ASSERT_EQUAL(OAny_toFloat(oleftshift(S, OFloat(214), OFloat(12))), 876544);
-	CU_ASSERT_EQUAL(OAny_toFloat(oleftshift(S, OFloat(-8888), OFloat(7))), -1137664);
-	/*__rightshift__*/
-	CU_ASSERT_EQUAL(OAny_toFloat(orightshift(S, int1, int0)), 1);
-	CU_ASSERT_EQUAL(OAny_toFloat(orightshift(S, int0, int1)), 0);
-	CU_ASSERT_EQUAL(OAny_toFloat(orightshift(S, OFloat(23), OFloat(2))), 5);
-	CU_ASSERT_EQUAL(OAny_toFloat(orightshift(S, OFloat(-1233), OFloat(3))), -155);
 
 	/*__mod__*/
 	CU_ASSERT_EQUAL(OAny_toFloat(omod(S, OFloat(23), OFloat(2))), 1);
 	CU_ASSERT_EQUAL(OAny_toFloat(omod(S, OFloat(4665), OFloat(65))), 50);
 	CU_ASSERT_EQUAL(OAny_toFloat(omod(S, OFloat(-90), OFloat(4))), -2);
 	CU_ASSERT_EQUAL(OAny_toFloat(omod(S, OFloat(-90), OFloat(-4))), -2);
-
-	/*__bitand__*/
-	CU_ASSERT_EQUAL(OAny_toFloat(obitand(S, OFloat(10), OFloat(2))), 2);
-	CU_ASSERT_EQUAL(OAny_toFloat(obitand(S, OFloat(42), OFloat(35))), 34);
-	CU_ASSERT_EQUAL(OAny_toFloat(obitand(S, OFloat(-42), OFloat(35))), 2);
-	CU_ASSERT_EQUAL(OAny_toFloat(obitand(S, OFloat(134), OFloat(12))), 4);
-
-	/*__bitor__*/
-	CU_ASSERT_EQUAL(OAny_toFloat(obitor(S, OFloat(10), OFloat(3))), 11);
-	CU_ASSERT_EQUAL(OAny_toFloat(obitor(S, OFloat(42), OFloat(35))), 43);
-	CU_ASSERT_EQUAL(OAny_toFloat(obitor(S, OFloat(-42), OFloat(35))), -9);
-	CU_ASSERT_EQUAL(OAny_toFloat(obitor(S, OFloat(134), OFloat(12))), 142);
-	/*__bitxor__*/
-	CU_ASSERT_EQUAL(OAny_toFloat(obitxor(S, OFloat(10), OFloat(3))), 9);
-	CU_ASSERT_EQUAL(OAny_toFloat(obitxor(S, OFloat(42), OFloat(35))), 9);
-	CU_ASSERT_EQUAL(OAny_toFloat(obitxor(S, OFloat(-42), OFloat(35))), -11);
-	CU_ASSERT_EQUAL(OAny_toFloat(obitxor(S, OFloat(134), OFloat(12))), 138);
 
 	/**add**/
 	CU_ASSERT_EQUAL(OAny_toFloat(oadd(S, OFloat(10), OFloat(3))), 13);
