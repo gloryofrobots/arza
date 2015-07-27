@@ -7,6 +7,8 @@ obool ointeger_init(OState* S);
 
 
 OAny OInteger(oint number);
+OAny OInteger_fromCFloat(ofloat number);
+OBehavior* OInteger_behavior();
 
 #define OInteger_isFitToMemsize(number) \
 	(obin_any_integer(number) > 0 && obin_any_integer(number) < OBIN_MEM_MAX)

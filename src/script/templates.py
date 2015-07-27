@@ -16,13 +16,13 @@ OAny {{generic_name}}(OState* S{% for arg in args %}, {{arg.type}} {{arg.name}}{
 """
 
 METHOD_IMPLEMENTATION_DECLARATION = """
-OAny {{name}}(OState* S{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %});
+static OAny {{name}}(OState* S{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %});
 """
 
 
 BEHAVIOR_TPL = """
 typedef struct _OBehavior {
-    obin_string __name__;
+    ostring __name__;
 %s
 } OBehavior;
     """

@@ -3,7 +3,7 @@
 
 #include "obuiltin.h"
 
-obool OError_init(OState* S);
+obool oerror_init(OState* S);
 OAny OError_raise(OState* S, OAny exception);
 OAny oraise(OState* S, OAny trait, ostring message, OAny argument);
 OAny oraise_vargs(OState* S, OAny trait, ostring message, ...);

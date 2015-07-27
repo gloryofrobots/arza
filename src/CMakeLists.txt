@@ -27,6 +27,7 @@ SET(OBIN_LIB_SRC
    core/types/_string.c
    core/types/_integer.c
    core/types/_float.c
+   core/types/_number.c
    core/types/_fstream.c
    )
    
@@ -42,6 +43,9 @@ include_directories(
 add_subdirectory(test)	
 
 add_library(${OBIN_LIBRARY} ${OBIN_LIB_SRC})
+
+target_link_libraries(${OBIN_LIBRARY}  m)
+
 SET_TARGET_PROPERTIES(${OBIN_LIBRARY} PROPERTIES PREFIX "")
 
 

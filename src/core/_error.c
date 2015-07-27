@@ -1,6 +1,6 @@
 #include <obin.h>
 
-obool OError_init(OState* S) {
+obool oerror_init(OState* S) {
 	oerrors(S)->MemoryError = ObinNil;
 	oerrors(S)->IOError = ObinNil;
 	oerrors(S)->InternalError = ObinNil;

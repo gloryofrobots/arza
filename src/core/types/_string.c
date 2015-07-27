@@ -4,7 +4,7 @@
 
 static OBehavior __BEHAVIOR__ = {0};
 
-static obyte* __CHARS__[SCHAR_MAX] = {0};
+static obyte* __CHARS__[UCHAR_MAX] = {0};
 
 #define _CHECK_SELF_TYPE(S, self, method) \
 	if(!OAny_isString(self)) { \
@@ -788,7 +788,7 @@ static void _init_chars_cache() {
 	int c = 0;
 
 	for(c=0; c<=UCHAR_MAX; c++) {
-		__CHARS__[c] = ocalloc(2, sizeof(ochar));
+		__CHARS__[c] = omalloc(2*sizeof(ochar));
 		__CHARS__[c][0] = c;
 		__CHARS__[c][1] = 0;
 	}
@@ -824,6 +824,7 @@ obool ostring_init(OState* S) {
 	ostrings(S)->PrintSeparator = OChar_new(OBIN_PRINT_SEPARATOR);
 	ostrings(S)->Empty = _obin_string_from_carr(S, "", 0);
 	ostrings(S)->Space = OChar_new('\32');
+
 	ostrings(S)->TabSpaces = OString_dublicate(S, ostrings(S)->Space, OInteger(OBIN_COUNT_TAB_SPACES));
 
 	return OTRUE;

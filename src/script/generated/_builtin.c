@@ -1,358 +1,332 @@
 
 /************************* BASE **********************************/
 
-OAny otostring(OState* state, OAny self) {
+OAny otostring(OState* S, OAny self) {
     ofunc_1 method;
-    method = _method(state, self, __tostring__);
+    method = _method(S, self, __tostring__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__tostring__ protocol not supported", self);
     }
 
-    return method(state, self);
+    return method(S, self);
 }
 
-OAny otobool(OState* state, OAny self) {
+OAny otobool(OState* S, OAny self) {
     ofunc_1 method;
-    method = _method(state, self, __tobool__);
+    method = _method(S, self, __tobool__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__tobool__ protocol not supported", self);
     }
 
-    return method(state, self);
+    return method(S, self);
 }
 
-OAny oclone(OState* state, OAny self) {
+OAny oclone(OState* S, OAny self) {
     ofunc_1 method;
-    method = _method(state, self, __clone__);
+    method = _method(S, self, __clone__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__clone__ protocol not supported", self);
     }
 
-    return method(state, self);
+    return method(S, self);
 }
 
-OAny ocompare(OState* state, OAny self, OAny arg1) {
+OAny ocompare(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __compare__);
+    method = _method(S, self, __compare__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__compare__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }
 
-OAny ohash(OState* state, OAny self) {
+OAny ohash(OState* S, OAny self) {
     ofunc_1 method;
-    method = _method(state, self, __hash__);
+    method = _method(S, self, __hash__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__hash__ protocol not supported", self);
     }
 
-    return method(state, self);
+    return method(S, self);
 }
 
 /************************* COLLECTION **********************************/
 
-OAny oiterator(OState* state, OAny self) {
+OAny oiterator(OState* S, OAny self) {
     ofunc_1 method;
-    method = _method(state, self, __iterator__);
+    method = _method(S, self, __iterator__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__iterator__ protocol not supported", self);
     }
 
-    return method(state, self);
+    return method(S, self);
 }
 
-OAny olength(OState* state, OAny self) {
+OAny olength(OState* S, OAny self) {
     ofunc_1 method;
-    method = _method(state, self, __length__);
+    method = _method(S, self, __length__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__length__ protocol not supported", self);
     }
 
-    return method(state, self);
+    return method(S, self);
 }
 
-OAny ogetitem(OState* state, OAny self, OAny arg1) {
+OAny ogetitem(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __getitem__);
+    method = _method(S, self, __getitem__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__getitem__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }
 
-OAny ohasitem(OState* state, OAny self, OAny arg1) {
+OAny ohasitem(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __hasitem__);
+    method = _method(S, self, __hasitem__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__hasitem__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }
 
-OAny odelitem(OState* state, OAny self, OAny arg1) {
+OAny odelitem(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __delitem__);
+    method = _method(S, self, __delitem__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__delitem__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }
 
-OAny osetitem(OState* state, OAny self, OAny arg1, OAny arg2) {
+OAny osetitem(OState* S, OAny self, OAny arg1, OAny arg2) {
     ofunc_3 method;
-    method = _method(state, self, __setitem__);
+    method = _method(S, self, __setitem__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__setitem__ protocol not supported", self);
     }
 
-    return method(state, self, arg1, arg2);
+    return method(S, self, arg1, arg2);
 }
 
 /************************* GENERATOR **********************************/
 
-OAny onext(OState* state, OAny self) {
+OAny onext(OState* S, OAny self) {
     ofunc_1 method;
-    method = _method(state, self, __next__);
+    method = _method(S, self, __next__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__next__ protocol not supported", self);
     }
 
-    return method(state, self);
+    return method(S, self);
 }
 
-/************************* NUMBER_CAST **********************************/
+/************************* NUMBER **********************************/
 
-OAny otointeger(OState* state, OAny self) {
+OAny otointeger(OState* S, OAny self) {
     ofunc_1 method;
-    method = _method(state, self, __tointeger__);
+    method = _method(S, self, __tointeger__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__tointeger__ protocol not supported", self);
     }
 
-    return method(state, self);
+    return method(S, self);
 }
 
-OAny otofloat(OState* state, OAny self) {
+OAny otofloat(OState* S, OAny self) {
     ofunc_1 method;
-    method = _method(state, self, __tofloat__);
+    method = _method(S, self, __tofloat__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__tofloat__ protocol not supported", self);
     }
 
-    return method(state, self);
+    return method(S, self);
 }
 
-OAny otopositive(OState* state, OAny self) {
+OAny otopositive(OState* S, OAny self) {
     ofunc_1 method;
-    method = _method(state, self, __topositive__);
+    method = _method(S, self, __topositive__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__topositive__ protocol not supported", self);
     }
 
-    return method(state, self);
+    return method(S, self);
 }
 
-OAny otonegative(OState* state, OAny self) {
+OAny otonegative(OState* S, OAny self) {
     ofunc_1 method;
-    method = _method(state, self, __tonegative__);
+    method = _method(S, self, __tonegative__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__tonegative__ protocol not supported", self);
     }
 
-    return method(state, self);
+    return method(S, self);
 }
 
-/************************* NUMBER_OPERATIONS **********************************/
-
-OAny oabs(OState* state, OAny self) {
+OAny oinvert(OState* S, OAny self) {
     ofunc_1 method;
-    method = _method(state, self, __abs__);
+    method = _method(S, self, __invert__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
-                "__abs__ protocol not supported", self);
-    }
-
-    return method(state, self);
-}
-
-OAny oinvert(OState* state, OAny self) {
-    ofunc_1 method;
-    method = _method(state, self, __invert__);
-
-    if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__invert__ protocol not supported", self);
     }
 
-    return method(state, self);
+    return method(S, self);
 }
 
-OAny oadd(OState* state, OAny self, OAny arg1) {
+OAny oadd(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __add__);
+    method = _method(S, self, __add__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__add__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }
 
-OAny osubtract(OState* state, OAny self, OAny arg1) {
+OAny osubtract(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __subtract__);
+    method = _method(S, self, __subtract__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__subtract__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }
 
-OAny odivide(OState* state, OAny self, OAny arg1) {
+OAny odivide(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __divide__);
+    method = _method(S, self, __divide__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__divide__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }
 
-OAny omultiply(OState* state, OAny self, OAny arg1) {
+OAny omultiply(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __multiply__);
+    method = _method(S, self, __multiply__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__multiply__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }
 
-OAny opow(OState* state, OAny self, OAny arg1) {
+OAny oleftshift(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __pow__);
+    method = _method(S, self, __leftshift__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
-                "__pow__ protocol not supported", self);
-    }
-
-    return method(state, self, arg1);
-}
-
-OAny oleftshift(OState* state, OAny self, OAny arg1) {
-    ofunc_2 method;
-    method = _method(state, self, __leftshift__);
-
-    if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__leftshift__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }
 
-OAny orightshift(OState* state, OAny self, OAny arg1) {
+OAny orightshift(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __rightshift__);
+    method = _method(S, self, __rightshift__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__rightshift__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }
 
-OAny omod(OState* state, OAny self, OAny arg1) {
+OAny omod(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __mod__);
+    method = _method(S, self, __mod__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "__mod__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }
 
-OAny oand(OState* state, OAny self, OAny arg1) {
+OAny obitand(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __and__);
+    method = _method(S, self, __bitand__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
-                "__and__ protocol not supported", self);
+        oraise(S, oerrors(S)->TypeError,
+                "__bitand__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }
 
-OAny oor(OState* state, OAny self, OAny arg1) {
+OAny obitor(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __or__);
+    method = _method(S, self, __bitor__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
-                "__or__ protocol not supported", self);
+        oraise(S, oerrors(S)->TypeError,
+                "__bitor__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }
 
-OAny oxor(OState* state, OAny self, OAny arg1) {
+OAny obitxor(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(state, self, __xor__);
+    method = _method(S, self, __bitxor__);
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
-                "__xor__ protocol not supported", self);
+        oraise(S, oerrors(S)->TypeError,
+                "__bitxor__ protocol not supported", self);
     }
 
-    return method(state, self, arg1);
+    return method(S, self, arg1);
 }

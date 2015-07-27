@@ -7,6 +7,7 @@
 #include "memory/omemory.h"
 #include "oerror.h"
 #include "orandom.h"
+#include "types/onumber.h"
 #include "types/obool.h"
 #include "types/ointeger.h"
 #include "types/ofloat.h"

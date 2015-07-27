@@ -60,7 +60,7 @@ OAny OAny_new();
 #endif
 
 #define OAny_type(any) (any.type)
-
+/*TODO MOVE IT TO MODULES*/
 
 #define OAny_initCell(any, type, cell) \
 		OANY_BEFORE_SET(any); \

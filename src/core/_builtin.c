@@ -23,6 +23,7 @@ _embedded_type_behavior(OState* S, OAny any) {
 	case EOBIN_TYPE_FALSE:
 		return obehaviors(S)->False;
 	case EOBIN_TYPE_INTEGER:
+		return OInteger_behavior();
 		return obehaviors(S)->Integer;
 	case EOBIN_TYPE_FLOAT:
 		return obehaviors(S)->Float;
@@ -69,6 +70,7 @@ OAny ois(OState * S, OAny any, OAny other) {
 	}
 }
 
+/*AUTOGEN CODE BELOW */
 
 /************************* BASE **********************************/
 
@@ -220,7 +222,7 @@ OAny onext(OState* S, OAny self) {
     return method(S, self);
 }
 
-/************************* NUMBER_CAST **********************************/
+/************************* NUMBER **********************************/
 
 OAny otointeger(OState* S, OAny self) {
     ofunc_1 method;
@@ -265,20 +267,6 @@ OAny otonegative(OState* S, OAny self) {
     if (!method) {
         oraise(S, oerrors(S)->TypeError,
                 "__tonegative__ protocol not supported", self);
-    }
-
-    return method(S, self);
-}
-
-/************************* NUMBER_OPERATIONS **********************************/
-
-OAny oabs(OState* S, OAny self) {
-    ofunc_1 method;
-    method = _method(S, self, __abs__);
-
-    if (!method) {
-        oraise(S, oerrors(S)->TypeError,
-                "__abs__ protocol not supported", self);
     }
 
     return method(S, self);
@@ -344,18 +332,6 @@ OAny omultiply(OState* S, OAny self, OAny arg1) {
     return method(S, self, arg1);
 }
 
-OAny opow(OState* S, OAny self, OAny arg1) {
-    ofunc_2 method;
-    method = _method(S, self, __pow__);
-
-    if (!method) {
-        oraise(S, oerrors(S)->TypeError,
-                "__pow__ protocol not supported", self);
-    }
-
-    return method(S, self, arg1);
-}
-
 OAny oleftshift(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(S, self, __leftshift__);
@@ -392,39 +368,38 @@ OAny omod(OState* S, OAny self, OAny arg1) {
     return method(S, self, arg1);
 }
 
-OAny oand(OState* S, OAny self, OAny arg1) {
+OAny obitand(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(S, self, __and__);
+    method = _method(S, self, __bitand__);
 
     if (!method) {
         oraise(S, oerrors(S)->TypeError,
-                "__and__ protocol not supported", self);
+                "__bitand__ protocol not supported", self);
     }
 
     return method(S, self, arg1);
 }
 
-OAny oor(OState* S, OAny self, OAny arg1) {
+OAny obitor(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(S, self, __or__);
+    method = _method(S, self, __bitor__);
 
     if (!method) {
         oraise(S, oerrors(S)->TypeError,
-                "__or__ protocol not supported", self);
+                "__bitor__ protocol not supported", self);
     }
 
     return method(S, self, arg1);
 }
 
-OAny oxor(OState* S, OAny self, OAny arg1) {
+OAny obitxor(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
-    method = _method(S, self, __xor__);
+    method = _method(S, self, __bitxor__);
 
     if (!method) {
         oraise(S, oerrors(S)->TypeError,
-                "__xor__ protocol not supported", self);
+                "__bitxor__ protocol not supported", self);
     }
 
     return method(S, self, arg1);
 }
-

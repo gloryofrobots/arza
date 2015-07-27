@@ -11,7 +11,7 @@ typedef void (*ofunc_each)(OState* S, OAny arg, ofunc_1 func);
 
 /*BELOW IS AUTOGEN CODE FROM behavior.py */
 typedef struct _OBehavior {
-    ostring __name__;
+	ostring __name__;
     /*MEMORY*/
     odestructor __destroy__;
     ofunc_each __mark__;
@@ -30,25 +30,22 @@ typedef struct _OBehavior {
     ofunc_3 __setitem__;
     /*GENERATOR*/
     ofunc_1 __next__;
-    /*NUMBER_CAST*/
+    /*NUMBER*/
     ofunc_1 __tointeger__;
     ofunc_1 __tofloat__;
     ofunc_1 __topositive__;
     ofunc_1 __tonegative__;
-    /*NUMBER_OPERATIONS*/
-    ofunc_1 __abs__;
     ofunc_1 __invert__;
     ofunc_2 __add__;
     ofunc_2 __subtract__;
     ofunc_2 __divide__;
     ofunc_2 __multiply__;
-    ofunc_2 __pow__;
     ofunc_2 __leftshift__;
     ofunc_2 __rightshift__;
     ofunc_2 __mod__;
-    ofunc_2 __and__;
-    ofunc_2 __or__;
-    ofunc_2 __xor__;
+    ofunc_2 __bitand__;
+    ofunc_2 __bitor__;
+    ofunc_2 __bitxor__;
 } OBehavior;
 
 #define OBEHAVIOR_MEMORY(__destroy__,__mark__)  __destroy__, __mark__
@@ -63,17 +60,15 @@ typedef struct _OBehavior {
 #define OBEHAVIOR_GENERATOR(__next__)  __next__
 
 #define OBEHAVIOR_GENERATOR_NULL 0
-#define OBEHAVIOR_NUMBER_CAST(__tointeger__,__tofloat__,__topositive__,__tonegative__)  __tointeger__, __tofloat__, __topositive__, __tonegative__
+#define OBEHAVIOR_NUMBER(__tointeger__,__tofloat__,__topositive__,__tonegative__,__invert__,__add__,__subtract__,__divide__,__multiply__,__leftshift__,__rightshift__,__mod__,__bitand__,__bitor__,__bitxor__)  __tointeger__, __tofloat__, __topositive__, __tonegative__, __invert__, __add__, __subtract__, __divide__, __multiply__, __leftshift__, __rightshift__, __mod__, __bitand__, __bitor__, __bitxor__
 
-#define OBEHAVIOR_NUMBER_CAST_NULL 0, 0, 0, 0
-#define OBEHAVIOR_NUMBER_OPERATIONS(__abs__,__invert__,__add__,__subtract__,__divide__,__multiply__,__pow__,__leftshift__,__rightshift__,__mod__,__and__,__or__,__xor__)  __abs__, __invert__, __add__, __subtract__, __divide__, __multiply__, __pow__, __leftshift__, __rightshift__, __mod__, __and__, __or__, __xor__
-
-#define OBEHAVIOR_NUMBER_OPERATIONS_NULL 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#define OBEHAVIOR_NUMBER_NULL 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 #define OBEHAVIOR_DECLARE(structname) static OBehavior structname;
 
-#define OBEHAVIOR_DEFINE(structname, name, MEMORY, BASE, COLLECTION, GENERATOR, NUMBER_CAST, NUMBER_OPERATIONS)  \
+#define OBEHAVIOR_DEFINE(structname, name, MEMORY, BASE, COLLECTION, GENERATOR, NUMBER)  \
 static OBehavior structname = { \
-    name, MEMORY, BASE, COLLECTION, GENERATOR, NUMBER_CAST, NUMBER_OPERATIONS  \
+    name, MEMORY, BASE, COLLECTION, GENERATOR, NUMBER  \
 };
+
 #endif /* OBEHAVIOR_H_ */

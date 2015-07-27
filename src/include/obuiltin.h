@@ -57,7 +57,6 @@ ObinAny obin_reduce(ObinState * S, obin_function_2 function, ObinAny iterable);
 */
 
 /*AUTO GENERATED CODE BELOW */
-
 /************************* BASE **********************************/
 
 OAny otostring(OState* S, OAny self);
@@ -88,7 +87,7 @@ OAny osetitem(OState* S, OAny self, OAny arg1, OAny arg2);
 
 OAny onext(OState* S, OAny self);
 
-/************************* NUMBER_CAST **********************************/
+/************************* NUMBER **********************************/
 
 OAny otointeger(OState* S, OAny self);
 
@@ -97,10 +96,6 @@ OAny otofloat(OState* S, OAny self);
 OAny otopositive(OState* S, OAny self);
 
 OAny otonegative(OState* S, OAny self);
-
-/************************* NUMBER_OPERATIONS **********************************/
-
-OAny oabs(OState* S, OAny self);
 
 OAny oinvert(OState* S, OAny self);
 
@@ -112,19 +107,16 @@ OAny odivide(OState* S, OAny self, OAny arg1);
 
 OAny omultiply(OState* S, OAny self, OAny arg1);
 
-OAny opow(OState* S, OAny self, OAny arg1);
-
 OAny oleftshift(OState* S, OAny self, OAny arg1);
 
 OAny orightshift(OState* S, OAny self, OAny arg1);
 
 OAny omod(OState* S, OAny self, OAny arg1);
 
-OAny oand(OState* S, OAny self, OAny arg1);
+OAny obitand(OState* S, OAny self, OAny arg1);
 
-OAny oor(OState* S, OAny self, OAny arg1);
+OAny obitor(OState* S, OAny self, OAny arg1);
 
-OAny oxor(OState* S, OAny self, OAny arg1);
-
+OAny obitxor(OState* S, OAny self, OAny arg1);
 
 #endif

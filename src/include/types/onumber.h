@@ -4,5 +4,8 @@
 
 obool onumber_init(OState* S);
 
+OAny onumber_from_float(ofloat f);
+OAny onumber_from_int(oint i);
+OAny onumber_cast_upper(OState* S, OAny any);
 
 #endif /* ONUMBER_H_ */

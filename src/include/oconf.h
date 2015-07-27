@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #define OFALSE 0
 #define OTRUE 1
@@ -62,15 +63,21 @@ typedef void* opointer;
 typedef FILE* ofile;
 
 typedef long oint;
+#define OINT_MAX LONG_MAX
+#define OINT_MIN LONG_MIN
+
 typedef const char* ostring;
 typedef char ochar;
 typedef unsigned char ouchar;
+
 
 /* Needed for convertion between numbers and strings */
 #define OBIN_INTEGER_FORMATTER "%ld"
 #define OBIN_POINTER_FORMATTER "%p"
 #define OBIN_FLOAT_FORMATTER "%f"
-
+#define OBIN_INTEGER_REPR_SIZE 256
+#define OBIN_FLOAT_REPR_SIZE 1024
+#define OBIN_FLOAT_EPSILON 0.00000000000001
 /* DIRECTORY_SEPARATOR */
 #if defined(_WIN32)
 #define OBIN_DIR_SEPARATOR	"\\"
@@ -184,6 +191,8 @@ OBIN_STMT_END
 #define ocalloc calloc
 #define orealloc realloc
 #define ofree free
+#define __oabs labs
+#define __opow pow
 
 /**********LOG***********/
 #define OBIN_LOG_ENABLE
