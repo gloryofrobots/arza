@@ -17,7 +17,7 @@ static OAny __si__next__(OState* state, OAny self) {
 		return ObinNothing;
 	}
 
-	result = ogetitem(state, it->source, obin_integer_new(it->current));
+	result = ogetitem(state, it->source, OInteger_new(it->current));
 	it->current++;
 	return result;
 }
@@ -32,7 +32,7 @@ OBEHAVIOR_DEFINE(__SEQUENCE_ITERATOR_BEHAVIOR__,
 		OBEHAVIOR_NUMBER_OPERATIONS_NULL
 );
 
-OAny obin_sequence_iterator_new(OState* state, OAny sequence){
+OAny OSequence_iterator(OState* state, OAny sequence){
 	SequenceIterator * iterator;
 
 	iterator = obin_new(state, SequenceIterator);
@@ -40,10 +40,10 @@ OAny obin_sequence_iterator_new(OState* state, OAny sequence){
 	iterator->current = 0;
 	iterator->length = (omem_t) OAny_toInt(olength(state, sequence));
 
-	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__SEQUENCE_ITERATOR_BEHAVIOR__, ocells(state)->__Cell__);
+	return OCell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__SEQUENCE_ITERATOR_BEHAVIOR__, ocells(state)->__Cell__);
 }
 
-OAny obin_collection_compare(OState * state, OAny self, OAny other){
+OAny OCollection_compare(OState * state, OAny self, OAny other){
 	OAny self_length;
 	OAny other_length;
 	OAny self_iterator;

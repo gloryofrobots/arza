@@ -12,12 +12,12 @@ typedef struct {
 } ObinModule;
 
 static ObinModule __MODULES__[] = {
-		{"Integer", &obin_module_integer_init, 0},
-		{"String", &obin_module_string_init, 0},
+		{"Integer", &OInteger_init, 0},
+		{"String", &ostring_init, 0},
 		{"Error", &OError_init, 0},
 		{"Array", &OArray_init, 0},
-		{"Tuple", &obin_module_tuple_init, 0},
-		{"Table", &obin_module_table_init, 0},
+		{"Tuple", &OTuple_init, 0},
+		{"Table", &OTable_init, 0},
 		{"Random", &ORandom_init, 0},
 };
 
@@ -29,7 +29,7 @@ _init_internals(OState* state) {
 	oindex_t i;
 
 	state->internals = &__INTERNALS__;
-	state->internals->cells.__Cell__ = obin_cell_new(EOBIN_TYPE_CELL, obin_new(state, OCell), 0, ObinNil);
+	state->internals->cells.__Cell__ = OCell_new(EOBIN_TYPE_CELL, obin_new(state, OCell), 0, ObinNil);
 
 	for(i=0; i < count_modules; i++) {
 		module = __MODULES__ + i;
@@ -50,7 +50,7 @@ OState* obin_init(omem_t heap_size) {
 		heap_size = OBIN_DEFAULT_HEAP_SIZE;
 	}
 
-	OState* state = obin_state_new(heap_size);
+	OState* state = OState_new(heap_size);
 
 	if(!is_initialised
 		&& !_init_internals(state)) {

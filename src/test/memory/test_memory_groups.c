@@ -31,7 +31,7 @@ OAny tmg_cell_new(OState* state, int data_size, double garbage_pecentage, int pa
 	tm_counter_add(tmg_counter);
 	cell->id = tmg_counter->TotalCount;
 	cell->parent_id = parent_id;
-	cell->chunk = obin_malloc_array(state, obyte, 1024);
+	cell->chunk = omemory_malloc_array(state, obyte, 1024);
 
 	cell->data_size = data_size;
 
@@ -45,14 +45,14 @@ OAny tmg_cell_new(OState* state, int data_size, double garbage_pecentage, int pa
 
 	if(data_size > 0) {
 
-		cell->data = obin_malloc_array(state, OAny, data_size);
+		cell->data = omemory_malloc_array(state, OAny, data_size);
 		for(i=0; i < data_size; i++) {
 			cell->data[i] = tmg_cell_new(state, data_size-1, garbage_pecentage, cell->id);
 
 		}
 	}
 
-	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*) cell, &__TMGCELL_BEHAVIOR__, ocells(state)->__Cell__);
+	return OCell_new(EOBIN_TYPE_CELL, (OCell*) cell, &__TMGCELL_BEHAVIOR__, ocells(state)->__Cell__);
 }
 
 
@@ -82,7 +82,7 @@ static void __tmg_cell_destroy__(OState* state, OCell* self) {
 	tm_counter_destroy(tmg_counter);
 
 	tmg_print_cell(cell, "__test_mem_destroy__");
-	obin_memory_free(state, cell->chunk);
+	omemory_free(state, cell->chunk);
 }
 
 OBEHAVIOR_DEFINE(__TMGCELL_BEHAVIOR__,
@@ -106,12 +106,12 @@ void tmg_test(OState* state, omem_t data_size, double garbage_percentage) {
     state->globals = tmg_cell_new(state, data_size, garbage_percentage, tmg_counter->TotalCount);
     printf("Test cells count before collection %d \n", tmg_counter->Count);
 
-    obin_gc_collect(state);
+    omemory_collect(state);
     destroyed = tm_counter_predict_destroyed(tmg_counter);
 
     if(TMG_VERBOSE > 0) {
     	tm_counter_info(tmg_counter);
-    	obin_memory_debug_trace(state);
+    	omemory_debug_trace(state);
     }
 
     CU_ASSERT_EQUAL(destroyed, tmg_counter->Destroyed);
@@ -137,6 +137,6 @@ static void Test_MemoryGroups(void) {
 	/*tmg_test(state, 9, 0.7);*/
 
 /*	obin_memory_end_transaction(state);*/
-	obin_state_destroy(state);
+	OState_destroy(state);
 	tm_counter_free(tmg_counter);
 }

@@ -37,7 +37,7 @@ _array_grow(OState* state, OAny self, oindex_t count_elements) {
 		return OFALSE;
 	}
 
-	_array_data(self) = obin_memory_realloc(state, _array_data(self), new_capacity);
+	_array_data(self) = omemory_realloc(state, _array_data(self), new_capacity);
 	_array_capacity(self) = new_capacity;
 
 	return OTRUE;
@@ -47,7 +47,7 @@ OAny
 OArray_new(OState* state, OAny size) {
 	ObinArray * self; omem_t capacity;
 	if(OAny_isNil(size)){
-		size = obin_integer_new(OBIN_DEFAULT_ARRAY_SIZE);
+		size = OInteger_new(OBIN_DEFAULT_ARRAY_SIZE);
 	}
 	if (!OInt_isFitToMemsize(size)) {
 			oraise(state, oerrors(state)->MemoryError,
@@ -57,11 +57,11 @@ OArray_new(OState* state, OAny size) {
 	self = obin_new(state, ObinArray);
 
 	capacity = (omem_t) OAny_toInt(size);
-	self->data = obin_malloc_array(state, OAny, capacity);
+	self->data = omemory_malloc_array(state, OAny, capacity);
 
 	self->capacity = capacity;
 	self->size = 0;
-	return obin_cell_new(EOBIN_TYPE_ARRAY, (OCell*)self, &__BEHAVIOR__, ocells(state)->__Array__);
+	return OCell_new(EOBIN_TYPE_ARRAY, (OCell*)self, &__BEHAVIOR__, ocells(state)->__Array__);
 }
 
 static omem_t _array_inflate(OState* state, OAny self, oindex_t start, oindex_t end) {
@@ -75,7 +75,7 @@ static omem_t _array_inflate(OState* state, OAny self, oindex_t start, oindex_t 
 	if (new_size > _array_capacity(self)) {
 		if ( !_array_grow(state, self, length) ){
 			oraise(state, oerrors(state)->MemoryError,
-				"__array_inflate " __TypeName__ "can't grow", obin_integer_new(length));
+				"__array_inflate " __TypeName__ "can't grow", OInteger_new(length));
 			return 0;
 		}
 	}
@@ -108,13 +108,13 @@ OAny OArray_insertCollection(OState* state, OAny self, OAny collection, OAny pos
 
 	i=start;j=0;
 	while(i<end && j<collection_size) {
-		_array_setitem(self, i, ogetitem(state, collection, obin_integer_new(j)));
+		_array_setitem(self, i, ogetitem(state, collection, OInteger_new(j)));
 		++i; ++j;
 	}
 
 	_array_size(self) = new_size;
 
-	return obin_integer_new(new_size);
+	return OInteger_new(new_size);
 }
 
 OAny OArray_insert(OState* state, OAny self, OAny item, OAny position) {
@@ -139,7 +139,7 @@ OAny OArray_insert(OState* state, OAny self, OAny item, OAny position) {
 	_array_setitem(self, insert_index, item);
 
 	_array_size(self) = new_size;
-	return obin_integer_new(new_size);
+	return OInteger_new(new_size);
 }
 
 /*
@@ -169,7 +169,7 @@ OArray_push(OState* state, OAny self, OAny value) {
 	if (new_size > _array_capacity(self)){
 		if (!_array_grow(state, self, 1) ){
 			oraise(state, oerrors(state)->MemoryError,
-				"obin_array_push " __TypeName__ "can't grow", obin_integer_new(new_size));
+				"obin_array_push " __TypeName__ "can't grow", OInteger_new(new_size));
 		}
 	}
 
@@ -177,7 +177,7 @@ OArray_push(OState* state, OAny self, OAny value) {
 
 	_array_size(self) = new_size;
 
-	return obin_integer_new(new_size);
+	return OInteger_new(new_size);
 }
 
 OAny obin_array_lastindexof(OState* state, OAny self, OAny item){
@@ -187,7 +187,7 @@ OAny obin_array_lastindexof(OState* state, OAny self, OAny item){
 
 	for(i=_array_last_index(self); i>=0; --i) {
 		if (OAny_isTrue(oequal(state, _array_item(self, i), item))) {
-			return obin_integer_new(i);
+			return OInteger_new(i);
 		}
 	}
 
@@ -201,7 +201,7 @@ OAny OArray_indexOf(OState* state, OAny self, OAny item) {
 
 	for(i=0; i<_array_size(self); ++i) {
 		if (OAny_isTrue(oequal(state, _array_item(self, i), item))) {
-			return obin_integer_new(i);
+			return OInteger_new(i);
 		}
 	}
 
@@ -218,7 +218,7 @@ OAny OArray_pop(OState* state, OAny self) {
 				"obin_array_pop " __TypeName__ " empty array", ObinNil);
 	}
 
-	item = ogetitem(state, self, obin_integer_new(_array_last_index(self)));
+	item = ogetitem(state, self, OInteger_new(_array_last_index(self)));
 	_array_size(self) -= 1;
 
 	return item;
@@ -248,7 +248,7 @@ OAny OArray_remove(OState* state, OAny self, OAny item) {
 		return ObinFalse;
 	}
 
-	odelitem(state, self, obin_integer_new(i));
+	odelitem(state, self, OInteger_new(i));
 	return ObinTrue;
 }
 
@@ -256,16 +256,16 @@ OAny OArray_remove(OState* state, OAny self, OAny item) {
 
 static OAny __tobool__(OState* state, OAny self) {
 	_CHECK_SELF_TYPE(state, self, __tobool__);
-	return obin_bool_new(_array_size(self)>0);
+	return OBool_new(_array_size(self)>0);
 }
 
 static OAny __tostring__(OState* state, OAny self) {
     OAny result;
 
 	_CHECK_SELF_TYPE(state, self, __tostring__);
-	result = obin_string_join(state, obin_char_new(','), self);
-	result = oadd(state, obin_char_new('['), result);
-	result = oadd(state, result, obin_char_new(']'));
+	result = OString_join(state, OChar_new(','), self);
+	result = oadd(state, OChar_new('['), result);
+	result = oadd(state, result, OChar_new(']'));
 
 	return result;
 }
@@ -273,7 +273,7 @@ static OAny __tostring__(OState* state, OAny self) {
 static void __destroy__(OState* state, OCell* self) {
 	ObinArray* array = (ObinArray*) self;
 
-	obin_memory_free(state, array->data);
+	omemory_free(state, array->data);
 }
 
 static void __mark__(OState* state, OAny self, ofunc_1 mark) {
@@ -290,7 +290,7 @@ static OAny __clone__(OState* state, OAny self) {
 
 	_CHECK_SELF_TYPE(state, self, __clone__);
 
-	result = OArray_new(state, obin_integer_new(_array_capacity(self)));
+	result = OArray_new(state, OInteger_new(_array_capacity(self)));
 	omemcpy(_array_data(result), _array_data(self), _array_capacity(self) * sizeof(OAny));
 	_array_size(result) = _array_size(self);
 	return result;
@@ -299,7 +299,7 @@ static OAny __clone__(OState* state, OAny self) {
 static OAny __length__(OState* state, OAny self) {
 	_CHECK_SELF_TYPE(state, self, __length__);
 
-	return obin_integer_new(_array_size(self));
+	return OInteger_new(_array_size(self));
 }
 
 static oint
@@ -355,12 +355,12 @@ __setitem__(OState* state, OAny self, OAny pos, OAny value){
 
 	_array_setitem(self, index, value);
 
-	return obin_integer_new(index);
+	return OInteger_new(index);
 }
 
 static OAny
 __hasitem__(OState* state, OAny self, OAny item){
-	return obin_bool_new(OAny_toInt(OArray_indexOf(state, self, item)) != OBIN_INVALID_INDEX);
+	return OBool_new(OAny_toInt(OArray_indexOf(state, self, item)) != OBIN_INVALID_INDEX);
 }
 
 static OAny
@@ -390,8 +390,8 @@ obool OArray_init(OState* state) {
 	__BEHAVIOR__.__tobool__ = __tobool__;
 	__BEHAVIOR__.__destroy__ = __destroy__;
 	__BEHAVIOR__.__clone__ = __clone__;
-	__BEHAVIOR__.__compare__ = obin_collection_compare;
-	__BEHAVIOR__.__iterator__ = obin_sequence_iterator_new;
+	__BEHAVIOR__.__compare__ = OCollection_compare;
+	__BEHAVIOR__.__iterator__ = OSequence_iterator;
 	__BEHAVIOR__.__length__ = __length__;
 	__BEHAVIOR__.__getitem__ = __getitem__;
 	__BEHAVIOR__.__setitem__ = __setitem__;
@@ -399,7 +399,7 @@ obool OArray_init(OState* state) {
 	__BEHAVIOR__.__delitem__ = __delitem__;
 	__BEHAVIOR__.__mark__ = __mark__;
 
-	ocells(state)->__Array__ = obin_cell_new(EOBIN_TYPE_CELL,
+	ocells(state)->__Array__ = OCell_new(EOBIN_TYPE_CELL,
 			obin_new(state, OCell), &__BEHAVIOR__, ocells(state)->__Cell__);
 
 	return OTRUE;

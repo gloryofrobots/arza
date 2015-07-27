@@ -57,14 +57,14 @@ typedef enum _EOBIN_CELL_MARK{
 #define _is_not_marked(cell) (cell->memory.mark == EOBIN_CELL_MARK_MARKED)
 #define _is_new(cell) (cell->memory.mark == EOBIN_CELL_MARK_NEW)
 
-OAny obin_cell_to_any(EOTYPE type, OCell* cell) {
+OAny OCell_toAny(EOTYPE type, OCell* cell) {
 	OAny result = OAny_new();
 	oassert(OType_isCell(type));
 	OAny_initCell(result, type, cell);
 	return result;
 }
 
-OAny obin_cell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny origin) {
+OAny OCell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny origin) {
 	OAny result;
 	oassert(OType_isCell(type));
 	cell->origin = origin;
@@ -76,7 +76,7 @@ OAny obin_cell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny origin) {
 }
 
 /* MEMORY PRIMITIVES */
-opointer obin_memory_malloc(OState * state, omem_t size) {
+opointer omemory_malloc(OState * state, omem_t size) {
 	opointer new_pointer;
 
 	if (!size) {
@@ -96,7 +96,7 @@ opointer obin_memory_malloc(OState * state, omem_t size) {
 	return new_pointer;
 }
 
-opointer obin_memory_realloc(OState * state, opointer ptr, omem_t size) {
+opointer omemory_realloc(OState * state, opointer ptr, omem_t size) {
 	opointer new_pointer;
 	if (!size) {
 		return NULL;
@@ -114,7 +114,7 @@ opointer obin_memory_duplicate(OState * state, opointer ptr,
 
 	size = element_size * elements;
 
-	new_pointer = obin_memory_malloc(state, size);
+	new_pointer = omemory_malloc(state, size);
 	memcpy(new_pointer, ptr, size);
 
 	return new_pointer;
@@ -130,7 +130,7 @@ void _memory_create(OState* state, omem_t heap_size) {
 				heap_size);
 	}
 
-	state->memory = (OMemory*) obin_memory_malloc(state, sizeof(OMemory));
+	state->memory = (OMemory*) omemory_malloc(state, sizeof(OMemory));
 	M = state->memory;
 
 	if(!M) {
@@ -154,7 +154,7 @@ void _memory_create(OState* state, omem_t heap_size) {
 
     /* initialize free_list by creating the first */
     /* entry, which contains the whole object_space */
-    M->free_node = (ObinMemoryFreeNode*) M->heap;
+    M->free_node = (OMemoryFreeNode*) M->heap;
     M->free_node->size = M->heap_size;
     M->free_node->next = NULL;
 
@@ -173,7 +173,7 @@ void _memory_destroy(OState* state) {
 	state->memory = 0;
 }
 
-OState* obin_state_new(omem_t heap_size) {
+OState* OState_new(omem_t heap_size) {
 	OState* state;
 	omem_t size;
     size = sizeof(OState);
@@ -189,7 +189,7 @@ OState* obin_state_new(omem_t heap_size) {
 	return state;
 }
 
-void obin_state_destroy(OState* state) {
+void OState_destroy(OState* state) {
 	ObinMem_Free(state->memory->heap);
     ObinMem_Free(state->memory);
 	ObinMem_Free(state);
@@ -267,10 +267,10 @@ static void _destroy_cell(OState * state, OCell* cell) {
 }
 
 
-void obin_gc_collect(OState* state) {
+void omemory_collect(OState* state) {
 	opointer pointer;
 	OCell* object;
-	ObinMemoryFreeNode* current_entry, *new_entry;
+	OMemoryFreeNode* current_entry, *new_entry;
     int object_size = 0;
 	CATCH_STATE_MEMORY(state);
 
@@ -287,7 +287,7 @@ void obin_gc_collect(OState* state) {
 
 #ifdef OBIN_MEMORY_DEBUG
 	_log(state, "-- pre-collection heap dump --\n");
-	obin_memory_debug_trace(state);
+	omemory_debug_trace(state);
 #endif
 
     pointer = M->heap;
@@ -304,7 +304,7 @@ void obin_gc_collect(OState* state) {
             if ((void*)current_entry == (void*)pointer) {
                 object_size = current_entry->size;
             } else {
-                ObinMemoryFreeNode* next = current_entry->next;
+                OMemoryFreeNode* next = current_entry->next;
                 object_size = next->size;
             }
             /*fprintf(stderr,"[%d]",object_size); */
@@ -324,7 +324,7 @@ void obin_gc_collect(OState* state) {
                 /* add new entry containing this object to the free_list */
                 _destroy_cell(state, object);
                 memset(object, 0, object_size);
-                new_entry = ((ObinMemoryFreeNode*) pointer);
+                new_entry = ((OMemoryFreeNode*) pointer);
                 new_entry->size = object_size;
 
                 /* if the new entry lies before the first entry, */
@@ -353,7 +353,7 @@ void obin_gc_collect(OState* state) {
 
 #ifdef OBIN_MEMORY_DEBUG
 	_log(state, "-- post-collection heap dump --\n");
-	obin_memory_debug_trace(state);
+	omemory_debug_trace(state);
 #endif
     reset_allocation_stat(state);
 }
@@ -361,7 +361,7 @@ void obin_gc_collect(OState* state) {
 
 void* _allocate_cell(OState* state, omem_t size) {
     void* result = NULL;
-	ObinMemoryFreeNode* entry, *before_entry, *old_next, *replace_entry;
+	OMemoryFreeNode* entry, *before_entry, *old_next, *replace_entry;
 	int old_entry_size;
 	CATCH_STATE_MEMORY(state);
 
@@ -369,13 +369,13 @@ void* _allocate_cell(OState* state, omem_t size) {
     	return NULL;
     }
 
-    if(size < sizeof(ObinMemoryFreeNode)) {
+    if(size < sizeof(OMemoryFreeNode)) {
     	_panic(state, "Can`t allocate so small chunk in allocator %d", size);
     	return NULL;
     }
 
     if (M->heap_free_size <= M->heap_gc_threshold) {
-    	obin_gc_collect(state);
+    	omemory_collect(state);
     }
 
     /* initialize variables to search through the free_list */
@@ -385,7 +385,7 @@ void* _allocate_cell(OState* state, omem_t size) {
     /* don't look for the perfect match, but for the first-fit */
     while (! ((entry->size == size)
                || (entry->next == NULL)
-               || (entry->size >= (size + sizeof(ObinMemoryFreeNode))))) {
+               || (entry->size >= (size + sizeof(OMemoryFreeNode))))) {
         before_entry = entry;
         entry = entry->next;
     }
@@ -408,14 +408,14 @@ void* _allocate_cell(OState* state, omem_t size) {
     } else {
         /* did we find an entry big enough for the request and a new */
         /* free_entry? */
-        if (entry->size >= (size + sizeof(ObinMemoryFreeNode))) {
+        if (entry->size >= (size + sizeof(OMemoryFreeNode))) {
             /* save data from found entry */
             old_entry_size = entry->size;
             old_next = entry->next;
 
             result = entry;
             /* create new entry and assign data */
-            replace_entry =  (ObinMemoryFreeNode*) ((int)entry + size);
+            replace_entry =  (OMemoryFreeNode*) ((int)entry + size);
 
             replace_entry->size = old_entry_size - size;
             replace_entry->next = old_next;
@@ -433,7 +433,7 @@ void* _allocate_cell(OState* state, omem_t size) {
             _log(state, _WARN, "Not enough heap!\n");
             _log(state, _WARN, "FREE-Size: %d Perfoming garbage collection\n", M->heap_free_size);
 
-            obin_gc_collect(state);
+            omemory_collect(state);
 
             _log(state, _WARN, "FREE-Size after collection: %d,\n", M->heap_free_size);
             if(M->heap_free_size <= size) {
@@ -455,7 +455,7 @@ void* _allocate_cell(OState* state, omem_t size) {
     return result;
 }
 
-void* obin_allocate_cell(OState* state, omem_t size) {
+void* omemory_allocate_cell(OState* state, omem_t size) {
 	omem_t aligned_size = size + ObinMem_Padding(size);
     OCell* object = (OCell*)_allocate_cell(state, aligned_size);
 
@@ -475,7 +475,7 @@ void* obin_allocate_cell(OState* state, omem_t size) {
  * this function must not do anything, since the heap management
  * is done inside gc_collect.
  */
-void obin_memory_free(OState* state, opointer ptr) {
+void omemory_free(OState* state, opointer ptr) {
 #ifdef ODEBUG
 	CATCH_STATE_MEMORY(state);
     /* check if called for an object inside the object_space */
@@ -491,10 +491,10 @@ void obin_memory_free(OState* state, opointer ptr) {
 /* free entries which are next to each other are merged into one entry */
 void gc_merge_free_spaces(OState* state) {
 	OMemory* M = state->memory;
-    ObinMemoryFreeNode* entry = M->free_node;
-    ObinMemoryFreeNode* entry_to_append = NULL;
+    OMemoryFreeNode* entry = M->free_node;
+    OMemoryFreeNode* entry_to_append = NULL;
     int new_size = 0;
-    ObinMemoryFreeNode* new_next = NULL;
+    OMemoryFreeNode* new_next = NULL;
 
     M->heap_free_size = 0;
 
@@ -526,7 +526,7 @@ void gc_merge_free_spaces(OState* state) {
  * the garbage collection would result in data loss and must
  * not be started!
  */
-void obin_memory_start_transaction(OState* state) {
+void omemory_start_transaction(OState* state) {
     state->memory->transaction_count++;
 }
 
@@ -534,7 +534,7 @@ void obin_memory_start_transaction(OState* state) {
  * only if the counter reaches zero, it is safe to start the
  * garbage collection.
  */
-void obin_memory_end_transaction(OState* state) {
+void omemory_end_transaction(OState* state) {
     state->memory->transaction_count--;
 }
 
@@ -586,7 +586,7 @@ static void _log_memory_stat(OState* state) {
  */
 static void _memory_trace(OState* state) {
     OCell* pointer;
-    ObinMemoryFreeNode* current_entry;
+    OMemoryFreeNode* current_entry;
     int object_size = 0;
     int object_aligner = 0;
     int line_count = 2;
@@ -612,7 +612,7 @@ static void _memory_trace(OState* state) {
             if ((void*)current_entry == (void*)pointer) {
                 object_size = current_entry->size;
             } else {
-                ObinMemoryFreeNode* next = current_entry->next;
+                OMemoryFreeNode* next = current_entry->next;
                 object_size = next->size;
             }
             _log(state, _ALL, "[%d]",object_size);
@@ -642,7 +642,7 @@ static void _memory_trace(OState* state) {
     } while ((void*)pointer < (void*)(_end_heap(M)));
 }
 
-void obin_memory_debug_trace(OState* state) {
+void omemory_debug_trace(OState* state) {
 	_log_memory_stat(state);
 	_memory_trace(state);
 }

@@ -2,27 +2,25 @@
 #define OSTRING_H_
 #include "obuiltin.h"
 
-obool obin_module_string_init(OState* state);
+obool ostring_init(OState* state);
 
 /* constructors */
-OAny obin_string_new(OState* state, ostring data);
-OAny obin_char_new(ochar ch);
+OAny OString_new(OState* state, ostring data);
+OAny OChar_new(ochar ch);
 
-OBehavior* obin_char_behavior();
+OAny OString_fromCArray(OState* state, ostring data, omem_t size);
 
-OAny obin_string_from_carray(OState* state, ostring data, omem_t size);
+OAny OString_capitalize(OState* state, OAny self);
+OAny OString_capitalizeWords(OState* state, OAny self);
+OAny OString_toLower(OState* state, OAny self);
+OAny OString_toUpper(OState* state, OAny self);
 
-OAny obin_string_capitalize(OState* state, OAny self);
-OAny obin_string_capitalize_words(OState* state, OAny self);
-OAny obin_string_to_lowercase(OState* state, OAny self);
-OAny obin_string_to_uppercase(OState* state, OAny self);
-
-OAny obin_string_is_alphanum(OState* state, OAny self);
-OAny obin_string_is_alpha(OState* state, OAny self);
-OAny obin_string_is_digit(OState* state, OAny self);
-OAny obin_string_is_lower(OState* state, OAny self);
-OAny obin_string_is_upper(OState* state, OAny self);
-OAny obin_string_is_space(OState* state, OAny self);
+OAny OString_isAlphanum(OState* state, OAny self);
+OAny OString_isAlpha(OState* state, OAny self);
+OAny OString_isDigit(OState* state, OAny self);
+OAny OString_isLower(OState* state, OAny self);
+OAny OString_isUpper(OState* state, OAny self);
+OAny OString_isSpace(OState* state, OAny self);
 
 /*
  Return the lowest index in the string
@@ -30,7 +28,7 @@ OAny obin_string_is_space(OState* state, OAny self);
  within s[start:end]. Optional arguments start and end
  are interpreted as in slice notation. Return -1 on failure.
  */
-OAny obin_string_index_of(OState* state, OAny self, OAny other,
+OAny OString_indexOf(OState* state, OAny self, OAny other,
 		OAny start, OAny end);
 /*
  Return the highest index in the string
@@ -38,17 +36,17 @@ OAny obin_string_index_of(OState* state, OAny self, OAny other,
  within s[start:end]. Optional arguments start and end
  are interpreted as in slice notation. Return -1 on failure.
  */
-OAny obin_string_last_index_of(OState* state, OAny self, OAny other,
+OAny OString_lastIndexOf(OState* state, OAny self, OAny other,
 		OAny start, OAny end);
 
-OAny obin_string_dublicate(OState* state, OAny self, OAny _count);
-OAny obin_string_format(OState* state, OAny format, ...);
-OAny obin_string_concat(OState* state, OAny str1, OAny str2);
-OAny obin_string_join(OState* state, OAny self, OAny collection);
-OAny obin_string_split(OState* state, OAny self, OAny separator);
+OAny OString_dublicate(OState* state, OAny self, OAny _count);
+OAny OString_format(OState* state, OAny format, ...);
+OAny OString_concat(OState* state, OAny str1, OAny str2);
+OAny OString_join(OState* state, OAny self, OAny collection);
+OAny OString_split(OState* state, OAny self, OAny separator);
 
-ostring obin_string_cstr(OState* state, OAny self);
+ostring OString_cstr(OState* state, OAny self);
 
-OAny obin_string_pack(OState* state, oindex_t count, ...);
+OAny OString_pack(OState* state, oindex_t count, ...);
 
 #endif /* OSTRING_H_ */

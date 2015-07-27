@@ -41,9 +41,9 @@ OAny oequal(OState * state, OAny any, OAny other);
 OAny ois(OState * state, OAny first, OAny second);
 
 /*shortcuts for tuples and arrays*/
-#define ogetfirst(state, coll) ogetitem(state, coll, obin_integer_new(0))
-#define ogetsecond(state, coll) ogetitem(state, coll, obin_integer_new(1))
-#define ogetthird(state, coll) ogetitem(state, coll, obin_integer_new(2))
+#define ogetfirst(state, coll) ogetitem(state, coll, OInteger_new(0))
+#define ogetsecond(state, coll) ogetitem(state, coll, OInteger_new(1))
+#define ogetthird(state, coll) ogetitem(state, coll, OInteger_new(2))
 
 /*@return list of results from function applied to iterable
 ObinAny obin_map(ObinState * state, obin_function function, ObinAny iterable);

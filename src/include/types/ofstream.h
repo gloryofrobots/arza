@@ -10,12 +10,12 @@
 #define OBIN_FSTREAM_MODE_WRITE "w"
 #define OBIN_FSTREAM_MODE_WRITE_UPDATE "w+"
 
-OAny obin_fstream_from_file(OState* state, ofile file,
+OAny OFstream_fromFile(OState* state, ofile file,
 		obool is_disposable);
-OAny obin_fstream_from_path(OState* state, OAny path, ostring mode);
-OAny obin_fstream_write_va(OState* state, OAny self, ostring format, ...);
-OAny obin_fstream_write(OState* state, OAny self, OAny any);
-OAny obin_fstream_close(OState* state, OAny self);
-OAny obin_fstream_is_open(OState* state, OAny self);
+OAny OFstream_fromPath(OState* state, OAny path, ostring mode);
+OAny OFstream_writeVA(OState* state, OAny self, ostring format, ...);
+OAny OFstream_write(OState* state, OAny self, OAny any);
+OAny OFstream_close(OState* state, OAny self);
+OAny OFstream_isOpen(OState* state, OAny self);
 
 #endif /* OSTREAM_H_ */

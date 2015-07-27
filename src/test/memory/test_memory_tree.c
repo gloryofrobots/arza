@@ -50,7 +50,7 @@ OAny tmtcell_new(OState* state, ostring data, omem_t capacity) {
 	body_size = sizeof(TMTCell);
 	size = body_size + capacity;
 
-	cell = obin_allocate_cell(state, size);
+	cell = omemory_allocate_cell(state, size);
 
 	tm_counter_add(tmt_counter);
 	cell->id = tmt_counter->TotalCount;
@@ -66,7 +66,7 @@ OAny tmtcell_new(OState* state, ostring data, omem_t capacity) {
 
 	tmtcell_print(cell, "tmtcell_new");
 
-	return obin_cell_new(EOBIN_TYPE_CELL, (OCell*) cell, &__TMTCELL_BEHAVIOR__, ocells(state)->__Cell__);
+	return OCell_new(EOBIN_TYPE_CELL, (OCell*) cell, &__TMTCELL_BEHAVIOR__, ocells(state)->__Cell__);
 }
 
 
@@ -128,13 +128,13 @@ _TMTTestStat tmt_stat_new(obool live, obool killed, obool allocated) {
 OAny tmt_stat_add_cell(_TMTTestStat* requests, OAny node, obool is_alive) {
 	if(is_alive) {
         requests->live_count++;
-        requests->live_space += obin_any_cell_size(node);
+        requests->live_space += OAny_cellSize(node);
 	} else {
         requests->killed_count++;
-        requests->killed_space += obin_any_cell_size(node);
+        requests->killed_space += OAny_cellSize(node);
 	}
 	requests->allocated_count++;
-	requests->allocated_space  += obin_any_cell_size(node);
+	requests->allocated_space  += OAny_cellSize(node);
 
 	return node;
 }
@@ -197,7 +197,7 @@ _TMTTestStat _test2(OState* state) {
 
 void _test_clear(OState* state, _TMTTestStat stat) {
 	state->globals = ObinNil;
-	obin_gc_collect(state);
+	omemory_collect(state);
 
     CU_ASSERT_EQUAL(state->memory->allocated_count, 0);
 	CU_ASSERT_EQUAL(state->memory->allocated_space, 0);
@@ -228,12 +228,12 @@ _TMTTestStat _tmt_make_test(OState* state, __tmt_test test) {
     	CU_ASSERT_EQUAL(state->memory->heap_free_size, state->memory->heap_size - state->memory->allocated_space);
     }
 
-    obin_gc_collect(state);
+    omemory_collect(state);
 
 
     if(TMT_VERBOSE > 0) {
     	tm_counter_info(tmt_counter);
-    	obin_memory_debug_trace(state);
+    	omemory_debug_trace(state);
     }
 
     if(requests.live_count > -1) {
@@ -268,7 +268,7 @@ void tmt_test() {
 	stat = _tmt_make_test(state, _test2);
 	_test_clear(state, stat);
 
-	obin_state_destroy(state);
+	OState_destroy(state);
 	tm_counter_free(tmt_counter);
 }
 

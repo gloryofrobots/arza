@@ -5,7 +5,7 @@ OAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
 OAny ObinNil = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NIL);
 OAny ObinNothing = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NOTHING);
 
-OAny obin_bool_new(obool condition){
+OAny OBool_new(obool condition){
 	if(condition){
 		return ObinTrue;
 	}
@@ -41,7 +41,7 @@ OAny __true_compare__(OState* state, OAny self, OAny arg1) {
 }
 
 OAny __true_hash__(OState* state, OAny self) {
-	return obin_integer_new(1);
+	return OInteger_new(1);
 }
 
 OAny __false_tostring__(OState* state, OAny self){
@@ -65,10 +65,10 @@ OAny __false_compare__(OState* state, OAny self, OAny arg1) {
 }
 
 OAny __false_hash__(OState* state, OAny self) {
-	return obin_integer_new(1);
+	return OInteger_new(1);
 }
 
-obool obin_module_bool_init(OState* state) {
+obool OBool_init(OState* state) {
 	__TRUE_BEHAVIOR__.__name__ = "__True__";
 	__TRUE_BEHAVIOR__.__tostring__ = __true_tostring__;
 	__TRUE_BEHAVIOR__.__tobool__ = __true_tobool__;

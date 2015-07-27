@@ -48,7 +48,7 @@ OAny oequal(OState * state, OAny any, OAny other) {
 OAny ois(OState * state, OAny any, OAny other) {
 	if (OAny_isCell(any)) {
 		if (OAny_isCell(other)) {
-			return obin_bool_new(OAny_toCell(any) == OAny_toCell(other));
+			return OBool_new(OAny_toCell(any) == OAny_toCell(other));
 		}
 
 		return ObinFalse;
@@ -58,11 +58,11 @@ OAny ois(OState * state, OAny any, OAny other) {
 	case EOBIN_TYPE_TRUE:
 	case EOBIN_TYPE_NIL:
 	case EOBIN_TYPE_NOTHING:
-		return obin_bool_new(any.type == other.type);
+		return OBool_new(any.type == other.type);
 	case EOBIN_TYPE_INTEGER:
-		return obin_bool_new(OAny_toInt(any) == OAny_toInt(other));
+		return OBool_new(OAny_toInt(any) == OAny_toInt(other));
 	case EOBIN_TYPE_CHAR:
-		return obin_bool_new(OAny_toChar(any) == OAny_toChar(other));
+		return OBool_new(OAny_toChar(any) == OAny_toChar(other));
 	default:
 		/*Other things are definitely not the same including floats*/
 		return ObinFalse;

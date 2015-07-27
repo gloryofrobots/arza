@@ -32,14 +32,14 @@ ObinTuple* _obin_tuple_new(OState* state,  omem_t size) {
 		return NULL;
 	}
 	capacity = sizeof(ObinTuple) + sizeof(OAny) * size;
-	self = (ObinTuple*) obin_allocate_cell(state, capacity);
+	self = (ObinTuple*) omemory_allocate_cell(state, capacity);
 	self->size = size;
 	self->data = (opointer)self + sizeof(ObinTuple);
 
 	return self;
 }
 
-OAny obin_tuple_new(OState* state,  OAny size, OAny* items) {
+OAny OTuple_new(OState* state,  OAny size, OAny* items) {
 	ObinTuple * self;
 
 	if(!OAny_isInt(size)){
@@ -58,10 +58,10 @@ OAny obin_tuple_new(OState* state,  OAny size, OAny* items) {
 		omemcpy(self->data, items, OAny_toInt(size));
 	}
 
-	return obin_cell_new(EOBIN_TYPE_TUPLE, (OCell*) self, &__BEHAVIOR__, ocells(state)->__Tuple__);
+	return OCell_new(EOBIN_TYPE_TUPLE, (OCell*) self, &__BEHAVIOR__, ocells(state)->__Tuple__);
 }
 
-OAny obin_tuple_pack(OState* state, omem_t size, ...){
+OAny OTuple_pack(OState* state, omem_t size, ...){
 	ObinTuple * self;
 	omem_t i;
 	OAny item;
@@ -69,7 +69,7 @@ OAny obin_tuple_pack(OState* state, omem_t size, ...){
 
 	if(!OBIN_IS_FIT_TO_MEMSIZE(size)) {
 		return oraise(state, oerrors(state)->TypeError,
-				"Tuple.pack invalid size", obin_integer_new(size));
+				"Tuple.pack invalid size", OInteger_new(size));
 	}
 
 	self = _obin_tuple_new(state , size);
@@ -81,14 +81,14 @@ OAny obin_tuple_pack(OState* state, omem_t size, ...){
     }
     va_end(vargs);
 
-	return obin_cell_new(EOBIN_TYPE_TUPLE, (OCell*) self, &__BEHAVIOR__, ocells(state)->__Tuple__);
+	return OCell_new(EOBIN_TYPE_TUPLE, (OCell*) self, &__BEHAVIOR__, ocells(state)->__Tuple__);
 }
 
 /****************************************  TYPETRAIT  *************************************************/
 static OAny __tobool__(OState* state, OAny self) {
     _CHECK_SELF_TYPE(state, self, __tobool__);
 
-	return obin_bool_new(_size(self) > 0);
+	return OBool_new(_size(self) > 0);
 }
 
 static OAny __tostring__(OState* state, OAny self) {
@@ -96,9 +96,9 @@ static OAny __tostring__(OState* state, OAny self) {
 
     _CHECK_SELF_TYPE(state, self, __tostring__);
 
-	result = obin_string_join(state, obin_char_new(','), self);
-	result = oadd(state, obin_char_new('('), result);
-	result = oadd(state, result, obin_string_new(state, ",)"));
+	result = OString_join(state, OChar_new(','), self);
+	result = oadd(state, OChar_new('('), result);
+	result = oadd(state, result, OString_new(state, ",)"));
 
 	return result;
 }
@@ -108,7 +108,7 @@ static OAny __clone__(OState* state, OAny self) {
 
     _CHECK_SELF_TYPE(state, self, __clone__);
 
-	result = obin_tuple_new(state,  obin_integer_new(_size(self)), _data(self));
+	result = OTuple_new(state,  OInteger_new(_size(self)), _data(self));
 	return result;
 }
 
@@ -123,13 +123,13 @@ static void __mark__(OState* state, OAny self, ofunc_1 mark) {
 static OAny __iterator__(OState* state, OAny self) {
     _CHECK_SELF_TYPE(state, self, __iterator__);
 
-	return obin_sequence_iterator_new(state, self);
+	return OSequence_iterator(state, self);
 }
 
 static OAny __length__(OState* state, OAny self) {
     _CHECK_SELF_TYPE(state, self, __length__);
 
-	return obin_integer_new(_size(self));
+	return OInteger_new(_size(self));
 }
 
 static oint
@@ -173,7 +173,7 @@ __getitem__(OState* state, OAny self, OAny pos){
 static OAny
 __hasitem__(OState* state, OAny self, OAny item){
     _CHECK_SELF_TYPE(state, self, __hasitem__);
-	return obin_bool_new(_get_index(state, self, item) != OBIN_INVALID_INDEX);
+	return OBool_new(_get_index(state, self, item) != OBIN_INVALID_INDEX);
 }
 
 /*
@@ -197,7 +197,7 @@ __hash__(OState* state, OAny self){
     	items++;
 
         if (y == -1)
-            return obin_integer_new(-1);
+            return OInteger_new(-1);
         x = (x ^ y) * mult;
         /* the cast might truncate len; that doesn't change hash stability */
         mult += (oint)(82520L + length + length);
@@ -209,11 +209,11 @@ __hash__(OState* state, OAny self){
         x = -2;
     }
 
-    return obin_integer_new(x);
+    return OInteger_new(x);
 }
 
 
-obool obin_module_tuple_init(OState* state) {
+obool OTuple_init(OState* state) {
 	__BEHAVIOR__.__name__ = __TypeName__;
 
 	__BEHAVIOR__.__mark__ = __mark__;
@@ -221,7 +221,7 @@ obool obin_module_tuple_init(OState* state) {
 	__BEHAVIOR__.__tostring__ = __tostring__;
 	__BEHAVIOR__.__tobool__ = __tobool__;
 	__BEHAVIOR__.__clone__ = __clone__;
-	__BEHAVIOR__.__compare__ = obin_collection_compare;
+	__BEHAVIOR__.__compare__ = OCollection_compare;
 	__BEHAVIOR__.__hash__ = __hash__;
 
 	__BEHAVIOR__.__iterator__ = __iterator__;
@@ -229,7 +229,7 @@ obool obin_module_tuple_init(OState* state) {
 	__BEHAVIOR__.__getitem__ = __getitem__;
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
 
-	ocells(state)->__Tuple__ = obin_cell_new(EOBIN_TYPE_CELL,
+	ocells(state)->__Tuple__ = OCell_new(EOBIN_TYPE_CELL,
 			obin_new(state, OCell), &__BEHAVIOR__, ocells(state)->__Cell__);
 
 	return OTRUE;

@@ -6,17 +6,17 @@
  * ObinMemoryFreeNode are used to manage the space freed after the sweep phase.
  * these entries contain their own size and a reference of the entry next to them
  */
-typedef struct ObinMemoryFreeNode {
-	struct ObinMemoryFreeNode* next;
+typedef struct OMemoryFreeNode {
+	struct OMemoryFreeNode* next;
     size_t size;
-} ObinMemoryFreeNode;
+} OMemoryFreeNode;
 
 struct _OMemory {
 	void* heap;
 	omem_t heap_size;
 	omem_t heap_capacity;
 	omem_t heap_gc_threshold;
-	ObinMemoryFreeNode* free_node;
+	OMemoryFreeNode* free_node;
 
 	omem_t heap_free_size;
 	/*
@@ -36,50 +36,50 @@ struct _OMemory {
 
 
 
-#define obin_any_cell_size(any) (OAny_toCell(any)->memory.size)
+#define OAny_cellSize(any) (OAny_toCell(any)->memory.size)
 
-OAny obin_cell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny root);
+OAny OCell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny root);
 
 /*TRAITS HERE MUST EXIST IN CELL */
-OAny obin_cell_to_any(EOTYPE type, OCell* cell);
+OAny OCell_toAny(EOTYPE type, OCell* cell);
 
-OState* obin_state_new(omem_t heap_size);
-void obin_state_destroy(OState* state);
+OState* OState_new(omem_t heap_size);
+void OState_destroy(OState* state);
 
-void* obin_allocate_cell(OState* state, omem_t size);
-void obin_gc_collect(OState* state);
+void* omemory_allocate_cell(OState* state, omem_t size);
+void omemory_collect(OState* state);
 
 /*TODO REMOVE IT LATER TO statics in c source */
-opointer obin_memory_malloc(OState* state, omem_t size);
+opointer omemory_malloc(OState* state, omem_t size);
 
-opointer obin_memory_realloc(OState* state, opointer ptr, omem_t size) ;
+opointer omemory_realloc(OState* state, opointer ptr, omem_t size) ;
 
-opointer obin_memory_memdup(OState* state, opointer ptr, omem_t elements, omem_t element_size );
+opointer omemory_memdup(OState* state, opointer ptr, omem_t elements, omem_t element_size );
 
-void obin_memory_free(OState* state, opointer ptr);
+void omemory_free(OState* state, opointer ptr);
 
-void obin_memory_debug_trace(OState* state);
+void omemory_debug_trace(OState* state);
 
 /*
  * During memory transactions gc collection will not occur.
  * There are no support for rollbacks now.
  * If the memory is not enough, the system will fall
  * */
-void obin_memory_start_transaction(OState* state);
-void obin_memory_end_transaction(OState* state);
+void omemory_start_transaction(OState* state);
+void omemory_end_transaction(OState* state);
 
 #define obin_new(state, type) \
-		((type*) obin_allocate_cell(state, sizeof(type)))
+		((type*) omemory_allocate_cell(state, sizeof(type)))
 
-#define obin_malloc_type(state, type) \
-	 ( (type *) obin_malloc(state, sizeof(type)) )
+#define omemory_malloc_type(state, type) \
+	 ( (type *) omemory_malloc(state, sizeof(type)) )
 
-#define obin_malloc_array(state, type, n) \
+#define omemory_malloc_array(state, type, n) \
   ( ((omem_t)(n) > OBIN_MEM_MAX / sizeof(type)) ? NULL :	\
-	( (type *) obin_memory_malloc(state, (n) * sizeof(type)) ) )
+	( (type *) omemory_malloc(state, (n) * sizeof(type)) ) )
 
-#define obin_realloc_type(state, p, type, n) \
+#define omemory_realloc_type(state, p, type, n) \
   ( (p) = ((omem_t)(n) > OBIN_MEM_MAX / sizeof(type)) ? NULL :	\
-	(type *) obin_memory_realloc(state, (p), (n) * sizeof(type)) )
+	(type *) omemory_realloc(state, (p), (n) * sizeof(type)) )
 
 #endif
