@@ -1,22 +1,22 @@
 BUILTIN_MEHOD_TPL = """
-OAny {{generic_name}}(OState* state{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %}) {
+OAny {{generic_name}}(OState* S{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %}) {
     {{ type }} method;
-    method = _method(state, {{ args[0].name }}, {{ name }});
+    method = _method(S, {{ args[0].name }}, {{ name }});
 
     if (!method) {
-        oraise(state, oerrors(state)->TypeError,
+        oraise(S, oerrors(S)->TypeError,
                 "{{ name }} protocol not supported", {{ args[0].name }});
     }
 
-    return method(state{% for arg in args %}, {{arg.name}}{% endfor %});
+    return method(S{% for arg in args %}, {{arg.name}}{% endfor %});
 }"""
 
 BUILTIN_MEHOD_TPL_DECLARATION = """
-OAny {{generic_name}}(OState* state{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %});
+OAny {{generic_name}}(OState* S{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %});
 """
 
 METHOD_IMPLEMENTATION_DECLARATION = """
-OAny {{name}}(OState* state{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %});
+OAny {{name}}(OState* S{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %});
 """
 
 
