@@ -45,12 +45,13 @@ static OAny __tostring__(OState* S, OAny self) {
                 __TypeName__ "__tostring__ error in inernal function osprintf", self);
 	}
 
+	printf("\nFloat__tostring__ %s\n", buffer);
 	return OString(S, buffer);
 }
 
 static OAny __tobool__(OState* S, OAny self) {
 	_CHECK_SELF_TYPE(S, self, __tobool__);
-	return OBool(_float(self) > 0);
+	return OBool(_float(self) != 0);
 }
 
 static OAny __clone__(OState* S, OAny self) {

@@ -1,5 +1,5 @@
 static void Test_Integer(void) {
-	printf("OINT_MAX ="OBIN_INTEGER_FORMATTER" OINT_MIN="OBIN_INTEGER_FORMATTER, OINT_MAX, OINT_MIN);
+	printf("{OINT_MAX="OBIN_INTEGER_FORMATTER" OINT_MIN="OBIN_INTEGER_FORMATTER"} ", OINT_MAX, OINT_MIN);
 	/*TODO overflows*/
 
 	OState * S = obin_init(1024 * 1024 * 1);
@@ -123,28 +123,61 @@ static void Test_Integer(void) {
 	CU_ASSERT_EQUAL(OAny_toInt(orightshift(S, OInteger(-1233), OInteger(3))), -155);
 
 	/*__mod__*/
-	var1 = omod(S, OInteger(-90), OInteger(4));
 	CU_ASSERT_EQUAL(OAny_toInt(omod(S, OInteger(23), OInteger(2))), 1);
 	CU_ASSERT_EQUAL(OAny_toInt(omod(S, OInteger(4665), OInteger(65))), 50);
 	CU_ASSERT_EQUAL(OAny_toInt(omod(S, OInteger(-90), OInteger(4))), -2);
 	CU_ASSERT_EQUAL(OAny_toInt(omod(S, OInteger(-90), OInteger(-4))), -2);
 
+	/*__bitand__*/
+	CU_ASSERT_EQUAL(OAny_toInt(obitand(S, OInteger(10), OInteger(2))), 2);
+	CU_ASSERT_EQUAL(OAny_toInt(obitand(S, OInteger(42), OInteger(35))), 34);
+	CU_ASSERT_EQUAL(OAny_toInt(obitand(S, OInteger(-42), OInteger(35))), 2);
+	CU_ASSERT_EQUAL(OAny_toInt(obitand(S, OInteger(134), OInteger(12))), 4);
+
+	/*__bitor__*/
+	CU_ASSERT_EQUAL(OAny_toInt(obitor(S, OInteger(10), OInteger(3))), 11);
+	CU_ASSERT_EQUAL(OAny_toInt(obitor(S, OInteger(42), OInteger(35))), 43);
+	CU_ASSERT_EQUAL(OAny_toInt(obitor(S, OInteger(-42), OInteger(35))), -9);
+	CU_ASSERT_EQUAL(OAny_toInt(obitor(S, OInteger(134), OInteger(12))), 142);
+	/*__bitxor__*/
+	CU_ASSERT_EQUAL(OAny_toInt(obitxor(S, OInteger(10), OInteger(3))), 9);
+	CU_ASSERT_EQUAL(OAny_toInt(obitxor(S, OInteger(42), OInteger(35))), 9);
+	CU_ASSERT_EQUAL(OAny_toInt(obitxor(S, OInteger(-42), OInteger(35))), -11);
+	CU_ASSERT_EQUAL(OAny_toInt(obitxor(S, OInteger(134), OInteger(12))), 138);
+
 	/**add**/
-	var1 = oadd(S, OInteger(1), OInteger(2));
-	CU_ASSERT_EQUAL(OAny_toInt(var1), 3);
-
-
+	CU_ASSERT_EQUAL(OAny_toInt(oadd(S, OInteger(10), OInteger(3))), 13);
+	CU_ASSERT_EQUAL(OAny_toInt(oadd(S, OInteger(42), OInteger(35))), 77);
+	CU_ASSERT_EQUAL(OAny_toInt(oadd(S, OInteger(-42), OInteger(35))), -7);
+	CU_ASSERT_EQUAL(OAny_toInt(oadd(S, OInteger(35), OInteger(-42))), -7);
+	CU_ASSERT_EQUAL(OAny_toInt(oadd(S, OInteger(134), OInteger(12))), 146);
+	CU_ASSERT_EQUAL(OAny_toInt(oadd(S, OInteger(OINT_MIN), OInteger(1))), OINT_MIN + 1);
+	/*__subtract__*/
+	CU_ASSERT_EQUAL(OAny_toInt(osubtract(S, OInteger(10), OInteger(3))), 7);
+	CU_ASSERT_EQUAL(OAny_toInt(osubtract(S, OInteger(42), OInteger(35))), 7);
+	CU_ASSERT_EQUAL(OAny_toInt(osubtract(S, OInteger(-42), OInteger(35))), -77);
+	CU_ASSERT_EQUAL(OAny_toInt(osubtract(S, OInteger(35), OInteger(-42))), 77);
+	CU_ASSERT_EQUAL(OAny_toInt(osubtract(S, OInteger(134), OInteger(12))), 122);
+	CU_ASSERT_EQUAL(OAny_toInt(osubtract(S, OInteger(OINT_MAX), OInteger(1))), OINT_MAX - 1);
+	/*__multiply__*/
+	CU_ASSERT_EQUAL(OAny_toInt(omultiply(S, OInteger(10), OInteger(3))), 30);
+	CU_ASSERT_EQUAL(OAny_toInt(omultiply(S, OInteger(42), OInteger(35))), 1470);
+	CU_ASSERT_EQUAL(OAny_toInt(omultiply(S, OInteger(-42), OInteger(35))), -1470);
+	CU_ASSERT_EQUAL(OAny_toInt(omultiply(S, OInteger(35), OInteger(-42))), -1470);
+	CU_ASSERT_EQUAL(OAny_toInt(omultiply(S, OInteger(134), OInteger(12))), 1608);
+	CU_ASSERT_EQUAL(OAny_toInt(omultiply(S, OInteger(OINT_MAX), OInteger(1))), OINT_MAX);
+	CU_ASSERT_EQUAL(OAny_toInt(omultiply(S, OInteger(OINT_MAX), OInteger(0))), 0);
+	/*__divide__*/
+	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(10), OInteger(3))), 3);
+	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(42), OInteger(35))), 1);
+	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(-42), OInteger(35))), -1);
+	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(35), OInteger(-42))), 0);
+	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(134), OInteger(12))), 11);
+	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(OINT_MAX), OInteger(1))), OINT_MAX);
+	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(OINT_MAX), OInteger(OINT_MIN))), 0);
+	/*TODO CHECK DIVISION BY ZERO*/
 }
 /*
  *TODO BELOW
-	__BEHAVIOR__.__mod__ = __mod__;
-	__BEHAVIOR__.__bitand__ = __and__;
-	__BEHAVIOR__.__bitor__ = __or__;
-	__BEHAVIOR__.__bitxor__ = __xor__;
-	__BEHAVIOR__.__add__ = __add__;
-	__BEHAVIOR__.__subtract__ = __subtract__;
-	__BEHAVIOR__.__divide__ = __divide__;
-	__BEHAVIOR__.__multiply__ = __multiply__;
-
 	__BEHAVIOR__.__tofloat__ = __tofloat__;
 */
