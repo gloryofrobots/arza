@@ -13,6 +13,7 @@
 				__TypeName__"."#method " argument is not "__TypeName__, self); \
 	}
 
+
 #define _int(any) OAny_toInt(any)
 
 OAny OInteger(oint number) {
@@ -21,6 +22,14 @@ OAny OInteger(oint number) {
 	result = OAny_new();
 	OAny_initInteger(result, number);
 	return result;
+}
+
+OAny OInteger_fromFloat(OAny f) {
+	return OInteger((oint)OAny_toFloat(f));
+}
+
+OAny OInteger_fromCFloat(ofloat f) {
+	return OInteger((oint)f);
 }
 
 static OAny __tostring__(OState* S, OAny self) {
@@ -148,8 +157,17 @@ static obool _isOverflowOnDivide(int left, int right) {
 static OAny __divide__(OState* S, OAny self, OAny arg1) {
 	_CHECK_SELF_TYPE(S, self, __divide__);
 	_CHECK_ARG_TYPE(S, arg1, __divide__);
+	if(_int(arg1) == 0) {
+		return oraise(S, oerrors(S)->ZeroDivisionError,
+			                __TypeName__ "__divide__  divizion by zero", self);
+	}
+
 	if(_isOverflowOnDivide(_int(self), _int(arg1))) {
 		return odivide(S, onumber_cast_upper(S, self), onumber_cast_upper(S, arg1));
+	}
+
+	if(_int(self) % _int(arg1) != 0) {
+		return odivide(S, OFloat_fromInt(self), OFloat_fromInt(arg1));
 	}
 
 	return OInteger(_int(self) / _int(arg1));

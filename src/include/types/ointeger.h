@@ -8,6 +8,7 @@ obool ointeger_init(OState* S);
 
 OAny OInteger(oint number);
 OAny OInteger_fromCFloat(ofloat number);
+OAny OInteger_fromFloat(OAny number);
 OBehavior* OInteger_behavior();
 
 #define OInteger_isFitToMemsize(number) \

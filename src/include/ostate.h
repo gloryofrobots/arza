@@ -45,6 +45,7 @@ typedef struct _OInternals {
 		OAny ValueError;
 		OAny IndexError;
 		OAny KeyError;
+		OAny ZeroDivisionError;
 	} errors;
 
 	struct _ObinInternalBehaviors {

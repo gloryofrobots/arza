@@ -65,20 +65,36 @@ static OAny __compare__(OState* S, OAny self, OAny arg1) {
 	_CHECK_ARG_TYPE(S, arg1, __compare__);
 
 	if(_float(self) == _float(arg1)) {
-		result = 0;
+		return ointegers(S)->Equal;
 	} else if(_float(self) > _float(arg1)) {
-		result = 1;
+		return ointegers(S)->Greater;
 	} else {
-		result = -1;
+		return ointegers(S)->Lesser;
 	}
 
 	return OFloat(result);
 }
 
-static OAny __hash__(OState* S, OAny self) {
-	_CHECK_SELF_TYPE(S, self, __hash__);
-	return OInteger((oint)_float(self));
+long
+_Py_HashDouble(double v)
+{
+
 }
+
+long
+_Py_HashPointer(void *p)
+{
+    long x;
+    size_t y = (size_t)p;
+    /* bottom 3 or 4 bits are likely to be 0; rotate y by 4 to avoid
+       excessive hash collisions for dicts and sets */
+    y = (y >> 4) | (y << (8 * sizeof(opointer) - 4));
+    x = (long)y;
+    if (x == -1)
+        x = -2;
+    return x;
+}
+
 
 static OAny __tointeger__(OState* S, OAny self) {
 	_CHECK_SELF_TYPE(S, self, __tointeger__);
@@ -110,6 +126,10 @@ static OAny __subtract__(OState* S, OAny self, OAny arg1) {
 static OAny __divide__(OState* S, OAny self, OAny arg1) {
 	_CHECK_SELF_TYPE(S, self, __divide__);
 	_CHECK_ARG_TYPE(S, arg1, __divide__);
+	if(_float(arg1) > 0 && _float(arg1) < 0.000000000000001) {
+		 return oraise(S, oerrors(S)->ZeroDivisionError,
+		                __TypeName__ "__divide__  divizion by zero", self);
+	}
 	return OFloat(_float(self) / _float(arg1));
 }
 
@@ -131,7 +151,7 @@ obool ofloat_init(OState* S) {
 	__BEHAVIOR__.__tostring__ = __tostring__;
 	__BEHAVIOR__.__tobool__ = __tobool__;
 	__BEHAVIOR__.__clone__ = __clone__;
-	__BEHAVIOR__.__hash__ = __hash__;
+	__BEHAVIOR__.__hash__ = 0; /*NOT USE HASH FOR FLOATS*/
 	__BEHAVIOR__.__compare__ = __compare__;
 	__BEHAVIOR__.__tointeger__ = __tointeger__;
 	__BEHAVIOR__.__tofloat__ = __tofloat__;

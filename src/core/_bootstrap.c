@@ -13,6 +13,7 @@ typedef struct {
 
 static ObinModule __MODULES__[] = {
 		{"Integer", &ointeger_init, 0},
+		{"Float", &ofloat_init, 0},
 		{"String", &ostring_init, 0},
 		{"Error", &oerror_init, 0},
 		{"Array", &oarray_init, 0},

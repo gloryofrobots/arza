@@ -74,7 +74,7 @@ typedef unsigned char ouchar;
 /* Needed for convertion between numbers and strings */
 #define OBIN_INTEGER_FORMATTER "%ld"
 #define OBIN_POINTER_FORMATTER "%p"
-#define OBIN_FLOAT_FORMATTER "%f"
+#define OBIN_FLOAT_FORMATTER "%g"
 #define OBIN_INTEGER_REPR_SIZE 256
 #define OBIN_FLOAT_REPR_SIZE 1024
 #define OBIN_FLOAT_EPSILON 0.00000000000001
@@ -193,7 +193,9 @@ OBIN_STMT_END
 #define ofree free
 #define __oabs labs
 #define __opow pow
-
+#define __ofmod fmod
+#define __oisfinite isfinite
+#define __oisinf isinf
 /**********LOG***********/
 #define OBIN_LOG_ENABLE
 #ifdef OBIN_LOG_ENABLE
