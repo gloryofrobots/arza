@@ -9,7 +9,7 @@ static CU_TestInfo TestGroup_BaseTypes[] = {
   { "Test_BaseAnyNew", Test_BaseAnyNew },
   {"Test_Character", Test_Character},
   {"Test_String", Test_String},
-  /*{"Test_Integer", Test_Integer},*/
+  {"Test_Integer", Test_Integer},
   {"Test_Float", Test_Float},
 	CU_TEST_INFO_NULL,
 };

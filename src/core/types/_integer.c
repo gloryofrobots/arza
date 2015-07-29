@@ -43,16 +43,19 @@ OAny OInteger_toChar(OAny i) {
 
 static OAny __tostring__(OState* S, OAny self) {
 	oint size;
-	ochar buffer[OBIN_INTEGER_REPR_SIZE] = {'\0'};
+	ochar* ptr = 0;
+	OAny result;
 
 	_CHECK_SELF_TYPE(S, self, __tostring__);
-	size = osprintf(buffer, OBIN_INTEGER_FORMATTER, _int(self));
+	size = __oasprintf(&ptr, OBIN_INTEGER_FORMATTER, _int(self));
 	if(size < 0) {
-        return oraise(S, oerrors(S)->TypeError,
-                __TypeName__ "__tostring__ error in inernal function osprintf", self);
+		return oraise(S, oerrors(S)->InternalError,
+				__TypeName__ "__tostring__ error in __oasprintf", self);
 	}
 
-	return OString(S, buffer);
+	result = OString(S, ptr);
+	ofree(ptr);
+	return result;
 }
 
 static OAny __tobool__(OState* S, OAny self) {

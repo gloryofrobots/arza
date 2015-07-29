@@ -168,13 +168,13 @@ static void Test_Integer(void) {
 	CU_ASSERT_EQUAL(OAny_toInt(omultiply(S, OInteger(OINT_MAX), OInteger(1))), OINT_MAX);
 	CU_ASSERT_EQUAL(OAny_toInt(omultiply(S, OInteger(OINT_MAX), OInteger(0))), 0);
 	/*__divide__*/
-	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(10), OInteger(3))), 3);
-	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(42), OInteger(35))), 1);
-	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(-42), OInteger(35))), -1);
-	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(35), OInteger(-42))), 0);
-	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(134), OInteger(12))), 11);
+	var1 = odivide(S, OInteger(10), OInteger(3));
+	CU_ASSERT_DOUBLE_EQUAL(OAny_toFloat(odivide(S, OInteger(10), OInteger(3))), 3.3333333333333335, 0.00001);
+	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(4), OInteger(2))), 2);
+	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(-40), OInteger(10))), -4);
+	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(-40), OInteger(-10))), 4);
 	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(OINT_MAX), OInteger(1))), OINT_MAX);
-	CU_ASSERT_EQUAL(OAny_toInt(odivide(S, OInteger(OINT_MAX), OInteger(OINT_MIN))), 0);
+	CU_ASSERT_DOUBLE_EQUAL(OAny_toFloat(odivide(S, OInteger(OINT_MAX), OInteger(OINT_MIN))), -0.9999999995343387, 0.00001);
 	/*TODO CHECK DIVISION BY ZERO*/
 }
 /*
