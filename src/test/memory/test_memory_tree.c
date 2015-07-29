@@ -217,7 +217,9 @@ _TMTTestStat _tmt_make_test(OState* S, __tmt_test test) {
 
 	requests = test(S);
 
-    printf("Test cells count before collection %d \n", tmt_counter->Count);
+    if(TMT_VERBOSE > 0) {
+    	printf("Test cells count before collection %d \n", tmt_counter->Count);
+    }
 
     if(requests.allocated_count > -1) {
     	CU_ASSERT_EQUAL(S->memory->allocated_count, requests.allocated_count);

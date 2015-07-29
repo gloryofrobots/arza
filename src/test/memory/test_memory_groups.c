@@ -96,15 +96,18 @@ OBEHAVIOR_DEFINE(__TMGCELL_BEHAVIOR__,
 
 void tmg_test(OState* S, omem_t data_size, double garbage_percentage) {
 	int destroyed = 0;
-	printf("\ntmg_test data_size:%d garbage_percentage:%.2f\n", data_size, garbage_percentage);
+	if(TMG_VERBOSE > 0) {
+		printf("\ntmg_test data_size:%d garbage_percentage:%.2f\n", data_size, garbage_percentage);
+	}
 /*    obin_memory_debug_trace(S);*/
 
 	tm_counter_remember(tmg_counter);
 	tm_counter_refresh(tmg_counter);
 
     S->globals = tmg_cell_new(S, data_size, garbage_percentage, tmg_counter->TotalCount);
-    printf("Test cells count before collection %d \n", tmg_counter->Count);
-
+	if(TMG_VERBOSE > 0) {
+		printf("Test cells count before collection %d \n", tmg_counter->Count);
+	}
     omemory_collect(S);
     destroyed = tm_counter_predict_destroyed(tmg_counter);
 
