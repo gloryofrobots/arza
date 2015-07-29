@@ -32,7 +32,7 @@ OState* obin_init(omem_t heap_size);
 
 void obin_finalise(OState* S);
 /*TODO REMOVE obin_destroy FROM API*/
-void odestroy(OState * S, OCell* self);
+void OCell_destroy(OState * S, OCell* self);
 
 void orelease(OState * S, OAny self);
 
