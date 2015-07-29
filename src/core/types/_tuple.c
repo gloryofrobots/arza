@@ -173,7 +173,15 @@ __getitem__(OState* S, OAny self, OAny pos){
 static OAny
 __hasitem__(OState* S, OAny self, OAny item){
     _CHECK_SELF_TYPE(S, self, __hasitem__);
-	return OBool(_get_index(S, self, item) != OBIN_INVALID_INDEX);
+    oindex_t i;
+
+	for(i=0; i<_size(self); ++i) {
+		 if(OAny_isTrue(oequal(S,_get(self, i), item))) {
+			 return ObinTrue;
+		 }
+	}
+
+	return ObinFalse;
 }
 
 /*

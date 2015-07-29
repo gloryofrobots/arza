@@ -41,6 +41,7 @@ BASE = Methods("BASE",
     Method('__tobool__', 1),
     Method('__clone__', 1),
     Method('__compare__', 2),
+    Method('__equal__', 2),
     Method('__hash__', 1),
     )
 

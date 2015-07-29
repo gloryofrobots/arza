@@ -64,8 +64,10 @@ OAny ois(OState * S, OAny any, OAny other) {
 		return OBool(OAny_intVal(any) == OAny_intVal(other));
 	case EOBIN_TYPE_CHAR:
 		return OBool(OAny_charVal(any) == OAny_charVal(other));
+	case EOBIN_TYPE_FLOAT:
+		return oequal(S, any, other);
 	default:
-		/*Other things are definitely not the same including floats*/
+		/*Other things are definitely not the same*/
 		return ObinFalse;
 	}
 }
