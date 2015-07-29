@@ -1,6 +1,6 @@
 #include <obin.h>
 
-#define _cell_behavior(any) (OAny_toCell(any)->behavior)
+#define _cell_behavior(any) (OAny_cellVal(any)->behavior)
 
 #define _behavior_method(traits, method) (traits->method)
 #define _behavior(S, any) (OAny_isCell(any) ? _cell_behavior(any) : _embedded_type_behavior(S, any))
@@ -8,9 +8,9 @@
 #define _method(S, any, method) (_behavior_method(_behavior(S, any), method))
 
 /*TODO INIT IT WITH TYPE */
-OAny OAny_new() {
+OAny OAny_new(EOTYPE type) {
 	OAny proto;
-	proto.type = EOBIN_TYPE_UNKNOWN;
+	proto.type = type;
 	return proto;
 }
 
@@ -49,7 +49,7 @@ OAny oequal(OState * S, OAny any, OAny other) {
 OAny ois(OState * S, OAny any, OAny other) {
 	if (OAny_isCell(any)) {
 		if (OAny_isCell(other)) {
-			return OBool(OAny_toCell(any) == OAny_toCell(other));
+			return OBool(OAny_cellVal(any) == OAny_cellVal(other));
 		}
 
 		return ObinFalse;
@@ -61,9 +61,9 @@ OAny ois(OState * S, OAny any, OAny other) {
 	case EOBIN_TYPE_NOTHING:
 		return OBool(any.type == other.type);
 	case EOBIN_TYPE_INTEGER:
-		return OBool(OAny_toInt(any) == OAny_toInt(other));
+		return OBool(OAny_intVal(any) == OAny_intVal(other));
 	case EOBIN_TYPE_CHAR:
-		return OBool(OAny_toChar(any) == OAny_toChar(other));
+		return OBool(OAny_charVal(any) == OAny_charVal(other));
 	default:
 		/*Other things are definitely not the same including floats*/
 		return ObinFalse;

@@ -141,14 +141,14 @@ static void Test_String(void) {
 
 	str1 = OString(S, TEXT);
 	str2 = OString(S, "Squid");
-	CU_ASSERT_EQUAL(OAny_toInt(OString_indexOf(S, str1, str2, ObinNil, ObinNil)), 4);
-	CU_ASSERT_EQUAL(OAny_toInt(OString_indexOf(S, str1, str2, OInteger(6), ObinNil)), 29);
-	CU_ASSERT_EQUAL(OAny_toInt(OString_indexOf(S, str1, str2, OInteger(6),
+	CU_ASSERT_EQUAL(OAny_intVal(OString_indexOf(S, str1, str2, ObinNil, ObinNil)), 4);
+	CU_ASSERT_EQUAL(OAny_intVal(OString_indexOf(S, str1, str2, OInteger(6), ObinNil)), 29);
+	CU_ASSERT_EQUAL(OAny_intVal(OString_indexOf(S, str1, str2, OInteger(6),
 									OInteger(10))),-1);
 
-	CU_ASSERT_EQUAL(OAny_toInt(OString_lastIndexOf(S, str1, str2, ObinNil, ObinNil)), 29);
-	CU_ASSERT_EQUAL(OAny_toInt(OString_lastIndexOf(S, str1, str2, OInteger(0), OInteger(10))), 4);
-	CU_ASSERT_EQUAL(OAny_toInt(OString_lastIndexOf(S, str1, str2, OInteger(6),
+	CU_ASSERT_EQUAL(OAny_intVal(OString_lastIndexOf(S, str1, str2, ObinNil, ObinNil)), 29);
+	CU_ASSERT_EQUAL(OAny_intVal(OString_lastIndexOf(S, str1, str2, OInteger(0), OInteger(10))), 4);
+	CU_ASSERT_EQUAL(OAny_intVal(OString_lastIndexOf(S, str1, str2, OInteger(6),
 									OInteger(10))),-1);
 
 	/******************DUPLICATE*******************************/
@@ -202,14 +202,14 @@ static void Test_String(void) {
 	str3 = OString(S, TEXT3);
 	str4 = OString(S, TEXT);
 
-	CU_ASSERT_EQUAL(OAny_toInt(ocompare(S, str1, str2)), 1);
-	CU_ASSERT_EQUAL(OAny_toInt(ocompare(S, str2, str1)), -1);
-	CU_ASSERT_EQUAL(OAny_toInt(ocompare(S, str1, str3)), -1);
-	CU_ASSERT_EQUAL(OAny_toInt(ocompare(S, str3, str1)), 1);
+	CU_ASSERT_EQUAL(OAny_intVal(ocompare(S, str1, str2)), 1);
+	CU_ASSERT_EQUAL(OAny_intVal(ocompare(S, str2, str1)), -1);
+	CU_ASSERT_EQUAL(OAny_intVal(ocompare(S, str1, str3)), -1);
+	CU_ASSERT_EQUAL(OAny_intVal(ocompare(S, str3, str1)), 1);
 
-	CU_ASSERT_EQUAL(OAny_toInt(ocompare(S, str1, str4)), 0);
-	CU_ASSERT_EQUAL(OAny_toInt(ocompare(S, str4, str1)), 0);
-	CU_ASSERT_EQUAL(OAny_toInt(ocompare(S, str4, str4)), 0);
+	CU_ASSERT_EQUAL(OAny_intVal(ocompare(S, str1, str4)), 0);
+	CU_ASSERT_EQUAL(OAny_intVal(ocompare(S, str4, str1)), 0);
+	CU_ASSERT_EQUAL(OAny_intVal(ocompare(S, str4, str4)), 0);
 	/****************hash******************************************/
 	#undef TEXT
 	#undef TEXT2
@@ -223,11 +223,11 @@ static void Test_String(void) {
 	CU_ASSERT_STRING_NOT_EQUAL(OString_cstr(S, str2), OString_cstr(S, str1));
 	val1 = ohash(S, str1);
 	val2 = ohash(S, str2);
-	CU_ASSERT_NOT_EQUAL(OAny_toInt(val1), OAny_toInt(val2));
+	CU_ASSERT_NOT_EQUAL(OAny_intVal(val1), OAny_intVal(val2));
 
 	printf(" {HASH TEST: hash %s = %ld; hash %s = %ld; }",
-			OString_cstr(S, str1), OAny_toInt(val1),
-			OString_cstr(S, str2), OAny_toInt(val2));
+			OString_cstr(S, str1), OAny_intVal(val1),
+			OString_cstr(S, str2), OAny_intVal(val2));
 	/***********************iterator ***********************************/
 	#undef TEXT
 	#undef TEXT2
@@ -247,7 +247,7 @@ static void Test_String(void) {
 
 		str2 = OString_fromCArray(S, &cstr1[i], 1);
 		CU_ASSERT_STRING_EQUAL(OString_cstr(S, str2), OString_cstr(S, OCharacter_toString(S, val2)));
-		CU_ASSERT_EQUAL((ochar)cstr1[i], (ochar)OAny_toChar(val2));
+		CU_ASSERT_EQUAL((ochar)cstr1[i], (ochar)OAny_charVal(val2));
 		str3 = oadd(S, str3, OCharacter_toString(S, val2));
 		i++;
 	}
@@ -263,15 +263,15 @@ static void Test_String(void) {
 	str1 = OString(S, TEXT);
 	str2 = OString(S, TEXT2);
 	str3 = OString(S, TEXT3);
-	CU_ASSERT_EQUAL(OAny_toInt(olength(S, str1)), 1);
-	CU_ASSERT_EQUAL(OAny_toInt(olength(S, str2)), 134);
-	CU_ASSERT_EQUAL(OAny_toInt(olength(S, str3)), 0);
+	CU_ASSERT_EQUAL(OAny_intVal(olength(S, str1)), 1);
+	CU_ASSERT_EQUAL(OAny_intVal(olength(S, str2)), 134);
+	CU_ASSERT_EQUAL(OAny_intVal(olength(S, str3)), 0);
 	/*********************getitem************************************/
 	val1 = ogetitem(S, str1, OInteger(0));
-	CU_ASSERT_EQUAL(OAny_toChar(val1), 'a');
+	CU_ASSERT_EQUAL(OAny_charVal(val1), 'a');
 
 	val1 = ogetitem(S, str2, OInteger(100));
-	CU_ASSERT_EQUAL(OAny_toChar(val1), 'o');
+	CU_ASSERT_EQUAL(OAny_charVal(val1), 'o');
 
 	omemory_collect(S);
 	/*need to implement integer behavior to use has_item*/

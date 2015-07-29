@@ -11,12 +11,12 @@ static void Test_BaseTypes(void) {
 	CU_ASSERT_EQUAL(OAny_type(ObinNil), EOBIN_TYPE_NIL);
 	CU_ASSERT_EQUAL(OAny_type(ObinNothing), EOBIN_TYPE_NOTHING);
 	CU_ASSERT_EQUAL(OAny_type(ObinTrue), EOBIN_TYPE_TRUE);
-	CU_ASSERT_EQUAL(OAny_toInt(ointegers(S)->Lesser), -1);
-	CU_ASSERT_EQUAL(OAny_toInt(ointegers(S)->Greater), 1);
-	CU_ASSERT_EQUAL(OAny_toInt(ointegers(S)->Equal), 0);
+	CU_ASSERT_EQUAL(OAny_intVal(ointegers(S)->Lesser), -1);
+	CU_ASSERT_EQUAL(OAny_intVal(ointegers(S)->Greater), 1);
+	CU_ASSERT_EQUAL(OAny_intVal(ointegers(S)->Equal), 0);
 }
 static void Test_BaseAnyNew(void) {
-	OAny any = OAny_new();
+	OAny any = OAny_new(EOBIN_TYPE_UNKNOWN);
 	CU_ASSERT_EQUAL(OAny_type(any), EOBIN_TYPE_UNKNOWN);
 }
 

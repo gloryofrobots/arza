@@ -36,7 +36,7 @@ struct _OMemory {
 
 
 
-#define OAny_cellSize(any) (OAny_toCell(any)->memory.size)
+#define OAny_cellSize(any) (OAny_cellVal(any)->memory.size)
 
 OAny OCell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny root);
 

@@ -15,7 +15,7 @@ static OBehavior __BEHAVIOR__ = {0};
 				__TypeName__ #method "call from other type", self); \
 	} \
 
-#define _array(any) ((ObinArray*) OAny_toCell(any))
+#define _array(any) ((ObinArray*) OAny_cellVal(any))
 #define _array_size(any) ((_array(any))->size)
 #define _array_capacity(any) ((_array(any))->capacity)
 #define _array_data(any) ((_array(any))->data)
@@ -56,7 +56,7 @@ OArray(OState* S, OAny size) {
 
 	self = obin_new(S, ObinArray);
 
-	capacity = (omem_t) OAny_toInt(size);
+	capacity = (omem_t) OAny_intVal(size);
 	self->data = omemory_malloc_array(S, OAny, capacity);
 
 	self->capacity = capacity;
@@ -90,8 +90,8 @@ OAny OArray_insertCollection(OState* S, OAny self, OAny collection, OAny positio
 
 	_CHECK_SELF_TYPE(S, self, OArray_insertCollection);
 
-	start = OAny_toInt(position);
-	collection_size = OAny_toInt(olength(S, collection));
+	start = OAny_intVal(position);
+	collection_size = OAny_intVal(olength(S, collection));
 	end = start + collection_size;
 
 	if(start > _array_size(self)) {
@@ -123,7 +123,7 @@ OAny OArray_insert(OState* S, OAny self, OAny item, OAny position) {
 
 	_CHECK_SELF_TYPE(S, self, OArray_insert);
 
-	insert_index = OAny_toInt(position);
+	insert_index = OAny_intVal(position);
 	if(insert_index > _array_size(self)) {
 		return oraise(S, oerrors(S)->KeyError, "obin_array_insert invalid index", position);
 	} else if(insert_index == _array_size(self)) {
@@ -310,11 +310,11 @@ _get_index(OState* S, OAny self, OAny pos){
 		return OBIN_INVALID_INDEX;
 	}
 
-	index = OAny_toInt(pos);
+	index = OAny_intVal(pos);
 	if( index < 0){
 		index = _array_size(self) - index;
 	} else{
-		index = OAny_toInt(pos);
+		index = OAny_intVal(pos);
 	}
 
 	if (index > _array_size(self) || index < 0) {
@@ -360,7 +360,7 @@ __setitem__(OState* S, OAny self, OAny pos, OAny value){
 
 static OAny
 __hasitem__(OState* S, OAny self, OAny item){
-	return OBool(OAny_toInt(OArray_indexOf(S, self, item)) != OBIN_INVALID_INDEX);
+	return OBool(OAny_intVal(OArray_indexOf(S, self, item)) != OBIN_INVALID_INDEX);
 }
 
 static OAny

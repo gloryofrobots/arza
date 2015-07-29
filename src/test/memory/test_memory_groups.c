@@ -58,13 +58,13 @@ OAny tmg_cell_new(OState* S, int data_size, double garbage_pecentage, int parent
 
 static void __tmg_cell_mark__(OState* S, OAny self, ofunc_1 callback ) {
 	int i = 0, count_marked = 0;
-	TMGCell* cell = (TMGCell*) OAny_toCell(self);
+	TMGCell* cell = (TMGCell*) OAny_cellVal(self);
 	TMGCell* child;
 	tmg_print_cell(cell, "__test_mem_mark__");
 	tm_counter_mark(tmg_counter);
 
 	for(i=0; i<cell->data_size; i++) {
-		child = (TMGCell*)OAny_toCell(cell->data[i]);
+		child = (TMGCell*)OAny_cellVal(cell->data[i]);
 		if(!child->marked_size) {
 			continue;
 		}

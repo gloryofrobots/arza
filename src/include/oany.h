@@ -48,42 +48,26 @@ typedef struct {
 	OValue data;
 } OAny;
 
-OAny OAny_new();
+OAny OAny_new(EOTYPE type);
 
 /* we mark cells once we initialized them with special type to prevent overwriting types
  *  and values*/
 #ifdef ODEBUG
 #define OANY_CHECK_TYPE(any, type) oassert(any.type==type)
-#define OANY_BEFORE_SET(any) oassert(any.type == EOBIN_TYPE_UNKNOWN)
 #else
 #define OANY_CHECK_TYPE(any, type)
-#define OANY_BEFORE_SET(any)
 #endif
 
 #define OAny_type(any) (any.type)
 
 /*TODO MOVE IT TO MODULES*/
-#define OAny_initCell(any, type, cell) \
-		OANY_BEFORE_SET(any); \
-		any.type=type; \
-		any.data.cell=cell
 
-#define OAny_initInteger(any, num) \
-		OANY_BEFORE_SET(any); \
-		any.type=EOBIN_TYPE_INTEGER; \
-		any.data.integer_value=num
+#define OAny_cellVal(any) (any.data.cell)
+#define OAny_intVal(any) (any.data.integer_value)
+#define OAny_charVal(any) (any.data.char_value)
+#define OAny_memVal(any) (omem_t)(any.data.integer_value)
 
-#define OAny_initFloat(any, num) \
-		OANY_BEFORE_SET(any); \
-		any.type=EOBIN_TYPE_FLOAT; \
-		any.data.float_value=num
-
-#define OAny_toCell(any) (any.data.cell)
-#define OAny_toInt(any) (any.data.integer_value)
-#define OAny_toChar(any) (any.data.char_value)
-#define OAny_toMem_t(any) (omem_t)(any.data.integer_value)
-
-#define OAny_toFloat(any) (any.data.float_value)
+#define OAny_floatVal(any) (any.data.float_value)
 
 #define OCHECK_TYPE_RANGE(type, min, max) (type > min && type < max)
 #define OType_isCell(type) OCHECK_TYPE_RANGE(type, EOBIN_TYPE_BEGIN_CELL_TYPES, EOBIN_TYPE_END_CELL_TYPES)
@@ -105,7 +89,7 @@ OAny OAny_new();
 #define OAny_isCell(any) OType_isCell(any.type)
 
 #define OBIN_IS_FIT_TO_MEMSIZE(size) (size > 0 && size < OBIN_MAX_CAPACITY)
-#define OInt_isFitToMemsize(any) (OBIN_IS_FIT_TO_MEMSIZE(OAny_toInt(any)))
+#define OInt_isFitToMemsize(any) (OBIN_IS_FIT_TO_MEMSIZE(OAny_intVal(any)))
 
 #define OBIN_IS_STOP_ITERATION(any) (OAny_isNothing(any))
 

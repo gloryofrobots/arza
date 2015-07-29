@@ -52,10 +52,10 @@ OAny OTuple_fromArray(OState* S,  OAny size, OAny* items) {
 				"Tuple.new invalid size", size);
 	}
 
-	self = _obin_tuple_new(S , OAny_toInt(size));
+	self = _obin_tuple_new(S , OAny_intVal(size));
 
 	if(items != NULL) {
-		omemcpy(self->data, items, OAny_toInt(size));
+		omemcpy(self->data, items, OAny_intVal(size));
 	}
 
 	return OCell_new(EOBIN_TYPE_TUPLE, (OCell*) self, &__BEHAVIOR__, ocells(S)->__Tuple__);
@@ -140,11 +140,11 @@ _get_index(OState* S, OAny self, OAny pos){
 		return OBIN_INVALID_INDEX;
 	}
 
-	index = OAny_toInt(pos);
+	index = OAny_intVal(pos);
 	if( index < 0){
 		index = _size(self) - index;
 	} else{
-		index = OAny_toInt(pos);
+		index = OAny_intVal(pos);
 	}
 
 	if (index > _size(self) || index < 0) {
@@ -193,7 +193,7 @@ __hash__(OState* S, OAny self){
     OAny * items = _data(self);
 
     while (--length >= 0) {
-    	y = OAny_toInt(ohash(S, *items));
+    	y = OAny_intVal(ohash(S, *items));
     	items++;
 
         if (y == -1)

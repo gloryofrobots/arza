@@ -21,13 +21,12 @@ static OAny __STRINGS_CACHE__[OCHAR_MAX];
 #define _CHECK_SELF_TYPE_AND_PANIC(self, method)
 #endif
 
-#define _value(any) OAny_toChar(any)
+#define _value(any) OAny_charVal(any)
 
 OAny OCharacter(ochar ch) {
 	OAny result;
-	result = OAny_new();
-	result.type = EOBIN_TYPE_CHAR;
-	result.data.char_value = ch;
+	result = OAny_new(EOBIN_TYPE_CHAR);
+	OAny_charVal(result) = ch;
 	return result;
 }
 
@@ -125,6 +124,16 @@ static OAny __hash__(OState* S, OAny self){
 	return OCharacter_toInteger(self);
 }
 
+static OAny __tointeger__(OState* S, OAny self){
+	_CHECK_SELF_TYPE(S, self, __tointeger__);
+	return OCharacter_toInteger(self);
+}
+
+static OAny __tofloat__(OState* S, OAny self){
+	_CHECK_SELF_TYPE(S, self, __tofloat__);
+	return OCharacter_toFloat(self);
+}
+
 static void _init_repr_cache(OState* S) {
 	int c = 0;
 
@@ -140,8 +149,8 @@ obool ocharacter_init(OState* S) {
 	__BEHAVIOR__.__clone__ = __clone__;
 	__BEHAVIOR__.__hash__ = __hash__;
 	__BEHAVIOR__.__compare__ = __compare__;
-	__BEHAVIOR__.__tointeger__ = OCharacter_toInteger;
-	__BEHAVIOR__.__tofloat__ = OCharacter_toFloat;
+	__BEHAVIOR__.__tointeger__ = __tointeger__;
+	__BEHAVIOR__.__tofloat__ = __tofloat__;
 
 	obehaviors(S)->Character = &__BEHAVIOR__;
 	return OTRUE;

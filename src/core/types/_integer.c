@@ -21,40 +21,39 @@
 		return oraise(S, oerrors(S)->TypeError, \
 				__TypeName__"."#method " argument is not "__TypeName__, self);
 
-#define _int(any) OAny_toInt(any)
+#define _int(any) OAny_intVal(any)
 
 OAny OInteger(oint number) {
 	OAny result;
 
-	result = OAny_new();
-	OAny_initInteger(result, number);
+	result = OAny_new(EOBIN_TYPE_INTEGER);
+	OAny_intVal(result) = number;
 	return result;
 }
 
 OAny OInteger_toFloat(OAny i) {
 	_CHECK_SELF_TYPE_AND_PANIC(i, OInteger_toFloat);
-	return OFloat((ofloat) OAny_toInt(i));
+	return OFloat((ofloat) OAny_intVal(i));
 }
 
 OAny OInteger_toChar(OAny i) {
 	_CHECK_SELF_TYPE_AND_PANIC(i, OInteger_toChar);
-	return OCharacter((ochar) OAny_toInt(i));
+	return OCharacter((ochar) OAny_intVal(i));
 }
 
 static OAny __tostring__(OState* S, OAny self) {
 	oint size;
-	ochar* ptr = 0;
 	OAny result;
+	ochar buffer[1024] = {'\0'};
 
 	_CHECK_SELF_TYPE(S, self, __tostring__);
-	size = __oasprintf(&ptr, OBIN_INTEGER_FORMATTER, _int(self));
+	size = osprintf(buffer, OBIN_INTEGER_FORMATTER, _int(self));
 	if(size < 0) {
 		return oraise(S, oerrors(S)->InternalError,
-				__TypeName__ "__tostring__ error in __oasprintf", self);
+				__TypeName__ "__tostring__ error in osprintf", self);
 	}
 
-	result = OString(S, ptr);
-	ofree(ptr);
+	result = OString(S, buffer);
 	return result;
 }
 

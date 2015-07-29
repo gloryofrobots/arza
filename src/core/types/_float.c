@@ -20,38 +20,36 @@
 				__TypeName__"."#method " argument is not "__TypeName__, self); \
 	}
 
-#define _float(any) OAny_toFloat(any)
+#define _float(any) OAny_floatVal(any)
 
 OAny OFloat(ofloat number) {
 	OAny result;
-
-	result = OAny_new();
-	OAny_initFloat(result, number);
+	result = OAny_new(EOBIN_TYPE_FLOAT);
+	OAny_floatVal(result) = number;
 	return result;
 }
 
 OAny OFloat_toInteger(OAny f) {
-	return OInteger((oint)OAny_toFloat(f));
+	return OInteger((oint)OAny_floatVal(f));
 }
 
 OAny OFloat_toCharacter(OAny f) {
-	return OCharacter((ochar)OAny_toFloat(f));
+	return OCharacter((ochar)OAny_floatVal(f));
 }
 
 static OAny __tostring__(OState* S, OAny self) {
 	oint size;
-	ochar* ptr = 0;
 	OAny result;
+	ochar buffer[1024] = {'\0'};
 
 	_CHECK_SELF_TYPE(S, self, __tostring__);
-	size = __oasprintf(&ptr, OBIN_FLOAT_FORMATTER, _float(self));
+	size = osprintf(buffer, OBIN_FLOAT_FORMATTER, _float(self));
 	if(size < 0) {
         return oraise(S, oerrors(S)->InternalError,
                 __TypeName__ "__tostring__ error in __oasprintf", self);
 	}
 
-	result = OString(S, ptr);
-	ofree(ptr);
+	result = OString(S, buffer);
 	return result;
 }
 

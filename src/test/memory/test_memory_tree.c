@@ -17,7 +17,7 @@ OCELL_DECLARE(TMTCell,
 	ochar* data;
 );
 
-#define tmtcell(any)   ((TMTCell*) OAny_toCell(any))
+#define tmtcell(any)   ((TMTCell*) OAny_cellVal(any))
 #define tmtcell_left(any)   tmtcell(any)->left
 #define tmtcell_right(any)  tmtcell(any)->right
 #define tmtcell_id(any)   tmtcell(any)->id
@@ -71,7 +71,7 @@ OAny tmtcell_new(OState* S, ostring data, omem_t capacity) {
 
 
 static void __tmtcell_mark__(OState* S, OAny self, ofunc_1 callback ) {
-	TMTCell* cell = (TMTCell*) OAny_toCell(self);
+	TMTCell* cell = (TMTCell*) OAny_cellVal(self);
 	tmtcell_print(cell, "__tmtcell_mark__");
 	tm_counter_mark(tmt_counter);
 

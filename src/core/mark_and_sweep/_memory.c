@@ -58,20 +58,24 @@ typedef enum _EOBIN_CELL_MARK{
 #define _is_new(cell) (cell->memory.mark == EOBIN_CELL_MARK_NEW)
 
 OAny OCell_toAny(EOTYPE type, OCell* cell) {
-	OAny result = OAny_new();
+	OAny result;
 	oassert(OType_isCell(type));
-	OAny_initCell(result, type, cell);
+	result = OAny_new(type);
+	OAny_cellVal(result) = cell;
 	return result;
 }
 
 OAny OCell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny origin) {
 	OAny result;
 	oassert(OType_isCell(type));
+
 	cell->origin = origin;
 	cell->behavior = behavior;
 	_unmark(cell);
-	result = OAny_new();
-	OAny_initCell(result, type, cell);
+
+	result = OAny_new(type);
+	OAny_cellVal(result) = cell;
+
 	return result;
 }
 
@@ -204,7 +208,7 @@ void OState_destroy(OState* S) {
  *  function for all its references.
  */
 static OAny gc_mark_object(OState* S, OAny object) {
-	OCell* cell = OAny_toCell(object);
+	OCell* cell = OAny_cellVal(object);
 	CATCH_STATE_MEMORY(S);
 	if(!cell) {
 		return ObinNil;

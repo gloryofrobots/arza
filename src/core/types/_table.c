@@ -24,7 +24,7 @@ typedef struct {
 	oint iter_count;
 } ObinTable;
 
-#define _table(any) ((ObinTable*) OAny_toCell(any))
+#define _table(any) ((ObinTable*) OAny_cellVal(any))
 #define _size(any) ((_table(any))->size)
 #define _capacity(any) ((_table(any))->capacity)
 #define _body(any) ((_table(any))->body)
@@ -62,7 +62,7 @@ OAny OTable(OState* S, OAny size){
 
 	self = obin_new(S, ObinTable);
 
-	self->capacity = _next_power_of_2(OAny_toMem_t(size));
+	self->capacity = _next_power_of_2(OAny_memVal(size));
 
 	self->body = omemory_malloc_array(S, _ObinHashTableEntry, self->capacity);
 	self->size = 0;
@@ -203,7 +203,7 @@ static OAny __iterator__next__(OState* S, OAny self) {
 	TableIterator * it;
 	OAny result = ObinNothing;
 
-	it = (TableIterator*) OAny_toCell(self);
+	it = (TableIterator*) OAny_cellVal(self);
 
 	while(it->index < _capacity(it->source)) {
 		if(_body(self)[it->index].isset) {
@@ -322,7 +322,7 @@ static OAny __length__(OState* S, OAny self) {
  */
 oindex_t _find_slot(OState* S, OAny self, OAny key)
 {
-	oint hash = OAny_toInt(ohash(S, key));
+	oint hash = OAny_intVal(ohash(S, key));
 	oindex_t index;
 
 	index =  hash % _capacity(self);

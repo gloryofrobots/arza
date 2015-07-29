@@ -12,7 +12,7 @@ static OAny __si__next__(OState* S, OAny self) {
 	SequenceIterator * it;
 	OAny result;
 
-	it = (SequenceIterator*) OAny_toCell(self);
+	it = (SequenceIterator*) OAny_cellVal(self);
 	if(it->current >= it->length){
 		return ObinNothing;
 	}
@@ -37,7 +37,7 @@ OAny OSequence_iterator(OState* S, OAny sequence){
 	iterator = obin_new(S, SequenceIterator);
 	iterator->source = sequence;
 	iterator->current = 0;
-	iterator->length = (omem_t) OAny_toInt(olength(S, sequence));
+	iterator->length = (omem_t) OAny_intVal(olength(S, sequence));
 
 	return OCell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__SEQUENCE_ITERATOR_BEHAVIOR__, ocells(S)->__Cell__);
 }
@@ -55,7 +55,7 @@ OAny OCollection_compare(OState * S, OAny self, OAny other){
 
 	/*TODO ADD TYPE CHECK HERE FOR __COLLECTION__ cell*/
 	if(!OAny_isCell(other)){
-		if(OAny_toInt(self_length) > 0){
+		if(OAny_intVal(self_length) > 0){
 			return ointegers(S)->Greater;
 		}
 
@@ -68,11 +68,11 @@ OAny OCollection_compare(OState * S, OAny self, OAny other){
 
 	other_length = olength(S, other);
 
-	if (OAny_toInt(self_length) < OAny_toInt(other_length)) {
+	if (OAny_intVal(self_length) < OAny_intVal(other_length)) {
 		return ointegers(S)->Lesser;
 	}
 
-	if (OAny_toInt(self_length) > OAny_toInt(other_length)) {
+	if (OAny_intVal(self_length) > OAny_intVal(other_length)) {
 		return ointegers(S)->Greater;
 	}
 

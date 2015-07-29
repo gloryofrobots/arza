@@ -23,7 +23,7 @@ typedef struct {
 	oint hash;
 } ObinString;
 
-#define _string(any) ((ObinString*) OAny_toCell(any))
+#define _string(any) ((ObinString*) OAny_cellVal(any))
 #define _string_data(any) (_string(any)->data)
 #define _string_size(any) (_string(any)->size)
 #define _is_string(any) (OAny_isString(any))
@@ -62,7 +62,7 @@ static OAny __getitem__(OState* S, OAny self, OAny key) {
 				"String.__item__ key must be integer", key);
 	}
 
-	index = OAny_toInt(key);
+	index = OAny_intVal(key);
 	if(index < 0 || index >= _string_size(self)) {
 		return oraise(S, oerrors(S)->TypeError,
 				"String.__item__ invalid index", key);
@@ -428,27 +428,27 @@ OAny _obin_string_find(OState* S, OAny haystack, OAny needle,
 	if (OAny_isNil(start)) {
 		pstart = 0;
 	} else {
-		if (OAny_toInt(start) < 0
-				|| OAny_toInt(start) > haystack_size) {
+		if (OAny_intVal(start) < 0
+				|| OAny_intVal(start) > haystack_size) {
 
 			return oraise(S, oerrors(S)->RangeError,
 					"String.search Invalid start index for search ", start);
 		}
 
-		pstart = (omem_t) OAny_toInt(start);
+		pstart = (omem_t) OAny_intVal(start);
 	}
 
 	if (OAny_isNil(end)) {
 		pend = haystack_size;
 	} else {
-		if (OAny_toInt(end) < 0 || OAny_toInt(end) > haystack_size
-				|| OAny_toInt(end) < pstart) {
+		if (OAny_intVal(end) < 0 || OAny_intVal(end) > haystack_size
+				|| OAny_intVal(end) < pstart) {
 
 			return oraise(S, oerrors(S)->RangeError,
 					"String.search Invalid end index for search ", end);
 		}
 
-		pend = (omem_t) OAny_toInt(end);
+		pend = (omem_t) OAny_intVal(end);
 	}
 
 	if ((pend - pstart) > _string_size(haystack)) {
@@ -582,7 +582,7 @@ OAny OString_dublicate(OState* S, OAny self, OAny _count) {
 				"String.dublicate invalid argument type, integer expected ", _count);
 	}
 
-	count = OAny_toInt(_count);
+	count = OAny_intVal(_count);
 
 	size = _string_size(self) * count;
 	result = _obin_string_blank(S, size);
@@ -628,7 +628,7 @@ OAny OString_split(OState* S, OAny self, OAny separator) {
 								_string_size(self) - previous));
 			return result;
 		}
-		current = OAny_toInt(curPos);
+		current = OAny_intVal(curPos);
 		if (current == 0) {
 			previous = current + _string_size(separator);
 			continue;
@@ -654,7 +654,7 @@ OAny OString_join(OState* S, OAny self, OAny collection) {
 
 	result = ostrings(S)->Empty;
 
-	counter = OAny_toInt(olength(S, collection));
+	counter = OAny_intVal(olength(S, collection));
 	if(counter==0) {
 		return result;
 	}
