@@ -2,9 +2,6 @@
 
 static void Test_Float(void) {
 	OState * S = obin_init(1024 * 1024 * 1);
-	ofloat var1;
-	ostring str1;
-
 
 	CU_ASSERT_DOUBLE_EQUAL(OAny_toFloat(OFloat(1.0)), 1.0, GRANULARITY);
 	CU_ASSERT_DOUBLE_EQUAL(OAny_toFloat(OFloat(-1.0)), -1.0, GRANULARITY);
