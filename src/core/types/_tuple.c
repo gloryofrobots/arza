@@ -96,8 +96,8 @@ static OAny __tostring__(OState* S, OAny self) {
 
     _CHECK_SELF_TYPE(S, self, __tostring__);
 
-	result = OString_join(S, OChar_new(','), self);
-	result = oadd(S, OChar_new('('), result);
+	result = OString_join(S, OString(S, ","), self);
+	result = oadd(S, OString(S, "("), result);
 	result = oadd(S, result, OString(S, ",)"));
 
 	return result;

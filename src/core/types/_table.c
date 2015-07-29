@@ -274,8 +274,8 @@ static OAny __tostring__(OState* S, OAny self) {
 	}
 
 	result = OString_join(S, items_separator, array);
-	result = oadd(S, OChar_new('{'), result);
-	result = oadd(S, result, OChar_new('}'));
+	result = oadd(S, OString(S, "{"), result);
+	result = oadd(S, result, OString(S, "}"));
 
 	orelease(S, iterator);
 	orelease(S, array);

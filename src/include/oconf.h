@@ -46,6 +46,7 @@
 #define CHAR_MAX 255
 #endif
 
+#define OCHAR_MAX UCHAR_MAX
 
 #define omem_t	size_t
 #define oindex_t	omem_t
@@ -75,16 +76,14 @@ typedef unsigned char ouchar;
 #define OBIN_INTEGER_FORMATTER "%ld"
 #define OBIN_POINTER_FORMATTER "%p"
 #define OBIN_FLOAT_FORMATTER "%g"
-#define OBIN_INTEGER_REPR_SIZE 256
-#define OBIN_FLOAT_REPR_SIZE 1024
-#define OBIN_FLOAT_EPSILON 0.00000000000001
+#define OBIN_FLOAT_GRANULARITY 10000
 /* DIRECTORY_SEPARATOR */
 #if defined(_WIN32)
 #define OBIN_DIR_SEPARATOR	"\\"
 #else
 #define OBIN_DIR_SEPARATOR	"/"
 #endif
-#define OBIN_PRINT_SEPARATOR '\44'
+#define OBIN_PRINT_SEPARATOR "\44"
 #define OBIN_COUNT_TAB_SPACES 4
 
 #define OBIN_DEFAULT_ARRAY_SIZE 10
@@ -174,6 +173,8 @@ OBIN_STMT_END
 #endif
 
 /*************ALIASES******/
+#define __oasprintf asprintf
+
 #define ovfprintf vfprintf
 #define osprintf sprintf
 #define osnprintf snprintf
@@ -196,6 +197,17 @@ OBIN_STMT_END
 #define __ofmod fmod
 #define __oisfinite isfinite
 #define __oisinf isinf
+
+#define __otolower tolower
+#define __otoupper toupper
+
+#define __oisalpha isalpha
+#define __oisdigit isdigit
+#define __oisspace isspace
+#define __oisupper isupper
+#define __oislower islower
+#define __oispunct ispunct
+
 /**********LOG***********/
 #define OBIN_LOG_ENABLE
 #ifdef OBIN_LOG_ENABLE

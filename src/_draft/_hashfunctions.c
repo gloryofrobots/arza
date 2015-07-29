@@ -53,7 +53,7 @@ static OAny __hash__(OState* S, OAny self) {
 		/* This must return the same hash as an equal int or long. */
 		if (intpart > OINT_MAX/2 || -intpart > OINT_MAX/2) {
 			/* Convert to long and use its hash. */
-			return OInteger_fromFloat(self);
+			return OFloat_toInteger(self);
 		}
 		/* Fits in a C long == a Python int, so is its own hash. */
 		x = (oint)intpart;
@@ -63,4 +63,18 @@ static OAny __hash__(OState* S, OAny self) {
 	x = (oint)hipart & (oint)intpart;
 	x = x * (oint) v;
 	return OInteger(x);
+}
+
+long
+_Py_HashPointer(void *p)
+{
+    long x;
+    size_t y = (size_t)p;
+    /* bottom 3 or 4 bits are likely to be 0; rotate y by 4 to avoid
+       excessive hash collisions for dicts and sets */
+    y = (y >> 4) | (y << (8 * sizeof(opointer) - 4));
+    x = (long)y;
+    if (x == -1)
+        x = -2;
+    return x;
 }

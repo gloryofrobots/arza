@@ -55,7 +55,7 @@ typedef struct _OInternals {
 		OBehavior* Nothing;
 		OBehavior* Float;
 		OBehavior* Integer;
-		OBehavior* Char;
+		OBehavior* Character;
 	} behaviors;
 
 } OInternals;

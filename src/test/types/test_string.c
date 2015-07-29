@@ -5,15 +5,6 @@ static void print_str(OState* S, OAny str) {
 	printf("\n%d. %s\n", ++c, OString_cstr(S, str));
 }
 
-static void Test_Char(void) {
-/*	ObinState * S = obin_init(1024 * 1024 * 90);
-	char str_arr[STR_ARR_SIZE] = {'\0'};
-	ObinAny str1, str2;
-	*****************************
-	str1 = obin_char_new('T');
-	CU_ASSERT_STRING_EQUAL(obin_string_cstr(S, str1), "T");*/
-}
-
 static void Test_String(void) {
 	OState * S = obin_init(1024 * 1024 * 90);
 	ochar str_arr[STR_ARR_SIZE] = {'\0'};
@@ -255,9 +246,9 @@ static void Test_String(void) {
 		}
 
 		str2 = OString_fromCArray(S, &cstr1[i], 1);
-		CU_ASSERT_STRING_EQUAL(OString_cstr(S, str2), OString_cstr(S, val2));
+		CU_ASSERT_STRING_EQUAL(OString_cstr(S, str2), OString_cstr(S, OCharacter_toString(S, val2)));
 		CU_ASSERT_EQUAL((ochar)cstr1[i], (ochar)OAny_toChar(val2));
-		str3 = oadd(S, str3, val2);
+		str3 = oadd(S, str3, OCharacter_toString(S, val2));
 		i++;
 	}
 

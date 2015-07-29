@@ -16,7 +16,7 @@ OAny onumber_from_int(oint i) {
 OAny onumber_cast_upper(OState* S, OAny any) {
 	switch(OAny_type(any)) {
 	case EOBIN_TYPE_INTEGER:
-		return OFloat_fromInt(any);
+		return OInteger_toFloat(any);
 	default:
 		 oraise(S, oerrors(S)->TypeError,
 		                "onumber_cast_upper already on top", any);

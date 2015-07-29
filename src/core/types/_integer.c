@@ -1,18 +1,25 @@
 #include <obin.h>
 #define __TypeName__ "__Integer__"
 
+#ifdef ODEBUG
 #define _CHECK_SELF_TYPE(S, self, method) \
-	if(!OAny_isInt(self)) { \
+	if(!OAny_isInt(self)) \
 		return oraise(S, oerrors(S)->TypeError, \
-				__TypeName__"."#method "call from other type", self); \
-	}
+				__TypeName__"."#method "call from other type", self);
+
+#define _CHECK_SELF_TYPE_AND_PANIC(self, method) \
+		if(!OAny_isInt(self)) \
+			opanic(__TypeName__"."#method "call from other type"); \
+
+#else
+#define _CHECK_SELF_TYPE(S, self, method)
+#define _CHECK_SELF_TYPE_AND_PANIC(self, method)
+#endif
 
 #define _CHECK_ARG_TYPE(S, self, method) \
-	if(!OAny_isInt(self)) { \
+	if(!OAny_isInt(self)) \
 		return oraise(S, oerrors(S)->TypeError, \
-				__TypeName__"."#method " argument is not "__TypeName__, self); \
-	}
-
+				__TypeName__"."#method " argument is not "__TypeName__, self);
 
 #define _int(any) OAny_toInt(any)
 
@@ -24,17 +31,18 @@ OAny OInteger(oint number) {
 	return result;
 }
 
-OAny OInteger_fromFloat(OAny f) {
-	return OInteger((oint)OAny_toFloat(f));
+OAny OInteger_toFloat(OAny i) {
+	_CHECK_SELF_TYPE_AND_PANIC(i, OInteger_toFloat);
+	return OFloat((ofloat) OAny_toInt(i));
 }
 
-OAny OInteger_fromCFloat(ofloat f) {
-	return OInteger((oint)f);
+OAny OInteger_toChar(OAny i) {
+	_CHECK_SELF_TYPE_AND_PANIC(i, OInteger_toChar);
+	return OCharacter((ochar) OAny_toInt(i));
 }
 
 static OAny __tostring__(OState* S, OAny self) {
 	oint size;
-
 	ochar buffer[OBIN_INTEGER_REPR_SIZE] = {'\0'};
 
 	_CHECK_SELF_TYPE(S, self, __tostring__);
@@ -167,7 +175,7 @@ static OAny __divide__(OState* S, OAny self, OAny arg1) {
 	}
 
 	if(_int(self) % _int(arg1) != 0) {
-		return odivide(S, OFloat_fromInt(self), OFloat_fromInt(arg1));
+		return odivide(S, OInteger_toFloat(self), OInteger_toFloat(arg1));
 	}
 
 	return OInteger(_int(self) / _int(arg1));

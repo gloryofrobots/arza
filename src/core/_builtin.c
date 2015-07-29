@@ -7,6 +7,7 @@
 
 #define _method(S, any, method) (_behavior_method(_behavior(S, any), method))
 
+/*TODO INIT IT WITH TYPE */
 OAny OAny_new() {
 	OAny proto;
 	proto.type = EOBIN_TYPE_UNKNOWN;
@@ -23,12 +24,11 @@ _embedded_type_behavior(OState* S, OAny any) {
 	case EOBIN_TYPE_FALSE:
 		return obehaviors(S)->False;
 	case EOBIN_TYPE_INTEGER:
-		return OInteger_behavior();
 		return obehaviors(S)->Integer;
 	case EOBIN_TYPE_FLOAT:
 		return obehaviors(S)->Float;
 	case EOBIN_TYPE_CHAR:
-		return obehaviors(S)->Char;
+		return obehaviors(S)->Character;
 	default:
 		oraise(S, oerrors(S)->TypeError,
 				"There are no native behavior in this type", any);

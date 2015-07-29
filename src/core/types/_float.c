@@ -29,8 +29,12 @@ OAny OFloat(ofloat number) {
 	return result;
 }
 
-OAny OFloat_fromInt(OAny i) {
-	return OFloat((ofloat) OAny_toInt(i));
+OAny OFloat_toInteger(OAny f) {
+	return OInteger((oint)OAny_toFloat(f));
+}
+
+OAny OFloat_toCharacter(OAny f) {
+	return OCharacter((ochar)OAny_toFloat(f));
 }
 
 static OAny __tostring__(OState* S, OAny self) {
@@ -45,7 +49,6 @@ static OAny __tostring__(OState* S, OAny self) {
                 __TypeName__ "__tostring__ error in inernal function osprintf", self);
 	}
 
-	printf("\nFloat__tostring__ %s\n", buffer);
 	return OString(S, buffer);
 }
 
@@ -74,27 +77,6 @@ static OAny __compare__(OState* S, OAny self, OAny arg1) {
 
 	return OFloat(result);
 }
-
-long
-_Py_HashDouble(double v)
-{
-
-}
-
-long
-_Py_HashPointer(void *p)
-{
-    long x;
-    size_t y = (size_t)p;
-    /* bottom 3 or 4 bits are likely to be 0; rotate y by 4 to avoid
-       excessive hash collisions for dicts and sets */
-    y = (y >> 4) | (y << (8 * sizeof(opointer) - 4));
-    x = (long)y;
-    if (x == -1)
-        x = -2;
-    return x;
-}
-
 
 static OAny __tointeger__(OState* S, OAny self) {
 	_CHECK_SELF_TYPE(S, self, __tointeger__);

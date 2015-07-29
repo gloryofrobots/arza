@@ -43,6 +43,7 @@ typedef union {
 } OValue;
 
 typedef struct {
+	/*RENAME TO __type__*/
 	EOTYPE type;
 	OValue data;
 } OAny;
@@ -60,8 +61,8 @@ OAny OAny_new();
 #endif
 
 #define OAny_type(any) (any.type)
-/*TODO MOVE IT TO MODULES*/
 
+/*TODO MOVE IT TO MODULES*/
 #define OAny_initCell(any, type, cell) \
 		OANY_BEFORE_SET(any); \
 		any.type=type; \
@@ -97,7 +98,7 @@ OAny OAny_new();
 #define OAny_isFloat(any) (any.type == EOBIN_TYPE_FLOAT)
 #define OAny_isChar(any) (any.type == EOBIN_TYPE_CHAR)
 
-#define OAny_isString(any) (any.type == EOBIN_TYPE_STRING || any.type == EOBIN_TYPE_CHAR)
+#define OAny_isString(any) (any.type == EOBIN_TYPE_STRING)
 #define OAny_isArray(any) (any.type == EOBIN_TYPE_ARRAY)
 #define OAny_isTuple(any) (any.type == EOBIN_TYPE_TUPLE)
 #define OAny_isTable(any) (any.type == EOBIN_TYPE_TABLE)

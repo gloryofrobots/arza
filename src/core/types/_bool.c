@@ -1,5 +1,5 @@
 #include <obin.h>
-
+/*TODO rename it*/
 OAny ObinFalse = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_FALSE);
 OAny ObinTrue = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_TRUE);
 OAny ObinNil = OBIN_ANY_STATIC_INIT(EOBIN_TYPE_NIL);

@@ -18,10 +18,9 @@ def gen_methods(methods):
 
 for m in gen_methods(BASE):
     print m
-for m in gen_methods(NUMBER_CAST):
+for m in gen_methods(NUMBER):
     print m
-for m in gen_methods(NUMBER_OPERATIONS):
-    print m
+
 
 """
 print gen_method("__false_compare__", 2)
