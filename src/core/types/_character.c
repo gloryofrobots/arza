@@ -116,6 +116,10 @@ static OAny __clone__(OState* S, OAny self) {
 
 static OAny __compare__(OState* S, OAny self, OAny arg1) {
 	_CHECK_SELF_TYPE(S, self, __compare__);
+	if(OAny_isCell(arg1)) {
+		return ointegers(S)->Lesser;
+	}
+
 	return ocompare(S, OCharacter_toInteger(self), otointeger(S, arg1));
 }
 

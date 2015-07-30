@@ -90,11 +90,54 @@ OAny OCollection_compare(OState * S, OAny self, OAny other){
 		}
 
 		compare_result = ocompare(S, self_item, other_item);
-		if(OAny_isTrue(ois(S, compare_result, ointegers(S)->Equal))){
+		if(OAny_isFalse(ois(S, compare_result, ointegers(S)->Equal))){
 			break;
 		}
 	}
 
+	orelease(S, self_iterator);
+	orelease(S, other_iterator);
+	return compare_result;
+}
+
+OAny OCollection_equal(OState * S, OAny self, OAny other){
+	OAny self_iterator;
+	OAny other_iterator;
+	OAny self_item;
+	OAny other_item;
+	OAny compare_result;
+
+	if(!OAny_isCell(other)){
+		return ObinFalse;
+	}
+
+	if(OAny_type(other) != OAny_type(self) ){
+		return ObinFalse;
+	}
+
+	if (OAny_intVal(olength(S, other)) != OAny_intVal(olength(S, self))) {
+		return ObinFalse;
+	}
+
+	self_iterator = oiterator(S, self);
+	other_iterator = oiterator(S, other);
+
+	while(OTRUE) {
+		self_item = onext(S, self_iterator);
+		other_item = onext(S, other_iterator);
+
+		if(OBIN_IS_STOP_ITERATION(self_item) || OBIN_IS_STOP_ITERATION(other_item)){
+			compare_result = ObinTrue;
+			goto result;
+		}
+
+		compare_result = oequal(S, self_item, other_item);
+		if(OAny_isFalse(compare_result)){
+			return ObinFalse;
+		}
+	}
+
+result:
 	orelease(S, self_iterator);
 	orelease(S, other_iterator);
 	return compare_result;

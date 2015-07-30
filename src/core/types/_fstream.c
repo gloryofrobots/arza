@@ -91,7 +91,7 @@ static void __destroy__(OState* S, OCell* cell) {
 OBEHAVIOR_DEFINE(__BEHAVIOR__,
 		"__FStream__",
 		OBEHAVIOR_MEMORY(__destroy__, 0),
-		OBEHAVIOR_BASE(__tostring__, 0, 0, 0, 0),
+		OBEHAVIOR_BASE(__tostring__, 0, 0, 0, 0, 0),
 		OBEHAVIOR_COLLECTION_NULL,
 		OBEHAVIOR_GENERATOR_NULL,
 		OBEHAVIOR_NUMBER_NULL

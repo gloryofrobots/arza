@@ -404,6 +404,7 @@ obool otable_init(OState* S) {
 	__BEHAVIOR__.__tobool__ = __tobool__;
 	__BEHAVIOR__.__clone__ = __clone__;
 	__BEHAVIOR__.__compare__ = OCollection_compare;
+	__BEHAVIOR__.__equal__ = OCollection_equal;
 
 	__BEHAVIOR__.__iterator__ = __iterator__;
 	__BEHAVIOR__.__length__ = __length__;

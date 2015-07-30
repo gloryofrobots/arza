@@ -10,6 +10,8 @@ def write_builtin_c(filename):
 
         results = []
         for method in methods:
+            if not method.isGeneric:
+                continue
             data = template.render(method.as_dict())
             results.append(data)
         
@@ -30,6 +32,8 @@ def write_builtin_h(filename):
 
         results = []
         for method in methods:
+            if not method.isGeneric:
+                continue
             data = template.render(method.as_dict())
             results.append(data)
         

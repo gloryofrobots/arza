@@ -9,6 +9,7 @@ typedef struct _OBehavior {
     ofunc_1 __tobool__;
     ofunc_1 __clone__;
     ofunc_2 __compare__;
+    ofunc_2 __equal__;
     ofunc_1 __hash__;
     /*COLLECTION*/
     ofunc_1 __iterator__;
@@ -39,9 +40,9 @@ typedef struct _OBehavior {
 #define OBEHAVIOR_MEMORY(__destroy__,__mark__)  __destroy__, __mark__ 
 
 #define OBEHAVIOR_MEMORY_NULL 0, 0 
-#define OBEHAVIOR_BASE(__tostring__,__tobool__,__clone__,__compare__,__hash__)  __tostring__, __tobool__, __clone__, __compare__, __hash__ 
+#define OBEHAVIOR_BASE(__tostring__,__tobool__,__clone__,__compare__,__hash__,__equal__)  __tostring__, __tobool__, __clone__, __compare__, __hash__, __equal__ 
 
-#define OBEHAVIOR_BASE_NULL 0, 0, 0, 0, 0 
+#define OBEHAVIOR_BASE_NULL 0, 0, 0, 0, 0, 0 
 #define OBEHAVIOR_COLLECTION(__iterator__,__length__,__getitem__,__hasitem__,__delitem__,__setitem__)  __iterator__, __length__, __getitem__, __hasitem__, __delitem__, __setitem__ 
 
 #define OBEHAVIOR_COLLECTION_NULL 0, 0, 0, 0, 0, 0 

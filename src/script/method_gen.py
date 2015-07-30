@@ -15,13 +15,14 @@ def __gen_method(method):
 def gen_methods(methods):
     return [__gen_method(method) for method in methods]
 
-
+"""
 for m in gen_methods(BASE):
     print m
 for m in gen_methods(NUMBER):
     print m
+"""
 
-
+print gen_method("__equal__", 2)
 """
 print gen_method("__false_compare__", 2)
 print gen_method("__false_hash__", 1)

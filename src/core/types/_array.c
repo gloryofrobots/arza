@@ -9,11 +9,20 @@ OCELL_DECLARE(ObinArray,
 
 static OBehavior __BEHAVIOR__ = {0};
 
+#ifdef ODEBUG
 #define _CHECK_SELF_TYPE(S, self, method) \
-	if(!OAny_isArray(self)) { \
+	if(!OAny_isArray(self))\
 		return oraise(S, oerrors(S)->TypeError, \
-				__TypeName__ #method "call from other type", self); \
-	} \
+				__TypeName__"."#method "call from other type", self); \
+
+#else
+#define _CHECK_SELF_TYPE(S, self, method)
+#endif
+
+#define _CHECK_ARG_TYPE(S, arg, method) \
+		if(!OAny_isArray(arg))\
+			return oraise(S, oerrors(S)->TypeError, \
+					__TypeName__"."#method "argument must be" __TypeName__, self);
 
 #define _array(any) ((ObinArray*) OAny_cellVal(any))
 #define _array_size(any) ((_array(any))->size)
@@ -85,10 +94,10 @@ static omem_t _array_inflate(OState* S, OAny self, oindex_t start, oindex_t end)
 }
 
 OAny OArray_insertCollection(OState* S, OAny self, OAny collection, OAny position) {
-	OAny item;
 	oindex_t start, end, new_size, collection_size, i, j;
 
 	_CHECK_SELF_TYPE(S, self, OArray_insertCollection);
+	_CHECK_ARG_TYPE(S, collection, OArray_concat);
 
 	start = OAny_intVal(position);
 	collection_size = OAny_intVal(olength(S, collection));
@@ -96,8 +105,6 @@ OAny OArray_insertCollection(OState* S, OAny self, OAny collection, OAny positio
 
 	if(start > _array_size(self)) {
 		return oraise(S, oerrors(S)->KeyError, "obin_array_insert_collection invalid index", position);
-	} else if(start == _array_size(self)) {
-		return oadd(S, self, item);
 	}
 
 	new_size = _array_inflate(S, self, start, end);
@@ -115,6 +122,16 @@ OAny OArray_insertCollection(OState* S, OAny self, OAny collection, OAny positio
 	_array_size(self) = new_size;
 
 	return OInteger(new_size);
+}
+
+OAny OArray_concat(OState* S, OAny self, OAny collection) {
+	OAny result;
+	_CHECK_SELF_TYPE(S, self, OArray_concat);
+	_CHECK_ARG_TYPE(S, collection, OArray_concat);
+
+	result = oclone(S, self);
+	OArray_insertCollection(S, result, collection, OInteger(_array_size(result)));
+	return result;
 }
 
 OAny OArray_insert(OState* S, OAny self, OAny item, OAny position) {
@@ -142,9 +159,8 @@ OAny OArray_insert(OState* S, OAny self, OAny item, OAny position) {
 	return OInteger(new_size);
 }
 
-/*
- * implemented __add__
- * */
+
+
 /*
 MAYBE IMPLEMENT IT IN SOURCE
 ObinAny obin_array_merge(ObinState* S, ObinAny self, ObinAny sequence,
@@ -252,6 +268,84 @@ OAny OArray_remove(OState* S, OAny self, OAny item) {
 	return ObinTrue;
 }
 
+OAny OArray_join(OState* S, OAny self, OAny collection) {
+	OAny iterator;
+	OAny value;
+	OAny result;
+	oint length;
+	oindex_t counter;
+
+	_CHECK_SELF_TYPE(S, self, OArray_join);
+
+	length = OAny_intVal(olength(S, collection));
+	length = (length - 1 * _array_size(self)) + length;
+	result = OArray(S, OInteger(length));
+	if(!length) {
+		return result;
+	}
+	counter = length;
+
+	iterator = oiterator(S, collection);
+
+	while (OTRUE) {
+		/*avoid appending self at end of string*/
+		if(!(--counter)){
+			break;
+		}
+
+		value = onext(S, iterator);
+		OArray_push(S, result, value);
+		OArray_insertCollection(S, result, self, OInteger(_array_size(result)));
+	}
+
+	/*append last element*/
+	value = onext(S, iterator);
+	OArray_push(S, result, value);
+	return result;
+}
+
+OAny OArray_reverse(OState* S, OAny self) {
+	OAny item;
+	oindex_t i,j;
+	oint length;
+
+	_CHECK_SELF_TYPE(S, self, OArray_reverse);
+	if(_array_size(self) < 2) {
+		return self;
+	}
+	length = _array_size(self);
+
+	for (i = 0; i < length / 2 - 1; i++){
+	    j = length - i - 1;
+
+	    item = _array_item(self, i);
+	    _array_item(self, i) = _array_item(self, j);
+	    _array_item(self, j) = item;
+	  }
+
+	return self;
+}
+
+OAny OArray_fill(OState* S, OAny self, OAny item, OAny startPos, OAny endPos) {
+	oint start, end;
+	oindex_t i;
+
+	_CHECK_SELF_TYPE(S, self, OArray_reverse);
+	start = OAny_intVal(startPos);
+	end = OAny_intVal(endPos);
+	if(end <= start
+		|| start < 0 || end >_array_size(self)) {
+		return oraise(S, oerrors(S)->IndexError,
+				"OArray_fill invalid positions", OTuple(S, 2, startPos, endPos));
+	}
+
+
+	for (i = start; i < end; i++){
+		_array_item(self, i) = item;
+	}
+
+	return self;
+}
 /* PRIVATE */
 
 static OAny __tobool__(OState* S, OAny self) {
@@ -391,6 +485,7 @@ obool oarray_init(OState* S) {
 	__BEHAVIOR__.__destroy__ = __destroy__;
 	__BEHAVIOR__.__clone__ = __clone__;
 	__BEHAVIOR__.__compare__ = OCollection_compare;
+	__BEHAVIOR__.__equal__ = OCollection_equal;
 	__BEHAVIOR__.__iterator__ = OSequence_iterator;
 	__BEHAVIOR__.__length__ = __length__;
 	__BEHAVIOR__.__getitem__ = __getitem__;

@@ -5,7 +5,7 @@ class Arg(object):
     pass
 
 class Method(object):
-    def __init__(self, name, arity,  methodType=None):
+    def __init__(self, name, arity,  methodType=None, isGeneric=True):
         self.name = name
         self.arity = arity
         if not methodType:
@@ -17,6 +17,7 @@ class Method(object):
         for i in range(1, self.arity):
             self.args.append(Arg("arg%d" % i))
 
+        self.isGeneric = isGeneric
         name = self.name.replace("__", "")
         self.generic_name = "o%s" % name
 
@@ -41,8 +42,8 @@ BASE = Methods("BASE",
     Method('__tobool__', 1),
     Method('__clone__', 1),
     Method('__compare__', 2),
-    Method('__equal__', 2),
     Method('__hash__', 1),
+    Method('__equal__', 2, isGeneric=False),
     )
 
 COLLECTION = Methods("COLLECTION", 

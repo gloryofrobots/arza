@@ -42,6 +42,22 @@ void orelease(OState * S, OAny self) {
 
 OAny oequal(OState * S, OAny any, OAny other) {
 	OAny result;
+	ofunc_2 method;
+
+	method = _method(S, any, __equal__);
+	if (method) {
+		 return method(S, any, other);
+	}
+	method = _method(S, other, __equal__);
+	if (method) {
+		return method(S, other, any);
+	}
+
+	if(OAny_type(any)!= OAny_type(other)) {
+		return ObinFalse;
+	}
+
+	/*try compare if not defined*/
 	result = ocompare(S, any, other);
 	return ois(S, result, ointegers(S)->Equal);
 }
@@ -64,10 +80,8 @@ OAny ois(OState * S, OAny any, OAny other) {
 		return OBool(OAny_intVal(any) == OAny_intVal(other));
 	case EOBIN_TYPE_CHAR:
 		return OBool(OAny_charVal(any) == OAny_charVal(other));
-	case EOBIN_TYPE_FLOAT:
-		return oequal(S, any, other);
 	default:
-		/*Other things are definitely not the same*/
+		/*Other things are definitely not the same including Floats*/
 		return ObinFalse;
 	}
 }

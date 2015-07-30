@@ -3,7 +3,6 @@
 
 #include "obuiltin.h"
 
-
 obool oarray_init(OState* S);
 
 OAny OArray(OState* S, OAny size);
@@ -16,19 +15,20 @@ OAny OArray_clear(OState* S, OAny self);
 OAny OArray_remove(OState* S, OAny self, OAny item);
 OAny OArray_insert(OState* S, OAny self, OAny item, OAny position);
 OAny OArray_insertCollection(OState* S, OAny self, OAny collection, OAny position);
+OAny OArray_concat(OState* S, OAny self, OAny collection);
+/*return new array with self inserted between each collection element*/
+OAny OArray_join(OState* S, OAny self, OAny collection);
+/*return reversed copy of array*/
+OAny OArray_reverse(OState* S, OAny self);
+OAny OArray_fill(OState* S, OAny self, OAny item, OAny start, OAny end);
+
 /*
  * implemented __add__
  * */
 /*
-ObinAny obin_array_merge(ObinState* S, ObinAny self, ObinAny sequence,
-		ObinAny start, ObinAny end);
-ObinAny obin_array_fill(ObinState* S, ObinAny self, ObinAny item,
-		ObinAny start, ObinAny end);
-ObinAny obin_array_reverse(ObinState* S, ObinAny self);
 MAYBE IMPLEMENT IT IN SOURCE
 Array.prototype.sort()
 Array.prototype.splice()
-Array.prototype.concat()
 Array.prototype.slice()
 MAY BE INTERESTING THING
 Array.prototype.toSource()
