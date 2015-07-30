@@ -6,7 +6,6 @@ obool ostring_init(OState* S);
 
 /* constructors */
 OAny OString(OState* S, ostring data);
-OAny OChar_new(ochar ch);
 
 OAny OString_fromCArray(OState* S, ostring data, omem_t size);
 

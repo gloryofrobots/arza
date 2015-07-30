@@ -6,6 +6,8 @@
 obool oarray_init(OState* S);
 
 OAny OArray(OState* S, OAny size);
+OAny OArray_pack(OState* S, oint count, ...);
+
 OAny OArray_push(OState* S, OAny self, OAny value);
 OAny OArray_indexOf(OState* S, OAny self, OAny item);
 OAny OArray_lastIndexOf(OState* S, OAny self, OAny item);
@@ -18,8 +20,9 @@ OAny OArray_insertCollection(OState* S, OAny self, OAny collection, OAny positio
 OAny OArray_concat(OState* S, OAny self, OAny collection);
 /*return new array with self inserted between each collection element*/
 OAny OArray_join(OState* S, OAny self, OAny collection);
-/*return reversed copy of array*/
+/*reverse array. return self*/
 OAny OArray_reverse(OState* S, OAny self);
+/*fill array with value. return self*/
 OAny OArray_fill(OState* S, OAny self, OAny item, OAny start, OAny end);
 
 /*

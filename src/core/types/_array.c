@@ -73,6 +73,26 @@ OArray(OState* S, OAny size) {
 	return OCell_new(EOBIN_TYPE_ARRAY, (OCell*)self, &__BEHAVIOR__, ocells(S)->__Array__);
 }
 
+OAny OArray_pack(OState* S, oint count, ...) {
+	OAny self;
+	oindex_t i;
+    va_list vargs;
+
+	if(!count) {
+		return OArray(S, ObinNil);
+	}
+
+	self = OArray(S, OInteger(count));
+
+	va_start(vargs, count);
+	for (i = 0; i < count; i++) {
+		_array_item(self, i) = va_arg(vargs, OAny);
+	}
+	va_end(vargs);
+
+	return self;
+}
+
 static omem_t _array_inflate(OState* S, OAny self, oindex_t start, oindex_t end) {
 	omem_t new_size, old_size;
 	omem_t length;
@@ -158,8 +178,6 @@ OAny OArray_insert(OState* S, OAny self, OAny item, OAny position) {
 	_array_size(self) = new_size;
 	return OInteger(new_size);
 }
-
-
 
 /*
 MAYBE IMPLEMENT IT IN SOURCE
@@ -493,6 +511,7 @@ obool oarray_init(OState* S) {
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
 	__BEHAVIOR__.__delitem__ = __delitem__;
 	__BEHAVIOR__.__mark__ = __mark__;
+	__BEHAVIOR__.__add__ = OArray_concat;
 
 	ocells(S)->__Array__ = OCell_new(EOBIN_TYPE_CELL,
 			obin_new(S, OCell), &__BEHAVIOR__, ocells(S)->__Cell__);
