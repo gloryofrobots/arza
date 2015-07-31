@@ -21,7 +21,8 @@ static ObinModule __MODULES__[] = {
 		{"Array", &oarray_init, 0},
 		{"Tuple", &otuple_init, 0},
 		{"Table", &otable_init, 0},
-		{"Random", &orandom_init, 0}
+		{"Random", &orandom_init, 0},
+		{"Bool", &obool_init, 0}
 };
 
 

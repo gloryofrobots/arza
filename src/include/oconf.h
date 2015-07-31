@@ -176,6 +176,7 @@ OBIN_STMT_END
 #define __oasprintf asprintf
 
 #define ovfprintf vfprintf
+#define ofprintf fprintf
 #define osprintf sprintf
 #define osnprintf snprintf
 #define ovprintf vprintf
@@ -223,6 +224,7 @@ OBIN_STMT_END
  *  */
 #define OBIN_LOG_MEMORY 2
 #define OBIN_LOG_COMMON 2
+#define OBIN_LOG_ARRAY 2
 #endif
 
 /*************STRING*********/

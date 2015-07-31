@@ -1,6 +1,8 @@
 #include <obin.h>
 #define __TypeName__ "__Array__"
 
+OBIN_MODULE_LOG(ARRAY);
+
 OCELL_DECLARE(ObinArray,
 	omem_t size;
 	omem_t capacity;
@@ -55,6 +57,7 @@ _array_grow(OState* S, OAny self, oindex_t count_elements) {
 OAny
 OArray(OState* S, OAny size) {
 	ObinArray * self; omem_t capacity;
+	OAny s;
 	if(OAny_isNil(size)){
 		size = OInteger(OBIN_DEFAULT_ARRAY_SIZE);
 	}
@@ -70,7 +73,8 @@ OArray(OState* S, OAny size) {
 
 	self->capacity = capacity;
 	self->size = 0;
-	return OCell_new(EOBIN_TYPE_ARRAY, (OCell*)self, &__BEHAVIOR__, ocells(S)->__Array__);
+	s =  OCell_new(EOBIN_TYPE_ARRAY, (OCell*)self, &__BEHAVIOR__, ocells(S)->__Array__);
+	return s;
 }
 
 OAny OArray_pack(OState* S, oint count, ...) {
@@ -89,6 +93,9 @@ OAny OArray_pack(OState* S, oint count, ...) {
 		_array_item(self, i) = va_arg(vargs, OAny);
 	}
 	va_end(vargs);
+
+	_array_size(self) = count;
+	_log(S, _ERR,"OArray_pack size %d", 423);
 
 	return self;
 }
@@ -230,8 +237,10 @@ OAny obin_array_lastindexof(OState* S, OAny self, OAny item){
 
 OAny OArray_indexOf(OState* S, OAny self, OAny item) {
 	omem_t i;
-
+	omem_t size;
 	_CHECK_SELF_TYPE(S, self, OArray_indexOf);
+
+	size = _array_size(self);
 
 	for(i=0; i<_array_size(self); ++i) {
 		if (OAny_isTrue(oequal(S, _array_item(self, i), item))) {
@@ -472,7 +481,8 @@ __setitem__(OState* S, OAny self, OAny pos, OAny value){
 
 static OAny
 __hasitem__(OState* S, OAny self, OAny item){
-	return OBool(OAny_intVal(OArray_indexOf(S, self, item)) != OBIN_INVALID_INDEX);
+	oint index = OAny_intVal(OArray_indexOf(S, self, item));
+	return OBool( index != OBIN_INVALID_INDEX);
 }
 
 static OAny

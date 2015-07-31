@@ -85,7 +85,7 @@ obool obool_init(OState* S) {
 	__FALSE_BEHAVIOR__.__compare__ = __false_compare__;
 	__FALSE_BEHAVIOR__.__hash__ = __false_hash__;
 
-	obehaviors(S)->True = &__FALSE_BEHAVIOR__;
+	obehaviors(S)->False = &__FALSE_BEHAVIOR__;
 
 	return OTRUE;
 }

@@ -24,7 +24,7 @@ static void _log(OState* S, oint verbosity, ostring format, ...) { \
 	} \
 	va_list myargs; \
 	va_start(myargs, format); \
-	olog(S, format, myargs); \
+	ovlog(S, format, myargs); \
 	va_end(myargs); \
 }
 #else
@@ -37,6 +37,6 @@ static void _log(ObinState* S, oint verbosity, ostring format, ...) { }
 #endif
 
 void olog(OState* S, ostring message, ...);
-
+void ovlog(OState* S, ostring message, va_list arguments);
 
 #endif /* OLOG_H_ */

@@ -78,7 +78,6 @@ OAny OCell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny origin) {
 
 	return result;
 }
-
 /* MEMORY PRIMITIVES */
 opointer omemory_malloc(OState * S, omem_t size) {
 	opointer new_pointer;
