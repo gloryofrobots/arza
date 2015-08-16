@@ -38,6 +38,7 @@ static obool
 _vector_grow(OState* S, OAny self, oindex_t count_elements) {
 	/*TODO IT IS DANGEROUS OPERATION NEED SAFE CHECKS*/
 	omem_t new_capacity;
+
     if (_capacity(self) > OBIN_MAX_CAPACITY - (OBIN_DEFAULT_ARRAY_SIZE + count_elements)) {
     	new_capacity = OBIN_MAX_CAPACITY;
     } else {
@@ -48,7 +49,8 @@ _vector_grow(OState* S, OAny self, oindex_t count_elements) {
 		return OFALSE;
 	}
 
-	_data(self) = omemory_realloc(S, _data(self), new_capacity);
+	_data(self) = omemory_realloc(S, _data(self), new_capacity * sizeof(OAny));
+
 	_capacity(self) = new_capacity;
 
 	return OTRUE;
@@ -247,6 +249,19 @@ OAny OVector_indexOf(OState* S, OAny self, OAny item) {
 	return ointegers(S)->NotFound;
 }
 
+OAny OVector_lastIndexOf(OState* S, OAny self, OAny item) {
+	omem_t i;
+	_CHECK_SELF_TYPE(S, self, OVector_indexOf);
+
+	for(i=_size(self); i>=0; --i) {
+		if (OAny_isTrue(oequal(S, _item(self, i), item))) {
+			return OInteger(i);
+		}
+	}
+
+	return ointegers(S)->NotFound;
+}
+
 OAny OVector_pop(OState* S, OAny self) {
     OAny item;
 
@@ -277,7 +292,7 @@ OAny OVector_remove(OState* S, OAny self, OAny item) {
 	_CHECK_SELF_TYPE(S, self, OVector_remove);
 
 	for (i=0; i<_size(self); i++) {
-		if(OAny_isTrue(oequal(S, self, item))) {
+		if (OAny_isTrue(oequal(S, _item(self, i), item))) {
 			find = OTRUE;
 			break;
 		}
@@ -296,16 +311,19 @@ OAny OVector_join(OState* S, OAny self, OAny collection) {
 	OAny value;
 	OAny result;
 	oint length;
+	oint result_length;
 	oindex_t counter;
 
 	_CHECK_SELF_TYPE(S, self, OVector_join);
 
 	length = OAny_intVal(olength(S, collection));
-	length = (length - 1 * _size(self)) + length;
+	result_length = ((length - 1) * _size(self)) + length;
 	result = OVector(S, OInteger(length));
-	if(!length) {
-		return result;
+
+	if(result_length<=1) {
+		return oclone(S,collection);
 	}
+
 	counter = length;
 
 	iterator = oiterator(S, collection);

@@ -102,11 +102,14 @@ opointer omemory_malloc(OState * S, omem_t size) {
 opointer omemory_realloc(OState * S, opointer ptr, omem_t size) {
 	opointer new_pointer;
 	if (!size) {
-		return NULL;
+		_panic(S, "omemory_realloc can't realloc memory for size %d", size);
 	}
 
 	new_pointer = ObinMem_Realloc(ptr, size);
-	assert(new_pointer != 0);
+	if(new_pointer==0) {
+		_panic(S, "omemory_realloc can't realloc memory for size %d", size);
+	}
+
 	return new_pointer;
 }
 
