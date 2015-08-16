@@ -607,11 +607,11 @@ OAny OString_split(OState* S, OAny self, OAny separator) {
 						"String.split invalid argument type, String expected ", separator);
 	}
 
-	result = OArray(S, ObinNil);
+	result = OVector(S, ObinNil);
 
 	if (_string_size(separator) > _string_size(self)) {
 		/*can`t split */
-		OArray_push(S, result, oclone(S, self));
+		OVector_push(S, result, oclone(S, self));
 		return result;
 	}
 
@@ -623,7 +623,7 @@ OAny OString_split(OState* S, OAny self, OAny separator) {
 
 		if (OAny_isTrue(oequal(S, curPos, ointegers(S)->NotFound))) {
 
-			OArray_push(S, result,
+			OVector_push(S, result,
 						OString_fromCArray(S, _string_data(self) + previous,
 								_string_size(self) - previous));
 			return result;
@@ -634,7 +634,7 @@ OAny OString_split(OState* S, OAny self, OAny separator) {
 			continue;
 		}
 
-		OArray_push(S, result,
+		OVector_push(S, result,
 				OString_fromCArray(S, _string_data(self) + previous,
 						current - previous));
 
@@ -689,12 +689,12 @@ OAny OString_pack(OState* S, oindex_t count, ...){
 						"String.pack invalid argument type, Invalid size", OInteger(count));
 	}
 
-	array = OArray(S, OInteger(count));
+	array = OVector(S, OInteger(count));
 
     va_start(vargs, count);
     for (i = 0; i < count; i++) {
     	item = va_arg(vargs, OAny);
-    	OArray_push(S, array, item);
+    	OVector_push(S, array, item);
     }
 
     va_end(vargs);

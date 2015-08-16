@@ -4,7 +4,7 @@
 #include "test_float.c"
 #include "test_character.c"
 #include "test_tuple.c"
-#include "test_array.c"
+#include "test_vector.c"
 
 static CU_TestInfo TestGroup_BaseTypes[] = {
   { "Test_BaseTypes", Test_BaseTypes },
@@ -14,6 +14,6 @@ static CU_TestInfo TestGroup_BaseTypes[] = {
   {"Test_Integer", Test_Integer},
   {"Test_Float", Test_Float},
   {"Test_Tuple", Test_Tuple},
-  {"Test_Array", Test_Array},
+  {"Test_Vector", Test_Vector},
 	CU_TEST_INFO_NULL,
 };

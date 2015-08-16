@@ -17,7 +17,7 @@ OAny OArray_reverse(OState* S, OAny self);
 OAny OArray_fill(OState* S, OAny self, OAny item, OAny start, OAny end);
 */
 
-static void Test_Array(void) {
+static void Test_Vector(void) {
 	OState * S = obin_init(1024 * 1024 * 90);
 
 	OAny a1, a2, a3, a4;
@@ -30,10 +30,10 @@ static void Test_Array(void) {
 	i5 = OTuple(S, 2, i1, i2);
 	i6 = OFloat(3455.23344);
 
-	a1 = OArray_pack(S, 6, i1, i2, i3, i4, i5, i6);
-	a2 = OArray(S, ObinNil);
-	OArray_push(S, a2, i1); OArray_push(S, a2, i2); OArray_push(S, a2, i3);
-	OArray_push(S, a2, i4); OArray_push(S, a2, i5); OArray_push(S, a2, i6);
+	a1 = OVector_pack(S, 6, i1, i2, i3, i4, i5, i6);
+	a2 = OVector(S, ObinNil);
+	OVector_push(S, a2, i1); OVector_push(S, a2, i2); OVector_push(S, a2, i3);
+	OVector_push(S, a2, i4); OVector_push(S, a2, i5); OVector_push(S, a2, i6);
 
 	CU_ASSERT_TRUE(OAny_isTrue(ohasitem(S, a2, i1)));
 	CU_ASSERT_TRUE(OAny_isTrue(ohasitem(S, a2, i2)));
@@ -56,7 +56,7 @@ static void Test_Array(void) {
 	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, a1, a3)));
 	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, a2, a3)));
 
-	a4 = OArray_pack(S, 2, ObinTrue, ObinFalse);
+	a4 = OVector_pack(S, 2, ObinTrue, ObinFalse);
 	osetitem(S, a2, OInteger(0), a4);
 
 	omemory_collect(S);

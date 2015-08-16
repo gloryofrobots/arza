@@ -1,9 +1,9 @@
 #include <obin.h>
-#define __TypeName__ "__Array__"
+#define __TypeName__ "__Vector__"
 
-OBIN_MODULE_LOG(ARRAY);
+OBIN_MODULE_LOG(VECTOR);
 
-OCELL_DECLARE(ObinArray,
+OCELL_DECLARE(Vector,
 	omem_t size;
 	omem_t capacity;
 	OAny* data;
@@ -13,7 +13,7 @@ static OBehavior __BEHAVIOR__ = {0};
 
 #ifdef ODEBUG
 #define _CHECK_SELF_TYPE(S, self, method) \
-	if(!OAny_isArray(self))\
+	if(!OAny_isVector(self))\
 		return oraise(S, oerrors(S)->TypeError, \
 				__TypeName__"."#method "call from other type", self); \
 
@@ -22,20 +22,20 @@ static OBehavior __BEHAVIOR__ = {0};
 #endif
 
 #define _CHECK_ARG_TYPE(S, arg, method) \
-		if(!OAny_isArray(arg))\
+		if(!OAny_isVector(arg))\
 			return oraise(S, oerrors(S)->TypeError, \
 					__TypeName__"."#method "argument must be" __TypeName__, self);
 
-#define _array(any) ((ObinArray*) OAny_cellVal(any))
-#define _size(any) ((_array(any))->size)
-#define _capacity(any) ((_array(any))->capacity)
-#define _data(any) ((_array(any))->data)
+#define _vector(any) ((Vector*) OAny_cellVal(any))
+#define _size(any) ((_vector(any))->size)
+#define _capacity(any) ((_vector(any))->capacity)
+#define _data(any) ((_vector(any))->data)
 #define _item(any, index) ((_data(any))[index])
 #define _setitem(any, index, item) ((_data(any))[index] = item)
 
-#define _array_last_index(any) (_size(any) - 1)
+#define _vector_last_index(any) (_size(any) - 1)
 static obool
-_array_grow(OState* S, OAny self, oindex_t count_elements) {
+_vector_grow(OState* S, OAny self, oindex_t count_elements) {
 	/*TODO IT IS DANGEROUS OPERATION NEED SAFE CHECKS*/
 	omem_t new_capacity;
     if (_capacity(self) > OBIN_MAX_CAPACITY - (OBIN_DEFAULT_ARRAY_SIZE + count_elements)) {
@@ -55,38 +55,38 @@ _array_grow(OState* S, OAny self, oindex_t count_elements) {
 }
 
 OAny
-OArray(OState* S, OAny size) {
-	ObinArray * self; omem_t capacity;
+OVector(OState* S, OAny size) {
+	Vector * self; omem_t capacity;
 	OAny s;
 	if(OAny_isNil(size)){
 		size = OInteger(OBIN_DEFAULT_ARRAY_SIZE);
 	}
 	if (!OInt_isFitToMemsize(size)) {
 			oraise(S, oerrors(S)->MemoryError,
-				"obin_array_new " __TypeName__ "size not fit to memory", size);
+				"obin_vector_new " __TypeName__ "size not fit to memory", size);
 	}
 
-	self = obin_new(S, ObinArray);
+	self = obin_new(S, Vector);
 
 	capacity = (omem_t) OAny_intVal(size);
 	self->data = omemory_malloc_array(S, OAny, capacity);
 
 	self->capacity = capacity;
 	self->size = 0;
-	s =  OCell_new(EOBIN_TYPE_ARRAY, (OCell*)self, &__BEHAVIOR__, ocells(S)->__Array__);
+	s =  OCell_new(EOBIN_TYPE_VECTOR, (OCell*)self, &__BEHAVIOR__, ocells(S)->__Array__);
 	return s;
 }
 
-OAny OArray_pack(OState* S, oint count, ...) {
+OAny OVector_pack(OState* S, oint count, ...) {
 	OAny self;
 	oindex_t i;
     va_list vargs;
 
 	if(!count) {
-		return OArray(S, ObinNil);
+		return OVector(S, ObinNil);
 	}
 
-	self = OArray(S, OInteger(count));
+	self = OVector(S, OInteger(count));
 
 	va_start(vargs, count);
 	for (i = 0; i < count; i++) {
@@ -95,12 +95,11 @@ OAny OArray_pack(OState* S, oint count, ...) {
 	va_end(vargs);
 
 	_size(self) = count;
-	_log(S, _ERR,"OArray_pack size %d", 423);
 
 	return self;
 }
 
-static omem_t _array_inflate(OState* S, OAny self, oindex_t start, oindex_t end) {
+static omem_t _vector_inflate(OState* S, OAny self, oindex_t start, oindex_t end) {
 	omem_t new_size, old_size;
 	omem_t length;
 
@@ -109,9 +108,9 @@ static omem_t _array_inflate(OState* S, OAny self, oindex_t start, oindex_t end)
 	new_size = old_size + length;
 
 	if (new_size > _capacity(self)) {
-		if ( !_array_grow(S, self, length) ){
+		if ( !_vector_grow(S, self, length) ){
 			oraise(S, oerrors(S)->MemoryError,
-				"__array_inflate " __TypeName__ "can't grow", OInteger(length));
+				"__vector_inflate " __TypeName__ "can't grow", OInteger(length));
 			return 0;
 		}
 	}
@@ -120,24 +119,24 @@ static omem_t _array_inflate(OState* S, OAny self, oindex_t start, oindex_t end)
 	return new_size;
 }
 
-OAny OArray_insertCollection(OState* S, OAny self, OAny collection, OAny position) {
+OAny OVector_insertCollection(OState* S, OAny self, OAny collection, OAny position) {
 	oindex_t start, end, new_size, collection_size, i, j;
 
-	_CHECK_SELF_TYPE(S, self, OArray_insertCollection);
-	_CHECK_ARG_TYPE(S, collection, OArray_concat);
+	_CHECK_SELF_TYPE(S, self, OVector_insertCollection);
+	_CHECK_ARG_TYPE(S, collection, OVector_concat);
 
 	start = OAny_intVal(position);
 	collection_size = OAny_intVal(olength(S, collection));
 	end = start + collection_size;
 
 	if(start > _size(self)) {
-		return oraise(S, oerrors(S)->KeyError, "obin_array_insert_collection invalid index", position);
+		return oraise(S, oerrors(S)->KeyError, "obin_vector_insert_collection invalid index", position);
 	}
 
-	new_size = _array_inflate(S, self, start, end);
+	new_size = _vector_inflate(S, self, start, end);
 	if(!new_size) {
 		return oraise(S, oerrors(S)->KeyError,
-				"obin_array_insert inflate error", position);
+				"obin_vector_insert inflate error", position);
 	}
 
 	i=start;j=0;
@@ -151,33 +150,33 @@ OAny OArray_insertCollection(OState* S, OAny self, OAny collection, OAny positio
 	return OInteger(new_size);
 }
 
-OAny OArray_concat(OState* S, OAny self, OAny collection) {
+OAny OVector_concat(OState* S, OAny self, OAny collection) {
 	OAny result;
-	_CHECK_SELF_TYPE(S, self, OArray_concat);
-	_CHECK_ARG_TYPE(S, collection, OArray_concat);
+	_CHECK_SELF_TYPE(S, self, OVector_concat);
+	_CHECK_ARG_TYPE(S, collection, OVector_concat);
 
 	result = oclone(S, self);
-	OArray_insertCollection(S, result, collection, OInteger(_size(result)));
+	OVector_insertCollection(S, result, collection, OInteger(_size(result)));
 	return result;
 }
 
-OAny OArray_insert(OState* S, OAny self, OAny item, OAny position) {
+OAny OVector_insert(OState* S, OAny self, OAny item, OAny position) {
 	omem_t new_size;
 	omem_t insert_index;
 
-	_CHECK_SELF_TYPE(S, self, OArray_insert);
+	_CHECK_SELF_TYPE(S, self, OVector_insert);
 
 	insert_index = OAny_intVal(position);
 	if(insert_index > _size(self)) {
-		return oraise(S, oerrors(S)->KeyError, "obin_array_insert invalid index", position);
+		return oraise(S, oerrors(S)->KeyError, "obin_vector_insert invalid index", position);
 	} else if(insert_index == _size(self)) {
-		return OArray_push(S, self, item);
+		return OVector_push(S, self, item);
 	}
 
-	new_size = _array_inflate(S, self, insert_index, insert_index + 1);
+	new_size = _vector_inflate(S, self, insert_index, insert_index + 1);
 	if(!new_size) {
 		return oraise(S, oerrors(S)->KeyError,
-				"obin_array_insert inflate error", position);
+				"obin_vector_insert inflate error", position);
 	}
 
 	_setitem(self, insert_index, item);
@@ -188,11 +187,11 @@ OAny OArray_insert(OState* S, OAny self, OAny item, OAny position) {
 
 /*
 MAYBE IMPLEMENT IT IN SOURCE
-ObinAny obin_array_merge(ObinState* S, ObinAny self, ObinAny sequence,
+ObinAny obin_vector_merge(ObinState* S, ObinAny self, ObinAny sequence,
 		ObinAny start, ObinAny end);
-ObinAny obin_array_fill(ObinState* S, ObinAny self, ObinAny item,
+ObinAny obin_vector_fill(ObinState* S, ObinAny self, ObinAny item,
 		ObinAny start, ObinAny end);
-ObinAny obin_array_reverse(ObinState* S, ObinAny self);
+ObinAny obin_vector_reverse(ObinState* S, ObinAny self);
 Array.prototype.sort()
 Array.prototype.splice()
 Array.prototype.concat()
@@ -201,16 +200,16 @@ MAY BE INTERESTING THING
 Array.prototype.toSource()
 */
 OAny
-OArray_push(OState* S, OAny self, OAny value) {
+OVector_push(OState* S, OAny self, OAny value) {
 	omem_t new_size;
-	_CHECK_SELF_TYPE(S, self, OArray_push);
+	_CHECK_SELF_TYPE(S, self, OVector_push);
 
 	new_size = _size(self) + 1;
 
 	if (new_size > _capacity(self)){
-		if (!_array_grow(S, self, 1) ){
+		if (!_vector_grow(S, self, 1) ){
 			oraise(S, oerrors(S)->MemoryError,
-				"obin_array_push " __TypeName__ "can't grow", OInteger(new_size));
+				"obin_vector_push " __TypeName__ "can't grow", OInteger(new_size));
 		}
 	}
 
@@ -221,12 +220,12 @@ OArray_push(OState* S, OAny self, OAny value) {
 	return OInteger(new_size);
 }
 
-OAny obin_array_lastindexof(OState* S, OAny self, OAny item){
+OAny obin_vector_lastindexof(OState* S, OAny self, OAny item){
 	omem_t i;
 
 	_CHECK_SELF_TYPE(S, self, lastindexof);
 
-	for(i=_array_last_index(self); i>=0; --i) {
+	for(i=_vector_last_index(self); i>=0; --i) {
 		if (OAny_isTrue(oequal(S, _item(self, i), item))) {
 			return OInteger(i);
 		}
@@ -235,12 +234,9 @@ OAny obin_array_lastindexof(OState* S, OAny self, OAny item){
 	return ointegers(S)->NotFound;
 }
 
-OAny OArray_indexOf(OState* S, OAny self, OAny item) {
+OAny OVector_indexOf(OState* S, OAny self, OAny item) {
 	omem_t i;
-	omem_t size;
-	_CHECK_SELF_TYPE(S, self, OArray_indexOf);
-
-	size = _size(self);
+	_CHECK_SELF_TYPE(S, self, OVector_indexOf);
 
 	for(i=0; i<_size(self); ++i) {
 		if (OAny_isTrue(oequal(S, _item(self, i), item))) {
@@ -251,34 +247,34 @@ OAny OArray_indexOf(OState* S, OAny self, OAny item) {
 	return ointegers(S)->NotFound;
 }
 
-OAny OArray_pop(OState* S, OAny self) {
+OAny OVector_pop(OState* S, OAny self) {
     OAny item;
 
-	_CHECK_SELF_TYPE(S, self, OArray_pop);
+	_CHECK_SELF_TYPE(S, self, OVector_pop);
 
 	if(_size(self) == 0) {
 			oraise(S, oerrors(S)->IndexError,
-				"obin_array_pop " __TypeName__ " empty array", ObinNil);
+				"obin_vector_pop " __TypeName__ " empty vector", ObinNil);
 	}
 
-	item = ogetitem(S, self, OInteger(_array_last_index(self)));
+	item = ogetitem(S, self, OInteger(_vector_last_index(self)));
 	_size(self) -= 1;
 
 	return item;
 }
 
-OAny OArray_clear(OState* S, OAny self) {
-	_CHECK_SELF_TYPE(S, self, OArray_clear);
+OAny OVector_clear(OState* S, OAny self) {
+	_CHECK_SELF_TYPE(S, self, OVector_clear);
 	_size(self) = 0;
 	return ObinNothing;
 }
 
-OAny OArray_remove(OState* S, OAny self, OAny item) {
+OAny OVector_remove(OState* S, OAny self, OAny item) {
 	oint i;
 	obool find;
 	find = OFALSE;
 
-	_CHECK_SELF_TYPE(S, self, OArray_remove);
+	_CHECK_SELF_TYPE(S, self, OVector_remove);
 
 	for (i=0; i<_size(self); i++) {
 		if(OAny_isTrue(oequal(S, self, item))) {
@@ -295,18 +291,18 @@ OAny OArray_remove(OState* S, OAny self, OAny item) {
 	return ObinTrue;
 }
 
-OAny OArray_join(OState* S, OAny self, OAny collection) {
+OAny OVector_join(OState* S, OAny self, OAny collection) {
 	OAny iterator;
 	OAny value;
 	OAny result;
 	oint length;
 	oindex_t counter;
 
-	_CHECK_SELF_TYPE(S, self, OArray_join);
+	_CHECK_SELF_TYPE(S, self, OVector_join);
 
 	length = OAny_intVal(olength(S, collection));
 	length = (length - 1 * _size(self)) + length;
-	result = OArray(S, OInteger(length));
+	result = OVector(S, OInteger(length));
 	if(!length) {
 		return result;
 	}
@@ -321,22 +317,22 @@ OAny OArray_join(OState* S, OAny self, OAny collection) {
 		}
 
 		value = onext(S, iterator);
-		OArray_push(S, result, value);
-		OArray_insertCollection(S, result, self, OInteger(_size(result)));
+		OVector_push(S, result, value);
+		OVector_insertCollection(S, result, self, OInteger(_size(result)));
 	}
 
 	/*append last element*/
 	value = onext(S, iterator);
-	OArray_push(S, result, value);
+	OVector_push(S, result, value);
 	return result;
 }
 
-OAny OArray_reverse(OState* S, OAny self) {
+OAny OVector_reverse(OState* S, OAny self) {
 	OAny item;
 	oindex_t i,j;
 	oint length;
 
-	_CHECK_SELF_TYPE(S, self, OArray_reverse);
+	_CHECK_SELF_TYPE(S, self, OVector_reverse);
 	if(_size(self) < 2) {
 		return self;
 	}
@@ -353,11 +349,11 @@ OAny OArray_reverse(OState* S, OAny self) {
 	return self;
 }
 
-OAny OArray_fill(OState* S, OAny self, OAny item, OAny startPos, OAny endPos) {
+OAny OVector_fill(OState* S, OAny self, OAny item, OAny startPos, OAny endPos) {
 	oint start, end;
 	oindex_t i;
 
-	_CHECK_SELF_TYPE(S, self, OArray_reverse);
+	_CHECK_SELF_TYPE(S, self, OVector_reverse);
 	start = OAny_intVal(startPos);
 	end = OAny_intVal(endPos);
 	if(end <= start
@@ -392,9 +388,9 @@ static OAny __tostring__(OState* S, OAny self) {
 }
 
 static void __destroy__(OState* S, OCell* self) {
-	ObinArray* array = (ObinArray*) self;
+	Vector* vector = (Vector*) self;
 
-	omemory_free(S, array->data);
+	omemory_free(S, vector->data);
 }
 
 static void __mark__(OState* S, OAny self, ofunc_1 mark) {
@@ -411,7 +407,7 @@ static OAny __clone__(OState* S, OAny self) {
 
 	_CHECK_SELF_TYPE(S, self, __clone__);
 
-	result = OArray(S, OInteger(_capacity(self)));
+	result = OVector(S, OInteger(_capacity(self)));
 	omemcpy(_data(result), _data(self), _capacity(self) * sizeof(OAny));
 	_size(result) = _size(self);
 	return result;
@@ -471,7 +467,7 @@ __setitem__(OState* S, OAny self, OAny pos, OAny value){
 	}
 
 	if (_size(self) == 0 && index == 0) {
-		return OArray_push(S, self, value);
+		return OVector_push(S, self, value);
 	}
 
 	_setitem(self, index, value);
@@ -481,7 +477,7 @@ __setitem__(OState* S, OAny self, OAny pos, OAny value){
 
 static OAny
 __hasitem__(OState* S, OAny self, OAny item){
-	oint index = OAny_intVal(OArray_indexOf(S, self, item));
+	oint index = OAny_intVal(OVector_indexOf(S, self, item));
 	return OBool( index != OBIN_INVALID_INDEX);
 }
 
@@ -506,7 +502,7 @@ __delitem__(OState* S, OAny self, OAny pos){
 	return ObinNothing;
 }
 
-obool oarray_init(OState* S) {
+obool ovector_init(OState* S) {
 	__BEHAVIOR__.__name__ = __TypeName__;
 	__BEHAVIOR__.__tostring__ = __tostring__;
 	__BEHAVIOR__.__tobool__ = __tobool__;
@@ -521,7 +517,7 @@ obool oarray_init(OState* S) {
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
 	__BEHAVIOR__.__delitem__ = __delitem__;
 	__BEHAVIOR__.__mark__ = __mark__;
-	__BEHAVIOR__.__add__ = OArray_concat;
+	__BEHAVIOR__.__add__ = OVector_concat;
 
 	ocells(S)->__Array__ = OCell_new(EOBIN_TYPE_CELL,
 			obin_new(S, OCell), &__BEHAVIOR__, ocells(S)->__Cell__);

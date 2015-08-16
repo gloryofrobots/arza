@@ -14,10 +14,10 @@
 #include "types/obool.h"
 #include "types/ocollection.h"
 #include "types/otuple.h"
-#include "types/oarray.h"
 #include "types/ofstream.h"
 #include "types/otable.h"
 #include "types/ostring.h"
+#include "types/ovector.h"
 
 
 /*

@@ -132,7 +132,7 @@ OAny OTable_items(OState* S, OAny self){
 
 	_CHECK_SELF_TYPE(S, self, OTable_items);
 
-	result = OArray(S, OInteger(_size(self)));
+	result = OVector(S, OInteger(_size(self)));
 
 	iterator = oiterator(S, self);
 
@@ -142,7 +142,7 @@ OAny OTable_items(OState* S, OAny self){
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
-		OArray_push(S, result, item);
+		OVector_push(S, result, item);
 	}
 
 	return result;
@@ -153,7 +153,7 @@ OAny OTable_keys(OState* S, OAny self){
 
 	_CHECK_SELF_TYPE(S, self, OTable_keys);
 
-	result = OArray(S, OInteger(_size(self)));
+	result = OVector(S, OInteger(_size(self)));
 
 	iterator = oiterator(S, self);
 
@@ -163,7 +163,7 @@ OAny OTable_keys(OState* S, OAny self){
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
-		OArray_push(S, result, ogetfirst(S, item));
+		OVector_push(S, result, ogetfirst(S, item));
 
 	}
 
@@ -175,7 +175,7 @@ OAny OTable_values(OState* S, OAny self){
 
 	_CHECK_SELF_TYPE(S, self, OTable_values);
 
-	result = OArray(S, OInteger(_size(self)));
+	result = OVector(S, OInteger(_size(self)));
 
 	iterator = oiterator(S, self);
 
@@ -185,7 +185,7 @@ OAny OTable_values(OState* S, OAny self){
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
-		OArray_push(S, result, ogetsecond(S, item));
+		OVector_push(S, result, ogetsecond(S, item));
 
 	}
 
@@ -259,7 +259,7 @@ static OAny __tostring__(OState* S, OAny self) {
     kv_separator = OString(S, ": ");
     items_separator = OString(S, ", ");
 
-	array = OArray(S, OInteger(_size(self)));
+	array = OVector(S, OInteger(_size(self)));
 
 	iterator = oiterator(S, self);
 
@@ -270,7 +270,7 @@ static OAny __tostring__(OState* S, OAny self) {
 			break;
 		}
 
-		OArray_push(S, array, OString_join(S, kv_separator, item));
+		OVector_push(S, array, OString_join(S, kv_separator, item));
 	}
 
 	result = OString_join(S, items_separator, array);

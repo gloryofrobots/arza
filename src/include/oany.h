@@ -23,7 +23,7 @@ typedef enum _EOBIN_TYPE {
 
 	EOBIN_BEGIN_COLLECTION_TYPES,
 	EOBIN_TYPE_STRING,
-	EOBIN_TYPE_ARRAY,
+	EOBIN_TYPE_VECTOR,
 	EOBIN_TYPE_TABLE,
 	EOBIN_TYPE_TUPLE,
 	EOBIN_TYPE_END_COLLECTION_TYPES,
@@ -83,7 +83,7 @@ OAny OAny_new(EOTYPE type);
 #define OAny_isChar(any) (any.type == EOBIN_TYPE_CHAR)
 
 #define OAny_isString(any) (any.type == EOBIN_TYPE_STRING)
-#define OAny_isArray(any) (any.type == EOBIN_TYPE_ARRAY)
+#define OAny_isVector(any) (any.type == EOBIN_TYPE_VECTOR)
 #define OAny_isTuple(any) (any.type == EOBIN_TYPE_TUPLE)
 #define OAny_isTable(any) (any.type == EOBIN_TYPE_TABLE)
 #define OAny_isCell(any) OType_isCell(any.type)

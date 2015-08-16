@@ -24,7 +24,7 @@ SET(OBIN_LIB_SRC
    core/types/_collection.c
    core/types/_tuple.c
    core/types/_table.c
-   core/types/_array.c
+   core/types/_vector.c
    core/types/_string.c
    core/types/_integer.c
    core/types/_float.c
