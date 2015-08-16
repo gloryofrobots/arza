@@ -1,5 +1,8 @@
 /*
+
 OAny OArray(OState* S, OAny size);
+OAny OArray_pack(OState* S, oint count, ...);
+
 OAny OArray_push(OState* S, OAny self, OAny value);
 OAny OArray_indexOf(OState* S, OAny self, OAny item);
 OAny OArray_lastIndexOf(OState* S, OAny self, OAny item);
