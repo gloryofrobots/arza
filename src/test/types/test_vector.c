@@ -1,20 +1,19 @@
 /*
+OAny OVector(OState* S, OAny size);
+OAny OVector_pack(OState* S, oint count, ...);
 
-OAny OArray(OState* S, OAny size);
-OAny OArray_pack(OState* S, oint count, ...);
-
-OAny OArray_push(OState* S, OAny self, OAny value);
-OAny OArray_indexOf(OState* S, OAny self, OAny item);
-OAny OArray_lastIndexOf(OState* S, OAny self, OAny item);
-OAny OArray_pop(OState* S, OAny self);
-OAny OArray_clear(OState* S, OAny self);
-OAny OArray_remove(OState* S, OAny self, OAny item);
-OAny OArray_insert(OState* S, OAny self, OAny item, OAny position);
-OAny OArray_insertCollection(OState* S, OAny self, OAny collection, OAny position);
-OAny OArray_concat(OState* S, OAny self, OAny collection);
-OAny OArray_join(OState* S, OAny self, OAny collection);
-OAny OArray_reverse(OState* S, OAny self);
-OAny OArray_fill(OState* S, OAny self, OAny item, OAny start, OAny end);
+OAny OVector_push(OState* S, OAny self, OAny value);
+OAny OVector_indexOf(OState* S, OAny self, OAny item);
+OAny OVector_lastIndexOf(OState* S, OAny self, OAny item);
+OAny OVector_pop(OState* S, OAny self);
+OAny OVector_clear(OState* S, OAny self);
+OAny OVector_remove(OState* S, OAny self, OAny item);
+OAny OVector_insert(OState* S, OAny self, OAny item, OAny position);
+OAny OVector_insertCollection(OState* S, OAny self, OAny collection, OAny position);
+OAny OVector_concat(OState* S, OAny self, OAny collection);
+OAny OVector_join(OState* S, OAny self, OAny collection);
+OAny OVector_reverse(OState* S, OAny self);
+OAny OVector_fill(OState* S, OAny self, OAny item, OAny start, OAny end);
 */
 
 static void Test_Vector(void) {
@@ -58,6 +57,8 @@ static void Test_Vector(void) {
 
 	a4 = OVector_pack(S, 2, ObinTrue, ObinFalse);
 	osetitem(S, a2, OInteger(0), a4);
+	OVector_push(S, a4, i1);
 
+	CU_ASSERT_EQUAL(OAny_intVal(olength(S, a4)), 3);
 	omemory_collect(S);
 }
