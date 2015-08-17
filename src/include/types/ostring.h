@@ -4,6 +4,8 @@
 
 obool ostring_init(OState* S);
 
+OAny ostring_concat_collection(OState* S, OAny collection);
+
 /* constructors */
 OAny OString(OState* S, ostring data);
 

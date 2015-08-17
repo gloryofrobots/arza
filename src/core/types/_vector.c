@@ -345,26 +345,35 @@ OAny OVector_join(OState* S, OAny self, OAny collection) {
 	return result;
 }
 
+static ostring _cstr(OState* S, OAny self) {
+	return OString_cstr(S, otostring(S, self));
+}
+
 OAny OVector_reverse(OState* S, OAny self) {
-	OAny item;
+	OAny result;
+
 	oindex_t i,j;
 	oint length;
 
 	_CHECK_SELF_TYPE(S, self, OVector_reverse);
+
 	if(_size(self) < 2) {
-		return self;
+		return oclone(S, self);
 	}
+
+	result = OVector(S, OInteger(_size(self)));
 	length = _size(self);
 
-	for (i = 0; i < length / 2 - 1; i++){
-	    j = length - i - 1;
+	for (i = 0, j=length - 1;
+			(i < length && j>=0);
+			i++,j--){
 
-	    item = _item(self, i);
-	    _item(self, i) = _item(self, j);
-	    _item(self, j) = item;
-	  }
+		_item(result, i) = _item(self, j);
+	}
+	_size(result) = _size(self);
+	_log(S, _INFO, "OVector_reverse2 %s", _cstr(S, result));
 
-	return self;
+	return result;
 }
 
 OAny OVector_fill(OState* S, OAny self, OAny item, OAny startPos, OAny endPos) {

@@ -98,16 +98,13 @@ static void Test_Vector(void) {
 	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a1, OInteger(3)), i4)));
 	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a1, OInteger(4)), i5)));
 	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a1, OInteger(5)), i6)));
-	OVector_reverse(S, a1);
-	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a1, OInteger(5)), i1)));
-	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a1, OInteger(4)), i2)));
-	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a1, OInteger(3)), i3)));
-	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a1, OInteger(2)), i4)));
-	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a1, OInteger(1)), i5)));
-	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a1, OInteger(0)), i6)));
+	a2 = OVector_reverse(S, a1);
+	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a2, OInteger(5)), i1)));
+	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a2, OInteger(4)), i2)));
+	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a2, OInteger(3)), i3)));
+	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a2, OInteger(2)), i4)));
+	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a2, OInteger(1)), i5)));
+	CU_ASSERT_TRUE(OAny_isTrue(oequal(S, ogetitem(S, a2, OInteger(0)), i6)));
 	/********* ****************************************/
-	/*
-	OAny OVector_reverse(OState* S, OAny self);
-	*/
 	omemory_collect(S);
 }

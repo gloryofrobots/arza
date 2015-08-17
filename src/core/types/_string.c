@@ -668,14 +668,18 @@ OAny OString_join(OState* S, OAny self, OAny collection) {
 		}
 
 		value = onext(S, iterator);
-		result = __add__(S, result, value);
+		result = __add__(S, result, otostring(S, value));
 		result = __add__(S, result, self);
 	}
 
 	/*append last element*/
 	value = onext(S, iterator);
-	result = __add__(S, result, value);
+	result = __add__(S, result, otostring(S, value));
 	return result;
+}
+
+OAny ostring_concat_collection(OState* S, OAny collection) {
+	return OString_join(S, ostrings(S)->Empty, collection);
 }
 
 OAny OString_pack(OState* S, oindex_t count, ...){
