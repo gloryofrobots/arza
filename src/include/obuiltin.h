@@ -1,33 +1,12 @@
 #ifndef OBUILTIN_H_
 #define OBUILTIN_H_
-/* TODO remove obin_any_xxx to obin_to_xxx */
-/*
-Obin q reg
-obin_ w reg
-OBIN_ e reg
-
-ObinFalse f reg
-ObinTrue t reg
-ObinNil n reg
-ObinNothing g reg
-ObinAny a reg
- */
 
 #include "oconf.h"
 #include "oany.h"
 #include "ostate.h"
 #include "ocell.h"
 
-/*
-#define OBIN_MODULE_NAME(name) OBIN_MODULE_##name##_INIT
-#define OBIN_MODULE_DECLARE(name) static int  OBIN_MODULE_NAME(name) = 0
-#define OBIN_MODULE_INIT(name) OBIN_MODULE_NAME(name) = 1
-#define OBIN_MODULE_CHECK(name) obin_assert(OBIN_MODULE_NAME(name))
-*/
-
 /**************************** BUILTINS *******************************************/
-/* NEVER FORGET TO CALL THIS BEFORE SETTING TYPE*/
-
 OState* obin_init(omem_t heap_size);
 
 void obin_finalise(OState* S);
@@ -39,9 +18,9 @@ OAny oequal(OState * S, OAny any, OAny other);
 OAny ois(OState * S, OAny first, OAny second);
 
 /*shortcuts for tuples and arrays*/
-#define ogetfirst(S, coll) ogetitem(S, coll, OInteger(0))
-#define ogetsecond(S, coll) ogetitem(S, coll, OInteger(1))
-#define ogetthird(S, coll) ogetitem(S, coll, OInteger(2))
+#define ofirst(S, coll) ogetitem(S, coll, OInteger(0))
+#define osecond(S, coll) ogetitem(S, coll, OInteger(1))
+#define othird(S, coll) ogetitem(S, coll, OInteger(2))
 
 /*@return list of results from function applied to iterable
 ObinAny obin_map(ObinState * S, obin_function function, ObinAny iterable);

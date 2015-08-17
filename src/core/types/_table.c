@@ -119,8 +119,8 @@ OAny OTable_merge(OState* S, OAny self, OAny other) {
 		}
 
 		osetitem(S, self,
-				ogetfirst(S, item),
-				ogetsecond(S, item));
+				ofirst(S, item),
+				osecond(S, item));
 	}
 
 	return ObinNothing;
@@ -162,7 +162,7 @@ OAny OTable_keys(OState* S, OAny self){
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
-		OVector_push(S, result, ogetfirst(S, item));
+		OVector_push(S, result, ofirst(S, item));
 
 	}
 
@@ -184,7 +184,7 @@ OAny OTable_values(OState* S, OAny self){
 		if (OBIN_IS_STOP_ITERATION(item)) {
 			break;
 		}
-		OVector_push(S, result, ogetsecond(S, item));
+		OVector_push(S, result, osecond(S, item));
 
 	}
 
