@@ -21,15 +21,16 @@ SET(OBIN_LIB_SRC
    core/_random.c
    core/types/_character.c
    core/types/_bool.c
-   core/types/_collection.c
-   core/types/_tuple.c
-   core/types/_table.c
-   core/types/_vector.c
-   core/types/_string.c
    core/types/_integer.c
    core/types/_float.c
    core/types/_number.c
-   core/types/_fstream.c
+   
+   core/types/cells/_fstream.c
+   core/types/cells/_collection.c
+   core/types/cells/_tuple.c
+   core/types/cells/_table.c
+   core/types/cells/_vector.c
+   core/types/cells/_string.c
    )
    
 SET(OBIN_EXE_SRC
