@@ -18,19 +18,8 @@ typedef enum _EOBIN_TYPE {
 	EOBIN_TYPE_CHAR,
 	EOBIN_TYPE_INTEGER,
 	EOBIN_TYPE_FLOAT,
-	/* TYPES ALLOCATED IN HEAP WE CALL THEM CELLS */
-	EOBIN_TYPE_BEGIN_CELL_TYPES,
-
-	EOBIN_BEGIN_COLLECTION_TYPES,
-	EOBIN_TYPE_STRING,
-	EOBIN_TYPE_VECTOR,
-	EOBIN_TYPE_TABLE,
-	EOBIN_TYPE_TUPLE,
-	EOBIN_TYPE_END_COLLECTION_TYPES,
-
+	/*COMPOUND TYPE COLLECTED BY GC, Strings, Vectors and other*/
 	EOBIN_TYPE_CELL,
-
-	EOBIN_TYPE_END_CELL_TYPES,
 } EOTYPE;
 
 typedef struct _ObinCell OCell;
@@ -68,9 +57,7 @@ OAny OAny_new(EOTYPE type);
 #define OAny_memVal(any) (omem_t)(any.data.integer_value)
 
 #define OAny_floatVal(any) (any.data.float_value)
-
-#define OCHECK_TYPE_RANGE(type, min, max) (type > min && type < max)
-#define OType_isCell(type) OCHECK_TYPE_RANGE(type, EOBIN_TYPE_BEGIN_CELL_TYPES, EOBIN_TYPE_END_CELL_TYPES)
+#define OType_isCell(type) (type == EOBIN_TYPE_CELL)
 
 #define OAny_isBool(any) ((any.type == EOBIN_TYPE_TRUE) || (any.type == EOBIN_TYPE_FALSE))
 #define OAny_isTrue(any) (any.type == EOBIN_TYPE_TRUE)
@@ -82,10 +69,6 @@ OAny OAny_new(EOTYPE type);
 #define OAny_isFloat(any) (any.type == EOBIN_TYPE_FLOAT)
 #define OAny_isChar(any) (any.type == EOBIN_TYPE_CHAR)
 
-#define OAny_isString(any) (any.type == EOBIN_TYPE_STRING)
-#define OAny_isVector(any) (any.type == EOBIN_TYPE_VECTOR)
-#define OAny_isTuple(any) (any.type == EOBIN_TYPE_TUPLE)
-#define OAny_isTable(any) (any.type == EOBIN_TYPE_TABLE)
 #define OAny_isCell(any) OType_isCell(any.type)
 
 #define OBIN_IS_FIT_TO_MEMSIZE(size) (size > 0 && size < OBIN_MAX_CAPACITY)

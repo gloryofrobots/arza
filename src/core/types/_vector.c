@@ -75,7 +75,7 @@ OVector(OState* S, OAny size) {
 
 	self->capacity = capacity;
 	self->size = 0;
-	s =  OCell_new(EOBIN_TYPE_VECTOR, (OCell*)self, &__BEHAVIOR__, ocells(S)->__Array__);
+	s =  OCell_new(__OVectorTypeId__, (OCell*)self, &__BEHAVIOR__);
 	return s;
 }
 
@@ -189,11 +189,6 @@ OAny OVector_insert(OState* S, OAny self, OAny item, OAny position) {
 
 /*
 MAYBE IMPLEMENT IT IN SOURCE
-ObinAny obin_vector_merge(ObinState* S, ObinAny self, ObinAny sequence,
-		ObinAny start, ObinAny end);
-ObinAny obin_vector_fill(ObinState* S, ObinAny self, ObinAny item,
-		ObinAny start, ObinAny end);
-ObinAny obin_vector_reverse(ObinState* S, ObinAny self);
 Array.prototype.sort()
 Array.prototype.splice()
 Array.prototype.concat()
@@ -545,9 +540,6 @@ obool ovector_init(OState* S) {
 	__BEHAVIOR__.__delitem__ = __delitem__;
 	__BEHAVIOR__.__mark__ = __mark__;
 	__BEHAVIOR__.__add__ = OVector_concat;
-
-	ocells(S)->__Array__ = OCell_new(EOBIN_TYPE_CELL,
-			obin_new(S, OCell), &__BEHAVIOR__, ocells(S)->__Cell__);
 
 	return OTRUE;
 }

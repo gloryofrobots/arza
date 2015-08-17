@@ -33,7 +33,6 @@ _init_internals(OState* S) {
 	oindex_t i;
 
 	S->internals = &__INTERNALS__;
-	S->internals->cells.__Cell__ = OCell_new(EOBIN_TYPE_CELL, obin_new(S, OCell), 0, ObinNil);
 
 	for(i=0; i < count_modules; i++) {
 		module = __MODULES__ + i;

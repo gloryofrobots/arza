@@ -23,7 +23,7 @@ OAny OFstream_fromFile(OState* S, ofile file, obool is_disposable){
 
 	self->file = file;
 	self->is_disposable = is_disposable;
-	return OCell_new(EOBIN_TYPE_CELL, (OCell*)self, &__BEHAVIOR__, ocells(S)->__Cell__);
+	return OCell_new(__OFStreamTypeId__, (OCell*)self, &__BEHAVIOR__);
 }
 
 OAny OFstream_fromPath(OState* S, OAny path, ostring mode){
@@ -84,7 +84,7 @@ static void __destroy__(OState* S, OCell* cell) {
 
 	if(self->file && self->is_disposable) {
 		OFstream_close(S,
-				OCell_toAny(EOBIN_TYPE_CELL, (OCell*)self));
+				OCell_toAny((OCell*)self));
 	}
 }
 

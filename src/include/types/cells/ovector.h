@@ -1,6 +1,5 @@
 #ifndef OVECTOR_H_
 #define OVECTOR_H_
-
 #include "obuiltin.h"
 
 obool ovector_init(OState* S);

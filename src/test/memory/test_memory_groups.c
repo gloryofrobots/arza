@@ -52,7 +52,7 @@ OAny tmg_cell_new(OState* S, int data_size, double garbage_pecentage, int parent
 		}
 	}
 
-	return OCell_new(EOBIN_TYPE_CELL, (OCell*) cell, &__TMGCELL_BEHAVIOR__, ocells(S)->__Cell__);
+	return OCell_new(9999999, (OCell*) cell, &__TMGCELL_BEHAVIOR__);
 }
 
 

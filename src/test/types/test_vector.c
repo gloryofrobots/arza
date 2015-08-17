@@ -4,8 +4,8 @@ static void Test_Vector(void) {
 	OState * S = obin_init(1024 * 1024 * 90);
 
 	OAny a1, a2, a3, a4;
-	OAny i1, i2, i3, i4, i5, i6, i7, i8;
-	OAny var1, var2;
+	OAny i1, i2, i3, i4, i5, i6;
+	OAny var1;
 	i1 = OString(S, "XXX");
 	i2 = OInteger(42);
 	i3 = OInteger(-42);

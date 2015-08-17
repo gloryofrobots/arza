@@ -214,7 +214,7 @@ static OAny _obin_string_from_carr(OState* S, ostring data, omem_t size) {
 
 	self->data[self->size] = '\0';
 
-	return OCell_new(EOBIN_TYPE_STRING, (OCell*) self, &__BEHAVIOR__, ocells(S)->__String__);
+	return OCell_new(__OStringTypeId__, (OCell*) self, &__BEHAVIOR__);
 }
 
 static OAny _obin_string_blank(OState* S, omem_t length) {
@@ -725,11 +725,6 @@ obool ostring_init(OState* S) {
 	__BEHAVIOR__.__getitem__ = __getitem__;
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
 	__BEHAVIOR__.__add__ = __add__;
-
-	/*strings proto*/
-	ocells(S)->__String__ =  OCell_new(EOBIN_TYPE_CELL,
-			obin_new(S, OCell), &__BEHAVIOR__, ocells(S)->__Cell__);
-
 
 	ostrings(S)->Nil = OString(S, "Nil");
 	ostrings(S)->True = OString(S, "True");

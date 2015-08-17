@@ -16,13 +16,12 @@ typedef struct {
 	OAny value;
 } _ObinHashTableEntry;
 
-typedef struct {
-	OCELL_HEADER;
+OCELL_DECLARE(ObinTable,
 	_ObinHashTableEntry* body;
 	omem_t size;
 	omem_t capacity;
 	oint iter_count;
-} ObinTable;
+);
 
 #define _table(any) ((ObinTable*) OAny_cellVal(any))
 #define _size(any) ((_table(any))->size)
@@ -67,7 +66,7 @@ OAny OTable(OState* S, OAny size){
 	self->body = omemory_malloc_array(S, _ObinHashTableEntry, self->capacity);
 	self->size = 0;
 
-	return OCell_new(EOBIN_TYPE_TABLE, (OCell*)self, &__BEHAVIOR__, ocells(S)->__Table__);
+	return OCell_new(__OTableTypeId__, (OCell*)self, &__BEHAVIOR__);
 }
 
 static void _obin_table_resize(OState* S, OAny self, omem_t new_capacity) {
@@ -237,7 +236,7 @@ static OAny __iterator__(OState* S, OAny self) {
 	iterator = obin_new(S, TableIterator);
 	iterator->source = self;
 	iterator->index = 0;
-	return OCell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__TABLE_ITERATOR_BEHAVIOR__, ObinNil);
+	return OCell_new(__OIteratorTypeId__, (OCell*)iterator, &__TABLE_ITERATOR_BEHAVIOR__);
 }
 
 static OAny __tobool__(OState* S, OAny self) {
@@ -412,9 +411,6 @@ obool otable_init(OState* S) {
 	__BEHAVIOR__.__setitem__ = __setitem__;
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
 	__BEHAVIOR__.__delitem__ = __delitem__;
-
-	ocells(S)->__Table__ = OCell_new(EOBIN_TYPE_CELL,
-			obin_new(S, OCell), &__BEHAVIOR__, ocells(S)->__Cell__);
 
 	return OTRUE;
 }

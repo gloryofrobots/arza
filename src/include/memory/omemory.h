@@ -38,10 +38,10 @@ struct _OMemory {
 
 #define OAny_cellSize(any) (OAny_cellVal(any)->memory.size)
 
-OAny OCell_new(EOTYPE type, OCell* cell, OBehavior* behavior, OAny root);
+OAny OCell_new(oint typeId, OCell* cell, OBehavior* behavior);
 
 /*TRAITS HERE MUST EXIST IN CELL */
-OAny OCell_toAny(EOTYPE type, OCell* cell);
+OAny OCell_toAny(OCell* cell);
 
 OState* OState_create(omem_t heap_size);
 void OState_destroy(OState* S);

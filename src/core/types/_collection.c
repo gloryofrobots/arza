@@ -39,7 +39,7 @@ OAny OSequence_iterator(OState* S, OAny sequence){
 	iterator->current = 0;
 	iterator->length = (omem_t) OAny_intVal(olength(S, sequence));
 
-	return OCell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__SEQUENCE_ITERATOR_BEHAVIOR__, ocells(S)->__Cell__);
+	return OCell_new(EOBIN_TYPE_CELL, (OCell*)iterator, &__SEQUENCE_ITERATOR_BEHAVIOR__);
 }
 
 OAny OCollection_compare(OState * S, OAny self, OAny other){

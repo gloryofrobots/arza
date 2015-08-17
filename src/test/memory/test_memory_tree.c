@@ -66,7 +66,7 @@ OAny tmtcell_new(OState* S, ostring data, omem_t capacity) {
 
 	tmtcell_print(cell, "tmtcell_new");
 
-	return OCell_new(EOBIN_TYPE_CELL, (OCell*) cell, &__TMTCELL_BEHAVIOR__, ocells(S)->__Cell__);
+	return OCell_new(9999998, (OCell*) cell, &__TMTCELL_BEHAVIOR__);
 }
 
 

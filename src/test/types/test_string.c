@@ -1,9 +1,9 @@
 #define STR_ARR_SIZE 1024 * 4
-
+/*
 static void print_str(OState* S, OAny str) {
 	static int c = 0;
 	printf("\n%d. %s\n", ++c, OString_cstr(S, str));
-}
+}*/
 
 static void Test_String(void) {
 	OState * S = obin_init(1024 * 1024 * 90);

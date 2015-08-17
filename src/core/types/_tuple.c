@@ -7,12 +7,11 @@
 				__TypeName__"."#method "call from other type", self); \
 	} \
 
-typedef struct {
-	OCELL_HEADER;
+OCELL_DECLARE(ObinTuple,
 	omem_t size;
 	OAny* data;
 	oint hash;
-} ObinTuple;
+);
 
 #define _tuple(any) ((ObinTuple*) (any.data.cell))
 #define _size(any) ((_tuple(any))->size)
@@ -41,7 +40,7 @@ ObinTuple* _obin_tuple_new(OState* S,  omem_t size) {
 	return self;
 }
 
-#define OTuple_make(cell) OCell_new(EOBIN_TYPE_TUPLE, (OCell*) self, &__BEHAVIOR__, ocells(S)->__Tuple__)
+#define OTuple_make(cell) OCell_new(__OTupleTypeId__, (OCell*) self, &__BEHAVIOR__)
 
 OAny _obin_tuple_empty(OState* S) {
 	ObinTuple* self;
@@ -255,9 +254,6 @@ obool otuple_init(OState* S) {
 	__BEHAVIOR__.__length__ = __length__;
 	__BEHAVIOR__.__getitem__ = __getitem__;
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
-
-	ocells(S)->__Tuple__ = OCell_new(EOBIN_TYPE_CELL,
-			obin_new(S, OCell), &__BEHAVIOR__, ocells(S)->__Cell__);
 
 	return OTRUE;
 

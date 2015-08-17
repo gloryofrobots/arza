@@ -6,17 +6,6 @@ typedef struct _OBehavior OBehavior;
 typedef struct _OMemory OMemory;
 
 typedef struct _OInternals {
-	struct _ObinInternalCells {
-		OAny __Cell__;
-		OAny __String__;
-		OAny __Array__;
-		OAny __Table__;
-		OAny __ProtoCell__;
-		OAny __Tuple__;
-		OAny __List__;
-		OAny __Stream__;
-	} cells;
-
 	struct _ObinInternalIntegers {
 		OAny NotFound;
 		OAny Lesser;
@@ -70,7 +59,6 @@ typedef struct _ObinState {
 #define oerrors(S) (&S->internals->errors)
 #define ointegers(S) (&S->internals->integers)
 #define ostrings(S) (&S->internals->strings)
-#define ocells(S) (&S->internals->cells)
 #define obehaviors(S) (&S->internals->behaviors)
 
 #endif /* OSTATE_H_ */

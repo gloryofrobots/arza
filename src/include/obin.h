@@ -12,12 +12,12 @@
 #include "types/ocharacter.h"
 #include "types/onumber.h"
 #include "types/obool.h"
-#include "types/ocollection.h"
-#include "types/otuple.h"
-#include "types/ofstream.h"
-#include "types/otable.h"
-#include "types/ostring.h"
-#include "types/ovector.h"
+#include "types/cells/ocollection.h"
+#include "types/cells/otuple.h"
+#include "types/cells/ofstream.h"
+#include "types/cells/otable.h"
+#include "types/cells/ostring.h"
+#include "types/cells/ovector.h"
 
 
 /*
