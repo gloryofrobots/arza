@@ -64,6 +64,8 @@ typedef void* opointer;
 typedef FILE* ofile;
 
 typedef long oint;
+typedef oint obytecode;
+
 #define OINT_MAX LONG_MAX
 #define OINT_MIN LONG_MIN
 
@@ -225,6 +227,7 @@ OBIN_STMT_END
 #define OBIN_LOG_MEMORY 2
 #define OBIN_LOG_COMMON 2
 #define OBIN_LOG_VECTOR 2
+#define OBIN_LOG_BYTECODE 2
 #endif
 
 /*************STRING*********/

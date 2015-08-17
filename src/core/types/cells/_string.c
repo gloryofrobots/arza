@@ -732,7 +732,7 @@ obool ostring_init(OState* S) {
 	ostrings(S)->Nothing = OString(S, "Nothing");
 	ostrings(S)->PrintSeparator = OString(S, OBIN_PRINT_SEPARATOR);
 	ostrings(S)->Empty = _obin_string_from_carr(S, "", 0);
-	ostrings(S)->Space = OString(S, "\32");
+	ostrings(S)->Space = OString(S, " ");
 
 	ostrings(S)->TabSpaces = OString_dublicate(S, ostrings(S)->Space, OInteger(OBIN_COUNT_TAB_SPACES));
 

@@ -18,6 +18,7 @@
 #include "types/cells/otable.h"
 #include "types/cells/ostring.h"
 #include "types/cells/ovector.h"
+#include "types/cells/obytecode.h"
 
 
 /*

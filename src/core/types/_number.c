@@ -2,7 +2,6 @@
 
 
 obool onumber_init(OState* S) {
-
 	return OTRUE;
 }
 
