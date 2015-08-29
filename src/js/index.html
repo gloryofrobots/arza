@@ -4,6 +4,7 @@
     <script src = 'tokens.js'></script>
     <script src = 'parse.js'></script>
     <script src = 'underscore.js'></script>
+    <script src = 'jquery.js'></script>
     <style type="text/css">
         #program {
              width:28%;
@@ -18,17 +19,19 @@
     </style>
 </head>
 <script type="text/template" id="program-body">
-   var x =  1+ 2 * 3 -4;
-    var y = x ? x: 0; 
+    if(1+2) {
+       var x =  1+ 2 * 3 -4;
+        var y = x ? x: 0; 
+    }
 </script>
 <body>
     <script>
     function compile() {
-        var ptext = document.getElementById("program-body").innerHTML;
+        var ptext = $("#program").val();
         console.log("ptext:", ptext);
         var parser = make_parse();
         var ast = parser(ptext);
-        console.log(ast);
+        //console.log(ast);
         var output = JSON.stringify(ast,
             function(key, value) {
                 if(key  == "scope" || key == "from" || key == "to") {
@@ -38,8 +41,8 @@
                     return value;
                 }
             }, 2);
-        console.log("ast:", output );
-        document.getElementById("result").innerHTML = output; 
+        //console.log("ast:", output );
+        $("#result").html(output); 
     }
     </script>
     <button onclick="compile()">Compile</button><br/><br/>
@@ -50,7 +53,11 @@
     
     <textarea id="result"></textarea>
     <script type="text/javascript">
-        compile();
+        $(document).ready(function(){
+             $("#program").val($("#program-body").html());
+            compile();
+        });
+           
     </script>
 </body>
 </html>

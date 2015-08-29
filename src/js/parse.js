@@ -6,7 +6,6 @@
 // 2010-06-26
 
 var make_parse = function () {
-    var scope;
     var symbol_table = {};
     var token;
     var tokens;
@@ -15,65 +14,17 @@ var make_parse = function () {
     var itself = function () {
         return this;
     };
-
-    var original_scope = {
-        define: function (n) {
-            var t = this.def[n.value];
-            if (typeof t === "object") {
-                n.error(t.reserved ? "Already reserved." : "Already defined. " + n.value);
-            }
-            this.def[n.value] = n;
-            n.reserved = false;
-            n.nud      = itself;
-            n.led      = null;
-            n.std      = null;
-            n.lbp      = 0;
-            n.scope    = scope;
-            return n;
-        },
-        find: function (n) {
-            var e = this, o;
-            while (true) {
-                o = e.def[n];
-                if (o && typeof o !== 'function') {
-                    return e.def[n];
-                }
-                e = e.parent;
-                if (!e) {
-                    o = symbol_table[n];
-                    return o && typeof o !== 'function' ? o : symbol_table["(name)"];
-                }
-            }
-        },
-        pop: function () {
-            scope = this.parent;
-        },
-        reserve: function (n) {
-            if (n.arity !== "name" || n.reserved) {
-                return;
-            }
-            var t = this.def[n.value];
-            if (t) {
-                if (t.reserved) {
-                    return;
-                }
-                if (t.arity === "name") {
-                    n.error("Already defined.");
-                }
-            }
-            this.def[n.value] = n;
-            n.reserved = true;
-        }
-    };
-
-    var new_scope = function () {
-        var s = scope;
-        scope = Object.create(original_scope);
-        scope.def = {};
-        scope.parent = s;
-        return scope;
-    };
-
+    
+    var define = function (n) {
+        symbol_table[n.value] = n;
+        n.reserved = false;
+        n.nud      = itself;
+        n.led      = null;
+        n.std      = null;
+        n.lbp      = 0;
+        return n;
+    }
+    
     var advance = function (id) {
         var a, o, t, v;
         if (id && token.id !== id) {
@@ -87,12 +38,12 @@ var make_parse = function () {
         token_nr += 1;
         v = t.value;
         a = t.type;
-        if (a === "name") {
-            o = scope.find(v);
-        } else if (a === "operator") {
+        if (a === "operator" || a === "name") {
             o = symbol_table[v];
             if (!o) {
-                t.error("Unknown operator. " + v);
+                define(t);
+                o = t;
+                //t.error("Unknown operator. " + v);
             }
         } else if (a === "string" || a ===  "number") {
             o = symbol_table["(literal)"];
@@ -131,7 +82,6 @@ var make_parse = function () {
 
         if (n.std) {
             advance();
-            scope.reserve(n);
             return n.std();
         }
         v = expression(0);
@@ -190,7 +140,6 @@ var make_parse = function () {
     var constant = function (s, v) {
         var x = symbol(s);
         x.nud = function () {
-            scope.reserve(this);
             this.value = symbol_table[this.id].value;
             this.arity = "literal";
             return this;
@@ -237,7 +186,6 @@ var make_parse = function () {
     var prefix = function (id, nud) {
         var s = symbol(id);
         s.nud = nud || function () {
-            scope.reserve(this);
             this.first = expression(70);
             this.arity = "unary";
             return this;
@@ -245,9 +193,12 @@ var make_parse = function () {
         return s;
     };
 
-    var stmt = function (s, f) {
+    var stmt = function (s, f, reserved) {
         var x = symbol(s);
         x.std = f;
+        if (reserved) {
+            x.reserved = reserved;
+        }
         return x;
     };
 
@@ -271,7 +222,6 @@ var make_parse = function () {
     symbol("(literal)").nud = itself;
 
     symbol("this").nud = function () {
-        scope.reserve(this);
         this.arity = "this";
         return this;
     };
@@ -366,11 +316,12 @@ var make_parse = function () {
         return e;
     });
 
+    
+
     prefix("function", function () {
         var a = [];
-        new_scope();
         if (token.arity === "name") {
-            scope.define(token);
+            define(token);
             this.name = token.value;
             advance();
         }
@@ -380,7 +331,7 @@ var make_parse = function () {
                 if (token.arity !== "name") {
                     token.error("Expected a parameter name.");
                 }
-                scope.define(token);
+                define(token);
                 a.push(token);
                 advance();
                 if (token.id !== ",") {
@@ -395,7 +346,6 @@ var make_parse = function () {
         this.second = statements();
         advance("}");
         this.arity = "function";
-        scope.pop();
         return this;
     });
 
@@ -443,10 +393,8 @@ var make_parse = function () {
 
 
     stmt("{", function () {
-        new_scope();
         var a = statements();
         advance("}");
-        scope.pop();
         return a;
     });
 
@@ -457,7 +405,7 @@ var make_parse = function () {
             if (n.arity !== "name") {
                 n.error("Expected a new variable name.");
             }
-            scope.define(n);
+            define(n);
             advance();
             if (token.id === "=") {
                 t = token;
@@ -476,13 +424,17 @@ var make_parse = function () {
         return a.length === 0 ? null : a.length === 1 ? a[0] : a;
     });
 
+    var reserve = function(n) {
+        n.reserved = true;
+    };
+
     stmt("if", function () {
         advance("(");
         this.first = expression(0);
         advance(")");
         this.second = block();
         if (token.id === "else") {
-            scope.reserve(token);
+            reserve(token);
             advance("else");
             this.third = token.id === "if" ? statement() : block();
         } else {
@@ -490,7 +442,7 @@ var make_parse = function () {
         }
         this.arity = "statement";
         return this;
-    });
+    }, true);
 
     stmt("return", function () {
         if (token.id !== ";") {
@@ -526,11 +478,9 @@ var make_parse = function () {
         tokens = source.tokens('=<>!+-*&|/%^', '=<>&|');
         //console.log(tokens);
         token_nr = 0;
-        new_scope();
         advance();
         var s = statements();
         advance("(end)");
-        scope.pop();
         return s;
     };
 };
