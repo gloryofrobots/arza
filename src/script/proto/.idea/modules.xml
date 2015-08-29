@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../../../../../smalltalk/childtalk/src/main/java/ua/ho/gloryofrobots/childtalk/.idea/childtalk.iml" filepath="$PROJECT_DIR$/../../../../../../smalltalk/childtalk/src/main/java/ua/ho/gloryofrobots/childtalk/.idea/childtalk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/proto.iml" filepath="$PROJECT_DIR$/.idea/proto.iml" />
+    </modules>
+  </component>
+</project>

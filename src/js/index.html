@@ -1,0 +1,56 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script src = 'tokens.js'></script>
+    <script src = 'parse.js'></script>
+    <script src = 'underscore.js'></script>
+    <style type="text/css">
+        #program {
+             width:28%;
+             height:500px;
+             float:left;       
+        }
+        #result {
+             width:68%;
+             height:1024px;
+             float:right;       
+        }
+    </style>
+</head>
+<script type="text/template" id="program-body">
+   var x =  1+ 2 * 3 -4;
+    var y = x ? x: 0; 
+</script>
+<body>
+    <script>
+    function compile() {
+        var ptext = document.getElementById("program-body").innerHTML;
+        console.log("ptext:", ptext);
+        var parser = make_parse();
+        var ast = parser(ptext);
+        console.log(ast);
+        var output = JSON.stringify(ast,
+            function(key, value) {
+                if(key  == "scope" || key == "from" || key == "to") {
+                    return undefined;
+                } 
+                else {
+                    return value;
+                }
+            }, 2);
+        console.log("ast:", output );
+        document.getElementById("result").innerHTML = output; 
+    }
+    </script>
+    <button onclick="compile()">Compile</button><br/><br/>
+
+    <textarea id="program"> var x =  1 + 2 * 3; </textarea> 
+
+    
+    
+    <textarea id="result"></textarea>
+    <script type="text/javascript">
+        compile();
+    </script>
+</body>
+</html>
