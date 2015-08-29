@@ -288,8 +288,6 @@ var make_parse = function () {
         return this;
     });
 
-    infix(",", 80);
-
     infix("[", 80, function (left) {
         this.first = left;
         this.second = expression(0);
@@ -366,33 +364,13 @@ var make_parse = function () {
     prefix("-");
     prefix("typeof");
 
-    // prefix("(", function () {
-    //     var a = [];
-    //     while (true) {
-    //         a.push(expression(0));
-    //         if (token.id !== ",") {
-    //             break;
-    //         }
-    //         advance(",");
-    //     }
-        
-    //     advance(")");
-
-    //     if(a.length == 1) {
-    //         return a[0];
-    //     }
-
-    //     this.first = a;
-    //     this.arity = "unary";
-    //     return this;
-    // });
-
-   prefix("(", function () {
+    prefix("(", function () {
         var e = expression(0);
         advance(")");
         return e;
     });
 
+    
 
     prefix("function", function () {
         var a = [];
