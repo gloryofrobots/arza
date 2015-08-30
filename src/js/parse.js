@@ -27,9 +27,13 @@ var make_parse = function () {
         return n;
     }
     
+
+
     var advance = function (id) {
         var a, o, t, v;
         if (id && token.id !== id) {
+            console.error("Expected", id, token);
+
             token.error("Expected '" + id + "'.");
         }
         if (token_nr >= tokens.length) {
@@ -79,11 +83,11 @@ var make_parse = function () {
         var t = token;
         advance();
         left = t.nud();
-        console.log("expression:", rbp, t.rbp, t.value, token.value, token.rbp, token.lbp);
+        //console.log("expression:", rbp, t.rbp, t.value, token.value, token.rbp, token.lbp);
         while (rbp < token.lbp) {
             t = token;
             advance();
-            console.log("expression2:",   token.value, token.rbp, token.lbp);
+            //console.log("expression2:",   token.value, token.rbp, token.lbp);
 
             left = t.led(left);
         }
@@ -190,7 +194,9 @@ var make_parse = function () {
 
     var assignment = function (id) {
         return infixr(id, 10, function (left) {
-            if (left.id !== "." && left.id !== "[" && left.arity !== "name") {
+            if (left.id !== "." && left.id !== "[" && left.arity !== "name" 
+                && left.id != ",") {
+                console.log("Bad Lv ", left); 
                 left.error("Bad lvalue.");
             }
             this.first = left;
@@ -288,8 +294,39 @@ var make_parse = function () {
         return this;
     });
 
-    infix(",", 80);
+    var tuplemode = false;
 
+    // infix(",", 5, function (left) {
+    //     if(tuplemode) {
+    //         this.arity = "unary";
+    //         this.first = left;
+    //         console.log("token tuplemode:", token);
+    //         return this;
+    //     }
+    //     var a = [left];
+    //     this.first = a;
+    //     this.arity = "unary";
+    //     console.log("token:", token)
+    //     tuplemode = true;
+    //     while(true) {
+    //         var e = expression(0);
+            
+    //         var t = tokens[token_nr];
+            
+    //         if(e.id == ',') {
+    //             a.push(e.first);
+    //             console.log("e:", a, e, t, token);
+    //         } else {
+    //             console.log("breaking!");
+    //             a.push(e);
+    //             tuplemode = false;
+    //             console.log("e:", a, e, t, token);
+    //             break;
+    //         }
+    //     }
+    //     return this;
+    // });
+    infix(",", 20);
     infix("[", 80, function (left) {
         this.first = left;
         this.second = expression(0);
@@ -298,7 +335,7 @@ var make_parse = function () {
         return this;
     });
 
-    infix("(", 80, function (left) {
+    /*infix("(", 90, function (left) {
         var a = [];
         if (left.id === "." || left.id === "[") {
             this.arity = "ternary";
@@ -326,7 +363,7 @@ var make_parse = function () {
         }
         advance(")");
         return this;
-    });
+    });*/
 
     var __call__ = function(id) {
         var s = symbol(id, 80);

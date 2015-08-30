@@ -21,8 +21,11 @@
     </style>
 </head>
 <script type="text/template" id="program-body">
-    x  1,2,3,4,5
-    
+    //w = 1,2,3,4;
+    //z = 1,(2,2),3,4
+    function dodo(x,y,z) {
+        dodo = 1,2;
+    }
 
     
 </script>
@@ -36,7 +39,7 @@
         //console.log(ast);
         var output = JSON.stringify(ast,
             function(key, value) {
-                if(key  == "scope" || key == "from" || key == "to") {
+                if(key  == "scope" || key == "from" || key == "to" || key == "arity") {
                     return undefined;
                 } 
                 else {
