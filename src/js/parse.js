@@ -27,15 +27,33 @@ var make_parse = function () {
         return n;
     }
     
-
-
-    var advance = function (id) {
-        var a, o, t, v;
-        if (id && token.id !== id) {
-            console.error("Expected", id, token);
-
-            token.error("Expected '" + id + "'.");
+    var checkId = function(ids) {
+        if(!ids) {
+            return
         }
+
+        if(!Array.isArray(ids)) {
+            if (token.id !== ids) {
+                console.error("Expected", ids, token);
+                token.error("Expected '" + ids + "'.");
+            }
+            return;
+        }
+
+        for (key in ids) {
+            if (token.id === ids[key]) {
+                return;
+            }
+        }
+        console.error("Expected", ids, token);
+        token.error("Expected '" + ids + "'.");
+    }
+
+    var advance = function (ids) {
+        var a, o, t, v;
+        
+        checkId(ids);
+       
         if (token_nr >= tokens.length) {
             token = symbol_table["(end)"];
             return;
@@ -44,7 +62,7 @@ var make_parse = function () {
         token_nr += 1;
         v = t.value;
         a = t.type;
-        if (a === "operator" || a === "name") {
+        if (a === "operator" || a === "name" || a === "(endline)") {
             o = symbol_table[v];
             if (!o) {
                 define(t);
@@ -62,6 +80,7 @@ var make_parse = function () {
         token.from  = t.from;
         token.to    = t.to;
         token.value = v;
+        token.id = v;
         token.arity = a;
         token.error = function(){
             console.error(arguments);
@@ -75,7 +94,7 @@ var make_parse = function () {
         if (token_nr >= tokens.length) {
             return advance();
         }
-        return advance(";");
+        return advance([";","(endline)"]);
     }
 
     var expression = function (rbp) {
@@ -114,18 +133,35 @@ var make_parse = function () {
         return v;
     };
 
-    var statements = function () {
+    var statements = function (endlist) {
         var a = [], s;
+        if(!endlist) endlist = ["}", "(end)", "end", "(newline)"]
+        var check = false;
         while (true) {
-            if (token.id === "}" || token.id === "(end)") {
+            for(key in endlist) {
+                if(endlist[key] === token.id) {
+                    check = true;
+                }
+            }
+
+            if (check) {
                 break;
             }
+
             s = statement();
             if (s) {
-                a.push(s);
+                console.log("s", s);
+                if(s) {
+                    a.push(s);
+                }
+                // if(s.id != "(newline)"){
+                //     a.push(s);
+                // }
             }
         }
-        return a.length === 0 ? null : a.length === 1 ? a[0] : a;
+        var result =  a.length === 0 ? null : a.length === 1 ? a[0] : a;
+        return result;
+
     };
 
     var block = function () {
@@ -170,11 +206,29 @@ var make_parse = function () {
         return x;
     };
 
+
     var infix = function (id, bp, led) {
+        var skipsymbols = ["(endline)"]
         var s = symbol(id, bp);
         s.led = led || function (left) {
             this.first = left;
-            this.second = expression(bp);
+            if(skipsymbols) {
+                var exp;
+                while(true) {
+                    exp = expression(bp);
+                    var skip = _.some(skipsymbols, function(sym) { return sym == exp.id;});
+                    if(!skip) {
+                        this.second = exp;
+                        break;
+                    }
+                }
+            }
+            else {
+                this.second = expression(bp);
+            }
+           
+            
+            console.log("infix: ", id, this.second)
             this.arity = "binary";
             return this;
         };
@@ -234,6 +288,7 @@ var make_parse = function () {
     symbol(")");
     symbol("]");
     symbol("}");
+    symbol("end");
     symbol(",");
     symbol("else");
 
@@ -244,6 +299,7 @@ var make_parse = function () {
     constant("Object", {});
     constant("Array", []);
 
+    symbol("(endline)").nud = itself;
     symbol("(literal)").nud = itself;
 
     symbol("this").nud = function () {
@@ -254,6 +310,15 @@ var make_parse = function () {
     assignment("=");
     assignment("+=");
     assignment("-=");
+
+    infix("if", 20, function (left) {
+        this.first = expression(0);
+        this.second = left
+        advance("else");
+        this.third = expression(0);
+        this.arity = "ternary";
+        return this;
+    });
 
     infix("?", 20, function (left) {
         this.first = left;
@@ -267,7 +332,8 @@ var make_parse = function () {
     infixr("&&", 30);
     infixr("||", 30);
 
-    infixr("===", 40);
+    infixr("==", 40);
+    infixr("is", 40);
     infixr("!==", 40);
     infixr("<", 40);
     infixr("<=", 40);
@@ -431,8 +497,8 @@ var make_parse = function () {
     });
 
 
-    prefix("function", function () {
-        var a = [];
+   prefix("function", function () {
+        var a = [],t;
         if (token.arity === "name") {
             define(token);
             this.name = token.value;
@@ -441,15 +507,50 @@ var make_parse = function () {
         advance("(");
         if (token.id !== ")") {
             while (true) {
-                if (token.arity !== "name") {
+                var arg = {};
+                /*if (token.arity == "operator") {
+                    token.error("Wrong function parameter");
                     token.error("Expected a parameter name.");
+                }*/
+                if(token.id == "::") {
+                   
+                    if(a.length == 0) {
+                        token.error("Wrong list matching");
+                    }
+                    var listitems = [a.pop()];
+                    arg.id = "::"
+                    console.log("enter ::", token, a, listitems);
+                    while(true) {
+                        advance();
+                        console.log("::", token);
+                        if(token.arity!="name") {
+                            token.error("Wrong list item in matching");
+                        }
+                        listitems.push(token)
+                        advance();
+                        if (token.id !== "::") {
+                            arg.value = listitems;
+                            break;
+                        }
+                    } 
+                    a.push(arg);
+                } else if(token.arity == "name" || token.arity == "literal") {
+                    arg.arity = token.arity;
+                    arg.value = token.value;
+                    arg.id = token.id;
+
+                    define(token);
+                    a.push(arg);
+                    advance();    
                 }
-                define(token);
-                a.push(token);
-                advance();
+                if (token.id == "::") {
+                    continue;
+                }
+
                 if (token.id !== ",") {
                     break;
                 }
+
                 advance(",");
             }
         }
@@ -462,14 +563,53 @@ var make_parse = function () {
         return this;
     });
 
+
     prefix("do", function () {
-        this.first = [];
-        this.second = statements();
+        this.first = statements();
         advance("end");
         this.arity = "block";
         return this;
     });
 
+    prefix("if", function () {
+        this.branches = []
+        var branch = {};
+        branch.first = expression(0);
+        
+        if (token.id === "(endline)" || token.id === "then") {
+            advance(["then", "(endline)"]);
+            branch.second = statements(["else","elif", "end"]);
+            this.branches.push(branch);
+        } else {
+            token.error("wrong if statement");
+        } 
+        
+        while(token.id == "elif") {
+            branch = {};
+            advance("elif");
+            branch.first = expression(0);
+            if (token.id === "(endline)" || token.id === "then") {
+                advance(["then", "(endline)"]);
+                branch.second = statements(["else","elif", "end"]);
+                this.branches.push(branch);
+            } 
+            else {
+                token.error("wrong elif ending");
+            } 
+        }
+
+        branch = {};
+        if (token.id === "else") {
+            advance("else");
+            branch.first = null;
+            branch.second = statements(["end"]);
+            this.branches.push(branch);
+        } 
+
+        advance("end");
+        this.arity = "if";
+        return this;
+    });
 
     prefix("[", function () {
         var a = [];
@@ -525,21 +665,21 @@ var make_parse = function () {
         n.reserved = true;
     };
 
-    stmt("if", function () {
-        advance("(");
-        this.first = expression(0);
-        advance(")");
-        this.second = block();
-        if (token.id === "else") {
-            reserve(token);
-            advance("else");
-            this.third = token.id === "if" ? statement() : block();
-        } else {
-            this.third = null;
-        }
-        this.arity = "statement";
-        return this;
-    }, true);
+   // stmt("if", function () {
+   //      advance("(");
+   //      this.first = expression(0);
+   //      advance(")");
+   //      this.second = block();
+   //      if (token.id === "else") {
+   //          reserve(token);
+   //          advance("else");
+   //          this.third = token.id === "if" ? statement() : block();
+   //      } else {
+   //          this.third = null;
+   //      }
+   //      this.arity = "statement";
+   //      return this;
+   //  }, true);
 
     stmt("return", function () {
         if (token.id !== ";") {
@@ -562,6 +702,15 @@ var make_parse = function () {
         return this;
     });
 
+    stmt("(endline)", function () {
+        return undefined;
+    });
+    
+    stmt(";", function () {
+        return undefined;
+    
+    });
+    
     stmt("while", function () {
         advance("(");
         this.first = expression(0);
@@ -572,7 +721,7 @@ var make_parse = function () {
     });
 
     return function (source) {
-        tokens = source.tokens('=<>!+-*&|/%^', '=<>&|');
+        tokens = source.tokens(':=<>!+-*&|/%^', ':=<>&|');
         var memo = _.reduce(tokens, function(memo, token){ return memo + "<" + token.value + ">,"; }, "");
         console.log("tokens:", memo);
         //console.log(tokens);

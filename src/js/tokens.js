@@ -73,13 +73,13 @@ String.prototype.tokens = function (prefix, suffix) {
 
 // Ignore whitespace.
         
-        // if( c == "\n") {
-        //     i += 1;
-        //     result.push(make('(endline)', "(nl)"));
-        //     c = this.charAt(i);
+        if( c == "\n") {
+             i += 1;
+             result.push(make('(endline)', "(endline)"));
+             c = this.charAt(i);
             
-        // }
-        if (c <= ' ') {
+        }
+        else if (c <= ' ') {
             i += 1;
             c = this.charAt(i);
 
