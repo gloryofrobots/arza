@@ -10,8 +10,6 @@ var make_parse = function () {
     var token;
     var tokens;
     var token_nr;
-    var reserved = ["if", "else", "case", "of", "class", "def",
-     "func","fn", "or", "and"]
 
     var itself = function () {
         return this;
@@ -19,7 +17,6 @@ var make_parse = function () {
     
     var define = function (n) {
         symbol_table[n.value] = n;
-        n.reserved = false;
         n.nud      = itself;
         n.led      = null;
         n.std      = null;
@@ -271,12 +268,9 @@ var make_parse = function () {
         return s;
     };
 
-    var stmt = function (s, f, reserved) {
+    var stmt = function (s, f) {
         var x = symbol(s);
         x.std = f;
-        if (reserved) {
-            x.reserved = reserved;
-        }
         return x;
     };
 
@@ -299,7 +293,12 @@ var make_parse = function () {
     constant("Object", {});
     constant("Array", []);
 
-    symbol("(endline)").nud = itself;
+    var empty = function() {
+        return undefined;
+    }
+
+    symbol("(endline)").nud = empty;
+    symbol(";").nud = empty;
     symbol("(literal)").nud = itself;
 
     symbol("this").nud = function () {
@@ -401,7 +400,7 @@ var make_parse = function () {
         return this;
     });
 
-    /*infix("(", 90, function (left) {
+    infix("(", 90, function (left) {
         var a = [];
         if (left.id === "." || left.id === "[") {
             this.arity = "ternary";
@@ -429,7 +428,7 @@ var make_parse = function () {
         }
         advance(")");
         return this;
-    });*/
+    });
 
     var __call__ = function(id) {
         var s = symbol(id, 80);
@@ -659,27 +658,6 @@ var make_parse = function () {
         advance("}");
         return a;
     });
-
-
-    var reserve = function(n) {
-        n.reserved = true;
-    };
-
-   // stmt("if", function () {
-   //      advance("(");
-   //      this.first = expression(0);
-   //      advance(")");
-   //      this.second = block();
-   //      if (token.id === "else") {
-   //          reserve(token);
-   //          advance("else");
-   //          this.third = token.id === "if" ? statement() : block();
-   //      } else {
-   //          this.third = null;
-   //      }
-   //      this.arity = "statement";
-   //      return this;
-   //  }, true);
 
     stmt("return", function () {
         if (token.id !== ";") {
