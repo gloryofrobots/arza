@@ -205,27 +205,15 @@ var make_parse = function () {
 
 
     var infix = function (id, bp, led) {
-        var skipsymbols = ["(endline)"]
         var s = symbol(id, bp);
         s.led = led || function (left) {
             this.first = left;
-            if(skipsymbols) {
-                var exp;
-                while(true) {
-                    exp = expression(bp);
-                    var skip = _.some(skipsymbols, function(sym) { return sym == exp.id;});
-                    if(!skip) {
-                        this.second = exp;
-                        break;
-                    }
-                }
+            var exp = undefined;
+            while(!exp) {
+                 exp = expression(bp);
+                 console.log("infix: ", id, exp)
             }
-            else {
-                this.second = expression(bp);
-            }
-           
-            
-            console.log("infix: ", id, this.second)
+            this.second = exp; 
             this.arity = "binary";
             return this;
         };
