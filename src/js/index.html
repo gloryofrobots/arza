@@ -6,6 +6,7 @@
     <script src = 'jquery.js'></script>
     <script src = 'tokens.js'></script>
     <script src = 'parse.js'></script>
+     <script src = 'transform.js'></script>
    
     <style type="text/css">
         #program {
@@ -21,37 +22,63 @@
     </style>
 </head>
 <script type="text/template" id="program-body">
+    
+
+   
+
     1,2,3,4
     1,(2,3),4
 
-    1,2, x, r, t, y
 
-    v = 1 - 
-    2
+    // cell Z
+    //     self.isa(Origin)
 
-    z = if x == 1 then 5; else 6; end 
+    //     x = 2
+    //     y = 3
 
-    if x==1
-        x = 112
-    elif x == 2 then x = 345; t += 34; z = 234 + 56 * 67 - 4456;
-    else 
-        x = 14
-    end + 3
+    //     self.l = 2
+    //     self.s = 345
+    //     pmax = fun() {
+    //         x if x > y else y
+    //     }
+        
+    //     fun max() 
+    //         pmax()
+    //     end
+    // end
+    // fun maximize(x, y, z)
+    //     x + y - z
+    // end
+
+    // 1,2, x, r, t, y
+
+    // v = 1 - 
+    // 2
+
+    // z = if x == 1 then 5; else 6; end 
+
+    // if x==1
+    //     x = 112
+    // elif x == 2 then x = 345; t += 34; z = 234 + 56 * 67 - 4456;
+    // else 
+    //     x = 14
+    // end + 3
 
 
-    x = 1 + 2
-    y = 2 + 3
+    // x = 1 + 2
+    // y = 2 + 3
     
-    // x = 112 if x == 1 else 14;
+    // // x = 112 if x == 1 else 14;
 
 </script>
 <body>
     <script>
     function compile() {
         var ptext = $("#program").val();
-        console.log("ptext:", ptext);
+        //console.log("ptext:", ptext);
         var parser = make_parse();
         var ast = parser(ptext);
+        
         //console.log(ast);
         var output = JSON.stringify(ast,
             function(key, value) {
@@ -64,6 +91,19 @@
             }, 2);
         //console.log("ast:", output );
         $("#result").html(output); 
+
+        var ast = transform(ast);
+        var output = JSON.stringify(ast,
+            function(key, value) {
+                if(key  == "scope" || key == "from" || key == "to" || key == "arity") {
+                    return undefined;
+                } 
+                else {
+                    return value;
+                }
+            }, 2);
+        $("#result").html(output); 
+
     }
     </script>
     <button onclick="compile()">Compile</button><br/><br/>

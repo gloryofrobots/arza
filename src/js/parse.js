@@ -147,7 +147,7 @@ var make_parse = function () {
 
             s = statement();
             if (s) {
-                console.log("s", s);
+                //console.log("s", s);
                 if(s) {
                     a.push(s);
                 }
@@ -203,7 +203,6 @@ var make_parse = function () {
         return x;
     };
 
-
     var infix = function (id, bp, led) {
         var s = symbol(id, bp);
         s.led = led || function (left) {
@@ -211,7 +210,7 @@ var make_parse = function () {
             var exp = undefined;
             while(!exp) {
                  exp = expression(bp);
-                 console.log("infix: ", id, exp)
+                //console.log("infix: ", id, exp)
             }
             this.second = exp; 
             this.arity = "binary";
@@ -302,15 +301,6 @@ var make_parse = function () {
         this.first = expression(0);
         this.second = left
         advance("else");
-        this.third = expression(0);
-        this.arity = "ternary";
-        return this;
-    });
-
-    infix("?", 20, function (left) {
-        this.first = left;
-        this.second = expression(0);
-        advance(":");
         this.third = expression(0);
         this.arity = "ternary";
         return this;
@@ -484,7 +474,20 @@ var make_parse = function () {
     });
 
 
-   prefix("function", function () {
+   prefix("cell", function () {
+        var a = [],t;
+        if (token.arity === "name") {
+            define(token);
+            this.name = token.value;
+            advance();
+        }
+        this.first = statements(["end"]);
+        advance("end");
+        this.arity = "cell";
+        return this;
+    });
+
+   prefix("fun", function () {
         var a = [],t;
         if (token.arity === "name") {
             define(token);
@@ -543,9 +546,19 @@ var make_parse = function () {
         }
         this.first = a;
         advance(")");
-        advance("{");
+       
+        var ending_token = null;
+        if (token.id == "(endline)") {
+            ending_token = "end";
+        } else if(token.id == "{") {
+            ending_token = "}";
+        } else {
+            token.error("Wrong function statement expected either (endline) or { in the same line as fun expression")
+        }
+        
+        advance();
         this.second = statements();
-        advance("}");
+        advance(ending_token);
         this.arity = "function";
         return this;
     });
@@ -689,7 +702,7 @@ var make_parse = function () {
     return function (source) {
         tokens = source.tokens(':=<>!+-*&|/%^', ':=<>&|');
         var memo = _.reduce(tokens, function(memo, token){ return memo + "<" + token.value + ">,"; }, "");
-        console.log("tokens:", memo);
+        //console.log("tokens:", memo);
         //console.log(tokens);
         token_nr = 0;
         advance();
