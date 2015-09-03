@@ -17,7 +17,10 @@ class X(object):
 
     def action(self):
         print "Action"
-#dis.dis(X)
+
+def t():
+    return (1,2,("222","3"))
+dis.dis(t)
 
 
 
