@@ -66,6 +66,7 @@ TOKENS = [
   ("TT_LESS", "<"),
   ("TT_GREATER", ">"),
   ("TT_QUESTION", "?")
+  ("TT_UNDEFINED", None)
 ]
 
 print "********************************ENUM********************************"
