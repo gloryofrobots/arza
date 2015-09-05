@@ -28,6 +28,7 @@ SET(OBIN_LIB_SRC
    core/types/cells/_fstream.c
    core/types/cells/_collection.c
    core/types/cells/_tuple.c
+   core/types/cells/_array.c
    core/types/cells/_table.c
    core/types/cells/_vector.c
    core/types/cells/_string.c

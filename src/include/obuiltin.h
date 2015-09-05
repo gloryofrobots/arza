@@ -22,6 +22,14 @@ OAny ois(OState * S, OAny first, OAny second);
 #define osecond(S, coll) ogetitem(S, coll, OInteger(1))
 #define othird(S, coll) ogetitem(S, coll, OInteger(2))
 
+#define OFOREACH_DEFINE(varname) OAny varname; omem_t varname##iter;
+
+#define OFOREACH(S, seq, variable, statements) \
+for(variable##iter = 0; variable##iter < OAny_intVal(olength(S, seq)); variable##iter++) { \
+	variable = ogetitem(S, seq, OInt(variable##iter)); \
+	statements; \
+}
+
 /*@return list of results from function applied to iterable
 ObinAny obin_map(ObinState * S, obin_function function, ObinAny iterable);
 

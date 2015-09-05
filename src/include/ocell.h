@@ -7,7 +7,7 @@
 #define OCELL_HEADER \
 	OBehavior* behavior; \
 	oint typeId; \
-	OAny traits; \
+	obool frozen; \
 	OCellMemoryInfo memory;
 
 struct _ObinCell {
@@ -21,7 +21,11 @@ typedef struct _##CELLNAME { \
 } CELLNAME
 
 #define OCell_typeId(any) OAny_cellVal(any)->typeId
+#define OCell_frozen(any) OAny_cellVal(any)->frozen
+#define OCell_freeze(any) OCell_freezed(any)->frozen = 1
+
 #define OCell_isSameType(any, type) (OCell_typeId(any) == type)
+#define OCell_isFrozen(any) (OCell_freezed(any) == 1)
 
 #define __OStringTypeId__ 0
 #define OAny_isString(any) OCell_isSameType(any, __OStringTypeId__)
@@ -39,5 +43,7 @@ typedef struct _##CELLNAME { \
 #define OAny_isFStream(any) OCell_isSameType(any, __OFStreamTypeId__)
 #define __OIteratorTypeId__ 7
 #define OAny_isIterator(any) OCell_isSameType(any, __OIteratorTypeId__)
+#define __OArrayTypeId__ 8
+#define OAny_isArray(any) OCell_isSameType(any, __OArrayTypeId__)
 
 #endif /* OCELL_H_ */

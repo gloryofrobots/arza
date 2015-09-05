@@ -5,7 +5,7 @@ class Arg(object):
     pass
 
 class Method(object):
-    def __init__(self, name, arity,  methodType=None, isGeneric=True):
+    def __init__(self, name, arity,  methodType=None, isGeneric=True, isMutator=False):
         self.name = name
         self.arity = arity
         if not methodType:
@@ -18,6 +18,7 @@ class Method(object):
             self.args.append(Arg("arg%d" % i))
 
         self.isGeneric = isGeneric
+        self.isMutator = isMutator
         name = self.name.replace("__", "")
         self.generic_name = "o%s" % name
 
@@ -51,8 +52,8 @@ COLLECTION = Methods("COLLECTION",
     Method('__length__', 1),
     Method('__getitem__', 2),
     Method('__hasitem__', 2),
-    Method('__delitem__', 2),
-    Method('__setitem__', 3),
+    Method('__delitem__', 2, isMutator=True),
+    Method('__setitem__', 3, isMutator=True),
     )
 
 GENERATOR = Methods("GENERATOR", Method('__next__', 1))

@@ -14,6 +14,7 @@
 #include "types/obool.h"
 #include "types/cells/ocollection.h"
 #include "types/cells/otuple.h"
+#include "types/cells/oarray.h"
 #include "types/cells/ofstream.h"
 #include "types/cells/otable.h"
 #include "types/cells/ostring.h"

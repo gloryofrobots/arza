@@ -2,7 +2,9 @@ BUILTIN_MEHOD_TPL = """
 OAny {{generic_name}}(OState* S{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %}) {
     {{ type }} method;
     method = _method(S, {{ args[0].name }}, {{ name }});
-
+    {% if isMutator %}
+    _CHECK_FROZEN(S, {{ args[0].name }});
+    {% endif %}
     if (!method) {
         oraise(S, oerrors(S)->TypeError,
                 "{{ name }} protocol not supported", {{ args[0].name }});

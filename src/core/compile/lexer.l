@@ -65,14 +65,14 @@ typedef enum {
     TT_LESS = 59,
     TT_GREATER = 60,
     TT_QUESTION = 61,
-    TT_UNKNOWN = 255
+    TT_UNKNOWN = 62,
+    TT_END_TOKEN_TYPE = 63
 } TokenType;
 
 %}
 %option reentrant
 %option yylineno
 %option noyywrap
-/* some complex named patterns */
 
 /* Universal Character Name */
 UCN     (\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})
@@ -86,7 +86,6 @@ H   [a-fA-F0-9]
 HP  (0[xX])
 E   ([Ee][+-]?{D}+)
 P   ([Pp][+-]?{D}+)
-FS  (f|F|l|L)
 CP  (u|U|L)
 SP  (u8|u|U|L)
 ES  (\\(['"\?\\abfnrtv]|[0-7]{1,3}|x[a-fA-F0-9]+))
@@ -106,12 +105,12 @@ NAME ([_a-zA-Z]|{UCN})([_a-zA-Z0-9]|{UCN})*
 "0"{O}*        { return TT_INT; }
 {CP}?"'"([^'\\\n]|{ES})+"'"   { return TT_INT; }
 
-{D}+{E}{FS}?        { return TT_FLOAT; }
-{D}*"."{D}+{E}?{FS}?      { return TT_FLOAT; }
-{D}+"."{E}?{FS}?      { return TT_FLOAT; }
-{HP}{H}+{P}{FS}?      { return TT_FLOAT; }
-{HP}{H}*"."{H}+{P}{FS}?     { return TT_FLOAT; }
-{HP}{H}+"."{P}{FS}?     { return TT_FLOAT; }
+{D}+{E}?        { return TT_FLOAT; }
+{D}*"."{D}+{E}?      { return TT_FLOAT; }
+{D}+"."{E}?      { return TT_FLOAT; }
+{HP}{H}+{P}      { return TT_FLOAT; }
+{HP}{H}*"."{H}+{P}     { return TT_FLOAT; }
+{HP}{H}+"."{P}     { return TT_FLOAT; }
 "break" { return TT_BREAK; }
 "case" { return TT_CASE; }
 "continue" { return TT_CONTINUE; }
@@ -249,22 +248,22 @@ const char * TokenTypeStr(TokenType type) {
     case TT_QUESTION: return "TT_QUESTION";
     case TT_UNKNOWN: return "TT_UNKNOWN";
   }
-}
-
-typedef struct {
-    char * data;
-    int length;
-    TokenType type;
-    int line;
-} Token;
+} 
 
 typedef struct {
   yyscan_t scanner;
   YY_BUFFER_STATE buffer;
+  struct {
+    char * data;
+    int length;
+    TokenType type;
+    int line;
+  } token;
 } YYLexer;
 
 YYLexer* YYLexer_new() {
   YYLexer* lexer = malloc(sizeof(YYLexer));
+  lexer->token.type = TT_UNKNOWN;
   yylex_init(&lexer->scanner);
 
   return lexer;
@@ -294,15 +293,12 @@ YYLexer* YYLexer_fromString(const char* string) {
   return lexer;
 }
 
-Token YYLexer_next(YYLexer* lexer) {
-  Token token;
-  
-  token.type = yylex(lexer->scanner);
-  token.data = strdup(yyget_text(lexer->scanner));
-  token.length = yyget_leng(lexer->scanner);
-  token.line = yyget_lineno(lexer->scanner);
-  
-  return token;
+TokenType YYLexer_next(YYLexer* lexer) {
+  lexer->token.type = yylex(lexer->scanner);
+  lexer->token.data = yyget_text(lexer->scanner);
+  lexer->token.length = yyget_leng(lexer->scanner);
+  lexer->token.line = yyget_lineno(lexer->scanner);
+  return lexer->token.type;
 }
 
 void YYLexer_destroy(YYLexer* lexer) {
@@ -315,14 +311,9 @@ int main () {
   YYLexer* lexer = YYLexer_fromFile(f);
   //YYLexer* lexer = YYLexer_fromString("\nx +456 - 5566 for if else\n\n\nb+yyu\n");
   
-  
-  Token t;
-  while(1) {
-    t = YYLexer_next(lexer);
-    printf("%s %s (%d) at %d,\n", TokenTypeStr(t.type), t.data, t.length, t.line);
-    if(t.type == TT_ENDSTREAM) {
-      break;
-    }
+  while(YYLexer_next(lexer) != TT_ENDSTREAM) {
+    printf("%s %s (%d) at %d,\n", TokenTypeStr(lexer->token.type), lexer->token.data, 
+    lexer->token.length, lexer->token.line);
   }
   YYLexer_destroy(lexer);
 }

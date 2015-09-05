@@ -9,8 +9,8 @@ typedef struct _OBehavior {
     ofunc_1 __tobool__;
     ofunc_1 __clone__;
     ofunc_2 __compare__;
-    ofunc_2 __equal__;
     ofunc_1 __hash__;
+    ofunc_2 __equal__;
     /*COLLECTION*/
     ofunc_1 __iterator__;
     ofunc_1 __length__;

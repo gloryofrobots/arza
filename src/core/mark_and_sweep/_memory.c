@@ -68,6 +68,7 @@ OAny OCell_new(oint typeId, OCell* cell, OBehavior* behavior) {
 
 	cell->behavior = behavior;
 	cell->typeId = typeId;
+	cell->frozen = 0;
 
 	_unmark(cell);
 

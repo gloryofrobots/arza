@@ -9,7 +9,7 @@ def gen_cell_types(types):
     return result
 
 types = gen_cell_types(["String", "Tuple", "Vector", "Table",
-         "Bytecode", "Bytes", "FStream", "Iterator"])
+         "Bytecode", "Bytes", "FStream", "Iterator", "Array"])
 
 for type in types:
     print type

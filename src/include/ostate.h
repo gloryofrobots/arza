@@ -31,6 +31,7 @@ typedef struct _OInternals {
 		OAny InternalError;
 		OAny RangeError;
 		OAny TypeError;
+		OAny ParseError;
 		OAny ValueError;
 		OAny IndexError;
 		OAny KeyError;

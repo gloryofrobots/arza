@@ -7,6 +7,12 @@
 
 #define _method(S, any, method) (_behavior_method(_behavior(S, any), method))
 
+#define _CHECK_FROZEN(S, self) \
+	if(!OAny_isCell(self) || !OCell_frozen(self)) { \
+		return oraise(S, oerrors(S)->TypeError, \
+				 "Cell is freezed, can`t perfom mutable operation", self); \
+	}
+
 /*TODO INIT IT WITH TYPE */
 OAny OAny_new(EOTYPE type) {
 	OAny proto;
@@ -87,6 +93,7 @@ OAny ois(OState * S, OAny any, OAny other) {
 }
 
 /*AUTOGEN CODE BELOW */
+
 
 /************************* BASE **********************************/
 
@@ -204,6 +211,8 @@ OAny odelitem(OState* S, OAny self, OAny arg1) {
     ofunc_2 method;
     method = _method(S, self, __delitem__);
 
+    _CHECK_FROZEN(S, self);
+
     if (!method) {
         oraise(S, oerrors(S)->TypeError,
                 "__delitem__ protocol not supported", self);
@@ -215,6 +224,8 @@ OAny odelitem(OState* S, OAny self, OAny arg1) {
 OAny osetitem(OState* S, OAny self, OAny arg1, OAny arg2) {
     ofunc_3 method;
     method = _method(S, self, __setitem__);
+
+    _CHECK_FROZEN(S, self);
 
     if (!method) {
         oraise(S, oerrors(S)->TypeError,
