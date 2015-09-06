@@ -38,3 +38,32 @@ static OBehavior structname = { \\
 BEHAVIOR_DECL_TPL = """
 #define OBEHAVIOR_DECLARE(structname) \
 static OBehavior structname;"""
+
+ARRAY_PACK_TPL = """
+OAny {{name}}(OState* S, omem_t size, ...){
+    ObinArray * self;
+    omem_t i;
+    {{type}} item;
+    va_list vargs;
+
+    if(size == 0) {
+        return _obin_array_empty(S);
+    }
+
+    if(!OBIN_IS_FIT_TO_MEMSIZE(size)) {
+        return oraise(S, oerrors(S)->TypeError,
+                "Array invalid size", OInteger(size));
+    }
+
+    self = _obin_array_new(S , size);
+
+    va_start(vargs, size);
+    for (i = 0; i < size; i++) {
+        item = va_arg(vargs, {{type}});
+        self->data[i] = {{constructor}};
+    }
+    va_end(vargs);
+
+    return OArray_make(self);
+}
+"""

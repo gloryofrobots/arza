@@ -13,6 +13,11 @@ OCELL_DECLARE(_ONode,
 
 #define _node(self) ((_ONode*) OAny_cellVal(self))
 #define _node_items(self) (_node(self)->items)
+
+#define _node_first(self) (_node_items(self)[0])
+#define _node_second(self) (_node_items(self)[1])
+#define _node_third(self) (_node_items(self)[2])
+
 #define _node_raw(self) (_node(self)->items)
 #define _node_raw_length(self) (_node(self)->items)
 #define _node_type(self) (_node(self)->items)
@@ -20,23 +25,32 @@ OCELL_DECLARE(_ONode,
 #define _node_arity(self) (_node(self)->arity)
 #define _node_value(self) (_node(self)->value)
 
+typedef ofunc_2 NudFunction;
+typedef ofunc_2 StdFunction;
+typedef ofunc_3 LedFunction;
+
 typedef struct _NodeHandler {
 	obool initialized;
-	ofunc_1 nud;
-	ofunc_1 std;
-	ofunc_2 led;
+	NudFunction nud;
+	StdFunction std;
+	LedFunction led;
 	oint lbp;
 	oint rbp;
+	OAny value;
 } NodeHandler;
 
 NodeHandler handlers [TT_END_TOKEN_TYPE];
 
-NodeHandler* ONode_handler(OState* S, OAny self) {
-	oassert(_node_type(self) < TT_END_TOKEN_TYPE);
+NodeHandler* handler(OState* S, TokenType type) {
+	oassert(type < TT_END_TOKEN_TYPE);
 
-	NodeHandler* handler = &(handlers[_node_type(self)]);
+	NodeHandler* handler = &(handlers[type]);
 	oassert(handler->initialized);
 	return handler;
+}
+
+NodeHandler* ONode_handler(OState* S, OAny self) {
+	return handler(S, _node_type(self));
 }
 
 OAny ONode_nud(OState* S, OAny self) {
@@ -91,7 +105,7 @@ obool ONode_hasLed(OState* S, OAny self) {
 }
 
 OAny ONode_init(OState* S, OAny self, omem_t size) {
-	_node_items(self) = OArray(S, size);
+	_node_arity(self) = size;
 	return self;
 }
 
@@ -103,6 +117,11 @@ OAny ONode(OState* S, TokenType type, ostring raw, oint length, oint line) {
 	node->raw_length = length;
 	node->line = line;
 	node->value = OString(S, raw);
+
+	/*TODO Allocate 8 subnodes at start, refactor later*/
+	node->items = OArray(S, 8);
+	node->arity = 0;
+
 	return OCell_new(-125, (_ONode) node, 0);
 }
 
@@ -127,10 +146,6 @@ OAny OParser_fromString(OState* S, OAny str) {
 	return OCell_new(-124, (OCell*) parser, 0);
 }
 
-obool oparser_init(OState* S) {
-	omemset(handlers, 0, sizeof(NodeHandler) * TT_END_TOKEN_TYPE);
-	return OTRUE;
-}
 
 OAny parse_error(OState* S, OAny parser, ostring message, OAny argument) {
 	return oraise(S, oerrors(S)->ParseError, "message", argument);
@@ -181,7 +196,7 @@ OAny OSyntax_endOfExpression(OState *S, OAny parser) {
 		return ObinNil;
 	}
 
-	return OParser_advanceExpected(S, parser, OTuple(S, 2, OInt(TT_SEMI), OInt(TT_NEWLINE)));
+	return OParser_advanceExpected(S, parser, OTuple(S, 2, OInteger(TT_SEMI), OInteger(TT_NEWLINE)));
 }
 
 OAny OSyntax_expression(OState *S, OAny parser, oint rbp) {
@@ -200,3 +215,191 @@ OAny OSyntax_expression(OState *S, OAny parser, oint rbp) {
 	return left;
 }
 
+OAny OSyntax_statement(OState* S, OAny parser) {
+	OAny node = _parser_node(parser);
+	OAny value;
+
+	if(ONode_hasStd(S, node)) {
+		OParser_advance(S, parser);
+		return ONode_std(S, node);
+	}
+
+	value = OSyntax_expression(S, parser, 0);
+	OSyntax_endOfExpression(S, parser);
+
+	return value;
+}
+
+obool OParser_tokenIsOneOf(OState* S, OAny parser, OAny tokenTypes) {
+	OFOREACH_DEFINE(type);
+
+	OFOREACH(S, tokenTypes, type,
+			if(_parser_token_type(parser) == OInt_toTokenType(type)) {
+				return OTRUE;
+			}
+	);
+
+	return OFALSE;
+}
+
+OAny OSyntax_statements(OState* S, OAny parser, OAny endlist) {
+	static OAny __defaultendlist__ = OArray_ofInts(S, 4, TT_RCURLY, TT_ENDSTREAM, TT_END, TT_NEWLINE);
+	OAny s;
+	OAny stmts = OVector(S, ObinNil);
+	obool check = OFALSE;
+	oint length;
+
+	if(OAny_isNil(endlist)) {
+		endlist = __defaultendlist__;
+	}
+
+	while(OTRUE) {
+		if(OParser_tokenIsOneOf(S, parser, endlist)){
+			break;
+		}
+
+		s = OSyntax_statement(S, parser);
+		if(OAny_isNil(s)) {
+			continue;
+		}
+		OVector_push(S, stmts, s);
+	}
+
+	length = OAny_intVal(olength(S, stmts));
+
+	if(length == 0) {
+		return ObinNil;
+	} else if(length == 1) {
+		return ofirst(S, stmts);
+	}
+
+	return stmts;
+}
+
+void NodeHandler_setNud(OState* s, TokenType type, NudFunction nud) {
+	NodeHandler* h = handler(S, type);
+	h->nud = nud;
+}
+
+void NodeHandler_setStd(OState* s, TokenType type, StdFunction std) {
+	NodeHandler* h = handler(S, type);
+	h->std = std;
+}
+
+void NodeHandler_setLed(OState* s, TokenType type, oint lbp, LedFunction led) {
+	NodeHandler* h = handler(S, type);
+	h->lbp = lbp;
+	h->led = led;
+}
+
+OAny _nud_constant(OState* S, OAny node) {
+	NodeHandler* h = ONode_handler(S, node);
+	_node_value(node) = h->value;
+	ONode_init(S, node, 0);
+	return node;
+}
+
+void _constant(OState* S, TokenType type, OAny value) {
+	NodeHandler* h = handler(S, type);
+	h->value = value;
+	NodeHandler_setNud(S, type, _nud_constant);
+}
+
+OAny _led_infix(OState* S, OAny parser, OAny node, OAny left) {
+	OAny exp = ObinNil;
+	NodeHandler* h = ONode_handler(S, node);
+
+	ONode_init(node, 2);
+	_node_first(node) = left;
+
+	while(OAny_isNil(exp)) {
+		exp = OSyntax_expression(S, parser, h->lbp);
+	}
+
+	_node_second(node) = exp;
+
+	return node;
+}
+
+void _infix(OState* S, TokenType type, oint lbp, LedFunction led) {
+	NodeHandler_setLed(S, type, lbp, led || _led_infix);
+}
+
+OAny _led_infixr(OState* S, OAny parser, OAny node, OAny left) {
+	OAny exp = ObinNil;
+	NodeHandler* h = ONode_handler(S, node);
+	ONode_init(node, 2);
+
+	_node_first(node) = left;
+	_node_second(node) = OSyntax_expression(S, parser, h->lbp - 1);
+
+	return node;
+}
+
+void _infixr(OState* S, TokenType type, oint lbp, LedFunction led) {
+	NodeHandler_setLed(S, type, lbp, led || _led_infixr);
+}
+
+OAny _led_infixr_assign(OState* S, OAny parser, OAny node, OAny left) {
+	OAny exp = ObinNil;
+	NodeHandler* h = ONode_handler(S, node);
+	ONode_init(node, 2);
+
+	switch(_node_type(left)) {
+	case TT_DOT:
+	case TT_LSQUARE:
+	case TT_NAME:
+	case TT_COMMA:
+		break;
+	default:
+		return parse_error(S, parser, "Bad lvalue in assignment", left);
+	}
+
+	_node_first(node) = left;
+	_node_second(node) = OSyntax_expression(S, parser, 9);
+
+	return node;
+}
+
+void _assignment(OState* S, TokenType type) {
+	_infixr(S, type, 10, _led_infixr_assign);
+}
+
+OAny _prefix_nud(OState* S, OAny parser, OAny node) {
+	OAny exp = ObinNil;
+	NodeHandler* h = ONode_handler(S, node);
+	ONode_init(node, 1);
+	_node_first(node) = OSyntax_expression(S, parser, 70);
+
+	return node;
+}
+
+void _prefix(OState* S, TokenType type) {
+	NodeHandler_setNud(S, type, _prefix_nud);
+}
+
+void _statement(OState* S, TokenType type, StdFunction std) {
+	NodeHandler_setStd(S, type, std);
+}
+
+OAny _nud_empty(OState* S, OAny parser, OAny node) {
+	return ObinNil;
+}
+
+OParser_parse(OState* S, OAny parser) {
+	OAny stmts = OSyntax_statements(S, parser, ObinNil);
+	OParser_advanceExpected(S, parser, OInteger(TT_ENDSTREAM));
+	return stmts;
+}
+
+obool oparser_init(OState* S) {
+	omemset(handlers, 0, sizeof(NodeHandler) * TT_END_TOKEN_TYPE);
+	_infix(S, TT_ADD, 50, 0);
+	_infix(S, TT_SUB, 50, 0);
+	_infix(S, TT_MUL, 60, 0);
+	_infix(S, TT_DIVIDE, 60, 0);
+
+	_assignment(S, TT_ASSIGN);
+
+	return OTRUE;
+}

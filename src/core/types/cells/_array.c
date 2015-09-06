@@ -86,33 +86,6 @@ OAny OArray(OState* S, omem_t size) {
 	return OArray_make(self);
 }
 
-OAny OArray_pack(OState* S, omem_t size, ...){
-	ObinArray * self;
-	omem_t i;
-	OAny item;
-    va_list vargs;
-
-    if(size == 0) {
-    	return _obin_array_empty(S);
-    }
-
-    if(!OBIN_IS_FIT_TO_MEMSIZE(size)) {
-		return oraise(S, oerrors(S)->TypeError,
-				"Array invalid size", OInteger(size));
-	}
-
-	self = _obin_array_new(S , size);
-
-    va_start(vargs, size);
-    for (i = 0; i < size; i++) {
-    	item = va_arg(vargs, OAny);
-    	self->data[i] = item;
-    }
-    va_end(vargs);
-
-    return OArray_make(self);
-}
-
 /****************************************  TYPETRAIT  *************************************************/
 static OAny __tobool__(OState* S, OAny self) {
     _CHECK_SELF_TYPE(S, self, __tobool__);
@@ -289,4 +262,87 @@ obool oarray_init(OState* S) {
 
 	return OTRUE;
 
+}
+
+/*AUTOGEN CODE FOR PACK METHODS */
+
+OAny OArray_pack(OState* S, omem_t size, ...){
+    ObinArray * self;
+    omem_t i;
+    OAny item;
+    va_list vargs;
+
+    if(size == 0) {
+        return _obin_array_empty(S);
+    }
+
+    if(!OBIN_IS_FIT_TO_MEMSIZE(size)) {
+        return oraise(S, oerrors(S)->TypeError,
+                "Array invalid size", OInteger(size));
+    }
+
+    self = _obin_array_new(S , size);
+
+    va_start(vargs, size);
+    for (i = 0; i < size; i++) {
+        item = va_arg(vargs, OAny);
+        self->data[i] = item;
+    }
+    va_end(vargs);
+
+    return OArray_make(self);
+}
+
+OAny OArray_ofCStrings(OState* S, omem_t size, ...){
+    ObinArray * self;
+    omem_t i;
+    ostring item;
+    va_list vargs;
+
+    if(size == 0) {
+        return _obin_array_empty(S);
+    }
+
+    if(!OBIN_IS_FIT_TO_MEMSIZE(size)) {
+        return oraise(S, oerrors(S)->TypeError,
+                "Array invalid size", OInteger(size));
+    }
+
+    self = _obin_array_new(S , size);
+
+    va_start(vargs, size);
+    for (i = 0; i < size; i++) {
+        item = va_arg(vargs, ostring);
+        self->data[i] = OString(S, item);
+    }
+    va_end(vargs);
+
+    return OArray_make(self);
+}
+
+OAny OArray_ofInts(OState* S, omem_t size, ...){
+    ObinArray * self;
+    omem_t i;
+    oint item;
+    va_list vargs;
+
+    if(size == 0) {
+        return _obin_array_empty(S);
+    }
+
+    if(!OBIN_IS_FIT_TO_MEMSIZE(size)) {
+        return oraise(S, oerrors(S)->TypeError,
+                "Array invalid size", OInteger(size));
+    }
+
+    self = _obin_array_new(S , size);
+
+    va_start(vargs, size);
+    for (i = 0; i < size; i++) {
+        item = va_arg(vargs, oint);
+        self->data[i] = OInteger(item);
+    }
+    va_end(vargs);
+
+    return OArray_make(self);
 }
