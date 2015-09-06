@@ -21,12 +21,15 @@ OAny ois(OState * S, OAny first, OAny second);
 #define ofirst(S, coll) ogetitem(S, coll, OInteger(0))
 #define osecond(S, coll) ogetitem(S, coll, OInteger(1))
 #define othird(S, coll) ogetitem(S, coll, OInteger(2))
+#define osetfirst(S, coll, value) osetitem(S, coll, OInteger(0), value)
+#define osetsecond(S, coll, value) osetitem(S, coll, OInteger(1), value)
+#define osetthird(S, coll, value) osetitem(S, coll, OInteger(2), value)
 
 #define OFOREACH_DEFINE(varname) OAny varname; omem_t varname##iter;
 
 #define OFOREACH(S, seq, variable, statements) \
 for(variable##iter = 0; variable##iter < OAny_intVal(olength(S, seq)); variable##iter++) { \
-	variable = ogetitem(S, seq, OInt(variable##iter)); \
+	variable = ogetitem(S, seq, OInteger(variable##iter)); \
 	statements; \
 }
 
@@ -40,6 +43,8 @@ Apply function of two arguments cumulatively to the items of iterable,
  from left to right, so as to reduce the iterable to a single value..
 ObinAny obin_reduce(ObinState * S, obin_function_2 function, ObinAny iterable);
 */
+
+ostring otocstring(OState* S, OAny self);
 
 /*AUTO GENERATED CODE BELOW */
 /************************* BASE **********************************/

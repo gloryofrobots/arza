@@ -97,10 +97,16 @@ var make_parse = function () {
     var expression = function (rbp) {
         var left;
         var t = token;
+        console.log("****************")
+        console.log("rbp: ", rbp)
+        console.log("previous", t.value);
         advance();
+        console.log("current", token.value, token.lbp);
         left = t.nud();
+        console.log("left", left.value);
         //console.log("expression:", rbp, t.rbp, t.value, token.value, token.rbp, token.lbp);
         while (rbp < token.lbp) {
+            console.log(token.lbp);
             t = token;
             advance();
             //console.log("expression2:",   token.value, token.rbp, token.lbp);

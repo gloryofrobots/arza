@@ -247,18 +247,23 @@ const char * TokenTypeStr(TokenType type) {
     case TT_GREATER: return "TT_GREATER";
     case TT_QUESTION: return "TT_QUESTION";
     case TT_UNKNOWN: return "TT_UNKNOWN";
+    case TT_END_TOKEN_TYPE: return "TT_END_TOKEN_TYPE";
   }
+  
+  return "--";
 } 
 
-typedef struct {
-  yyscan_t scanner;
-  YY_BUFFER_STATE buffer;
-  struct {
+typedef  struct {
     char * data;
     int length;
     TokenType type;
     int line;
-  } token;
+}  YYToken;
+  
+typedef struct {
+  yyscan_t scanner;
+  YY_BUFFER_STATE buffer;
+  YYToken token;
 } YYLexer;
 
 YYLexer* YYLexer_new() {
@@ -306,10 +311,10 @@ void YYLexer_destroy(YYLexer* lexer) {
   yylex_destroy(lexer->scanner);
 }
 
+/*
 int main () {
   FILE* f= fopen("test.c","r");
   YYLexer* lexer = YYLexer_fromFile(f);
-  //YYLexer* lexer = YYLexer_fromString("\nx +456 - 5566 for if else\n\n\nb+yyu\n");
   
   while(YYLexer_next(lexer) != TT_ENDSTREAM) {
     printf("%s %s (%d) at %d,\n", TokenTypeStr(lexer->token.type), lexer->token.data, 
@@ -317,3 +322,4 @@ int main () {
   }
   YYLexer_destroy(lexer);
 }
+*/

@@ -8,6 +8,11 @@ OAny OVector(OState* S, OAny size);
 OAny OVector_pack(OState* S, oint count, ...);
 
 OAny OVector_push(OState* S, OAny self, OAny value);
+OAny OVector_pushCString(OState* S, OAny self, ostring value);
+OAny OVector_pushAsString(OState* S, OAny self, OAny value);
+OAny OVector_pushInt(OState* S, OAny self, oint value);
+
+OAny OVector_pushMany(OState* S, OAny self, omem_t count, ...);
 OAny OVector_indexOf(OState* S, OAny self, OAny item);
 OAny OVector_lastIndexOf(OState* S, OAny self, OAny item);
 OAny OVector_pop(OState* S, OAny self);

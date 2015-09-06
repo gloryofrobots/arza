@@ -30,10 +30,12 @@
 #include <obin.h>
 #include "types/test_types.c"
 #include "memory/test_memory.c"
+#include "compile/test_compile.c"
 
 static CU_SuiteInfo suites[] = {
   { "Suite_BaseTypes",  NULL, NULL,    TestGroup_BaseTypes },
   { "Suite_Memory",  NULL, NULL,    TestGroup_Memory },
+  { "Suite_Compile",  NULL, NULL,    TestGroup_Compile },
 
   /*  { "suite_success_both",  suite_base_init, suite_base_clean,    tests_base_types },
   { "suite_success_init",  suite_base_init, NULL,                tests_base_types },

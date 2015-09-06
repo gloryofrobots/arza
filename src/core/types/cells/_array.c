@@ -242,6 +242,10 @@ __setitem__(OState* S, OAny self, OAny pos, OAny value){
 	return OInteger(index);
 }
 
+OAny OArray_set(OState* S, OAny self, oindex_t index, OAny value) {
+	return __setitem__(S, self, OInteger(index), value);
+}
+
 obool oarray_init(OState* S) {
 	__BEHAVIOR__.__name__ = __TypeName__;
 

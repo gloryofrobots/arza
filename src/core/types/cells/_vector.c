@@ -56,6 +56,7 @@ _vector_grow(OState* S, OAny self, oindex_t count_elements) {
 	return OTRUE;
 }
 
+/*ADD def constructor for vector without specifing size*/
 OAny
 OVector(OState* S, OAny size) {
 	Vector * self; omem_t capacity;
@@ -97,6 +98,21 @@ OAny OVector_pack(OState* S, oint count, ...) {
 	va_end(vargs);
 
 	_size(self) = count;
+
+	return self;
+}
+
+OAny OVector_pushMany(OState* S, OAny self, omem_t count, ...) {
+	oindex_t i;
+    va_list vargs;
+    OAny item;
+
+	va_start(vargs, count);
+	for (i = 0; i < count; i++) {
+		item = va_arg(vargs, OAny);
+		OVector_push(S, self, item);
+	}
+	va_end(vargs);
 
 	return self;
 }
@@ -196,6 +212,19 @@ Array.prototype.slice()
 MAY BE INTERESTING THING
 Array.prototype.toSource()
 */
+
+OAny OVector_pushAsString(OState* S, OAny self, OAny value) {
+	return OVector_push(S, self, otostring(S, value));
+}
+
+OAny OVector_pushCString(OState* S, OAny self, ostring value) {
+	return OVector_push(S, self, OString(S, value));
+}
+
+OAny OVector_pushInt(OState* S, OAny self, oint value) {
+	return OVector_push(S, self, OInteger(value));
+}
+
 OAny
 OVector_push(OState* S, OAny self, OAny value) {
 	omem_t new_size;

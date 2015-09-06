@@ -6,7 +6,7 @@ SET(OBIN_EXECUTABLE obin)
 SET(OBIN_LIBRARY libobin)
 
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules)
-set(CMAKE_C_FLAGS "-std=c89") 
+set(CMAKE_C_FLAGS "-std=c89 -gdwarf-4 -g3") 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall")
 
 FILE(GLOB_RECURSE HEADERS "include/*.h")
@@ -19,6 +19,7 @@ SET(OBIN_LIB_SRC
    core/_log.c
    core/_error.c
    core/_random.c
+   core/compile/_parser.c
    core/types/_character.c
    core/types/_bool.c
    core/types/_integer.c

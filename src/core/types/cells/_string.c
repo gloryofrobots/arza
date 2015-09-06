@@ -146,16 +146,16 @@ static OAny __clone__(OState* S, OAny self) {
 
 static OAny _obin_string_blank(OState* S, omem_t length);
 
-static OAny __add__(OState* S, OAny str1, OAny str2) {
+OAny OString_concat(OState* S, OAny str1, OAny str2) {
 	ochar* data;
 	omem_t size;
 	OAny result;
 
-	_CHECK_SELF_TYPE(S, str1, __add__);
+	_CHECK_SELF_TYPE(S, str1, OString_concat);
 
 	if(!OAny_isString(str2)) {
 		return oraise(S, oerrors(S)->TypeError,
-						"String.__add__ invalid argument type, String expected ", str2);
+						"OString_concat invalid argument type, String expected ", str2);
 	}
 
 	if (_string_size(str1) == 0) {
@@ -668,13 +668,13 @@ OAny OString_join(OState* S, OAny self, OAny collection) {
 		}
 
 		value = onext(S, iterator);
-		result = __add__(S, result, otostring(S, value));
-		result = __add__(S, result, self);
+		result = OString_concat(S, result, otostring(S, value));
+		result = OString_concat(S, result, self);
 	}
 
 	/*append last element*/
 	value = onext(S, iterator);
-	result = __add__(S, result, otostring(S, value));
+	result = OString_concat(S, result, otostring(S, value));
 	return result;
 }
 
@@ -703,7 +703,7 @@ OAny OString_pack(OState* S, oindex_t count, ...){
 
     va_end(vargs);
 
-    return OString_join(S, ostrings(S)->PrintSeparator, array);
+    return OString_join(S, ostrings(S)->Empty, array);
 }
 /* //native
  str.startswith(prefix[, start[, end]])
@@ -724,7 +724,7 @@ obool ostring_init(OState* S) {
 	__BEHAVIOR__.__length__ = __length__;
 	__BEHAVIOR__.__getitem__ = __getitem__;
 	__BEHAVIOR__.__hasitem__ = __hasitem__;
-	__BEHAVIOR__.__add__ = __add__;
+	__BEHAVIOR__.__add__ = OString_concat;
 
 	ostrings(S)->Nil = OString(S, "Nil");
 	ostrings(S)->True = OString(S, "True");

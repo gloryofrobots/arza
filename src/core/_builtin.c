@@ -8,7 +8,7 @@
 #define _method(S, any, method) (_behavior_method(_behavior(S, any), method))
 
 #define _CHECK_FROZEN(S, self) \
-	if(!OAny_isCell(self) || !OCell_frozen(self)) { \
+	if(OAny_isCell(self) && OCell_frozen(self)) { \
 		return oraise(S, oerrors(S)->TypeError, \
 				 "Cell is freezed, can`t perfom mutable operation", self); \
 	}
@@ -92,6 +92,9 @@ OAny ois(OState * S, OAny any, OAny other) {
 	}
 }
 
+ostring otocstring(OState* S, OAny self) {
+	return OString_cstr(S, otostring(S, self));
+}
 /*AUTOGEN CODE BELOW */
 
 
