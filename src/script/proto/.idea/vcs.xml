@@ -2,5 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="" />
+    <mapping directory="$PROJECT_DIR$/../../../../../kermit" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/../../../../../lang-js" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$/../../../../../pyrolog" vcs="hg4idea" />
   </component>
 </project>
