@@ -4,6 +4,11 @@
 // contributed by David Hedbor
 // modified by Isaac Gouy
 //"use strict";
+var T = {};
+T[1] = "OLOLO";
+
+var x = "XXXX";
+x = x + "YYYY";
 function A() {
     return 1;
 }
@@ -13,6 +18,7 @@ function B() {
 }
 
 print (B());
+
 //function Obj(id) {
 //    this.id = id;
 //}

@@ -15,13 +15,13 @@ def setup(global_object):
     # 15.5.1
     from js.jsobj import W_StringConstructor
     w_String = W_StringConstructor()
-    object_space.assign_proto(w_String, object_space.proto_function)
+    object_space.assign_delegate(w_String, object_space.proto_function)
     put_property(w_String, u'length', _w(1), writable=False, enumerable=False, configurable=False)
     put_property(global_object, u'String', w_String)
 
     # 15.5.4
     w_StringPrototype = W_StringObject(_w(u''))
-    object_space.assign_proto(w_StringPrototype, object_space.proto_object)
+    object_space.assign_delegate(w_StringPrototype, object_space.proto_object)
 
     # 15.5.3.1
     object_space.proto_string = w_StringPrototype

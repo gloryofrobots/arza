@@ -87,7 +87,7 @@ def setup(global_object):
 
     # 15.9.3
     w_Date = W_DateConstructor()
-    object_space.assign_proto(w_Date, object_space.proto_function)
+    object_space.assign_delegate(w_Date, object_space.proto_function)
     put_property(global_object, u'Date', w_Date)
 
     put_property(w_Date, u'prototype', w_DatePrototype, writable=False, enumerable=False, configurable=False)

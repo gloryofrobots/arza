@@ -11,7 +11,7 @@ def setup(global_object):
     # 15.7.2
     from js.jsobj import W_NumberConstructor
     w_Number = W_NumberConstructor()
-    object_space.assign_proto(w_Number, object_space.proto_function)
+    object_space.assign_delegate(w_Number, object_space.proto_function)
     put_property(global_object, u'Number', w_Number)
 
     # 15.7.3
@@ -19,7 +19,7 @@ def setup(global_object):
 
     # 15.7.4
     w_NumberPrototype = W_NumericObject(_w(0))
-    object_space.assign_proto(w_NumberPrototype, object_space.proto_object)
+    object_space.assign_delegate(w_NumberPrototype, object_space.proto_object)
     object_space.proto_number = w_NumberPrototype
 
     # 15.7.4.1

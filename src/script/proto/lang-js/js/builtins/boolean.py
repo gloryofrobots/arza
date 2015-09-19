@@ -10,7 +10,7 @@ def setup(global_object):
     # 15.6.2
     from js.jsobj import W_BooleanConstructor
     w_Boolean = W_BooleanConstructor()
-    object_space.assign_proto(w_Boolean, object_space.proto_function)
+    object_space.assign_delegate(w_Boolean, object_space.proto_function)
     put_property(global_object, u'Boolean', w_Boolean)
 
     # 15.6.3
@@ -18,7 +18,7 @@ def setup(global_object):
 
     # 15.6.4
     w_BooleanPrototype = W_BooleanObject(_w(False))
-    object_space.assign_proto(w_BooleanPrototype, object_space.proto_object)
+    object_space.assign_delegate(w_BooleanPrototype, object_space.proto_object)
 
     # 15.6.3.1
     object_space.proto_boolean = w_BooleanPrototype

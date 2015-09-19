@@ -653,7 +653,7 @@ class W_BasicFunction(W_BasicObject):
         proto = self.get(u'prototype')
         if isinstance(proto, W_BasicObject):
             obj = object_space.new_obj()
-            object_space.assign_proto(obj, proto)
+            object_space.assign_delegate(obj, proto)
         else:
             # would love to test this
             # but I fail to find a case that falls into this
