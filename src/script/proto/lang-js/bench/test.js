@@ -3,48 +3,15 @@
 //
 // contributed by David Hedbor
 // modified by Isaac Gouy
-//"use strict";
-var T = {};
-T[1] = "OLOLO";
-
-var x = "XXXX";
-x = x + "YYYY";
-function A() {
-    return 1;
+function F() {
+    this.uid = 1233.232;
+    this.data = {};
+    this.data.id = 1;
+    var self = this;
+    /*this.data.getId = function() {
+        return self.data.id;
+    };*/
 }
-
-function B() {
-    return A() + 1;
-}
-
-print (B());
-
-//function Obj(id) {
-//    this.id = id;
-//}
-//
-//var obj = new Obj(1);
-//print(obj.id);
-//function main() {
-//    var x = 1, i = 0;
-//    while(true) {
-//        break
-//    }
-//    return i;
-//}
-//print(main())
-//
-//function F() {
-//    this.uid = 1233.232;
-//    this.data = {};
-//    this.data.id = 1;
-//    var self = this;
-//    /*this.data.getId = function() {
-//        return self.data.id;
-//    };*/
-//}
-
-
 /*
 var f = new F();
 print(f.data.getId());

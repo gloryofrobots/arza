@@ -12,9 +12,8 @@ class Map(object):
         self.name = None
 
     def __repr__(self):
-        return "%(id)s %(back)s, [%(index)d]:%(name)s" % \
-            {'id': str(hex(id(self))), 'back': repr(self.back), 'index': self.index, 'name': self.name}
-
+        return "%(back)s, [%(index)d]:%(name)s" % \
+            {'back': repr(self.back), 'index': self.index, 'name': self.name}
 
     @jit.elidable_promote("0")
     def contains(self, name):
@@ -74,7 +73,7 @@ class Map(object):
 
 class MapRoot(Map):
     def __repr__(self):
-        return "Root:[%(index)d]:%(name)s" % {'index': self.index, 'name': self.name}
+        return "[%(index)d]:%(name)s" % {'index': self.index, 'name': self.name}
 
 
 class MapNode(Map):

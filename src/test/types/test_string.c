@@ -8,6 +8,7 @@ static void print_str(OState* S, OAny str) {
 static void Test_String(void) {
 	OState * S = obin_init(1024 * 1024 * 90);
 	ochar str_arr[STR_ARR_SIZE] = {'\0'};
+
 	OAny str1, str2, str3, str4;
 	OAny val1, val2;
 	oint i;

@@ -12,7 +12,7 @@ def setup(global_object):
 
     # 15.8
     w_Math = W_Math()
-    object_space.assign_delegate(w_Math)
+    object_space.assign_proto(w_Math)
     put_property(global_object, u'Math', w_Math)
 
     put_native_function(w_Math, u'abs', js_abs, params=[u'x'])

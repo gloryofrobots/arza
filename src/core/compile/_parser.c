@@ -237,7 +237,8 @@ OAny _checkTokenTypes(OState* S, OAny parser, OAny types) {
 	OFOREACH(S, types, type,
 		if(_parser_token_type(parser) == OInt_toTokenType(type)) {
 			return ObinNil;
-	});
+		}
+	);
 
 	return parse_error(S, parser, "Expected one of the tokens ", types);
 }

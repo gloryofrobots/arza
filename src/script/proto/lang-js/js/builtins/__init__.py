@@ -53,17 +53,17 @@ def setup_builtins(global_object):
     import js.builtins.function
     empty_func = JsNativeFunction(js.builtins.function.empty, u'Empty')
     w_FunctionPrototype = object_space.new_func(empty_func)
-    object_space.assign_delegate(w_FunctionPrototype, object_space.proto_object)
+    object_space.assign_proto(w_FunctionPrototype, object_space.proto_object)
     object_space.proto_function = w_FunctionPrototype
 
     # 15.3.3
-    object_space.assign_delegate(w_Function, object_space.proto_function)
+    object_space.assign_proto(w_Function, object_space.proto_function)
 
     # 15.2 Object Objects
     # 15.2.3 Properties of the Object Constructor
     from js.jsobj import W_ObjectConstructor
     w_Object = W_ObjectConstructor()
-    object_space.assign_delegate(w_Object, object_space.proto_function)
+    object_space.assign_proto(w_Object, object_space.proto_function)
 
     put_property(w_Object, u'length', _w(1))
 

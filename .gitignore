@@ -21,7 +21,8 @@ obin
 *.a
 *.la
 *.lo
-
+*.pyc
+__pycache__/*
 # Shared objects (inc. Windows DLLs)
 *.dll
 *.so

@@ -139,7 +139,6 @@ class JsCode(object):
         self.updatelooplabel.pop()
 
     def emit(self, operation, *args):
-        print "Emit", operation, args
         opcode = getattr(opcodes, operation)(*args)
         self.opcodes.append(opcode)
         return opcode
@@ -172,7 +171,6 @@ class JsCode(object):
     def compile(self):
         self.unlabel()
         self.compiled_opcodes = [o for o in self.opcodes]
-        #print "***********COMPILE***************",self.compiled_opcodes
         self.estimated_stack_size()
 
     def remove_labels(self):
@@ -219,11 +217,6 @@ class JsCode(object):
         pc = 0
         result = None
         while True:
-
-            if pc < self._opcode_count():
-                opcode = self._get_opcode(pc)
-                print "op:", opcode
-                print ctx._stack_
             jitdriver.jit_merge_point(pc=pc, debug=debug, self=self, ctx=ctx, result=result)
             if pc >= self._opcode_count():
                 break

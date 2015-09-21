@@ -27,7 +27,7 @@ class Interpreter(object):
         js.builtins.setup_builtins(self.global_object)
         js.builtins.interpreter.setup_builtins(self.global_object)
 
-        object_space.assign_delegate(self.global_object)
+        object_space.assign_proto(self.global_object)
 
     def run_ast(self, ast):
         symbol_map = ast.symbol_map
