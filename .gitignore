@@ -5,7 +5,7 @@ CMakeFiles/*
 CMakeCache.txt
 cmake_install.cmake
 Makefile
-obin
+
 # Object files
 *.o
 *.ko
