@@ -166,40 +166,92 @@ class BytecodeRoutine(BaseRoutine):
         self.result = None
 
 
-    def _execute(self, ctx):
+    def __run(self, ctx):
         from obin.objects.object_space import object_space
         debug = object_space.interpreter.config.debug
+        from obin.runtime.completion import NormalCompletion, is_return_completion, is_empty_completion, is_completion
         from obin.runtime.opcodes import BaseJump
         code = self._js_code_
 
-        if self.pc >= code.opcode_count():
+        if code.opcode_count() == 0:
+            return NormalCompletion()
+
+        if debug:
+            print('start running %s' % (str(self)))
+
+        self.pc = 0
+        self.result = None
+        while True:
+            if self.pc >= code.opcode_count():
+                break
+            opcode = code.get_opcode(self.pc)
+            self.result = opcode.eval(ctx)
+
+            if debug:
+                d = u'%s\t%s' % (unicode(str(self.pc)), unicode(str(opcode)))
+                #d = u'%s' % (unicode(str(pc)))
+                #d = u'%3d %25s %s %s' % (pc, unicode(opcode), unicode([unicode(s) for s in ctx._stack_]), unicode(result))
+                print(d)
+
+            if is_return_completion(self.result):
+                break
+            elif not is_completion(self.result):
+                self.result = NormalCompletion()
+
+            if isinstance(opcode, BaseJump):
+                new_pc = opcode.do_jump(ctx, self.pc)
+                self.pc = new_pc
+                continue
+            else:
+                self.pc += 1
+
+        if self.result is None or is_empty_completion(self.result):
+            self.result = NormalCompletion(value=ctx.stack_top())
+
+        return self.result
+
+    def code(self):
+        return self._js_code_
+
+    def _execute(self, ctx):
+        from obin.objects.object_space import object_space
+        debug = object_space.interpreter.config.debug
+        from obin.runtime.completion import NormalCompletion, is_return_completion, is_empty_completion, is_completion
+        from obin.runtime.opcodes import BaseJump
+
+        if self.pc >= self.code().opcode_count():
             return
 
-        opcode = code.get_opcode(self.pc)
+        opcode = self.code().get_opcode(self.pc)
         self.result = opcode.eval(ctx)
-
+        #print "result", self.result
         if debug:
             d = u'%s\t%s' % (unicode(str(self.pc)), unicode(str(opcode)))
             #d = u'%s' % (unicode(str(pc)))
             #d = u'%3d %25s %s %s' % (pc, unicode(opcode), unicode([unicode(s) for s in ctx._stack_]), unicode(result))
-            #print(d)
-
+            print(d)
         if isinstance(opcode, BaseJump):
+            #print "JUMP"
             new_pc = opcode.do_jump(ctx, self.pc)
             self.pc = new_pc
+            self._execute(ctx)
         else:
             self.pc += 1
 
     def run(self, ctx):
         from obin.objects.object_space import object_space
         debug = object_space.interpreter.config.debug
-        from obin.runtime.completion import NormalCompletion, is_return_completion, is_empty_completion
+        from obin.runtime.completion import NormalCompletion, is_return_completion, is_empty_completion, is_completion
         code = self._js_code_
+
         if code.opcode_count() == 0:
             return NormalCompletion()
 
         if debug:
-            print('start running %s' % (str(code)))
+            print('start running %s' % (str(self)))
+
+        self.pc = 0
+        self.result = None
 
         while True:
             if self.pc >= code.opcode_count():

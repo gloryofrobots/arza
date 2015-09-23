@@ -55,7 +55,15 @@ var cowbag = cow.fuck(bug);
 print("COWBUG");
 print(cowbag[0].name());
 print(cowbag[1].name());
-
+var i = 3;
+while(i-- > 0) {
+    for(var j = 0; j < 10; j++) {
+        var A = new Array();
+        A.push(i);
+        A.push(j);
+        print("" + i + "," + j + " = " + A);
+    }
+}
 
 /*Object.create = function(o, properties) {
     if (typeof o !== 'object' && typeof o !== 'function') throw new TypeError('Object prototype may only be an Object: ' + o);
