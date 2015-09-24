@@ -17,22 +17,20 @@ var x = 1;
 //    return O;
 //};
 
-Object.prototype.extend = function () {
+function extend(object) {
      var hasOwnProperty = Object.hasOwnProperty;
-     var object = this.clone();
+     var clone = object.clone();
      var length = arguments.length;
-     var index = length;
-
-     while (index) {
-         var extension = arguments[length - (index--)];
+     for (var i = 1; i < length; i++) {
+        var extension = arguments[i];
          for (var property in extension) {
              if (hasOwnProperty.call(extension, property)){
                  object[property] = extension[property];
              }
         }
-    }
+     }
 
-     return object;
+     return clone;
 };
 
 function Robot(id) {
@@ -61,15 +59,17 @@ function blueprint(func, object) {
     return object;
 }
 
-
 var r = blueprint(Robot, null, "MEGA PIHAR");
 var rc = r.clone();
+
 rc.launchRockets();
 rc.destroyWhosLeft();
 r.launchRockets();
-var bc = rc.extend({
+
+var bc = extend(rc, {
     name:"ROBOT-GOBOT"
 });
+
 print(r);
 print(rc);
 print(bc);
@@ -77,56 +77,57 @@ print(bc);
 //
 //
 //
-//function Animal(name, eatPower) {
-//    function eat(a1, a2) {
-//        function _eat(){
-//            function __eat() {
-//                if(a1.eatPower() > a2.eatPower()) {
-//                     return a1;
-//                }
-//                return a2;
-//            }
-//            return __eat();
-//        }
-//        return _eat();
-//    }
-//
-//    var aid = name + "Animal";
-//
-//    function A() {
-//        this.eatPower = function() {
-//            return eatPower;
-//        };
-//        this.name = function(){
-//            return name;
-//        };
-//        this.fuck = function(other) {
-//           var c = [];
-//           c.push(this);
-//           c.push(other);
-//           return c;
-//        };
-//        this.id = function(){
-//            return aid;
-//        };
-//        this.eat = function(other) {
-//            return eat(this, other);
-//        };
-//        this.toString = function() {
-//            return this.id;
-//        };
-//    }
-//    return new A();
-//}
-//
-//var cow = Animal("Zorka", 2);
-//var bug = Animal("Boris", 4);
-//var survivor = cow.eat(bug);
-//print(survivor.name());
-//var cowbag = cow.fuck(bug);
-//print("COWBUG");
-//print(cowbag[0].name());
-//print(cowbag[1].name());
+function Animal(name, eatPower) {
+    function eat(a1, a2) {
+        function _eat(){
+            function __eat() {
+                if(a1.eatPower() > a2.eatPower()) {
+                     return a1;
+                }
+                return a2;
+            }
+            return __eat();
+        }
+        return _eat();
+    }
+
+    var aid = name + "Animal";
+
+    var A = {
+        eatPower : function() {
+            return eatPower;
+        },
+        fuck : function(other) {
+           var c = [];
+           c.push(this);
+           c.push(other);
+           return c;
+        },
+        id : function(){
+            return aid;
+        },
+        eat : function(other) {
+            return eat(this, other);
+        },
+        toString : function() {
+            return this.id;
+        },
+        name : function(){
+            return name;
+        }
+    };
+    return A.clone();
+}
+
+var cow = Animal("Zorka", 2);
+var bug = Animal("Boris", 4);
+var survivor = cow.eat(bug);
+print(survivor.name());
+var cowbag = cow.fuck(bug);
+print("COWBUG");
+print(cowbag[0].name());
+print(cowbag[0]);
+print(cowbag[1].name());
 //var i = 3;
 //while(i-- > 0) {
 //    for(var j = 0; j < 10; j++) {
@@ -151,9 +152,7 @@ print(bc);
 //} catch(e) {
 //    print("Error occurred:" + e);
 //}
-////var N = new Number(23);
 //var n = 34.343434;
-////var S = new String("ddddd");
 //var s = "aaaaa";
 
 /*Object.create = function(o, properties) {

@@ -1015,6 +1015,7 @@ class W_ArrayConstructor(W_BasicFunction):
         return True
 
     def Call(self, args=[], this=None, calling_context=None):
+        print "W_ArrayConstructor Call"
         from obin.objects.object_space import object_space
         from obin.objects.object_space import _w
 
