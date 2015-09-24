@@ -57,8 +57,8 @@ class JsThrowException(JsException):
 
 class JsTypeError(JsException):
     def __init__(self, value):
-        import traceback
-        traceback.print_stack()
+        from obin.utils import tb
+        tb()
         #assert isinstance(value, unicode)
         self.value = value
 

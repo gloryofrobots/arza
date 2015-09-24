@@ -1,5 +1,5 @@
 def test_string_match_chars():
-    from obin.builtins.js_global import _string_match_chars
+    from obin.builtins.global_functions import _string_match_chars
     assert _string_match_chars(u'abccab', u'abc') is True
     assert _string_match_chars(u'ABCcba', u'abc') is True
     assert _string_match_chars(u'2921', u'0123456789') is True

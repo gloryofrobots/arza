@@ -5,7 +5,7 @@ from obin.objects.object_space import _w, isint
 from obin.runtime.exception import JsTypeError
 from obin.runtime.baseop import plus, sub, AbstractEC, StrictEC, increment, decrement, mult, division, uminus, mod
 from obin.objects.object import put_property
-
+from obin.utils import tb
 
 class Opcode(object):
     _settled_ = True
@@ -789,6 +789,7 @@ def commonnew(ctx, obj, args):
         msg = u'%s is not a constructor' % (obj.to_string())
         raise JsTypeError(msg)
 
+    tb("commonnew")
     from obin.objects.object import W_BasicFunction
     assert isinstance(obj, W_BasicFunction)
     res = obj.Construct(args=args)

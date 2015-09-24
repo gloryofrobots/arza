@@ -82,6 +82,9 @@ def setup_builtins(global_object):
 
     # 15.2.4.3 Object.prototype.valueOf()
     put_native_function(w_ObjectPrototype, u'valueOf', obin.builtins.object.value_of)
+    put_native_function(w_ObjectPrototype, u'clone', obin.builtins.object.clone)
+    put_native_function(w_ObjectPrototype, u'hasOwnProperty', obin.builtins.object.has_own_property)
+    put_native_function(w_ObjectPrototype, u'create', obin.builtins.object.create)
 
     # 15.3 Function Objects
     # 15.3.3 Properties of the Function Constructor
@@ -116,14 +119,14 @@ def setup_builtins(global_object):
     import obin.builtins.array
     obin.builtins.array.setup(global_object)
 
-    import obin.builtins.js_math
-    obin.builtins.js_math.setup(global_object)
+    import obin.builtins.math_functions
+    obin.builtins.math_functions.setup(global_object)
 
     import obin.builtins.date
     obin.builtins.date.setup(global_object)
 
-    import obin.builtins.js_global
-    obin.builtins.js_global.setup(global_object)
+    import obin.builtins.global_functions
+    obin.builtins.global_functions.setup(global_object)
 
 
 from obin.objects.object_space import newundefined

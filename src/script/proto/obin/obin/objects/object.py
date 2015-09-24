@@ -8,6 +8,7 @@ from obin.objects.property_descriptor import PropertyDescriptor, DataPropertyDes
 from obin.objects.property import DataProperty, AccessorProperty
 from obin.objects.object_map import new_map
 from obin.runtime.exception import JsTypeError, JsRangeError
+from obin.utils import tb
 
 
 @jit.elidable
@@ -566,6 +567,8 @@ class W_BasicObject(W_Root):
         prop_dict = self._named_properties_dict()
         return prop_dict.keys()
 
+    def own_named_properties(self):
+        return self._property_map_.keys()
 
 class W__PrimitiveObject(W_BasicObject):
     _immutable_fields_ = ['_primitive_value_']
@@ -650,6 +653,7 @@ class W_BasicFunction(W_BasicObject):
 
     # 13.2.2
     def Construct(self, args=[]):
+        #tb("W_BasicFunction Construct")
         from obin.objects.object_space import object_space
 
         proto = self.get(u'prototype')
@@ -695,6 +699,7 @@ class W_BasicFunction(W_BasicObject):
 
 class W_ObjectConstructor(W_BasicFunction):
     def Call(self, args=[], this=None, calling_context=None):
+        print "W_ObjectConstructor Call"
         from obin.objects.object_space import isnull_or_undefined
         from obin.builtins import get_arg
         value = get_arg(args, 0)
@@ -728,6 +733,7 @@ class W_FunctionConstructor(W_BasicFunction):
 
     # 15.3.2.1
     def Call(self, args=[], this=None, calling_context=None):
+        print "W_FunctionConstructor Call"
         arg_count = len(args)
         _args = u''
         body = u''
@@ -772,6 +778,7 @@ class W_FunctionConstructor(W_BasicFunction):
 class W_NumberConstructor(W_BasicFunction):
     # 15.7.1.1
     def Call(self, args=[], this=None, calling_context=None):
+        print "W_NumberConstructor Call"
         from obin.objects.object_space import _w, isnull_or_undefined, isundefined
 
         if len(args) >= 1 and not isnull_or_undefined(args[0]):
@@ -792,6 +799,7 @@ class W_NumberConstructor(W_BasicFunction):
 # 15.5.2
 class W_StringConstructor(W_BasicFunction):
     def Call(self, args=[], this=None, calling_context=None):
+        print "W_StringConstructor Call"
         from obin.builtins import get_arg
         from obin.objects.object_space import _w
         arg0 = get_arg(args, 0, _w(u""))
@@ -808,6 +816,7 @@ class W_StringConstructor(W_BasicFunction):
 # 15.6.2
 class W_BooleanConstructor(W_BasicFunction):
     def Call(self, args=[], this=None, calling_context=None):
+        print "W_BooleanConstructor Call"
         from obin.objects.object_space import _w, isnull_or_undefined
         if len(args) >= 1 and not isnull_or_undefined(args[0]):
             boolval = args[0].to_boolean()
@@ -825,6 +834,7 @@ class W_BooleanConstructor(W_BasicFunction):
 # 15.9.2
 class W_DateConstructor(W_BasicFunction):
     def Call(self, args=[], this=None, calling_context=None):
+        print "W_DateConstructor Call"
         import time
         #from js.builtins import get_arg
         # TODO
@@ -1093,7 +1103,7 @@ class W_String(W_Primitive):
             return True
 
     def ToNumber(self):
-        from obin.builtins.js_global import _strip
+        from obin.builtins.global_functions import _strip
         from obin.runistr import encode_unicode_utf8
         from obin.constants import hex_rexp, oct_rexp, num_rexp
 
@@ -1118,7 +1128,7 @@ class W_String(W_Primitive):
 
             return float(num_lit)
 
-        from obin.builtins.js_global import _parse_int
+        from obin.builtins.global_functions import _parse_int
 
         match_data = hex_rexp.match(s)
         if match_data is not None:

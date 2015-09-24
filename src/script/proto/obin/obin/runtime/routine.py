@@ -1,5 +1,6 @@
 from obin.objects.object_space import _w
 from rpython.rlib import jit
+routine_contexts = set()
 
 def get_printable_location(pc, debug, jscode):
     if pc < jscode.opcode_count():
@@ -119,6 +120,9 @@ class NativeRoutine(BaseRoutine):
         return self._name_
 
     def run(self, ctx):
+        routine_contexts.add((self.__class__.__name__, ctx.__class__.__name__))
+        #print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
+
         from obin.runtime.completion import ReturnCompletion
 
         args = ctx.argv()
@@ -146,6 +150,8 @@ class NativeIntimateRoutine(NativeRoutine):
         self._intimate_function_ = function
 
     def run(self, ctx):
+        routine_contexts.add((self.__class__.__name__, ctx.__class__.__name__))
+        # print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
         from obin.runtime.completion import Completion
         compl = self._intimate_function_(ctx)
         assert isinstance(compl, Completion)
@@ -167,6 +173,8 @@ class BytecodeRoutine(BaseRoutine):
 
 
     def __run(self, ctx):
+        routine_contexts.add((self.__class__.__name__, ctx.__class__.__name__))
+        # print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
         from obin.objects.object_space import object_space
         debug = object_space.interpreter.config.debug
         from obin.runtime.completion import NormalCompletion, is_return_completion, is_empty_completion, is_completion
@@ -239,6 +247,8 @@ class BytecodeRoutine(BaseRoutine):
             self.pc += 1
 
     def run(self, ctx):
+        routine_contexts.add((self.__class__.__name__, ctx.__class__.__name__))
+        # print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
         from obin.objects.object_space import object_space
         debug = object_space.interpreter.config.debug
         from obin.runtime.completion import NormalCompletion, is_return_completion, is_empty_completion, is_completion

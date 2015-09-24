@@ -2,6 +2,12 @@
 #from pypy.rlib.jit import hint
 from rpython.rlib import jit  # , debug
 
+def tb(message=None):
+    import traceback
+    if message:
+        print message
+
+    traceback.print_stack()
 
 class StackMixin(object):
     _mixin_ = True

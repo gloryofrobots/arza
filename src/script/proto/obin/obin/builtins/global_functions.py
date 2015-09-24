@@ -41,6 +41,7 @@ def setup(global_object):
     put_native_function(global_object, u'alert', alert)
 
     put_native_function(global_object, u'print', printjs)
+    put_native_function(global_object, u'id', _id)
 
     put_native_function(global_object, u'escape', escape, params=[u'string'])
 
@@ -106,7 +107,6 @@ def _string_match_chars(string, chars):
             return False
     return True
 
-
 # 15.1.2.2
 @w_return
 def parse_int(this, args):
@@ -115,6 +115,10 @@ def parse_int(this, args):
 
     return _parse_int(string.to_string(), radix.ToInt32())
 
+@w_return
+def _id(this, args):
+    element = get_arg(args, 0)
+    return str(hex(id(element)))
 
 def _parse_int(string, radix):
     assert isinstance(string, unicode)
@@ -211,10 +215,10 @@ def parse_float(this, args):
     return NAN
 
 
+
 @w_return
 def alert(this, args):
     printjs(this, args)
-
 
 @w_return
 def printjs(this, args):

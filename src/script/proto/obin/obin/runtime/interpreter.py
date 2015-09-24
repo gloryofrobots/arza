@@ -45,7 +45,7 @@ class Interpreter(object):
         return self.run_ast(ast)
 
     def run(self, code, interactive=False):
-        from obin.runtime.routine import GlobalRoutine
+        from obin.runtime.routine import GlobalRoutine, routine_contexts
 
         from obin.compile.code import Code
         assert isinstance(code, Code)
@@ -58,4 +58,5 @@ class Interpreter(object):
         object_space.global_context = ctx
 
         result = c.run(ctx)
+        print routine_contexts
         return result.value
