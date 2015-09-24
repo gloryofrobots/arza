@@ -42,6 +42,7 @@ def setup(global_object):
 
     put_native_function(global_object, u'print', printjs)
     put_native_function(global_object, u'id', _id)
+    put_native_function(global_object, u'now', now)
 
     put_native_function(global_object, u'escape', escape, params=[u'string'])
 
@@ -114,6 +115,16 @@ def parse_int(this, args):
     radix = get_arg(args, 1)
 
     return _parse_int(string.to_string(), radix.ToInt32())
+
+def now(self, args):
+    print "W_DateConstructor Call"
+    import time
+    from obin.objects.object_space import _w
+    value = _w(int(time.time() * 1000))
+
+    from obin.objects.object_space import object_space
+    obj = object_space.new_date(value)
+    return obj
 
 @w_return
 def _id(this, args):

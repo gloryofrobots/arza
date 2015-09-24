@@ -15,7 +15,7 @@ fYEAR = 3
 
 def setup(global_object):
     from obin.builtins import put_property, put_native_function
-    from obin.objects.object import W_DateObject, W_DateConstructor
+    from obin.objects.object import W_DateObject, W__Object
     from obin.objects.object_space import object_space
 
     ##Date
@@ -86,7 +86,7 @@ def setup(global_object):
     put_native_function(w_DatePrototype, u'toGMTString', to_gmt_string)
 
     # 15.9.3
-    w_Date = W_DateConstructor()
+    w_Date = W__Object()
     object_space.assign_proto(w_Date, object_space.proto_function)
     put_property(global_object, u'Date', w_Date)
 
@@ -97,9 +97,6 @@ def setup(global_object):
     put_native_function(w_Date, u'now', now)
 
     put_native_function(w_Date, u'UTC', parse)
-
-    # 15.9.5.1
-    put_property(w_DatePrototype, u'constructor', w_Date)
 
 
 @w_return

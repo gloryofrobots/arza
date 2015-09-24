@@ -118,7 +118,8 @@ function Animal(name, eatPower) {
     };
     return A.clone();
 }
-
+var t = 1 !=0;
+print("t=" + t);
 var cow = Animal("Zorka", 2);
 var bug = Animal("Boris", 4);
 var survivor = cow.eat(bug);

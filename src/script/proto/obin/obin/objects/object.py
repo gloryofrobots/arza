@@ -812,73 +812,6 @@ class W_StringConstructor(W_BasicFunction):
     def _to_string_(self):
         return u'function String() { [native code] }'
 
-
-# 15.6.2
-class W_BooleanConstructor(W_BasicFunction):
-    def Call(self, args=[], this=None, calling_context=None):
-        print "W_BooleanConstructor Call"
-        from obin.objects.object_space import _w, isnull_or_undefined
-        if len(args) >= 1 and not isnull_or_undefined(args[0]):
-            boolval = args[0].to_boolean()
-            return _w(boolval)
-        else:
-            return _w(False)
-
-    def Construct(self, args=[]):
-        return self.Call(args).ToObject()
-
-    def _to_string_(self):
-        return u'function Boolean() { [native code] }'
-
-
-# 15.9.2
-class W_DateConstructor(W_BasicFunction):
-    def Call(self, args=[], this=None, calling_context=None):
-        print "W_DateConstructor Call"
-        import time
-        #from js.builtins import get_arg
-        # TODO
-        #import datetime
-
-        #if len(args) > 1:
-        #    arg0 = get_arg(args, 0);
-        #    arg1 = get_arg(args, 1, _w(0));
-        #    arg2 = get_arg(args, 2, _w(0));
-
-        #    year = arg0.ToInteger()
-        #    month = arg1.ToInteger() + 1
-        #    day = arg2.ToInteger() + 1
-
-        #    d = datetime.date(year, month, day)
-        #    sec = time.mktime(d.timetuple())
-        #    value = _w(int(sec * 1000))
-
-        #elif len(args) == 1:
-        #    arg0 = get_arg(args, 0);
-        #    if isinstance(arg0, W_String):
-        #        raise NotImplementedError()
-        #    else:
-        #        num = arg0.ToNumber()
-        #        if isnan(num) or isinf(num):
-        #            raise JsTypeError(unicode(num))
-        #        value = _w(int(num))
-        #else:
-        #    value = _w(int(time.time() * 1000))
-        from obin.objects.object_space import _w
-        value = _w(int(time.time() * 1000))
-
-        from obin.objects.object_space import object_space
-        obj = object_space.new_date(value)
-        return obj
-
-    # 15.7.2.1
-    def Construct(self, args=[]):
-        return self.Call(args).ToObject()
-
-    def _to_string_(self):
-        return u'function Date() { [native code] }'
-
-
 class W__Function(W_BasicFunction):
     _immutable_fields_ = ['_type_', '_class_', '_extensible_', '_scope_', '_params_[*]', '_strict_', '_function_']
 
@@ -1002,45 +935,6 @@ def make_arg_setter(name, env):
     pass
     #param = u'%s_arg' % (name)
     #code = u'%s = %s;' % (name, param)
-
-
-# 15.4.2
-class W_ArrayConstructor(W_BasicFunction):
-    def __init__(self):
-        from obin.objects.object_space import _w
-        W_BasicFunction.__init__(self)
-        put_property(self, u'length', _w(1), writable=False, enumerable=False, configurable=False)
-
-    def is_callable(self):
-        return True
-
-    def Call(self, args=[], this=None, calling_context=None):
-        print "W_ArrayConstructor Call"
-        from obin.objects.object_space import object_space
-        from obin.objects.object_space import _w
-
-        if len(args) == 1:
-            _len = args[0]
-            if isinstance(_len, W_Number):
-                length = _len.ToUInt32()
-                if length != _len.ToNumber():
-                    raise JsRangeError()
-                array = object_space.new_array(_w(length))
-            else:
-                length = 1
-                array = object_space.new_array(_w(length))
-                array._idx_put(0, _len, False)
-
-            return array
-        else:
-            array = object_space.new_array()
-            for index, obj in enumerate(args):
-                array._idx_put(index, obj, False)
-            return array
-
-    def Construct(self, args=[]):
-        return self.Call(args)
-
 
 # 15.8
 class W_Math(W__Object):
