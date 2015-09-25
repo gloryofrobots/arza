@@ -35,19 +35,17 @@ def newstring(s):
     return W_String(s)
 
 
-@enforceargs(bool)
-def _makebool(b):
+w_True = None
+w_False = None
+
+def makebools():
+    global w_True
+    global w_False
     from obin.objects.object import W_Boolean
-    return W_Boolean(b)
-
-
-w_True = _makebool(True)
-jit.promote(w_True)
-
-
-w_False = _makebool(False)
-jit.promote(w_False)
-
+    w_True = W_Boolean(True)
+    w_False = W_Boolean(False)
+    jit.promote(w_True)
+    jit.promote(w_False)
 
 def _makeundefined():
     from obin.objects.object import W_Undefined
@@ -55,7 +53,6 @@ def _makeundefined():
 
 w_Undefined = _makeundefined()
 jit.promote(w_Undefined)
-
 
 def _makenull():
     from obin.objects.object import W_Null
@@ -89,6 +86,9 @@ def isnull_or_undefined(obj):
 
 @enforceargs(bool)
 def newbool(val):
+    if not w_False:
+        makebools()
+
     if val:
         return w_True
     return w_False
@@ -140,18 +140,18 @@ class ObjectSpace(object):
         return self.global_context.variable_environment()
 
     def assign_proto(self, obj, proto=None):
-        from obin.objects.object import W_BasicFunction, W_DateObject, W_BooleanObject, W_StringObject, W_NumericObject, W__Array
+        from obin.objects.object import W_BasicFunction, W_DateObject, W_String, W_Boolean, W_Number, W__Array
         if proto is not None:
             obj._prototype_ = proto
             return obj
 
         if isinstance(obj, W_BasicFunction):
             obj._prototype_ = self.proto_function
-        elif isinstance(obj, W_BooleanObject):
+        elif isinstance(obj, W_Boolean):
             obj._prototype_ = self.proto_boolean
-        elif isinstance(obj, W_NumericObject):
+        elif isinstance(obj, W_Number):
             obj._prototype_ = self.proto_number
-        elif isinstance(obj, W_StringObject):
+        elif isinstance(obj, W_String):
             obj._prototype_ = self.proto_string
         elif isinstance(obj, W__Array):
             obj._prototype_ = self.proto_array
@@ -179,27 +179,11 @@ class ObjectSpace(object):
         self.assign_proto(obj)
         return obj
 
-    def new_array(self, length=_w(0)):
+    def new_array(self, length=None):
+        if not length:
+            length = _w(0)
         from obin.objects.object import W__Array
         obj = W__Array(length)
-        self.assign_proto(obj)
-        return obj
-
-    def new_bool(self, value):
-        from obin.objects.object import W_BooleanObject
-        obj = W_BooleanObject(value)
-        self.assign_proto(obj)
-        return obj
-
-    def new_string(self, value):
-        from obin.objects.object import W_StringObject
-        obj = W_StringObject(value)
-        self.assign_proto(obj)
-        return obj
-
-    def new_number(self, value):
-        from obin.objects.object import W_NumericObject
-        obj = W_NumericObject(value)
         self.assign_proto(obj)
         return obj
 

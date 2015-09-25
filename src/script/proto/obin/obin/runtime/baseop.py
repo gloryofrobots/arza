@@ -14,8 +14,8 @@ from obin.builtins.number import w_NAN, w_POSITIVE_INFINITY, w_NEGATIVE_INFINITY
 
 # 11.6.1, 11.6.3
 def plus(lval, rval):
-    lprim = lval.ToPrimitive()
-    rprim = rval.ToPrimitive()
+    lprim = lval
+    rprim = rval
 
     if isinstance(lprim, W_String) or isinstance(rprim, W_String):
         sleft = lprim.to_string()

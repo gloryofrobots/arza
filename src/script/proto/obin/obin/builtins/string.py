@@ -1,7 +1,7 @@
 from rpython.rlib.rfloat import NAN
 from rpython.rlib.rstring import UnicodeBuilder
 
-from obin.objects.object import W_String, W_StringObject
+from obin.objects.object import W_String
 from obin.runtime.exception import JsTypeError
 from obin.builtins import get_arg
 from obin.objects.object_space import w_return, _w
@@ -20,7 +20,7 @@ def setup(global_object):
     put_property(global_object, u'String', w_String)
 
     # 15.5.4
-    w_StringPrototype = W__Object()
+    w_StringPrototype = W_String(u"")
     object_space.assign_proto(w_StringPrototype, object_space.proto_object)
 
     # 15.5.3.1

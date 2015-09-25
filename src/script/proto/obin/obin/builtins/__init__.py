@@ -119,8 +119,8 @@ def setup_builtins(global_object):
     import obin.builtins.math_functions
     obin.builtins.math_functions.setup(global_object)
 
-    import obin.builtins.date
-    obin.builtins.date.setup(global_object)
+    # import obin.builtins.date
+    # obin.builtins.date.setup(global_object)
 
     import obin.builtins.global_functions
     obin.builtins.global_functions.setup(global_object)

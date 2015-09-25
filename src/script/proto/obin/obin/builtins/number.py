@@ -1,6 +1,6 @@
 from rpython.rlib.rfloat import NAN, INFINITY
 from obin.runtime.exception import JsRangeError, JsTypeError
-from obin.objects.object import W_Number, W_NumericObject
+from obin.objects.object import W_Number
 from obin.objects.object_space import w_return, _w
 
 
@@ -18,7 +18,7 @@ def setup(global_object):
     put_property(w_Number, u'length', _w(1), writable=False, enumerable=False, configurable=False)
 
     # 15.7.4
-    w_NumberPrototype = W_NumericObject(_w(0))
+    w_NumberPrototype = W__Object()
     object_space.assign_proto(w_NumberPrototype, object_space.proto_object)
     object_space.proto_number = w_NumberPrototype
 
@@ -72,8 +72,6 @@ def to_string(this, args):
 
     if isinstance(this, W_Number):
         num = this
-    elif isinstance(this, W_NumericObject):
-        num = this.PrimitiveValue()
     else:
         raise JsTypeError(u'')
 
@@ -86,8 +84,6 @@ def to_string(this, args):
 def value_of(this, args):
     if isinstance(this, W_Number):
         num = this
-    elif isinstance(this, W_NumericObject):
-        num = this.PrimitiveValue()
     else:
         raise JsTypeError(u'')
 

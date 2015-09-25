@@ -1,4 +1,4 @@
-from obin.objects.object import W_Boolean, W_BooleanObject
+from obin.objects.object import W_Boolean
 from obin.runtime.exception import JsTypeError
 from obin.objects.object_space import w_return, _w
 
@@ -17,7 +17,7 @@ def setup(global_object):
     put_property(w_Boolean, u'length', _w(1), writable=False, enumerable=False, configurable=False)
 
     # 15.6.4
-    w_BooleanPrototype = W_BooleanObject(_w(False))
+    w_BooleanPrototype = W_Boolean(False)
     object_space.assign_proto(w_BooleanPrototype, object_space.proto_object)
 
     # 15.6.3.1
@@ -38,8 +38,6 @@ def setup(global_object):
 def to_string(this, args):
     if isinstance(this, W_Boolean):
         b = this
-    elif isinstance(this, W_BooleanObject):
-        b = this.PrimitiveValue()
     else:
         raise JsTypeError(u'')
 
@@ -54,8 +52,6 @@ def to_string(this, args):
 def value_of(this, args):
     if isinstance(this, W_Boolean):
         b = this
-    elif isinstance(this, W_BooleanObject):
-        b = this.PrimitiveValue()
     else:
         raise JsTypeError(u'')
 

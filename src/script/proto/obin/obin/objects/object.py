@@ -213,6 +213,7 @@ def _ireject(throw, idx):
     return False
 
 
+
 class W_BasicObject(W_Root):
     _type_ = 'object'
     _class_ = 'Object'
@@ -255,7 +256,6 @@ class W_BasicObject(W_Root):
     # 8.12.1
     def get_own_property(self, p):
         assert p is not None and isinstance(p, unicode)
-
         prop = self._get_prop(p)
         if prop is None:
             return
@@ -287,7 +287,8 @@ class W_BasicObject(W_Root):
         proto = self.prototype()
         if isnull(proto):
             return None
-
+        if not isinstance(proto, W_BasicObject):
+            raise JsRangeError()
         assert isinstance(proto, W_BasicObject)
         return proto.get_property(p)
 
@@ -400,16 +401,14 @@ class W_BasicObject(W_Root):
         if to_string.is_callable():
             assert isinstance(to_string, W_BasicFunction)
             _str = to_string.Call(this=self)
-            if isinstance(_str, W_Primitive):
-                return _str
+            return _str
 
     def _default_value_number_(self):
         value_of = self.get(u'valueOf')
         if value_of.is_callable():
             assert isinstance(value_of, W_BasicFunction)
             val = value_of.Call(this=self)
-            if isinstance(val, W_Primitive):
-                return val
+            return val
 
     # 8.12.9
     def define_own_property(self, p, desc, throw=False):
@@ -512,7 +511,7 @@ class W_BasicObject(W_Root):
         return self.ToPrimitive('Number').ToNumber()
 
     def to_string(self):
-        return self.ToPrimitive('String').to_string()
+        return self._default_value_string_().to_string()
 
     def ToPrimitive(self, hint=None):
         return self.default_value(hint)
@@ -549,62 +548,7 @@ class W_BasicObject(W_Root):
         return self._slots.keys()
 
 class W__PrimitiveObject(W_BasicObject):
-    _immutable_fields_ = ['_primitive_value_']
-
-    def __init__(self, primitive_value):
-        print "W__PrimitiveObject",self.__class__.__name__
-        W_BasicObject.__init__(self)
-        self.set_primitive_value(primitive_value)
-
-    def PrimitiveValue(self):
-        return self._primitive_value_
-
-    def set_primitive_value(self, value):
-        assert isinstance(value, W_Root)
-        self._primitive_value_ = value
-
-
-class W_BooleanObject(W__PrimitiveObject):
-    _class_ = 'Boolean'
-
-    def __str__(self):
-        return u'W_BooleanObject(%s)' % (str(self._primitive_value_))
-
-
-class W_NumericObject(W__PrimitiveObject):
-    _class_ = 'Number'
-
-
-class W_StringObject(W__PrimitiveObject):
-    _class_ = 'String'
-
-    def __init__(self, primitive_value):
-        from obin.objects.object_space import _w
-        W__PrimitiveObject.__init__(self, primitive_value)
-        length = len(self._primitive_value_.to_string())
-        descr = PropertyDescriptor(value=_w(length), enumerable=False, configurable=False, writable=False)
-        self.define_own_property(u'length', descr)
-
-    def get_own_property(self, p):
-        desc = W__PrimitiveObject.get_own_property(self, p)
-        if desc is not None:
-            return desc
-
-        if not is_array_index(p):
-            return None
-
-        string = self.to_string()
-        index = int(p)
-        length = len(string)
-
-        if length <= index:
-            return None
-
-        result_string = string[index]
-        from obin.objects.object_space import _w
-        d = PropertyDescriptor(value=_w(result_string), enumerable=True, writable=False, configurable=False)
-        return d
-
+    pass
 
 class W__Object(W_BasicObject):
     pass
@@ -621,7 +565,6 @@ class W_DateObject(W__PrimitiveObject):
         if hint is None:
             hint = 'String'
         return W_BasicObject.default_value(self, hint)
-
 
 class W_BasicFunction(W_BasicObject):
     _class_ = 'Function'
@@ -783,19 +726,22 @@ class W_Math(W__Object):
     _class_ = 'Math'
 
 
-class W_Boolean(W_Primitive):
+class W_Boolean(W__PrimitiveObject):
     _type_ = 'boolean'
     _immutable_fields_ = ['_boolval_']
 
     def __init__(self, boolval):
         self._boolval_ = bool(boolval)
+        W__PrimitiveObject.__init__(self)
 
     def __str__(self):
         return 'W_Bool(%s)' % (str(self._boolval_), )
 
-    def ToObject(self):
-        from obin.objects.object_space import object_space
-        return object_space.new_bool(self)
+    def prototype(self):
+        from obin.objects.object_space import object_space, isnull
+        if isnull(self._prototype_):
+            self._prototype_ = object_space.proto_boolean
+        return self._prototype_
 
     def to_string(self):
         if self._boolval_ is True:
@@ -811,13 +757,24 @@ class W_Boolean(W_Primitive):
         return self._boolval_
 
 
-class W_String(W_Primitive):
+class W_String(W__PrimitiveObject):
     _type_ = 'string'
     _immutable_fields_ = ['_strval_']
 
     def __init__(self, strval):
+        from obin.objects.object_space import newint
         assert strval is not None and isinstance(strval, unicode)
+        W__PrimitiveObject.__init__(self)
         self._strval_ = strval
+        length = len(strval)
+        descr = PropertyDescriptor(value=newint(length), enumerable=False, configurable=False, writable=False)
+        self.define_own_property(u'length', descr)
+
+    def prototype(self):
+        from obin.objects.object_space import object_space,isnull
+        if isnull(self._prototype_):
+            self._prototype_ = object_space.proto_string
+        return self._prototype_
 
     def __eq__(self, other):
         other_string = other.to_string()
@@ -826,9 +783,25 @@ class W_String(W_Primitive):
     def __str__(self):
         return u'W_String("%s")' % (self._strval_)
 
-    def ToObject(self):
-        from obin.objects.object_space import object_space
-        return object_space.new_string(self)
+    def get_own_property(self, p):
+        desc = W__PrimitiveObject.get_own_property(self, p)
+        if desc is not None:
+            return desc
+
+        if not is_array_index(p):
+            return None
+
+        string = self.to_string()
+        index = int(p)
+        length = len(string)
+
+        if length <= index:
+            return None
+
+        result_string = string[index]
+        from obin.objects.object_space import _w
+        d = PropertyDescriptor(value=_w(result_string), enumerable=True, writable=False, configurable=False)
+        return d
 
     def to_string(self):
         return self._strval_
@@ -884,23 +857,23 @@ class W_String(W_Primitive):
         return NAN
 
 
-class W_Number(W_Primitive):
+class W_Number(W__PrimitiveObject):
     """ Base class for numbers, both known to be floats
     and those known to be integers
     """
     _type_ = 'number'
-
-    # 9.9
-    def ToObject(self):
-        from obin.objects.object_space import object_space
-        obj = object_space.new_number(self)
-        return obj
 
     def to_boolean(self):
         num = self.ToNumber()
         if isnan(num):
             return False
         return bool(num)
+
+    def prototype(self):
+        from obin.objects.object_space import object_space, isnull
+        if isnull(self._prototype_):
+            self._prototype_ = object_space.proto_number
+        return self._prototype_
 
     def __eq__(self, other):
         if isinstance(other, W_Number):
@@ -916,6 +889,7 @@ class W_IntNumber(W_Number):
     """
     def __init__(self, intval):
         self._intval_ = intmask(intval)
+        W__PrimitiveObject.__init__(self)
 
     def __str__(self):
         return 'W_IntNumber(%s)' % (self._intval_,)
@@ -966,6 +940,7 @@ class W_FloatNumber(W_Number):
     def __init__(self, floatval):
         assert isinstance(floatval, float)
         self._floatval_ = floatval
+        W__PrimitiveObject.__init__(self)
 
     def __str__(self):
         return 'W_FloatNumber(%s)' % (self._floatval_,)
@@ -1106,7 +1081,7 @@ class W__Array(W_BasicObject):
         for i in self._array_props_.keys():
             my_d[unicode(str(i))] = None
 
-        for i in self._property_map_.keys():
+        for i in self._slots.keys():
             my_d[i] = None
 
         proto = self.prototype()
