@@ -34,7 +34,6 @@ class Fiber(object):
     def set_active_routine(self, r):
         if self.__routine is r:
             raise RuntimeError("Routine been already called")
-            return
 
         self.__routine = r
 
@@ -43,14 +42,46 @@ class Fiber(object):
         if self.routine() is None:
             self.terminate()
             return
+
         self.routine().execute()
 
     def find_routine_to_execute(self):
         routine = self.__routine
         while True:
-            if routine is not None and routine.is_complete() is True:
-                routine = routine.caller()
+            if routine is None:
                 break
+
+            if routine.is_complete():
+                routine = routine.continuation()
+                continue
+
+            break
+
+        self.__routine = routine
+
+        if routine is None:
+            return
+
+        if routine.is_terminated():
+            return self.catch_signal()
+
+    def catch_signal(self):
+        routine = self.__routine
+        assert routine.is_terminated()
+        signal = routine.signal()
+        assert signal
+
+        while True:
+            handler = routine.catch_signal(signal)
+            if handler:
+                routine = handler
+                break
+
+            if routine.has_continuation():
+                routine = routine.continuation()
+                continue
+
+            raise RuntimeError("NonHandled signal", signal)
 
         self.__routine = routine
 
@@ -78,7 +109,7 @@ class Fiber(object):
     def is_complete(self):
         if self.__routine is None:
             return False
-        if self.__routine.is_complete() and self.__routine.has_caller() is False:
+        if self.__routine.is_complete() and self.__routine.has_continuation() is False:
             return True
 
         return False

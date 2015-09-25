@@ -574,6 +574,7 @@ class W__PrimitiveObject(W_BasicObject):
     _immutable_fields_ = ['_primitive_value_']
 
     def __init__(self, primitive_value):
+        print "W__PrimitiveObject",self.__class__.__name__
         W_BasicObject.__init__(self)
         self.set_primitive_value(primitive_value)
 
@@ -653,7 +654,7 @@ class W_BasicFunction(W_BasicObject):
 
     # 13.2.2
     def Construct(self, args=[]):
-        #tb("W_BasicFunction Construct")
+        tb("W_BasicFunction Construct")
         from obin.objects.object_space import object_space
 
         proto = self.get(u'prototype')
@@ -696,132 +697,15 @@ class W_BasicFunction(W_BasicObject):
             if v == o:
                 return True
 
-
-class W_ObjectConstructor(W_BasicFunction):
-    def Call(self, args=[], this=None, calling_context=None):
-        print "W_ObjectConstructor Call"
-        from obin.objects.object_space import isnull_or_undefined
-        from obin.builtins import get_arg
-        value = get_arg(args, 0)
-
-        if isinstance(value, W_BasicObject):
-            return value
-        if isinstance(value, W_String):
-            return value.ToObject()
-        if isinstance(value, W_Boolean):
-            return value.ToObject()
-        if isinstance(value, W_Number):
-            return value.ToObject()
-
-        assert isnull_or_undefined(value)
-
-        from obin.objects.object_space import object_space
-        obj = object_space.new_obj()
-        return obj
-
-    def _to_string_(self):
-        return u'function Object() { [native code] }'
-
-    # TODO
-    def Construct(self, args=[]):
-        return self.Call(args, this=None)
-
-
-class W_FunctionConstructor(W_BasicFunction):
-    def _to_string_(self):
-        return u'function Function() { [native code] }'
-
-    # 15.3.2.1
-    def Call(self, args=[], this=None, calling_context=None):
-        print "W_FunctionConstructor Call"
-        arg_count = len(args)
-        _args = u''
-        body = u''
-        if arg_count == 0:
-            pass
-        elif arg_count == 1:
-            body = args[0].to_string()
-        else:
-            first_arg = args[0].to_string()
-            _args = first_arg
-            k = 2
-            while k < arg_count:
-                next_arg = args[k - 1].to_string()
-                _args = _args + u',' + next_arg
-                k = k + 1
-            body = args[k - 1].to_string()
-
-        src = u'function (' + _args + u') { ' + body + u' };'
-
-        from obin.compile.astbuilder import parse_to_ast
-        from obin.compile.code import ast_to_bytecode
-
-        ast = parse_to_ast(src)
-        symbol_map = ast.symbol_map
-        code = ast_to_bytecode(ast, symbol_map)
-        # TODO hackish
-        func = code.opcodes[0].funcobj
-
-        from obin.objects.object_space import object_space
-        scope = object_space.get_global_environment()
-        strict = func.strict
-        params = func.params()
-        w_func = object_space.new_func(func, formal_parameter_list=params, scope=scope, strict=strict)
-        return w_func
-
-    # TODO
-    def Construct(self, args=[]):
-        return self.Call(args, this=None)
-
-
-# 15.7.2
-class W_NumberConstructor(W_BasicFunction):
-    # 15.7.1.1
-    def Call(self, args=[], this=None, calling_context=None):
-        print "W_NumberConstructor Call"
-        from obin.objects.object_space import _w, isnull_or_undefined, isundefined
-
-        if len(args) >= 1 and not isnull_or_undefined(args[0]):
-            return _w(args[0].ToNumber())
-        elif len(args) >= 1 and isundefined(args[0]):
-            return _w(NAN)
-        else:
-            return _w(0.0)
-
-    # 15.7.2.1
-    def Construct(self, args=[]):
-        return self.Call(args).ToObject()
-
-    def _to_string_(self):
-        return u'function Number() { [native code] }'
-
-
-# 15.5.2
-class W_StringConstructor(W_BasicFunction):
-    def Call(self, args=[], this=None, calling_context=None):
-        print "W_StringConstructor Call"
-        from obin.builtins import get_arg
-        from obin.objects.object_space import _w
-        arg0 = get_arg(args, 0, _w(u""))
-        strval = arg0.to_string()
-        return W_String(strval)
-
-    def Construct(self, args=[]):
-        return self.Call(args).ToObject()
-
-    def _to_string_(self):
-        return u'function String() { [native code] }'
-
 class W__Function(W_BasicFunction):
-    _immutable_fields_ = ['_type_', '_class_', '_extensible_', '_scope_', '_params_[*]', '_strict_', '_function_']
+    _immutable_fields_ = ['_type_', '_class_', '_extensible_', '_scope_', '_params_[*]', '_function_']
 
-    def __init__(self, function_body, formal_parameter_list=[], scope=None, strict=False):
+    def __init__(self, function_body, formal_parameter_list=[], scope=None):
         W_BasicFunction.__init__(self)
         from obin.objects.object_space import _w, newnull, object_space
         self._function_ = function_body
         self._scope_ = scope
         self._params_ = formal_parameter_list
-        self._strict_ = strict
 
         # 13.2 Creating Function Objects
         # 14.
@@ -835,11 +719,8 @@ class W__Function(W_BasicFunction):
         # 18.
         put_property(self, u'prototype', proto_obj, writable=True, enumerable=False, configurable=False)
 
-        if strict is True:
-            raise NotImplementedError()
-        else:
-            put_property(self, u'caller', newnull(), writable=True, enumerable=False, configurable=False)
-            put_property(self, u'arguments', newnull(), writable=True, enumerable=False, configurable=False)
+        put_property(self, u'caller', newnull(), writable=True, enumerable=False, configurable=False)
+        put_property(self, u'arguments', newnull(), writable=True, enumerable=False, configurable=False)
 
     def _to_string(self):
         return self._function_.to_string()
@@ -856,13 +737,11 @@ class W__Function(W_BasicFunction):
 
         code = self.code()
         jit.promote(code)
-        strict = self._strict_
         scope = self.scope()
 
         ctx = FunctionExecutionContext(code,
                                        argv=args,
                                        this=this,
-                                       strict=strict,
                                        scope=scope,
                                        w_func=self)
         ctx._calling_context_ = calling_context
@@ -875,15 +754,10 @@ class W__Function(W_BasicFunction):
     # 15.3.5.4
     def get(self, p):
         v = W_BasicObject.get(self, p)
-        if p is u'caller' and isinstance(v, W__Function) and v.is_strict():
-            raise JsTypeError(u'')
         return v
 
     def scope(self):
         return self._scope_
-
-    def is_strict(self):
-        return self._strict_
 
 
 # 10.6
@@ -891,10 +765,9 @@ class W_Arguments(W__Object):
     _class_ = 'Arguments'
 
     @jit.unroll_safe
-    def __init__(self, func, names, args, env, strict=False):
+    def __init__(self, func, names, args, env):
         from obin.objects.object_space import _w
         W__Object.__init__(self)
-        self.strict = strict
         _len = len(args)
         put_property(self, u'length', _w(_len), writable=True, enumerable=False, configurable=True)
 
@@ -908,7 +781,7 @@ class W_Arguments(W__Object):
             put_property(self, unicode(str(indx)), val, writable=True, enumerable=True, configurable=True)
             if indx < len(names):
                 name = names[indx]
-                if strict is False and not mapped_names.contains(name):
+                if not mapped_names.contains(name):
                     mapped_names = mapped_names.add(name)
                     g = make_arg_getter(name, env)
                     p = make_arg_setter(name, env)
@@ -919,11 +792,7 @@ class W_Arguments(W__Object):
         if not mapped_names.empty():
             self._paramenter_map_ = _map
 
-        if strict is False:
-            put_property(self, u'callee', _w(func), writable=True, enumerable=False, configurable=True)
-        else:
-            # 10.6 14 thrower
-            pass
+        put_property(self, u'callee', _w(func), writable=True, enumerable=False, configurable=True)
 
 
 def make_arg_getter(name, env):

@@ -15,17 +15,86 @@ def get_printable_location(pc, debug, jscode):
 jitdriver = jit.JitDriver(greens=['pc', 'debug', 'self'], reds=['result', 'ctx'], get_printable_location=get_printable_location, virtualizables=['ctx'])
 
 class Routine(object):
+    class State:
+        IDLE = -1
+        COMPLETE = 0
+        INPROCESS = 1
+        TERMINATED = 2
+        SUSPENDED = 3
+
     def __init__(self):
         self.fiber = None
-        self.__complete = False
-        self.caller = None
+        self.__continuation = None
+        self.__state = Routine.State.IDLE
         self.called = None
         self.arguments = None
         self.result = None
+        self.ctx = None
+        self.__signal = None
+        self.__signal_handlers = {}
+
+    def add_signal_handler(self, signal, handler):
+        self.__signal_handlers[signal] = handler
+
+    def get_signal_handler(self, signal):
+        return self.__signal_handlers.get(signal, None)
+
+    def has_continuation(self):
+        return self.__continuation is not None
+
+    def continuation(self):
+        return self.__continuation
+
+    def signal(self):
+        return self.__signal
+
+    def resume(self, value):
+        assert self.is_suspended()
+        self.result = value
+        self.ctx.stack_append(value)
+        self.__state = Routine.State.INPROCESS
+
+    def inprocess(self):
+        assert not self.is_closed()
+        self.__state = Routine.State.INPROCESS
+
+    def complete(self, result):
+        assert not self.is_closed()
+        self.result = result
+        self.__state = Routine.State.COMPLETE
+
+    def terminate(self, signal):
+        assert not self.is_closed()
+        assert signal is not None
+        self.__state = Routine.State.TERMINATED
+        self.__signal = signal
+
+    def suspend(self):
+        assert not self.is_closed()
+        return self.__state == Routine.State.SUSPENDED
+
+    def catch_signal(self):
+        assert self.is_terminated()
+        # handler = self.get_signal_handler(self.__signal)
+        return None
+
+    def is_inprocess(self):
+        return self.__state == Routine.State.INPROCESS
+
+    def is_complete(self):
+        return self.__state == Routine.State.COMPLETE
+
+    def is_terminated(self):
+        return self.__state == Routine.State.TERMINATED
+
+    def is_suspended(self):
+        return self.__state == Routine.State.SUSPENDED
+
+    def is_closed(self):
+        return self.__state == Routine.State.COMPLETE or self.__state == Routine.State.TERMINATED
 
     def activate(self, fiber):
-        if self.fiber:
-            raise RuntimeError("Already attached to fiber")
+        assert not self.fiber
         self.fiber = fiber
         self._on_activate()
 
@@ -36,28 +105,18 @@ class Routine(object):
         self.activate(fiber)
 
     def call_routine(self, routine):
+        assert not self.is_closed()
+
         if self.called is not None:
             raise RuntimeError("Called has exists")
 
         self.called = routine
-        routine.caller = self
-        routine.call_from_fiber(self.fiber)
+        self.suspend()
+        routine.call_from_continuation(self)
 
-    def resume(self):
-        self.fiber.set_active_routine(self)
-
-    def uncomplete(self):
-        self.__complete = False
-
-    def __complete(self, result):
-        self.result = result
-        self.__complete = True
-
-    def is_complete(self):
-        return self.__complete
-
-    def set_result(self, result):
-        self.result = result
+    def call_from_continuation(self, routine):
+        self.__continuation = routine
+        self.call_from_fiber(routine.fiber)
 
     def execute(self):
         if self.is_complete():
@@ -73,7 +132,6 @@ class BaseRoutine(object):
     eval_code = False
     function_code = False
     configurable_bindings = False
-    strict = False
 
     def run(self, ctx):
         raise NotImplementedError

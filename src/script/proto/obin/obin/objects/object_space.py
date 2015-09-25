@@ -167,9 +167,9 @@ class ObjectSpace(object):
         self.assign_proto(obj)
         return obj
 
-    def new_func(self, function_body, formal_parameter_list=[], scope=None, strict=False):
+    def new_func(self, function_body, formal_parameter_list=[], scope=None):
         from obin.objects.object import W__Function
-        obj = W__Function(function_body, formal_parameter_list, scope, strict)
+        obj = W__Function(function_body, formal_parameter_list, scope)
         self.assign_proto(obj)
         return obj
 

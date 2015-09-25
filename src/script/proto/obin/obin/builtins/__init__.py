@@ -43,8 +43,8 @@ def setup_builtins(global_object):
     object_space.proto_object = w_ObjectPrototype
 
     # 15.3.2
-    from obin.objects.object import W_FunctionConstructor
-    w_Function = W_FunctionConstructor()
+    from obin.objects.object import W__Object
+    w_Function = W__Object()
     put_property(global_object, u'Function', w_Function)
 
     # 15.3.4 Properties of the Function Prototype Object
@@ -61,8 +61,8 @@ def setup_builtins(global_object):
 
     # 15.2 Object Objects
     # 15.2.3 Properties of the Object Constructor
-    from obin.objects.object import W_ObjectConstructor
-    w_Object = W_ObjectConstructor()
+    from obin.objects.object import W__Object
+    w_Object = W__Object()
     object_space.assign_proto(w_Object, object_space.proto_function)
 
     put_property(w_Object, u'length', _w(1))
@@ -71,9 +71,6 @@ def setup_builtins(global_object):
 
     # 15.2.3.1 Object.prototype
     put_property(w_Object, u'prototype', w_ObjectPrototype, writable=False, configurable=False, enumerable=False)
-
-    # 14.2.4.1 Object.prototype.constructor
-    put_property(w_ObjectPrototype, u'constructor', w_Object)
 
     import obin.builtins.object
     # 15.2.4.2 Object.prototype.toString()

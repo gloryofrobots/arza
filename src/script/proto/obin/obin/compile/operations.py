@@ -360,7 +360,8 @@ class FunctionStatement(Statement):
         index = self.index
 
         bytecode.emit('LOAD_FUNCTION', jsfunc)
-        if index is not None:
+
+        if index is not None and len(name):
             bytecode.emit('STORE', index, name)
 
 
@@ -588,12 +589,6 @@ class Delete(Expression):
         else:
             what.left.emit(bytecode)
             bytecode.emit('LOAD_BOOLCONSTANT', True)
-
-#class Index(BinaryOp):
-#    def eval(self, ctx):
-#        w_obj = self.left.eval(ctx).GetValue().ToObject(ctx)
-#        name= self.right.eval(ctx).GetValue().to_string(ctx)
-#        return W_Reference(name, w_obj)
 
 
 class ArgumentList(ListOp):

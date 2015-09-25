@@ -9,9 +9,9 @@ def setup(global_object):
     from obin.objects.object_space import object_space
 
     # 15.7.2
-    from obin.objects.object import W_NumberConstructor
-    w_Number = W_NumberConstructor()
-    object_space.assign_proto(w_Number, object_space.proto_function)
+    from obin.objects.object import W__Object
+    w_Number = W__Object()
+    # object_space.assign_proto(w_Number, object_space.proto_function)
     put_property(global_object, u'Number', w_Number)
 
     # 15.7.3
@@ -21,9 +21,6 @@ def setup(global_object):
     w_NumberPrototype = W_NumericObject(_w(0))
     object_space.assign_proto(w_NumberPrototype, object_space.proto_object)
     object_space.proto_number = w_NumberPrototype
-
-    # 15.7.4.1
-    put_property(w_NumberPrototype, u'constructor', w_Number)
 
     # 15.7.4.2
     put_native_function(w_NumberPrototype, u'toString', to_string)

@@ -3,13 +3,12 @@ from obin.runtime.exception import JsReferenceError
 
 
 class Reference(object):
-    _immutable_fields_ = ['base_env', 'base_value', 'referenced', 'strict']
+    _immutable_fields_ = ['base_env', 'base_value', 'referenced']
 
-    def __init__(self, base_value=None, base_env=None, referenced=None, strict=False):
+    def __init__(self, base_value=None, base_env=None, referenced=None):
         self.base_env = base_env
         self.base_value = base_value
         self.referenced = referenced
-        self.strict = strict
 
     def get_base(self):
         return self.base_value
@@ -19,9 +18,6 @@ class Reference(object):
         if identifier is not None:
             return identifier
         return self.referenced
-
-    def is_strict_reference(self):
-        return self.strict is True
 
     def has_primitive_base(self):
         b = self.base_value
@@ -64,8 +60,7 @@ def get_value(v, identifier=None):
         from obin.runtime.environment_record import EnvironmentRecord
         assert isinstance(base_env, EnvironmentRecord)
         name = v.get_referenced_name(identifier)
-        strict = v.is_strict_reference()
-        return base_env.get_binding_value(name, strict)
+        return base_env.get_binding_value(name)
 
 
 # 8.7.2
@@ -74,16 +69,8 @@ def put_value(v, w, identifier):
         raise JsReferenceError('unresolvable reference')
 
     if v.is_unresolvable_reference():
-        if v.is_strict_reference():
-            referenced = v.get_referenced_name()
-            raise JsReferenceError(referenced)
-        else:
-            name = v.get_referenced_name(identifier)
-            # TODO how to solve this ????
-            from obin.objects.object_space import object_space
-            global_object = object_space.global_object
-
-            global_object.put(name, w, throw=False)
+        referenced = v.get_referenced_name()
+        raise JsReferenceError(referenced)
     elif v.is_property_reference():
         raise NotImplementedError('8.7.2 4.')
     else:
@@ -91,5 +78,4 @@ def put_value(v, w, identifier):
         from obin.runtime.environment_record import EnvironmentRecord
         assert isinstance(base_env, EnvironmentRecord)
         name = v.get_referenced_name(identifier)
-        strict = v.is_strict_reference()
-        base_env.set_mutable_binding(name, w, strict)
+        base_env.set_mutable_binding(name, w)

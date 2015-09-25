@@ -60,7 +60,6 @@ class ExecutionContext(StackMixin):
         from obin.objects.object_space import newundefined
 
         env = self._variable_environment_.environment_record
-        strict = self._strict_
         code = jit.promote(self._code_)
 
         if code.is_eval_code():
@@ -84,7 +83,7 @@ class ExecutionContext(StackMixin):
                 arg_already_declared = env.has_binding(arg_name)
                 if arg_already_declared is False:
                     env.create_mutuable_binding(arg_name, configurable_bindings)
-                env.set_mutable_binding(arg_name, v, False)
+                env.set_mutable_binding(arg_name, v)
 
         # 5.
         func_declarations = code.functions()
@@ -95,7 +94,7 @@ class ExecutionContext(StackMixin):
                 env.create_mutuable_binding(fn, configurable_bindings)
             else:
                 pass  # see 10.5 5.e
-            env.set_mutable_binding(fn, fo, False)
+            env.set_mutable_binding(fn, fo)
 
         arguments_already_declared = env.has_binding(u'arguments')
         # 7.
@@ -105,14 +104,10 @@ class ExecutionContext(StackMixin):
             func = self._w_func_
             arguments = self._argument_values_
             names = code.params()
-            args_obj = W_Arguments(func, names, arguments, env, strict)
+            args_obj = W_Arguments(func, names, arguments, env)
 
-            if strict is True:
-                env.create_immutable_bining(u'arguments')
-                env.initialize_immutable_binding(u'arguments', args_obj)
-            else:
-                env.create_mutuable_binding(u'arguments', False)  # TODO not sure if mutable binding is deletable
-                env.set_mutable_binding(u'arguments', args_obj, False)
+            env.create_mutuable_binding(u'arguments', False)  # TODO not sure if mutable binding is deletable
+            env.set_mutable_binding(u'arguments', args_obj)
 
         # 8.
         var_declarations = code.variables()
@@ -120,7 +115,7 @@ class ExecutionContext(StackMixin):
             var_already_declared = env.has_binding(dn)
             if var_already_declared is False:
                 env.create_mutuable_binding(dn, configurable_bindings)
-                env.set_mutable_binding(dn, newundefined(), False)
+                env.set_mutable_binding(dn, newundefined())
 
     def _get_refs(self, index):
         assert index < len(self._refs_)
@@ -173,13 +168,12 @@ class _DynamicExecutionContext(ExecutionContext):
 
 
 class GlobalExecutionContext(_DynamicExecutionContext):
-    def __init__(self, code, global_object, strict=False):
+    def __init__(self, code, global_object):
         stack_size = code.estimated_stack_size()
 
         _DynamicExecutionContext.__init__(self, stack_size)
 
         self._code_ = code
-        self._strict_ = strict
 
         from obin.objects.lexical_environment import ObjectEnvironment
         localEnv = ObjectEnvironment(global_object)
@@ -196,19 +190,14 @@ class EvalExecutionContext(_DynamicExecutionContext):
 
         _DynamicExecutionContext.__init__(self, stack_size)
         self._code_ = code
-        self._strict_ = code.strict
 
         if not calling_context:
             raise NotImplementedError()
-        else:
-            self._this_binding_ = calling_context.this_binding()
-            self._variable_environment_ = calling_context.variable_environment()
-            self._lexical_environment_ = calling_context.lexical_environment()
-        if self._strict_:
-            from obin.objects.lexical_environment import DeclarativeEnvironment
-            strict_var_env = DeclarativeEnvironment(self._lexical_environment_)
-            self._variable_environment_ = strict_var_env
-            self._lexical_environment_ = strict_var_env
+
+        from obin.objects.lexical_environment import DeclarativeEnvironment
+        strict_var_env = DeclarativeEnvironment(self._lexical_environment_)
+        self._variable_environment_ = strict_var_env
+        self._lexical_environment_ = strict_var_env
 
         self.declaration_binding_initialization()
 
@@ -216,7 +205,7 @@ class EvalExecutionContext(_DynamicExecutionContext):
 class FunctionExecutionContext(ExecutionContext):
     _immutable_fields_ = ['_scope_', '_calling_context_']
 
-    def __init__(self, code, formal_parameters=[], argv=[], this=newundefined(), strict=False, scope=None, w_func=None):
+    def __init__(self, code, formal_parameters=[], argv=[], this=newundefined(), scope=None, w_func=None):
         from obin.objects.object import W_BasicObject
         from obin.objects.object_space import object_space, isnull_or_undefined
 
@@ -227,7 +216,6 @@ class FunctionExecutionContext(ExecutionContext):
 
         self._code_ = code
         self._argument_values_ = argv
-        self._strict_ = strict
         self._scope_ = scope
         self._w_func_ = w_func
         self._calling_context_ = None
@@ -237,18 +225,7 @@ class FunctionExecutionContext(ExecutionContext):
         self._lexical_environment_ = localEnv
         self._variable_environment_ = localEnv
 
-        if strict:
-            self._this_binding_ = this
-        else:
-            if this is None or isnull_or_undefined(this):
-                self._this_binding_ = object_space.global_object
-            else:
-                assert isinstance(this, W_BasicObject)
-
-                if this.klass() is not 'Object':
-                    self._this_binding_ = this.ToObject()
-                else:
-                    self._this_binding_ = this
+        self._this_binding_ = this
 
         self.declaration_binding_initialization()
 
@@ -281,7 +258,6 @@ class WithExecutionContext(SubExecutionContext):
     def __init__(self, code, expr_obj, parent_context):
         SubExecutionContext.__init__(self, parent_context)
         self._code_ = code
-        self._strict_ = code.strict
         self._expr_obj_ = expr_obj
         self._dynamic_refs = []
 
@@ -299,7 +275,6 @@ class WithExecutionContext(SubExecutionContext):
 class CatchExecutionContext(_DynamicExecutionContext):
     def __init__(self, code, catchparam, exception_value, parent_context):
         self._code_ = code
-        self._strict_ = code.strict
         self._parent_context_ = parent_context
 
         stack_size = code.estimated_stack_size()

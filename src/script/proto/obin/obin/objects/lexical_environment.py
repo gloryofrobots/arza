@@ -2,19 +2,19 @@
 from obin.runtime.reference import Reference
 
 
-def get_identifier_reference(lex, identifier, strict=False):
+def get_identifier_reference(lex, identifier):
     assert isinstance(identifier, unicode)
     if lex is None:
-        return Reference(referenced=identifier, strict=strict)
+        return Reference(referenced=identifier)
 
     envRec = lex.environment_record
     exists = envRec.has_binding(identifier)
     if exists:
-        ref = Reference(base_env=envRec, referenced=identifier, strict=strict)
+        ref = Reference(base_env=envRec, referenced=identifier)
         return ref
     else:
         outer = lex.outer_environment
-        return get_identifier_reference(outer, identifier, strict)
+        return get_identifier_reference(outer, identifier)
 
 
 class LexicalEnvironment(object):
@@ -25,8 +25,8 @@ class LexicalEnvironment(object):
         self.outer_environment = outer_environment
         self.environment_record = None
 
-    def get_identifier_reference(self, identifier, strict=False):
-        return get_identifier_reference(self, identifier, strict)
+    def get_identifier_reference(self, identifier):
+        return get_identifier_reference(self, identifier)
 
 
 class DeclarativeEnvironment(LexicalEnvironment):

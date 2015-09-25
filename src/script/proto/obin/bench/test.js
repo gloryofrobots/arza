@@ -3,7 +3,6 @@
 //
 // contributed by David Hedbor
 // modified by Isaac Gouy
-var x = 1;
 //
 //Object.create = function(o, properties) {
 //    if (typeof o !== 'object' && typeof o !== 'function') throw new TypeError('Object prototype may only be an Object: ' + o);
@@ -16,6 +15,12 @@ var x = 1;
 //
 //    return O;
 //};
+var s = "abcd";
+print(s.charAt(2));
+var s2 = eval("var g = 42; g");
+print(s2);
+var L = {};
+
 
 function extend(object) {
      var hasOwnProperty = Object.hasOwnProperty;
@@ -25,7 +30,7 @@ function extend(object) {
         var extension = arguments[i];
          for (var property in extension) {
              if (hasOwnProperty.call(extension, property)){
-                 object[property] = extension[property];
+                 clone[property] = extension[property];
              }
         }
      }

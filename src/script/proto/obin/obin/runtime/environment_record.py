@@ -11,10 +11,10 @@ class EnvironmentRecord(object):
     def create_mutuable_binding(self, identifier, deletable):
         raise NotImplementedError
 
-    def set_mutable_binding(self, identifier, value, strict):
+    def set_mutable_binding(self, identifier, value):
         raise NotImplementedError
 
-    def get_binding_value(self, identifier, strict=False):
+    def get_binding_value(self, identifier):
         raise NotImplementedError
 
     def delete_binding(self, identifier):
@@ -97,7 +97,7 @@ class DeclarativeEnvironmentRecord(EnvironmentRecord):
             self._set_deletable_binding(identifier)
 
     # 10.2.1.1.3
-    def set_mutable_binding(self, identifier, value, strict):
+    def set_mutable_binding(self, identifier, value):
         assert identifier is not None and isinstance(identifier, unicode)
         assert self.has_binding(identifier)
         if not self._is_mutable_binding(identifier):
@@ -106,15 +106,12 @@ class DeclarativeEnvironmentRecord(EnvironmentRecord):
         self._set_binding(identifier, value)
 
     # 10.2.1.1.4
-    def get_binding_value(self, identifier, strict=False):
-        from obin.objects.object_space import newundefined
+    def get_binding_value(self, identifier):
         assert identifier is not None and isinstance(identifier, unicode)
         if not self.has_binding(identifier):
-            if strict:
                 from obin.runtime.exception import JsReferenceError
                 raise JsReferenceError(identifier)
-            else:
-                return newundefined()
+
         return self._get_binding(identifier)
 
     # 10.2.1.1.5
@@ -176,10 +173,10 @@ class ObjectEnvironmentRecord(EnvironmentRecord):
         bindings.define_own_property(n, desc, True)
 
     # 10.2.1.2.3
-    def set_mutable_binding(self, n, v, s):
+    def set_mutable_binding(self, n, v):
         assert n is not None and isinstance(n, unicode)
         bindings = self.binding_object
-        bindings.put(n, v, s)
+        bindings.put(n, v)
 
     # 10.2.1.2.4
     def get_binding_value(self, n, s=False):

@@ -217,8 +217,7 @@ class LOAD_FUNCTION(Opcode):
         func = self.funcobj
         scope = ctx.lexical_environment()
         params = func.params()
-        strict = func.strict
-        w_func = object_space.new_func(func, formal_parameter_list=params, scope=scope, strict=strict)
+        w_func = object_space.new_func(func, formal_parameter_list=params, scope=scope)
 
         ctx.stack_append(w_func)
 
@@ -934,20 +933,16 @@ class DELETE(Opcode):
         if not isinstance(ref, Reference):
             res = True
         if ref.is_unresolvable_reference():
-            if ref.is_strict_reference():
-                raise JsSyntaxError()
-            res = True
+            raise JsSyntaxError()
         if ref.is_property_reference():
             obj = ref.get_base().ToObject()
-            res = obj.delete(ref.get_referenced_name(), ref.is_strict_reference())
+            res = obj.delete(ref.get_referenced_name())
         else:
-            if ref.is_strict_reference():
-                raise JsSyntaxError()
-            bindings = ref.base_env
-            res = bindings.delete_binding(ref.get_referenced_name())
+            raise JsSyntaxError("Can`t delete variable binding")
 
         if res is True:
             ctx.forget_ref(self.name, self.index)
+
         ctx.stack_append(_w(res))
 
 
