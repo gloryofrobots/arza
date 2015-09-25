@@ -619,30 +619,6 @@ class Null(Expression):
 # Value and object creation
 #
 ##############################################################################
-
-
-class New(Expression):
-    def __init__(self, pos, left):
-        self.pos = pos
-        self.left = left
-
-    def emit(self, bytecode):
-        self.left.emit(bytecode)
-        bytecode.emit('NEW_NO_ARGS')
-
-
-class NewWithArgs(Expression):
-    def __init__(self, pos, left, right):
-        self.pos = pos
-        self.left = left
-        self.right = right
-
-    def emit(self, bytecode):
-        self.left.emit(bytecode)
-        self.right.emit(bytecode)
-        bytecode.emit('NEW')
-
-
 class BaseNumber(Expression):
     pass
 

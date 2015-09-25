@@ -221,8 +221,10 @@ class W_BasicObject(W_Root):
 
     def __init__(self):
         from obin.objects.object_space import newnull
+        from obin.objects.datastructs import Slots
         self._property_map_ = new_map()
         self._property_slots_ = debug.make_sure_not_resized([])
+        self._slots = Slots
 
         self._prototype_ = newnull()
         W_BasicObject.define_own_property(self, u'__proto__', proto_desc)
@@ -601,6 +603,7 @@ class W_StringObject(W__PrimitiveObject):
     _class_ = 'String'
 
     def __init__(self, primitive_value):
+        tb()
         from obin.objects.object_space import _w
         W__PrimitiveObject.__init__(self, primitive_value)
         length = len(self._primitive_value_.to_string())
@@ -750,11 +753,6 @@ class W__Function(W_BasicFunction):
 
         assert isinstance(res, Completion)
         return res.value
-
-    # 15.3.5.4
-    def get(self, p):
-        v = W_BasicObject.get(self, p)
-        return v
 
     def scope(self):
         return self._scope_
