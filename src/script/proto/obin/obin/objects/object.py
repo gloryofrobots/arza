@@ -222,9 +222,7 @@ class W_BasicObject(W_Root):
     def __init__(self):
         from obin.objects.object_space import newnull
         from obin.objects.datastructs import Slots
-        self._property_map_ = new_map()
-        self._property_slots_ = debug.make_sure_not_resized([])
-        self._slots = Slots
+        self._slots = Slots()
 
         self._prototype_ = newnull()
         W_BasicObject.define_own_property(self, u'__proto__', proto_desc)
@@ -265,39 +263,17 @@ class W_BasicObject(W_Root):
         return prop.to_property_descriptor()
 
     def _get_prop(self, name):
-        idx = self._property_map_.lookup(name)
-
-        if self._property_map_.not_found(idx):
-            return
-
-        prop = self._property_slots_[idx]
+        prop = self._slots.get(name)
         return prop
 
     def _del_prop(self, name):
-        idx = self._property_map_.lookup(name)
-
-        if self._property_map_.not_found(idx):
-            return
-
-        assert idx >= 0
-        self._property_slots_ = self._property_slots_[:idx] + self._property_slots_[idx + 1:]
-        self._property_map_ = self._property_map_.delete(name)
+        self._slots.delete(name)
 
     def _add_prop(self, name, value):
-        idx = self._property_map_.lookup(name)
-
-        if self._property_map_.not_found(idx):
-            self._property_map_ = self._property_map_.add(name)
-            idx = self._property_map_.index
-
-        if idx >= len(self._property_slots_):
-            self._property_slots_ = self._property_slots_ + ([None] * (1 + idx - len(self._property_slots_)))
-
-        self._property_slots_[idx] = value
+        self._slots.add(name, value)
 
     def _set_prop(self, name, value):
-        idx = self._property_map_.lookup(name)
-        self._property_slots_[idx] = value
+        self._slots.set(name, value)
 
     # 8.12.2
     def get_property(self, p):
@@ -551,7 +527,7 @@ class W_BasicObject(W_Root):
     def _named_properties_dict(self):
         from obin.objects.object_space import isnull_or_undefined
         my_d = {}
-        for i in self._property_map_.keys():
+        for i in self._slots.keys():
             my_d[i] = None
 
         proto = self.prototype()
@@ -570,7 +546,7 @@ class W_BasicObject(W_Root):
         return prop_dict.keys()
 
     def own_named_properties(self):
-        return self._property_map_.keys()
+        return self._slots.keys()
 
 class W__PrimitiveObject(W_BasicObject):
     _immutable_fields_ = ['_primitive_value_']
@@ -603,7 +579,6 @@ class W_StringObject(W__PrimitiveObject):
     _class_ = 'String'
 
     def __init__(self, primitive_value):
-        tb()
         from obin.objects.object_space import _w
         W__PrimitiveObject.__init__(self, primitive_value)
         length = len(self._primitive_value_.to_string())

@@ -3,7 +3,9 @@ from obin.builtins import get_arg
 
 def clone(this, args):
     import copy
-    return copy.copy(this)
+    clone = copy.copy(this)
+    clone._slots = copy.deepcopy(this._slots)
+    return clone
 
 def create(this, args):
     from obin.objects.object_space import object_space

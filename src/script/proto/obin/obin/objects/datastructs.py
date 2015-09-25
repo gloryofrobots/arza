@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
 from rpython.rlib import jit, debug
 from rpython.rlib.objectmodel import enforceargs
-from space import newundefined
+from obin.objects.object_space  import newundefined
 
 @jit.elidable
 def is_array_index(p):

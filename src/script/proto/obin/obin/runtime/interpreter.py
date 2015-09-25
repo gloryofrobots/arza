@@ -58,5 +58,5 @@ class Interpreter(object):
         object_space.global_context = ctx
 
         result = c.run(ctx)
-        print routine_contexts
+        #print routine_contexts
         return result.value

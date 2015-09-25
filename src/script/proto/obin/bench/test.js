@@ -25,6 +25,7 @@ var L = {};
 function extend(object) {
      var hasOwnProperty = Object.hasOwnProperty;
      var clone = object.clone();
+     print("clone " + clone);
      var length = arguments.length;
      for (var i = 1; i < length; i++) {
         var extension = arguments[i];
@@ -35,6 +36,8 @@ function extend(object) {
         }
      }
 
+     print("object " + object);
+     print("clone " + clone);
      return clone;
 };
 
