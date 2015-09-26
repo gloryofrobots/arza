@@ -160,16 +160,13 @@ def _base_compare(x, y, _compare):
         n2 = x.ToNumber()
         return _compare(n1, n2)
 
-    p1 = x.ToPrimitive('Number')
-    p2 = y.ToPrimitive('Number')
-
     if not (isstr(p1) and isstr(p2)):
-        n1 = p1.ToNumber()
-        n2 = p2.ToNumber()
+        n1 = x.ToNumber()
+        n2 = y.ToNumber()
         return _compare(n1, n2)
     else:
-        s1 = p1.to_string()
-        s2 = p2.to_string()
+        s1 = x.to_string()
+        s2 = y.to_string()
         return _compare(s1, s2)
 
 
@@ -235,10 +232,10 @@ def AbstractEC(x, y):
             return AbstractEC(x, W_FloatNumber(y.ToNumber()))
         if (type1 == "string" or type1 == "number") and \
                 type2 == "object":
-            return AbstractEC(x, y.ToPrimitive())
+            return AbstractEC(x, y)
         if (type2 == "string" or type2 == "number") and \
                 type1 == "object":
-            return AbstractEC(x.ToPrimitive(), y)
+            return AbstractEC(x, y)
         return False
 
     objtype = x.GetValue().type()

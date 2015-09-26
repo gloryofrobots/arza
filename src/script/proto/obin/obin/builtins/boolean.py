@@ -14,7 +14,7 @@ def setup(global_object):
     put_property(global_object, u'Boolean', w_Boolean)
 
     # 15.6.3
-    put_property(w_Boolean, u'length', _w(1), writable=False, enumerable=False, configurable=False)
+    put_property(w_Boolean, u'length', _w(1))
 
     # 15.6.4
     w_BooleanPrototype = W_Boolean(False)
@@ -24,7 +24,7 @@ def setup(global_object):
     object_space.proto_boolean = w_BooleanPrototype
 
     # 15.6.3.1
-    put_property(w_Boolean, u'prototype', w_BooleanPrototype, writable=False, enumerable=False, configurable=False)
+    put_property(w_Boolean, u'prototype', w_BooleanPrototype)
 
     # 15.6.4.2
     put_native_function(w_BooleanPrototype, u'toString', to_string)

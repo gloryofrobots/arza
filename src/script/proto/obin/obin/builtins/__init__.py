@@ -15,7 +15,7 @@ def new_native_function(function, name=u'', params=[]):
 # 15
 def put_native_function(obj, name, func, writable=True, configurable=True, enumerable=False, params=[]):
     jsfunc = new_native_function(func, name, params)
-    put_property(obj, name, jsfunc, writable=writable, configurable=configurable, enumerable=enumerable)
+    put_property(obj, name, jsfunc)
 
 
 # 15
@@ -25,13 +25,13 @@ def put_intimate_function(obj, name, func, writable=True, configurable=True, enu
 
     jsfunc = NativeIntimateRoutine(func, name)
     w_func = object_space.new_func(jsfunc, formal_parameter_list=params)
-    put_property(obj, name, w_func, writable=writable, configurable=configurable, enumerable=enumerable)
+    put_property(obj, name, w_func)
 
 
 # 15
-def put_property(obj, name, value, writable=True, configurable=True, enumerable=False):
+def put_property(obj, name, value):
     from obin.objects.object import put_property as _put_property
-    _put_property(obj, name, value, writable, configurable, enumerable)
+    _put_property(obj, name, value)
 
 
 def setup_builtins(global_object):
@@ -70,7 +70,7 @@ def setup_builtins(global_object):
     put_property(global_object, u'Object', w_Object)
 
     # 15.2.3.1 Object.prototype
-    put_property(w_Object, u'prototype', w_ObjectPrototype, writable=False, configurable=False, enumerable=False)
+    put_property(w_Object, u'prototype', w_ObjectPrototype)
 
     import obin.builtins.object
     # 15.2.4.2 Object.prototype.toString()
@@ -87,10 +87,10 @@ def setup_builtins(global_object):
     # 15.3.3 Properties of the Function Constructor
 
     # 15.3.3.1 Function.prototype
-    put_property(w_Function, u'prototype', w_FunctionPrototype, writable=False, configurable=False, enumerable=False)
+    put_property(w_Function, u'prototype', w_FunctionPrototype)
 
     # 15.3.3.2 Function.length
-    put_property(w_Function, u'length', _w(1), writable=False, configurable=False, enumerable=False)
+    put_property(w_Function, u'length', _w(1))
 
     # 14.3.4.1 Function.prototype.constructor
     put_property(w_FunctionPrototype, u'constructor', w_Function)

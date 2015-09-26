@@ -14,7 +14,7 @@ def create(this, args):
     return obj
 
 def to_string(this, args):
-    s = "[%s<%s> %s]" % (this.klass(), str(hex(id(this))), str(this.own_named_properties()))
+    s = "[%s<%s> %s]" % (this.klass(), str(hex(id(this))), str(this.named_properties()))
     return _w(s)
 
 

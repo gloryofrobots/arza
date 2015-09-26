@@ -4,8 +4,6 @@ from rpython.rlib.rfloat import isnan, isinf, NAN, formatd, INFINITY
 from rpython.rlib.objectmodel import enforceargs
 from rpython.rlib import jit, debug
 
-from obin.objects.property_descriptor import PropertyDescriptor, DataPropertyDescriptor, AccessorPropertyDescriptor, is_data_descriptor, is_generic_descriptor, is_accessor_descriptor
-from obin.objects.property import DataProperty, AccessorProperty
 from obin.objects.object_map import new_map
 from obin.runtime.exception import JsTypeError, JsRangeError
 from obin.utils import tb
@@ -166,40 +164,6 @@ class W_Null(W_Primitive):
     def ToObject(self):
         raise JsTypeError(u'W_Null.ToObject')
 
-
-class PropertyIdenfidier(object):
-    def __init__(self, name, descriptor):
-        self.name = name
-        self.descriptor = descriptor
-
-
-class W_ProtoGetter(W_Root):
-    def is_callable(self):
-        return True
-
-    def Call(self, args=[], this=None, calling_context=None):
-        if not isinstance(this, W_BasicObject):
-            raise JsTypeError(u'')
-
-        return this._prototype_
-
-
-class W_ProtoSetter(W_Root):
-    def is_callable(self):
-        return True
-
-    def Call(self, args=[], this=None, calling_context=None):
-        if not isinstance(this, W_BasicObject):
-            raise JsTypeError(u'')
-
-        proto = args[0]
-        this._prototype_ = proto
-
-w_proto_getter = W_ProtoGetter()
-w_proto_setter = W_ProtoSetter()
-proto_desc = AccessorPropertyDescriptor(w_proto_getter, w_proto_setter, False, False)
-jit.promote(proto_desc)
-
 def reject(throw, msg=u''):
     if throw:
         raise JsTypeError(msg)
@@ -241,11 +205,8 @@ class W_Cell(W_Root):
 
         obj = self.get_property(p)
         if obj is None:
-            raise JsTypeError("Unknown property ", p)
+            raise JsTypeError(p)
         return obj
-
-    def get_outer_property(self, p):
-        return None
 
     # 8.12.2
     def get_property(self, p):
@@ -256,6 +217,9 @@ class W_Cell(W_Root):
             return prop
 
         return self.get_outer_property(p)
+
+    def get_outer_property(self, p):
+        return None
 
     # 8.12.1
     def get_own_property(self, p):
@@ -272,16 +236,13 @@ class W_Cell(W_Root):
     def _add_prop(self, name, value):
         self._slots.add(name, value)
 
-    def _set_prop(self, name, value):
-        self._slots.set(name, value)
-
     # 8.12.5
     def put(self, p, v):
         assert p is not None
         if not isinstance(p, unicode):
             p = p.to_string()
 
-        #it works like freeze now but you can determine outer set and inner
+        #it works like freeze now but you can determine outer set and inner later
         if not self.extensible():
             raise JsTypeError(u"can't put %s" % (p, ))
 
@@ -290,11 +251,7 @@ class W_Cell(W_Root):
     # 8.12.6
     def has_property(self, p):
         assert p is not None and isinstance(p, unicode)
-
-        desc = self.get_property(p)
-        if desc is None:
-            return False
-        return True
+        return self._slots.contains(p)
 
     # 8.12.7
     def delete(self, p):
@@ -316,7 +273,6 @@ class W_Cell(W_Root):
             return res
 
         return newstring(u"Object")
-        #raise JsTypeError(u'')
 
     def _default_value_string_(self):
         to_string = self.get(u'toString')
@@ -333,58 +289,32 @@ class W_Cell(W_Root):
             val = value_of.Call(this=self)
             return val
 
+    def ToNumber(self):
+        return 0
 
     ##########
     def to_boolean(self):
         return True
 
-    def ToNumber(self):
-        return self.ToPrimitive('Number').ToNumber()
-
     def to_string(self):
         return self._default_value_string_().to_string()
-
-    def ToPrimitive(self, hint=None):
-        return self.default_value(hint)
 
     def ToObject(self):
         return self
 
     def has_instance(self, other):
         raise JsTypeError(u'has_instance')
-    ###
-
-    def _named_properties_dict(self):
-        from obin.objects.object_space import isnull_or_undefined
-        my_d = {}
-        for i in self._slots.keys():
-            my_d[i] = None
-
-        proto = self.prototype()
-        if not isnull_or_undefined(proto):
-            assert isinstance(proto, W_BasicObject)
-            proto_d = proto._named_properties_dict()
-        else:
-            proto_d = {}
-
-        my_d.update(proto_d)
-
-        return my_d
 
     def named_properties(self):
-        prop_dict = self._named_properties_dict()
-        return prop_dict.keys()
-
-    def own_named_properties(self):
         return self._slots.keys()
-    pass
+
 
 class W_BasicObject(W_Cell):
     def __init__(self):
         W_Cell.__init__(self)
         from obin.objects.object_space import newnull
+        W_BasicObject.put(self, u'__proto__', newnull())
         self._prototype_ = newnull()
-        W_BasicObject.define_own_property(self, u'__proto__', proto_desc)
 
     def prototype(self):
         return self._prototype_
@@ -442,14 +372,12 @@ class W_String(W__PrimitiveObject):
         W__PrimitiveObject.__init__(self)
         self._strval_ = strval
         length = len(strval)
-        descr = PropertyDescriptor(value=newint(length), enumerable=False, configurable=False, writable=False)
-        self.define_own_property(u'length', descr)
+        self.put(u'length', newint(length),)
+        from obin.objects.object_space import object_space,isnull
 
     def prototype(self):
-        from obin.objects.object_space import object_space,isnull
-        if isnull(self._prototype_):
-            self._prototype_ = object_space.proto_string
-        return self._prototype_
+        from obin.objects.object_space import object_space
+        return object_space.proto_string
 
     def __eq__(self, other):
         other_string = other.to_string()
@@ -459,9 +387,9 @@ class W_String(W__PrimitiveObject):
         return u'W_String("%s")' % (self._strval_)
 
     def get_own_property(self, p):
-        desc = W__PrimitiveObject.get_own_property(self, p)
-        if desc is not None:
-            return desc
+        value = W__PrimitiveObject.get_own_property(self, p)
+        if value:
+            return value
 
         if not is_array_index(p):
             return None
@@ -475,8 +403,7 @@ class W_String(W__PrimitiveObject):
 
         result_string = string[index]
         from obin.objects.object_space import _w
-        d = PropertyDescriptor(value=_w(result_string), enumerable=True, writable=False, configurable=False)
-        return d
+        return _w(result_string),
 
     def to_string(self):
         return self._strval_
@@ -731,16 +658,16 @@ class W__Function(W_BasicFunction):
         # 14.
         _len = len(formal_parameter_list)
         # 15.
-        put_property(self, u'length', _w(_len), writable=False, enumerable=False, configurable=False)
+        put_property(self, u'length', _w(_len),)
         # 16.
         proto_obj = object_space.new_obj()
         # 17.
-        put_property(proto_obj, u'constructor', self, writable=True, enumerable=False, configurable=True)
+        put_property(proto_obj, u'constructor', self)
         # 18.
-        put_property(self, u'prototype', proto_obj, writable=True, enumerable=False, configurable=False)
+        put_property(self, u'prototype', proto_obj)
 
-        put_property(self, u'caller', newnull(), writable=True, enumerable=False, configurable=False)
-        put_property(self, u'arguments', newnull(), writable=True, enumerable=False, configurable=False)
+        put_property(self, u'caller', newnull())
+        put_property(self, u'arguments', newnull())
 
     def _to_string_(self):
         return self._function_.to_string()
@@ -784,30 +711,27 @@ class W_Arguments(W__Object):
         from obin.objects.object_space import _w
         W__Object.__init__(self)
         _len = len(args)
-        put_property(self, u'length', _w(_len), writable=True, enumerable=False, configurable=True)
+        put_property(self, u'length', _w(_len))
 
-        from obin.objects.object_space import object_space
+        from obin.objects.object_space import object_space, newundefined
         _map = object_space.new_obj()
         mapped_names = new_map()
         jit.promote(_len)
         indx = _len - 1
         while indx >= 0:
             val = args[indx]
-            put_property(self, unicode(str(indx)), val, writable=True, enumerable=True, configurable=True)
+            put_property(self, unicode(str(indx)), val)
             if indx < len(names):
                 name = names[indx]
                 if not mapped_names.contains(name):
                     mapped_names = mapped_names.add(name)
-                    g = make_arg_getter(name, env)
-                    p = make_arg_setter(name, env)
-                    desc = PropertyDescriptor(setter=p, getter=g, configurable=True)
-                    _map.define_own_property(unicode(str(indx)), desc, False)
+                    _map.put(unicode(str(indx)), newundefined())
             indx = indx - 1
 
         if not mapped_names.empty():
             self._paramenter_map_ = _map
 
-        put_property(self, u'callee', _w(func), writable=True, enumerable=False, configurable=True)
+        put_property(self, u'callee', _w(func))
 
 
 def make_arg_getter(name, env):
@@ -855,18 +779,9 @@ class W_Iterator(W_Root):
 class W__Array(W_BasicObject):
     _class_ = 'Array'
 
-    def __init__(self, length=None):
-        if not length:
-            length = W_IntNumber(0)
-        self._array_props_ = {}
-        #self._array_props_ = []
-        print "W__ARRAY"
-
+    def __init__(self):
         W_BasicObject.__init__(self)
-        assert isinstance(length, W_Root)
-
-        desc = PropertyDescriptor(value=length, writable=True, enumerable=False, configurable=False)
-        W_BasicObject.define_own_property(self, u'length', desc)
+        self._items = []
 
     ####### dict
     def _add_prop(self, name, value):
@@ -878,7 +793,8 @@ class W__Array(W_BasicObject):
 
     def _add_iprop(self, idx, value):
         assert isinstance(idx, int) or isinstance(idx, long)
-        self._array_props_[idx] = value
+
+        self._items[idx] = value
 
     def _get_prop(self, name):
         idx = make_array_index(name)
@@ -890,19 +806,7 @@ class W__Array(W_BasicObject):
     def _get_iprop(self, idx):
         assert isinstance(idx, int) or isinstance(idx, long)
         assert idx >= 0
-        return self._array_props_.get(idx, None)
-
-    def _set_prop(self, name, value):
-        idx = make_array_index(name)
-        if idx != NOT_ARRAY_INDEX:
-            self._set_iprop(idx, value)
-        else:
-            W_BasicObject._set_prop(self, name, value)
-
-    def _set_iprop(self, idx, value):
-        assert isinstance(idx, int)
-        assert idx >= 0
-        self._array_props_[idx] = value
+        return self._items[idx]
 
     def _del_prop(self, name):
         idx = make_array_index(name)
@@ -915,323 +819,19 @@ class W__Array(W_BasicObject):
         assert isinstance(idx, int)
         assert idx >= 0
         try:
-            del self._array_props_[idx]
+            del self._items[idx]
         except KeyError:
             pass
 
+    def length(self):
+        return len(self._items)
+
     def _named_properties_dict(self):
-        from obin.objects.object_space import isnull_or_undefined
         my_d = {}
-        for i in self._array_props_.keys():
+        for i in range(self.length()):
             my_d[unicode(str(i))] = None
-
-        for i in self._slots.keys():
-            my_d[i] = None
-
-        proto = self.prototype()
-        if not isnull_or_undefined(proto):
-            assert isinstance(proto, W_BasicObject)
-            proto_d = proto._named_properties_dict()
-        else:
-            proto_d = {}
-
-        my_d.update(proto_d)
 
         return my_d
 
-    def _get_idx_property(self, idx):
-        from obin.objects.object_space import isnull
-
-        prop = self._get_own_idx_property(idx)
-        if prop is not None:
-            return prop
-
-        proto = self.prototype()
-        if isnull(proto):
-            return None
-
-        if isinstance(proto, W__Array):
-            return proto._get_idx_property(idx)
-
-        assert isinstance(proto, W_BasicObject)
-        p = unicode(str(idx))
-        return proto.get_property(p)
-
-    def _idx_put(self, idx, v, throw):
-        d = self._can_idx_put(idx)
-        can_put = d.can_put
-        own_desc = d.own
-        inherited_desc = d.inherited
-        prop = d.prop
-
-        if not can_put:
-            if throw:
-                raise JsTypeError(u"can't put %s" % (str(idx), ))
-            else:
-                return
-
-        if is_data_descriptor(own_desc):
-            value_desc = PropertyDescriptor(value=v)
-            self._define_own_idx_property(idx, value_desc, throw, own_desc, prop)
-            return
-
-        if own_desc is None:
-            desc = inherited_desc
-        else:
-            desc = own_desc
-
-        if is_accessor_descriptor(desc):
-            setter = desc.setter
-            assert setter is not None
-            setter.Call(this=self, args=[v])
-        else:
-            new_desc = DataPropertyDescriptor(v, True, True, True)
-            self._define_own_idx_property(idx, new_desc, throw)
-
-    def _can_idx_put(self, idx):
-        from obin.objects.object_space import isundefined, isnull_or_undefined
-        prop = self._get_iprop(idx)
-
-        if prop is None:
-            desc = None
-        else:
-            desc = prop.to_property_descriptor()
-
-        #desc = self._get_own_idx_property(idx)
-        if desc is not None:
-            if is_accessor_descriptor(desc) is True:
-                if isundefined(desc.setter):
-                    return Descr(False, desc, None, prop)
-                else:
-                    return Descr(True, desc, None, prop)
-            return Descr(desc.writable, desc, None, prop)
-
-        proto = self.prototype()
-
-        if isnull_or_undefined(proto):
-            return Descr(self.extensible(), None, None, prop)
-
-        assert isinstance(proto, W_BasicObject)
-
-        if isinstance(proto, W__Array):
-            inherited = proto._get_idx_property(idx)
-        else:
-            p = unicode(str(idx))
-            inherited = proto.get_property(p)
-
-        if inherited is None:
-            return Descr(self.extensible(), None, None, prop)
-
-        if is_accessor_descriptor(inherited) is True:
-            if isundefined(inherited.setter):
-                return Descr(False, None, inherited, prop)
-            else:
-                return Descr(True, None, inherited, prop)
-        else:
-            if self.extensible() is False:
-                return Descr(False, None, inherited, prop)
-            else:
-                return Descr(inherited.writable, None, inherited, prop)
-
-    def _define_own_idx_property(self, idx, desc, throw=False, current_desc=None, prop=None):
-        if current_desc is None:
-            current_desc = self._get_idx_property(idx)
-
-        from obin.objects.object_space import _w
-        old_len_desc = self.get_own_property(u'length')
-        assert old_len_desc is not None
-        old_len = old_len_desc.value.ToUInt32()
-
-        # a
-        index = idx
-        # b
-        if index >= old_len and old_len_desc.writable is False:
-            return _ireject(throw, idx)
-
-        # c
-        succeeded = self._define_own_int_property(idx, desc, False, current_desc, prop)
-        # d
-        if succeeded is False:
-            return _ireject(throw, idx)
-
-        # e
-        if index >= old_len:
-            old_len_desc.value = _w(index + 1)
-            res = W_BasicObject.define_own_property(self, u'length', old_len_desc, False)
-            assert res is True
-        # f
-        return True
-
-    def _define_own_int_property(self, idx, desc, throw, current_desc, prop):
-        current = current_desc
-        extensible = self.extensible()
-
-        # 3.
-        if current is None and extensible is False:
-            return _ireject(throw, idx)
-
-        # 4.
-        if current is None and extensible is True:
-            # 4.a
-            if is_generic_descriptor(desc) or is_data_descriptor(desc):
-                new_prop = DataProperty(
-                    desc.value,
-                    desc.writable,
-                    desc.enumerable,
-                    desc.configurable
-                )
-                self._add_iprop(idx, new_prop)
-            # 4.b
-            else:
-                assert is_accessor_descriptor(desc) is True
-                new_prop = AccessorProperty(
-                    desc.getter,
-                    desc.setter,
-                    desc.enumerable,
-                    desc.configurable
-                )
-                self._add_iprop(idx, new_prop)
-            # 4.c
-            return True
-
-        # 5.
-        if desc.is_empty():
-            return True
-
-        # 6.
-        if desc == current:
-            return True
-
-        # 7.
-        if current.configurable is False:
-            if desc.configurable is True:
-                return _ireject(throw, idx)
-            if desc.has_set_enumerable() and (not(current.enumerable) == desc.enumerable):
-                return _ireject(throw, idx)
-
-        # 8.
-        if is_generic_descriptor(desc):
-            pass
-        # 9.
-        elif is_data_descriptor(current) != is_data_descriptor(desc):
-            # 9.a
-            if current.configurable is False:
-                return _ireject(throw, idx)
-            # 9.b
-            if is_data_descriptor(current):
-                raise NotImplementedError(self.__class__)
-            # 9.c
-            else:
-                raise NotImplementedError(self.__class__)
-        # 10
-        elif is_data_descriptor(current) and is_data_descriptor(desc):
-            # 10.a
-            if current.configurable is False:
-                # 10.a.i
-                if current.writable is False and desc.writable is True:
-                    return _ireject(throw, idx)
-                # 10.a.ii
-                if current.writable is False:
-                    if desc.has_set_value() and desc.value != current.value:
-                        return _ireject(throw, idx)
-            # 10.b
-            else:
-                pass
-        # 11
-        elif is_accessor_descriptor(current) and is_accessor_descriptor(desc):
-            # 11.a
-            if current.configurable is False:
-                # 11.a.i
-                if desc.has_set_setter() and desc.setter != current.setter:
-                    return _ireject(throw, idx)
-                # 11.a.ii
-                if desc.has_set_getter() and desc.getter != current.getter:
-                    return _ireject(throw, idx)
-        # 12
-        prop = self._get_iprop(idx)
-        prop.update_with_descriptor(desc)
-
-        # 13
-        return True
-
-    def _get_own_idx_property(self, idx):
-        assert isinstance(idx, int) or isinstance(idx, long)
-        assert idx >= 0
-        prop = self._get_iprop(idx)
-        if prop is None:
-            return
-
-        return prop.to_property_descriptor()
-
-    # 15.4.5.1
-    def define_own_property(self, p, desc, throw=False):
-        from obin.objects.object_space import _w
-
-        # 3
-        if p == u'length':
-            old_len_desc = self.get_own_property(u'length')
-            assert old_len_desc is not None
-            old_len = old_len_desc.value.ToUInt32()
-
-            if desc.has_set_value() is False:
-                return W_BasicObject.define_own_property(self, u'length', desc, throw)
-            new_len_desc = desc.copy()
-            new_len = desc.value.ToUInt32()
-
-            if new_len != desc.value.ToNumber():
-                raise JsRangeError()
-
-            new_len_desc.value = _w(new_len)
-
-            # f
-            if new_len >= old_len:
-                return W_BasicObject.define_own_property(self, u'length', new_len_desc, throw)
-            # g
-            if old_len_desc.writable is False:
-                return reject(throw, p)
-
-            # h
-            if new_len_desc.has_set_writable() is False or new_len_desc.writable is True:
-                new_writable = True
-            # i
-            else:
-                new_writable = False
-                new_len_desc.writable = True
-
-            # j
-            succeeded = W_BasicObject.define_own_property(self, u'length', new_len_desc, throw)
-            # k
-            if succeeded is False:
-                return False
-
-            # l
-            while new_len < old_len:
-                old_len = old_len - 1
-                delete_succeeded = self.delete(unicode(str(old_len)), False)
-                if delete_succeeded is False:
-                    new_len_desc.value = _w(old_len + 1)
-                    if new_writable is False:
-                        new_len_desc.writable = False
-                    W_BasicObject.define_own_property(self, u'length', new_len_desc, False)
-                    return reject(throw, p)
-
-            # m
-            if new_writable is False:
-                desc = PropertyDescriptor(writable=False)
-                res = W_BasicObject.define_own_property(self, u'length', desc, False)
-                assert res is True
-
-            return True
-
-        # 4
-        elif is_array_index(p):
-            index = uint32(int(p))
-            return self._define_own_idx_property(index, desc, False)
-
-        # 5
-        return W_BasicObject.define_own_property(self, p, desc, throw)
-
-
-def put_property(obj, name, value, writable=False, configurable=False, enumerable=False, throw=False):
-    descriptor = PropertyDescriptor(value=value, writable=writable, configurable=configurable, enumerable=enumerable)
-    obj.define_own_property(name, descriptor, throw)
+def put_property(obj, name, value):
+    obj.put(name, value)

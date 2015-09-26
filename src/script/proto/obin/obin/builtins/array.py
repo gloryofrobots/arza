@@ -17,7 +17,7 @@ def setup(global_object):
     object_space.proto_array = w_ArrayPrototype
 
     # 15.4.3.1
-    put_property(w_Array, u'prototype', w_ArrayPrototype, writable=False, enumerable=False, configurable=False)
+    put_property(w_Array, u'prototype', w_ArrayPrototype)
 
     # 15.4.4.2
     put_native_function(w_ArrayPrototype, u'toString', to_string)
@@ -36,6 +36,7 @@ def setup(global_object):
 
     # 15.4.4.11
     put_native_function(w_ArrayPrototype, u'sort', sort)
+    put_native_function(w_ArrayPrototype, u'length', length)
 
     put_native_function(w_ArrayPrototype, u'forEach', for_each)
 
@@ -67,19 +68,15 @@ def slice(this, args):
 @w_return
 def push(this, args):
     o = this.ToObject()
-    len_val = o.get(u'length')
-    n = len_val.ToUInt32()
-
     for item in args:
         e = item
+        o._items.append(e)
 
-        o.put(unicode(str(n)), e, True)
-        n = n + 1
+    return o.length()
 
-    o.put(u'length', _w(n), True)
-
-    return n
-
+def length(this, args):
+    o = this.ToObject()
+    return o.length()
 
 # 15.4.4.2
 @w_return
@@ -138,20 +135,7 @@ def join(this, args):
 @w_return
 def pop(this, args):
     o = this.ToObject()
-    lenVal = o.get(u'length')
-    l = lenVal.ToUInt32()
-
-    if l == 0:
-        o.put(u'length', _w(0))
-        return newundefined()
-    else:
-        indx = l - 1
-        indxs = unicode(str(indx))
-        element = o.get(indxs)
-        o.delete(indxs, True)
-        o.put(u'length', _w(indx))
-        return element
-
+    return o._items.pop()
 
 @w_return
 def shift(this, args):

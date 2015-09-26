@@ -37,28 +37,28 @@ def setup(global_object):
     # 15.8.1
 
     # 15.8.1.1
-    put_property(w_Math, u'E', _w(E), writable=False, enumerable=False, configurable=False)
+    put_property(w_Math, u'E', _w(E))
 
     # 15.8.1.2
-    put_property(w_Math, u'LN10', _w(LN10), writable=False, enumerable=False, configurable=False)
+    put_property(w_Math, u'LN10', _w(LN10))
 
     # 15.8.1.3
-    put_property(w_Math, u'LN2', _w(LN2), writable=False, enumerable=False, configurable=False)
+    put_property(w_Math, u'LN2', _w(LN2))
 
     # 15.8.1.4
-    put_property(w_Math, u'LOG2E', _w(LOG2E), writable=False, enumerable=False, configurable=False)
+    put_property(w_Math, u'LOG2E', _w(LOG2E))
 
     # 15.8.1.5
-    put_property(w_Math, u'LOG10E', _w(LOG10E), writable=False, enumerable=False, configurable=False)
+    put_property(w_Math, u'LOG10E', _w(LOG10E))
 
     # 15.8.1.6
-    put_property(w_Math, u'PI', _w(PI), writable=False, enumerable=False, configurable=False)
+    put_property(w_Math, u'PI', _w(PI))
 
     # 15.8.1.7
-    put_property(w_Math, u'SQRT1_2', _w(SQRT1_2), writable=False, enumerable=False, configurable=False)
+    put_property(w_Math, u'SQRT1_2', _w(SQRT1_2))
 
     # 15.8.1.8
-    put_property(w_Math, u'SQRT2', _w(SQRT2), writable=False, enumerable=False, configurable=False)
+    put_property(w_Math, u'SQRT2', _w(SQRT2))
 
 
 # 15.8.2.9

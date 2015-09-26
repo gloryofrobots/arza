@@ -3,7 +3,7 @@ class EnvironmentRecord(object):
     def has_binding(self, identifier):
         return False
 
-    def create_binding(self, identifier, deletable):
+    def create_binding(self, identifier):
         raise NotImplementedError
 
     def set_binding(self, identifier, value):
@@ -38,7 +38,7 @@ class DeclarativeEnvironmentRecord(EnvironmentRecord):
         self.bindings.delete(name)
 
     # 10.2.1.1.2
-    def create_binding(self, identifier, deletable):
+    def create_binding(self, identifier):
         from obin.objects.object_space import newundefined
         assert identifier is not None and isinstance(identifier, unicode)
         assert not self.has_binding(identifier)
@@ -77,19 +77,13 @@ class ObjectEnvironmentRecord(EnvironmentRecord):
         return bindings.has_property(n)
 
     # 10.2.1.2.2
-    def create_binding(self, n, d):
+    def create_binding(self, n):
+        from obin.objects.object_space import newundefined
         assert n is not None and isinstance(n, unicode)
         bindings = self.binding_object
         assert bindings.has_property(n) is False
-        if d is True:
-            config_value = False
-        else:
-            config_value = True
 
-        from obin.objects.object import PropertyDescriptor
-        from obin.objects.object_space import newundefined
-        desc = PropertyDescriptor(value=newundefined(), writable=True, enumerable=True, configurable=config_value)
-        bindings.define_own_property(n, desc, True)
+        bindings.put(n, newundefined())
 
     # 10.2.1.2.3
     def set_binding(self, n, v):

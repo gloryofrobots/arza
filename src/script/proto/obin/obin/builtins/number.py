@@ -15,7 +15,7 @@ def setup(global_object):
     put_property(global_object, u'Number', w_Number)
 
     # 15.7.3
-    put_property(w_Number, u'length', _w(1), writable=False, enumerable=False, configurable=False)
+    put_property(w_Number, u'length', _w(1))
 
     # 15.7.4
     w_NumberPrototype = W__Object()
@@ -29,22 +29,22 @@ def setup(global_object):
     put_native_function(w_NumberPrototype, u'valueOf', value_of)
 
     # 15.7.3.1
-    put_property(w_Number, u'prototype', w_NumberPrototype, writable=False, enumerable=False, configurable=False)
+    put_property(w_Number, u'prototype', w_NumberPrototype)
 
     # 15.7.3.2
-    put_property(w_Number, u'MAX_VALUE', w_MAX_VALUE, writable=False, configurable=False, enumerable=False)
+    put_property(w_Number, u'MAX_VALUE', w_MAX_VALUE)
 
     # 15.7.3.3
-    put_property(w_Number, u'MIN_VALUE', w_MIN_VALUE, writable=False, configurable=False, enumerable=False)
+    put_property(w_Number, u'MIN_VALUE', w_MIN_VALUE)
 
     # 15.7.3.4
-    put_property(w_Number, u'NaN', w_NAN, writable=False, configurable=False, enumerable=False)
+    put_property(w_Number, u'NaN', w_NAN)
 
     # 15.7.3.5
-    put_property(w_Number, u'POSITIVE_INFINITY', w_POSITIVE_INFINITY, writable=False, configurable=False, enumerable=False)
+    put_property(w_Number, u'POSITIVE_INFINITY', w_POSITIVE_INFINITY)
 
     # 15.7.3.6
-    put_property(w_Number, u'NEGATIVE_INFINITY', w_NEGATIVE_INFINITY, writable=False, configurable=False, enumerable=False)
+    put_property(w_Number, u'NEGATIVE_INFINITY', w_NEGATIVE_INFINITY)
 
 # 15.7.3.2
 w_MAX_VALUE = _w(1.7976931348623157e308)

@@ -146,7 +146,7 @@ class ObjectSpace(object):
         if not length:
             length = _w(0)
         from obin.objects.object import W__Array
-        obj = W__Array(length)
+        obj = W__Array()
         self.assign_proto(obj)
         return obj
 

@@ -16,7 +16,7 @@ def setup(global_object):
     from obin.objects.object import W__Object, W_String
     w_String = W__Object()
     # object_space.assign_proto(w_String, object_space.proto_function)
-    put_property(w_String, u'length', _w(1), writable=False, enumerable=False, configurable=False)
+    put_property(w_String, u'length', _w(1))
     put_property(global_object, u'String', w_String)
 
     # 15.5.4
@@ -26,7 +26,7 @@ def setup(global_object):
     # 15.5.3.1
     object_space.proto_string = w_StringPrototype
 
-    put_property(w_String, u'prototype', w_StringPrototype, writable=False, enumerable=False, configurable=False)
+    put_property(w_String, u'prototype', w_StringPrototype)
 
     # 15.5.3.2
     put_native_function(w_String, u'fromCharCode', from_char_code, params=[u'char1'])

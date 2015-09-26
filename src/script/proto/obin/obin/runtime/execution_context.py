@@ -59,11 +59,6 @@ class ExecutionContext(StackMixin):
         env = self._variable_environment_.environment_record
         code = jit.promote(self._code_)
 
-        if code.is_eval_code():
-            configurable_bindings = True
-        else:
-            configurable_bindings = False
-
         # 4.
         if code.is_function_code():
             names = code.params()
@@ -79,7 +74,7 @@ class ExecutionContext(StackMixin):
                     v = args[n - 1]
                 arg_already_declared = env.has_binding(arg_name)
                 if arg_already_declared is False:
-                    env.create_binding(arg_name, configurable_bindings)
+                    env.create_binding(arg_name)
                 env.set_binding(arg_name, v)
 
         # 5.
@@ -88,7 +83,7 @@ class ExecutionContext(StackMixin):
             fo = None
             func_already_declared = env.has_binding(fn)
             if func_already_declared is False:
-                env.create_binding(fn, configurable_bindings)
+                env.create_binding(fn)
             else:
                 pass  # see 10.5 5.e
             env.set_binding(fn, fo)
@@ -103,7 +98,7 @@ class ExecutionContext(StackMixin):
             names = code.params()
             args_obj = W_Arguments(func, names, arguments, env)
 
-            env.create_binding(u'arguments', False)  # TODO not sure if mutable binding is deletable
+            env.create_binding(u'arguments')  # TODO not sure if mutable binding is deletable
             env.set_binding(u'arguments', args_obj)
 
         # 8.
@@ -111,7 +106,7 @@ class ExecutionContext(StackMixin):
         for dn in var_declarations:
             var_already_declared = env.has_binding(dn)
             if var_already_declared is False:
-                env.create_binding(dn, configurable_bindings)
+                env.create_binding(dn)
                 env.set_binding(dn, newundefined())
 
     def _get_refs(self, index):

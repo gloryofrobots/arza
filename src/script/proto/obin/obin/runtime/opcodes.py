@@ -239,7 +239,7 @@ class LOAD_OBJECT(Opcode):
             top = ctx.stack_pop()
             name = top.to_string()
             w_elem = ctx.stack_pop()
-            put_property(w_obj, name, w_elem, writable=True, configurable=True, enumerable=True)
+            put_property(w_obj, name, w_elem)
         ctx.stack_append(w_obj)
 
     #def __repr__(self):
@@ -833,9 +833,7 @@ class LOAD_ITERATOR(Opcode):
         TimSort(properties).sort()
 
         for key in properties:
-            prop = obj.get_property(key)
-            if prop.enumerable is True:
-                props.append(_w(key))
+            props.append(_w(key))
 
         props.reverse()
 
@@ -952,7 +950,7 @@ class DELETE_MEMBER(Opcode):
     def eval(self, ctx):
         what = ctx.stack_pop().to_string()
         obj = ctx.stack_pop().ToObject()
-        res = obj.delete(what, False)
+        res = obj.delete(what)
         ctx.stack_append(_w(res))
 
 
