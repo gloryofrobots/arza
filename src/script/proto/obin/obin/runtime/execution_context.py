@@ -42,9 +42,6 @@ class ExecutionContext(StackMixin):
     def this_binding(self):
         return self._this_binding_
 
-    def implicit_this_binding(self):
-        return self.lexical_environment().environment_record.implicit_this_value()
-
     def variable_environment(self):
         return self._variable_environment_
 
@@ -82,8 +79,8 @@ class ExecutionContext(StackMixin):
                     v = args[n - 1]
                 arg_already_declared = env.has_binding(arg_name)
                 if arg_already_declared is False:
-                    env.create_mutuable_binding(arg_name, configurable_bindings)
-                env.set_mutable_binding(arg_name, v)
+                    env.create_binding(arg_name, configurable_bindings)
+                env.set_binding(arg_name, v)
 
         # 5.
         func_declarations = code.functions()
@@ -91,10 +88,10 @@ class ExecutionContext(StackMixin):
             fo = None
             func_already_declared = env.has_binding(fn)
             if func_already_declared is False:
-                env.create_mutuable_binding(fn, configurable_bindings)
+                env.create_binding(fn, configurable_bindings)
             else:
                 pass  # see 10.5 5.e
-            env.set_mutable_binding(fn, fo)
+            env.set_binding(fn, fo)
 
         arguments_already_declared = env.has_binding(u'arguments')
         # 7.
@@ -106,16 +103,16 @@ class ExecutionContext(StackMixin):
             names = code.params()
             args_obj = W_Arguments(func, names, arguments, env)
 
-            env.create_mutuable_binding(u'arguments', False)  # TODO not sure if mutable binding is deletable
-            env.set_mutable_binding(u'arguments', args_obj)
+            env.create_binding(u'arguments', False)  # TODO not sure if mutable binding is deletable
+            env.set_binding(u'arguments', args_obj)
 
         # 8.
         var_declarations = code.variables()
         for dn in var_declarations:
             var_already_declared = env.has_binding(dn)
             if var_already_declared is False:
-                env.create_mutuable_binding(dn, configurable_bindings)
-                env.set_mutable_binding(dn, newundefined())
+                env.create_binding(dn, configurable_bindings)
+                env.set_binding(dn, newundefined())
 
     def _get_refs(self, index):
         assert index < len(self._refs_)
@@ -175,7 +172,7 @@ class GlobalExecutionContext(_DynamicExecutionContext):
 
         self._code_ = code
 
-        from obin.objects.lexical_environment import ObjectEnvironment
+        from obin.runtime.lexical_environment import ObjectEnvironment
         localEnv = ObjectEnvironment(global_object)
         self._lexical_environment_ = localEnv
         self._variable_environment_ = localEnv
@@ -194,8 +191,8 @@ class EvalExecutionContext(_DynamicExecutionContext):
         if not calling_context:
             raise NotImplementedError()
 
-        from obin.objects.lexical_environment import DeclarativeEnvironment
-        strict_var_env = DeclarativeEnvironment(self._lexical_environment_)
+        from obin.runtime.lexical_environment import DeclarativeEnvironment
+        strict_var_env = DeclarativeEnvironment(self._lexical_environment_, 0)
         self._variable_environment_ = strict_var_env
         self._lexical_environment_ = strict_var_env
 
@@ -206,9 +203,6 @@ class FunctionExecutionContext(ExecutionContext):
     _immutable_fields_ = ['_scope_', '_calling_context_']
 
     def __init__(self, code, formal_parameters=[], argv=[], this=newundefined(), scope=None, w_func=None):
-        from obin.objects.object import W_BasicObject
-        from obin.objects.object_space import object_space, isnull_or_undefined
-
         stack_size = code.estimated_stack_size()
         env_size = code.env_size() + 1  # neet do add one for the arguments object
 
@@ -220,8 +214,8 @@ class FunctionExecutionContext(ExecutionContext):
         self._w_func_ = w_func
         self._calling_context_ = None
 
-        from obin.objects.lexical_environment import DeclarativeEnvironment
-        localEnv = DeclarativeEnvironment(scope, env_size, False)
+        from obin.runtime.lexical_environment import DeclarativeEnvironment
+        localEnv = DeclarativeEnvironment(scope, env_size)
         self._lexical_environment_ = localEnv
         self._variable_environment_ = localEnv
 
@@ -261,7 +255,7 @@ class WithExecutionContext(SubExecutionContext):
         self._expr_obj_ = expr_obj
         self._dynamic_refs = []
 
-        from obin.objects.lexical_environment import ObjectEnvironment
+        from obin.runtime.lexical_environment import ObjectEnvironment
         parent_environment = parent_context.lexical_environment()
         local_env = ObjectEnvironment(expr_obj, outer_environment=parent_environment)
         local_env.environment_record.provide_this = True
@@ -284,11 +278,11 @@ class CatchExecutionContext(_DynamicExecutionContext):
 
         parent_env = parent_context.lexical_environment()
 
-        from obin.objects.lexical_environment import DeclarativeEnvironment
+        from obin.runtime.lexical_environment import DeclarativeEnvironment
         local_env = DeclarativeEnvironment(parent_env)
         local_env_rec = local_env.environment_record
-        local_env_rec.create_mutuable_binding(catchparam, True)
-        local_env_rec.set_mutable_binding(catchparam, exception_value, False)
+        local_env_rec.create_binding(catchparam, True)
+        local_env_rec.set_binding(catchparam, exception_value, False)
 
         self._lexical_environment_ = local_env
         self._variable_environment_ = local_env

@@ -78,4 +78,4 @@ def put_value(v, w, identifier):
         from obin.runtime.environment_record import EnvironmentRecord
         assert isinstance(base_env, EnvironmentRecord)
         name = v.get_referenced_name(identifier)
-        base_env.set_mutable_binding(name, w)
+        base_env.set_binding(name, w)

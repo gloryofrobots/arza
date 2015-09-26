@@ -681,10 +681,10 @@ class CALL(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
+        from obin.objects.object_space import newundefined
         r1 = ctx.stack_pop()
         args = ctx.stack_pop()
-        this = ctx.implicit_this_binding()
-        res = common_call(ctx, r1, args, this, r1)
+        res = common_call(ctx, r1, args, newundefined(), r1)
         ctx.stack_append(res)
 
 

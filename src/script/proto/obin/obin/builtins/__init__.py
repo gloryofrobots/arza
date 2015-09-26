@@ -57,13 +57,13 @@ def setup_builtins(global_object):
     object_space.proto_function = w_FunctionPrototype
 
     # 15.3.3
-    object_space.assign_proto(w_Function, object_space.proto_function)
+    object_space.assign_proto(w_Function, object_space.proto_object)
 
     # 15.2 Object Objects
     # 15.2.3 Properties of the Object Constructor
     from obin.objects.object import W__Object
     w_Object = W__Object()
-    object_space.assign_proto(w_Object, object_space.proto_function)
+    object_space.assign_proto(w_Object, object_space.proto_object)
 
     put_property(w_Object, u'length', _w(1))
 
@@ -118,9 +118,6 @@ def setup_builtins(global_object):
 
     import obin.builtins.math_functions
     obin.builtins.math_functions.setup(global_object)
-
-    # import obin.builtins.date
-    # obin.builtins.date.setup(global_object)
 
     import obin.builtins.global_functions
     obin.builtins.global_functions.setup(global_object)

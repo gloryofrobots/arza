@@ -30,10 +30,10 @@ class LexicalEnvironment(object):
 
 
 class DeclarativeEnvironment(LexicalEnvironment):
-    def __init__(self, outer_environment=None, env_size=0, env_resize=True):
+    def __init__(self, outer_environment, env_size):
         LexicalEnvironment.__init__(self, outer_environment)
         from obin.runtime.environment_record import DeclarativeEnvironmentRecord
-        self.environment_record = DeclarativeEnvironmentRecord(env_size, env_resize)
+        self.environment_record = DeclarativeEnvironmentRecord(env_size)
 
 
 class ObjectEnvironment(LexicalEnvironment):

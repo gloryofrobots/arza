@@ -2,7 +2,7 @@ from obin.objects.object_space import _w
 from obin.compile.code import Code
 from obin.runtime.execution_context import ExecutionContext, FunctionExecutionContext, GlobalExecutionContext, EvalExecutionContext
 from obin.runtime.routine import FunctionRoutine, BytecodeRoutine, NativeRoutine, GlobalRoutine, EvalRoutine
-from obin.objects.lexical_environment import DeclarativeEnvironment
+from obin.runtime.lexical_environment import DeclarativeEnvironment
 from obin.compile.astbuilder import parse_to_ast, SymbolMap
 from obin.compile.code import ast_to_bytecode
 from obin.objects.object import W_BasicObject
@@ -76,7 +76,7 @@ class TestJsFunctionAndStuff(object):
 
         lex = ctx.variable_environment()
         env_rec = lex.environment_record
-        env_rec.set_mutable_binding(u'a', _w(21), False)
+        env_rec.set_binding(u'a', _w(21), False)
 
         res = f.run(ctx)
         assert res.value == _w(42)
@@ -98,7 +98,7 @@ class TestJsFunctionAndStuff(object):
 
         lex_env = ctx.variable_environment()
         env_rec = lex_env.environment_record
-        env_rec.set_mutable_binding(u'a', _w(21), False)
+        env_rec.set_binding(u'a', _w(21), False)
 
         res = f.run(ctx)
 
@@ -127,10 +127,10 @@ class TestJsFunctionAndStuff(object):
         lex_env = ctx.variable_environment()
         env_rec = lex_env.environment_record
 
-        env_rec.set_mutable_binding(u'a', _w(21), False)
+        env_rec.set_binding(u'a', _w(21), False)
 
-        outer_env_rec.create_mutuable_binding(u'b', True)
-        outer_env_rec.set_mutable_binding(u'b', _w(21), False)
+        outer_env_rec.create_binding(u'b', True)
+        outer_env_rec.set_binding(u'b', _w(21), False)
 
         res = f.run(ctx)
 
@@ -160,10 +160,10 @@ class TestJsFunctionAndStuff(object):
         lex_env = ctx.variable_environment()
         env_rec = lex_env.environment_record
 
-        env_rec.set_mutable_binding(u'a', _w(21), False)
+        env_rec.set_binding(u'a', _w(21), False)
 
-        outer_env_rec.create_mutuable_binding(u'b', True)
-        outer_env_rec.set_mutable_binding(u'b', _w(21), False)
+        outer_env_rec.create_binding(u'b', True)
+        outer_env_rec.set_binding(u'b', _w(21), False)
 
         res = f.run(ctx)
 

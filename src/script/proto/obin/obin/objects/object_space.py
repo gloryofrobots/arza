@@ -94,6 +94,65 @@ def newbool(val):
     return w_False
 
 
+class ObjectSpace(object):
+    def __init__(self):
+        self.global_context = None
+        self.global_object = None
+        self.proto_function = newnull()
+        self.proto_boolean = newnull()
+        self.proto_number = newnull()
+        self.proto_string = newnull()
+        self.proto_array = newnull()
+        self.proto_date = newnull()
+        self.proto_object = newnull()
+        self.interpreter = None
+
+    def get_global_environment(self):
+        return self.global_context.variable_environment()
+
+    def assign_proto(self, obj, proto=None):
+        from obin.objects.object import W_BasicFunction, W_String, W_Boolean, W_Number, W__Array
+        if proto is not None:
+            obj._prototype_ = proto
+            return obj
+
+        if isinstance(obj, W_BasicFunction):
+            obj._prototype_ = self.proto_function
+        elif isinstance(obj, W_Boolean):
+            obj._prototype_ = self.proto_boolean
+        elif isinstance(obj, W_Number):
+            obj._prototype_ = self.proto_number
+        elif isinstance(obj, W_String):
+            obj._prototype_ = self.proto_string
+        elif isinstance(obj, W__Array):
+            obj._prototype_ = self.proto_array
+        else:
+            obj._prototype_ = self.proto_object
+        return obj
+
+    def new_obj(self):
+        from obin.objects.object import W__Object
+        obj = W__Object()
+        self.assign_proto(obj)
+        return obj
+
+    def new_func(self, function_body, formal_parameter_list=[], scope=None):
+        from obin.objects.object import W__Function
+        obj = W__Function(function_body, formal_parameter_list, scope)
+        self.assign_proto(obj)
+        return obj
+
+    def new_array(self, length=None):
+        if not length:
+            length = _w(0)
+        from obin.objects.object import W__Array
+        obj = W__Array(length)
+        self.assign_proto(obj)
+        return obj
+
+
+object_space = ObjectSpace()
+
 @specialize.argtype(0)
 def _w(value):
     from obin.objects.object import W_Root, put_property
@@ -122,73 +181,6 @@ def _w(value):
 
     raise TypeError("ffffuuu %s" % (str(type(value)),))
 
-
-class ObjectSpace(object):
-    def __init__(self):
-        self.global_context = None
-        self.global_object = None
-        self.proto_function = newnull()
-        self.proto_boolean = newnull()
-        self.proto_number = newnull()
-        self.proto_string = newnull()
-        self.proto_array = newnull()
-        self.proto_date = newnull()
-        self.proto_object = newnull()
-        self.interpreter = None
-
-    def get_global_environment(self):
-        return self.global_context.variable_environment()
-
-    def assign_proto(self, obj, proto=None):
-        from obin.objects.object import W_BasicFunction, W_DateObject, W_String, W_Boolean, W_Number, W__Array
-        if proto is not None:
-            obj._prototype_ = proto
-            return obj
-
-        if isinstance(obj, W_BasicFunction):
-            obj._prototype_ = self.proto_function
-        elif isinstance(obj, W_Boolean):
-            obj._prototype_ = self.proto_boolean
-        elif isinstance(obj, W_Number):
-            obj._prototype_ = self.proto_number
-        elif isinstance(obj, W_String):
-            obj._prototype_ = self.proto_string
-        elif isinstance(obj, W__Array):
-            obj._prototype_ = self.proto_array
-        elif isinstance(obj, W_DateObject):
-            obj._prototype_ = self.proto_date
-        else:
-            obj._prototype_ = self.proto_object
-        return obj
-
-    def new_obj(self):
-        from obin.objects.object import W__Object
-        obj = W__Object()
-        self.assign_proto(obj)
-        return obj
-
-    def new_func(self, function_body, formal_parameter_list=[], scope=None):
-        from obin.objects.object import W__Function
-        obj = W__Function(function_body, formal_parameter_list, scope)
-        self.assign_proto(obj)
-        return obj
-
-    def new_date(self, value):
-        from obin.objects.object import W_DateObject
-        obj = W_DateObject(value)
-        self.assign_proto(obj)
-        return obj
-
-    def new_array(self, length=None):
-        if not length:
-            length = _w(0)
-        from obin.objects.object import W__Array
-        obj = W__Array(length)
-        self.assign_proto(obj)
-        return obj
-
-
-object_space = ObjectSpace()
 
 
 def w_return(fn):

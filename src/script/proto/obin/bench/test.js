@@ -1,28 +1,11 @@
-// The Great Computer Language Shootout
-// http://shootout.alioth.debian.org/
-//
-// contributed by David Hedbor
-// modified by Isaac Gouy
-//
-//Object.create = function(o, properties) {
-//    if (typeof o !== 'object' && typeof o !== 'function') throw new TypeError('Object prototype may only be an Object: ' + o);
-//    else if (o === null) throw new Error("This browser's implementation of Object.create is a shim and doesn't support 'null' as the first argument.");
-//
-//    if (typeof properties != 'undefined') throw new Error("This browser's implementation of Object.create is a shim and doesn't support a second argument.");
-//
-//    var O = {};
-//    O.prototype = o;
-//
-//    return O;
-//};
-var s = "abcd";
-print(s.charAt(2));
-var s2 = eval("var g = 42; g");
-print(s2);
-var L = {};
+function main(){
+    var s = "abcd";
+    print(s.charAt(2));
+    var s2 = eval("var g = 42; g");
+    print(s2);
+    var L = {};
 
-
-function extend(object) {
+    function extend(object) {
      var hasOwnProperty = Object.hasOwnProperty;
      var clone = object.clone();
      print("clone " + clone);
@@ -39,9 +22,9 @@ function extend(object) {
      print("object " + object);
      print("clone " + clone);
      return clone;
-};
+    };
 
-function Robot(id) {
+    function Robot(id) {
     this.id = id;
     this.launchRockets = function() {
         this.destroyWhosLeft = function() {
@@ -49,9 +32,9 @@ function Robot(id) {
         };
         print("BDUSCH!!!" + this.id);
     };
-}
+    }
 
-function blueprint(func, object) {
+    function blueprint(func, object) {
     if(!func) {
         throw "Function required"
     }
@@ -65,27 +48,39 @@ function blueprint(func, object) {
 
     func.apply(object, args);
     return object;
-}
+    }
 
-var r = blueprint(Robot, null, "MEGA PIHAR");
-var rc = r.clone();
+    var r = blueprint(Robot, null, "MEGA PIHAR");
+    var rc = r.clone();
 
-rc.launchRockets();
-rc.destroyWhosLeft();
-r.launchRockets();
+    rc.launchRockets();
+    rc.destroyWhosLeft();
+    r.launchRockets();
 
-var bc = extend(rc, {
+    var bc = extend(rc, {
     name:"ROBOT-GOBOT"
-});
+    });
+    var tc = extend(bc, {
+        ammo: 1000,
+        lazerBeam: function() {
+            print("BZZZZZ ", --this.ammo);
+        }
+    }, {
+        photonCannon: function()  {
+            print("PTRRRR ", --this.ammo)
+        }
+    });
+    print(r);
+    print(rc);
+    print(bc);
+    print(tc);
 
-print(r);
-print(rc);
-print(bc);
-
-//
-//
-//
-function Animal(name, eatPower) {
+    tc.lazerBeam();
+    tc.photonCannon();
+    //
+    //
+    //
+    function Animal(name, eatPower) {
     function eat(a1, a2) {
         function _eat(){
             function __eat() {
@@ -125,29 +120,37 @@ function Animal(name, eatPower) {
         }
     };
     return A.clone();
-}
-var t = 1 !=0;
-print("t=" + t);
-var cow = Animal("Zorka", 2);
-var bug = Animal("Boris", 4);
-var survivor = cow.eat(bug);
-print(survivor.name());
-var cowbag = cow.fuck(bug);
-print("COWBUG");
-print(cowbag[0].name());
-print(cowbag[0]);
-print(cowbag[1].name());
-//var i = 3;
-//while(i-- > 0) {
-//    for(var j = 0; j < 10; j++) {
-//        var A = [];
-//        A.push(i);
-//        A.push(j);
-//        print("" + i + "," + j + " = " + A);
+    }
+//    var t = 1 !=0;
+//    print("t=" + t);
+//    var cow = Animal("Zorka", 2);
+//    var bug = Animal("Boris", 4);
+//    var survivor = cow.eat(bug);
+//    print(survivor.name());
+//    var cowbag = cow.fuck(bug);
+//    print("COWBUG");
+//    print(cowbag[0].name());
+//    print(cowbag[0]);
+//    print(cowbag[1].name());
+//    var i = 3;
+//    while(i-- > 0) {
+//        for(var j = 0; j < 10; j++) {
+//            var A = [];
+//            A.push(i);
+//            A.push(j);
+//            print("" + i + "," + j + " = " + A);
+//        }
 //    }
-//}
-//
-//var a, x, y;
+}
+main();
+var P = {
+    id:1,
+    name:"2"
+};
+delete P.id;
+print(this);
+print(this.Object);
+    //var a, x, y;
 //var r = 10;
 //with (Math) {
 //  a = PI * r * r;

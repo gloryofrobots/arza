@@ -231,6 +231,9 @@ def parse_float(this, args):
 def alert(this, args):
     printjs(this, args)
 
+def dummy(this, args):
+    pass
+
 @w_return
 def printjs(this, args):
     if len(args) == 0:

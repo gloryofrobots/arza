@@ -1,4 +1,4 @@
-from obin.objects.lexical_environment import DeclarativeEnvironment, ObjectEnvironment
+from obin.runtime.lexical_environment import DeclarativeEnvironment, ObjectEnvironment
 from obin.objects.object import W_BasicObject
 
 
@@ -14,7 +14,7 @@ class TestDeclarativeEnvironment(object):
         lex_env = DeclarativeEnvironment()
 
         env_rec = lex_env.environment_record
-        env_rec.create_mutuable_binding(u'foo', True)
+        env_rec.create_binding(u'foo', True)
 
         ref = lex_env.get_identifier_reference(u'foo')
         assert ref.base_env == env_rec
@@ -23,7 +23,7 @@ class TestDeclarativeEnvironment(object):
     def test_get_identifier_reference_from_parent(self):
         outer_lex_env = DeclarativeEnvironment()
         outer_env_rec = outer_lex_env.environment_record
-        outer_env_rec.create_mutuable_binding(u'foo', True)
+        outer_env_rec.create_binding(u'foo', True)
 
         lex_env = DeclarativeEnvironment(outer_lex_env)
 
@@ -34,11 +34,11 @@ class TestDeclarativeEnvironment(object):
     def test_get_identifier_reference_overwrite_parent(self):
         outer_lex_env = DeclarativeEnvironment()
         outer_env_rec = outer_lex_env.environment_record
-        outer_env_rec.create_mutuable_binding(u'foo', True)
+        outer_env_rec.create_binding(u'foo', True)
 
         lex_env = DeclarativeEnvironment(outer_lex_env)
         env_rec = lex_env.environment_record
-        env_rec.create_mutuable_binding(u'foo', True)
+        env_rec.create_binding(u'foo', True)
 
         ref = lex_env.get_identifier_reference(u'foo')
         assert ref.base_env == env_rec
@@ -59,7 +59,7 @@ class TestObjectEnvironment(object):
         lex_env = ObjectEnvironment(obj)
 
         env_rec = lex_env.environment_record
-        env_rec.create_mutuable_binding(u'foo', True)
+        env_rec.create_binding(u'foo', True)
 
         ref = lex_env.get_identifier_reference(u'foo')
         assert ref.base_env == env_rec
@@ -68,7 +68,7 @@ class TestObjectEnvironment(object):
     def test_get_identifier_reference_from_parent(self):
         outer_lex_env = DeclarativeEnvironment()
         outer_env_rec = outer_lex_env.environment_record
-        outer_env_rec.create_mutuable_binding(u'foo', True)
+        outer_env_rec.create_binding(u'foo', True)
 
         obj = W_BasicObject()
         lex_env = ObjectEnvironment(obj, outer_lex_env)
@@ -80,12 +80,12 @@ class TestObjectEnvironment(object):
     def test_get_identifier_reference_overwrite_parent(self):
         outer_lex_env = DeclarativeEnvironment()
         outer_env_rec = outer_lex_env.environment_record
-        outer_env_rec.create_mutuable_binding(u'foo', True)
+        outer_env_rec.create_binding(u'foo', True)
 
         obj = W_BasicObject()
         lex_env = ObjectEnvironment(obj, outer_lex_env)
         env_rec = lex_env.environment_record
-        env_rec.create_mutuable_binding(u'foo', True)
+        env_rec.create_binding(u'foo', True)
 
         ref = lex_env.get_identifier_reference(u'foo')
         assert ref.base_env == env_rec

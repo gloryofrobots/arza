@@ -200,7 +200,6 @@ w_proto_setter = W_ProtoSetter()
 proto_desc = AccessorPropertyDescriptor(w_proto_getter, w_proto_setter, False, False)
 jit.promote(proto_desc)
 
-
 def reject(throw, msg=u''):
     if throw:
         raise JsTypeError(msg)
@@ -211,7 +210,6 @@ def _ireject(throw, idx):
     if throw:
         raise JsTypeError(unicode(str(idx)))
     return False
-
 
 
 class W_BasicObject(W_Root):
@@ -550,182 +548,6 @@ class W_BasicObject(W_Root):
 class W__PrimitiveObject(W_BasicObject):
     pass
 
-class W__Object(W_BasicObject):
-    pass
-
-
-class W_GlobalObject(W__Object):
-    _class_ = 'global'
-
-
-class W_DateObject(W__PrimitiveObject):
-    _class_ = 'Date'
-
-    def default_value(self, hint='String'):
-        if hint is None:
-            hint = 'String'
-        return W_BasicObject.default_value(self, hint)
-
-class W_BasicFunction(W_BasicObject):
-    _class_ = 'Function'
-    _type_ = 'function'
-
-    def Call(self, args=[], this=None, calling_context=None):
-        raise NotImplementedError("abstract")
-
-    # 13.2.2
-    def Construct(self, args=[]):
-        tb("W_BasicFunction Construct")
-        from obin.objects.object_space import object_space
-
-        proto = self.get(u'prototype')
-        if isinstance(proto, W_BasicObject):
-            obj = object_space.new_obj()
-            object_space.assign_proto(obj, proto)
-        else:
-            # would love to test this
-            # but I fail to find a case that falls into this
-            obj = object_space.new_obj()
-
-        result = self.Call(args, this=obj)
-        if isinstance(result, W__Object):
-            return result
-
-        return obj
-
-    def is_callable(self):
-        return True
-
-    def _to_string_(self):
-        return u'function() {}'
-
-    # 15.3.5.3
-    def has_instance(self, v):
-        from obin.objects.object_space import isnull_or_undefined
-        if not isinstance(v, W_BasicObject):
-            return False
-
-        o = self.get(u'prototype')
-
-        if not isinstance(o, W_BasicObject):
-            raise JsTypeError(u'has_instance')
-
-        while True:
-            assert isinstance(v, W_BasicObject)
-            v = v.prototype()
-            if isnull_or_undefined(v):
-                return False
-            if v == o:
-                return True
-
-class W__Function(W_BasicFunction):
-    _immutable_fields_ = ['_type_', '_class_', '_extensible_', '_scope_', '_params_[*]', '_function_']
-
-    def __init__(self, function_body, formal_parameter_list=[], scope=None):
-        W_BasicFunction.__init__(self)
-        from obin.objects.object_space import _w, newnull, object_space
-        self._function_ = function_body
-        self._scope_ = scope
-        self._params_ = formal_parameter_list
-
-        # 13.2 Creating Function Objects
-        # 14.
-        _len = len(formal_parameter_list)
-        # 15.
-        put_property(self, u'length', _w(_len), writable=False, enumerable=False, configurable=False)
-        # 16.
-        proto_obj = object_space.new_obj()
-        # 17.
-        put_property(proto_obj, u'constructor', self, writable=True, enumerable=False, configurable=True)
-        # 18.
-        put_property(self, u'prototype', proto_obj, writable=True, enumerable=False, configurable=False)
-
-        put_property(self, u'caller', newnull(), writable=True, enumerable=False, configurable=False)
-        put_property(self, u'arguments', newnull(), writable=True, enumerable=False, configurable=False)
-
-    def _to_string(self):
-        return self._function_.to_string()
-
-    def code(self):
-        return self._function_
-
-    def formal_parameters(self):
-        return self._params_
-
-    def Call(self, args=[], this=None, calling_context=None):
-        from obin.runtime.execution_context import FunctionExecutionContext
-        from obin.runtime.completion import Completion
-
-        code = self.code()
-        jit.promote(code)
-        scope = self.scope()
-
-        ctx = FunctionExecutionContext(code,
-                                       argv=args,
-                                       this=this,
-                                       scope=scope,
-                                       w_func=self)
-        ctx._calling_context_ = calling_context
-
-        res = code.run(ctx)
-
-        assert isinstance(res, Completion)
-        return res.value
-
-    def scope(self):
-        return self._scope_
-
-
-# 10.6
-class W_Arguments(W__Object):
-    _class_ = 'Arguments'
-
-    @jit.unroll_safe
-    def __init__(self, func, names, args, env):
-        from obin.objects.object_space import _w
-        W__Object.__init__(self)
-        _len = len(args)
-        put_property(self, u'length', _w(_len), writable=True, enumerable=False, configurable=True)
-
-        from obin.objects.object_space import object_space
-        _map = object_space.new_obj()
-        mapped_names = new_map()
-        jit.promote(_len)
-        indx = _len - 1
-        while indx >= 0:
-            val = args[indx]
-            put_property(self, unicode(str(indx)), val, writable=True, enumerable=True, configurable=True)
-            if indx < len(names):
-                name = names[indx]
-                if not mapped_names.contains(name):
-                    mapped_names = mapped_names.add(name)
-                    g = make_arg_getter(name, env)
-                    p = make_arg_setter(name, env)
-                    desc = PropertyDescriptor(setter=p, getter=g, configurable=True)
-                    _map.define_own_property(unicode(str(indx)), desc, False)
-            indx = indx - 1
-
-        if not mapped_names.empty():
-            self._paramenter_map_ = _map
-
-        put_property(self, u'callee', _w(func), writable=True, enumerable=False, configurable=True)
-
-
-def make_arg_getter(name, env):
-    pass
-    #code = u'return %s;' % (name)
-
-
-def make_arg_setter(name, env):
-    pass
-    #param = u'%s_arg' % (name)
-    #code = u'%s = %s;' % (name, param)
-
-# 15.8
-class W_Math(W__Object):
-    _class_ = 'Math'
-
-
 class W_Boolean(W__PrimitiveObject):
     _type_ = 'boolean'
     _immutable_fields_ = ['_boolval_']
@@ -982,6 +804,174 @@ class W_FloatNumber(W_Number):
 
         return intmask(int(self._floatval_))
 
+class W__Object(W_BasicObject):
+    pass
+
+
+class W_GlobalObject(W__Object):
+    _class_ = 'global'
+
+
+class W_BasicFunction(W_BasicObject):
+    _class_ = 'Function'
+    _type_ = 'function'
+
+    def Call(self, args=[], this=None, calling_context=None):
+        raise NotImplementedError("abstract")
+
+    # 13.2.2
+    def Construct(self, args=[]):
+        tb("W_BasicFunction Construct")
+        from obin.objects.object_space import object_space
+
+        proto = self.get(u'prototype')
+        if isinstance(proto, W_BasicObject):
+            obj = object_space.new_obj()
+            object_space.assign_proto(obj, proto)
+        else:
+            # would love to test this
+            # but I fail to find a case that falls into this
+            obj = object_space.new_obj()
+
+        result = self.Call(args, this=obj)
+        if isinstance(result, W__Object):
+            return result
+
+        return obj
+
+    def is_callable(self):
+        return True
+
+    def _to_string_(self):
+        return u'function() {}'
+
+    # 15.3.5.3
+    def has_instance(self, v):
+        from obin.objects.object_space import isnull_or_undefined
+        if not isinstance(v, W_BasicObject):
+            return False
+
+        o = self.get(u'prototype')
+
+        if not isinstance(o, W_BasicObject):
+            raise JsTypeError(u'has_instance')
+
+        while True:
+            assert isinstance(v, W_BasicObject)
+            v = v.prototype()
+            if isnull_or_undefined(v):
+                return False
+            if v == o:
+                return True
+
+class W__Function(W_BasicFunction):
+    _immutable_fields_ = ['_type_', '_class_', '_extensible_', '_scope_', '_params_[*]', '_function_']
+
+    def __init__(self, function_body, formal_parameter_list=[], scope=None):
+        W_BasicFunction.__init__(self)
+        from obin.objects.object_space import _w, newnull, object_space
+        self._function_ = function_body
+        self._scope_ = scope
+        self._params_ = formal_parameter_list
+
+        # 13.2 Creating Function Objects
+        # 14.
+        _len = len(formal_parameter_list)
+        # 15.
+        put_property(self, u'length', _w(_len), writable=False, enumerable=False, configurable=False)
+        # 16.
+        proto_obj = object_space.new_obj()
+        # 17.
+        put_property(proto_obj, u'constructor', self, writable=True, enumerable=False, configurable=True)
+        # 18.
+        put_property(self, u'prototype', proto_obj, writable=True, enumerable=False, configurable=False)
+
+        put_property(self, u'caller', newnull(), writable=True, enumerable=False, configurable=False)
+        put_property(self, u'arguments', newnull(), writable=True, enumerable=False, configurable=False)
+
+    def _to_string_(self):
+        return self._function_.to_string()
+
+    def code(self):
+        return self._function_
+
+    def formal_parameters(self):
+        return self._params_
+
+    def Call(self, args=[], this=None, calling_context=None):
+        from obin.runtime.execution_context import FunctionExecutionContext
+        from obin.runtime.completion import Completion
+
+        code = self.code()
+        jit.promote(code)
+        scope = self.scope()
+
+        ctx = FunctionExecutionContext(code,
+                                       argv=args,
+                                       this=this,
+                                       scope=scope,
+                                       w_func=self)
+        ctx._calling_context_ = calling_context
+
+        res = code.run(ctx)
+
+        assert isinstance(res, Completion)
+        return res.value
+
+    def scope(self):
+        return self._scope_
+
+
+# 10.6
+class W_Arguments(W__Object):
+    _class_ = 'Arguments'
+
+    @jit.unroll_safe
+    def __init__(self, func, names, args, env):
+        from obin.objects.object_space import _w
+        W__Object.__init__(self)
+        _len = len(args)
+        put_property(self, u'length', _w(_len), writable=True, enumerable=False, configurable=True)
+
+        from obin.objects.object_space import object_space
+        _map = object_space.new_obj()
+        mapped_names = new_map()
+        jit.promote(_len)
+        indx = _len - 1
+        while indx >= 0:
+            val = args[indx]
+            put_property(self, unicode(str(indx)), val, writable=True, enumerable=True, configurable=True)
+            if indx < len(names):
+                name = names[indx]
+                if not mapped_names.contains(name):
+                    mapped_names = mapped_names.add(name)
+                    g = make_arg_getter(name, env)
+                    p = make_arg_setter(name, env)
+                    desc = PropertyDescriptor(setter=p, getter=g, configurable=True)
+                    _map.define_own_property(unicode(str(indx)), desc, False)
+            indx = indx - 1
+
+        if not mapped_names.empty():
+            self._paramenter_map_ = _map
+
+        put_property(self, u'callee', _w(func), writable=True, enumerable=False, configurable=True)
+
+
+def make_arg_getter(name, env):
+    pass
+    #code = u'return %s;' % (name)
+
+
+def make_arg_setter(name, env):
+    pass
+    #param = u'%s_arg' % (name)
+    #code = u'%s = %s;' % (name, param)
+
+# 15.8
+class W_Math(W__Object):
+    _class_ = 'Math'
+
+
 
 class W_List(W_Root):
     def __init__(self, values):
@@ -1017,6 +1007,7 @@ class W__Array(W_BasicObject):
     def __init__(self, length=w_0):
         self._array_props_ = {}
         #self._array_props_ = []
+        print "W__ARRAY"
 
         W_BasicObject.__init__(self)
         assert isinstance(length, W_Root)

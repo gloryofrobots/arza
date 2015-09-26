@@ -167,9 +167,15 @@ def new_map():
 
 
 class Slots(object):
-    def __init__(self):
+    def __init__(self, size=0):
+        if size:
+            self._property_slots_ = [None] * size
         self._property_map_ = new_map()
-        self._property_slots_ = debug.make_sure_not_resized([])
+        self._property_slots_ = []
+
+
+    def contains(self, name):
+        return self._property_map_.contains(name)
 
     def keys(self):
         return self._property_map_.keys()
