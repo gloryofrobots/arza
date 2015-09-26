@@ -252,7 +252,7 @@ class LOAD_MEMBER(Opcode):
     def eval(self, ctx):
         w_obj = ctx.stack_pop().ToObject()
         w_name = ctx.stack_pop()
-        value = w_obj.w_get(w_name)
+        value = w_obj.get(w_name)
 
         ctx.stack_append(value)
 
@@ -530,7 +530,7 @@ class STORE_MEMBER(Opcode):
         value = ctx.stack_pop()
 
         l_obj = left.ToObject()
-        l_obj.w_put(w_name, value)
+        l_obj.put(w_name, value)
 
         ctx.stack_append(value)
 
