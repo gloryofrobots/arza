@@ -998,13 +998,13 @@ class W_Iterator(W_Root):
     def to_string(self):
         return u'<Iterator>'
 
-w_0 = W_IntNumber(0)
-
 
 class W__Array(W_BasicObject):
     _class_ = 'Array'
 
-    def __init__(self, length=w_0):
+    def __init__(self, length=None):
+        if not length:
+            length = W_IntNumber(0)
         self._array_props_ = {}
         #self._array_props_ = []
         print "W__ARRAY"
