@@ -99,8 +99,7 @@ def join(this, args):
     separator = get_arg(args, 0)
 
     o = this.ToObject()
-    len_val = o.get(u'length')
-    length = len_val.ToUInt32()
+    length = o.length()
 
     if isundefined(separator):
         sep = u','
@@ -110,7 +109,7 @@ def join(this, args):
     if length == 0:
         return u''
 
-    element0 = o.get(u'0')
+    element0 = o.get(_w(0))
     if isnull_or_undefined(element0):
         r = u''
     else:

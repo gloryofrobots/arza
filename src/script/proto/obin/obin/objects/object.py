@@ -653,7 +653,6 @@ class W__Function(W_BasicFunction):
         self._function_ = function_body
         self._scope_ = scope
         self._params_ = formal_parameter_list
-
         # 13.2 Creating Function Objects
         # 14.
         _len = len(formal_parameter_list)
@@ -733,7 +732,8 @@ class W_Arguments(W__Object):
 
         put_property(self, u'callee', _w(func))
 
-
+    def to_string(self):
+        return unicode(str(self._paramenter_map_ ))
 def make_arg_getter(name, env):
     pass
     #code = u'return %s;' % (name)

@@ -72,9 +72,6 @@ class ExecutionContext(StackMixin):
                     v = newundefined()
                 else:
                     v = args[n - 1]
-                arg_already_declared = env.has_binding(arg_name)
-                if arg_already_declared is False:
-                    env.create_binding(arg_name)
                 env.set_binding(arg_name, v)
 
         # 5.
@@ -82,10 +79,6 @@ class ExecutionContext(StackMixin):
         for fn in func_declarations:
             fo = None
             func_already_declared = env.has_binding(fn)
-            if func_already_declared is False:
-                env.create_binding(fn)
-            else:
-                pass  # see 10.5 5.e
             env.set_binding(fn, fo)
 
         arguments_already_declared = env.has_binding(u'arguments')
@@ -98,16 +91,12 @@ class ExecutionContext(StackMixin):
             names = code.params()
             args_obj = W_Arguments(func, names, arguments, env)
 
-            env.create_binding(u'arguments')  # TODO not sure if mutable binding is deletable
             env.set_binding(u'arguments', args_obj)
 
         # 8.
         var_declarations = code.variables()
         for dn in var_declarations:
-            var_already_declared = env.has_binding(dn)
-            if var_already_declared is False:
-                env.create_binding(dn)
-                env.set_binding(dn, newundefined())
+            env.set_binding(dn, newundefined())
 
     def _get_refs(self, index):
         assert index < len(self._refs_)
@@ -267,16 +256,15 @@ class CatchExecutionContext(_DynamicExecutionContext):
         self._parent_context_ = parent_context
 
         stack_size = code.estimated_stack_size()
-        #env_size = code.env_size() + 1  # neet do add one for the arguments object
+        env_size = code.env_size() + 1  # neet do add one for the arguments object
 
         _DynamicExecutionContext.__init__(self, stack_size)
 
         parent_env = parent_context.lexical_environment()
 
         from obin.runtime.lexical_environment import DeclarativeEnvironment
-        local_env = DeclarativeEnvironment(parent_env)
+        local_env = DeclarativeEnvironment(parent_env, env_size)
         local_env_rec = local_env.environment_record
-        local_env_rec.create_binding(catchparam)
         local_env_rec.set_binding(catchparam, exception_value)
 
         self._lexical_environment_ = local_env

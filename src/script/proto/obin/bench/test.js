@@ -1,3 +1,24 @@
+function operators(){
+    var z = 1 + 2;
+    z = 345.5 * 34;
+    z = 42 / 2;
+    z = 10 % 2;
+    z = 12 ^ 3;
+    z = 34 | 3;
+    z = 2233 & 123;
+    z = 2 && 0;
+    z = 2 || 0;
+    z = 4 == 5;
+    z = 4 != 5;
+    z = 45 > 3;
+    z = 45 < 4;
+    z = 45 >= 4;
+    z = 45 <= 4;
+    z = 45 >> 4;
+    z = 35 >>> 34;
+    z = 234 << 4;
+}
+
 function main(){
     var s = "abcd";
     print(s.charAt(2));
@@ -45,7 +66,7 @@ function main(){
     for(var i = 2; i < arguments.length; i++) {
         args.push(arguments[i]);
     }
-
+    print(arguments);
     func.apply(object, args);
     return object;
     }
@@ -121,26 +142,32 @@ function main(){
     };
     return A.clone();
     }
-//    var t = 1 !=0;
-//    print("t=" + t);
-//    var cow = Animal("Zorka", 2);
-//    var bug = Animal("Boris", 4);
-//    var survivor = cow.eat(bug);
-//    print(survivor.name());
-//    var cowbag = cow.fuck(bug);
-//    print("COWBUG");
-//    print(cowbag[0].name());
-//    print(cowbag[0]);
-//    print(cowbag[1].name());
-//    var i = 3;
-//    while(i-- > 0) {
-//        for(var j = 0; j < 10; j++) {
-//            var A = [];
-//            A.push(i);
-//            A.push(j);
-//            print("" + i + "," + j + " = " + A);
-//        }
-//    }
+    var t = 1 !=0;
+    print("t=" + t);
+    var cow = Animal("Zorka", 2);
+    var bug = Animal("Boris", 4);
+    var survivor = cow.eat(bug);
+    print(survivor.name());
+    var cowbag = cow.fuck(bug);
+    print("COWBUG");
+    print(cowbag[0].name());
+    print(cowbag[0]);
+    print(cowbag[1].name());
+    var i = 3;
+    while(i-- > 0) {
+        for(var j = 0; j < 10; j++) {
+            var A = [];
+            A.push(i);
+            A.push(j);
+            print("" + i + "," + j + " = " + A);
+        }
+    }
+
+try {
+   throw "Shit!"
+} catch(e) {
+    print("Error occurred:" + e);
+}
 }
 main();
 var P = {
@@ -159,11 +186,7 @@ print(this.Object);
 //}
 //print("a= " + a + " x= " + x + " y= " + y);
 //
-//try {
-//   throw "Shit!"
-//} catch(e) {
-//    print("Error occurred:" + e);
-//}
+
 //var n = 34.343434;
 //var s = "aaaaa";
 
