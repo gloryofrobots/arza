@@ -276,8 +276,8 @@ class CatchExecutionContext(_DynamicExecutionContext):
         from obin.runtime.lexical_environment import DeclarativeEnvironment
         local_env = DeclarativeEnvironment(parent_env)
         local_env_rec = local_env.environment_record
-        local_env_rec.create_binding(catchparam, True)
-        local_env_rec.set_binding(catchparam, exception_value, False)
+        local_env_rec.create_binding(catchparam)
+        local_env_rec.set_binding(catchparam, exception_value)
 
         self._lexical_environment_ = local_env
         self._variable_environment_ = local_env

@@ -57,7 +57,7 @@ def get_value(v, identifier=None):
         raise NotImplementedError('8.7.1 4.')
     else:
         base_env = v.base_env
-        from obin.runtime.environment_record import EnvironmentRecord
+        from obin.runtime.lexical_environment import EnvironmentRecord
         assert isinstance(base_env, EnvironmentRecord)
         name = v.get_referenced_name(identifier)
         return base_env.get_binding_value(name)
@@ -75,7 +75,7 @@ def put_value(v, w, identifier):
         raise NotImplementedError('8.7.2 4.')
     else:
         base_env = v.base_env
-        from obin.runtime.environment_record import EnvironmentRecord
+        from obin.runtime.lexical_environment import EnvironmentRecord
         assert isinstance(base_env, EnvironmentRecord)
         name = v.get_referenced_name(identifier)
         base_env.set_binding(name, w)
