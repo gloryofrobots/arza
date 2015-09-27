@@ -5,9 +5,6 @@ class EnvironmentRecord(object):
     def has_binding(self, identifier):
         return False
 
-    def create_binding(self, identifier):
-        raise NotImplementedError
-
     def set_binding(self, identifier, value):
         raise NotImplementedError
 
@@ -32,26 +29,15 @@ class DeclarativeEnvironmentRecord(EnvironmentRecord):
     def _get_binding(self, name):
         return self.bindings.get(name)
 
-    def _add_binding(self, name, value):
-        self.bindings.add(name, value)
-
     def _set_binding(self, name, value):
-        self.bindings.set(name, value)
+        self.bindings.add(name, value)
 
     def _del_binding(self, name):
         self.bindings.delete(name)
 
-    # 10.2.1.1.2
-    def create_binding(self, identifier):
-        from obin.objects.object_space import newundefined
-        assert identifier is not None and isinstance(identifier, unicode)
-        assert not self.has_binding(identifier)
-        self._add_binding(identifier, newundefined())
-
     # 10.2.1.1.3
     def set_binding(self, identifier, value):
         assert identifier is not None and isinstance(identifier, unicode)
-        assert self.has_binding(identifier)
         self._set_binding(identifier, value)
 
     # 10.2.1.1.4
@@ -79,15 +65,6 @@ class ObjectEnvironmentRecord(EnvironmentRecord):
         assert n is not None and isinstance(n, unicode)
         bindings = self.binding_object
         return bindings.has_property(n)
-
-    # 10.2.1.2.2
-    def create_binding(self, n):
-        from obin.objects.object_space import newundefined
-        assert n is not None and isinstance(n, unicode)
-        bindings = self.binding_object
-        assert bindings.has_property(n) is False
-
-        bindings.put(n, newundefined())
 
     # 10.2.1.2.3
     def set_binding(self, n, v):
