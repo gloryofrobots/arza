@@ -46,7 +46,7 @@ var make_parse = function () {
         token.error("Expected '" + ids + "'.");
     }
 
-    var advance = function (ids) {
+    var advance = function (ids, skip) {
         var a, o, t, v;
 
         checkId(ids);
@@ -57,8 +57,16 @@ var make_parse = function () {
         }
         t = tokens[token_nr];
         token_nr += 1;
+
         v = t.value;
         a = t.type;
+        if(skip) {
+            console.log("advance", skip, a, v)
+            if (a == skip) {
+
+                return advance(ids, skip);
+            }
+        }
         if (a === "operator" || a === "name" || a === "(endline)") {
             o = symbol_table[v];
             if (!o) {
@@ -97,16 +105,16 @@ var make_parse = function () {
     var expression = function (rbp) {
         var left;
         var t = token;
-        console.log("****************")
-        console.log("rbp: ", rbp)
-        console.log("previous", t.value);
+        // console.log("****************")
+        // console.log("rbp: ", rbp)
+        // console.log("previous", t.value);
         advance();
-        console.log("current", token.value, token.lbp);
+        // console.log("current", token.value, token.lbp);
         left = t.nud();
-        console.log("left", left.value);
+        // console.log("left", left.value);
         //console.log("expression:", rbp, t.rbp, t.value, token.value, token.rbp, token.lbp);
         while (rbp < token.lbp) {
-            console.log(token.lbp);
+            // console.log(token.lbp);
             t = token;
             advance();
             //console.log("expression2:",   token.value, token.rbp, token.lbp);
@@ -153,13 +161,9 @@ var make_parse = function () {
 
             s = statement();
             if (s) {
-                //console.log("s", s);
                 if(s) {
                     a.push(s);
                 }
-                // if(s.id != "(newline)"){
-                //     a.push(s);
-                // }
             }
         }
         var result =  a.length === 0 ? null : a.length === 1 ? a[0] : a;
@@ -343,39 +347,7 @@ var make_parse = function () {
         return this;
     });
 
-    var tuplemode = false;
-
-    // infix(",", 5, function (left) {
-    //     if(tuplemode) {
-    //         this.arity = "unary";
-    //         this.first = left;
-    //         console.log("token tuplemode:", token);
-    //         return this;
-    //     }
-    //     var a = [left];
-    //     this.first = a;
-    //     this.arity = "unary";
-    //     console.log("token:", token)
-    //     tuplemode = true;
-    //     while(true) {
-    //         var e = expression(0);
-
-    //         var t = tokens[token_nr];
-
-    //         if(e.id == ',') {
-    //             a.push(e.first);
-    //             console.log("e:", a, e, t, token);
-    //         } else {
-    //             console.log("breaking!");
-    //             a.push(e);
-    //             tuplemode = false;
-    //             console.log("e:", a, e, t, token);
-    //             break;
-    //         }
-    //     }
-    //     return this;
-    // });
-    //infix(",", 20);
+   
     infix("[", 80, function (left) {
         this.first = left;
         this.second = expression(0);
@@ -480,20 +452,7 @@ var make_parse = function () {
     });
 
 
-   prefix("cell", function () {
-        var a = [],t;
-        if (token.arity === "name") {
-            define(token);
-            this.name = token.value;
-            advance();
-        }
-        this.first = statements(["end"]);
-        advance("end");
-        this.arity = "cell";
-        return this;
-    });
-
-   prefix("fun", function () {
+   prefix("fn", function () {
         var a = [],t;
         if (token.arity === "name") {
             define(token);
@@ -552,67 +511,53 @@ var make_parse = function () {
         }
         this.first = a;
         advance(")");
-
-        var ending_token = null;
-        if (token.id == "(endline)") {
-            ending_token = "end";
-        } else if(token.id == "{") {
-            ending_token = "}";
-        } else {
-            token.error("Wrong function statement expected either (endline) or { in the same line as fun expression")
-        }
-
-        advance();
+        advance("{");
         this.second = statements();
-        advance(ending_token);
+        advance("}");
         this.arity = "function";
         return this;
     });
 
 
     prefix("do", function () {
+        advance("{");
         this.first = statements();
-        advance("end");
+        advance("}");
         this.arity = "block";
         return this;
     });
 
     prefix("if", function () {
+
         this.branches = []
         var branch = {};
         branch.first = expression(0);
-
-        if (token.id === "(endline)" || token.id === "then") {
-            advance(["then", "(endline)"]);
-            branch.second = statements(["else","elif", "end"]);
-            this.branches.push(branch);
-        } else {
-            token.error("wrong if statement");
-        }
+        advance("{");
+        branch.second = statements(["}"]);
+        this.branches.push(branch);
+        advance("}");
 
         while(token.id == "elif") {
             branch = {};
             advance("elif");
             branch.first = expression(0);
-            if (token.id === "(endline)" || token.id === "then") {
-                advance(["then", "(endline)"]);
-                branch.second = statements(["else","elif", "end"]);
-                this.branches.push(branch);
-            }
-            else {
-                token.error("wrong elif ending");
-            }
-        }
-
-        branch = {};
-        if (token.id === "else") {
-            advance("else");
-            branch.first = null;
-            branch.second = statements(["end"]);
+            advance("{");
+            branch.second = statements(["}"]);
+            advance("}");
             this.branches.push(branch);
         }
 
-        advance("end");
+        branch = {};
+
+        if (token.id === "else") {
+            advance("else");
+            advance("{");
+            branch.first = null;
+            branch.second = statements(["}"]);
+            advance("}");
+            this.branches.push(branch);
+        }
+
         this.arity = "if";
         return this;
     });
@@ -659,15 +604,7 @@ var make_parse = function () {
                 advance(",");
             }
         }
-        while(true) {
-            if(token.arity == "(endline)") {
-                advance();
-                continue;
-            }
-            break;
-
-        }
-        advance("}");
+        advance("}", "(endline)");
         this.first = a;
         this.arity = "unary";
         return this;
@@ -707,17 +644,37 @@ var make_parse = function () {
 
     stmt(";", function () {
         return undefined;
-
     });
 
     stmt("while", function () {
-        advance("(");
         this.first = expression(0);
-        advance(")");
-        this.second = block();
+        advance("{");
+        this.second = statements(["}"]);
+        advance("}");
         this.arity = "statement";
         return this;
     });
+
+  stmt("for", function () {
+        this.first = [expression(0)]
+        while (token.id == ",") {
+            advance();
+            if(token.arity != "name" && token.arity != "literal") {
+                token.error("expected name in for loop");
+            }
+
+            this.first.push(expression(0));
+        }
+        advance("in");
+        this.second = expression(0);
+
+        advance("{");
+        this.third = statements(["}"]);
+        advance("}");
+        this.arity = "for";
+        return this;
+    });
+
 
     return function (source) {
         tokens = source.tokens(':=<>!+-*&|/%^', ':=<>&|');
