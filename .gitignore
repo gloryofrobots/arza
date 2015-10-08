@@ -5,7 +5,9 @@ CMakeFiles/*
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+.idea
 
+node_modules
 # Object files
 *.o
 *.ko

@@ -1,0 +1,444 @@
+[
+  {
+    "from": 0,
+    "line": 1,
+    "to": 2,
+    "value": "fn",
+    "id": "fn",
+    "arity": "function",
+    "name": "floor",
+    "first": [
+      {
+        "arity": "name",
+        "value": "x",
+        "id": "x"
+      },
+      {
+        "arity": "name",
+        "value": "y",
+        "id": "y"
+      },
+      {
+        "arity": "name",
+        "value": "z",
+        "id": "z"
+      }
+    ],
+    "second": null
+  },
+  {
+    "from": 28,
+    "line": 5,
+    "to": 29,
+    "value": "=",
+    "id": "=",
+    "arity": "binary",
+    "first": {
+      "from": 22,
+      "line": 5,
+      "to": 27,
+      "value": "floor",
+      "id": "floor",
+      "arity": "name"
+    },
+    "second": {
+      "from": 53,
+      "line": 7,
+      "to": 54,
+      "value": "+",
+      "id": "+",
+      "arity": "binary",
+      "first": {
+        "from": 30,
+        "line": 5,
+        "to": 32,
+        "value": "fn",
+        "id": "fn",
+        "arity": "function",
+        "name": "ceil",
+        "first": [
+          {
+            "arity": "name",
+            "value": "t",
+            "id": "t"
+          },
+          {
+            "arity": "name",
+            "value": "y",
+            "id": "y"
+          },
+          {
+            "id": "::",
+            "value": [
+              {
+                "arity": "name",
+                "value": "u",
+                "id": "u"
+              },
+              {
+                "from": 45,
+                "line": 5,
+                "to": 46,
+                "value": "g",
+                "id": "g",
+                "arity": "name"
+              }
+            ]
+          }
+        ],
+        "second": null
+      },
+      "second": {
+        "from": 55,
+        "line": 7,
+        "to": 56,
+        "value": 2,
+        "id": 2,
+        "arity": "literal"
+      }
+    },
+    "assignment": true
+  },
+  {
+    "from": 61,
+    "line": 9,
+    "to": 62,
+    "value": "=",
+    "id": "=",
+    "arity": "binary",
+    "first": {
+      "from": 59,
+      "line": 9,
+      "to": 60,
+      "value": "t",
+      "id": "t",
+      "arity": "name"
+    },
+    "second": {
+      "from": 63,
+      "line": 9,
+      "to": 65,
+      "value": "do",
+      "id": "do",
+      "arity": "block",
+      "first": {
+        "from": 78,
+        "line": 10,
+        "to": 79,
+        "value": "+",
+        "id": "+",
+        "arity": "binary",
+        "first": {
+          "from": 74,
+          "line": 10,
+          "to": 75,
+          "value": "+",
+          "id": "+",
+          "arity": "binary",
+          "first": {
+            "from": 72,
+            "line": 10,
+            "to": 73,
+            "value": 1,
+            "id": 1,
+            "arity": "literal"
+          },
+          "second": {
+            "from": 76,
+            "line": 10,
+            "to": 77,
+            "value": 3,
+            "id": 3,
+            "arity": "literal"
+          }
+        },
+        "second": {
+          "from": 80,
+          "line": 10,
+          "to": 81,
+          "value": 4,
+          "id": 4,
+          "arity": "literal"
+        }
+      }
+    },
+    "assignment": true
+  },
+  {
+    "from": 86,
+    "line": 13,
+    "to": 88,
+    "value": "if",
+    "id": "if",
+    "arity": "if",
+    "branches": [
+      {
+        "first": {
+          "from": 91,
+          "line": 13,
+          "to": 92,
+          "value": ">",
+          "id": ">",
+          "arity": "binary",
+          "first": {
+            "from": 89,
+            "line": 13,
+            "to": 90,
+            "value": "x",
+            "id": "x",
+            "arity": "name"
+          },
+          "second": {
+            "from": 93,
+            "line": 13,
+            "to": 95,
+            "value": 10,
+            "id": 10,
+            "arity": "literal"
+          }
+        },
+        "second": {
+          "from": 107,
+          "line": 14,
+          "to": 108,
+          "value": "(",
+          "id": "(",
+          "arity": "binary",
+          "first": {
+            "from": 102,
+            "line": 14,
+            "to": 107,
+            "value": "print",
+            "id": "print",
+            "arity": "name"
+          },
+          "second": [
+            {
+              "from": 108,
+              "line": 14,
+              "to": 109,
+              "value": "x",
+              "id": "x",
+              "arity": "name"
+            },
+            {
+              "from": 110,
+              "line": 14,
+              "to": 112,
+              "value": 30,
+              "id": 30,
+              "arity": "literal"
+            }
+          ]
+        }
+      },
+      {
+        "first": {
+          "from": 124,
+          "line": 15,
+          "to": 125,
+          "value": "<",
+          "id": "<",
+          "arity": "binary",
+          "first": {
+            "from": 122,
+            "line": 15,
+            "to": 123,
+            "value": "x",
+            "id": "x",
+            "arity": "name"
+          },
+          "second": {
+            "from": 126,
+            "line": 15,
+            "to": 128,
+            "value": 20,
+            "id": 20,
+            "arity": "literal"
+          }
+        },
+        "second": {
+          "from": 140,
+          "line": 16,
+          "to": 141,
+          "value": "(",
+          "id": "(",
+          "arity": "binary",
+          "first": {
+            "from": 135,
+            "line": 16,
+            "to": 140,
+            "value": "print",
+            "id": "print",
+            "arity": "name"
+          },
+          "second": [
+            {
+              "from": 141,
+              "line": 16,
+              "to": 147,
+              "value": "less",
+              "id": "less",
+              "arity": "literal"
+            }
+          ]
+        }
+      },
+      {
+        "first": null,
+        "second": {
+          "from": 168,
+          "line": 18,
+          "to": 169,
+          "value": "(",
+          "id": "(",
+          "arity": "binary",
+          "first": {
+            "from": 163,
+            "line": 18,
+            "to": 168,
+            "value": "print",
+            "id": "print",
+            "arity": "name"
+          },
+          "second": [
+            {
+              "from": 169,
+              "line": 18,
+              "to": 178,
+              "value": "unknown",
+              "id": "unknown",
+              "arity": "literal"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "from": 184,
+    "line": 21,
+    "to": 189,
+    "value": "while",
+    "id": "while",
+    "arity": "statement",
+    "first": {
+      "from": 190,
+      "line": 21,
+      "to": 191,
+      "value": "z",
+      "id": "z",
+      "arity": "name"
+    },
+    "second": {
+      "from": 203,
+      "line": 22,
+      "to": 204,
+      "value": "(",
+      "id": "(",
+      "arity": "binary",
+      "first": {
+        "from": 198,
+        "line": 22,
+        "to": 203,
+        "value": "print",
+        "id": "print",
+        "arity": "name"
+      },
+      "second": [
+        {
+          "from": 204,
+          "line": 22,
+          "to": 205,
+          "value": "z",
+          "id": "z",
+          "arity": "name"
+        }
+      ]
+    }
+  },
+  {
+    "from": 211,
+    "line": 25,
+    "to": 214,
+    "value": "for",
+    "id": "for",
+    "arity": "for",
+    "first": [
+      {
+        "from": 215,
+        "line": 25,
+        "to": 216,
+        "value": "x",
+        "id": "x",
+        "arity": "name"
+      },
+      {
+        "from": 217,
+        "line": 25,
+        "to": 218,
+        "value": "y",
+        "id": "y",
+        "arity": "name"
+      },
+      {
+        "from": 219,
+        "line": 25,
+        "to": 220,
+        "value": "t",
+        "id": "t",
+        "arity": "name"
+      }
+    ],
+    "second": {
+      "from": 224,
+      "line": 25,
+      "to": 228,
+      "value": "data",
+      "id": "data",
+      "arity": "name"
+    },
+    "third": {
+      "from": 240,
+      "line": 26,
+      "to": 241,
+      "value": "(",
+      "id": "(",
+      "arity": "binary",
+      "first": {
+        "from": 235,
+        "line": 26,
+        "to": 240,
+        "value": "print",
+        "id": "print",
+        "arity": "name"
+      },
+      "second": [
+        {
+          "from": 243,
+          "line": 26,
+          "to": 244,
+          "value": "+",
+          "id": "+",
+          "arity": "binary",
+          "first": {
+            "from": 241,
+            "line": 26,
+            "to": 242,
+            "value": "x",
+            "id": "x",
+            "arity": "name"
+          },
+          "second": {
+            "from": 245,
+            "line": 26,
+            "to": 246,
+            "value": "y",
+            "id": "y",
+            "arity": "name"
+          }
+        }
+      ]
+    }
+  }
+]

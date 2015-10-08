@@ -1,0 +1,27 @@
+fn floor(x,y,z) {
+
+}
+
+floor = fn ceil(t,y,u::g) {
+
+} + 2;
+
+t = do {
+    1 + 3 + 4;
+}
+
+if x > 10 {
+    print(x,30);
+} elif x < 20 {
+    print("less");
+} else {
+    print("unknown");
+}
+
+while z {
+    print(z);
+}
+
+for x,y,t in data {
+    print(x + y);
+}

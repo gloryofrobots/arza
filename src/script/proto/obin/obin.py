@@ -13,6 +13,8 @@ from obin.runtime.exception import JsException
 
 def main(argv):
     opts, files = parse_args(argv)
+    from obin.compile.parse import parse
+    parse("x = 1;")
 
     try:
         run(files, opts)
@@ -22,9 +24,9 @@ def main(argv):
     return 0
 
 
+
 def run(files, opts):
     from obin.runtime.interpreter import Interpreter, load_file
-
     interactive = len(files) == 0
     inspect = opts.get('inspect', False)
 
