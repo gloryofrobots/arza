@@ -148,7 +148,7 @@ class _DynamicExecutionContext(ExecutionContext):
             self._dyn_refs_ += ([None] * (1 + index - len(self._dyn_refs_)))
 
 
-class GlobalExecutionContext(_DynamicExecutionContext):
+class ObjectExecutionContext(_DynamicExecutionContext):
     def __init__(self, code, global_object):
         stack_size = code.estimated_stack_size()
 

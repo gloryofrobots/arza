@@ -1,5 +1,5 @@
 from rpython.rlib.streamio import open_file_as_stream
-from obin.runtime.scheduler import Scheduler
+from obin.runtime.machine import Machine
 
 def load_file(filename):
     f = open_file_as_stream(str(filename))
@@ -15,14 +15,17 @@ class InterpreterConfig(object):
 class Interpreter(object):
     """Creates a js interpreter"""
     def __init__(self, config={}):
-        from obin.objects.object import W_GlobalObject
+        from obin.objects.object import W_ModuleObject
         from obin.objects.object_space import object_space
         import obin.builtins.interpreter
 
-        self.scheduler = Scheduler()
+        self.scheduler = Machine()
 
         self.config = InterpreterConfig(config)
-        self.global_object = W_GlobalObject()
+        self.global_object = W_ModuleObject()
+        self.modules = []
+
+
         object_space.global_object = self.global_object
         object_space.interpreter = self
 
@@ -30,6 +33,10 @@ class Interpreter(object):
         obin.builtins.interpreter.setup_builtins(self.global_object)
 
         object_space.assign_proto(self.global_object)
+
+    def load_module(self, filename):
+
+        pass
 
     def run_ast(self, ast):
         symbol_map = ast.symbol_map
@@ -52,9 +59,9 @@ class Interpreter(object):
         c = GlobalRoutine(code)
 
         from obin.objects.object_space import object_space
-        from obin.runtime.execution_context import GlobalExecutionContext
+        from obin.runtime.execution_context import ObjectExecutionContext
 
-        ctx = GlobalExecutionContext(c, self.global_object)
+        ctx = ObjectExecutionContext(c, self.global_object)
         object_space.global_context = ctx
 
         result = c.run(ctx)

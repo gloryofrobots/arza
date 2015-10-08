@@ -13,10 +13,7 @@ class Reference(object):
     def get_base(self):
         return self.base_value
 
-    # XXX passing identifier is a obscure hack but cfbolz sayz so!
-    def get_referenced_name(self, identifier=None):
-        if identifier is not None:
-            return identifier
+    def get_referenced_name(self):
         return self.referenced
 
     def has_primitive_base(self):
@@ -37,45 +34,40 @@ class Reference(object):
             return True
         return False
 
-    def get_value(self, identifier=None):
-        return get_value(self, identifier)
+    def get_value(self):
+        return get_value(self)
 
-    def put_value(self, value, identifier=None):
-        put_value(self, value, identifier)
+    def put_value(self, value):
+        put_value(self, value)
 
 
 # 8.7.1
-def get_value(v, identifier=None):
+def get_value(v):
     if not isinstance(v, Reference):
         return v
 
     if v.is_unresolvable_reference():
         referenced = v.get_referenced_name()
         raise JsReferenceError(referenced)
-
-    if v.is_property_reference():
-        raise NotImplementedError('8.7.1 4.')
     else:
         base_env = v.base_env
         from obin.runtime.lexical_environment import EnvironmentRecord
         assert isinstance(base_env, EnvironmentRecord)
-        name = v.get_referenced_name(identifier)
+        name = v.get_referenced_name()
         return base_env.get_binding_value(name)
 
 
 # 8.7.2
-def put_value(v, w, identifier):
+def put_value(v, w):
     if not isinstance(v, Reference):
         raise JsReferenceError('unresolvable reference')
 
     if v.is_unresolvable_reference():
         referenced = v.get_referenced_name()
         raise JsReferenceError(referenced)
-    elif v.is_property_reference():
-        raise NotImplementedError('8.7.2 4.')
     else:
         base_env = v.base_env
         from obin.runtime.lexical_environment import EnvironmentRecord
         assert isinstance(base_env, EnvironmentRecord)
-        name = v.get_referenced_name(identifier)
+        name = v.get_referenced_name()
         base_env.set_binding(name, w)

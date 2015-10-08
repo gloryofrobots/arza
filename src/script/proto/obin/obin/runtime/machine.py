@@ -8,7 +8,7 @@ class FiberEntry(object):
         self.previous = None
 
 
-class Scheduler(object):
+class Machine(object):
     def __init__(self):
         self.head = None
         self.current = None

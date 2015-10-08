@@ -1,6 +1,6 @@
 from obin.objects.object_space import _w
 from obin.compile.code import Code
-from obin.runtime.execution_context import ExecutionContext, FunctionExecutionContext, GlobalExecutionContext, EvalExecutionContext
+from obin.runtime.execution_context import ExecutionContext, FunctionExecutionContext, ObjectExecutionContext, EvalExecutionContext
 from obin.runtime.routine import FunctionRoutine, BytecodeRoutine, NativeRoutine, GlobalRoutine, EvalRoutine
 from obin.runtime.lexical_environment import DeclarativeEnvironment
 from obin.compile.astbuilder import parse_to_ast, SymbolMap
@@ -15,8 +15,8 @@ class FakeInterpreter(object):
 from obin.objects.object_space import object_space
 object_space.interpreter = FakeInterpreter()
 
-from obin.objects.object import W_GlobalObject
-object_space.global_object = W_GlobalObject()
+from obin.objects.object import W_ModuleObject
+object_space.global_object = W_ModuleObject()
 
 
 class TestJsFunctionAndStuff(object):
@@ -194,7 +194,7 @@ class TestJsFunctionAndStuff(object):
 
         w_global = W_BasicObject()
 
-        ctx = GlobalExecutionContext(f, w_global)
+        ctx = ObjectExecutionContext(f, w_global)
         res = f.run(ctx)
 
         lex_env = ctx.variable_environment()
@@ -220,7 +220,7 @@ class TestJsFunctionAndStuff(object):
         f = GlobalRoutine(code)
 
         w_global = W_BasicObject()
-        ctx = GlobalExecutionContext(f, w_global)
+        ctx = ObjectExecutionContext(f, w_global)
         res = f.run(ctx)
 
         lex_env = ctx.variable_environment()
@@ -247,7 +247,7 @@ class TestJsFunctionAndStuff(object):
         f = GlobalRoutine(code)
         w_global = W_BasicObject()
 
-        ctx = GlobalExecutionContext(f, w_global)
+        ctx = ObjectExecutionContext(f, w_global)
         res = f.run(ctx)
 
         lex_env = ctx.variable_environment()
@@ -273,7 +273,7 @@ class TestJsFunctionAndStuff(object):
         f = GlobalRoutine(code)
 
         w_global = W_BasicObject()
-        ctx = GlobalExecutionContext(f, w_global)
+        ctx = ObjectExecutionContext(f, w_global)
         res = f.run(ctx)
 
         lex_env = ctx.variable_environment()
@@ -303,7 +303,7 @@ class TestJsFunctionAndStuff(object):
         f = GlobalRoutine(code)
 
         w_global = W_BasicObject()
-        ctx = GlobalExecutionContext(f, w_global)
+        ctx = ObjectExecutionContext(f, w_global)
         res = f.run(ctx)
 
         assert res.value == _w(55)
@@ -341,7 +341,7 @@ class TestJsFunctionAndStuff(object):
         code = ast_to_bytecode(ast, symbol_map)
 
         c = GlobalRoutine(code)
-        ctx = GlobalExecutionContext(c, w_global)
+        ctx = ObjectExecutionContext(c, w_global)
         res = c.run(ctx)
 
         assert res.value == _w(42)
@@ -407,7 +407,7 @@ class TestJsFunctionAndStuff(object):
 
         global_code = GlobalRoutine(code)
         global_object = W_BasicObject()
-        global_ctx = GlobalExecutionContext(global_code, global_object)
+        global_ctx = ObjectExecutionContext(global_code, global_object)
 
         src = u'''
         a = 1;
@@ -433,6 +433,6 @@ class TestJsFunctionAndStuff(object):
 
         w_global = W_BasicObject()
         object_space.global_object = w_global
-        ctx = GlobalExecutionContext(c, w_global)
+        ctx = ObjectExecutionContext(c, w_global)
         res = c.run(ctx)
         return res.value

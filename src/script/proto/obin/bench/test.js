@@ -46,13 +46,13 @@ function main(){
     };
 
     function Robot(id) {
-    this.id = id;
-    this.launchRockets = function() {
-        this.destroyWhosLeft = function() {
-            print("You all gonna die");
+        this.id = id;
+        this.launchRockets = function() {
+            this.destroyWhosLeft = function() {
+                print("You all gonna die " + this.id);
+            };
+            print("BDUSCH!!!" + this.id);
         };
-        print("BDUSCH!!!" + this.id);
-    };
     }
 
     function blueprint(func, object) {
@@ -66,7 +66,6 @@ function main(){
     for(var i = 2; i < arguments.length; i++) {
         args.push(arguments[i]);
     }
-    print(arguments);
     func.apply(object, args);
     return object;
     }

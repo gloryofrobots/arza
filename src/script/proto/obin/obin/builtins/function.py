@@ -43,18 +43,16 @@ def js_apply(ctx):
 
     this_arg = get_arg(args, 0)
     arg_array = get_arg(args, 1)
-
     if isnull_or_undefined(arg_array):
         res = func.Call(args=[], this=this_arg, calling_context=ctx)
         compl = NormalCompletion(value=_w(res))
         return compl
 
-    from obin.objects.object import W_BasicObject
-    if not isinstance(arg_array, W_BasicObject):
-        raise JsTypeError(u'')
+    from obin.objects.object import W__Array
+    if not isinstance(arg_array, W__Array):
+        raise JsTypeError(u'W__Array expected')
 
-    length = arg_array.get(u'length')
-    n = length.ToUInt32()
+    n = arg_array.length()
     arg_list = []
     index = 0
     while index < n:

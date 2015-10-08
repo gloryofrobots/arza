@@ -14,7 +14,7 @@ from obin.runtime.exception import JsException
 def main(argv):
     opts, files = parse_args(argv)
     from obin.compile.parse import parse
-    parse("x = 1;")
+    # parse("x = 1;")
 
     try:
         run(files, opts)

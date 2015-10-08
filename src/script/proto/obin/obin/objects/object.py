@@ -588,7 +588,7 @@ class W__Object(W_BasicObject):
     pass
 
 
-class W_GlobalObject(W__Object):
+class W_ModuleObject(W__Object):
     _class_ = 'global'
 
 
