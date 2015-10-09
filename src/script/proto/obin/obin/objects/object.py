@@ -677,10 +677,8 @@ class W__Function(W_BasicFunction):
     def formal_parameters(self):
         return self._params_
 
-    def Call(self, args=[], this=None, calling_context=None):
+    def create_routine(self, args=[], this=None, calling_context=None):
         from obin.runtime.execution_context import FunctionExecutionContext
-        from obin.runtime.completion import Completion
-
         code = self.code()
         jit.promote(code)
         scope = self.scope()
@@ -691,11 +689,15 @@ class W__Function(W_BasicFunction):
                                        scope=scope,
                                        w_func=self)
         ctx._calling_context_ = calling_context
+        code.set_context(ctx)
+        return code
 
-        res = code.run(ctx)
+    def Call(self, args=[], this=None, calling_context=None):
+        assert calling_context is not None
 
-        assert isinstance(res, Completion)
-        return res.value
+        code = self.create_routine(args, this, calling_context)
+        calling_context.routine().call_routine(code)
+
 
     def scope(self):
         return self._scope_

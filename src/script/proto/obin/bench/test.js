@@ -1,3 +1,10 @@
+function f(x, y){
+    return x + y;
+}
+
+print(f(2,3));
+
+/*
 function operators(){
     var z = 1 + 2;
     z = 345.5 * 34;

@@ -19,7 +19,7 @@ class Interpreter(object):
         from obin.objects.object_space import object_space
         import obin.builtins.interpreter
 
-        self.scheduler = Machine()
+        self.machine = Machine()
 
         self.config = InterpreterConfig(config)
         self.global_object = W_ModuleObject()
@@ -52,7 +52,7 @@ class Interpreter(object):
         return self.run_ast(ast)
 
     def run(self, code, interactive=False):
-        from obin.runtime.routine import GlobalRoutine, routine_contexts
+        from obin.runtime.routine import GlobalRoutine
 
         from obin.compile.code import Code
         assert isinstance(code, Code)
@@ -63,7 +63,8 @@ class Interpreter(object):
 
         ctx = ObjectExecutionContext(c, self.global_object)
         object_space.global_context = ctx
+        c.set_context(ctx)
+        self.machine.add_routine(c)
 
-        result = c.run(ctx)
-        #print routine_contexts
-        return result.value
+        self.machine.run()
+        return self.machine.result

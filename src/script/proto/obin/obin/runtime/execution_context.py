@@ -10,11 +10,15 @@ class ExecutionContext(StackMixin):
 
     def __init__(self, stack_size=1, refs_size=1):
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
+        self._code_ = None
         self._lexical_environment_ = None
         self._variable_environment_ = None
         self._this_binding_ = None
         self._refs_ = [None] * refs_size
         self._init_stack_(stack_size)
+
+    def routine(self):
+        return self._code_
 
     def stack_append(self, value):
         self._stack_append(value)

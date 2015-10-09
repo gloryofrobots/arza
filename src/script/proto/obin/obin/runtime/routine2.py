@@ -22,7 +22,6 @@ class Routine(object):
         SUSPENDED = 3
 
     def __init__(self):
-        super(Routine, self).__init__()
         self.fiber = None
         self.__continuation = None
         self.__state = Routine.State.IDLE
@@ -32,9 +31,6 @@ class Routine(object):
         self.ctx = None
         self.__signal = None
         self.__signal_handlers = {}
-
-    def set_context(self, ctx):
-        self.ctx = ctx
 
     def add_signal_handler(self, signal, handler):
         self.__signal_handlers[signal] = handler
@@ -130,11 +126,14 @@ class Routine(object):
         raise NotImplementedError()
 
 
-class BaseRoutine(Routine):
+class BaseRoutine(object):
     _settled_ = True
     eval_code = False
     function_code = False
     configurable_bindings = False
+
+    def run(self, ctx):
+        raise NotImplementedError
 
     def estimated_stack_size(self):
         return 2
@@ -177,14 +176,18 @@ class NativeRoutine(BaseRoutine):
     def name(self):
         return self._name_
 
-    def _execute(self):
+    def run(self, ctx):
         #print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
 
-        args = self.ctx.argv()
-        this = self.ctx.this_binding()
+        from obin.runtime.completion import ReturnCompletion
+
+        args = ctx.argv()
+        this = ctx.this_binding()
+        assert isinstance(self, NativeRoutine)
         res = self._function_(this, args)
         w_res = _w(res)
-        self.complete(w_res)
+        compl = ReturnCompletion(value=w_res)
+        return compl
 
     def to_string(self):
         name = self.name()
@@ -198,20 +201,22 @@ class NativeIntimateRoutine(NativeRoutine):
     _immutable_fields_ = ['_name_', '_intimate_function_']
 
     def __init__(self, function, name=u''):
-        super(NativeIntimateRoutine, self).__init__(function, name)
         assert isinstance(name, unicode)
         self._name_ = name
         self._intimate_function_ = function
 
-    def _execute(self):
-        result = self._intimate_function_(self.ctx)
-        self.complete(result)
+    def run(self, ctx):
+        # print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
+        from obin.runtime.completion import Completion
+        compl = self._intimate_function_(ctx)
+        assert isinstance(compl, Completion)
+        return compl
+
 
 class BytecodeRoutine(BaseRoutine):
     _immutable_fields_ = ['_js_code_', '_stack_size_', '_symbol_size_']
 
     def __init__(self, js_code):
-        super(BytecodeRoutine, self).__init__()
         from obin.compile.code import Code
         assert isinstance(js_code, Code)
         self._js_code_ = js_code
@@ -221,19 +226,66 @@ class BytecodeRoutine(BaseRoutine):
         self.pc = 0
         self.result = None
 
+
+    def __run(self, ctx):
+        # print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
+        from obin.objects.object_space import object_space
+        debug = object_space.interpreter.config.debug
+        from obin.runtime.completion import NormalCompletion, is_return_completion, is_empty_completion, is_completion
+        from obin.runtime.opcodes import BaseJump
+        code = self._js_code_
+
+        if code.opcode_count() == 0:
+            return NormalCompletion()
+
+        if debug:
+            print('start running %s' % (str(self)))
+
+        self.pc = 0
+        self.result = None
+        while True:
+            if self.pc >= code.opcode_count():
+                break
+            opcode = code.get_opcode(self.pc)
+            self.result = opcode.eval(ctx)
+
+            if debug:
+                d = u'%s\t%s' % (unicode(str(self.pc)), unicode(str(opcode)))
+                #d = u'%s' % (unicode(str(pc)))
+                #d = u'%3d %25s %s %s' % (pc, unicode(opcode), unicode([unicode(s) for s in ctx._stack_]), unicode(result))
+                print(d)
+
+            if is_return_completion(self.result):
+                break
+            elif not is_completion(self.result):
+                self.result = NormalCompletion()
+
+            if isinstance(opcode, BaseJump):
+                new_pc = opcode.do_jump(ctx, self.pc)
+                self.pc = new_pc
+                continue
+            else:
+                self.pc += 1
+
+        if self.result is None or is_empty_completion(self.result):
+            self.result = NormalCompletion(value=ctx.stack_top())
+
+        return self.result
+
     def code(self):
         return self._js_code_
 
-    def _execute(self):
+    def _execute(self, ctx):
         from obin.objects.object_space import object_space
         debug = object_space.interpreter.config.debug
+        from obin.runtime.completion import NormalCompletion, is_return_completion, is_empty_completion, is_completion
         from obin.runtime.opcodes import BaseJump
 
         if self.pc >= self.code().opcode_count():
-            self.complete(_w(None))
+            return
 
         opcode = self.code().get_opcode(self.pc)
-        self.result = opcode.eval(self.ctx)
+        self.result = opcode.eval(ctx)
         #print "result", self.result
         if debug:
             d = u'%s\t%s' % (unicode(str(self.pc)), unicode(str(opcode)))
@@ -242,16 +294,40 @@ class BytecodeRoutine(BaseRoutine):
             print(d)
         if isinstance(opcode, BaseJump):
             #print "JUMP"
-            new_pc = opcode.do_jump(self.ctx, self.pc)
+            new_pc = opcode.do_jump(ctx, self.pc)
             self.pc = new_pc
-            self._execute()
+            self._execute(ctx)
         else:
             self.pc += 1
 
-        if self.pc >= self.code().opcode_count():
-            if self.result is None:
-                self.result = self.ctx.stack_pop()
-            self.complete(self.result)
+    def run(self, ctx):
+        from obin.objects.object_space import object_space
+        debug = object_space.interpreter.config.debug
+        from obin.runtime.completion import NormalCompletion, is_return_completion, is_empty_completion, is_completion
+        code = self._js_code_
+
+        if code.opcode_count() == 0:
+            return NormalCompletion()
+
+        if debug:
+            print('start running %s' % (str(self)))
+
+        self.pc = 0
+        self.result = None
+
+        while True:
+            if self.pc >= code.opcode_count():
+                break
+
+            self._execute(ctx)
+
+            if is_return_completion(self.result):
+                break
+
+        if self.result is None or is_empty_completion(self.result):
+            self.result = NormalCompletion(value=ctx.stack_top())
+
+        return self.result
 
     def estimated_stack_size(self):
         return self._stack_size_

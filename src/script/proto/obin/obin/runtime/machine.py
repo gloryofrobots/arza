@@ -7,6 +7,13 @@ class FiberEntry(object):
         self.next = None
         self.previous = None
 
+def run_routine_for_result(routine, ctx=None):
+    if ctx:
+        routine.set_context(ctx)
+    m = Machine()
+    m.add_routine(routine)
+    m.run()
+    return m.result
 
 class Machine(object):
     def __init__(self):
@@ -15,6 +22,7 @@ class Machine(object):
         self.__enabled = False
         # add first fiber
         self.add_fiber(Fiber())
+        self.result = None
 
     def enabled(self):
         return self.__enabled
@@ -23,7 +31,6 @@ class Machine(object):
         if self.__enabled is True:
             return
         self.__enabled = True
-        self.run()
 
     def disable(self):
         self.__enabled = False
@@ -38,7 +45,14 @@ class Machine(object):
         self.head.previous = entry
         self.head = entry
 
+    def add_routine(self, routine):
+        from fiber import Fiber
+        f = Fiber()
+        f.call_routine(routine)
+        self.add_fiber(f)
+
     def run(self):
+        self.enable()
         while True:
             if not self.__enabled:
                 break
@@ -78,6 +92,7 @@ class Machine(object):
     def kill_fiber(self, entry):
         previous = entry.previous
         next = entry.next
+        self.result = entry.fiber.result()
 
         if previous is not None and next is not None:
             previous.next = next

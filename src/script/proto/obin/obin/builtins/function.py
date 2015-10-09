@@ -1,6 +1,5 @@
 from obin.runtime.exception import JsTypeError
 from obin.builtins import get_arg
-from obin.runtime.completion import NormalCompletion
 from obin.objects.object_space import w_return, _w
 
 
@@ -30,13 +29,15 @@ def js_call(ctx):
     this_arg = get_arg(args, 0)
     arg_list = args[1:]
 
-    res = func.Call(args=arg_list, this=this_arg, calling_context=ctx)
-    compl = NormalCompletion(value=_w(res))
-    return compl
+    routine = func.create_routine(args=arg_list, this=this_arg, calling_context=ctx)
+    from obin.runtime.machine import run_routine_for_result
+    result = run_routine_for_result(routine)
+    return result
 
 
 # 15.3.4.3 Function.prototype.apply (thisArg, argArray)
 def js_apply(ctx):
+    from obin.runtime.machine import run_routine_for_result
     from obin.objects.object_space import isnull_or_undefined
     func = ctx.this_binding()
     args = ctx.argv()
@@ -44,11 +45,12 @@ def js_apply(ctx):
     this_arg = get_arg(args, 0)
     arg_array = get_arg(args, 1)
     if isnull_or_undefined(arg_array):
-        res = func.Call(args=[], this=this_arg, calling_context=ctx)
-        compl = NormalCompletion(value=_w(res))
-        return compl
+        routine = func.create_routine(args=[], this=this_arg, calling_context=ctx)
+        result = run_routine_for_result(routine)
+        return _w(result)
 
     from obin.objects.object import W__Array
+
     if not isinstance(arg_array, W__Array):
         raise JsTypeError(u'W__Array expected')
 
@@ -61,6 +63,6 @@ def js_apply(ctx):
         arg_list.append(next_arg)
         index += 1
 
-    res = func.Call(args=arg_list, this=this_arg, calling_context=ctx)
-    compl = NormalCompletion(value=_w(res))
-    return compl
+    routine = func.create_routine(args=arg_list, this=this_arg, calling_context=ctx)
+    result = run_routine_for_result(routine)
+    return _w(result)
