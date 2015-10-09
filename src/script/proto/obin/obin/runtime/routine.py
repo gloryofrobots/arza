@@ -33,6 +33,9 @@ class Routine(object):
         self.__signal = None
         self.__signal_handlers = {}
 
+    def clone(self):
+        raise NotImplementedError()
+
     def set_context(self, ctx):
         self.ctx = ctx
 
@@ -53,6 +56,7 @@ class Routine(object):
 
     def resume(self, value):
         assert self.is_suspended()
+        self.called = None
         self.result = value
         self.ctx.stack_append(value)
         self.__state = Routine.State.INPROCESS
@@ -64,7 +68,11 @@ class Routine(object):
     def complete(self, result):
         assert not self.is_closed()
         self.result = result
+        self._on_complete()
         self.__state = Routine.State.COMPLETE
+
+    def _on_complete(self):
+        pass
 
     def terminate(self, signal):
         assert not self.is_closed()
@@ -108,6 +116,7 @@ class Routine(object):
         self.activate(fiber)
 
     def call_routine(self, routine):
+
         assert not self.is_closed()
 
         if self.called is not None:
@@ -174,6 +183,9 @@ class NativeRoutine(BaseRoutine):
         self._name_ = name
         self._function_ = function
 
+    def clone(self):
+        return NativeRoutine(self._function_, self._name_)
+
     def name(self):
         return self._name_
 
@@ -186,6 +198,9 @@ class NativeRoutine(BaseRoutine):
         w_res = _w(res)
         self.complete(w_res)
 
+    def _on_complete(self):
+        self.ctx.stack_append(self.result)
+    
     def to_string(self):
         name = self.name()
         if name is not None:
@@ -202,6 +217,9 @@ class NativeIntimateRoutine(NativeRoutine):
         assert isinstance(name, unicode)
         self._name_ = name
         self._intimate_function_ = function
+
+    def clone(self):
+        return NativeIntimateRoutine(self._function_, self._name_)
 
     def _execute(self):
         result = self._intimate_function_(self.ctx)
@@ -221,6 +239,9 @@ class BytecodeRoutine(BaseRoutine):
         self.pc = 0
         self.result = None
 
+    def clone(self):
+        return BytecodeRoutine(self._js_code_)
+
     def code(self):
         return self._js_code_
 
@@ -235,6 +256,7 @@ class BytecodeRoutine(BaseRoutine):
         opcode = self.code().get_opcode(self.pc)
         self.result = opcode.eval(self.ctx)
         #print "result", self.result
+        debug = True
         if debug:
             d = u'%s\t%s' % (unicode(str(self.pc)), unicode(str(opcode)))
             #d = u'%s' % (unicode(str(pc)))
@@ -308,6 +330,9 @@ class FunctionRoutine(BytecodeRoutine):
         BytecodeRoutine.__init__(self, js_code)
         js_code._function_name_ = name
         self._name_ = name
+
+    def clone(self):
+        return FunctionRoutine(self._name_, self._js_code_)
 
     def name(self):
         return self._name_

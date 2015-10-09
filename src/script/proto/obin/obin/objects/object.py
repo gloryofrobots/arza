@@ -679,7 +679,7 @@ class W__Function(W_BasicFunction):
 
     def create_routine(self, args=[], this=None, calling_context=None):
         from obin.runtime.execution_context import FunctionExecutionContext
-        code = self.code()
+        code = self.code().clone()
         jit.promote(code)
         scope = self.scope()
 

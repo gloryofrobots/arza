@@ -52,7 +52,9 @@ class Fiber(object):
                 break
 
             if routine.is_complete():
-                routine = routine.continuation()
+                continuation = routine.continuation()
+                continuation.resume(routine.result)
+                routine = continuation
                 continue
 
             break

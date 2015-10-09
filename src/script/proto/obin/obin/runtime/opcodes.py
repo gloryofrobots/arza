@@ -673,8 +673,7 @@ def common_call(ctx, funcobj, args, this, identifyer):
     assert isinstance(funcobj, W_BasicFunction)
 
     argv = args.to_list()
-    res = funcobj.Call(args=argv, this=this, calling_context=ctx)
-    return res
+    funcobj.Call(args=argv, this=this, calling_context=ctx)
 
 
 class CALL(Opcode):
@@ -684,8 +683,7 @@ class CALL(Opcode):
         from obin.objects.object_space import newundefined
         r1 = ctx.stack_pop()
         args = ctx.stack_pop()
-        res = common_call(ctx, r1, args, newundefined(), r1)
-        ctx.stack_append(res)
+        common_call(ctx, r1, args, newundefined(), r1)
 
 
 class CALL_METHOD(Opcode):
@@ -697,8 +695,7 @@ class CALL_METHOD(Opcode):
         args = ctx.stack_pop()
         name = method.to_string()
         r1 = what.get(name)
-        res = common_call(ctx, r1, args, what, method)
-        ctx.stack_append(res)
+        common_call(ctx, r1, args, what, method)
 
 
 class DUP(Opcode):
