@@ -90,7 +90,7 @@ class Machine(object):
     def kill_fiber(self, entry):
         previous = entry.previous
         next = entry.next
-        self.result = entry.fiber.result()
+        self.result = entry.fiber.result
         if previous is not None and next is not None:
             previous.next = next
             next.previous = previous

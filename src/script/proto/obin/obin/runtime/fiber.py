@@ -11,6 +11,7 @@ class Fiber(object):
     def __init__(self):
         self.__state = Fiber.State.IDLE
         self.__routine = None
+        self.result = None
 
     def state(self):
         return self.__state
@@ -39,8 +40,8 @@ class Fiber(object):
 
     def execute(self):
         self.find_routine_to_execute()
+
         if self.routine() is None:
-            self.terminate()
             return
 
         self.routine().execute()
@@ -54,6 +55,8 @@ class Fiber(object):
             if routine.is_complete():
                 continuation = routine.continuation()
                 if not continuation:
+                    self.result = routine.result
+                    self.terminate()
                     routine = None
                     break
 
@@ -86,6 +89,7 @@ class Fiber(object):
                 routine = routine.continuation()
                 continue
 
+            self.terminate()
             raise RuntimeError("NonHandled signal", signal)
 
         self.__routine = routine
@@ -115,15 +119,12 @@ class Fiber(object):
         return self.__state == Fiber.State.IDLE
 
     def is_complete(self):
+        if self.is_terminated():
+            return True
         if self.__routine is None:
-            return False
+            return True
         if self.__routine.is_complete() and self.__routine.has_continuation() is False:
             return True
 
         return False
 
-    def result(self):
-        if not self.is_complete():
-            return None
-
-        return self.routine().result
