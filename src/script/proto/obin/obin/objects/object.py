@@ -795,6 +795,7 @@ class W__Array(W_BasicObject):
 
     def _add_iprop(self, idx, value):
         assert isinstance(idx, int) or isinstance(idx, long)
+        #if idx not in self._items:
 
         self._items[idx] = value
 

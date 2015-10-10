@@ -176,7 +176,7 @@ class LOAD_ARRAY(Opcode):
 
         list_w = ctx.stack_pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
         for index, el in enumerate(list_w):
-            array._idx_put(index, el, False)
+            array.put(_w(index), el)
         ctx.stack_append(array)
 
     def stack_change(self):

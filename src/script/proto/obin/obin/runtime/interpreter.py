@@ -64,7 +64,7 @@ class Interpreter(object):
         ctx = ObjectExecutionContext(c, self.global_object)
         object_space.global_context = ctx
         c.set_context(ctx)
-        self.machine.add_routine(c)
 
-        self.machine.run()
-        return self.machine.result
+        result = self.machine.run_with(c)
+        print result
+        return result

@@ -11,9 +11,8 @@ def run_routine_for_result(routine, ctx=None):
     if ctx:
         routine.set_context(ctx)
     m = Machine()
-    m.add_routine(routine)
-    m.run()
-    return m.result
+    result = m.run_with(routine)
+    return result
 
 class Machine(object):
     def __init__(self):
@@ -43,11 +42,13 @@ class Machine(object):
         self.head.previous = entry
         self.head = entry
 
-    def add_routine(self, routine):
+    def run_with(self, routine):
         from fiber import Fiber
         f = Fiber()
         f.call_routine(routine)
         self.add_fiber(f)
+        self.run()
+        return f.result
 
     def run(self):
         self.enable()
@@ -90,7 +91,6 @@ class Machine(object):
     def kill_fiber(self, entry):
         previous = entry.previous
         next = entry.next
-        self.result = entry.fiber.result
         if previous is not None and next is not None:
             previous.next = next
             next.previous = previous

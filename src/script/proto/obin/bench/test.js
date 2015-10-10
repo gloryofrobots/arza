@@ -1,8 +1,18 @@
 function f(x, y){
-    return x + y;
+    function f1(z) {
+        function f3(a,b) {
+            return x + y + z + a + b;
+        }
+        return x + y + z + f3(x, y);
+
+    }
+    return x + f1(y);
 }
 
-return f(2,3);
+var result = f.call(undefined, 2,3) == f(2,3);
+print(result);
+var result = f.apply(undefined, [2,3]) == f(2,3);
+print(result);
 
 /*
 function operators(){
