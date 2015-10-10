@@ -20,8 +20,6 @@ class Machine(object):
         self.head = None
         self.current = None
         self.__enabled = False
-        # add first fiber
-        self.add_fiber(Fiber())
         self.result = None
 
     def enabled(self):
@@ -82,7 +80,7 @@ class Machine(object):
             if fiber.is_active():
                 try:
                     fiber.execute()
-                except:
+                except Exception as e:
                     self.kill_fiber(current)
                     self.disable()
                     raise
@@ -93,7 +91,6 @@ class Machine(object):
         previous = entry.previous
         next = entry.next
         self.result = entry.fiber.result()
-
         if previous is not None and next is not None:
             previous.next = next
             next.previous = previous

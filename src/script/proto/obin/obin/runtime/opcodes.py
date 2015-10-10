@@ -651,9 +651,8 @@ class RETURN(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
-        from obin.runtime.completion import ReturnCompletion
         value = ctx.stack_top()
-        return ReturnCompletion(value)
+        ctx.routine().complete(value)
 
 
 class POP(Opcode):

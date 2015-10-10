@@ -53,10 +53,13 @@ class Fiber(object):
 
             if routine.is_complete():
                 continuation = routine.continuation()
+                if not continuation:
+                    routine = None
+                    break
+
                 continuation.resume(routine.result)
                 routine = continuation
                 continue
-
             break
 
         self.__routine = routine
@@ -91,18 +94,21 @@ class Fiber(object):
         return self.__state == Fiber.State.TERMINATED
 
     def terminate(self):
+        print "F terminate"
         self.__state = Fiber.State.TERMINATED
 
     def is_suspended(self):
         return self.__state == Fiber.State.SUSPENDED
 
     def suspend(self):
+        print "F suspend"
         self.__state = Fiber.State.SUSPENDED
 
     def is_active(self):
         return self.__state == Fiber.State.ACTIVE
 
     def activate(self):
+        print "F activate"
         self.__state = Fiber.State.ACTIVE
 
     def is_idle(self):
@@ -120,4 +126,4 @@ class Fiber(object):
         if not self.is_complete():
             return None
 
-        return self.routine().result()
+        return self.routine().result

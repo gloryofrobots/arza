@@ -2,7 +2,7 @@ function f(x, y){
     return x + y;
 }
 
-print(f(2,3));
+return f(2,3);
 
 /*
 function operators(){

@@ -33,6 +33,10 @@ class Routine(object):
         self.__signal = None
         self.__signal_handlers = {}
 
+    def stack_top(self):
+        return self.ctx.stack_top()
+        pass
+
     def clone(self):
         raise NotImplementedError()
 
@@ -55,9 +59,9 @@ class Routine(object):
         return self.__signal
 
     def resume(self, value):
+        # print "RESUME", self.__state
         assert self.is_suspended()
         self.called = None
-        self.result = value
         self.ctx.stack_append(value)
         self.__state = Routine.State.INPROCESS
 
@@ -82,7 +86,7 @@ class Routine(object):
 
     def suspend(self):
         assert not self.is_closed()
-        return self.__state == Routine.State.SUSPENDED
+        self.__state = Routine.State.SUSPENDED
 
     def catch_signal(self):
         assert self.is_terminated()
@@ -128,7 +132,7 @@ class Routine(object):
 
     def call_from_continuation(self, routine):
         self.__continuation = routine
-        self.call_from_fiber(routine.fiber)
+        routine.fiber.call_routine(self)
 
     def execute(self):
         if self.is_complete():
@@ -200,7 +204,7 @@ class NativeRoutine(BaseRoutine):
 
     def _on_complete(self):
         self.ctx.stack_append(self.result)
-    
+
     def to_string(self):
         name = self.name()
         if name is not None:
@@ -233,6 +237,7 @@ class BytecodeRoutine(BaseRoutine):
         from obin.compile.code import Code
         assert isinstance(js_code, Code)
         self._js_code_ = js_code
+        self._js_code_.emit('LOAD_UNDEFINED')
         self._js_code_.compile()
         self._stack_size_ = js_code.estimated_stack_size()
         self._symbol_size_ = js_code.symbol_size()
@@ -254,26 +259,34 @@ class BytecodeRoutine(BaseRoutine):
             self.complete(_w(None))
 
         opcode = self.code().get_opcode(self.pc)
-        self.result = opcode.eval(self.ctx)
+        opcode.eval(self.ctx)
+
+        #RETURN occured
+        if self.is_complete():
+            return
+
         #print "result", self.result
         debug = True
         if debug:
             d = u'%s\t%s' % (unicode(str(self.pc)), unicode(str(opcode)))
             #d = u'%s' % (unicode(str(pc)))
             #d = u'%3d %25s %s %s' % (pc, unicode(opcode), unicode([unicode(s) for s in ctx._stack_]), unicode(result))
-            print(d)
+            #print(d)
         if isinstance(opcode, BaseJump):
             #print "JUMP"
             new_pc = opcode.do_jump(self.ctx, self.pc)
             self.pc = new_pc
-            self._execute()
+            # self._execute()
+            # # complete after jump
+            # if self.is_complete():
+            #     return
         else:
             self.pc += 1
 
         if self.pc >= self.code().opcode_count():
-            if self.result is None:
-                self.result = self.ctx.stack_pop()
-            self.complete(self.result)
+            #print "_execute", self, self.result
+            assert not self.result
+            self.complete(self.ctx.stack_top())
 
     def estimated_stack_size(self):
         return self._stack_size_
@@ -314,7 +327,8 @@ class BytecodeRoutine(BaseRoutine):
         return "%s" % (self.get_js_code())
 
 class GlobalRoutine(BytecodeRoutine):
-     pass
+    def __repr__(self):
+        return "Global Routine: %s" % (str(self.get_js_code()))
 
 
 class EvalRoutine(BytecodeRoutine):
@@ -339,3 +353,5 @@ class FunctionRoutine(BytecodeRoutine):
 
     def is_function_code(self):
         return True
+    def __repr__(self):
+        return "function %s {}" % self.name()
