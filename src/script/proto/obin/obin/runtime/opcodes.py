@@ -175,8 +175,8 @@ class LOAD_ARRAY(Opcode):
         array = object_space.new_array()
 
         list_w = ctx.stack_pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
-        for index, el in enumerate(list_w):
-            array.put(_w(index), el)
+        for el in list_w:
+            array.append(el)
         ctx.stack_append(array)
 
     def stack_change(self):
@@ -652,7 +652,7 @@ class RETURN(Opcode):
 
     def eval(self, ctx):
         value = ctx.stack_top()
-        ctx.routine().complete(value)
+        ctx.routine().force_complete(value)
 
 
 class POP(Opcode):
@@ -715,51 +715,50 @@ class TRYCATCHBLOCK(Opcode):
     _immutable_fields_ = ['tryexec', 'catchexec', 'catchparam', 'finallyexec']
 
     def __init__(self, tryfunc, catchparam, catchfunc, finallyfunc):
-        self.tryexec = tryfunc
-        self.catchexec = catchfunc
+        self.tryroutine = tryfunc
+        self.catchroutine = catchfunc
         self.catchparam = catchparam
-        self.finallyexec = finallyfunc
+        self.finallyroutine = finallyfunc
 
     def stack_change(self):
         trystack = 0
         catchstack = 0
         finallystack = 0
 
-        if self.tryexec is not None:
-            trystack = self.tryexec.estimated_stack_size()
+        if self.tryroutine is not None:
+            trystack = self.tryroutine.estimated_stack_size()
         #if self.catchexec is not None:
             #catchstack = self.catchexec.estimated_stack_size()
-        if self.finallyexec is not None:
-            finallystack = self.finallyexec.estimated_stack_size()
+        if self.finallyroutine is not None:
+            finallystack = self.finallyroutine.estimated_stack_size()
 
         return trystack + catchstack + finallystack
 
     def eval(self, ctx):
-        from obin.runtime.completion import is_return_completion, is_completion, NormalCompletion
         from obin.runtime.exception import JsException
-
-        tryexec = self.tryexec
-        catchexec = self.catchexec
-        finallyexec = self.finallyexec
+        tryroutine = self.tryroutine.clone()
+        catchroutine = self.catchroutine.clone()
+        finallyexec = self.finallyroutine.clone()
         catchparam = self.catchparam
+        parentroutine = ctx.routine()
 
         stack_p = ctx._stack_pointer()
 
+        tryroutine.add_signal_handler(None, catchexec)
+        tryroutine.set_force_continuation(parentroutine)
+
+        catchroutine.set_force_continuation(parentroutine)
+        catchroutine.set_start_stack_index(stack_p)
+
+
+        tryroutine.set_finalizer(finallyexec)
+        ctx.routine().call_routine(tryroutine)
         try:
-            b = tryexec.run(ctx)
+            b = tryroutine.run(ctx)
             assert is_completion(b)
             ctx.stack_pop()
         except JsException, e:
-            ctx._set_stack_pointer(stack_p)
-            if catchexec is not None:
-                from obin.runtime.execution_context import CatchExecutionContext
-                msg = e.msg()
-                catch_ctx = CatchExecutionContext(catchexec, catchparam, msg, ctx)
-                res = catchexec.run(catch_ctx)
-                assert is_completion(res)
-                c = res
-            else:
-                c = NormalCompletion()
+            pass
         else:
             assert is_completion(b)
             c = b

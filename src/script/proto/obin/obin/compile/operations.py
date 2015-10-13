@@ -755,7 +755,7 @@ class Try(Statement):
 
     def emit(self, bytecode):
         from obin.compile.code import Code
-        from obin.runtime.routine import BytecodeRoutine
+        from obin.runtime.routine import BytecodeRoutine, SignalHandleRoutine
 
         trycode = Code()
         self.tryblock.emit(trycode)
@@ -764,9 +764,9 @@ class Try(Statement):
 
         if self.catchblock:
             catchcode = Code()
-            self.catchblock.emit(catchcode)
-            catchexec = BytecodeRoutine(catchcode)
             catchparam = self.catchparam.get_literal()
+            self.catchblock.emit(catchcode)
+            catchexec = SignalHandleRoutine(catchparam, catchcode)
         else:
             catchexec = None
             catchparam = None

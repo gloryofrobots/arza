@@ -14,6 +14,12 @@ def run_routine_for_result(routine, ctx=None):
     result = m.run_with(routine)
     return result
 
+def run_function_for_result(function, args=[], this=None, calling_context=None):
+    routine = function.create_routine(args=args, this=this, calling_context=calling_context)
+    m = Machine()
+    result = m.run_with(routine)
+    return result
+
 class Machine(object):
     def __init__(self):
         self.head = None
@@ -23,6 +29,11 @@ class Machine(object):
 
     def enabled(self):
         return self.__enabled
+
+    def current_context(self):
+        if not self.current:
+            return None
+        return self.current.fiber.routine().ctx
 
     def enable(self):
         if self.__enabled is True:
@@ -53,6 +64,7 @@ class Machine(object):
     def run(self):
         self.enable()
         while True:
+            self.current = None
             if not self.__enabled:
                 break
 
@@ -64,16 +76,16 @@ class Machine(object):
         self.disable()
 
     def __run_fibers(self):
-        current = self.head
+        self.current = self.head
         while True:
-            if not self.__enabled or not current:
+            if not self.__enabled or not self.current:
                 break
-            fiber = current.fiber
+            fiber = self.current .fiber
             if fiber.is_suspended():
-                current = current.next
+                self.current = self.current.next
                 continue
             if fiber.is_terminated():
-                current = self.kill_fiber(current)
+                self.current = self.kill_fiber(self.current)
                 continue
             if fiber.is_idle():
                 fiber.activate()
@@ -82,11 +94,11 @@ class Machine(object):
                 try:
                     fiber.execute()
                 except Exception as e:
-                    self.kill_fiber(current)
+                    self.current = self.kill_fiber(self.current)
                     self.disable()
                     raise
 
-            current = current.next
+            self.current = self.current.next
 
     def kill_fiber(self, entry):
         previous = entry.previous

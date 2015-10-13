@@ -548,7 +548,7 @@ class ASTBuilder(RPythonVisitor):
         if setup is None:
             setup = operations.EmptyExpression(pos)
         if condition is None:
-            condition = operations.Boolean(pos, True)
+            condition = operation
         if update is None:
             update = operations.EmptyExpression(pos)
         if body is None:

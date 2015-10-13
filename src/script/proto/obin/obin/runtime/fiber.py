@@ -82,8 +82,11 @@ class Fiber(object):
         while True:
             handler = routine.catch_signal(signal)
             if handler:
+                from obin.runtime.execution_context import CatchExecutionContext
+
+                catch_ctx = CatchExecutionContext(handler, handler.signal_name(), signal, routine.ctx)
+                handler.set_context(catch_ctx)
                 routine = handler
-                break
 
             if routine.has_continuation():
                 routine = routine.continuation()
@@ -93,26 +96,27 @@ class Fiber(object):
             raise RuntimeError("NonHandled signal", signal)
 
         self.__routine = routine
+        self.__routine.call_from_fiber(self)
 
     def is_terminated(self):
         return self.__state == Fiber.State.TERMINATED
 
     def terminate(self):
-        print "F terminate"
+        # print "F terminate"
         self.__state = Fiber.State.TERMINATED
 
     def is_suspended(self):
         return self.__state == Fiber.State.SUSPENDED
 
     def suspend(self):
-        print "F suspend"
+        # print "F suspend"
         self.__state = Fiber.State.SUSPENDED
 
     def is_active(self):
         return self.__state == Fiber.State.ACTIVE
 
     def activate(self):
-        print "F activate"
+        # print "F activate"
         self.__state = Fiber.State.ACTIVE
 
     def is_idle(self):

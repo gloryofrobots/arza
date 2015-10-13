@@ -1,5 +1,4 @@
 from obin.objects.object_space import _w
-from rpython.rlib import jit
 
 def get_printable_location(pc, debug, jscode):
     if pc < jscode.opcode_count():
@@ -11,19 +10,21 @@ def get_printable_location(pc, debug, jscode):
     else:
         return '%d: %s' % (pc, 'end of opcodes')
 
-jitdriver = jit.JitDriver(greens=['pc', 'debug', 'self'], reds=['result', 'ctx'], get_printable_location=get_printable_location, virtualizables=['ctx'])
-
 class Routine(object):
     class State:
         IDLE = -1
         COMPLETE = 0
-        INPROCESS = 1
-        TERMINATED = 2
-        SUSPENDED = 3
+        FORCE_COMPLETE = 1
+        INPROCESS = 2
+        TERMINATED = 3
+        SUSPENDED = 4
 
     def __init__(self):
         super(Routine, self).__init__()
         self.fiber = None
+        #forced continuation on return statement may differ from __continuation in try catch and others
+        self.__forced_continuation = None
+        #continuation for routine if return is not called
         self.__continuation = None
         self.__state = Routine.State.IDLE
         self.called = None
@@ -32,6 +33,8 @@ class Routine(object):
         self.ctx = None
         self.__signal = None
         self.__signal_handlers = {}
+        self.__finalizer = None
+        self.__stack_start_index = None
 
     def stack_top(self):
         return self.ctx.stack_top()
@@ -43,16 +46,45 @@ class Routine(object):
     def set_context(self, ctx):
         self.ctx = ctx
 
+    def stack_start_index(self):
+        return self.__stack_start_index
+
+    def set_start_stack_index(self, start_index):
+        self.__stack_start_index = start_index
+
+    def set_finalizer(self, finalizer):
+        self.__finalizer = finalizer
+
     def add_signal_handler(self, signal, handler):
         self.__signal_handlers[signal] = handler
 
     def get_signal_handler(self, signal):
-        return self.__signal_handlers.get(signal, None)
+        from obin.objects.object_space import iskindof
+
+        if not len(self.__signal_handlers):
+            return None
+
+        for catchedsignal in self.__signal_handlers:
+            # if iskindof(catchedsignal, signal):
+
+            #     return self.__signal_handlers[catchedsignal]
+            return self.__signal_handlers[catchedsignal]
+
+    def get_finalizer(self):
+        return self.__finalizer
 
     def has_continuation(self):
         return self.__continuation is not None
 
+    def set_continuation(self, continuation):
+        self.__continuation = continuation
+
+    def set_forced_continuation(self, rp):
+        self.__forced_continuation = rp
+
     def continuation(self):
+        if self.is_force_complete() and self.__forced_continuation:
+            return self.__forced_continuation
         return self.__continuation
 
     def signal(self):
@@ -69,11 +101,18 @@ class Routine(object):
         assert not self.is_closed()
         self.__state = Routine.State.INPROCESS
 
+    # called in RETURN
+    def force_complete(self, result):
+        assert not self.is_closed()
+        self.result = result
+        self.__state = Routine.State.FORCE_COMPLETE
+        self._on_complete()
+
     def complete(self, result):
         assert not self.is_closed()
         self.result = result
-        self._on_complete()
         self.__state = Routine.State.COMPLETE
+        self._on_complete()
 
     def _on_complete(self):
         pass
@@ -88,16 +127,20 @@ class Routine(object):
         assert not self.is_closed()
         self.__state = Routine.State.SUSPENDED
 
-    def catch_signal(self):
+    def catch_signal(self, signal):
         assert self.is_terminated()
-        # handler = self.get_signal_handler(self.__signal)
-        return None
+
+        handler = self.get_signal_handler(self.__signal)
+        return handler
 
     def is_inprocess(self):
         return self.__state == Routine.State.INPROCESS
 
+    def is_force_complete(self):
+        return self.__state == Routine.State.FORCE_COMPLETE
+
     def is_complete(self):
-        return self.__state == Routine.State.COMPLETE
+        return self.__state == Routine.State.COMPLETE or self.__state == Routine.State.FORCE_COMPLETE
 
     def is_terminated(self):
         return self.__state == Routine.State.TERMINATED
@@ -106,11 +149,14 @@ class Routine(object):
         return self.__state == Routine.State.SUSPENDED
 
     def is_closed(self):
-        return self.__state == Routine.State.COMPLETE or self.__state == Routine.State.TERMINATED
+        return self.__state == Routine.State.COMPLETE \
+               or self.__state == Routine.State.TERMINATED \
+               or self.__state == Routine.State.FORCE_COMPLETE
 
     def activate(self, fiber):
         assert not self.fiber
         self.fiber = fiber
+
         self._on_activate()
 
     def _on_activate(self):
@@ -128,9 +174,9 @@ class Routine(object):
 
         self.called = routine
         self.suspend()
-        routine.call_from_continuation(self)
+        routine.call_from(self)
 
-    def call_from_continuation(self, routine):
+    def call_from(self, routine):
         self.__continuation = routine
         routine.fiber.call_routine(self)
 
@@ -166,9 +212,6 @@ class BaseRoutine(Routine):
 
     def name(self):
         return '_unnamed_'
-
-    def is_eval_code(self):
-        return False
 
     def is_function_code(self):
         return False
@@ -243,6 +286,11 @@ class BytecodeRoutine(BaseRoutine):
         self._symbol_size_ = js_code.symbol_size()
         self.pc = 0
         self.result = None
+
+    def _on_activate(self):
+        assert self.ctx
+        if self.stack_start_index() is not None:
+            self.ctx._set_stack_pointer(self.stack_start_index())
 
     def clone(self):
         return BytecodeRoutine(self._js_code_)
@@ -330,12 +378,6 @@ class GlobalRoutine(BytecodeRoutine):
     def __repr__(self):
         return "Global Routine: %s" % (str(self.get_js_code()))
 
-
-class EvalRoutine(BytecodeRoutine):
-    def is_eval_code(self):
-        return True
-
-
 class FunctionRoutine(BytecodeRoutine):
     _immutable_fields_ = ['_js_code_', '_stack_size_', '_symbol_size_', '_name_']
 
@@ -353,5 +395,20 @@ class FunctionRoutine(BytecodeRoutine):
 
     def is_function_code(self):
         return True
+
     def __repr__(self):
         return "function %s {}" % self.name()
+
+class SignalHandleRoutine(BytecodeRoutine):
+    _immutable_fields_ = ['_js_code_', '_stack_size_', '_symbol_size_', '_signal_name_']
+
+    def __init__(self, _signal_name_, js_code):
+        BytecodeRoutine.__init__(self, js_code)
+        self._signal_name_ = _signal_name_
+
+    def clone(self):
+        return SignalHandleRoutine(self._signal_name_, self._js_code_)
+
+    def signal_name(self):
+        return self._signal_name_
+

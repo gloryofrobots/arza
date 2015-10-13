@@ -81,12 +81,14 @@ def length(this, args):
 # 15.4.4.2
 @w_return
 def to_string(this, args):
+    from obin.runtime.machine import run_function_for_result
     array = this.ToObject()
     func = array.get(u'join')
     if func.is_callable():
         from obin.objects.object import W_BasicFunction
         assert isinstance(func, W_BasicFunction)
-        return func.Call(this=this).to_string()
+        result = run_function_for_result(func, this=this)
+        return result.to_string()
     else:
         return this.to_string()
 

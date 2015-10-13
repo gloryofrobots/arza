@@ -150,6 +150,8 @@ class ObjectSpace(object):
         self.assign_proto(obj)
         return obj
 
+def iskindof(obj, _type):
+    raise NotImplementedError()
 
 object_space = ObjectSpace()
 

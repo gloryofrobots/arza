@@ -1,4 +1,4 @@
-function f(x, y){
+/*function f(x, y){
     function f1(z) {
         function f3(a,b) {
             return x + y + z + a + b;
@@ -13,9 +13,14 @@ var result = f.call(undefined, 2,3) == f(2,3);
 print(result);
 var result = f.apply(undefined, [2,3]) == f(2,3);
 print(result);
+if (f(2,3) == 23) {
+    print("GOT IT");
+}
+else {
+    print(f(2,3));
+}*/
 
-/*
-function operators(){
+function operators() {
     var z = 1 + 2;
     z = 345.5 * 34;
     z = 42 / 2;
@@ -36,11 +41,15 @@ function operators(){
     z = 234 << 4;
 }
 
-function main(){
+function main() {
     var s = "abcd";
+
     print(s.charAt(2));
+
     var s2 = eval("var g = 42; g");
+
     print(s2);
+
     var L = {};
 
     function extend(object) {
@@ -183,17 +192,25 @@ try {
    throw "Shit!"
 } catch(e) {
     print("Error occurred:" + e);
+} finally {
+    print('Final code');
 }
 }
+
 main();
+
 var P = {
     id:1,
     name:"2"
 };
+
 delete P.id;
+
 print(this);
+
 print(this.Object);
-    //var a, x, y;
+
+//var a, x, y;
 //var r = 10;
 //with (Math) {
 //  a = PI * r * r;

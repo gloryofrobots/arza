@@ -276,17 +276,19 @@ class W_Cell(W_Root):
 
     def _default_value_string_(self):
         to_string = self.get(u'toString')
-
+        from obin.runtime.machine import run_function_for_result
         if to_string.is_callable():
             assert isinstance(to_string, W_BasicFunction)
-            _str = to_string.Call(this=self)
+
+            _str = run_function_for_result(to_string, this=self)
             return _str
 
     def _default_value_number_(self):
+        from obin.runtime.machine import run_function_for_result
         value_of = self.get(u'valueOf')
         if value_of.is_callable():
             assert isinstance(value_of, W_BasicFunction)
-            val = value_of.Call(this=self)
+            val = run_function_for_result(value_of, this=self)
             return val
 
     def ToNumber(self):
@@ -297,6 +299,10 @@ class W_Cell(W_Root):
         return True
 
     def to_string(self):
+        if self._default_value_string_() is None:
+            print self._default_value_string_()
+            return u""
+
         return self._default_value_string_().to_string()
 
     def ToObject(self):
@@ -693,7 +699,9 @@ class W__Function(W_BasicFunction):
         return code
 
     def Call(self, args=[], this=None, calling_context=None):
-        assert calling_context is not None
+        if calling_context is None:
+            from object_space import object_space
+            calling_context = object_space.interpreter.machine.current_context()
 
         code = self.create_routine(args, this, calling_context)
         calling_context.routine().call_routine(code)
@@ -785,7 +793,9 @@ class W__Array(W_BasicObject):
         W_BasicObject.__init__(self)
         self._items = []
 
-    ####### dict
+    def append(self, item):
+        self._items.append(item)
+
     def _add_prop(self, name, value):
         idx = make_array_index(name)
         if idx != NOT_ARRAY_INDEX:
