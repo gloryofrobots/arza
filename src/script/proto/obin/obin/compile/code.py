@@ -38,6 +38,7 @@ class Code(object):
         self._symbols = symbol_map
         self.parameters = symbol_map.parameters[:]
         self._function_name_ = None
+        self.compiled_opcodes = None
 
     def variables(self):
         return self._symbols.variables
@@ -125,7 +126,11 @@ class Code(object):
     def done_continue(self):
         self.updatelooplabel.pop()
 
+    def is_compiled(self):
+        return self.compiled_opcodes is not None
+
     def emit(self, operation, *args):
+        assert not self.compiled_opcodes
         opcode = getattr(opcodes, operation)(*args)
         self.opcodes.append(opcode)
         return opcode

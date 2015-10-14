@@ -277,13 +277,14 @@ class BytecodeRoutine(BaseRoutine):
         from obin.compile.code import Code
         assert isinstance(js_code, Code)
         self._js_code_ = js_code
-        self._js_code_.emit('LOAD_UNDEFINED')
-        self._js_code_.compile()
+        if not self._js_code_.is_compiled():
+            self._js_code_.emit('LOAD_UNDEFINED')
+            self._js_code_.compile()
+
         self._stack_size_ = js_code.estimated_stack_size()
         self._symbol_size_ = js_code.symbol_size()
         self.pc = 0
         self.result = None
-
 
     def _on_activate(self):
         assert self.ctx
