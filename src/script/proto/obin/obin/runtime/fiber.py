@@ -46,6 +46,24 @@ class Fiber(object):
 
         self.routine().execute()
 
+    def complete_last_routine(self, result):
+        routine = self.__routine
+        assert self.__routine.is_block()
+
+        while True:
+            if routine is None:
+                raise RuntimeError("Routine for completion is absent")
+
+            if routine.is_block():
+                routine = routine.continuation()
+                continue
+
+            if not routine.is_suspended():
+                raise RuntimeError("Routine in call stack not suspended")
+
+            self.__routine = routine
+            self.__routine.complete(result)
+
     def find_routine_to_execute(self):
         routine = self.__routine
         while True:
@@ -87,6 +105,9 @@ class Fiber(object):
                 catch_ctx = CatchExecutionContext(handler, handler.signal_name(), signal, routine.ctx)
                 handler.set_context(catch_ctx)
                 routine = handler
+                break
+            else:
+                routine.terminate(signal)
 
             if routine.has_continuation():
                 routine = routine.continuation()

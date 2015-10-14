@@ -14,7 +14,6 @@ class Routine(object):
     class State:
         IDLE = -1
         COMPLETE = 0
-        FORCE_COMPLETE = 1
         INPROCESS = 2
         TERMINATED = 3
         SUSPENDED = 4
@@ -22,9 +21,6 @@ class Routine(object):
     def __init__(self):
         super(Routine, self).__init__()
         self.fiber = None
-        #forced continuation on return statement may differ from __continuation in try catch and others
-        self.__forced_continuation = None
-        #continuation for routine if return is not called
         self.__continuation = None
         self.__state = Routine.State.IDLE
         self.called = None
@@ -45,6 +41,10 @@ class Routine(object):
 
     def set_context(self, ctx):
         self.ctx = ctx
+        if self.ctx.routine() == self:
+            return
+
+        self.ctx.set_routine(self)
 
     def stack_start_index(self):
         return self.__stack_start_index
@@ -79,12 +79,7 @@ class Routine(object):
     def set_continuation(self, continuation):
         self.__continuation = continuation
 
-    def set_forced_continuation(self, rp):
-        self.__forced_continuation = rp
-
     def continuation(self):
-        if self.is_force_complete() and self.__forced_continuation:
-            return self.__forced_continuation
         return self.__continuation
 
     def signal(self):
@@ -103,10 +98,11 @@ class Routine(object):
 
     # called in RETURN
     def force_complete(self, result):
-        assert not self.is_closed()
-        self.result = result
-        self.__state = Routine.State.FORCE_COMPLETE
-        self._on_complete()
+        self.complete(result)
+        self._on_force_complete()
+
+    def _on_force_complete(self):
+        pass
 
     def complete(self, result):
         assert not self.is_closed()
@@ -128,19 +124,14 @@ class Routine(object):
         self.__state = Routine.State.SUSPENDED
 
     def catch_signal(self, signal):
-        assert self.is_terminated()
-
         handler = self.get_signal_handler(self.__signal)
         return handler
 
     def is_inprocess(self):
         return self.__state == Routine.State.INPROCESS
 
-    def is_force_complete(self):
-        return self.__state == Routine.State.FORCE_COMPLETE
-
     def is_complete(self):
-        return self.__state == Routine.State.COMPLETE or self.__state == Routine.State.FORCE_COMPLETE
+        return self.__state == Routine.State.COMPLETE
 
     def is_terminated(self):
         return self.__state == Routine.State.TERMINATED
@@ -150,14 +141,19 @@ class Routine(object):
 
     def is_closed(self):
         return self.__state == Routine.State.COMPLETE \
-               or self.__state == Routine.State.TERMINATED \
-               or self.__state == Routine.State.FORCE_COMPLETE
+               or self.__state == Routine.State.TERMINATED
 
     def activate(self, fiber):
         assert not self.fiber
         self.fiber = fiber
 
         self._on_activate()
+
+    def is_block(self):
+        return False
+
+    def is_function_code(self):
+        return False
 
     def _on_activate(self):
         pass
@@ -178,6 +174,7 @@ class Routine(object):
 
     def call_from(self, routine):
         self.__continuation = routine
+        assert routine.fiber
         routine.fiber.call_routine(self)
 
     def execute(self):
@@ -287,6 +284,7 @@ class BytecodeRoutine(BaseRoutine):
         self.pc = 0
         self.result = None
 
+
     def _on_activate(self):
         assert self.ctx
         if self.stack_start_index() is not None:
@@ -305,12 +303,13 @@ class BytecodeRoutine(BaseRoutine):
 
         if self.pc >= self.code().opcode_count():
             self.complete(_w(None))
+            return
 
         opcode = self.code().get_opcode(self.pc)
         opcode.eval(self.ctx)
 
-        #RETURN occured
-        if self.is_complete():
+        #RETURN or THROW occured
+        if self.is_closed():
             return
 
         #print "result", self.result
@@ -319,7 +318,8 @@ class BytecodeRoutine(BaseRoutine):
             d = u'%s\t%s' % (unicode(str(self.pc)), unicode(str(opcode)))
             #d = u'%s' % (unicode(str(pc)))
             #d = u'%3d %25s %s %s' % (pc, unicode(opcode), unicode([unicode(s) for s in ctx._stack_]), unicode(result))
-            #print(d)
+
+            # print(getattr(self, "_name_", None), str(hex(id(self))), d)
         if isinstance(opcode, BaseJump):
             #print "JUMP"
             new_pc = opcode.do_jump(self.ctx, self.pc)
@@ -399,7 +399,7 @@ class FunctionRoutine(BytecodeRoutine):
     def __repr__(self):
         return "function %s {}" % self.name()
 
-class SignalHandleRoutine(BytecodeRoutine):
+class BlockRoutine(BytecodeRoutine):
     _immutable_fields_ = ['_js_code_', '_stack_size_', '_symbol_size_', '_signal_name_']
 
     def __init__(self, _signal_name_, js_code):
@@ -407,8 +407,13 @@ class SignalHandleRoutine(BytecodeRoutine):
         self._signal_name_ = _signal_name_
 
     def clone(self):
-        return SignalHandleRoutine(self._signal_name_, self._js_code_)
+        return BlockRoutine(self._signal_name_, self._js_code_)
+
+    def is_block(self):
+        return True
 
     def signal_name(self):
         return self._signal_name_
 
+    def _on_force_complete(self):
+        self.fiber.complete_last_routine(self.result)

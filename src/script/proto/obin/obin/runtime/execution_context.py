@@ -20,6 +20,10 @@ class ExecutionContext(StackMixin):
     def routine(self):
         return self._code_
 
+    def set_routine(self, r):
+        assert not self._code_
+        self._code_ = r
+
     def stack_append(self, value):
         self._stack_append(value)
 
@@ -253,16 +257,37 @@ class WithExecutionContext(SubExecutionContext):
 
         self.declaration_binding_initialization()
 
+class BlockExecutionContext(_DynamicExecutionContext):
+    def __init__(self, code, parent_context):
+        stack_size = code.estimated_stack_size()
+        _DynamicExecutionContext.__init__(self, stack_size)
+
+        code.set_context(self)
+        self._parent_context_ = parent_context
+
+        parent_env = parent_context.lexical_environment()
+
+        from obin.runtime.lexical_environment import DeclarativeEnvironment
+        env_size = code.env_size() + 1  # neet do add one for the arguments object
+        local_env = DeclarativeEnvironment(parent_env, env_size)
+        local_env_rec = local_env.environment_record
+
+        self._lexical_environment_ = local_env
+        self._variable_environment_ = local_env
+
+        self.declaration_binding_initialization()
+
+    def this_binding(self):
+        return self._parent_context_.this_binding()
 
 class CatchExecutionContext(_DynamicExecutionContext):
     def __init__(self, code, catchparam, exception_value, parent_context):
+        stack_size = code.estimated_stack_size()
+        _DynamicExecutionContext.__init__(self, stack_size)
+
+        env_size = code.env_size() + 1  # neet do add one for the arguments object
         self._code_ = code
         self._parent_context_ = parent_context
-
-        stack_size = code.estimated_stack_size()
-        env_size = code.env_size() + 1  # neet do add one for the arguments object
-
-        _DynamicExecutionContext.__init__(self, stack_size)
 
         parent_env = parent_context.lexical_environment()
 

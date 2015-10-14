@@ -708,8 +708,7 @@ class THROW(Opcode):
     def eval(self, ctx):
         val = ctx.stack_pop()
         from obin.runtime.exception import JsThrowException
-        raise JsThrowException(val)
-
+        ctx.routine().terminate(val)
 
 class TRYCATCHBLOCK(Opcode):
     _immutable_fields_ = ['tryexec', 'catchexec', 'catchparam', 'finallyexec']
@@ -735,47 +734,35 @@ class TRYCATCHBLOCK(Opcode):
         return trystack + catchstack + finallystack
 
     def eval(self, ctx):
-        from obin.runtime.exception import JsException
+        from obin.runtime.execution_context import BlockExecutionContext
         tryroutine = self.tryroutine.clone()
         catchroutine = self.catchroutine.clone()
-        finallyexec = self.finallyroutine.clone()
-        catchparam = self.catchparam
+
+        finallroutine = self.finallyroutine.clone() if self.finallyroutine else None
         parentroutine = ctx.routine()
 
         stack_p = ctx._stack_pointer()
 
-        tryroutine.add_signal_handler(None, catchexec)
-        tryroutine.set_force_continuation(parentroutine)
+        trycontext = BlockExecutionContext(tryroutine, ctx)
+        tryroutine.add_signal_handler(None, catchroutine)
+        catchcontext = BlockExecutionContext(catchroutine, ctx)
 
-        catchroutine.set_force_continuation(parentroutine)
+        if finallroutine:
+            finallycontext = BlockExecutionContext(finallroutine, ctx)
+
+            print "STACK SIZE", finallroutine.estimated_stack_size()
+            print finallroutine._js_code_
+            tryroutine.set_continuation(finallroutine)
+            catchroutine.set_continuation(finallroutine)
+
+            finallroutine.activate(parentroutine.fiber)
+            finallroutine.suspend()
+        else:
+            catchroutine.set_continuation(parentroutine)
+            tryroutine.set_continuation(parentroutine)
+
         catchroutine.set_start_stack_index(stack_p)
-
-
-        tryroutine.set_finalizer(finallyexec)
         ctx.routine().call_routine(tryroutine)
-        try:
-            b = tryroutine.run(ctx)
-            assert is_completion(b)
-            ctx.stack_pop()
-        except JsException, e:
-            pass
-        else:
-            assert is_completion(b)
-            c = b
-
-        if finallyexec is not None:
-            f = finallyexec.run(ctx)
-            if not is_return_completion(f):
-                f = c
-        else:
-            f = c
-
-        assert is_completion(f)
-
-        if is_return_completion(f):
-            return f
-        else:
-            ctx.stack_append(f.value)
 
 
 def commonnew(ctx, obj, args):
