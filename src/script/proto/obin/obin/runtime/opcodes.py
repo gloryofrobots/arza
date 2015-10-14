@@ -752,11 +752,10 @@ class TRYCATCHBLOCK(Opcode):
         if finallroutine:
             finallycontext = BlockExecutionContext(finallroutine, ctx)
 
-            print "STACK SIZE", finallroutine.estimated_stack_size()
-            print finallroutine._js_code_
             tryroutine.set_continuation(finallroutine)
             catchroutine.set_continuation(finallroutine)
 
+            finallroutine.set_continuation(parentroutine)
             finallroutine.activate(parentroutine.fiber)
             finallroutine.suspend()
         else:
@@ -764,7 +763,8 @@ class TRYCATCHBLOCK(Opcode):
             tryroutine.set_continuation(parentroutine)
 
         catchroutine.set_start_stack_index(stack_p)
-        ctx.routine().call_routine(tryroutine)
+        ctx.routine().suspend()
+        ctx.routine().fiber.call_routine(tryroutine)
 
 
 def commonnew(ctx, obj, args):

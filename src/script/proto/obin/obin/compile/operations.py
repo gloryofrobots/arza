@@ -774,7 +774,7 @@ class Try(Statement):
         if self.finallyblock:
             finallycode = Code()
             self.finallyblock.emit(finallycode)
-            finallyexec = BlockRoutine(None, finallycode)
+            finallyexec = BlockRoutine("FINALLY", finallycode)
         else:
             finallyexec = None
         bytecode.emit('TRYCATCHBLOCK', tryexec, catchparam, catchexec, finallyexec)

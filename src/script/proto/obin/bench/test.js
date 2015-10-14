@@ -189,12 +189,21 @@ function main() {
     }
 
 try {
+    print ("there are no errors");
+} catch(e) {
+    print("Error occurred:" + e);
+} finally {
+    print('Finally after try');
+}
+
+try {
    throw "Shit!"
 } catch(e) {
     print("Error occurred:" + e);
 } finally {
-    print('Final code');
+    print('Finally after catch');
 }
+
 }
 
 main();

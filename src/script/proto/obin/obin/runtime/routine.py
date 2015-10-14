@@ -305,7 +305,9 @@ class BytecodeRoutine(BaseRoutine):
         if self.pc >= self.code().opcode_count():
             self.complete(_w(None))
             return
-
+        
+        # if getattr(self, "_signal_name_", None) == "FINALLY":
+        #     print ""
         opcode = self.code().get_opcode(self.pc)
         opcode.eval(self.ctx)
 
