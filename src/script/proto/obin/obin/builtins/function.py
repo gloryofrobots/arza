@@ -1,10 +1,12 @@
+from obin.objects.object_space import _w
+from obin.runtime.routine import complete_native_routine
 from obin.runtime.exception import JsTypeError
 from obin.builtins import get_arg
-from obin.objects.object_space import w_return, _w
 
 
-@w_return
-def to_string(this, args):
+@complete_native_routine
+def to_string(ctx, routine):
+    this, args = routine.args()
     from obin.objects.object import W_BasicFunction
     if not isinstance(this, W_BasicFunction):
         raise JsTypeError(u'')
@@ -12,14 +14,14 @@ def to_string(this, args):
     return this._to_string_()
 
 
-@w_return
-def empty(this, args):
+@complete_native_routine
+def empty(ctx, routine):
     from obin.objects.object_space import newundefined
     return newundefined()
 
 
 # 15.3.4.4 Function.prototype.call
-def js_call(ctx):
+def js_call(ctx, routine):
     func = ctx.this_binding()
     args = ctx.argv()
 
@@ -29,14 +31,14 @@ def js_call(ctx):
     this_arg = get_arg(args, 0)
     arg_list = args[1:]
 
-    routine = func.create_routine(args=arg_list, this=this_arg, calling_context=ctx)
+    routine2 = func.create_routine(args=arg_list, this=this_arg, calling_context=ctx)
     from obin.runtime.machine import run_routine_for_result
-    result = run_routine_for_result(routine)
-    return result
+    result = run_routine_for_result(routine2)
+    routine.complete(_w(result))
 
 
 # 15.3.4.3 Function.prototype.apply (thisArg, argArray)
-def js_apply(ctx):
+def js_apply(ctx, routine):
     from obin.runtime.machine import run_routine_for_result
     from obin.objects.object_space import isnull_or_undefined
     func = ctx.this_binding()
@@ -63,6 +65,6 @@ def js_apply(ctx):
         arg_list.append(next_arg)
         index += 1
 
-    routine = func.create_routine(args=arg_list, this=this_arg, calling_context=ctx)
-    result = run_routine_for_result(routine)
-    return _w(result)
+    routine2 = func.create_routine(args=arg_list, this=this_arg, calling_context=ctx)
+    result = run_routine_for_result(routine2)
+    routine.complete(_w(result))

@@ -216,6 +216,12 @@ class BaseRoutine(Routine):
     def env_size(self):
         return 0
 
+def complete_native_routine(func):
+   def func_wrapper(ctx, routine):
+       result = func(ctx, routine)
+       routine.complete(_w(result))
+
+   return func_wrapper
 
 class NativeRoutine(BaseRoutine):
     _immutable_fields_ = ['_name_', '_function_']
@@ -233,14 +239,15 @@ class NativeRoutine(BaseRoutine):
     def name(self):
         return self._name_
 
-    def _execute(self):
-        #print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
-
+    def args(self):
         args = self.ctx.argv()
         this = self.ctx.this_binding()
-        res = self._function_(this, args)
-        w_res = _w(res)
-        self.complete(w_res)
+        return this, args
+
+    def _execute(self):
+        #print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
+        self.suspend()
+        self._function_(self.ctx, self)
 
     def _on_complete(self):
         self.ctx.stack_append(self.result)
@@ -252,22 +259,6 @@ class NativeRoutine(BaseRoutine):
         else:
             return u'function () { [native code] }'
 
-
-class NativeIntimateRoutine(NativeRoutine):
-    _immutable_fields_ = ['_name_', '_intimate_function_']
-
-    def __init__(self, function, name=u''):
-        super(NativeIntimateRoutine, self).__init__(function, name)
-        assert isinstance(name, unicode)
-        self._name_ = name
-        self._intimate_function_ = function
-
-    def clone(self):
-        return NativeIntimateRoutine(self._function_, self._name_)
-
-    def _execute(self):
-        result = self._intimate_function_(self.ctx)
-        self.complete(result)
 
 class BytecodeRoutine(BaseRoutine):
     _immutable_fields_ = ['_js_code_', '_stack_size_', '_symbol_size_']
@@ -305,7 +296,7 @@ class BytecodeRoutine(BaseRoutine):
         if self.pc >= self.code().opcode_count():
             self.complete(_w(None))
             return
-        
+
         # if getattr(self, "_signal_name_", None) == "FINALLY":
         #     print ""
         opcode = self.code().get_opcode(self.pc)

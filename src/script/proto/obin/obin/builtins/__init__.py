@@ -13,19 +13,9 @@ def new_native_function(function, name=u'', params=[]):
 
 
 # 15
-def put_native_function(obj, name, func, writable=True, configurable=True, enumerable=False, params=[]):
+def put_native_function(obj, name, func, params=[]):
     jsfunc = new_native_function(func, name, params)
     put_property(obj, name, jsfunc)
-
-
-# 15
-def put_intimate_function(obj, name, func, writable=True, configurable=True, enumerable=False, params=[]):
-    from obin.runtime.routine import NativeIntimateRoutine
-    from obin.objects.object_space import object_space
-
-    jsfunc = NativeIntimateRoutine(func, name)
-    w_func = object_space.new_func(jsfunc, formal_parameter_list=params)
-    put_property(obj, name, w_func)
 
 
 # 15
@@ -99,10 +89,10 @@ def setup_builtins(global_object):
     put_native_function(w_FunctionPrototype, u'toString', obin.builtins.function.to_string)
 
     # 15.3.4.3 Function.prototype.apply
-    put_intimate_function(w_FunctionPrototype, u'apply', obin.builtins.function.js_apply)
+    put_native_function(w_FunctionPrototype, u'apply', obin.builtins.function.js_apply)
 
     # 15.3.4.4 Function.prototype.call
-    put_intimate_function(w_FunctionPrototype, u'call', obin.builtins.function.js_call)
+    put_native_function(w_FunctionPrototype, u'call', obin.builtins.function.js_call)
 
     import obin.builtins.boolean
     obin.builtins.boolean.setup(global_object)

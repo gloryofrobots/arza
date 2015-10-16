@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
+from obin.objects.object_space import _w
+from obin.runtime.routine import complete_native_routine
 from rpython.rlib.rfloat import NAN, INFINITY, isnan, isinf
 from obin.builtins import get_arg
-from obin.objects.object_space import w_return
 from rpython.rlib.unicodedata import unicodedb
 
 
 def setup(global_object):
     from rpython.rlib.objectmodel import we_are_translated
-    from obin.builtins import put_intimate_function, put_native_function, put_property
+    from obin.builtins import  put_native_function, put_property
     from obin.builtins.number import w_NAN
     from obin.builtins.number import w_POSITIVE_INFINITY
     from obin.objects.object_space import newundefined
@@ -23,7 +24,7 @@ def setup(global_object):
     put_property(global_object, u'undefined', newundefined())
 
     # 15.1.2.1
-    put_intimate_function(global_object, u'eval', js_eval, params=[u'x'])
+    put_native_function(global_object, u'eval', js_eval, params=[u'x'])
 
     # 15.1.2.2
     put_native_function(global_object, u'parseInt', parse_int, params=[u'string', u'radix'])
@@ -57,16 +58,18 @@ def setup(global_object):
 
 
 # 15.1.2.4
-@w_return
-def is_nan(this, args):
+@complete_native_routine
+def is_nan(ctx, routine):
+    this, args = routine.args()
     if len(args) < 1:
         return True
     return isnan(args[0].ToNumber())
 
 
 # 15.1.2.5
-@w_return
-def is_finite(this, args):
+@complete_native_routine
+def is_finite(ctx, routine):
+    this, args = routine.args()
     if len(args) < 1:
         return True
     n = args[0].ToNumber()
@@ -109,8 +112,9 @@ def _string_match_chars(string, chars):
     return True
 
 # 15.1.2.2
-@w_return
-def parse_int(this, args):
+@complete_native_routine
+def parse_int(ctx, routine):
+    this, args = routine.args()
     string = get_arg(args, 0)
     radix = get_arg(args, 1)
 
@@ -126,8 +130,9 @@ def now(self, args):
     obj = object_space.new_date(value)
     return obj
 
-@w_return
-def _id(this, args):
+@complete_native_routine
+def _id(ctx, routine):
+    this, args = routine.args()
     element = get_arg(args, 0)
     return str(hex(id(element)))
 
@@ -196,8 +201,9 @@ def _parse_int(string, radix):
 
 
 # 15.1.2.3
-@w_return
-def parse_float(this, args):
+@complete_native_routine
+def parse_float(ctx, routine):
+    this, args = routine.args()
     from obin.runistr import encode_unicode_utf8
     from obin.constants import num_lit_rexp
 
@@ -227,15 +233,16 @@ def parse_float(this, args):
 
 
 
-@w_return
-def alert(this, args):
-    printjs(this, args)
+@complete_native_routine
+def alert(ctx, routine):
+    printjs(ctx, routine)
 
-def dummy(this, args):
+def dummy(ctx, routine):
     pass
 
-@w_return
-def printjs(this, args):
+@complete_native_routine
+def printjs(ctx, routine):
+    this, args = routine.args()
     if len(args) == 0:
         return
 
@@ -266,8 +273,9 @@ def hexing(i, length):
 
 
 # B.2.1
-@w_return
-def escape(this, args):
+@complete_native_routine
+def escape(ctx, routine):
+    this, args = routine.args()
     CHARARCERS = u'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@*_+-./'
     string = get_arg(args, 0)
     r1 = string.to_string()
@@ -293,8 +301,9 @@ def escape(this, args):
 
 
 # B.2.2
-@w_return
-def unescape(this, args):
+@complete_native_routine
+def unescape(ctx, routine):
+    this, args = routine.args()
     string = get_arg(args, 0)
     r1 = string.to_string()
     r2 = len(r1)
@@ -336,14 +345,15 @@ def unescape(this, args):
     return r
 
 
-@w_return
-def pypy_repr(this, args):
+@complete_native_routine
+def pypy_repr(ctx, routine):
+    this, args = routine.args()
     o = args[0]
     return str(o)
 
 
-@w_return
-def inspect(this, args):
+@complete_native_routine
+def inspect(ctx, routine):
     pass
 
 
@@ -353,15 +363,15 @@ def _make_version_string():
 _version_string = _make_version_string()
 
 
-@w_return
-def version(this, args):
+@complete_native_routine
+def version(ctx, routine):
     return _version_string
 
 from obin.runtime.machine import run_routine_for_result
 from obin.objects.object_space import _w
 
 # 15.1.2.1
-def js_eval(ctx):
+def js_eval(ctx, routine):
     from rpython.rlib.parsing.parsing import ParseError
     from rpython.rlib.parsing.deterministic import LexerError
 
@@ -376,9 +386,7 @@ def js_eval(ctx):
     args = ctx.argv()
     x = get_arg(args, 0)
 
-    if not isinstance(x, W_String):
-        from obin.runtime.completion import NormalCompletion
-        return NormalCompletion(value=x)
+    assert isinstance(x, W_String)
 
     src = x.to_string()
 

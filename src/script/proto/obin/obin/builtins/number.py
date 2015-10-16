@@ -1,7 +1,8 @@
 from rpython.rlib.rfloat import NAN, INFINITY
+from obin.objects.object_space import _w
+from obin.runtime.routine import complete_native_routine
 from obin.runtime.exception import JsRangeError, JsTypeError
 from obin.objects.object import W_Number
-from obin.objects.object_space import w_return, _w
 
 
 def setup(global_object):
@@ -63,8 +64,9 @@ w_NEGATIVE_INFINITY = _w(-INFINITY)
 
 
 # 15.7.4.2
-@w_return
-def to_string(this, args):
+@complete_native_routine
+def to_string(ctx, routine):
+    this, args = routine.args()
     if len(args) > 0:
         radix = args[0].ToInteger()
         if radix < 2 or radix > 36:
@@ -80,8 +82,9 @@ def to_string(this, args):
 
 
 # 15.7.4.4
-@w_return
-def value_of(this, args):
+@complete_native_routine
+def value_of(ctx, routine):
+    this, args = routine.args()
     if isinstance(this, W_Number):
         num = this
     else:

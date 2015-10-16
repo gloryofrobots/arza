@@ -1,10 +1,11 @@
+from obin.objects.object_space import _w
+from obin.runtime.routine import complete_native_routine
 from rpython.rlib.rfloat import NAN
 from rpython.rlib.rstring import UnicodeBuilder
 
 from obin.objects.object import W_String
 from obin.runtime.exception import JsTypeError
 from obin.builtins import get_arg
-from obin.objects.object_space import w_return, _w
 
 
 def setup(global_object):
@@ -66,8 +67,9 @@ def setup(global_object):
 
 
 # 15.5.3.2
-@w_return
-def from_char_code(this, args):
+@complete_native_routine
+def from_char_code(ctx, routine):
+    this, args = routine.args()
     builder = UnicodeBuilder(len(args))
 
     for arg in args:
@@ -80,8 +82,9 @@ def from_char_code(this, args):
 
 
 # 15.5.4.2
-@w_return
-def to_string(this, args):
+@complete_native_routine
+def to_string(ctx, routine):
+    this, args = routine.args()
     if isinstance(this, W_String):
         s = this
     elif isinstance(this, W_StringObject):
@@ -93,8 +96,9 @@ def to_string(this, args):
 
 
 # 15.5.4.3
-@w_return
-def value_of(this, args):
+@complete_native_routine
+def value_of(ctx, routine):
+    this, args = routine.args()
     if isinstance(this, W_String):
         s = this
     elif isinstance(this, W_StringObject):
@@ -107,8 +111,9 @@ def value_of(this, args):
 
 
 # 15.5.4.4
-@w_return
-def char_at(this, args):
+@complete_native_routine
+def char_at(ctx, routine):
+    this, args = routine.args()
     pos = get_arg(args, 0)
 
     position = pos.ToInt32()
@@ -124,8 +129,9 @@ def char_at(this, args):
 
 
 #15.5.4.5
-@w_return
-def char_code_at(this, args):
+@complete_native_routine
+def char_code_at(ctx, routine):
+    this, args = routine.args()
     pos = get_arg(args, 0)
 
     this.check_object_coercible()
@@ -141,8 +147,9 @@ def char_code_at(this, args):
 
 
 #15.5.4.6
-@w_return
-def concat(this, args):
+@complete_native_routine
+def concat(ctx, routine):
+    this, args = routine.args()
     string = this.to_string()
     others = [obj.to_string() for obj in args]
     string += u''.join(others)
@@ -150,8 +157,9 @@ def concat(this, args):
 
 
 # 15.5.4.7
-@w_return
-def index_of(this, args):
+@complete_native_routine
+def index_of(ctx, routine):
+    this, args = routine.args()
     string = this.to_string()
     if len(args) < 1:
         return -1
@@ -170,8 +178,9 @@ def index_of(this, args):
 
 
 # 15.5.4.8
-@w_return
-def last_index_of(this, args):
+@complete_native_routine
+def last_index_of(ctx, routine):
+    this, args = routine.args()
     search_string = get_arg(args, 0)
     position = get_arg(args, 1)
 
@@ -223,9 +232,10 @@ def _rsplit(value, by, maxsplit=-1):
 
 
 # 15.5.4.14
-@w_return
-def split(this, args):
+@complete_native_routine
+def split(ctx, routine):
     from obin.objects.object_space import isundefined
+    this, args = routine.args()
 
     this.check_object_coercible()
 
@@ -258,8 +268,9 @@ def split(this, args):
 
 
 # 15.5.4.15
-@w_return
-def substring(this, args):
+@complete_native_routine
+def substring(ctx, routine):
+    this, args = routine.args()
     string = this.to_string()
     size = len(string)
 
@@ -286,10 +297,11 @@ def substring(this, args):
 
 
 # 15.5.4.16
-@w_return
-def to_lower_case(this, args):
+@complete_native_routine
+def to_lower_case(ctx, routine):
     from rpython.rlib.unicodedata import unicodedb
 
+    this, args = routine.args()
     string = this.to_string()
     builder = UnicodeBuilder(len(string))
 
@@ -300,10 +312,10 @@ def to_lower_case(this, args):
 
 
 # 15.5.4.18
-@w_return
-def to_upper_case(this, args):
+@complete_native_routine
+def to_upper_case(ctx, routine):
     from rpython.rlib.unicodedata import unicodedb
-
+    this, args = routine.args()
     string = this.to_string()
     builder = UnicodeBuilder(len(string))
 

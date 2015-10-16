@@ -46,9 +46,9 @@ function main() {
 
     print(s.charAt(2));
 
-    var s2 = eval("var g = 42; g");
+    //var s2 = eval("var g = 42; g");
 
-    print(s2);
+    //print(s2);
 
     var L = {};
 
