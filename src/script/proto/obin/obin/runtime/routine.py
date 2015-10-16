@@ -236,6 +236,15 @@ class NativeRoutine(BaseRoutine):
     def clone(self):
         return NativeRoutine(self._function_, self._name_)
 
+    #redefine resume because we can call bytecode routine from native and after it resumes as we must complete
+    resume = Routine.complete
+
+    # def resume(self, value):
+    #     # print "RESUME", self.__state
+    #     assert self.is_suspended()
+    #     self.called = None
+    #     self.complete(value)
+
     def name(self):
         return self._name_
 

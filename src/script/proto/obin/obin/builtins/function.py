@@ -32,9 +32,7 @@ def js_call(ctx, routine):
     arg_list = args[1:]
 
     routine2 = func.create_routine(args=arg_list, this=this_arg, calling_context=ctx)
-    from obin.runtime.machine import run_routine_for_result
-    result = run_routine_for_result(routine2)
-    routine.complete(_w(result))
+    routine.call_routine(routine2)
 
 
 # 15.3.4.3 Function.prototype.apply (thisArg, argArray)
@@ -66,5 +64,6 @@ def js_apply(ctx, routine):
         index += 1
 
     routine2 = func.create_routine(args=arg_list, this=this_arg, calling_context=ctx)
-    result = run_routine_for_result(routine2)
-    routine.complete(_w(result))
+    routine.call_routine(routine2)
+    # result = run_routine_for_result(routine2)
+    # routine.complete(_w(result))
