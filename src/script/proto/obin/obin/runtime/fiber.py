@@ -22,8 +22,30 @@ class Fiber(object):
     def routine(self):
         return self.__routine
 
-    def call_routine(self, routine):
-        routine.call_from_fiber(self)
+    def call_object(self, obj, args, this, ctx):
+        routine = obj.create_routine(args, this, ctx)
+        self.call_routine(routine, ctx.routine())
+
+    def call_routine(self, routine, caller=None):
+        if caller is None:
+            caller = self.routine()
+
+        self.__call_routine(routine, caller)
+
+    def __call_routine(self, routine, caller):
+        assert caller == self.routine()
+
+        if caller:
+            assert not caller.is_closed()
+            if caller.called is not None:
+                raise RuntimeError("Called has exists")
+
+            caller.called = routine
+            caller.suspend()
+
+            routine.set_continuation(caller)
+
+        routine.activate(self)
         self.set_active_routine(routine)
 
     """
@@ -116,8 +138,7 @@ class Fiber(object):
             self.terminate()
             raise RuntimeError("NonHandled signal", signal)
 
-        self.__routine = routine
-        self.__routine.call_from_fiber(self)
+        self.call_routine(routine)
 
     def is_terminated(self):
         return self.__state == Fiber.State.TERMINATED

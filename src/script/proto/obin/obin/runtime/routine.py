@@ -29,7 +29,6 @@ class Routine(object):
         self.ctx = None
         self.__signal = None
         self.__signal_handlers = {}
-        self.__finalizer = None
         self.__stack_start_index = None
 
     def stack_top(self):
@@ -77,6 +76,9 @@ class Routine(object):
         return self.__continuation is not None
 
     def set_continuation(self, continuation):
+        if self.__continuation:
+            print self, continuation
+        assert not self.__continuation
         self.__continuation = continuation
 
     def continuation(self):
@@ -158,24 +160,9 @@ class Routine(object):
     def _on_activate(self):
         pass
 
-    def call_from_fiber(self, fiber):
-        self.activate(fiber)
-
     def call_routine(self, routine):
-
-        assert not self.is_closed()
-
-        if self.called is not None:
-            raise RuntimeError("Called has exists")
-
-        self.called = routine
-        self.suspend()
-        routine.call_from(self)
-
-    def call_from(self, routine):
-        self.__continuation = routine
-        assert routine.fiber
-        routine.fiber.call_routine(self)
+        assert self.fiber
+        self.fiber.call_routine(routine, self)
 
     def execute(self):
         if self.is_complete():

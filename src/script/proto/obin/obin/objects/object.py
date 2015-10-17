@@ -656,7 +656,7 @@ class W__Function(W_BasicFunction):
     def __init__(self, function_body, formal_parameter_list=[], scope=None):
         W_BasicFunction.__init__(self)
         from obin.objects.object_space import _w, newnull, object_space
-        print "W__Function", function_body.__class__, scope, formal_parameter_list
+        # print "W__Function", function_body.__class__, scope, formal_parameter_list
         self._function_ = function_body
         self._scope_ = scope
         self._params_ = formal_parameter_list
@@ -706,6 +706,7 @@ class W__Function(W_BasicFunction):
 
         code = self.create_routine(args, this, calling_context)
         calling_context.routine().call_routine(code)
+        # calling_context.routine().fiber.call_object(self, args, this, calling_context)
 
 
     def scope(self):
