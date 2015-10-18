@@ -108,7 +108,7 @@ class ObjectSpace(object):
         self.interpreter = None
 
     def get_global_environment(self):
-        return self.global_context.variable_environment()
+        return self.global_context.lexical_environment()
 
     def assign_proto(self, obj, proto=None):
         from obin.objects.object import W_BasicFunction, W_String, W_Boolean, W_Number, W__Array
