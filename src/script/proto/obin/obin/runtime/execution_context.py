@@ -13,8 +13,8 @@ class ExecutionContext(object):
 
         self._stack_ = Stack()
         self._code_ = None
-        self._lexical_environment_ = None
-        self._variable_environment_ = None
+        self.__lexical_environment = None
+        self.__variable_environment = None
         self._this_binding_ = None
         self._refs_ = [None] * refs_size
         self._stack_.init(stack_size)
@@ -49,20 +49,23 @@ class ExecutionContext(object):
         return self._this_binding_
 
     def variable_environment(self):
-        return self._variable_environment_
+        return self.__variable_environment
 
     def lexical_environment(self):
-        return self._lexical_environment_
+        return self.__lexical_environment
 
-    def set_lexical_environment(self, lex_env):
-        self._lexical_environment_ = lex_env
+    def set_lexical_environment(self, env):
+        self.__lexical_environment = env
+
+    def set_variable_environment(self, env):
+        self.__variable_environment = env
 
     # 10.5
     @jit.unroll_safe
     def declaration_binding_initialization(self):
         from obin.objects.object_space import newundefined
 
-        env = self._variable_environment_.environment_record
+        env = self.variable_environment().environment_record
         code = jit.promote(self._code_)
 
         # 4.
@@ -164,8 +167,8 @@ class ObjectExecutionContext(_DynamicExecutionContext):
 
         from obin.runtime.lexical_environment import ObjectEnvironment
         localEnv = ObjectEnvironment(obj)
-        self._lexical_environment_ = localEnv
-        self._variable_environment_ = localEnv
+        self.set_lexical_environment(localEnv)
+        self.set_variable_environment(localEnv)
         self._this_binding_ = obj
 
         self.declaration_binding_initialization()
@@ -182,9 +185,9 @@ class EvalExecutionContext(_DynamicExecutionContext):
             raise NotImplementedError()
 
         from obin.runtime.lexical_environment import DeclarativeEnvironment
-        strict_var_env = DeclarativeEnvironment(self._lexical_environment_, 0)
-        self._variable_environment_ = strict_var_env
-        self._lexical_environment_ = strict_var_env
+        strict_var_env = DeclarativeEnvironment(self.lexical_environment(), 0)
+        self.set_lexical_environment(strict_var_env)
+        self.set_variable_environment(strict_var_env)
 
         self.declaration_binding_initialization()
 
@@ -206,8 +209,8 @@ class FunctionExecutionContext(ExecutionContext):
 
         from obin.runtime.lexical_environment import DeclarativeEnvironment
         localEnv = DeclarativeEnvironment(scope, env_size)
-        self._lexical_environment_ = localEnv
-        self._variable_environment_ = localEnv
+        self.set_lexical_environment(localEnv)
+        self.set_variable_environment(localEnv)
 
         self._this_binding_ = this
 
@@ -250,8 +253,8 @@ class WithExecutionContext(SubExecutionContext):
         local_env = ObjectEnvironment(expr_obj, outer_environment=parent_environment)
         local_env.environment_record.provide_this = True
 
-        self._lexical_environment_ = local_env
-        self._variable_environment_ = local_env
+        self.set_lexical_environment(local_env)
+        self.set_variable_environment(local_env)
 
         self.declaration_binding_initialization()
 
@@ -270,8 +273,8 @@ class BlockExecutionContext(_DynamicExecutionContext):
         local_env = DeclarativeEnvironment(parent_env, env_size)
         local_env_rec = local_env.environment_record
 
-        self._lexical_environment_ = local_env
-        self._variable_environment_ = local_env
+        self.set_lexical_environment(local_env)
+        self.set_variable_environment(local_env)
 
         self.declaration_binding_initialization()
 
@@ -294,8 +297,8 @@ class CatchExecutionContext(_DynamicExecutionContext):
         local_env_rec = local_env.environment_record
         local_env_rec.set_binding(catchparam, exception_value)
 
-        self._lexical_environment_ = local_env
-        self._variable_environment_ = local_env
+        self.set_lexical_environment(local_env)
+        self.set_variable_environment(local_env)
 
         self.declaration_binding_initialization()
 
