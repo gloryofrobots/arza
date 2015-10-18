@@ -414,9 +414,9 @@ def js_eval(ctx, routine):
     f = BytecodeRoutine(code)
     calling_context = ctx._calling_context_
 
-    ctx = EvalExecutionContext(f, calling_context=calling_context)
-    result = run_routine_for_result(f, ctx)
-    return _w(result)
+    ctx = EvalExecutionContext(f)
+    f.set_context(ctx)
+    routine.call_routine(f)
 
 
 def js_load(ctx):

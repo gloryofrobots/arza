@@ -46,9 +46,10 @@ function main() {
 
     print(s.charAt(2));
 
-    //var s2 = eval("var g = 42; g");
+    var s2 = eval("var g = 42; return g");
 
-    //print(s2);
+    print("EVAL IS " + s2);
+    return;
 
     var L = {};
 
@@ -222,6 +223,7 @@ print(this);
 
 print(this.Object);
 
+return 42;
 //var a, x, y;
 //var r = 10;
 //with (Math) {

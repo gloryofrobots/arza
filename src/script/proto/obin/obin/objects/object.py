@@ -605,26 +605,6 @@ class W_BasicFunction(W_BasicObject):
     def Call(self, args=[], this=None, calling_context=None):
         raise NotImplementedError("abstract")
 
-    # 13.2.2
-    def Construct(self, args=[]):
-        tb("W_BasicFunction Construct")
-        from obin.objects.object_space import object_space
-
-        proto = self.get(u'prototype')
-        if isinstance(proto, W_BasicObject):
-            obj = object_space.new_obj()
-            object_space.assign_proto(obj, proto)
-        else:
-            # would love to test this
-            # but I fail to find a case that falls into this
-            obj = object_space.new_obj()
-
-        result = self.Call(args, this=obj)
-        if isinstance(result, W__Object):
-            return result
-
-        return obj
-
     def is_callable(self):
         return True
 
@@ -667,8 +647,6 @@ class W__Function(W_BasicFunction):
         put_property(self, u'length', _w(_len),)
         # 16.
         proto_obj = object_space.new_obj()
-        # 17.
-        put_property(proto_obj, u'constructor', self)
         # 18.
         put_property(self, u'prototype', proto_obj)
 
@@ -704,10 +682,7 @@ class W__Function(W_BasicFunction):
             from object_space import object_space
             calling_context = object_space.interpreter.machine.current_context()
 
-        code = self.create_routine(args, this, calling_context)
-        calling_context.routine().call_routine(code)
-        # calling_context.routine().fiber.call_object(self, args, this, calling_context)
-
+        calling_context.fiber().call_object(self, args, this, calling_context)
 
     def scope(self):
         return self._scope_

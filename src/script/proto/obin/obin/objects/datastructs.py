@@ -237,10 +237,10 @@ class Table(object):
 
 
 class Stack(object):
-    def __init__(self):
-        self.init()
+    def __init__(self, size=1):
         self.__data = None
         self.__pointer = None
+        self.init(size)
 
     def init(self, size=1):
         self.__data = [None] * size

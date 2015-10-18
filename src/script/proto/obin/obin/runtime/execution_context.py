@@ -2,6 +2,7 @@ from obin.objects.object_space import newundefined
 from obin.objects.datastructs import Stack
 from rpython.rlib import jit
 
+DISTINCT = []
 
 class ExecutionContext(object):
     _immutable_fields_ = ['_stack_', '_this_binding_', '_lexical_environment_', '_variable_environment_', '_refs_', '_code_', '_formal_parameters_', '_argument_values_', '_w_func_']  # TODO why are _formal_parameters_, _w_func_ etc. required here?
@@ -9,17 +10,26 @@ class ExecutionContext(object):
     _settled_ = True
 
     def __init__(self, stack_size=1, refs_size=1):
+        name =  self.__class__.__name__
+        if name not in DISTINCT:
+            DISTINCT.append(name)
+            print "CTX", DISTINCT
+
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
 
-        self._stack_ = Stack()
+        self._stack_ = Stack(stack_size)
         self._code_ = None
         self.__lexical_environment = None
         self._this_binding_ = None
         self._refs_ = [None] * refs_size
-        self._stack_.init(stack_size)
 
     def routine(self):
         return self._code_
+
+    def fiber(self):
+        assert self._code_
+        assert self._code_.fiber
+        return self._code_.fiber
 
     def set_routine(self, r):
         assert not self._code_
@@ -133,21 +143,22 @@ class ExecutionContext(object):
 
 
 class _DynamicExecutionContext(ExecutionContext):
-    def __init__(self, stack_size):
-        ExecutionContext.__init__(self, stack_size)
-        self._dyn_refs_ = [None]
-
     def _get_refs(self, index):
+        from obin.utils import tb
+        # if index > len(self._refs_):
+        #     tb("BAD INDEX")
+
+        # assert index < len(self._refs_)
         self._resize_refs(index)
-        return self._dyn_refs_[index]
+        return self._refs_[index]
 
     def _set_refs(self, index, value):
         self._resize_refs(index)
-        self._dyn_refs_[index] = value
+        self._refs_[index] = value
 
     def _resize_refs(self, index):
-        if index >= len(self._dyn_refs_):
-            self._dyn_refs_ += ([None] * (1 + index - len(self._dyn_refs_)))
+        if index >= len(self._refs_):
+            self._refs_ += ([None] * (1 + index - len(self._refs_)))
 
 
 class ObjectExecutionContext(_DynamicExecutionContext):
@@ -173,8 +184,8 @@ class EvalExecutionContext(_DynamicExecutionContext):
         _DynamicExecutionContext.__init__(self, stack_size)
         self._code_ = code
 
-        if not calling_context:
-            raise NotImplementedError()
+        # if not calling_context:
+        #     raise NotImplementedError()
 
         from obin.runtime.lexical_environment import DeclarativeEnvironment
         strict_var_env = DeclarativeEnvironment(self.lexical_environment(), 0)
@@ -208,44 +219,6 @@ class FunctionExecutionContext(ExecutionContext):
 
     def argv(self):
         return self._argument_values_
-
-
-class SubExecutionContext(_DynamicExecutionContext):
-    def __init__(self, parent):
-        _DynamicExecutionContext.__init__(self, 0)
-        self._parent_context_ = parent
-
-    def stack_append(self, value):
-        self._parent_context_.stack_append(value)
-
-    def stack_pop(self):
-        return self._parent_context_.stack_pop()
-
-    def stack_top(self):
-        return self._parent_context_.stack_top()
-
-    def stack_pop_n(self, n):
-        return self._parent_context_.stack_pop_n(n)
-
-    def this_binding(self):
-        return self._parent_context_.this_binding()
-
-
-class WithExecutionContext(SubExecutionContext):
-    def __init__(self, code, expr_obj, parent_context):
-        SubExecutionContext.__init__(self, parent_context)
-        self._code_ = code
-        self._expr_obj_ = expr_obj
-        self._dynamic_refs = []
-
-        from obin.runtime.lexical_environment import ObjectEnvironment
-        parent_environment = parent_context.lexical_environment()
-        local_env = ObjectEnvironment(expr_obj, outer_environment=parent_environment)
-        local_env.environment_record.provide_this = True
-
-        self.set_lexical_environment(local_env)
-
-        self.declaration_binding_initialization()
 
 class BlockExecutionContext(_DynamicExecutionContext):
     def __init__(self, code, parent_context):

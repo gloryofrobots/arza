@@ -1,4 +1,3 @@
-#from rpython.rlib import jit
 from obin.runtime.reference import Reference
 
 class EnvironmentRecord(object):
@@ -87,7 +86,7 @@ class ObjectEnvironmentRecord(EnvironmentRecord):
     def delete_binding(self, n):
         assert n is not None and isinstance(n, unicode)
         bindings = self.binding_object
-        return bindings.delete(n, False)
+        return bindings.delete(n)
 
 
 class GlobalEnvironmentRecord(ObjectEnvironmentRecord):
