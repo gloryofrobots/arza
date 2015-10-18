@@ -277,7 +277,7 @@ class BytecodeRoutine(BaseRoutine):
     def _on_activate(self):
         assert self.ctx
         if self.stack_start_index() is not None:
-            self.ctx._set_stack_pointer(self.stack_start_index())
+            self.ctx.set_stack_pointer(self.stack_start_index())
 
     def clone(self):
         return BytecodeRoutine(self._js_code_)

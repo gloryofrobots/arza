@@ -743,7 +743,7 @@ class TRYCATCHBLOCK(Opcode):
         finallroutine = self.finallyroutine.clone() if self.finallyroutine else None
         parentroutine = ctx.routine()
 
-        stack_p = ctx._stack_pointer()
+        stack_p = ctx.stack_pointer()
 
         trycontext = BlockExecutionContext(tryroutine, ctx)
         tryroutine.add_signal_handler(None, catchroutine)

@@ -267,6 +267,10 @@ class Stack(object):
         return len(self.__data)
 
     def push(self, element):
+        # from obin.utils import tb
+        # if str(element) == "undefined":
+        #     tb("CHECK!!!!!!!!!!")
+        #     print "UNDEFINED IS SET ", hex(id(self.routine()))
         i = self.pointer()
         len_stack = len(self.__data)
 
@@ -278,3 +282,15 @@ class Stack(object):
     def set_pointer(self, p):
         self.__pointer = p
 
+    def pop_n(self, n):
+        if n < 1:
+            return []
+
+        r = []
+        i = n
+        while i > 0:
+            i -= 1
+            e = self.pop()
+            r = [e] + r
+
+        return r

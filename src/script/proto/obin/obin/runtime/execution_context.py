@@ -1,21 +1,23 @@
-from obin.utils import StackMixin
 from obin.objects.object_space import newundefined
+from obin.objects.datastructs import Stack
 from rpython.rlib import jit
 
 
-class ExecutionContext(StackMixin):
+class ExecutionContext(object):
     _immutable_fields_ = ['_stack_', '_this_binding_', '_lexical_environment_', '_variable_environment_', '_refs_', '_code_', '_formal_parameters_', '_argument_values_', '_w_func_']  # TODO why are _formal_parameters_, _w_func_ etc. required here?
     _virtualizable2_ = ['_stack_[*]', '_stack_pointer_', '_refs_[*]']
     _settled_ = True
 
     def __init__(self, stack_size=1, refs_size=1):
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
+
+        self._stack_ = Stack()
         self._code_ = None
         self._lexical_environment_ = None
         self._variable_environment_ = None
         self._this_binding_ = None
         self._refs_ = [None] * refs_size
-        self._init_stack_(stack_size)
+        self._stack_.init(stack_size)
 
     def routine(self):
         return self._code_
@@ -25,27 +27,23 @@ class ExecutionContext(StackMixin):
         self._code_ = r
 
     def stack_append(self, value):
-        self._stack_append(value)
+        self._stack_.push(value)
 
     def stack_pop(self):
-        return self._stack_pop()
+        return self._stack_.pop()
 
     def stack_top(self):
-        return self._stack_top()
+        return self._stack_.top()
 
     @jit.unroll_safe
     def stack_pop_n(self, n):
-        if n < 1:
-            return []
+        return self._stack_.pop_n(n)
 
-        r = []
-        i = n
-        while i > 0:
-            i -= 1
-            e = self._stack_pop()
-            r = [e] + r
+    def stack_pointer(self):
+        return self._stack_.pointer()
 
-        return r
+    def set_stack_pointer(self, p):
+        self._stack_.set_pointer(p)
 
     def this_binding(self):
         return self._this_binding_
@@ -157,7 +155,7 @@ class _DynamicExecutionContext(ExecutionContext):
 
 
 class ObjectExecutionContext(_DynamicExecutionContext):
-    def __init__(self, code, global_object):
+    def __init__(self, code, obj):
         stack_size = code.estimated_stack_size()
 
         _DynamicExecutionContext.__init__(self, stack_size)
@@ -165,10 +163,10 @@ class ObjectExecutionContext(_DynamicExecutionContext):
         self._code_ = code
 
         from obin.runtime.lexical_environment import ObjectEnvironment
-        localEnv = ObjectEnvironment(global_object)
+        localEnv = ObjectEnvironment(obj)
         self._lexical_environment_ = localEnv
         self._variable_environment_ = localEnv
-        self._this_binding_ = global_object
+        self._this_binding_ = obj
 
         self.declaration_binding_initialization()
 
