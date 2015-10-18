@@ -56,7 +56,7 @@ class Machine(object):
     def run_with(self, routine):
         from fiber import Fiber
         f = Fiber()
-        f.call_routine(routine)
+        f.call_routine(routine, None, None)
         self.add_fiber(f)
         self.run()
         return f.result
@@ -88,7 +88,7 @@ class Machine(object):
                 self.current = self.kill_fiber(self.current)
                 continue
             if fiber.is_idle():
-                fiber.activate()
+                fiber.active()
 
             if fiber.is_active():
                 try:

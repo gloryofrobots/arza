@@ -189,6 +189,16 @@ function main() {
     }
 
 try {
+   throw "Shit!"
+} catch(e) {
+    var x = 1;
+    print("Error occurred:" + e);
+} finally {
+    var x = "wwww";
+    print('Finally after catch');
+}
+
+try {
     print ("there are no errors");
 } catch(e) {
     print("Error occurred:" + e);
@@ -196,13 +206,6 @@ try {
     print('Finally after try');
 }
 
-try {
-   throw "Shit!"
-} catch(e) {
-    print("Error occurred:" + e);
-} finally {
-    print('Finally after catch');
-}
 
 }
 

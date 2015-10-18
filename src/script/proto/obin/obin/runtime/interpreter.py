@@ -56,15 +56,15 @@ class Interpreter(object):
 
         from obin.compile.code import Code
         assert isinstance(code, Code)
-        c = GlobalRoutine(code)
+        global_routine = GlobalRoutine(code)
 
         from obin.objects.object_space import object_space
         from obin.runtime.execution_context import ObjectExecutionContext
 
-        ctx = ObjectExecutionContext(c, self.global_object)
+        ctx = ObjectExecutionContext(global_routine, self.global_object)
         object_space.global_context = ctx
-        c.set_context(ctx)
+        global_routine.set_context(ctx)
 
-        result = self.machine.run_with(c)
+        result = self.machine.run_with(global_routine)
         print result
         return result

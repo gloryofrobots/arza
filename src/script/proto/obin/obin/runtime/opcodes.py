@@ -748,23 +748,21 @@ class TRYCATCHBLOCK(Opcode):
         trycontext = BlockExecutionContext(tryroutine, ctx)
         tryroutine.add_signal_handler(None, catchroutine)
         catchcontext = BlockExecutionContext(catchroutine, ctx)
-
+        continuation = None
         if finallroutine:
             finallycontext = BlockExecutionContext(finallroutine, ctx)
+            # print "finallroutine.estimated_stack_size()", finallroutine.estimated_stack_size()
+            # print finallroutine.code()
 
-            tryroutine.set_continuation(finallroutine)
+            continuation = finallroutine
             catchroutine.set_continuation(finallroutine)
-
             finallroutine.set_continuation(parentroutine)
-            finallroutine.activate(parentroutine.fiber)
-            finallroutine.suspend()
         else:
             catchroutine.set_continuation(parentroutine)
-            tryroutine.set_continuation(parentroutine)
+            continuation = parentroutine
 
         catchroutine.set_start_stack_index(stack_p)
-        ctx.routine().suspend()
-        ctx.routine().fiber.call_routine(tryroutine)
+        ctx.routine().fiber.call_routine(tryroutine, continuation, parentroutine)
 
 
 def commonnew(ctx, obj, args):

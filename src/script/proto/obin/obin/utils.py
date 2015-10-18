@@ -4,10 +4,11 @@ from rpython.rlib import jit  # , debug
 
 def tb(message=None):
     import traceback
+    import sys
     if message:
         print message
 
-    traceback.print_stack()
+    traceback.print_stack(file=sys.stdout)
 
 class StackMixin(object):
     _mixin_ = True
@@ -37,8 +38,15 @@ class StackMixin(object):
         return self._stack_[i]
 
     def _stack_append(self, element):
+        # if str(element) == "undefined":
+        #     tb("CHECK!!!!!!!!!!")
+        #     print "UNDEFINED IS SET ", hex(id(self.routine()))
+
         i = self._stack_pointer()
         len_stack = len(self._stack_)
+
+
+
 
         assert i >= 0 and len_stack > i
 

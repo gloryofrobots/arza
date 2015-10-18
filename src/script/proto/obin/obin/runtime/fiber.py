@@ -1,5 +1,17 @@
+from sqlalchemy.sql.functions import coalesce
+
 __author__ = 'gloryofrobots'
 
+def check_continuation_consistency(caller, continuation):
+    r = continuation
+    while True:
+        if r is caller:
+            break
+
+        if not r:
+            raise RuntimeError("Continuation not consistent. Continuation chain is empty")
+
+        r = r.continuation()
 
 class Fiber(object):
     class State:
@@ -24,36 +36,31 @@ class Fiber(object):
 
     def call_object(self, obj, args, this, ctx):
         routine = obj.create_routine(args, this, ctx)
-        self.call_routine(routine, ctx.routine())
+        self.call_routine(routine, ctx.routine(), ctx.routine())
 
-    def call_routine(self, routine, caller=None):
-        if caller is None:
-            caller = self.routine()
-
-        self.__call_routine(routine, caller)
-
-    def __call_routine(self, routine, caller):
+    def call_routine(self, routine, continuation, caller):
         assert caller == self.routine()
+        check_continuation_consistency(caller, continuation)
 
+        self.__call_routine(routine, continuation, caller)
+
+    def __call_routine(self, routine, continuation, caller):
         if caller:
             assert not caller.is_closed()
+            assert not continuation.is_closed()
+
             if caller.called is not None:
                 raise RuntimeError("Called has exists")
 
             caller.called = routine
             caller.suspend()
 
-            routine.set_continuation(caller)
+        if continuation:
+            routine.set_continuation(continuation)
 
         routine.activate(self)
         self.set_active_routine(routine)
 
-    """
-    public void callExecutable(STExecutableObject executable) {
-        Routine routine = executable.createRoutine();
-        routine.call(this);
-    }
-    """
     def set_active_routine(self, r):
         if self.__routine is r:
             raise RuntimeError("Routine been already called")
@@ -100,7 +107,14 @@ class Fiber(object):
                     routine = None
                     break
 
-                continuation.resume(routine.result)
+                # continuation can be suspended in case of normal call
+                if continuation.is_suspended():
+                    continuation.resume(routine.result)
+                # and idle in ensured blocks and similar abnormal cases
+                elif continuation.is_idle():
+                    continuation.activate(self)
+                    continuation.inprocess()
+
                 routine = continuation
                 continue
             break
@@ -138,7 +152,8 @@ class Fiber(object):
             self.terminate()
             raise RuntimeError("NonHandled signal", signal)
 
-        self.call_routine(routine)
+        # continuation in signal handler must exists at this moment
+        self.__call_routine(routine, None, None)
 
     def is_terminated(self):
         return self.__state == Fiber.State.TERMINATED
@@ -157,7 +172,7 @@ class Fiber(object):
     def is_active(self):
         return self.__state == Fiber.State.ACTIVE
 
-    def activate(self):
+    def active(self):
         # print "F activate"
         self.__state = Fiber.State.ACTIVE
 

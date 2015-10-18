@@ -76,8 +76,12 @@ class Routine(object):
         return self.__continuation is not None
 
     def set_continuation(self, continuation):
+        # if continuation is self.__continuation:
+        #     return
+
         if self.__continuation:
-            print self, continuation
+            print self, "\n**************\n", continuation
+
         assert not self.__continuation
         self.__continuation = continuation
 
@@ -132,6 +136,9 @@ class Routine(object):
     def is_inprocess(self):
         return self.__state == Routine.State.INPROCESS
 
+    def is_idle(self):
+        return self.__state == Routine.State.IDLE
+
     def is_complete(self):
         return self.__state == Routine.State.COMPLETE
 
@@ -162,7 +169,7 @@ class Routine(object):
 
     def call_routine(self, routine):
         assert self.fiber
-        self.fiber.call_routine(routine, self)
+        self.fiber.call_routine(routine, self, self)
 
     def execute(self):
         if self.is_complete():
@@ -225,12 +232,6 @@ class NativeRoutine(BaseRoutine):
 
     #redefine resume because we can call bytecode routine from native and after it resumes as we must complete
     resume = Routine.complete
-
-    # def resume(self, value):
-    #     # print "RESUME", self.__state
-    #     assert self.is_suspended()
-    #     self.called = None
-    #     self.complete(value)
 
     def name(self):
         return self._name_
@@ -296,6 +297,15 @@ class BytecodeRoutine(BaseRoutine):
         # if getattr(self, "_signal_name_", None) == "FINALLY":
         #     print ""
         opcode = self.code().get_opcode(self.pc)
+
+        debug = True
+        if debug:
+            d = u'%s\t%s' % (unicode(str(self.pc)), unicode(str(opcode)))
+            #d = u'%s' % (unicode(str(pc)))
+            #d = u'%3d %25s %s ' % (self.pc, unicode(opcode), unicode([unicode(s) for s in self.ctx._stack_]))
+
+            #print(getattr(self, "_name_", None), str(hex(id(self))), d)
+
         opcode.eval(self.ctx)
 
         #RETURN or THROW occured
@@ -303,13 +313,6 @@ class BytecodeRoutine(BaseRoutine):
             return
 
         #print "result", self.result
-        debug = True
-        if debug:
-            d = u'%s\t%s' % (unicode(str(self.pc)), unicode(str(opcode)))
-            #d = u'%s' % (unicode(str(pc)))
-            #d = u'%3d %25s %s %s' % (pc, unicode(opcode), unicode([unicode(s) for s in ctx._stack_]), unicode(result))
-
-            # print(getattr(self, "_name_", None), str(hex(id(self))), d)
         if isinstance(opcode, BaseJump):
             #print "JUMP"
             new_pc = opcode.do_jump(self.ctx, self.pc)
