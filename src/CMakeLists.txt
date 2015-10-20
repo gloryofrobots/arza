@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 project(obin)
 
 
-SET(OBIN_EXECUTABLE obin)
+SET(OBIN_EXECUTABLE obinepa)
 SET(OBIN_LIBRARY libobin)
 
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules)

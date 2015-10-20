@@ -1,13 +1,16 @@
+//COMMENT
+/*
+MULTILINE
+COMMENT
+*/
+
 n = 42;
 d = 3.1415926535;
 s = "Some String"
 a = [1, 2.34, "SSS"]
 c = 'C'
 
-o = {
-    id: 42,
-    label: "xxx"
-}
+
 
 if x > 10 {
     print(x,30);
@@ -26,9 +29,9 @@ for x,y,t in data {
 }
 
 fn fib(n) {
-   fn process(n,a,b) {
-        return process(n-1, b, a+b) if n>0 else a;
+   fn _process(n,a,b) {
+        return _process(n-1, b, a+b) if n>0 else a;
    }
 
-   return process(n,0,1);
+   return _process(n,0,1);
 }

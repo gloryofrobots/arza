@@ -1,293 +1,389 @@
-var _ = require('underscore-node');
-var fs = require('fs');
-var http = require('http') // http module
-    , qs = require('qs'); // querystring parser
+__author__ = 'gloryofrobots'
+import lexer
+import tokens as T
 
-// tokens.js
-// 2010-02-23
+def testprogram():
+    data = ""
+    with open("program.obn") as f:
+        data = f.read()
 
-// (c) 2006 Douglas Crockford
-
-// Produce an array of simple token objects from a string.
-// A simple token object contains these members:
-//      type: 'name', 'string', 'number', 'operator'
-//      value: string or number value of the token
-//      from: index of first character of the token
-//      to: index of the last character + 1
-
-// Comments of the // type are ignored.
-
-// Operators are by default single characters. Multicharacter
-// operators can be made by supplying a string of prefix and
-// suffix characters.
-// characters. For example,
-//      '<>+-&', '=>&:'
-// will match any of these:
-//      <=  >>  >>>  <>  >=  +: -: &: &&: &&
+    return data
 
 
 
-String.prototype.tokens = function (prefix, suffix) {
-    var c;                      // The current character.
-    var from;                   // The index of the start of the token.
-    var i = 0;                  // The index of the current character.
-    var length = this.length;
-    var n;                      // The number value.
-    var q;                      // The quote character.
-    var str;                    // The string value.
-    var linecount = 1;
-    var result = [];            // An array to hold the results.
 
-    var make = function (type, value) {
-// Make a token object.
 
-        return {
-            type: type,
-            value: value,
-            from: from,
-            to: i,
-            line: linecount,
-            error: function(){
-                console.error(arguments);
-                throw new Error(arguments);
-            }
-        };
-    };
+class Node:
+    def __init__(self, _type, value, position):
+        self.type = _type
+        self.value = value
+        self.position = position
+        self.children = None
+        self.arity = 0
 
-// Begin tokenization. If the source string is empty, return nothing.
+    def init(self, arity):
+        if not arity:
+            return
 
-    if (!this) {
-        return;
+        self.children = [None] * arity
+        self.arity = arity
+
+    def setchild(self, index, value):
+        self.children[index] = value
+
+    def getchild(self, index):
+        return self.children[index]
+
+    def setfirst(self, value):
+        self.setchild(0, value)
+
+    def setsecond(self, value):
+        self.setchild(1, value)
+
+    def setthird(self, value):
+        self.setchild(2, value)
+
+    def setfourth(self, value):
+        self.setchild(3, value)
+
+    def first(self):
+        return self.getchild(0)
+
+    def second(self):
+        return self.getchild(1)
+
+    def third(self):
+        return self.getchild(2)
+
+    def fourth(self):
+        return self.getchild(3)
+
+    def __repr__(self):
+        d = {"type": self.type, "value": self.value,
+             "arity": self.arity, "pos": self.position,
+             "items": [str(item) for item in self.items if item is not None]}
+        import json
+        return json.dumps(d, sort_keys=True,
+                  indent=4, separators=(',', ': '))
+
+
+def set_handler(parser, ttype, handler):
+    parser.handlers[ttype] = handler
+
+def node_handler(parser, node):
+    return handler(parser, node.type)
+
+def handler(parser, ttype):
+    assert ttype != T.TT_ENDSTREAM
+    return parser.handlers[ttype]
+
+def nud(parser, node):
+    handler = parser.node_handler(node)
+
+    return handler.nud(parser, node)
+
+def std(parser, node):
+    handler = parser.node_handler(node)
+
+    return handler.std(parser, node)
+
+def has_nud(parser, node):
+    handler = parser.node_handler(node)
+    return handler.nud is not None
+
+def has_led(parser, node):
+    handler = parser.node_handler(node)
+    return handler.led is not None
+
+def has_std(parser, node):
+    handler = parser.node_handler(node)
+    return handler.std is not None
+
+def rbp(parser, node):
+    handler = parser.node_handler(node)
+    return handler.rbp
+
+def lbp(parser, node):
+    handler = parser.node_handler(node)
+    return handler.lbp
+
+def led(parser, node, left):
+    handler = parser.node_handler(node)
+
+    return handler.led(parser, node, left)
+
+
+class Handler(object):
+    def __init__(self):
+        self.nud = None
+        self.led = None
+        self.std = None
+        self.lbp = None
+        self.rbp = None
+        self.value = None
+
+class Parser(object):
+    def __init__(self):
+        self.handlers = {}
+        self.node = None
+        self.token = None
+        self.tokens = None
+
+    @property
+    def token_type(self):
+        return self.token.type
+
+
+    def isend(self):
+        return self.token.type == T.TT_ENDSTREAM
+
+def error(parser, message, args):
+    raise RuntimeError(message, args)
+
+def check_token_type(parser, type):
+    if parser.token.type != type:
+        error(parser, "Expected token type %s got token %s"  % (str(type)), parser.token)
+
+def check_token_types(parser, types):
+    for t in types:
+        check_token_type(parser, t)
+
+def advance(parser):
+    if parser.isend():
+        return None
+
+    parser.token = parser.tokens.next()
+    parser.node = Node(parser.token.type, parser.token.value, parser.token.position)
+
+    return parser.node
+
+def endofexpression(parser):
+    if parser.isend():
+        return None
+
+    check_token_types(parser, [T.TT_SEMI, T.TT_NEWLINE])
+    return advance(parser)
+
+def expression(parser, rbp):
+    lbp = None
+    previous = parser.node
+
+    advance(parser)
+    left = nud(parser, previous)
+    while True:
+        lbp = lbp(parser.node)
+        if rbp >= lbp:
+            break
+        previous = parser.node
+        advance(parser)
+        left = led(parser, previous, left)
+
+    return left
+
+def statement(parser):
+    value = None
+    node = parser.node
+
+    if has_std(parser, node):
+        advance(parser)
+        return std(parser, node)
+
+    value = expression(parser, 0)
+    endofexpression(parser)
+    return value
+
+def token_is_one_of(parser, types):
+    return parser.token_type in types
+
+def statements(parser, endlist=None):
+    if not endlist:
+        endlist = [T.TT_RCURLY, T.TT_NEWLINE, T.TT_ENDSTREAM]
+
+    s = None
+    stmts = []
+    while True:
+        if token_is_one_of(parser, endlist):
+            break
+        s = statement(parser)
+
+        if s is None:
+            continue
+        stmts.append(s)
+
+    length = len(stmts)
+    if length == 0:
+        return  None
+    elif length == 1:
+        return stmts[0]
+
+    return stmts
+
+def set_nud(parser, ttype, fn):
+    h = handler(parser, ttype)
+    h.nud = fn
+
+def set_std(parser, ttype, fn):
+    h = handler(parser, ttype)
+    h.std = fn
+
+def set_led(parser, ttype, lbp, fn):
+    h = handler(parser, ttype)
+    h.lbp = lbp
+    h.led = fn
+
+def itself(parser, node):
+    return node
+
+def nud_constant(parser, node):
+    h = node_handler(parser, node)
+    node.value = h.value
+    node.init(0)
+    return node
+
+def constant(parser, ttype, value):
+    h = handler(parser, ttype)
+    h.value = value
+    set_nud(parser, ttype, nud_constant)
+
+def led_infix(parser, node, left):
+    h = node_handler(parser, node)
+    node.init(2)
+    node.setfirst(left)
+    exp = None
+    while exp is None:
+        exp = expression(parser, h.lbp)
+
+    node.setsecond(exp)
+    return node
+
+def infix(parser, ttype, lbp, led=led_infix):
+    set_led(parser, ttype, lbp, led)
+
+
+def led_infixr(parser, node, left):
+    h = node_handler(parser, node)
+    node.init(2)
+
+    node.setfirst(left)
+    exp = expression(parser, h.lbp - 1)
+    node.setsecond(exp)
+
+    return node
+
+def infix(parser, ttype, lbp, led=led_infixr):
+    set_led(parser, ttype, lbp, led)
+
+
+OAny _led_infixr_assign(OState* S, OAny parser, OAny node, OAny left) {
+    ONode_init(S, node, 2);
+
+    switch(_node_type(left)) {
+    case TT_DOT:
+    case TT_LSQUARE:
+    case TT_NAME:
+    case TT_COMMA:
+        break;
+    default:
+        return parse_error(S, parser, "Bad lvalue in assignment", left);
     }
 
-// If prefix and suffix strings are not provided, supply defaults.
+    _node_setfirst(S, node, left);
+    _node_setsecond(S, node,  OSyntax_expression(S, parser, 9));
 
-    if (typeof prefix !== 'string') {
-        prefix = '<>+-&';
-    }
-    if (typeof suffix !== 'string') {
-        suffix = '=>&:';
-    }
+    return node;
+}
+
+void _assignment(OState* S, TokenType type) {
+    _infixr(S, type, 10, _led_infixr_assign);
+}
+
+OAny _prefix_nud(OState* S, OAny parser, OAny node) {
+    ONode_init(S, node, 1);
+    _node_setfirst(S, node, OSyntax_expression(S, parser, 70));
+    return node;
+}
+
+void _prefix(OState* S, TokenType type) {
+    NodeHandler_setNud(S, type, _prefix_nud);
+}
+
+void _statement(OState* S, TokenType type, StdFunction std) {
+    NodeHandler_setStd(S, type, std);
+}
+
+void _literal(OState* S, TokenType type) {
+    NodeHandler_setNud(S, type, _itself);
+}
+
+OAny _nud_empty(OState* S, OAny parser, OAny node) {
+    return ObinNil;
+}
+
+OAny OParser_parse(OState* S, OAny parser) {
+    OParser_advance(S, parser);
+
+    OAny stmts = OSyntax_statements(S, parser, ObinNil);
+    OParser_advanceExpected(S, parser, OInteger(TT_ENDSTREAM));
+    return stmts;
+}
+
+OAny OParser_fromString(OState* S, OAny str) {
+    ostring data = OString_cstr(S, str);
+    OParser* parser = obin_new(S, OParser);
+    parser->lexer = YYLexer_fromString(data);
+
+    return OCell_new(-124, (OCell*) parser, 0);
+}
+
+OAny OParser_parseString(OState* S, OAny str) {
+    return OParser_parse(S, OParser_fromString(S, str));
+}
+
+OAny OParser_parseCString(OState* S, ostring str) {
+    return OParser_parseString(S, OString(S, str));
+}
+
+obool oparser_init(OState* S) {
+    omemset(handlers, 0, sizeof(NodeHandler) * TT_END_TOKEN_TYPE);
+    _infix(S, TT_ADD, 50, 0);
+    _infix(S, TT_SUB, 50, 0);
+    _infix(S, TT_MUL, 60, 0);
+    _infix(S, TT_DIVIDE, 60, 0);
+    _literal(S, TT_INT);
+    _literal(S, TT_FLOAT);
+    _literal(S, TT_CHAR);
+    _literal(S, TT_STR);
+
+    _assignment(S, TT_ASSIGN);
+
+    OSyntax_statements__defaultendlist__ = OArray_ofInts(S, 4, TT_RCURLY, TT_ENDSTREAM, TT_END, TT_NEWLINE);
+    return OTRUE;
+}
 
 
-// Loop through this text, one character at a time.
 
-    c = this.charAt(i);
-    while (c) {
-        from = i;
 
-// Ignore whitespace.
 
-        if( c == "\n") {
-            linecount+=1;
-            i += 1;
-            result.push(make('(endline)', "(endline)"));
-            c = this.charAt(i);
 
-        }
-        else if (c <= ' ') {
-            i += 1;
-            c = this.charAt(i);
 
-// name.
 
-        } else if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
-            str = c;
-            i += 1;
-            for (;;) {
-                c = this.charAt(i);
-                if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
-                    (c >= '0' && c <= '9') || c === '_') {
-                    str += c;
-                    i += 1;
-                } else {
-                    break;
-                }
-            }
-            result.push(make('name', str));
 
-// number.
+def parse():
+    txt = testprogram()
+    lx = lexer.lexer(txt)
+    tokens = lx.tokens()
+    
+    try:
+        for tok in lx.tokens():
+            print(tok)
+    except lexer.LexerError as e:
+        print "Lexer Error at ", e.pos
+        print txt[e.pos:]
 
-// A number cannot start with a decimal point. It must start with a digit,
-// possibly '0'.
+parse()
 
-        } else if (c >= '0' && c <= '9') {
-            str = c;
-            i += 1;
 
-// Look for more digits.
 
-            for (;;) {
-                c = this.charAt(i);
-                if (c < '0' || c > '9') {
-                    break;
-                }
-                i += 1;
-                str += c;
-            }
-
-// Look for a decimal fraction part.
-
-            if (c === '.') {
-                i += 1;
-                str += c;
-                for (;;) {
-                    c = this.charAt(i);
-                    if (c < '0' || c > '9') {
-                        break;
-                    }
-                    i += 1;
-                    str += c;
-                }
-            }
-
-// Look for an exponent part.
-
-            if (c === 'e' || c === 'E') {
-                i += 1;
-                str += c;
-                c = this.charAt(i);
-                if (c === '-' || c === '+') {
-                    i += 1;
-                    str += c;
-                    c = this.charAt(i);
-                }
-                if (c < '0' || c > '9') {
-                    make('number', str).error("Bad exponent");
-                }
-                do {
-                    i += 1;
-                    str += c;
-                    c = this.charAt(i);
-                } while (c >= '0' && c <= '9');
-            }
-
-// Make sure the next character is not a letter.
-
-            if (c >= 'a' && c <= 'z') {
-                str += c;
-                i += 1;
-                make('number', str).error("Bad number");
-            }
-
-// Convert the string value to a number. If it is finite, then it is a good
-// token.
-
-            n = +str;
-            if (isFinite(n)) {
-                result.push(make('number', n));
-            } else {
-                make('number', str).error("Bad number");
-            }
-
-// string
-
-        } else if (c === '\'' || c === '"') {
-            str = '';
-            q = c;
-            i += 1;
-            for (;;) {
-                c = this.charAt(i);
-                if (c < ' ') {
-                    make('string', str).error(c === '\n' || c === '\r' || c === '' ?
-                        "Unterminated string." :
-                        "Control character in string.", make('', str));
-                }
-
-// Look for the closing quote.
-
-                if (c === q) {
-                    break;
-                }
-
-// Look for escapement.
-
-                if (c === '\\') {
-                    i += 1;
-                    if (i >= length) {
-                        make('string', str).error("Unterminated string");
-                    }
-                    c = this.charAt(i);
-                    switch (c) {
-                        case 'b':
-                            c = '\b';
-                            break;
-                        case 'f':
-                            c = '\f';
-                            break;
-                        case 'n':
-                            c = '\n';
-                            break;
-                        case 'r':
-                            c = '\r';
-                            break;
-                        case 't':
-                            c = '\t';
-                            break;
-                        case 'u':
-                            if (i >= length) {
-                                make('string', str).error("Unterminated string");
-                            }
-                            c = parseInt(this.substr(i + 1, 4), 16);
-                            if (!isFinite(c) || c < 0) {
-                                make('string', str).error("Unterminated string");
-                            }
-                            c = String.fromCharCode(c);
-                            i += 4;
-                            break;
-                    }
-                }
-                str += c;
-                i += 1;
-            }
-            i += 1;
-            result.push(make('string', str));
-            c = this.charAt(i);
-
-// comment.
-
-        } else if (c === '/' && this.charAt(i + 1) === '/') {
-            i += 1;
-            for (;;) {
-                c = this.charAt(i);
-                if (c === '\n' || c === '\r' || c === '') {
-                    break;
-                }
-                i += 1;
-            }
-
-// combining
-
-        } else if (prefix.indexOf(c) >= 0) {
-            str = c;
-            i += 1;
-            while (true) {
-                c = this.charAt(i);
-                if (i >= length || suffix.indexOf(c) < 0) {
-                    break;
-                }
-                str += c;
-                i += 1;
-            }
-            result.push(make('operator', str));
-
-// single-character operator
-
-        } else {
-            i += 1;
-            result.push(make('operator', c));
-            c = this.charAt(i);
-        }
-    }
-    return result;
-};
-
-// parse.js
-// Parser for Simplified JavaScript written in Simplified JavaScript
-// From Top Down Operator Precedence
-// http://javascript.crockford.com/tdop/index.html
-// Douglas Crockford
-// 2010-06-26
 
 var make_parse = function () {
     var symbol_table = {};

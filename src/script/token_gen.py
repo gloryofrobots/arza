@@ -15,10 +15,9 @@ TOKENS = [
   ("TT_FOR", "for"),
   ("TT_WHILE", "while"),
   ("TT_IF", "if"),
-  ("TT_THEN", "then"),
-  ("TT_END", "end"),
-  ("TT_FUNC", "func"),
-  ("TT_CELL", "cell"),
+  ("TT_OF", "of"),
+  ("TT_MATCH", "match"),
+  ("TT_FN", "fn"),
   ("TT_AND", "and"),
   ("TT_OR", "or"),
   ("TT_NOT", "not"),
@@ -65,8 +64,8 @@ TOKENS = [
   ("TT_MOD", "%"),
   ("TT_LESS", "<"),
   ("TT_GREATER", ">"),
-  ("TT_QUESTION", "?")
-  ("TT_UNDEFINED", None)
+  ("TT_QUESTION", "?"),
+  ("TT_UNKNOWN", None)
 ]
 
 print "********************************ENUM********************************"
@@ -83,3 +82,16 @@ for name,pattern in TOKENS:
         print "\"%s\" { return %s; }" % (pattern, name)
 
 
+## FOR PYTHON LEXER
+print "************************PYTHON TOKENS*****************************"
+for number, token in enumerate(TOKENS):
+    print "%s = %d" % (token[0],number)
+    
+print "************************PYTHON LEXER*****************************"
+for name,pattern in TOKENS:
+    print "    ('%s', %s)," % (pattern, name)
+   
+   
+print "************************PYTHON BINDINGS*****************************"
+for name,pattern in TOKENS:
+    print "TT_REPR[%s] = '%s'" % (name, name)
