@@ -15,6 +15,7 @@ TOKENS = [
   ("TT_FOR", "for"),
   ("TT_WHILE", "while"),
   ("TT_IF", "if"),
+  ("TT_ELIF", "elif"),
   ("TT_OF", "of"),
   ("TT_MATCH", "match"),
   ("TT_FN", "fn"),

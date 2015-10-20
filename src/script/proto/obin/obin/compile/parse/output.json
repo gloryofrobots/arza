@@ -1,37 +1,30 @@
 [
     {
-        "_type": "TT_DO",
-        "_value": "do",
+        "_type": "TT_IF",
+        "_value": "if",
         "children": [
             [
-                {
-                    "_type": "TT_ADD",
-                    "_value": "+",
-                    "children": [
-                        {
-                            "_type": "TT_INT",
-                            "_value": "1"
-                        },
-                        {
-                            "_type": "TT_INT",
-                            "_value": "4"
-                        }
-                    ]
-                },
-                {
-                    "_type": "TT_MUL",
-                    "_value": "*",
-                    "children": [
-                        {
-                            "_type": "TT_INT",
-                            "_value": "5"
-                        },
-                        {
-                            "_type": "TT_NAME",
-                            "_value": "x"
-                        }
-                    ]
-                }
+                [
+                    {
+                        "_type": "TT_EQ",
+                        "_value": "==",
+                        "children": [
+                            {
+                                "_type": "TT_NAME",
+                                "_value": "x"
+                            },
+                            {
+                                "_type": "TT_INT",
+                                "_value": "1"
+                            }
+                        ]
+                    },
+                    {
+                        "_type": "TT_NAME",
+                        "_value": "x"
+                    }
+                ],
+                []
             ]
         ]
     }

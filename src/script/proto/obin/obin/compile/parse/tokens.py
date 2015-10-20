@@ -59,6 +59,7 @@ RULES = [
     ('for', TT_FOR),
     ('while', TT_WHILE),
     ('if', TT_IF),
+    ('elif', TT_ELIF),
     ('of', TT_OF),
     ('match', TT_MATCH),
     ('fn', TT_FN),

@@ -44,8 +44,8 @@
       <file leaf-file-name="parser2.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/obin/compile/parse/parser2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4712042">
-              <caret line="551" column="0" selection-start-line="551" selection-start-column="0" selection-end-line="551" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.8507853">
+              <caret line="775" column="27" selection-start-line="775" selection-start-column="27" selection-end-line="775" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -115,7 +115,7 @@
         <entry file="file://$PROJECT_DIR$/obin/compile/parse/token_type.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="71" column="0" selection-start-line="71" selection-start-column="0" selection-end-line="71" selection-end-column="0" />
+              <caret line="49" column="0" selection-start-line="49" selection-start-column="0" selection-end-line="49" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -594,8 +594,8 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1" y="0" width="1368" height="736" extended-state="6" />
-    <editor active="true" />
+    <frame x="-1" y="0" width="1368" height="736" extended-state="7" />
+    <editor active="false" />
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32970452" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1053,10 +1053,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/obin/compile/parse/token_type.py">
+    <entry file="file://$PROJECT_DIR$/obin/compile/parse/lexer.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="71" column="0" selection-start-line="71" selection-start-column="0" selection-end-line="71" selection-end-column="0" />
+          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1069,18 +1069,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/obin/compile/parse/lexer.py">
+    <entry file="file://$PROJECT_DIR$/obin/compile/parse/token_type.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+          <caret line="49" column="0" selection-start-line="49" selection-start-column="0" selection-end-line="49" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/obin/compile/parse/parser2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4712042">
-          <caret line="551" column="0" selection-start-line="551" selection-start-column="0" selection-end-line="551" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.8507853">
+          <caret line="775" column="27" selection-start-line="775" selection-start-column="27" selection-end-line="775" selection-end-column="27" />
           <folding />
         </state>
       </provider>

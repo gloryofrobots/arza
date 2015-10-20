@@ -68,8 +68,8 @@ class Node:
             elif isinstance(child, Node):
                 children.append(child.to_dict())
             else:
-                children.append(child)
-                # raise ValueError("Node child wrong type", child)
+                # children.append(child)
+                raise ValueError("Node child wrong type", child)
 
         return children
 
@@ -548,6 +548,43 @@ def parser_init(parser):
         return node
 
     prefix(parser, T.TT_DO, _prefix_do)
+
+    def _prefix_if(parser, node):
+        node.init(1)
+        branches = []
+        branch = [None] * 2
+        branch[0] = expression(parser, 0)
+        advance_expected(parser, T.TT_LCURLY)
+        branch[1] = (statements(parser, [T.TT_RCURLY]))
+        branches.append(branch)
+        advance_expected(parser, T.TT_RCURLY)
+
+        while parser.token_type == T.TT_ELIF:
+            advance_expected(parser, T.TT_ELIF)
+
+            branch = [None] * 2
+            branch[0] = expression(parser, 0)
+            advance_expected(parser, T.TT_LCURLY)
+            branch[1] = (statements(parser, [T.TT_RCURLY]))
+            branches.append(branch)
+            advance_expected(parser, T.TT_RCURLY)
+
+        if parser.token_type == T.TT_ELSE:
+            branch = [None] * 2
+            advance_expected(parser, T.TT_ELSE)
+            advance_expected(parser, T.TT_LCURLY)
+            branch[0] = []
+            branch[1] = statements(parser, [T.TT_RCURLY])
+            advance_expected(parser, T.TT_RCURLY)
+            branches.append(branch)
+        else:
+            branches.append([])
+
+        #append else branch anyway
+        node.setfirst(branches)
+        return node
+
+    prefix(parser, T.TT_IF, _prefix_if)
 """
 
     prefix("if", function () {
@@ -736,6 +773,6 @@ def write_ast(ast):
                               indent=4, separators=(',', ': '))
         f.write(repr)
 
-ast = parse_string("do { 1 +4; 5 * x; }")
+ast = parse_string("if x == 1 { x;  }")
 write_ast(ast)
 
