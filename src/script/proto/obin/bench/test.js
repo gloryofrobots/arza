@@ -20,6 +20,78 @@ else {
     print(f(2,3));
 }*/
 
+function range(start, end, step) {
+        step = step || 1;
+        if (!end) {
+            end = start;
+            start = 0;
+        }
+        var arr = [];
+        for (var i = start; i < end; i += step) arr.push(i);
+        return arr;
+}
+//
+//for (var y in range(10)) {
+//    print(y);
+//}
+
+function fibonacci(mode, n) {
+    function fib(n) {
+      function _process(n,a,b) {
+        return n>0 ? _process(n-1,b,a+b) : a;
+      }
+      return _process(n,0,1);
+    }
+
+    function fib2(n) {
+      var a = 0, b = 1, t;
+      while (n-- > 0) {
+        t = a;
+        a = b;
+        b += t;
+      }
+      return a;
+    }
+
+     if (mode == 1) {
+        return fib(n);
+     } else if(mode == 2) {
+        return fib2(n);
+     }
+
+}
+function fold(array, fn, initial, bind){
+		var len = array.length(), i = 0;
+		if (len == 0 && arguments.length == 1) return null;
+		var result = initial || array[i++];
+		for (; i < len; i++) {
+		    result = fn.call(bind, result, array[i], i, array);
+		}
+		return result;
+}
+function foldr(array, fn, initial, bind){
+		var len = array.length(), i = len - 1;
+		if (len == 0 && arguments.length == 1) return null;
+		var result = initial || array[i--];
+		for (; i >= 0; i--) result = fn.call(bind, result, array[i], i, array);
+		return result;
+}
+
+function root_mean_square(ary) {
+    var sum_of_squares = fold(ary, function(s,x) {return (s + x*x)}, 0);
+    return Math.sqrt(sum_of_squares / ary.length());
+}
+
+function horner(coeffs, x) {
+    return foldr(coeffs, function(acc, coeff) { return(acc * x + coeff) }, 0);
+}
+
+print(horner([-19,7,-4,6],3));  // ==> 128
+
+print( root_mean_square([1,2,3,4,5,6,7,8,9,10]) ); // ==> 6.2048368229954285
+var n = 11;
+print ("Fibonacci(" + n + ") = " + fibonacci(1, n) + " check = " + (fibonacci(1, n) == fibonacci(2, n)));
+
 function operators() {
     var z = 1 + 2;
     z = 345.5 * 34;
@@ -49,7 +121,6 @@ function main() {
     var s2 = eval("var g = 42; return g");
 
     print("EVAL IS " + s2);
-    return;
 
     var L = {};
 

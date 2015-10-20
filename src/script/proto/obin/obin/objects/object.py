@@ -816,12 +816,9 @@ class W__Array(W_BasicObject):
     def length(self):
         return len(self._items)
 
-    def _named_properties_dict(self):
-        my_d = {}
-        for i in range(self.length()):
-            my_d[unicode(str(i))] = None
+    def named_properties(self):
+        return range(len(self._items))
 
-        return my_d
 
 def put_property(obj, name, value):
     obj.put(name, value)

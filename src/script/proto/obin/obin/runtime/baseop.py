@@ -160,7 +160,7 @@ def _base_compare(x, y, _compare):
         n2 = x.ToNumber()
         return _compare(n1, n2)
 
-    if not (isstr(p1) and isstr(p2)):
+    if not (isstr(x) and isstr(y)):
         n1 = x.ToNumber()
         n2 = y.ToNumber()
         return _compare(n1, n2)

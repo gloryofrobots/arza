@@ -333,6 +333,16 @@ var make_parse = function () {
     var advance = function (ids, skip) {
         var a, o, t, v;
 
+        if(skip) {
+            t = tokens[token_nr];
+            console.log("advance", skip, t);
+            if (t.value == skip) {
+                token_nr += 1;
+                token = tokens[token_nr];
+                return advance(ids, skip);
+            }
+        }
+
         checkId(ids);
 
         if (token_nr >= tokens.length) {
@@ -344,13 +354,6 @@ var make_parse = function () {
 
         v = t.value;
         a = t.type;
-        if(skip) {
-            console.log("advance", skip, a, v)
-            if (a == skip) {
-
-                return advance(ids, skip);
-            }
-        }
         if (a === "operator" || a === "name" || a === "(endline)") {
             o = symbol_table[v];
             if (!o) {
@@ -869,7 +872,6 @@ var make_parse = function () {
         if (token.id !== "}") {
             while (true) {
                 n = token;
-                console.log(n);
                 if(n.arity == "(endline)") {
                     advance();
                     continue;
@@ -1014,6 +1016,7 @@ function prettify(ast, silent) {
 
 testparse();
 
+return;
 // create the http server
 http.createServer(function (req, res) {
     // handle the routes
