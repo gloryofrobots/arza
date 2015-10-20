@@ -26,7 +26,13 @@ class Token(object):
             t_repr = tokens.TT_REPR[self.type]
         except:
             t_repr = self.type
-        return '<%s %s p:%d>' % (t_repr, self.val, self.pos)
+
+        if self.type == tokens.TT_NEWLINE:
+            val = '\\n'
+        else:
+            val = self.val
+
+        return '<%s %s p:%d>' % (t_repr, val, self.pos)
 
 
 class LexerError(Exception):
@@ -133,6 +139,6 @@ class Lexer(object):
 def lexer(txt):
     import tokens
 
-    lx = Lexer(tokens.RULES, skip_whitespace=True)
+    lx = Lexer(tokens.RULES, skip_whitespace=False)
     lx.input(txt)
     return lx

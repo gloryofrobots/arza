@@ -10,9 +10,6 @@ def testprogram():
     return data
 
 
-
-
-
 class Node:
     def __init__(self, _type, value, position):
         self.type = _type
@@ -67,48 +64,54 @@ class Node:
                   indent=4, separators=(',', ': '))
 
 
-def set_handler(parser, ttype, handler):
-    parser.handlers[ttype] = handler
+def set_handler(parser, ttype, h):
+    parser.handlers[ttype] = h
+    return handler(parser, ttype)
 
 def node_handler(parser, node):
     return handler(parser, node.type)
 
 def handler(parser, ttype):
     assert ttype != T.TT_ENDSTREAM
-    return parser.handlers[ttype]
+    try:
+        return parser.handlers[ttype]
+    except:
+        return set_handler(parser, ttype, Handler())
+        # parser.handlers[ttype] = Handler()
+        # return handler(parser, ttype)
+        #error(parser, "Handler not exists %s" % T.TT_TO_STR(ttype))
 
 def nud(parser, node):
-    handler = parser.node_handler(node)
-
+    handler = node_handler(parser, node)
     return handler.nud(parser, node)
 
 def std(parser, node):
-    handler = parser.node_handler(node)
+    handler = node_handler(parser, node)
 
     return handler.std(parser, node)
 
 def has_nud(parser, node):
-    handler = parser.node_handler(node)
+    handler = node_handler(parser, node)
     return handler.nud is not None
 
 def has_led(parser, node):
-    handler = parser.node_handler(node)
+    handler = node_handler(parser, node)
     return handler.led is not None
 
 def has_std(parser, node):
-    handler = parser.node_handler(node)
+    handler = node_handler(parser, node)
     return handler.std is not None
 
 def rbp(parser, node):
-    handler = parser.node_handler(node)
+    handler = node_handler(parser, node)
     return handler.rbp
 
 def lbp(parser, node):
-    handler = parser.node_handler(node)
+    handler = node_handler(parser, node)
     return handler.lbp
 
 def led(parser, node, left):
-    handler = parser.node_handler(node)
+    handler = node_handler(parser, node)
 
     return handler.led(parser, node, left)
 
@@ -123,26 +126,30 @@ class Handler(object):
         self.value = None
 
 class Parser(object):
-    def __init__(self):
+    def __init__(self, tokens):
         self.handlers = {}
         self.node = None
         self.token = None
-        self.tokens = None
+        self.tokens = tokens
 
     @property
     def token_type(self):
         return self.token.type
 
+    def next(self):
+        self.token = self.tokens.next()
+        self.node = Node(self.token.type, self.token.val, self.token.pos)
+        return self.node
 
     def isend(self):
         return self.token.type == T.TT_ENDSTREAM
 
-def error(parser, message, args):
+def error(parser, message, args=None):
     raise RuntimeError(message, args)
 
 def check_token_type(parser, type):
     if parser.token.type != type:
-        error(parser, "Expected token type %s got token %s"  % (str(type)), parser.token)
+        error(parser, "Expected token type %s got token %s" % ((str(type)), parser.token))
 
 def check_token_types(parser, types):
     for t in types:
@@ -152,10 +159,7 @@ def advance(parser):
     if parser.isend():
         return None
 
-    parser.token = parser.tokens.next()
-    parser.node = Node(parser.token.type, parser.token.value, parser.token.position)
-
-    return parser.node
+    return parser.next()
 
 def endofexpression(parser):
     if parser.isend():
@@ -164,24 +168,50 @@ def endofexpression(parser):
     check_token_types(parser, [T.TT_SEMI, T.TT_NEWLINE])
     return advance(parser)
 
-def expression(parser, rbp):
-    lbp = None
+def expression(parser, _rbp):
     previous = parser.node
+    print "******"
+    print "rbp ", _rbp
+    print "previous", previous.value
 
     advance(parser)
+    print "current", parser.token
+
     left = nud(parser, previous)
+    print "left", left.value
     while True:
-        lbp = lbp(parser.node)
-        if rbp >= lbp:
+        _lbp = lbp(parser, parser.node)
+        if _rbp >= _lbp:
             break
         previous = parser.node
         advance(parser)
         left = led(parser, previous, left)
 
     return left
+"""
+var expression = function (rbp) {
+        var left;
+        var t = token;
+        // console.log("****************")
+         console.log("rbp: ", rbp)
+         console.log("previous", t.value);
+        advance();
+         console.log("current", token.value, token.lbp);
+        left = t.nud();
+         console.log("left", left.value);
+        console.log("expression:", rbp, t.rbp, t.value, token.value, token.rbp, token.lbp);
+        while (rbp < token.lbp) {
+             console.log(token.lbp);
+            t = token;
+            advance();
+           //console.log("expression2:",   token.value, token.rbp, token.lbp);
 
+            left = t.led(left);
+        }
+        return left;
+    };
+"""
 def statement(parser):
-    value = None
     node = parser.node
 
     if has_std(parser, node):
@@ -270,109 +300,75 @@ def led_infixr(parser, node, left):
 
     return node
 
-def infix(parser, ttype, lbp, led=led_infixr):
+def infixr(parser, ttype, lbp, led=led_infixr):
     set_led(parser, ttype, lbp, led)
 
+def led_infixr_assign(parser, node, left):
+    node.init(2)
+    if left.type not in [T.TT_DOT, T.TT_LSQUARE, T.TT_NAME, T.TT_COMMA]:
+        error(parser, "Bad lvalue in assignment", left)
+    node.setfirst(left)
+    exp = expression(parser, node, 9)
+    node.setsecond(exp)
 
-OAny _led_infixr_assign(OState* S, OAny parser, OAny node, OAny left) {
-    ONode_init(S, node, 2);
+    return node
 
-    switch(_node_type(left)) {
-    case TT_DOT:
-    case TT_LSQUARE:
-    case TT_NAME:
-    case TT_COMMA:
-        break;
-    default:
-        return parse_error(S, parser, "Bad lvalue in assignment", left);
-    }
+def assignment(parser, ttype):
+    infixr(parser, ttype, 10, led_infixr_assign)
 
-    _node_setfirst(S, node, left);
-    _node_setsecond(S, node,  OSyntax_expression(S, parser, 9));
+def prefix_nud(parser, node):
+    node.init(1)
+    exp = expression(parser, 70)
+    node.setfirst(exp)
+    return node
 
-    return node;
-}
+def prefix(parser, ttype):
+    set_nud(parser, ttype, prefix_nud)
 
-void _assignment(OState* S, TokenType type) {
-    _infixr(S, type, 10, _led_infixr_assign);
-}
+def std_statement(parser, ttype, std):
+    set_std(parser, ttype, std)
 
-OAny _prefix_nud(OState* S, OAny parser, OAny node) {
-    ONode_init(S, node, 1);
-    _node_setfirst(S, node, OSyntax_expression(S, parser, 70));
-    return node;
-}
+def literal(parser, ttype):
+    set_nud(parser, ttype, itself)
 
-void _prefix(OState* S, TokenType type) {
-    NodeHandler_setNud(S, type, _prefix_nud);
-}
+def empty(parser, node):
+    return None
 
-void _statement(OState* S, TokenType type, StdFunction std) {
-    NodeHandler_setStd(S, type, std);
-}
-
-void _literal(OState* S, TokenType type) {
-    NodeHandler_setNud(S, type, _itself);
-}
-
-OAny _nud_empty(OState* S, OAny parser, OAny node) {
-    return ObinNil;
-}
-
-OAny OParser_parse(OState* S, OAny parser) {
-    OParser_advance(S, parser);
-
-    OAny stmts = OSyntax_statements(S, parser, ObinNil);
-    OParser_advanceExpected(S, parser, OInteger(TT_ENDSTREAM));
-    return stmts;
-}
-
-OAny OParser_fromString(OState* S, OAny str) {
-    ostring data = OString_cstr(S, str);
-    OParser* parser = obin_new(S, OParser);
-    parser->lexer = YYLexer_fromString(data);
-
-    return OCell_new(-124, (OCell*) parser, 0);
-}
-
-OAny OParser_parseString(OState* S, OAny str) {
-    return OParser_parse(S, OParser_fromString(S, str));
-}
-
-OAny OParser_parseCString(OState* S, ostring str) {
-    return OParser_parseString(S, OString(S, str));
-}
-
-obool oparser_init(OState* S) {
-    omemset(handlers, 0, sizeof(NodeHandler) * TT_END_TOKEN_TYPE);
-    _infix(S, TT_ADD, 50, 0);
-    _infix(S, TT_SUB, 50, 0);
-    _infix(S, TT_MUL, 60, 0);
-    _infix(S, TT_DIVIDE, 60, 0);
-    _literal(S, TT_INT);
-    _literal(S, TT_FLOAT);
-    _literal(S, TT_CHAR);
-    _literal(S, TT_STR);
-
-    _assignment(S, TT_ASSIGN);
-
-    OSyntax_statements__defaultendlist__ = OArray_ofInts(S, 4, TT_RCURLY, TT_ENDSTREAM, TT_END, TT_NEWLINE);
-    return OTRUE;
-}
+def parse(parser):
+    parser.next()
+    stmts = statements(parser)
+    check_token_type(parser, T.TT_ENDSTREAM)
+    return stmts
 
 
+def parser_init(parser):
+    infix(parser, T.TT_ADD, 50)
+    infix(parser, T.TT_SUB, 50)
+    infix(parser, T.TT_MUL, 60)
+    infix(parser, T.TT_DIVIDE, 60)
+    literal(parser, T.TT_INT)
+    literal(parser, T.TT_FLOAT)
+    literal(parser, T.TT_CHAR)
+    literal(parser, T.TT_STR)
+
+    assignment(parser, T.TT_ASSIGN)
 
 
-
-
-
-
-
-def parse():
-    txt = testprogram()
+def parser_from_str(txt):
     lx = lexer.lexer(txt)
     tokens = lx.tokens()
-    
+    parser = Parser(tokens)
+    parser_init(parser)
+    return parser
+
+def parse_string(txt):
+    parser = parser_from_str(txt)
+    return parse(parser)
+
+
+def test_lexer():
+    txt = testprogram()
+    lx = lexer.lexer(txt)
     try:
         for tok in lx.tokens():
             print(tok)
@@ -380,9 +376,17 @@ def parse():
         print "Lexer Error at ", e.pos
         print txt[e.pos:]
 
-parse()
 
+def write_ast(ast):
+    import json
+    repr = json.dumps(ast, sort_keys=True,
+                      indent=4, separators=(',', ': '))
+    print repr
 
+ast = parse_string("2+3")
+write_ast(ast)
+
+"""
 
 
 var make_parse = function () {
@@ -1116,30 +1120,5 @@ function prettify(ast, silent) {
 
 testparse();
 
-return;
-// create the http server
-http.createServer(function (req, res) {
-    // handle the routes
-    if (req.method == 'POST') {
-        // pipe the request data to the console
-        var body = "";
-        req.on('data', function(chunk) {
-            console.log("Received body data:");
-           body += chunk.toString();
-            console.log(body);
-        });
 
-        req.on("end", function(){
-            var decodedBody = qs.parse(body);
-            console.log(decodedBody);
-            res.writeHead(200, {'Content-Type': 'text/json'});
-            var program = decodedBody['program'];
-            console.log("prog", program);
-            var ast = parse(program);
-            console.log("ast", ast);
-            res.write(ast);
-            res.end();
-        });
-
-    }
-}).listen(8084);
+"""

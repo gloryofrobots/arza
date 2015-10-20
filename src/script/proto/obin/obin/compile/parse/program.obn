@@ -4,12 +4,13 @@ MULTILINE
 COMMENT
 */
 
-n = 42;
+2 + 3 * 4
+
+/*
 d = 3.1415926535;
 s = "Some String"
 a = [1, 2.34, "SSS"]
 c = 'C'
-
 
 
 if x > 10 {
@@ -28,6 +29,7 @@ for x,y,t in data {
     print(x + y);
 }
 
+
 fn fib(n) {
    fn _process(n,a,b) {
         return _process(n-1, b, a+b) if n>0 else a;
@@ -35,3 +37,4 @@ fn fib(n) {
 
    return _process(n,0,1);
 }
+*/

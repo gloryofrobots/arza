@@ -129,6 +129,9 @@ TT_REPR[TT_GREATER] = 'TT_GREATER'
 TT_REPR[TT_QUESTION] = 'TT_QUESTION'
 TT_REPR[TT_UNKNOWN] = 'TT_UNKNOWN'
 
+def TT_TO_STR(ttype):
+    return TT_REPR[ttype]
+
 ## Regexes for use in tokens
 ##
 ##
@@ -172,9 +175,10 @@ hex_floating_constant = '('+hex_prefix+'('+hex_digits+'|'+hex_fractional_constan
 
 
 RULES = [
+    ('\n', TT_NEWLINE),
+    (' ', None),
     ('//[^\n]*', None),
     ('/\*[^\*\/]*\*/', None),
-    ('\n', TT_NEWLINE),
     (floating_constant, TT_FLOAT),
     (decimal_constant, TT_INT),
     (string_literal, TT_STR),
@@ -216,7 +220,7 @@ RULES = [
     ('\{', TT_LCURLY),
     ('\}', TT_RCURLY),
     ('\,', TT_COMMA),
-    ('\=', TT_ASSIGN),
+    ('=', TT_ASSIGN),
     ('\(', TT_LPAREN),
     ('\)', TT_RPAREN),
     ('\[', TT_LSQUARE),
@@ -261,3 +265,4 @@ RULES2 = [
     ('::',              'CONCAT'),
     (';',               'SEMI'),
 ]
+
