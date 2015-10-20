@@ -55,11 +55,19 @@ class Node:
     def fourth(self):
         return self.getchild(3)
 
+    def to_dict(self):
+        d = {"type": T.TT_TO_STR(self.type), "value": self.value,
+             "arity": self.arity, "pos": self.position}
+
+        if self.children:
+            d['children'] = [child.to_dict() for child in self.children if child is not None]
+
+        return d
+
     def __repr__(self):
-        d = {"type": self.type, "value": self.value,
-             "arity": self.arity, "pos": self.position,
-             "items": [str(item) for item in self.items if item is not None]}
         import json
+
+        d = self.to_dict()
         return json.dumps(d, sort_keys=True,
                   indent=4, separators=(',', ': '))
 
@@ -72,7 +80,7 @@ def node_handler(parser, node):
     return handler(parser, node.type)
 
 def handler(parser, ttype):
-    assert ttype != T.TT_ENDSTREAM
+    assert ttype < T.TT_UNKNOWN
     try:
         return parser.handlers[ttype]
     except:
@@ -149,13 +157,21 @@ def error(parser, message, args=None):
 
 def check_token_type(parser, type):
     if parser.token.type != type:
-        error(parser, "Expected token type %s got token %s" % ((str(type)), parser.token))
+        error(parser, "Expected token type %s got token %s" % ((T.TT_TO_STR(type)), parser.token))
 
 def check_token_types(parser, types):
     for t in types:
         check_token_type(parser, t)
 
 def advance(parser):
+    if parser.isend():
+        return None
+
+    return parser.next()
+
+def advance_expected(parser, ttype):
+    check_token_type(parser, ttype)
+
     if parser.isend():
         return None
 
@@ -168,17 +184,18 @@ def endofexpression(parser):
     check_token_types(parser, [T.TT_SEMI, T.TT_NEWLINE])
     return advance(parser)
 
+
 def expression(parser, _rbp):
     previous = parser.node
-    print "******"
-    print "rbp ", _rbp
-    print "previous", previous.value
+    # print "******"
+    # print "rbp ", _rbp
+    # print "previous", previous.value
 
     advance(parser)
-    print "current", parser.token
+    # print "current", parser.token
 
     left = nud(parser, previous)
-    print "left", left.value
+    # print "left", left.value
     while True:
         _lbp = lbp(parser, parser.node)
         if _rbp >= _lbp:
@@ -261,6 +278,10 @@ def set_led(parser, ttype, lbp, fn):
     h.lbp = lbp
     h.led = fn
 
+def set_lbp(parser, ttype, _lbp):
+    h = handler(parser, ttype)
+    h.lbp = _lbp
+
 def itself(parser, node):
     return node
 
@@ -325,408 +346,98 @@ def prefix_nud(parser, node):
 def prefix(parser, ttype):
     set_nud(parser, ttype, prefix_nud)
 
-def std_statement(parser, ttype, std):
+def stmt(parser, ttype, std):
     set_std(parser, ttype, std)
 
 def literal(parser, ttype):
     set_nud(parser, ttype, itself)
 
+def symbol(parser, ttype, bp=0, nud=None):
+    h = handler(parser, ttype)
+    h.lbp = bp
+    if not nud:
+        return
+    set_nud(parser, ttype, nud)
+
+def skip(parser, ttype):
+    while True:
+        if parser.token_type == ttype:
+            advance(parser)
+            continue
+        break
+
+
 def empty(parser, node):
     return None
+
+
+
+
 
 def parse(parser):
     parser.next()
     stmts = statements(parser)
+    print stmts
     check_token_type(parser, T.TT_ENDSTREAM)
     return stmts
 
 
 def parser_init(parser):
-    infix(parser, T.TT_ADD, 50)
-    infix(parser, T.TT_SUB, 50)
-    infix(parser, T.TT_MUL, 60)
-    infix(parser, T.TT_DIVIDE, 60)
     literal(parser, T.TT_INT)
     literal(parser, T.TT_FLOAT)
     literal(parser, T.TT_CHAR)
     literal(parser, T.TT_STR)
 
+    symbol(parser, T.TT_ENDSTREAM)
+    symbol(parser, T.TT_NAME)
+    symbol(parser, T.TT_COLON)
+    symbol(parser, T.TT_RPAREN)
+    symbol(parser, T.TT_RCURLY)
+    symbol(parser, T.TT_COMMA)
+    symbol(parser, T.TT_ELSE)
+    symbol(parser, T.TT_NEWLINE, nud=empty)
+    symbol(parser, T.TT_SEMI, nud=empty)
+
+    constant(parser, T.TT_TRUE, True)
+    constant(parser, T.TT_FALSE, False)
+    constant(parser, T.TT_NIL, None)
+
     assignment(parser, T.TT_ASSIGN)
+    assignment(parser, T.TT_ADD_ASSIGN)
+    assignment(parser, T.TT_SUB_ASSIGN)
 
+    infixr(parser, T.TT_AND, 30)
+    infixr(parser, T.TT_OR, 30)
+    infixr(parser, T.TT_EQ, 40)
+    infixr(parser, T.TT_IS, 40)
+    infixr(parser, T.TT_NE, 40)
+    infixr(parser, T.TT_GREATER, 40)
+    infixr(parser, T.TT_GE, 40)
+    infixr(parser, T.TT_LESS, 40)
+    infixr(parser, T.TT_LE, 40)
 
-def parser_from_str(txt):
-    lx = lexer.lexer(txt)
-    tokens = lx.tokens()
-    parser = Parser(tokens)
-    parser_init(parser)
-    return parser
+    infix(parser, T.TT_ADD, 50)
+    infix(parser, T.TT_SUB, 50)
+    infix(parser, T.TT_MUL, 60)
+    infix(parser, T.TT_DIVIDE, 60)
 
-def parse_string(txt):
-    parser = parser_from_str(txt)
-    return parse(parser)
+    prefix(parser, T.TT_NOT)
+    prefix(parser, T.TT_SUB)
 
+    def _infix_if(parser, node, left):
+        node.init(3)
+        node.setfirst(expression(parser, 0))
+        node.setsecond(left)
+        advance_expected(parser, T.TT_ELSE)
+        node.setthird(expression(parser, 0))
+        return node
 
-def test_lexer():
-    txt = testprogram()
-    lx = lexer.lexer(txt)
-    try:
-        for tok in lx.tokens():
-            print(tok)
-    except lexer.LexerError as e:
-        print "Lexer Error at ", e.pos
-        print txt[e.pos:]
+    infix(parser, T.TT_IF, 20, _infix_if)
 
-
-def write_ast(ast):
-    import json
-    repr = json.dumps(ast, sort_keys=True,
-                      indent=4, separators=(',', ': '))
-    print repr
-
-ast = parse_string("2+3")
-write_ast(ast)
-
+    def _infix_dot():
+        pass
+    
 """
-
-
-var make_parse = function () {
-    var symbol_table = {};
-    var token;
-    var tokens;
-    var token_nr;
-
-    var itself = function () {
-        return this;
-    };
-
-    var define = function (n) {
-        symbol_table[n.value] = n;
-        n.nud      = itself;
-        n.led      = null;
-        n.std      = null;
-        n.lbp      = 0;
-        return n;
-    }
-
-    var checkId = function(ids) {
-        if(!ids) {
-            return
-        }
-
-        if(!Array.isArray(ids)) {
-            if (token.id !== ids) {
-                console.error("Expected", ids, token);
-                token.error("Expected '" + ids + "'.");
-            }
-            return;
-        }
-
-        for (key in ids) {
-            if (token.id === ids[key]) {
-                return;
-            }
-        }
-        console.error("Expected", ids, token);
-        token.error("Expected '" + ids + "'.");
-    }
-
-    var skipId = function(id){
-//        console.log("TOKEN ", token, id);
-        while(true) {
-            if(token.id == id) {
-                advance();
-                continue;
-            }
-            break;
-        }
-    }
-
-    var advance = function (ids) {
-        var a, o, t, v;
-        if(arguments.length > 1) {
-            throw new Error("Wrog args");
-        }
-
-        checkId(ids);
-
-        if (token_nr >= tokens.length) {
-            token = symbol_table["(end)"];
-            return;
-        }
-        t = tokens[token_nr];
-        token_nr += 1;
-
-        v = t.value;
-        a = t.type;
-        if (a === "operator" || a === "name" || a === "(endline)") {
-            o = symbol_table[v];
-            if (!o) {
-                define(t);
-                o = t;
-                //t.error("Unknown operator. " + v);
-            }
-
-        } else if (a === "string" || a ===  "number") {
-            o = symbol_table["(literal)"];
-            a = "literal";
-        } else {
-            t.error("Unexpected token.");
-        }
-        token = Object.create(o);
-        token.from  = t.from;
-        token.line = t.line;
-        token.to    = t.to;
-        token.value = v;
-        token.id = v;
-        token.arity = a;
-        token.error = function(){
-            console.error(arguments);
-            throw new Error(arguments);
-        }
-
-        return token;
-    };
-
-    var endofexpression = function() {
-        if (token_nr >= tokens.length) {
-            return advance();
-        }
-        return advance([";","(endline)"]);
-    }
-
-    var expression = function (rbp) {
-        var left;
-        var t = token;
-        // console.log("****************")
-        // console.log("rbp: ", rbp)
-        // console.log("previous", t.value);
-        advance();
-        // console.log("current", token.value, token.lbp);
-        left = t.nud();
-        // console.log("left", left.value);
-        //console.log("expression:", rbp, t.rbp, t.value, token.value, token.rbp, token.lbp);
-        while (rbp < token.lbp) {
-            // console.log(token.lbp);
-            t = token;
-            advance();
-            //console.log("expression2:",   token.value, token.rbp, token.lbp);
-
-            left = t.led(left);
-        }
-        return left;
-    };
-
-    var statement = function () {
-        var n = token, v;
-
-        if (n.std) {
-            advance();
-            return n.std();
-        }
-        v = expression(0);
-
-        //if(v.id === "(") {
-        //    advance(")");
-        //}
-
-        //if (!v.assignment && v.id !== "(") {
-        //    v.error("Bad expression statement.");
-        //}
-        endofexpression();
-        return v;
-    };
-
-    var statements = function (endlist) {
-        var a = [], s;
-        if(!endlist) endlist = ["}", "(end)", "end", "(newline)"]
-        var check = false;
-        while (true) {
-            for(key in endlist) {
-                if(endlist[key] === token.id) {
-                    check = true;
-                }
-            }
-
-            if (check) {
-                break;
-            }
-
-            s = statement();
-            if (s) {
-                if(s) {
-                    a.push(s);
-                }
-            }
-        }
-        var result =  a.length === 0 ? null : a.length === 1 ? a[0] : a;
-        return result;
-
-    };
-
-    var block = function () {
-        var t = token;
-        advance("{");
-        return t.std();
-    };
-
-    var original_symbol = {
-        nud: function () {
-            this.error("Undefined.");
-        },
-        led: function (left) {
-            this.error("Missing operator.");
-        }
-    };
-
-    var symbol = function (id, bp) {
-        var s = symbol_table[id];
-        bp = bp || 0;
-        if (s) {
-            if (bp >= s.lbp) {
-                s.lbp = bp;
-            }
-        } else {
-            s = Object.create(original_symbol);
-            s.id = s.value = id;
-            s.lbp = bp;
-            symbol_table[id] = s;
-        }
-        return s;
-    };
-
-    var constant = function (s, v) {
-        var x = symbol(s);
-        x.nud = function () {
-            this.value = symbol_table[this.id].value;
-            this.arity = "literal";
-            return this;
-        };
-        x.value = v;
-        return x;
-    };
-
-    var infix = function (id, bp, led) {
-        var s = symbol(id, bp);
-        s.led = led || function (left) {
-            this.first = left;
-            var exp = undefined;
-            while(!exp) {
-                exp = expression(bp);
-                //console.log("infix: ", id, exp)
-            }
-            this.second = exp;
-            this.arity = "binary";
-            return this;
-        };
-        return s;
-    };
-
-    var infixr = function (id, bp, led) {
-        var s = symbol(id, bp);
-        s.led = led || function (left) {
-            this.first = left;
-            this.second = expression(bp - 1);
-            this.arity = "binary";
-            return this;
-        };
-        return s;
-    };
-
-    var assignment = function (id) {
-        return infixr(id, 10, function (left) {
-            if (left.id !== "." && left.id !== "[" && left.arity !== "name"
-                && left.id != ",") {
-                console.log("Bad Lv ", left);
-                left.error("Bad lvalue.");
-            }
-            this.first = left;
-            this.second = expression(9);
-            this.assignment = true;
-            this.arity = "binary";
-            return this;
-        });
-    };
-
-    var prefix = function (id, nud) {
-        var s = symbol(id);
-        s.nud = nud || function () {
-            this.first = expression(70);
-            this.arity = "unary";
-            return this;
-        };
-        return s;
-    };
-
-    var stmt = function (s, f) {
-        var x = symbol(s);
-        x.std = f;
-        return x;
-    };
-
-    symbol("(end)");
-    symbol("end");
-    symbol("(name)");
-    symbol(":");
-    symbol(";");
-    symbol(")");
-    symbol("]");
-    symbol("}");
-    symbol("end");
-    symbol(",");
-    symbol("else");
-
-    constant("true", true);
-    constant("false", false);
-    constant("null", null);
-    constant("pi", 3.141592653589793);
-    constant("Object", {});
-    constant("Array", []);
-
-    var empty = function() {
-        return undefined;
-    }
-
-    symbol("(endline)").nud = empty;
-    symbol(";").nud = empty;
-    symbol("(literal)").nud = itself;
-
-    symbol("this").nud = function () {
-        this.arity = "this";
-        return this;
-    };
-
-    assignment("=");
-    assignment("+=");
-    assignment("-=");
-
-    infix("if", 20, function (left) {
-        this.first = expression(0);
-        this.second = left
-        advance("else");
-        this.third = expression(0);
-        this.arity = "ternary";
-        return this;
-    });
-
-    infixr("&&", 30);
-    infixr("||", 30);
-
-    infixr("==", 40);
-    infixr("is", 40);
-    infixr("!==", 40);
-    infixr("<", 40);
-    infixr("<=", 40);
-    infixr(">", 40);
-    infixr(">=", 40);
-
-    infix("+", 50);
-    infix("-", 50);
-
-    infix("*", 60);
-    infix("/", 60);
-
-    infix("->", 80);
-
     infix(".", 80, function (left) {
         this.first = left;
         if (token.arity !== "name") {
@@ -778,43 +489,6 @@ var make_parse = function () {
         return this;
     });
 
-    var __call__ = function(id) {
-        var s = symbol(id, 80);
-        s.led = function (left) {
-            var a = [];
-            if (left.id === "." || left.id === "[") {
-                this.arity = "ternary";
-                this.first = left.first;
-                this.second = left.second;
-                this.third = a;
-            } else {
-                this.arity = "binary";
-                this.first = left;
-                this.second = a;
-            }
-
-            if (token.id == "(" || token.id == "="
-                || token.arity == "operator"
-                || token.id == ".") {
-                return this;
-            }
-
-            while (true) {
-                a.push(expression(0));
-                if (token.id !== ",") {
-                    break;
-                }
-                advance(",");
-            }
-
-            return this;
-        }
-        return s;
-    };
-
-    prefix("!");
-    prefix("-");
-    prefix("typeof");
 
     prefix("(", function () {
         var a = [];
@@ -855,33 +529,7 @@ var make_parse = function () {
         if (token.id !== ")") {
             while (true) {
                 var arg = {};
-                /*if (token.arity == "operator") {
-                 token.error("Wrong function parameter");
-                 token.error("Expected a parameter name.");
-                 }*/
-                if(token.id == "::") {
-
-                    if(a.length == 0) {
-                        token.error("Wrong list matching");
-                    }
-                    var listitems = [a.pop()];
-                    arg.id = "::"
-//                    console.log("enter ::", token, a, listitems);
-                    while(true) {
-                        advance();
-//                        console.log("::", token);
-                        if(token.arity!="name") {
-                            token.error("Wrong list item in matching");
-                        }
-                        listitems.push(token)
-                        advance();
-                        if (token.id !== "::") {
-                            arg.value = listitems;
-                            break;
-                        }
-                    }
-                    a.push(arg);
-                } else if(token.arity == "name" || token.arity == "literal") {
+                if(token.arity == "name" || token.arity == "literal") {
                     arg.arity = token.arity;
                     arg.value = token.value;
                     arg.id = token.id;
@@ -890,10 +538,6 @@ var make_parse = function () {
                     a.push(arg);
                     advance();
                 }
-                if (token.id == "::") {
-                    continue;
-                }
-
                 if (token.id !== ",") {
                     break;
                 }
@@ -1067,58 +711,45 @@ var make_parse = function () {
     });
 
 
-    return function (source) {
-        tokens = source.tokens(':=<>!+-*&|/%^', ':=<>&|');
-        var memo = _.reduce(tokens, function(memo, token){ return memo + "<" + token.value + ">,"; }, "");
-        //console.log("tokens:", memo);
-        //console.log(tokens);
-        token_nr = 0;
-        advance();
-        var s = statements();
-        advance("(end)");
-        return s;
-    };
 };
-
-function testprogram() {
-    return fs.readFileSync("program.obn", "utf8");
-}
-
-function testast() {
-    var parser = make_parse();
-    var ast = parser(testprogram());
-
-    return prettify(ast);
-}
-
-function parse(program) {
-    var parser = make_parse();
-    var ast = parser(program);
-    return prettify(ast);
-}
-
-function testparse() {
-    fs.writeFileSync('output.json', testast());
-}
-
-function prettify(ast, silent) {
-    if(silent) {
-        var cb = function(key, value) {
-            if(key  == "scope" || key == "from" || key == "to" || key == "arity") {
-                return undefined;
-            }
-            else {
-                return value;
-            }
-        }
-    } else {
-        var cb = undefined;
-    }
-
-    return JSON.stringify(ast, cb, 2);
-}
-
-testparse();
 
 
 """
+def parser_from_str(txt):
+    lx = lexer.lexer(txt)
+    tokens = lx.tokens()
+    parser = Parser(tokens)
+    parser_init(parser)
+    return parser
+
+
+def parse_string(txt):
+    parser = parser_from_str(txt)
+    return parse(parser)
+
+
+def test_lexer():
+    txt = testprogram()
+    lx = lexer.lexer(txt)
+    try:
+        for tok in lx.tokens():
+            print(tok)
+    except lexer.LexerError as e:
+        print "Lexer Error at ", e.pos
+        print txt[e.pos:]
+
+
+def write_ast(ast):
+    import json
+    if not isinstance(ast, list):
+        ast = [ast.to_dict()]
+    else:
+        ast = [node.to_dict() for node in ast]
+    with open("output.json", "w") as f:
+        repr = json.dumps(ast, sort_keys=True,
+                              indent=4, separators=(',', ': '))
+        f.write(repr)
+
+ast = parse_string("2+3*5")
+write_ast(ast)
+

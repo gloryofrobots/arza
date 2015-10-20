@@ -5,10 +5,10 @@ COMMENT
 */
 
 2 + 3 * 4
-
 /*
 d = 3.1415926535;
 s = "Some String"
+
 a = [1, 2.34, "SSS"]
 c = 'C'
 
