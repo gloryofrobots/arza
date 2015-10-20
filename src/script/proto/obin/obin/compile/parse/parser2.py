@@ -26,6 +26,10 @@ class Node:
         self.arity = arity
 
     def setchild(self, index, value):
+        assert value is not None
+        if isinstance(value, list):
+            assert None not in value
+
         self.children[index] = value
 
     def getchild(self, index):
@@ -55,12 +59,29 @@ class Node:
     def fourth(self):
         return self.getchild(3)
 
+
+    def __children_repr(self, nodes):
+        children = []
+        for child in nodes:
+            if isinstance(child, list):
+                children.append(self.__children_repr(child))
+            elif isinstance(child, Node):
+                children.append(child.to_dict())
+            else:
+                children.append(child)
+                # raise ValueError("Node child wrong type", child)
+
+        return children
+
     def to_dict(self):
-        d = {"type": T.TT_TO_STR(self.type), "value": self.value,
-             "arity": self.arity, "pos": self.position}
+        d = {"_type": T.TT_TO_STR(self.type), "_value": self.value,
+             #"arity": self.arity, "pos": self.position
+            }
 
         if self.children:
-            d['children'] = [child.to_dict() for child in self.children if child is not None]
+            d['children'] = self.__children_repr(self.children)
+            # d['children'] = [child.to_dict() if isinstance(child, Node) else child
+            #                         for child in self.children if child is not None]
 
         return d
 
@@ -69,7 +90,7 @@ class Node:
 
         d = self.to_dict()
         return json.dumps(d, sort_keys=True,
-                  indent=4, separators=(',', ': '))
+                  indent=2, separators=(',', ': '))
 
 
 def set_handler(parser, ttype, h):
@@ -123,6 +144,22 @@ def led(parser, node, left):
 
     return handler.led(parser, node, left)
 
+def set_nud(parser, ttype, fn):
+    h = handler(parser, ttype)
+    h.nud = fn
+
+def set_std(parser, ttype, fn):
+    h = handler(parser, ttype)
+    h.std = fn
+
+def set_led(parser, ttype, lbp, fn):
+    h = handler(parser, ttype)
+    h.lbp = lbp
+    h.led = fn
+
+def set_lbp(parser, ttype, _lbp):
+    h = handler(parser, ttype)
+    h.lbp = _lbp
 
 class Handler(object):
     def __init__(self):
@@ -156,12 +193,13 @@ def error(parser, message, args=None):
     raise RuntimeError(message, args)
 
 def check_token_type(parser, type):
-    if parser.token.type != type:
+    if parser.token_type != type:
         error(parser, "Expected token type %s got token %s" % ((T.TT_TO_STR(type)), parser.token))
 
 def check_token_types(parser, types):
-    for t in types:
-        check_token_type(parser, t)
+    if parser.token_type not in types:
+        error(parser, "Expected token type one of %s got token %s" %
+              ([T.TT_TO_STR(type) for type in types], parser.token))
 
 def advance(parser):
     if parser.isend():
@@ -205,29 +243,7 @@ def expression(parser, _rbp):
         left = led(parser, previous, left)
 
     return left
-"""
-var expression = function (rbp) {
-        var left;
-        var t = token;
-        // console.log("****************")
-         console.log("rbp: ", rbp)
-         console.log("previous", t.value);
-        advance();
-         console.log("current", token.value, token.lbp);
-        left = t.nud();
-         console.log("left", left.value);
-        console.log("expression:", rbp, t.rbp, t.value, token.value, token.rbp, token.lbp);
-        while (rbp < token.lbp) {
-             console.log(token.lbp);
-            t = token;
-            advance();
-           //console.log("expression2:",   token.value, token.rbp, token.lbp);
 
-            left = t.led(left);
-        }
-        return left;
-    };
-"""
 def statement(parser):
     node = parser.node
 
@@ -265,22 +281,6 @@ def statements(parser, endlist=None):
 
     return stmts
 
-def set_nud(parser, ttype, fn):
-    h = handler(parser, ttype)
-    h.nud = fn
-
-def set_std(parser, ttype, fn):
-    h = handler(parser, ttype)
-    h.std = fn
-
-def set_led(parser, ttype, lbp, fn):
-    h = handler(parser, ttype)
-    h.lbp = lbp
-    h.led = fn
-
-def set_lbp(parser, ttype, _lbp):
-    h = handler(parser, ttype)
-    h.lbp = _lbp
 
 def itself(parser, node):
     return node
@@ -329,7 +329,7 @@ def led_infixr_assign(parser, node, left):
     if left.type not in [T.TT_DOT, T.TT_LSQUARE, T.TT_NAME, T.TT_COMMA]:
         error(parser, "Bad lvalue in assignment", left)
     node.setfirst(left)
-    exp = expression(parser, node, 9)
+    exp = expression(parser, 9)
     node.setsecond(exp)
 
     return node
@@ -343,8 +343,8 @@ def prefix_nud(parser, node):
     node.setfirst(exp)
     return node
 
-def prefix(parser, ttype):
-    set_nud(parser, ttype, prefix_nud)
+def prefix(parser, ttype, nud=prefix_nud):
+    set_nud(parser, ttype, nud)
 
 def stmt(parser, ttype, std):
     set_std(parser, ttype, std)
@@ -370,10 +370,6 @@ def skip(parser, ttype):
 def empty(parser, node):
     return None
 
-
-
-
-
 def parse(parser):
     parser.next()
     stmts = statements(parser)
@@ -387,9 +383,9 @@ def parser_init(parser):
     literal(parser, T.TT_FLOAT)
     literal(parser, T.TT_CHAR)
     literal(parser, T.TT_STR)
+    literal(parser, T.TT_NAME)
 
     symbol(parser, T.TT_ENDSTREAM)
-    symbol(parser, T.TT_NAME)
     symbol(parser, T.TT_COLON)
     symbol(parser, T.TT_RPAREN)
     symbol(parser, T.TT_RCURLY)
@@ -434,135 +430,125 @@ def parser_init(parser):
 
     infix(parser, T.TT_IF, 20, _infix_if)
 
-    def _infix_dot():
-        pass
-    
-"""
-    infix(".", 80, function (left) {
-        this.first = left;
-        if (token.arity !== "name") {
-            token.error("Expected a property name.");
-        }
-        token.arity = "literal";
-        this.second = token;
-        this.arity = "binary";
-        advance();
-        return this;
-    });
+    def _infix_dot(parser, node, left):
+        node.init(2)
+        node.setfirst(left)
+        check_token_type(parser, T.TT_NAME)
+        node.setsecond(parser.node)
+        advance(parser)
+        return node
 
+    infix(parser, T.TT_DOT, 80, _infix_dot)
 
-    infix("[", 80, function (left) {
-        this.first = left;
-        this.second = expression(0);
-        this.arity = "binary";
-        advance("]");
-        return this;
-    });
+    def _infix_rsquare(parser, node, left):
+        node.init(2)
+        node.setfirst(left)
+        node.setsecond(expression(parser, 0))
+        advance_expected(parser, T.TT_RSQUARE)
+        return node
 
-    infix("(", 90, function (left) {
-        var a = [];
-        if (left.id === "." || left.id === "[") {
-            this.arity = "ternary";
-            this.first = left.first;
-            this.second = left.second;
-            this.third = a;
-        } else {
-            this.arity = "binary";
-            this.first = left;
-            this.second = a;
+    infix(parser, T.TT_LSQUARE, 80, _infix_rsquare)
+
+    def _infix_lparen(parser, node, left):
+        items = []
+        if left.type == T.TT_DOT or left.type == T.TT_LSQUARE:
+            node.init(3)
+            node.setfirst(left.first())
+            node.setsecond(left.second())
+            node.setthird(items)
+        else:
+            node.init(2)
+            node.setfirst(left)
+            node.setsecond(items)
+            """
             if ((left.arity !== "unary" || left.id !== "function") &&
                 left.arity !== "name" && left.id !== "(" &&
                 left.id !== "&&" && left.id !== "||" && left.id !== "?") {
                 left.error("Expected a variable name.");
             }
-        }
-        if (token.id !== ")") {
-            while (true) {
-                a.push(expression(0));
-                if (token.id !== ",") {
-                    break;
-                }
-                advance(",");
-            }
-        }
-        advance(")");
-        return this;
-    });
+            """
+        if parser.node.type != T.TT_RPAREN:
+            while True:
+                items.append(expression(parser, 0))
+                if parser.node.type != T.TT_COMMA:
+                    break
 
+                advance_expected(parser, T.TT_COMMA)
 
-    prefix("(", function () {
-        var a = [];
-        while (true) {
-            a.push(expression(0));
-            if (token.id !== ",") {
-                break;
-            }
-            advance(",");
-        }
+        advance_expected(parser, T.TT_RPAREN)
+        return node
 
-        advance(")");
+    infix(parser, T.TT_LPAREN, 90, _infix_lparen)
 
-        if(a.length == 1) {
-            return a[0];
-        }
+    def _prefix_lparen2(parser, node):
+        node.init(1)
+        items = []
 
-        this.first = a;
-        this.arity = "unary";
-        return this;
-    });
+        if parser.node.type != T.TT_RPAREN:
+            while True:
+                items.append(expression(parser, 0))
+                if parser.node.type != T.TT_COMMA:
+                    break
 
-    prefix("(", function () {
-        var e = expression(0);
-        advance(")");
-        return e;
-    });
+                advance_expected(parser, T.TT_COMMA)
 
+        advance_expected(parser, T.TT_RPAREN)
 
-    prefix("fn", function () {
-        var a = [],t;
-        if (token.arity === "name") {
-            define(token);
-            this.name = token.value;
-            advance();
-        }
-        advance("(");
-        if (token.id !== ")") {
-            while (true) {
-                var arg = {};
-                if(token.arity == "name" || token.arity == "literal") {
-                    arg.arity = token.arity;
-                    arg.value = token.value;
-                    arg.id = token.id;
+        if len(items) == 1:
+            return items[0]
 
-                    define(token);
-                    a.push(arg);
-                    advance();
-                }
-                if (token.id !== ",") {
-                    break;
-                }
+        node.setfirst(items)
+        return node
 
-                advance(",");
-            }
-        }
-        this.first = a;
-        advance(")");
-        advance("{");
-        this.second = statements();
-        skipId("(endline)");
-        advance("}");
-        this.arity = "function";
-        return this;
-    });
+    def _prefix_lparen(parser, node):
+        e = expression(parser, 0)
+        advance_expected(parser, T.TT_RPAREN)
+        return e
 
+    prefix(parser, T.TT_LPAREN, _prefix_lparen)
 
-    prefix("do", function () {
-        advance("{");
-        this.first = statements();
-        advance("}");
-        this.arity = "block";
-        return this;
-    });
+    def _prefix_fn(parser, node):
+        items = []
+        node.init(3)
+        if parser.token_type == T.TT_NAME:
+            node.setfirst(parser.node)
+            advance(parser)
+        else:
+            node.setfirst(Node(T.TT_NAME, "anonymous", parser.node.position))
+
+        if parser.token_type == T.TT_LPAREN:
+            advance_expected(parser, T.TT_LPAREN)
+            if parser.token_type != T.TT_RPAREN:
+                while True:
+                    if parser.token_type == T.TT_NAME:
+                        items.append(parser.node)
+                        advance(parser)
+
+                    if parser.token_type != T.TT_COMMA:
+                        break
+
+                    advance_expected(parser, T.TT_COMMA)
+
+                advance_expected(parser, T.TT_RPAREN)
+
+        node.setsecond(items)
+        advance_expected(parser, T.TT_LCURLY)
+        node.setthird(statements(parser))
+        skip(parser, T.TT_NEWLINE)
+        advance_expected(parser, T.TT_RCURLY)
+        return node
+
+    prefix(parser, T.TT_FN, _prefix_fn)
+
+    def _prefix_do(parser, node):
+        node.init(1)
+        advance_expected(parser, T.TT_LCURLY)
+        node.setfirst(statements(parser))
+        advance_expected(parser, T.TT_RCURLY)
+        return node
+
+    prefix(parser, T.TT_DO, _prefix_do)
+"""
 
     prefix("if", function () {
 
@@ -750,6 +736,6 @@ def write_ast(ast):
                               indent=4, separators=(',', ': '))
         f.write(repr)
 
-ast = parse_string("2+3*5")
+ast = parse_string("do { 1 +4; 5 * x; }")
 write_ast(ast)
 

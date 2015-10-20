@@ -27,7 +27,7 @@ TOKENS = [
   ("TT_THIS", "this"),
   ("TT_IN", "in"),
   ("TT_IS", "is"),
-
+  ("TT_RETURN", "return"),
   ("TT_ELLIPSIS", "..."),
   ("TT_ADD_ASSIGN", "+="),
   ("TT_SUB_ASSIGN", "-="),
@@ -96,8 +96,8 @@ for number, token in enumerate(TOKENS):
     print "%s = %d" % (token[0],number)
     
   
-print "TT_REPR = {}"
 print "# ************************PYTHON TOKENS REPR *****************************"
+print "TT_REPR = {}"
 for name,pattern in TOKENS:
     print "TT_REPR[%s] = '%s'" % (name, name)
 
