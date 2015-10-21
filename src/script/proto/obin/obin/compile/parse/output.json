@@ -1,31 +1,20 @@
 [
-    {
-        "_type": "TT_IF",
-        "_value": "if",
+  {
+    "_type": "TT_FN",
+    "_value": "fn",
+    "children": [
+      {
+        "_type": "TT_NAME",
+        "_value": "x"
+      },
+      [],
+      {
+        "_type": "TT_RETURN",
+        "_value": "return",
         "children": [
-            [
-                [
-                    {
-                        "_type": "TT_EQ",
-                        "_value": "==",
-                        "children": [
-                            {
-                                "_type": "TT_NAME",
-                                "_value": "x"
-                            },
-                            {
-                                "_type": "TT_INT",
-                                "_value": "1"
-                            }
-                        ]
-                    },
-                    {
-                        "_type": "TT_NAME",
-                        "_value": "x"
-                    }
-                ],
-                []
-            ]
+          []
         ]
-    }
+      }
+    ]
+  }
 ]

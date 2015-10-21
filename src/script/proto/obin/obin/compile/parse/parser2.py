@@ -360,11 +360,8 @@ def symbol(parser, ttype, bp=0, nud=None):
     set_nud(parser, ttype, nud)
 
 def skip(parser, ttype):
-    while True:
-        if parser.token_type == ttype:
-            advance(parser)
-            continue
-        break
+    while parser.token_type == ttype:
+        advance(parser)
 
 
 def empty(parser, node):
@@ -585,108 +582,71 @@ def parser_init(parser):
         return node
 
     prefix(parser, T.TT_IF, _prefix_if)
+
+    def _prefix_lsquare(parser, node):
+        items = []
+        node.init(1)
+        if parser.token_type != T.TT_RSQUARE:
+            while True:
+                items.append(expression(parser, 0))
+                if parser.token_type != T.TT_COMMA:
+                    break
+
+                advance_expected(parser, T.TT_COMMA)
+
+        node.setfirst(items)
+        advance_expected(parser, T.TT_RSQUARE)
+        return node
+
+    prefix(parser, T.TT_LSQUARE, _prefix_lsquare)
+
+    def _prefix_lcurly(parser, node):
+        items = []
+        key = None
+        value = None
+        node.init(1)
+        if parser.token_type != T.TT_RCURLY:
+            while True:
+                #TODO check it
+                skip(parser, T.TT_NEWLINE)
+                check_token_types(parser, [T.TT_NAME, T.TT_INT, T.TT_STR, T.TT_CHAR, T.TT_FLOAT])
+                key = parser.node
+                advance(parser)
+                advance_expected(parser, T.TT_COLON)
+                value = expression(parser, 0)
+                items.append([key, value])
+                if parser.token_type != T.TT_COMMA:
+                    break
+
+                advance_expected(parser, T.TT_COMMA)
+
+        skip(parser, T.TT_NEWLINE)
+        advance_expected(parser, T.TT_RCURLY)
+        node.setfirst(items)
+        return node
+
+    prefix(parser, T.TT_LCURLY, _prefix_lcurly)
+
+    def _stmt_return(parser, node):
+        node.init(1)
+        if token_is_one_of(parser, [T.TT_SEMI, T.TT_NEWLINE, T.TT_RCURLY]):
+            node.setfirst([])
+        else:
+            node.setfirst(expression(parser, 0))
+        endofexpression(parser)
+        return node
+
+    stmt(parser, T.TT_RETURN, _stmt_return)
+    #TODO CHECK
+    stmt(parser, T.TT_SEMI, empty)
+    stmt(parser, T.TT_NEWLINE, empty)
+
+    def _stmt_loop_flow(parser, node):
+        endofexpression(parser)
+        if parser.token_type != T.TT_LCURLY:
+            error(parser, "Code below is unreachable")
+
 """
-
-    prefix("if", function () {
-
-        this.branches = []
-        var branch = {};
-        branch.first = expression(0);
-        advance("{");
-        branch.second = statements(["}"]);
-        this.branches.push(branch);
-        advance("}");
-
-        while(token.id == "elif") {
-            branch = {};
-            advance("elif");
-            branch.first = expression(0);
-            advance("{");
-            branch.second = statements(["}"]);
-            advance("}");
-            this.branches.push(branch);
-        }
-
-        branch = {};
-
-        if (token.id === "else") {
-            advance("else");
-            advance("{");
-            branch.first = null;
-            branch.second = statements(["}"]);
-            advance("}");
-            this.branches.push(branch);
-        }
-
-        this.arity = "if";
-        return this;
-    });
-
-    prefix("[", function () {
-        var a = [];
-        if (token.id !== "]") {
-            while (true) {
-                a.push(expression(0));
-                if (token.id !== ",") {
-                    break;
-                }
-                advance(",");
-            }
-        }
-        advance("]");
-        this.first = a;
-        this.arity = "unary";
-        return this;
-    });
-
-    prefix("{", function () {
-        var a = [], n, v;
-        if (token.id !== "}") {
-            while (true) {
-                n = token;
-                if(n.arity == "(endline)") {
-                    advance();
-                    continue;
-                }
-                if (n.arity !== "name" && n.arity !== "literal") {
-                    console.log(n);
-                    token.error("Bad property name.");
-                }
-                advance();
-                advance(":");
-                v = expression(0);
-                v.key = n.value;
-                a.push(v);
-                if (token.id !== ",") {
-                    break;
-                }
-                advance(",");
-            }
-        }
-        skipId("(endline)");
-        advance("}");
-        this.first = a;
-        this.arity = "unary";
-        return this;
-    });
-
-
-    stmt("{", function () {
-        var a = statements();
-        advance("}");
-        return a;
-    });
-
-    stmt("return", function () {
-        if (token.id !== ";") {
-            this.first = expression(0);
-        }
-        endofexpression();
-//        console.log("AFTER SKIP", token);
-        this.arity = "statement";
-        return this;
-    });
-
     stmt("break", function () {
         endofexpression();
         if (token.id !== "}") {
@@ -696,13 +656,7 @@ def parser_init(parser):
         return this;
     });
 
-    stmt("(endline)", function () {
-        return undefined;
-    });
 
-    stmt(";", function () {
-        return undefined;
-    });
 
     stmt("while", function () {
         this.first = expression(0);
@@ -770,9 +724,9 @@ def write_ast(ast):
         ast = [node.to_dict() for node in ast]
     with open("output.json", "w") as f:
         repr = json.dumps(ast, sort_keys=True,
-                              indent=4, separators=(',', ': '))
+                              indent=2, separators=(',', ': '))
         f.write(repr)
 
-ast = parse_string("if x == 1 { x;  }")
+ast = parse_string("fn x { return \n }")
 write_ast(ast)
 
