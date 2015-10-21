@@ -1,18 +1,60 @@
 [
   {
-    "_type": "TT_FN",
-    "_value": "fn",
+    "_type": "TT_FOR",
+    "_value": "for",
     "children": [
+      [
+        {
+          "_type": "TT_NAME",
+          "_value": "x"
+        },
+        {
+          "_type": "TT_NAME",
+          "_value": "y"
+        },
+        {
+          "_type": "TT_NAME",
+          "_value": "z"
+        }
+      ],
       {
-        "_type": "TT_NAME",
-        "_value": "x"
-      },
-      [],
-      {
-        "_type": "TT_RETURN",
-        "_value": "return",
+        "_type": "TT_LPAREN",
+        "_value": "(",
         "children": [
-          []
+          {
+            "_type": "TT_NAME",
+            "_value": "enumerate"
+          },
+          [
+            {
+              "_type": "TT_NAME",
+              "_value": "ints"
+            }
+          ]
+        ]
+      },
+      {
+        "_type": "TT_LPAREN",
+        "_value": "(",
+        "children": [
+          {
+            "_type": "TT_NAME",
+            "_value": "print"
+          },
+          [
+            {
+              "_type": "TT_NAME",
+              "_value": "x"
+            },
+            {
+              "_type": "TT_NAME",
+              "_value": "y"
+            },
+            {
+              "_type": "TT_NAME",
+              "_value": "z"
+            }
+          ]
         ]
       }
     ]

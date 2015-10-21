@@ -81,7 +81,10 @@ class Lexer(object):
             self.group_type[groupname] = type
             idx += 1
 
-        self.regex = re.compile('|'.join(regex_parts))
+        pattern = '|'.join(regex_parts)
+        # print pattern
+        # print "*************************"
+        self.regex = re.compile(pattern)
         self.skip_whitespace = skip_whitespace
         self.re_ws_skip = re.compile('\S')
 

@@ -70,7 +70,7 @@ RULES = [
     ('False', TT_FALSE),
     ('Nil', TT_NIL),
     ('this', TT_THIS),
-    ('in', TT_IN),
+    ('\\bin\\b', TT_IN),
     ('is', TT_IS),
     ('return', TT_RETURN),
     (floating_constant, TT_FLOAT),

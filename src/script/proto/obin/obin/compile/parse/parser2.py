@@ -183,6 +183,7 @@ class Parser(object):
 
     def next(self):
         self.token = self.tokens.next()
+        print self.token
         self.node = Node(self.token.type, self.token.val, self.token.pos)
         return self.node
 
@@ -227,7 +228,7 @@ def expression(parser, _rbp):
     previous = parser.node
     # print "******"
     # print "rbp ", _rbp
-    # print "previous", previous.value
+    # print "previous", previous
 
     advance(parser)
     # print "current", parser.token
@@ -275,7 +276,7 @@ def statements(parser, endlist=None):
 
     length = len(stmts)
     if length == 0:
-        return  None
+        return None
     elif length == 1:
         return stmts[0]
 
@@ -643,30 +644,45 @@ def parser_init(parser):
 
     def _stmt_loop_flow(parser, node):
         endofexpression(parser)
-        if parser.token_type != T.TT_LCURLY:
-            error(parser, "Code below is unreachable")
+        if parser.token_type != T.TT_RCURLY:
+            error(parser, "Unreachable statement")
+        return node
 
+    stmt(parser, T.TT_BREAK, _stmt_loop_flow)
+    stmt(parser, T.TT_CONTINUE, _stmt_loop_flow)
+
+    def _stmt_while(parser, node):
+        node.init(2)
+        node.setfirst(expression(parser, 0))
+        advance_expected(parser, T.TT_LCURLY)
+        node.setsecond(statements(parser, [T.TT_RCURLY]))
+        advance_expected(parser, T.TT_RCURLY)
+        return node
+
+    stmt(parser, T.TT_WHILE, _stmt_while)
+
+    def _stmt_for(parser, node):
+        node.init(3)
+        vars = []
+        vars.append(expression(parser, 0))
+        while parser.token_type == T.TT_COMMA:
+            advance(parser)
+            if parser.token_type != T.TT_NAME:
+                error(parser, "Wrong variable name in for loop")
+
+            vars.append(expression(parser, 0))
+
+        node.setfirst(vars)
+        advance_expected(parser, T.TT_IN)
+        node.setsecond(expression(parser, 0))
+
+        advance_expected(parser, T.TT_LCURLY)
+        node.setthird(statements(parser, [T.TT_RCURLY]))
+        advance_expected(parser, T.TT_RCURLY)
+        return node
+
+    stmt(parser, T.TT_FOR, _stmt_for)
 """
-    stmt("break", function () {
-        endofexpression();
-        if (token.id !== "}") {
-            token.error("Unreachable statement.");
-        }
-        this.arity = "statement";
-        return this;
-    });
-
-
-
-    stmt("while", function () {
-        this.first = expression(0);
-        advance("{");
-        this.second = statements(["}"]);
-        advance("}");
-        this.arity = "statement";
-        return this;
-    });
-
     stmt("for", function () {
         this.first = [expression(0)]
         while (token.id == ",") {
@@ -727,6 +743,6 @@ def write_ast(ast):
                               indent=2, separators=(',', ': '))
         f.write(repr)
 
-ast = parse_string("fn x { return \n }")
+ast = parse_string(testprogram())
 write_ast(ast)
 
