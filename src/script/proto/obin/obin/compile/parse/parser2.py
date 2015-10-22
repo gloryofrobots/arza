@@ -2,6 +2,7 @@ __author__ = 'gloryofrobots'
 import lexer
 import tokens as T
 
+
 def testprogram():
     data = ""
     with open("program.obn") as f:
@@ -11,10 +12,11 @@ def testprogram():
 
 
 class Node:
-    def __init__(self, _type, value, position):
+    def __init__(self, _type, value, position, line):
         self.type = _type
         self.value = value
         self.position = position
+        self.line = line
         self.children = None
         self.arity = 0
 
@@ -59,7 +61,6 @@ class Node:
     def fourth(self):
         return self.getchild(3)
 
-
     def __children_repr(self, nodes):
         children = []
         for child in nodes:
@@ -74,9 +75,9 @@ class Node:
         return children
 
     def to_dict(self):
-        d = {"_type": T.TT_TO_STR(self.type), "_value": self.value,
-             #"arity": self.arity, "pos": self.position
-            }
+        d = {"_type": T.TT_TO_STR(self.type), "_value": self.value, "_line": self.line
+             # "arity": self.arity, "pos": self.position
+             }
 
         if self.children:
             d['children'] = self.__children_repr(self.children)
@@ -90,15 +91,17 @@ class Node:
 
         d = self.to_dict()
         return json.dumps(d, sort_keys=True,
-                  indent=2, separators=(',', ': '))
+                          indent=2, separators=(',', ': '))
 
 
 def set_handler(parser, ttype, h):
     parser.handlers[ttype] = h
     return handler(parser, ttype)
 
+
 def node_handler(parser, node):
     return handler(parser, node.type)
+
 
 def handler(parser, ttype):
     assert ttype < T.TT_UNKNOWN
@@ -108,58 +111,71 @@ def handler(parser, ttype):
         return set_handler(parser, ttype, Handler())
         # parser.handlers[ttype] = Handler()
         # return handler(parser, ttype)
-        #error(parser, "Handler not exists %s" % T.TT_TO_STR(ttype))
+        # error(parser, "Handler not exists %s" % T.TT_TO_STR(ttype))
+
 
 def nud(parser, node):
     handler = node_handler(parser, node)
     return handler.nud(parser, node)
+
 
 def std(parser, node):
     handler = node_handler(parser, node)
 
     return handler.std(parser, node)
 
+
 def has_nud(parser, node):
     handler = node_handler(parser, node)
     return handler.nud is not None
+
 
 def has_led(parser, node):
     handler = node_handler(parser, node)
     return handler.led is not None
 
+
 def has_std(parser, node):
     handler = node_handler(parser, node)
     return handler.std is not None
+
 
 def rbp(parser, node):
     handler = node_handler(parser, node)
     return handler.rbp
 
+
 def lbp(parser, node):
     handler = node_handler(parser, node)
     return handler.lbp
+
 
 def led(parser, node, left):
     handler = node_handler(parser, node)
 
     return handler.led(parser, node, left)
 
+
 def set_nud(parser, ttype, fn):
     h = handler(parser, ttype)
     h.nud = fn
 
+
 def set_std(parser, ttype, fn):
     h = handler(parser, ttype)
     h.std = fn
+
 
 def set_led(parser, ttype, lbp, fn):
     h = handler(parser, ttype)
     h.lbp = lbp
     h.led = fn
 
+
 def set_lbp(parser, ttype, _lbp):
     h = handler(parser, ttype)
     h.lbp = _lbp
+
 
 class Handler(object):
     def __init__(self):
@@ -170,43 +186,61 @@ class Handler(object):
         self.rbp = None
         self.value = None
 
+
 class Parser(object):
     def __init__(self, tokens):
         self.handlers = {}
         self.node = None
         self.token = None
         self.tokens = tokens
+        self.is_newline_occurred = False
 
     @property
     def token_type(self):
         return self.token.type
 
     def next(self):
-        self.token = self.tokens.next()
-        print self.token
-        self.node = Node(self.token.type, self.token.val, self.token.pos)
+        token = self.tokens.next()
+        if token.type == T.TT_NEWLINE:
+            # print "NEW LINE"
+            self.is_newline_occurred = True
+            while token.type == T.TT_NEWLINE:
+                token = self.tokens.next()
+        else:
+            # print "TOKEN"
+            self.is_newline_occurred = False
+
+        # print token
+        self.token = token
+        self.node = Node(self.token.type, self.token.val, self.token.pos, self.token.line)
         return self.node
 
     def isend(self):
         return self.token.type == T.TT_ENDSTREAM
 
+
 def error(parser, message, args=None):
-    raise RuntimeError(message, args)
+    error_message = "Parse Error %d:%d %s" % (parser.token.line, parser.token.pos, message)
+    raise RuntimeError(error_message, args)
+
 
 def check_token_type(parser, type):
     if parser.token_type != type:
         error(parser, "Expected token type %s got token %s" % ((T.TT_TO_STR(type)), parser.token))
+
 
 def check_token_types(parser, types):
     if parser.token_type not in types:
         error(parser, "Expected token type one of %s got token %s" %
               ([T.TT_TO_STR(type) for type in types], parser.token))
 
+
 def advance(parser):
     if parser.isend():
         return None
 
     return parser.next()
+
 
 def advance_expected(parser, ttype):
     check_token_type(parser, ttype)
@@ -216,12 +250,18 @@ def advance_expected(parser, ttype):
 
     return parser.next()
 
+
 def endofexpression(parser):
     if parser.isend():
         return None
+    if parser.is_newline_occurred:
+        # print "NL"
+        return parser.node
+    if parser.token_type == T.TT_SEMI:
+        # print "SEMI"
+        return advance(parser)
 
-    check_token_types(parser, [T.TT_SEMI, T.TT_NEWLINE])
-    return advance(parser)
+    error(parser, "Expressions must end with new line or ;")
 
 
 def expression(parser, _rbp):
@@ -236,6 +276,8 @@ def expression(parser, _rbp):
     left = nud(parser, previous)
     # print "left", left.value
     while True:
+        if parser.is_newline_occurred:
+            break
         _lbp = lbp(parser, parser.node)
         if _rbp >= _lbp:
             break
@@ -244,6 +286,7 @@ def expression(parser, _rbp):
         left = led(parser, previous, left)
 
     return left
+
 
 def statement(parser):
     node = parser.node
@@ -256,12 +299,14 @@ def statement(parser):
     endofexpression(parser)
     return value
 
+
 def token_is_one_of(parser, types):
     return parser.token_type in types
 
+
 def statements(parser, endlist=None):
     if not endlist:
-        endlist = [T.TT_RCURLY, T.TT_NEWLINE, T.TT_ENDSTREAM]
+        endlist = [T.TT_RCURLY, T.TT_ENDSTREAM]
 
     s = None
     stmts = []
@@ -286,16 +331,19 @@ def statements(parser, endlist=None):
 def itself(parser, node):
     return node
 
+
 def nud_constant(parser, node):
     h = node_handler(parser, node)
     node.value = h.value
     node.init(0)
     return node
 
+
 def constant(parser, ttype, value):
     h = handler(parser, ttype)
     h.value = value
     set_nud(parser, ttype, nud_constant)
+
 
 def led_infix(parser, node, left):
     h = node_handler(parser, node)
@@ -307,6 +355,7 @@ def led_infix(parser, node, left):
 
     node.setsecond(exp)
     return node
+
 
 def infix(parser, ttype, lbp, led=led_infix):
     set_led(parser, ttype, lbp, led)
@@ -322,8 +371,10 @@ def led_infixr(parser, node, left):
 
     return node
 
+
 def infixr(parser, ttype, lbp, led=led_infixr):
     set_led(parser, ttype, lbp, led)
+
 
 def led_infixr_assign(parser, node, left):
     node.init(2)
@@ -335,8 +386,10 @@ def led_infixr_assign(parser, node, left):
 
     return node
 
+
 def assignment(parser, ttype):
     infixr(parser, ttype, 10, led_infixr_assign)
+
 
 def prefix_nud(parser, node):
     node.init(1)
@@ -344,14 +397,18 @@ def prefix_nud(parser, node):
     node.setfirst(exp)
     return node
 
+
 def prefix(parser, ttype, nud=prefix_nud):
     set_nud(parser, ttype, nud)
+
 
 def stmt(parser, ttype, std):
     set_std(parser, ttype, std)
 
+
 def literal(parser, ttype):
     set_nud(parser, ttype, itself)
+
 
 def symbol(parser, ttype, bp=0, nud=None):
     h = handler(parser, ttype)
@@ -360,6 +417,7 @@ def symbol(parser, ttype, bp=0, nud=None):
         return
     set_nud(parser, ttype, nud)
 
+
 def skip(parser, ttype):
     while parser.token_type == ttype:
         advance(parser)
@@ -367,6 +425,7 @@ def skip(parser, ttype):
 
 def empty(parser, node):
     return None
+
 
 def parse(parser):
     parser.next()
@@ -389,7 +448,6 @@ def parser_init(parser):
     symbol(parser, T.TT_RCURLY)
     symbol(parser, T.TT_COMMA)
     symbol(parser, T.TT_ELSE)
-    symbol(parser, T.TT_NEWLINE, nud=empty)
     symbol(parser, T.TT_SEMI, nud=empty)
 
     constant(parser, T.TT_TRUE, True)
@@ -532,7 +590,6 @@ def parser_init(parser):
         node.setsecond(items)
         advance_expected(parser, T.TT_LCURLY)
         node.setthird(statements(parser))
-        skip(parser, T.TT_NEWLINE)
         advance_expected(parser, T.TT_RCURLY)
         return node
 
@@ -578,7 +635,7 @@ def parser_init(parser):
         else:
             branches.append([])
 
-        #append else branch anyway
+        # append else branch anyway
         node.setfirst(branches)
         return node
 
@@ -608,8 +665,7 @@ def parser_init(parser):
         node.init(1)
         if parser.token_type != T.TT_RCURLY:
             while True:
-                #TODO check it
-                skip(parser, T.TT_NEWLINE)
+                # TODO check it
                 check_token_types(parser, [T.TT_NAME, T.TT_INT, T.TT_STR, T.TT_CHAR, T.TT_FLOAT])
                 key = parser.node
                 advance(parser)
@@ -621,7 +677,6 @@ def parser_init(parser):
 
                 advance_expected(parser, T.TT_COMMA)
 
-        skip(parser, T.TT_NEWLINE)
         advance_expected(parser, T.TT_RCURLY)
         node.setfirst(items)
         return node
@@ -630,7 +685,7 @@ def parser_init(parser):
 
     def _stmt_return(parser, node):
         node.init(1)
-        if token_is_one_of(parser, [T.TT_SEMI, T.TT_NEWLINE, T.TT_RCURLY]):
+        if token_is_one_of(parser, [T.TT_SEMI, T.TT_RCURLY]) or parser.is_newline_occurred:
             node.setfirst([])
         else:
             node.setfirst(expression(parser, 0))
@@ -638,9 +693,8 @@ def parser_init(parser):
         return node
 
     stmt(parser, T.TT_RETURN, _stmt_return)
-    #TODO CHECK
-    stmt(parser, T.TT_SEMI, empty)
-    stmt(parser, T.TT_NEWLINE, empty)
+    # TODO CHECK
+    # stmt(parser, T.TT_SEMI, empty)
 
     def _stmt_loop_flow(parser, node):
         endofexpression(parser)
@@ -682,32 +736,8 @@ def parser_init(parser):
         return node
 
     stmt(parser, T.TT_FOR, _stmt_for)
-"""
-    stmt("for", function () {
-        this.first = [expression(0)]
-        while (token.id == ",") {
-            advance();
-            if(token.arity != "name" && token.arity != "literal") {
-                token.error("expected name in for loop");
-            }
-
-            this.first.push(expression(0));
-        }
-        advance("in");
-        this.second = expression(0);
-
-        advance("{");
-        this.third = statements(["}"]);
-        advance("}");
-        this.arity = "for";
-        return this;
-    });
 
 
-};
-
-
-"""
 def parser_from_str(txt):
     lx = lexer.lexer(txt)
     tokens = lx.tokens()
@@ -740,9 +770,9 @@ def write_ast(ast):
         ast = [node.to_dict() for node in ast]
     with open("output.json", "w") as f:
         repr = json.dumps(ast, sort_keys=True,
-                              indent=2, separators=(',', ': '))
+                          indent=2, separators=(',', ': '))
         f.write(repr)
+
 
 ast = parse_string(testprogram())
 write_ast(ast)
-

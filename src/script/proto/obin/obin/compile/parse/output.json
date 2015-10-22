@@ -1,60 +1,29 @@
 [
   {
-    "_type": "TT_FOR",
-    "_value": "for",
+    "_line": 1,
+    "_type": "TT_SUB",
+    "_value": "-",
     "children": [
-      [
-        {
-          "_type": "TT_NAME",
-          "_value": "x"
-        },
-        {
-          "_type": "TT_NAME",
-          "_value": "y"
-        },
-        {
-          "_type": "TT_NAME",
-          "_value": "z"
-        }
-      ],
       {
-        "_type": "TT_LPAREN",
-        "_value": "(",
-        "children": [
-          {
-            "_type": "TT_NAME",
-            "_value": "enumerate"
-          },
-          [
-            {
-              "_type": "TT_NAME",
-              "_value": "ints"
-            }
-          ]
-        ]
+        "_line": 1,
+        "_type": "TT_INT",
+        "_value": "2"
       },
       {
-        "_type": "TT_LPAREN",
-        "_value": "(",
+        "_line": 1,
+        "_type": "TT_MUL",
+        "_value": "*",
         "children": [
           {
-            "_type": "TT_NAME",
-            "_value": "print"
+            "_line": 1,
+            "_type": "TT_INT",
+            "_value": "3"
           },
-          [
-            {
-              "_type": "TT_NAME",
-              "_value": "x"
-            },
-            {
-              "_type": "TT_NAME",
-              "_value": "y"
-            },
-            {
-              "_type": "TT_NAME",
-              "_value": "z"
-            }
-          ]
+          {
+            "_line": 2,
+            "_type": "TT_INT",
+            "_value": "4"
+          }
         ]
       }
     ]

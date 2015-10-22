@@ -16,10 +16,11 @@ class Token(object):
     """ A simple Token structure.
         Contains the token type, value and position.
     """
-    def __init__(self, type, val, pos):
+    def __init__(self, type, val, pos, line):
         self.type = type
         self.val = val
         self.pos = pos
+        self.line = line
 
     def __str__(self):
         try:
@@ -32,7 +33,7 @@ class Token(object):
         else:
             val = self.val
 
-        return '<%s %s p:%d>' % (t_repr, val, self.pos)
+        return '<%s %s %d:%d>' % (t_repr, val, self.line, self.pos)
 
 
 class LexerError(Exception):
@@ -71,6 +72,8 @@ class Lexer(object):
         # user are arbitrary strings, we auto-generate the group
         # names and map them to token types.
         #
+        self.linecount = 1
+
         idx = 1
         regex_parts = []
         self.group_type = {}
@@ -117,10 +120,13 @@ class Lexer(object):
             if m:
                 groupname = m.lastgroup
                 tok_type = self.group_type[groupname]
-                tok = Token(tok_type, m.group(groupname), self.pos)
+                tok = Token(tok_type, m.group(groupname), self.pos, self.linecount)
                 self.pos = m.end()
                 if tok_type is None:
                     return self.token()
+                if tok.type == tokens.TT_NEWLINE:
+                    self.linecount+=1
+
                 return tok
 
             # if we're here, no rule matched
@@ -132,7 +138,7 @@ class Lexer(object):
         while 1:
             tok = self.token()
             if tok is None:
-                yield Token(tokens.TT_ENDSTREAM, 0, 0)
+                yield Token(tokens.TT_ENDSTREAM, 0, 0, 0)
                 break
             yield tok
 
