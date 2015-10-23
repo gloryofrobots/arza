@@ -25,6 +25,7 @@ TOKENS = [
   ("TT_TRUE", "true"),
   ("TT_FALSE", "false"),
   ("TT_NIL", "nil"),
+  ("TT_UNDEFINED", "undefined"),
   ("TT_THIS", "this"),
   ("TT_THEN", "then"),
   ("TT_YIELD", "yield"),

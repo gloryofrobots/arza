@@ -1,8 +1,8 @@
 [
   {
     "_line": 4,
-    "_type": "TT_ASSIGN",
-    "_value": "=",
+    "_type": "TT_AND",
+    "_value": "and",
     "children": [
       {
         "_line": 4,
@@ -11,49 +11,39 @@
       },
       {
         "_line": 4,
-        "_type": "TT_INT",
-        "_value": "42"
+        "_type": "TT_NAME",
+        "_value": "y"
       }
     ]
   },
   {
     "_line": 5,
-    "_type": "TT_ASSIGN",
-    "_value": "=",
+    "_type": "TT_NOT",
+    "_value": "not",
     "children": [
       {
         "_line": 5,
         "_type": "TT_NAME",
-        "_value": "x"
-      },
-      {
-        "_line": 5,
-        "_type": "TT_FLOAT",
-        "_value": "3.1445"
+        "_value": "y"
       }
     ]
   },
   {
     "_line": 6,
-    "_type": "TT_ASSIGN",
-    "_value": "=",
+    "_type": "TT_BITNOT",
+    "_value": "~",
     "children": [
       {
         "_line": 6,
         "_type": "TT_NAME",
-        "_value": "x"
-      },
-      {
-        "_line": 6,
-        "_type": "TT_CHAR",
-        "_value": "'x'"
+        "_value": "y"
       }
     ]
   },
   {
     "_line": 7,
-    "_type": "TT_ASSIGN",
-    "_value": "=",
+    "_type": "TT_OR",
+    "_value": "or",
     "children": [
       {
         "_line": 7,
@@ -62,15 +52,15 @@
       },
       {
         "_line": 7,
-        "_type": "TT_STR",
-        "_value": "\"sdd\""
+        "_type": "TT_NAME",
+        "_value": "y"
       }
     ]
   },
   {
     "_line": 8,
-    "_type": "TT_ASSIGN",
-    "_value": "=",
+    "_type": "TT_BITOR",
+    "_value": "|",
     "children": [
       {
         "_line": 8,
@@ -79,34 +69,15 @@
       },
       {
         "_line": 8,
-        "_type": "TT_LSQUARE",
-        "_value": "[",
-        "children": [
-          [
-            {
-              "_line": 8,
-              "_type": "TT_INT",
-              "_value": "1"
-            },
-            {
-              "_line": 8,
-              "_type": "TT_FLOAT",
-              "_value": "2.34"
-            },
-            {
-              "_line": 8,
-              "_type": "TT_STR",
-              "_value": "\"SSS\""
-            }
-          ]
-        ]
+        "_type": "TT_NAME",
+        "_value": "y"
       }
     ]
   },
   {
     "_line": 9,
-    "_type": "TT_ASSIGN",
-    "_value": "=",
+    "_type": "TT_BITAND",
+    "_value": "&",
     "children": [
       {
         "_line": 9,
@@ -115,43 +86,15 @@
       },
       {
         "_line": 9,
-        "_type": "TT_LCURLY",
-        "_value": "{",
-        "children": [
-          [
-            [
-              {
-                "_line": 9,
-                "_type": "TT_NAME",
-                "_value": "name"
-              },
-              {
-                "_line": 9,
-                "_type": "TT_STR",
-                "_value": "\"X\""
-              }
-            ],
-            [
-              {
-                "_line": 9,
-                "_type": "TT_NAME",
-                "_value": "age"
-              },
-              {
-                "_line": 9,
-                "_type": "TT_FLOAT",
-                "_value": "42.24"
-              }
-            ]
-          ]
-        ]
+        "_type": "TT_NAME",
+        "_value": "y"
       }
     ]
   },
   {
     "_line": 10,
-    "_type": "TT_ASSIGN",
-    "_value": "=",
+    "_type": "TT_BITXOR",
+    "_value": "^",
     "children": [
       {
         "_line": 10,
@@ -161,551 +104,500 @@
       {
         "_line": 10,
         "_type": "TT_NAME",
-        "_value": "alice"
+        "_value": "y"
       }
     ]
   },
   {
     "_line": 11,
-    "_type": "TT_ASSIGN",
-    "_value": "=",
-    "children": [
-      {
-        "_line": 11,
-        "_type": "TT_NAME",
-        "_value": "x"
-      },
-      {
-        "_line": 11,
-        "_type": "TT_TRUE",
-        "_value": true
-      }
-    ]
-  },
-  {
-    "_line": 12,
-    "_type": "TT_ASSIGN",
-    "_value": "=",
-    "children": [
-      {
-        "_line": 12,
-        "_type": "TT_NAME",
-        "_value": "x"
-      },
-      {
-        "_line": 12,
-        "_type": "TT_FALSE",
-        "_value": false
-      }
-    ]
-  },
-  {
-    "_line": 13,
-    "_type": "TT_ASSIGN",
-    "_value": "=",
-    "children": [
-      {
-        "_line": 13,
-        "_type": "TT_NAME",
-        "_value": "x"
-      },
-      {
-        "_line": 13,
-        "_type": "TT_NIL",
-        "_value": null
-      }
-    ]
-  },
-  {
-    "_line": 14,
     "_type": "TT_ADD_ASSIGN",
     "_value": "+=",
     "children": [
       {
-        "_line": 14,
+        "_line": 11,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 14,
+        "_line": 11,
         "_type": "TT_FLOAT",
         "_value": "0.5"
       }
     ]
   },
   {
-    "_line": 15,
+    "_line": 12,
     "_type": "TT_SUB_ASSIGN",
     "_value": "-=",
     "children": [
       {
-        "_line": 15,
+        "_line": 12,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 15,
+        "_line": 12,
         "_type": "TT_INT",
         "_value": "1"
       }
     ]
   },
   {
-    "_line": 16,
+    "_line": 13,
     "_type": "TT_MUL_ASSIGN",
     "_value": "*=",
     "children": [
       {
-        "_line": 16,
+        "_line": 13,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 16,
+        "_line": 13,
         "_type": "TT_INT",
         "_value": "2"
       }
     ]
   },
   {
-    "_line": 17,
+    "_line": 14,
     "_type": "TT_DIV_ASSIGN",
     "_value": "/=",
     "children": [
       {
-        "_line": 17,
+        "_line": 14,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 17,
+        "_line": 14,
         "_type": "TT_INT",
         "_value": "3"
       }
     ]
   },
   {
-    "_line": 18,
+    "_line": 15,
     "_type": "TT_MOD_ASSIGN",
     "_value": "%=",
     "children": [
       {
-        "_line": 18,
+        "_line": 15,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 18,
+        "_line": 15,
         "_type": "TT_INT",
         "_value": "4"
       }
     ]
   },
   {
-    "_line": 19,
+    "_line": 16,
     "_type": "TT_AND_ASSIGN",
     "_value": "&=",
     "children": [
       {
-        "_line": 19,
+        "_line": 16,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 19,
+        "_line": 16,
         "_type": "TT_INT",
         "_value": "5"
       }
     ]
   },
   {
-    "_line": 20,
+    "_line": 17,
     "_type": "TT_XOR_ASSIGN",
     "_value": "^=",
     "children": [
       {
-        "_line": 20,
+        "_line": 17,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 20,
+        "_line": 17,
         "_type": "TT_INT",
         "_value": "6"
       }
     ]
   },
   {
-    "_line": 21,
+    "_line": 18,
     "_type": "TT_OR_ASSIGN",
     "_value": "|=",
     "children": [
       {
-        "_line": 21,
+        "_line": 18,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 21,
+        "_line": 18,
         "_type": "TT_INT",
         "_value": "7"
       }
     ]
   },
   {
-    "_line": 22,
+    "_line": 19,
     "_type": "TT_ASSIGN",
     "_value": "=",
     "children": [
       {
-        "_line": 22,
+        "_line": 19,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 22,
+        "_line": 19,
         "_type": "TT_IF",
         "_value": "if",
         "children": [
           {
-            "_line": 22,
+            "_line": 19,
             "_type": "TT_GREATER",
             "_value": ">",
             "children": [
               {
-                "_line": 22,
+                "_line": 19,
                 "_type": "TT_INT",
                 "_value": "5"
               },
               {
-                "_line": 22,
+                "_line": 19,
                 "_type": "TT_INT",
                 "_value": "4"
               }
             ]
           },
           {
-            "_line": 22,
+            "_line": 19,
             "_type": "TT_TRUE",
-            "_value": true
+            "_value": "true"
           },
           {
-            "_line": 22,
+            "_line": 19,
             "_type": "TT_FALSE",
-            "_value": false
+            "_value": "false"
           }
         ]
       }
     ]
   },
   {
-    "_line": 23,
+    "_line": 20,
     "_type": "TT_IN",
     "_value": "in",
     "children": [
       {
-        "_line": 23,
+        "_line": 20,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 23,
+        "_line": 20,
         "_type": "TT_NAME",
         "_value": "y"
       }
     ]
   },
   {
-    "_line": 24,
+    "_line": 21,
     "_type": "TT_IS",
     "_value": "is",
     "children": [
       {
-        "_line": 24,
+        "_line": 21,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 24,
+        "_line": 21,
         "_type": "TT_NAME",
         "_value": "y"
       }
     ]
   },
   {
-    "_line": 25,
+    "_line": 22,
     "_type": "TT_GREATER",
     "_value": ">",
     "children": [
       {
-        "_line": 25,
+        "_line": 22,
         "_type": "TT_INT",
         "_value": "5"
       },
       {
-        "_line": 25,
+        "_line": 22,
         "_type": "TT_INT",
         "_value": "5"
       }
     ]
   },
   {
-    "_line": 26,
+    "_line": 23,
     "_type": "TT_GE",
     "_value": ">=",
     "children": [
       {
-        "_line": 26,
+        "_line": 23,
         "_type": "TT_INT",
         "_value": "5"
       },
       {
-        "_line": 26,
+        "_line": 23,
         "_type": "TT_INT",
         "_value": "3"
       }
     ]
   },
   {
-    "_line": 27,
+    "_line": 24,
     "_type": "TT_LESS",
     "_value": "<",
     "children": [
       {
-        "_line": 27,
+        "_line": 24,
         "_type": "TT_INT",
         "_value": "5"
       },
       {
-        "_line": 27,
+        "_line": 24,
         "_type": "TT_INT",
         "_value": "4"
       }
     ]
   },
   {
-    "_line": 28,
+    "_line": 25,
     "_type": "TT_LE",
     "_value": "<=",
     "children": [
       {
-        "_line": 28,
+        "_line": 25,
         "_type": "TT_INT",
         "_value": "5"
       },
       {
-        "_line": 28,
+        "_line": 25,
         "_type": "TT_INT",
         "_value": "3"
       }
     ]
   },
   {
-    "_line": 29,
+    "_line": 26,
     "_type": "TT_NE",
     "_value": "!=",
     "children": [
       {
-        "_line": 29,
+        "_line": 26,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 29,
+        "_line": 26,
         "_type": "TT_INT",
         "_value": "6"
       }
     ]
   },
   {
-    "_line": 30,
+    "_line": 27,
     "_type": "TT_EQ",
     "_value": "==",
     "children": [
       {
-        "_line": 30,
+        "_line": 27,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 30,
+        "_line": 27,
         "_type": "TT_NAME",
         "_value": "y"
       }
     ]
   },
   {
-    "_line": 31,
+    "_line": 28,
     "_type": "TT_RSHIFT",
     "_value": ">>",
     "children": [
       {
-        "_line": 31,
+        "_line": 28,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 31,
+        "_line": 28,
         "_type": "TT_INT",
         "_value": "43"
       }
     ]
   },
   {
-    "_line": 32,
+    "_line": 29,
     "_type": "TT_LSHIFT",
     "_value": "<<",
     "children": [
       {
-        "_line": 32,
+        "_line": 29,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 32,
+        "_line": 29,
         "_type": "TT_INT",
         "_value": "10001"
       }
     ]
   },
   {
-    "_line": 33,
+    "_line": 30,
     "_type": "TT_URSHIFT",
     "_value": ">>>",
     "children": [
       {
-        "_line": 33,
+        "_line": 30,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 33,
+        "_line": 30,
         "_type": "TT_INT",
         "_value": "1001001001"
       }
     ]
   },
   {
-    "_line": 34,
+    "_line": 31,
     "_type": "TT_ADD",
     "_value": "+",
     "children": [
       {
-        "_line": 34,
+        "_line": 31,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 34,
+        "_line": 31,
         "_type": "TT_INT",
         "_value": "34"
       }
     ]
   },
   {
-    "_line": 35,
+    "_line": 32,
     "_type": "TT_SUB",
     "_value": "-",
     "children": [
       {
-        "_line": 35,
+        "_line": 32,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 35,
+        "_line": 32,
         "_type": "TT_INT",
         "_value": "34"
       }
     ]
   },
   {
-    "_line": 36,
+    "_line": 33,
     "_type": "TT_MUL",
     "_value": "*",
     "children": [
       {
-        "_line": 36,
+        "_line": 33,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 36,
+        "_line": 33,
         "_type": "TT_INT",
         "_value": "34"
       }
     ]
   },
   {
-    "_line": 37,
+    "_line": 34,
     "_type": "TT_DIVIDE",
     "_value": "/",
     "children": [
       {
-        "_line": 37,
+        "_line": 34,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 37,
+        "_line": 34,
         "_type": "TT_INT",
         "_value": "45"
       }
     ]
   },
   {
-    "_line": 38,
+    "_line": 35,
     "_type": "TT_MOD",
     "_value": "%",
     "children": [
       {
-        "_line": 38,
+        "_line": 35,
         "_type": "TT_NAME",
         "_value": "x"
       },
       {
-        "_line": 38,
+        "_line": 35,
         "_type": "TT_INT",
         "_value": "32"
       }
     ]
   },
   {
-    "_line": 39,
+    "_line": 36,
     "_type": "TT_ASSIGN",
     "_value": "=",
     "children": [
       {
-        "_line": 39,
+        "_line": 36,
         "_type": "TT_DOT",
         "_value": ".",
         "children": [
           {
-            "_line": 39,
+            "_line": 36,
             "_type": "TT_DOT",
             "_value": ".",
             "children": [
               {
-                "_line": 39,
+                "_line": 36,
                 "_type": "TT_NAME",
                 "_value": "x"
               },
               {
-                "_line": 39,
+                "_line": 36,
                 "_type": "TT_NAME",
                 "_value": "f"
               }
             ]
           },
           {
-            "_line": 39,
+            "_line": 36,
             "_type": "TT_NAME",
             "_value": "t"
           }
         ]
       },
       {
-        "_line": 39,
+        "_line": 36,
         "_type": "TT_INT",
         "_value": "1"
       }

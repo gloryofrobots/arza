@@ -69,6 +69,7 @@ RULES = [
     ('true', TT_TRUE),
     ('false', TT_FALSE),
     ('nil', TT_NIL),
+    ('undefined', TT_UNDEFINED),
     # TODO MAYBE DELETE IT
     ('this', TT_THIS),
     # ('then', TT_THEN),

@@ -27,7 +27,7 @@ class Opcode(object):
         return self.__class__.__name__
 
     def __repr__(self):
-        return "%s:%s" % (self.__class__.__name__, str(self._stack_change))
+        return "%s: sc %s" % (self.__class__.__name__, str(self._stack_change))
 
 class BaseBinaryComparison(Opcode):
     _stack_change = 0
@@ -337,19 +337,19 @@ class ADD(BaseBinaryOperation):
 class BITAND(BaseBinaryBitwiseOp):
     def operation(self, ctx, op1, op2):
         from obin.objects.object_space import newint
-        return newint(op1 & op2)
+        return newint(int(op1 & op2))
 
 
 class BITXOR(BaseBinaryBitwiseOp):
     def operation(self, ctx, op1, op2):
         from obin.objects.object_space import newint
-        return newint(op1 ^ op2)
+        return newint(int(op1 ^ op2))
 
 
 class BITOR(BaseBinaryBitwiseOp):
     def operation(self, ctx, op1, op2):
         from obin.objects.object_space import newint
-        return newint(op1 | op2)
+        return newint(int(op1 | op2))
 
 
 class BITNOT(BaseUnaryOperation):

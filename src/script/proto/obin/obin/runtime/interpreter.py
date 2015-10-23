@@ -59,6 +59,10 @@ class Interpreter(object):
         assert isinstance(code, Code)
         global_routine = GlobalRoutine(code)
 
+        print "*********"
+        for c in  [str(c) for c in code.compiled_opcodes]: print c
+        print "*********"
+        
         from obin.objects.object_space import object_space
         from obin.runtime.execution_context import ObjectExecutionContext
 

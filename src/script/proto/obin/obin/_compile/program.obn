@@ -1,6 +1,9 @@
 
 
-
+/*
+x = true
+x = false
+x = nil
 x = 42
 x = 3.1445
 x = 'x'
@@ -8,9 +11,14 @@ x = "sdd"
 x = [1, 2.34, "SSS"]
 x = { name:"X", age:42.24 }
 x = alice
-x = true
-x = false
-x = nil
+*/
+x and y
+not y
+~ y
+x or y
+x | y
+x & y
+x ^ y
 x += 0.5
 x -= 1
 x *= 2

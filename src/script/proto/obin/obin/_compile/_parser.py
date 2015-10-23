@@ -448,6 +448,11 @@ def parser_init(parser):
     literal(parser, T.TT_CHAR)
     literal(parser, T.TT_STR)
     literal(parser, T.TT_NAME)
+    literal(parser, T.TT_TRUE)
+    literal(parser, T.TT_FALSE)
+    literal(parser, T.TT_NIL)
+    literal(parser, T.TT_UNDEFINED)
+    literal(parser, T.TT_THIS)
 
     symbol(parser, T.TT_ENDSTREAM)
     symbol(parser, T.TT_COLON)
@@ -457,9 +462,6 @@ def parser_init(parser):
     symbol(parser, T.TT_ELSE)
     symbol(parser, T.TT_SEMI, nud=empty)
 
-    constant(parser, T.TT_TRUE, True)
-    constant(parser, T.TT_FALSE, False)
-    constant(parser, T.TT_NIL, None)
 
     # precedence 5
     # infix(parser, T.TT_COMMA, 5)
@@ -634,6 +636,7 @@ def parser_init(parser):
     PREFIXES
     """
 
+    prefix(parser, T.TT_BITNOT)
     prefix(parser, T.TT_NOT)
     prefix(parser, T.TT_SUB)
     prefix(parser, T.TT_ADD)

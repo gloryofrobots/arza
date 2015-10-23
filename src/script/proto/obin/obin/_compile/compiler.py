@@ -1,7 +1,9 @@
 __author__ = 'gloryofrobots'
 from token_type import *
+from tokens import TT_TO_STR
+from _parser import *
+
 from obin.objects.symbol_map import SymbolMap
-def _compile(ast, code, )
 
 
 class Position(object):
@@ -80,7 +82,130 @@ class Compiler(object):
         )
 
     def compile(self, ast):
+        from bytecode import ByteCode
+        code = ByteCode()
+        self.enter_scope()
+        self._compile(code, ast)
+        scope = self.current_scope()
+        final_scope = scope.finalize()
+        code.set_symbols(final_scope)
+        return code
 
-def compile(ast):
+    def _compile(self, code, ast):
+        if isinstance(ast, list):
+            return self._compile_nodes(code, ast)
+        else:
+            return self._compile_node(code, ast)
 
-    pass
+    def _compile_nodes(self, bytecode, nodes):
+        if len(nodes) > 1:
+            for node in nodes[:-1]:
+                self._compile_node(bytecode, node)
+                bytecode.emit('POP')
+
+        if len(nodes) > 0:
+            node = nodes[-1]
+            self._compile_node(bytecode, node)
+        else:
+            bytecode.emit('LOAD_UNDEFINED')
+
+    def _compile_node(self, code, node):
+        t = node.type
+        t_str = TT_TO_STR(t).replace("TT_", "")
+        compiler = getattr(self, "_compile_" + t_str)
+        return compiler(code, node)
+
+    def _compile_FLOAT(self, bytecode, node):
+        value = float(node.value)
+        bytecode.emit('LOAD_FLOATCONSTANT', value)
+
+    def _compile_INT(self, bytecode, node):
+        value = int(node.value)
+        bytecode.emit('LOAD_INTCONSTANT', value)
+
+    def _compile_TRUE(self, bytecode, node):
+        bytecode.emit('LOAD_BOOLCONSTANT', True)
+
+    def _compile_FALSE(self, bytecode, node):
+        bytecode.emit('LOAD_BOOLCONSTANT', True)
+
+    def _compile_NIL(self, bytecode, node):
+        bytecode.emit('LOAD_NULL')
+
+    def _compile_UNDEFINED(self, bytecode, node):
+        bytecode.emit('LOAD_UNDEFINED')
+
+    def _compile_STRING(self, bytecode, node):
+        from obin.compile.operations import string_unquote
+        from obin.runistr import unicode_unescape, decode_str_utf8
+
+        s = str(node.value)
+        strval = decode_str_utf8(s)
+        strval = string_unquote(strval)
+        strval = unicode_unescape(strval)
+        bytecode.emit('LOAD_STRINGCONSTANT', strval)
+
+    def _compile_CHAR(self, bytecode, node):
+        from obin.compile.operations import string_unquote
+        from obin.runistr import unicode_unescape, decode_str_utf8
+
+        s = str(node.value)
+        strval = decode_str_utf8(s)
+        strval = string_unquote(strval)
+        strval = unicode_unescape(strval)
+        bytecode.emit('LOAD_STRINGCONSTANT', strval)
+
+    def compile_binary(self, code, node, name):
+        self._compile(code, node.first())
+        self._compile(code, node.second())
+        code.emit(name)
+
+    def _compile_BITAND(self, code, node):
+        self.compile_binary(code, node, "BITAND")
+
+    def _compile_BITOR(self, code, node):
+        self.compile_binary(code, node, "BITOR")
+
+    def _compile_BITXOR(self, code, node):
+        self.compile_binary(code, node, "BITXOR")
+
+    def _compile_BITNOT(self, code, node):
+        self.compile_binary(code, node, "BITNOT")
+
+    def _compile_AND(self, bytecode, node):
+        self._compile(bytecode, node.first())
+        one = bytecode.prealocate_label()
+        bytecode.emit('JUMP_IF_FALSE_NOPOP', one)
+        self._compile(bytecode, node.second())
+        bytecode.emit('LABEL', one)
+
+    def _compile_OR(self, bytecode, node):
+        self._compile(bytecode, node.first())
+        one = bytecode.prealocate_label()
+        bytecode.emit('JUMP_IF_TRUE_NOPOP', one)
+        self._compile(bytecode, node.second())
+        bytecode.emit('LABEL', one)
+
+    def _compile_ASSIGN(self, bytecode, node):
+        left = node.first()
+        index = self.declare_variable(left.value)
+        # self._compile(bytecode, left)
+        self._compile(bytecode, node.second())
+        bytecode.emit('STORE', index, left.value)
+
+
+def testprogram():
+    data = ""
+    with open("program2.obn") as f:
+        data = f.read()
+
+    return data
+
+def compile_ast(ast):
+    compiler = Compiler()
+    code = compiler.compile(ast)
+    print [str(c) for c in code.opcodes]
+
+
+ast = parse_string(testprogram())
+compile_ast(ast)

@@ -15,7 +15,7 @@ class ByteCode(object):
 
     """ That object stands for code of a single javascript function
     """
-    def __init__(self, symbol_map=empty_symbols):
+    def __init__(self):
         self.opcodes = []
         self.label_count = 0
         self.has_labels = True
@@ -24,10 +24,14 @@ class ByteCode(object):
         self.pop_after_break = []
         self.updatelooplabel = []
         self._estimated_stack_size = -1
-        self._symbols = symbol_map
-        self.parameters = symbol_map.parameters[:]
+        self._symbols = None
+        self.parameters = None
         self._function_name_ = None
         self.compiled_opcodes = None
+
+    def set_symbols(self, symbols):
+        self._symbols = symbols
+        self.parameters = symbols.parameters[:]
 
     def variables(self):
         return self._symbols.variables
