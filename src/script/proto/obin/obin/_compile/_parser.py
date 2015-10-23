@@ -436,7 +436,6 @@ def empty(parser, node):
 def parse(parser):
     parser.next()
     stmts = statements(parser)
-    print stmts
     check_token_type(parser, T.TT_ENDSTREAM)
     return stmts
 
@@ -853,8 +852,9 @@ def parser_from_str(txt):
 
 def parse_string(txt):
     parser = parser_from_str(txt)
-    return parse(parser)
-
+    stmts = parse(parser)
+    # print stmts
+    return stmts
 
 def test_lexer():
     txt = testprogram()

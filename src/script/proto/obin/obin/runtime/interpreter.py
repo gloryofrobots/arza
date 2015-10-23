@@ -60,7 +60,7 @@ class Interpreter(object):
         global_routine = GlobalRoutine(code)
 
         print "*********"
-        for c in  [str(c) for c in code.compiled_opcodes]: print c
+        for c in [str(c) for c in code.compiled_opcodes]: print c
         print "*********"
         
         from obin.objects.object_space import object_space

@@ -172,6 +172,21 @@ class Compiler(object):
     def _compile_BITNOT(self, code, node):
         self.compile_binary(code, node, "BITNOT")
 
+    def _compile_ADD(self, code, node):
+        self.compile_binary(code, node, "ADD")
+
+    def _compile_MUL(self, code, node):
+        self.compile_binary(code, node, "MUL")
+
+    def _compile_MOD(self, code, node):
+        self.compile_binary(code, node, "MOD")
+
+    def _compile_DIV(self, code, node):
+        self.compile_binary(code, node, "DIV")
+
+    def _compile_SUB(self, code, node):
+        self.compile_binary(code, node, "SUB")
+
     def _compile_AND(self, bytecode, node):
         self._compile(bytecode, node.first())
         one = bytecode.prealocate_label()
@@ -201,11 +216,19 @@ def testprogram():
 
     return data
 
-def compile_ast(ast):
+def compile(txt):
+    ast = parse_string(txt)
     compiler = Compiler()
     code = compiler.compile(ast)
+    return code
+
+def print_code(code):
     print [str(c) for c in code.opcodes]
 
+def compile_and_print(txt):
+    print_code(compile(txt))
 
-ast = parse_string(testprogram())
-compile_ast(ast)
+compile_and_print("""
+x = 2 + 3
+y = 2 + 4 * 6
+""")
