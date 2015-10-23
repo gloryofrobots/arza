@@ -15,6 +15,13 @@ class Map(object):
         return "%(back)s, [%(index)d]:%(name)s" % \
             {'back': repr(self.back), 'index': self.index, 'name': self.name}
 
+    def __eq__(self, other):
+        keys = self.keys()
+        for k in keys:
+            if self.lookup(k) != other.lookup(k):
+                return False
+
+
     @jit.elidable_promote("0")
     def contains(self, name):
         idx = self.lookup(name)

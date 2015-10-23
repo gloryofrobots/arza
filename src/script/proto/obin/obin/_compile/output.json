@@ -530,7 +530,7 @@
   },
   {
     "_line": 34,
-    "_type": "TT_DIVIDE",
+    "_type": "TT_DIV",
     "_value": "/",
     "children": [
       {

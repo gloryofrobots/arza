@@ -40,6 +40,7 @@ class Code(object):
         self._function_name_ = None
         self.compiled_opcodes = None
 
+
     def variables(self):
         return self._symbols.variables
 

@@ -47,6 +47,9 @@ class Interpreter(object):
         return self.run(code)
 
     def run_src(self, src):
+        # from obin._compile.compiler import compile as cl
+        # code = cl(src)
+        # return self.run(code)
         from obin.compile.astbuilder import parse_to_ast
         from obin.runistr import decode_str_utf8
         ast = parse_to_ast(decode_str_utf8(src))
@@ -56,7 +59,8 @@ class Interpreter(object):
         from obin.runtime.routine import GlobalRoutine
 
         from obin.compile.code import Code
-        assert isinstance(code, Code)
+        # assert isinstance(code, Code)
+        print [str(c) for c in code.opcodes]
         global_routine = GlobalRoutine(code)
 
         print "*********"

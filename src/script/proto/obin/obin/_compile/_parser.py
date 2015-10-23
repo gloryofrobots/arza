@@ -565,7 +565,7 @@ def parser_init(parser):
     * / %
     """
     infix(parser, T.TT_MUL, 65)
-    infix(parser, T.TT_DIVIDE, 65)
+    infix(parser, T.TT_DIV, 65)
     infix(parser, T.TT_MOD, 65)
 
     """
@@ -879,5 +879,5 @@ def write_ast(ast):
         f.write(repr)
 
 
-ast = parse_string(testprogram())
-write_ast(ast)
+# ast = parse_string(testprogram())
+# write_ast(ast)

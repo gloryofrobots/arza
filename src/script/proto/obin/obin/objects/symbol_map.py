@@ -8,6 +8,12 @@ class SymbolMap(object):
         self.variables = []
         self.parameters = []
 
+    def __eq__(self, other):
+        return self.functions == other.functions \
+               and self.variables == other.variables \
+               and self.parameters == other.parameters \
+                and self.symbols == other.symbols
+
     def add_symbol(self, identifyer):
         idx = self.symbols.lookup(identifyer)
 

@@ -262,8 +262,6 @@ class BytecodeRoutine(BaseRoutine):
 
     def __init__(self, js_code):
         super(BytecodeRoutine, self).__init__()
-        from obin.compile.code import Code
-        assert isinstance(js_code, Code)
         self._js_code_ = js_code
         if not self._js_code_.is_compiled():
             self._js_code_.emit('LOAD_UNDEFINED')
@@ -336,8 +334,6 @@ class BytecodeRoutine(BaseRoutine):
         return self._symbol_size_
 
     def get_js_code(self):
-        from obin.compile.code import Code
-        assert isinstance(self._js_code_, Code)
         return self._js_code_
 
     def variables(self):

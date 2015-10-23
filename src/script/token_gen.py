@@ -73,7 +73,7 @@ TOKENS = [
   ("TT_SUB", "-"),
   ("TT_ADD", "+"),
   ("TT_MUL", "*"),
-  ("TT_DIVIDE", "/"),
+  ("TT_DIV", "/"),
   ("TT_BACKSLASH", "\\"),
   ("TT_BACKTICK", "`"),
   ("TT_MOD", "%"),

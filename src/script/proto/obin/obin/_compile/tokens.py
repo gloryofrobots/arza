@@ -118,7 +118,7 @@ RULES = [
     ('\-', TT_SUB),
     ('\+', TT_ADD),
     ('\*', TT_MUL),
-    ('/', TT_DIVIDE),
+    ('/', TT_DIV),
     ('\%', TT_MOD),
     ('\<', TT_LESS),
     ('\>', TT_GREATER),
