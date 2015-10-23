@@ -203,14 +203,7 @@ class ASTBuilder(RPythonVisitor):
     visit_expressionnoin = binaryop
 
     def visit_memberexpression(self, node):
-        if isinstance(node.children[0], Symbol) and \
-                node.children[0].additional_info == 'new':  # XXX could be a identifier?
-            pos = self.get_pos(node)
-            left = self.dispatch(node.children[1])
-            right = self.dispatch(node.children[2])
-            return operations.NewWithArgs(pos, left, right)
-        else:
-            return self.binaryop(node)
+        return self.binaryop(node)
 
     def literalop(self, node):
         pos = self.get_pos(node)
@@ -235,9 +228,7 @@ class ASTBuilder(RPythonVisitor):
 
     def _dispatch_assignment(self, pos, left, atype, prepost):
         is_post = prepost == 'post'
-        if self.is_local_identifier(left):
-            return operations.LocalAssignmentOperation(pos, left, None, atype, is_post)
-        elif self.is_identifier(left):
+        if self.is_identifier(left):
             return operations.AssignmentOperation(pos, left, left.name, left.index, None, atype, is_post)
         elif self.is_member(left):
             return operations.MemberAssignmentOperation(pos, left, None, atype, is_post)

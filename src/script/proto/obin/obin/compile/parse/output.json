@@ -1,30 +1,105 @@
 [
   {
-    "_line": 1,
-    "_type": "TT_SUB",
-    "_value": "-",
+    "_line": 6,
+    "_type": "TT_ASSIGN",
+    "_value": "=",
     "children": [
       {
-        "_line": 1,
-        "_type": "TT_INT",
-        "_value": "2"
+        "_line": 6,
+        "_type": "TT_NAME",
+        "_value": "n"
       },
       {
-        "_line": 1,
-        "_type": "TT_MUL",
-        "_value": "*",
+        "_line": 6,
+        "_type": "TT_INT",
+        "_value": "42"
+      }
+    ]
+  },
+  {
+    "_line": 7,
+    "_type": "TT_ASSIGN",
+    "_value": "=",
+    "children": [
+      {
+        "_line": 7,
+        "_type": "TT_NAME",
+        "_value": "d"
+      },
+      {
+        "_line": 7,
+        "_type": "TT_FLOAT",
+        "_value": "3.1415926535"
+      }
+    ]
+  },
+  {
+    "_line": 8,
+    "_type": "TT_ASSIGN",
+    "_value": "=",
+    "children": [
+      {
+        "_line": 8,
+        "_type": "TT_NAME",
+        "_value": "s"
+      },
+      {
+        "_line": 8,
+        "_type": "TT_STR",
+        "_value": "\"Some String\""
+      }
+    ]
+  },
+  {
+    "_line": 9,
+    "_type": "TT_ASSIGN",
+    "_value": "=",
+    "children": [
+      {
+        "_line": 9,
+        "_type": "TT_NAME",
+        "_value": "a"
+      },
+      {
+        "_line": 9,
+        "_type": "TT_LSQUARE",
+        "_value": "[",
         "children": [
-          {
-            "_line": 1,
-            "_type": "TT_INT",
-            "_value": "3"
-          },
-          {
-            "_line": 2,
-            "_type": "TT_INT",
-            "_value": "4"
-          }
+          [
+            {
+              "_line": 9,
+              "_type": "TT_INT",
+              "_value": "1"
+            },
+            {
+              "_line": 9,
+              "_type": "TT_FLOAT",
+              "_value": "2.34"
+            },
+            {
+              "_line": 9,
+              "_type": "TT_STR",
+              "_value": "\"SSS\""
+            }
+          ]
         ]
+      }
+    ]
+  },
+  {
+    "_line": 10,
+    "_type": "TT_ASSIGN",
+    "_value": "=",
+    "children": [
+      {
+        "_line": 10,
+        "_type": "TT_NAME",
+        "_value": "c"
+      },
+      {
+        "_line": 10,
+        "_type": "TT_CHAR",
+        "_value": "'C'"
       }
     ]
   }

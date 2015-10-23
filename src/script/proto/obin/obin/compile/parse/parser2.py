@@ -116,11 +116,15 @@ def handler(parser, ttype):
 
 def nud(parser, node):
     handler = node_handler(parser, node)
+    if not handler.nud:
+        error(parser, "Unknown token", args=node)
     return handler.nud(parser, node)
 
 
 def std(parser, node):
     handler = node_handler(parser, node)
+    if not handler.std:
+        error(parser, "Unknown token", args=node)
 
     return handler.std(parser, node)
 
@@ -152,6 +156,8 @@ def lbp(parser, node):
 
 def led(parser, node, left):
     handler = node_handler(parser, node)
+    if not handler.led:
+        error(parser, "Unknown token", args=node)
 
     return handler.led(parser, node, left)
 
@@ -210,7 +216,7 @@ class Parser(object):
             # print "TOKEN"
             self.is_newline_occurred = False
 
-        # print token
+        #print token
         self.token = token
         self.node = Node(self.token.type, self.token.val, self.token.pos, self.token.line)
         return self.node
@@ -496,6 +502,9 @@ def parser_init(parser):
 
     infix(parser, T.TT_DOT, 80, _infix_dot)
 
+    # infix(parser, T.TT_COMMA, 1)
+    # infix(parser, T.TT_COLON, 1)
+
     def _infix_rsquare(parser, node, left):
         node.init(2)
         node.setfirst(left)
@@ -504,6 +513,7 @@ def parser_init(parser):
         return node
 
     infix(parser, T.TT_LSQUARE, 80, _infix_rsquare)
+
 
     def _infix_lparen(parser, node, left):
         items = []
@@ -555,6 +565,26 @@ def parser_init(parser):
 
         node.setfirst(items)
         return node
+
+    def _prefix_backslash(parser, node):
+        items = []
+        node.init(2)
+        # function name
+        node.setfirst(expression(parser, 0))
+        node.setsecond(items)
+        if parser.token_type == T.TT_RPAREN:
+            return node
+
+        while True:
+            items.append(expression(parser, 0))
+            if parser.node.type != T.TT_COMMA or parser.is_newline_occurred:
+                break
+
+            advance_expected(parser, T.TT_COMMA)
+
+        return node
+
+    prefix(parser, T.TT_BACKSLASH, _prefix_backslash)
 
     def _prefix_lparen(parser, node):
         e = expression(parser, 0)

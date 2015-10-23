@@ -69,7 +69,10 @@ RULES = [
     ('True', TT_TRUE),
     ('False', TT_FALSE),
     ('Nil', TT_NIL),
+    # TODO MAYBE DELETE IT
     ('this', TT_THIS),
+    ('then', TT_THEN),
+    # **********
     ('\\bin\\b', TT_IN),
     ('is', TT_IS),
     ('return', TT_RETURN),
@@ -118,6 +121,8 @@ RULES = [
     ('\<', TT_LESS),
     ('\>', TT_GREATER),
     ('\?', TT_QUESTION),
+    ('\\\\', TT_BACKSLASH),
+    ('`', TT_BACKTICK),
 ]
 
 RULES2 = [
