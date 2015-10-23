@@ -9,8 +9,9 @@
 # Last modified: November 2010
 #-------------------------------------------------------------------------------
 import re
-import sys
+
 import tokens
+
 
 class Token(object):
     """ A simple Token structure.

@@ -197,22 +197,6 @@ class AssignmentOperation(BaseAssignment):
         bytecode.emit('STORE', self.index, self.identifier)
 
 
-class LocalAssignmentOperation(AssignmentOperation):
-    def __init__(self, pos, left, right, operand, post=False):
-        self.left = left
-        self.local = left.get_local()
-        self.identifier = left.get_literal()
-        self.right = right
-        if self.right is None:
-            self.right = Empty(pos)
-        self.pos = pos
-        self.operand = operand
-        self.post = post
-
-    def emit_store(self, bytecode):
-        bytecode.emit('STORE_LOCAL', self.local)
-
-
 class MemberAssignmentOperation(BaseAssignment):
     def __init__(self, pos, left, right, operand, post=False):
         self.pos = pos

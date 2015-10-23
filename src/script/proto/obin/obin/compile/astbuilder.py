@@ -435,9 +435,7 @@ class ASTBuilder(RPythonVisitor):
         operation = node.children[1].additional_info
         right = self.dispatch(node.children[2])
 
-        if self.is_local_identifier(left):
-            return operations.LocalAssignmentOperation(pos, left, right, operation)
-        elif self.is_identifier(left):
+        if self.is_identifier(left):
             identifier = left.get_literal()
             i = unicode(identifier)
             #assert isinstance(i, unicode)

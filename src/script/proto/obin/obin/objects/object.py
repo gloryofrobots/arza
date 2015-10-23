@@ -465,6 +465,23 @@ class W_String(W__PrimitiveObject):
         return NAN
 
 
+class Symbol(object):
+    def __init__(self, strval):
+        from obin.objects.object_space import object_space
+        interpreter = object_space.interpreter
+        if interpreter.symbols.contains(strval):
+            self.index = interpreter.symbols.get_index(strval)
+        else:
+            self.index = interpreter.symbols.add(strval, W_String(strval))
+
+    def to_string(self):
+        from obin.objects.object_space import object_space
+        return object_space.interpreter.get_by_index(self.index)
+
+    def __str__(self):
+        return self.to_string()
+
+
 class W_Number(W__PrimitiveObject):
     """ Base class for numbers, both known to be floats
     and those known to be integers

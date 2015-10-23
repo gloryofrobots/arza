@@ -173,12 +173,14 @@ class Slots(object):
         self._property_map_ = new_map()
         self._property_slots_ = []
 
-
     def contains(self, name):
         return self._property_map_.contains(name)
 
     def keys(self):
         return self._property_map_.keys()
+
+    def get_by_index(self, index):
+        return self._property_slots_[index]
 
     def get(self, name):
         idx = self._property_map_.lookup(name)
@@ -186,8 +188,7 @@ class Slots(object):
         if self._property_map_.not_found(idx):
             return
 
-        prop = self._property_slots_[idx]
-        return prop
+        return self.get_by_index(idx)
 
     def delete(self, name):
         idx = self._property_map_.lookup(name)
@@ -198,6 +199,13 @@ class Slots(object):
         assert idx >= 0
         self._property_slots_ = self._property_slots_[:idx] + self._property_slots_[idx + 1:]
         self._property_map_ = self._property_map_.delete(name)
+
+    def get_index(self, name):
+        idx = self._property_map_.lookup(name)
+
+        if self._property_map_.not_found(idx):
+            return
+        return idx
 
     def add(self, name, value):
         idx = self._property_map_.lookup(name)
@@ -215,8 +223,10 @@ class Slots(object):
         idx = self._property_map_.lookup(name)
         self._property_slots_[idx] = value
 
+
 def newslots():
     return Slots()
+
 
 class Table(object):
     def __init__(self, data=None):

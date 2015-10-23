@@ -18,6 +18,7 @@ class Interpreter(object):
         from obin.objects.object import W_ModuleObject
         from obin.objects.object_space import object_space
         import obin.builtins.interpreter
+        from obin.objects.datastructs import Slots
 
         self.machine = Machine()
 
@@ -25,7 +26,7 @@ class Interpreter(object):
         self.global_object = W_ModuleObject()
         self.modules = []
 
-
+        self.symbols = Slots()
         object_space.global_object = self.global_object
         object_space.interpreter = self
 

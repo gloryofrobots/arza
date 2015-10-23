@@ -117,7 +117,7 @@ def handler(parser, ttype):
 def nud(parser, node):
     handler = node_handler(parser, node)
     if not handler.nud:
-        error(parser, "Unknown token", args=node)
+        error(parser, "Unknown token", args=(node, str(parser.token)))
     return handler.nud(parser, node)
 
 
@@ -442,6 +442,7 @@ def parse(parser):
 
 
 def parser_init(parser):
+
     literal(parser, T.TT_INT)
     literal(parser, T.TT_FLOAT)
     literal(parser, T.TT_CHAR)
@@ -460,27 +461,30 @@ def parser_init(parser):
     constant(parser, T.TT_FALSE, False)
     constant(parser, T.TT_NIL, None)
 
+    # precedence 5
+    # infix(parser, T.TT_COMMA, 5)
+    # infix(parser, T.TT_COLON, 5)
+
+    """
+    precedence 10
+    = += -= *= /= %= &= ^= |=
+    """
     assignment(parser, T.TT_ASSIGN)
     assignment(parser, T.TT_ADD_ASSIGN)
     assignment(parser, T.TT_SUB_ASSIGN)
+    assignment(parser, T.TT_MUL_ASSIGN)
+    assignment(parser, T.TT_DIV_ASSIGN)
+    assignment(parser, T.TT_MOD_ASSIGN)
+    assignment(parser, T.TT_OR_ASSIGN)
+    assignment(parser, T.TT_AND_ASSIGN)
+    assignment(parser, T.TT_XOR_ASSIGN)
 
-    infixr(parser, T.TT_AND, 30)
-    infixr(parser, T.TT_OR, 30)
-    infixr(parser, T.TT_EQ, 40)
-    infixr(parser, T.TT_IS, 40)
-    infixr(parser, T.TT_NE, 40)
-    infixr(parser, T.TT_GREATER, 40)
-    infixr(parser, T.TT_GE, 40)
-    infixr(parser, T.TT_LESS, 40)
-    infixr(parser, T.TT_LE, 40)
 
-    infix(parser, T.TT_ADD, 50)
-    infix(parser, T.TT_SUB, 50)
-    infix(parser, T.TT_MUL, 60)
-    infix(parser, T.TT_DIVIDE, 60)
 
-    prefix(parser, T.TT_NOT)
-    prefix(parser, T.TT_SUB)
+    """
+    precedence 20
+    infix if
+    """
 
     def _infix_if(parser, node, left):
         node.init(3)
@@ -492,6 +496,81 @@ def parser_init(parser):
 
     infix(parser, T.TT_IF, 20, _infix_if)
 
+
+    """
+    precedence 25
+    or
+    """
+    infix(parser, T.TT_OR, 25)
+
+    """
+    precedence 30
+    AND
+    """
+    infix(parser, T.TT_AND, 30)
+
+
+    """
+    precedence 35
+    |
+    """
+    infixr(parser, T.TT_BITOR, 35)
+
+    """
+    precedence 40
+    ^
+    """
+    infixr(parser, T.TT_BITXOR, 40)
+
+
+    """
+    precedence 45
+    &
+    """
+    infixr(parser, T.TT_BITAND, 45)
+
+    """
+    precedence 50
+    in, is, <, <=, >, >=, !=, ==
+    """
+    #TODO is not and not is
+
+    infix(parser, T.TT_IN, 50)
+    infix(parser, T.TT_IS, 50)
+    infix(parser, T.TT_LESS, 50)
+    infix(parser, T.TT_LE, 50)
+    infix(parser, T.TT_GREATER, 50)
+    infix(parser, T.TT_GE, 50)
+    infix(parser, T.TT_NE, 50)
+    infix(parser, T.TT_EQ, 50)
+
+    """
+    precedence 55
+    >> << >>>
+    """
+    infix(parser, T.TT_LSHIFT, 55)
+    infix(parser, T.TT_RSHIFT, 55)
+    infix(parser, T.TT_URSHIFT, 55)
+
+    """
+    precedence 60
+    + -
+    """
+    infix(parser, T.TT_ADD, 60)
+    infix(parser, T.TT_SUB, 60)
+
+    """
+    precedence 65
+    * / %
+    """
+    infix(parser, T.TT_MUL, 65)
+    infix(parser, T.TT_DIVIDE, 65)
+    infix(parser, T.TT_MOD, 65)
+
+    """
+    precedence 70
+    .
+    """
     def _infix_dot(parser, node, left):
         node.init(2)
         node.setfirst(left)
@@ -500,11 +579,12 @@ def parser_init(parser):
         advance(parser)
         return node
 
-    infix(parser, T.TT_DOT, 80, _infix_dot)
+    infix(parser, T.TT_DOT, 70, _infix_dot)
 
-    # infix(parser, T.TT_COMMA, 1)
-    # infix(parser, T.TT_COLON, 1)
-
+    """
+    precedence 80
+    [
+    """
     def _infix_rsquare(parser, node, left):
         node.init(2)
         node.setfirst(left)
@@ -514,7 +594,10 @@ def parser_init(parser):
 
     infix(parser, T.TT_LSQUARE, 80, _infix_rsquare)
 
-
+    """
+    precedence 90
+    (
+    """
     def _infix_lparen(parser, node, left):
         items = []
         if left.type == T.TT_DOT or left.type == T.TT_LSQUARE:
@@ -546,25 +629,14 @@ def parser_init(parser):
 
     infix(parser, T.TT_LPAREN, 90, _infix_lparen)
 
-    def _prefix_lparen2(parser, node):
-        node.init(1)
-        items = []
 
-        if parser.node.type != T.TT_RPAREN:
-            while True:
-                items.append(expression(parser, 0))
-                if parser.node.type != T.TT_COMMA:
-                    break
+    """
+    PREFIXES
+    """
 
-                advance_expected(parser, T.TT_COMMA)
-
-        advance_expected(parser, T.TT_RPAREN)
-
-        if len(items) == 1:
-            return items[0]
-
-        node.setfirst(items)
-        return node
+    prefix(parser, T.TT_NOT)
+    prefix(parser, T.TT_SUB)
+    prefix(parser, T.TT_ADD)
 
     def _prefix_backslash(parser, node):
         items = []

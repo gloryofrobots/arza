@@ -27,8 +27,6 @@ TOKENS = [
   ("TT_NIL", "nil"),
   ("TT_THIS", "this"),
   ("TT_THEN", "then"),
-  ("TT_GENERIC", "generic"),
-  ("TT_IMPLEMENT", "implement"),
   ("TT_YIELD", "yield"),
   ("TT_FROM", "from"),
   ("TT_IN", "in"),
@@ -45,6 +43,7 @@ TOKENS = [
   ("TT_OR_ASSIGN", "|="),
 
   ("TT_RSHIFT", ">>"),
+  ("TT_URSHIFT", ">>>"),
   ("TT_LSHIFT", "<<"),
   ("TT_ARROW", "->"),
   ("TT_FAT_ARROW", "=>"),

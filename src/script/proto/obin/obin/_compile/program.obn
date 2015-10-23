@@ -1,0 +1,101 @@
+
+
+
+x = 42
+x = 3.1445
+x = 'x'
+x = "sdd"
+x = [1, 2.34, "SSS"]
+x = { name:"X", age:42.24 }
+x = alice
+x = true
+x = false
+x = nil
+x += 0.5
+x -= 1
+x *= 2
+x /= 3
+x %= 4
+x &= 5
+x ^=6
+x |= 7
+x = true if 5 > 4 else false
+x in y
+x is y
+5 > 5
+5 >= 3
+5 < 4
+5 <= 3
+x != 6
+x == y
+x >> 43
+x << 10001
+x >>> 1001001001
+x + 34
+x - 34
+x * 34
+x / 45
+x % 32
+x.f.t = 1
+
+
+
+
+/*
+if x > 10 {
+    print(x,30);
+} elif x < 20 {
+    print("less");
+} else {
+    print("unknown");
+}
+
+while z {
+    print(z);
+}
+
+for x,y,t in data {
+    print(x + y);
+}
+
+fn fib(n) {
+   fn _process(n,a,b) {
+        return _process(n-1, b, a+b) if n>0 else a;
+   }
+
+   return _process(n,0,1);
+} */
+/*
+fn f(x, y){
+    let fs = \require "fs"
+    fn f1(z) {
+        fn f3(a,b) {
+            return x + y + z + a + b;
+        }
+        return \f2 x + y + z + (\f3 x, y);
+
+    }
+    return x + \f1 y;
+}*/
+
+//COMMENT
+/*
+MULTILINE
+COMMENT
+
+match x,v {
+    [_, 2, 2], true => 1
+    [_, 2, 3], false => 2
+    [1, 2, 4], _ => 3
+    else => fail
+}
+
+(let [v [1 2 4]
+      x true]
+  (match [v x]
+    [[_ 2 2] true] 1
+    [[_ 2 3] false] 2
+    [[1 2 4] _] 3
+    :else 4))
+\print x,y, (\write z,"1111"), [1,2]
+*/
