@@ -32,6 +32,7 @@ TOKENS = [
   ("TT_FROM", "from"),
   ("TT_IN", "in"),
   ("TT_IS", "is"),
+  ("TT_ISNOT", "isnot"),
   ("TT_RETURN", "return"),
   ("TT_ELLIPSIS", "..."),
   ("TT_ADD_ASSIGN", "+="),
@@ -39,9 +40,9 @@ TOKENS = [
   ("TT_MUL_ASSIGN", "*="),
   ("TT_DIV_ASSIGN", "/="),
   ("TT_MOD_ASSIGN", "%="),
-  ("TT_AND_ASSIGN", "&="),
-  ("TT_XOR_ASSIGN", "^="),
-  ("TT_OR_ASSIGN", "|="),
+  ("TT_BITAND_ASSIGN", "&="),
+  ("TT_BITXOR_ASSIGN", "^="),
+  ("TT_BITOR_ASSIGN", "|="),
 
   ("TT_RSHIFT", ">>"),
   ("TT_URSHIFT", ">>>"),
@@ -77,9 +78,8 @@ TOKENS = [
   ("TT_BACKSLASH", "\\"),
   ("TT_BACKTICK", "`"),
   ("TT_MOD", "%"),
-  ("TT_LESS", "<"),
-  ("TT_GREATER", ">"),
-  ("TT_QUESTION", "?"),
+  ("TT_LT", "<"),
+  ("TT_GT", ">"),
   ("TT_UNKNOWN", None)
 ]
 

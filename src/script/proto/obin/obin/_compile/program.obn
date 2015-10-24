@@ -30,6 +30,7 @@ x |= 7
 x = true if 5 > 4 else false
 x in y
 x is y
+x isnot y
 5 > 5
 5 >= 3
 5 < 4

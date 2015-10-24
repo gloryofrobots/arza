@@ -155,6 +155,7 @@ class BaseAssignment(Expression):
         if self.has_operation():
             self.left.emit(bytecode)
             if self.post_operation():
+                raise RuntimeError()
                 # Force ToNumber
                 bytecode.emit('UPLUS')
                 bytecode.emit('DUP')

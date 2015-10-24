@@ -261,7 +261,7 @@
         "children": [
           {
             "_line": 19,
-            "_type": "TT_GREATER",
+            "_type": "TT_GT",
             "_value": ">",
             "children": [
               {
@@ -326,7 +326,7 @@
   },
   {
     "_line": 22,
-    "_type": "TT_GREATER",
+    "_type": "TT_GT",
     "_value": ">",
     "children": [
       {
@@ -360,7 +360,7 @@
   },
   {
     "_line": 24,
-    "_type": "TT_LESS",
+    "_type": "TT_LT",
     "_value": "<",
     "children": [
       {

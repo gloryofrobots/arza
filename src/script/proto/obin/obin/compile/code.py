@@ -131,6 +131,9 @@ class Code(object):
         return self.compiled_opcodes is not None
 
     def emit(self, operation, *args):
+        # from obin.utils import tb
+        # if operation == "POP":
+        #     tb("POP")
         assert not self.compiled_opcodes
         opcode = getattr(opcodes, operation)(*args)
         self.opcodes.append(opcode)

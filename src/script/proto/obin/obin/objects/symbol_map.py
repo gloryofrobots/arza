@@ -24,6 +24,9 @@ class SymbolMap(object):
         assert isinstance(idx, int)
         return idx
 
+    def has_variable(self, identifyer):
+        return identifyer in self.variables
+
     def add_variable(self, identifyer):
         idx = self.add_symbol(identifyer)
 

@@ -35,6 +35,9 @@ class Compiler(object):
         #print 'symbol "%s"@%d in scope %d' % (symbol, idx, self.depth,)
         return idx
 
+    def has_variable(self, symbol):
+        return self.scopes[-1].has_variable(symbol)
+
     def declare_variable(self, symbol):
         s = unicode(symbol)
         #assert isinstance(s, unicode)
@@ -160,6 +163,10 @@ class Compiler(object):
         self._compile(code, node.second())
         code.emit(name)
 
+    def compile_unary(self, code, node, name):
+        self._compile(code, node.first())
+        code.emit(name)
+
     def _compile_BITAND(self, code, node):
         self.compile_binary(code, node, "BITAND")
 
@@ -169,11 +176,13 @@ class Compiler(object):
     def _compile_BITXOR(self, code, node):
         self.compile_binary(code, node, "BITXOR")
 
-    def _compile_BITNOT(self, code, node):
-        self.compile_binary(code, node, "BITNOT")
-
     def _compile_ADD(self, code, node):
-        self.compile_binary(code, node, "ADD")
+        if node.arity == 2:
+            self.compile_binary(code, node, "ADD")
+        elif node.arity == 1:
+            self.compile_unary(code, node, "UPLUS")
+        else:
+            assert 0
 
     def _compile_MUL(self, code, node):
         self.compile_binary(code, node, "MUL")
@@ -185,7 +194,53 @@ class Compiler(object):
         self.compile_binary(code, node, "DIV")
 
     def _compile_SUB(self, code, node):
-        self.compile_binary(code, node, "SUB")
+        if node.arity == 2:
+            self.compile_binary(code, node, "SUB")
+        elif node.arity == 1:
+            self.compile_unary(code, node, "UMINUS")
+        assert 0
+
+    def _compile_BITNOT(self, code, node):
+        self.compile_unary(code, node, "BITNOT")
+
+    def _compile_NOT(self, code, node):
+        self.compile_unary(code, node, "NOT")
+
+    def _compile_GE(self, code, node):
+        self.compile_binary(code, node, "GE")
+
+    def _compile_GT(self, code, node):
+        self.compile_binary(code, node, "GT")
+
+    def _compile_LE(self, code, node):
+        self.compile_binary(code, node, "LE")
+
+    def _compile_LT(self, code, node):
+        self.compile_binary(code, node, "LT")
+
+    def _compile_IS(self, code, node):
+        self.compile_binary(code, node, "IS")
+
+    def _compile_ISNOT(self, code, node):
+        self.compile_binary(code, node, "ISNOT")
+
+    def _compile_IN(self, code, node):
+        self.compile_binary(code, node, "IN")
+
+    def _compile_EQ(self, code, node):
+        self.compile_binary(code, node, "EQ")
+
+    def _compile_NE(self, code, node):
+        self.compile_binary(code, node, "NE")
+
+    def _compile_LSHIFT(self, code, node):
+        self.compile_binary(code, node, "LSH")
+
+    def _compile_RSHIFT(self, code, node):
+        self.compile_binary(code, node, "RSH")
+
+    def _compile_URSHIFT(self, code, node):
+        self.compile_binary(code, node, "URSH")
 
     def _compile_AND(self, bytecode, node):
         self._compile(bytecode, node.first())
@@ -201,12 +256,58 @@ class Compiler(object):
         self._compile(bytecode, node.second())
         bytecode.emit('LABEL', one)
 
+    def _compile_variable_declaration(self, bytecode, node, value):
+        index = self.declare_variable(value)
+        self._compile(bytecode, node.second())
+        bytecode.emit('STORE', index, value)
+
     def _compile_ASSIGN(self, bytecode, node):
+        left = node.first()
+        value = unicode(left.value)
+
+        index = self.declare_variable(value)
+        # self._compile(bytecode, node.first())
+        self._compile(bytecode, node.second())
+        bytecode.emit('STORE', index, unicode(left.value))
+
+    def _compile_modify_assignment(self, bytecode, node, operation):
         left = node.first()
         index = self.declare_variable(left.value)
         # self._compile(bytecode, left)
+
+        self._compile(bytecode, node.first())
         self._compile(bytecode, node.second())
+        bytecode.emit(operation)
         bytecode.emit('STORE', index, unicode(left.value))
+
+    def _compile_ADD_ASSIGN(self, code, node):
+        self._compile_modify_assignment(code, node, "ADD")
+
+    def _compile_SUB_ASSIGN(self, code, node):
+        self._compile_modify_assignment(code, node, "SUB")
+
+    def _compile_MUL_ASSIGN(self, code, node):
+        self._compile_modify_assignment(code, node, "MUL")
+
+    def _compile_DIV_ASSIGN(self, code, node):
+        self._compile_modify_assignment(code, node, "DIV")
+
+    def _compile_MOD_ASSIGN(self, code, node):
+        self._compile_modify_assignment(code, node, "MOD")
+
+    def _compile_BITOR_ASSIGN(self, code, node):
+        self._compile_modify_assignment(code, node, "BITOR")
+
+    def _compile_BITAND_ASSIGN(self, code, node):
+        self._compile_modify_assignment(code, node, "BITAND")
+
+    def _compile_BITXOR_ASSIGN(self, code, node):
+        self._compile_modify_assignment(code, node, "BITXOR")
+
+    def _compile_NAME(self, code, node):
+        name = unicode(node.value)
+        index = self.declare_symbol(name)
+        code.emit('LOAD_VARIABLE', index, name)
 
 
 def testprogram():
@@ -276,11 +377,12 @@ y = 2 + 4 * 6
 
 test(
 """
-x = 2 + 3;
-y = 2 + 4 * 6 / 12
+x = 0
+y += 2
+
 """,
 """
-var x = 2 + 3;
-var y = 2 + 4 * 6 / 12;
+var x = 0;
+y += 2;
 """
 )

@@ -476,9 +476,9 @@ def parser_init(parser):
     assignment(parser, T.TT_MUL_ASSIGN)
     assignment(parser, T.TT_DIV_ASSIGN)
     assignment(parser, T.TT_MOD_ASSIGN)
-    assignment(parser, T.TT_OR_ASSIGN)
-    assignment(parser, T.TT_AND_ASSIGN)
-    assignment(parser, T.TT_XOR_ASSIGN)
+    assignment(parser, T.TT_BITOR_ASSIGN)
+    assignment(parser, T.TT_BITAND_ASSIGN)
+    assignment(parser, T.TT_BITXOR_ASSIGN)
 
 
 
@@ -537,10 +537,11 @@ def parser_init(parser):
     #TODO is not and not is
 
     infix(parser, T.TT_IN, 50)
+    infix(parser, T.TT_ISNOT, 50)
     infix(parser, T.TT_IS, 50)
-    infix(parser, T.TT_LESS, 50)
+    infix(parser, T.TT_LT, 50)
     infix(parser, T.TT_LE, 50)
-    infix(parser, T.TT_GREATER, 50)
+    infix(parser, T.TT_GT, 50)
     infix(parser, T.TT_GE, 50)
     infix(parser, T.TT_NE, 50)
     infix(parser, T.TT_EQ, 50)
@@ -879,5 +880,5 @@ def write_ast(ast):
         f.write(repr)
 
 
-# ast = parse_string(testprogram())
-# write_ast(ast)
+ast = parse_string("-x; 2 - 4")
+#write_ast(ast)

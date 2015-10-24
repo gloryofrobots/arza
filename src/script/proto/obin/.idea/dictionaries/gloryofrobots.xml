@@ -2,6 +2,7 @@
   <dictionary name="gloryofrobots">
     <words>
       <w>inprocess</w>
+      <w>isnot</w>
       <w>opcode</w>
     </words>
   </dictionary>
