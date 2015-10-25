@@ -27,6 +27,7 @@ TOKENS = [
   ("TT_NIL", "nil"),
   ("TT_UNDEFINED", "undefined"),
   ("TT_THIS", "this"),
+  ("TT_RAISE", "raise"),
   ("TT_THEN", "then"),
   ("TT_YIELD", "yield"),
   ("TT_FROM", "from"),

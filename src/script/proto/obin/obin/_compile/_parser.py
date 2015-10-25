@@ -788,7 +788,7 @@ def parser_init(parser):
 
     prefix(parser, T.TT_LCURLY, _prefix_lcurly)
 
-    def _stmt_return(parser, node):
+    def _stmt_single(parser, node):
         node.init(1)
         if token_is_one_of(parser, [T.TT_SEMI, T.TT_RCURLY]) or parser.is_newline_occurred:
             node.setfirst([])
@@ -797,8 +797,9 @@ def parser_init(parser):
         endofexpression(parser)
         return node
 
-    stmt(parser, T.TT_RETURN, _stmt_return)
-    # TODO CHECK
+    stmt(parser, T.TT_RETURN, _stmt_single)
+    stmt(parser, T.TT_RAISE, _stmt_single)
+
     # stmt(parser, T.TT_SEMI, empty)
 
     def _stmt_loop_flow(parser, node):

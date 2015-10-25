@@ -72,6 +72,7 @@ RULES = [
     ('undefined', TT_UNDEFINED),
     # TODO MAYBE DELETE IT
     ('this', TT_THIS),
+    ('raise', TT_RAISE),
     # ('then', TT_THEN),
     # **********
     ('\\bin\\b', TT_IN),
@@ -124,7 +125,7 @@ RULES = [
     ('\<', TT_LT),
     ('\>', TT_GT),
     ('\\\\', TT_BACKSLASH),
-    ('`', TT_BACKTICK),
+    # ('`', TT_BACKTICK),
 ]
 
 RULES2 = [

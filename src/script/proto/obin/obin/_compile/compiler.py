@@ -89,6 +89,7 @@ class Compiler(object):
         code = ByteCode()
         self.enter_scope()
         self._compile(code, ast)
+        code.emit('LOAD_UNDEFINED')
         scope = self.current_scope()
         final_scope = scope.finalize()
         code.set_symbols(final_scope)
@@ -99,7 +100,6 @@ class Compiler(object):
             self._compile_nodes(code, ast)
         else:
             self._compile_node(code, ast)
-        code.emit('LOAD_UNDEFINED')
 
     def _compile_nodes(self, bytecode, nodes):
         if len(nodes) > 1:
@@ -310,7 +310,7 @@ class Compiler(object):
         code.emit('LOAD_VARIABLE', index, name)
 
     def is_empty(self, l):
-        return isinstance(l, list) and len(l) > 0
+        return isinstance(l, list) and len(l) == 0
 
     def _compile_RETURN(self, code, node):
         expr = node.first()
@@ -320,6 +320,15 @@ class Compiler(object):
             self._compile(code, expr)
 
         code.emit('RETURN')
+
+    def _compile_RAISE(self, code, node):
+        expr = node.first()
+        if self.is_empty(expr):
+            code.emit('LOAD_UNDEFINED')
+        else:
+            self._compile(code, expr)
+
+        code.emit('THROW')
 
     def _compile_LCURLY(self, code, node):
         items = node.first()
@@ -388,6 +397,53 @@ class Compiler(object):
 
         code.emit('POP')
 
+    def _compile_IF(self, code, node):
+        branches = node.first()
+
+        def compile_branch(bytecode, branch, endif):
+            condition = branch[0]
+            body = branch[1]
+            self._compile(bytecode, condition)
+            end_body = bytecode.prealocate_label()
+            bytecode.emit('JUMP_IF_FALSE', end_body)
+            self._compile(bytecode, body)
+            bytecode.emit('JUMP', endif)
+            bytecode.emit('LABEL', end_body)
+
+        endif = code.prealocate_label()
+
+        for i in range(len(branches) - 1):
+            branch = branches[i]
+            compile_branch(code, branch, endif)
+
+        elsebranch = branches[-1]
+        if self.is_empty(elsebranch):
+            code.emit('LOAD_UNDEFINED')
+        else:
+            self._compile(code, elsebranch[1])
+
+        code.emit('LABEL', endif)
+
+    def _compile_WHILE(self, bytecode, node):
+        condition = node.first()
+        body = node.second()
+        bytecode.emit('LOAD_UNDEFINED')
+        startlabel = bytecode.emit_startloop_label()
+        bytecode.continue_at_label(startlabel)
+        self._compile(bytecode, condition)
+        endlabel = bytecode.prealocate_endloop_label()
+        bytecode.emit('JUMP_IF_FALSE', endlabel)
+        bytecode.emit('POP')
+        self._compile(bytecode, body)
+        bytecode.emit('JUMP', startlabel)
+        bytecode.emit_endloop_label(endlabel)
+        bytecode.done_continue()
+
+    def _compile_LPAREN(self, bytecode, node):
+
+        for node in self.nodes:
+            node.emit(bytecode)
+        bytecode.emit('LOAD_LIST', len(self.nodes))
 def testprogram():
     data = ""
     with open("program2.obn") as f:
@@ -449,14 +505,16 @@ def test(txt, txt_old):
     check_codes(code, code_old)
 
 # compile_and_print("""
-# fn _f(x, y) { return x; }
+# if y > 0 { x = 1; } else { x = 2; }
 # """)
 
 test(
 """
-F = fn _f(x, y) { return x; }
+print(1,"OLOLO",3.14);
+return Math.abs(2.333);
 """,
 """
-var F = function _f(x, y) { return x; }
+print(1,"OLOLO",3.14);
+return Math.abs(2.333);
 """
 )
