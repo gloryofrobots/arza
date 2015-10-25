@@ -11,8 +11,6 @@ class FakeParseError(Exception):
     def __init__(self, pos, msg):
         self.pos = pos
         self.msg = msg
-
-
 import sys
 
 def format_arg_value(arg_val):
@@ -110,14 +108,14 @@ class ASTBuilder(RPythonVisitor):
 
         new_scope = SymbolMap()
         self.scopes.append(new_scope)
-        # print 'starting new scope %d' % (self.depth, )
+        #print 'starting new scope %d' % (self.depth, )
 
     @echo
     def declare_symbol(self, symbol):
         s = unicode(symbol)
         #assert isinstance(s, unicode)
         idx = self.scopes[-1].add_symbol(s)
-        # print 'symbol "%s"@%d in scope %d' % (symbol, idx, self.depth,)
+        #print 'symbol "%s"@%d in scope %d' % (symbol, idx, self.depth,)
         return idx
 
     @echo
@@ -149,15 +147,12 @@ class ASTBuilder(RPythonVisitor):
         self.scopes.pop()
         #print 'closing scope, returning to %d' % (self.depth, )
 
-    @echo
     def current_scope_variables(self):
         return self.current_scope().variables
 
-    @echo
     def current_scope_parameters(self):
         return self.current_scope().parameters
 
-    @echo
     def current_scope(self):
         try:
             return self.scopes[-1]
@@ -206,6 +201,7 @@ class ASTBuilder(RPythonVisitor):
         except (ValueError, OverflowError):
             return operations.FloatNumber(pos, float(node.additional_info))
 
+    @echo
     def visit_HEXINTEGERLITERAL(self, node):
         pos = self.get_pos(node)
         hexlit = node.additional_info
@@ -213,10 +209,12 @@ class ASTBuilder(RPythonVisitor):
             hexlit = hexlit[2:]
         return operations.IntNumber(pos, int(hexlit, 16))
 
+    @echo
     def visit_OCTALLITERAL(self, node):
         pos = self.get_pos(node)
         return operations.IntNumber(pos, int(node.additional_info, 8))
 
+    @echo
     def string(self, node):
         from obin.compile.operations import string_unquote
         from obin.runistr import unicode_unescape, decode_str_utf8
@@ -232,6 +230,7 @@ class ASTBuilder(RPythonVisitor):
     visit_DOUBLESTRING = string
     visit_SINGLESTRING = string
 
+    @echo
     def binaryop(self, node):
         left = self.dispatch(node.children[0])
         for i in range((len(node.children) - 1) // 2):
@@ -256,7 +255,14 @@ class ASTBuilder(RPythonVisitor):
 
     @echo
     def visit_memberexpression(self, node):
-        return self.binaryop(node)
+        if isinstance(node.children[0], Symbol) and \
+                node.children[0].additional_info == 'new':  # XXX could be a identifier?
+            pos = self.get_pos(node)
+            left = self.dispatch(node.children[1])
+            right = self.dispatch(node.children[2])
+            return operations.NewWithArgs(pos, left, right)
+        else:
+            return self.binaryop(node)
 
     @echo
     def literalop(self, node):
@@ -284,7 +290,9 @@ class ASTBuilder(RPythonVisitor):
     @echo
     def _dispatch_assignment(self, pos, left, atype, prepost):
         is_post = prepost == 'post'
-        if self.is_identifier(left):
+        if self.is_local_identifier(left):
+            return operations.LocalAssignmentOperation(pos, left, None, atype, is_post)
+        elif self.is_identifier(left):
             return operations.AssignmentOperation(pos, left, left.name, left.index, None, atype, is_post)
         elif self.is_member(left):
             return operations.MemberAssignmentOperation(pos, left, None, atype, is_post)
@@ -360,7 +368,6 @@ class ASTBuilder(RPythonVisitor):
 
     @echo
     def visit_IDENTIFIERNAME(self, node):
-
         pos = self.get_pos(node)
         name = node.additional_info
         n = unicode(name)
@@ -428,7 +435,7 @@ class ASTBuilder(RPythonVisitor):
 
         self.exit_scope()
 
-        funcindex = -1
+        funcindex = None
         if declaration:
             f = unicode(funcname)
             #assert isinstance(f, unicode)
@@ -490,13 +497,21 @@ class ASTBuilder(RPythonVisitor):
 
         return left
 
+    @echo
     def is_identifier(self, obj):
         from obin.compile.operations import Identifier
         return isinstance(obj, Identifier)
 
+    @echo
     def is_member(self, obj):
         from obin.compile.operations import Member, MemberDot
         return isinstance(obj, Member) or isinstance(obj, MemberDot)
+
+    @echo
+    def is_local_identifier(self, obj):
+        #from js.operations import LocalIdentifier
+        #return isinstance(obj, LocalIdentifier)
+        return False
 
     @echo
     def visit_assignmentexpression(self, node):
@@ -506,7 +521,9 @@ class ASTBuilder(RPythonVisitor):
         operation = node.children[1].additional_info
         right = self.dispatch(node.children[2])
 
-        if self.is_identifier(left):
+        if self.is_local_identifier(left):
+            return operations.LocalAssignmentOperation(pos, left, right, operation)
+        elif self.is_identifier(left):
             identifier = left.get_literal()
             i = unicode(identifier)
             #assert isinstance(i, unicode)

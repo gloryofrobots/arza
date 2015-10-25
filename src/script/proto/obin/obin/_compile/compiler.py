@@ -48,7 +48,7 @@ class Compiler(object):
     def declare_function(self, symbol, funcobj):
         s = unicode(symbol)
         #assert isinstance(s, unicode)
-        self.funclists[-1][s] = funcobj
+        # self.funclists[-1][s] = funcobj
         idx = self.scopes[-1].add_function(s)
         #print 'func declaration "%s"@%d in scope %d' % (symbol, idx, self.depth,)
         return idx
@@ -96,9 +96,10 @@ class Compiler(object):
 
     def _compile(self, code, ast):
         if isinstance(ast, list):
-            return self._compile_nodes(code, ast)
+            self._compile_nodes(code, ast)
         else:
-            return self._compile_node(code, ast)
+            self._compile_node(code, ast)
+        code.emit('LOAD_UNDEFINED')
 
     def _compile_nodes(self, bytecode, nodes):
         if len(nodes) > 1:
@@ -109,8 +110,7 @@ class Compiler(object):
         if len(nodes) > 0:
             node = nodes[-1]
             self._compile_node(bytecode, node)
-        else:
-            bytecode.emit('LOAD_UNDEFINED')
+
 
     def _compile_node(self, code, node):
         t = node.type
@@ -365,7 +365,6 @@ class Compiler(object):
         else:
             funcname = unicode(name.value)
             index = self.declare_symbol(funcname)
-
         for param in params:
             self.declare_parameter(param.value)
 
@@ -380,6 +379,7 @@ class Compiler(object):
 
         from obin.runtime.routine import FunctionRoutine
         func = FunctionRoutine(funcname, funccode)
+        self.declare_function(funcname, func)
 
         code.emit('LOAD_FUNCTION', func)
 
@@ -406,8 +406,6 @@ def print_code(code):
 
 def compile_and_print(txt):
     print_code(compile(txt))
-
-from compiler import *
 
 def compile_old(txt):
     from obin.compile.astbuilder import parse_to_ast
@@ -456,9 +454,9 @@ def test(txt, txt_old):
 
 test(
 """
-fn _f(x, y) { return x; }
+F = fn _f(x, y) { return x; }
 """,
 """
-function _f(x, y) { return x; }
+var F = function _f(x, y) { return x; }
 """
 )

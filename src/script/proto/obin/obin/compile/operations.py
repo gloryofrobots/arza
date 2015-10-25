@@ -155,7 +155,6 @@ class BaseAssignment(Expression):
         if self.has_operation():
             self.left.emit(bytecode)
             if self.post_operation():
-                raise RuntimeError()
                 # Force ToNumber
                 bytecode.emit('UPLUS')
                 bytecode.emit('DUP')
@@ -196,6 +195,22 @@ class AssignmentOperation(BaseAssignment):
 
     def emit_store(self, bytecode):
         bytecode.emit('STORE', self.index, self.identifier)
+
+
+class LocalAssignmentOperation(AssignmentOperation):
+    def __init__(self, pos, left, right, operand, post=False):
+        self.left = left
+        self.local = left.get_local()
+        self.identifier = left.get_literal()
+        self.right = right
+        if self.right is None:
+            self.right = Empty(pos)
+        self.pos = pos
+        self.operand = operand
+        self.post = post
+
+    def emit_store(self, bytecode):
+        bytecode.emit('STORE_LOCAL', self.local)
 
 
 class MemberAssignmentOperation(BaseAssignment):
@@ -678,6 +693,7 @@ class SourceElements(Statement):
     def emit(self, bytecode):
         functions = self.func_decl.values()
         nodes = self.nodes
+
         for funccode in functions:
             funccode.emit(bytecode)
             bytecode.emit('POP')
@@ -690,8 +706,8 @@ class SourceElements(Statement):
         if len(nodes) > 0:
             node = nodes[-1]
             node.emit(bytecode)
-        else:
-            bytecode.emit('LOAD_UNDEFINED')
+
+        bytecode.emit('LOAD_UNDEFINED')
 
 
 class Program(Statement):
