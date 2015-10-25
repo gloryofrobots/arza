@@ -678,7 +678,6 @@ class SourceElements(Statement):
     def emit(self, bytecode):
         functions = self.func_decl.values()
         nodes = self.nodes
-
         for funccode in functions:
             funccode.emit(bytecode)
             bytecode.emit('POP')

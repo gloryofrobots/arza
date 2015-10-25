@@ -131,9 +131,9 @@ class Code(object):
         return self.compiled_opcodes is not None
 
     def emit(self, operation, *args):
-        # from obin.utils import tb
-        # if operation == "POP":
-        #     tb("POP")
+        from obin.utils import tb
+        # if operation == "LOAD_UNDEFINED":
+        #     tb("LOAD_UNDEFINED")
         assert not self.compiled_opcodes
         opcode = getattr(opcodes, operation)(*args)
         self.opcodes.append(opcode)

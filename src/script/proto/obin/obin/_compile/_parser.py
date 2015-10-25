@@ -669,20 +669,20 @@ def parser_init(parser):
     prefix(parser, T.TT_LPAREN, _prefix_lparen)
 
     def _prefix_fn(parser, node):
-        items = []
+        args = []
         node.init(3)
         if parser.token_type == T.TT_NAME:
             node.setfirst(parser.node)
             advance(parser)
         else:
-            node.setfirst(Node(T.TT_NAME, "anonymous", parser.node.position))
+            node.setfirst([])
 
         if parser.token_type == T.TT_LPAREN:
             advance_expected(parser, T.TT_LPAREN)
             if parser.token_type != T.TT_RPAREN:
                 while True:
                     if parser.token_type == T.TT_NAME:
-                        items.append(parser.node)
+                        args.append(parser.node)
                         advance(parser)
 
                     if parser.token_type != T.TT_COMMA:
@@ -692,7 +692,7 @@ def parser_init(parser):
 
                 advance_expected(parser, T.TT_RPAREN)
 
-        node.setsecond(items)
+        node.setsecond(args)
         advance_expected(parser, T.TT_LCURLY)
         node.setthird(statements(parser))
         advance_expected(parser, T.TT_RCURLY)
@@ -880,5 +880,6 @@ def write_ast(ast):
         f.write(repr)
 
 
-ast = parse_string("-x; 2 - 4")
-#write_ast(ast)
+ast = parse_string("fn _f(x,y) { return; }")
+# print ast
+# write_ast(ast)

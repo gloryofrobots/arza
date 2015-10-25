@@ -43,7 +43,6 @@ class SymbolMap(object):
         #assert isinstance(identifyer, unicode)
         f = unicode(identifyer)
         #assert isinstance(f, unicode)
-        print "PARAM", identifyer
         idx = self.add_symbol(f)
         self.parameters.append(f)
         return idx

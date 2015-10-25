@@ -138,12 +138,12 @@ class Compiler(object):
     def _compile_UNDEFINED(self, bytecode, node):
         bytecode.emit('LOAD_UNDEFINED')
 
-    def _compile_STRING(self, bytecode, node):
+    def _compile_STR(self, bytecode, node):
         from obin.compile.operations import string_unquote
         from obin.runistr import unicode_unescape, decode_str_utf8
 
-        s = str(node.value)
-        strval = decode_str_utf8(s)
+        strval = str(node.value)
+        strval = decode_str_utf8(strval)
         strval = string_unquote(strval)
         strval = unicode_unescape(strval)
         bytecode.emit('LOAD_STRINGCONSTANT', strval)
@@ -152,8 +152,8 @@ class Compiler(object):
         from obin.compile.operations import string_unquote
         from obin.runistr import unicode_unescape, decode_str_utf8
 
-        s = str(node.value)
-        strval = decode_str_utf8(s)
+        strval  = str(node.value)
+        strval = decode_str_utf8(strval)
         strval = string_unquote(strval)
         strval = unicode_unescape(strval)
         bytecode.emit('LOAD_STRINGCONSTANT', strval)
@@ -309,6 +309,84 @@ class Compiler(object):
         index = self.declare_symbol(name)
         code.emit('LOAD_VARIABLE', index, name)
 
+    def is_empty(self, l):
+        return isinstance(l, list) and len(l) > 0
+
+    def _compile_RETURN(self, code, node):
+        expr = node.first()
+        if self.is_empty(expr):
+            code.emit('LOAD_UNDEFINED')
+        else:
+            self._compile(code, expr)
+
+        code.emit('RETURN')
+
+    def _compile_LCURLY(self, code, node):
+        items = node.first()
+        for c in items:
+            key = c[0]
+            value = c[1]
+
+            self._compile(code, value)
+            if key.type == TT_NAME:
+                # in case of names in object literal we must convert them to strings
+                code.emit('LOAD_STRINGCONSTANT', unicode(key.value))
+            else:
+                self._compile(code, key)
+
+        code.emit("LOAD_OBJECT", len(items))
+
+    def _compile_LSQUARE(self, code, node):
+        items = node.first()
+        for c in items:
+            self._compile(code, c)
+
+        code.emit("LOAD_ARRAY", len(items))
+
+    def _compile_BREAK(self, code, node):
+        code.emit('LOAD_UNDEFINED')
+        code.emit_break()
+
+    def _compile_CONTINUE(self, code, node):
+        code.emit('LOAD_UNDEFINED')
+        code.emit_continue()
+
+    def _compile_FN(self, code, node):
+        from bytecode import ByteCode
+        self.enter_scope()
+
+        name = node.first()
+        params = node.second()
+        body = node.third()
+
+        if self.is_empty(name):
+            funcname = u''
+            index = None
+        else:
+            funcname = unicode(name.value)
+            index = self.declare_symbol(funcname)
+
+        for param in params:
+            self.declare_parameter(param.value)
+
+        funccode = ByteCode()
+
+        self._compile(funccode, body)
+        funccode.emit('LOAD_UNDEFINED')
+        current_scope = self.current_scope()
+        scope = current_scope.finalize()
+        self.exit_scope()
+        funccode.set_symbols(scope)
+
+        from obin.runtime.routine import FunctionRoutine
+        func = FunctionRoutine(funcname, funccode)
+
+        code.emit('LOAD_FUNCTION', func)
+
+        if index is not None and len(funcname):
+            code.emit('STORE', index, funcname)
+
+        code.emit('POP')
 
 def testprogram():
     data = ""
@@ -328,6 +406,8 @@ def print_code(code):
 
 def compile_and_print(txt):
     print_code(compile(txt))
+
+from compiler import *
 
 def compile_old(txt):
     from obin.compile.astbuilder import parse_to_ast
@@ -370,19 +450,15 @@ def test(txt, txt_old):
     code_old = compile_old(txt_old)
     check_codes(code, code_old)
 
-compile_and_print("""
-x = 2 + 3
-y = 2 + 4 * 6
-""")
+# compile_and_print("""
+# fn _f(x, y) { return x; }
+# """)
 
 test(
 """
-x = 0
-y += 2
-
+fn _f(x, y) { return x; }
 """,
 """
-var x = 0;
-y += 2;
+function _f(x, y) { return x; }
 """
 )
