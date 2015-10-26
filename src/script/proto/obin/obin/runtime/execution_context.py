@@ -67,6 +67,8 @@ class ExecutionContext(object):
     @jit.unroll_safe
     def declaration_binding_initialization(self):
         from obin.objects.object_space import newundefined
+        if str(self._code_) == "function _f2 {}":
+            x = 1
 
         env = self.lexical_environment().environment_record
         code = jit.promote(self._code_)
@@ -106,9 +108,10 @@ class ExecutionContext(object):
             env.set_binding(u'arguments', args_obj)
 
         # 8.
-        var_declarations = code.variables()
-        for dn in var_declarations:
-            env.set_binding(dn, newundefined())
+
+        # var_declarations = code.variables()
+        # for dn in var_declarations:
+        #     env.set_binding(dn, newundefined())
 
     def _get_refs(self, index):
         assert index < len(self._refs_)
@@ -119,6 +122,18 @@ class ExecutionContext(object):
         assert index < len(self._refs_)
         assert index >= 0
         self._refs_[index] = value
+
+    def store_ref(self, symbol, index, value):
+        lex_env = self.lexical_environment()
+        ref = lex_env.get_identifier_reference(symbol)
+        if not ref:
+            ref = self._get_refs(index)
+
+        if not ref.is_unresolvable_reference():
+            ref.put_value(value)
+            return
+
+        lex_env.environment_record.set_binding(symbol, value)
 
     def get_ref(self, symbol, index=-1):
         ## TODO pre-bind symbols, work with idndex, does not work, see test_foo19

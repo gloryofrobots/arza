@@ -34,17 +34,17 @@ def run(files, opts):
     for filename in files:
         src = load_file(filename)
 
-        try:
-            interp.run_src(src)
-        except ParseError as exc:
-            printsyntaxerror(unicode(filename), exc, src)
-            raise SystemExit
-        except LexerError as e:
-            printlexererror(unicode(filename), e, src)
-            raise SystemExit
-        except JsException as e:
-            printerrormessage(unicode(filename), e._msg())
-            raise SystemExit
+        interp.run_src(src)
+        # try:
+        # except ParseError as exc:
+        #     printsyntaxerror(unicode(filename), exc, src)
+        #     raise SystemExit
+        # except LexerError as e:
+        #     printlexererror(unicode(filename), e, src)
+        #     raise SystemExit
+        # except JsException as e:
+        #     printerrormessage(unicode(filename), e._msg())
+        #     raise SystemExit
 
     if inspect or interactive:
         repl(interp)

@@ -5,15 +5,6 @@ from _parser import *
 
 from obin.objects.symbol_map import SymbolMap
 
-
-class Position(object):
-    def __init__(self, lineno=-1, start=-1):
-        self.lineno = lineno
-        self.start = start
-
-    def __repr__(self):
-        return "l:%d %d" % (self.lineno, self.start)
-
 class Compiler(object):
     def __init__(self):
         self.funclists = []
@@ -29,16 +20,19 @@ class Compiler(object):
         #print 'starting new scope %d' % (self.depth, )
 
     def declare_symbol(self, symbol):
+        assert symbol
         s = unicode(symbol)
         #assert isinstance(s, unicode)
         idx = self.scopes[-1].add_symbol(s)
-        #print 'symbol "%s"@%d in scope %d' % (symbol, idx, self.depth,)
+        # print "SYMBOL", symbol, len(symbol), idx
         return idx
 
     def has_variable(self, symbol):
         return self.scopes[-1].has_variable(symbol)
 
     def declare_variable(self, symbol):
+        assert symbol
+        # print "VAR", symbol
         s = unicode(symbol)
         #assert isinstance(s, unicode)
         idx = self.scopes[-1].add_variable(s)
@@ -46,6 +40,7 @@ class Compiler(object):
         return idx
 
     def declare_function(self, symbol, funcobj):
+        assert symbol
         s = unicode(symbol)
         #assert isinstance(s, unicode)
         # self.funclists[-1][s] = funcobj
@@ -54,6 +49,7 @@ class Compiler(object):
         return idx
 
     def declare_parameter(self, symbol):
+        assert symbol
         idx = self.scopes[-1].add_parameter(symbol)
         #print 'parameter declaration "%s"@%d in scope %d' % (symbol, idx, self.depth,)
         return idx
@@ -107,9 +103,9 @@ class Compiler(object):
 
             for node in nodes[:-1]:
                 self._compile_node(bytecode, node)
-                last = bytecode.opcodes[-1]
-                if not isinstance(last, POP):
-                    bytecode.emit('POP')
+                # last = bytecode.opcodes[-1]
+                # if not isinstance(last, POP):
+                bytecode.emit('POP')
 
         if len(nodes) > 0:
             node = nodes[-1]
@@ -266,8 +262,22 @@ class Compiler(object):
         self._compile(bytecode, node.second())
         bytecode.emit('STORE', index, value)
 
+    def _compile_ASSIGN_DOT(self, bytecode, node):
+        member = node.first()
+        name = member.second()
+
+        obj = member.first()
+        self._compile(bytecode, node.second())
+        bytecode.emit('LOAD_STRINGCONSTANT', unicode(name.value))
+        # self._compile(bytecode, name)
+        self._compile(bytecode, obj)
+        bytecode.emit('STORE_MEMBER')
+
     def _compile_ASSIGN(self, bytecode, node):
         left = node.first()
+        if left.type == TT_DOT:
+            return self._compile_ASSIGN_DOT(bytecode, node)
+
         value = unicode(left.value)
 
         index = self.declare_variable(value)
@@ -316,6 +326,9 @@ class Compiler(object):
 
     def is_empty(self, l):
         return isinstance(l, list) and len(l) == 0
+
+    def _compile_THIS(self, code, node):
+        code.emit('LOAD_THIS')
 
     def _compile_RETURN(self, code, node):
         expr = node.first()
@@ -384,7 +397,9 @@ class Compiler(object):
             index = self.declare_symbol(funcname)
 
         self.enter_scope()
-        self.declare_symbol(funcname)
+        if len(funcname):
+            self.declare_symbol(funcname)
+
         for param in params:
             self.declare_parameter(param.value)
 
@@ -402,14 +417,14 @@ class Compiler(object):
 
         from obin.runtime.routine import FunctionRoutine
         func = FunctionRoutine(funcname, funccode)
-        self.declare_function(funcname, func)
 
         code.emit('LOAD_FUNCTION', func)
 
         if index is not None and len(funcname):
+            # self.declare_function(funcname, func)
             code.emit('STORE', index, funcname)
 
-        code.emit('POP')
+        # code.emit('POP')
 
     def _compile_branch(self, bytecode, condition, body, endif):
         self._compile(bytecode, condition)
@@ -569,7 +584,6 @@ def check_codes(first, second):
     _check(str(first._symbols.functions), str(second._symbols.functions))
     _check(first.parameters, second.parameters)
 
-
 def test(txt, txt_old):
     code = compile(txt)
     code_old = compile_old(txt_old)
@@ -581,22 +595,22 @@ def test(txt, txt_old):
 # """)
 # compile_old("var x = (y > 0) ? 1: 2;")
 #
-test(
-"""
-fn _f2(x) {
-    x -= 1;
-    print(x);
-    return x;
-}
-print(_f2(23));
-""",
-"""
-function _f2(x) {
-    x -= 1;
-    print(x);
-    return x;
-}
-print(_f2(23));
-"""
-)
+# test(
+# """
+# F = fn{
+# }
+# F.action = fn {
+#     print("OLOLO")
+# }
+# F.action()
+# """,
+# """
+# F = function(){
+# };
+# F.action = function() {
+#     print("OLOLO");
+# };
+# F.action();
+# """
+# )
 
