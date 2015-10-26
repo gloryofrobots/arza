@@ -346,6 +346,10 @@ class Compiler(object):
         code.emit("LOAD_OBJECT", len(items))
 
     def _compile_LSQUARE(self, code, node):
+        # lookup like a[0]
+        if node.arity == 2:
+            return self._compile_LSQUARE_LOOKUP(code, node)
+
         items = node.first()
         for c in items:
             self._compile(code, c)
@@ -439,11 +443,56 @@ class Compiler(object):
         bytecode.emit_endloop_label(endlabel)
         bytecode.done_continue()
 
-    def _compile_LPAREN(self, bytecode, node):
+    def _compile_DOT(self, code, node):
+        name = node.second().value
+        name = unicode(name)
+        code.emit("LOAD_STRINGCONSTANT", name)
+        obj = node.first()
+        self._compile(code, obj)
+        code.emit('LOAD_MEMBER_DOT')
+        self.declare_symbol(name)
 
-        for node in self.nodes:
-            node.emit(bytecode)
-        bytecode.emit('LOAD_LIST', len(self.nodes))
+    def _compile_LSQUARE_LOOKUP(self, code, node):
+        expr = node.second()
+        self._compile(code, expr)
+        obj = node.first()
+        self._compile(code, obj)
+        code.emit('LOAD_MEMBER')
+
+    def _compile_list(self, bytecode, elements):
+        for el in elements:
+            self._compile(bytecode, el)
+        bytecode.emit('LOAD_LIST', len(elements))
+
+    def _compile_LPAREN_MEMBER(self, bytecode, node):
+        obj = node.first()
+        method = node.second()
+        name = unicode(method.value)
+        args = node.third()
+        print "_compile_LPAREN_MEMBER", obj, method, args
+        self._compile_list(bytecode, args)
+
+        self._compile(bytecode, obj)
+        bytecode.emit('LOAD_STRINGCONSTANT', name)
+        self.declare_symbol(name)
+        bytecode.emit('CALL_METHOD')
+
+    def _compile_LPAREN(self, bytecode, node):
+        if node.arity == 3:
+            return self._compile_LPAREN_MEMBER(bytecode, node)
+
+        func = node.first()
+        args = node.second()
+
+        print "_compile_LPAREN", func, args
+
+        for arg in args:
+            self._compile(bytecode, arg)
+
+        bytecode.emit('LOAD_LIST', len(args))
+        self._compile(bytecode, func)
+        bytecode.emit('CALL')
+
 def testprogram():
     data = ""
     with open("program2.obn") as f:
@@ -453,6 +502,7 @@ def testprogram():
 
 def compile(txt):
     ast = parse_string(txt)
+    print ast
     compiler = Compiler()
     code = compiler.compile(ast)
     return code
@@ -483,6 +533,8 @@ def _check(val1, val2):
 
 def check_codes(first, second):
     print "**************************************************************"
+    print str(first._symbols.symbols)
+    print str(second._symbols.symbols)
     self_str = str([str(c) for c in first.opcodes])
     other_str = str([str(c) for c in second.opcodes])
     _check(self_str, other_str)
@@ -511,10 +563,11 @@ def test(txt, txt_old):
 test(
 """
 print(1,"OLOLO",3.14);
-return Math.abs(2.333);
+return Math.abs.pow.ceil(2.333);
 """,
 """
 print(1,"OLOLO",3.14);
-return Math.abs(2.333);
+return Math.abs.pow.ceil(2.333);
 """
 )
+

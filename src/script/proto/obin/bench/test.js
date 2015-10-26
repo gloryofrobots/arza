@@ -1,2 +1,2 @@
-print(1,"OLOLO",3.14);
-return Math.abs(2.333);
+print(1,2,3);
+return Math.abs(3.14);

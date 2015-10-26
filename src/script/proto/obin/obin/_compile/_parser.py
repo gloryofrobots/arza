@@ -587,14 +587,14 @@ def parser_init(parser):
     precedence 80
     [
     """
-    def _infix_rsquare(parser, node, left):
+    def _infix_lsquare(parser, node, left):
         node.init(2)
         node.setfirst(left)
         node.setsecond(expression(parser, 0))
         advance_expected(parser, T.TT_RSQUARE)
         return node
 
-    infix(parser, T.TT_LSQUARE, 80, _infix_rsquare)
+    infix(parser, T.TT_LSQUARE, 80, _infix_lsquare)
 
     """
     precedence 90
