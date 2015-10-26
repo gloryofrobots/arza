@@ -263,6 +263,7 @@ class BytecodeRoutine(BaseRoutine):
     def __init__(self, js_code):
         super(BytecodeRoutine, self).__init__()
         self._js_code_ = js_code
+
         if not self._js_code_.is_compiled():
             self._js_code_.emit('LOAD_UNDEFINED')
             self._js_code_.compile()

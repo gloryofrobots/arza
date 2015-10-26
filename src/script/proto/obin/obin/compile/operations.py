@@ -350,7 +350,11 @@ class FunctionStatement(Statement):
 
     def emit(self, bytecode):
         from obin.compile.code import ast_to_bytecode
+        print "+++++++++++++++++++++++++++++"
+        print self.symbol_map.symbols
         body_code = ast_to_bytecode(self.body_ast, self.symbol_map)
+        print [str(c) for c in body_code.opcodes]
+
         body_code.emit('LOAD_UNDEFINED')
 
         from obin.runtime.routine import FunctionRoutine

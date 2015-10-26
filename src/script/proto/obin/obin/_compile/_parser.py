@@ -690,11 +690,14 @@ def parser_init(parser):
 
                     advance_expected(parser, T.TT_COMMA)
 
-                advance_expected(parser, T.TT_RPAREN)
+            advance_expected(parser, T.TT_RPAREN)
 
         node.setsecond(args)
         advance_expected(parser, T.TT_LCURLY)
-        node.setthird(statements(parser))
+        body = statements(parser)
+        if not body:
+            body = []
+        node.setthird(body)
         advance_expected(parser, T.TT_RCURLY)
         return node
 
@@ -881,6 +884,9 @@ def write_ast(ast):
         f.write(repr)
 
 
-ast = parse_string("fn _f(x,y) { return; }")
+ast = parse_string("""
+fn f2(x, y){
+    x + y
+}""")
 # print ast
 # write_ast(ast)

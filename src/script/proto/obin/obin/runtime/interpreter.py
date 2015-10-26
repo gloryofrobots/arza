@@ -46,14 +46,18 @@ class Interpreter(object):
         #print code
         return self.run(code)
 
-    def run_src(self, src):
-        # from obin._compile.compiler import compile as cl
-        # code = cl(src)
-        # return self.run(code)
+    def run_src_old(self, src):
         from obin.compile.astbuilder import parse_to_ast
         from obin.runistr import decode_str_utf8
         ast = parse_to_ast(decode_str_utf8(src))
         return self.run_ast(ast)
+
+    def run_src(self, src):
+        from obin._compile.compiler import compile as cl
+        code = cl(src)
+        return self.run(code)
+
+    # run_src = run_src_old
 
     def run(self, code, interactive=False):
         from obin.runtime.routine import GlobalRoutine

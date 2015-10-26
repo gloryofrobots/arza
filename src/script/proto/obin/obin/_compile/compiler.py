@@ -102,10 +102,14 @@ class Compiler(object):
             self._compile_node(code, ast)
 
     def _compile_nodes(self, bytecode, nodes):
+        from obin.runtime.opcodes import POP
         if len(nodes) > 1:
+
             for node in nodes[:-1]:
                 self._compile_node(bytecode, node)
-                bytecode.emit('POP')
+                last = bytecode.opcodes[-1]
+                if not isinstance(last, POP):
+                    bytecode.emit('POP')
 
         if len(nodes) > 0:
             node = nodes[-1]
@@ -198,7 +202,8 @@ class Compiler(object):
             self.compile_binary(code, node, "SUB")
         elif node.arity == 1:
             self.compile_unary(code, node, "UMINUS")
-        assert 0
+        else:
+            assert 0
 
     def _compile_BITNOT(self, code, node):
         self.compile_unary(code, node, "BITNOT")
@@ -366,7 +371,6 @@ class Compiler(object):
 
     def _compile_FN(self, code, node):
         from bytecode import ByteCode
-        self.enter_scope()
 
         name = node.first()
         params = node.second()
@@ -378,6 +382,9 @@ class Compiler(object):
         else:
             funcname = unicode(name.value)
             index = self.declare_symbol(funcname)
+
+        self.enter_scope()
+        self.declare_symbol(funcname)
         for param in params:
             self.declare_parameter(param.value)
 
@@ -388,7 +395,10 @@ class Compiler(object):
         current_scope = self.current_scope()
         scope = current_scope.finalize()
         self.exit_scope()
+        print str(scope.symbols)
         funccode.set_symbols(scope)
+        print [str(c) for c in funccode.opcodes]
+        print "-------------------------"
 
         from obin.runtime.routine import FunctionRoutine
         func = FunctionRoutine(funcname, funccode)
@@ -401,24 +411,33 @@ class Compiler(object):
 
         code.emit('POP')
 
-    def _compile_IF(self, code, node):
-        branches = node.first()
+    def _compile_branch(self, bytecode, condition, body, endif):
+        self._compile(bytecode, condition)
+        end_body = bytecode.prealocate_label()
+        bytecode.emit('JUMP_IF_FALSE', end_body)
+        self._compile(bytecode, body)
+        bytecode.emit('JUMP', endif)
+        bytecode.emit('LABEL', end_body)
 
-        def compile_branch(bytecode, branch, endif):
-            condition = branch[0]
-            body = branch[1]
-            self._compile(bytecode, condition)
-            end_body = bytecode.prealocate_label()
-            bytecode.emit('JUMP_IF_FALSE', end_body)
-            self._compile(bytecode, body)
-            bytecode.emit('JUMP', endif)
-            bytecode.emit('LABEL', end_body)
+    def _compile_IF_TERNARY(self, code, node):
+        condition = node.first()
+        truebranch = node.second()
+        falsebranch = node.third()
+        endif = code.prealocate_label()
+        self._compile_branch(code, condition, truebranch, endif)
+        self._compile(code, falsebranch)
+        code.emit('LABEL', endif)
+
+    def _compile_IF(self, code, node):
+        if node.arity == 3:
+            return self._compile_IF_TERNARY(code, node)
+        branches = node.first()
 
         endif = code.prealocate_label()
 
         for i in range(len(branches) - 1):
             branch = branches[i]
-            compile_branch(code, branch, endif)
+            self._compile_branch(code, branch[0], branch[1], endif)
 
         elsebranch = branches[-1]
         if self.is_empty(elsebranch):
@@ -469,7 +488,7 @@ class Compiler(object):
         method = node.second()
         name = unicode(method.value)
         args = node.third()
-        print "_compile_LPAREN_MEMBER", obj, method, args
+        # print "_compile_LPAREN_MEMBER", obj, method, args
         self._compile_list(bytecode, args)
 
         self._compile(bytecode, obj)
@@ -484,7 +503,7 @@ class Compiler(object):
         func = node.first()
         args = node.second()
 
-        print "_compile_LPAREN", func, args
+        # print "_compile_LPAREN", func, args
 
         for arg in args:
             self._compile(bytecode, arg)
@@ -502,7 +521,7 @@ def testprogram():
 
 def compile(txt):
     ast = parse_string(txt)
-    print ast
+    # print ast
     compiler = Compiler()
     code = compiler.compile(ast)
     return code
@@ -557,17 +576,27 @@ def test(txt, txt_old):
     check_codes(code, code_old)
 
 # compile_and_print("""
-# if y > 0 { x = 1; } else { x = 2; }
+# fn f(x, y, z){ return x + y + z; }
+# fn f2() {}
 # """)
-
+# compile_old("var x = (y > 0) ? 1: 2;")
+#
 test(
 """
-print(1,"OLOLO",3.14);
-return Math.abs.pow.ceil(2.333);
+fn _f2(x) {
+    x -= 1;
+    print(x);
+    return x;
+}
+print(_f2(23));
 """,
 """
-print(1,"OLOLO",3.14);
-return Math.abs.pow.ceil(2.333);
+function _f2(x) {
+    x -= 1;
+    print(x);
+    return x;
+}
+print(_f2(23));
 """
 )
 
