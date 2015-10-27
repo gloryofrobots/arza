@@ -192,18 +192,12 @@ class Handler(object):
         self.rbp = None
         self.value = None
 
-
-class Parser(object):
+class TokenStream(object):
     def __init__(self, tokens):
-        self.handlers = {}
+        self.tokens = tokens
         self.node = None
         self.token = None
-        self.tokens = tokens
         self.is_newline_occurred = False
-
-    @property
-    def token_type(self):
-        return self.token.type
 
     def next(self):
         token = self.tokens.next()
@@ -216,13 +210,38 @@ class Parser(object):
             # print "TOKEN"
             self.is_newline_occurred = False
 
-        #print token
+        # print token
         self.token = token
         self.node = Node(self.token.type, self.token.val, self.token.pos, self.token.line)
         return self.node
 
+class Parser(object):
+    def __init__(self, ts, args_parser=None):
+        self.handlers = {}
+        self.ts = ts
+        self.args_parser = args_parser
+
+    @property
+    def token_type(self):
+        return self.ts.token.type
+
+    @property
+    def is_newline_occurred(self):
+        return self.ts.is_newline_occurred
+
+    @property
+    def node(self):
+        return self.ts.node
+
+    @property
+    def token(self):
+        return self.ts.token
+
+    def next(self):
+        return self.ts.next()
+
     def isend(self):
-        return self.token.type == T.TT_ENDSTREAM
+        return self.token_type == T.TT_ENDSTREAM
 
 
 def error(parser, message, args=None):
@@ -432,16 +451,18 @@ def skip(parser, ttype):
 def empty(parser, node):
     return None
 
-
 def parse(parser):
     parser.next()
     stmts = statements(parser)
     check_token_type(parser, T.TT_ENDSTREAM)
     return stmts
 
+def args_parser_init(parser):
+    prefix(parser, T.TT_ELLIPSIS)
+    literal(parser, T.TT_NAME)
 
 def parser_init(parser):
-
+    # *********************************************
     literal(parser, T.TT_INT)
     literal(parser, T.TT_FLOAT)
     literal(parser, T.TT_CHAR)
@@ -671,6 +692,7 @@ def parser_init(parser):
     def _prefix_fn(parser, node):
         args = []
         node.init(3)
+
         if parser.token_type == T.TT_NAME:
             node.setfirst(parser.node)
             advance(parser)
@@ -689,6 +711,12 @@ def parser_init(parser):
                         break
 
                     advance_expected(parser, T.TT_COMMA)
+
+            if parser.token_type == T.TT_ELLIPSIS:
+                rest = expression(parser.args_parser, 0)
+                # advance(parser)
+                args.append(rest)
+                # advance_expected(parser, T.TT_NAME)
 
             advance_expected(parser, T.TT_RPAREN)
 
@@ -850,7 +878,11 @@ def parser_init(parser):
 def parser_from_str(txt):
     lx = lexer.lexer(txt)
     tokens = lx.tokens()
-    parser = Parser(tokens)
+    ts = TokenStream(tokens)
+
+    parser = Parser(ts, Parser(ts))
+    args_parser_init(parser.args_parser)
+
     parser_init(parser)
     return parser
 
@@ -885,7 +917,7 @@ def write_ast(ast):
 
 
 ast = parse_string("""
-fn f2(x, y){
+fn f2(x, y, ...z){
     x + y
 }""")
 # print ast

@@ -54,6 +54,12 @@ class Compiler(object):
         #print 'parameter declaration "%s"@%d in scope %d' % (symbol, idx, self.depth,)
         return idx
 
+    def declare_rest(self, symbol):
+        assert symbol
+        idx = self.scopes[-1].add_rest(symbol)
+        #print 'rest declaration "%s"@%d in scope %d' % (symbol, idx, self.depth,)
+        return idx
+
     def exit_scope(self):
         self.depth = self.depth - 1
         self.scopes.pop()
@@ -400,8 +406,14 @@ class Compiler(object):
         if len(funcname):
             self.declare_symbol(funcname)
 
-        for param in params:
+        for param in params[:, -1]:
             self.declare_parameter(param.value)
+
+        lastparam = params[-1]
+        if lastparam.type == TT_ELLIPSIS:
+            self.declare_rest(lastparam.first().value)
+        else:
+            self.declare_parameter(lastparam.value)
 
         funccode = ByteCode()
 

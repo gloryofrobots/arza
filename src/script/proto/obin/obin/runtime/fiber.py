@@ -143,7 +143,8 @@ class Fiber(object):
                 routine = handler
                 break
             else:
-                routine.terminate(signal)
+                if not routine.is_closed():
+                    routine.terminate(signal)
 
             if routine.has_continuation():
                 routine = routine.continuation()

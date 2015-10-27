@@ -39,6 +39,14 @@ class SymbolMap(object):
         self.functions.append(identifyer)
         return idx
 
+    def add_rest(self, identifyer):
+        #assert isinstance(identifyer, unicode)
+        f = unicode(identifyer)
+        #assert isinstance(f, unicode)
+        self.rest = f
+        idx = self.add_symbol(f)
+        return idx
+
     def add_parameter(self, identifyer):
         #assert isinstance(identifyer, unicode)
         f = unicode(identifyer)
