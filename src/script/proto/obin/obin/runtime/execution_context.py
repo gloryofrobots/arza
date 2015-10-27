@@ -67,26 +67,36 @@ class ExecutionContext(object):
     @jit.unroll_safe
     def declaration_binding_initialization(self):
         from obin.objects.object_space import newundefined
-        if str(self._code_) == "function _f2 {}":
-            x = 1
+        # if str(self._code_) == "function _f2 {}":
+        #     x = 1
 
         env = self.lexical_environment().environment_record
         code = jit.promote(self._code_)
 
         # 4.
         if code.is_function_code():
+            from obin.objects.object_space import _w
             names = code.params()
-            n = 0
             args = self._argument_values_
+            rest = code.params_rest()
+            nlen = len(names)
+            alen = len(args)
+            if alen < nlen:
+                raise RuntimeError("Wrong argument count in function call %d < %d" % (alen, nlen))
 
-            arg_count = len(args)
-            for arg_name in names:
-                n += 1
-                if n > arg_count:
-                    v = newundefined()
-                else:
-                    v = args[n - 1]
-                env.set_binding(arg_name, v)
+            for i in range(nlen):
+                v = args[i]
+                n = names[i]
+                env.set_binding(n, v)
+
+            if alen > nlen:
+                if not rest:
+                    raise RuntimeError("Wrong argument count in function call %s %s" % (str(names), str(args)))
+                rest_items = []
+                for i in range(nlen, alen):
+                    rest_items.append(args[i])
+
+                env.set_binding(rest, _w(rest_items))
 
         # 5.
         func_declarations = code.functions()

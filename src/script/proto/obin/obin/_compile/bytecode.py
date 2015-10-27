@@ -48,6 +48,9 @@ class ByteCode(object):
     def params(self):
         return self._symbols.parameters
 
+    def params_rest(self):
+        return self._symbols.rest
+
     @jit.elidable
     def estimated_stack_size(self):
         if self._estimated_stack_size == -1:

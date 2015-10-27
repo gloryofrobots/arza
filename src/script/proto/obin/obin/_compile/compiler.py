@@ -406,14 +406,15 @@ class Compiler(object):
         if len(funcname):
             self.declare_symbol(funcname)
 
-        for param in params[:, -1]:
-            self.declare_parameter(param.value)
+        if params:
+            for param in params[:-1]:
+                self.declare_parameter(param.value)
 
-        lastparam = params[-1]
-        if lastparam.type == TT_ELLIPSIS:
-            self.declare_rest(lastparam.first().value)
-        else:
-            self.declare_parameter(lastparam.value)
+            lastparam = params[-1]
+            if lastparam.type == TT_ELLIPSIS:
+                self.declare_rest(lastparam.first().value)
+            else:
+                self.declare_parameter(lastparam.value)
 
         funccode = ByteCode()
 

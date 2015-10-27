@@ -351,6 +351,10 @@ class BytecodeRoutine(BaseRoutine):
         code = self.get_js_code()
         return code.params()
 
+    def params_rest(self):
+        code = self.get_js_code()
+        return code.params_rest()
+
     def name(self):
         return u'_unnamed_'
 

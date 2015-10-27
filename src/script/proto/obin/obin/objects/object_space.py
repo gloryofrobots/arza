@@ -177,8 +177,8 @@ def _w(value):
         return newstring(u_str)
     elif isinstance(value, list):
         a = object_space.new_array()
-        for index, item in enumerate(value):
-            put_property(a, unicode(str(index)), _w(item), writable=True, enumerable=True, configurable=True)
+        for v in value:
+            a.append(v)
         return a
 
     raise TypeError("ffffuuu %s" % (str(type(value)),))

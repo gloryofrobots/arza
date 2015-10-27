@@ -7,6 +7,7 @@ class SymbolMap(object):
         self.functions = []
         self.variables = []
         self.parameters = []
+        self.rest = None
 
     def __eq__(self, other):
         return self.functions == other.functions \
@@ -65,17 +66,18 @@ class SymbolMap(object):
         return self.symbols.len()
 
     def finalize(self):
-        return FinalSymbolMap(self.symbols, self.functions, self.variables, self.parameters)
+        return FinalSymbolMap(self.symbols, self.functions, self.variables, self.parameters, self.rest)
 
 
 class FinalSymbolMap(object):
     _immutable_fields_ = ['symbols', 'functions[*]', 'variables[*]', 'parameters[*]']
 
-    def __init__(self, symbols, functions, variables, parameters):
+    def __init__(self, symbols, functions, variables, parameters, rest):
         self.symbols = symbols
         self.functions = functions[:]
         self.variables = variables[:]
         self.parameters = parameters[:]
+        self.rest = rest
 
     def get_index(self, identifyer):
         return self.symbols.lookup(identifyer)
