@@ -1,44 +1,29 @@
-
-
-
 import dis
 
-class X(object):
-    SOME_VAR = 1
-    def __init__(self, x, y):
-        super(self, X).__init__()
+class C(object):
+    def __init__(self, x):
         self.x = x
-        self.y = y
 
-    def __add__(self, other):
-        class Y(X):
-            pass
-        return X(self.x+other.x, self.y+other.y)
-
-    def action(self):
-        print "Action"
-
-def t():
-    return (1,2,("222","3"))
-dis.dis(t)
+    def action(self, *args):
+        print "ARGS", args
 
 
+def f2(x, y):
+    print x + y
+
+def m1(self):
+    print self.x
 
 
-Env = {}
+def f(*args):
 
-TXT = """
-def func():
-    print 1
-"""
+    o = C(42)
+    o.action(1,2, *args)
+    f2(1,2)
+    d = {"key":"value", "key2":"value"}
 
-exec("12+24", globals(), Env)
-#print Env
+f("arg1", "arg2")
 
-GV = 1
+dis.dis(f)
 
-def main():
-    GV = 2
-    print GV
-print GV
-main()
+

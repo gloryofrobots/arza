@@ -188,22 +188,22 @@ class LOAD_ARRAY(Opcode):
         return 'LOAD_ARRAY %d' % (self.counter,)
 
 
-class LOAD_LIST(Opcode):
-    _immutable_fields_ = ['counter']
-
-    def __init__(self, counter):
-        self.counter = counter
-
-    def eval(self, ctx):
-        from obin.objects.object import W_List
-        list_w = ctx.stack_pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
-        ctx.stack_append(W_List(list_w))
-
-    def stack_change(self):
-        return -1 * self.counter + 1
-
-    def __str__(self):
-        return u'LOAD_LIST %d' % (self.counter,)
+# class LOAD_LIST(Opcode):
+#     _immutable_fields_ = ['counter']
+#
+#     def __init__(self, counter):
+#         self.counter = counter
+#
+#     def eval(self, ctx):
+#         from obin.objects.object import W_List
+#         list_w = ctx.stack_pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
+#         ctx.stack_append(W_List(list_w))
+#
+#     def stack_change(self):
+#         return -1 * self.counter + 1
+#
+#     def __str__(self):
+#         return u'LOAD_LIST %d' % (self.counter,)
 
 
 class LOAD_FUNCTION(Opcode):
@@ -675,33 +675,57 @@ def common_call(ctx, funcobj, args, this, identifyer):
     argv = args.to_list()
     funcobj.Call(args=argv, this=this, calling_context=ctx)
 
+def load_arguments(ctx, counter):
+    from obin.objects.object import W_List
+    args = ctx.stack_pop_n(counter)  # [:] # pop_n returns a non-resizable list
+    return W_List(args)
 
 class CALL(Opcode):
-    _stack_change = 0
+    def __init__(self, counter):
+        self.counter = counter
+
+    def stack_change(self):
+        return -1 * self.counter + 1
 
     def eval(self, ctx):
         from obin.objects.object_space import newundefined
         r1 = ctx.stack_pop()
-        args = ctx.stack_pop()
+        args = load_arguments(ctx, self.counter)
         common_call(ctx, r1, args, newundefined(), r1)
 
+    def __str__(self):
+        return "CALL (%d)" % self.counter
+
+    def __repr__(self):
+        return self.__str__()
 
 class CALL_METHOD(Opcode):
     _stack_change = -2
 
+    def __init__(self, counter):
+        self.counter = counter
+
+    def stack_change(self):
+        return -1 * self.counter + 1 + self._stack_change
+
     def eval(self, ctx):
         method = ctx.stack_pop()
         what = ctx.stack_pop().ToObject()
-        args = ctx.stack_pop()
+        args = load_arguments(ctx, self.counter)
+
         name = method.to_string()
         r1 = what.get(name)
         common_call(ctx, r1, args, what, method)
 
+    def __str__(self):
+        return "CALL_METHOD (%d)" % self.counter
+
+    def __repr__(self):
+        return self.__str__()
 
 class DUP(Opcode):
     def eval(self, ctx):
         ctx.stack_append(ctx.stack_top())
-
 
 class THROW(Opcode):
     _stack_change = 0

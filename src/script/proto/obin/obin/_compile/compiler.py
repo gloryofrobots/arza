@@ -506,23 +506,20 @@ class Compiler(object):
         self._compile(code, obj)
         code.emit('LOAD_MEMBER')
 
-    def _compile_list(self, bytecode, elements):
-        for el in elements:
-            self._compile(bytecode, el)
-        bytecode.emit('LOAD_LIST', len(elements))
-
     def _compile_LPAREN_MEMBER(self, bytecode, node):
         obj = node.first()
         method = node.second()
         name = unicode(method.value)
         args = node.third()
         # print "_compile_LPAREN_MEMBER", obj, method, args
-        self._compile_list(bytecode, args)
+
+        for arg in args:
+            self._compile(bytecode, arg)
 
         self._compile(bytecode, obj)
         bytecode.emit('LOAD_STRINGCONSTANT', name)
         self.declare_symbol(name)
-        bytecode.emit('CALL_METHOD')
+        bytecode.emit('CALL_METHOD', len(args))
 
     def _compile_LPAREN(self, bytecode, node):
         if node.arity == 3:
@@ -536,9 +533,8 @@ class Compiler(object):
         for arg in args:
             self._compile(bytecode, arg)
 
-        bytecode.emit('LOAD_LIST', len(args))
         self._compile(bytecode, func)
-        bytecode.emit('CALL')
+        bytecode.emit('CALL', len(args))
 
 def testprogram():
     data = ""

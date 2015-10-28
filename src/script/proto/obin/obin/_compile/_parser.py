@@ -657,6 +657,7 @@ def parser_init(parser):
     PREFIXES
     """
 
+    prefix(parser, T.TT_ELLIPSIS)
     prefix(parser, T.TT_BITNOT)
     prefix(parser, T.TT_NOT)
     prefix(parser, T.TT_SUB)
@@ -917,8 +918,7 @@ def write_ast(ast):
 
 
 ast = parse_string("""
-fn f2(x, y, ...z){
-    x + y
-}""")
-# print ast
+print(2,3,...x,4)
+""")
+print ast
 # write_ast(ast)

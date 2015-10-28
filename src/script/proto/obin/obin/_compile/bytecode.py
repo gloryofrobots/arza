@@ -190,6 +190,9 @@ class ByteCode(object):
         assert pc >= 0
         return self.compiled_opcodes[pc]
 
+    def length(self):
+        return len(self.opcodes)
+
     @jit.elidable
     def opcode_count(self):
         return len(self.compiled_opcodes)
