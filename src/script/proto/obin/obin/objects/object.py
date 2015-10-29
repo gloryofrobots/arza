@@ -756,6 +756,7 @@ class W_Math(W__Object):
 
 class W_List(W_Root):
     def __init__(self, values):
+        assert isinstance(values, list)
         self.values = values
 
     def to_list(self):

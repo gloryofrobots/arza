@@ -508,21 +508,27 @@ class Compiler(object):
         code.emit('LOAD_MEMBER')
 
     def _compile_args_list(self, code, args):
-        varargs = False
-        first_args = args[:-1]
-        length = len(first_args)
-        for arg in first_args:
-            self._compile(code, arg)
+        # create tuples and unpack instruction for function call
+        length = 0
+        normal_args_count = 0
+        for arg in args:
+            if arg.type == TT_ELLIPSIS:
+                if normal_args_count:
+                    code.emit("LOAD_LIST", normal_args_count)
+                    normal_args_count = 0
+                    length += 1
+                self._compile(code, arg.first())
+                code.emit("UNPACK")
+                length += 1
+            else:
+                self._compile(code, arg)
+                normal_args_count += 1
 
-        lastarg = args[-1]
-        if lastarg.type == TT_ELLIPSIS:
-            varargs = True
-            self._compile(code, lastarg.first())
-        else:
+        if normal_args_count:
+            code.emit("LOAD_LIST", normal_args_count)
             length += 1
-            self._compile(code, lastarg)
 
-        return varargs, length
+        return length
 
     def _compile_LPAREN_MEMBER(self, bytecode, node):
         obj = node.first()
@@ -531,18 +537,13 @@ class Compiler(object):
         args = node.third()
         # print "_compile_LPAREN_MEMBER", obj, method, args
 
-        varargs, length = self._compile_args_list(bytecode, args)
+        length = self._compile_args_list(bytecode, args)
 
         self._compile(bytecode, obj)
         bytecode.emit('LOAD_STRINGCONSTANT', name)
         self.declare_symbol(name)
 
-        if varargs:
-            codename = "CALL_METHOD_VARARGS"
-        else:
-            codename = "CALL_METHOD"
-
-        bytecode.emit(codename, length)
+        bytecode.emit("CALL_METHOD", length)
 
     def _compile_LPAREN(self, bytecode, node):
         if node.arity == 3:
@@ -553,16 +554,11 @@ class Compiler(object):
 
         # print "_compile_LPAREN", func, args
 
-        varargs, length = self._compile_args_list(bytecode, args)
+        length = self._compile_args_list(bytecode, args)
 
         self._compile(bytecode, func)
 
-        if varargs:
-            codename = "CALL_VARARGS"
-        else:
-            codename = "CALL"
-
-        bytecode.emit(codename, length)
+        bytecode.emit("CALL", length)
 
 def testprogram():
     data = ""

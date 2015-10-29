@@ -1,0 +1,21 @@
+fn p(...rest) {
+    print(rest)
+}
+
+v1 = [1,2,3]
+v2 = [7,8]
+v3 = [11,12,13,14,15,16,17,18,19,20]
+
+p(...v1, 4,5,6, ...v2, 9, 10, ...v3, ...[21, 22], 23)
+
+fn add2(...rest) {
+    return add(1, ...rest)
+}
+
+fn add(x,y,z) {
+    print(x,y,z)
+    return x + y + z
+}
+
+A = [3]
+add2(2,...A)

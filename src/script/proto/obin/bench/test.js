@@ -17,16 +17,4 @@ print(a)
 
 
 
-fn add2(...rest) {
-    return add(1, ...rest)
-}
-
-fn add(x,y,z) {
-    print(x,y,z)
-    return x + y + z
-}
-
-A = [3]
-add2(2,...A)
-
 //x = ...A

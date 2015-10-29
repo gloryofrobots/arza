@@ -210,7 +210,7 @@ class TokenStream(object):
             # print "TOKEN"
             self.is_newline_occurred = False
 
-        print token
+        # print token
         self.token = token
         self.node = Node(self.token.type, self.token.val, self.token.pos, self.token.line)
         return self.node
@@ -644,15 +644,6 @@ def parser_init(parser):
 
                 advance_expected(parser, T.TT_COMMA)
 
-        if parser.token_type == T.TT_ELLIPSIS:
-            # trick to use ellipsis only in func calls
-            node = parser.node
-            advance(parser)
-            expr = expression(parser, 0)
-            node.init(1)
-            node.setfirst(expr)
-            items.append(node)
-
         advance_expected(parser, T.TT_RPAREN)
         return node
 
@@ -663,10 +654,7 @@ def parser_init(parser):
     PREFIXES
     """
 
-    def _prefix_ellipsis(parser, node):
-        return error(parser, "'...' operator can be used only in function calls")
-
-    prefix(parser, T.TT_ELLIPSIS, _prefix_ellipsis)
+    prefix(parser, T.TT_ELLIPSIS)
 
     prefix(parser, T.TT_BITNOT)
     prefix(parser, T.TT_NOT)
@@ -930,5 +918,5 @@ def write_ast(ast):
 ast = parse_string("""
 print(2,3,...x)
 """)
-print ast
+# print ast
 # write_ast(ast)

@@ -188,23 +188,6 @@ class LOAD_ARRAY(Opcode):
         return 'LOAD_ARRAY %d' % (self.counter,)
 
 
-# class LOAD_LIST(Opcode):
-#     _immutable_fields_ = ['counter']
-#
-#     def __init__(self, counter):
-#         self.counter = counter
-#
-#     def eval(self, ctx):
-#         from obin.objects.object import W_List
-#         list_w = ctx.stack_pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
-#         ctx.stack_append(W_List(list_w))
-#
-#     def stack_change(self):
-#         return -1 * self.counter + 1
-#
-#     def __str__(self):
-#         return u'LOAD_LIST %d' % (self.counter,)
-
 
 class LOAD_FUNCTION(Opcode):
     _immutable_fields_ = ['funcobj']
@@ -675,17 +658,48 @@ def common_call(ctx, funcobj, args, this, identifyer):
     argv = args.to_list()
     funcobj.Call(args=argv, this=this, calling_context=ctx)
 
+
 def load_arguments(ctx, counter):
     from obin.objects.object import W_List
-    args = ctx.stack_pop_n(counter)  # [:] # pop_n returns a non-resizable list
-    return W_List(args)
 
-def load_arguments_varargs(ctx, counter):
-    from obin.objects.object import W_List
-    varargs = ctx.stack_pop()
-    args = ctx.stack_pop_n(counter)  # [:] # pop_n returns a non-resizable list
+    if counter == 0:
+        return W_List([])
+    if counter == 1:
+        return ctx.stack_pop()
 
-    return W_List(args + varargs.values())
+    lists = ctx.stack_pop_n(counter)  # [:] # pop_n returns a non-resizable list
+    values = []
+    for l in lists:
+        values += l.values
+
+    return W_List(values)
+
+
+class UNPACK(Opcode):
+    _stack_change = 0
+
+    def eval(self, ctx):
+        from obin.objects.object import W_List, W__Array
+        arr = ctx.stack_pop()  # [:] # pop_n returns a non-resizable list
+        assert isinstance(arr, W__Array)
+        ctx.stack_append(W_List(arr.values()))
+
+class LOAD_LIST(Opcode):
+    _immutable_fields_ = ['counter']
+
+    def __init__(self, counter):
+        self.counter = counter
+
+    def eval(self, ctx):
+        from obin.objects.object import W_List
+        list_w = ctx.stack_pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
+        ctx.stack_append(W_List(list_w))
+
+    def stack_change(self):
+        return -1 * self.counter + 1
+
+    def __str__(self):
+        return u'LOAD_LIST %d' % (self.counter,)
 
 class CALL(Opcode):
     def __init__(self, counter):
@@ -696,8 +710,10 @@ class CALL(Opcode):
 
     def eval(self, ctx):
         from obin.objects.object_space import newundefined
+
         r1 = ctx.stack_pop()
         args = load_arguments(ctx, self.counter)
+
         common_call(ctx, r1, args, newundefined(), r1)
 
     def __str__(self):
@@ -726,49 +742,6 @@ class CALL_METHOD(Opcode):
 
     def __str__(self):
         return "CALL_METHOD (%d)" % self.counter
-
-    def __repr__(self):
-        return self.__str__()
-
-class CALL_VARARGS(Opcode):
-    def __init__(self, counter):
-        self.counter = counter
-
-    def stack_change(self):
-        return -1 * self.counter + 1
-
-    def eval(self, ctx):
-        from obin.objects.object_space import newundefined
-        r1 = ctx.stack_pop()
-        args = load_arguments_varargs(ctx, self.counter)
-        common_call(ctx, r1, args, newundefined(), r1)
-
-    def __str__(self):
-        return "CALL_VARARGS (%d)" % self.counter
-
-    def __repr__(self):
-        return self.__str__()
-
-class CALL_METHOD_VARARGS(Opcode):
-    _stack_change = -2
-
-    def __init__(self, counter):
-        self.counter = counter
-
-    def stack_change(self):
-        return -1 * self.counter + 1 + self._stack_change
-
-    def eval(self, ctx):
-        method = ctx.stack_pop()
-        what = ctx.stack_pop().ToObject()
-        args = load_arguments_varargs(ctx, self.counter)
-
-        name = method.to_string()
-        r1 = what.get(name)
-        common_call(ctx, r1, args, what, method)
-
-    def __str__(self):
-        return "CALL_METHOD_VARARGS (%d)" % self.counter
 
     def __repr__(self):
         return self.__str__()
