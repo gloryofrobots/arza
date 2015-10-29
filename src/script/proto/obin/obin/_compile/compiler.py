@@ -5,6 +5,10 @@ from _parser import *
 
 from obin.objects.symbol_map import SymbolMap
 
+def error(node, message, args):
+    error_message = "Compile Error %d:%d %s" % (node.line, node.position, message)
+    raise RuntimeError(error_message, args)
+
 class Compiler(object):
     def __init__(self):
         self.funclists = []
@@ -79,12 +83,6 @@ class Compiler(object):
 
     def set_sourcename(self, sourcename):
         self.stsourcename = sourcename  # XXX I should call this
-
-    def get_pos(self, node):
-        return Position(
-            node.line,
-            node.position
-        )
 
     def compile(self, ast):
         from bytecode import ByteCode
@@ -499,12 +497,32 @@ class Compiler(object):
         code.emit('LOAD_MEMBER_DOT')
         self.declare_symbol(name)
 
+    def _compile_ELLIPSIS(self, code, node):
+        pass
+
     def _compile_LSQUARE_LOOKUP(self, code, node):
         expr = node.second()
         self._compile(code, expr)
         obj = node.first()
         self._compile(code, obj)
         code.emit('LOAD_MEMBER')
+
+    def _compile_args_list(self, code, args):
+        varargs = False
+        first_args = args[:-1]
+        length = len(first_args)
+        for arg in first_args:
+            self._compile(code, arg)
+
+        lastarg = args[-1]
+        if lastarg.type == TT_ELLIPSIS:
+            varargs = True
+            self._compile(code, lastarg.first())
+        else:
+            length += 1
+            self._compile(code, lastarg)
+
+        return varargs, length
 
     def _compile_LPAREN_MEMBER(self, bytecode, node):
         obj = node.first()
@@ -513,13 +531,18 @@ class Compiler(object):
         args = node.third()
         # print "_compile_LPAREN_MEMBER", obj, method, args
 
-        for arg in args:
-            self._compile(bytecode, arg)
+        varargs, length = self._compile_args_list(bytecode, args)
 
         self._compile(bytecode, obj)
         bytecode.emit('LOAD_STRINGCONSTANT', name)
         self.declare_symbol(name)
-        bytecode.emit('CALL_METHOD', len(args))
+
+        if varargs:
+            codename = "CALL_METHOD_VARARGS"
+        else:
+            codename = "CALL_METHOD"
+
+        bytecode.emit(codename, length)
 
     def _compile_LPAREN(self, bytecode, node):
         if node.arity == 3:
@@ -530,11 +553,16 @@ class Compiler(object):
 
         # print "_compile_LPAREN", func, args
 
-        for arg in args:
-            self._compile(bytecode, arg)
+        varargs, length = self._compile_args_list(bytecode, args)
 
         self._compile(bytecode, func)
-        bytecode.emit('CALL', len(args))
+
+        if varargs:
+            codename = "CALL_VARARGS"
+        else:
+            codename = "CALL"
+
+        bytecode.emit(codename, length)
 
 def testprogram():
     data = ""

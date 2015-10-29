@@ -1,5 +1,3 @@
-from sqlalchemy.sql.functions import coalesce
-
 __author__ = 'gloryofrobots'
 
 def check_continuation_consistency(caller, continuation):

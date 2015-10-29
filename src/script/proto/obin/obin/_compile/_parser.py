@@ -210,7 +210,7 @@ class TokenStream(object):
             # print "TOKEN"
             self.is_newline_occurred = False
 
-        # print token
+        print token
         self.token = token
         self.node = Node(self.token.type, self.token.val, self.token.pos, self.token.line)
         return self.node
@@ -482,7 +482,6 @@ def parser_init(parser):
     symbol(parser, T.TT_ELSE)
     symbol(parser, T.TT_SEMI, nud=empty)
 
-
     # precedence 5
     # infix(parser, T.TT_COMMA, 5)
     # infix(parser, T.TT_COLON, 5)
@@ -500,8 +499,6 @@ def parser_init(parser):
     assignment(parser, T.TT_BITOR_ASSIGN)
     assignment(parser, T.TT_BITAND_ASSIGN)
     assignment(parser, T.TT_BITXOR_ASSIGN)
-
-
 
     """
     precedence 20
@@ -639,13 +636,22 @@ def parser_init(parser):
                 left.error("Expected a variable name.");
             }
             """
-        if parser.node.type != T.TT_RPAREN:
+        if parser.token_type != T.TT_RPAREN:
             while True:
                 items.append(expression(parser, 0))
                 if parser.node.type != T.TT_COMMA:
                     break
 
                 advance_expected(parser, T.TT_COMMA)
+
+        if parser.token_type == T.TT_ELLIPSIS:
+            # trick to use ellipsis only in func calls
+            node = parser.node
+            advance(parser)
+            expr = expression(parser, 0)
+            node.init(1)
+            node.setfirst(expr)
+            items.append(node)
 
         advance_expected(parser, T.TT_RPAREN)
         return node
@@ -657,7 +663,11 @@ def parser_init(parser):
     PREFIXES
     """
 
-    prefix(parser, T.TT_ELLIPSIS)
+    def _prefix_ellipsis(parser, node):
+        return error(parser, "'...' operator can be used only in function calls")
+
+    prefix(parser, T.TT_ELLIPSIS, _prefix_ellipsis)
+
     prefix(parser, T.TT_BITNOT)
     prefix(parser, T.TT_NOT)
     prefix(parser, T.TT_SUB)
@@ -918,7 +928,7 @@ def write_ast(ast):
 
 
 ast = parse_string("""
-print(2,3,...x,4)
+print(2,3,...x)
 """)
 print ast
 # write_ast(ast)

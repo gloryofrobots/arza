@@ -680,6 +680,13 @@ def load_arguments(ctx, counter):
     args = ctx.stack_pop_n(counter)  # [:] # pop_n returns a non-resizable list
     return W_List(args)
 
+def load_arguments_varargs(ctx, counter):
+    from obin.objects.object import W_List
+    varargs = ctx.stack_pop()
+    args = ctx.stack_pop_n(counter)  # [:] # pop_n returns a non-resizable list
+
+    return W_List(args + varargs.values())
+
 class CALL(Opcode):
     def __init__(self, counter):
         self.counter = counter
@@ -719,6 +726,49 @@ class CALL_METHOD(Opcode):
 
     def __str__(self):
         return "CALL_METHOD (%d)" % self.counter
+
+    def __repr__(self):
+        return self.__str__()
+
+class CALL_VARARGS(Opcode):
+    def __init__(self, counter):
+        self.counter = counter
+
+    def stack_change(self):
+        return -1 * self.counter + 1
+
+    def eval(self, ctx):
+        from obin.objects.object_space import newundefined
+        r1 = ctx.stack_pop()
+        args = load_arguments_varargs(ctx, self.counter)
+        common_call(ctx, r1, args, newundefined(), r1)
+
+    def __str__(self):
+        return "CALL_VARARGS (%d)" % self.counter
+
+    def __repr__(self):
+        return self.__str__()
+
+class CALL_METHOD_VARARGS(Opcode):
+    _stack_change = -2
+
+    def __init__(self, counter):
+        self.counter = counter
+
+    def stack_change(self):
+        return -1 * self.counter + 1 + self._stack_change
+
+    def eval(self, ctx):
+        method = ctx.stack_pop()
+        what = ctx.stack_pop().ToObject()
+        args = load_arguments_varargs(ctx, self.counter)
+
+        name = method.to_string()
+        r1 = what.get(name)
+        common_call(ctx, r1, args, what, method)
+
+    def __str__(self):
+        return "CALL_METHOD_VARARGS (%d)" % self.counter
 
     def __repr__(self):
         return self.__str__()

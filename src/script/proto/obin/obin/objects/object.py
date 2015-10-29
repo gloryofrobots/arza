@@ -830,6 +830,9 @@ class W__Array(W_BasicObject):
         except KeyError:
             pass
 
+    def values(self):
+        return self._items
+
     def length(self):
         return len(self._items)
 

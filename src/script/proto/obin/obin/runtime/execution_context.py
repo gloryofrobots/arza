@@ -82,7 +82,7 @@ class ExecutionContext(object):
             nlen = len(names)
             alen = len(args)
             if alen < nlen:
-                raise RuntimeError("Wrong argument count in function call %d < %d" % (alen, nlen))
+                raise RuntimeError("Wrong argument count in function call %d < %d %s" % (alen, nlen, names))
 
             for i in range(nlen):
                 v = args[i]

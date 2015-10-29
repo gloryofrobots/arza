@@ -99,6 +99,7 @@ assertEqual(h.greetings(), "Bob - 42", 'h.greetings(), "Bob - 42"')
 assertEqual(h.memory.secret(), 42,'h.memory.secret(), 42')
 
 
+
 fn fib(n) {
   fn _process(n,a,b) {
     return _process(n-1,b,a+b)  if n>0 else a;

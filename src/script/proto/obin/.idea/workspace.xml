@@ -25,17 +25,17 @@
         <entry file="file://$PROJECT_DIR$/obin/_compile/compiler.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="508" column="0" selection-start-line="508" selection-start-column="0" selection-end-line="508" selection-end-column="0" />
+              <caret line="86" column="0" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="bytecode.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/obin/_compile/bytecode.py">
+      <file leaf-file-name="execution_context.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/obin/runtime/execution_context.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="51" column="12" selection-start-line="51" selection-start-column="12" selection-end-line="51" selection-end-column="12" />
+              <caret line="84" column="106" selection-start-line="84" selection-start-column="106" selection-end-line="84" selection-end-column="106" />
               <folding />
             </state>
           </provider>
@@ -45,7 +45,7 @@
         <entry file="file://$PROJECT_DIR$/obin/runtime/opcodes.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="205" column="21" selection-start-line="205" selection-start-column="21" selection-end-line="205" selection-end-column="21" />
+              <caret line="746" column="28" selection-start-line="746" selection-start-column="28" selection-end-line="746" selection-end-column="28" />
               <folding />
             </state>
           </provider>
@@ -55,47 +55,27 @@
         <entry file="file://$PROJECT_DIR$/bench/test.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="9" column="24" selection-start-line="9" selection-start-column="24" selection-end-line="9" selection-end-column="24" />
+              <caret line="0" column="6" selection-start-line="0" selection-start-column="6" selection-end-line="0" selection-end-column="6" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="object_space.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/obin/objects/object_space.py">
+      <file leaf-file-name="common.obn" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/common.obn">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="181" column="8" selection-start-line="181" selection-start-column="8" selection-end-line="181" selection-end-column="8" />
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="routine.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/obin/runtime/routine.py">
+      <file leaf-file-name="test2.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/bench/test2.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="355" column="0" selection-start-line="355" selection-start-column="0" selection-end-line="355" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="fiber.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/obin/runtime/fiber.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="37" column="28" selection-start-line="37" selection-start-column="28" selection-end-line="37" selection-end-column="28" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="object.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/obin/objects/object.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="681" column="8" selection-start-line="681" selection-start-column="8" selection-end-line="681" selection-end-column="8" />
+              <caret line="38" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="338" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -105,7 +85,7 @@
         <entry file="file://$PROJECT_DIR$/bench/test3.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="64" column="0" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
+              <caret line="101" column="0" selection-start-line="101" selection-start-column="0" selection-end-line="101" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -114,8 +94,28 @@
       <file leaf-file-name="_parser.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/obin/_compile/_parser.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.53367877">
-              <caret line="920" column="16" selection-start-line="920" selection-start-column="16" selection-end-line="920" selection-end-column="16" />
+            <state vertical-scroll-proportion="0.3816156">
+              <caret line="638" column="43" selection-start-line="638" selection-start-column="43" selection-end-line="638" selection-end-column="43" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="token_type.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/obin/_compile/token_type.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tokens.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/obin/_compile/tokens.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="128" column="1" selection-start-line="128" selection-start-column="1" selection-end-line="128" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -160,7 +160,6 @@
         <option value="$PROJECT_DIR$/obin/objects/object_map.py" />
         <option value="$PROJECT_DIR$/obin/runtime/lexical_environment.py" />
         <option value="$PROJECT_DIR$/obin/_compile/program.obn" />
-        <option value="$PROJECT_DIR$/obin/objects/object.py" />
         <option value="$PROJECT_DIR$/obin/_compile/tcompile.py" />
         <option value="$PROJECT_DIR$/obin/_compile/testcompile.py" />
         <option value="$PROJECT_DIR$/obin/compile/code.py" />
@@ -173,16 +172,17 @@
         <option value="$PROJECT_DIR$/obin.py" />
         <option value="$PROJECT_DIR$/obin/runtime/reference.py" />
         <option value="$PROJECT_DIR$/obin/compile/operations.py" />
-        <option value="$PROJECT_DIR$/obin/runtime/fiber.py" />
         <option value="$PROJECT_DIR$/obin/runtime/routine.py" />
         <option value="$PROJECT_DIR$/obin/objects/symbol_map.py" />
-        <option value="$PROJECT_DIR$/obin/runtime/execution_context.py" />
-        <option value="$PROJECT_DIR$/bench/test3.js" />
         <option value="$PROJECT_DIR$/obin/objects/object_space.py" />
         <option value="$PROJECT_DIR$/obin/_compile/bytecode.py" />
-        <option value="$PROJECT_DIR$/bench/test.js" />
+        <option value="$PROJECT_DIR$/obin/runtime/fiber.py" />
+        <option value="$PROJECT_DIR$/obin/objects/object.py" />
+        <option value="$PROJECT_DIR$/obin/runtime/execution_context.py" />
         <option value="$PROJECT_DIR$/obin/runtime/opcodes.py" />
+        <option value="$PROJECT_DIR$/bench/test3.js" />
         <option value="$PROJECT_DIR$/obin/_compile/compiler.py" />
+        <option value="$PROJECT_DIR$/bench/test.js" />
         <option value="$PROJECT_DIR$/obin/_compile/_parser.py" />
       </list>
     </option>
@@ -234,6 +234,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="obin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="obin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="obin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tests" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -333,6 +347,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="obin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="_compile" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="obin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="obin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="bench" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -364,11 +396,13 @@
     <property name="options.lastSelected" value="configurable.group.appearance" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../../../../../smalltalk/childtalk/src/main/java/ua/ho/gloryofrobots/childtalk" />
+    <property name="last_opened_file_path" value="/usr/bin/python" />
     <property name="recentsLimit" value="5" />
     <property name="restartRequiresConfirmation" value="true" />
-    <property name="SearchEverywhereHistoryKey" value="_pa&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/_parser.py&#10;compi&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/compiler.py&#10;LOAD_LI&#9;null&#9;null&#10;opco&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/opcodes.py&#10;opcode&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/opcodes.py&#10;byt&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/bytecode.py&#10;sym&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/objects/symbol_map.py&#10;routi&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/routine.py&#10;exe&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/execution_context.py&#10;com&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/compiler.py&#10;compil&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/compiler.py&#10;Parse&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/parser.py&#10;comp&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/compiler.py&#10;astbui&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/astbuilder.py&#10;co&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/compiler.py&#10;opera&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/operations.py&#10;refe&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/reference.py&#10;re&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/reference.py&#10;inte&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/interpreter.py&#10;oper&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/operations.py&#10;c&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/compiler.py&#10;inter&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/interpreter.py&#10;Rou&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/routine.py&#10;in&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/interpreter.py&#10;byt\&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/bytecode.py&#10;_p&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/_parser.py&#10;as&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/astbuilder.py&#10;ast&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/astbuilder.py&#10;astb&#9;null&#9;null&#10;code&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/code.py&#10;object&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/objects/object.py&#10;Node&#9;null&#9;null&#10;parser_ini&#9;null&#9;null&#10;token&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/parse/token_type.py&#10;outpu&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/parse/output.json&#10;Token&#9;null&#9;null&#10;fiber&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/fiber.py&#10;THROW&#9;null&#9;null&#10;opc&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/opcodes.py&#10;obj&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/objects/object_space.py&#10;obin&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin.py&#10;test&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/test/test_array.py&#10;rout&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/routine.py" />
+    <property name="SearchEverywhereHistoryKey" value="_pa&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/_parser.py&#10;co&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/compiler.py&#10;_par&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/_parser.py&#10;comp&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/compiler.py&#10;obje&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/objects/object.py&#10;com&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/compiler.py&#10;compi&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/compiler.py&#10;LOAD_LI&#9;null&#9;null&#10;opco&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/opcodes.py&#10;opcode&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/opcodes.py&#10;byt&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/bytecode.py&#10;sym&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/objects/symbol_map.py&#10;routi&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/routine.py&#10;exe&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/execution_context.py&#10;compil&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/compiler.py&#10;Parse&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/parser.py&#10;astbui&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/astbuilder.py&#10;opera&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/operations.py&#10;refe&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/reference.py&#10;re&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/reference.py&#10;inte&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/interpreter.py&#10;oper&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/operations.py&#10;c&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/compiler.py&#10;inter&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/interpreter.py&#10;Rou&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/routine.py&#10;in&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/interpreter.py&#10;byt\&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/bytecode.py&#10;_p&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/_compile/_parser.py&#10;as&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/astbuilder.py&#10;ast&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/astbuilder.py&#10;astb&#9;null&#9;null&#10;code&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/code.py&#10;object&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/objects/object.py&#10;Node&#9;null&#9;null&#10;parser_ini&#9;null&#9;null&#10;token&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/parse/token_type.py&#10;outpu&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/compile/parse/output.json&#10;Token&#9;null&#9;null&#10;fiber&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/fiber.py&#10;THROW&#9;null&#9;null&#10;opc&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/opcodes.py&#10;obj&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/objects/object_space.py&#10;obin&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin.py&#10;test&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/test/test_array.py&#10;rout&#9;FILE&#9;file:///home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/obin/runtime/routine.py" />
     <property name="FullScreen" value="false" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -622,9 +656,9 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24963397" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24158126" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39968896" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.39968896" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3576983" sideWeight="0.49706745" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3576983" sideWeight="0.49706745" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32970452" sideWeight="0.50879765" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -697,7 +731,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/obin/runtime/fiber.py</url>
-          <line>130</line>
+          <line>128</line>
           <option name="timeStamp" value="89" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
@@ -726,24 +760,19 @@
           <option name="timeStamp" value="133" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
-          <url>file://$PROJECT_DIR$/obin/runtime/opcodes.py</url>
-          <line>152</line>
-          <option name="timeStamp" value="136" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/obin/runtime/reference.py</url>
           <line>61</line>
           <option name="timeStamp" value="137" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/obin/_compile/_parser.py</url>
-          <line>219</line>
-          <option name="timeStamp" value="138" />
+          <line>666</line>
+          <option name="timeStamp" value="141" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/obin/_compile/_parser.py</url>
-          <line>243</line>
-          <option name="timeStamp" value="139" />
+          <line>628</line>
+          <option name="timeStamp" value="142" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -753,37 +782,15 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="140" />
+      <option name="time" value="143" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../../../../../pypy/rpython/rlib/objectmodel.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="179" column="0" selection-start-line="179" selection-start-column="0" selection-end-line="179" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../../../../../pypy/rpython/rlib/parsing/tree.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="121" column="0" selection-start-line="121" selection-start-column="0" selection-end-line="121" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/obin/_compile/token_type.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="158" column="0" selection-start-line="158" selection-start-column="0" selection-end-line="158" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/obin/_compile/tokens.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="128" column="1" selection-start-line="128" selection-start-column="1" selection-end-line="128" selection-end-column="1" />
         </state>
       </provider>
     </entry>
@@ -880,14 +887,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="61" column="0" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/obin/objects/datastructs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="209" column="8" selection-start-line="209" selection-start-column="8" selection-end-line="209" selection-end-column="8" />
           <folding />
         </state>
       </provider>
@@ -1039,34 +1038,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/obin/runtime/execution_context.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="93" column="0" selection-start-line="93" selection-start-column="0" selection-end-line="93" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/bench/TODO.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bench/test2.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="38" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="338" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bench/test3.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="64" column="0" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1087,26 +1062,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bench/test.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="9" column="24" selection-start-line="9" selection-start-column="24" selection-end-line="9" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/obin/runtime/fiber.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="37" column="28" selection-start-line="37" selection-start-column="28" selection-end-line="37" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/obin/objects/object.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="681" column="8" selection-start-line="681" selection-start-column="8" selection-end-line="681" selection-end-column="8" />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1119,10 +1078,42 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/obin/objects/datastructs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="299" column="8" selection-start-line="299" selection-start-column="8" selection-end-line="299" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/obin/objects/object.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="782" column="9" selection-start-line="782" selection-start-column="9" selection-end-line="782" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/obin/runtime/execution_context.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="84" column="106" selection-start-line="84" selection-start-column="106" selection-end-line="84" selection-end-column="106" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/obin/runtime/opcodes.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="205" column="21" selection-start-line="205" selection-start-column="21" selection-end-line="205" selection-end-column="21" />
+          <caret line="746" column="28" selection-start-line="746" selection-start-column="28" selection-end-line="746" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bench/test3.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="101" column="0" selection-start-line="101" selection-start-column="0" selection-end-line="101" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1130,15 +1121,55 @@
     <entry file="file://$PROJECT_DIR$/obin/_compile/compiler.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="508" column="0" selection-start-line="508" selection-start-column="0" selection-end-line="508" selection-end-column="0" />
+          <caret line="86" column="0" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/common.obn">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bench/test2.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="38" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="338" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/obin/_compile/token_type.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/obin/_compile/tokens.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="128" column="1" selection-start-line="128" selection-start-column="1" selection-end-line="128" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bench/test.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="6" selection-start-line="0" selection-start-column="6" selection-end-line="0" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/obin/_compile/_parser.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.53367877">
-          <caret line="920" column="16" selection-start-line="920" selection-start-column="16" selection-end-line="920" selection-end-column="16" />
+        <state vertical-scroll-proportion="0.3816156">
+          <caret line="638" column="43" selection-start-line="638" selection-start-column="43" selection-end-line="638" selection-end-column="43" />
           <folding />
         </state>
       </provider>
