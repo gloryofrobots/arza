@@ -49,9 +49,9 @@ def js_apply(ctx, routine):
         result = run_routine_for_result(routine)
         return _w(result)
 
-    from obin.objects.object import W__Array
+    from obin.objects.object import W_Array
 
-    if not isinstance(arg_array, W__Array):
+    if not isinstance(arg_array, W_Array):
         raise JsTypeError(u'W__Array expected')
 
     n = arg_array.length()

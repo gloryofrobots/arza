@@ -6,7 +6,7 @@ from obin.objects.object_space import isnull_or_undefined, newundefined
 
 def setup(global_object):
     from obin.builtins import put_property, put_native_function
-    from obin.objects.object import W__Object, W__Array
+    from obin.objects.object import W__Object, W_Array
     from obin.objects.object_space import object_space
 
     w_Array = W__Object()
@@ -14,7 +14,7 @@ def setup(global_object):
     put_property(global_object, u'Array', w_Array)
 
     # 15.4.4
-    w_ArrayPrototype = W__Array()
+    w_ArrayPrototype = W_Array()
     object_space.assign_proto(w_ArrayPrototype, object_space.proto_object)
     object_space.proto_array = w_ArrayPrototype
 

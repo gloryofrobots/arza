@@ -19,15 +19,19 @@ def isfloat(w):
 
 @enforceargs(int)
 def newint(i):
-    from obin.objects.object import W_IntNumber
-    return W_IntNumber(i)
+    from obin.objects.object import W_Integer
+    return W_Integer(i)
 
 
 @enforceargs(float)
 def newfloat(f):
-    from obin.objects.object import W_FloatNumber
-    return W_FloatNumber(f)
+    from obin.objects.object import W_Float
+    return W_Float(f)
 
+@enforceargs(str)
+def newchar(c):
+    from obin.objects.object import W_Char
+    return W_Char(ord(c))
 
 @enforceargs(unicode)
 def newstring(s):
@@ -55,8 +59,8 @@ w_Undefined = _makeundefined()
 jit.promote(w_Undefined)
 
 def _makenull():
-    from obin.objects.object import W_Null
-    return W_Null()
+    from obin.objects.object import W_Nil
+    return W_Nil()
 
 w_Null = _makenull()
 jit.promote(w_Null)
@@ -83,7 +87,6 @@ def isnull_or_undefined(obj):
         return True
     return False
 
-
 @enforceargs(bool)
 def newbool(val):
     if not w_False:
@@ -95,23 +98,45 @@ def newbool(val):
 
 
 class ObjectSpace(object):
+
     def __init__(self):
         self.global_context = None
         self.global_object = None
-        self.proto_function = newnull()
-        self.proto_boolean = newnull()
-        self.proto_number = newnull()
-        self.proto_string = newnull()
-        self.proto_array = newnull()
-        self.proto_date = newnull()
-        self.proto_object = newnull()
+
+        self.traits = None
+        self.init_traits()
         self.interpreter = None
+
+    def init_traits(self):
+        class Traits(object):
+            pass
+
+        self.traits = Traits()
+        # following traits resemble native types list
+        self.traits.Function = newnull()
+        self.traits.True = newnull()
+        self.traits.False = newnull()
+        self.traits.Nil = newnull()
+        self.traits.Undefined = newnull()
+
+        self.traits.Char = newnull()
+        self.traits.Integer = newnull()
+        self.traits.Float = newnull()
+        self.traits.Symbol = newnull()
+
+        self.traits.String = newnull()
+        self.traits.Array = newnull()
+        self.traits.List = newnull()
+        self.traits.Vector = newnull()
+        self.traits.Tuple = newnull()
+
+        self.traits.Object = newnull()
 
     def get_global_environment(self):
         return self.global_context.lexical_environment()
 
     def assign_proto(self, obj, proto=None):
-        from obin.objects.object import W_BasicFunction, W_String, W_Boolean, W_Number, W__Array
+        from obin.objects.object import W_BasicFunction, W_String, W_Boolean, W_Number, W_Array
         if proto is not None:
             obj._prototype_ = proto
             return obj
@@ -124,7 +149,7 @@ class ObjectSpace(object):
             obj._prototype_ = self.proto_number
         elif isinstance(obj, W_String):
             obj._prototype_ = self.proto_string
-        elif isinstance(obj, W__Array):
+        elif isinstance(obj, W_Array):
             obj._prototype_ = self.proto_array
         else:
             obj._prototype_ = self.proto_object
@@ -145,8 +170,8 @@ class ObjectSpace(object):
     def new_array(self, length=None):
         if not length:
             length = _w(0)
-        from obin.objects.object import W__Array
-        obj = W__Array()
+        from obin.objects.object import W_Array
+        obj = W_Array()
         self.assign_proto(obj)
         return obj
 

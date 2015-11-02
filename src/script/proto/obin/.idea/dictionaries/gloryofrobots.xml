@@ -5,6 +5,7 @@
       <w>inprocess</w>
       <w>isnot</w>
       <w>opcode</w>
+      <w>tointeger</w>
     </words>
   </dictionary>
 </component>

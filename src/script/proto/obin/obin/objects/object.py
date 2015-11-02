@@ -7,15 +7,13 @@ from rpython.rlib import jit, debug
 from obin.objects.object_map import new_map
 from obin.runtime.exception import JsTypeError, JsRangeError
 from obin.utils import tb
-
+import api
 
 @jit.elidable
 def is_array_index(p):
     return make_array_index(p) != NOT_ARRAY_INDEX
 
-
 NOT_ARRAY_INDEX = -1
-
 
 class Descr(object):
     def __init__(self, can_put, own, inherited, prop):
@@ -23,23 +21,6 @@ class Descr(object):
         self.own = own
         self.inherited = inherited
         self.prop = prop
-
-
-def _get_from_desc(desc, this):
-    from obin.objects.object_space import newundefined
-    if desc is None:
-        return newundefined()
-
-    if is_data_descriptor(desc):
-        return desc.value
-
-    if desc.has_set_getter() is False:
-        return newundefined()
-
-    getter = desc.getter
-    res = getter.Call(this=this)
-    return res
-
 
 @jit.unroll_safe
 def make_array_index(idx):
@@ -62,138 +43,213 @@ def sign(i):
         return -1
     return 0
 
-
 class W_Root(object):
     _settled_ = True
     _immutable_fields_ = ['_type_']
     _type_ = ''
 
     def __str__(self):
-        return self.to_string()
-
-    def to_string(self):
-        return u''
+        return api.tostring(self)
 
     def type(self):
         return self._type_
 
-    def to_boolean(self):
-        return False
+    # BEHAVIOR
+    def _at_(self, b):
+        raise NotImplementedError()
 
-    def ToPrimitive(self, hint=None):
-        return self
+    def _length_(self):
+        raise NotImplementedError()
 
-    def ToObject(self):
-        raise JsTypeError(u'W_Root.ToObject')
+    def _put_(self, k, v):
+        raise NotImplementedError()
 
-    def ToNumber(self):
-        return 0.0
+    def _tostring_(self):
+        raise NotImplementedError()
 
-    def ToInteger(self):
-        num = self.ToNumber()
-        if num == NAN:
-            return 0
-        if num == INFINITY or num == -INFINITY:
-            raise Exception('dafuq?')
-            return 0
+    def _tobool_(self):
+        raise NotImplementedError()
 
-        return int(num)
+    def _equal_(self, other):
+        raise NotImplementedError()
 
-    def ToInt32(self):
-        num = self.ToInteger()
-        #if num == NAN or num == INFINITY or num == -INFINITY:
-            #return 0
-
-        return int32(num)
-
-    def ToUInt32(self):
-        num = self.ToInteger()
-        #if num == NAN or num == INFINITY or num == -INFINITY:
-            #return 0
-        return uint32(num)
-
-    def ToInt16(self):
-        num = self.ToInteger()
-        #if num == NAN or num == INFINITY or num == -INFINITY or num == 0:
-            #return 0
-
-        return uint16(num)
-
-    def is_callable(self):
-        return False
-
-    def check_object_coercible(self):
-        pass
-
+    def _compare_(self, other):
+        raise NotImplementedError()
 
 class W_Primitive(W_Root):
     pass
 
-
 class W_Undefined(W_Primitive):
-    _type_ = 'undefined'
+    _type_ = 'Undefined'
 
-    def ToInteger(self):
-        return 0
+class W_Nil(W_Primitive):
+    _type_ = 'Nil'
 
-    def ToNumber(self):
-        return NAN
+    def _tostring_(self):
+        return u'nil'
 
-    def to_string(self):
-        return unicode(self._type_)
-
-    def check_object_coercible(self):
-        raise JsTypeError(u'W_Undefined.check_object_coercible')
-
-    def ToObject(self):
-        raise JsTypeError(u'W_Undefined.ToObject')
-
-
-class W_Null(W_Primitive):
-    _type_ = 'null'
-
-    def to_boolean(self):
+    def _tobool_(self):
         return False
 
-    def to_string(self):
-        return u'null'
+    def _at_(self, k):
+        from object_space import object_space
 
-    def check_object_coercible(self):
-        raise JsTypeError(u'W_Null.check_object_coercible')
+        return api.at(object_space.traits.Nil, k)
 
-    def ToObject(self):
-        raise JsTypeError(u'W_Null.ToObject')
+class W_True(W_Primitive):
+    _type_ = 'True'
+    _immutable_fields_ = ['value']
 
-def reject(throw, msg=u''):
-    if throw:
-        raise JsTypeError(msg)
-    return False
+    def _tostring_(self):
+        return u'true'
 
+    def _tobool_(self):
+        return True
 
-def _ireject(throw, idx):
-    if throw:
-        raise JsTypeError(unicode(str(idx)))
-    return False
+    def _at_(self, k):
+        from object_space import object_space
+        return api.at(object_space.traits.True, k)
 
+    def __str__(self):
+        return '_True_'
+
+class W_False(W_Primitive):
+    _type_ = 'True'
+    _immutable_fields_ = ['value']
+
+    def _tostring_(self):
+        return u'false'
+
+    def _tobool_(self):
+        return False
+
+    def _at_(self, k):
+        from object_space import object_space
+        return api.at(object_space.traits.False, k)
+
+    def __str__(self):
+        return '_False_'
+
+class W_Char(W_Primitive):
+    _immutable_fields_ = ['value']
+
+    def __init__(self, value):
+        super(W_Char, self).__init__()
+        self.__value = value
+
+    def __str__(self):
+        return 'W_Char(%s)' % (unichr(self.__value),)
+
+    def value(self):
+        return self.__value
+
+    def _tostring_(self):
+        return unichr(self.__value)
+
+    def _tobool_(self):
+        return bool(self.__value)
+
+    def _at_(self, k):
+        from object_space import object_space
+        return api.at(object_space.traits.Char, k)
+
+class W_Integer(W_Primitive):
+    _immutable_fields_ = ['__value']
+
+    def __init__(self, value):
+        super(W_Integer, self).__init__()
+        self.__value = value
+
+    def __str__(self):
+        return 'W_Integer(%d)' % (self.value,)
+
+    def value(self):
+        return self.__value
+
+    def _tostring_(self):
+        return str(self.__value)
+
+    def _tobool_(self):
+        return bool(self.__value)
+
+    def _at_(self, k):
+        from object_space import object_space
+        return api.at(object_space.traits.Integer, k)
+
+class W_Float(W_Primitive):
+    _immutable_fields_ = ['value']
+
+    def __init__(self, value):
+        super(W_Float, self).__init__()
+        self.__value = value
+
+    def __str__(self):
+        return 'W_Float(%d)' % (self.__value,)
+
+    def value(self):
+        return self.__value
+
+    def _tostring_(self):
+        return str(self.__value)
+
+    def _tobool_(self):
+        return bool(self.__value)
+
+    def _at_(self, k):
+        from object_space import object_space
+        return api.at(object_space.traits.Float, k)
+
+class W_String(W_Primitive):
+    _type_ = 'String'
+    _immutable_fields_ = ['value']
+
+    def __init__(self, value):
+        assert value is not None and isinstance(value, unicode)
+        super(W_String, self).__init__()
+        self.__value = value
+        self.length = len(self.__value)
+
+    def __str__(self):
+        return u'W_String("%s")' % (self.__value)
+
+    def _tostring_(self):
+        return self.__value
+
+    def _tobool_(self):
+        return bool(self.__value)
+
+    def _length_(self):
+        return self.length
+
+    def _at_(self, k):
+        from object_space import object_space, isint
+        if isint(k):
+            return self._char_at(k.value())
+        else:
+            return api.at(object_space.traits.String, k)
+
+    def _char_at(self, index):
+        from object_space import newundefined, newchar
+        try:
+            ch = self.__value[index]
+        except KeyError:
+            return newundefined()
+
+        return newchar(ch)
 
 class W_Cell(W_Root):
     _type_ = 'object'
-    _class_ = 'Object'
     _extensible_ = True
-    _immutable_fields_ = ['_type_', '_class_']
+    _immutable_fields_ = ['_type_']
 
     def __init__(self):
         from obin.objects.datastructs import Slots
         self._slots = Slots()
 
     def __str__(self):
-        return "%s: %s" % (object.__repr__(self), self.klass())
+        return "%s: %s" % (object.__repr__(self), self._type_)
 
-    ##########
-    # 8.6.2 Object Internal Properties and Methods
-    def klass(self):
-        return self._class_
-
+    #TODO rename to freeze
     def extensible(self):
         return self._extensible_
 
@@ -334,135 +390,6 @@ class W_BasicObject(W_Cell):
             raise JsRangeError()
         return proto.get_property(p)
 
-class W__PrimitiveObject(W_BasicObject):
-    pass
-
-class W_Boolean(W__PrimitiveObject):
-    _type_ = 'boolean'
-    _immutable_fields_ = ['_boolval_']
-
-    def __init__(self, boolval):
-        self._boolval_ = bool(boolval)
-        W__PrimitiveObject.__init__(self)
-
-    def __str__(self):
-        return 'W_Bool(%s)' % (str(self._boolval_), )
-
-    def prototype(self):
-        from obin.objects.object_space import object_space, isnull
-        if isnull(self._prototype_):
-            self._prototype_ = object_space.proto_boolean
-        return self._prototype_
-
-    def to_string(self):
-        if self._boolval_ is True:
-            return u'true'
-        return u'false'
-
-    def ToNumber(self):
-        if self._boolval_ is True:
-            return 1.0
-        return 0.0
-
-    def to_boolean(self):
-        return self._boolval_
-
-
-class W_String(W__PrimitiveObject):
-    _type_ = 'string'
-    _immutable_fields_ = ['_strval_']
-
-    def __init__(self, strval):
-        from obin.objects.object_space import newint
-        assert strval is not None and isinstance(strval, unicode)
-        W__PrimitiveObject.__init__(self)
-        self._strval_ = strval
-        length = len(strval)
-        self.put(u'length', newint(length),)
-        from obin.objects.object_space import object_space,isnull
-
-    def prototype(self):
-        from obin.objects.object_space import object_space
-        return object_space.proto_string
-
-    def __eq__(self, other):
-        other_string = other.to_string()
-        return self.to_string() == other_string
-
-    def __str__(self):
-        return u'W_String("%s")' % (self._strval_)
-
-    def get_own_property(self, p):
-        value = W__PrimitiveObject.get_own_property(self, p)
-        if value:
-            return value
-
-        if not is_array_index(p):
-            return None
-
-        string = self.to_string()
-        index = int(p)
-        length = len(string)
-
-        if length <= index:
-            return None
-
-        result_string = string[index]
-        from obin.objects.object_space import _w
-        return _w(result_string),
-
-    def to_string(self):
-        return self._strval_
-
-    def to_boolean(self):
-        if len(self._strval_) == 0:
-            return False
-        else:
-            return True
-
-    def ToNumber(self):
-        from obin.builtins.global_functions import _strip
-        from obin.runistr import encode_unicode_utf8
-        from obin.constants import hex_rexp, oct_rexp, num_rexp
-
-        u_strval = self._strval_
-
-        u_strval = _strip(u_strval)
-        s = encode_unicode_utf8(u_strval)
-
-        if s == '':
-            return 0.0
-
-        match_data = num_rexp.match(s)
-        if match_data is not None:
-            num_lit = match_data.group()
-            assert num_lit is not None
-            assert isinstance(num_lit, str)
-
-            if num_lit == 'Infinity' or num_lit == '+Infinity':
-                return INFINITY
-            elif num_lit == '-Infinity':
-                return -INFINITY
-
-            return float(num_lit)
-
-        from obin.builtins.global_functions import _parse_int
-
-        match_data = hex_rexp.match(s)
-        if match_data is not None:
-            hex_lit = match_data.group(1)
-            assert hex_lit is not None
-            assert hex_lit.startswith('0x') is False
-            assert hex_lit.startswith('0X') is False
-            return float(_parse_int(unicode(hex_lit), 16))
-
-        match_data = oct_rexp.match(s)
-        if match_data is not None:
-            oct_lit = match_data.group(1)
-            assert oct_lit is not None
-            return float(_parse_int(unicode(oct_lit), 8))
-
-        return NAN
 
 
 class Symbol(object):
@@ -482,142 +409,15 @@ class Symbol(object):
         return self.to_string()
 
 
-class W_Number(W__PrimitiveObject):
-    """ Base class for numbers, both known to be floats
-    and those known to be integers
-    """
-    _type_ = 'number'
-
-    def to_boolean(self):
-        num = self.ToNumber()
-        if isnan(num):
-            return False
-        return bool(num)
-
-    def prototype(self):
-        from obin.objects.object_space import object_space, isnull
-        if isnull(self._prototype_):
-            self._prototype_ = object_space.proto_number
-        return self._prototype_
-
-    def __eq__(self, other):
-        if isinstance(other, W_Number):
-            return self.ToNumber() == other.ToNumber()
-        else:
-            return False
-
-
-class W_IntNumber(W_Number):
-    _immutable_fields_ = ['_intval_']
-
-    """ Number known to be an integer
-    """
-    def __init__(self, intval):
-        self._intval_ = intmask(intval)
-        W__PrimitiveObject.__init__(self)
-
-    def __str__(self):
-        return 'W_IntNumber(%s)' % (self._intval_,)
-
-    def ToInteger(self):
-        return self._intval_
-
-    def ToNumber(self):
-        # XXX
-        return float(self._intval_)
-
-    def to_string(self):
-        # XXX incomplete, this doesn't follow the 9.8.1 recommendation
-        return unicode(str(self.ToInteger()))
-
-MASK_32 = (2 ** 32) - 1
-MASK_16 = (2 ** 16) - 1
-
-
-@enforceargs(int)
-@jit.elidable
-def int32(n):
-    if n & (1 << (32 - 1)):
-        res = n | ~MASK_32
-    else:
-        res = n & MASK_32
-
-    return res
-
-
-@enforceargs(int)
-@jit.elidable
-def uint32(n):
-    return n & MASK_32
-
-
-@enforceargs(int)
-@jit.elidable
-def uint16(n):
-    return n & MASK_16
-
-
-class W_FloatNumber(W_Number):
-    _immutable_fields_ = ['_floatval_']
-
-    """ Number known to be a float
-    """
-    def __init__(self, floatval):
-        assert isinstance(floatval, float)
-        self._floatval_ = floatval
-        W__PrimitiveObject.__init__(self)
-
-    def __str__(self):
-        return 'W_FloatNumber(%s)' % (self._floatval_,)
-
-    def to_string(self):
-        # XXX incomplete, this doesn't follow the 9.8.1 recommendation
-        if isnan(self._floatval_):
-            return u'NaN'
-        if isinf(self._floatval_):
-            if self._floatval_ > 0:
-                return u'Infinity'
-            else:
-                return u'-Infinity'
-
-        if self._floatval_ == 0:
-            return u'0'
-
-        res = u''
-        try:
-            res = unicode(formatd(self._floatval_, 'g', 10))
-        except OverflowError:
-            raise
-
-        if len(res) > 3 and (res[-3] == '+' or res[-3] == '-') and res[-2] == '0':
-            cut = len(res) - 2
-            assert cut >= 0
-            res = res[:cut] + res[-1]
-        return res
-
-    def ToNumber(self):
-        return self._floatval_
-
-    def ToInteger(self):
-        if isnan(self._floatval_):
-            return 0
-
-        if self._floatval_ == 0 or isinf(self._floatval_):
-            return int(self._floatval_)
-
-        return intmask(int(self._floatval_))
-
 class W__Object(W_BasicObject):
     pass
 
 
 class W_ModuleObject(W__Object):
-    _class_ = 'global'
+    pass
 
 
 class W_BasicFunction(W_BasicObject):
-    _class_ = 'Function'
-    _type_ = 'function'
 
     def Call(self, args=[], this=None, calling_context=None):
         raise NotImplementedError("abstract")
@@ -648,7 +448,8 @@ class W_BasicFunction(W_BasicObject):
                 return True
 
 class W__Function(W_BasicFunction):
-    _immutable_fields_ = ['_type_', '_class_', '_extensible_', '_scope_', '_params_[*]', '_function_']
+    _type_ = 'function'
+    _immutable_fields_ = ['_type_', '_extensible_', '_scope_', '_params_[*]', '_function_']
 
     def __init__(self, function_body, formal_parameter_list=[], scope=None):
         W_BasicFunction.__init__(self)
@@ -668,7 +469,6 @@ class W__Function(W_BasicFunction):
         put_property(self, u'prototype', proto_obj)
 
         put_property(self, u'caller', newnull())
-        put_property(self, u'arguments', newnull())
 
     def _to_string_(self):
         return self._function_.to_string()
@@ -704,56 +504,6 @@ class W__Function(W_BasicFunction):
     def scope(self):
         return self._scope_
 
-
-# 10.6
-class W_Arguments(W__Object):
-    _class_ = 'Arguments'
-
-    @jit.unroll_safe
-    def __init__(self, func, names, args, env):
-        from obin.objects.object_space import _w
-        W__Object.__init__(self)
-        _len = len(args)
-        put_property(self, u'length', _w(_len))
-
-        from obin.objects.object_space import object_space, newundefined
-        _map = object_space.new_obj()
-        mapped_names = new_map()
-        jit.promote(_len)
-        indx = _len - 1
-        while indx >= 0:
-            val = args[indx]
-            put_property(self, unicode(str(indx)), val)
-            if indx < len(names):
-                name = names[indx]
-                if not mapped_names.contains(name):
-                    mapped_names = mapped_names.add(name)
-                    _map.put(unicode(str(indx)), newundefined())
-            indx = indx - 1
-
-        if not mapped_names.empty():
-            self._paramenter_map_ = _map
-
-        put_property(self, u'callee', _w(func))
-
-    def to_string(self):
-        return unicode(str(self._paramenter_map_ ))
-def make_arg_getter(name, env):
-    pass
-    #code = u'return %s;' % (name)
-
-
-def make_arg_setter(name, env):
-    pass
-    #param = u'%s_arg' % (name)
-    #code = u'%s = %s;' % (name, param)
-
-# 15.8
-class W_Math(W__Object):
-    _class_ = 'Math'
-
-
-
 class W_List(W_Root):
     def __init__(self, values):
         assert isinstance(values, list)
@@ -781,8 +531,8 @@ class W_Iterator(W_Root):
         return u'<Iterator>'
 
 
-class W__Array(W_BasicObject):
-    _class_ = 'Array'
+class W_Array(W_BasicObject):
+    _type_ = 'Array'
 
     def __init__(self):
         W_BasicObject.__init__(self)

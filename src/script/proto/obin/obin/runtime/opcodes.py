@@ -679,9 +679,9 @@ class UNPACK(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
-        from obin.objects.object import W_List, W__Array
+        from obin.objects.object import W_List, W_Array
         arr = ctx.stack_pop()  # [:] # pop_n returns a non-resizable list
-        assert isinstance(arr, W__Array)
+        assert isinstance(arr, W_Array)
         ctx.stack_append(W_List(arr.values()))
 
 class LOAD_LIST(Opcode):
