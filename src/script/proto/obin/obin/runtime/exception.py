@@ -73,14 +73,19 @@ class JsReferenceError(JsException):
     def _msg(self):
         return u'ReferenceError: ' + self.identifier + u' is not defined'
 
-
 class JsRangeError(JsException):
     def __init__(self, value=None):
         self.value = value
 
     def _msg(self):
-        return u'RangeError: %s'  # % (self.value, )
+        return u'RangeError: %s' % (self.value, )
 
+class JsKeyError(JsRangeError):
+    def __init__(self, value=None):
+        self.value = value
+
+    def _msg(self):
+        return u'KeyError: %s' % (self.value, )
 
 class JsSyntaxError(JsException):
     def __init__(self, msg=u'', src=u'', line=0, column=0):

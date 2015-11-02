@@ -5,7 +5,7 @@ from rpython.rlib.objectmodel import enforceargs
 from rpython.rlib import jit, debug
 
 from obin.objects.object_map import new_map
-from obin.runtime.exception import JsTypeError, JsRangeError
+from obin.runtime.exception import *
 from obin.utils import tb
 import api
 
@@ -199,6 +199,20 @@ class W_Float(W_Primitive):
         from object_space import object_space
         return api.at(object_space.traits.Float, k)
 
+class LinearSequenceIterator(W_Primitive):
+    def __init__(self, source, length):
+        self.index = 0
+        self.source = source
+        self.length = length
+
+    def _next_(self):
+        from obin.objects.object_space import newundefined
+        if self.index >= self.length:
+            return newundefined()
+
+        return api.at(self.source, self.index)
+
+
 class W_String(W_Primitive):
     _type_ = 'String'
     _immutable_fields_ = ['value']
@@ -206,20 +220,23 @@ class W_String(W_Primitive):
     def __init__(self, value):
         assert value is not None and isinstance(value, unicode)
         super(W_String, self).__init__()
-        self.__value = value
-        self.length = len(self.__value)
+        self.__items = value
+        self.__length = len(self.__items)
 
     def __str__(self):
-        return u'W_String("%s")' % (self.__value)
+        return u'W_String("%s")' % (self.__items)
 
     def _tostring_(self):
-        return self.__value
+        return str(self.__items)
+
+    def _iterator_(self):
+        return LinearSequenceIterator(self, self.__length)
 
     def _tobool_(self):
-        return bool(self.__value)
+        return bool(self.__items)
 
     def _length_(self):
-        return self.length
+        return self.__length
 
     def _at_(self, k):
         from object_space import object_space, isint
@@ -231,13 +248,159 @@ class W_String(W_Primitive):
     def _char_at(self, index):
         from object_space import newundefined, newchar
         try:
-            ch = self.__value[index]
+            ch = self.__items[index]
         except KeyError:
             return newundefined()
 
         return newchar(ch)
 
-class W_Cell(W_Root):
+class W_Array(W_Primitive):
+    _type_ = 'Array'
+    _immutable_fields_ = ['__length']
+
+    def __init__(self, items=None):
+        super(W_Array, self).__init__()
+
+        if not items:
+            items = []
+        assert isinstance(items, list)
+        self._items = items
+        self._length = len(self._items)
+
+    def __str__(self):
+        return u'W_Array("%s")' % (self._items)
+
+    def _put_(self, k, v):
+        from object_space import object_space, isint
+        if not isint(k):
+            raise JsKeyError("Integer key expected", k)
+        i = k.value()
+        try:
+            self._items[i] = v
+        except:
+            raise JsKeyError("Invalid index ", k)
+
+    def _at_(self, k):
+        from object_space import object_space, isint
+        if isint(k):
+            return self._at_index_(k.value())
+        else:
+            return api.at(object_space.traits.Array, k)
+
+    def __str__(self):
+        return u'W_Array("%s")' % (self._items)
+
+    def _tostring_(self):
+        return str(self._items)
+
+    def _iterator_(self):
+        return LinearSequenceIterator(self, self._length)
+
+    def _tobool_(self):
+        return bool(self._items)
+
+    def _length_(self):
+        return self._length
+
+    def at(self, i):
+        return self._items[i]
+
+    def _at_index_(self, index):
+        from object_space import newundefined
+        try:
+            el = self._items[index]
+        except KeyError:
+            return newundefined()
+
+        return el
+
+class W_Tuple(W_Array):
+    _type_ = 'Tuple'
+    _immutable_fields_ = ['__length']
+
+    def __init__(self, items):
+        super(W_Tuple, self).__init__()
+        assert isinstance(items, list)
+        self._items = tuple(items)
+        self._length = len(self._items)
+
+    def __str__(self):
+        return u'W_Tuple("%s")' % str(self._items)
+
+    def _put(self, k, v):
+        raise NotImplementedError()
+
+    def _at_(self, k):
+        from object_space import object_space, isint
+        if isint(k):
+            return self._at_index_(k.value())
+        else:
+            return api.at(object_space.traits.Tuple, k)
+
+class W_Vector(W_Array):
+    _type_ = 'Vector'
+    def __init__(self, items=None):
+        super(W_Vector, self).__init__()
+        if not items:
+            items = []
+        assert isinstance(items, list)
+        self._items = items
+
+    def __str__(self):
+        return u'W_Vector("%s")' % str(self._items)
+
+    def _put_(self, k, v):
+        from object_space import object_space, isint
+        if not isint(k):
+            raise JsKeyError(k)
+        i = k.value()
+        try:
+            self._items[i] = v
+        except:
+            raise JsKeyError(k)
+
+    def _at_(self, k):
+        from object_space import object_space, isint
+        if isint(k):
+            return self._at_index_(k.value())
+        else:
+            return api.at(object_space.traitsVector, k)
+
+    def _iterator_(self):
+        return LinearSequenceIterator(self, self._length)
+
+    def _tobool_(self):
+        return bool(self._items)
+
+    def _length_(self):
+        return self.length()
+
+    def at(self, i):
+        return self._items[i]
+
+    def length(self):
+        return len(self._items)
+
+    def _at_index_(self, index):
+        from object_space import newundefined
+        try:
+            el = self._items[index]
+        except KeyError:
+            return newundefined()
+
+        return el
+
+    def append(self, v):
+        self._items.append(v)
+
+    def pop(self, v):
+        self._items.append(v)
+
+    def _delete_(self, key):
+        del self._items[key]
+
+
+class W_Object(W_Root):
     _type_ = 'object'
     _extensible_ = True
     _immutable_fields_ = ['_type_']
@@ -371,9 +534,9 @@ class W_Cell(W_Root):
         return self._slots.keys()
 
 
-class W_BasicObject(W_Cell):
+class W_BasicObject(W_Object):
     def __init__(self):
-        W_Cell.__init__(self)
+        W_Object.__init__(self)
         from obin.objects.object_space import newnull
         W_BasicObject.put(self, u'__proto__', newnull())
         self._prototype_ = newnull()
@@ -389,25 +552,6 @@ class W_BasicObject(W_Cell):
         if not isinstance(proto, W_BasicObject):
             raise JsRangeError()
         return proto.get_property(p)
-
-
-
-class Symbol(object):
-    def __init__(self, strval):
-        from obin.objects.object_space import object_space
-        interpreter = object_space.interpreter
-        if interpreter.symbols.contains(strval):
-            self.index = interpreter.symbols.get_index(strval)
-        else:
-            self.index = interpreter.symbols.add(strval, W_String(strval))
-
-    def to_string(self):
-        from obin.objects.object_space import object_space
-        return object_space.interpreter.get_by_index(self.index)
-
-    def __str__(self):
-        return self.to_string()
-
 
 class W__Object(W_BasicObject):
     pass
@@ -530,65 +674,6 @@ class W_Iterator(W_Root):
     def to_string(self):
         return u'<Iterator>'
 
-
-class W_Array(W_BasicObject):
-    _type_ = 'Array'
-
-    def __init__(self):
-        W_BasicObject.__init__(self)
-        self._items = []
-
-    def append(self, item):
-        self._items.append(item)
-
-    def _add_prop(self, name, value):
-        idx = make_array_index(name)
-        if idx != NOT_ARRAY_INDEX:
-            self._add_iprop(idx, value)
-        else:
-            W_BasicObject._add_prop(self, name, value)
-
-    def _add_iprop(self, idx, value):
-        assert isinstance(idx, int) or isinstance(idx, long)
-        #if idx not in self._items:
-
-        self._items[idx] = value
-
-    def _get_prop(self, name):
-        idx = make_array_index(name)
-        if idx != NOT_ARRAY_INDEX:
-            return self._get_iprop(idx)
-        else:
-            return W_BasicObject._get_prop(self, name)
-
-    def _get_iprop(self, idx):
-        assert isinstance(idx, int) or isinstance(idx, long)
-        assert idx >= 0
-        return self._items[idx]
-
-    def _del_prop(self, name):
-        idx = make_array_index(name)
-        if idx != NOT_ARRAY_INDEX:
-            self._del_iprop(idx)
-        else:
-            W_BasicObject._del_prop(self, name)
-
-    def _del_iprop(self, idx):
-        assert isinstance(idx, int)
-        assert idx >= 0
-        try:
-            del self._items[idx]
-        except KeyError:
-            pass
-
-    def values(self):
-        return self._items
-
-    def length(self):
-        return len(self._items)
-
-    def named_properties(self):
-        return range(len(self._items))
 
 
 def put_property(obj, name, value):

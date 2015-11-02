@@ -9,6 +9,12 @@ def tobool(obj):
     return obj._tobool_()
 
 
+def delete(obj, k):
+    from object_space import isundefined
+    assert not isundefined(k)
+    obj._delete_(k)
+
+
 def at(obj, k):
     from object_space import isundefined
     assert not isundefined(k)
