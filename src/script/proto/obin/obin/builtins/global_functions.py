@@ -381,7 +381,7 @@ def js_eval(ctx, routine):
     from obin.runtime.routine import BytecodeRoutine
     from obin.runtime.execution_context import EvalExecutionContext
     from obin.compile.astbuilder import FakeParseError
-    from obin.runtime.exception import JsSyntaxError
+    from obin.runtime.exception import ObinSyntaxError
 
     args = ctx.argv()
     x = get_arg(args, 0)
@@ -397,16 +397,16 @@ def js_eval(ctx, routine):
         #error_lineno = e.source_pos.lineno
         #error_pos = e.source_pos.columnno
         #raise JsSyntaxError(msg = unicode(error), src = unicode(src), line = error_lineno, column = error_pos)
-        raise JsSyntaxError()
+        raise ObinSyntaxError()
     except FakeParseError, e:
         #raise JsSyntaxError(msg = unicode(e.msg), src = unicode(src))
-        raise JsSyntaxError()
+        raise ObinSyntaxError()
     except LexerError, e:
         #error_lineno = e.source_pos.lineno
         #error_pos = e.source_pos.columnno
         error_msg = u'LexerError'
         #raise JsSyntaxError(msg = error_msg, src = unicode(src), line = error_lineno, column = error_pos)
-        raise JsSyntaxError(msg=error_msg)
+        raise ObinSyntaxError(msg=error_msg)
 
     symbol_map = ast.symbol_map
     code = ast_to_bytecode(ast, symbol_map)

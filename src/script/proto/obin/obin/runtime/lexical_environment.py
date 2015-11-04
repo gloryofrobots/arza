@@ -43,8 +43,8 @@ class DeclarativeEnvironmentRecord(EnvironmentRecord):
     def get_binding_value(self, identifier):
         assert identifier is not None and isinstance(identifier, unicode)
         if not self.has_binding(identifier):
-                from obin.runtime.exception import JsReferenceError
-                raise JsReferenceError(identifier)
+                from obin.runtime.exception import ObinReferenceError
+                raise ObinReferenceError(identifier)
 
         return self._get_binding(identifier)
 
@@ -77,8 +77,8 @@ class ObjectEnvironmentRecord(EnvironmentRecord):
         bindings = self.binding_object
         value = bindings.has_property(n)
         if value is False:
-            from obin.runtime.exception import JsReferenceError
-            raise JsReferenceError(self.__class__)
+            from obin.runtime.exception import ObinReferenceError
+            raise ObinReferenceError(self.__class__)
 
         return bindings.get(n)
 

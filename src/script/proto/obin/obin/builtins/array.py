@@ -58,7 +58,7 @@ def slice(ctx, routine):
     from_index = get_arg(args, 0).ToUInt32()
     to_index = get_arg(args, 1).ToUInt32()
     from obin.objects.object_space import object_space
-    n = object_space.new_array(length=_w(to_index-from_index))
+    n = object_space.newvector(length=_w(to_index-from_index))
     from obin.objects.object import put_property
     index = 0
     for item in xrange(from_index, to_index):
@@ -311,8 +311,8 @@ def sort_compare(obj, j, k, comparefn=newundefined()):
 
     if not isundefined(comparefn):
         if not comparefn.is_callable():
-            from obin.runtime.exception import JsTypeError
-            raise JsTypeError(u'')
+            from obin.runtime.exception import ObinTypeError
+            raise ObinTypeError(u'')
 
         from obin.objects.object import W_BasicFunction
         assert isinstance(comparefn, W_BasicFunction)

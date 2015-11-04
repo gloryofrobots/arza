@@ -2,9 +2,9 @@ from rpython.rlib.rarithmetic import intmask
 from rpython.rlib import jit
 
 from obin.objects.object_space import _w, isint
-from obin.runtime.exception import JsTypeError
-from obin.runtime.baseop import plus, sub, AbstractEC, StrictEC, increment, decrement, mult, division, uminus, mod
-from obin.objects.object import put_property
+from obin.runtime.exception import ObinTypeError
+from obin.runtime.baseop import plus, sub, increment, decrement, mult, division, uminus, mod
+from obin.objects.object import api
 from obin.utils import tb
 
 class Opcode(object):
@@ -47,8 +47,8 @@ class BaseBinaryBitwiseOp(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
-        s5 = ctx.stack_pop().ToInt32()
-        s6 = ctx.stack_pop().ToInt32()
+        s5 = ctx.stack_pop().value()()
+        s6 = ctx.stack_pop().value()()
         ctx.stack_append(self.operation(ctx, s5, s6))
 
     def operation(self, ctx, op1, op2):
@@ -79,7 +79,7 @@ class LOAD_INTCONSTANT(Opcode):
         ctx.stack_append(self.w_intvalue)
 
     def __str__(self):
-        return 'LOAD_INTCONSTANT %s' % (self.w_intvalue.ToInteger(),)
+        return 'LOAD_INTCONSTANT %s' % (self.w_intvalue.value(),)
 
 
 class LOAD_BOOLCONSTANT(Opcode):
@@ -109,7 +109,7 @@ class LOAD_FLOATCONSTANT(Opcode):
         ctx.stack_append(self.w_floatvalue)
 
     def __str__(self):
-        return 'LOAD_FLOATCONSTANT %s' % (self.w_floatvalue.ToNumber(),)
+        return 'LOAD_FLOATCONSTANT %s' % (self.w_floatvalue.value(),)
 
 
 class LOAD_STRINGCONSTANT(Opcode):
@@ -124,7 +124,7 @@ class LOAD_STRINGCONSTANT(Opcode):
         ctx.stack_append(w_strval)
 
     def __str__(self):
-        return u'LOAD_STRINGCONSTANT "%s"' % (self.w_strval.to_string())
+        return u'LOAD_STRINGCONSTANT "%s"' % (api.tostring(self.w_strval))
 
 
 class LOAD_UNDEFINED(Opcode):
@@ -158,14 +158,7 @@ class LOAD_VARIABLE(Opcode):
         return 'LOAD_VARIABLE "%s" (%d)' % (self.identifier, self.index)
 
 
-class LOAD_THIS(Opcode):
-    # 11.1.1
-    def eval(self, ctx):
-        this = ctx.this_binding()
-        ctx.stack_append(this)
-
-
-class LOAD_ARRAY(Opcode):
+class LOAD_VECTOR(Opcode):
     _immutable_fields_ = ['counter']
 
     def __init__(self, counter):
@@ -173,8 +166,8 @@ class LOAD_ARRAY(Opcode):
 
     @jit.unroll_safe
     def eval(self, ctx):
-        from obin.objects.object_space import object_space
-        array = object_space.new_array()
+        from obin.objects.object_space import newvector
+        array = newvector()
 
         list_w = ctx.stack_pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
         for el in list_w:
@@ -185,7 +178,7 @@ class LOAD_ARRAY(Opcode):
         return -1 * self.counter + 1
 
     def __str__(self):
-        return 'LOAD_ARRAY %d' % (self.counter,)
+        return 'LOAD_VECTOR %d' % (self.counter,)
 
 
 
@@ -197,12 +190,12 @@ class LOAD_FUNCTION(Opcode):
 
     # 13.2 Creating Function Objects
     def eval(self, ctx):
-        from obin.objects.object_space import object_space
+        from obin.objects.object_space import object_space, newfunc
 
         func = self.funcobj
         scope = ctx.lexical_environment()
         params = func.params()
-        w_func = object_space.new_func(func, formal_parameter_list=params, scope=scope)
+        w_func = newfunc(func, formal_parameter_list=params, scope=scope)
 
         ctx.stack_append(w_func)
 
@@ -219,12 +212,12 @@ class LOAD_OBJECT(Opcode):
     @jit.unroll_safe
     def eval(self, ctx):
         from obin.objects.object_space import object_space
-        w_obj = object_space.new_obj()
+        w_obj = object_space.newobject()
         for _ in range(self.counter):
             top = ctx.stack_pop()
-            name = top.to_string()
+            name = api.tostring(top)
             w_elem = ctx.stack_pop()
-            put_property(w_obj, name, w_elem)
+            api.put(w_obj, name, w_elem)
         ctx.stack_append(w_obj)
 
     #def __repr__(self):
@@ -237,7 +230,7 @@ class LOAD_MEMBER(Opcode):
     def eval(self, ctx):
         w_obj = ctx.stack_pop().ToObject()
         w_name = ctx.stack_pop()
-        value = w_obj.get(w_name)
+        value = api.at(w_obj, w_name)
 
         ctx.stack_append(value)
 
@@ -265,13 +258,11 @@ class SUB(BaseBinaryOperation):
 
 class IN(BaseBinaryOperation):
     def operation(self, ctx, left, right):
-        from obin.objects.object import W_BasicObject
-        from obin.objects.object_space import newbool
-        if not isinstance(right, W_BasicObject):
-            raise JsTypeError(u"TypeError: fffuuu!")  # + repr(right)
-        name = left.to_string()
-        has_name = right.has_property(name)
-        return newbool(has_name)
+        from obin.objects.object_space import iscell
+        if not iscell(right):
+            raise ObinTypeError(u"TypeError: invalid object for in operator")  # + repr(right)
+            
+        return api.has(right, left)
 
 
 # 11.4.3
@@ -280,36 +271,6 @@ def type_of(var):
     if var_type == 'null':
         return u'object'
     return unicode(var_type)
-
-
-class TYPEOF(BaseUnaryOperation):
-    def eval(self, ctx):
-        var = ctx.stack_pop()
-        var_type = type_of(var)
-        ctx.stack_append(_w(var_type))
-
-
-class TYPEOF_VARIABLE(Opcode):
-    _immutable_fields_ = ['index', 'name']
-
-    def __init__(self, index, name):
-        self.index = index
-        self.name = name
-
-    def eval(self, ctx):
-        from obin.objects.object_space import newstring
-        ref = ctx.get_ref(self.name, self.index)
-        if ref.is_unresolvable_reference():
-            var_type = u'undefined'
-        else:
-            var = ref.get_value()
-            var_type = type_of(var)
-
-        w_string = newstring(var_type)
-        ctx.stack_append(w_string)
-
-    def __str__(self):
-        return 'TYPEOF_VARIABLE %s' % (self.name)
 
 
 class ADD(BaseBinaryOperation):
@@ -337,7 +298,7 @@ class BITOR(BaseBinaryBitwiseOp):
 
 class BITNOT(BaseUnaryOperation):
     def eval(self, ctx):
-        op = ctx.stack_pop().ToInt32()
+        op = ctx.stack_pop().value()()
         from obin.objects.object_space import newint
         ctx.stack_append(newint(~op))
 
@@ -347,8 +308,8 @@ class URSH(BaseBinaryBitwiseOp):
         rval = ctx.stack_pop()
         lval = ctx.stack_pop()
 
-        rnum = rval.ToUInt32()
-        lnum = lval.ToUInt32()
+        rnum = rval.value()
+        lnum = lval.value()
 
         #from rpython.rlib.rarithmetic import ovfcheck_float_to_int
 
@@ -370,8 +331,8 @@ class RSH(BaseBinaryBitwiseOp):
         rval = ctx.stack_pop()
         lval = ctx.stack_pop()
 
-        rnum = rval.ToUInt32()
-        lnum = lval.ToInt32()
+        rnum = rval.value()
+        lnum = lval.value()()
         shift_count = rnum & 0x1F
         res = lnum >> shift_count
 
@@ -384,8 +345,8 @@ class LSH(BaseBinaryBitwiseOp):
         rval = ctx.stack_pop()
         lval = ctx.stack_pop()
 
-        lnum = lval.ToInt32()
-        rnum = rval.ToUInt32()
+        lnum = lval.value()()
+        rnum = rval.value()
 
         shift_count = intmask(rnum & 0x1F)
         res = int32(lnum << shift_count)
@@ -510,12 +471,9 @@ class STORE_MEMBER(Opcode):
 
     def eval(self, ctx):
         left = ctx.stack_pop()
-        w_name = ctx.stack_pop()
-
+        name = ctx.stack_pop()
         value = ctx.stack_pop()
-
-        l_obj = left.ToObject()
-        l_obj.put(w_name, value)
+        api.put(left, name, value)
 
         ctx.stack_append(value)
 
@@ -647,42 +605,38 @@ class POP(Opcode):
 
 
 def common_call(ctx, funcobj, args, this, identifyer):
-    if not funcobj.is_callable():
-        err = u"%s is not a callable (%s)" % (funcobj.to_string(), identifyer.to_string())
-        raise JsTypeError(err)
+    from obin.objects.object_space import isvector, isfunction
+    assert isvector(args)
+    assert isfunction(funcobj)
 
-    from obin.objects.object import W_List, W_BasicFunction
-    assert isinstance(args, W_List)
-    assert isinstance(funcobj, W_BasicFunction)
-
-    argv = args.to_list()
+    argv = args.values()
     funcobj.Call(args=argv, this=this, calling_context=ctx)
 
 
 def load_arguments(ctx, counter):
-    from obin.objects.object import W_List
+    from obin.objects.object_space import newvector
 
     if counter == 0:
-        return W_List([])
+        return newvector([])
     if counter == 1:
         return ctx.stack_pop()
 
     lists = ctx.stack_pop_n(counter)  # [:] # pop_n returns a non-resizable list
     values = []
     for l in lists:
-        values += l.values
+        values += l.values()
 
-    return W_List(values)
+    return newvector(values)
 
 
-class UNPACK(Opcode):
-    _stack_change = 0
-
-    def eval(self, ctx):
-        from obin.objects.object import W_List, W_Array
-        arr = ctx.stack_pop()  # [:] # pop_n returns a non-resizable list
-        assert isinstance(arr, W_Array)
-        ctx.stack_append(W_List(arr.values()))
+# class UNPACK(Opcode):
+#     _stack_change = 0
+#
+#     def eval(self, ctx):
+#         from obin.objects.object import W_List, W_Array
+#         arr = ctx.stack_pop()
+#         assert isinstance(arr, W_Array)
+#         ctx.stack_append(W_List(arr.values()))
 
 class LOAD_LIST(Opcode):
     _immutable_fields_ = ['counter']
@@ -691,9 +645,10 @@ class LOAD_LIST(Opcode):
         self.counter = counter
 
     def eval(self, ctx):
-        from obin.objects.object import W_List
+        # from obin.objects.object import W_List
         list_w = ctx.stack_pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
-        ctx.stack_append(W_List(list_w))
+        from obin.objects.object_space import newvector
+        ctx.stack_append(newvector(list_w))
 
     def stack_change(self):
         return -1 * self.counter + 1
@@ -755,7 +710,7 @@ class THROW(Opcode):
 
     def eval(self, ctx):
         val = ctx.stack_pop()
-        from obin.runtime.exception import JsThrowException
+        from obin.runtime.exception import ObinThrowException
         ctx.routine().terminate(val)
 
 class TRYCATCHBLOCK(Opcode):
@@ -811,39 +766,6 @@ class TRYCATCHBLOCK(Opcode):
         ctx.routine().fiber.call_routine(tryroutine, continuation, parentroutine)
 
 
-def commonnew(ctx, obj, args):
-    if not obj.is_callable():
-        msg = u'%s is not a constructor' % (obj.to_string())
-        raise JsTypeError(msg)
-
-    tb("commonnew")
-    from obin.objects.object import W_BasicFunction
-    assert isinstance(obj, W_BasicFunction)
-    res = obj.Construct(args=args)
-    return res
-
-
-class NEW(Opcode):
-    _stack_change = 0
-
-    def eval(self, ctx):
-        from obin.objects.object import W_List
-
-        y = ctx.stack_pop()
-        x = ctx.stack_pop()
-        assert isinstance(y, W_List)
-        args = y.to_list()
-        res = commonnew(ctx, x, args)
-        ctx.stack_append(res)
-
-
-class NEW_NO_ARGS(Opcode):
-    _stack_change = 0
-
-    def eval(self, ctx):
-        x = ctx.stack_pop()
-        res = commonnew(ctx, x, [])
-        ctx.stack_append(res)
 
 # ------------ iterator support ----------------
 
@@ -952,19 +874,19 @@ class DELETE(Opcode):
 
     def eval(self, ctx):
         from obin.runtime.reference import Reference
-        from obin.runtime.exception import JsSyntaxError
+        from obin.runtime.exception import ObinSyntaxError
 
         # 11.4.1
         ref = ctx.get_ref(self.name, self.index)
         if not isinstance(ref, Reference):
             res = True
         if ref.is_unresolvable_reference():
-            raise JsSyntaxError()
+            raise ObinSyntaxError()
         if ref.is_property_reference():
             obj = ref.get_base().ToObject()
             res = obj.delete(ref.get_referenced_name())
         else:
-            raise JsSyntaxError("Can`t delete variable binding")
+            raise ObinSyntaxError("Can`t delete variable binding")
 
         if res is True:
             ctx.forget_ref(self.name, self.index)
@@ -979,17 +901,6 @@ class DELETE_MEMBER(Opcode):
         what = ctx.stack_pop().to_string()
         obj = ctx.stack_pop().ToObject()
         res = obj.delete(what)
-        ctx.stack_append(_w(res))
-
-
-class INSTANCEOF(Opcode):
-    def eval(self, ctx):
-        rval = ctx.stack_pop()
-        lval = ctx.stack_pop()
-        from obin.objects.object import W_BasicObject
-        if not isinstance(rval, W_BasicObject):
-            raise JsTypeError(u'TypeError INSTANCEOF')
-        res = rval.has_instance(lval)
         ctx.stack_append(_w(res))
 
 # different opcode mappings, to make annotator happy

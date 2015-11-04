@@ -1,8 +1,7 @@
 from rpython.rlib.rfloat import NAN, INFINITY
 from obin.objects.object_space import _w
 from obin.runtime.routine import complete_native_routine
-from obin.runtime.exception import JsRangeError, JsTypeError
-from obin.objects.object import W_Number
+from obin.runtime.exception import ObinRangeError, ObinTypeError
 
 
 def setup(global_object):
@@ -70,12 +69,12 @@ def to_string(ctx, routine):
     if len(args) > 0:
         radix = args[0].ToInteger()
         if radix < 2 or radix > 36:
-            raise JsRangeError
+            raise ObinRangeError
 
     if isinstance(this, W_Number):
         num = this
     else:
-        raise JsTypeError(u'')
+        raise ObinTypeError(u'')
 
     # TODO radix, see 15.7.4.2
     return num.to_string()
@@ -88,6 +87,6 @@ def value_of(ctx, routine):
     if isinstance(this, W_Number):
         num = this
     else:
-        raise JsTypeError(u'')
+        raise ObinTypeError(u'')
 
     return num.ToNumber()

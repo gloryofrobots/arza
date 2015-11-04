@@ -1,34 +1,4 @@
-class JsBaseExcept(Exception):
-    pass
-
-
-#XXX Just an idea for now
-class JsRuntimeExcept(Exception):
-    def __init__(self, pos, message, exception_object):
-        self.pos = pos
-        self.message = message
-        self.exception_object = exception_object  # JS Exception Object
-
-
-class ReturnException(Exception):
-    def __init__(self, value):
-        self.value = value
-
-
-class ExecutionReturned(JsBaseExcept):
-    def __init__(self, type='normal', value=None, identifier=None):
-        self.type = type
-        self.value = value
-        self.identifier = identifier
-
-
-class ThrowException(JsBaseExcept):
-    def __init__(self, exception):
-        self.exception = exception
-        self.args = [exception]
-
-
-class JsException(Exception):
+class ObinException(Exception):
     message = u'Exception'
 
     def __init__(self, message=None):
@@ -44,7 +14,7 @@ class JsException(Exception):
         return _w(self._msg())
 
 
-class JsThrowException(JsException):
+class ObinThrowException(ObinException):
     def __init__(self, value):
         from obin.objects.object import W_Root
         assert isinstance(value, W_Root)
@@ -55,39 +25,42 @@ class JsThrowException(JsException):
         return s
 
 
-class JsTypeError(JsException):
+class ObinTypeError(ObinException):
     def __init__(self, value):
         from obin.utils import tb
         tb()
-        #assert isinstance(value, unicode)
+        # assert isinstance(value, unicode)
         self.value = value
 
     def _msg(self):
         return u'TypeError : ' + self.value  # % (self.value, )
 
 
-class JsReferenceError(JsException):
+class ObinReferenceError(ObinException):
     def __init__(self, identifier):
         self.identifier = identifier
 
     def _msg(self):
         return u'ReferenceError: ' + self.identifier + u' is not defined'
 
-class JsRangeError(JsException):
+
+class ObinRangeError(ObinException):
     def __init__(self, value=None):
         self.value = value
 
     def _msg(self):
-        return u'RangeError: %s' % (self.value, )
+        return u'RangeError: %s' % (self.value,)
 
-class JsKeyError(JsRangeError):
+
+class ObinKeyError(ObinRangeError):
     def __init__(self, value=None):
         self.value = value
 
     def _msg(self):
-        return u'KeyError: %s' % (self.value, )
+        return u'KeyError: %s' % (self.value,)
 
-class JsSyntaxError(JsException):
+
+class ObinSyntaxError(ObinException):
     def __init__(self, msg=u'', src=u'', line=0, column=0):
         self.error_msg = msg
         self.src = src
@@ -95,7 +68,7 @@ class JsSyntaxError(JsException):
         self.column = column
 
     def _msg(self):
-        #error_src = self.src #self.src.encode('unicode_escape')
+        # error_src = self.src #self.src.encode('unicode_escape')
         if self.error_msg:
             return u'SyntaxError: "%s" in "%s" at line:%d, column:%d'  # %(self.error_msg, error_src, self.line, self.column)
         else:

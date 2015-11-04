@@ -17,7 +17,7 @@ from rpython.rlib.parsing.parsing import ParseError
 # print obin.__path__
 from obin.runtime.interpreter import Interpreter, load_file
 from obin.objects.object_space import _w
-from obin.runtime.exception import JsException
+from obin.runtime.exception import ObinException
 
 EXCLUSIONLIST = ['shell.js', 'browser.js']
 SKIP = [
@@ -298,7 +298,7 @@ class JSTestFile(pytest.File):
             results = interp.get_results(str(self.fspath))
         except ParseError, e:
             raise Failed(msg=e.nice_error_message(filename=str(self.fspath)))  # excinfo=None)
-        except JsException, e:
+        except ObinException, e:
             raise Failed(msg="Javascript Error: " + str(e))  # excinfo=py.code.ExceptionInfo())
 
         for test_result in results:

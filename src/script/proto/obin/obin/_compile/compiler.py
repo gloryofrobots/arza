@@ -376,7 +376,7 @@ class Compiler(object):
         for c in items:
             self._compile(code, c)
 
-        code.emit("LOAD_ARRAY", len(items))
+        code.emit("LOAD_VECTOR", len(items))
 
     def _compile_BREAK(self, code, node):
         code.emit('LOAD_UNDEFINED')
@@ -518,7 +518,7 @@ class Compiler(object):
                     normal_args_count = 0
                     length += 1
                 self._compile(code, arg.first())
-                code.emit("UNPACK")
+                # code.emit("UNPACK")
                 length += 1
             else:
                 self._compile(code, arg)

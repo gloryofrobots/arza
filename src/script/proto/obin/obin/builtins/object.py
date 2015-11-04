@@ -14,7 +14,7 @@ def clone(ctx, routine):
 def create(ctx, routine):
     from obin.objects.object_space import object_space
     this, args = routine.args()
-    obj = object_space.new_obj()
+    obj = object_space.newobject()
     object_space.assign_proto(obj, this)
     return obj
 

@@ -15,15 +15,14 @@ class InterpreterConfig(object):
 class Interpreter(object):
     """Creates a js interpreter"""
     def __init__(self, config={}):
-        from obin.objects.object import W_ModuleObject
-        from obin.objects.object_space import object_space
+        from obin.objects.object_space import object_space, newobject
         import obin.builtins.interpreter
         from obin.objects.datastructs import Slots
 
         self.machine = Machine()
 
         self.config = InterpreterConfig(config)
-        self.global_object = W_ModuleObject()
+        self.global_object = newobject()
         self.modules = []
 
         self.symbols = Slots()
@@ -31,9 +30,7 @@ class Interpreter(object):
         object_space.interpreter = self
 
         obin.builtins.setup_builtins(self.global_object)
-        obin.builtins.interpreter.setup_builtins(self.global_object)
-
-        object_space.assign_proto(self.global_object)
+        # obin.builtins.interpreter.setup_builtins(self.global_object)
 
     def load_module(self, filename):
 

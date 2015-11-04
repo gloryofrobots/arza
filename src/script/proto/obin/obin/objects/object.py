@@ -9,40 +9,6 @@ from obin.runtime.exception import *
 from obin.utils import tb
 import api
 
-@jit.elidable
-def is_array_index(p):
-    return make_array_index(p) != NOT_ARRAY_INDEX
-
-NOT_ARRAY_INDEX = -1
-
-class Descr(object):
-    def __init__(self, can_put, own, inherited, prop):
-        self.can_put = can_put
-        self.own = own
-        self.inherited = inherited
-        self.prop = prop
-
-@jit.unroll_safe
-def make_array_index(idx):
-    if len(idx) == 0:
-        return -1
-
-    IDX_LIT = '0123456789'
-
-    for c in idx:
-        if c not in IDX_LIT:
-            return NOT_ARRAY_INDEX
-    return int(idx)
-
-
-@jit.elidable
-def sign(i):
-    if i > 0:
-        return 1
-    if i < 0:
-        return -1
-    return 0
-
 class W_Root(object):
     _settled_ = True
     _immutable_fields_ = ['_type_']
@@ -76,13 +42,16 @@ class W_Root(object):
     def _compare_(self, other):
         raise NotImplementedError()
 
+class W_Constant(W_Root):
+    pass
+
 class W_Primitive(W_Root):
     pass
 
-class W_Undefined(W_Primitive):
+class W_Undefined(W_Constant):
     _type_ = 'Undefined'
 
-class W_Nil(W_Primitive):
+class W_Nil(W_Constant):
     _type_ = 'Nil'
 
     def _tostring_(self):
@@ -96,7 +65,8 @@ class W_Nil(W_Primitive):
 
         return api.at(object_space.traits.Nil, k)
 
-class W_True(W_Primitive):
+
+class W_True(W_Constant):
     _type_ = 'True'
     _immutable_fields_ = ['value']
 
@@ -113,7 +83,7 @@ class W_True(W_Primitive):
     def __str__(self):
         return '_True_'
 
-class W_False(W_Primitive):
+class W_False(W_Constant):
     _type_ = 'True'
     _immutable_fields_ = ['value']
 
@@ -262,7 +232,7 @@ class W_String(W_Primitive):
         from object_space import newundefined, newchar
         try:
             ch = self.__items[index]
-        except KeyError:
+        except ObinKeyError:
             return newundefined()
 
         return newchar(ch)
@@ -283,12 +253,12 @@ class W_Vector(W_Cell):
     def _put_(self, k, v):
         from object_space import isint
         if not isint(k):
-            raise JsKeyError(k)
+            raise ObinKeyError(k)
         i = k.value()
         try:
             self._items[i] = v
         except:
-            raise JsKeyError(k)
+            raise ObinKeyError(k)
 
     def _at_(self, k):
         from object_space import object_space, isint
@@ -301,7 +271,7 @@ class W_Vector(W_Cell):
         from object_space import newundefined
         try:
             el = self._items[index]
-        except KeyError:
+        except ObinKeyError:
             return newundefined()
 
         return el
@@ -323,6 +293,9 @@ class W_Vector(W_Cell):
 
     def at(self, i):
         return self._items[i]
+
+    def has(self, i):
+        return i > 0 and i < self.length()
 
     def length(self):
         return len(self._items)
@@ -427,7 +400,7 @@ class W_Object(W_Cell):
 class W_ModuleObject(W_Object):
     pass
 
-class W_Function(W_Object):
+class W_Function(W_Primitive):
     _type_ = 'function'
     _immutable_fields_ = ['_type_', '_extensible_', '_scope_', '_params_[*]', '_function_']
 
@@ -439,12 +412,19 @@ class W_Function(W_Object):
         self._function_ = function_body
         self._scope_ = scope
         self._params_ = formal_parameter_list
-        _len = len(formal_parameter_list)
-        api.put_property(self, u'length', newint(_len))
 
-
-    def _to_string_(self):
+    def _tostring_(self):
         return self._function_.to_string()
+
+    def _tobool_(self):
+        return True
+
+    def _at_(self, k):
+        from object_space import object_space
+        return api.at(object_space.traits.Function, k)
+
+    def __str__(self):
+        return 'Function %s' % self._tostring_()
 
     def code(self):
         return self._function_

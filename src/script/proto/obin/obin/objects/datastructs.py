@@ -3,65 +3,39 @@ from rpython.rlib import jit, debug
 from rpython.rlib.objectmodel import enforceargs
 from obin.objects.object_space  import newundefined
 
-@jit.elidable
-def is_array_index(p):
-    return make_array_index(p) != NOT_ARRAY_INDEX
 
-NOT_ARRAY_INDEX = -1
+# @jit.elidable
+# def sign(i):
+#     if i > 0:
+#         return 1
+#     if i < 0:
+#         return -1
+#     return 0
 
-class Descr(object):
-    def __init__(self, can_put, own, inherited, prop):
-        self.can_put = can_put
-        self.own = own
-        self.inherited = inherited
-        self.prop = prop
-
-
-@jit.unroll_safe
-def make_array_index(idx):
-    if len(idx) == 0:
-        return -1
-
-    IDX_LIT = '0123456789'
-
-    for c in idx:
-        if c not in IDX_LIT:
-            return NOT_ARRAY_INDEX
-    return int(idx)
-
-
-@jit.elidable
-def sign(i):
-    if i > 0:
-        return 1
-    if i < 0:
-        return -1
-    return 0
-
-MASK_32 = (2 ** 32) - 1
-MASK_16 = (2 ** 16) - 1
-
-@enforceargs(int)
-@jit.elidable
-def int32(n):
-    if n & (1 << (32 - 1)):
-        res = n | ~MASK_32
-    else:
-        res = n & MASK_32
-
-    return res
-
-
-@enforceargs(int)
-@jit.elidable
-def uint32(n):
-    return n & MASK_32
-
-
-@enforceargs(int)
-@jit.elidable
-def uint16(n):
-    return n & MASK_16
+# MASK_32 = (2 ** 32) - 1
+# MASK_16 = (2 ** 16) - 1
+#
+# @enforceargs(int)
+# @jit.elidable
+# def int32(n):
+#     if n & (1 << (32 - 1)):
+#         res = n | ~MASK_32
+#     else:
+#         res = n & MASK_32
+#
+#     return res
+#
+#
+# @enforceargs(int)
+# @jit.elidable
+# def uint32(n):
+#     return n & MASK_32
+#
+#
+# @enforceargs(int)
+# @jit.elidable
+# def uint16(n):
+#     return n & MASK_16
 
 
 class Map(object):

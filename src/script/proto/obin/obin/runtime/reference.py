@@ -1,4 +1,4 @@
-from obin.runtime.exception import JsReferenceError
+from obin.runtime.exception import ObinReferenceError
 #from pypy.rlib import jit
 
 
@@ -48,7 +48,7 @@ def get_value(v):
 
     if v.is_unresolvable_reference():
         referenced = v.get_referenced_name()
-        raise JsReferenceError(referenced)
+        raise ObinReferenceError(referenced)
     else:
         base_env = v.base_env
         from obin.runtime.lexical_environment import EnvironmentRecord
@@ -60,11 +60,11 @@ def get_value(v):
 # 8.7.2
 def put_value(v, w):
     if not isinstance(v, Reference):
-        raise JsReferenceError('unresolvable reference')
+        raise ObinReferenceError('unresolvable reference')
 
     if v.is_unresolvable_reference():
         referenced = v.get_referenced_name()
-        raise JsReferenceError(referenced)
+        raise ObinReferenceError(referenced)
     else:
         base_env = v.base_env
         from obin.runtime.lexical_environment import EnvironmentRecord

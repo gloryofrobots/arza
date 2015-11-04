@@ -71,7 +71,6 @@ RULES = [
     ('nil', TT_NIL),
     ('undefined', TT_UNDEFINED),
     # TODO MAYBE DELETE IT
-    ('this', TT_THIS),
     ('raise', TT_RAISE),
     # ('then', TT_THEN),
     # **********
@@ -125,32 +124,6 @@ RULES = [
     ('\<', TT_LT),
     ('\>', TT_GT),
     ('\\\\', TT_BACKSLASH),
-    # ('`', TT_BACKTICK),
-]
-
-RULES2 = [
-    ('\d+',             'NUMBER'),
-    ('fn',     'fn'),
-    ('if',       'if'),
-    ('elif',       'elif'),
-    ('else',     'else'),
-    ('while',    'while'),
-    ('for',      'for'),
-    ('[a-zA-Z_]\w*',    'symbol'),
-    ('\+',              'PLUS'),
-    ('\-',              'MINUS'),
-    ('\*',              'MULTIPLY'),
-    ('\/',              'DIVIDE'),
-    ('\]',              'LEFT_SQUARE'),
-    ('\[',              'RIGHT_SQUARE'),
-    ('\{',              'LEFT_CURLY'),
-    ('\}',              'RIGHT_CURLY'),
-    ('\(',              'LEFT_PAREN'),
-    ('\)',              'RIGHT_PAREN'),
-    ('=',               'EQUALS'),
-    (',',               'COMA'),
-    (':',               'COLON'),
-    ('::',              'CONCAT'),
-    (';',               'SEMI'),
+    ('`', TT_BACKTICK),
 ]
 

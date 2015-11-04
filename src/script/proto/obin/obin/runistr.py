@@ -56,8 +56,8 @@ def unicode_unescape(string):
         pos += 1
         if pos >= size:
             message = u"\\ at end of string"
-            from obin.runtime.exception import JsSyntaxError
-            raise JsSyntaxError(message)
+            from obin.runtime.exception import ObinSyntaxError
+            raise ObinSyntaxError(message)
 
         ch = s[pos]
         pos += 1

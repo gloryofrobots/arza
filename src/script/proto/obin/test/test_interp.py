@@ -236,8 +236,8 @@ def test_array_initializer(capsys):
 
 
 def test_throw(capsys):
-    from obin.runtime.exception import JsThrowException
-    asserte("throw(3);", JsThrowException)
+    from obin.runtime.exception import ObinThrowException
+    asserte("throw(3);", ObinThrowException)
 
 
 def test_group():
@@ -413,8 +413,8 @@ def test_eval(capsys):
 
 
 def test_eval_syntax_error():
-    from obin.runtime.exception import JsSyntaxError
-    asserte("eval('var do =true;');", JsSyntaxError)
+    from obin.runtime.exception import ObinSyntaxError
+    asserte("eval('var do =true;');", ObinSyntaxError)
 
 
 def test_arrayobject():

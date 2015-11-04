@@ -2,26 +2,10 @@ from rpython.rlib.objectmodel import specialize, enforceargs
 from rpython.rlib import jit
 
 
-def isint(w):
-    from obin.objects.object import W_IntNumber
-    return isinstance(w, W_IntNumber)
-
-
-def isstr(w):
-    from obin.objects.object import W_String
-    return isinstance(w, W_String)
-
-
-def isfloat(w):
-    from obin.objects.object import W_FloatNumber
-    return isinstance(w, W_FloatNumber)
-
-
 @enforceargs(int)
 def newint(i):
     from obin.objects.object import W_Integer
     return W_Integer(i)
-
 
 @enforceargs(float)
 def newfloat(f):
@@ -37,7 +21,6 @@ def newchar(c):
 def newstring(s):
     from obin.objects.object import W_String
     return W_String(s)
-
 
 w_True = None
 w_False = None
@@ -66,30 +49,12 @@ w_Null = _makenull()
 jit.promote(w_Null)
 
 
-def isnull(value):
-    return value is w_Null
-
-
 def newnull():
     return w_Null
 
 
-def isundefined(value):
-    return value is w_Undefined
-
-def iscell(value):
-    from object import W_Cell
-    return isinstance(value, W_Cell)
-
-
 def newundefined():
     return w_Undefined
-
-
-def isnull_or_undefined(obj):
-    if isnull(obj) or isundefined(obj):
-        return True
-    return False
 
 @enforceargs(bool)
 def newbool(val):
@@ -101,92 +66,113 @@ def newbool(val):
     return w_False
 
 
+def newfunc(function_body, formal_parameter_list=[], scope=None):
+    from obin.objects.object import W_Function
+    obj = W_Function(function_body, formal_parameter_list, scope)
+    return obj
+
+def newvector(items=None):
+    from obin.objects.object import W_Vector
+    obj = W_Vector(items)
+    return obj
+
+def isundefined(value):
+    return value is w_Undefined
+
+def iscell(value):
+    from object import W_Cell
+    return isinstance(value, W_Cell)
+
+def isobject(value):
+    from object import W_Object
+    return isinstance(value, W_Object)
+
+def isprimitive(value):
+    from object import W_Primitive
+    return isinstance(value, W_Primitive)
+
+def isfunction(value):
+    from object import W_Function
+    return isinstance(value, W_Function)
+
+def isvector(value):
+    from object import W_Vector
+    return isinstance(value, W_Vector)
+
+def isnull(value):
+    return value is w_Null
+
+def isint(w):
+    from obin.objects.object import W_Integer
+    return isinstance(w, W_Integer)
+
+def isstr(w):
+    from obin.objects.object import W_String
+    return isinstance(w, W_String)
+
+def isfloat(w):
+    from obin.objects.object import W_Float
+    return isinstance(w, W_Float)
+
+def isconstant(w):
+    from obin.objects.object import W_Constant
+    return isinstance(w, W_Constant)
+
+def isnull_or_undefined(obj):
+    if isnull(obj) or isundefined(obj):
+        return True
+    return False
+
 class ObjectSpace(object):
+    class Traits(object):
+        pass
 
     def __init__(self):
         self.global_context = None
         self.global_object = None
 
-        self.traits = None
-        self.init_traits()
+        self.traits = ObjectSpace.Traits()
+        from obin.objects.object import W_Object
+        self.traits.Object = W_Object()
         self.interpreter = None
 
     def init_traits(self):
-        class Traits(object):
-            pass
-
-        self.traits = Traits()
         # following traits resemble native types list
-        self.traits.Function = newnull()
-        self.traits.True = newnull()
-        self.traits.False = newnull()
-        self.traits.Nil = newnull()
-        self.traits.Undefined = newnull()
+        self.traits.Function = newobject()
+        self.traits.True = newobject()
+        self.traits.False = newobject()
+        self.traits.Nil = newobject()
+        self.traits.Undefined = newobject()
 
-        self.traits.Char = newnull()
-        self.traits.Integer = newnull()
-        self.traits.Float = newnull()
-        self.traits.Symbol = newnull()
+        self.traits.Char = newobject()
+        self.traits.Integer = newobject()
+        self.traits.Float = newobject()
+        self.traits.Symbol = newobject()
 
-        self.traits.String = newnull()
-        self.traits.Array = newnull()
-        self.traits.List = newnull()
-        self.traits.Vector = newnull()
-        self.traits.Tuple = newnull()
+        self.traits.String = newobject()
+        self.traits.Array = newobject()
+        self.traits.List = newobject()
+        self.traits.Vector = newobject()
+        self.traits.Tuple = newobject()
 
-        self.traits.Object = newnull()
 
     def get_global_environment(self):
         return self.global_context.lexical_environment()
 
-    def assign_proto(self, obj, proto=None):
-        from obin.objects.object import W_BasicFunction, W_String, W_Boolean, W_Number, W_Array
-        if proto is not None:
-            obj._prototype_ = proto
-            return obj
-
-        if isinstance(obj, W_BasicFunction):
-            obj._prototype_ = self.proto_function
-        elif isinstance(obj, W_Boolean):
-            obj._prototype_ = self.proto_boolean
-        elif isinstance(obj, W_Number):
-            obj._prototype_ = self.proto_number
-        elif isinstance(obj, W_String):
-            obj._prototype_ = self.proto_string
-        elif isinstance(obj, W_Array):
-            obj._prototype_ = self.proto_array
-        else:
-            obj._prototype_ = self.proto_object
-        return obj
-
-    def new_obj(self):
-        from obin.objects.object import W__Object
-        obj = W__Object()
-        self.assign_proto(obj)
-        return obj
-
-    def new_func(self, function_body, formal_parameter_list=[], scope=None):
-        from obin.objects.object import W_Function
-        obj = W_Function(function_body, formal_parameter_list, scope)
-        self.assign_proto(obj)
-        return obj
-
-    def new_array(self, length=None):
-        if not length:
-            length = _w(0)
-        from obin.objects.object import W_Array
-        obj = W_Array()
-        self.assign_proto(obj)
-        return obj
-
-def iskindof(obj, _type):
-    raise NotImplementedError()
-
 object_space = ObjectSpace()
+
+def newobject():
+    global object_space
+    from obin.objects.object import W_Object
+    obj = W_Object()
+    obj.isa(object_space.traits.Object)
+    return obj
+
+object_space.init_traits()
 
 @specialize.argtype(0)
 def _w(value):
-    from obin.objects.object import W_Root, put_property
+    from obin.objects.object import W_Root
     if value is None:
         return newnull()
     elif isinstance(value, W_Root):
@@ -205,20 +191,15 @@ def _w(value):
         u_str = unicode(value)
         return newstring(u_str)
     elif isinstance(value, list):
-        a = object_space.new_array()
-        for v in value:
-            a.append(v)
-        return a
+        return newvector(value)
 
     raise TypeError("ffffuuu %s" % (str(type(value)),))
-
 
 
 def w_return(fn):
     def f(*args):
         return _w(fn(*args))
     return f
-
 
 def hide_on_translate(*args):
     default = None
@@ -237,3 +218,4 @@ def hide_on_translate(*args):
     else:
         default = args[0]
         return _wrap
+

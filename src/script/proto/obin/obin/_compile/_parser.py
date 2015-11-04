@@ -472,7 +472,6 @@ def parser_init(parser):
     literal(parser, T.TT_FALSE)
     literal(parser, T.TT_NIL)
     literal(parser, T.TT_UNDEFINED)
-    literal(parser, T.TT_THIS)
 
     symbol(parser, T.TT_ENDSTREAM)
     symbol(parser, T.TT_COLON)

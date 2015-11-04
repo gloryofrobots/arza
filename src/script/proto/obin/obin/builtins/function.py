@@ -1,16 +1,14 @@
 from obin.objects.object_space import _w
 from obin.runtime.routine import complete_native_routine
-from obin.runtime.exception import JsTypeError
+from obin.runtime.exception import ObinTypeError
 from obin.builtins import get_arg
 
 
 @complete_native_routine
 def to_string(ctx, routine):
     this, args = routine.args()
-    from obin.objects.object import W_BasicFunction
-    if not isinstance(this, W_BasicFunction):
-        raise JsTypeError(u'')
-
+    from obin.objects.object_space import isfunction
+    assert isfunction(this)
     return this._to_string_()
 
 
@@ -22,11 +20,11 @@ def empty(ctx, routine):
 
 # 15.3.4.4 Function.prototype.call
 def js_call(ctx, routine):
+    from obin.objects.object_space import isfunction
     func = ctx.this_binding()
     args = ctx.argv()
 
-    if not func.is_callable():
-        raise JsTypeError(u'')
+    assert isfunction(func)
 
     this_arg = get_arg(args, 0)
     arg_list = args[1:]
@@ -52,7 +50,7 @@ def js_apply(ctx, routine):
     from obin.objects.object import W_Array
 
     if not isinstance(arg_array, W_Array):
-        raise JsTypeError(u'W__Array expected')
+        raise ObinTypeError(u'W__Array expected')
 
     n = arg_array.length()
     arg_list = []

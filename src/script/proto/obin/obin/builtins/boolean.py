@@ -1,7 +1,7 @@
 from obin.objects.object_space import _w
 from obin.runtime.routine import complete_native_routine
 from obin.objects.object import W_Boolean
-from obin.runtime.exception import JsTypeError
+from obin.runtime.exception import ObinTypeError
 
 
 def setup(global_object):
@@ -41,7 +41,7 @@ def to_string(ctx, routine):
     if isinstance(this, W_Boolean):
         b = this
     else:
-        raise JsTypeError(u'')
+        raise ObinTypeError(u'')
 
     if b.to_boolean() is True:
         return u'true'
@@ -56,6 +56,6 @@ def value_of(ctx, routine):
     if isinstance(this, W_Boolean):
         b = this
     else:
-        raise JsTypeError(u'')
+        raise ObinTypeError(u'')
 
     return b

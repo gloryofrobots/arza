@@ -4,7 +4,7 @@ from rpython.rlib.rfloat import NAN
 from rpython.rlib.rstring import UnicodeBuilder
 
 from obin.objects.object import W_String
-from obin.runtime.exception import JsTypeError
+from obin.runtime.exception import ObinTypeError
 from obin.builtins import get_arg
 
 
@@ -90,7 +90,7 @@ def to_string(ctx, routine):
     elif isinstance(this, W_StringObject):
         s = this.PrimitiveValue()
     else:
-        raise JsTypeError(u'')
+        raise ObinTypeError(u'')
 
     return s.to_string()
 
@@ -104,7 +104,7 @@ def value_of(ctx, routine):
     elif isinstance(this, W_StringObject):
         s = this.PrimitiveValue()
     else:
-        raise JsTypeError(u'')
+        raise ObinTypeError(u'')
 
     assert isinstance(s, W_String)
     return s

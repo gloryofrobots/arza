@@ -2,7 +2,7 @@
 #from pypy.rlib.objectmodel import we_are_translated
 from rpython.rlib import jit
 
-from obin.runtime.exception import JsThrowException
+from obin.runtime.exception import ObinThrowException
 from obin.runtime.opcodes import opcodes, LABEL, BaseJump
 from obin.objects.object import W_String
 
@@ -111,14 +111,14 @@ class Code(object):
 
     def emit_break(self):
         if not self.endlooplabel:
-            raise JsThrowException(W_String(u"Break outside loop"))
+            raise ObinThrowException(W_String(u"Break outside loop"))
         if self.pop_after_break[-1] is True:
             self.emit('POP')
         self.emit('JUMP', self.endlooplabel[-1])
 
     def emit_continue(self):
         if not self.startlooplabel:
-            raise JsThrowException(W_String(u"Continue outside loop"))
+            raise ObinThrowException(W_String(u"Continue outside loop"))
         self.emit('JUMP', self.updatelooplabel[-1])
 
     def continue_at_label(self, label):

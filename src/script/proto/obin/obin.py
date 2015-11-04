@@ -8,7 +8,7 @@ from rpython.rlib.objectmodel import enforceargs
 from rpython.rlib.parsing.parsing import ParseError
 from rpython.rlib.parsing.deterministic import LexerError
 
-from obin.runtime.exception import JsException
+from obin.runtime.exception import ObinException
 
 
 def main(argv):
@@ -71,7 +71,7 @@ def repl(interpreter):
         except LexerError as e:
             printlexererror(filename, e, line)
             continue
-        except JsException as e:
+        except ObinException as e:
             printerrormessage(filename, e._msg())
             continue
 

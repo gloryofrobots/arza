@@ -102,26 +102,7 @@ class ExecutionContext(object):
         func_declarations = code.functions()
         for fn in func_declarations:
             fo = None
-            func_already_declared = env.has_binding(fn)
             env.set_binding(fn, fo)
-
-        arguments_already_declared = env.has_binding(u'arguments')
-        # 7.
-        if code.is_function_code() and arguments_already_declared is False:
-            from obin.objects.object import W_Arguments
-            # TODO get calling W_Function
-            func = self._w_func_
-            arguments = self._argument_values_
-            names = code.params()
-            args_obj = W_Arguments(func, names, arguments, env)
-
-            env.set_binding(u'arguments', args_obj)
-
-        # 8.
-
-        # var_declarations = code.variables()
-        # for dn in var_declarations:
-        #     env.set_binding(dn, newundefined())
 
     def _get_refs(self, index):
         assert index < len(self._refs_)
