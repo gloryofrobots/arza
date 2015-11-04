@@ -143,9 +143,10 @@ class LOAD_VARIABLE(Opcode):
     _immutable_fields_ = ['identifier', 'index']
 
     def __init__(self, index, identifier):
+        from obin.objects.object_space import newstring
         assert index is not None
         self.index = index
-        self.identifier = identifier
+        self.identifier = newstring(identifier)
 
     # 11.1.2
     def eval(self, ctx):

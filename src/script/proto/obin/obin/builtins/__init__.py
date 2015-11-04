@@ -28,6 +28,8 @@ def setup_builtins(global_object):
     # # 15.3.4.4 Function.prototype.call
     # api.put_native_function(target, u'call', obin.builtins.function.js_call)
 
+    import obin.builtins.global_functions
+    obin.builtins.global_functions.setup(global_object)
     """
     import obin.builtins.boolean
     obin.builtins.boolean.setup(global_object)
@@ -44,8 +46,6 @@ def setup_builtins(global_object):
     import obin.builtins.math_functions
     obin.builtins.math_functions.setup(global_object)
 
-    import obin.builtins.global_functions
-    obin.builtins.global_functions.setup(global_object)
     """
 
 from obin.objects.object_space import newundefined

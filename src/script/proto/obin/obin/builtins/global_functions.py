@@ -5,56 +5,53 @@ from obin.runtime.routine import complete_native_routine
 from rpython.rlib.rfloat import NAN, INFINITY, isnan, isinf
 from obin.builtins import get_arg
 from rpython.rlib.unicodedata import unicodedb
+from obin.objects import api
 
 
 def setup(global_object):
     from rpython.rlib.objectmodel import we_are_translated
-    from obin.builtins import  put_native_function, put_property
     from obin.builtins.number import w_NAN
     from obin.builtins.number import w_POSITIVE_INFINITY
     from obin.objects.object_space import newundefined
 
     # 15.1.1.1
-    put_property(global_object, u'NaN', w_NAN)
+    api.put_property(global_object, u'NaN', w_NAN)
 
     # 15.1.1.2
-    put_property(global_object, u'Infinity', w_POSITIVE_INFINITY)
-
-    # 15.1.1.3
-    put_property(global_object, u'undefined', newundefined())
+    api.put_property(global_object, u'Infinity', w_POSITIVE_INFINITY)
 
     # 15.1.2.1
-    put_native_function(global_object, u'eval', js_eval, params=[u'x'])
+    api.put_native_function(global_object, u'eval', js_eval, params=[u'x'])
 
     # 15.1.2.2
-    put_native_function(global_object, u'parseInt', parse_int, params=[u'string', u'radix'])
+    api.put_native_function(global_object, u'parseInt', parse_int, params=[u'string', u'radix'])
 
     # 15.1.2.3
     # TODO
-    put_native_function(global_object, u'parseFloat', parse_float, params=[u'string'])
+    api.put_native_function(global_object, u'parseFloat', parse_float, params=[u'string'])
 
     # 15.1.2.4
-    put_native_function(global_object, u'isNaN', is_nan, params=[u'number'])
+    api.put_native_function(global_object, u'isNaN', is_nan, params=[u'number'])
 
     # 15.1.2.5
-    put_native_function(global_object, u'isFinite', is_finite, params=[u'number'])
+    api.put_native_function(global_object, u'isFinite', is_finite, params=[u'number'])
 
-    put_native_function(global_object, u'alert', alert)
+    api.put_native_function(global_object, u'alert', alert)
 
-    put_native_function(global_object, u'print', printjs)
-    put_native_function(global_object, u'id', _id)
-    put_native_function(global_object, u'now', now)
+    api.put_native_function(global_object, u'print', printjs)
+    api.put_native_function(global_object, u'id', _id)
+    api.put_native_function(global_object, u'now', now)
 
-    put_native_function(global_object, u'escape', escape, params=[u'string'])
+    api.put_native_function(global_object, u'escape', escape, params=[u'string'])
 
-    put_native_function(global_object, u'unescape', unescape, params=[u'string'])
+    api.put_native_function(global_object, u'unescape', unescape, params=[u'string'])
 
-    put_native_function(global_object, u'version', version)
+    api.put_native_function(global_object, u'version', version)
 
     ## debugging
     if not we_are_translated():
-        put_native_function(global_object, u'pypy_repr', pypy_repr)
-        put_native_function(global_object, u'inspect', inspect)
+        api.put_native_function(global_object, u'pypy_repr', pypy_repr)
+        api.put_native_function(global_object, u'inspect', inspect)
 
 
 # 15.1.2.4
@@ -254,7 +251,7 @@ def printjs(ctx, routine):
         builder.append(arg.to_string())
         builder.append(u',')
 
-    builder.append(args[-1].to_string())
+    builder.append(api.tostring(args[-1]).value())
 
     u_print_str = builder.build()
     print_str = encode_unicode_utf8(u_print_str)

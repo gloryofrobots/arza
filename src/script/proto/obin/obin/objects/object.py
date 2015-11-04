@@ -212,6 +212,17 @@ class W_String(W_Primitive):
     def __str__(self):
         return u'W_String("%s")' % (self.__items)
 
+    def __eq__(self, other):
+        if not isinstance(other, W_String):
+            return False
+        return self.value() == other.value()
+
+    def __hash__(self):
+        return self.value().__hash__()
+
+    def value(self):
+        return self.__items
+
     def _tostring_(self):
         return str(self.__items)
 
@@ -309,6 +320,9 @@ class W_Vector(W_Cell):
     def prepend(self, v):
         self._items.insert(0, v)
 
+    def insert(self, index, v):
+        self._items.insert(index, v)
+
     def remove(self, v):
         self._items.remove(v)
 
@@ -356,7 +370,7 @@ class W_Object(W_Cell):
         for trait in obj.traits().values():
             if self.traits().has(trait):
                 return
-            self.traits().prepend(trait)
+            self.traits().insert(1, trait)
 
     def nota(self, obj):
         assert isinstance(obj, W_Object)
@@ -387,7 +401,11 @@ class W_Object(W_Cell):
                 return v
 
     def _at_self(self, k):
+        from object_space import newundefined
         v = self._slots.get(k)
+        if v is None:
+            return newundefined()
+
         return v
 
     def _put_(self, k, v):

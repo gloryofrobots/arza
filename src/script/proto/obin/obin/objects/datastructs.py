@@ -143,11 +143,11 @@ class Slots(object):
     def __init__(self, size=0):
         if size:
             self._property_slots_ = [None] * size
-        self._property_map_ = new_map()
+        self._property_map_ = {}
         self._property_slots_ = []
 
     def contains(self, name):
-        return self._property_map_.contains(name)
+        return name in self._property_map_
 
     def values(self):
         return self._property_slots_
@@ -162,36 +162,33 @@ class Slots(object):
         return self._property_slots_[index]
 
     def get(self, name):
-        idx = self._property_map_.lookup(name)
-
-        if self._property_map_.not_found(idx):
+        idx = self.get_index(name)
+        if not idx:
             return
 
         return self.get_by_index(idx)
 
     def delete(self, name):
-        idx = self._property_map_.lookup(name)
-
-        if self._property_map_.not_found(idx):
+        idx = self.get_index(name)
+        if not idx:
             return
 
         assert idx >= 0
         self._property_slots_ = self._property_slots_[:idx] + self._property_slots_[idx + 1:]
-        self._property_map_ = self._property_map_.delete(name)
+        del self._property_map_[name]
 
     def get_index(self, name):
-        idx = self._property_map_.lookup(name)
-
-        if self._property_map_.not_found(idx):
-            return
+        try:
+            idx = self._property_map_[name]
+        except KeyError:
+            return None
         return idx
 
     def add(self, name, value):
-        idx = self._property_map_.lookup(name)
-
-        if self._property_map_.not_found(idx):
-            self._property_map_ = self._property_map_.add(name)
-            idx = self._property_map_.index
+        idx = self.get_index(name)
+        if not idx:
+            idx = len(self._property_map_)
+            self._property_map_[name] = idx
 
         if idx >= len(self._property_slots_):
             self._property_slots_ = self._property_slots_ + ([None] * (1 + idx - len(self._property_slots_)))
@@ -200,7 +197,7 @@ class Slots(object):
         return idx
 
     def set(self, name, value):
-        idx = self._property_map_.lookup(name)
+        idx = self.get_index(name)
         self._property_slots_[idx] = value
 
 

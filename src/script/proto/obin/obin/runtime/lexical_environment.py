@@ -50,12 +50,8 @@ class DeclarativeEnvironmentRecord(EnvironmentRecord):
 class ObjectEnvironmentRecord(EnvironmentRecord):
     _immutable_fields_ = ['binding_object']
 
-    provide_this = False
-
-    def __init__(self, obj, provide_this=False):
+    def __init__(self, obj):
         self.binding_object = obj
-        if provide_this is True:
-            self.provide_this = True
 
     # 10.2.1.2.1
     def has_binding(self, n):
