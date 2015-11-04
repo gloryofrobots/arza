@@ -326,8 +326,8 @@ class TestJsFunctionAndStuff(object):
 
         func = NativeRoutine(f)
 
-        from obin.objects.object import W__Function
-        w_func = W__Function(func)
+        from obin.objects.object import W_Function
+        w_func = W_Function(func)
 
         w_global = W_BasicObject()
         w_global.put(u'f', w_func)

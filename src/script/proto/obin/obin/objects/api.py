@@ -24,11 +24,19 @@ def at(obj, k):
 def length(obj):
     return obj._length_()
 
+def put_property(obj, k, v):
+    from object_space import newstring
+    put(obj, newstring(k), v)
 
 def put(obj, k, v):
-    from object_space import isundefined
+    from object_space import isundefined, iscell
     assert not isundefined(v)
     assert not isundefined(k)
+    assert iscell(obj)
+    #you can determine outer set and inner later
+    if obj.isfrozen():
+        raise RuntimeError("Object is frozen")
+
     obj._put_(k, v)
 
 

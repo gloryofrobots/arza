@@ -165,7 +165,6 @@ ROOT_MAP = MapRoot()
 def new_map():
     return ROOT_MAP
 
-
 class Slots(object):
     def __init__(self, size=0):
         if size:
@@ -175,6 +174,12 @@ class Slots(object):
 
     def contains(self, name):
         return self._property_map_.contains(name)
+
+    def values(self):
+        return self._property_slots_
+
+    def length(self):
+        return len(self._property_slots_)
 
     def keys(self):
         return self._property_map_.keys()
@@ -218,6 +223,7 @@ class Slots(object):
             self._property_slots_ = self._property_slots_ + ([None] * (1 + idx - len(self._property_slots_)))
 
         self._property_slots_[idx] = value
+        return idx
 
     def set(self, name, value):
         idx = self._property_map_.lookup(name)

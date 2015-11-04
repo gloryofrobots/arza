@@ -77,6 +77,10 @@ def newnull():
 def isundefined(value):
     return value is w_Undefined
 
+def iscell(value):
+    from object import W_Cell
+    return isinstance(value, W_Cell)
+
 
 def newundefined():
     return w_Undefined
@@ -162,8 +166,8 @@ class ObjectSpace(object):
         return obj
 
     def new_func(self, function_body, formal_parameter_list=[], scope=None):
-        from obin.objects.object import W__Function
-        obj = W__Function(function_body, formal_parameter_list, scope)
+        from obin.objects.object import W_Function
+        obj = W_Function(function_body, formal_parameter_list, scope)
         self.assign_proto(obj)
         return obj
 
