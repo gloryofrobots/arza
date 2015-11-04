@@ -1,4 +1,5 @@
 from obin.runtime.reference import Reference
+from obin.objects import api
 
 class EnvironmentRecord(object):
     def has_binding(self, identifier):
@@ -8,9 +9,6 @@ class EnvironmentRecord(object):
         raise NotImplementedError
 
     def get_binding_value(self, identifier):
-        raise NotImplementedError
-
-    def delete_binding(self, n):
         raise NotImplementedError
 
 class DeclarativeEnvironmentRecord(EnvironmentRecord):
@@ -61,32 +59,15 @@ class ObjectEnvironmentRecord(EnvironmentRecord):
 
     # 10.2.1.2.1
     def has_binding(self, n):
-        assert n is not None and isinstance(n, unicode)
-        bindings = self.binding_object
-        return bindings.has_property(n)
+        return self.binding_object.has(n)
 
     # 10.2.1.2.3
     def set_binding(self, n, v):
-        assert n is not None and isinstance(n, unicode)
-        bindings = self.binding_object
-        bindings.put(n, v)
+        api.put(self.binding_object, n, v)
 
     # 10.2.1.2.4
     def get_binding_value(self, n):
-        assert n is not None and isinstance(n, unicode)
-        bindings = self.binding_object
-        value = bindings.has_property(n)
-        if value is False:
-            from obin.runtime.exception import ObinReferenceError
-            raise ObinReferenceError(self.__class__)
-
-        return bindings.get(n)
-
-    # 10.2.1.2.5
-    def delete_binding(self, n):
-        assert n is not None and isinstance(n, unicode)
-        bindings = self.binding_object
-        return bindings.delete(n)
+        return api.at(self.binding_object, n)
 
 
 class GlobalEnvironmentRecord(ObjectEnvironmentRecord):
@@ -94,7 +75,6 @@ class GlobalEnvironmentRecord(ObjectEnvironmentRecord):
 
 
 def get_identifier_reference(lex, identifier):
-    assert isinstance(identifier, unicode)
     if lex is None:
         return Reference(referenced=identifier)
 

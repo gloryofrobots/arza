@@ -15,7 +15,7 @@ class W_Root(object):
     _type_ = ''
 
     def __str__(self):
-        return api.tostring(self)
+        return self._tostring_()
 
     def type(self):
         return self._type_
@@ -50,6 +50,9 @@ class W_Primitive(W_Root):
 
 class W_Undefined(W_Constant):
     _type_ = 'Undefined'
+
+    def _tostring_(self):
+        return "undefined"
 
 class W_Nil(W_Constant):
     _type_ = 'Nil'
@@ -131,7 +134,7 @@ class W_Integer(W_Primitive):
         self.__value = value
 
     def __str__(self):
-        return 'W_Integer(%d)' % (self.value,)
+        return 'W_Integer(%d)' % (self.value(),)
 
     def value(self):
         return self.__value
@@ -370,6 +373,11 @@ class W_Object(W_Cell):
                 return False
 
         return True
+
+    def has(self, k):
+        from object_space import isundefined
+        v = self._at_(k)
+        return not isundefined(v)
 
     def _at_(self, k):
         from object_space import isundefined

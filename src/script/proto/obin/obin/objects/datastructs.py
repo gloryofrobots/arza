@@ -232,6 +232,9 @@ class Stack(object):
         self.__pointer = None
         self.init(size)
 
+    def __iter__(self):
+        return self.__data.__iter__()
+
     def init(self, size=1):
         self.__data = [None] * size
         self.__pointer = 0

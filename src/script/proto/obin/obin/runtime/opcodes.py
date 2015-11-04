@@ -211,8 +211,8 @@ class LOAD_OBJECT(Opcode):
 
     @jit.unroll_safe
     def eval(self, ctx):
-        from obin.objects.object_space import object_space
-        w_obj = object_space.newobject()
+        from obin.objects.object_space import newobject
+        w_obj = newobject()
         for _ in range(self.counter):
             top = ctx.stack_pop()
             name = api.tostring(top)
@@ -483,9 +483,10 @@ class STORE(Opcode):
     _stack_change = 0
 
     def __init__(self, index, identifier):
+        from obin.objects.object_space import newstring
         assert index is not None
         self.index = index
-        self.identifier = identifier
+        self.identifier = newstring(identifier)
 
     def eval(self, ctx):
         value = ctx.stack_top()

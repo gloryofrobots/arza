@@ -28,9 +28,9 @@ w_False = None
 def makebools():
     global w_True
     global w_False
-    from obin.objects.object import W_Boolean
-    w_True = W_Boolean(True)
-    w_False = W_Boolean(False)
+    from obin.objects.object import W_True, W_False
+    w_True = W_True()
+    w_False = W_False()
     jit.promote(w_True)
     jit.promote(w_False)
 

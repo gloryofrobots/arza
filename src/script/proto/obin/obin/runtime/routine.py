@@ -301,9 +301,9 @@ class BytecodeRoutine(BaseRoutine):
         if debug:
             d = u'%s\t%s' % (unicode(str(self.pc)), unicode(str(opcode)))
             #d = u'%s' % (unicode(str(pc)))
-            #d = u'%3d %25s %s ' % (self.pc, unicode(opcode), unicode([unicode(s) for s in self.ctx._stack_]))
+            d = u'%3d %25s %s ' % (self.pc, unicode(opcode), unicode([unicode(s) for s in self.ctx._stack_]))
 
-            #print(getattr(self, "_name_", None), str(hex(id(self))), d)
+            print(getattr(self, "_name_", None), str(hex(id(self))), d)
 
         opcode.eval(self.ctx)
 
