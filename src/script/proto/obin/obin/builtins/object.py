@@ -7,14 +7,55 @@ def setup(obj):
     api.put_native_function(obj, u'toString', to_string)
     api.put_native_function(obj, u'clone', clone)
     api.put_native_function(obj, u'at', at)
+    api.put_native_function(obj, u'lookup', lookup)
+    api.put_native_function(obj, u'isa', isa)
+    api.put_native_function(obj, u'nota', nota)
+    api.put_native_function(obj, u'kindof', kindof)
     api.put_native_function(obj, u'create', create)
+    api.put_native_function(obj, u'traits', traits)
     pass
+
+def object_extract_1_obj_arg(routine):
+    from obin.objects.object_space import isobject
+    this, args = routine.args()
+    other = get_arg(args, 0)
+    assert isobject(this)
+    assert isobject(other)
+    return this, other
+
+@complete_native_routine
+def traits(ctx, routine):
+    from obin.objects.object_space import isobject
+    this, args = routine.args()
+    assert isobject(this)
+    return this.traits()
+
+@complete_native_routine
+def isa(ctx, routine):
+    this, other = object_extract_1_obj_arg(routine)
+    return this.isa(other)
+
+@complete_native_routine
+def nota(ctx, routine):
+    this, other = object_extract_1_obj_arg(routine)
+    return this.nota(other)
+
+@complete_native_routine
+def kindof(ctx, routine):
+    this, other = object_extract_1_obj_arg(routine)
+    return this.kindof(other)
 
 @complete_native_routine
 def at(ctx, routine):
     this, args = routine.args()
     key = get_arg(args, 0)
     return api.at(this, key)
+
+@complete_native_routine
+def lookup(ctx, routine):
+    this, args = routine.args()
+    key = get_arg(args, 0)
+    return api.lookup(this, key)
 
 @complete_native_routine
 def clone(ctx, routine):
@@ -26,7 +67,7 @@ def create(ctx, routine):
     from obin.objects.object_space import object_space
     this, args = routine.args()
     obj = object_space.newobject()
-    object_space.assign_proto(obj, this)
+    obj.isa(this)
     return obj
 
 @complete_native_routine

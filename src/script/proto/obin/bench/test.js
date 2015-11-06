@@ -3,6 +3,26 @@ O = {
         action: fn () {},
         name: "Alice"
     }
+
+L = {
+    gender: "Male",
+    hello: fn(){
+
+        print("Hello i am L")
+    }
+}
+
+print(O.traits())
+print(L.traits())
+O.isa(L)
+print(O.traits())
+O.hello()
+O.nota(L)
+print(O.traits())
+print("Kindof", O.kindof(L))
+O.isa(L)
+print(O.traits())
+
 O2 = O.clone()
 
 

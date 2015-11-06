@@ -45,6 +45,9 @@ class W_Root(object):
     def _compare_(self, other):
         raise NotImplementedError()
 
+    def __repr__(self):
+        return self.__str__()
+
 class W_Constant(W_Root):
     pass
 
@@ -309,7 +312,13 @@ class W_Vector(W_Cell):
 
     def has_index(self, i):
         return i > 0 and i < self.length()
-    
+
+    def get_index(self, obj):
+        try:
+            return self._items.index(obj)
+        except KeyError:
+            return -1
+
     def has(self, obj):
         return obj in self._items
 
@@ -374,9 +383,11 @@ class W_Object(W_Cell):
             self.traits().prepend(obj)
             
         for trait in obj.traits().values():
-            if self.traits().has(trait):
-                continue
-            self.traits().prepend(trait)
+            index = self.traits().get_index(trait)
+            if index == -1:
+                self.traits().prepend(trait)
+            else:
+                self.traits().insert(index, trait)
 
     def nota(self, obj):
         assert isinstance(obj, W_Object)
@@ -393,6 +404,9 @@ class W_Object(W_Cell):
                 pass
 
     def kindof(self, obj):
+        if obj is self:
+            return True
+
         assert isinstance(obj, W_Object)
         if not self.traits().has(obj):
             return False
@@ -442,7 +456,7 @@ class W_Object(W_Cell):
         return self.__slots.length()
 
     def _tostring_(self):
-        return str(self.__slots._property_map_)
+        return str(self.__slots)
 
     def _clone_(self):
         import copy

@@ -145,6 +145,22 @@ class Slots(object):
             self._property_slots_ = [None] * size
         self._property_map_ = {}
         self._property_slots_ = []
+        self._index = 0
+
+
+    def to_dict(self):
+        m = {}
+        for n, v in self._property_map_.items():
+            m[n] = self._property_slots_[v]
+
+        return m
+
+    def __str__(self):
+        return str(self.to_dict())
+        pass
+
+    def __repr__(self):
+        return self.__str__()
 
     def contains(self, name):
         return name in self._property_map_
@@ -187,8 +203,9 @@ class Slots(object):
     def add(self, name, value):
         idx = self.get_index(name)
         if idx is None:
-            idx = len(self._property_map_)
+            idx = self._index
             self._property_map_[name] = idx
+            self._index += 1
 
         if idx >= len(self._property_slots_):
             self._property_slots_ = self._property_slots_ + ([None] * (1 + idx - len(self._property_slots_)))

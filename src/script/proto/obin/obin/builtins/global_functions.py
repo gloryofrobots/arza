@@ -248,7 +248,7 @@ def printjs(ctx, routine):
 
     builder = UnicodeBuilder()
     for arg in args[:-1]:
-        builder.append(arg.to_string())
+        builder.append(api.tostring(arg).value())
         builder.append(u',')
 
     builder.append(api.tostring(args[-1]).value())
