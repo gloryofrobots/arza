@@ -78,6 +78,9 @@ class W_True(W_Constant):
     _type_ = 'True'
     _immutable_fields_ = ['value']
 
+    def value(self):
+        return True
+
     def _tostring_(self):
         return u'true'
 
@@ -99,6 +102,9 @@ class W_False(W_Constant):
         return u'false'
 
     def _tobool_(self):
+        return False
+
+    def value(self):
         return False
 
     def _lookup_(self, k):
@@ -379,6 +385,9 @@ class W_Object(W_Cell):
 
     def isa(self, obj):
         assert isinstance(obj, W_Object)
+        if self is obj:
+            return
+
         if not self.traits().has(obj):
             self.traits().prepend(obj)
             
@@ -391,6 +400,8 @@ class W_Object(W_Cell):
 
     def nota(self, obj):
         assert isinstance(obj, W_Object)
+        if self is obj:
+            return
 
         try:
             self.traits().remove(obj)

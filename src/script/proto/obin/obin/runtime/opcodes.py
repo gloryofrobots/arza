@@ -547,13 +547,14 @@ class JUMP(BaseJump):
 class BaseIfJump(BaseJump):
     def eval(self, ctx):
         value = ctx.stack_pop()
-        self.decision = value.to_boolean()
+
+        self.decision = api.tobool(value).value()
 
 
 class BaseIfNopopJump(BaseJump):
     def eval(self, ctx):
         value = ctx.stack_top()
-        self.decision = value.to_boolean()
+        self.decision = api.tobool(value).value()
 
 
 class JUMP_IF_FALSE(BaseIfJump):
@@ -702,6 +703,7 @@ class CALL_METHOD(Opcode):
 
         name = method
         r1 = api.lookup(what, name)
+        args.prepend(what)
         common_call(ctx, r1, args, what, method)
 
     def __str__(self):
