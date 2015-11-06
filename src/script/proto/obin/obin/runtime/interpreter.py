@@ -50,7 +50,7 @@ class Interpreter(object):
         return self.run_ast(ast)
 
     def run_src(self, src):
-        from obin._compile.compiler import compile as cl
+        from obin.compile.compiler import compile as cl
         code = cl(src)
         return self.run(code)
 
@@ -59,8 +59,6 @@ class Interpreter(object):
     def run(self, code, interactive=False):
         from obin.runtime.routine import GlobalRoutine
 
-        from obin.compile.code import Code
-        # assert isinstance(code, Code)
         print [str(c) for c in code.opcodes]
         global_routine = GlobalRoutine(code)
 

@@ -9,6 +9,19 @@ def error(node, message, args):
     error_message = "Compile Error %d:%d %s" % (node.line, node.position, message)
     raise RuntimeError(error_message, args)
 
+def string_unquote(string):
+    s = string
+    if s.startswith('"'):
+        assert s.endswith('"')
+    else:
+        assert s.startswith("'")
+        assert s.endswith("'")
+    s = s[:-1]
+    s = s[1:]
+
+    return s
+
+
 class Compiler(object):
     def __init__(self):
         self.funclists = []
@@ -143,7 +156,6 @@ class Compiler(object):
         bytecode.emit('LOAD_UNDEFINED')
 
     def _compile_STR(self, bytecode, node):
-        from obin.compile.operations import string_unquote
         from obin.runistr import unicode_unescape, decode_str_utf8
 
         strval = str(node.value)
@@ -153,7 +165,6 @@ class Compiler(object):
         bytecode.emit('LOAD_STRINGCONSTANT', strval)
 
     def _compile_CHAR(self, bytecode, node):
-        from obin.compile.operations import string_unquote
         from obin.runistr import unicode_unescape, decode_str_utf8
 
         strval  = str(node.value)
