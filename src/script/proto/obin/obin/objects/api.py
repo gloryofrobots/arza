@@ -1,7 +1,6 @@
 __author__ = 'gloryofrobots'
 from obin.runtime.exception import *
 
-
 def tostring(obj):
     from object_space import newstring
     return newstring(unicode(obj._tostring_()))

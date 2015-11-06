@@ -7,6 +7,7 @@ class FiberEntry(object):
         self.next = None
         self.previous = None
 
+
 def run_routine_for_result(routine, ctx=None):
     if ctx:
         routine.set_context(ctx)
@@ -14,11 +15,13 @@ def run_routine_for_result(routine, ctx=None):
     result = m.run_with(routine)
     return result
 
-def run_function_for_result(function, args=[], this=None, calling_context=None):
-    routine = function.create_routine(args=args, this=this, calling_context=calling_context)
+
+def run_function_for_result(function, args=[], calling_context=None):
+    routine = function.create_routine(args=args, calling_context=calling_context)
     m = Machine()
     result = m.run_with(routine)
     return result
+
 
 class Machine(object):
     def __init__(self):
@@ -80,7 +83,7 @@ class Machine(object):
         while True:
             if not self.__enabled or not self.current:
                 break
-            fiber = self.current .fiber
+            fiber = self.current.fiber
             if fiber.is_suspended():
                 self.current = self.current.next
                 continue
@@ -119,4 +122,3 @@ class Machine(object):
 
         self.head = None
         return None
-

@@ -17,6 +17,9 @@ class W_Root(object):
     def __str__(self):
         return self._tostring_()
 
+    def __repr__(self):
+        return self.__str__()
+
     def type(self):
         return self._type_
 
@@ -45,8 +48,6 @@ class W_Root(object):
     def _compare_(self, other):
         raise NotImplementedError()
 
-    def __repr__(self):
-        return self.__str__()
 
 class W_Constant(W_Root):
     pass
@@ -224,6 +225,10 @@ class W_String(W_Primitive):
         return u'W_String("%s")' % (self.__items)
 
     def __eq__(self, other):
+        if isinstance(other, unicode):
+            raise RuntimeError("It is not unicode")
+        if isinstance(other, str):
+            raise RuntimeError("It is not  str")
         if not isinstance(other, W_String):
             return False
         return self.value() == other.value()
@@ -286,7 +291,7 @@ class W_Vector(W_Cell):
 
     def _lookup_(self, k):
         from object_space import object_space, isint
-        return api.at(object_space.traitsVector, k)
+        return api.at(object_space.traits.Vector, k)
 
     def _at_(self, index):
         from object_space import newundefined, isint
@@ -378,7 +383,7 @@ class W_Object(W_Cell):
         self.__traits = traits
 
     def __str__(self):
-        return "%s: %s" % (object.__repr__(self), self._type_)
+        return "W_Object(%s)" % (self._tostring_())
 
     def traits(self):
         return self.__traits
@@ -511,7 +516,7 @@ class W_Function(W_Primitive):
     def formal_parameters(self):
         return self._params_
 
-    def create_routine(self, args=[], this=None, calling_context=None):
+    def create_routine(self, args=[], calling_context=None):
         from obin.runtime.execution_context import FunctionExecutionContext
         code = self.code().clone()
         jit.promote(code)
@@ -519,19 +524,18 @@ class W_Function(W_Primitive):
 
         ctx = FunctionExecutionContext(code,
                                        argv=args,
-                                       this=this,
                                        scope=scope,
                                        w_func=self)
         ctx._calling_context_ = calling_context
         code.set_context(ctx)
         return code
 
-    def Call(self, args=[], this=None, calling_context=None):
+    def Call(self, args=[], calling_context=None):
         if calling_context is None:
             from object_space import object_space
             calling_context = object_space.interpreter.machine.current_context()
 
-        calling_context.fiber().call_object(self, args, this, calling_context)
+        calling_context.fiber().call_object(self, args, calling_context)
 
     def scope(self):
         return self._scope_

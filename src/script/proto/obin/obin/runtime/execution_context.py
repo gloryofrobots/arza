@@ -5,7 +5,7 @@ from rpython.rlib import jit
 DISTINCT = []
 
 class ExecutionContext(object):
-    _immutable_fields_ = ['_stack_', '_this_binding_', '_lexical_environment_', '_variable_environment_', '_refs_', '_code_', '_formal_parameters_', '_argument_values_', '_w_func_']  # TODO why are _formal_parameters_, _w_func_ etc. required here?
+    _immutable_fields_ = ['_stack_', '_lexical_environment_', '_variable_environment_', '_refs_', '_code_', '_formal_parameters_', '_argument_values_', '_w_func_']  # TODO why are _formal_parameters_, _w_func_ etc. required here?
     _virtualizable2_ = ['_stack_[*]', '_stack_pointer_', '_refs_[*]']
     _settled_ = True
 
@@ -20,7 +20,6 @@ class ExecutionContext(object):
         self._stack_ = Stack(stack_size)
         self._code_ = None
         self.__lexical_environment = None
-        self._this_binding_ = None
         self._refs_ = [None] * refs_size
 
     def routine(self):
@@ -54,9 +53,6 @@ class ExecutionContext(object):
     def set_stack_pointer(self, p):
         self._stack_.set_pointer(p)
 
-    def this_binding(self):
-        return self._this_binding_
-
     def lexical_environment(self):
         return self.__lexical_environment
 
@@ -70,7 +66,7 @@ class ExecutionContext(object):
         # if str(self._code_) == "function _f2 {}":
         #     x = 1
 
-        env = self.lexical_environment().environment_record
+        env = self.lexical_environment()
         code = jit.promote(self._code_)
 
         # 4.
@@ -124,7 +120,7 @@ class ExecutionContext(object):
             ref.put_value(value)
             return
 
-        lex_env.environment_record.set_binding(symbol, value)
+        lex_env.set_binding(symbol, value)
 
     def get_ref(self, symbol, index=-1):
         ## TODO pre-bind symbols, work with idndex, does not work, see test_foo19
@@ -178,8 +174,6 @@ class ObjectExecutionContext(_DynamicExecutionContext):
         from obin.runtime.lexical_environment import ObjectEnvironment
         localEnv = ObjectEnvironment(obj)
         self.set_lexical_environment(localEnv)
-        self._this_binding_ = obj
-
         self.declaration_binding_initialization()
 
 
@@ -203,7 +197,7 @@ class EvalExecutionContext(_DynamicExecutionContext):
 class FunctionExecutionContext(ExecutionContext):
     _immutable_fields_ = ['_scope_', '_calling_context_']
 
-    def __init__(self, code, formal_parameters=[], argv=[], this=newundefined(), scope=None, w_func=None):
+    def __init__(self, code, argv=[], scope=None, w_func=None):
         stack_size = code.estimated_stack_size()
         env_size = code.env_size() + 1  # neet do add one for the arguments object
 
@@ -218,8 +212,6 @@ class FunctionExecutionContext(ExecutionContext):
         from obin.runtime.lexical_environment import DeclarativeEnvironment
         localEnv = DeclarativeEnvironment(scope, env_size)
         self.set_lexical_environment(localEnv)
-
-        self._this_binding_ = this
 
         self.declaration_binding_initialization()
 
@@ -239,14 +231,10 @@ class BlockExecutionContext(_DynamicExecutionContext):
         from obin.runtime.lexical_environment import DeclarativeEnvironment
         env_size = code.env_size() + 1  # neet do add one for the arguments object
         local_env = DeclarativeEnvironment(parent_env, env_size)
-        local_env_rec = local_env.environment_record
 
         self.set_lexical_environment(local_env)
 
         self.declaration_binding_initialization()
-
-    def this_binding(self):
-        return self._parent_context_.this_binding()
 
 class CatchExecutionContext(_DynamicExecutionContext):
     def __init__(self, code, catchparam, exception_value, parent_context):
@@ -261,12 +249,9 @@ class CatchExecutionContext(_DynamicExecutionContext):
 
         from obin.runtime.lexical_environment import DeclarativeEnvironment
         local_env = DeclarativeEnvironment(parent_env, env_size)
-        local_env_rec = local_env.environment_record
-        local_env_rec.set_binding(catchparam, exception_value)
+        local_env.set_binding(catchparam, exception_value)
 
         self.set_lexical_environment(local_env)
 
         self.declaration_binding_initialization()
 
-    def this_binding(self):
-        return self._parent_context_.this_binding()

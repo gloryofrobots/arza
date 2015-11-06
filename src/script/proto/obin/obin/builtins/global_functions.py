@@ -21,7 +21,7 @@ def setup(global_object):
     api.put_property(global_object, u'Infinity', w_POSITIVE_INFINITY)
 
     # 15.1.2.1
-    api.put_native_function(global_object, u'eval', js_eval, params=[u'x'])
+    api.put_native_function(global_object, u'eval', _eval, params=[u'x'])
 
     # 15.1.2.2
     api.put_native_function(global_object, u'parseInt', parse_int, params=[u'string', u'radix'])
@@ -38,7 +38,7 @@ def setup(global_object):
 
     api.put_native_function(global_object, u'alert', alert)
 
-    api.put_native_function(global_object, u'print', printjs)
+    api.put_native_function(global_object, u'print', _print)
     api.put_native_function(global_object, u'id', _id)
     api.put_native_function(global_object, u'now', now)
 
@@ -57,7 +57,7 @@ def setup(global_object):
 # 15.1.2.4
 @complete_native_routine
 def is_nan(ctx, routine):
-    this, args = routine.args()
+    args = routine.args()
     if len(args) < 1:
         return True
     return isnan(args[0].ToNumber())
@@ -66,7 +66,7 @@ def is_nan(ctx, routine):
 # 15.1.2.5
 @complete_native_routine
 def is_finite(ctx, routine):
-    this, args = routine.args()
+    args = routine.args()
     if len(args) < 1:
         return True
     n = args[0].ToNumber()
@@ -111,7 +111,7 @@ def _string_match_chars(string, chars):
 # 15.1.2.2
 @complete_native_routine
 def parse_int(ctx, routine):
-    this, args = routine.args()
+    args = routine.args()
     string = get_arg(args, 0)
     radix = get_arg(args, 1)
 
@@ -129,7 +129,7 @@ def now(self, args):
 
 @complete_native_routine
 def _id(ctx, routine):
-    this, args = routine.args()
+    args = routine.args()
     element = get_arg(args, 0)
     return str(hex(id(element)))
 
@@ -200,7 +200,7 @@ def _parse_int(string, radix):
 # 15.1.2.3
 @complete_native_routine
 def parse_float(ctx, routine):
-    this, args = routine.args()
+    args = routine.args()
     from obin.runistr import encode_unicode_utf8
     from obin.constants import num_lit_rexp
 
@@ -232,14 +232,14 @@ def parse_float(ctx, routine):
 
 @complete_native_routine
 def alert(ctx, routine):
-    printjs(ctx, routine)
+    _print(ctx, routine)
 
 def dummy(ctx, routine):
     pass
 
 @complete_native_routine
-def printjs(ctx, routine):
-    this, args = routine.args()
+def _print(ctx, routine):
+    args = routine.args()
     if len(args) == 0:
         return
 
@@ -272,7 +272,7 @@ def hexing(i, length):
 # B.2.1
 @complete_native_routine
 def escape(ctx, routine):
-    this, args = routine.args()
+    args = routine.args()
     CHARARCERS = u'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@*_+-./'
     string = get_arg(args, 0)
     r1 = string.to_string()
@@ -300,7 +300,7 @@ def escape(ctx, routine):
 # B.2.2
 @complete_native_routine
 def unescape(ctx, routine):
-    this, args = routine.args()
+    args = routine.args()
     string = get_arg(args, 0)
     r1 = string.to_string()
     r2 = len(r1)
@@ -344,7 +344,7 @@ def unescape(ctx, routine):
 
 @complete_native_routine
 def pypy_repr(ctx, routine):
-    this, args = routine.args()
+    args = routine.args()
     o = args[0]
     return str(o)
 
@@ -368,50 +368,21 @@ from obin.runtime.machine import run_routine_for_result
 from obin.objects.object_space import _w
 
 # 15.1.2.1
-def js_eval(ctx, routine):
-    from rpython.rlib.parsing.parsing import ParseError
-    from rpython.rlib.parsing.deterministic import LexerError
-
-    from obin.compile.astbuilder import parse_to_ast
-    from obin.compile.code import ast_to_bytecode
-    from obin.objects.object import W_String
+def _eval(ctx, routine):
+    from obin.objects.object_space import isstring
     from obin.runtime.routine import BytecodeRoutine
     from obin.runtime.execution_context import EvalExecutionContext
-    from obin.compile.astbuilder import FakeParseError
-    from obin.runtime.exception import ObinSyntaxError
 
     args = ctx.argv()
     x = get_arg(args, 0)
 
-    assert isinstance(x, W_String)
+    assert isstring(x)
 
-    src = x.to_string()
-
-    try:
-        ast = parse_to_ast(src)
-    except ParseError, e:
-        #error = e.errorinformation.failure_reasons
-        #error_lineno = e.source_pos.lineno
-        #error_pos = e.source_pos.columnno
-        #raise JsSyntaxError(msg = unicode(error), src = unicode(src), line = error_lineno, column = error_pos)
-        raise ObinSyntaxError()
-    except FakeParseError, e:
-        #raise JsSyntaxError(msg = unicode(e.msg), src = unicode(src))
-        raise ObinSyntaxError()
-    except LexerError, e:
-        #error_lineno = e.source_pos.lineno
-        #error_pos = e.source_pos.columnno
-        error_msg = u'LexerError'
-        #raise JsSyntaxError(msg = error_msg, src = unicode(src), line = error_lineno, column = error_pos)
-        raise ObinSyntaxError(msg=error_msg)
-
-    symbol_map = ast.symbol_map
-    code = ast_to_bytecode(ast, symbol_map)
-
+    src = x.value()
+    from obin.compile.compiler import compile as cl
+    code = cl(src)
     f = BytecodeRoutine(code)
-    calling_context = ctx._calling_context_
-
-    ctx = EvalExecutionContext(f)
+    ctx = EvalExecutionContext(f, ctx._calling_context_)
     f.set_context(ctx)
     routine.call_routine(f)
 

@@ -51,8 +51,6 @@ def get_value(v):
         raise ObinReferenceError(referenced)
     else:
         base_env = v.base_env
-        from obin.runtime.lexical_environment import EnvironmentRecord
-        assert isinstance(base_env, EnvironmentRecord)
         name = v.get_referenced_name()
         return base_env.get_binding_value(name)
 

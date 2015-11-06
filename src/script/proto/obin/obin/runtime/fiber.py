@@ -32,8 +32,8 @@ class Fiber(object):
     def routine(self):
         return self.__routine
 
-    def call_object(self, obj, args, this, ctx):
-        routine = obj.create_routine(args, this, ctx)
+    def call_object(self, obj, args, ctx):
+        routine = obj.create_routine(args, ctx)
         self.call_routine(routine, ctx.routine(), ctx.routine())
 
     def call_routine(self, routine, continuation, caller):

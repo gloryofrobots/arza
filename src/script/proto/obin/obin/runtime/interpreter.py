@@ -36,19 +36,6 @@ class Interpreter(object):
 
         pass
 
-    def run_ast(self, ast):
-        symbol_map = ast.symbol_map
-        from obin.compile.code import ast_to_bytecode
-        code = ast_to_bytecode(ast, symbol_map)
-        #print code
-        return self.run(code)
-
-    def run_src_old(self, src):
-        from obin.compile.astbuilder import parse_to_ast
-        from obin.runistr import decode_str_utf8
-        ast = parse_to_ast(decode_str_utf8(src))
-        return self.run_ast(ast)
-
     def run_src(self, src):
         from obin.compile.compiler import compile as cl
         code = cl(src)

@@ -1,5 +1,5 @@
 from obin.objects.object_map import new_map
-
+from object_space import isstring
 
 class SymbolMap(object):
     def __init__(self):
@@ -16,6 +16,7 @@ class SymbolMap(object):
                 and self.symbols == other.symbols
 
     def add_symbol(self, identifyer):
+        assert isstring(identifyer)
         idx = self.symbols.lookup(identifyer)
 
         if idx == self.symbols.NOT_FOUND:
@@ -26,11 +27,11 @@ class SymbolMap(object):
         return idx
 
     def has_variable(self, identifyer):
+        assert isstring(identifyer)
         return identifyer in self.variables
 
     def add_variable(self, identifyer):
         idx = self.add_symbol(identifyer)
-
         self.variables.append(identifyer)
         return idx
 
@@ -41,22 +42,17 @@ class SymbolMap(object):
         return idx
 
     def add_rest(self, identifyer):
-        #assert isinstance(identifyer, unicode)
-        f = unicode(identifyer)
-        #assert isinstance(f, unicode)
-        self.rest = f
-        idx = self.add_symbol(f)
+        self.rest = identifyer
+        idx = self.add_symbol(identifyer)
         return idx
 
     def add_parameter(self, identifyer):
-        #assert isinstance(identifyer, unicode)
-        f = unicode(identifyer)
-        #assert isinstance(f, unicode)
-        idx = self.add_symbol(f)
-        self.parameters.append(f)
+        idx = self.add_symbol(identifyer)
+        self.parameters.append(identifyer)
         return idx
 
     def get_index(self, identifyer):
+        assert isstring(identifyer)
         return self.symbols.lookup(identifyer)
 
     def get_symbols(self):

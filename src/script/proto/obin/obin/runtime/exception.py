@@ -22,6 +22,7 @@ class ObinException(Exception):
 
 class ObinTypeError(ObinException):
     def __init__(self, value):
+        super(ObinTypeError, self).__init__()
         from obin.utils import tb
         tb()
         # assert isinstance(value, unicode)
@@ -33,7 +34,8 @@ class ObinTypeError(ObinException):
 
 class ObinReferenceError(ObinException):
     def __init__(self, identifier):
-        self.identifier = identifier
+        super(ObinReferenceError, self).__init__()
+        self.identifier = identifier.value()
 
     def _msg(self):
         return u'ReferenceError: ' + self.identifier + u' is not defined'
@@ -41,6 +43,7 @@ class ObinReferenceError(ObinException):
 
 class ObinRangeError(ObinException):
     def __init__(self, value=None):
+        super(ObinRangeError, self).__init__()
         self.value = value
 
     def _msg(self):
@@ -49,6 +52,7 @@ class ObinRangeError(ObinException):
 
 class ObinKeyError(ObinRangeError):
     def __init__(self, value=None):
+        super(ObinKeyError, self).__init__()
         self.value = value
 
     def _msg(self):
@@ -56,6 +60,7 @@ class ObinKeyError(ObinRangeError):
 
 class ObinInvokeError(ObinRangeError):
     def __init__(self, value=None):
+        super(ObinInvokeError, self).__init__()
         self.value = value
 
     def _msg(self):
@@ -64,6 +69,7 @@ class ObinInvokeError(ObinRangeError):
 
 class ObinSyntaxError(ObinException):
     def __init__(self, msg=u'', src=u'', line=0, column=0):
+        super(ObinSyntaxError, self).__init__()
         self.error_msg = msg
         self.src = src
         self.line = line

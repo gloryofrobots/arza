@@ -17,10 +17,9 @@ def newchar(c):
     from obin.objects.object import W_Char
     return W_Char(ord(c))
 
-@enforceargs(unicode)
 def newstring(s):
     from obin.objects.object import W_String
-    return W_String(s)
+    return W_String(unicode(s))
 
 w_True = None
 w_False = None
@@ -106,7 +105,7 @@ def isint(w):
     from obin.objects.object import W_Integer
     return isinstance(w, W_Integer)
 
-def isstr(w):
+def isstring(w):
     from obin.objects.object import W_String
     return isinstance(w, W_String)
 

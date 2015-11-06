@@ -17,7 +17,7 @@ def setup(obj):
 
 def object_extract_1_obj_arg(routine):
     from obin.objects.object_space import isobject
-    this, args = routine.args()
+    this, args = routine.method_args()
     other = get_arg(args, 0)
     assert isobject(this)
     assert isobject(other)
@@ -26,7 +26,7 @@ def object_extract_1_obj_arg(routine):
 @complete_native_routine
 def traits(ctx, routine):
     from obin.objects.object_space import isobject
-    this, args = routine.args()
+    this, args = routine.method_args()
     assert isobject(this)
     return this.traits()
 
@@ -47,44 +47,44 @@ def kindof(ctx, routine):
 
 @complete_native_routine
 def at(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     key = get_arg(args, 0)
     return api.at(this, key)
 
 @complete_native_routine
 def lookup(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     key = get_arg(args, 0)
     return api.lookup(this, key)
 
 @complete_native_routine
 def clone(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     return api.clone(this)
 
 @complete_native_routine
 def create(ctx, routine):
     from obin.objects.object_space import object_space
-    this, args = routine.args()
+    this, args = routine.method_args()
     obj = object_space.newobject()
     obj.isa(this)
     return obj
 
 @complete_native_routine
 def to_string(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     s = "[%s<%s> %s]" % (this.klass(), str(hex(id(this))), str(this.named_properties()))
     return _w(s)
 
 
 @complete_native_routine
 def value_of(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     return this
 
 @complete_native_routine
 def has_own_property(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     arg = get_arg(args, 0)
     s = arg.to_string()
     result = this.has_property(s)

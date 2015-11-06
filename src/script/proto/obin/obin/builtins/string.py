@@ -7,8 +7,7 @@ from obin.objects.object import W_String
 from obin.runtime.exception import ObinTypeError
 from obin.builtins import get_arg
 
-
-def setup(global_object):
+def setup(obj):
     from obin.builtins import put_native_function, put_property
     from obin.objects.object_space import object_space
 
@@ -18,7 +17,7 @@ def setup(global_object):
     w_String = W__Object()
     # object_space.assign_proto(w_String, object_space.proto_function)
     put_property(w_String, u'length', _w(1))
-    put_property(global_object, u'String', w_String)
+    put_property(obj, u'String', w_String)
 
     # 15.5.4
     w_StringPrototype = W_String(u"")

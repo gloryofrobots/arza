@@ -2,67 +2,51 @@ from obin.objects.object_space import _w
 from obin.runtime.routine import complete_native_routine
 from obin.builtins import get_arg
 from obin.objects.object_space import isnull_or_undefined, newundefined
+from obin.objects import api
 
 
-def setup(global_object):
-    from obin.builtins import put_property, put_native_function
-    from obin.objects.object import W__Object, W_Array
-    from obin.objects.object_space import object_space
-
-    w_Array = W__Object()
-    object_space.assign_proto(w_Array, object_space.proto_function)
-    put_property(global_object, u'Array', w_Array)
-
-    # 15.4.4
-    w_ArrayPrototype = W_Array()
-    object_space.assign_proto(w_ArrayPrototype, object_space.proto_object)
-    object_space.proto_array = w_ArrayPrototype
-
-    # 15.4.3.1
-    put_property(w_Array, u'prototype', w_ArrayPrototype)
-
+def setup(obj):
     # 15.4.4.2
-    put_native_function(w_ArrayPrototype, u'toString', to_string)
+    api.put_native_function(obj, u'toString', to_string)
 
     # 15.4.4.5
-    put_native_function(w_ArrayPrototype, u'join', join, params=[u'separator'])
+    api.put_native_function(obj, u'join', join, params=[u'separator'])
 
     # 15.4.4.6
-    put_native_function(w_ArrayPrototype, u'pop', pop)
+    api.put_native_function(obj, u'pop', pop)
 
     # 15.4.4.7
-    put_native_function(w_ArrayPrototype, u'push', push)
+    api.put_native_function(obj, u'push', push)
 
     # 15.4.4.8
-    put_native_function(w_ArrayPrototype, u'reverse', reverse)
+    api.put_native_function(obj, u'reverse', reverse)
 
     # 15.4.4.11
-    put_native_function(w_ArrayPrototype, u'sort', sort)
-    put_native_function(w_ArrayPrototype, u'length', length)
+    api.put_native_function(obj, u'sort', sort)
+    api.put_native_function(obj, u'length', length)
 
-    put_native_function(w_ArrayPrototype, u'forEach', for_each)
+    api.put_native_function(obj, u'forEach', for_each)
 
-    put_native_function(w_ArrayPrototype, u'indexOf', index_of)
+    api.put_native_function(obj, u'indexOf', index_of)
 
-    put_native_function(w_ArrayPrototype, u'lastIndexOf', last_index_of)
+    api.put_native_function(obj, u'lastIndexOf', last_index_of)
 
-    put_native_function(w_ArrayPrototype, u'shift', shift)
+    api.put_native_function(obj, u'shift', shift)
 
-    put_native_function(w_ArrayPrototype, u'slice', slice)
+    api.put_native_function(obj, u'slice', slice)
 
 
 @complete_native_routine
 def slice(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     o = this.ToObject()
     from_index = get_arg(args, 0).ToUInt32()
     to_index = get_arg(args, 1).ToUInt32()
     from obin.objects.object_space import object_space
     n = object_space.newvector(length=_w(to_index-from_index))
-    from obin.objects.object import put_property
     index = 0
     for item in xrange(from_index, to_index):
-        put_property(n, unicode(str(index)), o.get(unicode(str(item))))
+        api.put_property(n, unicode(str(index)), o.get(unicode(str(item))))
         index += 1
     return n
 
@@ -70,7 +54,7 @@ def slice(ctx, routine):
 # 15.4.4.7
 @complete_native_routine
 def push(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     o = this.ToObject()
     for item in args:
         e = item
@@ -80,14 +64,13 @@ def push(ctx, routine):
 
 @complete_native_routine
 def length(ctx, routine):
-    this, args = routine.args()
-    o = this.ToObject()
-    return o.length()
+    this, args = routine.method_args()
+    return this.length()
 
 # 15.4.4.2
 @complete_native_routine
 def to_string(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     from obin.runtime.machine import run_function_for_result
     array = this.ToObject()
     func = array.get(u'join')
@@ -103,7 +86,7 @@ def to_string(ctx, routine):
 # 15.4.4.5
 @complete_native_routine
 def join(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     from obin.objects.object_space import isundefined
 
     separator = get_arg(args, 0)
@@ -143,13 +126,13 @@ def join(ctx, routine):
 # 15.4.4.6
 @complete_native_routine
 def pop(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     o = this.ToObject()
     return o._items.pop()
 
 @complete_native_routine
 def shift(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     o = this.ToObject()
     l = o.get(u'length').ToUInt32()
 
@@ -170,7 +153,7 @@ def shift(ctx, routine):
 # 15.4.4.8
 @complete_native_routine
 def reverse(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     o = this.ToObject()
     length = o.get(u'length').ToUInt32()
 
@@ -202,7 +185,7 @@ def reverse(ctx, routine):
 
 @complete_native_routine
 def last_index_of(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     obj = this
     elem = get_arg(args, 0)
     length = this.get(u'length').ToUInt32()
@@ -215,39 +198,39 @@ def last_index_of(ctx, routine):
         else:
             from_index = findex
 
-    from obin.objects.object import W_IntNumber
+    from obin.objects.object import W_Integer
     for i in xrange(from_index, -1, -1):
         y = obj.get(unicode(str(i)))
         if elem == y:
-            return W_IntNumber(i)
-    return W_IntNumber(-1)
+            return W_Integer(i)
+    return W_Integer(-1)
 
 
 @complete_native_routine
 def index_of(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     obj = this
     length = this.get(u'length').ToUInt32()
     elem = get_arg(args, 0)
     from_index = get_arg(args, 1).ToUInt32()
 
-    from obin.objects.object import W_IntNumber
+    from obin.objects.object import W_Integer
     for i in xrange(from_index, length):
         y = obj.get(unicode(str(i)))
         if elem == y:
-            return W_IntNumber(i)
-    return W_IntNumber(-1)
+            return W_Integer(i)
+    return W_Integer(-1)
 
 #TODO FIX IT
 @complete_native_routine
 def for_each(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     obj = this
-    length = this.get(u'length').ToUInt32()
+    length = this.get(u'length').value()
 
     callback = get_arg(args, 0)
-    from obin.objects.object import W_BasicFunction
-    assert isinstance(callback, W_BasicFunction)
+    from obin.objects.object_space import isfunction
+    assert isfunction(callback)
 
     for i in xrange(length):
         x = obj.get(unicode(str(i)))
@@ -257,7 +240,7 @@ def for_each(ctx, routine):
 # 15.4.4.11
 @complete_native_routine
 def sort(ctx, routine):
-    this, args = routine.args()
+    this, args = routine.method_args()
     obj = this
     length = this.get(u'length').ToUInt32()
 

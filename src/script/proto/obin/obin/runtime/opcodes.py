@@ -116,8 +116,9 @@ class LOAD_STRINGCONSTANT(Opcode):
     _immutable_fields_ = ['w_strval']
 
     def __init__(self, value):
-        from obin.objects.object_space import newstring
-        self.w_strval = newstring(value)
+        from obin.objects.object_space import isstring
+        assert isstring(value)
+        self.w_strval = value
 
     def eval(self, ctx):
         w_strval = self.w_strval
@@ -143,10 +144,9 @@ class LOAD_VARIABLE(Opcode):
     _immutable_fields_ = ['identifier', 'index']
 
     def __init__(self, index, identifier):
-        from obin.objects.object_space import newstring
         assert index is not None
         self.index = index
-        self.identifier = newstring(identifier)
+        self.identifier = identifier
 
     # 11.1.2
     def eval(self, ctx):
@@ -491,14 +491,13 @@ class STORE(Opcode):
     _stack_change = 0
 
     def __init__(self, index, identifier):
-        from obin.objects.object_space import newstring
         assert index is not None
         self.index = index
-        self.identifier = newstring(identifier)
+        self.identifier = identifier
 
     def eval(self, ctx):
         value = ctx.stack_top()
-        ref = ctx.store_ref(self.identifier, self.index, value)
+        ctx.store_ref(self.identifier, self.index, value)
 
     def __str__(self):
         return 'STORE "%s" (%d)' % (self.identifier, self.index)
@@ -614,13 +613,13 @@ class POP(Opcode):
         ctx.stack_pop()
 
 
-def common_call(ctx, funcobj, args, this, identifyer):
+def common_call(ctx, funcobj, args):
     from obin.objects.object_space import isvector, isfunction
     assert isvector(args)
     assert isfunction(funcobj)
 
     argv = args.values()
-    funcobj.Call(args=argv, this=this, calling_context=ctx)
+    funcobj.Call(args=argv, calling_context=ctx)
 
 
 def load_arguments(ctx, counter):
@@ -674,12 +673,10 @@ class CALL(Opcode):
         return -1 * self.counter + 1
 
     def eval(self, ctx):
-        from obin.objects.object_space import newundefined
-
         r1 = ctx.stack_pop()
         args = load_arguments(ctx, self.counter)
 
-        common_call(ctx, r1, args, newundefined(), r1)
+        common_call(ctx, r1, args)
 
     def __str__(self):
         return "CALL (%d)" % self.counter
@@ -704,7 +701,7 @@ class CALL_METHOD(Opcode):
         name = method
         r1 = api.lookup(what, name)
         args.prepend(what)
-        common_call(ctx, r1, args, what, method)
+        common_call(ctx, r1, args)
 
     def __str__(self):
         return "CALL_METHOD (%d)" % self.counter

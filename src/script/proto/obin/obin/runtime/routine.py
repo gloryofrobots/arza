@@ -238,8 +238,13 @@ class NativeRoutine(BaseRoutine):
 
     def args(self):
         args = self.ctx.argv()
-        this = self.ctx.this_binding()
-        return this, args
+
+        return args
+
+    def method_args(self):
+        args = self.ctx.argv()
+
+        return args[0], args[1:]
 
     def _execute(self):
         #print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__

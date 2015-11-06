@@ -1,7 +1,29 @@
 from obin.runtime.reference import Reference
 from obin.objects import api
+from obin.objects.object_space import isstring
 
-class EnvironmentRecord(object):
+def get_identifier_reference(lex, identifier):
+    if lex is None:
+        return Reference(referenced=identifier)
+
+    exists = lex.has_binding(identifier)
+    if exists:
+        ref = Reference(base_env=lex, referenced=identifier)
+        return ref
+    else:
+        outer = lex.outer_environment
+        return get_identifier_reference(outer, identifier)
+
+class LexicalEnvironment(object):
+    _immutable_fields_ = ['outer_environment']
+
+    def __init__(self, outer_environment=None):
+        assert isinstance(outer_environment, LexicalEnvironment) or outer_environment is None
+        self.outer_environment = outer_environment
+
+    def get_identifier_reference(self, identifier):
+        return get_identifier_reference(self, identifier)
+
     def has_binding(self, identifier):
         return False
 
@@ -11,15 +33,15 @@ class EnvironmentRecord(object):
     def get_binding_value(self, identifier):
         raise NotImplementedError
 
-class DeclarativeEnvironmentRecord(EnvironmentRecord):
-    _immutable_fields_ = ['_binding_slots_', '_binding_resize_']
 
-    def __init__(self, size):
+class DeclarativeEnvironment(LexicalEnvironment):
+    _immutable_fields_ = ['_binding_slots_', '_binding_resize_', 'outer_environment']
+
+    def __init__(self, outer_environment, env_size):
         from obin.objects.datastructs import Slots
-        EnvironmentRecord.__init__(self)
-        self.bindings = Slots(size)
+        LexicalEnvironment.__init__(self, outer_environment)
+        self.bindings = Slots(env_size)
 
-    # 10.2.1.1.1
     def has_binding(self, identifier):
         return self.bindings.contains(identifier)
 
@@ -34,23 +56,24 @@ class DeclarativeEnvironmentRecord(EnvironmentRecord):
 
     # 10.2.1.1.3
     def set_binding(self, identifier, value):
-        assert identifier is not None and isinstance(identifier, unicode)
+        assert isstring(identifier)
         self._set_binding(identifier, value)
 
     # 10.2.1.1.4
     def get_binding_value(self, identifier):
-        assert identifier is not None and isinstance(identifier, unicode)
+        assert isstring(identifier)
         if not self.has_binding(identifier):
-                from obin.runtime.exception import ObinReferenceError
-                raise ObinReferenceError(identifier)
+            from obin.runtime.exception import ObinReferenceError
+            raise ObinReferenceError(identifier)
 
         return self._get_binding(identifier)
 
 
-class ObjectEnvironmentRecord(EnvironmentRecord):
+class ObjectEnvironment(LexicalEnvironment):
     _immutable_fields_ = ['binding_object']
 
-    def __init__(self, obj):
+    def __init__(self, obj, outer_environment=None):
+        LexicalEnvironment.__init__(self, outer_environment)
         self.binding_object = obj
 
     # 10.2.1.2.1
@@ -66,43 +89,3 @@ class ObjectEnvironmentRecord(EnvironmentRecord):
         return api.at(self.binding_object, n)
 
 
-class GlobalEnvironmentRecord(ObjectEnvironmentRecord):
-    pass
-
-
-def get_identifier_reference(lex, identifier):
-    if lex is None:
-        return Reference(referenced=identifier)
-
-    envRec = lex.environment_record
-    exists = envRec.has_binding(identifier)
-    if exists:
-        ref = Reference(base_env=envRec, referenced=identifier)
-        return ref
-    else:
-        outer = lex.outer_environment
-        return get_identifier_reference(outer, identifier)
-
-
-class LexicalEnvironment(object):
-    _immutable_fields_ = ['outer_environment', 'environment_record']
-
-    def __init__(self, outer_environment=None):
-        assert isinstance(outer_environment, LexicalEnvironment) or outer_environment is None
-        self.outer_environment = outer_environment
-        self.environment_record = None
-
-    def get_identifier_reference(self, identifier):
-        return get_identifier_reference(self, identifier)
-
-
-class DeclarativeEnvironment(LexicalEnvironment):
-    def __init__(self, outer_environment, env_size):
-        LexicalEnvironment.__init__(self, outer_environment)
-        self.environment_record = DeclarativeEnvironmentRecord(env_size)
-
-
-class ObjectEnvironment(LexicalEnvironment):
-    def __init__(self, obj, outer_environment=None):
-        LexicalEnvironment.__init__(self, outer_environment)
-        self.environment_record = ObjectEnvironmentRecord(obj)

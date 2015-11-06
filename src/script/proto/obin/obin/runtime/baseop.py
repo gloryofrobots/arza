@@ -5,7 +5,7 @@
 import math
 
 from obin.objects.object import W_String, W_Integer, W_Float
-from obin.objects.object_space import _w, isint, isstr, isfloat
+from obin.objects.object_space import _w, isint, isstring, isfloat
 from rpython.rlib.rarithmetic import ovfcheck
 from rpython.rlib.rfloat import isnan, isinf
 from rpython.rlib.objectmodel import specialize
@@ -160,7 +160,7 @@ def _base_compare(x, y, _compare):
         n2 = x.value()
         return _compare(n1, n2)
 
-    if not (isstr(x) and isstr(y)):
+    if not (isstring(x) and isstring(y)):
         n1 = x.value()
         n2 = y.value()
         return _compare(n1, n2)
