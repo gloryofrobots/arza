@@ -229,7 +229,7 @@ class LOAD_MEMBER(Opcode):
     _stack_change = -1
 
     def eval(self, ctx):
-        w_obj = ctx.stack_pop().ToObject()
+        w_obj = ctx.stack_pop()
         w_name = ctx.stack_pop()
         value = api.at(w_obj, w_name)
 
@@ -242,6 +242,13 @@ class LOAD_MEMBER(Opcode):
 class LOAD_MEMBER_DOT(LOAD_MEMBER):
     def __str__(self):
         return 'LOAD_MEMBER_DOT'
+
+    def eval(self, ctx):
+        w_obj = ctx.stack_pop()
+        w_name = ctx.stack_pop()
+        value = api.lookup(w_obj, w_name)
+
+        ctx.stack_append(value)
 
 
 class COMMA(BaseUnaryOperation):
@@ -690,11 +697,11 @@ class CALL_METHOD(Opcode):
 
     def eval(self, ctx):
         method = ctx.stack_pop()
-        what = ctx.stack_pop().ToObject()
+        what = ctx.stack_pop()
         args = load_arguments(ctx, self.counter)
 
-        name = method.to_string()
-        r1 = what.get(name)
+        name = method
+        r1 = api.lookup(what, name)
         common_call(ctx, r1, args, what, method)
 
     def __str__(self):

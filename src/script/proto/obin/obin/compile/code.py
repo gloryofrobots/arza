@@ -2,7 +2,6 @@
 #from pypy.rlib.objectmodel import we_are_translated
 from rpython.rlib import jit
 
-from obin.runtime.exception import ObinThrowException
 from obin.runtime.opcodes import opcodes, LABEL, BaseJump
 from obin.objects.object import W_String
 

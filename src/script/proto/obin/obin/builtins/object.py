@@ -1,14 +1,25 @@
 from obin.objects.object_space import _w
 from obin.runtime.routine import complete_native_routine
 from obin.builtins import get_arg
+from obin.objects import api
+
+def setup(obj):
+    api.put_native_function(obj, u'toString', to_string)
+    api.put_native_function(obj, u'clone', clone)
+    api.put_native_function(obj, u'at', at)
+    api.put_native_function(obj, u'create', create)
+    pass
+
+@complete_native_routine
+def at(ctx, routine):
+    this, args = routine.args()
+    key = get_arg(args, 0)
+    return api.at(this, key)
 
 @complete_native_routine
 def clone(ctx, routine):
-    import copy
     this, args = routine.args()
-    clone = copy.copy(this)
-    clone._slots = copy.deepcopy(this._slots)
-    return clone
+    return api.clone(this)
 
 @complete_native_routine
 def create(ctx, routine):

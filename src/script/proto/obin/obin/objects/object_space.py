@@ -123,6 +123,13 @@ def isnull_or_undefined(obj):
         return True
     return False
 
+def newobject():
+    global object_space
+    from obin.objects.object import W_Object
+    obj = W_Object(None, None)
+    obj.isa(object_space.traits.Object)
+    return obj
+
 class ObjectSpace(object):
     class Traits(object):
         pass
@@ -132,28 +139,35 @@ class ObjectSpace(object):
         self.global_object = None
 
         self.traits = ObjectSpace.Traits()
-        from obin.objects.object import W_Object
-        self.traits.Object = W_Object()
+        self.init_traits()
         self.interpreter = None
 
+    def newobject(self):
+        from obin.objects.object import W_Object
+        obj = W_Object(None, None)
+        obj.isa(self.traits.Object)
+        return obj
+
     def init_traits(self):
+        from obin.objects.object import W_Object
+        self.traits.Object = W_Object(None, None)
         # following traits resemble native types list
-        self.traits.Function = newobject()
-        self.traits.True = newobject()
-        self.traits.False = newobject()
-        self.traits.Nil = newobject()
-        self.traits.Undefined = newobject()
+        self.traits.Function = self.newobject()
+        self.traits.True = self.newobject()
+        self.traits.False = self.newobject()
+        self.traits.Nil = self.newobject()
+        self.traits.Undefined = self.newobject()
 
-        self.traits.Char = newobject()
-        self.traits.Integer = newobject()
-        self.traits.Float = newobject()
-        self.traits.Symbol = newobject()
+        self.traits.Char = self.newobject()
+        self.traits.Integer = self.newobject()
+        self.traits.Float = self.newobject()
+        self.traits.Symbol = self.newobject()
 
-        self.traits.String = newobject()
-        self.traits.Array = newobject()
-        self.traits.List = newobject()
-        self.traits.Vector = newobject()
-        self.traits.Tuple = newobject()
+        self.traits.String = self.newobject()
+        self.traits.Array = self.newobject()
+        self.traits.List = self.newobject()
+        self.traits.Vector = self.newobject()
+        self.traits.Tuple = self.newobject()
 
 
     def get_global_environment(self):
@@ -161,14 +175,7 @@ class ObjectSpace(object):
 
 object_space = ObjectSpace()
 
-def newobject():
-    global object_space
-    from obin.objects.object import W_Object
-    obj = W_Object()
-    obj.isa(object_space.traits.Object)
-    return obj
 
-object_space.init_traits()
 
 @specialize.argtype(0)
 def _w(value):

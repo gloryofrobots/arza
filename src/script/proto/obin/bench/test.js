@@ -3,6 +3,12 @@ O = {
         action: fn () {},
         name: "Alice"
     }
+O2 = O.clone()
+
+
+print(O.name)
+print(O)
+print(O2)
 
 x = 42
 s = "Hello"

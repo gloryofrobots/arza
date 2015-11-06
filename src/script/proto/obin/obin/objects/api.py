@@ -22,10 +22,19 @@ def at(obj, k):
     from object_space import isundefined
     assert not isundefined(k)
     v = obj._at_(k)
+    assert v is not None
     if isundefined(v):
         raise ObinKeyError(k)
     return v
 
+def lookup(obj, k):
+    from object_space import isundefined
+    assert not isundefined(k)
+    v = obj._lookup_(k)
+    assert v is not None
+    if isundefined(v):
+        raise ObinKeyError(k)
+    return v
 
 def has(obj, k):
     from object_space import isundefined, newbool
@@ -36,11 +45,22 @@ def has(obj, k):
     else:
         return newbool(True)
 
+def obtain(obj, k):
+    from object_space import isundefined, newbool
+    assert not isundefined(k)
+    v = obj._lookup_(k)
+    if isundefined(v):
+        return newbool(False)
+    else:
+        return newbool(True)
 
 def length(obj):
     from object_space import newint
     return newint(obj._length_())
 
+def clone(obj):
+    c = obj._clone_()
+    return c
 
 def put_property(obj, k, v):
     from object_space import newstring

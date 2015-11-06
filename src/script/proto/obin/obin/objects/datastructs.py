@@ -163,14 +163,14 @@ class Slots(object):
 
     def get(self, name):
         idx = self.get_index(name)
-        if not idx:
+        if idx is None:
             return
 
         return self.get_by_index(idx)
 
     def delete(self, name):
         idx = self.get_index(name)
-        if not idx:
+        if idx is None:
             return
 
         assert idx >= 0
@@ -186,7 +186,7 @@ class Slots(object):
 
     def add(self, name, value):
         idx = self.get_index(name)
-        if not idx:
+        if idx is None:
             idx = len(self._property_map_)
             self._property_map_[name] = idx
 

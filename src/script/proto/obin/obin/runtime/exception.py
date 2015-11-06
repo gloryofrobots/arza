@@ -13,16 +13,11 @@ class ObinException(Exception):
         from obin.objects.object_space import _w
         return _w(self._msg())
 
+    def __str__(self):
+        return self._msg()
 
-class ObinThrowException(ObinException):
-    def __init__(self, value):
-        from obin.objects.object import W_Root
-        assert isinstance(value, W_Root)
-        self.value = value
-
-    def _msg(self):
-        s = self.value.to_string()
-        return s
+    def __repr__(self):
+        return self.__str__()
 
 
 class ObinTypeError(ObinException):
@@ -58,6 +53,13 @@ class ObinKeyError(ObinRangeError):
 
     def _msg(self):
         return u'KeyError: %s' % (self.value,)
+
+class ObinInvokeError(ObinRangeError):
+    def __init__(self, value=None):
+        self.value = value
+
+    def _msg(self):
+        return u'InvokeError: expected argument with number %s' % (str(self.value),)
 
 
 class ObinSyntaxError(ObinException):

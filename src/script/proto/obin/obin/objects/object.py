@@ -24,6 +24,9 @@ class W_Root(object):
     def _at_(self, b):
         raise NotImplementedError()
 
+    def _lookup_(self, b):
+        raise NotImplementedError()
+
     def _length_(self):
         raise NotImplementedError()
 
@@ -63,9 +66,8 @@ class W_Nil(W_Constant):
     def _tobool_(self):
         return False
 
-    def _at_(self, k):
+    def _lookup_(self, k):
         from object_space import object_space
-
         return api.at(object_space.traits.Nil, k)
 
 
@@ -79,7 +81,7 @@ class W_True(W_Constant):
     def _tobool_(self):
         return True
 
-    def _at_(self, k):
+    def _lookup_(self, k):
         from object_space import object_space
         return api.at(object_space.traits.True, k)
 
@@ -96,7 +98,7 @@ class W_False(W_Constant):
     def _tobool_(self):
         return False
 
-    def _at_(self, k):
+    def _lookup_(self, k):
         from object_space import object_space
         return api.at(object_space.traits.False, k)
 
@@ -122,7 +124,7 @@ class W_Char(W_Primitive):
     def _tobool_(self):
         return bool(self.__value)
 
-    def _at_(self, k):
+    def _lookup_(self, k):
         from object_space import object_space
         return api.at(object_space.traits.Char, k)
 
@@ -145,7 +147,7 @@ class W_Integer(W_Primitive):
     def _tobool_(self):
         return bool(self.__value)
 
-    def _at_(self, k):
+    def _lookup_(self, k):
         from object_space import object_space
         return api.at(object_space.traits.Integer, k)
 
@@ -168,7 +170,7 @@ class W_Float(W_Primitive):
     def _tobool_(self):
         return bool(self.__value)
 
-    def _at_(self, k):
+    def _lookup_(self, k):
         from object_space import object_space
         return api.at(object_space.traits.Float, k)
 
@@ -235,21 +237,20 @@ class W_String(W_Primitive):
     def _length_(self):
         return self.__length
 
-    def _at_(self, k):
-        from object_space import object_space, isint
-        if isint(k):
-            return self._char_at(k.value())
-        else:
-            return api.at(object_space.traits.String, k)
-
-    def _char_at(self, index):
-        from object_space import newundefined, newchar
+    def _at_(self, index):
+        from object_space import newundefined, newchar, isint
+        assert isint(index)
         try:
-            ch = self.__items[index]
+            ch = self.__items[index.value()]
         except ObinKeyError:
             return newundefined()
 
         return newchar(ch)
+
+    def _lookup_(self, k):
+        from object_space import object_space
+        return api.at(object_space.traits.String, k)
+
 
 class W_Vector(W_Cell):
     _type_ = 'Vector'
@@ -274,17 +275,15 @@ class W_Vector(W_Cell):
         except:
             raise ObinKeyError(k)
 
-    def _at_(self, k):
+    def _lookup_(self, k):
         from object_space import object_space, isint
-        if isint(k):
-            return self._at_index_(k.value())
-        else:
-            return api.at(object_space.traitsVector, k)
+        return api.at(object_space.traitsVector, k)
 
-    def _at_index_(self, index):
-        from object_space import newundefined
+    def _at_(self, index):
+        from object_space import newundefined, isint
+        assert isint(index)
         try:
-            el = self._items[index]
+            el = self._items[index.value()]
         except ObinKeyError:
             return newundefined()
 
@@ -308,8 +307,11 @@ class W_Vector(W_Cell):
     def at(self, i):
         return self._items[i]
 
-    def has(self, i):
+    def has_index(self, i):
         return i > 0 and i < self.length()
+    
+    def has(self, obj):
+        return obj in self._items
 
     def length(self):
         return len(self._items)
@@ -349,39 +351,52 @@ class W_Object(W_Cell):
     _type_ = 'Object'
     _immutable_fields_ = ['_type_']
 
-    def __init__(self):
+    def __init__(self, slots, traits):
         super(W_Object, self).__init__()
-        from object_space import newstring
         from obin.objects.datastructs import Slots
-        self._slots = Slots()
-        traits = W_Vector()
-        traits.append(self)
-        self._slots.add(newstring(u"__traits__"), traits)
+        if not slots:
+            slots = Slots()
+        if not traits:
+            traits = W_Vector()
+
+        self.__slots = slots
+        self.__traits = traits
 
     def __str__(self):
         return "%s: %s" % (object.__repr__(self), self._type_)
 
     def traits(self):
-        return self._slots.get_by_index(0)
+        return self.__traits
 
     def isa(self, obj):
         assert isinstance(obj, W_Object)
-
+        if not self.traits().has(obj):
+            self.traits().prepend(obj)
+            
         for trait in obj.traits().values():
             if self.traits().has(trait):
-                return
-            self.traits().insert(1, trait)
+                continue
+            self.traits().prepend(trait)
 
     def nota(self, obj):
         assert isinstance(obj, W_Object)
+
+        try:
+            self.traits().remove(obj)
+        except KeyError:
+            pass
+        
         for trait in obj.traits().values():
             try:
                 self.traits().remove(trait)
-            except:
+            except KeyError:
                 pass
 
     def kindof(self, obj):
         assert isinstance(obj, W_Object)
+        if not self.traits().has(obj):
+            return False
+
         for t in obj.traits().values():
             if not self.traits().has(t):
                 return False
@@ -393,35 +408,48 @@ class W_Object(W_Cell):
         v = self._at_(k)
         return not isundefined(v)
 
-    def _at_(self, k):
-        from object_space import isundefined
+    def _lookup_(self, k):
+        from object_space import isundefined, newundefined
+        v = self._at_(k)
+        if not isundefined(v):
+            return v
+
         for t in self.traits().values():
-            v = t._at_self(k)
+            v = t._at_(k)
             if not isundefined(v):
                 return v
 
-    def _at_self(self, k):
+        return newundefined()
+
+    def _at_(self, k):
         from object_space import newundefined
-        v = self._slots.get(k)
+        v = self.__slots.get(k)
         if v is None:
             return newundefined()
 
         return v
 
     def _put_(self, k, v):
-        self._slots.add(k, v)
+        self.__slots.add(k, v)
 
     def _iterator_(self):
-        return W_ObjectIterator(self._slots.keys())
+        return W_ObjectIterator(self.__slots.keys())
 
     def _tobool_(self):
         return True
 
     def _length_(self):
-        return self._slots.length()
+        return self.__slots.length()
 
     def _tostring_(self):
-        return str(self._slots._property_map_)
+        return str(self.__slots._property_map_)
+
+    def _clone_(self):
+        import copy
+        slots = copy.copy(self.__slots)
+        traits = copy.copy(self.__traits)
+        clone = W_Object(slots, traits)
+        return clone
 
 class W_ModuleObject(W_Object):
     pass
@@ -445,7 +473,7 @@ class W_Function(W_Primitive):
     def _tobool_(self):
         return True
 
-    def _at_(self, k):
+    def _lookup_(self, k):
         from object_space import object_space
         return api.at(object_space.traits.Function, k)
 

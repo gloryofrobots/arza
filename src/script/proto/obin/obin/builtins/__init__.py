@@ -7,16 +7,6 @@ from obin.objects import api
 def setup_builtins(global_object):
     from obin.objects.object_space import object_space
     import obin.builtins.object
-    target = object_space.traits.Object
-    # 15.2.4.2 Object.prototype.toString()
-    api.put_native_function(target, u'toString', obin.builtins.object.to_string)
-    api.put_native_function(target, u'toLocaleString', obin.builtins.object.to_string)
-
-    # 15.2.4.3 Object.prototype.valueOf()
-    api.put_native_function(target, u'valueOf', obin.builtins.object.value_of)
-    api.put_native_function(target, u'clone', obin.builtins.object.clone)
-    api.put_native_function(target, u'hasOwnProperty', obin.builtins.object.has_own_property)
-    api.put_native_function(target, u'create', obin.builtins.object.create)
 
     # target = object_space.traits.Function
     # # 15.3.4.2 Function.prototype.toString()
@@ -28,6 +18,8 @@ def setup_builtins(global_object):
     # # 15.3.4.4 Function.prototype.call
     # api.put_native_function(target, u'call', obin.builtins.function.js_call)
 
+    import obin.builtins.object
+    obin.builtins.object.setup(object_space.traits.Object)
     import obin.builtins.global_functions
     obin.builtins.global_functions.setup(global_object)
     """
@@ -48,10 +40,8 @@ def setup_builtins(global_object):
 
     """
 
-from obin.objects.object_space import newundefined
-
-
-def get_arg(args, index, default=newundefined()):
+def get_arg(args, index):
+    from obin.runtime.exception import ObinInvokeError
     if len(args) > index:
         return args[index]
-    return default
+    raise ObinInvokeError(index)
