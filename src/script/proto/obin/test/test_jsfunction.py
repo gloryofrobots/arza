@@ -2,7 +2,7 @@ from obin.objects.object_space import _w
 from obin.compile.code import Code
 from obin.runtime.execution_context import ExecutionContext, FunctionExecutionContext, ObjectExecutionContext, EvalExecutionContext
 from obin.runtime.routine import FunctionRoutine, BytecodeRoutine, NativeRoutine, GlobalRoutine, EvalRoutine
-from obin.runtime.lexical_environment import DeclarativeEnvironment
+from obin.runtime.environment import DeclarativeEnvironment
 from obin.compile.astbuilder import parse_to_ast, SymbolMap
 from obin.compile.code import ast_to_bytecode
 from obin.objects.object import W_BasicObject

@@ -143,8 +143,11 @@ class Slots(object):
     def __init__(self, size=0):
         if size:
             self._property_slots_ = [None] * size
+        else:
+            self._property_slots_ = []
+
+        self._size = size
         self._property_map_ = {}
-        self._property_slots_ = []
         self._index = 0
 
 
@@ -161,6 +164,14 @@ class Slots(object):
 
     def __repr__(self):
         return self.__str__()
+
+    def __copy__(self):
+        from copy import copy
+        clone = Slots(0)
+        clone._property_slots_ = copy(self._property_slots_)
+        clone._property_map_ = copy(self._property_map_)
+        clone._index = self._index
+        return clone
 
     def contains(self, name):
         return name in self._property_map_

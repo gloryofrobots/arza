@@ -112,7 +112,7 @@ class ExecutionContext(object):
 
     def store_ref(self, symbol, index, value):
         lex_env = self.lexical_environment()
-        ref = lex_env.get_identifier_reference(symbol)
+        ref = lex_env.get_reference(symbol)
         if not ref:
             ref = self._get_refs(index)
 
@@ -126,14 +126,14 @@ class ExecutionContext(object):
         ## TODO pre-bind symbols, work with idndex, does not work, see test_foo19
         if index < 0:
             lex_env = self.lexical_environment()
-            ref = lex_env.get_identifier_reference(symbol)
+            ref = lex_env.get_reference(symbol)
             return ref
 
         ref = self._get_refs(index)
 
         if ref is None:
             lex_env = self.lexical_environment()
-            ref = lex_env.get_identifier_reference(symbol)
+            ref = lex_env.get_reference(symbol)
             if ref.is_unresolvable_reference() is True:
                 return ref
             self._set_refs(index, ref)
@@ -171,9 +171,9 @@ class ObjectExecutionContext(_DynamicExecutionContext):
 
         self._code_ = code
 
-        from obin.runtime.lexical_environment import ObjectEnvironment
-        localEnv = ObjectEnvironment(obj)
-        self.set_lexical_environment(localEnv)
+        from obin.runtime.environment import newobjectenv
+        env = newobjectenv(obj, None)
+        self.set_lexical_environment(env)
         self.declaration_binding_initialization()
 
 
@@ -187,8 +187,8 @@ class EvalExecutionContext(_DynamicExecutionContext):
         # if not calling_context:
         #     raise NotImplementedError()
 
-        from obin.runtime.lexical_environment import DeclarativeEnvironment
-        strict_var_env = DeclarativeEnvironment(self.lexical_environment(), 0)
+        from obin.runtime.environment import newenv
+        strict_var_env = newenv(self.lexical_environment(), 0)
         self.set_lexical_environment(strict_var_env)
 
         self.declaration_binding_initialization()
@@ -209,9 +209,9 @@ class FunctionExecutionContext(ExecutionContext):
         self._w_func_ = w_func
         self._calling_context_ = None
 
-        from obin.runtime.lexical_environment import DeclarativeEnvironment
-        localEnv = DeclarativeEnvironment(scope, env_size)
-        self.set_lexical_environment(localEnv)
+        from obin.runtime.environment import newenv
+        env = newenv(scope, env_size)
+        self.set_lexical_environment(env)
 
         self.declaration_binding_initialization()
 
@@ -228,9 +228,9 @@ class BlockExecutionContext(_DynamicExecutionContext):
 
         parent_env = parent_context.lexical_environment()
 
-        from obin.runtime.lexical_environment import DeclarativeEnvironment
+        from obin.runtime.environment import newenv
         env_size = code.env_size() + 1  # neet do add one for the arguments object
-        local_env = DeclarativeEnvironment(parent_env, env_size)
+        local_env = newenv(parent_env, env_size)
 
         self.set_lexical_environment(local_env)
 
@@ -247,8 +247,8 @@ class CatchExecutionContext(_DynamicExecutionContext):
 
         parent_env = parent_context.lexical_environment()
 
-        from obin.runtime.lexical_environment import DeclarativeEnvironment
-        local_env = DeclarativeEnvironment(parent_env, env_size)
+        from obin.runtime.environment import newenv
+        local_env = newenv(parent_env, env_size)
         local_env.set_binding(catchparam, exception_value)
 
         self.set_lexical_environment(local_env)

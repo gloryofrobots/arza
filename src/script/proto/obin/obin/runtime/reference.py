@@ -65,7 +65,7 @@ def put_value(v, w):
         raise ObinReferenceError(referenced)
     else:
         base_env = v.base_env
-        from obin.runtime.lexical_environment import EnvironmentRecord
+        from obin.runtime.environment import EnvironmentRecord
         assert isinstance(base_env, EnvironmentRecord)
         name = v.get_referenced_name()
         base_env.set_binding(name, w)

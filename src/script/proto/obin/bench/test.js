@@ -3,9 +3,17 @@ A = {
         return a1 + a2
     }
 }
-
+B = A.clone()
+B.action = fn(self, a1, a2) {
+    fn _d() {
+        return a1 - a2 * 100
+    }
+    return _d()
+}
 a = A.action(2,3.14)
 print(a)
+b = B.action(2,3.14)
+print(b)
 
 
 

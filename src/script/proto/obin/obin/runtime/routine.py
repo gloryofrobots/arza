@@ -265,16 +265,16 @@ class NativeRoutine(BaseRoutine):
 class BytecodeRoutine(BaseRoutine):
     _immutable_fields_ = ['_js_code_', '_stack_size_', '_symbol_size_']
 
-    def __init__(self, js_code):
+    def __init__(self, _code):
         super(BytecodeRoutine, self).__init__()
-        self._js_code_ = js_code
+        self._code_ = _code
 
-        if not self._js_code_.is_compiled():
-            self._js_code_.emit('LOAD_UNDEFINED')
-            self._js_code_.compile()
+        if not self._code_.is_compiled():
+            self._code_.emit('LOAD_UNDEFINED')
+            self._code_.compile()
 
-        self._stack_size_ = js_code.estimated_stack_size()
-        self._symbol_size_ = js_code.symbol_size()
+        self._stack_size_ = _code.estimated_stack_size()
+        self._symbol_size_ = _code.symbol_size()
         self.pc = 0
         self.result = None
 
@@ -284,10 +284,10 @@ class BytecodeRoutine(BaseRoutine):
             self.ctx.set_stack_pointer(self.stack_start_index())
 
     def clone(self):
-        return BytecodeRoutine(self._js_code_)
+        return BytecodeRoutine(self._code_)
 
     def code(self):
-        return self._js_code_
+        return self._code_
 
     def _execute(self):
         from obin.objects.object_space import object_space
@@ -340,7 +340,7 @@ class BytecodeRoutine(BaseRoutine):
         return self._symbol_size_
 
     def get_js_code(self):
-        return self._js_code_
+        return self._code_
 
     def variables(self):
         code = self.get_js_code()
@@ -380,14 +380,15 @@ class GlobalRoutine(BytecodeRoutine):
 class FunctionRoutine(BytecodeRoutine):
     _immutable_fields_ = ['_js_code_', '_stack_size_', '_symbol_size_', '_name_']
 
-    def __init__(self, name, js_code):
-        assert isinstance(name, unicode)
-        BytecodeRoutine.__init__(self, js_code)
-        js_code._function_name_ = name
+    def __init__(self, name, code):
+        from obin.objects.object_space import isstring
+        assert isstring(name)
+        BytecodeRoutine.__init__(self, code)
+        code._function_name_ = name
         self._name_ = name
 
     def clone(self):
-        return FunctionRoutine(self._name_, self._js_code_)
+        return FunctionRoutine(self._name_, self._code_)
 
     def name(self):
         return self._name_
@@ -406,7 +407,7 @@ class BlockRoutine(BytecodeRoutine):
         self._signal_name_ = _signal_name_
 
     def clone(self):
-        return BlockRoutine(self._signal_name_, self._js_code_)
+        return BlockRoutine(self._signal_name_, self._code_)
 
     def is_block(self):
         return True

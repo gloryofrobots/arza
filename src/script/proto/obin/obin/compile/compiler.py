@@ -404,7 +404,7 @@ class Compiler(object):
             funcname = u''
             index = None
         else:
-            funcname = newstring(name.value)
+            funcname = unicode(name.value)
             index = self.declare_symbol(funcname)
 
         self.enter_scope()
@@ -434,13 +434,13 @@ class Compiler(object):
         print "-------------------------"
 
         from obin.runtime.routine import FunctionRoutine
-        func = FunctionRoutine(funcname, funccode)
+        func = FunctionRoutine(newstring(funcname), funccode)
 
         code.emit('LOAD_FUNCTION', func)
 
         if index is not None and len(funcname):
             # self.declare_function(funcname, func)
-            code.emit('STORE', index, funcname)
+            code.emit('STORE', index, newstring(funcname))
 
         # code.emit('POP')
 

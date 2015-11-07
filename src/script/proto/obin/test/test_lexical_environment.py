@@ -1,11 +1,11 @@
-from obin.runtime.lexical_environment import DeclarativeEnvironment, ObjectEnvironment
+from obin.runtime.environment import DeclarativeEnvironment, Environment
 from obin.objects.object import W_BasicObject
 
 
 class TestDeclarativeEnvironment(object):
     def test_get_identifier_reference_empty(self):
         lex_env = DeclarativeEnvironment()
-        ref = lex_env.get_identifier_reference(u'foo')
+        ref = lex_env.get_reference(u'foo')
 
         assert ref.base_value is None
         assert ref.referenced == u'foo'
@@ -16,7 +16,7 @@ class TestDeclarativeEnvironment(object):
         env_rec = lex_env.environment_record
         env_rec.create_binding(u'foo', True)
 
-        ref = lex_env.get_identifier_reference(u'foo')
+        ref = lex_env.get_reference(u'foo')
         assert ref.base_env == env_rec
         assert ref.referenced == 'foo'
 
@@ -27,7 +27,7 @@ class TestDeclarativeEnvironment(object):
 
         lex_env = DeclarativeEnvironment(outer_lex_env)
 
-        ref = lex_env.get_identifier_reference(u'foo')
+        ref = lex_env.get_reference(u'foo')
         assert ref.base_env == outer_env_rec
         assert ref.referenced == 'foo'
 
@@ -40,7 +40,7 @@ class TestDeclarativeEnvironment(object):
         env_rec = lex_env.environment_record
         env_rec.create_binding(u'foo', True)
 
-        ref = lex_env.get_identifier_reference(u'foo')
+        ref = lex_env.get_reference(u'foo')
         assert ref.base_env == env_rec
         assert ref.referenced == 'foo'
 
@@ -48,20 +48,20 @@ class TestDeclarativeEnvironment(object):
 class TestObjectEnvironment(object):
     def test_get_identifier_reference_empty(self):
         obj = W_BasicObject()
-        lex_env = ObjectEnvironment(obj)
-        ref = lex_env.get_identifier_reference(u'foo')
+        lex_env = __Environment(obj)
+        ref = lex_env.get_reference(u'foo')
 
         assert ref.base_value is None
         assert ref.referenced == 'foo'
 
     def test_get_identifier_reference(self):
         obj = W_BasicObject()
-        lex_env = ObjectEnvironment(obj)
+        lex_env = __Environment(obj)
 
         env_rec = lex_env.environment_record
         env_rec.create_binding(u'foo', True)
 
-        ref = lex_env.get_identifier_reference(u'foo')
+        ref = lex_env.get_reference(u'foo')
         assert ref.base_env == env_rec
         assert ref.referenced == 'foo'
 
@@ -71,9 +71,9 @@ class TestObjectEnvironment(object):
         outer_env_rec.create_binding(u'foo', True)
 
         obj = W_BasicObject()
-        lex_env = ObjectEnvironment(obj, outer_lex_env)
+        lex_env = __Environment(obj, outer_lex_env)
 
-        ref = lex_env.get_identifier_reference(u'foo')
+        ref = lex_env.get_reference(u'foo')
         assert ref.base_env == outer_env_rec
         assert ref.referenced == u'foo'
 
@@ -83,10 +83,10 @@ class TestObjectEnvironment(object):
         outer_env_rec.create_binding(u'foo', True)
 
         obj = W_BasicObject()
-        lex_env = ObjectEnvironment(obj, outer_lex_env)
+        lex_env = __Environment(obj, outer_lex_env)
         env_rec = lex_env.environment_record
         env_rec.create_binding(u'foo', True)
 
-        ref = lex_env.get_identifier_reference(u'foo')
+        ref = lex_env.get_reference(u'foo')
         assert ref.base_env == env_rec
         assert ref.referenced == u'foo'

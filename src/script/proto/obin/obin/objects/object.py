@@ -371,15 +371,22 @@ class W_Object(W_Cell):
     _type_ = 'Object'
     _immutable_fields_ = ['_type_']
 
-    def __init__(self, slots, traits):
+    def __init__(self, slots):
         super(W_Object, self).__init__()
         from obin.objects.datastructs import Slots
         if not slots:
             slots = Slots()
+        self.__slots = slots
+        self.__traits = None
+
+    def has_traits(self):
+        return self.__traits is not None
+
+    def create_traits(self, traits):
+        assert self.traits() is None
         if not traits:
             traits = W_Vector()
 
-        self.__slots = slots
         self.__traits = traits
 
     def __str__(self):
@@ -477,8 +484,10 @@ class W_Object(W_Cell):
     def _clone_(self):
         import copy
         slots = copy.copy(self.__slots)
+        clone = W_Object(slots)
+
         traits = copy.copy(self.__traits)
-        clone = W_Object(slots, traits)
+        clone.create_traits(traits)
         return clone
 
 class W_ModuleObject(W_Object):

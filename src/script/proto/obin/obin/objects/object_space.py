@@ -7,22 +7,27 @@ def newint(i):
     from obin.objects.object import W_Integer
     return W_Integer(i)
 
+
 @enforceargs(float)
 def newfloat(f):
     from obin.objects.object import W_Float
     return W_Float(f)
+
 
 @enforceargs(str)
 def newchar(c):
     from obin.objects.object import W_Char
     return W_Char(ord(c))
 
+
 def newstring(s):
     from obin.objects.object import W_String
     return W_String(unicode(s))
 
+
 w_True = None
 w_False = None
+
 
 def makebools():
     global w_True
@@ -33,16 +38,20 @@ def makebools():
     jit.promote(w_True)
     jit.promote(w_False)
 
+
 def _makeundefined():
     from obin.objects.object import W_Undefined
     return W_Undefined()
 
+
 w_Undefined = _makeundefined()
 jit.promote(w_Undefined)
+
 
 def _makenull():
     from obin.objects.object import W_Nil
     return W_Nil()
+
 
 w_Null = _makenull()
 jit.promote(w_Null)
@@ -54,6 +63,7 @@ def newnull():
 
 def newundefined():
     return w_Undefined
+
 
 @enforceargs(bool)
 def newbool(val):
@@ -70,68 +80,111 @@ def newfunc(function_body, formal_parameter_list=[], scope=None):
     obj = W_Function(function_body, formal_parameter_list, scope)
     return obj
 
+
 def newvector(items=None):
     from obin.objects.object import W_Vector
     obj = W_Vector(items)
     return obj
 
+
 def isundefined(value):
     return value is w_Undefined
+
 
 def iscell(value):
     from object import W_Cell
     return isinstance(value, W_Cell)
 
+
 def isobject(value):
     from object import W_Object
     return isinstance(value, W_Object)
+
 
 def isprimitive(value):
     from object import W_Primitive
     return isinstance(value, W_Primitive)
 
+
 def isfunction(value):
     from object import W_Function
     return isinstance(value, W_Function)
+
 
 def isvector(value):
     from object import W_Vector
     return isinstance(value, W_Vector)
 
+
 def isnull(value):
     return value is w_Null
+
 
 def isint(w):
     from obin.objects.object import W_Integer
     return isinstance(w, W_Integer)
 
+
 def isstring(w):
     from obin.objects.object import W_String
     return isinstance(w, W_String)
+
 
 def isfloat(w):
     from obin.objects.object import W_Float
     return isinstance(w, W_Float)
 
+
 def isconstant(w):
     from obin.objects.object import W_Constant
     return isinstance(w, W_Constant)
+
 
 def isnull_or_undefined(obj):
     if isnull(obj) or isundefined(obj):
         return True
     return False
 
-def newobject():
-    global object_space
+
+def newsimpleobject():
     from obin.objects.object import W_Object
-    obj = W_Object(None, None)
+    obj = W_Object(None)
+    return obj
+
+def newsimpleobject_withsize(size):
+    from obin.objects.object import W_Object
+    from obin.objects.datastructs import Slots
+    slots = Slots(size)
+    obj = W_Object(slots)
+    return obj
+
+def newobject():
+    obj = newsimpleobject()
+    obj.create_traits(None)
     obj.isa(object_space.traits.Object)
     return obj
 
+
 class ObjectSpace(object):
     class Traits(object):
-        pass
+        def __init__(self):
+            self.Object = None
+            self.Function = None
+            self.True = None
+            self.False = None
+            self.Nil = None
+            self.Undefined = None
+
+            self.Char = None
+            self.Integer = None
+            self.Float = None
+            self.Symbol = None
+
+            self.String = None
+            self.Array = None
+            self.List = None
+            self.Vector = None
+            self.Tuple = None
 
     def __init__(self):
         self.global_context = None
@@ -142,14 +195,15 @@ class ObjectSpace(object):
         self.interpreter = None
 
     def newobject(self):
-        from obin.objects.object import W_Object
-        obj = W_Object(None, None)
+        obj = newsimpleobject()
+        obj.create_traits(None)
         obj.isa(self.traits.Object)
         return obj
 
     def init_traits(self):
-        from obin.objects.object import W_Object
-        self.traits.Object = W_Object(None, None)
+        self.traits.Object = newsimpleobject()
+        self.traits.Object.create_traits(None)
+
         # following traits resemble native types list
         self.traits.Function = self.newobject()
         self.traits.True = self.newobject()
@@ -168,12 +222,11 @@ class ObjectSpace(object):
         self.traits.Vector = self.newobject()
         self.traits.Tuple = self.newobject()
 
-
     def get_global_environment(self):
         return self.global_context.lexical_environment()
 
-object_space = ObjectSpace()
 
+object_space = ObjectSpace()
 
 
 @specialize.argtype(0)
@@ -205,7 +258,9 @@ def _w(value):
 def w_return(fn):
     def f(*args):
         return _w(fn(*args))
+
     return f
+
 
 def hide_on_translate(*args):
     default = None
@@ -217,6 +272,7 @@ def hide_on_translate(*args):
                 return f(*args)
 
             return default
+
         return _wrapped_f
 
     if len(args) == 1 and callable(args[0]):
@@ -224,4 +280,3 @@ def hide_on_translate(*args):
     else:
         default = args[0]
         return _wrap
-
