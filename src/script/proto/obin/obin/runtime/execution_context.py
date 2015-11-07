@@ -1,16 +1,19 @@
-from obin.objects.object_space import newundefined
 from obin.objects.datastructs import Stack
+from obin.runtime.environment import newenv
 from rpython.rlib import jit
 
 DISTINCT = []
 
 class ExecutionContext(object):
-    _immutable_fields_ = ['_stack_', '_lexical_environment_', '_variable_environment_', '_refs_', '_code_', '_formal_parameters_', '_argument_values_', '_w_func_']  # TODO why are _formal_parameters_, _w_func_ etc. required here?
+    _immutable_fields_ = ['_stack_', '_lexical_environment_',
+                          '_refs_', '_routine_', '_formal_parameters_',
+                          '_argument_values_', '_w_func_']
+                          # TODO why are _formal_parameters_, _w_func_ etc. required here?
     _virtualizable2_ = ['_stack_[*]', '_stack_pointer_', '_refs_[*]']
     _settled_ = True
 
     def __init__(self, stack_size=1, refs_size=1):
-        name =  self.__class__.__name__
+        name = self.__class__.__name__
         if name not in DISTINCT:
             DISTINCT.append(name)
             print "CTX", DISTINCT
@@ -18,21 +21,21 @@ class ExecutionContext(object):
         self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
 
         self._stack_ = Stack(stack_size)
-        self._code_ = None
-        self.__lexical_environment = None
+        self._routine_ = None
+        self._lexical_environment = None
         self._refs_ = [None] * refs_size
 
     def routine(self):
-        return self._code_
+        return self._routine_
 
     def fiber(self):
-        assert self._code_
-        assert self._code_.fiber
-        return self._code_.fiber
+        assert self._routine_
+        assert self._routine_.fiber
+        return self._routine_.fiber
 
     def set_routine(self, r):
-        assert not self._code_
-        self._code_ = r
+        assert not self._routine_
+        self._routine_ = r
 
     def stack_append(self, value):
         self._stack_.push(value)
@@ -54,20 +57,16 @@ class ExecutionContext(object):
         self._stack_.set_pointer(p)
 
     def lexical_environment(self):
-        return self.__lexical_environment
+        return self._lexical_environment
 
     def set_lexical_environment(self, env):
-        self.__lexical_environment = env
+        self._lexical_environment = env
 
     # 10.5
     @jit.unroll_safe
     def declaration_binding_initialization(self):
-        from obin.objects.object_space import newundefined
-        # if str(self._code_) == "function _f2 {}":
-        #     x = 1
-
         env = self.lexical_environment()
-        code = jit.promote(self._code_)
+        code = jit.promote(self._routine_)
 
         # 4.
         if code.is_function_code():
@@ -78,7 +77,7 @@ class ExecutionContext(object):
             nlen = len(names)
             alen = len(args)
             if alen < nlen:
-                raise RuntimeError("Wrong argument count in function call %d < %d %s" % (alen, nlen, names))
+                raise RuntimeError("Wrong argument count in function call %d < %d %s" % (alen, nlen, str(names)))
 
             for i in range(nlen):
                 v = args[i]
@@ -116,7 +115,7 @@ class ExecutionContext(object):
         if not ref:
             ref = self._get_refs(index)
 
-        if not ref.is_unresolvable_reference():
+        if not ref.is_unresolvable():
             ref.put_value(value)
             return
 
@@ -134,7 +133,7 @@ class ExecutionContext(object):
         if ref is None:
             lex_env = self.lexical_environment()
             ref = lex_env.get_reference(symbol)
-            if ref.is_unresolvable_reference() is True:
+            if ref.is_unresolvable() is True:
                 return ref
             self._set_refs(index, ref)
 
@@ -169,7 +168,7 @@ class ObjectExecutionContext(_DynamicExecutionContext):
 
         _DynamicExecutionContext.__init__(self, stack_size)
 
-        self._code_ = code
+        self._routine_ = code
 
         from obin.runtime.environment import newobjectenv
         env = newobjectenv(obj, None)
@@ -182,12 +181,11 @@ class EvalExecutionContext(_DynamicExecutionContext):
         stack_size = code.estimated_stack_size()
 
         _DynamicExecutionContext.__init__(self, stack_size)
-        self._code_ = code
+        self._routine_ = code
 
         # if not calling_context:
         #     raise NotImplementedError()
 
-        from obin.runtime.environment import newenv
         strict_var_env = newenv(self.lexical_environment(), 0)
         self.set_lexical_environment(strict_var_env)
 
@@ -203,13 +201,12 @@ class FunctionExecutionContext(ExecutionContext):
 
         ExecutionContext.__init__(self, stack_size, env_size)
 
-        self._code_ = code
+        self._routine_ = code
         self._argument_values_ = argv
         self._scope_ = scope
         self._w_func_ = w_func
         self._calling_context_ = None
 
-        from obin.runtime.environment import newenv
         env = newenv(scope, env_size)
         self.set_lexical_environment(env)
 
@@ -228,7 +225,6 @@ class BlockExecutionContext(_DynamicExecutionContext):
 
         parent_env = parent_context.lexical_environment()
 
-        from obin.runtime.environment import newenv
         env_size = code.env_size() + 1  # neet do add one for the arguments object
         local_env = newenv(parent_env, env_size)
 
@@ -242,12 +238,11 @@ class CatchExecutionContext(_DynamicExecutionContext):
         _DynamicExecutionContext.__init__(self, stack_size)
 
         env_size = code.env_size() + 1  # neet do add one for the arguments object
-        self._code_ = code
+        self._routine_ = code
         self._parent_context_ = parent_context
 
         parent_env = parent_context.lexical_environment()
 
-        from obin.runtime.environment import newenv
         local_env = newenv(parent_env, env_size)
         local_env.set_binding(catchparam, exception_value)
 

@@ -31,7 +31,7 @@ class Map(object):
     def not_found(self, idx):
         return idx == self.NOT_FOUND
 
-    # @jit.elidable_promote("0")
+    @jit.elidable_promote("0")
     def lookup(self, name):
         from object_space import isstring
         assert isstring(name)

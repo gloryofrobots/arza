@@ -843,8 +843,6 @@ class NEXT_ITERATOR(Opcode):
         next_el = iterator.next()
         ctx.stack_append(next_el)
 
-        #ref = ctx.get_ref(self.name)
-        #ref.put_value(next_el)
 
 # ---------------- with support ---------------------
 
@@ -871,36 +869,6 @@ class WITH(Opcode):
             ctx.stack_append(c.value)
 
 # ------------------ delete -------------------------
-
-
-class DELETE(Opcode):
-    _immutable_fields_ = ['name', 'index']
-
-    def __init__(self, name, index):
-        self.name = name
-        self.index = index
-
-    def eval(self, ctx):
-        from obin.runtime.reference import Reference
-        from obin.runtime.exception import ObinSyntaxError
-
-        # 11.4.1
-        ref = ctx.get_ref(self.name, self.index)
-        if not isinstance(ref, Reference):
-            res = True
-        if ref.is_unresolvable_reference():
-            raise ObinSyntaxError()
-        if ref.is_property_reference():
-            obj = ref.get_base().ToObject()
-            res = obj.delete(ref.get_referenced_name())
-        else:
-            raise ObinSyntaxError("Can`t delete variable binding")
-
-        if res is True:
-            ctx.forget_ref(self.name, self.index)
-
-        ctx.stack_append(_w(res))
-
 
 class DELETE_MEMBER(Opcode):
     _stack_change = 0
