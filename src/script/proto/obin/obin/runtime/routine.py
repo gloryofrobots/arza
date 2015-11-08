@@ -220,7 +220,7 @@ def complete_native_routine(func):
 class NativeRoutine(BaseRoutine):
     _immutable_fields_ = ['_name_', '_function_']
 
-    def __init__(self, function, name=u''):
+    def __init__(self, name, function):
         super(NativeRoutine, self).__init__()
 
         assert isinstance(name, unicode)

@@ -1,12 +1,13 @@
 __author__ = 'gloryofrobots'
 from obin.runtime.exception import *
 
+
 def tostring(obj):
     from object_space import newstring
     return newstring(unicode(obj._tostring_()))
 
 
-def tobool(obj ):
+def tobool(obj):
     from object_space import newbool
     return newbool(obj._tobool_())
 
@@ -26,6 +27,7 @@ def at(obj, k):
         raise ObinKeyError(k)
     return v
 
+
 def lookup(obj, k):
     from object_space import isundefined
     assert not isundefined(k)
@@ -34,6 +36,7 @@ def lookup(obj, k):
     if isundefined(v):
         raise ObinKeyError(k)
     return v
+
 
 def has(obj, k):
     from object_space import isundefined, newbool
@@ -44,6 +47,7 @@ def has(obj, k):
     else:
         return newbool(True)
 
+
 def obtain(obj, k):
     from object_space import isundefined, newbool
     assert not isundefined(k)
@@ -53,13 +57,16 @@ def obtain(obj, k):
     else:
         return newbool(True)
 
+
 def length(obj):
     from object_space import newint
     return newint(obj._length_())
 
+
 def clone(obj):
     c = obj._clone_()
     return c
+
 
 def put_property(obj, k, v):
     from object_space import newstring
@@ -77,24 +84,26 @@ def put(obj, k, v):
 
     obj._put_(k, v)
 
+
 def strict_equal(obj, other):
-    from object_space import newbool, isprimitive, isconstant
+    from object_space import newbool, isbasetype, isconstant
     if not isinstance(other, obj.__class__):
         return newbool(False)
     if isconstant(obj):
         return newbool(True)
 
-    if isprimitive(obj):
+    if isbasetype(obj):
         return newbool(obj.value() is other.value())
 
     return newbool(obj is other)
 
+
 def equal(obj, other):
-    from object_space import newbool, isprimitive, isconstant
+    from object_space import newbool, isbasetype, isconstant
     if not isinstance(other, obj.__class__):
         return newbool(False)
 
-    if isprimitive(obj):
+    if isbasetype(obj):
         return newbool(obj.value() == other.value())
 
     if isconstant(obj):
@@ -103,11 +112,12 @@ def equal(obj, other):
     v = obj._equal_(other)
     return newbool(v)
 
+
 def compare(obj, other):
-    from object_space import isundefined, newint, newbool, isprimitive, isconstant
+    from object_space import isundefined, newint, newbool, isbasetype, isconstant
     assert not isundefined(other)
     v = obj._compare_(other)
-    if isprimitive(obj):
+    if isbasetype(obj):
         return newint(cmp(obj.value(), other.value()))
 
     if isconstant(obj):
@@ -115,23 +125,22 @@ def compare(obj, other):
 
     return newint(v)
 
+
 def call(obj, ctx, args):
     return obj._call_(ctx, args)
+
 
 def next(obj):
     return obj._next_()
 
 
-def new_native_function(function, name=u'', params=[]):
-    from obin.runtime.routine import NativeRoutine
-    from obin.objects.object_space import newfunc
-
-    jsfunc = NativeRoutine(function, name)
-    obj = newfunc(jsfunc, params, None)
+def new_native_function(function, name):
+    from obin.objects.object_space import newprimitive, newstring
+    assert isinstance(name, unicode)
+    obj = newprimitive(newstring(name), function)
     return obj
 
 
 # 15
-def put_native_function(obj, name, func, params=[]):
-    jsfunc = new_native_function(func, name, params)
-    put_property(obj, name, jsfunc)
+def put_native_function(obj, name, func):
+    put_property(obj, name, new_native_function(func, name))

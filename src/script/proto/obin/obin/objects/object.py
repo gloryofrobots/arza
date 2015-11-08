@@ -55,7 +55,7 @@ class W_Root(object):
 class W_Constant(W_Root):
     pass
 
-class W_Primitive(W_Root):
+class W_BaseType(W_Root):
     pass
 
 class W_Undefined(W_Constant):
@@ -118,7 +118,7 @@ class W_False(W_Constant):
     def __str__(self):
         return '_False_'
 
-class W_Char(W_Primitive):
+class W_Char(W_BaseType):
     _immutable_fields_ = ['value']
 
     def __init__(self, value):
@@ -141,7 +141,7 @@ class W_Char(W_Primitive):
         from object_space import object_space
         return api.at(object_space.traits.Char, k)
 
-class W_Integer(W_Primitive):
+class W_Integer(W_BaseType):
     _immutable_fields_ = ['__value']
 
     def __init__(self, value):
@@ -164,7 +164,7 @@ class W_Integer(W_Primitive):
         from object_space import object_space
         return api.at(object_space.traits.Integer, k)
 
-class W_Float(W_Primitive):
+class W_Float(W_BaseType):
     _immutable_fields_ = ['value']
 
     def __init__(self, value):
@@ -200,7 +200,7 @@ class W_Cell(W_Root):
     def isfrozen(self):
         return self.__frozen
 
-class LinearSequenceIterator(W_Primitive):
+class LinearSequenceIterator(W_BaseType):
     def __init__(self, source, length):
         self.index = 0
         self.source = source
@@ -214,7 +214,7 @@ class LinearSequenceIterator(W_Primitive):
         return api.at(self.source, self.index)
 
 
-class W_String(W_Primitive):
+class W_String(W_BaseType):
     _type_ = 'String'
     _immutable_fields_ = ['value']
 
@@ -357,7 +357,7 @@ class W_Vector(W_Cell):
     def pop(self):
         return self._items.pop()
 
-class W_ObjectIterator(W_Primitive):
+class W_ObjectIterator(W_BaseType):
     def __init__(self, keys):
         self.index = 0
         self.keys = keys
@@ -496,21 +496,18 @@ class W_Object(W_Cell):
 class W_ModuleObject(W_Object):
     pass
 
-class W_Function(W_Primitive):
+class W_Function(W_BaseType):
     _type_ = 'function'
     _immutable_fields_ = ['_type_', '_extensible_', '_scope_', '_params_[*]', '_function_']
 
-    def __init__(self, function_body, formal_parameter_list=[], scope=None):
-        from obin.objects.object_space import newint
-
+    def __init__(self, name, bytecode, scope):
         super(W_Function, self).__init__()
-        # print "W__Function", function_body.__class__, scope, formal_parameter_list
-        self._routine_ = function_body
+        self._name_ = name
+        self._bytecode_ = bytecode
         self._scope_ = scope
-        self._params_ = formal_parameter_list
 
     def _tostring_(self):
-        return self._routine_.to_string()
+        return self._bytecode_.to_string()
 
     def _tobool_(self):
         return True
@@ -522,25 +519,22 @@ class W_Function(W_Primitive):
     def __str__(self):
         return 'Function %s' % self._tostring_()
 
-    def routine(self):
-        return self._routine_
-
-    def formal_parameters(self):
-        return self._params_
-
     def create_routine(self, ctx, args):
         from obin.runtime.execution_context import FunctionExecutionContext
-        code = self.routine().clone()
-        jit.promote(code)
+        from obin.runtime.routine import FunctionRoutine
+
+        routine = FunctionRoutine(self._name_, self._bytecode_)
+
+        jit.promote(routine)
         scope = self.scope()
 
-        ctx = FunctionExecutionContext(code,
+        funcctx = FunctionExecutionContext(routine,
                                        argv=args,
                                        scope=scope,
                                        w_func=self)
-        ctx._calling_context_ = ctx
-        code.set_context(ctx)
-        return code
+        funcctx._calling_context_ = ctx
+        routine.set_context(funcctx)
+        return routine
 
     def _call_(self, ctx, args):
         if ctx is None:
@@ -551,4 +545,46 @@ class W_Function(W_Primitive):
 
     def scope(self):
         return self._scope_
+
+
+class W_Primitive(W_BaseType):
+    _type_ = 'native'
+    _immutable_fields_ = ['_type_', '_extensible_', '_scope_', '_params_[*]', '_function_']
+
+    def __init__(self, name, function):
+        super(W_Primitive, self).__init__()
+        self._name_ = name
+        self._function_ = function
+
+    def _tostring_(self):
+        return "function %s {[native code]}" % self._name_.value()
+
+    def _tobool_(self):
+        return True
+
+    def _lookup_(self, k):
+        from object_space import object_space
+        return api.at(object_space.traits.Function, k)
+
+    def create_routine(self, ctx, args):
+        from obin.runtime.execution_context import FunctionExecutionContext
+        from obin.runtime.routine import NativeRoutine
+
+        routine = NativeRoutine(self._name_, self._function_)
+
+        jit.promote(routine)
+
+        funcctx = FunctionExecutionContext(routine,
+                                           argv=args,
+                                           scope=None,
+                                           w_func=self)
+        routine.set_context(funcctx)
+        return routine
+
+    def _call_(self, ctx, args):
+        if ctx is None:
+            from object_space import object_space
+            ctx = object_space.interpreter.machine.current_context()
+
+        ctx.fiber().call_object(self, ctx, args)
 

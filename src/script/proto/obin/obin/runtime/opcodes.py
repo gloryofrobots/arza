@@ -186,18 +186,16 @@ class LOAD_VECTOR(Opcode):
 class LOAD_FUNCTION(Opcode):
     _immutable_fields_ = ['funcobj']
 
-    def __init__(self, funcobj):
-        self.funcobj = funcobj
+    def __init__(self, name, code):
+        self.code = code
+        self.name = name
 
     # 13.2 Creating Function Objects
     def eval(self, ctx):
         from obin.objects.object_space import newfunc
 
-        func = self.funcobj
         scope = ctx.env()
-        params = func.params()
-
-        w_func = newfunc(func, params, scope)
+        w_func = newfunc(self.name, self.code, scope)
 
         ctx.stack_append(w_func)
 
