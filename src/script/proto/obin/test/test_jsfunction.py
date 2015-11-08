@@ -1,6 +1,6 @@
 from obin.objects.object_space import _w
 from obin.compile.code import Code
-from obin.runtime.execution_context import ExecutionContext, FunctionExecutionContext, ObjectExecutionContext, EvalExecutionContext
+from obin.runtime.context import Context, FunctionExecutionContext, ObjectExecutionContext, EvalExecutionContext
 from obin.runtime.routine import FunctionRoutine, BytecodeRoutine, NativeRoutine, GlobalRoutine, EvalRoutine
 from obin.runtime.environment import DeclarativeEnvironment
 from obin.compile.astbuilder import parse_to_ast, SymbolMap
@@ -28,7 +28,7 @@ class TestJsFunctionAndStuff(object):
         code.emit('RETURN')
 
         f = BytecodeRoutine(code)
-        ctx = ExecutionContext(stack_size=f.estimated_stack_size())
+        ctx = Context(stack_size=f.estimated_stack_size())
         res = f.run(ctx)
         assert res.value == _w(2)
 
@@ -354,7 +354,7 @@ class TestJsFunctionAndStuff(object):
 
         f = BytecodeRoutine(code)
 
-        ctx = ExecutionContext(stack_size=f.estimated_stack_size())
+        ctx = Context(stack_size=f.estimated_stack_size())
         res = f.run(ctx)
         assert res.value == _w(2)
 

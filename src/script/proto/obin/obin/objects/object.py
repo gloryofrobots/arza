@@ -9,6 +9,7 @@ from obin.runtime.exception import *
 from obin.utils import tb
 import api
 
+
 class W_Root(object):
     _settled_ = True
     _immutable_fields_ = ['_type_']
@@ -55,14 +56,17 @@ class W_Root(object):
 class W_Constant(W_Root):
     pass
 
+
 class W_BaseType(W_Root):
     pass
+
 
 class W_Undefined(W_Constant):
     _type_ = 'Undefined'
 
     def _tostring_(self):
         return "undefined"
+
 
 class W_Nil(W_Constant):
     _type_ = 'Nil'
@@ -98,6 +102,7 @@ class W_True(W_Constant):
     def __str__(self):
         return '_True_'
 
+
 class W_False(W_Constant):
     _type_ = 'True'
     _immutable_fields_ = ['value']
@@ -117,6 +122,7 @@ class W_False(W_Constant):
 
     def __str__(self):
         return '_False_'
+
 
 class W_Char(W_BaseType):
     _immutable_fields_ = ['value']
@@ -141,6 +147,7 @@ class W_Char(W_BaseType):
         from object_space import object_space
         return api.at(object_space.traits.Char, k)
 
+
 class W_Integer(W_BaseType):
     _immutable_fields_ = ['__value']
 
@@ -163,6 +170,7 @@ class W_Integer(W_BaseType):
     def _lookup_(self, k):
         from object_space import object_space
         return api.at(object_space.traits.Integer, k)
+
 
 class W_Float(W_BaseType):
     _immutable_fields_ = ['value']
@@ -187,6 +195,7 @@ class W_Float(W_BaseType):
         from object_space import object_space
         return api.at(object_space.traits.Float, k)
 
+
 class W_Cell(W_Root):
     def __init__(self):
         self.__frozen = False
@@ -199,6 +208,7 @@ class W_Cell(W_Root):
 
     def isfrozen(self):
         return self.__frozen
+
 
 class LinearSequenceIterator(W_BaseType):
     def __init__(self, source, length):
@@ -357,6 +367,7 @@ class W_Vector(W_Cell):
     def pop(self):
         return self._items.pop()
 
+
 class W_ObjectIterator(W_BaseType):
     def __init__(self, keys):
         self.index = 0
@@ -369,6 +380,7 @@ class W_ObjectIterator(W_BaseType):
             return newundefined()
 
         return self.keys[self.index]
+
 
 class W_Object(W_Cell):
     _type_ = 'Object'
@@ -493,8 +505,10 @@ class W_Object(W_Cell):
         clone.create_traits(traits)
         return clone
 
+
 class W_ModuleObject(W_Object):
     pass
+
 
 class W_Function(W_BaseType):
     _type_ = 'function'
@@ -520,20 +534,17 @@ class W_Function(W_BaseType):
         return 'Function %s' % self._tostring_()
 
     def create_routine(self, ctx, args):
-        from obin.runtime.execution_context import FunctionExecutionContext
-        from obin.runtime.routine import FunctionRoutine
+        from obin.runtime.context import create_function_context
+        from obin.runtime.routine import create_function_routine
 
-        routine = FunctionRoutine(self._name_, self._bytecode_)
+        routine = create_function_routine(self._bytecode_, self._name_)
 
         jit.promote(routine)
         scope = self.scope()
 
-        funcctx = FunctionExecutionContext(routine,
-                                       argv=args,
-                                       scope=scope,
-                                       w_func=self)
-        funcctx._calling_context_ = ctx
-        routine.set_context(funcctx)
+        create_function_context(routine,
+                                args,
+                                scope)
         return routine
 
     def _call_(self, ctx, args):
@@ -567,18 +578,15 @@ class W_Primitive(W_BaseType):
         return api.at(object_space.traits.Function, k)
 
     def create_routine(self, ctx, args):
-        from obin.runtime.execution_context import FunctionExecutionContext
+        from obin.runtime.context import create_primitive_context
         from obin.runtime.routine import NativeRoutine
 
         routine = NativeRoutine(self._name_, self._function_)
 
         jit.promote(routine)
 
-        funcctx = FunctionExecutionContext(routine,
-                                           argv=args,
-                                           scope=None,
-                                           w_func=self)
-        routine.set_context(funcctx)
+        create_primitive_context(routine,
+                                 args)
         return routine
 
     def _call_(self, ctx, args):
@@ -587,4 +595,3 @@ class W_Primitive(W_BaseType):
             ctx = object_space.interpreter.machine.current_context()
 
         ctx.fiber().call_object(self, ctx, args)
-

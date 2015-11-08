@@ -1,14 +1,13 @@
 from obin.objects.object_space import _w
 
-def get_printable_location(pc, debug, jscode):
-    if pc < jscode.opcode_count():
-        opcode = jscode.get_opcode(pc)
-        if jscode._function_name_ is not None:
-            return '%d: %s function: %s' % (pc, str(opcode), str(jscode._function_name_))
-        else:
-            return '%d: %s' % (pc, str(opcode))
-    else:
-        return '%d: %s' % (pc, 'end of opcodes')
+
+def complete_native_routine(func):
+    def func_wrapper(ctx, routine):
+        result = func(ctx, routine)
+        routine.complete(_w(result))
+
+    return func_wrapper
+
 
 class Routine(object):
     class State:
@@ -39,20 +38,14 @@ class Routine(object):
         raise NotImplementedError()
 
     def set_context(self, ctx):
+        assert not self.ctx
         self.ctx = ctx
-        if self.ctx.routine() is self:
-            return
-
-        self.ctx.set_routine(self)
 
     def stack_start_index(self):
         return self.__stack_start_index
 
     def set_start_stack_index(self, start_index):
         self.__stack_start_index = start_index
-
-    def set_finalizer(self, finalizer):
-        self.__finalizer = finalizer
 
     def add_signal_handler(self, signal, handler):
         self.__signal_handlers[signal] = handler
@@ -68,9 +61,6 @@ class Routine(object):
 
             #     return self.__signal_handlers[catchedsignal]
             return self.__signal_handlers[catchedsignal]
-
-    def get_finalizer(self):
-        return self.__finalizer
 
     def has_continuation(self):
         return self.__continuation is not None
@@ -161,9 +151,6 @@ class Routine(object):
     def is_block(self):
         return False
 
-    def is_function_code(self):
-        return False
-
     def _on_activate(self):
         pass
 
@@ -179,45 +166,14 @@ class Routine(object):
     def _execute(self):
         raise NotImplementedError()
 
-
-class BaseRoutine(Routine):
-    _settled_ = True
-    eval_code = False
-    function_code = False
-    configurable_bindings = False
-
     def estimated_stack_size(self):
-        return 2
-
-    def to_string(self):
-        return u'function() {}'
-
-    def variables(self):
-        return []
-
-    def functions(self):
-        return []
-
-    def params(self):
-        return []
-
-    def name(self):
-        return '_unnamed_'
-
-    def is_function_code(self):
-        return False
+        raise NotImplementedError()
 
     def env_size(self):
-        return 0
+        raise NotImplementedError()
 
-def complete_native_routine(func):
-   def func_wrapper(ctx, routine):
-       result = func(ctx, routine)
-       routine.complete(_w(result))
 
-   return func_wrapper
-
-class NativeRoutine(BaseRoutine):
+class NativeRoutine(Routine):
     _immutable_fields_ = ['_name_', '_function_']
 
     def __init__(self, name, function):
@@ -230,7 +186,7 @@ class NativeRoutine(BaseRoutine):
     def clone(self):
         return NativeRoutine(self._function_, self._name_)
 
-    #redefine resume because we can call bytecode routine from native and after it resumes as we must complete
+    # redefine resume because we can call bytecode routine from native and after it resumes as we must complete
     resume = Routine.complete
 
     def name(self):
@@ -247,7 +203,7 @@ class NativeRoutine(BaseRoutine):
         return args[0], args[1:]
 
     def _execute(self):
-        #print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
+        # print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
         self.suspend()
         self._function_(self.ctx, self)
 
@@ -257,26 +213,41 @@ class NativeRoutine(BaseRoutine):
     def to_string(self):
         name = self.name()
         if name is not None:
-            return u'function %s() { [native code] }' % (name, )
+            return u'function %s() { [native code] }' % (name,)
         else:
             return u'function () { [native code] }'
 
+    def estimated_stack_size(self):
+        return 2
 
-class BytecodeRoutine(BaseRoutine):
-    _immutable_fields_ = ['_js_code_', '_stack_size_', '_symbol_size_']
+    def env_size(self):
+        return 0
 
-    def __init__(self, _code):
+
+class BytecodeRoutine(Routine):
+    _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
+
+    def __init__(self, code, name):
         super(BytecodeRoutine, self).__init__()
-        self._code_ = _code
+
+        from obin.objects.object_space import isstring
+        assert isstring(name)
+
+        self._code_ = code
+
+        self._name_ = name
 
         if not self._code_.is_compiled():
             self._code_.emit('LOAD_UNDEFINED')
             self._code_.compile()
 
-        self._stack_size_ = _code.estimated_stack_size()
-        self._symbol_size_ = _code.symbol_size()
+        self._stack_size_ = code.estimated_stack_size()
+        self._symbol_size_ = code.symbol_size()
         self.pc = 0
         self.result = None
+
+    def name(self):
+        return self._name_
 
     def _on_activate(self):
         assert self.ctx
@@ -305,20 +276,20 @@ class BytecodeRoutine(BaseRoutine):
         debug = True
         if debug:
             d = u'%s\t%s' % (unicode(str(self.pc)), unicode(str(opcode)))
-            #d = u'%s' % (unicode(str(pc)))
+            # d = u'%s' % (unicode(str(pc)))
             d = u'%3d %25s %s ' % (self.pc, unicode(opcode), unicode([unicode(s) for s in self.ctx._stack_]))
 
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
 
         opcode.eval(self.ctx)
 
-        #RETURN or THROW occured
+        # RETURN or THROW occured
         if self.is_closed():
             return
 
-        #print "result", self.result
+        # print "result", self.result
         if isinstance(opcode, BaseJump):
-            #print "JUMP"
+            # print "JUMP"
             new_pc = opcode.do_jump(self.ctx, self.pc)
             self.pc = new_pc
             # self._execute()
@@ -329,7 +300,7 @@ class BytecodeRoutine(BaseRoutine):
             self.pc += 1
 
         if self.pc >= self.code().opcode_count():
-            #print "_execute", self, self.result
+            # print "_execute", self, self.result
             assert not self.result
             self.complete(self.ctx.stack_top())
 
@@ -339,75 +310,36 @@ class BytecodeRoutine(BaseRoutine):
     def env_size(self):
         return self._symbol_size_
 
-    def get_js_code(self):
+    def bytecode(self):
         return self._code_
-
-    def variables(self):
-        code = self.get_js_code()
-        return code.variables()
-
-    def functions(self):
-        # XXX tuning
-        code = self.get_js_code()
-        functions = code.functions()
-        return functions
-
-    def params(self):
-        code = self.get_js_code()
-        return code.params()
-
-    def params_rest(self):
-        code = self.get_js_code()
-        return code.params_rest()
-
-    def name(self):
-        return u'_unnamed_'
 
     def to_string(self):
         name = self.name()
         if name is not None:
-            return u'function %s() { }' % (name, )
+            return u'function %s() { }' % (name,)
         else:
             return u'function () { }'
 
     def __repr__(self):
-        return "%s" % (self.get_js_code())
+        return "%s" % (self.bytecode())
 
-class GlobalRoutine(BytecodeRoutine):
-    def __repr__(self):
-        return "Global Routine: %s" % (str(self.get_js_code()))
 
-class FunctionRoutine(BytecodeRoutine):
-    _immutable_fields_ = ['_js_code_', '_stack_size_', '_symbol_size_', '_name_']
+def create_function_routine(code, name):
+    return BytecodeRoutine(code, name)
 
-    def __init__(self, name, code):
-        from obin.objects.object_space import isstring
-        assert isstring(name)
-        BytecodeRoutine.__init__(self, code)
-        code._function_name_ = name
-        self._name_ = name
 
-    def clone(self):
-        return FunctionRoutine(self._name_, self._code_)
+def create_bytecode_routine(code):
+    from obin.objects.object_space import newstring
+    return BytecodeRoutine(code, newstring("UNNAMED"))
 
-    def name(self):
-        return self._name_
-
-    def is_function_code(self):
-        return True
-
-    def __repr__(self):
-        return "function %s {}" % self.name()
 
 class BlockRoutine(BytecodeRoutine):
-    _immutable_fields_ = ['_js_code_', '_stack_size_', '_symbol_size_', '_signal_name_']
+    _immutable_fields_ = ['_code_', '_stack_size_', '_symbol_size_', '_signal_name_']
 
-    def __init__(self, _signal_name_, js_code):
-        BytecodeRoutine.__init__(self, js_code)
+    def __init__(self, _signal_name_, code):
+        from obin.objects.object_space import newstring
+        BytecodeRoutine.__init__(self, code, newstring("BLOCK"))
         self._signal_name_ = _signal_name_
-
-    def clone(self):
-        return BlockRoutine(self._signal_name_, self._code_)
 
     def is_block(self):
         return True

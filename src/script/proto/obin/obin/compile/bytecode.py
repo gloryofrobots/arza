@@ -32,12 +32,6 @@ class ByteCode(object):
         self._symbols = symbols
         self.parameters = symbols.parameters[:]
 
-    def variables(self):
-        return self._symbols.variables
-
-    def functions(self):
-        return self._symbols.functions
-
     def index_for_symbol(self, symbol):
         return self._symbols.get_index(symbol)
 
@@ -160,6 +154,8 @@ class ByteCode(object):
             self.remove_labels()
 
     def compile(self):
+        assert not self.compiled_opcodes
+        assert self._symbols
         self.unlabel()
         self.compiled_opcodes = [o for o in self.opcodes]
         self.estimated_stack_size()

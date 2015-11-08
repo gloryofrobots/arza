@@ -370,8 +370,8 @@ from obin.objects.object_space import _w
 # 15.1.2.1
 def _eval(ctx, routine):
     from obin.objects.object_space import isstring
-    from obin.runtime.routine import BytecodeRoutine
-    from obin.runtime.execution_context import EvalExecutionContext
+    from obin.runtime.routine import create_bytecode_routine
+    from obin.runtime.context import create_eval_context
 
     args = ctx.argv()
     x = get_arg(args, 0)
@@ -381,30 +381,7 @@ def _eval(ctx, routine):
     src = x.value()
     from obin.compile.compiler import compile as cl
     code = cl(src)
-    f = BytecodeRoutine(code)
-    ctx = EvalExecutionContext(f)
-    f.set_context(ctx)
+    f = create_bytecode_routine(code)
+    create_eval_context(f)
     routine.call_routine(f)
-
-
-def js_load(ctx):
-    from obin.runtime.interpreter import load_file
-    from obin.compile.code import ast_to_bytecode
-    from obin.runtime.routine import BytecodeRoutine
-    from obin.runtime.execution_context import EvalExecutionContext
-
-    args = ctx.argv()
-    f = get_arg(args, 0)
-    filename = f.to_string()
-
-    ast = load_file(filename)
-    symbol_map = ast.symbol_map
-    code = ast_to_bytecode(ast, symbol_map)
-
-    f = BytecodeRoutine(code)
-    calling_context = ctx._calling_context_
-
-    ctx = EvalExecutionContext(f, calling_context=calling_context)
-    result = run_routine_for_result(f, ctx)
-    return _w(result)
 

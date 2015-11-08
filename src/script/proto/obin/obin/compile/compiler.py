@@ -564,7 +564,6 @@ class Compiler(object):
         bytecode.emit("CALL", length)
 
 def testprogram():
-    data = ""
     with open("program2.obn") as f:
         data = f.read()
 
@@ -583,16 +582,6 @@ def print_code(code):
 def compile_and_print(txt):
     print_code(compile(txt))
 
-def compile_old(txt):
-    from obin.compile.astbuilder import parse_to_ast
-    from obin.runistr import decode_str_utf8
-    from obin.compile.code import ast_to_bytecode
-    ast = parse_to_ast(decode_str_utf8(txt))
-    symbol_map = ast.symbol_map
-    code = ast_to_bytecode(ast, symbol_map)
-    return code
-
-
 def _check(val1, val2):
     print val1
     print val2
@@ -601,52 +590,9 @@ def _check(val1, val2):
         print val2
         raise RuntimeError("Not equal")
 
-def check_codes(first, second):
-    print "**************************************************************"
-    print str(first._symbols.symbols)
-    print str(second._symbols.symbols)
-    self_str = str([str(c) for c in first.opcodes])
-    other_str = str([str(c) for c in second.opcodes])
-    _check(self_str, other_str)
-    _check(first.label_count, second.label_count)
-    _check(first.has_labels, second.has_labels)
-    _check(first.startlooplabel, second.startlooplabel)
-    _check(first.endlooplabel, second.endlooplabel)
-    _check(first.pop_after_break, second.pop_after_break)
-    _check(first.updatelooplabel, second.updatelooplabel)
-    _check(first._function_name_, second._function_name_)
-    _check(str(first._symbols.symbols), str(second._symbols.symbols))
-    _check(str(first._symbols.functions), str(second._symbols.functions))
-    _check(str(first._symbols.functions), str(second._symbols.functions))
-    _check(first.parameters, second.parameters)
-
-def test(txt, txt_old):
-    code = compile(txt)
-    code_old = compile_old(txt_old)
-    check_codes(code, code_old)
 
 # compile_and_print("""
 # fn f(x, y, z){ return x + y + z; }
 # fn f2() {}
 # """)
-# compile_old("var x = (y > 0) ? 1: 2;")
-#
-# test(
-# """
-# F = fn{
-# }
-# F.action = fn {
-#     print("OLOLO")
-# }
-# F.action()
-# """,
-# """
-# F = function(){
-# };
-# F.action = function() {
-#     print("OLOLO");
-# };
-# F.action();
-# """
-# )
 

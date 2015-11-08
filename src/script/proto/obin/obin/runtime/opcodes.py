@@ -744,7 +744,7 @@ class TRYCATCHBLOCK(Opcode):
         return trystack + catchstack + finallystack
 
     def eval(self, ctx):
-        from obin.runtime.execution_context import BlockExecutionContext
+        from obin.runtime.context import BlockExecutionContext
         tryroutine = self.tryroutine.clone()
         catchroutine = self.catchroutine.clone()
 
@@ -854,7 +854,7 @@ class WITH(Opcode):
 
     def eval(self, ctx):
         from obin.runtime.completion import is_return_completion
-        from obin.runtime.execution_context import WithExecutionContext
+        from obin.runtime.context import WithExecutionContext
         # 12.10
         expr = ctx.stack_pop()
         expr_obj = expr.ToObject()

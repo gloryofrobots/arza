@@ -11,12 +11,12 @@ def test_simple():
     bytecode.emit('LOAD_FLOATCONSTANT', 4)
     bytecode.emit('ADD')
 
-    from obin.runtime.execution_context import ExecutionContext
+    from obin.runtime.context import Context
 
     from obin.runtime.routine import BytecodeRoutine
     f = BytecodeRoutine(bytecode)
 
-    ctx = ExecutionContext()
+    ctx = Context()
     res = f.run(ctx)
     value = res.value
     assert value.ToNumber() == 6.0

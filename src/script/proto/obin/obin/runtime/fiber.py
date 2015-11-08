@@ -134,7 +134,7 @@ class Fiber(object):
         while True:
             handler = routine.catch_signal(signal)
             if handler:
-                from obin.runtime.execution_context import CatchExecutionContext
+                from obin.runtime.context import CatchExecutionContext
 
                 catch_ctx = CatchExecutionContext(handler, handler.signal_name(), signal, routine.ctx)
                 handler.set_context(catch_ctx)

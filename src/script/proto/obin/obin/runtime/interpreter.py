@@ -44,21 +44,20 @@ class Interpreter(object):
     # run_src = run_src_old
 
     def run(self, code, interactive=False):
-        from obin.runtime.routine import GlobalRoutine
+        from obin.runtime.routine import create_bytecode_routine
 
-        print [str(c) for c in code.opcodes]
-        global_routine = GlobalRoutine(code)
+        # print [str(c) for c in code.opcodes]
+        global_routine = create_bytecode_routine(code)
 
-        print "*********"
-        for c in [str(c) for c in code.compiled_opcodes]: print c
-        print "*********"
+        # print "*********"
+        # for c in [str(c) for c in code.compiled_opcodes]: print c
+        # print "*********"
         
         from obin.objects.object_space import object_space
-        from obin.runtime.execution_context import ObjectExecutionContext
+        from obin.runtime.context import create_object_context
 
-        ctx = ObjectExecutionContext(global_routine, self.global_object)
+        ctx = create_object_context(global_routine, self.global_object)
         object_space.global_context = ctx
-        global_routine.set_context(ctx)
 
         result = self.machine.run_with(global_routine)
         print result
