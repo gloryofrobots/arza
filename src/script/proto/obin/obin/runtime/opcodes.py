@@ -200,7 +200,7 @@ class LOAD_FUNCTION(Opcode):
         ctx.stack_append(w_func)
 
     def __repr__(self):
-        return "\n%s\n**************\n%s\n******************\n" % (str(self.__class__), str(self.funcobj))
+        return "\n%s\n**************\n%s\n******************\n" % (str(self.__class__), str(self.code))
 
 
 class LOAD_OBJECT(Opcode):

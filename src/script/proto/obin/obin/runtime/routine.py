@@ -222,8 +222,8 @@ class NativeRoutine(BaseRoutine):
 
     def __init__(self, name, function):
         super(NativeRoutine, self).__init__()
-
-        assert isinstance(name, unicode)
+        from obin.objects.object_space import isstring
+        assert isstring(name)
         self._name_ = name
         self._function_ = function
 
@@ -234,7 +234,7 @@ class NativeRoutine(BaseRoutine):
     resume = Routine.complete
 
     def name(self):
-        return self._name_
+        return self._name_.value()
 
     def args(self):
         args = self.ctx.argv()

@@ -21,20 +21,20 @@ def setup(global_object):
     api.put_property(global_object, u'Infinity', w_POSITIVE_INFINITY)
 
     # 15.1.2.1
-    api.put_native_function(global_object, u'eval', _eval, params=[u'x'])
+    api.put_native_function(global_object, u'eval', _eval)
 
     # 15.1.2.2
-    api.put_native_function(global_object, u'parseInt', parse_int, params=[u'string', u'radix'])
+    api.put_native_function(global_object, u'parseInt', parse_int)
 
     # 15.1.2.3
     # TODO
-    api.put_native_function(global_object, u'parseFloat', parse_float, params=[u'string'])
+    api.put_native_function(global_object, u'parseFloat', parse_float)
 
     # 15.1.2.4
-    api.put_native_function(global_object, u'isNaN', is_nan, params=[u'number'])
+    api.put_native_function(global_object, u'isNaN', is_nan)
 
     # 15.1.2.5
-    api.put_native_function(global_object, u'isFinite', is_finite, params=[u'number'])
+    api.put_native_function(global_object, u'isFinite', is_finite)
 
     api.put_native_function(global_object, u'alert', alert)
 
@@ -42,9 +42,9 @@ def setup(global_object):
     api.put_native_function(global_object, u'id', _id)
     api.put_native_function(global_object, u'now', now)
 
-    api.put_native_function(global_object, u'escape', escape, params=[u'string'])
+    api.put_native_function(global_object, u'escape', escape)
 
-    api.put_native_function(global_object, u'unescape', unescape, params=[u'string'])
+    api.put_native_function(global_object, u'unescape', unescape)
 
     api.put_native_function(global_object, u'version', version)
 

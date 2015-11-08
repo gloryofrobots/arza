@@ -128,8 +128,8 @@ def isbasetype(value):
 
 
 def isfunction(value):
-    from object import W_Function
-    return isinstance(value, W_Function)
+    from object import W_Function, W_Primitive
+    return isinstance(value, W_Function) or isinstance(value, W_Primitive)
 
 
 def isvector(value):

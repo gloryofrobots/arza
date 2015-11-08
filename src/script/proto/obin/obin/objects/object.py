@@ -507,7 +507,7 @@ class W_Function(W_BaseType):
         self._scope_ = scope
 
     def _tostring_(self):
-        return self._bytecode_.to_string()
+        return str(self._bytecode_)
 
     def _tobool_(self):
         return True

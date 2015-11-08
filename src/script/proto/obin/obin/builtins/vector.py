@@ -10,7 +10,7 @@ def setup(obj):
     api.put_native_function(obj, u'toString', to_string)
 
     # 15.4.4.5
-    api.put_native_function(obj, u'join', join, params=[u'separator'])
+    api.put_native_function(obj, u'join', join)
 
     # 15.4.4.6
     api.put_native_function(obj, u'pop', pop)
