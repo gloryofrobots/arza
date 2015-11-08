@@ -34,9 +34,6 @@ class Routine(object):
         return self.ctx.stack_top()
         pass
 
-    def clone(self):
-        raise NotImplementedError()
-
     def set_context(self, ctx):
         assert not self.ctx
         self.ctx = ctx
@@ -183,9 +180,6 @@ class NativeRoutine(Routine):
         self._name_ = name
         self._function_ = function
 
-    def clone(self):
-        return NativeRoutine(self._function_, self._name_)
-
     # redefine resume because we can call bytecode routine from native and after it resumes as we must complete
     resume = Routine.complete
 
@@ -253,9 +247,6 @@ class BytecodeRoutine(Routine):
         assert self.ctx
         if self.stack_start_index() is not None:
             self.ctx.set_stack_pointer(self.stack_start_index())
-
-    def clone(self):
-        return BytecodeRoutine(self._code_)
 
     def code(self):
         return self._code_

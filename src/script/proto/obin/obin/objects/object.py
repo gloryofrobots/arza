@@ -548,9 +548,10 @@ class W_Function(W_BaseType):
         return routine
 
     def _call_(self, ctx, args):
-        if ctx is None:
-            from object_space import object_space
-            ctx = object_space.interpreter.machine.current_context()
+        assert ctx
+        # if ctx is None:
+        #     from object_space import object_space
+        #     ctx = object_space.interpreter.machine.current_context()
 
         ctx.fiber().call_object(self, ctx, args)
 
@@ -590,8 +591,9 @@ class W_Primitive(W_BaseType):
         return routine
 
     def _call_(self, ctx, args):
-        if ctx is None:
-            from object_space import object_space
-            ctx = object_space.interpreter.machine.current_context()
+        assert ctx
+        # if ctx is None:
+        #     from object_space import object_space
+        #     ctx = object_space.interpreter.machine.current_context()
 
         ctx.fiber().call_object(self, ctx, args)

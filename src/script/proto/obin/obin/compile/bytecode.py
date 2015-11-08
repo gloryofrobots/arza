@@ -5,9 +5,6 @@ from rpython.rlib import jit
 from obin.runtime.opcodes import opcodes, LABEL, BaseJump
 from obin.objects.object import W_String
 
-from obin.objects.symbol_map import SymbolMap
-empty_symbols = SymbolMap().finalize()
-
 
 class ByteCode(object):
     _immutable_fields_ = ['compiled_opcodes[*]', '_symbols', 'parameters[*]']
