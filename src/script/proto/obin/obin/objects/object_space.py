@@ -75,11 +75,15 @@ def newbool(val):
     return w_False
 
 
-def newfunc(function_body, params, scope):
+def newfunc(name, bytecode, scope):
     from obin.objects.object import W_Function
-    obj = W_Function(function_body, params, scope)
+    obj = W_Function(name, bytecode, scope)
     return obj
 
+def newprimitive(name, function):
+    from obin.objects.object import W_Primitive
+    obj = W_Primitive(name, function)
+    return obj
 
 def newsimpleobject():
     from obin.objects.object import W_Object
@@ -118,14 +122,14 @@ def isobject(value):
     return isinstance(value, W_Object)
 
 
-def isprimitive(value):
-    from object import W_Primitive
-    return isinstance(value, W_Primitive)
+def isbasetype(value):
+    from object import W_BaseType
+    return isinstance(value, W_BaseType)
 
 
 def isfunction(value):
-    from object import W_Function
-    return isinstance(value, W_Function)
+    from object import W_Function, W_Primitive
+    return isinstance(value, W_Function) or isinstance(value, W_Primitive)
 
 
 def isvector(value):

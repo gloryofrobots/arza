@@ -433,10 +433,7 @@ class Compiler(object):
         print [str(c) for c in funccode.opcodes]
         print "-------------------------"
 
-        from obin.runtime.routine import FunctionRoutine
-        func = FunctionRoutine(newstring(funcname), funccode)
-
-        code.emit('LOAD_FUNCTION', func)
+        code.emit('LOAD_FUNCTION', newstring(funcname), funccode)
 
         if index is not None and len(funcname):
             # self.declare_function(funcname, func)
