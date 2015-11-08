@@ -40,7 +40,7 @@ class Routine(object):
 
     def set_context(self, ctx):
         self.ctx = ctx
-        if self.ctx.routine() == self:
+        if self.ctx.routine() is self:
             return
 
         self.ctx.set_routine(self)

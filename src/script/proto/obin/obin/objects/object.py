@@ -502,12 +502,12 @@ class W_Function(W_Primitive):
 
         super(W_Function, self).__init__()
         # print "W__Function", function_body.__class__, scope, formal_parameter_list
-        self._function_ = function_body
+        self._routine_ = function_body
         self._scope_ = scope
         self._params_ = formal_parameter_list
 
     def _tostring_(self):
-        return self._function_.to_string()
+        return self._routine_.to_string()
 
     def _tobool_(self):
         return True
@@ -519,15 +519,15 @@ class W_Function(W_Primitive):
     def __str__(self):
         return 'Function %s' % self._tostring_()
 
-    def code(self):
-        return self._function_
+    def routine(self):
+        return self._routine_
 
     def formal_parameters(self):
         return self._params_
 
     def create_routine(self, args=[], calling_context=None):
         from obin.runtime.execution_context import FunctionExecutionContext
-        code = self.code().clone()
+        code = self.routine().clone()
         jit.promote(code)
         scope = self.scope()
 

@@ -12,7 +12,7 @@ class ExecutionContext(object):
     _virtualizable2_ = ['_stack_[*]', '_stack_pointer_', '_refs_[*]']
     _settled_ = True
 
-    def __init__(self, stack_size=1, refs_size=1):
+    def __init__(self, stack_size=1, refs_size=0):
         name = self.__class__.__name__
         if name not in DISTINCT:
             DISTINCT.append(name)
@@ -22,8 +22,9 @@ class ExecutionContext(object):
 
         self._stack_ = Stack(stack_size)
         self._routine_ = None
-        self._lexical_environment = None
+        self._env_ = None
         self._refs_ = [None] * refs_size
+        self.__resizable = not bool(refs_size)
 
     def routine(self):
         return self._routine_
@@ -56,16 +57,16 @@ class ExecutionContext(object):
     def set_stack_pointer(self, p):
         self._stack_.set_pointer(p)
 
-    def lexical_environment(self):
-        return self._lexical_environment
+    def env(self):
+        return self._env_
 
-    def set_lexical_environment(self, env):
-        self._lexical_environment = env
+    def set_env(self, env):
+        self._env_ = env
 
     # 10.5
     @jit.unroll_safe
     def declaration_binding_initialization(self):
-        env = self.lexical_environment()
+        env = self.env()
         code = jit.promote(self._routine_)
 
         # 4.
@@ -99,18 +100,29 @@ class ExecutionContext(object):
             fo = None
             env.set_binding(fn, fo)
 
+    def is_resizable(self):
+        return self.__resizable
+
+    def _resize_refs(self, index):
+        if index >= len(self._refs_):
+            self._refs_ += ([None] * (1 + index - len(self._refs_)))
+
     def _get_refs(self, index):
+        if self.is_resizable():
+            self._resize_refs(index)
         assert index < len(self._refs_)
         assert index >= 0
         return self._refs_[index]
 
     def _set_refs(self, index, value):
+        if self.is_resizable():
+            self._resize_refs(index)
         assert index < len(self._refs_)
         assert index >= 0
         self._refs_[index] = value
 
     def store_ref(self, symbol, index, value):
-        lex_env = self.lexical_environment()
+        lex_env = self.env()
         ref = lex_env.get_reference(symbol)
         if not ref:
             ref = self._get_refs(index)
@@ -124,14 +136,14 @@ class ExecutionContext(object):
     def get_ref(self, symbol, index=-1):
         ## TODO pre-bind symbols, work with idndex, does not work, see test_foo19
         if index < 0:
-            lex_env = self.lexical_environment()
+            lex_env = self.env()
             ref = lex_env.get_reference(symbol)
             return ref
 
         ref = self._get_refs(index)
 
         if ref is None:
-            lex_env = self.lexical_environment()
+            lex_env = self.env()
             ref = lex_env.get_reference(symbol)
             if ref.is_unresolvable() is True:
                 return ref
@@ -143,51 +155,30 @@ class ExecutionContext(object):
         self._set_refs(index, None)
 
 
-class _DynamicExecutionContext(ExecutionContext):
-    def _get_refs(self, index):
-        from obin.utils import tb
-        # if index > len(self._refs_):
-        #     tb("BAD INDEX")
 
-        # assert index < len(self._refs_)
-        self._resize_refs(index)
-        return self._refs_[index]
-
-    def _set_refs(self, index, value):
-        self._resize_refs(index)
-        self._refs_[index] = value
-
-    def _resize_refs(self, index):
-        if index >= len(self._refs_):
-            self._refs_ += ([None] * (1 + index - len(self._refs_)))
-
-
-class ObjectExecutionContext(_DynamicExecutionContext):
+class ObjectExecutionContext(ExecutionContext):
     def __init__(self, code, obj):
         stack_size = code.estimated_stack_size()
 
-        _DynamicExecutionContext.__init__(self, stack_size)
+        ExecutionContext.__init__(self, stack_size)
 
         self._routine_ = code
 
         from obin.runtime.environment import newobjectenv
         env = newobjectenv(obj, None)
-        self.set_lexical_environment(env)
+        self.set_env(env)
         self.declaration_binding_initialization()
 
 
-class EvalExecutionContext(_DynamicExecutionContext):
-    def __init__(self, code, calling_context=None):
+class EvalExecutionContext(ExecutionContext):
+    def __init__(self, code):
         stack_size = code.estimated_stack_size()
 
-        _DynamicExecutionContext.__init__(self, stack_size)
+        ExecutionContext.__init__(self, stack_size)
         self._routine_ = code
 
-        # if not calling_context:
-        #     raise NotImplementedError()
-
-        strict_var_env = newenv(self.lexical_environment(), 0)
-        self.set_lexical_environment(strict_var_env)
+        strict_var_env = newenv(self.env(), 0)
+        self.set_env(strict_var_env)
 
         self.declaration_binding_initialization()
 
@@ -195,58 +186,58 @@ class EvalExecutionContext(_DynamicExecutionContext):
 class FunctionExecutionContext(ExecutionContext):
     _immutable_fields_ = ['_scope_', '_calling_context_']
 
-    def __init__(self, code, argv=[], scope=None, w_func=None):
-        stack_size = code.estimated_stack_size()
-        env_size = code.env_size() + 1  # neet do add one for the arguments object
+    def __init__(self, routine, argv=[], scope=None, w_func=None):
+        stack_size = routine.estimated_stack_size()
+        env_size = routine.env_size() + 1  # neet do add one for the arguments object
 
         ExecutionContext.__init__(self, stack_size, env_size)
 
-        self._routine_ = code
+        self._routine_ = routine
         self._argument_values_ = argv
-        self._scope_ = scope
-        self._w_func_ = w_func
-        self._calling_context_ = None
+        # self._scope_ = scope
+        # self._w_func_ = w_func
+        # self._calling_context_ = None
 
         env = newenv(scope, env_size)
-        self.set_lexical_environment(env)
+        self.set_env(env)
 
         self.declaration_binding_initialization()
 
     def argv(self):
         return self._argument_values_
 
-class BlockExecutionContext(_DynamicExecutionContext):
+class BlockExecutionContext(ExecutionContext):
     def __init__(self, code, parent_context):
         stack_size = code.estimated_stack_size()
-        _DynamicExecutionContext.__init__(self, stack_size)
+        ExecutionContext.__init__(self, stack_size)
 
         code.set_context(self)
         self._parent_context_ = parent_context
 
-        parent_env = parent_context.lexical_environment()
+        parent_env = parent_context.env()
 
         env_size = code.env_size() + 1  # neet do add one for the arguments object
         local_env = newenv(parent_env, env_size)
 
-        self.set_lexical_environment(local_env)
+        self.set_env(local_env)
 
         self.declaration_binding_initialization()
 
-class CatchExecutionContext(_DynamicExecutionContext):
+class CatchExecutionContext(ExecutionContext):
     def __init__(self, code, catchparam, exception_value, parent_context):
         stack_size = code.estimated_stack_size()
-        _DynamicExecutionContext.__init__(self, stack_size)
+        ExecutionContext.__init__(self, stack_size)
 
         env_size = code.env_size() + 1  # neet do add one for the arguments object
         self._routine_ = code
         self._parent_context_ = parent_context
 
-        parent_env = parent_context.lexical_environment()
+        parent_env = parent_context.env()
 
         local_env = newenv(parent_env, env_size)
         local_env.set_binding(catchparam, exception_value)
 
-        self.set_lexical_environment(local_env)
+        self.set_env(local_env)
 
         self.declaration_binding_initialization()
 

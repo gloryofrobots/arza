@@ -194,7 +194,7 @@ class LOAD_FUNCTION(Opcode):
         from obin.objects.object_space import object_space, newfunc
 
         func = self.funcobj
-        scope = ctx.lexical_environment()
+        scope = ctx.env()
         params = func.params()
         w_func = newfunc(func, formal_parameter_list=params, scope=scope)
 

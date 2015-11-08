@@ -382,7 +382,7 @@ def _eval(ctx, routine):
     from obin.compile.compiler import compile as cl
     code = cl(src)
     f = BytecodeRoutine(code)
-    ctx = EvalExecutionContext(f, ctx._calling_context_)
+    ctx = EvalExecutionContext(f)
     f.set_context(ctx)
     routine.call_routine(f)
 

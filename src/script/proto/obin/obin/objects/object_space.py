@@ -81,6 +81,23 @@ def newfunc(function_body, formal_parameter_list=[], scope=None):
     return obj
 
 
+def newsimpleobject():
+    from obin.objects.object import W_Object
+    obj = W_Object(None)
+    return obj
+
+def newsimpleobject_withsize(size):
+    from obin.objects.object import W_Object
+    from obin.objects.datastructs import Slots
+    slots = Slots(size)
+    obj = W_Object(slots)
+    return obj
+
+def newobject():
+    obj = newsimpleobject()
+    obj.create_traits(None)
+    obj.isa(object_space.traits.Object)
+    return obj
 def newvector(items=None):
     from obin.objects.object import W_Vector
     obj = W_Vector(items)
@@ -146,23 +163,6 @@ def isnull_or_undefined(obj):
     return False
 
 
-def newsimpleobject():
-    from obin.objects.object import W_Object
-    obj = W_Object(None)
-    return obj
-
-def newsimpleobject_withsize(size):
-    from obin.objects.object import W_Object
-    from obin.objects.datastructs import Slots
-    slots = Slots(size)
-    obj = W_Object(slots)
-    return obj
-
-def newobject():
-    obj = newsimpleobject()
-    obj.create_traits(None)
-    obj.isa(object_space.traits.Object)
-    return obj
 
 
 class ObjectSpace(object):
@@ -223,7 +223,7 @@ class ObjectSpace(object):
         self.traits.Tuple = self.newobject()
 
     def get_global_environment(self):
-        return self.global_context.lexical_environment()
+        return self.global_context.env()
 
 
 object_space = ObjectSpace()
