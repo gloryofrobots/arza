@@ -115,15 +115,19 @@ def compare(obj, other):
 
     return newint(v)
 
+def call(obj, ctx, args):
+    return obj._call_(ctx, args)
+
 def next(obj):
     return obj._next_()
+
 
 def new_native_function(function, name=u'', params=[]):
     from obin.runtime.routine import NativeRoutine
     from obin.objects.object_space import newfunc
 
     jsfunc = NativeRoutine(function, name)
-    obj = newfunc(jsfunc, formal_parameter_list=params)
+    obj = newfunc(jsfunc, params, None)
     return obj
 
 

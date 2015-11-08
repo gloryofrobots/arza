@@ -26,10 +26,7 @@ def js_call(ctx, routine):
 
     assert isfunction(func)
 
-    this_arg = get_arg(args, 0)
-    arg_list = args[1:]
-
-    routine2 = func.create_routine(args=arg_list, this=this_arg, calling_context=ctx)
+    routine2 = func.create_routine(ctx, args)
     routine.call_routine(routine2)
 
 
@@ -43,7 +40,7 @@ def js_apply(ctx, routine):
     this_arg = get_arg(args, 0)
     arg_array = get_arg(args, 1)
     if isnull_or_undefined(arg_array):
-        routine = func.create_routine(args=[], this=this_arg, calling_context=ctx)
+        routine = func.create_routine(ctx, [])
         result = run_routine_for_result(routine)
         return _w(result)
 
@@ -61,7 +58,7 @@ def js_apply(ctx, routine):
         arg_list.append(next_arg)
         index += 1
 
-    routine2 = func.create_routine(args=arg_list, this=this_arg, calling_context=ctx)
+    routine2 = func.create_routine(ctx, arg_list)
     routine.call_routine(routine2)
     # result = run_routine_for_result(routine2)
     # routine.complete(_w(result))

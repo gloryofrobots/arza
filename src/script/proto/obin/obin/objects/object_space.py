@@ -75,9 +75,9 @@ def newbool(val):
     return w_False
 
 
-def newfunc(function_body, formal_parameter_list=[], scope=None):
+def newfunc(function_body, params, scope):
     from obin.objects.object import W_Function
-    obj = W_Function(function_body, formal_parameter_list, scope)
+    obj = W_Function(function_body, params, scope)
     return obj
 
 

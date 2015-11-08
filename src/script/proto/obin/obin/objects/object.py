@@ -45,6 +45,9 @@ class W_Root(object):
     def _equal_(self, other):
         raise NotImplementedError()
 
+    def _call_(self, ctx, args):
+        raise NotImplementedError()
+
     def _compare_(self, other):
         raise NotImplementedError()
 
@@ -402,7 +405,7 @@ class W_Object(W_Cell):
 
         if not self.traits().has(obj):
             self.traits().prepend(obj)
-            
+
         for trait in obj.traits().values():
             index = self.traits().get_index(trait)
             if index == -1:
@@ -419,7 +422,7 @@ class W_Object(W_Cell):
             self.traits().remove(obj)
         except KeyError:
             pass
-        
+
         for trait in obj.traits().values():
             try:
                 self.traits().remove(trait)
@@ -525,7 +528,7 @@ class W_Function(W_Primitive):
     def formal_parameters(self):
         return self._params_
 
-    def create_routine(self, args=[], calling_context=None):
+    def create_routine(self, ctx, args):
         from obin.runtime.execution_context import FunctionExecutionContext
         code = self.routine().clone()
         jit.promote(code)
@@ -535,16 +538,16 @@ class W_Function(W_Primitive):
                                        argv=args,
                                        scope=scope,
                                        w_func=self)
-        ctx._calling_context_ = calling_context
+        ctx._calling_context_ = ctx
         code.set_context(ctx)
         return code
 
-    def Call(self, args=[], calling_context=None):
-        if calling_context is None:
+    def _call_(self, ctx, args):
+        if ctx is None:
             from object_space import object_space
-            calling_context = object_space.interpreter.machine.current_context()
+            ctx = object_space.interpreter.machine.current_context()
 
-        calling_context.fiber().call_object(self, args, calling_context)
+        ctx.fiber().call_object(self, ctx, args)
 
     def scope(self):
         return self._scope_

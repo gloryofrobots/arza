@@ -16,8 +16,10 @@ def run_routine_for_result(routine, ctx=None):
     return result
 
 
-def run_function_for_result(function, args=[], calling_context=None):
-    routine = function.create_routine(args=args, calling_context=calling_context)
+def run_function_for_result(function, ctx, args):
+    from obin.runtime.execution_context import ExecutionContext
+    assert isinstance(ctx, ExecutionContext)
+    routine = function.create_routine(ctx, args)
     m = Machine()
     result = m.run_with(routine)
     return result

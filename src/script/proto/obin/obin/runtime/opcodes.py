@@ -191,12 +191,13 @@ class LOAD_FUNCTION(Opcode):
 
     # 13.2 Creating Function Objects
     def eval(self, ctx):
-        from obin.objects.object_space import object_space, newfunc
+        from obin.objects.object_space import newfunc
 
         func = self.funcobj
         scope = ctx.env()
         params = func.params()
-        w_func = newfunc(func, formal_parameter_list=params, scope=scope)
+
+        w_func = newfunc(func, params, scope)
 
         ctx.stack_append(w_func)
 
@@ -619,7 +620,7 @@ def common_call(ctx, funcobj, args):
     assert isfunction(funcobj)
 
     argv = args.values()
-    funcobj.Call(args=argv, calling_context=ctx)
+    api.call(funcobj, ctx, argv)
 
 
 def load_arguments(ctx, counter):
