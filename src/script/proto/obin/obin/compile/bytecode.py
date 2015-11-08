@@ -1,6 +1,7 @@
 #from pypy.rlib.jit import hint
 #from pypy.rlib.objectmodel import we_are_translated
 from rpython.rlib import jit
+from obin.runtime.exception import ObinRuntimeError, ObinSyntaxError
 
 from obin.runtime.opcodes import opcodes, LABEL, BaseJump
 from obin.objects.object import W_String
@@ -96,14 +97,14 @@ class ByteCode(object):
 
     def emit_break(self):
         if not self.endlooplabel:
-            raise ObinThrowException(W_String(u"Break outside loop"))
+            raise ObinRuntimeError(W_String(u"Break outside loop"))
         if self.pop_after_break[-1] is True:
             self.emit('POP')
         self.emit('JUMP', self.endlooplabel[-1])
 
     def emit_continue(self):
         if not self.startlooplabel:
-            raise ObinThrowException(W_String(u"Continue outside loop"))
+            raise ObinRuntimeError(W_String(u"Continue outside loop"))
         self.emit('JUMP', self.updatelooplabel[-1])
 
     def continue_at_label(self, label):
@@ -162,7 +163,7 @@ class ByteCode(object):
         jumps to addresses. Necessary to run code at all
         """
         if not self.has_labels:
-            raise AlreadyRun("Already has labels")
+            raise ObinRuntimeError("Already has labels")
         labels = {}
         counter = 0
         for i in range(len(self.opcodes)):
