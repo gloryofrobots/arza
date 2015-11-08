@@ -1,10 +1,9 @@
 eval("return 42")
 print("EVAL", eval("return 13 + 24"))
 
-
 fn fib(n) {
   fn _process(n,a,b) {
-    return _process(n-1,b,a+b)  if n>0 else a;
+    return _process(n-1,b,a+b) if n>0 else a;
   }
   return _process(n,0,1);
 }

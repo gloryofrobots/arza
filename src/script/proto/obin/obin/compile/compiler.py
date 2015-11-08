@@ -38,9 +38,8 @@ class Compiler(object):
         #print 'starting new scope %d' % (self.depth, )
 
     def declare_symbol(self, symbol):
-        assert symbol
-        s = newstring(symbol)
-        idx = self.scopes[-1].add_symbol(s)
+        assert isstring(symbol)
+        idx = self.scopes[-1].add_symbol(symbol)
         # print "SYMBOL", symbol, len(symbol), idx
         return idx
 
@@ -48,30 +47,20 @@ class Compiler(object):
         return self.scopes[-1].has_variable(symbol)
 
     def declare_variable(self, symbol):
-        assert symbol
-        # print "VAR", symbol
-        s = newstring(symbol)
-        idx = self.scopes[-1].add_variable(s)
+        assert isstring(symbol)
+        idx = self.scopes[-1].add_variable(symbol)
         #print 'var declaration "%s"@%d in scope %d' % (symbol, idx, self.depth,)
         return idx
 
-    def declare_function(self, symbol, funcobj):
-        assert symbol
-        s = newstring(symbol)
-        # self.funclists[-1][s] = funcobj
-        idx = self.scopes[-1].add_function(s)
-        #print 'func declaration "%s"@%d in scope %d' % (symbol, idx, self.depth,)
-        return idx
-
     def declare_parameter(self, symbol):
-        assert symbol
+        assert isstring(symbol)
         idx = self.scopes[-1].add_parameter(symbol)
         #print 'parameter declaration "%s"@%d in scope %d' % (symbol, idx, self.depth,)
         return idx
 
     def declare_rest(self, symbol):
-        assert symbol
-        idx = self.scopes[-1].add_rest(newstring(symbol))
+        assert isstring(symbol)
+        idx = self.scopes[-1].add_rest(symbol)
         #print 'rest declaration "%s"@%d in scope %d' % (symbol, idx, self.depth,)
         return idx
 
@@ -153,6 +142,9 @@ class Compiler(object):
     def _compile_UNDEFINED(self, bytecode, node):
         bytecode.emit('LOAD_UNDEFINED')
 
+    def _compile_string(self, bytecode, string):
+        bytecode.emit('LOAD_STRINGCONSTANT', string)
+
     def _compile_STR(self, bytecode, node):
         from obin.runistr import unicode_unescape, decode_str_utf8
 
@@ -160,7 +152,7 @@ class Compiler(object):
         strval = decode_str_utf8(strval)
         strval = string_unquote(strval)
         strval = unicode_unescape(strval)
-        bytecode.emit('LOAD_STRINGCONSTANT', newstring(strval))
+        self._compile_string(bytecode,  newstring(strval))
 
     def _compile_CHAR(self, bytecode, node):
         from obin.runistr import unicode_unescape, decode_str_utf8
@@ -169,7 +161,7 @@ class Compiler(object):
         strval = decode_str_utf8(strval)
         strval = string_unquote(strval)
         strval = unicode_unescape(strval)
-        bytecode.emit('LOAD_STRINGCONSTANT', newstring(strval))
+        self._compile_string(bytecode, newstring(strval))
 
     def compile_binary(self, code, node, name):
         self._compile(code, node.first())
@@ -270,19 +262,13 @@ class Compiler(object):
         self._compile(bytecode, node.second())
         bytecode.emit('LABEL', one)
 
-    def _compile_variable_declaration(self, bytecode, node, value):
-        index = self.declare_variable(value)
-        self._compile(bytecode, node.second())
-        bytecode.emit('STORE', index, value)
-
     def _compile_ASSIGN_DOT(self, bytecode, node):
         member = node.first()
-        name = member.second()
+        name = newstring(member.second().value)
 
         obj = member.first()
         self._compile(bytecode, node.second())
-        bytecode.emit('LOAD_STRINGCONSTANT', newstring(name.value))
-        # self._compile(bytecode, name)
+        self._compile_string(bytecode, name)
         self._compile(bytecode, obj)
         bytecode.emit('STORE_MEMBER')
 
@@ -291,20 +277,23 @@ class Compiler(object):
         if left.type == TT_DOT:
             return self._compile_ASSIGN_DOT(bytecode, node)
 
-        index = self.declare_variable(left.value)
+        name = newstring(left.value)
+        index = self.declare_variable(name)
         # self._compile(bytecode, node.first())
         self._compile(bytecode, node.second())
-        bytecode.emit('STORE', index, newstring(left.value))
+        bytecode.emit('STORE', index, name)
 
     def _compile_modify_assignment(self, bytecode, node, operation):
         left = node.first()
-        index = self.declare_variable(left.value)
+        name = newstring(left.value)
+
+        index = self.declare_variable(name)
         # self._compile(bytecode, left)
 
         self._compile(bytecode, node.first())
         self._compile(bytecode, node.second())
         bytecode.emit(operation)
-        bytecode.emit('STORE', index, newstring(left.value))
+        bytecode.emit('STORE', index, name)
 
     def _compile_ADD_ASSIGN(self, code, node):
         self._compile_modify_assignment(code, node, "ADD")
@@ -332,14 +321,11 @@ class Compiler(object):
 
     def _compile_NAME(self, code, node):
         name = newstring(node.value)
-        index = self.declare_symbol(node.value)
+        index = self.declare_symbol(name)
         code.emit('LOAD_VARIABLE', index, name)
 
     def is_empty(self, l):
         return isinstance(l, list) and len(l) == 0
-
-    def _compile_THIS(self, code, node):
-        code.emit('LOAD_THIS')
 
     def _compile_RETURN(self, code, node):
         expr = node.first()
@@ -368,7 +354,7 @@ class Compiler(object):
             self._compile(code, value)
             if key.type == TT_NAME:
                 # in case of names in object literal we must convert them to strings
-                code.emit('LOAD_STRINGCONSTANT', newstring(key.value))
+                self._compile_string(code, newstring(key.value))
             else:
                 self._compile(code, key)
 
@@ -401,14 +387,14 @@ class Compiler(object):
         body = node.third()
 
         if self.is_empty(name):
-            funcname = u''
+            funcname = newstring(u'')
             index = None
         else:
-            funcname = unicode(name.value)
+            funcname = newstring(name.value)
             index = self.declare_symbol(funcname)
 
         self.enter_scope()
-        if len(funcname):
+        if len(funcname.value()):
             self.declare_symbol(funcname)
 
         if params:
@@ -433,11 +419,10 @@ class Compiler(object):
         print [str(c) for c in funccode.opcodes]
         print "-------------------------"
 
-        code.emit('LOAD_FUNCTION', newstring(funcname), funccode)
+        code.emit('LOAD_FUNCTION', funcname, funccode)
 
-        if index is not None and len(funcname):
-            # self.declare_function(funcname, func)
-            code.emit('STORE', index, newstring(funcname))
+        if index is not None and not funcname.isempty():
+            code.emit('STORE', index, funcname)
 
         # code.emit('POP')
 
@@ -493,8 +478,8 @@ class Compiler(object):
         bytecode.done_continue()
 
     def _compile_DOT(self, code, node):
-        name = node.second().value
-        code.emit("LOAD_STRINGCONSTANT", newstring(name))
+        name = newstring(node.second().value)
+        self._compile_string(code, name)
         obj = node.first()
         self._compile(code, obj)
         code.emit('LOAD_MEMBER_DOT')
@@ -536,14 +521,14 @@ class Compiler(object):
     def _compile_LPAREN_MEMBER(self, bytecode, node):
         obj = node.first()
         method = node.second()
-        name = method.value
+        name = newstring(method.value)
         args = node.third()
         # print "_compile_LPAREN_MEMBER", obj, method, args
 
         length = self._compile_args_list(bytecode, args)
 
         self._compile(bytecode, obj)
-        bytecode.emit('LOAD_STRINGCONSTANT', newstring(name))
+        self._compile_string(bytecode, name)
         self.declare_symbol(name)
 
         bytecode.emit("CALL_METHOD", length)

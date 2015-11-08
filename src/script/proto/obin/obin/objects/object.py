@@ -249,6 +249,9 @@ class W_String(W_BaseType):
     def __hash__(self):
         return self.value().__hash__()
 
+    def isempty(self):
+        return not bool(len(self.__items))
+
     def value(self):
         return self.__items
 
