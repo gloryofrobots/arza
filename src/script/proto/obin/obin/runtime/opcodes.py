@@ -33,11 +33,10 @@ class BaseBinaryComparison(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
-        from obin.objects.object_space import newbool
         s4 = ctx.stack_pop()
         s2 = ctx.stack_pop()
         res = self.decision(s2, s4)
-        ctx.stack_append(newbool(res))
+        ctx.stack_append(res)
 
     def decision(self, op1, op2):
         raise NotImplementedError
@@ -455,23 +454,22 @@ class LE(BaseBinaryComparison):
 
 class EQ(BaseBinaryComparison):
     def decision(self, op1, op2):
-        return AbstractEC(op1, op2)
+        return api.equal(op1, op2)
 
 
 class NE(BaseBinaryComparison):
     def decision(self, op1, op2):
-        return not AbstractEC(op1, op2)
+        return not api.equal(op1, op2)
 
 
 class IS(BaseBinaryComparison):
     def decision(self, op1, op2):
-        return StrictEC(op1, op2)
+        return api.strict_equal(op1, op2)
 
 
 class ISNOT(BaseBinaryComparison):
     def decision(self, op1, op2):
-        return not StrictEC(op1, op2)
-
+        return not api.strict_equal(op1, op2)
 
 class STORE_MEMBER(Opcode):
     _stack_change = 0
@@ -774,38 +772,12 @@ class TRYCATCHBLOCK(Opcode):
 
 
 # ------------ iterator support ----------------
-
-from rpython.rlib.listsort import make_timsort_class
-TimSort = make_timsort_class()
-
-
 class LOAD_ITERATOR(Opcode):
     _stack_change = 0
 
-    # separate function because jit should trace eval but not iterator creation.
-    def _make_iterator(self, obj):
-        props = []
-        properties = obj.named_properties()
-        TimSort(properties).sort()
-
-        for key in properties:
-            props.append(_w(key))
-
-        props.reverse()
-
-        from obin.objects.object import W_Iterator
-        iterator = W_Iterator(props)
-        return iterator
-
     def eval(self, ctx):
-        exper_value = ctx.stack_pop()
-        obj = exper_value.ToObject()
-
-        from obin.objects.object import W_BasicObject
-        assert isinstance(obj, W_BasicObject)
-
-        iterator = self._make_iterator(obj)
-
+        obj = ctx.stack_pop()
+        iterator = api.iterator(obj)
         ctx.stack_append(iterator)
 
 
@@ -814,11 +786,9 @@ class JUMP_IF_ITERATOR_EMPTY(BaseJump):
         pass
 
     def do_jump(self, ctx, pos):
-        from obin.objects.object import W_Iterator
         last_block_value = ctx.stack_pop()
         iterator = ctx.stack_top()
-        assert isinstance(iterator, W_Iterator)
-        if iterator.empty():
+        if not iterator._tobool_():
             # discard the iterator
             ctx.stack_pop()
             # put the last block value on the stack
@@ -834,11 +804,8 @@ class NEXT_ITERATOR(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
-        from obin.objects.object import W_Iterator
-
         iterator = ctx.stack_top()
-        assert isinstance(iterator, W_Iterator)
-        next_el = iterator.next()
+        next_el = api.next(iterator)
         ctx.stack_append(next_el)
 
 

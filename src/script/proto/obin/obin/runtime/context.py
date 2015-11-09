@@ -32,6 +32,8 @@ class Context(object):
         return self._routine_.fiber
 
     def stack_append(self, value):
+        from obin.objects.object_space import isany
+        assert isany(value)
         self._stack_.push(value)
 
     def stack_pop(self):

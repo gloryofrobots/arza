@@ -129,6 +129,8 @@ def compare(obj, other):
 def call(obj, ctx, args):
     return obj._call_(ctx, args)
 
+def iterator(obj):
+    return obj._iterator_()
 
 def next(obj):
     return obj._next_()

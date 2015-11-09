@@ -462,6 +462,33 @@ class Compiler(object):
         self._compile(code, falsebranch)
         code.emit('LABEL', endif)
 
+    def _compile_FOR(self, bytecode, node):
+        vars = node.first()
+        name = newstring(vars[0].value)
+
+        source = node.second()
+        body = node.third()
+        self._compile(bytecode, source)
+        bytecode.emit('LOAD_ITERATOR')
+        # load the "last" iterations result
+        bytecode.emit('LOAD_UNDEFINED')
+        precond = bytecode.emit_startloop_label()
+        finish = bytecode.prealocate_endloop_label(True)
+
+        bytecode.emit('JUMP_IF_ITERATOR_EMPTY', finish)
+
+        # put next iterator value on stack
+        bytecode.emit('NEXT_ITERATOR')
+
+        index = self.declare_variable(name)
+        # self._compile_string(bytecode, name)
+        bytecode.emit('STORE', index, name)
+        bytecode.emit('POP')
+
+        self._compile(bytecode, body)
+        bytecode.emit('JUMP', precond)
+        bytecode.emit_endloop_label(finish)
+
     def _compile_IF(self, code, node):
         if node.arity == 3:
             return self._compile_IF_TERNARY(code, node)

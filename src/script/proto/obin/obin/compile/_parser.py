@@ -853,7 +853,8 @@ def parser_init(parser):
     def _stmt_for(parser, node):
         node.init(3)
         vars = []
-        vars.append(expression(parser, 0))
+        # set big bp to overrinding IN binding power
+        vars.append(expression(parser, 70))
         while parser.token_type == T.TT_COMMA:
             advance(parser)
             if parser.token_type != T.TT_NAME:

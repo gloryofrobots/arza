@@ -5,7 +5,7 @@
 import math
 
 from obin.objects.object import W_String, W_Integer, W_Float
-from obin.objects.object_space import _w, isint, isstring, isfloat
+from obin.objects.object_space import _w, isint, isstring, isfloat, newbool
 from rpython.rlib.rarithmetic import ovfcheck
 from rpython.rlib.rfloat import isnan, isinf
 from rpython.rlib.objectmodel import specialize
@@ -171,19 +171,19 @@ def _base_compare(x, y, _compare):
 
 
 def compare_gt(x, y):
-    return _base_compare(x, y, _compare_gt)
+    return newbool(_base_compare(x, y, _compare_gt))
 
 
 def compare_ge(x, y):
-    return _base_compare(x, y, _compare_ge)
+    return newbool(_base_compare(x, y, _compare_ge))
 
 
 def compare_lt(x, y):
-    return _base_compare(y, x, _compare_gt)
+    return newbool(_base_compare(y, x, _compare_gt))
 
 
 def compare_le(x, y):
-    return _base_compare(y, x, _compare_ge)
+    return newbool(_base_compare(y, x, _compare_ge))
 
 
 def uminus(obj, ctx):

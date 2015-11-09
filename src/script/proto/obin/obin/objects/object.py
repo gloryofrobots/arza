@@ -221,8 +221,17 @@ class LinearSequenceIterator(W_BaseType):
         if self.index >= self.length:
             return newundefined()
 
-        return api.at(self.source, self.index)
+        el = self.source[self.index]
+        self.index += 1
+        return el
 
+    def _tostring_(self):
+        return "<Iterator %d:%d>" % (self.index, self.length)
+
+    def _tobool_(self):
+        if self.index >= self.length:
+            return False
+        return True
 
 class W_String(W_BaseType):
     _type_ = 'String'
@@ -259,7 +268,7 @@ class W_String(W_BaseType):
         return str(self.__items)
 
     def _iterator_(self):
-        return LinearSequenceIterator(self, self.__length)
+        return LinearSequenceIterator(self.__items, self.__length)
 
     def _tobool_(self):
         return bool(self.__items)
@@ -320,7 +329,7 @@ class W_Vector(W_Cell):
         return el
 
     def _iterator_(self):
-        return LinearSequenceIterator(self, self.length())
+        return LinearSequenceIterator(self._items, self.length())
 
     def _tobool_(self):
         return bool(self._items)
@@ -369,21 +378,6 @@ class W_Vector(W_Cell):
 
     def pop(self):
         return self._items.pop()
-
-
-class W_ObjectIterator(W_BaseType):
-    def __init__(self, keys):
-        self.index = 0
-        self.keys = keys
-        self.length = len(self.keys)
-
-    def _next_(self):
-        from obin.objects.object_space import newundefined
-        if self.index >= self.length:
-            return newundefined()
-
-        return self.keys[self.index]
-
 
 class W_Object(W_Cell):
     _type_ = 'Object'
@@ -497,7 +491,8 @@ class W_Object(W_Cell):
         self.__slots.add(k, v)
 
     def _iterator_(self):
-        return W_ObjectIterator(self.__slots.keys())
+        keys = self.__slots.keys()
+        return LinearSequenceIterator(keys, len(keys))
 
     def _tobool_(self):
         return True

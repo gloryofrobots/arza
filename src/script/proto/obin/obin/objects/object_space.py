@@ -108,6 +108,9 @@ def newvector(items=None):
     obj = W_Vector(items)
     return obj
 
+def isany(value):
+    from object import W_Root
+    return isinstance(value, W_Root)
 
 def isundefined(value):
     return value is w_Undefined
