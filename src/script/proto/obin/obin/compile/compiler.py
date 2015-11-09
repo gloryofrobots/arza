@@ -283,8 +283,27 @@ class Compiler(object):
         self._compile(bytecode, node.second())
         bytecode.emit('STORE', index, name)
 
+    def _compile_modify_assignment_dot(self, bytecode, node, operation):
+        member = node.first()
+        name = newstring(member.second().value)
+
+        obj = member.first()
+
+        self._compile(bytecode, node.first())
+        self._compile(bytecode, node.second())
+        bytecode.emit(operation)
+
+        # self._compile(bytecode, node.second())
+        self._compile_string(bytecode, name)
+        self._compile(bytecode, obj)
+        bytecode.emit('STORE_MEMBER')
+        pass
+
     def _compile_modify_assignment(self, bytecode, node, operation):
         left = node.first()
+        if left.type == TT_DOT:
+            return self._compile_modify_assignment_dot(bytecode, node, operation)
+
         name = newstring(left.value)
 
         index = self.declare_variable(name)

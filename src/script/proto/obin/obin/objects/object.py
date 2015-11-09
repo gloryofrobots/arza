@@ -484,6 +484,15 @@ class W_Object(W_Cell):
 
         return v
 
+    def _call_(self, ctx, args):
+        from object_space import newstring, isundefined
+        cb = self._at_(newstring("__call__"))
+        if isundefined(cb):
+            raise ObinRuntimeError("Object is not callable")
+
+        args.insert(0, self)
+        return api.call(cb, ctx, args)
+
     def _put_(self, k, v):
         self.__slots.add(k, v)
 

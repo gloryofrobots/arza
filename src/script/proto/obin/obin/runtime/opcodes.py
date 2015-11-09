@@ -615,7 +615,6 @@ class POP(Opcode):
 def common_call(ctx, funcobj, args):
     from obin.objects.object_space import isvector, isfunction
     assert isvector(args)
-    assert isfunction(funcobj)
 
     argv = args.values()
     api.call(funcobj, ctx, argv)
