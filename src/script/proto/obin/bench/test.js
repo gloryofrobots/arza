@@ -1,6 +1,18 @@
+x = 20
+while x > 0 {
+    x -= 5
+    if x == 10 {
+        print("SKIP", x)
+        continue
+    }
+    print("X", x)
+
+}
+
+
 A = [1, 2, 3, 4, 5, 6, 35, 110, 122]
 for a in A {
-    if(a > 35) {
+    if(a == 35) {
        continue
     }
 
