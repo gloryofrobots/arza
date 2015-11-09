@@ -49,9 +49,9 @@ class Interpreter(object):
         # print [str(c) for c in code.opcodes]
         global_routine = create_bytecode_routine(code)
 
-        print "*********"
-        for c in [str(c) for c in code.compiled_opcodes]: print c
-        print "*********"
+        # print "*********"
+        # for c in [str(c) for c in code.compiled_opcodes]: print c
+        # print "*********"
         
         from obin.objects.object_space import object_space
         from obin.runtime.context import create_object_context

@@ -714,7 +714,6 @@ class THROW(Opcode):
 
     def eval(self, ctx):
         val = ctx.stack_pop()
-        from obin.runtime.exception import ObinThrowException
         ctx.routine().terminate(val)
 
 class TRYCATCHBLOCK(Opcode):

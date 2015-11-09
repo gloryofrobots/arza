@@ -26,6 +26,10 @@ def setup_builtins(global_object):
 
     import obin.builtins.vector
     obin.builtins.vector.setup(object_space.traits.Vector)
+
+    import obin.builtins.function
+    obin.builtins.function.setup(object_space.traits.Function)
+
     """
     import obin.builtins.boolean
     obin.builtins.boolean.setup(global_object)

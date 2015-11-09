@@ -519,13 +519,25 @@ class W_ModuleObject(W_Object):
 
 class W_Function(W_BaseType):
     _type_ = 'function'
-    _immutable_fields_ = ['_type_', '_extensible_', '_scope_', '_params_[*]', '_function_']
+    _immutable_fields_ = ['_type_',  '_scope_',  '_variadic_', '_arity_', '_name_']
 
     def __init__(self, name, bytecode, scope):
         super(W_Function, self).__init__()
         self._name_ = name
         self._bytecode_ = bytecode
+        self._arity_ = len(bytecode.params())
+        if bytecode.params_rest() is not None:
+            self._variadic_ = True
+        else:
+            self._variadic_ = False
+
         self._scope_ = scope
+
+    def arity(self):
+        return self._arity_
+
+    def is_variadic(self):
+        return self._variadic_
 
     def _tostring_(self):
         return str(self._bytecode_)

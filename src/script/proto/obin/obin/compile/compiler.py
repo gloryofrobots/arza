@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
 from token_type import *
 from tokens import TT_TO_STR
-from _parser import *
+from parser import *
 
 from obin.objects.symbol_map import SymbolMap
 from obin.objects.object_space import newstring, isstring
