@@ -2,14 +2,17 @@ from obin.objects.object_space import hide_on_translate
 from obin.objects.object_space import _w
 from obin.runtime.routine import complete_native_routine
 #from pypy.rlib import jit
+from obin.objects import api
 
+def setup_builtins(interpreter, global_object):
+    interpreter.add_primitive(u"__add_traits__", add_traits)
 
-def setup_builtins(global_object):
-    from obin.builtins import put_native_function
-
-    put_native_function(global_object, u'load', js_load)
-    put_native_function(global_object, u'debug', js_debug)
-    put_native_function(global_object, u'trace', js_trace)
+@complete_native_routine
+def add_traits(ctx, routine):
+    args = routine.args()
+    object = args[0]
+    for t in a[1:]:
+        object.isa(t)
 
 
 @complete_native_routine

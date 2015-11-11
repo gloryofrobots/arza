@@ -86,24 +86,24 @@ def put(obj, k, v):
 
 
 def strict_equal(obj, other):
-    from object_space import newbool, isbasetype, isconstant
+    from object_space import newbool, isvaluetype, isconstant
     if not isinstance(other, obj.__class__):
         return newbool(False)
     if isconstant(obj):
         return newbool(True)
 
-    if isbasetype(obj):
+    if isvaluetype(obj):
         return newbool(obj.value() is other.value())
 
     return newbool(obj is other)
 
 
 def equal(obj, other):
-    from object_space import newbool, isbasetype, isconstant
+    from object_space import newbool, isvaluetype, isconstant
     if not isinstance(other, obj.__class__):
         return newbool(False)
 
-    if isbasetype(obj):
+    if isvaluetype(obj):
         return newbool(obj.value() == other.value())
 
     if isconstant(obj):
@@ -114,10 +114,10 @@ def equal(obj, other):
 
 
 def compare(obj, other):
-    from object_space import isundefined, newint, newbool, isbasetype, isconstant
+    from object_space import isundefined, newint, newbool, isvaluetype, isconstant
     assert not isundefined(other)
     v = obj._compare_(other)
-    if isbasetype(obj):
+    if isvaluetype(obj):
         return newint(cmp(obj.value(), other.value()))
 
     if isconstant(obj):

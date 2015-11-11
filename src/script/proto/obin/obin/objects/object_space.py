@@ -103,6 +103,7 @@ def newobject():
     obj.create_traits(None)
     obj.isa(object_space.traits.Object)
     return obj
+
 def newvector(items=None):
     from obin.objects.object import W_Vector
     obj = W_Vector(items)
@@ -126,9 +127,9 @@ def isobject(value):
     return isinstance(value, W_Object)
 
 
-def isbasetype(value):
-    from object import W_BaseType
-    return isinstance(value, W_BaseType)
+def isvaluetype(value):
+    from object import W_ValueType
+    return isinstance(value, W_ValueType)
 
 
 def isfunction(value):
@@ -178,12 +179,14 @@ class ObjectSpace(object):
         def __init__(self):
             self.Object = None
             self.Function = None
+            self.Boolean = None
             self.True = None
             self.False = None
             self.Nil = None
             self.Undefined = None
 
             self.Char = None
+            self.Number = None
             self.Integer = None
             self.Float = None
             self.Symbol = None
@@ -214,12 +217,14 @@ class ObjectSpace(object):
 
         # following traits resemble native types list
         self.traits.Function = self.newobject()
+        self.traits.Boolean = self.newobject()
         self.traits.True = self.newobject()
         self.traits.False = self.newobject()
         self.traits.Nil = self.newobject()
         self.traits.Undefined = self.newobject()
 
         self.traits.Char = self.newobject()
+        self.traits.Number = self.newobject()
         self.traits.Integer = self.newobject()
         self.traits.Float = self.newobject()
         self.traits.Symbol = self.newobject()

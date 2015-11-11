@@ -13,7 +13,8 @@ def setup(obj):
     api.put_native_function(obj, u'kindof', kindof)
     api.put_native_function(obj, u'create', create)
     api.put_native_function(obj, u'traits', traits)
-    pass
+
+    obj.freeze()
 
 def object_extract_1_obj_arg(routine):
     from obin.objects.object_space import isobject

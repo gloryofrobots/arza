@@ -11,6 +11,15 @@ def testprogram():
     return data
 
 
+def is_many(node):
+    return isinstance(node, list)
+
+def empty_node():
+    return []
+
+def is_empty_node(n):
+    return isinstance(n, list) and len(n) == 0
+
 class Node:
     def __init__(self, _type, value, position, line):
         self.type = _type
@@ -817,6 +826,87 @@ def parser_init(parser):
 
     prefix(parser, T.TT_LCURLY, _prefix_lcurly)
 
+    def _prefix_object(parser, node):
+        key = None
+        value = None
+        node.init(3)
+        traits = []
+        items = []
+
+        if parser.token_type == T.TT_NAME:
+            node.setfirst(parser.node)
+            advance(parser)
+        else:
+            node.setfirst([])
+
+        if parser.token_type == T.TT_LPAREN:
+            advance_expected(parser, T.TT_LPAREN)
+            if parser.token_type != T.TT_RPAREN:
+                while True:
+                    if parser.token_type == T.TT_NAME:
+                        traits.append(parser.node)
+                        advance(parser)
+
+                    if parser.token_type != T.TT_COMMA:
+                        break
+
+                    advance_expected(parser, T.TT_COMMA)
+
+            advance_expected(parser, T.TT_RPAREN)
+
+        node.setsecond(traits)
+
+        advance_expected(parser, T.TT_LCURLY)
+        if parser.token_type != T.TT_RCURLY:
+            while True:
+                # TODO check it
+                if parser.token_type == T.TT_FN:
+                    fn = expression(parser, 0)
+                    key = fn.first()
+                    if is_empty_node(key):
+                        error(parser, "object function literals must have names")
+
+                    value = fn
+                elif parser.token_type == T.TT_OBJECT:
+                    obj = expression(parser, 0)
+                    key = obj.first()
+                    if is_empty_node(key):
+                        error(parser, "object function literals must have names")
+
+                    value = obj
+                else:
+                    check_token_types(parser, [T.TT_NAME, T.TT_INT, T.TT_STR, T.TT_CHAR, T.TT_FLOAT, T.TT_FN, T.TT_OBJECT])
+                    key = parser.node
+                    advance(parser)
+                    advance_expected(parser, T.TT_ASSIGN)
+                    value = expression(parser, 0)
+
+                items.append([key, value])
+                if parser.token_type == T.TT_RCURLY:
+                    break
+
+        advance_expected(parser, T.TT_RCURLY)
+        node.setthird(items)
+        return node
+    prefix(parser, T.TT_OBJECT, _prefix_object)
+    """
+    object AliceTraits(Human, Insect, Fucking, Shit) {
+        id = 42
+        name = "Alice"
+        object Bob(Human) {
+            fn hello(self) {
+                return "I am Bob"
+            }
+        }
+        fn greetings(self) {
+            return "Hello from" + self.name
+        }
+        goNorth = fn(self) {
+            "I " + self.name + " go North"
+        }
+    }
+
+    """
     def _stmt_single(parser, node):
         node.init(1)
         if token_is_one_of(parser, [T.TT_SEMI, T.TT_RCURLY]) or parser.is_newline_occurred:
@@ -915,8 +1005,24 @@ def write_ast(ast):
         f.write(repr)
 
 
-ast = parse_string("""
-print(2,3,...x)
-""")
-# print ast
+ast = parse_string(
+    """
+    object AliceTraits(Human, Insect, Fucking, Shit) {
+        id = 42
+        name = "Alice"
+        object Bob(Human) {
+            fn hello(self) {
+                return "I am Bob"
+            }
+        }
+        fn greetings(self) {
+            return "Hello from" + self.name
+        }
+        goNorth = fn(self) {
+            "I " + self.name + " go North"
+        }
+    }
+    """
+)
+print ast
 # write_ast(ast)

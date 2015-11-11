@@ -4,6 +4,7 @@ from obin.runtime.routine import complete_native_routine
 def setup(obj):
     api.put_native_function(obj, u'arity', arity)
     api.put_native_function(obj, u'isVariadic', is_variadic)
+    obj.freeze()
 
 @complete_native_routine
 def arity(ctx, routine):

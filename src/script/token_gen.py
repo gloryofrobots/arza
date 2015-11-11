@@ -32,6 +32,7 @@ TOKENS = [
   ("TT_FROM", "from"),
   ("TT_IN", "in"),
   ("TT_IS", "is"),
+  ("TT_OBJECT", "object"),
   ("TT_ISNOT", "isnot"),
   ("TT_RETURN", "return"),
   ("TT_ELLIPSIS", "..."),

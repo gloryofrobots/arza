@@ -57,8 +57,9 @@ class W_Constant(W_Root):
     pass
 
 
-class W_BaseType(W_Root):
-    pass
+class W_ValueType(W_Root):
+    def value(self):
+        raise NotImplementedError()
 
 
 class W_Undefined(W_Constant):
@@ -124,7 +125,7 @@ class W_False(W_Constant):
         return '_False_'
 
 
-class W_Char(W_BaseType):
+class W_Char(W_ValueType):
     _immutable_fields_ = ['value']
 
     def __init__(self, value):
@@ -132,7 +133,7 @@ class W_Char(W_BaseType):
         self.__value = value
 
     def __str__(self):
-        return 'W_Char(%s)' % (unichr(self.__value),)
+        return '(%s)' % (unichr(self.__value),)
 
     def value(self):
         return self.__value
@@ -148,15 +149,15 @@ class W_Char(W_BaseType):
         return api.at(object_space.traits.Char, k)
 
 
-class W_Integer(W_BaseType):
+class W_Integer(W_ValueType):
     _immutable_fields_ = ['__value']
 
     def __init__(self, value):
         super(W_Integer, self).__init__()
         self.__value = value
 
-    def __str__(self):
-        return 'W_Integer(%d)' % (self.value(),)
+    # def __str__(self):
+        # return 'W_Integer(%d)' % (self.value(),)
 
     def value(self):
         return self.__value
@@ -172,15 +173,15 @@ class W_Integer(W_BaseType):
         return api.at(object_space.traits.Integer, k)
 
 
-class W_Float(W_BaseType):
+class W_Float(W_ValueType):
     _immutable_fields_ = ['value']
 
     def __init__(self, value):
         super(W_Float, self).__init__()
         self.__value = value
 
-    def __str__(self):
-        return 'W_Float(%d)' % (self.__value,)
+    # def __str__(self):
+    #     return 'W_Float(%s)' % (str(self.__value),)
 
     def value(self):
         return self.__value
@@ -210,7 +211,7 @@ class W_Cell(W_Root):
         return self.__frozen
 
 
-class LinearSequenceIterator(W_BaseType):
+class NativeListIterator(W_ValueType):
     def __init__(self, source, length):
         self.index = 0
         self.source = source
@@ -233,7 +234,7 @@ class LinearSequenceIterator(W_BaseType):
             return False
         return True
 
-class W_String(W_BaseType):
+class W_String(W_ValueType):
     _type_ = 'String'
     _immutable_fields_ = ['value']
 
@@ -243,8 +244,8 @@ class W_String(W_BaseType):
         self.__items = value
         self.__length = len(self.__items)
 
-    def __str__(self):
-        return u'W_String("%s")' % (self.__items)
+    # def __str__(self):
+    #     return u'W_String("%s")' % (self.__items)
 
     def __eq__(self, other):
         if isinstance(other, unicode):
@@ -265,10 +266,10 @@ class W_String(W_BaseType):
         return self.__items
 
     def _tostring_(self):
-        return str(self.__items)
+        return '"%s"' % str(self.__items)
 
     def _iterator_(self):
-        return LinearSequenceIterator(self.__items, self.__length)
+        return NativeListIterator(self.__items, self.__length)
 
     def _tobool_(self):
         return bool(self.__items)
@@ -301,10 +302,12 @@ class W_Vector(W_Cell):
         assert isinstance(items, list)
         self._items = items
 
-    def __str__(self):
-        return u'W_Vector("%s")' % str(self._items)
+    # def __str__(self):
+    #     return u'W_Vector("%s")' % str(self._items)
 
     def _put_(self, k, v):
+        if self.isfrozen():
+            raise ObinRuntimeError("Vector is frozen")
         from object_space import isint
         if not isint(k):
             raise ObinKeyError(k)
@@ -329,7 +332,7 @@ class W_Vector(W_Cell):
         return el
 
     def _iterator_(self):
-        return LinearSequenceIterator(self._items, self.length())
+        return NativeListIterator(self._items, self.length())
 
     def _tobool_(self):
         return bool(self._items)
@@ -401,8 +404,8 @@ class W_Object(W_Cell):
 
         self.__traits = traits
 
-    def __str__(self):
-        return "W_Object(%s)" % (self._tostring_())
+    # def __str__(self):
+    #     return "W_Object(%s)" % (self._tostring_())
 
     def traits(self):
         return self.__traits
@@ -488,11 +491,13 @@ class W_Object(W_Cell):
         return api.call(cb, ctx, args)
 
     def _put_(self, k, v):
+        if self.isfrozen():
+            raise ObinRuntimeError("Object is frozen")
         self.__slots.add(k, v)
 
     def _iterator_(self):
         keys = self.__slots.keys()
-        return LinearSequenceIterator(keys, len(keys))
+        return NativeListIterator(keys, len(keys))
 
     def _tobool_(self):
         return True
@@ -501,8 +506,12 @@ class W_Object(W_Cell):
         return self.__slots.length()
 
     def _tostring_(self):
+        # from object_space import newstring, isundefined
         return str(self.__slots)
-
+        # _name_ = self._at_(newstring("__name__"))
+        # if isundefined(_name_):
+        # else:
+        #     return "Object %s %s"
     def _clone_(self):
         import copy
         slots = copy.copy(self.__slots)
@@ -517,7 +526,7 @@ class W_ModuleObject(W_Object):
     pass
 
 
-class W_Function(W_BaseType):
+class W_Function(W_Root):
     _type_ = 'function'
     _immutable_fields_ = ['_type_',  '_scope_',  '_variadic_', '_arity_', '_name_']
 
@@ -540,7 +549,9 @@ class W_Function(W_BaseType):
         return self._variadic_
 
     def _tostring_(self):
-        return str(self._bytecode_)
+        params = ",".join([str(p.value()) for p in self._bytecode_.params()])
+
+        return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
 
     def _tobool_(self):
         return True
@@ -549,8 +560,8 @@ class W_Function(W_BaseType):
         from object_space import object_space
         return api.at(object_space.traits.Function, k)
 
-    def __str__(self):
-        return 'Function %s' % self._tostring_()
+    # def __str__(self):
+    #     return 'Function %s' % self._tostring_()
 
     def create_routine(self, ctx, args):
         from obin.runtime.context import create_function_context
@@ -577,8 +588,7 @@ class W_Function(W_BaseType):
     def scope(self):
         return self._scope_
 
-
-class W_Primitive(W_BaseType):
+class W_Primitive(W_Root):
     _type_ = 'native'
     _immutable_fields_ = ['_type_', '_extensible_', '_scope_', '_params_[*]', '_function_']
 
@@ -616,3 +626,71 @@ class W_Primitive(W_BaseType):
         #     ctx = object_space.interpreter.machine.current_context()
 
         ctx.fiber().call_object(self, ctx, args)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# class TRYCATCHBLOCK(Opcode):
+#     _immutable_fields_ = ['tryexec', 'catchexec', 'catchparam', 'finallyexec']
+#
+#     def __init__(self, tryfunc, catchparam, catchfunc, finallyfunc):
+#         self.tryroutine = tryfunc
+#         self.catchroutine = catchfunc
+#         self.catchparam = catchparam
+#         self.finallyroutine = finallyfunc
+#
+#     def stack_change(self):
+#         trystack = 0
+#         catchstack = 0
+#         finallystack = 0
+#
+#         if self.tryroutine is not None:
+#             trystack = self.tryroutine.estimated_stack_size()
+#             #if self.catchexec is not None:
+#             #catchstack = self.catchexec.estimated_stack_size()
+#         if self.finallyroutine is not None:
+#             finallystack = self.finallyroutine.estimated_stack_size()
+#
+#         return trystack + catchstack + finallystack
+#
+#     def eval(self, ctx):
+#         from obin.runtime.context import BlockExecutionContext
+#         tryroutine = self.tryroutine.clone()
+#         catchroutine = self.catchroutine.clone()
+#
+#         finallroutine = self.finallyroutine.clone() if self.finallyroutine else None
+#         parentroutine = ctx.routine()
+#
+#         stack_p = ctx.stack_pointer()
+#
+#         trycontext = BlockExecutionContext(tryroutine, ctx)
+#         tryroutine.add_signal_handler(None, catchroutine)
+#         catchcontext = BlockExecutionContext(catchroutine, ctx)
+#         continuation = None
+#         if finallroutine:
+#             finallycontext = BlockExecutionContext(finallroutine, ctx)
+#             # print "finallroutine.estimated_stack_size()", finallroutine.estimated_stack_size()
+#             # print finallroutine.code()
+#
+#             continuation = finallroutine
+#             catchroutine.set_continuation(finallroutine)
+#             finallroutine.set_continuation(parentroutine)
+#         else:
+#             catchroutine.set_continuation(parentroutine)
+#             continuation = parentroutine
+#
+#         catchroutine.set_start_stack_index(stack_p)
+#         ctx.routine().fiber.call_routine(tryroutine, continuation, parentroutine)
+

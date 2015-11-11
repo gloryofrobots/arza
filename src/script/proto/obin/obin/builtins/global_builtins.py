@@ -10,9 +10,28 @@ from obin.objects import api
 
 def setup(global_object):
     from rpython.rlib.objectmodel import we_are_translated
-    from obin.builtins.number import w_NAN
-    from obin.builtins.number import w_POSITIVE_INFINITY
-    from obin.objects.object_space import newundefined
+    from obin.builtins.number_builtins import w_NAN
+    from obin.builtins.number_builtins import w_POSITIVE_INFINITY
+    from obin.objects.object_space import object_space
+
+    ### Traits
+    traits = object_space.traits
+    api.put_property(global_object, u'True', traits.True)
+    api.put_property(global_object, u'False', traits.False)
+    api.put_property(global_object, u'Boolean', traits.Boolean)
+    api.put_property(global_object, u'Nil', traits.Nil)
+    api.put_property(global_object, u'Undefined', traits.Undefined)
+    api.put_property(global_object, u'Char', traits.Char)
+    api.put_property(global_object, u'Number', traits.Number)
+    api.put_property(global_object, u'Integer', traits.Integer)
+    api.put_property(global_object, u'Float', traits.Float)
+    api.put_property(global_object, u'Symbol', traits.Symbol)
+    api.put_property(global_object, u'String', traits.String)
+    api.put_property(global_object, u'Array', traits.Array)
+    api.put_property(global_object, u'Vector', traits.Vector)
+    api.put_property(global_object, u'Tuple', traits.Tuple)
+    api.put_property(global_object, u'Object', traits.Object)
+    api.put_property(global_object, u'Function', traits.Function)
 
     # 15.1.1.1
     api.put_property(global_object, u'NaN', w_NAN)
@@ -52,6 +71,8 @@ def setup(global_object):
     if not we_are_translated():
         api.put_native_function(global_object, u'pypy_repr', pypy_repr)
         api.put_native_function(global_object, u'inspect', inspect)
+
+    # global_object.freeze()
 
 
 # 15.1.2.4

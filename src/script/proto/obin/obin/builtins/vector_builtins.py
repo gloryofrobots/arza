@@ -35,6 +35,8 @@ def setup(obj):
 
     api.put_native_function(obj, u'slice', slice)
 
+    obj.freeze()
+
 
 @complete_native_routine
 def slice(ctx, routine):

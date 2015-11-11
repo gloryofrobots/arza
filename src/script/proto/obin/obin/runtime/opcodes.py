@@ -155,7 +155,7 @@ class LOAD_VARIABLE(Opcode):
         ctx.stack_append(value)
 
     def __str__(self):
-        return 'LOAD_VARIABLE "%s" (%d)' % (self.identifier, self.index)
+        return 'LOAD_VARIABLE %s (%d)' % (self.identifier, self.index)
 
 
 class LOAD_VECTOR(Opcode):
@@ -210,11 +210,10 @@ class LOAD_OBJECT(Opcode):
 
     @jit.unroll_safe
     def eval(self, ctx):
-        from obin.objects.object_space import newobject
+        from obin.objects.object_space import newobject, isstring
         w_obj = newobject()
         for _ in range(self.counter):
-            top = ctx.stack_pop()
-            name = api.tostring(top)
+            name = ctx.stack_pop()
             w_elem = ctx.stack_pop()
             api.put(w_obj, name, w_elem)
         ctx.stack_append(w_obj)
@@ -482,6 +481,21 @@ class STORE_MEMBER(Opcode):
 
         ctx.stack_append(value)
 
+class LOAD_PRIMITIVE(Opcode):
+    _immutable_fields_ = ['identifier', 'index']
+    _stack_change = 0
+
+    def __init__(self, prim_id):
+        self.prim_id = prim_id
+
+    def eval(self, ctx):
+        from obin.objects.object_space import object_space
+        interpreter = object_space.interpreter
+        primitive = interpreter.get_primitive(self.prim_id)
+        ctx.stack_append(primitive)
+
+    def __str__(self):
+        return 'LOAD_PRIMITIVE %s ' % (self.prim_id)
 
 class STORE(Opcode):
     _immutable_fields_ = ['identifier', 'index']
@@ -497,7 +511,7 @@ class STORE(Opcode):
         ctx.store_ref(self.identifier, self.index, value)
 
     def __str__(self):
-        return 'STORE "%s" (%d)' % (self.identifier, self.index)
+        return 'STORE %s (%d)' % (self.identifier, self.index)
 
 
 class LABEL(Opcode):

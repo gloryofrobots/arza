@@ -6,7 +6,7 @@ from obin.objects import api
 
 def setup_builtins(global_object):
     from obin.objects.object_space import object_space
-    import obin.builtins.object
+    import obin.builtins.object_builitns
 
     # target = object_space.traits.Function
     # # 15.3.4.2 Function.prototype.toString()
@@ -18,17 +18,17 @@ def setup_builtins(global_object):
     # # 15.3.4.4 Function.prototype.call
     # api.put_native_function(target, u'call', obin.builtins.function.js_call)
 
-    import obin.builtins.object
-    obin.builtins.object.setup(object_space.traits.Object)
+    import obin.builtins.object_builitns
+    obin.builtins.object_builitns.setup(object_space.traits.Object)
 
-    import obin.builtins.global_functions
-    obin.builtins.global_functions.setup(global_object)
+    import obin.builtins.global_builtins
+    obin.builtins.global_builtins.setup(global_object)
 
-    import obin.builtins.vector
-    obin.builtins.vector.setup(object_space.traits.Vector)
+    import obin.builtins.vector_builtins
+    obin.builtins.vector_builtins.setup(object_space.traits.Vector)
 
-    import obin.builtins.function
-    obin.builtins.function.setup(object_space.traits.Function)
+    import obin.builtins.function_builtins
+    obin.builtins.function_builtins.setup(object_space.traits.Function)
 
     """
     import obin.builtins.boolean

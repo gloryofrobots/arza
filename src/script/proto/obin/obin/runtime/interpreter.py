@@ -16,11 +16,12 @@ class Interpreter(object):
     """Creates a js interpreter"""
     def __init__(self, config={}):
         from obin.objects.object_space import object_space, newobject
-        import obin.builtins.interpreter
+        import obin.builtins.interpreter_builtins
         from obin.objects.datastructs import Slots
 
         self.machine = Machine()
 
+        self.primitives = {}
         self.config = InterpreterConfig(config)
         self.global_object = newobject()
         self.modules = []
@@ -31,6 +32,12 @@ class Interpreter(object):
 
         obin.builtins.setup_builtins(self.global_object)
         # obin.builtins.interpreter.setup_builtins(self.global_object)
+
+    def add_primitive(self, primitive_id, func):
+        self.primitives[primitive_id] = func
+
+    def get_primitive(self, primitive_id):
+        return self.primitives[primitive_id]
 
     def load_module(self, filename):
 
@@ -49,9 +56,9 @@ class Interpreter(object):
         # print [str(c) for c in code.opcodes]
         global_routine = create_bytecode_routine(code)
 
-        # print "*********"
-        # for c in [str(c) for c in code.compiled_opcodes]: print c
-        # print "*********"
+        print "*********"
+        for c in [str(c) for c in code.compiled_opcodes]: print c
+        print "*********"
         
         from obin.objects.object_space import object_space
         from obin.runtime.context import create_object_context

@@ -364,8 +364,7 @@ class Compiler(object):
 
         code.emit('THROW')
 
-    def _compile_LCURLY(self, code, node):
-        items = node.first()
+    def _compile_object(self, code, items):
         for c in items:
             key = c[0]
             value = c[1]
@@ -378,6 +377,21 @@ class Compiler(object):
                 self._compile(code, key)
 
         code.emit("LOAD_OBJECT", len(items))
+
+    def _compile_LCURLY(self, code, node):
+        items = node.first()
+        self._compile_object(code, items)
+
+    def _compile_OBJECT(self, code, node):
+        name = node.first()
+        traits = node.second()
+        items = node.third()
+        self._compile_object(code, items)
+
+        name = newstring(name.value)
+        index = self.declare_variable(name)
+        # self._compile(bytecode, node.first())
+        code.emit('STORE', index, name)
 
     def _compile_LSQUARE(self, code, node):
         # lookup like a[0]

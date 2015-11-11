@@ -9,7 +9,7 @@ from obin.objects.object_space import _w, isint, isstring, isfloat, newbool
 from rpython.rlib.rarithmetic import ovfcheck
 from rpython.rlib.rfloat import isnan, isinf
 from rpython.rlib.objectmodel import specialize
-from obin.builtins.number import w_NAN, w_POSITIVE_INFINITY, w_NEGATIVE_INFINITY
+from obin.builtins.number_builtins import w_NAN, w_POSITIVE_INFINITY, w_NEGATIVE_INFINITY
 from obin.objects import api
 
 # 11.6.1, 11.6.3
