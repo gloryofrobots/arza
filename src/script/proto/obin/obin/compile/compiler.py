@@ -382,7 +382,18 @@ class Compiler(object):
         items = node.first()
         self._compile_object(code, items)
 
+    def _compile_OBJECT_EXPRESSION(self, code, node):
+        traits = node.first()
+        items = node.second()
+        self._compile_object(code, items)
+
     def _compile_OBJECT(self, code, node):
+        """
+        compiles object statements
+        """
+        if node.arity == 2:
+            return self._compile_OBJECT_EXPRESSION(code, node)
+
         name = node.first()
         traits = node.second()
         items = node.third()
@@ -412,22 +423,11 @@ class Compiler(object):
         code.emit('LOAD_UNDEFINED')
         code.emit_continue()
 
-    def _compile_FN(self, code, node):
+
+    def _compile_fn_args_and_body(self, code, funcname, params, body):
         from bytecode import ByteCode
-
-        name = node.first()
-        params = node.second()
-        body = node.third()
-
-        if self.is_empty(name):
-            funcname = newstring(u'')
-            index = None
-        else:
-            funcname = newstring(name.value)
-            index = self.declare_symbol(funcname)
-
         self.enter_scope()
-        if len(funcname.value()):
+        if not funcname.isempty():
             self.declare_symbol(funcname)
 
         if params:
@@ -453,10 +453,29 @@ class Compiler(object):
         print "-------------------------"
 
         code.emit('LOAD_FUNCTION', funcname, funccode)
+        pass
 
-        if index is not None and not funcname.isempty():
-            code.emit('STORE', index, funcname)
+    def _compile_FN_EXPRESSION(self, code, node):
+        name = newstring(u'')
+        params = node.first()
+        body = node.second()
+        self._compile_fn_args_and_body(code, name, params, body)
 
+    def _compile_FN(self, code, node):
+        """
+        compiles function statements
+        """
+        if node.arity == 2:
+            return self._compile_FN_EXPRESSION(code, node)
+
+        name = node.first()
+        funcname = newstring(name.value)
+        index = self.declare_symbol(funcname)
+        params = node.second()
+        body = node.third()
+        self._compile_fn_args_and_body(code, funcname, params, body)
+
+        code.emit('STORE', index, funcname)
         # code.emit('POP')
 
     def _compile_branch(self, bytecode, condition, body, endif):

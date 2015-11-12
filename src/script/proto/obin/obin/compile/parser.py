@@ -253,8 +253,12 @@ class Parser(object):
         return self.token_type == T.TT_ENDSTREAM
 
 
-def error(parser, message, args=None):
-    error_message = "Parse Error %d:%d %s" % (parser.token.line, parser.token.pos, message)
+def error(parser, message, args=None, node=None):
+    if not node:
+        error_message = "Parse Error %d:%d %s" % (parser.token.line, parser.token.pos, message)
+    else:
+        error_message = "Parse Error %d:%d %s" % (node.line, node.position, message)
+
     raise RuntimeError(error_message, args)
 
 
@@ -696,47 +700,6 @@ def parser_init(parser):
 
     prefix(parser, T.TT_LPAREN, _prefix_lparen)
 
-    def _prefix_fn(parser, node):
-        args = []
-        node.init(3)
-
-        if parser.token_type == T.TT_NAME:
-            node.setfirst(parser.node)
-            advance(parser)
-        else:
-            node.setfirst([])
-
-        if parser.token_type == T.TT_LPAREN:
-            advance_expected(parser, T.TT_LPAREN)
-            if parser.token_type != T.TT_RPAREN:
-                while True:
-                    if parser.token_type == T.TT_NAME:
-                        args.append(parser.node)
-                        advance(parser)
-
-                    if parser.token_type != T.TT_COMMA:
-                        break
-
-                    advance_expected(parser, T.TT_COMMA)
-
-            if parser.token_type == T.TT_ELLIPSIS:
-                rest = expression(parser.args_parser, 0)
-                # advance(parser)
-                args.append(rest)
-                # advance_expected(parser, T.TT_NAME)
-
-            advance_expected(parser, T.TT_RPAREN)
-
-        node.setsecond(args)
-        advance_expected(parser, T.TT_LCURLY)
-        body = statements(parser)
-        if not body:
-            body = []
-        node.setthird(body)
-        advance_expected(parser, T.TT_RCURLY)
-        return node
-
-    prefix(parser, T.TT_FN, _prefix_fn)
 
     def _prefix_do(parser, node):
         node.init(1)
@@ -826,18 +789,74 @@ def parser_init(parser):
 
     prefix(parser, T.TT_LCURLY, _prefix_lcurly)
 
-    def _prefix_object(parser, node):
-        key = None
-        value = None
+    def _parse_fn(parser):
+        args = []
+        body = []
+        if parser.token_type == T.TT_NAME:
+            name = parser.node
+            advance(parser)
+        else:
+            name = empty_node()
+
+        if parser.token_type == T.TT_LPAREN:
+            advance_expected(parser, T.TT_LPAREN)
+            if parser.token_type != T.TT_RPAREN:
+                while True:
+                    if parser.token_type == T.TT_NAME:
+                        args.append(parser.node)
+                        advance(parser)
+
+                    if parser.token_type != T.TT_COMMA:
+                        break
+
+                    advance_expected(parser, T.TT_COMMA)
+
+            if parser.token_type == T.TT_ELLIPSIS:
+                rest = expression(parser.args_parser, 0)
+                # advance(parser)
+                args.append(rest)
+                # advance_expected(parser, T.TT_NAME)
+
+            advance_expected(parser, T.TT_RPAREN)
+
+        advance_expected(parser, T.TT_LCURLY)
+        body = statements(parser)
+        if not body:
+            body = empty_node()
+        advance_expected(parser, T.TT_RCURLY)
+        return name, args, body
+
+    def _prefix_fn(parser, node):
+        node.init(2)
+        name, args, body = _parse_fn(parser)
+        if not is_empty_node(name):
+            error(parser, "In expressions functions could not have names", node=node)
+        node.setfirst(args)
+        node.setsecond(body)
+        return node
+
+    prefix(parser, T.TT_FN, _prefix_fn)
+
+    def _stmt_fn(parser, node):
         node.init(3)
+        name, args, body = _parse_fn(parser)
+        if is_empty_node(name):
+            error(parser, "Function statement must be declared with name", node=node)
+        node.setfirst(name)
+        node.setsecond(args)
+        node.setthird(body)
+        return node
+
+    stmt(parser, T.TT_FN, _stmt_fn)
+
+    def _parse_object(parser):
+        name = empty_node()
         traits = []
         items = []
 
         if parser.token_type == T.TT_NAME:
-            node.setfirst(parser.node)
+            name = parser.node
             advance(parser)
-        else:
-            node.setfirst([])
 
         if parser.token_type == T.TT_LPAREN:
             advance_expected(parser, T.TT_LPAREN)
@@ -854,28 +873,20 @@ def parser_init(parser):
 
             advance_expected(parser, T.TT_RPAREN)
 
-        node.setsecond(traits)
-
         advance_expected(parser, T.TT_LCURLY)
         if parser.token_type != T.TT_RCURLY:
             while True:
-                # TODO check it
                 if parser.token_type == T.TT_FN:
-                    fn = expression(parser, 0)
+                    fn = statement(parser)
                     key = fn.first()
-                    if is_empty_node(key):
-                        error(parser, "object function literals must have names")
-
                     value = fn
                 elif parser.token_type == T.TT_OBJECT:
-                    obj = expression(parser, 0)
+                    obj = statement(parser)
                     key = obj.first()
-                    if is_empty_node(key):
-                        error(parser, "object function literals must have names")
-
                     value = obj
                 else:
-                    check_token_types(parser, [T.TT_NAME, T.TT_INT, T.TT_STR, T.TT_CHAR, T.TT_FLOAT, T.TT_FN, T.TT_OBJECT])
+                    # TODO check it
+                    check_token_types(parser, [T.TT_NAME, T.TT_INT, T.TT_STR, T.TT_CHAR, T.TT_FLOAT])
                     key = parser.node
                     advance(parser)
                     advance_expected(parser, T.TT_ASSIGN)
@@ -886,9 +897,7 @@ def parser_init(parser):
                     break
 
         advance_expected(parser, T.TT_RCURLY)
-        node.setthird(items)
-        return node
-    prefix(parser, T.TT_OBJECT, _prefix_object)
+        return name, traits, items
     """
     object AliceTraits(Human, Insect, Fucking, Shit) {
         id = 42
@@ -907,6 +916,31 @@ def parser_init(parser):
     }
 
     """
+
+    def _prefix_object(parser, node):
+        node.init(2)
+        name, traits, body = _parse_object(parser)
+        if not is_empty_node(name):
+            error(parser, "In expressions objects could not have names", node=node)
+        node.setfirst(traits)
+        node.setsecond(body)
+        return node
+
+    prefix(parser, T.TT_OBJECT, _prefix_object)
+
+    def _stmt_object(parser, node):
+        node.init(3)
+        name, traits, items = _parse_object(parser)
+        # TODO move this check to parse object or add support for error token in error func
+        if is_empty_node(name):
+            error(parser, "Object statement must have name", node=node)
+        node.setfirst(name)
+        node.setsecond(traits)
+        node.setthird(items)
+        return node
+
+    stmt(parser, T.TT_OBJECT, _stmt_object)
+
     def _stmt_single(parser, node):
         node.init(1)
         if token_is_one_of(parser, [T.TT_SEMI, T.TT_RCURLY]) or parser.is_newline_occurred:
@@ -1005,24 +1039,14 @@ def write_ast(ast):
         f.write(repr)
 
 
-ast = parse_string(
-    """
-    object AliceTraits(Human, Insect, Fucking, Shit) {
-        id = 42
-        name = "Alice"
-        object Bob(Human) {
-            fn hello(self) {
-                return "I am Bob"
-            }
-        }
-        fn greetings(self) {
-            return "Hello from" + self.name
-        }
-        goNorth = fn(self) {
-            "I " + self.name + " go North"
-        }
-    }
-    """
-)
-print ast
+# ast = parse_string(
+#     """
+#     fn f(x1,x2,...x3) {
+#         x1 + x2
+#     }
+#
+#     f = fn somef (x2, x3) { x2 * x3; }
+#     """
+# )
+# print ast
 # write_ast(ast)
