@@ -23,7 +23,7 @@ class Transformer(object):
 
     def transform(self, ast):
         pass
-
+"""
 var transform = function(ast) {
     function tuple(node) {
         var newnode = {
@@ -99,3 +99,4 @@ var transform = function(ast) {
     });
     return result;
 }
+"""

@@ -72,6 +72,9 @@ def put_property(obj, k, v):
     from object_space import newstring
     put(obj, newstring(k), v)
 
+def put_string_property(obj, k, v):
+    from object_space import newstring
+    put(obj, newstring(k), newstring(v))
 
 def put(obj, k, v):
     from object_space import isundefined, iscell

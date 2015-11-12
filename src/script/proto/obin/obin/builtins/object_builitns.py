@@ -14,6 +14,8 @@ def setup(obj):
     api.put_native_function(obj, u'create', create)
     api.put_native_function(obj, u'traits', traits)
 
+    api.put_string_property(obj, u'__name__', u"Object")
+
     obj.freeze()
 
 def object_extract_1_obj_arg(routine):

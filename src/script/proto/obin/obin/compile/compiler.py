@@ -364,7 +364,10 @@ class Compiler(object):
 
         code.emit('THROW')
 
-    def _compile_object(self, code, items):
+    def _compile_object(self, code, items, traits):
+        for t in traits:
+            self._compile(code, t)
+
         for c in items:
             key = c[0]
             value = c[1]
@@ -376,16 +379,16 @@ class Compiler(object):
             else:
                 self._compile(code, key)
 
-        code.emit("LOAD_OBJECT", len(items))
+        code.emit("LOAD_OBJECT", len(items), len(traits))
 
     def _compile_LCURLY(self, code, node):
         items = node.first()
-        self._compile_object(code, items)
+        self._compile_object(code, items, [])
 
     def _compile_OBJECT_EXPRESSION(self, code, node):
         traits = node.first()
         items = node.second()
-        self._compile_object(code, items)
+        self._compile_object(code, items, traits)
 
     def _compile_OBJECT(self, code, node):
         """
@@ -397,7 +400,7 @@ class Compiler(object):
         name = node.first()
         traits = node.second()
         items = node.third()
-        self._compile_object(code, items)
+        self._compile_object(code, items, traits)
 
         name = newstring(name.value)
         index = self.declare_variable(name)

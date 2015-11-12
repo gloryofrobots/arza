@@ -205,17 +205,23 @@ class LOAD_FUNCTION(Opcode):
 class LOAD_OBJECT(Opcode):
     _immutable_fields_ = ["counter"]
 
-    def __init__(self, counter):
-        self.counter = counter
+    def __init__(self, count_items, count_traits):
+        self.count_items = count_items
+        self.count_traits = count_traits
 
     @jit.unroll_safe
     def eval(self, ctx):
-        from obin.objects.object_space import newobject, isstring
+        from obin.objects.object_space import newobject
         w_obj = newobject()
-        for _ in range(self.counter):
+        for _ in range(self.count_items):
             name = ctx.stack_pop()
             w_elem = ctx.stack_pop()
             api.put(w_obj, name, w_elem)
+
+        for _ in range(self.count_traits):
+            trait = ctx.stack_pop()
+            w_obj.isa(trait)
+
         ctx.stack_append(w_obj)
 
     #def __repr__(self):

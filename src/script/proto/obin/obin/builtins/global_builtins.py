@@ -6,6 +6,7 @@ from rpython.rlib.rfloat import NAN, INFINITY, isnan, isinf
 from obin.builtins import get_arg
 from rpython.rlib.unicodedata import unicodedb
 from obin.objects import api
+from obin.objects.object_space import newstring
 
 
 def setup(global_object):
@@ -32,6 +33,7 @@ def setup(global_object):
     api.put_property(global_object, u'Tuple', traits.Tuple)
     api.put_property(global_object, u'Object', traits.Object)
     api.put_property(global_object, u'Function', traits.Function)
+
 
     # 15.1.1.1
     api.put_property(global_object, u'NaN', w_NAN)

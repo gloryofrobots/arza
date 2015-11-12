@@ -21,6 +21,9 @@ class W_Root(object):
     def __repr__(self):
         return self.__str__()
 
+    def id(self):
+        return str(hex(id(self)))
+
     def type(self):
         return self._type_
 
@@ -266,7 +269,7 @@ class W_String(W_ValueType):
         return self.__items
 
     def _tostring_(self):
-        return '"%s"' % str(self.__items)
+        return str(self.__items)
 
     def _iterator_(self):
         return NativeListIterator(self.__items, self.__length)
@@ -506,12 +509,14 @@ class W_Object(W_Cell):
         return self.__slots.length()
 
     def _tostring_(self):
-        # from object_space import newstring, isundefined
-        return str(self.__slots)
-        # _name_ = self._at_(newstring("__name__"))
-        # if isundefined(_name_):
-        # else:
-        #     return "Object %s %s"
+        from object_space import newstring, isundefined
+
+        _name_ = self._at_(newstring("__name__"))
+        if isundefined(_name_):
+            return str(self.__slots)
+        else:
+            return "<object %s %s>" % (_name_._tostring_(), self.id())
+
     def _clone_(self):
         import copy
         slots = copy.copy(self.__slots)

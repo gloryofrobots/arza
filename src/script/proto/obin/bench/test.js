@@ -1,7 +1,22 @@
-object Alice(Human, Insect, Fucking, Shit) {
+object Human {
+    __name__ = "Human"
+    name = nil
+    fn make_shit(self) {
+        print("SHIT from ", self.name)
+    }
+}
+
+object Insect {
+    fn eat_human(self, h) {
+        print("Eating ", h.name)
+    }
+}
+
+object Alice(Human, Insect) {
     id = 42
     name = "Alice"
     object Bob(Human) {
+        name = "Bob"
         fn hello(self) {
             print("I am Bob")
         }
@@ -13,9 +28,34 @@ object Alice(Human, Insect, Fucking, Shit) {
         print("I ", self.name, " go North")
     }
 }
+
+N = object {
+    __name__ = "N"
+}
+
+print(N.traits())
+
+N = {
+    __name__ : "N1"
+}
+
+print(N.traits())
+
+N = object(Human) {
+    __name__ = "N2"
+}
+
+print(N.traits())
+
+x  = [1,2,3,4]
+
 for i in Alice {
     print(i)
 }
+
+Alice.make_shit()
+Alice.eat_human(Alice.Bob)
+
 print(Alice)
 print(Alice.Bob)
 print(Alice.greetings)
