@@ -9,7 +9,7 @@ object Alice(Human, Insect, Fucking, Shit) {
     fn greetings(self) {
         print("Hello from", self.name)
     }
-    goNorth = fn(self) {
+    goNorth = fn (self) {
         print("I ", self.name, " go North")
     }
 }
@@ -17,7 +17,18 @@ for i in Alice {
     print(i)
 }
 print(Alice)
-print(Bob)
+print(Alice.Bob)
+print(Alice.greetings)
+
+fn wrap(cb, ...args) {
+    cb(1,2, ...args)
+}
+
+wrap(fn(...args) {
+    print(...args)
+},3)
+
+
 //Alice = {
 //    id = 42
 //    name = "Alice"

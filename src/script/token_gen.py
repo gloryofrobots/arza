@@ -115,3 +115,4 @@ print "# ************************PYTHON LEXER*****************************"
 for name,pattern in TOKENS:
     print "    ('%s', %s)," % (pattern, name)
 """
+

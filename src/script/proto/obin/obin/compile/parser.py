@@ -850,6 +850,13 @@ def parser_init(parser):
     stmt(parser, T.TT_FN, _stmt_fn)
 
     def _parse_object(parser):
+        def _statement_to_expr(stmt):
+            expr = Node(stmt.type, stmt.value, stmt.position, stmt.line)
+            expr.init(2)
+            expr.setfirst(stmt.second())
+            expr.setsecond(stmt.third())
+            return expr
+
         name = empty_node()
         traits = []
         items = []
@@ -879,11 +886,13 @@ def parser_init(parser):
                 if parser.token_type == T.TT_FN:
                     fn = statement(parser)
                     key = fn.first()
-                    value = fn
+                    # dirty hack to convert statements to expression for compiler
+                    value = _statement_to_expr(fn)
                 elif parser.token_type == T.TT_OBJECT:
                     obj = statement(parser)
                     key = obj.first()
-                    value = obj
+                    # dirty hack to convert statements to expression for compiler
+                    value = _statement_to_expr(obj)
                 else:
                     # TODO check it
                     check_token_types(parser, [T.TT_NAME, T.TT_INT, T.TT_STR, T.TT_CHAR, T.TT_FLOAT])
