@@ -130,14 +130,18 @@ def initialize_environment(ctx):
         n = names[i]
         env.set_binding(n, v)
 
-    if alen > nlen:
-        if not rest:
+    if not rest:
+        if alen > nlen:
             raise RuntimeError("Wrong argument count in function call %s %s" % (str(names), str(args)))
+        return
+
+    rest_items = []
+    if alen > nlen:
         rest_items = []
         for i in range(nlen, alen):
             rest_items.append(args[i])
 
-        env.set_binding(rest, newvector(rest_items))
+    env.set_binding(rest, newvector(rest_items))
 
 
 def create_object_context(routine, obj):

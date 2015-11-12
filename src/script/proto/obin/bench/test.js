@@ -21,12 +21,12 @@ print(Alice.Bob)
 print(Alice.greetings)
 
 fn wrap(cb, ...args) {
-    cb(1,2, ...args)
+    cb(...args)
 }
 
-wrap(fn(...args) {
-    print(...args)
-},3)
+wrap(fn(x, ...args) {
+    print(x, args)
+}, 1)
 
 
 //Alice = {

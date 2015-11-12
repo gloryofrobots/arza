@@ -19,3 +19,11 @@ fn add(x,y,z) {
 
 A = [3]
 add2(2,...A)
+// Here args must be empty list
+fn wrap(cb, ...args) {
+    cb(...args)
+}
+
+wrap(fn(x, ...args) {
+    print(x, args)
+}, 1)
