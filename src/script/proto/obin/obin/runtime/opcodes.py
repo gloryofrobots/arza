@@ -786,7 +786,7 @@ class TRYCATCHBLOCK(Opcode):
             continuation = parentroutine
 
         catchroutine.set_start_stack_index(stack_p)
-        ctx.routine().fiber.call_routine(tryroutine, continuation, parentroutine)
+        ctx.routine().process.call_routine(tryroutine, continuation, parentroutine)
 
 
 

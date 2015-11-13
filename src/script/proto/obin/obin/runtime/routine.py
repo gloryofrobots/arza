@@ -19,7 +19,7 @@ class Routine(object):
 
     def __init__(self):
         super(Routine, self).__init__()
-        self.fiber = None
+        self.process = None
         self.__continuation = None
         self.__state = Routine.State.IDLE
         self.called = None
@@ -139,9 +139,9 @@ class Routine(object):
         return self.__state == Routine.State.COMPLETE \
                or self.__state == Routine.State.TERMINATED
 
-    def activate(self, fiber):
-        assert not self.fiber
-        self.fiber = fiber
+    def activate(self, process):
+        assert not self.process
+        self.process = process
 
         self._on_activate()
 
@@ -152,8 +152,8 @@ class Routine(object):
         pass
 
     def call_routine(self, routine):
-        assert self.fiber
-        self.fiber.call_routine(routine, self, self)
+        assert self.process
+        self.process.call_routine(routine, self, self)
 
     def execute(self):
         if self.is_complete():
@@ -339,4 +339,4 @@ class BlockRoutine(BytecodeRoutine):
         return self._signal_name_
 
     def _on_force_complete(self):
-        self.fiber.complete_last_routine(self.result)
+        self.process.complete_last_routine(self.result)

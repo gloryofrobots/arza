@@ -1,5 +1,5 @@
 from rpython.rlib.streamio import open_file_as_stream
-from obin.runtime.machine import Machine
+from obin.runtime.process import Process
 
 def load_file(filename):
     f = open_file_as_stream(str(filename))
@@ -19,7 +19,7 @@ class Interpreter(object):
         import obin.builtins.interpreter_builtins
         from obin.objects.datastructs import Slots
 
-        self.machine = Machine()
+        self.process = Process()
 
         self.primitives = {}
         self.config = InterpreterConfig(config)
@@ -66,6 +66,6 @@ class Interpreter(object):
         ctx = create_object_context(global_routine, self.global_object)
         object_space.global_context = ctx
 
-        result = self.machine.run_with(global_routine)
+        result = self.process.run_with(global_routine)
         print result
         return result

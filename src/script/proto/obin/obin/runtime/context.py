@@ -26,10 +26,10 @@ class Context(object):
     def routine(self):
         return self._routine_
 
-    def fiber(self):
+    def process(self):
         assert self._routine_
-        assert self._routine_.fiber
-        return self._routine_.fiber
+        assert self._routine_.process
+        return self._routine_.process
 
     def stack_append(self, value):
         from obin.objects.object_space import isany

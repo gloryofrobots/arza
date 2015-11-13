@@ -73,7 +73,7 @@ def length(ctx, routine):
 @complete_native_routine
 def to_string(ctx, routine):
     this, args = routine.method_args()
-    from obin.runtime.machine import run_function_for_result
+    from obin.runtime.process import run_function_for_result
     array = this.ToObject()
     func = array.get(u'join')
     if func.is_callable():

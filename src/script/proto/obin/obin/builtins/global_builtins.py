@@ -387,7 +387,7 @@ _version_string = _make_version_string()
 def version(ctx, routine):
     return _version_string
 
-from obin.runtime.machine import run_routine_for_result
+from obin.runtime.process import run_routine_for_result
 from obin.objects.object_space import _w
 
 # 15.1.2.1

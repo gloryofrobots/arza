@@ -588,7 +588,7 @@ class W_Function(W_Root):
         #     from object_space import object_space
         #     ctx = object_space.interpreter.machine.current_context()
 
-        ctx.fiber().call_object(self, ctx, args)
+        ctx.process().call_object(self, ctx, args)
 
     def scope(self):
         return self._scope_
@@ -630,7 +630,7 @@ class W_Primitive(W_Root):
         #     from object_space import object_space
         #     ctx = object_space.interpreter.machine.current_context()
 
-        ctx.fiber().call_object(self, ctx, args)
+        ctx.process().call_object(self, ctx, args)
 
 
 

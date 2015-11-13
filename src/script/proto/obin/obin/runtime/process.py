@@ -1,4 +1,19 @@
-__author__ = 'gloryofrobots'
+def run_routine_for_result(routine, ctx=None):
+    if ctx:
+        routine.set_context(ctx)
+    m = Process()
+    result = m.run_with(routine)
+    return result
+
+
+def run_function_for_result(function, ctx, args):
+    from obin.runtime.context import Context
+    assert isinstance(ctx, Context)
+    routine = function.create_routine(ctx, args)
+    m = Process()
+    result = m.run_with(routine)
+    return result
+
 
 def check_continuation_consistency(caller, continuation):
     r = continuation
@@ -11,7 +26,8 @@ def check_continuation_consistency(caller, continuation):
 
         r = r.continuation()
 
-class Fiber(object):
+
+class Process(object):
     class State:
         IDLE = 1
         ACTIVE = 2
@@ -19,15 +35,12 @@ class Fiber(object):
         TERMINATED = 4
 
     def __init__(self):
-        self.__state = Fiber.State.IDLE
+        self.__state = Process.State.IDLE
         self.__routine = None
         self.result = None
 
-    def state(self):
-        return self.__state
-
-    def __set_state(self, s):
-        self.__state = s
+    def current_context(self):
+        return self.routine().ctx
 
     def routine(self):
         return self.__routine
@@ -37,7 +50,7 @@ class Fiber(object):
         self.call_routine(routine, ctx.routine(), ctx.routine())
 
     def call_routine(self, routine, continuation, caller):
-        assert caller == self.routine()
+        assert caller is self.routine()
         check_continuation_consistency(caller, continuation)
 
         self.__call_routine(routine, continuation, caller)
@@ -154,29 +167,52 @@ class Fiber(object):
         # continuation in signal handler must exists at this moment
         self.__call_routine(routine, None, None)
 
+    def run_with(self, routine):
+        self.call_routine(routine, None, None)
+        self.run()
+        return self.result
+
+    def run(self):
+        assert self.is_idle()
+        self.active()
+        while True:
+            if not self.is_active():
+                break
+            try:
+                self.execute()
+            except Exception:
+                self.terminate()
+                raise
+
+    def state(self):
+        return self.__state
+
+    def __set_state(self, s):
+        self.__state = s
+
     def is_terminated(self):
-        return self.__state == Fiber.State.TERMINATED
+        return self.state() == Process.State.TERMINATED
 
     def terminate(self):
         # print "F terminate"
-        self.__state = Fiber.State.TERMINATED
+        self.__set_state(Process.State.TERMINATED)
 
     def is_suspended(self):
-        return self.__state == Fiber.State.SUSPENDED
+        return self.state() == Process.State.SUSPENDED
 
     def suspend(self):
         # print "F suspend"
-        self.__state = Fiber.State.SUSPENDED
+        self.__set_state(Process.State.SUSPENDED)
 
     def is_active(self):
-        return self.__state == Fiber.State.ACTIVE
+        return self.state() == Process.State.ACTIVE
 
     def active(self):
         # print "F activate"
-        self.__state = Fiber.State.ACTIVE
+        self.__set_state(Process.State.ACTIVE)
 
     def is_idle(self):
-        return self.__state == Fiber.State.IDLE
+        return self.state() == Process.State.IDLE
 
     def is_complete(self):
         if self.is_terminated():
@@ -187,4 +223,3 @@ class Fiber(object):
             return True
 
         return False
-
