@@ -191,7 +191,7 @@ class ByteCode(object):
         return len(self.compiled_opcodes)
 
     def tostring(self):
-        return str([repr(i) for i in self.opcodes])
+        return str([str(i) for i in self.opcodes])
 
     def __repr__(self):
         return "\n".join([repr(i) for i in self.opcodes])
