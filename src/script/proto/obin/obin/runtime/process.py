@@ -49,6 +49,17 @@ class Process(object):
         routine = obj.create_routine(ctx, args)
         self.call_routine(routine, ctx.routine(), ctx.routine())
 
+    def yield_to_routine(self, routine_to_resume, routine_resume_from, value):
+        assert self.routine() is routine_resume_from
+        assert routine_to_resume.is_suspended()
+        assert routine_resume_from.is_inprocess()
+
+        # check_continuation_consistency(routine_to_resume, routine_resume_from)
+        routine_resume_from.suspend()
+        routine_resume_from.called = routine_to_resume
+        routine_to_resume.resume(value)
+        self.set_active_routine(routine_to_resume)
+
     def call_routine(self, routine, continuation, caller):
         assert caller is self.routine()
         check_continuation_consistency(caller, continuation)

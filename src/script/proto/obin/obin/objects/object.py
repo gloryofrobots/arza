@@ -633,12 +633,98 @@ class W_Primitive(W_Root):
         ctx.process().call_object(self, ctx, args)
 
 
+class W_CoroutineYield(W_Root):
+    def __init__(self, coroutine, receiver):
+        self._coroutine_ = coroutine
+        self._receiver_ = receiver
+
+    def coroutine(self):
+        return self._coroutine_
+
+    def set_receiver(self, continuation):
+        self._receiver_ = continuation
+
+    def _tostring_(self):
+        return "fn coroutine.yield {[native code]}"
+
+    def _tobool_(self):
+        return True
+
+    def _call_(self, ctx, args):
+        if not self._coroutine_.is_active():
+            raise ObinRuntimeError(u"Can not yield from inactive coroutine")
+
+        assert ctx
+        routine = ctx.routine()
+        self._coroutine_.set_receiver(routine)
+        self._coroutine_.deactivate()
+
+        ctx.process().yield_to_routine(self._receiver_, routine, args[0])
 
 
+class W_Coroutine(W_Root):
+    _type_ = 'native'
+    _immutable_fields_ = ['_function_']
 
+    def __init__(self, function):
+        super(W_Coroutine, self).__init__()
+        self._function_ = function
+        self._routine_ = None
+        self._receiver_ = None
+        self._active_ = False
+        self._yield_ = None
 
+    def deactivate(self):
+        self._active_ = False
 
+    def activate(self):
+        self._active_ = True
 
+    def is_active(self):
+        return self._active_
+
+    def function(self):
+        return self._function_
+
+    def set_receiver(self, co):
+        from obin.runtime.process import check_continuation_consistency
+        if self._receiver_:
+            check_continuation_consistency(self._receiver_, co)
+        self._receiver_ = co
+
+    def _tostring_(self):
+        return "fn coroutine {[native code]}"
+
+    def _tobool_(self):
+        return True
+
+    def _lookup_(self, k):
+        from object_space import object_space
+        return api.at(object_space.traits.Coroutine, k)
+
+    def _first_call_(self, ctx):
+        self._receiver_ = ctx.routine()
+
+        self._yield_ = W_CoroutineYield(self, self._receiver_)
+
+        self._routine_ = self.function().create_routine(ctx, [self._yield_])
+        ctx.process().call_routine(self._routine_, self._receiver_, self._receiver_)
+        self._routine_.inprocess()
+
+    def _call_(self, ctx, args):
+        assert ctx
+        if self.is_active():
+            raise ObinRuntimeError("Can not activate already active coroutine")
+
+        if not self._routine_:
+            self._first_call_(ctx)
+            self.activate()
+            return
+
+        self.activate()
+        receiver = ctx.routine()
+        self._yield_.set_receiver(receiver)
+        ctx.process().yield_to_routine(self._receiver_, receiver, args[0])
 
 
 

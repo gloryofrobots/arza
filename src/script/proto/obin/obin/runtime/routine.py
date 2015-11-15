@@ -41,8 +41,8 @@ class Routine(object):
     def stack_start_index(self):
         return self.__stack_start_index
 
-    def set_start_stack_index(self, start_index):
-        self.__stack_start_index = start_index
+    # def set_start_stack_index(self, start_index):
+    #     self.__stack_start_index = start_index
 
     def add_signal_handler(self, signal, handler):
         self.__signal_handlers[signal] = handler

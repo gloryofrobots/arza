@@ -109,6 +109,11 @@ def newvector(items=None):
     obj = W_Vector(items)
     return obj
 
+def newcoroutine(fn):
+    from obin.objects.object import W_Coroutine
+    obj = W_Coroutine(fn)
+    return obj
+
 def isany(value):
     from object import W_Root
     return isinstance(value, W_Root)

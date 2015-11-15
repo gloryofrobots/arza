@@ -68,6 +68,7 @@ def setup(global_object):
     api.put_native_function(global_object, u'unescape', unescape)
 
     api.put_native_function(global_object, u'version', version)
+    api.put_native_function(global_object, u'coroutine', coroutine)
 
     ## debugging
     if not we_are_translated():
@@ -387,10 +388,6 @@ _version_string = _make_version_string()
 def version(ctx, routine):
     return _version_string
 
-from obin.runtime.process import run_routine_for_result
-from obin.objects.object_space import _w
-
-# 15.1.2.1
 def _eval(ctx, routine):
     from obin.objects.object_space import isstring
     from obin.runtime.routine import create_bytecode_routine
@@ -408,3 +405,10 @@ def _eval(ctx, routine):
     create_eval_context(f)
     routine.call_routine(f)
 
+@complete_native_routine
+def coroutine(ctx, routine):
+    from obin.objects.object_space import newcoroutine, isfunction
+    args = routine.args()
+    fn = args[0]
+    assert isfunction(fn)
+    return newcoroutine(fn)

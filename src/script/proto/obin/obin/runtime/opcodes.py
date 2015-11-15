@@ -639,12 +639,14 @@ def common_call(ctx, funcobj, args):
 
 
 def load_arguments(ctx, counter):
-    from obin.objects.object_space import newvector
+    from obin.objects.object_space import newvector, isvector
 
     if counter == 0:
         return newvector([])
     if counter == 1:
-        return ctx.stack_pop()
+        args = ctx.stack_pop()
+        assert isvector(args)
+        return args
 
     lists = ctx.stack_pop_n(counter)  # [:] # pop_n returns a non-resizable list
     values = []
