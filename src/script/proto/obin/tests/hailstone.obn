@@ -1,0 +1,93 @@
+/*** IMPERATIVE ***********************/
+
+function hailstone (n) {
+    var seq = [n];
+    while (n > 1) {
+        n = n % 2 ? 3 * n + 1 : n / 2;
+        seq.push(n);
+    }
+    return seq;
+}
+
+// task 2: verify the sequence for n = 27
+var h = hailstone(27), hLen = h.length;
+print("sequence 27 is (" + h.slice(0, 4).join(", ") + " ... "
+    + h.slice(hLen - 4, hLen).join(", ") + "). length: " + hLen);
+
+// task 3: find the longest sequence for n < 100000
+for (var n, max = 0, i = 100000; --i;) {
+    var seq = hailstone(i), sLen = seq.length;
+    if (sLen > max) {
+        n = i;
+        max = sLen;
+    }
+}
+print("longest sequence: " + max + " numbers for starting point " + n);
+
+
+/* FUNCTIONAL ******************************************/
+(function (n) {
+
+  var dctMemo = {};
+
+  // Length only of hailstone sequence
+  // n -> n
+  function collatzLength(n) {
+    var i = 1,
+      a = n,
+      lng;
+
+    while (a !== 1) {
+      lng = dctMemo[a];
+      if ('u' === (typeof lng)[0]) {
+        a = (a % 2 ? 3 * a + 1 : a / 2);
+        i++;
+      } else return lng + i - 1;
+    }
+    return i;
+  }
+
+  // Iterative version of range
+  // [m..n]
+  function range(m, n) {
+    var a = Array(n - m + 1),
+      i = n + 1;
+    while (i--) a[i - 1] = i;
+    return a;
+  }
+
+  // Fold/reduce over an array to find the maximum length
+  function longestBelow(n) {
+
+    return range(1, n).reduce(
+      function (a, x) {
+
+        var lng = dctMemo[x] || (dctMemo[x] = collatzLength(x));
+
+        return lng > a.l ? {
+          n: x,
+          l: lng
+        } : a
+
+      }, {
+        n: 0,
+        l: 0
+      }
+    )
+  }
+
+  return [100000, 1000000, 10000000].map(longestBelow);
+
+})();
+
+
+Output:
+
+[
+  {"n":77031, "l":351},   // 100,000
+  {"n":837799, "l":525},  // 1,000,000
+  {"n":8400511, "l":686}  // 10,000,000
+]
+
+longestBelow(100000000)
+-> {"n":63728127, "l":950}

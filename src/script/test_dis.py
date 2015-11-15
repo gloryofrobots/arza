@@ -16,13 +16,15 @@ def m1(self):
 
 
 def f(*args):
+    try:
+        return 1/0
+    except RuntimeError as e:
+        print "RuntimeError"
+    except BaseException as e:
+        print "BaseException"
+    finally:
+        print "Finally"
 
-    o = C(42)
-    o.action(1,2, *args)
-    f2(1,2)
-    d = {"key":"value", "key2":"value"}
-
-f("arg1", "arg2")
 
 dis.dis(f)
 
