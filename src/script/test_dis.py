@@ -26,6 +26,19 @@ def f(*args):
         print "Finally"
 
 
-dis.dis(f)
+# dis.dis(f)
 
 
+
+
+
+
+def fib(n):
+  a, b = 0, 1
+  for i in xrange(n):
+      a, b = b, a + b
+  return b
+
+
+f = fib(10)
+print f

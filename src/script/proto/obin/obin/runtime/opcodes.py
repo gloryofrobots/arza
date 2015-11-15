@@ -825,8 +825,12 @@ class NEXT_ITERATOR(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
+        from obin.objects.object_space import isinterrupt
         iterator = ctx.stack_top()
         next_el = api.next(iterator)
+        # call is interrupted, probably coroutine call
+        if isinterrupt(next_el):
+            return
         ctx.stack_append(next_el)
 
 

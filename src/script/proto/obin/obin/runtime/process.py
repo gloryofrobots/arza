@@ -135,7 +135,6 @@ class Process(object):
                 # and idle in ensured blocks and similar abnormal cases
                 elif continuation.is_idle():
                     continuation.activate(self)
-                    continuation.inprocess()
 
                 routine = continuation
                 continue

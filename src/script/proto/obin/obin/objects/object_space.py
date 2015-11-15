@@ -53,10 +53,17 @@ def _makenull():
     from obin.objects.object import W_Nil
     return W_Nil()
 
-
 w_Null = _makenull()
 jit.promote(w_Null)
 
+def _make_interrupt():
+    from obin.objects.object import W_Constant
+    return W_Constant()
+
+w_Interrupt = _make_interrupt()
+
+def newinterrupt():
+    return w_Interrupt
 
 def newnull():
     return w_Null
@@ -121,6 +128,8 @@ def isany(value):
 def isundefined(value):
     return value is w_Undefined
 
+def isinterrupt(value):
+    return value is w_Interrupt
 
 def iscell(value):
     from object import W_Cell

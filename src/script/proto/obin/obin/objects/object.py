@@ -632,11 +632,28 @@ class W_Primitive(W_Root):
 
         ctx.process().call_object(self, ctx, args)
 
+class W_CoroutineIterator(W_Root):
+    def __init__(self, coroutine):
+        self._coroutine_ = coroutine
+
+    def _tobool_(self):
+        return self._coroutine_.is_accessible()
+
+    def _next_(self):
+        from object_space import object_space, newundefined, newinterrupt
+        process = object_space.interpreter.process
+        routine = process.routine()
+        self._coroutine_._call_(routine.ctx, None)
+        return newinterrupt()
+
+    def _tostring_(self):
+        return "CoroutineIterator"
+
 
 class W_CoroutineYield(W_Root):
-    def __init__(self, coroutine, receiver):
+    def __init__(self, coroutine):
         self._coroutine_ = coroutine
-        self._receiver_ = receiver
+        self._receiver_ = None
 
     def coroutine(self):
         return self._coroutine_
@@ -651,15 +668,15 @@ class W_CoroutineYield(W_Root):
         return True
 
     def _call_(self, ctx, args):
-        if not self._coroutine_.is_active():
-            raise ObinRuntimeError(u"Can not yield from inactive coroutine")
+        if not self._coroutine_.is_accessible():
+            raise ObinRuntimeError(u"Can not yield from coroutine")
 
         assert ctx
         routine = ctx.routine()
         self._coroutine_.set_receiver(routine)
-        self._coroutine_.deactivate()
 
         ctx.process().yield_to_routine(self._receiver_, routine, args[0])
+
 
 
 class W_Coroutine(W_Root):
@@ -671,25 +688,18 @@ class W_Coroutine(W_Root):
         self._function_ = function
         self._routine_ = None
         self._receiver_ = None
-        self._active_ = False
         self._yield_ = None
 
-    def deactivate(self):
-        self._active_ = False
-
-    def activate(self):
-        self._active_ = True
-
-    def is_active(self):
-        return self._active_
+    def is_accessible(self):
+        return self._routine_ is None or not self._routine_.is_closed()
 
     def function(self):
         return self._function_
 
     def set_receiver(self, co):
-        from obin.runtime.process import check_continuation_consistency
-        if self._receiver_:
-            check_continuation_consistency(self._receiver_, co)
+        # from obin.runtime.process import check_continuation_consistency
+        # if self._receiver_:
+        #     check_continuation_consistency(self._receiver_, co)
         self._receiver_ = co
 
     def _tostring_(self):
@@ -702,29 +712,51 @@ class W_Coroutine(W_Root):
         from object_space import object_space
         return api.at(object_space.traits.Coroutine, k)
 
-    def _first_call_(self, ctx):
+    def _first_call_(self, ctx, args):
         self._receiver_ = ctx.routine()
 
-        self._yield_ = W_CoroutineYield(self, self._receiver_)
+        self._yield_ = W_CoroutineYield(self)
+        self._yield_.set_receiver(self._receiver_)
+        
+        if args is not None:
+            args.insert(0, self._yield_)
+        else:
+            args = [self._yield_]
 
-        self._routine_ = self.function().create_routine(ctx, [self._yield_])
+        self._routine_ = self.function().create_routine(ctx, args)
         ctx.process().call_routine(self._routine_, self._receiver_, self._receiver_)
-        self._routine_.inprocess()
+
+    def _iterator_(self):
+        return W_CoroutineIterator(self)
 
     def _call_(self, ctx, args):
+        from object_space import newundefined
         assert ctx
-        if self.is_active():
-            raise ObinRuntimeError("Can not activate already active coroutine")
 
         if not self._routine_:
-            self._first_call_(ctx)
-            self.activate()
-            return
+            return self._first_call_(ctx, args)
 
-        self.activate()
+        if not self._routine_.is_suspended():
+            raise ObinRuntimeError(u"Invalid coroutine state")
+
+        if args is not None:
+            value = args[0]
+        else:
+            value = newundefined()
+
         receiver = ctx.routine()
         self._yield_.set_receiver(receiver)
-        ctx.process().yield_to_routine(self._receiver_, receiver, args[0])
+        ctx.process().yield_to_routine(self._receiver_, receiver, value)
+
+
+
+
+
+
+
+
+
+
 
 
 

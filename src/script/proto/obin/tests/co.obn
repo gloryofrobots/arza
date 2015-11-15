@@ -1,0 +1,64 @@
+ co = coroutine(fn(yield) {
+           Z = "1111"
+           _co1 = coroutine(fn(yield2) {
+               Y = "2222"
+               fn send() {
+                    X = "3333"
+                    return yield2(42)
+               }
+               send()
+           })
+
+        v = _co1()
+        x = yield(v)
+        y = yield(x + v)
+        print(x, y)
+        return x + y
+      })
+v = co(co(co()))
+print(v)
+
+iter = coroutine(fn(yield) {
+           _iter = coroutine(fn(yield2) {
+               fn send(i) {
+                    return yield2(i)
+               }
+               i = 0
+               while i < 9 {
+                   send(i)
+                   i += 1
+               }
+               return i
+           })
+        for v in _iter {
+            yield(v)
+        }
+        return nil
+      })
+
+for v in iter {
+    print(v)
+}
+
+ co = coroutine(fn(yield) {
+           fn send(i) {
+               return yield(i)
+           }
+
+           i = 1
+           v = 0
+           while i < 4 {
+               v = send(i + v)
+               i += 1
+           }
+           return i
+     })
+
+v = co(10)
+print(v)
+v = co(10)
+print(v)
+v = co(10)
+print(v)
+v = co(10)
+print(v)

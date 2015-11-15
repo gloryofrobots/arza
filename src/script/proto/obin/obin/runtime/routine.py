@@ -144,6 +144,7 @@ class Routine(object):
         self.process = process
 
         self._on_activate()
+        self.inprocess()
 
     def is_block(self):
         return False
@@ -311,8 +312,8 @@ class BytecodeRoutine(Routine):
         else:
             return u'function () { }'
 
-    def __repr__(self):
-        return "%s" % (self.bytecode())
+    # def __repr__(self):
+    #     return "%s" % (self.bytecode())
 
 
 def create_function_routine(code, name):
