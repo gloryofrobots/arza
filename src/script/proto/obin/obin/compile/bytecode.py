@@ -27,9 +27,10 @@ class ByteCode(object):
         self.compiled_opcodes = None
         self.emit("LOAD_UNDEFINED")
 
-    def set_symbols(self, symbols):
+    def finalize_compilation(self, symbols):
         self._symbols = symbols
         self.parameters = symbols.parameters[:]
+        self.compile()
 
     def index_for_symbol(self, symbol):
         return self._symbols.get_index(symbol)
@@ -177,7 +178,7 @@ class ByteCode(object):
         self.opcodes = [op for op in self.opcodes if not isinstance(op, LABEL)]
         for op in self.opcodes:
             if isinstance(op, BaseJump):
-                print "Jump %d => %d" % (op.where, labels[op.where])
+                # print "Jump %d => %d" % (op.where, labels[op.where])
                 op.where = labels[op.where]
         self.has_labels = False
 

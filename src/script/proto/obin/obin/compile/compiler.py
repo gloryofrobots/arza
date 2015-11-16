@@ -91,7 +91,7 @@ class Compiler(object):
         self._compile(code, ast)
         scope = self.current_scope()
         final_scope = scope.finalize()
-        code.set_symbols(final_scope)
+        code.finalize_compilation(final_scope)
         return code
 
     def _compile(self, code, ast):
@@ -451,8 +451,7 @@ class Compiler(object):
         scope = current_scope.finalize()
         self.exit_scope()
         print str(scope.symbols)
-        funccode.set_symbols(scope)
-        funccode.compile()
+        funccode.finalize_compilation(scope)
         print [str(c) for c in funccode.opcodes]
         print "-------------------------"
 
@@ -646,7 +645,6 @@ def compile(txt):
     # print ast
     compiler = Compiler()
     code = compiler.compile(ast)
-    code.compile()
     return code
 
 def print_code(code):
