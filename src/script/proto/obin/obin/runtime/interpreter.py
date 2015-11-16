@@ -45,19 +45,23 @@ class Interpreter(object):
 
     def run_src(self, src):
         from obin.compile.compiler import compile as cl
+        from obin.objects.object_space import newfunc, newstring
+        # fn = newfunc(newstring(u"Global"), code, None)
         code = cl(src)
         return self.run(code)
 
     # run_src = run_src_old
 
-    def run(self, code, interactive=False):
+    def run(self, code):
         from obin.runtime.routine import create_bytecode_routine
 
         # print [str(c) for c in code.opcodes]
+
+
         global_routine = create_bytecode_routine(code)
 
         print "*********"
-        for c in [str(c) for c in code.compiled_opcodes]: print c
+        for i, c in enumerate([str(c) for c in code.compiled_opcodes]): print i,c
         print "*********"
         
         from obin.objects.object_space import object_space

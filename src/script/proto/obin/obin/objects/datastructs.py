@@ -185,6 +185,7 @@ class Stack(object):
         return len(self.__data)
 
     def push(self, element):
+        from obin.objects.object_space import isnull
         # from obin.utils import tb
         # if str(element) == "undefined":
         #     tb("CHECK!!!!!!!!!!")

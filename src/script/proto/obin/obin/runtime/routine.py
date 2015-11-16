@@ -232,10 +232,6 @@ class BytecodeRoutine(Routine):
 
         self._name_ = name
 
-        if not self._code_.is_compiled():
-            self._code_.emit('LOAD_UNDEFINED')
-            self._code_.compile()
-
         self._stack_size_ = code.estimated_stack_size()
         self._symbol_size_ = code.symbol_size()
         self.pc = 0
@@ -257,23 +253,17 @@ class BytecodeRoutine(Routine):
         debug = object_space.interpreter.config.debug
         from obin.runtime.opcodes import BaseJump
 
-        if self.pc >= self.code().opcode_count():
-            self.complete(_w(None))
-            return
-
-        # if getattr(self, "_signal_name_", None) == "FINALLY":
-        #     print ""
         opcode = self.code().get_opcode(self.pc)
 
         debug = True
+
+        opcode.eval(self.ctx)
         if debug:
             d = u'%s\t%s' % (unicode(str(self.pc)), unicode(str(opcode)))
             # d = u'%s' % (unicode(str(pc)))
             d = u'%3d %25s %s ' % (self.pc, unicode(opcode), unicode([unicode(s) for s in self.ctx._stack_]))
 
-            # print(getattr(self, "_name_", None), str(hex(id(self))), d)
-
-        opcode.eval(self.ctx)
+            print(getattr(self, "_name_", None), str(hex(id(self))), d)
 
         # RETURN or THROW occured
         if self.is_closed():
@@ -290,11 +280,6 @@ class BytecodeRoutine(Routine):
             #     return
         else:
             self.pc += 1
-
-        if self.pc >= self.code().opcode_count():
-            # print "_execute", self, self.result
-            assert not self.result
-            self.complete(self.ctx.stack_top())
 
     def estimated_stack_size(self):
         return self._stack_size_

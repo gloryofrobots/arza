@@ -25,6 +25,7 @@ class ByteCode(object):
         self.parameters = None
         self._function_name_ = None
         self.compiled_opcodes = None
+        self.emit("LOAD_UNDEFINED")
 
     def set_symbols(self, symbols):
         self._symbols = symbols
@@ -74,10 +75,10 @@ class ByteCode(object):
         self.label_count += 1
         return num
 
-    def prealocate_endloop_label(self, pop_after_break=False):
+    def prealocate_endloop_label(self, pop=False):
         num = self.prealocate_label()
         self.endlooplabel.append(num)
-        self.pop_after_break.append(pop_after_break)
+        self.pop_after_break.append(pop)
         return num
 
     def prealocate_updateloop_label(self):
@@ -117,9 +118,9 @@ class ByteCode(object):
         return self.compiled_opcodes is not None
 
     def emit(self, operation, *args):
-        from obin.utils import tb
-        # if operation == "POP":
-        #     tb()
+        # from obin.utils import tb
+        # if operation == "LOAD_UNDEFINED":
+        #     tb(args)
         assert not self.compiled_opcodes
         opcode = getattr(opcodes, operation)(*args)
         self.opcodes.append(opcode)
@@ -154,6 +155,7 @@ class ByteCode(object):
     def compile(self):
         assert not self.compiled_opcodes
         assert self._symbols
+        self.emit("RETURN")
         self.unlabel()
         self.compiled_opcodes = [o for o in self.opcodes]
         self.estimated_stack_size()
@@ -175,6 +177,7 @@ class ByteCode(object):
         self.opcodes = [op for op in self.opcodes if not isinstance(op, LABEL)]
         for op in self.opcodes:
             if isinstance(op, BaseJump):
+                print "Jump %d => %d" % (op.where, labels[op.where])
                 op.where = labels[op.where]
         self.has_labels = False
 

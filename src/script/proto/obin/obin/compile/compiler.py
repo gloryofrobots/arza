@@ -89,7 +89,6 @@ class Compiler(object):
         code = ByteCode()
         self.enter_scope()
         self._compile(code, ast)
-        code.emit('LOAD_UNDEFINED')
         scope = self.current_scope()
         final_scope = scope.finalize()
         code.set_symbols(final_scope)
@@ -445,13 +444,15 @@ class Compiler(object):
 
         funccode = ByteCode()
 
+        # funccode.emit('LOAD_UNDEFINED')
         self._compile(funccode, body)
-        funccode.emit('LOAD_UNDEFINED')
+        # funccode.emit('RETURN')
         current_scope = self.current_scope()
         scope = current_scope.finalize()
         self.exit_scope()
         print str(scope.symbols)
         funccode.set_symbols(scope)
+        funccode.compile()
         print [str(c) for c in funccode.opcodes]
         print "-------------------------"
 
@@ -529,7 +530,7 @@ class Compiler(object):
         bytecode.emit('LOAD_UNDEFINED')
         precond = bytecode.emit_startloop_label()
         bytecode.continue_at_label(precond)
-        finish = bytecode.prealocate_endloop_label(True)
+        finish = bytecode.prealocate_endloop_label(False)
         # update = bytecode.prealocate_updateloop_label()
 
         bytecode.emit('JUMP_IF_ITERATOR_EMPTY', finish)
@@ -645,6 +646,7 @@ def compile(txt):
     # print ast
     compiler = Compiler()
     code = compiler.compile(ast)
+    code.compile()
     return code
 
 def print_code(code):
