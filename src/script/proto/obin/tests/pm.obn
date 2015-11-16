@@ -1,0 +1,52 @@
+length of cases is always must be equal to var count
+
+X =
+case x {
+    of null { }
+    of undefined {}
+    of 42 { }
+    of "Foo" { }
+}
+
+
+case x, y {
+    of _, 12 { }
+}
+
+case A {
+    // sequence must have 3 items and third binds of Y
+    of [0, 1, Y] { Y }
+
+    //here Y got rest of sequence
+    of [0, X, ...Y]{ X, Y }
+
+    //List of four
+    of [_, _, _, _] { }
+
+}
+
+case A {
+    of [] {}
+    of [1, 2, 3] {}
+    of [H, ...] when H of String { H }
+    of [H, ...T] {H, T}
+    of [H, ...M, T] { H, M, T }
+    of [..., T] { T }
+    of [X, Y, Z, ..., T] { X, Y, Z, T}
+    of [[x,y], [1,2,3], Y, ...T] { x, y, Y, T }
+    of [...I of String] { if all elements I is strings }
+    of [X of Integer, Y of Float, Z of String, ...(I of String)] { X, Y, Z, I }
+    of [...[x,y]] when x > 0 or y > 3 [x here is a list of firsts and y is a list of seconds]
+    of [...{name}]  [extract names from objects]
+    of [...{name, surname}] when name of String and surname of String {extract names and surnames from objects}
+    of [...[head, ...tail]] {heads and tails of nested tuples}
+}
+
+case O {
+    of {}  { //empty object }
+    of {x,y} {two keys x and y}
+    of {children: [a,b]} { a, b }
+    of {children: X of Integer} { X }
+    of {name: [H of Integer, ...T of String], surname, age } { H, T, surname, age }
+}
+
