@@ -717,7 +717,7 @@ class W_Coroutine(W_Root):
 
         self._yield_ = W_CoroutineYield(self)
         self._yield_.set_receiver(self._receiver_)
-        
+
         if args is not None:
             args.insert(0, self._yield_)
         else:

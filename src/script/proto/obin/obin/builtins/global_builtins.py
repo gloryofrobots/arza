@@ -69,6 +69,7 @@ def setup(global_object):
 
     api.put_native_function(global_object, u'version', version)
     api.put_native_function(global_object, u'coroutine', coroutine)
+    api.put_native_function(global_object, u'range', _range)
 
     ## debugging
     if not we_are_translated():
@@ -412,3 +413,12 @@ def coroutine(ctx, routine):
     fn = args[0]
     assert isfunction(fn)
     return newcoroutine(fn)
+
+@complete_native_routine
+def _range(ctx, routine):
+    from obin.objects.object_space import newvector, newint
+    args = routine.args()
+    start = args[0]
+    end = args[1]
+    items = [newint(i) for i in xrange(start.value(), end.value())]
+    return newvector(items)

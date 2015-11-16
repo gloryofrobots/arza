@@ -1,52 +1,18 @@
- co = coroutine(fn(yield, x) {
-           Z = "1111"
-
-           _co1 = coroutine(fn(yield2, y) {
-               Y = "2222"
-               fn send() {
-                    X = "3333"
-                    return yield2(42 + y)
-               }
-               send()
-           })
-
-        print("x", x)
-        v = _co1(x)
-        t = yield(v)
-        print("t", t)
-        x = yield(t)
-        print("x", x)
-        return x
-      })
-
-v = co(23)
-print(v)
-v = co(34)
-print(v)
-v = co(44)
-print(v)
-
-iter = coroutine(fn(yield) {
-           _iter = coroutine(fn(yield2) {
-               fn send(i) {
-                    return yield2(i)
-               }
-               i = 0
-               while i < 9 {
-                   send(i)
-                   i += 1
-               }
-               return i
-           })
-        for v in _iter {
-            yield(v)
+fn yrange(start, end) {
+    return coroutine(fn (yield) {
+        i = start
+        j = end - 1
+        while i < j {
+           yield(i)
+           i += 1
         }
-        return nil
-      })
-
-for v in iter {
-    print(v)
+//        return j
+    })
 }
+for i in yrange(0, 100) {
+    print(i)
+}
+
 //
 //fn fib(n) {
 //  fn _process(n,a,b) {
