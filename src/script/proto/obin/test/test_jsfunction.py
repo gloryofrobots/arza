@@ -15,8 +15,8 @@ class FakeInterpreter(object):
 from obin.objects.object_space import object_space
 object_space.interpreter = FakeInterpreter()
 
-from obin.objects.object import W_ModuleObject
-object_space.global_object = W_ModuleObject()
+from obin.objects.object import W_Module
+object_space.global_object = W_Module()
 
 
 class TestJsFunctionAndStuff(object):

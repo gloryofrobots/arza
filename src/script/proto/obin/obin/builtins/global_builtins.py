@@ -69,6 +69,7 @@ def setup(global_object):
 
     api.put_native_function(global_object, u'version', version)
     api.put_native_function(global_object, u'coroutine', coroutine)
+    api.put_native_function(global_object, u'crtn', coroutine)
     api.put_native_function(global_object, u'range', _range)
 
     ## debugging

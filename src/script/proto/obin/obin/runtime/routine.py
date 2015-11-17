@@ -249,6 +249,13 @@ class BytecodeRoutine(Routine):
         return self._code_
 
     def _execute(self):
+        while True:
+            if not self.is_inprocess():
+                return
+            self.__execute()
+        pass
+
+    def __execute(self):
         from obin.objects.object_space import object_space
         debug = object_space.interpreter.config.debug
         from obin.runtime.opcodes import BaseJump
@@ -263,7 +270,7 @@ class BytecodeRoutine(Routine):
             # d = u'%s' % (unicode(str(pc)))
             d = u'%3d %25s %s ' % (self.pc, unicode(opcode), unicode([unicode(s) for s in self.ctx._stack_]))
 
-            print(getattr(self, "_name_", None), str(hex(id(self))), d)
+            # print(getattr(self, "_name_", None), str(hex(id(self))), d)
 
         # RETURN or THROW occured
         if self.is_closed():

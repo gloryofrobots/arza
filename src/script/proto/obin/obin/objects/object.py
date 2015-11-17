@@ -527,8 +527,40 @@ class W_Object(W_Cell):
         return clone
 
 
-class W_ModuleObject(W_Object):
-    pass
+class W_Module(W_Root):
+    def __init__(self, name, bytecode):
+        from object_space import newobject
+        self._name = name
+        self._bytecode_ = bytecode
+        self._object_ = newobject()
+        self._result_ = None
+        self._is_compiled_ = False
+
+    def result(self):
+        return self._result_
+
+    def set_result(self, r):
+        self._result_ = r
+
+    def code(self):
+        return self._bytecode_
+
+    def scope(self):
+        return self._object_
+
+    def compile(self):
+        assert not self._is_compiled_
+        from obin.runtime.routine import create_bytecode_routine
+        from obin.runtime.context import create_object_context
+
+        routine = create_bytecode_routine(self._bytecode_)
+
+        print "*********"
+        for i, c in enumerate([str(c) for c in self._bytecode_.compiled_opcodes]): print i,c
+        print "*********"
+        create_object_context(routine, self._object_)
+        self._is_compiled_ = True
+        return routine
 
 
 class W_Function(W_Root):

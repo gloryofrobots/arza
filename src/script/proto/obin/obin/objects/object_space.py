@@ -121,6 +121,12 @@ def newcoroutine(fn):
     obj = W_Coroutine(fn)
     return obj
 
+def newmodule(name, code):
+    assert isstring(name)
+    from obin.objects.object import W_Module
+    obj = W_Module(name, code)
+    return obj
+
 def isany(value):
     from object import W_Root
     return isinstance(value, W_Root)
@@ -155,6 +161,9 @@ def isvector(value):
     from object import W_Vector
     return isinstance(value, W_Vector)
 
+def ismodule(w):
+    from obin.objects.object import W_Module
+    return isinstance(w, W_Module)
 
 def isnull(value):
     return value is w_Null
@@ -248,9 +257,6 @@ class ObjectSpace(object):
         self.traits.List = self.newobject()
         self.traits.Vector = self.newobject()
         self.traits.Tuple = self.newobject()
-
-    def get_global_environment(self):
-        return self.global_context.env()
 
 
 object_space = ObjectSpace()

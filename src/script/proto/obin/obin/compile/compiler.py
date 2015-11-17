@@ -647,6 +647,12 @@ def compile(txt):
     code = compiler.compile(ast)
     return code
 
+def compile_module(name, txt):
+    from obin.objects.object_space import newmodule
+    code = compile(txt)
+    module = newmodule(name, code)
+    return module
+
 def print_code(code):
     print [str(c) for c in code.opcodes]
 
