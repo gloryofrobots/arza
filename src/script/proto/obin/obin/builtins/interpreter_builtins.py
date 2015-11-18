@@ -4,7 +4,7 @@ from obin.runtime.routine import complete_native_routine
 #from pypy.rlib import jit
 from obin.objects import api
 
-def setup_builtins(interpreter, global_object):
+def setup_builtins(interpreter, obj):
     interpreter.add_primitive(u"__add_traits__", add_traits)
 
 @complete_native_routine

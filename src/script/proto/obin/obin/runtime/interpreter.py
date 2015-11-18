@@ -38,10 +38,6 @@ class Interpreter(object):
     def get_primitive(self, primitive_id):
         return self.primitives[primitive_id]
 
-    def load_module(self, filename):
-
-        pass
-
     def run_src(self, src):
         from obin.compile.compiler import compile_module
         from obin.objects.object_space import newstring

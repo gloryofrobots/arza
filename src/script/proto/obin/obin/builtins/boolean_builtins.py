@@ -4,7 +4,7 @@ from obin.objects.object import W_Boolean
 from obin.runtime.exception import ObinTypeError
 
 
-def setup(global_object):
+def setup(trait):
     from obin.builtins import put_property, put_native_function
     from obin.objects.object_space import object_space
 
@@ -12,7 +12,7 @@ def setup(global_object):
     from obin.objects.object import W__Object
     w_Boolean = W__Object()
     object_space.assign_proto(w_Boolean, object_space.proto_function)
-    put_property(global_object, u'Boolean', w_Boolean)
+    put_property(trait, u'Boolean', w_Boolean)
 
     # 15.6.3
     put_property(w_Boolean, u'length', _w(1))

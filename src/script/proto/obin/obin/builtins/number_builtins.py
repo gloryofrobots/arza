@@ -4,7 +4,7 @@ from obin.runtime.routine import complete_native_routine
 from obin.runtime.exception import ObinRangeError, ObinTypeError
 
 
-def setup(global_object):
+def setup(obj):
     from obin.builtins import put_property, put_native_function
     from obin.objects.object_space import object_space
 
@@ -12,7 +12,7 @@ def setup(global_object):
     from obin.objects.object import W__Object
     w_Number = W__Object()
     # object_space.assign_proto(w_Number, object_space.proto_function)
-    put_property(global_object, u'Number', w_Number)
+    put_property(obj, u'Number', w_Number)
 
     # 15.7.3
     put_property(w_Number, u'length', _w(1))

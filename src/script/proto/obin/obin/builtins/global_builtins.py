@@ -9,7 +9,7 @@ from obin.objects import api
 from obin.objects.object_space import newstring
 
 
-def setup(global_object):
+def setup(obj):
     from rpython.rlib.objectmodel import we_are_translated
     from obin.builtins.number_builtins import w_NAN
     from obin.builtins.number_builtins import w_POSITIVE_INFINITY
@@ -17,65 +17,65 @@ def setup(global_object):
 
     ### Traits
     traits = object_space.traits
-    api.put_property(global_object, u'True', traits.True)
-    api.put_property(global_object, u'False', traits.False)
-    api.put_property(global_object, u'Boolean', traits.Boolean)
-    api.put_property(global_object, u'Nil', traits.Nil)
-    api.put_property(global_object, u'Undefined', traits.Undefined)
-    api.put_property(global_object, u'Char', traits.Char)
-    api.put_property(global_object, u'Number', traits.Number)
-    api.put_property(global_object, u'Integer', traits.Integer)
-    api.put_property(global_object, u'Float', traits.Float)
-    api.put_property(global_object, u'Symbol', traits.Symbol)
-    api.put_property(global_object, u'String', traits.String)
-    api.put_property(global_object, u'Array', traits.Array)
-    api.put_property(global_object, u'Vector', traits.Vector)
-    api.put_property(global_object, u'Tuple', traits.Tuple)
-    api.put_property(global_object, u'Object', traits.Object)
-    api.put_property(global_object, u'Function', traits.Function)
+    api.put_property(obj, u'True', traits.True)
+    api.put_property(obj, u'False', traits.False)
+    api.put_property(obj, u'Boolean', traits.Boolean)
+    api.put_property(obj, u'Nil', traits.Nil)
+    api.put_property(obj, u'Undefined', traits.Undefined)
+    api.put_property(obj, u'Char', traits.Char)
+    api.put_property(obj, u'Number', traits.Number)
+    api.put_property(obj, u'Integer', traits.Integer)
+    api.put_property(obj, u'Float', traits.Float)
+    api.put_property(obj, u'Symbol', traits.Symbol)
+    api.put_property(obj, u'String', traits.String)
+    api.put_property(obj, u'Array', traits.Array)
+    api.put_property(obj, u'Vector', traits.Vector)
+    api.put_property(obj, u'Tuple', traits.Tuple)
+    api.put_property(obj, u'Object', traits.Object)
+    api.put_property(obj, u'Function', traits.Function)
 
 
     # 15.1.1.1
-    api.put_property(global_object, u'NaN', w_NAN)
+    api.put_property(obj, u'NaN', w_NAN)
 
     # 15.1.1.2
-    api.put_property(global_object, u'Infinity', w_POSITIVE_INFINITY)
+    api.put_property(obj, u'Infinity', w_POSITIVE_INFINITY)
 
     # 15.1.2.1
-    api.put_native_function(global_object, u'eval', _eval)
+    api.put_native_function(obj, u'eval', _eval)
 
     # 15.1.2.2
-    api.put_native_function(global_object, u'parseInt', parse_int)
+    api.put_native_function(obj, u'parseInt', parse_int)
 
     # 15.1.2.3
     # TODO
-    api.put_native_function(global_object, u'parseFloat', parse_float)
+    api.put_native_function(obj, u'parseFloat', parse_float)
 
     # 15.1.2.4
-    api.put_native_function(global_object, u'isNaN', is_nan)
+    api.put_native_function(obj, u'isNaN', is_nan)
 
     # 15.1.2.5
-    api.put_native_function(global_object, u'isFinite', is_finite)
+    api.put_native_function(obj, u'isFinite', is_finite)
 
-    api.put_native_function(global_object, u'alert', alert)
+    api.put_native_function(obj, u'alert', alert)
 
-    api.put_native_function(global_object, u'print', _print)
-    api.put_native_function(global_object, u'id', _id)
-    api.put_native_function(global_object, u'now', now)
+    api.put_native_function(obj, u'print', _print)
+    api.put_native_function(obj, u'id', _id)
+    api.put_native_function(obj, u'now', now)
 
-    api.put_native_function(global_object, u'escape', escape)
+    api.put_native_function(obj, u'escape', escape)
 
-    api.put_native_function(global_object, u'unescape', unescape)
+    api.put_native_function(obj, u'unescape', unescape)
 
-    api.put_native_function(global_object, u'version', version)
-    api.put_native_function(global_object, u'coroutine', coroutine)
-    api.put_native_function(global_object, u'crtn', coroutine)
-    api.put_native_function(global_object, u'range', _range)
+    api.put_native_function(obj, u'version', version)
+    api.put_native_function(obj, u'coroutine', coroutine)
+    api.put_native_function(obj, u'crtn', coroutine)
+    api.put_native_function(obj, u'range', _range)
 
     ## debugging
     if not we_are_translated():
-        api.put_native_function(global_object, u'pypy_repr', pypy_repr)
-        api.put_native_function(global_object, u'inspect', inspect)
+        api.put_native_function(obj, u'pypy_repr', pypy_repr)
+        api.put_native_function(obj, u'inspect', inspect)
 
     # global_object.freeze()
 

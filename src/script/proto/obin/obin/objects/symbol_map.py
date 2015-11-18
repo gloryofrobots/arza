@@ -6,6 +6,7 @@ class SymbolMap(object):
         self.symbols = new_map()
         self.__variables = []
         self.__parameters = []
+        self.__locals = []
         self.__rest = None
 
     @property
