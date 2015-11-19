@@ -521,7 +521,23 @@ class LOAD_PRIMITIVE(Opcode):
     def __str__(self):
         return 'LOAD_PRIMITIVE %s ' % (self.prim_id)
 
-class STORE(Opcode):
+class STORE_LOCAL(Opcode):
+    _immutable_fields_ = ['identifier', 'index']
+    _stack_change = 0
+
+    def __init__(self, index, identifier):
+        assert index is not None
+        self.index = index
+        self.identifier = identifier
+
+    def eval(self, ctx):
+        value = ctx.stack_top()
+        ctx.store_local(self.index, value)
+
+    def __str__(self):
+        return 'STORE %s (%d)' % (self.identifier, self.index)
+
+class STORE_OUTER(Opcode):
     _immutable_fields_ = ['identifier', 'index']
     _stack_change = 0
 

@@ -76,6 +76,9 @@ class Context(object):
         assert index >= 0
         self._refs_[index] = value
 
+    def store_local(self, index, value):
+        self._env_.set_by_index(index, value)
+
     def store_ref(self, symbol, index, value):
         lex_env = self.env()
         ref = lex_env.get_reference(symbol)
@@ -86,7 +89,10 @@ class Context(object):
             ref.put_value(value)
             return
 
-        lex_env.set_binding(symbol, value)
+        raise RuntimeError("Unable to store reference", symbol, index, value)
+
+    def get_local(self, index):
+        return self._env_.get_by_index(index)
 
     def get_ref(self, symbol, index=-1):
         if index < 0:
@@ -104,7 +110,6 @@ class Context(object):
             self._set_refs(index, ref)
 
         return ref
-
 
 @jit.unroll_safe
 def initialize_environment(ctx):

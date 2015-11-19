@@ -124,6 +124,12 @@ class Slots(object):
         self._property_slots_[idx] = value
         return idx
 
+    def set_by_index(self, idx, value):
+        self._property_slots_[idx] = value
+
+    def get_by_index(self, idx):
+        return self._property_slots_[idx]
+
     def set(self, name, value):
         idx = self.get_index(name)
         self._property_slots_[idx] = value

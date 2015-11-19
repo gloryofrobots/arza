@@ -410,6 +410,12 @@ class W_Object(W_Cell):
     # def __str__(self):
     #     return "W_Object(%s)" % (self._tostring_())
 
+    def put_by_index(self, idx, value):
+        self.__slots.set_by_index(idx, value)
+
+    def get_by_index(self, idx):
+        return self.__slots.get_by_index(idx)
+
     def traits(self):
         return self.__traits
 

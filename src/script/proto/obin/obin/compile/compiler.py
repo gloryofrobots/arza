@@ -44,7 +44,7 @@ class Compiler(object):
         if not scope.is_function_scope():
             compile_error(self.current_node, "Outer variables can be declared only inside functions", symbol)
         if scope.has_outer(symbol):
-            compile_error(self.current_node, "Outer variable has been already declared", symbol)
+            compile_error(self.current_node, "Outer variable has already been declared", symbol)
         scope.add_outer(symbol)
 
     # def declare_symbol(self, symbol):
@@ -117,10 +117,6 @@ class Compiler(object):
 
     def current_scope(self):
         return self.scopes[-1]
-        # try:
-        #     return self.scopes[-1]
-        # except IndexError:
-        #     return None
 
     def set_sourcename(self, sourcename):
         self.stsourcename = sourcename  # XXX I should call this
@@ -153,7 +149,6 @@ class Compiler(object):
         if len(nodes) > 0:
             node = nodes[-1]
             self._compile_node(bytecode, node)
-
 
     def _compile_node(self, code, node):
         self.current_node = node

@@ -38,7 +38,13 @@ class Environment(object):
         self.binding = obj
 
     def get_reference(self, identifier):
-        return get_reference(self, identifier)
+        return get_reference(self.outer_environment, identifier)
+
+    def set_by_index(self, idx, v):
+        self.binding.put_by_index(idx, v)
+
+    def get_by_index(self, idx):
+        self.binding.get_by_index(idx)
 
     def has_binding(self, n):
         assert isstring(n)
