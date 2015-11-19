@@ -139,7 +139,25 @@ class LOAD_NULL(Opcode):
         ctx.stack_append(newnull())
 
 
-class LOAD_VARIABLE(Opcode):
+class LOAD_LOCAL(Opcode):
+    _immutable_fields_ = ['identifier', 'index']
+
+    def __init__(self, index, identifier):
+        assert index is not None
+        self.index = index
+        self.identifier = identifier
+
+    # 11.1.2
+    def eval(self, ctx):
+        # TODO put ref onto stack
+        value = ctx.get_local(self.index)
+        ctx.stack_append(value)
+
+    def __str__(self):
+        return 'LOAD_LOCAL %s (%d)' % (self.identifier, self.index)
+
+
+class LOAD_OUTER(Opcode):
     _immutable_fields_ = ['identifier', 'index']
 
     def __init__(self, index, identifier):
@@ -155,7 +173,7 @@ class LOAD_VARIABLE(Opcode):
         ctx.stack_append(value)
 
     def __str__(self):
-        return 'LOAD_VARIABLE %s (%d)' % (self.identifier, self.index)
+        return 'LOAD_OUTER %s (%d)' % (self.identifier, self.index)
 
 
 class LOAD_VECTOR(Opcode):

@@ -126,14 +126,14 @@ def handler(parser, ttype):
 def nud(parser, node):
     handler = node_handler(parser, node)
     if not handler.nud:
-        error(parser, "Unknown token", args=(node, str(parser.token)))
+        parse_error(parser, "Unknown token", args=(node, str(parser.token)))
     return handler.nud(parser, node)
 
 
 def std(parser, node):
     handler = node_handler(parser, node)
     if not handler.std:
-        error(parser, "Unknown token", args=node)
+        parse_error(parser, "Unknown token", args=node)
 
     return handler.std(parser, node)
 
@@ -166,7 +166,7 @@ def lbp(parser, node):
 def led(parser, node, left):
     handler = node_handler(parser, node)
     if not handler.led:
-        error(parser, "Unknown token", args=node)
+        parse_error(parser, "Unknown token", args=node)
 
     return handler.led(parser, node, left)
 
@@ -253,7 +253,7 @@ class Parser(object):
         return self.token_type == T.TT_ENDSTREAM
 
 
-def error(parser, message, args=None, node=None):
+def parse_error(parser, message, args=None, node=None):
     if not node:
         error_message = "Parse Error %d:%d %s" % (parser.token.line, parser.token.pos, message)
     else:
@@ -264,12 +264,12 @@ def error(parser, message, args=None, node=None):
 
 def check_token_type(parser, type):
     if parser.token_type != type:
-        error(parser, "Expected token type %s got token %s" % ((T.TT_TO_STR(type)), parser.token))
+        parse_error(parser, "Expected token type %s got token %s" % ((T.TT_TO_STR(type)), parser.token))
 
 
 def check_token_types(parser, types):
     if parser.token_type not in types:
-        error(parser, "Expected token type one of %s got token %s" %
+        parse_error(parser, "Expected token type one of %s got token %s" %
               ([T.TT_TO_STR(type) for type in types], parser.token))
 
 
@@ -299,7 +299,7 @@ def endofexpression(parser):
         # print "SEMI"
         return advance(parser)
 
-    error(parser, "Expressions must end with new line or ;")
+    parse_error(parser, "Expressions must end with new line or ;")
 
 
 def expression(parser, _rbp):
@@ -417,7 +417,7 @@ def infixr(parser, ttype, lbp, led=led_infixr):
 def led_infixr_assign(parser, node, left):
     node.init(2)
     if left.type not in [T.TT_DOT, T.TT_LSQUARE, T.TT_NAME, T.TT_COMMA]:
-        error(parser, "Bad lvalue in assignment", left)
+        parse_error(parser, "Bad lvalue in assignment", left)
     node.setfirst(left)
     exp = expression(parser, 9)
     node.setsecond(exp)
@@ -830,7 +830,7 @@ def parser_init(parser):
         node.init(2)
         name, args, body = _parse_fn(parser)
         if not is_empty_node(name):
-            error(parser, "In expressions functions could not have names", node=node)
+            parse_error(parser, "In expressions functions could not have names", node=node)
         node.setfirst(args)
         node.setsecond(body)
         return node
@@ -841,7 +841,7 @@ def parser_init(parser):
         node.init(3)
         name, args, body = _parse_fn(parser)
         if is_empty_node(name):
-            error(parser, "Function statement must be declared with name", node=node)
+            parse_error(parser, "Function statement must be declared with name", node=node)
         node.setfirst(name)
         node.setsecond(args)
         node.setthird(body)
@@ -930,7 +930,7 @@ def parser_init(parser):
         node.init(2)
         name, traits, body = _parse_object(parser)
         if not is_empty_node(name):
-            error(parser, "In expressions objects could not have names", node=node)
+            parse_error(parser, "In expressions objects could not have names", node=node)
         node.setfirst(traits)
         node.setsecond(body)
         return node
@@ -942,13 +942,19 @@ def parser_init(parser):
         name, traits, items = _parse_object(parser)
         # TODO move this check to parse object or add support for error token in error func
         if is_empty_node(name):
-            error(parser, "Object statement must have name", node=node)
+            parse_error(parser, "Object statement must have name", node=node)
         node.setfirst(name)
         node.setsecond(traits)
         node.setthird(items)
         return node
 
     stmt(parser, T.TT_OBJECT, _stmt_object)
+
+    def _stmt_single_one_arg(parser, node):
+        node.init(1)
+        node.setfirst(expression(parser, 0))
+        endofexpression(parser)
+        return node
 
     def _stmt_single(parser, node):
         node.init(1)
@@ -961,13 +967,14 @@ def parser_init(parser):
 
     stmt(parser, T.TT_RETURN, _stmt_single)
     stmt(parser, T.TT_RAISE, _stmt_single)
+    stmt(parser, T.TT_OUTER, _stmt_single_one_arg)
 
     # stmt(parser, T.TT_SEMI, empty)
 
     def _stmt_loop_flow(parser, node):
         endofexpression(parser)
         if parser.token_type != T.TT_RCURLY:
-            error(parser, "Unreachable statement")
+            parse_error(parser, "Unreachable statement")
         return node
 
     stmt(parser, T.TT_BREAK, _stmt_loop_flow)
@@ -991,7 +998,7 @@ def parser_init(parser):
         while parser.token_type == T.TT_COMMA:
             advance(parser)
             if parser.token_type != T.TT_NAME:
-                error(parser, "Wrong variable name in for loop")
+                parse_error(parser, "Wrong variable name in for loop")
 
             vars.append(expression(parser, 0))
 

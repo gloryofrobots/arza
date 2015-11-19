@@ -8,7 +8,7 @@ from obin.objects.object import W_String
 
 
 class ByteCode(object):
-    _immutable_fields_ = ['compiled_opcodes[*]', '_symbols', 'parameters[*]']
+    _immutable_fields_ = ['compiled_opcodes[*]', '_scope_info']
 
     """ That object stands for code of a single javascript function
     """
@@ -21,28 +21,23 @@ class ByteCode(object):
         self.pop_after_break = []
         self.updatelooplabel = []
         self._estimated_stack_size = -1
-        self._symbols = None
-        self.parameters = None
+        self._scope_info = None
         self._function_name_ = None
         self.compiled_opcodes = None
         self.emit("LOAD_UNDEFINED")
 
-    def finalize_compilation(self, symbols):
-        self._symbols = symbols
-        self.parameters = symbols.parameters[:]
+    def finalize_compilation(self, scope_info):
+        self._scope_info = scope_info
         self.compile()
 
-    def index_for_symbol(self, symbol):
-        return self._symbols.get_index(symbol)
-
     def symbols(self):
-        return self._symbols.get_symbols()
+        return self._scope_info.get_symbols()
 
     def params(self):
-        return self._symbols.parameters
+        return self._scope_info.arguments
 
     def params_rest(self):
-        return self._symbols.rest
+        return self._scope_info.rest
 
     @jit.elidable
     def estimated_stack_size(self):
@@ -58,7 +53,7 @@ class ByteCode(object):
         return jit.promote(self._estimated_stack_size)
 
     def symbol_size(self):
-        return self._symbols.len()
+        return self._scope_info.len()
 
     def emit_label(self, num=-1):
         if num == -1:
@@ -155,7 +150,7 @@ class ByteCode(object):
 
     def compile(self):
         assert not self.compiled_opcodes
-        assert self._symbols
+        assert self._scope_info
         self.emit("RETURN")
         self.unlabel()
         self.compiled_opcodes = [o for o in self.opcodes]

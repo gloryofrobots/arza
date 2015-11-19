@@ -35,6 +35,7 @@ TOKENS = [
   ("TT_IS", "is"),
   ("TT_OBJECT", "object"),
   ("TT_ISNOT", "isnot"),
+  ("TT_OUTER", "outer"),
   ("TT_RETURN", "return"),
   ("TT_ELLIPSIS", "..."),
   ("TT_ADD_ASSIGN", "+="),
