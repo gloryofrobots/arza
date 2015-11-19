@@ -148,9 +148,9 @@ def initialize_environment(ctx):
     env.set_binding(rest, newvector(rest_items))
 
 
-def create_object_context(routine, obj):
+def create_object_context(routine, obj, count_refs):
     from obin.runtime.environment import newobjectenv
-    ctx = Context(routine.estimated_stack_size(), 0, routine, newobjectenv(obj, None), None)
+    ctx = Context(routine.estimated_stack_size(), count_refs, routine, newobjectenv(obj, None), None)
     return ctx
 
 

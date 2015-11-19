@@ -4,8 +4,8 @@ from obin.objects.object_space import isstring
 
 
 def newenv(outer_environment, size):
-    from obin.objects.object_space import newsimpleobject_withsize
-    obj = newsimpleobject_withsize(size)
+    from obin.objects.object_space import newplainobject_with_size
+    obj = newplainobject_with_size(size)
     env = Environment(obj, outer_environment)
     return env
 

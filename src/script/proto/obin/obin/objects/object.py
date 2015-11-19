@@ -535,12 +535,18 @@ class W_Object(W_Cell):
 
 class W_Module(W_Root):
     def __init__(self, name, bytecode):
-        from object_space import newobject
         self._name = name
         self._bytecode_ = bytecode
-        self._object_ = newobject()
+        self._object_ = None
         self._result_ = None
         self._is_compiled_ = False
+        self.init_scope()
+
+    def init_scope(self):
+        from object_space import newplainobject_with_slots
+        scope = self._bytecode_.scope_info()
+        vars = scope.variables.clone()
+        self._object_ = newplainobject_with_slots(vars)
 
     def result(self):
         return self._result_
@@ -564,7 +570,9 @@ class W_Module(W_Root):
         print "*********"
         for i, c in enumerate([str(c) for c in self._bytecode_.compiled_opcodes]): print i,c
         print "*********"
-        create_object_context(routine, self._object_)
+
+        refs_size = self._bytecode_.scope_info().count_refs()
+        create_object_context(routine, self._object_, refs_size)
         self._is_compiled_ = True
         return routine
 

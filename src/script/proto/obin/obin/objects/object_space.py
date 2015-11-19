@@ -98,7 +98,7 @@ def newsimpleobject():
     obj = W_Object(None)
     return obj
 
-def newsimpleobject_withsize(size):
+def newplainobject_with_size(size):
     from obin.objects.object import W_Object
     from obin.objects.datastructs import Slots
     slots = Slots(size)
@@ -109,6 +109,13 @@ def newobject():
     obj = newsimpleobject()
     obj.create_traits(None)
     obj.isa(object_space.traits.Object)
+    return obj
+
+def newplainobject_with_slots(slots):
+    from obin.objects.object import W_Object
+    obj = W_Object(slots)
+    # obj.create_traits(None)
+    # obj.isa(object_space.traits.Object)
     return obj
 
 def newvector(items=None):

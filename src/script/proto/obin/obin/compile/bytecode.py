@@ -31,11 +31,8 @@ class ByteCode(object):
         self._scope_info = scope_info
         self.compile()
 
-    def params(self):
-        return self._scope_info.arguments
-
-    def params_rest(self):
-        return self._scope_info.rest
+    def scope_info(self):
+        return self._scope_info
 
     @jit.elidable
     def estimated_stack_size(self):
