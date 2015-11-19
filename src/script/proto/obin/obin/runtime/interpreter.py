@@ -25,7 +25,6 @@ class Interpreter(object):
         self.global_object = newobject()
         self.modules = []
 
-        self.symbols = Slots()
         object_space.global_object = self.global_object
         object_space.interpreter = self
 

@@ -89,7 +89,6 @@ class Context(object):
         lex_env.set_binding(symbol, value)
 
     def get_ref(self, symbol, index=-1):
-        ## TODO pre-bind symbols, work with idndex, does not work, see test_foo19
         if index < 0:
             lex_env = self.env()
             ref = lex_env.get_reference(symbol)

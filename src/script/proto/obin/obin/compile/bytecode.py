@@ -24,14 +24,12 @@ class ByteCode(object):
         self._scope_info = None
         self._function_name_ = None
         self.compiled_opcodes = None
+        # VALUE FOR AUTOMATIC RETURN
         self.emit("LOAD_UNDEFINED")
 
     def finalize_compilation(self, scope_info):
         self._scope_info = scope_info
         self.compile()
-
-    def symbols(self):
-        return self._scope_info.get_symbols()
 
     def params(self):
         return self._scope_info.arguments

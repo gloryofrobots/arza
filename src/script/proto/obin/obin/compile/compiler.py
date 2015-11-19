@@ -92,7 +92,10 @@ class Compiler(object):
                     return ref_id, False
             scope_id += 1
 
-        compile_error(self.current_node, "Non reachable variable", name)
+        # compile_error(self.current_node, "Non reachable variable", name)
+        # COMMENT ERROR BECAUSE OF LATER LINKING OF BUILTINS
+        ref_id = self.declare_reference(name)
+        return ref_id, False
 
     def declare_variable(self, symbol):
         """
@@ -507,7 +510,8 @@ class Compiler(object):
         current_scope = self.current_scope()
         scope = current_scope.finalize()
         self.exit_scope()
-        print str(scope.symbols)
+        print str(scope.locals.keys())
+        print str(scope.references)
         funccode.finalize_compilation(scope)
         print [str(c) for c in funccode.opcodes]
         print "-------------------------"
