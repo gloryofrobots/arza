@@ -1,6 +1,7 @@
 from obin.objects.datastructs import Stack
 from obin.runtime.environment import newenv
 from rpython.rlib import jit
+from obin.runtime.exception import ObinReferenceError
 
 
 class Context(object):
@@ -33,6 +34,8 @@ class Context(object):
 
     def stack_append(self, value):
         from obin.objects.object_space import isany
+        if not isany(value):
+            print value
         assert isany(value)
         self._stack_.push(value)
 
@@ -112,7 +115,7 @@ class Context(object):
         return ref
 
 @jit.unroll_safe
-def initialize_environment(ctx):
+def initialize_environment(func, ctx):
     env = ctx.env()
     routine = jit.promote(ctx.routine())
     code = routine.bytecode()
@@ -121,54 +124,68 @@ def initialize_environment(ctx):
     assert isinstance(routine, BytecodeRoutine)
 
     from obin.objects.object_space import newvector
-    names = code.params()
+    scope = code.scope
+    declared_args_count = scope.count_args
+    is_variadic = scope.is_variadic
     args = ctx.argv()
-    rest = code.params_rest()
-    nlen = len(names)
-    alen = len(args)
-    if alen < nlen:
-        raise RuntimeError("Wrong argument count in function call %d < %d %s" % (alen, nlen, str(names)))
+    args_count = len(args)
 
-    for i in range(nlen):
+    if args_count < declared_args_count:
+        raise RuntimeError("Wrong argument count in function call %d < %d %s" % (args_count, declared_args_count,
+                                                                                 str(scope.variables.keys())))
+    if not is_variadic:
+        actual_args_count = declared_args_count
+        if args_count != actual_args_count:
+            raise RuntimeError("Wrong argument count in function call %s %s" %
+                               (str(scope.variables.keys()), str(args)))
+    else:
+        varargs_index = declared_args_count - 1
+        actual_args_count = varargs_index
+
+        rest_items = []
+        if args_count != actual_args_count:
+            rest_items = []
+            for i in range(actual_args_count, args_count):
+                rest_items.append(args[i])
+
+        env.set_by_index(varargs_index, newvector(rest_items))
+
+    for i in xrange(actual_args_count):
         v = args[i]
-        n = names[i]
-        env.set_binding(n, v)
+        env.set_by_index(i, v)
 
-    if not rest:
-        if alen > nlen:
-            raise RuntimeError("Wrong argument count in function call %s %s" % (str(names), str(args)))
+    fn_index = scope.fn_name_index
+    if fn_index == -1:
         return
 
-    rest_items = []
-    if alen > nlen:
-        rest_items = []
-        for i in range(nlen, alen):
-            rest_items.append(args[i])
-
-    env.set_binding(rest, newvector(rest_items))
+    env.set_by_index(fn_index, func)
 
 
-def create_object_context(routine, obj):
+def create_object_context(routine, obj, _globals):
     from obin.runtime.environment import newobjectenv
-    ctx = Context(routine.estimated_stack_size(), routine.estimated_refs_count(), routine, newobjectenv(obj, None), None)
+    if _globals is not None:
+        _globals = newobjectenv(_globals, None)
+
+    from obin.runtime.environment import newobjectenv
+    ctx = Context(routine.estimated_stack_size(), routine.estimated_refs_count(), routine, newobjectenv(obj, _globals), None)
     return ctx
 
 
 def create_eval_context(routine):
     from obin.runtime.environment import newobjectenv
-    obj = routine.code().scope.create_object()
+    obj = routine.bytecode().scope.create_object()
     ctx = Context(routine.estimated_stack_size(), routine.estimated_refs_count(), routine, newobjectenv(obj, None), None)
     return ctx
 
 
-def create_function_context(routine, args, scope):
+def create_function_context(func, routine, args, scope):
     from obin.runtime.environment import newobjectenv
-    obj = routine.code().scope.create_object()
+    obj = routine.bytecode().scope.create_object()
 
     stack_size = routine.estimated_stack_size()
     refs_size = routine.estimated_refs_count()
     ctx = Context(stack_size, refs_size, routine, newobjectenv(obj, scope), args)
-    initialize_environment(ctx)
+    initialize_environment(func, ctx)
     return ctx
 
 

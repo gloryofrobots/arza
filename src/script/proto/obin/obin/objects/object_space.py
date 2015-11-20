@@ -202,8 +202,6 @@ def isnull_or_undefined(obj):
     return False
 
 
-
-
 class ObjectSpace(object):
     class Traits(object):
         def __init__(self):
@@ -228,9 +226,6 @@ class ObjectSpace(object):
             self.Tuple = None
 
     def __init__(self):
-        self.global_context = None
-        self.global_object = None
-
         self.traits = ObjectSpace.Traits()
         self.init_traits()
         self.interpreter = None

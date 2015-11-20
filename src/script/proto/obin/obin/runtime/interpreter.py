@@ -16,20 +16,17 @@ class Interpreter(object):
     def __init__(self, config={}):
         from obin.objects.object_space import object_space, newobject
         import obin.builtins.interpreter_builtins
-        from obin.objects.datastructs import Slots
 
         self.process = Process()
 
         self.primitives = {}
         self.config = InterpreterConfig(config)
-        self.global_object = newobject()
+        self.builtins = newobject()
         self.modules = []
 
-        object_space.global_object = self.global_object
         object_space.interpreter = self
 
-        obin.builtins.setup_builtins(self.global_object)
-        # obin.builtins.interpreter.setup_builtins(self.global_object)
+        obin.builtins.setup_builtins(self.builtins)
 
     def add_primitive(self, primitive_id, func):
         self.primitives[primitive_id] = func
@@ -44,6 +41,6 @@ class Interpreter(object):
         return self.run_module(module)
 
     def run_module(self, module):
-        result = self.process.run_with_module(module)
+        result = self.process.run_with_module(module, self.builtins)
         print result
         return result

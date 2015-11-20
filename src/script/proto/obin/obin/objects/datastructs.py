@@ -85,9 +85,6 @@ class Slots(object):
     def keys(self):
         return self._property_map_.keys()
 
-    def get_by_index(self, index):
-        return self._property_slots_[index]
-
     def get(self, name):
         idx = self.get_index(name)
         if idx is None:

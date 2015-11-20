@@ -238,8 +238,8 @@ class BytecodeRoutine(Routine):
         self._name_ = name
 
         scope = code.scope
-        self._refs_size_ = scope.count_refs()
-        self._env_size_ = scope.count_vars()
+        self._refs_size_ = scope.count_refs
+        self._env_size_ = scope.count_vars
         self._stack_size_ = code.estimated_stack_size()
         self.pc = 0
         self.result = None
@@ -251,9 +251,6 @@ class BytecodeRoutine(Routine):
         assert self.ctx
         if self.stack_start_index() is not None:
             self.ctx.set_stack_pointer(self.stack_start_index())
-
-    def code(self):
-        return self._code_
 
     def _execute(self):
         while True:
@@ -267,7 +264,7 @@ class BytecodeRoutine(Routine):
         debug = object_space.interpreter.config.debug
         from obin.runtime.opcodes import BaseJump
 
-        opcode = self.code().get_opcode(self.pc)
+        opcode = self.bytecode().get_opcode(self.pc)
 
         debug = True
 

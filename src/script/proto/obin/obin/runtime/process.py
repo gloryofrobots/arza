@@ -177,8 +177,8 @@ class Process(object):
         # continuation in signal handler must exists at this moment
         self.__call_routine(routine, None, None)
 
-    def run_with_module(self, module):
-        routine = module.compile()
+    def run_with_module(self, module, _globals):
+        routine = module.compile(_globals)
         self.call_routine(routine, None, None)
         self.run()
         module.set_result(self.result)

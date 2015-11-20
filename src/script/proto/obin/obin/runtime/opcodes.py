@@ -2,7 +2,7 @@ from rpython.rlib.rarithmetic import intmask
 from rpython.rlib import jit
 
 from obin.objects.object_space import _w, isint
-from obin.runtime.exception import ObinTypeError
+from obin.runtime.exception import ObinTypeError, ObinReferenceError
 from obin.runtime.baseop import plus, sub, increment, decrement, mult, division, uminus, mod
 from obin.objects.object import api
 from obin.utils import tb
@@ -151,6 +151,9 @@ class LOAD_LOCAL(Opcode):
     def eval(self, ctx):
         # TODO put ref onto stack
         value = ctx.get_local(self.index)
+        if value is None:
+            raise ObinReferenceError(self.identifier)
+
         ctx.stack_append(value)
 
     def __str__(self):

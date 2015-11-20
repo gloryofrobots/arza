@@ -4,15 +4,17 @@ from obin.objects.datastructs import Slots
 class Scope(object):
     def __init__(self):
         self.locals = Slots()
+
         self.arg_count = -1
         self.fn_name_index = -1
         self.outers = []
-        
+
+        self.arguments = []
         self.references = []
-        self.is_varargs = False
+        self.is_variadic = False
 
     def is_function_scope(self):
-        return self.arg_count == -1
+        return self.arg_count != -1
 
     def check_arg_count(self):
         assert self.arg_count != -1
@@ -24,14 +26,16 @@ class Scope(object):
     def add_arguments(self, args, is_varargs):
         if args is None:
             self.arg_count = 0
-            self.is_varargs = False
+            self.is_variadic = False
             return
 
+        assert isinstance(args, list)
+        self.arg_count = len(args)
+        self.arguments = args
         for arg in args:
             self.add_local(arg)
 
-        self.is_varargs = is_varargs
-        self.arg_count = len(args)
+        self.is_variadic = is_varargs
 
     def add_local(self, local):
         assert isstring(local)
@@ -65,22 +69,25 @@ class Scope(object):
         return len(self.references) - 1
 
     def finalize(self):
-        return FinalScope(self.locals, self.references,  self.arg_count, self.is_varargs, self.fn_name_index)
+        return FinalScope(self.locals, self.arguments, self.references,  self.arg_count, self.is_variadic, self.fn_name_index)
 
 
 class FinalScope(object):
     _immutable_fields_ = ['vars', 'arg_count', 'fn_name_index',
                           'references[*]', 'is_varargs', 'count_refs', 'count_vars']
 
-    def __init__(self, variables, references, arg_count, is_varargs, fn_name_index):
+    def __init__(self, variables, arguments, references, arg_count, is_varargs, fn_name_index):
         self.variables = variables
-        self.arg_count = arg_count
+        self.count_args = arg_count
         self.fn_name_index = fn_name_index
         self.references = references
-        self.is_varargs = is_varargs
+        self.is_variadic = is_varargs
         self.count_refs = len(self.references)
         self.count_vars = self.variables.length()
+        self.arguments = arguments
 
     def create_object(self):
-        from object_space import newplainobject_with_slots
-        return newplainobject_with_slots(self.variables.clone())
+        from obin.objects.object_space import newplainobject_with_slots
+        from copy import copy
+        return newplainobject_with_slots(copy(self.variables))
+

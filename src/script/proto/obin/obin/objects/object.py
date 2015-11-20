@@ -551,13 +551,13 @@ class W_Module(W_Root):
     def set_result(self, r):
         self._result_ = r
 
-    def code(self):
+    def bytecode(self):
         return self._bytecode_
 
     def scope(self):
         return self._object_
 
-    def compile(self):
+    def compile(self, _globals):
         assert not self._is_compiled_
         from obin.runtime.routine import create_bytecode_routine
         from obin.runtime.context import create_object_context
@@ -568,7 +568,7 @@ class W_Module(W_Root):
         for i, c in enumerate([str(c) for c in self._bytecode_.compiled_opcodes]): print i,c
         print "*********"
 
-        create_object_context(routine, self._object_)
+        create_object_context(routine, self._object_, _globals)
         self._is_compiled_ = True
         return routine
 
@@ -581,12 +581,9 @@ class W_Function(W_Root):
         super(W_Function, self).__init__()
         self._name_ = name
         self._bytecode_ = bytecode
-        self._arity_ = len(bytecode.params())
-        if bytecode.params_rest() is not None:
-            self._variadic_ = True
-        else:
-            self._variadic_ = False
-
+        scope_info = bytecode.scope
+        self._arity_ = scope_info.count_args
+        self._variadic_ = scope_info.is_variadic
         self._scope_ = scope
 
     def arity(self):
@@ -596,7 +593,7 @@ class W_Function(W_Root):
         return self._variadic_
 
     def _tostring_(self):
-        params = ",".join([str(p.value()) for p in self._bytecode_.params()])
+        params = ",".join([str(p.value()) for p in self._bytecode_.scope.arguments])
 
         return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
 
@@ -619,7 +616,8 @@ class W_Function(W_Root):
         jit.promote(routine)
         scope = self.scope()
 
-        create_function_context(routine,
+        create_function_context(self,
+                                routine,
                                 args,
                                 scope)
         return routine

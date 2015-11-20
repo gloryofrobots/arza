@@ -44,7 +44,7 @@ class Environment(object):
         self.binding.put_by_index(idx, v)
 
     def get_by_index(self, idx):
-        self.binding.get_by_index(idx)
+        return self.binding.get_by_index(idx)
 
     def has_binding(self, n):
         assert isstring(n)

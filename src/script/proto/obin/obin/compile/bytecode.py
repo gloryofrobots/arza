@@ -139,7 +139,7 @@ class ByteCode(object):
 
     def compile(self):
         assert not self.compiled_opcodes
-        assert self._scope_info
+        assert self.scope
         self.emit("RETURN")
         self.unlabel()
         self.compiled_opcodes = [o for o in self.opcodes]

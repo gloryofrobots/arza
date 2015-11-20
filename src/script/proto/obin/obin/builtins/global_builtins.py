@@ -77,7 +77,6 @@ def setup(obj):
         api.put_native_function(obj, u'pypy_repr', pypy_repr)
         api.put_native_function(obj, u'inspect', inspect)
 
-    # global_object.freeze()
 
 
 # 15.1.2.4

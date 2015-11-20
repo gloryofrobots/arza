@@ -125,6 +125,7 @@ class Compiler(object):
         from bytecode import ByteCode
         code = ByteCode()
         self.enter_scope()
+        self.declare_arguments(None, False)
         self._compile(code, ast)
         scope = self.current_scope()
         final_scope = scope.finalize()
@@ -505,7 +506,7 @@ class Compiler(object):
         current_scope = self.current_scope()
         scope = current_scope.finalize()
         self.exit_scope()
-        print str(scope.locals.keys())
+        print str(scope.variables.keys())
         print str(scope.references)
         funccode.finalize_compilation(scope)
         print [str(c) for c in funccode.opcodes]
