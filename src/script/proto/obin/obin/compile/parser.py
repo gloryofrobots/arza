@@ -792,6 +792,7 @@ def parser_init(parser):
     def _parse_fn(parser):
         args = []
         body = []
+        outers = []
         if parser.token_type == T.TT_NAME:
             name = parser.node
             advance(parser)
@@ -820,31 +821,48 @@ def parser_init(parser):
             advance_expected(parser, T.TT_RPAREN)
 
         advance_expected(parser, T.TT_LCURLY)
+        if parser.token_type == T.TT_OUTER:
+            advance_expected(parser, T.TT_OUTER)
+            while True:
+                if parser.token_type == T.TT_NAME:
+                    outers.append(parser.node)
+                    advance(parser)
+
+                if parser.token_type != T.TT_COMMA:
+                    break
+
+                advance_expected(parser, T.TT_COMMA)
+
+            if len(outers) == 0:
+                parse_error(parser, "Outer variables not declared")
+
         body = statements(parser)
         if not body:
             body = empty_node()
         advance_expected(parser, T.TT_RCURLY)
-        return name, args, body
+        return name, args, outers, body
 
     def _prefix_fn(parser, node):
-        node.init(2)
-        name, args, body = _parse_fn(parser)
+        node.init(3)
+        name, args, outers, body = _parse_fn(parser)
         if not is_empty_node(name):
             parse_error(parser, "In expressions functions could not have names", node=node)
         node.setfirst(args)
-        node.setsecond(body)
+        node.setsecond(outers)
+        node.setthird(body)
         return node
 
     prefix(parser, T.TT_FN, _prefix_fn)
 
     def _stmt_fn(parser, node):
-        node.init(3)
-        name, args, body = _parse_fn(parser)
+        node.init(4)
+        name, args, outers, body = _parse_fn(parser)
         if is_empty_node(name):
             parse_error(parser, "Function statement must be declared with name", node=node)
         node.setfirst(name)
         node.setsecond(args)
-        node.setthird(body)
+        node.setthird(outers)
+        node.setfourth(body)
         return node
 
     stmt(parser, T.TT_FN, _stmt_fn)
@@ -950,11 +968,6 @@ def parser_init(parser):
 
     stmt(parser, T.TT_OBJECT, _stmt_object)
 
-    def _stmt_single_one_arg(parser, node):
-        node.init(1)
-        node.setfirst(expression(parser, 0))
-        endofexpression(parser)
-        return node
 
     def _stmt_single(parser, node):
         node.init(1)
@@ -967,7 +980,11 @@ def parser_init(parser):
 
     stmt(parser, T.TT_RETURN, _stmt_single)
     stmt(parser, T.TT_RAISE, _stmt_single)
-    stmt(parser, T.TT_OUTER, _stmt_single_one_arg)
+
+    def _stmt_outer(parser, node):
+        parse_error(parser, "Outer variables can be declared only in first function statement")
+
+    stmt(parser, T.TT_OUTER, _stmt_outer)
 
     # stmt(parser, T.TT_SEMI, empty)
 

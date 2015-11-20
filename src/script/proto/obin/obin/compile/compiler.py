@@ -22,9 +22,6 @@ def string_unquote(string):
 
     return s
 
-def is_empty_node(self, l):
-    return isinstance(l, list) and len(l) == 0
-
 class Compiler(object):
     def __init__(self):
         self.funclists = []
@@ -471,12 +468,11 @@ class Compiler(object):
         code.emit('LOAD_UNDEFINED')
         code.emit_continue()
 
-
-    def _compile_fn_args_and_body(self, code, funcname, params, body):
+    def _compile_fn_args_and_body(self, code, funcname, params, outers, body):
         from bytecode import ByteCode
         self.enter_scope()
 
-        if params:
+        if not is_empty_node(params):
             args = []
             for param in params[:-1]:
                 args.append(newstring(param.value))
@@ -495,6 +491,10 @@ class Compiler(object):
 
         self.declare_arguments(args, varargs)
 
+        if not is_empty_node(outers):
+            for outer in outers:
+                self.declare_outer(newstring(outer.value))
+
         if not funcname.isempty():
             self.declare_function_name(funcname)
 
@@ -506,8 +506,8 @@ class Compiler(object):
         current_scope = self.current_scope()
         scope = current_scope.finalize()
         self.exit_scope()
-        print str(scope.variables.keys())
-        print str(scope.references)
+        print "LOCALS:", str(scope.variables.keys())
+        print "REFS:", str(scope.references)
         funccode.finalize_compilation(scope)
         print [str(c) for c in funccode.opcodes]
         print "-------------------------"
@@ -518,14 +518,15 @@ class Compiler(object):
     def _compile_FN_EXPRESSION(self, code, node):
         name = newstring(u'')
         params = node.first()
-        body = node.second()
-        self._compile_fn_args_and_body(code, name, params, body)
+        outers = node.second()
+        body = node.third()
+        self._compile_fn_args_and_body(code, name, params, outers, body)
 
     def _compile_FN(self, code, node):
         """
         compiles function statements
         """
-        if node.arity == 2:
+        if node.arity == 3:
             return self._compile_FN_EXPRESSION(code, node)
 
         name = node.first()
@@ -533,8 +534,9 @@ class Compiler(object):
 
         index = self.declare_local(funcname)
         params = node.second()
-        body = node.third()
-        self._compile_fn_args_and_body(code, funcname, params, body)
+        outers = node.third()
+        body = node.fourth()
+        self._compile_fn_args_and_body(code, funcname, params, outers, body)
 
         code.emit('STORE_LOCAL', index, funcname)
         # code.emit('POP')

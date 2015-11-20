@@ -24,12 +24,22 @@ fib(25)
 
 fn f() {
     x = 1
+    y = 2
+    z = 3
     fn f2() {
-        x = 1
-        outer x
-        x = 2
+        outer x, y
+
+        fn f3() {
+            outer x, z
+            x = 4
+            z = 6
+        }
+        y = 5
+        x = 6
+        f3()
+
     }
     f2()
-    x
+    [x, y, z]
 }
 f()
