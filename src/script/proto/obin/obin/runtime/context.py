@@ -148,31 +148,34 @@ def initialize_environment(ctx):
     env.set_binding(rest, newvector(rest_items))
 
 
-def create_object_context(routine, obj, count_refs):
+def create_object_context(routine, obj):
     from obin.runtime.environment import newobjectenv
-    ctx = Context(routine.estimated_stack_size(), count_refs, routine, newobjectenv(obj, None), None)
+    ctx = Context(routine.estimated_stack_size(), routine.estimated_refs_count(), routine, newobjectenv(obj, None), None)
     return ctx
 
 
 def create_eval_context(routine):
-    from obin.runtime.environment import newenv
-    ctx = Context(routine.estimated_stack_size(), 0, routine, newenv(None, 0), None)
+    from obin.runtime.environment import newobjectenv
+    obj = routine.code().scope.create_object()
+    ctx = Context(routine.estimated_stack_size(), routine.estimated_refs_count(), routine, newobjectenv(obj, None), None)
     return ctx
 
 
 def create_function_context(routine, args, scope):
-    from obin.runtime.environment import newenv
+    from obin.runtime.environment import newobjectenv
+    obj = routine.code().scope.create_object()
+
     stack_size = routine.estimated_stack_size()
-    env_size = routine.env_size()
-    ctx = Context(stack_size, env_size, routine, newenv(scope, env_size), args)
+    refs_size = routine.estimated_refs_count()
+    ctx = Context(stack_size, refs_size, routine, newobjectenv(obj, scope), args)
     initialize_environment(ctx)
     return ctx
 
 
 def create_primitive_context(routine, args):
     stack_size = routine.estimated_stack_size()
-    env_size = routine.env_size()
-    ctx = Context(stack_size, env_size, routine, None, args)
+    refs_size = routine.estimated_refs_count()
+    ctx = Context(stack_size, refs_size, routine, None, args)
     return ctx
 
 
@@ -186,7 +189,7 @@ class BlockContext(Context):
 
         parent_env = parent_context.env()
 
-        env_size = code.env_size()
+        env_size = code.estimated_env_size()
         local_env = newenv(parent_env, env_size)
 
         self.set_env(local_env)
@@ -199,7 +202,7 @@ class CatchContext(Context):
         stack_size = code.estimated_stack_size()
         Context.__init__(self, stack_size)
 
-        env_size = code.env_size()
+        env_size = code.estimated_env_size()
         self._routine_ = code
         self._parent_context_ = parent_context
 

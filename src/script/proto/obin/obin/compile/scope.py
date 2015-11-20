@@ -69,7 +69,8 @@ class Scope(object):
 
 
 class FinalScope(object):
-    _immutable_fields_ = ['vars', 'arg_count', 'fn_name_index', 'references[*]', 'is_varargs']
+    _immutable_fields_ = ['vars', 'arg_count', 'fn_name_index',
+                          'references[*]', 'is_varargs', 'count_refs', 'count_vars']
 
     def __init__(self, variables, references, arg_count, is_varargs, fn_name_index):
         self.variables = variables
@@ -77,9 +78,9 @@ class FinalScope(object):
         self.fn_name_index = fn_name_index
         self.references = references
         self.is_varargs = is_varargs
+        self.count_refs = len(self.references)
+        self.count_vars = self.variables.length()
 
-    def count_vars(self):
-        return self.variables.length()
-
-    def count_refs(self):
-        return len(self.references)
+    def create_object(self):
+        from object_space import newplainobject_with_slots
+        return newplainobject_with_slots(self.variables.clone())

@@ -167,9 +167,11 @@ class Routine(object):
     def estimated_stack_size(self):
         raise NotImplementedError()
 
-    def env_size(self):
+    def estimated_env_size(self):
         raise NotImplementedError()
 
+    def estimated_refs_count(self):
+        raise NotImplementedError()
 
 class NativeRoutine(Routine):
     _immutable_fields_ = ['_name_', '_function_']
@@ -215,7 +217,10 @@ class NativeRoutine(Routine):
     def estimated_stack_size(self):
         return 2
 
-    def env_size(self):
+    def estimated_env_size(self):
+        return 0
+
+    def estimated_refs_count(self):
         return 0
 
 
@@ -232,8 +237,10 @@ class BytecodeRoutine(Routine):
 
         self._name_ = name
 
+        scope = code.scope
+        self._refs_size_ = scope.count_refs()
+        self._env_size_ = scope.count_vars()
         self._stack_size_ = code.estimated_stack_size()
-        self._symbol_size_ = code.symbol_size()
         self.pc = 0
         self.result = None
 
@@ -291,8 +298,11 @@ class BytecodeRoutine(Routine):
     def estimated_stack_size(self):
         return self._stack_size_
 
-    def env_size(self):
-        return self._symbol_size_
+    def estimated_env_size(self):
+        return self._env_size_
+
+    def estimated_refs_count(self):
+        return self._refs_size_
 
     def bytecode(self):
         return self._code_

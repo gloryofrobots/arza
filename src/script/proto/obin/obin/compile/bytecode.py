@@ -8,7 +8,7 @@ from obin.objects.object import W_String
 
 
 class ByteCode(object):
-    _immutable_fields_ = ['compiled_opcodes[*]', '_scope_info']
+    _immutable_fields_ = ['compiled_opcodes[*]', 'scope']
 
     """ That object stands for code of a single javascript function
     """
@@ -21,18 +21,15 @@ class ByteCode(object):
         self.pop_after_break = []
         self.updatelooplabel = []
         self._estimated_stack_size = -1
-        self._scope_info = None
+        self.scope = None
         self._function_name_ = None
         self.compiled_opcodes = None
         # VALUE FOR AUTOMATIC RETURN
         self.emit("LOAD_UNDEFINED")
 
     def finalize_compilation(self, scope_info):
-        self._scope_info = scope_info
+        self.scope = scope_info
         self.compile()
-
-    def scope_info(self):
-        return self._scope_info
 
     @jit.elidable
     def estimated_stack_size(self):
@@ -46,9 +43,6 @@ class ByteCode(object):
             self._estimated_stack_size = max_size
 
         return jit.promote(self._estimated_stack_size)
-
-    def symbol_size(self):
-        return self._scope_info.len()
 
     def emit_label(self, num=-1):
         if num == -1:

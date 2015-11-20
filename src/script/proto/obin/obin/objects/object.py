@@ -543,10 +543,7 @@ class W_Module(W_Root):
         self.init_scope()
 
     def init_scope(self):
-        from object_space import newplainobject_with_slots
-        scope = self._bytecode_.scope_info()
-        vars = scope.variables.clone()
-        self._object_ = newplainobject_with_slots(vars)
+        self._object_ = self._bytecode_.scope.create_object()
 
     def result(self):
         return self._result_
@@ -571,8 +568,7 @@ class W_Module(W_Root):
         for i, c in enumerate([str(c) for c in self._bytecode_.compiled_opcodes]): print i,c
         print "*********"
 
-        refs_size = self._bytecode_.scope_info().count_refs()
-        create_object_context(routine, self._object_, refs_size)
+        create_object_context(routine, self._object_)
         self._is_compiled_ = True
         return routine
 
