@@ -632,7 +632,7 @@ def parser_init(parser):
     """
     def _infix_lparen(parser, node, left):
         items = []
-        if left.type == T.TT_DOT or left.type == T.TT_LSQUARE:
+        if left.type == T.TT_DOT:
             node.init(3)
             node.setfirst(left.first())
             node.setsecond(left.second())
