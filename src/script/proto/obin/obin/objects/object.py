@@ -373,6 +373,9 @@ class W_Vector(W_Cell):
     def prepend(self, v):
         self._items.insert(0, v)
 
+    def set(self, index, v):
+        self._items[index] = v
+
     def insert(self, index, v):
         self._items.insert(index, v)
 
@@ -385,15 +388,20 @@ class W_Vector(W_Cell):
     def pop(self):
         return self._items.pop()
 
+    def fold_slice_into_itself(self, index):
+        rest = W_Vector(self._items[index:])
+        self._items = self._items[0:index]
+        self._items.append(rest)
+
 class W_Object(W_Cell):
     _type_ = 'Object'
     _immutable_fields_ = ['_type_']
 
     def __init__(self, slots):
         super(W_Object, self).__init__()
-        from obin.objects.datastructs import Slots
+        from obin.objects.slots import newslots_empty
         if not slots:
-            slots = Slots()
+            slots = newslots_empty()
         self.__slots = slots
         self.__traits = None
 

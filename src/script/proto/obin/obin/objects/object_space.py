@@ -100,8 +100,8 @@ def newsimpleobject():
 
 def newplainobject_with_size(size):
     from obin.objects.object import W_Object
-    from obin.objects.datastructs import Slots
-    slots = Slots(size)
+    from obin.objects.slots import newslots_with_size
+    slots = newslots_with_size(size)
     obj = W_Object(slots)
     return obj
 

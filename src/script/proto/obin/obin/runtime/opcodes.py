@@ -666,42 +666,6 @@ class POP(Opcode):
     def eval(self, ctx):
         ctx.stack_pop()
 
-
-def common_call(ctx, funcobj, args):
-    from obin.objects.object_space import isvector, isfunction
-    assert isvector(args)
-
-    argv = args.values()
-    api.call(funcobj, ctx, argv)
-
-
-def load_arguments(ctx, counter):
-    from obin.objects.object_space import newvector, isvector
-
-    if counter == 0:
-        return newvector([])
-    if counter == 1:
-        args = ctx.stack_pop()
-        assert isvector(args)
-        return args
-
-    lists = ctx.stack_pop_n(counter)  # [:] # pop_n returns a non-resizable list
-    values = []
-    for l in lists:
-        values += l.values()
-
-    return newvector(values)
-
-
-# class UNPACK(Opcode):
-#     _stack_change = 0
-#
-#     def eval(self, ctx):
-#         from obin.objects.object import W_List, W_Array
-#         arr = ctx.stack_pop()
-#         assert isinstance(arr, W_Array)
-#         ctx.stack_append(W_List(arr.values()))
-
 class LOAD_LIST(Opcode):
     _immutable_fields_ = ['counter']
 
@@ -720,6 +684,28 @@ class LOAD_LIST(Opcode):
     def __str__(self):
         return u'LOAD_LIST %d' % (self.counter,)
 
+
+def load_arguments(ctx, counter):
+    from obin.objects.object_space import newvector, isvector
+
+    if counter == 0:
+        return newvector([])
+    # if counter == 1:
+    #     args = ctx.stack_pop()
+    #     # assert isvector(args)
+    #     return args
+
+    vectors = ctx.stack_pop_n(counter)  # [:] # pop_n returns a non-resizable list
+    # vectors2 = []
+    # ctx.stack_pop_n_into(counter, vectors2)  # [:] # pop_n returns a non-resizable list
+
+    first = vectors[0]
+    for i in xrange(1, len(vectors)):
+        first.push_from(vectors[i])
+
+    return first
+
+
 class CALL(Opcode):
     def __init__(self, counter):
         self.counter = counter
@@ -728,10 +714,10 @@ class CALL(Opcode):
         return -1 * self.counter + 1
 
     def eval(self, ctx):
-        r1 = ctx.stack_pop()
-        args = load_arguments(ctx, self.counter)
+        func = ctx.stack_pop()
+        argv = load_arguments(ctx, self.counter)
 
-        common_call(ctx, r1, args)
+        api.call(func, ctx, argv)
 
     def __str__(self):
         return "CALL (%d)" % self.counter
@@ -751,12 +737,12 @@ class CALL_METHOD(Opcode):
     def eval(self, ctx):
         method = ctx.stack_pop()
         what = ctx.stack_pop()
-        args = load_arguments(ctx, self.counter)
+        argv = load_arguments(ctx, self.counter)
 
-        name = method
-        r1 = api.lookup(what, name)
-        args.prepend(what)
-        common_call(ctx, r1, args)
+        func = api.lookup(what, method)
+        argv.prepend(what)
+
+        api.call(func, ctx, argv)
 
     def __str__(self):
         return "CALL_METHOD (%d)" % self.counter

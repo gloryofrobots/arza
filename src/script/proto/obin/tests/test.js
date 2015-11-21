@@ -1,4 +1,12 @@
 
+fn fv(x, y, z, ...r) {
+    print(x, y, z, r)
+    r
+}
+
+print(fv(1,2,3,4,5,6,7,8,9))
+
+
 fn f(x, y) {
     fn f2(z) {
         fn f3(w) {

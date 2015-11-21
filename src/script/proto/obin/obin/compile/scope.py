@@ -1,9 +1,9 @@
 from obin.objects.object_space import isstring
-from obin.objects.datastructs import Slots
+from obin.objects.slots import newslots_empty, newslots_with_values_from_slots
 
 class Scope(object):
     def __init__(self):
-        self.locals = Slots()
+        self.locals = newslots_empty()
 
         self.arg_count = -1
         self.fn_name_index = -1
@@ -87,7 +87,9 @@ class FinalScope(object):
         self.arguments = arguments
 
     def create_object(self):
-        from obin.objects.object_space import newplainobject_with_slots
         from copy import copy
+        from obin.objects.object_space import newplainobject_with_slots
         return newplainobject_with_slots(copy(self.variables))
 
+    def create_environment_slots(self, arguments):
+        return newslots_with_values_from_slots(arguments, self.variables)

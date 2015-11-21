@@ -1,4 +1,4 @@
-from obin.objects.datastructs import Stack
+from obin.objects.stack import Stack
 from obin.runtime.environment import newenv
 from rpython.rlib import jit
 from obin.runtime.exception import ObinReferenceError
@@ -22,7 +22,10 @@ class Context(object):
         self._env_ = env
         self._refs_ = [None] * refs_size
         self._resizable_ = not bool(refs_size)
-        self._args_ = args
+        if args is not None:
+            self._args_ = args.values()
+        else:
+            self._args_ = None
 
     def routine(self):
         return self._routine_
@@ -51,6 +54,10 @@ class Context(object):
     @jit.unroll_safe
     def stack_pop_n(self, n):
         return self._stack_.pop_n(n)
+
+    @jit.unroll_safe
+    def stack_pop_n_into(self, n, arr):
+        return self._stack_.pop_n_into(n, arr)
 
     def stack_pointer(self):
         return self._stack_.pointer()
@@ -114,21 +121,19 @@ class Context(object):
 
         return ref
 
-@jit.unroll_safe
-def initialize_environment(func, ctx):
-    env = ctx.env()
-    routine = jit.promote(ctx.routine())
-    code = routine.bytecode()
-
+def create_environment(func, routine, args, outer_env):
+    from obin.runtime.environment import newobjectenv
+    from obin.objects.object_space import newvector
     from obin.runtime.routine import BytecodeRoutine
+    from obin.objects.object_space import newplainobject_with_slots
+
     assert isinstance(routine, BytecodeRoutine)
 
-    from obin.objects.object_space import newvector
+    code = routine.bytecode()
     scope = code.scope
     declared_args_count = scope.count_args
     is_variadic = scope.is_variadic
-    args = ctx.argv()
-    args_count = len(args)
+    args_count = args.length()
 
     if args_count < declared_args_count:
         raise RuntimeError("Wrong argument count in function call %d < %d %s" % (args_count, declared_args_count,
@@ -142,23 +147,18 @@ def initialize_environment(func, ctx):
         varargs_index = declared_args_count - 1
         actual_args_count = varargs_index
 
-        rest_items = []
         if args_count != actual_args_count:
-            rest_items = []
-            for i in range(actual_args_count, args_count):
-                rest_items.append(args[i])
-
-        env.set_by_index(varargs_index, newvector(rest_items))
-
-    for i in xrange(actual_args_count):
-        v = args[i]
-        env.set_by_index(i, v)
+            args.fold_slice_into_itself(actual_args_count)
 
     fn_index = scope.fn_name_index
     if fn_index == -1:
         return
 
+    slots = scope.create_environment_slots(args.values())
+    env = newobjectenv(newplainobject_with_slots(slots), outer_env)
+
     env.set_by_index(fn_index, func)
+    return env
 
 
 def create_object_context(routine, obj, _globals):
@@ -171,21 +171,13 @@ def create_object_context(routine, obj, _globals):
     return ctx
 
 
-def create_eval_context(routine):
-    from obin.runtime.environment import newobjectenv
-    obj = routine.bytecode().scope.create_object()
-    ctx = Context(routine.estimated_stack_size(), routine.estimated_refs_count(), routine, newobjectenv(obj, None), None)
-    return ctx
-
-
 def create_function_context(func, routine, args, scope):
-    from obin.runtime.environment import newobjectenv
-    obj = routine.bytecode().scope.create_object()
-
+    routine = jit.promote(routine)
     stack_size = routine.estimated_stack_size()
     refs_size = routine.estimated_refs_count()
-    ctx = Context(stack_size, refs_size, routine, newobjectenv(obj, scope), args)
-    initialize_environment(func, ctx)
+
+    env = create_environment(func, routine, args, scope)
+    ctx = Context(stack_size, refs_size, routine, env, args)
     return ctx
 
 
@@ -193,6 +185,14 @@ def create_primitive_context(routine, args):
     stack_size = routine.estimated_stack_size()
     refs_size = routine.estimated_refs_count()
     ctx = Context(stack_size, refs_size, routine, None, args)
+    return ctx
+
+
+def create_eval_context(routine):
+    from obin.runtime.environment import newobjectenv
+    obj = routine.bytecode().scope.create_object()
+    ctx = Context(routine.estimated_stack_size(), routine.estimated_refs_count(),
+                  routine, newobjectenv(obj, None), None)
     return ctx
 
 
@@ -231,3 +231,48 @@ class CatchContext(Context):
         self.set_env(local_env)
 
         self.declaration_binding_initialization()
+# @jit.unroll_safe
+# def initialize_environment(func, ctx):
+#     env = ctx.env()
+#     routine = jit.promote(ctx.routine())
+#     code = routine.bytecode()
+#
+#     from obin.runtime.routine import BytecodeRoutine
+#     assert isinstance(routine, BytecodeRoutine)
+#
+#     from obin.objects.object_space import newvector
+#     scope = code.scope
+#     declared_args_count = scope.count_args
+#     is_variadic = scope.is_variadic
+#     args = ctx.argv()
+#     args_count = len(args)
+#
+#     if args_count < declared_args_count:
+#         raise RuntimeError("Wrong argument count in function call %d < %d %s" % (args_count, declared_args_count,
+#                                                                                  str(scope.variables.keys())))
+#     if not is_variadic:
+#         actual_args_count = declared_args_count
+#         if args_count != actual_args_count:
+#             raise RuntimeError("Wrong argument count in function call %s %s" %
+#                                (str(scope.variables.keys()), str(args)))
+#     else:
+#         varargs_index = declared_args_count - 1
+#         actual_args_count = varargs_index
+#
+#         rest_items = []
+#         if args_count != actual_args_count:
+#             rest_items = []
+#             for i in range(actual_args_count, args_count):
+#                 rest_items.append(args[i])
+#
+#         env.set_by_index(varargs_index, newvector(rest_items))
+#
+#     for i in xrange(actual_args_count):
+#         v = args[i]
+#         env.set_by_index(i, v)
+#
+#     fn_index = scope.fn_name_index
+#     if fn_index == -1:
+#         return
+#
+#     env.set_by_index(fn_index, func)

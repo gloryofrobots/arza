@@ -1,4 +1,15 @@
 __author__ = 'gloryofrobots'
+# @jit.elidable
+# def sign(i):
+#     if i > 0:
+#         return 1
+#     if i < 0:
+#         return -1
+#     return 0
+
+# MASK_32 = (2 ** 32) - 1
+# MASK_16 = (2 ** 16) - 1
+#
 # @enforceargs(int)
 # @jit.elidable
 # def int32(n):
@@ -20,7 +31,7 @@ __author__ = 'gloryofrobots'
 # @jit.elidable
 # def uint16(n):
 #     return n & MASK_16
-#
+
 #
 # class W_FloatNumberOld(W_Number):
 #     _immutable_fields_ = ['_floatval_']
