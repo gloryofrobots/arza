@@ -88,9 +88,9 @@ def newfunc(name, bytecode, scope):
     obj = W_Function(name, bytecode, scope)
     return obj
 
-def newprimitive(name, function):
+def newprimitive(name, function, arity):
     from obin.objects.object import W_Primitive
-    obj = W_Primitive(name, function)
+    obj = W_Primitive(name, function, arity)
     return obj
 
 def newsimpleobject():

@@ -2,8 +2,8 @@ from obin.objects.object_space import _w
 
 
 def complete_native_routine(func):
-    def func_wrapper(ctx, routine):
-        result = func(ctx, routine)
+    def func_wrapper(routine):
+        result = func(routine)
         routine.complete(_w(result))
 
     return func_wrapper
@@ -176,12 +176,15 @@ class Routine(object):
 class NativeRoutine(Routine):
     _immutable_fields_ = ['_name_', '_function_']
 
-    def __init__(self, name, function):
+    def __init__(self, name, function, args, arity):
         super(NativeRoutine, self).__init__()
         from obin.objects.object_space import isstring
         assert isstring(name)
         self._name_ = name
         self._function_ = function
+        self.arity = arity
+        self.count_args = args.length()
+        self._args = args
 
     # redefine resume because we can call bytecode routine from native and after it resumes as we must complete
     resume = Routine.complete
@@ -189,23 +192,23 @@ class NativeRoutine(Routine):
     def name(self):
         return self._name_.value()
 
-    def args(self):
-        args = self.ctx.argv()
+    def get_arg(self, index):
+        return self._args.at(index)
 
-        return args
+    def args(self):
+        raise DeprecationWarning()
 
     def method_args(self):
-        args = self.ctx.argv()
-
-        return args[0], args[1:]
+        raise DeprecationWarning()
 
     def _execute(self):
         # print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
         self.suspend()
-        self._function_(self.ctx, self)
+        self._function_(self)
 
     def _on_complete(self):
-        self.ctx.stack_append(self.result)
+        pass
+        # self.ctx.stack_append(self.result)
 
     def to_string(self):
         name = self.name()
@@ -314,10 +317,11 @@ class BytecodeRoutine(Routine):
     # def __repr__(self):
     #     return "%s" % (self.bytecode())
 
+def create_native_routine(name, primitive, args, arity):
+    return NativeRoutine(name, primitive, args, arity)
 
 def create_function_routine(code, name):
     return BytecodeRoutine(code, name)
-
 
 def create_bytecode_routine(code):
     from obin.objects.object_space import newstring

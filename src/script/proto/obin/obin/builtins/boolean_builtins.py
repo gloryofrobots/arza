@@ -27,35 +27,3 @@ def setup(trait):
     # 15.6.3.1
     put_property(w_Boolean, u'prototype', w_BooleanPrototype)
 
-    # 15.6.4.2
-    put_native_function(w_BooleanPrototype, u'toString', to_string)
-
-    # 15.6.4.3
-    put_native_function(w_BooleanPrototype, u'valueOf', value_of)
-
-
-# 15.6.4.2
-@complete_native_routine
-def to_string(ctx, routine):
-    this, args = routine.args()
-    if isinstance(this, W_Boolean):
-        b = this
-    else:
-        raise ObinTypeError(u'')
-
-    if b.to_boolean() is True:
-        return u'true'
-    else:
-        return u'false'
-
-
-# 15.6.4.3
-@complete_native_routine
-def value_of(ctx, routine):
-    this, args = routine.args()
-    if isinstance(this, W_Boolean):
-        b = this
-    else:
-        raise ObinTypeError(u'')
-
-    return b

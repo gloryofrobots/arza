@@ -701,7 +701,7 @@ def load_arguments(ctx, counter):
 
     first = vectors[0]
     for i in xrange(1, len(vectors)):
-        first.push_from(vectors[i])
+        first.concat(vectors[i])
 
     return first
 

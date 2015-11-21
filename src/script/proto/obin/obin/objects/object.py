@@ -388,6 +388,9 @@ class W_Vector(W_Cell):
     def pop(self):
         return self._items.pop()
 
+    def concat(self, v):
+        self._items += v.values()
+
     def fold_slice_into_itself(self, index):
         rest = W_Vector(self._items[index:])
         self._items = self._items[0:index]
@@ -583,22 +586,16 @@ class W_Module(W_Root):
 
 class W_Function(W_Root):
     _type_ = 'function'
-    _immutable_fields_ = ['_type_',  '_scope_',  '_variadic_', '_arity_', '_name_']
+    _immutable_fields_ = ['_type_',  'scope',  'is_variadic', 'arity', '_name_']
 
     def __init__(self, name, bytecode, scope):
         super(W_Function, self).__init__()
         self._name_ = name
         self._bytecode_ = bytecode
         scope_info = bytecode.scope
-        self._arity_ = scope_info.count_args
-        self._variadic_ = scope_info.is_variadic
-        self._scope_ = scope
-
-    def arity(self):
-        return self._arity_
-
-    def is_variadic(self):
-        return self._variadic_
+        self.arity = scope_info.count_args
+        self.is_variadic = scope_info.is_variadic
+        self.scope = scope
 
     def _tostring_(self):
         params = ",".join([str(p.value()) for p in self._bytecode_.scope.arguments])
@@ -621,13 +618,12 @@ class W_Function(W_Root):
 
         routine = create_function_routine(self._bytecode_, self._name_)
 
-        jit.promote(routine)
-        scope = self.scope()
+        routine = jit.promote(routine)
 
         create_function_context(self,
                                 routine,
                                 args,
-                                scope)
+                                self.scope)
         return routine
 
     def _call_(self, ctx, args):
@@ -638,17 +634,16 @@ class W_Function(W_Root):
 
         ctx.process().call_object(self, ctx, args)
 
-    def scope(self):
-        return self._scope_
 
 class W_Primitive(W_Root):
     _type_ = 'native'
     _immutable_fields_ = ['_type_', '_extensible_', '_scope_', '_params_[*]', '_function_']
 
-    def __init__(self, name, function):
+    def __init__(self, name, function, arity):
         super(W_Primitive, self).__init__()
         self._name_ = name
         self._function_ = function
+        self.arity = arity
 
     def _tostring_(self):
         return "function %s {[native code]}" % self._name_.value()
@@ -662,21 +657,20 @@ class W_Primitive(W_Root):
 
     def create_routine(self, ctx, args):
         from obin.runtime.context import create_primitive_context
-        from obin.runtime.routine import NativeRoutine
+        from obin.runtime.routine import create_native_routine
 
-        routine = NativeRoutine(self._name_, self._function_)
+        routine = create_native_routine(self._name_, self._function_, args, self.arity)
 
-        jit.promote(routine)
+        routine = jit.promote(routine)
 
-        create_primitive_context(routine,
-                                 args)
+        # create_primitive_context(routine)
         return routine
 
     def _call_(self, ctx, args):
         assert ctx
-        # if ctx is None:
-        #     from object_space import object_space
-        #     ctx = object_space.interpreter.machine.current_context()
+        if self.arity != -1 and args.length() != self.arity:
+            raise ObinRuntimeError(u"Invalid primitive call wrong count of arguments %d != %d"
+                                   % (args.length(), self.arity))
 
         ctx.process().call_object(self, ctx, args)
 
@@ -723,7 +717,9 @@ class W_CoroutineYield(W_Root):
         routine = ctx.routine()
         self._coroutine_.set_receiver(routine)
 
-        ctx.process().yield_to_routine(self._receiver_, routine, args[0])
+        # TODO THIS IS WRONG
+        value = args.at(0)
+        ctx.process().yield_to_routine(self._receiver_, routine, value)
 
 
 
@@ -761,15 +757,16 @@ class W_Coroutine(W_Root):
         return api.at(object_space.traits.Coroutine, k)
 
     def _first_call_(self, ctx, args):
+        from object_space import newvector
         self._receiver_ = ctx.routine()
 
         self._yield_ = W_CoroutineYield(self)
         self._yield_.set_receiver(self._receiver_)
 
         if args is not None:
-            args.insert(0, self._yield_)
+            args.prepend(self._yield_)
         else:
-            args = [self._yield_]
+            args = newvector([self._yield_])
 
         self._routine_ = self.function().create_routine(ctx, args)
         ctx.process().call_routine(self._routine_, self._receiver_, self._receiver_)
@@ -787,8 +784,9 @@ class W_Coroutine(W_Root):
         if not self._routine_.is_suspended():
             raise ObinRuntimeError(u"Invalid coroutine state")
 
+        # TODO THIS IS TOTALLY WRONG, CHANGE IT TO PATTERN MATCH
         if args is not None:
-            value = args[0]
+            value = args.at(0)
         else:
             value = newundefined()
 

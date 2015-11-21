@@ -64,7 +64,7 @@ w_NEGATIVE_INFINITY = _w(-INFINITY)
 
 # 15.7.4.2
 @complete_native_routine
-def to_string(ctx, routine):
+def to_string(routine):
     this, args = routine.args()
     if len(args) > 0:
         radix = args[0].ToInteger()
@@ -82,7 +82,7 @@ def to_string(ctx, routine):
 
 # 15.7.4.4
 @complete_native_routine
-def value_of(ctx, routine):
+def value_of(routine):
     this, args = routine.args()
     if isinstance(this, W_Number):
         num = this

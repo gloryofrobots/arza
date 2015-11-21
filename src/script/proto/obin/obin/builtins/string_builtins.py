@@ -67,7 +67,7 @@ def setup(obj):
 
 # 15.5.3.2
 @complete_native_routine
-def from_char_code(ctx, routine):
+def from_char_code(routine):
     this, args = routine.args()
     builder = UnicodeBuilder(len(args))
 
@@ -82,7 +82,7 @@ def from_char_code(ctx, routine):
 
 # 15.5.4.2
 @complete_native_routine
-def to_string(ctx, routine):
+def to_string(routine):
     this, args = routine.args()
     if isinstance(this, W_String):
         s = this
@@ -96,7 +96,7 @@ def to_string(ctx, routine):
 
 # 15.5.4.3
 @complete_native_routine
-def value_of(ctx, routine):
+def value_of(routine):
     this, args = routine.args()
     if isinstance(this, W_String):
         s = this
@@ -111,7 +111,7 @@ def value_of(ctx, routine):
 
 # 15.5.4.4
 @complete_native_routine
-def char_at(ctx, routine):
+def char_at(routine):
     this, args = routine.args()
     pos = get_arg(args, 0)
 
@@ -129,7 +129,7 @@ def char_at(ctx, routine):
 
 #15.5.4.5
 @complete_native_routine
-def char_code_at(ctx, routine):
+def char_code_at(routine):
     this, args = routine.args()
     pos = get_arg(args, 0)
 
@@ -147,7 +147,7 @@ def char_code_at(ctx, routine):
 
 #15.5.4.6
 @complete_native_routine
-def concat(ctx, routine):
+def concat(routine):
     this, args = routine.args()
     string = this.to_string()
     others = [obj.to_string() for obj in args]
@@ -157,7 +157,7 @@ def concat(ctx, routine):
 
 # 15.5.4.7
 @complete_native_routine
-def index_of(ctx, routine):
+def index_of(routine):
     this, args = routine.args()
     string = this.to_string()
     if len(args) < 1:
@@ -178,7 +178,7 @@ def index_of(ctx, routine):
 
 # 15.5.4.8
 @complete_native_routine
-def last_index_of(ctx, routine):
+def last_index_of(routine):
     this, args = routine.args()
     search_string = get_arg(args, 0)
     position = get_arg(args, 1)
@@ -232,7 +232,7 @@ def _rsplit(value, by, maxsplit=-1):
 
 # 15.5.4.14
 @complete_native_routine
-def split(ctx, routine):
+def split(routine):
     from obin.objects.object_space import isundefined
     this, args = routine.args()
 
@@ -268,7 +268,7 @@ def split(ctx, routine):
 
 # 15.5.4.15
 @complete_native_routine
-def substring(ctx, routine):
+def substring(routine):
     this, args = routine.args()
     string = this.to_string()
     size = len(string)
@@ -297,7 +297,7 @@ def substring(ctx, routine):
 
 # 15.5.4.16
 @complete_native_routine
-def to_lower_case(ctx, routine):
+def to_lower_case(routine):
     from rpython.rlib.unicodedata import unicodedb
 
     this, args = routine.args()
@@ -312,7 +312,7 @@ def to_lower_case(ctx, routine):
 
 # 15.5.4.18
 @complete_native_routine
-def to_upper_case(ctx, routine):
+def to_upper_case(routine):
     from rpython.rlib.unicodedata import unicodedb
     this, args = routine.args()
     string = this.to_string()

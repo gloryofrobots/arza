@@ -6,40 +6,37 @@ from obin.objects import api
 
 
 def setup(obj):
-    # 15.4.4.2
-    api.put_native_function(obj, u'toString', to_string)
-
     # 15.4.4.5
-    api.put_native_function(obj, u'join', join)
+    api.put_native_function(obj, u'join', join, 2)
 
     # 15.4.4.6
-    api.put_native_function(obj, u'pop', pop)
+    api.put_native_function(obj, u'pop', pop, 1)
 
     # 15.4.4.7
-    api.put_native_function(obj, u'push', push)
+    api.put_native_function(obj, u'push', push, 2)
 
     # 15.4.4.8
-    api.put_native_function(obj, u'reverse', reverse)
+    api.put_native_function(obj, u'reverse', reverse, 1)
 
     # 15.4.4.11
-    api.put_native_function(obj, u'sort', sort)
-    api.put_native_function(obj, u'length', length)
+    api.put_native_function(obj, u'sort', sort, 1)
+    api.put_native_function(obj, u'length', length, 1)
 
-    api.put_native_function(obj, u'forEach', for_each)
+    api.put_native_function(obj, u'forEach', for_each, 2)
 
-    api.put_native_function(obj, u'indexOf', index_of)
+    api.put_native_function(obj, u'indexOf', index_of, 2)
 
-    api.put_native_function(obj, u'lastIndexOf', last_index_of)
+    api.put_native_function(obj, u'lastIndexOf', last_index_of, 2)
 
-    api.put_native_function(obj, u'shift', shift)
+    api.put_native_function(obj, u'shift', shift, 2)
 
-    api.put_native_function(obj, u'slice', slice)
+    api.put_native_function(obj, u'slice', slice, 2)
 
     obj.freeze()
 
 
 @complete_native_routine
-def slice(ctx, routine):
+def slice(routine):
     this, args = routine.method_args()
     o = this.ToObject()
     from_index = get_arg(args, 0).ToUInt32()
@@ -55,7 +52,7 @@ def slice(ctx, routine):
 
 # 15.4.4.7
 @complete_native_routine
-def push(ctx, routine):
+def push(routine):
     this, args = routine.method_args()
     o = this.ToObject()
     for item in args:
@@ -65,29 +62,13 @@ def push(ctx, routine):
     return o.length()
 
 @complete_native_routine
-def length(ctx, routine):
-    this, args = routine.method_args()
+def length(routine):
+    this = routine.get_arg(0)
     return this.length()
-
-# 15.4.4.2
-@complete_native_routine
-def to_string(ctx, routine):
-    this, args = routine.method_args()
-    from obin.runtime.process import run_function_for_result
-    array = this.ToObject()
-    func = array.get(u'join')
-    if func.is_callable():
-        from obin.objects.object import W_BasicFunction
-        assert isinstance(func, W_BasicFunction)
-        result = run_function_for_result(func, this=this)
-        return result.to_string()
-    else:
-        return this.to_string()
-
 
 # 15.4.4.5
 @complete_native_routine
-def join(ctx, routine):
+def join(routine):
     this, args = routine.method_args()
     from obin.objects.object_space import isundefined
 
@@ -124,16 +105,15 @@ def join(ctx, routine):
 
     return r
 
-
 # 15.4.4.6
 @complete_native_routine
-def pop(ctx, routine):
+def pop(routine):
     this, args = routine.method_args()
     o = this.ToObject()
     return o._items.pop()
 
 @complete_native_routine
-def shift(ctx, routine):
+def shift(routine):
     this, args = routine.method_args()
     o = this.ToObject()
     l = o.get(u'length').ToUInt32()
@@ -154,7 +134,7 @@ def shift(ctx, routine):
 
 # 15.4.4.8
 @complete_native_routine
-def reverse(ctx, routine):
+def reverse(routine):
     this, args = routine.method_args()
     o = this.ToObject()
     length = o.get(u'length').ToUInt32()
@@ -186,7 +166,7 @@ def reverse(ctx, routine):
 
 
 @complete_native_routine
-def last_index_of(ctx, routine):
+def last_index_of(routine):
     this, args = routine.method_args()
     obj = this
     elem = get_arg(args, 0)
@@ -209,7 +189,7 @@ def last_index_of(ctx, routine):
 
 
 @complete_native_routine
-def index_of(ctx, routine):
+def index_of(routine):
     this, args = routine.method_args()
     obj = this
     length = this.get(u'length').ToUInt32()
@@ -225,7 +205,7 @@ def index_of(ctx, routine):
 
 #TODO FIX IT
 @complete_native_routine
-def for_each(ctx, routine):
+def for_each(routine):
     this, args = routine.method_args()
     obj = this
     length = this.get(u'length').value()
@@ -241,7 +221,7 @@ def for_each(ctx, routine):
 
 # 15.4.4.11
 @complete_native_routine
-def sort(ctx, routine):
+def sort(routine):
     this, args = routine.method_args()
     obj = this
     length = this.get(u'length').ToUInt32()
