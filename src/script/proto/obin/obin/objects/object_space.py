@@ -53,17 +53,22 @@ def _makenull():
     from obin.objects.object import W_Nil
     return W_Nil()
 
+
 w_Null = _makenull()
 jit.promote(w_Null)
+
 
 def _make_interrupt():
     from obin.objects.object import W_Constant
     return W_Constant()
 
+
 w_Interrupt = _make_interrupt()
+
 
 def newinterrupt():
     return w_Interrupt
+
 
 def newnull():
     return w_Null
@@ -88,45 +93,43 @@ def newfunc(name, bytecode, scope):
     obj = W_Function(name, bytecode, scope)
     return obj
 
+
 def newprimitive(name, function, arity):
     from obin.objects.object import W_Primitive
     obj = W_Primitive(name, function, arity)
     return obj
 
-def newsimpleobject():
+
+def newplainobject():
     from obin.objects.object import W_Object
     obj = W_Object(None)
     return obj
 
-def newplainobject_with_size(size):
-    from obin.objects.object import W_Object
-    from obin.objects.slots import newslots_with_size
-    slots = newslots_with_size(size)
-    obj = W_Object(slots)
-    return obj
 
 def newobject():
-    obj = newsimpleobject()
+    obj = newplainobject()
     obj.create_traits(None)
     obj.isa(object_space.traits.Object)
     return obj
 
+
 def newplainobject_with_slots(slots):
     from obin.objects.object import W_Object
     obj = W_Object(slots)
-    # obj.create_traits(None)
-    # obj.isa(object_space.traits.Object)
     return obj
+
 
 def newvector(items=None):
     from obin.objects.object import W_Vector
     obj = W_Vector(items)
     return obj
 
+
 def newcoroutine(fn):
     from obin.objects.object import W_Coroutine
     obj = W_Coroutine(fn)
     return obj
+
 
 def newmodule(name, code):
     assert isstring(name)
@@ -134,15 +137,19 @@ def newmodule(name, code):
     obj = W_Module(name, code)
     return obj
 
+
 def isany(value):
     from object import W_Root
     return isinstance(value, W_Root)
 
+
 def isundefined(value):
     return value is w_Undefined
 
+
 def isinterrupt(value):
     return value is w_Interrupt
+
 
 def iscell(value):
     from object import W_Cell
@@ -168,9 +175,11 @@ def isvector(value):
     from object import W_Vector
     return isinstance(value, W_Vector)
 
+
 def ismodule(w):
     from obin.objects.object import W_Module
     return isinstance(w, W_Module)
+
 
 def isnull(value):
     return value is w_Null
@@ -231,13 +240,13 @@ class ObjectSpace(object):
         self.interpreter = None
 
     def newobject(self):
-        obj = newsimpleobject()
+        obj = newplainobject()
         obj.create_traits(None)
         obj.isa(self.traits.Object)
         return obj
 
     def init_traits(self):
-        self.traits.Object = newsimpleobject()
+        self.traits.Object = newplainobject()
         self.traits.Object.create_traits(None)
 
         # following traits resemble native types list

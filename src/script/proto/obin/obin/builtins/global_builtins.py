@@ -3,10 +3,8 @@
 from obin.objects.object_space import _w
 from obin.runtime.routine import complete_native_routine
 from rpython.rlib.rfloat import NAN, INFINITY, isnan, isinf
-from obin.builtins import get_arg
 from rpython.rlib.unicodedata import unicodedb
 from obin.objects import api
-from obin.objects.object_space import newstring
 
 
 def setup(obj):
@@ -210,9 +208,6 @@ def parse_float(routine):
 @complete_native_routine
 def alert(routine):
     _print(routine)
-
-def dummy(routine):
-    pass
 
 @complete_native_routine
 def _print(routine):

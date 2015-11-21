@@ -396,6 +396,12 @@ class W_Vector(W_Cell):
         self._items = self._items[0:index]
         self._items.append(rest)
 
+    def append_value_multiple_times(self, val, times):
+        self._items = self._items + [val] * times
+
+    def set_values(self, values):
+        self._items = values
+
 class W_Object(W_Cell):
     _type_ = 'Object'
     _immutable_fields_ = ['_type_']

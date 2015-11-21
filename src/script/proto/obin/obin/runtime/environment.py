@@ -3,14 +3,7 @@ from obin.objects import api
 from obin.objects.object_space import isstring
 
 
-def newenv(outer_environment, size):
-    from obin.objects.object_space import newplainobject_with_size
-    obj = newplainobject_with_size(size)
-    env = Environment(obj, outer_environment)
-    return env
-
-
-def newobjectenv(obj, outer_environment):
+def newenv(obj, outer_environment):
     env = Environment(obj, outer_environment)
     return env
 

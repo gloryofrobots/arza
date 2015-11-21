@@ -1,3 +1,5 @@
+from obin.objects.object_space import newvector
+
 class Slots(object):
     def __init__(self):
         self.property_values = None
@@ -7,7 +9,7 @@ class Slots(object):
     def to_dict(self):
         m = {}
         for n, v in self.property_bindings.items():
-            m[n] = self.property_values[v]
+            m[n] = self.property_values.at(v)
 
         return m
 
@@ -29,11 +31,8 @@ class Slots(object):
     def contains(self, name):
         return name in self.property_bindings
 
-    def values(self):
-        return self.property_values
-
     def length(self):
-        return len(self.property_values)
+        return self.property_values.length()
 
     def keys(self):
         return self.property_bindings.keys()
@@ -53,14 +52,14 @@ class Slots(object):
         return idx
 
     def set_by_index(self, idx, value):
-        self.property_values[idx] = value
+        self.property_values.set(idx, value)
 
     def get_by_index(self, idx):
-        return self.property_values[idx]
+        return self.property_values.at(idx)
 
     def set(self, name, value):
         idx = self.get_index(name)
-        self.property_values[idx] = value
+        self.set_by_index(idx, value)
 
     def add(self, name, value):
         idx = self.get_index(name)
@@ -69,10 +68,12 @@ class Slots(object):
             self.property_bindings[name] = idx
             self.index += 1
 
-        if idx >= len(self.property_values):
-            self.property_values = self.property_values + ([None] * (1 + idx - len(self.property_values)))
+        if idx >= self.property_values.length():
+            values = self.property_values.values()
+            values = values + ([None] * (1 + idx - len(values)))
+            self.property_values.set_values(values)
 
-        self.property_values[idx] = value
+        self.set_by_index(idx, value)
         return idx
 
     def delete(self, name):
@@ -81,7 +82,10 @@ class Slots(object):
             return
 
         assert idx >= 0
-        self.property_values = self.property_values[:idx] + self.property_values[idx + 1:]
+        values = self.property_values.values()
+        values = values[:idx] + values[idx + 1:]
+        self.property_values.set_values(values)
+
         del self.property_bindings[name]
 
 
@@ -93,19 +97,19 @@ def newslots(values, bindings, index):
     return slots
 
 def newslots_with_size(size):
-    return newslots([None] * size, {}, 0)
+    return newslots(newvector([None] * size), {}, 0)
 
 def newslots_empty():
-    return newslots([], {}, 0)
+    return newslots(newvector([]), {}, 0)
 
 def newslots_with_values_from_slots(values, protoslots):
     from copy import copy
-    l = len(protoslots.property_values)
-    size = len(values)
+    l = protoslots.length()
+    size = values.length()
     diff = l - size
     assert diff >= 0
     if diff > 0:
-        values = values + [None] * diff
+        values.append_value_multiple_times(None, diff)
 
     bindings = copy(protoslots.property_bindings)
     index = protoslots.index

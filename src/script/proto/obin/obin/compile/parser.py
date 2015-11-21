@@ -868,11 +868,19 @@ def parser_init(parser):
     stmt(parser, T.TT_FN, _stmt_fn)
 
     def _parse_object(parser):
-        def _statement_to_expr(stmt):
+        def _object_statement_to_expr(stmt):
             expr = Node(stmt.type, stmt.value, stmt.position, stmt.line)
             expr.init(2)
             expr.setfirst(stmt.second())
             expr.setsecond(stmt.third())
+            return expr
+
+        def _fn_statement_to_expr(stmt):
+            expr = Node(stmt.type, stmt.value, stmt.position, stmt.line)
+            expr.init(3)
+            expr.setfirst(stmt.second())
+            expr.setsecond(stmt.third())
+            expr.setthird(stmt.fourth())
             return expr
 
         name = empty_node()
@@ -905,12 +913,12 @@ def parser_init(parser):
                     fn = statement(parser)
                     key = fn.first()
                     # dirty hack to convert statements to expression for compiler
-                    value = _statement_to_expr(fn)
+                    value = _fn_statement_to_expr(fn)
                 elif parser.token_type == T.TT_OBJECT:
                     obj = statement(parser)
                     key = obj.first()
                     # dirty hack to convert statements to expression for compiler
-                    value = _statement_to_expr(obj)
+                    value = _object_statement_to_expr(obj)
                 else:
                     # TODO check it
                     check_token_types(parser, [T.TT_NAME, T.TT_INT, T.TT_STR, T.TT_CHAR, T.TT_FLOAT])
@@ -1074,11 +1082,13 @@ def write_ast(ast):
 
 # ast = parse_string(
 #     """
-#     fn f(x1,x2,...x3) {
-#         x1 + x2
+# object Human {
+#     __name__ = "Human"
+#     name = nil
+#     fn make_shit(self) {
+#         print("SHIT from ", self.name)
 #     }
-#
-#     f = fn somef (x2, x3) { x2 * x3; }
+# }
 #     """
 # )
 # print ast

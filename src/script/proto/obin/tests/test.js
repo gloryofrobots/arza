@@ -16,7 +16,7 @@ fn yfib(x) {
     })
 }
 
-f = yfib(15)
+f = yfib(5)
 
 for i in f {
   print(i)

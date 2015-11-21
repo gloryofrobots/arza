@@ -1,6 +1,5 @@
 from obin.objects.object_space import _w
 from obin.runtime.routine import complete_native_routine
-from obin.builtins import get_arg
 from obin.objects.object_space import isnull_or_undefined, newundefined
 from obin.objects import api
 

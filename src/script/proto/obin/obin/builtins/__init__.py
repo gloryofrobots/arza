@@ -46,8 +46,3 @@ def setup_builtins(module):
 
     """
 
-def get_arg(args, index):
-    from obin.runtime.exception import ObinInvokeError
-    if len(args) > index:
-        return args[index]
-    raise ObinInvokeError(index)
