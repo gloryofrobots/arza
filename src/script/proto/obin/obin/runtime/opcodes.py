@@ -168,11 +168,12 @@ class LOAD_OUTER(Opcode):
         self.index = index
         self.identifier = identifier
 
+        assert self.index > -1
+
     # 11.1.2
     def eval(self, ctx):
         # TODO put ref onto stack
-        ref = ctx.get_ref(self.identifier, self.index)
-        value = ref.get_value()
+        value = ctx.get_ref(self.identifier, self.index)
         ctx.stack_append(value)
 
     def __str__(self):

@@ -10,11 +10,11 @@ def newenv(obj, outer_environment):
 
 def get_reference(lex, identifier):
     if lex is None:
-        return Reference(referenced=identifier)
+        return None
 
-    exists = lex.has_binding(identifier)
-    if exists:
-        ref = Reference(base_env=lex, referenced=identifier)
+    index = lex.get_index(identifier)
+    if index is not None:
+        ref = Reference(lex, identifier, index)
         return ref
     else:
         outer = lex.outer_environment
@@ -35,6 +35,9 @@ class Environment(object):
 
     def set_by_index(self, idx, v):
         self.binding.put_by_index(idx, v)
+
+    def get_index(self, n):
+        return self.binding.get_index(n)
 
     def get_by_index(self, idx):
         return self.binding.get_by_index(idx)

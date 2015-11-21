@@ -23,12 +23,183 @@ class Routine(object):
         self.__continuation = None
         self.__state = Routine.State.IDLE
         self.called = None
-        self.arguments = None
         self.result = None
+
+    def has_continuation(self):
+        return self.__continuation is not None
+
+    def set_continuation(self, continuation):
+        # if continuation is self.__continuation:
+        #     return
+
+        if self.__continuation:
+            print self, "\n**************\n", continuation
+
+        assert not self.__continuation
+        self.__continuation = continuation
+
+    def continuation(self):
+        return self.__continuation
+
+    def resume(self, value):
+        # print "RESUME", self.__state
+        assert self.is_suspended()
+        self._on_resume(value)
+        self.called = None
+        self.__state = Routine.State.INPROCESS
+
+    def _on_resume(self, value):
+        raise NotImplementedError()
+
+    def inprocess(self):
+        assert not self.is_closed()
+        self.__state = Routine.State.INPROCESS
+
+    # called in RETURN
+    def force_complete(self, result):
+        self.complete(result)
+        self._on_force_complete()
+
+    def _on_force_complete(self):
+        raise NotImplementedError()
+
+    def complete(self, result):
+        assert not self.is_closed()
+        self.result = result
+        self.__state = Routine.State.COMPLETE
+        self._on_complete()
+
+    def _on_complete(self):
+        raise NotImplementedError()
+
+    def terminate(self, signal):
+        assert not self.is_closed()
+        assert signal is not None
+        self.__state = Routine.State.TERMINATED
+        self._on_terminate(signal)
+
+    def _on_terminate(self, signal):
+        raise NotImplementedError()
+
+    def activate(self, process):
+        assert not self.process
+        self.process = process
+
+        self._on_activate()
+        self.inprocess()
+
+    def _on_activate(self):
+        pass
+
+    def suspend(self):
+        assert not self.is_closed()
+        self.__state = Routine.State.SUSPENDED
+
+    def execute(self):
+        if self.is_complete():
+            raise RuntimeError("Already complete")
+        self._execute()
+
+    def _execute(self):
+        raise NotImplementedError()
+
+    def is_inprocess(self):
+        return self.__state == Routine.State.INPROCESS
+
+    def is_idle(self):
+        return self.__state == Routine.State.IDLE
+
+    def is_complete(self):
+        return self.__state == Routine.State.COMPLETE
+
+    def is_terminated(self):
+        return self.__state == Routine.State.TERMINATED
+
+    def is_suspended(self):
+        return self.__state == Routine.State.SUSPENDED
+
+    def is_closed(self):
+        return self.__state == Routine.State.COMPLETE \
+               or self.__state == Routine.State.TERMINATED
+
+    def is_block(self):
+        return False
+
+    def call_routine(self, routine):
+        assert self.process
+        self.process.call_routine(routine, self, self)
+
+
+class NativeRoutine(Routine):
+    _immutable_fields_ = ['_name_', '_function_']
+
+    def __init__(self, name, function, args, arity):
+        super(NativeRoutine, self).__init__()
+        from obin.objects.object_space import isstring
+        assert isstring(name)
+        self._name_ = name
+        self._function_ = function
+        self.arity = arity
+        self.count_args = args.length()
+        self._args = args
+
+    # redefine resume because we can call bytecode routine from native and after it resumes as we must complete
+    resume = Routine.complete
+
+    def name(self):
+        return self._name_.value()
+
+    def get_arg(self, index):
+        return self._args.at(index)
+
+    def _execute(self):
+        # print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
+        self.suspend()
+        self._function_(self)
+
+    def _on_complete(self):
+        pass
+        # self.ctx.stack_append(self.result)
+
+    def to_string(self):
+        name = self.name()
+        if name is not None:
+            return u'function %s() { [native code] }' % (name,)
+        else:
+            return u'function () { [native code] }'
+
+
+class BytecodeRoutine(Routine):
+    _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
+
+    def __init__(self, code, name):
+        super(BytecodeRoutine, self).__init__()
+
+        from obin.objects.object_space import isstring
+        assert isstring(name)
+
         self.ctx = None
         self.__signal = None
         self.__signal_handlers = {}
         self.__stack_start_index = None
+
+        self._code_ = code
+
+        self._name_ = name
+
+        scope = code.scope
+        self._refs_size_ = scope.count_refs
+        self._env_size_ = scope.count_vars
+        self._stack_size_ = code.estimated_stack_size()
+        self.pc = 0
+        self.result = None
+
+    def signal(self):
+        return self.__signal
+
+    def catch_signal(self, signal):
+        handler = self.get_signal_handler(self.__signal)
+        return handler
 
     def stack_top(self):
         return self.ctx.stack_top()
@@ -59,201 +230,25 @@ class Routine(object):
             #     return self.__signal_handlers[catchedsignal]
             return self.__signal_handlers[catchedsignal]
 
-    def has_continuation(self):
-        return self.__continuation is not None
-
-    def set_continuation(self, continuation):
-        # if continuation is self.__continuation:
-        #     return
-
-        if self.__continuation:
-            print self, "\n**************\n", continuation
-
-        assert not self.__continuation
-        self.__continuation = continuation
-
-    def continuation(self):
-        return self.__continuation
-
-    def signal(self):
-        return self.__signal
-
-    def resume(self, value):
-        # print "RESUME", self.__state
-        assert self.is_suspended()
-        self.called = None
-        self.ctx.stack_append(value)
-        self.__state = Routine.State.INPROCESS
-
-    def inprocess(self):
-        assert not self.is_closed()
-        self.__state = Routine.State.INPROCESS
-
-    # called in RETURN
-    def force_complete(self, result):
-        self.complete(result)
-        self._on_force_complete()
-
-    def _on_force_complete(self):
-        pass
-
-    def complete(self, result):
-        assert not self.is_closed()
-        self.result = result
-        self.__state = Routine.State.COMPLETE
-        self._on_complete()
-
-    def _on_complete(self):
-        pass
-
-    def terminate(self, signal):
-        assert not self.is_closed()
-        assert signal is not None
-        self.__state = Routine.State.TERMINATED
-        self.__signal = signal
-
-    def suspend(self):
-        assert not self.is_closed()
-        self.__state = Routine.State.SUSPENDED
-
-    def catch_signal(self, signal):
-        handler = self.get_signal_handler(self.__signal)
-        return handler
-
-    def is_inprocess(self):
-        return self.__state == Routine.State.INPROCESS
-
-    def is_idle(self):
-        return self.__state == Routine.State.IDLE
-
-    def is_complete(self):
-        return self.__state == Routine.State.COMPLETE
-
-    def is_terminated(self):
-        return self.__state == Routine.State.TERMINATED
-
-    def is_suspended(self):
-        return self.__state == Routine.State.SUSPENDED
-
-    def is_closed(self):
-        return self.__state == Routine.State.COMPLETE \
-               or self.__state == Routine.State.TERMINATED
-
-    def activate(self, process):
-        assert not self.process
-        self.process = process
-
-        self._on_activate()
-        self.inprocess()
-
-    def is_block(self):
-        return False
-
-    def _on_activate(self):
-        pass
-
-    def call_routine(self, routine):
-        assert self.process
-        self.process.call_routine(routine, self, self)
-
-    def execute(self):
-        if self.is_complete():
-            raise RuntimeError("Already complete")
-        self._execute()
-
-    def _execute(self):
-        raise NotImplementedError()
-
-    def estimated_stack_size(self):
-        raise NotImplementedError()
-
-    def estimated_env_size(self):
-        raise NotImplementedError()
-
-    def estimated_refs_count(self):
-        raise NotImplementedError()
-
-class NativeRoutine(Routine):
-    _immutable_fields_ = ['_name_', '_function_']
-
-    def __init__(self, name, function, args, arity):
-        super(NativeRoutine, self).__init__()
-        from obin.objects.object_space import isstring
-        assert isstring(name)
-        self._name_ = name
-        self._function_ = function
-        self.arity = arity
-        self.count_args = args.length()
-        self._args = args
-
-    # redefine resume because we can call bytecode routine from native and after it resumes as we must complete
-    resume = Routine.complete
-
-    def name(self):
-        return self._name_.value()
-
-    def get_arg(self, index):
-        return self._args.at(index)
-
-    def args(self):
-        raise DeprecationWarning()
-
-    def method_args(self):
-        raise DeprecationWarning()
-
-    def _execute(self):
-        # print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
-        self.suspend()
-        self._function_(self)
-
-    def _on_complete(self):
-        pass
-        # self.ctx.stack_append(self.result)
-
-    def to_string(self):
-        name = self.name()
-        if name is not None:
-            return u'function %s() { [native code] }' % (name,)
-        else:
-            return u'function () { [native code] }'
-
-    def estimated_stack_size(self):
-        return 2
-
-    def estimated_env_size(self):
-        return 0
-
-    def estimated_refs_count(self):
-        return 0
-
-
-class BytecodeRoutine(Routine):
-    _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
-
-    def __init__(self, code, name):
-        super(BytecodeRoutine, self).__init__()
-
-        from obin.objects.object_space import isstring
-        assert isstring(name)
-
-        self._code_ = code
-
-        self._name_ = name
-
-        scope = code.scope
-        self._refs_size_ = scope.count_refs
-        self._env_size_ = scope.count_vars
-        self._stack_size_ = code.estimated_stack_size()
-        self.pc = 0
-        self.result = None
-
     def name(self):
         return self._name_
+
+    def _on_terminate(self, signal):
+        self.__signal = signal
+
+    def _on_resume(self, value):
+        self.ctx.stack_append(value)
 
     def _on_activate(self):
         assert self.ctx
         if self.stack_start_index() is not None:
             self.ctx.set_stack_pointer(self.stack_start_index())
+
+    def _on_complete(self):
+        pass
+
+    def _on_force_complete(self):
+        pass
 
     def _execute(self):
         while True:
@@ -297,9 +292,6 @@ class BytecodeRoutine(Routine):
 
     def estimated_stack_size(self):
         return self._stack_size_
-
-    def estimated_env_size(self):
-        return self._env_size_
 
     def estimated_refs_count(self):
         return self._refs_size_

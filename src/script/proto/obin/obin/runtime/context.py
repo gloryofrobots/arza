@@ -55,10 +55,6 @@ class Context(object):
     def set_stack_pointer(self, p):
         self._stack_.set_pointer(p)
 
-    def get_arg(self, index):
-        assert index < self._arg_count
-        return self._env_.get_by_index(index)
-
     def env(self):
         return self._env_
 
@@ -67,10 +63,12 @@ class Context(object):
             self._refs_ += ([None] * (1 + index - len(self._refs_)))
 
     def _get_refs(self, index):
-        if self._resizable_:
-            self._resize_refs(index)
         assert index < len(self._refs_)
         assert index >= 0
+
+        if self._resizable_:
+            self._resize_refs(index)
+
         return self._refs_[index]
 
     def _set_refs(self, index, value):
@@ -80,40 +78,41 @@ class Context(object):
         assert index >= 0
         self._refs_[index] = value
 
+    def get_local(self, index):
+        return self._env_.get_by_index(index)
+
     def store_local(self, index, value):
         self._env_.set_by_index(index, value)
 
     def store_ref(self, symbol, index, value):
-        lex_env = self.env()
-        ref = lex_env.get_reference(symbol)
-        if not ref:
-            ref = self._get_refs(index)
+        ref = self._get_refs(index)
 
-        if not ref.is_unresolvable():
+        if ref is not None:
             ref.put_value(value)
             return
 
-        raise RuntimeError("Unable to store reference", symbol, index, value)
+        ref = self.env().get_reference(symbol)
+        if not ref:
+            raise RuntimeError("Unable to store reference", symbol, index, value)
 
-    def get_local(self, index):
-        return self._env_.get_by_index(index)
+        ref.put_value(value)
+        self._set_refs(index, ref)
 
     def get_ref(self, symbol, index=-1):
-        if index < 0:
-            lex_env = self.env()
-            ref = lex_env.get_reference(symbol)
-            return ref
-
+        # if index < 0:
+        #     lex_env = self.env()
+        #     ref = lex_env.get_reference(symbol)
+        #     return ref
         ref = self._get_refs(index)
 
         if ref is None:
             lex_env = self.env()
             ref = lex_env.get_reference(symbol)
-            if ref.is_unresolvable() is True:
-                return ref
+            if not ref:
+                raise ObinReferenceError(symbol)
             self._set_refs(index, ref)
 
-        return ref
+        return ref.get_value()
 
 def create_function_environment(func, routine, args, outer_env):
     from obin.runtime.environment import newenv
@@ -178,13 +177,6 @@ def create_function_context(func, routine, args, scope):
 
     env = create_function_environment(func, routine, args, scope)
     ctx = Context(stack_size, refs_size, routine, env)
-    return ctx
-
-
-def create_primitive_context(routine):
-    stack_size = routine.estimated_stack_size()
-    refs_size = routine.estimated_refs_count()
-    ctx = Context(stack_size, refs_size, routine, None)
     return ctx
 
 

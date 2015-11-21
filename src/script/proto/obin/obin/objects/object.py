@@ -433,6 +433,9 @@ class W_Object(W_Cell):
     def get_by_index(self, idx):
         return self.__slots.get_by_index(idx)
 
+    def get_index(self, name):
+        return self.__slots.get_index(name)
+
     def traits(self):
         return self.__traits
 
@@ -662,14 +665,11 @@ class W_Primitive(W_Root):
         return api.at(object_space.traits.Function, k)
 
     def create_routine(self, ctx, args):
-        from obin.runtime.context import create_primitive_context
         from obin.runtime.routine import create_native_routine
 
         routine = create_native_routine(self._name_, self._function_, args, self.arity)
 
         routine = jit.promote(routine)
-
-        # create_primitive_context(routine)
         return routine
 
     def _call_(self, ctx, args):
