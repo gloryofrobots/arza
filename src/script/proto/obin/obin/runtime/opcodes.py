@@ -3,7 +3,6 @@ from rpython.rlib import jit
 
 from obin.objects.object_space import _w, isint
 from obin.runtime.exception import ObinTypeError, ObinReferenceError
-from obin.runtime.baseop import plus, sub, increment, decrement, mult, division, uminus, mod
 from obin.objects.object import api
 from obin.utils import tb
 
@@ -28,43 +27,6 @@ class Opcode(object):
 
     def __repr__(self):
         return "%s: sc %s" % (self.__class__.__name__, str(self._stack_change))
-
-class BaseBinaryComparison(Opcode):
-    _stack_change = 0
-
-    def eval(self, routine):
-        s4 = routine.stack.pop()
-        s2 = routine.stack.pop()
-        res = self.decision(s2, s4)
-        routine.stack.push(res)
-
-    def decision(self, op1, op2):
-        raise NotImplementedError
-
-
-class BaseBinaryBitwiseOp(Opcode):
-    _stack_change = 0
-
-    def eval(self, routine):
-        s5 = routine.stack.pop().value()()
-        s6 = routine.stack.pop().value()()
-        routine.stack.push(self.operation(routine, s5, s6))
-
-    def operation(self, routine, op1, op2):
-        raise NotImplementedError
-
-
-class BaseBinaryOperation(Opcode):
-    _stack_change = 0
-
-    def eval(self, routine):
-        right = routine.stack.pop()
-        left = routine.stack.pop()
-        routine.stack.push(self.operation(routine, left, right))
-
-
-class BaseUnaryOperation(Opcode):
-    _stack_change = 0
 
 
 class LOAD_INTCONSTANT(Opcode):
@@ -224,7 +186,7 @@ class LOAD_FUNCTION(Opcode):
 
 
 class LOAD_OBJECT(Opcode):
-    _immutable_fields_ = ["counter"]
+    _immutable_fields_ = ["count_items", "count_traits"]
 
     def __init__(self, count_items, count_traits):
         self.count_items = count_items
@@ -245,8 +207,8 @@ class LOAD_OBJECT(Opcode):
 
         routine.stack.push(w_obj)
 
-    #def __repr__(self):
-        #return 'LOAD_OBJECT %d' % (self.counter,)
+    def __repr__(self):
+        return 'LOAD_OBJECT %d' % (self.counter,)
 
 
 class LOAD_MEMBER(Opcode):
@@ -275,228 +237,6 @@ class LOAD_MEMBER_DOT(LOAD_MEMBER):
         routine.stack.push(value)
 
 
-class COMMA(BaseUnaryOperation):
-    def eval(self, routine):
-        one = routine.stack.pop()
-        routine.stack.pop()
-        routine.stack.push(one)
-        # XXX
-
-
-class SUB(BaseBinaryOperation):
-    def operation(self, routine, left, right):
-        return sub(routine, left, right)
-
-
-class IN(BaseBinaryOperation):
-    def operation(self, routine, left, right):
-        from obin.objects.object_space import iscell
-        if not iscell(right):
-            raise ObinTypeError(u"TypeError: invalid object for in operator")  # + repr(right)
-            
-        return api.has(right, left)
-
-
-# 11.4.3
-def type_of(var):
-    var_type = var.type()
-    if var_type == 'null':
-        return u'object'
-    return unicode(var_type)
-
-
-class ADD(BaseBinaryOperation):
-    def operation(self, routine, left, right):
-        return plus(left, right)
-
-
-class BITAND(BaseBinaryBitwiseOp):
-    def operation(self, routine, op1, op2):
-        from obin.objects.object_space import newint
-        return newint(int(op1 & op2))
-
-
-class BITXOR(BaseBinaryBitwiseOp):
-    def operation(self, routine, op1, op2):
-        from obin.objects.object_space import newint
-        return newint(int(op1 ^ op2))
-
-
-class BITOR(BaseBinaryBitwiseOp):
-    def operation(self, routine, op1, op2):
-        from obin.objects.object_space import newint
-        return newint(int(op1 | op2))
-
-
-class BITNOT(BaseUnaryOperation):
-    def eval(self, routine):
-        op = routine.stack.pop().value()()
-        from obin.objects.object_space import newint
-        routine.stack.push(newint(~op))
-
-
-class URSH(BaseBinaryBitwiseOp):
-    def eval(self, routine):
-        rval = routine.stack.pop()
-        lval = routine.stack.pop()
-
-        rnum = rval.value()
-        lnum = lval.value()
-
-        #from rpython.rlib.rarithmetic import ovfcheck_float_to_int
-
-        shift_count = rnum & 0x1F
-        res = lnum >> shift_count
-        w_res = _w(res)
-
-        #try:
-            #ovfcheck_float_to_int(res)
-            #w_res = _w(res)
-        #except OverflowError:
-            #w_res = _w(float(res))
-
-        routine.stack.push(w_res)
-
-
-class RSH(BaseBinaryBitwiseOp):
-    def eval(self, routine):
-        rval = routine.stack.pop()
-        lval = routine.stack.pop()
-
-        rnum = rval.value()
-        lnum = lval.value()()
-        shift_count = rnum & 0x1F
-        res = lnum >> shift_count
-
-        routine.stack.push(_w(res))
-
-
-class LSH(BaseBinaryBitwiseOp):
-    def eval(self, routine):
-        from obin.objects.object import int32
-        rval = routine.stack.pop()
-        lval = routine.stack.pop()
-
-        lnum = lval.value()()
-        rnum = rval.value()
-
-        shift_count = intmask(rnum & 0x1F)
-        res = int32(lnum << shift_count)
-
-        routine.stack.push(_w(res))
-
-
-class MUL(BaseBinaryOperation):
-    def operation(self, routine, op1, op2):
-        return mult(routine, op1, op2)
-
-
-class DIV(BaseBinaryOperation):
-    def operation(self, routine, op1, op2):
-        return division(routine, op1, op2)
-
-
-class MOD(BaseBinaryOperation):
-    def operation(self, routine, op1, op2):
-        return mod(routine, op1, op2)
-
-
-class UPLUS(BaseUnaryOperation):
-    def eval(self, routine):
-        expr = routine.stack.pop()
-        res = None
-
-        if isint(expr):
-            res = expr
-        else:
-            num = expr.ToNumber()
-            res = _w(num)
-
-        routine.stack.push(res)
-
-
-class UMINUS(BaseUnaryOperation):
-    def eval(self, routine):
-        routine.stack.push(uminus(routine.stack.pop(), routine))
-
-
-class NOT(BaseUnaryOperation):
-    def eval(self, routine):
-        val = routine.stack.pop()
-        boolval = val.to_boolean()
-        inv_boolval = not boolval
-        routine.stack.push(_w(inv_boolval))
-
-
-class INCR(BaseUnaryOperation):
-    def eval(self, routine):
-        value = routine.stack.pop()
-        if isint(value):
-            num = value
-        else:
-            num = _w(value.ToNumber())
-        newvalue = increment(num)
-        routine.stack.push(newvalue)
-
-
-class DECR(BaseUnaryOperation):
-    def eval(self, routine):
-        value = routine.stack.pop()
-        if isint(value):
-            num = value
-        else:
-            num = _w(value.ToNumber())
-        newvalue = decrement(routine, num)
-        routine.stack.push(newvalue)
-
-
-class GT(BaseBinaryComparison):
-    def decision(self, op1, op2):
-        from obin.runtime.baseop import compare_gt
-        res = compare_gt(op1, op2)
-        return res
-
-
-class GE(BaseBinaryComparison):
-    def decision(self, op1, op2):
-        from obin.runtime.baseop import compare_ge
-        res = compare_ge(op1, op2)
-        return res
-
-
-class LT(BaseBinaryComparison):
-    def decision(self, op1, op2):
-        from obin.runtime.baseop import compare_lt
-        res = compare_lt(op1, op2)
-        return res
-
-
-class LE(BaseBinaryComparison):
-    def decision(self, op1, op2):
-        from obin.runtime.baseop import compare_le
-        res = compare_le(op1, op2)
-        return res
-
-
-class EQ(BaseBinaryComparison):
-    def decision(self, op1, op2):
-        return api.equal(op1, op2)
-
-
-class NE(BaseBinaryComparison):
-    def decision(self, op1, op2):
-        return not api.equal(op1, op2)
-
-
-class IS(BaseBinaryComparison):
-    def decision(self, op1, op2):
-        return api.strict_equal(op1, op2)
-
-
-class ISNOT(BaseBinaryComparison):
-    def decision(self, op1, op2):
-        return not api.strict_equal(op1, op2)
-
 class STORE_MEMBER(Opcode):
     _stack_change = 0
 
@@ -508,7 +248,7 @@ class STORE_MEMBER(Opcode):
 
         routine.stack.push(value)
 
-class LOAD_PRIMITIVE(Opcode):
+class CALL_PRIMITIVE(Opcode):
     _immutable_fields_ = ['identifier', 'index']
     _stack_change = 0
 
@@ -516,13 +256,13 @@ class LOAD_PRIMITIVE(Opcode):
         self.prim_id = prim_id
 
     def eval(self, routine):
-        from obin.objects.object_space import object_space
-        interpreter = object_space.interpreter
-        primitive = interpreter.get_primitive(self.prim_id)
-        routine.stack.push(primitive)
+
+        prim = routine.process.get_primitive(self.prim_id)
+        prim(routine)
 
     def __str__(self):
-        return 'LOAD_PRIMITIVE %s ' % (self.prim_id)
+        from obin.runtime.primitives import primitive_to_str
+        return 'CALL_PRIMITIVE %s ' % (primitive_to_str(self.prim_id))
 
 class STORE_LOCAL(Opcode):
     _immutable_fields_ = ['identifier', 'index']
@@ -650,7 +390,6 @@ class JUMP_IF_TRUE_NOPOP(BaseIfNopopJump):
 
     def __str__(self):
         return 'JUMP_IF_TRUE_NOPOP %d' % (self.where)
-
 
 class RETURN(Opcode):
     _stack_change = 0
@@ -789,7 +528,6 @@ class JUMP_IF_ITERATOR_EMPTY(BaseJump):
     def __str__(self):
         return 'JUMP_IF_ITERATOR_EMPTY %d' % (self.where)
 
-
 class NEXT_ITERATOR(Opcode):
     _stack_change = 0
 
@@ -801,44 +539,6 @@ class NEXT_ITERATOR(Opcode):
         if isinterrupt(next_el):
             return
         routine.stack.push(next_el)
-
-
-# ---------------- with support ---------------------
-
-
-class WITH(Opcode):
-    _immutable_fields_ = ['body']
-
-    def __init__(self, body):
-        self.body = body
-
-    def eval(self, routine):
-        from obin.runtime.completion import is_return_completion
-        from obin.runtime.context import WithExecutionContext
-        # 12.10
-        expr = routine.stack.pop()
-        expr_obj = expr.ToObject()
-
-        with_routine = WithExecutionContext(self.body, expr_obj, routine)
-
-        c = self.body.run(with_routine)
-        if is_return_completion(c):
-            return c
-        else:
-            routine.stack.push(c.value)
-
-# ------------------ delete -------------------------
-
-class DELETE_MEMBER(Opcode):
-    _stack_change = 0
-
-    def eval(self, routine):
-        what = routine.stack.pop().to_string()
-        obj = routine.stack.pop().ToObject()
-        res = obj.delete(what)
-        routine.stack.push(_w(res))
-
-# different opcode mappings, to make annotator happy
 
 OpcodeMap = {}
 

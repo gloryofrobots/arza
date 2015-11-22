@@ -1,3 +1,5 @@
+from obin.runtime.primitives import newprimitives
+
 def run_routine_for_result(routine, ctx=None):
     if ctx:
         routine.set_context(ctx)
@@ -36,6 +38,10 @@ class Process(object):
         self.__state = Process.State.IDLE
         self.__routine = None
         self.result = None
+        self.__primitives = newprimitives()
+
+    def get_primitive(self, pid):
+        return self.__primitives[pid]
 
     @property
     def routine(self):

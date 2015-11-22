@@ -5,14 +5,8 @@ from obin.runtime.routine import complete_native_routine
 from obin.objects import api
 
 def setup_builtins(interpreter, obj):
-    interpreter.add_primitive(u"__add_traits__", add_traits)
+    pass
 
-@complete_native_routine
-def add_traits(routine):
-    object = routine.get_arg(0)
-    for i in range(1, routine.count_args):
-        t = routine.get_arg(i)
-        object.isa(t)
 
 
 @complete_native_routine

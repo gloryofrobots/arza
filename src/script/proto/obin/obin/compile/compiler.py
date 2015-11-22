@@ -5,6 +5,7 @@ from parser import *
 
 from obin.compile.scope import Scope
 from obin.objects.object_space import newstring, isstring
+from obin.runtime import primitives
 
 def compile_error(node, message, args):
     error_message = "Compile Error %d:%d %s" % (node.line, node.position, message)
@@ -200,90 +201,90 @@ class Compiler(object):
         strval = unicode_unescape(strval)
         self._emit_string(bytecode, newstring(strval))
 
-    def compile_binary(self, code, node, name):
+    def compile_binary_primitive(self, code, node, name):
         self._compile(code, node.first())
         self._compile(code, node.second())
-        code.emit(name)
+        code.emit("CALL_PRIMITIVE", name)
 
-    def compile_unary(self, code, node, name):
+    def compile_unary_primitive(self, code, node, name):
         self._compile(code, node.first())
-        code.emit(name)
+        code.emit("CALL_PRIMITIVE", name)
 
     def _compile_BITAND(self, code, node):
-        self.compile_binary(code, node, "BITAND")
+        self.compile_binary_primitive(code, node, primitives.BITAND)
 
     def _compile_BITOR(self, code, node):
-        self.compile_binary(code, node, "BITOR")
+        self.compile_binary_primitive(code, node, primitives.BITOR)
 
     def _compile_BITXOR(self, code, node):
-        self.compile_binary(code, node, "BITXOR")
+        self.compile_binary_primitive(code, node, primitives.BITXOR)
 
     def _compile_ADD(self, code, node):
         if node.arity == 2:
-            self.compile_binary(code, node, "ADD")
+            self.compile_binary_primitive(code, node, primitives.ADD)
         elif node.arity == 1:
-            self.compile_unary(code, node, "UPLUS")
+            self.compile_unary_primitive(code, node, primitives.UPLUS)
         else:
             assert 0
 
     def _compile_MUL(self, code, node):
-        self.compile_binary(code, node, "MUL")
+        self.compile_binary_primitive(code, node, primitives.MUL)
 
     def _compile_MOD(self, code, node):
-        self.compile_binary(code, node, "MOD")
+        self.compile_binary_primitive(code, node, primitives.MOD)
 
     def _compile_DIV(self, code, node):
-        self.compile_binary(code, node, "DIV")
+        self.compile_binary_primitive(code, node, primitives.DIV)
 
     def _compile_SUB(self, code, node):
         if node.arity == 2:
-            self.compile_binary(code, node, "SUB")
+            self.compile_binary_primitive(code, node, primitives.SUB)
         elif node.arity == 1:
-            self.compile_unary(code, node, "UMINUS")
+            self.compile_unary_primitive(code, node, primitives.UMINUS)
         else:
             assert 0
 
     def _compile_BITNOT(self, code, node):
-        self.compile_unary(code, node, "BITNOT")
+        self.compile_unary_primitive(code, node, primitives.BITNOT)
 
     def _compile_NOT(self, code, node):
-        self.compile_unary(code, node, "NOT")
+        self.compile_unary_primitive(code, node, primitives.NOT)
 
     def _compile_GE(self, code, node):
-        self.compile_binary(code, node, "GE")
+        self.compile_binary_primitive(code, node, primitives.GE)
 
     def _compile_GT(self, code, node):
-        self.compile_binary(code, node, "GT")
+        self.compile_binary_primitive(code, node, primitives.GT)
 
     def _compile_LE(self, code, node):
-        self.compile_binary(code, node, "LE")
+        self.compile_binary_primitive(code, node, primitives.LE)
 
     def _compile_LT(self, code, node):
-        self.compile_binary(code, node, "LT")
+        self.compile_binary_primitive(code, node, primitives.LT)
 
     def _compile_IS(self, code, node):
-        self.compile_binary(code, node, "IS")
+        self.compile_binary_primitive(code, node, primitives.IS)
 
     def _compile_ISNOT(self, code, node):
-        self.compile_binary(code, node, "ISNOT")
+        self.compile_binary_primitive(code, node, primitives.ISNOT)
 
     def _compile_IN(self, code, node):
-        self.compile_binary(code, node, "IN")
+        self.compile_binary_primitive(code, node, primitives.IN)
 
     def _compile_EQ(self, code, node):
-        self.compile_binary(code, node, "EQ")
+        self.compile_binary_primitive(code, node, primitives.EQ)
 
     def _compile_NE(self, code, node):
-        self.compile_binary(code, node, "NE")
+        self.compile_binary_primitive(code, node, primitives.NE)
 
     def _compile_LSHIFT(self, code, node):
-        self.compile_binary(code, node, "LSH")
+        self.compile_binary_primitive(code, node, primitives.LSH)
 
     def _compile_RSHIFT(self, code, node):
-        self.compile_binary(code, node, "RSH")
+        self.compile_binary_primitive(code, node, primitives.RSH)
 
     def _compile_URSHIFT(self, code, node):
-        self.compile_binary(code, node, "URSH")
+        self.compile_binary_primitive(code, node, primitives.URSH)
 
     def _compile_AND(self, bytecode, node):
         self._compile(bytecode, node.first())
@@ -326,7 +327,7 @@ class Compiler(object):
         self._compile(bytecode, node.second())
         self._emit_store(bytecode, name)
 
-    def _compile_modify_assignment_dot(self, bytecode, node, operation):
+    def _compile_modify_assignment_dot_primitive(self, bytecode, node, operation):
         member = node.first()
         name = newstring(member.second().value)
 
@@ -334,7 +335,7 @@ class Compiler(object):
 
         self._compile(bytecode, node.first())
         self._compile(bytecode, node.second())
-        bytecode.emit(operation)
+        bytecode.emit("CALL_PRIMITIVE", operation)
 
         # self._compile(bytecode, node.second())
         self._emit_string(bytecode, name)
@@ -342,42 +343,42 @@ class Compiler(object):
         bytecode.emit('STORE_MEMBER')
         pass
 
-    def _compile_modify_assignment(self, bytecode, node, operation):
+    def _compile_modify_assignment_primitive(self, bytecode, node, operation):
         left = node.first()
         if left.type == TT_DOT:
-            return self._compile_modify_assignment_dot(bytecode, node, operation)
+            return self._compile_modify_assignment_dot_primitive(bytecode, node, operation)
 
         name = newstring(left.value)
 
         # self._compile(bytecode, left)
         self._compile(bytecode, node.first())
         self._compile(bytecode, node.second())
-        bytecode.emit(operation)
+        bytecode.emit("CALL_PRIMITIVE", operation)
         self._emit_store(bytecode, name)
 
     def _compile_ADD_ASSIGN(self, code, node):
-        self._compile_modify_assignment(code, node, "ADD")
+        self._compile_modify_assignment_primitive(code, node, primitives.ADD)
 
     def _compile_SUB_ASSIGN(self, code, node):
-        self._compile_modify_assignment(code, node, "SUB")
+        self._compile_modify_assignment_primitive(code, node, primitives.SUB)
 
     def _compile_MUL_ASSIGN(self, code, node):
-        self._compile_modify_assignment(code, node, "MUL")
+        self._compile_modify_assignment_primitive(code, node, primitives.MUL)
 
     def _compile_DIV_ASSIGN(self, code, node):
-        self._compile_modify_assignment(code, node, "DIV")
+        self._compile_modify_assignment_primitive(code, node, primitives.DIV)
 
     def _compile_MOD_ASSIGN(self, code, node):
-        self._compile_modify_assignment(code, node, "MOD")
+        self._compile_modify_assignment_primitive(code, node, primitives.MOD)
 
     def _compile_BITOR_ASSIGN(self, code, node):
-        self._compile_modify_assignment(code, node, "BITOR")
+        self._compile_modify_assignment_primitive(code, node, primitives.BITOR)
 
     def _compile_BITAND_ASSIGN(self, code, node):
-        self._compile_modify_assignment(code, node, "BITAND")
+        self._compile_modify_assignment_primitive(code, node, primitives.BITAND)
 
     def _compile_BITXOR_ASSIGN(self, code, node):
-        self._compile_modify_assignment(code, node, "BITXOR")
+        self._compile_modify_assignment_primitive(code, node, primitives.BITXOR)
 
     def _compile_NAME(self, code, node):
         name = newstring(node.value)

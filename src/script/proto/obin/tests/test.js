@@ -183,3 +183,4 @@ fn inner_loop() {
 
 inner_loop()
 C(10,100,1000)
+x = 1 + 2 * 3

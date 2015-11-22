@@ -11,6 +11,8 @@ def tobool(obj):
     from object_space import newbool
     return newbool(obj._tobool_())
 
+def toboolvalue(obj):
+    return obj._tobool_()
 
 def delete(obj, k):
     from object_space import isundefined
