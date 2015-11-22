@@ -207,8 +207,8 @@ class LOAD_OBJECT(Opcode):
 
         routine.stack.push(w_obj)
 
-    def __repr__(self):
-        return 'LOAD_OBJECT %d' % (self.counter,)
+    def __str__(self):
+        return 'LOAD_OBJECT %d %d' % (self.count_items, self.count_traits)
 
 
 class LOAD_MEMBER(Opcode):

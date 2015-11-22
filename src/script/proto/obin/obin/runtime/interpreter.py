@@ -18,21 +18,12 @@ class Interpreter(object):
         import obin.builtins.interpreter_builtins
 
         self.process = Process()
-
-        self.primitives = {}
         self.config = InterpreterConfig(config)
         self.builtins = newobject()
         self.modules = []
-
         object_space.interpreter = self
 
         obin.builtins.setup_builtins(self.builtins)
-
-    def add_primitive(self, primitive_id, func):
-        self.primitives[primitive_id] = func
-
-    def get_primitive(self, primitive_id):
-        return self.primitives[primitive_id]
 
     def run_src(self, src):
         from obin.compile.compiler import compile_module
@@ -42,5 +33,4 @@ class Interpreter(object):
 
     def run_module(self, module):
         result = self.process.run_with_module(module, self.builtins)
-        print result
         return result

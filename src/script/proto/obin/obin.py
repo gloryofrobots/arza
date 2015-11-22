@@ -34,7 +34,7 @@ def run(files, opts):
     for filename in files:
         src = load_file(filename)
 
-        interp.run_src(src)
+        print interp.run_src(src)
         # try:
         # except ParseError as exc:
         #     printsyntaxerror(unicode(filename), exc, src)
