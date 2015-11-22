@@ -3,60 +3,14 @@ from rpython.rlib import jit
 from obin.runtime.exception import ObinReferenceError
 
 
-class Context(object):
-    _immutable_fields_ = ['_stack_', '_env_',
-                          '_refs_', '_routine_',
-                          '_args_', '_resizable_']
-    # TODO why are _formal_parameters_, _w_func_ etc. required here?
+class References(object):
     _virtualizable2_ = ['_refs_[*]']
     _settled_ = True
 
-    def __init__(self, stack_size, refs_size, routine, env):
-        name = self.__class__.__name__
-        self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
-
-        self._stack_ = Stack(stack_size)
-        self._routine_ = routine
-        self._routine_.set_context(self)
-        self._env_ = env
-        self._refs_ = [None] * refs_size
-        self._resizable_ = not bool(refs_size)
-
-    def routine(self):
-        return self._routine_
-
-    def process(self):
-        assert self._routine_
-        assert self._routine_.process
-        return self._routine_.process
-
-    def stack_append(self, value):
-        from obin.objects.object_space import isany
-        assert isany(value)
-        self._stack_.push(value)
-
-    def stack_pop(self):
-        return self._stack_.pop()
-
-    def stack_top(self):
-        return self._stack_.top()
-
-    @jit.unroll_safe
-    def stack_pop_n(self, n):
-        return self._stack_.pop_n(n)
-
-    @jit.unroll_safe
-    def stack_pop_n_into(self, n, arr):
-        return self._stack_.pop_n_into(n, arr)
-
-    def stack_pointer(self):
-        return self._stack_.pointer()
-
-    def set_stack_pointer(self, p):
-        self._stack_.set_pointer(p)
-
-    def env(self):
-        return self._env_
+    def __init__(self, env, size):
+        self._refs_ = [None] * size
+        self._resizable_ = not bool(size)
+        self.env = env
 
     def _resize_refs(self, index):
         if index >= len(self._refs_):
@@ -78,12 +32,6 @@ class Context(object):
         assert index >= 0
         self._refs_[index] = value
 
-    def get_local(self, index):
-        return self._env_.get_by_index(index)
-
-    def store_local(self, index, value):
-        self._env_.set_by_index(index, value)
-
     def store_ref(self, symbol, index, value):
         ref = self._get_refs(index)
 
@@ -91,7 +39,7 @@ class Context(object):
             ref.put_value(value)
             return
 
-        ref = self.env().get_reference(symbol)
+        ref = self.env.get_reference(symbol)
         if not ref:
             raise RuntimeError("Unable to store reference", symbol, index, value)
 
@@ -99,20 +47,73 @@ class Context(object):
         self._set_refs(index, ref)
 
     def get_ref(self, symbol, index=-1):
-        # if index < 0:
-        #     lex_env = self.env()
-        #     ref = lex_env.get_reference(symbol)
-        #     return ref
         ref = self._get_refs(index)
 
         if ref is None:
-            lex_env = self.env()
-            ref = lex_env.get_reference(symbol)
+            ref = self.env.get_reference(symbol)
             if not ref:
                 raise ObinReferenceError(symbol)
             self._set_refs(index, ref)
 
         return ref.get_value()
+
+class Context(object):
+    _immutable_fields_ = ['stack', '_env_',
+                          '_routine_',
+                          '_args_', '_resizable_']
+    _settled_ = True
+
+    def __init__(self, stack_size, refs_size, routine, env):
+        self = jit.hint(self, access_directly=True, fresh_virtualizable=True)
+
+        self._routine_ = routine
+        self._routine_.set_context(self)
+        self._env_ = env
+        self.stack = Stack(stack_size)
+        self.refs = References(env, refs_size)
+
+    def routine(self):
+        return self._routine_
+
+    def process(self):
+        assert self._routine_
+        assert self._routine_.process
+        return self._routine_.process
+
+    def stack_append(self, value):
+        from obin.objects.object_space import isany
+        assert isany(value)
+        self.stack.push(value)
+
+    def stack_pop(self):
+        return self.stack.pop()
+
+    def stack_top(self):
+        return self.stack.top()
+
+    @jit.unroll_safe
+    def stack_pop_n(self, n):
+        return self.stack.pop_n(n)
+
+    @jit.unroll_safe
+    def stack_pop_n_into(self, n, arr):
+        return self.stack.pop_n_into(n, arr)
+
+    def stack_pointer(self):
+        return self.stack.pointer()
+
+    def set_stack_pointer(self, p):
+        self.stack.set_pointer(p)
+
+    def env(self):
+        return self._env_
+
+    def get_local(self, index):
+        return self._env_.get_by_index(index)
+
+    def store_local(self, index, value):
+        self._env_.set_by_index(index, value)
+
 
 def create_function_environment(func, routine, args, outer_env):
     from obin.runtime.environment import newenv

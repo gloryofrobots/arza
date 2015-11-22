@@ -173,7 +173,7 @@ class LOAD_OUTER(Opcode):
     # 11.1.2
     def eval(self, ctx):
         # TODO put ref onto stack
-        value = ctx.get_ref(self.identifier, self.index)
+        value = ctx.refs.get_ref(self.identifier, self.index)
         ctx.stack_append(value)
 
     def __str__(self):
@@ -552,7 +552,7 @@ class STORE_OUTER(Opcode):
 
     def eval(self, ctx):
         value = ctx.stack_top()
-        ctx.store_ref(self.identifier, self.index, value)
+        ctx.refs.store_ref(self.identifier, self.index, value)
 
     def __str__(self):
         return 'STORE %s (%d)' % (self.identifier, self.index)
