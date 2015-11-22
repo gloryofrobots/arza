@@ -94,3 +94,92 @@ fn f() {
 }
 f()
 
+object Human {
+    __name__ = "Human"
+    name = nil
+    fn make_shit(self) {
+        print("SHIT from ", self.name)
+    }
+}
+
+object Insect {
+    fn eat_human(self, h) {
+        print("Eating ", h.name)
+    }
+}
+
+object Alice(Human, Insect) {
+    id = 42
+    name = "Alice"
+    object Bob(Human) {
+        name = "Bob"
+        fn hello(self) {
+            print("I am Bob")
+        }
+    }
+    fn greetings(self) {
+        print("Hello from", self.name)
+    }
+    goNorth = fn (self) {
+        print("I ", self.name, " go North")
+    }
+}
+
+N = object {
+    __name__ = "N"
+}
+
+print(N.traits())
+
+N = {
+    __name__ : "N1"
+}
+
+print(N.traits())
+
+N = object(Human) {
+    __name__ = "N2"
+}
+
+print(N.traits())
+
+x  = [1,2,3,4]
+
+for i in Alice {
+    print(i)
+}
+
+Alice.make_shit()
+//Alice.nota(Insect)
+Alice.eat_human(Alice.Bob)
+
+print(Alice)
+print(Alice.Bob)
+print(Alice.greetings)
+
+object C {
+    fn __call__(self, x, y, z) {
+        x + y + z
+    }
+}
+
+fn inner_loop() {
+    x = 0
+    fn f() {
+        outer x
+        while x < 100 {
+            x += 1
+            if x == 8 {
+                continue
+            }
+            elif x == 11 {
+                break
+            }
+            print(x)
+        }
+    }
+    f()
+}
+
+inner_loop()
+C(10,100,1000)

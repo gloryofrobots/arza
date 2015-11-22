@@ -1,0 +1,7 @@
+object C {
+    fn __call__(self, x, y, z) {
+        x + y + z
+    }
+}
+
+C(10,100,1000)

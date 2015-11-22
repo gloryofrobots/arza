@@ -324,8 +324,7 @@ def version(routine):
 
 def _eval(routine):
     from obin.objects.object_space import isstring
-    from obin.runtime.routine import create_bytecode_routine
-    from obin.runtime.context import create_eval_context
+    from obin.runtime.routine import create_eval_routine
 
     x = routine.get_arg(0)
 
@@ -334,8 +333,7 @@ def _eval(routine):
     src = x.value()
     from obin.compile.compiler import compile as cl
     code = cl(src)
-    f = create_bytecode_routine(code)
-    create_eval_context(f)
+    f = create_eval_routine(code)
     routine.call_routine(f)
 
 @complete_native_routine

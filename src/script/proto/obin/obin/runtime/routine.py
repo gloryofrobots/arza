@@ -1,12 +1,10 @@
+from rpython.rlib import jit
+
 from obin.objects.object_space import _w
-
-
-def complete_native_routine(func):
-    def func_wrapper(routine):
-        result = func(routine)
-        routine.complete(_w(result))
-
-    return func_wrapper
+from obin.objects.stack import Stack
+from obin.runtime.reference import References
+from obin.objects.object_space import newstring
+from obin.runtime.environment import newenv
 
 
 class Routine(object):
@@ -54,14 +52,6 @@ class Routine(object):
     def inprocess(self):
         assert not self.is_closed()
         self.__state = Routine.State.INPROCESS
-
-    # called in RETURN
-    def force_complete(self, result):
-        self.complete(result)
-        self._on_force_complete()
-
-    def _on_force_complete(self):
-        raise NotImplementedError()
 
     def complete(self, result):
         assert not self.is_closed()
@@ -122,12 +112,17 @@ class Routine(object):
         return self.__state == Routine.State.COMPLETE \
                or self.__state == Routine.State.TERMINATED
 
-    def is_block(self):
-        return False
-
     def call_routine(self, routine):
         assert self.process
         self.process.call_routine(routine, self, self)
+
+
+def complete_native_routine(func):
+    def func_wrapper(routine):
+        result = func(routine)
+        routine.complete(_w(result))
+
+    return func_wrapper
 
 
 class NativeRoutine(Routine):
@@ -172,59 +167,30 @@ class NativeRoutine(Routine):
 class BytecodeRoutine(Routine):
     _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
 
-    def __init__(self, code, name):
+    def __init__(self, name, code, env):
         super(BytecodeRoutine, self).__init__()
 
         from obin.objects.object_space import isstring
         assert isstring(name)
-
-        self.ctx = None
-        self.__signal = None
-        self.__signal_handlers = {}
-        self.__stack_start_index = None
-
         self._code_ = code
 
         self._name_ = name
 
-        scope = code.scope
-        self._refs_size_ = scope.count_refs
-        self._env_size_ = scope.count_vars
-        self._stack_size_ = code.estimated_stack_size()
         self.pc = 0
         self.result = None
+        self.env = env
 
-    def signal(self):
-        return self.__signal
-
-    def catch_signal(self, signal):
-        handler = self.get_signal_handler(self.__signal)
-        return handler
-
-    def set_context(self, ctx):
-        assert not self.ctx
-        self.ctx = ctx
-
-    def stack_start_index(self):
-        return self.__stack_start_index
-
-    # def set_start_stack_index(self, start_index):
-    #     self.__stack_start_index = start_index
-
-    def add_signal_handler(self, signal, handler):
-        self.__signal_handlers[signal] = handler
-
-    def get_signal_handler(self, signal):
-        from obin.objects.object_space import iskindof
-
-        if not len(self.__signal_handlers):
-            return None
-
-        for catchedsignal in self.__signal_handlers:
-            # if iskindof(catchedsignal, signal):
-
-            #     return self.__signal_handlers[catchedsignal]
-            return self.__signal_handlers[catchedsignal]
+        scope = code.scope
+        refs_size = scope.count_refs
+        stack_size = code.estimated_stack_size()
+        if stack_size:
+            self.stack = Stack(stack_size)
+        else:
+            self.stack = None
+        if refs_size != 0:
+            self.refs = References(env, refs_size)
+        else:
+            self.refs = None
 
     def name(self):
         return self._name_
@@ -233,17 +199,12 @@ class BytecodeRoutine(Routine):
         self.__signal = signal
 
     def _on_resume(self, value):
-        self.ctx.stack.push(value)
+        self.stack.push(value)
 
     def _on_activate(self):
-        assert self.ctx
-        if self.stack_start_index() is not None:
-            self.ctx.stack.set_pointer(self.stack_start_index())
-
-    def _on_complete(self):
         pass
 
-    def _on_force_complete(self):
+    def _on_complete(self):
         pass
 
     def _execute(self):
@@ -262,11 +223,11 @@ class BytecodeRoutine(Routine):
 
         debug = True
 
-        opcode.eval(self.ctx)
+        opcode.eval(self)
         if debug:
             d = u'%s\t%s' % (unicode(str(self.pc)), unicode(str(opcode)))
             # d = u'%s' % (unicode(str(pc)))
-            d = u'%3d %25s %s ' % (self.pc, unicode(opcode), unicode([unicode(s) for s in self.ctx.stack]))
+            d = u'%3d %25s %s ' % (self.pc, unicode(opcode), unicode([unicode(s) for s in self.stack]))
 
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
 
@@ -277,7 +238,7 @@ class BytecodeRoutine(Routine):
         # print "result", self.result
         if isinstance(opcode, BaseJump):
             # print "JUMP"
-            new_pc = opcode.do_jump(self.ctx, self.pc)
+            new_pc = opcode.do_jump(self, self.pc)
             self.pc = new_pc
             # self._execute()
             # # complete after jump
@@ -285,12 +246,6 @@ class BytecodeRoutine(Routine):
             #     return
         else:
             self.pc += 1
-
-    def estimated_stack_size(self):
-        return self._stack_size_
-
-    def estimated_refs_count(self):
-        return self._refs_size_
 
     def bytecode(self):
         return self._code_
@@ -302,33 +257,75 @@ class BytecodeRoutine(Routine):
         else:
             return u'function () { }'
 
-    # def __repr__(self):
-    #     return "%s" % (self.bytecode())
+            # def __repr__(self):
+            #     return "%s" % (self.bytecode())
 
-def create_native_routine(name, primitive, args, arity):
+
+def create_primitive_routine(name, primitive, args, arity):
     return NativeRoutine(name, primitive, args, arity)
 
-def create_function_routine(code, name):
-    return BytecodeRoutine(code, name)
 
-def create_bytecode_routine(code):
-    from obin.objects.object_space import newstring
-    return BytecodeRoutine(code, newstring("UNNAMED"))
+def create_module_routine(code, module, _globals):
+    if _globals is not None:
+        global_env = newenv(_globals, None)
+    else:
+        global_env = None
+    env = newenv(module, global_env)
+    return jit.promote(BytecodeRoutine(newstring("__module__"), code, env))
 
 
-class BlockRoutine(BytecodeRoutine):
-    _immutable_fields_ = ['_code_', '_stack_size_', '_symbol_size_', '_signal_name_']
+def create_eval_routine(code):
+    from obin.runtime.environment import newenv
+    obj = code.scope.create_object()
+    env = newenv(obj, None)
+    return jit.promote(BytecodeRoutine(newstring("__module__"), code, env))
 
-    def __init__(self, _signal_name_, code):
-        from obin.objects.object_space import newstring
-        BytecodeRoutine.__init__(self, code, newstring("BLOCK"))
-        self._signal_name_ = _signal_name_
 
-    def is_block(self):
-        return True
+def create_function_routine(func, args, outer_env):
+    # TODO CHANGE TO PUBLIC FIELDS
+    code = func._bytecode_
+    scope = code.scope
+    name = func._name_
 
-    def signal_name(self):
-        return self._signal_name_
+    env = create_function_environment(func, scope, args, outer_env)
+    return jit.promote(BytecodeRoutine(name, code, env))
 
-    def _on_force_complete(self):
-        self.process.complete_last_routine(self.result)
+
+def create_function_environment(func, scope, args, outer_env):
+    from obin.runtime.environment import newenv
+    from obin.objects.object_space import newplainobject_with_slots, newvector
+
+    declared_args_count = scope.count_args
+    is_variadic = scope.is_variadic
+    args_count = args.length()
+
+    if not is_variadic:
+        if args_count < declared_args_count:
+            raise RuntimeError("Wrong argument count in function call %d < %d %s" % (args_count, declared_args_count,
+                                                                                     str(scope.variables.keys())))
+
+        actual_args_count = declared_args_count
+        if args_count != actual_args_count:
+            raise RuntimeError("Wrong argument count in function call %s %s" %
+                               (str(scope.variables.keys()), str(args)))
+    else:
+        varargs_index = declared_args_count - 1
+        actual_args_count = varargs_index
+
+        if args_count < actual_args_count:
+            raise RuntimeError("Wrong argument count in function call %d < %d %s" % (args_count, declared_args_count,
+                                                                                     str(scope.variables.keys())))
+
+        if args_count != actual_args_count:
+            args.fold_slice_into_itself(actual_args_count)
+        else:
+            args.append(newvector([]))
+
+    slots = scope.create_environment_slots(args)
+    env = newenv(newplainobject_with_slots(slots), outer_env)
+
+    fn_index = scope.fn_name_index
+    if fn_index != -1:
+        env.set_local(fn_index, func)
+
+    return env

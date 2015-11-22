@@ -64,7 +64,7 @@ def setup(obj):
 
 # 15.8.2.9
 @complete_native_routine
-def floor(ctx, routine):
+def floor(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     x = arg0.ToNumber()
@@ -77,7 +77,7 @@ def floor(ctx, routine):
 
 # 15.8.2.1
 @complete_native_routine
-def js_abs(ctx, routine):
+def js_abs(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     x = arg0.ToNumber()
@@ -90,7 +90,7 @@ def js_abs(ctx, routine):
 
 # 15.8.2.15
 @complete_native_routine
-def js_round(ctx, routine):
+def js_round(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     x = arg0.ToNumber()
@@ -148,7 +148,7 @@ def eq_signed_zero(a, b):
 
 # 15.8.2.13
 @complete_native_routine
-def js_pow(ctx, routine):
+def js_pow(routine):
     this, args = routine.args()
     w_x = get_arg(args, 0)
     w_y = get_arg(args, 1)
@@ -206,7 +206,7 @@ def js_pow(ctx, routine):
 
 # 15.8.2.17
 @complete_native_routine
-def js_sqrt(ctx, routine):
+def js_sqrt(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     x = arg0.ToNumber()
@@ -225,7 +225,7 @@ def js_sqrt(ctx, routine):
 
 # 15.8.2.10
 @complete_native_routine
-def js_log(ctx, routine):
+def js_log(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     x = arg0.ToNumber()
@@ -247,7 +247,7 @@ def js_log(ctx, routine):
 
 # 15.8.2.11
 @complete_native_routine
-def js_min(ctx, routine):
+def js_min(routine):
     this, args = routine.args()
     values = []
     for arg in args:
@@ -275,7 +275,7 @@ def js_min(ctx, routine):
 
 # 15.8.2.12
 @complete_native_routine
-def js_max(ctx, routine):
+def js_max(routine):
     this, args = routine.args()
     values = []
     for arg in args:
@@ -300,7 +300,7 @@ def js_max(ctx, routine):
 
 # 15.8.2.17
 @complete_native_routine
-def js_sin(ctx, routine):
+def js_sin(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     x = arg0.ToNumber()
@@ -316,7 +316,7 @@ def js_sin(ctx, routine):
 
 # 15.8.2.18
 @complete_native_routine
-def js_tan(ctx, routine):
+def js_tan(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     x = arg0.ToNumber()
@@ -332,7 +332,7 @@ def js_tan(ctx, routine):
 
 # 15.8.2.2
 @complete_native_routine
-def js_acos(ctx, routine):
+def js_acos(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     x = arg0.ToNumber()
@@ -348,7 +348,7 @@ def js_acos(ctx, routine):
 
 # 15.8.2.3
 @complete_native_routine
-def js_asin(ctx, routine):
+def js_asin(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     x = arg0.ToNumber()
@@ -364,7 +364,7 @@ def js_asin(ctx, routine):
 
 # 15.8.2.4
 @complete_native_routine
-def js_atan(ctx, routine):
+def js_atan(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     x = arg0.ToNumber()
@@ -383,7 +383,7 @@ def js_atan(ctx, routine):
 
 # 15.8.2.5
 @complete_native_routine
-def js_atan2(ctx, routine):
+def js_atan2(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     arg1 = get_arg(args, 1)
@@ -398,7 +398,7 @@ def js_atan2(ctx, routine):
 
 # 15.8.2.6
 @complete_native_routine
-def js_ceil(ctx, routine):
+def js_ceil(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     x = arg0.ToNumber()
@@ -417,7 +417,7 @@ def js_ceil(ctx, routine):
 
 # 15.8.2.7
 @complete_native_routine
-def js_cos(ctx, routine):
+def js_cos(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     x = arg0.ToNumber()
@@ -430,7 +430,7 @@ def js_cos(ctx, routine):
 
 # 15.8.2.8
 @complete_native_routine
-def js_exp(ctx, routine):
+def js_exp(routine):
     this, args = routine.args()
     arg0 = get_arg(args, 0)
     x = arg0.ToNumber()
@@ -453,7 +453,7 @@ random = rrandom.Random(int(time.time()))
 
 # 15.8.2.14
 @complete_native_routine
-def js_random(ctx, routine):
+def js_random(routine):
     return random.random()
 
 # 15.8.1.1
