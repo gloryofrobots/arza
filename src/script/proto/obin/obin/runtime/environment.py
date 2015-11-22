@@ -33,13 +33,13 @@ class Environment(object):
     def get_reference(self, identifier):
         return get_reference(self.outer_environment, identifier)
 
-    def set_by_index(self, idx, v):
+    def set_local(self, idx, v):
         self.binding.put_by_index(idx, v)
 
     def get_index(self, n):
         return self.binding.get_index(n)
 
-    def get_by_index(self, idx):
+    def get_local(self, idx):
         return self.binding.get_by_index(idx)
 
     def has_binding(self, n):

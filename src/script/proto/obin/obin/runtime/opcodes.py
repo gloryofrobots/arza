@@ -33,10 +33,10 @@ class BaseBinaryComparison(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
-        s4 = ctx.stack_pop()
-        s2 = ctx.stack_pop()
+        s4 = ctx.stack.pop()
+        s2 = ctx.stack.pop()
         res = self.decision(s2, s4)
-        ctx.stack_append(res)
+        ctx.stack.push(res)
 
     def decision(self, op1, op2):
         raise NotImplementedError
@@ -46,9 +46,9 @@ class BaseBinaryBitwiseOp(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
-        s5 = ctx.stack_pop().value()()
-        s6 = ctx.stack_pop().value()()
-        ctx.stack_append(self.operation(ctx, s5, s6))
+        s5 = ctx.stack.pop().value()()
+        s6 = ctx.stack.pop().value()()
+        ctx.stack.push(self.operation(ctx, s5, s6))
 
     def operation(self, ctx, op1, op2):
         raise NotImplementedError
@@ -58,9 +58,9 @@ class BaseBinaryOperation(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
-        right = ctx.stack_pop()
-        left = ctx.stack_pop()
-        ctx.stack_append(self.operation(ctx, left, right))
+        right = ctx.stack.pop()
+        left = ctx.stack.pop()
+        ctx.stack.push(self.operation(ctx, left, right))
 
 
 class BaseUnaryOperation(Opcode):
@@ -75,7 +75,7 @@ class LOAD_INTCONSTANT(Opcode):
         self.w_intvalue = newint(int(value))
 
     def eval(self, ctx):
-        ctx.stack_append(self.w_intvalue)
+        ctx.stack.push(self.w_intvalue)
 
     def __str__(self):
         return 'LOAD_INTCONSTANT %s' % (self.w_intvalue.value(),)
@@ -89,7 +89,7 @@ class LOAD_BOOLCONSTANT(Opcode):
         self.w_boolval = newbool(value)
 
     def eval(self, ctx):
-        ctx.stack_append(self.w_boolval)
+        ctx.stack.push(self.w_boolval)
 
     def __str__(self):
         if self.w_boolval.to_boolean():
@@ -105,7 +105,7 @@ class LOAD_FLOATCONSTANT(Opcode):
         self.w_floatvalue = newfloat(float(value))
 
     def eval(self, ctx):
-        ctx.stack_append(self.w_floatvalue)
+        ctx.stack.push(self.w_floatvalue)
 
     def __str__(self):
         return 'LOAD_FLOATCONSTANT %s' % (self.w_floatvalue.value(),)
@@ -121,7 +121,7 @@ class LOAD_STRINGCONSTANT(Opcode):
 
     def eval(self, ctx):
         w_strval = self.w_strval
-        ctx.stack_append(w_strval)
+        ctx.stack.push(w_strval)
 
     def __str__(self):
         return u'LOAD_STRINGCONSTANT "%s"' % (api.tostring(self.w_strval))
@@ -130,13 +130,13 @@ class LOAD_STRINGCONSTANT(Opcode):
 class LOAD_UNDEFINED(Opcode):
     def eval(self, ctx):
         from obin.objects.object_space import newundefined
-        ctx.stack_append(newundefined())
+        ctx.stack.push(newundefined())
 
 
 class LOAD_NULL(Opcode):
     def eval(self, ctx):
         from obin.objects.object_space import newnull
-        ctx.stack_append(newnull())
+        ctx.stack.push(newnull())
 
 
 class LOAD_LOCAL(Opcode):
@@ -150,11 +150,11 @@ class LOAD_LOCAL(Opcode):
     # 11.1.2
     def eval(self, ctx):
         # TODO put ref onto stack
-        value = ctx.get_local(self.index)
+        value = ctx.env.get_local(self.index)
         if value is None:
             raise ObinReferenceError(self.identifier)
 
-        ctx.stack_append(value)
+        ctx.stack.push(value)
 
     def __str__(self):
         return 'LOAD_LOCAL %s (%d)' % (self.identifier, self.index)
@@ -174,7 +174,7 @@ class LOAD_OUTER(Opcode):
     def eval(self, ctx):
         # TODO put ref onto stack
         value = ctx.refs.get_ref(self.identifier, self.index)
-        ctx.stack_append(value)
+        ctx.stack.push(value)
 
     def __str__(self):
         return 'LOAD_OUTER %s (%d)' % (self.identifier, self.index)
@@ -191,10 +191,10 @@ class LOAD_VECTOR(Opcode):
         from obin.objects.object_space import newvector
         array = newvector()
 
-        list_w = ctx.stack_pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
+        list_w = ctx.stack.pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
         for el in list_w:
             array.append(el)
-        ctx.stack_append(array)
+        ctx.stack.push(array)
 
     def stack_change(self):
         return -1 * self.counter + 1
@@ -215,10 +215,9 @@ class LOAD_FUNCTION(Opcode):
     def eval(self, ctx):
         from obin.objects.object_space import newfunc
 
-        scope = ctx.env()
-        w_func = newfunc(self.name, self.code, scope)
+        w_func = newfunc(self.name, self.code, ctx.env)
 
-        ctx.stack_append(w_func)
+        ctx.stack.push(w_func)
 
     def __repr__(self):
         return "\n%s\n**************\n%s\n******************\n" % (str(self.__class__), str(self.code))
@@ -236,15 +235,15 @@ class LOAD_OBJECT(Opcode):
         from obin.objects.object_space import newobject
         w_obj = newobject()
         for _ in range(self.count_items):
-            name = ctx.stack_pop()
-            w_elem = ctx.stack_pop()
+            name = ctx.stack.pop()
+            w_elem = ctx.stack.pop()
             api.put(w_obj, name, w_elem)
 
         for _ in range(self.count_traits):
-            trait = ctx.stack_pop()
+            trait = ctx.stack.pop()
             w_obj.isa(trait)
 
-        ctx.stack_append(w_obj)
+        ctx.stack.push(w_obj)
 
     #def __repr__(self):
         #return 'LOAD_OBJECT %d' % (self.counter,)
@@ -254,11 +253,11 @@ class LOAD_MEMBER(Opcode):
     _stack_change = -1
 
     def eval(self, ctx):
-        w_obj = ctx.stack_pop()
-        w_name = ctx.stack_pop()
+        w_obj = ctx.stack.pop()
+        w_name = ctx.stack.pop()
         value = api.at(w_obj, w_name)
 
-        ctx.stack_append(value)
+        ctx.stack.push(value)
 
     def __str__(self):
         return 'LOAD_MEMBER'
@@ -269,18 +268,18 @@ class LOAD_MEMBER_DOT(LOAD_MEMBER):
         return 'LOAD_MEMBER_DOT'
 
     def eval(self, ctx):
-        w_obj = ctx.stack_pop()
-        w_name = ctx.stack_pop()
+        w_obj = ctx.stack.pop()
+        w_name = ctx.stack.pop()
         value = api.lookup(w_obj, w_name)
 
-        ctx.stack_append(value)
+        ctx.stack.push(value)
 
 
 class COMMA(BaseUnaryOperation):
     def eval(self, ctx):
-        one = ctx.stack_pop()
-        ctx.stack_pop()
-        ctx.stack_append(one)
+        one = ctx.stack.pop()
+        ctx.stack.pop()
+        ctx.stack.push(one)
         # XXX
 
 
@@ -331,15 +330,15 @@ class BITOR(BaseBinaryBitwiseOp):
 
 class BITNOT(BaseUnaryOperation):
     def eval(self, ctx):
-        op = ctx.stack_pop().value()()
+        op = ctx.stack.pop().value()()
         from obin.objects.object_space import newint
-        ctx.stack_append(newint(~op))
+        ctx.stack.push(newint(~op))
 
 
 class URSH(BaseBinaryBitwiseOp):
     def eval(self, ctx):
-        rval = ctx.stack_pop()
-        lval = ctx.stack_pop()
+        rval = ctx.stack.pop()
+        lval = ctx.stack.pop()
 
         rnum = rval.value()
         lnum = lval.value()
@@ -356,27 +355,27 @@ class URSH(BaseBinaryBitwiseOp):
         #except OverflowError:
             #w_res = _w(float(res))
 
-        ctx.stack_append(w_res)
+        ctx.stack.push(w_res)
 
 
 class RSH(BaseBinaryBitwiseOp):
     def eval(self, ctx):
-        rval = ctx.stack_pop()
-        lval = ctx.stack_pop()
+        rval = ctx.stack.pop()
+        lval = ctx.stack.pop()
 
         rnum = rval.value()
         lnum = lval.value()()
         shift_count = rnum & 0x1F
         res = lnum >> shift_count
 
-        ctx.stack_append(_w(res))
+        ctx.stack.push(_w(res))
 
 
 class LSH(BaseBinaryBitwiseOp):
     def eval(self, ctx):
         from obin.objects.object import int32
-        rval = ctx.stack_pop()
-        lval = ctx.stack_pop()
+        rval = ctx.stack.pop()
+        lval = ctx.stack.pop()
 
         lnum = lval.value()()
         rnum = rval.value()
@@ -384,7 +383,7 @@ class LSH(BaseBinaryBitwiseOp):
         shift_count = intmask(rnum & 0x1F)
         res = int32(lnum << shift_count)
 
-        ctx.stack_append(_w(res))
+        ctx.stack.push(_w(res))
 
 
 class MUL(BaseBinaryOperation):
@@ -404,7 +403,7 @@ class MOD(BaseBinaryOperation):
 
 class UPLUS(BaseUnaryOperation):
     def eval(self, ctx):
-        expr = ctx.stack_pop()
+        expr = ctx.stack.pop()
         res = None
 
         if isint(expr):
@@ -413,42 +412,42 @@ class UPLUS(BaseUnaryOperation):
             num = expr.ToNumber()
             res = _w(num)
 
-        ctx.stack_append(res)
+        ctx.stack.push(res)
 
 
 class UMINUS(BaseUnaryOperation):
     def eval(self, ctx):
-        ctx.stack_append(uminus(ctx.stack_pop(), ctx))
+        ctx.stack.push(uminus(ctx.stack.pop(), ctx))
 
 
 class NOT(BaseUnaryOperation):
     def eval(self, ctx):
-        val = ctx.stack_pop()
+        val = ctx.stack.pop()
         boolval = val.to_boolean()
         inv_boolval = not boolval
-        ctx.stack_append(_w(inv_boolval))
+        ctx.stack.push(_w(inv_boolval))
 
 
 class INCR(BaseUnaryOperation):
     def eval(self, ctx):
-        value = ctx.stack_pop()
+        value = ctx.stack.pop()
         if isint(value):
             num = value
         else:
             num = _w(value.ToNumber())
         newvalue = increment(num)
-        ctx.stack_append(newvalue)
+        ctx.stack.push(newvalue)
 
 
 class DECR(BaseUnaryOperation):
     def eval(self, ctx):
-        value = ctx.stack_pop()
+        value = ctx.stack.pop()
         if isint(value):
             num = value
         else:
             num = _w(value.ToNumber())
         newvalue = decrement(ctx, num)
-        ctx.stack_append(newvalue)
+        ctx.stack.push(newvalue)
 
 
 class GT(BaseBinaryComparison):
@@ -502,12 +501,12 @@ class STORE_MEMBER(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
-        left = ctx.stack_pop()
-        name = ctx.stack_pop()
-        value = ctx.stack_pop()
+        left = ctx.stack.pop()
+        name = ctx.stack.pop()
+        value = ctx.stack.pop()
         api.put(left, name, value)
 
-        ctx.stack_append(value)
+        ctx.stack.push(value)
 
 class LOAD_PRIMITIVE(Opcode):
     _immutable_fields_ = ['identifier', 'index']
@@ -520,7 +519,7 @@ class LOAD_PRIMITIVE(Opcode):
         from obin.objects.object_space import object_space
         interpreter = object_space.interpreter
         primitive = interpreter.get_primitive(self.prim_id)
-        ctx.stack_append(primitive)
+        ctx.stack.push(primitive)
 
     def __str__(self):
         return 'LOAD_PRIMITIVE %s ' % (self.prim_id)
@@ -535,8 +534,8 @@ class STORE_LOCAL(Opcode):
         self.identifier = identifier
 
     def eval(self, ctx):
-        value = ctx.stack_top()
-        ctx.store_local(self.index, value)
+        value = ctx.stack.top()
+        ctx.env.set_local(self.index, value)
 
     def __str__(self):
         return 'STORE %s (%d)' % (self.identifier, self.index)
@@ -551,7 +550,7 @@ class STORE_OUTER(Opcode):
         self.identifier = identifier
 
     def eval(self, ctx):
-        value = ctx.stack_top()
+        value = ctx.stack.top()
         ctx.refs.store_ref(self.identifier, self.index, value)
 
     def __str__(self):
@@ -600,14 +599,14 @@ class JUMP(BaseJump):
 
 class BaseIfJump(BaseJump):
     def eval(self, ctx):
-        value = ctx.stack_pop()
+        value = ctx.stack.pop()
 
         self.decision = api.tobool(value).value()
 
 
 class BaseIfNopopJump(BaseJump):
     def eval(self, ctx):
-        value = ctx.stack_top()
+        value = ctx.stack.top()
         self.decision = api.tobool(value).value()
 
 
@@ -624,7 +623,7 @@ class JUMP_IF_FALSE(BaseIfJump):
 class JUMP_IF_FALSE_NOPOP(BaseIfNopopJump):
     def do_jump(self, ctx, pos):
         if self.decision:
-            ctx.stack_pop()
+            ctx.stack.pop()
             return pos + 1
         return self.where
 
@@ -646,7 +645,7 @@ class JUMP_IF_TRUE_NOPOP(BaseIfNopopJump):
     def do_jump(self, ctx, pos):
         if self.decision:
             return self.where
-        ctx.stack_pop()
+        ctx.stack.pop()
         return pos + 1
 
     def __str__(self):
@@ -657,7 +656,7 @@ class RETURN(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
-        value = ctx.stack_top()
+        value = ctx.stack.top()
         ctx.routine().force_complete(value)
 
 
@@ -665,7 +664,7 @@ class POP(Opcode):
     _stack_change = -1
 
     def eval(self, ctx):
-        ctx.stack_pop()
+        ctx.stack.pop()
 
 class LOAD_LIST(Opcode):
     _immutable_fields_ = ['counter']
@@ -675,9 +674,9 @@ class LOAD_LIST(Opcode):
 
     def eval(self, ctx):
         # from obin.objects.object import W_List
-        list_w = ctx.stack_pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
+        list_w = ctx.stack.pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
         from obin.objects.object_space import newvector
-        ctx.stack_append(newvector(list_w))
+        ctx.stack.push(newvector(list_w))
 
     def stack_change(self):
         return -1 * self.counter + 1
@@ -692,13 +691,13 @@ def load_arguments(ctx, counter):
     if counter == 0:
         return newvector([])
     # if counter == 1:
-    #     args = ctx.stack_pop()
+    #     args = ctx.stack.pop()
     #     # assert isvector(args)
     #     return args
 
-    vectors = ctx.stack_pop_n(counter)  # [:] # pop_n returns a non-resizable list
+    vectors = ctx.stack.pop_n(counter)  # [:] # pop_n returns a non-resizable list
     # vectors2 = []
-    # ctx.stack_pop_n_into(counter, vectors2)  # [:] # pop_n returns a non-resizable list
+    # ctx.stack.pop_n_into(counter, vectors2)  # [:] # pop_n returns a non-resizable list
 
     first = vectors[0]
     for i in xrange(1, len(vectors)):
@@ -715,7 +714,7 @@ class CALL(Opcode):
         return -1 * self.counter + 1
 
     def eval(self, ctx):
-        func = ctx.stack_pop()
+        func = ctx.stack.pop()
         argv = load_arguments(ctx, self.counter)
 
         api.call(func, ctx, argv)
@@ -736,8 +735,8 @@ class CALL_METHOD(Opcode):
         return -1 * self.counter + 1 + self._stack_change
 
     def eval(self, ctx):
-        method = ctx.stack_pop()
-        what = ctx.stack_pop()
+        method = ctx.stack.pop()
+        what = ctx.stack.pop()
         argv = load_arguments(ctx, self.counter)
 
         func = api.lookup(what, method)
@@ -753,77 +752,23 @@ class CALL_METHOD(Opcode):
 
 class DUP(Opcode):
     def eval(self, ctx):
-        ctx.stack_append(ctx.stack_top())
+        ctx.stack.push(ctx.stack.top())
 
 class THROW(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
-        val = ctx.stack_pop()
+        val = ctx.stack.pop()
         ctx.routine().terminate(val)
-
-class TRYCATCHBLOCK(Opcode):
-    _immutable_fields_ = ['tryexec', 'catchexec', 'catchparam', 'finallyexec']
-
-    def __init__(self, tryfunc, catchparam, catchfunc, finallyfunc):
-        self.tryroutine = tryfunc
-        self.catchroutine = catchfunc
-        self.catchparam = catchparam
-        self.finallyroutine = finallyfunc
-
-    def stack_change(self):
-        trystack = 0
-        catchstack = 0
-        finallystack = 0
-
-        if self.tryroutine is not None:
-            trystack = self.tryroutine.estimated_stack_size()
-        #if self.catchexec is not None:
-            #catchstack = self.catchexec.estimated_stack_size()
-        if self.finallyroutine is not None:
-            finallystack = self.finallyroutine.estimated_stack_size()
-
-        return trystack + catchstack + finallystack
-
-    def eval(self, ctx):
-        from obin.runtime.context import BlockExecutionContext
-        tryroutine = self.tryroutine.clone()
-        catchroutine = self.catchroutine.clone()
-
-        finallroutine = self.finallyroutine.clone() if self.finallyroutine else None
-        parentroutine = ctx.routine()
-
-        stack_p = ctx.stack_pointer()
-
-        trycontext = BlockExecutionContext(tryroutine, ctx)
-        tryroutine.add_signal_handler(None, catchroutine)
-        catchcontext = BlockExecutionContext(catchroutine, ctx)
-        continuation = None
-        if finallroutine:
-            finallycontext = BlockExecutionContext(finallroutine, ctx)
-            # print "finallroutine.estimated_stack_size()", finallroutine.estimated_stack_size()
-            # print finallroutine.code()
-
-            continuation = finallroutine
-            catchroutine.set_continuation(finallroutine)
-            finallroutine.set_continuation(parentroutine)
-        else:
-            catchroutine.set_continuation(parentroutine)
-            continuation = parentroutine
-
-        catchroutine.set_start_stack_index(stack_p)
-        ctx.routine().process.call_routine(tryroutine, continuation, parentroutine)
-
-
 
 # ------------ iterator support ----------------
 class LOAD_ITERATOR(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
-        obj = ctx.stack_pop()
+        obj = ctx.stack.pop()
         iterator = api.iterator(obj)
-        ctx.stack_append(iterator)
+        ctx.stack.push(iterator)
 
 
 class JUMP_IF_ITERATOR_EMPTY(BaseJump):
@@ -831,13 +776,13 @@ class JUMP_IF_ITERATOR_EMPTY(BaseJump):
         pass
 
     def do_jump(self, ctx, pos):
-        last_block_value = ctx.stack_pop()
-        iterator = ctx.stack_top()
+        last_block_value = ctx.stack.pop()
+        iterator = ctx.stack.top()
         if not iterator._tobool_():
             # discard the iterator
-            ctx.stack_pop()
+            ctx.stack.pop()
             # put the last block value on the stack
-            ctx.stack_append(last_block_value)
+            ctx.stack.push(last_block_value)
             return self.where
         return pos + 1
 
@@ -850,12 +795,12 @@ class NEXT_ITERATOR(Opcode):
 
     def eval(self, ctx):
         from obin.objects.object_space import isinterrupt
-        iterator = ctx.stack_top()
+        iterator = ctx.stack.top()
         next_el = api.next(iterator)
         # call is interrupted, probably coroutine call
         if isinterrupt(next_el):
             return
-        ctx.stack_append(next_el)
+        ctx.stack.push(next_el)
 
 
 # ---------------- with support ---------------------
@@ -871,7 +816,7 @@ class WITH(Opcode):
         from obin.runtime.completion import is_return_completion
         from obin.runtime.context import WithExecutionContext
         # 12.10
-        expr = ctx.stack_pop()
+        expr = ctx.stack.pop()
         expr_obj = expr.ToObject()
 
         with_ctx = WithExecutionContext(self.body, expr_obj, ctx)
@@ -880,7 +825,7 @@ class WITH(Opcode):
         if is_return_completion(c):
             return c
         else:
-            ctx.stack_append(c.value)
+            ctx.stack.push(c.value)
 
 # ------------------ delete -------------------------
 
@@ -888,10 +833,10 @@ class DELETE_MEMBER(Opcode):
     _stack_change = 0
 
     def eval(self, ctx):
-        what = ctx.stack_pop().to_string()
-        obj = ctx.stack_pop().ToObject()
+        what = ctx.stack.pop().to_string()
+        obj = ctx.stack.pop().ToObject()
         res = obj.delete(what)
-        ctx.stack_append(_w(res))
+        ctx.stack.push(_w(res))
 
 # different opcode mappings, to make annotator happy
 

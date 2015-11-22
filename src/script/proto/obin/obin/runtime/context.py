@@ -1,61 +1,7 @@
-from obin.objects.stack import Stack
 from rpython.rlib import jit
-from obin.runtime.exception import ObinReferenceError
+from obin.objects.stack import Stack
+from obin.runtime.reference import References
 
-
-class References(object):
-    _virtualizable2_ = ['_refs_[*]']
-    _settled_ = True
-
-    def __init__(self, env, size):
-        self._refs_ = [None] * size
-        self._resizable_ = not bool(size)
-        self.env = env
-
-    def _resize_refs(self, index):
-        if index >= len(self._refs_):
-            self._refs_ += ([None] * (1 + index - len(self._refs_)))
-
-    def _get_refs(self, index):
-        assert index < len(self._refs_)
-        assert index >= 0
-
-        if self._resizable_:
-            self._resize_refs(index)
-
-        return self._refs_[index]
-
-    def _set_refs(self, index, value):
-        if self._resizable_:
-            self._resize_refs(index)
-        assert index < len(self._refs_)
-        assert index >= 0
-        self._refs_[index] = value
-
-    def store_ref(self, symbol, index, value):
-        ref = self._get_refs(index)
-
-        if ref is not None:
-            ref.put_value(value)
-            return
-
-        ref = self.env.get_reference(symbol)
-        if not ref:
-            raise RuntimeError("Unable to store reference", symbol, index, value)
-
-        ref.put_value(value)
-        self._set_refs(index, ref)
-
-    def get_ref(self, symbol, index=-1):
-        ref = self._get_refs(index)
-
-        if ref is None:
-            ref = self.env.get_reference(symbol)
-            if not ref:
-                raise ObinReferenceError(symbol)
-            self._set_refs(index, ref)
-
-        return ref.get_value()
 
 class Context(object):
     _immutable_fields_ = ['stack', '_env_',
@@ -68,7 +14,7 @@ class Context(object):
 
         self._routine_ = routine
         self._routine_.set_context(self)
-        self._env_ = env
+        self.env = env
         self.stack = Stack(stack_size)
         self.refs = References(env, refs_size)
 
@@ -79,40 +25,6 @@ class Context(object):
         assert self._routine_
         assert self._routine_.process
         return self._routine_.process
-
-    def stack_append(self, value):
-        from obin.objects.object_space import isany
-        assert isany(value)
-        self.stack.push(value)
-
-    def stack_pop(self):
-        return self.stack.pop()
-
-    def stack_top(self):
-        return self.stack.top()
-
-    @jit.unroll_safe
-    def stack_pop_n(self, n):
-        return self.stack.pop_n(n)
-
-    @jit.unroll_safe
-    def stack_pop_n_into(self, n, arr):
-        return self.stack.pop_n_into(n, arr)
-
-    def stack_pointer(self):
-        return self.stack.pointer()
-
-    def set_stack_pointer(self, p):
-        self.stack.set_pointer(p)
-
-    def env(self):
-        return self._env_
-
-    def get_local(self, index):
-        return self._env_.get_by_index(index)
-
-    def store_local(self, index, value):
-        self._env_.set_by_index(index, value)
 
 
 def create_function_environment(func, routine, args, outer_env):
@@ -155,7 +67,7 @@ def create_function_environment(func, routine, args, outer_env):
 
     fn_index = scope.fn_name_index
     if fn_index != -1:
-        env.set_by_index(fn_index, func)
+        env.set_local(fn_index, func)
 
     return env
 
@@ -187,40 +99,3 @@ def create_eval_context(routine):
     ctx = Context(routine.estimated_stack_size(), routine.estimated_refs_count(),
                   routine, newenv(obj, None))
     return ctx
-
-
-# class BlockContext(Context):
-#     def __init__(self, code, parent_context):
-#         stack_size = code.estimated_stack_size()
-#         Context.__init__(self, stack_size)
-#
-#         code.set_context(self)
-#         self._parent_context_ = parent_context
-#
-#         parent_env = parent_context.env()
-#
-#         env_size = code.estimated_env_size()
-#         local_env = newenv(parent_env, env_size)
-#
-#         self.set_env(local_env)
-#
-#         self.declaration_binding_initialization()
-#
-#
-# class CatchContext(Context):
-#     def __init__(self, code, catchparam, exception_value, parent_context):
-#         stack_size = code.estimated_stack_size()
-#         Context.__init__(self, stack_size)
-#
-#         env_size = code.estimated_env_size()
-#         self._routine_ = code
-#         self._parent_context_ = parent_context
-#
-#         parent_env = parent_context.env()
-#
-#         local_env = newenv(parent_env, env_size)
-#         local_env.set_binding(catchparam, exception_value)
-#
-#         self.set_env(local_env)
-#
-#         self.declaration_binding_initialization()

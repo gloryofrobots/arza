@@ -35,7 +35,8 @@ class Stack(object):
         return len(self.__data)
 
     def push(self, element):
-        from obin.objects.object_space import isnull
+        from obin.objects.object_space import isnull, isany
+        assert isany(element)
         # from obin.utils import tb
         # if str(element) == "undefined":
         #     tb("CHECK!!!!!!!!!!")
@@ -51,6 +52,7 @@ class Stack(object):
     def set_pointer(self, p):
         self.__pointer = p
 
+    @jit.unroll_safe
     def pop_n_into(self, n, l):
         assert n > 0
 
@@ -60,6 +62,7 @@ class Stack(object):
             e = self.pop()
             l.append(e)
 
+    @jit.unroll_safe
     def pop_n(self, n):
         if n < 1:
             return []

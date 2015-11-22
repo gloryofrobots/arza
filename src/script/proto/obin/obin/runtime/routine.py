@@ -201,10 +201,6 @@ class BytecodeRoutine(Routine):
         handler = self.get_signal_handler(self.__signal)
         return handler
 
-    def stack_top(self):
-        return self.ctx.stack_top()
-        pass
-
     def set_context(self, ctx):
         assert not self.ctx
         self.ctx = ctx
@@ -237,12 +233,12 @@ class BytecodeRoutine(Routine):
         self.__signal = signal
 
     def _on_resume(self, value):
-        self.ctx.stack_append(value)
+        self.ctx.stack.push(value)
 
     def _on_activate(self):
         assert self.ctx
         if self.stack_start_index() is not None:
-            self.ctx.set_stack_pointer(self.stack_start_index())
+            self.ctx.stack.set_pointer(self.stack_start_index())
 
     def _on_complete(self):
         pass
