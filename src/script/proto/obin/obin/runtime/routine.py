@@ -183,6 +183,7 @@ class BytecodeRoutine(Routine):
         scope = code.scope
         refs_size = scope.count_refs
         stack_size = code.estimated_stack_size()
+        self.literals = scope.literals
         if stack_size:
             self.stack = Stack(stack_size)
         else:

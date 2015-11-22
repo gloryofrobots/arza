@@ -29,64 +29,15 @@ class Opcode(object):
         return "%s: sc %s" % (self.__class__.__name__, str(self._stack_change))
 
 
-class LOAD_INTCONSTANT(Opcode):
-    _immutable_fields_ = ['w_intvalue']
-
-    def __init__(self, value):
-        from obin.objects.object_space import newint
-        self.w_intvalue = newint(int(value))
-
+class LOAD_TRUE(Opcode):
     def eval(self, routine):
-        routine.stack.push(self.w_intvalue)
-
-    def __str__(self):
-        return 'LOAD_INTCONSTANT %s' % (self.w_intvalue.value(),)
-
-
-class LOAD_BOOLCONSTANT(Opcode):
-    _immutable_fields_ = ['w_boolval']
-
-    def __init__(self, value):
         from obin.objects.object_space import newbool
-        self.w_boolval = newbool(value)
+        routine.stack.push(newbool(True))
 
+class LOAD_FALSE(Opcode):
     def eval(self, routine):
-        routine.stack.push(self.w_boolval)
-
-    def __str__(self):
-        if self.w_boolval.to_boolean():
-            return 'LOAD_BOOLCONSTANT true'
-        return 'LOAD_BOOLCONSTANT false'
-
-
-class LOAD_FLOATCONSTANT(Opcode):
-    _immutable_fields_ = ['w_floatvalue']
-
-    def __init__(self, value):
-        from obin.objects.object_space import newfloat
-        self.w_floatvalue = newfloat(float(value))
-
-    def eval(self, routine):
-        routine.stack.push(self.w_floatvalue)
-
-    def __str__(self):
-        return 'LOAD_FLOATCONSTANT %s' % (self.w_floatvalue.value(),)
-
-
-class LOAD_STRINGCONSTANT(Opcode):
-    _immutable_fields_ = ['w_strval']
-
-    def __init__(self, value):
-        from obin.objects.object_space import isstring
-        assert isstring(value)
-        self.w_strval = value
-
-    def eval(self, routine):
-        w_strval = self.w_strval
-        routine.stack.push(w_strval)
-
-    def __str__(self):
-        return u'LOAD_STRINGCONSTANT "%s"' % (api.tostring(self.w_strval))
+        from obin.objects.object_space import newbool
+        routine.stack.push(newbool(False))
 
 
 class LOAD_UNDEFINED(Opcode):
@@ -165,6 +116,20 @@ class LOAD_VECTOR(Opcode):
         return 'LOAD_VECTOR %d' % (self.counter,)
 
 
+class LOAD_LITERAL(Opcode):
+    _immutable_fields_ = ['index']
+
+    def __init__(self, index):
+        self.index = index
+
+    # 13.2 Creating Function Objects
+    def eval(self, routine):
+        l = routine.literals[self.index]
+
+        routine.stack.push(l)
+
+    def __str__(self):
+        return 'LOAD_LITERAL %d' % (self.index,)
 
 class LOAD_FUNCTION(Opcode):
     _immutable_fields_ = ['funcobj']

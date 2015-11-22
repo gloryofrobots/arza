@@ -1,6 +1,22 @@
 from obin.objects.object_space import isstring
 from obin.objects.slots import newslots_empty, newslots_with_values_from_slots
 
+class ScopeSet(object):
+    def __init__(self):
+        self.values = []
+
+    def get(self, val):
+        try:
+            return self.values.index(val)
+        except ValueError:
+            return None
+
+    def add(self, val):
+        assert val not in self.values
+        self.values.append(val)
+        return len(self.values) - 1
+
+
 class Scope(object):
     def __init__(self):
         self.locals = newslots_empty()
@@ -8,10 +24,24 @@ class Scope(object):
         self.arg_count = -1
         self.fn_name_index = -1
         self.outers = []
-
         self.arguments = []
-        self.references = []
+
+        self.literals = ScopeSet()
+        self.references = ScopeSet()
         self.is_variadic = False
+
+    def get_reference(self, name):
+        return self.references.get(name)
+
+    def add_reference(self, name):
+        assert isstring(name)
+        return self.references.add(name)
+
+    def get_literal(self, literal):
+        return self.literals.get(literal)
+
+    def add_literal(self, literal):
+        return self.literals.add(literal)
 
     def is_function_scope(self):
         return self.arg_count != -1
@@ -55,32 +85,22 @@ class Scope(object):
         assert isstring(name)
         return name in self.outers
 
-    def get_reference(self, name):
-        assert isstring(name)
-        try:
-            return self.references.index(name)
-        except ValueError:
-            return None
-
-    def add_reference(self, ref):
-        assert isstring(ref)
-        assert ref not in self.references
-        self.references.append(ref)
-        return len(self.references) - 1
-
     def finalize(self):
-        return FinalScope(self.locals, self.arguments, self.references,  self.arg_count, self.is_variadic, self.fn_name_index)
+        return FinalScope(self.locals, self.arguments, self.references.values,
+                          self.literals.values,
+                          self.arg_count, self.is_variadic, self.fn_name_index)
 
 
 class FinalScope(object):
     _immutable_fields_ = ['vars', 'arg_count', 'fn_name_index',
-                          'references[*]', 'is_varargs', 'count_refs', 'count_vars']
+                          'references[*]', 'is_varargs', 'count_refs', 'count_vars', 'literals', 'functions']
 
-    def __init__(self, variables, arguments, references, arg_count, is_varargs, fn_name_index):
+    def __init__(self, variables, arguments, references, literals, arg_count, is_varargs, fn_name_index):
         self.variables = variables
         self.count_args = arg_count
         self.fn_name_index = fn_name_index
         self.references = references
+        self.literals = literals
         self.is_variadic = is_varargs
         self.count_refs = len(self.references)
         self.count_vars = self.variables.length()
