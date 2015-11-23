@@ -1,6 +1,6 @@
 from rpython.rlib import jit
-from obin.runtime.exception import ObinSyntaxError
-from obin.runtime.opcode import *
+from obin.compile.opcode import *
+
 
 def estimate_stack_size(opcodes):
     max_size = 0
@@ -11,11 +11,13 @@ def estimate_stack_size(opcodes):
     assert max_size >= 0
     return max_size
 
-class ByteCodeSource(object):
+
+class CodeSource(object):
     _immutable_fields_ = ['compiled_opcodes[*]', 'scope']
 
     """ That object stands for code of a single javascript function
     """
+
     def __init__(self):
         self.opcodes = []
         self.label_count = 0
@@ -27,15 +29,15 @@ class ByteCodeSource(object):
         self.scope = None
         self._function_name_ = None
         # VALUE FOR AUTOMATIC RETURN
-        self.emit_command(LOAD_UNDEFINED)
+        self.emit_0(LOAD_UNDEFINED)
 
     def finalize_compilation(self, scope_info):
         assert scope_info
         self.scope = scope_info
-        self.emit_command(RETURN)
+        self.emit_0(RETURN)
         self.__remove_labels()
         self.estimated_stack_size = estimate_stack_size(self.opcodes)
-        return ByteCode(self.opcodes, self.estimated_stack_size, self.scope)
+        return Code(self.opcodes, self.estimated_stack_size, self.scope)
 
     def prealocate_label(self):
         num = self.label_count
@@ -53,7 +55,7 @@ class ByteCodeSource(object):
         self.updatelooplabel.append(num)
         return num
 
-    def emit(self, opcode, arg1, arg2):
+    def emit_2(self, opcode, arg1, arg2):
         assert isinstance(opcode, int)
         # from obin.utils import tb
         # if operation == "LOAD_UNDEFINED":
@@ -61,11 +63,11 @@ class ByteCodeSource(object):
         self.opcodes.append((opcode, arg1, arg2))
         return opcode
 
-    def emit_command(self, operation):
-        self.emit(operation, None, None)
+    def emit_0(self, operation):
+        self.emit_2(operation, None, None)
 
-    def emit_unary(self, operation, arg1):
-        self.emit(operation, arg1, None)
+    def emit_1(self, operation, arg1):
+        self.emit_2(operation, arg1, None)
 
     def emit_endloop_label(self, label):
         self.endlooplabel.pop()
@@ -81,20 +83,20 @@ class ByteCodeSource(object):
         if not self.endlooplabel:
             return False
         if self.pop_after_break[-1] is True:
-            self.emit_command(POP)
-        self.emit_unary(JUMP, self.endlooplabel[-1])
+            self.emit_0(POP)
+        self.emit_1(JUMP, self.endlooplabel[-1])
         return True
 
     def emit_continue(self):
         if not self.startlooplabel:
             return False
-        self.emit_unary(JUMP, self.updatelooplabel[-1])
+        self.emit_1(JUMP, self.updatelooplabel[-1])
         return True
 
     def emit_label(self, num=-1):
         if num == -1:
             num = self.prealocate_label()
-        self.emit_unary(LABEL, num)
+        self.emit_1(LABEL, num)
         return num
 
     def emit_startloop_label(self):
@@ -122,10 +124,10 @@ class ByteCodeSource(object):
             else:
                 counter += 1
 
-        opcodes = self.opcodes
+        oldopcodes = self.opcodes
         self.opcodes = [None] * (length - len(labels))
         for i in range(length):
-            op = opcodes[i]
+            op = oldopcodes[i]
             tag = op[0]
             if is_jump_opcode(tag):
                 # print "Jump %d => %d" % (op[1], labels[op[1]])
@@ -141,7 +143,8 @@ class ByteCodeSource(object):
     def __repr__(self):
         return "\n".join([repr(i) for i in self.opcodes])
 
-class ByteCode(object):
+
+class Code(object):
     def __init__(self, opcodes, estimated_stack_size, scope):
         self.opcodes = opcodes
         self.estimated_stack_size = estimated_stack_size

@@ -1,5 +1,5 @@
-from obin.runtime.opcode import *
-from obin.runtime.exception import ObinTypeError, ObinReferenceError
+from obin.compile.opcode.opcodes import *
+from obin.runtime.exception import ObinReferenceError
 from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
 from obin.objects.stack import Stack
@@ -27,11 +27,11 @@ def load_arguments(routine, counter):
     return first
 
 
-class BytecodeRoutine(BaseRoutine):
+class CodeRoutine(BaseRoutine):
     _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
 
     def __init__(self, name, code, env):
-        super(BytecodeRoutine, self).__init__()
+        super(CodeRoutine, self).__init__()
 
         from obin.objects.object_space import isstring
         assert isstring(name)

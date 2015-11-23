@@ -4,7 +4,6 @@ from rpython.rlib.rfloat import isnan, isinf, NAN, formatd, INFINITY
 from rpython.rlib.objectmodel import enforceargs
 from rpython.rlib import jit, debug
 
-from obin.objects.object_map import new_map
 from obin.runtime.exception import *
 from obin.utils import tb
 import api

@@ -1,7 +1,7 @@
 from rpython.rlib import jit
 from obin.objects.object_space import newstring, _w
 from obin.runtime.environment import newenv
-from obin.runtime.routine.bytecode_routine import BytecodeRoutine
+from obin.runtime.routine.code_routine import CodeRoutine
 from obin.runtime.routine.native_routine import NativeRoutine
 
 def complete_native_routine(func):
@@ -21,14 +21,14 @@ def create_module_routine(code, module, _globals):
     else:
         global_env = None
     env = newenv(module, global_env)
-    return jit.promote(BytecodeRoutine(newstring("__module__"), code, env))
+    return jit.promote(CodeRoutine(newstring("__module__"), code, env))
 
 
 def create_eval_routine(code):
     from obin.runtime.environment import newenv
     obj = code.scope.create_object()
     env = newenv(obj, None)
-    return jit.promote(BytecodeRoutine(newstring("__module__"), code, env))
+    return jit.promote(CodeRoutine(newstring("__module__"), code, env))
 
 
 def create_function_routine(func, args, outer_env):
@@ -38,7 +38,7 @@ def create_function_routine(func, args, outer_env):
     name = func._name_
 
     env = create_function_environment(func, scope, args, outer_env)
-    return jit.promote(BytecodeRoutine(name, code, env))
+    return jit.promote(CodeRoutine(name, code, env))
 
 
 def create_function_environment(func, scope, args, outer_env):
