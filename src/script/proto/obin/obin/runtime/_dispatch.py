@@ -5,6 +5,8 @@ from obin.objects.object_space import _w, isint
 from obin.runtime.exception import ObinTypeError, ObinReferenceError
 from obin.objects.object import api
 from obin.utils import tb
+from opcode import *
+
 
 class Opcode(object):
     _settled_ = True
@@ -28,35 +30,56 @@ class Opcode(object):
     def __repr__(self):
         return "%s: sc %s" % (self.__class__.__name__, str(self._stack_change))
 
+def opcode_info(routine, opcode):
+    tag = opcode[0]
+    if tag == LOAD_VECTOR:
+        pass
+    else:
+        l = len(opcode)
+        if l == 0:
+            print opcode_to_str(tag)
+        else:
+            print opcode_to_str(tag), opcode[1]
 
-class LOAD_TRUE(Opcode):
-    _stack_change = 1
-    def eval(self, routine):
-        from obin.objects.object_space import newbool
+    return str(opcode)
+
+__STACK_CHANGES__ = [None] * 32
+def _stack_change(opcode):
+    tag = opcode[0]
+    change = __STACK_CHANGES__[tag]
+    if change is not None:
+        return change
+
+    pass
+
+def _dispatch(routine, opcode):
+    from obin.objects.object_space import newbool
+    from obin.objects.object_space import newundefined
+    from obin.objects.object_space import newnull
+    tag = opcode[0]
+    arg = opcode[1]
+    # *************************************
+    if LOAD_TRUE == tag:
         routine.stack.push(newbool(True))
-
-class LOAD_FALSE(Opcode):
-    _stack_change = 1
-    def eval(self, routine):
-        from obin.objects.object_space import newbool
+    # *************************************
+    if LOAD_FALSE == tag:
         routine.stack.push(newbool(False))
-
-
-class LOAD_UNDEFINED(Opcode):
-    _stack_change = 1
-    def eval(self, routine):
-        from obin.objects.object_space import newundefined
+    # *************************************
+    if LOAD_UNDEFINED == tag:
         routine.stack.push(newundefined())
-
-
-class LOAD_NULL(Opcode):
-    _stack_change = 1
-    def eval(self, routine):
-        from obin.objects.object_space import newnull
+    # *************************************
+    if LOAD_NULL == tag:
+        routine.stack.push(newnull())
+    # *************************************
+    if LOAD_NULL == tag:
+        routine.stack.push(newnull())
+    # *************************************
+    if LOAD_LOCAL == tag:
         routine.stack.push(newnull())
 
 
 class LOAD_LOCAL(Opcode):
+
     _stack_change = 1
     _immutable_fields_ = ['identifier', 'index']
 
