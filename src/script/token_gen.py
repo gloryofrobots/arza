@@ -102,18 +102,18 @@ for name,pattern in TOKENS:
 
 """
 ## FOR PYTHON LEXER
-print "# ************************PYTHON TOKENS*****************************"
+print "# ************************ OBIN TOKENS*****************************"
 for number, token in enumerate(TOKENS):
     print "%s = %d" % (token[0],number)
     
   
-print "# ************************PYTHON TOKENS REPR *****************************"
-print "TT_REPR = {}"
+print "# ************************ OBIN TOKENS REPR *****************************"
+print "__TT_REPR__ = [None] * TT_UNKNOWN" 
 for name,pattern in TOKENS:
-    print "TT_REPR[%s] = '%s'" % (name, name)
+    print "__TT_REPR__[%s] = '%s'" % (name, name)
 
 """
-print "# ************************PYTHON LEXER*****************************"
+print "# ************************ LEXER*****************************"
 for name,pattern in TOKENS:
     print "    ('%s', %s)," % (pattern, name)
 """

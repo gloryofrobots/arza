@@ -43,7 +43,7 @@ class References(object):
         ref.put_value(value)
         self._set_refs(index, ref)
 
-    def get_ref(self, symbol, index=-1):
+    def get_ref(self, symbol, index):
         ref = self._get_refs(index)
 
         if ref is None:

@@ -1,5 +1,5 @@
 __author__ = 'gloryofrobots'
-from obin.runtime.routine.base import BaseRoutine
+from obin.runtime.routine.base_routine import BaseRoutine
 
 class NativeRoutine(BaseRoutine):
     _immutable_fields_ = ['_name_', '_function_']
@@ -30,11 +30,3 @@ class NativeRoutine(BaseRoutine):
 
     def _on_complete(self):
         pass
-        # self.ctx.stack_append(self.result)
-
-    def to_string(self):
-        name = self.name()
-        if name is not None:
-            return u'function %s() { [native code] }' % (name,)
-        else:
-            return u'function () { [native code] }'

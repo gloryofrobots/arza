@@ -13,9 +13,9 @@ def gen_prim_ids():
         print "%s = %d" % (n, i)
 
 def gen_prims_repr():
-    print "__REPR__ = [None] * __LENGTH__"
+    print "__PRIMITIVE_REPR__ = [None] * __LENGTH__"
     for p in PRIMITIVES[0:-1]:
-        print "__REPR__[%s] = %s" % (p, ("\"%s\"" % p))
+        print "__PRIMITIVE_REPR__[%s] = %s" % (p, ("\"%s\"" % p))
 
 
 def gen_prims_factory():
@@ -37,7 +37,7 @@ def gen_prim_to_str():
     print \
 """
 def primitive_to_str(p):
-    return __REPR__[p]\n\n
+    return __PRIMITIVE_REPR__[p]\n\n
 """ 
 
 print "from obin.runtime.primitives.base import *"

@@ -1,8 +1,8 @@
 from rpython.rlib import jit
 from obin.objects.object_space import newstring, _w
 from obin.runtime.environment import newenv
-from obin.runtime.routine.bytecode import BytecodeRoutine
-from obin.runtime.routine.native import NativeRoutine
+from obin.runtime.routine.bytecode_routine import BytecodeRoutine
+from obin.runtime.routine.native_routine import NativeRoutine
 
 def complete_native_routine(func):
     def func_wrapper(routine):

@@ -3,7 +3,7 @@
 from rpython.rlib import jit
 from obin.runtime.exception import ObinRuntimeError, ObinSyntaxError
 
-from obin.runtime.opcodes import opcodes, LABEL, BaseJump
+from obin.runtime.opcodes_old import opcodes, LABEL, BaseJump
 from obin.objects.object import W_String
 
 
@@ -120,7 +120,7 @@ class ByteCode(object):
         return self.emit('LOAD_INTCONSTANT', i)
 
     def unpop(self):
-        from obin.runtime.opcodes import POP
+        from obin.runtime.opcodes_old import POP
         if self.opcodes and isinstance(self.opcodes[-1], POP):
             self.opcodes.pop()
             return True
@@ -128,7 +128,7 @@ class ByteCode(object):
             return False
 
     def returns(self):
-        from obin.runtime.opcodes import RETURN
+        from obin.runtime.opcodes_old import RETURN
         if self.opcodes and isinstance(self.opcodes[-1], RETURN):
             return True
         return False
