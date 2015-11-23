@@ -1,5 +1,3 @@
-__author__ = 'gloryofrobots'
-
 from obin.runtime.opcode import *
 from obin.runtime.exception import ObinTypeError, ObinReferenceError
 from obin.runtime.reference import References

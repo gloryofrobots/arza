@@ -128,15 +128,15 @@ class Compiler(object):
         self.stsourcename = sourcename  # XXX I should call this
 
     def compile(self, ast):
-        from bytecode import ByteCode
-        code = ByteCode()
+        from bytecode import ByteCodeSource
+        code = ByteCodeSource()
         self.enter_scope()
         self.declare_arguments(None, False)
         self._compile(code, ast)
         scope = self.current_scope()
         final_scope = scope.finalize()
-        code.finalize_compilation(final_scope)
-        return code
+        compiled_code = code.finalize_compilation(final_scope)
+        return compiled_code
 
     def _compile(self, code, ast):
         if isinstance(ast, list):
@@ -475,14 +475,16 @@ class Compiler(object):
 
     def _compile_BREAK(self, code, node):
         code.emit('LOAD_UNDEFINED')
-        code.emit_break()
+        if not code.emit_break():
+            compile_error(node, u"break outside loop", ())
 
     def _compile_CONTINUE(self, code, node):
         code.emit('LOAD_UNDEFINED')
-        code.emit_continue()
+        if not code.emit_continue():
+            compile_error(node, u"continue outside loop", ())
 
     def _compile_fn_args_and_body(self, code, funcname, params, outers, body):
-        from bytecode import ByteCode
+        from bytecode import ByteCodeSource
         self.enter_scope()
 
         if not is_empty_node(params):
@@ -511,22 +513,18 @@ class Compiler(object):
         if not funcname.isempty():
             self.declare_function_name(funcname)
 
-        funccode = ByteCode()
-
-        # funccode.emit('LOAD_UNDEFINED')
+        funccode = ByteCodeSource()
         self._compile(funccode, body)
-        # funccode.emit('RETURN')
         current_scope = self.current_scope()
         scope = current_scope.finalize()
         self.exit_scope()
         print "LOCALS:", str(scope.variables.keys())
         print "REFS:", str(scope.references)
-        funccode.finalize_compilation(scope)
-        print [str(c) for c in funccode.opcodes]
+        compiled_code = funccode.finalize_compilation(scope)
+        print [str(c) for c in compiled_code.opcodes]
         print "-------------------------"
 
-        code.emit('LOAD_FUNCTION', funcname, funccode)
-        pass
+        code.emit('LOAD_FUNCTION', funcname, compiled_code)
 
     def _compile_FN_EXPRESSION(self, code, node):
         name = obs.newstring(u'')
@@ -662,7 +660,7 @@ class Compiler(object):
         for arg in args:
             if arg.type == TT_ELLIPSIS:
                 if normal_args_count:
-                    code.emit("LOAD_LIST", normal_args_count)
+                    code.emit("LOAD_VECTOR", normal_args_count)
                     normal_args_count = 0
                     length += 1
                 self._compile(code, arg.first())
@@ -673,7 +671,7 @@ class Compiler(object):
                 normal_args_count += 1
 
         if normal_args_count:
-            code.emit("LOAD_LIST", normal_args_count)
+            code.emit("LOAD_VECTOR", normal_args_count)
             length += 1
 
         return length

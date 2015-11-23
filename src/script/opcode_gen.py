@@ -13,21 +13,22 @@ OPCODES = [
     ("LABEL", 0),
     ("STORE_OUTER", 0),
     ("STORE_LOCAL", 0),
-    ("JUMP_IF_FALSE_NOPOP", 0),
-    ("JUMP_IF_TRUE_NOPOP", 0),
-    ("JUMP_IF_FALSE", 0),
-    ("JUMP_IF_TRUE", 0),
-    ("JUMP", 0),
     ("LOAD_ITERATOR", 0),
     ("RETURN", 0),
 
     ("CALL_PRIMITIVE", 0),
+    
+    ("JUMP", 0),
+    ("JUMP_IF_FALSE_NOPOP", 0),
+    ("JUMP_IF_TRUE_NOPOP", 0),
+    ("JUMP_IF_FALSE", 0),
+    ("JUMP_IF_TRUE", 0),
+    ("JUMP_IF_ITERATOR_EMPTY", -1),
 
     ("LOAD_MEMBER_DOT", -1),
     ("LOAD_MEMBER", -1),
     ("POP", -1),
     ("THROW", -1),
-    ("JUMP_IF_ITERATOR_EMPTY", -1),
 
     ("STORE_MEMBER", -2),
 
