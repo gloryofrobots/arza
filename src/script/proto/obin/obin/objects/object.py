@@ -581,9 +581,9 @@ class W_Module(W_Root):
         from obin.runtime.routine import create_module_routine
 
         routine = create_module_routine(self._bytecode_, self._object_, _globals)
-        print "*********"
-        for i, c in enumerate([str(c) for c in self._bytecode_.compiled_opcodes]): print i,c
-        print "*********"
+        # print "*********"
+        # for i, c in enumerate([str(c) for c in self._bytecode_.opcodes]): print i,c
+        # print "*********"
         self._is_compiled_ = True
         return routine
 

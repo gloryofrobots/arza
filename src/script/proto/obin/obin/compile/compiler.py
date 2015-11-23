@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
 from token_type import *
-from tokens import TT_TO_STR
+from tokens import token_type_to_str
 from parser import *
 
 from obin.compile.scope import Scope
@@ -161,7 +161,7 @@ class Compiler(object):
     def _compile_node(self, code, node):
         self.current_node = node
         t = node.type
-        t_str = TT_TO_STR(t).replace("TT_", "")
+        t_str = token_type_to_str(t).replace("TT_", "")
         compiler = getattr(self, "_compile_" + t_str)
         return compiler(code, node)
 
@@ -217,11 +217,11 @@ class Compiler(object):
     def compile_binary_primitive(self, code, node, name):
         self._compile(code, node.first())
         self._compile(code, node.second())
-        code.emit_1("CALL_PRIMITIVE", name)
+        code.emit_1(CALL_PRIMITIVE, name)
 
     def compile_unary_primitive(self, code, node, name):
         self._compile(code, node.first())
-        code.emit_1("CALL_PRIMITIVE", name)
+        code.emit_1(CALL_PRIMITIVE, name)
 
     def _compile_BITAND(self, code, node):
         self.compile_binary_primitive(code, node, primitives.BITAND)
@@ -325,10 +325,11 @@ class Compiler(object):
 
     def _emit_store(self, bytecode, name):
         index, is_local = self.declare_variable(name)
+        name_index = self.declare_literal(name)
         if is_local:
-            bytecode.emit_2(STORE_LOCAL, index, name)
+            bytecode.emit_2(STORE_LOCAL, index, name_index)
         else:
-            bytecode.emit_2(STORE_OUTER, index, name)
+            bytecode.emit_2(STORE_OUTER, index, name_index)
 
     def _compile_ASSIGN(self, bytecode, node):
         left = node.first()
@@ -397,10 +398,11 @@ class Compiler(object):
         name = obs.newstring(node.value)
 
         index, is_local = self.get_variable_index(name)
+        name_index = self.declare_literal(name)
         if is_local:
-            code.emit_2(LOAD_LOCAL, index, name)
+            code.emit_2(LOAD_LOCAL, index, name_index)
         else:
-            code.emit_2(LOAD_OUTER, index, name)
+            code.emit_2(LOAD_OUTER, index, name_index)
 
     def _compile_RETURN(self, code, node):
         expr = node.first()
@@ -460,8 +462,9 @@ class Compiler(object):
 
         name = obs.newstring(name.value)
         index = self.declare_local(name)
+        name_index = self.declare_literal(name)
         # self._compile(bytecode, node.first())
-        code.emit_2(STORE_LOCAL, index, name)
+        code.emit_2(STORE_LOCAL, index, name_index)
 
     def _compile_LSQUARE(self, code, node):
         # lookup like a[0]
@@ -550,7 +553,8 @@ class Compiler(object):
         body = node.fourth()
         self._compile_fn_args_and_body(code, funcname, params, outers, body)
 
-        code.emit_2(STORE_LOCAL, index, funcname)
+        funcname_index = self.declare_literal(funcname)
+        code.emit_2(STORE_LOCAL, index, funcname_index)
 
     def _compile_branch(self, bytecode, condition, body, endif):
         self._compile(bytecode, condition)
@@ -610,7 +614,8 @@ class Compiler(object):
 
         index = self.declare_local(name)
         # self._compile_string(bytecode, name)
-        bytecode.emit_2(STORE_LOCAL, index, name)
+        name_index = self.declare_literal(name)
+        bytecode.emit_2(STORE_LOCAL, index, name_index)
         bytecode.emit_0(POP)
 
         self._compile(bytecode, body)

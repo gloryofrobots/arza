@@ -1,3 +1,5 @@
+from obin.compile.opcode.opcodes import *
+
 # ************************************************
 
 __OPCODE_REPR__ = ["LOAD_UNDEFINED", "LOAD_NULL", "LOAD_TRUE", "LOAD_FALSE", "LOAD_LITERAL", "LOAD_OUTER", "LOAD_LOCAL",
@@ -69,6 +71,9 @@ def opcode_info(routine, opcode):
     # ********************************
     elif tag == CALL_PRIMITIVE:
         return 'CALL_PRIMITIVE %s ' % (primitive_to_str(arg1))
+    # ********************************
+    elif tag == LOAD_FUNCTION:
+        return 'LOAD_FUNCTION'
     else:
         return "<%s, %s, %s>" % (opcode_to_str(tag), str(arg1), str(arg2))
 

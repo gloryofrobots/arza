@@ -1,8 +1,6 @@
 __author__ = 'gloryofrobots'
 from token_type import *
 
-def TT_TO_STR(ttype):
-    return TT_REPR[ttype]
 
 ## Regexes for use in tokens
 ##

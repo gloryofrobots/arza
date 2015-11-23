@@ -108,13 +108,15 @@ for number, token in enumerate(TOKENS):
     
   
 print "# ************************ OBIN TOKENS REPR *****************************"
-print "__TT_REPR__ = [None] * TT_UNKNOWN" 
+S = "__TT_REPR__ = ["
 for name,pattern in TOKENS:
-    print "__TT_REPR__[%s] = '%s'" % (name, name)
+    S += "%s, " % str(("\"%s\"" % name))
+S += "]"
+print S
+print 
+print 
+print "def token_type_to_str(ttype):"
+print "    return __TT_REPR__[ttype]"
 
-"""
-print "# ************************ LEXER*****************************"
-for name,pattern in TOKENS:
-    print "    ('%s', %s)," % (pattern, name)
-"""
+    
 

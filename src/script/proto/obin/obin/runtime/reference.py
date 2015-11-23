@@ -14,6 +14,8 @@ class References(object):
             self._refs_ += ([None] * (1 + index - len(self._refs_)))
 
     def _get_refs(self, index):
+        if index > len(self._refs_):
+            print
         assert index < len(self._refs_)
         assert index >= 0
 

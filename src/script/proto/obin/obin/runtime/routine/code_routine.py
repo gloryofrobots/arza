@@ -1,4 +1,4 @@
-from obin.compile.opcode.opcodes import *
+from obin.compile.opcode import *
 from obin.runtime.exception import ObinReferenceError
 from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
@@ -45,7 +45,7 @@ class CodeRoutine(BaseRoutine):
 
         scope = code.scope
         refs_size = scope.count_refs
-        stack_size = code.estimated_stack_size()
+        stack_size = code.estimated_stack_size
         self.literals = scope.literals
         if stack_size:
             self.stack = Stack(stack_size)
@@ -80,6 +80,8 @@ class CodeRoutine(BaseRoutine):
             arg1 = opcode[1]
             arg2 = opcode[2]
 
+            # d = u'%3d %25s %s ' % (self.pc, opcode_info(self, opcode), unicode([unicode(s) for s in self.stack]))
+            # print(getattr(self, "_name_", None), str(hex(id(self))), d)
             self.pc += 1
             # *************************************
             if LOAD_UNDEFINED == tag:
@@ -119,7 +121,7 @@ class CodeRoutine(BaseRoutine):
                 assert arg1 > -1
 
                 name = self.literals[arg2]
-                value = self.refs.get_ref(arg1, name)
+                value = self.refs.get_ref(name, arg1)
                 self.stack.push(value)
             # *************************************
             elif LOAD_MEMBER == tag:
@@ -261,9 +263,6 @@ class CodeRoutine(BaseRoutine):
             elif LABEL == tag:
                 raise RuntimeError("Uncompiled label opcode")
 
-                # ROUTINE STEP
-                # d = u'%3d %25s %s ' % (self.pc, opcode_info(self, opcode), unicode([unicode(s) for s in self.stack]))
-                # print(getattr(self, "_name_", None), str(hex(id(self))), d)
 
     def bytecode(self):
         return self._code_

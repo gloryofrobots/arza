@@ -125,17 +125,20 @@ class CodeSource(object):
                 counter += 1
 
         oldopcodes = self.opcodes
-        self.opcodes = [None] * (length - len(labels))
-        for i in range(length):
-            op = oldopcodes[i]
+        new_length = length - len(labels)
+        self.opcodes = [None] * new_length
+        i = 0
+        for op in oldopcodes:
             tag = op[0]
-            if is_jump_opcode(tag):
-                # print "Jump %d => %d" % (op[1], labels[op[1]])
-                self.opcodes[i] = (tag, labels[op[1]], op[2])
-            elif is_label_opcode(tag):
+            if is_label_opcode(tag):
                 continue
             else:
-                self.opcodes[i] = op
+                if is_jump_opcode(tag):
+                    # print "Jump %d => %d" % (op[1], labels[op[1]])
+                    self.opcodes[i] = (tag, labels[op[1]], op[2])
+                else:
+                    self.opcodes[i] = op
+                i += 1
 
     def length(self):
         return len(self.opcodes)
@@ -160,7 +163,7 @@ class Code(object):
         return len(self.opcodes)
 
     def tostring(self):
-        return str([str(i) for i in self.opcodes])
+        return str([(opcode_to_str(op[0]), op[1], op[2]) for op in self.opcodes])
 
     def __repr__(self):
-        return "\n".join([repr(i) for i in self.opcodes])
+        return "\n".join([str((opcode_to_str(op[0]), op[1], op[2])) for op in self.opcodes])

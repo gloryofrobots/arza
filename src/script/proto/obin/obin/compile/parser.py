@@ -84,7 +84,7 @@ class Node:
         return children
 
     def to_dict(self):
-        d = {"_type": T.TT_TO_STR(self.type), "_value": self.value, "_line": self.line
+        d = {"_type": T.token_type_to_str(self.type), "_value": self.value, "_line": self.line
              # "arity": self.arity, "pos": self.position
              }
 
@@ -264,13 +264,13 @@ def parse_error(parser, message, args=None, node=None):
 
 def check_token_type(parser, type):
     if parser.token_type != type:
-        parse_error(parser, "Expected token type %s got token %s" % ((T.TT_TO_STR(type)), parser.token))
+        parse_error(parser, "Expected token type %s got token %s" % ((T.token_type_to_str(type)), parser.token))
 
 
 def check_token_types(parser, types):
     if parser.token_type not in types:
         parse_error(parser, "Expected token type one of %s got token %s" %
-              ([T.TT_TO_STR(type) for type in types], parser.token))
+              ([T.token_type_to_str(type) for type in types], parser.token))
 
 
 def advance(parser):
