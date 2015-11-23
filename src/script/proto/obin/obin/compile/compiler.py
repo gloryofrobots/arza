@@ -38,6 +38,15 @@ class Compiler(object):
         self.scopes.append(new_scope)
         #print 'starting new scope %d' % (self.depth, )
 
+    def is_modifiable_binding(self, name):
+        scope = self.current_scope()
+        if scope.get_local_index(name) is not None:
+            return True
+        if scope.has_outer(name):
+            return True
+
+        return False
+
     def declare_outer(self, symbol):
         scope = self.current_scope()
         if not scope.is_function_scope():
@@ -363,6 +372,8 @@ class Compiler(object):
             return self._compile_modify_assignment_dot_primitive(bytecode, node, operation)
 
         name = obs.newstring(left.value)
+        if not self.is_modifiable_binding(name):
+            compile_error(node, "Unreachable variable", name)
 
         # self._compile(bytecode, left)
         self._compile(bytecode, node.first())
