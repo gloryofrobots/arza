@@ -1,5 +1,5 @@
 from rpython.rlib import jit
-from obin.compile.opcode import *
+from obin.compile.code import *
 
 
 def estimate_stack_size(opcodes):

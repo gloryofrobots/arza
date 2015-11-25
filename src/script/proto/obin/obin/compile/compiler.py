@@ -6,7 +6,8 @@ from parser import *
 from obin.compile.scope import Scope
 from obin.objects import object_space as obs
 from obin.runtime import primitives
-from obin.compile.opcode.opcodes import *
+from obin.compile.code.source import CodeSource
+from obin.compile.code import *
 
 def compile_error(node, message, args):
     error_message = "Compile Error %d:%d %s" % (node.line, node.position, message)
@@ -138,7 +139,6 @@ class Compiler(object):
         self.stsourcename = sourcename  # XXX I should call this
 
     def compile(self, ast):
-        from obin.compile.opcode.code import CodeSource
         code = CodeSource()
         self.enter_scope()
         self.declare_arguments(None, False)
@@ -499,7 +499,6 @@ class Compiler(object):
             compile_error(node, u"continue outside loop", ())
 
     def _compile_fn_args_and_body(self, code, funcname, params, outers, body):
-        from obin.compile.opcode.code import CodeSource
         self.enter_scope()
 
         if not is_empty_node(params):
@@ -670,26 +669,39 @@ class Compiler(object):
         code.emit_0(LOAD_MEMBER)
 
     def _compile_args_list(self, code, args):
-        # create tuples and unpack instruction for function call
-        length = 0
         normal_args_count = 0
+        first_args_inserted = False
+        if len(args) == 0:
+            code.emit_1(LOAD_VECTOR, 0)
+            return
+
         for arg in args:
             if arg.type == TT_ELLIPSIS:
-                if normal_args_count:
-                    code.emit_1(LOAD_VECTOR, normal_args_count)
-                    normal_args_count = 0
-                    length += 1
-                self._compile(code, arg.first())
-                length += 1
+                if first_args_inserted:
+                    if normal_args_count:
+                        code.emit_1(PUSH_MANY, normal_args_count)
+
+                    self._compile(code, arg.first())
+                    code.emit_0(CONCAT)
+                else:
+                    if normal_args_count:
+                        code.emit_1(LOAD_VECTOR, normal_args_count)
+                        self._compile(code, arg.first())
+                        code.emit_0(CONCAT)
+                    else:
+                        self._compile(code, arg.first())
+
+                first_args_inserted = True
+                normal_args_count = 0
             else:
                 self._compile(code, arg)
                 normal_args_count += 1
 
         if normal_args_count:
-            code.emit_1(LOAD_VECTOR, normal_args_count)
-            length += 1
-
-        return length
+            if first_args_inserted:
+                code.emit_1(PUSH_MANY, normal_args_count)
+            else:
+                code.emit_1(LOAD_VECTOR, normal_args_count)
 
     def _compile_LPAREN_MEMBER(self, bytecode, node):
         obj = node.first()
@@ -698,14 +710,14 @@ class Compiler(object):
         args = node.third()
         # print "_compile_LPAREN_MEMBER", obj, method, args
 
-        length = self._compile_args_list(bytecode, args)
+        self._compile_args_list(bytecode, args)
 
         self._compile(bytecode, obj)
         self._emit_string(bytecode, name)
         # TODO LITERAL HERE
         # self.declare_symbol(name)
 
-        bytecode.emit_1(CALL_METHOD, length)
+        bytecode.emit_0(CALL_METHOD)
 
     def _compile_LPAREN(self, bytecode, node):
         if node.arity == 3:
@@ -716,11 +728,11 @@ class Compiler(object):
 
         # print "_compile_LPAREN", func, args
 
-        length = self._compile_args_list(bytecode, args)
+        self._compile_args_list(bytecode, args)
 
         self._compile(bytecode, func)
 
-        bytecode.emit_1(CALL, length)
+        bytecode.emit_0(CALL)
 
 def testprogram():
     with open("program2.obn") as f:

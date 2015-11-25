@@ -1,17 +1,16 @@
-from obin.compile.opcode.opcodes import *
-
+from obin.compile.code.opcode import *
 # ************************************************
 
 __OPCODE_REPR__ = ["LOAD_UNDEFINED", "LOAD_NULL", "LOAD_TRUE", "LOAD_FALSE", "LOAD_LITERAL", "LOAD_OUTER", "LOAD_LOCAL",
-                   "LOAD_FUNCTION", "DUP", "NEXT_ITERATOR", "LABEL", "STORE_OUTER", "STORE_LOCAL", "LOAD_ITERATOR",
-                   "RETURN", "CALL_PRIMITIVE", "JUMP", "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE",
-                   "JUMP_IF_TRUE", "JUMP_IF_ITERATOR_EMPTY", "LOAD_MEMBER_DOT", "LOAD_MEMBER", "POP", "THROW",
-                   "STORE_MEMBER", "LOAD_VECTOR", "LOAD_OBJECT", "CALL", "CALL_METHOD", ]
+                   "LOAD_FUNCTION", "LOAD_INTEGER", "DUP", "NEXT_ITERATOR", "LABEL", "STORE_OUTER", "STORE_LOCAL",
+                   "LOAD_ITERATOR", "RETURN", "CALL_PRIMITIVE", "CALL", "CALL_METHOD", "JUMP", "JUMP_IF_FALSE_NOPOP",
+                   "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "JUMP_IF_ITERATOR_EMPTY", "LOAD_MEMBER_DOT",
+                   "LOAD_MEMBER", "POP", "THROW", "CONCAT", "STORE_MEMBER", "PUSH_MANY", "LOAD_VECTOR", "LOAD_OBJECT", ]
 
 # ************************************************
 
-__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -2, None, None,
-                     None, None, ]
+__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -2,
+                     None, None, None, ]
 
 
 # ************************************************
@@ -26,16 +25,15 @@ def opcode_estimate_stack_change(opcode):
     tag = opcode[0]
 
     change = __STACK_CHANGES__[tag]
+    print opcode_to_str(tag), change
     if change is not None:
         return change
 
     arg1 = opcode[1]
     arg2 = opcode[2]
 
-    if tag == CALL:
+    if tag == PUSH_MANY:
         return -1 * arg1 + 1
-    if tag == CALL_METHOD:
-        return -1 * arg1 + -1
     if tag == LOAD_OBJECT:
         return -1 * arg1 + arg2 + 1
     if tag == LOAD_VECTOR:
@@ -82,6 +80,7 @@ def is_jump_opcode(tag):
     if tag >= JUMP and tag <= JUMP_IF_ITERATOR_EMPTY:
         return True
     return False
+
 
 def is_label_opcode(tag):
     return tag == LABEL

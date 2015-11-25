@@ -1,30 +1,20 @@
-from obin.compile.opcode import *
+from obin.compile.code import *
 from obin.runtime.exception import ObinReferenceError
 from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
 from obin.objects.stack import Stack
 from obin.objects.object_space import (newbool, newundefined,
                                        newnull, newvector, isinterrupt,
-                                       newobject, newfunc)
+                                       newobject, newfunc, newint)
 from obin.objects.object import api
 
 
-def load_arguments(routine, counter):
-    if counter == 0:
-        return newvector([])
-    if counter == 1:
-        vec = routine.stack.pop()
-        return vec
-    # TODO OPTIMIZE IT
-    vectors = routine.stack.pop_n(counter)  # [:] # pop_n returns a non-resizable list
+def load_arguments(stack):
+    length = stack.pop().value()
+    elements = stack.pop_n(length)  # [:] # pop_n returns a non-resizable list
     # vectors2 = []
     # routine.stack.pop_n_into(counter, vectors2)  # [:] # pop_n returns a non-resizable list
-
-    first = vectors[0]
-    for i in xrange(1, len(vectors)):
-        first.concat(vectors[i])
-
-    return first
+    return newvector(elements)
 
 
 class CodeRoutine(BaseRoutine):
@@ -99,6 +89,9 @@ class CodeRoutine(BaseRoutine):
             elif LOAD_FALSE == tag:
                 self.stack.push(newbool(False))
             # *************************************
+            elif LOAD_INTEGER == tag:
+                self.stack.push(newint(arg1))
+            # *************************************
             elif DUP == tag:
                 self.stack.push(self.stack.top())
             # *************************************
@@ -168,19 +161,29 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif CALL == tag:
                 func = self.stack.pop()
-                argv = load_arguments(self, arg1)
+                argv = self.stack.pop()
 
                 api.call(func, self, argv)
             # *************************************
             elif CALL_METHOD == tag:
                 method = self.stack.pop()
                 what = self.stack.pop()
-                argv = load_arguments(self, arg1)
+                argv = self.stack.pop()
 
                 func = api.lookup(what, method)
                 argv.prepend(what)
 
                 api.call(func, self, argv)
+            # *************************************
+            elif CONCAT == tag:
+                first = self.stack.pop()
+                vec = self.stack.top()
+                vec.concat(first)
+            # *************************************
+            elif PUSH_MANY == tag:
+                args = self.stack.pop_n(arg1)
+                vec = self.stack.top()
+                vec.append_many(args)
             # *************************************
             elif JUMP == tag:
                 self.pc = arg1

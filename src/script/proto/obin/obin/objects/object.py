@@ -384,6 +384,9 @@ class W_Vector(W_Cell):
     def values(self):
         return self._items
 
+    def append_many(self, items):
+        self._items += items
+
     def pop(self):
         return self._items.pop()
 

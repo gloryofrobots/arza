@@ -7,6 +7,7 @@ OPCODES = [
     ("LOAD_OUTER", 1),
     ("LOAD_LOCAL", 1),
     ("LOAD_FUNCTION", 1),
+    ("LOAD_INTEGER", 1),
     ("DUP", 1),
     ("NEXT_ITERATOR", 1),
 
@@ -17,6 +18,8 @@ OPCODES = [
     ("RETURN", 0),
 
     ("CALL_PRIMITIVE", 0),
+    ("CALL", 0),
+    ("CALL_METHOD", 0),
     
     ("JUMP", 0),
     ("JUMP_IF_FALSE_NOPOP", 0),
@@ -29,13 +32,13 @@ OPCODES = [
     ("LOAD_MEMBER", -1),
     ("POP", -1),
     ("THROW", -1),
+    ("CONCAT", -1),
 
     ("STORE_MEMBER", -2),
 
+    ("PUSH_MANY", None),
     ("LOAD_VECTOR", None),
     ("LOAD_OBJECT", None),
-    ("CALL", None),
-    ("CALL_METHOD", None),
 ]
 
 def gen_ocode_ids():
