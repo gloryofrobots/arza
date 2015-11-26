@@ -27,3 +27,24 @@ fn wrap(cb, ...args) {
 wrap(fn(x, ...args) {
     print(x, args)
 }, 1)
+
+
+fn fv(x, y, z, ...r) {
+    A = [10,11,12,14]
+    fn _f(w,t) {
+        print(w, t, ...r, x, y, z, ...A)
+
+        print(w, t, x, y, z, r)
+    }
+    _f(x+y, y+z)
+    r
+}
+
+a = fv(1,2,3,4,5,6,7,8)
+
+b = [11,12,13]
+
+print(1,2,3,...a, 9, 10, ...b)
+a = fv(1,2,3,...a, 9, 10, ...b)
+print(a.length())
+print(a)

@@ -13,59 +13,24 @@ class InterpreterConfig(object):
 
 
 class Interpreter(object):
-    """Creates a js interpreter"""
     def __init__(self, config={}):
         from obin.objects.object_space import object_space, newobject
         import obin.builtins.interpreter_builtins
-        from obin.objects.datastructs import Slots
 
         self.process = Process()
-
-        self.primitives = {}
         self.config = InterpreterConfig(config)
-        self.global_object = newobject()
+        self.builtins = newobject()
         self.modules = []
-
-        self.symbols = Slots()
-        object_space.global_object = self.global_object
         object_space.interpreter = self
 
-        obin.builtins.setup_builtins(self.global_object)
-        # obin.builtins.interpreter.setup_builtins(self.global_object)
-
-    def add_primitive(self, primitive_id, func):
-        self.primitives[primitive_id] = func
-
-    def get_primitive(self, primitive_id):
-        return self.primitives[primitive_id]
-
-    def load_module(self, filename):
-
-        pass
+        obin.builtins.setup_builtins(self.builtins)
 
     def run_src(self, src):
-        from obin.compile.compiler import compile as cl
-        code = cl(src)
-        return self.run(code)
+        from obin.compile.compiler import compile_module
+        from obin.objects.object_space import newstring
+        module = compile_module(newstring(u"__main__"), src)
+        return self.run_module(module)
 
-    # run_src = run_src_old
-
-    def run(self, code, interactive=False):
-        from obin.runtime.routine import create_bytecode_routine
-
-        # print [str(c) for c in code.opcodes]
-        global_routine = create_bytecode_routine(code)
-
-        print "*********"
-        for c in [str(c) for c in code.compiled_opcodes]: print c
-        print "*********"
-        
-        from obin.objects.object_space import object_space
-        from obin.runtime.context import create_object_context
-
-        ctx = create_object_context(global_routine, self.global_object)
-        object_space.global_context = ctx
-
-        result = self.process.run_with(global_routine)
-        print result
+    def run_module(self, module):
+        result = self.process.run_with_module(module, self.builtins)
         return result

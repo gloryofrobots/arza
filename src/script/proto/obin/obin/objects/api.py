@@ -11,6 +11,8 @@ def tobool(obj):
     from object_space import newbool
     return newbool(obj._tobool_())
 
+def toboolvalue(obj):
+    return obj._tobool_()
 
 def delete(obj, k):
     from object_space import isundefined
@@ -139,13 +141,13 @@ def next(obj):
     return obj._next_()
 
 
-def new_native_function(function, name):
+def new_native_function(function, name, arity):
     from obin.objects.object_space import newprimitive, newstring
     assert isinstance(name, unicode)
-    obj = newprimitive(newstring(name), function)
+    obj = newprimitive(newstring(name), function, arity)
     return obj
 
 
 # 15
-def put_native_function(obj, name, func):
-    put_property(obj, name, new_native_function(func, name))
+def put_native_function(obj, name, func, arity):
+    put_property(obj, name, new_native_function(func, name, arity))

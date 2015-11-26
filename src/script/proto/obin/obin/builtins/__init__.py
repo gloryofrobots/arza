@@ -4,7 +4,7 @@ from obin.objects import api
 
 
 
-def setup_builtins(global_object):
+def setup_builtins(module):
     from obin.objects.object_space import object_space
     import obin.builtins.object_builitns
 
@@ -22,7 +22,7 @@ def setup_builtins(global_object):
     obin.builtins.object_builitns.setup(object_space.traits.Object)
 
     import obin.builtins.global_builtins
-    obin.builtins.global_builtins.setup(global_object)
+    obin.builtins.global_builtins.setup(module)
 
     import obin.builtins.vector_builtins
     obin.builtins.vector_builtins.setup(object_space.traits.Vector)
@@ -46,8 +46,3 @@ def setup_builtins(global_object):
 
     """
 
-def get_arg(args, index):
-    from obin.runtime.exception import ObinInvokeError
-    if len(args) > index:
-        return args[index]
-    raise ObinInvokeError(index)

@@ -35,6 +35,7 @@ TOKENS = [
   ("TT_IS", "is"),
   ("TT_OBJECT", "object"),
   ("TT_ISNOT", "isnot"),
+  ("TT_OUTER", "outer"),
   ("TT_RETURN", "return"),
   ("TT_ELLIPSIS", "..."),
   ("TT_ADD_ASSIGN", "+="),
@@ -101,19 +102,21 @@ for name,pattern in TOKENS:
 
 """
 ## FOR PYTHON LEXER
-print "# ************************PYTHON TOKENS*****************************"
+print "# ************************ OBIN TOKENS*****************************"
 for number, token in enumerate(TOKENS):
     print "%s = %d" % (token[0],number)
     
   
-print "# ************************PYTHON TOKENS REPR *****************************"
-print "TT_REPR = {}"
+print "# ************************ OBIN TOKENS REPR *****************************"
+S = "__TT_REPR__ = ["
 for name,pattern in TOKENS:
-    print "TT_REPR[%s] = '%s'" % (name, name)
+    S += "%s, " % str(("\"%s\"" % name))
+S += "]"
+print S
+print 
+print 
+print "def token_type_to_str(ttype):"
+print "    return __TT_REPR__[ttype]"
 
-"""
-print "# ************************PYTHON LEXER*****************************"
-for name,pattern in TOKENS:
-    print "    ('%s', %s)," % (pattern, name)
-"""
+    
 

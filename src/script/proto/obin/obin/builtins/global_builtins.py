@@ -3,13 +3,11 @@
 from obin.objects.object_space import _w
 from obin.runtime.routine import complete_native_routine
 from rpython.rlib.rfloat import NAN, INFINITY, isnan, isinf
-from obin.builtins import get_arg
 from rpython.rlib.unicodedata import unicodedb
 from obin.objects import api
-from obin.objects.object_space import newstring
 
 
-def setup(global_object):
+def setup(obj):
     from rpython.rlib.objectmodel import we_are_translated
     from obin.builtins.number_builtins import w_NAN
     from obin.builtins.number_builtins import w_POSITIVE_INFINITY
@@ -17,93 +15,49 @@ def setup(global_object):
 
     ### Traits
     traits = object_space.traits
-    api.put_property(global_object, u'True', traits.True)
-    api.put_property(global_object, u'False', traits.False)
-    api.put_property(global_object, u'Boolean', traits.Boolean)
-    api.put_property(global_object, u'Nil', traits.Nil)
-    api.put_property(global_object, u'Undefined', traits.Undefined)
-    api.put_property(global_object, u'Char', traits.Char)
-    api.put_property(global_object, u'Number', traits.Number)
-    api.put_property(global_object, u'Integer', traits.Integer)
-    api.put_property(global_object, u'Float', traits.Float)
-    api.put_property(global_object, u'Symbol', traits.Symbol)
-    api.put_property(global_object, u'String', traits.String)
-    api.put_property(global_object, u'Array', traits.Array)
-    api.put_property(global_object, u'Vector', traits.Vector)
-    api.put_property(global_object, u'Tuple', traits.Tuple)
-    api.put_property(global_object, u'Object', traits.Object)
-    api.put_property(global_object, u'Function', traits.Function)
+    api.put_property(obj, u'True', traits.True)
+    api.put_property(obj, u'False', traits.False)
+    api.put_property(obj, u'Boolean', traits.Boolean)
+    api.put_property(obj, u'Nil', traits.Nil)
+    api.put_property(obj, u'Undefined', traits.Undefined)
+    api.put_property(obj, u'Char', traits.Char)
+    api.put_property(obj, u'Number', traits.Number)
+    api.put_property(obj, u'Integer', traits.Integer)
+    api.put_property(obj, u'Float', traits.Float)
+    api.put_property(obj, u'Symbol', traits.Symbol)
+    api.put_property(obj, u'String', traits.String)
+    api.put_property(obj, u'Array', traits.Array)
+    api.put_property(obj, u'Vector', traits.Vector)
+    api.put_property(obj, u'Tuple', traits.Tuple)
+    api.put_property(obj, u'Object', traits.Object)
+    api.put_property(obj, u'Function', traits.Function)
 
 
     # 15.1.1.1
-    api.put_property(global_object, u'NaN', w_NAN)
+    api.put_property(obj, u'NaN', w_NAN)
 
     # 15.1.1.2
-    api.put_property(global_object, u'Infinity', w_POSITIVE_INFINITY)
+    api.put_property(obj, u'Infinity', w_POSITIVE_INFINITY)
 
     # 15.1.2.1
-    api.put_native_function(global_object, u'eval', _eval)
+    api.put_native_function(obj, u'eval', _eval, 1)
+    api.put_native_function(obj, u'print', _print, -1)
+    api.put_native_function(obj, u'id', _id, 1)
+    api.put_native_function(obj, u'escape', escape, 1)
+    api.put_native_function(obj, u'unescape', unescape, 1)
 
-    # 15.1.2.2
-    api.put_native_function(global_object, u'parseInt', parse_int)
-
-    # 15.1.2.3
-    # TODO
-    api.put_native_function(global_object, u'parseFloat', parse_float)
-
-    # 15.1.2.4
-    api.put_native_function(global_object, u'isNaN', is_nan)
-
-    # 15.1.2.5
-    api.put_native_function(global_object, u'isFinite', is_finite)
-
-    api.put_native_function(global_object, u'alert', alert)
-
-    api.put_native_function(global_object, u'print', _print)
-    api.put_native_function(global_object, u'id', _id)
-    api.put_native_function(global_object, u'now', now)
-
-    api.put_native_function(global_object, u'escape', escape)
-
-    api.put_native_function(global_object, u'unescape', unescape)
-
-    api.put_native_function(global_object, u'version', version)
-    api.put_native_function(global_object, u'coroutine', coroutine)
-    api.put_native_function(global_object, u'range', _range)
+    api.put_native_function(obj, u'version', version, 0)
+    api.put_native_function(obj, u'coroutine', coroutine, 1)
+    api.put_native_function(obj, u'range', _range, 2)
 
     ## debugging
-    if not we_are_translated():
-        api.put_native_function(global_object, u'pypy_repr', pypy_repr)
-        api.put_native_function(global_object, u'inspect', inspect)
-
-    # global_object.freeze()
-
-
-# 15.1.2.4
-@complete_native_routine
-def is_nan(ctx, routine):
-    args = routine.args()
-    if len(args) < 1:
-        return True
-    return isnan(args[0].ToNumber())
-
-
-# 15.1.2.5
-@complete_native_routine
-def is_finite(ctx, routine):
-    args = routine.args()
-    if len(args) < 1:
-        return True
-    n = args[0].ToNumber()
-    if isinf(n) or isnan(n):
-        return False
-    else:
-        return True
+    # if not we_are_translated():
+    #     api.put_native_function(obj, u'pypy_repr', pypy_repr)
+    #     api.put_native_function(obj, u'inspect', inspect)
 
 
 def _isspace(uchar):
     return unicodedb.isspace(ord(uchar))
-
 
 def _strip(unistr, left=True, right=True):
     lpos = 0
@@ -135,12 +89,11 @@ def _string_match_chars(string, chars):
 
 # 15.1.2.2
 @complete_native_routine
-def parse_int(ctx, routine):
-    args = routine.args()
-    string = get_arg(args, 0)
-    radix = get_arg(args, 1)
+def parse_int(routine):
+    string = routine.get_arg(0)
+    radix = routine.get_arg(1)
 
-    return _parse_int(string.to_string(), radix.ToInt32())
+    return _parse_int(string.to_string(), radix.value())
 
 def now(self, args):
     print "W_DateConstructor Call"
@@ -153,10 +106,9 @@ def now(self, args):
     return obj
 
 @complete_native_routine
-def _id(ctx, routine):
-    args = routine.args()
-    element = get_arg(args, 0)
-    return str(hex(id(element)))
+def _id(routine):
+    this = routine.get_arg(0)
+    return str(hex(id(this)))
 
 def _parse_int(string, radix):
     assert isinstance(string, unicode)
@@ -224,13 +176,12 @@ def _parse_int(string, radix):
 
 # 15.1.2.3
 @complete_native_routine
-def parse_float(ctx, routine):
-    args = routine.args()
+def parse_float(routine):
     from obin.runistr import encode_unicode_utf8
     from obin.constants import num_lit_rexp
 
-    string = get_arg(args, 0)
-    input_string = string.to_string()
+    string = routine.get_arg(0)
+    input_string = string.value()
     trimmed_string = _strip(input_string)
     str_trimmed_string = encode_unicode_utf8(trimmed_string)
 
@@ -256,15 +207,12 @@ def parse_float(ctx, routine):
 
 
 @complete_native_routine
-def alert(ctx, routine):
-    _print(ctx, routine)
-
-def dummy(ctx, routine):
-    pass
+def alert(routine):
+    _print(routine)
 
 @complete_native_routine
-def _print(ctx, routine):
-    args = routine.args()
+def _print(routine):
+    args = routine._args.values()
     if len(args) == 0:
         return
 
@@ -296,11 +244,10 @@ def hexing(i, length):
 
 # B.2.1
 @complete_native_routine
-def escape(ctx, routine):
-    args = routine.args()
+def escape(routine):
     CHARARCERS = u'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@*_+-./'
-    string = get_arg(args, 0)
-    r1 = string.to_string()
+    string = routine.get_arg(0)
+    r1 = string.value()
     r2 = len(r1)
     r = u''
     k = 0
@@ -324,10 +271,9 @@ def escape(ctx, routine):
 
 # B.2.2
 @complete_native_routine
-def unescape(ctx, routine):
-    args = routine.args()
-    string = get_arg(args, 0)
-    r1 = string.to_string()
+def unescape(routine):
+    string = routine.get_arg(0)
+    r1 = string.value()
     r2 = len(r1)
 
     r = u''
@@ -367,18 +313,6 @@ def unescape(ctx, routine):
     return r
 
 
-@complete_native_routine
-def pypy_repr(ctx, routine):
-    args = routine.args()
-    o = args[0]
-    return str(o)
-
-
-@complete_native_routine
-def inspect(ctx, routine):
-    pass
-
-
 def _make_version_string():
     return ""
 
@@ -386,39 +320,34 @@ _version_string = _make_version_string()
 
 
 @complete_native_routine
-def version(ctx, routine):
+def version(routine):
     return _version_string
 
-def _eval(ctx, routine):
+def _eval(routine):
     from obin.objects.object_space import isstring
-    from obin.runtime.routine import create_bytecode_routine
-    from obin.runtime.context import create_eval_context
+    from obin.runtime.routine import create_eval_routine
 
-    args = ctx.argv()
-    x = get_arg(args, 0)
+    x = routine.get_arg(0)
 
     assert isstring(x)
 
     src = x.value()
     from obin.compile.compiler import compile as cl
     code = cl(src)
-    f = create_bytecode_routine(code)
-    create_eval_context(f)
+    f = create_eval_routine(code)
     routine.call_routine(f)
 
 @complete_native_routine
-def coroutine(ctx, routine):
+def coroutine(routine):
     from obin.objects.object_space import newcoroutine, isfunction
-    args = routine.args()
-    fn = args[0]
+    fn = routine.get_arg(0)
     assert isfunction(fn)
     return newcoroutine(fn)
 
 @complete_native_routine
-def _range(ctx, routine):
+def _range(routine):
     from obin.objects.object_space import newvector, newint
-    args = routine.args()
-    start = args[0]
-    end = args[1]
+    start = routine.get_arg(0)
+    end = routine.get_arg(1)
     items = [newint(i) for i in xrange(start.value(), end.value())]
     return newvector(items)

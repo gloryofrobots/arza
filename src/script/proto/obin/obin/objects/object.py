@@ -4,7 +4,6 @@ from rpython.rlib.rfloat import isnan, isinf, NAN, formatd, INFINITY
 from rpython.rlib.objectmodel import enforceargs
 from rpython.rlib import jit, debug
 
-from obin.objects.object_map import new_map
 from obin.runtime.exception import *
 from obin.utils import tb
 import api
@@ -49,7 +48,7 @@ class W_Root(object):
     def _equal_(self, other):
         raise NotImplementedError()
 
-    def _call_(self, ctx, args):
+    def _call_(self, routine, args):
         raise NotImplementedError()
 
     def _compare_(self, other):
@@ -373,6 +372,9 @@ class W_Vector(W_Cell):
     def prepend(self, v):
         self._items.insert(0, v)
 
+    def set(self, index, v):
+        self._items[index] = v
+
     def insert(self, index, v):
         self._items.insert(index, v)
 
@@ -382,8 +384,25 @@ class W_Vector(W_Cell):
     def values(self):
         return self._items
 
+    def append_many(self, items):
+        self._items += items
+
     def pop(self):
         return self._items.pop()
+
+    def concat(self, v):
+        self._items += v.values()
+
+    def fold_slice_into_itself(self, index):
+        rest = W_Vector(self._items[index:])
+        self._items = self._items[0:index]
+        self._items.append(rest)
+
+    def append_value_multiple_times(self, val, times):
+        self._items = self._items + [val] * times
+
+    def set_values(self, values):
+        self._items = values
 
 class W_Object(W_Cell):
     _type_ = 'Object'
@@ -391,9 +410,9 @@ class W_Object(W_Cell):
 
     def __init__(self, slots):
         super(W_Object, self).__init__()
-        from obin.objects.datastructs import Slots
+        from obin.objects.slots import newslots_empty
         if not slots:
-            slots = Slots()
+            slots = newslots_empty()
         self.__slots = slots
         self.__traits = None
 
@@ -409,6 +428,15 @@ class W_Object(W_Cell):
 
     # def __str__(self):
     #     return "W_Object(%s)" % (self._tostring_())
+
+    def put_by_index(self, idx, value):
+        self.__slots.set_by_index(idx, value)
+
+    def get_by_index(self, idx):
+        return self.__slots.get_by_index(idx)
+
+    def get_index(self, name):
+        return self.__slots.get_index(name)
 
     def traits(self):
         return self.__traits
@@ -484,14 +512,14 @@ class W_Object(W_Cell):
 
         return v
 
-    def _call_(self, ctx, args):
+    def _call_(self, routine, args):
         from object_space import newstring, isundefined
         cb = self._at_(newstring("__call__"))
         if isundefined(cb):
             raise ObinRuntimeError("Object is not callable")
 
         args.insert(0, self)
-        return api.call(cb, ctx, args)
+        return api.call(cb, routine, args)
 
     def _put_(self, k, v):
         if self.isfrozen():
@@ -527,34 +555,57 @@ class W_Object(W_Cell):
         return clone
 
 
-class W_ModuleObject(W_Object):
-    pass
+class W_Module(W_Root):
+    def __init__(self, name, bytecode):
+        self._name = name
+        self._bytecode_ = bytecode
+        self._object_ = None
+        self._result_ = None
+        self._is_compiled_ = False
+        self.init_scope()
+
+    def init_scope(self):
+        self._object_ = self._bytecode_.scope.create_object()
+
+    def result(self):
+        return self._result_
+
+    def set_result(self, r):
+        self._result_ = r
+
+    def bytecode(self):
+        return self._bytecode_
+
+    def scope(self):
+        return self._object_
+
+    def compile(self, _globals):
+        assert not self._is_compiled_
+        from obin.runtime.routine import create_module_routine
+
+        routine = create_module_routine(self._bytecode_, self._object_, _globals)
+        # print "*********"
+        # for i, c in enumerate([str(c) for c in self._bytecode_.opcodes]): print i,c
+        # print "*********"
+        self._is_compiled_ = True
+        return routine
 
 
 class W_Function(W_Root):
     _type_ = 'function'
-    _immutable_fields_ = ['_type_',  '_scope_',  '_variadic_', '_arity_', '_name_']
+    _immutable_fields_ = ['_type_',  'scope',  'is_variadic', 'arity', '_name_']
 
     def __init__(self, name, bytecode, scope):
         super(W_Function, self).__init__()
         self._name_ = name
         self._bytecode_ = bytecode
-        self._arity_ = len(bytecode.params())
-        if bytecode.params_rest() is not None:
-            self._variadic_ = True
-        else:
-            self._variadic_ = False
-
-        self._scope_ = scope
-
-    def arity(self):
-        return self._arity_
-
-    def is_variadic(self):
-        return self._variadic_
+        scope_info = bytecode.scope
+        self.arity = scope_info.count_args
+        self.is_variadic = scope_info.is_variadic
+        self.scope = scope
 
     def _tostring_(self):
-        params = ",".join([str(p.value()) for p in self._bytecode_.params()])
+        params = ",".join([str(p.value()) for p in self._bytecode_.scope.arguments])
 
         return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
 
@@ -568,39 +619,25 @@ class W_Function(W_Root):
     # def __str__(self):
     #     return 'Function %s' % self._tostring_()
 
-    def create_routine(self, ctx, args):
-        from obin.runtime.context import create_function_context
+    def create_routine(self, args):
         from obin.runtime.routine import create_function_routine
-
-        routine = create_function_routine(self._bytecode_, self._name_)
-
-        jit.promote(routine)
-        scope = self.scope()
-
-        create_function_context(routine,
-                                args,
-                                scope)
+        routine = create_function_routine(self, args, self.scope)
         return routine
 
-    def _call_(self, ctx, args):
-        assert ctx
-        # if ctx is None:
-        #     from object_space import object_space
-        #     ctx = object_space.interpreter.machine.current_context()
+    def _call_(self, routine, args):
+        assert routine
+        routine.process.call_object(self, routine, args)
 
-        ctx.process().call_object(self, ctx, args)
-
-    def scope(self):
-        return self._scope_
 
 class W_Primitive(W_Root):
     _type_ = 'native'
     _immutable_fields_ = ['_type_', '_extensible_', '_scope_', '_params_[*]', '_function_']
 
-    def __init__(self, name, function):
+    def __init__(self, name, function, arity):
         super(W_Primitive, self).__init__()
         self._name_ = name
         self._function_ = function
+        self.arity = arity
 
     def _tostring_(self):
         return "function %s {[native code]}" % self._name_.value()
@@ -612,25 +649,21 @@ class W_Primitive(W_Root):
         from object_space import object_space
         return api.at(object_space.traits.Function, k)
 
-    def create_routine(self, ctx, args):
-        from obin.runtime.context import create_primitive_context
-        from obin.runtime.routine import NativeRoutine
+    def create_routine(self, args):
+        from obin.runtime.routine import create_primitive_routine
 
-        routine = NativeRoutine(self._name_, self._function_)
+        routine = create_primitive_routine(self._name_, self._function_, args, self.arity)
 
-        jit.promote(routine)
-
-        create_primitive_context(routine,
-                                 args)
+        routine = jit.promote(routine)
         return routine
 
-    def _call_(self, ctx, args):
-        assert ctx
-        # if ctx is None:
-        #     from object_space import object_space
-        #     ctx = object_space.interpreter.machine.current_context()
+    def _call_(self, routine, args):
+        assert routine
+        if self.arity != -1 and args.length() != self.arity:
+            raise ObinRuntimeError(u"Invalid primitive call wrong count of arguments %d != %d"
+                                   % (args.length(), self.arity))
 
-        ctx.process().call_object(self, ctx, args)
+        routine.process.call_object(self, routine, args)
 
 class W_CoroutineIterator(W_Root):
     def __init__(self, coroutine):
@@ -642,8 +675,8 @@ class W_CoroutineIterator(W_Root):
     def _next_(self):
         from object_space import object_space, newundefined, newinterrupt
         process = object_space.interpreter.process
-        routine = process.routine()
-        self._coroutine_._call_(routine.ctx, None)
+        routine = process.routine
+        self._coroutine_._call_(routine, None)
         return newinterrupt()
 
     def _tostring_(self):
@@ -667,15 +700,16 @@ class W_CoroutineYield(W_Root):
     def _tobool_(self):
         return True
 
-    def _call_(self, ctx, args):
+    def _call_(self, routine, args):
         if not self._coroutine_.is_accessible():
             raise ObinRuntimeError(u"Can not yield from coroutine")
 
-        assert ctx
-        routine = ctx.routine()
+        assert routine
         self._coroutine_.set_receiver(routine)
 
-        ctx.process().yield_to_routine(self._receiver_, routine, args[0])
+        # TODO THIS IS WRONG
+        value = args.at(0)
+        routine.process.yield_to_routine(self._receiver_, routine, value)
 
 
 
@@ -712,41 +746,43 @@ class W_Coroutine(W_Root):
         from object_space import object_space
         return api.at(object_space.traits.Coroutine, k)
 
-    def _first_call_(self, ctx, args):
-        self._receiver_ = ctx.routine()
+    def _first_call_(self, routine, args):
+        from object_space import newvector
+        self._receiver_ = routine
 
         self._yield_ = W_CoroutineYield(self)
         self._yield_.set_receiver(self._receiver_)
 
         if args is not None:
-            args.insert(0, self._yield_)
+            args.prepend(self._yield_)
         else:
-            args = [self._yield_]
+            args = newvector([self._yield_])
 
-        self._routine_ = self.function().create_routine(ctx, args)
-        ctx.process().call_routine(self._routine_, self._receiver_, self._receiver_)
+        self._routine_ = self.function().create_routine(args)
+        routine.process.call_routine(self._routine_, self._receiver_, self._receiver_)
 
     def _iterator_(self):
         return W_CoroutineIterator(self)
 
-    def _call_(self, ctx, args):
+    def _call_(self, routine, args):
         from object_space import newundefined
-        assert ctx
+        assert routine
 
         if not self._routine_:
-            return self._first_call_(ctx, args)
+            return self._first_call_(routine, args)
 
         if not self._routine_.is_suspended():
             raise ObinRuntimeError(u"Invalid coroutine state")
 
+        # TODO THIS IS TOTALLY WRONG, CHANGE IT TO PATTERN MATCH
         if args is not None:
-            value = args[0]
+            value = args.at(0)
         else:
             value = newundefined()
 
-        receiver = ctx.routine()
+        receiver = routine
         self._yield_.set_receiver(receiver)
-        ctx.process().yield_to_routine(self._receiver_, receiver, value)
+        routine.process.yield_to_routine(self._receiver_, receiver, value)
 
 
 
@@ -764,56 +800,4 @@ class W_Coroutine(W_Root):
 
 
 
-
-# class TRYCATCHBLOCK(Opcode):
-#     _immutable_fields_ = ['tryexec', 'catchexec', 'catchparam', 'finallyexec']
-#
-#     def __init__(self, tryfunc, catchparam, catchfunc, finallyfunc):
-#         self.tryroutine = tryfunc
-#         self.catchroutine = catchfunc
-#         self.catchparam = catchparam
-#         self.finallyroutine = finallyfunc
-#
-#     def stack_change(self):
-#         trystack = 0
-#         catchstack = 0
-#         finallystack = 0
-#
-#         if self.tryroutine is not None:
-#             trystack = self.tryroutine.estimated_stack_size()
-#             #if self.catchexec is not None:
-#             #catchstack = self.catchexec.estimated_stack_size()
-#         if self.finallyroutine is not None:
-#             finallystack = self.finallyroutine.estimated_stack_size()
-#
-#         return trystack + catchstack + finallystack
-#
-#     def eval(self, ctx):
-#         from obin.runtime.context import BlockExecutionContext
-#         tryroutine = self.tryroutine.clone()
-#         catchroutine = self.catchroutine.clone()
-#
-#         finallroutine = self.finallyroutine.clone() if self.finallyroutine else None
-#         parentroutine = ctx.routine()
-#
-#         stack_p = ctx.stack_pointer()
-#
-#         trycontext = BlockExecutionContext(tryroutine, ctx)
-#         tryroutine.add_signal_handler(None, catchroutine)
-#         catchcontext = BlockExecutionContext(catchroutine, ctx)
-#         continuation = None
-#         if finallroutine:
-#             finallycontext = BlockExecutionContext(finallroutine, ctx)
-#             # print "finallroutine.estimated_stack_size()", finallroutine.estimated_stack_size()
-#             # print finallroutine.code()
-#
-#             continuation = finallroutine
-#             catchroutine.set_continuation(finallroutine)
-#             finallroutine.set_continuation(parentroutine)
-#         else:
-#             catchroutine.set_continuation(parentroutine)
-#             continuation = parentroutine
-#
-#         catchroutine.set_start_stack_index(stack_p)
-#         ctx.routine().fiber.call_routine(tryroutine, continuation, parentroutine)
 

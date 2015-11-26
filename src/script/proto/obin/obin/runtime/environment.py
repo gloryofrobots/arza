@@ -3,25 +3,18 @@ from obin.objects import api
 from obin.objects.object_space import isstring
 
 
-def newenv(outer_environment, size):
-    from obin.objects.object_space import newsimpleobject_withsize
-    obj = newsimpleobject_withsize(size)
-    env = Environment(obj, outer_environment)
-    return env
-
-
-def newobjectenv(obj, outer_environment):
+def newenv(obj, outer_environment):
     env = Environment(obj, outer_environment)
     return env
 
 
 def get_reference(lex, identifier):
     if lex is None:
-        return Reference(referenced=identifier)
+        return None
 
-    exists = lex.has_binding(identifier)
-    if exists:
-        ref = Reference(base_env=lex, referenced=identifier)
+    index = lex.get_index(identifier)
+    if index is not None:
+        ref = Reference(lex, identifier, index)
         return ref
     else:
         outer = lex.outer_environment
@@ -38,7 +31,16 @@ class Environment(object):
         self.binding = obj
 
     def get_reference(self, identifier):
-        return get_reference(self, identifier)
+        return get_reference(self.outer_environment, identifier)
+
+    def set_local(self, idx, v):
+        self.binding.put_by_index(idx, v)
+
+    def get_index(self, n):
+        return self.binding.get_index(n)
+
+    def get_local(self, idx):
+        return self.binding.get_by_index(idx)
 
     def has_binding(self, n):
         assert isstring(n)

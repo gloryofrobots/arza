@@ -1,3 +1,18 @@
+fn yfib(x) {
+    coroutine(fn(yield) {
+      for i in range(0, x - 1) {
+        yield(fib(i))
+      }
+      fib(x)
+    })
+}
+
+f = yfib(15)
+
+for i in f {
+  print(i)
+}
+
 fn ruler(put, k) {
     if k <= 0 {
         return nil

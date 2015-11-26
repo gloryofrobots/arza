@@ -13,7 +13,7 @@ from obin.builtins.number_builtins import w_NAN, w_POSITIVE_INFINITY, w_NEGATIVE
 from obin.objects import api
 
 # 11.6.1, 11.6.3
-def plus(lval, rval):
+def plus(r, lval, rval):
     lprim = lval
     rprim = rval
 
@@ -33,21 +33,6 @@ def plus(lval, rval):
         fleft = lprim.value()
         fright = rprim.value()
         return W_Float(fleft + fright)
-
-
-def increment(nleft, constval=1):
-    if isint(nleft):
-        return W_Integer(nleft.value() + constval)
-    else:
-        return plus(nleft, W_Integer(constval))
-
-
-def decrement(ctx, nleft, constval=1):
-    if isinstance(nleft, W_Integer):
-        return W_Integer(nleft.value() - constval)
-    else:
-        return sub(ctx, nleft, W_Integer(constval))
-
 
 def sub(ctx, nleft, nright):
     if isint(nleft) and isint(nright):
@@ -170,23 +155,23 @@ def _base_compare(x, y, _compare):
         return _compare(s1, s2)
 
 
-def compare_gt(x, y):
+def compare_gt(r, x, y):
     return newbool(_base_compare(x, y, _compare_gt))
 
 
-def compare_ge(x, y):
+def compare_ge(r, x, y):
     return newbool(_base_compare(x, y, _compare_ge))
 
 
-def compare_lt(x, y):
+def compare_lt(r, x, y):
     return newbool(_base_compare(y, x, _compare_gt))
 
 
-def compare_le(x, y):
+def compare_le(r, x, y):
     return newbool(_base_compare(y, x, _compare_ge))
 
 
-def uminus(obj, ctx):
+def uminus(routine, obj):
     if isint(obj):
         intval = obj.value()
         if intval == 0:

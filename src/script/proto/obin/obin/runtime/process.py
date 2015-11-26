@@ -1,3 +1,5 @@
+from obin.runtime.primitives import newprimitives
+
 def run_routine_for_result(routine, ctx=None):
     if ctx:
         routine.set_context(ctx)
@@ -6,10 +8,8 @@ def run_routine_for_result(routine, ctx=None):
     return result
 
 
-def run_function_for_result(function, ctx, args):
-    from obin.runtime.context import Context
-    assert isinstance(ctx, Context)
-    routine = function.create_routine(ctx, args)
+def run_function_for_result(function, args):
+    routine = function.create_routine(args)
     m = Process()
     result = m.run_with(routine)
     return result
@@ -38,19 +38,21 @@ class Process(object):
         self.__state = Process.State.IDLE
         self.__routine = None
         self.result = None
+        self.__primitives = newprimitives()
 
-    def current_context(self):
-        return self.routine().ctx
+    def get_primitive(self, pid):
+        return self.__primitives[pid]
 
+    @property
     def routine(self):
         return self.__routine
 
-    def call_object(self, obj, ctx, args):
-        routine = obj.create_routine(ctx, args)
-        self.call_routine(routine, ctx.routine(), ctx.routine())
+    def call_object(self, obj, calling_routine, args):
+        routine = obj.create_routine(args)
+        self.call_routine(routine, calling_routine, calling_routine)
 
     def yield_to_routine(self, routine_to_resume, routine_resume_from, value):
-        assert self.routine() is routine_resume_from
+        assert self.routine is routine_resume_from
         assert routine_to_resume.is_suspended()
         assert routine_resume_from.is_inprocess()
 
@@ -61,7 +63,7 @@ class Process(object):
         self.set_active_routine(routine_to_resume)
 
     def call_routine(self, routine, continuation, caller):
-        assert caller is self.routine()
+        assert caller is self.routine
         check_continuation_consistency(caller, continuation)
 
         self.__call_routine(routine, continuation, caller)
@@ -92,28 +94,10 @@ class Process(object):
     def execute(self):
         self.find_routine_to_execute()
 
-        if self.routine() is None:
+        if self.routine is None:
             return
 
-        self.routine().execute()
-
-    def complete_last_routine(self, result):
-        routine = self.__routine
-        assert self.__routine.is_block()
-
-        while True:
-            if routine is None:
-                raise RuntimeError("Routine for completion is absent")
-
-            if routine.is_block():
-                routine = routine.continuation()
-                continue
-
-            if not routine.is_suspended():
-                raise RuntimeError("Routine in call stack not suspended")
-
-            self.__routine = routine
-            self.__routine.complete(result)
+        self.routine.execute()
 
     def find_routine_to_execute(self):
         routine = self.__routine
@@ -176,6 +160,14 @@ class Process(object):
 
         # continuation in signal handler must exists at this moment
         self.__call_routine(routine, None, None)
+
+    def run_with_module(self, module, _globals):
+        routine = module.compile(_globals)
+        self.call_routine(routine, None, None)
+        self.run()
+        module.set_result(self.result)
+        self.result = None
+        return module.result()
 
     def run_with(self, routine):
         self.call_routine(routine, None, None)
