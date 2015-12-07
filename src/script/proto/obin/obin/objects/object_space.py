@@ -4,24 +4,24 @@ from rpython.rlib import jit
 
 @enforceargs(int)
 def newint(i):
-    from obin.objects.object import W_Integer
+    from obin.objects.types.value import W_Integer
     return W_Integer(i)
 
 
 @enforceargs(float)
 def newfloat(f):
-    from obin.objects.object import W_Float
+    from obin.objects.types.value  import W_Float
     return W_Float(f)
 
 
 @enforceargs(str)
 def newchar(c):
-    from obin.objects.object import W_Char
+    from obin.objects.types.value  import W_Char
     return W_Char(ord(c))
 
 
 def newstring(s):
-    from obin.objects.object import W_String
+    from obin.objects.types.value  import W_String
     assert not isstring(s)
     return W_String(unicode(s))
 
@@ -33,7 +33,7 @@ w_False = None
 def makebools():
     global w_True
     global w_False
-    from obin.objects.object import W_True, W_False
+    from obin.objects.types.constant  import W_True, W_False
     w_True = W_True()
     w_False = W_False()
     jit.promote(w_True)
@@ -41,7 +41,7 @@ def makebools():
 
 
 def _makeundefined():
-    from obin.objects.object import W_Undefined
+    from obin.objects.types.constant  import W_Undefined
     return W_Undefined()
 
 
@@ -50,7 +50,7 @@ jit.promote(w_Undefined)
 
 
 def _makenull():
-    from obin.objects.object import W_Nil
+    from obin.objects.types.constant  import W_Nil
     return W_Nil()
 
 
@@ -59,7 +59,7 @@ jit.promote(w_Null)
 
 
 def _make_interrupt():
-    from obin.objects.object import W_Constant
+    from obin.objects.types.constant  import W_Constant
     return W_Constant()
 
 
@@ -89,19 +89,19 @@ def newbool(val):
 
 
 def newfunc(name, bytecode, scope):
-    from obin.objects.object import W_Function
+    from obin.objects.types.callable import W_Function
     obj = W_Function(name, bytecode, scope)
     return obj
 
 
 def newprimitive(name, function, arity):
-    from obin.objects.object import W_Primitive
+    from obin.objects.types.callable import W_Primitive
     obj = W_Primitive(name, function, arity)
     return obj
 
 
 def newplainobject():
-    from obin.objects.object import W_Object
+    from obin.objects.types.object import W_Object
     obj = W_Object(None)
     return obj
 
@@ -109,37 +109,37 @@ def newplainobject():
 def newobject():
     obj = newplainobject()
     obj.create_traits(None)
-    obj.isa(object_space.traits.Object)
+    obj.set_origin(object_space.traits.Object)
     return obj
 
 
 def newplainobject_with_slots(slots):
-    from obin.objects.object import W_Object
+    from obin.objects.types.object import W_Object
     obj = W_Object(slots)
     return obj
 
 
 def newvector(items=None):
-    from obin.objects.object import W_Vector
+    from obin.objects.types.vector import W_Vector
     obj = W_Vector(items)
     return obj
 
 
 def newcoroutine(fn):
-    from obin.objects.object import W_Coroutine
+    from obin.objects.types.callable import W_Coroutine
     obj = W_Coroutine(fn)
     return obj
 
 
 def newmodule(name, code):
     assert isstring(name)
-    from obin.objects.object import W_Module
+    from obin.objects.types.module import W_Module
     obj = W_Module(name, code)
     return obj
 
 
 def isany(value):
-    from object import W_Root
+    from obin.objects.types.root import W_Root
     return isinstance(value, W_Root)
 
 
@@ -152,32 +152,32 @@ def isinterrupt(value):
 
 
 def iscell(value):
-    from object import W_Cell
+    from obin.objects.types.root import W_Cell
     return isinstance(value, W_Cell)
 
 
 def isobject(value):
-    from object import W_Object
+    from obin.objects.types.object import W_Object
     return isinstance(value, W_Object)
 
 
 def isvaluetype(value):
-    from object import W_ValueType
+    from obin.objects.types.value import W_ValueType
     return isinstance(value, W_ValueType)
 
 
 def isfunction(value):
-    from object import W_Function, W_Primitive
+    from obin.objects.types.callable import  W_Function, W_Primitive
     return isinstance(value, W_Function) or isinstance(value, W_Primitive)
 
 
 def isvector(value):
-    from object import W_Vector
+    from obin.objects.types.vector import W_Vector
     return isinstance(value, W_Vector)
 
 
 def ismodule(w):
-    from obin.objects.object import W_Module
+    from obin.objects.types.module import W_Module
     return isinstance(w, W_Module)
 
 
@@ -186,22 +186,22 @@ def isnull(value):
 
 
 def isint(w):
-    from obin.objects.object import W_Integer
+    from obin.objects.types.value import W_Integer
     return isinstance(w, W_Integer)
 
 
 def isstring(w):
-    from obin.objects.object import W_String
+    from obin.objects.types.value import W_String
     return isinstance(w, W_String)
 
 
 def isfloat(w):
-    from obin.objects.object import W_Float
+    from obin.objects.types.value import W_Float
     return isinstance(w, W_Float)
 
 
 def isconstant(w):
-    from obin.objects.object import W_Constant
+    from obin.objects.types.constant import W_Constant
     return isinstance(w, W_Constant)
 
 
@@ -242,7 +242,7 @@ class ObjectSpace(object):
     def newobject(self):
         obj = newplainobject()
         obj.create_traits(None)
-        obj.isa(self.traits.Object)
+        obj.set_origin(self.traits.Object)
         return obj
 
     def init_traits(self):
@@ -275,7 +275,7 @@ object_space = ObjectSpace()
 
 @specialize.argtype(0)
 def _w(value):
-    from obin.objects.object import W_Root
+    from obin.objects.types.root import W_Root
     if value is None:
         return newnull()
     elif isinstance(value, W_Root):

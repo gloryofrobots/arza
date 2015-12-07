@@ -33,17 +33,17 @@ def traits(routine):
 @complete_native_routine
 def isa(routine):
     this, other = object_extract_1_obj_arg(routine)
-    return this.isa(other)
+    raise NotImplementedError()
 
 @complete_native_routine
 def nota(routine):
     this, other = object_extract_1_obj_arg(routine)
-    return this.nota(other)
+    raise NotImplementedError()
 
 @complete_native_routine
 def kindof(routine):
     this, other = object_extract_1_obj_arg(routine)
-    return this.kindof(other)
+    raise NotImplementedError()
 
 @complete_native_routine
 def at(routine):
@@ -67,6 +67,6 @@ def create(routine):
     from obin.objects.object_space import object_space
     this = routine.get_arg(0)
     obj = object_space.newobject()
-    obj.isa(this)
+    obj.set_origin(this)
     return obj
 
