@@ -9,9 +9,11 @@ from obin.runtime import primitives
 from obin.compile.code.source import CodeSource
 from obin.compile.code import *
 
+
 def compile_error(node, message, args):
     error_message = "Compile Error %d:%d %s" % (node.line, node.position, message)
     raise RuntimeError(error_message, args)
+
 
 def string_unquote(string):
     s = string
@@ -25,6 +27,7 @@ def string_unquote(string):
 
     return s
 
+
 class Compiler(object):
     def __init__(self):
         self.funclists = []
@@ -37,7 +40,7 @@ class Compiler(object):
 
         new_scope = Scope()
         self.scopes.append(new_scope)
-        #print 'starting new scope %d' % (self.depth, )
+        # print 'starting new scope %d' % (self.depth, )
 
     def is_modifiable_binding(self, name):
         scope = self.current_scope()
@@ -130,7 +133,7 @@ class Compiler(object):
     def exit_scope(self):
         self.depth = self.depth - 1
         self.scopes.pop()
-        #print 'closing scope, returning to %d' % (self.depth, )
+        # print 'closing scope, returning to %d' % (self.depth, )
 
     def current_scope(self):
         return self.scopes[-1]
@@ -174,7 +177,6 @@ class Compiler(object):
         compiler = getattr(self, "_compile_" + t_str)
         return compiler(code, node)
 
-
     def _compile_FLOAT(self, bytecode, node):
         value = float(node.value)
         idx = self.declare_literal(obs.newfloat(value))
@@ -208,12 +210,12 @@ class Compiler(object):
         strval = decode_str_utf8(strval)
         strval = string_unquote(strval)
         strval = unicode_unescape(strval)
-        self._emit_string(bytecode,  obs.newstring(strval))
+        self._emit_string(bytecode, obs.newstring(strval))
 
     def _compile_CHAR(self, bytecode, node):
         from obin.runistr import unicode_unescape, decode_str_utf8
 
-        strval  = str(node.value)
+        strval = str(node.value)
         strval = decode_str_utf8(strval)
         strval = string_unquote(strval)
         strval = unicode_unescape(strval)
@@ -734,11 +736,13 @@ class Compiler(object):
 
         bytecode.emit_0(CALL)
 
+
 def testprogram():
     with open("program2.obn") as f:
         data = f.read()
 
     return data
+
 
 def compile(txt):
     ast = parse_string(txt)
@@ -747,17 +751,21 @@ def compile(txt):
     code = compiler.compile(ast)
     return code
 
+
 def compile_module(name, txt):
     from obin.objects.object_space import newmodule
     code = compile(txt)
     module = newmodule(name, code)
     return module
 
+
 def print_code(code):
     print [str(c) for c in code.opcodes]
 
+
 def compile_and_print(txt):
     print_code(compile(txt))
+
 
 def _check(val1, val2):
     print val1
@@ -767,10 +775,7 @@ def _check(val1, val2):
         print val2
         raise RuntimeError("Not equal")
 
-
-
 # compile_and_print("""
 # fn f(x, y, z){ return x + y + z; }
 # fn f2() {}
 # """)
-
