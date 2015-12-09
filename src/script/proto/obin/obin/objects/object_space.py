@@ -108,7 +108,6 @@ def newplainobject():
 
 def newobject():
     obj = newplainobject()
-    obj.create_traits(None)
     obj.set_origin(object_space.traits.Object)
     return obj
 
@@ -135,6 +134,12 @@ def newmodule(name, code):
     assert isstring(name)
     from obin.objects.types.module import W_Module
     obj = W_Module(name, code)
+    return obj
+
+def newmethod(name):
+    assert isstring(name)
+    from obin.objects.types.method import W_MultiMethod
+    obj = W_MultiMethod(name)
     return obj
 
 
@@ -241,13 +246,11 @@ class ObjectSpace(object):
 
     def newobject(self):
         obj = newplainobject()
-        obj.create_traits(None)
         obj.set_origin(self.traits.Object)
         return obj
 
     def init_traits(self):
         self.traits.Object = newplainobject()
-        self.traits.Object.create_traits(None)
 
         # following traits resemble native types list
         self.traits.Function = self.newobject()

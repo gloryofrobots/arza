@@ -6,7 +6,7 @@ from obin.objects.stack import Stack
 from obin.objects.object_space import (newbool, newundefined,
                                        newnull, newvector, isinterrupt,
                                        newobject, newfunc, newint)
-from obin.objects.object import api
+from obin.objects import api
 
 
 def load_arguments(stack):

@@ -69,6 +69,15 @@ class ObinInvokeError(ObinRangeError):
         return u'InvokeError: expected argument with number %s' % (str(self.value),)
 
 
+class ObinMethodInvokeError(ObinRangeError):
+    def __init__(self, name, args):
+        super(ObinMethodInvokeError, self).__init__()
+        self.arguments = args
+        self.name = name
+
+    def _msg(self):
+        return u'Method Invoke Error:  Can\'t find method  %s for arguments %s' % (str(self.name), str(self.arguments),)
+
 class ObinSyntaxError(ObinException):
     def __init__(self, msg=u'', src=u'', line=0, column=0):
         super(ObinSyntaxError, self).__init__()

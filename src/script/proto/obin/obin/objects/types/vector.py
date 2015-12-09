@@ -75,6 +75,12 @@ class W_Vector(W_Cell):
     def length(self):
         return len(self._items)
 
+    def ensure_size(self, size):
+        assert size > 0
+        l = self.length()
+        if size > l:
+            self._items += [None] * (size - l)
+
     def append(self, v):
         self._items.append(v)
 

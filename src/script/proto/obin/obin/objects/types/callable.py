@@ -1,6 +1,7 @@
 from root import W_Root
 from obin.runtime.exception import *
 from obin.objects import api
+from rpython.rlib import jit
 
 class W_Function(W_Root):
     _type_ = 'function'

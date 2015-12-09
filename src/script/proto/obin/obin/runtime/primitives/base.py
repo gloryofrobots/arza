@@ -5,7 +5,7 @@ from rpython.rlib import jit
 
 from obin.objects.object_space import _w, isint, newint, newbool
 from obin.runtime.exception import ObinTypeError, ObinReferenceError
-from obin.objects.object import api
+from obin.objects import api
 from obin.utils import tb
 
 

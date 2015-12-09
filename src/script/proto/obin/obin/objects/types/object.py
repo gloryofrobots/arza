@@ -21,6 +21,9 @@ class W_Object(W_Cell):
     def has_traits(self):
         return self.__traits is not None
 
+    def has_origin(self):
+        return self.__origin is not None
+
     def create_traits(self, traits):
         from obin.objects.object_space import newvector
         assert self.traits() is None
@@ -29,8 +32,11 @@ class W_Object(W_Cell):
 
         self.__traits = traits
 
+    def origin(self):
+        return self.__origin
+
     def set_origin(self, origin):
-        self.origin = origin
+        self.__origin = origin
 
     # def __str__(self):
     #     return "W_Object(%s)" % (self._tostring_())
@@ -54,16 +60,14 @@ class W_Object(W_Cell):
 
     def _lookup_(self, k):
         from obin.objects.object_space import isundefined, newundefined
-        v = self._at_(k)
-        if not isundefined(v):
-            return v
-
-        for t in self.traits().values():
-            v = t._at_(k)
+        obj = self
+        while True:
+            v = obj._at_(k)
             if not isundefined(v):
                 return v
-
-        return newundefined()
+            obj = obj.__origin
+            if not obj:
+                return newundefined()
 
     def _at_(self, k):
         from obin.objects.object_space import newundefined
@@ -110,9 +114,8 @@ class W_Object(W_Cell):
         import copy
         slots = copy.copy(self.__slots)
         clone = W_Object(slots)
-
-        traits = copy.copy(self.__traits)
-        clone.create_traits(traits)
+        # traits = copy.copy(self.__traits)
+        # clone.create_traits(traits)
         return clone
 
     def kindof(self, obj2):
@@ -121,35 +124,34 @@ class W_Object(W_Cell):
         if self is obj2:
             return True
 
-        if obj2 is self.origin:
+        if obj2 is self.__origin:
             return True
 
-        if self.traits().has(obj2):
-            return True
+        # if self.traits().has(obj2):
+        #     return True
 
-        if not self.origin:
+        if not self.__origin:
             return False
 
-        return self.origin.kindof(obj2)
+        return self.__origin.kindof(obj2)
 
-
-    def add_trait(self, trait):
-        from obin.objects.object_space import istrait
-        assert istrait(trait)
-
-        traits = self.traits()
-        if not traits:
-            self.create_traits(None)
-            traits = self.traits()
-
-        traits.prepend(trait)
-
-    def remove_trait(self, trait):
-        from obin.objects.object_space import istrait
-        assert istrait(trait)
-        try:
-            self.traits().remove(trait)
-        except KeyError:
-            pass
+    # def add_trait(self, trait):
+    #     from obin.objects.object_space import istrait
+    #     assert istrait(trait)
+    #
+    #     traits = self.traits()
+    #     if not traits:
+    #         self.create_traits(None)
+    #         traits = self.traits()
+    #
+    #     traits.prepend(trait)
+    #
+    # def remove_trait(self, trait):
+    #     from obin.objects.object_space import istrait
+    #     assert istrait(trait)
+    #     try:
+    #         self.traits().remove(trait)
+    #     except KeyError:
+    #         pass
 
 

@@ -49,6 +49,10 @@ def setup(obj):
     api.put_native_function(obj, u'version', version, 0)
     api.put_native_function(obj, u'coroutine', coroutine, 1)
     api.put_native_function(obj, u'range', _range, 2)
+    api.put_native_function(obj, u'method', method, 1)
+    api.put_native_function(obj, u'specify', specify, 3)
+    api.put_native_function(obj, u'create', create, 2)
+    api.put_native_function(obj, u'origin', origin, 1)
 
     ## debugging
     # if not we_are_translated():
@@ -351,3 +355,29 @@ def _range(routine):
     end = routine.get_arg(1)
     items = [newint(i) for i in xrange(start.value(), end.value())]
     return newvector(items)
+
+@complete_native_routine
+def method(routine):
+    from obin.objects.object_space import newmethod
+    name = routine.get_arg(0)
+    return newmethod(name)
+
+@complete_native_routine
+def specify(routine):
+    method = routine.get_arg(0)
+    signature = routine.get_arg(1)
+    specification = routine.get_arg(2)
+    method.specify(signature, specification)
+    return None
+
+@complete_native_routine
+def origin(routine):
+    obj = routine.get_arg(0)
+    return obj.origin()
+
+@complete_native_routine
+def create(routine):
+    origin = routine.get_arg(0)
+    child = routine.get_arg(1)
+    child.set_origin(origin)
+    return child
