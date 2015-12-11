@@ -1,7 +1,6 @@
 from root import W_Cell
 from value import NativeListIterator
 from obin.runtime.exception import *
-from obin.objects import api
 
 class W_Vector(W_Cell):
     _type_ = 'Vector'
@@ -28,9 +27,9 @@ class W_Vector(W_Cell):
         except:
             raise ObinKeyError(k)
 
-    def _lookup_(self, k):
-        from obin.objects.object_space import object_space, isint
-        return api.at(object_space.traits.Vector, k)
+    def _traits_(self):
+        from obin.objects.object_space import object_space
+        return object_space.traits.VectorTraits
 
     def _at_(self, index):
         from obin.objects.object_space import newundefined, isint

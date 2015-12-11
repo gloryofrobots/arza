@@ -23,6 +23,14 @@ class ObinException(Exception):
 class ObinRuntimeError(ObinException):
     pass
 
+class ObinTraitError(ObinException):
+    def __init__(self, message, trait):
+        super(ObinTraitError, self).__init__()
+        self.message = message
+        self.trait = trait
+
+    def _msg(self):
+        return u'TraitError : %s %s ' % (self.message, self.trait)# % (self.value, )
 
 class ObinTypeError(ObinException):
     def __init__(self, value):

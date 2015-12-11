@@ -18,17 +18,17 @@ def setup_builtins(module):
     # # 15.3.4.4 Function.prototype.call
     # api.put_native_function(target, u'call', obin.builtins.function.js_call)
 
-    import obin.builtins.object_builitns
-    obin.builtins.object_builitns.setup(object_space.traits.Object)
-
     import obin.builtins.global_builtins
     obin.builtins.global_builtins.setup(module)
 
-    import obin.builtins.vector_builtins
-    obin.builtins.vector_builtins.setup(object_space.traits.Vector)
+    # import obin.builtins.object_builitns
+    # obin.builtins.object_builitns.setup(object_space.traits.Object)
 
-    import obin.builtins.function_builtins
-    obin.builtins.function_builtins.setup(object_space.traits.Function)
+    # import obin.builtins.vector_builtins
+    # obin.builtins.vector_builtins.setup(object_space.traits.Vector)
+    #
+    # import obin.builtins.function_builtins
+    # obin.builtins.function_builtins.setup(object_space.traits.Function)
 
     """
     import obin.builtins.boolean

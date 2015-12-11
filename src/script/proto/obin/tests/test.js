@@ -1,10 +1,20 @@
-hello = method("hello")
+hello = generic("hello")
 print(hello)
 Dog = {
     name: "dog",
     teeth: 32,
     sound: "Bark"
 }
+
+fn create(origin, data) {
+    copy = clone(origin)
+    for k in data {
+        v = data[k]
+        copy[k] = v
+    }
+    return copy
+}
+
 Cat = create(Dog, {
     name: 'Cat',
     sound: "Miau"

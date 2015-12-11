@@ -2,8 +2,6 @@ from root import W_Root
 from obin.runtime.exception import *
 from obin.objects import api
 
-WILDCARD = 0
-
 class LookupLeaf(object):
     def __init__(self, idx):
         self.method_index = idx
@@ -20,9 +18,6 @@ class LookupNode(object):
         self.children = {}
 
     def lookup(self, arg):
-        return self._lookup_(arg)
-
-    def _lookup_(self, arg):
         return self.children.get(arg, None)
 
     def lookup_or_insert(self, trait):
@@ -41,12 +36,14 @@ class LookupNode(object):
     def __str__(self):
         return "Node %s" % str(self.children)
 
-class W_MultiMethod(W_Root):
+
+
+class W_Generic(W_Root):
     _type_ = 'native'
     _immutable_fields_ = ["_name_"]
 
     def __init__(self, name):
-        super(W_MultiMethod, self).__init__()
+        super(W_Generic, self).__init__()
         self._name_ = name
         self._methods_ = []
         self._signatures_ = []
@@ -77,7 +74,6 @@ class W_MultiMethod(W_Root):
 
         print str(node)
 
-
     def _add_method(self, m):
         index = len(self._methods_)
         self._methods_.append(m)
@@ -91,7 +87,6 @@ class W_MultiMethod(W_Root):
         self._signatures_[0] = idx
 
     def _specify(self, root_node, signature, method):
-        from obin.objects.object_space import isundefined, object_space
         index = 0
         length = signature.length()
         max_index = length - 1
@@ -100,20 +95,29 @@ class W_MultiMethod(W_Root):
         # make path for method
         while index < max_index:
             arg = signature.at(index)
-            if isundefined(arg):
-                arg = object_space.traits.Any
-
-            node = node.lookup_or_insert(arg)
+            trait = api.totrait(arg)
+            node = node.lookup_or_insert(trait)
             index += 1
 
         # here we set method to leaf of hash table tree
         last_arg = signature.at(max_index)
+        trait = api.totrait(last_arg)
 
-        if node.lookup(last_arg):
+        if node.lookup(trait):
             raise ObinMethodSpecialisationError(self, u"Method for such signature has been already defined")
 
         method_idx = self._add_method(method)
-        node.insert(last_arg, LookupLeaf(method_idx))
+        node.insert(trait, LookupLeaf(method_idx))
+
+    def find_next_node(self, node, args, index):
+        arg = args.at(index)
+        traits = api.traits(arg)
+        for trait in traits:
+            node = node.lookup(trait)
+            if node is not None:
+                return node
+
+        raise ObinMethodInvokeError(self, arg)
 
     def lookup_method(self, args):
         arity = args.length()
@@ -126,20 +130,10 @@ class W_MultiMethod(W_Root):
         max_index = arity - 1
 
         while index < max_index:
-            arg = args.at(index)
-
-            node = api.is_in_method(arg, node)
-            if node is None:
-                raise ObinMethodInvokeError(self, args)
-
+            node = self.find_next_node(node, args, index)
             index += 1
 
-        last_arg = args.at(max_index)
-        leaf = api.is_in_method(last_arg, node)
-
-        if leaf is None:
-            raise ObinMethodInvokeError(self, args)
-
+        leaf = self.find_next_node(node, args, max_index)
         return self._methods_[leaf.method_index]
 
     def _tostring_(self):
@@ -152,3 +146,7 @@ class W_MultiMethod(W_Root):
         assert routine
         method = self.lookup_method(args)
         routine.process.call_object(method, routine, args)
+
+    def _traits_(self):
+        from obin.objects.object_space import object_space
+        return object_space.traits.GenericTraits

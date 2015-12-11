@@ -24,9 +24,9 @@ class W_Function(W_Root):
     def _tobool_(self):
         return True
 
-    def _lookup_(self, k):
+    def _traits_(self):
         from obin.objects.object_space import object_space
-        return api.at(object_space.traits.Function, k)
+        return object_space.traits.FunctionTraits
 
     # def __str__(self):
     #     return 'Function %s' % self._tostring_()
@@ -57,9 +57,9 @@ class W_Primitive(W_Root):
     def _tobool_(self):
         return True
 
-    def _lookup_(self, k):
+    def _traits_(self):
         from obin.objects.object_space import object_space
-        return api.at(object_space.traits.Function, k)
+        return object_space.traits.PrimitiveTraits
 
     def create_routine(self, args):
         from obin.runtime.routine import create_primitive_routine

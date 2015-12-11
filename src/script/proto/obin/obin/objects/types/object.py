@@ -11,32 +11,32 @@ class W_Object(W_Cell):
     def __init__(self, slots):
         super(W_Object, self).__init__()
         from obin.objects.slots import newslots_empty
+
         if not slots:
             slots = newslots_empty()
         self.__slots = slots
-
-        self.__origin = None
         self.__traits = None
+        self.__trait = None
 
     def has_traits(self):
         return self.__traits is not None
 
-    def has_origin(self):
-        return self.__origin is not None
+    def __create_self_trate(self):
+        from obin.objects.object_space import newtrait, newstring
+        self.__trait = newtrait(newstring(""))
+        self.attach(self.__trait)
 
-    def create_traits(self, traits):
-        from obin.objects.object_space import newvector
-        assert self.traits() is None
-        if not traits:
-            traits = newvector()
-
+    def set_traits(self, traits):
+        assert self.__traits is None
+        assert self.__trait is None
         self.__traits = traits
+        self.__create_self_trate()
 
-    def origin(self):
-        return self.__origin
-
-    def set_origin(self, origin):
-        self.__origin = origin
+    def create_traits(self):
+        assert self.__traits is None
+        from obin.objects.object_space import newvector
+        self.__traits = newvector()
+        self.__create_self_trate()
 
     # def __str__(self):
     #     return "W_Object(%s)" % (self._tostring_())
@@ -58,17 +58,6 @@ class W_Object(W_Cell):
         v = self._at_(k)
         return not isundefined(v)
 
-    def _lookup_(self, k):
-        from obin.objects.object_space import isundefined, newundefined
-        obj = self
-        while True:
-            v = obj._at_(k)
-            if not isundefined(v):
-                return v
-            obj = obj.__origin
-            if not obj:
-                return newundefined()
-
     def _at_(self, k):
         from obin.objects.object_space import newundefined
         v = self.__slots.get(k)
@@ -76,6 +65,9 @@ class W_Object(W_Cell):
             return newundefined()
 
         return v
+
+    def _lookup_(self, k):
+        return self._at_(k)
 
     def _call_(self, routine, args):
         from obin.objects.object_space import newstring, isundefined
@@ -114,55 +106,36 @@ class W_Object(W_Cell):
         import copy
         slots = copy.copy(self.__slots)
         clone = W_Object(slots)
-        # traits = copy.copy(self.__traits)
-        # clone.create_traits(traits)
+        traits = copy.copy(self.__traits)
+        clone.set_traits(traits)
         return clone
 
-    def _is_in_method_(self, node):
-        obj = self
-        while obj is not None:
-            sub_node = node.lookup(obj)
-            if sub_node is not None:
-                return sub_node
-
-            obj = obj.__origin
-
-        return None
-
-    def kindof(self, obj2):
-        from obin.objects.object_space import isobject
-        assert isobject(obj2)
-        if self is obj2:
+    def _kindof_(self, trait):
+        if self.traits().has(trait):
             return True
 
-        if obj2 is self.__origin:
-            return True
+        return False
 
-        # if self.traits().has(obj2):
-        #     return True
+    def _traits_(self):
+        return self.__traits
 
-        if not self.__origin:
-            return False
+    def _totrait_(self):
+        if not self.__trait:
+            raise ObinRuntimeError(u"Can't convert object to trait")
+        return self.__trait
 
-        return self.__origin.kindof(obj2)
+    def attach(self, trait):
+        from obin.objects.object_space import istrait
+        assert self.__traits
+        assert istrait(trait)
+        self.traits().prepend(trait)
 
-    # def add_trait(self, trait):
-    #     from obin.objects.object_space import istrait
-    #     assert istrait(trait)
-    #
-    #     traits = self.traits()
-    #     if not traits:
-    #         self.create_traits(None)
-    #         traits = self.traits()
-    #
-    #     traits.prepend(trait)
-    #
-    # def remove_trait(self, trait):
-    #     from obin.objects.object_space import istrait
-    #     assert istrait(trait)
-    #     try:
-    #         self.traits().remove(trait)
-    #     except KeyError:
-    #         pass
+    def detach(self, trait):
+        from obin.objects.object_space import istrait
+        assert istrait(trait)
+        try:
+            self.traits().remove(trait)
+        except KeyError:
+            raise ObinTraitError(u"Detach trait error", trait)
 
 

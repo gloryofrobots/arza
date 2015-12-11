@@ -1,4 +1,3 @@
-from obin.objects import api
 from root import W_Root
 
 
@@ -26,9 +25,9 @@ class W_Char(W_ValueType):
     def _tobool_(self):
         return bool(self.__value)
 
-    def _lookup_(self, k):
+    def _traits_(self):
         from obin.objects.object_space import object_space
-        return api.at(object_space.traits.Char, k)
+        return object_space.traits.CharTraits
 
 
 class W_Integer(W_ValueType):
@@ -50,9 +49,9 @@ class W_Integer(W_ValueType):
     def _tobool_(self):
         return bool(self.__value)
 
-    def _lookup_(self, k):
+    def _traits_(self):
         from obin.objects.object_space import object_space
-        return api.at(object_space.traits.Integer, k)
+        return object_space.traits.IntegerTraits
 
 
 class W_Float(W_ValueType):
@@ -74,9 +73,9 @@ class W_Float(W_ValueType):
     def _tobool_(self):
         return bool(self.__value)
 
-    def _lookup_(self, k):
+    def _traits_(self):
         from obin.objects.object_space import object_space
-        return api.at(object_space.traits.Float, k)
+        return object_space.traits.FloatTraits
 
 
 class NativeListIterator(W_ValueType):
@@ -157,6 +156,6 @@ class W_String(W_ValueType):
 
         return newchar(ch)
 
-    def _lookup_(self, k):
+    def _traits_(self):
         from obin.objects.object_space import object_space
-        return api.at(object_space.traits.String, k)
+        return object_space.traits.StringTraits

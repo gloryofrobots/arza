@@ -12,6 +12,11 @@ class W_Undefined(W_Constant):
     def _tostring_(self):
         return "undefined"
 
+    def _traits_(self):
+        from obin.objects.object_space import object_space
+        return object_space.traits.UndefinedTraits
+
+
 
 class W_Nil(W_Constant):
     _type_ = 'Nil'
@@ -22,9 +27,9 @@ class W_Nil(W_Constant):
     def _tobool_(self):
         return False
 
-    def _lookup_(self, k):
-        from object_space import object_space
-        return api.at(object_space.traits.Nil, k)
+    def _traits_(self):
+        from obin.objects.object_space import object_space
+        return object_space.traits.NilTraits
 
 
 class W_True(W_Constant):
@@ -40,9 +45,9 @@ class W_True(W_Constant):
     def _tobool_(self):
         return True
 
-    def _lookup_(self, k):
-        from object_space import object_space
-        return api.at(object_space.traits.True, k)
+    def _traits_(self):
+        from obin.objects.object_space import object_space
+        return object_space.traits.TrueTraits
 
     def __str__(self):
         return '_True_'
@@ -61,9 +66,9 @@ class W_False(W_Constant):
     def value(self):
         return False
 
-    def _lookup_(self, k):
-        from object_space import object_space
-        return api.at(object_space.traits.False, k)
+    def _traits_(self):
+        from obin.objects.object_space import object_space
+        return object_space.traits.FalseTraits
 
     def __str__(self):
         return '_False_'

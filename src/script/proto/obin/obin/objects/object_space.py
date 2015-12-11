@@ -100,15 +100,9 @@ def newprimitive(name, function, arity):
     return obj
 
 
-def newplainobject():
+def newobject():
     from obin.objects.types.object import W_Object
     obj = W_Object(None)
-    return obj
-
-
-def newobject():
-    obj = newplainobject()
-    obj.set_origin(object_space.traits.Object)
     return obj
 
 
@@ -136,12 +130,18 @@ def newmodule(name, code):
     obj = W_Module(name, code)
     return obj
 
-def newmethod(name):
+def newgeneric(name):
     assert isstring(name)
-    from obin.objects.types.method import W_MultiMethod
-    obj = W_MultiMethod(name)
+    from obin.objects.types.generic import W_Generic
+    obj = W_Generic(name)
     return obj
 
+def newtrait(name):
+    from obin.objects.types.trait import W_Trait
+    return W_Trait(name)
+
+def newtraits(traits):
+    return newvector(traits)
 
 def isany(value):
     from obin.objects.types.root import W_Root
@@ -180,6 +180,9 @@ def isvector(value):
     from obin.objects.types.vector import W_Vector
     return isinstance(value, W_Vector)
 
+def istrait(w):
+    from obin.objects.types.trait import W_Trait
+    return isinstance(w, W_Trait)
 
 def ismodule(w):
     from obin.objects.types.module import W_Module
@@ -219,61 +222,63 @@ def isnull_or_undefined(obj):
 class ObjectSpace(object):
     class Traits(object):
         def __init__(self):
-            self.Any = None
-            self.Object = None
-            self.Function = None
-            self.Boolean = None
-            self.True = None
-            self.False = None
-            self.Nil = None
-            self.Undefined = None
+            self.Any = newtrait(newstring("Any"))
+            self.Boolean = newtrait(newstring("Boolean"))
 
-            self.Char = None
-            self.Number = None
-            self.Integer = None
-            self.Float = None
-            self.Symbol = None
+            self.True = newtrait(newstring("True"))
+            self.TrueTraits = newtraits([self.True, self.Boolean, self.Any])
 
-            self.String = None
-            self.Array = None
-            self.List = None
-            self.Vector = None
-            self.Tuple = None
+            self.False = newtrait(newstring("False"))
+            self.FalseTraits = newtraits([self.False, self.Boolean, self.Any])
+
+            self.Nil = newtrait(newstring("Nil"))
+            self.NilTraits = newtraits([self.Nil, self.Any])
+
+            self.Undefined = newtrait(newstring("Undefined"))
+            self.UndefinedTraits = newtraits([self.Undefined, self.Any])
+
+            self.Char = newtrait(newstring("Char"))
+            self.CharTraits = newtraits([self.Char, self.Any])
+
+            self.Number = newtrait(newstring("Number"))
+            self.Integer = newtrait(newstring("Integer"))
+            self.IntegerTraits = newtraits([self.Integer, self.Number, self.Any])
+
+            self.Float = newtrait(newstring("Float"))
+            self.FloatTraits = newtraits([self.Float, self.Number, self.Any])
+
+            self.Symbol = newtrait(newstring("Symbol"))
+            self.SymbolTraits = newtraits([self.Symbol, self.Any])
+
+            self.String = newtrait(newstring("String"))
+            self.StringTraits = newtraits([self.String, self.Any])
+
+            self.List = newtrait(newstring("List"))
+
+            self.Vector = newtrait(newstring("Vector"))
+            self.VectorTraits = newtraits([self.Vector, self.Any])
+
+            self.Tuple = newtrait(newstring("Tuple"))
+            self.TupleTraits = newtraits([self.Tuple, self.Any])
+
+            self.Function = newtrait(newstring("Function"))
+            self.FunctionTraits = newtraits([self.Function, self.Any])
+
+            self.Generic = newtrait(newstring("Generic"))
+            self.GenericTraits = newtraits([self.Generic, self.Any])
+
+            self.Primitive = newtrait(newstring("Primitive"))
+            self.PrimitiveTraits = newtraits([self.Primitive, self.Any])
+
+            self.Object = newtrait(newstring("Object"))
+            self.ObjectTraits = newtraits([self.Object, self.Any])
+
+            self.Module = newtrait(newstring("Object"))
+            self.ModuleTraits = newtraits([self.Module, self.Any])
 
     def __init__(self):
         self.traits = ObjectSpace.Traits()
-        self.init_traits()
         self.interpreter = None
-
-    def newobject(self):
-        obj = newplainobject()
-        obj.set_origin(self.traits.Object)
-        return obj
-
-    def init_traits(self):
-        self.traits.Object = newplainobject()
-
-        # following traits resemble native types list
-        self.traits.Any = self.newobject()
-        self.traits.Function = self.newobject()
-        self.traits.Boolean = self.newobject()
-        self.traits.True = self.newobject()
-        self.traits.False = self.newobject()
-        self.traits.Nil = self.newobject()
-        self.traits.Undefined = self.newobject()
-
-        self.traits.Char = self.newobject()
-        self.traits.Number = self.newobject()
-        self.traits.Integer = self.newobject()
-        self.traits.Float = self.newobject()
-        self.traits.Symbol = self.newobject()
-
-        self.traits.String = self.newobject()
-        self.traits.Array = self.newobject()
-        self.traits.List = self.newobject()
-        self.traits.Vector = self.newobject()
-        self.traits.Tuple = self.newobject()
-
 
 object_space = ObjectSpace()
 

@@ -42,6 +42,36 @@ def lookup(obj, k):
     return v
 
 
+def lookup_default(obj, k, default):
+    from object_space import isundefined
+    v = obj._lookup_(k)
+    assert v is not None
+    if isundefined(v):
+        return default
+    return v
+
+
+def traits(obj):
+    return obj._traits_()
+
+
+def attach(obj, trait):
+    from object_space import isobject, istrait
+    assert isobject(obj)
+    assert istrait(trait)
+    obj.attach(trait)
+
+
+def detach(obj, trait):
+    from object_space import isobject, istrait
+    assert isobject(obj)
+    assert istrait(trait)
+    obj.detach(trait)
+
+def kindof(obj, trait):
+    t = trait._totrait_()
+    return obj._kindof_(t)
+
 def has(obj, k):
     from object_space import isundefined, newbool
     assert not isundefined(k)
@@ -147,8 +177,10 @@ def next(obj):
     return obj._next_()
 
 
-def is_in_method(obj, container):
-    return obj._is_in_method_(container)
+def totrait(any):
+    return any._totrait_()
+
+
 
 
 def new_native_function(function, name, arity):

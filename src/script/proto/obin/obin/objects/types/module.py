@@ -8,6 +8,10 @@ class W_Module(W_Root):
         self._is_compiled_ = False
         self.init_scope()
 
+    def _traits_(self):
+        from obin.objects.object_space import object_space
+        return object_space.traits.ModuleTraits
+
     def init_scope(self):
         self._object_ = self._bytecode_.scope.create_object()
 

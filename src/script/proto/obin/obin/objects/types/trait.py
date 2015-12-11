@@ -7,17 +7,9 @@ class W_Trait(W_Cell):
     _type_ = 'Trait'
     _immutable_fields_ = ['_type_']
 
-    def __init__(self, slots):
+    def __init__(self, name):
         super(W_Cell, self).__init__()
-        from obin.objects.slots import newvector
-        self.__methods = newvector()
+        self._name_ = name
 
-    def _register_(self, method, signature):
-        length = signature.length()
-        methods = self.__methods
-        methods.ensure_size(length)
-        index = length - 1
-
-
-
-
+    def _totrait_(self):
+        return self
