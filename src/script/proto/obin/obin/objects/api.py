@@ -6,7 +6,6 @@ def tostring(obj):
     from object_space import newstring
     return newstring(unicode(obj._tostring_()))
 
-
 def tobool(obj):
     from object_space import newbool
     return newbool(obj._tobool_())

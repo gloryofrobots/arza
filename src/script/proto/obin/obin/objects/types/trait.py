@@ -13,3 +13,6 @@ class W_Trait(W_Cell):
 
     def _totrait_(self):
         return self
+
+    def _tostring_(self):
+        return u"<trait %s>" % (self._name_.value())

@@ -103,6 +103,7 @@ def newprimitive(name, function, arity):
 def newobject():
     from obin.objects.types.object import W_Object
     obj = W_Object(None)
+    obj.set_traits(object_space.traits.ObjectTraits)
     return obj
 
 

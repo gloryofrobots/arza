@@ -20,6 +20,9 @@ class NativeRoutine(BaseRoutine):
     def name(self):
         return self._name_.value()
 
+    def args(self):
+        return self._args
+
     def get_arg(self, index):
         return self._args.at(index)
 

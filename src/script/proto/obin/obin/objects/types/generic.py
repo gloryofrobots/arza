@@ -110,16 +110,19 @@ class W_Generic(W_Root):
         node.insert(trait, LookupLeaf(method_idx))
 
     def find_next_node(self, node, args, index):
+        from obin.objects.object_space import object_space
         arg = args.at(index)
         traits = api.traits(arg)
-        for trait in traits:
-            node = node.lookup(trait)
-            if node is not None:
-                return node
+
+        for trait in traits.values():
+            next_node = node.lookup(trait)
+            if next_node is not None:
+                return next_node
 
         raise ObinMethodInvokeError(self, arg)
 
     def lookup_method(self, args):
+
         arity = args.length()
         if arity == 0:
             idx = self._signatures_[0]

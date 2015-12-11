@@ -87,7 +87,7 @@ class ObinMethodInvokeError(ObinRangeError):
         self.method = method
 
     def _msg(self):
-        return u'Method Invoke Error:  Can\'t find method  %s for arguments %s' % (str(self.method._name_), str(self.arguments),)
+        return u'Method Invoke Error:  Can\'t determine method "%s" for arguments %s' % (str(self.method._name_), str(self.arguments),)
 
 
 class ObinMethodSpecialisationError(ObinRangeError):
@@ -97,7 +97,7 @@ class ObinMethodSpecialisationError(ObinRangeError):
         self.message = message
 
     def _msg(self):
-        return u'Method Specialisation Error:  Can\'t specialize method  %s %s' % (str(self.method._name_), str(self.message),)
+        return u'Method Specialisation Error:  Can\'t specialize method "%s" %s' % (str(self.method._name_), str(self.message),)
 
 
 class ObinSyntaxError(ObinException):

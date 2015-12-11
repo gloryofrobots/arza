@@ -1,36 +1,100 @@
-hello = generic("hello")
-print(hello)
-Dog = {
-    name: "dog",
-    teeth: 32,
-    sound: "Bark"
-}
+Named = trait("Named")
+Animal = trait("Animal")
+Mammal = trait("Mammal")
+Winged = trait("Winged")
+Carnivoros = trait("Carnivoros")
+Grazing = trait("Grazing")
+Living = trait("Living")
 
-fn create(origin, data) {
-    copy = clone(origin)
-    for k in data {
-        v = data[k]
-        copy[k] = v
+name = generic("name")
+str = generic("str")
+eat = generic("eat")
+breathe = generic("breathe")
+flap = generic("flap")
+die = generic("die")
+bite = generic("bite")
+
+specify(name, [Named, Any], fn(self, other){
+    self.name = name
+})
+
+specify(name, [Named], fn(self) {
+    return self.name
+})
+
+specify(str, [Named], fn(self) {
+    return self.name
+})
+
+specify(eat, [Animal, Animal], fn(self, other) {
+    print(str(self), "eating", str(other))
+    bite(self, other)
+})
+
+specify(eat, [Carnivoros, Carnivoros], fn(self, other) {
+    print(str(self), "eating each other", str(other))
+    bite(self, other)
+    bite(other, self)
+})
+
+specify(eat, [Grazing, Carnivoros], fn(self, other) {
+    print("Carnivoros eats Grazing")
+    bite(other, self)
+})
+
+specify(eat, [Winged, Winged], fn(self, other) {
+    print(str(self), "eating", str(other))
+    bite(self, other)
+})
+specify(eat, [Animal, Winged], fn(self, other) {
+    print(str(self), "can't eat, pray fly away", str(other))
+})
+
+specify(bite, [Animal, Animal], fn(self, other) {
+    other.health -= self.power
+    if other.health <= 0 {
+        die(other)
     }
-    return copy
+    print("after bite", self, other)
+})
+
+specify(die, [Animal], fn(self) {
+    print(str(self), "is dead")
+})
+
+specify(breathe, [Mammal], fn(self) {
+    print(str(self), "health is ", self.health)
+})
+
+fn animal(_name, _power) {
+    {
+        health: 100,
+        name: _name,
+        power: _power
+    }
 }
 
-Cat = create(Dog, {
-    name: 'Cat',
-    sound: "Miau"
-})
+fn Cow() {
+    attach(animal("Cow", 2), Grazing, Mammal, Animal, Named)
+}
 
-print(Dog)
+fn Bat() {
+    attach(animal("Bat", 10), Winged, Mammal, Animal, Named)
+}
 
-specify(hello, [Dog], fn(self){
-    print("Dog barks", self)
-})
-hello(Dog)
-hello(Cat)
-specify(hello, [Cat], fn(self){
-    print("Cat miuaus", self)
-})
-hello(Cat)
+fn ScaryFrog() {
+    attach(animal("ScaryFrog", 60), Carnivoros, Animal, Named)
+}
+
+cow = Cow()
+frog = ScaryFrog()
+
+bat = Bat()
+eat(cow, frog)
+eat(frog, cow)
+
+
+
 
 
 //A = [1,2,3]

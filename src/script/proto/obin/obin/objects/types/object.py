@@ -21,22 +21,17 @@ class W_Object(W_Cell):
     def has_traits(self):
         return self.__traits is not None
 
-    def __create_self_trate(self):
+    def create_self_trait(self):
         from obin.objects.object_space import newtrait, newstring
+        assert self.__traits
+        assert not self.__trait
         self.__trait = newtrait(newstring(""))
         self.attach(self.__trait)
 
     def set_traits(self, traits):
+        from copy import copy
         assert self.__traits is None
-        assert self.__trait is None
-        self.__traits = traits
-        self.__create_self_trate()
-
-    def create_traits(self):
-        assert self.__traits is None
-        from obin.objects.object_space import newvector
-        self.__traits = newvector()
-        self.__create_self_trate()
+        self.__traits = copy(traits)
 
     # def __str__(self):
     #     return "W_Object(%s)" % (self._tostring_())
@@ -121,7 +116,8 @@ class W_Object(W_Cell):
 
     def _totrait_(self):
         if not self.__trait:
-            raise ObinRuntimeError(u"Can't convert object to trait")
+            self.create_self_trait()
+            # raise ObinRuntimeError(u"Can't convert object to trait")
         return self.__trait
 
     def attach(self, trait):

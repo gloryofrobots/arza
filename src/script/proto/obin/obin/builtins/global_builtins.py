@@ -11,6 +11,7 @@ def setup(obj):
 
     ### Traits
     traits = object_space.traits
+    api.put_property(obj, u'Any', traits.Any)
     api.put_property(obj, u'True', traits.True)
     api.put_property(obj, u'False', traits.False)
     api.put_property(obj, u'Boolean', traits.Boolean)
@@ -39,7 +40,10 @@ def setup(obj):
     api.put_native_function(obj, u'generic', generic, 1)
     api.put_native_function(obj, u'specify', specify, 3)
     api.put_native_function(obj, u'clone', clone, 1)
-    api.put_native_function(obj, u'newtrait', newtrait, 1)
+    api.put_native_function(obj, u'trait', trait, 1)
+    api.put_native_function(obj, u'attach', attach, -1)
+    api.put_native_function(obj, u'detach', detach, -1)
+    api.put_native_function(obj, u'set_traits', set_traits, 1)
     ## debugging
     # if not we_are_translated():
     #     api.put_native_function(obj, u'pypy_repr', pypy_repr)
@@ -139,17 +143,30 @@ def traits(routine):
     return api.traits(obj)
 
 @complete_native_routine
-def attach(routine):
+def set_traits(routine):
     obj = routine.get_arg(0)
-    trait = routine.get_arg(1)
-    api.attach(obj, trait)
+    traits = routine.get_arg(1)
+    obj.set_traits(traits)
+    return obj
+
+@complete_native_routine
+def attach(routine):
+    args = routine.args().values()
+    obj = routine.get_arg(0)
+    for i in range(len(args) -1, 0, -1):
+        trait = routine.get_arg(i)
+        api.attach(obj, trait)
+    return obj
 
 @complete_native_routine
 def detach(routine):
+    args = routine.args().values()
     obj = routine.get_arg(0)
-    trait = routine.get_arg(1)
-    api.detach(obj, trait)
+    for i in range(1, len(args)):
+        trait = routine.get_arg(i)
+        api.detach(obj, trait)
 
+    return obj
 
 @complete_native_routine
 def kindof(routine):
@@ -171,7 +188,7 @@ def clone(routine):
     return api.clone(this)
 
 @complete_native_routine
-def newtrait(routine):
+def trait(routine):
     from obin.objects.object_space import newtrait
     name = routine.get_arg(0)
     return newtrait(name)
