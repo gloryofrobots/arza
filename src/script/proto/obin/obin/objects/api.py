@@ -11,8 +11,10 @@ def tobool(obj):
     from object_space import newbool
     return newbool(obj._tobool_())
 
+
 def toboolvalue(obj):
     return obj._tobool_()
+
 
 def delete(obj, k):
     from object_space import isundefined
@@ -74,9 +76,11 @@ def put_property(obj, k, v):
     from object_space import newstring
     put(obj, newstring(k), v)
 
+
 def put_string_property(obj, k, v):
     from object_space import newstring
     put(obj, newstring(k), newstring(v))
+
 
 def put(obj, k, v):
     from object_space import isundefined, iscell
@@ -134,11 +138,17 @@ def compare(obj, other):
 def call(obj, ctx, args):
     return obj._call_(ctx, args)
 
+
 def iterator(obj):
     return obj._iterator_()
 
+
 def next(obj):
     return obj._next_()
+
+
+def is_in_method(obj, container):
+    return obj._is_in_method_(container)
 
 
 def new_native_function(function, name, arity):

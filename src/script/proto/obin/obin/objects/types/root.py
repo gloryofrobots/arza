@@ -43,6 +43,9 @@ class W_Root(object):
     def _compare_(self, other):
         raise NotImplementedError()
 
+    def _is_in_method_(self, other):
+        raise NotImplementedError()
+
 class W_Cell(W_Root):
     def __init__(self):
         self.__frozen = False

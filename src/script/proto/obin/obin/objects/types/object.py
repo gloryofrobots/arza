@@ -118,6 +118,17 @@ class W_Object(W_Cell):
         # clone.create_traits(traits)
         return clone
 
+    def _is_in_method_(self, node):
+        obj = self
+        while obj is not None:
+            sub_node = node.lookup(obj)
+            if sub_node is not None:
+                return sub_node
+
+            obj = obj.__origin
+
+        return None
+
     def kindof(self, obj2):
         from obin.objects.object_space import isobject
         assert isobject(obj2)

@@ -219,6 +219,7 @@ def isnull_or_undefined(obj):
 class ObjectSpace(object):
     class Traits(object):
         def __init__(self):
+            self.Any = None
             self.Object = None
             self.Function = None
             self.Boolean = None
@@ -253,6 +254,7 @@ class ObjectSpace(object):
         self.traits.Object = newplainobject()
 
         # following traits resemble native types list
+        self.traits.Any = self.newobject()
         self.traits.Function = self.newobject()
         self.traits.Boolean = self.newobject()
         self.traits.True = self.newobject()

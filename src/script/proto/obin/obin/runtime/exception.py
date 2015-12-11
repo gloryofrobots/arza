@@ -19,8 +19,10 @@ class ObinException(Exception):
     def __repr__(self):
         return self.__str__()
 
+
 class ObinRuntimeError(ObinException):
     pass
+
 
 class ObinTypeError(ObinException):
     def __init__(self, value):
@@ -60,6 +62,7 @@ class ObinKeyError(ObinRangeError):
     def _msg(self):
         return u'KeyError: %s' % (self.value,)
 
+
 class ObinInvokeError(ObinRangeError):
     def __init__(self, value=None):
         super(ObinInvokeError, self).__init__()
@@ -70,13 +73,24 @@ class ObinInvokeError(ObinRangeError):
 
 
 class ObinMethodInvokeError(ObinRangeError):
-    def __init__(self, name, args):
+    def __init__(self, method, args):
         super(ObinMethodInvokeError, self).__init__()
         self.arguments = args
-        self.name = name
+        self.method = method
 
     def _msg(self):
-        return u'Method Invoke Error:  Can\'t find method  %s for arguments %s' % (str(self.name), str(self.arguments),)
+        return u'Method Invoke Error:  Can\'t find method  %s for arguments %s' % (str(self.method._name_), str(self.arguments),)
+
+
+class ObinMethodSpecialisationError(ObinRangeError):
+    def __init__(self, method, message):
+        super(ObinMethodSpecialisationError, self).__init__()
+        self.method = method
+        self.message = message
+
+    def _msg(self):
+        return u'Method Specialisation Error:  Can\'t specialize method  %s %s' % (str(self.method._name_), str(self.message),)
+
 
 class ObinSyntaxError(ObinException):
     def __init__(self, msg=u'', src=u'', line=0, column=0):

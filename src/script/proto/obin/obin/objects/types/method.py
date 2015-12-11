@@ -2,6 +2,45 @@ from root import W_Root
 from obin.runtime.exception import *
 from obin.objects import api
 
+WILDCARD = 0
+
+class LookupLeaf(object):
+    def __init__(self, idx):
+        self.method_index = idx
+
+    def __str__(self):
+        return "{Leaf %d}" % self.method_index
+
+    def __repr__(self):
+        return "{Leaf %d}" % self.method_index
+
+
+class LookupNode(object):
+    def __init__(self):
+        self.children = {}
+
+    def lookup(self, arg):
+        return self._lookup_(arg)
+
+    def _lookup_(self, arg):
+        return self.children.get(arg, None)
+
+    def lookup_or_insert(self, trait):
+        node = self.children.get(trait, None)
+
+        if not node:
+            node = LookupNode()
+            self.insert(trait, node)
+
+        return node
+
+    def insert(self, trait, node):
+        self.children[trait] = node
+        return node
+
+    def __str__(self):
+        return "Node %s" % str(self.children)
+
 class W_MultiMethod(W_Root):
     _type_ = 'native'
     _immutable_fields_ = ["_name_"]
@@ -10,59 +49,104 @@ class W_MultiMethod(W_Root):
         super(W_MultiMethod, self).__init__()
         self._name_ = name
         self._methods_ = []
+        self._signatures_ = []
 
     def specify(self, signature, method):
-        signature = signature.values()
-        arity = len(signature)
-        assert arity == method.arity
-        methods = self._methods_
-        count_methods = len(methods)
-        if arity > count_methods:
-            methods += [None] * (arity - count_methods)
+        arity = signature.length()
+        signatures = self._signatures_
+        count_signatures = len(signatures)
 
-        record = methods[arity-1]
-        if not record:
-            methods[arity-1] = []
+        if arity != method.arity:
+            raise ObinMethodSpecialisationError(self, u"Method arity doesn't match implementation function")
 
-        record = methods[arity-1]
-        record.insert(0, [signature, method])
+        if arity == 0:
+            return self._specify_empty(method)
 
-    @staticmethod
-    def match_signature(signature, args):
-        l_args = len(args)
-        l_sig = len(signature)
-        assert l_args == l_sig
+        index = arity + 1
 
-        for i in range(l_args):
-            sig = signature[i]
-            arg = args[i]
+        if index > count_signatures:
+            signatures += [None] * (index - count_signatures)
 
-            if not arg.kindof(sig):
-                return False
+        node = signatures[arity]
 
-        return True
+        if not node:
+            node = LookupNode()
+            signatures[arity] = node
+
+        self._specify(node, signature, method)
+
+        print str(node)
+
+
+    def _add_method(self, m):
+        index = len(self._methods_)
+        self._methods_.append(m)
+        return index
+
+    def _specify_empty(self, method):
+        idx = self._add_method(method)
+        if self._signatures_[0] is not None:
+            raise ObinMethodSpecialisationError(self, u"Specialisation for 0-length method has been already defined")
+
+        self._signatures_[0] = idx
+
+    def _specify(self, root_node, signature, method):
+        from obin.objects.object_space import isundefined, object_space
+        index = 0
+        length = signature.length()
+        max_index = length - 1
+        node = root_node
+
+        # make path for method
+        while index < max_index:
+            arg = signature.at(index)
+            if isundefined(arg):
+                arg = object_space.traits.Any
+
+            node = node.lookup_or_insert(arg)
+            index += 1
+
+        # here we set method to leaf of hash table tree
+        last_arg = signature.at(max_index)
+
+        if node.lookup(last_arg):
+            raise ObinMethodSpecialisationError(self, u"Method for such signature has been already defined")
+
+        method_idx = self._add_method(method)
+        node.insert(last_arg, LookupLeaf(method_idx))
 
     def lookup_method(self, args):
-        args = args.values()
+        arity = args.length()
+        if arity == 0:
+            idx = self._signatures_[0]
+            return self._methods_[idx]
 
-        arity = len(args)
-        record = self._methods_[arity-1]
-        for data in record:
-            signature = data[0]
-            if self.match_signature(signature, args):
-                return data[1]
+        node = self._signatures_[arity]
+        index = 0
+        max_index = arity - 1
 
-        raise ObinMethodInvokeError(self._name_, args)
+        while index < max_index:
+            arg = args.at(index)
+
+            node = api.is_in_method(arg, node)
+            if node is None:
+                raise ObinMethodInvokeError(self, args)
+
+            index += 1
+
+        last_arg = args.at(max_index)
+        leaf = api.is_in_method(last_arg, node)
+
+        if leaf is None:
+            raise ObinMethodInvokeError(self, args)
+
+        return self._methods_[leaf.method_index]
 
     def _tostring_(self):
         return "method %s {}" % self._name_.value()
 
     def _tobool_(self):
         return True
-
-    def _lookup_(self, k):
-        from obin.objects.object_space import object_space
-        return api.at(object_space.traits.Function, k)
 
     def _call_(self, routine, args):
         assert routine
