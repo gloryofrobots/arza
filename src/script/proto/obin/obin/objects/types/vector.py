@@ -31,6 +31,10 @@ class W_Vector(W_Cell):
         from obin.objects.object_space import object_space
         return object_space.traits.VectorTraits
 
+    def _clone_(self):
+        from copy import copy
+        return W_Vector(copy(self._items))
+
     def _at_(self, index):
         from obin.objects.object_space import newundefined, isint
         assert isint(index)

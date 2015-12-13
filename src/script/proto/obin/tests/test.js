@@ -14,6 +14,19 @@ flap = generic("flap")
 die = generic("die")
 bite = generic("bite")
 
+specify(eat, [Animal, Animal], fn(self, other) {
+    print(str(self), "eating", str(other))
+    bite(self, other)
+})
+
+specify(eat, [Carnivoros, Carnivoros], fn(self, other) {
+    print(str(self), "eating each other", str(other))
+    bite(self, other)
+    bite(other, self)
+})
+
+return
+
 specify(name, [Named, Any], fn(self, other){
     self.name = name
 })
@@ -26,16 +39,6 @@ specify(str, [Named], fn(self) {
     return self.name
 })
 
-specify(eat, [Animal, Animal], fn(self, other) {
-    print(str(self), "eating", str(other))
-    bite(self, other)
-})
-
-specify(eat, [Carnivoros, Carnivoros], fn(self, other) {
-    print(str(self), "eating each other", str(other))
-    bite(self, other)
-    bite(other, self)
-})
 
 specify(eat, [Grazing, Carnivoros], fn(self, other) {
     print("Carnivoros eats Grazing")

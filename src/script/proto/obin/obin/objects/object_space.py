@@ -102,8 +102,10 @@ def newprimitive(name, function, arity):
 
 def newobject():
     from obin.objects.types.object import W_Object
+    from obin.objects import api
     obj = W_Object(None)
-    obj.set_traits(object_space.traits.ObjectTraits)
+
+    obj.set_traits(api.clone(object_space.traits.ObjectTraits))
     return obj
 
 
@@ -133,7 +135,7 @@ def newmodule(name, code):
 
 def newgeneric(name):
     assert isstring(name)
-    from obin.objects.types.generic import W_Generic
+    from obin.objects.types.dispatch.generic import W_Generic
     obj = W_Generic(name)
     return obj
 
