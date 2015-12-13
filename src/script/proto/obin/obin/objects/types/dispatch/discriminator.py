@@ -1,16 +1,20 @@
+from obin.objects import api
+
 class Discriminator(object):
     def __init__(self, position):
         self.position = position
         self.status = None
 
-    def check(self, arg):
+    def evaluate(self, args):
+        arg = args.at(self.position)
+
         if self.status is None:
-            self.status = self._check(arg)
+            self.status = self._evaluate(arg)
             assert self.status is not None
 
         return self.status
 
-    def _check(self, arg):
+    def _evaluate(self, arg):
         raise NotImplementedError()
 
     def __eq__(self, other):
@@ -21,7 +25,7 @@ class Discriminator(object):
         return "<Discriminator %s %s>" % (str(self.position), str(self.status))
 
 class TrueDiscriminator(Discriminator):
-    def _check(self, arg):
+    def _evaluate(self, arg):
         return True
 
 
@@ -36,8 +40,8 @@ class TraitDiscriminator(Discriminator):
                and other.position == self.position \
                and other.trait == self.trait
 
-    def _check(self, arg):
-        return self.trait.is_attached(arg)
+    def _evaluate(self, arg):
+        return api.kindof(arg, self.trait)
 
     def __str__(self):
         return "<TraitDiscriminator %s %s %s>" % (str(self.position), str(self.trait), str(self.status))

@@ -133,7 +133,3 @@ class W_Object(W_Cell):
         except KeyError:
             raise ObinTraitError(u"Detach trait error", trait)
 
-    def is_attached(self, trait):
-        from obin.objects.object_space import istrait
-        assert istrait(trait)
-        return self.traits().has(trait)

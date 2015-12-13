@@ -84,7 +84,9 @@ class W_Generic(W_Root):
 
     def _make_nodes(self, index, arity, signatures, discriminators):
         if index == arity:
-            return self._make_method_node(signatures)
+            leaf = self._make_method_node(signatures)
+            print "METHOD", index, leaf
+            return leaf
 
         groups = {}
 
@@ -96,11 +98,15 @@ class W_Generic(W_Root):
                 groups[arg].append(signature)
 
         nodes = []
+        from copy import copy
         for arg, group in groups.iteritems():
             d = arg.discriminator(discriminators)
             children = self._make_nodes(index + 1, arity, group, discriminators)
             nodes.append(DecisionNode(d, children))
 
+        if index == 0:
+            print ""
+        print "NODES", index, nodes
         return nodes
 
     def fill_dag(self, signatures, arity, dag):
@@ -133,11 +139,14 @@ class W_Generic(W_Root):
         raise ObinMethodInvokeError(self, args)
 
     def lookup_method(self, args):
-        print "LOOKUP", self._name_, args
         arity = args.length()
+        print "LOOKUP", self._name_, args, arity
         if arity == 0:
             idx = self._signatures_[0]
             return self._methods_[idx]
+
+        if arity >= len(self._dags_):
+            raise ObinMethodInvokeError(self, args)
 
         dag = self._dags_[arity]
         method = dag.evaluate(args)

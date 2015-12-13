@@ -25,7 +25,7 @@ class DecisionNode(DAGNode):
         return False
 
     def __str__(self):
-        return "Decision %s %s" % (str(self.discriminator), str(self.nodes))
+        return "{DagNode %s %s}" % (str(self.discriminator), str(self.nodes))
 
 class DAGRoot(DAGNode):
     def __init__(self):
@@ -46,7 +46,11 @@ class DAGRoot(DAGNode):
         return False
 
     def __str__(self):
-       return "Dag %s" % str(self.nodes)
+        s = "{DagRoot "
+        for node in self.nodes:
+            s += "\n" + str(node)
+        s += "}"
+        return s
 
     def __repr__(self):
         return self.__str__()
@@ -59,4 +63,4 @@ class DAGMethodNode(DAGNode):
         return self.method
 
     def __str__(self):
-        return "DagMethod %s" % (str(self.method))
+        return "{DagMethod %s}" % (str(self.method._name_))
