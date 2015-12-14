@@ -98,7 +98,6 @@ class W_Generic(W_Root):
                 groups[arg].append(signature)
 
         nodes = []
-        from copy import copy
         for arg, group in groups.iteritems():
             d = arg.discriminator(discriminators)
             children = self._make_nodes(index + 1, arity, group, discriminators)

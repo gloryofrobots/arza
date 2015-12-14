@@ -133,3 +133,5 @@ class W_Object(W_Cell):
         except KeyError:
             raise ObinTraitError(u"Detach trait error", trait)
 
+    def get_trait_index(self, trait):
+        return self.traits().get_index(trait)

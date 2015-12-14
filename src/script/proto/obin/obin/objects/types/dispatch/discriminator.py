@@ -41,7 +41,8 @@ class TraitDiscriminator(Discriminator):
                and other.trait == self.trait
 
     def _evaluate(self, arg):
-        return api.kindof(arg, self.trait)
+        return arg.get_trait_index(self.trait)
+        # return api.kindof(arg, self.trait)
 
     def __str__(self):
         return "<TraitDiscriminator %s %s %s>" % (str(self.position), str(self.trait), str(self.status))

@@ -69,7 +69,7 @@ class W_Vector(W_Cell):
     def get_index(self, obj):
         try:
             return self._items.index(obj)
-        except KeyError:
+        except ValueError:
             return -1
 
     def has(self, obj):
