@@ -5,6 +5,9 @@ class Discriminator(object):
         self.position = position
         self.status = None
 
+    def clear(self):
+        self.status = None
+
     def evaluate(self, args):
         arg = args.at(self.position)
 
@@ -44,5 +47,8 @@ class TraitDiscriminator(Discriminator):
         return arg.get_trait_index(self.trait)
         # return api.kindof(arg, self.trait)
 
+    # def __str__(self):
+    #     return "<TraitDiscriminator %s %s %s>" % (str(self.position), str(self.trait), str(self.status))
+
     def __str__(self):
-        return "<TraitDiscriminator %s %s %s>" % (str(self.position), str(self.trait), str(self.status))
+        return "<%s %s %s>" % (str(self.position), str(self.trait._name_), str(self.status))

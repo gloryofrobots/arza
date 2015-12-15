@@ -85,7 +85,7 @@ class W_Generic(W_Root):
     def _make_nodes(self, index, arity, signatures, discriminators):
         if index == arity:
             leaf = self._make_method_node(signatures)
-            print "METHOD", index, leaf
+            # print "METHOD", index, leaf
             return leaf
 
         groups = {}
@@ -105,13 +105,12 @@ class W_Generic(W_Root):
 
         if index == 0:
             print ""
-        print "NODES", index, nodes
+        # print "NODES", index, nodes
         return nodes
 
     def fill_dag(self, signatures, arity, dag):
         dag.set_nodes(self._make_nodes(0, arity, signatures, dag.discriminators))
         print self._name_, dag
-
 
     def _add_method(self, m):
         index = len(self._methods_)
@@ -168,3 +167,34 @@ class W_Generic(W_Root):
     def _traits_(self):
         from obin.objects.object_space import object_space
         return object_space.traits.GenericTraits
+
+
+def test_3():
+    from obin.objects.object_space import newtrait, newgeneric, newstring, newprimitive, newvector
+    X = newtrait(newstring("X"))
+    Y = newtrait(newstring("Y"))
+    Z = newtrait(newstring("Z"))
+    g = newgeneric(newstring("TEST_3"))
+
+    def make_method(name):
+        return newprimitive(newstring(name), lambda x, y, z: name, 3)
+
+    def sig(*args):
+        return newvector(list(args))
+    
+    def test(gen, expected, *args):
+        s = newvector(list(args))
+        m = gen.lookup_method(s)
+        res = m._function_(*args)
+        if res != expected:
+            print "ERROR", res, expected
+            raise RuntimeError((res, expected))
+
+    g.specify(sig(X, Y, Z), make_method("m1"))
+    g.specify(sig(Y, Y, Z), make_method("m2"))
+    g.specify(sig(Z, Z, Z), make_method("m3"))
+    g.specify(sig(Z, Z, X), make_method("m4"))
+    g.specify(sig(Y, Y, X), make_method("m5"))
+    g.specify(sig(X, Z, Z), make_method("m6"))
+    g.specify(sig(Y, X, X), make_method("m7"))
+

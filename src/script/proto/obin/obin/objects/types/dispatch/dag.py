@@ -29,10 +29,8 @@ class DecisionNode(DAGNode):
     def __init__(self, discriminator, nodes):
         self.nodes = nodes
         self.discriminator = discriminator
-        self.rank = None
-
-    def add_node(self, node):
-        self.nodes.append(node)
+        self.ordering_stack = []
+        self.is_evaluated = False
 
     def get_rank(self, args):
         result = self.discriminator.evaluate(args)
@@ -40,11 +38,23 @@ class DecisionNode(DAGNode):
             return None
         return result
 
+    def clear(self):
+        if not self.is_evaluated:
+            return
+
+        self.ordering_stack[:] = []
+        self.is_evaluated = False
+        self.discriminator.clear()
+        for child in self.nodes:
+            child.clear()
+
     def evaluate(self, args):
+        self.is_evaluated = True
+        self.ordering_stack[:] = []
         return evaluate_decision(self.nodes, args)
 
     def __str__(self):
-        return "{DagNode %s %s}" % (str(self.discriminator), str(self.nodes))
+        return "{%s %s}" % (str(self.discriminator), str(self.nodes))
 
 
 class DAGRoot(DAGNode):
@@ -55,17 +65,20 @@ class DAGRoot(DAGNode):
     def set_nodes(self, nodes):
         self.nodes = nodes
 
-    def add_node(self, node):
-        self.nodes.append(node)
-
     def evaluate(self, args):
-        return evaluate_decision(self.nodes, args)
+        result = evaluate_decision(self.nodes, args)
+        self.clear()
+        return result
+
+    def clear(self):
+        for child in self.nodes:
+            child.clear()
 
     def __str__(self):
-        s = "{DagRoot "
-        for node in self.nodes:
+        s = "Dag"
+        for i, node in enumerate(self.nodes):
             s += "\n" + str(node)
-        s += "}"
+        s += "\n"
         return s
 
     def __repr__(self):
@@ -79,8 +92,11 @@ class DAGMethodNode(DAGNode):
     def get_rank(self, args):
         return 0
 
+    def clear(self):
+        pass
+
     def evaluate(self, args):
         return self.method
 
     def __str__(self):
-        return "{DagMethod %s}" % (str(self.method._name_))
+        return "{Method %s}" % (str(self.method._name_))
