@@ -1,9 +1,11 @@
 __author__ = 'gloryofrobots'
-from discriminator import TraitDiscriminator
+from discriminator import *
 
 
 class Argument(object):
     # return new discriminator for argument or choose existed one
+    def __init__(self, position):
+        self.position = position
 
     def find_old_discriminator(self, discriminators):
         raise NotImplementedError()
@@ -21,13 +23,74 @@ class Argument(object):
         return d
 
     def __eq__(self, other):
-        raise NotImplementedError()
+        if other.__class__ == self.__class__ \
+                and other.position == self.position:
+            return True
+        return False
+
+
+class PredicateArgument(Argument):
+    def __init__(self, position, predicate):
+        super(PredicateArgument, self).__init__(position)
+        self.predicate = predicate
+
+    def find_old_discriminator(self, discriminators):
+        position = self.position
+        predicate = self.predicate
+        for d in discriminators:
+            if d.__class__ == PredicateArgument \
+                    and d.position == position \
+                    and d.trait == predicate:
+                return d
+
+        return None
+
+    def make_discriminator(self):
+        return PredicateDiscriminator(self.position, self.predicate)
+
+    def __eq__(self, other):
+        if other.__class__ == self.__class__ \
+                and other.trait == self.predicate \
+                and other.position == self.position:
+            return True
+        return False
+
+    def __repr__(self):
+        return str(self.predicate)
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __hash__(self):
+        return self.predicate.__hash__()
+
+class ArgumentAny(Argument):
+    def find_old_discriminator(self, discriminators):
+        position = self.position
+        for d in discriminators:
+            if d.__class__ == self.__class__ \
+                    and d.position == position:
+                return d
+
+        return None
+
+    def make_discriminator(self):
+        return AnyDiscriminator(self.position)
+
+    def __repr__(self):
+        return "Any"
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __hash__(self):
+        return self.__class__.__hash__()
 
 
 class ArgumentTrait(Argument):
     def __init__(self, position, trait):
+        super(ArgumentTrait, self).__init__(position)
         self.trait = trait
-        self.position = position
 
     def find_old_discriminator(self, discriminators):
         position = self.position
@@ -44,9 +107,11 @@ class ArgumentTrait(Argument):
         return TraitDiscriminator(self.position, self.trait)
 
     def __eq__(self, other):
-        return other.__class__ == self.__class__ \
-               and other.trait == self.trait \
-               and other.position == self.position
+        if other.__class__ == self.__class__ \
+                and other.trait == self.trait \
+                and other.position == self.position:
+            return True
+        return False
 
     def __repr__(self):
         return str(self.trait)
@@ -54,12 +119,42 @@ class ArgumentTrait(Argument):
     def __str__(self):
         return self.__repr__()
 
+    def __hash__(self):
+        return self.trait.__hash__()
+
 
 class Signature(object):
     def __init__(self, args, method):
-        from obin.objects.object_space import newvector
+        from obin.objects import object_space
+        traits = object_space.object_space.traits
         self.arity = args.length()
-        self.args = [ArgumentTrait(i, trait) for i, trait in enumerate(args.values())]
+        self.args = []
+        for i, trait in enumerate(args):
+            if traits.Any is trait:
+                arg = ArgumentAny(i)
+            elif traits.Object is trait:
+                arg = PredicateArgument(i, object_space.isobject)
+            elif traits.Vector is trait:
+                arg = PredicateArgument(i, object_space.isvector)
+            elif traits.String is trait:
+                arg = PredicateArgument(i, object_space.isstring)
+            elif traits.Function is trait:
+                arg = PredicateArgument(i, object_space.isfunction)
+            elif traits.Integer is trait:
+                arg = PredicateArgument(i, object_space.isint)
+            elif traits.Float is trait:
+                arg = PredicateArgument(i, object_space.isfloat)
+            elif traits.Tuple is trait:
+                arg = PredicateArgument(i, object_space.istuple)
+            elif traits.Generic is trait:
+                arg = PredicateArgument(i, object_space.isgeneric)
+            elif traits.Nil is trait:
+                arg = PredicateArgument(i, object_space.isnull)
+            else:
+                arg = ArgumentTrait(i, trait)
+
+            self.args.append(arg)
+
         self.method = method
 
     def __eq__(self, other):

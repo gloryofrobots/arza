@@ -2,11 +2,11 @@ from root import W_Cell
 from value import NativeListIterator
 from obin.runtime.exception import *
 
-class W_Vector(W_Cell):
+class W_Tuple(W_Cell):
     _type_ = 'Vector'
 
     def __init__(self, items=None):
-        super(W_Vector, self).__init__()
+        super(W_Tuple, self).__init__()
         if not items:
             items = []
         assert isinstance(items, list)

@@ -89,10 +89,11 @@ class W_Generic(W_Root):
             return leaf
 
         groups = {}
-
+        if len(signatures) == 2:
+            print signatures
         for signature in signatures:
             arg = signature.at(index)
-            if not arg in groups:
+            if arg not in groups:
                 groups[arg] = [signature]
             else:
                 groups[arg].append(signature)
@@ -110,7 +111,8 @@ class W_Generic(W_Root):
 
     def fill_dag(self, signatures, arity, dag):
         dag.set_nodes(self._make_nodes(0, arity, signatures, dag.discriminators))
-        print self._name_, dag
+        print "DAG for", self._name_
+        print dag
 
     def _add_method(self, m):
         index = len(self._methods_)
@@ -123,18 +125,6 @@ class W_Generic(W_Root):
             raise ObinMethodSpecialisationError(self, u"Specialisation for 0-length method has been already defined")
 
         self._signatures_[0] = idx
-
-    def find_next_node(self, node, args, index):
-        from obin.objects.object_space import object_space
-        arg = args.at(index)
-        traits = api.traits(arg)
-
-        for trait in traits.values():
-            next_node = node.lookup(trait)
-            if next_node is not None:
-                return next_node
-
-        raise ObinMethodInvokeError(self, args)
 
     def lookup_method(self, args):
         arity = args.length()
@@ -168,33 +158,6 @@ class W_Generic(W_Root):
         from obin.objects.object_space import object_space
         return object_space.traits.GenericTraits
 
-
-def test_3():
-    from obin.objects.object_space import newtrait, newgeneric, newstring, newprimitive, newvector
-    X = newtrait(newstring("X"))
-    Y = newtrait(newstring("Y"))
-    Z = newtrait(newstring("Z"))
-    g = newgeneric(newstring("TEST_3"))
-
-    def make_method(name):
-        return newprimitive(newstring(name), lambda x, y, z: name, 3)
-
-    def sig(*args):
-        return newvector(list(args))
-    
-    def test(gen, expected, *args):
-        s = newvector(list(args))
-        m = gen.lookup_method(s)
-        res = m._function_(*args)
-        if res != expected:
-            print "ERROR", res, expected
-            raise RuntimeError((res, expected))
-
-    g.specify(sig(X, Y, Z), make_method("m1"))
-    g.specify(sig(Y, Y, Z), make_method("m2"))
-    g.specify(sig(Z, Z, Z), make_method("m3"))
-    g.specify(sig(Z, Z, X), make_method("m4"))
-    g.specify(sig(Y, Y, X), make_method("m5"))
-    g.specify(sig(X, Z, Z), make_method("m6"))
-    g.specify(sig(Y, X, X), make_method("m7"))
+from tests import test_3
+test_3()
 

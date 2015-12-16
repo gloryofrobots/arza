@@ -10,18 +10,18 @@ def newint(i):
 
 @enforceargs(float)
 def newfloat(f):
-    from obin.objects.types.value  import W_Float
+    from obin.objects.types.value import W_Float
     return W_Float(f)
 
 
 @enforceargs(str)
 def newchar(c):
-    from obin.objects.types.value  import W_Char
+    from obin.objects.types.value import W_Char
     return W_Char(ord(c))
 
 
 def newstring(s):
-    from obin.objects.types.value  import W_String
+    from obin.objects.types.value import W_String
     assert not isstring(s)
     return W_String(unicode(s))
 
@@ -33,7 +33,7 @@ w_False = None
 def makebools():
     global w_True
     global w_False
-    from obin.objects.types.constant  import W_True, W_False
+    from obin.objects.types.constant import W_True, W_False
     w_True = W_True()
     w_False = W_False()
     jit.promote(w_True)
@@ -41,7 +41,7 @@ def makebools():
 
 
 def _makeundefined():
-    from obin.objects.types.constant  import W_Undefined
+    from obin.objects.types.constant import W_Undefined
     return W_Undefined()
 
 
@@ -50,7 +50,7 @@ jit.promote(w_Undefined)
 
 
 def _makenull():
-    from obin.objects.types.constant  import W_Nil
+    from obin.objects.types.constant import W_Nil
     return W_Nil()
 
 
@@ -59,7 +59,7 @@ jit.promote(w_Null)
 
 
 def _make_interrupt():
-    from obin.objects.types.constant  import W_Constant
+    from obin.objects.types.constant import W_Constant
     return W_Constant()
 
 
@@ -109,6 +109,13 @@ def newobject():
     return obj
 
 
+def newplainobject():
+    from obin.objects.types.object import W_Object
+    from obin.objects import api
+    obj = W_Object(None)
+    return obj
+
+
 def newplainobject_with_slots(slots):
     from obin.objects.types.object import W_Object
     obj = W_Object(slots)
@@ -120,6 +127,10 @@ def newvector(items=None):
     obj = W_Vector(items)
     return obj
 
+def newtuple(items=None):
+    from obin.objects.types.tupletype import W_Tuple
+    obj = W_Tuple(items)
+    return obj
 
 def newcoroutine(fn):
     from obin.objects.types.callable import W_Coroutine
@@ -133,18 +144,22 @@ def newmodule(name, code):
     obj = W_Module(name, code)
     return obj
 
+
 def newgeneric(name):
     assert isstring(name)
     from obin.objects.types.dispatch.generic import W_Generic
     obj = W_Generic(name)
     return obj
 
+
 def newtrait(name):
     from obin.objects.types.trait import W_Trait
     return W_Trait(name)
 
+
 def newtraits(traits):
     return newvector(traits)
+
 
 def isany(value):
     from obin.objects.types.root import W_Root
@@ -175,7 +190,7 @@ def isvaluetype(value):
 
 
 def isfunction(value):
-    from obin.objects.types.callable import  W_Function, W_Primitive
+    from obin.objects.types.callable import W_Function, W_Primitive
     return isinstance(value, W_Function) or isinstance(value, W_Primitive)
 
 
@@ -183,9 +198,18 @@ def isvector(value):
     from obin.objects.types.vector import W_Vector
     return isinstance(value, W_Vector)
 
+
 def istrait(w):
     from obin.objects.types.trait import W_Trait
     return isinstance(w, W_Trait)
+
+def isgeneric(w):
+    from obin.objects.types.dispatch.generic import W_Generic
+    return isinstance(w, W_Generic)
+
+def istuple(w):
+    from obin.objects.types.tupletype import W_Tuple
+    return isinstance(w, W_Tuple)
 
 def ismodule(w):
     from obin.objects.types.module import W_Module
@@ -282,6 +306,7 @@ class ObjectSpace(object):
     def __init__(self):
         self.traits = ObjectSpace.Traits()
         self.interpreter = None
+
 
 object_space = ObjectSpace()
 

@@ -92,7 +92,7 @@ class W_Object(W_Cell):
 
         _name_ = self._at_(newstring("__name__"))
         if isundefined(_name_):
-            return str(self.__slots)
+            return "{%s %s}" % (str(self.__slots), str(self.__traits))
         else:
             return "<object %s %s>" % (_name_._tostring_(), self.id())
 
