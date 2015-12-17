@@ -38,9 +38,9 @@ class PredicateArgument(Argument):
         position = self.position
         predicate = self.predicate
         for d in discriminators:
-            if d.__class__ == PredicateArgument \
+            if d.__class__ == PredicateDiscriminator \
                     and d.position == position \
-                    and d.trait == predicate:
+                    and d.predicate == predicate:
                 return d
 
         return None
@@ -50,7 +50,7 @@ class PredicateArgument(Argument):
 
     def __eq__(self, other):
         if other.__class__ == self.__class__ \
-                and other.trait == self.predicate \
+                and other.predicate is self.predicate \
                 and other.position == self.position:
             return True
         return False
@@ -68,7 +68,7 @@ class ArgumentAny(Argument):
     def find_old_discriminator(self, discriminators):
         position = self.position
         for d in discriminators:
-            if d.__class__ == self.__class__ \
+            if d.__class__ == AnyDiscriminator\
                     and d.position == position:
                 return d
 
@@ -84,7 +84,7 @@ class ArgumentAny(Argument):
         return self.__repr__()
 
     def __hash__(self):
-        return self.__class__.__hash__()
+        return hash(self.__class__)
 
 
 class ArgumentTrait(Argument):
@@ -150,6 +150,8 @@ class Signature(object):
                 arg = PredicateArgument(i, object_space.isgeneric)
             elif traits.Nil is trait:
                 arg = PredicateArgument(i, object_space.isnull)
+            elif traits.Boolean is trait:
+                arg = PredicateArgument(i, object_space.isboolean)
             else:
                 arg = ArgumentTrait(i, trait)
 

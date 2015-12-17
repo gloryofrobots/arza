@@ -1,3 +1,5 @@
+from obin.objects import api
+
 class Discriminator(object):
     def __init__(self, position):
         self.position = position
@@ -31,10 +33,10 @@ class AnyDiscriminator(Discriminator):
         super(AnyDiscriminator, self).__init__(position)
 
     def _evaluate(self, arg):
-        return True
+        return 1000
 
     def __str__(self):
-        return "Any"
+        return '"Any"'
 
 
 class PredicateDiscriminator(Discriminator):
@@ -49,17 +51,19 @@ class PredicateDiscriminator(Discriminator):
 
     def _evaluate(self, arg):
         if self.predicate(arg):
-            return 0
+            return 100
         else:
             return -1
 
+    # def __str__(self):
+    #     if self.status is None:
+    #         status = '"None"'
+    #     else:
+    #         status = self.status
+    #
+    #     return '["%s", %s, %s]' % (str(self.predicate), str(self.position), str(status))
     def __str__(self):
-        if self.status is None:
-            status = '"nil"'
-        else:
-            status = self.status
-
-        return '["%s", %s, %s]' % (str(self.predicate), str(self.position), str(status))
+        return '"%s:%s"' % (str(self.position), str(self.predicate))
 
 
 class TraitDiscriminator(Discriminator):
@@ -73,16 +77,19 @@ class TraitDiscriminator(Discriminator):
                and other.trait == self.trait
 
     def _evaluate(self, arg):
-        return arg.get_trait_index(self.trait)
+        return api.traits(arg).get_index(self.trait)
         # return api.kindof(arg, self.trait)
 
     # def __str__(self):
     #     return "<TraitDiscriminator %s %s %s>" % (str(self.position), str(self.trait), str(self.status))
 
-    def __str__(self):
-        if self.status is None:
-            status = '"nil"'
-        else:
-            status = self.status
+    # def __str__(self):
+    #     if self.status is None:
+    #         status = '"nil"'
+    #     else:
+    #         status = self.status
+    #
+    #     return '["%s", %s, %s]' % (str(self.trait._name_), str(self.position), str(status))
 
-        return '["%s", %s, %s]' % (str(self.trait._name_), str(self.position), str(status))
+    def __str__(self):
+        return '"%s:%s"' % (str(self.position), str(self.trait._name_))

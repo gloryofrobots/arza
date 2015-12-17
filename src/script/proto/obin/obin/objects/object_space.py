@@ -215,10 +215,11 @@ def ismodule(w):
     from obin.objects.types.module import W_Module
     return isinstance(w, W_Module)
 
+def isboolean(value):
+    return value is w_False or value is w_True
 
 def isnull(value):
     return value is w_Null
-
 
 def isint(w):
     from obin.objects.types.value import W_Integer

@@ -25,7 +25,7 @@ class W_Generic(W_Root):
         if index > count_dags:
             dags += [None] * (index - count_dags)
 
-        dag = DAGRoot()
+        dag = RootNode()
         dags[arity] = dag
 
         return dag
@@ -80,7 +80,7 @@ class W_Generic(W_Root):
             raise ObinMethodSpecialisationError(self, u"Ambiguous method specialisation")
 
         sig = signatures[0]
-        return [DAGMethodNode(sig.method)]
+        return [LeafNode(sig.method)]
 
     def _make_nodes(self, index, arity, signatures, discriminators):
         if index == arity:
@@ -102,7 +102,10 @@ class W_Generic(W_Root):
         for arg, group in groups.iteritems():
             d = arg.discriminator(discriminators)
             children = self._make_nodes(index + 1, arity, group, discriminators)
-            nodes.append(DecisionNode(d, children))
+            if len(children) == 1:
+                nodes.append(SingleNode(d, children[0]))
+            else:
+                nodes.append(GroupNode(d, children))
 
         if index == 0:
             print ""
@@ -158,6 +161,7 @@ class W_Generic(W_Root):
         from obin.objects.object_space import object_space
         return object_space.traits.GenericTraits
 
-from tests import test_3
-test_3()
+from tests import test_3, test_any
+# test_3()
+test_any()
 

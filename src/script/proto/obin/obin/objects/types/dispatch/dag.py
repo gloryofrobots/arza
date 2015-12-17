@@ -6,6 +6,24 @@ class DAGNode(object):
         return self.__str__()
 
 
+class SingleNode(DAGNode):
+    def __init__(self, discriminator, nextnode):
+        self.nextnode = nextnode
+        self.discriminator = discriminator
+        self.is_evaluated = False
+
+    def get_rank(self, args):
+        return self.discriminator.evaluate(args)
+
+    def evaluate(self, args):
+        rank = self.nextnode.get_rank(args)
+        if rank == -1:
+            return False
+        return self.nextnode.evaluate(args)
+
+    def __str__(self):
+        return '[%s, %s]' % (str(self.discriminator), str(self.nextnode))
+
 def evaluate_decision(nodes, args):
     from operator import itemgetter
     good_nodes = []
@@ -24,8 +42,7 @@ def evaluate_decision(nodes, args):
             return result
     return False
 
-
-class DecisionNode(DAGNode):
+class GroupNode(DAGNode):
     def __init__(self, discriminator, nodes):
         self.nodes = nodes
         self.discriminator = discriminator
@@ -33,10 +50,7 @@ class DecisionNode(DAGNode):
         self.is_evaluated = False
 
     def get_rank(self, args):
-        result = self.discriminator.evaluate(args)
-        if result is None:
-            return None
-        return result
+        return self.discriminator.evaluate(args)
 
     def evaluate(self, args):
         self.ordering_stack[:] = []
@@ -46,7 +60,7 @@ class DecisionNode(DAGNode):
         return '[%s, %s]' % (str(self.discriminator), str(self.nodes))
 
 
-class DAGRoot(DAGNode):
+class RootNode(DAGNode):
     def __init__(self):
         self.discriminators = []
         self.nodes = []
@@ -71,7 +85,7 @@ class DAGRoot(DAGNode):
         return self.__str__()
 
 
-class DAGMethodNode(DAGNode):
+class LeafNode(DAGNode):
     def __init__(self, method):
         self.method = method
 
