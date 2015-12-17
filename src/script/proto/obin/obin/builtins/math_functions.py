@@ -1,6 +1,6 @@
 import math
 
-from obin.objects.object_space import _w
+from obin.objects.space import _w
 from obin.runtime.routine import complete_native_routine
 from rpython.rlib.rfloat import NAN, INFINITY, isnan, isinf
 from obin.builtins import get_arg
@@ -9,11 +9,11 @@ from obin.builtins import get_arg
 def setup(obj):
     from obin.builtins import put_native_function, put_property
     from obin.objects.object import W_Math
-    from obin.objects.object_space import object_space
+    from obin.objects.space import state
 
     # 15.8
     w_Math = W_Math()
-    object_space.assign_proto(w_Math)
+    state.assign_proto(w_Math)
     put_property(obj, u'Math', w_Math)
 
     put_native_function(w_Math, u'abs', js_abs, params=[u'x'])

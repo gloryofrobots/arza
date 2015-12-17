@@ -50,6 +50,7 @@ class PredicateDiscriminator(Discriminator):
                and other.trait == self.predicate
 
     def _evaluate(self, arg):
+        # TODO GET RID OF MAGIC NUMBERS
         if self.predicate(arg):
             return 100
         else:

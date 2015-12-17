@@ -1,12 +1,12 @@
 from rpython.rlib.rfloat import NAN, INFINITY
-from obin.objects.object_space import _w
+from obin.objects.space import _w
 from obin.runtime.routine import complete_native_routine
 from obin.runtime.exception import ObinRangeError, ObinTypeError
 
 
 def setup(obj):
     from obin.builtins import put_property, put_native_function
-    from obin.objects.object_space import object_space
+    from obin.objects.space import state
 
     # 15.7.2
     from obin.objects.object import W__Object
@@ -19,8 +19,8 @@ def setup(obj):
 
     # 15.7.4
     w_NumberPrototype = W__Object()
-    object_space.assign_proto(w_NumberPrototype, object_space.proto_object)
-    object_space.proto_number = w_NumberPrototype
+    state.assign_proto(w_NumberPrototype, state.proto_object)
+    state.proto_number = w_NumberPrototype
 
     # 15.7.4.2
     put_native_function(w_NumberPrototype, u'toString', to_string)

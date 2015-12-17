@@ -25,8 +25,8 @@ class W_Function(W_Root):
         return True
 
     def _traits_(self):
-        from obin.objects.object_space import object_space
-        return object_space.traits.FunctionTraits
+        from obin.objects.space import state
+        return state.traits.FunctionTraits
 
     # def __str__(self):
     #     return 'Function %s' % self._tostring_()
@@ -58,8 +58,8 @@ class W_Primitive(W_Root):
         return True
 
     def _traits_(self):
-        from obin.objects.object_space import object_space
-        return object_space.traits.PrimitiveTraits
+        from obin.objects.space import state
+        return state.traits.PrimitiveTraits
 
     def create_routine(self, args):
         from obin.runtime.routine import create_primitive_routine
@@ -85,8 +85,8 @@ class W_CoroutineIterator(W_Root):
         return self._coroutine_.is_accessible()
 
     def _next_(self):
-        from obin.objects.object_space import object_space, newundefined, newinterrupt
-        process = object_space.interpreter.process
+        from obin.objects.space import state, newundefined, newinterrupt
+        process = state.interpreter.process
         routine = process.routine
         self._coroutine_._call_(routine, None)
         return newinterrupt()
@@ -155,11 +155,11 @@ class W_Coroutine(W_Root):
         return True
 
     def _lookup_(self, k):
-        from obin.objects.object_space import object_space
-        return api.at(object_space.traits.Coroutine, k)
+        from obin.objects.space import state
+        return api.at(state.traits.Coroutine, k)
 
     def _first_call_(self, routine, args):
-        from obin.objects.object_space import newvector
+        from obin.objects.space import newvector
         self._receiver_ = routine
 
         self._yield_ = W_CoroutineYield(self)
@@ -177,7 +177,7 @@ class W_Coroutine(W_Root):
         return W_CoroutineIterator(self)
 
     def _call_(self, routine, args):
-        from obin.objects.object_space import newundefined
+        from obin.objects.space import newundefined
         assert routine
 
         if not self._routine_:

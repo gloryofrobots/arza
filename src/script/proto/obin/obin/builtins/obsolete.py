@@ -1,5 +1,5 @@
 __author__ = 'gloryofrobots'
-from obin.objects.object_space import _w
+from obin.objects.space import _w
 from rpython.rlib.rfloat import NAN, INFINITY, isnan, isinf
 from rpython.rlib.unicodedata import unicodedb
 from obin.objects import api
@@ -24,11 +24,11 @@ def parse_int(routine):
 def now(self, args):
     print "W_DateConstructor Call"
     import time
-    from obin.objects.object_space import _w
+    from obin.objects.space import _w
     value = _w(int(time.time() * 1000))
 
-    from obin.objects.object_space import object_space
-    obj = object_space.new_date(value)
+    from obin.objects.space import state
+    obj = state.new_date(value)
     return obj
 def _isspace(uchar):
     return unicodedb.isspace(ord(uchar))

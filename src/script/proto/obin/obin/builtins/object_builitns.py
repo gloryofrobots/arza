@@ -16,7 +16,7 @@ def setup(obj):
     obj.freeze()
 
 def object_extract_1_obj_arg(routine):
-    from obin.objects.object_space import isobject
+    from obin.objects.space import isobject
     this = routine.get_arg(0)
     other = routine.get_arg(1)
     assert isobject(this)
@@ -25,7 +25,7 @@ def object_extract_1_obj_arg(routine):
 
 @complete_native_routine
 def traits(routine):
-    from obin.objects.object_space import isobject
+    from obin.objects.space import isobject
     this = routine.get_arg(0)
     assert isobject(this)
     return this.traits()
@@ -64,9 +64,9 @@ def clone(routine):
 
 @complete_native_routine
 def create(routine):
-    from obin.objects.object_space import object_space
+    from obin.objects.space import state
     this = routine.get_arg(0)
-    obj = object_space.newobject()
+    obj = state.newobject()
     obj.set_origin(this)
     return obj
 

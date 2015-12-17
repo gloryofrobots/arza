@@ -13,8 +13,8 @@ class W_Undefined(W_Constant):
         return "undefined"
 
     def _traits_(self):
-        from obin.objects.object_space import object_space
-        return object_space.traits.UndefinedTraits
+        from obin.objects.space import state
+        return state.traits.UndefinedTraits
 
 
 
@@ -28,8 +28,8 @@ class W_Nil(W_Constant):
         return False
 
     def _traits_(self):
-        from obin.objects.object_space import object_space
-        return object_space.traits.NilTraits
+        from obin.objects.space import state
+        return state.traits.NilTraits
 
 
 class W_True(W_Constant):
@@ -46,8 +46,8 @@ class W_True(W_Constant):
         return True
 
     def _traits_(self):
-        from obin.objects.object_space import object_space
-        return object_space.traits.TrueTraits
+        from obin.objects.space import state
+        return state.traits.TrueTraits
 
     def __str__(self):
         return '_True_'
@@ -67,8 +67,8 @@ class W_False(W_Constant):
         return False
 
     def _traits_(self):
-        from obin.objects.object_space import object_space
-        return object_space.traits.FalseTraits
+        from obin.objects.space import state
+        return state.traits.FalseTraits
 
     def __str__(self):
         return '_False_'

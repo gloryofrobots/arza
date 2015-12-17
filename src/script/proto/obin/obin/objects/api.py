@@ -3,11 +3,11 @@ from obin.runtime.exception import *
 
 
 def tostring(obj):
-    from object_space import newstring
+    from space import newstring
     return newstring(unicode(obj._tostring_()))
 
 def tobool(obj):
-    from object_space import newbool
+    from space import newbool
     return newbool(obj._tobool_())
 
 
@@ -16,13 +16,13 @@ def toboolvalue(obj):
 
 
 def delete(obj, k):
-    from object_space import isundefined
+    from space import isundefined
     assert not isundefined(k)
     obj._delete_(k)
 
 
 def at(obj, k):
-    from object_space import isundefined
+    from space import isundefined
     assert not isundefined(k)
     v = obj._at_(k)
     assert v is not None
@@ -32,7 +32,7 @@ def at(obj, k):
 
 
 def lookup(obj, k):
-    from object_space import isundefined
+    from space import isundefined
     assert not isundefined(k)
     v = obj._lookup_(k)
     assert v is not None
@@ -42,7 +42,7 @@ def lookup(obj, k):
 
 
 def lookup_default(obj, k, default):
-    from object_space import isundefined
+    from space import isundefined
     v = obj._lookup_(k)
     assert v is not None
     if isundefined(v):
@@ -55,14 +55,14 @@ def traits(obj):
 
 
 def attach(obj, trait):
-    from object_space import isobject, istrait
+    from space import isobject, istrait
     assert isobject(obj)
     assert istrait(trait)
     obj.attach(trait)
 
 
 def detach(obj, trait):
-    from object_space import isobject, istrait
+    from space import isobject, istrait
     assert isobject(obj)
     assert istrait(trait)
     obj.detach(trait)
@@ -72,7 +72,7 @@ def kindof(obj, trait):
     return obj._kindof_(t)
 
 def has(obj, k):
-    from object_space import isundefined, newbool
+    from space import isundefined, newbool
     assert not isundefined(k)
     v = obj._at_(k)
     if isundefined(v):
@@ -82,7 +82,7 @@ def has(obj, k):
 
 
 def obtain(obj, k):
-    from object_space import isundefined, newbool
+    from space import isundefined, newbool
     assert not isundefined(k)
     v = obj._lookup_(k)
     if isundefined(v):
@@ -92,7 +92,7 @@ def obtain(obj, k):
 
 
 def length(obj):
-    from object_space import newint
+    from space import newint
     return newint(obj._length_())
 
 
@@ -102,17 +102,17 @@ def clone(obj):
 
 
 def put_property(obj, k, v):
-    from object_space import newstring
+    from space import newstring
     put(obj, newstring(k), v)
 
 
 def put_string_property(obj, k, v):
-    from object_space import newstring
+    from space import newstring
     put(obj, newstring(k), newstring(v))
 
 
 def put(obj, k, v):
-    from object_space import isundefined, iscell
+    from space import isundefined, iscell
     assert not isundefined(v)
     assert not isundefined(k)
     assert iscell(obj)
@@ -124,7 +124,7 @@ def put(obj, k, v):
 
 
 def strict_equal(obj, other):
-    from object_space import newbool, isvaluetype, isconstant
+    from space import newbool, isvaluetype, isconstant
     if not isinstance(other, obj.__class__):
         return newbool(False)
     if isconstant(obj):
@@ -137,7 +137,7 @@ def strict_equal(obj, other):
 
 
 def equal(obj, other):
-    from object_space import newbool, isvaluetype, isconstant
+    from space import newbool, isvaluetype, isconstant
     if not isinstance(other, obj.__class__):
         return newbool(False)
 
@@ -152,7 +152,7 @@ def equal(obj, other):
 
 
 def compare(obj, other):
-    from object_space import isundefined, newint, newbool, isvaluetype, isconstant
+    from space import isundefined, newint, newbool, isvaluetype, isconstant
     assert not isundefined(other)
     v = obj._compare_(other)
     if isvaluetype(obj):
@@ -183,7 +183,7 @@ def totrait(any):
 
 
 def new_native_function(function, name, arity):
-    from obin.objects.object_space import newprimitive, newstring
+    from obin.objects.space import newprimitive, newstring
     assert isinstance(name, unicode)
     obj = newprimitive(newstring(name), function, arity)
     return obj

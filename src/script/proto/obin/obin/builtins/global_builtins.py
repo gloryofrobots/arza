@@ -7,10 +7,10 @@ from obin.runistr import encode_unicode_utf8
 
 def setup(obj):
     from rpython.rlib.objectmodel import we_are_translated
-    from obin.objects.object_space import object_space
+    from obin.objects.space import state
 
     ### Traits
-    traits = object_space.traits
+    traits = state.traits
     api.put_property(obj, u'Any', traits.Any)
     api.put_property(obj, u'True', traits.True)
     api.put_property(obj, u'False', traits.False)
@@ -82,7 +82,7 @@ def _print(routine):
 
 
 def _eval(routine):
-    from obin.objects.object_space import isstring
+    from obin.objects.space import isstring
     from obin.runtime.routine import create_eval_routine
 
     x = routine.get_arg(0)
@@ -98,7 +98,7 @@ def _eval(routine):
 
 @complete_native_routine
 def coroutine(routine):
-    from obin.objects.object_space import newcoroutine, isfunction
+    from obin.objects.space import newcoroutine, isfunction
     fn = routine.get_arg(0)
     assert isfunction(fn)
     return newcoroutine(fn)
@@ -106,7 +106,7 @@ def coroutine(routine):
 
 @complete_native_routine
 def _range(routine):
-    from obin.objects.object_space import newvector, newint
+    from obin.objects.space import newvector, newint
     start = routine.get_arg(0)
     end = routine.get_arg(1)
     items = [newint(i) for i in xrange(start.value(), end.value())]
@@ -115,7 +115,7 @@ def _range(routine):
 
 @complete_native_routine
 def generic(routine):
-    from obin.objects.object_space import newgeneric
+    from obin.objects.space import newgeneric
     name = routine.get_arg(0)
     return newgeneric(name)
 
@@ -138,7 +138,7 @@ def clone(routine):
 
 @complete_native_routine
 def traits(routine):
-    from obin.objects.object_space import isobject
+    from obin.objects.space import isobject
     obj = routine.get_arg(0)
     return api.traits(obj)
 
@@ -189,6 +189,6 @@ def clone(routine):
 
 @complete_native_routine
 def trait(routine):
-    from obin.objects.object_space import newtrait
+    from obin.objects.space import newtrait
     name = routine.get_arg(0)
     return newtrait(name)

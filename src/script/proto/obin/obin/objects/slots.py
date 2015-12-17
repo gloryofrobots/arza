@@ -1,4 +1,4 @@
-from obin.objects.object_space import newvector
+from obin.objects.space import newvector
 
 class Slots(object):
     def __init__(self):
@@ -68,10 +68,11 @@ class Slots(object):
             self.property_bindings[name] = idx
             self.index += 1
 
-        if idx >= self.property_values.length():
-            values = self.property_values.values()
-            values = values + ([None] * (1 + idx - len(values)))
-            self.property_values.set_values(values)
+        self.property_values.ensure_size(idx + 1)
+        # if idx >= self.property_values.length():
+        #     values = self.property_values.values()
+        #     values = values + ([None] * (1 + idx - len(values)))
+        #     self.property_values.set_values(values)
 
         self.set_by_index(idx, value)
         return idx
@@ -82,10 +83,7 @@ class Slots(object):
             return
 
         assert idx >= 0
-        values = self.property_values.values()
-        values = values[:idx] + values[idx + 1:]
-        self.property_values.set_values(values)
-
+        self.property_values.exclude_index(idx)
         del self.property_bindings[name]
 
 

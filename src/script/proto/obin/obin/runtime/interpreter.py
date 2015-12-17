@@ -14,20 +14,20 @@ class InterpreterConfig(object):
 
 class Interpreter(object):
     def __init__(self, config={}):
-        from obin.objects.object_space import object_space, newobject
+        from obin.objects.space import state, newobject
         import obin.builtins.interpreter_builtins
 
         self.process = Process()
         self.config = InterpreterConfig(config)
         self.builtins = newobject()
         self.modules = []
-        object_space.interpreter = self
+        state.interpreter = self
 
         obin.builtins.setup_builtins(self.builtins)
 
     def run_src(self, src):
         from obin.compile.compiler import compile_module
-        from obin.objects.object_space import newstring
+        from obin.objects.space import newstring
         module = compile_module(newstring(u"__main__"), src)
         return self.run_module(module)
 

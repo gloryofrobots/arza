@@ -16,7 +16,7 @@ class W_Array(W_Cell):
         return u'W_Array("%s")' % (self._items)
 
     def _put_(self, k, v):
-        from object_space import object_space, isint
+        from space import state, isint
         if not isint(k):
             raise JsKeyError("Integer key expected", k)
         i = k.value()
@@ -26,11 +26,11 @@ class W_Array(W_Cell):
             raise JsKeyError("Invalid index ", k)
 
     def _at_(self, k):
-        from object_space import object_space, isint
+        from space import state, isint
         if isint(k):
             return self._at_index_(k.value())
         else:
-            return api.at(object_space.traits.Array, k)
+            return api.at(state.traits.Array, k)
 
     def __str__(self):
         return u'W_Array("%s")' % (self._items)
@@ -51,7 +51,7 @@ class W_Array(W_Cell):
         return self._items[i]
 
     def _at_index_(self, index):
-        from object_space import newundefined
+        from space import newundefined
         try:
             el = self._items[index]
         except KeyError:
@@ -76,8 +76,8 @@ class W_Tuple(W_Array):
         raise NotImplementedError()
 
     def _at_(self, k):
-        from object_space import object_space, isint
+        from space import state, isint
         if isint(k):
             return self._at_index_(k.value())
         else:
-            return api.at(object_space.traits.Tuple, k)
+            return api.at(state.traits.Tuple, k)

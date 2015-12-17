@@ -5,7 +5,7 @@
 import math
 
 from obin.objects.types.value import W_String, W_Integer, W_Float
-from obin.objects.object_space import _w, isint, isstring, isfloat, newbool
+from obin.objects.space import _w, isint, isstring, isfloat, newbool
 from rpython.rlib.rarithmetic import ovfcheck
 from rpython.rlib.rfloat import isnan, isinf
 from rpython.rlib.objectmodel import specialize

@@ -1,5 +1,5 @@
 def make_method(name, arity=3):
-    from obin.objects.object_space import newtrait, newgeneric, newstring, newprimitive, newvector
+    from obin.objects.space import newtrait, newgeneric, newstring, newprimitive, newvector
     return newprimitive(newstring(name), lambda *args: name, arity)
 
 def specify(generic, sig, name):
@@ -8,18 +8,18 @@ def specify(generic, sig, name):
     generic.specify(sig, method)
 
 def sig(*args):
-    from obin.objects.object_space import newtrait, newgeneric, newstring, newprimitive, newvector
+    from obin.objects.space import newtrait, newgeneric, newstring, newprimitive, newvector
     return newvector(list(args))
 
 def makeobject(traits):
-    from obin.objects.object_space import newplainobject, newvector
+    from obin.objects.space import newplainobject, newvector
     o = newplainobject()
     o.set_traits(newvector(traits))
     return o
 
 
 def objects(traits_list):
-    from obin.objects.object_space import newplainobject, newvector
+    from obin.objects.space import newplainobject, newvector
     return newvector([makeobject(traits) for traits in traits_list])
 
 def test(gen, expected, args):
@@ -32,7 +32,7 @@ def test(gen, expected, args):
         raise RuntimeError((res, expected))
 
 def test_3():
-    from obin.objects.object_space import newtrait, newgeneric, newstring, newprimitive, newvector
+    from obin.objects.space import newtrait, newgeneric, newstring, newprimitive, newvector
     X = newtrait(newstring("X"))
     Y = newtrait(newstring("Y"))
     Z = newtrait(newstring("Z"))
@@ -52,12 +52,12 @@ def test_3():
     test(g, "m1", objects([[X,X], [Y,X], [Y,Y,Z]]))
 
 def test_any():
-    from obin.objects.object_space import newtrait, newgeneric, newstring,\
-        object_space, newvector, newnull, newbool, newint
-    Any = object_space.traits.Any
-    Object = object_space.traits.Object
-    Vector = object_space.traits.Vector
-    String = object_space.traits.String
+    from obin.objects.space import newtrait, newgeneric, newstring,\
+        state, newvector, newnull, newbool, newint
+    Any = state.traits.Any
+    Object = state.traits.Object
+    Vector = state.traits.Vector
+    String = state.traits.String
     X = newtrait(newstring("X"))
     Y = newtrait(newstring("Y"))
     Z = newtrait(newstring("Z"))

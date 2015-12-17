@@ -1,5 +1,5 @@
 from rpython.rlib import jit
-from obin.objects.object_space import newstring, _w
+from obin.objects.space import newstring, _w
 from obin.runtime.environment import newenv
 from obin.runtime.routine.code_routine import CodeRoutine
 from obin.runtime.routine.native_routine import NativeRoutine
@@ -43,7 +43,7 @@ def create_function_routine(func, args, outer_env):
 
 def create_function_environment(func, scope, args, outer_env):
     from obin.runtime.environment import newenv
-    from obin.objects.object_space import newplainobject_with_slots, newvector
+    from obin.objects.space import newplainobject_with_slots, newvector
 
     declared_args_count = scope.count_args
     is_variadic = scope.is_variadic

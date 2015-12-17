@@ -3,7 +3,7 @@ from obin.runtime.exception import ObinReferenceError
 from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
 from obin.objects.stack import Stack
-from obin.objects.object_space import (newbool, newundefined,
+from obin.objects.space import (newbool, newundefined,
                                        newnull, newvector, isinterrupt,
                                        newobject, newfunc, newint)
 from obin.objects import api
@@ -23,7 +23,7 @@ class CodeRoutine(BaseRoutine):
     def __init__(self, name, code, env):
         super(CodeRoutine, self).__init__()
 
-        from obin.objects.object_space import isstring
+        from obin.objects.space import isstring
         assert isstring(name)
         self._code_ = code
 

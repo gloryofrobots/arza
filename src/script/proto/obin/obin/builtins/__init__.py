@@ -1,11 +1,11 @@
-from obin.objects.object_space import _w
+from obin.objects.space import _w
 from obin.objects import api
 #from pypy.rlib import jit
 
 
 
 def setup_builtins(module):
-    from obin.objects.object_space import object_space
+    from obin.objects.space import state
     import obin.builtins.object_builitns
 
     # target = object_space.traits.Function

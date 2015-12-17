@@ -1,6 +1,6 @@
-from obin.objects.object_space import _w
+from obin.objects.space import _w
 from obin.runtime.routine import complete_native_routine
-from obin.objects.object_space import isnull_or_undefined, newundefined
+from obin.objects.space import isnull_or_undefined, newundefined
 from obin.objects import api
 
 
@@ -40,8 +40,8 @@ def slice(routine):
     o = this.ToObject()
     from_index = get_arg(args, 0).ToUInt32()
     to_index = get_arg(args, 1).ToUInt32()
-    from obin.objects.object_space import object_space
-    n = object_space.newvector(length=_w(to_index-from_index))
+    from obin.objects.space import state
+    n = state.newvector(length=_w(to_index-from_index))
     index = 0
     for item in xrange(from_index, to_index):
         api.put_property(n, unicode(str(index)), o.get(unicode(str(item))))
@@ -69,7 +69,7 @@ def length(routine):
 @complete_native_routine
 def join(routine):
     this, args = routine.method_args()
-    from obin.objects.object_space import isundefined
+    from obin.objects.space import isundefined
 
     separator = get_arg(args, 0)
 
@@ -210,7 +210,7 @@ def for_each(routine):
     length = this.get(u'length').value()
 
     callback = get_arg(args, 0)
-    from obin.objects.object_space import isfunction
+    from obin.objects.space import isfunction
     assert isfunction(callback)
 
     for i in xrange(length):
@@ -249,7 +249,7 @@ def sort(routine):
 
 
 def sort_compare(obj, j, k, comparefn=newundefined()):
-    from obin.objects.object_space import isundefined
+    from obin.objects.space import isundefined
 
     j_string = j
     k_string = k

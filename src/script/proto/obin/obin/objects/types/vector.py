@@ -5,10 +5,8 @@ from obin.runtime.exception import *
 class W_Vector(W_Cell):
     _type_ = 'Vector'
 
-    def __init__(self, items=None):
+    def __init__(self, items):
         super(W_Vector, self).__init__()
-        if not items:
-            items = []
         assert isinstance(items, list)
         self._items = items
 
@@ -21,7 +19,7 @@ class W_Vector(W_Cell):
     def _put_(self, k, v):
         if self.isfrozen():
             raise ObinRuntimeError("Vector is frozen")
-        from obin.objects.object_space import isint
+        from obin.objects.space import isint
         if not isint(k):
             raise ObinKeyError(k)
         i = k.value()
@@ -31,15 +29,15 @@ class W_Vector(W_Cell):
             raise ObinKeyError(k)
 
     def _traits_(self):
-        from obin.objects.object_space import object_space
-        return object_space.traits.VectorTraits
+        from obin.objects.space import state
+        return state.traits.VectorTraits
 
     def _clone_(self):
         from copy import copy
         return W_Vector(copy(self._items))
 
     def _at_(self, index):
-        from obin.objects.object_space import newundefined, isint
+        from obin.objects.space import newundefined, isint
         assert isint(index)
         try:
             el = self._items[index.value()]
@@ -84,8 +82,10 @@ class W_Vector(W_Cell):
     def ensure_size(self, size):
         assert size > 0
         l = self.length()
-        if size > l:
-            self._items += [None] * (size - l)
+        if size <= l:
+            return
+
+        self._items += [None] * (size - l)
 
     def append(self, v):
         self._items.append(v)
@@ -122,5 +122,6 @@ class W_Vector(W_Cell):
     def append_value_multiple_times(self, val, times):
         self._items = self._items + [val] * times
 
-    def set_values(self, values):
-        self._items = values
+    def exclude_index(self, idx):
+        items = self._items
+        self._items = items[:idx] + items[idx + 1:]

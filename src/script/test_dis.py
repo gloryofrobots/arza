@@ -16,10 +16,6 @@ def m1(self):
 
 
 def f(*args):
-    for i in range(0, 5):
-        10
-        20
-
-
+    assert True
 dis.dis(f)
 

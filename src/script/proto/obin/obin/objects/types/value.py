@@ -26,8 +26,8 @@ class W_Char(W_ValueType):
         return bool(self.__value)
 
     def _traits_(self):
-        from obin.objects.object_space import object_space
-        return object_space.traits.CharTraits
+        from obin.objects.space import state
+        return state.traits.CharTraits
 
 
 class W_Integer(W_ValueType):
@@ -50,8 +50,8 @@ class W_Integer(W_ValueType):
         return bool(self.__value)
 
     def _traits_(self):
-        from obin.objects.object_space import object_space
-        return object_space.traits.IntegerTraits
+        from obin.objects.space import state
+        return state.traits.IntegerTraits
 
 
 class W_Float(W_ValueType):
@@ -74,8 +74,8 @@ class W_Float(W_ValueType):
         return bool(self.__value)
 
     def _traits_(self):
-        from obin.objects.object_space import object_space
-        return object_space.traits.FloatTraits
+        from obin.objects.space import state
+        return state.traits.FloatTraits
 
 
 class NativeListIterator(W_ValueType):
@@ -85,7 +85,7 @@ class NativeListIterator(W_ValueType):
         self.length = length
 
     def _next_(self):
-        from obin.objects.object_space import newundefined
+        from obin.objects.space import newundefined
         if self.index >= self.length:
             return newundefined()
 
@@ -146,7 +146,7 @@ class W_String(W_ValueType):
         return self.__length
 
     def _at_(self, index):
-        from obin.objects.object_space import newundefined, newchar, isint
+        from obin.objects.space import newundefined, newchar, isint
         from obin.runtime.exception import ObinKeyError
         assert isint(index)
         try:
@@ -157,5 +157,5 @@ class W_String(W_ValueType):
         return newchar(ch)
 
     def _traits_(self):
-        from obin.objects.object_space import object_space
-        return object_space.traits.StringTraits
+        from obin.objects.space import state
+        return state.traits.StringTraits

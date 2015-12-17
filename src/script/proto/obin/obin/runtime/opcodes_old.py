@@ -1,7 +1,7 @@
 from rpython.rlib.rarithmetic import intmask
 from rpython.rlib import jit
 
-from obin.objects.object_space import _w, isint
+from obin.objects.space import _w, isint
 from obin.runtime.exception import ObinTypeError, ObinReferenceError
 from obin.objects.object import api
 from obin.utils import tb
@@ -32,27 +32,27 @@ class Opcode(object):
 class LOAD_TRUE(Opcode):
     _stack_change = 1
     def eval(self, routine):
-        from obin.objects.object_space import newbool
+        from obin.objects.space import newbool
         routine.stack.push(newbool(True))
 
 class LOAD_FALSE(Opcode):
     _stack_change = 1
     def eval(self, routine):
-        from obin.objects.object_space import newbool
+        from obin.objects.space import newbool
         routine.stack.push(newbool(False))
 
 
 class LOAD_UNDEFINED(Opcode):
     _stack_change = 1
     def eval(self, routine):
-        from obin.objects.object_space import newundefined
+        from obin.objects.space import newundefined
         routine.stack.push(newundefined())
 
 
 class LOAD_NULL(Opcode):
     _stack_change = 1
     def eval(self, routine):
-        from obin.objects.object_space import newnull
+        from obin.objects.space import newnull
         routine.stack.push(newnull())
 
 
@@ -107,7 +107,7 @@ class LOAD_VECTOR(Opcode):
 
     @jit.unroll_safe
     def eval(self, routine):
-        from obin.objects.object_space import newvector
+        from obin.objects.space import newvector
         array = newvector()
 
         list_w = routine.stack.pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
@@ -148,7 +148,7 @@ class LOAD_FUNCTION(Opcode):
 
     # 13.2 Creating Function Objects
     def eval(self, routine):
-        from obin.objects.object_space import newfunc
+        from obin.objects.space import newfunc
 
         w_func = newfunc(self.name, self.code, routine.env)
 
@@ -170,7 +170,7 @@ class LOAD_OBJECT(Opcode):
 
     @jit.unroll_safe
     def eval(self, routine):
-        from obin.objects.object_space import newobject
+        from obin.objects.space import newobject
         w_obj = newobject()
         for _ in range(self.count_items):
             name = routine.stack.pop()
@@ -399,7 +399,7 @@ class LOAD_LIST(Opcode):
     def eval(self, routine):
         # from obin.objects.object import W_List
         list_w = routine.stack.pop_n(self.counter)  # [:] # pop_n returns a non-resizable list
-        from obin.objects.object_space import newvector
+        from obin.objects.space import newvector
         routine.stack.push(newvector(list_w))
 
     def stack_change(self):
@@ -410,7 +410,7 @@ class LOAD_LIST(Opcode):
 
 
 def load_arguments(routine, counter):
-    from obin.objects.object_space import newvector, isvector
+    from obin.objects.space import newvector, isvector
 
     if counter == 0:
         return newvector([])
@@ -517,7 +517,7 @@ class NEXT_ITERATOR(Opcode):
     _stack_change = 0
 
     def eval(self, routine):
-        from obin.objects.object_space import isinterrupt
+        from obin.objects.space import isinterrupt
         iterator = routine.stack.top()
         next_el = api.next(iterator)
         # call is interrupted, probably coroutine call

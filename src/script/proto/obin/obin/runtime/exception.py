@@ -10,7 +10,7 @@ class ObinException(Exception):
         return self.message
 
     def msg(self):
-        from obin.objects.object_space import _w
+        from obin.objects.space import _w
         return _w(self._msg())
 
     def __str__(self):

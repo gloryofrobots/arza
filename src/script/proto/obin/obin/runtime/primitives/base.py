@@ -3,7 +3,7 @@ from obin.runtime.baseop import plus, sub, mult, division, uminus, mod, compare_
 from rpython.rlib.rarithmetic import intmask
 from rpython.rlib import jit
 
-from obin.objects.object_space import _w, isint, newint, newbool
+from obin.objects.space import _w, isint, newint, newbool
 from obin.runtime.exception import ObinTypeError, ObinReferenceError
 from obin.objects import api
 from obin.utils import tb
@@ -33,7 +33,7 @@ def apply_unary_ob_unboxed(routine, operation):
 
 def primitive_IN(routine):
     def _in(routine, left, right):
-        from obin.objects.object_space import iscell
+        from obin.objects.space import iscell
         if not iscell(right):
             raise ObinTypeError(u"TypeError: invalid object for in operator")
 

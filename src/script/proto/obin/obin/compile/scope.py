@@ -1,4 +1,4 @@
-from obin.objects.object_space import isstring
+from obin.objects.space import isstring
 from obin.objects.slots import newslots_empty, newslots_with_values_from_slots
 
 class ScopeSet(object):
@@ -108,7 +108,7 @@ class FinalScope(object):
 
     def create_object(self):
         from copy import copy
-        from obin.objects.object_space import newplainobject_with_slots
+        from obin.objects.space import newplainobject_with_slots
         return newplainobject_with_slots(copy(self.variables))
 
     def create_environment_slots(self, arguments):

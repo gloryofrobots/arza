@@ -1,6 +1,6 @@
 from obin.runtime.reference import Reference
 from obin.objects import api
-from obin.objects.object_space import isstring
+from obin.objects.space import isstring
 
 
 def newenv(obj, outer_environment):

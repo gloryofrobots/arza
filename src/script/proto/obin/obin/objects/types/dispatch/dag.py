@@ -54,7 +54,7 @@ class GroupNode(DAGNode):
         return self.discriminator.evaluate(args)
 
     def evaluate(self, args):
-        self.ordering_stack[:] = []
+        del self.ordering_stack[:]
         return evaluate_decision(self.ordering_stack, self.nodes, args)
 
     def __str__(self):
@@ -68,7 +68,7 @@ class RootNode(DAGNode):
         self.ordering_stack = []
 
     def evaluate(self, args):
-        self.ordering_stack[:] = []
+        del self.ordering_stack[:]
         result = evaluate_decision(self.ordering_stack, self.nodes, args)
         self.reset()
         return result

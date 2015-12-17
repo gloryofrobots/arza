@@ -125,33 +125,33 @@ class ArgumentTrait(Argument):
 
 class Signature(object):
     def __init__(self, args, method):
-        from obin.objects import object_space
-        traits = object_space.object_space.traits
+        from obin.objects import space
+        traits = space.state.traits
         self.arity = args.length()
         self.args = []
         for i, trait in enumerate(args):
             if traits.Any is trait:
                 arg = ArgumentAny(i)
             elif traits.Object is trait:
-                arg = PredicateArgument(i, object_space.isobject)
+                arg = PredicateArgument(i, space.isobject)
             elif traits.Vector is trait:
-                arg = PredicateArgument(i, object_space.isvector)
+                arg = PredicateArgument(i, space.isvector)
             elif traits.String is trait:
-                arg = PredicateArgument(i, object_space.isstring)
+                arg = PredicateArgument(i, space.isstring)
             elif traits.Function is trait:
-                arg = PredicateArgument(i, object_space.isfunction)
+                arg = PredicateArgument(i, space.isfunction)
             elif traits.Integer is trait:
-                arg = PredicateArgument(i, object_space.isint)
+                arg = PredicateArgument(i, space.isint)
             elif traits.Float is trait:
-                arg = PredicateArgument(i, object_space.isfloat)
+                arg = PredicateArgument(i, space.isfloat)
             elif traits.Tuple is trait:
-                arg = PredicateArgument(i, object_space.istuple)
+                arg = PredicateArgument(i, space.istuple)
             elif traits.Generic is trait:
-                arg = PredicateArgument(i, object_space.isgeneric)
+                arg = PredicateArgument(i, space.isgeneric)
             elif traits.Nil is trait:
-                arg = PredicateArgument(i, object_space.isnull)
+                arg = PredicateArgument(i, space.isnull)
             elif traits.Boolean is trait:
-                arg = PredicateArgument(i, object_space.isboolean)
+                arg = PredicateArgument(i, space.isboolean)
             else:
                 arg = ArgumentTrait(i, trait)
 

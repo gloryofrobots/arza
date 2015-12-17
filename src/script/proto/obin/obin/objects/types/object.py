@@ -22,7 +22,7 @@ class W_Object(W_Cell):
         return self.__traits is not None
 
     def create_self_trait(self):
-        from obin.objects.object_space import newtrait, newstring
+        from obin.objects.space import newtrait, newstring
         assert self.__traits
         assert not self.__trait
         self.__trait = newtrait(newstring(""))
@@ -48,12 +48,12 @@ class W_Object(W_Cell):
         return self.__traits
 
     def has(self, k):
-        from obin.objects.object_space import isundefined
+        from obin.objects.space import isundefined
         v = self._at_(k)
         return not isundefined(v)
 
     def _at_(self, k):
-        from obin.objects.object_space import newundefined
+        from obin.objects.space import newundefined
         v = self.__slots.get(k)
         if v is None:
             return newundefined()
@@ -64,7 +64,7 @@ class W_Object(W_Cell):
         return self._at_(k)
 
     def _call_(self, routine, args):
-        from obin.objects.object_space import newstring, isundefined
+        from obin.objects.space import newstring, isundefined
         cb = self._at_(newstring("__call__"))
         if isundefined(cb):
             raise ObinRuntimeError("Object is not callable")
@@ -88,7 +88,7 @@ class W_Object(W_Cell):
         return self.__slots.length()
 
     def _tostring_(self):
-        from obin.objects.object_space import newstring, isundefined
+        from obin.objects.space import newstring, isundefined
 
         _name_ = self._at_(newstring("__name__"))
         if isundefined(_name_):
@@ -120,13 +120,13 @@ class W_Object(W_Cell):
         return self.__trait
 
     def attach(self, trait):
-        from obin.objects.object_space import istrait
+        from obin.objects.space import istrait
         assert self.__traits
         assert istrait(trait)
         self.traits().prepend(trait)
 
     def detach(self, trait):
-        from obin.objects.object_space import istrait
+        from obin.objects.space import istrait
         assert istrait(trait)
         try:
             self.traits().remove(trait)

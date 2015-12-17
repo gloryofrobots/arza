@@ -105,7 +105,7 @@ def newobject():
     from obin.objects import api
     obj = W_Object(None)
 
-    obj.set_traits(api.clone(object_space.traits.ObjectTraits))
+    obj.set_traits(api.clone(state.traits.ObjectTraits))
     return obj
 
 
@@ -122,15 +122,14 @@ def newplainobject_with_slots(slots):
     return obj
 
 
-def newvector(items=None):
+def newvector(items):
     from obin.objects.types.vector import W_Vector
     obj = W_Vector(items)
     return obj
 
-def newtuple(items=None):
+def newtuple(tupl):
     from obin.objects.types.tupletype import W_Tuple
-    obj = W_Tuple(items)
-    return obj
+    return W_Tuple(tupl)
 
 def newcoroutine(fn):
     from obin.objects.types.callable import W_Coroutine
@@ -247,7 +246,7 @@ def isnull_or_undefined(obj):
     return False
 
 
-class ObjectSpace(object):
+class State(object):
     class Traits(object):
         def __init__(self):
             self.Any = newtrait(newstring("Any"))
@@ -305,12 +304,11 @@ class ObjectSpace(object):
             self.ModuleTraits = newtraits([self.Module, self.Any])
 
     def __init__(self):
-        self.traits = ObjectSpace.Traits()
+        self.traits = State.Traits()
         self.interpreter = None
 
 
-object_space = ObjectSpace()
-
+state = State()
 
 @specialize.argtype(0)
 def _w(value):
@@ -338,28 +336,4 @@ def _w(value):
     raise TypeError("ffffuuu %s" % (str(type(value)),))
 
 
-def w_return(fn):
-    def f(*args):
-        return _w(fn(*args))
 
-    return f
-
-
-def hide_on_translate(*args):
-    default = None
-
-    def _wrap(f):
-        def _wrapped_f(*args):
-            from rpython.rlib.objectmodel import we_are_translated
-            if not we_are_translated():
-                return f(*args)
-
-            return default
-
-        return _wrapped_f
-
-    if len(args) == 1 and callable(args[0]):
-        return _wrap(args[0])
-    else:
-        default = args[0]
-        return _wrap

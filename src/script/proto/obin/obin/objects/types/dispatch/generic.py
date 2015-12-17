@@ -154,10 +154,10 @@ class W_Generic(W_Root):
         routine.process.call_object(method, routine, args)
 
     def _traits_(self):
-        from obin.objects.object_space import object_space
-        return object_space.traits.GenericTraits
+        from obin.objects.space import state
+        return state.traits.GenericTraits
 
 from tests import test_3, test_any
-# test_3()
+test_3()
 test_any()
 

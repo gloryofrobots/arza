@@ -4,7 +4,7 @@ from tokens import token_type_to_str
 from parser import *
 
 from obin.compile.scope import Scope
-from obin.objects import object_space as obs
+from obin.objects import space as obs
 from obin.runtime import primitives
 from obin.compile.code.source import CodeSource
 from obin.compile.code import *
@@ -748,7 +748,7 @@ def compile(txt):
     return code
 
 def compile_module(name, txt):
-    from obin.objects.object_space import newmodule
+    from obin.objects.space import newmodule
     code = compile(txt)
     module = newmodule(name, code)
     return module

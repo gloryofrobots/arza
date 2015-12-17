@@ -6,7 +6,7 @@ class NativeRoutine(BaseRoutine):
 
     def __init__(self, name, function, args, arity):
         super(NativeRoutine, self).__init__()
-        from obin.objects.object_space import isstring
+        from obin.objects.space import isstring
         assert isstring(name)
         self._name_ = name
         self._function_ = function
