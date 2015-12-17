@@ -1,6 +1,5 @@
 from obin.objects.types.root import W_Root
 from obin.runtime.exception import *
-from obin.objects import api
 from signature import Signature
 from dag import *
 
@@ -16,7 +15,7 @@ class W_Generic(W_Root):
         self._dags_ = []
         self._signatures_ = []
 
-    def create_dag(self, arity):
+    def create_dag(self, signatures, arity):
         dags = self._dags_
         count_dags = len(dags)
 
@@ -25,9 +24,12 @@ class W_Generic(W_Root):
         if index > count_dags:
             dags += [None] * (index - count_dags)
 
-        dag = RootNode()
+        discriminators = []
+        nodes = self._make_nodes(0, arity, signatures, discriminators)
+        dag = RootNode(nodes, discriminators)
+        print "DAG for", self._name_
+        print dag
         dags[arity] = dag
-
         return dag
 
     def get_signatures(self, arity):
@@ -72,8 +74,7 @@ class W_Generic(W_Root):
 
         self._methods_.append(method)
 
-        dag = self.create_dag(arity)
-        self.fill_dag(signatures, arity, dag)
+        self.create_dag(signatures, arity)
 
     def _make_method_node(self, signatures):
         if len(signatures) != 1:
@@ -111,11 +112,6 @@ class W_Generic(W_Root):
             print ""
         # print "NODES", index, nodes
         return nodes
-
-    def fill_dag(self, signatures, arity, dag):
-        dag.set_nodes(self._make_nodes(0, arity, signatures, dag.discriminators))
-        print "DAG for", self._name_
-        print dag
 
     def _add_method(self, m):
         index = len(self._methods_)

@@ -24,23 +24,24 @@ class SingleNode(DAGNode):
     def __str__(self):
         return '[%s, %s]' % (str(self.discriminator), str(self.nextnode))
 
-def evaluate_decision(nodes, args):
+
+def evaluate_decision(stack, nodes, args):
     from operator import itemgetter
-    good_nodes = []
     for node in nodes:
         rank = node.get_rank(args)
         if rank != -1:
-            good_nodes.append((node, rank))
+            stack.append((node, rank))
 
-    ranked_nodes = sorted(good_nodes, key=itemgetter(1))
+    stack.sort(key=itemgetter(1))
 
-    for ranked_node in ranked_nodes:
+    for ranked_node in stack:
         node = ranked_node[0]
         result = node.evaluate(args)
 
         if result is not False:
             return result
     return False
+
 
 class GroupNode(DAGNode):
     def __init__(self, discriminator, nodes):
@@ -54,22 +55,21 @@ class GroupNode(DAGNode):
 
     def evaluate(self, args):
         self.ordering_stack[:] = []
-        return evaluate_decision(self.nodes, args)
+        return evaluate_decision(self.ordering_stack, self.nodes, args)
 
     def __str__(self):
         return '[%s, %s]' % (str(self.discriminator), str(self.nodes))
 
 
 class RootNode(DAGNode):
-    def __init__(self):
-        self.discriminators = []
-        self.nodes = []
-
-    def set_nodes(self, nodes):
+    def __init__(self, nodes, discriminators):
+        self.discriminators = discriminators
         self.nodes = nodes
+        self.ordering_stack = []
 
     def evaluate(self, args):
-        result = evaluate_decision(self.nodes, args)
+        self.ordering_stack[:] = []
+        result = evaluate_decision(self.ordering_stack, self.nodes, args)
         self.reset()
         return result
 
@@ -78,8 +78,7 @@ class RootNode(DAGNode):
             d.reset()
 
     def __str__(self):
-       return "[" + ",\n".join([str(node)  for node in self.nodes]) + "]"
-
+        return "[" + ",\n".join([str(node) for node in self.nodes]) + "]"
 
     def __repr__(self):
         return self.__str__()
