@@ -75,3 +75,16 @@ class Stack(object):
             r = [e] + r
 
         return r
+
+    @jit.unroll_safe
+    def pop_n_to_tuple(self, n):
+        assert n > 0
+
+        r = (self.pop(), )
+        i = n
+        while i > 1:
+            i -= 1
+            e = self.pop()
+            r = (e, ) + r
+
+        return r

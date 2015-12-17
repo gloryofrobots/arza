@@ -38,6 +38,7 @@ OPCODES = [
 
     ("PUSH_MANY", None),
     ("LOAD_VECTOR", None),
+    ("LOAD_TUPLE", None),
     ("LOAD_OBJECT", None),
 ]
 

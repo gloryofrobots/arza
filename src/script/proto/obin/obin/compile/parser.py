@@ -673,30 +673,27 @@ def parser_init(parser):
     prefix(parser, T.TT_SUB)
     prefix(parser, T.TT_ADD)
 
-    def _prefix_backslash(parser, node):
-        items = []
-        node.init(2)
-        # function name
-        node.setfirst(expression(parser, 0))
-        node.setsecond(items)
-        if parser.token_type == T.TT_RPAREN:
-            return node
-
-        while True:
-            items.append(expression(parser, 0))
-            if parser.node.type != T.TT_COMMA or parser.is_newline_occurred:
-                break
-
-            advance_expected(parser, T.TT_COMMA)
-
-        return node
-
-    prefix(parser, T.TT_BACKSLASH, _prefix_backslash)
-
     def _prefix_lparen(parser, node):
         e = expression(parser, 0)
+        if parser.node.type != T.TT_COMMA:
+            advance_expected(parser, T.TT_RPAREN)
+            return e
+
+        node.init(1)
+        items = [e]
+        advance_expected(parser, T.TT_COMMA)
+
+        if parser.token_type != T.TT_RPAREN:
+            while True:
+                items.append(expression(parser, 0))
+                if parser.node.type != T.TT_COMMA:
+                    break
+
+                advance_expected(parser, T.TT_COMMA)
+
         advance_expected(parser, T.TT_RPAREN)
-        return e
+        node.setfirst(items)
+        return node
 
     prefix(parser, T.TT_LPAREN, _prefix_lparen)
 
@@ -1082,13 +1079,7 @@ def write_ast(ast):
 
 # ast = parse_string(
 #     """
-# object Human {
-#     __name__ = "Human"
-#     name = nil
-#     fn make_shit(self) {
-#         print("SHIT from ", self.name)
-#     }
-# }
+#     t = (1,2,3,4)
 #     """
 # )
 # print ast

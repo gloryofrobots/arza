@@ -477,6 +477,13 @@ class Compiler(object):
         # self._compile(bytecode, node.first())
         code.emit_2(STORE_LOCAL, index, name_index)
 
+    def _compile_TUPLE(self, code, node):
+        items = node.first()
+        for c in items:
+            self._compile(code, c)
+
+        code.emit_1(LOAD_TUPLE, len(items))
+
     def _compile_LSQUARE(self, code, node):
         # lookup like a[0]
         if node.arity == 2:
@@ -720,7 +727,9 @@ class Compiler(object):
         bytecode.emit_0(CALL_METHOD)
 
     def _compile_LPAREN(self, bytecode, node):
-        if node.arity == 3:
+        if node.arity == 1:
+            return self._compile_TUPLE(bytecode, node)
+        elif node.arity == 3:
             return self._compile_LPAREN_MEMBER(bytecode, node)
 
         func = node.first()

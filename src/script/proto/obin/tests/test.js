@@ -1,3 +1,6 @@
+t = (1 + 2, (2, 34 - 2 * 3), (3,), 4 - 31, 5, 6 + 3 + 35)
+return t
+
 Named = trait("Named")
 Animal = trait("Animal")
 Mammal = trait("Mammal")

@@ -5,7 +5,7 @@ from obin.runtime.routine.base_routine import BaseRoutine
 from obin.objects.stack import Stack
 from obin.objects.space import (newbool, newundefined,
                                        newnull, newvector, isinterrupt,
-                                       newobject, newfunc, newint)
+                                       newobject, newfunc, newint, newtuple)
 from obin.objects import api
 
 
@@ -150,6 +150,10 @@ class CodeRoutine(BaseRoutine):
                 self.stack.push(value)
             # *************************************
             # TODO STORE_MEMBER_DOT
+            # *************************************
+            elif LOAD_TUPLE == tag:
+                tupl = self.stack.pop_n_to_tuple(arg1)  # [:] # pop_n returns a non-resizable list
+                self.stack.push(newtuple(tupl))
             # *************************************
             elif LOAD_VECTOR == tag:
                 lst = self.stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
