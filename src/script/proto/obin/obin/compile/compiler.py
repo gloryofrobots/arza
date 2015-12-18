@@ -581,7 +581,7 @@ class Compiler(object):
         bytecode.emit_1(JUMP, endif)
         bytecode.emit_1(LABEL, end_body)
 
-    def _compile_IF_TERNARY(self, code, node):
+    def _compile_WHEN(self, code, node):
         condition = node.first()
         truebranch = node.second()
         falsebranch = node.third()
@@ -591,8 +591,6 @@ class Compiler(object):
         code.emit_1(LABEL, endif)
 
     def _compile_IF(self, code, node):
-        if node.arity == 3:
-            return self._compile_IF_TERNARY(code, node)
         branches = node.first()
 
         endif = code.prealocate_label()

@@ -1,6 +1,7 @@
 __author__ = 'gloryofrobots'
 import lexer
 import tokens as T
+from weakref import ref
 
 
 def testprogram():
@@ -14,11 +15,14 @@ def testprogram():
 def is_many(node):
     return isinstance(node, list)
 
+
 def empty_node():
     return []
 
+
 def is_empty_node(n):
     return isinstance(n, list) and len(n) == 0
+
 
 class Node:
     def __init__(self, _type, value, position, line):
@@ -201,6 +205,7 @@ class Handler(object):
         self.rbp = None
         self.value = None
 
+
 class TokenStream(object):
     def __init__(self, tokens):
         self.tokens = tokens
@@ -224,11 +229,11 @@ class TokenStream(object):
         self.node = Node(self.token.type, self.token.val, self.token.pos, self.token.line)
         return self.node
 
-class Parser(object):
-    def __init__(self, ts, args_parser=None):
+
+class BaseParser(object):
+    def __init__(self, ts):
         self.handlers = {}
         self.ts = ts
-        self.args_parser = args_parser
 
     @property
     def token_type(self):
@@ -253,6 +258,14 @@ class Parser(object):
         return self.token_type == T.TT_ENDSTREAM
 
 
+class Parser(BaseParser):
+    def __init__(self, ts):
+        super(Parser, self).__init__(ts)
+        self.args_parser = args_parser_init(BaseParser(ts))
+        self.import_parser = import_parser_init(BaseParser(ts))
+        code_parser_init(self)
+
+
 def parse_error(parser, message, args=None, node=None):
     if not node:
         error_message = "Parse Error %d:%d %s" % (parser.token.line, parser.token.pos, message)
@@ -270,7 +283,7 @@ def check_token_type(parser, type):
 def check_token_types(parser, types):
     if parser.token_type not in types:
         parse_error(parser, "Expected token type one of %s got token %s" %
-              ([T.token_type_to_str(type) for type in types], parser.token))
+                    ([T.token_type_to_str(type) for type in types], parser.token))
 
 
 def advance(parser):
@@ -464,17 +477,56 @@ def skip(parser, ttype):
 def empty(parser, node):
     return None
 
+
 def parse(parser):
     parser.next()
     stmts = statements(parser)
     check_token_type(parser, T.TT_ENDSTREAM)
     return stmts
 
+
 def args_parser_init(parser):
     prefix(parser, T.TT_ELLIPSIS)
     literal(parser, T.TT_NAME)
+    return parser
 
-def parser_init(parser):
+
+def import_parser_init(parser):
+    def _infix_dot(parser, node, left):
+        node.init(2)
+        if left.type != T.TT_NAME or left.type != T.TT_DOT:
+            parse_error(parser,
+                        "Expected token type %s got token %s" % ((T.token_type_to_str(T.TT_NAME)), parser.token))
+
+        node.setfirst(left)
+        check_token_type(parser, T.TT_NAME)
+        node.setsecond(parser.node)
+        advance(parser)
+        return node
+
+    infix(parser, T.TT_DOT, 10, _infix_dot)
+
+    def _infix_as(parser, node, left):
+        node.init(2)
+        if left.type != T.TT_NAME:
+            parse_error(parser,
+                        "Expected token type %s got token %s" % ((T.token_type_to_str(T.TT_NAME)), parser.token))
+
+        node.setfirst(left)
+        check_token_type(parser, T.TT_NAME)
+        node.setsecond(parser.node)
+        advance(parser)
+        return node
+
+    infix(parser, T.TT_AS, 20, _infix_as)
+    # symbol(parser, T.TT_DOT)
+    literal(parser, T.TT_NAME)
+    return parser
+
+
+
+
+def code_parser_init(parser):
     # *********************************************
     literal(parser, T.TT_INT)
     literal(parser, T.TT_FLOAT)
@@ -517,7 +569,7 @@ def parser_init(parser):
     infix if
     """
 
-    def _infix_if(parser, node, left):
+    def _infix_when(parser, node, left):
         node.init(3)
         node.setfirst(expression(parser, 0))
         node.setsecond(left)
@@ -525,8 +577,7 @@ def parser_init(parser):
         node.setthird(expression(parser, 0))
         return node
 
-    infix(parser, T.TT_IF, 20, _infix_if)
-
+    infix(parser, T.TT_WHEN, 20, _infix_when)
 
     """
     precedence 25
@@ -540,7 +591,6 @@ def parser_init(parser):
     """
     infix(parser, T.TT_AND, 30)
 
-
     """
     precedence 35
     |
@@ -553,7 +603,6 @@ def parser_init(parser):
     """
     infixr(parser, T.TT_BITXOR, 40)
 
-
     """
     precedence 45
     &
@@ -564,7 +613,7 @@ def parser_init(parser):
     precedence 50
     in, is, <, <=, >, >=, !=, ==
     """
-    #TODO is not and not is
+    # TODO is not and not is
 
     infix(parser, T.TT_IN, 50)
     infix(parser, T.TT_ISNOT, 50)
@@ -603,6 +652,7 @@ def parser_init(parser):
     precedence 70
     .
     """
+
     def _infix_dot(parser, node, left):
         node.init(2)
         node.setfirst(left)
@@ -617,6 +667,7 @@ def parser_init(parser):
     precedence 80
     [
     """
+
     def _infix_lsquare(parser, node, left):
         node.init(2)
         node.setfirst(left)
@@ -630,6 +681,7 @@ def parser_init(parser):
     precedence 90
     (
     """
+
     def _infix_lparen(parser, node, left):
         items = []
         if left.type == T.TT_DOT:
@@ -660,7 +712,6 @@ def parser_init(parser):
         return node
 
     infix(parser, T.TT_LPAREN, 90, _infix_lparen)
-
 
     """
     PREFIXES
@@ -920,6 +971,7 @@ def parser_init(parser):
 
         advance_expected(parser, T.TT_RCURLY)
         return name, traits, items
+
     """
     object AliceTraits(Human, Insect, Fucking, Shit) {
         id = 42
@@ -962,7 +1014,6 @@ def parser_init(parser):
         return node
 
     stmt(parser, T.TT_OBJECT, _stmt_object)
-
 
     def _stmt_single(parser, node):
         node.init(1)
@@ -1025,16 +1076,26 @@ def parser_init(parser):
 
     stmt(parser, T.TT_FOR, _stmt_for)
 
+    def _stmt_import(parser, node):
+        pass
+
+"""
+import military.army.behavior as bh
+print(bh)
+import military.army.behavior
+print(behavior)
+print(fire, army_unit_destroy, army_unit_attack)
+
+
+"""
+
+
 
 def parser_from_str(txt):
     lx = lexer.lexer(txt)
     tokens = lx.tokens()
     ts = TokenStream(tokens)
-
-    parser = Parser(ts, Parser(ts))
-    args_parser_init(parser.args_parser)
-
-    parser_init(parser)
+    parser = Parser(ts)
     return parser
 
 
@@ -1043,6 +1104,7 @@ def parse_string(txt):
     stmts = parse(parser)
     # print stmts
     return stmts
+
 
 def test_lexer():
     txt = testprogram()
@@ -1065,7 +1127,6 @@ def write_ast(ast):
         repr = json.dumps(ast, sort_keys=True,
                           indent=2, separators=(',', ': '))
         f.write(repr)
-
 
 # ast = parse_string(
 #     """
