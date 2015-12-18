@@ -9,6 +9,7 @@ class C(object):
 
 
 def f2(x, y):
+
     print x + y
 
 def m1(self):
@@ -16,6 +17,12 @@ def m1(self):
 
 
 def f(*args):
+    import os
+    import os.path
+
+    print os.path
     assert True
+
+f()
 dis.dis(f)
 

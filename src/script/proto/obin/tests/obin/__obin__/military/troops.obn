@@ -1,0 +1,10 @@
+trait Soldier;
+trait Civilian;
+trait Squad
+
+fn Squad(soldiers) {
+    attach({
+        soldiers: soldiers
+    }, Squad)
+}
+

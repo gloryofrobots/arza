@@ -19,6 +19,8 @@ class ObinException(Exception):
     def __repr__(self):
         return self.__str__()
 
+class ObinImportError(ObinException):
+    pass
 
 class ObinRuntimeError(ObinException):
     pass

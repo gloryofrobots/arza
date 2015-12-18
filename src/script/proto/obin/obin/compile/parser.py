@@ -697,16 +697,6 @@ def parser_init(parser):
 
     prefix(parser, T.TT_LPAREN, _prefix_lparen)
 
-
-    def _prefix_do(parser, node):
-        node.init(1)
-        advance_expected(parser, T.TT_LCURLY)
-        node.setfirst(statements(parser))
-        advance_expected(parser, T.TT_RCURLY)
-        return node
-
-    prefix(parser, T.TT_DO, _prefix_do)
-
     def _prefix_if(parser, node):
         node.init(1)
         branches = []

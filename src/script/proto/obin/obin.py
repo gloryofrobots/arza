@@ -96,12 +96,6 @@ def printlexererror(filename, exc, source):
     print_sourcepos(filename, exc.source_pos, source)
 
 
-def printsyntaxerror(filename, exc, source):
-    # XXX format syntax errors nicier
-    print_sourcepos(filename, exc.source_pos, source)
-    error = exc.errorinformation.failure_reasons
-    printmessage(u'Error: %s\n' % (unicode(str(error))))
-
 
 # https://bitbucket.org/cfbolz/pyrolog/src/f18f2ccc23a4/prolog/interpreter/translatedmain.py
 def readline():

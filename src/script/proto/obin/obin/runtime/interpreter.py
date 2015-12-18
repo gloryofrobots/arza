@@ -20,15 +20,13 @@ class Interpreter(object):
         self.process = Process()
         self.config = InterpreterConfig(config)
         self.builtins = newobject()
-        self.modules = []
         state.interpreter = self
-
         obin.builtins.setup_builtins(self.builtins)
 
     def run_src(self, src):
-        from obin.compile.compiler import compile_module
+        from obin.runtime.loader import compile_module
         from obin.objects.space import newstring
-        module = compile_module(newstring(u"__main__"), src)
+        module = compile_module(self.process, newstring(u"__main__"), src)
         return self.run_module(module)
 
     def run_module(self, module):

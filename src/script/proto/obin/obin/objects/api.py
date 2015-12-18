@@ -6,6 +6,9 @@ def tostring(obj):
     from space import newstring
     return newstring(unicode(obj._tostring_()))
 
+def tonativevalue(obj):
+    return obj.value()
+
 def tobool(obj):
     from space import newbool
     return newbool(obj._tobool_())

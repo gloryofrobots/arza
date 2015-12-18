@@ -39,6 +39,13 @@ class Process(object):
         self.__routine = None
         self.result = None
         self.__primitives = newprimitives()
+        self.modules = {}
+
+    def add_module(self, name, module):
+        self.modules[name] = module
+
+    def get_module(self, name):
+        return self.modules[name]
 
     def get_primitive(self, pid):
         return self.__primitives[pid]
@@ -168,6 +175,10 @@ class Process(object):
         module.set_result(self.result)
         self.result = None
         return module.result()
+
+    def run_module_force(self, module, _globals):
+        routine = module.compile(_globals)
+        routine.execute()
 
     def run_with(self, routine):
         self.call_routine(routine, None, None)
