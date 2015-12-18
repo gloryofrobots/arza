@@ -12,7 +12,7 @@ def setup_builtins(interpreter, obj):
 @complete_native_routine
 def js_load(routine):
     from obin.objects.space import state
-    from obin.runtime.interpreter import load_file
+    from obin.runtime.interpret import load_file
     filename = routine.get_arg(0).value()
     src = load_file(str(filename))
     state.interpreter.run_src(src)

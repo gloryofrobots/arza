@@ -25,16 +25,15 @@ def main(argv):
 
 
 def run(files, opts):
-    from obin.runtime.interpreter import Interpreter, load_file
+    from obin.runtime.interpret import load_file, run_src, initialize
+    from obin.objects.space import state
+
     interactive = len(files) == 0
-    inspect = opts.get('inspect', False)
-
-    interp = Interpreter(opts)
-
+    state = initialize()
     for filename in files:
         src = load_file(filename)
 
-        print interp.run_src(src)
+        print run_src(state.process, src)
         # try:
         # except ParseError as exc:
         #     printsyntaxerror(unicode(filename), exc, src)
@@ -47,7 +46,7 @@ def run(files, opts):
         #     raise SystemExit
 
     if inspect or interactive:
-        repl(interp)
+        repl(state)
 
 
 @enforceargs(unicode, unicode)

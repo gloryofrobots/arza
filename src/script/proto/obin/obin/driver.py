@@ -16,7 +16,7 @@ def filter(filename):
         return True
 
 if py.path.local.sysfind("js") is None:
-    print "js interpreter not found in path"
+    print "interpreter not found in path"
     sys.exit()
 
 results = open('results.txt', 'w')

@@ -305,10 +305,18 @@ class State(object):
 
     def __init__(self):
         self.traits = State.Traits()
-        self.interpreter = None
+        self.process = None
+        self.modules = {}
+        self.builtins = newplainobject()
 
+    def add_module(self, name, module):
+        self.modules[name] = module
+
+    def get_module(self, name):
+        return self.modules[name]
 
 state = State()
+
 
 @specialize.argtype(0)
 def _w(value):

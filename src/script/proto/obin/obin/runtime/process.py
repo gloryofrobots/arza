@@ -1,4 +1,3 @@
-from obin.runtime.primitives import newprimitives
 
 def run_routine_for_result(routine, ctx=None):
     if ctx:
@@ -35,17 +34,11 @@ class Process(object):
         TERMINATED = 4
 
     def __init__(self):
+        from obin.runtime.primitives import newprimitives
         self.__state = Process.State.IDLE
         self.__routine = None
         self.result = None
         self.__primitives = newprimitives()
-        self.modules = {}
-
-    def add_module(self, name, module):
-        self.modules[name] = module
-
-    def get_module(self, name):
-        return self.modules[name]
 
     def get_primitive(self, pid):
         return self.__primitives[pid]

@@ -1,10 +1,10 @@
-__author__ = 'gloryofrobots'
 from obin.objects.space import newmodule
 from obin.objects import api
 from obin.compile.compiler import compile
 from obin.runtime.exception import ObinImportError
 from obin.utils.fs import file_get_contents, is_file, join_and_normalise_path
 import os
+
 
 
 def compile_module(process, name, txt):

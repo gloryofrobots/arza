@@ -974,7 +974,7 @@ def parser_init(parser):
         return node
 
     stmt(parser, T.TT_RETURN, _stmt_single)
-    stmt(parser, T.TT_RAISE, _stmt_single)
+    stmt(parser, T.TT_THROW, _stmt_single)
 
     def _stmt_outer(parser, node):
         parse_error(parser, "Outer variables can be declared only in first function statement")
