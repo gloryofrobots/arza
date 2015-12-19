@@ -2,16 +2,16 @@ from obin.compile.code.opcode import *
 # ************************************************
 
 __OPCODE_REPR__ = ["LOAD_UNDEFINED", "LOAD_NULL", "LOAD_TRUE", "LOAD_FALSE", "LOAD_LITERAL", "LOAD_OUTER", "LOAD_LOCAL",
-                   "LOAD_FUNCTION", "LOAD_INTEGER", "DUP", "NEXT_ITERATOR", "LABEL", "STORE_OUTER", "STORE_LOCAL",
-                   "LOAD_ITERATOR", "RETURN", "CALL_PRIMITIVE", "CALL", "CALL_METHOD", "JUMP", "JUMP_IF_FALSE_NOPOP",
-                   "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "JUMP_IF_ITERATOR_EMPTY", "LOAD_MEMBER_DOT",
-                   "LOAD_MEMBER", "POP", "THROW", "CONCAT", "STORE_MEMBER", "PUSH_MANY", "LOAD_VECTOR", "LOAD_TUPLE",
-                   "LOAD_OBJECT", ]
+                   "LOAD_FUNCTION", "LOAD_INTEGER", "DUP", "NEXT_ITERATOR", "IMPORT", "LABEL", "STORE_OUTER",
+                   "STORE_LOCAL", "LOAD_ITERATOR", "RETURN", "CALL_PRIMITIVE", "CALL", "CALL_METHOD", "JUMP",
+                   "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE",
+                   "JUMP_IF_ITERATOR_EMPTY", "LOAD_MEMBER_DOT", "LOAD_MEMBER", "POP", "THROW", "CONCAT", "STORE_MEMBER",
+                   "PUSH_MANY", "LOAD_VECTOR", "LOAD_TUPLE", "LOAD_OBJECT", ]
 
 # ************************************************
 
-__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -2,
-                     None, None, None, None, ]
+__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1,
+                     -2, None, None, None, None, ]
 
 
 # ************************************************
@@ -69,6 +69,10 @@ def opcode_info(routine, opcode):
     elif tag == STORE_OUTER:
         literal = routine.literals[arg2]
         return 'STORE_OUTER %s (%d)' % (literal, arg1)
+    # ********************************
+    elif tag == IMPORT:
+        literal = routine.literals[arg1]
+        return 'IMPORT %s' % (literal,)
     # ********************************
     elif tag == CALL_PRIMITIVE:
         return 'CALL_PRIMITIVE %s ' % (primitive_to_str(arg1))

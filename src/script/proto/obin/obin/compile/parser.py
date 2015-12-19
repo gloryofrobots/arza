@@ -494,7 +494,7 @@ def args_parser_init(parser):
 def import_parser_init(parser):
     def _infix_dot(parser, node, left):
         node.init(2)
-        if left.type != T.TT_NAME or left.type != T.TT_DOT:
+        if left.type != T.TT_NAME and left.type != T.TT_DOT:
             parse_error(parser,
                         "Expected token type %s got token %s" % ((T.token_type_to_str(T.TT_NAME)), parser.token))
 
@@ -508,10 +508,6 @@ def import_parser_init(parser):
 
     def _infix_as(parser, node, left):
         node.init(2)
-        if left.type != T.TT_NAME:
-            parse_error(parser,
-                        "Expected token type %s got token %s" % ((T.token_type_to_str(T.TT_NAME)), parser.token))
-
         node.setfirst(left)
         check_token_type(parser, T.TT_NAME)
         node.setsecond(parser.node)
@@ -1077,7 +1073,12 @@ def code_parser_init(parser):
     stmt(parser, T.TT_FOR, _stmt_for)
 
     def _stmt_import(parser, node):
-        pass
+        node.init(1)
+        imported = expression(parser.import_parser, 0)
+        node.setfirst(imported)
+        return node
+
+    stmt(parser, T.TT_IMPORT, _stmt_import)
 
 """
 import military.army.behavior as bh
@@ -1088,7 +1089,6 @@ print(fire, army_unit_destroy, army_unit_attack)
 
 
 """
-
 
 
 def parser_from_str(txt):
@@ -1128,10 +1128,11 @@ def write_ast(ast):
                           indent=2, separators=(',', ': '))
         f.write(repr)
 
-# ast = parse_string(
-#     """
-#     t = (1,2,3,4)
-#     """
-# )
-# print ast
+ast = parse_string(
+    """
+    import state.military.ranks.private as dumbass
+
+    """
+)
+print ast
 # write_ast(ast)

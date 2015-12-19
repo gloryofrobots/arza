@@ -10,6 +10,7 @@ OPCODES = [
     ("LOAD_INTEGER", 1),
     ("DUP", 1),
     ("NEXT_ITERATOR", 1),
+    ("IMPORT", 1),
 
     ("LABEL", 0),
     ("STORE_OUTER", 0),

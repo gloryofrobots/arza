@@ -267,6 +267,12 @@ class CodeRoutine(BaseRoutine):
                 val = self.stack.pop()
                 self.terminate(val)
             # *************************************
+            elif IMPORT == tag:
+                from obin.runtime.load import import_module
+                name = self.literals[arg1]
+                module = import_module(self.process, name)
+                self.stack.push(module)
+            # *************************************
             elif LABEL == tag:
                 raise RuntimeError("Uncompiled label opcode")
 

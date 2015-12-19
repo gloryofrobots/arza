@@ -18,11 +18,12 @@ def m1(self):
 
 def f(*args):
     import os
-    import os.path
+    from os import path, walk
 
-    print os.path
+    print path
+    print walk
     assert True
 
-f()
+
 dis.dis(f)
 

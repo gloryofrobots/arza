@@ -9,9 +9,11 @@ from obin.runtime import primitives
 from obin.compile.code.source import CodeSource
 from obin.compile.code import *
 
+
 def compile_error(node, message, args):
     error_message = "Compile Error %d:%d %s" % (node.line, node.position, message)
     raise RuntimeError(error_message, args)
+
 
 def string_unquote(string):
     s = string
@@ -25,6 +27,7 @@ def string_unquote(string):
 
     return s
 
+
 class Compiler(object):
     def __init__(self):
         self.funclists = []
@@ -37,7 +40,7 @@ class Compiler(object):
 
         new_scope = Scope()
         self.scopes.append(new_scope)
-        #print 'starting new scope %d' % (self.depth, )
+        # print 'starting new scope %d' % (self.depth, )
 
     def is_modifiable_binding(self, name):
         scope = self.current_scope()
@@ -77,6 +80,7 @@ class Compiler(object):
         return idx
 
     def declare_literal(self, literal):
+        assert obs.isany(literal)
         scope = self.current_scope()
         idx = scope.get_literal(literal)
         if idx is None:
@@ -130,7 +134,7 @@ class Compiler(object):
     def exit_scope(self):
         self.depth = self.depth - 1
         self.scopes.pop()
-        #print 'closing scope, returning to %d' % (self.depth, )
+        # print 'closing scope, returning to %d' % (self.depth, )
 
     def current_scope(self):
         return self.scopes[-1]
@@ -174,7 +178,6 @@ class Compiler(object):
         compiler = getattr(self, "_compile_" + t_str)
         return compiler(code, node)
 
-
     def _compile_FLOAT(self, bytecode, node):
         value = float(node.value)
         idx = self.declare_literal(obs.newfloat(value))
@@ -208,12 +211,12 @@ class Compiler(object):
         strval = decode_str_utf8(strval)
         strval = string_unquote(strval)
         strval = unicode_unescape(strval)
-        self._emit_string(bytecode,  obs.newstring(strval))
+        self._emit_string(bytecode, obs.newstring(strval))
 
     def _compile_CHAR(self, bytecode, node):
         from obin.runistr import unicode_unescape, decode_str_utf8
 
-        strval  = str(node.value)
+        strval = str(node.value)
         strval = decode_str_utf8(strval)
         strval = string_unquote(strval)
         strval = unicode_unescape(strval)
@@ -607,6 +610,37 @@ class Compiler(object):
 
         code.emit_1(LABEL, endif)
 
+    def _dot_to_string(self, node):
+        def _parse_node(node):
+            if node.type == TT_DOT:
+                return _parse_node(node.first()) + '.' + node.second().value
+            else:
+                return node.value
+        return _parse_node(node)
+
+    def _compile_IMPORT(self, code, node):
+        exp = node.first()
+        if exp.type == TT_AS:
+            import_name = exp.second().value
+            module_path = self._dot_to_string(exp.first())
+        elif exp.type == TT_DOT:
+            import_name = exp.second().value
+            module_path = self._dot_to_string(exp)
+        else:
+            assert exp.type == TT_NAME
+            import_name = node.value
+            module_path = import_name
+
+        module_path = obs.newstring(module_path)
+        import_name = obs.newstring(import_name)
+
+        module_path_literal = self.declare_literal(module_path)
+        code.emit_1(IMPORT, module_path_literal)
+
+        import_name_literal = self.declare_literal(import_name)
+        import_name_index = self.declare_local(import_name)
+        code.emit_2(STORE_LOCAL, import_name_index, import_name_literal)
+
     def _compile_FOR(self, bytecode, node):
         vars = node.first()
         name = obs.newstring(vars[0].value)
@@ -741,11 +775,13 @@ class Compiler(object):
 
         bytecode.emit_0(CALL)
 
+
 def testprogram():
     with open("program2.obn") as f:
         data = f.read()
 
     return data
+
 
 def compile(txt):
     ast = parse_string(txt)
@@ -758,8 +794,10 @@ def compile(txt):
 def print_code(code):
     print [str(c) for c in code.opcodes]
 
+
 def compile_and_print(txt):
     print_code(compile(txt))
+
 
 def _check(val1, val2):
     print val1
@@ -769,10 +807,6 @@ def _check(val1, val2):
         print val2
         raise RuntimeError("Not equal")
 
-
-
-# compile_and_print("""
-# fn f(x, y, z){ return x + y + z; }
-# fn f2() {}
-# """)
-
+compile_and_print("""
+    import state.military.ranks.private as dumbass
+""")
