@@ -1147,6 +1147,9 @@ def code_parser_init(parser):
             advance_expected(parser, T.TT_RCURLY)
 
         node.setfirst(name)
+        if len(funcs) == 0:
+            parse_error(parser, "Empty reify statement")
+
         node.setsecond(funcs)
         return node
 

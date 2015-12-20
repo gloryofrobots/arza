@@ -1,9 +1,9 @@
+/*
 import military.equipment as eq
 import military.troops
 import attack, hide, runaway as run_away_from_danger, three from military.ta.behavior
 
 
-/*
 print(attack)
 print(hide)
 print(run_away_from_danger)
@@ -13,10 +13,20 @@ print(troops.Soldier)
 
 print(eq.Weapon)
 print(eq.fire)
-*/
 
 three()
+*/
 
-//eq.fire(eq.Weapon)
+trait Soldier
+trait Civilian
 
+generic attack
 
+reify attack {
+    (self of Soldier, target of Civilian) {
+        print(self, "not killing a civilian", target)
+    }
+    (self of Soldier, target of Soldier) {
+        print(self, "try killing soldier", target)
+    }
+}

@@ -56,7 +56,7 @@ class W_Generic(W_Root):
             args_signature = sig.at(0)
             method = sig.at(1)
             signature = Signature(args_signature, method)
-            arity = args_signature.arity
+            arity = signature.arity
 
             if arity != method.arity:
                 raise ObinMethodSpecialisationError(self, u"Method arity doesn't match implementation function")
@@ -79,8 +79,8 @@ class W_Generic(W_Root):
 
             self._methods_.append(method)
 
-        for signatures in modified:
-            self.create_dag(signatures, len(signatures))
+        for arity, signatures in modified.iteritems():
+            self.create_dag(signatures, arity)
 
     def reify_single(self, signature, method):
         print "SPECIFY", signature

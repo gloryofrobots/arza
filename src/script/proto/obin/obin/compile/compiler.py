@@ -619,6 +619,7 @@ class Compiler(object):
                 return _parse_node(node.first()) + '.' + node.second().value
             else:
                 return node.value
+
         return _parse_node(node)
 
     def _compile_IMPORT_SINGLE(self, code, node):
@@ -684,7 +685,7 @@ class Compiler(object):
         name = obs.newstring(name.value)
         index = self.declare_local(name)
         name_index = self.declare_literal(name)
-        code.emit_2(GENERIC, name_index)
+        code.emit_1(GENERIC, name_index)
         code.emit_2(STORE_LOCAL, index, name_index)
 
     def _compile_TRAIT(self, code, node):
@@ -692,7 +693,7 @@ class Compiler(object):
         name = obs.newstring(name.value)
         index = self.declare_local(name)
         name_index = self.declare_literal(name)
-        code.emit_2(TRAIT, name_index)
+        code.emit_1(TRAIT, name_index)
         code.emit_2(STORE_LOCAL, index, name_index)
 
     def _compile_REIFY(self, code, node):
@@ -701,21 +702,31 @@ class Compiler(object):
         methods = node.second()
 
         for method in methods:
-            args = method[0]
-            body = method[1]
-            fn_args = []
+            method_args = method[0]
+            method_body = method[1]
+            args = []
             signature = []
-            for arg
+            for arg in method_args:
+                if arg.type == TT_OF:
+                    args.append(arg.first())
+                    signature.append(arg.second())
+                else:
+                    args.append(arg)
+                    signature.append(None)
 
-        index = self.declare_local(funcname)
-        params = node.second()
-        outers = node.third()
-        body = node.fourth()
-        self._compile_fn_args_and_body(code, funcname, params, outers, body)
+            for trait in signature:
+                if trait is None:
+                    code.emit_0(UNDEFINED)
+                else:
+                    self._compile(code, trait)
 
-        funcname_index = self.declare_literal(funcname)
-        code.emit_2(STORE_LOCAL, index, funcname_index)
-        pass
+            code.emit_1(TUPLE, len(signature))
+
+            method_name = obs.newstring(u"")
+            self._compile_fn_args_and_body(code, method_name, args, empty_node(), method_body)
+            code.emit_1(TUPLE, 2)
+
+        code.emit_1(REIFY, len(methods))
 
     def _compile_FOR(self, bytecode, node):
         vars = node.first()
@@ -882,6 +893,7 @@ def _check(val1, val2):
         print val1
         print val2
         raise RuntimeError("Not equal")
+
 
 compile_and_print("""
     trait Soldier

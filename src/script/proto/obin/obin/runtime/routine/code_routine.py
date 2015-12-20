@@ -291,6 +291,12 @@ class CodeRoutine(BaseRoutine):
                 trait = newgeneric(name)
                 self.stack.push(trait)
             # *************************************
+            elif REIFY == tag:
+                methods = self.stack.pop_n_to_tuple(arg1)  # [:] # pop_n returns a non-resizable list
+                methods = newtuple(methods)
+                generic = self.stack.pop()
+                generic.reify(methods)
+            # *************************************
             elif LABEL == tag:
                 raise RuntimeError("Uncompiled label opcode")
 
