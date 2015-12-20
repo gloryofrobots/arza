@@ -181,28 +181,28 @@ class Compiler(object):
     def _compile_FLOAT(self, bytecode, node):
         value = float(node.value)
         idx = self.declare_literal(obs.newfloat(value))
-        bytecode.emit_1(LOAD_LITERAL, idx)
+        bytecode.emit_1(LITERAL, idx)
 
     def _compile_INT(self, bytecode, node):
         value = int(node.value)
         idx = self.declare_literal(obs.newint(value))
-        bytecode.emit_1(LOAD_LITERAL, idx)
+        bytecode.emit_1(LITERAL, idx)
 
     def _compile_TRUE(self, bytecode, node):
-        bytecode.emit_0(LOAD_TRUE)
+        bytecode.emit_0(TRUE)
 
     def _compile_FALSE(self, bytecode, node):
-        bytecode.emit_0(LOAD_FALSE)
+        bytecode.emit_0(FALSE)
 
     def _compile_NIL(self, bytecode, node):
-        bytecode.emit_0(LOAD_NULL)
+        bytecode.emit_0(NULL)
 
     def _compile_UNDEFINED(self, bytecode, node):
-        bytecode.emit_0(LOAD_UNDEFINED)
+        bytecode.emit_0(UNDEFINED)
 
     def _emit_string(self, bytecode, string):
         idx = self.declare_literal(string)
-        bytecode.emit_1(LOAD_LITERAL, idx)
+        bytecode.emit_1(LITERAL, idx)
 
     def _compile_STR(self, bytecode, node):
         from obin.runistr import unicode_unescape, decode_str_utf8
@@ -408,20 +408,23 @@ class Compiler(object):
     def _compile_BITXOR_ASSIGN(self, code, node):
         self._compile_modify_assignment_primitive(code, node, primitives.BITXOR)
 
-    def _compile_NAME(self, code, node):
+    def _compile_name_lookup(self, code, node):
         name = obs.newstring(node.value)
 
         index, is_local = self.get_variable_index(name)
         name_index = self.declare_literal(name)
         if is_local:
-            code.emit_2(LOAD_LOCAL, index, name_index)
+            code.emit_2(LOCAL, index, name_index)
         else:
-            code.emit_2(LOAD_OUTER, index, name_index)
+            code.emit_2(OUTER, index, name_index)
+
+    def _compile_NAME(self, code, node):
+        self._compile_name_lookup(code, node)
 
     def _compile_RETURN(self, code, node):
         expr = node.first()
         if is_empty_node(expr):
-            code.emit_0(LOAD_UNDEFINED)
+            code.emit_0(UNDEFINED)
         else:
             self._compile(code, expr)
 
@@ -430,7 +433,7 @@ class Compiler(object):
     def _compile_RAISE(self, code, node):
         expr = node.first()
         if is_empty_node(expr):
-            code.emit_0(LOAD_UNDEFINED)
+            code.emit_0(UNDEFINED)
         else:
             self._compile(code, expr)
 
@@ -451,7 +454,7 @@ class Compiler(object):
             else:
                 self._compile(code, key)
 
-        code.emit_2(LOAD_OBJECT, len(items), len(traits))
+        code.emit_2(OBJECT, len(items), len(traits))
 
     def _compile_LCURLY(self, code, node):
         items = node.first()
@@ -485,7 +488,7 @@ class Compiler(object):
         for c in items:
             self._compile(code, c)
 
-        code.emit_1(LOAD_TUPLE, len(items))
+        code.emit_1(TUPLE, len(items))
 
     def _compile_LSQUARE(self, code, node):
         # lookup like a[0]
@@ -496,15 +499,15 @@ class Compiler(object):
         for c in items:
             self._compile(code, c)
 
-        code.emit_1(LOAD_VECTOR, len(items))
+        code.emit_1(VECTOR, len(items))
 
     def _compile_BREAK(self, code, node):
-        code.emit_0(LOAD_UNDEFINED)
+        code.emit_0(UNDEFINED)
         if not code.emit_break():
             compile_error(node, u"break outside loop", ())
 
     def _compile_CONTINUE(self, code, node):
-        code.emit_0(LOAD_UNDEFINED)
+        code.emit_0(UNDEFINED)
         if not code.emit_continue():
             compile_error(node, u"continue outside loop", ())
 
@@ -548,7 +551,7 @@ class Compiler(object):
         print [str(c) for c in compiled_code.opcodes]
         print "-------------------------"
 
-        code.emit_2(LOAD_FUNCTION, funcname, compiled_code)
+        code.emit_2(FUNCTION, funcname, compiled_code)
 
     def _compile_FN_EXPRESSION(self, code, node):
         name = obs.newstring(u'')
@@ -604,7 +607,7 @@ class Compiler(object):
 
         elsebranch = branches[-1]
         if is_empty_node(elsebranch):
-            code.emit_0(LOAD_UNDEFINED)
+            code.emit_0(UNDEFINED)
         else:
             self._compile(code, elsebranch[1])
 
@@ -676,6 +679,44 @@ class Compiler(object):
         else:
             compile_error(node, u"Invalid import statement", None)
 
+    def _compile_GENERIC(self, code, node):
+        name = node.first()
+        name = obs.newstring(name.value)
+        index = self.declare_local(name)
+        name_index = self.declare_literal(name)
+        code.emit_2(GENERIC, name_index)
+        code.emit_2(STORE_LOCAL, index, name_index)
+
+    def _compile_TRAIT(self, code, node):
+        name = node.first()
+        name = obs.newstring(name.value)
+        index = self.declare_local(name)
+        name_index = self.declare_literal(name)
+        code.emit_2(TRAIT, name_index)
+        code.emit_2(STORE_LOCAL, index, name_index)
+
+    def _compile_REIFY(self, code, node):
+        name = node.first()
+        self._compile_name_lookup(code, name)
+        methods = node.second()
+
+        for method in methods:
+            args = method[0]
+            body = method[1]
+            fn_args = []
+            signature = []
+            for arg
+
+        index = self.declare_local(funcname)
+        params = node.second()
+        outers = node.third()
+        body = node.fourth()
+        self._compile_fn_args_and_body(code, funcname, params, outers, body)
+
+        funcname_index = self.declare_literal(funcname)
+        code.emit_2(STORE_LOCAL, index, funcname_index)
+        pass
+
     def _compile_FOR(self, bytecode, node):
         vars = node.first()
         name = obs.newstring(vars[0].value)
@@ -683,9 +724,9 @@ class Compiler(object):
         source = node.second()
         body = node.third()
         self._compile(bytecode, source)
-        bytecode.emit_0(LOAD_ITERATOR)
+        bytecode.emit_0(ITERATOR)
         # load the "last" iterations result
-        bytecode.emit_0(LOAD_UNDEFINED)
+        bytecode.emit_0(UNDEFINED)
         precond = bytecode.emit_startloop_label()
         bytecode.continue_at_label(precond)
         finish = bytecode.prealocate_endloop_label(False)
@@ -694,7 +735,7 @@ class Compiler(object):
         bytecode.emit_1(JUMP_IF_ITERATOR_EMPTY, finish)
 
         # put next iterator value on stack
-        bytecode.emit_0(NEXT_ITERATOR)
+        bytecode.emit_0(NEXT)
 
         index = self.declare_local(name)
         # self._compile_string(bytecode, name)
@@ -711,7 +752,7 @@ class Compiler(object):
     def _compile_WHILE(self, bytecode, node):
         condition = node.first()
         body = node.second()
-        bytecode.emit_0(LOAD_UNDEFINED)
+        bytecode.emit_0(UNDEFINED)
         startlabel = bytecode.emit_startloop_label()
         bytecode.continue_at_label(startlabel)
         self._compile(bytecode, condition)
@@ -728,7 +769,7 @@ class Compiler(object):
         self._emit_string(code, name)
         obj = node.first()
         self._compile(code, obj)
-        code.emit_0(LOAD_MEMBER_DOT)
+        code.emit_0(MEMBER_DOT)
         # TODO LITERAL HERE
         # self.declare_symbol(name)
 
@@ -740,13 +781,13 @@ class Compiler(object):
         self._compile(code, expr)
         obj = node.first()
         self._compile(code, obj)
-        code.emit_0(LOAD_MEMBER)
+        code.emit_0(MEMBER)
 
     def _compile_args_list(self, code, args):
         normal_args_count = 0
         first_args_inserted = False
         if len(args) == 0:
-            code.emit_1(LOAD_VECTOR, 0)
+            code.emit_1(VECTOR, 0)
             return
 
         for arg in args:
@@ -759,7 +800,7 @@ class Compiler(object):
                     code.emit_0(CONCAT)
                 else:
                     if normal_args_count:
-                        code.emit_1(LOAD_VECTOR, normal_args_count)
+                        code.emit_1(VECTOR, normal_args_count)
                         self._compile(code, arg.first())
                         code.emit_0(CONCAT)
                     else:
@@ -775,7 +816,7 @@ class Compiler(object):
             if first_args_inserted:
                 code.emit_1(PUSH_MANY, normal_args_count)
             else:
-                code.emit_1(LOAD_VECTOR, normal_args_count)
+                code.emit_1(VECTOR, normal_args_count)
 
     def _compile_LPAREN_MEMBER(self, bytecode, node):
         obj = node.first()
@@ -843,6 +884,26 @@ def _check(val1, val2):
         raise RuntimeError("Not equal")
 
 compile_and_print("""
-    import fire as army_fire, Weapon as weapon, private as army_private from state.military.equipment
-    import state.military.infantry.private as ground_powder
+    trait Soldier
+    trait Civilian
+    generic fire
 """)
+"""
+    reify fire {
+        (self of Soldier, other of Civilian) {
+            attack(self, other)
+            name = self.name
+            surname = "Surname" + name + other.name
+        }
+        (self of Soldier, other1, other2) {
+            attack(self, other)
+            name = self.name
+            surname = "Surname" + name + other.name
+        }
+        (self, other1, other2, other3 of Enemy) {
+            attack(self, other)
+            name = self.name
+            surname = "Surname" + name + other.name
+        }
+    }
+"""

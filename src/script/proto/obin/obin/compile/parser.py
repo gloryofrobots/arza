@@ -265,6 +265,7 @@ class Parser(BaseParser):
         self.module_name_parser = module_name_parser_init(BaseParser(ts))
         self.module_name_alias_parser = module_name_alias_parser_init(BaseParser(ts))
         self.import_alias_parser = import_alias_parser_init(BaseParser(ts))
+        self.generic_signature_parser = generic_signature_parser_init(BaseParser(ts))
         code_parser_init(self)
 
 
@@ -492,7 +493,8 @@ def args_parser_init(parser):
     literal(parser, T.TT_NAME)
     return parser
 
-def import_infix_pair(parser, node, left):
+
+def infix_simple_pair(parser, node, left):
     node.init(2)
     node.setfirst(left)
     check_token_type(parser, T.TT_NAME)
@@ -500,19 +502,28 @@ def import_infix_pair(parser, node, left):
     advance(parser)
     return node
 
+
 def import_alias_parser_init(parser):
-    infix(parser, T.TT_AS, 20, import_infix_pair)
+    infix(parser, T.TT_AS, 20, infix_simple_pair)
     literal(parser, T.TT_NAME)
     return parser
+
 
 def module_name_parser_init(parser):
-    infix(parser, T.TT_DOT, 10, import_infix_pair)
+    infix(parser, T.TT_DOT, 10, infix_simple_pair)
     literal(parser, T.TT_NAME)
     return parser
 
+
 def module_name_alias_parser_init(parser):
-    infix(parser, T.TT_DOT, 10, import_infix_pair)
-    infix(parser, T.TT_AS, 20, import_infix_pair)
+    infix(parser, T.TT_DOT, 10, infix_simple_pair)
+    infix(parser, T.TT_AS, 20, infix_simple_pair)
+    literal(parser, T.TT_NAME)
+    return parser
+
+
+def generic_signature_parser_init(parser):
+    infix(parser, T.TT_OF, 10, infix_simple_pair)
     literal(parser, T.TT_NAME)
     return parser
 
@@ -882,6 +893,9 @@ def code_parser_init(parser):
         return node
 
     prefix(parser, T.TT_FN, _prefix_fn)
+    """
+    STATEMENTS
+    """
 
     def _stmt_fn(parser, node):
         node.init(4)
@@ -1067,6 +1081,77 @@ def code_parser_init(parser):
 
     stmt(parser, T.TT_FOR, _stmt_for)
 
+    def _stmt_generic(parser, node):
+        node.init(1)
+        name = expression(parser, 0)
+        if name.type != T.TT_NAME:
+            parse_error(parser, "Wrong generic name")
+        node.setfirst(name)
+        return node
+
+    stmt(parser, T.TT_GENERIC, _stmt_generic)
+
+    def _stmt_trait(parser, node):
+        node.init(1)
+        name = expression(parser, 0)
+        if name.type != T.TT_NAME:
+            parse_error(parser, "Wrong trait name")
+        node.setfirst(name)
+        return node
+
+    stmt(parser, T.TT_TRAIT, _stmt_trait)
+
+    def _parse_reify_fn(_parser, _signature_parser):
+        signature = []
+
+        advance_expected(parser, T.TT_LPAREN)
+        while _parser.token_type != T.TT_RPAREN:
+            sig = expression(_signature_parser, 0)
+            signature.append(sig)
+
+            if _parser.token_type != T.TT_COMMA:
+                break
+
+            advance_expected(_signature_parser, T.TT_COMMA)
+
+        advance_expected(_parser, T.TT_RPAREN)
+        advance_expected(parser, T.TT_LCURLY)
+
+        body = statements(parser)
+        # TODO FIX IT
+        if not body:
+            body = empty_node()
+
+        advance_expected(parser, T.TT_RCURLY)
+        return [signature, body]
+
+    def _stmt_reify(parser, node):
+        generic_signature_parser = parser.generic_signature_parser
+        node.init(2)
+        if parser.token_type != T.TT_NAME:
+            parse_error(parser, "Wrong generic name in reify statement")
+
+        name = parser.node
+        advance(parser)
+
+        funcs = []
+        if parser.token_type == T.TT_LPAREN:
+            func = _parse_reify_fn(parser, generic_signature_parser)
+            funcs.append(func)
+        else:
+            advance_expected(parser, T.TT_LCURLY)
+            while parser.token_type == T.TT_LPAREN:
+                func = _parse_reify_fn(parser, generic_signature_parser)
+                funcs.append(func)
+
+            advance_expected(parser, T.TT_RCURLY)
+
+        node.setfirst(name)
+        node.setsecond(funcs)
+        return node
+
+    stmt(parser, T.TT_REIFY, _stmt_reify)
+
     def _stmt_import(parser, node):
         # import statement needs three different parsers :(
 
@@ -1100,6 +1185,7 @@ def code_parser_init(parser):
         return node
 
     stmt(parser, T.TT_IMPORT, _stmt_import)
+
 
 """
 import fire as army_fire, Weapon as weapon, private as army_private from state.military
@@ -1153,10 +1239,23 @@ def write_ast(ast):
 
 # ast = parse_string(
 #     """
-#     import fire as army_fire, Weapon as weapon, private as army_private from state.military.equipment
-#
-#     import state.military.infantry.private as ground_powder
-#
+#     reify fire {
+#         (self of Soldier, other of Civilian) {
+#             attack(self, other)
+#             name = self.name
+#             surname = "Surname" + name + other.name
+#         }
+#         (self of Soldier, other1, other2) {
+#             attack(self, other)
+#             name = self.name
+#             surname = "Surname" + name + other.name
+#         }
+#         (self, other1, other2, other3 of Enemy) {
+#             attack(self, other)
+#             name = self.name
+#             surname = "Surname" + name + other.name
+#         }
+#     }
 #     """
 # )
 # print ast

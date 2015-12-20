@@ -4,8 +4,9 @@ from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
 from obin.objects.stack import Stack
 from obin.objects.space import (newbool, newundefined,
-                                       newnull, newvector, isinterrupt,
-                                       newobject, newfunc, newint, newtuple)
+                                newnull, newvector, isinterrupt,
+                                newobject, newfunc,
+                                newint, newtuple, newgeneric, newtrait)
 from obin.objects import api
 from obin.runtime.load import import_module
 
@@ -75,22 +76,22 @@ class CodeRoutine(BaseRoutine):
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
             self.pc += 1
             # *************************************
-            if LOAD_UNDEFINED == tag:
+            if UNDEFINED == tag:
                 self.stack.push(newundefined())
             # *************************************
             elif RETURN == tag:
                 self.complete(self.stack.top())
             # *************************************
-            elif LOAD_NULL == tag:
+            elif NULL == tag:
                 self.stack.push(newnull())
             # *************************************
-            elif LOAD_TRUE == tag:
+            elif TRUE == tag:
                 self.stack.push(newbool(True))
             # *************************************
-            elif LOAD_FALSE == tag:
+            elif FALSE == tag:
                 self.stack.push(newbool(False))
             # *************************************
-            elif LOAD_INTEGER == tag:
+            elif INTEGER == tag:
                 self.stack.push(newint(arg1))
             # *************************************
             elif DUP == tag:
@@ -99,11 +100,11 @@ class CodeRoutine(BaseRoutine):
             elif POP == tag:
                 self.stack.pop()
             # *************************************
-            elif LOAD_LITERAL == tag:
+            elif LITERAL == tag:
                 l = self.literals[arg1]
                 self.stack.push(l)
             # *************************************
-            elif LOAD_LOCAL == tag:
+            elif LOCAL == tag:
                 value = self.env.get_local(arg1)
                 if value is None:
                     literal = self.literals[arg2]
@@ -111,21 +112,21 @@ class CodeRoutine(BaseRoutine):
 
                 self.stack.push(value)
             # *************************************
-            elif LOAD_OUTER == tag:
+            elif OUTER == tag:
                 assert arg1 > -1
 
                 name = self.literals[arg2]
                 value = self.refs.get_ref(name, arg1)
                 self.stack.push(value)
             # *************************************
-            elif LOAD_MEMBER == tag:
+            elif MEMBER == tag:
                 obj = self.stack.pop()
                 name = self.stack.pop()
                 value = api.at(obj, name)
 
                 self.stack.push(value)
             # *************************************
-            elif LOAD_MEMBER_DOT == tag:
+            elif MEMBER_DOT == tag:
                 obj = self.stack.pop()
                 name = self.stack.pop()
                 value = api.lookup(obj, name)
@@ -153,11 +154,11 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             # TODO STORE_MEMBER_DOT
             # *************************************
-            elif LOAD_TUPLE == tag:
+            elif TUPLE == tag:
                 tupl = self.stack.pop_n_to_tuple(arg1)  # [:] # pop_n returns a non-resizable list
                 self.stack.push(newtuple(tupl))
             # *************************************
-            elif LOAD_VECTOR == tag:
+            elif VECTOR == tag:
                 lst = self.stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
                 self.stack.push(newvector(lst))
             # *************************************
@@ -222,7 +223,7 @@ class CodeRoutine(BaseRoutine):
                 else:
                     self.stack.pop()
             # *************************************
-            elif LOAD_ITERATOR == tag:
+            elif ITERATOR == tag:
                 obj = self.stack.pop()
                 iterator = api.iterator(obj)
                 self.stack.push(iterator)
@@ -238,7 +239,7 @@ class CodeRoutine(BaseRoutine):
                     self.stack.push(last_block_value)
                     self.pc = arg1
             # *************************************
-            elif NEXT_ITERATOR == tag:
+            elif NEXT == tag:
                 iterator = self.stack.top()
                 next_el = api.next(iterator)
                 # call is interrupted, probably coself call
@@ -246,7 +247,7 @@ class CodeRoutine(BaseRoutine):
                     return
                 self.stack.push(next_el)
             # *************************************
-            elif LOAD_OBJECT == tag:
+            elif OBJECT == tag:
                 obj = newobject()
 
                 for _ in xrange(arg1):
@@ -261,7 +262,7 @@ class CodeRoutine(BaseRoutine):
 
                 self.stack.push(obj)
             # *************************************
-            elif LOAD_FUNCTION == tag:
+            elif FUNCTION == tag:
                 w_func = newfunc(arg1, arg2, self.env)
                 self.stack.push(w_func)
             # *************************************
@@ -280,9 +281,18 @@ class CodeRoutine(BaseRoutine):
                 member = api.lookup(module, name)
                 self.stack.push(member)
             # *************************************
+            elif TRAIT == tag:
+                name = self.literals[arg1]
+                trait = newtrait(name)
+                self.stack.push(trait)
+            # *************************************
+            elif GENERIC == tag:
+                name = self.literals[arg1]
+                trait = newgeneric(name)
+                self.stack.push(trait)
+            # *************************************
             elif LABEL == tag:
                 raise RuntimeError("Uncompiled label opcode")
-
 
     def bytecode(self):
         return self._code_

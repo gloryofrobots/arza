@@ -49,7 +49,40 @@ class W_Generic(W_Root):
 
         return record
 
-    def specify(self, signature, method):
+    def reify(self, signatures):
+        modified = {}
+
+        for sig in signatures:
+            args_signature = sig.at(0)
+            method = sig.at(1)
+            signature = Signature(args_signature, method)
+            arity = args_signature.arity
+
+            if arity != method.arity:
+                raise ObinMethodSpecialisationError(self, u"Method arity doesn't match implementation function")
+
+            if arity == 0:
+                return self._specify_empty(method)
+            try:
+                signatures = modified[arity]
+            except KeyError:
+                signatures = self.get_signatures(arity)
+                modified[arity] = signatures
+
+            try:
+                index = signatures.index(signature)
+                old = signatures[index]
+                self._methods_.remove(old.method)
+                signatures[index] = signature
+            except ValueError:
+                signatures.append(signature)
+
+            self._methods_.append(method)
+
+        for signatures in modified:
+            self.create_dag(signatures, len(signatures))
+
+    def reify_single(self, signature, method):
         print "SPECIFY", signature
         arity = signature.length()
 
@@ -157,7 +190,8 @@ class W_Generic(W_Root):
         from obin.objects.space import state
         return state.traits.GenericTraits
 
+
 from tests import test_3, test_any
+
 test_3()
 test_any()
-

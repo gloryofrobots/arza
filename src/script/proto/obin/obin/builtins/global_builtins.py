@@ -125,7 +125,7 @@ def specify(routine):
     method = routine.get_arg(0)
     signature = routine.get_arg(1)
     specification = routine.get_arg(2)
-    method.specify(signature, specification)
+    method.reify_single(signature, specification)
     return None
 
 

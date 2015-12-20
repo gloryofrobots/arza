@@ -29,7 +29,7 @@ class CodeSource(object):
         self.scope = None
         self._function_name_ = None
         # VALUE FOR AUTOMATIC RETURN
-        self.emit_0(LOAD_UNDEFINED)
+        self.emit_0(UNDEFINED)
 
     def finalize_compilation(self, scope_info):
         assert scope_info
