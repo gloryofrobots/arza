@@ -1,0 +1,7 @@
+import military.equipment as eq
+
+print(eq.Weapon)
+print(eq.fire)
+//eq.fire(eq.Weapon)
+
+

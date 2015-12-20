@@ -12,11 +12,9 @@ from obin.runtime.exception import ObinException
 
 
 def main(argv):
-    opts, files = parse_args(argv)
-    # parse("x = 1;")
-
+    script_file = argv[1]
     try:
-        run(files, opts)
+        run(script_file)
     except SystemExit:
         printmessage(u"\n")
 
@@ -24,29 +22,19 @@ def main(argv):
 
 
 
-def run(files, opts):
-    from obin.runtime.interpret import load_file, run_src, initialize
-    from obin.objects.space import state
+def run(script_file):
+    from obin.runtime.interpret import load_file, run_src
+    from obin.utils import fs
+    from obin.objects.space import newprocess
 
-    interactive = len(files) == 0
-    state = initialize()
-    for filename in files:
-        src = load_file(filename)
+    script_dir = fs.get_dirname(script_file)
 
-        print run_src(state.process, src)
-        # try:
-        # except ParseError as exc:
-        #     printsyntaxerror(unicode(filename), exc, src)
-        #     raise SystemExit
-        # except LexerError as e:
-        #     printlexererror(unicode(filename), e, src)
-        #     raise SystemExit
-        # except JsException as e:
-        #     printerrormessage(unicode(filename), e._msg())
-        #     raise SystemExit
+    path = unicode(fs.join_and_normalise_path(script_dir, u"olib"))
 
-    if inspect or interactive:
-        repl(state)
+    process = newprocess([path])
+    src = load_file(script_file)
+    print run_src(process, src)
+
 
 
 @enforceargs(unicode, unicode)

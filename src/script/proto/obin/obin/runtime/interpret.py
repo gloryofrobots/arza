@@ -12,14 +12,6 @@ def run_src(process, src):
     return run_module(process, module)
 
 def run_module(process, module):
-    from obin.objects.space import state
-    result = process.run_with_module(module, state.builtins)
+    result = process.run_with_module(module, process.builtins)
     return result
 
-def initialize():
-    from obin.builtins import setup_builtins
-    from obin.runtime.process import Process
-    from obin.objects.space import state
-    state.process = Process()
-    setup_builtins(state.builtins)
-    return state

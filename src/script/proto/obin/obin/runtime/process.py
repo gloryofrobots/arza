@@ -35,10 +35,24 @@ class Process(object):
 
     def __init__(self):
         from obin.runtime.primitives import newprimitives
+        from obin.objects.space import newplainobject
         self.__state = Process.State.IDLE
         self.__routine = None
         self.result = None
         self.__primitives = newprimitives()
+        self.builtins = newplainobject()
+        self.modules = {}
+        self.path = []
+
+    def add_path(self, path):
+        assert isinstance(path, unicode)
+        self.path.append(path)
+
+    def add_module(self, name, module):
+        self.modules[name] = module
+
+    def get_module(self, name):
+        return self.modules[name]
 
     def get_primitive(self, pid):
         return self.__primitives[pid]
@@ -171,6 +185,7 @@ class Process(object):
 
     def run_module_force(self, module, _globals):
         routine = module.compile(_globals)
+        routine.activate(self)
         routine.execute()
 
     def run_with(self, routine):

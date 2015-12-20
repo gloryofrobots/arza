@@ -618,7 +618,7 @@ class Compiler(object):
                 return node.value
         return _parse_node(node)
 
-    def _compile_IMPORT(self, code, node):
+    def _compile_IMPORT_SINGLE(self, code, node):
         exp = node.first()
         if exp.type == TT_AS:
             import_name = exp.second().value
@@ -640,6 +640,42 @@ class Compiler(object):
         import_name_literal = self.declare_literal(import_name)
         import_name_index = self.declare_local(import_name)
         code.emit_2(STORE_LOCAL, import_name_index, import_name_literal)
+
+    def _compile_IMPORT_DESTRUCTURING(self, code, node):
+        items = node.first()
+        module = node.second()
+        module_path = self._dot_to_string(module)
+        module_path_literal = self.declare_literal(module_path)
+        code.emit_1(IMPORT, module_path_literal)
+        for item in items:
+            if item.type == TT_AS:
+                var_name = item.second().value
+                module_var = item.first().value
+            else:
+                assert item.type == TT_NAME
+                var_name = node.value
+                module_var = var_name
+
+            var_name = obs.newstring(var_name)
+            module_var = obs.newstring(module_var)
+
+            module_var_literal = self.declare_literal(module_var)
+            code.emit_1(IMPORT_MEMBER, module_var_literal)
+
+            var_name_literal = self.declare_literal(var_name)
+            var_name_index = self.declare_local(var_name)
+            code.emit_2(STORE_LOCAL, var_name_index, var_name_literal)
+
+        code.emit_0(POP)
+        pass
+
+    def _compile_IMPORT(self, code, node):
+        if node.arity == 1:
+            self._compile_IMPORT_SINGLE(code, node)
+        elif node.arity == 2:
+            self._compile_IMPORT_DESTRUCTURING(code, node)
+        else:
+            compile_error(node, u"Invalid import statement", None)
 
     def _compile_FOR(self, bytecode, node):
         vars = node.first()
@@ -808,5 +844,6 @@ def _check(val1, val2):
         raise RuntimeError("Not equal")
 
 compile_and_print("""
-    import state.military.ranks.private as dumbass
+    import fire as army_fire, Weapon as weapon, private as army_private from state.military.equipment
+    import state.military.infantry.private as ground_powder
 """)

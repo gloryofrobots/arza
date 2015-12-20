@@ -22,21 +22,23 @@ def import_module(process, name):
 
 def load_module(process, name):
     raw = api.tonativevalue(name)
-    path = raw.replace(".", os.sep)
+    path = raw.replace(u".", os.sep)
+    path = path + u".obn"
     script = None
-    for directory in process.lib_dirs:
+    for directory in process.path:
         filename = join_and_normalise_path(directory, path)
         if is_file(filename):
-            script = file_get_contents(path)
+            script = file_get_contents(filename)
             break
 
         if not script:
-            raise ObinImportError(name)
+            raise ObinImportError(unicode(name))
 
-    create_module(process, name, script)
+    return create_module(process, name, script)
 
 
 def create_module(process, name, script):
-    module = compile_module(name, script)
+    module = compile_module(process, name, script)
     process.run_module_force(module, None)
     process.add_module(name, module)
+    return module

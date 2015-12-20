@@ -1,3 +1,0 @@
-from military.equipment import Weapon,fire
-
-fire(Weapon)

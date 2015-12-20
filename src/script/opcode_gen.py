@@ -11,6 +11,7 @@ OPCODES = [
     ("DUP", 1),
     ("NEXT_ITERATOR", 1),
     ("IMPORT", 1),
+    ("IMPORT_MEMBER", 1),
 
     ("LABEL", 0),
     ("STORE_OUTER", 0),

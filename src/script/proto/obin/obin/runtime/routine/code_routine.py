@@ -175,7 +175,7 @@ class CodeRoutine(BaseRoutine):
                 argv = self.stack.pop()
 
                 func = api.lookup(what, method)
-                argv.prepend(what)
+                # argv.prepend(what)
 
                 api.call(func, self, argv)
             # *************************************
@@ -270,6 +270,7 @@ class CodeRoutine(BaseRoutine):
             elif IMPORT == tag:
                 from obin.runtime.load import import_module
                 name = self.literals[arg1]
+
                 module = import_module(self.process, name)
                 self.stack.push(module)
             # *************************************

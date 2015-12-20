@@ -12,6 +12,15 @@ class W_Module(W_Root):
         from obin.objects.space import state
         return state.traits.ModuleTraits
 
+    def _tostring_(self):
+        return self._object_._tostring_()
+
+    def _at_(self, key):
+        return self._object_._at_(key)
+
+    def _lookup_(self, key):
+        return self._object_._lookup_(key)
+
     def init_scope(self):
         self._object_ = self._bytecode_.scope.create_object()
 

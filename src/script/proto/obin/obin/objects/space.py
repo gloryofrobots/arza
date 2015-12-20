@@ -127,9 +127,11 @@ def newvector(items):
     obj = W_Vector(items)
     return obj
 
+
 def newtuple(tupl):
     from obin.objects.types.tupletype import W_Tuple
     return W_Tuple(tupl)
+
 
 def newcoroutine(fn):
     from obin.objects.types.callable import W_Coroutine
@@ -202,23 +204,29 @@ def istrait(w):
     from obin.objects.types.trait import W_Trait
     return isinstance(w, W_Trait)
 
+
 def isgeneric(w):
     from obin.objects.types.dispatch.generic import W_Generic
     return isinstance(w, W_Generic)
+
 
 def istuple(w):
     from obin.objects.types.tupletype import W_Tuple
     return isinstance(w, W_Tuple)
 
+
 def ismodule(w):
     from obin.objects.types.module import W_Module
     return isinstance(w, W_Module)
 
+
 def isboolean(value):
     return value is w_False or value is w_True
 
+
 def isnull(value):
     return value is w_Null
+
 
 def isint(w):
     from obin.objects.types.value import W_Integer
@@ -306,16 +314,20 @@ class State(object):
     def __init__(self):
         self.traits = State.Traits()
         self.process = None
-        self.modules = {}
-        self.builtins = newplainobject()
 
-    def add_module(self, name, module):
-        self.modules[name] = module
-
-    def get_module(self, name):
-        return self.modules[name]
 
 state = State()
+
+
+def newprocess(libdirs):
+    from obin.builtins import setup_builtins
+    from obin.runtime.process import Process
+    process = Process()
+    for path in libdirs:
+        process.add_path(path)
+    state.process = process
+    setup_builtins(process.builtins)
+    return process
 
 
 @specialize.argtype(0)
@@ -342,6 +354,3 @@ def _w(value):
         return newvector(value)
 
     raise TypeError("ffffuuu %s" % (str(type(value)),))
-
-
-
