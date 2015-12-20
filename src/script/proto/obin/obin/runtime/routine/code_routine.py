@@ -7,6 +7,7 @@ from obin.objects.space import (newbool, newundefined,
                                        newnull, newvector, isinterrupt,
                                        newobject, newfunc, newint, newtuple)
 from obin.objects import api
+from obin.runtime.load import import_module
 
 
 def load_arguments(stack):
@@ -131,6 +132,7 @@ class CodeRoutine(BaseRoutine):
 
                 self.stack.push(value)
             # *************************************
+            # TODO WHY NOT POP HERE?
             elif STORE_LOCAL == tag:
                 value = self.stack.top()
                 self.env.set_local(arg1, value)
@@ -268,11 +270,15 @@ class CodeRoutine(BaseRoutine):
                 self.terminate(val)
             # *************************************
             elif IMPORT == tag:
-                from obin.runtime.load import import_module
                 name = self.literals[arg1]
-
                 module = import_module(self.process, name)
                 self.stack.push(module)
+            # *************************************
+            elif IMPORT_MEMBER == tag:
+                name = self.literals[arg1]
+                module = self.stack.top()
+                member = api.lookup(module, name)
+                self.stack.push(member)
             # *************************************
             elif LABEL == tag:
                 raise RuntimeError("Uncompiled label opcode")

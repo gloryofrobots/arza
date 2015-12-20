@@ -645,6 +645,7 @@ class Compiler(object):
         items = node.first()
         module = node.second()
         module_path = self._dot_to_string(module)
+        module_path = obs.newstring(module_path)
         module_path_literal = self.declare_literal(module_path)
         code.emit_1(IMPORT, module_path_literal)
         for item in items:
@@ -653,7 +654,7 @@ class Compiler(object):
                 module_var = item.first().value
             else:
                 assert item.type == TT_NAME
-                var_name = node.value
+                var_name = item.value
                 module_var = var_name
 
             var_name = obs.newstring(var_name)
@@ -665,9 +666,7 @@ class Compiler(object):
             var_name_literal = self.declare_literal(var_name)
             var_name_index = self.declare_local(var_name)
             code.emit_2(STORE_LOCAL, var_name_index, var_name_literal)
-
-        code.emit_0(POP)
-        pass
+            code.emit_0(POP)
 
     def _compile_IMPORT(self, code, node):
         if node.arity == 1:

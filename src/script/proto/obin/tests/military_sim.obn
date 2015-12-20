@@ -1,7 +1,22 @@
 import military.equipment as eq
+import military.troops
+import attack, hide, runaway as run_away_from_danger, three from military.ta.behavior
+
+
+/*
+print(attack)
+print(hide)
+print(run_away_from_danger)
+print(troops.Squad)
+print(troops.Civilian)
+print(troops.Soldier)
 
 print(eq.Weapon)
 print(eq.fire)
+*/
+
+three()
+
 //eq.fire(eq.Weapon)
 
 

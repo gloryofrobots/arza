@@ -1,6 +1,5 @@
 from obin.objects.space import newmodule
 from obin.objects import api
-from obin.compile.compiler import compile
 from obin.runtime.exception import ObinImportError
 from obin.utils.fs import file_get_contents, is_file, join_and_normalise_path
 import os
@@ -8,6 +7,7 @@ import os
 
 
 def compile_module(process, name, txt):
+    from obin.compile.compiler import compile
     code = compile(txt)
     module = newmodule(name, code)
     return module
@@ -39,6 +39,6 @@ def load_module(process, name):
 
 def create_module(process, name, script):
     module = compile_module(process, name, script)
-    process.run_module_force(module, None)
+    process.run_module_force(module, process.builtins)
     process.add_module(name, module)
     return module

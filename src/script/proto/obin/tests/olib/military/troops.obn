@@ -1,6 +1,16 @@
-trait Soldier;
-trait Civilian;
-trait Squad
+//trait Soldier;
+//trait Civilian;
+//trait Squad
+
+object Soldier {
+    name = "Joe"
+    rank = nil
+}
+
+object Civilian{
+    name = "Mr. Smith"
+    position = "teacher"
+}
 
 fn Squad(soldiers) {
     attach({

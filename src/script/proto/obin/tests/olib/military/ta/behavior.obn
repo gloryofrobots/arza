@@ -1,0 +1,23 @@
+fn one(){
+    1
+}
+
+fn two() {
+    one() + 1
+}
+
+fn three() {
+    two() + 1
+}
+
+fn attack(self, other) {
+    print("Attack", self, other)
+}
+
+fn hide(self, other) {
+    print("Hiding", self, other)
+}
+
+fn runaway(self, other) {
+    print("Running", self)
+}
