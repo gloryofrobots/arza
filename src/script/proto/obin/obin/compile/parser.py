@@ -1082,11 +1082,20 @@ def code_parser_init(parser):
     stmt(parser, T.TT_FOR, _stmt_for)
 
     def _stmt_generic(parser, node):
-        node.init(1)
-        name = expression(parser, 0)
-        if name.type != T.TT_NAME:
+        if parser.token_type != T.TT_NAME:
             parse_error(parser, "Wrong generic name")
-        node.setfirst(name)
+        name = parser.node
+        advance(parser)
+
+        if parser.token_type == T.TT_LCURLY or parser.token_type == T.TT_LPAREN:
+            node.init(2)
+            funcs = _parse_reify_funcs(parser)
+            node.setfirst(name)
+            node.setsecond(funcs)
+        else:
+            node.init(1)
+            node.setfirst(name)
+
         return node
 
     stmt(parser, T.TT_GENERIC, _stmt_generic)
@@ -1125,15 +1134,8 @@ def code_parser_init(parser):
         advance_expected(parser, T.TT_RCURLY)
         return [signature, body]
 
-    def _stmt_reify(parser, node):
+    def _parse_reify_funcs(parser):
         generic_signature_parser = parser.generic_signature_parser
-        node.init(2)
-        if parser.token_type != T.TT_NAME:
-            parse_error(parser, "Wrong generic name in reify statement")
-
-        name = parser.node
-        advance(parser)
-
         funcs = []
         if parser.token_type == T.TT_LPAREN:
             func = _parse_reify_fn(parser, generic_signature_parser)
@@ -1146,10 +1148,23 @@ def code_parser_init(parser):
 
             advance_expected(parser, T.TT_RCURLY)
 
-        node.setfirst(name)
         if len(funcs) == 0:
             parse_error(parser, "Empty reify statement")
 
+        return funcs
+
+    def _stmt_reify(parser, node):
+        node.init(2)
+
+        if parser.token_type != T.TT_NAME:
+            parse_error(parser, "Wrong generic name in reify statement")
+
+        name = parser.node
+        advance(parser)
+
+        funcs = _parse_reify_funcs(parser)
+
+        node.setfirst(name)
         node.setsecond(funcs)
         return node
 

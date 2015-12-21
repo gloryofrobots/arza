@@ -687,6 +687,8 @@ class Compiler(object):
         name_index = self.declare_literal(name)
         code.emit_1(GENERIC, name_index)
         code.emit_2(STORE_LOCAL, index, name_index)
+        if node.arity == 2:
+            self._compile_REIFY(code, node)
 
     def _compile_TRAIT(self, code, node):
         name = node.first()

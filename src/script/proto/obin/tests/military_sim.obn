@@ -20,9 +20,8 @@ three()
 trait Soldier
 trait Civilian
 
-generic attack
 
-reify attack {
+generic attack {
     (self of Soldier, target of Civilian) {
         print(self, "not killing a civilian", target)
     }
@@ -30,3 +29,17 @@ reify attack {
         print(self, "try killing soldier", target)
     }
 }
+
+attack(object(Soldier) {
+            name = "Joe"
+       },
+       object(Soldier){
+            name = "Ivan"
+       })
+
+attack(object(Soldier) {
+            name = "Joe"
+       },
+       object(Civilian){
+            name = "Mr.Smith"
+       })

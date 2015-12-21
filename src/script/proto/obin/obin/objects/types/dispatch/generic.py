@@ -27,8 +27,8 @@ class W_Generic(W_Root):
         discriminators = []
         nodes = self._make_nodes(0, arity, signatures, discriminators)
         dag = RootNode(nodes, discriminators)
-        print "DAG for", self._name_
-        print dag
+        # print "DAG for", self._name_
+        # print dag
         dags[arity] = dag
         return dag
 
@@ -83,7 +83,7 @@ class W_Generic(W_Root):
             self.create_dag(signatures, arity)
 
     def reify_single(self, signature, method):
-        print "SPECIFY", signature
+        # print "SPECIFY", signature
         arity = signature.length()
 
         if arity != method.arity:
@@ -123,8 +123,6 @@ class W_Generic(W_Root):
             return leaf
 
         groups = {}
-        if len(signatures) == 2:
-            print signatures
         for signature in signatures:
             arg = signature.at(index)
             if arg not in groups:
@@ -141,8 +139,6 @@ class W_Generic(W_Root):
             else:
                 nodes.append(GroupNode(d, children))
 
-        if index == 0:
-            print ""
         # print "NODES", index, nodes
         return nodes
 
@@ -160,7 +156,7 @@ class W_Generic(W_Root):
 
     def lookup_method(self, args):
         arity = args.length()
-        print "LOOKUP", self._name_, args, arity
+        # print "LOOKUP", self._name_, args, arity
         if arity == 0:
             idx = self._signatures_[0]
             return self._methods_[idx]

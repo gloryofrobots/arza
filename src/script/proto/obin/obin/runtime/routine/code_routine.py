@@ -258,7 +258,7 @@ class CodeRoutine(BaseRoutine):
                 if arg2 > 0:
                     for _ in xrange(arg2):
                         trait = self.stack.pop()
-                        obj.isa(trait)
+                        api.attach(obj, trait)
 
                 self.stack.push(obj)
             # *************************************
