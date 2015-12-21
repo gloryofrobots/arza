@@ -117,6 +117,11 @@ class CodeRoutine(BaseRoutine):
 
                 name = self.literals[arg2]
                 value = self.refs.get_ref(name, arg1)
+                # check for none value here too
+                # for unbounded clojure vars X = 1 + fn() { 1 + X }
+                if value is None:
+                    literal = self.literals[arg2]
+                    raise ObinReferenceError(literal)
                 self.stack.push(value)
             # *************************************
             elif MEMBER == tag:

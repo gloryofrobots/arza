@@ -347,7 +347,9 @@ def statement(parser):
 
     if has_std(parser, node):
         advance(parser)
-        return std(parser, node)
+        value = std(parser, node)
+        # endofexpression(parser)
+        return value
 
     value = expression(parser, 0)
     endofexpression(parser)

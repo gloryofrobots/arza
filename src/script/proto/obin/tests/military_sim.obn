@@ -21,6 +21,20 @@ trait Soldier
 trait Civilian
 
 
+Z = 1 + (fn (x, y) {
+ print("COOL", x, y)
+ return x + y
+} (1,2))
+
+if Z = 5 {
+    print("FIVE")
+} elif Z == 4 {
+    print("FOUR")
+}
+
+print("Z", Z)
+
+
 generic attack {
     (self of Soldier, target of Civilian) {
         print(self, "not killing a civilian", target)
@@ -29,6 +43,8 @@ generic attack {
         print(self, "try killing soldier", target)
     }
 }
+
+
 
 attack(object(Soldier) {
             name = "Joe"

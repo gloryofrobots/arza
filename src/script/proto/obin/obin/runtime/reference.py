@@ -1,5 +1,6 @@
 from obin.runtime.exception import ObinReferenceError
 
+
 class References(object):
     _virtualizable2_ = ['_refs_[*]']
     _settled_ = True
@@ -14,8 +15,6 @@ class References(object):
             self._refs_ += ([None] * (1 + index - len(self._refs_)))
 
     def _get_refs(self, index):
-        if index > len(self._refs_):
-            print
         assert index < len(self._refs_)
         assert index >= 0
 
@@ -40,7 +39,7 @@ class References(object):
 
         ref = self.env.get_reference(symbol)
         if not ref:
-            raise ObinReferenceError("Unable to store reference", symbol, index, value)
+            raise ObinReferenceError(symbol)
 
         ref.put_value(value)
         self._set_refs(index, ref)

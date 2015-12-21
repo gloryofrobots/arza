@@ -36,6 +36,8 @@ class Stack(object):
 
     def push(self, element):
         from obin.objects.space import isnull, isany
+        if not isany(element):
+            raise RuntimeError(u"Not Any product", element)
         assert isany(element)
         # from obin.utils import tb
         # if str(element) == "undefined":
