@@ -897,11 +897,11 @@ def _check(val1, val2):
         raise RuntimeError("Not equal")
 
 
-compile_and_print("""
-    trait Soldier
-    trait Civilian
-    generic fire
-""")
+# compile_and_print("""
+# fn _(x, y) {
+#     print("x - y", x - y)
+# } (30, 20)
+# """)
 """
     reify fire {
         (self of Soldier, other of Civilian) {

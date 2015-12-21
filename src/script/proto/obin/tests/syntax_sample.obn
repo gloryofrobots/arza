@@ -1,3 +1,5 @@
+
+
 x = 1
 print(x)
 
@@ -72,5 +74,75 @@ print("x * 34", x * 34)
 print("x / 45", x / 45)
 print("x % 32", x % 32)
 
+
 A = [0, 1, 2, x]
 print(x,"in",A, x in A)
+
+x = 2
+
+y = if x == 3 {
+    5
+} elif x == 20 {
+    6
+} else {
+    7
+}
+print(y)
+
+while x == 2 {
+    print("LOOP")
+    x = 1
+}
+
+x = fn(x,y) {
+    z = x + y
+} (1, 2)
+
+print("x", x)
+
+trait Private
+trait Patriot
+trait Man
+trait Weapon
+trait Rifle
+trait Equipment
+
+object Joe(Private, Patriot, Man) {
+    health = 100
+
+    object rifle(Rifle, Weapon, Equipment) {
+        ammo = 100
+    }
+
+    fn fire (self){
+        print("Joe firing with", self.rifle)
+    }
+}
+
+print(Joe)
+
+generic fire {
+    (self of Patriot, rifle of Rifle) {
+        print("Patriot", self, "fire rifle", rifle)
+    }
+    (self of Man) {
+        print("Man firing")
+        fire(self, self.rifle)
+    }
+}
+
+fire(Joe)
+
+reify fire {
+    (self of Private, w of Weapon) {
+        print("Private", self, "fire weapon", w)
+    }
+}
+detach(Joe.rifle, Rifle)
+
+fire(Joe)
+
+
+
+
+

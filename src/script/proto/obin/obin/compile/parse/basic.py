@@ -1,7 +1,7 @@
-from obin.compile.parse.token_type import (TT_UNKNOWN, TT_ENDSTREAM, TT_RCURLY,
-                                           TT_DOT, TT_LSQUARE, TT_NAME, TT_COMMA, TT_SEMI)
+from obin.compile.parse.token_type import *
 
 from obin.compile.parse.tokens import token_type_to_str
+
 
 def parse_error(parser, message, args=None, node=None):
     if not node:
@@ -187,7 +187,7 @@ def statement(parser):
     if has_std(parser, node):
         advance(parser)
         value = std(parser, node)
-        # endofexpression(parser)
+        endofexpression(parser)
         return value
 
     value = expression(parser, 0)
@@ -321,3 +321,21 @@ def skip(parser, ttype):
 
 def empty(parser, node):
     return None
+
+
+def is_assignment_node(node):
+    token_type = node.type
+    if token_type == TT_ASSIGN \
+            or token_type == TT_ADD_ASSIGN or token_type == TT_SUB_ASSIGN \
+            or token_type == TT_MUL_ASSIGN or token_type == TT_DIV_ASSIGN \
+            or token_type == TT_MOD_ASSIGN \
+            or token_type == TT_BITAND_ASSIGN or token_type == TT_BITOR_ASSIGN \
+            or token_type == TT_BITXOR_ASSIGN:
+        return True
+
+
+def condition(parser):
+    node = expression(parser, 0)
+    if is_assignment_node(node):
+        parse_error(parser, "Assignment operators not allowed in conditions", node=node)
+    return node

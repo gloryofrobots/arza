@@ -18,8 +18,8 @@ class W_Function(W_Root):
 
     def _tostring_(self):
         params = ",".join([str(p.value()) for p in self._bytecode_.scope.arguments])
-
-        return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
+        # return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
+        return "fn %s(%s){ %s }" % (self._name_.value(), params, "..." )
 
     def _tobool_(self):
         return True

@@ -42,9 +42,8 @@ class Parser(BaseParser):
         self.module_name_alias_parser = module_name_alias_parser_init(BaseParser(ts))
         self.import_alias_parser = import_alias_parser_init(BaseParser(ts))
         self.generic_signature_parser = generic_signature_parser_init(BaseParser(ts))
-        self.expression_parser = expression_parser_init(BaseParser(ts))
-        expression_parser_init(self)
-        statement_parser_init(self)
+        # self.expression_parser = expression_parser_init(BaseParser(ts))
+        main_parser_init(self)
 
 
 def args_parser_init(parser):
@@ -93,128 +92,6 @@ def generic_signature_parser_init(parser):
     return parser
 
 
-def _parse_fn(parser):
-    args = []
-    body = []
-    outers = []
-    if parser.token_type == TT_NAME:
-        name = parser.node
-        advance(parser)
-    else:
-        name = empty_node()
-
-    if parser.token_type == TT_LPAREN:
-        advance_expected(parser, TT_LPAREN)
-        if parser.token_type != TT_RPAREN:
-            while True:
-                if parser.token_type == TT_NAME:
-                    args.append(parser.node)
-                    advance(parser)
-
-                if parser.token_type != TT_COMMA:
-                    break
-
-                advance_expected(parser, TT_COMMA)
-
-        if parser.token_type == TT_ELLIPSIS:
-            rest = expression(parser.args_parser, 0)
-            # advance(parser)
-            args.append(rest)
-            # advance_expected(parser, TT_NAME)
-
-        advance_expected(parser, TT_RPAREN)
-
-    advance_expected(parser, TT_LCURLY)
-    if parser.token_type == TT_OUTER:
-        advance_expected(parser, TT_OUTER)
-        while True:
-            if parser.token_type == TT_NAME:
-                outers.append(parser.node)
-                advance(parser)
-
-            if parser.token_type != TT_COMMA:
-                break
-
-            advance_expected(parser, TT_COMMA)
-
-        if len(outers) == 0:
-            parse_error(parser, "Outer variables not declared")
-
-    body = statements(parser)
-    if not body:
-        body = empty_node()
-    advance_expected(parser, TT_RCURLY)
-    return name, args, outers, body
-
-
-def _parse_object(parser):
-    def _object_statement_to_expr(stmt):
-        expr = Node(stmt.type, stmt.value, stmt.position, stmt.line)
-        expr.init(2)
-        expr.setfirst(stmt.second())
-        expr.setsecond(stmt.third())
-        return expr
-
-    def _fn_statement_to_expr(stmt):
-        expr = Node(stmt.type, stmt.value, stmt.position, stmt.line)
-        expr.init(3)
-        expr.setfirst(stmt.second())
-        expr.setsecond(stmt.third())
-        expr.setthird(stmt.fourth())
-        return expr
-
-    name = empty_node()
-    traits = []
-    items = []
-
-    if parser.token_type == TT_NAME:
-        name = parser.node
-        advance(parser)
-
-    if parser.token_type == TT_LPAREN:
-        advance_expected(parser, TT_LPAREN)
-        if parser.token_type != TT_RPAREN:
-            while True:
-                if parser.token_type == TT_NAME:
-                    traits.append(parser.node)
-                    advance(parser)
-
-                if parser.token_type != TT_COMMA:
-                    break
-
-                advance_expected(parser, TT_COMMA)
-
-        advance_expected(parser, TT_RPAREN)
-
-    advance_expected(parser, TT_LCURLY)
-    if parser.token_type != TT_RCURLY:
-        while True:
-            if parser.token_type == TT_FN:
-                fn = statement(parser)
-                key = fn.first()
-                # dirty hack to convert statements to expression for compiler
-                value = _fn_statement_to_expr(fn)
-            elif parser.token_type == TT_OBJECT:
-                obj = statement(parser)
-                key = obj.first()
-                # dirty hack to convert statements to expression for compiler
-                value = _object_statement_to_expr(obj)
-            else:
-                # TODO check it
-                check_token_types(parser, [TT_NAME, TT_INT, TT_STR, TT_CHAR, TT_FLOAT])
-                key = parser.node
-                advance(parser)
-                advance_expected(parser, TT_ASSIGN)
-                value = expression(parser, 0)
-
-            items.append([key, value])
-            if parser.token_type == TT_RCURLY:
-                break
-
-    advance_expected(parser, TT_RCURLY)
-    return name, traits, items
-
-
 """
 object AliceTraits(Human, Insect, Fucking, Shit) {
     id = 42
@@ -235,7 +112,7 @@ object AliceTraits(Human, Insect, Fucking, Shit) {
 """
 
 
-def expression_parser_init(parser):
+def main_parser_init(parser):
     # *********************************************
     literal(parser, TT_INT)
     literal(parser, TT_FLOAT)
@@ -262,13 +139,27 @@ def expression_parser_init(parser):
     # infix(parser, TT_COLON, 5)
 
     """
+    precedence 10
+    = += -= *= /= %= &= ^= |=
+    """
+    assignment(parser, TT_ASSIGN)
+    assignment(parser, TT_ADD_ASSIGN)
+    assignment(parser, TT_SUB_ASSIGN)
+    assignment(parser, TT_MUL_ASSIGN)
+    assignment(parser, TT_DIV_ASSIGN)
+    assignment(parser, TT_MOD_ASSIGN)
+    assignment(parser, TT_BITOR_ASSIGN)
+    assignment(parser, TT_BITAND_ASSIGN)
+    assignment(parser, TT_BITXOR_ASSIGN)
+
+    """
     precedence 20
-    infix if
+    when
     """
 
     def _infix_when(parser, node, left):
         node.init(3)
-        node.setfirst(expression(parser, 0))
+        node.setfirst(condition(parser))
         node.setsecond(left)
         advance_expected(parser, TT_ELSE)
         node.setthird(expression(parser, 0))
@@ -421,6 +312,41 @@ def expression_parser_init(parser):
     prefix(parser, TT_SUB)
     prefix(parser, TT_ADD)
 
+    def _parse_if(parser, node):
+        node.init(1)
+        branches = []
+
+        cond = condition(parser)
+        advance_expected(parser, TT_LCURLY)
+        body = (statements(parser, [TT_RCURLY]))
+
+        branches.append([cond, body])
+        advance_expected(parser, TT_RCURLY)
+
+        while parser.token_type == TT_ELIF:
+            advance_expected(parser, TT_ELIF)
+
+            cond = condition(parser)
+            advance_expected(parser, TT_LCURLY)
+            body = statements(parser, [TT_RCURLY])
+
+            branches.append([cond, body])
+            advance_expected(parser, TT_RCURLY)
+        if parser.token_type == TT_ELSE:
+            advance_expected(parser, TT_ELSE)
+            advance_expected(parser, TT_LCURLY)
+            body = statements(parser, [TT_RCURLY])
+            advance_expected(parser, TT_RCURLY)
+            branches.append([[], body])
+        else:
+            branches.append([])
+
+        # append else branch anyway
+        node.setfirst(branches)
+        return node
+
+    prefix(parser, TT_IF, _parse_if)
+
     def _prefix_lparen(parser, node):
         e = expression(parser, 0)
         if parser.node.type != TT_COMMA:
@@ -487,6 +413,59 @@ def expression_parser_init(parser):
 
     prefix(parser, TT_LCURLY, _prefix_lcurly)
 
+    def _parse_fn(parser):
+        args = []
+        body = []
+        outers = []
+        if parser.token_type == TT_NAME:
+            name = parser.node
+            advance(parser)
+        else:
+            name = empty_node()
+
+        if parser.token_type == TT_LPAREN:
+            advance_expected(parser, TT_LPAREN)
+            if parser.token_type != TT_RPAREN:
+                while True:
+                    if parser.token_type == TT_NAME:
+                        args.append(parser.node)
+                        advance(parser)
+
+                    if parser.token_type != TT_COMMA:
+                        break
+
+                    advance_expected(parser, TT_COMMA)
+
+            if parser.token_type == TT_ELLIPSIS:
+                rest = expression(parser.args_parser, 0)
+                # advance(parser)
+                args.append(rest)
+                # advance_expected(parser, TT_NAME)
+
+            advance_expected(parser, TT_RPAREN)
+
+        advance_expected(parser, TT_LCURLY)
+        if parser.token_type == TT_OUTER:
+            advance_expected(parser, TT_OUTER)
+            while True:
+                if parser.token_type == TT_NAME:
+                    outers.append(parser.node)
+                    advance(parser)
+
+                if parser.token_type != TT_COMMA:
+                    break
+
+                advance_expected(parser, TT_COMMA)
+
+            if len(outers) == 0:
+                parse_error(parser, "Outer variables not declared")
+
+        body = statements(parser)
+        if not body:
+            body = empty_node()
+        advance_expected(parser, TT_RCURLY)
+        return name, args, outers, body
+
     def _prefix_fn(parser, node):
         node.init(3)
         name, args, outers, body = _parse_fn(parser)
@@ -499,6 +478,73 @@ def expression_parser_init(parser):
 
     prefix(parser, TT_FN, _prefix_fn)
 
+    def _parse_object(parser):
+        def _object_statement_to_expr(stmt):
+            expr = Node(stmt.type, stmt.value, stmt.position, stmt.line)
+            expr.init(2)
+            expr.setfirst(stmt.second())
+            expr.setsecond(stmt.third())
+            return expr
+
+        def _fn_statement_to_expr(stmt):
+            expr = Node(stmt.type, stmt.value, stmt.position, stmt.line)
+            expr.init(3)
+            expr.setfirst(stmt.second())
+            expr.setsecond(stmt.third())
+            expr.setthird(stmt.fourth())
+            return expr
+
+        name = empty_node()
+        traits = []
+        items = []
+
+        if parser.token_type == TT_NAME:
+            name = parser.node
+            advance(parser)
+
+        if parser.token_type == TT_LPAREN:
+            advance_expected(parser, TT_LPAREN)
+            if parser.token_type != TT_RPAREN:
+                while True:
+                    if parser.token_type == TT_NAME:
+                        traits.append(parser.node)
+                        advance(parser)
+
+                    if parser.token_type != TT_COMMA:
+                        break
+
+                    advance_expected(parser, TT_COMMA)
+
+            advance_expected(parser, TT_RPAREN)
+
+        advance_expected(parser, TT_LCURLY)
+        if parser.token_type != TT_RCURLY:
+            while True:
+                if parser.token_type == TT_FN:
+                    fn = statement(parser)
+                    key = fn.first()
+                    # dirty hack to convert statements to expression for compiler
+                    value = _fn_statement_to_expr(fn)
+                elif parser.token_type == TT_OBJECT:
+                    obj = statement(parser)
+                    key = obj.first()
+                    # dirty hack to convert statements to expression for compiler
+                    value = _object_statement_to_expr(obj)
+                else:
+                    # TODO check it
+                    check_token_types(parser, [TT_NAME, TT_INT, TT_STR, TT_CHAR, TT_FLOAT])
+                    key = parser.node
+                    advance(parser)
+                    advance_expected(parser, TT_ASSIGN)
+                    value = expression(parser, 0)
+
+                items.append([key, value])
+                if parser.token_type == TT_RCURLY:
+                    break
+
+        advance_expected(parser, TT_RCURLY)
+        return name, traits, items
+
     def _prefix_object(parser, node):
         node.init(2)
         name, traits, body = _parse_object(parser)
@@ -509,65 +555,10 @@ def expression_parser_init(parser):
         return node
 
     prefix(parser, TT_OBJECT, _prefix_object)
-    return parser
 
-def statement_parser_init(parser):
     """
     STATEMENTS
     """
-
-    """
-    precedence 10
-    = += -= *= /= %= &= ^= |=
-    """
-    assignment(parser, TT_ASSIGN)
-    assignment(parser, TT_ADD_ASSIGN)
-    assignment(parser, TT_SUB_ASSIGN)
-    assignment(parser, TT_MUL_ASSIGN)
-    assignment(parser, TT_DIV_ASSIGN)
-    assignment(parser, TT_MOD_ASSIGN)
-    assignment(parser, TT_BITOR_ASSIGN)
-    assignment(parser, TT_BITAND_ASSIGN)
-    assignment(parser, TT_BITXOR_ASSIGN)
-
-    def _parse_if(parser, node):
-        expression_parser = parser.expression_parser
-
-        node.init(1)
-        branches = []
-        branch = [None] * 2
-        branch[0] = expression(expression_parser, 0)
-        advance_expected(parser, TT_LCURLY)
-        branch[1] = (statements(parser, [TT_RCURLY]))
-        branches.append(branch)
-        advance_expected(parser, TT_RCURLY)
-
-        while parser.token_type == TT_ELIF:
-            advance_expected(parser, TT_ELIF)
-
-            branch = [None] * 2
-            branch[0] = expression(expression_parser, 0)
-            advance_expected(parser, TT_LCURLY)
-            branch[1] = (statements(parser, [TT_RCURLY]))
-            branches.append(branch)
-            advance_expected(parser, TT_RCURLY)
-
-        if parser.token_type == TT_ELSE:
-            branch = [None] * 2
-            advance_expected(parser, TT_ELSE)
-            advance_expected(parser, TT_LCURLY)
-            branch[0] = []
-            branch[1] = statements(parser, [TT_RCURLY])
-            advance_expected(parser, TT_RCURLY)
-            branches.append(branch)
-        else:
-            branches.append([])
-
-        # append else branch anyway
-        node.setfirst(branches)
-        return node
-
-    stmt(parser, TT_IF, _parse_if)
 
     def _stmt_fn(parser, node):
         node.init(4)
@@ -623,7 +614,7 @@ def statement_parser_init(parser):
 
     def _stmt_while(parser, node):
         node.init(2)
-        node.setfirst(expression(parser, 0))
+        node.setfirst(condition(parser))
         advance_expected(parser, TT_LCURLY)
         node.setsecond(statements(parser, [TT_RCURLY]))
         advance_expected(parser, TT_RCURLY)
@@ -634,7 +625,7 @@ def statement_parser_init(parser):
     def _stmt_for(parser, node):
         node.init(3)
         vars = []
-        # set big bp to overrinding IN binding power
+        # set big lbp to overriding IN binding power
         vars.append(expression(parser, 70))
         while parser.token_type == TT_COMMA:
             advance(parser)
