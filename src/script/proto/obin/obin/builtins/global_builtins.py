@@ -72,7 +72,7 @@ def _print(routine):
     builder = UnicodeBuilder()
     for arg in args[:-1]:
         builder.append(api.tostring(arg).value())
-        builder.append(u',')
+        builder.append(u' ')
 
     builder.append(api.tostring(args[-1]).value())
 

@@ -1,51 +1,6 @@
 
 
 /*
-x = true
-x = false
-x = nil
-x = 42
-x = 3.1445
-x = 'x'
-x = "sdd"
-x = [1, 2.34, "SSS"]
-x = { name:"X", age:42.24 }
-x = alice
-*/
-x and y
-not y
-~ y
-x or y
-x | y
-x & y
-x ^ y
-x += 0.5
-x -= 1
-x *= 2
-x /= 3
-x %= 4
-x &= 5
-x ^=6
-x |= 7
-x = true if 5 > 4 else false
-x in y
-x is y
-x isnot y
-5 > 5
-5 >= 3
-5 < 4
-5 <= 3
-x != 6
-x == y
-x >> 43
-x << 10001
-x >>> 1001001001
-x + 34
-x - 34
-x * 34
-x / 45
-x % 32
-x.f.t = 1
 
 
 

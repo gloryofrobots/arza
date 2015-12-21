@@ -74,18 +74,24 @@ def has_std(parser, node):
 
 def rbp(parser, node):
     handler = node_handler(parser, node)
-    return handler.rbp
+    rbp = handler.rbp
+    if rbp is None:
+        parse_error(parser, u"Right binding power can't be evaluated", args=node)
+    return rbp
 
 
 def lbp(parser, node):
     handler = node_handler(parser, node)
-    return handler.lbp
+    lbp = handler.lbp
+    if lbp is None:
+        parse_error(parser, u"Left binding power can't be evaluated", args=node)
+    return lbp
 
 
 def led(parser, node, left):
     handler = node_handler(parser, node)
     if not handler.led:
-        parse_error(parser, "Unknown token", args=node)
+        parse_error(parser, u"Unknown token", args=node)
 
     return handler.led(parser, node, left)
 

@@ -1,0 +1,76 @@
+x = 1
+print(x)
+
+x = "Hello"
+print(x)
+
+x = 42.234433444
+print(x)
+
+x = [1, "Hello", 35.44555]
+print(x)
+
+x = (42,)
+print(x)
+
+x = (1,2, ["Alice", "Bob", (45,), 54.000000001])
+print(x)
+
+print((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name:"Alice", surname: "Bob"})
+
+x = true
+print(x)
+
+x = false
+print(x)
+x = nil
+print(x)
+
+x = { name:"X", age:42.24 }
+print(x)
+
+x = 1
+y = 0
+print("x = ", x, "y = ", y)
+
+print("x or y", x or y)
+
+print("x and y", x and y)
+print("not y", not y)
+print("~ y", ~ y)
+print("~ y", ~ y)
+
+
+print("x | y", x | y)
+print("x & y", x & y)
+print("x ^ y", x ^ y)
+
+//print("x += 0.5", x += 0.5)
+//print("x -= 1", x -= 1)
+//print("x *= 2", x *= 2)
+//print("x /= 3", x /= 3)
+//print("x %= 4", x %= 4)
+//print("x &= 5", x &= 5)
+//print("x ^=6", x ^=6)
+//print("x |= 7", x |= 7)
+
+print("true when 5 > 4 else false", true when 5 > 4 else false)
+print("x is y", x is y)
+print("x isnot y", x isnot y)
+print("5 > 5", 5 > 5)
+print("5 >= 3", 5 >= 3)
+print("5 < 4", 5 < 4)
+print("5 <= 3", 5 <= 3)
+print("x != 6", x != 6)
+print("x == y", x == y)
+//print("x >> 43", x >> 43)
+//print("x << 10001", x << 10001)
+//print("x >>> 1001001001", x >>> 1001001001)
+print("x + 34", x + 34)
+print("x - 34", x - 34)
+print("x * 34", x * 34)
+print("x / 45", x / 45)
+print("x % 32", x % 32)
+
+A = [0, 1, 2, x]
+print(x,"in",A, x in A)

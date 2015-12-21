@@ -26,7 +26,7 @@ def apply_unary(routine, operation):
     routine.stack.push(operation(routine, val))
 
 
-def apply_unary_ob_unboxed(routine, operation):
+def apply_unary_on_unboxed(routine, operation):
     val = routine.stack.pop().value()
     routine.stack.push(operation(routine, val))
 
@@ -66,28 +66,28 @@ def primitive_BITAND(routine):
     def _bitand(r, op1, op2):
         return newint(int(op1 & op2))
 
-    apply_binary(routine, _bitand)
+    apply_binary_on_unboxed(routine, _bitand)
 
 
 def primitive_BITXOR(routine):
     def _bitxor(r, op1, op2):
         return newint(int(op1 ^ op2))
 
-    apply_binary(routine, _bitxor)
+    apply_binary_on_unboxed(routine, _bitxor)
 
 
 def primitive_BITOR(routine):
     def _bitor(r, op1, op2):
         return newint(int(op1 | op2))
 
-    apply_binary(routine, _bitor)
+    apply_binary_on_unboxed(routine, _bitor)
 
 
 def primitive_BITNOT(routine):
     def bitnot(r, op):
         return newint(~op)
 
-    apply_unary(routine, bitnot)
+    apply_unary_on_unboxed(routine, bitnot)
 
 
 def primitive_URSH(routine):
@@ -188,7 +188,8 @@ def primitive_EQ(routine):
 
 def primitive_NE(routine):
     def noteq(r, op1, op2):
-        return not api.equal(op1, op2)
+        # TODO api.ne
+        return newbool(not (api.equal(op1, op2)).value())
 
     apply_binary(routine, noteq)
 
@@ -202,13 +203,8 @@ def primitive_IS(routine):
 
 def primitive_ISNOT(routine):
     def _isnot(r, op1, op2):
-        return not api.strict_equal(op1, op2)
+        # TODO api.isnot
+        return newbool(not (api.strict_equal(op1, op2)).value())
 
     apply_binary(routine, _isnot)
 
-
-def primitive_ISA(routine):
-    def _isa(routine, left, right):
-        left.isa(right)
-
-    apply_binary(routine, _isa)

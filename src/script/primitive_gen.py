@@ -4,7 +4,6 @@ PRIMITIVES = [
     "UMINUS", "UPLUS", "GE", "GT", "LT", "LE",
     "BITNOT", "BITOR", "BITXOR", "BITAND",
     "LSH", "RSH", "URSH", 
-    "ISA",
     "__LENGTH__"
 ]
     

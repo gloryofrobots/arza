@@ -49,11 +49,13 @@ class Parser(BaseParser):
 
 def args_parser_init(parser):
     prefix(parser, TT_ELLIPSIS)
+    symbol(parser, TT_COMMA)
     literal(parser, TT_NAME)
     return parser
 
 
 def infix_simple_pair(parser, node, left):
+    symbol(parser, TT_COMMA)
     node.init(2)
     node.setfirst(left)
     check_token_type(parser, TT_NAME)
@@ -75,6 +77,7 @@ def module_name_parser_init(parser):
 
 
 def module_name_alias_parser_init(parser):
+    symbol(parser, TT_COMMA)
     infix(parser, TT_DOT, 10, infix_simple_pair)
     infix(parser, TT_AS, 20, infix_simple_pair)
     literal(parser, TT_NAME)
@@ -82,6 +85,9 @@ def module_name_alias_parser_init(parser):
 
 
 def generic_signature_parser_init(parser):
+    symbol(parser, TT_COMMA)
+    symbol(parser, TT_LPAREN)
+    symbol(parser, TT_RPAREN)
     infix(parser, TT_OF, 10, infix_simple_pair)
     literal(parser, TT_NAME)
     return parser
@@ -241,12 +247,14 @@ def expression_parser_init(parser):
     literal(parser, TT_NIL)
     literal(parser, TT_UNDEFINED)
 
+    symbol(parser, TT_RSQUARE)
     symbol(parser, TT_ENDSTREAM)
-    # symbol(parser, TT_COLON)
-    # symbol(parser, TT_RPAREN)
-    # symbol(parser, TT_RCURLY)
-    # symbol(parser, TT_COMMA)
-    # symbol(parser, TT_ELSE)
+    symbol(parser, TT_COLON)
+    symbol(parser, TT_RPAREN)
+    symbol(parser, TT_RCURLY)
+    symbol(parser, TT_LCURLY)
+    symbol(parser, TT_COMMA)
+    symbol(parser, TT_ELSE)
     symbol(parser, TT_SEMI, nud=empty)
 
     # precedence 5
@@ -522,7 +530,7 @@ def statement_parser_init(parser):
     assignment(parser, TT_BITAND_ASSIGN)
     assignment(parser, TT_BITXOR_ASSIGN)
 
-    def _stmt_if(parser, node):
+    def _parse_if(parser, node):
         expression_parser = parser.expression_parser
 
         node.init(1)
@@ -559,7 +567,7 @@ def statement_parser_init(parser):
         node.setfirst(branches)
         return node
 
-    prefix(parser, TT_IF, _stmt_if)
+    stmt(parser, TT_IF, _parse_if)
 
     def _stmt_fn(parser, node):
         node.init(4)

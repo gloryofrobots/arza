@@ -25,37 +25,35 @@ BITAND = 20
 LSH = 21
 RSH = 22
 URSH = 23
-ISA = 24
-__LENGTH__ = 25
+__LENGTH__ = 24
 
 
 # ********************* PRIMITIVES REPR ***************
-__REPR__ = [None] * __LENGTH__
-__REPR__[IS] = "IS"
-__REPR__[NE] = "NE"
-__REPR__[EQ] = "EQ"
-__REPR__[NOT] = "NOT"
-__REPR__[ISNOT] = "ISNOT"
-__REPR__[IN] = "IN"
-__REPR__[ADD] = "ADD"
-__REPR__[MOD] = "MOD"
-__REPR__[MUL] = "MUL"
-__REPR__[DIV] = "DIV"
-__REPR__[SUB] = "SUB"
-__REPR__[UMINUS] = "UMINUS"
-__REPR__[UPLUS] = "UPLUS"
-__REPR__[GE] = "GE"
-__REPR__[GT] = "GT"
-__REPR__[LT] = "LT"
-__REPR__[LE] = "LE"
-__REPR__[BITNOT] = "BITNOT"
-__REPR__[BITOR] = "BITOR"
-__REPR__[BITXOR] = "BITXOR"
-__REPR__[BITAND] = "BITAND"
-__REPR__[LSH] = "LSH"
-__REPR__[RSH] = "RSH"
-__REPR__[URSH] = "URSH"
-__REPR__[ISA] = "ISA"
+__PRIMITIVE_REPR__ = [None] * __LENGTH__
+__PRIMITIVE_REPR__[IS] = "IS"
+__PRIMITIVE_REPR__[NE] = "NE"
+__PRIMITIVE_REPR__[EQ] = "EQ"
+__PRIMITIVE_REPR__[NOT] = "NOT"
+__PRIMITIVE_REPR__[ISNOT] = "ISNOT"
+__PRIMITIVE_REPR__[IN] = "IN"
+__PRIMITIVE_REPR__[ADD] = "ADD"
+__PRIMITIVE_REPR__[MOD] = "MOD"
+__PRIMITIVE_REPR__[MUL] = "MUL"
+__PRIMITIVE_REPR__[DIV] = "DIV"
+__PRIMITIVE_REPR__[SUB] = "SUB"
+__PRIMITIVE_REPR__[UMINUS] = "UMINUS"
+__PRIMITIVE_REPR__[UPLUS] = "UPLUS"
+__PRIMITIVE_REPR__[GE] = "GE"
+__PRIMITIVE_REPR__[GT] = "GT"
+__PRIMITIVE_REPR__[LT] = "LT"
+__PRIMITIVE_REPR__[LE] = "LE"
+__PRIMITIVE_REPR__[BITNOT] = "BITNOT"
+__PRIMITIVE_REPR__[BITOR] = "BITOR"
+__PRIMITIVE_REPR__[BITXOR] = "BITXOR"
+__PRIMITIVE_REPR__[BITAND] = "BITAND"
+__PRIMITIVE_REPR__[LSH] = "LSH"
+__PRIMITIVE_REPR__[RSH] = "RSH"
+__PRIMITIVE_REPR__[URSH] = "URSH"
 
 
 def newprimitives():
@@ -85,9 +83,8 @@ def newprimitives():
     P[LSH] = primitive_LSH
     P[RSH] = primitive_RSH
     P[URSH] = primitive_URSH
-    P[ISA] = primitive_ISA
     return P
 
 
 def primitive_to_str(p):
-    return __REPR__[p]
+    return __PRIMITIVE_REPR__[p]

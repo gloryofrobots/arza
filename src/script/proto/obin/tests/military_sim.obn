@@ -16,6 +16,11 @@ print(eq.fire)
 
 three()
 */
+x = 2
+
+if x == 2  {
+    print(x)
+}
 
 trait Soldier
 trait Civilian
@@ -34,6 +39,8 @@ if Z == 5 {
 }
 
 print("Z", Z)
+X = 4 when Z == 5 else 44
+print("X",X)
 
 
 generic attack {
@@ -60,3 +67,4 @@ attack(object(Soldier) {
        object(Civilian){
             name = "Mr.Smith"
        })
+
