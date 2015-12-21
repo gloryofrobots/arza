@@ -1,5 +1,5 @@
 __author__ = 'gloryofrobots'
-from parser import *
+from obin.compile.parse.parser import *
 
 class Transformer(object):
     def __init__(self):

@@ -10,7 +10,7 @@
 #-------------------------------------------------------------------------------
 import re
 
-import tokens
+from obin.compile.parse import tokens
 
 
 class Token(object):
@@ -147,8 +147,6 @@ class Lexer(object):
 
 
 def lexer(txt):
-    import tokens
-
     lx = Lexer(tokens.RULES, skip_whitespace=False)
     lx.input(txt)
     return lx

@@ -23,10 +23,11 @@ trait Civilian
 
 Z = 1 + (fn (x, y) {
  print("COOL", x, y)
- return x + y
+ V = 1
+ return x + y + V
 } (1,2))
 
-if Z = 5 {
+if Z == 5 {
     print("FIVE")
 } elif Z == 4 {
     print("FOUR")

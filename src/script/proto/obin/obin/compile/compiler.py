@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
-from token_type import *
-from tokens import token_type_to_str
-from parser import *
+from obin.compile.parse.token_type import *
+from obin.compile.parse.tokens import token_type_to_str
+from obin.compile.parse.parser import *
 
 from obin.compile.scope import Scope
 from obin.objects import space as obs
