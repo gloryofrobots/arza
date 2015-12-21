@@ -94,17 +94,17 @@ RULES = [
     (char_const, TT_CHAR),
     (identifier, TT_NAME),
     ('\.\.\.', TT_ELLIPSIS),
-    ('\+=', TT_ADD_ASSIGN),
-    ('-=', TT_SUB_ASSIGN),
-    ('\*=', TT_MUL_ASSIGN),
-    ('/=', TT_DIV_ASSIGN),
+    # ('\+=', TT_ADD_ASSIGN),
+    # ('-=', TT_SUB_ASSIGN),
+    # ('\*=', TT_MUL_ASSIGN),
+    # ('/=', TT_DIV_ASSIGN),
     # ('\%\=', TT_MOD_ASSIGN),
     # ('\&\=', TT_BITAND_ASSIGN),
     # ('\^\=', TT_BITXOR_ASSIGN),
     # ('\|=', TT_BITOR_ASSIGN),
-    # ('>>>', TT_URSHIFT),
-    # ('>>', TT_RSHIFT),
-    # ('<<', TT_LSHIFT),
+    ('>>>', TT_URSHIFT),
+    ('>>', TT_RSHIFT),
+    ('<<', TT_LSHIFT),
     # ('->', TT_ARROW),
     # ('=>', TT_FAT_ARROW),
     ('==', TT_EQ),
@@ -135,8 +135,6 @@ RULES = [
     ('\>', TT_GT),
     ('`', TT_BACKTICK),
 ]
-
-
 
 
 # ************************ OBIN TOKENS REPR *****************************
