@@ -59,9 +59,6 @@ class CodeSource:
         assert isinstance(opcode, int)
         assert isinstance(arg1, int)
         assert isinstance(arg2, int)
-        # from obin.utils import tb
-        # if operation == "LOAD_UNDEFINED":
-        #     tb(args)
         self.opcodes.append((opcode, arg1, arg2))
         return opcode
 

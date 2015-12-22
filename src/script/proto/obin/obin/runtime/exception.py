@@ -35,8 +35,6 @@ class ObinTraitError(ObinException):
 
 class ObinTypeError(ObinException):
     def __init__(self, value):
-        from obin.utils import tb
-        tb()
         # assert isinstance(value, unicode)
         self.value = value
 

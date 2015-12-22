@@ -1,7 +1,8 @@
 from root import W_Cell
 from obin.runtime.exception import *
 from obin.objects import api
-
+from rpython.rlib.rrandom import Random
+r = Random()
 
 class W_Trait(W_Cell):
     _type_ = 'Trait'
@@ -9,16 +10,22 @@ class W_Trait(W_Cell):
 
     def __init__(self, name):
         self._name_ = name
-        self.__id = int(id(self))
+        v = r.random()
+        _id = (1 - v)
+        _id = _id * 10000000
+        __id = int(_id)
+        # __id2 = id(self)
+        # print "Trait", __id, __id2
+        self.__id = __id
 
     def _totrait_(self):
         return self
 
     def _tostring_(self):
-        return u"<trait %s>" % (api.to_native_string(self._name_))
+        return "<trait %s>" % (api.to_native_string(self._name_))
 
     def __hash__(self):
         return self.__id
 
     def __eq__(self, other):
-        return other.__id == self.__id
+        return other is self

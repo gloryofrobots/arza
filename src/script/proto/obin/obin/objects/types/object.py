@@ -1,8 +1,32 @@
 from root import W_Cell
-from value import NativeListIterator
+from value import W_ValueType
 from obin.runtime.exception import *
 from obin.objects import api
 
+class ObjectIterator(W_ValueType):
+    def __init__(self, source, length):
+        assert isinstance(source, list)
+        assert isinstance(length, int)
+        self.index = 0
+        self.source = source
+        self.__source_length = length
+
+    def _next_(self):
+        from obin.objects.space import newundefined
+        if self.index >= self.__source_length:
+            return newundefined()
+
+        el = self.source[self.index]
+        self.index += 1
+        return el
+
+    def _tostring_(self):
+        return "<Iterator %d:%d>" % (self.index, self.__source_length)
+
+    def _tobool_(self):
+        if self.index >= self.__source_length:
+            return False
+        return True
 
 class W_Object(W_Cell):
     _type_ = 'Object'
@@ -67,19 +91,19 @@ class W_Object(W_Cell):
         from obin.objects.space import newstring, isundefined
         cb = self._at_(newstring(u"__call__"))
         if isundefined(cb):
-            raise ObinRuntimeError("Object is not callable")
+            raise ObinRuntimeError(u"Object is not callable")
 
         args.insert(0, self)
         return api.call(cb, routine, args)
 
     def _put_(self, k, v):
         if self.isfrozen():
-            raise ObinRuntimeError("Object is frozen")
+            raise ObinRuntimeError(u"Object is frozen")
         self._slots.add(k, v)
 
     def _iterator_(self):
         keys = self._slots.keys()
-        return NativeListIterator(keys, len(keys))
+        return ObjectIterator(keys, len(keys))
 
     def _tobool_(self):
         return True
@@ -88,13 +112,12 @@ class W_Object(W_Cell):
         return self._slots.length()
 
     def _tostring_(self):
-        return unicode("{%s %s}" % (str(self._slots), str(self._traits)))
+        return str("{%s %s}" % (str(self._slots), str(self._traits)))
 
     def _clone_(self):
-        from obin.utils.copy import copy
-        slots = copy(self._slots)
+        slots = self._slots.clopy()
         clone = W_Object(slots)
-        traits = copy(self._traits)
+        traits = self._traits.copy()
         clone.set_traits(traits)
         return clone
 
@@ -110,7 +133,6 @@ class W_Object(W_Cell):
     def _totrait_(self):
         if not self._trait:
             self.create_self_trait()
-            # raise ObinRuntimeError(u"Can't convert object to trait")
         return self._trait
 
     def attach(self, trait):

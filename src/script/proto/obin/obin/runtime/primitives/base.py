@@ -4,20 +4,19 @@ from obin.objects.space import _w, isint, newint, newbool
 from obin.runtime.exception import ObinTypeError, ObinReferenceError
 from obin.objects import api
 from obin.objects.types.value import W_String, W_Integer, W_Float
-from obin.objects.space import _w, isint, isstring, isfloat, newbool, newint, newfloat
+from obin.objects.space import _w, isint, isstring, isfloat, newbool, newint, newfloat, newstring
 from rpython.rlib.rarithmetic import ovfcheck, intmask
 from rpython.rlib.rfloat import isnan, isinf
 from rpython.rlib.objectmodel import specialize
 from obin.builtins.number_builtins import w_NAN, w_POSITIVE_INFINITY, w_NEGATIVE_INFINITY
 from rpython.rlib import jit
-from obin.utils import tb
 
 
 def plus(r, lprim, rprim):
     if isstring(lprim) or isstring(rprim):
-        sleft = api.to_native_string(lprim)
-        sright = api.to_native_string(rprim)
-        return W_String(sleft + sright)
+        sleft = api.to_native_unicode(lprim)
+        sright = api.to_native_unicode(rprim)
+        return newstring(sleft + sright)
     # hot path
     if isint(lprim) and isint(rprim):
         ileft = api.to_native_integer(lprim)

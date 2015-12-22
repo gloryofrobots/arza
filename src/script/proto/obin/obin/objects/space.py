@@ -118,6 +118,7 @@ def newplainobject_with_slots(slots):
 
 
 def newvector(items):
+    assert isinstance(items, list)
     from obin.objects.types.vector import W_Vector
     obj = W_Vector(items)
     return obj
@@ -125,7 +126,7 @@ def newvector(items):
 
 def newtuple(tupl):
     from obin.objects.types.tupletype import W_Tuple
-    return W_Tuple(tupl)
+    return W_Tuple(list(tupl))
 
 
 def newcoroutine(fn):

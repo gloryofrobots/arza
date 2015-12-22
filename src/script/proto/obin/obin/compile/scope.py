@@ -68,10 +68,11 @@ class Scope:
         self.is_variadic = is_varargs
 
     def add_local(self, local):
+        from obin.objects.space import newundefined
         assert isstring(local)
         self.check_arg_count()
         assert self.get_local_index(local) is -1000
-        return self.locals.add(local, None)
+        return self.locals.add(local, newundefined())
 
     def get_local_index(self, local):
         return self.locals.get_index(local)

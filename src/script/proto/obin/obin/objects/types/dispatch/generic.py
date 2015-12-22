@@ -193,8 +193,7 @@ class W_Generic(W_Root):
         from obin.objects.space import state
         return state.traits.GenericTraits
 
-
-from tests import test_3, test_any
-
-test_3()
-test_any()
+if __name__ == "__main__":
+    from tests import test_3, test_any
+    test_3()
+    test_any()

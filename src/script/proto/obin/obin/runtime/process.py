@@ -45,7 +45,7 @@ class Process(object):
         self.path = []
 
     def add_path(self, path):
-        assert isinstance(path, unicode)
+        assert isinstance(path, str)
         self.path.append(path)
 
     def add_module(self, name, module):

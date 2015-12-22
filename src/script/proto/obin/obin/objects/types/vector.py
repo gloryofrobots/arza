@@ -1,22 +1,55 @@
 from root import W_Cell
-from value import NativeListIterator
+from value import W_ValueType
 from obin.runtime.exception import *
+
+
+class VectorIterator(W_ValueType):
+    def __init__(self, source, length):
+        assert isinstance(source, W_Vector)
+        assert isinstance(length, int)
+        self.index = 0
+        self.source = source
+        self.source_length = length
+
+    def _next_(self):
+        from obin.objects.space import newundefined
+        if self.index >= self.source_length:
+            return newundefined()
+
+        el = self.source.at(self.index)
+        self.index += 1
+        return el
+
+    def _tostring_(self):
+        return "<Iterator %d:%d>" % (self.index, self.source_length)
+
+    def _tobool_(self):
+        if self.index >= self.source_length:
+            return False
+        return True
+
 
 class W_Vector(W_Cell):
     _type_ = 'Vector'
 
     def __init__(self, items):
+        W_Cell.__init__(self)
         assert isinstance(items, list)
+        # from obin.objects.space import isany
+        # for i in items:
+        #     assert isany(i)
+
         self._items = items
 
     def _native_iterator_(self):
-        return self._items.__iter__()
+        return iter(self._items)
+
     # def __str__(self):
     #     return u'W_Vector("%s")' % str(self._items)
 
     def _put_(self, k, v):
         if self.isfrozen():
-            raise ObinRuntimeError("Vector is frozen")
+            raise ObinRuntimeError(u"Vector is frozen")
         from obin.objects.space import isint
         from obin.objects import api
         assert isint(k)
@@ -31,10 +64,13 @@ class W_Vector(W_Cell):
         return state.traits.VectorTraits
 
     def _clone_(self):
-        return W_Vector([v for v in self._items])
+        items = []
+        for v in self._items:
+            items.append(v)
+        return W_Vector(items)
 
     def copy(self):
-        return W_Vector([v for v in self._items])
+        return self._clone_()
 
     def _at_(self, index):
         from obin.objects.space import newundefined, isint
@@ -48,7 +84,7 @@ class W_Vector(W_Cell):
         return el
 
     def _iterator_(self):
-        return NativeListIterator(self._items, self.length())
+        return VectorIterator(self, self.length())
 
     def _tobool_(self):
         return bool(self._items)
@@ -89,18 +125,28 @@ class W_Vector(W_Cell):
         self._items += [None] * (size - l)
 
     def append(self, v):
+        from obin.objects.space import isany
+        assert isany(v)
         self._items.append(v)
 
     def prepend(self, v):
+        from obin.objects.space import isany
+        assert isany(v)
         self._items.insert(0, v)
 
     def set(self, index, v):
+        from obin.objects.space import isany
+        assert isany(v)
         self._items[index] = v
 
     def insert(self, index, v):
+        from obin.objects.space import isany
+        assert isany(v)
         self._items.insert(index, v)
 
     def remove(self, v):
+        from obin.objects.space import isany
+        assert isany(v)
         self._items.remove(v)
 
     def values(self):
@@ -113,6 +159,7 @@ class W_Vector(W_Cell):
         return self._items.pop()
 
     def concat(self, v):
+        assert isinstance(v, W_Vector)
         self._items += v.values()
 
     def fold_slice_into_itself(self, index):

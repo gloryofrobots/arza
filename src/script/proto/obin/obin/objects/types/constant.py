@@ -22,7 +22,7 @@ class W_Nil(W_Constant):
     _type_ = 'Nil'
 
     def _tostring_(self):
-        return u'nil'
+        return 'nil'
 
     def _tobool_(self):
         return False
@@ -40,7 +40,7 @@ class W_True(W_Constant):
         return True
 
     def _tostring_(self):
-        return u'true'
+        return 'true'
 
     def _tobool_(self):
         return True
@@ -58,7 +58,7 @@ class W_False(W_Constant):
     _immutable_fields_ = ['value']
 
     def _tostring_(self):
-        return u'false'
+        return 'false'
 
     def _tobool_(self):
         return False

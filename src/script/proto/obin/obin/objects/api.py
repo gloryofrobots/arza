@@ -4,7 +4,9 @@ from obin.runtime.exception import *
 
 def tostring(obj):
     from space import newstring
-    return newstring(unicode(obj._tostring_()))
+    s = obj._tostring_()
+    assert isinstance(s, str)
+    return newstring(unicode(s))
 
 
 def tointeger(obj):
@@ -35,7 +37,9 @@ def to_native_float(obj):
 
 
 def to_native_string(obj):
-    return obj._tostring_()
+    s = obj._tostring_()
+    assert isinstance(s, str)
+    return s
 
 
 def to_native_bool(obj):

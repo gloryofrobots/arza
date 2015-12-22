@@ -24,7 +24,7 @@ def run(script_file):
     from obin.objects.space import newprocess
     script_dir = fs.dirname(script_file)
 
-    path = unicode(fs.join_and_normalise_path(script_dir, "olib"))
+    path = fs.join_and_normalise_path(script_dir, "olib")
 
     process = newprocess([path])
     src = load_file(script_file)

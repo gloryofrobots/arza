@@ -29,7 +29,7 @@ def run(script_file):
 
     script_dir = fs.get_dirname(script_file)
 
-    path = unicode(fs.join_and_normalise_path(script_dir, u"olib"))
+    path = fs.join_and_normalise_path(script_dir, "olib")
 
     process = newprocess([path])
     src = load_file(script_file)

@@ -21,9 +21,9 @@ def import_module(process, name):
 
 
 def load_module(process, name):
-    raw = api.to_native_unicode(name)
-    path = raw.replace(u".", os.sep)
-    path = path + u".obn"
+    raw = api.to_native_string(name)
+    path = raw.replace(".", os.sep)
+    path = path + ".obn"
     script = None
     for directory in process.path:
         filename = join_and_normalise_path(directory, path)
@@ -32,7 +32,7 @@ def load_module(process, name):
             break
 
         if not script:
-            raise ObinImportError(unicode(name))
+            raise ObinImportError(unicode(raw))
 
     return create_module(process, name, script)
 

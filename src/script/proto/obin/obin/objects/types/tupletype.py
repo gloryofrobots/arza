@@ -1,17 +1,38 @@
 from root import W_Cell
-from value import NativeListIterator
+from value import W_ValueType
 from obin.runtime.exception import *
 from obin.objects import api
 
+class TupleIterator(W_ValueType):
+    def __init__(self, source, length):
+        assert isinstance(source, W_Tuple)
+        assert isinstance(length, int)
+        self.index = 0
+        self.source = source
+        self.__source_length = length
+
+    def _next_(self):
+        from obin.objects.space import newundefined
+        if self.index >= self.__source_length:
+            return newundefined()
+
+        el = self.source.at(self.index)
+        self.index += 1
+        return el
+
+    def _tostring_(self):
+        return "<Iterator %d:%d>" % (self.index, self.__source_length)
+
+    def _tobool_(self):
+        if self.index >= self.__source_length:
+            return False
+        return True
 
 class W_Tuple(W_Cell):
     def __init__(self, items):
         W_Cell.__init__(self)
         assert isinstance(items, list)
-        self.values = items
-
-    def _native_iterator_(self):
-        return self.values.__iter__()
+        self.values = list(items)
 
     def __hash__(self):
         return hash(self.values)
@@ -37,7 +58,7 @@ class W_Tuple(W_Cell):
         return el
 
     def _iterator_(self):
-        return NativeListIterator(self.values, self.length())
+        return TupleIterator(self, self.length())
 
     def _tobool_(self):
         return bool(self.values)
@@ -67,59 +88,59 @@ class W_Tuple(W_Cell):
         return len(self.values)
 
 
-def append(tupl, v):
-    items = tupl.values + [v]
-    return W_Tuple(items)
-
-
-def prepend(tupl, v):
-    items = [v] + tupl.values
-    return W_Tuple(items)
-
-
-def insert(tupl, index, v):
-    items = tupl.values
-    first = items[0:index]
-    second = items[index:]
-    items = first + [v] + second
-    return W_Tuple(items)
-
-
-def remove(tupl, v):
-    items = tupl.values
-    index = tupl.values.index(v)
-    first = items[0:index - 1]
-    second = items[index:]
-    items = first + second
-    return W_Tuple(items)
-
-
-def append_items(tupl, items):
-    items = tupl.values + items
-    return W_Tuple(items)
-
-
-def remove_last(tupl):
-    items = tupl.values[0:len(tupl.values) - 1]
-    return W_Tuple(items)
-
-
-def remove_first(tupl):
-    items = tupl.values[1:len(tupl.values)]
-    return W_Tuple(items)
-
-
-def concat(tupl, v):
-    tupl.values += v.values()
-
-
-def fold_slice(tupl, index):
-    items = tupl.values
-    slice = items[index:]
-    rest = items[0:index]
-    items = rest + [slice,]
-    return W_Tuple(items)
-
-
-def append_value_multiple_times(tupl, val, times):
-    tupl.values = tupl.values + [val] * times
+# def append(tupl, v):
+#     items = tupl.values + [v]
+#     return W_Tuple(items)
+#
+#
+# def prepend(tupl, v):
+#     items = [v] + tupl.values
+#     return W_Tuple(items)
+#
+#
+# def insert(tupl, index, v):
+#     items = tupl.values
+#     first = items[0:index]
+#     second = items[index:]
+#     items = first + [v] + second
+#     return W_Tuple(items)
+#
+#
+# def remove(tupl, v):
+#     items = tupl.values
+#     index = tupl.values.index(v)
+#     first = items[0:index - 1]
+#     second = items[index:]
+#     items = first + second
+#     return W_Tuple(items)
+#
+#
+# def append_items(tupl, items):
+#     items = tupl.values + items
+#     return W_Tuple(items)
+#
+#
+# def remove_last(tupl):
+#     items = tupl.values[0:len(tupl.values) - 1]
+#     return W_Tuple(items)
+#
+#
+# def remove_first(tupl):
+#     items = tupl.values[1:len(tupl.values)]
+#     return W_Tuple(items)
+#
+#
+# def concat(tupl, v):
+#     tupl.values += v.values()
+#
+#
+# def fold_slice(tupl, index):
+#     items = tupl.values
+#     slice = items[index:]
+#     rest = items[0:index]
+#     items = rest + [slice,]
+#     return W_Tuple(items)
+#
+#
+# def append_value_multiple_times(tupl, val, times):
+#     tupl.values = tupl.values + [val] * times

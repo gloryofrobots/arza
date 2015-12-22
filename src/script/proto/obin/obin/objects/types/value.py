@@ -113,26 +113,28 @@ class W_Float(W_ValueType):
         return state.traits.FloatTraits
 
 
-class NativeListIterator(W_ValueType):
+class StringIterator(W_ValueType):
     def __init__(self, source, length):
+        assert isinstance(source, W_String)
+        assert isinstance(length, int)
         self.index = 0
         self.source = source
-        self.length = length
+        self.__source_length = length
 
     def _next_(self):
         from obin.objects.space import newundefined
-        if self.index >= self.length:
+        if self.index >= self.__source_length:
             return newundefined()
 
-        el = self.source[self.index]
+        el = self.source.at(self.index)
         self.index += 1
         return el
 
     def _tostring_(self):
-        return "<Iterator %d:%d>" % (self.index, self.length)
+        return "<Iterator %d:%d>" % (self.index, self.__source_length)
 
     def _tobool_(self):
-        if self.index >= self.length:
+        if self.index >= self.__source_length:
             return False
         return True
 
@@ -174,7 +176,7 @@ class W_String(W_ValueType):
         return str(self.string_value)
 
     def _iterator_(self):
-        return NativeListIterator(self.string_value, self.__length)
+        return StringIterator(self.string_value, self.__length)
 
     def _tobool_(self):
         return bool(self.string_value)
@@ -182,17 +184,21 @@ class W_String(W_ValueType):
     def _length_(self):
         return self.__length
 
-    def _at_(self, index):
-        from obin.objects.space import newundefined, newchar, isint
+    def at(self, index):
+        from obin.objects.space import newundefined, newstring
         from obin.runtime.exception import ObinKeyError
-        from obin.objects import api
-        assert isint(index)
         try:
-            ch = self.string_value[api.to_native_integer(index)]
+            ch = self.string_value[index]
         except ObinKeyError:
             return newundefined()
 
-        return newchar(ch)
+        return newstring(ch)
+
+    def _at_(self, index):
+        from obin.objects.space import isint
+        from obin.objects import api
+        assert isint(index)
+        return self.at(api.to_native_integer(index))
 
     def _traits_(self):
         from obin.objects.space import state

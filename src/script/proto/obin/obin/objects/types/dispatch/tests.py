@@ -53,7 +53,9 @@ def test_3():
 
 def test_any():
     from obin.objects.space import newtrait, newgeneric, newstring,\
-        state, newvector, newnull, newbool, newint
+        state, newvector, newnull, newbool, newint, newprocess
+    newprocess(["."])
+
     Any = state.traits.Any
     Object = state.traits.Object
     Vector = state.traits.Vector
