@@ -8,7 +8,6 @@ class W_Function(W_Root):
     _immutable_fields_ = ['_type_',  'scope',  'is_variadic', 'arity', '_name_']
 
     def __init__(self, name, bytecode, scope):
-        super(W_Function, self).__init__()
         self._name_ = name
         self._bytecode_ = bytecode
         scope_info = bytecode.scope
@@ -46,7 +45,6 @@ class W_Primitive(W_Root):
     _immutable_fields_ = ['_type_', '_extensible_', '_scope_', '_params_[*]', '_function_']
 
     def __init__(self, name, function, arity):
-        super(W_Primitive, self).__init__()
         self._name_ = name
         self._function_ = function
         self.arity = arity
@@ -130,7 +128,6 @@ class W_Coroutine(W_Root):
     _immutable_fields_ = ['_function_']
 
     def __init__(self, function):
-        super(W_Coroutine, self).__init__()
         self._function_ = function
         self._routine_ = None
         self._receiver_ = None

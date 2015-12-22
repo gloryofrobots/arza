@@ -44,7 +44,7 @@ class Compiler(object):
 
     def is_modifiable_binding(self, name):
         scope = self.current_scope()
-        if scope.get_local_index(name) is not None:
+        if scope.get_local_index(name) is not -1000:
             return True
         if scope.has_outer(name):
             return True
@@ -75,7 +75,7 @@ class Compiler(object):
         assert obs.isstring(symbol)
         scope = self.current_scope()
         idx = scope.get_reference(symbol)
-        if idx is None:
+        if idx is -1000:
             idx = scope.add_reference(symbol)
         return idx
 
@@ -83,18 +83,18 @@ class Compiler(object):
         assert obs.isany(literal)
         scope = self.current_scope()
         idx = scope.get_literal(literal)
-        if idx is None:
+        if idx is -1000:
             idx = scope.add_literal(literal)
         return idx
 
     def declare_local(self, symbol):
         scope = self.current_scope()
         idx = scope.get_local_index(symbol)
-        if idx is not None:
+        if idx is not -1000:
             return idx
 
         idx = scope.add_local(symbol)
-        assert idx is not None
+        assert idx is not -1000
         return idx
 
     def get_variable_index(self, name):
@@ -104,7 +104,7 @@ class Compiler(object):
         scope_id = 0
         for scope in reversed(self.scopes):
             idx = scope.get_local_index(name)
-            if idx is not None:
+            if idx is not -1000:
                 if scope_id == 0:
                     return idx, True
                 else:
@@ -663,11 +663,11 @@ class Compiler(object):
         current_scope = self.current_scope()
         scope = current_scope.finalize()
         self.exit_scope()
-        print "LOCALS:", str(scope.variables.keys())
-        print "REFS:", str(scope.references)
+        # print "LOCALS:", str(scope.variables.keys())
+        # print "REFS:", str(scope.references)
         compiled_code = funccode.finalize_compilation(scope)
-        print [str(c) for c in compiled_code.opcodes]
-        print "-------------------------"
+        # print [str(c) for c in compiled_code.opcodes]
+        # print "-------------------------"
 
         code.emit_2(FUNCTION, funcname, compiled_code)
 

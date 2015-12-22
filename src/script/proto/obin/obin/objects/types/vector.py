@@ -6,7 +6,6 @@ class W_Vector(W_Cell):
     _type_ = 'Vector'
 
     def __init__(self, items):
-        super(W_Vector, self).__init__()
         assert isinstance(items, list)
         self._items = items
 

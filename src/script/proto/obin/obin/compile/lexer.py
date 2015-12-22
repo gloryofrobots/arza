@@ -1,17 +1,5 @@
-#-------------------------------------------------------------------------------
-# lexer.py
-#
-# A generic regex-based Lexer/tokenizer tool.
-# See the if __main__ section in the bottom for an example.
-#
-# Eli Bendersky (eliben@gmail.com)
-# This code is in the public domain
-# Last modified: November 2010
-#-------------------------------------------------------------------------------
 import re
-
 from obin.compile.parse import tokens
-
 
 class Token(object):
     """ A simple Token structure.
@@ -25,7 +13,7 @@ class Token(object):
 
     def __str__(self):
         try:
-            t_repr = tokens.TT_REPR[self.type]
+            t_repr = tokens.token_type_to_str(self.type)
         except:
             t_repr = self.type
 
@@ -47,12 +35,12 @@ class LexerError(Exception):
         self.pos = pos
 
 
-class Lexer(object):
+class Lexer:
     """ A simple regex-based lexer/tokenizer.
 
         See below for an example of usage.
     """
-    def __init__(self, rules, skip_whitespace=True):
+    def __init__(self, rules, skip_whitespace):
         """ Create a lexer.
 
             rules:
@@ -147,6 +135,6 @@ class Lexer(object):
 
 
 def lexer(txt):
-    lx = Lexer(tokens.RULES, skip_whitespace=False)
+    lx = Lexer(tokens.RULES, False)
     lx.input(txt)
     return lx

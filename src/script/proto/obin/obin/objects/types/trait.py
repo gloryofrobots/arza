@@ -8,7 +8,6 @@ class W_Trait(W_Cell):
     _immutable_fields_ = ['_type_']
 
     def __init__(self, name):
-        super(W_Cell, self).__init__()
         self._name_ = name
         self.__id = int(id(self))
 

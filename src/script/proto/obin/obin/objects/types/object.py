@@ -55,7 +55,7 @@ class W_Object(W_Cell):
     def _at_(self, k):
         from obin.objects.space import newundefined
         v = self._slots.get(k)
-        if v is None:
+        if v == -1000:
             return newundefined()
 
         return v

@@ -11,7 +11,6 @@ class W_Char(W_ValueType):
     _immutable_fields_ = ['value']
 
     def __init__(self, value):
-        super(W_Char, self).__init__()
         self.__value = value
 
     def __str__(self):
@@ -35,7 +34,6 @@ class W_Integer(W_ValueType):
     _immutable_fields_ = ['__value']
 
     def __init__(self, value):
-        super(W_Integer, self).__init__()
         self.__value = value
 
         # def __str__(self):
@@ -59,7 +57,6 @@ class W_Float(W_ValueType):
     _immutable_fields_ = ['value']
 
     def __init__(self, value):
-        super(W_Float, self).__init__()
         self.__value = value
 
     # def __str__(self):
@@ -109,7 +106,6 @@ class W_String(W_ValueType):
 
     def __init__(self, value):
         assert value is not None and isinstance(value, unicode)
-        super(W_String, self).__init__()
         self.__items = value
         self.__length = len(self.__items)
 

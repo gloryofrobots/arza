@@ -13,7 +13,7 @@ def get_reference(lex, identifier):
         return None
 
     index = lex.get_index(identifier)
-    if index is not None:
+    if index is not -1000:
         ref = Reference(lex, identifier, index)
         return ref
     else:

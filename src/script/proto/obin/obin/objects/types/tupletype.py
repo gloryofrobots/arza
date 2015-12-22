@@ -5,7 +5,6 @@ from obin.runtime.exception import *
 
 class W_Tuple(W_Cell):
     def __init__(self, items):
-        super(W_Tuple, self).__init__()
         assert isinstance(items, tuple)
         self.values = items
 

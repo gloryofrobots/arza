@@ -9,7 +9,7 @@ class ScopeSet(object):
         try:
             return self.values.index(val)
         except ValueError:
-            return None
+            return -1000
 
     def add(self, val):
         assert val not in self.values
@@ -70,7 +70,7 @@ class Scope(object):
     def add_local(self, local):
         assert isstring(local)
         self.check_arg_count()
-        assert self.get_local_index(local) is None
+        assert self.get_local_index(local) is -1000
         return self.locals.add(local, None)
 
     def get_local_index(self, local):

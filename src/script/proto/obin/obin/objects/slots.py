@@ -39,8 +39,8 @@ class Slots(object):
 
     def get(self, name):
         idx = self.get_index(name)
-        if idx is None:
-            return
+        if idx is -1000:
+            return -1000
 
         return self.get_by_index(idx)
 
@@ -48,7 +48,7 @@ class Slots(object):
         try:
             idx = self.property_bindings[name]
         except KeyError:
-            return None
+            return -1000
         return idx
 
     def set_by_index(self, idx, value):
@@ -63,7 +63,7 @@ class Slots(object):
 
     def add(self, name, value):
         idx = self.get_index(name)
-        if idx is None:
+        if idx is -1000:
             idx = self.index
             self.property_bindings[name] = idx
             self.index += 1
@@ -79,7 +79,7 @@ class Slots(object):
 
     def delete(self, name):
         idx = self.get_index(name)
-        if idx is None:
+        if idx is -1000:
             return
 
         assert idx >= 0

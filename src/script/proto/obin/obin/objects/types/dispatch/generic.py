@@ -10,7 +10,6 @@ class W_Generic(W_Root):
     _immutable_fields_ = ["_name_"]
 
     def __init__(self, name):
-        super(W_Generic, self).__init__()
         self._name_ = name
         self._methods_ = []
         self._dags_ = []
