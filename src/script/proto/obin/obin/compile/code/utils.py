@@ -2,16 +2,19 @@ from obin.compile.code.opcode import *
 # ************************************************
 
 __OPCODE_REPR__ = ["UNDEFINED", "NULL", "TRUE", "FALSE", "LITERAL", "OUTER", "LOCAL", "FUNCTION", "INTEGER", "DUP",
-                   "ITERATOR_NEXT", "IMPORT", "IMPORT_MEMBER", "GENERIC", "TRAIT", "LABEL", "STORE_OUTER",
-                   "STORE_LOCAL", "ITERATOR", "RETURN", "CALL_PRIMITIVE", "CALL", "CALL_METHOD", "JUMP",
-                   "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE",
-                   "JUMP_IF_ITERATOR_EMPTY", "MEMBER_DOT", "MEMBER", "POP", "THROW", "CONCAT", "STORE_MEMBER",
-                   "PUSH_MANY", "VECTOR", "TUPLE", "OBJECT", "REIFY", ]
+                   "NEXT", "IMPORT", "IMPORT_MEMBER", "GENERIC", "TRAIT", "LABEL", "STORE_OUTER", "STORE_LOCAL",
+                   "ITERATOR", "RETURN", "CALL_PRIMITIVE", "CALL", "CALL_METHOD", "JUMP", "JUMP_IF_FALSE_NOPOP",
+                   "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "JUMP_IF_ITERATOR_EMPTY", "MEMBER_DOT",
+                   "MEMBER", "POP", "THROW", "CONCAT", "STORE_MEMBER", "PUSH_MANY", "VECTOR", "TUPLE", "OBJECT",
+                   "REIFY", ]
 
 # ************************************************
 
+__UNKNOWN_CHANGE__ = - 128
+
 __STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1,
-                     -1, -1, -2, None, None, None, None, None, ]
+                     -1, -1, -2, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
+                     __UNKNOWN_CHANGE__, ]
 
 
 # ************************************************
@@ -27,7 +30,7 @@ def opcode_estimate_stack_change(opcode):
 
     change = __STACK_CHANGES__[tag]
     # print opcode_to_str(tag), change
-    if change is not None:
+    if change != __UNKNOWN_CHANGE__:
         return change
 
     arg1 = opcode[1]

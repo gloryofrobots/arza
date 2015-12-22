@@ -1,3 +1,5 @@
+UNKNOW_CHANGE = -128
+
 OPCODES = [
     ("UNDEFINED", 1),
     ("NULL", 1),
@@ -40,11 +42,11 @@ OPCODES = [
 
     ("STORE_MEMBER", -2),
 
-    ("PUSH_MANY", None),
-    ("VECTOR", None),
-    ("TUPLE", None),
-    ("OBJECT", None),
-    ("REIFY", None),
+    ("PUSH_MANY", "__UNKNOWN_CHANGE__"),
+    ("VECTOR", "__UNKNOWN_CHANGE__"),
+    ("TUPLE", "__UNKNOWN_CHANGE__"),
+    ("OBJECT", "__UNKNOWN_CHANGE__"),
+    ("REIFY", "__UNKNOWN_CHANGE__"),
 ]
 
 def gen_ocode_ids():
@@ -60,7 +62,8 @@ def gen_opcode_repr():
     print S
 
 def gen_opcode_stack_change():
-    S = "__STACK_CHANGES__ = ["
+    S = "__UNKNOWN_CHANGE__ %d\n\n" % UNKNOW_CHANGE
+    S += "__STACK_CHANGES__ = ["
     for p in OPCODES:
         S += "%s, " % str(p[1])
 

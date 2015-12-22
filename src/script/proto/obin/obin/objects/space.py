@@ -22,7 +22,7 @@ def newchar(c):
 
 def newstring(s):
     from obin.objects.types.value import W_String
-    assert not isstring(s)
+    assert not isinstance(s, W_String)
     return W_String(unicode(s))
 
 

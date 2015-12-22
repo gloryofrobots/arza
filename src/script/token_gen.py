@@ -121,9 +121,10 @@ print "def token_type_to_str(ttype):"
 print "    return __TT_REPR__[ttype]"
 
     
-print "# ************************ COMPILE SWITCH*****************************"
-for number, token in enumerate(TOKENS):
-    t_str = token[0].replace("TT_", "")
-    print "    elif %s == t:" % token[0]
-    print "        self._compile_%s(code, node)" % t_str
+
+# print "# ************************ COMPILE SWITCH*****************************"
+# for number, token in enumerate(TOKENS):
+#     t_str = token[0].replace("TT_", "")
+#     print "    elif %s == t:" % token[0]
+#     print "        self._compile_%s(code, node)" % t_str
 
