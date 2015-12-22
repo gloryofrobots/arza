@@ -1,18 +1,11 @@
 from obin.compile.parse.tokens import token_type_to_str
 
-def is_many(node):
-    return isinstance(node, list)
+
+class EmptyNode:
+    pass
 
 
-def empty_node():
-    return []
-
-
-def is_empty_node(n):
-    return isinstance(n, list) and len(n) == 0
-
-
-class Node:
+class Node(EmptyNode):
     def __init__(self, _type, value, position, line):
         self.type = _type
         self.value = value
@@ -29,10 +22,7 @@ class Node:
         self.arity = arity
 
     def setchild(self, index, value):
-        assert value is not None
-        if isinstance(value, list):
-            assert None not in value
-
+        assert isinstance(value, Node) or isinstance(value, NodeList)
         self.children[index] = value
 
     def getchild(self, index):
@@ -94,3 +84,46 @@ class Node:
         return json.dumps(d, sort_keys=True,
                           indent=2, separators=(',', ': '))
 
+
+class NodeList(EmptyNode):
+    def __init__(self, items):
+        assert isinstance(items, list)
+        self.items = items
+
+    def __iter__(self):
+        return self.items.__iter__()
+
+    def __getitem__(self, item):
+        return self.items.__getitem__(item)
+
+    def __len__(self):
+        return len(self.items)
+
+    def append(self, item):
+        self.items.append(item)
+
+    def append_list(self, items):
+        self.items.append(list_node(items))
+
+def empty_node():
+    return EmptyNode()
+
+
+def is_empty_node(n):
+    return n.__class__ == EmptyNode
+
+def is_iterable_node(node):
+    return is_list_node(node) and len(node) > 0
+
+def list_node(items):
+    assert isinstance(items, list)
+    if len(items):
+        o = items[0]
+        if isinstance(o, list):
+            raise RuntimeError()
+        assert not isinstance(o, list)
+
+    return NodeList(items)
+
+def is_list_node(node):
+    return isinstance(node, NodeList)

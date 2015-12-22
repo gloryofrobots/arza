@@ -2,7 +2,7 @@ __author__ = 'gloryofrobots'
 from obin.compile.parse.token_type import *
 from obin.compile.parse.tokens import token_type_to_str
 from obin.compile.parse.parser import *
-
+from obin.compile.parse.node import is_empty_node, is_list_node, is_iterable_node
 from obin.compile.scope import Scope
 from obin.objects import space as obs
 from obin.runtime import primitives
@@ -80,7 +80,7 @@ class Compiler(object):
         return idx
 
     def declare_literal(self, literal):
-        assert obs.isany(literal)
+        # assert obs.isany(literal)
         scope = self.current_scope()
         idx = scope.get_literal(literal)
         if idx is -1000:
@@ -153,12 +153,14 @@ class Compiler(object):
         return compiled_code
 
     def _compile(self, code, ast):
-        if isinstance(ast, list):
+        if is_list_node(ast):
             self._compile_nodes(code, ast)
         else:
             self._compile_node(code, ast)
 
-    def _compile_nodes(self, bytecode, nodes):
+    def _compile_nodes(self, bytecode, ast):
+        nodes = ast.items
+
         if len(nodes) > 1:
 
             for node in nodes[:-1]:
@@ -632,7 +634,7 @@ class Compiler(object):
     def _compile_fn_args_and_body(self, code, funcname, params, outers, body):
         self.enter_scope()
 
-        if not is_empty_node(params):
+        if is_iterable_node(params):
             args = []
             for param in params[:-1]:
                 args.append(obs.newstring(param.value))
@@ -651,7 +653,7 @@ class Compiler(object):
 
         self.declare_arguments(args, varargs)
 
-        if not is_empty_node(outers):
+        if is_iterable_node(outers):
             for outer in outers:
                 self.declare_outer(obs.newstring(outer.value))
 
@@ -669,7 +671,9 @@ class Compiler(object):
         # print [str(c) for c in compiled_code.opcodes]
         # print "-------------------------"
 
-        code.emit_2(FUNCTION, funcname, compiled_code)
+        funcnameindex = self.declare_literal(funcname)
+        compiled_code_index = self.declare_literal(compiled_code)
+        code.emit_2(FUNCTION, funcnameindex, compiled_code_index)
 
     def _compile_FN_expression(self, code, node):
         name = obs.newstring(u'')
@@ -843,7 +847,7 @@ class Compiler(object):
             code.emit_1(TUPLE, len(signature))
 
             method_name = obs.newstring(u"")
-            self._compile_fn_args_and_body(code, method_name, args, empty_node(), method_body)
+            self._compile_fn_args_and_body(code, method_name, list_node(args), empty_node(), method_body)
             code.emit_1(TUPLE, 2)
 
         code.emit_1(REIFY, len(methods))

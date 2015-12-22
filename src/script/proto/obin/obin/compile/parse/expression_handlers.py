@@ -1,6 +1,6 @@
 import obin.compile.rlexer as lexer
 from obin.compile.parse.token_type import *
-from obin.compile.parse.node import Node, is_empty_node, empty_node
+from obin.compile.parse.node import Node, is_empty_node, empty_node, list_node
 from obin.compile.parse.tokenstream import TokenStream
 from obin.compile.parse.basic import *
 
@@ -33,22 +33,6 @@ def infix_lsquare(parser, node, left):
 
 def infix_lparen(parser, node, left):
     items = []
-    if left.type == TT_DOT:
-        node.init(3)
-        node.setfirst(left.first())
-        node.setsecond(left.second())
-        node.setthird(items)
-    else:
-        node.init(2)
-        node.setfirst(left)
-        node.setsecond(items)
-        """
-        if ((left.arity !== "unary" || left.id !== "function") &&
-            left.arity !== "name" && left.id !== "(" &&
-            left.id !== "&&" && left.id !== "||" && left.id !== "?") {
-            left.error("Expected a variable name.");
-        }
-        """
     if parser.token_type != TT_RPAREN:
         while True:
             items.append(expression(parser, 0))
@@ -58,18 +42,34 @@ def infix_lparen(parser, node, left):
             advance_expected(parser, TT_COMMA)
 
     advance_expected(parser, TT_RPAREN)
-    return node
 
+    if left.type == TT_DOT:
+        node.init(3)
+        node.setfirst(left.first())
+        node.setsecond(left.second())
+        node.setthird(list_node(items))
+    else:
+        node.init(2)
+        node.setfirst(left)
+        node.setsecond(list_node(items))
+        """
+        if ((left.arity !== "unary" || left.id !== "function") &&
+            left.arity !== "name" && left.id !== "(" &&
+            left.id !== "&&" && left.id !== "||" && left.id !== "?") {
+            left.error("Expected a variable name.");
+        }
+        """
+    return node
 
 def prefix_if(parser, node):
     node.init(1)
-    branches = []
+    branches = list_node([])
 
     cond = condition(parser)
     advance_expected(parser, TT_LCURLY)
     body = (statements(parser, [TT_RCURLY]))
 
-    branches.append([cond, body])
+    branches.append_list([cond, body])
     advance_expected(parser, TT_RCURLY)
 
     while parser.token_type == TT_ELIF:
@@ -79,16 +79,16 @@ def prefix_if(parser, node):
         advance_expected(parser, TT_LCURLY)
         body = statements(parser, [TT_RCURLY])
 
-        branches.append([cond, body])
+        branches.append_list([cond, body])
         advance_expected(parser, TT_RCURLY)
     if parser.token_type == TT_ELSE:
         advance_expected(parser, TT_ELSE)
         advance_expected(parser, TT_LCURLY)
         body = statements(parser, [TT_RCURLY])
         advance_expected(parser, TT_RCURLY)
-        branches.append([[], body])
+        branches.append_list([empty_node(), body])
     else:
-        branches.append([])
+        branches.append(empty_node())
 
     # append else branch anyway
     node.setfirst(branches)
@@ -114,7 +114,7 @@ def prefix_lparen(parser, node):
             advance_expected(parser, TT_COMMA)
 
     advance_expected(parser, TT_RPAREN)
-    node.setfirst(items)
+    node.setfirst(list_node(items))
     return node
 
 
@@ -129,15 +129,13 @@ def prefix_lsquare(parser, node):
 
             advance_expected(parser, TT_COMMA)
 
-    node.setfirst(items)
+    node.setfirst(list_node(items))
     advance_expected(parser, TT_RSQUARE)
     return node
 
 
 def prefix_lcurly(parser, node):
     items = []
-    key = None
-    value = None
     node.init(1)
     if parser.token_type != TT_RCURLY:
         while True:
@@ -147,20 +145,19 @@ def prefix_lcurly(parser, node):
             advance(parser)
             advance_expected(parser, TT_COLON)
             value = expression(parser, 0)
-            items.append([key, value])
+            items.append(list_node([key, value]))
             if parser.token_type != TT_COMMA:
                 break
 
             advance_expected(parser, TT_COMMA)
 
     advance_expected(parser, TT_RCURLY)
-    node.setfirst(items)
+    node.setfirst(list_node(items))
     return node
 
 
 def parse_fn(parser):
     args = []
-    body = []
     outers = []
     if parser.token_type == TT_NAME:
         name = parser.node
@@ -209,7 +206,7 @@ def parse_fn(parser):
     if not body:
         body = empty_node()
     advance_expected(parser, TT_RCURLY)
-    return name, args, outers, body
+    return name, list_node(args), list_node(outers), body
 
 
 def prefix_fn(parser, node):
@@ -295,12 +292,12 @@ def parse_object(parser):
                 advance_expected(parser, TT_ASSIGN)
                 value = expression(parser, 0)
 
-            items.append([key, value])
+            items.append(list_node([key, value]))
             if parser.token_type == TT_RCURLY:
                 break
 
     advance_expected(parser, TT_RCURLY)
-    return name, traits, items
+    return name, list_node(traits), list_node(items)
 
 
 def prefix_object(parser, node):
@@ -328,7 +325,7 @@ def stmt_object(parser, node):
 def stmt_single(parser, node):
     node.init(1)
     if token_is_one_of(parser, [TT_SEMI, TT_RCURLY]) or parser.is_newline_occurred:
-        node.setfirst([])
+        node.setfirst(list_node([]))
     else:
         node.setfirst(expression(parser, 0))
     endofexpression(parser)
@@ -357,17 +354,17 @@ def stmt_while(parser, node):
 
 def stmt_for(parser, node):
     node.init(3)
-    vars = []
+    variables = []
     # set big lbp to overriding IN binding power
-    vars.append(expression(parser, 70))
+    variables.append(expression(parser, 70))
     while parser.token_type == TT_COMMA:
         advance(parser)
         if parser.token_type != TT_NAME:
             parse_error_simple(parser, "Wrong variable name in for loop")
 
-        vars.append(expression(parser, 0))
+        variables.append(expression(parser, 0))
 
-    node.setfirst(vars)
+    node.setfirst(list_node(variables))
     advance_expected(parser, TT_IN)
     node.setsecond(expression(parser, 0))
 
@@ -426,7 +423,7 @@ def parse_reify_fn(_parser, _signature_parser):
         body = empty_node()
 
     advance_expected(_parser, TT_RCURLY)
-    return [signature, body]
+    return list_node([list_node(signature), body])
 
 
 def parse_reify_funcs(parser):
@@ -446,7 +443,7 @@ def parse_reify_funcs(parser):
     if len(funcs) == 0:
         parse_error_simple(parser, "Empty reify statement")
 
-    return funcs
+    return list_node(funcs)
 
 
 def stmt_reify(parser, node):
@@ -462,4 +459,36 @@ def stmt_reify(parser, node):
 
     node.setfirst(name)
     node.setsecond(funcs)
+    return node
+
+def stmt_import(parser, node):
+    # import statement needs three different parsers :(
+
+    # all parsers share same token stream and token_type checks can be made for any of them
+    module_name_parser = parser.module_name_parser
+    module_name_alias_parser = parser.module_name_alias_parser
+    import_alias_parser = parser.import_alias_parser
+
+    # first statement can be import x.y.z as c
+    imported = expression(module_name_alias_parser, 0)
+    # destructuring import x as y from a.b.c
+    if parser.token_type == TT_COMMA or parser.token_type == TT_FROM:
+        items = [imported]
+
+        # aliases like x as y
+        while parser.token_type == TT_COMMA:
+            advance(parser)
+            items.append(expression(import_alias_parser, 0))
+
+        advance_expected(module_name_parser, TT_FROM)
+        # module name x.y.z
+        module = expression(module_name_parser, 0)
+        node.init(2)
+        node.setfirst(list_node(items))
+        node.setsecond(module)
+    # simple import x.y.z as c
+    else:
+        node.init(1)
+        node.setfirst(imported)
+
     return node

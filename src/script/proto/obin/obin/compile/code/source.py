@@ -57,6 +57,8 @@ class CodeSource(object):
 
     def emit_2(self, opcode, arg1, arg2):
         assert isinstance(opcode, int)
+        assert isinstance(arg1, int)
+        assert isinstance(arg2, int)
         # from obin.utils import tb
         # if operation == "LOAD_UNDEFINED":
         #     tb(args)
@@ -64,10 +66,10 @@ class CodeSource(object):
         return opcode
 
     def emit_0(self, operation):
-        self.emit_2(operation, None, None)
+        self.emit_2(operation, 0, 0)
 
     def emit_1(self, operation, arg1):
-        self.emit_2(operation, arg1, None)
+        self.emit_2(operation, arg1, 0)
 
     def emit_endloop_label(self, label):
         self.endlooplabel.pop()
@@ -126,7 +128,7 @@ class CodeSource(object):
 
         oldopcodes = self.opcodes
         new_length = length - len(labels)
-        self.opcodes = [None] * new_length
+        self.opcodes = [(0,0,0)] * new_length
         i = 0
         for op in oldopcodes:
             tag = op[0]

@@ -1,5 +1,5 @@
 from obin.compile.parse.token_type import *
-
+from obin.compile.parse.node import list_node, empty_node
 from obin.compile.parse.tokens import token_type_to_str
 
 
@@ -215,7 +215,6 @@ def statements(parser, endlist=None):
     if not endlist:
         endlist = [TT_RCURLY, TT_ENDSTREAM]
 
-    s = None
     stmts = []
     while True:
         if token_is_one_of(parser, endlist):
@@ -228,11 +227,11 @@ def statements(parser, endlist=None):
 
     length = len(stmts)
     if length == 0:
-        return None
+        return empty_node()
     elif length == 1:
         return stmts[0]
 
-    return stmts
+    return list_node(stmts)
 
 
 def itself(parser, node):

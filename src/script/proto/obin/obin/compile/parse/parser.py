@@ -301,37 +301,6 @@ def main_parser_init(parser):
 
     stmt(parser, TT_REIFY, stmt_reify)
 
-    def stmt_import(parser, node):
-        # import statement needs three different parsers :(
-
-        # all parsers share same token stream and token_type checks can be made for any of them
-        module_name_parser = parser.module_name_parser
-        module_name_alias_parser = parser.module_name_alias_parser
-        import_alias_parser = parser.import_alias_parser
-
-        # first statement can be import x.y.z as c
-        imported = expression(module_name_alias_parser, 0)
-        # destructuring import x as y from a.b.c
-        if parser.token_type == TT_COMMA or parser.token_type == TT_FROM:
-            items = [imported]
-
-            # aliases like x as y
-            while parser.token_type == TT_COMMA:
-                advance(parser)
-                items.append(expression(import_alias_parser, 0))
-
-            advance_expected(module_name_parser, TT_FROM)
-            # module name x.y.z
-            module = expression(module_name_parser, 0)
-            node.init(2)
-            node.setfirst(items)
-            node.setsecond(module)
-        # simple import x.y.z as c
-        else:
-            node.init(1)
-            node.setfirst(imported)
-
-        return node
 
     stmt(parser, TT_IMPORT, stmt_import)
     return parser

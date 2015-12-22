@@ -24,12 +24,18 @@ class LexerStream(object):
 
     def _update_pos(self, match):
         self.idx = match.end
-        self._lineno += self.s.count("\n", match.start, match.end)
-        last_nl = self.s.rfind("\n", 0, match.start)
+        start = match.start
+        end = match.end
+        assert start >= 0
+        assert end >= 1
+
+        count = self.s.count("\n", start, end)
+        self._lineno = self._lineno + count
+        last_nl = self.s.rfind("\n", 0, start)
         if last_nl < 0:
-            return match.start + 1
+            return start + 1
         else:
-            return match.start - last_nl
+            return start - last_nl
 
     def next(self):
         if self.idx >= len(self.s):
@@ -42,11 +48,16 @@ class LexerStream(object):
         for rule in self.lexer.rules:
             match = rule.matches(self.s, self.idx)
             if match:
+                start = match.start
+                end = match.end
+                assert start >= 0
+                assert end >= 1
+
                 lineno = self._lineno
                 colno = self._update_pos(match)
-                source_pos = SourcePosition(match.start, lineno, colno)
+                source_pos = SourcePosition(start, lineno, colno)
                 token = Token(
-                    rule.name, self.s[match.start:match.end], source_pos
+                    rule.name, self.s[start:end], source_pos
                 )
                 return token
         else:

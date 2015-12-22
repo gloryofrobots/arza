@@ -9,12 +9,16 @@ print(x)
 
 x = [1, "Hello", 35.44555]
 print(x)
+print(x[1])
 
 x = (42,)
 print(x)
 
 x = (1,2, ["Alice", "Bob", (45,), 54.000000001])
 print(x)
+
+x = {name: "XXX"}
+print(x.name)
 
 print((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name:"Alice", surname: "Bob"})
 

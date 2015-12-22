@@ -18,6 +18,10 @@ class Token(object):
     """
 
     def __init__(self, type, val, pos, line):
+        assert isinstance(type, int)
+        assert isinstance(val, str)
+        assert isinstance(pos, int)
+        assert isinstance(line, int)
         self.type = type
         self.val = val
         self.pos = pos
@@ -95,7 +99,7 @@ class Lexer:
         while 1:
             tok = self.token()
             if tok is None:
-                yield Token(tokens.TT_ENDSTREAM, 0, 0, 0)
+                yield Token(tokens.TT_ENDSTREAM, "", 0, 0)
                 break
             yield tok
 
