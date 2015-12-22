@@ -268,9 +268,8 @@ class CodeRoutine(BaseRoutine):
                 self.stack.push(obj)
             # *************************************
             elif FUNCTION == tag:
-                name = self.literals[arg1]
-                code = self.literals[arg2]
-                w_func = newfunc(name, code, self.env)
+                source = self.literals[arg1]
+                w_func = newfunc(source.name, source.code, self.env)
                 self.stack.push(w_func)
             # *************************************
             elif THROW == tag:

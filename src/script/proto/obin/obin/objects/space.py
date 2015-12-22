@@ -93,6 +93,11 @@ def newfunc(name, bytecode, scope):
     obj = W_Function(name, bytecode, scope)
     return obj
 
+def newfuncsource(name, bytecode):
+    from obin.objects.types.callable import W_FunctionSource
+    obj = W_FunctionSource(name, bytecode)
+    return obj
+
 
 def newprimitive(name, function, arity):
     from obin.objects.types.callable import W_Primitive

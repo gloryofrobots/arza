@@ -80,7 +80,7 @@ class Compiler(object):
         return idx
 
     def declare_literal(self, literal):
-        # assert obs.isany(literal)
+        assert obs.isany(literal)
         scope = self.current_scope()
         idx = scope.get_literal(literal)
         if idx is -1000:
@@ -671,9 +671,9 @@ class Compiler(object):
         # print [str(c) for c in compiled_code.opcodes]
         # print "-------------------------"
 
-        funcnameindex = self.declare_literal(funcname)
-        compiled_code_index = self.declare_literal(compiled_code)
-        code.emit_2(FUNCTION, funcnameindex, compiled_code_index)
+        source = obs.newfuncsource(funcname, compiled_code)
+        source_index = self.declare_literal(source)
+        code.emit_1(FUNCTION, source_index)
 
     def _compile_FN_expression(self, code, node):
         name = obs.newstring(u'')

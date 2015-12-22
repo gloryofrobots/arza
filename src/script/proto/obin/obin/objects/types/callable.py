@@ -3,6 +3,11 @@ from obin.runtime.exception import *
 from obin.objects import api
 from rpython.rlib import jit
 
+class W_FunctionSource(W_Root):
+    def __init__(self, name, code):
+        self.name = name
+        self.code = code
+
 class W_Function(W_Root):
     _type_ = 'function'
     _immutable_fields_ = ['_type_',  'scope',  'is_variadic', 'arity', '_name_']
