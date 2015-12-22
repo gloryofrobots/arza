@@ -26,7 +26,7 @@ def opcode_estimate_stack_change(opcode):
     tag = opcode[0]
 
     change = __STACK_CHANGES__[tag]
-    print opcode_to_str(tag), change
+    # print opcode_to_str(tag), change
     if change is not None:
         return change
 
