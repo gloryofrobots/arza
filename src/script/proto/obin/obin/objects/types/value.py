@@ -3,27 +3,36 @@ from root import W_Root
 
 
 class W_ValueType(W_Root):
-    def value(self):
-        raise NotImplementedError()
+    pass
 
 
 class W_Char(W_ValueType):
     _immutable_fields_ = ['value']
 
     def __init__(self, value):
-        self.__value = value
+        self.char_value = value
 
     def __str__(self):
-        return '(%s)' % (unichr(self.__value),)
-
-    def value(self):
-        return self.__value
+        return "%s" % (chr(self.char_value),)
 
     def _tostring_(self):
-        return unichr(self.__value)
+        return chr(self.char_value)
+
+    def _equal_(self, other):
+        assert isinstance(other, W_Char)
+        return self.char_value == other.char_value
+
+    def _compare_(self, other):
+        assert isinstance(other, W_Char)
+        if self.char_value > other.char_value:
+            return 1
+        elif self.char_value < other.char_value:
+            return -1
+        else:
+            return 0
 
     def _tobool_(self):
-        return bool(self.__value)
+        return bool(self.char_value)
 
     def _traits_(self):
         from obin.objects.space import state
@@ -34,19 +43,33 @@ class W_Integer(W_ValueType):
     _immutable_fields_ = ['__value']
 
     def __init__(self, value):
-        self.__value = value
+        assert isinstance(value, int)
+        self.int_value = value
 
-        # def __str__(self):
-        # return 'W_Integer(%d)' % (self.value(),)
+    def _tointeger_(self):
+        return self.int_value
 
-    def value(self):
-        return self.__value
+    def _tofloat_(self):
+        return float(self.int_value)
+
+    def _equal_(self, other):
+        assert isinstance(other, W_Integer)
+        return self.int_value == other.int_value
+
+    def _compare_(self, other):
+        assert isinstance(other, W_Integer)
+        if self.int_value > other.int_value:
+            return 1
+        elif self.int_value < other.int_value:
+            return -1
+        else:
+            return 0
 
     def _tostring_(self):
-        return str(self.__value)
+        return str(self.int_value)
 
     def _tobool_(self):
-        return bool(self.__value)
+        return bool(self.int_value)
 
     def _traits_(self):
         from obin.objects.space import state
@@ -57,19 +80,33 @@ class W_Float(W_ValueType):
     _immutable_fields_ = ['value']
 
     def __init__(self, value):
-        self.__value = value
+        assert isinstance(value, float)
+        self.float_value = value
 
-    # def __str__(self):
-    #     return 'W_Float(%s)' % (str(self.__value),)
+    def _tointeger_(self):
+        return int(self.float_value)
 
-    def value(self):
-        return self.__value
+    def _tofloat_(self):
+        return self.float_value
+
+    def _equal_(self, other):
+        assert isinstance(other, W_Float)
+        return self.float_value == other.float_value
+
+    def _compare_(self, other):
+        assert isinstance(other, W_Float)
+        if self.float_value > other.float_value:
+            return 1
+        elif self.float_value < other.float_value:
+            return -1
+        else:
+            return 0
 
     def _tostring_(self):
-        return str(self.__value)
+        return str(self.float_value)
 
     def _tobool_(self):
-        return bool(self.__value)
+        return bool(self.float_value)
 
     def _traits_(self):
         from obin.objects.space import state
@@ -106,38 +143,41 @@ class W_String(W_ValueType):
 
     def __init__(self, value):
         assert value is not None and isinstance(value, unicode)
-        self.__items = value
-        self.__length = len(self.__items)
+        self.string_value = value
+        self.__length = len(self.string_value)
 
-    # def __str__(self):
-    #     return u'W_String("%s")' % (self.__items)
+    def _equal_(self, other):
+        assert isinstance(other, W_String)
+        return self.string_value == other.string_value
+
+    def _compare_(self, other):
+        assert isinstance(other, W_String)
+        if self.string_value > other.string_value:
+            return 1
+        elif self.string_value < other.string_value:
+            return -1
+        else:
+            return 0
 
     def __eq__(self, other):
-        if isinstance(other, unicode):
-            raise RuntimeError("It is not unicode")
-        if isinstance(other, str):
-            raise RuntimeError("It is not  str")
         if not isinstance(other, W_String):
             return False
-        return self.value() == other.value()
+        return self._equal_(other)
 
     def __hash__(self):
-        return self.value().__hash__()
+        return self.string_value.__hash__()
 
     def isempty(self):
-        return not bool(len(self.__items))
-
-    def value(self):
-        return self.__items
+        return not bool(len(self.string_value))
 
     def _tostring_(self):
-        return str(self.__items)
+        return str(self.string_value)
 
     def _iterator_(self):
-        return NativeListIterator(self.__items, self.__length)
+        return NativeListIterator(self.string_value, self.__length)
 
     def _tobool_(self):
-        return bool(self.__items)
+        return bool(self.string_value)
 
     def _length_(self):
         return self.__length
@@ -145,9 +185,10 @@ class W_String(W_ValueType):
     def _at_(self, index):
         from obin.objects.space import newundefined, newchar, isint
         from obin.runtime.exception import ObinKeyError
+        from obin.objects import api
         assert isint(index)
         try:
-            ch = self.__items[index.value()]
+            ch = self.string_value[api.to_native_integer(index)]
         except ObinKeyError:
             return newundefined()
 

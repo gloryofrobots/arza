@@ -155,11 +155,10 @@ class Process(object):
         while True:
             handler = routine.catch_signal(signal)
             if handler:
-                from obin.runtime.context import CatchContext
-
-                catch_ctx = CatchContext(handler, handler.signal_name(), signal, routine.ctx)
-                handler.set_context(catch_ctx)
-                routine = handler
+                assert 0
+                # catch_ctx = CatchContext(handler, handler.signal_name(), signal, routine.ctx)
+                # handler.set_context(catch_ctx)
+                # routine = handler
                 break
             else:
                 if not routine.is_closed():

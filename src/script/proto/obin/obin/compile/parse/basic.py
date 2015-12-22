@@ -25,7 +25,7 @@ def parse_error(parser, message, node):
     return _parse_error(error_message, (node, ))
 
 
-class Handler(object):
+class Handler:
     def __init__(self):
         self.nud = None
         self.led = None

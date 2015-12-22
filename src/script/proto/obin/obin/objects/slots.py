@@ -1,6 +1,6 @@
 from obin.objects.space import newvector
 
-class Slots(object):
+class Slots:
     def __init__(self):
         self.property_values = None
         self.property_bindings = None
@@ -20,12 +20,14 @@ class Slots(object):
     def __repr__(self):
         return self.__str__()
 
-    def __copy__(self):
-        from copy import copy
+    def copy(self):
         clone = Slots()
-        clone.property_values = copy(self.property_values)
-        clone.property_bindings = copy(self.property_bindings)
-        clone.index = self.index
+        values = self.property_values
+        if values is not None:
+            clone.property_values = self.property_values.copy()
+            clone.property_bindings = self.property_bindings.copy()
+            clone.index = self.index
+
         return clone
 
     def contains(self, name):
@@ -101,7 +103,6 @@ def newslots_empty():
     return newslots(newvector([]), {}, 0)
 
 def newslots_with_values_from_slots(values, protoslots):
-    from copy import copy
     l = protoslots.length()
     size = values.length()
     diff = l - size
@@ -109,7 +110,7 @@ def newslots_with_values_from_slots(values, protoslots):
     if diff > 0:
         values.append_value_multiple_times(None, diff)
 
-    bindings = copy(protoslots.property_bindings)
+    bindings = protoslots.property_bindings.copy()
     index = protoslots.index
     return newslots(values, bindings, index)
 

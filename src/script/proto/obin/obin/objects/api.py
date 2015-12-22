@@ -7,8 +7,14 @@ def tostring(obj):
     return newstring(unicode(obj._tostring_()))
 
 
-def tonativevalue(obj):
-    return obj.value()
+def tointeger(obj):
+    from space import newint
+    return newint(obj._tointeger_())
+
+
+def tofloat(obj):
+    from space import newfloat
+    return newfloat(obj._tofloat_())
 
 
 def tobool(obj):
@@ -16,7 +22,23 @@ def tobool(obj):
     return newbool(obj._tobool_())
 
 
-def toboolvalue(obj):
+def to_native_unicode(obj):
+    return unicode(obj._tostring_())
+
+
+def to_native_integer(obj):
+    return obj._tointeger_()
+
+
+def to_native_float(obj):
+    return obj._tofloat_()
+
+
+def to_native_string(obj):
+    return obj._tostring_()
+
+
+def to_native_bool(obj):
     return obj._tobool_()
 
 
@@ -131,25 +153,14 @@ def put(obj, k, v):
 
 
 def strict_equal(obj, other):
-    from space import newbool, isvaluetype, isconstant
-    if not isinstance(other, obj.__class__):
-        return newbool(False)
-    if isconstant(obj):
-        return newbool(True)
-
-    if isvaluetype(obj):
-        return newbool(obj.value() is other.value())
-
+    from space import newbool
     return newbool(obj is other)
 
 
 def equal(obj, other):
-    from space import newbool, isvaluetype, isconstant
+    from space import newbool, isconstant
     if not isinstance(other, obj.__class__):
         return newbool(False)
-
-    if isvaluetype(obj):
-        return newbool(obj.value() == other.value())
 
     if isconstant(obj):
         return newbool(True)
@@ -159,14 +170,12 @@ def equal(obj, other):
 
 
 def compare(obj, other):
-    from space import isundefined, newint, newbool, isvaluetype, isconstant
+    from space import isundefined, newint,  isconstant
     assert not isundefined(other)
-    v = obj._compare_(other)
-    if isvaluetype(obj):
-        return newint(cmp(obj.value(), other.value()))
-
     if isconstant(obj):
         raise ObinTypeError(obj)
+
+    v = obj._compare_(other)
 
     return newint(v)
 

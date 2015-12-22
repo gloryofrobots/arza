@@ -1,11 +1,12 @@
 __author__ = 'gloryofrobots'
 from obin.runtime.routine.base_routine import BaseRoutine
+from obin.objects import api
 
 class NativeRoutine(BaseRoutine):
     _immutable_fields_ = ['_name_', '_function_']
 
     def __init__(self, name, function, args, arity):
-        super(NativeRoutine, self).__init__()
+        BaseRoutine.__init__(self)
         from obin.objects.space import isstring
         assert isstring(name)
         self._name_ = name
@@ -18,7 +19,7 @@ class NativeRoutine(BaseRoutine):
     resume = BaseRoutine.complete
 
     def name(self):
-        return self._name_.value()
+        return api.to_native_string(self._name_)
 
     def args(self):
         return self._args

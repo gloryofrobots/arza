@@ -34,6 +34,12 @@ class W_Root:
     def _tobool_(self):
         raise NotImplementedError()
 
+    def _tointeger_(self):
+        raise NotImplementedError()
+
+    def _tofloat_(self):
+        raise NotImplementedError()
+
     def _equal_(self, other):
         raise NotImplementedError()
 

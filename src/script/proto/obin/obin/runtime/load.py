@@ -21,7 +21,7 @@ def import_module(process, name):
 
 
 def load_module(process, name):
-    raw = api.tonativevalue(name)
+    raw = api.to_native_unicode(name)
     path = raw.replace(u".", os.sep)
     path = path + u".obn"
     script = None

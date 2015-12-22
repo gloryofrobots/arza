@@ -10,9 +10,13 @@ from obin.compile.code.source import CodeSource
 from obin.compile.code import *
 
 
-def compile_error(node, message, args):
+def compile_error(node, message):
     error_message = "Compile Error %d:%d %s" % (node.line, node.position, message)
-    raise RuntimeError(error_message, args)
+    raise RuntimeError(error_message)
+
+def compile_error_1(node, message, arg):
+    error_message = "Compile Error %d:%d %s" % (node.line, node.position, message)
+    raise RuntimeError(error_message, arg)
 
 
 def string_unquote(string):
@@ -28,7 +32,7 @@ def string_unquote(string):
     return s
 
 
-class Compiler(object):
+class Compiler:
     def __init__(self):
         self.funclists = []
         self.scopes = []
@@ -54,9 +58,9 @@ class Compiler(object):
     def declare_outer(self, symbol):
         scope = self.current_scope()
         if not scope.is_function_scope():
-            compile_error(self.current_node, "Outer variables can be declared only inside functions", symbol)
+            compile_error_1(self.current_node, "Outer variables can be declared only inside functions", symbol)
         if scope.has_outer(symbol):
-            compile_error(self.current_node, "Outer variable has already been declared", symbol)
+            compile_error_1(self.current_node, "Outer variable has already been declared", symbol)
         scope.add_outer(symbol)
 
     # def declare_symbol(self, symbol):
@@ -496,7 +500,7 @@ class Compiler(object):
 
         name = obs.newstring_from_str(left.value)
         if not self.is_modifiable_binding(name):
-            compile_error(node, "Unreachable variable", name)
+            compile_error_1(node, "Unreachable variable", name)
 
         # self._compile(bytecode, left)
         self._compile(bytecode, node.first())
@@ -578,7 +582,7 @@ class Compiler(object):
 
     def _compile_LCURLY(self, code, node):
         items = node.first()
-        self._compile_object(code, items, [])
+        self._compile_object(code, items, list_node([]))
 
     def _compile_OBJECT_expression(self, code, node):
         traits = node.first()
@@ -624,12 +628,12 @@ class Compiler(object):
     def _compile_BREAK(self, code, node):
         code.emit_0(UNDEFINED)
         if not code.emit_break():
-            compile_error(node, u"break outside loop", ())
+            compile_error(node, "break outside loop")
 
     def _compile_CONTINUE(self, code, node):
         code.emit_0(UNDEFINED)
         if not code.emit_continue():
-            compile_error(node, u"continue outside loop", ())
+            compile_error(node, "continue outside loop")
 
     def _compile_fn_args_and_body(self, code, funcname, params, outers, body):
         self.enter_scope()
@@ -736,13 +740,10 @@ class Compiler(object):
         code.emit_1(LABEL, endif)
 
     def _dot_to_string(self, node):
-        def _parse_node(node):
-            if node.type == TT_DOT:
-                return _parse_node(node.first()) + '.' + node.second().value
-            else:
-                return node.value
-
-        return _parse_node(node)
+        if node.type == TT_DOT:
+            return self._dot_to_string(node.first()) + '.' + node.second().value
+        else:
+            return node.value
 
     def _compile_IMPORT_single(self, code, node):
         exp = node.first()
@@ -800,7 +801,7 @@ class Compiler(object):
         elif node.arity == 2:
             self._compile_IMPORT_destructuring(code, node)
         else:
-            compile_error(node, u"Invalid import statement", None)
+            compile_error(node, "Invalid import statement")
 
     def _compile_GENERIC(self, code, node):
         name = node.first()

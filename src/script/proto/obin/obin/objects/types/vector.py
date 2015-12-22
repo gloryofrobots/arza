@@ -18,9 +18,9 @@ class W_Vector(W_Cell):
         if self.isfrozen():
             raise ObinRuntimeError("Vector is frozen")
         from obin.objects.space import isint
-        if not isint(k):
-            raise ObinKeyError(k)
-        i = k.value()
+        from obin.objects import api
+        assert isint(k)
+        i = api.to_native_integer(k)
         try:
             self._items[i] = v
         except:
@@ -31,14 +31,17 @@ class W_Vector(W_Cell):
         return state.traits.VectorTraits
 
     def _clone_(self):
-        from copy import copy
-        return W_Vector(copy(self._items))
+        return W_Vector([v for v in self._items])
+
+    def copy(self):
+        return W_Vector([v for v in self._items])
 
     def _at_(self, index):
         from obin.objects.space import newundefined, isint
+        from obin.objects import api
         assert isint(index)
         try:
-            el = self._items[index.value()]
+            el = self._items[api.to_native_integer(index)]
         except ObinKeyError:
             return newundefined()
 

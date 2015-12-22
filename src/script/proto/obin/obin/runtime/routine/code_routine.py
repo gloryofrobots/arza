@@ -12,7 +12,7 @@ from obin.runtime.load import import_module
 
 
 def load_arguments(stack):
-    length = stack.pop().value()
+    length = api.to_native_integer(stack.pop())
     elements = stack.pop_n(length)  # [:] # pop_n returns a non-resizable list
     # vectors2 = []
     # routine.stack.pop_n_into(counter, vectors2)  # [:] # pop_n returns a non-resizable list
@@ -23,7 +23,7 @@ class CodeRoutine(BaseRoutine):
     _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
 
     def __init__(self, name, code, env):
-        super(CodeRoutine, self).__init__()
+        BaseRoutine.__init__(self)
 
         from obin.objects.space import isstring
         assert isstring(name)
@@ -160,7 +160,7 @@ class CodeRoutine(BaseRoutine):
             # TODO STORE_MEMBER_DOT
             # *************************************
             elif TUPLE == tag:
-                tupl = self.stack.pop_n_to_tuple(arg1)  # [:] # pop_n returns a non-resizable list
+                tupl = self.stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
                 self.stack.push(newtuple(tupl))
             # *************************************
             elif VECTOR == tag:
@@ -202,19 +202,19 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif JUMP_IF_FALSE == tag:
                 value = self.stack.pop()
-                decision = api.toboolvalue(value)
+                decision = api.to_native_bool(value)
                 if not decision:
                     self.pc = arg1
             # *************************************
             elif JUMP_IF_TRUE == tag:
                 value = self.stack.pop()
-                decision = api.toboolvalue(value)
+                decision = api.to_native_bool(value)
                 if decision:
                     self.pc = arg1
             # *************************************
             elif JUMP_IF_FALSE_NOPOP == tag:
                 value = self.stack.top()
-                decision = api.toboolvalue(value)
+                decision = api.to_native_bool(value)
                 if not decision:
                     self.pc = arg1
                 else:
@@ -222,7 +222,7 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif JUMP_IF_TRUE_NOPOP == tag:
                 value = self.stack.top()
-                decision = api.toboolvalue(value)
+                decision = api.to_native_bool(value)
                 if decision:
                     self.pc = arg1
                 else:
@@ -236,7 +236,7 @@ class CodeRoutine(BaseRoutine):
             elif JUMP_IF_ITERATOR_EMPTY == tag:
                 last_block_value = self.stack.pop()
                 iterator = self.stack.top()
-                value = api.toboolvalue(iterator)
+                value = api.to_native_bool(iterator)
                 if not value:
                     # discard the iterator
                     self.stack.pop()
@@ -298,7 +298,7 @@ class CodeRoutine(BaseRoutine):
                 self.stack.push(trait)
             # *************************************
             elif REIFY == tag:
-                methods = self.stack.pop_n_to_tuple(arg1)  # [:] # pop_n returns a non-resizable list
+                methods = self.stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
                 methods = newtuple(methods)
                 generic = self.stack.pop()
                 generic.reify(methods)

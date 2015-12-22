@@ -1,4 +1,4 @@
-class BaseRoutine(object):
+class BaseRoutine:
     class State:
         IDLE = -1
         COMPLETE = 0
@@ -7,7 +7,6 @@ class BaseRoutine(object):
         SUSPENDED = 4
 
     def __init__(self):
-        super(BaseRoutine, self).__init__()
         self.process = None
         self.__continuation = None
         self.__state = BaseRoutine.State.IDLE

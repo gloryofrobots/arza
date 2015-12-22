@@ -71,10 +71,10 @@ def _print(routine):
 
     builder = UnicodeBuilder()
     for arg in args[:-1]:
-        builder.append(api.tostring(arg).value())
+        builder.append(api.to_native_unicode(arg))
         builder.append(u' ')
 
-    builder.append(api.tostring(args[-1]).value())
+    builder.append(api.to_native_unicode(args[-1]))
 
     u_print_str = builder.build()
     print_str = encode_unicode_utf8(u_print_str)
@@ -89,7 +89,7 @@ def _eval(routine):
 
     assert isstring(x)
 
-    src = x.value()
+    src = api.to_native_string(x)
     from obin.compile.compiler import compile as cl
     code = cl(src)
     f = create_eval_routine(code)
@@ -109,7 +109,9 @@ def _range(routine):
     from obin.objects.space import newvector, newint
     start = routine.get_arg(0)
     end = routine.get_arg(1)
-    items = [newint(i) for i in xrange(start.value(), end.value())]
+    start = api.to_native_integer(start)
+    end = api.to_native_integer(end)
+    items = [newint(i) for i in xrange(start, end)]
     return newvector(items)
 
 

@@ -2,7 +2,7 @@ __author__ = 'gloryofrobots'
 from discriminator import *
 
 
-class Argument(object):
+class Argument:
     # return new discriminator for argument or choose existed one
     def __init__(self, position):
         self.position = position
@@ -31,7 +31,7 @@ class Argument(object):
 
 class PredicateArgument(Argument):
     def __init__(self, position, predicate):
-        super(PredicateArgument, self).__init__(position)
+        Argument.__init__(self, position)
         self.predicate = predicate
 
     def find_old_discriminator(self, discriminators):
@@ -89,7 +89,7 @@ class ArgumentAny(Argument):
 
 class ArgumentTrait(Argument):
     def __init__(self, position, trait):
-        super(ArgumentTrait, self).__init__(position)
+        Argument.__init__(self, position)
         self.trait = trait
 
     def find_old_discriminator(self, discriminators):
@@ -123,7 +123,7 @@ class ArgumentTrait(Argument):
         return self.trait.__hash__()
 
 
-class Signature(object):
+class Signature:
     def __init__(self, args, method):
         from obin.objects import space, api
         traits = space.state.traits

@@ -12,7 +12,7 @@ def estimate_stack_size(opcodes):
     return max_size
 
 
-class CodeSource(object):
+class CodeSource:
     _immutable_fields_ = ['compiled_opcodes[*]', 'scope']
 
     """ That object stands for code of a single javascript function
@@ -149,7 +149,7 @@ class CodeSource(object):
         return "\n".join([repr(i) for i in self.opcodes])
 
 
-class Code(object):
+class Code:
     def __init__(self, opcodes, estimated_stack_size, scope):
         self.opcodes = opcodes
         self.estimated_stack_size = estimated_stack_size

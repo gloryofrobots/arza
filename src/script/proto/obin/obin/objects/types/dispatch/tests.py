@@ -8,7 +8,7 @@ def specify(generic, sig, name):
     generic.reify_single(sig, method)
 
 def sig(*args):
-    from obin.objects.space import newtrait, newgeneric, newstring, newprimitive, newvector
+    from obin.objects.space import newvector
     return newvector(list(args))
 
 def makeobject(traits):
@@ -19,7 +19,7 @@ def makeobject(traits):
 
 
 def objects(traits_list):
-    from obin.objects.space import newplainobject, newvector
+    from obin.objects.space import newvector
     return newvector([makeobject(traits) for traits in traits_list])
 
 def test(gen, expected, args):

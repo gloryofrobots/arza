@@ -1,6 +1,6 @@
 from obin.objects import api
 
-class Discriminator(object):
+class Discriminator:
     def __init__(self, position):
         self.position = position
         self.status = None
@@ -30,7 +30,7 @@ class Discriminator(object):
 
 class AnyDiscriminator(Discriminator):
     def __init__(self, position):
-        super(AnyDiscriminator, self).__init__(position)
+        Discriminator.__init__(self, position)
 
     def _evaluate(self, arg):
         return 1000
@@ -41,7 +41,7 @@ class AnyDiscriminator(Discriminator):
 
 class PredicateDiscriminator(Discriminator):
     def __init__(self, position, predicate):
-        super(PredicateDiscriminator, self).__init__(position)
+        Discriminator.__init__(self, position)
         self.predicate = predicate
 
     def __eq__(self, other):
@@ -69,7 +69,7 @@ class PredicateDiscriminator(Discriminator):
 
 class TraitDiscriminator(Discriminator):
     def __init__(self, position, trait):
-        super(TraitDiscriminator, self).__init__(position)
+        Discriminator.__init__(self, position)
         self.trait = trait
 
     def __eq__(self, other):

@@ -21,11 +21,10 @@ def get_reference(lex, identifier):
         return get_reference(outer, identifier)
 
 
-class Environment(object):
+class Environment:
     _immutable_fields_ = ['binding_object', 'outer_environment']
 
     def __init__(self, obj, outer_environment=None):
-        super(Environment, self).__init__()
         assert isinstance(outer_environment, Environment) or outer_environment is None
         self.outer_environment = outer_environment
         self.binding = obj

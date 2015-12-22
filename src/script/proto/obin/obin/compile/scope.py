@@ -1,7 +1,7 @@
 from obin.objects.space import isstring
 from obin.objects.slots import newslots_empty, newslots_with_values_from_slots
 
-class ScopeSet(object):
+class ScopeSet:
     def __init__(self):
         self.values = []
 
@@ -13,11 +13,11 @@ class ScopeSet(object):
 
     def add(self, val):
         assert val not in self.values
-        self.values.append(val)
+        self.values = self.values + [val]
         return len(self.values) - 1
 
 
-class Scope(object):
+class Scope:
     def __init__(self):
         self.locals = newslots_empty()
 
@@ -91,7 +91,7 @@ class Scope(object):
                           self.arg_count, self.is_variadic, self.fn_name_index)
 
 
-class FinalScope(object):
+class FinalScope:
     _immutable_fields_ = ['vars', 'arg_count', 'fn_name_index',
                           'references[*]', 'is_varargs', 'count_refs', 'count_vars', 'literals', 'functions']
 
@@ -107,9 +107,8 @@ class FinalScope(object):
         self.arguments = arguments
 
     def create_object(self):
-        from copy import copy
         from obin.objects.space import newplainobject_with_slots
-        return newplainobject_with_slots(copy(self.variables))
+        return newplainobject_with_slots(self.variables.copy())
 
     def create_environment_slots(self, arguments):
         return newslots_with_values_from_slots(arguments, self.variables)

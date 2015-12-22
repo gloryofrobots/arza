@@ -2,7 +2,7 @@ from obin.compile.parse.token_type import TT_NEWLINE
 from obin.compile.parse.node import Node
 
 
-class TokenStream(object):
+class TokenStream:
     def __init__(self, _tokens):
         self.tokens = _tokens
         self.node = None

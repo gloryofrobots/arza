@@ -1,15 +1,13 @@
 __author__ = 'gloryofrobots'
 from rpython.rlib import jit
+from obin.objects.space import newundefined
 
-class Stack(object):
+class Stack:
     def __init__(self, size=1):
         self.data = None
-        self.__pointer = None
-        self.init(size)
-
-    def init(self, size=1):
-        self.data = [None] * size
         self.__pointer = 0
+        undef = newundefined()
+        self.data = [undef] * size
 
     def pointer(self):
         return jit.promote(self.__pointer)

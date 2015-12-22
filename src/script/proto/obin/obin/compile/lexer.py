@@ -2,7 +2,7 @@ import re
 from obin.compile.parse import tokens
 
 
-class Token(object):
+class Token:
     """ A simple Token structure.
         Contains the token type, value and position.
     """

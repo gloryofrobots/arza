@@ -91,10 +91,10 @@ class W_Object(W_Cell):
         return unicode("{%s %s}" % (str(self._slots), str(self._traits)))
 
     def _clone_(self):
-        import copy
-        slots = copy.copy(self._slots)
+        from obin.utils.copy import copy
+        slots = copy(self._slots)
         clone = W_Object(slots)
-        traits = copy.copy(self._traits)
+        traits = copy(self._traits)
         clone.set_traits(traits)
         return clone
 

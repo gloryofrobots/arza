@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
 from obin.compile.parse.parser import *
 
-class Transformer(object):
+class Transformer:
     def __init__(self):
         self.transformers = {}
 

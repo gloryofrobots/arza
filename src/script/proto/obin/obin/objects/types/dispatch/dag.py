@@ -1,4 +1,4 @@
-class DAGNode(object):
+class DAGNode:
     def evaluate(self, args):
         raise NotImplementedError()
 

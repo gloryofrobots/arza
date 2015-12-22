@@ -179,7 +179,7 @@ class W_Generic(W_Root):
         return method
 
     def _tostring_(self):
-        return "method %s {}" % self._name_.value()
+        return "method %s {}" % api.to_native_string(self._name_)
 
     def _tobool_(self):
         return True

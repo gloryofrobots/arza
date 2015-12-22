@@ -26,7 +26,10 @@ def opcode_to_str(p):
 # SOME OPCODES CHANGE STACK SIZE DEPENDING ON RUNTIME VALUES. MAXIMAL CHANGES USED FOR THIS OPCODES,
 # SO STACK CAN BE LARGER THEN IT NECESSARY
 def opcode_estimate_stack_change(opcode):
+    assert isinstance(opcode, tuple)
+    assert len(opcode) == 3
     tag = opcode[0]
+    assert isinstance(tag, int)
 
     change = __STACK_CHANGES__[tag]
     # print opcode_to_str(tag), change
@@ -50,6 +53,7 @@ def opcode_estimate_stack_change(opcode):
     # pop generic from stack too
     elif tag == REIFY:
         return -1 * (arg1 + 1) + 1
+    return 0
 
 
 def opcode_info(routine, opcode):

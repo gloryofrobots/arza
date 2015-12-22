@@ -15,7 +15,7 @@ class W_Trait(W_Cell):
         return self
 
     def _tostring_(self):
-        return u"<trait %s>" % (self._name_.value())
+        return u"<trait %s>" % (api.to_native_string(self._name_))
 
     def __hash__(self):
         return self.__id

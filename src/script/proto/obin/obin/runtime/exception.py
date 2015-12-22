@@ -27,7 +27,6 @@ class ObinRuntimeError(ObinException):
 
 class ObinTraitError(ObinException):
     def __init__(self, message, trait):
-        super(ObinTraitError, self).__init__()
         self.message = message
         self.trait = trait
 
@@ -36,7 +35,6 @@ class ObinTraitError(ObinException):
 
 class ObinTypeError(ObinException):
     def __init__(self, value):
-        super(ObinTypeError, self).__init__()
         from obin.utils import tb
         tb()
         # assert isinstance(value, unicode)
@@ -48,7 +46,6 @@ class ObinTypeError(ObinException):
 
 class ObinReferenceError(ObinException):
     def __init__(self, identifier):
-        super(ObinReferenceError, self).__init__()
         self.identifier = identifier.value()
 
     def _msg(self):
@@ -57,7 +54,6 @@ class ObinReferenceError(ObinException):
 
 class ObinRangeError(ObinException):
     def __init__(self, value=None):
-        super(ObinRangeError, self).__init__()
         self.value = value
 
     def _msg(self):
@@ -66,7 +62,6 @@ class ObinRangeError(ObinException):
 
 class ObinKeyError(ObinRangeError):
     def __init__(self, value=None):
-        super(ObinKeyError, self).__init__()
         self.value = value
 
     def _msg(self):
@@ -75,7 +70,6 @@ class ObinKeyError(ObinRangeError):
 
 class ObinInvokeError(ObinRangeError):
     def __init__(self, value=None):
-        super(ObinInvokeError, self).__init__()
         self.value = value
 
     def _msg(self):
@@ -84,7 +78,6 @@ class ObinInvokeError(ObinRangeError):
 
 class ObinMethodInvokeError(ObinRangeError):
     def __init__(self, method, args):
-        super(ObinMethodInvokeError, self).__init__()
         self.arguments = args
         self.method = method
 
@@ -94,7 +87,6 @@ class ObinMethodInvokeError(ObinRangeError):
 
 class ObinMethodSpecialisationError(ObinRangeError):
     def __init__(self, method, message):
-        super(ObinMethodSpecialisationError, self).__init__()
         self.method = method
         self.message = message
 
@@ -104,7 +96,6 @@ class ObinMethodSpecialisationError(ObinRangeError):
 
 class ObinSyntaxError(ObinException):
     def __init__(self, msg=u'', src=u'', line=0, column=0):
-        super(ObinSyntaxError, self).__init__()
         self.error_msg = msg
         self.src = src
         self.line = line

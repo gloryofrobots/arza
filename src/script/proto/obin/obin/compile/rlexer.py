@@ -12,7 +12,7 @@ def create_generator(rules):
     return lexer
 
 
-class Token(object):
+class Token:
     """ A simple Token structure.
         Contains the token type, value and position.
     """

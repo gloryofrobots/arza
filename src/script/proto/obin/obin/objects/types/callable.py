@@ -21,9 +21,9 @@ class W_Function(W_Root):
         self.scope = scope
 
     def _tostring_(self):
-        params = ",".join([str(p.value()) for p in self._bytecode_.scope.arguments])
+        params = ",".join([api.to_native_string(p) for p in self._bytecode_.scope.arguments])
         # return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
-        return "fn %s(%s){ %s }" % (self._name_.value(), params, "..." )
+        return "fn %s(%s){ %s }" % (api.to_native_string(self._name_), params, "..." )
 
     def _tobool_(self):
         return True
@@ -55,7 +55,7 @@ class W_Primitive(W_Root):
         self.arity = arity
 
     def _tostring_(self):
-        return "function %s {[native code]}" % self._name_.value()
+        return "function %s {[native code]}" % api.to_native_string(self._name_)
 
     def _tobool_(self):
         return True

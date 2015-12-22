@@ -1,17 +1,276 @@
-from obin.runtime.baseop import plus, sub, mult, division, uminus, mod, compare_gt, \
-    compare_ge, compare_le, compare_lt
-from rpython.rlib.rarithmetic import intmask
-from rpython.rlib import jit
+import math
 
 from obin.objects.space import _w, isint, newint, newbool
 from obin.runtime.exception import ObinTypeError, ObinReferenceError
 from obin.objects import api
+from obin.objects.types.value import W_String, W_Integer, W_Float
+from obin.objects.space import _w, isint, isstring, isfloat, newbool, newint, newfloat
+from rpython.rlib.rarithmetic import ovfcheck, intmask
+from rpython.rlib.rfloat import isnan, isinf
+from rpython.rlib.objectmodel import specialize
+from obin.builtins.number_builtins import w_NAN, w_POSITIVE_INFINITY, w_NEGATIVE_INFINITY
+from rpython.rlib import jit
 from obin.utils import tb
 
 
-def apply_binary_on_unboxed(routine, operation):
-    right = routine.stack.pop().value()
-    left = routine.stack.pop().value()
+def plus(r, lprim, rprim):
+    if isstring(lprim) or isstring(rprim):
+        sleft = api.to_native_string(lprim)
+        sright = api.to_native_string(rprim)
+        return W_String(sleft + sright)
+    # hot path
+    if isint(lprim) and isint(rprim):
+        ileft = api.to_native_integer(lprim)
+        iright = api.to_native_integer(rprim)
+        try:
+            return newint(ovfcheck(ileft + iright))
+        except OverflowError:
+            return newfloat(float(ileft) + float(iright))
+    else:
+        fleft = api.to_native_float(lprim)
+        fright = api.to_native_float(rprim)
+        return newfloat(fleft + fright)
+
+
+def sub(r, nleft, nright):
+    if isint(nleft) and isint(nright):
+        ileft = api.to_native_integer(nleft)
+        iright = api.to_native_integer(nright)
+        try:
+            return newint(ovfcheck(ileft - iright))
+        except OverflowError:
+            return newfloat(float(ileft) - float(iright))
+
+    fleft = api.to_native_float(nleft)
+    fright = api.to_native_float(nright)
+    return newfloat(fleft - fright)
+
+
+def mult(r, nleft, nright):
+    if isint(nleft) and isint(nright):
+        ileft = api.to_native_integer(nleft)
+        iright = api.to_native_integer(nright)
+        try:
+            return newint(ovfcheck(ileft * iright))
+        except OverflowError:
+            return newfloat(float(ileft) * float(iright))
+
+    fleft = api.to_native_float(nleft)
+    fright = api.to_native_float(nright)
+    return newfloat(fleft * fright)
+
+
+def mod(r, w_left, w_right):
+    fleft = api.to_native_float(w_left)
+    fright = api.to_native_float(w_right)
+
+    if isnan(fleft) or isnan(fright):
+        return w_NAN
+
+    if isinf(fright) or fright == 0:
+        return w_NAN
+
+    if isinf(fright):
+        return w_left
+
+    if fleft == 0:
+        return w_left
+
+    return newfloat(math.fmod(fleft, fright))
+
+
+def sign(x):
+    from math import copysign
+    return copysign(1.0, x)
+
+
+def sign_of(a, b):
+    sign_a = sign(a)
+    sign_b = sign(b)
+    return sign_a * sign_b
+
+
+def w_signed_inf(sign):
+    if sign < 0.0:
+        return w_NEGATIVE_INFINITY
+    return w_POSITIVE_INFINITY
+
+
+# 11.5.2
+def division(r, nleft, nright):
+    fleft = api.to_native_float(nleft)
+    fright = api.to_native_float(nright)
+    if isnan(fleft) or isnan(fright):
+        return w_NAN
+
+    if isinf(fleft) and isinf(fright):
+        return w_NAN
+
+    if isinf(fleft) and fright == 0:
+        s = sign_of(fleft, fright)
+        return w_signed_inf(s)
+
+    if isinf(fright):
+        return newfloat(0.0)
+
+    if fleft == 0 and fright == 0:
+        return w_NAN
+
+    if fright == 0:
+        s = sign_of(fleft, fright)
+        return w_signed_inf(s)
+
+    val = fleft / fright
+    return newfloat(val)
+
+
+@specialize.argtype(0, 1)
+def _compare_gt(x, y):
+    return x > y
+
+
+@specialize.argtype(0, 1)
+def _compare_ge(x, y):
+    return x >= y
+
+
+def _base_compare(x, y, _compare):
+    if isint(x) and isint(y):
+        n1 = api.to_native_integer(x)
+        n2 = api.to_native_integer(y)
+        return _compare(n1, n2)
+
+    if isfloat(x) and isfloat(y):
+        n1 = api.to_native_float(x)
+        n2 = api.to_native_float(y)
+        return _compare(n1, n2)
+
+    if isstring(x) and isstring(y):
+        n1 = api.to_native_string(x)
+        n2 = api.to_native_string(y)
+        return _compare(n1, n2)
+    else:
+        raise ObinTypeError(u"Invalid comparison operation")
+
+
+def compare_gt(r, x, y):
+    return newbool(_base_compare(x, y, _compare_gt))
+
+
+def compare_ge(r, x, y):
+    return newbool(_base_compare(x, y, _compare_ge))
+
+
+def compare_lt(r, x, y):
+    return newbool(_base_compare(y, x, _compare_gt))
+
+
+def compare_le(r, x, y):
+    return newbool(_base_compare(y, x, _compare_ge))
+
+
+def uminus(routine, obj):
+    if isint(obj):
+        intval = api.to_native_integer(obj)
+        if intval == 0:
+            return newfloat(-float(intval))
+        return newint(-intval)
+    n1 = api.to_native_float(obj)
+    return newfloat(-n1)
+
+
+def _in(routine, left, right):
+    from obin.objects.space import iscell
+    if not iscell(right):
+        raise ObinTypeError(u"TypeError: invalid object for in operator")
+
+    return api.has(right, left)
+
+
+def _bitand(r, op1, op2):
+    return newint(int(op1 & op2))
+
+
+def _bitxor(r, op1, op2):
+    return newint(int(op1 ^ op2))
+
+
+def _bitor(r, op1, op2):
+    return newint(int(op1 | op2))
+
+
+def bitnot(r, op):
+    return newint(~op)
+
+
+def ursh(r, lval, rval):
+    lnum = api.to_native_integer(lval)
+    rnum = api.to_native_integer(rval)
+
+    # from rpython.rlib.rarithmetic import ovfcheck_float_to_int
+
+    shift_count = rnum & 0x1F
+    res = lnum >> shift_count
+    return _w(res)
+
+
+def rsh(r, lval, rval):
+    lnum = api.to_native_integer(lval)
+    rnum = api.to_native_integer(rval)
+
+    # from rpython.rlib.rarithmetic import ovfcheck_float_to_int
+
+    shift_count = rnum & 0x1F
+    res = lnum >> shift_count
+    return _w(res)
+
+
+def lsh(r, lval, rval):
+    rnum = rval.value()
+    lnum = lval.value()
+
+    shift_count = intmask(rnum & 0x1F)
+    res = lnum << shift_count
+
+    return _w(res)
+
+
+def uplus(r, op1):
+    assert isint(op1)
+    return op1
+
+
+def _not(r, val):
+    v = api.to_native_bool(val)
+    return newbool(not v)
+
+
+def eq(r, op1, op2):
+    return api.equal(op1, op2)
+
+
+def noteq(r, op1, op2):
+    # TODO api.ne
+    return newbool(not api.to_native_bool(api.equal(op1, op2)))
+
+
+def _isnot(r, op1, op2):
+    # TODO api.isnot
+    return newbool(not api.to_native_bool(api.strict_equal(op1, op2)))
+
+
+def _is(r, op1, op2):
+    return api.strict_equal(op1, op2)
+
+
+"""
+********************************** WRAPPERS
+"""
+
+
+def apply_binary_on_unboxed_integers(routine, operation):
+    right = api.to_native_integer(routine.stack.pop())
+    left = api.to_native_integer(routine.stack.pop())
     routine.stack.push(operation(routine, left, right))
 
 
@@ -26,19 +285,12 @@ def apply_unary(routine, operation):
     routine.stack.push(operation(routine, val))
 
 
-def apply_unary_on_unboxed(routine, operation):
-    val = routine.stack.pop().value()
+def apply_unary_on_unboxed_integer(routine, operation):
+    val = api.to_native_integer(routine.stack.pop())
     routine.stack.push(operation(routine, val))
 
 
 def primitive_IN(routine):
-    def _in(routine, left, right):
-        from obin.objects.space import iscell
-        if not iscell(right):
-            raise ObinTypeError(u"TypeError: invalid object for in operator")
-
-        return api.has(right, left)
-
     apply_binary(routine, _in)
 
 
@@ -63,79 +315,34 @@ def primitive_MOD(routine):
 
 
 def primitive_BITAND(routine):
-    def _bitand(r, op1, op2):
-        return newint(int(op1 & op2))
-
-    apply_binary_on_unboxed(routine, _bitand)
+    apply_binary_on_unboxed_integers(routine, _bitand)
 
 
 def primitive_BITXOR(routine):
-    def _bitxor(r, op1, op2):
-        return newint(int(op1 ^ op2))
-
-    apply_binary_on_unboxed(routine, _bitxor)
+    apply_binary_on_unboxed_integers(routine, _bitxor)
 
 
 def primitive_BITOR(routine):
-    def _bitor(r, op1, op2):
-        return newint(int(op1 | op2))
-
-    apply_binary_on_unboxed(routine, _bitor)
+    apply_binary_on_unboxed_integers(routine, _bitor)
 
 
 def primitive_BITNOT(routine):
-    def bitnot(r, op):
-        return newint(~op)
-
-    apply_unary_on_unboxed(routine, bitnot)
+    apply_unary_on_unboxed_integer(routine, bitnot)
 
 
 def primitive_URSH(routine):
-    def ursh(r, lval, rval):
-        rnum = rval.value()
-        lnum = lval.value()
-
-        # from rpython.rlib.rarithmetic import ovfcheck_float_to_int
-
-        shift_count = rnum & 0x1F
-        res = lnum >> shift_count
-        return _w(res)
-
     apply_binary(routine, ursh)
 
 
 def primitive_RSH(routine):
-    def rsh(r, lval, rval):
-        rnum = rval.value()
-        lnum = lval.value()
-
-        # from rpython.rlib.rarithmetic import ovfcheck_float_to_int
-
-        shift_count = rnum & 0x1F
-        res = lnum >> shift_count
-        return _w(res)
-
     apply_binary(routine, rsh)
 
 
 def primitive_LSH(routine):
-    def lsh(r, lval, rval):
-        rnum = rval.value()
-        lnum = lval.value()
-
-        shift_count = intmask(rnum & 0x1F)
-        res = lnum << shift_count
-
-        return _w(res)
-
     apply_binary(routine, lsh)
 
 
 def primitive_UPLUS(routine):
-    def uplus(r, op1):
-        assert isint(op1)
-        return op1
-
     apply_unary(routine, uplus)
 
 
@@ -144,24 +351,8 @@ def primitive_UMINUS(routine):
 
 
 def primitive_NOT(routine):
-    def _not(r, val):
-        v = api.toboolvalue(val)
-        return newbool(not v)
-
     apply_unary(routine, _not)
 
-
-# class BaseBinaryComparison(Opcode):
-#     _stack_change = 0
-#
-#     def eval(self, routine):
-#         s4 = routine.stack.pop()
-#         s2 = routine.stack.pop()
-#         res = self.decision(s2, s4)
-#         routine.stack.push(res)
-#
-#     def decision(self, op1, op2):
-#         raise NotImplementedError
 
 def primitive_GT(routine):
     apply_binary(routine, compare_gt)
@@ -180,31 +371,16 @@ def primitive_LE(routine):
 
 
 def primitive_EQ(routine):
-    def eq(r, op1, op2):
-        return api.equal(op1, op2)
-
     apply_binary(routine, eq)
 
 
 def primitive_NE(routine):
-    def noteq(r, op1, op2):
-        # TODO api.ne
-        return newbool(not (api.equal(op1, op2)).value())
-
     apply_binary(routine, noteq)
 
 
 def primitive_IS(routine):
-    def _is(r, op1, op2):
-        return api.strict_equal(op1, op2)
-
     apply_binary(routine, _is)
 
 
 def primitive_ISNOT(routine):
-    def _isnot(r, op1, op2):
-        # TODO api.isnot
-        return newbool(not (api.strict_equal(op1, op2)).value())
-
     apply_binary(routine, _isnot)
-

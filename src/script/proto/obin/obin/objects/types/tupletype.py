@@ -1,11 +1,13 @@
 from root import W_Cell
 from value import NativeListIterator
 from obin.runtime.exception import *
+from obin.objects import api
 
 
 class W_Tuple(W_Cell):
     def __init__(self, items):
-        assert isinstance(items, tuple)
+        W_Cell.__init__(self)
+        assert isinstance(items, list)
         self.values = items
 
     def _native_iterator_(self):
@@ -15,7 +17,7 @@ class W_Tuple(W_Cell):
         return hash(self.values)
 
     def __str__(self):
-        return str(self.values)
+        return "(%s,)" % ",".join([v._tostring_() for v in self.values])
 
     def _traits_(self):
         from obin.objects.space import state
@@ -28,7 +30,7 @@ class W_Tuple(W_Cell):
         from obin.objects.space import newundefined, isint
         assert isint(index)
         try:
-            el = self.values[index.value()]
+            el = self.values[api.to_native_integer(index)]
         except ObinKeyError:
             return newundefined()
 
@@ -66,12 +68,12 @@ class W_Tuple(W_Cell):
 
 
 def append(tupl, v):
-    items = tupl.values + (v,)
+    items = tupl.values + [v]
     return W_Tuple(items)
 
 
 def prepend(tupl, v):
-    items = (v,) + tupl.values
+    items = [v] + tupl.values
     return W_Tuple(items)
 
 
@@ -79,7 +81,7 @@ def insert(tupl, index, v):
     items = tupl.values
     first = items[0:index]
     second = items[index:]
-    items = first + (v,) + second
+    items = first + [v] + second
     return W_Tuple(items)
 
 
@@ -92,7 +94,7 @@ def remove(tupl, v):
     return W_Tuple(items)
 
 
-def append_tuple(tupl, items):
+def append_items(tupl, items):
     items = tupl.values + items
     return W_Tuple(items)
 
@@ -115,7 +117,7 @@ def fold_slice(tupl, index):
     items = tupl.values
     slice = items[index:]
     rest = items[0:index]
-    items = rest + (slice,)
+    items = rest + [slice,]
     return W_Tuple(items)
 
 

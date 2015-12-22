@@ -34,67 +34,48 @@ def newstring(s):
     assert isinstance(s, unicode)
     return W_String(s)
 
+class Globals:
+    def __init__(self):
+        self.w_True = None
+        self.w_False = None
+        self.w_Undefined = None
+        self.w_Interrupt = None
+        self.w_Null = None
 
-w_True = None
-w_False = None
+w_Globals = Globals()
 
+def makeglobals():
+    global w_Globals
+    from obin.objects.types.constant import W_True, W_False, W_Undefined, W_Nil, W_Constant
+    w_Globals.w_True = W_True()
+    w_Globals.w_False = W_False()
+    w_Globals.w_Null = W_Nil()
+    w_Globals.w_Undefined = W_Undefined()
+    w_Globals.w_Interrupt = W_Constant()
 
-def makebools():
-    global w_True
-    global w_False
-    from obin.objects.types.constant import W_True, W_False
-    w_True = W_True()
-    w_False = W_False()
-    jit.promote(w_True)
-    jit.promote(w_False)
-
-
-def _makeundefined():
-    from obin.objects.types.constant import W_Undefined
-    return W_Undefined()
-
-
-w_Undefined = _makeundefined()
-jit.promote(w_Undefined)
-
-
-def _makenull():
-    from obin.objects.types.constant import W_Nil
-    return W_Nil()
-
-
-w_Null = _makenull()
-jit.promote(w_Null)
-
-
-def _make_interrupt():
-    from obin.objects.types.constant import W_Constant
-    return W_Constant()
-
-
-w_Interrupt = _make_interrupt()
+    jit.promote(w_Globals.w_True)
+    jit.promote(w_Globals.w_False)
+    jit.promote(w_Globals.w_Undefined)
+    jit.promote(w_Globals.w_Null)
 
 
 def newinterrupt():
-    return w_Interrupt
+    return w_Globals.w_Interrupt
 
 
 def newnull():
-    return w_Null
+    return w_Globals.w_Null
 
 
 def newundefined():
-    return w_Undefined
+    return w_Globals.w_Undefined
 
 
 @enforceargs(bool)
 def newbool(val):
-    if not w_False:
-        makebools()
-
     if val:
-        return w_True
-    return w_False
+        return w_Globals.w_True
+    return w_Globals.w_False
 
 
 def newfunc(name, bytecode, scope):
@@ -182,11 +163,11 @@ def isany(value):
 
 
 def isundefined(value):
-    return value is w_Undefined
+    return value is w_Globals.w_Undefined
 
 
 def isinterrupt(value):
-    return value is w_Interrupt
+    return value is w_Globals.w_Interrupt
 
 
 def iscell(value):
@@ -268,8 +249,8 @@ def isnull_or_undefined(obj):
     return False
 
 
-class State(object):
-    class Traits(object):
+class State:
+    class Traits:
         def __init__(self):
             self.Any = newtrait(newstring(u"Any"))
             self.Boolean = newtrait(newstring(u"Boolean"))
@@ -334,6 +315,7 @@ state = State()
 
 
 def newprocess(libdirs):
+    makeglobals()
     from obin.builtins import setup_builtins
     from obin.runtime.process import Process
     process = Process()
