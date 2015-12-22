@@ -174,9 +174,127 @@ class Compiler(object):
     def _compile_node(self, code, node):
         self.current_node = node
         t = node.type
-        t_str = token_type_to_str(t).replace("TT_", "")
-        compiler = getattr(self, "_compile_" + t_str)
-        return compiler(code, node)
+
+        if TT_INT == t:
+            self._compile_INT(code, node)
+        elif TT_FLOAT == t:
+            self._compile_FLOAT(code, node)
+        elif TT_STR == t:
+            self._compile_STR(code, node)
+        elif TT_CHAR == t:
+            self._compile_CHAR(code, node)
+        elif TT_NAME == t:
+            self._compile_NAME(code, node)
+        elif TT_BREAK == t:
+            self._compile_BREAK(code, node)
+        elif TT_CONTINUE == t:
+            self._compile_CONTINUE(code, node)
+        elif TT_FOR == t:
+            self._compile_FOR(code, node)
+        elif TT_WHILE == t:
+            self._compile_WHILE(code, node)
+        elif TT_IF == t:
+            self._compile_IF(code, node)
+        elif TT_WHEN == t:
+            self._compile_WHEN(code, node)
+        elif TT_FN == t:
+            self._compile_FN(code, node)
+        elif TT_AND == t:
+            self._compile_AND(code, node)
+        elif TT_OR == t:
+            self._compile_OR(code, node)
+        elif TT_NOT == t:
+            self._compile_NOT(code, node)
+        elif TT_TRUE == t:
+            self._compile_TRUE(code, node)
+        elif TT_FALSE == t:
+            self._compile_FALSE(code, node)
+        elif TT_NIL == t:
+            self._compile_NIL(code, node)
+        elif TT_UNDEFINED == t:
+            self._compile_UNDEFINED(code, node)
+        elif TT_IN == t:
+            self._compile_IN(code, node)
+        elif TT_IS == t:
+            self._compile_IS(code, node)
+        elif TT_OBJECT == t:
+            self._compile_OBJECT(code, node)
+        elif TT_ISNOT == t:
+            self._compile_ISNOT(code, node)
+        elif TT_OUTER == t:
+            self._compile_OUTER(code, node)
+        elif TT_IMPORT == t:
+            self._compile_IMPORT(code, node)
+        elif TT_TRAIT == t:
+            self._compile_TRAIT(code, node)
+        elif TT_GENERIC == t:
+            self._compile_GENERIC(code, node)
+        elif TT_REIFY == t:
+            self._compile_REIFY(code, node)
+        elif TT_RETURN == t:
+            self._compile_RETURN(code, node)
+        elif TT_ADD_ASSIGN == t:
+            self._compile_ADD_ASSIGN(code, node)
+        elif TT_SUB_ASSIGN == t:
+            self._compile_SUB_ASSIGN(code, node)
+        elif TT_MUL_ASSIGN == t:
+            self._compile_MUL_ASSIGN(code, node)
+        elif TT_DIV_ASSIGN == t:
+            self._compile_DIV_ASSIGN(code, node)
+        elif TT_MOD_ASSIGN == t:
+            self._compile_MOD_ASSIGN(code, node)
+        elif TT_BITAND_ASSIGN == t:
+            self._compile_BITAND_ASSIGN(code, node)
+        elif TT_BITXOR_ASSIGN == t:
+            self._compile_BITXOR_ASSIGN(code, node)
+        elif TT_BITOR_ASSIGN == t:
+            self._compile_BITOR_ASSIGN(code, node)
+        elif TT_RSHIFT == t:
+            self._compile_RSHIFT(code, node)
+        elif TT_URSHIFT == t:
+            self._compile_URSHIFT(code, node)
+        elif TT_LSHIFT == t:
+            self._compile_LSHIFT(code, node)
+        elif TT_EQ == t:
+            self._compile_EQ(code, node)
+        elif TT_LE == t:
+            self._compile_LE(code, node)
+        elif TT_GE == t:
+            self._compile_GE(code, node)
+        elif TT_NE == t:
+            self._compile_NE(code, node)
+        elif TT_LCURLY == t:
+            self._compile_LCURLY(code, node)
+        elif TT_ASSIGN == t:
+            self._compile_ASSIGN(code, node)
+        elif TT_LPAREN == t:
+            self._compile_LPAREN(code, node)
+        elif TT_LSQUARE == t:
+            self._compile_LSQUARE(code, node)
+        elif TT_DOT == t:
+            self._compile_DOT(code, node)
+        elif TT_BITAND == t:
+            self._compile_BITAND(code, node)
+        elif TT_BITNOT == t:
+            self._compile_BITNOT(code, node)
+        elif TT_BITOR == t:
+            self._compile_BITOR(code, node)
+        elif TT_BITXOR == t:
+            self._compile_BITXOR(code, node)
+        elif TT_SUB == t:
+            self._compile_SUB(code, node)
+        elif TT_ADD == t:
+            self._compile_ADD(code, node)
+        elif TT_MUL == t:
+            self._compile_MUL(code, node)
+        elif TT_DIV == t:
+            self._compile_DIV(code, node)
+        elif TT_MOD == t:
+            self._compile_MOD(code, node)
+        elif TT_LT == t:
+            self._compile_LT(code, node)
+        elif TT_GT == t:
+            self._compile_GT(code, node)
 
     def _compile_FLOAT(self, bytecode, node):
         value = float(node.value)
@@ -460,7 +578,7 @@ class Compiler(object):
         items = node.first()
         self._compile_object(code, items, [])
 
-    def _compile_OBJECT_EXPRESSION(self, code, node):
+    def _compile_OBJECT_expression(self, code, node):
         traits = node.first()
         items = node.second()
         self._compile_object(code, items, traits)
@@ -470,7 +588,7 @@ class Compiler(object):
         compiles object statements
         """
         if node.arity == 2:
-            return self._compile_OBJECT_EXPRESSION(code, node)
+            return self._compile_OBJECT_expression(code, node)
 
         name = node.first()
         traits = node.second()
@@ -493,7 +611,7 @@ class Compiler(object):
     def _compile_LSQUARE(self, code, node):
         # lookup like a[0]
         if node.arity == 2:
-            return self._compile_LSQUARE_LOOKUP(code, node)
+            return self._compile_LSQUARE_lookup(code, node)
 
         items = node.first()
         for c in items:
@@ -553,7 +671,7 @@ class Compiler(object):
 
         code.emit_2(FUNCTION, funcname, compiled_code)
 
-    def _compile_FN_EXPRESSION(self, code, node):
+    def _compile_FN_expression(self, code, node):
         name = obs.newstring(u'')
         params = node.first()
         outers = node.second()
@@ -565,7 +683,7 @@ class Compiler(object):
         compiles function statements
         """
         if node.arity == 3:
-            return self._compile_FN_EXPRESSION(code, node)
+            return self._compile_FN_expression(code, node)
 
         name = node.first()
         funcname = obs.newstring(name.value)
@@ -622,7 +740,7 @@ class Compiler(object):
 
         return _parse_node(node)
 
-    def _compile_IMPORT_SINGLE(self, code, node):
+    def _compile_IMPORT_single(self, code, node):
         exp = node.first()
         if exp.type == TT_AS:
             import_name = exp.second().value
@@ -645,7 +763,7 @@ class Compiler(object):
         import_name_index = self.declare_local(import_name)
         code.emit_2(STORE_LOCAL, import_name_index, import_name_literal)
 
-    def _compile_IMPORT_DESTRUCTURING(self, code, node):
+    def _compile_IMPORT_destructuring(self, code, node):
         items = node.first()
         module = node.second()
         module_path = self._dot_to_string(module)
@@ -674,9 +792,9 @@ class Compiler(object):
 
     def _compile_IMPORT(self, code, node):
         if node.arity == 1:
-            self._compile_IMPORT_SINGLE(code, node)
+            self._compile_IMPORT_single(code, node)
         elif node.arity == 2:
-            self._compile_IMPORT_DESTRUCTURING(code, node)
+            self._compile_IMPORT_destructuring(code, node)
         else:
             compile_error(node, u"Invalid import statement", None)
 
@@ -786,10 +904,7 @@ class Compiler(object):
         # TODO LITERAL HERE
         # self.declare_symbol(name)
 
-    def _compile_ELLIPSIS(self, code, node):
-        pass
-
-    def _compile_LSQUARE_LOOKUP(self, code, node):
+    def _compile_LSQUARE_lookup(self, code, node):
         expr = node.second()
         self._compile(code, expr)
         obj = node.first()
@@ -831,7 +946,7 @@ class Compiler(object):
             else:
                 code.emit_1(VECTOR, normal_args_count)
 
-    def _compile_LPAREN_MEMBER(self, bytecode, node):
+    def _compile_LPAREN_member(self, bytecode, node):
         obj = node.first()
         method = node.second()
         name = obs.newstring(method.value)
@@ -851,7 +966,7 @@ class Compiler(object):
         if node.arity == 1:
             return self._compile_TUPLE(bytecode, node)
         elif node.arity == 3:
-            return self._compile_LPAREN_MEMBER(bytecode, node)
+            return self._compile_LPAREN_member(bytecode, node)
 
         func = node.first()
         args = node.second()

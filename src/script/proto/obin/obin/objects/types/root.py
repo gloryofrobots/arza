@@ -1,4 +1,4 @@
-class W_Root(object):
+class W_Root:
     _settled_ = True
     _immutable_fields_ = ['_type_']
     _type_ = ''

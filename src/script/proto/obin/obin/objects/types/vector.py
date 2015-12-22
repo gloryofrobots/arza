@@ -10,9 +10,8 @@ class W_Vector(W_Cell):
         assert isinstance(items, list)
         self._items = items
 
-    def __iter__(self):
+    def _native_iterator_(self):
         return self._items.__iter__()
-
     # def __str__(self):
     #     return u'W_Vector("%s")' % str(self._items)
 

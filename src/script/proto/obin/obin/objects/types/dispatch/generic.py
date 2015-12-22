@@ -1,6 +1,7 @@
 from obin.objects.types.root import W_Root
 from obin.runtime.exception import *
 from signature import Signature
+from obin.objects import api
 from dag import *
 
 
@@ -49,10 +50,17 @@ class W_Generic(W_Root):
 
         return record
 
+    def find_signature_index(self, signatures, signature):
+        for i, sig in enumerate(signatures):
+            if signature.equal(sig):
+                return i
+
+        raise IndexError()
+
     def reify(self, signatures):
         modified = {}
 
-        for sig in signatures:
+        for sig in api.native_iterator(signatures):
             args_signature = sig.at(0)
             method = sig.at(1)
             signature = Signature(args_signature, method)
@@ -70,11 +78,11 @@ class W_Generic(W_Root):
                 modified[arity] = signatures
 
             try:
-                index = signatures.index(signature)
+                index = self.find_signature_index(signatures, signature)
                 old = signatures[index]
                 self._methods_.remove(old.method)
                 signatures[index] = signature
-            except ValueError:
+            except IndexError:
                 signatures.append(signature)
 
             self._methods_.append(method)
@@ -98,11 +106,11 @@ class W_Generic(W_Root):
 
         # replace old method with same signature
         try:
-            index = signatures.index(signature)
+            index = self.find_signature_index(signatures, signature)
             old = signatures[index]
             self._methods_.remove(old.method)
             signatures[index] = signature
-        except ValueError:
+        except IndexError:
             signatures.append(signature)
 
         self._methods_.append(method)

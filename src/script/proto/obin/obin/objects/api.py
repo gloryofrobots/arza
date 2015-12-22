@@ -6,8 +6,10 @@ def tostring(obj):
     from space import newstring
     return newstring(unicode(obj._tostring_()))
 
+
 def tonativevalue(obj):
     return obj.value()
+
 
 def tobool(obj):
     from space import newbool
@@ -70,9 +72,11 @@ def detach(obj, trait):
     assert istrait(trait)
     obj.detach(trait)
 
+
 def kindof(obj, trait):
     t = trait._totrait_()
     return obj._kindof_(t)
+
 
 def has(obj, k):
     from space import isundefined, newbool
@@ -175,14 +179,16 @@ def iterator(obj):
     return obj._iterator_()
 
 
+def native_iterator(obj):
+    return obj._native_iterator_()
+
+
 def next(obj):
     return obj._next_()
 
 
 def totrait(any):
     return any._totrait_()
-
-
 
 
 def new_native_function(function, name, arity):

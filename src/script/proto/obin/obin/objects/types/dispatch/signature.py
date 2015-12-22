@@ -125,11 +125,11 @@ class ArgumentTrait(Argument):
 
 class Signature(object):
     def __init__(self, args, method):
-        from obin.objects import space
+        from obin.objects import space, api
         traits = space.state.traits
         self.arity = args.length()
         self.args = []
-        for i, trait in enumerate(args):
+        for i, trait in enumerate(api.native_iterator(args)):
             if traits.Any is trait:
                 arg = ArgumentAny(i)
             elif traits.Object is trait:
@@ -159,7 +159,7 @@ class Signature(object):
 
         self.method = method
 
-    def __eq__(self, other):
+    def equal(self, other):
         return other.args == self.args
 
     def at(self, index):

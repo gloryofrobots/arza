@@ -1,21 +1,22 @@
 __author__ = 'gloryofrobots'
 import os
-import os.path
+# from rpython.rlib import rpath as path
+from os import path
 import shutil
 import distutils.dir_util
 import filecmp
 
 
-def abspath(path):
-    return os.path.abspath(path)
+def abspath(p):
+    return path.abspath(p)
 
 
-def open_file(path, mode):
-    return open(path, mode)
+def open_file(p, mode):
+    return open(p, mode)
 
 
-def get_file_extension(path):
-    pathData = os.path.splitext(path)
+def get_file_extension(p):
+    pathData = path.splitext(p)
     if len(pathData) != 2:
         return None
 
@@ -24,8 +25,8 @@ def get_file_extension(path):
     return ext.lower()
 
 
-def set_file_extension(path, newExt):
-    pathData = os.path.splitext(path)
+def set_file_extension(p, newExt):
+    pathData = path.splitext(p)
     if len(pathData) != 2:
         return None
 
@@ -33,16 +34,16 @@ def set_file_extension(path, newExt):
     return basePart + "." + newExt
 
 
-def split_by_extension(path):
-    return os.path.splitext(path)
+def split_by_extension(p):
+    return path.splitext(p)
 
 
-def remove_file(path):
-    os.remove(path)
+def remove_file(p):
+    os.remove(p)
 
 
-def normalise_path(path):
-    return os.path.normpath(path)
+def normalise_path(p):
+    return path.normpath(p)
 
 
 def get_path_difference(pathLarge, pathSmall):
@@ -51,8 +52,8 @@ def get_path_difference(pathLarge, pathSmall):
     pathLargeN.replace(pathSmallN)
 
 
-def path_step_backward(path, countSteps):
-    result = normalise_path(path)
+def path_step_backward(p, countSteps):
+    result = normalise_path(p)
 
     while True:
         if countSteps <= 0:
@@ -65,38 +66,45 @@ def path_step_backward(path, countSteps):
 
 
 def join_path(path1, path2):
-    path = os.path.join(path1, path2)
-    return path
+    return path.join(path1, path2)
 
 
 def join_and_normalise_path(path1, path2):
-    path = os.path.join(path1, path2)
-    path = normalise_path(path)
-    return path
+    p = path.join(path1, path2)
+    p = normalise_path(p)
+    return p
 
+def dirname(p):
+    """Returns the directory component of a pathname"""
+    i = p.rfind(os.sep) + 1
+    assert i >= 0
+    head = p[:i]
+    if head and head != os.sep * len(head):
+        head = head.rstrip(os.sep)
+    return head
 
-def get_dirname(path):
-    dirname = os.path.dirname(path)
+def get_dirname(p):
+    dirname = path.dirname(p)
     return dirname
 
 
-def get_basename(path):
-    basename = os.path.basename(path)
+def get_basename(p):
+    basename = path.basename(p)
     return basename
 
 
-def split_path(path):
-    parts = os.path.split(path)
+def split_path(p):
+    parts = path.split(p)
     return parts
 
 
-def is_directory(path):
-    isDir = os.path.isdir(path)
+def is_directory(p):
+    isDir = path.isdir(p)
     return isDir
 
 
-def is_file(path):
-    state = os.path.isfile(path)
+def is_file(p):
+    state = path.isfile(p)
     return state
 
 
@@ -118,31 +126,31 @@ def file_get_contents(filename):
     return content
 
 
-def make_dirs_recursive_if_not_exist(path):
-    if len(path) == 0:
+def make_dirs_recursive_if_not_exist(p):
+    if len(p) == 0:
         return
 
-    if is_directory(path) is True:
+    if is_directory(p) is True:
         return
 
-    make_dirs_recursive(path)
+    make_dirs_recursive(p)
 
 
-def make_dirs_recursive(path):
-    os.makedirs(path)
+def make_dirs_recursive(p):
+    os.makedirs(p)
 
 
-def make_dir(path):
-    os.mkdir(path)
+def make_dir(p):
+    os.mkdir(p)
 
 
 def is_same_files(path1, path2):
-    state = os.path.samefile(path1, path2)
+    state = path.samefile(path1, path2)
     return state
 
 
-def is_empty_dir(path):
-    if len(os.listdir(path)) > 0:
+def is_empty_dir(p):
+    if len(os.listdir(p)) > 0:
         state = False
     else:
         state = True

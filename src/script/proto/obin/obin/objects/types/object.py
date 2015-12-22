@@ -9,43 +9,43 @@ class W_Object(W_Cell):
     _immutable_fields_ = ['_type_']
 
     def __init__(self, slots):
-        super(W_Object, self).__init__()
+        W_Cell.__init__(self)
         from obin.objects.slots import newslots_empty
 
         if not slots:
             slots = newslots_empty()
-        self.__slots = slots
-        self.__traits = None
-        self.__trait = None
+        self._slots = slots
+        self._traits = None
+        self._trait = None
 
     def has_traits(self):
-        return self.__traits is not None
+        return self._traits is not None
 
     def create_self_trait(self):
         from obin.objects.space import newtrait, newstring
-        assert self.__traits
-        assert not self.__trait
-        self.__trait = newtrait(newstring(""))
-        self.attach(self.__trait)
+        assert self._traits
+        assert not self._trait
+        self._trait = newtrait(newstring(""))
+        self.attach(self._trait)
 
     def set_traits(self, traits):
-        assert self.__traits is None
-        self.__traits = traits
+        assert self._traits is None
+        self._traits = traits
 
     # def __str__(self):
     #     return "W_Object(%s)" % (self._tostring_())
 
     def put_by_index(self, idx, value):
-        self.__slots.set_by_index(idx, value)
+        self._slots.set_by_index(idx, value)
 
     def get_by_index(self, idx):
-        return self.__slots.get_by_index(idx)
+        return self._slots.get_by_index(idx)
 
     def get_index(self, name):
-        return self.__slots.get_index(name)
+        return self._slots.get_index(name)
 
     def traits(self):
-        return self.__traits
+        return self._traits
 
     def has(self, k):
         from obin.objects.space import isundefined
@@ -54,7 +54,7 @@ class W_Object(W_Cell):
 
     def _at_(self, k):
         from obin.objects.space import newundefined
-        v = self.__slots.get(k)
+        v = self._slots.get(k)
         if v is None:
             return newundefined()
 
@@ -75,32 +75,32 @@ class W_Object(W_Cell):
     def _put_(self, k, v):
         if self.isfrozen():
             raise ObinRuntimeError("Object is frozen")
-        self.__slots.add(k, v)
+        self._slots.add(k, v)
 
     def _iterator_(self):
-        keys = self.__slots.keys()
+        keys = self._slots.keys()
         return NativeListIterator(keys, len(keys))
 
     def _tobool_(self):
         return True
 
     def _length_(self):
-        return self.__slots.length()
+        return self._slots.length()
 
     def _tostring_(self):
         from obin.objects.space import newstring, isundefined
 
         _name_ = self._at_(newstring("__name__"))
         if isundefined(_name_):
-            return "{%s %s}" % (str(self.__slots), str(self.__traits))
+            return "{%s %s}" % (str(self._slots), str(self._traits))
         else:
             return "<object %s %s>" % (_name_._tostring_(), self.id())
 
     def _clone_(self):
         import copy
-        slots = copy.copy(self.__slots)
+        slots = copy.copy(self._slots)
         clone = W_Object(slots)
-        traits = copy.copy(self.__traits)
+        traits = copy.copy(self._traits)
         clone.set_traits(traits)
         return clone
 
@@ -111,17 +111,17 @@ class W_Object(W_Cell):
         return False
 
     def _traits_(self):
-        return self.__traits
+        return self._traits
 
     def _totrait_(self):
-        if not self.__trait:
+        if not self._trait:
             self.create_self_trait()
             # raise ObinRuntimeError(u"Can't convert object to trait")
-        return self.__trait
+        return self._trait
 
     def attach(self, trait):
         from obin.objects.space import istrait
-        assert self.__traits
+        assert self._traits
         assert istrait(trait)
         self.traits().prepend(trait)
 

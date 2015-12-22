@@ -1,4 +1,5 @@
 from root import W_Root
+
 class W_Module(W_Root):
     def __init__(self, name, bytecode):
         self._name = name

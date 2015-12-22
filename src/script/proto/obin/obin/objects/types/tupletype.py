@@ -4,14 +4,12 @@ from obin.runtime.exception import *
 
 
 class W_Tuple(W_Cell):
-    _type_ = 'Tuple'
-
     def __init__(self, items):
         super(W_Tuple, self).__init__()
         assert isinstance(items, tuple)
         self.values = items
 
-    def __iter__(self):
+    def _native_iterator_(self):
         return self.values.__iter__()
 
     def __hash__(self):

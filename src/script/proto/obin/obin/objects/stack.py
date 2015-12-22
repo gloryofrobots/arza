@@ -3,15 +3,12 @@ from rpython.rlib import jit
 
 class Stack(object):
     def __init__(self, size=1):
-        self.__data = None
+        self.data = None
         self.__pointer = None
         self.init(size)
 
-    def __iter__(self):
-        return self.__data.__iter__()
-
     def init(self, size=1):
-        self.__data = [None] * size
+        self.data = [None] * size
         self.__pointer = 0
 
     def pointer(self):
@@ -21,7 +18,7 @@ class Stack(object):
         e = self.top()
         i = self.pointer() - 1
         assert i >= 0
-        self.__data[i] = None
+        self.data[i] = None
         self.set_pointer(i)
         return e
 
@@ -29,10 +26,10 @@ class Stack(object):
         i = self.pointer() - 1
         if i < 0:
             raise IndexError
-        return self.__data[i]
+        return self.data[i]
 
     def size(self):
-        return len(self.__data)
+        return len(self.data)
 
     def push(self, element):
         from obin.objects.space import isnull, isany
@@ -44,11 +41,11 @@ class Stack(object):
         #     tb("CHECK!!!!!!!!!!")
         #     print "UNDEFINED IS SET ", hex(id(self.routine()))
         i = self.pointer()
-        len_stack = len(self.__data)
+        len_stack = len(self.data)
 
         assert i >= 0 and len_stack > i
 
-        self.__data[i] = element
+        self.data[i] = element
         self.set_pointer(i + 1)
 
     def set_pointer(self, p):
