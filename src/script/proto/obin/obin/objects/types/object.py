@@ -25,7 +25,7 @@ class W_Object(W_Cell):
         from obin.objects.space import newtrait, newstring
         assert self._traits
         assert not self._trait
-        self._trait = newtrait(newstring(""))
+        self._trait = newtrait(newstring(u""))
         self.attach(self._trait)
 
     def set_traits(self, traits):
@@ -65,7 +65,7 @@ class W_Object(W_Cell):
 
     def _call_(self, routine, args):
         from obin.objects.space import newstring, isundefined
-        cb = self._at_(newstring("__call__"))
+        cb = self._at_(newstring(u"__call__"))
         if isundefined(cb):
             raise ObinRuntimeError("Object is not callable")
 
@@ -88,13 +88,7 @@ class W_Object(W_Cell):
         return self._slots.length()
 
     def _tostring_(self):
-        from obin.objects.space import newstring, isundefined
-
-        _name_ = self._at_(newstring("__name__"))
-        if isundefined(_name_):
-            return "{%s %s}" % (str(self._slots), str(self._traits))
-        else:
-            return "<object %s %s>" % (_name_._tostring_(), self.id())
+        return unicode("{%s %s}" % (str(self._slots), str(self._traits)))
 
     def _clone_(self):
         import copy

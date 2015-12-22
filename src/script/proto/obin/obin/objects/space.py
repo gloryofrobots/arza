@@ -19,14 +19,20 @@ def newchar(c):
     from obin.objects.types.value import W_Char
     return W_Char(ord(c))
 
-
-def newstring(s):
-    from obin.objects.types.value import W_String
-
+@enforceargs(str)
+def newstring_from_str(s):
     if not isinstance(s, str):
         print type(s)
     assert isinstance(s, str)
-    return W_String(unicode(s))
+    return newstring(unicode(s))
+
+# @enforceargs(unicode)
+def newstring(s):
+    from obin.objects.types.value import W_String
+    if not isinstance(s, unicode):
+        print type(s)
+    assert isinstance(s, unicode)
+    return W_String(s)
 
 
 w_True = None
@@ -265,58 +271,58 @@ def isnull_or_undefined(obj):
 class State(object):
     class Traits(object):
         def __init__(self):
-            self.Any = newtrait(newstring("Any"))
-            self.Boolean = newtrait(newstring("Boolean"))
+            self.Any = newtrait(newstring(u"Any"))
+            self.Boolean = newtrait(newstring(u"Boolean"))
 
-            self.True = newtrait(newstring("True"))
+            self.True = newtrait(newstring(u"True"))
             self.TrueTraits = newtraits([self.True, self.Boolean, self.Any])
 
-            self.False = newtrait(newstring("False"))
+            self.False = newtrait(newstring(u"False"))
             self.FalseTraits = newtraits([self.False, self.Boolean, self.Any])
 
-            self.Nil = newtrait(newstring("Nil"))
+            self.Nil = newtrait(newstring(u"Nil"))
             self.NilTraits = newtraits([self.Nil, self.Any])
 
-            self.Undefined = newtrait(newstring("Undefined"))
+            self.Undefined = newtrait(newstring(u"Undefined"))
             self.UndefinedTraits = newtraits([self.Undefined, self.Any])
 
-            self.Char = newtrait(newstring("Char"))
+            self.Char = newtrait(newstring(u"Char"))
             self.CharTraits = newtraits([self.Char, self.Any])
 
-            self.Number = newtrait(newstring("Number"))
-            self.Integer = newtrait(newstring("Integer"))
+            self.Number = newtrait(newstring(u"Number"))
+            self.Integer = newtrait(newstring(u"Integer"))
             self.IntegerTraits = newtraits([self.Integer, self.Number, self.Any])
 
-            self.Float = newtrait(newstring("Float"))
+            self.Float = newtrait(newstring(u"Float"))
             self.FloatTraits = newtraits([self.Float, self.Number, self.Any])
 
-            self.Symbol = newtrait(newstring("Symbol"))
+            self.Symbol = newtrait(newstring(u"Symbol"))
             self.SymbolTraits = newtraits([self.Symbol, self.Any])
 
-            self.String = newtrait(newstring("String"))
+            self.String = newtrait(newstring(u"String"))
             self.StringTraits = newtraits([self.String, self.Any])
 
-            self.List = newtrait(newstring("List"))
+            self.List = newtrait(newstring(u"List"))
 
-            self.Vector = newtrait(newstring("Vector"))
+            self.Vector = newtrait(newstring(u"Vector"))
             self.VectorTraits = newtraits([self.Vector, self.Any])
 
-            self.Tuple = newtrait(newstring("Tuple"))
+            self.Tuple = newtrait(newstring(u"Tuple"))
             self.TupleTraits = newtraits([self.Tuple, self.Any])
 
-            self.Function = newtrait(newstring("Function"))
+            self.Function = newtrait(newstring(u"Function"))
             self.FunctionTraits = newtraits([self.Function, self.Any])
 
-            self.Generic = newtrait(newstring("Generic"))
+            self.Generic = newtrait(newstring(u"Generic"))
             self.GenericTraits = newtraits([self.Generic, self.Any])
 
-            self.Primitive = newtrait(newstring("Primitive"))
+            self.Primitive = newtrait(newstring(u"Primitive"))
             self.PrimitiveTraits = newtraits([self.Primitive, self.Any])
 
-            self.Object = newtrait(newstring("Object"))
+            self.Object = newtrait(newstring(u"Object"))
             self.ObjectTraits = newtraits([self.Object, self.Any])
 
-            self.Module = newtrait(newstring("Object"))
+            self.Module = newtrait(newstring(u"Object"))
             self.ModuleTraits = newtraits([self.Module, self.Any])
 
     def __init__(self):

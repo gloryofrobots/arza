@@ -1,6 +1,6 @@
 def make_method(name, arity=3):
     from obin.objects.space import newtrait, newgeneric, newstring, newprimitive, newvector
-    return newprimitive(newstring(name), lambda *args: name, arity)
+    return newprimitive(newstring(unicode(name)), lambda *args: name, arity)
 
 def specify(generic, sig, name):
     arity = sig.length()
@@ -33,10 +33,10 @@ def test(gen, expected, args):
 
 def test_3():
     from obin.objects.space import newtrait, newgeneric, newstring, newprimitive, newvector
-    X = newtrait(newstring("X"))
-    Y = newtrait(newstring("Y"))
-    Z = newtrait(newstring("Z"))
-    g = newgeneric(newstring("TEST_3"))
+    X = newtrait(newstring(u"X"))
+    Y = newtrait(newstring(u"Y"))
+    Z = newtrait(newstring(u"Z"))
+    g = newgeneric(newstring(u"TEST_3"))
     g.reify_single(sig(X, Y, Z), make_method("m1"))
     g.reify_single(sig(X, Z, Z), make_method("m6"))
     g.reify_single(sig(Y, Y, Z), make_method("m2"))
@@ -58,10 +58,10 @@ def test_any():
     Object = state.traits.Object
     Vector = state.traits.Vector
     String = state.traits.String
-    X = newtrait(newstring("X"))
-    Y = newtrait(newstring("Y"))
-    Z = newtrait(newstring("Z"))
-    g = newgeneric(newstring("TEST_ANY"))
+    X = newtrait(newstring(u"X"))
+    Y = newtrait(newstring(u"Y"))
+    Z = newtrait(newstring(u"Z"))
+    g = newgeneric(newstring(u"TEST_ANY"))
     specify(g, sig(String, X, Any, Any), "m1")
     specify(g, sig(String, Any, Any, Any), "m2")
     specify(g, sig(Any, Any, Any, String), "m3")
@@ -79,7 +79,7 @@ def test_any():
     assert len(g._dags_[3].discriminators) == 5
 
     test(g, "m1", newvector([
-        newstring("S1"),
+        newstring(u"S1"),
         makeobject([Y,Z,Z,X]),
         newint(111),
         newbool(True)
@@ -87,7 +87,7 @@ def test_any():
 
 
     test(g, "m2", newvector([
-        newstring("S1"),
+        newstring(u"S1"),
         newint(42),
         newint(111),
         newbool(True)
@@ -97,14 +97,14 @@ def test_any():
         newnull(),
         newint(42),
         newint(111),
-        newstring("S1")
+        newstring(u"S1")
     ]))
 
     test(g, "m4", newvector([
         newnull(),
         makeobject([Z,Z,Y,Z,X]),
         newvector([newbool(True), newbool(False)]),
-        newstring("S1")
+        newstring(u"S1")
     ]))
     test(g, "m5", newvector([
         makeobject([Z,Z,Y,Z,X]),

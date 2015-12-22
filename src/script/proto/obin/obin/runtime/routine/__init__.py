@@ -21,14 +21,14 @@ def create_module_routine(code, module, _globals):
     else:
         global_env = None
     env = newenv(module, global_env)
-    return jit.promote(CodeRoutine(newstring("__module__"), code, env))
+    return jit.promote(CodeRoutine(newstring(u"__module__"), code, env))
 
 
 def create_eval_routine(code):
     from obin.runtime.environment import newenv
     obj = code.scope.create_object()
     env = newenv(obj, None)
-    return jit.promote(CodeRoutine(newstring("__module__"), code, env))
+    return jit.promote(CodeRoutine(newstring(u"__module__"), code, env))
 
 
 def create_function_routine(func, args, outer_env):

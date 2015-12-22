@@ -343,7 +343,7 @@ class Compiler(object):
         self._emit_string(bytecode, obs.newstring(strval))
 
     def _compile_OUTER(self, bytecode, node):
-        name = obs.newstring(node.first().value)
+        name = obs.newstring_from_str(node.first().value)
         self.declare_outer(name)
 
     def compile_binary_primitive(self, code, node, name):
@@ -447,7 +447,7 @@ class Compiler(object):
 
     def _compile_ASSIGN_DOT(self, bytecode, node):
         member = node.first()
-        name = obs.newstring(member.second().value)
+        name = obs.newstring_from_str(member.second().value)
 
         obj = member.first()
         self._compile(bytecode, node.second())
@@ -468,14 +468,14 @@ class Compiler(object):
         if left.type == TT_DOT:
             return self._compile_ASSIGN_DOT(bytecode, node)
 
-        name = obs.newstring(left.value)
+        name = obs.newstring_from_str(left.value)
         # self._compile(bytecode, node.first())
         self._compile(bytecode, node.second())
         self._emit_store(bytecode, name)
 
     def _compile_modify_assignment_dot_primitive(self, bytecode, node, operation):
         member = node.first()
-        name = obs.newstring(member.second().value)
+        name = obs.newstring_from_str(member.second().value)
 
         obj = member.first()
 
@@ -494,7 +494,7 @@ class Compiler(object):
         if left.type == TT_DOT:
             return self._compile_modify_assignment_dot_primitive(bytecode, node, operation)
 
-        name = obs.newstring(left.value)
+        name = obs.newstring_from_str(left.value)
         if not self.is_modifiable_binding(name):
             compile_error(node, "Unreachable variable", name)
 
@@ -529,7 +529,7 @@ class Compiler(object):
         self._compile_modify_assignment_primitive(code, node, primitives.BITXOR)
 
     def _compile_name_lookup(self, code, node):
-        name = obs.newstring(node.value)
+        name = obs.newstring_from_str(node.value)
 
         index, is_local = self.get_variable_index(name)
         name_index = self.declare_literal(name)
@@ -570,7 +570,7 @@ class Compiler(object):
             self._compile(code, value)
             if key.type == TT_NAME:
                 # in case of names in object literal we must convert them to strings
-                self._emit_string(code, obs.newstring(key.value))
+                self._emit_string(code, obs.newstring_from_str(key.value))
             else:
                 self._compile(code, key)
 
@@ -597,7 +597,7 @@ class Compiler(object):
         items = node.third()
         self._compile_object(code, items, traits)
 
-        name = obs.newstring(name.value)
+        name = obs.newstring_from_str(name.value)
         index = self.declare_local(name)
         name_index = self.declare_literal(name)
         # self._compile(bytecode, node.first())
@@ -637,15 +637,15 @@ class Compiler(object):
         if is_iterable_node(params):
             args = []
             for param in params[:-1]:
-                args.append(obs.newstring(param.value))
+                args.append(obs.newstring_from_str(param.value))
 
             lastparam = params[-1]
 
             if lastparam.type == TT_ELLIPSIS:
-                args.append(obs.newstring(lastparam.first().value))
+                args.append(obs.newstring_from_str(lastparam.first().value))
                 varargs = True
             else:
-                args.append(obs.newstring(lastparam.value))
+                args.append(obs.newstring_from_str(lastparam.value))
                 varargs = False
         else:
             args = None
@@ -655,7 +655,7 @@ class Compiler(object):
 
         if is_iterable_node(outers):
             for outer in outers:
-                self.declare_outer(obs.newstring(outer.value))
+                self.declare_outer(obs.newstring_from_str(outer.value))
 
         if not funcname.isempty():
             self.declare_function_name(funcname)
@@ -690,7 +690,7 @@ class Compiler(object):
             return self._compile_FN_expression(code, node)
 
         name = node.first()
-        funcname = obs.newstring(name.value)
+        funcname = obs.newstring_from_str(name.value)
 
         index = self.declare_local(funcname)
         params = node.second()
@@ -757,8 +757,8 @@ class Compiler(object):
             import_name = node.value
             module_path = import_name
 
-        module_path = obs.newstring(module_path)
-        import_name = obs.newstring(import_name)
+        module_path = obs.newstring_from_str(module_path)
+        import_name = obs.newstring_from_str(import_name)
 
         module_path_literal = self.declare_literal(module_path)
         code.emit_1(IMPORT, module_path_literal)
@@ -771,7 +771,7 @@ class Compiler(object):
         items = node.first()
         module = node.second()
         module_path = self._dot_to_string(module)
-        module_path = obs.newstring(module_path)
+        module_path = obs.newstring_from_str(module_path)
         module_path_literal = self.declare_literal(module_path)
         code.emit_1(IMPORT, module_path_literal)
         for item in items:
@@ -783,8 +783,8 @@ class Compiler(object):
                 var_name = item.value
                 module_var = var_name
 
-            var_name = obs.newstring(var_name)
-            module_var = obs.newstring(module_var)
+            var_name = obs.newstring_from_str(var_name)
+            module_var = obs.newstring_from_str(module_var)
 
             module_var_literal = self.declare_literal(module_var)
             code.emit_1(IMPORT_MEMBER, module_var_literal)
@@ -804,7 +804,7 @@ class Compiler(object):
 
     def _compile_GENERIC(self, code, node):
         name = node.first()
-        name = obs.newstring(name.value)
+        name = obs.newstring_from_str(name.value)
         index = self.declare_local(name)
         name_index = self.declare_literal(name)
         code.emit_1(GENERIC, name_index)
@@ -814,7 +814,7 @@ class Compiler(object):
 
     def _compile_TRAIT(self, code, node):
         name = node.first()
-        name = obs.newstring(name.value)
+        name = obs.newstring_from_str(name.value)
         index = self.declare_local(name)
         name_index = self.declare_literal(name)
         code.emit_1(TRAIT, name_index)
@@ -854,7 +854,7 @@ class Compiler(object):
 
     def _compile_FOR(self, bytecode, node):
         vars = node.first()
-        name = obs.newstring(vars[0].value)
+        name = obs.newstring_from_str(vars[0].value)
 
         source = node.second()
         body = node.third()
@@ -900,7 +900,7 @@ class Compiler(object):
         bytecode.done_continue()
 
     def _compile_DOT(self, code, node):
-        name = obs.newstring(node.second().value)
+        name = obs.newstring_from_str(node.second().value)
         self._emit_string(code, name)
         obj = node.first()
         self._compile(code, obj)
@@ -953,7 +953,7 @@ class Compiler(object):
     def _compile_LPAREN_member(self, bytecode, node):
         obj = node.first()
         method = node.second()
-        name = obs.newstring(method.value)
+        name = obs.newstring_from_str(method.value)
         args = node.third()
         # print "_compile_LPAREN_MEMBER", obj, method, args
 
