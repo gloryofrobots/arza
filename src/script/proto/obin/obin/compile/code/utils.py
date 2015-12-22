@@ -36,6 +36,9 @@ def opcode_estimate_stack_change(opcode):
     arg1 = opcode[1]
     arg2 = opcode[2]
 
+    assert isinstance(arg1, int)
+    assert isinstance(arg2, int)
+
     if tag == PUSH_MANY:
         return -1 * arg1 + 1
     elif tag == OBJECT:

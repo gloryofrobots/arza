@@ -94,7 +94,7 @@ class NodeList(EmptyNode):
         return self.items.__iter__()
 
     def __getitem__(self, item):
-        return self.items.__getitem__(item)
+        return self.items[item]
 
     def __len__(self):
         return len(self.items)

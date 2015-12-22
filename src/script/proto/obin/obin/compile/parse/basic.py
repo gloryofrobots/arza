@@ -336,6 +336,7 @@ def empty(parser, node):
 
 def is_assignment_node(node):
     token_type = node.type
+    assert isinstance(token_type, int)
     if token_type == TT_ASSIGN \
             or token_type == TT_ADD_ASSIGN or token_type == TT_SUB_ASSIGN \
             or token_type == TT_MUL_ASSIGN or token_type == TT_DIV_ASSIGN \
@@ -343,6 +344,7 @@ def is_assignment_node(node):
             or token_type == TT_BITAND_ASSIGN or token_type == TT_BITOR_ASSIGN \
             or token_type == TT_BITXOR_ASSIGN:
         return True
+    return False
 
 
 def condition(parser):
