@@ -3,13 +3,26 @@ from obin.compile.parse.token_type import *
 from obin.compile.parse.tokens import token_type_to_str
 
 
-def parse_error(parser, message, args=None, node=None):
-    if not node:
-        error_message = "Parse Error %d:%d %s" % (parser.token.line, parser.token.pos, message)
-    else:
-        error_message = "Parse Error %d:%d %s" % (node.line, node.position, message)
+def parse_error_node(parser, message, node):
+    assert isinstance(message, str)
+    error_message = "Parse Error %d:%d %s" % (node.line, node.position, message)
+    raise RuntimeError(error_message)
 
-    raise RuntimeError(error_message, args)
+
+def _parse_error(message, args):
+    raise RuntimeError(message, args)
+
+
+def parse_error_simple(parser, message):
+    assert isinstance(message, str)
+    error_message = "Parse Error %d:%d %s" % (parser.token.line, parser.token.pos, message)
+    raise RuntimeError(error_message)
+
+
+def parse_error(parser, message, node):
+    assert isinstance(message, str)
+    error_message = "Parse Error %d:%d %s" % (parser.token.line, parser.token.pos, message)
+    return _parse_error(error_message, (node, ))
 
 
 class Handler(object):
@@ -17,8 +30,8 @@ class Handler(object):
         self.nud = None
         self.led = None
         self.std = None
-        self.lbp = None
-        self.rbp = None
+        self.lbp = -1
+        self.rbp = -1
         self.value = None
 
 
@@ -45,14 +58,14 @@ def handler(parser, ttype):
 def nud(parser, node):
     handler = node_handler(parser, node)
     if not handler.nud:
-        parse_error(parser, "Unknown token", args=(node, str(parser.token)))
+        parse_error(parser, "Unknown token", node)
     return handler.nud(parser, node)
 
 
 def std(parser, node):
     handler = node_handler(parser, node)
     if not handler.std:
-        parse_error(parser, "Unknown token", args=node)
+        parse_error(parser, "Unknown token", node)
 
     return handler.std(parser, node)
 
@@ -75,23 +88,23 @@ def has_std(parser, node):
 def rbp(parser, node):
     handler = node_handler(parser, node)
     rbp = handler.rbp
-    if rbp is None:
-        parse_error(parser, u"Right binding power can't be evaluated", args=node)
+    if rbp == -1:
+        parse_error(parser, "Right binding power can't be evaluated", node)
     return rbp
 
 
 def lbp(parser, node):
     handler = node_handler(parser, node)
     lbp = handler.lbp
-    if lbp is None:
-        parse_error(parser, u"Left binding power can't be evaluated", args=node)
+    if lbp == -1:
+        parse_error(parser, "Left binding power can't be evaluated", node)
     return lbp
 
 
 def led(parser, node, left):
     handler = node_handler(parser, node)
     if not handler.led:
-        parse_error(parser, u"Unknown token", args=node)
+        parse_error(parser, "Unknown token", node)
 
     return handler.led(parser, node, left)
 
@@ -119,13 +132,12 @@ def set_lbp(parser, ttype, _lbp):
 
 def check_token_type(parser, type):
     if parser.token_type != type:
-        parse_error(parser, "Expected token type %s got token %s" % ((token_type_to_str(type)), parser.token))
+        parse_error_simple(parser, "Wrong token type %s %s" % (token_type_to_str(type), parser.token) )
 
 
 def check_token_types(parser, types):
     if parser.token_type not in types:
-        parse_error(parser, "Expected token type one of %s got token %s" %
-                    ([token_type_to_str(type) for type in types], parser.token))
+        parse_error_simple(parser, "Wrong token type %s %s" % (str([token_type_to_str(type) for type in types]), parser.token))
 
 
 def advance(parser):
@@ -154,7 +166,7 @@ def endofexpression(parser):
         # print "SEMI"
         return advance(parser)
 
-    parse_error(parser, "Expressions must end with new line or ;")
+    parse_error_simple(parser, "Expressions must end with new line or ;")
 
 
 def expression(parser, _rbp):
@@ -306,9 +318,9 @@ def literal(parser, ttype):
     set_nud(parser, ttype, itself)
 
 
-def symbol(parser, ttype, bp=0, nud=None):
+def symbol(parser, ttype, nud=None):
     h = handler(parser, ttype)
-    h.lbp = bp
+    h.lbp = 0
     if not nud:
         return
     set_nud(parser, ttype, nud)
@@ -337,5 +349,5 @@ def is_assignment_node(node):
 def condition(parser):
     node = expression(parser, 0)
     if is_assignment_node(node):
-        parse_error(parser, "Assignment operators not allowed in conditions", node=node)
+        parse_error_node(parser, "Assignment operators not allowed in conditions", node=node)
     return node

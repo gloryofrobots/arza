@@ -1,5 +1,15 @@
-import re
+__author__ = 'gloryofrobots'
+from rply import LexerGenerator
 from obin.compile.parse import tokens
+from obin.compile.parse.token_type import *
+
+def create_generator(rules):
+    lg = LexerGenerator()
+    for rule in rules:
+        # build up a set of token names and regexes they match
+        lg.add(rule[1], rule[0])
+    lexer = lg.build()
+    return lexer
 
 
 class Token(object):
@@ -39,10 +49,6 @@ class LexerError(Exception):
 
 
 class Lexer:
-    """ A simple regex-based lexer/tokenizer.
-
-        See below for an example of usage.
-    """
 
     def __init__(self, rules, skip_whitespace):
         # All the regexes are concatenated into a single one
@@ -54,30 +60,11 @@ class Lexer:
         assert isinstance(rules, list)
         assert isinstance(skip_whitespace, bool)
 
-        self.linecount = 1
-
-        idx = 1
-        regex_parts = []
-        self.group_type = {}
-
-        for regex, type in rules:
-            groupname = 'GROUP%s' % idx
-            regex_parts.append('(?P<%s>%s)' % (groupname, regex))
-            self.group_type[groupname] = type
-            idx += 1
-
-        pattern = '|'.join(regex_parts)
-        # print pattern
-        # print "*************************"
-        self.regex = re.compile(pattern)
-        self.skip_whitespace = skip_whitespace
-        self.re_ws_skip = re.compile('\S')
+        self.lexer = create_generator(rules)
+        self.stream = None
 
     def input(self, buf):
-        """ Initialize the lexer with a buffer as input.
-        """
-        self.buf = buf
-        self.pos = 0
+        self.stream = self.lexer.lex(buf)
 
     def token(self):
         """ Return the next token (a Token object) found in the
@@ -87,32 +74,20 @@ class Lexer:
             buffer matches no rule), a LexerError is raised with
             the position of the error.
         """
-        if self.pos >= len(self.buf):
+        try:
+            return self._token()
+        except StopIteration:
             return None
-        else:
-            if self.skip_whitespace:
-                m = self.re_ws_skip.search(self.buf, self.pos)
 
-                if m:
-                    self.pos = m.start()
-                else:
-                    return None
 
-            m = self.regex.match(self.buf, self.pos)
-            if m:
-                groupname = m.lastgroup
-                tok_type = self.group_type[groupname]
-                tok = Token(tok_type, m.group(groupname), self.pos, self.linecount)
-                self.pos = m.end()
-                if tok_type is -1:
-                    return self.token()
-                if tok.type == tokens.TT_NEWLINE:
-                    self.linecount += 1
+    def _token(self):
+        t = next(self.stream)
+        # print tokens.token_type_to_str(t.name), t.value
+        token = Token(t.name, t.value, t.source_pos.idx, t.source_pos.lineno)
+        if token.type == -1:
+            return self._token()
 
-                return tok
-
-            # if we're here, no rule matched
-            raise LexerError(self.pos)
+        return token
 
     def tokens(self):
         """ Returns an iterator to the tokens found in the buffer.

@@ -1,13 +1,22 @@
 __author__ = 'gloryofrobots'
 from obin.compile.parse.token_type import *
 
+import rpython.rlib.rsre.rsre_re as re
+
+def keyword(literal):
+    return re.compile('\\b%s\\b' % literal)
+
+# def token(literal):
+#     return literal
+
+token = re.compile
 
 ## Regexes for use in tokens
 ##
 ##
 
 # valid  identifiers (K&R2: A.2.3), plus '$' (supported by some compilers)
-identifier = '[a-zA-Z_$][0-9a-zA-Z_$]*'
+identifier = token('[a-zA-Z_$][0-9a-zA-Z_$]*')
 
 hex_prefix = '0[xX]'
 hex_digits = '[0-9a-fA-F]+'
@@ -15,7 +24,7 @@ bin_prefix = '0[bB]'
 bin_digits = '[01]+'
 
 integer_suffix_opt = '(([uU]ll)|([uU]LL)|(ll[uU]?)|(LL[uU]?)|([uU][lL])|([lL][uU]?)|[uU])?'
-decimal_constant = '(0' + integer_suffix_opt + ')|([1-9][0-9]*' + integer_suffix_opt + ')'
+decimal_constant = token('(0' + integer_suffix_opt + ')|([1-9][0-9]*' + integer_suffix_opt + ')')
 octal_constant = '0[0-7]*' + integer_suffix_opt
 hex_constant = hex_prefix + hex_digits + integer_suffix_opt
 bin_constant = bin_prefix + bin_digits + integer_suffix_opt
@@ -27,32 +36,29 @@ hex_escape = """(x[0-9a-fA-F]+)"""
 escape_sequence = """(\\(""" + simple_escape + '|' + decimal_escape + '|' + hex_escape + '))'
 cconst_char = """([^'\\\n]|""" + escape_sequence + ')'
 char_const = "'" + cconst_char + "'"
-char_const = "'[^']+'"
+char_const = token("'[^']+'")
 
 # string literals (K&R2: A.2.6)
-string_char = """([^"\\\n]|""" + escape_sequence + ')'
-string_literal = '"' + string_char + '*"'
-wstring_literal = 'L' + string_literal
-string_literal = "\"[^\"]*\""
+# string_char = """([^"\\\n]|""" + escape_sequence + ')'
+# string_literal = token('"' + string_char + '*"')
+string_literal = token('(""".*?""")|(".*?")|(\'.*?\')')
+# wstring_literal = 'L' + string_literal
+# string_literal = "\"[^\"]*\""
 
 # floating constants (K&R2: A.2.5.3)
 exponent_part = """([eE][-+]?[0-9]+)"""
-fractional_constant = r"""([0-9]*\.[0-9]+)|([0-9]+\.)"""
-floating_constant = '((((' + fractional_constant + ')' + exponent_part + '?)|([0-9]+' + exponent_part + '))[FfLl]?)'
+fractional_constant = """([0-9]*\.[0-9]+)|([0-9]+\.)"""
+floating_constant = token('((((' + fractional_constant + ')' + exponent_part + '?)|([0-9]+' + exponent_part + '))[FfLl]?)')
 binary_exponent_part = '''([pP][+-]?[0-9]+)'''
 hex_fractional_constant = '(((' + hex_digits + r""")?\.""" + hex_digits + ')|(' + hex_digits + r"""\.))"""
 hex_floating_constant = '(' + hex_prefix + '(' + hex_digits + '|' + hex_fractional_constant + ')' + binary_exponent_part + '[FfLl]?)'
 
 
-def keyword(literal):
-    return '\\b%s\\b' % literal
-
-
 RULES = [
-    ('\n', TT_NEWLINE),
-    (' ', None),
-    ('//[^\n]*', None),
-    ('/\*[^\*\/]*\*/', None),
+    (token('\n'), TT_NEWLINE),
+    (token(' '), -1),
+    (token('//[^\n]*'), -1),
+    (token('/\*[^\*\/]*\*/'), -1),
     (keyword('break'), TT_BREAK),
     # ('case', TT_CASE),
     (keyword('continue'), TT_CONTINUE),
@@ -93,7 +99,7 @@ RULES = [
     (string_literal, TT_STR),
     (char_const, TT_CHAR),
     (identifier, TT_NAME),
-    ('\.\.\.', TT_ELLIPSIS),
+    (token('\.\.\.'), TT_ELLIPSIS),
     # ('\+=', TT_ADD_ASSIGN),
     # ('-=', TT_SUB_ASSIGN),
     # ('\*=', TT_MUL_ASSIGN),
@@ -102,39 +108,40 @@ RULES = [
     # ('\&\=', TT_BITAND_ASSIGN),
     # ('\^\=', TT_BITXOR_ASSIGN),
     # ('\|=', TT_BITOR_ASSIGN),
-    ('>>>', TT_URSHIFT),
-    ('>>', TT_RSHIFT),
-    ('<<', TT_LSHIFT),
+    (token('>>>'), TT_URSHIFT),
+    (token('>>'), TT_RSHIFT),
+    (token('<<'), TT_LSHIFT),
     # ('->', TT_ARROW),
     # ('=>', TT_FAT_ARROW),
-    ('==', TT_EQ),
-    ('<=', TT_LE),
-    ('>=', TT_GE),
-    ('!=', TT_NE),
-    ('\;', TT_SEMI),
-    ('\:', TT_COLON),
-    ('\{', TT_LCURLY),
-    ('\}', TT_RCURLY),
-    ('\,', TT_COMMA),
-    ('=', TT_ASSIGN),
-    ('\(', TT_LPAREN),
-    ('\)', TT_RPAREN),
-    ('\[', TT_LSQUARE),
-    ('\]', TT_RSQUARE),
-    ('\.', TT_DOT),
-    ('\&', TT_BITAND),
-    ('\~', TT_BITNOT),
-    ('\|', TT_BITOR),
-    ('\^', TT_BITXOR),
-    ('\-', TT_SUB),
-    ('\+', TT_ADD),
-    ('\*', TT_MUL),
-    ('/', TT_DIV),
-    ('\%', TT_MOD),
-    ('\<', TT_LT),
-    ('\>', TT_GT),
-    ('`', TT_BACKTICK),
+    (token('=='), TT_EQ),
+    (token('<='), TT_LE),
+    (token('>='), TT_GE),
+    (token('!='), TT_NE),
+    (token('\;'), TT_SEMI),
+    (token('\:'), TT_COLON),
+    (token('\{'), TT_LCURLY),
+    (token('\}'), TT_RCURLY),
+    (token('\,'), TT_COMMA),
+    (token('='), TT_ASSIGN),
+    (token('\('), TT_LPAREN),
+    (token('\)'), TT_RPAREN),
+    (token('\['), TT_LSQUARE),
+    (token('\]'), TT_RSQUARE),
+    (token('\.'), TT_DOT),
+    (token('\&'), TT_BITAND),
+    (token('\~'), TT_BITNOT),
+    (token('\|'), TT_BITOR),
+    (token('\^'), TT_BITXOR),
+    (token('\-'), TT_SUB),
+    (token('\+'), TT_ADD),
+    (token('\*'), TT_MUL),
+    (token('/'), TT_DIV),
+    (token('\%'), TT_MOD),
+    (token('\<'), TT_LT),
+    (token('\>'), TT_GT),
+    (token('`'), TT_BACKTICK),
 ]
+
 
 
 # ************************ OBIN TOKENS REPR *****************************
