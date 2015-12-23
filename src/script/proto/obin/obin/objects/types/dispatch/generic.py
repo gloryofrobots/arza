@@ -131,7 +131,7 @@ class W_Generic(W_Root):
 
         groups = odict()
         for signature in signatures:
-            arg = signature.at(index)
+            arg = signature.get_argument(index)
             if arg not in groups:
                 groups[arg] = [signature]
             else:

@@ -135,7 +135,7 @@ class BaseSignature:
     def equal(self, other):
         raise NotImplementedError()
 
-    def at(self, index):
+    def get_argument(self, index):
         raise NotImplementedError()
 
 
@@ -187,5 +187,5 @@ class Signature(BaseSignature):
 
         return True
 
-    def at(self, index):
+    def get_argument(self, index):
         return self.args[index]

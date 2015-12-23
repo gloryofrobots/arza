@@ -1,4 +1,5 @@
 from rpython.rlib.objectmodel import specialize, enforceargs, compute_unique_id, compute_identity_hash, r_dict
+from obin.objects.space import isany
 
 @specialize.argtype(0)
 def ohash(obj):
@@ -9,11 +10,14 @@ def oid(obj):
     return compute_unique_id(obj)
 
 def _dict_key(obj1, obj2):
+    assert isany(obj1)
+    assert isany(obj2)
     v = obj1._equal_(obj2)
     # print "_dict_key", obj1, obj2, v
     return v
 
 def _dict_hash(obj1):
+    assert isany(obj1)
     # print "_dict_hash", obj1,obj1._hash_()
     return obj1._hash_()
 

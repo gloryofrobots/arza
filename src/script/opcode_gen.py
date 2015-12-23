@@ -62,7 +62,7 @@ def gen_opcode_repr():
     print S
 
 def gen_opcode_stack_change():
-    S = "__UNKNOWN_CHANGE__ %d\n\n" % UNKNOW_CHANGE
+    S = "__UNKNOWN_CHANGE__ = %d\n\n" % UNKNOW_CHANGE
     S += "__STACK_CHANGES__ = ["
     for p in OPCODES:
         S += "%s, " % str(p[1])

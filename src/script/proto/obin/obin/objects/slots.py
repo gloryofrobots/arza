@@ -1,5 +1,6 @@
 from obin.objects.space import newvector
 from obin.utils.builtins import odict
+from obin.objects.hashtable import newhashtable
 
 class Slots:
     def __init__(self):
@@ -52,7 +53,7 @@ class Slots:
         from obin.objects import api
         print "get_index", api.to_native_string(name)
         try:
-            idx = self.property_bindings[name]
+            idx = self.property_bindings.get(name)
             return idx
         except Exception as e:
             print "get_index Exception", e
@@ -68,17 +69,23 @@ class Slots:
         return self.property_values.at(idx)
 
     def set(self, name, value):
+        from obin.objects.space import isany
+        assert isany(name)
+        assert isany(value)
         idx = self.get_index(name)
         self.set_by_index(idx, value)
 
     def add(self, name, value):
+        from obin.objects.space import isany
+        assert isany(name)
+        assert isany(value)
         from obin.objects import api
         print "Slots_ass", api.to_native_string(name), api.to_native_string(value)
         idx = self.get_index(name)
         # print "Slots_add, IDX", idx
         if idx == -1000:
             idx = self.index
-            self.property_bindings[name] = idx
+            self.property_bindings.set(name, idx)
             self.index += 1
 
         # print "Slots_add, IDX >>", idx
@@ -109,10 +116,10 @@ def newslots(values, bindings, index):
     return slots
 
 def newslots_with_size(size):
-    return newslots(newvector([None] * size), odict(), 0)
+    return newslots(newvector([None] * size), newhashtable(), 0)
 
 def newslots_empty():
-    return newslots(newvector([]), odict(), 0)
+    return newslots(newvector([]), newhashtable(), 0)
 
 def newslots_with_values_from_slots(values, protoslots):
     l = protoslots.length()

@@ -172,10 +172,20 @@ class W_String(W_ValueType):
         else:
             return 0
 
-    def _equal_(self, other):
-        return self.string_value == other.string_value
+    def __eq__(self, other):
+        if not isinstance(other, W_String):
+            return False
+        return self._equal_(other)
 
+    def __hash__(self):
+        return self._hash_()
+
+    def _equal_(self, other):
+        # print "_equal_", self.string_value, other.string_value, self.string_value == other.string_value
+        return self.string_value == other.string_value
+    #
     def _hash_(self):
+        # print "HASH", self.string_value, self.__hash
         return self.__hash
 
     def isempty(self):

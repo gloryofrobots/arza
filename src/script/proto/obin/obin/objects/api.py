@@ -114,6 +114,9 @@ def has(obj, k):
     else:
         return newbool(True)
 
+def n_hash(obj):
+    return obj._hash_()
+
 
 def obtain(obj, k):
     from space import isundefined, newbool
@@ -163,16 +166,19 @@ def strict_equal(obj, other):
 
 
 def equal(obj, other):
-    from space import newbool, isconstant
+    from space import newbool
+    return newbool(n_equal(obj, other))
+
+def n_equal(obj, other):
+    from space import isconstant
     if not isinstance(other, obj.__class__):
-        return newbool(False)
+        return False
 
     if isconstant(obj):
-        return newbool(True)
+        return True
 
     v = obj._equal_(other)
-    return newbool(v)
-
+    return v
 
 def compare(obj, other):
     from obin.runtime.exception import ObinTypeError
