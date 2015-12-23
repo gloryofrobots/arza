@@ -47,7 +47,7 @@ def run(script_file):
 
 # _____ Define and setup target ___
 def target(driver, args):
-    driver.exe_name = 'obin-script'
+    driver.exe_name = 'obin_i'
     return entry_point, None
 
 def jitpolicy(driver):

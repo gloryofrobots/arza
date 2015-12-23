@@ -1,4 +1,5 @@
 .cproject
+obin_i*
 test/*
 CMakeFiles/*
 .project

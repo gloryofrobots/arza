@@ -63,7 +63,7 @@ class Slots:
         self.property_values.set(idx, value)
 
     def get_by_index(self, idx):
-        print "Slots.get_by_index", idx, self.property_values._items
+        print "Slots.get_by_index", idx
         return self.property_values.at(idx)
 
     def set(self, name, value):
