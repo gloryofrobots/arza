@@ -7,8 +7,6 @@ class W_Constant(W_Root):
 
 
 class W_Undefined(W_Constant):
-    _type_ = 'Undefined'
-
     def _tostring_(self):
         return "undefined"
 
@@ -19,8 +17,6 @@ class W_Undefined(W_Constant):
 
 
 class W_Nil(W_Constant):
-    _type_ = 'Nil'
-
     def _tostring_(self):
         return 'nil'
 
@@ -33,12 +29,6 @@ class W_Nil(W_Constant):
 
 
 class W_True(W_Constant):
-    _type_ = 'True'
-    _immutable_fields_ = ['value']
-
-    def value(self):
-        return True
-
     def _tostring_(self):
         return 'true'
 
@@ -54,16 +44,10 @@ class W_True(W_Constant):
 
 
 class W_False(W_Constant):
-    _type_ = 'True'
-    _immutable_fields_ = ['value']
-
     def _tostring_(self):
         return 'false'
 
     def _tobool_(self):
-        return False
-
-    def value(self):
         return False
 
     def _traits_(self):

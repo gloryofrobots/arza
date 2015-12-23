@@ -3,11 +3,11 @@ from obin.runtime.exception import *
 from signature import Signature, BaseSignature
 from obin.objects import api
 from dag import *
+from obin.utils.builtins import odict
 
 
 class W_Generic(W_Root):
-    _type_ = 'native'
-    _immutable_fields_ = ["_name_"]
+    # _immutable_fields_ = ["_name_"]
 
     def __init__(self, name):
         self._name_ = name
@@ -129,8 +129,7 @@ class W_Generic(W_Root):
             # print "METHOD", index, leaf
             return leaf
 
-        from obin.objects.space import newdict
-        groups = newdict()
+        groups = odict()
         for signature in signatures:
             arg = signature.at(index)
             if arg not in groups:

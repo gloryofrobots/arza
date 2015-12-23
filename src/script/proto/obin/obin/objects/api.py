@@ -1,5 +1,4 @@
 __author__ = 'gloryofrobots'
-from obin.runtime.exception import *
 
 
 def tostring(obj):
@@ -53,6 +52,7 @@ def delete(obj, k):
 
 
 def at(obj, k):
+    from obin.runtime.exception import ObinKeyError
     from space import isundefined
     assert not isundefined(k)
     v = obj._at_(k)
@@ -63,6 +63,7 @@ def at(obj, k):
 
 
 def lookup(obj, k):
+    from obin.runtime.exception import ObinKeyError
     from space import isundefined
     assert not isundefined(k)
     v = obj._lookup_(k)
@@ -174,6 +175,7 @@ def equal(obj, other):
 
 
 def compare(obj, other):
+    from obin.runtime.exception import ObinTypeError
     from space import isundefined, newint,  isconstant
     assert not isundefined(other)
     if isconstant(obj):

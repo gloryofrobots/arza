@@ -3,7 +3,7 @@ from obin.runtime.routine.base_routine import BaseRoutine
 from obin.objects import api
 
 class NativeRoutine(BaseRoutine):
-    _immutable_fields_ = ['_name_', '_function_']
+    # _immutable_fields_ = ['_name_', '_function_']
 
     def __init__(self, name, function, args, arity):
         BaseRoutine.__init__(self)

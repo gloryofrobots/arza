@@ -1,8 +1,6 @@
-class W_Root:
-    _settled_ = True
-    _immutable_fields_ = ['_type_']
-    _type_ = ''
+# TODO REFACTOR DICT AND ID
 
+class W_Root:
     def __str__(self):
         return self._tostring_()
 
@@ -11,9 +9,6 @@ class W_Root:
 
     def id(self):
         return str(hex(id(self)))
-
-    def type(self):
-        return self._type_
 
     # BEHAVIOR
     def _at_(self, b):

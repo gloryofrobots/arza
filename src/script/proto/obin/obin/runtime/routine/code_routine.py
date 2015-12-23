@@ -20,7 +20,7 @@ def load_arguments(stack):
 
 
 class CodeRoutine(BaseRoutine):
-    _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
+    # _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
 
     def __init__(self, name, code, env):
         BaseRoutine.__init__(self)

@@ -225,8 +225,8 @@ def rsh(r, lval, rval):
 
 
 def lsh(r, lval, rval):
-    rnum = rval.value()
-    lnum = lval.value()
+    lnum = api.to_native_integer(lval)
+    rnum = api.to_native_integer(rval)
 
     shift_count = intmask(rnum & 0x1F)
     res = lnum << shift_count

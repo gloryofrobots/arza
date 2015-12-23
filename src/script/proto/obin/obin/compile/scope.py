@@ -93,8 +93,8 @@ class Scope:
 
 
 class FinalScope:
-    _immutable_fields_ = ['vars', 'arg_count', 'fn_name_index',
-                          'references[*]', 'is_varargs', 'count_refs', 'count_vars', 'literals', 'functions']
+    # _immutable_fields_ = ['vars', 'arg_count', 'fn_name_index',
+    #                       'references[*]', 'is_varargs', 'count_refs', 'count_vars', 'literals', 'functions']
 
     def __init__(self, variables, arguments, references, literals, arg_count, is_varargs, fn_name_index):
         self.variables = variables

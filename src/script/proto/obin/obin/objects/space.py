@@ -163,19 +163,6 @@ def newtrait(name):
 def newtraits(traits):
     return newvector(traits)
 
-def _dict_key(obj1, obj2):
-    v = obj1._equal_(obj2)
-    # print "_dict_key", obj1, obj2, v
-    return v
-
-def _dict_hash(obj1):
-    # print "_dict_hash", obj1,obj1._hash_()
-    return obj1._hash_()
-
-def newdict():
-    from rpython.rlib.objectmodel import r_dict
-    return r_dict(_dict_key, _dict_hash)
-
 def isany(value):
     from obin.objects.types.root import W_Root
     return isinstance(value, W_Root)

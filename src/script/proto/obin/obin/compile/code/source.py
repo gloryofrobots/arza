@@ -13,7 +13,7 @@ def estimate_stack_size(opcodes):
 
 
 class CodeSource:
-    _immutable_fields_ = ['compiled_opcodes[*]', 'scope']
+    # _immutable_fields_ = ['compiled_opcodes[*]', 'scope']
 
     """ That object stands for code of a single javascript function
     """

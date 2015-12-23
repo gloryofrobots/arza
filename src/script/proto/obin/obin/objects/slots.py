@@ -40,9 +40,10 @@ class Slots:
         return self.property_bindings.keys()
 
     def get(self, name):
+        from obin.objects.space import newundefined
         idx = self.get_index(name)
         if idx is -1000:
-            return -1000
+            return newundefined()
 
         return self.get_by_index(idx)
 

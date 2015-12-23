@@ -56,7 +56,7 @@ class References(object):
         return ref.get_value()
 
 
-class Reference(object):
+class Reference:
     _immutable_fields_ = ['env', 'name', 'index']
     _settled_ = True
 

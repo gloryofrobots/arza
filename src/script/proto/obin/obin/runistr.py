@@ -1,6 +1,6 @@
 from rpython.rlib.objectmodel import enforceargs
 from rpython.rlib import runicode
-
+from obin.runtime.exception import ObinRuntimeError
 
 @enforceargs(str)
 def decode_str_utf8(string):
@@ -56,8 +56,7 @@ def unicode_unescape(string):
         pos += 1
         if pos >= size:
             message = u"\\ at end of string"
-            from obin.runtime.exception import ObinSyntaxError
-            raise ObinSyntaxError(message)
+            raise ObinRuntimeError(message)
 
         ch = s[pos]
         pos += 1

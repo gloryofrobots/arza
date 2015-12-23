@@ -7,7 +7,7 @@ class W_ValueType(W_Root):
 
 
 class W_Char(W_ValueType):
-    _immutable_fields_ = ['value']
+    # _immutable_fields_ = ['char_value']
 
     def __init__(self, value):
         self.char_value = value
@@ -40,7 +40,7 @@ class W_Char(W_ValueType):
 
 
 class W_Integer(W_ValueType):
-    _immutable_fields_ = ['__value']
+    # _immutable_fields_ = ['int_value']
 
     def __init__(self, value):
         assert isinstance(value, int)
@@ -77,7 +77,7 @@ class W_Integer(W_ValueType):
 
 
 class W_Float(W_ValueType):
-    _immutable_fields_ = ['value']
+    # _immutable_fields_ = ['float_value']
 
     def __init__(self, value):
         assert isinstance(value, float)
@@ -140,8 +140,7 @@ class StringIterator(W_ValueType):
 
 
 class W_String(W_ValueType):
-    _type_ = 'String'
-    _immutable_fields_ = ['value']
+    # _immutable_fields_ = ['value']
 
     def __init__(self, value):
         assert value is not None and isinstance(value, unicode)

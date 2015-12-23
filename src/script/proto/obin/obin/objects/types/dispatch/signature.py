@@ -1,6 +1,7 @@
 __author__ = 'gloryofrobots'
 from discriminator import *
 from obin.objects.types.root import W_Root
+from obin.utils.builtins import ohash, oid
 
 
 class Argument(W_Root):
@@ -23,17 +24,6 @@ class Argument(W_Root):
         discriminators.append(d)
         return d
 
-    def _equal_(self, other):
-        if other.__class__ == self.__class__ \
-                and other.position == self.position:
-            return True
-        return False
-
-    def _hash_(self):
-        from rpython.rlib.objectmodel import compute_identity_hash
-        return compute_identity_hash(self)
-
-
 class PredicateArgument(Argument):
     def __init__(self, position, predicate):
         Argument.__init__(self, position)
@@ -43,9 +33,9 @@ class PredicateArgument(Argument):
         position = self.position
         predicate = self.predicate
         for d in discriminators:
-            if d.__class__ == PredicateDiscriminator \
+            if isinstance(d, PredicateDiscriminator) \
                     and d.position == position \
-                    and d.predicate == predicate:
+                    and d.predicate is predicate:
                 return d
 
         return None
@@ -54,11 +44,15 @@ class PredicateArgument(Argument):
         return PredicateDiscriminator(self.position, self.predicate)
 
     def _equal_(self, other):
-        if other.__class__ == self.__class__ \
-                and other.predicate is self.predicate \
+        if not isinstance(other, PredicateArgument):
+            return False
+        if other.predicate is self.predicate \
                 and other.position == self.position:
             return True
         return False
+
+    def _hash_(self):
+        return oid(self.__class__)
 
     def __repr__(self):
         return str(self.predicate)
@@ -66,16 +60,13 @@ class PredicateArgument(Argument):
     def __str__(self):
         return self.__repr__()
 
-    def _hash_(self):
-        from rpython.rlib.objectmodel import compute_identity_hash
-        return compute_identity_hash(self.predicate)
 
 
 class ArgumentAny(Argument):
     def find_old_discriminator(self, discriminators):
         position = self.position
         for d in discriminators:
-            if d.__class__ == AnyDiscriminator \
+            if d.__class__ is AnyDiscriminator \
                     and d.position == position:
                 return d
 
@@ -91,11 +82,12 @@ class ArgumentAny(Argument):
         return self.__repr__()
 
     def _equal_(self, other):
-        return self.__class__ == other.__class__ and self.position == other.position
+        if not isinstance(other, ArgumentAny):
+            return False
+        return self.position == other.position
 
     def _hash_(self):
-        from rpython.rlib.objectmodel import compute_identity_hash
-        return compute_identity_hash(self.__class__)
+        return self.position
 
 
 class ArgumentTrait(Argument):
@@ -107,7 +99,8 @@ class ArgumentTrait(Argument):
         position = self.position
         trait = self.trait
         for d in discriminators:
-            if d.__class__ == TraitDiscriminator \
+
+            if isinstance(d, TraitDiscriminator) \
                     and d.position == position \
                     and d.trait == trait:
                 return d
@@ -118,7 +111,7 @@ class ArgumentTrait(Argument):
         return TraitDiscriminator(self.position, self.trait)
 
     def _equal_(self, other):
-        if other.__class__ == self.__class__ \
+        if other.__class__ is self.__class__ \
                 and other.trait == self.trait \
                 and other.position == self.position:
             return True
@@ -183,7 +176,11 @@ class Signature(BaseSignature):
             self.args.append(arg)
 
     def equal(self, other):
-        for arg1, arg2 in zip(self.args, other.args):
+        args1 = self.args
+        args2 = other.args
+        for i in range(0, len(args1)):
+            arg1 = args1[i]
+            arg2 = args2[i]
             if not arg1._equal_(arg2):
                 return False
 

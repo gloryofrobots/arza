@@ -29,8 +29,7 @@ class ObjectIterator(W_ValueType):
         return True
 
 class W_Object(W_Cell):
-    _type_ = 'Object'
-    _immutable_fields_ = ['_type_']
+    # _immutable_fields_ = ['_slots']
 
     def __init__(self, slots):
         W_Cell.__init__(self)
@@ -77,11 +76,7 @@ class W_Object(W_Cell):
         return not isundefined(v)
 
     def _at_(self, k):
-        from obin.objects.space import newundefined
         v = self._slots.get(k)
-        if v == -1000:
-            return newundefined()
-
         return v
 
     def _lookup_(self, k):

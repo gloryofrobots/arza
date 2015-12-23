@@ -30,8 +30,6 @@ class VectorIterator(W_ValueType):
 
 
 class W_Vector(W_Cell):
-    _type_ = 'Vector'
-
     def __init__(self, items):
         W_Cell.__init__(self)
         assert isinstance(items, list)

@@ -1,17 +1,16 @@
-class ObinException(Exception):
-    message = u'Exception'
+from obin.objects import api
 
-    def __init__(self, message=None):
-        if message is not None:
-            assert isinstance(message, unicode)
-            self.message = message
+class ObinException(Exception):
+    def __init__(self, message):
+        assert isinstance(message, unicode)
+        self.message = message
 
     def _msg(self):
         return self.message
 
     def msg(self):
-        from obin.objects.space import _w
-        return _w(self._msg())
+        from obin.objects.space import newstring
+        return newstring(self._msg())
 
     def __str__(self):
         return self._msg()
@@ -31,7 +30,7 @@ class ObinTraitError(ObinException):
         self.trait = trait
 
     def _msg(self):
-        return u'TraitError : %s %s ' % (self.message, self.trait)# % (self.value, )
+        return u'TraitError : %s %s ' % (self.message, self.trait)
 
 class ObinTypeError(ObinException):
     def __init__(self, value):
@@ -44,14 +43,14 @@ class ObinTypeError(ObinException):
 
 class ObinReferenceError(ObinException):
     def __init__(self, identifier):
-        self.identifier = identifier.value()
+        self.identifier = api.to_native_unicode(identifier)
 
     def _msg(self):
         return u'ReferenceError: ' + self.identifier + u' is not defined'
 
 
 class ObinRangeError(ObinException):
-    def __init__(self, value=None):
+    def __init__(self, value):
         self.value = value
 
     def _msg(self):
@@ -59,7 +58,7 @@ class ObinRangeError(ObinException):
 
 
 class ObinKeyError(ObinRangeError):
-    def __init__(self, value=None):
+    def __init__(self, value):
         self.value = value
 
     def _msg(self):
@@ -67,7 +66,7 @@ class ObinKeyError(ObinRangeError):
 
 
 class ObinInvokeError(ObinRangeError):
-    def __init__(self, value=None):
+    def __init__(self, value):
         self.value = value
 
     def _msg(self):
@@ -92,16 +91,3 @@ class ObinMethodSpecialisationError(ObinRangeError):
         return u'Method Specialisation Error:  Can\'t specialize method "%s" %s' % (str(self.method._name_), str(self.message),)
 
 
-class ObinSyntaxError(ObinException):
-    def __init__(self, msg=u'', src=u'', line=0, column=0):
-        self.error_msg = msg
-        self.src = src
-        self.line = line
-        self.column = column
-
-    def _msg(self):
-        # error_src = self.src #self.src.encode('unicode_escape')
-        if self.error_msg:
-            return u'SyntaxError: "%s" in "%s" at line:%d, column:%d'  # %(self.error_msg, error_src, self.line, self.column)
-        else:
-            return u'SyntaxError: in "%s" at line:%d, column:%d'  # %(error_src, self.line, self.column)

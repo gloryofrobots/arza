@@ -1,11 +1,13 @@
 from obin.compile.parse.tokens import token_type_to_str
 
+class BaseNode:
+    pass
 
-class EmptyNode:
+class EmptyNode(BaseNode):
     pass
 
 
-class Node(EmptyNode):
+class Node(BaseNode):
     def __init__(self, _type, value, position, line):
         self.type = _type
         self.value = value
@@ -85,7 +87,7 @@ class Node(EmptyNode):
                           indent=2, separators=(',', ': '))
 
 
-class NodeList(EmptyNode):
+class NodeList(BaseNode):
     def __init__(self, items):
         assert isinstance(items, list)
         self.items = items
@@ -110,7 +112,7 @@ def empty_node():
 
 
 def is_empty_node(n):
-    return n.__class__ == EmptyNode
+    return isinstance(n, EmptyNode)
 
 def is_iterable_node(node):
     return is_list_node(node) and len(node) > 0

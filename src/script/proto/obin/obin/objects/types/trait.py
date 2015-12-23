@@ -5,8 +5,7 @@ from rpython.rlib.rrandom import Random
 r = Random()
 
 class W_Trait(W_Cell):
-    _type_ = 'Trait'
-    _immutable_fields_ = ['_type_']
+    # _immutable_fields_ = ['_name_']
 
     def __init__(self, name):
         self._name_ = name
