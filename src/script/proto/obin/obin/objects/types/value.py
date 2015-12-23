@@ -119,11 +119,11 @@ class StringIterator(W_ValueType):
         assert isinstance(length, int)
         self.index = 0
         self.source = source
-        self.__source_length = length
+        self._string_length = length
 
     def _next_(self):
         from obin.objects.space import newundefined
-        if self.index >= self.__source_length:
+        if self.index >= self._string_length:
             return newundefined()
 
         el = self.source.at(self.index)
@@ -131,10 +131,10 @@ class StringIterator(W_ValueType):
         return el
 
     def _tostring_(self):
-        return "<Iterator %d:%d>" % (self.index, self.__source_length)
+        return "<Iterator %d:%d>" % (self.index, self._string_length)
 
     def _tobool_(self):
-        if self.index >= self.__source_length:
+        if self.index >= self._string_length:
             return False
         return True
 
@@ -176,7 +176,7 @@ class W_String(W_ValueType):
         return str(self.string_value)
 
     def _iterator_(self):
-        return StringIterator(self.string_value, self.__length)
+        return StringIterator(self, self.__length)
 
     def _tobool_(self):
         return bool(self.string_value)

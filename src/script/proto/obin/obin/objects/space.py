@@ -19,12 +19,14 @@ def newchar(c):
     from obin.objects.types.value import W_Char
     return W_Char(ord(c))
 
+
 @enforceargs(str)
 def newstring_from_str(s):
     if not isinstance(s, str):
         print type(s)
     assert isinstance(s, str)
     return newstring(unicode(s))
+
 
 # @enforceargs(unicode)
 def newstring(s):
@@ -34,6 +36,7 @@ def newstring(s):
     assert isinstance(s, unicode)
     return W_String(s)
 
+
 class Globals:
     def __init__(self):
         self.w_True = None
@@ -42,7 +45,9 @@ class Globals:
         self.w_Interrupt = None
         self.w_Null = None
 
+
 w_Globals = Globals()
+
 
 def makeglobals():
     global w_Globals
@@ -82,6 +87,7 @@ def newfunc(name, bytecode, scope):
     from obin.objects.types.callable import W_Function
     obj = W_Function(name, bytecode, scope)
     return obj
+
 
 def newfuncsource(name, bytecode):
     from obin.objects.types.callable import W_FunctionSource
@@ -157,6 +163,18 @@ def newtrait(name):
 def newtraits(traits):
     return newvector(traits)
 
+def _dict_key(obj1, obj2):
+    v = obj1._equal_(obj2)
+    # print "_dict_key", obj1, obj2, v
+    return v
+
+def _dict_hash(obj1):
+    # print "_dict_hash", obj1,obj1._hash_()
+    return obj1._hash_()
+
+def newdict():
+    from rpython.rlib.objectmodel import r_dict
+    return r_dict(_dict_key, _dict_hash)
 
 def isany(value):
     from obin.objects.types.root import W_Root
@@ -217,11 +235,11 @@ def ismodule(w):
 
 
 def isboolean(value):
-    return value is w_False or value is w_True
+    return value is w_Globals.w_False or value is w_Globals.w_True
 
 
 def isnull(value):
-    return value is w_Null
+    return value is w_Globals.w_Null
 
 
 def isint(w):
@@ -295,6 +313,9 @@ class State:
             self.Function = newtrait(newstring(u"Function"))
             self.FunctionTraits = newtraits([self.Function, self.Any])
 
+            self.Coroutine = newtrait(newstring(u"Coroutine"))
+            self.CoroutineTraits = newtraits([self.Coroutine, self.Function, self.Any])
+
             self.Generic = newtrait(newstring(u"Generic"))
             self.GenericTraits = newtraits([self.Generic, self.Any])
 
@@ -338,8 +359,6 @@ def _w(value):
         return newbool(value)
     elif isinstance(value, int):
         return newint(value)
-    elif isinstance(value, long):
-        return newint(int(value))
     elif isinstance(value, float):
         return newfloat(value)
     elif isinstance(value, unicode):

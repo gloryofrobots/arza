@@ -32,26 +32,30 @@ class W_Tuple(W_Cell):
     def __init__(self, items):
         W_Cell.__init__(self)
         assert isinstance(items, list)
-        self.values = list(items)
+        self.__values = list(items)
+
+    def __iter__(self):
+        for v in self.__values:
+            yield v
 
     def __hash__(self):
-        return hash(self.values)
+        return hash(self.__values)
 
     def __str__(self):
-        return "(%s,)" % ",".join([v._tostring_() for v in self.values])
+        return "(%s,)" % ",".join([v._tostring_() for v in self.__values])
 
     def _traits_(self):
         from obin.objects.space import state
         return state.traits.TupleTraits
 
     def _clone_(self):
-        return W_Tuple(self.values)
+        return W_Tuple(self.__values)
 
     def _at_(self, index):
         from obin.objects.space import newundefined, isint
         assert isint(index)
         try:
-            el = self.values[api.to_native_integer(index)]
+            el = self.__values[api.to_native_integer(index)]
         except ObinKeyError:
             return newundefined()
 
@@ -61,31 +65,31 @@ class W_Tuple(W_Cell):
         return TupleIterator(self, self.length())
 
     def _tobool_(self):
-        return bool(self.values)
+        return bool(self.__values)
 
     def _length_(self):
         return self.length()
 
     def _tostring_(self):
-        return str(self.values)
+        return str(self.__values)
 
     def at(self, i):
-        return self.values[i]
+        return self.__values[i]
 
     def has_index(self, i):
         return i > 0 and i < self.length()
 
     def get_index(self, obj):
         try:
-            return self.values.index(obj)
+            return self.__values.index(obj)
         except ValueError:
             return -1
 
     def has(self, obj):
-        return obj in self.values
+        return obj in self.__values
 
     def length(self):
-        return len(self.values)
+        return len(self.__values)
 
 
 # def append(tupl, v):

@@ -89,7 +89,7 @@ class W_CoroutineIterator(W_Root):
 
     def _next_(self):
         from obin.objects.space import state, newundefined, newinterrupt
-        process = state.interpreter.process
+        process = state.process
         routine = process.routine
         self._coroutine_._call_(routine, None)
         return newinterrupt()

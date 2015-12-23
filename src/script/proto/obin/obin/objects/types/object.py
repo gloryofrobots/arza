@@ -115,7 +115,7 @@ class W_Object(W_Cell):
         return str("{%s %s}" % (str(self._slots), str(self._traits)))
 
     def _clone_(self):
-        slots = self._slots.clopy()
+        slots = self._slots.copy()
         clone = W_Object(slots)
         traits = self._traits.copy()
         clone.set_traits(traits)

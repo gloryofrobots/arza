@@ -3,24 +3,25 @@ from obin.objects import api
 class Discriminator:
     def __init__(self, position):
         self.position = position
-        self.status = None
+        self.status = -2000
 
     def reset(self):
-        self.status = None
+        self.status = -2000
 
     def evaluate(self, args):
         arg = args.at(self.position)
 
-        if self.status is None:
+        if self.status == -2000:
             self.status = self._evaluate(arg)
-            assert self.status is not None
+            # print "STATUS", self.status
+            assert self.status != -2000
 
         return self.status
 
     def _evaluate(self, arg):
         raise NotImplementedError()
 
-    def __eq__(self, other):
+    def _equal_(self, other):
         return other.__class__ == self.__class__ \
                and other.position == self.position
 
@@ -44,7 +45,7 @@ class PredicateDiscriminator(Discriminator):
         Discriminator.__init__(self, position)
         self.predicate = predicate
 
-    def __eq__(self, other):
+    def _equal_(self, other):
         return other.__class__ == self.__class__ \
                and other.position == self.position \
                and other.trait == self.predicate
@@ -54,7 +55,7 @@ class PredicateDiscriminator(Discriminator):
         if self.predicate(arg):
             return 100
         else:
-            return -1
+            return -1000
 
     # def __str__(self):
     #     if self.status is None:
@@ -72,7 +73,7 @@ class TraitDiscriminator(Discriminator):
         Discriminator.__init__(self, position)
         self.trait = trait
 
-    def __eq__(self, other):
+    def _equal_(self, other):
         return other.__class__ == self.__class__ \
                and other.position == self.position \
                and other.trait == self.trait

@@ -639,11 +639,14 @@ class Compiler:
         self.enter_scope()
 
         if is_iterable_node(params):
+            length = len(params)
+            last_index = length - 1
             args = []
-            for param in params[:-1]:
+            for i in range(0, last_index):
+                param = params[i]
                 args.append(obs.newstring_from_str(param.value))
 
-            lastparam = params[-1]
+            lastparam = params[last_index]
 
             if lastparam.type == TT_ELLIPSIS:
                 args.append(obs.newstring_from_str(lastparam.first().value))

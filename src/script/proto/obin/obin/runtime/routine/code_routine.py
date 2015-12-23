@@ -52,7 +52,7 @@ class CodeRoutine(BaseRoutine):
         return self._name_
 
     def _on_terminate(self, signal):
-        self.__signal = signal
+        pass
 
     def _on_resume(self, value):
         self.stack.push(value)

@@ -41,8 +41,9 @@ class W_Vector(W_Cell):
 
         self._items = items
 
-    def _native_iterator_(self):
-        return iter(self._items)
+    def __iter__(self):
+        for i in self._items:
+            yield i
 
     # def __str__(self):
     #     return u'W_Vector("%s")' % str(self._items)
@@ -149,7 +150,7 @@ class W_Vector(W_Cell):
         assert isany(v)
         self._items.remove(v)
 
-    def values(self):
+    def to_list(self):
         return self._items
 
     def append_many(self, items):
@@ -160,16 +161,19 @@ class W_Vector(W_Cell):
 
     def concat(self, v):
         assert isinstance(v, W_Vector)
-        self._items += v.values()
+        self._items += v.to_list()
 
     def fold_slice_into_itself(self, index):
+        assert index > 0
         rest = W_Vector(self._items[index:])
         self._items = self._items[0:index]
         self._items.append(rest)
 
     def append_value_multiple_times(self, val, times):
+        assert times > 0
         self._items = self._items + [val] * times
 
     def exclude_index(self, idx):
+        assert idx > 0
         items = self._items
         self._items = items[:idx] + items[idx + 1:]

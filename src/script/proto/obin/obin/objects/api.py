@@ -192,10 +192,6 @@ def iterator(obj):
     return obj._iterator_()
 
 
-def native_iterator(obj):
-    return obj._native_iterator_()
-
-
 def next(obj):
     return obj._next_()
 

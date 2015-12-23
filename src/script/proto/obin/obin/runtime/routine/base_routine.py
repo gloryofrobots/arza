@@ -12,6 +12,10 @@ class BaseRoutine:
         self.__state = BaseRoutine.State.IDLE
         self.called = None
         self.result = None
+        self.__signal = None
+
+    def signal(self):
+        return self.__signal
 
     def has_continuation(self):
         return self.__continuation is not None
@@ -55,6 +59,7 @@ class BaseRoutine:
     def terminate(self, signal):
         assert not self.is_closed()
         assert signal is not None
+        self.__signal = signal
         self.__state = BaseRoutine.State.TERMINATED
         self._on_terminate(signal)
 

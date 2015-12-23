@@ -54,8 +54,9 @@ def setup(obj):
 
 @complete_native_routine
 def _id(routine):
+    from rpython.rlib.objectmodel import compute_unique_id
     this = routine.get_arg(0)
-    return str(hex(id(this)))
+    return str(hex(compute_unique_id(this)))
 
 
 @complete_native_routine
@@ -65,7 +66,7 @@ def alert(routine):
 
 @complete_native_routine
 def _print(routine):
-    args = routine._args.values()
+    args = routine._args.to_list()
     if len(args) == 0:
         return
 
@@ -153,7 +154,7 @@ def set_traits(routine):
 
 @complete_native_routine
 def attach(routine):
-    args = routine.args().values()
+    args = routine.args().to_list()
     obj = routine.get_arg(0)
     for i in range(len(args) -1, 0, -1):
         trait = routine.get_arg(i)
@@ -162,7 +163,7 @@ def attach(routine):
 
 @complete_native_routine
 def detach(routine):
-    args = routine.args().values()
+    args = routine.args().to_list()
     obj = routine.get_arg(0)
     for i in range(1, len(args)):
         trait = routine.get_arg(i)

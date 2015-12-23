@@ -147,32 +147,32 @@ class Process(object):
             return self.catch_signal()
 
     def catch_signal(self):
-        routine = self.__routine
-        assert routine.is_terminated()
-        signal = routine.signal()
-        assert signal
-
-        while True:
-            handler = routine.catch_signal(signal)
-            if handler:
-                assert 0
-                # catch_ctx = CatchContext(handler, handler.signal_name(), signal, routine.ctx)
-                # handler.set_context(catch_ctx)
-                # routine = handler
-                break
-            else:
-                if not routine.is_closed():
-                    routine.terminate(signal)
-
-            if routine.has_continuation():
-                routine = routine.continuation()
-                continue
-
-            self.terminate()
-            raise RuntimeError("NonHandled signal", signal)
-
-        # continuation in signal handler must exists at this moment
-        self.__call_routine(routine, None, None)
+        raise NotImplementedError()
+        # routine = self.__routine
+        # assert routine.is_terminated()
+        # signal = routine.signal()
+        # assert signal
+        # while True:
+        #     handler = routine.catch_signal(signal)
+        #     if handler:
+        #         assert 0
+        #         # catch_ctx = CatchContext(handler, handler.signal_name(), signal, routine.ctx)
+        #         # handler.set_context(catch_ctx)
+        #         # routine = handler
+        #         break
+        #     else:
+        #         if not routine.is_closed():
+        #             routine.terminate(signal)
+        #
+        #     if routine.has_continuation():
+        #         routine = routine.continuation()
+        #         continue
+        #
+        #     self.terminate()
+        #     raise RuntimeError("NonHandled signal", signal)
+        #
+        # # continuation in signal handler must exists at this moment
+        # self.__call_routine(routine, None, None)
 
     def run_with_module(self, module, _globals):
         routine = module.compile(_globals)

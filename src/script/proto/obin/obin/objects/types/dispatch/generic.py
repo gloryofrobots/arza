@@ -1,6 +1,6 @@
 from obin.objects.types.root import W_Root
 from obin.runtime.exception import *
-from signature import Signature
+from signature import Signature, BaseSignature
 from obin.objects import api
 from dag import *
 
@@ -54,12 +54,12 @@ class W_Generic(W_Root):
             if signature.equal(sig):
                 return i
 
-        raise IndexError()
+        return -1
 
     def reify(self, signatures):
         modified = {}
 
-        for sig in api.native_iterator(signatures):
+        for sig in signatures:
             args_signature = sig.at(0)
             method = sig.at(1)
             signature = Signature(args_signature, method)
@@ -76,12 +76,12 @@ class W_Generic(W_Root):
                 signatures = self.get_signatures(arity)
                 modified[arity] = signatures
 
-            try:
-                index = self.find_signature_index(signatures, signature)
+            index = self.find_signature_index(signatures, signature)
+            if index != -1:
                 old = signatures[index]
                 self._methods_.remove(old.method)
                 signatures[index] = signature
-            except IndexError:
+            else:
                 signatures.append(signature)
 
             self._methods_.append(method)
@@ -104,12 +104,12 @@ class W_Generic(W_Root):
         signature = Signature(signature, method)
 
         # replace old method with same signature
-        try:
-            index = self.find_signature_index(signatures, signature)
+        index = self.find_signature_index(signatures, signature)
+        if index != -1:
             old = signatures[index]
             self._methods_.remove(old.method)
             signatures[index] = signature
-        except IndexError:
+        else:
             signatures.append(signature)
 
         self._methods_.append(method)
@@ -129,7 +129,8 @@ class W_Generic(W_Root):
             # print "METHOD", index, leaf
             return leaf
 
-        groups = {}
+        from obin.objects.space import newdict
+        groups = newdict()
         for signature in signatures:
             arg = signature.at(index)
             if arg not in groups:
@@ -155,18 +156,18 @@ class W_Generic(W_Root):
         return index
 
     def _specify_empty(self, method):
-        idx = self._add_method(method)
+        self._add_method(method)
         if self._signatures_[0] is not None:
             raise ObinMethodSpecialisationError(self, u"Specialisation for 0-length method has been already defined")
 
-        self._signatures_[0] = idx
+        self._signatures_[0] = [BaseSignature(method)]
 
     def lookup_method(self, args):
         arity = args.length()
         # print "LOOKUP", self._name_, args, arity
         if arity == 0:
-            idx = self._signatures_[0]
-            return self._methods_[idx]
+            sig = self._signatures_[0][0]
+            return sig.method
 
         if arity >= len(self._dags_):
             raise ObinMethodInvokeError(self, args)

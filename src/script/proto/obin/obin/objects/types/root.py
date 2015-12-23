@@ -43,6 +43,9 @@ class W_Root:
     def _equal_(self, other):
         raise NotImplementedError()
 
+    def _hash_(self):
+        raise NotImplementedError()
+
     def _call_(self, routine, args):
         raise NotImplementedError()
 

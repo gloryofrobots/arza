@@ -17,30 +17,53 @@ class SingleNode(DAGNode):
 
     def evaluate(self, args):
         rank = self.nextnode.get_rank(args)
-        if rank == -1:
-            return False
+        if rank < 0:
+            return None
         return self.nextnode.evaluate(args)
 
     def __str__(self):
         return '[%s, %s]' % (str(self.discriminator), str(self.nextnode))
+
+def sort_stack(stack):
+    length = len(stack)
+    # sorts need to be in-place, lets do some very non-fancy bubble sort for starters
+    while True:
+        swapped = False
+        for i in xrange(1, length):
+            # print "swapped"
+            v_x = stack[i]
+            v_y = stack[i - 1]
+            x = v_x[1]
+            y = v_y[1]
+            if y > x:
+                stack[i] = v_y
+                stack[i - 1] = v_x
+                swapped = True
+
+        if not swapped:
+            break
 
 
 def evaluate_decision(stack, nodes, args):
     from operator import itemgetter
     for node in nodes:
         rank = node.get_rank(args)
-        if rank != -1:
+        if rank >= 0:
             stack.append((node, rank))
-
-    stack.sort(key=itemgetter(1))
+    # print "********************"
+    # print "1", stack
+    sort_stack(stack)
+    # print "2", stack
+    # stack.sort(key=itemgetter(1))
+    # print "3", stack
 
     for ranked_node in stack:
         node = ranked_node[0]
         result = node.evaluate(args)
 
-        if result is not False:
+        if result is not None:
             return result
-    return False
+    return None
 
 
 class GroupNode(DAGNode):
