@@ -139,7 +139,7 @@ class StringIterator(W_ValueType):
         return True
 
 
-def _hash_string(s):
+def _compute_hash_string(s):
     """The algorithm behind compute_hash() for a string or a unicode."""
     from rpython.rlib.rarithmetic import intmask
     length = len(s)
@@ -161,7 +161,7 @@ class W_String(W_ValueType):
         assert value is not None and isinstance(value, unicode)
         self.string_value = value
         self.__length = len(self.string_value)
-        self.__hash = _hash_string(self.string_value)
+        self.__hash = _compute_hash_string(self.string_value)
 
     def _compare_(self, other):
         assert isinstance(other, W_String)
