@@ -139,6 +139,21 @@ class StringIterator(W_ValueType):
         return True
 
 
+def _hash_string(s):
+    """The algorithm behind compute_hash() for a string or a unicode."""
+    from rpython.rlib.rarithmetic import intmask
+    length = len(s)
+    if length == 0:
+        return -1
+    x = ord(s[0]) << 7
+    i = 0
+    while i < length:
+        x = intmask((1000003 * x) ^ ord(s[i]))
+        i += 1
+    x ^= length
+    return intmask(x)
+
+
 class W_String(W_ValueType):
     # _immutable_fields_ = ['value']
 
@@ -146,10 +161,7 @@ class W_String(W_ValueType):
         assert value is not None and isinstance(value, unicode)
         self.string_value = value
         self.__length = len(self.string_value)
-
-    def _equal_(self, other):
-        assert isinstance(other, W_String)
-        return self.string_value == other.string_value
+        self.__hash = _hash_string(self.string_value)
 
     def _compare_(self, other):
         assert isinstance(other, W_String)
@@ -160,13 +172,11 @@ class W_String(W_ValueType):
         else:
             return 0
 
-    def __eq__(self, other):
-        if not isinstance(other, W_String):
-            return False
-        return self._equal_(other)
+    def _equal_(self, other):
+        return self.string_value == other.string_value
 
-    def __hash__(self):
-        return self.string_value.__hash__()
+    def _hash_(self):
+        return self.__hash
 
     def isempty(self):
         return not bool(len(self.string_value))

@@ -1,4 +1,5 @@
 from obin.objects.space import newvector
+from obin.utils.builtins import odict
 
 class Slots:
     def __init__(self):
@@ -108,10 +109,10 @@ def newslots(values, bindings, index):
     return slots
 
 def newslots_with_size(size):
-    return newslots(newvector([None] * size), {}, 0)
+    return newslots(newvector([None] * size), odict(), 0)
 
 def newslots_empty():
-    return newslots(newvector([]), {}, 0)
+    return newslots(newvector([]), odict(), 0)
 
 def newslots_with_values_from_slots(values, protoslots):
     l = protoslots.length()
