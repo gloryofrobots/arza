@@ -45,14 +45,19 @@ class References(object):
         self._set_refs(index, ref)
 
     def get_ref(self, symbol, index):
+        print "get_ref", symbol, index, self._refs_
         ref = self._get_refs(index)
-
+        print "ref", ref, ref is None
         if ref is None:
+            print "is None"
             ref = self.env.get_reference(symbol)
+            print " new ref", ref
+            # assert ref is not None
             if not ref:
-                raise ObinReferenceError(symbol)
+                raise RuntimeError("Unknown reference", (symbol,))
             self._set_refs(index, ref)
 
+        print "ref_get_value"
         return ref.get_value()
 
 
@@ -67,6 +72,7 @@ class Reference:
         self.index = index
 
     def get_value(self):
+        print "Reference.ref_get_value", self.env, self.index
         return self.env.get_local(self.index)
 
     def put_value(self, value):

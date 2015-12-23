@@ -9,6 +9,7 @@ def run_src(process, src):
     from obin.runtime.load import compile_module
     from obin.objects.space import newstring
     module = compile_module(process, newstring(u"__main__"), src)
+    print "run_src", module
     return run_module(process, module)
 
 def run_module(process, module):

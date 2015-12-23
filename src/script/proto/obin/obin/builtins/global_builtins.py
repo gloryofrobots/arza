@@ -67,6 +67,7 @@ def alert(routine):
 @complete_native_routine
 def _print(routine):
     args = routine._args.to_list()
+    print "_print", args
     if len(args) == 0:
         return
 

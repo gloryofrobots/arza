@@ -52,7 +52,8 @@ class PredicateArgument(Argument):
         return False
 
     def _hash_(self):
-        return oid(self.__class__)
+        # TODO FIX IT. GIVE RPYTHON SOME HASH TO THINK
+        return 1024 + self.position
 
     def __repr__(self):
         return str(self.predicate)
@@ -87,7 +88,7 @@ class ArgumentAny(Argument):
         return self.position == other.position
 
     def _hash_(self):
-        return self.position
+        return 256 + self.position
 
 
 class ArgumentTrait(Argument):

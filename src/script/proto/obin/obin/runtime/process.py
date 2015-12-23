@@ -106,17 +106,21 @@ class Process(object):
         self.__routine = r
 
     def execute(self):
+        print "execute"
         self.find_routine_to_execute()
-
+        print "Process_routine", self.routine
         if self.routine is None:
+            print "Routine not here"
             return
 
         self.routine.execute()
 
     def find_routine_to_execute(self):
         routine = self.__routine
+        print "find_routine_to_execute", routine
         while True:
             if routine is None:
+                print "exit loop", routine
                 break
 
             if routine.is_complete():
@@ -141,7 +145,7 @@ class Process(object):
         self.__routine = routine
 
         if routine is None:
-            return
+            return None
 
         if routine.is_terminated():
             return self.catch_signal()
@@ -177,9 +181,11 @@ class Process(object):
     def run_with_module(self, module, _globals):
         routine = module.compile(_globals)
         self.call_routine(routine, None, None)
+
         self.run()
         module.set_result(self.result)
         self.result = None
+        print "run_with_module", module.result()
         return module.result()
 
     def run_module_force(self, module, _globals):
@@ -193,6 +199,7 @@ class Process(object):
         return self.result
 
     def run(self):
+        print "RUN"
         assert self.is_idle()
         self.active()
         while True:

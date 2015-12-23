@@ -48,16 +48,19 @@ class Slots:
         return self.get_by_index(idx)
 
     def get_index(self, name):
+        print "get_index", name
         try:
             idx = self.property_bindings[name]
-        except KeyError:
+            return idx
+        except Exception as e:
+            print "get_index Exception", e
             return -1000
-        return idx
 
     def set_by_index(self, idx, value):
         self.property_values.set(idx, value)
 
     def get_by_index(self, idx):
+        print "Slots.get_by_index", idx, self.property_values._items
         return self.property_values.at(idx)
 
     def set(self, name, value):
@@ -66,11 +69,13 @@ class Slots:
 
     def add(self, name, value):
         idx = self.get_index(name)
-        if idx is -1000:
+        # print "Slots_add, IDX", idx
+        if idx == -1000:
             idx = self.index
             self.property_bindings[name] = idx
             self.index += 1
 
+        # print "Slots_add, IDX >>", idx
         self.property_values.ensure_size(idx + 1)
         # if idx >= self.property_values.length():
         #     values = self.property_values.values()
