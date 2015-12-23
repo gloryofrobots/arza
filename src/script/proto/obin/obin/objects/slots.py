@@ -42,18 +42,21 @@ class Slots:
     def get(self, name):
         from obin.objects.space import newundefined
         idx = self.get_index(name)
-        if idx is -1000:
+        if idx == -1000:
             return newundefined()
 
         return self.get_by_index(idx)
 
     def get_index(self, name):
-        print "get_index", name
+        from obin.objects import api
+        print "get_index", api.to_native_string(name)
         try:
             idx = self.property_bindings[name]
             return idx
         except Exception as e:
             print "get_index Exception", e
+            for k in self.property_bindings:
+                print api.to_native_string(k),
             return -1000
 
     def set_by_index(self, idx, value):
@@ -68,6 +71,8 @@ class Slots:
         self.set_by_index(idx, value)
 
     def add(self, name, value):
+        from obin.objects import api
+        print "Slots_ass", api.to_native_string(name), api.to_native_string(value)
         idx = self.get_index(name)
         # print "Slots_add, IDX", idx
         if idx == -1000:
