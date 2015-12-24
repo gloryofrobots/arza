@@ -118,10 +118,16 @@ def at_index(obj, i):
     return obj._at_index(i)
 
 
-def put_at_index(obj, i):
+def get_index(obj, i):
     from space import isint
     assert isint(i)
-    return obj._put_at_index(i)
+    return obj._get_index(i)
+
+
+def put_at_index(obj, i, v):
+    from space import isint
+    assert isint(i)
+    return obj._put_at_index(i, v)
 
 
 def is_empty(obj):

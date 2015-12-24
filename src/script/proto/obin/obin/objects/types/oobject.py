@@ -46,6 +46,15 @@ class W_Object(W_Cell):
         v = self.slots.get(k)
         return v
 
+    def _at_index(self, i):
+        return api.at_index(self.slots, i)
+
+    def _get_index(self, obj):
+        return api.get_index(self.slots, obj)
+
+    def _put_at_index(self, i, obj):
+        return api.put_at_index(self.slots, i, obj)
+
     def _lookup_(self, k):
         return self._at_(k)
 
