@@ -1,5 +1,5 @@
 # TODO STRING LITERALS PROPER, CHARS, SYMBOLS
-from root import W_Root
+from oroot import W_Root
 
 
 class W_ValueType(W_Root):

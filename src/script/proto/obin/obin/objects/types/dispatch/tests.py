@@ -53,7 +53,7 @@ def test_3():
 
 def test_any():
     from obin.objects.space import newtrait, newgeneric, newstring,\
-        state, newvector, newnull, newbool, newint, newprocess
+        state, newvector, newnil, newbool, newint, newprocess
     newprocess(["."])
 
     Any = state.traits.Any
@@ -96,14 +96,14 @@ def test_any():
     ]))
 
     test(g, "m3", newvector([
-        newnull(),
+        newnil(),
         newint(42),
         newint(111),
         newstring(u"S1")
     ]))
 
     test(g, "m4", newvector([
-        newnull(),
+        newnil(),
         makeobject([Z,Z,Y,Z,X]),
         newvector([newbool(True), newbool(False)]),
         newstring(u"S1")
@@ -115,10 +115,10 @@ def test_any():
         makeobject([X,Z]),
     ]))
     test(g, "m6", newvector([
-        newnull(),
-        newnull(),
-        newnull(),
-        newnull(),
+        newnil(),
+        newnil(),
+        newnil(),
+        newnil(),
     ]))
 
     test(g, "m7", newvector([
@@ -129,13 +129,13 @@ def test_any():
     ]))
 
     test(g, "m8", newvector([
-        newnull(),
+        newnil(),
         newvector([newbool(True), newbool(False)]),
-        newnull(),
+        newnil(),
     ]))
 
     test(g, "m9", newvector([
-        newnull(),
+        newnil(),
         newvector([newbool(True), newbool(False)]),
         makeobject([X,Z]),
     ]))

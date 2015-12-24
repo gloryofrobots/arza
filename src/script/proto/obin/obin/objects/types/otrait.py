@@ -1,4 +1,4 @@
-from root import W_Cell
+from oroot import W_Cell
 from obin.runtime.exception import *
 from obin.objects import api
 from rpython.rlib.rrandom import Random

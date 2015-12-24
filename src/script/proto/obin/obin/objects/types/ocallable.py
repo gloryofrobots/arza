@@ -1,4 +1,4 @@
-from root import W_Root
+from oroot import W_Root
 from obin.runtime.exception import *
 from obin.objects import api
 from rpython.rlib import jit

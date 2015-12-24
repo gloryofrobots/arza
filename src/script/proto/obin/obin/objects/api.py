@@ -88,31 +88,43 @@ def traits(obj):
 
 def attach(obj, trait):
     from space import isobject, istrait
+    from obin.objects.types import oobject
     assert isobject(obj)
     assert istrait(trait)
-    obj.attach(trait)
+    oobject.attach(obj, trait)
 
 
 def detach(obj, trait):
+    from obin.objects.types import oobject
     from space import isobject, istrait
     assert isobject(obj)
     assert istrait(trait)
-    obj.detach(trait)
+    oobject.detach(obj, trait)
 
 
 def kindof(obj, trait):
+    from space import newbool
+    return newbool(n_kindof(obj, trait))
+
+def n_kindof(obj, trait):
     t = trait._totrait_()
     return obj._kindof_(t)
 
 
-def has(obj, k):
-    from space import isundefined, newbool
+def contain(obj, k):
+    from space import newbool
+    return newbool(n_contain(obj, k))
+
+
+def n_contain(obj, k):
+    from space import isundefined
     assert not isundefined(k)
     v = obj._at_(k)
     if isundefined(v):
-        return newbool(False)
+        return False
     else:
-        return newbool(True)
+        return True
+
 
 def n_hash(obj):
     return obj._hash_()

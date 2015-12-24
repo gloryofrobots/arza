@@ -43,7 +43,6 @@ def setup(obj):
     api.put_native_function(obj, u'trait', trait, 1)
     api.put_native_function(obj, u'attach', attach, -1)
     api.put_native_function(obj, u'detach', detach, -1)
-    api.put_native_function(obj, u'set_traits', set_traits, 1)
     ## debugging
     # if not we_are_translated():
     #     api.put_native_function(obj, u'pypy_repr', pypy_repr)
@@ -144,13 +143,6 @@ def traits(routine):
     from obin.objects.space import isobject
     obj = routine.get_arg(0)
     return api.traits(obj)
-
-@complete_native_routine
-def set_traits(routine):
-    obj = routine.get_arg(0)
-    traits = routine.get_arg(1)
-    obj.set_traits(traits)
-    return obj
 
 @complete_native_routine
 def attach(routine):

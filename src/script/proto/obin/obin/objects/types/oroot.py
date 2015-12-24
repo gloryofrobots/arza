@@ -62,3 +62,4 @@ class W_Cell(W_Root):
 
     def isfrozen(self):
         return self.__frozen
+

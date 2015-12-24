@@ -4,7 +4,7 @@ from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
 from obin.objects.stack import Stack
 from obin.objects.space import (newbool, newundefined,
-                                newnull, newvector, isinterrupt,
+                                newnil, newvector, isinterrupt,
                                 newobject, newfunc,
                                 newint, newtuple, newgeneric, newtrait)
 from obin.objects import api
@@ -85,7 +85,7 @@ class CodeRoutine(BaseRoutine):
                 self.complete(self.stack.top())
             # *************************************
             elif NULL == tag:
-                self.stack.push(newnull())
+                self.stack.push(newnil())
             # *************************************
             elif TRUE == tag:
                 self.stack.push(newbool(True))

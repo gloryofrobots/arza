@@ -1,4 +1,4 @@
-from obin.objects.types.root import W_Root
+from obin.objects.types.oroot import W_Root
 from obin.objects.space import newtuple, isany
 from obin.runtime.exception import *
 from signature import Signature, BaseSignature

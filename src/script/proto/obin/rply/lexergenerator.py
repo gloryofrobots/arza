@@ -46,42 +46,6 @@ class Match(object):
 
 
 class LexerGenerator(object):
-    """
-    A LexerGenerator represents a set of rules that match pieces of text that
-    should either be turned into tokens or ignored by the lexer.
-
-    Rules are added using the :meth:`add` and :meth:`ignore` methods:
-
-    >>> from rply import LexerGenerator
-    >>> lg = LexerGenerator()
-    >>> lg.add('NUMBER', r'\d+')
-    >>> lg.add('ADD', r'\+')
-    >>> lg.ignore(r'\s+')
-
-    The rules are passed to :func:`re.compile`. If you need additional flags,
-    e.g. :const:`re.DOTALL`, you can pass them to :meth:`add` and
-    :meth:`ignore` as an additional optional parameter:
-
-    >>> import re
-    >>> lg.add('ALL', r'.*', flags=re.DOTALL)
-
-    You can then build a lexer with which you can lex a string to produce an
-    iterator yielding tokens:
-
-    >>> lexer = lg.build()
-    >>> iterator = lexer.lex('1 + 1')
-    >>> iterator.next()
-    Token('NUMBER', '1')
-    >>> iterator.next()
-    Token('ADD', '+')
-    >>> iterator.next()
-    Token('NUMBER', '1')
-    >>> iterator.next()
-    Traceback (most recent call last):
-    ...
-    StopIteration
-    """
-
     def __init__(self):
         self.rules = []
         self.ignore_rules = []
