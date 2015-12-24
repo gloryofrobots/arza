@@ -1,10 +1,15 @@
 from obin.objects.types.root import W_Root
+from obin.objects.space import newtuple
 from obin.runtime.exception import *
 from signature import Signature, BaseSignature
 from obin.objects import api
 from dag import *
 from obin.utils.builtins import odict
 
+class SrategyType:
+    ARITY_DISPATCH = 0
+    SINGLE_DISPATCH = 1
+    MULTIPLE_DISPATCH = 2
 
 class W_Generic(W_Root):
     # _immutable_fields_ = ["_name_"]
@@ -90,31 +95,9 @@ class W_Generic(W_Root):
             self.create_dag(signatures, arity)
 
     def reify_single(self, signature, method):
-        # print "SPECIFY", signature
-        arity = signature.length()
-
-        if arity != method.arity:
-            raise ObinMethodSpecialisationError(self, u"Method arity doesn't match implementation function")
-
-        if arity == 0:
-            return self._specify_empty(method)
-
-        signatures = self.get_signatures(arity)
-
-        signature = Signature(signature, method)
-
-        # replace old method with same signature
-        index = self.find_signature_index(signatures, signature)
-        if index != -1:
-            old = signatures[index]
-            self._methods_.remove(old.method)
-            signatures[index] = signature
-        else:
-            signatures.append(signature)
-
-        self._methods_.append(method)
-
-        self.create_dag(signatures, arity)
+        self.reify(
+                newtuple(
+                    [newtuple([signature, method])]))
 
     def _make_method_node(self, signatures):
         if len(signatures) != 1:

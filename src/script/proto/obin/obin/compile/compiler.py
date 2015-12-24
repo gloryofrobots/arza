@@ -8,6 +8,7 @@ from obin.objects import space as obs
 from obin.runtime import primitives
 from obin.compile.code.source import CodeSource
 from obin.compile.code import *
+from obin.utils.builtins import is_absent_index
 
 
 def compile_error(node, message):
@@ -48,7 +49,7 @@ class Compiler:
 
     def is_modifiable_binding(self, name):
         scope = self.current_scope()
-        if scope.get_local_index(name) is not -1000:
+        if not is_absent_index(scope.get_local_index(name)):
             return True
         if scope.has_outer(name):
             return True
@@ -79,7 +80,7 @@ class Compiler:
         assert obs.isstring(symbol)
         scope = self.current_scope()
         idx = scope.get_reference(symbol)
-        if idx is -1000:
+        if is_absent_index(idx):
             idx = scope.add_reference(symbol)
         return idx
 
@@ -87,18 +88,18 @@ class Compiler:
         assert obs.isany(literal)
         scope = self.current_scope()
         idx = scope.get_literal(literal)
-        if idx is -1000:
+        if is_absent_index(idx):
             idx = scope.add_literal(literal)
         return idx
 
     def declare_local(self, symbol):
         scope = self.current_scope()
         idx = scope.get_local_index(symbol)
-        if idx is not -1000:
+        if not is_absent_index(idx):
             return idx
 
         idx = scope.add_local(symbol)
-        assert idx is not -1000
+        assert not is_absent_index(idx)
         return idx
 
     def get_variable_index(self, name):
@@ -108,7 +109,7 @@ class Compiler:
         scope_id = 0
         for scope in reversed(self.scopes):
             idx = scope.get_local_index(name)
-            if idx is not -1000:
+            if not is_absent_index(idx):
                 if scope_id == 0:
                     return idx, True
                 else:

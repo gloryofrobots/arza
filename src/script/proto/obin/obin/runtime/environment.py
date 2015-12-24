@@ -1,7 +1,7 @@
 from obin.runtime.reference import Reference
 from obin.objects import api
 from obin.objects.space import isstring
-
+from obin.utils.builtins import is_absent_index
 
 def newenv(obj, outer_environment):
     env = Environment(obj, outer_environment)
@@ -14,7 +14,7 @@ def get_reference(lex, identifier):
         return None
 
     index = lex.get_index(identifier)
-    if index != -1000:
+    if not is_absent_index(index):
         ref = Reference(lex, identifier, index)
         return ref
     else:

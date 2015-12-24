@@ -1,6 +1,6 @@
 from obin.objects.space import isstring
 from obin.objects.slots import newslots_empty, newslots_with_values_from_slots
-
+from obin.utils.builtins import absent_index, is_absent_index
 class ScopeSet:
     def __init__(self):
         self.values = []
@@ -9,7 +9,7 @@ class ScopeSet:
         try:
             return self.values.index(val)
         except ValueError:
-            return -1000
+            return absent_index()
 
     def add(self, val):
         assert val not in self.values
@@ -71,7 +71,7 @@ class Scope:
         from obin.objects.space import newundefined
         assert isstring(local)
         self.check_arg_count()
-        assert self.get_local_index(local) is -1000
+        assert is_absent_index(self.get_local_index(local))
         return self.locals.add(local, newundefined())
 
     def get_local_index(self, local):
