@@ -1,9 +1,14 @@
 from rpython.rlib.objectmodel import (specialize, enforceargs,
                                       compute_unique_id, compute_identity_hash,
                                       always_inline)
-from obin.objects.space import isany
+from rpython.rlib.rrandom import Random
+
+r = Random()
 
 NOT_FOUND = -1
+
+def random():
+    return r.random()
 
 
 @always_inline

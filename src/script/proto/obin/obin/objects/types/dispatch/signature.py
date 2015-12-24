@@ -2,6 +2,7 @@ __author__ = 'gloryofrobots'
 from discriminator import *
 from obin.objects.types.oroot import W_Root
 from obin.utils.builtins import ohash, oid
+from obin.objects.types import otuple
 
 
 class Argument(W_Root):
@@ -145,10 +146,10 @@ class Signature(BaseSignature):
 
         from obin.objects import space, api
         traits = space.state.traits
-        self.arity = args.length()
+        self.arity = api.n_length(args)
         self.args = []
         for i in range(self.arity):
-            trait = args.at(i)
+            trait = otuple.at(args, i)
             if traits.Any is trait:
                 arg = ArgumentAny(i)
             elif traits.Object is trait:

@@ -1,5 +1,5 @@
 # TODO STRING LITERALS PROPER, CHARS, SYMBOLS
-from oroot import W_Root
+from oroot import W_Root, W_Hashable
 
 
 class W_ValueType(W_Root):
@@ -11,6 +11,9 @@ class W_Char(W_ValueType):
 
     def __init__(self, value):
         self.char_value = value
+
+    def _hash_(self):
+        return self.char_value
 
     def __str__(self):
         return "%s" % (chr(self.char_value),)
@@ -45,6 +48,9 @@ class W_Integer(W_ValueType):
     def __init__(self, value):
         assert isinstance(value, int)
         self.int_value = value
+
+    def _hash_(self):
+        return self.int_value
 
     def _tointeger_(self):
         return self.int_value
@@ -82,6 +88,10 @@ class W_Float(W_ValueType):
     def __init__(self, value):
         assert isinstance(value, float)
         self.float_value = value
+
+    def _hash_(self):
+        from obin.utils.builtins import ohash
+        return ohash(self.float_value)
 
     def _tointeger_(self):
         return int(self.float_value)
@@ -139,29 +149,30 @@ class StringIterator(W_ValueType):
         return True
 
 
-def _compute_hash_string(s):
-    """The algorithm behind compute_hash() for a string or a unicode."""
-    from rpython.rlib.rarithmetic import intmask
-    length = len(s)
-    if length == 0:
-        return -1
-    x = ord(s[0]) << 7
-    i = 0
-    while i < length:
-        x = intmask((1000003 * x) ^ ord(s[i]))
-        i += 1
-    x ^= length
-    return intmask(x)
 
 
-class W_String(W_ValueType):
+class W_String(W_Hashable):
     # _immutable_fields_ = ['value']
 
     def __init__(self, value):
+        W_Hashable.__init__(self)
         assert value is not None and isinstance(value, unicode)
         self.string_value = value
         self.__length = len(self.string_value)
-        self.__hash = _compute_hash_string(self.string_value)
+
+    def _compute_hash_(self):
+        """The algorithm behind compute_hash() for a string or a unicode."""
+        from rpython.rlib.rarithmetic import intmask
+        length = len(self.string_value)
+        if length == 0:
+            return -1
+        x = ord(self.string_value[0]) << 7
+        i = 0
+        while i < length:
+            x = intmask((1000003 * x) ^ ord(self.string_value[i]))
+            i += 1
+        x ^= length
+        return intmask(x)
 
     def _compare_(self, other):
         assert isinstance(other, W_String)
@@ -184,9 +195,6 @@ class W_String(W_ValueType):
         # print "_equal_", self.string_value, other.string_value, self.string_value == other.string_value
         return self.string_value == other.string_value
     #
-    def _hash_(self):
-        # print "HASH", self.string_value, self.__hash
-        return self.__hash
 
     def isempty(self):
         return not bool(len(self.string_value))

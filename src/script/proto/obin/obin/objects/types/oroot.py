@@ -7,9 +7,6 @@ class W_Root:
     def __repr__(self):
         return self.__str__()
 
-    def id(self):
-        return str(hex(id(self)))
-
     # BEHAVIOR
     def _at_(self, b):
         raise NotImplementedError()
@@ -47,8 +44,6 @@ class W_Root:
     def _compare_(self, other):
         raise NotImplementedError()
 
-    def _find_method_for_self_(self, other):
-        raise NotImplementedError()
 
 class W_Cell(W_Root):
     def __init__(self):
@@ -57,9 +52,18 @@ class W_Cell(W_Root):
     def freeze(self):
         self.__frozen = True
 
-    def unfreeze(self):
-        self.__frozen = False
-
     def isfrozen(self):
         return self.__frozen
 
+
+class W_Hashable(W_Root):
+    def __init__(self):
+        self.__hash = None
+
+    def _compute_hash_(self):
+        raise NotImplementedError()
+
+    def _hash_(self):
+        if self.__hash is None:
+            self.__hash = self._compute_hash_()
+        return self.__hash

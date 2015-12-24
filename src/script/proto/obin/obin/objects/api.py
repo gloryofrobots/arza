@@ -142,7 +142,10 @@ def obtain(obj, k):
 
 def length(obj):
     from space import newint
-    return newint(obj._length_())
+    return newint(n_length(obj))
+
+def n_length(obj):
+    return obj._length_()
 
 
 def clone(obj):

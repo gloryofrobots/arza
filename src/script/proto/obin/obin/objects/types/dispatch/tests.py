@@ -13,8 +13,9 @@ def sig(*args):
 
 def makeobject(traits):
     from obin.objects.space import newplainobject, newvector
+    from obin.objects.types import oobject
     o = newplainobject()
-    o.set_traits(newvector(traits))
+    oobject.set_traits(o, newvector(traits))
     return o
 
 

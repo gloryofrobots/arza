@@ -1,7 +1,8 @@
-from oroot import W_Cell
+from oroot import W_Hashable
 from ovalue import W_ValueType
 from obin.runtime.exception import *
 from obin.objects import api
+
 
 class TupleIterator(W_ValueType):
     def __init__(self, source, length):
@@ -9,88 +10,87 @@ class TupleIterator(W_ValueType):
         assert isinstance(length, int)
         self.index = 0
         self.source = source
-        self.__source_length = length
+        self.tuple_length = length
 
     def _next_(self):
         from obin.objects.space import newundefined
-        if self.index >= self.__source_length:
+        if self.index >= self.tuple_length:
             return newundefined()
 
-        el = self.source.at(self.index)
+        el = at(self.source, self.index)
         self.index += 1
         return el
 
     def _tostring_(self):
-        return "<Iterator %d:%d>" % (self.index, self.__source_length)
+        return "<Iterator %d:%d>" % (self.index, self.tuple_length)
 
     def _tobool_(self):
-        if self.index >= self.__source_length:
+        if self.index >= self.tuple_length:
             return False
         return True
 
-class W_Tuple(W_Cell):
+
+class W_Tuple(W_Hashable):
     def __init__(self, items):
-        W_Cell.__init__(self)
         assert isinstance(items, list)
-        self.__values = list(items)
+        W_Hashable.__init__(self)
+        self.elements = list(items)
 
     def __iter__(self):
-        for v in self.__values:
+        for v in self.elements:
             yield v
 
-    def __hash__(self):
-        return hash(self.__values)
-
-    def __str__(self):
-        return "(%s,)" % ",".join([v._tostring_() for v in self.__values])
+    def _compute_hash_(self):
+        from rpython.rlib.rarithmetic import intmask
+        x = 0x345678
+        for item in self.elements:
+            y = api.n_hash(item)
+            x = intmask((1000003 * x) ^ y)
+        return x
 
     def _traits_(self):
         from obin.objects.space import state
         return state.traits.TupleTraits
 
     def _clone_(self):
-        return W_Tuple(self.__values)
+        return W_Tuple(self.elements)
 
     def _at_(self, index):
         from obin.objects.space import newundefined, isint
         assert isint(index)
         try:
-            el = self.__values[api.to_native_integer(index)]
+            el = self.elements[api.to_native_integer(index)]
         except ObinKeyError:
             return newundefined()
 
         return el
 
     def _iterator_(self):
-        return TupleIterator(self, self.length())
+        return TupleIterator(self, self._length_())
 
     def _tobool_(self):
-        return bool(self.__values)
+        return bool(self.elements)
 
     def _length_(self):
-        return self.length()
+        return len(self.elements)
 
     def _tostring_(self):
-        return str(self.__values)
+        return "(%s,)" % ",".join([v._tostring_() for v in self.elements])
 
-    def at(self, i):
-        return self.__values[i]
 
-    def has_index(self, i):
-        return i > 0 and i < self.length()
+def at(tupl, i):
+    return tupl.elements[i]
 
-    def get_index(self, obj):
-        try:
-            return self.__values.index(obj)
-        except ValueError:
-            return -1
 
-    def has(self, obj):
-        return obj in self.__values
+def has_index(tupl, i):
+    return i > 0 and i < tupl._length_()
 
-    def length(self):
-        return len(self.__values)
 
+def get_index(tupl, obj):
+    try:
+        return tupl.elements.index(obj)
+    except ValueError:
+        return -1
 
 # def append(tupl, v):
 #     items = tupl.values + [v]

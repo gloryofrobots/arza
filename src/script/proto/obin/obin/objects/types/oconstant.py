@@ -7,6 +7,10 @@ class W_Constant(W_Root):
 
 
 class W_Undefined(W_Constant):
+    def __init__(self):
+        from obin.utils.builtins import oid
+        self.__hash = oid(self)
+
     def _tostring_(self):
         return "undefined"
 
@@ -14,9 +18,15 @@ class W_Undefined(W_Constant):
         from obin.objects.space import state
         return state.traits.UndefinedTraits
 
+    def _hash_(self):
+        return self.__hash
 
 
 class W_Nil(W_Constant):
+    def __init__(self):
+        from obin.utils.builtins import oid
+        self.__hash = oid(self)
+
     def _tostring_(self):
         return 'nil'
 
@@ -26,6 +36,9 @@ class W_Nil(W_Constant):
     def _traits_(self):
         from obin.objects.space import state
         return state.traits.NilTraits
+
+    def _hash_(self):
+        return self.__hash
 
 
 class W_True(W_Constant):
@@ -38,6 +51,9 @@ class W_True(W_Constant):
     def _traits_(self):
         from obin.objects.space import state
         return state.traits.TrueTraits
+
+    def _hash_(self):
+        return 1
 
     def __str__(self):
         return '_True_'
@@ -53,6 +69,9 @@ class W_False(W_Constant):
     def _traits_(self):
         from obin.objects.space import state
         return state.traits.FalseTraits
+
+    def _hash_(self):
+        return 0
 
     def __str__(self):
         return '_False_'

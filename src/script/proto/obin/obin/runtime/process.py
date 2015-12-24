@@ -179,17 +179,19 @@ class Process(object):
         # self.__call_routine(routine, None, None)
 
     def run_with_module(self, module, _globals):
-        routine = module.compile(_globals)
+        from obin.objects.types import omodule
+        routine = omodule.compile_module(module, _globals)
         self.call_routine(routine, None, None)
 
         self.run()
-        module.set_result(self.result)
+        module.result = self.result
         self.result = None
         # print "run_with_module", module.result()
-        return module.result()
+        return module.result
 
     def run_module_force(self, module, _globals):
-        routine = module.compile(_globals)
+        from obin.objects.types import omodule
+        routine = omodule.compile_module(module, _globals)
         routine.activate(self)
         routine.execute()
 

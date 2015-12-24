@@ -1,4 +1,5 @@
 from obin.objects.types.oroot import W_Root
+from obin.objects.types import otuple
 from obin.objects.space import newtuple, isany
 from obin.runtime.exception import *
 from signature import Signature, BaseSignature
@@ -82,8 +83,8 @@ class W_Generic(W_Root):
         modified = {}
 
         for sig in signatures:
-            args_signature = sig.at(0)
-            method = sig.at(1)
+            args_signature = otuple.at(sig, 0)
+            method = otuple.at(sig, 1)
             signature = Signature(args_signature, method)
             arity = signature.arity
 

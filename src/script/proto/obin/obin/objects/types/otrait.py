@@ -1,30 +1,23 @@
-from oroot import W_Cell
-from obin.runtime.exception import *
+from oroot import W_Hashable
 from obin.objects import api
-from rpython.rlib.rrandom import Random
-r = Random()
+from obin.utils.builtins import random
 
-class W_Trait(W_Cell):
+
+class W_Trait(W_Hashable):
     # _immutable_fields_ = ['_name_']
 
     def __init__(self, name):
+        W_Hashable.__init__(self)
         self._name_ = name
-        v = r.random()
-        _id = (1 - v)
-        _id = _id * 10000000
-        __id = int(_id)
-        # __id2 = id(self)
-        # print "Trait", __id, __id2
-        self.__id = __id
+
+    def _compute_hash_(self):
+        return int((1 - random()) * 10000000)
 
     def _totrait_(self):
         return self
 
     def _tostring_(self):
         return "<trait %s>" % (api.to_native_string(self._name_))
-
-    def _hash_(self):
-        return self.__id
 
     def _equal_(self, other):
         return other is self

@@ -3,10 +3,12 @@ from obin.runtime.exception import *
 from obin.objects import api
 from rpython.rlib import jit
 
+
 class W_FunctionSource(W_Root):
     def __init__(self, name, code):
         self.name = name
         self.code = code
+
 
 class W_Function(W_Root):
     # _immutable_fields_ = ['scope',  'is_variadic', 'arity', '_name_']
@@ -22,7 +24,7 @@ class W_Function(W_Root):
     def _tostring_(self):
         params = ",".join([api.to_native_string(p) for p in self._bytecode_.scope.arguments])
         # return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
-        return "fn %s(%s){ %s }" % (api.to_native_string(self._name_), params, "..." )
+        return "fn %s(%s){ %s }" % (api.to_native_string(self._name_), params, "...")
 
     def _tobool_(self):
         return True
@@ -78,6 +80,7 @@ class W_Primitive(W_Root):
 
         routine.process.call_object(self, routine, args)
 
+
 class W_CoroutineIterator(W_Root):
     def __init__(self, coroutine):
         self._coroutine_ = coroutine
@@ -86,7 +89,7 @@ class W_CoroutineIterator(W_Root):
         return self._coroutine_.is_accessible()
 
     def _next_(self):
-        from obin.objects.space import state, newundefined, newinterrupt
+        from obin.objects.space import state, newinterrupt
         process = state.process
         routine = process.routine
         self._coroutine_._call_(routine, None)
@@ -125,27 +128,23 @@ class W_CoroutineYield(W_Root):
         routine.process.yield_to_routine(self._receiver_, routine, value)
 
 
-
 class W_Coroutine(W_Root):
     # _immutable_fields_ = ['_function_']
 
     def __init__(self, function):
-        self._function_ = function
-        self._routine_ = None
-        self._receiver_ = None
-        self._yield_ = None
+        self.function = function
+        self.routine = None
+        self.receiver = None
+        self.yielder = None
 
     def is_accessible(self):
-        return self._routine_ is None or not self._routine_.is_closed()
-
-    def function(self):
-        return self._function_
+        return self.routine is None or not self.routine.is_closed()
 
     def set_receiver(self, co):
         # from obin.runtime.process import check_continuation_consistency
         # if self._receiver_:
         #     check_continuation_consistency(self._receiver_, co)
-        self._receiver_ = co
+        self.receiver = co
 
     def _tostring_(self):
         return "fn coroutine {[native code]}"
@@ -159,18 +158,18 @@ class W_Coroutine(W_Root):
 
     def _first_call_(self, routine, args):
         from obin.objects.space import newvector
-        self._receiver_ = routine
+        self.receiver = routine
 
-        self._yield_ = W_CoroutineYield(self)
-        self._yield_.set_receiver(self._receiver_)
+        self.yielder = W_CoroutineYield(self)
+        self.yielder.set_receiver(self.receiver)
 
         if args is not None:
-            args.prepend(self._yield_)
+            args.prepend(self.yielder)
         else:
-            args = newvector([self._yield_])
+            args = newvector([self.yielder])
 
-        self._routine_ = self.function().create_routine(args)
-        routine.process.call_routine(self._routine_, self._receiver_, self._receiver_)
+        self.routine = self.function.create_routine(args)
+        routine.process.call_routine(self.routine, self.receiver, self.receiver)
 
     def _iterator_(self):
         return W_CoroutineIterator(self)
@@ -179,10 +178,10 @@ class W_Coroutine(W_Root):
         from obin.objects.space import newundefined
         assert routine
 
-        if not self._routine_:
+        if not self.routine:
             return self._first_call_(routine, args)
 
-        if not self._routine_.is_suspended():
+        if not self.routine.is_suspended():
             raise ObinRuntimeError(u"Invalid coroutine state")
 
         # TODO THIS IS TOTALLY WRONG, CHANGE IT TO PATTERN MATCH
@@ -192,5 +191,5 @@ class W_Coroutine(W_Root):
             value = newundefined()
 
         receiver = routine
-        self._yield_.set_receiver(receiver)
-        routine.process.yield_to_routine(self._receiver_, receiver, value)
+        self.yielder.set_receiver(receiver)
+        routine.process.yield_to_routine(self.receiver, receiver, value)
