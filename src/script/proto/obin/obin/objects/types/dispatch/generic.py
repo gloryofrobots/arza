@@ -1,15 +1,32 @@
 from obin.objects.types.root import W_Root
-from obin.objects.space import newtuple
+from obin.objects.space import newtuple, isany
 from obin.runtime.exception import *
 from signature import Signature, BaseSignature
 from obin.objects import api
 from dag import *
-from obin.utils.builtins import odict
+from rpython.rlib.objectmodel import r_dict
 
 class SrategyType:
     ARITY_DISPATCH = 0
     SINGLE_DISPATCH = 1
     MULTIPLE_DISPATCH = 2
+
+def _dict_key(obj1, obj2):
+    assert isany(obj1)
+    assert isany(obj2)
+    v = obj1._equal_(obj2)
+    # print "_dict_key", obj1, obj2, v
+    return v
+
+
+def _dict_hash(obj1):
+    assert isany(obj1)
+    # print "_dict_hash", obj1,obj1._hash_()
+    return obj1._hash_()
+
+
+def group_dict():
+    return r_dict(_dict_key, _dict_hash)
 
 class W_Generic(W_Root):
     # _immutable_fields_ = ["_name_"]
@@ -112,7 +129,7 @@ class W_Generic(W_Root):
             # print "METHOD", index, leaf
             return leaf
 
-        groups = odict()
+        groups = group_dict()
         for signature in signatures:
             arg = signature.get_argument(index)
             if arg not in groups:

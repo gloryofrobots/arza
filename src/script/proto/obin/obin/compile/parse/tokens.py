@@ -2,10 +2,13 @@ __author__ = 'gloryofrobots'
 from obin.compile.parse.token_type import *
 
 import rpython.rlib.rsre.rsre_re as re
+
+
 # import re
 
 def keyword(literal):
     return re.compile('\\b%s\\b' % literal)
+
 
 # def token(literal):
 #     return literal
@@ -49,11 +52,11 @@ string_literal = token('(""".*?""")|(".*?")|(\'.*?\')')
 # floating constants (K&R2: A.2.5.3)
 exponent_part = """([eE][-+]?[0-9]+)"""
 fractional_constant = """([0-9]*\.[0-9]+)|([0-9]+\.)"""
-floating_constant = token('((((' + fractional_constant + ')' + exponent_part + '?)|([0-9]+' + exponent_part + '))[FfLl]?)')
+floating_constant = token(
+    '((((' + fractional_constant + ')' + exponent_part + '?)|([0-9]+' + exponent_part + '))[FfLl]?)')
 binary_exponent_part = '''([pP][+-]?[0-9]+)'''
 hex_fractional_constant = '(((' + hex_digits + r""")?\.""" + hex_digits + ')|(' + hex_digits + r"""\.))"""
 hex_floating_constant = '(' + hex_prefix + '(' + hex_digits + '|' + hex_fractional_constant + ')' + binary_exponent_part + '[FfLl]?)'
-
 
 RULES = [
     (token('\n'), TT_NEWLINE),
@@ -101,14 +104,14 @@ RULES = [
     (char_const, TT_CHAR),
     (identifier, TT_NAME),
     (token('\.\.\.'), TT_ELLIPSIS),
-    # ('\+=', TT_ADD_ASSIGN),
-    # ('-=', TT_SUB_ASSIGN),
-    # ('\*=', TT_MUL_ASSIGN),
-    # ('/=', TT_DIV_ASSIGN),
-    # ('\%\=', TT_MOD_ASSIGN),
-    # ('\&\=', TT_BITAND_ASSIGN),
-    # ('\^\=', TT_BITXOR_ASSIGN),
-    # ('\|=', TT_BITOR_ASSIGN),
+    (token('\+='), TT_ADD_ASSIGN),
+    (token('-='), TT_SUB_ASSIGN),
+    (token('\*='), TT_MUL_ASSIGN),
+    (token('/='), TT_DIV_ASSIGN),
+    (token('\%\='), TT_MOD_ASSIGN),
+    (token('\&\='), TT_BITAND_ASSIGN),
+    (token('\^\='), TT_BITXOR_ASSIGN),
+    (token('\|='), TT_BITOR_ASSIGN),
     (token('>>>'), TT_URSHIFT),
     (token('>>'), TT_RSHIFT),
     (token('<<'), TT_LSHIFT),
