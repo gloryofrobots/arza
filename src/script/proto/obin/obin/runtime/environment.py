@@ -47,7 +47,7 @@ class Environment:
 
     def has_binding(self, n):
         assert isstring(n)
-        return api.n_contain(self.binding, n)
+        return api.n_contains(self.binding, n)
 
     def set_binding(self, n, v):
         assert isstring(n)

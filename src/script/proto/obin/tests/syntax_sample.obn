@@ -159,3 +159,16 @@ print(troops.Soldier)
 print(eq.Weapon)
 print(eq.fire)
 
+S = "ABCDEFGH"
+for s in S {
+    print(s)
+}
+
+L = [23, 42.344, "Hello", (1,2,3,55555,[2,3]), {name:"Bob", surname:"Alice"}]
+for el in L {
+    print(el)
+}
+
+for el in L[3] {
+    print(l)
+}

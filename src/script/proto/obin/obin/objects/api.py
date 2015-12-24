@@ -106,17 +106,49 @@ def kindof(obj, trait):
     from space import newbool
     return newbool(n_kindof(obj, trait))
 
+
 def n_kindof(obj, trait):
     t = trait._totrait_()
     return obj._kindof_(t)
 
 
-def contain(obj, k):
+def at_index(obj, i):
+    from space import isint
+    assert isint(i)
+    return obj._at_index(i)
+
+
+def put_at_index(obj, i):
+    from space import isint
+    assert isint(i)
+    return obj._put_at_index(i)
+
+
+def is_empty(obj):
     from space import newbool
-    return newbool(n_contain(obj, k))
+    return newbool(n_is_empty(obj))
 
 
-def n_contain(obj, k):
+def n_is_empty(obj):
+    return obj._length_() == 0
+
+
+def n_contains_index(obj, i):
+    from space import isint
+    assert isint(i)
+
+    l = n_length(obj)
+    if i > 0 and i < l:
+        return True
+    return False
+
+
+def contains(obj, k):
+    from space import newbool
+    return newbool(n_contains(obj, k))
+
+
+def n_contains(obj, k):
     from space import isundefined
     assert not isundefined(k)
     v = obj._at_(k)
@@ -143,6 +175,7 @@ def obtain(obj, k):
 def length(obj):
     from space import newint
     return newint(n_length(obj))
+
 
 def n_length(obj):
     return obj._length_()
@@ -184,6 +217,7 @@ def equal(obj, other):
     from space import newbool
     return newbool(n_equal(obj, other))
 
+
 def n_equal(obj, other):
     from space import isconstant
     if not isinstance(other, obj.__class__):
@@ -195,9 +229,10 @@ def n_equal(obj, other):
     v = obj._equal_(other)
     return v
 
+
 def compare(obj, other):
     from obin.runtime.exception import ObinTypeError
-    from space import isundefined, newint,  isconstant
+    from space import isundefined, newint, isconstant
     assert not isundefined(other)
     if isconstant(obj):
         raise ObinTypeError(obj)

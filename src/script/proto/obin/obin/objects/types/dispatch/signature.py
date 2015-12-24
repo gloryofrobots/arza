@@ -183,7 +183,7 @@ class Signature(BaseSignature):
         for i in range(0, len(args1)):
             arg1 = args1[i]
             arg2 = args2[i]
-            if not arg1._equal_(arg2):
+            if not api.n_equal(arg1, arg2):
                 return False
 
         return True

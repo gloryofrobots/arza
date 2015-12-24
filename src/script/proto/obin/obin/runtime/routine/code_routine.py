@@ -2,7 +2,7 @@ from obin.compile.code import *
 from obin.runtime.exception import ObinReferenceError
 from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
-from obin.objects.stack import Stack
+from obin.runtime.stack import Stack
 from obin.objects.space import (newbool, newundefined,
                                 newnil, newvector, isinterrupt,
                                 newobject, newfunc,

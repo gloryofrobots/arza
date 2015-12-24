@@ -1,42 +1,14 @@
 from oroot import W_Cell
 from ovalue import W_ValueType
 from obin.runtime.exception import *
-
-
-class VectorIterator(W_ValueType):
-    def __init__(self, source, length):
-        assert isinstance(source, W_Vector)
-        assert isinstance(length, int)
-        self.index = 0
-        self.source = source
-        self.source_length = length
-
-    def _next_(self):
-        from obin.objects.space import newundefined
-        if self.index >= self.source_length:
-            return newundefined()
-
-        el = self.source.at(self.index)
-        self.index += 1
-        return el
-
-    def _tostring_(self):
-        return "<Iterator %d:%d>" % (self.index, self.source_length)
-
-    def _tobool_(self):
-        if self.index >= self.source_length:
-            return False
-        return True
+from osequence import W_SequenceIterator
+from obin.utils.builtins import absent_index
 
 
 class W_Vector(W_Cell):
     def __init__(self, items):
         W_Cell.__init__(self)
         assert isinstance(items, list)
-        # from obin.objects.space import isany
-        # for i in items:
-        #     assert isany(i)
-
         self._items = items
 
     def __iter__(self):
@@ -47,8 +19,6 @@ class W_Vector(W_Cell):
     #     return u'W_Vector("%s")' % str(self._items)
 
     def _put_(self, k, v):
-        if self.isfrozen():
-            raise ObinRuntimeError(u"Vector is frozen")
         from obin.objects.space import isint
         from obin.objects import api
         assert isint(k)
@@ -68,9 +38,6 @@ class W_Vector(W_Cell):
             items.append(v)
         return W_Vector(items)
 
-    def copy(self):
-        return self._clone_()
-
     def _at_(self, index):
         from obin.objects.space import newundefined, isint
         from obin.objects import api
@@ -83,13 +50,13 @@ class W_Vector(W_Cell):
         return el
 
     def _iterator_(self):
-        return VectorIterator(self, self.length())
+        return W_SequenceIterator(self)
 
     def _tobool_(self):
         return bool(self._items)
 
     def _length_(self):
-        return self.length()
+        return len(self._items)
 
     def _delete_(self, key):
         del self._items[key]
@@ -97,27 +64,24 @@ class W_Vector(W_Cell):
     def _tostring_(self):
         return str(self._items)
 
-    def at(self, i):
+    def _at_index(self, i):
         return self._items[i]
 
-    def has_index(self, i):
-        return i > 0 and i < self.length()
+    def _put_at_index(self, i, obj):
+        try:
+            self._items[i] = obj
+        except:
+            raise
 
-    def get_index(self, obj):
+    def _get_index(self, obj):
         try:
             return self._items.index(obj)
         except ValueError:
-            return -1
-
-    def has(self, obj):
-        return obj in self._items
-
-    def length(self):
-        return len(self._items)
+            return absent_index()
 
     def ensure_size(self, size):
         assert size > 0
-        l = self.length()
+        l = self._length_()
         if size <= l:
             return
 
@@ -132,11 +96,6 @@ class W_Vector(W_Cell):
         from obin.objects.space import isany
         assert isany(v)
         self._items.insert(0, v)
-
-    def set(self, index, v):
-        from obin.objects.space import isany
-        assert isany(v)
-        self._items[index] = v
 
     def insert(self, index, v):
         from obin.objects.space import isany

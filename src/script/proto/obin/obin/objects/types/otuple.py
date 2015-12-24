@@ -1,33 +1,42 @@
 from oroot import W_Hashable
-from ovalue import W_ValueType
+from osequence import W_SequenceIterator
 from obin.runtime.exception import *
 from obin.objects import api
 
+"""
+ @jit.look_inside_iff(lambda self, _1: _unroll_condition(self))
+    def descr_hash(self, space):
+        mult = 1000003
+        x = 0x345678
+        z = len(self.wrappeditems)
+        for w_item in self.wrappeditems:
+            y = space.hash_w(w_item)
+            x = (x ^ y) * mult
+            z -= 1
+            mult += 82520 + z + z
+        x += 97531
+        return space.wrap(intmask(x))
 
-class TupleIterator(W_ValueType):
-    def __init__(self, source, length):
-        assert isinstance(source, W_Tuple)
-        assert isinstance(length, int)
-        self.index = 0
-        self.source = source
-        self.tuple_length = length
+    def descr_eq(self, space, w_other):
+        if not isinstance(w_other, W_AbstractTupleObject):
+            return space.w_NotImplemented
+        return self._descr_eq(space, w_other)
 
-    def _next_(self):
-        from obin.objects.space import newundefined
-        if self.index >= self.tuple_length:
-            return newundefined()
-
-        el = at(self.source, self.index)
-        self.index += 1
-        return el
-
-    def _tostring_(self):
-        return "<Iterator %d:%d>" % (self.index, self.tuple_length)
-
-    def _tobool_(self):
-        if self.index >= self.tuple_length:
-            return False
-        return True
+    @jit.look_inside_iff(_unroll_condition_cmp)
+    def _descr_eq(self, space, w_other):
+        items1 = self.wrappeditems
+        items2 = w_other.tolist()
+        lgt1 = len(items1)
+        lgt2 = len(items2)
+        if lgt1 != lgt2:
+            return space.w_False
+        for i in range(lgt1):
+            item1 = items1[i]
+            item2 = items2[i]
+            if not space.eq_w(item1, item2):
+                return space.w_False
+        return space.w_True
+"""
 
 
 class W_Tuple(W_Hashable):
@@ -65,8 +74,17 @@ class W_Tuple(W_Hashable):
 
         return el
 
+    def _at_index(self, i):
+        return self.elements[i]
+
+    def _get_index(self, obj):
+        try:
+            return self.elements.index(obj)
+        except ValueError:
+            return -1
+
     def _iterator_(self):
-        return TupleIterator(self, self._length_())
+        return W_SequenceIterator(self)
 
     def _tobool_(self):
         return bool(self.elements)
@@ -77,20 +95,6 @@ class W_Tuple(W_Hashable):
     def _tostring_(self):
         return "(%s,)" % ",".join([v._tostring_() for v in self.elements])
 
-
-def at(tupl, i):
-    return tupl.elements[i]
-
-
-def has_index(tupl, i):
-    return i > 0 and i < tupl._length_()
-
-
-def get_index(tupl, obj):
-    try:
-        return tupl.elements.index(obj)
-    except ValueError:
-        return -1
 
 # def append(tupl, v):
 #     items = tupl.values + [v]

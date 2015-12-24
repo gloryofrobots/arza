@@ -1,5 +1,6 @@
 # TODO STRING LITERALS PROPER, CHARS, SYMBOLS
 from oroot import W_Root, W_Hashable
+from obin.objects import api
 
 
 class W_ValueType(W_Root):
@@ -123,110 +124,5 @@ class W_Float(W_ValueType):
         return state.traits.FloatTraits
 
 
-class StringIterator(W_ValueType):
-    def __init__(self, source, length):
-        assert isinstance(source, W_String)
-        assert isinstance(length, int)
-        self.index = 0
-        self.source = source
-        self._string_length = length
-
-    def _next_(self):
-        from obin.objects.space import newundefined
-        if self.index >= self._string_length:
-            return newundefined()
-
-        el = self.source.at(self.index)
-        self.index += 1
-        return el
-
-    def _tostring_(self):
-        return "<Iterator %d:%d>" % (self.index, self._string_length)
-
-    def _tobool_(self):
-        if self.index >= self._string_length:
-            return False
-        return True
 
 
-
-
-class W_String(W_Hashable):
-    # _immutable_fields_ = ['value']
-
-    def __init__(self, value):
-        W_Hashable.__init__(self)
-        assert value is not None and isinstance(value, unicode)
-        self.string_value = value
-        self.__length = len(self.string_value)
-
-    def _compute_hash_(self):
-        """The algorithm behind compute_hash() for a string or a unicode."""
-        from rpython.rlib.rarithmetic import intmask
-        length = len(self.string_value)
-        if length == 0:
-            return -1
-        x = ord(self.string_value[0]) << 7
-        i = 0
-        while i < length:
-            x = intmask((1000003 * x) ^ ord(self.string_value[i]))
-            i += 1
-        x ^= length
-        return intmask(x)
-
-    def _compare_(self, other):
-        assert isinstance(other, W_String)
-        if self.string_value > other.string_value:
-            return 1
-        elif self.string_value < other.string_value:
-            return -1
-        else:
-            return 0
-
-    def __eq__(self, other):
-        if not isinstance(other, W_String):
-            return False
-        return self._equal_(other)
-
-    def __hash__(self):
-        return self._hash_()
-
-    def _equal_(self, other):
-        # print "_equal_", self.string_value, other.string_value, self.string_value == other.string_value
-        return self.string_value == other.string_value
-    #
-
-    def isempty(self):
-        return not bool(len(self.string_value))
-
-    def _tostring_(self):
-        return str(self.string_value)
-
-    def _iterator_(self):
-        return StringIterator(self, self.__length)
-
-    def _tobool_(self):
-        return bool(self.string_value)
-
-    def _length_(self):
-        return self.__length
-
-    def at(self, index):
-        from obin.objects.space import newundefined, newstring
-        from obin.runtime.exception import ObinKeyError
-        try:
-            ch = self.string_value[index]
-        except ObinKeyError:
-            return newundefined()
-
-        return newstring(ch)
-
-    def _at_(self, index):
-        from obin.objects.space import isint
-        from obin.objects import api
-        assert isint(index)
-        return self.at(api.to_native_integer(index))
-
-    def _traits_(self):
-        from obin.objects.space import state
-        return state.traits.StringTraits

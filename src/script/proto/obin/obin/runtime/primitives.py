@@ -183,7 +183,7 @@ def _in(routine, left, right):
     if not iscell(right):
         raise ObinTypeError(u"TypeError: invalid object for in operator")
 
-    return api.contain(right, left)
+    return api.contains(right, left)
 
 
 def _bitand(r, op1, op2):

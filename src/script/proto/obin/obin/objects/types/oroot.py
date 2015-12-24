@@ -11,6 +11,15 @@ class W_Root:
     def _at_(self, b):
         raise NotImplementedError()
 
+    def _at_index(self, i):
+        raise NotImplementedError()
+
+    def _get_index(self, obj):
+        raise NotImplementedError()
+
+    def _put_at_index(self, i, obj):
+        raise NotImplementedError()
+
     def _lookup_(self, b):
         raise NotImplementedError()
 
