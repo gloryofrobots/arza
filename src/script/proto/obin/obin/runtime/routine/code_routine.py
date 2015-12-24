@@ -72,7 +72,7 @@ class CodeRoutine(BaseRoutine):
             arg1 = opcode[1]
             arg2 = opcode[2]
 
-            print "_execute", opcode
+            # print "_execute", opcode
             # d = '%3d %25s %s ' % (self.pc, opcode_info(self, opcode), unicode([str(s) for s in self.stack]))
             # print d
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
@@ -118,15 +118,12 @@ class CodeRoutine(BaseRoutine):
                 assert arg1 > -1
 
                 name = self.literals[arg2]
-                print "OUTER name", name
                 value = self.refs.get_ref(name, arg1)
-                print "OUTER value", value
                 # check for none value here too
                 # for unbounded clojure vars X = 1 + fn() { 1 + X }
                 if value is None:
                     literal = self.literals[arg2]
                     raise ObinReferenceError(literal)
-                print "OUTER push"
                 self.stack.push(value)
             # *************************************
             elif MEMBER == tag:

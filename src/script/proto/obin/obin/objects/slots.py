@@ -1,5 +1,4 @@
 from obin.objects.space import newvector
-from obin.utils.builtins import odict
 from obin.objects.hashtable import newhashtable
 
 class Slots:
@@ -50,22 +49,22 @@ class Slots:
         return self.get_by_index(idx)
 
     def get_index(self, name):
-        from obin.objects import api
-        print "get_index", api.to_native_string(name)
+        # from obin.objects import api
+        # print "get_index", api.to_native_string(name)
         try:
             idx = self.property_bindings.get(name)
             return idx
         except Exception as e:
-            print "get_index Exception", e
-            for k in self.property_bindings:
-                print api.to_native_string(k),
+            # print "get_index Exception", e
+            # for k in self.property_bindings:
+            #     print api.to_native_string(k),
             return -1000
 
     def set_by_index(self, idx, value):
         self.property_values.set(idx, value)
 
     def get_by_index(self, idx):
-        print "Slots.get_by_index", idx
+        # print "Slots.get_by_index", idx
         return self.property_values.at(idx)
 
     def set(self, name, value):
@@ -80,7 +79,7 @@ class Slots:
         assert isany(name)
         assert isany(value)
         from obin.objects import api
-        print "Slots_ass", api.to_native_string(name), api.to_native_string(value)
+        # print "Slots_ass", api.to_native_string(name), api.to_native_string(value)
         idx = self.get_index(name)
         # print "Slots_add, IDX", idx
         if idx == -1000:

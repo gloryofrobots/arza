@@ -37,7 +37,6 @@ class CodeSource:
         self.emit_0(RETURN)
         self.__remove_labels()
         self.estimated_stack_size = estimate_stack_size(self.opcodes)
-        print "OPCODES", self.opcodes
         return Code(self.opcodes, self.estimated_stack_size, self.scope)
 
     def prealocate_label(self):

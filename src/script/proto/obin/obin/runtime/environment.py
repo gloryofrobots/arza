@@ -9,7 +9,7 @@ def newenv(obj, outer_environment):
 
 
 def get_reference(lex, identifier):
-    print "get_reference lex", lex
+    # print "get_reference lex", lex
     if lex is None:
         return None
 
@@ -31,7 +31,7 @@ class Environment:
         self.binding = obj
 
     def get_reference(self, identifier):
-        print "Environment.get_reference"
+        # print "Environment.get_reference"
         return get_reference(self.outer_environment, identifier)
 
     def set_local(self, idx, v):
