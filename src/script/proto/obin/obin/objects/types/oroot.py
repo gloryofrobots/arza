@@ -11,13 +11,13 @@ class W_Root:
     def _at_(self, b):
         raise NotImplementedError()
 
-    def _at_index(self, i):
+    def _at_index_(self, i):
         raise NotImplementedError()
 
-    def _get_index(self, obj):
+    def _get_index_(self, obj):
         raise NotImplementedError()
 
-    def _put_at_index(self, i, obj):
+    def _put_at_index_(self, i, obj):
         raise NotImplementedError()
 
     def _lookup_(self, b):
@@ -27,6 +27,9 @@ class W_Root:
         raise NotImplementedError()
 
     def _put_(self, k, v):
+        raise NotImplementedError()
+
+    def _remove_at_(self, key):
         raise NotImplementedError()
 
     def _tostring_(self):

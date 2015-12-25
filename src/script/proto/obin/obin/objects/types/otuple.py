@@ -74,10 +74,10 @@ class W_Tuple(W_Hashable):
 
         return el
 
-    def _at_index(self, i):
+    def _at_index_(self, i):
         return self.elements[i]
 
-    def _get_index(self, obj):
+    def _get_index_(self, obj):
         try:
             return self.elements.index(obj)
         except ValueError:

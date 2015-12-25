@@ -1,15 +1,13 @@
 import math
 
-from obin.objects.space import _w, isint, newint, newbool
 from obin.runtime.exception import ObinTypeError, ObinReferenceError
 from obin.objects import api
-from obin.objects.types.ovalue import W_String, W_Integer, W_Float
 from obin.objects.space import _w, isint, isstring, isfloat, newbool, newint, newfloat, newstring
 from rpython.rlib.rarithmetic import ovfcheck, intmask
 from rpython.rlib.rfloat import isnan, isinf
 from rpython.rlib.objectmodel import specialize
 from obin.builtins.number_builtins import w_NAN, w_POSITIVE_INFINITY, w_NEGATIVE_INFINITY
-from rpython.rlib import jit
+# from rpython.rlib import jit
 
 
 def plus(r, lprim, rprim):

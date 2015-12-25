@@ -1,9 +1,10 @@
-from obin.objects.space import newvector
-from obin.objects.space import newundefined, isundefined, isany
 from obin.objects import api
+from obin.objects.types.oroot import W_Root
 from obin.utils.builtins import is_absent_index, absent_index
-from rpython.rlib.objectmodel import specialize, enforceargs, always_inline
-from rpython.rlib import jit
+
+
+# from rpython.rlib.objectmodel import specialize, enforceargs, always_inline
+# from rpython.rlib import jit
 
 
 
@@ -12,6 +13,7 @@ class Bindings:
     PERTURB_SHIFT = 5
 
     def __init__(self):
+        from obin.objects.space import newundefined
         self._minsize = Bindings.MINSIZE
         self._perturb_shift = Bindings.PERTURB_SHIFT
         self._backing = None
@@ -22,6 +24,7 @@ class Bindings:
         self._build(self._minsize)
 
     def _lookup(self, key):
+        from obin.objects.space import isundefined
         backing = self._backing
         for i in self._indices(key, len(backing)):
             kv_pair = backing[i]
@@ -45,7 +48,8 @@ class Bindings:
             return True
         return False
 
-    def set(self, key, value):
+    def insert(self, key, value):
+        from obin.objects.space import isundefined, isany
         assert isany(key)
         assert not isundefined(key)
         assert isinstance(value, int)
@@ -71,6 +75,7 @@ class Bindings:
         return not self.is_empty_pair(kv_pair)
 
     def keys(self):
+        from obin.objects.space import isundefined
         l = []
         for kv_pair in self._backing:
             if kv_pair and not isundefined(kv_pair[0]):
@@ -78,11 +83,13 @@ class Bindings:
         return l
 
     def __iter__(self):
+        from obin.objects.space import isundefined
         for kv_pair in self._backing:
             if kv_pair and not isundefined(kv_pair[0]):
                 yield kv_pair[0]
 
     def items(self):
+        from obin.objects.space import isundefined
         for kv_pair in self._backing:
             if kv_pair and not isundefined(kv_pair[0]):
                 yield kv_pair[0], kv_pair[1]
@@ -92,7 +99,7 @@ class Bindings:
         b = Bindings()
         for kv_pair in self._backing:
             if not self.is_empty_pair(kv_pair):
-                b.set(kv_pair[0], kv_pair[1])
+                b.insert(kv_pair[0], kv_pair[1])
         return b
 
     def length(self):
@@ -145,7 +152,7 @@ class Bindings:
         self._deleted = 0
         for kv_pair in init:
             if not self.is_empty_pair(kv_pair):
-                self.set(kv_pair[0], kv_pair[1])
+                self.insert(kv_pair[0], kv_pair[1])
 
     def _incr_size(self, size):
         return size * 2
@@ -154,8 +161,7 @@ class Bindings:
         return max(self._minsize, size // 2)
 
 
-
-class Slots:
+class Table(W_Root):
     """
         Dict which supports access by key and by index
     """
@@ -174,39 +180,29 @@ class Slots:
 
     def __str__(self):
         return str(self.to_dict())
-        pass
 
     def __repr__(self):
         return self.__str__()
 
-    def copy(self):
-        clone = Slots()
+    def _clone_(self):
+        clone = Table()
         values = self.slot_values
         if values is not None:
-            clone.slot_values = self.slot_values.copy()
-            clone.slot_bindings = self.slot_bindings.copy()
+            clone.slot_values = api.clone(self.slot_values)
+            clone.slot_bindings = api.clone(self.slot_bindings)
             clone.index = self.index
 
         return clone
 
-    def contains(self, name):
-        return name in self.slot_bindings
-
-    def length(self):
-        return self.slot_values.length()
-
-    def keys(self):
-        return self.slot_bindings.keys()
-
-    def get(self, name):
+    def _at_(self, name):
         from obin.objects.space import newundefined
-        idx = self.get_index(name)
+        idx = self._get_index_(name)
         if is_absent_index(idx):
             return newundefined()
 
-        return self.get_by_index(idx)
+        return self._at_index_(idx)
 
-    def get_index(self, name):
+    def _get_index_(self, name):
         # from obin.objects import api
         # print "get_index", api.to_native_string(name)
         try:
@@ -218,76 +214,77 @@ class Slots:
             #     print api.to_native_string(k),
             return absent_index()
 
-    def set_by_index(self, idx, value):
-        self.slot_values.set(idx, value)
+    def _put_at_index_(self, idx, value):
+        # accessing protected method instead of api.put_at_index for avoiding multiple 0 < idx < length check
+        self.slot_values._put_at_index_(idx, value)
 
-    def get_by_index(self, idx):
-        # print "Slots.get_by_index", idx
+    def _at_index_(self, idx):
         return self.slot_values.at(idx)
 
-    def set(self, name, value):
-        from obin.objects.space import isany
-        assert isany(name)
-        assert isany(value)
-        idx = self.get_index(name)
-        self.set_by_index(idx, value)
+    def _put_(self, name, value):
+        self.insert(name, value)
 
-    def add(self, name, value):
+    def insert(self, name, value):
         from obin.objects.space import isany
         assert isany(name)
         assert isany(value)
         # print "Slots_ass", api.to_native_string(name), api.to_native_string(value)
-        idx = self.get_index(name)
+        idx = self._get_index_(name)
         # print "Slots_add, IDX", idx
         if is_absent_index(idx):
             idx = self.index
-            self.slot_bindings.set(name, idx)
+            self.slot_bindings.insert(name, idx)
             self.index += 1
 
         # print "Slots_add, IDX >>", idx
         self.slot_values.ensure_size(idx + 1)
-        # if idx >= self.property_values.length():
-        #     values = self.property_values.values()
-        #     values = values + ([None] * (1 + idx - len(values)))
-        #     self.property_values.set_values(values)
-
-        self.set_by_index(idx, value)
+        self._put_at_index_(idx, value)
         return idx
 
-    def delete(self, name):
-        idx = self.get_index(name)
+    def contains(self, name):
+        return name in self.slot_bindings
+
+    def _length_(self):
+        return self.slot_values._length_()
+
+    def keys(self):
+        return self.slot_bindings.keys()
+
+    def _remove_at_(self, name):
+        idx = self._get_index_(name)
         if is_absent_index(idx):
-            return
+            raise RuntimeError("Illegal call")
 
         assert idx >= 0
         self.slot_values.exclude_index(idx)
         del self.slot_bindings[name]
 
 
-def newslots(values, bindings, index):
-    slots = Slots()
-    slots.slot_bindings = bindings
-    slots.slot_values = values
-    slots.index = index
-    return slots
+def newtable(values, bindings, index):
+    table = Table()
+    table.slot_bindings = bindings
+    table.slot_values = values
+    table.index = index
+    return table
 
 
-def newslots_with_size(size):
-    return newslots(newvector([None] * size), Bindings(), 0)
+def newtable_with_size(size):
+    from obin.objects.space import newvector
+    return newtable(newvector([None] * size), Bindings(), 0)
 
 
-def newslots_empty():
-    return newslots(newvector([]), Bindings(), 0)
+def newtable_empty():
+    from obin.objects.space import newvector
+    return newtable(newvector([]), Bindings(), 0)
 
 
-def newslots_with_values_from_slots(values, protoslots):
-    l = protoslots.length()
+def newtable_with_values_from_table(values, source):
+    l = source.length()
     size = values.length()
     diff = l - size
     assert diff >= 0
     if diff > 0:
         values.append_value_multiple_times(None, diff)
 
-    bindings = protoslots.slot_bindings.copy()
-    index = protoslots.index
-    return newslots(values, bindings, index)
+    bindings = source.slot_bindings.copy()
+    return newtable(values, bindings, source.index)

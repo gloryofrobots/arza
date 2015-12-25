@@ -64,16 +64,16 @@ class W_Vector(W_Cell):
     def _tostring_(self):
         return str(self._items)
 
-    def _at_index(self, i):
+    def _at_index_(self, i):
         return self._items[i]
 
-    def _put_at_index(self, i, obj):
+    def _put_at_index_(self, i, obj):
         try:
             self._items[i] = obj
         except:
             raise
 
-    def _get_index(self, obj):
+    def _get_index_(self, obj):
         try:
             return self._items.index(obj)
         except ValueError:

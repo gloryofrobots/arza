@@ -2,7 +2,7 @@ from obin.objects.types.oroot import W_Cell
 from obin.objects.types.ovalue import W_ValueType
 from obin.runtime.exception import ObinTraitError
 from obin.objects import api
-from obin.objects.slots import newslots_empty
+from obin.objects.otable import newtable_empty
 
 
 class ObjectIterator(W_ValueType):
@@ -37,29 +37,29 @@ class W_Object(W_Cell):
     def __init__(self, slots):
         W_Cell.__init__(self)
         if slots is None:
-            slots = newslots_empty()
+            slots = newtable_empty()
         self.slots = slots
         self.traits = None
         self.trait = None
 
     def _at_(self, k):
-        v = self.slots.get(k)
+        v = self.slots._at_(k)
         return v
 
     def _at_index(self, i):
-        return api.at_index(self.slots, i)
+        return self.slots._at_index(i)
 
     def _get_index(self, obj):
-        return api.get_index(self.slots, obj)
+        return self.slots._get_index(obj)
 
     def _put_at_index(self, i, obj):
-        return api.put_at_index(self.slots, i, obj)
+        self.slots._put_at_index(i, obj)
 
     def _lookup_(self, k):
         return self._at_(k)
 
     def _put_(self, k, v):
-        self.slots.add(k, v)
+        self.slots._put_(k, v)
 
     def _iterator_(self):
         keys = self.slots.keys()
@@ -69,7 +69,7 @@ class W_Object(W_Cell):
         return True
 
     def _length_(self):
-        return self.slots.length()
+        return self.slots._length_()
 
     def _tostring_(self):
         return str("{%s %s}" % (str(self.slots), str(self.traits)))

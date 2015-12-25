@@ -29,7 +29,7 @@ def newstring_from_str(s):
 
 @enforceargs(unicode)
 def newstring(s):
-    from obin.objects.types.ovalue import W_String
+    from obin.objects.types.ostring import W_String
     return W_String(s)
 
 
@@ -222,7 +222,7 @@ def isint(w):
 
 
 def isstring(w):
-    from obin.objects.types.ovalue import W_String
+    from obin.objects.types.ostring import W_String
     return isinstance(w, W_String)
 
 

@@ -1,5 +1,9 @@
 __author__ = 'gloryofrobots'
 
+"""
+type conversions
+"""
+
 
 def tostring(obj):
     from space import newstring
@@ -45,6 +49,11 @@ def to_native_bool(obj):
     return obj._tobool_()
 
 
+"""
+collection stuff
+"""
+
+
 def delete(obj, k):
     from space import isundefined
     assert not isundefined(k)
@@ -82,54 +91,6 @@ def lookup_default(obj, k, default):
     return v
 
 
-def traits(obj):
-    return obj._traits_()
-
-
-def attach(obj, trait):
-    from space import isobject, istrait
-    from obin.objects.types import oobject
-    assert isobject(obj)
-    assert istrait(trait)
-    oobject.attach(obj, trait)
-
-
-def detach(obj, trait):
-    from obin.objects.types import oobject
-    from space import isobject, istrait
-    assert isobject(obj)
-    assert istrait(trait)
-    oobject.detach(obj, trait)
-
-
-def kindof(obj, trait):
-    from space import newbool
-    return newbool(n_kindof(obj, trait))
-
-
-def n_kindof(obj, trait):
-    t = trait._totrait_()
-    return obj._kindof_(t)
-
-
-def at_index(obj, i):
-    from space import isint
-    assert isint(i)
-    return obj._at_index(i)
-
-
-def get_index(obj, i):
-    from space import isint
-    assert isint(i)
-    return obj._get_index(i)
-
-
-def put_at_index(obj, i, v):
-    from space import isint
-    assert isint(i)
-    return obj._put_at_index(i, v)
-
-
 def is_empty(obj):
     from space import newbool
     return newbool(n_is_empty(obj))
@@ -164,40 +125,12 @@ def n_contains(obj, k):
         return True
 
 
-def n_hash(obj):
-    return obj._hash_()
-
-
-def obtain(obj, k):
-    from space import isundefined, newbool
-    assert not isundefined(k)
-    v = obj._lookup_(k)
-    if isundefined(v):
-        return newbool(False)
-    else:
-        return newbool(True)
-
-
-def length(obj):
-    from space import newint
-    return newint(n_length(obj))
-
-
-def n_length(obj):
-    return obj._length_()
-
-
-def clone(obj):
-    c = obj._clone_()
-    return c
-
-
-def put_property(obj, k, v):
+def put_string(obj, k, v):
     from space import newstring
     put(obj, newstring(k), v)
 
 
-def put_string_property(obj, k, v):
+def put_string_string(obj, k, v):
     from space import newstring
     put(obj, newstring(k), newstring(v))
 
@@ -212,6 +145,88 @@ def put(obj, k, v):
         raise RuntimeError("Object is frozen")
 
     obj._put_(k, v)
+
+
+def at_index(obj, i):
+    from space import isint
+    assert isint(i)
+    return obj._at_index_(i)
+
+
+def get_index(obj, k):
+    return obj._get_index_(k)
+
+
+def put_at_index(obj, i, v):
+    from space import isint
+    assert isint(i)
+    return obj._put_at_index_(i, v)
+
+
+def length(obj):
+    from space import newint
+    return newint(n_length(obj))
+
+
+def n_length(obj):
+    return obj._length_()
+
+
+def iterator(obj):
+    return obj._iterator_()
+
+
+"""
+Traits
+"""
+
+
+def traits(obj):
+    return obj._traits_()
+
+
+def attach(obj, trait):
+    from space import isobject, istrait
+    from obin.objects.types import oobject
+    assert isobject(obj)
+    assert istrait(trait)
+    oobject.attach(obj, trait)
+
+
+def detach(obj, trait):
+    from obin.objects.types import oobject
+    from space import isobject, istrait
+    assert isobject(obj)
+    assert istrait(trait)
+    oobject.detach(obj, trait)
+
+
+def kindof(obj, trait):
+    from space import newbool
+    return newbool(n_kindof(obj, trait))
+
+
+def n_kindof(obj, trait):
+    t = trait._totrait_()
+    return obj._kindof_(t)
+
+
+def totrait(any):
+    return any._totrait_()
+
+
+"""
+basic
+"""
+
+
+def n_hash(obj):
+    return obj._hash_()
+
+
+def clone(obj):
+    c = obj._clone_()
+    return c
 
 
 def strict_equal(obj, other):
@@ -252,25 +267,14 @@ def call(obj, ctx, args):
     return obj._call_(ctx, args)
 
 
-def iterator(obj):
-    return obj._iterator_()
-
-
 def next(obj):
     return obj._next_()
 
 
-def totrait(any):
-    return any._totrait_()
-
-
-def new_native_function(function, name, arity):
+"""
+native funcs
+"""
+#TODO move to object
+def put_primitive_function(obj, name, func, arity):
     from obin.objects.space import newprimitive, newstring
-    assert isinstance(name, unicode)
-    obj = newprimitive(newstring(name), function, arity)
-    return obj
-
-
-# 15
-def put_native_function(obj, name, func, arity):
-    put_property(obj, name, new_native_function(func, name, arity))
+    put_string(obj, name,  newprimitive(newstring(name), func, arity))

@@ -1,6 +1,8 @@
 from obin.objects.space import isstring
-from obin.objects.slots import newslots_empty, newslots_with_values_from_slots
+from obin.objects.otable import newtable_empty, newtable_with_values_from_table
 from obin.utils.builtins import absent_index, is_absent_index
+from obin.objects import api
+
 class ScopeSet:
     def __init__(self):
         self.values = []
@@ -19,7 +21,7 @@ class ScopeSet:
 
 class Scope:
     def __init__(self):
-        self.locals = newslots_empty()
+        self.locals = newtable_empty()
 
         self.arg_count = -1
         self.fn_name_index = -1
@@ -72,10 +74,10 @@ class Scope:
         assert isstring(local)
         self.check_arg_count()
         assert is_absent_index(self.get_local_index(local))
-        return self.locals.add(local, newundefined())
+        return self.locals.insert(local, newundefined())
 
     def get_local_index(self, local):
-        return self.locals.get_index(local)
+        return api.get_index(self.locals, local)
 
     def add_outer(self, name):
         assert isstring(name)
@@ -104,12 +106,12 @@ class FinalScope:
         self.literals = literals
         self.is_variadic = is_varargs
         self.count_refs = len(self.references)
-        self.count_vars = self.variables.length()
+        self.count_vars = api.n_length(self.variables)
         self.arguments = arguments
 
     def create_object(self):
         from obin.objects.space import newplainobject_with_slots
-        return newplainobject_with_slots(self.variables.copy())
+        return newplainobject_with_slots(api.clone(self.variables))
 
     def create_environment_slots(self, arguments):
-        return newslots_with_values_from_slots(arguments, self.variables)
+        return newtable_with_values_from_table(arguments, self.variables)

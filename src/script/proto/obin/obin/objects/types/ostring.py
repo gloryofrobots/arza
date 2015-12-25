@@ -63,7 +63,7 @@ class W_String(W_Hashable):
     def _length_(self):
         return self.__length
 
-    def _at_index(self, i):
+    def _at_index_(self, i):
         from obin.objects.space import newundefined, newstring
         try:
             ch = self.string_value[i]
@@ -72,7 +72,7 @@ class W_String(W_Hashable):
 
         return newstring(ch)
 
-    def _get_index(self, obj):
+    def _get_index_(self, obj):
         try:
             return self.string_value.index(obj)
         except ValueError:
@@ -82,7 +82,7 @@ class W_String(W_Hashable):
         from obin.objects.space import isint
         from obin.objects import api
         assert isint(index)
-        return self._at_index(api.to_native_integer(index))
+        return self._at_index_(api.to_native_integer(index))
 
     def _traits_(self):
         from obin.objects.space import state

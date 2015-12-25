@@ -2,16 +2,16 @@ from obin.runtime.routine import complete_native_routine
 from obin.objects import api
 
 def setup(obj):
-    api.put_native_function(obj, u'clone', clone, 1)
-    api.put_native_function(obj, u'at', at, 2)
-    api.put_native_function(obj, u'lookup', lookup, 2)
-    api.put_native_function(obj, u'isa', isa, 2)
-    api.put_native_function(obj, u'nota', nota, 2)
-    api.put_native_function(obj, u'kindof', kindof, 2)
-    api.put_native_function(obj, u'create', create, 1)
-    api.put_native_function(obj, u'traits', traits, 1)
+    api.put_primitive_function(obj, u'clone', clone, 1)
+    api.put_primitive_function(obj, u'at', at, 2)
+    api.put_primitive_function(obj, u'lookup', lookup, 2)
+    api.put_primitive_function(obj, u'isa', isa, 2)
+    api.put_primitive_function(obj, u'nota', nota, 2)
+    api.put_primitive_function(obj, u'kindof', kindof, 2)
+    api.put_primitive_function(obj, u'create', create, 1)
+    api.put_primitive_function(obj, u'traits', traits, 1)
 
-    api.put_string_property(obj, u'__name__', u"Object")
+    api.put_string_string(obj, u'__name__', u"Object")
 
     obj.freeze()
 
