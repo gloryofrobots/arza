@@ -71,7 +71,12 @@ class CodeRoutine(BaseRoutine):
             tag = opcode[0]
             arg1 = opcode[1]
             arg2 = opcode[2]
-
+            stack = self.stack
+            env = self.env
+            literals = self.literals
+            refs = self.refs
+            process = self.process
+            
             # print "_execute", opcode
             # d = '%3d %25s %s ' % (self.pc, opcode_info(self, opcode), unicode([str(s) for s in self.stack]))
             # print d
@@ -79,110 +84,110 @@ class CodeRoutine(BaseRoutine):
             self.pc += 1
             # *************************************
             if UNDEFINED == tag:
-                self.stack.push(newundefined())
+                stack.push(newundefined())
             # *************************************
             elif RETURN == tag:
-                self.complete(self.stack.top())
+                self.complete(stack.top())
             # *************************************
             elif NULL == tag:
-                self.stack.push(newnil())
+                stack.push(newnil())
             # *************************************
             elif TRUE == tag:
-                self.stack.push(newbool(True))
+                stack.push(newbool(True))
             # *************************************
             elif FALSE == tag:
-                self.stack.push(newbool(False))
+                stack.push(newbool(False))
             # *************************************
             elif INTEGER == tag:
-                self.stack.push(newint(arg1))
+                stack.push(newint(arg1))
             # *************************************
             elif DUP == tag:
-                self.stack.push(self.stack.top())
+                stack.push(stack.top())
             # *************************************
             elif POP == tag:
-                self.stack.pop()
+                stack.pop()
             # *************************************
             elif LITERAL == tag:
-                l = self.literals[arg1]
-                self.stack.push(l)
+                l = literals[arg1]
+                stack.push(l)
             # *************************************
             elif LOCAL == tag:
-                value = self.env.get_local(arg1)
+                value = env.get_local(arg1)
                 if value is None:
-                    literal = self.literals[arg2]
+                    literal = literals[arg2]
                     raise ObinReferenceError(literal)
 
-                self.stack.push(value)
+                stack.push(value)
             # *************************************
             elif OUTER == tag:
                 assert arg1 > -1
 
-                name = self.literals[arg2]
-                value = self.refs.get_ref(name, arg1)
+                name = literals[arg2]
+                value = refs.get_ref(name, arg1)
                 # check for none value here too
                 # for unbounded clojure vars X = 1 + fn() { 1 + X }
                 if value is None:
-                    literal = self.literals[arg2]
+                    literal = literals[arg2]
                     raise ObinReferenceError(literal)
-                self.stack.push(value)
+                stack.push(value)
             # *************************************
             elif MEMBER == tag:
-                obj = self.stack.pop()
-                name = self.stack.pop()
+                obj = stack.pop()
+                name = stack.pop()
                 value = api.at(obj, name)
 
-                self.stack.push(value)
+                stack.push(value)
             # *************************************
             elif MEMBER_DOT == tag:
-                obj = self.stack.pop()
-                name = self.stack.pop()
+                obj = stack.pop()
+                name = stack.pop()
                 value = api.lookup(obj, name)
 
-                self.stack.push(value)
+                stack.push(value)
             # *************************************
             # TODO WHY NOT POP HERE?
             elif STORE_LOCAL == tag:
-                value = self.stack.top()
-                self.env.set_local(arg1, value)
+                value = stack.top()
+                env.set_local(arg1, value)
             # *************************************
             elif STORE_OUTER == tag:
-                value = self.stack.top()
-                literal = self.literals[arg2]
-                self.refs.store_ref(literal, arg1, value)
+                value = stack.top()
+                literal = literals[arg2]
+                refs.store_ref(literal, arg1, value)
             # *************************************
             elif STORE_MEMBER == tag:
-                left = self.stack.pop()
-                name = self.stack.pop()
-                value = self.stack.pop()
+                left = stack.pop()
+                name = stack.pop()
+                value = stack.pop()
                 api.put(left, name, value)
 
                 # TODO REMOVE PUSHING
-                self.stack.push(value)
+                stack.push(value)
             # *************************************
             # TODO STORE_MEMBER_DOT
             # *************************************
             elif TUPLE == tag:
-                tupl = self.stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
-                self.stack.push(newtuple(tupl))
+                tupl = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
+                stack.push(newtuple(tupl))
             # *************************************
             elif VECTOR == tag:
-                lst = self.stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
-                self.stack.push(newvector(lst))
+                lst = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
+                stack.push(newvector(lst))
             # *************************************
             elif CALL_PRIMITIVE == tag:
-                prim = self.process.get_primitive(arg1)
+                prim = process.get_primitive(arg1)
                 prim(self)
             # *************************************
             elif CALL == tag:
-                func = self.stack.pop()
-                argv = self.stack.pop()
+                func = stack.pop()
+                argv = stack.pop()
 
                 api.call(func, self, argv)
             # *************************************
             elif CALL_METHOD == tag:
-                method = self.stack.pop()
-                what = self.stack.pop()
-                argv = self.stack.pop()
+                method = stack.pop()
+                what = stack.pop()
+                argv = stack.pop()
 
                 func = api.lookup(what, method)
                 # argv.prepend(what)
@@ -190,119 +195,119 @@ class CodeRoutine(BaseRoutine):
                 api.call(func, self, argv)
             # *************************************
             elif CONCAT == tag:
-                first = self.stack.pop()
-                vec = self.stack.top()
+                first = stack.pop()
+                vec = stack.top()
                 vec.concat(first)
             # *************************************
             elif PUSH_MANY == tag:
-                args = self.stack.pop_n(arg1)
-                vec = self.stack.top()
+                args = stack.pop_n(arg1)
+                vec = stack.top()
                 vec.append_many(args)
             # *************************************
             elif JUMP == tag:
                 self.pc = arg1
             # *************************************
             elif JUMP_IF_FALSE == tag:
-                value = self.stack.pop()
+                value = stack.pop()
                 decision = api.to_native_bool(value)
                 if not decision:
                     self.pc = arg1
             # *************************************
             elif JUMP_IF_TRUE == tag:
-                value = self.stack.pop()
+                value = stack.pop()
                 decision = api.to_native_bool(value)
                 if decision:
                     self.pc = arg1
             # *************************************
             elif JUMP_IF_FALSE_NOPOP == tag:
-                value = self.stack.top()
+                value = stack.top()
                 decision = api.to_native_bool(value)
                 if not decision:
                     self.pc = arg1
                 else:
-                    self.stack.pop()
+                    stack.pop()
             # *************************************
             elif JUMP_IF_TRUE_NOPOP == tag:
-                value = self.stack.top()
+                value = stack.top()
                 decision = api.to_native_bool(value)
                 if decision:
                     self.pc = arg1
                 else:
-                    self.stack.pop()
+                    stack.pop()
             # *************************************
             elif ITERATOR == tag:
-                obj = self.stack.pop()
+                obj = stack.pop()
                 iterator = api.iterator(obj)
-                self.stack.push(iterator)
+                stack.push(iterator)
             # *************************************
             elif JUMP_IF_ITERATOR_EMPTY == tag:
-                last_block_value = self.stack.pop()
-                iterator = self.stack.top()
+                last_block_value = stack.pop()
+                iterator = stack.top()
                 value = api.to_native_bool(iterator)
                 if not value:
                     # discard the iterator
-                    self.stack.pop()
+                    stack.pop()
                     # put the last block value on the stack
-                    self.stack.push(last_block_value)
+                    stack.push(last_block_value)
                     self.pc = arg1
             # *************************************
             elif NEXT == tag:
-                iterator = self.stack.top()
+                iterator = stack.top()
                 next_el = api.next(iterator)
                 # call is interrupted, probably coself call
                 if isinterrupt(next_el):
                     return
-                self.stack.push(next_el)
+                stack.push(next_el)
             # *************************************
             elif OBJECT == tag:
                 obj = newobject()
 
                 for _ in xrange(arg1):
-                    name = self.stack.pop()
-                    w_elem = self.stack.pop()
+                    name = stack.pop()
+                    w_elem = stack.pop()
                     api.put(obj, name, w_elem)
 
                 if arg2 > 0:
                     for _ in xrange(arg2):
-                        trait = self.stack.pop()
+                        trait = stack.pop()
                         api.attach(obj, trait)
 
-                self.stack.push(obj)
+                stack.push(obj)
             # *************************************
             elif FUNCTION == tag:
-                source = self.literals[arg1]
-                w_func = newfunc(source.name, source.code, self.env)
-                self.stack.push(w_func)
+                source = literals[arg1]
+                w_func = newfunc(source.name, source.code, env)
+                stack.push(w_func)
             # *************************************
             elif THROW == tag:
-                val = self.stack.pop()
+                val = stack.pop()
                 self.terminate(val)
             # *************************************
             elif IMPORT == tag:
-                name = self.literals[arg1]
-                module = import_module(self.process, name)
-                self.stack.push(module)
+                name = literals[arg1]
+                module = import_module(process, name)
+                stack.push(module)
             # *************************************
             elif IMPORT_MEMBER == tag:
-                name = self.literals[arg1]
-                module = self.stack.top()
+                name = literals[arg1]
+                module = stack.top()
                 member = api.lookup(module, name)
-                self.stack.push(member)
+                stack.push(member)
             # *************************************
             elif TRAIT == tag:
-                name = self.literals[arg1]
+                name = literals[arg1]
                 trait = newtrait(name)
-                self.stack.push(trait)
+                stack.push(trait)
             # *************************************
             elif GENERIC == tag:
-                name = self.literals[arg1]
+                name = literals[arg1]
                 trait = newgeneric(name)
-                self.stack.push(trait)
+                stack.push(trait)
             # *************************************
             elif REIFY == tag:
-                methods = self.stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
+                methods = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
                 methods = newtuple(methods)
-                generic = self.stack.pop()
+                generic = stack.pop()
                 generic.reify(methods)
             # *************************************
             elif LABEL == tag:

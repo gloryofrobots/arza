@@ -1,9 +1,11 @@
+from obin.objects import api
+
 def make_method(name, arity=3):
     from obin.objects.space import newtrait, newgeneric, newstring, newprimitive, newvector
     return newprimitive(newstring(unicode(name)), lambda *args: name, arity)
 
 def specify(generic, sig, name):
-    arity = sig.length()
+    arity = api.n_length(sig)
     method = make_method(name, arity)
     generic.reify_single(sig, method)
 

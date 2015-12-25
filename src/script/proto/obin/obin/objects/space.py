@@ -1,7 +1,18 @@
 from rpython.rlib.objectmodel import specialize, enforceargs
 from rpython.rlib import jit
 from obin.objects.types.oconstant import W_True, W_False, W_Undefined, W_Nil, W_Constant
-from obin.runtime.process import Process
+
+w_True = W_True()
+w_False = W_False()
+w_Undefined = W_Undefined()
+w_Interrupt = W_Constant()
+w_Nil = W_Nil()
+
+jit.promote(w_True)
+jit.promote(w_False)
+jit.promote(w_Undefined)
+jit.promote(w_Nil)
+jit.promote(w_Interrupt)
 
 
 @enforceargs(int)
@@ -33,19 +44,6 @@ def newstring(s):
     return W_String(s)
 
 
-w_True = W_True()
-w_False = W_False()
-w_Undefined = W_Undefined()
-w_Interrupt = W_Constant()
-w_Nil = W_Nil()
-
-jit.promote(w_True)
-jit.promote(w_False)
-jit.promote(w_Undefined)
-jit.promote(w_Nil)
-jit.promote(w_Interrupt)
-
-
 def newinterrupt():
     return w_Interrupt
 
@@ -74,19 +72,19 @@ def newfalse():
 
 
 def newfunc(name, bytecode, scope):
-    from obin.objects.types.ocallable import W_Function
+    from obin.objects.types.ofunction import W_Function
     obj = W_Function(name, bytecode, scope)
     return obj
 
 
 def newfuncsource(name, bytecode):
-    from obin.objects.types.ocallable import W_FunctionSource
+    from obin.objects.types.ofunction import W_FunctionSource
     obj = W_FunctionSource(name, bytecode)
     return obj
 
 
 def newprimitive(name, function, arity):
-    from obin.objects.types.ocallable import W_Primitive
+    from obin.objects.types.oprimitive import W_Primitive
     obj = W_Primitive(name, function, arity)
     return obj
 
@@ -121,9 +119,9 @@ def newtuple(tupl):
     return W_Tuple(list(tupl))
 
 
-def newcoroutine(fn):
-    from obin.objects.types.ocallable import W_Coroutine
-    obj = W_Coroutine(fn)
+def newcoroutine(fn, process):
+    from obin.objects.types.ocoroutine import W_Coroutine
+    obj = W_Coroutine(fn, process)
     return obj
 
 
@@ -179,7 +177,8 @@ def isvaluetype(value):
 
 
 def isfunction(value):
-    from obin.objects.types.ocallable import W_Function, W_Primitive
+    from obin.objects.types.ofunction import W_Function
+    from obin.objects.types.oprimitive import W_Primitive
     return isinstance(value, W_Function) or isinstance(value, W_Primitive)
 
 
@@ -265,6 +264,7 @@ def _w(value):
 
     raise TypeError("ffffuuu %s" % (str(type(value)),))
 
+
 def newprocess(libdirs):
     from obin.builtins import setup_builtins
     from obin.runtime.process import Process
@@ -273,6 +273,7 @@ def newprocess(libdirs):
         process.add_path(path)
     setup_builtins(process.builtins)
     return process
+
 
 class Generics:
     def __init__(self):
@@ -363,4 +364,3 @@ class Std:
 
 
 state = Std()
-

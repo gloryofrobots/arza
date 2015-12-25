@@ -240,6 +240,8 @@ class Compiler:
             self._compile_REIFY(code, node)
         elif TT_RETURN == t:
             self._compile_RETURN(code, node)
+        elif TT_THROW == t:
+            self._compile_THROW(code, node)
         elif TT_ADD_ASSIGN == t:
             self._compile_ADD_ASSIGN(code, node)
         elif TT_SUB_ASSIGN == t:
@@ -555,7 +557,7 @@ class Compiler:
 
         code.emit_0(RETURN)
 
-    def _compile_RAISE(self, code, node):
+    def _compile_THROW(self, code, node):
         expr = node.first()
         if is_empty_node(expr):
             code.emit_0(UNDEFINED)

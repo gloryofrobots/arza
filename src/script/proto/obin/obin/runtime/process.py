@@ -65,14 +65,14 @@ class Process(object):
         routine = obj.create_routine(args)
         self.call_routine(routine, calling_routine, calling_routine)
 
-    def yield_to_routine(self, routine_to_resume, routine_resume_from, value):
-        assert self.routine is routine_resume_from
+    def resume_routine(self, routine_to_resume, calling_routine, value):
+        assert self.routine is calling_routine
         assert routine_to_resume.is_suspended()
-        assert routine_resume_from.is_inprocess()
+        assert calling_routine.is_inprocess()
 
         # check_continuation_consistency(routine_to_resume, routine_resume_from)
-        routine_resume_from.suspend()
-        routine_resume_from.called = routine_to_resume
+        calling_routine.suspend()
+        calling_routine.called = routine_to_resume
         routine_to_resume.resume(value)
         self.set_active_routine(routine_to_resume)
 
@@ -151,7 +151,7 @@ class Process(object):
             return self.catch_signal()
 
     def catch_signal(self):
-        raise NotImplementedError()
+        raise NotImplementedError("Throw in code")
         # routine = self.__routine
         # assert routine.is_terminated()
         # signal = routine.signal()

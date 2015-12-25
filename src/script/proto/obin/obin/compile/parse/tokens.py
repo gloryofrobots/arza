@@ -1,10 +1,10 @@
 __author__ = 'gloryofrobots'
 from obin.compile.parse.token_type import *
 
-import rpython.rlib.rsre.rsre_re as re
+# import rpython.rlib.rsre.rsre_re as re
 
 
-# import re
+import re
 
 def keyword(literal):
     return re.compile('\\b%s\\b' % literal)

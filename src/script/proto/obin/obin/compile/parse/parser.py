@@ -50,6 +50,7 @@ class Parser(BaseParser):
 def args_parser_init(parser):
     prefix(parser, TT_ELLIPSIS)
     symbol(parser, TT_COMMA)
+    symbol(parser, TT_RPAREN)
     literal(parser, TT_NAME)
     return parser
 

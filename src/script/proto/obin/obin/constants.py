@@ -1,3 +1,4 @@
+# TODO MOVE IT TO LEXER / PARSER
 from rpython.rlib.rsre.rsre_re import compile
 
 num_lit_exp = r'(?:[+-]?((?:(?:\d+)(?:\.\d*)?)|Infinity|(?:\.[0-9]+))(?:[eE][\+\-]?[0-9]*)?)'

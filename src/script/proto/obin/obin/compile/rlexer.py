@@ -6,7 +6,6 @@ from obin.compile.parse.token_type import *
 def create_generator(rules):
     lg = LexerGenerator()
     for rule in rules:
-        # build up a set of token names and regexes they match
         lg.add(rule[1], rule[0])
     lexer = lg.build()
     return lexer

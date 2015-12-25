@@ -58,7 +58,7 @@ def create_function_environment(func, scope, args, outer_env):
         actual_args_count = declared_args_count
         if args_count != actual_args_count:
             raise RuntimeError("Wrong argument count in function call %s %s" %
-                               (str(scope.variables.keys()), str(args)))
+                               (str(scope.arguments), str(args)))
     else:
         varargs_index = declared_args_count - 1
         actual_args_count = varargs_index
