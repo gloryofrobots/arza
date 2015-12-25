@@ -148,8 +148,7 @@ def put(obj, k, v):
 
 
 def at_index(obj, i):
-    from space import isint
-    assert isint(i)
+    assert isinstance(i, int)
     return obj._at_index_(i)
 
 
@@ -158,8 +157,7 @@ def get_index(obj, k):
 
 
 def put_at_index(obj, i, v):
-    from space import isint
-    assert isint(i)
+    assert isinstance(i, int)
     return obj._put_at_index_(i, v)
 
 

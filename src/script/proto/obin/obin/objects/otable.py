@@ -174,7 +174,7 @@ class Table(W_Root):
     def to_dict(self):
         m = {}
         for k, i in self.slot_bindings.items():
-            m[k] = self.slot_values.at(i)
+            m[k] = api.at_index(self.slot_values, i)
 
         return m
 
@@ -189,7 +189,7 @@ class Table(W_Root):
         values = self.slot_values
         if values is not None:
             clone.slot_values = api.clone(self.slot_values)
-            clone.slot_bindings = api.clone(self.slot_bindings)
+            clone.slot_bindings = self.slot_bindings.copy()
             clone.index = self.index
 
         return clone
@@ -219,7 +219,8 @@ class Table(W_Root):
         self.slot_values._put_at_index_(idx, value)
 
     def _at_index_(self, idx):
-        return self.slot_values.at(idx)
+        # accessing protected method instead of api.at_index for avoiding multiple 0 < idx < length check
+        return self.slot_values._at_index_(idx)
 
     def _put_(self, name, value):
         self.insert(name, value)
@@ -279,8 +280,8 @@ def newtable_empty():
 
 
 def newtable_with_values_from_table(values, source):
-    l = source.length()
-    size = values.length()
+    l = api.n_length(source)
+    size = api.n_length(values)
     diff = l - size
     assert diff >= 0
     if diff > 0:

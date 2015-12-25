@@ -9,7 +9,7 @@ class Discriminator:
         self.status = -2000
 
     def evaluate(self, args):
-        arg = args.at(self.position)
+        arg = api.at_index(args, self.position)
 
         if self.status == -2000:
             self.status = self._evaluate(arg)
@@ -79,10 +79,7 @@ class TraitDiscriminator(Discriminator):
                and other.trait == self.trait
 
     def _evaluate(self, arg):
-        if arg is None:
-            print 1
-        return api.traits(arg).get_index(self.trait)
-        # return api.kindof(arg, self.trait)
+        return api.get_index(api.traits(arg), self.trait)
 
     # def __str__(self):
     #     return "<TraitDiscriminator %s %s %s>" % (str(self.position), str(self.trait), str(self.status))

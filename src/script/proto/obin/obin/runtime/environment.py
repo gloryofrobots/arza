@@ -2,7 +2,6 @@ from obin.runtime.reference import Reference
 from obin.objects import api
 from obin.objects.space import isstring
 from obin.utils.builtins import is_absent_index
-from obin.objects.types import oobject
 
 
 def newenv(obj, outer_environment):
@@ -37,13 +36,13 @@ class Environment:
         return get_reference(self.outer_environment, identifier)
 
     def set_local(self, idx, v):
-        oobject.put_by_index(self.binding, idx, v)
+        api.put_at_index(self.binding, idx, v)
 
     def get_index(self, n):
-        return oobject.get_index(self.binding, n)
+        return api.get_index(self.binding, n)
 
     def get_local(self, idx):
-        return oobject.get_by_index(self.binding, idx)
+        return api.at_index(self.binding, idx)
 
     def has_binding(self, n):
         assert isstring(n)

@@ -83,8 +83,8 @@ class W_Generic(W_Root):
         modified = {}
 
         for sig in signatures:
-            args_signature = otuple.at(sig, 0)
-            method = otuple.at(sig, 1)
+            args_signature = api.at_index(sig, 0)
+            method = api.at_index(sig, 1)
             signature = Signature(args_signature, method)
             arity = signature.arity
 
@@ -163,7 +163,7 @@ class W_Generic(W_Root):
         self._signatures_[0] = [BaseSignature(method)]
 
     def lookup_method(self, args):
-        arity = args.length()
+        arity = api.n_length(args)
         # print "LOOKUP", self._name_, args, arity
         if arity == 0:
             sig = self._signatures_[0][0]

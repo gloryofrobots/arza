@@ -170,5 +170,5 @@ for el in L {
 }
 
 for el in L[3] {
-    print(l)
+    print(el)
 }

@@ -46,14 +46,14 @@ class W_Object(W_Cell):
         v = self.slots._at_(k)
         return v
 
-    def _at_index(self, i):
-        return self.slots._at_index(i)
+    def _at_index_(self, i):
+        return self.slots._at_index_(i)
 
-    def _get_index(self, obj):
-        return self.slots._get_index(obj)
+    def _get_index_(self, obj):
+        return self.slots._get_index_(obj)
 
-    def _put_at_index(self, i, obj):
-        self.slots._put_at_index(i, obj)
+    def _put_at_index_(self, i, obj):
+        self.slots._put_at_index_(i, obj)
 
     def _lookup_(self, k):
         return self._at_(k)
@@ -106,18 +106,6 @@ def _create_trait(obj):
     assert not obj.trait
     obj.trait = newtrait(newstring(u""))
     attach(obj, obj.trait)
-
-
-def put_by_index(obj, idx, value):
-    obj.slots.set_by_index(idx, value)
-
-
-def get_by_index(obj, idx):
-    return obj.slots.get_by_index(idx)
-
-
-def get_index(obj, name):
-    return obj.slots.get_index(name)
 
 
 def traits(obj):

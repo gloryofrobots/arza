@@ -3,6 +3,7 @@ from obin.objects.space import newstring, _w
 from obin.runtime.environment import newenv
 from obin.runtime.routine.code_routine import CodeRoutine
 from obin.runtime.routine.native_routine import NativeRoutine
+from obin.objects import api
 
 def complete_native_routine(func):
     def func_wrapper(routine):
@@ -47,7 +48,7 @@ def create_function_environment(func, scope, args, outer_env):
 
     declared_args_count = scope.count_args
     is_variadic = scope.is_variadic
-    args_count = args.length()
+    args_count = api.n_length(args)
 
     if not is_variadic:
         if args_count < declared_args_count:

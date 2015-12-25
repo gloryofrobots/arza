@@ -149,7 +149,7 @@ class Signature(BaseSignature):
         self.arity = api.n_length(args)
         self.args = []
         for i in range(self.arity):
-            trait = otuple.at(args, i)
+            trait = api.at_index(args, i)
             if traits.Any is trait:
                 arg = ArgumentAny(i)
             elif traits.Object is trait:
