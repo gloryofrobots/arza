@@ -261,8 +261,8 @@ def compare(obj, other):
     return newint(v)
 
 
-def call(obj, routine, args):
-    return obj._call_(routine, args)
+def call(obj, process, args):
+    return obj._call_(process, args)
 
 
 def next(obj):

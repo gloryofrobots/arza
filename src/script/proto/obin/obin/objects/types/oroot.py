@@ -50,7 +50,7 @@ class W_Root:
     def _hash_(self):
         raise NotImplementedError()
 
-    def _call_(self, routine, args):
+    def _call_(self, process, args):
         raise NotImplementedError()
 
     def _compare_(self, other):

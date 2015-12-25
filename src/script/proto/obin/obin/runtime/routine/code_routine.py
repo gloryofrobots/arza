@@ -63,10 +63,11 @@ class CodeRoutine(BaseRoutine):
     def _on_complete(self):
         pass
 
-    def _execute(self):
+    def _execute(self, process):
         while True:
             if not self.is_inprocess():
                 return
+
             opcode = self._code_.get_opcode(self.pc)
             tag = opcode[0]
             arg1 = opcode[1]
@@ -75,8 +76,7 @@ class CodeRoutine(BaseRoutine):
             env = self.env
             literals = self.literals
             refs = self.refs
-            process = self.process
-            
+
             # print "_execute", opcode
             # d = '%3d %25s %s ' % (self.pc, opcode_info(self, opcode), unicode([str(s) for s in self.stack]))
             # print d
@@ -182,7 +182,7 @@ class CodeRoutine(BaseRoutine):
                 func = stack.pop()
                 argv = stack.pop()
 
-                api.call(func, self, argv)
+                api.call(func, process, argv)
             # *************************************
             elif CALL_METHOD == tag:
                 method = stack.pop()
@@ -192,7 +192,7 @@ class CodeRoutine(BaseRoutine):
                 func = api.lookup(what, method)
                 # argv.prepend(what)
 
-                api.call(func, self, argv)
+                api.call(func, process, argv)
             # *************************************
             elif CONCAT == tag:
                 first = stack.pop()

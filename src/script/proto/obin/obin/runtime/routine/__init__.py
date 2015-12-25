@@ -17,6 +17,7 @@ def create_primitive_routine(name, primitive, args, arity):
 
 
 def create_module_routine(code, module, _globals):
+    assert _globals
     if _globals is not None:
         global_env = newenv(_globals, None)
     else:

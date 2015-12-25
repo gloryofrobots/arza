@@ -268,10 +268,12 @@ def _w(value):
 def newprocess(libdirs):
     from obin.builtins import setup_builtins
     from obin.runtime.process import Process
-    process = Process()
+    from obin.objects.space import newplainobject
+    builtins = newplainobject()
+    setup_builtins(builtins)
+    process = Process(builtins)
     for path in libdirs:
         process.add_path(path)
-    setup_builtins(process.builtins)
     return process
 
 

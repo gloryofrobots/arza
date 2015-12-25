@@ -1,29 +1,8 @@
-
-def run_routine_for_result(routine, ctx=None):
-    if ctx:
-        routine.set_context(ctx)
-    m = Process()
-    result = m.run_with(routine)
-    return result
-
-
-def run_function_for_result(function, args):
-    routine = function.create_routine(args)
-    m = Process()
-    result = m.run_with(routine)
-    return result
-
-
-def check_continuation_consistency(caller, continuation):
-    r = continuation
-    while True:
-        if r is caller:
-            break
-
-        if not r:
-            raise RuntimeError("Continuation not consistent. Continuation chain is empty")
-
-        r = r.continuation()
+class Fiber:
+    def __init__(self, routine):
+        self.routines = [routine]
+        self.current = routine
+        self.destination = None
 
 
 class Process(object):
@@ -33,14 +12,15 @@ class Process(object):
         SUSPENDED = 3
         TERMINATED = 4
 
-    def __init__(self):
+    def __init__(self, builtins):
         from obin.runtime.primitives import newprimitives
-        from obin.objects.space import newplainobject
         self.__state = Process.State.IDLE
-        self.__routine = None
+
+        self.fibers = []
+        self.__fiber = None
         self.result = None
         self.__primitives = newprimitives()
-        self.builtins = newplainobject()
+        self.builtins = builtins
         self.modules = {}
         self.path = []
 
@@ -59,130 +39,52 @@ class Process(object):
 
     @property
     def routine(self):
-        return self.__routine
+        return self.fiber().current
 
-    def call_object(self, obj, calling_routine, args):
+    @property
+    def fiber(self):
+        return self.__fiber
+
+    @fiber.setter
+    def fiber(self, f):
+        self.__fiber = f
+
+    def create_fiber(self, routine):
+        f = Fiber(routine)
+        f.destination = self.__fiber
+        return f
+
+    def purge_fiber(self, fiber):
+        assert len(fiber.routines) == 0
+        assert not fiber.current
+        self.fibers.remove(fiber)
+
+    def call_object(self, obj, args):
         routine = obj.create_routine(args)
-        self.call_routine(routine, calling_routine, calling_routine)
+        self.call_routine(routine)
 
-    def resume_routine(self, routine_to_resume, calling_routine, value):
-        assert self.routine is calling_routine
-        assert routine_to_resume.is_suspended()
-        assert calling_routine.is_inprocess()
+    def resume_fiber(self, fiber1, fiber2, result):
+        fiber2.current.suspend()
+        fiber1.current.resume(result)
+        self.fiber = fiber1
 
-        # check_continuation_consistency(routine_to_resume, routine_resume_from)
-        calling_routine.suspend()
-        calling_routine.called = routine_to_resume
-        routine_to_resume.resume(value)
-        self.set_active_routine(routine_to_resume)
-
-    def call_routine(self, routine, continuation, caller):
-        assert caller is self.routine
-        check_continuation_consistency(caller, continuation)
-
-        self.__call_routine(routine, continuation, caller)
-
-    def __call_routine(self, routine, continuation, caller):
-        if caller:
-            assert not caller.is_closed()
-            assert not continuation.is_closed()
-
-            if caller.called is not None:
-                raise RuntimeError("Called has exists")
-
-            caller.called = routine
-            caller.suspend()
-
-        if continuation:
-            routine.set_continuation(continuation)
-
-        routine.activate(self)
-        self.set_active_routine(routine)
-
-    def set_active_routine(self, r):
-        if self.__routine is r:
-            raise RuntimeError("Routine been already called")
-
-        self.__routine = r
-
-    def execute(self):
-        # print "execute"
-        self.find_routine_to_execute()
-        # print "Process_routine", self.routine
-        if self.routine is None:
-            # print "Routine not here"
-            return
-
-        self.routine.execute()
-
-    def find_routine_to_execute(self):
-        routine = self.__routine
-        # print "find_routine_to_execute", routine
-        while True:
-            if routine is None:
-                # print "exit loop", routine
-                break
-
-            if routine.is_complete():
-                continuation = routine.continuation()
-                if not continuation:
-                    self.result = routine.result
-                    self.terminate()
-                    routine = None
-                    break
-
-                # continuation can be suspended in case of normal call
-                if continuation.is_suspended():
-                    continuation.resume(routine.result)
-                # and idle in ensured blocks and similar abnormal cases
-                elif continuation.is_idle():
-                    continuation.activate(self)
-
-                routine = continuation
-                continue
-            break
-
-        self.__routine = routine
-
-        if routine is None:
-            return None
-
-        if routine.is_terminated():
-            return self.catch_signal()
+    def call_routine(self, routine):
+        fiber = self.fiber
+        assert routine is not fiber.current
+        fiber.current.suspend()
+        fiber.routines.append(fiber.current)
+        fiber.current = routine
+        routine.activate()
 
     def catch_signal(self):
         raise NotImplementedError("Throw in code")
-        # routine = self.__routine
-        # assert routine.is_terminated()
-        # signal = routine.signal()
-        # assert signal
-        # while True:
-        #     handler = routine.catch_signal(signal)
-        #     if handler:
-        #         assert 0
-        #         # catch_ctx = CatchContext(handler, handler.signal_name(), signal, routine.ctx)
-        #         # handler.set_context(catch_ctx)
-        #         # routine = handler
-        #         break
-        #     else:
-        #         if not routine.is_closed():
-        #             routine.terminate(signal)
-        #
-        #     if routine.has_continuation():
-        #         routine = routine.continuation()
-        #         continue
-        #
-        #     self.terminate()
-        #     raise RuntimeError("NonHandled signal", signal)
-        #
-        # # continuation in signal handler must exists at this moment
-        # self.__call_routine(routine, None, None)
 
-    def run_with_module(self, module, _globals):
+    def evaluate_module(self, module):
         from obin.objects.types import omodule
-        routine = omodule.compile_module(module, _globals)
-        self.call_routine(routine, None, None)
-
+        assert not self.fiber
+        routine = omodule.compile_module(module, self.builtins)
+        self.fiber = self.create_fiber(routine)
+        routine.activate()
         self.run()
         module.result = self.result
         self.result = None
@@ -190,15 +92,11 @@ class Process(object):
         return module.result
 
     def run_module_force(self, module, _globals):
-        from obin.objects.types import omodule
-        routine = omodule.compile_module(module, _globals)
-        routine.activate(self)
-        routine.execute()
-
-    def run_with(self, routine):
-        self.call_routine(routine, None, None)
-        self.run()
-        return self.result
+        raise NotImplementedError()
+        # from obin.objects.types import omodule
+        # routine = omodule.compile_module(module, _globals)
+        # routine.activate(self)
+        # routine.execute()
 
     def run(self):
         # print "RUN"
@@ -212,6 +110,40 @@ class Process(object):
             except Exception:
                 self.terminate()
                 raise
+
+    def fiber_next(self, fiber):
+        if len(fiber.routines) == 0:
+            fiber.current = None
+            return False
+
+        routine = fiber.routines.pop()
+        routine.resume(fiber.current.result)
+        fiber.current = routine
+        return routine
+
+    def execute(self):
+        # print "execute"
+        fiber = self.fiber
+        routine = self.fiber.current
+        assert routine
+        assert routine.is_inprocess()
+        routine.execute(self)
+
+        if routine.is_complete():
+            result = routine.result
+            if self.fiber_next(fiber) is False:
+                destination = fiber.destination
+                if not destination:
+                    self.result = result
+                    self.purge_fiber(self.fiber)
+                    self.fiber = None
+                    self.terminate()
+                    return
+                else:
+                    self.resume_fiber(destination, self.fiber, result)
+
+        elif routine.is_terminated():
+            return self.catch_signal()
 
     def state(self):
         return self.__state
@@ -243,12 +175,28 @@ class Process(object):
     def is_idle(self):
         return self.state() == Process.State.IDLE
 
+    # TODO THERE NO IS_COMPLETE HERE
+    # PROCESS CAN BE EMPTY, TERMINATED AND ACTIVE
     def is_complete(self):
         if self.is_terminated():
             return True
-        if self.__routine is None:
+
+        if self.fiber is None:
             return True
-        if self.__routine.is_complete() and self.__routine.has_continuation() is False:
+
+        if self.routine() is None:
             return True
 
         return False
+
+
+    # def resume_routine(self, routine_to_resume, calling_routine, value):
+    #     assert self.routine is calling_routine
+    #     assert routine_to_resume.is_suspended()
+    #     assert calling_routine.is_inprocess()
+    #
+    #     # check_continuation_consistency(routine_to_resume, routine_resume_from)
+    #     calling_routine.suspend()
+    #     calling_routine.called = routine_to_resume
+    #     routine_to_resume.resume(value)
+    #     self.set_active_routine(routine_to_resume)

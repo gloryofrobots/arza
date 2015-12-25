@@ -185,10 +185,9 @@ class W_Generic(W_Root):
     def _tobool_(self):
         return True
 
-    def _call_(self, routine, args):
-        assert routine
+    def _call_(self, process, args):
         method = self.lookup_method(args)
-        routine.process.call_object(method, routine, args)
+        process.call_object(method, args)
 
     def _traits_(self):
         from obin.objects.space import state

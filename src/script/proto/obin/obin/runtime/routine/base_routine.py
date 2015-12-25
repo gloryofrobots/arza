@@ -7,37 +7,19 @@ class BaseRoutine:
         SUSPENDED = 4
 
     def __init__(self):
-        self.process = None
-        self._continuation = None
         self._state = BaseRoutine.State.IDLE
-        self.called = None
         self.result = None
         self._signal = None
 
     def signal(self):
         return self._signal
 
-    def has_continuation(self):
-        return self._continuation is not None
-
-    def set_continuation(self, continuation):
-        # if continuation is self.__continuation:
-        #     return
-
-        if self._continuation:
-            print self, "\n**************\n", continuation
-
-        assert not self._continuation
-        self._continuation = continuation
-
-    def continuation(self):
-        return self._continuation
-
     def resume(self, value):
         # print "RESUME", self.__state
+        if not self.is_suspended():
+            print "SSS"
         assert self.is_suspended()
         self._on_resume(value)
-        self.called = None
         self._state = BaseRoutine.State.INPROCESS
 
     def _on_resume(self, value):
@@ -66,11 +48,7 @@ class BaseRoutine:
     def _on_terminate(self, signal):
         raise NotImplementedError()
 
-    def activate(self, process):
-        assert not self.process
-        self.process = process
-
-        self._on_activate()
+    def activate(self):
         self.inprocess()
 
     def _on_activate(self):
@@ -80,12 +58,12 @@ class BaseRoutine:
         assert not self.is_closed()
         self._state = BaseRoutine.State.SUSPENDED
 
-    def execute(self):
+    def execute(self, process):
         if self.is_complete():
             raise RuntimeError("Already complete")
-        self._execute()
+        self._execute(process)
 
-    def _execute(self):
+    def _execute(self, process):
         raise NotImplementedError()
 
     def is_inprocess(self):
@@ -107,6 +85,3 @@ class BaseRoutine:
         return self._state == BaseRoutine.State.COMPLETE \
                or self._state == BaseRoutine.State.TERMINATED
 
-    def call_routine(self, routine):
-        assert self.process
-        self.process.call_routine(routine, self, self)

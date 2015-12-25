@@ -27,7 +27,7 @@ class NativeRoutine(BaseRoutine):
     def get_arg(self, index):
         return api.at_index(self._args, index)
 
-    def _execute(self):
+    def _execute(self, process):
         # print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
         self.suspend()
         self._function_(self)

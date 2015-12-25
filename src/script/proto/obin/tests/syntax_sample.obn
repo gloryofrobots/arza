@@ -1,10 +1,11 @@
-/*
 fn fib(n) {
   fn _process(n,a,b) {
     return _process(n-1,b,a+b) when n>0 else a;
   }
   return _process(n,0,1);
 }
+fib(10)
+/*
 
 
 fn yfib(x) {
@@ -145,7 +146,6 @@ iter = coroutine(fn(yield) {
 for v in iter {
     print(v)
 }
-*/
  iter = coroutine(fn(yield, j) {
            fn send(i) {
                return yield(i)
@@ -160,11 +160,6 @@ for v in iter {
            v + i
      })
 
-/*
-print(iter(10))
-print(iter(11))
-print(iter(12))
-*/
 (fn() {
     print(iter(10))
     (fn(){
@@ -175,3 +170,4 @@ print(iter(12))
      })()
 })()
 
+*/

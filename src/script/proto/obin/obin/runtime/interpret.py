@@ -13,6 +13,6 @@ def run_src(process, src):
     return run_module(process, module)
 
 def run_module(process, module):
-    result = process.run_with_module(module, process.builtins)
+    result = process.evaluate_module(module)
     return result
 

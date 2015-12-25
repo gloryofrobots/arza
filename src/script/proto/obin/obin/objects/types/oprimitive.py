@@ -30,10 +30,9 @@ class W_Primitive(W_Root):
         routine = jit.promote(routine)
         return routine
 
-    def _call_(self, routine, args):
-        assert routine
+    def _call_(self, process, args):
         if self.arity != -1 and api.n_length(args) != self.arity:
             raise ObinRuntimeError(u"Invalid primitive call wrong count of arguments %d != %d"
                                    % (api.n_length(args), self.arity))
 
-        routine.process.call_object(self, routine, args)
+        process.call_object(self, args)

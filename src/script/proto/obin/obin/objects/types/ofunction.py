@@ -41,8 +41,7 @@ class W_Function(W_Root):
         routine = create_function_routine(self, args, self.scope)
         return routine
 
-    def _call_(self, routine, args):
-        assert routine
-        routine.process.call_object(self, routine, args)
+    def _call_(self, process, args):
+        process.call_object(self, args)
 
 
