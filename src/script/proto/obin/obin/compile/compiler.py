@@ -15,6 +15,7 @@ def compile_error(node, message):
     error_message = "Compile Error %d:%d %s" % (node.line, node.position, message)
     raise RuntimeError(error_message)
 
+
 def compile_error_1(node, message, arg):
     error_message = "Compile Error %d:%d %s" % (node.line, node.position, message)
     raise RuntimeError(error_message, arg)
@@ -1005,6 +1006,12 @@ def compile(txt):
     code = compiler.compile(ast)
     return code
 
+
+def compile_module(process, name, txt):
+    from obin.objects.space import newmodule
+    code = compile(txt)
+    module = newmodule(process, name, code)
+    return module
 
 def print_code(code):
     print [str(c) for c in code.opcodes]

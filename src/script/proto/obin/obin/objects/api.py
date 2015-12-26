@@ -260,13 +260,19 @@ def compare(obj, other):
 
     return newint(v)
 
+def next(obj):
+    return obj._next_()
+
+"""
+Callable
+"""
 
 def call(obj, process, args):
     return obj._call_(process, args)
 
 
-def next(obj):
-    return obj._next_()
+def to_routine(obj, args):
+    return obj._to_routine_(args)
 
 
 """

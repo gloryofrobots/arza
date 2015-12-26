@@ -50,10 +50,10 @@ class W_Root:
     def _hash_(self):
         raise NotImplementedError()
 
-    def _call_(self, process, args):
+    def _compare_(self, other):
         raise NotImplementedError()
 
-    def _compare_(self, other):
+    def _call_(self, process, args):
         raise NotImplementedError()
 
 
@@ -79,3 +79,10 @@ class W_Hashable(W_Root):
         if self.__hash is None:
             self.__hash = self._compute_hash_()
         return self.__hash
+
+
+class W_Callable(W_Root):
+    def _to_routine_(self, args):
+        raise NotImplementedError()
+
+

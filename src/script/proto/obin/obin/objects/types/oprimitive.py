@@ -1,10 +1,10 @@
-from oroot import W_Root
+from oroot import W_Callable
 from obin.runtime.exception import *
 from obin.objects import api
 from rpython.rlib import jit
 
 
-class W_Primitive(W_Root):
+class W_Primitive(W_Callable):
     # _immutable_fields_ = ['_name_', 'arity',  '_function_']
 
     def __init__(self, name, function, arity):
@@ -22,7 +22,7 @@ class W_Primitive(W_Root):
         from obin.objects.space import stdlib
         return stdlib.traits.PrimitiveTraits
 
-    def create_routine(self, args):
+    def _to_routine_(self, args):
         from obin.runtime.routine import create_primitive_routine
 
         routine = create_primitive_routine(self._name_, self._function_, args, self.arity)

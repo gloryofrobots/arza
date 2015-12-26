@@ -1,3 +1,5 @@
+from obin.objects import api
+
 class Modules:
     def __init__(self, path):
         assert isinstance(path, list)
@@ -84,7 +86,11 @@ class Process(object):
         self.fibers = []
         self.__fiber = None
 
-        self.idle()
+        self.__idle()
+
+    """
+    PUBLIC API
+    """
 
     @property
     def modules(self):
@@ -110,67 +116,43 @@ class Process(object):
     def state(self):
         return self.__state
 
-    def __set_state(self, s):
-        self.__state = s
+    def is_terminated(self):
+        return self.state == Process.State.TERMINATED
+
+    def is_active(self):
+        return self.state == Process.State.ACTIVE
+
+    def is_idle(self):
+        return self.state == Process.State.IDLE
 
     def call_object(self, obj, args):
-        routine = obj.create_routine(args)
-        self.call_routine(routine)
+        from obin.objects import api
+        routine = api.to_routine(obj, args)
+        self.fiber.call(routine)
 
-    def catch_signal(self):
-        raise NotImplementedError("Throw in code")
-
-    def evaluate_module(self, module):
-        from obin.objects.types import omodule
+    def run(self, func, args):
+        from obin.objects import api
+        assert self.is_idle()
         assert not self.fiber
-        routine = omodule.compile_module(module)
-        self.fiber = self._newfiber(routine)
-        result = self.run()
-        module.result = result
-        # print "run_with_module", module.result()
+
+        routine = api.to_routine(func, args)
+        self.fiber = self.__new_fiber(routine)
+        return self.__run()
+
+    def subprocess(self, func, args):
+        child = Process(self.__data)
+        result = child.run(func, args)
         return result
 
-    def run_module_force(self, module):
-        from obin.objects.types import omodule
-        routine = omodule.compile_module(module)
-        routine.activate()
-        routine.execute(self)
-
-    def run(self):
-        # print "RUN"
-        assert self.is_idle()
-        self.active()
-        while True:
-            if not self.is_active():
-                break
-            try:
-                self.execute()
-            except Exception:
-                self.terminate()
-                raise
-        assert len(self.fibers) == 0
-        assert self.fiber is None
-        self.idle()
-
-    def _newfiber(self, routine):
-        assert routine.is_idle()
-        f = Fiber(routine, self.__fiber)
-        self.fibers.append(f)
-        routine.activate()
-        return f
-
-    def spawn_fiber(self, routine):
+    def spawn_fiber(self, func, args):
+        routine = api.to_routine(func, args)
         assert self.fiber
         self.fiber.stop_routine()
-        f = self._newfiber(routine)
+        f = self.__new_fiber(routine)
         self.fiber = f
         return f
 
-    def _purge_fiber(self, fiber):
-        assert fiber.is_finished()
-        self.fibers.remove(fiber)
-
-    def switch_to(self, fiber, result):
+    def switch_to_fiber(self, fiber, result):
         assert fiber is not self.fiber
         assert self.fiber.is_working()
 
@@ -180,10 +162,45 @@ class Process(object):
         fiber.resume_routine(result)
         self.fiber = fiber
 
-    def call_routine(self, routine):
-        self.fiber.call(routine)
 
-    def execute(self):
+    """
+    PRIVATE API
+    """
+
+    def __catch_signal(self):
+        raise NotImplementedError("Throw in code")
+
+    def __run(self):
+        # print "RUN"
+        assert self.is_idle()
+        self.__active()
+        result = None
+        while True:
+            if not self.is_active():
+                break
+            try:
+                result = self.__execute()
+            except Exception:
+                self.__terminate()
+                raise
+
+        assert len(self.fibers) == 0
+        assert self.fiber is None
+        self.__idle()
+        return result
+
+    def __new_fiber(self, routine):
+        assert routine.is_idle()
+        f = Fiber(routine, self.__fiber)
+        self.fibers.append(f)
+        routine.activate()
+        return f
+
+    def __purge_fiber(self, fiber):
+        assert fiber.is_finished()
+        self.fibers.remove(fiber)
+
+    def __execute(self):
         # print "execute"
         fiber = self.fiber
         routine = fiber.routine
@@ -200,40 +217,34 @@ class Process(object):
                 return None
 
             parent_fiber = fiber.finalise()
-            self._purge_fiber(fiber)
+            self.__purge_fiber(fiber)
             if not parent_fiber:
-                self.terminate()
+                self.__terminate()
                 return routine.result
             else:
                 self.fiber = parent_fiber
                 return None
 
         elif routine.is_terminated():
-            self.catch_signal()
+            self.__catch_signal()
 
         # if suspended reach here
         return None
 
-    def is_terminated(self):
-        return self.state == Process.State.TERMINATED
+    def __set_state(self, s):
+        self.__state = s
 
-    def terminate(self):
+    def __terminate(self):
         # print "F terminate"
         self.fiber = None
         self.fibers = []
         self.__set_state(Process.State.TERMINATED)
 
-    def is_active(self):
-        return self.state == Process.State.ACTIVE
-
-    def active(self):
+    def __active(self):
         # print "F activate"
         self.__set_state(Process.State.ACTIVE)
 
-    def is_idle(self):
-        return self.state == Process.State.IDLE
-
-    def idle(self):
+    def __idle(self):
         self.__set_state(Process.State.IDLE)
 
 

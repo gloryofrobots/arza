@@ -1,15 +1,7 @@
-from obin.objects.space import newmodule
 from obin.objects import api
 from obin.runtime.exception import ObinImportError
 from obin.utils.fs import load_file_content, is_file, join_and_normalise_path
 import os
-
-
-def compile_module(process, name, txt):
-    from obin.compile.compiler import compile
-    code = compile(txt)
-    module = newmodule(process, name, code)
-    return module
 
 
 def import_module(process, name):
@@ -35,11 +27,13 @@ def load_module(process, name):
         if not script:
             raise ObinImportError(unicode(raw))
 
-    return create_module(process, name, script)
+    return __setup_module(process, name, script)
 
 
-def create_module(process, name, script):
+def __setup_module(process, name, script):
+    from obin.objects.space import newundefined
+    from obin.compile.compiler import compile_module
     module = compile_module(process, name, script)
-    process.run_module_force(module)
+    module.result = process.subprocess(module, newundefined())
     process.modules.add_module(name, module)
     return module

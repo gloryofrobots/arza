@@ -1,4 +1,4 @@
-from oroot import W_Root
+from oroot import W_Root, W_Callable
 from obin.runtime.exception import *
 from obin.objects import api
 from rpython.rlib import jit
@@ -19,7 +19,7 @@ class W_CoroutineIterator(W_Root):
         return "CoroutineIterator"
 
 
-class W_CoroutineYield(W_Root):
+class W_CoroutineYield(W_Callable):
     def __init__(self, coroutine):
         self.co = coroutine
         self.fiber = None
@@ -40,10 +40,10 @@ class W_CoroutineYield(W_Root):
 
         # TODO THIS IS WRONG
         value = api.at_index(args, 0)
-        process.switch_to(self.fiber, value)
+        process.switch_to_fiber(self.fiber, value)
 
 
-class W_Coroutine(W_Root):
+class W_Coroutine(W_Callable):
     # _immutable_fields_ = ['_function_']
 
     def __init__(self, function):
@@ -78,8 +78,7 @@ class W_Coroutine(W_Root):
         else:
             args.prepend(self.yielder)
 
-        routine = self.function.create_routine(args)
-        self.fiber = process.spawn_fiber(routine)
+        self.fiber = process.spawn_fiber(self.function, args)
 
     def _iterator_(self):
         return W_CoroutineIterator(self)
@@ -99,4 +98,4 @@ class W_Coroutine(W_Root):
         else:
             value = newundefined()
 
-        process.switch_to(self.fiber, value)
+        process.switch_to_fiber(self.fiber, value)

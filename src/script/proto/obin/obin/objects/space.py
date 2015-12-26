@@ -120,7 +120,7 @@ def newtuple(tupl):
 
 
 def newcoroutine(fn):
-    from obin.objects.types.ocoroutine import W_Coroutine
+    from obin.objects.types.oasync import W_Coroutine
     obj = W_Coroutine(fn)
     return obj
 
