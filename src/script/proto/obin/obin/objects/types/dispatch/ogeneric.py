@@ -190,8 +190,8 @@ class W_Generic(W_Root):
         process.call_object(method, args)
 
     def _traits_(self):
-        from obin.objects.space import state
-        return state.traits.GenericTraits
+        from obin.objects.space import stdlib
+        return stdlib.traits.GenericTraits
 
 if __name__ == "__main__":
     from tests import test_3, test_any

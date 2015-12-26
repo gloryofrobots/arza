@@ -9,6 +9,7 @@ from obin.objects.space import (newbool, newundefined,
                                 newint, newtuple, newgeneric, newtrait)
 from obin.objects import api
 from obin.runtime.load import import_module
+from obin.runtime.internals import get_internal
 
 
 def load_arguments(stack):
@@ -174,9 +175,9 @@ class CodeRoutine(BaseRoutine):
                 lst = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
                 stack.push(newvector(lst))
             # *************************************
-            elif CALL_PRIMITIVE == tag:
-                prim = process.get_primitive(arg1)
-                prim(self)
+            elif CALL_INTERNAL == tag:
+                internal = get_internal(arg1)
+                internal(self)
             # *************************************
             elif CALL == tag:
                 func = stack.pop()

@@ -40,8 +40,8 @@ def slice(routine):
     o = this.ToObject()
     from_index = get_arg(args, 0).ToUInt32()
     to_index = get_arg(args, 1).ToUInt32()
-    from obin.objects.space import state
-    n = state.newvector(length=_w(to_index-from_index))
+    from obin.objects.space import stdlib
+    n = stdlib.newvector(length=_w(to_index-from_index))
     index = 0
     for item in xrange(from_index, to_index):
         api.put_string(n, unicode(str(index)), o.get(unicode(str(item))))

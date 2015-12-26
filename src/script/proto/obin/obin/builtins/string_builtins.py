@@ -9,7 +9,7 @@ from obin.builtins import get_arg
 
 def setup(obj):
     from obin.builtins import put_native_function, put_property
-    from obin.objects.space import state
+    from obin.objects.space import stdlib
 
     #String
     # 15.5.1
@@ -21,10 +21,10 @@ def setup(obj):
 
     # 15.5.4
     w_StringPrototype = W_String(u"")
-    state.assign_proto(w_StringPrototype, state.proto_object)
+    stdlib.assign_proto(w_StringPrototype, stdlib.proto_object)
 
     # 15.5.3.1
-    state.proto_string = w_StringPrototype
+    stdlib.proto_string = w_StringPrototype
 
     put_property(w_String, u'prototype', w_StringPrototype)
 

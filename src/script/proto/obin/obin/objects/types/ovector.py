@@ -29,8 +29,8 @@ class W_Vector(W_Cell):
             raise ObinKeyError(k)
 
     def _traits_(self):
-        from obin.objects.space import state
-        return state.traits.VectorTraits
+        from obin.objects.space import stdlib
+        return stdlib.traits.VectorTraits
 
     def _clone_(self):
         items = []

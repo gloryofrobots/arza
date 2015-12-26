@@ -22,7 +22,7 @@ def main(argv):
 
 def run(script_file):
     # print "RUN", script_file
-    from obin.runtime.interpret import load_file, run_src
+    from obin.runtime.interpret import load_file, evaluate
     from obin.utils import fs
     from obin.objects.space import newprocess
     script_dir = fs.dirname(script_file)
@@ -34,7 +34,7 @@ def run(script_file):
 
     # print "RUN process", process
     src = load_file(script_file)
-    print run_src(process, src)
+    print evaluate(process, src)
 
 # _____ Define and setup target ___
 def target(driver, args):

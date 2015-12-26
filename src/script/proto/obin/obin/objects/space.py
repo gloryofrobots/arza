@@ -125,10 +125,10 @@ def newcoroutine(fn):
     return obj
 
 
-def newmodule(name, code):
+def newmodule(process, name, code):
     assert isstring(name)
     from obin.objects.types.omodule import W_Module
-    obj = W_Module(name, code)
+    obj = W_Module(name, code, process.builtins)
     return obj
 
 
@@ -265,16 +265,6 @@ def _w(value):
     raise TypeError("ffffuuu %s" % (str(type(value)),))
 
 
-def newprocess(libdirs):
-    from obin.builtins import setup_builtins
-    from obin.runtime.process import Process
-    from obin.objects.space import newplainobject
-    builtins = newplainobject()
-    setup_builtins(builtins)
-    process = Process(builtins)
-    for path in libdirs:
-        process.add_path(path)
-    return process
 
 
 class Generics:
@@ -358,11 +348,10 @@ class Traits:
         self.ModuleTraits = newtraits([self.Module, self.Any])
 
 
-class Std:
+class StdLib:
     def __init__(self):
         self.traits = Traits()
         self.generics = Generics()
-        self.initialized = None
 
 
-state = Std()
+stdlib = StdLib()

@@ -56,13 +56,13 @@ def test_3():
 
 def test_any():
     from obin.objects.space import newtrait, newgeneric, newstring,\
-        state, newvector, newnil, newbool, newint, newprocess
+        stdlib, newvector, newnil, newbool, newint, newprocess
     newprocess(["."])
 
-    Any = state.traits.Any
-    Object = state.traits.Object
-    Vector = state.traits.Vector
-    String = state.traits.String
+    Any = stdlib.traits.Any
+    Object = stdlib.traits.Object
+    Vector = stdlib.traits.Vector
+    String = stdlib.traits.String
     X = newtrait(newstring(u"X"))
     Y = newtrait(newstring(u"Y"))
     Z = newtrait(newstring(u"Z"))

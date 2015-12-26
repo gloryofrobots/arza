@@ -3,14 +3,14 @@ from obin.compile.code.opcode import *
 
 __OPCODE_REPR__ = ["UNDEFINED", "NULL", "TRUE", "FALSE", "LITERAL", "OUTER", "LOCAL", "FUNCTION", "INTEGER", "DUP",
                    "NEXT", "IMPORT", "IMPORT_MEMBER", "GENERIC", "TRAIT", "LABEL", "STORE_OUTER", "STORE_LOCAL",
-                   "ITERATOR", "RETURN", "CALL_PRIMITIVE", "CALL", "CALL_METHOD", "JUMP", "JUMP_IF_FALSE_NOPOP",
+                   "ITERATOR", "RETURN", "CALL_INTERNAL", "CALL", "CALL_METHOD", "JUMP", "JUMP_IF_FALSE_NOPOP",
                    "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "JUMP_IF_ITERATOR_EMPTY", "MEMBER_DOT",
                    "MEMBER", "POP", "THROW", "CONCAT", "STORE_MEMBER", "PUSH_MANY", "VECTOR", "TUPLE", "OBJECT",
                    "REIFY", ]
 
 # ************************************************
 
-__UNKNOWN_CHANGE__ = - 128
+__UNKNOWN_CHANGE__ = -128
 
 __STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1,
                      -1, -1, -2, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
@@ -91,7 +91,7 @@ def opcode_info(routine, opcode):
         literal = routine.literals[arg1]
         return 'IMPORT_MEMBER %s' % (literal,)
     # ********************************
-    elif tag == CALL_PRIMITIVE:
+    elif tag == CALL_INTERNAL:
         return 'CALL_PRIMITIVE %s ' % (primitive_to_str(arg1))
     # ********************************
     elif tag == FUNCTION:

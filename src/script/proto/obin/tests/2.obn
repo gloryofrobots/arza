@@ -285,3 +285,73 @@ print(1,2,3,...a, 9, 10, ...b)
 a = fv(1,2,3,...a, 9, 10, ...b)
 print(a)
 
+print("OLOLO")
+ iter = coroutine(fn(yield, j) {
+           fn send(k) {
+               yield(k)
+           }
+
+           i = 1
+           v = j
+           while i < 4 {
+               v = send(i + v)
+               i += 1
+           }
+           v + i
+     })
+
+(fn() {
+    print(iter(10))
+    (fn(){
+        print(iter(11))
+        (fn() {
+            print(iter(12))
+        })()
+     })()
+})()
+iter(13)
+
+ co = coroutine(fn(yield, x) {
+           Z = "1111"
+
+           _co1 = coroutine(fn(yield2, y) {
+               Y = "2222"
+               fn send() {
+                    X = "3333"
+                    yield2(42 + y)
+               }
+               send()
+           })
+
+        print("x", x)
+        v = _co1(x)
+        t = yield(v)
+        print("t", t)
+        x = yield(t)
+        print("x", x)
+        return x
+      })
+
+print(co(23))
+print(co(34))
+print(co(44))
+
+ co = coroutine(fn(yield) {
+           Z = "1111"
+           _co1 = coroutine(fn(yield2) {
+               Y = "2222"
+               fn send() {
+                    X = "3333"
+                    return yield2(42)
+               }
+               send()
+           })
+
+        v = _co1()
+        x = yield(v)
+        y = yield(x + v)
+        print(x, y)
+        return x + y
+      })
+v = co(co(co()))
+print(v)

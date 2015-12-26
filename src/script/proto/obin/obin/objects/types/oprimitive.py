@@ -19,8 +19,8 @@ class W_Primitive(W_Root):
         return True
 
     def _traits_(self):
-        from obin.objects.space import state
-        return state.traits.PrimitiveTraits
+        from obin.objects.space import stdlib
+        return stdlib.traits.PrimitiveTraits
 
     def create_routine(self, args):
         from obin.runtime.routine import create_primitive_routine

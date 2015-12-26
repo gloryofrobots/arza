@@ -39,8 +39,8 @@ class W_Char(W_ValueType):
         return bool(self.char_value)
 
     def _traits_(self):
-        from obin.objects.space import state
-        return state.traits.CharTraits
+        from obin.objects.space import stdlib
+        return stdlib.traits.CharTraits
 
 
 class W_Integer(W_ValueType):
@@ -79,8 +79,8 @@ class W_Integer(W_ValueType):
         return bool(self.int_value)
 
     def _traits_(self):
-        from obin.objects.space import state
-        return state.traits.IntegerTraits
+        from obin.objects.space import stdlib
+        return stdlib.traits.IntegerTraits
 
 
 class W_Float(W_ValueType):
@@ -120,8 +120,8 @@ class W_Float(W_ValueType):
         return bool(self.float_value)
 
     def _traits_(self):
-        from obin.objects.space import state
-        return state.traits.FloatTraits
+        from obin.objects.space import stdlib
+        return stdlib.traits.FloatTraits
 
 
 

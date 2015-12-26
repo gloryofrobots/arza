@@ -23,7 +23,7 @@ OPCODES = [
     ("ITERATOR", 0),
     ("RETURN", 0),
 
-    ("CALL_PRIMITIVE", 0),
+    ("CALL_INTERNAL", 0),
     ("CALL", 0),
     ("CALL_METHOD", 0),
     

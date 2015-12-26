@@ -40,7 +40,7 @@ class W_CoroutineYield(W_Root):
 
         # TODO THIS IS WRONG
         value = api.at_index(args, 0)
-        process.fiber_switchto(self.fiber, value)
+        process.switch_to(self.fiber, value)
 
 
 class W_Coroutine(W_Root):
@@ -65,8 +65,8 @@ class W_Coroutine(W_Root):
         return True
 
     def _lookup_(self, k):
-        from obin.objects.space import state
-        return api.at(state.traits.Coroutine, k)
+        from obin.objects.space import stdlib
+        return api.at(stdlib.traits.Coroutine, k)
 
     def _first_call_(self, process, args):
         from obin.objects.space import newvector
@@ -79,7 +79,7 @@ class W_Coroutine(W_Root):
             args.prepend(self.yielder)
 
         routine = self.function.create_routine(args)
-        self.fiber = process.fiber_spawn(routine)
+        self.fiber = process.spawn_fiber(routine)
 
     def _iterator_(self):
         return W_CoroutineIterator(self)
@@ -90,7 +90,7 @@ class W_Coroutine(W_Root):
         if not self.fiber:
             return self._first_call_(process, args)
 
-        if not self.fiber.current.is_suspended():
+        if not self.fiber.is_waiting():
             raise ObinRuntimeError(u"Invalid coroutine state")
 
         # TODO THIS IS TOTALLY WRONG, CHANGE IT TO PATTERN MATCH
@@ -99,4 +99,4 @@ class W_Coroutine(W_Root):
         else:
             value = newundefined()
 
-        process.fiber_switchto(self.fiber, value)
+        process.switch_to(self.fiber, value)

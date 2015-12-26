@@ -9,11 +9,11 @@ from obin.builtins import get_arg
 def setup(obj):
     from obin.builtins import put_native_function, put_property
     from obin.objects.object import W_Math
-    from obin.objects.space import state
+    from obin.objects.space import stdlib
 
     # 15.8
     w_Math = W_Math()
-    state.assign_proto(w_Math)
+    stdlib.assign_proto(w_Math)
     put_property(obj, u'Math', w_Math)
 
     put_native_function(w_Math, u'abs', js_abs, params=[u'x'])

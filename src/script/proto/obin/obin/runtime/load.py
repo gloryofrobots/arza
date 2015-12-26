@@ -1,34 +1,35 @@
 from obin.objects.space import newmodule
 from obin.objects import api
 from obin.runtime.exception import ObinImportError
-from obin.utils.fs import file_get_contents, is_file, join_and_normalise_path
+from obin.utils.fs import load_file_content, is_file, join_and_normalise_path
 import os
-
 
 
 def compile_module(process, name, txt):
     from obin.compile.compiler import compile
     code = compile(txt)
-    module = newmodule(name, code)
+    module = newmodule(process, name, code)
     return module
 
 
 def import_module(process, name):
     try:
-        return process.get_module(name)
+        return process.modules.get_module(name)
     except KeyError:
         return load_module(process, name)
 
 
 def load_module(process, name):
+    modules = process.modules
+
     raw = api.to_native_string(name)
     path = raw.replace(".", os.sep)
     path = path + ".obn"
     script = None
-    for directory in process.path:
+    for directory in modules.path:
         filename = join_and_normalise_path(directory, path)
         if is_file(filename):
-            script = file_get_contents(filename)
+            script = load_file_content(filename)
             break
 
         if not script:
@@ -39,6 +40,6 @@ def load_module(process, name):
 
 def create_module(process, name, script):
     module = compile_module(process, name, script)
-    process.run_module_force(module, process.builtins)
-    process.add_module(name, module)
+    process.run_module_force(module)
+    process.modules.add_module(name, module)
     return module

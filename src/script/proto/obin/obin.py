@@ -21,20 +21,14 @@ def main(argv):
     return 0
 
 
-
 def run(script_file):
-    from obin.runtime.interpret import load_file, run_src
+    from obin.runtime import engine
     from obin.utils import fs
-    from obin.objects.space import newprocess
-
     script_dir = fs.get_dirname(script_file)
-
     path = fs.join_and_normalise_path(script_dir, "olib")
 
-    process = newprocess([path])
-    src = load_file(script_file)
-    print run_src(process, src)
-
+    process = engine.initialize([path])
+    return engine.evaluate_file(process, script_file)
 
 
 @enforceargs(unicode, unicode)

@@ -145,7 +145,7 @@ class Signature(BaseSignature):
         BaseSignature.__init__(self, method)
 
         from obin.objects import space, api
-        traits = space.state.traits
+        traits = space.stdlib.traits
         self.arity = api.n_length(args)
         self.args = []
         for i in range(self.arity):

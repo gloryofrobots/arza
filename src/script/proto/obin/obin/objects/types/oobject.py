@@ -110,18 +110,18 @@ def _create_trait(obj):
 
 def traits(obj):
     if obj.traits is None:
-        from obin.objects.space import state
-        return state.traits.ObjectTraits
+        from obin.objects.space import stdlib
+        return stdlib.traits.ObjectTraits
 
     return obj.traits
 
 
 def attach(obj, trait):
-    from obin.objects.space import isobject, istrait, state
+    from obin.objects.space import isobject, istrait, stdlib
     assert istrait(trait)
     assert isobject(obj)
     if obj.traits is None:
-        obj.traits = api.clone(state.traits.ObjectTraits)
+        obj.traits = api.clone(stdlib.traits.ObjectTraits)
     obj.traits.prepend(trait)
 
 

@@ -27,8 +27,8 @@ def now(self, args):
     from obin.objects.space import _w
     value = _w(int(time.time() * 1000))
 
-    from obin.objects.space import state
-    obj = state.new_date(value)
+    from obin.objects.space import stdlib
+    obj = stdlib.new_date(value)
     return obj
 def _isspace(uchar):
     return unicodedb.isspace(ord(uchar))

@@ -6,7 +6,23 @@ from obin.objects.space import _w, isint, isstring, isfloat, newbool, newint, ne
 from rpython.rlib.rarithmetic import ovfcheck, intmask
 from rpython.rlib.rfloat import isnan, isinf
 from rpython.rlib.objectmodel import specialize
-from obin.builtins.number_builtins import w_NAN, w_POSITIVE_INFINITY, w_NEGATIVE_INFINITY
+
+from rpython.rlib.rfloat import NAN, INFINITY
+# 15.7.3.2
+w_MAX_VALUE = _w(1.7976931348623157e308)
+
+# 15.7.3.3
+w_MIN_VALUE = _w(5e-320)
+
+# 15.7.3.4
+w_NAN = _w(NAN)
+
+# 15.7.3.5
+w_POSITIVE_INFINITY = _w(INFINITY)
+
+# 15.7.3.6
+w_NEGATIVE_INFINITY = _w(-INFINITY)
+
 # from rpython.rlib import jit
 
 
@@ -287,104 +303,103 @@ def apply_unary_on_unboxed_integer(routine, operation):
     routine.stack.push(operation(routine, val))
 
 
-def primitive_IN(routine):
+def internal_IN(routine):
     apply_binary(routine, _in)
 
 
-def primitive_SUB(routine):
+def internal_SUB(routine):
     apply_binary(routine, sub)
 
 
-def primitive_ADD(routine):
+def internal_ADD(routine):
     apply_binary(routine, plus)
 
 
-def primitive_MUL(routine):
+def internal_MUL(routine):
     apply_binary(routine, mult)
 
 
-def primitive_DIV(routine):
+def internal_DIV(routine):
     apply_binary(routine, division)
 
 
-def primitive_MOD(routine):
+def internal_MOD(routine):
     apply_binary(routine, mod)
 
 
-def primitive_BITAND(routine):
+def internal_BITAND(routine):
     apply_binary_on_unboxed_integers(routine, _bitand)
 
 
-def primitive_BITXOR(routine):
+def internal_BITXOR(routine):
     apply_binary_on_unboxed_integers(routine, _bitxor)
 
 
-def primitive_BITOR(routine):
+def internal_BITOR(routine):
     apply_binary_on_unboxed_integers(routine, _bitor)
 
 
-def primitive_BITNOT(routine):
+def internal_BITNOT(routine):
     apply_unary_on_unboxed_integer(routine, bitnot)
 
 
-def primitive_URSH(routine):
+def internal_URSH(routine):
     apply_binary(routine, ursh)
 
 
-def primitive_RSH(routine):
+def internal_RSH(routine):
     apply_binary(routine, rsh)
 
 
-def primitive_LSH(routine):
+def internal_LSH(routine):
     apply_binary(routine, lsh)
 
 
-def primitive_UPLUS(routine):
+def internal_UPLUS(routine):
     apply_unary(routine, uplus)
 
 
-def primitive_UMINUS(routine):
+def internal_UMINUS(routine):
     apply_unary(routine, uminus)
 
 
-def primitive_NOT(routine):
+def internal_NOT(routine):
     apply_unary(routine, _not)
 
 
-def primitive_GT(routine):
+def internal_GT(routine):
     apply_binary(routine, compare_gt)
 
 
-def primitive_GE(routine):
+def internal_GE(routine):
     apply_binary(routine, compare_ge)
 
 
-def primitive_LT(routine):
+def internal_LT(routine):
     apply_binary(routine, compare_lt)
 
 
-def primitive_LE(routine):
+def internal_LE(routine):
     apply_binary(routine, compare_le)
 
 
-def primitive_EQ(routine):
+def internal_EQ(routine):
     apply_binary(routine, eq)
 
 
-def primitive_NE(routine):
+def internal_NE(routine):
     apply_binary(routine, noteq)
 
 
-def primitive_IS(routine):
+def internal_IS(routine):
     apply_binary(routine, _is)
 
 
-def primitive_ISNOT(routine):
+def internal_ISNOT(routine):
     apply_binary(routine, _isnot)
 
 
-# ********************  PRIMITIVES IDS ********************
-
+# ********************  INTERNALS IDS ********************
 IS = 0
 NE = 1
 EQ = 2
@@ -412,63 +427,70 @@ URSH = 23
 __LENGTH__ = 24
 
 
-# ********************* PRIMITIVES REPR ***************
-__PRIMITIVE_REPR__ = [None] * __LENGTH__
-__PRIMITIVE_REPR__[IS] = "IS"
-__PRIMITIVE_REPR__[NE] = "NE"
-__PRIMITIVE_REPR__[EQ] = "EQ"
-__PRIMITIVE_REPR__[NOT] = "NOT"
-__PRIMITIVE_REPR__[ISNOT] = "ISNOT"
-__PRIMITIVE_REPR__[IN] = "IN"
-__PRIMITIVE_REPR__[ADD] = "ADD"
-__PRIMITIVE_REPR__[MOD] = "MOD"
-__PRIMITIVE_REPR__[MUL] = "MUL"
-__PRIMITIVE_REPR__[DIV] = "DIV"
-__PRIMITIVE_REPR__[SUB] = "SUB"
-__PRIMITIVE_REPR__[UMINUS] = "UMINUS"
-__PRIMITIVE_REPR__[UPLUS] = "UPLUS"
-__PRIMITIVE_REPR__[GE] = "GE"
-__PRIMITIVE_REPR__[GT] = "GT"
-__PRIMITIVE_REPR__[LT] = "LT"
-__PRIMITIVE_REPR__[LE] = "LE"
-__PRIMITIVE_REPR__[BITNOT] = "BITNOT"
-__PRIMITIVE_REPR__[BITOR] = "BITOR"
-__PRIMITIVE_REPR__[BITXOR] = "BITXOR"
-__PRIMITIVE_REPR__[BITAND] = "BITAND"
-__PRIMITIVE_REPR__[LSH] = "LSH"
-__PRIMITIVE_REPR__[RSH] = "RSH"
-__PRIMITIVE_REPR__[URSH] = "URSH"
+# ********************* INTERNALS REPR ***************
+__INTERNALS_REPR__ = [None] * __LENGTH__
+__INTERNALS_REPR__[IS] = "IS"
+__INTERNALS_REPR__[NE] = "NE"
+__INTERNALS_REPR__[EQ] = "EQ"
+__INTERNALS_REPR__[NOT] = "NOT"
+__INTERNALS_REPR__[ISNOT] = "ISNOT"
+__INTERNALS_REPR__[IN] = "IN"
+__INTERNALS_REPR__[ADD] = "ADD"
+__INTERNALS_REPR__[MOD] = "MOD"
+__INTERNALS_REPR__[MUL] = "MUL"
+__INTERNALS_REPR__[DIV] = "DIV"
+__INTERNALS_REPR__[SUB] = "SUB"
+__INTERNALS_REPR__[UMINUS] = "UMINUS"
+__INTERNALS_REPR__[UPLUS] = "UPLUS"
+__INTERNALS_REPR__[GE] = "GE"
+__INTERNALS_REPR__[GT] = "GT"
+__INTERNALS_REPR__[LT] = "LT"
+__INTERNALS_REPR__[LE] = "LE"
+__INTERNALS_REPR__[BITNOT] = "BITNOT"
+__INTERNALS_REPR__[BITOR] = "BITOR"
+__INTERNALS_REPR__[BITXOR] = "BITXOR"
+__INTERNALS_REPR__[BITAND] = "BITAND"
+__INTERNALS_REPR__[LSH] = "LSH"
+__INTERNALS_REPR__[RSH] = "RSH"
+__INTERNALS_REPR__[URSH] = "URSH"
 
 
-def newprimitives():
+def newinternals():
     P = [None] * __LENGTH__
 
-    P[IS] = primitive_IS
-    P[NE] = primitive_NE
-    P[EQ] = primitive_EQ
-    P[NOT] = primitive_NOT
-    P[ISNOT] = primitive_ISNOT
-    P[IN] = primitive_IN
-    P[ADD] = primitive_ADD
-    P[MOD] = primitive_MOD
-    P[MUL] = primitive_MUL
-    P[DIV] = primitive_DIV
-    P[SUB] = primitive_SUB
-    P[UMINUS] = primitive_UMINUS
-    P[UPLUS] = primitive_UPLUS
-    P[GE] = primitive_GE
-    P[GT] = primitive_GT
-    P[LT] = primitive_LT
-    P[LE] = primitive_LE
-    P[BITNOT] = primitive_BITNOT
-    P[BITOR] = primitive_BITOR
-    P[BITXOR] = primitive_BITXOR
-    P[BITAND] = primitive_BITAND
-    P[LSH] = primitive_LSH
-    P[RSH] = primitive_RSH
-    P[URSH] = primitive_URSH
+    P[IS] = internal_IS
+    P[NE] = internal_NE
+    P[EQ] = internal_EQ
+    P[NOT] = internal_NOT
+    P[ISNOT] = internal_ISNOT
+    P[IN] = internal_IN
+    P[ADD] = internal_ADD
+    P[MOD] = internal_MOD
+    P[MUL] = internal_MUL
+    P[DIV] = internal_DIV
+    P[SUB] = internal_SUB
+    P[UMINUS] = internal_UMINUS
+    P[UPLUS] = internal_UPLUS
+    P[GE] = internal_GE
+    P[GT] = internal_GT
+    P[LT] = internal_LT
+    P[LE] = internal_LE
+    P[BITNOT] = internal_BITNOT
+    P[BITOR] = internal_BITOR
+    P[BITXOR] = internal_BITXOR
+    P[BITAND] = internal_BITAND
+    P[LSH] = internal_LSH
+    P[RSH] = internal_RSH
+    P[URSH] = internal_URSH
     return P
 
 
-def primitive_to_str(p):
-    return __PRIMITIVE_REPR__[p]
+__INTERNALS__ = newinternals()
+
+
+def internal_to_str(p):
+    return __INTERNALS_REPR__[p]
+
+
+def get_internal(id):
+    return __INTERNALS__[id]

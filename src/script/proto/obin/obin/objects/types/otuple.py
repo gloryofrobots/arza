@@ -58,8 +58,8 @@ class W_Tuple(W_Hashable):
         return x
 
     def _traits_(self):
-        from obin.objects.space import state
-        return state.traits.TupleTraits
+        from obin.objects.space import stdlib
+        return stdlib.traits.TupleTraits
 
     def _clone_(self):
         return W_Tuple(self.elements)

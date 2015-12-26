@@ -30,8 +30,8 @@ class W_Function(W_Root):
         return True
 
     def _traits_(self):
-        from obin.objects.space import state
-        return state.traits.FunctionTraits
+        from obin.objects.space import stdlib
+        return stdlib.traits.FunctionTraits
 
     # def __str__(self):
     #     return 'Function %s' % self._tostring_()

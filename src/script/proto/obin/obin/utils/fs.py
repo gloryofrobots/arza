@@ -108,22 +108,11 @@ def is_file(p):
     return state
 
 
-def file_put_contents(filename, content, mode="wb"):
-    try:
-        file = open(filename, mode)
-        file.write(content)
-        file.close()
-        return True
-
-    except Exception:
-        return False
-
-
-def file_get_contents(filename):
-    file = open(filename, "r")
-    content = file.read()
-    file.close()
-    return content
+def load_file_content(filename):
+    from rpython.rlib.streamio import open_file_as_stream
+    f = open_file_as_stream(str(filename))
+    src = f.readall()
+    return src
 
 
 def make_dirs_recursive_if_not_exist(p):

@@ -64,9 +64,9 @@ def clone(routine):
 
 @complete_native_routine
 def create(routine):
-    from obin.objects.space import state
+    from obin.objects.space import stdlib
     this = routine.get_arg(0)
-    obj = state.newobject()
+    obj = stdlib.newobject()
     obj.set_origin(this)
     return obj
 

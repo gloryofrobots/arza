@@ -5,12 +5,9 @@ from rpython.rlib.rstring import UnicodeBuilder
 from obin.runistr import encode_unicode_utf8
 
 
-def setup(obj):
-    from rpython.rlib.objectmodel import we_are_translated
-    from obin.objects.space import state
-
+def setup(obj, stdlib):
     ### Traits
-    traits = state.traits
+    traits = stdlib.traits
     api.put_string(obj, u'Any', traits.Any)
     api.put_string(obj, u'True', traits.True)
     api.put_string(obj, u'False', traits.False)
@@ -140,7 +137,6 @@ def clone(routine):
 
 @complete_native_routine
 def traits(routine):
-    from obin.objects.space import isobject
     obj = routine.get_arg(0)
     return api.traits(obj)
 
