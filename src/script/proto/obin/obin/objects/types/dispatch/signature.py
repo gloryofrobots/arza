@@ -25,6 +25,7 @@ class Argument(W_Root):
         discriminators.append(d)
         return d
 
+
 class PredicateArgument(Argument):
     def __init__(self, position, predicate):
         Argument.__init__(self, position)
@@ -61,7 +62,6 @@ class PredicateArgument(Argument):
 
     def __str__(self):
         return self.__repr__()
-
 
 
 class ArgumentAny(Argument):
@@ -143,39 +143,8 @@ class BaseSignature:
 class Signature(BaseSignature):
     def __init__(self, args, method):
         BaseSignature.__init__(self, method)
-
-        from obin.objects import space, api
-        traits = space.stdlib.traits
-        self.arity = api.n_length(args)
-        self.args = []
-        for i in range(self.arity):
-            trait = api.at_index(args, i)
-            if traits.Any is trait:
-                arg = ArgumentAny(i)
-            elif traits.Object is trait:
-                arg = PredicateArgument(i, space.isobject)
-            elif traits.Vector is trait:
-                arg = PredicateArgument(i, space.isvector)
-            elif traits.String is trait:
-                arg = PredicateArgument(i, space.isstring)
-            elif traits.Function is trait:
-                arg = PredicateArgument(i, space.isfunction)
-            elif traits.Integer is trait:
-                arg = PredicateArgument(i, space.isint)
-            elif traits.Float is trait:
-                arg = PredicateArgument(i, space.isfloat)
-            elif traits.Tuple is trait:
-                arg = PredicateArgument(i, space.istuple)
-            elif traits.Generic is trait:
-                arg = PredicateArgument(i, space.isgeneric)
-            elif traits.Nil is trait:
-                arg = PredicateArgument(i, space.isnull)
-            elif traits.Boolean is trait:
-                arg = PredicateArgument(i, space.isboolean)
-            else:
-                arg = ArgumentTrait(i, trait)
-
-            self.args.append(arg)
+        self.args = args
+        self.arity = len(args)
 
     def equal(self, other):
         args1 = self.args
@@ -190,3 +159,44 @@ class Signature(BaseSignature):
 
     def get_argument(self, index):
         return self.args[index]
+
+
+def newsignature(process, args, method):
+    from obin.objects import space, api
+    arity = api.n_length(args)
+    sig_args = []
+    traits = process.stdlib.traits
+
+    for i in range(arity):
+        trait = api.at_index(args, i)
+        if traits.Any is trait:
+            arg = ArgumentAny(i)
+        elif traits.Object is trait:
+            arg = PredicateArgument(i, space.isobject)
+        elif traits.Vector is trait:
+            arg = PredicateArgument(i, space.isvector)
+        elif traits.String is trait:
+            arg = PredicateArgument(i, space.isstring)
+        elif traits.Function is trait:
+            arg = PredicateArgument(i, space.isfunction)
+        elif traits.Integer is trait:
+            arg = PredicateArgument(i, space.isint)
+        elif traits.Float is trait:
+            arg = PredicateArgument(i, space.isfloat)
+        elif traits.Tuple is trait:
+            arg = PredicateArgument(i, space.istuple)
+        elif traits.Generic is trait:
+            arg = PredicateArgument(i, space.isgeneric)
+        elif traits.Nil is trait:
+            arg = PredicateArgument(i, space.isnull)
+        elif traits.Boolean is trait:
+            arg = PredicateArgument(i, space.isboolean)
+        else:
+            arg = ArgumentTrait(i, trait)
+
+        sig_args.append(arg)
+
+    return Signature(sig_args, method)
+
+def new_base_signature(method):
+    return BaseSignature(method)

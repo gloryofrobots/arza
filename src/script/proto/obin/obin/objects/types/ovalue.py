@@ -38,9 +38,8 @@ class W_Char(W_ValueType):
     def _tobool_(self):
         return bool(self.char_value)
 
-    def _traits_(self):
-        from obin.objects.space import stdlib
-        return stdlib.traits.CharTraits
+    def _traits_(self, process):
+        return process.stdlib.traits.CharTraits
 
 
 class W_Integer(W_ValueType):
@@ -78,9 +77,8 @@ class W_Integer(W_ValueType):
     def _tobool_(self):
         return bool(self.int_value)
 
-    def _traits_(self):
-        from obin.objects.space import stdlib
-        return stdlib.traits.IntegerTraits
+    def _traits_(self, process):
+        return process.stdlib.traits.IntegerTraits
 
 
 class W_Float(W_ValueType):
@@ -119,9 +117,8 @@ class W_Float(W_ValueType):
     def _tobool_(self):
         return bool(self.float_value)
 
-    def _traits_(self):
-        from obin.objects.space import stdlib
-        return stdlib.traits.FloatTraits
+    def _traits_(self, process):
+        return process.stdlib.traits.FloatTraits
 
 
 

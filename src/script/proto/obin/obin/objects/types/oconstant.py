@@ -14,9 +14,8 @@ class W_Undefined(W_Constant):
     def _tostring_(self):
         return "undefined"
 
-    def _traits_(self):
-        from obin.objects.space import stdlib
-        return stdlib.traits.UndefinedTraits
+    def _traits_(self, process):
+        return process.stdlib.traits.UndefinedTraits
 
     def _hash_(self):
         return self.__hash
@@ -33,9 +32,8 @@ class W_Nil(W_Constant):
     def _tobool_(self):
         return False
 
-    def _traits_(self):
-        from obin.objects.space import stdlib
-        return stdlib.traits.NilTraits
+    def _traits_(self, process):
+        return process.stdlib.traits.NilTraits
 
     def _hash_(self):
         return self.__hash
@@ -48,9 +46,8 @@ class W_True(W_Constant):
     def _tobool_(self):
         return True
 
-    def _traits_(self):
-        from obin.objects.space import stdlib
-        return stdlib.traits.TrueTraits
+    def _traits_(self, process):
+        return process.stdlib.traits.TrueTraits
 
     def _hash_(self):
         return 1
@@ -66,9 +63,8 @@ class W_False(W_Constant):
     def _tobool_(self):
         return False
 
-    def _traits_(self):
-        from obin.objects.space import stdlib
-        return stdlib.traits.FalseTraits
+    def _traits_(self, process):
+        return process.stdlib.traits.FalseTraits
 
     def _hash_(self):
         return 0

@@ -168,24 +168,24 @@ Traits
 """
 
 
-def traits(obj):
-    return obj._traits_()
+def traits(process, obj):
+    return obj._traits_(process)
 
 
-def attach(obj, trait):
+def attach(process, obj, trait):
     from space import isobject, istrait
     from obin.objects.types import oobject
     assert isobject(obj)
     assert istrait(trait)
-    oobject.attach(obj, trait)
+    oobject.attach(process, obj, trait)
 
 
-def detach(obj, trait):
+def detach(process, obj, trait):
     from obin.objects.types import oobject
     from space import isobject, istrait
     assert isobject(obj)
     assert istrait(trait)
-    oobject.detach(obj, trait)
+    oobject.detach(process, obj, trait)
 
 
 def kindof(obj, trait):
@@ -198,8 +198,8 @@ def n_kindof(obj, trait):
     return obj._kindof_(t)
 
 
-def totrait(any):
-    return any._totrait_()
+def totrait(obj, process):
+    return obj._totrait_(process)
 
 
 """
@@ -256,7 +256,7 @@ def next(obj):
 Callable
 """
 
-def call(obj, process, args):
+def call(process, obj, args):
     return obj._call_(process, args)
 
 

@@ -49,19 +49,19 @@ def setup(obj, stdlib):
 # 15.1.2.2
 
 @complete_native_routine
-def _id(routine):
+def _id(process, routine):
     from rpython.rlib.objectmodel import compute_unique_id
     this = routine.get_arg(0)
     return str(hex(compute_unique_id(this)))
 
 
 @complete_native_routine
-def alert(routine):
+def alert(process, routine):
     _print(routine)
 
 
 @complete_native_routine
-def _print(routine):
+def _print(process, routine):
     args = routine._args.to_list()
     if len(args) == 0:
         return
@@ -78,7 +78,7 @@ def _print(routine):
     print(print_str)
 
 
-def _eval(routine):
+def _eval(process, routine):
     from obin.objects.space import isstring
     from obin.runtime.routine import create_eval_routine
 
@@ -94,7 +94,7 @@ def _eval(routine):
 
 
 @complete_native_routine
-def coroutine(routine):
+def coroutine(process, routine):
     from obin.objects.space import newcoroutine, isfunction
     fn = routine.get_arg(0)
     assert isfunction(fn)
@@ -102,7 +102,7 @@ def coroutine(routine):
 
 
 @complete_native_routine
-def _range(routine):
+def _range(process, routine):
     from obin.objects.space import newvector, newint
     start = routine.get_arg(0)
     end = routine.get_arg(1)
@@ -113,14 +113,14 @@ def _range(routine):
 
 
 @complete_native_routine
-def generic(routine):
+def generic(process, routine):
     from obin.objects.space import newgeneric
     name = routine.get_arg(0)
     return newgeneric(name)
 
 
 @complete_native_routine
-def specify(routine):
+def specify(process, routine):
     method = routine.get_arg(0)
     signature = routine.get_arg(1)
     specification = routine.get_arg(2)
@@ -129,57 +129,57 @@ def specify(routine):
 
 
 @complete_native_routine
-def clone(routine):
+def clone(process, routine):
     origin = routine.get_arg(0)
     clone = api.clone(origin)
     return clone
 
 
 @complete_native_routine
-def traits(routine):
+def traits(process, routine):
     obj = routine.get_arg(0)
-    return api.traits(obj)
+    return api.traits(process, obj)
 
 @complete_native_routine
-def attach(routine):
+def attach(process, routine):
     args = routine.args().to_list()
     obj = routine.get_arg(0)
     for i in range(len(args) -1, 0, -1):
         trait = routine.get_arg(i)
-        api.attach(obj, trait)
+        api.attach(process, obj, trait)
     return obj
 
 @complete_native_routine
-def detach(routine):
+def detach(process, routine):
     args = routine.args().to_list()
     obj = routine.get_arg(0)
     for i in range(1, len(args)):
         trait = routine.get_arg(i)
-        api.detach(obj, trait)
+        api.detach(process, obj, trait)
 
     return obj
 
 @complete_native_routine
-def kindof(routine):
+def kindof(process, routine):
     obj = routine.get_arg(0)
     trait = routine.get_arg(1)
     return api.kindof(trait, obj)
 
 
 @complete_native_routine
-def lookup(routine):
+def lookup(process, routine):
     this = routine.get_arg(0)
     key = routine.get_arg(1)
     default = routine.get_arg(2)
     return api.lookup(this, key, default)
 
 @complete_native_routine
-def clone(routine):
+def clone(process, routine):
     this = routine.get_arg(0)
     return api.clone(this)
 
 @complete_native_routine
-def trait(routine):
+def trait(process, routine):
     from obin.objects.space import newtrait
     name = routine.get_arg(0)
     return newtrait(name)

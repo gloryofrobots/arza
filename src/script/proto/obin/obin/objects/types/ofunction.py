@@ -29,9 +29,8 @@ class W_Function(W_Callable):
     def _tobool_(self):
         return True
 
-    def _traits_(self):
-        from obin.objects.space import stdlib
-        return stdlib.traits.FunctionTraits
+    def _traits_(self, process):
+        return process.stdlib.traits.FunctionTraits
 
     # def __str__(self):
     #     return 'Function %s' % self._tostring_()

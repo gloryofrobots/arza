@@ -13,7 +13,7 @@ class W_Trait(W_Hashable):
     def _compute_hash_(self):
         return int((1 - random()) * 10000000)
 
-    def _totrait_(self):
+    def _totrait_(self, process):
         return self
 
     def _tostring_(self):

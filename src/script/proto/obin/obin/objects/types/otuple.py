@@ -57,9 +57,8 @@ class W_Tuple(W_Hashable):
             x = intmask((1000003 * x) ^ y)
         return x
 
-    def _traits_(self):
-        from obin.objects.space import stdlib
-        return stdlib.traits.TupleTraits
+    def _traits_(self, process):
+        return process.stdlib.traits.TupleTraits
 
     def _clone_(self):
         return W_Tuple(self.elements)

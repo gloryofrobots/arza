@@ -84,12 +84,15 @@ class W_Object(W_Cell):
 
         return False
 
-    def _traits_(self):
+    def _traits_(self, process):
+        if self.traits is None:
+            return process.stdlib.traits.ObjectTraits
+
         return self.traits
 
-    def _totrait_(self):
+    def _totrait_(self, process):
         if not self.trait:
-            _create_trait(self)
+            _create_trait(process, self)
         return self.trait
 
 
@@ -97,32 +100,24 @@ def has_traits(obj):
     return obj.traits is not None
 
 
-def _create_trait(obj):
+def _create_trait(process, obj):
     from obin.objects.space import newtrait, newstring
     assert obj.traits
     assert not obj.trait
     obj.trait = newtrait(newstring(u""))
-    attach(obj, obj.trait)
+    attach(process, obj, obj.trait)
 
 
-def traits(obj):
-    if obj.traits is None:
-        from obin.objects.space import stdlib
-        return stdlib.traits.ObjectTraits
-
-    return obj.traits
-
-
-def attach(obj, trait):
-    from obin.objects.space import isobject, istrait, stdlib
+def attach(process, obj, trait):
+    from obin.objects.space import isobject, istrait
     assert istrait(trait)
     assert isobject(obj)
     if obj.traits is None:
-        obj.traits = api.clone(stdlib.traits.ObjectTraits)
+        obj.traits = api.clone(process.stdlib.traits.ObjectTraits)
     obj.traits.prepend(trait)
 
 
-def detach(obj, trait):
+def detach(process, obj, trait):
     from obin.objects.space import isobject, istrait
     assert isobject(obj)
     assert istrait(trait)

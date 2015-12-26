@@ -18,9 +18,8 @@ class W_Primitive(W_Callable):
     def _tobool_(self):
         return True
 
-    def _traits_(self):
-        from obin.objects.space import stdlib
-        return stdlib.traits.PrimitiveTraits
+    def _traits_(self, process):
+        return process.stdlib.traits.PrimitiveTraits
 
     def _to_routine_(self, args):
         from obin.runtime.routine import create_primitive_routine

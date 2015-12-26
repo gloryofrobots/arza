@@ -1,5 +1,5 @@
 class DAGNode:
-    def evaluate(self, args):
+    def evaluate(self, process, args):
         raise NotImplementedError()
 
     def __repr__(self):
@@ -12,14 +12,14 @@ class SingleNode(DAGNode):
         self.discriminator = discriminator
         self.is_evaluated = False
 
-    def get_rank(self, args):
-        return self.discriminator.evaluate(args)
+    def get_rank(self, process, args):
+        return self.discriminator.evaluate(process, args)
 
-    def evaluate(self, args):
-        rank = self.nextnode.get_rank(args)
+    def evaluate(self, process, args):
+        rank = self.nextnode.get_rank(process, args)
         if rank < 0:
             return None
-        return self.nextnode.evaluate(args)
+        return self.nextnode.evaluate(process, args)
 
     def __str__(self):
         return '[%s, %s]' % (str(self.discriminator), str(self.nextnode))
@@ -44,10 +44,9 @@ def sort_stack(stack):
             break
 
 
-def evaluate_decision(stack, nodes, args):
-    from operator import itemgetter
+def evaluate_decision(process, stack, nodes, args):
     for node in nodes:
-        rank = node.get_rank(args)
+        rank = node.get_rank(process, args)
         if rank >= 0:
             stack.append((node, rank))
     # print "********************"
@@ -59,7 +58,7 @@ def evaluate_decision(stack, nodes, args):
 
     for ranked_node in stack:
         node = ranked_node[0]
-        result = node.evaluate(args)
+        result = node.evaluate(process, args)
 
         if result is not None:
             return result
@@ -76,9 +75,9 @@ class GroupNode(DAGNode):
     def get_rank(self, args):
         return self.discriminator.evaluate(args)
 
-    def evaluate(self, args):
+    def evaluate(self, process, args):
         del self.ordering_stack[:]
-        return evaluate_decision(self.ordering_stack, self.nodes, args)
+        return evaluate_decision(process, self.ordering_stack, self.nodes, args)
 
     def __str__(self):
         return '[%s, %s]' % (str(self.discriminator), str(self.nodes))
@@ -90,9 +89,9 @@ class RootNode(DAGNode):
         self.nodes = nodes
         self.ordering_stack = []
 
-    def evaluate(self, args):
+    def evaluate(self, process, args):
         del self.ordering_stack[:]
-        result = evaluate_decision(self.ordering_stack, self.nodes, args)
+        result = evaluate_decision(process, self.ordering_stack, self.nodes, args)
         self.reset()
         return result
 
@@ -111,10 +110,10 @@ class LeafNode(DAGNode):
     def __init__(self, method):
         self.method = method
 
-    def get_rank(self, args):
+    def get_rank(self, process, args):
         return 0
 
-    def evaluate(self, args):
+    def evaluate(self, process, args):
         return self.method
 
     def __str__(self):

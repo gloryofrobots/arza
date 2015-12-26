@@ -30,7 +30,7 @@ class NativeRoutine(BaseRoutine):
     def _execute(self, process):
         # print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
         self.suspend()
-        self._function_(self)
+        self._function_(process, self)
 
     def _on_complete(self):
         pass

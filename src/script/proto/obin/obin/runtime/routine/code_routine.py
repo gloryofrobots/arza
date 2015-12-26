@@ -7,6 +7,7 @@ from obin.objects.space import (newbool, newundefined,
                                 newnil, newvector, isinterrupt,
                                 newobject, newfunc,
                                 newint, newtuple, newgeneric, newtrait)
+from obin.objects.types.dispatch.ogeneric import reify
 from obin.objects import api
 from obin.runtime.load import import_module
 from obin.runtime.internals import get_internal
@@ -176,7 +177,7 @@ class CodeRoutine(BaseRoutine):
                 func = stack.pop()
                 argv = stack.pop()
 
-                api.call(func, process, argv)
+                api.call(process, func, argv)
             # *************************************
             elif CALL_METHOD == tag:
                 method = stack.pop()
@@ -186,7 +187,7 @@ class CodeRoutine(BaseRoutine):
                 func = api.at(what, method)
                 # argv.prepend(what)
 
-                api.call(func, process, argv)
+                api.call(process, func, argv)
             # *************************************
             elif CONCAT == tag:
                 first = stack.pop()
@@ -264,7 +265,7 @@ class CodeRoutine(BaseRoutine):
                 if arg2 > 0:
                     for _ in xrange(arg2):
                         trait = stack.pop()
-                        api.attach(obj, trait)
+                        api.attach(process, obj, trait)
 
                 stack.push(obj)
             # *************************************
@@ -302,7 +303,7 @@ class CodeRoutine(BaseRoutine):
                 methods = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
                 methods = newtuple(methods)
                 generic = stack.pop()
-                generic.reify(methods)
+                reify(process, generic, methods)
             # *************************************
             elif LABEL == tag:
                 raise RuntimeError("Uncompiled label opcode")

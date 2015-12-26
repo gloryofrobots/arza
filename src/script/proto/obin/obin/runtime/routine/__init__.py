@@ -6,8 +6,8 @@ from obin.runtime.routine.native_routine import NativeRoutine
 from obin.objects import api
 
 def complete_native_routine(func):
-    def func_wrapper(routine):
-        result = func(routine)
+    def func_wrapper(process, routine):
+        result = func(process, routine)
         routine.complete(_w(result))
 
     return func_wrapper

@@ -8,17 +8,17 @@ class Discriminator:
     def reset(self):
         self.status = -2000
 
-    def evaluate(self, args):
+    def evaluate(self, process, args):
         arg = api.at_index(args, self.position)
 
         if self.status == -2000:
-            self.status = self._evaluate(arg)
+            self.status = self._evaluate(process, arg)
             # print "STATUS", self.status
             assert self.status != -2000
 
         return self.status
 
-    def _evaluate(self, arg):
+    def _evaluate(self, process, arg):
         raise NotImplementedError()
 
     def _equal_(self, other):
@@ -33,7 +33,7 @@ class AnyDiscriminator(Discriminator):
     def __init__(self, position):
         Discriminator.__init__(self, position)
 
-    def _evaluate(self, arg):
+    def _evaluate(self, process, arg):
         return 1000
 
     def __str__(self):
@@ -50,7 +50,7 @@ class PredicateDiscriminator(Discriminator):
                and other.position == self.position \
                and other.trait == self.predicate
 
-    def _evaluate(self, arg):
+    def _evaluate(self, process, arg):
         # TODO GET RID OF MAGIC NUMBERS
         if self.predicate(arg):
             return 100
@@ -78,8 +78,8 @@ class TraitDiscriminator(Discriminator):
                and other.position == self.position \
                and other.trait == self.trait
 
-    def _evaluate(self, arg):
-        return api.get_index(api.traits(arg), self.trait)
+    def _evaluate(self, process, arg):
+        return api.get_index(api.traits(process, arg), self.trait)
 
     # def __str__(self):
     #     return "<TraitDiscriminator %s %s %s>" % (str(self.position), str(self.trait), str(self.status))

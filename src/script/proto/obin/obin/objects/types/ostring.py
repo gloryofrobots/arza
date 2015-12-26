@@ -84,6 +84,5 @@ class W_String(W_Hashable):
         assert isint(index)
         return self._at_index_(api.to_native_integer(index))
 
-    def _traits_(self):
-        from obin.objects.space import stdlib
-        return stdlib.traits.StringTraits
+    def _traits_(self, process):
+        return process.stdlib.traits.StringTraits

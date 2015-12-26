@@ -53,6 +53,15 @@ class W_Root:
     def _call_(self, process, args):
         raise NotImplementedError()
 
+    def _kindof_(self, trait):
+        raise NotImplementedError()
+
+    def _traits_(self, process):
+        raise NotImplementedError()
+
+    def _totrait_(self, process):
+        raise NotImplementedError()
+
 
 class W_Cell(W_Root):
     def __init__(self):
