@@ -119,9 +119,9 @@ def newtuple(tupl):
     return W_Tuple(list(tupl))
 
 
-def newcoroutine(fn, process):
+def newcoroutine(fn):
     from obin.objects.types.ocoroutine import W_Coroutine
-    obj = W_Coroutine(fn, process)
+    obj = W_Coroutine(fn)
     return obj
 
 

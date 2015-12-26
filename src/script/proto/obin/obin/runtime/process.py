@@ -1,8 +1,8 @@
 class Fiber:
-    def __init__(self, routine):
-        self.routines = [routine]
-        self.current = routine
-        self.destination = None
+    def __init__(self):
+        self.routines = []
+        self.current = None
+        self.parent = None
 
 
 class Process(object):
@@ -49,32 +49,9 @@ class Process(object):
     def fiber(self, f):
         self.__fiber = f
 
-    def create_fiber(self, routine):
-        f = Fiber(routine)
-        f.destination = self.__fiber
-        return f
-
-    def purge_fiber(self, fiber):
-        assert len(fiber.routines) == 0
-        assert not fiber.current
-        self.fibers.remove(fiber)
-
     def call_object(self, obj, args):
         routine = obj.create_routine(args)
         self.call_routine(routine)
-
-    def resume_fiber(self, fiber1, fiber2, result):
-        fiber2.current.suspend()
-        fiber1.current.resume(result)
-        self.fiber = fiber1
-
-    def call_routine(self, routine):
-        fiber = self.fiber
-        assert routine is not fiber.current
-        fiber.current.suspend()
-        fiber.routines.append(fiber.current)
-        fiber.current = routine
-        routine.activate()
 
     def catch_signal(self):
         raise NotImplementedError("Throw in code")
@@ -83,8 +60,7 @@ class Process(object):
         from obin.objects.types import omodule
         assert not self.fiber
         routine = omodule.compile_module(module, self.builtins)
-        self.fiber = self.create_fiber(routine)
-        routine.activate()
+        self.fiber = self.fiber_create(routine)
         self.run()
         module.result = self.result
         self.result = None
@@ -92,11 +68,11 @@ class Process(object):
         return module.result
 
     def run_module_force(self, module, _globals):
-        raise NotImplementedError()
-        # from obin.objects.types import omodule
-        # routine = omodule.compile_module(module, _globals)
-        # routine.activate(self)
-        # routine.execute()
+        # raise NotImplementedError()
+        from obin.objects.types import omodule
+        routine = omodule.compile_module(module, _globals)
+        routine.activate()
+        routine.execute(self)
 
     def run(self):
         # print "RUN"
@@ -111,10 +87,61 @@ class Process(object):
                 self.terminate()
                 raise
 
+    def fiber_create(self, routine):
+        assert routine.is_idle()
+        f = Fiber()
+        f.current = routine
+        f.parent = self.__fiber
+        self.fibers.append(f)
+        routine.activate()
+        return f
+
+    def fiber_spawn(self, routine):
+        assert self.fiber
+        self.fiber.current.suspend()
+
+        f = self.fiber_create(routine)
+        self.fiber = f
+        return f
+
+    def fiber_purge(self, fiber):
+        assert len(fiber.routines) == 0
+        assert fiber.current.is_closed()
+        self.fibers.remove(fiber)
+
+    def fiber_switchto(self, fiber, result):
+        cur_fiber = self.fiber
+        assert fiber is not cur_fiber
+        assert cur_fiber.current.is_inprocess()
+        assert fiber.current.is_suspended()
+        
+        cur_fiber.current.suspend()
+        fiber.current.resume(result)
+        self.fiber = fiber
+        
+    def fiber_finalise(self, fiber):
+        parent = fiber.parent
+        if parent is None:
+            return None
+
+        assert parent.current.is_suspended()
+        parent.current.resume(fiber.current.result)
+        self.fiber_purge(fiber)
+        return parent
+
+    def fiber_call(self, fiber, routine):
+        assert routine is not fiber.current
+        fiber.current.suspend()
+        fiber.routines.append(fiber.current)
+        fiber.current = routine
+        routine.activate()
+
+    def call_routine(self, routine):
+        self.fiber_call(self.fiber, routine)
+
     def fiber_next(self, fiber):
         if len(fiber.routines) == 0:
-            fiber.current = None
-            return False
+            return None
 
         routine = fiber.routines.pop()
         routine.resume(fiber.current.result)
@@ -131,16 +158,20 @@ class Process(object):
 
         if routine.is_complete():
             result = routine.result
-            if self.fiber_next(fiber) is False:
-                destination = fiber.destination
-                if not destination:
+            continuation = self.fiber_next(fiber)
+            if continuation is None:
+                fiber = self.fiber_finalise(fiber)
+                if not fiber:
                     self.result = result
-                    self.purge_fiber(self.fiber)
+                    self.fiber_purge(self.fiber)
                     self.fiber = None
                     self.terminate()
                     return
                 else:
-                    self.resume_fiber(destination, self.fiber, result)
+                    self.fiber = fiber
+            else:
+                # here we can fetch routine to another loop
+                pass
 
         elif routine.is_terminated():
             return self.catch_signal()
@@ -190,13 +221,13 @@ class Process(object):
         return False
 
 
-    # def resume_routine(self, routine_to_resume, calling_routine, value):
-    #     assert self.routine is calling_routine
-    #     assert routine_to_resume.is_suspended()
-    #     assert calling_routine.is_inprocess()
-    #
-    #     # check_continuation_consistency(routine_to_resume, routine_resume_from)
-    #     calling_routine.suspend()
-    #     calling_routine.called = routine_to_resume
-    #     routine_to_resume.resume(value)
-    #     self.set_active_routine(routine_to_resume)
+        # def resume_routine(self, routine_to_resume, calling_routine, value):
+        #     assert self.routine is calling_routine
+        #     assert routine_to_resume.is_suspended()
+        #     assert calling_routine.is_inprocess()
+        #
+        #     # check_continuation_consistency(routine_to_resume, routine_resume_from)
+        #     calling_routine.suspend()
+        #     calling_routine.called = routine_to_resume
+        #     routine_to_resume.resume(value)
+        #     self.set_active_routine(routine_to_resume)

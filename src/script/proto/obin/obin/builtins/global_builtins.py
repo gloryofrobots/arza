@@ -101,7 +101,7 @@ def coroutine(routine):
     from obin.objects.space import newcoroutine, isfunction
     fn = routine.get_arg(0)
     assert isfunction(fn)
-    return newcoroutine(fn, routine.process)
+    return newcoroutine(fn)
 
 
 @complete_native_routine

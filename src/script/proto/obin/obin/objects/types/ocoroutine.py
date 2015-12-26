@@ -21,14 +21,8 @@ class W_CoroutineIterator(W_Root):
 
 class W_CoroutineYield(W_Root):
     def __init__(self, coroutine):
-        self._coroutine_ = coroutine
-        self._receiver_ = None
-
-    def coroutine(self):
-        return self._coroutine_
-
-    def set_receiver(self, continuation):
-        self._receiver_ = continuation
+        self.co = coroutine
+        self.fiber = None
 
     def _tostring_(self):
         return "fn coroutine.yield {[native code]}"
@@ -36,27 +30,27 @@ class W_CoroutineYield(W_Root):
     def _tobool_(self):
         return True
 
-    def _call_(self, routine, args):
-        if not self._coroutine_.is_accessible():
+    def _call_(self, process, args):
+        assert self.fiber
+
+        if not self.co.is_accessible():
             raise ObinRuntimeError(u"Can not yield from coroutine")
 
-        assert routine
-        self._coroutine_.set_receiver(routine)
+        # self.co.fiber = process.fiber
 
         # TODO THIS IS WRONG
         value = api.at_index(args, 0)
-        routine.process.resume_routine(self._receiver_, routine, value)
+        process.fiber_switchto(self.fiber, value)
 
 
 class W_Coroutine(W_Root):
     # _immutable_fields_ = ['_function_']
 
-    def __init__(self, function, process):
+    def __init__(self, function):
         self.function = function
         self.routine = None
-        self.receiver = None
-        self.yielder = None
-        self.process = process
+        self.fiber = None
+        self.yielder = W_CoroutineYield(self)
 
     def is_accessible(self):
         return self.routine is None or not self.routine.is_closed()
@@ -74,32 +68,29 @@ class W_Coroutine(W_Root):
         from obin.objects.space import state
         return api.at(state.traits.Coroutine, k)
 
-    def _first_call_(self, routine, args):
+    def _first_call_(self, process, args):
         from obin.objects.space import newvector
-        self.receiver = routine
 
-        self.yielder = W_CoroutineYield(self)
-        self.yielder.set_receiver(self.receiver)
+        self.yielder.fiber = process.fiber
 
         if args is None:
             args = newvector([self.yielder])
         else:
             args.prepend(self.yielder)
 
-        self.routine = self.function.create_routine(args)
-        routine.process.call_routine(self.routine, self.receiver, self.receiver)
+        routine = self.function.create_routine(args)
+        self.fiber = process.fiber_spawn(routine)
 
     def _iterator_(self):
         return W_CoroutineIterator(self)
 
-    def _call_(self, routine, args):
+    def _call_(self, process, args):
         from obin.objects.space import newundefined
-        assert routine
 
-        if not self.routine:
-            return self._first_call_(routine, args)
+        if not self.fiber:
+            return self._first_call_(process, args)
 
-        if not self.routine.is_suspended():
+        if not self.fiber.current.is_suspended():
             raise ObinRuntimeError(u"Invalid coroutine state")
 
         # TODO THIS IS TOTALLY WRONG, CHANGE IT TO PATTERN MATCH
@@ -108,6 +99,4 @@ class W_Coroutine(W_Root):
         else:
             value = newundefined()
 
-        receiver = routine
-        self.yielder.set_receiver(receiver)
-        routine.process.resume_routine(self.receiver, receiver, value)
+        process.fiber_switchto(self.fiber, value)
