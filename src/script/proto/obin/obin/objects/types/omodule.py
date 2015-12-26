@@ -20,9 +20,6 @@ class W_Module(W_Root):
     def _at_(self, key):
         return self.env._at_(key)
 
-    def _lookup_(self, key):
-        return self.env._lookup_(key)
-
     def _to_routine_(self, _):
         if self.is_compiled:
             raise RuntimeError("Module Already compiled")

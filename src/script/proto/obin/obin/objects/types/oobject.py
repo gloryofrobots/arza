@@ -55,9 +55,6 @@ class W_Object(W_Cell):
     def _put_at_index_(self, i, obj):
         self.slots._put_at_index_(i, obj)
 
-    def _lookup_(self, k):
-        return self._at_(k)
-
     def _put_(self, k, v):
         self.slots._put_(k, v)
 

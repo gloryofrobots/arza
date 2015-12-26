@@ -64,10 +64,6 @@ class W_Coroutine(W_Callable):
     def _tobool_(self):
         return True
 
-    def _lookup_(self, k):
-        from obin.objects.space import stdlib
-        return api.at(stdlib.traits.Coroutine, k)
-
     def _first_call_(self, process, args):
         from obin.objects.space import newvector
 

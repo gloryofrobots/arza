@@ -10,6 +10,14 @@ fn three() {
     two() + 1
 }
 
+four =
+fn(){
+    return fn(){
+        three() + 1
+    }
+}()
+
+
 fn attack(self, other) {
     print("Attack", self, other)
 }

@@ -3,7 +3,6 @@ from obin.objects import api
 
 def setup(obj):
     api.put_primitive_function(obj, u'clone', clone, 1)
-    api.put_primitive_function(obj, u'at', at, 2)
     api.put_primitive_function(obj, u'lookup', lookup, 2)
     api.put_primitive_function(obj, u'isa', isa, 2)
     api.put_primitive_function(obj, u'nota', nota, 2)
@@ -46,16 +45,10 @@ def kindof(routine):
     raise NotImplementedError()
 
 @complete_native_routine
-def at(routine):
-    this = routine.get_arg(0)
-    key = routine.get_arg(1)
-    return api.at(this, key)
-
-@complete_native_routine
 def lookup(routine):
     this = routine.get_arg(0)
     key = routine.get_arg(1)
-    return api.lookup(this, key)
+    return api.at(this, key)
 
 @complete_native_routine
 def clone(routine):

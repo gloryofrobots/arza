@@ -20,9 +20,6 @@ class W_Root:
     def _put_at_index_(self, i, obj):
         raise NotImplementedError()
 
-    def _lookup_(self, b):
-        raise NotImplementedError()
-
     def _length_(self):
         raise NotImplementedError()
 

@@ -139,13 +139,6 @@ class CodeRoutine(BaseRoutine):
 
                 stack.push(value)
             # *************************************
-            elif MEMBER_DOT == tag:
-                obj = stack.pop()
-                name = stack.pop()
-                value = api.lookup(obj, name)
-
-                stack.push(value)
-            # *************************************
             # TODO WHY NOT POP HERE?
             elif STORE_LOCAL == tag:
                 value = stack.top()
@@ -190,7 +183,7 @@ class CodeRoutine(BaseRoutine):
                 what = stack.pop()
                 argv = stack.pop()
 
-                func = api.lookup(what, method)
+                func = api.at(what, method)
                 # argv.prepend(what)
 
                 api.call(func, process, argv)
@@ -292,7 +285,7 @@ class CodeRoutine(BaseRoutine):
             elif IMPORT_MEMBER == tag:
                 name = literals[arg1]
                 module = stack.top()
-                member = api.lookup(module, name)
+                member = api.at(module, name)
                 stack.push(member)
             # *************************************
             elif TRAIT == tag:
@@ -313,6 +306,9 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif LABEL == tag:
                 raise RuntimeError("Uncompiled label opcode")
+            else:
+                raise RuntimeError("Unknown opcode")
+
 
     def bytecode(self):
         return self._code_

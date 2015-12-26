@@ -171,7 +171,7 @@ def lookup(routine):
     this = routine.get_arg(0)
     key = routine.get_arg(1)
     default = routine.get_arg(2)
-    return api.lookup_default(this, key, default)
+    return api.lookup(this, key, default)
 
 @complete_native_routine
 def clone(routine):

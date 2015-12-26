@@ -912,9 +912,7 @@ class Compiler:
         self._emit_string(code, name)
         obj = node.first()
         self._compile(code, obj)
-        code.emit_0(MEMBER_DOT)
-        # TODO LITERAL HERE
-        # self.declare_symbol(name)
+        code.emit_0(MEMBER)
 
     def _compile_LSQUARE_lookup(self, code, node):
         expr = node.second()

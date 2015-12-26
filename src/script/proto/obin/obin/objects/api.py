@@ -71,20 +71,9 @@ def at(obj, k):
     return v
 
 
-def lookup(obj, k):
-    from obin.runtime.exception import ObinKeyError
+def lookup(obj, k, default):
     from space import isundefined
-    assert not isundefined(k)
-    v = obj._lookup_(k)
-    assert v is not None
-    if isundefined(v):
-        raise ObinKeyError(k)
-    return v
-
-
-def lookup_default(obj, k, default):
-    from space import isundefined
-    v = obj._lookup_(k)
+    v = obj._at_(k)
     assert v is not None
     if isundefined(v):
         return default

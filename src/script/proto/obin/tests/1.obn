@@ -135,7 +135,7 @@ generic fire {
         print("Patriot", self, "fire rifle", rifle)
     }
     (self of Man) {
-        print("Man firing")
+        print("Man firing", self.rifle)
         fire(self, self.rifle)
     }
 }
@@ -153,9 +153,9 @@ fire(Joe)
 
 import military.equipment as eq
 import military.troops
-import attack, hide, runaway as run_away_from_danger, three from military.ta.behavior
+import attack, hide, runaway as run_away_from_danger, three, four from military.ta.behavior
 
-
+print(four())
 print(attack)
 print(hide)
 print(run_away_from_danger)
