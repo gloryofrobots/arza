@@ -41,7 +41,7 @@ def jitpolicy(driver):
 def entry_point(argv):
     return main(argv)
 
-# if __name__ == '__main__':
-#     import sys
-#     entry_point(sys.argv)
+if __name__ == '__main__':
+    import sys
+    entry_point(sys.argv)
 
