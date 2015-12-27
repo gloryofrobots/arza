@@ -275,7 +275,7 @@ def sort_compare(obj, j, k, comparefn=newundefined()):
 
     if not isundefined(comparefn):
         if not comparefn.is_callable():
-            from obin.runtime.exception import ObinTypeError
+            from obin.runtime.error import ObinTypeError
             raise ObinTypeError(u'')
 
         from obin.objects.object import W_BasicFunction

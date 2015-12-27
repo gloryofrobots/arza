@@ -1,5 +1,5 @@
 from obin.compile.code import *
-from obin.runtime.exception import ObinReferenceError
+from obin.runtime.error import ObinReferenceError
 from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
 from obin.runtime.stack import Stack

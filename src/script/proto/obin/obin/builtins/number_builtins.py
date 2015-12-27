@@ -1,5 +1,5 @@
 from obin.runtime.routine import complete_native_routine
-from obin.runtime.exception import ObinRangeError, ObinTypeError
+from obin.runtime.error import ObinRangeError, ObinTypeError
 from obin.objects.space import _w
 from rpython.rlib.rfloat import NAN, INFINITY
 # 15.7.3.2

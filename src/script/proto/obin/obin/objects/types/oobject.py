@@ -1,6 +1,6 @@
 from obin.objects.types.oroot import W_Cell
 from obin.objects.types.ovalue import W_ValueType
-from obin.runtime.exception import ObinTraitError
+from obin.runtime.error import ObinTraitError
 from obin.objects import api
 from obin.objects.otable import newtable_empty
 

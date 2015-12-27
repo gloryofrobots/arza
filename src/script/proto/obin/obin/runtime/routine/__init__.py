@@ -5,12 +5,14 @@ from obin.runtime.routine.code_routine import CodeRoutine
 from obin.runtime.routine.native_routine import NativeRoutine
 from obin.objects import api
 
+
 def complete_native_routine(func):
     def func_wrapper(process, routine):
         result = func(process, routine)
         routine.complete(_w(result))
 
     return func_wrapper
+
 
 def create_primitive_routine(name, primitive, args, arity):
     return NativeRoutine(name, primitive, args, arity)

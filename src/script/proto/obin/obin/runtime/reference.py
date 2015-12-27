@@ -1,4 +1,4 @@
-from obin.runtime.exception import ObinReferenceError
+from obin.runtime.error import ObinReferenceError
 
 
 class References(object):

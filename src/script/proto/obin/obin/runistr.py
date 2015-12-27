@@ -1,6 +1,6 @@
 from rpython.rlib.objectmodel import enforceargs
 from rpython.rlib import runicode
-from obin.runtime.exception import ObinRuntimeError
+from obin.runtime.error import ObinRuntimeError
 
 @enforceargs(str)
 def decode_str_utf8(string):

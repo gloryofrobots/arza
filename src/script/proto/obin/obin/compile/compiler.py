@@ -36,16 +36,16 @@ def string_unquote(string):
 
 class Compiler:
     def __init__(self):
-        self.funclists = []
-        self.scopes = []
-        self.sourcename = ""
-        self.depth = -1
+        self.property_funclists = []
+        self.property_scopes = []
+        self.property_sourcename = ""
+        self.property_depth = -1
 
     def enter_scope(self):
-        self.depth = self.depth + 1
+        self.property_depth = self.property_depth + 1
 
         new_scope = Scope()
-        self.scopes.append(new_scope)
+        self.property_scopes.append(new_scope)
         # print 'starting new scope %d' % (self.depth, )
 
     def is_modifiable_binding(self, name):
@@ -108,7 +108,7 @@ class Compiler:
             return var_index, is_local_variable
         """
         scope_id = 0
-        for scope in reversed(self.scopes):
+        for scope in reversed(self.property_scopes):
             idx = scope.get_local_index(name)
             if not is_absent_index(idx):
                 if scope_id == 0:
@@ -138,12 +138,12 @@ class Compiler:
         return idx, True
 
     def exit_scope(self):
-        self.depth = self.depth - 1
-        self.scopes.pop()
+        self.property_depth = self.property_depth - 1
+        self.property_scopes.pop()
         # print 'closing scope, returning to %d' % (self.depth, )
 
     def current_scope(self):
-        return self.scopes[-1]
+        return self.property_scopes[-1]
 
     def set_sourcename(self, sourcename):
         self.stsourcename = sourcename  # XXX I should call this

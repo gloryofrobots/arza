@@ -1,10 +1,9 @@
 from obin.objects.types.oroot import W_Root
 from obin.objects.space import newtuple, isany
-from obin.runtime.exception import *
+from obin.runtime.error import *
 from signature import newsignature, new_base_signature
 from obin.objects import api
 from dag import *
-from rpython.rlib.objectmodel import r_dict
 
 
 class SrategyType:
@@ -28,6 +27,7 @@ def _dict_hash(obj1):
 
 
 def group_dict():
+    from rpython.rlib.objectmodel import r_dict
     return r_dict(_dict_key, _dict_hash)
 
 

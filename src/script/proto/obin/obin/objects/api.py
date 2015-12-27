@@ -61,7 +61,7 @@ def delete(obj, k):
 
 
 def at(obj, k):
-    from obin.runtime.exception import ObinKeyError
+    from obin.runtime.error import ObinKeyError
     from space import isundefined
     assert not isundefined(k)
     v = obj._at_(k)
@@ -239,7 +239,7 @@ def n_equal(obj, other):
 
 
 def compare(obj, other):
-    from obin.runtime.exception import ObinTypeError
+    from obin.runtime.error import ObinTypeError
     from space import isundefined, newint, isconstant
     assert not isundefined(other)
     if isconstant(obj):

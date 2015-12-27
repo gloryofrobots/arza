@@ -1,5 +1,5 @@
 from obin.objects import api
-from obin.runtime.exception import ObinImportError
+from obin.runtime.error import ObinImportError
 from obin.utils.fs import load_file_content, is_file, join_and_normalise_path
 import os
 

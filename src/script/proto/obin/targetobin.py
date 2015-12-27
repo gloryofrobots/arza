@@ -21,20 +21,13 @@ def main(argv):
         return 0
 
 def run(script_file):
-    # print "RUN", script_file
-    from obin.runtime.interpret import load_file, evaluate
+    from obin.runtime import engine
     from obin.utils import fs
-    from obin.objects.space import newprocess
-    script_dir = fs.dirname(script_file)
-
+    script_dir = fs.get_dirname(script_file)
     path = fs.join_and_normalise_path(script_dir, "olib")
-    # print "RUN PATH", path
 
-    process = newprocess([path])
-
-    # print "RUN process", process
-    src = load_file(script_file)
-    print evaluate(process, src)
+    process = engine.initialize([path])
+    return engine.evaluate_file(process, script_file)
 
 # _____ Define and setup target ___
 def target(driver, args):
@@ -48,7 +41,7 @@ def jitpolicy(driver):
 def entry_point(argv):
     return main(argv)
 
-if __name__ == '__main__':
-    import sys
-    entry_point(sys.argv)
+# if __name__ == '__main__':
+#     import sys
+#     entry_point(sys.argv)
 

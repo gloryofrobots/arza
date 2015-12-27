@@ -1,6 +1,5 @@
 from oroot import W_Cell
-from ovalue import W_ValueType
-from obin.runtime.exception import *
+from obin.runtime.error import *
 from osequence import W_SequenceIterator
 from obin.utils.builtins import absent_index
 

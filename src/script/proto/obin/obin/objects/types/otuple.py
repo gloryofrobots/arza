@@ -1,6 +1,6 @@
 from oroot import W_Hashable
 from osequence import W_SequenceIterator
-from obin.runtime.exception import *
+from obin.runtime.error import *
 from obin.objects import api
 
 """

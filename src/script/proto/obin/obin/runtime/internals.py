@@ -1,6 +1,6 @@
 import math
 
-from obin.runtime.exception import ObinTypeError, ObinReferenceError
+from obin.runtime.error import ObinTypeError, ObinReferenceError
 from obin.objects import api
 from obin.objects.space import _w, isint, isstring, isfloat, newbool, newint, newfloat, newstring
 from rpython.rlib.rarithmetic import ovfcheck, intmask

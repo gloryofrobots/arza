@@ -4,7 +4,7 @@ from rpython.rlib.rfloat import NAN
 from rpython.rlib.rstring import UnicodeBuilder
 
 from obin.objects.object import W_String
-from obin.runtime.exception import ObinTypeError
+from obin.runtime.error import ObinTypeError
 from obin.builtins import get_arg
 
 def setup(obj):
