@@ -1,5 +1,6 @@
 from obin.objects import api
 
+
 class Modules:
     def __init__(self, path):
         assert isinstance(path, list)
@@ -25,11 +26,15 @@ class ProcessData:
 
 
 class Fiber:
-    def __init__(self, r, parent):
-        assert r.is_idle()
+    def __init__(self, parent):
         self.routines = []
-        self.routine = r
+        self.routine = None
         self.parent = parent
+
+    def start_work(self, func, args):
+        routine = api.to_routine(func, args)
+        self.routine = routine
+        self.routine.activate()
 
     def is_finished(self):
         assert len(self.routines) == 0
@@ -131,12 +136,10 @@ class Process(object):
         self.fiber.call(routine)
 
     def run(self, func, args):
-        from obin.objects import api
         assert self.is_idle()
         assert not self.fiber
-
-        routine = api.to_routine(func, args)
-        self.fiber = self.__new_fiber(routine)
+        self.fiber = self.create_fiber()
+        self.fiber.start_work(func, args)
         return self.__run()
 
     def subprocess(self, func, args):
@@ -144,13 +147,18 @@ class Process(object):
         result = child.run(func, args)
         return result
 
-    def spawn_fiber(self, func, args):
-        routine = api.to_routine(func, args)
-        assert self.fiber
+    def create_fiber(self):
+        fiber = Fiber(self.__fiber)
+        # DEBUG ONLY
+        self.fibers.append(fiber)
+        return fiber
+
+    def activate_fiber(self, fiber, func, args):
+        assert self.fiber is not fiber
+        assert fiber.routine is None
         self.fiber.stop_routine()
-        f = self.__new_fiber(routine)
-        self.fiber = f
-        return f
+        fiber.start_work(func, args)
+        self.fiber = fiber
 
     def switch_to_fiber(self, fiber, result):
         assert fiber is not self.fiber
@@ -161,7 +169,6 @@ class Process(object):
         self.fiber.stop_routine()
         fiber.resume_routine(result)
         self.fiber = fiber
-
 
     """
     PRIVATE API
@@ -188,13 +195,6 @@ class Process(object):
         assert self.fiber is None
         self.__idle()
         return result
-
-    def __new_fiber(self, routine):
-        assert routine.is_idle()
-        f = Fiber(routine, self.__fiber)
-        self.fibers.append(f)
-        routine.activate()
-        return f
 
     def __purge_fiber(self, fiber):
         assert fiber.is_finished()

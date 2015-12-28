@@ -32,7 +32,7 @@ def setup(obj, stdlib):
     api.put_primitive_function(obj, u'eval', _eval, 1)
     api.put_primitive_function(obj, u'print', _print, -1)
     api.put_primitive_function(obj, u'id', _id, 1)
-    api.put_primitive_function(obj, u'coroutine', coroutine, 1)
+    api.put_primitive_function(obj, u'spawn_fiber', spawn_fiber, 1)
     api.put_primitive_function(obj, u'range', _range, 2)
     api.put_primitive_function(obj, u'generic', generic, 1)
     api.put_primitive_function(obj, u'specify', specify, 3)
@@ -94,11 +94,11 @@ def _eval(process, routine):
 
 
 @complete_native_routine
-def coroutine(process, routine):
-    from obin.objects.space import newcoroutine, isfunction
-    fn = routine.get_arg(0)
-    assert isfunction(fn)
-    return newcoroutine(fn)
+def spawn_fiber(process, routine):
+    from obin.objects.types.fiber import newfiber
+    from obin.objects.space import newtuple
+    y1, y2 = newfiber(process)
+    return newtuple([y1, y2])
 
 
 @complete_native_routine

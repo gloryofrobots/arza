@@ -1,56 +1,35 @@
-T = (1,2,3, 4)
-
-(x,y,z, w) = T
-
-Human = {
-    name, surname, age:10
-}
-
-print(Human)
-
-print ("**************************************************************************")
-
-
-metadata = {
-    title: "Nemesis Games",
-    subject: "SCIFI",
-    translationsUa: {title: "IGRU DOLI", translator: "PILIP LUN" },
-    translationsEn: { titleEn: ("GAMES OF NEMESIS", "NEMESIS GAMES"), translatorEn: "Jhon DOU" },
-    author: ("James", "Corey")
+fn coroutine(func) {
+    (yield1, yield2) = spawn_fiber()
+    return fn(...args) {
+        func(yield1, ...args);
+    }
 }
 
 
-print(metadata.title, metadata.subject, metadata.translationsUa["title"], metadata.translationsUa.translator)
 
-print ("**************************************************************************")
 
-{
-    title: englishTitle,
-    subject,
-    translationsUa: { title: localeTitle, translator },
-    translationsEn: { titleEn: (localeTitleEn, origTitleEn), translatorEn },
-    author:author_data
-} = metadata;
+ co = coroutine(fn(yield, x) {
+           Z = "1111"
 
-print(englishTitle, subject, localeTitle,translator,localeTitleEn, origTitleEn, translatorEn, author_data )
+           _co1 = coroutine(fn(yield2, y) {
+               Y = "2222"
+               fn send() {
+                    X = "3333"
+                    yield2(42 + y)
+               }
+               send()
+           })
 
-print ("**************************************************************************")
+        print("x", x)
+        v = _co1(x)
+        t = yield(v)
+        print("t", t)
+        x = yield(t)
+        print("x", x)
+        return x
+      })
 
-T = (1,2,3)
-
-(x,y,z) = T
-
-print(x,y,z)
-
-print ("**************************************************************************")
-
-V = [1,2,3,4,5,6,7,8,9,10]
-(x, y, ...rest) = V
-print(x, y, rest)
-
-V = [0, [1,2,3,4,5,6,7,8,9,10]]
-V = [0, [1,2,3], {data:[41,41,41,41,41,42]}]
-
-(a, (b, c, d), {data:e}) = V
-print(a, b, c, d, e)
+print(co(23))
+print(co(34))
+print(co(44))
 
