@@ -80,7 +80,7 @@ class CodeRoutine(BaseRoutine):
             refs = self.refs
 
             # print "_execute", opcode
-            # d = '%3d %25s %s ' % (self.pc, opcode_info(self, opcode), unicode([str(s) for s in self.stack]))
+            # d = '%3d %25s %s ' % (self.pc, opcode_info(self, opcode), unicode([str(s) for s in self.stack.data]))
             # print d
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
             self.pc += 1
@@ -160,6 +160,15 @@ class CodeRoutine(BaseRoutine):
                 stack.push(value)
             # *************************************
             # TODO STORE_MEMBER_DOT
+            # *************************************
+            elif UNPACK_SEQUENCE == tag:
+                seq = stack.pop()
+                seq_length = api.n_length(seq)
+                if seq_length != arg1:
+                    raise RuntimeError("Unpack sequence error : wrong length")
+                for i in range(seq_length - 1, -1, -1):
+                    el = api.at_index(seq, i)
+                    stack.push(el)
             # *************************************
             elif TUPLE == tag:
                 tupl = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
@@ -309,7 +318,6 @@ class CodeRoutine(BaseRoutine):
                 raise RuntimeError("Uncompiled label opcode")
             else:
                 raise RuntimeError("Unknown opcode")
-
 
     def bytecode(self):
         return self._code_

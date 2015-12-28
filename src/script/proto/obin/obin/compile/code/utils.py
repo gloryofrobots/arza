@@ -5,8 +5,8 @@ __OPCODE_REPR__ = ["UNDEFINED", "NULL", "TRUE", "FALSE", "LITERAL", "OUTER", "LO
                    "NEXT", "IMPORT", "IMPORT_MEMBER", "GENERIC", "TRAIT", "LABEL", "STORE_OUTER", "STORE_LOCAL",
                    "ITERATOR", "RETURN", "CALL_INTERNAL", "CALL", "CALL_METHOD", "JUMP", "JUMP_IF_FALSE_NOPOP",
                    "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "JUMP_IF_ITERATOR_EMPTY", "MEMBER_DOT",
-                   "MEMBER", "POP", "THROW", "CONCAT", "STORE_MEMBER", "PUSH_MANY", "VECTOR", "TUPLE", "OBJECT",
-                   "REIFY", ]
+                   "MEMBER", "POP", "THROW", "CONCAT", "STORE_MEMBER", "UNPACK_SEQUENCE", "PUSH_MANY", "VECTOR",
+                   "TUPLE", "OBJECT", "REIFY", ]
 
 # ************************************************
 
@@ -14,7 +14,7 @@ __UNKNOWN_CHANGE__ = -128
 
 __STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1,
                      -1, -1, -2, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
-                     __UNKNOWN_CHANGE__, ]
+                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
 
 
 # ************************************************
@@ -48,6 +48,8 @@ def opcode_estimate_stack_change(opcode):
         return -1 * arg1 + arg2 + 1
     elif tag == VECTOR:
         return -1 * arg1 + 1
+    elif tag == UNPACK_SEQUENCE:
+        return arg1 - 1
     elif tag == TUPLE:
         return -1 * arg1 + 1
     # pop generic from stack too
@@ -57,7 +59,7 @@ def opcode_estimate_stack_change(opcode):
 
 
 def opcode_info(routine, opcode):
-    from obin.runtime.primitives import primitive_to_str
+    from obin.runtime.internals import internal_to_str
 
     tag = opcode[0]
     arg1 = opcode[1]
@@ -92,7 +94,7 @@ def opcode_info(routine, opcode):
         return 'IMPORT_MEMBER %s' % (literal,)
     # ********************************
     elif tag == CALL_INTERNAL:
-        return 'CALL_PRIMITIVE %s ' % (primitive_to_str(arg1))
+        return 'CALL_PRIMITIVE %s ' % (internal_to_str(arg1))
     # ********************************
     elif tag == FUNCTION:
         return 'LOAD_FUNCTION'

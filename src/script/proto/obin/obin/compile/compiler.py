@@ -371,15 +371,52 @@ def _emit_store(process, compiler, bytecode, name):
     else:
         bytecode.emit_2(STORE_OUTER, index, name_index)
 
+def _emit_store_n_string(process, compiler, bytecode, namestring):
+    name = obs.newstring_from_str(namestring)
+    _emit_store(process, compiler, bytecode, name)
+
+def _compile_destruct(process, compiler, bytecode, node):
+    left = node.first()
+    # x,y,z = foo() optimisation to single unpack opcode
+    if left.type == TT_LPAREN:
+        unpack = True
+        items = left.first()
+        for child in items:
+            if child.type != TT_NAME:
+                unpack = False
+                break
+        if unpack:
+            return _compile_unpack_seq(process, compiler, bytecode, node)
+
+    _compile(process, compiler, bytecode, node.second())
+    return _compile_destruct_recur(process, compiler, bytecode, left)
+
+def _compile_destruct_recur(process, compiler, bytecode, node):
+    pass
+
+def _compile_unpack_seq(process, compiler, bytecode, node):
+    # TODO REMOVE UNPACK SEQ and COMPILE IT TO MEMBER ACCESS AND SLICES
+    left = node.first()
+    names = left.first()
+    length = len(names)
+    _compile(process, compiler, bytecode, node.second())
+    bytecode.emit_1(UNPACK_SEQUENCE, length)
+    for name in names[0:-1]:
+        _emit_store_n_string(process, compiler, bytecode, name.value)
+        bytecode.emit_0(POP)
+    last_name = names[-1]
+    _emit_store_n_string(process, compiler, bytecode, last_name.value)
 
 def _compile_ASSIGN(process, compiler, bytecode, node):
     left = node.first()
     if left.type == TT_DOT:
         return _compile_ASSIGN_DOT(process, compiler, bytecode, node)
+    elif left.type == TT_LPAREN or left.type == TT_LCURLY:
+        return _compile_destruct(process, compiler, bytecode, node)
 
-    name = obs.newstring_from_str(left.value)
-    # _compile(process, compiler,bytecode, node.first())
+
     _compile(process, compiler, bytecode, node.second())
+    name = obs.newstring_from_str(left.value)
     _emit_store(process, compiler, bytecode, name)
 
 
@@ -490,8 +527,11 @@ def _compile_object(process, compiler, code, items, traits):
     for c in items:
         key = c[0]
         value = c[1]
+        if is_empty_node(value):
+            _compile_NIL(process, compiler, code, value)
+        else:
+            _compile(process, compiler, code, value)
 
-        _compile(process, compiler, code, value)
         if key.type == TT_NAME:
             # in case of names in object literal we must convert them to strings
             _emit_string(process, compiler, code, obs.newstring_from_str(key.value))
@@ -1120,11 +1160,11 @@ def compile_module(process, name, src):
 
 
 def print_code(code):
-    print [str(c) for c in code.opcodes]
-
+    from code.utils import opcode_to_str
+    print "\n".join([str((opcode_to_str(c[0]), str(c[1:]))) for c in code.opcodes])
 
 def compile_and_print(txt):
-    print_code(compile(txt))
+    print_code(compile(None, txt))
 
 
 def _check(val1, val2):
@@ -1136,11 +1176,10 @@ def _check(val1, val2):
         raise RuntimeError("Not equal")
 
 
-# compile_and_print("""
-# fn _(x, y) {
-#     print("x - y", x - y)
-# } (30, 20)
-# """)
+compile_and_print("""
+(x,y,z) = foo();
+
+""")
 """
     reify fire {
         (self of Soldier, other of Civilian) {

@@ -134,6 +134,7 @@ def prefix_lsquare(parser, node):
     return node
 
 
+
 def prefix_lcurly(parser, node):
     items = []
     node.init(1)
@@ -143,9 +144,17 @@ def prefix_lcurly(parser, node):
             check_token_types(parser, [TT_NAME, TT_INT, TT_STR, TT_CHAR, TT_FLOAT])
             key = parser.node
             advance(parser)
-            advance_expected(parser, TT_COLON)
-            value = expression(parser, 0)
+
+            if parser.token_type == TT_COMMA:
+                value = empty_node()
+            elif parser.token_type == TT_RCURLY:
+                value = empty_node()
+            else:
+                advance_expected(parser, TT_COLON)
+                value = expression(parser, 0)
+
             items.append(list_node([key, value]))
+
             if parser.token_type != TT_COMMA:
                 break
 

@@ -10,15 +10,18 @@ def printmessage(msg):
 
 def main(argv):
     script_file = argv[1]
-    try:
-        run(script_file)
-    except SystemExit:
-        printmessage(u"Exit")
-        return 1
-    except Exception as e:
-        print "Exception", e
-    finally:
-        return 0
+    run(script_file)
+
+    # try:
+    #     run(script_file)
+    # except SystemExit:
+    #     printmessage(u"Exit")
+    #     return 1
+    # except Exception as e:
+    #     print "Exception", e
+    #     raise
+    # finally:
+    #     return 0
 
 def run(script_file):
     from obin.runtime import engine

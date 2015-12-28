@@ -1,5 +1,5 @@
-from oroot import W_Hashable
-from osequence import W_SequenceIterator
+from obin.objects.types.root import W_Hashable
+from sequence import W_SequenceIterator
 # from obin.runtime.error import *
 # from obin.objects import api
 

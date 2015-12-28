@@ -1,4 +1,4 @@
-from obin.objects.types.oroot import W_Root
+from obin.objects.types.root import W_Root
 from obin.objects import api
 
 class W_SequenceIterator(W_Root):

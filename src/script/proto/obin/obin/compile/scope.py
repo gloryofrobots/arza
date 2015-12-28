@@ -1,5 +1,5 @@
 from obin.objects.space import isstring
-from obin.objects.otable import newtable_empty, newtable_with_values_from_table
+from obin.objects.types.table import newtable_empty, newtable_with_values_from_table
 from obin.utils.builtins import absent_index, is_absent_index
 from obin.objects import api
 

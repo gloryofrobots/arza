@@ -9,23 +9,22 @@ class C(object):
 
 
 def f2(x, y):
-
-    print x + y
+    print x,y
 
 def m1(self):
     print self.x
 
 
+
 def f(*args):
-    import os
-    from os import path, walk
-
-    print path
-    print walk
-    assert True
+    x, y = f2(1,2) 
+    return x, y
 
 
-#dis.dis(f)
+dis.dis(f)
+
+
+
 def test_transducer():
     l = [1,2,3,4,5]
 
@@ -55,4 +54,4 @@ def test_transducer():
     # (reduce ((mapping inc) +) 0 [1 2 3 4])
     r = reduce((mapping(inc))(a), l, 0)
     print r
-test_transducer()
+#test_transducer()

@@ -1,4 +1,4 @@
-from oroot import W_Callable, W_Root
+from obin.objects.types.root import W_Callable, W_Root
 from obin.runtime.error import *
 from obin.objects import api
 from rpython.rlib import jit

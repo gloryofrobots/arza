@@ -174,18 +174,18 @@ def traits(process, obj):
 
 def attach(process, obj, trait):
     from space import isobject, istrait
-    from obin.objects.types import oobject
+    from obin.objects.types import objct
     assert isobject(obj)
     assert istrait(trait)
-    oobject.attach(process, obj, trait)
+    objct.attach(process, obj, trait)
 
 
 def detach(process, obj, trait):
-    from obin.objects.types import oobject
+    from obin.objects.types import objct
     from space import isobject, istrait
     assert isobject(obj)
     assert istrait(trait)
-    oobject.detach(process, obj, trait)
+    objct.detach(process, obj, trait)
 
 
 def kindof(obj, trait):
@@ -249,12 +249,15 @@ def compare(obj, other):
 
     return newint(v)
 
+
 def next(obj):
     return obj._next_()
+
 
 """
 Callable
 """
+
 
 def call(process, obj, args):
     return obj._call_(process, args)
@@ -267,7 +270,9 @@ def to_routine(obj, args):
 """
 native funcs
 """
-#TODO move to object
+
+
+# TODO move to object
 def put_primitive_function(obj, name, func, arity):
     from obin.objects.space import newprimitive, newstring
-    put_string(obj, name,  newprimitive(newstring(name), func, arity))
+    put_string(obj, name, newprimitive(newstring(name), func, arity))

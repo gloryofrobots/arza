@@ -4,6 +4,8 @@ class BaseNode:
     pass
 
 class EmptyNode(BaseNode):
+    def to_json_value(self):
+        return "EmptyNode"
     pass
 
 
@@ -54,26 +56,16 @@ class Node(BaseNode):
     def fourth(self):
         return self.getchild(3)
 
-    def __children_repr(self, nodes):
-        children = []
-        for child in nodes:
-            if isinstance(child, list):
-                children.append(self.__children_repr(child))
-            elif isinstance(child, Node):
-                children.append(child.to_dict())
-            else:
-                # children.append(child)
-                raise ValueError("Node child wrong type", child)
+    def __children_repr(self):
+        return [child.to_json_value() for child in self.children]
 
-        return children
-
-    def to_dict(self):
+    def to_json_value(self):
         d = {"_type": token_type_to_str(self.type), "_value": self.value, "_line": self.line
              # "arity": self.arity, "pos": self.position
              }
 
         if self.children:
-            d['children'] = self.__children_repr(self.children)
+            d['children'] = self.__children_repr()
             # d['children'] = [child.to_dict() if isinstance(child, Node) else child
             #                         for child in self.children if child is not None]
 
@@ -82,7 +74,7 @@ class Node(BaseNode):
     def __repr__(self):
         import json
 
-        d = self.to_dict()
+        d = self.to_json_value()
         return json.dumps(d, sort_keys=True,
                           indent=2, separators=(',', ': '))
 
@@ -98,10 +90,20 @@ class NodeList(BaseNode):
     def __getitem__(self, item):
         return self.items[item]
 
+    def to_json_value(self):
+        return [child.to_json_value() for child in self.items]
+
+    def __repr__(self):
+        import json
+        d = self.to_json_value()
+        return json.dumps(d, sort_keys=True,
+                          indent=2, separators=(',', ': '))
+
     def __len__(self):
         return len(self.items)
 
     def append(self, item):
+        assert isinstance(item, BaseNode)
         self.items.append(item)
 
     def append_list(self, items):

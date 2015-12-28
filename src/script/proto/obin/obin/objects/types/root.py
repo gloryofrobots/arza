@@ -92,3 +92,9 @@ class W_Callable(W_Root):
         raise NotImplementedError()
 
 
+class W_ValueType(W_Root):
+    pass
+
+# TODO RENAME
+class W_Constant(W_Root):
+    pass

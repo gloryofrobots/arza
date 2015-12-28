@@ -1,5 +1,5 @@
 from obin.objects import api
-from obin.objects.types.oroot import W_Root
+from obin.objects.types.root import W_Root
 from obin.utils.builtins import is_absent_index, absent_index
 
 
@@ -177,6 +177,9 @@ class Table(W_Root):
             m[k] = api.at_index(self.slot_values, i)
 
         return m
+
+    def _tostring_(self):
+        return str(self.to_dict())
 
     def __str__(self):
         return str(self.to_dict())

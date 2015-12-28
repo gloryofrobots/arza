@@ -1,8 +1,7 @@
-from obin.objects.types.oroot import W_Cell
-from obin.objects.types.ovalue import W_ValueType
+from obin.objects.types.root import W_Cell, W_ValueType
 from obin.runtime.error import ObinTraitError
 from obin.objects import api
-from obin.objects.otable import newtable_empty
+from obin.objects.types.table import newtable_empty
 
 
 class ObjectIterator(W_ValueType):
@@ -69,7 +68,10 @@ class W_Object(W_Cell):
         return self.slots._length_()
 
     def _tostring_(self):
-        return str("{%s %s}" % (str(self.slots), str(self.traits)))
+        if self.traits:
+            return str("{%s %s}" % (str(self.slots), str(self.traits)))
+        else:
+            return str(self.slots)
 
     def _clone_(self):
         slots = self.slots.copy()

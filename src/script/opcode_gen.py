@@ -42,6 +42,7 @@ OPCODES = [
 
     ("STORE_MEMBER", -2),
 
+    ("UNPACK_SEQUENCE", "__UNKNOWN_CHANGE__"),
     ("PUSH_MANY", "__UNKNOWN_CHANGE__"),
     ("VECTOR", "__UNKNOWN_CHANGE__"),
     ("TUPLE", "__UNKNOWN_CHANGE__"),

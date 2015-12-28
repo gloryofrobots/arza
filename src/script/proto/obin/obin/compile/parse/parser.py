@@ -353,26 +353,13 @@ def write_ast(ast):
                           indent=2, separators=(',', ': '))
         f.write(repr)
 
-# ast = parse_string(
-#     """
-#     reify fire {
-#         (self of Soldier, other of Civilian) {
-#             attack(self, other)
-#             name = self.name
-#             surname = "Surname" + name + other.name
-#         }
-#         (self of Soldier, other1, other2) {
-#             attack(self, other)
-#             name = self.name
-#             surname = "Surname" + name + other.name
-#         }
-#         (self, other1, other2, other3 of Enemy) {
-#             attack(self, other)
-#             name = self.name
-#             surname = "Surname" + name + other.name
-#         }
-#     }
-#     """
-# )
+ast = parse_string(
+    """
+(x, y, z) = func()
+{name, surname} = func()
+{name:new_name, surname:new_surname} = D
+{name:new_name, friends:({name:friend_name}, {dogname})} = D
+    """
+)
 # print ast
 # write_ast(ast)

@@ -1,4 +1,4 @@
-from obin.objects.types.oroot import W_Root
+from obin.objects.types.root import W_Callable
 from obin.objects.space import newtuple, isany
 from obin.runtime.error import *
 from signature import newsignature, new_base_signature
@@ -31,7 +31,7 @@ def group_dict():
     return r_dict(_dict_key, _dict_hash)
 
 
-class W_Generic(W_Root):
+class W_Generic(W_Callable):
     # _immutable_fields_ = ["_name_"]
 
     def __init__(self, name):

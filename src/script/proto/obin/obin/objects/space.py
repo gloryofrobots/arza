@@ -1,6 +1,9 @@
 from rpython.rlib.objectmodel import specialize, enforceargs
 from rpython.rlib import jit
-from obin.objects.types.oconstant import W_True, W_False, W_Undefined, W_Nil, W_Constant
+from obin.objects.types.boolean import W_True, W_False
+from obin.objects.types.nil import W_Nil
+from obin.objects.types.undefined import W_Undefined
+from obin.objects.types.root import W_Constant
 
 w_True = W_True()
 w_False = W_False()
@@ -17,19 +20,19 @@ jit.promote(w_Interrupt)
 
 @enforceargs(int)
 def newint(i):
-    from obin.objects.types.ovalue import W_Integer
+    from obin.objects.types.integer import W_Integer
     return W_Integer(i)
 
 
 @enforceargs(float)
 def newfloat(f):
-    from obin.objects.types.ovalue import W_Float
+    from obin.objects.types.floating import W_Float
     return W_Float(f)
 
 
 @enforceargs(str)
 def newchar(c):
-    from obin.objects.types.ovalue import W_Char
+    from obin.objects.types.character import W_Char
     return W_Char(ord(c))
 
 
@@ -40,7 +43,7 @@ def newstring_from_str(s):
 
 @enforceargs(unicode)
 def newstring(s):
-    from obin.objects.types.ostring import W_String
+    from obin.objects.types.string import W_String
     return W_String(s)
 
 
@@ -72,62 +75,62 @@ def newfalse():
 
 
 def newfunc(name, bytecode, scope):
-    from obin.objects.types.ofunction import W_Function
+    from obin.objects.types.function import W_Function
     obj = W_Function(name, bytecode, scope)
     return obj
 
 
 def newfuncsource(name, bytecode):
-    from obin.objects.types.ofunction import W_FunctionSource
+    from obin.objects.types.function import W_FunctionSource
     obj = W_FunctionSource(name, bytecode)
     return obj
 
 
 def newprimitive(name, function, arity):
-    from obin.objects.types.oprimitive import W_Primitive
+    from obin.objects.types.primitive import W_Primitive
     obj = W_Primitive(name, function, arity)
     return obj
 
 
 def newobject():
-    from obin.objects.types.oobject import W_Object
+    from obin.objects.types.objct import W_Object
     obj = W_Object(None)
     return obj
 
 
 def newplainobject():
-    from obin.objects.types.oobject import W_Object
+    from obin.objects.types.objct import W_Object
     obj = W_Object(None)
     return obj
 
 
 def newplainobject_with_slots(slots):
-    from obin.objects.types.oobject import W_Object
+    from obin.objects.types.objct import W_Object
     obj = W_Object(slots)
     return obj
 
 
 def newvector(items):
     assert isinstance(items, list)
-    from obin.objects.types.ovector import W_Vector
+    from obin.objects.types.vector import W_Vector
     obj = W_Vector(items)
     return obj
 
 
 def newtuple(tupl):
-    from obin.objects.types.otuple import W_Tuple
+    from obin.objects.types.tupl import W_Tuple
     return W_Tuple(list(tupl))
 
 
 def newcoroutine(fn):
-    from obin.objects.types.oasync import W_Coroutine
+    from obin.objects.types.fiber import W_Coroutine
     obj = W_Coroutine(fn)
     return obj
 
 
 def newmodule(process, name, code):
     assert isstring(name)
-    from obin.objects.types.omodule import W_Module
+    from obin.objects.types.module import W_Module
     obj = W_Module(name, code, process.builtins)
     return obj
 
@@ -140,7 +143,7 @@ def newgeneric(name):
 
 
 def newtrait(name):
-    from obin.objects.types.otrait import W_Trait
+    from obin.objects.types.trait import W_Trait
     return W_Trait(name)
 
 
@@ -149,7 +152,7 @@ def newtraits(traits):
 
 
 def isany(value):
-    from obin.objects.types.oroot import W_Root
+    from obin.objects.types.root import W_Root
     return isinstance(value, W_Root)
 
 
@@ -162,33 +165,33 @@ def isinterrupt(value):
 
 
 def iscell(value):
-    from obin.objects.types.oroot import W_Cell
+    from obin.objects.types.root import W_Cell
     return isinstance(value, W_Cell)
 
 
 def isobject(value):
-    from obin.objects.types.oobject import W_Object
+    from obin.objects.types.objct import W_Object
     return isinstance(value, W_Object)
 
 
 def isvaluetype(value):
-    from obin.objects.types.ovalue import W_ValueType
+    from obin.objects.types.root import W_ValueType
     return isinstance(value, W_ValueType)
 
 
 def isfunction(value):
-    from obin.objects.types.ofunction import W_Function
-    from obin.objects.types.oprimitive import W_Primitive
+    from obin.objects.types.function import W_Function
+    from obin.objects.types.primitive import W_Primitive
     return isinstance(value, W_Function) or isinstance(value, W_Primitive)
 
 
 def isvector(value):
-    from obin.objects.types.ovector import W_Vector
+    from obin.objects.types.vector import W_Vector
     return isinstance(value, W_Vector)
 
 
 def istrait(w):
-    from obin.objects.types.otrait import W_Trait
+    from obin.objects.types.trait import W_Trait
     return isinstance(w, W_Trait)
 
 
@@ -198,12 +201,12 @@ def isgeneric(w):
 
 
 def istuple(w):
-    from obin.objects.types.otuple import W_Tuple
+    from obin.objects.types.tupl import W_Tuple
     return isinstance(w, W_Tuple)
 
 
 def ismodule(w):
-    from obin.objects.types.omodule import W_Module
+    from obin.objects.types.module import W_Module
     return isinstance(w, W_Module)
 
 
@@ -216,22 +219,22 @@ def isnull(value):
 
 
 def isint(w):
-    from obin.objects.types.ovalue import W_Integer
+    from obin.objects.types.integer import W_Integer
     return isinstance(w, W_Integer)
 
 
 def isstring(w):
-    from obin.objects.types.ostring import W_String
+    from obin.objects.types.string import W_String
     return isinstance(w, W_String)
 
 
 def isfloat(w):
-    from obin.objects.types.ovalue import W_Float
+    from obin.objects.types.floating import W_Float
     return isinstance(w, W_Float)
 
 
 def isconstant(w):
-    from obin.objects.types.oconstant import W_Constant
+    from obin.objects.types.root import W_Constant
     return isinstance(w, W_Constant)
 
 
@@ -243,7 +246,7 @@ def isnull_or_undefined(obj):
 
 @specialize.argtype(0)
 def _w(value):
-    from obin.objects.types.oroot import W_Root
+    from obin.objects.types.root import W_Root
     if value is None:
         return newnil()
     elif isinstance(value, W_Root):

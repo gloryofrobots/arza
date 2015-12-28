@@ -1,8 +1,6 @@
 __author__ = 'gloryofrobots'
 from discriminator import *
-from obin.objects.types.oroot import W_Root
-from obin.utils.builtins import ohash, oid
-from obin.objects.types import otuple
+from obin.objects.types.root import W_Root
 
 
 class Argument(W_Root):
