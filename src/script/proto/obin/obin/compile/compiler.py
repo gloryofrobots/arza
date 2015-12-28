@@ -432,6 +432,7 @@ def _compile_destruct_recur_table(process, compiler, bytecode, node):
             bytecode.emit_0(POP)
         else:
             _emit_store_name(process, compiler, bytecode, varname)
+            bytecode.emit_0(POP)
 
 
 """
@@ -509,6 +510,7 @@ def _compile_destruct_recur_seq(process, compiler, bytecode, node):
             bytecode.emit_0(POP)
         else:
             _emit_store_name(process, compiler, bytecode, varname)
+            bytecode.emit_0(POP)
 
 
 def _compile_unpack_seq(process, compiler, bytecode, node):
