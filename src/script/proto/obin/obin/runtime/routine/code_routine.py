@@ -69,18 +69,13 @@ class CodeRoutine(BaseRoutine):
         from obin.objects.space import isany
         print u"_________STACK______________"
         prev = u""
-        count = 1
-        for s in self.stack.data:
-            s = unicode(s)
-            if s == prev:
-                count += 1
-            else:
-                print s if count == 1 else u"%s * %d" % (s, count)
-                count = 1
-            prev = s
+        print self.stack.data
+        for s in self.stack.data[0:self.stack.pointer()]:
+            print unicode(s)
 
-        if count != 1:
-            print prev if count == 1 else u"%s * %d" % (prev, count)
+    def _print_code(self, opcode):
+        print u"_____________________________"
+        print u'%s %3d' % (opcode_info(self, opcode), self.pc)
 
     def _execute(self, process):
         while True:
@@ -96,9 +91,8 @@ class CodeRoutine(BaseRoutine):
             literals = self.literals
             refs = self.refs
             # print "_execute", opcode
-            self._print_stack()
-            print u"_________CODE__________________"
-            print u'%3d %25s' % (self.pc, opcode_info(self, opcode))
+            # self._print_stack()
+            # self._print_code(opcode)
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
             self.pc += 1
             # *************************************

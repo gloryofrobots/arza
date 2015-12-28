@@ -1,7 +1,6 @@
-T = (1,2,3)
+T = (1,2,3, 4)
 
-(x,y,z) = T
-return
+(x,y,z, w) = T
 
 Human = {
     name, surname, age:10
@@ -32,6 +31,7 @@ print ("************************************************************************
     translationsEn: { titleEn: (localeTitleEn, origTitleEn), translatorEn },
     author:author_data
 } = metadata;
+
 print(englishTitle, subject, localeTitle,translator,localeTitleEn, origTitleEn, translatorEn, author_data )
 
 print ("**************************************************************************")
@@ -52,7 +52,5 @@ V = [0, [1,2,3,4,5,6,7,8,9,10]]
 V = [0, [1,2,3], {data:[41,41,41,41,41,42]}]
 
 (a, (b, c, d), {data:e}) = V
-//print(a, b, c, d, e)
+print(a, b, c, d, e)
 
-(x,y,z) = T
-//print(x, y, z, rest)

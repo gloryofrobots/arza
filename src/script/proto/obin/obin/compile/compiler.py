@@ -494,7 +494,7 @@ def _compile_destruct_recur_seq(process, compiler, bytecode, node):
 
 
 def _compile_destruct_unpack_seq(process, compiler, bytecode, node):
-    # TODO REMOVE UNPACK SEQ and COMPILE IT TO MEMBER ACCESS AND SLICES
+    bytecode.emit_0(DUP)
     names = node.first()
     length = len(names)
     bytecode.emit_1(UNPACK_SEQUENCE, length)

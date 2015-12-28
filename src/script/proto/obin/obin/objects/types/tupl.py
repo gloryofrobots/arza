@@ -76,6 +76,28 @@ class W_Tuple(W_Hashable):
     def _at_index_(self, i):
         return self.elements[i]
 
+    def _slice_(self, start, end, step):
+        from obin.objects.space import isundefined
+        from obin.objects import api
+
+        if isundefined(start):
+            start_index = 0
+        else:
+            start_index = api.to_native_integer(start)
+
+        if isundefined(end):
+            end_index = self._length_()
+        else:
+            end_index = api.to_native_integer(end)
+
+        if isundefined(step):
+            step_value = 1
+        else:
+            step_value = api.to_native_integer(step)
+
+        elements = self.elements[start_index:end_index:step_value]
+        return W_Tuple(elements)
+
     def _get_index_(self, obj):
         try:
             return self.elements.index(obj)

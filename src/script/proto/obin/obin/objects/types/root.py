@@ -57,7 +57,7 @@ class W_Root:
         raise NotImplementedError()
 
     def _slice_(self, start, end, step):
-        pass
+        raise NotImplementedError()
 
     def _traits_(self, process):
         raise NotImplementedError()
