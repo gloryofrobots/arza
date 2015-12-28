@@ -32,7 +32,8 @@ def setup(obj, stdlib):
     api.put_primitive_function(obj, u'eval', _eval, 1)
     api.put_primitive_function(obj, u'print', _print, -1)
     api.put_primitive_function(obj, u'id', _id, 1)
-    api.put_primitive_function(obj, u'spawn_fiber', spawn_fiber, 1)
+    api.put_primitive_function(obj, u'spawn_fiber', spawn_fiber, 0)
+    api.put_primitive_function(obj, u'activate_fiber', activate_fiber, 2)
     api.put_primitive_function(obj, u'range', _range, 2)
     api.put_primitive_function(obj, u'generic', generic, 1)
     api.put_primitive_function(obj, u'specify', specify, 3)
@@ -101,6 +102,16 @@ def spawn_fiber(process, routine):
     return newtuple([y1, y2])
 
 
+def activate_fiber(process, routine):
+    from obin.objects.types.fiber import activate_fiber as activate
+    from obin.objects.space import newvector
+    fiber = routine.get_arg(0)
+    func = routine.get_arg(1)
+    # args = routine.get_arg(2)
+    args = newvector([])
+    activate(process, fiber, func, args)
+
+
 @complete_native_routine
 def _range(process, routine):
     from obin.objects.space import newvector, newint
@@ -140,14 +151,16 @@ def traits(process, routine):
     obj = routine.get_arg(0)
     return api.traits(process, obj)
 
+
 @complete_native_routine
 def attach(process, routine):
     args = routine.args().to_list()
     obj = routine.get_arg(0)
-    for i in range(len(args) -1, 0, -1):
+    for i in range(len(args) - 1, 0, -1):
         trait = routine.get_arg(i)
         api.attach(process, obj, trait)
     return obj
+
 
 @complete_native_routine
 def detach(process, routine):
@@ -158,6 +171,7 @@ def detach(process, routine):
         api.detach(process, obj, trait)
 
     return obj
+
 
 @complete_native_routine
 def kindof(process, routine):
@@ -173,10 +187,12 @@ def lookup(process, routine):
     default = routine.get_arg(2)
     return api.lookup(this, key, default)
 
+
 @complete_native_routine
 def clone(process, routine):
     this = routine.get_arg(0)
     return api.clone(this)
+
 
 @complete_native_routine
 def trait(process, routine):

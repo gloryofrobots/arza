@@ -353,13 +353,13 @@ def write_ast(ast):
                           indent=2, separators=(',', ': '))
         f.write(repr)
 
-ast = parse_string(
-    """
-(x, y, z) = func()
-{name, surname} = func()
-{name:new_name, surname:new_surname} = D
-{name:new_name, friends:({name:friend_name}, {dogname})} = D
-    """
-)
+# ast = parse_string(
+#     """
+# (x, y, z) = func()
+# {name, surname} = func()
+# {name:new_name, surname:new_surname} = D
+# {name:new_name, friends:({name:friend_name}, {dogname})} = D
+#     """
+# )
 # print ast
 # write_ast(ast)

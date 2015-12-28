@@ -1,35 +1,25 @@
 fn coroutine(func) {
-    (yield1, yield2) = spawn_fiber()
+    (fiber1, fiber2) = spawn_fiber()
+    first_call = false
     return fn(...args) {
-        func(yield1, ...args);
+        outer first_call
+        if first_call == false {
+            first_call = true
+            activate_fiber(fiber2, fn(){
+                func(fiber1, ...args)
+            })
+        } else {
+            fiber2(...args)
+        }
     }
 }
 
+co = coroutine(fn(yield, x) {
+            v = yield(25);
+            yield(15 + x)
+        })
 
-
-
- co = coroutine(fn(yield, x) {
-           Z = "1111"
-
-           _co1 = coroutine(fn(yield2, y) {
-               Y = "2222"
-               fn send() {
-                    X = "3333"
-                    yield2(42 + y)
-               }
-               send()
-           })
-
-        print("x", x)
-        v = _co1(x)
-        t = yield(v)
-        print("t", t)
-        x = yield(t)
-        print("x", x)
-        return x
-      })
-
-print(co(23))
-print(co(34))
-print(co(44))
+x = co(15)
+y = co()
+print(x,y)
 

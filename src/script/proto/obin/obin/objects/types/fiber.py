@@ -3,8 +3,9 @@ from obin.runtime.error import *
 from obin.objects import api
 from rpython.rlib import jit
 
+
 class W_CoroutineIterator(W_Root):
-    def __init__(self,  coroutine):
+    def __init__(self, coroutine):
         self._coroutine_ = coroutine
 
     def _tobool_(self):
@@ -41,6 +42,7 @@ class W_CoroutineYield(W_Callable):
         # TODO THIS IS WRONG
         value = api.at_index(args, 0)
         process.switch_to_fiber(self.fiber, value)
+
 
 class W_Coroutine(W_Callable):
     # _immutable_fields_ = ['_function_']
@@ -107,12 +109,15 @@ class W_Fiber(W_Callable):
         return True
 
     def _call_(self, process, args):
-        assert self.fiber
+        from obin.objects.space import newundefined
 
         if not self.fiber.is_waiting():
             raise ObinRuntimeError(u"Can't resume not waiting fiber")
 
-        value = api.at_index(args, 0)
+        if api.n_length(args) == 0:
+            value = newundefined()
+        else:
+            value = api.at_index(args, 0)
         process.switch_to_fiber(self.fiber, value)
 
 
@@ -123,9 +128,6 @@ def newfiber(process):
     w_fiber2 = W_Fiber(fiber2)
     return w_fiber1, w_fiber2
 
-def init_fiber(process, fiber, function, args):
-    pass
 
-
-
-
+def activate_fiber(process, fiber_wrap, function, args):
+    process.activate_fiber(fiber_wrap.fiber, function, args)

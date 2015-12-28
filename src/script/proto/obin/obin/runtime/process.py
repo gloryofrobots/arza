@@ -51,6 +51,8 @@ class Fiber:
 
     def resume_routine(self, result):
         self.routine.resume(result)
+        while self.routine.is_complete():
+            self.next_routine()
 
     def finalise(self):
         parent = self.parent
