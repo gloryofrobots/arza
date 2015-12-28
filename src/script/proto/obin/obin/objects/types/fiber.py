@@ -116,8 +116,10 @@ class W_Fiber(W_Callable):
 
         if api.n_length(args) == 0:
             value = newundefined()
-        else:
+        elif api.n_length(args) == 1:
             value = api.at_index(args, 0)
+        else:
+            value = args
         process.switch_to_fiber(self.fiber, value)
 
 

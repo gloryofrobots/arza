@@ -15,11 +15,14 @@ fn coroutine(func) {
 }
 
 co = coroutine(fn(yield, x) {
-            v = yield(25);
+            print("x", x)
+            (x,y,z)  = yield(25);
             yield(15 + x)
+            x + y + z
         })
 
 x = co(15)
-y = co()
-print(x,y)
+y = co(1,2,3)
+z = co()
+print(x,y,z)
 
