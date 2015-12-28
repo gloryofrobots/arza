@@ -1,4 +1,89 @@
-//var { title: englishTitle, translations: [{ title: localeTitle }] } = metadata;
+metadata = {
+    title: "Nemesis Games",
+    subject: "SCIFI",
+    translationsUa: {title: "IGRU DOLI", translator: "PILIP LUN" },
+    translationsEn: { titleEn: ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU" },
+    author: ("James", "Corey")
+}
+print ("**************************************************************************")
+print ("**************************************************************************")
+print ("**************************************************************************")
+print ("**************************************************************************")
+{
+    title: englishTitle,
+    subject,
+    translationsUa: { title: localeTitle, translator },
+    translationsEn: { titleEn: (localeTitle, origTitle), translator },
+    author:author_name
+} = metadata;
+/*
+
+
+
+
+LOAD metadata
+######
+DUP
+STRING title
+MEMBER
+STORE_LOCAL englishTitle
+##########
+DUP
+STRING subject
+MEMBER
+STORE_LOCAL subject
+###########
+DUP
+STRING translationsUa
+MEMBER
+    #############
+    DUP
+    STRING title
+    MEMBER
+    STORE_LOCAL localTitle
+    #############
+    DUP
+    STRING translator
+    MEMBER
+    STORE_LOCAL translator
+POP
+DUP
+STRING translationsEn
+MEMBER
+#############
+    DUP
+    STRING titleEn
+    MEMBER
+        ###########
+        DUP
+        INTEGER 1
+        MEMBER
+        STORE_LOCAL localeTitle
+        ###########
+        DUP
+        INTEGER 2
+        MEMBER
+        STORE_LOCAL origTitle
+    POP
+    #############
+    DUP
+    STRING translator
+    MEMBER
+    STORE_LOCAL translator
+POP
+
+*/
+
+
+
+
+
+
+
+
+
+
+
 /*
 (x, y, z) = func()
 {name, surname} = func()

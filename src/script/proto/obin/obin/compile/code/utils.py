@@ -75,7 +75,7 @@ def opcode_info(routine, opcode):
     # ********************************
     elif tag == LITERAL:
         literal = routine.literals[arg1]
-        return 'OUTER %s (%d)' % (literal, arg1)
+        return 'LITERAL %s (%d)' % (literal, arg1)
     # ********************************
     elif tag == STORE_LOCAL:
         literal = routine.literals[arg2]

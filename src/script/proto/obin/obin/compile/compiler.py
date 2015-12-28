@@ -196,6 +196,9 @@ def _compile_NIL(process, compiler, bytecode, node):
 def _compile_UNDEFINED(process, compiler, bytecode, node):
     bytecode.emit_0(UNDEFINED)
 
+def _emit_string_name(process, compiler, bytecode, name):
+    string = obs.newstring_from_str(name.value)
+    _emit_string(process, compiler, bytecode, string)
 
 def _emit_string(process, compiler, bytecode, string):
     idx = _declare_literal(process, compiler, string)
@@ -371,9 +374,15 @@ def _emit_store(process, compiler, bytecode, name):
     else:
         bytecode.emit_2(STORE_OUTER, index, name_index)
 
+
 def _emit_store_n_string(process, compiler, bytecode, namestring):
     name = obs.newstring_from_str(namestring)
     _emit_store(process, compiler, bytecode, name)
+
+
+def _emit_store_name(process, compiler, bytecode, namenode):
+    _emit_store_n_string(process, compiler, bytecode, namenode.value)
+
 
 def _compile_destruct(process, compiler, bytecode, node):
     left = node.first()
@@ -391,8 +400,116 @@ def _compile_destruct(process, compiler, bytecode, node):
     _compile(process, compiler, bytecode, node.second())
     return _compile_destruct_recur(process, compiler, bytecode, left)
 
+
 def _compile_destruct_recur(process, compiler, bytecode, node):
-    pass
+    if node.type == TT_LPAREN:
+        return _compile_destruct_recur_seq(process, compiler, bytecode, node)
+    elif node.type == TT_LCURLY:
+        return _compile_destruct_recur_table(process, compiler, bytecode, node)
+    else:
+        compile_error(process, node, "unsupported assignment syntax")
+
+
+def _compile_destruct_recur_table(process, compiler, bytecode, node):
+    pairs = node.first()
+    for pair in pairs:
+        bytecode.emit_0(DUP)
+
+        key = pair[0]
+        value = pair[1]
+        varname = None
+        if is_empty_node(value):
+            varname = key
+        elif value.type == TT_NAME:
+            varname = value
+
+        _emit_table_key(process, compiler, bytecode, key)
+
+        bytecode.emit_0(MEMBER)
+
+        if varname is None:
+            _compile_destruct_recur(process, compiler, bytecode, value)
+            bytecode.emit_0(POP)
+        else:
+            _emit_store_name(process, compiler, bytecode, varname)
+
+
+"""
+LOAD metadata
+######
+DUP
+STRING title
+MEMBER
+STORE_LOCAL englishTitle
+##########
+DUP
+STRING subject
+MEMBER
+STORE_LOCAL subject
+###########
+DUP
+STRING translationsUa
+MEMBER
+    #############
+    DUP
+    STRING title
+    MEMBER
+    STORE_LOCAL localTitle
+    #############
+    DUP
+    STRING translator
+    MEMBER
+    STORE_LOCAL translator
+POP
+DUP
+STRING translationsEn
+MEMBER
+#############
+    DUP
+    STRING titleEn
+    MEMBER
+        ###########
+        DUP
+        INTEGER 1
+        MEMBER
+        STORE_LOCAL localeTitle
+        ###########
+        DUP
+        INTEGER 2
+        MEMBER
+        STORE_LOCAL origTitle
+    POP
+    #############
+    DUP
+    STRING translator
+    MEMBER
+    STORE_LOCAL translator
+POP
+
+"""
+
+def _compile_destruct_recur_seq(process, compiler, bytecode, node):
+    items = node.first()
+    length = len(items)
+
+    for i in range(length):
+        bytecode.emit_0(DUP)
+
+        item = items[i]
+        varname = None
+        if item.type == TT_NAME:
+            varname = item
+
+        idx = _declare_literal(process, compiler, obs.newint(i))
+        bytecode.emit_1(LITERAL, idx)
+        bytecode.emit_0(MEMBER)
+
+        if varname is None:
+            _compile_destruct_recur(process, compiler, bytecode, item)
+            bytecode.emit_0(POP)
+        else:
+            _emit_store_name(process, compiler, bytecode, varname)
+
 
 def _compile_unpack_seq(process, compiler, bytecode, node):
     # TODO REMOVE UNPACK SEQ and COMPILE IT TO MEMBER ACCESS AND SLICES
@@ -402,10 +519,11 @@ def _compile_unpack_seq(process, compiler, bytecode, node):
     _compile(process, compiler, bytecode, node.second())
     bytecode.emit_1(UNPACK_SEQUENCE, length)
     for name in names[0:-1]:
-        _emit_store_n_string(process, compiler, bytecode, name.value)
+        _emit_store_name(process, compiler, bytecode, name)
         bytecode.emit_0(POP)
     last_name = names[-1]
-    _emit_store_n_string(process, compiler, bytecode, last_name.value)
+    _emit_store_name(process, compiler, bytecode, last_name)
+
 
 def _compile_ASSIGN(process, compiler, bytecode, node):
     left = node.first()
@@ -413,7 +531,6 @@ def _compile_ASSIGN(process, compiler, bytecode, node):
         return _compile_ASSIGN_DOT(process, compiler, bytecode, node)
     elif left.type == TT_LPAREN or left.type == TT_LCURLY:
         return _compile_destruct(process, compiler, bytecode, node)
-
 
     _compile(process, compiler, bytecode, node.second())
     name = obs.newstring_from_str(left.value)
@@ -519,6 +636,12 @@ def _compile_THROW(process, compiler, code, node):
 
     code.emit_0(THROW)
 
+def _emit_table_key(process, compiler, code, key):
+    if key.type == TT_NAME:
+        # in case of names in object literal we must convert them to strings
+        _emit_string_name(process, compiler, code, key)
+    else:
+        _compile(process, compiler, code, key)
 
 def _compile_object(process, compiler, code, items, traits):
     for t in traits:
@@ -532,11 +655,7 @@ def _compile_object(process, compiler, code, items, traits):
         else:
             _compile(process, compiler, code, value)
 
-        if key.type == TT_NAME:
-            # in case of names in object literal we must convert them to strings
-            _emit_string(process, compiler, code, obs.newstring_from_str(key.value))
-        else:
-            _compile(process, compiler, code, key)
+        _emit_table_key(process, compiler, code, key)
 
     code.emit_2(OBJECT, len(items), len(traits))
 
@@ -884,18 +1003,19 @@ def _compile_WHILE(process, compiler, bytecode, node):
 
 
 def _compile_DOT(process, compiler, code, node):
-    name = obs.newstring_from_str(node.second().value)
-    _emit_string(process, compiler, code, name)
     obj = node.first()
     _compile(process, compiler, code, obj)
+    name = obs.newstring_from_str(node.second().value)
+    _emit_string(process, compiler, code, name)
     code.emit_0(MEMBER)
 
 
 def _compile_LSQUARE_lookup(process, compiler, code, node):
-    expr = node.second()
-    _compile(process, compiler, code, expr)
+    # TODO OPTIMISATION FOR INDEX LOOKUP
     obj = node.first()
     _compile(process, compiler, code, obj)
+    expr = node.second()
+    _compile(process, compiler, code, expr)
     code.emit_0(MEMBER)
 
 
@@ -1163,6 +1283,7 @@ def print_code(code):
     from code.utils import opcode_to_str
     print "\n".join([str((opcode_to_str(c[0]), str(c[1:]))) for c in code.opcodes])
 
+
 def compile_and_print(txt):
     print_code(compile(None, txt))
 
@@ -1176,10 +1297,18 @@ def _check(val1, val2):
         raise RuntimeError("Not equal")
 
 
-compile_and_print("""
-(x,y,z) = foo();
-
-""")
+# compile_and_print("""
+# metadata = 34;
+#
+# {
+#     title: englishTitle,
+#     subject,
+#     translationsUa: { title: localeTitle, translator },
+#     translationsEn: { titleEn: (localeTitle, origTitle), translator },
+#     author:author_data
+# } = metadata;
+#
+# """)
 """
     reify fire {
         (self of Soldier, other of Civilian) {

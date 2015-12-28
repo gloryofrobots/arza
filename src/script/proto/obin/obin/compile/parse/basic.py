@@ -286,12 +286,16 @@ def led_infixr_assign(parser, node, left):
     node.init(2)
     ltype = left.type
     # NOT TUPLE ASSIGNMENT
-    if ltype == TT_LPAREN:
-        if left.arity != 1:
-            parse_error(parser, "Bad lvalue in assignment, wrong tuple destructuring", left)
-    elif ltype != TT_DOT and ltype != TT_LSQUARE \
-                and ltype != TT_NAME and ltype != TT_COMMA and ltype != TT_LCURLY:
+    if ltype != TT_DOT and ltype != TT_LSQUARE \
+            and ltype != TT_NAME and ltype != TT_COMMA\
+            and ltype != TT_LCURLY and ltype != TT_LPAREN:
             parse_error(parser, "Bad lvalue in assignment", left)
+
+    if ltype == TT_LPAREN and left.arity != 1:
+        parse_error(parser, "Bad lvalue in assignment, wrong tuple destructuring", left)
+
+    if ltype == TT_LCURLY and left.count_children() == 0:
+        parse_error(parser, "Bad lvalue in assignment, empty table", left)
 
     node.setfirst(left)
     exp = expression(parser, 9)

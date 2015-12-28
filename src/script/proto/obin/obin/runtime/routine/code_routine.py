@@ -78,10 +78,9 @@ class CodeRoutine(BaseRoutine):
             env = self.env
             literals = self.literals
             refs = self.refs
-
             # print "_execute", opcode
-            # d = '%3d %25s %s ' % (self.pc, opcode_info(self, opcode), unicode([str(s) for s in self.stack.data]))
-            # print d
+            d = '%3d %25s %s ' % (self.pc, opcode_info(self, opcode), unicode([str(s) for s in self.stack.data]))
+            print d
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
             self.pc += 1
             # *************************************
@@ -134,10 +133,9 @@ class CodeRoutine(BaseRoutine):
                 stack.push(value)
             # *************************************
             elif MEMBER == tag:
-                obj = stack.pop()
                 name = stack.pop()
+                obj = stack.pop()
                 value = api.at(obj, name)
-
                 stack.push(value)
             # *************************************
             # TODO WHY NOT POP HERE?

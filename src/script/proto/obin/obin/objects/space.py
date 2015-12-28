@@ -18,6 +18,7 @@ jit.promote(w_Nil)
 jit.promote(w_Interrupt)
 
 
+# TODO CHECK FOR BIGINT OVERFLOW
 @enforceargs(int)
 def newint(i):
     from obin.objects.types.integer import W_Integer

@@ -56,6 +56,9 @@ class Node(BaseNode):
     def fourth(self):
         return self.getchild(3)
 
+    def count_children(self):
+        return len(self.children)
+
     def __children_repr(self):
         return [child.to_json_value() for child in self.children]
 
