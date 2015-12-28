@@ -1,0 +1,61 @@
+/*
+
+
+ {
+     title: englishTitle,
+     subject,
+     translationsUa: { title: localeTitle, translator },
+     translationsEn: { titleEn: (localeTitle, origTitle), translator },
+     author:author_data
+ } = metadata;
+LOAD metadata
+######
+DUP
+STRING title
+MEMBER
+STORE_LOCAL englishTitle
+##########
+DUP
+STRING subject
+MEMBER
+STORE_LOCAL subject
+###########
+DUP
+STRING translationsUa
+MEMBER
+    #############
+    DUP
+    STRING title
+    MEMBER
+    STORE_LOCAL localTitle
+    #############
+    DUP
+    STRING translator
+    MEMBER
+    STORE_LOCAL translator
+POP
+DUP
+STRING translationsEn
+MEMBER
+#############
+    DUP
+    STRING titleEn
+    MEMBER
+        ###########
+        DUP
+        INTEGER 1
+        MEMBER
+        STORE_LOCAL localeTitle
+        ###########
+        DUP
+        INTEGER 2
+        MEMBER
+        STORE_LOCAL origTitle
+    POP
+    #############
+    DUP
+    STRING translator
+    MEMBER
+    STORE_LOCAL translator
+POP
+*/

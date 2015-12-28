@@ -69,6 +69,15 @@ class ObinKeyError(ObinRangeError):
     def _msg(self):
         return u'KeyError: %s' % (self.value,)
 
+class ObinSliceError(ObinRangeError):
+    def __init__(self, start, end, step):
+        self.start = start
+        self.end = end
+        self.step = step
+
+    def _msg(self):
+        return u'SliceError: %s %s %s' % (self.start, self.end, self.step)
+
 
 class ObinInvokeError(ObinRangeError):
     def __init__(self, value):

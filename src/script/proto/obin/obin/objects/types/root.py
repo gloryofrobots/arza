@@ -56,6 +56,9 @@ class W_Root:
     def _kindof_(self, trait):
         raise NotImplementedError()
 
+    def _slice_(self, start, end, step):
+        pass
+
     def _traits_(self, process):
         raise NotImplementedError()
 

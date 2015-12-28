@@ -1,19 +1,20 @@
 from obin.compile.code.opcode import *
+
 # ************************************************
 
 __OPCODE_REPR__ = ["UNDEFINED", "NULL", "TRUE", "FALSE", "LITERAL", "OUTER", "LOCAL", "FUNCTION", "INTEGER", "DUP",
                    "NEXT", "IMPORT", "IMPORT_MEMBER", "GENERIC", "TRAIT", "LABEL", "STORE_OUTER", "STORE_LOCAL",
                    "ITERATOR", "RETURN", "CALL_INTERNAL", "CALL", "CALL_METHOD", "JUMP", "JUMP_IF_FALSE_NOPOP",
                    "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "JUMP_IF_ITERATOR_EMPTY", "MEMBER_DOT",
-                   "MEMBER", "POP", "THROW", "CONCAT", "STORE_MEMBER", "UNPACK_SEQUENCE", "PUSH_MANY", "VECTOR",
-                   "TUPLE", "OBJECT", "REIFY", ]
+                   "MEMBER", "POP", "THROW", "CONCAT", "STORE_MEMBER", "SLICE", "UNPACK_SEQUENCE", "PUSH_MANY",
+                   "VECTOR", "TUPLE", "OBJECT", "REIFY", ]
 
 # ************************************************
 
 __UNKNOWN_CHANGE__ = -128
 
 __STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1,
-                     -1, -1, -2, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
+                     -1, -1, -2, -3, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
                      __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
 
 

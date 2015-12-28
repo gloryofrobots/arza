@@ -79,8 +79,8 @@ class CodeRoutine(BaseRoutine):
             literals = self.literals
             refs = self.refs
             # print "_execute", opcode
-            d = '%3d %25s %s ' % (self.pc, opcode_info(self, opcode), unicode([str(s) for s in self.stack.data]))
-            print d
+            # d = '%3d %25s %s ' % (self.pc, opcode_info(self, opcode), unicode([str(s) for s in self.stack.data]))
+            # print d
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
             self.pc += 1
             # *************************************
@@ -195,6 +195,14 @@ class CodeRoutine(BaseRoutine):
                 # argv.prepend(what)
 
                 api.call(process, func, argv)
+            # *************************************
+            elif SLICE == tag:
+                step = stack.pop()
+                end = stack.pop()
+                start = stack.pop()
+                obj = stack.pop()
+                v = api.slice(obj, start, end, step)
+                stack.push(v)
             # *************************************
             elif CONCAT == tag:
                 first = stack.pop()

@@ -177,7 +177,11 @@ def _compile_FLOAT(process, compiler, bytecode, node):
 
 def _compile_INT(process, compiler, bytecode, node):
     value = int(node.value)
-    idx = _declare_literal(process, compiler, obs.newint(value))
+    _emit_integer(process, compiler, bytecode, value)
+
+
+def _emit_integer(process, compiler, bytecode, integer):
+    idx = _declare_literal(process, compiler, obs.newint(integer))
     bytecode.emit_1(LITERAL, idx)
 
 
@@ -196,9 +200,11 @@ def _compile_NIL(process, compiler, bytecode, node):
 def _compile_UNDEFINED(process, compiler, bytecode, node):
     bytecode.emit_0(UNDEFINED)
 
+
 def _emit_string_name(process, compiler, bytecode, name):
     string = obs.newstring_from_str(name.value)
     _emit_string(process, compiler, bytecode, string)
+
 
 def _emit_string(process, compiler, bytecode, string):
     idx = _declare_literal(process, compiler, string)
@@ -384,6 +390,9 @@ def _emit_store_name(process, compiler, bytecode, namenode):
     _emit_store_n_string(process, compiler, bytecode, namenode.value)
 
 
+#####
+# DESTRUCT DESTRUCT
+####
 def _compile_destruct(process, compiler, bytecode, node):
     left = node.first()
     # x,y,z = foo() optimisation to single unpack opcode
@@ -395,7 +404,7 @@ def _compile_destruct(process, compiler, bytecode, node):
                 unpack = False
                 break
         if unpack:
-            return _compile_unpack_seq(process, compiler, bytecode, node)
+            return _compile_destruct_unpack_seq(process, compiler, bytecode, node)
 
     _compile(process, compiler, bytecode, node.second())
     return _compile_destruct_recur(process, compiler, bytecode, left)
@@ -435,85 +444,60 @@ def _compile_destruct_recur_table(process, compiler, bytecode, node):
             bytecode.emit_0(POP)
 
 
-"""
-LOAD metadata
-######
-DUP
-STRING title
-MEMBER
-STORE_LOCAL englishTitle
-##########
-DUP
-STRING subject
-MEMBER
-STORE_LOCAL subject
-###########
-DUP
-STRING translationsUa
-MEMBER
-    #############
-    DUP
-    STRING title
-    MEMBER
-    STORE_LOCAL localTitle
-    #############
-    DUP
-    STRING translator
-    MEMBER
-    STORE_LOCAL translator
-POP
-DUP
-STRING translationsEn
-MEMBER
-#############
-    DUP
-    STRING titleEn
-    MEMBER
-        ###########
-        DUP
-        INTEGER 1
-        MEMBER
-        STORE_LOCAL localeTitle
-        ###########
-        DUP
-        INTEGER 2
-        MEMBER
-        STORE_LOCAL origTitle
-    POP
-    #############
-    DUP
-    STRING translator
-    MEMBER
-    STORE_LOCAL translator
-POP
+##################################################
+# DESTRUCT SEQUENCE
+##################################################
 
-"""
+def _compile_destruct_recur_seq_rest(process, compiler, bytecode, last_item, last_index):
+    bytecode.emit_0(DUP)
+    varname = last_item.first()
+    _emit_integer(process, compiler, bytecode, last_index)
+    bytecode.emit_0(UNDEFINED)
+    bytecode.emit_0(UNDEFINED)
+    bytecode.emit_0(SLICE)
+    _emit_store_name(process, compiler, bytecode, varname)
+    bytecode.emit_0(POP)
+
+
+def _compile_destruct_recur_seq_item(process, compiler, bytecode, item, index):
+    bytecode.emit_0(DUP)
+
+    varname = None
+    if item.type == TT_NAME:
+        varname = item
+    else:
+        compile_error(process, item, "invalid destructuring binding name")
+
+    idx = _declare_literal(process, compiler, obs.newint(index))
+    bytecode.emit_1(LITERAL, idx)
+    bytecode.emit_0(MEMBER)
+
+    if varname is None:
+        _compile_destruct_recur(process, compiler, bytecode, item)
+        bytecode.emit_0(POP)
+    else:
+        _emit_store_name(process, compiler, bytecode, varname)
+        bytecode.emit_0(POP)
+
 
 def _compile_destruct_recur_seq(process, compiler, bytecode, node):
     items = node.first()
     length = len(items)
 
-    for i in range(length):
-        bytecode.emit_0(DUP)
+    last_index = length - 1
 
+    for i in range(last_index):
         item = items[i]
-        varname = None
-        if item.type == TT_NAME:
-            varname = item
+        _compile_destruct_recur_seq_item(process, compiler, bytecode, item, i)
 
-        idx = _declare_literal(process, compiler, obs.newint(i))
-        bytecode.emit_1(LITERAL, idx)
-        bytecode.emit_0(MEMBER)
-
-        if varname is None:
-            _compile_destruct_recur(process, compiler, bytecode, item)
-            bytecode.emit_0(POP)
-        else:
-            _emit_store_name(process, compiler, bytecode, varname)
-            bytecode.emit_0(POP)
+    last_item = items[last_index]
+    if last_item.type == TT_ELLIPSIS:
+        _compile_destruct_recur_seq_rest(process, compiler, bytecode, last_item, last_index)
+    else:
+        _compile_destruct_recur_seq_item(process, compiler, bytecode, last_item, last_index)
 
 
-def _compile_unpack_seq(process, compiler, bytecode, node):
+def _compile_destruct_unpack_seq(process, compiler, bytecode, node):
     # TODO REMOVE UNPACK SEQ and COMPILE IT TO MEMBER ACCESS AND SLICES
     left = node.first()
     names = left.first()
@@ -526,6 +510,7 @@ def _compile_unpack_seq(process, compiler, bytecode, node):
     last_name = names[-1]
     _emit_store_name(process, compiler, bytecode, last_name)
 
+################################################################################
 
 def _compile_ASSIGN(process, compiler, bytecode, node):
     left = node.first()
@@ -638,12 +623,14 @@ def _compile_THROW(process, compiler, code, node):
 
     code.emit_0(THROW)
 
+
 def _emit_table_key(process, compiler, code, key):
     if key.type == TT_NAME:
         # in case of names in object literal we must convert them to strings
         _emit_string_name(process, compiler, code, key)
     else:
         _compile(process, compiler, code, key)
+
 
 def _compile_object(process, compiler, code, items, traits):
     for t in traits:

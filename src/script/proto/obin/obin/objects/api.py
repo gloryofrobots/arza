@@ -80,6 +80,16 @@ def lookup(obj, k, default):
     return v
 
 
+def slice(obj, start, end, step):
+    from obin.runtime.error import ObinSliceError
+    from space import isundefined
+    v = obj._slice_(start, end, step)
+    assert v is not None
+    if isundefined(v):
+        raise ObinSliceError(start, end, step)
+    return v
+
+
 def is_empty(obj):
     from space import newbool
     return newbool(n_is_empty(obj))

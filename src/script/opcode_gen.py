@@ -41,6 +41,7 @@ OPCODES = [
     ("CONCAT", -1),
 
     ("STORE_MEMBER", -2),
+    ("SLICE", -3),
 
     ("UNPACK_SEQUENCE", "__UNKNOWN_CHANGE__"),
     ("PUSH_MANY", "__UNKNOWN_CHANGE__"),
