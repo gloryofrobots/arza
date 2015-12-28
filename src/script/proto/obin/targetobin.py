@@ -10,8 +10,8 @@ def printmessage(msg):
 
 def main(argv):
     script_file = argv[1]
-    run(script_file)
-
+    result = run(script_file)
+    print ">>>", result
     # try:
     #     run(script_file)
     # except SystemExit:

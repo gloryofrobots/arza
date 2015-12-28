@@ -6,8 +6,7 @@ class Stack:
     def __init__(self, size=1):
         self.data = None
         self.__pointer = 0
-        undef = newundefined()
-        self.data = [undef] * size
+        self.data = [newundefined()] * size
 
     def pointer(self):
         return jit.promote(self.__pointer)
@@ -16,7 +15,7 @@ class Stack:
         e = self.top()
         i = self.pointer() - 1
         assert i >= 0
-        self.data[i] = None
+        self.data[i] = newundefined()
         self.set_pointer(i)
         return e
 

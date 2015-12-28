@@ -60,7 +60,7 @@ class CodeSource:
         assert isinstance(opcode, int)
         assert isinstance(arg1, int)
         assert isinstance(arg2, int)
-        print opcode_to_str(opcode), arg1, arg2
+        # print opcode_to_str(opcode), arg1, arg2
         self.opcodes.append((opcode, arg1, arg2))
         return opcode
 

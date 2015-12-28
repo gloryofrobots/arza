@@ -394,25 +394,23 @@ def _emit_store_name(process, compiler, bytecode, namenode):
 # DESTRUCT DESTRUCT
 ####
 def _compile_destruct(process, compiler, bytecode, node):
-    left = node.first()
-    # x,y,z = foo() optimisation to single unpack opcode
-    if left.type == TT_LPAREN:
-        unpack = True
-        items = left.first()
-        for child in items:
-            if child.type != TT_NAME:
-                unpack = False
-                break
-        if unpack:
-            return _compile_destruct_unpack_seq(process, compiler, bytecode, node)
-
     _compile(process, compiler, bytecode, node.second())
-    return _compile_destruct_recur(process, compiler, bytecode, left)
+    return _compile_destruct_recur(process, compiler, bytecode, node.first())
 
+def _is_optimizable_unpack_seq_pattern(node):
+    items = node.first()
+    for child in items:
+        if child.type != TT_NAME:
+            return False
+    return True
 
 def _compile_destruct_recur(process, compiler, bytecode, node):
     if node.type == TT_LPAREN:
-        return _compile_destruct_recur_seq(process, compiler, bytecode, node)
+        # x,y,z = foo() optimisation to single unpack opcode
+        if _is_optimizable_unpack_seq_pattern(node):
+            return _compile_destruct_unpack_seq(process, compiler, bytecode, node)
+        else:
+            return _compile_destruct_recur_seq(process, compiler, bytecode, node)
     elif node.type == TT_LCURLY:
         return _compile_destruct_recur_table(process, compiler, bytecode, node)
     else:
@@ -465,8 +463,6 @@ def _compile_destruct_recur_seq_item(process, compiler, bytecode, item, index):
     varname = None
     if item.type == TT_NAME:
         varname = item
-    else:
-        compile_error(process, item, "invalid destructuring binding name")
 
     idx = _declare_literal(process, compiler, obs.newint(index))
     bytecode.emit_1(LITERAL, idx)
@@ -499,16 +495,15 @@ def _compile_destruct_recur_seq(process, compiler, bytecode, node):
 
 def _compile_destruct_unpack_seq(process, compiler, bytecode, node):
     # TODO REMOVE UNPACK SEQ and COMPILE IT TO MEMBER ACCESS AND SLICES
-    left = node.first()
-    names = left.first()
+    names = node.first()
     length = len(names)
-    _compile(process, compiler, bytecode, node.second())
     bytecode.emit_1(UNPACK_SEQUENCE, length)
     for name in names[0:-1]:
         _emit_store_name(process, compiler, bytecode, name)
         bytecode.emit_0(POP)
     last_name = names[-1]
     _emit_store_name(process, compiler, bytecode, last_name)
+    bytecode.emit_0(POP)
 
 ################################################################################
 
