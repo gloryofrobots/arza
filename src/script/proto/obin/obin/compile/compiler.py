@@ -397,12 +397,14 @@ def _compile_destruct(process, compiler, bytecode, node):
     _compile(process, compiler, bytecode, node.second())
     return _compile_destruct_recur(process, compiler, bytecode, node.first())
 
+
 def _is_optimizable_unpack_seq_pattern(node):
     items = node.first()
     for child in items:
         if child.type != TT_NAME:
             return False
     return True
+
 
 def _compile_destruct_recur(process, compiler, bytecode, node):
     if node.type == TT_LPAREN:
@@ -504,6 +506,7 @@ def _compile_destruct_unpack_seq(process, compiler, bytecode, node):
     last_name = names[-1]
     _emit_store_name(process, compiler, bytecode, last_name)
     bytecode.emit_0(POP)
+
 
 ################################################################################
 
@@ -823,7 +826,7 @@ def _dot_to_string(process, compiler, node):
         return node.value
 
 
-def _compile_IMPORT_single(process, compiler, code, node):
+def _compile_IMPORT(process, compiler, code, node):
     exp = node.first()
     if exp.type == TT_AS:
         import_name = exp.second().value
@@ -845,43 +848,6 @@ def _compile_IMPORT_single(process, compiler, code, node):
     import_name_literal = _declare_literal(process, compiler, import_name)
     import_name_index = _declare_local(process, compiler, import_name)
     code.emit_2(STORE_LOCAL, import_name_index, import_name_literal)
-
-
-def _compile_IMPORT_destructuring(process, compiler, code, node):
-    items = node.first()
-    module = node.second()
-    module_path = _dot_to_string(process, compiler, module)
-    module_path = obs.newstring_from_str(module_path)
-    module_path_literal = _declare_literal(process, compiler, module_path)
-    code.emit_1(IMPORT, module_path_literal)
-    for item in items:
-        if item.type == TT_AS:
-            var_name = item.second().value
-            module_var = item.first().value
-        else:
-            assert item.type == TT_NAME
-            var_name = item.value
-            module_var = var_name
-
-        var_name = obs.newstring_from_str(var_name)
-        module_var = obs.newstring_from_str(module_var)
-
-        module_var_literal = _declare_literal(process, compiler, module_var)
-        code.emit_1(IMPORT_MEMBER, module_var_literal)
-
-        var_name_literal = _declare_literal(process, compiler, var_name)
-        var_name_index = _declare_local(process, compiler, var_name)
-        code.emit_2(STORE_LOCAL, var_name_index, var_name_literal)
-        code.emit_0(POP)
-
-
-def _compile_IMPORT(process, compiler, code, node):
-    if node.arity == 1:
-        _compile_IMPORT_single(process, compiler, code, node)
-    elif node.arity == 2:
-        _compile_IMPORT_destructuring(process, compiler, code, node)
-    else:
-        compile_error(process, node, "Invalid import statement")
 
 
 def _compile_GENERIC(process, compiler, code, node):

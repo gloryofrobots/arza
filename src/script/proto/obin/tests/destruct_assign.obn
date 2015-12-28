@@ -54,13 +54,14 @@ V = [0, [1,2,3], {data:[41,41,41,41,41,42]}]
 (a, (b, c, d), {data:e}) = V
 print(a, b, c, d, e)
 
-
-
-
+import military.ta.behavior as military_behavior
+{attack, hide, runaway:run_away_from_danger, three, four} = military_behavior
+print(three(), four())
+print(attack)
+print(hide)
+print(run_away_from_danger)
 
 /*
-
-
  {
      title: englishTitle,
      subject,

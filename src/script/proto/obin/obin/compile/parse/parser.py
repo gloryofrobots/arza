@@ -67,7 +67,6 @@ def infix_simple_pair(parser, node, left):
 
 def import_alias_parser_init(parser):
     symbol(parser, TT_COMMA)
-    symbol(parser, TT_FROM)
     infix(parser, TT_AS, 20, infix_simple_pair)
     literal(parser, TT_NAME)
     return parser
