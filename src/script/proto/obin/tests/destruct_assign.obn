@@ -61,6 +61,12 @@ print(attack)
 print(hide)
 print(run_away_from_danger)
 
+{attack, hide, runaway:run_away_from_danger, three, four} = import military.ta.behavior
+print(three(), four())
+print(attack)
+print(hide)
+print(run_away_from_danger)
+
 /*
  {
      title: englishTitle,

@@ -26,7 +26,7 @@ class Node(BaseNode):
         self.arity = arity
 
     def setchild(self, index, value):
-        assert isinstance(value, Node) or isinstance(value, NodeList)
+        assert isinstance(value, BaseNode)
         self.children[index] = value
 
     def getchild(self, index):

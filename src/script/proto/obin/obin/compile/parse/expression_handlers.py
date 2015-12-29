@@ -471,13 +471,18 @@ def stmt_reify(parser, node):
     return node
 
 def stmt_import(parser, node):
-    # import statement needs three different parsers :(
+    # statement can be import x.y.z as c
+    imported = expression(parser.module_name_alias_parser, 0)
+    node.init(2)
+    node.setfirst(imported)
+    # SET HERE empty node to show compiler it is a statement
+    # BAD DESIGN. NEED NODE TYPE
+    node.setsecond(empty_node())
 
-    # all parsers share same token stream and token_type checks can be made for any of them
-    module_name_alias_parser = parser.module_name_alias_parser
+    return node
 
-    # first statement can be import x.y.z as c
-    imported = expression(module_name_alias_parser, 0)
+def prefix_import(parser, node):
+    imported = expression(parser.module_name_parser, 0)
     node.init(1)
     node.setfirst(imported)
 

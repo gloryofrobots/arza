@@ -818,6 +818,9 @@ def _compile_IF(process, compiler, code, node):
 
     code.emit_1(LABEL, endif)
 
+############################
+# IMPORT
+#############################
 
 def _dot_to_string(process, compiler, node):
     if node.type == TT_DOT:
@@ -826,28 +829,43 @@ def _dot_to_string(process, compiler, node):
         return node.value
 
 
-def _compile_IMPORT(process, compiler, code, node):
+def _compile_IMPORT_STMT(process, compiler, code, node):
     exp = node.first()
     if exp.type == TT_AS:
-        import_name = exp.second().value
+        import_name = exp.second()
         module_path = _dot_to_string(process, compiler, exp.first())
     elif exp.type == TT_DOT:
-        import_name = exp.second().value
+        import_name = exp.second()
         module_path = _dot_to_string(process, compiler, exp)
     else:
         assert exp.type == TT_NAME
-        import_name = node.value
-        module_path = import_name
+        import_name = node
+        module_path = node.value
+
+    module_path_literal = _declare_literal(process, compiler, obs.newstring_from_str(module_path))
+    code.emit_1(IMPORT, module_path_literal)
+
+    _emit_store_name(process, compiler, code, import_name)
+
+
+
+def _compile_IMPORT_EXP(process, compiler, code, node):
+    exp = node.first()
+    if exp.type == TT_DOT:
+        module_path = _dot_to_string(process, compiler, exp)
+    else:
+        assert exp.type == TT_NAME
+        module_path = node.value
 
     module_path = obs.newstring_from_str(module_path)
-    import_name = obs.newstring_from_str(import_name)
-
     module_path_literal = _declare_literal(process, compiler, module_path)
     code.emit_1(IMPORT, module_path_literal)
 
-    import_name_literal = _declare_literal(process, compiler, import_name)
-    import_name_index = _declare_local(process, compiler, import_name)
-    code.emit_2(STORE_LOCAL, import_name_index, import_name_literal)
+def _compile_IMPORT(process, compiler, code, node):
+    if node.arity == 2:
+        _compile_IMPORT_STMT(process, compiler, code, node)
+    else:
+        _compile_IMPORT_EXP(process, compiler, code, node)
 
 
 def _compile_GENERIC(process, compiler, code, node):

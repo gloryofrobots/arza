@@ -41,7 +41,6 @@ class Parser(BaseParser):
         self.args_parser = args_parser_init(BaseParser(ts))
         self.module_name_parser = module_name_parser_init(BaseParser(ts))
         self.module_name_alias_parser = module_name_alias_parser_init(BaseParser(ts))
-        self.import_alias_parser = import_alias_parser_init(BaseParser(ts))
         self.generic_signature_parser = generic_signature_parser_init(BaseParser(ts))
         # self.expression_parser = expression_parser_init(BaseParser(ts))
         main_parser_init(self)
@@ -63,13 +62,6 @@ def infix_simple_pair(parser, node, left):
     node.setsecond(parser.node)
     advance(parser)
     return node
-
-
-def import_alias_parser_init(parser):
-    symbol(parser, TT_COMMA)
-    infix(parser, TT_AS, 20, infix_simple_pair)
-    literal(parser, TT_NAME)
-    return parser
 
 
 def module_name_parser_init(parser):
@@ -274,6 +266,8 @@ def main_parser_init(parser):
     prefix(parser, TT_FN, prefix_fn)
 
     prefix(parser, TT_OBJECT, prefix_object)
+
+    prefix(parser, TT_IMPORT, prefix_import)
 
     """
     STATEMENTS
