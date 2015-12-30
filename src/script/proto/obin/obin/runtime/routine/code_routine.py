@@ -5,7 +5,7 @@ from obin.runtime.routine.base_routine import BaseRoutine
 from obin.runtime.stack import Stack
 from obin.objects.space import (newbool, newundefined,
                                 newnil, newvector, isinterrupt,
-                                newtable, newfunc,
+                                newmap, newfunc,
                                 newint, newtuple, newgeneric, newtrait)
 from obin.objects.types.dispatch.ogeneric import reify
 from obin.objects import api
@@ -282,7 +282,7 @@ class CodeRoutine(BaseRoutine):
                 stack.push(next_el)
             # *************************************
             elif OBJECT == tag:
-                obj = newtable()
+                obj = newmap()
 
                 for _ in xrange(arg1):
                     name = stack.pop()

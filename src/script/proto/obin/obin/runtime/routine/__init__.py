@@ -72,7 +72,7 @@ def create_function_environment(func, scope, args, outer_env):
         else:
             args.append(newvector([]))
 
-    slots = scope.create_environment_slots(args)
+    slots = scope.create_environment_map(args)
     env = newenv(slots, outer_env)
 
     fn_index = scope.fn_name_index

@@ -4,11 +4,12 @@ from obin.objects.space import newvector, isnumber, isint
 
 
 def call2(process, generic, l, r):
-    process.call_object(generic, newvector([l, r]))
+    api.call(process, generic, newvector([l, r]))
 
 
 def call1(process, generic, w):
-    process.call_object(generic, newvector([w]))
+    api.call(process, generic, newvector([w]))
+    # process.call_object(generic, newvector([w]))
 
 
 # TODO INLINE

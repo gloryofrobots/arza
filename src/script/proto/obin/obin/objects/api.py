@@ -182,22 +182,6 @@ def traits(process, obj):
     return obj._traits_(process)
 
 
-def attach(process, obj, trait):
-    from space import isobject, istrait
-    from obin.objects.types import objct
-    assert isobject(obj)
-    assert istrait(trait)
-    objct.attach(process, obj, trait)
-
-
-def detach(process, obj, trait):
-    from obin.objects.types import objct
-    from space import isobject, istrait
-    assert isobject(obj)
-    assert istrait(trait)
-    objct.detach(process, obj, trait)
-
-
 def kindof(obj, trait):
     from space import newbool
     return newbool(n_kindof(obj, trait))

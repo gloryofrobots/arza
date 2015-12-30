@@ -295,7 +295,7 @@ def led_infixr_assign(parser, node, left):
         parse_error(parser, "Bad lvalue in assignment, wrong tuple destructuring", left)
 
     if ltype == TT_LCURLY and left.count_children() == 0:
-        parse_error(parser, "Bad lvalue in assignment, empty table", left)
+        parse_error(parser, "Bad lvalue in assignment, empty map", left)
 
     node.setfirst(left)
     exp = expression(parser, 9)

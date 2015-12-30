@@ -1,5 +1,5 @@
 from obin.objects.space import isstring
-from obin.objects.types.table import create_empty_table, create_table_with_values_from_table
+from obin.objects.space import newmap
 from obin.utils.builtins import absent_index, is_absent_index
 from obin.objects import api
 
@@ -21,7 +21,7 @@ class ScopeSet:
 
 class Scope:
     def __init__(self):
-        self.locals = create_empty_table()
+        self.locals = newmap()
 
         self.arg_count = -1
         self.fn_name_index = -1
@@ -112,5 +112,6 @@ class FinalScope:
     def create_env_bindings(self):
         return api.clone(self.variables)
 
-    def create_environment_slots(self, arguments):
-        return create_table_with_values_from_table(arguments, self.variables)
+    def create_environment_map(self, arguments):
+        from obin.objects.types.map import create_map_with_values_from_map
+        return create_map_with_values_from_map(arguments, self.variables)

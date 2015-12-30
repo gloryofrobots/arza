@@ -163,19 +163,19 @@ class Bindings:
 
 class TableIterator(W_Root):
     def __init__(self, source, length):
-        assert isinstance(source, W_Table)
+        assert isinstance(source, W_Map)
         assert isinstance(length, int)
         self.index = 0
-        self.table = source
-        self.__table_length = length
+        self.source = source
+        self.source_length = length
 
     def _next_(self):
         from obin.objects.space import newundefined, isundefined
         while True:
-            if self.index >= self.__table_length:
+            if self.index >= self.source_length:
                 return newundefined()
 
-            pair = self.table.slot_bindings[self.index]
+            pair = self.source.slot_bindings[self.index]
             self.index += 1
             key = pair[0]
             if isundefined(key):
@@ -184,15 +184,15 @@ class TableIterator(W_Root):
             return key
 
     def _tostring_(self):
-        return "<TableIterator %d:%d>" % (self.index, self.__table_length)
+        return "<TableIterator %d:%d>" % (self.index, self.source_length)
 
     def _tobool_(self):
-        if self.index >= self.__table_length:
+        if self.index >= self.source_length:
             return False
         return True
 
 
-class W_Table(W_Cell):
+class W_Map(W_Cell):
     """
         Dict which supports access by key and by index
     """
@@ -221,7 +221,7 @@ class W_Table(W_Cell):
         return self.__str__()
 
     def _clone_(self):
-        clone = W_Table()
+        clone = W_Map()
         values = self.slot_values
         if values is not None:
             clone.slot_values = api.clone(self.slot_values)
@@ -300,25 +300,25 @@ class W_Table(W_Cell):
         del self.slot_bindings[name]
 
 
-def _newtable(values, bindings, index):
-    table = W_Table()
-    table.slot_bindings = bindings
-    table.slot_values = values
-    table.index = index
-    return table
+def _create_map(values, bindings, index):
+    map = W_Map()
+    map.slot_bindings = bindings
+    map.slot_values = values
+    map.index = index
+    return map
 
 
-def create_table_with_size(size):
+def create_map_with_size(size):
     from obin.objects.space import newvector
-    return _newtable(newvector([None] * size), Bindings(), 0)
+    return _create_map(newvector([None] * size), Bindings(), 0)
 
 
-def create_empty_table():
+def create_empty_map():
     from obin.objects.space import newvector
-    return _newtable(newvector([]), Bindings(), 0)
+    return _create_map(newvector([]), Bindings(), 0)
 
 
-def create_table_with_values_from_table(values, source):
+def create_map_with_values_from_map(values, source):
     l = api.n_length(source)
     size = api.n_length(values)
     diff = l - size
@@ -327,4 +327,4 @@ def create_table_with_values_from_table(values, source):
         values.append_value_multiple_times(None, diff)
 
     bindings = source.slot_bindings.copy()
-    return _newtable(values, bindings, source.index)
+    return _create_map(values, bindings, source.index)

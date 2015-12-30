@@ -110,9 +110,9 @@ def newentity(process, traits, source):
     return W_Entity(traits, source)
 
 
-def newtable():
-    from obin.objects.types.table import create_empty_table
-    return create_empty_table()
+def newmap():
+    from obin.objects.types.map import create_empty_map
+    return create_empty_map()
 
 
 def newvector(items):
@@ -182,6 +182,12 @@ def isentity(value):
     from obin.objects.types.entity import W_Entity
     return isinstance(value, W_Entity)
 
+
+def ismap(value):
+    from obin.objects.types.map import W_Map
+    return isinstance(value, W_Map)
+
+
 def isvaluetype(value):
     from obin.objects.types.root import W_ValueType
     return isinstance(value, W_ValueType)
@@ -242,10 +248,7 @@ def isfloat(w):
 
 
 def isnumber(w):
-    from obin.objects.types.integer import W_Integer
-    from obin.objects.types.floating import W_Float
-    return isinstance(w, W_Integer) or isinstance(w, W_Float)
-
+    return isint(w) or isfloat(w)
 
 
 def isconstant(w):
@@ -257,4 +260,3 @@ def isnull_or_undefined(obj):
     if isnull(obj) or isundefined(obj):
         return True
     return False
-

@@ -1,11 +1,11 @@
 def initialize(libdirs):
     from obin.builtins import setup_builtins
     from obin.runtime.process import Process, ProcessData, Modules
-    from obin.objects.space import newtable
+    from obin.objects.space import newmap
     from obin.objects.stdlib import StdLib
 
     stdlib = StdLib()
-    builtins = newtable()
+    builtins = newmap()
     setup_builtins(builtins, stdlib)
     loader = Modules(libdirs)
 
