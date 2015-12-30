@@ -127,8 +127,10 @@ def newvector(items):
     obj = W_Vector(items)
     return obj
 
+
 def newemptyvector():
     return newvector([])
+
 
 def newtuple(tupl):
     from obin.objects.types.tupl import W_Tuple
@@ -231,19 +233,26 @@ def isnull(value):
     return value is w_Nil
 
 
-def isint(w):
-    from obin.objects.types.integer import W_Integer
-    return isinstance(w, W_Integer)
-
-
 def isstring(w):
     from obin.objects.types.string import W_String
     return isinstance(w, W_String)
 
 
+def isint(w):
+    from obin.objects.types.integer import W_Integer
+    return isinstance(w, W_Integer)
+
+
 def isfloat(w):
     from obin.objects.types.floating import W_Float
     return isinstance(w, W_Float)
+
+
+def isnumber(w):
+    from obin.objects.types.integer import W_Integer
+    from obin.objects.types.floating import W_Float
+    return isinstance(w, W_Integer) or isinstance(w, W_Float)
+
 
 
 def isconstant(w):

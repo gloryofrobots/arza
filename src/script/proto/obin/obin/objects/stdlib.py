@@ -9,6 +9,8 @@ class Generics:
         self.Mod = newgeneric(newstring(u"__mod__"))
         self.Equal = newgeneric(newstring(u"__equal__"))
         self.Compare = newgeneric(newstring(u"__compare__"))
+        self.GreaterThen = newgeneric(newstring(u"__gt__"))
+        self.GreaterEqual = newgeneric(newstring(u"__ge__"))
         self.UnaryMinus = newgeneric(newstring(u"__unary_minus__"))
         self.UnaryPlus = newgeneric(newstring(u"__unary_plus__"))
         self.BitNot = newgeneric(newstring(u"__bitnot__"))
