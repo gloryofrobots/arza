@@ -44,7 +44,7 @@ def create_function_routine(func, args, outer_env):
 
 def create_function_environment(func, scope, args, outer_env):
     from obin.runtime.environment import newenv
-    from obin.objects.space import newplainobject_with_slots, newvector
+    from obin.objects.space import  newvector
 
     declared_args_count = scope.count_args
     is_variadic = scope.is_variadic
@@ -73,7 +73,7 @@ def create_function_environment(func, scope, args, outer_env):
             args.append(newvector([]))
 
     slots = scope.create_environment_slots(args)
-    env = newenv(newplainobject_with_slots(slots), outer_env)
+    env = newenv(slots, outer_env)
 
     fn_index = scope.fn_name_index
     if fn_index != -1:

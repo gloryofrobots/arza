@@ -1,5 +1,5 @@
 from obin.objects import api
-from obin.objects.types.root import W_Root
+from obin.objects.types.root import W_Root, W_Cell
 from obin.utils.builtins import is_absent_index, absent_index
 
 
@@ -161,12 +161,45 @@ class Bindings:
         return max(self._minsize, size // 2)
 
 
-class Table(W_Root):
+class TableIterator(W_Root):
+    def __init__(self, source, length):
+        assert isinstance(source, W_Table)
+        assert isinstance(length, int)
+        self.index = 0
+        self.table = source
+        self.__table_length = length
+
+    def _next_(self):
+        from obin.objects.space import newundefined, isundefined
+        while True:
+            if self.index >= self.__table_length:
+                return newundefined()
+
+            pair = self.table.slot_bindings[self.index]
+            self.index += 1
+            key = pair[0]
+            if isundefined(key):
+                continue
+
+            return key
+
+    def _tostring_(self):
+        return "<TableIterator %d:%d>" % (self.index, self.__table_length)
+
+    def _tobool_(self):
+        if self.index >= self.__table_length:
+            return False
+        return True
+
+
+class W_Table(W_Cell):
     """
         Dict which supports access by key and by index
     """
 
     def __init__(self):
+        W_Cell.__init__(self)
+
         self.slot_values = None
         self.slot_bindings = None
         self.index = 0
@@ -188,7 +221,7 @@ class Table(W_Root):
         return self.__str__()
 
     def _clone_(self):
-        clone = Table()
+        clone = W_Table()
         values = self.slot_values
         if values is not None:
             clone.slot_values = api.clone(self.slot_values)
@@ -196,6 +229,9 @@ class Table(W_Root):
             clone.index = self.index
 
         return clone
+
+    def _iterator_(self):
+        return TableIterator(self, self._length_())
 
     def _at_(self, name):
         from obin.objects.space import newundefined
@@ -264,25 +300,25 @@ class Table(W_Root):
         del self.slot_bindings[name]
 
 
-def newtable(values, bindings, index):
-    table = Table()
+def _newtable(values, bindings, index):
+    table = W_Table()
     table.slot_bindings = bindings
     table.slot_values = values
     table.index = index
     return table
 
 
-def newtable_with_size(size):
+def create_table_with_size(size):
     from obin.objects.space import newvector
-    return newtable(newvector([None] * size), Bindings(), 0)
+    return _newtable(newvector([None] * size), Bindings(), 0)
 
 
-def newtable_empty():
+def create_empty_table():
     from obin.objects.space import newvector
-    return newtable(newvector([]), Bindings(), 0)
+    return _newtable(newvector([]), Bindings(), 0)
 
 
-def newtable_with_values_from_table(values, source):
+def create_table_with_values_from_table(values, source):
     l = api.n_length(source)
     size = api.n_length(values)
     diff = l - size
@@ -291,4 +327,4 @@ def newtable_with_values_from_table(values, source):
         values.append_value_multiple_times(None, diff)
 
     bindings = source.slot_bindings.copy()
-    return newtable(values, bindings, source.index)
+    return _newtable(values, bindings, source.index)

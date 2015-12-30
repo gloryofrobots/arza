@@ -7,7 +7,7 @@ class W_Module(W_Root):
         self.bytecode = bytecode
         self.is_compiled = False
         self.builtins = builtins
-        self.env = self.bytecode.scope.create_object()
+        self.env = self.bytecode.scope.create_env_bindings()
         self.result = None
 
     def _traits_(self, process):

@@ -3,12 +3,10 @@ import math
 from obin.runtime.error import ObinTypeError, ObinReferenceError
 from obin.objects import api
 from obin.objects.space import newnumber, isint, isstring, isfloat, \
-    newbool, newint, newfloat, newstring, newvector, isnumber, is_both_numbers
+    newbool, newint, newfloat, newstring
 from rpython.rlib.rarithmetic import ovfcheck, intmask
-from rpython.rlib.rfloat import isnan, isinf
-from rpython.rlib.objectmodel import specialize
+from rpython.rlib.rfloat import NAN, INFINITY, isnan, isinf
 
-from rpython.rlib.rfloat import NAN, INFINITY
 # 15.7.3.2
 w_MAX_VALUE = newnumber(1.7976931348623157e308)
 

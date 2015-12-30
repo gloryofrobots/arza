@@ -86,7 +86,7 @@ def _eval(process, routine):
 
     src = api.to_native_string(x)
     source = compiler.compile_function_source(process, src, space.newstring(u"__eval__"))
-    obj = source.code.scope.create_object()
+    obj = source.code.scope.create_env_bindings()
     env = newenv(obj, None)
     func = space.newfunc(source.name, source.code, env)
     process.call_object(func, space.newemptyvector())

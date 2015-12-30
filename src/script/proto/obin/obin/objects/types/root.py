@@ -65,6 +65,14 @@ class W_Root:
     def _totrait_(self, process):
         raise NotImplementedError()
 
+    def _compute_hash_(self):
+        raise NotImplementedError()
+
+    def _to_routine_(self, args):
+        raise NotImplementedError()
+
+    def _clone_(self):
+        raise NotImplementedError()
 
 class W_Cell(W_Root):
     def __init__(self):

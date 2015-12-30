@@ -5,12 +5,12 @@ from obin.runtime.routine.base_routine import BaseRoutine
 from obin.runtime.stack import Stack
 from obin.objects.space import (newbool, newundefined,
                                 newnil, newvector, isinterrupt,
-                                newobject, newfunc,
+                                newtable, newfunc,
                                 newint, newtuple, newgeneric, newtrait)
 from obin.objects.types.dispatch.ogeneric import reify
 from obin.objects import api
 from obin.runtime.load import import_module
-from obin.runtime.internals import get_internal
+from obin.runtime.internals.internals import get_internal
 
 
 def load_arguments(stack):
@@ -190,7 +190,7 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif CALL_INTERNAL == tag:
                 internal = get_internal(arg1)
-                internal(self)
+                internal(process, self)
             # *************************************
             elif CALL == tag:
                 func = stack.pop()
@@ -282,7 +282,7 @@ class CodeRoutine(BaseRoutine):
                 stack.push(next_el)
             # *************************************
             elif OBJECT == tag:
-                obj = newobject()
+                obj = newtable()
 
                 for _ in xrange(arg1):
                     name = stack.pop()

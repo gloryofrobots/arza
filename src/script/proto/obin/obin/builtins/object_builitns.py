@@ -55,11 +55,3 @@ def clone(routine):
     this = routine.get_arg(0)
     return api.clone(this)
 
-@complete_native_routine
-def create(routine):
-    from obin.objects.space import stdlib
-    this = routine.get_arg(0)
-    obj = stdlib.newobject()
-    obj.set_origin(this)
-    return obj
-

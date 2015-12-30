@@ -3,7 +3,7 @@ from obin.compile.parse.parser import *
 from obin.compile.parse.node import is_empty_node, is_list_node, is_iterable_node
 from obin.compile.scope import Scope
 from obin.objects import space as obs
-from obin.runtime import internals
+from obin.runtime.internals import internals
 from obin.compile.code.source import CodeSource
 from obin.compile.code import *
 from obin.utils.builtins import is_absent_index

@@ -103,22 +103,16 @@ def newprimitive(name, function, arity):
     return obj
 
 
-def newobject():
-    from obin.objects.types.objct import W_Object
-    obj = W_Object(None)
-    return obj
+def newentity(process, traits, source):
+    from obin.objects import api
+    from obin.objects.types.entity import W_Entity
+    traits.append_vector_items(api.traits(process, source))
+    return W_Entity(traits, source)
 
 
-def newplainobject():
-    from obin.objects.types.objct import W_Object
-    obj = W_Object(None)
-    return obj
-
-
-def newplainobject_with_slots(slots):
-    from obin.objects.types.objct import W_Object
-    obj = W_Object(slots)
-    return obj
+def newtable():
+    from obin.objects.types.table import create_empty_table
+    return create_empty_table()
 
 
 def newvector(items):
@@ -184,10 +178,9 @@ def iscell(value):
     return isinstance(value, W_Cell)
 
 
-def isobject(value):
-    from obin.objects.types.objct import W_Object
-    return isinstance(value, W_Object)
-
+def isentity(value):
+    from obin.objects.types.entity import W_Entity
+    return isinstance(value, W_Entity)
 
 def isvaluetype(value):
     from obin.objects.types.root import W_ValueType
@@ -265,24 +258,3 @@ def isnull_or_undefined(obj):
         return True
     return False
 
-# @specialize.argtype(0)
-# def _w(value):
-#     from obin.objects.types.root import W_Root
-#     if value is None:
-#         return newnil()
-#     elif isinstance(value, W_Root):
-#         return value
-#     elif isinstance(value, bool):
-#         return newbool(value)
-#     elif isinstance(value, unicode):
-#         return newstring(value)
-#     elif isinstance(value, str):
-#         u_str = unicode(value)
-#         return newstring(u_str)
-#     elif isinstance(value, list):
-#         return newvector(value)
-#
-#     raise TypeError("ffffuuu %s" % (str(type(value)),))
-#
-#
-#

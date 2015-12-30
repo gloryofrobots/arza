@@ -112,6 +112,14 @@ class W_Vector(W_Cell):
         assert isany(v)
         self._items.append(v)
 
+    def append_vector_items(self, vec):
+        from obin.objects.space import isvector
+        assert isvector(vec)
+        self.append_many(vec._items)
+
+    def append_many(self, items):
+        self._items += items
+
     def prepend(self, v):
         from obin.objects.space import isany
         assert isany(v)
@@ -129,9 +137,6 @@ class W_Vector(W_Cell):
 
     def to_list(self):
         return self._items
-
-    def append_many(self, items):
-        self._items += items
 
     def pop(self):
         return self._items.pop()
