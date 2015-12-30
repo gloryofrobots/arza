@@ -2,26 +2,26 @@ import math
 
 from obin.runtime.error import ObinTypeError, ObinReferenceError
 from obin.objects import api
-from obin.objects.space import _w, isint, isstring, isfloat, newbool, newint, newfloat, newstring
+from obin.objects.space import newnumber, isint, isstring, isfloat, newbool, newint, newfloat, newstring
 from rpython.rlib.rarithmetic import ovfcheck, intmask
 from rpython.rlib.rfloat import isnan, isinf
 from rpython.rlib.objectmodel import specialize
 
 from rpython.rlib.rfloat import NAN, INFINITY
 # 15.7.3.2
-w_MAX_VALUE = _w(1.7976931348623157e308)
+w_MAX_VALUE = newnumber(1.7976931348623157e308)
 
 # 15.7.3.3
-w_MIN_VALUE = _w(5e-320)
+w_MIN_VALUE = newnumber(5e-320)
 
 # 15.7.3.4
-w_NAN = _w(NAN)
+w_NAN = newnumber(NAN)
 
 # 15.7.3.5
-w_POSITIVE_INFINITY = _w(INFINITY)
+w_POSITIVE_INFINITY = newnumber(INFINITY)
 
 # 15.7.3.6
-w_NEGATIVE_INFINITY = _w(-INFINITY)
+w_NEGATIVE_INFINITY = newnumber(-INFINITY)
 
 # from rpython.rlib import jit
 
@@ -224,7 +224,7 @@ def ursh(r, lval, rval):
 
     shift_count = rnum & 0x1F
     res = lnum >> shift_count
-    return _w(res)
+    return newnumber(res)
 
 
 def rsh(r, lval, rval):
@@ -235,7 +235,7 @@ def rsh(r, lval, rval):
 
     shift_count = rnum & 0x1F
     res = lnum >> shift_count
-    return _w(res)
+    return newnumber(res)
 
 
 def lsh(r, lval, rval):
@@ -245,7 +245,7 @@ def lsh(r, lval, rval):
     shift_count = intmask(rnum & 0x1F)
     res = lnum << shift_count
 
-    return _w(res)
+    return newnumber(res)
 
 
 def uplus(r, op1):

@@ -31,6 +31,16 @@ def newfloat(f):
     return W_Float(f)
 
 
+@specialize.argtype(0)
+def newnumber(value):
+    if isinstance(value, int):
+        return newint(value)
+    elif isinstance(value, float):
+        return newfloat(value)
+
+    assert False, "invalid number type"
+
+
 @enforceargs(str)
 def newchar(c):
     from obin.objects.types.character import W_Char
@@ -117,6 +127,8 @@ def newvector(items):
     obj = W_Vector(items)
     return obj
 
+def newemptyvector():
+    return newvector([])
 
 def newtuple(tupl):
     from obin.objects.types.tupl import W_Tuple
@@ -244,30 +256,24 @@ def isnull_or_undefined(obj):
         return True
     return False
 
-
-@specialize.argtype(0)
-def _w(value):
-    from obin.objects.types.root import W_Root
-    if value is None:
-        return newnil()
-    elif isinstance(value, W_Root):
-        return value
-    elif isinstance(value, bool):
-        return newbool(value)
-    elif isinstance(value, int):
-        return newint(value)
-    elif isinstance(value, float):
-        return newfloat(value)
-    elif isinstance(value, unicode):
-        return newstring(value)
-    elif isinstance(value, str):
-        u_str = unicode(value)
-        return newstring(u_str)
-    elif isinstance(value, list):
-        return newvector(value)
-
-    raise TypeError("ffffuuu %s" % (str(type(value)),))
-
-
-
-
+# @specialize.argtype(0)
+# def _w(value):
+#     from obin.objects.types.root import W_Root
+#     if value is None:
+#         return newnil()
+#     elif isinstance(value, W_Root):
+#         return value
+#     elif isinstance(value, bool):
+#         return newbool(value)
+#     elif isinstance(value, unicode):
+#         return newstring(value)
+#     elif isinstance(value, str):
+#         u_str = unicode(value)
+#         return newstring(u_str)
+#     elif isinstance(value, list):
+#         return newvector(value)
+#
+#     raise TypeError("ffffuuu %s" % (str(type(value)),))
+#
+#
+#

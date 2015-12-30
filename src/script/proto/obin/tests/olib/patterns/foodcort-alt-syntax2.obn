@@ -1,0 +1,163 @@
+
+
+exports customers, items, foodcort
+
+module customers
+
+trait Customer;
+exports visit, Vegan, Ordinary
+
+generic visit(self of Customer, cort of FoodCort) =>
+    foodcort:prepare(cort, self, self.money)
+end
+
+
+func _customer(_trait, name, money) =>
+   construct([_trait, Customer], {name=name, money=money})
+end
+
+
+factory Vegan(name, money) =>
+    _customer(Vegan, name, money)
+end
+
+
+factory Ordinary(name, money) =>
+    _customer(Ordinary, name, money)
+end
+
+#########################################################################
+
+module items
+
+exports packing, pack, VegBurger, ChickenBurger, Pepsi, Coke
+
+trait Item
+trait Burger
+trait ColdDrink
+
+trait Wrapper
+trait Bottle
+
+
+generic _item(traits of Enumerable, price of Float, name of String) =>
+     construct (concat(traits, Item),
+                    record {price=price, name=name})
+end
+
+
+factory VegBurger() =>
+    _item([VegBurger, Burger], 0.25, "VegBurger")
+end
+
+
+factory ChickenBurger() =>
+    _item([ChickenBurger, Burger], 40.45, "ChickenBurger")
+end
+
+
+factory Pepsi() =>
+    _item([Pepsi, ColdDrink], 1.45, "Pepsi")
+end
+
+factory Coke() =>
+    _item([Coke, ColdDrink], 1.65, "Coke")
+end
+
+
+generic pack =>
+   case (self of Wrapper) =>
+      print("Wrapper of ", self.label) end
+
+   case (self of Bottle) =>
+      print("Bottle", self.label, " volume: ", self.volume) end
+end
+
+
+generic packing =>
+   case (self of Burger) =>
+      construct(Wrapper, { label = "Burger"})
+   end
+
+    case (self of ColdDrink) =>
+      construct(Bottle, { label = "ColdDrink", volume = 1.0})
+    end
+end
+
+#########################################################################
+
+module foodcort
+exports cost, NotEnoughMoneyError, prepare
+trait NotEnoughMoneyError;
+
+func cost(meal) =>
+    reduce(fun(item, result) =>
+                result + item.price end,
+           0.0,
+           meal as Vector)
+
+
+
+// It answers to append and all other list funcs
+factory Menu(items) =>
+    construct([Menu], items) end
+
+
+reify __tostring__(self of Menu) =>
+    each(func(item) =>
+            string.build(
+                         "Item", string.nl,
+                         "name", item.name, string.nl,
+                         "price", item.price, string.nl
+                          "packing", items.packing(item)
+                        )
+           end,
+           self as Vector);;
+
+
+factory FoodCort =>
+    construct(FoodCort, nil) end
+
+
+generic prepare =>
+    func check_amount(menu, money) =>
+        if cost(menu) > money
+            throw Error(NotEnoughMoneyError,
+                            {"money"=money}) 
+        end
+    end
+
+    case (cort of FoodCort, customer of customers.Vegan, money of Float) =>
+        menu = Menu([items.VegBurger(), items.Coke()])
+        check_amount(menu, money) 
+    end
+
+
+    case (cort of FoodCort, customer of customers.Ordinary, money of Float) =>
+        menu = Menu([items.ChickenBurger(), items.Pepsi()])
+        check_amount(menu, money) 
+    end 
+end
+
+OliveGarden = FoodCort()
+
+Joe = customers.Vegan()
+Bob = customers.Ordinary()
+Joe.visit(OliveGarden)
+Bob.visit(OliveGarden)
+
+reduce(`+`,
+  fun BigFun() => 
+    if x == 25 
+      print(x)
+      do_some_work(x)
+      y = 23 - 34
+    elif x == 23 
+      x = 12
+      print (x)
+      x -= 134
+    else
+      x = 12
+      x = 456
+    end
+  end, [1,2,3,3,4,5])

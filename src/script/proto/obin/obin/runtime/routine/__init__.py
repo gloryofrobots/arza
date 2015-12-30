@@ -1,5 +1,5 @@
 from rpython.rlib import jit
-from obin.objects.space import newstring, _w
+from obin.objects.space import newstring, isany
 from obin.runtime.environment import newenv
 from obin.runtime.routine.code_routine import CodeRoutine
 from obin.runtime.routine.native_routine import NativeRoutine
@@ -9,7 +9,10 @@ from obin.objects import api
 def complete_native_routine(func):
     def func_wrapper(process, routine):
         result = func(process, routine)
-        routine.complete(_w(result))
+        if not isany(result):
+            raise RuntimeError
+        assert isany(result)
+        routine.complete(result)
 
     return func_wrapper
 
@@ -28,13 +31,6 @@ def create_module_routine(code, module, _globals):
     return jit.promote(CodeRoutine(newstring(u"__module__"), code, env))
 
 
-def create_eval_routine(code):
-    from obin.runtime.environment import newenv
-    obj = code.scope.create_object()
-    env = newenv(obj, None)
-    return jit.promote(CodeRoutine(newstring(u"__module__"), code, env))
-
-
 def create_function_routine(func, args, outer_env):
     # TODO CHANGE TO PUBLIC FIELDS
     code = func._bytecode_
@@ -43,6 +39,7 @@ def create_function_routine(func, args, outer_env):
 
     env = create_function_environment(func, scope, args, outer_env)
     return jit.promote(CodeRoutine(name, code, env))
+
 
 
 def create_function_environment(func, scope, args, outer_env):

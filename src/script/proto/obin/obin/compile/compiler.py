@@ -818,6 +818,7 @@ def _compile_IF(process, compiler, code, node):
 
     code.emit_1(LABEL, endif)
 
+
 ############################
 # IMPORT
 #############################
@@ -848,7 +849,6 @@ def _compile_IMPORT_STMT(process, compiler, code, node):
     _emit_store_name(process, compiler, code, import_name)
 
 
-
 def _compile_IMPORT_EXP(process, compiler, code, node):
     exp = node.first()
     if exp.type == TT_DOT:
@@ -860,6 +860,7 @@ def _compile_IMPORT_EXP(process, compiler, code, node):
     module_path = obs.newstring_from_str(module_path)
     module_path_literal = _declare_literal(process, compiler, module_path)
     code.emit_1(IMPORT, module_path_literal)
+
 
 def _compile_IMPORT(process, compiler, code, node):
     if node.arity == 2:
@@ -1245,6 +1246,13 @@ def compile_module(process, name, src):
     code = compile(process, src)
     module = newmodule(process, name, code)
     return module
+
+
+def compile_function_source(process, src, name):
+    from obin.objects.space import newfuncsource
+    code = compile(process, src)
+    fn = newfuncsource(name, code)
+    return fn
 
 
 def print_code(code):

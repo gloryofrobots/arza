@@ -161,7 +161,7 @@ fire(Joe)
 
 import military.equipment as eq
 import military.troops
-import attack, hide, runaway as run_away_from_danger, three, four from military.ta.behavior
+{attack, hide, runaway:run_away_from_danger, three, four} = import military.ta.behavior
 
 print(four())
 print(attack)
@@ -293,7 +293,21 @@ print(1,2,3,...a, 9, 10, ...b)
 a = fv(1,2,3,...a, 9, 10, ...b)
 print(a)
 
-print("OLOLO")
+fn coroutine(func) {
+    (fiber1, fiber2) = spawn_fiber()
+    first_call = false
+    return fn(...args) {
+        outer first_call
+        if first_call == false {
+            first_call = true
+            activate_fiber(fiber2, fn(){
+                func(fiber1, ...args)
+            })
+        } else {
+            fiber2(...args)
+        }
+    }
+}
  iter = coroutine(fn(yield, j) {
            fn send(k) {
                yield(k)

@@ -1,5 +1,4 @@
 __author__ = 'gloryofrobots'
-from obin.objects.space import _w
 from rpython.rlib.rfloat import NAN, INFINITY, isnan, isinf
 from rpython.rlib.unicodedata import unicodedb
 from obin.objects import api

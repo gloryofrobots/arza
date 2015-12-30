@@ -51,8 +51,9 @@ class Fiber:
 
     def resume_routine(self, result):
         self.routine.resume(result)
-        while self.routine.is_complete():
-            self.next_routine()
+        # in case of native routines
+        # while self.routine.is_complete():
+        #     self.next_routine()
 
     def finalise(self):
         parent = self.parent
@@ -77,7 +78,10 @@ class Fiber:
         routine = self.routines.pop()
         routine.resume(self.routine.result)
         self.routine = routine
-        return routine
+        # in case of native routines
+        # if routine.is_complete():
+        #     return self.next_routine()
+        return self.routine
 
 
 class Process(object):
@@ -207,6 +211,8 @@ class Process(object):
         fiber = self.fiber
         routine = fiber.routine
         assert routine
+        if not routine.is_inprocess():
+            print routine
         assert routine.is_inprocess()
         routine.execute(self)
 

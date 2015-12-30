@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from obin.runtime.routine import complete_native_routine
 from obin.objects import api
+from obin.objects import space
 from rpython.rlib.rstring import UnicodeBuilder
 from obin.runistr import encode_unicode_utf8
 
@@ -53,12 +54,8 @@ def setup(obj, stdlib):
 def _id(process, routine):
     from rpython.rlib.objectmodel import compute_unique_id
     this = routine.get_arg(0)
-    return str(hex(compute_unique_id(this)))
+    return space.newstring(unicode(hex(compute_unique_id(this))))
 
-
-@complete_native_routine
-def alert(process, routine):
-    _print(routine)
 
 
 @complete_native_routine
@@ -77,57 +74,55 @@ def _print(process, routine):
     u_print_str = builder.build()
     print_str = encode_unicode_utf8(u_print_str)
     print(print_str)
+    return space.newundefined()
 
 
 def _eval(process, routine):
-    from obin.objects.space import isstring
-    from obin.runtime.routine import create_eval_routine
-
+    from obin.runtime.environment import newenv
+    from obin.compile import compiler
     x = routine.get_arg(0)
 
-    assert isstring(x)
+    assert space.isstring(x)
 
     src = api.to_native_string(x)
-    from obin.compile.compiler import compile as cl
-    code = cl(src)
-    f = create_eval_routine(code)
-    routine.call_routine(f)
+    source = compiler.compile_function_source(process, src, space.newstring(u"__eval__"))
+    obj = source.code.scope.create_object()
+    env = newenv(obj, None)
+    func = space.newfunc(source.name, source.code, env)
+    process.call_object(func, space.newemptyvector())
 
 
 @complete_native_routine
 def spawn_fiber(process, routine):
     from obin.objects.types.fiber import newfiber
-    from obin.objects.space import newtuple
     y1, y2 = newfiber(process)
-    return newtuple([y1, y2])
+    return space.newtuple([y1, y2])
 
 
 def activate_fiber(process, routine):
     from obin.objects.types.fiber import activate_fiber as activate
-    from obin.objects.space import newvector
     fiber = routine.get_arg(0)
     func = routine.get_arg(1)
     # args = routine.get_arg(2)
-    args = newvector([])
+    args = space.newvector([])
     activate(process, fiber, func, args)
+    return space.newundefined()
 
 
 @complete_native_routine
 def _range(process, routine):
-    from obin.objects.space import newvector, newint
     start = routine.get_arg(0)
     end = routine.get_arg(1)
     start = api.to_native_integer(start)
     end = api.to_native_integer(end)
-    items = [newint(i) for i in xrange(start, end)]
-    return newvector(items)
+    items = [space.newint(i) for i in xrange(start, end)]
+    return space.newvector(items)
 
 
 @complete_native_routine
 def generic(process, routine):
-    from obin.objects.space import newgeneric
     name = routine.get_arg(0)
-    return newgeneric(name)
+    return space.newgeneric(name)
 
 
 @complete_native_routine
@@ -136,7 +131,7 @@ def specify(process, routine):
     signature = routine.get_arg(1)
     specification = routine.get_arg(2)
     method.reify_single(signature, specification)
-    return None
+    return space.newundefined()
 
 
 @complete_native_routine
@@ -196,6 +191,5 @@ def clone(process, routine):
 
 @complete_native_routine
 def trait(process, routine):
-    from obin.objects.space import newtrait
     name = routine.get_arg(0)
-    return newtrait(name)
+    return space.newtrait(name)

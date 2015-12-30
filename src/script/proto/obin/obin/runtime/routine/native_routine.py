@@ -14,9 +14,11 @@ class NativeRoutine(BaseRoutine):
         self.arity = arity
         self.count_args = api.n_length(args)
         self._args = args
-
     # redefine resume because we can call bytecode routine from native and after it resumes as we must complete
-    resume = BaseRoutine.complete
+    # resume = BaseRoutine.complete
+
+    def _on_resume(self, value):
+        self.result = value
 
     def name(self):
         return api.to_native_string(self._name_)
@@ -28,9 +30,11 @@ class NativeRoutine(BaseRoutine):
         return api.at_index(self._args, index)
 
     def _execute(self, process):
-        # print "Routine and Ctx", self.__class__.__name__, ctx.__class__.__name__
-        self.suspend()
-        self._function_(process, self)
+        if self.result is not None:
+            self.complete(self.result)
+        else:
+            self.suspend()
+            self._function_(process, self)
 
     def _on_complete(self):
         pass

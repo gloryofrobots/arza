@@ -15,9 +15,7 @@ class BaseRoutine:
         return self._signal
 
     def resume(self, value):
-        # print "RESUME", self.__state
-        if not self.is_suspended():
-            print "SSS"
+        # print "RESUME", value
         assert self.is_suspended()
         self._on_resume(value)
         self._state = BaseRoutine.State.INPROCESS
