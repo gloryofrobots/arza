@@ -1,6 +1,6 @@
 from operations import *
 
-from obin.objects.space import newvector, isnumber, isint
+from obin.objects.space import newvector, isnumber, isint, isentity, isboolean
 
 
 def call2(process, generic, l, r):
@@ -9,7 +9,6 @@ def call2(process, generic, l, r):
 
 def call1(process, generic, w):
     api.call(process, generic, newvector([w]))
-    # process.call_object(generic, newvector([w]))
 
 
 # TODO INLINE
@@ -21,12 +20,19 @@ def is_both_integers(w1, w2):
     return isint(w1) and isint(w2)
 
 
+def is_both_strings(w1, w2):
+    return isstring(w1) and isstring(w2)
+
+
+def is_not_entities(w1, w2):
+    return not isentity(w1) and not isentity(w2)
+
+
 def apply_binary(process, routine, operation, left, right):
     routine.stack.push(operation(process, left, right))
 
 
 def apply_unary(process, routine, operation, val):
-    val = routine.stack.pop()
     routine.stack.push(operation(process, val))
 
 
@@ -46,6 +52,8 @@ def internal_ADD(process, routine):
 
     if is_both_numbers(left, right):
         apply_binary(process, routine, plus_n_n, left, right)
+    elif is_both_strings(left, right):
+        apply_binary(process, routine, add_string_string, left, right)
     else:
         call2(process, process.stdlib.generics.Add, left, right)
 
@@ -212,32 +220,40 @@ def internal_LE(process, routine):
 def internal_EQ(process, routine):
     right = routine.stack.pop()
     left = routine.stack.pop()
-
-    apply_binary(process, routine, eq_w, left, right)
+    if is_not_entities(left, right):
+        apply_binary(process, routine, eq_w, left, right)
+    else:
+        call2(process, process.stdlib.generics.Equal, left, right)
 
 
 def internal_NE(process, routine):
     right = routine.stack.pop()
     left = routine.stack.pop()
-    apply_binary(process, routine, noteq_w, left, right)
+    if is_not_entities(left, right):
+        apply_binary(process, routine, noteq_w, left, right)
+    else:
+        call2(process, process.stdlib.generics.NotEqual, left, right)
+
+
+def internal_NOT(process, routine):
+    value = routine.stack.pop()
+    apply_unary(process, routine, not_w, value)
 
 
 def internal_IN(process, routine):
     right = routine.stack.pop()
     left = routine.stack.pop()
 
-    apply_binary(process, routine, in_w, left, right)
+    if is_not_entities(left, right):
+        apply_binary(process, routine, in_w, left, right)
+    else:
+        call2(process, process.stdlib.generics.In, left, right)
 
 
 def internal_IS(process, routine):
     right = routine.stack.pop()
     left = routine.stack.pop()
     apply_binary(process, routine, is_w, left, right)
-
-
-def internal_NOT(process, routine):
-    value = routine.stack.pop()
-    apply_unary(process, routine, not_w, value)
 
 
 def internal_ISNOT(process, routine):

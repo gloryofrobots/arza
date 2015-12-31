@@ -2,7 +2,7 @@
 
 
 
-def setup_builtins(module, stdlib):
+def setup_builtins(process, module, stdlib):
     import obin.builtins.object_builitns
 
     # target = object_space.traits.Function
@@ -16,7 +16,7 @@ def setup_builtins(module, stdlib):
     # api.put_native_function(target, u'call', obin.builtins.function.js_call)
 
     import obin.builtins.global_builtins
-    obin.builtins.global_builtins.setup(module, stdlib)
+    obin.builtins.global_builtins.setup(process, module, stdlib)
 
     # import obin.builtins.object_builitns
     # obin.builtins.object_builitns.setup(object_space.traits.Object)

@@ -38,7 +38,7 @@ OPCODES = [
     ("MEMBER", -1),
     ("POP", -1),
     ("THROW", -1),
-    ("CONCAT", -1),
+    ("VECTOR_MERGE_INTO", -1),
 
     ("STORE_MEMBER", -2),
     ("SLICE", -3),

@@ -91,10 +91,16 @@ exports cost, NotEnoughMoneyError, prepare
 trait NotEnoughMoneyError;
 
 func cost(meal) =>
-    reduce(fun(item, result) =>
-                result + item.price end,
-           0.0,
-           meal as Vector)
+    if meal isnot nil
+        reduce(func(item, result) =>
+                    result + item.price
+               end,
+               0.0,
+             meal as Vector)
+    else
+        nil
+    end
+end
 
 
 
@@ -147,10 +153,10 @@ Joe.visit(OliveGarden)
 Bob.visit(OliveGarden)
 
 reduce(`+`,
-  fun BigFun() => 
+  fn BigFun() =>
     if x == 25 
       print(x)
-      do_some_work(x)
+      =>_some_work(x)
       y = 23 - 34
     elif x == 23 
       x = 12
@@ -161,3 +167,4 @@ reduce(`+`,
       x = 456
     end
   end, [1,2,3,3,4,5])
+

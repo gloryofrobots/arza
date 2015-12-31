@@ -1,6 +1,8 @@
 class Generics:
     def __init__(self):
         from obin.objects.space import newgeneric, newstring
+        self.Not = newgeneric(newstring(u"__not__"))
+
         self.Length = newgeneric(newstring(u"length"))
         self.Add = newgeneric(newstring(u"__add__"))
         self.Sub = newgeneric(newstring(u"__sub__"))
@@ -8,7 +10,19 @@ class Generics:
         self.Div = newgeneric(newstring(u"__div__"))
         self.Mod = newgeneric(newstring(u"__mod__"))
         self.Equal = newgeneric(newstring(u"__equal__"))
+        self.NotEqual = newgeneric(newstring(u"__not_equal__"))
         self.Compare = newgeneric(newstring(u"__compare__"))
+
+        self.ToBoolean = newgeneric(newstring(u"__toboolean__"))
+        self.ToString = newgeneric(newstring(u"__toboolean__"))
+        self.ToFloat = newgeneric(newstring(u"__toboolean__"))
+        self.ToInteger = newgeneric(newstring(u"__toboolean__"))
+        self.ToList = newgeneric(newstring(u"__toboolean__"))
+        self.ToTuple = newgeneric(newstring(u"__toboolean__"))
+        self.ToMap = newgeneric(newstring(u"__toboolean__"))
+        self.ToChar = newgeneric(newstring(u"__toboolean__"))
+
+        self.In = newgeneric(newstring(u"__in__"))
         self.GreaterThen = newgeneric(newstring(u"__gt__"))
         self.GreaterEqual = newgeneric(newstring(u"__ge__"))
         self.UnaryMinus = newgeneric(newstring(u"__unary_minus__"))

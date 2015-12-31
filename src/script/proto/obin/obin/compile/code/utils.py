@@ -1,13 +1,12 @@
 from obin.compile.code.opcode import *
-
 # ************************************************
 
 __OPCODE_REPR__ = ["UNDEFINED", "NULL", "TRUE", "FALSE", "LITERAL", "OUTER", "LOCAL", "FUNCTION", "INTEGER", "DUP",
                    "NEXT", "IMPORT", "IMPORT_MEMBER", "GENERIC", "TRAIT", "LABEL", "STORE_OUTER", "STORE_LOCAL",
                    "ITERATOR", "RETURN", "CALL_INTERNAL", "CALL", "CALL_METHOD", "JUMP", "JUMP_IF_FALSE_NOPOP",
                    "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "JUMP_IF_ITERATOR_EMPTY", "MEMBER_DOT",
-                   "MEMBER", "POP", "THROW", "CONCAT", "STORE_MEMBER", "SLICE", "UNPACK_SEQUENCE", "PUSH_MANY",
-                   "VECTOR", "TUPLE", "OBJECT", "REIFY", ]
+                   "MEMBER", "POP", "THROW", "VECTOR_MERGE_INTO", "STORE_MEMBER", "SLICE", "UNPACK_SEQUENCE",
+                   "PUSH_MANY", "VECTOR", "TUPLE", "OBJECT", "REIFY", ]
 
 # ************************************************
 
@@ -60,7 +59,7 @@ def opcode_estimate_stack_change(opcode):
 
 
 def opcode_info(routine, opcode):
-    from obin.runtime.internals import internal_to_str
+    from obin.runtime.internals.internals import internal_to_str
 
     tag = opcode[0]
     arg1 = opcode[1]

@@ -141,10 +141,6 @@ class W_Vector(W_Cell):
     def pop(self):
         return self._items.pop()
 
-    def concat(self, v):
-        assert isinstance(v, W_Vector)
-        self._items += v.to_list()
-
     def fold_slice_into_itself(self, index):
         assert index >= 0
         if index == 0:

@@ -6,10 +6,10 @@ def initialize(libdirs):
 
     stdlib = StdLib()
     builtins = newmap()
-    setup_builtins(builtins, stdlib)
     loader = Modules(libdirs)
-
     process = Process(ProcessData(loader, stdlib, builtins))
+    setup_builtins(process, builtins, stdlib)
+
     return process
 
 

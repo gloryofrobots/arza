@@ -30,6 +30,7 @@ def newinternals():
         S += "    P[%s] = %s\n" % (p, ("internal_%s" % p))
 
     S += "    return P\n"
+    S += "\n\n__INTERNALS__ = newinternals()"
     print S
 
 def gen_prim_to_str():
@@ -47,3 +48,8 @@ gen_prims_repr()
 print
 gen_prims_factory()
 gen_prim_to_str()
+
+print """
+def get_internal(id):
+    return __INTERNALS__[id]
+"""

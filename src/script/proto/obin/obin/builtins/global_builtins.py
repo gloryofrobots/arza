@@ -6,42 +6,51 @@ from rpython.rlib.rstring import UnicodeBuilder
 from obin.runistr import encode_unicode_utf8
 
 
-def setup(obj, stdlib):
-    ### Traits
+def setup_traits(process, module, stdlib):
     traits = stdlib.traits
-    api.put_string(obj, u'Any', traits.Any)
-    api.put_string(obj, u'True', traits.True)
-    api.put_string(obj, u'False', traits.False)
-    api.put_string(obj, u'Boolean', traits.Boolean)
-    api.put_string(obj, u'Nil', traits.Nil)
-    api.put_string(obj, u'Undefined', traits.Undefined)
-    api.put_string(obj, u'Char', traits.Char)
-    api.put_string(obj, u'Number', traits.Number)
-    api.put_string(obj, u'Integer', traits.Integer)
-    api.put_string(obj, u'Float', traits.Float)
-    api.put_string(obj, u'Symbol', traits.Symbol)
-    api.put_string(obj, u'String', traits.String)
-    api.put_string(obj, u'Vector', traits.Vector)
-    api.put_string(obj, u'Tuple', traits.Tuple)
-    api.put_string(obj, u'Object', traits.Object)
-    api.put_string(obj, u'Generic', traits.Generic)
-    api.put_string(obj, u'Module', traits.Module)
-    api.put_string(obj, u'Primitive', traits.Primitive)
-    api.put_string(obj, u'Function', traits.Function)
+    api.put_string(module, u'Any', traits.Any)
+    api.put_string(module, u'True', traits.True)
+    api.put_string(module, u'False', traits.False)
+    api.put_string(module, u'Boolean', traits.Boolean)
+    api.put_string(module, u'Nil', traits.Nil)
+    api.put_string(module, u'Undefined', traits.Undefined)
+    api.put_string(module, u'Char', traits.Char)
+    api.put_string(module, u'Number', traits.Number)
+    api.put_string(module, u'Integer', traits.Integer)
+    api.put_string(module, u'Float', traits.Float)
+    api.put_string(module, u'Symbol', traits.Symbol)
+    api.put_string(module, u'String', traits.String)
+    api.put_string(module, u'Vector', traits.Vector)
+    api.put_string(module, u'Tuple', traits.Tuple)
+    api.put_string(module, u'Object', traits.Object)
+    api.put_string(module, u'Generic', traits.Generic)
+    api.put_string(module, u'Module', traits.Module)
+    api.put_string(module, u'Primitive', traits.Primitive)
+    api.put_string(module, u'Function', traits.Function)
+    pass
+
+def setup_generics(process, module, stdlib):
+    generics = stdlib.generics
+    # api.put_primitive_function(module, u'+', _binary_plus, 2)
+
+def setup(process, module, stdlib):
+    ### Traits
+    setup_traits(process, module, stdlib)
+
 
     # 15.1.2.1
-    api.put_primitive_function(obj, u'eval', _eval, 1)
-    api.put_primitive_function(obj, u'print', _print, -1)
-    api.put_primitive_function(obj, u'id', _id, 1)
-    api.put_primitive_function(obj, u'spawn_fiber', spawn_fiber, 0)
-    api.put_primitive_function(obj, u'activate_fiber', activate_fiber, 2)
-    api.put_primitive_function(obj, u'range', _range, 2)
-    api.put_primitive_function(obj, u'generic', generic, 1)
-    api.put_primitive_function(obj, u'specify', specify, 3)
-    api.put_primitive_function(obj, u'clone', clone, 1)
-    api.put_primitive_function(obj, u'trait', trait, 1)
-    api.put_primitive_function(obj, u'attach', attach, -1)
-    api.put_primitive_function(obj, u'detach', detach, -1)
+    api.put_primitive_function(module, u'eval', _eval, 1)
+    api.put_primitive_function(module, u'print', _print, -1)
+    api.put_primitive_function(module, u'id', _id, 1)
+    api.put_primitive_function(module, u'spawn_fiber', spawn_fiber, 0)
+    api.put_primitive_function(module, u'activate_fiber', activate_fiber, 2)
+    api.put_primitive_function(module, u'range', _range, 2)
+    api.put_primitive_function(module, u'generic', generic, 1)
+    api.put_primitive_function(module, u'specify', specify, 3)
+    api.put_primitive_function(module, u'clone', clone, 1)
+    api.put_primitive_function(module, u'trait', trait, 1)
+    api.put_primitive_function(module, u'attach', attach, -1)
+    api.put_primitive_function(module, u'detach', detach, -1)
     ## debugging
     # if not we_are_translated():
     #     api.put_native_function(obj, u'pypy_repr', pypy_repr)
@@ -76,7 +85,6 @@ def _print(process, routine):
     print(print_str)
     return space.newundefined()
 
-
 def _eval(process, routine):
     from obin.runtime.environment import newenv
     from obin.compile import compiler
@@ -89,7 +97,8 @@ def _eval(process, routine):
     obj = source.code.scope.create_env_bindings()
     env = newenv(obj, None)
     func = space.newfunc(source.name, source.code, env)
-    process.call_object(func, space.newemptyvector())
+    args = space.newemptyvector()
+    api.call(process, func, args)
 
 
 @complete_native_routine

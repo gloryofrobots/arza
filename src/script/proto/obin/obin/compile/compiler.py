@@ -332,7 +332,6 @@ def _compile_EQ(process, compiler, code, node):
 def _compile_NE(process, compiler, code, node):
     _on_binary_primitive(process, compiler, code, node, internals.NE)
 
-
 def _compile_LSHIFT(process, compiler, code, node):
     _on_binary_primitive(process, compiler, code, node, internals.LSH)
 
@@ -1002,12 +1001,12 @@ def _compile_args_list(process, compiler, code, args):
                     code.emit_1(PUSH_MANY, normal_args_count)
 
                 _compile(process, compiler, code, arg.first())
-                code.emit_0(CONCAT)
+                code.emit_0(VECTOR_MERGE_INTO)
             else:
                 if normal_args_count:
                     code.emit_1(VECTOR, normal_args_count)
                     _compile(process, compiler, code, arg.first())
-                    code.emit_0(CONCAT)
+                    code.emit_0(VECTOR_MERGE_INTO)
                 else:
                     _compile(process, compiler, code, arg.first())
 

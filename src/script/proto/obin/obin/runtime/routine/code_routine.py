@@ -216,10 +216,10 @@ class CodeRoutine(BaseRoutine):
                 v = api.slice(obj, start, end, step)
                 stack.push(v)
             # *************************************
-            elif CONCAT == tag:
+            elif VECTOR_MERGE_INTO == tag:
                 first = stack.pop()
-                vec = stack.top()
-                vec.concat(first)
+                second = stack.top()
+                second.append_vector_items(first)
             # *************************************
             elif PUSH_MANY == tag:
                 args = stack.pop_n(arg1)
