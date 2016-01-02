@@ -41,6 +41,7 @@ escape_sequence = """(\\(""" + simple_escape + '|' + decimal_escape + '|' + hex_
 cconst_char = """([^'\\\n]|""" + escape_sequence + ')'
 char_const = "'" + cconst_char + "'"
 char_const = token("'[^']+'")
+backtick_const = token("`[^`]+`")
 
 # string literals (K&R2: A.2.6)
 # string_char = """([^"\\\n]|""" + escape_sequence + ')'
@@ -103,6 +104,7 @@ RULES = [
     (string_literal, TT_STR),
     (char_const, TT_CHAR),
     (identifier, TT_NAME),
+    (backtick_const, TT_BACKTICK),
     (token('\.\.\.'), TT_ELLIPSIS),
     (token('\+='), TT_ADD_ASSIGN),
     (token('-='), TT_SUB_ASSIGN),
@@ -143,7 +145,6 @@ RULES = [
     (token('\%'), TT_MOD),
     (token('\<'), TT_LT),
     (token('\>'), TT_GT),
-    (token('`'), TT_BACKTICK),
 ]
 
 

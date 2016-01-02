@@ -115,6 +115,7 @@ def main_parser_init(parser):
     literal(parser, TT_CHAR)
     literal(parser, TT_STR)
     literal(parser, TT_NAME)
+    literal(parser, TT_BACKTICK)
     literal(parser, TT_TRUE)
     literal(parser, TT_FALSE)
     literal(parser, TT_NIL)

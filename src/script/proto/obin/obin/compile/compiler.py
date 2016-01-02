@@ -586,9 +586,11 @@ def _compile_BITXOR_ASSIGN(process, compiler, code, node):
     _compile_modify_assignment_primitive(process, compiler, code, node, internals.BITXOR)
 
 
-def _compile_name_lookup(process, compiler, code, node):
+def _compile_node_name_lookup(process, compiler, code, node):
     name = obs.newstring_from_str(node.value)
+    _compile_name_lookup(process, compiler, code, name)
 
+def _compile_name_lookup(process, compiler, code, name):
     index, is_local = _get_variable_index(process, compiler, name)
     name_index = _declare_literal(process, compiler, name)
     if is_local:
@@ -596,9 +598,13 @@ def _compile_name_lookup(process, compiler, code, node):
     else:
         code.emit_2(OUTER, index, name_index)
 
+def _compile_BACKTICK(process, compiler, code, node):
+    value = node.value[1:len(node.value) - 1]
+    name = obs.newstring_from_str(value)
+    _compile_name_lookup(process, compiler, code, name)
 
 def _compile_NAME(process, compiler, code, node):
-    _compile_name_lookup(process, compiler, code, node)
+    _compile_node_name_lookup(process, compiler, code, node)
 
 
 def _compile_RETURN(process, compiler, code, node):
@@ -890,7 +896,7 @@ def _compile_TRAIT(process, compiler, code, node):
 
 def _compile_REIFY(process, compiler, code, node):
     name = node.first()
-    _compile_name_lookup(process, compiler, code, name)
+    _compile_node_name_lookup(process, compiler, code, name)
     methods = node.second()
 
     for method in methods:
@@ -1098,6 +1104,8 @@ def _compile_node(process, compiler, code, node):
         _compile_STR(process, compiler, code, node)
     elif TT_CHAR == t:
         _compile_CHAR(process, compiler, code, node)
+    elif TT_BACKTICK == t:
+        _compile_BACKTICK(process, compiler, code, node)
     elif TT_NAME == t:
         _compile_NAME(process, compiler, code, node)
     elif TT_BREAK == t:

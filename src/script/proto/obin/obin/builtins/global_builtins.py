@@ -41,6 +41,7 @@ def setup(process, module, stdlib):
     # 15.1.2.1
     api.put_primitive_function(module, u'eval', _eval, 1)
     api.put_primitive_function(module, u'print', _print, -1)
+    api.put_primitive_function(module, u'@@', _print, -1)
     api.put_primitive_function(module, u'id', _id, 1)
     api.put_primitive_function(module, u'spawn_fiber', spawn_fiber, 0)
     api.put_primitive_function(module, u'activate_fiber', activate_fiber, 2)
