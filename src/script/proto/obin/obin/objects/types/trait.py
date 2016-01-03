@@ -8,7 +8,7 @@ class W_Trait(W_Hashable):
 
     def __init__(self, name):
         W_Hashable.__init__(self)
-        self._name_ = name
+        self.name = name
 
     def _compute_hash_(self):
         return int((1 - random()) * 10000000)
@@ -17,7 +17,7 @@ class W_Trait(W_Hashable):
         return self
 
     def _tostring_(self):
-        return "<trait %s>" % (api.to_native_string(self._name_))
+        return "<trait %s>" % (api.to_native_string(self.name))
 
     def _equal_(self, other):
         return other is self

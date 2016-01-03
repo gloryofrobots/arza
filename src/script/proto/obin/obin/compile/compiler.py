@@ -3,12 +3,11 @@ from obin.compile.parse.parser import *
 from obin.compile.parse.node import is_empty_node, is_list_node, is_iterable_node
 from obin.compile.scope import Scope
 from obin.objects import space as obs
-from obin.runtime.internals import internals
+from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource
 from obin.compile.code import *
 from obin.utils.builtins import is_absent_index
 from obin.compile.parse.token_type import *
-from obin.compile.parse.tokens import token_type_to_str
 
 
 def compile_error(process, node, message):
@@ -332,6 +331,7 @@ def _compile_EQ(process, compiler, code, node):
 def _compile_NE(process, compiler, code, node):
     _on_binary_primitive(process, compiler, code, node, internals.NE)
 
+
 def _compile_LSHIFT(process, compiler, code, node):
     _on_binary_primitive(process, compiler, code, node, internals.LSH)
 
@@ -590,6 +590,7 @@ def _compile_node_name_lookup(process, compiler, code, node):
     name = obs.newstring_from_str(node.value)
     _compile_name_lookup(process, compiler, code, name)
 
+
 def _compile_name_lookup(process, compiler, code, name):
     index, is_local = _get_variable_index(process, compiler, name)
     name_index = _declare_literal(process, compiler, name)
@@ -598,10 +599,12 @@ def _compile_name_lookup(process, compiler, code, name):
     else:
         code.emit_2(OUTER, index, name_index)
 
+
 def _compile_BACKTICK(process, compiler, code, node):
     value = node.value[1:len(node.value) - 1]
     name = obs.newstring_from_str(value)
     _compile_name_lookup(process, compiler, code, name)
+
 
 def _compile_NAME(process, compiler, code, node):
     _compile_node_name_lookup(process, compiler, code, node)

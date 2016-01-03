@@ -23,13 +23,13 @@ w_POSITIVE_INFINITY = newnumber(INFINITY)
 w_NEGATIVE_INFINITY = newnumber(-INFINITY)
 
 
-def add_string_string(process, l, r):
+def add_s_s(process, l, r):
     sleft = api.to_native_unicode(l)
     sright = api.to_native_unicode(r)
     return newstring(sleft + sright)
 
 
-def add_int_int(process, l, r):
+def add_i_i(process, l, r):
     ileft = api.to_native_integer(l)
     iright = api.to_native_integer(r)
     try:
@@ -38,23 +38,23 @@ def add_int_int(process, l, r):
         return newfloat(float(ileft) + float(iright))
 
 
-def add_float_float(process, l, r):
+def add_f_f(process, l, r):
     fleft = api.to_native_float(l)
     fright = api.to_native_float(r)
     return newfloat(fleft + fright)
 
 
-def plus_n_n(process, lprim, rprim):
+def add_n_n(process, lprim, rprim):
     if isstring(lprim) or isstring(rprim):
-        return add_string_string(process, lprim, rprim)
+        return add_s_s(process, lprim, rprim)
 
     if isint(lprim) and isint(rprim):
-        return add_int_int(process, lprim, rprim)
+        return add_i_i(process, lprim, rprim)
     else:
-        return add_float_float(process, lprim, rprim)
+        return add_f_f(process, lprim, rprim)
 
 
-def sub_int_int(nleft, nright):
+def sub_i_i(process, nleft, nright):
     ileft = api.to_native_integer(nleft)
     iright = api.to_native_integer(nright)
     try:
@@ -63,7 +63,7 @@ def sub_int_int(nleft, nright):
         return newfloat(float(ileft) - float(iright))
 
 
-def sub_float_float(nleft, nright):
+def sub_f_f(process, nleft, nright):
     fleft = api.to_native_float(nleft)
     fright = api.to_native_float(nright)
     return newfloat(fleft - fright)
@@ -71,8 +71,8 @@ def sub_float_float(nleft, nright):
 
 def sub_n_n(process, nleft, nright):
     if isint(nleft) and isint(nright):
-        return sub_int_int(nleft, nright)
-    return sub_float_float(nleft, nright)
+        return sub_i_i(process, nleft, nright)
+    return sub_f_f(process, nleft, nright)
 
 
 def mult_f_f(process, nleft, nright):
@@ -158,12 +158,12 @@ def mod_n_n(process, nleft, nright):
     mod_f_f(process, nleft, nright)
 
 
-def uminus_float(process, obj):
+def uminus_f(process, obj):
     n1 = api.to_native_float(obj)
     return newfloat(-n1)
 
 
-def uminus_int(process, obj):
+def uminus_i(process, obj):
     intval = api.to_native_integer(obj)
     if intval == 0:
         return newfloat(-float(intval))
@@ -172,17 +172,17 @@ def uminus_int(process, obj):
 
 def uminus_n(process, obj):
     if isint(obj):
-        return uminus_int(process, obj)
-    return uminus_float(process, obj)
+        return uminus_i(process, obj)
+    return uminus_f(process, obj)
 
 
-def compare_gt_int_int(process, w_x, w_y):
+def compare_gt_i_i(process, w_x, w_y):
     x = api.to_native_integer(w_x)
     y = api.to_native_integer(w_y)
     return newbool(x > y)
 
 
-def compare_gt_float_float(process, w_x, w_y):
+def compare_gt_f_f(process, w_x, w_y):
     x = api.to_native_float(w_x)
     y = api.to_native_float(w_y)
     return newbool(x > y)
@@ -190,19 +190,19 @@ def compare_gt_float_float(process, w_x, w_y):
 
 def compare_gt_n_n(process, x, y):
     if isint(x) and isint(y):
-        return compare_gt_int_int(process, x, y)
+        return compare_gt_i_i(process, x, y)
     if isfloat(x) and isfloat(y):
-        return compare_gt_float_float(process, x, y)
+        return compare_gt_f_f(process, x, y)
     assert False
 
 
-def compare_ge_int_int(process, w_x, w_y):
+def compare_ge_i_i(process, w_x, w_y):
     x = api.to_native_integer(w_x)
     y = api.to_native_integer(w_y)
     return newbool(x >= y)
 
 
-def compare_ge_float_float(process, w_x, w_y):
+def compare_ge_f_f(process, w_x, w_y):
     x = api.to_native_float(w_x)
     y = api.to_native_float(w_y)
     return newbool(x >= y)
@@ -210,9 +210,9 @@ def compare_ge_float_float(process, w_x, w_y):
 
 def compare_ge_n_n(process, x, y):
     if isint(x) and isint(y):
-        return compare_ge_int_int(process, x, y)
+        return compare_ge_i_i(process, x, y)
     if isfloat(x) and isfloat(y):
-        return compare_ge_float_float(process, x, y)
+        return compare_ge_f_f(process, x, y)
     assert False
 
 
@@ -224,30 +224,30 @@ def in_w(process, routine, left, right):
     return api.contains(right, left)
 
 
-def bitand_int_int(process, op1_w, op2_w):
+def bitand_i_i(process, op1_w, op2_w):
     op1 = api.to_native_integer(op1_w)
     op2 = api.to_native_integer(op2_w)
     return newint(int(op1 & op2))
 
 
-def bitxor_int_int(process, op1_w, op2_w):
+def bitxor_i_i(process, op1_w, op2_w):
     op1 = api.to_native_integer(op1_w)
     op2 = api.to_native_integer(op2_w)
     return newint(int(op1 ^ op2))
 
 
-def bitor_int_int(process, op1_w, op2_w):
+def bitor_i_i(process, op1_w, op2_w):
     op1 = api.to_native_integer(op1_w)
     op2 = api.to_native_integer(op2_w)
     return newint(int(op1 | op2))
 
 
-def bitnot_int(process, op1_w):
+def bitnot_i(process, op1_w):
     op = api.to_native_integer(op1_w)
     return newint(~op)
 
 
-def ursh_int_int(process, lval, rval):
+def ursh_i_i(process, lval, rval):
     lnum = api.to_native_integer(lval)
     rnum = api.to_native_integer(rval)
 
@@ -258,7 +258,7 @@ def ursh_int_int(process, lval, rval):
     return newnumber(res)
 
 
-def rsh_int_int(process, lval, rval):
+def rsh_i_i(process, lval, rval):
     lnum = api.to_native_integer(lval)
     rnum = api.to_native_integer(rval)
 
@@ -269,7 +269,7 @@ def rsh_int_int(process, lval, rval):
     return newnumber(res)
 
 
-def lsh_int_int(process, lval, rval):
+def lsh_i_i(process, lval, rval):
     lnum = api.to_native_integer(lval)
     rnum = api.to_native_integer(rval)
 
@@ -304,3 +304,9 @@ def isnot_w(process, op1, op2):
 
 def is_w(process, op1, op2):
     return api.strict_equal(op1, op2)
+
+def str_w(process, op1):
+    return api.tostring(op1)
+
+def length_w(process, op1):
+    return api.length(op1)

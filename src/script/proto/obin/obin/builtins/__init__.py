@@ -15,8 +15,14 @@ def setup_builtins(process, module, stdlib):
     # # 15.3.4.4 Function.prototype.call
     # api.put_native_function(target, u'call', obin.builtins.function.js_call)
 
-    import obin.builtins.global_builtins
-    obin.builtins.global_builtins.setup(process, module, stdlib)
+    import obin.builtins.setup_traits
+    obin.builtins.setup_traits.setup(process, module, stdlib)
+
+    import obin.builtins.setup_generics
+    obin.builtins.setup_generics.setup(process, module, stdlib)
+
+    import obin.builtins.setup_globals
+    obin.builtins.setup_globals.setup(process, module, stdlib)
 
     # import obin.builtins.object_builitns
     # obin.builtins.object_builitns.setup(object_space.traits.Object)

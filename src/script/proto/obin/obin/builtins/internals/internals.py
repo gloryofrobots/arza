@@ -51,9 +51,9 @@ def internal_ADD(process, routine):
     left = routine.stack.pop()
 
     if is_both_numbers(left, right):
-        apply_binary(process, routine, plus_n_n, left, right)
+        apply_binary(process, routine, add_n_n, left, right)
     elif is_both_strings(left, right):
-        apply_binary(process, routine, add_string_string, left, right)
+        apply_binary(process, routine, add_s_s, left, right)
     else:
         call2(process, process.stdlib.generics.Add, left, right)
 
@@ -93,7 +93,7 @@ def internal_BITAND(process, routine):
     left = routine.stack.pop()
 
     if is_both_integers(left, right):
-        apply_binary(process, routine, bitand_int_int, left, right)
+        apply_binary(process, routine, bitand_i_i, left, right)
     else:
         call2(process, process.stdlib.generics.BitAnd, left, right)
 
@@ -103,7 +103,7 @@ def internal_BITXOR(process, routine):
     left = routine.stack.pop()
 
     if is_both_integers(left, right):
-        apply_binary(process, routine, bitxor_int_int, left, right)
+        apply_binary(process, routine, bitxor_i_i, left, right)
     else:
         call2(process, process.stdlib.generics.BitXor, left, right)
 
@@ -113,17 +113,17 @@ def internal_BITOR(process, routine):
     left = routine.stack.pop()
 
     if is_both_integers(left, right):
-        apply_binary(process, routine, bitor_int_int, left, right)
+        apply_binary(process, routine, bitor_i_i, left, right)
     else:
         call2(process, process.stdlib.generics.BitOr, left, right)
 
 
 def internal_BITNOT(process, routine):
     value = routine.stack.pop()
-    apply_unary(process, routine, bitnot_int, value)
+    apply_unary(process, routine, bitnot_i, value)
 
     if isint(value):
-        apply_unary(process, routine, bitnot_int, value)
+        apply_unary(process, routine, bitnot_i, value)
     else:
         call1(process, process.stdlib.generics.BitNot, value)
 
@@ -133,7 +133,7 @@ def internal_URSH(process, routine):
     left = routine.stack.pop()
 
     if is_both_integers(left, right):
-        apply_binary(process, routine, ursh_int_int, left, right)
+        apply_binary(process, routine, ursh_i_i, left, right)
     else:
         call2(process, process.stdlib.generics.UnsignedRightShift, left, right)
 
@@ -143,7 +143,7 @@ def internal_RSH(process, routine):
     left = routine.stack.pop()
 
     if is_both_integers(left, right):
-        apply_binary(process, routine, rsh_int_int, left, right)
+        apply_binary(process, routine, rsh_i_i, left, right)
     else:
         call2(process, process.stdlib.generics.RightShift, left, right)
 
@@ -153,7 +153,7 @@ def internal_LSH(process, routine):
     left = routine.stack.pop()
 
     if is_both_integers(left, right):
-        apply_binary(process, routine, lsh_int_int, left, right)
+        apply_binary(process, routine, lsh_i_i, left, right)
     else:
         call2(process, process.stdlib.generics.LeftShift, left, right)
 

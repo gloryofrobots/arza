@@ -10,7 +10,7 @@ from obin.objects.space import (newbool, newundefined,
 from obin.objects.types.dispatch.ogeneric import reify
 from obin.objects import api
 from obin.runtime.load import import_module
-from obin.runtime.internals.internals import get_internal
+from obin.builtins.internals import get_internal
 
 
 def load_arguments(stack):
@@ -66,7 +66,6 @@ class CodeRoutine(BaseRoutine):
         pass
 
     def _print_stack(self):
-        from obin.objects.space import isany
         print u"_________STACK______________"
         prev = u""
         print self.stack.data

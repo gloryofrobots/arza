@@ -59,7 +59,7 @@ def opcode_estimate_stack_change(opcode):
 
 
 def opcode_info(routine, opcode):
-    from obin.runtime.internals.internals import internal_to_str
+    from obin.builtins.internals import internal_to_str
 
     tag = opcode[0]
     arg1 = opcode[1]

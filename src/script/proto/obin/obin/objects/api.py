@@ -134,6 +134,11 @@ def put_string_string(obj, k, v):
     put(obj, newstring(k), newstring(v))
 
 
+def put_trait(obj, trait):
+    put(obj, trait.name, trait)
+
+
+
 def put(obj, k, v):
     from space import isundefined, iscell
     assert not isundefined(v)

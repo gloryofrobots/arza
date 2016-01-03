@@ -6,37 +6,19 @@ from rpython.rlib.rstring import UnicodeBuilder
 from obin.runistr import encode_unicode_utf8
 
 
-def setup_traits(process, module, stdlib):
-    traits = stdlib.traits
-    api.put_string(module, u'Any', traits.Any)
-    api.put_string(module, u'True', traits.True)
-    api.put_string(module, u'False', traits.False)
-    api.put_string(module, u'Boolean', traits.Boolean)
-    api.put_string(module, u'Nil', traits.Nil)
-    api.put_string(module, u'Undefined', traits.Undefined)
-    api.put_string(module, u'Char', traits.Char)
-    api.put_string(module, u'Number', traits.Number)
-    api.put_string(module, u'Integer', traits.Integer)
-    api.put_string(module, u'Float', traits.Float)
-    api.put_string(module, u'Symbol', traits.Symbol)
-    api.put_string(module, u'String', traits.String)
-    api.put_string(module, u'Vector', traits.Vector)
-    api.put_string(module, u'Tuple', traits.Tuple)
-    api.put_string(module, u'Object', traits.Object)
-    api.put_string(module, u'Generic', traits.Generic)
-    api.put_string(module, u'Module', traits.Module)
-    api.put_string(module, u'Primitive', traits.Primitive)
-    api.put_string(module, u'Function', traits.Function)
-    pass
-
-def setup_generics(process, module, stdlib):
-    generics = stdlib.generics
-    # api.put_primitive_function(module, u'+', _binary_plus, 2)
 
 def setup(process, module, stdlib):
     ### Traits
-    setup_traits(process, module, stdlib)
 
+    # THIS FUNCS NEED TO BE SIMPLE NATIVES FOR EACH TYPE (list_to_boolean, float_to_int, etc...)
+    # self.ToBoolean = newgeneric(newstring(u"to_boolean"))
+    # self.ToFloat = newgeneric(newstring(u"to_float"))
+    # self.ToInteger = newgeneric(newstring(u"to_integer"))
+    # self.ToList = newgeneric(newstring(u"to_list"))
+    # self.ToTuple = newgeneric(newstring(u"to_tuple"))
+    # self.ToMap = newgeneric(newstring(u"to_map"))
+    # self.ToVector = newgeneric(newstring(u"to_vector"))
+    # self.ToChar = newgeneric(newstring(u"to_character"))
 
     # 15.1.2.1
     api.put_primitive_function(module, u'eval', _eval, 1)
