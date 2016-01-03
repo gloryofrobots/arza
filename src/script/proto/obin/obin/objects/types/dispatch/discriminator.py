@@ -53,7 +53,7 @@ class PredicateDiscriminator(Discriminator):
     def _evaluate(self, process, arg):
         # TODO GET RID OF MAGIC NUMBERS
         if self.predicate(arg):
-            return 100
+            return 0
         else:
             return -1000
 

@@ -55,8 +55,8 @@ GENERICS = [
      ("UnsignedRightShift", ">>>",
          [((I,I),"ursh_i_i")]),
 
-     ("Length", "length",
-         [((A,),"length_w")]),
+     ("Length", "len",
+         [((A,),"len_w")]),
      ("Str", "str",
          [((A,),"str_w")]),
 ]
@@ -119,3 +119,29 @@ def print_builtin_puts():
 
 print_builtin_puts()
 
+print "#####################################################"
+print "#####################################################"
+
+REIFY_TPL = """
+    reify_single(process, generics.{{varname}},
+                 newtuple([{% for trait in traits %}traits.{{trait}}, {% endfor %}]),
+                 newprimitive(newstring(u"{{funcname}}"), wrappers.builtin_{{funcname}}, {{traits|length}}))
+"""
+    
+def print_reify():
+    from jinja2 import Template
+    template = Template(REIFY_TPL)
+    for G in GENERICS:
+        impls = G[2]
+        if impls is None:
+            continue
+        varname = G[0]
+        
+
+        for impl in impls:
+            data = {"varname":varname, "funcname":impl[1], "traits":impl[0]}
+            S = template.render(data)
+            print S
+
+print_reify()
+ 

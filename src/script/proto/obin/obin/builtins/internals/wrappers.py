@@ -276,10 +276,10 @@ def builtin_ursh_i_i(process, routine):
 
 
 @complete_native_routine
-def builtin_length_w(process, routine):
-    from obin.builtins.internals.operations import length_w 
+def builtin_len_w(process, routine):
+    from obin.builtins.internals.operations import len_w
     arg1 = routine.get_arg(0)
-    return length_w(process, arg1)
+    return len_w(process, arg1)
 
 
 @complete_native_routine

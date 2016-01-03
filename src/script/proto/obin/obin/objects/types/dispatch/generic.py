@@ -48,6 +48,7 @@ class W_Generic(W_Callable):
 
     def _call_(self, process, args):
         method = _lookup_method(process, self, args)
+        # print "GEN CALL", str(method)
         process.call_object(method, args)
 
     def _traits_(self, process):

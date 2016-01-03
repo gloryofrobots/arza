@@ -308,5 +308,5 @@ def is_w(process, op1, op2):
 def str_w(process, op1):
     return api.tostring(op1)
 
-def length_w(process, op1):
+def len_w(process, op1):
     return api.length(op1)
