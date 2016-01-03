@@ -41,7 +41,7 @@ class W_Generic(W_Callable):
         self.signatures = []
 
     def _tostring_(self):
-        return "method %s {}" % api.to_native_string(self.name)
+        return "generic %s {}" % api.to_native_string(self.name)
 
     def _tobool_(self):
         return True

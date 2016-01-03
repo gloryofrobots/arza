@@ -3,7 +3,7 @@
 
 
 def setup_builtins(process, module, stdlib):
-    import obin.builtins.object_builitns
+    # import obin.builtins.object_builitns
 
     # target = object_space.traits.Function
     # # 15.3.4.2 Function.prototype.toString()

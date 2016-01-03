@@ -7,10 +7,10 @@ from obin.objects.space import (newbool, newundefined,
                                 newnil, newvector, isinterrupt,
                                 newmap, newfunc,
                                 newint, newtuple, newgeneric, newtrait)
-from obin.objects.types.dispatch.ogeneric import reify
+from obin.objects.types.dispatch.generic import reify
 from obin.objects import api
 from obin.runtime.load import import_module
-from obin.builtins.internals import get_internal
+from obin.builtins.internals.internals import get_internal
 
 
 def load_arguments(stack):

@@ -38,7 +38,7 @@ def _install(process, module, stdlib):
 
 
 def _reify(process, module, stdlib):
-    import obin.builtins.internals.builtin_wrappers as wrappers
+    import obin.builtins.internals.wrappers as wrappers
     from obin.objects.types.dispatch.generic import reify_single
     from obin.objects.space import newtuple, newprimitive, newstring
     generics = stdlib.generics

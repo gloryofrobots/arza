@@ -1,4 +1,6 @@
-`@@`(1,2,3,4,5,"OLOLO")
+x = `+`(1,2)
+`@@`(1,2,3,4,5,"OLOLO", x)
+
 fn coroutine(func) {
     (fiber1, fiber2) = spawn_fiber()
     first_call = false

@@ -131,11 +131,6 @@ def newtuple(tupl):
     return W_Tuple(list(tupl))
 
 
-def newcoroutine(fn):
-    from obin.objects.types.fiber import W_Coroutine
-    obj = W_Coroutine(fn)
-    return obj
-
 
 def newmodule(process, name, code):
     assert isstring(name)
@@ -146,7 +141,7 @@ def newmodule(process, name, code):
 
 def newgeneric(name):
     assert isstring(name)
-    from obin.objects.types.dispatch.ogeneric import W_Generic
+    from obin.objects.types.dispatch.generic import W_Generic
     obj = W_Generic(name)
     return obj
 

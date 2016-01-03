@@ -61,6 +61,7 @@ GENERICS = [
          [((A,),"str_w")]),
 ]
 TPL_IMPL_BINARY = """
+@complete_native_routine
 def builtin_%s(process, routine):
     from obin.builtins.internals.operations import %s 
     arg1 = routine.get_arg(0)
@@ -69,6 +70,7 @@ def builtin_%s(process, routine):
 """
 
 TPL_IMPL_UNARY = """
+@complete_native_routine
 def builtin_%s(process, routine):
     from obin.builtins.internals.operations import %s 
     arg1 = routine.get_arg(0)
@@ -76,6 +78,7 @@ def builtin_%s(process, routine):
 """
 print "#################### WRAPPERS #################################################"
 def print_implementations():
+    print "from obin.runtime.routine import complete_native_routine"
     for G in GENERICS:
         impls = G[2]
         if impls is None:
