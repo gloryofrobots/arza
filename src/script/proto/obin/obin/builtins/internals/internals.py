@@ -43,7 +43,7 @@ def internal_SUB(process, routine):
     if is_both_numbers(left, right):
         apply_binary(process, routine, sub_n_n, left, right)
     else:
-        call2(process, process.stdlib.generics.Sub, left, right)
+        call2(process, process.std.generics.Sub, left, right)
 
 
 def internal_ADD(process, routine):
@@ -55,7 +55,7 @@ def internal_ADD(process, routine):
     elif is_both_strings(left, right):
         apply_binary(process, routine, add_s_s, left, right)
     else:
-        call2(process, process.stdlib.generics.Add, left, right)
+        call2(process, process.std.generics.Add, left, right)
 
 
 def internal_MUL(process, routine):
@@ -65,7 +65,7 @@ def internal_MUL(process, routine):
     if is_both_numbers(left, right):
         apply_binary(process, routine, mult_n_n, left, right)
     else:
-        call2(process, process.stdlib.generics.Mul, left, right)
+        call2(process, process.std.generics.Mul, left, right)
 
 
 def internal_DIV(process, routine):
@@ -75,7 +75,7 @@ def internal_DIV(process, routine):
     if is_both_numbers(left, right):
         apply_binary(process, routine, div_n_n, left, right)
     else:
-        call2(process, process.stdlib.generics.Div, left, right)
+        call2(process, process.std.generics.Div, left, right)
 
 
 def internal_MOD(process, routine):
@@ -85,7 +85,7 @@ def internal_MOD(process, routine):
     if is_both_numbers(left, right):
         apply_binary(process, routine, mod_n_n, left, right)
     else:
-        call2(process, process.stdlib.generics.Mod, left, right)
+        call2(process, process.std.generics.Mod, left, right)
 
 
 def internal_BITAND(process, routine):
@@ -95,7 +95,7 @@ def internal_BITAND(process, routine):
     if is_both_integers(left, right):
         apply_binary(process, routine, bitand_i_i, left, right)
     else:
-        call2(process, process.stdlib.generics.BitAnd, left, right)
+        call2(process, process.std.generics.BitAnd, left, right)
 
 
 def internal_BITXOR(process, routine):
@@ -105,7 +105,7 @@ def internal_BITXOR(process, routine):
     if is_both_integers(left, right):
         apply_binary(process, routine, bitxor_i_i, left, right)
     else:
-        call2(process, process.stdlib.generics.BitXor, left, right)
+        call2(process, process.std.generics.BitXor, left, right)
 
 
 def internal_BITOR(process, routine):
@@ -115,7 +115,7 @@ def internal_BITOR(process, routine):
     if is_both_integers(left, right):
         apply_binary(process, routine, bitor_i_i, left, right)
     else:
-        call2(process, process.stdlib.generics.BitOr, left, right)
+        call2(process, process.std.generics.BitOr, left, right)
 
 
 def internal_BITNOT(process, routine):
@@ -125,7 +125,7 @@ def internal_BITNOT(process, routine):
     if isint(value):
         apply_unary(process, routine, bitnot_i, value)
     else:
-        call1(process, process.stdlib.generics.BitNot, value)
+        call1(process, process.std.generics.BitNot, value)
 
 
 def internal_URSH(process, routine):
@@ -135,7 +135,7 @@ def internal_URSH(process, routine):
     if is_both_integers(left, right):
         apply_binary(process, routine, ursh_i_i, left, right)
     else:
-        call2(process, process.stdlib.generics.UnsignedRightShift, left, right)
+        call2(process, process.std.generics.UnsignedRightShift, left, right)
 
 
 def internal_RSH(process, routine):
@@ -145,7 +145,7 @@ def internal_RSH(process, routine):
     if is_both_integers(left, right):
         apply_binary(process, routine, rsh_i_i, left, right)
     else:
-        call2(process, process.stdlib.generics.RightShift, left, right)
+        call2(process, process.std.generics.RightShift, left, right)
 
 
 def internal_LSH(process, routine):
@@ -155,7 +155,7 @@ def internal_LSH(process, routine):
     if is_both_integers(left, right):
         apply_binary(process, routine, lsh_i_i, left, right)
     else:
-        call2(process, process.stdlib.generics.LeftShift, left, right)
+        call2(process, process.std.generics.LeftShift, left, right)
 
 
 def internal_UPLUS(process, routine):
@@ -165,7 +165,7 @@ def internal_UPLUS(process, routine):
     if isnumber(value):
         apply_unary(process, routine, uplus_n, value)
     else:
-        call1(process, process.stdlib.generics.UnaryPlus, value)
+        call1(process, process.std.generics.UnaryPlus, value)
 
 
 def internal_UMINUS(process, routine):
@@ -174,7 +174,7 @@ def internal_UMINUS(process, routine):
     if isnumber(value):
         apply_unary(process, routine, uminus_n, value)
     else:
-        call1(process, process.stdlib.generics.UnaryMinus, value)
+        call1(process, process.std.generics.UnaryMinus, value)
 
 
 def internal_GT(process, routine):
@@ -184,7 +184,7 @@ def internal_GT(process, routine):
     if is_both_numbers(left, right):
         apply_binary(process, routine, compare_gt_n_n, left, right)
     else:
-        call2(process, process.stdlib.generics.GreaterThen, left, right)
+        call2(process, process.std.generics.GreaterThen, left, right)
 
 
 def internal_GE(process, routine):
@@ -194,7 +194,7 @@ def internal_GE(process, routine):
     if is_both_numbers(left, right):
         apply_binary(process, routine, compare_ge_n_n, left, right)
     else:
-        call2(process, process.stdlib.generics.GreaterEqual, left, right)
+        call2(process, process.std.generics.GreaterEqual, left, right)
 
 
 def internal_LT(process, routine):
@@ -204,7 +204,7 @@ def internal_LT(process, routine):
     if is_both_numbers(left, right):
         apply_binary(process, routine, compare_gt_n_n, right, left)
     else:
-        call2(process, process.stdlib.generics.GreaterThen, right, left)
+        call2(process, process.std.generics.GreaterThen, right, left)
 
 
 def internal_LE(process, routine):
@@ -214,7 +214,7 @@ def internal_LE(process, routine):
     if is_both_numbers(left, right):
         apply_binary(process, routine, compare_ge_n_n, right, left)
     else:
-        call2(process, process.stdlib.generics.GreaterEqual, right, left)
+        call2(process, process.std.generics.GreaterEqual, right, left)
 
 
 def internal_EQ(process, routine):
@@ -223,7 +223,7 @@ def internal_EQ(process, routine):
     if is_not_entities(left, right):
         apply_binary(process, routine, eq_w, left, right)
     else:
-        call2(process, process.stdlib.generics.Equal, left, right)
+        call2(process, process.std.generics.Equal, left, right)
 
 
 def internal_NE(process, routine):
@@ -232,7 +232,7 @@ def internal_NE(process, routine):
     if is_not_entities(left, right):
         apply_binary(process, routine, noteq_w, left, right)
     else:
-        call2(process, process.stdlib.generics.NotEqual, left, right)
+        call2(process, process.std.generics.NotEqual, left, right)
 
 
 def internal_NOT(process, routine):
@@ -247,7 +247,7 @@ def internal_IN(process, routine):
     if is_not_entities(left, right):
         apply_binary(process, routine, in_w, left, right)
     else:
-        call2(process, process.stdlib.generics.In, left, right)
+        call2(process, process.std.generics.In, left, right)
 
 
 def internal_IS(process, routine):

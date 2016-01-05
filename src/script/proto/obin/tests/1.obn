@@ -50,3 +50,8 @@ print(co(34))
 print(co(44))
 
 
+print(filter(func(x) x % 2 end, 0,
+             map(func(x) x * x end,
+                    range(1, 6))))
+
+pipe_last(range(1,6), map(func(x) x * x end), filter(func(x) x % 2 end, 0), print)

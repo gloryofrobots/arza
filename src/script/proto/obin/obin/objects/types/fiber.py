@@ -14,6 +14,9 @@ class W_Fiber(W_Callable):
     def _tobool_(self):
         return True
 
+    def _behavior_(self, process):
+        return process.std.behaviors.Fiber
+
     def _call_(self, process, args):
         from obin.objects.space import newundefined
 

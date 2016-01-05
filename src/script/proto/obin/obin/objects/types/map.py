@@ -233,6 +233,9 @@ class W_Map(W_Cell):
     def _iterator_(self):
         return TableIterator(self, self._length_())
 
+    def _behavior_(self, process):
+        return process.std.behaviors.Map
+
     def _at_(self, name):
         from obin.objects.space import newundefined
         idx = self._get_index_(name)

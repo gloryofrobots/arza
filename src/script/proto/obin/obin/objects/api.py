@@ -182,23 +182,31 @@ def iterator(obj):
 Traits
 """
 
-
-def traits(process, obj):
-    return obj._traits_(process)
-
+def behavior(process, obj):
+    return obj._behavior_(process)
 
 def kindof(obj, trait):
+    raise NotImplementedError()
     from space import newbool
     return newbool(n_kindof(obj, trait))
 
 
 def n_kindof(obj, trait):
-    t = trait._totrait_()
+    raise NotImplementedError()
+    t = totrait(trait)
     return obj._kindof_(t)
 
 
 def totrait(obj, process):
-    return obj._totrait_(process)
+    from space import isorigin, isbehavior, isentity
+    if isbehavior(obj):
+        return obj
+    elif isorigin(obj):
+        return obj.trait
+    elif isentity(obj):
+        return totrait(obj.source, process)
+
+    raise RuntimeError("Object can not be represented as trait")
 
 
 """

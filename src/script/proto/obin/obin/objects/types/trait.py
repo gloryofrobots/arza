@@ -13,9 +13,6 @@ class W_Trait(W_Hashable):
     def _compute_hash_(self):
         return int((1 - random()) * 10000000)
 
-    def _totrait_(self, process):
-        return self
-
     def _tostring_(self):
         return "<trait %s>" % (api.to_native_string(self.name))
 

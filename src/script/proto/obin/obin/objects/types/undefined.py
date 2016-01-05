@@ -8,8 +8,9 @@ class W_Undefined(W_Constant):
     def _tostring_(self):
         return "undefined"
 
-    def _traits_(self, process):
-        return process.stdlib.traits.UndefinedTraits
+    def _behavior_(self, process):
+        return process.std.behaviors.Undefined
+
 
     def _hash_(self):
         return self.__hash

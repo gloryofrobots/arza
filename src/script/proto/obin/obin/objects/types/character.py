@@ -29,9 +29,6 @@ class W_Char(W_ValueType):
         else:
             return 0
 
-    def _tobool_(self):
-        return bool(self.char_value)
-
-    def _traits_(self, process):
-        return process.stdlib.traits.CharTraits
+    def _behavior_(self, process):
+        return process.std.behaviors.Char
 

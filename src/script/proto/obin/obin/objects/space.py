@@ -103,10 +103,16 @@ def newprimitive(name, function, arity):
     return obj
 
 
+def neworigin(name, function):
+    from obin.objects.types.origin import W_Origin
+    obj = W_Origin(name, function)
+    return obj
+
+
 def newentity(process, traits, source):
-    from obin.objects import api
+    from obin.objects.types import behavior
     from obin.objects.types.entity import W_Entity
-    traits.append_vector_items(api.traits(process, source))
+    traits.append_vector_items(behavior.traits(process, source))
     return W_Entity(traits, source)
 
 
@@ -122,6 +128,11 @@ def newvector(items):
     return obj
 
 
+def newlist(items):
+    from obin.objects.types.plist import plist
+    return plist(items)
+
+
 def newemptyvector():
     return newvector([])
 
@@ -129,7 +140,6 @@ def newemptyvector():
 def newtuple(tupl):
     from obin.objects.types.tupl import W_Tuple
     return W_Tuple(list(tupl))
-
 
 
 def newmodule(process, name, code):
@@ -151,8 +161,10 @@ def newtrait(name):
     return W_Trait(name)
 
 
-def newtraits(traits):
-    return newvector(traits)
+def newbehavior(traits):
+    assert islist(traits)
+    from obin.objects.types.behavior import W_Behavior
+    return W_Behavior(traits)
 
 
 def isany(value):
@@ -178,6 +190,11 @@ def isentity(value):
     return isinstance(value, W_Entity)
 
 
+def isorigin(value):
+    from obin.objects.types.origin import W_Origin
+    return isinstance(value, W_Origin)
+
+
 def ismap(value):
     from obin.objects.types.map import W_Map
     return isinstance(value, W_Map)
@@ -198,14 +215,22 @@ def isvector(value):
     from obin.objects.types.vector import W_Vector
     return isinstance(value, W_Vector)
 
+def islist(value):
+    from obin.objects.types.plist import W_List
+    return isinstance(value, W_List)
 
 def istrait(w):
     from obin.objects.types.trait import W_Trait
     return isinstance(w, W_Trait)
 
 
+def isbehavior(w):
+    from obin.objects.types.behavior import W_Behavior
+    return isinstance(w, W_Behavior)
+
+
 def isgeneric(w):
-    from obin.objects.types.dispatch.ogeneric import W_Generic
+    from obin.objects.types.dispatch.generic import W_Generic
     return isinstance(w, W_Generic)
 
 

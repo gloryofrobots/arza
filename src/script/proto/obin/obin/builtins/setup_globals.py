@@ -135,8 +135,9 @@ def clone(process, routine):
 
 @complete_native_routine
 def traits(process, routine):
+    from obin.objects.types import behavior
     obj = routine.get_arg(0)
-    return api.traits(process, obj)
+    return behavior.traits(process, obj)
 
 
 @complete_native_routine

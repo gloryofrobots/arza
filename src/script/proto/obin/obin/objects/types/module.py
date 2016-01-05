@@ -10,8 +10,8 @@ class W_Module(W_Root):
         self.env = self.bytecode.scope.create_env_bindings()
         self.result = None
 
-    def _traits_(self, process):
-        return process.stdlib.traits.ModuleTraits
+    def _behavior_(self, process):
+        return process.std.behaviors.Module
 
     def _tostring_(self):
         return self.env._tostring_()

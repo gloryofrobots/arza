@@ -51,8 +51,8 @@ class W_Generic(W_Callable):
         # print "GEN CALL", str(method)
         process.call_object(method, args)
 
-    def _traits_(self, process):
-        return process.stdlib.traits.GenericTraits
+    def _behavior_(self, process):
+        return process.std.behaviors.Generic
 
 
 def reify(process, gf, signatures):

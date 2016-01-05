@@ -11,8 +11,8 @@ class W_Nil(W_Constant):
     def _tobool_(self):
         return False
 
-    def _traits_(self, process):
-        return process.stdlib.traits.NilTraits
+    def _behavior_(self, process):
+        return process.std.behaviors.Nil
 
     def _hash_(self):
         return self.__hash

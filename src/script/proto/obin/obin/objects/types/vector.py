@@ -27,8 +27,8 @@ class W_Vector(W_Cell):
         except:
             raise ObinKeyError(k)
 
-    def _traits_(self, process):
-        return process.stdlib.traits.VectorTraits
+    def _behavior_(self, process):
+        return process.std.behaviors.Vector
 
     def _clone_(self):
         items = []

@@ -19,9 +19,9 @@ class Modules:
 
 
 class ProcessData:
-    def __init__(self, modules, stdlib, builtins):
+    def __init__(self, modules, std, builtins):
         self.modules = modules
-        self.stdlib = stdlib
+        self.std_objects = std
         self.builtins = builtins
 
 
@@ -108,8 +108,8 @@ class Process(object):
         return self.__data.modules
 
     @property
-    def stdlib(self):
-        return self.__data.stdlib
+    def std(self):
+        return self.__data.std_objects
 
     @property
     def builtins(self):

@@ -163,7 +163,7 @@ def newsignature(process, args, method):
     from obin.objects import space, api
     arity = api.n_length(args)
     sig_args = []
-    traits = process.stdlib.traits
+    traits = process.std.traits
 
     for i in range(arity):
         trait = api.at_index(args, i)

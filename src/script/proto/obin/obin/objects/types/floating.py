@@ -37,8 +37,8 @@ class W_Float(W_ValueType):
     def _tobool_(self):
         return bool(self.float_value)
 
-    def _traits_(self, process):
-        return process.stdlib.traits.FloatTraits
+    def _behavior_(self, process):
+        return process.std.behaviors.Float
 
 
 

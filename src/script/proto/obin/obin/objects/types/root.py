@@ -53,16 +53,10 @@ class W_Root:
     def _call_(self, process, args):
         raise NotImplementedError()
 
-    def _kindof_(self, trait):
-        raise NotImplementedError()
-
     def _slice_(self, start, end, step):
         raise NotImplementedError()
 
-    def _traits_(self, process):
-        raise NotImplementedError()
-
-    def _totrait_(self, process):
+    def _behavior_(self, process):
         raise NotImplementedError()
 
     def _compute_hash_(self):

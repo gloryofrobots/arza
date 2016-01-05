@@ -6,10 +6,10 @@ from obin.objects import api
 class W_Entity(W_Cell):
     # _immutable_fields_ = ['_slots']
 
-    def __init__(self, traits, source):
+    def __init__(self, behavior, source):
         W_Cell.__init__(self)
         self.source = source
-        self.traits = traits
+        self.behavior = behavior
 
     def __str__(self):
         return "<Entity of %s >" % (str(self.source))
@@ -66,17 +66,8 @@ class W_Entity(W_Cell):
     def _slice_(self, start, end, step):
         return self.source._slice_(start, end, step)
 
-    def _kindof_(self, trait):
-        if self.traits.has(trait):
-            return True
-
-        return False
-
-    def _traits_(self, process):
-        return self.traits
-
-    def _totrait_(self, process):
-        return self.source._totrait_(process)
+    def _behavior_(self, process):
+        return self.behavior
 
     def _compute_hash_(self):
         return self.source._compute_hash_()
@@ -86,8 +77,7 @@ class W_Entity(W_Cell):
 
     def _clone_(self):
         source = api.clone(self.source)
-        traits = self.traits.copy()
-        return W_Entity(traits, source)
+        return W_Entity(self.behavior, source)
 
 
 def has_traits(entity):
@@ -95,24 +85,21 @@ def has_traits(entity):
 
 
 def attach(process, entity, trait):
-    from obin.objects.space import isentity, istrait
+    from obin.objects.space import isentity, istrait, newbehavior, newentity
     assert istrait(trait)
     assert isentity(entity)
-    entity.traits.prepend(trait)
+    traits = entity.behavior.traits
+    from obin.objects.types.plist import cons
+    return newentity(process, newbehavior(cons(traits, trait)), entity.source)
 
 
 def detach(process, entity, trait):
-    from obin.objects.space import isentity, istrait
-    assert isentity(entity)
+    from obin.objects.space import isentity, istrait, newbehavior, newentity
+    from obin.objects.types.plist import remove
     assert istrait(trait)
-    try:
-        entity.traits.remove(trait)
-    except KeyError:
-        raise ObinTraitError(u"Detach trait error", trait)
-
-
-def set_traits(entity, traits):
-    from obin.objects.space import isentity
     assert isentity(entity)
-    assert entity.traits is None
-    entity.traits = traits
+    traits = entity.behavior.traits
+    try:
+        return newentity(process, newbehavior(remove(traits, trait)), entity.source)
+    except:
+        raise ObinTraitError(u"Detach trait error", trait)

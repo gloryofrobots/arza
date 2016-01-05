@@ -29,8 +29,8 @@ class W_Function(W_Callable):
     def _tobool_(self):
         return True
 
-    def _traits_(self, process):
-        return process.stdlib.traits.FunctionTraits
+    def _behavior_(self, process):
+        return process.std.behaviors.Function
 
     # def __str__(self):
     #     return 'Function %s' % self._tostring_()

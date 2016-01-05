@@ -35,7 +35,7 @@ class W_Integer(W_ValueType):
     def _tobool_(self):
         return bool(self.int_value)
 
-    def _traits_(self, process):
-        return process.stdlib.traits.IntegerTraits
+    def _behavior_(self, process):
+        return process.std.behaviors.Integer
 
 

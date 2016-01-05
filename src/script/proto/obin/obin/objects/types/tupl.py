@@ -57,8 +57,8 @@ class W_Tuple(W_Hashable):
             x = intmask((1000003 * x) ^ y)
         return x
 
-    def _traits_(self, process):
-        return process.stdlib.traits.TupleTraits
+    def _behavior_(self, process):
+        return process.std.behaviors.Tuple
 
     def _clone_(self):
         return W_Tuple(self.elements)

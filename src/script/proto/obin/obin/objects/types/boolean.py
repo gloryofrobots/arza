@@ -13,8 +13,8 @@ class W_True(W_Boolean):
     def _tobool_(self):
         return True
 
-    def _traits_(self, process):
-        return process.stdlib.traits.TrueTraits
+    def _behavior_(self, process):
+        return process.std.behaviors.True
 
     def _hash_(self):
         return 1
@@ -30,8 +30,8 @@ class W_False(W_Boolean):
     def _tobool_(self):
         return False
 
-    def _traits_(self, process):
-        return process.stdlib.traits.FalseTraits
+    def _behavior_(self, process):
+        return process.std.behaviors.False
 
     def _hash_(self):
         return 0
