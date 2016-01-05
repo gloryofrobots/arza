@@ -1,13 +1,16 @@
 trait Animal
 origin Human(name, surname) {
-    print(Human)
-    return ((Human, Animal), {name:name, surname:surname})
+    lst({name:name, surname:surname},Human, Animal)
 }
 print(Human)
 
 h = Human("Bob", "Alice")
+
+
 //print(h)
 
+l = lst(1,2,3,4,5)
+print(l)
 l = 1:2:3:4:5
 print(l)
 return nil

@@ -1,7 +1,7 @@
 from obin.runtime.reference import Reference
 from obin.objects import api
 from obin.objects.space import isstring
-from obin.utils.builtins import is_absent_index
+from obin.utils.misc import is_absent_index
 
 
 def newenv(obj, outer_environment):

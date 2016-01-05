@@ -24,8 +24,10 @@ class Generics:
         self.LeftShift = newgeneric(newstring(u"<<"))
         self.RightShift = newgeneric(newstring(u">>"))
         self.UnsignedRightShift = newgeneric(newstring(u">>>"))
+
         self.Len = newgeneric(newstring(u"len"))
         self.Str = newgeneric(newstring(u"str"))
+        self.List = newgeneric(newstring(u"list"))
 
 
 class Behaviors:

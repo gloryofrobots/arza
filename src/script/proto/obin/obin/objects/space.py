@@ -109,11 +109,15 @@ def neworigin(function):
     return obj
 
 
-def newentity(process, traits, source):
+def newentity(process, source, traits):
     from obin.objects.types import behavior
     from obin.objects.types.entity import W_Entity
-    traits.append_vector_items(behavior.traits(process, source))
-    return W_Entity(traits, source)
+    from obin.objects.types.plist import concat
+    assert islist(traits)
+    source_traits = behavior.traits(process, source)
+    behavior_traits = concat(traits, source_traits)
+    behavior = newbehavior(behavior_traits)
+    return W_Entity(behavior, source)
 
 
 def newmap():

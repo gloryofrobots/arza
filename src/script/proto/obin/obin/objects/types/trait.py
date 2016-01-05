@@ -1,6 +1,6 @@
 from obin.objects.types.root import W_Hashable
 from obin.objects import api
-from obin.utils.builtins import random
+from obin.utils.misc import random
 
 
 class W_Trait(W_Hashable):

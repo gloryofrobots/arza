@@ -14,26 +14,26 @@ class BaseRoutine:
     def signal(self):
         return self._signal
 
-    def resume(self, value):
+    def resume(self,  value):
         # print "RESUME", value
         assert self.is_suspended()
         self._on_resume(value)
         self._state = BaseRoutine.State.INPROCESS
 
-    def _on_resume(self, value):
+    def _on_resume(self,  value):
         raise NotImplementedError()
 
     def inprocess(self):
         assert not self.is_closed()
         self._state = BaseRoutine.State.INPROCESS
 
-    def complete(self, result):
+    def complete(self, process, result):
         assert not self.is_closed()
         self.result = result
         self._state = BaseRoutine.State.COMPLETE
-        self._on_complete()
+        self._on_complete(process)
 
-    def _on_complete(self):
+    def _on_complete(self, process):
         raise NotImplementedError()
 
     def terminate(self, signal):

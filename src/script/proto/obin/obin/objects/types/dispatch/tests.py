@@ -29,7 +29,7 @@ def test(gen, expected, args):
     # from obin.objects.object_space import newstring
     # assert m._name_ == newstring(expected)
     m = gen.lookup_method(args)
-    res = m._function_(*(args.to_list()))
+    res = m._function_(*(args.to_n_list()))
     if res != expected:
         print "ERROR", res, expected
         raise RuntimeError((res, expected))

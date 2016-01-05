@@ -10,15 +10,17 @@ class NativeRoutine(BaseRoutine):
         from obin.objects.space import isstring
         assert isstring(name)
         self._name_ = name
-        self._function_ = function
+        self.native_func = function
         self.arity = arity
         self.count_args = api.n_length(args)
         self._args = args
-    # redefine resume because we can call bytecode routine from native and after it resumes as we must complete
-    # resume = BaseRoutine.complete
 
+    # redefine resume because we can call bytecode routine from native and after it resumes as we must complete
     def _on_resume(self, value):
         self.result = value
+
+    def _on_complete(self, process):
+        pass
 
     def name(self):
         return api.to_native_string(self._name_)
@@ -31,10 +33,8 @@ class NativeRoutine(BaseRoutine):
 
     def _execute(self, process):
         if self.result is not None:
-            self.complete(self.result)
+            self.complete(process, self.result)
         else:
             self.suspend()
-            self._function_(process, self)
+            self.native_func(process, self)
 
-    def _on_complete(self):
-        pass

@@ -33,8 +33,7 @@ class W_List(W_Root):
                 break
             els.append(api.to_native_string(head(cur)))
             cur = cur.tail
-        return ":".join(els)
-        # return "list(%s)" % (",".join(els))
+        return "[%s]" % (":".join(els))
 
     def _length_(self):
         return self.count
@@ -67,19 +66,25 @@ def tail(pl):
     return pl.tail
 
 
-def cons(pl, v):
+def prepend(v, pl):
     return W_List(v, pl, pl.count + 1)
 
 
-def cons_n_list(pl, items):
+def cons_n_list(items, pl):
     head = pl
     for item in reversed(items):
-        head = cons(head, item)
+        head = prepend(item, head)
     return head
 
 
 def append(pl, v):
     insert(pl, pl.count, v)
+
+
+def concat(pl1, pl2):
+    if isempty(pl1):
+        return pl2
+    return prepend(head(pl1), concat(tail(pl1), pl2))
 
 
 def pop(pl):
@@ -92,12 +97,12 @@ def take(pl, count):
 
     if isempty(pl):
         raise RuntimeError("List to small for operation")
-    return cons(take(pop(pl), count - 1), head(pl))
+    return prepend(head(pl), take(pop(pl), count - 1))
 
 
 def insert(pl, index, v):
     if index == 0:
-        return cons(pl, v)
+        return prepend(v, pl)
 
     if isempty(pl):
         raise RuntimeError("Invalide Index")
@@ -146,7 +151,7 @@ def reverse(pl):
     while True:
         if isempty(cur):
             return result
-        result = cons(result, head(cur))
+        result = prepend(head(cur), result)
         cur = cur.tail
 
 
@@ -174,14 +179,21 @@ def compute_hash_2(pl):
     return x
 
 
+def plist_vec(process, vec):
+    items = vec.to_n_list()
+    return plist(items)
+
+
 def plist(items):
-    head = empty()
+    lst = empty()
     for item in reversed(items):
-        head = cons(head, item)
-    return head
+        lst = prepend(item, lst)
+    return lst
+
 
 def plist1(item):
-    return cons(empty(), item)
+    return prepend(item, empty())
+
 
 def test():
     from obin.objects.space import newint
@@ -203,9 +215,9 @@ def test():
     nis = lambda items: [newint(i) for i in items]
 
     l = plist(nis([0]))
-    l1 = cons(l, ni(1))
-    l2 = cons(l1, ni(2))
-    l3 = cons(l2, ni(3))
+    l1 = prepend( ni(1),l)
+    l2 = prepend( ni(2), l1)
+    l3 = prepend( ni(3), l2,)
     test_list(l3, [3, 2, 1, 0])
     l4 = insert(l3, 1, ni(44))
     test_list(l4, [3, 44, 2, 1, 0])
@@ -217,18 +229,24 @@ def test():
 
     l7 = remove(l6, ni(44))
     test_list(l7, [3, 55])
+    l7_1 = remove(l6, ni(55))
+    test_list(l7_1, [3, 44])
 
-    l8 = cons_n_list(l7, nis([123, 124, 125, 123, 124, 125]))
+
+    l8 = cons_n_list(nis([123, 124, 125, 123, 124, 125]), l7)
     test_list(l8, [123, 124, 125, 123, 124, 125, 3, 55])
     # print remove_all(l8, ni(125))
     l9 = reverse(l8)
     print l9
+    l10 = concat(l8, l9)
+    print l10
 
     # l9 = newlist(nis([1,2,2,3,4,5,2,6,2,7]))
     # l9 = newlist(nis([1,2,3]))
     # print l9
     # l10 = remove_all(l9, ni(2))
     # print l10
+
 
 if __name__ == "__main__":
     test()

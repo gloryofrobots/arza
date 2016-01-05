@@ -2,7 +2,7 @@ from root import W_Constant
 
 class W_Nil(W_Constant):
     def __init__(self):
-        from obin.utils.builtins import oid
+        from obin.utils.misc import oid
         self.__hash = oid(self)
 
     def _tostring_(self):

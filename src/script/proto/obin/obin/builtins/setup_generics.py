@@ -35,6 +35,7 @@ def _install(process, module, stdlib):
     api.put(module, generics.UnsignedRightShift.name, generics.UnsignedRightShift)
     api.put(module, generics.Len.name, generics.Len)
     api.put(module, generics.Str.name, generics.Str)
+    api.put(module, generics.List.name, generics.List)
 
 
 def _reify(process, module, stdlib):
@@ -192,3 +193,7 @@ def _reify(process, module, stdlib):
     reify_single(process, generics.Str,
                  newtuple([traits.Any, ]),
                  newprimitive(newstring(u"str_w"), wrappers.builtin_str_w, 1))
+
+    reify_single(process, generics.List,
+                 newtuple([traits.Vector, ]),
+                 newprimitive(newstring(u"plist_v"), wrappers.builtin_vector_to_list, 1))

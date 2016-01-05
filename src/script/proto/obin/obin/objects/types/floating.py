@@ -9,7 +9,7 @@ class W_Float(W_ValueType):
         self.float_value = value
 
     def _hash_(self):
-        from obin.utils.builtins import ohash
+        from obin.utils.misc import ohash
         return ohash(self.float_value)
 
     def _tointeger_(self):

@@ -6,7 +6,7 @@ from obin.objects import space as obs
 from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource
 from obin.compile.code import *
-from obin.utils.builtins import is_absent_index
+from obin.utils.misc import is_absent_index
 from obin.compile.parse.token_type import *
 
 

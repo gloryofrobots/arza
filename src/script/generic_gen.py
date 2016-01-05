@@ -2,7 +2,8 @@ I = "Integer"
 N = "Number"
 F = "Float"
 A = "Any"
-
+V = "Vector"
+T = "Tuple"
 
 GENERICS = [
     ("Add", "+",
@@ -59,11 +60,13 @@ GENERICS = [
          [((A,),"len_w")]),
      ("Str", "str",
          [((A,),"str_w")]),
+     ("List", "list",
+         [((V,),"plist_vec","obin.objects.types.plist")]),
 ]
 TPL_IMPL_BINARY = """
 @complete_native_routine
 def builtin_%s(process, routine):
-    from obin.builtins.internals.operations import %s 
+    from %s import %s 
     arg1 = routine.get_arg(0)
     arg2 = routine.get_arg(1)
     return %s(process, arg1, arg2)
@@ -72,7 +75,7 @@ def builtin_%s(process, routine):
 TPL_IMPL_UNARY = """
 @complete_native_routine
 def builtin_%s(process, routine):
-    from obin.builtins.internals.operations import %s 
+    from %s import %s 
     arg1 = routine.get_arg(0)
     return %s(process, arg1)
 """
@@ -92,7 +95,11 @@ def print_implementations():
                 tpl = TPL_IMPL_UNARY
             else:
                 tpl = TPL_IMPL_BINARY
-            S = tpl %(func, func, func)
+            try:
+                module = impl[2]
+            except:
+                module = "obin.builtins.internals.operations"
+            S = tpl %(func, module, func, func)
             print S
 
 print_implementations()

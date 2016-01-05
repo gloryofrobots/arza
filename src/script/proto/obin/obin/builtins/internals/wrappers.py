@@ -287,3 +287,10 @@ def builtin_str_w(process, routine):
     from obin.builtins.internals.operations import str_w 
     arg1 = routine.get_arg(0)
     return str_w(process, arg1)
+
+
+@complete_native_routine
+def builtin_vector_to_list(process, routine):
+    from obin.objects.types.plist import plist_vec
+    arg1 = routine.get_arg(0)
+    return plist_vec(process, arg1)

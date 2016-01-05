@@ -15,9 +15,16 @@ class OriginRoutine(BaseRoutine):
 
     def _execute(self, process):
         if self.result is not None:
-            self.complete(self.result)
+            self.complete(process, self.result)
         else:
             api.call(process, self.constructor, self._args)
 
-    def _on_complete(self):
+    def _on_complete(self, process):
+        from obin.objects.space import newentity, istuple, islist
+        from obin.objects.types.plist import head, tail
+        if not islist(self.result):
+            raise RuntimeError("Origin must return list[source, ...traits]")
+        source = head(self.result)
+        traits = tail(self.result)
+        self.result = newentity(process, source, traits)
         print "Origin on complete", self.result

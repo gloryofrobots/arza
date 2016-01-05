@@ -64,7 +64,7 @@ class CodeRoutine(BaseRoutine):
     def _on_activate(self):
         pass
 
-    def _on_complete(self):
+    def _on_complete(self, process):
         pass
 
     def _print_stack(self):
@@ -101,7 +101,7 @@ class CodeRoutine(BaseRoutine):
                 stack.push(newundefined())
             # *************************************
             elif RETURN == tag:
-                self.complete(stack.top())
+                self.complete(process, stack.top())
             # *************************************
             elif NULL == tag:
                 stack.push(newnil())

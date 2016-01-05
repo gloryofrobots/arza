@@ -50,7 +50,7 @@ def _id(process, routine):
 
 @complete_native_routine
 def _print(process, routine):
-    args = routine._args.to_list()
+    args = routine._args.to_n_list()
     if len(args) == 0:
         return
 
@@ -141,7 +141,7 @@ def traits(process, routine):
 
 @complete_native_routine
 def attach(process, routine):
-    args = routine.args().to_list()
+    args = routine.args().to_n_list()
     obj = routine.get_arg(0)
     for i in range(len(args) - 1, 0, -1):
         trait = routine.get_arg(i)
@@ -151,7 +151,7 @@ def attach(process, routine):
 
 @complete_native_routine
 def detach(process, routine):
-    args = routine.args().to_list()
+    args = routine.args().to_n_list()
     obj = routine.get_arg(0)
     for i in range(1, len(args)):
         trait = routine.get_arg(i)

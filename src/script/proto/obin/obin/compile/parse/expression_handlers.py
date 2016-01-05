@@ -118,20 +118,6 @@ def prefix_lparen(parser, node):
     node.setfirst(list_node(items))
     return node
 
-def prefix_pipe(parser, node):
-    items = []
-    node.init(1)
-    if parser.token_type != TT_BITOR:
-        while True:
-            items.append(expression(parser, 0))
-            if parser.token_type != TT_COMMA:
-                break
-
-            advance_expected(parser, TT_COMMA)
-
-    node.setfirst(list_node(items))
-    advance_expected(parser, TT_BITOR)
-    return node
 
 def prefix_lsquare(parser, node):
     items = []

@@ -115,6 +115,10 @@ class Process(object):
     def builtins(self):
         return self.__data.builtins
 
+    @builtins.setter
+    def builtins(self, b):
+        self.__data.builtins = b
+
     @property
     def fiber(self):
         return self.__fiber

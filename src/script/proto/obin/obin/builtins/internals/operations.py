@@ -313,6 +313,8 @@ def str_w(process, op1):
 def len_w(process, op1):
     return api.length(op1)
 
+def list_v(process, op1):
+    pass
 
 def cons_w(process, op1, op2):
     from obin.objects.types.plist import plist1, cons

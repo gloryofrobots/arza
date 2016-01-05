@@ -1,6 +1,6 @@
 from obin.objects import api
 from obin.objects.types.root import W_Root, W_Cell
-from obin.utils.builtins import is_absent_index, absent_index
+from obin.utils.misc import is_absent_index, absent_index
 
 
 # from rpython.rlib.objectmodel import specialize, enforceargs, always_inline

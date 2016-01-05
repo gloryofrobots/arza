@@ -1,6 +1,6 @@
 from obin.objects.space import isstring
 from obin.objects.space import newmap
-from obin.utils.builtins import absent_index, is_absent_index
+from obin.utils.misc import absent_index, is_absent_index
 from obin.objects import api
 
 class ScopeSet:

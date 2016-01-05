@@ -1,7 +1,7 @@
 from obin.objects.types.root import W_Cell
 from obin.runtime.error import *
 from sequence import W_SequenceIterator
-from obin.utils.builtins import absent_index
+from obin.utils.misc import absent_index
 
 
 class W_Vector(W_Cell):
@@ -135,7 +135,7 @@ class W_Vector(W_Cell):
         assert isany(v)
         self._items.remove(v)
 
-    def to_list(self):
+    def to_n_list(self):
         return self._items
 
     def pop(self):
