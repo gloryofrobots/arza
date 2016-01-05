@@ -61,6 +61,7 @@ def infix_lparen(parser, node, left):
         """
     return node
 
+
 def prefix_if(parser, node):
     node.init(1)
     branches = list_node([])
@@ -117,6 +118,20 @@ def prefix_lparen(parser, node):
     node.setfirst(list_node(items))
     return node
 
+def prefix_pipe(parser, node):
+    items = []
+    node.init(1)
+    if parser.token_type != TT_BITOR:
+        while True:
+            items.append(expression(parser, 0))
+            if parser.token_type != TT_COMMA:
+                break
+
+            advance_expected(parser, TT_COMMA)
+
+    node.setfirst(list_node(items))
+    advance_expected(parser, TT_BITOR)
+    return node
 
 def prefix_lsquare(parser, node):
     items = []
@@ -132,7 +147,6 @@ def prefix_lsquare(parser, node):
     node.setfirst(list_node(items))
     advance_expected(parser, TT_RSQUARE)
     return node
-
 
 
 def prefix_lcurly(parser, node):
@@ -218,22 +232,22 @@ def parse_fn(parser):
     return name, list_node(args), list_node(outers), body
 
 
-def prefix_fn(parser, node):
+def prefix_func(parser, node):
     node.init(3)
     name, args, outers, body = parse_fn(parser)
     if not is_empty_node(name):
-        parse_error_node(parser, "In expressions functions could not have names", node)
+        parse_error_node(parser, "func expression could not have name", node)
     node.setfirst(args)
     node.setsecond(outers)
     node.setthird(body)
     return node
 
 
-def stmt_fn(parser, node):
+def stmt_def(parser, node):
     node.init(4)
     name, args, outers, body = parse_fn(parser)
     if is_empty_node(name):
-        parse_error_node(parser, "Function statement must be declared with name", node)
+        parse_error_node(parser, "def statement must be declared with name", node)
     node.setfirst(name)
     node.setsecond(args)
     node.setthird(outers)
@@ -242,13 +256,6 @@ def stmt_fn(parser, node):
 
 
 def parse_object(parser):
-    def _object_statement_to_expr(stmt):
-        expr = Node(stmt.type, stmt.value, stmt.position, stmt.line)
-        expr.init(2)
-        expr.setfirst(stmt.second())
-        expr.setsecond(stmt.third())
-        return expr
-
     def _fn_statement_to_expr(stmt):
         expr = Node(stmt.type, stmt.value, stmt.position, stmt.line)
         expr.init(3)
@@ -283,16 +290,11 @@ def parse_object(parser):
     advance_expected(parser, TT_LCURLY)
     if parser.token_type != TT_RCURLY:
         while True:
-            if parser.token_type == TT_FN:
+            if parser.token_type == TT_FUNC:
                 fn = statement(parser)
                 key = fn.first()
                 # dirty hack to convert statements to expression for compiler
                 value = _fn_statement_to_expr(fn)
-            elif parser.token_type == TT_OBJECT:
-                obj = statement(parser)
-                key = obj.first()
-                # dirty hack to convert statements to expression for compiler
-                value = _object_statement_to_expr(obj)
             else:
                 # TODO check it
                 check_token_types(parser, [TT_NAME, TT_INT, TT_STR, TT_CHAR, TT_FLOAT])
@@ -383,6 +385,18 @@ def stmt_for(parser, node):
     return node
 
 
+def stmt_origin(parser, node):
+    node.init(4)
+    name, args, outers, body = parse_fn(parser)
+    if is_empty_node(name):
+        parse_error_node(parser, "origin statement must have name", node)
+    node.setfirst(name)
+    node.setsecond(args)
+    node.setthird(outers)
+    node.setfourth(body)
+    return node
+
+
 def stmt_generic(parser, node):
     if parser.token_type != TT_NAME:
         parse_error_simple(parser, "Wrong generic name")
@@ -470,6 +484,7 @@ def stmt_reify(parser, node):
     node.setsecond(funcs)
     return node
 
+
 def stmt_import(parser, node):
     # statement can be import x.y.z as c
     imported = expression(parser.module_name_alias_parser, 0)
@@ -480,6 +495,7 @@ def stmt_import(parser, node):
     node.setsecond(empty_node())
 
     return node
+
 
 def prefix_import(parser, node):
     imported = expression(parser.module_name_parser, 0)

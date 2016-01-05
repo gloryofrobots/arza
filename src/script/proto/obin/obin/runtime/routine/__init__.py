@@ -21,6 +21,11 @@ def create_primitive_routine(name, primitive, args, arity):
     return NativeRoutine(name, primitive, args, arity)
 
 
+def create_origin_routine(constructor, args):
+    from obin.runtime.routine.origin_routine import OriginRoutine
+    return OriginRoutine(constructor, args)
+
+
 def create_module_routine(code, module, _globals):
     assert _globals
     if _globals is not None:
@@ -32,19 +37,17 @@ def create_module_routine(code, module, _globals):
 
 
 def create_function_routine(func, args, outer_env):
-    # TODO CHANGE TO PUBLIC FIELDS
-    code = func._bytecode_
+    code = func.bytecode
     scope = code.scope
-    name = func._name_
+    name = func.name
 
     env = create_function_environment(func, scope, args, outer_env)
     return jit.promote(CodeRoutine(name, code, env))
 
 
-
 def create_function_environment(func, scope, args, outer_env):
     from obin.runtime.environment import newenv
-    from obin.objects.space import  newvector
+    from obin.objects.space import newvector
 
     declared_args_count = scope.count_args
     is_variadic = scope.is_variadic

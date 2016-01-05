@@ -1,22 +1,26 @@
-x = `+`(1,2)
-print(x)
-x = `+`(1.0,2.0)
-print(x)
-x = `+`(1,2.0)
-print(x)
+trait Animal
+origin Human(name, surname) {
+    print(Human)
+    return ((Human, Animal), {name:name, surname:surname})
+}
+print(Human)
 
-A = [1,2,3,4,5,6]
-print(length(A))
+h = Human("Bob", "Alice")
+//print(h)
 
-fn coroutine(func) {
+l = 1:2:3:4:5
+print(l)
+return nil
+
+def coroutine(fn) {
     (fiber1, fiber2) = spawn_fiber()
     first_call = false
-    return fn(...args) {
+    return func(...args) {
         outer first_call
         if first_call == false {
             first_call = true
-            activate_fiber(fiber2, fn(){
-                func(fiber1, ...args)
+            activate_fiber(fiber2, func(){
+                fn(fiber1, ...args)
             })
         } else {
             fiber2(...args)
@@ -24,12 +28,12 @@ fn coroutine(func) {
     }
 }
 
- co = coroutine(fn(yield, x) {
+ co = coroutine(func(yield, x) {
            Z = "1111"
 
-           _co1 = coroutine(fn(yield2, y) {
+           _co1 = coroutine(func(yield2, y) {
                Y = "2222"
-               fn send() {
+               def send() {
                     X = "3333"
                     yield2(42 + y)
                }
@@ -50,8 +54,3 @@ print(co(34))
 print(co(44))
 
 
-print(filter(func(x) x % 2 end, 0,
-             map(func(x) x * x end,
-                    range(1, 6))))
-
-pipe_last(range(1,6), map(func(x) x * x end), filter(func(x) x % 2 end, 0), print)

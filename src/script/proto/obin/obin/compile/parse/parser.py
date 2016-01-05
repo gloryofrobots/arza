@@ -231,6 +231,7 @@ def main_parser_init(parser):
     """
 
     infix(parser, TT_DOT, 70, infix_dot)
+    infixr(parser, TT_COLON, 70)
 
     """
     precedence 80
@@ -264,9 +265,9 @@ def main_parser_init(parser):
 
     prefix(parser, TT_LCURLY, prefix_lcurly)
 
-    prefix(parser, TT_FN, prefix_fn)
+    prefix(parser, TT_FUNC, prefix_func)
 
-    prefix(parser, TT_OBJECT, prefix_object)
+    # prefix(parser, TT_OBJECT, prefix_object)
 
     prefix(parser, TT_IMPORT, prefix_import)
 
@@ -274,9 +275,10 @@ def main_parser_init(parser):
     STATEMENTS
     """
 
-    stmt(parser, TT_FN, stmt_fn)
+    stmt(parser, TT_DEF, stmt_def)
 
-    stmt(parser, TT_OBJECT, stmt_object)
+    # stmt(parser, TT_OBJECT, stmt_object)
+    stmt(parser, TT_ORIGIN, stmt_origin)
 
     stmt(parser, TT_RETURN, stmt_single)
     stmt(parser, TT_THROW, stmt_single)
@@ -349,10 +351,9 @@ def write_ast(ast):
 
 # ast = parse_string(
 #     """
-# (x, y, z) = func()
-# {name, surname} = func()
-# {name:new_name, surname:new_surname} = D
-# {name:new_name, friends:({name:friend_name}, {dogname})} = D
+#     origin foo(x,y,...z) {
+#         print(x,y,z)
+#     }
 #     """
 # )
 # print ast

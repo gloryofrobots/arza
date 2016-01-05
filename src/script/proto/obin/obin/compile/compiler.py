@@ -55,7 +55,7 @@ def _enter_scope(process, compiler):
 
 
 def _is_modifiable_binding(process, compiler, name):
-    scope = _current_scope(process, compiler, )
+    scope = _current_scope(process, compiler)
     if not is_absent_index(scope.get_local_index(name)):
         return True
     if scope.has_outer(name):
@@ -65,7 +65,7 @@ def _is_modifiable_binding(process, compiler, name):
 
 
 def _declare_outer(process, compiler, symbol):
-    scope = _current_scope(process, compiler, )
+    scope = _current_scope(process, compiler)
     if not scope.is_function_scope():
         compile_error_1(process, process, compiler.current_node,
                         "Outer variables can be declared only inside functions", symbol)
@@ -81,16 +81,16 @@ def _declare_outer(process, compiler, symbol):
 #     return idx
 
 def _declare_arguments(process, compiler, args, varargs):
-    _current_scope(process, compiler, ).add_arguments(args, varargs)
+    _current_scope(process, compiler).add_arguments(args, varargs)
 
 
 def _declare_function_name(process, compiler, name):
-    _current_scope(process, compiler, ).add_function_name(name)
+    _current_scope(process, compiler).add_function_name(name)
 
 
 def _declare_reference(process, compiler, symbol):
     assert obs.isstring(symbol)
-    scope = _current_scope(process, compiler, )
+    scope = _current_scope(process, compiler)
     idx = scope.get_reference(symbol)
     if is_absent_index(idx):
         idx = scope.add_reference(symbol)
@@ -99,7 +99,7 @@ def _declare_reference(process, compiler, symbol):
 
 def _declare_literal(process, compiler, literal):
     assert obs.isany(literal)
-    scope = _current_scope(process, compiler, )
+    scope = _current_scope(process, compiler)
     idx = scope.get_literal(literal)
     if is_absent_index(idx):
         idx = scope.add_literal(literal)
@@ -107,7 +107,7 @@ def _declare_literal(process, compiler, literal):
 
 
 def _declare_local(process, compiler, symbol):
-    scope = _current_scope(process, compiler, )
+    scope = _current_scope(process, compiler)
     idx = scope.get_local_index(symbol)
     if not is_absent_index(idx):
         return idx
@@ -144,7 +144,7 @@ def _declare_variable(process, compiler, symbol):
         return var_index, is_local
     """
 
-    scope = _current_scope(process, compiler, )
+    scope = _current_scope(process, compiler)
     if scope.has_outer(symbol):
         idx = _declare_reference(process, compiler, symbol)
         return idx, False
@@ -202,12 +202,13 @@ def _compile_UNDEFINED(process, compiler, bytecode, node):
 
 def _emit_string_name(process, compiler, bytecode, name):
     string = obs.newstring_from_str(name.value)
-    _emit_string(process, compiler, bytecode, string)
+    return _emit_string(process, compiler, bytecode, string)
 
 
 def _emit_string(process, compiler, bytecode, string):
     idx = _declare_literal(process, compiler, string)
     bytecode.emit_1(LITERAL, idx)
+    return idx
 
 
 def _compile_STR(process, compiler, bytecode, node):
@@ -431,7 +432,7 @@ def _compile_destruct_recur_table(process, compiler, bytecode, node):
         elif value.type == TT_NAME:
             varname = value
 
-        _emit_table_key(process, compiler, bytecode, key)
+        _emit_map_key(process, compiler, bytecode, key)
 
         bytecode.emit_0(MEMBER)
 
@@ -630,7 +631,7 @@ def _compile_THROW(process, compiler, code, node):
     code.emit_0(THROW)
 
 
-def _emit_table_key(process, compiler, code, key):
+def _emit_map_key(process, compiler, code, key):
     if key.type == TT_NAME:
         # in case of names in object literal we must convert them to strings
         _emit_string_name(process, compiler, code, key)
@@ -638,10 +639,7 @@ def _emit_table_key(process, compiler, code, key):
         _compile(process, compiler, code, key)
 
 
-def _compile_object(process, compiler, code, items, traits):
-    for t in traits:
-        _compile(process, compiler, code, t)
-
+def _compile_map(process, compiler, code, items):
     for c in items:
         key = c[0]
         value = c[1]
@@ -650,38 +648,14 @@ def _compile_object(process, compiler, code, items, traits):
         else:
             _compile(process, compiler, code, value)
 
-        _emit_table_key(process, compiler, code, key)
+        _emit_map_key(process, compiler, code, key)
 
-    code.emit_2(OBJECT, len(items), len(traits))
+    code.emit_1(MAP, len(items))
 
 
 def _compile_LCURLY(process, compiler, code, node):
     items = node.first()
-    _compile_object(process, compiler, code, items, list_node([]))
-
-
-def _compile_OBJECT_expression(process, compiler, code, node):
-    traits = node.first()
-    items = node.second()
-    _compile_object(process, compiler, code, items, traits)
-
-
-def _compile_OBJECT(process, compiler, code, node):
-    # compiles object statements
-
-    if node.arity == 2:
-        return _compile_OBJECT_expression(process, compiler, code, node)
-
-    name = node.first()
-    traits = node.second()
-    items = node.third()
-    _compile_object(process, compiler, code, items, traits)
-
-    name = obs.newstring_from_str(name.value)
-    index = _declare_local(process, compiler, name)
-    name_index = _declare_literal(process, compiler, name)
-    # _compile(process, compiler,bytecode, node.first())
-    code.emit_2(STORE_LOCAL, index, name_index)
+    _compile_map(process, compiler, code, items)
 
 
 def _compile_TUPLE(process, compiler, code, node):
@@ -704,6 +678,15 @@ def _compile_LSQUARE(process, compiler, code, node):
     code.emit_1(VECTOR, len(items))
 
 
+# def _emit_list(process, compiler, code, node):
+#     items = node.first()
+#
+#     for c in items:
+#         _compile(process, compiler, code, c)
+#
+#     code.emit_1(LIST, len(items))
+
+
 def _compile_BREAK(process, compiler, code, node):
     code.emit_0(UNDEFINED)
     if not code.emit_break():
@@ -716,8 +699,8 @@ def _compile_CONTINUE(process, compiler, code, node):
         compile_error(process, node, "continue outside loop")
 
 
-def _compile_fn_args_and_body(process, compiler, code, funcname, params, outers, body):
-    _enter_scope(process, compiler, )
+def _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, opcode):
+    _enter_scope(process, compiler)
 
     if is_iterable_node(params):
         length = len(params)
@@ -745,14 +728,16 @@ def _compile_fn_args_and_body(process, compiler, code, funcname, params, outers,
         for outer in outers:
             _declare_outer(process, compiler, obs.newstring_from_str(outer.value))
 
-    if not funcname.isempty():
+    # avoid recursive name lookups for origins because in this case
+    # index will be pointed to constructor instead of origin
+    if not funcname.isempty() and not opcode == ORIGIN:
         _declare_function_name(process, compiler, funcname)
 
     funccode = CodeSource()
     _compile(process, compiler, funccode, body)
-    current_scope = _current_scope(process, compiler, )
+    current_scope = _current_scope(process, compiler)
     scope = current_scope.finalize()
-    _exit_scope(process, compiler, )
+    _exit_scope(process, compiler)
     # print "LOCALS:", str(scope.variables.keys())
     # print "REFS:", str(scope.references)
     compiled_code = funccode.finalize_compilation(scope)
@@ -761,22 +746,10 @@ def _compile_fn_args_and_body(process, compiler, code, funcname, params, outers,
 
     source = obs.newfuncsource(funcname, compiled_code)
     source_index = _declare_literal(process, compiler, source)
-    code.emit_1(FUNCTION, source_index)
+    code.emit_1(opcode, source_index)
 
 
-def _compile_FN_expression(process, compiler, code, node):
-    name = obs.newstring(u'')
-    params = node.first()
-    outers = node.second()
-    body = node.third()
-    _compile_fn_args_and_body(process, compiler, code, name, params, outers, body)
-
-
-def _compile_FN(process, compiler, code, node):
-    # compiles function statements
-    if node.arity == 3:
-        return _compile_FN_expression(process, compiler, code, node)
-
+def _compile_DEF(process, compiler, code, node):
     name = node.first()
     funcname = obs.newstring_from_str(name.value)
 
@@ -784,7 +757,29 @@ def _compile_FN(process, compiler, code, node):
     params = node.second()
     outers = node.third()
     body = node.fourth()
-    _compile_fn_args_and_body(process, compiler, code, funcname, params, outers, body)
+    _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, FUNCTION)
+
+    funcname_index = _declare_literal(process, compiler, funcname)
+    code.emit_2(STORE_LOCAL, index, funcname_index)
+
+
+def _compile_FUNC(process, compiler, code, node):
+    name = obs.newstring(u'')
+    params = node.first()
+    outers = node.second()
+    body = node.third()
+    _compile_func_args_and_body(process, compiler, code, name, params, outers, body, FUNCTION)
+
+
+def _compile_ORIGIN(process, compiler, code, node):
+    name = node.first()
+    funcname = obs.newstring_from_str(name.value)
+    index = _declare_local(process, compiler, funcname)
+
+    params = node.second()
+    outers = node.third()
+    body = node.fourth()
+    _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, ORIGIN)
 
     funcname_index = _declare_literal(process, compiler, funcname)
     code.emit_2(STORE_LOCAL, index, funcname_index)
@@ -924,7 +919,8 @@ def _compile_REIFY(process, compiler, code, node):
         code.emit_1(TUPLE, len(signature))
 
         method_name = obs.newstring(u"")
-        _compile_fn_args_and_body(process, compiler, code, method_name, list_node(args), empty_node(), method_body)
+        _compile_func_args_and_body(process, compiler, code, method_name, list_node(args), empty_node(), method_body,
+                                    FUNCTION)
         code.emit_1(TUPLE, 2)
 
     code.emit_1(REIFY, len(methods))
@@ -978,6 +974,8 @@ def _compile_WHILE(process, compiler, bytecode, node):
     bytecode.emit_endloop_label(endlabel)
     bytecode.done_continue()
 
+def _compile_COLON(process, compiler, code, node):
+    _on_binary_primitive(process, compiler, code, node, internals.CONS)
 
 def _compile_DOT(process, compiler, code, node):
     obj = node.first()
@@ -1123,8 +1121,12 @@ def _compile_node(process, compiler, code, node):
         _compile_IF(process, compiler, code, node)
     elif TT_WHEN == t:
         _compile_WHEN(process, compiler, code, node)
-    elif TT_FN == t:
-        _compile_FN(process, compiler, code, node)
+    elif TT_FUNC == t:
+        _compile_FUNC(process, compiler, code, node)
+    elif TT_DEF == t:
+        _compile_DEF(process, compiler, code, node)
+    elif TT_ORIGIN == t:
+        _compile_ORIGIN(process, compiler, code, node)
     elif TT_AND == t:
         _compile_AND(process, compiler, code, node)
     elif TT_OR == t:
@@ -1143,8 +1145,6 @@ def _compile_node(process, compiler, code, node):
         _compile_IN(process, compiler, code, node)
     elif TT_IS == t:
         _compile_IS(process, compiler, code, node)
-    elif TT_OBJECT == t:
-        _compile_OBJECT(process, compiler, code, node)
     elif TT_ISNOT == t:
         _compile_ISNOT(process, compiler, code, node)
     elif TT_OUTER == t:
@@ -1201,6 +1201,8 @@ def _compile_node(process, compiler, code, node):
         _compile_LSQUARE(process, compiler, code, node)
     elif TT_DOT == t:
         _compile_DOT(process, compiler, code, node)
+    elif TT_COLON == t:
+        _compile_COLON(process, compiler, code, node)
     elif TT_BITAND == t:
         _compile_BITAND(process, compiler, code, node)
     elif TT_BITNOT == t:
@@ -1227,10 +1229,10 @@ def _compile_node(process, compiler, code, node):
 
 def compile_ast(process, compiler, ast):
     code = CodeSource()
-    _enter_scope(process, compiler, )
+    _enter_scope(process, compiler)
     _declare_arguments(process, compiler, None, False)
     _compile(process, compiler, code, ast)
-    scope = _current_scope(process, compiler, )
+    scope = _current_scope(process, compiler)
     final_scope = scope.finalize()
     compiled_code = code.finalize_compilation(final_scope)
     return compiled_code
@@ -1284,18 +1286,25 @@ def _check(val1, val2):
 
 
 # compile_and_print("""
-# metadata = 34;
 #
-# {
-#     title: englishTitle,
-#     subject,
-#     translationsUa: { title: localeTitle, translator },
-#     translationsEn: { titleEn: (localeTitle, origTitle), translator },
-#     author:author_data
-# } = metadata;
-#
+# trait Animal
+# origin Human(name, surname) {
+#     return ((Human, Animal), {name:name, surname:surname})
+# }
 # """)
 """
+
+metadata = 34;
+
+{
+    title: englishTitle,
+    subject,
+    translationsUa: { title: localeTitle, translator },
+    translationsEn: { titleEn: (localeTitle, origTitle), translator },
+    author:author_data
+} = metadata;
+
+
     reify fire {
         (self of Soldier, other of Civilian) {
             attack(self, other)

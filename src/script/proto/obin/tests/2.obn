@@ -92,6 +92,16 @@ print("x / 45", x / 45)
 print("x % 32", x % 32)
 
 
+x = `+`(1,2)
+print(x)
+x = `+`(1.0,2.0)
+print(x)
+x = `+`(1,2.0)
+print(x)
+
+A = [1,2,3,4,5,6]
+print(length(A))
+
 A = [0, 1, 2, x]
 print(x,"in",A, x in A)
 

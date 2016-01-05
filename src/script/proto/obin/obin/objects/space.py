@@ -103,9 +103,9 @@ def newprimitive(name, function, arity):
     return obj
 
 
-def neworigin(name, function):
+def neworigin(function):
     from obin.objects.types.origin import W_Origin
-    obj = W_Origin(name, function)
+    obj = W_Origin(function)
     return obj
 
 

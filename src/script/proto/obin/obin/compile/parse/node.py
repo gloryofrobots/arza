@@ -87,6 +87,9 @@ class NodeList(BaseNode):
         assert isinstance(items, list)
         self.items = items
 
+    def __reversed__(self):
+        return reversed(self.items)
+
     def __iter__(self):
         return iter(self.items)
 

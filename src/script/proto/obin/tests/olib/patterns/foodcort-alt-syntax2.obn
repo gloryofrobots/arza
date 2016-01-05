@@ -153,7 +153,7 @@ Joe.visit(OliveGarden)
 Bob.visit(OliveGarden)
 
 reduce(`+`,
-  fn BigFun() =>
+  func BigFun() =>
     if x == 25 
       print(x)
       =>_some_work(x)

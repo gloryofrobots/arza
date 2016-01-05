@@ -6,7 +6,6 @@ from rpython.rlib.rstring import UnicodeBuilder
 from obin.runistr import encode_unicode_utf8
 
 
-
 def setup(process, module, stdlib):
     ### Traits
 
@@ -49,7 +48,6 @@ def _id(process, routine):
     return space.newstring(unicode(hex(compute_unique_id(this))))
 
 
-
 @complete_native_routine
 def _print(process, routine):
     args = routine._args.to_list()
@@ -67,6 +65,7 @@ def _print(process, routine):
     print_str = encode_unicode_utf8(u_print_str)
     print(print_str)
     return space.newundefined()
+
 
 def _eval(process, routine):
     from obin.runtime.environment import newenv

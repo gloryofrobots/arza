@@ -169,8 +169,8 @@ def newsignature(process, args, method):
         trait = api.at_index(args, i)
         if traits.Any is trait:
             arg = ArgumentAny(i)
-        elif traits.Object is trait:
-            arg = PredicateArgument(i, space.isobject)
+        elif traits.Map is trait:
+            arg = PredicateArgument(i, space.ismap)
         elif traits.Vector is trait:
             arg = PredicateArgument(i, space.isvector)
         elif traits.String is trait:

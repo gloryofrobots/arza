@@ -6,6 +6,7 @@ from obin.compile.parse.token_type import *
 
 import re
 
+
 def keyword(literal):
     return re.compile('\\b%s\\b' % literal)
 
@@ -74,7 +75,8 @@ RULES = [
     (keyword('elif'), TT_ELIF),
     (keyword('of'), TT_OF),
     (keyword('match'), TT_MATCH),
-    (keyword('fn'), TT_FN),
+    (keyword('func'), TT_FUNC),
+    (keyword('def'), TT_DEF),
     (keyword('and'), TT_AND),
     (keyword('or'), TT_OR),
     (keyword('not'), TT_NOT),
@@ -97,7 +99,7 @@ RULES = [
     (keyword('is'), TT_IS),
     (keyword('isnot'), TT_ISNOT),
     (keyword('return'), TT_RETURN),
-    (keyword('object'), TT_OBJECT),
+    (keyword('origin'), TT_ORIGIN),
     (keyword('outer'), TT_OUTER),
     (floating_constant, TT_FLOAT),
     (decimal_constant, TT_INT),
@@ -148,13 +150,12 @@ RULES = [
 ]
 
 
-
 # ************************ OBIN TOKENS REPR *****************************
 __TT_REPR__ = ["TT_ENDSTREAM", "TT_INT", "TT_FLOAT", "TT_STR", "TT_CHAR", "TT_NAME", "TT_NEWLINE", "TT_BREAK",
                "TT_CASE", "TT_CONTINUE", "TT_ELSE", "TT_FOR", "TT_WHILE", "TT_IF", "TT_WHEN", "TT_ELIF", "TT_OF",
-               "TT_AS", "TT_MATCH", "TT_FN", "TT_AND", "TT_OR", "TT_NOT", "TT_TRUE", "TT_FALSE", "TT_NIL",
-               "TT_UNDEFINED", "TT_THROW", "TT_CATCH", "TT_IN", "TT_IS", "TT_OBJECT", "TT_ISNOT", "TT_OUTER", "TT_FROM",
-               "TT_IMPORT", "TT_TRAIT", "TT_GENERIC", "TT_REIFY", "TT_RETURN", "TT_ELLIPSIS", "TT_ADD_ASSIGN",
+               "TT_AS", "TT_MATCH", "TT_FUNC", "TT_AND", "TT_OR", "TT_NOT", "TT_TRUE", "TT_FALSE", "TT_NIL",
+               "TT_UNDEFINED", "TT_THROW", "TT_CATCH", "TT_IN", "TT_IS", "TT_ORIGIN", "TT_ISNOT", "TT_OUTER", "TT_FROM",
+               "TT_IMPORT", "TT_TRAIT", "TT_GENERIC", "TT_DEF", "TT_REIFY", "TT_RETURN", "TT_ELLIPSIS", "TT_ADD_ASSIGN",
                "TT_SUB_ASSIGN", "TT_MUL_ASSIGN", "TT_DIV_ASSIGN", "TT_MOD_ASSIGN", "TT_BITAND_ASSIGN",
                "TT_BITXOR_ASSIGN", "TT_BITOR_ASSIGN", "TT_RSHIFT", "TT_URSHIFT", "TT_LSHIFT", "TT_ARROW",
                "TT_FAT_ARROW", "TT_EQ", "TT_LE", "TT_GE", "TT_NE", "TT_SEMI", "TT_COLON", "TT_LCURLY", "TT_RCURLY",

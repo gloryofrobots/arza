@@ -134,8 +134,6 @@ def put_string_string(obj, k, v):
     put(obj, newstring(k), newstring(v))
 
 
-def put_trait(obj, trait):
-    put(obj, trait.name, trait)
 
 
 
@@ -176,6 +174,8 @@ def n_length(obj):
 
 def iterator(obj):
     return obj._iterator_()
+
+
 
 
 """

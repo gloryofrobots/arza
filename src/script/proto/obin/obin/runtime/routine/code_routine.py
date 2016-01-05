@@ -6,7 +6,9 @@ from obin.runtime.stack import Stack
 from obin.objects.space import (newbool, newundefined,
                                 newnil, newvector, isinterrupt,
                                 newmap, newfunc,
-                                newint, newtuple, newgeneric, newtrait)
+                                newint, newtuple,
+                                newgeneric, newtrait,
+                                neworigin, newlist)
 from obin.objects.types.dispatch.generic import reify
 from obin.objects import api
 from obin.runtime.load import import_module
@@ -187,6 +189,10 @@ class CodeRoutine(BaseRoutine):
                 lst = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
                 stack.push(newvector(lst))
             # *************************************
+            elif LIST == tag:
+                lst = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
+                stack.push(newlist(lst))
+            # *************************************
             elif CALL_INTERNAL == tag:
                 internal = get_internal(arg1)
                 internal(process, self)
@@ -280,7 +286,7 @@ class CodeRoutine(BaseRoutine):
                     return
                 stack.push(next_el)
             # *************************************
-            elif OBJECT == tag:
+            elif MAP == tag:
                 obj = newmap()
 
                 for _ in xrange(arg1):
@@ -288,17 +294,18 @@ class CodeRoutine(BaseRoutine):
                     w_elem = stack.pop()
                     api.put(obj, name, w_elem)
 
-                if arg2 > 0:
-                    for _ in xrange(arg2):
-                        trait = stack.pop()
-                        api.attach(process, obj, trait)
-
                 stack.push(obj)
             # *************************************
             elif FUNCTION == tag:
                 source = literals[arg1]
                 w_func = newfunc(source.name, source.code, env)
                 stack.push(w_func)
+            # *************************************
+            elif ORIGIN == tag:
+                source = literals[arg1]
+                w_func = newfunc(source.name, source.code, env)
+                w_origin = neworigin(w_func)
+                stack.push(w_origin)
             # *************************************
             elif THROW == tag:
                 val = stack.pop()

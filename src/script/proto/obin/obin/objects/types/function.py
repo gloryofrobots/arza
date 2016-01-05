@@ -14,17 +14,17 @@ class W_Function(W_Callable):
     # _immutable_fields_ = ['scope',  'is_variadic', 'arity', '_name_']
 
     def __init__(self, name, bytecode, scope):
-        self._name_ = name
-        self._bytecode_ = bytecode
+        self.name = name
+        self.bytecode = bytecode
         scope_info = bytecode.scope
         self.arity = scope_info.count_args
         self.is_variadic = scope_info.is_variadic
         self.scope = scope
 
     def _tostring_(self):
-        params = ",".join([api.to_native_string(p) for p in self._bytecode_.scope.arguments])
+        params = ",".join([api.to_native_string(p) for p in self.bytecode.scope.arguments])
         # return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
-        return "fn %s(%s){ %s }" % (api.to_native_string(self._name_), params, "...")
+        return "fn %s(%s){ %s }" % (api.to_native_string(self.name), params, "...")
 
     def _tobool_(self):
         return True

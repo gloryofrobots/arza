@@ -9,6 +9,7 @@ OPCODES = [
     ("OUTER", 1),
     ("LOCAL", 1),
     ("FUNCTION", 1),
+    ("ORIGIN", 1),
     ("INTEGER", 1),
     ("DUP", 1),
     ("NEXT", 1),
@@ -47,7 +48,8 @@ OPCODES = [
     ("PUSH_MANY", "__UNKNOWN_CHANGE__"),
     ("VECTOR", "__UNKNOWN_CHANGE__"),
     ("TUPLE", "__UNKNOWN_CHANGE__"),
-    ("OBJECT", "__UNKNOWN_CHANGE__"),
+    ("MAP", "__UNKNOWN_CHANGE__"),
+    ("LIST", "__UNKNOWN_CHANGE__"),
     ("REIFY", "__UNKNOWN_CHANGE__"),
 ]
 

@@ -305,8 +305,20 @@ def isnot_w(process, op1, op2):
 def is_w(process, op1, op2):
     return api.strict_equal(op1, op2)
 
+
 def str_w(process, op1):
     return api.tostring(op1)
 
+
 def len_w(process, op1):
     return api.length(op1)
+
+
+def cons_w(process, op1, op2):
+    from obin.objects.types.plist import plist1, cons
+    from obin.objects.space import islist
+    if not islist(op2):
+        l = plist1(op2)
+    else:
+        l = op2
+    return cons(l, op1)

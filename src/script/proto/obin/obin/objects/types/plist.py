@@ -13,7 +13,7 @@ class W_List(W_Root):
             yield cur
             cur = cur.tail
 
-    def __repr__(self):
+    def show(self):
         els = []
         cur = self
         while True:
@@ -23,6 +23,18 @@ class W_List(W_Root):
             els.append("(%s %s)" % (cur.head, cur.count))
             cur = cur.tail
         return str(els)
+
+    def _tostring_(self):
+        from obin.objects import api
+        els = []
+        cur = self
+        while True:
+            if isempty(cur):
+                break
+            els.append(api.to_native_string(head(cur)))
+            cur = cur.tail
+        return ":".join(els)
+        # return "list(%s)" % (",".join(els))
 
     def _length_(self):
         return self.count
@@ -168,6 +180,8 @@ def plist(items):
         head = cons(head, item)
     return head
 
+def plist1(item):
+    return cons(empty(), item)
 
 def test():
     from obin.objects.space import newint
@@ -216,8 +230,9 @@ def test():
     # l10 = remove_all(l9, ni(2))
     # print l10
 
+if __name__ == "__main__":
+    test()
 
-test()
 """
 
 template<class T>

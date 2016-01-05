@@ -262,7 +262,13 @@ def internal_ISNOT(process, routine):
     apply_binary(process, routine, isnot_w, left, right)
 
 
+def internal_CONS(process, routine):
+    right = routine.stack.pop()
+    left = routine.stack.pop()
+    apply_binary(process, routine, cons_w, left, right)
+
 # ********************  INTERNALS IDS ********************
+
 IS = 0
 NE = 1
 EQ = 2
@@ -287,7 +293,8 @@ BITAND = 20
 LSH = 21
 RSH = 22
 URSH = 23
-__LENGTH__ = 24
+CONS = 24
+__LENGTH__ = 25
 
 
 # ********************* INTERNALS REPR ***************
@@ -316,6 +323,7 @@ __INTERNALS_REPR__[BITAND] = "BITAND"
 __INTERNALS_REPR__[LSH] = "LSH"
 __INTERNALS_REPR__[RSH] = "RSH"
 __INTERNALS_REPR__[URSH] = "URSH"
+__INTERNALS_REPR__[CONS] = "CONS"
 
 
 def newinternals():
@@ -345,6 +353,7 @@ def newinternals():
     P[LSH] = internal_LSH
     P[RSH] = internal_RSH
     P[URSH] = internal_URSH
+    P[CONS] = internal_CONS
     return P
 
 

@@ -55,7 +55,7 @@ GENERICS = [
      ("UnsignedRightShift", ">>>",
          [((I,I),"ursh_i_i")]),
 
-     ("Length", "len",
+     ("Len", "len",
          [((A,),"len_w")]),
      ("Str", "str",
          [((A,),"str_w")]),
