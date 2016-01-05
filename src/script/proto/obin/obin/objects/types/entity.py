@@ -89,8 +89,8 @@ def attach(process, entity, trait):
     assert istrait(trait)
     assert isentity(entity)
     traits = entity.behavior.traits
-    from obin.objects.types.plist import cons
-    return newentity(process, newbehavior(cons(traits, trait)), entity.source)
+    from obin.objects.types.plist import prepend
+    return newentity(process, newbehavior(prepend(traits, trait)), entity.source)
 
 
 def detach(process, entity, trait):

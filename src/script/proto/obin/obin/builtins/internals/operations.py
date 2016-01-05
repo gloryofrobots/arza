@@ -317,10 +317,10 @@ def list_v(process, op1):
     pass
 
 def cons_w(process, op1, op2):
-    from obin.objects.types.plist import plist1, cons
+    from obin.objects.types.plist import plist1, prepend
     from obin.objects.space import islist
     if not islist(op2):
         l = plist1(op2)
     else:
         l = op2
-    return cons(l, op1)
+    return prepend(l, op1)

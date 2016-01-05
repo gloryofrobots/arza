@@ -44,14 +44,21 @@ def empty():
     return W_List(newundefined(), newundefined(), 0)
 
 
-def reduce(func, acc, pl):
+def foldl(func, acc, pl):
     if isempty(pl):
         return acc
 
-    return reduce(func,
+    return foldl(func,
                   func(acc, head(pl)),
                   tail(pl))
 
+
+def foldr(func, acc, pl):
+    if isempty(pl):
+        return acc
+
+    return func(head(pl),
+                foldr(func, acc, tail(pl)))
 
 def isempty(pl):
     # from obin.objects.space import isundefined
@@ -82,9 +89,7 @@ def append(pl, v):
 
 
 def concat(pl1, pl2):
-    if isempty(pl1):
-        return pl2
-    return prepend(head(pl1), concat(tail(pl1), pl2))
+    return foldr(prepend, pl2, pl1)
 
 
 def pop(pl):
@@ -163,7 +168,7 @@ def _hash(acc, el):
 
 
 def compute_hash(pl):
-    return reduce(_hash, 0x345678, pl)
+    return foldl(_hash, 0x345678, pl)
 
 
 def compute_hash_2(pl):
