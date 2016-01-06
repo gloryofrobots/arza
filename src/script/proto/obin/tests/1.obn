@@ -39,8 +39,7 @@ def coroutine(fn):
         outer first_call
         if first_call == false:
             first_call = true
-            activate_fiber(fiber2, func():
-                                        fn(fiber1, ...args); end)
+            activate_fiber(fiber2, func(): fn(fiber1, ...args) end)
         else:
             fiber2(...args)
         end
