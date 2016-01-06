@@ -307,7 +307,7 @@ def stmt_origin(parser, node):
 
 
 def stmt_generic(parser, node):
-    if parser.token_type != TT_NAME:
+    if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
         parse_error_simple(parser, "Wrong generic name")
     name = parser.node
     advance(parser)
@@ -381,7 +381,7 @@ def parse_reify_funcs(parser):
 def stmt_reify(parser, node):
     node.init(2)
 
-    if parser.token_type != TT_NAME:
+    if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
         parse_error_simple(parser, "Wrong generic name in reify statement")
 
     name = parser.node

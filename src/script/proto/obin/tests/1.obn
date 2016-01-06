@@ -1,12 +1,27 @@
 trait Animal
+
 origin Human(name, surname):
     lst({name=name, surname=surname}, Human, Animal)
-    end
+end
+
+origin Wolf(name):
+    lst({name=name}, Wolf, Animal)
+end
 
 print(Human)
 
-h = Human("Bob", "Alice")
+generic `-=-=-=`(self of Animal):
+    print("I am animal", self.name)
+end
 
+reify `-=-=-=`(self of Human):
+    print("I am nice human",self.name, self.surname)
+end
+
+h = Human("Bob", "Alice")
+w = Wolf("Jack")
+`-=-=-=`(h)
+`-=-=-=`(w)
 
 //print(h)
 
@@ -14,9 +29,6 @@ l = lst(1,2,3,4,5)
 print(l)
 
 A = [1,2,3,4,5]
-for i in A:
-    print(i)
-end
 
 def coroutine(fn):
     (fiber1, fiber2) = spawn_fiber()
@@ -38,14 +50,15 @@ end
 co = coroutine(func(yield, x):
            Z = "1111"
 
-           _co1 = coroutine(func(yield2, y):
-               Y = "2222"
-               def send():
-                    X = "3333"
-                    yield2(42 + y)
-               end
-               send()
-           end)
+           _co1 = coroutine(
+               func(yield2, y):
+                   Y = "2222"
+                   def send():
+                        X = "3333"
+                        yield2(42 + y)
+                   end
+                   send()
+               end)
 
         print("x", x)
         v = _co1(x)

@@ -197,14 +197,14 @@ def n_kindof(obj, trait):
     return obj._kindof_(t)
 
 
-def totrait(obj, process):
-    from space import isorigin, isbehavior, isentity
-    if isbehavior(obj):
+def totrait(obj):
+    from space import isorigin, istrait, isentity
+    if istrait(obj):
         return obj
     elif isorigin(obj):
         return obj.trait
     elif isentity(obj):
-        return totrait(obj.source, process)
+        return totrait(obj.source)
 
     raise RuntimeError("Object can not be represented as trait")
 

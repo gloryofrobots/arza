@@ -1,6 +1,31 @@
 t = (1 + 2, (2, 34 - 2 * 3), (3,), 4 - 31, 5, 6 + 3 + 35)
 return t
 
+trait Animal
+
+origin Human(name, surname):
+    lst({name=name, surname=surname}, Human, Animal)
+end
+
+origin Wolf(name):
+    lst({name=name}, Wolf, Animal)
+end
+
+print(Human)
+
+generic `-=-=-=`(self of Animal):
+    print("I am animal", self.name)
+end
+
+reify `-=-=-=`(self of Human):
+    print("I am nice human",self.name, self.surname)
+end
+
+
+h = Human("Bob", "Alice")
+w = Wolf("Jack")
+`-=-=-=`(h)
+`-=-=-=`(w)
 Named = trait("Named")
 Animal = trait("Animal")
 Mammal = trait("Mammal")

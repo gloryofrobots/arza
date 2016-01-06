@@ -21,10 +21,10 @@ class OriginRoutine(BaseRoutine):
 
     def _on_complete(self, process):
         from obin.objects.space import newentity, istuple, islist
-        from obin.objects.types.plist import head, tail
+        from obin.objects.types.plist import head, tail, fmap
         if not islist(self.result):
             raise RuntimeError("Origin must return list[source, ...traits]")
         source = head(self.result)
-        traits = tail(self.result)
+        traits = fmap(api.totrait, tail(self.result))
         self.result = newentity(process, source, traits)
         print "Origin on complete", self.result

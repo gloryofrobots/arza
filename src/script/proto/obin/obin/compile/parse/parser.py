@@ -348,18 +348,8 @@ def write_ast(ast):
 
 ast = parse_string(
     """
-    x = 1
-    if x == 1:
-        x + 2
-        print(y)
-    elif x == 3:
-         -2 * 32
-    elif x == 34:
-        "Hello"
-    else:
-        gofucktourself()
-    end
+    func(x,y): s + 1 end
     """
 )
-# print ast
+print ast
 # write_ast(ast)

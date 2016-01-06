@@ -169,6 +169,8 @@ def endofexpression(parser):
     if parser.is_newline_occurred:
         # print "NL"
         return parser.node
+    if parser.token_type == TT_END:
+        return parser.node
     if parser.token_type == TT_SEMI:
         # print "SEMI"
         return advance(parser)

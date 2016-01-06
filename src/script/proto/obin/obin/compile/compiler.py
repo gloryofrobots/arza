@@ -588,7 +588,14 @@ def _compile_BITXOR_ASSIGN(process, compiler, code, node):
 
 
 def _compile_node_name_lookup(process, compiler, code, node):
-    name = obs.newstring_from_str(node.value)
+    if node.type == TT_BACKTICK:
+        name_value = _get_backtick_value(process, compiler, node)
+    elif node.type == TT_NAME:
+        name_value = node.value
+    else:
+        return compile_error(process, node, "Invalid node in lookup")
+
+    name = obs.newstring_from_str(name_value)
     _compile_name_lookup(process, compiler, code, name)
 
 
@@ -600,10 +607,12 @@ def _compile_name_lookup(process, compiler, code, name):
     else:
         code.emit_2(OUTER, index, name_index)
 
+def _get_backtick_value(process, compiler, node):
+     return node.value[1:len(node.value) - 1]
+
 
 def _compile_BACKTICK(process, compiler, code, node):
-    value = node.value[1:len(node.value) - 1]
-    name = obs.newstring_from_str(value)
+    name = obs.newstring_from_str(_get_backtick_value(process, compiler, node))
     _compile_name_lookup(process, compiler, code, name)
 
 
@@ -873,12 +882,19 @@ def _compile_IMPORT(process, compiler, code, node):
 
 
 def _compile_GENERIC(process, compiler, code, node):
-    name = node.first()
-    name = obs.newstring_from_str(name.value)
+    name_node = node.first()
+    if name_node.type == TT_BACKTICK:
+        name_value = _get_backtick_value(process, compiler, name_node)
+    else:
+        name_value = name_node.value
+
+    name = obs.newstring_from_str(name_value)
+
     index = _declare_local(process, compiler, name)
     name_index = _declare_literal(process, compiler, name)
     code.emit_1(GENERIC, name_index)
     code.emit_2(STORE_LOCAL, index, name_index)
+
     if node.arity == 2:
         _compile_REIFY(process, compiler, code, node)
 

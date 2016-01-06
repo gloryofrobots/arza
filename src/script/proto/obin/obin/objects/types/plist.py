@@ -1,4 +1,6 @@
 from obin.objects.types.root import W_Root
+from obin.objects import space
+from obin.objects import api
 
 
 class W_List(W_Root):
@@ -38,6 +40,9 @@ class W_List(W_Root):
     def _length_(self):
         return self.count
 
+    def _get_index_(self, obj):
+        return index(self, obj)
+
 
 def empty():
     from obin.objects.space import newundefined
@@ -49,8 +54,8 @@ def foldl(func, acc, pl):
         return acc
 
     return foldl(func,
-                  func(acc, head(pl)),
-                  tail(pl))
+                 func(acc, head(pl)),
+                 tail(pl))
 
 
 def foldr(func, acc, pl):
@@ -59,6 +64,7 @@ def foldr(func, acc, pl):
 
     return func(head(pl),
                 foldr(func, acc, tail(pl)))
+
 
 def isempty(pl):
     # from obin.objects.space import isundefined
@@ -150,6 +156,36 @@ def contains(pl, v):
     return contains(tail(pl), v)
 
 
+def index(pl, elem):
+    cur = pl
+    idx = 0
+    while True:
+        if isempty(cur):
+            return -1
+        if api.n_equal(head(cur), elem):
+            return idx
+        idx += 1
+        cur = cur.tail
+
+
+def fmap(func, pl):
+    if isempty(pl):
+        return empty()
+
+    return prepend(func(head(pl)), fmap(func, tail(pl)))
+
+
+def each(func, pl):
+    if isempty(pl):
+        return None
+
+    result = func(head(pl))
+    if result is not None:
+        return result
+
+    return each(func, tail(pl))
+
+
 def reverse(pl):
     result = empty()
     cur = pl
@@ -159,6 +195,8 @@ def reverse(pl):
         result = prepend(head(cur), result)
         cur = cur.tail
 
+
+##############################################################
 
 def _hash(acc, el):
     from obin.objects import api
@@ -171,18 +209,7 @@ def compute_hash(pl):
     return foldl(_hash, 0x345678, pl)
 
 
-def compute_hash_2(pl):
-    from obin.objects import api
-    from rpython.rlib.rarithmetic import intmask
-    x = 0x345678
-    cur = pl
-    while True:
-        if isempty(cur):
-            break
-        y = api.n_hash(head(cur))
-        x = intmask((1000003 * x) ^ y)
-    return x
-
+##############################################################
 
 def plist_vec(process, vec):
     items = vec.to_n_list()
@@ -199,6 +226,8 @@ def plist(items):
 def plist1(item):
     return prepend(item, empty())
 
+
+##############################################################
 
 def test():
     from obin.objects.space import newint
@@ -220,9 +249,9 @@ def test():
     nis = lambda items: [newint(i) for i in items]
 
     l = plist(nis([0]))
-    l1 = prepend( ni(1),l)
-    l2 = prepend( ni(2), l1)
-    l3 = prepend( ni(3), l2,)
+    l1 = prepend(ni(1), l)
+    l2 = prepend(ni(2), l1)
+    l3 = prepend(ni(3), l2, )
     test_list(l3, [3, 2, 1, 0])
     l4 = insert(l3, 1, ni(44))
     test_list(l4, [3, 44, 2, 1, 0])
@@ -237,7 +266,6 @@ def test():
     l7_1 = remove(l6, ni(55))
     test_list(l7_1, [3, 44])
 
-
     l8 = cons_n_list(nis([123, 124, 125, 123, 124, 125]), l7)
     test_list(l8, [123, 124, 125, 123, 124, 125, 3, 55])
     # print remove_all(l8, ni(125))
@@ -245,6 +273,13 @@ def test():
     print l9
     l10 = concat(l8, l9)
     print l10
+
+    def inc(el):
+        from obin.objects import api, space
+        return space.newint(api.to_native_integer(el) + 1)
+
+    l11 = fmap(inc, l10)
+    print l11
 
     # l9 = newlist(nis([1,2,2,3,4,5,2,6,2,7]))
     # l9 = newlist(nis([1,2,3]))
@@ -1813,12 +1848,3 @@ public final class ConsPStack<E> extends AbstractSequentialList<E> implements PS
 """
 
 
-class EmptyList(object):
-    def cons(self, next_item):
-        return W_List(next_item, None)
-
-    def __iter__(self):
-        return iter(())
-
-    def __bool__(self):
-        return False

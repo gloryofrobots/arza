@@ -166,7 +166,7 @@ def newsignature(process, args, method):
     traits = process.std.traits
 
     for i in range(arity):
-        trait = api.at_index(args, i)
+        trait = api.totrait(api.at_index(args, i))
         if traits.Any is trait:
             arg = ArgumentAny(i)
         elif traits.Map is trait:
