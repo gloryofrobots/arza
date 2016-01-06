@@ -63,32 +63,34 @@ def infix_lparen(parser, node, left):
 
 
 def prefix_if(parser, node):
+    IF_TERMINATION_TOKENS = [TT_ELIF, TT_ELSE, TT_END]
     node.init(1)
     branches = list_node([])
 
     cond = condition(parser)
-    advance_expected(parser, TT_LCURLY)
-    body = (statements(parser, [TT_RCURLY]))
+    advance_expected(parser, TT_COLON)
+    body = (statements(parser, IF_TERMINATION_TOKENS))
 
     branches.append_list([cond, body])
-    advance_expected(parser, TT_RCURLY)
+    check_token_types(parser, IF_TERMINATION_TOKENS)
 
     while parser.token_type == TT_ELIF:
         advance_expected(parser, TT_ELIF)
 
         cond = condition(parser)
-        advance_expected(parser, TT_LCURLY)
-        body = statements(parser, [TT_RCURLY])
+        advance_expected(parser, TT_COLON)
+        body = statements(parser, IF_TERMINATION_TOKENS)
 
         branches.append_list([cond, body])
-        advance_expected(parser, TT_RCURLY)
+        check_token_types(parser, IF_TERMINATION_TOKENS)
     if parser.token_type == TT_ELSE:
         advance_expected(parser, TT_ELSE)
-        advance_expected(parser, TT_LCURLY)
-        body = statements(parser, [TT_RCURLY])
-        advance_expected(parser, TT_RCURLY)
+        advance_expected(parser, TT_COLON)
+        body = statements(parser)
         branches.append_list([empty_node(), body])
+        advance_expected(parser, TT_END)
     else:
+        advance_expected(parser, TT_END)
         branches.append(empty_node())
 
     # append else branch anyway
@@ -150,7 +152,7 @@ def prefix_lcurly(parser, node):
             elif parser.token_type == TT_RCURLY:
                 value = empty_node()
             else:
-                advance_expected(parser, TT_COLON)
+                advance_expected(parser, TT_ASSIGN)
                 value = expression(parser, 0)
 
             items.append(list_node([key, value]))
@@ -165,7 +167,7 @@ def prefix_lcurly(parser, node):
     return node
 
 
-def parse_fn(parser):
+def parse_func(parser):
     args = []
     outers = []
     if parser.token_type == TT_NAME:
@@ -195,7 +197,7 @@ def parse_fn(parser):
 
         advance_expected(parser, TT_RPAREN)
 
-    advance_expected(parser, TT_LCURLY)
+    advance_expected(parser, TT_COLON)
     if parser.token_type == TT_OUTER:
         advance_expected(parser, TT_OUTER)
         while True:
@@ -214,13 +216,13 @@ def parse_fn(parser):
     body = statements(parser)
     if not body:
         body = empty_node()
-    advance_expected(parser, TT_RCURLY)
+    advance_expected(parser, TT_END)
     return name, list_node(args), list_node(outers), body
 
 
 def prefix_func(parser, node):
     node.init(3)
-    name, args, outers, body = parse_fn(parser)
+    name, args, outers, body = parse_func(parser)
     if not is_empty_node(name):
         parse_error_node(parser, "func expression could not have name", node)
     node.setfirst(args)
@@ -231,7 +233,7 @@ def prefix_func(parser, node):
 
 def stmt_def(parser, node):
     node.init(4)
-    name, args, outers, body = parse_fn(parser)
+    name, args, outers, body = parse_func(parser)
     if is_empty_node(name):
         parse_error_node(parser, "def statement must be declared with name", node)
     node.setfirst(name)
@@ -240,88 +242,9 @@ def stmt_def(parser, node):
     node.setfourth(body)
     return node
 
-
-def parse_object(parser):
-    def _fn_statement_to_expr(stmt):
-        expr = Node(stmt.type, stmt.value, stmt.position, stmt.line)
-        expr.init(3)
-        expr.setfirst(stmt.second())
-        expr.setsecond(stmt.third())
-        expr.setthird(stmt.fourth())
-        return expr
-
-    name = empty_node()
-    traits = []
-    items = []
-
-    if parser.token_type == TT_NAME:
-        name = parser.node
-        advance(parser)
-
-    if parser.token_type == TT_LPAREN:
-        advance_expected(parser, TT_LPAREN)
-        if parser.token_type != TT_RPAREN:
-            while True:
-                if parser.token_type == TT_NAME:
-                    traits.append(parser.node)
-                    advance(parser)
-
-                if parser.token_type != TT_COMMA:
-                    break
-
-                advance_expected(parser, TT_COMMA)
-
-        advance_expected(parser, TT_RPAREN)
-
-    advance_expected(parser, TT_LCURLY)
-    if parser.token_type != TT_RCURLY:
-        while True:
-            if parser.token_type == TT_FUNC:
-                fn = statement(parser)
-                key = fn.first()
-                # dirty hack to convert statements to expression for compiler
-                value = _fn_statement_to_expr(fn)
-            else:
-                # TODO check it
-                check_token_types(parser, [TT_NAME, TT_INT, TT_STR, TT_CHAR, TT_FLOAT])
-                key = parser.node
-                advance(parser)
-                advance_expected(parser, TT_ASSIGN)
-                value = expression(parser, 0)
-
-            items.append(list_node([key, value]))
-            if parser.token_type == TT_RCURLY:
-                break
-
-    advance_expected(parser, TT_RCURLY)
-    return name, list_node(traits), list_node(items)
-
-
-def prefix_object(parser, node):
-    node.init(2)
-    name, traits, body = parse_object(parser)
-    if not is_empty_node(name):
-        parse_error_node(parser, "In expressions objects could not have names", node)
-    node.setfirst(traits)
-    node.setsecond(body)
-    return node
-
-
-def stmt_object(parser, node):
-    node.init(3)
-    name, traits, items = parse_object(parser)
-    # TODO move this check to parse object or add support for error token in error func
-    if is_empty_node(name):
-        parse_error_node(parser, "Object statement must have name", node)
-    node.setfirst(name)
-    node.setsecond(traits)
-    node.setthird(items)
-    return node
-
-
 def stmt_single(parser, node):
     node.init(1)
-    if token_is_one_of(parser, [TT_SEMI, TT_RCURLY]) or parser.is_newline_occurred:
+    if token_is_one_of(parser, [TT_SEMI, TT_END]) or parser.is_newline_occurred:
         node.setfirst(list_node([]))
     else:
         node.setfirst(expression(parser, 0))
@@ -335,7 +258,7 @@ def stmt_outer(parser, node):
 
 def stmt_loop_flow(parser, node):
     endofexpression(parser)
-    if parser.token_type != TT_RCURLY:
+    if parser.token_type != TT_END:
         parse_error_simple(parser, "Unreachable statement")
     return node
 
@@ -343,9 +266,9 @@ def stmt_loop_flow(parser, node):
 def stmt_while(parser, node):
     node.init(2)
     node.setfirst(condition(parser))
-    advance_expected(parser, TT_LCURLY)
-    node.setsecond(statements(parser, [TT_RCURLY]))
-    advance_expected(parser, TT_RCURLY)
+    advance_expected(parser, TT_COLON)
+    node.setsecond(statements(parser, [TT_END]))
+    advance_expected(parser, TT_END)
     return node
 
 
@@ -365,15 +288,15 @@ def stmt_for(parser, node):
     advance_expected(parser, TT_IN)
     node.setsecond(expression(parser, 0))
 
-    advance_expected(parser, TT_LCURLY)
-    node.setthird(statements(parser, [TT_RCURLY]))
-    advance_expected(parser, TT_RCURLY)
+    advance_expected(parser, TT_COLON)
+    node.setthird(statements(parser, [TT_END]))
+    advance_expected(parser, TT_END)
     return node
 
 
 def stmt_origin(parser, node):
     node.init(4)
-    name, args, outers, body = parse_fn(parser)
+    name, args, outers, body = parse_func(parser)
     if is_empty_node(name):
         parse_error_node(parser, "origin statement must have name", node)
     node.setfirst(name)
@@ -389,7 +312,7 @@ def stmt_generic(parser, node):
     name = parser.node
     advance(parser)
 
-    if parser.token_type == TT_LCURLY or parser.token_type == TT_LPAREN:
+    if parser.token_type == TT_COLON or parser.token_type == TT_LPAREN:
         node.init(2)
         funcs = parse_reify_funcs(parser)
         node.setfirst(name)
@@ -424,14 +347,14 @@ def parse_reify_fn(_parser, _signature_parser):
         advance_expected(_signature_parser, TT_COMMA)
 
     advance_expected(_parser, TT_RPAREN)
-    advance_expected(_parser, TT_LCURLY)
+    advance_expected(_parser, TT_COLON)
 
     body = statements(_parser)
     # TODO FIX IT
     if not body:
         body = empty_node()
 
-    advance_expected(_parser, TT_RCURLY)
+    advance_expected(_parser, TT_END)
     return list_node([list_node(signature), body])
 
 
@@ -442,12 +365,12 @@ def parse_reify_funcs(parser):
         func = parse_reify_fn(parser, generic_signature_parser)
         funcs.append(func)
     else:
-        advance_expected(parser, TT_LCURLY)
+        advance_expected(parser, TT_COLON)
         while parser.token_type == TT_LPAREN:
             func = parse_reify_fn(parser, generic_signature_parser)
             funcs.append(func)
 
-        advance_expected(parser, TT_RCURLY)
+        advance_expected(parser, TT_END)
 
     if len(funcs) == 0:
         parse_error_simple(parser, "Empty reify statement")

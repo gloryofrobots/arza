@@ -24,9 +24,9 @@ class SingleNode(DAGNode):
     def __str__(self):
         return '[%s, %s]' % (str(self.discriminator), str(self.nextnode))
 
+
 def sort_stack(stack):
     length = len(stack)
-    # sorts need to be in-place, lets do some very non-fancy bubble sort for starters
     while True:
         swapped = False
         for i in xrange(1, length):

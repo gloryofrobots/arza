@@ -1,7 +1,8 @@
 trait Animal
-origin Human(name, surname) {
-    lst({name:name, surname:surname},Human, Animal)
-}
+origin Human(name, surname):
+    lst({name=name, surname=surname}, Human, Animal)
+    end
+
 print(Human)
 
 h = Human("Bob", "Alice")
@@ -11,37 +12,40 @@ h = Human("Bob", "Alice")
 
 l = lst(1,2,3,4,5)
 print(l)
-l = 1:2:3:4:5
-print(l)
-return nil
 
-def coroutine(fn) {
+A = [1,2,3,4,5]
+for i in A:
+    print(i)
+end
+
+def coroutine(fn):
     (fiber1, fiber2) = spawn_fiber()
-    first_call = false
-    return func(...args) {
-        outer first_call
-        if first_call == false {
-            first_call = true
-            activate_fiber(fiber2, func(){
-                fn(fiber1, ...args)
-            })
-        } else {
-            fiber2(...args)
-        }
-    }
-}
 
- co = coroutine(func(yield, x) {
+    first_call = false
+
+    func(...args):
+        outer first_call
+        if first_call == false:
+            first_call = true
+            activate_fiber(fiber2, func():
+                                        fn(fiber1, ...args); end)
+        else:
+            fiber2(...args)
+        end
+    end
+end
+
+co = coroutine(func(yield, x):
            Z = "1111"
 
-           _co1 = coroutine(func(yield2, y) {
+           _co1 = coroutine(func(yield2, y):
                Y = "2222"
-               def send() {
+               def send():
                     X = "3333"
                     yield2(42 + y)
-               }
+               end
                send()
-           })
+           end)
 
         print("x", x)
         v = _co1(x)
@@ -50,7 +54,7 @@ def coroutine(fn) {
         x = yield(t)
         print("x", x)
         return x
-      })
+end)
 
 print(co(23))
 print(co(34))

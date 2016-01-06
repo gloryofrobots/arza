@@ -128,6 +128,7 @@ def main_parser_init(parser):
     symbol(parser, TT_RCURLY)
     symbol(parser, TT_LCURLY)
     symbol(parser, TT_COMMA)
+    symbol(parser, TT_END)
     symbol(parser, TT_ELSE)
     symbol(parser, TT_SEMI, nud=empty)
 
@@ -231,7 +232,7 @@ def main_parser_init(parser):
     """
 
     infix(parser, TT_DOT, 70, infix_dot)
-    infixr(parser, TT_COLON, 70)
+    # infixr(parser, TT_COLON, 70)
 
     """
     precedence 80
@@ -267,8 +268,6 @@ def main_parser_init(parser):
 
     prefix(parser, TT_FUNC, prefix_func)
 
-    # prefix(parser, TT_OBJECT, prefix_object)
-
     prefix(parser, TT_IMPORT, prefix_import)
 
     """
@@ -277,7 +276,6 @@ def main_parser_init(parser):
 
     stmt(parser, TT_DEF, stmt_def)
 
-    # stmt(parser, TT_OBJECT, stmt_object)
     stmt(parser, TT_ORIGIN, stmt_origin)
 
     stmt(parser, TT_RETURN, stmt_single)
@@ -297,7 +295,6 @@ def main_parser_init(parser):
     stmt(parser, TT_TRAIT, stmt_trait)
 
     stmt(parser, TT_REIFY, stmt_reify)
-
 
     stmt(parser, TT_IMPORT, stmt_import)
     return parser
@@ -349,12 +346,20 @@ def write_ast(ast):
                           indent=2, separators=(',', ': '))
         f.write(repr)
 
-# ast = parse_string(
-#     """
-#     origin foo(x,y,...z) {
-#         print(x,y,z)
-#     }
-#     """
-# )
+ast = parse_string(
+    """
+    x = 1
+    if x == 1:
+        x + 2
+        print(y)
+    elif x == 3:
+         -2 * 32
+    elif x == 34:
+        "Hello"
+    else:
+        gofucktourself()
+    end
+    """
+)
 # print ast
 # write_ast(ast)

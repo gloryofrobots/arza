@@ -323,4 +323,4 @@ def cons_w(process, op1, op2):
         l = plist1(op2)
     else:
         l = op2
-    return prepend(l, op1)
+    return prepend(op1, l)

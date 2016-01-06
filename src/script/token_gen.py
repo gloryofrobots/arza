@@ -40,6 +40,7 @@ TOKENS = [
   ("TT_GENERIC", "generic"),
   ("TT_DEF", "def"),
   ("TT_REIFY", "reify"),
+  ("TT_END", "end"),
   ("TT_RETURN", "return"),
   ("TT_ELLIPSIS", "..."),
   ("TT_ADD_ASSIGN", "+="),

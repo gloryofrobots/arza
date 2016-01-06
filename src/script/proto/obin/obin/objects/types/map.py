@@ -207,18 +207,18 @@ class W_Map(W_Cell):
     def to_dict(self):
         m = {}
         for k, i in self.slot_bindings.items():
-            m[k] = api.at_index(self.slot_values, i)
+            m[api.to_native_string(k)] = api.at_index(self.slot_values, i)
 
         return m
 
     def _tostring_(self):
-        return str(self.to_dict())
+        from obin.objects import api
+        res = []
+        for k, i in self.slot_bindings.items():
+            v = api.at_index(self.slot_values, i)
+            res.append("%s = %s" % (api.to_native_string(k), api.to_native_string(v)))
 
-    def __str__(self):
-        return str(self.to_dict())
-
-    def __repr__(self):
-        return self.__str__()
+        return "{%s}" % ", ".join(res)
 
     def _clone_(self):
         clone = W_Map()

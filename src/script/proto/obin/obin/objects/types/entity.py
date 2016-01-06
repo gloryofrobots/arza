@@ -2,6 +2,9 @@ from obin.objects.types.root import W_Cell
 from obin.runtime.error import ObinTraitError
 from obin.objects import api
 
+def _tostring_foldl_(traits, trait):
+    traits.append(api.tostring(trait.name))
+    return traits
 
 class W_Entity(W_Cell):
     # _immutable_fields_ = ['_slots']
@@ -11,11 +14,14 @@ class W_Entity(W_Cell):
         self.source = source
         self.behavior = behavior
 
-    def __str__(self):
-        return "<Entity of %s >" % (str(self.source))
+    def _tostring_(self):
+        from obin.objects import api
+        from obin.objects.space import newvector
+        from obin.objects.types.plist import foldl
+        traits_repr = foldl(_tostring_foldl_, newvector([]), self.behavior.traits)
+        traits_repr = ",".join([api.to_native_string(t) for t in traits_repr.to_n_list()])
 
-    def __repr__(self):
-        return self.__str__()
+        return "<entity of %s and %s>" % (api.to_native_string(self.source), traits_repr)
 
     # BEHAVIOR
     def _at_(self, key):
@@ -38,9 +44,6 @@ class W_Entity(W_Cell):
 
     def _remove_at_(self, key):
         self.source._remove_at_(key)
-
-    def _tostring_(self):
-        return self.source._tostring_()
 
     def _tobool_(self):
         return self.source._tobool_()

@@ -155,6 +155,13 @@ def advance_expected(parser, ttype):
 
     return parser.next()
 
+def advance_expected_one_of(parser, ttypes):
+    check_token_types(parser, ttypes)
+
+    if parser.isend():
+        return None
+
+    return parser.next()
 
 def endofexpression(parser):
     if parser.isend():
@@ -213,7 +220,7 @@ def token_is_one_of(parser, types):
 
 def statements(parser, endlist=None):
     if not endlist:
-        endlist = [TT_RCURLY, TT_ENDSTREAM]
+        endlist = [TT_END, TT_ENDSTREAM]
 
     stmts = []
     while True:
