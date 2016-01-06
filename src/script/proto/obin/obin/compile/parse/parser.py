@@ -251,8 +251,6 @@ def main_parser_init(parser):
     PREFIXES
     """
 
-    prefix(parser, TT_ELLIPSIS)
-
     prefix(parser, TT_BITNOT)
     prefix(parser, TT_NOT)
     prefix(parser, TT_SUB)
@@ -351,5 +349,5 @@ ast = parse_string(
     func(x,y): s + 1 end
     """
 )
-print ast
+# print ast
 # write_ast(ast)

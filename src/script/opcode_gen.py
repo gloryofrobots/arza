@@ -39,13 +39,11 @@ OPCODES = [
     ("MEMBER", -1),
     ("POP", -1),
     ("THROW", -1),
-    ("VECTOR_MERGE_INTO", -1),
 
     ("STORE_MEMBER", -2),
     ("SLICE", -3),
 
     ("UNPACK_SEQUENCE", "__UNKNOWN_CHANGE__"),
-    ("PUSH_MANY", "__UNKNOWN_CHANGE__"),
     ("VECTOR", "__UNKNOWN_CHANGE__"),
     ("TUPLE", "__UNKNOWN_CHANGE__"),
     ("MAP", "__UNKNOWN_CHANGE__"),

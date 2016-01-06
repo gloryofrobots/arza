@@ -54,12 +54,6 @@ class LexerError(Exception):
 class Lexer:
 
     def __init__(self, rules, skip_whitespace):
-        # All the regexes are concatenated into a single one
-        # with named groups. Since the group names must be valid
-        # Python identifiers, but the token types used by the
-        # user are arbitrary strings, we auto-generate the group
-        # names and map them to token types.
-        #
         assert isinstance(rules, list)
         assert isinstance(skip_whitespace, bool)
 

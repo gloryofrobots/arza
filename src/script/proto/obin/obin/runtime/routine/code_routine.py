@@ -221,16 +221,6 @@ class CodeRoutine(BaseRoutine):
                 v = api.slice(obj, start, end, step)
                 stack.push(v)
             # *************************************
-            elif VECTOR_MERGE_INTO == tag:
-                first = stack.pop()
-                second = stack.top()
-                second.append_vector_items(first)
-            # *************************************
-            elif PUSH_MANY == tag:
-                args = stack.pop_n(arg1)
-                vec = stack.top()
-                vec.append_many(args)
-            # *************************************
             elif JUMP == tag:
                 self.pc = arg1
             # *************************************

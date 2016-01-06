@@ -159,3 +159,7 @@ class W_Vector(W_Cell):
         assert idx > 0
         items = self._items
         self._items = items[:idx] + items[idx + 1:]
+
+
+def concat(process, v1, v2):
+    return W_Vector(v1._items + v2._items)

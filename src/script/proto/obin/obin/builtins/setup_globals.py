@@ -33,6 +33,8 @@ def setup(process, module, stdlib):
     api.put_primitive_function(module, u'trait', trait, 1)
     api.put_primitive_function(module, u'attach', attach, -1)
     api.put_primitive_function(module, u'detach', detach, -1)
+    api.put_primitive_function(module, u'apply', apply, 2)
+    api.put_primitive_function(module, u'concat', concat_two_vectors, 2)
     ## debugging
     # if not we_are_translated():
     #     api.put_native_function(obj, u'pypy_repr', pypy_repr)
@@ -81,6 +83,19 @@ def _eval(process, routine):
     func = space.newfunc(source.name, source.code, env)
     args = space.newemptyvector()
     api.call(process, func, args)
+
+
+def apply(process, routine):
+    func = routine.get_arg(0)
+    args = routine.get_arg(1)
+    api.call(process, func, args)
+
+@complete_native_routine
+def concat_two_vectors(process, routine):
+    from obin.objects.types.vector import concat
+    v1 = routine.get_arg(0)
+    v2 = routine.get_arg(1)
+    return concat(process, v1, v2)
 
 
 @complete_native_routine

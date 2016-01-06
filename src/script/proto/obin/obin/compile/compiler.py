@@ -607,8 +607,9 @@ def _compile_name_lookup(process, compiler, code, name):
     else:
         code.emit_2(OUTER, index, name_index)
 
+
 def _get_backtick_value(process, compiler, node):
-     return node.value[1:len(node.value) - 1]
+    return node.value[1:len(node.value) - 1]
 
 
 def _compile_BACKTICK(process, compiler, code, node):
@@ -990,8 +991,10 @@ def _compile_WHILE(process, compiler, bytecode, node):
     bytecode.emit_endloop_label(endlabel)
     bytecode.done_continue()
 
+
 def _compile_COLON(process, compiler, code, node):
     _on_binary_primitive(process, compiler, code, node, internals.CONS)
+
 
 def _compile_DOT(process, compiler, code, node):
     obj = node.first()
@@ -1011,39 +1014,16 @@ def _compile_LSQUARE_lookup(process, compiler, code, node):
 
 
 def _compile_args_list(process, compiler, code, args):
-    normal_args_count = 0
-    first_args_inserted = False
+    args_count = 0
     if len(args) == 0:
         code.emit_1(VECTOR, 0)
         return
 
     for arg in args:
-        if arg.type == TT_ELLIPSIS:
-            if first_args_inserted:
-                if normal_args_count:
-                    code.emit_1(PUSH_MANY, normal_args_count)
+        _compile(process, compiler, code, arg)
+        args_count += 1
 
-                _compile(process, compiler, code, arg.first())
-                code.emit_0(VECTOR_MERGE_INTO)
-            else:
-                if normal_args_count:
-                    code.emit_1(VECTOR, normal_args_count)
-                    _compile(process, compiler, code, arg.first())
-                    code.emit_0(VECTOR_MERGE_INTO)
-                else:
-                    _compile(process, compiler, code, arg.first())
-
-            first_args_inserted = True
-            normal_args_count = 0
-        else:
-            _compile(process, compiler, code, arg)
-            normal_args_count += 1
-
-    if normal_args_count:
-        if first_args_inserted:
-            code.emit_1(PUSH_MANY, normal_args_count)
-        else:
-            code.emit_1(VECTOR, normal_args_count)
+    code.emit_1(VECTOR, args_count)
 
 
 def _compile_LPAREN_member(process, compiler, bytecode, node):

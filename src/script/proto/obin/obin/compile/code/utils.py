@@ -5,16 +5,16 @@ __OPCODE_REPR__ = ["UNDEFINED", "NULL", "TRUE", "FALSE", "LITERAL", "OUTER", "LO
                    "DUP", "NEXT", "IMPORT", "IMPORT_MEMBER", "GENERIC", "TRAIT", "LABEL", "STORE_OUTER", "STORE_LOCAL",
                    "ITERATOR", "RETURN", "CALL_INTERNAL", "CALL", "CALL_METHOD", "JUMP", "JUMP_IF_FALSE_NOPOP",
                    "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "JUMP_IF_ITERATOR_EMPTY", "MEMBER_DOT",
-                   "MEMBER", "POP", "THROW", "VECTOR_MERGE_INTO", "STORE_MEMBER", "SLICE", "UNPACK_SEQUENCE",
-                   "PUSH_MANY", "VECTOR", "TUPLE", "MAP", "LIST", "REIFY", ]
+                   "MEMBER", "POP", "THROW", "STORE_MEMBER", "SLICE", "UNPACK_SEQUENCE", "VECTOR", "TUPLE", "MAP",
+                   "LIST", "REIFY", ]
 
 # ************************************************
 
 __UNKNOWN_CHANGE__ = -128
 
 __STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1,
-                     -1, -1, -1, -2, -3, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
-                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
+                     -1, -1, -2, -3, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
+                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
 
 
 # ************************************************
@@ -42,9 +42,7 @@ def opcode_estimate_stack_change(opcode):
     assert isinstance(arg1, int)
     assert isinstance(arg2, int)
 
-    if tag == PUSH_MANY:
-        return -1 * arg1 + 1
-    elif tag == MAP:
+    if tag == MAP:
         return -1 * arg1 + 1
     elif tag == VECTOR:
         return -1 * arg1 + 1

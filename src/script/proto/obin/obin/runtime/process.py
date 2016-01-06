@@ -41,7 +41,7 @@ class Fiber:
         return self.routine.is_closed()
 
     def is_working(self):
-        return self.routine.is_inprocess()
+        return not self.routine.is_closed()
 
     def is_waiting(self):
         return self.routine.is_suspended()
