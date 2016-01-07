@@ -781,7 +781,7 @@ def _compile_DEF(process, compiler, code, node):
     params = node.second()
     outers = node.third()
     body = node.fourth()
-    _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, FUNCTION)
+    _compile_func_destructuring_args_and_body(process, compiler, code, funcname, params, outers, body, FUNCTION)
 
     funcname_index = _declare_literal(process, compiler, funcname)
     code.emit_2(STORE_LOCAL, index, funcname_index)
@@ -842,7 +842,7 @@ def _compile_ORIGIN(process, compiler, code, node):
     params = node.second()
     outers = node.third()
     body = node.fourth()
-    _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, ORIGIN)
+    _compile_func_destructuring_args_and_body(process, compiler, code, funcname, params, outers, body, ORIGIN)
 
     funcname_index = _declare_literal(process, compiler, funcname)
     code.emit_2(STORE_LOCAL, index, funcname_index)
@@ -989,7 +989,7 @@ def _compile_REIFY(process, compiler, code, node):
         code.emit_1(TUPLE, len(signature))
 
         method_name = obs.newstring(u"")
-        _compile_func_args_and_body(process, compiler, code, method_name, list_node(args), empty_node(), method_body,
+        _compile_func_destructuring_args_and_body(process, compiler, code, method_name, list_node(args), empty_node(), method_body,
                                     FUNCTION)
         code.emit_1(TUPLE, 2)
 

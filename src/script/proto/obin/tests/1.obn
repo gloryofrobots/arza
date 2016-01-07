@@ -2,7 +2,6 @@
 
 
 
-
 f1 = func (a,b,c):
     print(a, b, c)
 end
@@ -29,6 +28,14 @@ f5 = func(x, (y,z), a, b,
             "a", a,"b",b,"{name=name, age=(years, month)}", name, years, month,"rest", rest )
 end
 f5(1, (2,3), 4,5, {name=6, age=(7,8)}, 9,10,11,12)
+
+def f6(x, (y,z), a, b,
+    {name=name, age=(years, month)},
+     ...rest):
+    print("x",x, "(y,z)", (y,z),
+            "a", a,"b",b,"{name=name, age=(years, month)}", name, years, month,"rest", rest )
+end
+f6(1, (2,3), 4,5, {name=6, age=(7,8)}, 9,10,11,12)
 //func(x, (y,z), a, b,
 //    {name=name, age=(years, month)},
 //     ...rest):

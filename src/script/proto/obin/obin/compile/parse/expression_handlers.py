@@ -98,6 +98,25 @@ def prefix_if(parser, node):
     return node
 
 
+def prefix_lparen_arguments(parser, node):
+    if parser.token_type == TT_RPAREN:
+        advance_expected(parser, TT_RPAREN)
+        return empty_node()
+
+    node.init(1)
+    items = []
+    while True:
+        items.append(expression(parser, 0))
+        if parser.node.type != TT_COMMA:
+            break
+
+        advance_expected(parser, TT_COMMA)
+
+    advance_expected(parser, TT_RPAREN)
+    node.setfirst(list_node(items))
+    return node
+
+
 def prefix_lparen(parser, node):
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
@@ -170,6 +189,7 @@ def prefix_lcurly(parser, node):
     node.setfirst(list_node(items))
     return node
 
+
 def parse_func(parser):
     outers = []
     if parser.token_type == TT_NAME:
@@ -206,7 +226,6 @@ def parse_func(parser):
     return name, args, list_node(outers), body
 
 
-
 def prefix_func(parser, node):
     node.init(3)
     name, args, outers, body = parse_func(parser)
@@ -228,6 +247,7 @@ def stmt_def(parser, node):
     node.setthird(outers)
     node.setfourth(body)
     return node
+
 
 def stmt_single(parser, node):
     node.init(1)
@@ -399,8 +419,6 @@ def prefix_import(parser, node):
     node.setfirst(imported)
 
     return node
-
-
 
 # def parse_def(parser):
 #     args = []

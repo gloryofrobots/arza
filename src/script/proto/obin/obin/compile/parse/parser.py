@@ -48,7 +48,7 @@ class Parser(BaseParser):
 
 def args_parser_init(parser):
     prefix(parser, TT_ELLIPSIS)
-    prefix(parser, TT_LPAREN, prefix_lparen)
+    prefix(parser, TT_LPAREN, prefix_lparen_arguments)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly)
 
