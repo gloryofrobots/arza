@@ -278,8 +278,6 @@ def main_parser_init(parser):
     STATEMENTS
     """
 
-    stmt(parser, TT_DEF, stmt_def)
-
     stmt(parser, TT_ORIGIN, stmt_origin)
 
     stmt(parser, TT_RETURN, stmt_single)

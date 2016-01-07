@@ -1,7 +1,7 @@
 origin Timer(start_time):
     lst([start_time, nil, nil, nil], Timer) end
 
-def start():
+func start():
     Timer(time()) end
 
 generic stop:

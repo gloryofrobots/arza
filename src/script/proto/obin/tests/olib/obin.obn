@@ -1,4 +1,4 @@
-def lst(...args):
+func lst(...args):
     list(args)
 end
 

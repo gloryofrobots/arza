@@ -227,21 +227,8 @@ def parse_func(parser):
 
 
 def prefix_func(parser, node):
-    node.init(3)
-    name, args, outers, body = parse_func(parser)
-    if not is_empty_node(name):
-        parse_error_node(parser, "func expression could not have name", node)
-    node.setfirst(args)
-    node.setsecond(outers)
-    node.setthird(body)
-    return node
-
-
-def stmt_def(parser, node):
     node.init(4)
     name, args, outers, body = parse_func(parser)
-    if is_empty_node(name):
-        parse_error_node(parser, "def statement must be declared with name", node)
     node.setfirst(name)
     node.setsecond(args)
     node.setthird(outers)

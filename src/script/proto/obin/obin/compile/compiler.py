@@ -3,6 +3,7 @@ from obin.compile.parse.parser import *
 from obin.compile.parse.node import is_empty_node, is_list_node, is_iterable_node
 from obin.compile.scope import Scope
 from obin.objects import space as obs
+from obin.objects import api
 from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource
 from obin.compile.code import *
@@ -107,6 +108,7 @@ def _declare_literal(process, compiler, literal):
 
 
 def _declare_local(process, compiler, symbol):
+    assert api.n_length(symbol) > 0
     scope = _current_scope(process, compiler)
     idx = scope.get_local_index(symbol)
     if not is_absent_index(idx):
@@ -723,23 +725,7 @@ def _compile_CONTINUE(process, compiler, code, node):
         compile_error(process, node, "continue outside loop")
 
 
-
-
-def _compile_DEF(process, compiler, code, node):
-    name = node.first()
-    funcname = obs.newstring_from_str(name.value)
-
-    index = _declare_local(process, compiler, funcname)
-    params = node.second()
-    outers = node.third()
-    body = node.fourth()
-    _compile_func_destructuring_args_and_body(process, compiler, code, funcname, params, outers, body, FUNCTION)
-
-    funcname_index = _declare_literal(process, compiler, funcname)
-    code.emit_2(STORE_LOCAL, index, funcname_index)
-
-
-def _compile_func_destructuring_args_and_body(process, compiler, code, funcname, params, outers, body, opcode):
+def _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, opcode):
     _enter_scope(process, compiler)
 
     funccode = CodeSource()
@@ -759,7 +745,7 @@ def _compile_func_destructuring_args_and_body(process, compiler, code, funcname,
             _declare_outer(process, compiler, obs.newstring_from_str(outer.value))
 
     # avoid recursive name lookups for origins because in this case
-    # index will be pointed to constructor instead of origin
+    # index will be pointed to constructor function instead of origin
     if not funcname.isempty() and not opcode == ORIGIN:
         _declare_function_name(process, compiler, funcname)
 
@@ -779,11 +765,23 @@ def _compile_func_destructuring_args_and_body(process, compiler, code, funcname,
 
 
 def _compile_FUNC(process, compiler, code, node):
-    name = obs.newstring(u'')
-    params = node.first()
-    outers = node.second()
-    body = node.third()
-    _compile_func_destructuring_args_and_body(process, compiler, code, name, params, outers, body, FUNCTION)
+    name = node.first()
+    if not is_empty_node(name):
+        funcname = obs.newstring_from_str(name.value)
+    else:
+        funcname = obs.newstring(u"")
+
+    params = node.second()
+    outers = node.third()
+    body = node.fourth()
+    _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, FUNCTION)
+
+    if funcname.isempty():
+        return
+
+    index = _declare_local(process, compiler, funcname)
+    funcname_index = _declare_literal(process, compiler, funcname)
+    code.emit_2(STORE_LOCAL, index, funcname_index)
 
 
 def _compile_ORIGIN(process, compiler, code, node):
@@ -794,7 +792,7 @@ def _compile_ORIGIN(process, compiler, code, node):
     params = node.second()
     outers = node.third()
     body = node.fourth()
-    _compile_func_destructuring_args_and_body(process, compiler, code, funcname, params, outers, body, ORIGIN)
+    _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, ORIGIN)
 
     funcname_index = _declare_literal(process, compiler, funcname)
     code.emit_2(STORE_LOCAL, index, funcname_index)
@@ -913,11 +911,13 @@ def _compile_TRAIT(process, compiler, code, node):
     code.emit_1(TRAIT, name_index)
     code.emit_2(STORE_LOCAL, index, name_index)
 
+
 def _create_lparen_node(process, compiler, basenode, args):
     node = Node(TT_LPAREN, "(", basenode.position, basenode.line)
     node.init(1)
     node.setfirst(list_node(args))
     return node
+
 
 def _compile_REIFY(process, compiler, code, node):
     name = node.first()
@@ -947,8 +947,9 @@ def _compile_REIFY(process, compiler, code, node):
 
         method_name = obs.newstring(u"")
         args_node = _create_lparen_node(process, compiler, node, args)
-        _compile_func_destructuring_args_and_body(process, compiler, code, method_name, args_node, empty_node(), method_body,
-                                    FUNCTION)
+        _compile_func_args_and_body(process, compiler, code, method_name, args_node, empty_node(),
+                                                  method_body,
+                                                  FUNCTION)
         code.emit_1(TUPLE, 2)
 
     code.emit_1(REIFY, len(methods))
@@ -1130,8 +1131,6 @@ def _compile_node(process, compiler, code, node):
         _compile_WHEN(process, compiler, code, node)
     elif TT_FUNC == t:
         _compile_FUNC(process, compiler, code, node)
-    elif TT_DEF == t:
-        _compile_DEF(process, compiler, code, node)
     elif TT_ORIGIN == t:
         _compile_ORIGIN(process, compiler, code, node)
     elif TT_AND == t:
@@ -1332,54 +1331,3 @@ metadata = 34;
         }
     }
 """
-
-
-
-# def _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, opcode):
-#     _enter_scope(process, compiler)
-#
-#     if is_iterable_node(params):
-#         length = len(params)
-#         last_index = length - 1
-#         args = []
-#         for i in range(0, last_index):
-#             param = params[i]
-#             args.append(obs.newstring_from_str(param.value))
-#
-#         lastparam = params[last_index]
-#
-#         if lastparam.type == TT_ELLIPSIS:
-#             args.append(obs.newstring_from_str(lastparam.first().value))
-#             varargs = True
-#         else:
-#             args.append(obs.newstring_from_str(lastparam.value))
-#             varargs = False
-#     else:
-#         args = None
-#         varargs = False
-#
-#     _declare_arguments(process, compiler, args, varargs)
-#
-#     if is_iterable_node(outers):
-#         for outer in outers:
-#             _declare_outer(process, compiler, obs.newstring_from_str(outer.value))
-#
-#     # avoid recursive name lookups for origins because in this case
-#     # index will be pointed to constructor instead of origin
-#     if not funcname.isempty() and not opcode == ORIGIN:
-#         _declare_function_name(process, compiler, funcname)
-#
-#     funccode = CodeSource()
-#     _compile(process, compiler, funccode, body)
-#     current_scope = _current_scope(process, compiler)
-#     scope = current_scope.finalize()
-#     _exit_scope(process, compiler)
-#     # print "LOCALS:", str(scope.variables.keys())
-#     # print "REFS:", str(scope.references)
-#     compiled_code = funccode.finalize_compilation(scope)
-#     # print [str(c) for c in compiled_code.opcodes]
-#     # print "-------------------------"
-#
-#     source = obs.newfuncsource(funcname, compiled_code)
-#     source_index = _declare_literal(process, compiler, source)
-#     code.emit_1(opcode, source_index)
