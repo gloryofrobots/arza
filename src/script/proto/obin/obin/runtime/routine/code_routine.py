@@ -2,7 +2,6 @@ from obin.compile.code import *
 from obin.runtime.error import ObinReferenceError
 from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
-from obin.runtime.stack import Stack
 from obin.objects.space import (newbool, newundefined,
                                 newnil, newvector, isinterrupt,
                                 newmap, newfunc,
@@ -26,14 +25,14 @@ def load_arguments(stack):
 class CodeRoutine(BaseRoutine):
     # _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
 
-    def __init__(self, stack, name, code, env):
+    def __init__(self, stack, args, name, code, env):
         BaseRoutine.__init__(self, stack)
 
         from obin.objects.space import isstring
         assert isstring(name)
         self._code_ = code
         self._name_ = name
-
+        self.args = args
         self.pc = 0
         self.result = None
         self.env = env
@@ -79,6 +78,7 @@ class CodeRoutine(BaseRoutine):
             literals = self.literals
             refs = self.refs
             # print "_execute", opcode
+            # print "------ routine ----", api.to_native_string(self._name_)
             # self._print_stack()
             # self._print_code(opcode)
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
@@ -86,6 +86,9 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             if UNDEFINED == tag:
                 stack.push(newundefined())
+            # *************************************
+            elif ARGUMENTS == tag:
+                stack.push(self.args)
             # *************************************
             elif RETURN == tag:
                 self.complete(process, stack.top())

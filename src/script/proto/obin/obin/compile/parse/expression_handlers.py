@@ -99,6 +99,10 @@ def prefix_if(parser, node):
 
 
 def prefix_lparen(parser, node):
+    if parser.token_type == TT_RPAREN:
+        advance_expected(parser, TT_RPAREN)
+        return empty_node()
+
     e = expression(parser, 0)
     if parser.node.type != TT_COMMA:
         advance_expected(parser, TT_RPAREN)
@@ -166,36 +170,18 @@ def prefix_lcurly(parser, node):
     node.setfirst(list_node(items))
     return node
 
-
 def parse_func(parser):
-    args = []
     outers = []
     if parser.token_type == TT_NAME:
         name = parser.node
         advance(parser)
     else:
         name = empty_node()
-
-    if parser.token_type == TT_LPAREN:
-        advance_expected(parser, TT_LPAREN)
-        if parser.token_type != TT_RPAREN:
-            while True:
-                if parser.token_type == TT_NAME:
-                    args.append(parser.node)
-                    advance(parser)
-
-                if parser.token_type != TT_COMMA:
-                    break
-
-                advance_expected(parser, TT_COMMA)
-
-        if parser.token_type == TT_ELLIPSIS:
-            rest = expression(parser.args_parser, 0)
-            # advance(parser)
-            args.append(rest)
-            # advance_expected(parser, TT_NAME)
-
-        advance_expected(parser, TT_RPAREN)
+    args_parser = parser.args_parser
+    if args_parser.token_type == TT_COLON:
+        args = empty_node()
+    else:
+        args = expression(args_parser, 0)
 
     advance_expected(parser, TT_COLON)
     if parser.token_type == TT_OUTER:
@@ -217,7 +203,8 @@ def parse_func(parser):
     if not body:
         body = empty_node()
     advance_expected(parser, TT_END)
-    return name, list_node(args), list_node(outers), body
+    return name, args, list_node(outers), body
+
 
 
 def prefix_func(parser, node):
@@ -412,3 +399,57 @@ def prefix_import(parser, node):
     node.setfirst(imported)
 
     return node
+
+
+
+# def parse_def(parser):
+#     args = []
+#     outers = []
+#     if parser.token_type == TT_NAME:
+#         name = parser.node
+#         advance(parser)
+#     else:
+#         name = empty_node()
+#
+#     if parser.token_type == TT_LPAREN:
+#         advance_expected(parser, TT_LPAREN)
+#         if parser.token_type != TT_RPAREN:
+#             while True:
+#                 if parser.token_type == TT_NAME:
+#                     args.append(parser.node)
+#                     advance(parser)
+#
+#                 if parser.token_type != TT_COMMA:
+#                     break
+#
+#                 advance_expected(parser, TT_COMMA)
+#
+#         if parser.token_type == TT_ELLIPSIS:
+#             rest = expression(parser.args_parser, 0)
+#             # advance(parser)
+#             args.append(rest)
+#             # advance_expected(parser, TT_NAME)
+#
+#         advance_expected(parser, TT_RPAREN)
+#
+#     advance_expected(parser, TT_COLON)
+#     if parser.token_type == TT_OUTER:
+#         advance_expected(parser, TT_OUTER)
+#         while True:
+#             if parser.token_type == TT_NAME:
+#                 outers.append(parser.node)
+#                 advance(parser)
+#
+#             if parser.token_type != TT_COMMA:
+#                 break
+#
+#             advance_expected(parser, TT_COMMA)
+#
+#         if len(outers) == 0:
+#             parse_error_simple(parser, "Outer variables not declared")
+#
+#     body = statements(parser)
+#     if not body:
+#         body = empty_node()
+#     advance_expected(parser, TT_END)
+#     return name, list_node(args), list_node(outers), body

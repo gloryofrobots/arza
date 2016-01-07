@@ -48,8 +48,14 @@ class Parser(BaseParser):
 
 def args_parser_init(parser):
     prefix(parser, TT_ELLIPSIS)
+    prefix(parser, TT_LPAREN, prefix_lparen)
+    prefix(parser, TT_LSQUARE, prefix_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly)
+
     symbol(parser, TT_COMMA)
     symbol(parser, TT_RPAREN)
+    symbol(parser, TT_RCURLY)
+    symbol(parser, TT_COLON)
     literal(parser, TT_NAME)
     return parser
 
@@ -344,10 +350,17 @@ def write_ast(ast):
                           indent=2, separators=(',', ': '))
         f.write(repr)
 
-ast = parse_string(
-    """
-    A[2] = 24;
-    """
-)
+# ast = parse_string(
+#     """
+#     func: end
+#     """
+# )
+"""
+    func(x, (y,z), a, b,
+        {name=name, age=(years, month)},
+         ...rest):
+        return age
+    end
+"""
 # print ast
 # write_ast(ast)

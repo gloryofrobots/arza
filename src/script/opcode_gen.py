@@ -17,6 +17,7 @@ OPCODES = [
     ("IMPORT_MEMBER", 1),
     ("GENERIC", 1),
     ("TRAIT", 1),
+    ("ARGUMENTS", 1),
 
     ("LABEL", 0),
     ("STORE_OUTER", 0),

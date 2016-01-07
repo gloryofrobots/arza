@@ -27,13 +27,14 @@ def create_origin_routine(stack, constructor, args):
 
 
 def create_module_routine(stack, code, module, _globals):
+
     assert _globals
     if _globals is not None:
         global_env = newenv(_globals, None)
     else:
         global_env = None
     env = newenv(module, global_env)
-    return jit.promote(CodeRoutine(stack, newstring(u"__module__"), code, env))
+    return jit.promote(CodeRoutine(stack, None, newstring(u"__module__"), code, env))
 
 
 def create_function_routine(stack, func, args, outer_env):
@@ -42,40 +43,42 @@ def create_function_routine(stack, func, args, outer_env):
     name = func.name
 
     env = create_function_environment(func, scope, args, outer_env)
-    return jit.promote(CodeRoutine(stack, name, code, env))
-
+    routine = jit.promote(CodeRoutine(stack, args, name, code, env))
+    return routine
 
 def create_function_environment(func, scope, args, outer_env):
     from obin.runtime.environment import newenv
-    from obin.objects.space import newvector
 
     declared_args_count = scope.count_args
     is_variadic = scope.is_variadic
     args_count = api.n_length(args)
 
-    if not is_variadic:
-        if args_count < declared_args_count:
-            raise RuntimeError("Wrong argument count in function call %d < %d %s" % (args_count, declared_args_count,
-                                                                                     str(scope.variables.keys())))
+    if args_count < declared_args_count:
+        raise RuntimeError("Wrong argument count in function call %d < %d %s" % (args_count, declared_args_count,
+                                                                                 str(scope.variables.keys())))
+    # if not is_variadic:
+    #     if args_count < declared_args_count:
+    #         raise RuntimeError("Wrong argument count in function call %d < %d %s" % (args_count, declared_args_count,
+    #                                                                                  str(scope.variables.keys())))
+    #
+    #     actual_args_count = declared_args_count
+    #     if args_count != actual_args_count:
+    #         raise RuntimeError("Wrong argument count in function call %s %s" %
+    #                            (str(scope.arguments), str(args)))
+    # else:
+    #     varargs_index = declared_args_count - 1
+    #     actual_args_count = varargs_index
+    #
+    #     if args_count < actual_args_count:
+    #         raise RuntimeError("Wrong argument count in function call %d < %d %s" % (args_count, declared_args_count,
+    #                                                                                  str(scope.variables.keys())))
+    #
+    #     if args_count != actual_args_count:
+    #         args.fold_slice_into_itself(actual_args_count)
+    #     else:
+    #         args.append(newvector([]))
 
-        actual_args_count = declared_args_count
-        if args_count != actual_args_count:
-            raise RuntimeError("Wrong argument count in function call %s %s" %
-                               (str(scope.arguments), str(args)))
-    else:
-        varargs_index = declared_args_count - 1
-        actual_args_count = varargs_index
-
-        if args_count < actual_args_count:
-            raise RuntimeError("Wrong argument count in function call %d < %d %s" % (args_count, declared_args_count,
-                                                                                     str(scope.variables.keys())))
-
-        if args_count != actual_args_count:
-            args.fold_slice_into_itself(actual_args_count)
-        else:
-            args.append(newvector([]))
-
-    slots = scope.create_environment_map(args)
+    slots = scope.create_env_bindings()
     env = newenv(slots, outer_env)
 
     fn_index = scope.fn_name_index

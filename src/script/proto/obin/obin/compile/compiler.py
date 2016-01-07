@@ -787,12 +787,51 @@ def _compile_DEF(process, compiler, code, node):
     code.emit_2(STORE_LOCAL, index, funcname_index)
 
 
+def _compile_func_destructuring_args_and_body(process, compiler, code, funcname, params, outers, body, opcode):
+    _enter_scope(process, compiler)
+
+    funccode = CodeSource()
+
+    if is_empty_node(params):
+        _declare_arguments(process, compiler, None, None)
+    else:
+        args = params.first()
+        length = args.length()
+        funccode.emit_0(ARGUMENTS)
+
+        _declare_arguments(process, compiler, [obs.newstring(u"$%d" % i) for i in range(length)], None)
+        _compile_destruct_recur(process, compiler, funccode, params)
+
+    if is_iterable_node(outers):
+        for outer in outers:
+            _declare_outer(process, compiler, obs.newstring_from_str(outer.value))
+
+    # avoid recursive name lookups for origins because in this case
+    # index will be pointed to constructor instead of origin
+    if not funcname.isempty() and not opcode == ORIGIN:
+        _declare_function_name(process, compiler, funcname)
+
+    _compile(process, compiler, funccode, body)
+    current_scope = _current_scope(process, compiler)
+    scope = current_scope.finalize()
+    _exit_scope(process, compiler)
+    # print "LOCALS:", str(scope.variables.keys())
+    # print "REFS:", str(scope.references)
+    compiled_code = funccode.finalize_compilation(scope)
+    # print [str(c) for c in compiled_code.opcodes]
+    # print "-------------------------"
+
+    source = obs.newfuncsource(funcname, compiled_code)
+    source_index = _declare_literal(process, compiler, source)
+    code.emit_1(opcode, source_index)
+
+
 def _compile_FUNC(process, compiler, code, node):
     name = obs.newstring(u'')
     params = node.first()
     outers = node.second()
     body = node.third()
-    _compile_func_args_and_body(process, compiler, code, name, params, outers, body, FUNCTION)
+    _compile_func_destructuring_args_and_body(process, compiler, code, name, params, outers, body, FUNCTION)
 
 
 def _compile_ORIGIN(process, compiler, code, node):
@@ -1235,6 +1274,8 @@ def _compile_node(process, compiler, code, node):
         _compile_LT(process, compiler, code, node)
     elif TT_GT == t:
         _compile_GT(process, compiler, code, node)
+    else:
+        compile_error(process, node, "Unknown node")
 
 
 def compile_ast(process, compiler, ast):
@@ -1296,7 +1337,11 @@ def _check(val1, val2):
 
 
 # compile_and_print("""
-# A[2] = 24;
+#     func(x, (y,z), a, b,
+#         {name=name, age=(years, month)},
+#          ...rest):
+#         return age
+#     end
 # """)
 """
 

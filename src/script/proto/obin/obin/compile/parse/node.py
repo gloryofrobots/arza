@@ -96,6 +96,9 @@ class NodeList(BaseNode):
     def __getitem__(self, item):
         return self.items[item]
 
+    def length(self):
+        return len(self.items)
+
     def to_json_value(self):
         return [child.to_json_value() for child in self.items]
 

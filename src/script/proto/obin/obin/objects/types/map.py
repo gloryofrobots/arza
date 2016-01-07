@@ -331,3 +331,4 @@ def create_map_with_values_from_map(values, source):
 
     bindings = source.slot_bindings.copy()
     return _create_map(values, bindings, source.index)
+
