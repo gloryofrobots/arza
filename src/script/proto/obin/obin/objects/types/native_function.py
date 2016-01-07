@@ -4,7 +4,7 @@ from obin.objects import api
 from rpython.rlib import jit
 
 
-class W_Primitive(W_Callable):
+class W_NativeFunction(W_Callable):
     # _immutable_fields_ = ['_name_', 'arity',  '_function_']
 
     def __init__(self, name, function, arity):
@@ -21,17 +21,17 @@ class W_Primitive(W_Callable):
     def _behavior_(self, process):
         return process.std.behaviors.Primitive
 
-    def _to_routine_(self, args):
-        from obin.runtime.routine import create_primitive_routine
+    def _to_routine_(self, stack, args):
+        from obin.runtime.routine import create_native_routine
 
-        routine = create_primitive_routine(self._name_, self._function_, args, self.arity)
+        routine = create_native_routine(stack, self._name_, self._function_, args, self.arity)
 
         routine = jit.promote(routine)
         return routine
 
     def _call_(self, process, args):
         if self.arity != -1 and api.n_length(args) != self.arity:
-            raise ObinRuntimeError(u"Invalid primitive call wrong count of arguments %d != %d"
+            raise ObinRuntimeError(u"Invalid native call wrong count of arguments %d != %d"
                                    % (api.n_length(args), self.arity))
 
         process.call_object(self, args)

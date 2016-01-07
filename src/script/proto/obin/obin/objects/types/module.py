@@ -19,13 +19,13 @@ class W_Module(W_Root):
     def _at_(self, key):
         return self.env._at_(key)
 
-    def _to_routine_(self, _):
+    def _to_routine_(self, stack, args):
         if self.is_compiled:
             raise RuntimeError("Module Already compiled")
 
         from obin.runtime.routine import create_module_routine
 
-        routine = create_module_routine(self.bytecode, self.env, self.builtins)
+        routine = create_module_routine(stack, self.bytecode, self.env, self.builtins)
         # print "*********"
         # for i, c in enumerate([str(c) for c in self._bytecode_.opcodes]): print i,c
         # print "*********"

@@ -17,32 +17,32 @@ def complete_native_routine(func):
     return func_wrapper
 
 
-def create_primitive_routine(name, primitive, args, arity):
-    return NativeRoutine(name, primitive, args, arity)
+def create_native_routine(stack, name, native, args, arity):
+    return NativeRoutine(stack, name, native, args, arity)
 
 
-def create_origin_routine(constructor, args):
+def create_origin_routine(stack, constructor, args):
     from obin.runtime.routine.origin_routine import OriginRoutine
-    return OriginRoutine(constructor, args)
+    return OriginRoutine(stack, constructor, args)
 
 
-def create_module_routine(code, module, _globals):
+def create_module_routine(stack, code, module, _globals):
     assert _globals
     if _globals is not None:
         global_env = newenv(_globals, None)
     else:
         global_env = None
     env = newenv(module, global_env)
-    return jit.promote(CodeRoutine(newstring(u"__module__"), code, env))
+    return jit.promote(CodeRoutine(stack, newstring(u"__module__"), code, env))
 
 
-def create_function_routine(func, args, outer_env):
+def create_function_routine(stack, func, args, outer_env):
     code = func.bytecode
     scope = code.scope
     name = func.name
 
     env = create_function_environment(func, scope, args, outer_env)
-    return jit.promote(CodeRoutine(name, code, env))
+    return jit.promote(CodeRoutine(stack, name, code, env))
 
 
 def create_function_environment(func, scope, args, outer_env):

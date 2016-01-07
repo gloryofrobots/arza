@@ -75,8 +75,8 @@ class W_Entity(W_Cell):
     def _compute_hash_(self):
         return self.source._compute_hash_()
 
-    def _to_routine_(self, args):
-        return self.source._to_routine_()
+    def _to_routine_(self, stack, args):
+        return self.source._to_routine_(stack, args)
 
     def _clone_(self):
         source = api.clone(self.source)

@@ -1,9 +1,10 @@
 __author__ = 'gloryofrobots'
 from rpython.rlib import jit
 from obin.objects.space import newundefined
+# TODO proper stack operations
 
 class Stack:
-    def __init__(self, size=1):
+    def __init__(self, size):
         self.data = None
         self.__pointer = 0
         self.data = [newundefined()] * size
@@ -25,6 +26,14 @@ class Stack:
             raise IndexError
         return self.data[i]
 
+    def grow(self, size):
+        assert size > 0
+        l = self.size()
+        if size <= l:
+            return
+
+        self.data = self.data + [newundefined()] * (size - l)
+
     def size(self):
         return len(self.data)
 
@@ -32,15 +41,11 @@ class Stack:
         from obin.objects.space import isnull, isany
         if not isany(element):
             raise RuntimeError(u"Not Any product", element)
-        assert isany(element)
-        # from obin.utils import tb
-        # if str(element) == "undefined":
-        #     tb("CHECK!!!!!!!!!!")
-        #     print "UNDEFINED IS SET ", hex(id(self.routine()))
         i = self.pointer()
-        len_stack = len(self.data)
-
-        assert i >= 0 and len_stack > i
+        size = self.size()
+        assert i >= 0
+        if i >= size:
+            self.grow(size + 32)
 
         self.data[i] = element
         self.set_pointer(i + 1)
@@ -72,15 +77,3 @@ class Stack:
 
         return r
 
-    @jit.unroll_safe
-    def pop_n_to_tuple(self, n):
-        assert n > 0
-
-        r = (self.pop(), )
-        i = n
-        while i > 1:
-            i -= 1
-            e = self.pop()
-            r = (e, ) + r
-
-        return r

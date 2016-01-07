@@ -1,8 +1,8 @@
 from obin.objects import api
 
 def make_method(name, arity=3):
-    from obin.objects.space import newtrait, newgeneric, newstring, newprimitive, newvector
-    return newprimitive(newstring(unicode(name)), lambda *args: name, arity)
+    from obin.objects.space import newtrait, newgeneric, newstring, newnativefunc, newvector
+    return newnativefunc(newstring(unicode(name)), lambda *args: name, arity)
 
 def specify(generic, sig, name):
     arity = api.n_length(sig)
@@ -35,7 +35,7 @@ def test(gen, expected, args):
         raise RuntimeError((res, expected))
 
 def test_3():
-    from obin.objects.space import newtrait, newgeneric, newstring, newprimitive, newvector
+    from obin.objects.space import newtrait, newgeneric, newstring, newnativefunc, newvector
     X = newtrait(newstring(u"X"))
     Y = newtrait(newstring(u"Y"))
     Z = newtrait(newstring(u"Z"))

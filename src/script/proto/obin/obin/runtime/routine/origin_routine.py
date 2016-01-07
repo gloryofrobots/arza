@@ -5,8 +5,8 @@ from obin.objects import api
 class OriginRoutine(BaseRoutine):
     # _immutable_fields_ = ['_name_', '_function_']
 
-    def __init__(self, function, args):
-        BaseRoutine.__init__(self)
+    def __init__(self, stack, function, args):
+        BaseRoutine.__init__(self, stack)
         self.constructor = function
         self._args = args
 

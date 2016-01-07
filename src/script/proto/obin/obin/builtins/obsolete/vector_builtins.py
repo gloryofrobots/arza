@@ -6,30 +6,30 @@ from obin.objects import api
 
 def setup(obj):
     # 15.4.4.5
-    api.put_primitive_function(obj, u'join', join, 2)
+    api.put_native_function(obj, u'join', join, 2)
 
     # 15.4.4.6
-    api.put_primitive_function(obj, u'pop', pop, 1)
+    api.put_native_function(obj, u'pop', pop, 1)
 
     # 15.4.4.7
-    api.put_primitive_function(obj, u'push', push, 2)
+    api.put_native_function(obj, u'push', push, 2)
 
     # 15.4.4.8
-    api.put_primitive_function(obj, u'reverse', reverse, 1)
+    api.put_native_function(obj, u'reverse', reverse, 1)
 
     # 15.4.4.11
-    api.put_primitive_function(obj, u'sort', sort, 1)
-    api.put_primitive_function(obj, u'length', length, 1)
+    api.put_native_function(obj, u'sort', sort, 1)
+    api.put_native_function(obj, u'length', length, 1)
 
-    api.put_primitive_function(obj, u'forEach', for_each, 2)
+    api.put_native_function(obj, u'forEach', for_each, 2)
 
-    api.put_primitive_function(obj, u'indexOf', index_of, 2)
+    api.put_native_function(obj, u'indexOf', index_of, 2)
 
-    api.put_primitive_function(obj, u'lastIndexOf', last_index_of, 2)
+    api.put_native_function(obj, u'lastIndexOf', last_index_of, 2)
 
-    api.put_primitive_function(obj, u'shift', shift, 2)
+    api.put_native_function(obj, u'shift', shift, 2)
 
-    api.put_primitive_function(obj, u'slice', slice, 2)
+    api.put_native_function(obj, u'slice', slice, 2)
 
     obj.freeze()
 

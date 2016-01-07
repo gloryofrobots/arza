@@ -26,13 +26,12 @@ def load_arguments(stack):
 class CodeRoutine(BaseRoutine):
     # _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
 
-    def __init__(self, name, code, env):
-        BaseRoutine.__init__(self)
+    def __init__(self, stack, name, code, env):
+        BaseRoutine.__init__(self, stack)
 
         from obin.objects.space import isstring
         assert isstring(name)
         self._code_ = code
-
         self._name_ = name
 
         self.pc = 0
@@ -41,12 +40,7 @@ class CodeRoutine(BaseRoutine):
 
         scope = code.scope
         refs_size = scope.count_refs
-        stack_size = code.estimated_stack_size
         self.literals = scope.literals
-        if stack_size:
-            self.stack = Stack(stack_size)
-        else:
-            self.stack = None
         if refs_size != 0:
             self.refs = References(env, refs_size)
         else:
@@ -66,13 +60,6 @@ class CodeRoutine(BaseRoutine):
 
     def _on_complete(self, process):
         pass
-
-    def _print_stack(self):
-        print u"_________STACK______________"
-        prev = u""
-        print self.stack.data
-        for s in self.stack.data[0:self.stack.pointer()]:
-            print unicode(s)
 
     def _print_code(self, opcode):
         print u"_____________________________"

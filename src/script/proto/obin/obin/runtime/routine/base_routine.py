@@ -6,10 +6,12 @@ class BaseRoutine:
         TERMINATED = 3
         SUSPENDED = 4
 
-    def __init__(self):
+    def __init__(self, stack):
         self._state = BaseRoutine.State.IDLE
         self.result = None
         self._signal = None
+        self.stack = stack
+        self.return_pointer = self.stack.pointer()
 
     def signal(self):
         return self._signal
@@ -30,6 +32,7 @@ class BaseRoutine:
     def complete(self, process, result):
         assert not self.is_closed()
         self.result = result
+        self.stack.set_pointer(self.return_pointer)
         self._state = BaseRoutine.State.COMPLETE
         self._on_complete(process)
 
@@ -83,3 +86,8 @@ class BaseRoutine:
         return self._state == BaseRoutine.State.COMPLETE \
                or self._state == BaseRoutine.State.TERMINATED
 
+    def _print_stack(self):
+        print u"_________STACK______________"
+        print self.stack.data[self.return_pointer():self.stack.pointer()]
+        for s in self.stack.data[self.return_pointer():self.stack.pointer()]:
+            print unicode(s)

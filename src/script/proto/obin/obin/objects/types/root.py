@@ -62,7 +62,7 @@ class W_Root:
     def _compute_hash_(self):
         raise NotImplementedError()
 
-    def _to_routine_(self, args):
+    def _to_routine_(self, stack ,args):
         raise NotImplementedError()
 
     def _clone_(self):
@@ -97,8 +97,7 @@ class W_Hashable(W_Root):
 
 
 class W_Callable(W_Root):
-    def _to_routine_(self, args):
-        raise NotImplementedError()
+    pass
 
 
 class W_ValueType(W_Root):

@@ -2,8 +2,8 @@ from obin.objects import api
 from obin.runtime.routine import complete_native_routine
 
 def setup(obj):
-    api.put_primitive_function(obj, u'arity', arity, 1)
-    api.put_primitive_function(obj, u'isVariadic', is_variadic, 1)
+    api.put_native_function(obj, u'arity', arity, 1)
+    api.put_native_function(obj, u'isVariadic', is_variadic, 1)
     obj.freeze()
 
 @complete_native_routine

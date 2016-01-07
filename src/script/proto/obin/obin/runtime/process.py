@@ -1,5 +1,5 @@
 from obin.objects import api
-
+from obin.runtime.stack import Stack
 
 class Modules:
     def __init__(self, path):
@@ -24,15 +24,17 @@ class ProcessData:
         self.std_objects = std
         self.builtins = builtins
 
+DEFAULT_STACK_SIZE = 32
 
 class Fiber:
     def __init__(self, parent):
         self.routines = []
         self.routine = None
         self.parent = parent
+        self.stack = Stack(DEFAULT_STACK_SIZE)
 
     def start_work(self, func, args):
-        routine = api.to_routine(func, args)
+        routine = api.to_routine(func, self.stack, args)
         self.routine = routine
         self.routine.activate()
 
@@ -64,8 +66,8 @@ class Fiber:
         parent.routine.resume(self.routine.result)
         return parent
 
-    def call(self, routine):
-        assert routine is not self.routine
+    def call_object(self, obj, args):
+        routine = api.to_routine(obj, self.stack, args)
         self.routine.suspend()
         self.routines.append(self.routine)
         self.routine = routine
@@ -141,9 +143,7 @@ class Process(object):
         return self.state == Process.State.IDLE
 
     def call_object(self, obj, args):
-        from obin.objects import api
-        routine = api.to_routine(obj, args)
-        self.fiber.call(routine)
+        self.fiber.call_object(obj, args)
 
     def run(self, func, args):
         assert self.is_idle()

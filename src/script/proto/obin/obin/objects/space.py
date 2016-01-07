@@ -97,9 +97,9 @@ def newfuncsource(name, bytecode):
     return obj
 
 
-def newprimitive(name, function, arity):
-    from obin.objects.types.primitive import W_Primitive
-    obj = W_Primitive(name, function, arity)
+def newnativefunc(name, function, arity):
+    from obin.objects.types.native_function import W_NativeFunction
+    obj = W_NativeFunction(name, function, arity)
     return obj
 
 
@@ -211,8 +211,8 @@ def isvaluetype(value):
 
 def isfunction(value):
     from obin.objects.types.function import W_Function
-    from obin.objects.types.primitive import W_Primitive
-    return isinstance(value, W_Function) or isinstance(value, W_Primitive)
+    from obin.objects.types.native_function import W_NativeFunction
+    return isinstance(value, W_Function) or isinstance(value, W_NativeFunction)
 
 
 def isvector(value):

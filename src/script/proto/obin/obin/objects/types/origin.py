@@ -21,10 +21,10 @@ class W_Origin(W_Callable):
     def _call_(self, process, args):
         process.call_object(self, args)
 
-    def _to_routine_(self, args):
+    def _to_routine_(self, stack, args):
         from obin.runtime.routine import create_origin_routine
 
-        routine = create_origin_routine(self.constructor, args)
+        routine = create_origin_routine(stack, self.constructor, args)
 
         routine = jit.promote(routine)
         return routine

@@ -270,16 +270,15 @@ def call(process, obj, args):
     return obj._call_(process, args)
 
 
-def to_routine(obj, args):
-    return obj._to_routine_(args)
+def to_routine(obj, stack, args):
+    return obj._to_routine_(stack, args)
 
 
 """
 native funcs
 """
 
-
 # TODO move to object
-def put_primitive_function(obj, name, func, arity):
-    from obin.objects.space import newprimitive, newstring
-    put_string(obj, name, newprimitive(newstring(name), func, arity))
+def put_native_function(obj, name, func, arity):
+    from obin.objects.space import newnativefunc, newstring
+    put_string(obj, name, newnativefunc(newstring(name), func, arity))
