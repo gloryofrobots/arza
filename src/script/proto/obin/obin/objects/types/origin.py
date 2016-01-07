@@ -13,7 +13,7 @@ class W_Origin(W_Callable):
         self.trait = newtrait(self.name)
 
     def _tostring_(self):
-        return "<origin %s>" % api.to_native_string(self.trait)
+        return "<origin %s>" % api.to_native_string(self.name)
 
     def _behavior_(self, process):
         return process.std.behaviors.Origin

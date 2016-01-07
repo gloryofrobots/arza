@@ -22,9 +22,9 @@ class W_Function(W_Callable):
         self.scope = scope
 
     def _tostring_(self):
-        params = ",".join([api.to_native_string(p) for p in self.bytecode.scope.arguments])
+        # params = ",".join([api.to_native_string(p) for p in self.bytecode.scope.arguments])
         # return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
-        return "fn %s(%s){ %s }" % (api.to_native_string(self.name), params, "...")
+        return "<func %s/%d>" % (api.to_native_string(self.name) ,self.arity)
 
     def _tobool_(self):
         return True

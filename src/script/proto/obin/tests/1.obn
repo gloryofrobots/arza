@@ -1,4 +1,14 @@
+generic gg1
+func ff1(a,b,...c): 1 end
+origin o1(): 1 end
+print(gg1, ff1, o1)
+return
 
+multifunc mf1:
+    case (a,b,c):
+        a + b + c end
+    case (x, {name, surname})
+        x + name end end
 
 
 
@@ -29,8 +39,81 @@ func f5(x, (y,z), a, b,
 end
 f5(1, (2,3), 4,5, {name=6, age=(7,8)}, 9,10,11,12)
 
-//func(x, (y,z), a, b,
-//    {name=name, age=(years, month)},
-//     ...rest):
-//    return age
-//end
+trait Animal
+
+origin Human(name, surname):
+    lst({name=name, surname=surname}, Human, Animal)
+end
+
+origin Wolf(name):
+    lst({name=name}, Wolf, Animal)
+end
+
+print(Human)
+
+generic `-=-=-=`(self of Animal):
+    print("I am animal", self.name)
+end
+
+reify `-=-=-=`(self of Human):
+    print("I am nice human",self.name, self.surname)
+end
+
+h = Human("Bob", "Alice")
+w = Wolf("Jack")
+`-=-=-=`(h)
+`-=-=-=`(w)
+
+//print(h)
+
+l = lst(1,2,3,4,5)
+print(l)
+
+A = [1,2,3,4,5]
+
+func coroutine(fn):
+    (fiber1, fiber2) = spawn_fiber()
+
+    first_call = false
+
+    func(...args):
+        outer first_call
+        if first_call == false:
+            first_call = true
+            activate_fiber(fiber2,
+                func():
+                    apply(fn, concat([fiber1], args)) end)
+        else:
+            apply(fiber2, args)
+        end
+    end
+end
+
+co = coroutine(func(yield, x):
+           Z = "1111"
+
+           _co1 = coroutine(
+               func(yield2, y):
+                   Y = "2222"
+                   func send():
+                        X = "3333"
+                        yield2(42 + y)
+                   end
+                   send()
+               end)
+
+        print("x", x)
+        v = _co1(x)
+        t = yield(v)
+        print("t", t)
+        x = yield(t)
+        print("x", x)
+        return x
+end)
+
+print(co(23))
+print(co(34))
+print(co(44))
+
+
+

@@ -64,8 +64,8 @@ class Scope:
         assert isinstance(args, list)
         self.arg_count = len(args)
         self.arguments = args
-        for arg in args:
-            self.add_local(arg)
+        # for arg in args:
+        #     self.add_local(arg)
 
         self.is_variadic = is_varargs
 
