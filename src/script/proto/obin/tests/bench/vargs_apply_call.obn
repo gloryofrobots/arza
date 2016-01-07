@@ -1,0 +1,17 @@
+import timer
+
+{COUNT_TESTS, COUNT_CALLS, test_vargs} = import calls_bench
+
+print("****************************************************************")
+print("****************************************************************")
+
+T = 0
+for _ in range(0, COUNT_TESTS):
+    t = timer.start()
+    for i in range(0, COUNT_CALLS):
+        apply(test_vargs, [1,2,3,4,5,6])
+    end
+    T += timer.stop(t, true)
+end
+
+print("T = ", T / 3)

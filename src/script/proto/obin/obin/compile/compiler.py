@@ -361,6 +361,18 @@ def _compile_OR(process, compiler, bytecode, node):
     bytecode.emit_1(LABEL, one)
 
 
+def _compile_ASSIGN_LSQUARE(process, compiler, bytecode, node):
+    member = node.first()
+    value = node.second()
+    obj = member.first()
+    item = member.second()
+
+    _compile(process, compiler, bytecode, value)
+    _compile(process, compiler, bytecode, item)
+    _compile(process, compiler, bytecode, obj)
+    bytecode.emit_0(STORE_MEMBER)
+
+
 def _compile_ASSIGN_DOT(process, compiler, bytecode, node):
     member = node.first()
     name = obs.newstring_from_str(member.second().value)
@@ -514,6 +526,8 @@ def _compile_ASSIGN(process, compiler, bytecode, node):
     left = node.first()
     if left.type == TT_DOT:
         return _compile_ASSIGN_DOT(process, compiler, bytecode, node)
+    elif left.type == TT_LSQUARE:
+        return _compile_ASSIGN_LSQUARE(process, compiler, bytecode, node)
     elif left.type == TT_LPAREN or left.type == TT_LCURLY:
         return _compile_destruct(process, compiler, bytecode, node)
 
@@ -853,8 +867,8 @@ def _compile_IMPORT_STMT(process, compiler, code, node):
         module_path = _dot_to_string(process, compiler, exp)
     else:
         assert exp.type == TT_NAME
-        import_name = node
-        module_path = node.value
+        import_name = exp
+        module_path = exp.value
 
     module_path_literal = _declare_literal(process, compiler, obs.newstring_from_str(module_path))
     code.emit_1(IMPORT, module_path_literal)
@@ -868,7 +882,7 @@ def _compile_IMPORT_EXP(process, compiler, code, node):
         module_path = _dot_to_string(process, compiler, exp)
     else:
         assert exp.type == TT_NAME
-        module_path = node.value
+        module_path = exp.value
 
     module_path = obs.newstring_from_str(module_path)
     module_path_literal = _declare_literal(process, compiler, module_path)
@@ -1282,11 +1296,7 @@ def _check(val1, val2):
 
 
 # compile_and_print("""
-#
-# trait Animal
-# origin Human(name, surname) {
-#     return ((Human, Animal), {name:name, surname:surname})
-# }
+# A[2] = 24;
 # """)
 """
 

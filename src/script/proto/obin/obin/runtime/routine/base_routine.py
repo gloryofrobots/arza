@@ -88,6 +88,6 @@ class BaseRoutine:
 
     def _print_stack(self):
         print u"_________STACK______________"
-        print self.stack.data[self.return_pointer():self.stack.pointer()]
-        for s in self.stack.data[self.return_pointer():self.stack.pointer()]:
+        print self.stack.data[self.return_pointer:self.stack.pointer()]
+        for s in self.stack.data[self.return_pointer:self.stack.pointer()]:
             print unicode(s)

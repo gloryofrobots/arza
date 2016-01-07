@@ -1,0 +1,4 @@
+def test_default(x,y,z,a,b,c): x end
+def test_vargs(x,y,z,...args): args end
+COUNT_CALLS = 1000
+COUNT_TESTS = 6

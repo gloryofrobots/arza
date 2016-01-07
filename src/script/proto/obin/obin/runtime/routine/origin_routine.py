@@ -27,4 +27,4 @@ class OriginRoutine(BaseRoutine):
         source = head(self.result)
         traits = fmap(api.totrait, tail(self.result))
         self.result = newentity(process, source, traits)
-        print "Origin on complete", self.result
+        # print "Origin on complete", self.result

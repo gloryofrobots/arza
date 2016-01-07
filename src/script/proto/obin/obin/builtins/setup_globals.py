@@ -35,6 +35,7 @@ def setup(process, module, stdlib):
     api.put_native_function(module, u'detach', detach, -1)
     api.put_native_function(module, u'apply', apply, 2)
     api.put_native_function(module, u'concat', concat_two_vectors, 2)
+    api.put_native_function(module, u'time', time, 0)
     ## debugging
     # if not we_are_translated():
     #     api.put_native_function(obj, u'pypy_repr', pypy_repr)
@@ -96,6 +97,12 @@ def concat_two_vectors(process, routine):
     v1 = routine.get_arg(0)
     v2 = routine.get_arg(1)
     return concat(process, v1, v2)
+
+@complete_native_routine
+def time(process, routine):
+    from obin.objects.space import newfloat
+    import time
+    return newfloat(time.time())
 
 
 @complete_native_routine

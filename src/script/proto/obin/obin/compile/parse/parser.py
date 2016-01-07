@@ -346,7 +346,7 @@ def write_ast(ast):
 
 ast = parse_string(
     """
-    func(x,y): s + 1 end
+    A[2] = 24;
     """
 )
 # print ast

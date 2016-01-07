@@ -40,7 +40,7 @@ class W_Entity(W_Cell):
         return self.source._length_()
 
     def _put_(self, k, v):
-        self.source._put_at_index_(k, v)
+        self.source._put_(k, v)
 
     def _remove_at_(self, key):
         self.source._remove_at_(key)
