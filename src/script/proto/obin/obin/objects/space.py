@@ -219,9 +219,11 @@ def isvector(value):
     from obin.objects.types.vector import W_Vector
     return isinstance(value, W_Vector)
 
+
 def islist(value):
     from obin.objects.types.plist import W_List
     return isinstance(value, W_List)
+
 
 def istrait(w):
     from obin.objects.types.trait import W_Trait
@@ -250,6 +252,14 @@ def ismodule(w):
 
 def isboolean(value):
     return value is w_False or value is w_True
+
+
+def istrue(value):
+    return value is w_True
+
+
+def isfalse(value):
+    return value is w_False
 
 
 def isnull(value):

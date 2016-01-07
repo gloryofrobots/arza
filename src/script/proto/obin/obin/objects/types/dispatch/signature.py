@@ -189,6 +189,10 @@ def newsignature(process, args, method):
             arg = PredicateArgument(i, space.isnull)
         elif traits.Boolean is trait:
             arg = PredicateArgument(i, space.isboolean)
+        elif traits.False is trait:
+            arg = PredicateArgument(i, space.isfalse)
+        elif traits.True is trait:
+            arg = PredicateArgument(i, space.istrue)
         else:
             arg = ArgumentTrait(i, trait)
 

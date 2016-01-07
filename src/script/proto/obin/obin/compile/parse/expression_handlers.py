@@ -360,7 +360,8 @@ def parse_reify_funcs(parser):
         funcs.append(func)
     else:
         advance_expected(parser, TT_COLON)
-        while parser.token_type == TT_LPAREN:
+        while parser.token_type == TT_CASE:
+            advance_expected(generic_signature_parser, TT_CASE)
             func = parse_reify_fn(parser, generic_signature_parser)
             funcs.append(func)
 

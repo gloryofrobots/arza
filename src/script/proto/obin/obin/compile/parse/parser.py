@@ -89,6 +89,7 @@ def generic_signature_parser_init(parser):
     symbol(parser, TT_COMMA)
     symbol(parser, TT_LPAREN)
     symbol(parser, TT_RPAREN)
+    symbol(parser, TT_CASE)
     infix(parser, TT_OF, 10, infix_simple_pair)
     literal(parser, TT_NAME)
     return parser

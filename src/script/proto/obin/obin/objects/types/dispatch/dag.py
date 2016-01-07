@@ -72,8 +72,8 @@ class GroupNode(DAGNode):
         self.ordering_stack = []
         self.is_evaluated = False
 
-    def get_rank(self, args):
-        return self.discriminator.evaluate(args)
+    def get_rank(self, process, args):
+        return self.discriminator.evaluate(process, args)
 
     def evaluate(self, process, args):
         del self.ordering_stack[:]
