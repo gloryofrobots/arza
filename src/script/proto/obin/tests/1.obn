@@ -1,5 +1,3 @@
-
-
 generic _and_:
     case (t of True, f of True):
         true
@@ -85,23 +83,6 @@ print(l)
 
 A = [1,2,3,4,5]
 
-func coroutine(fn):
-    (fiber1, fiber2) = spawn_fiber()
-
-    first_call = false
-
-    func(...args):
-        outer first_call
-        if first_call == false:
-            first_call = true
-            activate_fiber(fiber2,
-                func():
-                    apply(fn, concat([fiber1], args)) end)
-        else:
-            apply(fiber2, args)
-        end
-    end
-end
 
 co = coroutine(func(yield, x):
            Z = "1111"
@@ -130,8 +111,29 @@ print(co(34))
 print(co(44))
 
 
-
 generic gg1
 func ff1(a,b,...c): 1 end
 origin o1(): 1 end
 print(gg1, ff1, o1)
+
+x = 12
+
+
+if x == 13:
+    1
+elif x == 14:
+    2
+elif x == 15:
+    3
+else:
+    4
+end
+
+
+match (a,b):
+    case (true, b): 1 + 1  end
+    case ({name="Bob", surname="Alice"}, (1,2)): 2 + 2 end
+    case 42: 3 + 3 end
+    case _: nil end
+end
+
