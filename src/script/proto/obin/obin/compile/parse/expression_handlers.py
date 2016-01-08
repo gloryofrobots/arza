@@ -308,7 +308,7 @@ def stmt_generic(parser, node):
 
     if parser.token_type == TT_COLON or parser.token_type == TT_LPAREN:
         node.init(2)
-        funcs = parse_reify_funcs(parser)
+        funcs = parse_specify_funcs(parser)
         node.setfirst(name)
         node.setsecond(funcs)
     else:
@@ -327,7 +327,7 @@ def stmt_trait(parser, node):
     return node
 
 
-def parse_reify_fn(_parser, _signature_parser):
+def parse_specify_fn(_parser, _signature_parser):
     signature = []
 
     advance_expected(_parser, TT_LPAREN)
@@ -352,37 +352,37 @@ def parse_reify_fn(_parser, _signature_parser):
     return list_node([list_node(signature), body])
 
 
-def parse_reify_funcs(parser):
+def parse_specify_funcs(parser):
     generic_signature_parser = parser.generic_signature_parser
     funcs = []
     if parser.token_type == TT_LPAREN:
-        func = parse_reify_fn(parser, generic_signature_parser)
+        func = parse_specify_fn(parser, generic_signature_parser)
         funcs.append(func)
     else:
         advance_expected(parser, TT_COLON)
         while parser.token_type == TT_CASE:
             advance_expected(generic_signature_parser, TT_CASE)
-            func = parse_reify_fn(parser, generic_signature_parser)
+            func = parse_specify_fn(parser, generic_signature_parser)
             funcs.append(func)
 
         advance_expected(parser, TT_END)
 
     if len(funcs) == 0:
-        parse_error_simple(parser, "Empty reify statement")
+        parse_error_simple(parser, "Empty specify statement")
 
     return list_node(funcs)
 
 
-def stmt_reify(parser, node):
+def stmt_specify(parser, node):
     node.init(2)
 
     if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
-        parse_error_simple(parser, "Wrong generic name in reify statement")
+        parse_error_simple(parser, "Wrong generic name in specify statement")
 
     name = parser.node
     advance(parser)
 
-    funcs = parse_reify_funcs(parser)
+    funcs = parse_specify_funcs(parser)
 
     node.setfirst(name)
     node.setsecond(funcs)

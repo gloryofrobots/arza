@@ -7,7 +7,7 @@ def make_method(name, arity=3):
 def specify(generic, sig, name):
     arity = api.n_length(sig)
     method = make_method(name, arity)
-    generic.reify_single(sig, method)
+    generic.specify_single(sig, method)
 
 def sig(*args):
     from obin.objects.space import newvector
@@ -40,17 +40,17 @@ def test_3():
     Y = newtrait(newstring(u"Y"))
     Z = newtrait(newstring(u"Z"))
     g = newgeneric(newstring(u"TEST_3"))
-    g.reify_single(sig(X, Y, Z), make_method("m1"))
-    g.reify_single(sig(X, Z, Z), make_method("m6"))
-    g.reify_single(sig(Y, Y, Z), make_method("m2"))
-    g.reify_single(sig(Z, Z, Z), make_method("m3"))
-    g.reify_single(sig(Z, Z, X), make_method("m4"))
-    g.reify_single(sig(Y, Y, X), make_method("m5"))
-    g.reify_single(sig(Y, X, X), make_method("m7"))
+    g.specify_single(sig(X, Y, Z), make_method("m1"))
+    g.specify_single(sig(X, Z, Z), make_method("m6"))
+    g.specify_single(sig(Y, Y, Z), make_method("m2"))
+    g.specify_single(sig(Z, Z, Z), make_method("m3"))
+    g.specify_single(sig(Z, Z, X), make_method("m4"))
+    g.specify_single(sig(Y, Y, X), make_method("m5"))
+    g.specify_single(sig(Y, X, X), make_method("m7"))
     test(g, "m1", objects([[X,X], [X,Y], [Y,Y,Z]]))
     test(g, "m2", objects([[Y,Y], [X,Y], [Y,Y,Z]]))
-    g.reify_single(sig(X, X, Y), make_method("m8"))
-    g.reify_single(sig(X, X, X), make_method("m7"))
+    g.specify_single(sig(X, X, Y), make_method("m8"))
+    g.specify_single(sig(X, X, X), make_method("m7"))
     test(g, "m8", objects([[X,X], [X,Y], [Y,Y,Z]]))
     test(g, "m1", objects([[X,X], [Y,X], [Y,Y,Z]]))
 

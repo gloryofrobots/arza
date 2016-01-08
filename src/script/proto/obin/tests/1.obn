@@ -13,11 +13,11 @@ print(_and_(true, true))
 
 print(_and_(true, false), _and_(false, true),  _and_(true, true))
 
-reify _and_ (_ of Integer, _ of Float):
+specify _and_ (_ of Integer, _ of Float):
     false
 end
 
-reify _and_:
+specify _and_:
     case (_ of String, _ of Integer):
         true
     end
@@ -25,7 +25,6 @@ end
 
 print(_and_(1, 1.0), _and_("hhh", 1))
 
-return
 
 f1 = func (a,b,c):
     print(a, b, c)
@@ -70,7 +69,7 @@ generic `-=-=-=`(self of Animal):
     print("I am animal", self.name)
 end
 
-reify `-=-=-=`(self of Human):
+specify `-=-=-=`(self of Human):
     print("I am nice human",self.name, self.surname)
 end
 

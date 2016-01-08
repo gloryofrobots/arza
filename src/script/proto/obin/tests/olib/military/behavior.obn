@@ -14,7 +14,7 @@ generic attack {
     }
 }
 
-reify attack {
+specify attack {
     from military.troops import Soldier, Civilian
 
     (self of Soldier, target of Civilian) {

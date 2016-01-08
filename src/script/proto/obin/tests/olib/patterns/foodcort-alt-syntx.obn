@@ -90,7 +90,7 @@ factory Menu(items) =>
     construct([Menu], items);;
 
 
-reify __tostring__(self of Menu) =>
+specify __tostring__(self of Menu) =>
     each(func(item) =>
             string.build(
                          "Item", string.nl,

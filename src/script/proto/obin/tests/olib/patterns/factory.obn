@@ -5,7 +5,7 @@ export generic vertices
 export generic shape
 export generic draw
 
-reify shape {
+specify shape {
     """
        main shape factory
     """
@@ -37,7 +37,7 @@ reify shape {
     }
 }
 
-reify draw {
+specify draw {
     (self of Shape, point of Enumerable)  {
         {draw, merge} = import graphics.simple.primitives
         v = vertices(self)
@@ -50,7 +50,7 @@ fn rect_vertices(width, height) {
     [0,0,width, height]
 }
 
-reify vertices {
+specify vertices {
     (self of Rectangle) {
         rect_vertices(self.width, self.height)
     }

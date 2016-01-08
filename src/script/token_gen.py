@@ -38,7 +38,7 @@ TOKENS = [
   ("TT_IMPORT", "import"),
   ("TT_TRAIT", "trait"),
   ("TT_GENERIC", "generic"),
-  ("TT_REIFY", "reify"),
+  ("TT_SPECIFY", "specify"),
   ("TT_END", "end"),
   ("TT_RETURN", "return"),
   ("TT_ELLIPSIS", "..."),

@@ -17,7 +17,7 @@ generic `-=-=-=`(self of Animal):
     print("I am animal", self.name)
 end
 
-reify `-=-=-=`(self of Human):
+specify `-=-=-=`(self of Human):
     print("I am nice human",self.name, self.surname)
 end
 

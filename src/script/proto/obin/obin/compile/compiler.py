@@ -901,7 +901,7 @@ def _compile_GENERIC(process, compiler, code, node):
 
     if node.arity == 2:
         methods = node.second()
-        _emit_reify(process, compiler, code, node, methods)
+        _emit_specify(process, compiler, code, node, methods)
 
 
 def _compile_TRAIT(process, compiler, code, node):
@@ -920,7 +920,7 @@ def _create_lparen_node(process, compiler, basenode, args):
     return node
 
 
-def _emit_reify(process, compiler, code, node, methods):
+def _emit_specify(process, compiler, code, node, methods):
     for method in methods:
         method_args = method[0]
         method_body = method[1]
@@ -949,13 +949,13 @@ def _emit_reify(process, compiler, code, node, methods):
                                     FUNCTION)
         code.emit_1(TUPLE, 2)
 
-    code.emit_1(REIFY, len(methods))
+    code.emit_1(SPECIFY, len(methods))
 
-def _compile_REIFY(process, compiler, code, node):
+def _compile_SPECIFY(process, compiler, code, node):
     name = node.first()
     _compile_node_name_lookup(process, compiler, code, name)
     methods = node.second()
-    _emit_reify(process, compiler, code, node, methods)
+    _emit_specify(process, compiler, code, node, methods)
 
 
 def _compile_FOR(process, compiler, bytecode, node):
@@ -1164,8 +1164,8 @@ def _compile_node(process, compiler, code, node):
         _compile_TRAIT(process, compiler, code, node)
     elif TT_GENERIC == t:
         _compile_GENERIC(process, compiler, code, node)
-    elif TT_REIFY == t:
-        _compile_REIFY(process, compiler, code, node)
+    elif TT_SPECIFY == t:
+        _compile_SPECIFY(process, compiler, code, node)
     elif TT_RETURN == t:
         _compile_RETURN(process, compiler, code, node)
     elif TT_THROW == t:
@@ -1316,7 +1316,7 @@ metadata = 34;
 } = metadata;
 
 
-    reify fire {
+    specify fire {
         (self of Soldier, other of Civilian) {
             attack(self, other)
             name = self.name

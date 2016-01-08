@@ -297,7 +297,7 @@ def main_parser_init(parser):
 
     stmt(parser, TT_TRAIT, stmt_trait)
 
-    stmt(parser, TT_REIFY, stmt_reify)
+    stmt(parser, TT_SPECIFY, stmt_specify)
 
     stmt(parser, TT_IMPORT, stmt_import)
     return parser

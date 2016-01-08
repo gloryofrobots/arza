@@ -55,7 +55,7 @@ class W_Generic(W_Callable):
         return process.std.behaviors.Generic
 
 
-def reify(process, gf, signatures):
+def specify(process, gf, signatures):
     modified = {}
 
     for sig in signatures:
@@ -89,8 +89,8 @@ def reify(process, gf, signatures):
         _create_dag(gf, signatures, arity)
 
 
-def reify_single(process, gf, signature, method):
-    reify(process, gf,
+def specify_single(process, gf, signature, method):
+    specify(process, gf,
           newtuple(
               [newtuple([signature, method])]))
 

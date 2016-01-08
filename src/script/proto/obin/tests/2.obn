@@ -160,7 +160,7 @@ generic fire {
 
 fire(Joe)
 
-reify fire {
+specify fire {
     (self of Private, w of Weapon) {
         print("Private", self, "fire weapon", w)
     }

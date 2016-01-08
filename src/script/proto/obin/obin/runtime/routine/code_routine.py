@@ -8,7 +8,7 @@ from obin.objects.space import (newbool, newundefined,
                                 newint, newtuple,
                                 newgeneric, newtrait,
                                 neworigin, newlist)
-from obin.objects.types.dispatch.generic import reify
+from obin.objects.types.dispatch.generic import specify
 from obin.objects import api
 from obin.runtime.load import import_module
 from obin.builtins.internals.internals import get_internal
@@ -312,11 +312,11 @@ class CodeRoutine(BaseRoutine):
                 trait = newgeneric(name)
                 stack.push(trait)
             # *************************************
-            elif REIFY == tag:
+            elif SPECIFY == tag:
                 methods = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
                 methods = newtuple(methods)
                 generic = stack.top()
-                reify(process, generic, methods)
+                specify(process, generic, methods)
             # *************************************
             elif LABEL == tag:
                 raise RuntimeError("Uncompiled label opcode")

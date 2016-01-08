@@ -6,7 +6,7 @@ __OPCODE_REPR__ = ["UNDEFINED", "NULL", "TRUE", "FALSE", "LITERAL", "OUTER", "LO
                    "STORE_LOCAL", "ITERATOR", "RETURN", "CALL_INTERNAL", "CALL", "CALL_METHOD", "JUMP",
                    "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE",
                    "JUMP_IF_ITERATOR_EMPTY", "MEMBER_DOT", "MEMBER", "POP", "THROW", "STORE_MEMBER", "SLICE",
-                   "UNPACK_SEQUENCE", "VECTOR", "TUPLE", "MAP", "LIST", "REIFY", ]
+                   "UNPACK_SEQUENCE", "VECTOR", "TUPLE", "MAP", "LIST", "SPECIFY", ]
 
 # ************************************************
 
@@ -51,7 +51,7 @@ def opcode_estimate_stack_change(opcode):
     elif tag == TUPLE:
         return -1 * arg1 + 1
     # pop generic from stack too
-    elif tag == REIFY:
+    elif tag == SPECIFY:
         return -1 * (arg1 + 1) + 1
     return 0
 
