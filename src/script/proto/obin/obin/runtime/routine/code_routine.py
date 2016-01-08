@@ -315,7 +315,7 @@ class CodeRoutine(BaseRoutine):
             elif REIFY == tag:
                 methods = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
                 methods = newtuple(methods)
-                generic = stack.pop()
+                generic = stack.top()
                 reify(process, generic, methods)
             # *************************************
             elif LABEL == tag:

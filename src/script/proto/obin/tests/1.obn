@@ -1,7 +1,4 @@
-generic gg1
-func ff1(a,b,...c): 1 end
-origin o1(): 1 end
-print(gg1, ff1, o1)
+
 
 generic _and_:
     case (t of True, f of True):
@@ -11,11 +8,12 @@ generic _and_:
         false
     end
 end
+
 print(_and_(true, true))
 
 print(_and_(true, false), _and_(false, true),  _and_(true, true))
 
-reify _and_(_ of Integer, _ of Float):
+reify _and_ (_ of Integer, _ of Float):
     false
 end
 
@@ -26,6 +24,7 @@ reify _and_:
 end
 
 print(_and_(1, 1.0), _and_("hhh", 1))
+
 return
 
 f1 = func (a,b,c):
@@ -133,3 +132,7 @@ print(co(44))
 
 
 
+generic gg1
+func ff1(a,b,...c): 1 end
+origin o1(): 1 end
+print(gg1, ff1, o1)

@@ -900,7 +900,8 @@ def _compile_GENERIC(process, compiler, code, node):
     code.emit_2(STORE_LOCAL, index, name_index)
 
     if node.arity == 2:
-        _compile_REIFY(process, compiler, code, node)
+        methods = node.second()
+        _emit_reify(process, compiler, code, node, methods)
 
 
 def _compile_TRAIT(process, compiler, code, node):
@@ -919,11 +920,7 @@ def _create_lparen_node(process, compiler, basenode, args):
     return node
 
 
-def _compile_REIFY(process, compiler, code, node):
-    name = node.first()
-    _compile_node_name_lookup(process, compiler, code, name)
-    methods = node.second()
-
+def _emit_reify(process, compiler, code, node, methods):
     for method in methods:
         method_args = method[0]
         method_body = method[1]
@@ -948,11 +945,17 @@ def _compile_REIFY(process, compiler, code, node):
         method_name = obs.newstring(u"")
         args_node = _create_lparen_node(process, compiler, node, args)
         _compile_func_args_and_body(process, compiler, code, method_name, args_node, empty_node(),
-                                                  method_body,
-                                                  FUNCTION)
+                                    method_body,
+                                    FUNCTION)
         code.emit_1(TUPLE, 2)
 
     code.emit_1(REIFY, len(methods))
+
+def _compile_REIFY(process, compiler, code, node):
+    name = node.first()
+    _compile_node_name_lookup(process, compiler, code, name)
+    methods = node.second()
+    _emit_reify(process, compiler, code, node, methods)
 
 
 def _compile_FOR(process, compiler, bytecode, node):
