@@ -98,7 +98,8 @@ def prefix_if(parser, node):
     return node
 
 
-def prefix_lparen_arguments(parser, node):
+# TODO MADE it only one lparen handler
+def prefix_lparen_tuple(parser, node):
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
         return empty_node()
@@ -233,6 +234,33 @@ def prefix_func(parser, node):
     node.setsecond(args)
     node.setthird(outers)
     node.setfourth(body)
+    return node
+
+
+def prefix_match(parser, node):
+    node.init(2)
+    exp = expression(parser, 0)
+    advance_expected(parser, TT_COLON)
+    node.setfirst(exp)
+
+    pattern_parser = parser.pattern_parser
+    branches = []
+    while pattern_parser.token_type == TT_CASE:
+        advance_expected(pattern_parser, TT_CASE)
+        pattern = expression(pattern_parser, 0)
+        advance_expected(parser, TT_COLON)
+
+        body = statements(parser, [TT_END])
+        advance_expected(parser, TT_END)
+
+        branches.append(list_node([pattern, body]))
+
+    advance_expected(parser, TT_END)
+
+    if len(branches) == 0:
+        parse_error_simple(parser, "Empty match statement")
+
+    node.setsecond(list_node(branches))
     return node
 
 

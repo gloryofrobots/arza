@@ -50,6 +50,7 @@ TOKENS = [
   ("TT_BITAND_ASSIGN", "&="),
   ("TT_BITXOR_ASSIGN", "^="),
   ("TT_BITOR_ASSIGN", "|="),
+  ("TT_WILDCARD", "_"),
 
   ("TT_RSHIFT", ">>"),
   ("TT_URSHIFT", ">>>"),

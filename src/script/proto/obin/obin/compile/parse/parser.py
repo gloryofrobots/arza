@@ -42,13 +42,14 @@ class Parser(BaseParser):
         self.module_name_parser = module_name_parser_init(BaseParser(ts))
         self.module_name_alias_parser = module_name_alias_parser_init(BaseParser(ts))
         self.generic_signature_parser = generic_signature_parser_init(BaseParser(ts))
+        self.pattern_parser = pattern_parser_init(BaseParser(ts))
         # self.expression_parser = expression_parser_init(BaseParser(ts))
         main_parser_init(self)
 
 
 def args_parser_init(parser):
     prefix(parser, TT_ELLIPSIS)
-    prefix(parser, TT_LPAREN, prefix_lparen_arguments)
+    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly)
 
@@ -95,24 +96,31 @@ def generic_signature_parser_init(parser):
     return parser
 
 
-"""
-object AliceTraits(Human, Insect, Fucking, Shit) {
-    id = 42
-    name = "Alice"
-    object Bob(Human) {
-        fn hello(self) {
-            return "I am Bob"
-        }
-    }
-    fn greetings(self) {
-        return "Hello from" + self.name
-    }
-    goNorth = fn(self) {
-        "I " + self.name + " go North"
-    }
-}
+def pattern_parser_init(parser):
+    prefix(parser, TT_ELLIPSIS)
+    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
+    prefix(parser, TT_LSQUARE, prefix_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly)
 
-"""
+    infix(parser, TT_OF, 10, infix_simple_pair)
+
+    symbol(parser, TT_CASE)
+    symbol(parser, TT_COMMA)
+    symbol(parser, TT_RPAREN)
+    symbol(parser, TT_RCURLY)
+    symbol(parser, TT_COLON)
+
+    literal(parser, TT_NAME)
+    literal(parser, TT_INT)
+    literal(parser, TT_FLOAT)
+    literal(parser, TT_CHAR)
+    literal(parser, TT_STR)
+    literal(parser, TT_TRUE)
+    literal(parser, TT_FALSE)
+    literal(parser, TT_NIL)
+    literal(parser, TT_UNDEFINED)
+    literal(parser, TT_WILDCARD)
+    return parser
 
 
 def main_parser_init(parser):
@@ -264,6 +272,7 @@ def main_parser_init(parser):
     prefix(parser, TT_ADD)
 
     prefix(parser, TT_IF, prefix_if)
+    prefix(parser, TT_MATCH, prefix_if)
 
     prefix(parser, TT_LPAREN, prefix_lparen)
 
@@ -274,6 +283,7 @@ def main_parser_init(parser):
     prefix(parser, TT_FUNC, prefix_func)
 
     prefix(parser, TT_IMPORT, prefix_import)
+    prefix(parser, TT_MATCH, prefix_match)
 
     """
     STATEMENTS
@@ -301,19 +311,6 @@ def main_parser_init(parser):
 
     stmt(parser, TT_IMPORT, stmt_import)
     return parser
-
-
-"""
-import fire as army_fire, Weapon as weapon, private as army_private from state.military
-
-import military.army.behavior as bh
-print(bh)
-import military.army.behavior
-print(behavior)
-print(fire, army_unit_destroy, army_unit_attack)
-
-
-"""
 
 
 def parse(parser):
@@ -349,17 +346,18 @@ def write_ast(ast):
                           indent=2, separators=(',', ': '))
         f.write(repr)
 
-# ast = parse_string(
-#     """
-#     func: end
-#     """
-# )
+
+ast = parse_string(
 """
-    func(x, (y,z), a, b,
-        {name=name, age=(years, month)},
-         ...rest):
-        return age
+match (a,b):
+    case (true, b):
+        1 + 1
     end
+    case ({name="Bob", surname="Alice"}, (1,2)): 2 + 2 end
+    case 42: 3 + 3 end
+    case _: nil end
+end
 """
-# print ast
+)
+print ast
 # write_ast(ast)

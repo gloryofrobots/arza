@@ -130,10 +130,3 @@ else:
 end
 
 
-match (a,b):
-    case (true, b): 1 + 1  end
-    case ({name="Bob", surname="Alice"}, (1,2)): 2 + 2 end
-    case 42: 3 + 3 end
-    case _: nil end
-end
-
