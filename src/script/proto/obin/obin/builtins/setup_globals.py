@@ -22,7 +22,6 @@ def setup(process, module, stdlib):
     # 15.1.2.1
     api.put_native_function(module, u'eval', _eval, 1)
     api.put_native_function(module, u'print', _print, -1)
-    api.put_native_function(module, u'@@', _print, -1)
     api.put_native_function(module, u'id', _id, 1)
     api.put_native_function(module, u'spawn_fiber', spawn_fiber, 0)
     api.put_native_function(module, u'activate_fiber', activate_fiber, 2)
@@ -36,6 +35,8 @@ def setup(process, module, stdlib):
     api.put_native_function(module, u'apply', apply, 2)
     api.put_native_function(module, u'concat', concat_two_vectors, 2)
     api.put_native_function(module, u'time', time, 0)
+    api.put_native_function(module, u'is_seq', is_seq, 1)
+    api.put_native_function(module, u'length', length, 1)
     ## debugging
     # if not we_are_translated():
     #     api.put_native_function(obj, u'pypy_repr', pypy_repr)
@@ -103,6 +104,19 @@ def time(process, routine):
     from obin.objects.space import newfloat
     import time
     return newfloat(time.time())
+
+@complete_native_routine
+def is_seq(process, routine):
+    from obin.objects.space import isvector, istuple, newbool
+    v1 = routine.get_arg(0)
+    if not isvector(v1) and not istuple(v1):
+        return newbool(False)
+    return newbool(True)
+
+@complete_native_routine
+def length(process, routine):
+    v1 = routine.get_arg(0)
+    return api.length(v1)
 
 
 @complete_native_routine

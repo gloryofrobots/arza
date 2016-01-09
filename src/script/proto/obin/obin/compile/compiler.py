@@ -533,6 +533,76 @@ def _group_branches(process, branches):
 
     return result
 
+PATTERN_DATA = """
+
+    match (a,b):
+        case (1, x):
+            print("OLOLO")
+            1 + 1
+        end
+        //case (1, false): 2 end
+        //case (34.05, 42, y): 3 end
+        //case (34.05, 42, (w,z)): 4 end
+        case A: 5 end
+    end
+"""
+def _transform_pattern(process, compiler, node, methods, tree):
+    nodes = []
+    for branch in tree:
+        head = branch[0]
+        tail = branch[1]
+
+        if tail is None:
+            assert isinstance(head, int)
+            return methods[head]
+
+        type = head[0]
+
+        if type == "is_seq":
+            condition_node = head[1]
+
+            condition = _create_eq_node(condition_node,
+                                               _create_call_node(condition_node,
+                                                                 _create_name_node(condition_node, "is_seq"),
+                                                                 condition_node),
+                                                _create_true_node(condition_node))
+
+            body = _transform_pattern(process, compiler, condition_node, methods, tail)
+            nodes.append(list_node([condition, body]))
+        elif type == "length":
+            condition_node = head[1]
+            count = head[2]
+            condition = _create_eq_node(condition_node,
+                                               _create_call_node(condition_node,
+                                                                 _create_name_node(condition_node, "length"),
+                                                                 condition_node),
+                                               _create_int_node(condition_node, str(count)))
+
+            body = _transform_pattern(process, compiler, condition_node, methods, tail)
+            nodes.append(list_node([condition, body]))
+        elif type == "equal":
+            left = head[1]
+            right = head[2]
+            condition = _create_eq_node(left, left, right)
+            body = _transform_pattern(process, compiler, left, methods, tail)
+            nodes.append(list_node([condition, body]))
+        elif type == "assign":
+            left = head[1]
+            right = head[2]
+
+            condition = _create_true_node(left)
+            rest = _transform_pattern(process, compiler, left, methods, tail)
+            if is_list_node(rest):
+                body = list_node([_create_assign_node(left, left, right)] + rest.items)
+            else:
+                body = list_node([_create_assign_node(left, left, right), rest])
+
+            nodes.append(list_node([condition, body]))
+
+    nodes.append(empty_node())
+    return _create_if_node(node, nodes)
+
+
 def _compile_match_patterns(process, compiler, code, node, patterns):
     branches = []
     path = plist.plist1(_create_name_node(node, PATTERN_INPUT_VAR))
@@ -548,14 +618,16 @@ def _compile_match_patterns(process, compiler, code, node, patterns):
         branches.append(stack)
 
     tree = _group_branches(process, branches)
-    print tree
+    # print tree
+    transformed_node = _transform_pattern(process, compiler, node, bodies, tree)
+    _compile(process, compiler, code, transformed_node)
+    # print transformed_node
     # for branch in branches:
     #     print "*******************************"
     #     for n in branch:
     #         print n
 
-    import sys
-    sys.exit(-1)
+    # raise SystemExit()
 
 
 def _compile_MATCH(process, compiler, code, node):
@@ -1275,6 +1347,8 @@ def _compile_nodes(process, compiler, bytecode, ast):
 
 def _compile_node(process, compiler, code, node):
     current_node = node
+    if is_list_node(node):
+        print node
     t = node.type
 
     if TT_INT == t:
@@ -1467,15 +1541,10 @@ def _check(val1, val2):
         raise RuntimeError("Not equal")
 
 
-compile_and_print("""
-    match (a,b):
-        case (1, x): 1 end
-        case (1, false): 2 end
-        //case (34.05, 42, y): 3 end
-        //case (34.05, 42, (w,z)): 4 end
-        //case A: 5 end
-    end
-""")
+
+compile_and_print(
+    PATTERN_DATA
+)
 """
 
 metadata = 34;
