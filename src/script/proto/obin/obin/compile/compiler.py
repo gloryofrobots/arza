@@ -9,6 +9,7 @@ from obin.compile.code.source import CodeSource
 from obin.compile.code import *
 from obin.utils.misc import is_absent_index
 from obin.compile.parse.token_type import *
+from obin.objects.types import plist
 
 
 def compile_error(process, node, message):
@@ -404,6 +405,173 @@ def _emit_store_name(process, compiler, bytecode, namenode):
     _emit_store_n_string(process, compiler, bytecode, namenode.value)
 
 
+#########################################################
+
+def _create_call_node(basenode, func, exp):
+    node = Node(TT_LPAREN, "(", basenode.position, basenode.line)
+    node.init(2)
+    node.setfirst(func)
+    node.setsecond(list_node([exp]))
+    return node
+
+
+def _create_if_node(basenode, branches):
+    node = Node(TT_IF, "(", basenode.position, basenode.line)
+    node.init(1)
+    node.setfirst(list_node(branches))
+    return node
+
+
+def _create_simple_if_node(basenode, branch):
+    node = Node(TT_IF, "(", basenode.position, basenode.line)
+    node.init(1)
+    node.setfirst(list_node([branch, empty_node()]))
+    return node
+
+
+def _create_eq_node(basenode, left, right):
+    node = Node(TT_EQ, "==", basenode.position, basenode.line)
+    node.init(2)
+    node.setfirst(left)
+    node.setsecond(right)
+    return node
+
+
+def _create_assign_node(basenode, var, exp):
+    node = Node(TT_ASSIGN, "=", basenode.position, basenode.line)
+    node.init(2)
+    node.setfirst(var)
+    node.setsecond(exp)
+    return node
+
+
+def _create_name_node(basenode, name):
+    node = Node(TT_NAME, name, basenode.position, basenode.line)
+    return node
+
+
+def _create_int_node(basenode, strval):
+    node = Node(TT_INT, strval, basenode.position, basenode.line)
+    return node
+
+
+def _create_lookup_node(basenode, left, right):
+    node = Node(TT_LSQUARE, "[", basenode.position, basenode.line)
+    node.init(2)
+    node.setfirst(left)
+    node.setsecond(right)
+    return node
+
+
+def _create_true_node(basenode):
+    node = Node(TT_TRUE, "true", basenode.position, basenode.line)
+    return node
+
+
+PATTERN_INPUT_VAR = "@"
+
+def _create_path_node(basenode, path):
+    head, tail = plist.split(path)
+    if plist.isempty(tail):
+        return head
+
+    return _create_lookup_node(basenode, _create_path_node(basenode, tail), head)
+
+
+def _process_pattern(process, compiler, pattern, stack, path):
+    if pattern.type == TT_LPAREN and pattern.arity == 1:
+        children = pattern.first()
+        count = children.length()
+        stack.append(["is_seq", _create_path_node(pattern, path)])
+        stack.append(["length", _create_path_node(pattern, path), count])
+
+        for i, child in enumerate(children):
+            _process_pattern(process, compiler, child, stack,
+                             plist.prepend(_create_int_node(child, i), path))
+    elif pattern.type == TT_NAME:
+        stack.append(["assign", pattern, _create_path_node(pattern, path)])
+    elif pattern.type == TT_WILDCARD:
+        stack.append(["wildcard"])
+    elif pattern.type in [TT_FALSE, TT_TRUE, TT_FLOAT, TT_INT, TT_NIL, TT_STR, TT_CHAR]:
+        stack.append(["equal", _create_path_node(pattern, path), pattern])
+    else:
+        assert False
+
+def _place_branch_node(tree, head, tail):
+    for leaf in tree:
+        if leaf[0] == head:
+            leaf[1].append(tail)
+            return
+
+    tree.append([head, [tail]])
+
+
+def _group_branches(process, branches):
+    groups = []
+    for b in branches:
+        head = b[0]
+        tail = b[1:]
+        if isinstance(head, int):
+            assert tail == []
+            assert len(branches) == 1
+            groups.append([head, None])
+            break
+        _place_branch_node(groups, head, tail)
+
+    result = []
+    for leaf in groups:
+        if isinstance(leaf[0], int):
+            merged = leaf[1]
+        else:
+            merged = _group_branches(process, leaf[1])
+
+        result.append((leaf[0], merged))
+
+        # print "*******************************"
+        # print leaf[0]
+        # print leaf[1]
+
+    return result
+
+def _compile_match_patterns(process, compiler, code, node, patterns):
+    branches = []
+    path = plist.plist1(_create_name_node(node, PATTERN_INPUT_VAR))
+    bodies = []
+    for pattern in patterns:
+        stack = []
+        clause = pattern[0]
+        body = pattern[1]
+        _process_pattern(process, compiler, clause, stack, path)
+        bodies.append(body)
+        index = len(bodies) - 1
+        stack.append(index)
+        branches.append(stack)
+
+    tree = _group_branches(process, branches)
+    print tree
+    # for branch in branches:
+    #     print "*******************************"
+    #     for n in branch:
+    #         print n
+
+    import sys
+    sys.exit(-1)
+
+
+def _compile_MATCH(process, compiler, code, node):
+    exp = node.first()
+    patterns = node.second()
+
+    name = obs.newstring(u"@")
+    index = _declare_local(process, compiler, name)
+    name_index = _declare_literal(process, compiler, name)
+    _compile(process, compiler, code, exp)
+    code.emit_2(STORE_LOCAL, index, name_index)
+
+    _compile_match_patterns(process, compiler, code, node, patterns)
+
+
+#########################################################
 #####
 # DESTRUCT DESTRUCT
 ####
@@ -951,6 +1119,7 @@ def _emit_specify(process, compiler, code, node, methods):
 
     code.emit_1(SPECIFY, len(methods))
 
+
 def _compile_SPECIFY(process, compiler, code, node):
     name = node.first()
     _compile_node_name_lookup(process, compiler, code, name)
@@ -1234,6 +1403,8 @@ def _compile_node(process, compiler, code, node):
         _compile_LT(process, compiler, code, node)
     elif TT_GT == t:
         _compile_GT(process, compiler, code, node)
+    elif TT_MATCH == t:
+        _compile_MATCH(process, compiler, code, node)
     else:
         compile_error(process, node, "Unknown node")
 
@@ -1296,13 +1467,15 @@ def _check(val1, val2):
         raise RuntimeError("Not equal")
 
 
-# compile_and_print("""
-#     func(x, (y,z), a, b,
-#         {name=name, age=(years, month)},
-#          ...rest):
-#         return age
-#     end
-# """)
+compile_and_print("""
+    match (a,b):
+        case (1, x): 1 end
+        case (1, false): 2 end
+        //case (34.05, 42, y): 3 end
+        //case (34.05, 42, (w,z)): 4 end
+        //case A: 5 end
+    end
+""")
 """
 
 metadata = 34;
@@ -1333,4 +1506,30 @@ metadata = 34;
             surname = "Surname" + name + other.name
         }
     }
+"""
+
+"""
+
+def _compile_pattern(process, compiler, pattern, stack, path, side_effects, ):
+    if pattern.type == TT_LPAREN and pattern.arity == 1:
+        count = pattern.count_children()
+        condition_is_seq = _create_eq_node(pattern,
+                                           _create_call_node(pattern,
+                                                             _create_name_node(pattern, "is_seq"),
+                                                             _create_path_node(pattern, path)),
+                                           _create_true_node(pattern))
+        condition_length = _create_eq_node(pattern,
+                                           _create_call_node(pattern,
+                                                             _create_name_node(pattern, "length"),
+                                                             _create_path_node(pattern, path)),
+                                           _create_int_node(pattern, str(count)))
+        return _create_simple_if_node(pattern,
+                                list_node([condition_is_seq,
+                                            _create_simple_if_node(pattern,
+                                                                   list_node([
+                                                                       condition_length,
+
+
+                                                                   ]))
+                                           ]))
 """

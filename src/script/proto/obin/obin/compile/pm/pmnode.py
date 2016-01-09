@@ -56,6 +56,7 @@ function_call
 if_condition
 elif_condition
 equals
+[[TT_IF, TT_NAME]]
 
 if is_seq($):
     if length($) == 2:

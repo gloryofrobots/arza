@@ -349,6 +349,14 @@ def write_ast(ast):
 
 ast = parse_string(
 """
+$[0][1]['name'][2]
+
+//2 name 1 0 $
+
+"""
+
+)
+"""
 match (a,b):
     case (true, b):
         1 + 1
@@ -358,6 +366,5 @@ match (a,b):
     case _: nil end
 end
 """
-)
-print ast
+# print ast
 # write_ast(ast)

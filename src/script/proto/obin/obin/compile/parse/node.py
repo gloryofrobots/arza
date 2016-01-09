@@ -1,12 +1,18 @@
 from obin.compile.parse.tokens import token_type_to_str
 
+
 class BaseNode:
     pass
+
 
 class EmptyNode(BaseNode):
     def to_json_value(self):
         return "EmptyNode"
-    pass
+
+    def __eq__(self, other):
+        if not isinstance(other, EmptyNode):
+            return False
+        return True
 
 
 class Node(BaseNode):
@@ -56,9 +62,6 @@ class Node(BaseNode):
     def fourth(self):
         return self.getchild(3)
 
-    def count_children(self):
-        return len(self.children)
-
     def __children_repr(self):
         return [child.to_json_value() for child in self.children]
 
@@ -81,11 +84,39 @@ class Node(BaseNode):
         return json.dumps(d, sort_keys=True,
                           indent=2, separators=(',', ': '))
 
+    def __eq__(self, other):
+        if not isinstance(other, Node):
+            return False
+        if self.type != other.type:
+            return False
+        if self.arity != other.arity:
+            return False
+
+        if self.arity == 0:
+            return self.value == other.value
+
+        for item1, item2 in zip(self.children, other.children):
+            res = item1 == item2
+            if not res:
+                return False
+        return True
+
 
 class NodeList(BaseNode):
     def __init__(self, items):
         assert isinstance(items, list)
         self.items = items
+
+    def __eq__(self, other):
+        if not isinstance(other, NodeList):
+            return False
+        if self.length() != other.length():
+            return False
+
+        for item1, item2 in zip(self.items.other.items):
+            if item1 != item2:
+                return False
+        return True
 
     def __reversed__(self):
         return reversed(self.items)
@@ -118,6 +149,7 @@ class NodeList(BaseNode):
     def append_list(self, items):
         self.items.append(list_node(items))
 
+
 def empty_node():
     return EmptyNode()
 
@@ -125,8 +157,10 @@ def empty_node():
 def is_empty_node(n):
     return isinstance(n, EmptyNode)
 
+
 def is_iterable_node(node):
     return is_list_node(node) and len(node) > 0
+
 
 def list_node(items):
     assert isinstance(items, list)
@@ -137,6 +171,7 @@ def list_node(items):
         assert not isinstance(o, list)
 
     return NodeList(items)
+
 
 def is_list_node(node):
     return isinstance(node, NodeList)

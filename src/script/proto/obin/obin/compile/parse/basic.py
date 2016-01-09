@@ -303,7 +303,7 @@ def led_infixr_assign(parser, node, left):
     if ltype == TT_LPAREN and left.arity != 1:
         parse_error(parser, "Bad lvalue in assignment, wrong tuple destructuring", left)
 
-    if ltype == TT_LCURLY and left.count_children() == 0:
+    if ltype == TT_LCURLY and left.arity == 0:
         parse_error(parser, "Bad lvalue in assignment, empty map", left)
 
     node.setfirst(left)

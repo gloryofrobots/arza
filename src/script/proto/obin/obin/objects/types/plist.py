@@ -77,6 +77,8 @@ def head(pl):
 def tail(pl):
     return pl.tail
 
+def split(pl):
+    return head(pl), tail(pl)
 
 def _length_foldl(acc, el):
     return acc + 1
