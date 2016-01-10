@@ -468,6 +468,11 @@ def _create_true_node(basenode):
     return node
 
 
+def _create_undefined_node(basenode):
+    node = Node(TT_UNDEFINED, "undefined", basenode.position, basenode.line)
+    return node
+
+
 PATTERN_INPUT_VAR = "@"
 
 
@@ -544,19 +549,55 @@ PATTERN_DATA = """
 
     match (a,b):
 
+        case (Z, B): 12 + Z end
+        case (Z, A):  Z + Y + A   end
         //case (1, x): 1 + 1 end
         //case (1, false): 2 end
         //case (34.05, 42, y): 3 end
         //case (34.05, 42, (w,z)): 4 end
-        case _: nil end
-        case A: 5 end
+         case _: nil end
+        // case A: 5 end
     end
 """
 
 
-def _transform_pattern(process, compiler, node, methods, tree):
+def _undefine_variables(basenode, body, variables):
+    if variables is None or len(variables) == 0:
+        return body
+
+    undefs = []
+    for var in variables:
+        undefs.append(_create_assign_node(basenode, var, _create_undefined_node(basenode)))
+
+    return _prepend_to_body(undefs, body)
+
+def _prepend_1_to_body(statement, body):
+    if is_list_node(body):
+        return list_node([statement] + body.items)
+    else:
+        return list_node([statement, body])
+
+
+def _prepend_to_body(statements, body):
+    assert isinstance(statements, list)
+    if is_list_node(body):
+        return list_node(statements + body.items)
+    else:
+        return list_node(statements + [body])
+
+
+def _transform_pattern(process, compiler, node, methods, variables, tree):
+    from copy import copy
     nodes = []
+
+    init_vars = copy(variables)
+    vars = copy(init_vars)
+
+    initial_vars_count = len(vars)
     for branch in tree:
+
+        condition = None
+        body = None
         head = branch[0]
         tail = branch[1]
 
@@ -575,8 +616,7 @@ def _transform_pattern(process, compiler, node, methods, tree):
                                                           condition_node),
                                         _create_true_node(condition_node))
 
-            body = _transform_pattern(process, compiler, condition_node, methods, tail)
-            nodes.append(list_node([condition, body]))
+            body = _transform_pattern(process, compiler, condition_node, methods, vars, tail)
         elif type == "length":
             condition_node = head[1]
             count = head[2]
@@ -586,32 +626,49 @@ def _transform_pattern(process, compiler, node, methods, tree):
                                                           condition_node),
                                         _create_int_node(condition_node, str(count)))
 
-            body = _transform_pattern(process, compiler, condition_node, methods, tail)
-            nodes.append(list_node([condition, body]))
+            body = _transform_pattern(process, compiler, condition_node, methods, vars, tail)
         elif type == "equal":
             left = head[1]
             right = head[2]
             condition = _create_eq_node(left, left, right)
-            body = _transform_pattern(process, compiler, left, methods, tail)
-            nodes.append(list_node([condition, body]))
+            body = _transform_pattern(process, compiler, left, methods, vars, tail)
         elif type == "assign":
             left = head[1]
             right = head[2]
 
-            condition = _create_true_node(left)
-            rest = _transform_pattern(process, compiler, left, methods, tail)
-            if is_list_node(rest):
-                body = list_node([_create_assign_node(left, left, right)] + rest.items)
-            else:
-                body = list_node([_create_assign_node(left, left, right), rest])
+            vars.append(left)
 
-            nodes.append(list_node([condition, body]))
+            condition = _create_true_node(left)
+            body = _prepend_1_to_body(_create_assign_node(left, left, right),
+                                      _transform_pattern(process, compiler, left, methods, vars, tail))
+
         elif type == "wildcard":
             condition = _create_true_node(node)
-            body = _transform_pattern(process, compiler, node, methods, tail)
-            nodes.append(list_node([condition, body]))
+            body = _transform_pattern(process, compiler, node, methods, vars, tail)
         else:
             assert False, (head, tail)
+
+        vars_length = len(vars)
+        assert vars_length >= initial_vars_count
+        # New variables has been added in recursive transformation,
+        #  so we need to undefine it in the next branch
+        if vars_length > initial_vars_count:
+            new_vars = vars[initial_vars_count:]
+            undefs = []
+            for var in new_vars:
+                if var not in variables:
+                    variables.append(var)
+                    undefs.append(var)
+
+            vars = copy(init_vars)
+        elif vars_length == initial_vars_count:
+            undefs = None
+        else:
+            assert False, "Delete our vars, Should not reach here"
+        assert condition is not None
+        assert body is not None
+        body = _undefine_variables(node, body, undefs)
+        nodes.append(list_node([condition, body]))
 
     ifs = [_create_if_node(node, [success_branch, empty_node()]) for success_branch in nodes]
     return list_node(ifs)
@@ -643,12 +700,12 @@ def _compile_match_patterns(process, compiler, code, node, patterns):
 
     tree = _group_branches(process, branches)
     # print tree
-    transformed_node = _transform_pattern(process, compiler, node, bodies, tree)
+    transformed_node = _transform_pattern(process, compiler, node, bodies, [], tree)
     _compile(process, compiler, code, transformed_node)
     code.emit_1(LABEL, endmatch)
 
-    # print transformed_node
-    # raise SystemExit()
+    print transformed_node
+    raise SystemExit()
 
 
 def _compile_MATCH(process, compiler, code, node):
@@ -1380,6 +1437,8 @@ def _compile_nodes(process, compiler, bytecode, ast):
 
 def _compile_node(process, compiler, code, node):
     current_node = node
+    if node is None:
+        print None
     if is_list_node(node):
         print node
     t = node.type

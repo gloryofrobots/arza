@@ -3,7 +3,7 @@ from obin.runtime.error import ObinReferenceError
 from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
 from obin.objects.space import (newbool, newundefined,
-                                newnil, newvector, isinterrupt,
+                                newnil, newvector, isinterrupt, isundefined,
                                 newmap, newfunc,
                                 newint, newtuple,
                                 newgeneric, newtrait,
@@ -117,7 +117,7 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif LOCAL == tag:
                 value = env.get_local(arg1)
-                if value is None:
+                if isundefined(value):
                     literal = literals[arg2]
                     raise ObinReferenceError(literal)
 

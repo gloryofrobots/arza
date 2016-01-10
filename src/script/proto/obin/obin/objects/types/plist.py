@@ -77,8 +77,10 @@ def head(pl):
 def tail(pl):
     return pl.tail
 
+
 def split(pl):
     return head(pl), tail(pl)
+
 
 def _length_foldl(acc, el):
     return acc + 1
@@ -118,6 +120,15 @@ def take(pl, count):
     if isempty(pl):
         raise RuntimeError("List to small for operation")
     return prepend(head(pl), take(pop(pl), count - 1))
+
+
+def drop(pl, count):
+    if count == 0:
+        return pl
+    if isempty(pl):
+        raise RuntimeError("List to small for operation")
+
+    return drop(tail(pl), count - 1)
 
 
 def insert(pl, index, v):
