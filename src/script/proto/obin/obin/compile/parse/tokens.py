@@ -158,11 +158,11 @@ __TT_REPR__ = ["TT_ENDSTREAM", "TT_INT", "TT_FLOAT", "TT_STR", "TT_CHAR", "TT_NA
                "TT_UNDEFINED", "TT_THROW", "TT_CATCH", "TT_IN", "TT_IS", "TT_ORIGIN", "TT_ISNOT", "TT_OUTER", "TT_FROM",
                "TT_IMPORT", "TT_TRAIT", "TT_GENERIC", "TT_SPECIFY", "TT_END", "TT_RETURN", "TT_ELLIPSIS",
                "TT_ADD_ASSIGN", "TT_SUB_ASSIGN", "TT_MUL_ASSIGN", "TT_DIV_ASSIGN", "TT_MOD_ASSIGN", "TT_BITAND_ASSIGN",
-               "TT_BITXOR_ASSIGN", "TT_BITOR_ASSIGN", "TT_WILDCARD", "TT_RSHIFT", "TT_URSHIFT", "TT_LSHIFT", "TT_ARROW",
-               "TT_FAT_ARROW", "TT_EQ", "TT_LE", "TT_GE", "TT_NE", "TT_SEMI", "TT_COLON", "TT_LCURLY", "TT_RCURLY",
-               "TT_COMMA", "TT_ASSIGN", "TT_LPAREN", "TT_RPAREN", "TT_LSQUARE", "TT_RSQUARE", "TT_DOT", "TT_BITAND",
-               "TT_BITNOT", "TT_BITOR", "TT_BITXOR", "TT_SUB", "TT_ADD", "TT_MUL", "TT_DIV", "TT_BACKTICK", "TT_MOD",
-               "TT_LT", "TT_GT", "TT_UNKNOWN", ]
+               "TT_BITXOR_ASSIGN", "TT_BITOR_ASSIGN", "TT_WILDCARD", "TT_GOTO", "TT_RSHIFT", "TT_URSHIFT", "TT_LSHIFT",
+               "TT_ARROW", "TT_FAT_ARROW", "TT_EQ", "TT_LE", "TT_GE", "TT_NE", "TT_SEMI", "TT_COLON", "TT_LCURLY",
+               "TT_RCURLY", "TT_COMMA", "TT_ASSIGN", "TT_LPAREN", "TT_RPAREN", "TT_LSQUARE", "TT_RSQUARE", "TT_DOT",
+               "TT_BITAND", "TT_BITNOT", "TT_BITOR", "TT_BITXOR", "TT_SUB", "TT_ADD", "TT_MUL", "TT_DIV", "TT_BACKTICK",
+               "TT_MOD", "TT_LT", "TT_GT", "TT_UNKNOWN", ]
 
 
 def token_type_to_str(ttype):

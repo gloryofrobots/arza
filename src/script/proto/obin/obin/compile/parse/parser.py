@@ -272,7 +272,6 @@ def main_parser_init(parser):
     prefix(parser, TT_ADD)
 
     prefix(parser, TT_IF, prefix_if)
-    prefix(parser, TT_MATCH, prefix_if)
 
     prefix(parser, TT_LPAREN, prefix_lparen)
 

@@ -1,6 +1,10 @@
-match (1, 23):
-    case (1, x, y):
-        print("OLOLO")
+
+
+
+
+
+T = match (1, 23):
+    case (1, x):
         45 + x
 
         end
@@ -8,7 +12,7 @@ match (1, 23):
     //case (34.05, 42, y): 3 end
     //case (34.05, 42, (w,z)): 4 end
     case A:
-      1/0
       A
      end
 end
+

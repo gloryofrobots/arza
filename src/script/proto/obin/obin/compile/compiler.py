@@ -470,12 +470,17 @@ def _create_true_node(basenode):
 
 PATTERN_INPUT_VAR = "@"
 
+
 def _create_path_node(basenode, path):
     head, tail = plist.split(path)
     if plist.isempty(tail):
         return head
 
     return _create_lookup_node(basenode, _create_path_node(basenode, tail), head)
+
+
+def _create_goto_node(label):
+    return Node(TT_GOTO, label, -1, -1)
 
 
 def _process_pattern(process, compiler, pattern, stack, path):
@@ -496,6 +501,7 @@ def _process_pattern(process, compiler, pattern, stack, path):
         stack.append(["equal", _create_path_node(pattern, path), pattern])
     else:
         assert False
+
 
 def _place_branch_node(tree, head, tail):
     for leaf in tree:
@@ -533,6 +539,7 @@ def _group_branches(process, branches):
 
     return result
 
+
 PATTERN_DATA = """
 
     match (a,b):
@@ -546,6 +553,8 @@ PATTERN_DATA = """
         case A: 5 end
     end
 """
+
+
 def _transform_pattern(process, compiler, node, methods, tree):
     nodes = []
     for branch in tree:
@@ -562,10 +571,10 @@ def _transform_pattern(process, compiler, node, methods, tree):
             condition_node = head[1]
 
             condition = _create_eq_node(condition_node,
-                                               _create_call_node(condition_node,
-                                                                 _create_name_node(condition_node, "is_seq"),
-                                                                 condition_node),
-                                                _create_true_node(condition_node))
+                                        _create_call_node(condition_node,
+                                                          _create_name_node(condition_node, "is_seq"),
+                                                          condition_node),
+                                        _create_true_node(condition_node))
 
             body = _transform_pattern(process, compiler, condition_node, methods, tail)
             nodes.append(list_node([condition, body]))
@@ -573,10 +582,10 @@ def _transform_pattern(process, compiler, node, methods, tree):
             condition_node = head[1]
             count = head[2]
             condition = _create_eq_node(condition_node,
-                                               _create_call_node(condition_node,
-                                                                 _create_name_node(condition_node, "length"),
-                                                                 condition_node),
-                                               _create_int_node(condition_node, str(count)))
+                                        _create_call_node(condition_node,
+                                                          _create_name_node(condition_node, "length"),
+                                                          condition_node),
+                                        _create_int_node(condition_node, str(count)))
 
             body = _transform_pattern(process, compiler, condition_node, methods, tail)
             nodes.append(list_node([condition, body]))
@@ -599,28 +608,39 @@ def _transform_pattern(process, compiler, node, methods, tree):
 
             nodes.append(list_node([condition, body]))
 
-    nodes.append(empty_node())
-    return _create_if_node(node, nodes)
+    ifs = [_create_if_node(node, [success_branch, empty_node()]) for success_branch in nodes]
+    return list_node(ifs)
 
 
 def _compile_match_patterns(process, compiler, code, node, patterns):
     branches = []
     path = plist.plist1(_create_name_node(node, PATTERN_INPUT_VAR))
     bodies = []
+
+    endmatch = code.prealocate_label()
+
     for pattern in patterns:
         stack = []
         clause = pattern[0]
-        body = pattern[1]
         _process_pattern(process, compiler, clause, stack, path)
+
+        body = pattern[1]
+        if not is_list_node(body):
+            body = list_node([body])
+
+        body.append(_create_goto_node(str(endmatch)))
+
         bodies.append(body)
         index = len(bodies) - 1
         stack.append(index)
+
         branches.append(stack)
 
     tree = _group_branches(process, branches)
     # print tree
     transformed_node = _transform_pattern(process, compiler, node, bodies, tree)
     _compile(process, compiler, code, transformed_node)
+    code.emit_1(LABEL, endmatch)
     # print transformed_node
     # for branch in branches:
     #     print "*******************************"
@@ -641,6 +661,12 @@ def _compile_MATCH(process, compiler, code, node):
     code.emit_2(STORE_LOCAL, index, name_index)
 
     _compile_match_patterns(process, compiler, code, node, patterns)
+
+
+def _compile_GOTO(process, compiler, code, node):
+    value = int(node.value)
+    code.emit_0(DUP)
+    code.emit_1(JUMP, value)
 
 
 #########################################################
@@ -1333,11 +1359,8 @@ def _compile_nodes(process, compiler, bytecode, ast):
     nodes = ast.items
 
     if len(nodes) > 1:
-
         for node in nodes[:-1]:
             _compile_node(process, compiler, bytecode, node)
-            # last = bytecode.opcodes[-1]
-            # if not isinstance(last, POP):
             bytecode.emit_0(POP)
 
     if len(nodes) > 0:
@@ -1479,6 +1502,8 @@ def _compile_node(process, compiler, code, node):
         _compile_GT(process, compiler, code, node)
     elif TT_MATCH == t:
         _compile_MATCH(process, compiler, code, node)
+    elif TT_GOTO == t:
+        _compile_GOTO(process, compiler, code, node)
     else:
         compile_error(process, node, "Unknown node")
 
@@ -1539,7 +1564,6 @@ def _check(val1, val2):
         print val1
         print val2
         raise RuntimeError("Not equal")
-
 
 
 compile_and_print(

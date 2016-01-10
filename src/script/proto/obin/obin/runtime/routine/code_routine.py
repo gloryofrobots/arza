@@ -78,9 +78,9 @@ class CodeRoutine(BaseRoutine):
             literals = self.literals
             refs = self.refs
             # print "_execute", opcode
-            # print "------ routine ----", api.to_native_string(self._name_)
-            # self._print_stack()
-            # self._print_code(opcode)
+            print "------ routine ----", api.to_native_string(self._name_)
+            self._print_stack()
+            self._print_code(opcode)
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
             self.pc += 1
             # *************************************

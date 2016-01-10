@@ -237,6 +237,7 @@ def statements(parser, endlist=None):
     length = len(stmts)
     if length == 0:
         return empty_node()
+    #TODO REMOVE IT
     elif length == 1:
         return stmts[0]
 

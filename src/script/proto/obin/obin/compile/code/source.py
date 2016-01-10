@@ -56,11 +56,11 @@ class CodeSource:
         return num
 
     def emit_2(self, opcode, arg1, arg2):
-        from obin.compile.code.utils import opcode_to_str
+        # from obin.compile.code.utils import opcode_to_str
         assert isinstance(opcode, int)
         assert isinstance(arg1, int)
         assert isinstance(arg2, int)
-        print opcode_to_str(opcode), arg1, arg2
+        # print opcode_to_str(opcode), arg1, arg2
         self.opcodes.append((opcode, arg1, arg2))
         return opcode
 
