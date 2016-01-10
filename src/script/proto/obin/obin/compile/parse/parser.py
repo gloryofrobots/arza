@@ -146,6 +146,7 @@ def main_parser_init(parser):
     symbol(parser, TT_END)
     symbol(parser, TT_ELSE)
     symbol(parser, TT_SEMI, nud=empty)
+    symbol(parser, TT_WILDCARD, nud=nud_wildcard)
 
     # precedence 5
     # infix(parser, TT_COMMA, 5)

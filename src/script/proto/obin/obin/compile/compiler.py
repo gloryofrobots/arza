@@ -543,13 +543,12 @@ def _group_branches(process, branches):
 PATTERN_DATA = """
 
     match (a,b):
-        case (1, x):
-            print("OLOLO")
-            1 + 1
-        end
+
+        //case (1, x): 1 + 1 end
         //case (1, false): 2 end
         //case (34.05, 42, y): 3 end
         //case (34.05, 42, (w,z)): 4 end
+        case _: nil end
         case A: 5 end
     end
 """
@@ -607,6 +606,12 @@ def _transform_pattern(process, compiler, node, methods, tree):
                 body = list_node([_create_assign_node(left, left, right), rest])
 
             nodes.append(list_node([condition, body]))
+        elif type == "wildcard":
+            condition = _create_true_node(node)
+            body = _transform_pattern(process, compiler, node, methods, tail)
+            nodes.append(list_node([condition, body]))
+        else:
+            assert False, (head, tail)
 
     ifs = [_create_if_node(node, [success_branch, empty_node()]) for success_branch in nodes]
     return list_node(ifs)
@@ -641,12 +646,8 @@ def _compile_match_patterns(process, compiler, code, node, patterns):
     transformed_node = _transform_pattern(process, compiler, node, bodies, tree)
     _compile(process, compiler, code, transformed_node)
     code.emit_1(LABEL, endmatch)
-    # print transformed_node
-    # for branch in branches:
-    #     print "*******************************"
-    #     for n in branch:
-    #         print n
 
+    # print transformed_node
     # raise SystemExit()
 
 
@@ -664,8 +665,17 @@ def _compile_MATCH(process, compiler, code, node):
 
 
 def _compile_GOTO(process, compiler, code, node):
+    # TODO REMOVE THIS SHIT
+    # WE NEED TO REMOVE POPS ON GOTO BECAUSE OF AUTOMATIC POP INSERTION
+    # GOTO USED ONLY FOR JUMPS ON PATTERN MATCHING BECAUSE IN PM WE PRODUCE TREE OF IFS
+    # AND NEED JUMP FROM SUCCESS BRANCH. IT'S ACTUALLY SIMPLIFIES CPM COMPILATION BUT LEEDS TO THIS BAD DESIGN
+    # SOLUTION: REMOVE AUTO POPS, SOMEHOW
+
+    last_code = code.last()
+    if last_code[0] == POP:
+        code.remove_last()
+
     value = int(node.value)
-    code.emit_0(DUP)
     code.emit_1(JUMP, value)
 
 

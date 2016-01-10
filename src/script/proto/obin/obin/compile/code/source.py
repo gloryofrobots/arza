@@ -55,6 +55,12 @@ class CodeSource:
         self.updatelooplabel.append(num)
         return num
 
+    def remove_last(self):
+        self.opcodes.pop()
+
+    def last(self):
+        return self.opcodes[-1]
+
     def emit_2(self, opcode, arg1, arg2):
         # from obin.compile.code.utils import opcode_to_str
         assert isinstance(opcode, int)

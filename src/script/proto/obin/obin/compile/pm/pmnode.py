@@ -14,14 +14,14 @@ class PMAction:
 
 """
 match (a,b):
+    case (A, true): 1 + 1 end
     case (1, false): 1 + 1 end
-    case (2, false): 1 + 1 end
     case false : 2 end
     case _: nil end
 end
 """
 """
-$c0 =
+$c0 = is_seq()
 if is_seq($):
     if length($) == 2:
         if $[0] == 1:

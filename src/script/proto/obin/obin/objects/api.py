@@ -150,9 +150,15 @@ def put(obj, k, v):
 
 
 def at_index(obj, i):
+    from obin.runtime.error import ObinKeyError
+    from space import isundefined
     assert isinstance(i, int)
-    return obj._at_index_(i)
 
+    v = obj._at_index_(i)
+    assert v is not None
+    if isundefined(v):
+        raise ObinKeyError(i)
+    return v
 
 def get_index(obj, k):
     return obj._get_index_(k)

@@ -353,6 +353,8 @@ def skip(parser, ttype):
 def empty(parser, node):
     return None
 
+def nud_wildcard(parser, node):
+    parse_error(parser, "Invalid use of _ pattern", node)
 
 def is_assignment_node(node):
     token_type = node.type
