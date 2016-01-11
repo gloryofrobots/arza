@@ -1,11 +1,12 @@
 from obin.compile.parse.parser import *
 from obin.objects.types import plist
 from obin.compile.parse.node import (is_empty_node,
-                                     is_list_node, is_iterable_node, create_assign_node,
+                                     is_list_node, create_assign_node,
                                      create_call_node, create_eq_node,
                                      create_if_node, create_true_node, create_int_node,
                                      create_lookup_node, create_name_node, create_undefined_node)
 from obin.objects import space as obs, api
+
 
 def _create_path_node(basenode, path):
     head, tail = plist.split(path)
@@ -109,7 +110,82 @@ def _get_history_condition(history, condition):
     return new_condition, assign
 
 
-def _transform_pattern(process, compiler, node, methods, history, variables, tree):
+def transform_body(func, methods, history, node, head, tail, variables):
+    next_node, condition, prefixes, new_vars = func(history, head, variables)
+    if next_node is None:
+        next_node = node
+
+    body, vars = _transform_pattern(next_node, methods, history, new_vars, tail)
+    return condition, body, prefixes, vars
+
+
+def _transform_is_seq(history, head, variables):
+    condition_node = head[1]
+
+    _condition = create_eq_node(condition_node,
+                                create_call_node(condition_node,
+                                                 create_name_node(condition_node, "is_seq"),
+                                                 condition_node),
+                                create_true_node(condition_node))
+
+    condition, prefixes = _get_history_condition(history, _condition)
+    return condition_node, condition, prefixes, variables
+
+
+def _transform_length(history, head, variables):
+    condition_node = head[1]
+    count = head[2]
+    _condition = create_eq_node(condition_node,
+                                create_call_node(condition_node,
+                                                 create_name_node(condition_node, "length"),
+                                                 condition_node),
+                                create_int_node(condition_node, str(count)))
+
+    condition, prefixes = _get_history_condition(history, _condition)
+    return condition_node, condition, prefixes, variables
+
+
+def _transform_is_length(history, head, variables):
+    condition_node = head[1]
+    count = head[2]
+    _condition = create_eq_node(condition_node,
+                                create_call_node(condition_node,
+                                                 create_name_node(condition_node, "length"),
+                                                 condition_node),
+                                create_int_node(condition_node, str(count)))
+
+    condition, prefixes = _get_history_condition(history, _condition)
+    return condition_node, condition, prefixes, variables
+
+
+def _transform_equal(history, head, variables):
+    left = head[1]
+    right = head[2]
+    _condition = create_eq_node(left, left, right)
+    condition, prefixes = _get_history_condition(history, _condition)
+    return left, condition, prefixes, variables
+
+
+def _transform_assign(history, head, variables):
+    left = head[1]
+    right = head[2]
+    return left, None, [create_assign_node(left, left, right)], plist.prepend(left, variables)
+
+
+def _transform_wildcard(history, head, variables):
+    return None, None, [], variables
+
+
+TRANSFORM_DISPATCH = {
+    "is_seq": _transform_is_seq,
+    "length": _transform_length,
+    "equal": _transform_equal,
+    "assign": _transform_assign,
+    "wildcard": _transform_wildcard
+}
+
+
+def _transform_pattern(node, methods, history, variables, tree):
     assert isinstance(history, list)
     assert obs.islist(variables)
 
@@ -128,58 +204,11 @@ def _transform_pattern(process, compiler, node, methods, history, variables, tre
 
         # init loop state
         type = head[0]
-        condition = None
-        body = None
-        prefixes = None
 
         undefs = plist.substract(vars, variables)
-
-        if type == "is_seq":
-            condition_node = head[1]
-
-            _condition = create_eq_node(condition_node,
-                                        create_call_node(condition_node,
-                                                         create_name_node(condition_node, "is_seq"),
-                                                         condition_node),
-                                        create_true_node(condition_node))
-
-            condition, prefixes = _get_history_condition(history, _condition)
-
-            body, vars = _transform_pattern(process, compiler, condition_node, methods, history, variables, tail)
-        elif type == "length":
-            condition_node = head[1]
-            count = head[2]
-            _condition = create_eq_node(condition_node,
-                                        create_call_node(condition_node,
-                                                         create_name_node(condition_node, "length"),
-                                                         condition_node),
-                                        create_int_node(condition_node, str(count)))
-
-            condition, prefixes = _get_history_condition(history, _condition)
-            body, vars = _transform_pattern(process, compiler, condition_node, methods, history, variables, tail)
-        elif type == "equal":
-            left = head[1]
-            right = head[2]
-            _condition = create_eq_node(left, left, right)
-            condition, prefixes = _get_history_condition(history, _condition)
-            body, vars = _transform_pattern(process, compiler, left, methods, history, variables, tail)
-        elif type == "assign":
-            left = head[1]
-            right = head[2]
-
-            condition = None
-            # condition = _create_true_node(left)
-            body, vars = _transform_pattern(process, compiler, left, methods,
-                                            history, plist.prepend(left, variables), tail)
-            prefixes = [create_assign_node(left, left, right)]
-
-        elif type == "wildcard":
-            condition = None
-            # condition = _create_true_node(node)
-            prefixes = []
-            body, vars = _transform_pattern(process, compiler, node, methods, history, variables, tail)
-        else:
-            assert False, (head, tail)
+        transformer = TRANSFORM_DISPATCH[type]
+        condition, body, prefixes, vars = \
+            transform_body(transformer, methods, history, node, head, tail, variables)
 
         # assert condition is not None
         assert body is not None
@@ -189,11 +218,7 @@ def _transform_pattern(process, compiler, node, methods, history, variables, tre
             undef_nodes = _create_variable_undefs(node, undefs)
             prefixes = prefixes + undef_nodes
 
-        # if len(prefixes) != 0:
-        #     body = _prepend_to_body(prefixes, body)
-
         nodes.append((condition, body, prefixes))
-        # nodes.append(list_node([condition, body]))
 
     result = []
     for condition, body, prefixes in nodes:
@@ -207,8 +232,6 @@ def _transform_pattern(process, compiler, node, methods, history, variables, tre
             result.append(_prepend_to_body(prefixes, list_node([if_node])))
 
     return list_node(result), vars
-    # ifs = [_create_if_node(node, [success_branch, empty_node()]) for success_branch in nodes]
-    # return list_node(ifs), vars
 
 
 def transform(process, compiler, node, patterns, decision_node):
@@ -236,7 +259,7 @@ def transform(process, compiler, node, patterns, decision_node):
 
     tree = _group_branches(process, branches)
     # print tree
-    transformed_node, vars = _transform_pattern(process, compiler, node, bodies, [], plist.empty(), tree)
+    transformed_node, vars = _transform_pattern(node, bodies, [], plist.empty(), tree)
     # print transformed_node
     # raise SystemExit()
     return transformed_node
