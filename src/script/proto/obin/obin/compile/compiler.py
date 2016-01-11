@@ -446,7 +446,7 @@ def _compile_GOTO(process, compiler, code, node):
     # TODO REMOVE THIS SHIT
     # WE NEED TO REMOVE POPS ON GOTO BECAUSE OF AUTOMATIC POP INSERTION
     # GOTO USED ONLY FOR JUMPS ON PATTERN MATCHING BECAUSE IN PM WE PRODUCE TREE OF IFS
-    # AND NEED JUMP FROM SUCCESS BRANCH. IT'S ACTUALLY SIMPLIFIES CPM COMPILATION BUT LEEDS TO THIS BAD DESIGN
+    # AND NEED JUMP FROM SUCCESS BRANCH. IT'S ACTUALLY SIMPLIFIES COMPILATION BUT LEEDS TO THIS BAD DESIGN
     # SOLUTION: REMOVE AUTO POPS, SOMEHOW
 
     last_code = code.last()
@@ -1086,14 +1086,14 @@ def _compile_LSQUARE_lookup(process, compiler, code, node):
 def _compile_args_list(process, compiler, code, args):
     args_count = 0
     if len(args) == 0:
-        code.emit_1(VECTOR, 0)
+        code.emit_1(TUPLE, 0)
         return
 
     for arg in args:
         _compile(process, compiler, code, arg)
         args_count += 1
 
-    code.emit_1(VECTOR, args_count)
+    code.emit_1(TUPLE, args_count)
 
 
 def _compile_LPAREN_member(process, compiler, bytecode, node):
@@ -1358,9 +1358,9 @@ def _check(val1, val2):
         raise RuntimeError("Not equal")
 
 
-compile_and_print(
-    PATTERN_DATA
-)
+# compile_and_print(
+#     PATTERN_DATA
+# )
 """
 
 metadata = 34;

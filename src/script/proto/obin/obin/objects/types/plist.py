@@ -174,6 +174,7 @@ def contains(pl, v):
 
     return contains(tail(pl), v)
 
+
 ######################################################
 
 def _substract(pl1, pl2, result):
@@ -185,8 +186,10 @@ def _substract(pl1, pl2, result):
     else:
         return _substract(tail(pl1), pl2, result)
 
+
 def substract(pl1, pl2):
     return reverse(_substract(pl1, pl2, empty()))
+
 
 ######################################################
 
@@ -248,7 +251,12 @@ def compute_hash(pl):
 ##############################################################
 
 def plist_vec(process, vec):
-    items = vec.to_n_list()
+    items = vec.to_py_list()
+    return plist(items)
+
+
+def plist_tuple(process, tupl):
+    items = tupl.to_py_list()
     return plist(items)
 
 
@@ -317,8 +325,8 @@ def test():
 
     l11 = fmap(inc, l10)
     print l11
-    l12 = plist(nis([1,2,3]))
-    l13 = plist(nis([1,2,3,4,5]))
+    l12 = plist(nis([1, 2, 3]))
+    l13 = plist(nis([1, 2, 3, 4, 5]))
     l14 = substract(l13, l12)
     test_list(l14, [4, 5])
     # l9 = newlist(nis([1,2,2,3,4,5,2,6,2,7]))

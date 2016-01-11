@@ -33,7 +33,7 @@ def setup(process, module, stdlib):
     api.put_native_function(module, u'attach', attach, -1)
     api.put_native_function(module, u'detach', detach, -1)
     api.put_native_function(module, u'apply', apply, 2)
-    api.put_native_function(module, u'concat', concat_two_vectors, 2)
+    api.put_native_function(module, u'concat', concat_tuples, 2)
     api.put_native_function(module, u'time', time, 0)
     api.put_native_function(module, u'is_seq', is_seq, 1)
     api.put_native_function(module, u'length', length, 1)
@@ -54,7 +54,7 @@ def _id(process, routine):
 
 @complete_native_routine
 def _print(process, routine):
-    args = routine._args.to_n_list()
+    args = routine._args.to_py_list()
     if len(args) == 0:
         return
 
@@ -90,11 +90,13 @@ def _eval(process, routine):
 def apply(process, routine):
     func = routine.get_arg(0)
     args = routine.get_arg(1)
+    from obin.objects.space import istuple
+    assert istuple(args)
     api.call(process, func, args)
 
 @complete_native_routine
-def concat_two_vectors(process, routine):
-    from obin.objects.types.vector import concat
+def concat_tuples(process, routine):
+    from obin.objects.types.tupl import concat
     v1 = routine.get_arg(0)
     v2 = routine.get_arg(1)
     return concat(process, v1, v2)
@@ -177,7 +179,7 @@ def traits(process, routine):
 
 @complete_native_routine
 def attach(process, routine):
-    args = routine.args().to_n_list()
+    args = routine.args().to_py_list()
     obj = routine.get_arg(0)
     for i in range(len(args) - 1, 0, -1):
         trait = routine.get_arg(i)
@@ -187,7 +189,7 @@ def attach(process, routine):
 
 @complete_native_routine
 def detach(process, routine):
-    args = routine.args().to_n_list()
+    args = routine.args().to_py_list()
     obj = routine.get_arg(0)
     for i in range(1, len(args)):
         trait = routine.get_arg(i)

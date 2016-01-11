@@ -19,7 +19,7 @@ class W_Entity(W_Cell):
         from obin.objects.space import newvector
         from obin.objects.types.plist import foldl
         traits_repr = foldl(_tostring_foldl_, newvector([]), self.behavior.traits)
-        traits_repr = ",".join([api.to_native_string(t) for t in traits_repr.to_n_list()])
+        traits_repr = ",".join([api.to_native_string(t) for t in traits_repr.to_py_list()])
 
         return "<entity of %s and %s>" % (api.to_native_string(self.source), traits_repr)
 

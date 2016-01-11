@@ -61,7 +61,9 @@ GENERICS = [
      ("Str", "str",
          [((A,),"str_w")]),
      ("List", "list",
-         [((V,),"plist_vec","obin.objects.types.plist")]),
+         [((V,),"plist_vec","obin.objects.types.plist"),
+          ((T,),"plist_tuple","obin.objects.types.plist"),
+          ]),
 ]
 TPL_IMPL_BINARY = """
 @complete_native_routine
@@ -130,9 +132,9 @@ print "#####################################################"
 print "#####################################################"
 
 REIFY_TPL = """
-    reify_single(process, generics.{{varname}},
+    specify_single(process, generics.{{varname}},
                  newtuple([{% for trait in traits %}traits.{{trait}}, {% endfor %}]),
-                 newprimitive(newstring(u"{{funcname}}"), wrappers.builtin_{{funcname}}, {{traits|length}}))
+                 newnativefunc(newstring(u"{{funcname}}"), wrappers.builtin_{{funcname}}, {{traits|length}}))
 """
     
 def print_reify():

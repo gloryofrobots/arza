@@ -135,7 +135,7 @@ class W_Vector(W_Cell):
         assert isany(v)
         self._items.remove(v)
 
-    def to_n_list(self):
+    def to_py_list(self):
         return self._items
 
     def pop(self):

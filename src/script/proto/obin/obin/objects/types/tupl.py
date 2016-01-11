@@ -116,6 +116,11 @@ class W_Tuple(W_Hashable):
     def _tostring_(self):
         return "(%s,)" % ",".join([v._tostring_() for v in self.elements])
 
+    def to_py_list(self):
+        return self.elements
+
+def concat(process, tupl1, tupl2):
+    return W_Tuple(tupl1.elements + tupl2.elements)
 
 # def append(tupl, v):
 #     items = tupl.values + [v]
@@ -159,8 +164,6 @@ class W_Tuple(W_Hashable):
 #     return W_Tuple(items)
 #
 #
-# def concat(tupl, v):
-#     tupl.values += v.values()
 #
 #
 # def fold_slice(tupl, index):

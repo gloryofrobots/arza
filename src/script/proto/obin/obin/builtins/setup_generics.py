@@ -196,4 +196,8 @@ def _specify(process, module, stdlib):
 
     specify_single(process, generics.List,
                  newtuple([traits.Vector, ]),
-                 newnativefunc(newstring(u"plist_v"), wrappers.builtin_vector_to_list, 1))
+                 newnativefunc(newstring(u"plist_vec"), wrappers.builtin_plist_vec, 1))
+
+    specify_single(process, generics.List,
+                 newtuple([traits.Tuple, ]),
+                 newnativefunc(newstring(u"plist_tuple"), wrappers.builtin_plist_tuple, 1))

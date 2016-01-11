@@ -2,6 +2,7 @@
 
 
 
+
 generic _and_:
     case (t of True, f of True):
         true
@@ -15,12 +16,12 @@ print(_and_(true, true))
 
 print(_and_(true, false), _and_(false, true),  _and_(true, true))
 
-specify _and_ (_ of Integer, _ of Float):
+specify _and_ (i of Integer, i of Float):
     false
 end
 
 specify _and_:
-    case (_ of String, _ of Integer):
+    case (i of String, i of Integer):
         true
     end
 end
@@ -133,4 +134,19 @@ else:
     4
 end
 
+
+
+
+
+T = match (1, (23, (24, 25))):
+        case (Z, (G, 1)): 12 + Z end
+        case (1, 23):  11  end
+        case (1, (23, X)):  11  end
+        case _: nil end
+end
+
+
+print("Match result", T, X)
+
+//print(Z, X)
 

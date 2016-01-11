@@ -243,6 +243,6 @@ def transform(process, compiler, node, patterns, decision_node):
     tree = _group_branches(process, branches)
     # print tree
     transformed_node, vars = _transform_pattern(node, bodies, [], plist.empty(), tree)
-    print transformed_node
-    raise SystemExit()
+    # print transformed_node
+    # raise SystemExit()
     return transformed_node
