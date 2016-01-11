@@ -82,7 +82,7 @@ def _prepend_to_body(statements, body):
 
 ###################################################################33
 
-def _history_get(history, exp):
+def _history_get_var(history, exp):
     from obin.compile import MATCH_SYS_VAR
 
     for record in history:
@@ -96,14 +96,14 @@ def _history_get(history, exp):
     return name_node, [assign]
 
 
-def _get_history_condition(history, condition):
-    var_name, assign = _history_get(history, condition)
+def _history_get_condition(history, condition):
+    var_name, prefixes = _history_get_var(history, condition)
 
     new_condition = create_eq_node(condition,
                                    var_name,
                                    create_true_node(condition))
 
-    return new_condition, assign
+    return new_condition, prefixes
 
 
 ###########################################################################
@@ -118,56 +118,43 @@ def transform_body(func, methods, history, node, head, tail, variables):
 
 
 def _transform_is_seq(history, head, variables):
-    condition_node = head[1]
+    arg_node, prefixes = _history_get_var(history,  head[1])
+    _condition = create_eq_node(arg_node,
+                                create_call_node(arg_node,
+                                                 create_name_node(arg_node, "is_seq"),
+                                                 arg_node),
+                                create_true_node(arg_node))
 
-    _condition = create_eq_node(condition_node,
-                                create_call_node(condition_node,
-                                                 create_name_node(condition_node, "is_seq"),
-                                                 condition_node),
-                                create_true_node(condition_node))
-
-    condition, prefixes = _get_history_condition(history, _condition)
-    return condition_node, condition, prefixes, variables
+    condition, prefixes1 = _history_get_condition(history, _condition)
+    return arg_node, condition, prefixes + prefixes1, variables
 
 
 def _transform_length(history, head, variables):
-    condition_node = head[1]
+    arg_node, prefixes = _history_get_var(history,  head[1])
     count = head[2]
-    _condition = create_eq_node(condition_node,
-                                create_call_node(condition_node,
-                                                 create_name_node(condition_node, "length"),
-                                                 condition_node),
-                                create_int_node(condition_node, str(count)))
+    _condition = create_eq_node(arg_node,
+                                create_call_node(arg_node,
+                                                 create_name_node(arg_node, "length"),
+                                                 arg_node),
+                                create_int_node(arg_node, str(count)))
 
-    condition, prefixes = _get_history_condition(history, _condition)
-    return condition_node, condition, prefixes, variables
-
-
-def _transform_is_length(history, head, variables):
-    condition_node = head[1]
-    count = head[2]
-    _condition = create_eq_node(condition_node,
-                                create_call_node(condition_node,
-                                                 create_name_node(condition_node, "length"),
-                                                 condition_node),
-                                create_int_node(condition_node, str(count)))
-
-    condition, prefixes = _get_history_condition(history, _condition)
-    return condition_node, condition, prefixes, variables
+    condition, prefixes1 = _history_get_condition(history, _condition)
+    return arg_node, condition, prefixes + prefixes1, variables
 
 
 def _transform_equal(history, head, variables):
-    left = head[1]
+    left, prefixes = _history_get_var(history,  head[1])
     right = head[2]
     _condition = create_eq_node(left, left, right)
-    condition, prefixes = _get_history_condition(history, _condition)
-    return left, condition, prefixes, variables
+    condition, prefixes1 = _history_get_condition(history, _condition)
+    return left, condition, prefixes + prefixes1, variables
 
 
 def _transform_assign(history, head, variables):
     left = head[1]
-    right = head[2]
-    return left, None, [create_assign_node(left, left, right)], plist.prepend(left, variables)
+    right, prefixes = _history_get_var(history,  head[2])
+    prefixes1 = (prefixes + [create_assign_node(left, left, right)])
+    return left, None, prefixes1, plist.prepend(left, variables)
 
 
 def _transform_wildcard(history, head, variables):
@@ -256,6 +243,6 @@ def transform(process, compiler, node, patterns, decision_node):
     tree = _group_branches(process, branches)
     # print tree
     transformed_node, vars = _transform_pattern(node, bodies, [], plist.empty(), tree)
-    # print transformed_node
-    # raise SystemExit()
+    print transformed_node
+    raise SystemExit()
     return transformed_node

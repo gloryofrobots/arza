@@ -425,7 +425,7 @@ PATTERN_DATA = """
 
 def _compile_MATCH(process, compiler, code, node):
     from obin.compile.match import transform
-    from obin.compile.parse.node  import  create_goto_node
+    from obin.compile.parse.node import create_goto_node
     from obin.compile import MATCH_SYS_VAR
     exp = node.first()
     patterns = node.second()
