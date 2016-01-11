@@ -546,7 +546,6 @@ def _group_branches(process, branches):
 
 
 PATTERN_DATA = """
-
     match (a,b):
         case (A, B, C): 12 + Z end
         case (D, E):  Z + Y + A   end
@@ -571,6 +570,7 @@ def _undefine_variables(basenode, body, variables):
 
     return _prepend_to_body(undefs, body)
 
+
 def _prepend_1_to_body(statement, body):
     if is_list_node(body):
         return list_node([statement] + body.items)
@@ -589,14 +589,13 @@ def _prepend_to_body(statements, body):
 def _transform_pattern(process, compiler, node, methods, variables, tree):
     nodes = []
 
-    vars = variables
+    vars = plist.empty()
 
     for branch in tree:
         undefs = plist.substract(vars, variables)
 
         condition = None
         body = None
-        new_vars = None
         head = branch[0]
         tail = branch[1]
 
@@ -616,7 +615,7 @@ def _transform_pattern(process, compiler, node, methods, variables, tree):
                                                           condition_node),
                                         _create_true_node(condition_node))
 
-            body, new_vars = _transform_pattern(process, compiler, condition_node, methods, variables, tail)
+            body, vars = _transform_pattern(process, compiler, condition_node, methods, variables, tail)
         elif type == "length":
             condition_node = head[1]
             count = head[2]
@@ -626,7 +625,7 @@ def _transform_pattern(process, compiler, node, methods, variables, tree):
                                                           condition_node),
                                         _create_int_node(condition_node, str(count)))
 
-            body, new_vars = _transform_pattern(process, compiler, condition_node, methods, variables, tail)
+            body, vars = _transform_pattern(process, compiler, condition_node, methods, variables, tail)
         elif type == "equal":
             left = head[1]
             right = head[2]
@@ -637,13 +636,13 @@ def _transform_pattern(process, compiler, node, methods, variables, tree):
             right = head[2]
 
             condition = _create_true_node(left)
-            body, new_vars = _transform_pattern(process, compiler, left, methods,
-                                                         plist.prepend(left, variables), tail)
+            body, vars = _transform_pattern(process, compiler, left, methods,
+                                            plist.prepend(left, variables), tail)
             body = _prepend_1_to_body(_create_assign_node(left, left, right), body)
 
         elif type == "wildcard":
             condition = _create_true_node(node)
-            body, new_vars = _transform_pattern(process, compiler, node, methods, variables, tail)
+            body, vars = _transform_pattern(process, compiler, node, methods, variables, tail)
         else:
             assert False, (head, tail)
 
@@ -651,11 +650,8 @@ def _transform_pattern(process, compiler, node, methods, variables, tree):
         assert body is not None
         if not plist.isempty(undefs):
             body = _undefine_variables(node, body, undefs)
-            vars = variables
 
         nodes.append(list_node([condition, body]))
-        if new_vars is not None:
-            vars = new_vars
 
     ifs = [_create_if_node(node, [success_branch, empty_node()]) for success_branch in nodes]
     return list_node(ifs), vars
