@@ -755,7 +755,7 @@ def _compile_LSQUARE(process, compiler, code, node):
     for c in items:
         _compile(process, compiler, code, c)
 
-    code.emit_1(VECTOR, len(items))
+    code.emit_1(LIST, len(items))
 
 
 # def _emit_list(process, compiler, code, node):

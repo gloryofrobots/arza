@@ -1,6 +1,7 @@
 __author__ = 'gloryofrobots'
 from rpython.rlib import jit
 from obin.objects.space import newundefined
+from obin.objects.types import plist
 # TODO proper stack operations
 
 class Stack:
@@ -54,26 +55,29 @@ class Stack:
         self.__pointer = p
 
     @jit.unroll_safe
-    def pop_n_into(self, n, l):
-        assert n > 0
-
-        i = n
-        while i > 0:
-            i -= 1
-            e = self.pop()
-            l.append(e)
-
-    @jit.unroll_safe
     def pop_n(self, n):
         if n < 1:
             return []
 
-        r = []
+        result = []
         i = n
         while i > 0:
             i -= 1
             e = self.pop()
-            r = [e] + r
+            result = [e] + result
 
-        return r
+        return result
 
+    @jit.unroll_safe
+    def pop_n_list(self, n):
+        lst = plist.empty()
+        if n < 1:
+            return lst
+
+        i = n
+        while i > 0:
+            i -= 1
+            value = self.pop()
+            lst = plist.prepend(value, lst)
+
+        return lst

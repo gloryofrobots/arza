@@ -1,14 +1,14 @@
 from operations import *
 
-from obin.objects.space import newvector, isnumber, isint, isentity, isboolean
+from obin.objects.space import newtuple, isnumber, isint, isentity, isboolean
 
 
 def call2(process, generic, l, r):
-    api.call(process, generic, newvector([l, r]))
+    api.call(process, generic, newtuple([l, r]))
 
 
 def call1(process, generic, w):
-    api.call(process, generic, newvector([w]))
+    api.call(process, generic, newtuple([w]))
 
 
 # TODO INLINE

@@ -14,14 +14,6 @@ from obin.runtime.load import import_module
 from obin.builtins.internals.internals import get_internal
 
 
-def load_arguments(stack):
-    length = api.to_native_integer(stack.pop())
-    elements = stack.pop_n(length)  # [:] # pop_n returns a non-resizable list
-    # vectors2 = []
-    # routine.stack.pop_n_into(counter, vectors2)  # [:] # pop_n returns a non-resizable list
-    return newvector(elements)
-
-
 class CodeRoutine(BaseRoutine):
     # _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
 
@@ -180,8 +172,8 @@ class CodeRoutine(BaseRoutine):
                 stack.push(newvector(lst))
             # *************************************
             elif LIST == tag:
-                lst = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
-                stack.push(newlist(lst))
+                lst = stack.pop_n_list(arg1)  # [:] # pop_n returns a non-resizable list
+                stack.push(lst)
             # *************************************
             elif CALL_INTERNAL == tag:
                 internal = get_internal(arg1)

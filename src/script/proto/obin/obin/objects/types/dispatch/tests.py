@@ -1,7 +1,7 @@
 from obin.objects import api
 
 def make_method(name, arity=3):
-    from obin.objects.space import newtrait, newgeneric, newstring, newnativefunc, newvector
+    from obin.objects.space import newtrait, newgeneric, newstring, newnativefunc, newtuple
     return newnativefunc(newstring(unicode(name)), lambda *args: name, arity)
 
 def specify(generic, sig, name):
@@ -10,20 +10,20 @@ def specify(generic, sig, name):
     generic.specify_single(sig, method)
 
 def sig(*args):
-    from obin.objects.space import newvector
-    return newvector(list(args))
+    from obin.objects.space import newtuple
+    return newtuple(list(args))
 
 def makeobject(traits):
-    from obin.objects.space import newplainobject, newvector
+    from obin.objects.space import newplainobject, newtuple
     from obin.objects.types import oobject
     o = newplainobject()
-    oobject.set_traits(o, newvector(traits))
+    oobject.set_traits(o, newtuple(traits))
     return o
 
 
 def objects(traits_list):
-    from obin.objects.space import newvector
-    return newvector([makeobject(traits) for traits in traits_list])
+    from obin.objects.space import newtuple
+    return newtuple([makeobject(traits) for traits in traits_list])
 
 def test(gen, expected, args):
     # from obin.objects.object_space import newstring
@@ -35,7 +35,7 @@ def test(gen, expected, args):
         raise RuntimeError((res, expected))
 
 def test_3():
-    from obin.objects.space import newtrait, newgeneric, newstring, newnativefunc, newvector
+    from obin.objects.space import newtrait, newgeneric, newstring, newnativefunc, newtuple
     X = newtrait(newstring(u"X"))
     Y = newtrait(newstring(u"Y"))
     Z = newtrait(newstring(u"Z"))
@@ -56,7 +56,7 @@ def test_3():
 
 def test_any():
     from obin.objects.space import newtrait, newgeneric, newstring,\
-        stdlib, newvector, newnil, newbool, newint, newprocess
+        stdlib, newtuple, newnil, newbool, newint, newprocess
     newprocess(["."])
 
     Any = stdlib.traits.Any
@@ -83,7 +83,7 @@ def test_any():
     assert len(g._dags_[4].discriminators) == 12
     assert len(g._dags_[3].discriminators) == 5
 
-    test(g, "m1", newvector([
+    test(g, "m1", newtuple([
         newstring(u"S1"),
         makeobject([Y,Z,Z,X]),
         newint(111),
@@ -91,55 +91,55 @@ def test_any():
     ]))
 
 
-    test(g, "m2", newvector([
+    test(g, "m2", newtuple([
         newstring(u"S1"),
         newint(42),
         newint(111),
         newbool(True)
     ]))
 
-    test(g, "m3", newvector([
+    test(g, "m3", newtuple([
         newnil(),
         newint(42),
         newint(111),
         newstring(u"S1")
     ]))
 
-    test(g, "m4", newvector([
+    test(g, "m4", newtuple([
         newnil(),
         makeobject([Z,Z,Y,Z,X]),
-        newvector([newbool(True), newbool(False)]),
+        newtuple([newbool(True), newbool(False)]),
         newstring(u"S1")
     ]))
-    test(g, "m5", newvector([
+    test(g, "m5", newtuple([
         makeobject([Z,Z,Y,Z,X]),
         makeobject([X]),
-        newvector([newbool(True), newbool(False)]),
+        newtuple([newbool(True), newbool(False)]),
         makeobject([X,Z]),
     ]))
-    test(g, "m6", newvector([
+    test(g, "m6", newtuple([
         newnil(),
         newnil(),
         newnil(),
         newnil(),
     ]))
 
-    test(g, "m7", newvector([
+    test(g, "m7", newtuple([
         makeobject([Z,Z,Y,Z,X]),
         makeobject([X]),
         makeobject([X,Z]),
         makeobject([X,Z]),
     ]))
 
-    test(g, "m8", newvector([
+    test(g, "m8", newtuple([
         newnil(),
-        newvector([newbool(True), newbool(False)]),
+        newtuple([newbool(True), newbool(False)]),
         newnil(),
     ]))
 
-    test(g, "m9", newvector([
+    test(g, "m9", newtuple([
         newnil(),
-        newvector([newbool(True), newbool(False)]),
+        newtuple([newbool(True), newbool(False)]),
         makeobject([X,Z]),
     ]))
 

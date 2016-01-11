@@ -3,7 +3,7 @@ from obin.objects import space
 from obin.objects import api
 
 
-class W_List(W_Root):
+class W_PList(W_Root):
     def __init__(self, head, tail):
         self.head = head
         self.tail = tail
@@ -34,7 +34,7 @@ class W_List(W_Root):
                 break
             els.append(api.to_native_string(head(cur)))
             cur = cur.tail
-        return "[%s]" % (":".join(els))
+        return "[%s]" % (", ".join(els))
 
     def _length_(self):
         return length(self)
@@ -45,7 +45,7 @@ class W_List(W_Root):
 
 def empty():
     from obin.objects.space import newundefined
-    return W_List(newundefined(), newundefined())
+    return W_PList(newundefined(), newundefined())
 
 
 def foldl(func, acc, pl):
@@ -92,7 +92,7 @@ def length(pl):
 
 def prepend(v, pl):
     assert v is not None
-    return W_List(v, pl)
+    return W_PList(v, pl)
 
 
 def cons_n_list(items, pl):
@@ -139,7 +139,7 @@ def insert(pl, index, v):
     if isempty(pl):
         raise RuntimeError("Invalide Index")
 
-    return W_List(head(pl), insert(tail(pl), index - 1, v))
+    return W_PList(head(pl), insert(tail(pl), index - 1, v))
 
 
 def remove_all(pl, v):
@@ -149,7 +149,7 @@ def remove_all(pl, v):
     if api.n_equal(v, head(pl)):
         l = remove_all(tail(pl), v)
         return l
-    l = W_List(head(pl), remove_all(tail(pl), v))
+    l = W_PList(head(pl), remove_all(tail(pl), v))
     return l
 
 
@@ -161,7 +161,7 @@ def remove(pl, v):
     if api.n_equal(v, head(pl)):
         return tail(pl)
 
-    return W_List(head(pl), remove(tail(pl), v))
+    return W_PList(head(pl), remove(tail(pl), v))
 
 
 def contains(pl, v):

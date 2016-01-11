@@ -221,8 +221,8 @@ def isvector(value):
 
 
 def islist(value):
-    from obin.objects.types.plist import W_List
-    return isinstance(value, W_List)
+    from obin.objects.types.plist import W_PList
+    return isinstance(value, W_PList)
 
 
 def istrait(w):
