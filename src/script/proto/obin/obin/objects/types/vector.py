@@ -141,16 +141,6 @@ class W_Vector(W_Cell):
     def pop(self):
         return self._items.pop()
 
-    def fold_slice_into_itself(self, index):
-        assert index >= 0
-        if index == 0:
-            rest = self._clone_()
-            self._items = [rest]
-        else:
-            rest = W_Vector(self._items[index:])
-            self._items = self._items[0:index]
-            self._items.append(rest)
-
     def append_value_multiple_times(self, val, times):
         assert times > 0
         self._items = self._items + [val] * times

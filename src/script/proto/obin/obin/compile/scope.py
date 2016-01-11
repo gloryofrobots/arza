@@ -112,6 +112,3 @@ class FinalScope:
     def create_env_bindings(self):
         return api.clone(self.variables)
 
-    def create_environment_map(self, arguments):
-        from obin.objects.types.map import create_map_with_values_from_map
-        return create_map_with_values_from_map(arguments, self.variables)

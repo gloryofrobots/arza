@@ -320,15 +320,3 @@ def create_empty_map():
     from obin.objects.space import newvector
     return _create_map(newvector([]), Bindings(), 0)
 
-
-def create_map_with_values_from_map(values, source):
-    l = api.n_length(source)
-    size = api.n_length(values)
-    diff = l - size
-    assert diff >= 0
-    if diff > 0:
-        values.append_value_multiple_times(None, diff)
-
-    bindings = source.slot_bindings.copy()
-    return _create_map(values, bindings, source.index)
-
