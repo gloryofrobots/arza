@@ -1,13 +1,16 @@
 from obin.compile.parse.tokens import token_type_to_str
+from obin.objects.types.root import W_Root
 
-
-class BaseNode:
+class BaseNode(W_Root):
     pass
 
 
 class EmptyNode(BaseNode):
     def to_json_value(self):
         return "EmptyNode"
+
+    def _equal_(self, other):
+        return self.__eq__(other)
 
     def __eq__(self, other):
         if not isinstance(other, EmptyNode):
@@ -32,7 +35,9 @@ class Node(BaseNode):
         self.arity = arity
 
     def setchild(self, index, value):
-        assert isinstance(value, BaseNode)
+        if not isinstance(value, BaseNode):
+            print type(value)
+        assert isinstance(value, BaseNode), value
         self.children[index] = value
 
     def getchild(self, index):
@@ -77,12 +82,15 @@ class Node(BaseNode):
 
         return d
 
-    def __repr__(self):
+    def _tostring_(self):
         import json
 
         d = self.to_json_value()
         return json.dumps(d, sort_keys=True,
                           indent=2, separators=(',', ': '))
+
+    def _equal_(self, other):
+        return self.__eq__(other)
 
     def __eq__(self, other):
         if not isinstance(other, Node):
@@ -107,13 +115,16 @@ class NodeList(BaseNode):
         assert isinstance(items, list)
         self.items = items
 
+    def _equal_(self, other):
+        return self.__eq__(other)
+
     def __eq__(self, other):
         if not isinstance(other, NodeList):
             return False
         if self.length() != other.length():
             return False
 
-        for item1, item2 in zip(self.items.other.items):
+        for item1, item2 in zip(self.items, other.items):
             if item1 != item2:
                 return False
         return True
@@ -133,7 +144,7 @@ class NodeList(BaseNode):
     def to_json_value(self):
         return [child.to_json_value() for child in self.items]
 
-    def __repr__(self):
+    def _tostring_(self):
         import json
         d = self.to_json_value()
         return json.dumps(d, sort_keys=True,

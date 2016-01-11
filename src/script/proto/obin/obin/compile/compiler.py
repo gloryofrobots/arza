@@ -548,9 +548,9 @@ def _group_branches(process, branches):
 PATTERN_DATA = """
 
     match (a,b):
-
-        case (Z, B): 12 + Z end
-        case (Z, A):  Z + Y + A   end
+        case (A, B, C): 12 + Z end
+        case (D, E):  Z + Y + A   end
+        case F : 2 end
         //case (1, x): 1 + 1 end
         //case (1, false): 2 end
         //case (34.05, 42, y): 3 end
@@ -562,7 +562,7 @@ PATTERN_DATA = """
 
 
 def _undefine_variables(basenode, body, variables):
-    if variables is None or len(variables) == 0:
+    if variables is None or plist.isempty(variables):
         return body
 
     undefs = []
@@ -587,23 +587,23 @@ def _prepend_to_body(statements, body):
 
 
 def _transform_pattern(process, compiler, node, methods, variables, tree):
-    from copy import copy
     nodes = []
 
-    init_vars = copy(variables)
-    vars = copy(init_vars)
+    vars = variables
 
-    initial_vars_count = len(vars)
     for branch in tree:
+        undefs = plist.substract(vars, variables)
 
         condition = None
         body = None
+        new_vars = None
         head = branch[0]
         tail = branch[1]
 
         if tail is None:
             assert isinstance(head, int)
-            return methods[head]
+            assert len(tree) == 1
+            return methods[head], variables
 
         type = head[0]
 
@@ -616,7 +616,7 @@ def _transform_pattern(process, compiler, node, methods, variables, tree):
                                                           condition_node),
                                         _create_true_node(condition_node))
 
-            body = _transform_pattern(process, compiler, condition_node, methods, vars, tail)
+            body, new_vars = _transform_pattern(process, compiler, condition_node, methods, variables, tail)
         elif type == "length":
             condition_node = head[1]
             count = head[2]
@@ -626,52 +626,39 @@ def _transform_pattern(process, compiler, node, methods, variables, tree):
                                                           condition_node),
                                         _create_int_node(condition_node, str(count)))
 
-            body = _transform_pattern(process, compiler, condition_node, methods, vars, tail)
+            body, new_vars = _transform_pattern(process, compiler, condition_node, methods, variables, tail)
         elif type == "equal":
             left = head[1]
             right = head[2]
             condition = _create_eq_node(left, left, right)
-            body = _transform_pattern(process, compiler, left, methods, vars, tail)
+            body = _transform_pattern(process, compiler, left, methods, variables, tail)
         elif type == "assign":
             left = head[1]
             right = head[2]
 
-            vars.append(left)
-
             condition = _create_true_node(left)
-            body = _prepend_1_to_body(_create_assign_node(left, left, right),
-                                      _transform_pattern(process, compiler, left, methods, vars, tail))
+            body, new_vars = _transform_pattern(process, compiler, left, methods,
+                                                         plist.prepend(left, variables), tail)
+            body = _prepend_1_to_body(_create_assign_node(left, left, right), body)
 
         elif type == "wildcard":
             condition = _create_true_node(node)
-            body = _transform_pattern(process, compiler, node, methods, vars, tail)
+            body, new_vars = _transform_pattern(process, compiler, node, methods, variables, tail)
         else:
             assert False, (head, tail)
 
-        vars_length = len(vars)
-        assert vars_length >= initial_vars_count
-        # New variables has been added in recursive transformation,
-        #  so we need to undefine it in the next branch
-        if vars_length > initial_vars_count:
-            new_vars = vars[initial_vars_count:]
-            undefs = []
-            for var in new_vars:
-                if var not in variables:
-                    variables.append(var)
-                    undefs.append(var)
-
-            vars = copy(init_vars)
-        elif vars_length == initial_vars_count:
-            undefs = None
-        else:
-            assert False, "Delete our vars, Should not reach here"
         assert condition is not None
         assert body is not None
-        body = _undefine_variables(node, body, undefs)
+        if not plist.isempty(undefs):
+            body = _undefine_variables(node, body, undefs)
+            vars = variables
+
         nodes.append(list_node([condition, body]))
+        if new_vars is not None:
+            vars = new_vars
 
     ifs = [_create_if_node(node, [success_branch, empty_node()]) for success_branch in nodes]
-    return list_node(ifs)
+    return list_node(ifs), vars
 
 
 def _compile_match_patterns(process, compiler, code, node, patterns):
@@ -700,7 +687,7 @@ def _compile_match_patterns(process, compiler, code, node, patterns):
 
     tree = _group_branches(process, branches)
     # print tree
-    transformed_node = _transform_pattern(process, compiler, node, bodies, [], tree)
+    transformed_node, vars = _transform_pattern(process, compiler, node, bodies, plist.empty(), tree)
     _compile(process, compiler, code, transformed_node)
     code.emit_1(LABEL, endmatch)
 
