@@ -1,5 +1,7 @@
 from obin.compile.parse.tokens import token_type_to_str
+from obin.compile.parse import token_type as tt
 from obin.objects.types.root import W_Root
+
 
 class BaseNode(W_Root):
     pass
@@ -186,3 +188,66 @@ def list_node(items):
 
 def is_list_node(node):
     return isinstance(node, NodeList)
+
+
+def create_call_node(basenode, func, exp):
+    node = Node(tt.TT_LPAREN, "(", basenode.position, basenode.line)
+    node.init(2)
+    node.setfirst(func)
+    node.setsecond(list_node([exp]))
+    return node
+
+
+def create_if_node(basenode, branches):
+    node = Node(tt.TT_IF, "(", basenode.position, basenode.line)
+    node.init(1)
+    node.setfirst(list_node(branches))
+    return node
+
+
+def create_eq_node(basenode, left, right):
+    node = Node(tt.TT_EQ, "==", basenode.position, basenode.line)
+    node.init(2)
+    node.setfirst(left)
+    node.setsecond(right)
+    return node
+
+
+def create_assign_node(basenode, var, exp):
+    node = Node(tt.TT_ASSIGN, "=", basenode.position, basenode.line)
+    node.init(2)
+    node.setfirst(var)
+    node.setsecond(exp)
+    return node
+
+
+def create_name_node(basenode, name):
+    node = Node(tt.TT_NAME, name, basenode.position, basenode.line)
+    return node
+
+
+def create_int_node(basenode, strval):
+    node = Node(tt.TT_INT, strval, basenode.position, basenode.line)
+    return node
+
+
+def create_lookup_node(basenode, left, right):
+    node = Node(tt.TT_LSQUARE, "[", basenode.position, basenode.line)
+    node.init(2)
+    node.setfirst(left)
+    node.setsecond(right)
+    return node
+
+
+def create_true_node(basenode):
+    node = Node(tt.TT_TRUE, "true", basenode.position, basenode.line)
+    return node
+
+
+def create_undefined_node(basenode):
+    node = Node(tt.TT_UNDEFINED, "undefined", basenode.position, basenode.line)
+    return node
+
+
+def create_goto_node(label):
+    return Node(tt.TT_GOTO, label, -1, -1)
