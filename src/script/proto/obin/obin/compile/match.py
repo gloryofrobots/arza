@@ -66,12 +66,7 @@ def _group_branches(process, branches):
 
         result.append((leaf[0], merged))
 
-        # print "*******************************"
-        # print leaf[0]
-        # print leaf[1]
-
     return result
-
 
 def _create_variable_undefs(basenode, variables):
     undefs = [create_assign_node(basenode, var, create_undefined_node(basenode)) for var in variables]
@@ -85,6 +80,7 @@ def _prepend_to_body(statements, body):
     else:
         return list_node(statements + [body])
 
+###################################################################33
 
 def _history_get(history, exp):
     from obin.compile import MATCH_SYS_VAR
@@ -109,6 +105,8 @@ def _get_history_condition(history, condition):
 
     return new_condition, assign
 
+
+###########################################################################
 
 def transform_body(func, methods, history, node, head, tail, variables):
     next_node, condition, prefixes, new_vars = func(history, head, variables)
@@ -202,7 +200,6 @@ def _transform_pattern(node, methods, history, variables, tree):
             assert len(tree) == 1
             return methods[head], variables
 
-        # init loop state
         type = head[0]
 
         undefs = plist.substract(vars, variables)
@@ -210,7 +207,6 @@ def _transform_pattern(node, methods, history, variables, tree):
         condition, body, prefixes, vars = \
             transform_body(transformer, methods, history, node, head, tail, variables)
 
-        # assert condition is not None
         assert body is not None
         assert prefixes is not None
 
