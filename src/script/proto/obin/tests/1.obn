@@ -2,9 +2,11 @@
 
 
 
-T = match (1, 23):
-        case (Z, 1): 12 + Z end
-        case (1, 23):  11   end
+T = match (1, (23, (24, 25))):
+        case (Z, (G, 1)): 12 + Z end
+        case (1, 23):  11  end
+        case (1, (23, X)):  11  end
+
         //case (1, false): 2 end
         //case (34.05, 42, y): 3 end
         //case (34.05, 42, (w,z)): 4 end
@@ -12,7 +14,7 @@ T = match (1, 23):
         case _: nil end
 end
 
-print("Match result", T, Z)
+print("Match result", T, X)
 
 //print(Z, X)
 

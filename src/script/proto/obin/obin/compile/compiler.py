@@ -578,23 +578,22 @@ def _prepend_to_body(statements, body):
 def _history_get(history, exp):
     for record in history:
         if api.n_equal(record[0], exp):
-            return record[1], None
+            return record[1], []
 
     name = "@_%d" % len(history)
     name_node = _create_name_node(exp, name)
     assign = _create_assign_node(exp, name_node, exp)
     history.append((exp, name_node))
-    return name_node, assign
+    return name_node, [assign]
 
 def _get_history_condition(history, condition):
     var_name, assign = _history_get(history, condition)
-    if assign is not None:
-        return _create_true_node(condition), [assign]
 
     new_condition = _create_eq_node(condition,
                                 var_name,
                                 _create_true_node(condition))
-    return new_condition, []
+
+    return new_condition, assign
 
 def _transform_pattern(process, compiler, node, methods, history, variables, tree):
     assert isinstance(history, list)
@@ -654,20 +653,21 @@ def _transform_pattern(process, compiler, node, methods, history, variables, tre
             left = head[1]
             right = head[2]
 
-            condition = _create_true_node(left)
-
+            condition = None
+            # condition = _create_true_node(left)
             body, vars = _transform_pattern(process, compiler, left, methods,
                                             history, plist.prepend(left, variables), tail)
             prefixes = [_create_assign_node(left, left, right)]
 
         elif type == "wildcard":
-            condition = _create_true_node(node)
+            condition = None
+            # condition = _create_true_node(node)
             prefixes = []
             body, vars = _transform_pattern(process, compiler, node, methods, history, variables, tail)
         else:
             assert False, (head, tail)
 
-        assert condition is not None
+        # assert condition is not None
         assert body is not None
         assert prefixes is not None
 
@@ -675,13 +675,26 @@ def _transform_pattern(process, compiler, node, methods, history, variables, tre
             undef_nodes = _create_variable_undefs(node, undefs)
             prefixes = prefixes + undef_nodes
 
-        if len(prefixes) != 0:
-            body = _prepend_to_body(prefixes, body)
+        # if len(prefixes) != 0:
+        #     body = _prepend_to_body(prefixes, body)
 
-        nodes.append(list_node([condition, body]))
+        nodes.append((condition, body, prefixes))
+        # nodes.append(list_node([condition, body]))
 
-    ifs = [_create_if_node(node, [success_branch, empty_node()]) for success_branch in nodes]
-    return list_node(ifs), vars
+    result = []
+    for condition, body, prefixes in nodes:
+        if condition is None:
+            result.append(_prepend_to_body(prefixes, body))
+        else:
+            if_node = _create_if_node(node,
+                                      [list_node([condition, body]),
+                                       empty_node()])
+
+            result.append(_prepend_to_body(prefixes, list_node([if_node])))
+
+    return list_node(result), vars
+    # ifs = [_create_if_node(node, [success_branch, empty_node()]) for success_branch in nodes]
+    # return list_node(ifs), vars
 
 
 def _compile_match_patterns(process, compiler, code, node, patterns):
@@ -714,8 +727,8 @@ def _compile_match_patterns(process, compiler, code, node, patterns):
     _compile(process, compiler, code, transformed_node)
     code.emit_1(LABEL, endmatch)
 
-    print transformed_node
-    raise SystemExit()
+    # print transformed_node
+    # raise SystemExit()
 
 
 def _compile_MATCH(process, compiler, code, node):
@@ -1437,12 +1450,12 @@ def _compile_nodes(process, compiler, bytecode, ast):
 
     if len(nodes) > 1:
         for node in nodes[:-1]:
-            _compile_node(process, compiler, bytecode, node)
+            _compile(process, compiler, bytecode, node)
             bytecode.emit_0(POP)
 
     if len(nodes) > 0:
         node = nodes[-1]
-        _compile_node(process, compiler, bytecode, node)
+        _compile(process, compiler, bytecode, node)
 
 
 def _compile_node(process, compiler, code, node):
