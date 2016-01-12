@@ -22,7 +22,7 @@ def parse_error_simple(parser, message):
 def parse_error(parser, message, node):
     assert isinstance(message, str)
     error_message = "Parse Error %d:%d %s" % (parser.token.line, parser.token.pos, message)
-    return _parse_error(error_message, (node, ))
+    return _parse_error(error_message, (node,))
 
 
 class Handler:
@@ -125,19 +125,15 @@ def set_led(parser, ttype, lbp, fn):
     h.led = fn
 
 
-def set_lbp(parser, ttype, _lbp):
-    h = handler(parser, ttype)
-    h.lbp = _lbp
-
-
 def check_token_type(parser, type):
     if parser.token_type != type:
-        parse_error_simple(parser, "Wrong token type %s %s" % (token_type_to_str(type), parser.token) )
+        parse_error_simple(parser, "Wrong token type %s %s" % (token_type_to_str(type), parser.token))
 
 
 def check_token_types(parser, types):
     if parser.token_type not in types:
-        parse_error_simple(parser, "Wrong token type %s %s" % (str([token_type_to_str(type) for type in types]), parser.token))
+        parse_error_simple(parser,
+                           "Wrong token type %s %s" % (str([token_type_to_str(type) for type in types]), parser.token))
 
 
 def advance(parser):
@@ -155,6 +151,7 @@ def advance_expected(parser, ttype):
 
     return parser.next()
 
+
 def advance_expected_one_of(parser, ttypes):
     check_token_types(parser, ttypes)
 
@@ -162,6 +159,7 @@ def advance_expected_one_of(parser, ttypes):
         return None
 
     return parser.next()
+
 
 def endofexpression(parser):
     if parser.isend():
@@ -237,7 +235,7 @@ def statements(parser, endlist=None):
     length = len(stmts)
     if length == 0:
         return empty_node()
-    #TODO REMOVE IT
+    # TODO REMOVE IT
     elif length == 1:
         return stmts[0]
 
@@ -248,88 +246,25 @@ def itself(parser, node):
     return node
 
 
-def nud_constant(parser, node):
-    h = node_handler(parser, node)
-    node.value = h.value
-    node.init(0)
-    return node
 
 
-def constant(parser, ttype, value):
-    h = handler(parser, ttype)
-    h.value = value
-    set_nud(parser, ttype, nud_constant)
+def infix(parser, ttype, lbp, led):
+    set_led(parser, ttype,  lbp, led)
 
 
-def led_infix(parser, node, left):
-    h = node_handler(parser, node)
-    node.init(2)
-    node.setfirst(left)
-    exp = None
-    while exp is None:
-        exp = expression(parser, h.lbp)
-
-    node.setsecond(exp)
-    return node
 
 
-def infix(parser, ttype, lbp, led=led_infix):
+def infixr(parser, ttype, lbp, led):
     set_led(parser, ttype, lbp, led)
 
 
-def led_infixr(parser, node, left):
-    h = node_handler(parser, node)
-    node.init(2)
-
-    node.setfirst(left)
-    exp = expression(parser, h.lbp - 1)
-    node.setsecond(exp)
-
-    return node
 
 
-def infixr(parser, ttype, lbp, led=led_infixr):
-    set_led(parser, ttype, lbp, led)
-
-
-def led_infixr_assign(parser, node, left):
-    node.init(2)
-    ltype = left.type
-    # NOT TUPLE ASSIGNMENT
-    if ltype != TT_DOT and ltype != TT_LSQUARE \
-            and ltype != TT_NAME and ltype != TT_COMMA\
-            and ltype != TT_LCURLY and ltype != TT_LPAREN:
-            parse_error(parser, "Bad lvalue in assignment", left)
-
-    if ltype == TT_LPAREN and left.arity != 1:
-        parse_error(parser, "Bad lvalue in assignment, wrong tuple destructuring", left)
-
-    if ltype == TT_LCURLY and left.arity == 0:
-        parse_error(parser, "Bad lvalue in assignment, empty map", left)
-
-    node.setfirst(left)
-    exp = expression(parser, 9)
-    node.setsecond(exp)
-
-    return node
-
-
-def assignment(parser, ttype):
-    infixr(parser, ttype, 10, led_infixr_assign)
-
-
-def prefix_nud(parser, node):
-    node.init(1)
-    exp = expression(parser, 70)
-    node.setfirst(exp)
-    return node
-
-
-def prefix(parser, ttype, nud=prefix_nud):
+def prefix(parser, ttype, nud):
     set_nud(parser, ttype, nud)
 
 
-def stmt(parser, ttype, std):
+def stmt(parser, ttype,  std):
     set_std(parser, ttype, std)
 
 
@@ -337,12 +272,10 @@ def literal(parser, ttype):
     set_nud(parser, ttype, itself)
 
 
-def symbol(parser, ttype, nud=None):
+def symbol(parser, ttype, nud):
     h = handler(parser, ttype)
     h.lbp = 0
-    if not nud:
-        return
-    set_nud(parser, ttype, nud)
+    set_nud(parser, ttype,  nud)
 
 
 def skip(parser, ttype):
@@ -353,8 +286,7 @@ def skip(parser, ttype):
 def empty(parser, node):
     return None
 
-def nud_wildcard(parser, node):
-    parse_error(parser, "Invalid use of _ pattern", node)
+
 
 def is_assignment_node(node):
     token_type = node.type

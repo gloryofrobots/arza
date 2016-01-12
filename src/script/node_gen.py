@@ -7,8 +7,9 @@ NODES = [
   "NT_FLOAT",
   "NT_STR",
   "NT_CHAR",
-
+  "NT_WILDCARD",
   "NT_NAME",
+  "NT_SPECIAL_NAME",
 
   "NT_FUNC",
 
@@ -66,7 +67,6 @@ NODES = [
   "NT_ADD",
   "NT_MUL",
   "NT_DIV",
-  "NT_BACKTICK",
   "NT_MOD",
   "NT_LT",
   "NT_GT",

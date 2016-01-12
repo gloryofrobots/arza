@@ -28,8 +28,12 @@ class Node(BaseNode):
         self.line = line
         self.children = None
         self.arity = 0
+        self.node_type = None
 
-    def init(self, arity):
+    def init(self, node_type, arity):
+        assert node_type is not None
+        self.node_type = node_type
+
         if not arity:
             return
 

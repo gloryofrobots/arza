@@ -1,8 +1,63 @@
-import obin.compile.rlexer as lexer
-from obin.compile.parse.token_type import *
-from obin.compile.parse.node import Node, is_empty_node, empty_node, list_node
-from obin.compile.parse.tokenstream import TokenStream
+from obin.compile.parse.node import is_empty_node, empty_node, list_node
 from obin.compile.parse.basic import *
+
+
+def led_infix(parser, node, left):
+    h = node_handler(parser, node)
+    node.init(h.node_type, 2)
+    node.setfirst(left)
+    exp = None
+    while exp is None:
+        exp = expression(parser, h.lbp)
+
+    node.setsecond(exp)
+    return node
+
+
+def led_infixr(parser, node, left):
+    h = node_handler(parser, node)
+    node.init(h.node_type, 2)
+
+    node.setfirst(left)
+    exp = expression(parser, h.lbp - 1)
+    node.setsecond(exp)
+
+    return node
+
+
+def led_infixr_assign(parser, node, left):
+    h = node_handler(parser, node)
+    node.init(h.node_type, 2)
+    ltype = left.type
+    # NOT TUPLE ASSIGNMENT
+    if ltype != TT_DOT and ltype != TT_LSQUARE \
+            and ltype != TT_NAME and ltype != TT_COMMA \
+            and ltype != TT_LCURLY and ltype != TT_LPAREN:
+        parse_error(parser, "Bad lvalue in assignment", left)
+
+    if ltype == TT_LPAREN and left.arity != 1:
+        parse_error(parser, "Bad lvalue in assignment, wrong tuple destructuring", left)
+
+    if ltype == TT_LCURLY and left.arity == 0:
+        parse_error(parser, "Bad lvalue in assignment, empty map", left)
+
+    node.setfirst(left)
+    exp = expression(parser, 9)
+    node.setsecond(exp)
+
+    return node
+
+
+def prefix_nud(parser, node):
+    h = node_handler(parser, node)
+    node.init(h.node_type, 1)
+    exp = expression(parser, 70)
+    node.setfirst(exp)
+    return node
+
+
+def nud_wildcard(parser, node):
+    parse_error(parser, "Invalid use of _ pattern", node)
 
 
 def infix_when(parser, node, left):
