@@ -41,11 +41,14 @@ NODES = [
   "NT_TUPLE",
   "NT_LOOKUP",
   "NT_LOOKUP_SYMBOL",
+  "NT_SLICE",
+  "NT_RANGE",
 
   "NT_CONS",
-  "NT_OF",
 
+  "NT_OF",
   "NT_AS",
+
   "NT_IN",
   "NT_IS",
   "NT_ISNOT",

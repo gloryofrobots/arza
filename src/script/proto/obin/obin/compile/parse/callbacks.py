@@ -67,6 +67,7 @@ NODE_TYPE_MAPPING = {
     TT_BITXOR_ASSIGN: NT_BITXOR_ASSIGN,
     TT_BITOR_ASSIGN: NT_BITOR_ASSIGN,
     TT_DOUBLE_COLON: NT_CONS,
+    TT_DOUBLE_DOT: NT_RANGE,
 }
 
 
@@ -179,9 +180,36 @@ def infix_dot(parser, node, left):
 
 
 def infix_lsquare(parser, node, left):
-    node.init(NT_LOOKUP, 2)
-    node.setfirst(left)
-    node.setsecond(expression(parser, 0))
+    if parser.token_type == TT_DOUBLE_DOT:
+        start = empty_node()
+        advance(parser)
+        if parser.token_type == TT_RSQUARE:
+            end = empty_node()
+        else:
+            end = expression(parser, 0)
+
+        node.init(NT_SLICE, 3)
+        node.setfirst(left)
+        node.setsecond(start)
+        node.setthird(end)
+    else:
+        exp = expression(parser, 0)
+        if parser.token_type == TT_DOUBLE_DOT:
+            advance(parser)
+            if parser.token_type == TT_RSQUARE:
+                end = empty_node()
+            else:
+                end = expression(parser, 0)
+
+            node.init(NT_SLICE, 3)
+            node.setfirst(left)
+            node.setsecond(exp)
+            node.setthird(end)
+        else:
+            node.init(NT_LOOKUP, 2)
+            node.setfirst(left)
+            node.setsecond(exp)
+
     advance_expected(parser, TT_RSQUARE)
     return node
 
@@ -599,4 +627,3 @@ def prefix_import(parser, node):
     node.setfirst(imported)
 
     return node
-

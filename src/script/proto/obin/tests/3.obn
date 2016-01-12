@@ -1,3 +1,104 @@
+func test_eq(str, val, expected):
+    print("test:","'" + str + "'", val, val == expected)
+    if val != expected:
+        throw "Test error"
+    end
+end
+
+
+x = 1
+test_eq("x = 1", x, 1)
+
+x = "Hello"
+test_eq("x = 'Hello'", x, "Hello")
+
+x = 42.234433444
+test_eq("x = 42.234433444", x, 42.234433444)
+
+x = (1, "Hello", 35.44555)
+print(x)
+print(x[1])
+
+x = (42,)
+print(x)
+
+x = (1,2, ["Alice", "Bob", (45,), 54.000000001])
+print(x)
+
+x = {name= "XXX"}
+print(x.name)
+
+print((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"})
+
+x = true
+print(x)
+
+x = false
+print(x)
+x = nil
+print(x)
+
+x = { name="X", age=42.24 }
+print(x)
+
+x = 1
+y = 0
+print("x = ", x, "y = ", y)
+
+print("x or y", x or y)
+
+print("x and y", x and y)
+print("not y", not y)
+print("~ y", ~ y)
+print("~ y", ~ y)
+
+
+print("x | y", x | y)
+print("x & y", x & y)
+print("x ^ y", x ^ y)
+
+//print("x += 0.5", x += 0.5)
+//print("x -= 1", x -= 1)
+//print("x *= 2", x *= 2)
+//print("x /= 3", x /= 3)
+//print("x %= 4", x %= 4)
+//print("x &= 5", x &= 5)
+//print("x ^=6", x ^=6)
+//print("x |= 7", x |= 7)
+
+print("true when 5 > 4 else false", true when 5 > 4 else false)
+print("x is y", x is y)
+print("x isnot y", x isnot y)
+print("5 > 5", 5 > 5)
+print("5 >= 3", 5 >= 3)
+print("5 < 4", 5 < 4)
+print("5 <= 3", 5 <= 3)
+print("x != 6", x != 6)
+print("x == y", x == y)
+//print("x >> 43", x >> 43)
+//print("x << 10001", x << 10001)
+//print("x >>> 1001001001", x >>> 1001001001)
+print("x + 34", x + 34)
+print("x - 34", x - 34)
+print("x * 34", x * 34)
+print("x / 45", x / 45)
+print("x % 32", x % 32)
+
+
+x = `+`(1,2)
+print(x)
+x = `+`(1.0,2.0)
+print(x)
+x = `+`(1,2.0)
+print(x)
+
+A = [1,2,3,4,5,6]
+print(length(A))
+
+A = [0, 1, 2, x]
+print(x,"in",A, x in A)
+
+x = 2
 generic _and_:
     case (t of True, f of True):
         true
@@ -129,9 +230,6 @@ else:
 end
 
 
-
-
-
 T = match (1, (23, (24, 25))):
         case (Z, (G, 1)): 12 + Z end
         case (1, 23):  11  end
@@ -140,7 +238,93 @@ T = match (1, (23, (24, 25))):
 end
 
 
+A = (1,2,3,4,5,6)
+for x in A:
+    print(x) end
+
+x = 10
+while x > 0:
+    x-=1
+    print(x) end
+
 print("Match result", T, X)
+
+A = (1, 2, 3, 4, 5, 6, 35, 110, 122)
+for a in A:
+    if(a == 35):
+       continue
+    end
+
+    if(a > 115):
+        if(1 < 2):
+            break;
+        end
+    end
+    print(a)
+end
+
+x = 20
+while x > 0:
+    x -= 5
+    if x == 10:
+        print("SKIP", x)
+        continue
+    end
+    print("X", x)
+end
+
+func inner_loop_outer():
+    x = 0
+    func f():
+        outer x
+        while x < 100:
+            x += 1
+            if x == 8:
+                continue
+            elif x == 11:
+                break
+            end
+            print(x)
+        end
+    end
+    f()
+end
+
+print ("**************************************************************************")
+
+
+metadata = {
+    title= "Nemesis Games",
+    subject= "SCIFI",
+    translationsUa={title="IGRU DOLI", translator="PILIP LUN" },
+    translationsEn={ titleEn=("GAMES OF NEMESIS", "NEMESIS GAMES"), translatorEn="Jhon DOU" },
+    author= ("James", "Corey")
+}
+
+
+print(metadata.title, metadata.subject, metadata.translationsUa["title"], metadata.translationsUa.translator,
+      metadata.translationsEn.titleEn,  metadata.translationsEn.translatorEn, metadata.author)
+
+print ("**************************************************************************")
+
+{
+    title=englishTitle,
+    subject,
+    translationsUa={ title=localeTitle, translator },
+    translationsEn={ titleEn=(localeTitleEn, origTitleEn), translatorEn },
+    author=author_data
+} = metadata;
+
+print(englishTitle, subject, localeTitle,translator,(localeTitleEn, origTitleEn), translatorEn, author_data )
+
+print ("**************************************************************************")
 
 //print(Z, X)
 
+
+
+//match A:
+//    case [a, b, ...rest] -> (a, b, rest) end
+//    case [a, ...rest] -> (a, rest) end
+//end
+//

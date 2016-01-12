@@ -522,7 +522,6 @@ def _compile_destruct_recur_seq_rest(process, compiler, bytecode, last_item, las
     varname = last_item.first()
     _emit_integer(process, compiler, bytecode, last_index)
     bytecode.emit_0(UNDEFINED)
-    bytecode.emit_0(UNDEFINED)
     bytecode.emit_0(SLICE)
     _emit_store_name(process, compiler, bytecode, varname)
     bytecode.emit_0(POP)

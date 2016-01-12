@@ -134,6 +134,7 @@ def main_parser_init(parser):
     symbol(parser, TT_ELSE, None)
     symbol(parser, TT_SEMI, empty)
     symbol(parser, TT_WILDCARD, nud_wildcard)
+    symbol(parser, TT_DOUBLE_DOT, None)
 
     # precedence 5
     # infix(parser, TT_COMMA, 5)
@@ -235,6 +236,12 @@ def main_parser_init(parser):
     infix(parser, TT_DOT, 70, infix_dot)
     infixr(parser, TT_DOUBLE_COLON, 70, led_infixr)
 
+    # """
+    # precedence 75
+    # ..
+    # """
+    # infix(parser, TT_DOUBLE_DOT, 75, led_infix)
+
     """
     precedence 80
     [
@@ -334,12 +341,12 @@ def write_ast(ast):
 
 ast = parse_string(
     """
-    $[0][1]['name'][2]
-
-    //2 name 1 0 $
-
+    A[1..];
+    A[2..3];
+    A[..];
+    A[..4];
+    A[5];
     """
-
 )
 """
 match (a,b):

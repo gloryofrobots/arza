@@ -36,7 +36,7 @@ class W_Vector(W_Cell):
             items.append(v)
         return W_Vector(items)
 
-    def _slice_(self, start, end, step):
+    def _slice_(self, start, end):
         from obin.objects.space import isundefined
         from obin.objects import api
 
@@ -50,12 +50,7 @@ class W_Vector(W_Cell):
         else:
             end_index = api.to_native_integer(end)
 
-        if isundefined(step):
-            step_value = 1
-        else:
-            step_value = api.to_native_integer(step)
-
-        items = self._items[start_index:end_index:step_value]
+        items = self._items[start_index:end_index]
         return W_Vector(items)
 
     def _at_(self, index):

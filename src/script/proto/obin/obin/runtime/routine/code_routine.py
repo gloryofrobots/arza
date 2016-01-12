@@ -195,11 +195,10 @@ class CodeRoutine(BaseRoutine):
                 api.call(process, func, args)
             # *************************************
             elif SLICE == tag:
-                step = stack.pop()
                 end = stack.pop()
                 start = stack.pop()
                 obj = stack.pop()
-                v = api.slice(obj, start, end, step)
+                v = api.slice(obj, start, end)
                 stack.push(v)
             # *************************************
             elif JUMP == tag:

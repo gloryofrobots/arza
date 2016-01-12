@@ -78,7 +78,10 @@ class Node(BaseNode):
         return [child.to_json_value() for child in self.children]
 
     def to_json_value(self):
-        d = {"_type": token_type_to_str(self.type), "_value": self.value, "_line": self.line
+        d = {"_type": token_type_to_str(self.type),
+             "_ntype": nt.node_type_to_str(self.node_type),
+             "_value": self.value,
+             "_line": self.line
              # "arity": self.arity, "pos": self.position
              }
 

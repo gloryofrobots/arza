@@ -53,7 +53,7 @@ class W_Root:
     def _call_(self, process, args):
         raise NotImplementedError()
 
-    def _slice_(self, start, end, step):
+    def _slice_(self, start, end):
         raise NotImplementedError()
 
     def _behavior_(self, process):

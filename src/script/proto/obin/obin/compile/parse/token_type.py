@@ -72,19 +72,20 @@ TT_RPAREN = 69
 TT_LSQUARE = 70
 TT_RSQUARE = 71
 TT_DOT = 72
-TT_BITAND = 73
-TT_BITNOT = 74
-TT_BITOR = 75
-TT_BITXOR = 76
-TT_SUB = 77
-TT_ADD = 78
-TT_MUL = 79
-TT_DIV = 80
-TT_BACKTICK = 81
-TT_MOD = 82
-TT_LT = 83
-TT_GT = 84
-TT_UNKNOWN = 85
+TT_DOUBLE_DOT = 73
+TT_BITAND = 74
+TT_BITNOT = 75
+TT_BITOR = 76
+TT_BITXOR = 77
+TT_SUB = 78
+TT_ADD = 79
+TT_MUL = 80
+TT_DIV = 81
+TT_BACKTICK = 82
+TT_MOD = 83
+TT_LT = 84
+TT_GT = 85
+TT_UNKNOWN = 86
 # ************************ OBIN TOKENS REPR *****************************
 __TT_REPR__ = ["TT_ENDSTREAM", "TT_INT", "TT_FLOAT", "TT_STR", "TT_CHAR", "TT_NAME", "TT_NEWLINE", "TT_BREAK",
                "TT_CASE", "TT_CONTINUE", "TT_ELSE", "TT_FOR", "TT_WHILE", "TT_IF", "TT_WHEN", "TT_ELIF", "TT_OF",
@@ -95,8 +96,8 @@ __TT_REPR__ = ["TT_ENDSTREAM", "TT_INT", "TT_FLOAT", "TT_STR", "TT_CHAR", "TT_NA
                "TT_BITXOR_ASSIGN", "TT_BITOR_ASSIGN", "TT_WILDCARD", "TT_GOTO", "TT_RSHIFT", "TT_URSHIFT", "TT_LSHIFT",
                "TT_ARROW", "TT_FAT_ARROW", "TT_EQ", "TT_LE", "TT_GE", "TT_NE", "TT_SEMI", "TT_COLON", "TT_DOUBLE_COLON",
                "TT_LCURLY", "TT_RCURLY", "TT_COMMA", "TT_ASSIGN", "TT_LPAREN", "TT_RPAREN", "TT_LSQUARE", "TT_RSQUARE",
-               "TT_DOT", "TT_BITAND", "TT_BITNOT", "TT_BITOR", "TT_BITXOR", "TT_SUB", "TT_ADD", "TT_MUL", "TT_DIV",
-               "TT_BACKTICK", "TT_MOD", "TT_LT", "TT_GT", "TT_UNKNOWN", ]
+               "TT_DOT", "TT_DOUBLE_DOT", "TT_BITAND", "TT_BITNOT", "TT_BITOR", "TT_BITXOR", "TT_SUB", "TT_ADD",
+               "TT_MUL", "TT_DIV", "TT_BACKTICK", "TT_MOD", "TT_LT", "TT_GT", "TT_UNKNOWN", ]
 
 
 def token_type_to_str(ttype):

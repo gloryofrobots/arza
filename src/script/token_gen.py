@@ -76,6 +76,7 @@ TOKENS = [
   ("TT_LSQUARE", "["),
   ("TT_RSQUARE", "]"),
   ("TT_DOT", "."),
+  ("TT_DOUBLE_DOT", ".."),
   ("TT_BITAND", "&"),
   ("TT_BITNOT", "~"),
   ("TT_BITOR", "|"),

@@ -66,8 +66,8 @@ class W_Entity(W_Cell):
     def _call_(self, process, args):
         return self.source._call_(process, args)
 
-    def _slice_(self, start, end, step):
-        return self.source._slice_(start, end, step)
+    def _slice_(self, start, end):
+        return self.source._slice_(start, end)
 
     def _behavior_(self, process):
         return self.behavior

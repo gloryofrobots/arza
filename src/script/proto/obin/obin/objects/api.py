@@ -80,13 +80,13 @@ def lookup(obj, k, default):
     return v
 
 
-def slice(obj, start, end, step):
+def slice(obj, start, end):
     from obin.runtime.error import ObinSliceError
     from space import isundefined
-    v = obj._slice_(start, end, step)
+    v = obj._slice_(start, end)
     assert v is not None
     if isundefined(v):
-        raise ObinSliceError(start, end, step)
+        raise ObinSliceError(start, end)
     return v
 
 

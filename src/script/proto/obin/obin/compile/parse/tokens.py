@@ -53,7 +53,7 @@ string_literal = token('(""".*?""")|(".*?")|(\'.*?\')')
 
 # floating constants (K&R2: A.2.5.3)
 exponent_part = """([eE][-+]?[0-9]+)"""
-fractional_constant = """([0-9]*\.[0-9]+)|([0-9]+\.)"""
+fractional_constant = """([0-9]*\.[0-9]+)"""
 floating_constant = token(
     '((((' + fractional_constant + ')' + exponent_part + '?)|([0-9]+' + exponent_part + '))[FfLl]?)')
 binary_exponent_part = '''([pP][+-]?[0-9]+)'''
@@ -137,6 +137,7 @@ RULES = [
     (token('\)'), TT_RPAREN),
     (token('\['), TT_LSQUARE),
     (token('\]'), TT_RSQUARE),
+    (token('\.\.'), TT_DOUBLE_DOT),
     (token('\.'), TT_DOT),
     (token('\&'), TT_BITAND),
     (token('\~'), TT_BITNOT),
