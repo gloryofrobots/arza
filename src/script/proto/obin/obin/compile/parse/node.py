@@ -34,7 +34,7 @@ class Node(BaseNode):
         assert node_type is not None
         self.node_type = node_type
 
-        if not arity:
+        if arity == 0:
             return
 
         self.children = [None] * arity

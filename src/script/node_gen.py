@@ -37,7 +37,7 @@ NODES = [
   "NT_COMMA",
   "NT_ASSIGN",
   "NT_CALL",
-  "NT_CALL_FROM",
+  "NT_CALL_MEMBER",
   "NT_LIST",
   "NT_TUPLE",
   "NT_LPAREN",
@@ -73,6 +73,8 @@ NODES = [
   "NT_RSHIFT",
   "NT_URSHIFT",
   "NT_LSHIFT",
+  "NT_UNARY_PLUS",
+  "NT_UNARY_MINUS",
 
   "NT_ADD_ASSIGN",
   "NT_SUB_ASSIGN",
@@ -83,6 +85,10 @@ NODES = [
   "NT_BITXOR_ASSIGN",
   "NT_BITOR_ASSIGN",
 ]
+
+
+
+
 
 ## FOR PYTHON LEXER
 print "# ************************ OBIN NODES*****************************"
@@ -101,6 +107,9 @@ print
 print "def node_type_to_str(ttype):"
 print "    return __NT_REPR__[ttype]"
 
+# print "# ************************ OBIN NODES MAPPING *****************************"
+# for name in NODES:
+#     print "%s: %s," % (name.replace("NT_", "TT_"), name)
     
 
 # print "# ************************ COMPILE SWITCH*****************************"

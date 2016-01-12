@@ -1,6 +1,5 @@
 __author__ = 'gloryofrobots'
 import obin.compile.rlexer as lexer
-from obin.compile.parse.node_type import *
 from obin.compile.parse.tokenstream import TokenStream
 from obin.compile.parse.callbacks import *
 
@@ -134,22 +133,6 @@ def main_parser_init(parser):
     literal(parser, TT_NIL)
     literal(parser, TT_UNDEFINED)
 
-TT_TO_NT_MAPPING = {
-    TT_NAME: NT_NAME,
-    TT_ELLIPSIS: NT_REST,
-    TT_DOT: NT_LOOKUP_SYMBOL,
-    TT_AS: NT_AS,
-    TT_OF: NT_OF,
-    TT_WILDCARD: NT_WILDCARD,
-    TT_INT: NT_INT,
-    TT_FLOAT: NT_FLOAT,
-    TT_CHAR: NT_CHAR,
-    TT_STR: NT_STR,
-    TT_BACKTICK: NT_SPECIAL_NAME,
-    TT_TRUE: NT_TRUE,
-    TT_FALSE: NT_FALSE,
-    TT_NIL: TT_NIL,
-}
 
     symbol(parser, TT_RSQUARE, None)
     symbol(parser, TT_ENDSTREAM, None)
@@ -170,52 +153,51 @@ TT_TO_NT_MAPPING = {
     precedence 10
     = += -= *= /= %= &= ^= |=
     """
-    infixr(parser, TT_ASSIGN, NT_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_ADD_ASSIGN, NT_ADD_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_SUB_ASSIGN, NT_SUB_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_MUL_ASSIGN, NT_MUL_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_DIV_ASSIGN, NT_DIV_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_MOD_ASSIGN, NT_MOD_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_BITOR_ASSIGN, NT_BITOR_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_BITAND_ASSIGN, NT_BITAND_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_BITXOR_ASSIGN, NT_BITXOR_ASSIGN, 10, led_infixr_assign)
+    infixr(parser, TT_ASSIGN, 10, led_infixr_assign)
+    infixr(parser, TT_ADD_ASSIGN, 10, led_infixr_assign)
+    infixr(parser, TT_SUB_ASSIGN, 10, led_infixr_assign)
+    infixr(parser, TT_MUL_ASSIGN, 10, led_infixr_assign)
+    infixr(parser, TT_DIV_ASSIGN, 10, led_infixr_assign)
+    infixr(parser, TT_MOD_ASSIGN, 10, led_infixr_assign)
+    infixr(parser, TT_BITOR_ASSIGN, 10, led_infixr_assign)
+    infixr(parser, TT_BITAND_ASSIGN, 10, led_infixr_assign)
+    infixr(parser, TT_BITXOR_ASSIGN, 10, led_infixr_assign)
 
     """
     precedence 20
     when
     """
 
-    infix(parser, TT_WHEN, NT_WHEN, 20, infix_when)
+    infix(parser, TT_WHEN, 20, infix_when)
 
     """
     precedence 25
     or
     """
-    infix(parser, TT_OR, NT_OR, 25, led_infix)
+    infix(parser, TT_OR, 25, led_infix)
 
     """
     precedence 30
     AND
     """
-    infix(parser, TT_AND, NT_AND, 30, led_infix)
-
+    infix(parser, TT_AND, 30, led_infix)
     """
     precedence 35
     |
     """
-    infixr(parser, TT_BITOR, NT_BITOR, 35, led_infixr)
+    infixr(parser, TT_BITOR,  35, led_infixr)
 
     """
     precedence 40
     ^
     """
-    infixr(parser, TT_BITXOR, NT_BITXOR, 40, led_infixr)
+    infixr(parser, TT_BITXOR,  40, led_infixr)
 
     """
     precedence 45
     &
     """
-    infixr(parser, TT_BITAND, NT_BITAND, 45, led_infixr)
+    infixr(parser, TT_BITAND, 45, led_infixr)
 
     """
     precedence 50
@@ -223,15 +205,15 @@ TT_TO_NT_MAPPING = {
     """
     # TODO is not and not in
 
-    infix(parser, TT_ISNOT, NT_ISNOT, 50, led_infix)
-    infix(parser, TT_IN, NT_IN, 50, led_infix)
-    infix(parser, TT_IS, NT_IS, 50, led_infix)
-    infix(parser, TT_LT, NT_LT, 50, led_infix)
-    infix(parser, TT_LE, NT_LE, 50, led_infix)
-    infix(parser, TT_GT, NT_GT, 50, led_infix)
-    infix(parser, TT_GE, NT_GE, 50, led_infix)
-    infix(parser, TT_NE, NT_NE, 50, led_infix)
-    infix(parser, TT_EQ, NT_EQ, 50, led_infix)
+    infix(parser, TT_ISNOT, 50, led_infix)
+    infix(parser, TT_IN, 50, led_infix)
+    infix(parser, TT_IS, 50, led_infix)
+    infix(parser, TT_LT, 50, led_infix)
+    infix(parser, TT_LE, 50, led_infix)
+    infix(parser, TT_GT, 50, led_infix)
+    infix(parser, TT_GE, 50, led_infix)
+    infix(parser, TT_NE, 50, led_infix)
+    infix(parser, TT_EQ, 50, led_infix)
 
     """
     precedence 55
@@ -269,22 +251,22 @@ TT_TO_NT_MAPPING = {
     [
     """
 
-    infix(parser, TT_LSQUARE, 80, infix_lsquare, led_infix)
+    infix(parser, TT_LSQUARE, 80, infix_lsquare)
 
     """
     precedence 90
     (
     """
-    infix(parser, TT_LPAREN, 90, infix_lparen, led_infix)
+    infix(parser, TT_LPAREN, 90, infix_lparen)
 
     """
     PREFIXES
     """
 
-    prefix(parser, TT_BITNOT)
-    prefix(parser, TT_NOT)
-    prefix(parser, TT_SUB)
-    prefix(parser, TT_ADD)
+    prefix(parser, TT_BITNOT, prefix_nud)
+    prefix(parser, TT_NOT, prefix_nud)
+    prefix(parser, TT_SUB, prefix_unary_minus)
+    prefix(parser, TT_ADD, prefix_unary_plus)
 
     prefix(parser, TT_IF, prefix_if)
 

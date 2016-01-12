@@ -1,10 +1,82 @@
 from obin.compile.parse.node import is_empty_node, empty_node, list_node
 from obin.compile.parse.basic import *
+from obin.compile.parse.node_type import *
 
+NODE_TYPE_MAPPING = {
+    TT_DOT: NT_LOOKUP_SYMBOL,
+    TT_TRUE: NT_TRUE,
+    TT_FALSE: NT_FALSE,
+    TT_NIL: NT_NIL,
+    TT_UNDEFINED: NT_UNDEFINED,
+    TT_INT: NT_INT,
+    TT_FLOAT: NT_FLOAT,
+    TT_STR: NT_STR,
+    TT_CHAR: NT_CHAR,
+    TT_WILDCARD: NT_WILDCARD,
+    TT_NAME: NT_NAME,
+    TT_BACKTICK: NT_SPECIAL_NAME,
+    TT_FUNC: NT_FUNC,
+    TT_IF: NT_IF,
+    TT_WHEN: NT_WHEN,
+    TT_MATCH: NT_MATCH,
+    TT_ORIGIN: NT_ORIGIN,
+    TT_IMPORT: NT_IMPORT,
+    TT_TRAIT: NT_TRAIT,
+    TT_GENERIC: NT_GENERIC,
+    TT_SPECIFY: NT_SPECIFY,
+    TT_RETURN: NT_RETURN,
+    TT_THROW: NT_THROW,
+    TT_BREAK: NT_BREAK,
+    TT_CONTINUE: NT_CONTINUE,
+    TT_FOR: NT_FOR,
+    TT_WHILE: NT_WHILE,
+    TT_ELLIPSIS: NT_REST,
+    TT_COMMA: NT_COMMA,
+    TT_ASSIGN: NT_ASSIGN,
+    TT_OF: NT_OF,
+    TT_AS: NT_AS,
+    TT_IN: NT_IN,
+    TT_IS: NT_IS,
+    TT_ISNOT: NT_ISNOT,
+    TT_AND: NT_AND,
+    TT_OR: NT_OR,
+    TT_NOT: NT_NOT,
+    TT_EQ: NT_EQ,
+    TT_LE: NT_LE,
+    TT_GE: NT_GE,
+    TT_NE: NT_NE,
+    TT_BITAND: NT_BITAND,
+    TT_BITNOT: NT_BITNOT,
+    TT_BITOR: NT_BITOR,
+    TT_BITXOR: NT_BITXOR,
+    TT_SUB: NT_SUB,
+    TT_ADD: NT_ADD,
+    TT_MUL: NT_MUL,
+    TT_DIV: NT_DIV,
+    TT_MOD: NT_MOD,
+    TT_LT: NT_LT,
+    TT_GT: NT_GT,
+    TT_RSHIFT: NT_RSHIFT,
+    TT_URSHIFT: NT_URSHIFT,
+    TT_LSHIFT: NT_LSHIFT,
+    TT_ADD_ASSIGN: NT_ADD_ASSIGN,
+    TT_SUB_ASSIGN: NT_SUB_ASSIGN,
+    TT_MUL_ASSIGN: NT_MUL_ASSIGN,
+    TT_DIV_ASSIGN: NT_DIV_ASSIGN,
+    TT_MOD_ASSIGN: NT_MOD_ASSIGN,
+    TT_BITAND_ASSIGN: NT_BITAND_ASSIGN,
+    TT_BITXOR_ASSIGN: NT_BITXOR_ASSIGN,
+    TT_BITOR_ASSIGN: NT_BITOR_ASSIGN,
+}
+
+def get_node_type(parser, node):
+    node_type = NODE_TYPE_MAPPING[node.type]
+    return node_type
 
 def led_infix(parser, node, left):
     h = node_handler(parser, node)
-    node.init(h.node_type, 2)
+    node_type = get_node_type(parser, node)
+    node.init(node_type, 2)
     node.setfirst(left)
     exp = None
     while exp is None:
@@ -16,7 +88,8 @@ def led_infix(parser, node, left):
 
 def led_infixr(parser, node, left):
     h = node_handler(parser, node)
-    node.init(h.node_type, 2)
+    node_type = get_node_type(parser, node)
+    node.init(node_type, 2)
 
     node.setfirst(left)
     exp = expression(parser, h.lbp - 1)
@@ -26,8 +99,8 @@ def led_infixr(parser, node, left):
 
 
 def led_infixr_assign(parser, node, left):
-    h = node_handler(parser, node)
-    node.init(h.node_type, 2)
+    node_type = get_node_type(parser, node)
+    node.init(node_type, 2)
     ltype = left.type
     # NOT TUPLE ASSIGNMENT
     if ltype != TT_DOT and ltype != TT_LSQUARE \
@@ -48,12 +121,24 @@ def led_infixr_assign(parser, node, left):
     return node
 
 
-def prefix_nud(parser, node):
-    h = node_handler(parser, node)
-    node.init(h.node_type, 1)
+def _prefix_nud(parser, node_type, node):
+    node.init(node_type, 1)
     exp = expression(parser, 70)
     node.setfirst(exp)
     return node
+
+
+def prefix_nud(parser, node):
+    node_type = get_node_type(parser, node)
+    _prefix_nud(parser, node_type, node)
+
+
+def prefix_unary_minus(parser, node):
+    _prefix_nud(parser, NT_UNARY_MINUS, node)
+
+
+def prefix_unary_plus(parser, node):
+    _prefix_nud(parser, NT_UNARY_PLUS, node)
 
 
 def nud_wildcard(parser, node):
@@ -61,7 +146,7 @@ def nud_wildcard(parser, node):
 
 
 def infix_when(parser, node, left):
-    node.init(3)
+    node.init(NT_WHEN, 3)
     node.setfirst(condition(parser))
     node.setsecond(left)
     advance_expected(parser, TT_ELSE)
@@ -70,7 +155,7 @@ def infix_when(parser, node, left):
 
 
 def infix_dot(parser, node, left):
-    node.init(2)
+    node.init(NT_LOOKUP_SYMBOL, 2)
     node.setfirst(left)
     check_token_type(parser, TT_NAME)
     node.setsecond(parser.node)
@@ -79,7 +164,7 @@ def infix_dot(parser, node, left):
 
 
 def infix_lsquare(parser, node, left):
-    node.init(2)
+    node.init(NT_LOOKUP, 2)
     node.setfirst(left)
     node.setsecond(expression(parser, 0))
     advance_expected(parser, TT_RSQUARE)
@@ -99,27 +184,20 @@ def infix_lparen(parser, node, left):
     advance_expected(parser, TT_RPAREN)
 
     if left.type == TT_DOT:
-        node.init(3)
+        node.init(NT_CALL_MEMBER, 3)
         node.setfirst(left.first())
         node.setsecond(left.second())
         node.setthird(list_node(items))
     else:
-        node.init(2)
+        node.init(NT_CALL, 2)
         node.setfirst(left)
         node.setsecond(list_node(items))
-        """
-        if ((left.arity !== "unary" || left.id !== "function") &&
-            left.arity !== "name" && left.id !== "(" &&
-            left.id !== "&&" && left.id !== "||" && left.id !== "?") {
-            left.error("Expected a variable name.");
-        }
-        """
     return node
 
 
 def prefix_if(parser, node):
     IF_TERMINATION_TOKENS = [TT_ELIF, TT_ELSE, TT_END]
-    node.init(1)
+    node.init(NT_IF, 1)
     branches = list_node([])
 
     cond = condition(parser)
@@ -159,7 +237,7 @@ def prefix_lparen_tuple(parser, node):
         advance_expected(parser, TT_RPAREN)
         return empty_node()
 
-    node.init(1)
+    node.init(NT_TUPLE, 1)
     items = []
     while True:
         items.append(expression(parser, 0))
@@ -183,7 +261,7 @@ def prefix_lparen(parser, node):
         advance_expected(parser, TT_RPAREN)
         return e
 
-    node.init(1)
+    node.init(NT_TUPLE, 1)
     items = [e]
     advance_expected(parser, TT_COMMA)
 
@@ -202,7 +280,7 @@ def prefix_lparen(parser, node):
 
 def prefix_lsquare(parser, node):
     items = []
-    node.init(1)
+    node.init(NT_LIST, 1)
     if parser.token_type != TT_RSQUARE:
         while True:
             items.append(expression(parser, 0))
@@ -218,7 +296,7 @@ def prefix_lsquare(parser, node):
 
 def prefix_lcurly(parser, node):
     items = []
-    node.init(1)
+    node.init(NT_MAP, 1)
     if parser.token_type != TT_RCURLY:
         while True:
             # TODO check it
@@ -283,7 +361,7 @@ def parse_func(parser):
 
 
 def prefix_func(parser, node):
-    node.init(4)
+    node.init(NT_FUNC, 4)
     name, args, outers, body = parse_func(parser)
     node.setfirst(name)
     node.setsecond(args)
@@ -293,7 +371,7 @@ def prefix_func(parser, node):
 
 
 def prefix_match(parser, node):
-    node.init(2)
+    node.init(NT_MATCH, 2)
     exp = expression(parser, 0)
     advance_expected(parser, TT_COLON)
     node.setfirst(exp)
@@ -320,7 +398,8 @@ def prefix_match(parser, node):
 
 
 def stmt_single(parser, node):
-    node.init(1)
+    node_type = get_node_type(parser, node)
+    node.init(node_type, 1)
     if token_is_one_of(parser, [TT_SEMI, TT_END]) or parser.is_newline_occurred:
         node.setfirst(list_node([]))
     else:
@@ -337,11 +416,13 @@ def stmt_loop_flow(parser, node):
     endofexpression(parser)
     if parser.token_type != TT_END:
         parse_error_simple(parser, "Unreachable statement")
+    node_type = get_node_type(parser, node)
+    node.init(node_type, 0)
     return node
 
 
 def stmt_while(parser, node):
-    node.init(2)
+    node.init(NT_WHILE, 2)
     node.setfirst(condition(parser))
     advance_expected(parser, TT_COLON)
     node.setsecond(statements(parser, [TT_END]))
@@ -350,7 +431,7 @@ def stmt_while(parser, node):
 
 
 def stmt_for(parser, node):
-    node.init(3)
+    node.init(NT_FOR, 3)
     variables = []
     # set big lbp to overriding IN binding power
     variables.append(expression(parser, 70))
@@ -372,7 +453,7 @@ def stmt_for(parser, node):
 
 
 def stmt_origin(parser, node):
-    node.init(4)
+    node.init(NT_ORIGIN, 4)
     name, args, outers, body = parse_func(parser)
     if is_empty_node(name):
         parse_error_node(parser, "origin statement must have name", node)
@@ -390,19 +471,19 @@ def stmt_generic(parser, node):
     advance(parser)
 
     if parser.token_type == TT_COLON or parser.token_type == TT_LPAREN:
-        node.init(2)
+        node.init(NT_GENERIC, 2)
         funcs = parse_specify_funcs(parser)
         node.setfirst(name)
         node.setsecond(funcs)
     else:
-        node.init(1)
+        node.init(NT_GENERIC, 1)
         node.setfirst(name)
 
     return node
 
 
 def stmt_trait(parser, node):
-    node.init(1)
+    node.init(NT_TRAIT, 1)
     name = expression(parser, 0)
     if name.type != TT_NAME:
         parse_error_simple(parser, "Wrong trait name")
@@ -457,7 +538,7 @@ def parse_specify_funcs(parser):
 
 
 def stmt_specify(parser, node):
-    node.init(2)
+    node.init(NT_SPECIFY, 2)
 
     if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
         parse_error_simple(parser, "Wrong generic name in specify statement")
@@ -475,7 +556,7 @@ def stmt_specify(parser, node):
 def stmt_import(parser, node):
     # statement can be import x.y.z as c
     imported = expression(parser.module_name_alias_parser, 0)
-    node.init(2)
+    node.init(NT_IMPORT, 2)
     node.setfirst(imported)
     # SET HERE empty node to show compiler it is a statement
     # BAD DESIGN. NEED NODE TYPE
@@ -486,7 +567,7 @@ def stmt_import(parser, node):
 
 def prefix_import(parser, node):
     imported = expression(parser.module_name_parser, 0)
-    node.init(1)
+    node.init(NT_IMPORT, 1)
     node.setfirst(imported)
 
     return node
