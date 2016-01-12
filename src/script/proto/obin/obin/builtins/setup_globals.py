@@ -26,8 +26,6 @@ def setup(process, module, stdlib):
     api.put_native_function(module, u'spawn_fiber', spawn_fiber, 0)
     api.put_native_function(module, u'activate_fiber', activate_fiber, 2)
     api.put_native_function(module, u'range', _range, 2)
-    api.put_native_function(module, u'generic', generic, 1)
-    api.put_native_function(module, u'specify', specify, 3)
     api.put_native_function(module, u'clone', clone, 1)
     api.put_native_function(module, u'trait', trait, 1)
     api.put_native_function(module, u'attach', attach, -1)
@@ -146,21 +144,6 @@ def _range(process, routine):
     end = api.to_native_integer(end)
     items = [space.newint(i) for i in xrange(start, end)]
     return space.newlist(items)
-
-
-@complete_native_routine
-def generic(process, routine):
-    name = routine.get_arg(0)
-    return space.newgeneric(name)
-
-
-@complete_native_routine
-def specify(process, routine):
-    method = routine.get_arg(0)
-    signature = routine.get_arg(1)
-    specification = routine.get_arg(2)
-    method.specify_single(signature, specification)
-    return space.newundefined()
 
 
 @complete_native_routine

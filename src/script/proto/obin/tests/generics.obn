@@ -4,11 +4,11 @@ return t
 trait Animal
 
 origin Human(name, surname):
-    lst({name=name, surname=surname}, Human, Animal)
+    [{name=name, surname=surname}, Human, Animal]
 end
 
 origin Wolf(name):
-    lst({name=name}, Wolf, Animal)
+    [{name=name}, Wolf, Animal]
 end
 
 print(Human)

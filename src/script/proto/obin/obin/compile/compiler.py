@@ -1085,15 +1085,12 @@ def _compile_LSQUARE_lookup(process, compiler, code, node):
 
 def _compile_args_list(process, compiler, code, args):
     args_count = 0
-    if len(args) == 0:
-        code.emit_1(TUPLE, 0)
-        return
 
     for arg in args:
         _compile(process, compiler, code, arg)
         args_count += 1
 
-    code.emit_1(TUPLE, args_count)
+    return args_count
 
 
 def _compile_LPAREN_member(process, compiler, bytecode, node):
@@ -1103,14 +1100,14 @@ def _compile_LPAREN_member(process, compiler, bytecode, node):
     args = node.third()
     # print "_compile_LPAREN_MEMBER", obj, method, args
 
-    _compile_args_list(process, compiler, bytecode, args)
+    args_count = _compile_args_list(process, compiler, bytecode, args)
 
     _compile(process, compiler, bytecode, obj)
     _emit_string(process, compiler, bytecode, name)
     # TODO LITERAL HERE
     # declare_symbol(process, compiler,name)
 
-    bytecode.emit_0(CALL_METHOD)
+    bytecode.emit_1(CALL_METHOD, args_count)
 
 
 def _compile_LPAREN(process, compiler, bytecode, node):
@@ -1124,11 +1121,11 @@ def _compile_LPAREN(process, compiler, bytecode, node):
 
     # print "_compile_LPAREN", func, args
 
-    _compile_args_list(process, compiler, bytecode, args)
+    arg_count = _compile_args_list(process, compiler, bytecode, args)
 
     _compile(process, compiler, bytecode, func)
 
-    bytecode.emit_0(CALL)
+    bytecode.emit_1(CALL, arg_count)
 
 
 ####

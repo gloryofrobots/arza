@@ -1,5 +1,1 @@
-func lst(...args):
-    list(args)
-end
-
 

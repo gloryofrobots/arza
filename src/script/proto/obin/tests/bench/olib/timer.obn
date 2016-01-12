@@ -1,5 +1,5 @@
 origin Timer(start_time):
-    lst([start_time, nil, nil, nil], Timer) end
+    [[start_time, nil, nil, nil], Timer] end
 
 func start():
     Timer(time()) end

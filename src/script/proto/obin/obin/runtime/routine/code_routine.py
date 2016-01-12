@@ -181,19 +181,18 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif CALL == tag:
                 func = stack.pop()
-                argv = stack.pop()
-
-                api.call(process, func, argv)
+                args = stack.pop_n_tuple(arg1)
+                api.call(process, func, args)
             # *************************************
             elif CALL_METHOD == tag:
                 method = stack.pop()
                 what = stack.pop()
-                argv = stack.pop()
 
+                args = stack.pop_n_tuple(arg1)
                 func = api.at(what, method)
                 # argv.prepend(what)
 
-                api.call(process, func, argv)
+                api.call(process, func, args)
             # *************************************
             elif SLICE == tag:
                 step = stack.pop()

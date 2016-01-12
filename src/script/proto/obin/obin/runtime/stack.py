@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
 from rpython.rlib import jit
-from obin.objects.space import newundefined
+from obin.objects.space import newundefined, newtuple
 from obin.objects.types import plist
 # TODO proper stack operations
 
@@ -67,6 +67,20 @@ class Stack:
             result = [e] + result
 
         return result
+
+    @jit.unroll_safe
+    def pop_n_tuple(self, n):
+        if n < 1:
+            return newtuple([])
+
+        result = []
+        i = n
+        while i > 0:
+            i -= 1
+            e = self.pop()
+            result = [e] + result
+
+        return newtuple(result)
 
     @jit.unroll_safe
     def pop_n_list(self, n):
