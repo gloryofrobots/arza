@@ -150,7 +150,6 @@ def main_parser_init(parser):
 
     # precedence 5
     # infix(parser, TT_COMMA, 5)
-    # infix(parser, TT_COLON, 5)
 
     """
     precedence 10
@@ -248,7 +247,7 @@ def main_parser_init(parser):
     """
 
     infix(parser, TT_DOT, 70, infix_dot)
-    # infixr(parser, TT_COLON, 70)
+    infixr(parser, TT_DOUBLE_COLON, 70)
 
     """
     precedence 80

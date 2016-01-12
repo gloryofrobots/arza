@@ -65,6 +65,7 @@ TOKENS = [
   ("TT_NE", "!="),
   ("TT_SEMI", ";"),
   ("TT_COLON", ":"),
+  ("TT_DOUBLE_COLON", "::"),
 
   ("TT_LCURLY", "{"),
   ("TT_RCURLY", "}"),

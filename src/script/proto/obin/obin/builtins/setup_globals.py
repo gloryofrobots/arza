@@ -35,6 +35,8 @@ def setup(process, module, stdlib):
     api.put_native_function(module, u'time', time, 0)
     api.put_native_function(module, u'is_seq', is_seq, 1)
     api.put_native_function(module, u'length', length, 1)
+    api.put_native_function(module, u'first', first, 1)
+    api.put_native_function(module, u'rest', rest, 1)
     ## debugging
     # if not we_are_translated():
     #     api.put_native_function(obj, u'pypy_repr', pypy_repr)
@@ -92,6 +94,7 @@ def apply(process, routine):
     assert istuple(args)
     api.call(process, func, args)
 
+
 @complete_native_routine
 def concat_tuples(process, routine):
     from obin.objects.types.tupl import concat
@@ -99,11 +102,13 @@ def concat_tuples(process, routine):
     v2 = routine.get_arg(1)
     return concat(process, v1, v2)
 
+
 @complete_native_routine
 def time(process, routine):
     from obin.objects.space import newfloat
     import time
     return newfloat(time.time())
+
 
 @complete_native_routine
 def is_seq(process, routine):
@@ -113,10 +118,32 @@ def is_seq(process, routine):
         return newbool(False)
     return newbool(True)
 
+
 @complete_native_routine
 def length(process, routine):
     v1 = routine.get_arg(0)
     return api.length(v1)
+
+
+@complete_native_routine
+def first(process, routine):
+    from obin.objects.types.plist import head, isempty
+    from obin.objects.space import islist
+    lst = routine.get_arg(0)
+    assert islist(lst)
+    v = head(lst)
+    return v
+
+
+@complete_native_routine
+def rest(process, routine):
+    from obin.objects.types.plist import tail, isempty
+    from obin.objects.space import islist
+    lst = routine.get_arg(0)
+    assert islist(lst)
+    assert not isempty(lst)
+    v = tail(lst)
+    return v
 
 
 @complete_native_routine

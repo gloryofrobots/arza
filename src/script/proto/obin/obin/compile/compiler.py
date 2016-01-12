@@ -234,6 +234,7 @@ def _compile_CHAR(process, compiler, bytecode, node):
 
 
 def _compile_OUTER(process, compiler, bytecode, node):
+    assert False, "Why you need it?"
     name = obs.newstring_from_str(node.first().value)
     _declare_outer(process, compiler, name)
 
@@ -1062,7 +1063,7 @@ def _compile_WHILE(process, compiler, bytecode, node):
     bytecode.done_continue()
 
 
-def _compile_COLON(process, compiler, code, node):
+def _compile_DOUBLE_COLON(process, compiler, code, node):
     _on_binary_primitive(process, compiler, code, node, internals.CONS)
 
 
@@ -1265,8 +1266,8 @@ def _compile_node(process, compiler, code, node):
         _compile_LSQUARE(process, compiler, code, node)
     elif TT_DOT == t:
         _compile_DOT(process, compiler, code, node)
-    elif TT_COLON == t:
-        _compile_COLON(process, compiler, code, node)
+    elif TT_DOUBLE_COLON == t:
+        _compile_DOUBLE_COLON(process, compiler, code, node)
     elif TT_BITAND == t:
         _compile_BITAND(process, compiler, code, node)
     elif TT_BITNOT == t:
