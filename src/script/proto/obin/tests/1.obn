@@ -15,7 +15,7 @@ test_eq("x = 'Hello'", x, "Hello")
 x = 42.234433444
 test_eq("x = 42.234433444", x, 42.234433444)
 
-x = [1, "Hello", 35.44555]
+x = (1, "Hello", 35.44555)
 print(x)
 print(x[1])
 
@@ -25,10 +25,10 @@ print(x)
 x = (1,2, ["Alice", "Bob", (45,), 54.000000001])
 print(x)
 
-x = {name: "XXX"}
+x = {name= "XXX"}
 print(x.name)
 
-print((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name:"Alice", surname: "Bob"})
+print((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"})
 
 x = true
 print(x)
@@ -38,7 +38,7 @@ print(x)
 x = nil
 print(x)
 
-x = { name:"X", age:42.24 }
+x = { name="X", age=42.24 }
 print(x)
 
 x = 1
@@ -238,7 +238,7 @@ T = match (1, (23, (24, 25))):
 end
 
 
-A = [1,2,3,4,5,6]
+A = (1,2,3,4,5,6)
 for x in A:
     print(x) end
 
@@ -249,7 +249,7 @@ while x > 0:
 
 print("Match result", T, X)
 
-A = [1, 2, 3, 4, 5, 6, 35, 110, 122]
+A = (1, 2, 3, 4, 5, 6, 35, 110, 122)
 for a in A:
     if(a == 35):
        continue
@@ -294,27 +294,28 @@ print ("************************************************************************
 
 
 metadata = {
-    title: "Nemesis Games",
-    subject: "SCIFI",
-    translationsUa: {title: "IGRU DOLI", translator: "PILIP LUN" },
-    translationsEn: { titleEn: ("GAMES OF NEMESIS", "NEMESIS GAMES"), translatorEn: "Jhon DOU" },
-    author: ("James", "Corey")
+    title= "Nemesis Games",
+    subject= "SCIFI",
+    translationsUa={title="IGRU DOLI", translator="PILIP LUN" },
+    translationsEn={ titleEn=("GAMES OF NEMESIS", "NEMESIS GAMES"), translatorEn="Jhon DOU" },
+    author= ("James", "Corey")
 }
 
 
-print(metadata.title, metadata.subject, metadata.translationsUa["title"], metadata.translationsUa.translator)
+print(metadata.title, metadata.subject, metadata.translationsUa["title"], metadata.translationsUa.translator,
+      metadata.translationsEn.titleEn,  metadata.translationsEn.translatorEn, metadata.author)
 
 print ("**************************************************************************")
 
 {
-    title: englishTitle,
+    title=englishTitle,
     subject,
-    translationsUa: { title: localeTitle, translator },
-    translationsEn: { titleEn: (localeTitleEn, origTitleEn), translatorEn },
-    author:author_data
+    translationsUa={ title=localeTitle, translator },
+    translationsEn={ titleEn=(localeTitleEn, origTitleEn), translatorEn },
+    author=author_data
 } = metadata;
 
-print(englishTitle, subject, localeTitle,translator,localeTitleEn, origTitleEn, translatorEn, author_data )
+print(englishTitle, subject, localeTitle,translator,(localeTitleEn, origTitleEn), translatorEn, author_data )
 
 print ("**************************************************************************")
 

@@ -155,7 +155,7 @@ def mod_f_f(process, nleft, nright):
 
 
 def mod_n_n(process, nleft, nright):
-    mod_f_f(process, nleft, nright)
+    return mod_f_f(process, nleft, nright)
 
 
 def uminus_f(process, obj):
@@ -216,11 +216,7 @@ def compare_ge_n_n(process, x, y):
     assert False
 
 
-def in_w(process, routine, left, right):
-    from obin.objects.space import iscell
-    if not iscell(right):
-        raise ObinTypeError(u"TypeError: invalid object for in operator")
-
+def in_w(process, left, right):
     return api.contains(right, left)
 
 

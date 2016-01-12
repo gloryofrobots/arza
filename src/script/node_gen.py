@@ -34,19 +34,17 @@ NODES = [
   "NT_REST",
 
   "NT_MAP",
-  "NT_COMMA",
   "NT_ASSIGN",
   "NT_CALL",
   "NT_CALL_MEMBER",
   "NT_LIST",
   "NT_TUPLE",
-  "NT_LPAREN",
   "NT_LOOKUP",
   "NT_LOOKUP_SYMBOL",
 
   "NT_CONS",
-
   "NT_OF",
+
   "NT_AS",
   "NT_IN",
   "NT_IS",
@@ -77,6 +75,7 @@ NODES = [
   "NT_UNARY_MINUS",
 
   "NT_ADD_ASSIGN",
+  "NT_GOTO",
   "NT_SUB_ASSIGN",
   "NT_MUL_ASSIGN",
   "NT_DIV_ASSIGN",
@@ -113,8 +112,8 @@ print "    return __NT_REPR__[ttype]"
     
 
 # print "# ************************ COMPILE SWITCH*****************************"
-# for number, token in enumerate(NODES):
-#     t_str = token[0].replace("TT_", "")
-#     print "    elif %s == t:" % token[0]
-#     print "        self._compile_%s(code, node)" % t_str
-
+# for number, node in enumerate(NODES):
+#     n_str = node.replace("NT_", "")
+#     print "    elif %s == node_type:" % node
+#     print "        _compile_%s(process, compiler, code, node)" % n_str
+                  

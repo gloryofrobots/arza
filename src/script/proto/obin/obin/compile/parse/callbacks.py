@@ -31,7 +31,6 @@ NODE_TYPE_MAPPING = {
     TT_FOR: NT_FOR,
     TT_WHILE: NT_WHILE,
     TT_ELLIPSIS: NT_REST,
-    TT_COMMA: NT_COMMA,
     TT_ASSIGN: NT_ASSIGN,
     TT_OF: NT_OF,
     TT_AS: NT_AS,
@@ -67,16 +66,28 @@ NODE_TYPE_MAPPING = {
     TT_BITAND_ASSIGN: NT_BITAND_ASSIGN,
     TT_BITXOR_ASSIGN: NT_BITXOR_ASSIGN,
     TT_BITOR_ASSIGN: NT_BITOR_ASSIGN,
+    TT_DOUBLE_COLON: NT_CONS,
 }
+
 
 def get_node_type(parser, node):
     node_type = NODE_TYPE_MAPPING[node.type]
     return node_type
 
+
+def _init_node(parser, node, arity):
+    node_type = get_node_type(parser, node)
+    node.init(node_type, arity)
+    return node
+
+
+def _init_current_node(parser, arity):
+    return _init_node(parser, parser.node, arity)
+
+
 def led_infix(parser, node, left):
     h = node_handler(parser, node)
-    node_type = get_node_type(parser, node)
-    node.init(node_type, 2)
+    _init_node(parser, node, 2)
     node.setfirst(left)
     exp = None
     while exp is None:
@@ -88,8 +99,7 @@ def led_infix(parser, node, left):
 
 def led_infixr(parser, node, left):
     h = node_handler(parser, node)
-    node_type = get_node_type(parser, node)
-    node.init(node_type, 2)
+    _init_node(parser, node, 2)
 
     node.setfirst(left)
     exp = expression(parser, h.lbp - 1)
@@ -99,8 +109,7 @@ def led_infixr(parser, node, left):
 
 
 def led_infixr_assign(parser, node, left):
-    node_type = get_node_type(parser, node)
-    node.init(node_type, 2)
+    _init_node(parser, node, 2)
     ltype = left.type
     # NOT TUPLE ASSIGNMENT
     if ltype != TT_DOT and ltype != TT_LSQUARE \
@@ -130,19 +139,24 @@ def _prefix_nud(parser, node_type, node):
 
 def prefix_nud(parser, node):
     node_type = get_node_type(parser, node)
-    _prefix_nud(parser, node_type, node)
+    return _prefix_nud(parser, node_type, node)
+
+
+def itself(parser, node):
+    _init_node(parser, node, 0)
+    return node
 
 
 def prefix_unary_minus(parser, node):
-    _prefix_nud(parser, NT_UNARY_MINUS, node)
+    return _prefix_nud(parser, NT_UNARY_MINUS, node)
 
 
 def prefix_unary_plus(parser, node):
-    _prefix_nud(parser, NT_UNARY_PLUS, node)
+    return _prefix_nud(parser, NT_UNARY_PLUS, node)
 
 
 def nud_wildcard(parser, node):
-    parse_error(parser, "Invalid use of _ pattern", node)
+    return parse_error(parser, "Invalid use of _ pattern", node)
 
 
 def infix_when(parser, node, left):
@@ -158,7 +172,8 @@ def infix_dot(parser, node, left):
     node.init(NT_LOOKUP_SYMBOL, 2)
     node.setfirst(left)
     check_token_type(parser, TT_NAME)
-    node.setsecond(parser.node)
+    symbol = _init_current_node(parser, 0)
+    node.setsecond(symbol)
     advance(parser)
     return node
 
@@ -171,12 +186,24 @@ def infix_lsquare(parser, node, left):
     return node
 
 
+def infix_simple_pair(parser, node, left):
+    # TODO REMOVE IT
+    symbol(parser, TT_COMMA, None)
+    _init_node(parser, node, 2)
+    node.setfirst(left)
+    check_token_type(parser, TT_NAME)
+    name = _init_current_node(parser, 0)
+    node.setsecond(name)
+    advance(parser)
+    return node
+
+
 def infix_lparen(parser, node, left):
     items = []
     if parser.token_type != TT_RPAREN:
         while True:
             items.append(expression(parser, 0))
-            if parser.node.type != TT_COMMA:
+            if parser.token_type != TT_COMMA:
                 break
 
             advance_expected(parser, TT_COMMA)
@@ -240,8 +267,9 @@ def prefix_lparen_tuple(parser, node):
     node.init(NT_TUPLE, 1)
     items = []
     while True:
-        items.append(expression(parser, 0))
-        if parser.node.type != TT_COMMA:
+        exp = expression(parser, 0)
+        items.append(exp)
+        if parser.token_type != TT_COMMA:
             break
 
         advance_expected(parser, TT_COMMA)
@@ -257,7 +285,7 @@ def prefix_lparen(parser, node):
         return empty_node()
 
     e = expression(parser, 0)
-    if parser.node.type != TT_COMMA:
+    if parser.token_type != TT_COMMA:
         advance_expected(parser, TT_RPAREN)
         return e
 
@@ -268,7 +296,7 @@ def prefix_lparen(parser, node):
     if parser.token_type != TT_RPAREN:
         while True:
             items.append(expression(parser, 0))
-            if parser.node.type != TT_COMMA:
+            if parser.token_type != TT_COMMA:
                 break
 
             advance_expected(parser, TT_COMMA)
@@ -301,7 +329,7 @@ def prefix_lcurly(parser, node):
         while True:
             # TODO check it
             check_token_types(parser, [TT_NAME, TT_INT, TT_STR, TT_CHAR, TT_FLOAT])
-            key = parser.node
+            key = _init_current_node(parser, 0)
             advance(parser)
 
             if parser.token_type == TT_COMMA:
@@ -327,7 +355,7 @@ def prefix_lcurly(parser, node):
 def parse_func(parser):
     outers = []
     if parser.token_type == TT_NAME:
-        name = parser.node
+        name = _init_current_node(parser, 0)
         advance(parser)
     else:
         name = empty_node()
@@ -342,7 +370,8 @@ def parse_func(parser):
         advance_expected(parser, TT_OUTER)
         while True:
             if parser.token_type == TT_NAME:
-                outers.append(parser.node)
+                outer = _init_current_node(parser, 0)
+                outers.append(outer)
                 advance(parser)
 
             if parser.token_type != TT_COMMA:
@@ -398,8 +427,7 @@ def prefix_match(parser, node):
 
 
 def stmt_single(parser, node):
-    node_type = get_node_type(parser, node)
-    node.init(node_type, 1)
+    _init_node(parser, node, 1)
     if token_is_one_of(parser, [TT_SEMI, TT_END]) or parser.is_newline_occurred:
         node.setfirst(list_node([]))
     else:
@@ -414,10 +442,9 @@ def stmt_outer(parser, node):
 
 def stmt_loop_flow(parser, node):
     endofexpression(parser)
-    if parser.token_type != TT_END:
+    if parser.token_type not in [TT_END, TT_ELSE, TT_ELIF, TT_CASE]:
         parse_error_simple(parser, "Unreachable statement")
-    node_type = get_node_type(parser, node)
-    node.init(node_type, 0)
+    _init_node(parser, node, 0)
     return node
 
 
@@ -467,7 +494,8 @@ def stmt_origin(parser, node):
 def stmt_generic(parser, node):
     if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
         parse_error_simple(parser, "Wrong generic name")
-    name = parser.node
+
+    name = _init_current_node(parser, 0)
     advance(parser)
 
     if parser.token_type == TT_COLON or parser.token_type == TT_LPAREN:
@@ -543,7 +571,7 @@ def stmt_specify(parser, node):
     if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
         parse_error_simple(parser, "Wrong generic name in specify statement")
 
-    name = parser.node
+    name = _init_current_node(parser, 0)
     advance(parser)
 
     funcs = parse_specify_funcs(parser)
@@ -572,54 +600,3 @@ def prefix_import(parser, node):
 
     return node
 
-# def parse_def(parser):
-#     args = []
-#     outers = []
-#     if parser.token_type == TT_NAME:
-#         name = parser.node
-#         advance(parser)
-#     else:
-#         name = empty_node()
-#
-#     if parser.token_type == TT_LPAREN:
-#         advance_expected(parser, TT_LPAREN)
-#         if parser.token_type != TT_RPAREN:
-#             while True:
-#                 if parser.token_type == TT_NAME:
-#                     args.append(parser.node)
-#                     advance(parser)
-#
-#                 if parser.token_type != TT_COMMA:
-#                     break
-#
-#                 advance_expected(parser, TT_COMMA)
-#
-#         if parser.token_type == TT_ELLIPSIS:
-#             rest = expression(parser.args_parser, 0)
-#             # advance(parser)
-#             args.append(rest)
-#             # advance_expected(parser, TT_NAME)
-#
-#         advance_expected(parser, TT_RPAREN)
-#
-#     advance_expected(parser, TT_COLON)
-#     if parser.token_type == TT_OUTER:
-#         advance_expected(parser, TT_OUTER)
-#         while True:
-#             if parser.token_type == TT_NAME:
-#                 outers.append(parser.node)
-#                 advance(parser)
-#
-#             if parser.token_type != TT_COMMA:
-#                 break
-#
-#             advance_expected(parser, TT_COMMA)
-#
-#         if len(outers) == 0:
-#             parse_error_simple(parser, "Outer variables not declared")
-#
-#     body = statements(parser)
-#     if not body:
-#         body = empty_node()
-#     advance_expected(parser, TT_END)
-#     return name, list_node(args), list_node(outers), body

@@ -58,19 +58,9 @@ def args_parser_init(parser):
     return parser
 
 
-def infix_simple_pair(parser, node, left):
-    symbol(parser, TT_COMMA, None)
-    node.init(2)
-    node.setfirst(left)
-    check_token_type(parser, TT_NAME)
-    node.setsecond(parser.node)
-    advance(parser)
-    return node
-
-
 def module_name_parser_init(parser):
-    symbol(parser, TT_COMMA,  None)
-    infix(parser, TT_DOT,  10, infix_simple_pair)
+    symbol(parser, TT_COMMA, None)
+    infix(parser, TT_DOT, 10, infix_simple_pair)
     literal(parser, TT_NAME)
     return parser
 
@@ -88,16 +78,16 @@ def generic_signature_parser_init(parser):
     symbol(parser, TT_LPAREN, None)
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_CASE, None)
-    infix(parser, TT_OF,  10, infix_simple_pair)
+    infix(parser, TT_OF, 10, infix_simple_pair)
     literal(parser, TT_NAME)
     return parser
 
 
 def pattern_parser_init(parser):
-    prefix(parser, TT_ELLIPSIS,  prefix_nud)
+    prefix(parser, TT_ELLIPSIS, prefix_nud)
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
-    prefix(parser, TT_LSQUARE,   prefix_lsquare)
-    prefix(parser, TT_LCURLY,  prefix_lcurly)
+    prefix(parser, TT_LSQUARE, prefix_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly)
 
     infix(parser, TT_OF, 10, infix_simple_pair)
 
@@ -132,7 +122,6 @@ def main_parser_init(parser):
     literal(parser, TT_FALSE)
     literal(parser, TT_NIL)
     literal(parser, TT_UNDEFINED)
-
 
     symbol(parser, TT_RSQUARE, None)
     symbol(parser, TT_ENDSTREAM, None)
@@ -185,13 +174,13 @@ def main_parser_init(parser):
     precedence 35
     |
     """
-    infixr(parser, TT_BITOR,  35, led_infixr)
+    infixr(parser, TT_BITOR, 35, led_infixr)
 
     """
     precedence 40
     ^
     """
-    infixr(parser, TT_BITXOR,  40, led_infixr)
+    infixr(parser, TT_BITXOR, 40, led_infixr)
 
     """
     precedence 45
@@ -344,12 +333,12 @@ def write_ast(ast):
 
 
 ast = parse_string(
-"""
-$[0][1]['name'][2]
+    """
+    $[0][1]['name'][2]
 
-//2 name 1 0 $
+    //2 name 1 0 $
 
-"""
+    """
 
 )
 """

@@ -42,6 +42,15 @@ class W_PList(W_Root):
     def _get_index_(self, obj):
         return index(self, obj)
 
+    def _at_(self, key):
+        from obin.objects.space import newundefined
+        from obin.objects import api
+        int_index = api.to_native_integer(key)
+        if int_index < 0:
+            return newundefined()
+
+        return nth(self, int_index)
+
 
 def empty():
     from obin.objects.space import newundefined
@@ -203,6 +212,20 @@ def index(pl, elem):
             return idx
         idx += 1
         cur = cur.tail
+
+
+def _nth(pl, index):
+    from obin.objects.space import newundefined
+    if index == 0:
+        return head(pl)
+    if isempty(pl):
+        return newundefined()
+    return nth(tail(pl), index - 1)
+
+
+def nth(pl, index):
+    assert index >= 0
+    return _nth(pl, index)
 
 
 def fmap(func, pl):

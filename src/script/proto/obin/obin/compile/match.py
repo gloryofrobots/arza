@@ -17,7 +17,7 @@ def _create_path_node(basenode, path):
 
 
 def _process_pattern(process, compiler, pattern, stack, path):
-    if pattern.type == TT_LPAREN and pattern.arity == 1:
+    if pattern.node_type == NT_TUPLE:
         children = pattern.first()
         count = children.length()
         stack.append(["is_seq", _create_path_node(pattern, path)])
@@ -26,11 +26,11 @@ def _process_pattern(process, compiler, pattern, stack, path):
         for i, child in enumerate(children):
             _process_pattern(process, compiler, child, stack,
                              plist.prepend(create_int_node(child, i), path))
-    elif pattern.type == TT_NAME:
+    elif pattern.node_type == NT_NAME:
         stack.append(["assign", pattern, _create_path_node(pattern, path)])
-    elif pattern.type == TT_WILDCARD:
+    elif pattern.node_type == NT_WILDCARD:
         stack.append(["wildcard"])
-    elif pattern.type in [TT_FALSE, TT_TRUE, TT_FLOAT, TT_INT, TT_NIL, TT_STR, TT_CHAR]:
+    elif pattern.node_type in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_NIL, NT_STR, NT_CHAR]:
         stack.append(["equal", _create_path_node(pattern, path), pattern])
     else:
         assert False

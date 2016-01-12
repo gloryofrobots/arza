@@ -1,5 +1,6 @@
 from obin.compile.parse.tokens import token_type_to_str
 from obin.compile.parse import token_type as tt
+from obin.compile.parse import node_type as nt
 from obin.objects.types.root import W_Root
 
 
@@ -160,7 +161,7 @@ class NodeList(BaseNode):
         return len(self.items)
 
     def append(self, item):
-        assert isinstance(item, BaseNode)
+        assert isinstance(item, BaseNode), item
         self.items.append(item)
 
     def append_list(self, items):
@@ -183,9 +184,9 @@ def list_node(items):
     assert isinstance(items, list)
     if len(items):
         o = items[0]
-        if isinstance(o, list):
-            raise RuntimeError()
         assert not isinstance(o, list)
+    for item in items:
+        assert isinstance(item, BaseNode)
 
     return NodeList(items)
 
@@ -193,10 +194,15 @@ def list_node(items):
 def is_list_node(node):
     return isinstance(node, NodeList)
 
+def create_tuple_node(basenode, elements):
+    node = Node(tt.TT_LPAREN, "(", basenode.position, basenode.line)
+    node.init(nt.NT_TUPLE, 1)
+    node.setfirst(list_node(elements))
+    return node
 
 def create_call_node(basenode, func, exp):
     node = Node(tt.TT_LPAREN, "(", basenode.position, basenode.line)
-    node.init(2)
+    node.init(nt.NT_CALL, 2)
     node.setfirst(func)
     node.setsecond(list_node([exp]))
     return node
@@ -204,14 +210,14 @@ def create_call_node(basenode, func, exp):
 
 def create_if_node(basenode, branches):
     node = Node(tt.TT_IF, "(", basenode.position, basenode.line)
-    node.init(1)
+    node.init(nt.NT_IF, 1)
     node.setfirst(list_node(branches))
     return node
 
 
 def create_eq_node(basenode, left, right):
     node = Node(tt.TT_EQ, "==", basenode.position, basenode.line)
-    node.init(2)
+    node.init(nt.NT_EQ, 2)
     node.setfirst(left)
     node.setsecond(right)
     return node
@@ -219,7 +225,7 @@ def create_eq_node(basenode, left, right):
 
 def create_assign_node(basenode, var, exp):
     node = Node(tt.TT_ASSIGN, "=", basenode.position, basenode.line)
-    node.init(2)
+    node.init(nt.NT_ASSIGN, 2)
     node.setfirst(var)
     node.setsecond(exp)
     return node
@@ -227,17 +233,19 @@ def create_assign_node(basenode, var, exp):
 
 def create_name_node(basenode, name):
     node = Node(tt.TT_NAME, name, basenode.position, basenode.line)
+    node.init(nt.NT_NAME, 0)
     return node
 
 
 def create_int_node(basenode, strval):
     node = Node(tt.TT_INT, strval, basenode.position, basenode.line)
+    node.init(nt.NT_INT, 0)
     return node
 
 
 def create_lookup_node(basenode, left, right):
     node = Node(tt.TT_LSQUARE, "[", basenode.position, basenode.line)
-    node.init(2)
+    node.init(nt.NT_LOOKUP, 2)
     node.setfirst(left)
     node.setsecond(right)
     return node
@@ -245,13 +253,17 @@ def create_lookup_node(basenode, left, right):
 
 def create_true_node(basenode):
     node = Node(tt.TT_TRUE, "true", basenode.position, basenode.line)
+    node.init(nt.NT_TRUE, 0)
     return node
 
 
 def create_undefined_node(basenode):
     node = Node(tt.TT_UNDEFINED, "undefined", basenode.position, basenode.line)
+    node.init(nt.NT_UNDEFINED, 0)
     return node
 
 
 def create_goto_node(label):
-    return Node(tt.TT_GOTO, label, -1, -1)
+    node = Node(tt.TT_GOTO, label, -1, -1)
+    node.init(nt.NT_GOTO, 0)
+    return node

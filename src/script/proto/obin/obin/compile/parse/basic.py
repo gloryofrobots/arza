@@ -242,9 +242,6 @@ def statements(parser, endlist=None):
     return list_node(stmts)
 
 
-def itself(parser, node):
-    return node
-
 
 
 
@@ -269,6 +266,7 @@ def stmt(parser, ttype,  std):
 
 
 def literal(parser, ttype):
+    from obin.compile.parse.callbacks import itself
     set_nud(parser, ttype, itself)
 
 
