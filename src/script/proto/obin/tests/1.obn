@@ -2,8 +2,10 @@
 A = [1,2,3,4,5]
 
 match A:
-    case [a, b, ...rest] : (a, b, rest) end
-    case (a, rest) : (a, rest) end
+    case [a,b]: (a,b) end
+//    case [...rest] : rest end
+//    case [a, b, ...rest] : (a, b, rest) end
+//    case (a, rest) : (a, rest) end
 end
 
 //A = (1,2,3,4,5,6)

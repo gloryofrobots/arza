@@ -39,8 +39,7 @@ def _process_pattern(process, compiler, pattern, stack, path):
         last_child = children[-1]
         if last_child.node_type == NT_REST:
             last_child = last_child.first()
-            cur_slice = create_slice_til_the_end(last_child)
-            child_path = plist.prepend(cur_slice, cur_path)
+            child_path = cur_path
         else:
             child_path = plist.prepend(create_int_node(last_child, 0), cur_path)
 
@@ -278,6 +277,6 @@ def transform(process, compiler, node, patterns, decision_node):
     tree = _group_branches(process, branches)
     # print tree
     transformed_node, vars = _transform_pattern(node, bodies, [], plist.empty(), tree)
-    print transformed_node
-    raise SystemExit()
+    # print transformed_node
+    # raise SystemExit()
     return transformed_node

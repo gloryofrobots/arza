@@ -1,5 +1,6 @@
 __author__ = 'gloryofrobots'
-from obin.compile.parse.node import (is_empty_node, is_list_node, is_iterable_node, create_tuple_node)
+from obin.compile.parse.node import (is_empty_node, is_list_node, is_iterable_node,
+                                     create_tuple_node, is_wildcard_node)
 from obin.compile.parse.parser import *
 from obin.compile.scope import Scope
 from obin.objects import space as obs
@@ -1054,19 +1055,18 @@ def _compile_LOOKUP_SYMBOL(process, compiler, code, node):
     code.emit_0(MEMBER)
 
 
-def _compile_SLICE(process, compiler, code, node):
-    obj = node.first()
-    start = node.second()
-    end = node.third()
+def _emit_SLICE(process, compiler, code, obj, slice):
+    start = slice.first()
+    end = slice.second()
 
     _compile(process, compiler, code, obj)
 
-    if is_empty_node(start):
+    if is_wildcard_node(start):
         code.emit_0(UNDEFINED)
     else:
         _compile(process, compiler, code, start)
 
-    if is_empty_node(end):
+    if is_wildcard_node(end):
         code.emit_0(UNDEFINED)
     else:
         _compile(process, compiler, code, end)
@@ -1077,8 +1077,11 @@ def _compile_SLICE(process, compiler, code, node):
 def _compile_LOOKUP(process, compiler, code, node):
     # TODO OPTIMISATION FOR INDEX LOOKUP
     obj = node.first()
-    _compile(process, compiler, code, obj)
     expr = node.second()
+    if expr.node_type == NT_RANGE:
+        return _emit_SLICE(process, compiler, code, obj, expr)
+
+    _compile(process, compiler, code, obj)
     _compile(process, compiler, code, expr)
     code.emit_0(MEMBER)
 
@@ -1234,8 +1237,6 @@ def _compile_node(process, compiler, code, node):
         _compile_LOOKUP(process, compiler, code, node)
     elif NT_LOOKUP_SYMBOL == node_type:
         _compile_LOOKUP_SYMBOL(process, compiler, code, node)
-    elif NT_SLICE == node_type:
-        _compile_SLICE(process, compiler, code, node)
 
     elif NT_CONS == node_type:
         _compile_CONS(process, compiler, code, node)
@@ -1364,7 +1365,7 @@ def print_code(code):
     print "\n".join([str((opcode_to_str(c[0]), str(c[1:]))) for c in code.opcodes])
 
 
-CODE = compile(None, PATTERN_DATA)
+# CODE = compile(None, PATTERN_DATA)
 # CODE = compile(None, """
 #     A[1.._];
 #     A[2..3];

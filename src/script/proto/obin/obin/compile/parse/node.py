@@ -179,6 +179,10 @@ def is_empty_node(n):
     return isinstance(n, EmptyNode)
 
 
+def is_wildcard_node(n):
+    return n.node_type == nt.NT_WILDCARD
+
+
 def is_iterable_node(node):
     return is_list_node(node) and len(node) > 0
 
