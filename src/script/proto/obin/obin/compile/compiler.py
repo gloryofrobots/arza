@@ -1062,6 +1062,26 @@ def _compile_LOOKUP_SYMBOL(process, compiler, code, node):
     code.emit_0(MEMBER)
 
 
+def _compile_SLICE(process, compiler, code, node):
+    obj = node.first()
+    start = node.second()
+    end = node.third()
+
+    _compile(process, compiler, code, obj)
+
+    if is_empty_node(start):
+        code.emit_0(UNDEFINED)
+    else:
+        _compile(process, compiler, code, start)
+
+    if is_empty_node(end):
+        code.emit_0(UNDEFINED)
+    else:
+        _compile(process, compiler, code, end)
+
+    code.emit_0(SLICE)
+
+
 def _compile_LOOKUP(process, compiler, code, node):
     # TODO OPTIMISATION FOR INDEX LOOKUP
     obj = node.first()
@@ -1170,28 +1190,33 @@ def _compile_node(process, compiler, code, node):
         _compile_NAME(process, compiler, code, node)
     elif NT_SPECIAL_NAME == node_type:
         _compile_SPECIAL_NAME(process, compiler, code, node)
+
     elif NT_FUNC == node_type:
         _compile_FUNC(process, compiler, code, node)
+
     elif NT_IF == node_type:
         _compile_IF(process, compiler, code, node)
     elif NT_WHEN == node_type:
         _compile_WHEN(process, compiler, code, node)
     elif NT_MATCH == node_type:
         _compile_MATCH(process, compiler, code, node)
-    elif NT_ORIGIN == node_type:
-        _compile_ORIGIN(process, compiler, code, node)
+
     elif NT_IMPORT == node_type:
         _compile_IMPORT(process, compiler, code, node)
     elif NT_TRAIT == node_type:
         _compile_TRAIT(process, compiler, code, node)
+    elif NT_ORIGIN == node_type:
+        _compile_ORIGIN(process, compiler, code, node)
     elif NT_GENERIC == node_type:
         _compile_GENERIC(process, compiler, code, node)
     elif NT_SPECIFY == node_type:
         _compile_SPECIFY(process, compiler, code, node)
+
     elif NT_RETURN == node_type:
         _compile_RETURN(process, compiler, code, node)
     elif NT_THROW == node_type:
         _compile_THROW(process, compiler, code, node)
+
     elif NT_BREAK == node_type:
         _compile_BREAK(process, compiler, code, node)
     elif NT_CONTINUE == node_type:
@@ -1200,22 +1225,26 @@ def _compile_node(process, compiler, code, node):
         _compile_FOR(process, compiler, code, node)
     elif NT_WHILE == node_type:
         _compile_WHILE(process, compiler, code, node)
-    elif NT_MAP == node_type:
-        _compile_MAP(process, compiler, code, node)
-    elif NT_ASSIGN == node_type:
-        _compile_ASSIGN(process, compiler, code, node)
+
     elif NT_CALL == node_type:
         _compile_CALL(process, compiler, code, node)
     elif NT_CALL_MEMBER == node_type:
         _compile_CALL_MEMBER(process, compiler, code, node)
+
     elif NT_LIST == node_type:
         _compile_LIST(process, compiler, code, node)
     elif NT_TUPLE == node_type:
         _compile_TUPLE(process, compiler, code, node)
+    elif NT_MAP == node_type:
+        _compile_MAP(process, compiler, code, node)
+
     elif NT_LOOKUP == node_type:
         _compile_LOOKUP(process, compiler, code, node)
     elif NT_LOOKUP_SYMBOL == node_type:
         _compile_LOOKUP_SYMBOL(process, compiler, code, node)
+    elif NT_SLICE == node_type:
+        _compile_SLICE(process, compiler, code, node)
+
     elif NT_CONS == node_type:
         _compile_CONS(process, compiler, code, node)
     elif NT_IN == node_type:
@@ -1260,20 +1289,26 @@ def _compile_node(process, compiler, code, node):
         _compile_LT(process, compiler, code, node)
     elif NT_GT == node_type:
         _compile_GT(process, compiler, code, node)
+
     elif NT_RSHIFT == node_type:
         _compile_RSHIFT(process, compiler, code, node)
     elif NT_URSHIFT == node_type:
         _compile_URSHIFT(process, compiler, code, node)
     elif NT_LSHIFT == node_type:
         _compile_LSHIFT(process, compiler, code, node)
+
     elif NT_UNARY_PLUS == node_type:
         _compile_UNARY_PLUS(process, compiler, code, node)
     elif NT_UNARY_MINUS == node_type:
         _compile_UNARY_MINUS(process, compiler, code, node)
-    elif NT_ADD_ASSIGN == node_type:
-        _compile_ADD_ASSIGN(process, compiler, code, node)
+
     elif NT_GOTO == node_type:
         _compile_GOTO(process, compiler, code, node)
+
+    elif NT_ASSIGN == node_type:
+        _compile_ASSIGN(process, compiler, code, node)
+    elif NT_ADD_ASSIGN == node_type:
+        _compile_ADD_ASSIGN(process, compiler, code, node)
     elif NT_SUB_ASSIGN == node_type:
         _compile_SUB_ASSIGN(process, compiler, code, node)
     elif NT_MUL_ASSIGN == node_type:
@@ -1337,51 +1372,12 @@ def print_code(code):
     print "\n".join([str((opcode_to_str(c[0]), str(c[1:]))) for c in code.opcodes])
 
 
-def compile_and_print(txt):
-    print_code(compile(None, txt))
-
-
-def _check(val1, val2):
-    print val1
-    print val2
-    if val1 != val2:
-        print val1
-        print val2
-        raise RuntimeError("Not equal")
-
-
-# compile_and_print(
-#     PATTERN_DATA
-# )
-"""
-
-metadata = 34;
-
-{
-    title: englishTitle,
-    subject,
-    translationsUa: { title: localeTitle, translator },
-    translationsEn: { titleEn: (localeTitle, origTitle), translator },
-    author:author_data
-} = metadata;
-
-
-    specify fire {
-        (self of Soldier, other of Civilian) {
-            attack(self, other)
-            name = self.name
-            surname = "Surname" + name + other.name
-        }
-        (self of Soldier, other1, other2) {
-            attack(self, other)
-            name = self.name
-            surname = "Surname" + name + other.name
-        }
-        (self, other1, other2, other3 of Enemy) {
-            attack(self, other)
-            name = self.name
-            surname = "Surname" + name + other.name
-        }
-    }
-"""
-
+# CODE = compile(None, PATTERN_DATA)
+CODE = compile(None, """
+    A[1.._];
+    A[2..3];
+    A[_.._];
+    A[_..4];
+    A[5];
+""")
+# print_code(CODE)

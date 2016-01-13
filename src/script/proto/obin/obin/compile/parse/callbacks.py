@@ -180,35 +180,24 @@ def infix_dot(parser, node, left):
 
 
 def infix_lsquare(parser, node, left):
-    if parser.token_type == TT_DOUBLE_DOT:
-        start = empty_node()
-        advance(parser)
-        if parser.token_type == TT_RSQUARE:
-            end = empty_node()
-        else:
-            end = expression(parser, 0)
+    exp = expression(parser, 0)
+    if exp.type == TT_DOUBLE_DOT:
+        first = exp.first()
+        second = exp.second()
+        if second.type == TT_DOUBLE_DOT or first.type == TT_DOUBLE_DOT:
+            return parse_error(parser, "Invalid slice syntax", node)
+
+        start = empty_node() if first.type == TT_WILDCARD else first
+        end = empty_node() if second.type == TT_WILDCARD else second
 
         node.init(NT_SLICE, 3)
         node.setfirst(left)
         node.setsecond(start)
         node.setthird(end)
     else:
-        exp = expression(parser, 0)
-        if parser.token_type == TT_DOUBLE_DOT:
-            advance(parser)
-            if parser.token_type == TT_RSQUARE:
-                end = empty_node()
-            else:
-                end = expression(parser, 0)
-
-            node.init(NT_SLICE, 3)
-            node.setfirst(left)
-            node.setsecond(exp)
-            node.setthird(end)
-        else:
-            node.init(NT_LOOKUP, 2)
-            node.setfirst(left)
-            node.setsecond(exp)
+        node.init(NT_LOOKUP, 2)
+        node.setfirst(left)
+        node.setsecond(exp)
 
     advance_expected(parser, TT_RSQUARE)
     return node

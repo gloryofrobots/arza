@@ -10,7 +10,7 @@ class BaseNode(W_Root):
 
 class EmptyNode(BaseNode):
     def to_json_value(self):
-        return "EmptyNode"
+        return "{ EmptyNode }"
 
     def _equal_(self, other):
         return self.__eq__(other)

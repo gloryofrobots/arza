@@ -51,6 +51,30 @@ class W_PList(W_Root):
 
         return nth(self, int_index)
 
+    def _slice_(self, start, end):
+        from obin.objects.space import isundefined, newundefined
+        from obin.objects import api
+
+        if isundefined(start):
+            start_index = 0
+        else:
+            start_index = api.to_native_integer(start)
+
+        # INTELLIGENT ERROR HERE, BECAUSE LISTS DON`T SUPPORT RELATIVE SLICING
+        if start_index < 0:
+            return newundefined()
+
+        if isundefined(end):
+            return drop(self, start_index)
+        else:
+            end_index = api.to_native_integer(end)
+
+        # INTELLIGENT ERROR HERE, BECAUSE LISTS DON`T SUPPORT RELATIVE SLICING
+        if end_index < 0:
+            return newundefined()
+        return slice(self, start_index, end_index)
+
+
 
 def empty():
     from obin.objects.space import newundefined
@@ -140,6 +164,43 @@ def drop(pl, count):
 
     return drop(tail(pl), count - 1)
 
+##############################################
+
+def _slice(pl, index, start, end):
+    if isempty(pl):
+        raise RuntimeError("List to small for operation")
+
+    if index < start:
+        return _slice(tail(pl), index + 1, start, end)
+
+    if index < end:
+        return prepend(head(pl), _slice(tail(pl), index + 1, start, end))
+
+    return empty()
+
+
+def slice(pl, start, end):
+    assert start >= 0
+    assert end > start
+    assert end > 0
+    # return take(drop(pl, start), end - 1)
+    return _slice(pl, 0, start, end)
+
+##############################################
+
+def _nth(pl, index):
+    from obin.objects.space import newundefined
+    if index == 0:
+        return head(pl)
+    if isempty(pl):
+        return newundefined()
+    return nth(tail(pl), index - 1)
+
+
+def nth(pl, index):
+    assert index >= 0
+    return _nth(pl, index)
+
 
 def insert(pl, index, v):
     if index == 0:
@@ -212,20 +273,6 @@ def index(pl, elem):
             return idx
         idx += 1
         cur = cur.tail
-
-
-def _nth(pl, index):
-    from obin.objects.space import newundefined
-    if index == 0:
-        return head(pl)
-    if isempty(pl):
-        return newundefined()
-    return nth(tail(pl), index - 1)
-
-
-def nth(pl, index):
-    assert index >= 0
-    return _nth(pl, index)
 
 
 def fmap(func, pl):
