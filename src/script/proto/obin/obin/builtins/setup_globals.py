@@ -33,6 +33,7 @@ def setup(process, module, stdlib):
     api.put_native_function(module, u'apply', apply, 2)
     api.put_native_function(module, u'concat', concat_tuples, 2)
     api.put_native_function(module, u'time', time, 0)
+    api.put_native_function(module, u'is_indexed', is_indexed, 1)
     api.put_native_function(module, u'is_seq', is_seq, 1)
     api.put_native_function(module, u'length', length, 1)
     api.put_native_function(module, u'first', first, 1)
@@ -111,13 +112,20 @@ def time(process, routine):
 
 
 @complete_native_routine
-def is_seq(process, routine):
+def is_indexed(process, routine):
     from obin.objects.space import isvector, istuple, newbool
     v1 = routine.get_arg(0)
     if not isvector(v1) and not istuple(v1):
         return newbool(False)
     return newbool(True)
 
+@complete_native_routine
+def is_seq(process, routine):
+    from obin.objects.space import islist, newbool
+    v1 = routine.get_arg(0)
+    if not islist(v1):
+        return newbool(False)
+    return newbool(True)
 
 @complete_native_routine
 def length(process, routine):

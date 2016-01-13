@@ -1,15 +1,14 @@
 
-//match A:
-//    case [a, b, ...rest] : (a, b, rest) end
-//    case [a, ...rest] : (a, rest) end
+A = [1,2,3,4,5]
+
+match A:
+    case [a, b, ...rest] : (a, b, rest) end
+    case (a, rest) : (a, rest) end
+end
+
+//A = (1,2,3,4,5,6)
+//print(A[1.._], A[2..4], A[_.._], A[_..4])
 //
-//    case [a, b | rest] : (a, b, rest) end
-//    case [a | rest] : (a, rest) end
-//end
-
-A = (1,2,3,4,5,6)
-print(A[1.._], A[2..4], A[_.._], A[_..4])
-
-
-B = [1,2,3,4,5,6]
-print(B[1.._], B[2..4], B[_.._], B[_..4])
+//
+//B = [1,2,3,4,5,6]
+//print(B[1.._], B[2..4], B[_.._], B[_..4])

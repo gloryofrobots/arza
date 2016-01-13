@@ -1,10 +1,6 @@
 from obin.compile.parse.parser import *
 from obin.objects.types import plist
-from obin.compile.parse.node import (is_empty_node,
-                                     is_list_node, create_assign_node,
-                                     create_call_node, create_eq_node,
-                                     create_if_node, create_true_node, create_int_node,
-                                     create_lookup_node, create_name_node, create_undefined_node)
+from obin.compile.parse.node import *
 from obin.objects import space as obs, api
 
 
@@ -20,12 +16,36 @@ def _process_pattern(process, compiler, pattern, stack, path):
     if pattern.node_type == NT_TUPLE:
         children = pattern.first()
         count = children.length()
-        stack.append(["is_seq", _create_path_node(pattern, path)])
+        stack.append(["is_indexed", _create_path_node(pattern, path)])
         stack.append(["length", _create_path_node(pattern, path), count])
 
         for i, child in enumerate(children):
             _process_pattern(process, compiler, child, stack,
                              plist.prepend(create_int_node(child, i), path))
+    elif pattern.node_type == NT_LIST:
+        stack.append(["is_seq", _create_path_node(pattern, path)])
+        children = pattern.first()
+
+        cur_path = path
+        for i, child in enumerate(children[:-1]):
+            if child.node_type == NT_REST:
+                raise RuntimeError("Invalid use of Rest")
+
+            child_path = plist.prepend(create_int_node(child, 0), cur_path)
+            cur_slice = create_slice_til_the_end(child)
+            cur_path = plist.prepend(cur_slice, cur_path)
+            _process_pattern(process, compiler, child, stack, child_path)
+
+        last_child = children[-1]
+        if last_child.node_type == NT_REST:
+            last_child = last_child.first()
+            cur_slice = create_slice_til_the_end(last_child)
+            child_path = plist.prepend(cur_slice, cur_path)
+        else:
+            child_path = plist.prepend(create_int_node(last_child, 0), cur_path)
+
+        _process_pattern(process, compiler, last_child, stack, child_path)
+
     elif pattern.node_type == NT_NAME:
         stack.append(["assign", pattern, _create_path_node(pattern, path)])
     elif pattern.node_type == NT_WILDCARD:
@@ -68,6 +88,7 @@ def _group_branches(process, branches):
 
     return result
 
+
 def _create_variable_undefs(basenode, variables):
     undefs = [create_assign_node(basenode, var, create_undefined_node(basenode)) for var in variables]
     return undefs
@@ -79,6 +100,7 @@ def _prepend_to_body(statements, body):
         return list_node(statements + body.items)
     else:
         return list_node(statements + [body])
+
 
 ###################################################################33
 
@@ -118,7 +140,7 @@ def transform_body(func, methods, history, node, head, tail, variables):
 
 
 def _transform_is_seq(history, head, variables):
-    arg_node, prefixes = _history_get_var(history,  head[1])
+    arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_eq_node(arg_node,
                                 create_call_node(arg_node,
                                                  create_name_node(arg_node, "is_seq"),
@@ -129,8 +151,20 @@ def _transform_is_seq(history, head, variables):
     return arg_node, condition, prefixes + prefixes1, variables
 
 
+def _transform_is_indexed(history, head, variables):
+    arg_node, prefixes = _history_get_var(history, head[1])
+    _condition = create_eq_node(arg_node,
+                                create_call_node(arg_node,
+                                                 create_name_node(arg_node, "is_indexed"),
+                                                 arg_node),
+                                create_true_node(arg_node))
+
+    condition, prefixes1 = _history_get_condition(history, _condition)
+    return arg_node, condition, prefixes + prefixes1, variables
+
+
 def _transform_length(history, head, variables):
-    arg_node, prefixes = _history_get_var(history,  head[1])
+    arg_node, prefixes = _history_get_var(history, head[1])
     count = head[2]
     _condition = create_eq_node(arg_node,
                                 create_call_node(arg_node,
@@ -143,7 +177,7 @@ def _transform_length(history, head, variables):
 
 
 def _transform_equal(history, head, variables):
-    left, prefixes = _history_get_var(history,  head[1])
+    left, prefixes = _history_get_var(history, head[1])
     right = head[2]
     _condition = create_eq_node(left, left, right)
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -152,7 +186,7 @@ def _transform_equal(history, head, variables):
 
 def _transform_assign(history, head, variables):
     left = head[1]
-    right, prefixes = _history_get_var(history,  head[2])
+    right, prefixes = _history_get_var(history, head[2])
     prefixes1 = (prefixes + [create_assign_node(left, left, right)])
     return left, None, prefixes1, plist.prepend(left, variables)
 
@@ -162,6 +196,7 @@ def _transform_wildcard(history, head, variables):
 
 
 TRANSFORM_DISPATCH = {
+    "is_indexed": _transform_is_indexed,
     "is_seq": _transform_is_seq,
     "length": _transform_length,
     "equal": _transform_equal,
@@ -243,6 +278,6 @@ def transform(process, compiler, node, patterns, decision_node):
     tree = _group_branches(process, branches)
     # print tree
     transformed_node, vars = _transform_pattern(node, bodies, [], plist.empty(), tree)
-    # print transformed_node
-    # raise SystemExit()
+    print transformed_node
+    raise SystemExit()
     return transformed_node

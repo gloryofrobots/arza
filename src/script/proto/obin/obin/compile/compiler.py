@@ -406,18 +406,10 @@ def _emit_store_name(process, compiler, bytecode, namenode):
 #########################################################
 
 PATTERN_DATA = """
-    match (1, 2):
-        case (Z, 1): 12 + Z end
-        case (1, 2): 11 end
-
-        case (1, Z, B, 1): 12 + Z end
-        case (1, Z, Y, A):  Z + Y + A   end
-        //case (1, x): 1 + 1 end
-        //case (1, false): 2 end
-        //case (34.05, 42, y): 3 end
-        //case (34.05, 42, (w,z)): 4 end
-         case _: nil end
-        // case A: 5 end
+    match [1, 2, 3]:
+        case [Z, ...rest]: 1 end
+        // case (1, 2): 2 end
+        //  case _: nil end
     end
 """
 
@@ -1372,12 +1364,12 @@ def print_code(code):
     print "\n".join([str((opcode_to_str(c[0]), str(c[1:]))) for c in code.opcodes])
 
 
-# CODE = compile(None, PATTERN_DATA)
-CODE = compile(None, """
-    A[1.._];
-    A[2..3];
-    A[_.._];
-    A[_..4];
-    A[5];
-""")
+CODE = compile(None, PATTERN_DATA)
+# CODE = compile(None, """
+#     A[1.._];
+#     A[2..3];
+#     A[_.._];
+#     A[_..4];
+#     A[5];
+# """)
 # print_code(CODE)

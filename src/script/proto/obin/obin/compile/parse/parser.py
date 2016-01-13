@@ -95,6 +95,7 @@ def pattern_parser_init(parser):
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_RCURLY, None)
+    symbol(parser, TT_RSQUARE, None)
     symbol(parser, TT_COLON, None)
 
     literal(parser, TT_NAME)

@@ -197,11 +197,13 @@ def list_node(items):
 def is_list_node(node):
     return isinstance(node, NodeList)
 
+
 def create_tuple_node(basenode, elements):
     node = Node(tt.TT_LPAREN, "(", basenode.position, basenode.line)
     node.init(nt.NT_TUPLE, 1)
     node.setfirst(list_node(elements))
     return node
+
 
 def create_call_node(basenode, func, exp):
     node = Node(tt.TT_LPAREN, "(", basenode.position, basenode.line)
@@ -266,7 +268,23 @@ def create_undefined_node(basenode):
     return node
 
 
+def create_slice_til_the_end(basenode):
+    node = Node(tt.TT_DOUBLE_COLON, "..", basenode.position, basenode.line)
+    node.init(nt.NT_RANGE, 2)
+    first = create_int_node(basenode, "1")
+    second = create_wildcard_node(basenode)
+    node.setfirst(first)
+    node.setsecond(second)
+    return node
+
+
 def create_goto_node(label):
     node = Node(tt.TT_GOTO, label, -1, -1)
     node.init(nt.NT_GOTO, 0)
+    return node
+
+
+def create_wildcard_node(basenode):
+    node = Node(tt.TT_WILDCARD, "_", basenode.position, basenode.line)
+    node.init(nt.NT_WILDCARD, 0)
     return node
