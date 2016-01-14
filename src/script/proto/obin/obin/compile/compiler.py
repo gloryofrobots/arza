@@ -1363,7 +1363,7 @@ def print_code(code):
     from code.utils import opcode_to_str
     print "\n".join([str((opcode_to_str(c[0]), str(c[1:]))) for c in code.opcodes])
 
-CODE = compile(None, PATTERN_DATA)
+# CODE = compile(None, PATTERN_DATA)
 # CODE = compile(None, """
 #     A[1.._];
 #     A[2..3];

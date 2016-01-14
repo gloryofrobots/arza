@@ -74,9 +74,9 @@ print("5 < 4", 5 < 4)
 print("5 <= 3", 5 <= 3)
 print("x != 6", x != 6)
 print("x == y", x == y)
-print("x >> 43", x >> 43)
-print("x << 10001", x << 10001)
-print("x >>> 1001001001", x >>> 1001001001)
+//print("x >> 43", x >> 43)
+//print("x << 10001", x << 10001)
+//print("x >>> 1001001001", x >>> 1001001001)
 print("x + 34", x + 34)
 print("x - 34", x - 34)
 print("x * 34", x * 34)
@@ -142,7 +142,9 @@ end
 
 f4(1,2,3,4,5,6)
 
-func f5(x, (y,z), a, b, {name=name, age=(years, month)}, ...rest) ->
+func f5(x, (y,z), a, b,
+    {name=name, age=(years, month)},
+     ...rest) ->
     print("x",x, "(y,z)", (y,z),
             "a", a,"b",b,"{name=name, age=(years, month)}", name, years, month,"rest", rest )
 end
@@ -241,16 +243,6 @@ while x > 0
     x-=1
     print(x) end
 
-# ONE LINE
-x = 12
-print(
-if x == 13; 1 + 1; elif x == 14; 2 + 2; else 4 + 4; end
-)
-
-x = 10
-while x > 0; x-=1; print(x); end
-
-for i in range(10,20); print(i) end
 
 A = (1, 2, 3, 4, 5, 6, 35, 110, 122)
 for a in A

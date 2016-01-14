@@ -1,16 +1,16 @@
-func coroutine(fn):
+func coroutine(fn) ->
     (fiber1, fiber2) = spawn_fiber()
 
     first_call = false
 
-    func(...args):
+    func(...args) ->
         outer first_call
-        if first_call == false:
+        if first_call == false
             first_call = true
             activate_fiber(fiber2,
-                    func():
+                    func() ->
                         apply(fn, concat((fiber1, ), args)) end)
-        else:
+        else
             apply(fiber2, args)
         end
     end

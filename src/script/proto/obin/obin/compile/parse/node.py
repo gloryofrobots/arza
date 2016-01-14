@@ -79,7 +79,7 @@ class Node(BaseNode):
 
     def to_json_value(self):
         d = {"_type": token_type_to_str(self.type),
-             "_ntype": nt.node_type_to_str(self.node_type),
+             "_ntype": nt.node_type_to_str(self.node_type) if self.node_type is not None else "",
              "_value": self.value,
              "_line": self.line
              # "arity": self.arity, "pos": self.position

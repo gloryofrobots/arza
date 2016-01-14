@@ -20,8 +20,10 @@ def parse_error_simple(parser, message):
 
 
 def parse_error(parser, message, node):
+    from obin.objects import api
     assert isinstance(message, str)
-    error_message = "Parse Error %d:%d %s" % (parser.token.line, parser.token.pos, message)
+    error_message = "Parse Error %d:%d %s %s" % (parser.token.line, parser.token.pos, message,
+                                                 api.to_native_string(node))
     return _parse_error(error_message, (node,))
 
 

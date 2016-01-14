@@ -53,7 +53,7 @@ def args_parser_init(parser):
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_RCURLY, None)
-    symbol(parser, TT_COLON, None)
+    symbol(parser, TT_ARROW, None)
     literal(parser, TT_NAME)
     return parser
 
@@ -96,7 +96,7 @@ def pattern_parser_init(parser):
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_RCURLY, None)
     symbol(parser, TT_RSQUARE, None)
-    symbol(parser, TT_COLON, None)
+    symbol(parser, TT_ARROW, None)
 
     literal(parser, TT_NAME)
     literal(parser, TT_INT)
@@ -127,7 +127,7 @@ def main_parser_init(parser):
 
     symbol(parser, TT_RSQUARE, None)
     symbol(parser, TT_ENDSTREAM, None)
-    symbol(parser, TT_COLON, None)
+    symbol(parser, TT_ARROW, None)
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_RCURLY, None)
     symbol(parser, TT_LCURLY, None)

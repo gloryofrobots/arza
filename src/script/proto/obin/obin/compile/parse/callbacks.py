@@ -232,7 +232,7 @@ def prefix_if(parser, node):
     branches = list_node([])
 
     cond = condition(parser)
-    advance_expected(parser, TT_COLON)
+    endofexpression(parser)
     body = (statements(parser, IF_TERMINATION_TOKENS))
 
     branches.append_list([cond, body])
@@ -242,14 +242,14 @@ def prefix_if(parser, node):
         advance_expected(parser, TT_ELIF)
 
         cond = condition(parser)
-        advance_expected(parser, TT_COLON)
+        # call endofexpression to allow one line ifs
+        endofexpression(parser)
         body = statements(parser, IF_TERMINATION_TOKENS)
 
         branches.append_list([cond, body])
         check_token_types(parser, IF_TERMINATION_TOKENS)
     if parser.token_type == TT_ELSE:
         advance_expected(parser, TT_ELSE)
-        advance_expected(parser, TT_COLON)
         body = statements(parser)
         branches.append_list([empty_node(), body])
         advance_expected(parser, TT_END)
@@ -364,12 +364,12 @@ def parse_func(parser):
     else:
         name = empty_node()
     args_parser = parser.args_parser
-    if args_parser.token_type == TT_COLON:
+    if args_parser.token_type == TT_ARROW:
         args = empty_node()
     else:
         args = expression(args_parser, 0)
 
-    advance_expected(parser, TT_COLON)
+    advance_expected(parser, TT_ARROW)
     if parser.token_type == TT_OUTER:
         advance_expected(parser, TT_OUTER)
         while True:
@@ -406,7 +406,6 @@ def prefix_func(parser, node):
 def prefix_match(parser, node):
     node.init(NT_MATCH, 2)
     exp = expression(parser, 0)
-    advance_expected(parser, TT_COLON)
     node.setfirst(exp)
 
     pattern_parser = parser.pattern_parser
@@ -414,10 +413,10 @@ def prefix_match(parser, node):
     while pattern_parser.token_type == TT_CASE:
         advance_expected(pattern_parser, TT_CASE)
         pattern = expression(pattern_parser, 0)
-        advance_expected(parser, TT_COLON)
+        advance_expected(parser, TT_ARROW)
 
-        body = statements(parser, [TT_END])
-        advance_expected(parser, TT_END)
+        body = statements(parser, [TT_END, TT_CASE])
+        # advance_expected(parser, TT_END)
 
         branches.append(list_node([pattern, body]))
 
@@ -455,7 +454,8 @@ def stmt_loop_flow(parser, node):
 def stmt_while(parser, node):
     node.init(NT_WHILE, 2)
     node.setfirst(condition(parser))
-    advance_expected(parser, TT_COLON)
+    # CALL endofexpression for one line while
+    endofexpression(parser)
     node.setsecond(statements(parser, [TT_END]))
     advance_expected(parser, TT_END)
     return node
@@ -477,7 +477,8 @@ def stmt_for(parser, node):
     advance_expected(parser, TT_IN)
     node.setsecond(expression(parser, 0))
 
-    advance_expected(parser, TT_COLON)
+    # CALL endofexpression for one line for i in 1..2; i end
+    endofexpression(parser)
     node.setthird(statements(parser, [TT_END]))
     advance_expected(parser, TT_END)
     return node
@@ -495,6 +496,15 @@ def stmt_origin(parser, node):
     return node
 
 
+def stmt_trait(parser, node):
+    node.init(NT_TRAIT, 1)
+    name = expression(parser, 0)
+    if name.type != TT_NAME:
+        parse_error_simple(parser, "Wrong trait name")
+    node.setfirst(name)
+    return node
+
+
 def stmt_generic(parser, node):
     if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
         parse_error_simple(parser, "Wrong generic name")
@@ -502,7 +512,7 @@ def stmt_generic(parser, node):
     name = _init_current_node(parser, 0)
     advance(parser)
 
-    if parser.token_type == TT_COLON or parser.token_type == TT_LPAREN:
+    if parser.token_type == TT_CASE or parser.token_type == TT_LPAREN:
         node.init(NT_GENERIC, 2)
         funcs = parse_specify_funcs(parser)
         node.setfirst(name)
@@ -511,15 +521,6 @@ def stmt_generic(parser, node):
         node.init(NT_GENERIC, 1)
         node.setfirst(name)
 
-    return node
-
-
-def stmt_trait(parser, node):
-    node.init(NT_TRAIT, 1)
-    name = expression(parser, 0)
-    if name.type != TT_NAME:
-        parse_error_simple(parser, "Wrong trait name")
-    node.setfirst(name)
     return node
 
 
@@ -537,14 +538,14 @@ def parse_specify_fn(_parser, _signature_parser):
         advance_expected(_signature_parser, TT_COMMA)
 
     advance_expected(_parser, TT_RPAREN)
-    advance_expected(_parser, TT_COLON)
+    advance_expected(_parser, TT_ARROW)
 
-    body = statements(_parser)
+    body = statements(_parser, [TT_CASE, TT_END])
     # TODO FIX IT
     if not body:
         body = empty_node()
 
-    advance_expected(_parser, TT_END)
+    # advance_expected(_parser, TT_END)
     return list_node([list_node(signature), body])
 
 
@@ -554,8 +555,9 @@ def parse_specify_funcs(parser):
     if parser.token_type == TT_LPAREN:
         func = parse_specify_fn(parser, generic_signature_parser)
         funcs.append(func)
+        advance_expected(parser, TT_END)
     else:
-        advance_expected(parser, TT_COLON)
+        # advance_expected(parser, TT_COLON)
         while parser.token_type == TT_CASE:
             advance_expected(generic_signature_parser, TT_CASE)
             func = parse_specify_fn(parser, generic_signature_parser)

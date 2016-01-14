@@ -191,7 +191,7 @@ def _range(process, routine):
     start = api.to_native_integer(start)
     end = api.to_native_integer(end)
     items = [space.newint(i) for i in xrange(start, end)]
-    return space.newlist(items)
+    return space.newtuple(items)
 
 
 @complete_native_routine
