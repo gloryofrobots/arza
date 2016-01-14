@@ -35,6 +35,8 @@ def setup(process, module, stdlib):
     api.put_native_function(module, u'time', time, 0)
     api.put_native_function(module, u'is_indexed', is_indexed, 1)
     api.put_native_function(module, u'is_seq', is_seq, 1)
+    api.put_native_function(module, u'is_map', is_map, 1)
+
     api.put_native_function(module, u'length', length, 1)
     api.put_native_function(module, u'first', first, 1)
     api.put_native_function(module, u'rest', rest, 1)
@@ -119,6 +121,7 @@ def is_indexed(process, routine):
         return newbool(False)
     return newbool(True)
 
+
 @complete_native_routine
 def is_seq(process, routine):
     from obin.objects.space import islist, newbool
@@ -126,6 +129,16 @@ def is_seq(process, routine):
     if not islist(v1):
         return newbool(False)
     return newbool(True)
+
+
+@complete_native_routine
+def is_map(process, routine):
+    from obin.objects.space import ismap, newbool
+    v1 = routine.get_arg(0)
+    if not ismap(v1):
+        return newbool(False)
+    return newbool(True)
+
 
 @complete_native_routine
 def length(process, routine):

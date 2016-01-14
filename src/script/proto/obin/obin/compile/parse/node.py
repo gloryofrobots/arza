@@ -232,6 +232,48 @@ def create_eq_node(basenode, left, right):
     return node
 
 
+def create_empty_list_node(basenode):
+    node = Node(tt.TT_LSQUARE, "[", basenode.position, basenode.line)
+    node.init(nt.NT_LIST, 1)
+    node.setfirst(list_node([]))
+    return node
+
+def create_empty_map_node(basenode):
+    node = Node(tt.TT_LCURLY, "{", basenode.position, basenode.line)
+    node.init(nt.NT_MAP, 1)
+    node.setfirst(list_node([]))
+    return node
+
+def create_isnot_node(basenode, left, right):
+    node = Node(tt.TT_ISNOT, "isnot", basenode.position, basenode.line)
+    node.init(nt.NT_ISNOT, 2)
+    node.setfirst(left)
+    node.setsecond(right)
+    return node
+
+
+def create_is_node(basenode, left, right):
+    node = Node(tt.TT_IS, "is", basenode.position, basenode.line)
+    node.init(nt.NT_IS, 2)
+    node.setfirst(left)
+    node.setsecond(right)
+    return node
+
+def create_in_node(basenode, left, right):
+    node = Node(tt.TT_IN, "in", basenode.position, basenode.line)
+    node.init(nt.NT_IN, 2)
+    node.setfirst(left)
+    node.setsecond(right)
+    return node
+
+def create_and_node(basenode, left, right):
+    node = Node(tt.TT_AND, "and", basenode.position, basenode.line)
+    node.init(nt.NT_AND, 2)
+    node.setfirst(left)
+    node.setsecond(right)
+    return node
+
+
 def create_assign_node(basenode, var, exp):
     node = Node(tt.TT_ASSIGN, "=", basenode.position, basenode.line)
     node.init(nt.NT_ASSIGN, 2)
@@ -245,6 +287,10 @@ def create_name_node(basenode, name):
     node.init(nt.NT_NAME, 0)
     return node
 
+def create_str_node(basenode, strval):
+    node = Node(tt.TT_STR, strval, basenode.position, basenode.line)
+    node.init(nt.NT_STR, 0)
+    return node
 
 def create_int_node(basenode, strval):
     node = Node(tt.TT_INT, strval, basenode.position, basenode.line)

@@ -408,9 +408,8 @@ def _emit_store_name(process, compiler, bytecode, namenode):
 
 PATTERN_DATA = """
     match [1, 2, 3]:
-        case [Z, ...rest]: 1 end
-        // case (1, 2): 2 end
-        //  case _: nil end
+        case {age=41, name="Bob"}: (name, age) end
+        case {name="Bob", surname=("Alice", "Dou")}: (surname, name) end
     end
 """
 
@@ -476,12 +475,12 @@ def _compile_destruct_recur(process, compiler, bytecode, node):
         else:
             return _compile_destruct_recur_seq(process, compiler, bytecode, node)
     elif node.node_type == NT_MAP:
-        return _compile_destruct_recur_table(process, compiler, bytecode, node)
+        return _compile_destruct_recur_map(process, compiler, bytecode, node)
     else:
         compile_error(process, node, "unsupported assignment syntax")
 
 
-def _compile_destruct_recur_table(process, compiler, bytecode, node):
+def _compile_destruct_recur_map(process, compiler, bytecode, node):
     pairs = node.first()
     for pair in pairs:
         bytecode.emit_0(DUP)
@@ -1364,8 +1363,7 @@ def print_code(code):
     from code.utils import opcode_to_str
     print "\n".join([str((opcode_to_str(c[0]), str(c[1:]))) for c in code.opcodes])
 
-
-# CODE = compile(None, PATTERN_DATA)
+CODE = compile(None, PATTERN_DATA)
 # CODE = compile(None, """
 #     A[1.._];
 #     A[2..3];

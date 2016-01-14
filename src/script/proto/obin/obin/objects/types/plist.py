@@ -74,11 +74,16 @@ class W_PList(W_Root):
             return newundefined()
         return slice(self, start_index, end_index)
 
+    def _equal_(self, other):
+        if isempty(other) and isempty(self):
+            return True
+        return False
+
+__EMPTY__ = W_PList(space.newundefined(), space.newundefined())
 
 
 def empty():
-    from obin.objects.space import newundefined
-    return W_PList(newundefined(), newundefined())
+    return __EMPTY__
 
 
 def foldl(func, acc, pl):
@@ -99,8 +104,7 @@ def foldr(func, acc, pl):
 
 
 def isempty(pl):
-    from obin.objects.space import isundefined
-    return isundefined(head(pl))
+    return pl is __EMPTY__
 
 
 def head(pl):
@@ -164,6 +168,7 @@ def drop(pl, count):
 
     return drop(tail(pl), count - 1)
 
+
 ##############################################
 
 def _slice(pl, index, start, end):
@@ -185,6 +190,7 @@ def slice(pl, start, end):
     assert end > 0
     # return take(drop(pl, start), end - 1)
     return _slice(pl, 0, start, end)
+
 
 ##############################################
 

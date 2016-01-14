@@ -1,12 +1,34 @@
 
-A = [1,2,3,4,5]
+//A = [1,2,3,4,5]
+//A = (5, 13, 45)
+//A = [1,2]
+//A = [(1,2), (2,3,4), 5, [6,7,8]]
+//match A:
+//    case [a,b,c]: (a, b, c) end
+//    case [a, b]: (a,b) end
+//    case (x, y, z): (x, y, z) end
+//    case [(1, X), Y, 5, [6,7, Z]]: (X, Y, Z) end
+//    case _: 123 end
+//end
+
+A = {name="Bob", surname=("Alice", "Dou"), age=42}
+print(A)
+//match A:
+//    case {name="Bob2", age=42}: (name, age) end
+//    case {name="Bob", surname="Alice"}: (name, surname) end
+////    case {name="Bob", surname=("Alice", X)}: (name, surname, X) end
+//    case {name="Bob", surname=("Alice", "Dou")}: (surname, name) end
+//    case _: 42 end
+//end
+
 
 match A:
-    case [a,b]: (a,b) end
-//    case [...rest] : rest end
-//    case [a, b, ...rest] : (a, b, rest) end
-//    case (a, rest) : (a, rest) end
+    case {age=41, names}: (name, age, 0) end
+    case {name, age=41}: (name, age, 1) end
+    case {age=42}: (age, 2) end
+    case _: 42 end
 end
+
 
 //A = (1,2,3,4,5,6)
 //print(A[1.._], A[2..4], A[_.._], A[_..4])

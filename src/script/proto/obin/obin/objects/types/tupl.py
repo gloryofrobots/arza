@@ -109,10 +109,14 @@ class W_Tuple(W_Hashable):
         return len(self.elements)
 
     def _tostring_(self):
-        return "(%s,)" % ",".join([v._tostring_() for v in self.elements])
+        repr = ", ".join([v._tostring_() for v in self.elements])
+        if self._length_() == 1:
+            return "(%s,)" % repr
+        return "(%s)" % repr
 
     def to_py_list(self):
         return self.elements
+
 
 def concat(process, tupl1, tupl2):
     return W_Tuple(tupl1.elements + tupl2.elements)
