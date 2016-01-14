@@ -58,6 +58,12 @@ def newstring(s):
     return W_String(s)
 
 
+def newsymbol(s, idx):
+    from obin.objects.types.symbol import W_Symbol
+    assert isstring(s)
+    return W_Symbol(s, idx)
+
+
 def newinterrupt():
     return w_Interrupt
 

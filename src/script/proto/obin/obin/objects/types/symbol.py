@@ -6,7 +6,8 @@ from obin.objects import api
 class W_Symbol():
     # _immutable_fields_ = ['value']
 
-    def __init__(self, string):
+    def __init__(self, string, idx):
+        self.index = idx
         self.string = string
 
     def _compare_(self, other):
