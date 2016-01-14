@@ -1,13 +1,16 @@
 def initialize(libdirs):
     from obin.builtins import setup_builtins
-    from obin.runtime.process import Process, ProcessState, Modules
+    from obin.runtime.process import Process
+    from obin.runtime import process_data
+
     from obin.objects.space import newmap, newstring
     from obin.builtins.std import Std
     from obin.runtime.load import import_module
     stdlib = Std()
     builtins = newmap()
-    loader = Modules(libdirs)
-    process = Process(ProcessState(loader, stdlib, builtins))
+    proc_data = process_data.create(libdirs, stdlib, builtins)
+
+    process = Process(proc_data)
 
     prelude = import_module(process, newstring(u"obin"))
     process.builtins = prelude.env

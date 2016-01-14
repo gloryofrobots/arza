@@ -1,29 +1,6 @@
 from obin.objects import api, space
 from obin.runtime.stack import Stack
 
-class Modules:
-    def __init__(self, path):
-        assert isinstance(path, list)
-        self.modules = {}
-        self.path = path
-
-    def add_path(self, path):
-        assert isinstance(path, str)
-        self.path.append(path)
-
-    def add_module(self, name, module):
-        self.modules[name] = module
-
-    def get_module(self, name):
-        return self.modules[name]
-
-
-class ProcessData:
-    def __init__(self, modules, std, builtins):
-        self.modules = modules
-        self.std_objects = std
-        self.builtins = builtins
-
 DEFAULT_STACK_SIZE = 32
 
 class Fiber:
@@ -93,6 +70,7 @@ class Process(object):
         TERMINATED = 4
 
     def __init__(self, data):
+        from obin.runtime.process_data import ProcessData
         assert isinstance(data, ProcessData)
         self.__data = data
         self.__state = None
