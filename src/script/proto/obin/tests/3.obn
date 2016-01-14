@@ -230,13 +230,6 @@ else:
 end
 
 
-T = match (1, (23, (24, 25))):
-        case (Z, (G, 1)): 12 + Z end
-        case (1, 23):  11  end
-        case (1, (23, X)):  11  end
-        case _: nil end
-end
-
 
 A = (1,2,3,4,5,6)
 for x in A:
@@ -321,6 +314,42 @@ print ("************************************************************************
 
 //print(Z, X)
 
+
+T = match (1, (23, (24, 25))):
+        case (Z, (G, 1)): 12 + Z end
+        case (1, 23):  11  end
+        case (1, (23, X)):  11  end
+        case _: nil end
+end
+A = [(1,2), (2,3,4), 5, [6,7,8]]
+print(
+match A:
+    case [a,b,c]: (a, b, c) end
+    case [a, b]: (a,b) end
+    case (x, y, z): (x, y, z) end
+    case [(1, X), Y, 5, [6,7, Z]]: (X, Y, Z) end
+    case _: 123 end
+end
+)
+
+A = {name="Bob", surname=("Alice", "Dou"), age=42}
+print(A)
+print(match A:
+    case {name="Bob2", age=42}: (name, age) end
+    case {name="Bob", surname="Alice"}: (name, surname) end
+//    case {name="Bob", surname=("Alice", X)}: (name, surname, X) end
+    case {name="Bob", surname=("Alice", "Dou")}: (surname, name) end
+    case _: 42 end
+end
+)
+print(
+match A:
+    case {age=41, names}: (name, age, 0) end
+    case {name, age=41}: (name, age, 1) end
+    case {age=42}: (age, 2) end
+    case _: 42 end
+end
+)
 
 
 //match A:
