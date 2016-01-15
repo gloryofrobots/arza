@@ -68,6 +68,7 @@ NODE_TYPE_MAPPING = {
     TT_BITOR_ASSIGN: NT_BITOR_ASSIGN,
     TT_DOUBLE_COLON: NT_CONS,
     TT_DOUBLE_DOT: NT_RANGE,
+    TT_COLON: NT_SYMBOL
 }
 
 
@@ -146,6 +147,11 @@ def prefix_nud(parser, node):
 def itself(parser, node):
     _init_node(parser, node, 0)
     return node
+
+
+def prefix_colon(parser, node):
+    check_token_types(parser, [TT_NAME, TT_BACKTICK])
+    return _prefix_nud(parser, NT_SYMBOL, node)
 
 
 def prefix_unary_minus(parser, node):
@@ -332,8 +338,9 @@ def prefix_lcurly(parser, node):
     if parser.token_type != TT_RCURLY:
         while True:
             # TODO check it
-            check_token_types(parser, [TT_NAME, TT_INT, TT_STR, TT_CHAR, TT_FLOAT])
+            check_token_types(parser, [TT_NAME, TT_COLON, TT_INT, TT_STR, TT_CHAR, TT_FLOAT])
             key = _init_current_node(parser, 0)
+
             advance(parser)
 
             if parser.token_type == TT_COMMA:

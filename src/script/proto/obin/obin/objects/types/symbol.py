@@ -1,28 +1,16 @@
+from obin.objects.types.root import W_Root
 from obin.objects.types.string import W_String
-from obin.runtime.error import *
-from obin.objects import api
 
 
-class W_Symbol():
+class W_Symbol(W_Root):
     # _immutable_fields_ = ['value']
 
     def __init__(self, string, idx):
-        self.index = idx
+        self.idx = idx
         self.string = string
 
-    def _compare_(self, other):
-        arg = string_or_symbol(other)
-        if arg is None:
-            raise RuntimeError("Invalid operation")
-
-        return self.string._compare_(arg)
-
     def __eq__(self, other):
-        arg = string_or_symbol(other)
-        if arg is None:
-            raise RuntimeError("Invalid operation")
-
-        return self.string.__eq__(arg)
+        return self._equal_(other)
 
     def __hash__(self):
         return self._hash_()
@@ -31,11 +19,27 @@ class W_Symbol():
         return self.string._hash_()
 
     def _equal_(self, other):
+        from obin.objects import space
+        if space.issymbol(other):
+            val = self.idx == other.idx
+            # print "SYMBOL EQ", self, other, val
+            return val
+
         arg = string_or_symbol(other)
         if arg is None:
-            raise RuntimeError("I")
+            # print "SYMBOL NOT EQ", self, other
+            return False
 
-        return self.string._equal_(arg)
+        val = self.string._equal_(arg)
+        # print "SYMBOL EQ STRING VAL", self, other, val
+        return val
+
+    def _compare_(self, other):
+        arg = string_or_symbol(other)
+        if arg is None:
+            raise RuntimeError("Invalid operation")
+
+        return self.string._compare_(arg)
 
     def _tostring_(self):
         return self.string._tostring_()

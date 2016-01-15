@@ -1,4 +1,5 @@
 from root import W_ValueType
+from obin.objects import api
 
 class W_Integer(W_ValueType):
     # _immutable_fields_ = ['int_value']
@@ -17,8 +18,11 @@ class W_Integer(W_ValueType):
         return float(self.int_value)
 
     def _equal_(self, other):
-        assert isinstance(other, W_Integer)
-        return self.int_value == other.int_value
+        try:
+            val = api.to_native_integer(other)
+            return self.int_value == val
+        except:
+            return False
 
     def _compare_(self, other):
         assert isinstance(other, W_Integer)

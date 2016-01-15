@@ -268,7 +268,9 @@ class W_Map(W_Cell):
         self.insert(name, value)
 
     def insert(self, name, value):
-        from obin.objects.space import isany
+        from obin.objects.space import isany, issymbol, isstring
+        if isstring(name):
+            print name
         assert isany(name)
         assert isany(value)
         # print "Slots_ass", api.to_native_string(name), api.to_native_string(value)

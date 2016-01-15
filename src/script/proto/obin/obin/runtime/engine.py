@@ -3,21 +3,17 @@ def initialize(libdirs):
     from obin.runtime.process import Process
     from obin.runtime import process_data
 
-    from obin.objects.space import newmap, newstring
-    from obin.builtins.std import Std
+    from obin.objects.space import newsymbol
     from obin.runtime.load import import_module
-    stdlib = Std()
-    builtins = newmap()
-    proc_data = process_data.create(libdirs, stdlib, builtins)
+    proc_data = process_data.create(libdirs)
 
     process = Process(proc_data)
 
-    prelude = import_module(process, newstring(u"obin"))
+    prelude = import_module(process, newsymbol(process, u"obin"))
     process.builtins = prelude.env
-    setup_builtins(process, process.builtins, stdlib)
+    setup_builtins(process)
 
     return process
-
 
 def evaluate_file(process, filename):
     from obin.utils import fs
@@ -27,8 +23,7 @@ def evaluate_file(process, filename):
 
 def evaluate_string(process, src):
     from obin.compile.compiler import compile_module
-    from obin.objects.space import newstring
-    module = compile_module(process, newstring(u"__main__"), src)
-    # print "run_src", module
+    from obin.objects.space import newsymbol
+    module = compile_module(process, newsymbol(process, u"__main__"), src)
     result = process.run(module, None)
     return result

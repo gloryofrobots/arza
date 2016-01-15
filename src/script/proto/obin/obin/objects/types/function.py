@@ -9,6 +9,8 @@ class W_FunctionSource(W_Root):
         self.name = name
         self.code = code
 
+    def _tostring_(self):
+        return "<funcsource %s>" % (api.to_native_string(self.name))
 
 class W_Function(W_Callable):
     # _immutable_fields_ = ['scope',  'is_variadic', 'arity', '_name_']
@@ -44,3 +46,12 @@ class W_Function(W_Callable):
         process.call_object(self, args)
 
 
+    def _equal_(self, other):
+        from obin.objects import space
+        if not space.isfunction(other):
+            return False
+
+        if not api.n_equal(self.name, other.name):
+            return False
+
+        return self.bytecode == other.bytecode

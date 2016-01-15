@@ -1,7 +1,8 @@
 # TODO STRING LITERALS PROPER, CHARS, SYMBOLS
-from root import W_ValueType
+from root import W_Number
+from obin.objects import api
 
-class W_Float(W_ValueType):
+class W_Float(W_Number):
     # _immutable_fields_ = ['float_value']
 
     def __init__(self, value):
@@ -19,8 +20,11 @@ class W_Float(W_ValueType):
         return self.float_value
 
     def _equal_(self, other):
-        assert isinstance(other, W_Float)
-        return self.float_value == other.float_value
+        try:
+            fother = api.to_native_float(other)
+            return self.float_value == fother
+        except:
+            return False
 
     def _compare_(self, other):
         assert isinstance(other, W_Float)

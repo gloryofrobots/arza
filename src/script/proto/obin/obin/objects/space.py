@@ -58,10 +58,14 @@ def newstring(s):
     return W_String(s)
 
 
-def newsymbol(s, idx):
-    from obin.objects.types.symbol import W_Symbol
-    assert isstring(s)
-    return W_Symbol(s, idx)
+def newsymbol(process, s):
+    assert isinstance(s, unicode)
+    return process.symbols.symbol(s)
+
+
+def newsymbol_py_str(process, s):
+    assert isinstance(s, str)
+    return newsymbol(process, unicode(s))
 
 
 def newinterrupt():
@@ -93,18 +97,21 @@ def newfalse():
 
 def newfunc(name, bytecode, scope):
     from obin.objects.types.function import W_Function
+    assert issymbol(name)
     obj = W_Function(name, bytecode, scope)
     return obj
 
 
 def newfuncsource(name, bytecode):
     from obin.objects.types.function import W_FunctionSource
+    assert issymbol(name)
     obj = W_FunctionSource(name, bytecode)
     return obj
 
 
 def newnativefunc(name, function, arity):
     from obin.objects.types.native_function import W_NativeFunction
+    assert issymbol(name)
     obj = W_NativeFunction(name, function, arity)
     return obj
 
@@ -153,14 +160,14 @@ def newtuple(tupl):
 
 
 def newmodule(process, name, code):
-    assert isstring(name)
+    assert issymbol(name)
     from obin.objects.types.module import W_Module
     obj = W_Module(name, code, process.builtins)
     return obj
 
 
 def newgeneric(name):
-    assert isstring(name)
+    assert issymbol(name)
     from obin.objects.types.dispatch.generic import W_Generic
     obj = W_Generic(name)
     return obj
@@ -168,6 +175,7 @@ def newgeneric(name):
 
 def newtrait(name):
     from obin.objects.types.trait import W_Trait
+    assert issymbol(name)
     return W_Trait(name)
 
 
@@ -220,6 +228,9 @@ def isfunction(value):
     from obin.objects.types.native_function import W_NativeFunction
     return isinstance(value, W_Function) or isinstance(value, W_NativeFunction)
 
+def isnativefunction(value):
+    from obin.objects.types.native_function import W_NativeFunction
+    return isinstance(value, W_NativeFunction)
 
 def isvector(value):
     from obin.objects.types.vector import W_Vector
@@ -275,6 +286,11 @@ def isnull(value):
 def isstring(w):
     from obin.objects.types.string import W_String
     return isinstance(w, W_String)
+
+
+def issymbol(w):
+    from obin.objects.types.symbol import W_Symbol
+    return isinstance(w, W_Symbol)
 
 
 def isint(w):

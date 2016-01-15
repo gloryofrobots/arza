@@ -3,22 +3,23 @@ class Symbols:
         self.symbols = []
         self.bindings = {}
 
-    def add_symbol(self, ustrval):
+    def symbol(self, ustrval):
         assert isinstance(ustrval, unicode)
         try:
             idx = self.bindings[ustrval]
             symbol = self.symbols[idx]
             return symbol
         except KeyError:
-            from obin.objects.space import newstring, newsymbol
+            from obin.objects.space import newstring
+            from obin.objects.types.symbol import W_Symbol
             string = newstring(ustrval)
             idx = len(self.symbols)
-            symbol = newsymbol(string, idx)
+            symbol = W_Symbol(string, idx)
             self.symbols.append(symbol)
-            self.symbols[ustrval] = idx
+            self.bindings[ustrval] = idx
             return symbol
 
-    def get_symbol(self, idx):
+    def get(self, idx):
         return self.symbols[idx]
 
 
@@ -47,7 +48,11 @@ class ProcessData:
         self.symbols = symbols
 
 
-def create(libdirs, stdlib, builtins):
-    modules = Modules(libdirs)
+def create(libdirs):
+    from obin.objects.space import newmap
+    from obin.builtins.std import Std
     symbols = Symbols()
+    stdlib = Std(symbols)
+    builtins = newmap()
+    modules = Modules(libdirs)
     return ProcessData(modules, stdlib, builtins, symbols)

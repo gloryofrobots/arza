@@ -10,7 +10,6 @@ def setup(obj):
     api.put_native_function(obj, u'create', create, 1)
     api.put_native_function(obj, u'traits', traits, 1)
 
-    api.put_string_string(obj, u'__name__', u"Object")
 
     obj.freeze()
 

@@ -44,7 +44,7 @@ def slice(routine):
     n = stdlib.newvector(length=_w(to_index-from_index))
     index = 0
     for item in xrange(from_index, to_index):
-        api.put_string(n, unicode(str(index)), o.get(unicode(str(item))))
+        api.put_symbol(n, unicode(str(index)), o.get(unicode(str(item))))
         index += 1
     return n
 

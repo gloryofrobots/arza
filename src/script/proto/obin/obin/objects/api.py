@@ -124,19 +124,6 @@ def n_contains(obj, k):
         return True
 
 
-def put_string(obj, k, v):
-    from space import newstring
-    put(obj, newstring(k), v)
-
-
-def put_string_string(obj, k, v):
-    from space import newstring
-    put(obj, newstring(k), newstring(v))
-
-
-
-
-
 def put(obj, k, v):
     from space import isundefined, iscell
     assert not isundefined(v)
@@ -157,6 +144,7 @@ def at_index(obj, i):
     v = obj._at_index_(i)
     return v
 
+
 def get_index(obj, k):
     return obj._get_index_(k)
 
@@ -175,18 +163,22 @@ def n_length(obj):
     return obj._length_()
 
 
+def isempty(obj):
+    return obj._length_() == 0
+
+
 def iterator(obj):
     return obj._iterator_()
-
-
 
 
 """
 Traits
 """
 
+
 def behavior(process, obj):
     return obj._behavior_(process)
+
 
 def kindof(obj, trait):
     raise NotImplementedError()
@@ -237,13 +229,6 @@ def equal(obj, other):
 
 
 def n_equal(obj, other):
-    from space import isconstant
-    if not isinstance(other, obj.__class__):
-        return False
-
-    if isconstant(obj):
-        return True
-
     v = obj._equal_(other)
     return v
 
@@ -281,7 +266,14 @@ def to_routine(obj, stack, args):
 native funcs
 """
 
+
 # TODO move to object
-def put_native_function(obj, name, func, arity):
-    from obin.objects.space import newnativefunc, newstring
-    put_string(obj, name, newnativefunc(newstring(name), func, arity))
+
+def put_symbol(process, obj, k, v):
+    from space import newsymbol
+    put(obj, newsymbol(process, k), v)
+
+
+def put_native_function(process, obj, name, func, arity):
+    from obin.objects.space import newnativefunc, newsymbol
+    put_symbol(process, obj, name, newnativefunc(newsymbol(process, name), func, arity))

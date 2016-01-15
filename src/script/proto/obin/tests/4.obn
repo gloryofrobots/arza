@@ -142,9 +142,7 @@ end
 
 f4(1,2,3,4,5,6)
 
-func f5(x, (y,z), a, b,
-    {name=name, age=(years, month)},
-     ...rest) ->
+func f5(x, (y,z), a, b, {name=name, age=(years, month)}, ...rest) ->
     print("x",x, "(y,z)", (y,z),
             "a", a,"b",b,"{name=name, age=(years, month)}", name, years, month,"rest", rest )
 end
@@ -243,6 +241,16 @@ while x > 0
     x-=1
     print(x) end
 
+// ONE LINE
+x = 12
+print(
+if x == 13; 1 + 1; elif x == 14; 2 + 2; else 4 + 4; end
+)
+
+x = 10
+while x > 0; x-=1; print(x); end
+
+for i in range(10,20); print(i) end
 
 A = (1, 2, 3, 4, 5, 6, 35, 110, 122)
 for a in A
@@ -354,4 +362,18 @@ match A
 end
 )
 
+
+
+//x = :name
+//m = {:name = "Alice", :surname="Bob",
+//        :child={
+//            :little_name="Sweetie",
+//            :toy={
+//                :model="SXR 123344:44332"
+//            }
+//         }
+// }
+//print(m.name)
+//print(m[:child[:toy[:model]]])
+//print(m.child.toy.model)
 

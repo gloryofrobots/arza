@@ -44,9 +44,14 @@ class W_String(W_Hashable):
         return self._hash_()
 
     def _equal_(self, other):
-        # print "_equal_", self.string_value, other.string_value, self.string_value == other.string_value
+        from obin.objects import space
+        if space.issymbol(other):
+            return self._equal_(other.string)
+
+        if not space.isstring(other):
+            return False
+
         return self.string_value == other.string_value
-    #
 
     def isempty(self):
         return not bool(len(self.string_value))
@@ -64,13 +69,13 @@ class W_String(W_Hashable):
         return self.__length
 
     def _at_index_(self, i):
-        from obin.objects.space import newundefined, newstring
+        from obin.objects.space import newundefined, newchar
         try:
             ch = self.string_value[i]
         except:
             return newundefined()
 
-        return newstring(ch)
+        return newchar(ch)
 
     def _get_index_(self, obj):
         try:

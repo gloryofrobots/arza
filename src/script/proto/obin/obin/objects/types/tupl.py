@@ -108,6 +108,20 @@ class W_Tuple(W_Hashable):
     def _length_(self):
         return len(self.elements)
 
+    def _equal_(self, other):
+        from obin.objects import space
+        if not space.istuple(other):
+            return False
+
+        if self._length_() != other._length_():
+            return False
+
+        for el1, el2 in zip(self.elements, other.elements):
+            if not api.n_equal(el1, el2):
+                return False
+
+        return True
+
     def _tostring_(self):
         repr = ", ".join([v._tostring_() for v in self.elements])
         if self._length_() == 1:

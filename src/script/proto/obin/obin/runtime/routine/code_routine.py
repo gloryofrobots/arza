@@ -12,6 +12,7 @@ from obin.objects.types.dispatch.generic import specify
 from obin.objects import api
 from obin.runtime.load import import_module
 from obin.builtins.internals.internals import get_internal
+from obin.objects import space
 
 
 class CodeRoutine(BaseRoutine):
@@ -20,8 +21,7 @@ class CodeRoutine(BaseRoutine):
     def __init__(self, stack, args, name, code, env):
         BaseRoutine.__init__(self, stack)
 
-        from obin.objects.space import isstring
-        assert isstring(name)
+        assert space.issymbol(name)
         self._code_ = code
         self._name_ = name
         self.args = args

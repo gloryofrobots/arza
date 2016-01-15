@@ -103,7 +103,11 @@ class W_Callable(W_Root):
 class W_ValueType(W_Root):
     pass
 
+class W_Number(W_ValueType):
+    pass
 
 # TODO RENAME
 class W_Constant(W_Root):
+    def _equal_(self, other):
+        return self is other
     pass

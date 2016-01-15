@@ -1,5 +1,5 @@
 from rpython.rlib import jit
-from obin.objects.space import newstring, isany
+from obin.objects.space import isany
 from obin.runtime.environment import newenv
 from obin.runtime.routine.code_routine import CodeRoutine
 from obin.runtime.routine.native_routine import NativeRoutine
@@ -26,14 +26,14 @@ def create_origin_routine(stack, constructor, args):
     return OriginRoutine(stack, constructor, args)
 
 
-def create_module_routine(stack, code, module, _globals):
+def create_module_routine(name, stack, code, module_env, _globals):
     assert _globals
     if _globals is not None:
         global_env = newenv(_globals, None)
     else:
         global_env = None
-    env = newenv(module, global_env)
-    return jit.promote(CodeRoutine(stack, None, newstring(u"__module__"), code, env))
+    env = newenv(module_env, global_env)
+    return jit.promote(CodeRoutine(stack, None, name, code, env))
 
 
 def create_function_routine(stack, func, args, outer_env):

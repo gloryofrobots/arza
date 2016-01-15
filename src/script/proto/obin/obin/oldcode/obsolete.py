@@ -8,10 +8,10 @@ def setup(obj):
     from obin.builtins.number_builtins import w_NAN
     from obin.builtins.number_builtins import w_POSITIVE_INFINITY
     # 15.1.1.1
-    api.put_string(obj, u'NaN', w_NAN)
+    api.put_symbol(obj, u'NaN', w_NAN)
 
     # 15.1.1.2
-    api.put_string(obj, u'Infinity', w_POSITIVE_INFINITY)
+    api.put_symbol(obj, u'Infinity', w_POSITIVE_INFINITY)
     pass
 
 @complete_native_routine

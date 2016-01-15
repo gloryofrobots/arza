@@ -35,3 +35,10 @@ class W_NativeFunction(W_Callable):
                                    % (api.n_length(args), self.arity))
 
         process.call_object(self, args)
+
+    def _equal_(self, other):
+        from obin.objects import space
+        if not space.isnativefunction(other):
+            return False
+
+        return self._function_ == other._function_

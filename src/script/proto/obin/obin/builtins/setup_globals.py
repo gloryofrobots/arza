@@ -9,41 +9,31 @@ from obin.runistr import encode_unicode_utf8
 def setup(process, module, stdlib):
     ### Traits
 
-    # THIS FUNCS NEED TO BE SIMPLE NATIVES FOR EACH TYPE (list_to_boolean, float_to_int, etc...)
-    # self.ToBoolean = newgeneric(newstring(u"to_boolean"))
-    # self.ToFloat = newgeneric(newstring(u"to_float"))
-    # self.ToInteger = newgeneric(newstring(u"to_integer"))
-    # self.ToList = newgeneric(newstring(u"to_list"))
-    # self.ToTuple = newgeneric(newstring(u"to_tuple"))
-    # self.ToMap = newgeneric(newstring(u"to_map"))
-    # self.ToVector = newgeneric(newstring(u"to_vector"))
-    # self.ToChar = newgeneric(newstring(u"to_character"))
-
     # 15.1.2.1
-    api.put_native_function(module, u'eval', _eval, 1)
-    api.put_native_function(module, u'print', _print, -1)
-    api.put_native_function(module, u'id', _id, 1)
-    api.put_native_function(module, u'spawn_fiber', spawn_fiber, 0)
-    api.put_native_function(module, u'activate_fiber', activate_fiber, 2)
-    api.put_native_function(module, u'range', _range, 2)
-    api.put_native_function(module, u'clone', clone, 1)
-    api.put_native_function(module, u'trait', trait, 1)
-    api.put_native_function(module, u'attach', attach, -1)
-    api.put_native_function(module, u'detach', detach, -1)
-    api.put_native_function(module, u'apply', apply, 2)
-    api.put_native_function(module, u'concat', concat_tuples, 2)
-    api.put_native_function(module, u'time', time, 0)
-    api.put_native_function(module, u'is_indexed', is_indexed, 1)
-    api.put_native_function(module, u'is_seq', is_seq, 1)
-    api.put_native_function(module, u'is_map', is_map, 1)
+    api.put_native_function(process, module, u'eval', _eval, 1)
+    api.put_native_function(process, module, u'print', _print, -1)
+    api.put_native_function(process, module, u'id', _id, 1)
+    api.put_native_function(process, module, u'spawn_fiber', spawn_fiber, 0)
+    api.put_native_function(process, module, u'activate_fiber', activate_fiber, 2)
+    api.put_native_function(process, module, u'range', _range, 2)
+    api.put_native_function(process, module, u'clone', clone, 1)
+    api.put_native_function(process, module, u'trait', trait, 1)
+    api.put_native_function(process, module, u'attach', attach, -1)
+    api.put_native_function(process, module, u'detach', detach, -1)
+    api.put_native_function(process, module, u'apply', apply, 2)
+    api.put_native_function(process, module, u'concat', concat_tuples, 2)
+    api.put_native_function(process, module, u'time', time, 0)
+    api.put_native_function(process, module, u'is_indexed', is_indexed, 1)
+    api.put_native_function(process, module, u'is_seq', is_seq, 1)
+    api.put_native_function(process, module, u'is_map', is_map, 1)
 
-    api.put_native_function(module, u'length', length, 1)
-    api.put_native_function(module, u'first', first, 1)
-    api.put_native_function(module, u'rest', rest, 1)
+    api.put_native_function(process, module, u'length', length, 1)
+    api.put_native_function(process, module, u'first', first, 1)
+    api.put_native_function(process, module, u'rest', rest, 1)
     ## debugging
     # if not we_are_translated():
-    #     api.put_native_function(obj, u'pypy_repr', pypy_repr)
-    #     api.put_native_function(obj, u'inspect', inspect)
+    #     api.put_native_function(process, obj, u'pypy_repr', pypy_repr)
+    #     api.put_native_function(process, obj, u'inspect', inspect)
 
 
 # 15.1.2.2
@@ -80,9 +70,9 @@ def _eval(process, routine):
     x = routine.get_arg(0)
 
     assert space.isstring(x)
-
+    spac
     src = api.to_native_string(x)
-    source = compiler.compile_function_source(process, src, space.newstring(u"__eval__"))
+    source = compiler.compile_function_source(process, src, space.newsymbol(u"__eval__"))
     obj = source.code.scope.create_env_bindings()
     env = newenv(obj, None)
     func = space.newfunc(source.name, source.code, env)

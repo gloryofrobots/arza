@@ -1,4 +1,4 @@
-from obin.objects.space import isstring
+from obin.objects.space import issymbol
 from obin.objects.space import newmap
 from obin.utils.misc import absent_index, is_absent_index
 from obin.objects import api
@@ -36,7 +36,7 @@ class Scope:
         return self.references.get(name)
 
     def add_reference(self, name):
-        assert isstring(name)
+        assert issymbol(name)
         return self.references.add(name)
 
     def get_literal(self, literal):
@@ -71,7 +71,7 @@ class Scope:
 
     def add_local(self, local):
         from obin.objects.space import newundefined
-        assert isstring(local)
+        assert issymbol(local)
         self.check_arg_count()
         assert is_absent_index(self.get_local_index(local))
         return self.locals.insert(local, newundefined())
@@ -80,12 +80,12 @@ class Scope:
         return api.get_index(self.locals, local)
 
     def add_outer(self, name):
-        assert isstring(name)
+        assert issymbol(name)
         assert name not in self.outers
         self.outers.append(name)
 
     def has_outer(self, name):
-        assert isstring(name)
+        assert issymbol(name)
         return name in self.outers
 
     def finalize(self):

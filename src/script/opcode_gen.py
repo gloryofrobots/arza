@@ -6,6 +6,7 @@ OPCODES = [
     ("TRUE", 1),
     ("FALSE", 1),
     ("LITERAL", 1),
+    ("SYMBOL", 1),
     ("OUTER", 1),
     ("LOCAL", 1),
     ("FUNCTION", 1),
@@ -14,7 +15,6 @@ OPCODES = [
     ("DUP", 1),
     ("NEXT", 1),
     ("IMPORT", 1),
-    ("IMPORT_MEMBER", 1),
     ("GENERIC", 1),
     ("TRAIT", 1),
     ("ARGUMENTS", 1),
@@ -49,7 +49,7 @@ OPCODES = [
     ("TUPLE", "__UNKNOWN_CHANGE__"),
     ("MAP", "__UNKNOWN_CHANGE__"),
     ("LIST", "__UNKNOWN_CHANGE__"),
-    ("REIFY", "__UNKNOWN_CHANGE__"),
+    ("SPECIFY", "__UNKNOWN_CHANGE__"),
 ]
 
 def gen_ocode_ids():

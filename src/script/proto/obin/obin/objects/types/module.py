@@ -25,7 +25,7 @@ class W_Module(W_Root):
 
         from obin.runtime.routine import create_module_routine
 
-        routine = create_module_routine(stack, self.bytecode, self.env, self.builtins)
+        routine = create_module_routine(self.name, stack, self.bytecode, self.env, self.builtins)
         # print "*********"
         # for i, c in enumerate([str(c) for c in self._bytecode_.opcodes]): print i,c
         # print "*********"

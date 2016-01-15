@@ -10,6 +10,7 @@ NODES = [
   "NT_WILDCARD",
   "NT_NAME",
   "NT_SPECIAL_NAME",
+  "NT_SYMBOL",
 
   "NT_FUNC",
 

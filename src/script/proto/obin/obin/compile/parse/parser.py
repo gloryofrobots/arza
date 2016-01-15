@@ -263,6 +263,8 @@ def main_parser_init(parser):
 
     prefix(parser, TT_BITNOT, prefix_nud)
     prefix(parser, TT_NOT, prefix_nud)
+    prefix(parser, TT_COLON, prefix_colon)
+
     prefix(parser, TT_SUB, prefix_unary_minus)
     prefix(parser, TT_ADD, prefix_unary_plus)
 

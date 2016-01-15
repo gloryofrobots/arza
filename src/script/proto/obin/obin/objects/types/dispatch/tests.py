@@ -1,8 +1,8 @@
 from obin.objects import api
 
-def make_method(name, arity=3):
-    from obin.objects.space import newtrait, newgeneric, newstring, newnativefunc, newtuple
-    return newnativefunc(newstring(unicode(name)), lambda *args: name, arity)
+def make_method(process, name, arity=3):
+    from obin.objects.space import newtrait, newgeneric,  newnativefunc, newtuple, newsymbol
+    return newnativefunc(newsymbol(process, unicode(name)), lambda *args: name, arity)
 
 def specify(generic, sig, name):
     arity = api.n_length(sig)
@@ -26,8 +26,6 @@ def objects(traits_list):
     return newtuple([makeobject(traits) for traits in traits_list])
 
 def test(gen, expected, args):
-    # from obin.objects.object_space import newstring
-    # assert m._name_ == newstring(expected)
     m = gen.lookup_method(args)
     res = m._function_(*(args.to_py_list()))
     if res != expected:
@@ -35,11 +33,11 @@ def test(gen, expected, args):
         raise RuntimeError((res, expected))
 
 def test_3():
-    from obin.objects.space import newtrait, newgeneric, newstring, newnativefunc, newtuple
-    X = newtrait(newstring(u"X"))
-    Y = newtrait(newstring(u"Y"))
-    Z = newtrait(newstring(u"Z"))
-    g = newgeneric(newstring(u"TEST_3"))
+    from obin.objects.space import newtrait, newgeneric
+    X = newtrait(newsymbol(u"X"))
+    Y = newtrait(newsymbol(u"Y"))
+    Z = newtrait(newsymbol(u"Z"))
+    g = newgeneric(newsymbol(u"TEST_3"))
     g.specify_single(sig(X, Y, Z), make_method("m1"))
     g.specify_single(sig(X, Z, Z), make_method("m6"))
     g.specify_single(sig(Y, Y, Z), make_method("m2"))
@@ -55,7 +53,7 @@ def test_3():
     test(g, "m1", objects([[X,X], [Y,X], [Y,Y,Z]]))
 
 def test_any():
-    from obin.objects.space import newtrait, newgeneric, newstring,\
+    from obin.objects.space import newtrait, newgeneric, newsymbol,\
         stdlib, newtuple, newnil, newbool, newint, newprocess
     newprocess(["."])
 
@@ -63,10 +61,10 @@ def test_any():
     Object = stdlib.traits.Object
     Vector = stdlib.traits.Vector
     String = stdlib.traits.String
-    X = newtrait(newstring(u"X"))
-    Y = newtrait(newstring(u"Y"))
-    Z = newtrait(newstring(u"Z"))
-    g = newgeneric(newstring(u"TEST_ANY"))
+    X = newtrait(newsymbol(u"X"))
+    Y = newtrait(newsymbol(u"Y"))
+    Z = newtrait(newsymbol(u"Z"))
+    g = newgeneric(newsymbol(u"TEST_ANY"))
     specify(g, sig(String, X, Any, Any), "m1")
     specify(g, sig(String, Any, Any, Any), "m2")
     specify(g, sig(Any, Any, Any, String), "m3")
@@ -84,7 +82,7 @@ def test_any():
     assert len(g._dags_[3].discriminators) == 5
 
     test(g, "m1", newtuple([
-        newstring(u"S1"),
+        newsymbol(u"S1"),
         makeobject([Y,Z,Z,X]),
         newint(111),
         newbool(True)
@@ -92,7 +90,7 @@ def test_any():
 
 
     test(g, "m2", newtuple([
-        newstring(u"S1"),
+        newsymbol(u"S1"),
         newint(42),
         newint(111),
         newbool(True)
@@ -102,14 +100,14 @@ def test_any():
         newnil(),
         newint(42),
         newint(111),
-        newstring(u"S1")
+        newsymbol(u"S1")
     ]))
 
     test(g, "m4", newtuple([
         newnil(),
         makeobject([Z,Z,Y,Z,X]),
         newtuple([newbool(True), newbool(False)]),
-        newstring(u"S1")
+        newsymbol(u"S1")
     ]))
     test(g, "m5", newtuple([
         makeobject([Z,Z,Y,Z,X]),

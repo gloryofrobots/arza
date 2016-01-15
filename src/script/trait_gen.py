@@ -38,7 +38,7 @@ print "#####################################################"
 
 def print_declarations():
     for T in TRAITS:
-        S = '        self.%s = newtrait(newstring(u"%s"))' % (T, T)
+        S = '        self.%s = newtrait(symbols.symbol(u"%s"))' % (T, T)
         print S
 print_declarations()
 

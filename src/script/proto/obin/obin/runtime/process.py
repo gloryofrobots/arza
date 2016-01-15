@@ -95,6 +95,10 @@ class Process(object):
     def builtins(self):
         return self.__data.builtins
 
+    @property
+    def symbols(self):
+        return self.__data.symbols
+
     @builtins.setter
     def builtins(self, b):
         self.__data.builtins = b
