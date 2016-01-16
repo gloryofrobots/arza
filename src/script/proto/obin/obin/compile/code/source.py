@@ -12,6 +12,11 @@ def estimate_stack_size(opcodes):
     return max_size
 
 
+def codeinfo(pos, line, col):
+    return pos, line, col
+
+def codeinfo_unknown():
+    return codeinfo(-1, -1, -1)
 
 class CodeSource:
     # _immutable_fields_ = ['compiled_opcodes[*]', 'scope']
@@ -20,7 +25,7 @@ class CodeSource:
     """
 
     def __init__(self):
-
+        self.source_map = []
         self.opcodes = []
         self.label_count = 0
         self.startlooplabel = []
@@ -30,12 +35,12 @@ class CodeSource:
         self.estimated_stack_size = -1
         self.scope = None
         # VALUE FOR AUTOMATIC RETURN
-        self.emit_0(UNDEFINED)
+        self.emit_0(UNDEFINED, codeinfo_unknown())
 
     def finalize_compilation(self, scope_info):
         assert scope_info
         self.scope = scope_info
-        self.emit_0(RETURN)
+        self.emit_0(RETURN, codeinfo_unknown())
         self.__remove_labels()
         self.estimated_stack_size = estimate_stack_size(self.opcodes)
         return Code(self.opcodes, self.estimated_stack_size, self.scope)
@@ -62,7 +67,7 @@ class CodeSource:
     def last(self):
         return self.opcodes[-1]
 
-    def emit_2(self, opcode, arg1, arg2):
+    def emit_2(self, opcode, arg1, arg2, info):
         # from obin.compile.code.utils import opcode_to_str
         assert isinstance(opcode, int)
         assert isinstance(arg1, int)
@@ -71,11 +76,11 @@ class CodeSource:
         self.opcodes.append((opcode, arg1, arg2))
         return opcode
 
-    def emit_0(self, operation):
-        self.emit_2(operation, 0, 0)
+    def emit_0(self, operation, info):
+        self.emit_2(operation, 0, 0, info)
 
-    def emit_1(self, operation, arg1):
-        self.emit_2(operation, arg1, 0)
+    def emit_1(self, operation, arg1, info):
+        self.emit_2(operation, arg1, 0, info)
 
     def emit_endloop_label(self, label):
         self.endlooplabel.pop()
@@ -92,19 +97,19 @@ class CodeSource:
             return False
         if self.pop_after_break[-1] is True:
             self.emit_0(POP)
-        self.emit_1(JUMP, self.endlooplabel[-1])
+        self.emit_1(JUMP, self.endlooplabel[-1], codeinfo_unknown())
         return True
 
     def emit_continue(self):
         if not self.startlooplabel:
             return False
-        self.emit_1(JUMP, self.updatelooplabel[-1])
+        self.emit_1(JUMP, self.updatelooplabel[-1], codeinfo_unknown())
         return True
 
     def emit_label(self, num=-1):
         if num == -1:
             num = self.prealocate_label()
-        self.emit_1(LABEL, num)
+        self.emit_1(LABEL, num, codeinfo_unknown())
         return num
 
     def emit_startloop_label(self):

@@ -6,7 +6,7 @@ from obin.compile.scope import Scope
 from obin.types import space as obs
 from obin.types import api
 from obin.builtins.internals import internals
-from obin.compile.code.source import CodeSource
+from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown
 from obin.compile.code import *
 from obin.utils.misc import is_absent_index
 
@@ -39,6 +39,12 @@ class Compiler:
         self.scopes = []
         self.depth = -1
         self.source_path = sourcename
+
+
+def info(node):
+    if is_empty_node(node):
+        return codeinfo_unknown()
+    return codeinfo(node.position, node.line, node.column)
 
 
 ########################
@@ -168,50 +174,63 @@ def _current_scope(process, compiler):
 def _compile_FLOAT(process, compiler, code, node):
     value = float(node.value)
     idx = _declare_literal(process, compiler, obs.newfloat(value))
-    code.emit_1(LITERAL, idx)
+    code.emit_1(LITERAL, idx, info(node))
 
 
 def _compile_INT(process, compiler, code, node):
     value = int(node.value)
-    _emit_integer(process, compiler, code, value)
+    idx = _declare_literal(process, compiler, obs.newint(value))
+    code.emit_1(LITERAL, idx, info(node))
 
 
 def _emit_integer(process, compiler, code, integer):
     idx = _declare_literal(process, compiler, obs.newint(integer))
-    code.emit_1(LITERAL, idx)
+    code.emit_1(LITERAL, idx, codeinfo_unknown())
 
 
 def _compile_TRUE(process, compiler, code, node):
-    code.emit_0(TRUE)
+    code.emit_0(TRUE, info(node))
 
 
 def _compile_FALSE(process, compiler, code, node):
-    code.emit_0(FALSE)
+    code.emit_0(FALSE, info(node))
 
 
 def _compile_NIL(process, compiler, code, node):
-    code.emit_0(NULL)
+    code.emit_0(NULL, info(node))
 
 
 def _compile_UNDEFINED(process, compiler, code, node):
-    code.emit_0(UNDEFINED)
+    code.emit_0(UNDEFINED, info(node))
 
 
-def _emit_string(process, compiler, code, string):
-    idx = _declare_literal(process, compiler, string)
-    code.emit_1(LITERAL, idx)
-    return idx
+def _get_name_value(name):
+    if name.node_type == NT_SPECIAL_NAME:
+        value = _get_special_name_value(name)
+    elif name.node_type == NT_NAME:
+        value = name.value
+    else:
+        assert False, "Invalid call"
+    return value
+
+
+def _emit_pop(code):
+    code.emit_0(POP, codeinfo_unknown())
+
+
+def _emit_dup(code):
+    code.emit_0(DUP, codeinfo_unknown())
+
+
+def _emit_undefined(code):
+    code.emit_0(UNDEFINED, codeinfo_unknown())
 
 
 def _emit_symbol_name(process, compiler, code, name):
-    symbol = obs.newsymbol_py_str(process, name.value)
-    return _emit_symbol(process, compiler, code, symbol)
-
-
-def _emit_symbol(process, compiler, code, name):
-    idx = _declare_literal(process, compiler, name)
-    code.emit_1(LITERAL, idx)
-    return idx
+    value = _get_name_value(name)
+    symbol = obs.newsymbol_py_str(process, value)
+    idx = _declare_literal(process, compiler, symbol)
+    code.emit_1(LITERAL, idx, info(name))
 
 
 def _compile_STR(process, compiler, code, node):
@@ -221,7 +240,9 @@ def _compile_STR(process, compiler, code, node):
     strval = decode_str_utf8(strval)
     strval = string_unquote(strval)
     strval = unicode_unescape(strval)
-    _emit_string(process, compiler, code, obs.newstring(strval))
+    string = obs.newstring(strval)
+    idx = _declare_literal(process, compiler, string)
+    code.emit_1(LITERAL, idx, info(node))
 
 
 def _compile_CHAR(process, compiler, code, node):
@@ -232,7 +253,9 @@ def _compile_CHAR(process, compiler, code, node):
     strval = decode_str_utf8(strval)
     strval = string_unquote(strval)
     strval = unicode_unescape(strval)
-    _emit_string(process, compiler, code, obs.newstring(strval))
+    string = obs.newstring(strval)
+    idx = _declare_literal(process, compiler, string)
+    code.emit_1(LITERAL, idx, info(node))
 
 
 # def _compile_OUTER(process, compiler, code, node):
@@ -245,12 +268,12 @@ def _compile_CHAR(process, compiler, code, node):
 def _on_binary_primitive(process, compiler, code, node, name):
     _compile(process, compiler, code, node.first())
     _compile(process, compiler, code, node.second())
-    code.emit_1(CALL_INTERNAL, name)
+    code.emit_1(CALL_INTERNAL, name, info(node))
 
 
 def _on_unary_primitive(process, compiler, code, node, name):
     _compile(process, compiler, code, node.first())
-    code.emit_1(CALL_INTERNAL, name)
+    code.emit_1(CALL_INTERNAL, name, info(node))
 
 
 def _compile_BITAND(process, compiler, code, node):
@@ -352,17 +375,17 @@ def _compile_URSHIFT(process, compiler, code, node):
 def _compile_AND(process, compiler, code, node):
     _compile(process, compiler, code, node.first())
     one = code.prealocate_label()
-    code.emit_1(JUMP_IF_FALSE_NOPOP, one)
+    code.emit_1(JUMP_IF_FALSE_NOPOP, one, info(node))
     _compile(process, compiler, code, node.second())
-    code.emit_1(LABEL, one)
+    code.emit_1(LABEL, one, info(node))
 
 
 def _compile_OR(process, compiler, code, node):
     _compile(process, compiler, code, node.first())
     one = code.prealocate_label()
-    code.emit_1(JUMP_IF_TRUE_NOPOP, one)
+    code.emit_1(JUMP_IF_TRUE_NOPOP, one, info(node))
     _compile(process, compiler, code, node.second())
-    code.emit_1(LABEL, one)
+    code.emit_1(LABEL, one, info(node))
 
 
 def _compile_ASSIGN_MEMBER(process, compiler, code, node):
@@ -374,7 +397,7 @@ def _compile_ASSIGN_MEMBER(process, compiler, code, node):
     _compile(process, compiler, code, value)
     _compile(process, compiler, code, item)
     _compile(process, compiler, code, obj)
-    code.emit_0(STORE_MEMBER)
+    code.emit_0(STORE_MEMBER, info(node))
 
 
 def _compile_ASSIGN_SYMBOL(process, compiler, code, node):
@@ -384,24 +407,18 @@ def _compile_ASSIGN_SYMBOL(process, compiler, code, node):
     _compile(process, compiler, code, node.second())
     _emit_symbol_name(process, compiler, code, member.second())
     _compile(process, compiler, code, obj)
-    code.emit_0(STORE_MEMBER)
-
-
-def _emit_store(process, compiler, code, name):
-    assert obs.issymbol(name)
-
-    index, is_local = _declare_variable(process, compiler, name)
-
-    name_index = _declare_literal(process, compiler, name)
-    if is_local:
-        code.emit_2(STORE_LOCAL, index, name_index)
-    else:
-        code.emit_2(STORE_OUTER, index, name_index)
+    code.emit_0(STORE_MEMBER, info(node))
 
 
 def _emit_store_name(process, compiler, code, namenode):
     name = obs.newsymbol_py_str(process, namenode.value)
-    _emit_store(process, compiler, code, name)
+    index, is_local = _declare_variable(process, compiler, name)
+
+    name_index = _declare_literal(process, compiler, name)
+    if is_local:
+        code.emit_2(STORE_LOCAL, index, name_index, info(namenode))
+    else:
+        code.emit_2(STORE_OUTER, index, name_index, info(namenode))
 
 
 #########################################################
@@ -426,12 +443,12 @@ def _compile_MATCH(process, compiler, code, node):
     name_index = _declare_literal(process, compiler, name)
     index = _declare_local(process, compiler, name)
     _compile(process, compiler, code, exp)
-    code.emit_2(STORE_LOCAL, index, name_index)
+    code.emit_2(STORE_LOCAL, index, name_index, codeinfo_unknown())
 
     endmatch = code.prealocate_label()
     graph = transform(process, compiler, node, patterns, create_goto_node(endmatch))
     _compile(process, compiler, code, graph)
-    code.emit_1(LABEL, endmatch)
+    code.emit_1(LABEL, endmatch, codeinfo_unknown())
 
 
 def _compile_GOTO(process, compiler, code, node):
@@ -446,7 +463,7 @@ def _compile_GOTO(process, compiler, code, node):
         code.remove_last()
 
     value = int(node.value)
-    code.emit_1(JUMP, value)
+    code.emit_1(JUMP, value, codeinfo_unknown())
 
 
 #########################################################
@@ -484,7 +501,7 @@ def _compile_destruct_recur(process, compiler, code, node):
 def _compile_destruct_recur_map(process, compiler, code, node):
     pairs = node.first()
     for pair in pairs:
-        code.emit_0(DUP)
+        _emit_dup(code)
 
         key = pair[0]
         value = pair[1]
@@ -496,14 +513,14 @@ def _compile_destruct_recur_map(process, compiler, code, node):
 
         _emit_map_key(process, compiler, code, key)
 
-        code.emit_0(MEMBER)
+        code.emit_0(MEMBER, info(key))
 
         if varname is None:
             _compile_destruct_recur(process, compiler, code, value)
-            code.emit_0(POP)
+            _emit_pop(code)
         else:
             _emit_store_name(process, compiler, code, varname)
-            code.emit_0(POP)
+            _emit_pop(code)
 
 
 ##################################################
@@ -511,32 +528,32 @@ def _compile_destruct_recur_map(process, compiler, code, node):
 ##################################################
 
 def _compile_destruct_recur_seq_rest(process, compiler, code, last_item, last_index):
-    code.emit_0(DUP)
+    _emit_dup(code)
     varname = last_item.first()
     _emit_integer(process, compiler, code, last_index)
-    code.emit_0(UNDEFINED)
-    code.emit_0(SLICE)
+    code.emit_0(UNDEFINED, codeinfo_unknown())
+    code.emit_0(SLICE, codeinfo_unknown())
     _emit_store_name(process, compiler, code, varname)
-    code.emit_0(POP)
+    _emit_pop(code)
 
 
 def _compile_destruct_recur_seq_item(process, compiler, code, item, index):
-    code.emit_0(DUP)
+    _emit_dup(code)
 
     varname = None
     if item.node_type == NT_NAME:
         varname = item
 
     idx = _declare_literal(process, compiler, obs.newint(index))
-    code.emit_1(LITERAL, idx)
-    code.emit_0(MEMBER)
+    code.emit_1(LITERAL, idx, info(item))
+    code.emit_0(MEMBER, info(item))
 
     if varname is None:
         _compile_destruct_recur(process, compiler, code, item)
-        code.emit_0(POP)
+        _emit_pop(code)
     else:
         _emit_store_name(process, compiler, code, varname)
-        code.emit_0(POP)
+        _emit_pop(code)
 
 
 def _compile_destruct_recur_seq(process, compiler, code, node):
@@ -557,16 +574,16 @@ def _compile_destruct_recur_seq(process, compiler, code, node):
 
 
 def _compile_destruct_unpack_seq(process, compiler, code, node):
-    code.emit_0(DUP)
+    _emit_dup(code)
     names = node.first()
     length = len(names)
-    code.emit_1(UNPACK_SEQUENCE, length)
+    code.emit_1(UNPACK_SEQUENCE, length, info(node))
     for name in names[0:-1]:
         _emit_store_name(process, compiler, code, name)
-        code.emit_0(POP)
+        _emit_pop(code)
     last_name = names[-1]
     _emit_store_name(process, compiler, code, last_name)
-    code.emit_0(POP)
+    _emit_pop(code)
 
 
 ################################################################################
@@ -581,8 +598,7 @@ def _compile_ASSIGN(process, compiler, code, node):
         return _compile_destruct(process, compiler, code, node)
 
     _compile(process, compiler, code, node.second())
-    name = obs.newsymbol_py_str(process, left.value)
-    _emit_store(process, compiler, code, name)
+    _emit_store_name(process, compiler, code, left)
 
 
 def _compile_modify_assignment_dot_primitive(process, compiler, code, node, operation):
@@ -592,11 +608,11 @@ def _compile_modify_assignment_dot_primitive(process, compiler, code, node, oper
 
     _compile(process, compiler, code, node.first())
     _compile(process, compiler, code, node.second())
-    code.emit_1(CALL_INTERNAL, operation)
+    code.emit_1(CALL_INTERNAL, operation, info(obj))
 
     _emit_symbol_name(process, compiler, code, member.second())
     _compile(process, compiler, code, obj)
-    code.emit_0(STORE_MEMBER)
+    code.emit_0(STORE_MEMBER, info(obj))
 
 
 def _compile_modify_assignment_primitive(process, compiler, code, node, operation):
@@ -611,8 +627,8 @@ def _compile_modify_assignment_primitive(process, compiler, code, node, operatio
     # _compile(process, compiler,code, left)
     _compile(process, compiler, code, node.first())
     _compile(process, compiler, code, node.second())
-    code.emit_1(CALL_INTERNAL, operation)
-    _emit_store(process, compiler, code, name)
+    code.emit_1(CALL_INTERNAL, operation, info(node))
+    _emit_store_name(process, compiler, code, left)
 
 
 def _compile_ADD_ASSIGN(process, compiler, code, node):
@@ -648,35 +664,24 @@ def _compile_BITXOR_ASSIGN(process, compiler, code, node):
 
 
 def _compile_node_name_lookup(process, compiler, code, node):
-    if node.node_type == NT_SPECIAL_NAME:
-        name_value = _get_special_name_value(process, compiler, node)
-    elif node.node_type == NT_NAME:
-        name_value = node.value
-    else:
-        return compile_error(process, node, "Invalid node in lookup")
-
+    name_value = _get_name_value(node)
     name = obs.newsymbol_py_str(process, name_value)
-    _compile_name_lookup(process, compiler, code, name)
 
-
-def _compile_name_lookup(process, compiler, code, name):
-    assert obs.issymbol(name)
     index, is_local = _get_variable_index(process, compiler, name)
     name_index = _declare_literal(process, compiler, name)
     if is_local:
-        code.emit_2(LOCAL, index, name_index)
+        code.emit_2(LOCAL, index, name_index, info(node))
     else:
-        code.emit_2(OUTER, index, name_index)
+        code.emit_2(OUTER, index, name_index, info(node))
 
 
-def _get_special_name_value(process, compiler, node):
+def _get_special_name_value(node):
     # REMOVE BACKTICKS `xxx`
     return node.value[1:len(node.value) - 1]
 
 
 def _compile_SPECIAL_NAME(process, compiler, code, node):
-    name = obs.newsymbol_py_str(process, _get_special_name_value(process, compiler, node))
-    _compile_name_lookup(process, compiler, code, name)
+    _compile_node_name_lookup(process, compiler, code, node)
 
 
 def _compile_NAME(process, compiler, code, node):
@@ -685,33 +690,27 @@ def _compile_NAME(process, compiler, code, node):
 
 def _compile_SYMBOL(process, compiler, code, node):
     name = node.first()
-    if name.node_type == NT_SPECIAL_NAME:
-        value = _get_special_name_value(process, compiler, name)
-    else:
-        value = name.value
-
-    symbol = obs.newsymbol_py_str(process, value)
-    _emit_symbol(process, compiler, code, symbol)
+    _emit_symbol_name(process, compiler, code, name)
 
 
 def _compile_RETURN(process, compiler, code, node):
     expr = node.first()
     if is_empty_node(expr):
-        code.emit_0(UNDEFINED)
+        _emit_undefined(code)
     else:
         _compile(process, compiler, code, expr)
 
-    code.emit_0(RETURN)
+    code.emit_0(RETURN, info(node))
 
 
 def _compile_THROW(process, compiler, code, node):
     expr = node.first()
     if is_empty_node(expr):
-        code.emit_0(UNDEFINED)
+        _emit_undefined(code)
     else:
         _compile(process, compiler, code, expr)
 
-    code.emit_0(THROW)
+    code.emit_0(THROW, info(node))
 
 
 def _emit_map_key(process, compiler, code, key):
@@ -722,7 +721,8 @@ def _emit_map_key(process, compiler, code, key):
         _compile(process, compiler, code, key)
 
 
-def _compile_map(process, compiler, code, items):
+def _compile_MAP(process, compiler, code, node):
+    items = node.first()
     for c in items:
         key = c[0]
         value = c[1]
@@ -733,12 +733,7 @@ def _compile_map(process, compiler, code, items):
 
         _emit_map_key(process, compiler, code, key)
 
-    code.emit_1(MAP, len(items))
-
-
-def _compile_MAP(process, compiler, code, node):
-    items = node.first()
-    _compile_map(process, compiler, code, items)
+    code.emit_1(MAP, len(items), info(node))
 
 
 def _compile_TUPLE(process, compiler, code, node):
@@ -746,7 +741,7 @@ def _compile_TUPLE(process, compiler, code, node):
     for c in items:
         _compile(process, compiler, code, c)
 
-    code.emit_1(TUPLE, len(items))
+    code.emit_1(TUPLE, len(items), info(node))
 
 
 def _compile_LIST(process, compiler, code, node):
@@ -754,7 +749,7 @@ def _compile_LIST(process, compiler, code, node):
     for c in items:
         _compile(process, compiler, code, c)
 
-    code.emit_1(LIST, len(items))
+    code.emit_1(LIST, len(items), info(node))
 
 
 # def _emit_list(process, compiler, code, node):
@@ -767,18 +762,18 @@ def _compile_LIST(process, compiler, code, node):
 
 
 def _compile_BREAK(process, compiler, code, node):
-    code.emit_0(UNDEFINED)
+    _emit_undefined(code)
     if not code.emit_break():
         compile_error(process, node, "break outside loop")
 
 
 def _compile_CONTINUE(process, compiler, code, node):
-    code.emit_0(UNDEFINED)
+    _emit_undefined(code)
     if not code.emit_continue():
         compile_error(process, node, "continue outside loop")
 
 
-def _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, opcode):
+def _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, opcode, emitinfo):
     _enter_scope(process, compiler)
 
     funccode = newcode(compiler)
@@ -788,7 +783,7 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params, outer
     else:
         args = params.first()
         length = args.length()
-        funccode.emit_0(ARGUMENTS)
+        funccode.emit_0(ARGUMENTS, codeinfo_unknown())
 
         # TODO REMOVE
         _declare_arguments(process, compiler, [obs.newstring(u"$%d" % i) for i in range(length)], None)
@@ -815,7 +810,7 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params, outer
 
     source = obs.newfuncsource(funcname, compiled_code)
     source_index = _declare_literal(process, compiler, source)
-    code.emit_1(opcode, source_index)
+    code.emit_1(opcode, source_index, emitinfo)
 
 
 def _compile_FUNC(process, compiler, code, node):
@@ -828,7 +823,7 @@ def _compile_FUNC(process, compiler, code, node):
     params = node.second()
     outers = node.third()
     body = node.fourth()
-    _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, FUNCTION)
+    _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, FUNCTION, info(name))
 
     if api.isempty(funcname):
         return
@@ -836,7 +831,7 @@ def _compile_FUNC(process, compiler, code, node):
     index = _declare_local(process, compiler, funcname)
 
     funcname_index = _declare_literal(process, compiler, funcname)
-    code.emit_2(STORE_LOCAL, index, funcname_index)
+    code.emit_2(STORE_LOCAL, index, funcname_index, info(node))
 
 
 def _compile_ORIGIN(process, compiler, code, node):
@@ -848,18 +843,18 @@ def _compile_ORIGIN(process, compiler, code, node):
     params = node.second()
     outers = node.third()
     body = node.fourth()
-    _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, ORIGIN)
+    _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, ORIGIN, info(node))
 
-    code.emit_2(STORE_LOCAL, index, funcname_index)
+    code.emit_2(STORE_LOCAL, index, funcname_index, info(name))
 
 
 def _compile_branch(process, compiler, code, condition, body, endif):
     _compile(process, compiler, code, condition)
     end_body = code.prealocate_label()
-    code.emit_1(JUMP_IF_FALSE, end_body)
+    code.emit_1(JUMP_IF_FALSE, end_body, info(condition))
     _compile(process, compiler, code, body)
-    code.emit_1(JUMP, endif)
-    code.emit_1(LABEL, end_body)
+    code.emit_1(JUMP, endif, codeinfo_unknown())
+    code.emit_1(LABEL, end_body, codeinfo_unknown())
 
 
 def _compile_WHEN(process, compiler, code, node):
@@ -869,7 +864,7 @@ def _compile_WHEN(process, compiler, code, node):
     endif = code.prealocate_label()
     _compile_branch(process, compiler, code, condition, truebranch, endif)
     _compile(process, compiler, code, falsebranch)
-    code.emit_1(LABEL, endif)
+    code.emit_1(LABEL, endif, codeinfo_unknown())
 
 
 def _compile_IF(process, compiler, code, node):
@@ -883,11 +878,11 @@ def _compile_IF(process, compiler, code, node):
 
     elsebranch = branches[-1]
     if is_empty_node(elsebranch):
-        code.emit_0(UNDEFINED)
+        _emit_undefined(code)
     else:
         _compile(process, compiler, code, elsebranch[1])
 
-    code.emit_1(LABEL, endif)
+    code.emit_1(LABEL, endif, codeinfo_unknown())
 
 
 def _compile_TRY(process, compiler, code, node):
@@ -902,19 +897,19 @@ def _compile_TRY(process, compiler, code, node):
         finallylabel = None
 
     catchlabel = code.prealocate_label()
-    code.emit_1(PUSH_CATCH, catchlabel)
+    code.emit_1(PUSH_CATCH, catchlabel, codeinfo_unknown())
     _compile(process, compiler, code, trynode)
-    code.emit_0(POP_CATCH)
+    code.emit_0(POP_CATCH, codeinfo_unknown())
     if finallylabel is not None:
-        code.emit_1(JUMP, finallylabel)
+        code.emit_1(JUMP, finallylabel, codeinfo_unknown())
 
-    code.emit_1(LABEL, catchlabel)
+    code.emit_1(LABEL, catchlabel, codeinfo_unknown())
     _emit_store_name(process, compiler, code, catchvar)
     _compile(process, compiler, code, catchnode)
 
     if finallylabel is not None:
-        code.emit_1(JUMP, finallylabel)
-        code.emit_1(LABEL, finallylabel)
+        code.emit_1(JUMP, finallylabel, codeinfo_unknown())
+        code.emit_1(LABEL, finallylabel, codeinfo_unknown())
         _compile(process, compiler, code, finallynode)
 
 
@@ -943,7 +938,7 @@ def _compile_IMPORT_STMT(process, compiler, code, node):
         module_path = exp.value
 
     module_path_literal = _declare_literal(process, compiler, obs.newstring_from_str(module_path))
-    code.emit_1(IMPORT, module_path_literal)
+    code.emit_1(IMPORT, module_path_literal, info(node))
 
     _emit_store_name(process, compiler, code, import_name)
 
@@ -958,7 +953,7 @@ def _compile_IMPORT_EXP(process, compiler, code, node):
 
     module_path = obs.newstring_from_str(module_path)
     module_path_literal = _declare_literal(process, compiler, module_path)
-    code.emit_1(IMPORT, module_path_literal)
+    code.emit_1(IMPORT, module_path_literal, info(node))
 
 
 def _compile_IMPORT(process, compiler, code, node):
@@ -970,17 +965,14 @@ def _compile_IMPORT(process, compiler, code, node):
 
 def _compile_GENERIC(process, compiler, code, node):
     name_node = node.first()
-    if name_node.node_type == NT_SPECIAL_NAME:
-        name_value = _get_special_name_value(process, compiler, name_node)
-    else:
-        name_value = name_node.value
+    name_value = _get_name_value(name_node)
 
     name = obs.newsymbol_py_str(process, name_value)
 
     name_index = _declare_literal(process, compiler, name)
     index = _declare_local(process, compiler, name)
-    code.emit_1(GENERIC, name_index)
-    code.emit_2(STORE_LOCAL, index, name_index)
+    code.emit_1(GENERIC, name_index, info(node))
+    code.emit_2(STORE_LOCAL, index, name_index, info(name_node))
 
     if node.arity == 2:
         methods = node.second()
@@ -993,8 +985,8 @@ def _compile_TRAIT(process, compiler, code, node):
     index = _declare_local(process, compiler, name)
 
     name_index = _declare_literal(process, compiler, name)
-    code.emit_1(TRAIT, name_index)
-    code.emit_2(STORE_LOCAL, index, name_index)
+    code.emit_1(TRAIT, name_index, info(node))
+    code.emit_2(STORE_LOCAL, index, name_index, info(node))
 
 
 def _emit_specify(process, compiler, code, node, methods):
@@ -1013,20 +1005,20 @@ def _emit_specify(process, compiler, code, node, methods):
 
         for trait in signature:
             if trait is None:
-                code.emit_0(UNDEFINED)
+                _emit_undefined(code)
             else:
                 _compile(process, compiler, code, trait)
 
-        code.emit_1(TUPLE, len(signature))
+        code.emit_1(TUPLE, len(signature), info(node))
 
         method_name = obs.newsymbol(process, u"")
         args_node = create_tuple_node(node, args)
         _compile_func_args_and_body(process, compiler, code, method_name, args_node, empty_node(),
                                     method_body,
-                                    FUNCTION)
-        code.emit_1(TUPLE, 2)
+                                    FUNCTION, info(node))
+        code.emit_1(TUPLE, 2, info(node))
 
-    code.emit_1(SPECIFY, len(methods))
+    code.emit_1(SPECIFY, len(methods), info(node))
 
 
 def _compile_SPECIFY(process, compiler, code, node):
@@ -1040,46 +1032,46 @@ def _compile_FOR(process, compiler, code, node):
     source = node.second()
     body = node.third()
     _compile(process, compiler, code, source)
-    code.emit_0(ITERATOR)
+    code.emit_0(ITERATOR, info(node))
     # load the "last" iterations result
-    code.emit_0(UNDEFINED)
+    _emit_undefined(code)
     precond = code.emit_startloop_label()
     code.continue_at_label(precond)
     finish = code.prealocate_endloop_label(False)
     # update = code.prealocate_updateloop_label()
 
-    code.emit_1(JUMP_IF_ITERATOR_EMPTY, finish)
+    code.emit_1(JUMP_IF_ITERATOR_EMPTY, finish, codeinfo_unknown())
 
     # put next iterator value on stack
-    code.emit_0(NEXT)
+    code.emit_0(NEXT, codeinfo_unknown())
 
     vars = node.first()
     name = obs.newsymbol_py_str(process, vars[0].value)
     index = _declare_local(process, compiler, name)
 
     name_index = _declare_literal(process, compiler, name)
-    code.emit_2(STORE_LOCAL, index, name_index)
-    code.emit_0(POP)
+    code.emit_2(STORE_LOCAL, index, name_index, info(node))
+    _emit_pop(code)
 
     _compile(process, compiler, code, body)
     # code.emit_updateloop_label(update)
 
-    code.emit_1(JUMP, precond)
+    code.emit_1(JUMP, precond, codeinfo_unknown())
     code.emit_endloop_label(finish)
 
 
 def _compile_WHILE(process, compiler, code, node):
     condition = node.first()
     body = node.second()
-    code.emit_0(UNDEFINED)
+    _emit_undefined(code)
     startlabel = code.emit_startloop_label()
     code.continue_at_label(startlabel)
     _compile(process, compiler, code, condition)
     endlabel = code.prealocate_endloop_label()
-    code.emit_1(JUMP_IF_FALSE, endlabel)
-    code.emit_0(POP)
+    code.emit_1(JUMP_IF_FALSE, endlabel, codeinfo_unknown())
+    _emit_pop(code)
     _compile(process, compiler, code, body)
-    code.emit_1(JUMP, startlabel)
+    code.emit_1(JUMP, startlabel, codeinfo_unknown())
     code.emit_endloop_label(endlabel)
     code.done_continue()
 
@@ -1092,7 +1084,7 @@ def _compile_LOOKUP_SYMBOL(process, compiler, code, node):
     obj = node.first()
     _compile(process, compiler, code, obj)
     _emit_symbol_name(process, compiler, code, node.second())
-    code.emit_0(MEMBER)
+    code.emit_0(MEMBER, info(node))
 
 
 def _emit_SLICE(process, compiler, code, obj, slice):
@@ -1102,16 +1094,16 @@ def _emit_SLICE(process, compiler, code, obj, slice):
     _compile(process, compiler, code, obj)
 
     if is_wildcard_node(start):
-        code.emit_0(UNDEFINED)
+        _emit_undefined(code)
     else:
         _compile(process, compiler, code, start)
 
     if is_wildcard_node(end):
-        code.emit_0(UNDEFINED)
+        _emit_undefined(code)
     else:
         _compile(process, compiler, code, end)
 
-    code.emit_0(SLICE)
+    code.emit_0(SLICE, info(slice))
 
 
 def _compile_LOOKUP(process, compiler, code, node):
@@ -1123,7 +1115,7 @@ def _compile_LOOKUP(process, compiler, code, node):
 
     _compile(process, compiler, code, obj)
     _compile(process, compiler, code, expr)
-    code.emit_0(MEMBER)
+    code.emit_0(MEMBER, info(node))
 
 
 def _compile_args_list(process, compiler, code, args):
@@ -1149,7 +1141,7 @@ def _compile_CALL_MEMBER(process, compiler, code, node):
     # TODO LITERAL HERE
     # declare_symbol(process, compiler,name)
 
-    code.emit_1(CALL_METHOD, args_count)
+    code.emit_1(CALL_METHOD, args_count, info(node))
 
 
 def _compile_CALL(process, compiler, code, node):
@@ -1162,7 +1154,7 @@ def _compile_CALL(process, compiler, code, node):
 
     _compile(process, compiler, code, func)
 
-    code.emit_1(CALL, arg_count)
+    code.emit_1(CALL, arg_count, info(node))
 
 
 ####
@@ -1183,7 +1175,7 @@ def _compile_nodes(process, compiler, code, ast):
     if len(nodes) > 1:
         for node in nodes[:-1]:
             _compile(process, compiler, code, node)
-            code.emit_0(POP)
+            _emit_pop(code)
 
     if len(nodes) > 0:
         node = nodes[-1]
