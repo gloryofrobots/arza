@@ -38,8 +38,20 @@ class CodeRoutine(BaseRoutine):
         return self._name_
 
     def _info(self):
-        return string.Builder().add(self._code_.scope.source_path)\
-                                .space().add_u(u"in").space().add(self._name_).value()
+        info = self._code_.get_opcode_info(self.pc)
+        if info is None:
+            info_str = u""
+            curline = u""
+        else:
+            info_str = u"{line = %d, column = %d}" % (info[1], info[2])
+            curline = self._code_.info.get_line(info[1])
+
+        builder = string.Builder().add(self._name_).space().add_u(info_str).space()\
+                                .add_u(u"from: \"").add(self._code_.info.path).add_u(u"\"")
+        if info is None:
+            return builder.value()
+
+        return builder.nl().space(8).add_u(curline).value()
 
     def _on_resume(self, value):
         self.stack.push(value)

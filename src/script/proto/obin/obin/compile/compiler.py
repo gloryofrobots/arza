@@ -6,7 +6,7 @@ from obin.compile.scope import Scope
 from obin.types import space as obs
 from obin.types import api
 from obin.builtins.internals import internals
-from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown
+from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
 from obin.compile.code import *
 from obin.utils.misc import is_absent_index
 
@@ -35,10 +35,11 @@ def string_unquote(string):
 
 
 class Compiler:
-    def __init__(self, sourcename):
+    def __init__(self, path, src):
         self.scopes = []
         self.depth = -1
-        self.source_path = sourcename
+        self.source_path = path
+        self.source = src
 
 
 def info(node):
@@ -55,7 +56,7 @@ def info(node):
 def _enter_scope(process, compiler):
     compiler.depth += 1
 
-    new_scope = Scope(compiler.source_path)
+    new_scope = Scope()
     compiler.scopes.append(new_scope)
     # print 'starting new scope %d' % (process, compiler.depth, )
 
@@ -1356,7 +1357,7 @@ def _compile_node(process, compiler, code, node):
 
 
 def newcode(compiler):
-    return CodeSource()
+    return CodeSource(SourceInfo(compiler.source_path, compiler.source))
 
 
 def compile_ast(process, compiler, ast):
@@ -1380,7 +1381,7 @@ def testprogram():
 def compile(process, src, sourcename):
     ast = parse_string(src)
     # print ast
-    compiler = Compiler(sourcename)
+    compiler = Compiler(sourcename, src)
     code = compile_ast(process, compiler, ast)
     return code
 
