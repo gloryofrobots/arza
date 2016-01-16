@@ -339,9 +339,10 @@ def prefix_lcurly(parser, node):
         while True:
             # TODO check it
             check_token_types(parser, [TT_NAME, TT_COLON, TT_INT, TT_STR, TT_CHAR, TT_FLOAT])
-            key = _init_current_node(parser, 0)
-
-            advance(parser)
+            # WE NEED LBP=10 TO OVERRIDE ASSIGNMENT LBP(9)
+            key = expression(parser, 10)
+            # key = _init_current_node(parser, 0)
+            # advance(parser)
 
             if parser.token_type == TT_COMMA:
                 value = empty_node()
@@ -407,6 +408,29 @@ def prefix_func(parser, node):
     node.setsecond(args)
     node.setthird(outers)
     node.setfourth(body)
+    return node
+
+
+def prefix_try(parser, node):
+    node.init(NT_TRY, 3)
+    trybody = statements(parser, [TT_CATCH])
+
+    advance_expected(parser, TT_CATCH)
+    check_token_type(parser, TT_NAME)
+    varname = expression(parser, 0)
+    catchstmts = statements(parser, [TT_FINALLY, TT_END])
+    catchbody = list_node([varname, catchstmts])
+    if parser.token_type == TT_FINALLY:
+        advance_expected(parser, TT_FINALLY)
+        finallybody = statements(parser, [TT_END])
+    else:
+        finallybody = empty_node()
+
+    advance_expected(parser, TT_END)
+    node.setfirst(trybody)
+    node.setsecond(catchbody)
+    node.setthird(finallybody)
+
     return node
 
 

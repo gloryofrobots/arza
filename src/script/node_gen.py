@@ -17,6 +17,7 @@ NODES = [
   "NT_IF",
   "NT_WHEN",
   "NT_MATCH",
+  "NT_TRY",
 
   "NT_ORIGIN",
   "NT_IMPORT",

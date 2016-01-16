@@ -167,8 +167,6 @@ class Process(object):
     PRIVATE API
     """
 
-    def __catch_signal(self):
-        raise NotImplementedError("Throw in code")
 
     def __run(self):
         # print "RUN"
@@ -198,8 +196,6 @@ class Process(object):
         fiber = self.fiber
         routine = fiber.routine
         assert routine
-        if not routine.is_inprocess():
-            print routine
         assert routine.is_inprocess()
         routine.execute(self)
 
@@ -226,30 +222,34 @@ class Process(object):
         # if suspended reach here
         return None
 
+    def __catch_signal(self):
+        routine = self.fiber.routine
+        assert routine.is_terminated()
+        signal = self.fiber.routine.signal
+        while not routine.catch(signal):
+            routine = self.fiber.next_routine()
+            if routine is None:
+                parent_fiber = self.fiber.finalise()
+                self.__purge_fiber(self.fiber)
+                if not parent_fiber:
+                    self.__terminate()
+                    raise RuntimeError("Unreachable error")
+                else:
+                    self.fiber = parent_fiber
+                    routine = self.fiber.next_routine()
+
     def __set_state(self, s):
         self.__state = s
 
     def __terminate(self):
-        # print "F terminate"
         self.fiber = None
         self.fibers = []
         self.__set_state(Process.State.TERMINATED)
 
     def __active(self):
-        # print "F activate"
         self.__set_state(Process.State.ACTIVE)
 
     def __idle(self):
         self.__set_state(Process.State.IDLE)
 
 
-        # def resume_routine(self, routine_to_resume, calling_routine, value):
-        #     assert self.routine is calling_routine
-        #     assert routine_to_resume.is_suspended()
-        #     assert calling_routine.is_inprocess()
-        #
-        #     # check_continuation_consistency(routine_to_resume, routine_resume_from)
-        #     calling_routine.suspend()
-        #     calling_routine.called = routine_to_resume
-        #     routine_to_resume.resume(value)
-        #     self.set_active_routine(routine_to_resume)

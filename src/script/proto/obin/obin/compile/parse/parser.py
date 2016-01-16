@@ -280,6 +280,7 @@ def main_parser_init(parser):
 
     prefix(parser, TT_IMPORT, prefix_import)
     prefix(parser, TT_MATCH, prefix_match)
+    prefix(parser, TT_TRY, prefix_try)
 
     """
     STATEMENTS
@@ -345,11 +346,16 @@ def write_ast(ast):
 
 ast = parse_string(
     """
-    A[1.._];
-    A[2..3];
-    A[_.._];
-    A[_..4];
-    A[5];
+    try
+        x = 1
+        x / 0
+    catch e
+        print("Error occured")
+        print(e)
+    finally
+        print("Cleanup")
+        return 23
+    end
     """
 )
 """
@@ -369,5 +375,5 @@ end
     A[..4];
     A[5];
 """
-# print ast
+print ast
 # write_ast(ast)

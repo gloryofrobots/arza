@@ -24,6 +24,7 @@ OPCODES = [
     ("STORE_LOCAL", 0),
     ("ITERATOR", 0),
     ("RETURN", 0),
+    ("POP_CATCH", 0),
 
     ("CALL_INTERNAL", 0),
     ("CALL", 0),
@@ -34,6 +35,7 @@ OPCODES = [
     ("JUMP_IF_TRUE_NOPOP", 0),
     ("JUMP_IF_FALSE", 0),
     ("JUMP_IF_TRUE", 0),
+    ("PUSH_CATCH", 0),
     ("JUMP_IF_ITERATOR_EMPTY", -1),
 
     ("MEMBER_DOT", -1),

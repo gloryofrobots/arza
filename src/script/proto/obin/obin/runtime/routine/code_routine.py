@@ -29,6 +29,8 @@ class CodeRoutine(BaseRoutine):
         self.result = None
         self.env = env
 
+        self.catches = []
+
         scope = code.scope
         refs_size = scope.count_refs
         self.literals = scope.literals
@@ -39,9 +41,6 @@ class CodeRoutine(BaseRoutine):
 
     def name(self):
         return self._name_
-
-    def _on_terminate(self, signal):
-        pass
 
     def _on_resume(self, value):
         self.stack.push(value)
@@ -55,6 +54,15 @@ class CodeRoutine(BaseRoutine):
     def _print_code(self, opcode):
         print u"_____________________________"
         print u'%s %3d' % (opcode_info(self, opcode), self.pc)
+
+    def _catch(self, signal):
+        if len(self.catches) == 0:
+            return False
+
+        catch = self.catches.pop()
+        self.pc = catch
+        self.stack.push(signal)
+        return True
 
     def _execute(self, process):
         while True:
@@ -248,6 +256,12 @@ class CodeRoutine(BaseRoutine):
                     stack.push(last_block_value)
                     self.pc = arg1
             # *************************************
+            elif PUSH_CATCH == tag:
+                self.catches.append(arg1)
+            # *************************************
+            elif POP_CATCH == tag:
+                self.catches.pop()
+            # *************************************
             elif NEXT == tag:
                 iterator = stack.top()
                 next_el = api.next(iterator)
@@ -279,18 +293,12 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif THROW == tag:
                 val = stack.pop()
-                self.terminate(val)
+                self.throw(val)
             # *************************************
             elif IMPORT == tag:
                 name = literals[arg1]
                 module = import_module(process, name)
                 stack.push(module)
-            # *************************************
-            elif IMPORT_MEMBER == tag:
-                name = literals[arg1]
-                module = stack.top()
-                member = api.at(module, name)
-                stack.push(member)
             # *************************************
             elif TRAIT == tag:
                 name = literals[arg1]

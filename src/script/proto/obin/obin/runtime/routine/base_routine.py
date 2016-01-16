@@ -9,20 +9,25 @@ class BaseRoutine:
     def __init__(self, stack):
         self._state = BaseRoutine.State.IDLE
         self.result = None
-        self._signal = None
+        self.signal = None
         self.stack = stack
         self.return_pointer = self.stack.pointer()
 
-    def signal(self):
-        return self._signal
+    def catch(self, signal):
+        result = self._catch(signal)
+        assert isinstance(result, bool)
+        return result
 
-    def resume(self,  value):
+    def _catch(self, signal):
+        return False
+
+    def resume(self, value):
         # print "RESUME", value
         assert self.is_suspended()
         self._on_resume(value)
         self._state = BaseRoutine.State.INPROCESS
 
-    def _on_resume(self,  value):
+    def _on_resume(self, value):
         raise NotImplementedError()
 
     def inprocess(self):
@@ -41,13 +46,8 @@ class BaseRoutine:
 
     def terminate(self, signal):
         assert not self.is_closed()
-        assert signal is not None
-        self._signal = signal
+        self.signal = signal
         self._state = BaseRoutine.State.TERMINATED
-        self._on_terminate(signal)
-
-    def _on_terminate(self, signal):
-        raise NotImplementedError()
 
     def activate(self):
         self.inprocess()

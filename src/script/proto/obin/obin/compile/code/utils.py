@@ -2,9 +2,9 @@ from obin.compile.code.opcode import *
 # ************************************************
 
 __OPCODE_REPR__ = ["UNDEFINED", "NULL", "TRUE", "FALSE", "LITERAL", "SYMBOL", "OUTER", "LOCAL", "FUNCTION", "ORIGIN",
-                   "INTEGER", "DUP", "NEXT", "IMPORT", "IMPORT_MEMBER", "GENERIC", "TRAIT", "ARGUMENTS", "LABEL",
-                   "STORE_OUTER", "STORE_LOCAL", "ITERATOR", "RETURN", "CALL_INTERNAL", "CALL", "CALL_METHOD", "JUMP",
-                   "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE",
+                   "INTEGER", "DUP", "NEXT", "IMPORT", "GENERIC", "TRAIT", "ARGUMENTS", "LABEL", "STORE_OUTER",
+                   "STORE_LOCAL", "ITERATOR", "RETURN", "POP_CATCH", "CALL_INTERNAL", "CALL", "CALL_METHOD", "JUMP",
+                   "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "PUSH_CATCH",
                    "JUMP_IF_ITERATOR_EMPTY", "MEMBER_DOT", "MEMBER", "POP", "THROW", "STORE_MEMBER", "SLICE",
                    "UNPACK_SEQUENCE", "VECTOR", "TUPLE", "MAP", "LIST", "SPECIFY", ]
 
@@ -12,7 +12,7 @@ __OPCODE_REPR__ = ["UNDEFINED", "NULL", "TRUE", "FALSE", "LITERAL", "SYMBOL", "O
 
 __UNKNOWN_CHANGE__ = -128
 
-__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1,
+__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1,
                      -1, -1, -1, -1, -2, -3, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
                      __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
 
@@ -86,10 +86,6 @@ def opcode_info(routine, opcode):
     elif tag == IMPORT:
         literal = routine.literals[arg1]
         return 'IMPORT %s' % (literal,)
-    # ********************************
-    elif tag == IMPORT_MEMBER:
-        literal = routine.literals[arg1]
-        return 'IMPORT_MEMBER %s' % (literal,)
     # ********************************
     elif tag == CALL_INTERNAL:
         return 'CALL_PRIMITIVE %s ' % (internal_to_str(arg1))

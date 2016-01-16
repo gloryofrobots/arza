@@ -892,6 +892,34 @@ def _compile_IF(process, compiler, code, node):
     code.emit_1(LABEL, endif)
 
 
+def _compile_TRY(process, compiler, code, node):
+    trynode = node.first()
+    catch = node.second()
+    catchvar = catch[0]
+    catchnode = catch[1]
+    finallynode = node.third()
+    if not is_empty_node(finallynode):
+        finallylabel = code.prealocate_label()
+    else:
+        finallylabel = None
+
+    catchlabel = code.prealocate_label()
+    code.emit_1(PUSH_CATCH, catchlabel)
+    _compile(process, compiler, code, trynode)
+    if finallylabel is not None:
+        code.emit_1(JUMP, finallylabel)
+
+    code.emit_1(LABEL, catchlabel)
+    _emit_store_name(process, compiler, code, catchvar)
+    _compile(process, compiler, code, catchnode)
+    code.emit_0(POP_CATCH)
+
+    if finallylabel is not None:
+        code.emit_1(JUMP, finallylabel)
+        code.emit_1(LABEL, finallylabel)
+        _compile(process, compiler, code, finallynode)
+
+
 ############################
 # IMPORT
 #############################
@@ -1210,6 +1238,8 @@ def _compile_node(process, compiler, code, node):
         _compile_WHEN(process, compiler, code, node)
     elif NT_MATCH == node_type:
         _compile_MATCH(process, compiler, code, node)
+    elif NT_TRY == node_type:
+        _compile_TRY(process, compiler, code, node)
 
     elif NT_IMPORT == node_type:
         _compile_IMPORT(process, compiler, code, node)
