@@ -42,6 +42,9 @@ class CodeRoutine(BaseRoutine):
     def name(self):
         return self._name_
 
+    def _info(self):
+        return self._name_
+
     def _on_resume(self, value):
         self.stack.push(value)
 

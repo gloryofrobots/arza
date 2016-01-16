@@ -1,10 +1,10 @@
-from obin.types.root import W_Callable, W_Root
+from obin.types.root import W_Callable, W_Any
 from obin.runtime.error import *
 from obin.types import api
 from rpython.rlib import jit
 
 
-class W_FunctionSource(W_Root):
+class W_FunctionSource(W_Any):
     def __init__(self, name, code):
         self.name = name
         self.code = code

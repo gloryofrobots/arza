@@ -1,5 +1,5 @@
 from obin.types import api
-from obin.types.root import W_Root, W_Cell
+from obin.types.root import W_Any, W_Cell
 from obin.utils.misc import is_absent_index, absent_index
 
 
@@ -161,7 +161,7 @@ class Bindings:
         return max(self._minsize, size // 2)
 
 
-class TableIterator(W_Root):
+class TableIterator(W_Any):
     def __init__(self, source, length):
         assert isinstance(source, W_Map)
         assert isinstance(length, int)

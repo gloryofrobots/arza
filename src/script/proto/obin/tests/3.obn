@@ -74,9 +74,10 @@ print("5 < 4", 5 < 4)
 print("5 <= 3", 5 <= 3)
 print("x != 6", x != 6)
 print("x == y", x == y)
-//print("x >> 43", x >> 43)
-//print("x << 10001", x << 10001)
-//print("x >>> 1001001001", x >>> 1001001001)
+
+print("11 >> 43", 11 >> 43)
+print("11 << 10001", 11 << 10001)
+print("11 >>> 1001001001", 11 >>> 1001001001)
 print("x + 34", x + 34)
 print("x - 34", x - 34)
 print("x * 34", x * 34)
@@ -377,7 +378,7 @@ m = {name = "Alice", :surname="Bob",
          }
  }
 print(m.name)
-print(m[:child[:toy[:model]]])
+print(m[:child][:toy][:model])
 print(m.child.toy.model)
 
 func error(reason) ->

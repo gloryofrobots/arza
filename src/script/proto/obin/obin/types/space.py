@@ -3,12 +3,12 @@ from rpython.rlib import jit
 from obin.types.boolean import W_True, W_False
 from obin.types.nil import W_Nil
 from obin.types.undefined import W_Undefined
-from obin.types.root import W_Constant
+from obin.types.root import W_UniqueType
 
 w_True = W_True()
 w_False = W_False()
 w_Undefined = W_Undefined()
-w_Interrupt = W_Constant()
+w_Interrupt = W_UniqueType()
 w_Nil = W_Nil()
 
 jit.promote(w_True)
@@ -150,10 +150,6 @@ def newlist(items):
     return plist(items)
 
 
-def newemptyvector():
-    return newvector([])
-
-
 def newtuple(tupl):
     from obin.types.tupl import W_Tuple
     return W_Tuple(list(tupl))
@@ -186,8 +182,8 @@ def newbehavior(traits):
 
 
 def isany(value):
-    from obin.types.root import W_Root
-    return isinstance(value, W_Root)
+    from obin.types.root import W_Any
+    return isinstance(value, W_Any)
 
 
 def isundefined(value):
@@ -307,9 +303,9 @@ def isnumber(w):
     return isint(w) or isfloat(w)
 
 
-def isconstant(w):
-    from obin.types.root import W_Constant
-    return isinstance(w, W_Constant)
+def isuniquetype(w):
+    from obin.types.root import W_UniqueType
+    return isinstance(w, W_UniqueType)
 
 
 def isnull_or_undefined(obj):

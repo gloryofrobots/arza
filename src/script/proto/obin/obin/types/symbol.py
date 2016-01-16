@@ -1,8 +1,8 @@
-from obin.types.root import W_Root
+from obin.types.root import W_Any
 from obin.types.string import W_String
 
 
-class W_Symbol(W_Root):
+class W_Symbol(W_Any):
     # _immutable_fields_ = ['value']
 
     def __init__(self, string, idx):

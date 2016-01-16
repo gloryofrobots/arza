@@ -1,7 +1,17 @@
 from obin.types import api, space
 from obin.runtime.stack import Stack
+from obin.types import plist
 
 DEFAULT_STACK_SIZE = 32
+
+
+def _print_trace(device, trace):
+    writer = device.writer()
+    writer.write_s("Uncaught exception").nl()
+
+    for record in trace:
+        writer.tab4().write(record).nl()
+
 
 class Fiber:
     def __init__(self, parent):
@@ -56,7 +66,6 @@ class Fiber:
         self.routine = self.routines.pop()
         return self.routine
 
-
     def next_routine(self):
         if len(self.routines) == 0:
             return None
@@ -66,20 +75,24 @@ class Fiber:
         self.routine = routine
         return self.routine
 
-    def catch(self, signal):
+    def catch(self, signal, trace):
         routine = self.routine
         assert routine.is_terminated()
         while not routine.catch(signal):
+            info = routine.info()
+            trace = plist.prepend(info, trace)
             routine = self.__pop()
             if routine is None:
-                return False
+                return False, trace
 
-        return True
+        return True, trace
+
 
 class Process(object):
     class State:
         IDLE = 1
         ACTIVE = 2
+        COMPLETE = 3
         TERMINATED = 4
 
     def __init__(self, data):
@@ -112,6 +125,10 @@ class Process(object):
     def symbols(self):
         return self.__data.symbols
 
+    @property
+    def io(self):
+        return self.__data.io
+
     @builtins.setter
     def builtins(self, b):
         self.__data.builtins = b
@@ -127,6 +144,9 @@ class Process(object):
     @property
     def state(self):
         return self.__state
+
+    def is_complete(self):
+        return self.state == Process.State.COMPLETE
 
     def is_terminated(self):
         return self.state == Process.State.TERMINATED
@@ -191,7 +211,7 @@ class Process(object):
             try:
                 result = self.__execute()
             except Exception:
-                self.__terminate()
+                # self.__terminate()
                 raise
 
         assert len(self.fibers) == 0
@@ -222,43 +242,53 @@ class Process(object):
             parent_fiber = fiber.finalise()
             self.__purge_fiber(fiber)
             if not parent_fiber:
-                self.__terminate()
+                self.__complete()
                 return routine.result
             else:
                 self.fiber = parent_fiber
                 return None
 
         elif routine.is_terminated():
-            self.__catch_signal()
+            signal = routine.result
+            catched, trace = self.__catch_signal(signal)
+            if not catched:
+                self.__terminate(trace)
+            return signal
 
+        assert False, "SHOULDNT REACH HERE"
         # if suspended reach here
-        return None
+        # return None
 
-    def __catch_signal(self):
-        signal = self.fiber.routine.result
-        trace = []
+    def __catch_signal(self, signal):
+        trace = plist.empty()
         while True:
-            if self.fiber.catch(signal):
-                break
+            result, trace = self.fiber.catch(signal, trace)
+            if result is True:
+                return True, trace
             parent_fiber = self.fiber.finalise()
             self.__purge_fiber(self.fiber)
             if not parent_fiber:
-                self.__terminate()
-                raise RuntimeError("Unreachable error")
+                return False, trace
             self.fiber = parent_fiber
 
     def __set_state(self, s):
         self.__state = s
 
-    def __terminate(self):
+    def __close(self):
         self.fiber = None
         self.fibers = []
+
+    def __terminate(self, trace):
+        _print_trace(self.io.stderr, trace)
+        self.__close()
         self.__set_state(Process.State.TERMINATED)
+
+    def __complete(self):
+        self.__close()
+        self.__set_state(Process.State.COMPLETE)
 
     def __active(self):
         self.__set_state(Process.State.ACTIVE)
 
     def __idle(self):
         self.__set_state(Process.State.IDLE)
-
-

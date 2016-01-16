@@ -34,6 +34,12 @@ class BaseRoutine:
     def _on_resume(self, value):
         raise NotImplementedError()
 
+    def info(self):
+        return self._info()
+
+    def _info(self):
+        raise NotImplementedError()
+
     def inprocess(self):
         assert not self.is_closed()
         self._state = BaseRoutine.State.INPROCESS

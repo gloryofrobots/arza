@@ -1,7 +1,7 @@
-from obin.types.root import W_Root
+from obin.types.root import W_Any
 
 
-class W_Module(W_Root):
+class W_Module(W_Any):
     def __init__(self, name, bytecode, builtins):
         self.name = name
         self.bytecode = bytecode

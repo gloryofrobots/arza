@@ -1,6 +1,6 @@
 # TODO REFACTOR DICT AND ID
 
-class W_Root:
+class W_Any:
     def __str__(self):
         return self._tostring_()
 
@@ -62,17 +62,14 @@ class W_Root:
     def _compute_hash_(self):
         raise NotImplementedError()
 
-    def _to_routine_(self, stack ,args):
+    def _to_routine_(self, stack, args):
         raise NotImplementedError()
 
     def _clone_(self):
         raise NotImplementedError()
 
 
-
-
-
-class W_Cell(W_Root):
+class W_Cell(W_Any):
     def __init__(self):
         self.__frozen = False
 
@@ -83,7 +80,7 @@ class W_Cell(W_Root):
         return self.__frozen
 
 
-class W_Hashable(W_Root):
+class W_Hashable(W_Any):
     def __init__(self):
         self.__hash = None
 
@@ -96,18 +93,20 @@ class W_Hashable(W_Root):
         return self.__hash
 
 
-class W_Callable(W_Root):
+class W_Callable(W_Any):
     pass
 
 
-class W_ValueType(W_Root):
+class W_ValueType(W_Any):
     pass
+
 
 class W_Number(W_ValueType):
     pass
 
-# TODO RENAME
-class W_Constant(W_Root):
+
+class W_UniqueType(W_Any):
     def _equal_(self, other):
         return self is other
+
     pass

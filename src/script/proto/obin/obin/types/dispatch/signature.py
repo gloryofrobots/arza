@@ -1,9 +1,9 @@
 __author__ = 'gloryofrobots'
 from discriminator import *
-from obin.types.root import W_Root
+from obin.types.root import W_Any
 
 
-class Argument(W_Root):
+class Argument(W_Any):
     # return new discriminator for argument or choose existed one
     def __init__(self, position):
         self.position = position

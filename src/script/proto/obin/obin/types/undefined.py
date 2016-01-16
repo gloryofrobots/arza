@@ -1,6 +1,6 @@
-from root import W_Constant
+from root import W_UniqueType
 
-class W_Undefined(W_Constant):
+class W_Undefined(W_UniqueType):
     def __init__(self):
         from obin.utils.misc import oid
         self.__hash = oid(self)
@@ -10,7 +10,6 @@ class W_Undefined(W_Constant):
 
     def _behavior_(self, process):
         return process.std.behaviors.Undefined
-
 
     def _hash_(self):
         return self.__hash

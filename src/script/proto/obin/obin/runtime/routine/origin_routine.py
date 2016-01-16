@@ -10,6 +10,9 @@ class OriginRoutine(BaseRoutine):
         self.constructor = function
         self._args = args
 
+    def _info(self):
+        return self.constructor.name
+
     def _on_resume(self, value):
         self.result = value
 

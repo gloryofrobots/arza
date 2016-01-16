@@ -1,9 +1,9 @@
-from obin.types.root import W_Root
+from obin.types.root import W_Any
 from obin.types import space
 from obin.types import api
 
 
-class W_PList(W_Root):
+class W_PList(W_Any):
     def __init__(self, head, tail):
         self.head = head
         self.tail = tail

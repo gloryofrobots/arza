@@ -1,8 +1,9 @@
 __author__ = 'gloryofrobots'
-from root import W_Constant
+import obin.types.root
+from root import W_UniqueType
 
 
-class W_Boolean(W_Constant):
+class W_Boolean(W_UniqueType):
     pass
 
 

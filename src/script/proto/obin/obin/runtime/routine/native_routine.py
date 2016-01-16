@@ -1,6 +1,7 @@
 __author__ = 'gloryofrobots'
 from obin.runtime.routine.base_routine import BaseRoutine
 from obin.types import api
+from obin.types import space
 
 class NativeRoutine(BaseRoutine):
     # _immutable_fields_ = ['_name_', '_function_']
@@ -22,8 +23,8 @@ class NativeRoutine(BaseRoutine):
     def _on_complete(self, process):
         pass
 
-    def name(self):
-        return api.to_native_string(self._name_)
+    def _info(self):
+        return space.newstring(u"obin.%s" % api.to_native_unicode(self._name_))
 
     def args(self):
         return self._args

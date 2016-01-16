@@ -1,6 +1,6 @@
-from root import W_Constant
+from root import W_UniqueType
 
-class W_Nil(W_Constant):
+class W_Nil(W_UniqueType):
     def __init__(self):
         from obin.utils.misc import oid
         self.__hash = oid(self)

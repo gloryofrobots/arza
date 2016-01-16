@@ -235,9 +235,9 @@ def n_equal(obj, other):
 
 def compare(obj, other):
     from obin.runtime.error import ObinTypeError
-    from space import isundefined, newint, isconstant
+    from space import isundefined, newint, isuniquetype
     assert not isundefined(other)
-    if isconstant(obj):
+    if isuniquetype(obj):
         raise ObinTypeError(obj)
 
     v = obj._compare_(other)

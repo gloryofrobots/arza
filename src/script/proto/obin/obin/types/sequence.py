@@ -1,7 +1,7 @@
-from obin.types.root import W_Root
+from obin.types.root import W_Any
 from obin.types import api
 
-class W_SequenceIterator(W_Root):
+class W_SequenceIterator(W_Any):
     def __init__(self, source):
         from obin.types.space import isany
         assert isany(source)

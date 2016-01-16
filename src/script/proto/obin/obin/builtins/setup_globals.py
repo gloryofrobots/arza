@@ -69,14 +69,13 @@ def _eval(process, routine):
     from obin.compile import compiler
     x = routine.get_arg(0)
 
-    assert space.isstring(x)
-    spac
+    assert space.issymbol(x)
     src = api.to_native_string(x)
-    source = compiler.compile_function_source(process, src, space.newsymbol(u"__eval__"))
+    source = compiler.compile_function_source(process, src, space.newsymbol(process, u"__eval__"))
     obj = source.code.scope.create_env_bindings()
     env = newenv(obj, None)
     func = space.newfunc(source.name, source.code, env)
-    args = space.newemptyvector()
+    args = space.newtuple([])
     api.call(process, func, args)
 
 

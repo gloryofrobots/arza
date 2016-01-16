@@ -41,11 +41,20 @@ class Modules:
 
 
 class ProcessData:
-    def __init__(self, modules, std, builtins, symbols):
+    def __init__(self, modules, std, builtins, symbols, io):
         self.modules = modules
         self.std_objects = std
         self.builtins = builtins
         self.symbols = symbols
+        self.io = io
+
+class IO:
+    def __init__(self):
+        from obin.types.iodevice import IoDevice
+        import sys
+        self.stdout = IoDevice(sys.stdout)
+        self.stderr = IoDevice(sys.stderr)
+        self.stdin = IoDevice(sys.stdin)
 
 
 def create(libdirs):
@@ -55,4 +64,5 @@ def create(libdirs):
     stdlib = Std(symbols)
     builtins = newmap()
     modules = Modules(libdirs)
-    return ProcessData(modules, stdlib, builtins, symbols)
+    io = IO()
+    return ProcessData(modules, stdlib, builtins, symbols, io)
