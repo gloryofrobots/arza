@@ -12,6 +12,7 @@ def estimate_stack_size(opcodes):
     return max_size
 
 
+
 class CodeSource:
     # _immutable_fields_ = ['compiled_opcodes[*]', 'scope']
 
@@ -19,6 +20,7 @@ class CodeSource:
     """
 
     def __init__(self):
+
         self.opcodes = []
         self.label_count = 0
         self.startlooplabel = []
@@ -27,7 +29,6 @@ class CodeSource:
         self.updatelooplabel = []
         self.estimated_stack_size = -1
         self.scope = None
-        self._function_name_ = None
         # VALUE FOR AUTOMATIC RETURN
         self.emit_0(UNDEFINED)
 
@@ -133,7 +134,7 @@ class CodeSource:
 
         oldopcodes = self.opcodes
         new_length = length - len(labels)
-        self.opcodes = [(0,0,0)] * new_length
+        self.opcodes = [(0, 0, 0)] * new_length
         i = 0
         for op in oldopcodes:
             tag = op[0]

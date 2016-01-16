@@ -22,5 +22,5 @@ class TokenStream:
 
         # print token
         self.token = token
-        self.node = Node(self.token.type, self.token.val, self.token.pos, self.token.line)
+        self.node = Node(self.token.type, self.token.val, self.token.pos, self.token.line, self.token.column)
         return self.node

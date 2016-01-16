@@ -20,7 +20,11 @@ class ScopeSet:
 
 
 class Scope:
-    def __init__(self):
+    def __init__(self, source_path):
+
+        self.source_path = source_path
+        self.source_map = {}
+
         self.locals = newmap()
 
         self.arg_count = -1
@@ -89,7 +93,7 @@ class Scope:
         return name in self.outers
 
     def finalize(self):
-        return FinalScope(self.locals, self.arguments, self.references.values,
+        return FinalScope(self.source_path, self.source_map, self.locals, self.arguments, self.references.values,
                           self.literals.values,
                           self.arg_count, self.is_variadic, self.fn_name_index)
 
@@ -98,7 +102,10 @@ class FinalScope:
     # _immutable_fields_ = ['vars', 'arg_count', 'fn_name_index',
     #                       'references[*]', 'is_varargs', 'count_refs', 'count_vars', 'literals', 'functions']
 
-    def __init__(self, variables, arguments, references, literals, arg_count, is_varargs, fn_name_index):
+    def __init__(self, source_path, source_map, variables, arguments, references, literals, arg_count, is_varargs, fn_name_index):
+        self.source_path = source_path
+        self.source_map = source_map
+
         self.variables = variables
         self.count_args = arg_count
         self.fn_name_index = fn_name_index

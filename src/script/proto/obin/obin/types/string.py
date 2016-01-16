@@ -1,7 +1,10 @@
 from obin.types.root import W_Hashable
 from sequence import W_SequenceIterator
+from obin.types import api
+# from obin.types import plist
+# from obin.types import space
 # from obin.runtime.error import *
-# from obin.objects import api
+
 
 class W_String(W_Hashable):
     # _immutable_fields_ = ['value']
@@ -91,3 +94,33 @@ class W_String(W_Hashable):
 
     def _behavior_(self, process):
         return process.std.behaviors.String
+
+
+class Builder:
+    def __init__(self):
+        self.els = []
+
+    def nl(self):
+        self.els.append(u"\n")
+        return self
+
+    def space(self, count=1):
+        self.els.append(u" " * count)
+        return self
+
+    def tab(self):
+        self.els.append(u"    ")
+        return self
+
+    def add(self, obj):
+        self.els.append(api.to_native_unicode(obj))
+        return self
+
+    def add_u(self, unistr):
+        assert isinstance(unistr, unicode)
+        self.els.append(unicode(unistr))
+        return self
+
+    def value(self):
+        res = u"".join(self.els)
+        return W_String(res)

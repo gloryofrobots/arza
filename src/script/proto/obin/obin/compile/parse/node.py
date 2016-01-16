@@ -22,11 +22,12 @@ class EmptyNode(BaseNode):
 
 
 class Node(BaseNode):
-    def __init__(self, _type, value, position, line):
+    def __init__(self, _type, value, position, line, column):
         self.type = _type
         self.value = value
         self.position = position
         self.line = line
+        self.column = column
         self.children = None
         self.arity = 0
         self.node_type = None
@@ -203,14 +204,14 @@ def is_list_node(node):
 
 
 def create_tuple_node(basenode, elements):
-    node = Node(tt.TT_LPAREN, "(", basenode.position, basenode.line)
+    node = Node(tt.TT_LPAREN, "(", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_TUPLE, 1)
     node.setfirst(list_node(elements))
     return node
 
 
 def create_call_node(basenode, func, exp):
-    node = Node(tt.TT_LPAREN, "(", basenode.position, basenode.line)
+    node = Node(tt.TT_LPAREN, "(", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_CALL, 2)
     node.setfirst(func)
     node.setsecond(list_node([exp]))
@@ -218,14 +219,14 @@ def create_call_node(basenode, func, exp):
 
 
 def create_if_node(basenode, branches):
-    node = Node(tt.TT_IF, "(", basenode.position, basenode.line)
+    node = Node(tt.TT_IF, "(", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_IF, 1)
     node.setfirst(list_node(branches))
     return node
 
 
 def create_eq_node(basenode, left, right):
-    node = Node(tt.TT_EQ, "==", basenode.position, basenode.line)
+    node = Node(tt.TT_EQ, "==", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_EQ, 2)
     node.setfirst(left)
     node.setsecond(right)
@@ -233,19 +234,19 @@ def create_eq_node(basenode, left, right):
 
 
 def create_empty_list_node(basenode):
-    node = Node(tt.TT_LSQUARE, "[", basenode.position, basenode.line)
+    node = Node(tt.TT_LSQUARE, "[", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_LIST, 1)
     node.setfirst(list_node([]))
     return node
 
 def create_empty_map_node(basenode):
-    node = Node(tt.TT_LCURLY, "{", basenode.position, basenode.line)
+    node = Node(tt.TT_LCURLY, "{", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_MAP, 1)
     node.setfirst(list_node([]))
     return node
 
 def create_isnot_node(basenode, left, right):
-    node = Node(tt.TT_ISNOT, "isnot", basenode.position, basenode.line)
+    node = Node(tt.TT_ISNOT, "isnot", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_ISNOT, 2)
     node.setfirst(left)
     node.setsecond(right)
@@ -253,21 +254,21 @@ def create_isnot_node(basenode, left, right):
 
 
 def create_is_node(basenode, left, right):
-    node = Node(tt.TT_IS, "is", basenode.position, basenode.line)
+    node = Node(tt.TT_IS, "is", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_IS, 2)
     node.setfirst(left)
     node.setsecond(right)
     return node
 
 def create_in_node(basenode, left, right):
-    node = Node(tt.TT_IN, "in", basenode.position, basenode.line)
+    node = Node(tt.TT_IN, "in", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_IN, 2)
     node.setfirst(left)
     node.setsecond(right)
     return node
 
 def create_and_node(basenode, left, right):
-    node = Node(tt.TT_AND, "and", basenode.position, basenode.line)
+    node = Node(tt.TT_AND, "and", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_AND, 2)
     node.setfirst(left)
     node.setsecond(right)
@@ -275,7 +276,7 @@ def create_and_node(basenode, left, right):
 
 
 def create_assign_node(basenode, var, exp):
-    node = Node(tt.TT_ASSIGN, "=", basenode.position, basenode.line)
+    node = Node(tt.TT_ASSIGN, "=", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_ASSIGN, 2)
     node.setfirst(var)
     node.setsecond(exp)
@@ -283,23 +284,23 @@ def create_assign_node(basenode, var, exp):
 
 
 def create_name_node(basenode, name):
-    node = Node(tt.TT_NAME, name, basenode.position, basenode.line)
+    node = Node(tt.TT_NAME, name, basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_NAME, 0)
     return node
 
 def create_str_node(basenode, strval):
-    node = Node(tt.TT_STR, strval, basenode.position, basenode.line)
+    node = Node(tt.TT_STR, strval, basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_STR, 0)
     return node
 
 def create_int_node(basenode, strval):
-    node = Node(tt.TT_INT, strval, basenode.position, basenode.line)
+    node = Node(tt.TT_INT, strval, basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_INT, 0)
     return node
 
 
 def create_lookup_node(basenode, left, right):
-    node = Node(tt.TT_LSQUARE, "[", basenode.position, basenode.line)
+    node = Node(tt.TT_LSQUARE, "[", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_LOOKUP, 2)
     node.setfirst(left)
     node.setsecond(right)
@@ -307,19 +308,19 @@ def create_lookup_node(basenode, left, right):
 
 
 def create_true_node(basenode):
-    node = Node(tt.TT_TRUE, "true", basenode.position, basenode.line)
+    node = Node(tt.TT_TRUE, "true", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_TRUE, 0)
     return node
 
 
 def create_undefined_node(basenode):
-    node = Node(tt.TT_UNDEFINED, "undefined", basenode.position, basenode.line)
+    node = Node(tt.TT_UNDEFINED, "undefined", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_UNDEFINED, 0)
     return node
 
 
 def create_slice_til_the_end(basenode):
-    node = Node(tt.TT_DOUBLE_COLON, "..", basenode.position, basenode.line)
+    node = Node(tt.TT_DOUBLE_COLON, "..", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_RANGE, 2)
     first = create_int_node(basenode, "1")
     second = create_wildcard_node(basenode)
@@ -329,12 +330,12 @@ def create_slice_til_the_end(basenode):
 
 
 def create_goto_node(label):
-    node = Node(tt.TT_GOTO, label, -1, -1)
+    node = Node(tt.TT_GOTO, label, -1, -1, -1)
     node.init(nt.NT_GOTO, 0)
     return node
 
 
 def create_wildcard_node(basenode):
-    node = Node(tt.TT_WILDCARD, "_", basenode.position, basenode.line)
+    node = Node(tt.TT_WILDCARD, "_", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_WILDCARD, 0)
     return node

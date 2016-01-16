@@ -16,7 +16,7 @@ class Token:
         Contains the token type, value and position.
     """
 
-    def __init__(self, type, val, pos, line):
+    def __init__(self, type, val, pos, line, column):
         assert isinstance(type, int)
         assert isinstance(val, str)
         assert isinstance(pos, int)
@@ -25,6 +25,7 @@ class Token:
         self.val = val
         self.pos = pos
         self.line = line
+        self.column = column
 
     def __str__(self):
         try:
@@ -80,7 +81,7 @@ class Lexer:
     def _token(self):
         t = next(self.stream)
         # print tokens.token_type_to_str(t.name), t.value
-        token = Token(t.name, t.value, t.source_pos.idx, t.source_pos.lineno)
+        token = Token(t.name, t.value, t.source_pos.idx, t.source_pos.lineno, t.source_pos.colno)
         if token.type == -1:
             return self._token()
 
@@ -92,7 +93,7 @@ class Lexer:
         while 1:
             tok = self.token()
             if tok is None:
-                yield Token(tokens.TT_ENDSTREAM, "", 0, 0)
+                yield Token(tokens.TT_ENDSTREAM, "", 0, 0, 0)
                 break
             yield tok
 

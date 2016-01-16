@@ -1,29 +1,29 @@
-def initialize(libdirs):
-    from obin.builtins import setup_builtins
-    from obin.runtime.process import Process
-    from obin.runtime import process_data
+from obin.types import space
+from obin.compile.compiler import compile_module
+from obin.utils import fs
+from obin.builtins import setup_builtins
+from obin.runtime.process import Process
+from obin.runtime import process_data
+from obin.runtime.load import import_module
 
-    from obin.types.space import newsymbol
-    from obin.runtime.load import import_module
+
+def initialize(libdirs):
     proc_data = process_data.create(libdirs)
 
     process = Process(proc_data)
-
-    prelude = import_module(process, newsymbol(process, u"obin"))
+    prelude = import_module(process, space.newsymbol(process, u"obin"))
     process.builtins = prelude.env
     setup_builtins(process)
 
     return process
 
+
 def evaluate_file(process, filename):
-    from obin.utils import fs
     src = fs.load_file_content(filename)
-    return evaluate_string(process, src)
+    sourcename = space.newsymbol_py_str(process, filename)
 
-
-def evaluate_string(process, src):
-    from obin.compile.compiler import compile_module
-    from obin.types.space import newsymbol
-    module = compile_module(process, newsymbol(process, u"__main__"), src)
+    module = compile_module(process, space.newsymbol(process,u"__main__"), src, sourcename)
     result = process.run(module, None)
     return result
+
+

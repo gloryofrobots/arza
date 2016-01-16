@@ -1,4 +1,4 @@
-from obin.types import api, space
+from obin.types import api, space, string
 from obin.runtime.stack import Stack
 from obin.types import plist
 
@@ -6,11 +6,11 @@ DEFAULT_STACK_SIZE = 32
 
 
 def _print_trace(device, trace):
-    writer = device.writer()
-    writer.write_s("Uncaught exception").nl()
-
+    builder = string.Builder().add_u(u"Uncaught exception").nl()
     for record in trace:
-        writer.tab4().write(record).nl()
+        builder.space(4).add(record).nl()
+
+    device.write(builder.value())
 
 
 class Fiber:
@@ -255,7 +255,7 @@ class Process(object):
                 self.__terminate(trace)
             return signal
 
-        assert False, "SHOULDNT REACH HERE"
+        assert False, "NOT REACHABLE"
         # if suspended reach here
         # return None
 

@@ -2,17 +2,12 @@ from obin.compile.code import *
 from obin.runtime.error import ObinReferenceError
 from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
-from obin.types.space import (newbool, newundefined,
-                                newnil, newvector, isinterrupt, isundefined,
-                                newmap, newfunc,
-                                newint, newtuple,
-                                newgeneric, newtrait,
-                                neworigin, newlist)
 from obin.types.dispatch.generic import specify
 from obin.types import api
 from obin.runtime.load import import_module
 from obin.builtins.internals.internals import get_internal
 from obin.types import space
+from obin.types import string
 
 
 class CodeRoutine(BaseRoutine):
@@ -43,7 +38,8 @@ class CodeRoutine(BaseRoutine):
         return self._name_
 
     def _info(self):
-        return self._name_
+        return string.Builder().add(self._code_.scope.source_path)\
+                                .space().add_u(u"in").space().add(self._name_).value()
 
     def _on_resume(self, value):
         self.stack.push(value)
@@ -90,7 +86,7 @@ class CodeRoutine(BaseRoutine):
             self.pc += 1
             # *************************************
             if UNDEFINED == tag:
-                stack.push(newundefined())
+                stack.push(space.newundefined())
             # *************************************
             elif ARGUMENTS == tag:
                 stack.push(self.args)
@@ -99,16 +95,16 @@ class CodeRoutine(BaseRoutine):
                 self.complete(process, stack.top())
             # *************************************
             elif NULL == tag:
-                stack.push(newnil())
+                stack.push(space.newnil())
             # *************************************
             elif TRUE == tag:
-                stack.push(newbool(True))
+                stack.push(space.newbool(True))
             # *************************************
             elif FALSE == tag:
-                stack.push(newbool(False))
+                stack.push(space.newbool(False))
             # *************************************
             elif INTEGER == tag:
-                stack.push(newint(arg1))
+                stack.push(space.newint(arg1))
             # *************************************
             elif DUP == tag:
                 stack.push(stack.top())
@@ -122,7 +118,7 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif LOCAL == tag:
                 value = env.get_local(arg1)
-                if isundefined(value):
+                if space.isundefined(value):
                     literal = literals[arg2]
                     raise ObinReferenceError(literal)
 
@@ -165,7 +161,7 @@ class CodeRoutine(BaseRoutine):
                 # TODO REMOVE PUSHING
                 stack.push(value)
             # *************************************
-            # TODO STORE_MEMBER_DOT
+            # TODO STORE_SYMBOL_MEMBER
             # *************************************
             elif UNPACK_SEQUENCE == tag:
                 seq = stack.pop()
@@ -178,11 +174,11 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif TUPLE == tag:
                 tupl = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
-                stack.push(newtuple(tupl))
+                stack.push(space.newtuple(tupl))
             # *************************************
             elif VECTOR == tag:
                 lst = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
-                stack.push(newvector(lst))
+                stack.push(space.newvector(lst))
             # *************************************
             elif LIST == tag:
                 lst = stack.pop_n_list(arg1)  # [:] # pop_n returns a non-resizable list
@@ -265,12 +261,12 @@ class CodeRoutine(BaseRoutine):
                 iterator = stack.top()
                 next_el = api.next(iterator)
                 # call is interrupted, probably coself call
-                if isinterrupt(next_el):
+                if space.isinterrupt(next_el):
                     return
                 stack.push(next_el)
             # *************************************
             elif MAP == tag:
-                obj = newmap()
+                obj = space.newmap()
 
                 for _ in xrange(arg1):
                     name = stack.pop()
@@ -281,13 +277,13 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif FUNCTION == tag:
                 source = literals[arg1]
-                w_func = newfunc(source.name, source.code, env)
+                w_func = space.newfunc(source.name, source.code, env)
                 stack.push(w_func)
             # *************************************
             elif ORIGIN == tag:
                 source = literals[arg1]
-                w_func = newfunc(source.name, source.code, env)
-                w_origin = neworigin(w_func)
+                w_func = space.newfunc(source.name, source.code, env)
+                w_origin = space.neworigin(w_func)
                 stack.push(w_origin)
             # *************************************
             elif THROW == tag:
@@ -307,17 +303,17 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif TRAIT == tag:
                 name = literals[arg1]
-                trait = newtrait(name)
+                trait = space.newtrait(name)
                 stack.push(trait)
             # *************************************
             elif GENERIC == tag:
                 name = literals[arg1]
-                trait = newgeneric(name)
+                trait = space.newgeneric(name)
                 stack.push(trait)
             # *************************************
             elif SPECIFY == tag:
                 methods = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
-                methods = newtuple(methods)
+                methods = space.newtuple(methods)
                 generic = stack.top()
                 specify(process, generic, methods)
             # *************************************
