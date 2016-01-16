@@ -1,6 +1,6 @@
-from obin.objects.types.root import W_Callable, W_Root
+from obin.types.root import W_Callable, W_Root
 from obin.runtime.error import *
-from obin.objects import api
+from obin.types import api
 from rpython.rlib import jit
 
 
@@ -47,7 +47,7 @@ class W_Function(W_Callable):
 
 
     def _equal_(self, other):
-        from obin.objects import space
+        from obin.types import space
         if not space.isfunction(other):
             return False
 

@@ -1,4 +1,4 @@
-from obin.objects.types.root import W_Cell
+from obin.types.root import W_Cell
 from obin.runtime.error import *
 from sequence import W_SequenceIterator
 from obin.utils.misc import absent_index
@@ -18,8 +18,8 @@ class W_Vector(W_Cell):
     #     return u'W_Vector("%s")' % str(self._items)
 
     def _put_(self, k, v):
-        from obin.objects.space import isint
-        from obin.objects import api
+        from obin.types.space import isint
+        from obin.types import api
         assert isint(k)
         i = api.to_native_integer(k)
         try:
@@ -37,8 +37,8 @@ class W_Vector(W_Cell):
         return W_Vector(items)
 
     def _slice_(self, start, end):
-        from obin.objects.space import isundefined
-        from obin.objects import api
+        from obin.types.space import isundefined
+        from obin.types import api
 
         if isundefined(start):
             start_index = 0
@@ -54,8 +54,8 @@ class W_Vector(W_Cell):
         return W_Vector(items)
 
     def _at_(self, index):
-        from obin.objects.space import newundefined, isint
-        from obin.objects import api
+        from obin.types.space import newundefined, isint
+        from obin.types import api
         assert isint(index)
         try:
             el = self._items[api.to_native_integer(index)]
@@ -103,12 +103,12 @@ class W_Vector(W_Cell):
         self._items += [None] * (size - l)
 
     def append(self, v):
-        from obin.objects.space import isany
+        from obin.types.space import isany
         assert isany(v)
         self._items.append(v)
 
     def append_vector_items(self, vec):
-        from obin.objects.space import isvector
+        from obin.types.space import isvector
         assert isvector(vec)
         self.append_many(vec._items)
 
@@ -116,17 +116,17 @@ class W_Vector(W_Cell):
         self._items += items
 
     def prepend(self, v):
-        from obin.objects.space import isany
+        from obin.types.space import isany
         assert isany(v)
         self._items.insert(0, v)
 
     def insert(self, index, v):
-        from obin.objects.space import isany
+        from obin.types.space import isany
         assert isany(v)
         self._items.insert(index, v)
 
     def remove(self, v):
-        from obin.objects.space import isany
+        from obin.types.space import isany
         assert isany(v)
         self._items.remove(v)
 

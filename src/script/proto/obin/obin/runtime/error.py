@@ -1,4 +1,4 @@
-from obin.objects import api
+from obin.types import api
 
 
 class ObinException(Exception):
@@ -10,7 +10,7 @@ class ObinException(Exception):
         return self.message
 
     def msg(self):
-        from obin.objects.space import newstring
+        from obin.types.space import newstring
         return newstring(self._msg())
 
     def __str__(self):

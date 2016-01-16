@@ -1,6 +1,6 @@
-from obin.objects.types.root import W_Cell
+from obin.types.root import W_Cell
 from obin.runtime.error import ObinTraitError
-from obin.objects import api
+from obin.types import api
 
 def _tostring_foldl_(traits, trait):
     traits.append(api.tostring(trait.name))
@@ -15,9 +15,9 @@ class W_Entity(W_Cell):
         self.behavior = behavior
 
     def _tostring_(self):
-        from obin.objects import api
-        from obin.objects.space import newvector
-        from obin.objects.types.plist import foldl
+        from obin.types import api
+        from obin.types.space import newvector
+        from obin.types.plist import foldl
         traits_repr = foldl(_tostring_foldl_, newvector([]), self.behavior.traits)
         traits_repr = ",".join([api.to_native_string(t) for t in traits_repr.to_py_list()])
 
@@ -88,17 +88,17 @@ def has_traits(entity):
 
 
 def attach(process, entity, trait):
-    from obin.objects.space import isentity, istrait, newbehavior, newentity
+    from obin.types.space import isentity, istrait, newbehavior, newentity
     assert istrait(trait)
     assert isentity(entity)
     traits = entity.behavior.traits
-    from obin.objects.types.plist import prepend
+    from obin.types.plist import prepend
     return newentity(process, newbehavior(prepend(traits, trait)), entity.source)
 
 
 def detach(process, entity, trait):
-    from obin.objects.space import isentity, istrait, newbehavior, newentity
-    from obin.objects.types.plist import remove
+    from obin.types.space import isentity, istrait, newbehavior, newentity
+    from obin.types.plist import remove
     assert istrait(trait)
     assert isentity(entity)
     traits = entity.behavior.traits

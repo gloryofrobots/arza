@@ -1,5 +1,5 @@
-from obin.objects import api
-from obin.objects.types.root import W_Root, W_Cell
+from obin.types import api
+from obin.types.root import W_Root, W_Cell
 from obin.utils.misc import is_absent_index, absent_index
 
 
@@ -13,7 +13,7 @@ class Bindings:
     PERTURB_SHIFT = 5
 
     def __init__(self):
-        from obin.objects.space import newundefined
+        from obin.types.space import newundefined
         self._minsize = Bindings.MINSIZE
         self._perturb_shift = Bindings.PERTURB_SHIFT
         self._backing = None
@@ -24,7 +24,7 @@ class Bindings:
         self._build(self._minsize)
 
     def _lookup(self, key):
-        from obin.objects.space import isundefined
+        from obin.types.space import isundefined
         backing = self._backing
         for i in self._indices(key, len(backing)):
             kv_pair = backing[i]
@@ -49,7 +49,7 @@ class Bindings:
         return False
 
     def insert(self, key, value):
-        from obin.objects.space import isundefined, isany
+        from obin.types.space import isundefined, isany
         assert isany(key)
         assert not isundefined(key)
         assert isinstance(value, int)
@@ -75,7 +75,7 @@ class Bindings:
         return not self.is_empty_pair(kv_pair)
 
     def keys(self):
-        from obin.objects.space import isundefined
+        from obin.types.space import isundefined
         l = []
         for kv_pair in self._backing:
             if kv_pair and not isundefined(kv_pair[0]):
@@ -83,13 +83,13 @@ class Bindings:
         return l
 
     def __iter__(self):
-        from obin.objects.space import isundefined
+        from obin.types.space import isundefined
         for kv_pair in self._backing:
             if kv_pair and not isundefined(kv_pair[0]):
                 yield kv_pair[0]
 
     def items(self):
-        from obin.objects.space import isundefined
+        from obin.types.space import isundefined
         for kv_pair in self._backing:
             if kv_pair and not isundefined(kv_pair[0]):
                 yield kv_pair[0], kv_pair[1]
@@ -170,7 +170,7 @@ class TableIterator(W_Root):
         self.source_length = length
 
     def _next_(self):
-        from obin.objects.space import newundefined, isundefined
+        from obin.types.space import newundefined, isundefined
         while True:
             if self.index >= self.source_length:
                 return newundefined()
@@ -212,7 +212,7 @@ class W_Map(W_Cell):
         return m
 
     def _tostring_(self):
-        from obin.objects import api
+        from obin.types import api
         res = []
         for k, i in self.slot_bindings.items():
             v = api.at_index(self.slot_values, i)
@@ -237,7 +237,7 @@ class W_Map(W_Cell):
         return process.std.behaviors.Map
 
     def _at_(self, name):
-        from obin.objects.space import newundefined
+        from obin.types.space import newundefined
         idx = self._get_index_(name)
         if is_absent_index(idx):
             return newundefined()
@@ -268,7 +268,7 @@ class W_Map(W_Cell):
         self.insert(name, value)
 
     def insert(self, name, value):
-        from obin.objects.space import isany, issymbol, isstring
+        from obin.types.space import isany, issymbol, isstring
         if isstring(name):
             print name
         assert isany(name)
@@ -314,11 +314,11 @@ def _create_map(values, bindings, index):
 
 
 def create_map_with_size(size):
-    from obin.objects.space import newvector
+    from obin.types.space import newvector
     return _create_map(newvector([None] * size), Bindings(), 0)
 
 
 def create_empty_map():
-    from obin.objects.space import newvector
+    from obin.types.space import newvector
     return _create_map(newvector([]), Bindings(), 0)
 

@@ -1,19 +1,19 @@
-from obin.objects.space import _w
+from obin.types.space import _w
 from obin.runtime.routine import complete_native_routine
 from rpython.rlib.rfloat import NAN
 from rpython.rlib.rstring import UnicodeBuilder
 
-from obin.objects.object import W_String
+from obin.types.object import W_String
 from obin.runtime.error import ObinTypeError
 from obin.builtins import get_arg
 
 def setup(obj):
     from obin.builtins import put_native_function, put_property
-    from obin.objects.space import stdlib
+    from obin.types.space import stdlib
 
     #String
     # 15.5.1
-    from obin.objects.object import W__Object, W_String
+    from obin.types.object import W__Object, W_String
     w_String = W__Object()
     # object_space.assign_proto(w_String, object_space.proto_function)
     put_property(w_String, u'length', _w(1))
@@ -233,7 +233,7 @@ def _rsplit(value, by, maxsplit=-1):
 # 15.5.4.14
 @complete_native_routine
 def split(routine):
-    from obin.objects.space import isundefined
+    from obin.types.space import isundefined
     this, args = routine.args()
 
     this.check_object_coercible()

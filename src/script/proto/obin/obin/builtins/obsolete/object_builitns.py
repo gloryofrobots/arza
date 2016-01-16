@@ -1,5 +1,5 @@
 from obin.runtime.routine import complete_native_routine
-from obin.objects import api
+from obin.types import api
 
 def setup(obj):
     api.put_native_function(obj, u'clone', clone, 1)
@@ -14,7 +14,7 @@ def setup(obj):
     obj.freeze()
 
 def object_extract_1_obj_arg(routine):
-    from obin.objects.space import isobject
+    from obin.types.space import isobject
     this = routine.get_arg(0)
     other = routine.get_arg(1)
     assert isobject(this)
@@ -23,7 +23,7 @@ def object_extract_1_obj_arg(routine):
 
 @complete_native_routine
 def traits(routine):
-    from obin.objects.space import isobject
+    from obin.types.space import isobject
     this = routine.get_arg(0)
     assert isobject(this)
     return this.traits()

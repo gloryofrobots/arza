@@ -1,4 +1,4 @@
-from obin.objects import api
+from obin.types import api
 
 class Discriminator:
     def __init__(self, position):
@@ -79,7 +79,7 @@ class TraitDiscriminator(Discriminator):
                and other.trait == self.trait
 
     def _evaluate(self, process, arg):
-        from obin.objects.types import behavior
+        from obin.types import behavior
         return api.get_index(behavior.traits(process, arg), self.trait)
 
     # def __str__(self):

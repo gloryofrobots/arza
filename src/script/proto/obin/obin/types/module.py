@@ -1,4 +1,4 @@
-from obin.objects.types.root import W_Root
+from obin.types.root import W_Root
 
 
 class W_Module(W_Root):

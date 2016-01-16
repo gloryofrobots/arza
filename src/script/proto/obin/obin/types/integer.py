@@ -1,5 +1,5 @@
 from root import W_ValueType
-from obin.objects import api
+from obin.types import api
 
 class W_Integer(W_ValueType):
     # _immutable_fields_ = ['int_value']

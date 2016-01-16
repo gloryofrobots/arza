@@ -1,5 +1,5 @@
-from obin.objects.types.root import W_Hashable
-from obin.objects import api
+from obin.types.root import W_Hashable
+from obin.types import api
 
 
 class W_Behavior(W_Hashable):
@@ -7,7 +7,7 @@ class W_Behavior(W_Hashable):
 
     def __init__(self, traits):
         W_Hashable.__init__(self)
-        from obin.objects.space import islist
+        from obin.types.space import islist
         assert islist(traits)
         self.traits = traits
 
@@ -21,7 +21,7 @@ class W_Behavior(W_Hashable):
         return W_Behavior(self.traits)
 
     def _compute_hash_(self):
-        from obin.objects.types.plist import compute_hash
+        from obin.types.plist import compute_hash
         return compute_hash(self.traits)
 
 

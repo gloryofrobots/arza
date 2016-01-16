@@ -1,5 +1,5 @@
-from obin.objects.types.root import W_Callable
-from obin.objects import api
+from obin.types.root import W_Callable
+from obin.types import api
 from rpython.rlib import jit
 
 
@@ -7,7 +7,7 @@ class W_Origin(W_Callable):
     # _immutable_fields_ = ['_name_', 'arity',  '_function_']
 
     def __init__(self, function):
-        from obin.objects.space import newtrait
+        from obin.types.space import newtrait
         self.name = function.name
         self.constructor = function
         self.trait = newtrait(self.name)

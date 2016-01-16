@@ -3,8 +3,8 @@ from obin.compile.parse.node import (is_empty_node, is_list_node, is_iterable_no
                                      create_tuple_node, is_wildcard_node)
 from obin.compile.parse.parser import *
 from obin.compile.scope import Scope
-from obin.objects import space as obs
-from obin.objects import api
+from obin.types import space as obs
+from obin.types import api
 from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource
 from obin.compile.code import *
@@ -1392,14 +1392,14 @@ def compile(process, src):
 
 
 def compile_module(process, name, src):
-    from obin.objects.space import newmodule
+    from obin.types.space import newmodule
     code = compile(process, src)
     module = newmodule(process, name, code)
     return module
 
 
 def compile_function_source(process, src, name):
-    from obin.objects.space import newfuncsource
+    from obin.types.space import newfuncsource
     code = compile(process, src)
     fn = newfuncsource(name, code)
     return fn

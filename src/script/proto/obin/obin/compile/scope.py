@@ -1,7 +1,7 @@
-from obin.objects.space import issymbol
-from obin.objects.space import newmap
+from obin.types.space import issymbol
+from obin.types.space import newmap
 from obin.utils.misc import absent_index, is_absent_index
-from obin.objects import api
+from obin.types import api
 
 class ScopeSet:
     def __init__(self):
@@ -70,7 +70,7 @@ class Scope:
         self.is_variadic = is_varargs
 
     def add_local(self, local):
-        from obin.objects.space import newundefined
+        from obin.types.space import newundefined
         assert issymbol(local)
         self.check_arg_count()
         assert is_absent_index(self.get_local_index(local))

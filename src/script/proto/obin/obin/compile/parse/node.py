@@ -1,7 +1,7 @@
 from obin.compile.parse.tokens import token_type_to_str
 from obin.compile.parse import token_type as tt
 from obin.compile.parse import node_type as nt
-from obin.objects.types.root import W_Root
+from obin.types.root import W_Root
 
 
 class BaseNode(W_Root):

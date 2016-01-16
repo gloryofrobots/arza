@@ -1,4 +1,4 @@
-from obin.objects import api
+from obin.types import api
 
 def setup(process, module, stdlib):
     traits = stdlib.traits

@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
 from rpython.rlib import jit
-from obin.objects.space import newundefined, newtuple
-from obin.objects.types import plist
+from obin.types.space import newundefined, newtuple
+from obin.types import plist
 # TODO proper stack operations
 
 class Stack:
@@ -39,7 +39,7 @@ class Stack:
         return len(self.data)
 
     def push(self, element):
-        from obin.objects.space import isnull, isany
+        from obin.types.space import isnull, isany
         if not isany(element):
             raise RuntimeError(u"Not Any product", element)
         i = self.pointer()

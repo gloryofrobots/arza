@@ -1,6 +1,6 @@
 # TODO STRING LITERALS PROPER, CHARS, SYMBOLS
 from root import W_Number
-from obin.objects import api
+from obin.types import api
 
 class W_Float(W_Number):
     # _immutable_fields_ = ['float_value']

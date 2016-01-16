@@ -1,13 +1,13 @@
 __author__ = 'gloryofrobots'
 from obin.runtime.routine.base_routine import BaseRoutine
-from obin.objects import api
+from obin.types import api
 
 class NativeRoutine(BaseRoutine):
     # _immutable_fields_ = ['_name_', '_function_']
 
     def __init__(self, stack, name, function, args, arity):
         BaseRoutine.__init__(self, stack)
-        from obin.objects.space import issymbol
+        from obin.types.space import issymbol
         assert issymbol(name)
         self._name_ = name
         self.native_func = function

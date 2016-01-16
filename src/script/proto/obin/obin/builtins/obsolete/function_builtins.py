@@ -1,4 +1,4 @@
-from obin.objects import api
+from obin.types import api
 from obin.runtime.routine import complete_native_routine
 
 def setup(obj):
@@ -8,14 +8,14 @@ def setup(obj):
 
 @complete_native_routine
 def arity(routine):
-    from obin.objects.space import isfunction, newint
+    from obin.types.space import isfunction, newint
     this = routine.get_arg(0)
     assert isfunction(this)
     return newint(this.arity())
 
 @complete_native_routine
 def is_variadic(routine):
-    from obin.objects.space import isfunction, newbool
+    from obin.types.space import isfunction, newbool
     this = routine.get_arg(0)
     assert isfunction(this)
     return newbool(this.is_variadic())

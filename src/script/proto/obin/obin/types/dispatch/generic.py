@@ -1,8 +1,8 @@
-from obin.objects.types.root import W_Callable
-from obin.objects.space import newtuple, isany
+from obin.types.root import W_Callable
+from obin.types.space import newtuple, isany
 from obin.runtime.error import *
 from signature import newsignature, new_base_signature
-from obin.objects import api
+from obin.types import api
 from dag import *
 
 

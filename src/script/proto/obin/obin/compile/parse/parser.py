@@ -50,6 +50,7 @@ def args_parser_init(parser):
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly)
 
+    symbol(parser, TT_ASSIGN, None)
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_RCURLY, None)
@@ -97,6 +98,7 @@ def pattern_parser_init(parser):
     symbol(parser, TT_RCURLY, None)
     symbol(parser, TT_RSQUARE, None)
     symbol(parser, TT_ARROW, None)
+    symbol(parser, TT_ASSIGN, None)
 
     literal(parser, TT_NAME)
     literal(parser, TT_INT)

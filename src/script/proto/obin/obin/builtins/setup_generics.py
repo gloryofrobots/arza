@@ -1,6 +1,6 @@
 from obin.runtime.routine import complete_native_routine
-from obin.objects import api
-from obin.objects import space
+from obin.types import api
+from obin.types import space
 from rpython.rlib.rstring import UnicodeBuilder
 from obin.runistr import encode_unicode_utf8
 
@@ -41,8 +41,8 @@ def _install(process, module, stdlib):
 
 def _specify(process, module, stdlib):
     import obin.builtins.internals.wrappers as wrappers
-    from obin.objects.types.dispatch.generic import specify_single
-    from obin.objects.space import newtuple, newnativefunc, newsymbol
+    from obin.types.dispatch.generic import specify_single
+    from obin.types.space import newtuple, newnativefunc, newsymbol
     generics = stdlib.generics
     traits = stdlib.traits
 

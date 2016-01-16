@@ -1,4 +1,4 @@
-from obin.objects import api
+from obin.types import api
 from obin.runtime.error import ObinImportError
 from obin.utils.fs import load_file_content, is_file, join_and_normalise_path
 import os
@@ -31,7 +31,7 @@ def load_module(process, name):
 
 
 def __setup_module(process, name, script):
-    from obin.objects.space import newundefined
+    from obin.types.space import newundefined
     from obin.compile.compiler import compile_module
     module = compile_module(process, name, script)
     module.result = process.subprocess(module, newundefined())

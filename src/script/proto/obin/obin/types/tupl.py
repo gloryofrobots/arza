@@ -1,7 +1,7 @@
-from obin.objects.types.root import W_Hashable
+from obin.types.root import W_Hashable
 from sequence import W_SequenceIterator
 from obin.runtime.error import *
-from obin.objects import api
+from obin.types import api
 
 """
  @jit.look_inside_iff(lambda self, _1: _unroll_condition(self))
@@ -64,7 +64,7 @@ class W_Tuple(W_Hashable):
         return W_Tuple(self.elements)
 
     def _at_(self, index):
-        from obin.objects.space import newundefined, isint
+        from obin.types.space import newundefined, isint
         assert isint(index)
         try:
             el = self.elements[api.to_native_integer(index)]
@@ -77,8 +77,8 @@ class W_Tuple(W_Hashable):
         return self.elements[i]
 
     def _slice_(self, start, end):
-        from obin.objects.space import isundefined
-        from obin.objects import api
+        from obin.types.space import isundefined
+        from obin.types import api
 
         if isundefined(start):
             start_index = 0
@@ -109,7 +109,7 @@ class W_Tuple(W_Hashable):
         return len(self.elements)
 
     def _equal_(self, other):
-        from obin.objects import space
+        from obin.types import space
         if not space.istuple(other):
             return False
 

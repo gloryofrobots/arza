@@ -1,16 +1,16 @@
-from obin.objects.types.root import W_Root
-from obin.objects import api
+from obin.types.root import W_Root
+from obin.types import api
 
 class W_SequenceIterator(W_Root):
     def __init__(self, source):
-        from obin.objects.space import isany
+        from obin.types.space import isany
         assert isany(source)
         self.index = 0
         self.source = source
         self.source_length = api.n_length(source)
 
     def _next_(self):
-        from obin.objects.space import newundefined
+        from obin.types.space import newundefined
         if self.index >= self.source_length:
             return newundefined()
 

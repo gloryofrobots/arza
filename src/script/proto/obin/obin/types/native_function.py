@@ -1,6 +1,6 @@
-from obin.objects.types.root import W_Callable
+from obin.types.root import W_Callable
 from obin.runtime.error import *
-from obin.objects import api
+from obin.types import api
 from rpython.rlib import jit
 
 
@@ -37,7 +37,7 @@ class W_NativeFunction(W_Callable):
         process.call_object(self, args)
 
     def _equal_(self, other):
-        from obin.objects import space
+        from obin.types import space
         if not space.isnativefunction(other):
             return False
 

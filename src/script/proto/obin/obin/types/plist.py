@@ -1,6 +1,6 @@
-from obin.objects.types.root import W_Root
-from obin.objects import space
-from obin.objects import api
+from obin.types.root import W_Root
+from obin.types import space
+from obin.types import api
 
 
 class W_PList(W_Root):
@@ -26,7 +26,7 @@ class W_PList(W_Root):
         return str(els)
 
     def _tostring_(self):
-        from obin.objects import api
+        from obin.types import api
         els = []
         cur = self
         while True:
@@ -43,8 +43,8 @@ class W_PList(W_Root):
         return index(self, obj)
 
     def _at_(self, key):
-        from obin.objects.space import newundefined
-        from obin.objects import api
+        from obin.types.space import newundefined
+        from obin.types import api
         int_index = api.to_native_integer(key)
         if int_index < 0:
             return newundefined()
@@ -52,8 +52,8 @@ class W_PList(W_Root):
         return nth(self, int_index)
 
     def _slice_(self, start, end):
-        from obin.objects.space import isundefined, newundefined
-        from obin.objects import api
+        from obin.types.space import isundefined, newundefined
+        from obin.types import api
 
         if isundefined(start):
             start_index = 0
@@ -195,7 +195,7 @@ def slice(pl, start, end):
 ##############################################
 
 def _nth(pl, index):
-    from obin.objects.space import newundefined
+    from obin.types.space import newundefined
     if index == 0:
         return head(pl)
     if isempty(pl):
@@ -230,7 +230,7 @@ def remove_all(pl, v):
 
 
 def remove(pl, v):
-    from obin.objects import api
+    from obin.types import api
     if isempty(pl):
         raise RuntimeError("Invalid value")
 
@@ -241,7 +241,7 @@ def remove(pl, v):
 
 
 def contains(pl, v):
-    from obin.objects import api
+    from obin.types import api
     if isempty(pl):
         return False
 
@@ -314,7 +314,7 @@ def reverse(pl):
 ##############################################################
 
 def _hash(acc, el):
-    from obin.objects import api
+    from obin.types import api
     from rpython.rlib.rarithmetic import intmask
     y = api.n_hash(el)
     return intmask((1000003 * acc) ^ y)
@@ -350,8 +350,8 @@ def plist1(item):
 ##############################################################
 
 def test():
-    from obin.objects.space import newint
-    from obin.objects import api
+    from obin.types.space import newint
+    from obin.types import api
     def test_list(pl, check):
         check = make_test_data(check)
         assert length(pl) == len(check)
@@ -396,7 +396,7 @@ def test():
     print l10
 
     def inc(el):
-        from obin.objects import api, space
+        from obin.types import api, space
         return space.newint(api.to_native_integer(el) + 1)
 
     l11 = fmap(inc, l10)

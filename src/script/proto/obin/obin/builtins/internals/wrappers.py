@@ -291,12 +291,12 @@ def builtin_str_w(process, routine):
 
 @complete_native_routine
 def builtin_plist_vec(process, routine):
-    from obin.objects.types.plist import plist_vec
+    from obin.types.plist import plist_vec
     arg1 = routine.get_arg(0)
     return plist_vec(process, arg1)
 
 @complete_native_routine
 def builtin_plist_tuple(process, routine):
-    from obin.objects.types.plist import plist_tuple
+    from obin.types.plist import plist_tuple
     arg1 = routine.get_arg(0)
     return plist_tuple(process, arg1)

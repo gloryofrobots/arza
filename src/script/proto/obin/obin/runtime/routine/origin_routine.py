@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
 from obin.runtime.routine.base_routine import BaseRoutine
-from obin.objects import api
+from obin.types import api
 
 class OriginRoutine(BaseRoutine):
     # _immutable_fields_ = ['_name_', '_function_']
@@ -20,8 +20,8 @@ class OriginRoutine(BaseRoutine):
             api.call(process, self.constructor, self._args)
 
     def _on_complete(self, process):
-        from obin.objects.space import newentity, istuple, islist
-        from obin.objects.types.plist import head, tail, fmap
+        from obin.types.space import newentity, istuple, islist
+        from obin.types.plist import head, tail, fmap
         if not islist(self.result):
             raise RuntimeError("Origin must return list[source, ...traits]")
         source = head(self.result)

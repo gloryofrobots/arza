@@ -2,17 +2,17 @@ from obin.compile.code import *
 from obin.runtime.error import ObinReferenceError
 from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
-from obin.objects.space import (newbool, newundefined,
+from obin.types.space import (newbool, newundefined,
                                 newnil, newvector, isinterrupt, isundefined,
                                 newmap, newfunc,
                                 newint, newtuple,
                                 newgeneric, newtrait,
                                 neworigin, newlist)
-from obin.objects.types.dispatch.generic import specify
-from obin.objects import api
+from obin.types.dispatch.generic import specify
+from obin.types import api
 from obin.runtime.load import import_module
 from obin.builtins.internals.internals import get_internal
-from obin.objects import space
+from obin.types import space
 
 
 class CodeRoutine(BaseRoutine):

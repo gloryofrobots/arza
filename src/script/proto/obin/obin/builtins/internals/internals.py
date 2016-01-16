@@ -1,6 +1,6 @@
 from operations import *
 
-from obin.objects.space import newtuple, isnumber, isint, isentity, isboolean
+from obin.types.space import newtuple, isnumber, isint, isentity, isboolean
 
 
 def call2(process, generic, l, r):

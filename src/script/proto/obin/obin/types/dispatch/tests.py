@@ -1,7 +1,7 @@
-from obin.objects import api
+from obin.types import api
 
 def make_method(process, name, arity=3):
-    from obin.objects.space import newtrait, newgeneric,  newnativefunc, newtuple, newsymbol
+    from obin.types.space import newtrait, newgeneric,  newnativefunc, newtuple, newsymbol
     return newnativefunc(newsymbol(process, unicode(name)), lambda *args: name, arity)
 
 def specify(generic, sig, name):
@@ -10,19 +10,19 @@ def specify(generic, sig, name):
     generic.specify_single(sig, method)
 
 def sig(*args):
-    from obin.objects.space import newtuple
+    from obin.types.space import newtuple
     return newtuple(list(args))
 
 def makeobject(traits):
-    from obin.objects.space import newplainobject, newtuple
-    from obin.objects.types import oobject
+    from obin.types.space import newplainobject, newtuple
+    from obin.types import oobject
     o = newplainobject()
     oobject.set_traits(o, newtuple(traits))
     return o
 
 
 def objects(traits_list):
-    from obin.objects.space import newtuple
+    from obin.types.space import newtuple
     return newtuple([makeobject(traits) for traits in traits_list])
 
 def test(gen, expected, args):
@@ -33,7 +33,7 @@ def test(gen, expected, args):
         raise RuntimeError((res, expected))
 
 def test_3():
-    from obin.objects.space import newtrait, newgeneric
+    from obin.types.space import newtrait, newgeneric
     X = newtrait(newsymbol(u"X"))
     Y = newtrait(newsymbol(u"Y"))
     Z = newtrait(newsymbol(u"Z"))
@@ -53,7 +53,7 @@ def test_3():
     test(g, "m1", objects([[X,X], [Y,X], [Y,Y,Z]]))
 
 def test_any():
-    from obin.objects.space import newtrait, newgeneric, newsymbol,\
+    from obin.types.space import newtrait, newgeneric, newsymbol,\
         stdlib, newtuple, newnil, newbool, newint, newprocess
     newprocess(["."])
 

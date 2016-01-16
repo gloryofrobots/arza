@@ -1,8 +1,8 @@
 import math
 
 from obin.runtime.error import ObinTypeError, ObinReferenceError
-from obin.objects import api
-from obin.objects.space import newnumber, isint, isstring, isfloat, \
+from obin.types import api
+from obin.types.space import newnumber, isint, isstring, isfloat, \
     newbool, newint, newfloat, newstring
 from rpython.rlib.rarithmetic import ovfcheck, intmask
 from rpython.rlib.rfloat import NAN, INFINITY, isnan, isinf
@@ -313,8 +313,8 @@ def list_v(process, op1):
     pass
 
 def cons_w(process, op1, op2):
-    from obin.objects.types.plist import plist1, prepend
-    from obin.objects.space import islist
+    from obin.types.plist import plist1, prepend
+    from obin.types.space import islist
     if not islist(op2):
         l = plist1(op2)
     else:

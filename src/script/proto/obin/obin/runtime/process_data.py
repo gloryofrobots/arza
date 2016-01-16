@@ -10,8 +10,8 @@ class Symbols:
             symbol = self.symbols[idx]
             return symbol
         except KeyError:
-            from obin.objects.space import newstring
-            from obin.objects.types.symbol import W_Symbol
+            from obin.types.space import newstring
+            from obin.types.symbol import W_Symbol
             string = newstring(ustrval)
             idx = len(self.symbols)
             symbol = W_Symbol(string, idx)
@@ -49,7 +49,7 @@ class ProcessData:
 
 
 def create(libdirs):
-    from obin.objects.space import newmap
+    from obin.types.space import newmap
     from obin.builtins.std import Std
     symbols = Symbols()
     stdlib = Std(symbols)

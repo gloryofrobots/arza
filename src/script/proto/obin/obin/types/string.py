@@ -1,4 +1,4 @@
-from obin.objects.types.root import W_Hashable
+from obin.types.root import W_Hashable
 from sequence import W_SequenceIterator
 # from obin.runtime.error import *
 # from obin.objects import api
@@ -44,7 +44,7 @@ class W_String(W_Hashable):
         return self._hash_()
 
     def _equal_(self, other):
-        from obin.objects import space
+        from obin.types import space
         if space.issymbol(other):
             return self._equal_(other.string)
 
@@ -69,7 +69,7 @@ class W_String(W_Hashable):
         return self.__length
 
     def _at_index_(self, i):
-        from obin.objects.space import newundefined, newchar
+        from obin.types.space import newundefined, newchar
         try:
             ch = self.string_value[i]
         except:
@@ -84,8 +84,8 @@ class W_String(W_Hashable):
             return -1
 
     def _at_(self, index):
-        from obin.objects.space import isint
-        from obin.objects import api
+        from obin.types.space import isint
+        from obin.types import api
         assert isint(index)
         return self._at_index_(api.to_native_integer(index))
 

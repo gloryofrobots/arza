@@ -275,5 +275,5 @@ def put_symbol(process, obj, k, v):
 
 
 def put_native_function(process, obj, name, func, arity):
-    from obin.objects.space import newnativefunc, newsymbol
+    from obin.types.space import newnativefunc, newsymbol
     put_symbol(process, obj, name, newnativefunc(newsymbol(process, name), func, arity))

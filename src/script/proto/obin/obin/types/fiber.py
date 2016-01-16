@@ -1,6 +1,6 @@
 from root import W_Root, W_Callable
 from obin.runtime.error import *
-from obin.objects import api
+from obin.types import api
 from rpython.rlib import jit
 
 
@@ -18,7 +18,7 @@ class W_Fiber(W_Callable):
         return process.std.behaviors.Fiber
 
     def _call_(self, process, args):
-        from obin.objects.space import newundefined
+        from obin.types.space import newundefined
 
         if not self.fiber.is_waiting():
             raise ObinRuntimeError(u"Can't resume not waiting fiber")

@@ -1,6 +1,6 @@
 from obin.runtime.reference import Reference
-from obin.objects import api
-from obin.objects.space import isstring
+from obin.types import api
+from obin.types.space import isstring
 from obin.utils.misc import is_absent_index
 
 

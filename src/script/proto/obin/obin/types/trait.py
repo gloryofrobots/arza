@@ -1,5 +1,5 @@
-from obin.objects.types.root import W_Hashable
-from obin.objects import api
+from obin.types.root import W_Hashable
+from obin.types import api
 from obin.utils.misc import random
 
 

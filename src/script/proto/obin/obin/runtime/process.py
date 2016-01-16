@@ -1,4 +1,4 @@
-from obin.objects import api, space
+from obin.types import api, space
 from obin.runtime.stack import Stack
 
 DEFAULT_STACK_SIZE = 32
@@ -179,7 +179,6 @@ class Process(object):
     """
     PRIVATE API
     """
-
 
     def __run(self):
         # print "RUN"

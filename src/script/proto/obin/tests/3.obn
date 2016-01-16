@@ -74,9 +74,9 @@ print("5 < 4", 5 < 4)
 print("5 <= 3", 5 <= 3)
 print("x != 6", x != 6)
 print("x == y", x == y)
-print("x >> 43", x >> 43)
-print("x << 10001", x << 10001)
-print("x >>> 1001001001", x >>> 1001001001)
+//print("x >> 43", x >> 43)
+//print("x << 10001", x << 10001)
+//print("x >>> 1001001001", x >>> 1001001001)
 print("x + 34", x + 34)
 print("x - 34", x - 34)
 print("x * 34", x * 34)
@@ -241,7 +241,7 @@ while x > 0
     x-=1
     print(x) end
 
-# ONE LINE
+// ONE LINE
 x = 12
 print(
 if x == 13; 1 + 1; elif x == 14; 2 + 2; else 4 + 4; end
@@ -379,4 +379,22 @@ m = {name = "Alice", :surname="Bob",
 print(m.name)
 print(m[:child[:toy[:model]]])
 print(m.child.toy.model)
+
+func error(reason) ->
+    throw (:error, {reason=reason}) end
+
+x =
+try
+    print("IN TRY")
+    error(:TestError)
+catch e
+    print("CATCH")
+    print(e)
+finally
+    print("Finally")
+    42
+end
+
+print(x)
+
 

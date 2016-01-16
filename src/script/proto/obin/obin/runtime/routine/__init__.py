@@ -1,9 +1,9 @@
 from rpython.rlib import jit
-from obin.objects.space import isany
+from obin.types.space import isany
 from obin.runtime.environment import newenv
 from obin.runtime.routine.code_routine import CodeRoutine
 from obin.runtime.routine.native_routine import NativeRoutine
-from obin.objects import api
+from obin.types import api
 
 
 def complete_native_routine(func):

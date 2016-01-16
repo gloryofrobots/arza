@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
 from discriminator import *
-from obin.objects.types.root import W_Root
+from obin.types.root import W_Root
 
 
 class Argument(W_Root):
@@ -160,7 +160,7 @@ class Signature(BaseSignature):
 
 
 def newsignature(process, args, method):
-    from obin.objects import space, api
+    from obin.types import space, api
     arity = api.n_length(args)
     sig_args = []
     traits = process.std.traits

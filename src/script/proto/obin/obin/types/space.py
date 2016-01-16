@@ -1,9 +1,9 @@
 from rpython.rlib.objectmodel import specialize, enforceargs
 from rpython.rlib import jit
-from obin.objects.types.boolean import W_True, W_False
-from obin.objects.types.nil import W_Nil
-from obin.objects.types.undefined import W_Undefined
-from obin.objects.types.root import W_Constant
+from obin.types.boolean import W_True, W_False
+from obin.types.nil import W_Nil
+from obin.types.undefined import W_Undefined
+from obin.types.root import W_Constant
 
 w_True = W_True()
 w_False = W_False()
@@ -21,13 +21,13 @@ jit.promote(w_Interrupt)
 # TODO CHECK FOR BIGINT OVERFLOW
 @enforceargs(int)
 def newint(i):
-    from obin.objects.types.integer import W_Integer
+    from obin.types.integer import W_Integer
     return W_Integer(i)
 
 
 @enforceargs(float)
 def newfloat(f):
-    from obin.objects.types.floating import W_Float
+    from obin.types.floating import W_Float
     return W_Float(f)
 
 
@@ -43,7 +43,7 @@ def newnumber(value):
 
 @enforceargs(str)
 def newchar(c):
-    from obin.objects.types.character import W_Char
+    from obin.types.character import W_Char
     return W_Char(ord(c))
 
 
@@ -54,7 +54,7 @@ def newstring_from_str(s):
 
 @enforceargs(unicode)
 def newstring(s):
-    from obin.objects.types.string import W_String
+    from obin.types.string import W_String
     return W_String(s)
 
 
@@ -96,36 +96,36 @@ def newfalse():
 
 
 def newfunc(name, bytecode, scope):
-    from obin.objects.types.function import W_Function
+    from obin.types.function import W_Function
     assert issymbol(name)
     obj = W_Function(name, bytecode, scope)
     return obj
 
 
 def newfuncsource(name, bytecode):
-    from obin.objects.types.function import W_FunctionSource
+    from obin.types.function import W_FunctionSource
     assert issymbol(name)
     obj = W_FunctionSource(name, bytecode)
     return obj
 
 
 def newnativefunc(name, function, arity):
-    from obin.objects.types.native_function import W_NativeFunction
+    from obin.types.native_function import W_NativeFunction
     assert issymbol(name)
     obj = W_NativeFunction(name, function, arity)
     return obj
 
 
 def neworigin(function):
-    from obin.objects.types.origin import W_Origin
+    from obin.types.origin import W_Origin
     obj = W_Origin(function)
     return obj
 
 
 def newentity(process, source, traits):
-    from obin.objects.types import behavior
-    from obin.objects.types.entity import W_Entity
-    from obin.objects.types.plist import concat
+    from obin.types import behavior
+    from obin.types.entity import W_Entity
+    from obin.types.plist import concat
     assert islist(traits)
     source_traits = behavior.traits(process, source)
     behavior_traits = concat(traits, source_traits)
@@ -134,19 +134,19 @@ def newentity(process, source, traits):
 
 
 def newmap():
-    from obin.objects.types.map import create_empty_map
+    from obin.types.map import create_empty_map
     return create_empty_map()
 
 
 def newvector(items):
     assert isinstance(items, list)
-    from obin.objects.types.vector import W_Vector
+    from obin.types.vector import W_Vector
     obj = W_Vector(items)
     return obj
 
 
 def newlist(items):
-    from obin.objects.types.plist import plist
+    from obin.types.plist import plist
     return plist(items)
 
 
@@ -155,38 +155,38 @@ def newemptyvector():
 
 
 def newtuple(tupl):
-    from obin.objects.types.tupl import W_Tuple
+    from obin.types.tupl import W_Tuple
     return W_Tuple(list(tupl))
 
 
 def newmodule(process, name, code):
     assert issymbol(name)
-    from obin.objects.types.module import W_Module
+    from obin.types.module import W_Module
     obj = W_Module(name, code, process.builtins)
     return obj
 
 
 def newgeneric(name):
     assert issymbol(name)
-    from obin.objects.types.dispatch.generic import W_Generic
+    from obin.types.dispatch.generic import W_Generic
     obj = W_Generic(name)
     return obj
 
 
 def newtrait(name):
-    from obin.objects.types.trait import W_Trait
+    from obin.types.trait import W_Trait
     assert issymbol(name)
     return W_Trait(name)
 
 
 def newbehavior(traits):
     assert islist(traits)
-    from obin.objects.types.behavior import W_Behavior
+    from obin.types.behavior import W_Behavior
     return W_Behavior(traits)
 
 
 def isany(value):
-    from obin.objects.types.root import W_Root
+    from obin.types.root import W_Root
     return isinstance(value, W_Root)
 
 
@@ -199,71 +199,71 @@ def isinterrupt(value):
 
 
 def iscell(value):
-    from obin.objects.types.root import W_Cell
+    from obin.types.root import W_Cell
     return isinstance(value, W_Cell)
 
 
 def isentity(value):
-    from obin.objects.types.entity import W_Entity
+    from obin.types.entity import W_Entity
     return isinstance(value, W_Entity)
 
 
 def isorigin(value):
-    from obin.objects.types.origin import W_Origin
+    from obin.types.origin import W_Origin
     return isinstance(value, W_Origin)
 
 
 def ismap(value):
-    from obin.objects.types.map import W_Map
+    from obin.types.map import W_Map
     return isinstance(value, W_Map)
 
 
 def isvaluetype(value):
-    from obin.objects.types.root import W_ValueType
+    from obin.types.root import W_ValueType
     return isinstance(value, W_ValueType)
 
 
 def isfunction(value):
-    from obin.objects.types.function import W_Function
-    from obin.objects.types.native_function import W_NativeFunction
+    from obin.types.function import W_Function
+    from obin.types.native_function import W_NativeFunction
     return isinstance(value, W_Function) or isinstance(value, W_NativeFunction)
 
 def isnativefunction(value):
-    from obin.objects.types.native_function import W_NativeFunction
+    from obin.types.native_function import W_NativeFunction
     return isinstance(value, W_NativeFunction)
 
 def isvector(value):
-    from obin.objects.types.vector import W_Vector
+    from obin.types.vector import W_Vector
     return isinstance(value, W_Vector)
 
 
 def islist(value):
-    from obin.objects.types.plist import W_PList
+    from obin.types.plist import W_PList
     return isinstance(value, W_PList)
 
 
 def istrait(w):
-    from obin.objects.types.trait import W_Trait
+    from obin.types.trait import W_Trait
     return isinstance(w, W_Trait)
 
 
 def isbehavior(w):
-    from obin.objects.types.behavior import W_Behavior
+    from obin.types.behavior import W_Behavior
     return isinstance(w, W_Behavior)
 
 
 def isgeneric(w):
-    from obin.objects.types.dispatch.generic import W_Generic
+    from obin.types.dispatch.generic import W_Generic
     return isinstance(w, W_Generic)
 
 
 def istuple(w):
-    from obin.objects.types.tupl import W_Tuple
+    from obin.types.tupl import W_Tuple
     return isinstance(w, W_Tuple)
 
 
 def ismodule(w):
-    from obin.objects.types.module import W_Module
+    from obin.types.module import W_Module
     return isinstance(w, W_Module)
 
 
@@ -284,22 +284,22 @@ def isnull(value):
 
 
 def isstring(w):
-    from obin.objects.types.string import W_String
+    from obin.types.string import W_String
     return isinstance(w, W_String)
 
 
 def issymbol(w):
-    from obin.objects.types.symbol import W_Symbol
+    from obin.types.symbol import W_Symbol
     return isinstance(w, W_Symbol)
 
 
 def isint(w):
-    from obin.objects.types.integer import W_Integer
+    from obin.types.integer import W_Integer
     return isinstance(w, W_Integer)
 
 
 def isfloat(w):
-    from obin.objects.types.floating import W_Float
+    from obin.types.floating import W_Float
     return isinstance(w, W_Float)
 
 
@@ -308,7 +308,7 @@ def isnumber(w):
 
 
 def isconstant(w):
-    from obin.objects.types.root import W_Constant
+    from obin.types.root import W_Constant
     return isinstance(w, W_Constant)
 
 

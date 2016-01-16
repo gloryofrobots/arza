@@ -1,7 +1,7 @@
 from obin.compile.parse.parser import *
-from obin.objects.types import plist
+from obin.types import plist
 from obin.compile.parse.node import *
-from obin.objects import space as obs, api
+from obin.types import space as obs, api
 
 
 def _create_path_node(basenode, path):

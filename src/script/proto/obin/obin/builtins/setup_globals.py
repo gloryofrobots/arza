@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from obin.runtime.routine import complete_native_routine
-from obin.objects import api
-from obin.objects import space
+from obin.types import api
+from obin.types import space
 from rpython.rlib.rstring import UnicodeBuilder
 from obin.runistr import encode_unicode_utf8
 
@@ -83,14 +83,14 @@ def _eval(process, routine):
 def apply(process, routine):
     func = routine.get_arg(0)
     args = routine.get_arg(1)
-    from obin.objects.space import istuple
+    from obin.types.space import istuple
     assert istuple(args)
     api.call(process, func, args)
 
 
 @complete_native_routine
 def concat_tuples(process, routine):
-    from obin.objects.types.tupl import concat
+    from obin.types.tupl import concat
     v1 = routine.get_arg(0)
     v2 = routine.get_arg(1)
     return concat(process, v1, v2)
@@ -98,14 +98,14 @@ def concat_tuples(process, routine):
 
 @complete_native_routine
 def time(process, routine):
-    from obin.objects.space import newfloat
+    from obin.types.space import newfloat
     import time
     return newfloat(time.time())
 
 
 @complete_native_routine
 def is_indexed(process, routine):
-    from obin.objects.space import isvector, istuple, newbool
+    from obin.types.space import isvector, istuple, newbool
     v1 = routine.get_arg(0)
     if not isvector(v1) and not istuple(v1):
         return newbool(False)
@@ -114,7 +114,7 @@ def is_indexed(process, routine):
 
 @complete_native_routine
 def is_seq(process, routine):
-    from obin.objects.space import islist, newbool
+    from obin.types.space import islist, newbool
     v1 = routine.get_arg(0)
     if not islist(v1):
         return newbool(False)
@@ -123,7 +123,7 @@ def is_seq(process, routine):
 
 @complete_native_routine
 def is_map(process, routine):
-    from obin.objects.space import ismap, newbool
+    from obin.types.space import ismap, newbool
     v1 = routine.get_arg(0)
     if not ismap(v1):
         return newbool(False)
@@ -138,8 +138,8 @@ def length(process, routine):
 
 @complete_native_routine
 def first(process, routine):
-    from obin.objects.types.plist import head, isempty
-    from obin.objects.space import islist
+    from obin.types.plist import head, isempty
+    from obin.types.space import islist
     lst = routine.get_arg(0)
     assert islist(lst)
     v = head(lst)
@@ -148,8 +148,8 @@ def first(process, routine):
 
 @complete_native_routine
 def rest(process, routine):
-    from obin.objects.types.plist import tail, isempty
-    from obin.objects.space import islist
+    from obin.types.plist import tail, isempty
+    from obin.types.space import islist
     lst = routine.get_arg(0)
     assert islist(lst)
     assert not isempty(lst)
@@ -159,13 +159,13 @@ def rest(process, routine):
 
 @complete_native_routine
 def spawn_fiber(process, routine):
-    from obin.objects.types.fiber import newfiber
+    from obin.types.fiber import newfiber
     y1, y2 = newfiber(process)
     return space.newtuple([y1, y2])
 
 
 def activate_fiber(process, routine):
-    from obin.objects.types.fiber import activate_fiber as activate
+    from obin.types.fiber import activate_fiber as activate
     fiber = routine.get_arg(0)
     func = routine.get_arg(1)
     # args = routine.get_arg(2)
@@ -193,7 +193,7 @@ def clone(process, routine):
 
 @complete_native_routine
 def traits(process, routine):
-    from obin.objects.types import behavior
+    from obin.types import behavior
     obj = routine.get_arg(0)
     return behavior.traits(process, obj)
 

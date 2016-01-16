@@ -1,7 +1,7 @@
-from obin.objects.space import _w
+from obin.types.space import _w
 from obin.runtime.routine import complete_native_routine
-from obin.objects.space import isnull_or_undefined, newundefined
-from obin.objects import api
+from obin.types.space import isnull_or_undefined, newundefined
+from obin.types import api
 
 
 def setup(obj):
@@ -40,7 +40,7 @@ def slice(routine):
     o = this.ToObject()
     from_index = get_arg(args, 0).ToUInt32()
     to_index = get_arg(args, 1).ToUInt32()
-    from obin.objects.space import stdlib
+    from obin.types.space import stdlib
     n = stdlib.newvector(length=_w(to_index-from_index))
     index = 0
     for item in xrange(from_index, to_index):
@@ -69,7 +69,7 @@ def length(routine):
 @complete_native_routine
 def join(routine):
     this, args = routine.method_args()
-    from obin.objects.space import isundefined
+    from obin.types.space import isundefined
 
     separator = get_arg(args, 0)
 
@@ -179,7 +179,7 @@ def last_index_of(routine):
         else:
             from_index = findex
 
-    from obin.objects.object import W_Integer
+    from obin.types.object import W_Integer
     for i in xrange(from_index, -1, -1):
         y = obj.get(unicode(str(i)))
         if elem == y:
@@ -195,7 +195,7 @@ def index_of(routine):
     elem = get_arg(args, 0)
     from_index = get_arg(args, 1).ToUInt32()
 
-    from obin.objects.object import W_Integer
+    from obin.types.object import W_Integer
     for i in xrange(from_index, length):
         y = obj.get(unicode(str(i)))
         if elem == y:
@@ -210,7 +210,7 @@ def for_each(routine):
     length = this.get(u'length').value()
 
     callback = get_arg(args, 0)
-    from obin.objects.space import isfunction
+    from obin.types.space import isfunction
     assert isfunction(callback)
 
     for i in xrange(length):
@@ -249,7 +249,7 @@ def sort(routine):
 
 
 def sort_compare(obj, j, k, comparefn=newundefined()):
-    from obin.objects.space import isundefined
+    from obin.types.space import isundefined
 
     j_string = j
     k_string = k
@@ -278,7 +278,7 @@ def sort_compare(obj, j, k, comparefn=newundefined()):
             from obin.runtime.error import ObinTypeError
             raise ObinTypeError(u'')
 
-        from obin.objects.object import W_BasicFunction
+        from obin.types.object import W_BasicFunction
         assert isinstance(comparefn, W_BasicFunction)
         res = comparefn.Call(args=[x, y], this=newundefined())
         return res.ToInteger()

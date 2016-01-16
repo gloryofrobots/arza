@@ -3,7 +3,7 @@ def initialize(libdirs):
     from obin.runtime.process import Process
     from obin.runtime import process_data
 
-    from obin.objects.space import newsymbol
+    from obin.types.space import newsymbol
     from obin.runtime.load import import_module
     proc_data = process_data.create(libdirs)
 
@@ -23,7 +23,7 @@ def evaluate_file(process, filename):
 
 def evaluate_string(process, src):
     from obin.compile.compiler import compile_module
-    from obin.objects.space import newsymbol
+    from obin.types.space import newsymbol
     module = compile_module(process, newsymbol(process, u"__main__"), src)
     result = process.run(module, None)
     return result

@@ -1,5 +1,5 @@
-from obin.objects.types.root import W_Root
-from obin.objects.types.string import W_String
+from obin.types.root import W_Root
+from obin.types.string import W_String
 
 
 class W_Symbol(W_Root):
@@ -19,7 +19,7 @@ class W_Symbol(W_Root):
         return self.string._hash_()
 
     def _equal_(self, other):
-        from obin.objects import space
+        from obin.types import space
         if space.issymbol(other):
             val = self.idx == other.idx
             # print "SYMBOL EQ", self, other, val

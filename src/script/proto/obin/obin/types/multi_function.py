@@ -1,6 +1,6 @@
-from obin.objects.types.root import W_Callable
+from obin.types.root import W_Callable
 from obin.runtime.error import *
-from obin.objects import api
+from obin.types import api
 
 
 class W_MultiFunction(W_Callable):

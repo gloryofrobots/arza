@@ -1,6 +1,6 @@
 from obin.runtime.routine import complete_native_routine
 from obin.runtime.error import ObinRangeError, ObinTypeError
-from obin.objects.space import _w
+from obin.types.space import _w
 from rpython.rlib.rfloat import NAN, INFINITY
 # 15.7.3.2
 w_MAX_VALUE = _w(1.7976931348623157e308)
@@ -21,10 +21,10 @@ w_NEGATIVE_INFINITY = _w(-INFINITY)
 
 def setup(obj):
     from obin.builtins import put_property, put_native_function
-    from obin.objects.space import stdlib
+    from obin.types.space import stdlib
 
     # 15.7.2
-    from obin.objects.object import W__Object
+    from obin.types.object import W__Object
     w_Number = W__Object()
     # object_space.assign_proto(w_Number, object_space.proto_function)
     put_property(obj, u'Number', w_Number)
