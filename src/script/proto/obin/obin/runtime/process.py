@@ -50,6 +50,13 @@ class Fiber:
         self.routine = routine
         routine.activate()
 
+    def __pop(self):
+        if len(self.routines) == 0:
+            return None
+        self.routine = self.routines.pop()
+        return self.routine
+
+
     def next_routine(self):
         if len(self.routines) == 0:
             return None
@@ -57,11 +64,17 @@ class Fiber:
         routine = self.routines.pop()
         routine.resume(self.routine.result)
         self.routine = routine
-        # in case of native routines
-        # if routine.is_complete():
-        #     return self.next_routine()
         return self.routine
 
+    def catch(self, signal):
+        routine = self.routine
+        assert routine.is_terminated()
+        while not routine.catch(signal):
+            routine = self.__pop()
+            if routine is None:
+                return False
+
+        return True
 
 class Process(object):
     class State:
@@ -223,20 +236,17 @@ class Process(object):
         return None
 
     def __catch_signal(self):
-        routine = self.fiber.routine
-        assert routine.is_terminated()
-        signal = self.fiber.routine.signal
-        while not routine.catch(signal):
-            routine = self.fiber.next_routine()
-            if routine is None:
-                parent_fiber = self.fiber.finalise()
-                self.__purge_fiber(self.fiber)
-                if not parent_fiber:
-                    self.__terminate()
-                    raise RuntimeError("Unreachable error")
-                else:
-                    self.fiber = parent_fiber
-                    routine = self.fiber.next_routine()
+        signal = self.fiber.routine.result
+        trace = []
+        while True:
+            if self.fiber.catch(signal):
+                break
+            parent_fiber = self.fiber.finalise()
+            self.__purge_fiber(self.fiber)
+            if not parent_fiber:
+                self.__terminate()
+                raise RuntimeError("Unreachable error")
+            self.fiber = parent_fiber
 
     def __set_state(self, s):
         self.__state = s

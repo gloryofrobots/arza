@@ -375,5 +375,5 @@ end
     A[..4];
     A[5];
 """
-print ast
+# print ast
 # write_ast(ast)

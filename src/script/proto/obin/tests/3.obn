@@ -363,3 +363,20 @@ end
 )
 
 
+print("name" == :name)
+print(:name == "name")
+print(:`++++ ---- <> $$` == "++++ ---- <> $$")
+print("++++ ---- <> $$" == :`++++ ---- <> $$`)
+
+m = {name = "Alice", :surname="Bob",
+        :child={
+            :little_name="Sweetie",
+            :toy={
+                :model="SXR 123344:44332"
+            }
+         }
+ }
+print(m.name)
+print(m[:child[:toy[:model]]])
+print(m.child.toy.model)
+

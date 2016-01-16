@@ -16,6 +16,10 @@ class BaseRoutine:
     def catch(self, signal):
         result = self._catch(signal)
         assert isinstance(result, bool)
+
+        if result is False and not self.is_terminated():
+            self.terminate(signal)
+
         return result
 
     def _catch(self, signal):
@@ -46,7 +50,7 @@ class BaseRoutine:
 
     def terminate(self, signal):
         assert not self.is_closed()
-        self.signal = signal
+        self.result = signal
         self._state = BaseRoutine.State.TERMINATED
 
     def activate(self):
@@ -73,11 +77,11 @@ class BaseRoutine:
     def is_idle(self):
         return self._state == BaseRoutine.State.IDLE
 
-    def is_complete(self):
-        return self._state == BaseRoutine.State.COMPLETE
-
     def is_terminated(self):
         return self._state == BaseRoutine.State.TERMINATED
+
+    def is_complete(self):
+        return self._state == BaseRoutine.State.COMPLETE
 
     def is_suspended(self):
         return self._state == BaseRoutine.State.SUSPENDED

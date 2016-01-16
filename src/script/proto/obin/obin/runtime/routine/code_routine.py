@@ -56,12 +56,14 @@ class CodeRoutine(BaseRoutine):
         print u'%s %3d' % (opcode_info(self, opcode), self.pc)
 
     def _catch(self, signal):
+        assert self.is_suspended() or self.is_terminated()
         if len(self.catches) == 0:
             return False
 
         catch = self.catches.pop()
         self.pc = catch
         self.stack.push(signal)
+        self.inprocess()
         return True
 
     def _execute(self, process):
@@ -256,12 +258,6 @@ class CodeRoutine(BaseRoutine):
                     stack.push(last_block_value)
                     self.pc = arg1
             # *************************************
-            elif PUSH_CATCH == tag:
-                self.catches.append(arg1)
-            # *************************************
-            elif POP_CATCH == tag:
-                self.catches.pop()
-            # *************************************
             elif NEXT == tag:
                 iterator = stack.top()
                 next_el = api.next(iterator)
@@ -293,7 +289,13 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif THROW == tag:
                 val = stack.pop()
-                self.throw(val)
+                self.terminate(val)
+            # *************************************
+            elif PUSH_CATCH == tag:
+                self.catches.append(arg1)
+            # *************************************
+            elif POP_CATCH == tag:
+                self.catches.pop()
             # *************************************
             elif IMPORT == tag:
                 name = literals[arg1]

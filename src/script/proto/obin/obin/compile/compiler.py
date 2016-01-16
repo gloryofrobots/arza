@@ -906,13 +906,13 @@ def _compile_TRY(process, compiler, code, node):
     catchlabel = code.prealocate_label()
     code.emit_1(PUSH_CATCH, catchlabel)
     _compile(process, compiler, code, trynode)
+    code.emit_0(POP_CATCH)
     if finallylabel is not None:
         code.emit_1(JUMP, finallylabel)
 
     code.emit_1(LABEL, catchlabel)
     _emit_store_name(process, compiler, code, catchvar)
     _compile(process, compiler, code, catchnode)
-    code.emit_0(POP_CATCH)
 
     if finallylabel is not None:
         code.emit_1(JUMP, finallylabel)
