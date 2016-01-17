@@ -39,6 +39,21 @@ def setup(process, module, stdlib):
 # 15.1.2.2
 
 @complete_native_routine
+def compile_module(process, routine):
+    from obin.utils import fs
+    from obin.compile import compiler
+
+    sourcename = routine.get_arg(0)
+    modulename = routine.get_arg(1)
+    filename = api.to_native_string(sourcename)
+    script = fs.load_file_content(filename)
+
+    module = compiler.compile_module(process, modulename, script, sourcename)
+    module.result = process.subprocess(module, space.newundefined())
+    process.modules.add_module(api.to_native_string(modulename), module)
+    return module
+
+@complete_native_routine
 def _id(process, routine):
     from rpython.rlib.objectmodel import compute_unique_id
     this = routine.get_arg(0)

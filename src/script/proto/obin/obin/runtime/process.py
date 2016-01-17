@@ -1,15 +1,17 @@
 from obin.types import api, space, string
 from obin.runtime.stack import Stack
 from obin.types import plist
+from obin.runtime import error
 
 DEFAULT_STACK_SIZE = 32
 
 
-def _print_trace(device, trace):
-    builder = string.Builder().add_u(u"Uncaught exception").nl()
+def _print_trace(device, signal, trace):
+    builder = string.Builder().add_u(u"Traceback:").nl()
     for record in trace:
         builder.space(4).add(record).nl()
 
+    builder.add_u(u"Signal:").space().add(signal).nl()
     device.write(builder.value())
 
 
@@ -171,6 +173,8 @@ class Process(object):
     def subprocess(self, func, args):
         child = Process(self.__data)
         result = child.run(func, args)
+        if child.is_terminated():
+            return self._catch_or_terminate(result)
         return result
 
     def create_fiber(self):
@@ -210,13 +214,16 @@ class Process(object):
                 break
             try:
                 result = self.__execute()
-            except Exception:
-                # self.__terminate()
+            except error.ObinError as e:
+                signal = error.convert_to_script_error(self, e)
+                result = self._catch_or_terminate(signal)
+            except Exception as e:
+                # TODO IF WE ARE TRANSLATED
                 raise
 
         assert len(self.fibers) == 0
         assert self.fiber is None
-        self.__idle()
+        # self.__idle()
         return result
 
     def __purge_fiber(self, fiber):
@@ -230,7 +237,9 @@ class Process(object):
         assert routine
         assert routine.is_inprocess()
         routine.execute(self)
-
+        if self.is_terminated():
+            return routine.result
+        
         if routine.is_suspended():
             return None
 
@@ -250,14 +259,20 @@ class Process(object):
 
         elif routine.is_terminated():
             signal = routine.result
-            catched, trace = self.__catch_signal(signal)
-            if not catched:
-                self.__terminate(trace)
-            return signal
+            return self._catch_or_terminate(signal)
 
         assert False, "NOT REACHABLE"
         # if suspended reach here
         # return None
+
+    def _catch_or_terminate(self, signal):
+        if not self.fiber.routine.is_terminated():
+            self.fiber.routine.terminate(signal)
+
+        catched, trace = self.__catch_signal(signal)
+        if not catched:
+            self.__terminate(signal, trace)
+        return signal
 
     def __catch_signal(self, signal):
         trace = plist.empty()
@@ -278,8 +293,8 @@ class Process(object):
         self.fiber = None
         self.fibers = []
 
-    def __terminate(self, trace):
-        _print_trace(self.io.stderr, trace)
+    def __terminate(self, signal, trace):
+        _print_trace(self.io.stderr, signal, trace)
         self.__close()
         self.__set_state(Process.State.TERMINATED)
 

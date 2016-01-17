@@ -11,6 +11,10 @@ def create_generator(rules):
     return lexer
 
 
+class UnknownTokenError(Exception):
+    def __init__(self, position):
+        self.position = position
+
 class Token:
     """ A simple Token structure.
         Contains the token type, value and position.
@@ -72,11 +76,14 @@ class Lexer:
             buffer matches no rule), a LexerError is raised with
             the position of the error.
         """
+        from rply.lexer import LexingError
         try:
             return self._token()
         except StopIteration:
             return None
-
+        except LexingError as e:
+            pos = e.source_pos
+            raise(UnknownTokenError(pos.idx))
 
     def _token(self):
         t = next(self.stream)

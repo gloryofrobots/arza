@@ -11,7 +11,7 @@ def parser_error_unknown(parser, position):
     return error.throw(error.Errors.PARSE,
                        space.newtuple([
                            space.newint(position),
-                           space.newstring(api.to_native_unicode(u"Unknown Token")),
+                           space.newstring(u"Unknown Token"),
                            space.newstring(line)
                        ]))
 

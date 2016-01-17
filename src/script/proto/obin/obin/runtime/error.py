@@ -1,5 +1,7 @@
 from obin.types import space
 
+def convert_to_script_error(process, err):
+    return error(process, err.name, err.args_tuple)
 
 def error(process, symbol_unistr, args_tuple):
     assert space.istuple(args_tuple)
@@ -66,7 +68,7 @@ class Errors:
     METHOD_SPECIALIZE = u"MethodSpecializeError"
     FROZEN = u"FrozenValueIllegalOperationError"
     COMPILE = u"CompileError"
-    PARSE = u"Parse"
+    PARSE = u"ParseError"
     ZERO_DIVISION = u"ZeroDivisionError"
     UNPACK_SEQUENCE = u"UnpackSequenceError"
     ORIGINATE = u"OriginateError"

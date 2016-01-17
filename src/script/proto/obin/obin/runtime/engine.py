@@ -19,11 +19,18 @@ def initialize(libdirs):
 
 
 def evaluate_file(process, filename):
-    src = fs.load_file_content(filename)
-    sourcename = space.newsymbol_py_str(process, filename)
+    from obin.builtins.setup_globals import compile_module
 
-    module = compile_module(process, space.newsymbol(process,u"__main__"), src, sourcename)
-    result = process.run(module, None)
-    return result
+    module = process.run(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 2),
+                                space.newtuple([space.newstring_from_str(filename), space.newsymbol(process,u"__main__")]))
+    if process.is_terminated():
+        return module
+    return module.result
+    # src = fs.load_file_content(filename)
+    # sourcename = space.newsymbol_py_str(process, filename)
+    # module = evaluate_module(process, , filename)
+    # module = compile_module(process, space.newsymbol(process,u"__main__"), src, sourcename)
+    # result = process.run(module, None)
+    # return result
 
 

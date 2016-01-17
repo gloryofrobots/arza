@@ -28,14 +28,19 @@ def load_module(process, name):
     if not filename:
         return error.throw_1(error.Errors.IMPORT, name)
 
-    return __setup_module(process, name, filename)
+    return evaluate_module(process, name, filename)
 
 
-def __setup_module(process, name, filename):
-    script = load_file_content(filename)
-    sourcename = space.newsymbol_py_str(process, filename)
 
-    module = compiler.compile_module(process, name, script, sourcename)
-    module.result = process.subprocess(module, space.newundefined())
-    process.modules.add_module(name, module)
+def evaluate_module(process, name, filename):
+    from obin.builtins.setup_globals import compile_module
+    module = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 2),
+                              space.newtuple([space.newstring_from_str(filename), name]))
     return module
+    # script = load_file_content(filename)
+    # sourcename = space.newsymbol_py_str(process, filename)
+    #
+    # module = compiler.compile_module(process, name, script, sourcename)
+    # module.result = process.subprocess(module, space.newundefined())
+    # process.modules.add_module(name, module)
+    # return module

@@ -67,5 +67,9 @@ def get_line(string, line_no):
 
 
 def get_line_for_position(string, pos):
-    index = string.index('\n', pos + 1)
-    return unicode(string[pos: index])
+    try:
+        index = string.index('\n', pos + 1)
+        result = string[pos: index]
+    except:
+        result = string[pos:]
+    return unicode(result)

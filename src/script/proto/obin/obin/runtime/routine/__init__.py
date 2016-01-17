@@ -12,7 +12,8 @@ def complete_native_routine(func):
         if not isany(result):
             raise RuntimeError
         assert isany(result)
-        routine.complete(process, result)
+        if not routine.is_closed():
+            routine.complete(process, result)
 
     return func_wrapper
 

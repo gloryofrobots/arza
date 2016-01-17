@@ -2,9 +2,6 @@ from obin.compile.parse.token_type import TT_NEWLINE
 from obin.compile.parse.node import Node
 
 
-class UnknownTokenError(Exception):
-    def __init__(self, position):
-        self.position = position
 
 
 class TokenStream:
@@ -16,12 +13,7 @@ class TokenStream:
         self.src = src
 
     def next(self):
-        from rply.lexer import LexingError
-        try:
-            token = self.tokens.next()
-        except LexingError as e:
-            pos = e.source_pos
-            raise(UnknownTokenError(pos.idx))
+        token = self.tokens.next()
 
         if token.type == TT_NEWLINE:
             # print "NEW LINE"
