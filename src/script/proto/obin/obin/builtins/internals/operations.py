@@ -1,6 +1,6 @@
 import math
 
-from obin.runtime.error import ObinTypeError, ObinReferenceError
+
 from obin.types import api
 from obin.types.space import newnumber, isint, isstring, isfloat, \
     newbool, newint, newfloat, newstring

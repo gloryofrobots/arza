@@ -1,5 +1,5 @@
 from obin.compile.code import *
-from obin.runtime.error import ObinReferenceError
+from obin.runtime import error
 from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
 from obin.types.dispatch.generic import specify
@@ -132,7 +132,7 @@ class CodeRoutine(BaseRoutine):
                 value = env.get_local(arg1)
                 if space.isundefined(value):
                     literal = literals[arg2]
-                    raise ObinReferenceError(literal)
+                    return error.throw_1(error.Errors.REFERENCE, literal)
 
                 stack.push(value)
             # *************************************
@@ -145,7 +145,7 @@ class CodeRoutine(BaseRoutine):
                 # for unbounded clojure vars X = 1 + fn() { 1 + X }
                 if value is None:
                     literal = literals[arg2]
-                    raise ObinReferenceError(literal)
+                    return error.throw_1(error.Errors.REFERENCE, literal)
                 stack.push(value)
             # *************************************
             elif MEMBER == tag:

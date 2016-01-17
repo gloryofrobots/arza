@@ -1,6 +1,8 @@
 from obin.types.root import W_Cell
-from obin.runtime.error import ObinTraitError
+from obin.runtime import error
 from obin.types import api
+from obin.types import plist
+from obin.types import space
 
 def _tostring_foldl_(traits, trait):
     traits.append(api.tostring(trait.name))
@@ -15,10 +17,7 @@ class W_Entity(W_Cell):
         self.behavior = behavior
 
     def _tostring_(self):
-        from obin.types import api
-        from obin.types.space import newvector
-        from obin.types.plist import foldl
-        traits_repr = foldl(_tostring_foldl_, newvector([]), self.behavior.traits)
+        traits_repr = plist.foldl(_tostring_foldl_, space.newvector([]), self.behavior.traits)
         traits_repr = ",".join([api.to_native_string(t) for t in traits_repr.to_py_list()])
 
         return "<entity of %s and %s>" % (api.to_native_string(self.source), traits_repr)
@@ -87,22 +86,22 @@ def has_traits(entity):
     return entity.traits is not None
 
 
-def attach(process, entity, trait):
-    from obin.types.space import isentity, istrait, newbehavior, newentity
-    assert istrait(trait)
-    assert isentity(entity)
+def add_trait(process, entity, trait):
+    assert space.istrait(trait)
+    assert space.isentity(entity)
     traits = entity.behavior.traits
     from obin.types.plist import prepend
-    return newentity(process, newbehavior(prepend(traits, trait)), entity.source)
+    try:
+        return space.newentity(process, space.newbehavior(prepend(traits, trait)), entity.source)
+    except:
+        error.throw(process, error.Errors.ADD_TRAIT, space.newtuple([entity, trait]))
 
 
-def detach(process, entity, trait):
-    from obin.types.space import isentity, istrait, newbehavior, newentity
-    from obin.types.plist import remove
-    assert istrait(trait)
-    assert isentity(entity)
+def remove_trait(process, entity, trait):
+    assert space.istrait(trait)
+    assert space.isentity(entity)
     traits = entity.behavior.traits
     try:
-        return newentity(process, newbehavior(remove(traits, trait)), entity.source)
+        return space.newentity(process, space.newbehavior(plist.remove(traits, trait)), entity.source)
     except:
-        raise ObinTraitError(u"Detach trait error", trait)
+        error.throw(process, error.Errors.REMOVE_TRAIT, space.newtuple([entity, trait]))

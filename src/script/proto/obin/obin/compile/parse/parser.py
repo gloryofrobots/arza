@@ -1,5 +1,5 @@
 __author__ = 'gloryofrobots'
-import obin.compile.rlexer as lexer
+import obin.compile.parse.rlexer as lexer
 from obin.compile.parse.tokenstream import TokenStream
 from obin.compile.parse.callbacks import *
 
@@ -322,7 +322,7 @@ def parse(parser):
 def parser_from_str(txt):
     lx = lexer.lexer(txt)
     tokens = lx.tokens()
-    ts = TokenStream(tokens)
+    ts = TokenStream(tokens, txt)
     parser = Parser(ts)
     return parser
 

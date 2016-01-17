@@ -1,90 +1,63 @@
-from obin.types import api
+from obin.types import api, space
 
 
-class ObinException(Exception):
-    def __init__(self, message):
-        assert isinstance(message, unicode)
-        self.message = message
+def error(process, symbol_unistr, args_tuple):
+    assert space.istuple(args_tuple)
+    assert isinstance(symbol_unistr, unicode)
+    symbol = space.newsymbol(process, symbol_unistr)
+    return space.newtuple([symbol, args_tuple])
 
-    def _msg(self):
-        return self.message
 
-    def msg(self):
-        from obin.types.space import newstring
-        return newstring(self._msg())
+def throw(symbol_unistr, args_tuple):
+    raise ObinError(symbol_unistr, args_tuple)
+
+
+def throw_1(symbol_unistr, arg):
+    throw(symbol_unistr, space.newtuple([arg]))
+
+
+def throw_2(symbol_unistr, arg1, arg2):
+    throw(symbol_unistr, space.newtuple([arg1, arg2]))
+
+def throw_3(symbol_unistr, arg1, arg2, arg3):
+    throw(symbol_unistr, space.newtuple([arg1, arg2, arg3]))
+
+
+class ObinError(Exception):
+    def __init__(self, name, args_tuple):
+        self.name = name
+        self.args_tuple = args_tuple
 
     def __str__(self):
-        return self._msg()
+        return "%s%s" % (str(self.name), api.to_native_string(self.args_tuple))
 
     def __repr__(self):
         return self.__str__()
 
 
-class ObinImportError(ObinException):
-    pass
+class Errors:
+    IMPORT = u"ImportError"
+    RUNTIME = u"RuntimeError"
+    ADD_TRAIT = u"AddTraitError"
+    REMOVE_TRAIT = u"RemoveTraitError"
+    TYPE = u"TypeError"
+    REFERENCE = u"ReferenceError"
+    RANGE = u"RangeError"
+    KEY = u"KeyError"
+    SLICE = u"SliceError"
+    INVOKE = u"InvokeError"
+    METHOD_INVOKE = u"MethodInvokeError"
+    METHOD_SPECIALIZE = u"MethodSpecializeError"
+    FROZEN = u"FrozenValueIllegalOperationError"
+    COMPILE = u"CompileError"
+    PARSE = u"Parse"
 
 
-class ObinRuntimeError(ObinException):
-    pass
 
 
-class ObinTraitError(ObinException):
-    def __init__(self, message, trait):
-        self.message = message
-        self.trait = trait
-
-    def _msg(self):
-        return u'TraitError : %s %s ' % (self.message, self.trait)
 
 
-class ObinTypeError(ObinException):
-    def __init__(self, value):
-        # assert isinstance(value, unicode)
-        self.value = value
 
-    def _msg(self):
-        return u'TypeError : ' + self.value  # % (self.value, )
-
-
-class ObinReferenceError(ObinException):
-    def __init__(self, identifier):
-        self.identifier = api.to_native_unicode(identifier)
-
-    def _msg(self):
-        return u'ReferenceError: ' + self.identifier + u' is not defined'
-
-
-class ObinRangeError(ObinException):
-    def __init__(self, value):
-        self.value = value
-
-    def _msg(self):
-        return u'RangeError: %s' % (self.value,)
-
-
-class ObinKeyError(ObinRangeError):
-    def __init__(self, value):
-        self.value = value
-
-    def _msg(self):
-        return u'KeyError: %s' % (self.value,)
-
-class ObinSliceError(ObinRangeError):
-    def __init__(self, start, end, step):
-        self.start = start
-        self.end = end
-        self.step = step
-
-    def _msg(self):
-        return u'SliceError: %s %s %s' % (self.start, self.end, self.step)
-
-
-class ObinInvokeError(ObinRangeError):
-    def __init__(self, value):
-        self.value = value
-
-    def _msg(self):
-        return u'InvokeError: expected argument with number %s' % (str(self.value),)
 
 
 class ObinMethodInvokeError(ObinRangeError):
@@ -94,7 +67,7 @@ class ObinMethodInvokeError(ObinRangeError):
 
     def _msg(self):
         return u'Method Invoke Error:  Can\'t determine method "%s" for arguments %s' % (
-        str(self.method._name_), str(self.arguments),)
+            str(self.method._name_), str(self.arguments),)
 
 
 class ObinMethodSpecialisationError(ObinRangeError):
@@ -104,4 +77,4 @@ class ObinMethodSpecialisationError(ObinRangeError):
 
     def _msg(self):
         return u'Method Specialisation Error:  Can\'t specialize method "%s" %s' % (
-        str(self.method._name_), str(self.message),)
+            str(self.method._name_), str(self.message),)

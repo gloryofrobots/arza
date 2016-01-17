@@ -117,13 +117,13 @@ def led_infixr_assign(parser, node, left):
     if ltype != TT_DOT and ltype != TT_LSQUARE \
             and ltype != TT_NAME and ltype != TT_COMMA \
             and ltype != TT_LCURLY and ltype != TT_LPAREN:
-        parse_error(parser, "Bad lvalue in assignment", left)
+        parse_error(parser, u"Bad lvalue in assignment", left)
 
     if ltype == TT_LPAREN and left.arity != 1:
-        parse_error(parser, "Bad lvalue in assignment, wrong tuple destructuring", left)
+        parse_error(parser, u"Bad lvalue in assignment, wrong tuple destructuring", left)
 
     if ltype == TT_LCURLY and left.arity == 0:
-        parse_error(parser, "Bad lvalue in assignment, empty map", left)
+        parse_error(parser, u"Bad lvalue in assignment, empty map", left)
 
     node.setfirst(left)
     exp = expression(parser, 9)
@@ -163,7 +163,7 @@ def prefix_unary_plus(parser, node):
 
 
 def nud_wildcard(parser, node):
-    return parse_error(parser, "Invalid use of _ pattern", node)
+    return parse_error(parser, u"Invalid use of _ pattern", node)
 
 
 def infix_when(parser, node, left):
@@ -392,7 +392,7 @@ def parse_func(parser):
             advance_expected(parser, TT_COMMA)
 
         if len(outers) == 0:
-            parse_error_simple(parser, "Outer variables not declared")
+            parse_error(parser, u"Wrong outer declaration", parser.node)
 
     body = statements(parser)
     if not body:
@@ -454,7 +454,7 @@ def prefix_match(parser, node):
     advance_expected(parser, TT_END)
 
     if len(branches) == 0:
-        parse_error_simple(parser, "Empty match statement")
+        parse_error(parser, u"Empty match expression", node)
 
     node.setsecond(list_node(branches))
     return node
@@ -471,13 +471,13 @@ def stmt_single(parser, node):
 
 
 def stmt_outer(parser, node):
-    parse_error_simple(parser, "Outer variables can be declared only in first function statement")
+    parse_error(parser, u"Outer variables can be declared only in first function statement", node)
 
 
 def stmt_loop_flow(parser, node):
     endofexpression(parser)
     if parser.token_type not in [TT_END, TT_ELSE, TT_ELIF, TT_CASE]:
-        parse_error_simple(parser, "Unreachable statement")
+        parse_error(parser, u"Unreachable statement", node)
     _init_node(parser, node, 0)
     return node
 
@@ -500,7 +500,7 @@ def stmt_for(parser, node):
     while parser.token_type == TT_COMMA:
         advance(parser)
         if parser.token_type != TT_NAME:
-            parse_error_simple(parser, "Wrong variable name in for loop")
+            parse_error(parser, u"Wrong variable name in for loop", node)
 
         variables.append(expression(parser, 0))
 
@@ -519,7 +519,7 @@ def stmt_origin(parser, node):
     node.init(NT_ORIGIN, 4)
     name, args, outers, body = parse_func(parser)
     if is_empty_node(name):
-        parse_error_node(parser, "origin statement must have name", node)
+        parse_error(parser, u"expected origin name", node)
     node.setfirst(name)
     node.setsecond(args)
     node.setthird(outers)
@@ -531,14 +531,14 @@ def stmt_trait(parser, node):
     node.init(NT_TRAIT, 1)
     name = expression(parser, 0)
     if name.type != TT_NAME:
-        parse_error_simple(parser, "Wrong trait name")
+        parse_error(parser, u"Invalid trait nam", parser.node)
     node.setfirst(name)
     return node
 
 
 def stmt_generic(parser, node):
     if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
-        parse_error_simple(parser, "Wrong generic name")
+        parse_error(parser, u"Invalid generic name", parser.node)
 
     name = _init_current_node(parser, 0)
     advance(parser)
@@ -597,7 +597,7 @@ def parse_specify_funcs(parser):
         advance_expected(parser, TT_END)
 
     if len(funcs) == 0:
-        parse_error_simple(parser, "Empty specify statement")
+        parse_error(parser, u"Empty specify statement", parser.node)
 
     return list_node(funcs)
 
@@ -606,7 +606,7 @@ def stmt_specify(parser, node):
     node.init(NT_SPECIFY, 2)
 
     if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
-        parse_error_simple(parser, "Wrong generic name in specify statement")
+        parse_error(parser, u"Invalid generic name", parser.node)
 
     name = _init_current_node(parser, 0)
     advance(parser)

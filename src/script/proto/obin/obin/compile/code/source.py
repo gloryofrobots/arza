@@ -1,5 +1,6 @@
 from rpython.rlib import jit
 from obin.compile.code import *
+from obin.utils.misc import get_line
 
 
 def estimate_stack_size(opcodes):
@@ -19,18 +20,7 @@ class SourceInfo:
         self.map = []
 
     def get_line(self, line_no):
-        index = -1
-        for _ in range(line_no-1):
-            index = self.src.index('\n', index + 1)
-
-        try:
-            last_index = self.src.index('\n', index + 1)
-            result = self.src[index + 1:last_index]
-        except ValueError:
-            result = self.src[index + 1:]
-
-        result = result.lstrip()
-        return unicode(result)
+        return get_line(self.src, line_no)
 
 
 def codeinfo(pos, line, col):

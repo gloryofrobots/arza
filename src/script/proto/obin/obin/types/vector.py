@@ -24,8 +24,9 @@ class W_Vector(W_Cell):
         i = api.to_native_integer(k)
         try:
             self._items[i] = v
-        except:
-            raise ObinKeyError(k)
+            return True
+        except IndexError:
+            return False
 
     def _behavior_(self, process):
         return process.std.behaviors.Vector
@@ -59,7 +60,7 @@ class W_Vector(W_Cell):
         assert isint(index)
         try:
             el = self._items[api.to_native_integer(index)]
-        except ObinKeyError:
+        except KeyError:
             return newundefined()
 
         return el

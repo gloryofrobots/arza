@@ -1,30 +1,20 @@
 from obin.compile.parse.token_type import *
 from obin.compile.parse.node import list_node, empty_node
 from obin.compile.parse.tokens import token_type_to_str
-
-
-def parse_error_node(parser, message, node):
-    assert isinstance(message, str)
-    error_message = "Parse Error %d:%d %s" % (node.line, node.position, message)
-    raise RuntimeError(error_message)
-
-
-def _parse_error(message, args):
-    raise RuntimeError(message, args)
-
-
-def parse_error_simple(parser, message):
-    assert isinstance(message, str)
-    error_message = "Parse Error %d:%d %s" % (parser.token.line, parser.token.pos, message)
-    raise RuntimeError(error_message)
+from obin.types import space, api
+from obin.runtime import error
+from obin.utils.misc import get_line
 
 
 def parse_error(parser, message, node):
-    from obin.types import api
-    assert isinstance(message, str)
-    error_message = "Parse Error %d:%d %s %s" % (parser.token.line, parser.token.pos, message,
-                                                 api.to_native_string(node))
-    return _parse_error(error_message, (node,))
+    line = get_line(parser.ts.src, node.line)
+    return error.throw(error.Errors.PARSE,
+                       space.newtuple([
+                           space.newtuple([node.position, node.line, node.column]),
+                           space.newstring(api.to_native_unicode(node)),
+                           space.newstring(message),
+                           space.newstring(line)
+                       ]))
 
 
 class Handler:
@@ -60,14 +50,14 @@ def handler(parser, ttype):
 def nud(parser, node):
     handler = node_handler(parser, node)
     if not handler.nud:
-        parse_error(parser, "Unknown token", node)
+        parse_error(parser, u"Unknown token nud", node)
     return handler.nud(parser, node)
 
 
 def std(parser, node):
     handler = node_handler(parser, node)
     if not handler.std:
-        parse_error(parser, "Unknown token", node)
+        parse_error(parser, u"Unknown token std", node)
 
     return handler.std(parser, node)
 
@@ -91,7 +81,7 @@ def rbp(parser, node):
     handler = node_handler(parser, node)
     rbp = handler.rbp
     if rbp == -1:
-        parse_error(parser, "Right binding power can't be evaluated", node)
+        parse_error(parser, u"Right binding power can't be evaluated", node)
     return rbp
 
 
@@ -99,14 +89,14 @@ def lbp(parser, node):
     handler = node_handler(parser, node)
     lbp = handler.lbp
     if lbp == -1:
-        parse_error(parser, "Left binding power can't be evaluated", node)
+        parse_error(parser, u"Left binding power error", node)
     return lbp
 
 
 def led(parser, node, left):
     handler = node_handler(parser, node)
     if not handler.led:
-        parse_error(parser, "Unknown token", node)
+        parse_error(parser, u"Unknown token led", node)
 
     return handler.led(parser, node, left)
 
@@ -129,13 +119,16 @@ def set_led(parser, ttype, lbp, fn):
 
 def check_token_type(parser, type):
     if parser.token_type != type:
-        parse_error_simple(parser, "Wrong token type %s %s" % (token_type_to_str(type), parser.token))
+        parse_error(parser, u"Wrong token type, expected %s, got %s" % (token_type_to_str(type),
+                                                                             token_type_to_str(parser.token_type)),
+                         parser.node)
 
 
 def check_token_types(parser, types):
     if parser.token_type not in types:
-        parse_error_simple(parser,
-                           "Wrong token type %s %s" % (str([token_type_to_str(type) for type in types]), parser.token))
+        parse_error(parser, u"Wrong token type, expected one of %s, got %s" %
+                         (unicode([token_type_to_str(type) for type in types]),
+                          token_type_to_str(parser.token_type)), parser.node)
 
 
 def advance(parser):
@@ -175,7 +168,7 @@ def endofexpression(parser):
         # print "SEMI"
         return advance(parser)
 
-    parse_error_simple(parser, "Expressions must end with new line or ;")
+    parse_error(parser, u"Expected new line or ;", parser.node)
 
 
 def expression(parser, _rbp):
@@ -244,26 +237,19 @@ def statements(parser, endlist=None):
     return list_node(stmts)
 
 
-
-
-
 def infix(parser, ttype, lbp, led):
-    set_led(parser, ttype,  lbp, led)
-
-
+    set_led(parser, ttype, lbp, led)
 
 
 def infixr(parser, ttype, lbp, led):
     set_led(parser, ttype, lbp, led)
 
 
-
-
 def prefix(parser, ttype, nud):
     set_nud(parser, ttype, nud)
 
 
-def stmt(parser, ttype,  std):
+def stmt(parser, ttype, std):
     set_std(parser, ttype, std)
 
 
@@ -275,7 +261,7 @@ def literal(parser, ttype):
 def symbol(parser, ttype, nud):
     h = handler(parser, ttype)
     h.lbp = 0
-    set_nud(parser, ttype,  nud)
+    set_nud(parser, ttype, nud)
 
 
 def skip(parser, ttype):
@@ -285,7 +271,6 @@ def skip(parser, ttype):
 
 def empty(parser, node):
     return None
-
 
 
 def is_assignment_node(node):
@@ -304,5 +289,5 @@ def is_assignment_node(node):
 def condition(parser):
     node = expression(parser, 0)
     if is_assignment_node(node):
-        parse_error_node(parser, "Assignment operators not allowed in conditions", node=node)
+        parse_error(parser, u"Assignment operators not allowed in conditions", node)
     return node

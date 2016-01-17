@@ -49,3 +49,18 @@ class Timer(object):
         self.msecs = self.secs * 1000  # millisecs
         if self.verbose:
             print 'elapsed time: %f ms' % self.msecs
+
+
+def get_line(string, line_no):
+    index = -1
+    for _ in range(line_no - 1):
+        index = string.index('\n', index + 1)
+
+    try:
+        last_index = string.index('\n', index + 1)
+        result = string[index + 1:last_index]
+    except ValueError:
+        result = string[index + 1:]
+
+    result = result.lstrip()
+    return unicode(result)

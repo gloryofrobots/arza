@@ -3,11 +3,12 @@ from obin.compile.parse.node import Node
 
 
 class TokenStream:
-    def __init__(self, _tokens):
+    def __init__(self, _tokens, src):
         self.tokens = _tokens
         self.node = None
         self.token = None
         self.is_newline_occurred = False
+        self.src = src
 
     def next(self):
         token = self.tokens.next()

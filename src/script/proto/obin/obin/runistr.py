@@ -55,8 +55,7 @@ def unicode_unescape(string):
         # - Escapes
         pos += 1
         if pos >= size:
-            message = u"\\ at end of string"
-            raise ObinRuntimeError(message)
+            raise RuntimeError(u"\\ at end of string")
 
         ch = s[pos]
         pos += 1

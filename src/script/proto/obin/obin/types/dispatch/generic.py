@@ -1,6 +1,6 @@
 from obin.types.root import W_Callable
 from obin.types.space import newtuple, isany
-from obin.runtime.error import *
+from obin.runtime import error
 from signature import newsignature, new_base_signature
 from obin.types import api
 from dag import *
@@ -65,7 +65,7 @@ def specify(process, gf, signatures):
         arity = signature.arity
 
         if arity != method.arity:
-            raise ObinMethodSpecialisationError(gf, u"Method arity doesn't match implementation function")
+            return error.throw_1(error.Errors.METHOD_SPECIALIZE, gf)
 
         if arity == 0:
             return _specify_empty(gf, method)
@@ -206,12 +206,12 @@ def _lookup_method(process, gf, args):
         return sig.method
 
     if arity >= len(gf.dags):
-        raise ObinMethodInvokeError(gf, args)
+        return error.throw_2(error.Errors.METHOD_INVOKE, gf, args)
 
     dag = gf.dags[arity]
     method = dag.evaluate(process, args)
     if not method:
-        raise ObinMethodInvokeError(gf, args)
+        return error.throw_2(error.Errors.METHOD_INVOKE, gf, args)
 
     return method
 

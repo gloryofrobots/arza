@@ -9,16 +9,17 @@ from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
 from obin.compile.code import *
 from obin.utils.misc import is_absent_index
+from obin.runtime import error
 
 
-def compile_error(process, node, message):
-    error_message = "Compile Error %d:%d %s" % (node.line, node.position, message)
-    raise RuntimeError(error_message)
-
-
-def compile_error_1(process, node, message, arg):
-    error_message = "Compile Error %d:%d %s" % (node.line, node.position, message)
-    raise RuntimeError(error_message, arg)
+def compile_error(process, compiler, code, node, message):
+    line = code.info.get_line(node.line)
+    return error.throw(error.Errors.COMPILE,
+                       obs.newtuple([
+                           obs.newtuple(info(node)),
+                           obs.newstring(message),
+                           obs.newstring(line)
+                       ]))
 
 
 def string_unquote(string):
@@ -71,14 +72,15 @@ def _is_modifiable_binding(process, compiler, name):
     return False
 
 
-def _declare_outer(process, compiler, symbol):
-    assert obs.issymbol(symbol)
+def _declare_outer(process, compiler, code, outer):
+    value = _get_name_value(outer)
+    symbol = obs.newsymbol_py_str(process, value)
     scope = _current_scope(process, compiler)
     if not scope.is_function_scope():
-        compile_error_1(process, compiler.current_node,
-                        "Outer variables can be declared only inside functions", symbol)
+        compile_error(process, compiler, code, symbol, u"outer variables can be declared only inside functions")
+
     if scope.has_outer(symbol):
-        compile_error_1(process, compiler.current_node, "Outer variable has already been declared", symbol)
+        compile_error(process, compiler, code, symbol, u"outer variable has already been declared")
     scope.add_outer(symbol)
 
 
@@ -237,26 +239,32 @@ def _emit_symbol_name(process, compiler, code, name):
 def _compile_STR(process, compiler, code, node):
     from obin.runistr import unicode_unescape, decode_str_utf8
 
-    strval = str(node.value)
-    strval = decode_str_utf8(strval)
-    strval = string_unquote(strval)
-    strval = unicode_unescape(strval)
-    string = obs.newstring(strval)
-    idx = _declare_literal(process, compiler, string)
-    code.emit_1(LITERAL, idx, info(node))
+    try:
+        strval = str(node.value)
+        strval = decode_str_utf8(strval)
+        strval = string_unquote(strval)
+        strval = unicode_unescape(strval)
+        string = obs.newstring(strval)
+        idx = _declare_literal(process, compiler, string)
+        code.emit_1(LITERAL, idx, info(node))
+    except RuntimeError as e:
+        compile_error(process, compiler, code, node, unicode(e.args[0]))
 
 
 def _compile_CHAR(process, compiler, code, node):
     from obin.runistr import unicode_unescape, decode_str_utf8
     # TODO CHAR
 
-    strval = str(node.value)
-    strval = decode_str_utf8(strval)
-    strval = string_unquote(strval)
-    strval = unicode_unescape(strval)
-    string = obs.newstring(strval)
-    idx = _declare_literal(process, compiler, string)
-    code.emit_1(LITERAL, idx, info(node))
+    try:
+        strval = str(node.value)
+        strval = decode_str_utf8(strval)
+        strval = string_unquote(strval)
+        strval = unicode_unescape(strval)
+        string = obs.newstring(strval)
+        idx = _declare_literal(process, compiler, string)
+        code.emit_1(LITERAL, idx, info(node))
+    except RuntimeError as e:
+        compile_error(process, compiler, code, node, unicode(e.args[0]))
 
 
 # def _compile_OUTER(process, compiler, code, node):
@@ -496,7 +504,7 @@ def _compile_destruct_recur(process, compiler, code, node):
     elif node.node_type == NT_MAP:
         return _compile_destruct_recur_map(process, compiler, code, node)
     else:
-        compile_error(process, node, "unsupported assignment syntax")
+        compile_error(process, compiler, code, node, u"unsupported assignment syntax")
 
 
 def _compile_destruct_recur_map(process, compiler, code, node):
@@ -623,7 +631,7 @@ def _compile_modify_assignment_primitive(process, compiler, code, node, operatio
 
     name = obs.newsymbol_py_str(process, left.value)
     if not _is_modifiable_binding(process, compiler, name):
-        compile_error_1(process, node, "Unreachable variable", name)
+        compile_error(process, compiler, code, node, u"unreachable variable")
 
     # _compile(process, compiler,code, left)
     _compile(process, compiler, code, node.first())
@@ -765,13 +773,13 @@ def _compile_LIST(process, compiler, code, node):
 def _compile_BREAK(process, compiler, code, node):
     _emit_undefined(code)
     if not code.emit_break():
-        compile_error(process, node, "break outside loop")
+        compile_error(process, compiler, code, node, u"break outside loop")
 
 
 def _compile_CONTINUE(process, compiler, code, node):
     _emit_undefined(code)
     if not code.emit_continue():
-        compile_error(process, node, "continue outside loop")
+        compile_error(process, compiler, code, node, u"continue outside loop")
 
 
 def _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, opcode, emitinfo):
@@ -792,7 +800,7 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params, outer
 
     if is_iterable_node(outers):
         for outer in outers:
-            _declare_outer(process, compiler, obs.newsymbol_py_str(process, outer.value))
+            _declare_outer(process, compiler, code, outer)
 
     # avoid recursive name lookups for origins because in this case
     # index will be pointed to constructor function instead of origin
@@ -1353,7 +1361,7 @@ def _compile_node(process, compiler, code, node):
     elif NT_BITOR_ASSIGN == node_type:
         _compile_BITOR_ASSIGN(process, compiler, code, node)
     else:
-        compile_error(process, node, "Unknown node")
+        compile_error(process, compiler, code, node, u"Unknown node")
 
 
 def newcode(compiler):

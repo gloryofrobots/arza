@@ -118,7 +118,7 @@ for number, token in enumerate(TOKENS):
 print "# ************************ OBIN TOKENS REPR *****************************"
 S = "__TT_REPR__ = ["
 for name,pattern in TOKENS:
-    S += "%s, " % str(("\"%s\"" % name))
+    S += "%s, " % str(("u\"%s\"" % name))
 S += "]"
 print S
 print 

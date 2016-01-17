@@ -1,4 +1,4 @@
-from obin.runtime.error import ObinReferenceError
+from obin.runtime import error
 
 
 class References(object):
@@ -39,7 +39,7 @@ class References(object):
 
         ref = self.env.get_reference(symbol)
         if not ref:
-            raise ObinReferenceError(symbol)
+            return error.throw_1(error.Errors.REFERENCE, symbol)
 
         ref.put_value(value)
         self._set_refs(index, ref)

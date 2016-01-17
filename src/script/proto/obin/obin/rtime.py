@@ -5,6 +5,9 @@ from rpython.rtyper.lltypesystem import rffi, lltype
 from rpython.rlib.rarithmetic import intmask
 from pypy.module.time.interp_time import c_gmtime, c_localtime, c_mktime, glob_buf, _POSIX, _CYGWIN, _WIN, c_tzset, c_strftime
 
+class RTimeException(Exception):
+    pass
+
 tmYEAR = 0
 tmMONTH = 1
 tmDAY = 2
@@ -30,7 +33,7 @@ def _tm_to_tuple(t):
 
 def _gettmarg(tup):
     if len(tup) != 9:
-        raise Exception("argument must be sequence of length 9, not %d", len(tup))
+        raise RTimeException("argument must be sequence of length 9, not %d", len(tup))
 
     y = tup[0]
     tm_mon = tup[1]
@@ -64,12 +67,12 @@ def _gettmarg(tup):
         elif 0 <= y <= 68:
             y += 2000
         else:
-            raise Exception("year out of range")
+            raise RTimeException("year out of range")
 
     # tm_wday does not need checking of its upper-bound since taking "%
     #  7" in gettmarg() automatically restricts the range.
     if rffi.getintfield(glob_buf, 'c_tm_wday') < -1:
-        raise Exception("day of week out of range")
+        raise RTimeException("day of week out of range")
 
     rffi.setintfield(glob_buf, 'c_tm_year', y - 1900)
     rffi.setintfield(glob_buf, 'c_tm_mon', rffi.getintfield(glob_buf, 'c_tm_mon') - 1)
@@ -102,7 +105,7 @@ def mktime(tup):
     rffi.setintfield(buf, "c_tm_wday", -1)
     tt = c_mktime(buf)
     if tt == -1 and rffi.getintfield(buf, "c_tm_wday") == -1:
-        raise Exception('mktime argument out of range')
+        raise RTimeException('mktime argument out of range')
 
     return float(tt)
 
@@ -141,19 +144,19 @@ def strftime(format, time_t):
     # by some bad index (fixes bug #897625).
     # No check for year since handled in gettmarg().
     if rffi.getintfield(buf_value, 'c_tm_mon') < 0 or rffi.getintfield(buf_value, 'c_tm_mon') > 11:
-        raise Exception("month out of range")
+        raise RTimeException("month out of range")
     if rffi.getintfield(buf_value, 'c_tm_mday') < 1 or rffi.getintfield(buf_value, 'c_tm_mday') > 31:
-        raise Exception("day of month out of range")
+        raise RTimeException("day of month out of range")
     if rffi.getintfield(buf_value, 'c_tm_hour') < 0 or rffi.getintfield(buf_value, 'c_tm_hour') > 23:
-        raise Exception("hour out of range")
+        raise RTimeException("hour out of range")
     if rffi.getintfield(buf_value, 'c_tm_min') < 0 or rffi.getintfield(buf_value, 'c_tm_min') > 59:
-        raise Exception("minute out of range")
+        raise RTimeException("minute out of range")
     if rffi.getintfield(buf_value, 'c_tm_sec') < 0 or rffi.getintfield(buf_value, 'c_tm_sec') > 61:
-        raise Exception("seconds out of range")
+        raise RTimeException("seconds out of range")
     if rffi.getintfield(buf_value, 'c_tm_yday') < 0 or rffi.getintfield(buf_value, 'c_tm_yday') > 365:
-        raise Exception("day of year out of range")
+        raise RTimeException("day of year out of range")
     if rffi.getintfield(buf_value, 'c_tm_isdst') < -1 or rffi.getintfield(buf_value, 'c_tm_isdst') > 1:
-        raise Exception("daylight savings flag out of range")
+        raise RTimeException("daylight savings flag out of range")
 
     if _WIN:
         # check that the format string contains only valid directives
@@ -166,7 +169,7 @@ def strftime(format, time_t):
                     # not documented by python
                     i += 1
                 if i >= length or format[i] not in "aAbBcdHIjmMpSUwWxXyYzZ%":
-                    raise Exception("invalid format string")
+                    raise RTimeException("invalid format string")
             i += 1
 
     i = 1024

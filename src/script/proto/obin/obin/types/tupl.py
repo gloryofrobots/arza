@@ -68,7 +68,7 @@ class W_Tuple(W_Hashable):
         assert isint(index)
         try:
             el = self.elements[api.to_native_integer(index)]
-        except ObinKeyError:
+        except KeyError:
             return newundefined()
 
         return el

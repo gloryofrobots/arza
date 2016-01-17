@@ -1,5 +1,5 @@
 from obin.types.root import W_Callable
-from obin.runtime.error import *
+from obin.runtime import error
 from obin.types import api
 
 
@@ -38,11 +38,11 @@ def _get_method(process, func, args):
     # print "LOOKUP", gf._name_, args, arity
 
     if arity >= length:
-        raise ObinMethodInvokeError(func, args)
+        return error.throw_2(error.Errors.METHOD_INVOKE, func, args)
 
     method = func.methods[arity]
     if method is None:
-        raise ObinMethodInvokeError(func, args)
+        return error.throw_2(error.Errors.METHOD_INVOKE, func, args)
 
     return method
 

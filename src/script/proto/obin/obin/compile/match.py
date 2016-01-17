@@ -2,6 +2,7 @@ from obin.compile.parse.parser import *
 from obin.types import plist
 from obin.compile.parse.node import *
 from obin.types import space as obs, api
+from obin.runtime import error
 
 
 def _create_path_node(basenode, path):
@@ -27,6 +28,7 @@ def _process_tuple(process, compiler, pattern, stack, path):
 
 
 def _process_list(process, compiler, pattern, stack, path):
+    from obin.compile.compiler import compile_error
     stack.append(["is_seq", _create_path_node(pattern, path)])
 
     children = pattern.first()
@@ -39,7 +41,7 @@ def _process_list(process, compiler, pattern, stack, path):
     cur_path = path
     for i, child in enumerate(children[:-1]):
         if child.node_type == NT_REST:
-            raise RuntimeError("Invalid use of Rest")
+            return compile_error(process, compiler, code, child, u'Invalid use of Rest')
 
         stack.append(["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(child)])
 
