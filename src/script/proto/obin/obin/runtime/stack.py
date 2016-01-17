@@ -2,6 +2,7 @@ __author__ = 'gloryofrobots'
 from rpython.rlib import jit
 from obin.types.space import newundefined, newtuple
 from obin.types import plist
+from obin.runtime import error
 # TODO proper stack operations
 
 class Stack:
@@ -24,7 +25,7 @@ class Stack:
     def top(self):
         i = self.pointer() - 1
         if i < 0:
-            raise IndexError
+            raise RuntimeError(i)
         return self.data[i]
 
     def grow(self, size):
@@ -42,6 +43,7 @@ class Stack:
         from obin.types.space import isnull, isany
         if not isany(element):
             raise RuntimeError(u"Not Any product", element)
+
         i = self.pointer()
         size = self.size()
         assert i >= 0

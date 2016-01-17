@@ -1,4 +1,51 @@
 # TODO REFACTOR DICT AND ID
+def check_implementation_1(operation_name):
+    def _check(f):
+        def wrapper(self, arg1):
+            try:
+                return f(self, arg1)
+            except NotImplementedError:
+                from obin.runtime import error
+                from obin.types import space
+                return error.throw_3(error.Errors.NOT_IMPLEMENTED, space.newstring(unicode(operation_name)), self, arg1)
+
+        return wrapper
+
+    return _check
+
+
+def check_implementation_2(operation_name):
+    def _check(f):
+        def wrapper(self, arg1, arg2):
+            try:
+                return f(self, arg1, arg2)
+            except NotImplementedError:
+                from obin.runtime import error
+                from obin.types import space
+                return error.throw_4(error.Errors.NOT_IMPLEMENTED,
+                                     space.newstring(unicode(operation_name)), self, arg1, arg2)
+
+        return wrapper
+
+    return _check
+
+
+def check_implementation_3(operation_name):
+    def _check(f):
+        def wrapper(self, arg1, arg2, arg3):
+            try:
+                return f(self, arg1, arg2, arg3)
+            except NotImplementedError:
+                from obin.runtime import error
+                from obin.types import space
+                return error.throw_5(error.Errors.NOT_IMPLEMENTED,
+                                     space.newstring(unicode(operation_name)),
+                                     self, arg1, arg2, arg3)
+
+        return wrapper
+
+    return _check
+
 
 class W_Any:
     def __str__(self):

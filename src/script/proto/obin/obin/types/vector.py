@@ -1,7 +1,8 @@
 from obin.types.root import W_Cell
-from obin.runtime.error import *
 from sequence import W_SequenceIterator
 from obin.utils.misc import absent_index
+from obin.runtime import error
+
 
 
 class W_Vector(W_Cell):
@@ -84,10 +85,7 @@ class W_Vector(W_Cell):
         return self._items[i]
 
     def _put_at_index_(self, i, obj):
-        try:
-            self._items[i] = obj
-        except:
-            raise
+        self._items[i] = obj
 
     def _get_index_(self, obj):
         try:

@@ -2,7 +2,7 @@ __author__ = 'gloryofrobots'
 import obin.compile.parse.rlexer as lexer
 from obin.compile.parse.tokenstream import TokenStream
 from obin.compile.parse.callbacks import *
-
+from obin.compile.parse.tokenstream import UnknownTokenError
 
 class BaseParser:
     def __init__(self, ts):
@@ -26,7 +26,10 @@ class BaseParser:
         return self.ts.token
 
     def next(self):
-        return self.ts.next()
+        try:
+            return self.ts.next()
+        except UnknownTokenError as e:
+            parser_error_unknown(self, e.position)
 
     def isend(self):
         return self.token_type == TT_ENDSTREAM

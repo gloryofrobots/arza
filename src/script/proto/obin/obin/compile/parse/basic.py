@@ -3,7 +3,17 @@ from obin.compile.parse.node import list_node, empty_node
 from obin.compile.parse.tokens import token_type_to_str
 from obin.types import space, api
 from obin.runtime import error
-from obin.utils.misc import get_line
+from obin.utils.misc import get_line, get_line_for_position
+
+
+def parser_error_unknown(parser, position):
+    line = get_line_for_position(parser.ts.src, position)
+    return error.throw(error.Errors.PARSE,
+                       space.newtuple([
+                           space.newint(position),
+                           space.newstring(api.to_native_unicode(u"Unknown Token")),
+                           space.newstring(line)
+                       ]))
 
 
 def parse_error(parser, message, node):
@@ -120,15 +130,15 @@ def set_led(parser, ttype, lbp, fn):
 def check_token_type(parser, type):
     if parser.token_type != type:
         parse_error(parser, u"Wrong token type, expected %s, got %s" % (token_type_to_str(type),
-                                                                             token_type_to_str(parser.token_type)),
-                         parser.node)
+                                                                        token_type_to_str(parser.token_type)),
+                    parser.node)
 
 
 def check_token_types(parser, types):
     if parser.token_type not in types:
         parse_error(parser, u"Wrong token type, expected one of %s, got %s" %
-                         (unicode([token_type_to_str(type) for type in types]),
-                          token_type_to_str(parser.token_type)), parser.node)
+                    (unicode([token_type_to_str(type) for type in types]),
+                     token_type_to_str(parser.token_type)), parser.node)
 
 
 def advance(parser):

@@ -1,6 +1,7 @@
 from obin.types.root import W_Any
 from obin.types import space
 from obin.types import api
+from obin.runtime import error
 
 
 class W_PList(W_Any):
@@ -156,7 +157,7 @@ def take(pl, count):
         return empty()
 
     if isempty(pl):
-        raise RuntimeError("List to small for operation")
+        return error.throw_1(error.Errors.INDEX, space.newint(count))
     return prepend(head(pl), take(pop(pl), count - 1))
 
 
@@ -164,7 +165,7 @@ def drop(pl, count):
     if count == 0:
         return pl
     if isempty(pl):
-        raise RuntimeError("List to small for operation")
+        return error.throw_1(error.Errors.INDEX, space.newint(count))
 
     return drop(tail(pl), count - 1)
 
@@ -173,7 +174,8 @@ def drop(pl, count):
 
 def _slice(pl, index, start, end):
     if isempty(pl):
-        raise RuntimeError("List to small for operation")
+        return error.throw_4(error.Errors.SLICE, space.newint(index),
+                             space.newint(start), space.newint(end))
 
     if index < start:
         return _slice(tail(pl), index + 1, start, end)
@@ -213,7 +215,7 @@ def insert(pl, index, v):
         return prepend(v, pl)
 
     if isempty(pl):
-        raise RuntimeError("Invalide Index")
+        return error.throw_1(error.Errors.INDEX, space.newint(index))
 
     return W_PList(head(pl), insert(tail(pl), index - 1, v))
 
@@ -232,7 +234,7 @@ def remove_all(pl, v):
 def remove(pl, v):
     from obin.types import api
     if isempty(pl):
-        raise RuntimeError("Invalid value")
+        return error.throw_1(error.Errors.VALUE, space.newint(v))
 
     if api.n_equal(v, head(pl)):
         return tail(pl)

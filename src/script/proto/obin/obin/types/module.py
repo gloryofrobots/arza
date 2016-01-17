@@ -1,4 +1,5 @@
 from obin.types.root import W_Any
+from obin.runtime import error
 
 
 class W_Module(W_Any):

@@ -1,6 +1,6 @@
 from obin.types.root import W_Any
 from obin.types.string import W_String
-
+from obin.runtime import error
 
 class W_Symbol(W_Any):
     # _immutable_fields_ = ['value']
@@ -37,7 +37,7 @@ class W_Symbol(W_Any):
     def _compare_(self, other):
         arg = string_or_symbol(other)
         if arg is None:
-            raise RuntimeError("Invalid operation")
+            raise NotImplementedError()
 
         return self.string._compare_(arg)
 

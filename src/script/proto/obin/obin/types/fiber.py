@@ -1,5 +1,5 @@
 from root import W_Any, W_Callable
-from obin.runtime.error import *
+from obin.runtime import error
 from obin.types import api
 from rpython.rlib import jit
 

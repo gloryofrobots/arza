@@ -179,7 +179,8 @@ class CodeRoutine(BaseRoutine):
                 seq = stack.pop()
                 seq_length = api.n_length(seq)
                 if seq_length != arg1:
-                    raise RuntimeError("Unpack sequence error : wrong length")
+                    return error.throw_1(error.Errors.UNPACK_SEQUENCE, seq)
+
                 for i in range(seq_length - 1, -1, -1):
                     el = api.at_index(seq, i)
                     stack.push(el)

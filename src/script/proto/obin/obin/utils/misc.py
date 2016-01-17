@@ -64,3 +64,8 @@ def get_line(string, line_no):
 
     result = result.lstrip()
     return unicode(result)
+
+
+def get_line_for_position(string, pos):
+    index = string.index('\n', pos + 1)
+    return unicode(string[pos: index])

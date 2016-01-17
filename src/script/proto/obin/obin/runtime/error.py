@@ -11,6 +11,8 @@ def error(process, symbol_unistr, args_tuple):
 def throw(symbol_unistr, args_tuple):
     raise ObinError(symbol_unistr, args_tuple)
 
+def throw_0(symbol_unistr):
+    throw(symbol_unistr, space.newtuple([]))
 
 def throw_1(symbol_unistr, arg):
     throw(symbol_unistr, space.newtuple([arg]))
@@ -19,8 +21,17 @@ def throw_1(symbol_unistr, arg):
 def throw_2(symbol_unistr, arg1, arg2):
     throw(symbol_unistr, space.newtuple([arg1, arg2]))
 
+
 def throw_3(symbol_unistr, arg1, arg2, arg3):
     throw(symbol_unistr, space.newtuple([arg1, arg2, arg3]))
+
+
+def throw_4(symbol_unistr, arg1, arg2, arg3, arg4):
+    throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4]))
+
+
+def throw_5(symbol_unistr, arg1, arg2, arg3, arg4, arg5):
+    throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4, arg5]))
 
 
 class ObinError(Exception):
@@ -44,20 +55,20 @@ class Errors:
     REFERENCE = u"ReferenceError"
     RANGE = u"RangeError"
     KEY = u"KeyError"
+    VALUE = u"ValueError"
     SLICE = u"SliceError"
+    INDEX = u"IndexError"
     INVOKE = u"InvokeError"
     METHOD_INVOKE = u"MethodInvokeError"
     METHOD_SPECIALIZE = u"MethodSpecializeError"
     FROZEN = u"FrozenValueIllegalOperationError"
     COMPILE = u"CompileError"
     PARSE = u"Parse"
-
-
-
-
-
-
-
+    ZERO_DIVISION = u"ZeroDivisionError"
+    UNPACK_SEQUENCE = u"UnpackSequenceError"
+    ORIGINATE = u"OriginateError"
+    FIBER_FLOW = u"FiberFlowError"
+    NOT_IMPLEMENTED = u"NotImplementedError"
 
 
 class ObinMethodInvokeError(ObinRangeError):

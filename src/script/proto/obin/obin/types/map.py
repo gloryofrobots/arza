@@ -1,7 +1,7 @@
 from obin.types import api
 from obin.types.root import W_Any, W_Cell
 from obin.utils.misc import is_absent_index, absent_index
-
+from obin.runtime import error
 
 # from rpython.rlib.objectmodel import specialize, enforceargs, always_inline
 # from rpython.rlib import jit

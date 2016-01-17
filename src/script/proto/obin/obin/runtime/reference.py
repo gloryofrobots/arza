@@ -53,7 +53,7 @@ class References(object):
             # print " new ref", ref
             # assert ref is not None
             if not ref:
-                raise RuntimeError("Unknown reference", (symbol,))
+                return error.throw_1(error.Errors.REFERENCE, symbol)
             self._set_refs(index, ref)
 
         return ref.get_value()

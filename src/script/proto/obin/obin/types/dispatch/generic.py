@@ -1,8 +1,7 @@
 from obin.types.root import W_Callable
-from obin.types.space import newtuple, isany
 from obin.runtime import error
 from signature import newsignature, new_base_signature
-from obin.types import api
+from obin.types import api, space
 from dag import *
 
 
@@ -13,15 +12,15 @@ class SrategyType:
 
 
 def _dict_key(obj1, obj2):
-    assert isany(obj1)
-    assert isany(obj2)
+    assert space.isany(obj1)
+    assert space.isany(obj2)
     v = obj1._equal_(obj2)
     # print "_dict_key", obj1, obj2, v
     return v
 
 
 def _dict_hash(obj1):
-    assert isany(obj1)
+    assert space.isany(obj1)
     # print "_dict_hash", obj1,obj1._hash_()
     return obj1._hash_()
 
@@ -91,8 +90,8 @@ def specify(process, gf, signatures):
 
 def specify_single(process, gf, signature, method):
     specify(process, gf,
-          newtuple(
-              [newtuple([signature, method])]))
+          space.newtuple(
+              [space.newtuple([signature, method])]))
 
 
 """
@@ -146,7 +145,9 @@ def _find_signature_index(gf, signatures, signature):
 
 def _make_method_node(gf, signatures):
     if len(signatures) != 1:
-        raise ObinMethodSpecialisationError(gf, u"Ambiguous method specialisation")
+        return error.throw_2(error.Errors.METHOD_SPECIALIZE,
+                             gf,
+                             space.newstring(u"Ambiguous method specialisation"))
 
     sig = signatures[0]
     return [LeafNode(sig.method)]
@@ -192,7 +193,9 @@ def _remove_method(gf, m):
 def _specify_empty(gf, method):
     _add_method(gf, method)
     if gf.signatures[0] is not None:
-        raise ObinMethodSpecialisationError(gf, u"Specialisation for 0-length method has been already defined")
+        return error.throw_2(error.Errors.METHOD_SPECIALIZE,
+                             gf,
+                             space.newstring(u"Specialisation for 0-arity method has been already defined"))
 
     # Storing dummy signature here for rpython translation
     gf.signatures[0] = [new_base_signature(method)]

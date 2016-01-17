@@ -1,5 +1,5 @@
 from obin.types import api
-from obin.runtime.error import ObinImportError
+from obin.runtime import error
 from obin.utils.fs import load_file_content, is_file, join_and_normalise_path
 import os
 from obin.types import space
@@ -26,7 +26,7 @@ def load_module(process, name):
             break
 
     if not filename:
-        raise ObinImportError(unicode(raw))
+        return error.throw_1(error.Errors.IMPORT, name)
 
     return __setup_module(process, name, filename)
 
