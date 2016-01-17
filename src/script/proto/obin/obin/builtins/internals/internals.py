@@ -21,7 +21,7 @@ def is_both_integers(w1, w2):
 
 
 def is_both_strings(w1, w2):
-    return isstring(w1) and isstring(w2)
+    return space.isstring(w1) and space.isstring(w2)
 
 
 def is_not_entities(w1, w2):

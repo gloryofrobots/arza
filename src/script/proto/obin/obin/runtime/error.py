@@ -1,4 +1,4 @@
-from obin.types import api, space
+from obin.types import space
 
 
 def error(process, symbol_unistr, args_tuple):
@@ -11,8 +11,10 @@ def error(process, symbol_unistr, args_tuple):
 def throw(symbol_unistr, args_tuple):
     raise ObinError(symbol_unistr, args_tuple)
 
+
 def throw_0(symbol_unistr):
     throw(symbol_unistr, space.newtuple([]))
+
 
 def throw_1(symbol_unistr, arg):
     throw(symbol_unistr, space.newtuple([arg]))
@@ -40,6 +42,7 @@ class ObinError(Exception):
         self.args_tuple = args_tuple
 
     def __str__(self):
+        from obin.types import api
         return "%s%s" % (str(self.name), api.to_native_string(self.args_tuple))
 
     def __repr__(self):
@@ -69,23 +72,3 @@ class Errors:
     ORIGINATE = u"OriginateError"
     FIBER_FLOW = u"FiberFlowError"
     NOT_IMPLEMENTED = u"NotImplementedError"
-
-
-class ObinMethodInvokeError(ObinRangeError):
-    def __init__(self, method, args):
-        self.arguments = args
-        self.method = method
-
-    def _msg(self):
-        return u'Method Invoke Error:  Can\'t determine method "%s" for arguments %s' % (
-            str(self.method._name_), str(self.arguments),)
-
-
-class ObinMethodSpecialisationError(ObinRangeError):
-    def __init__(self, method, message):
-        self.method = method
-        self.message = message
-
-    def _msg(self):
-        return u'Method Specialisation Error:  Can\'t specialize method "%s" %s' % (
-            str(self.method._name_), str(self.message),)
