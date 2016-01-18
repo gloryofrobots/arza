@@ -84,8 +84,8 @@ def _declare_outer(process, compiler, code, outer):
     scope.add_outer(symbol)
 
 
-def _declare_arguments(process, compiler, args, varargs):
-    _current_scope(process, compiler).add_arguments(args, varargs)
+def _declare_arguments(process, compiler, args_count, varargs):
+    _current_scope(process, compiler).declare_arguments(args_count, varargs)
 
 
 def _declare_function_name(process, compiler, name):
@@ -788,14 +788,16 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params, outer
     funccode = newcode(compiler)
 
     if is_empty_node(params):
-        _declare_arguments(process, compiler, None, None)
+        _declare_arguments(process, compiler, 0, False)
     else:
         args = params.first()
         length = args.length()
         funccode.emit_0(ARGUMENTS, codeinfo_unknown())
 
         # TODO REMOVE
-        _declare_arguments(process, compiler, [obs.newstring(u"$%d" % i) for i in range(length)], None)
+        last_param = args[-1]
+        is_variadic = True if last_param.node_type == NT_REST else False
+        _declare_arguments(process, compiler, length, is_variadic)
         _compile_destruct_recur(process, compiler, funccode, params)
 
     if is_iterable_node(outers):
@@ -1371,7 +1373,7 @@ def newcode(compiler):
 def compile_ast(process, compiler, ast):
     code = newcode(compiler)
     _enter_scope(process, compiler)
-    _declare_arguments(process, compiler, None, False)
+    _declare_arguments(process, compiler, 0, False)
     _compile(process, compiler, code, ast)
     scope = _current_scope(process, compiler)
     final_scope = scope.finalize()

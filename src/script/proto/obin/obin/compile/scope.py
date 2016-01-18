@@ -3,6 +3,7 @@ from obin.types.space import newmap
 from obin.utils.misc import absent_index, is_absent_index
 from obin.types import api
 
+
 class ScopeSet:
     def __init__(self):
         self.values = []
@@ -26,11 +27,10 @@ class Scope:
         self.arg_count = -1
         self.fn_name_index = -1
         self.outers = []
-        self.arguments = []
 
         self.literals = ScopeSet()
         self.references = ScopeSet()
-        self.is_variadic = False
+        self.is_variadic = None
 
     def get_reference(self, name):
         return self.references.get(name)
@@ -55,18 +55,8 @@ class Scope:
     def add_function_name(self, name):
         self.fn_name_index = self.add_local(name)
 
-    def add_arguments(self, args, is_varargs):
-        if args is None:
-            self.arg_count = 0
-            self.is_variadic = False
-            return
-
-        assert isinstance(args, list)
-        self.arg_count = len(args)
-        self.arguments = args
-        # for arg in args:
-        #     self.add_local(arg)
-
+    def declare_arguments(self, args_count, is_varargs):
+        self.arg_count = args_count
         self.is_variadic = is_varargs
 
     def add_local(self, local):
@@ -89,7 +79,7 @@ class Scope:
         return name in self.outers
 
     def finalize(self):
-        return FinalScope(self.locals, self.arguments, self.references.values,
+        return FinalScope(self.locals, self.references.values,
                           self.literals.values,
                           self.arg_count, self.is_variadic, self.fn_name_index)
 
@@ -98,7 +88,7 @@ class FinalScope:
     # _immutable_fields_ = ['vars', 'arg_count', 'fn_name_index',
     #                       'references[*]', 'is_varargs', 'count_refs', 'count_vars', 'literals', 'functions']
 
-    def __init__(self, variables, arguments, references, literals, arg_count, is_varargs, fn_name_index):
+    def __init__(self, variables, references, literals, arg_count, is_varargs, fn_name_index):
         self.variables = variables
         self.count_args = arg_count
         self.fn_name_index = fn_name_index
@@ -107,8 +97,6 @@ class FinalScope:
         self.is_variadic = is_varargs
         self.count_refs = len(self.references)
         self.count_vars = api.n_length(self.variables)
-        self.arguments = arguments
 
     def create_env_bindings(self):
         return api.clone(self.variables)
-

@@ -20,7 +20,8 @@ def parse_error(parser, message, node):
     line = get_line(parser.ts.src, node.line)
     return error.throw(error.Errors.PARSE,
                        space.newtuple([
-                           space.newtuple([node.position, node.line, node.column]),
+                           space.newtuple([space.newint(node.position), space.newint(node.line),
+                                           space.newint(node.column)]),
                            space.newstring(api.to_native_unicode(node)),
                            space.newstring(message),
                            space.newstring(line)

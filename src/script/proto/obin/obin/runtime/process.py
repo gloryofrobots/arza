@@ -219,6 +219,9 @@ class Process(object):
                 result = self._catch_or_terminate(signal)
             except Exception as e:
                 # TODO IF WE ARE TRANSLATED
+                # print e
+                # self.__terminate()
+                # return e
                 raise
 
         assert len(self.fibers) == 0
@@ -239,7 +242,7 @@ class Process(object):
         routine.execute(self)
         if self.is_terminated():
             return routine.result
-        
+
         if routine.is_suspended():
             return None
 
@@ -266,17 +269,17 @@ class Process(object):
         # return None
 
     def _catch_or_terminate(self, signal):
-        if not self.fiber.routine.is_terminated():
-            self.fiber.routine.terminate(signal)
-
         catched, trace = self.__catch_signal(signal)
         if not catched:
-            self.__terminate(signal, trace)
+            self.__terminate_with_signal(signal, trace)
         return signal
 
     def __catch_signal(self, signal):
         trace = plist.empty()
         while True:
+            if not self.fiber.routine.is_terminated():
+                self.fiber.routine.terminate(signal)
+
             result, trace = self.fiber.catch(signal, trace)
             if result is True:
                 return True, trace
@@ -293,8 +296,11 @@ class Process(object):
         self.fiber = None
         self.fibers = []
 
-    def __terminate(self, signal, trace):
+    def __terminate_with_signal(self , signal, trace):
         _print_trace(self.io.stderr, signal, trace)
+        self.__terminate()
+
+    def __terminate(self):
         self.__close()
         self.__set_state(Process.State.TERMINATED)
 

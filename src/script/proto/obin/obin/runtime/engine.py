@@ -24,8 +24,9 @@ def evaluate_file(process, filename):
     module = process.run(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 2),
                                 space.newtuple([space.newstring_from_str(filename), space.newsymbol(process,u"__main__")]))
     if process.is_terminated():
+        # error here
         return module
-    return module.result
+    return space.newtuple([space.newsymbol(process, u"ok"), module.result])
     # src = fs.load_file_content(filename)
     # sourcename = space.newsymbol_py_str(process, filename)
     # module = evaluate_module(process, , filename)

@@ -1,6 +1,6 @@
-from obin.types.root import W_Hashable
+from obin.types.root import W_Hashable, W_Any
 from sequence import W_SequenceIterator
-from obin.runtime.error import *
+from obin.runtime import error
 from obin.types import api
 
 """

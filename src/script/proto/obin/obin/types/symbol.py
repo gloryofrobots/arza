@@ -1,3 +1,4 @@
+from obin.types import api, space
 from obin.types.root import W_Any
 from obin.types.string import W_String
 from obin.runtime import error
@@ -25,7 +26,7 @@ class W_Symbol(W_Any):
             # print "SYMBOL EQ", self, other, val
             return val
 
-        arg = string_or_symbol(other)
+        arg = string_or_symbol_string(other)
         if arg is None:
             # print "SYMBOL NOT EQ", self, other
             return False
@@ -35,14 +36,14 @@ class W_Symbol(W_Any):
         return val
 
     def _compare_(self, other):
-        arg = string_or_symbol(other)
+        arg = string_or_symbol_string(other)
         if arg is None:
-            raise NotImplementedError()
+            return error.throw_3(error.Errors.NOT_IMPLEMENTED, space.newstring(u"_compare_"), self, other)
 
         return self.string._compare_(arg)
 
     def _tostring_(self):
-        return self.string._tostring_()
+        return api.to_native_string(self.string)
 
     def _iterator_(self):
         return self.string._iterator_()
@@ -63,7 +64,7 @@ class W_Symbol(W_Any):
         return process.std.behaviors.Symbol
 
 
-def string_or_symbol(var):
+def string_or_symbol_string(var):
     if isinstance(var, W_String):
         return var
     if isinstance(var, W_Symbol):
