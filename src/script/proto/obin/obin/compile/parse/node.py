@@ -339,3 +339,12 @@ def create_wildcard_node(basenode):
     node = Node(tt.TT_WILDCARD, "_", basenode.position, basenode.line, basenode.column)
     node.init(nt.NT_WILDCARD, 0)
     return node
+
+
+def create_try_statement_node(basenode, exp, success, fail):
+    node = Node(tt.TT_TRY, "try", basenode.position, basenode.line, basenode.column)
+    node.init(nt.NT_TRY, 3)
+    node.setfirst(list_node([exp, success]))
+    node.setsecond(list_node([empty_node(), list_node([fail])]))
+    node.setthird(empty_node())
+    return node

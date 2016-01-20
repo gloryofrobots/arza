@@ -1,30 +1,39 @@
-func f(fn) ->
-    first_call = false
-
-    func(...args) ->
-        outer first_call
-        if first_call == false
-            first_call = true
-            args
-        else
-            apply(fn, args)
-        end
-    end
+match (1, 2, 3)
+    case (A, x, A)  -> 24
+    case (3, A) -> 42
 end
 
-f1 = f(func (x,y) ->
-                x + y end)
 
 
-
-print(f1(2, 2))
-print(f1(2, 2))
-
-
-co = coroutine(func ff(yield) ->
-                    (x,y) = yield(1)
-                    yield(x, y)
-                end)
+//func f(fn) ->
+//    first_call = false
 //
-print(co())
-print(co(1, 2))
+//    func(...args) ->
+//        outer first_call
+//        if first_call == false
+//            first_call = true
+//            args
+//        else
+//            apply(fn, args)
+//        end
+//    end
+//end
+//
+//f1 = f(func (x,y) ->
+//                x + y end)
+//
+//
+//
+//print(f1(2, 2))
+//print(f1(2, 2))
+//
+//
+//co = coroutine(func ff(yield) ->
+//                    (x,y) = yield(1)
+//                    yield(x, y)
+//                end)
+////
+//print(co())
+//print(co(1, 2))
+//
+//

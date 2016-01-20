@@ -1,6 +1,6 @@
-from root import W_Any, W_Callable
+from root import W_Callable
 from obin.runtime import error
-from obin.types import api
+from obin.types import api, space
 from rpython.rlib import jit
 
 
@@ -9,7 +9,7 @@ class W_Fiber(W_Callable):
         self.fiber = fiber
 
     def _tostring_(self):
-        return "fn fiber.yield {[native code]}"
+        return "<fiber>"
 
     def _tobool_(self):
         return True
@@ -18,13 +18,12 @@ class W_Fiber(W_Callable):
         return process.std.behaviors.Fiber
 
     def _call_(self, process, args):
-        from obin.types.space import newundefined
 
         if not self.fiber.is_waiting():
-            raise ObinRuntimeError(u"Can't resume not waiting fiber")
+            error.throw_1(error.Errors.FIBER_FLOW, space.newstring(u"Can't resume active fiber"))
 
         if api.n_length(args) == 0:
-            value = newundefined()
+            value = space.newundefined()
         elif api.n_length(args) == 1:
             value = api.at_index(args, 0)
         else:

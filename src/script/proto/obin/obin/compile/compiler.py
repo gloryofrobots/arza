@@ -915,7 +915,11 @@ def _compile_TRY(process, compiler, code, node):
         code.emit_1(JUMP, finallylabel, codeinfo_unknown())
 
     code.emit_1(LABEL, catchlabel, codeinfo_unknown())
-    _emit_store_name(process, compiler, code, catchvar)
+    if not is_empty_node(catchvar):
+        _emit_store_name(process, compiler, code, catchvar)
+    else:
+        _emit_pop(code)
+
     _compile(process, compiler, code, catchnode)
 
     if finallylabel is not None:

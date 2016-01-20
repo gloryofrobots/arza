@@ -341,8 +341,13 @@ def _transform_isnot(history, head, variables):
 def _transform_assign(history, head, variables):
     left = head[1]
     right, prefixes = _history_get_var(history, head[2])
-    prefixes1 = (prefixes + [create_assign_node(left, left, right)])
-    return left, None, prefixes1, plist.prepend(left, variables)
+    if plist.contains(variables, left):
+        _condition = create_eq_node(left, left, right)
+        condition, prefixes1 = _history_get_condition(history, _condition)
+        return left, condition, prefixes + prefixes1, variables
+    else:
+        prefixes1 = (prefixes + [create_assign_node(left, left, right)])
+        return left, None, prefixes1, plist.prepend(left, variables)
     # left = head[1]
     # right = head[2]
     # prefixes = [create_assign_node(left, left, right)]

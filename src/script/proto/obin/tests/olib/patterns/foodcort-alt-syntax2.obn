@@ -151,6 +151,7 @@ Joe = customers.Vegan()
 Bob = customers.Ordinary()
 Joe.visit(OliveGarden)
 Bob.visit(OliveGarden)
+visit(Joe, OliveGarden)
 
 reduce(`+`,
   func BigFun() =>
