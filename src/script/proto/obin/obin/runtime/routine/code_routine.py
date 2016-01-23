@@ -165,13 +165,12 @@ class CodeRoutine(BaseRoutine):
                 refs.store_ref(literal, arg1, value)
             # *************************************
             elif STORE_MEMBER == tag:
-                left = stack.pop()
-                name = stack.pop()
                 value = stack.pop()
-                api.put(left, name, value)
+                name = stack.pop()
+                left = stack.pop()
+                result = api.put(left, name, value)
 
-                # TODO REMOVE PUSHING
-                stack.push(value)
+                stack.push(result)
             # *************************************
             # TODO STORE_SYMBOL_MEMBER
             # *************************************

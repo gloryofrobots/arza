@@ -254,6 +254,7 @@ def main_parser_init(parser):
     [
     """
 
+    infix(parser, TT_LCURLY, 80, infix_lcurly)
     infix(parser, TT_LSQUARE, 80, infix_lsquare)
 
     """

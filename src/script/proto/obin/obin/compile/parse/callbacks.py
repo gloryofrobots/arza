@@ -185,6 +185,32 @@ def infix_dot(parser, node, left):
     return node
 
 
+def infix_lcurly(parser, node, left):
+    items = []
+    node.init(NT_MODIFY, 2)
+    if parser.token_type != TT_RCURLY:
+        while True:
+            # TODO check it
+            check_token_types(parser, [TT_NAME, TT_COLON, TT_INT, TT_STR, TT_CHAR, TT_FLOAT])
+            # WE NEED LBP=10 TO OVERRIDE ASSIGNMENT LBP(9)
+            key = expression(parser, 10)
+
+            advance_expected(parser, TT_ASSIGN)
+            value = expression(parser, 0)
+
+            items.append(list_node([key, value]))
+
+            if parser.token_type != TT_COMMA:
+                break
+
+            advance_expected(parser, TT_COMMA)
+
+    advance_expected(parser, TT_RCURLY)
+    node.setfirst(left)
+    node.setsecond(list_node(items))
+    return node
+
+
 def infix_lsquare(parser, node, left):
     exp = expression(parser, 0)
 

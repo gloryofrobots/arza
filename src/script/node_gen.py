@@ -45,7 +45,7 @@ NODES = [
   "NT_LOOKUP_SYMBOL",
   "NT_SLICE",
   "NT_RANGE",
-
+  "NT_MODIFY",
   "NT_CONS",
 
   "NT_OF",

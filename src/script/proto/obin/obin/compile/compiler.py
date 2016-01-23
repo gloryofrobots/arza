@@ -403,9 +403,9 @@ def _compile_ASSIGN_MEMBER(process, compiler, code, node):
     obj = member.first()
     item = member.second()
 
-    _compile(process, compiler, code, value)
-    _compile(process, compiler, code, item)
     _compile(process, compiler, code, obj)
+    _compile(process, compiler, code, item)
+    _compile(process, compiler, code, value)
     code.emit_0(STORE_MEMBER, info(node))
 
 
@@ -413,9 +413,9 @@ def _compile_ASSIGN_SYMBOL(process, compiler, code, node):
     member = node.first()
 
     obj = member.first()
-    _compile(process, compiler, code, node.second())
-    _emit_symbol_name(process, compiler, code, member.second())
     _compile(process, compiler, code, obj)
+    _emit_symbol_name(process, compiler, code, member.second())
+    _compile(process, compiler, code, node.second())
     code.emit_0(STORE_MEMBER, info(node))
 
 
@@ -610,17 +610,20 @@ def _compile_ASSIGN(process, compiler, code, node):
     _emit_store_name(process, compiler, code, left)
 
 
+# TODO REMOVE MOD_ASSIGN
 def _compile_modify_assignment_dot_primitive(process, compiler, code, node, operation):
     member = node.first()
 
     obj = member.first()
 
+    _compile(process, compiler, code, obj)
+
+    _emit_symbol_name(process, compiler, code, member.second())
+
     _compile(process, compiler, code, node.first())
     _compile(process, compiler, code, node.second())
     code.emit_1(CALL_INTERNAL, operation, info(obj))
 
-    _emit_symbol_name(process, compiler, code, member.second())
-    _compile(process, compiler, code, obj)
     code.emit_0(STORE_MEMBER, info(obj))
 
 
@@ -728,6 +731,19 @@ def _emit_map_key(process, compiler, code, key):
         _emit_symbol_name(process, compiler, code, key)
     else:
         _compile(process, compiler, code, key)
+
+
+def _compile_MODIFY(process, compiler, code, node):
+    obj = node.first()
+    modifications = node.second()
+    _compile(process, compiler, code, obj)
+
+    for m in modifications:
+        key = m[0]
+        value = m[1]
+        _emit_map_key(process, compiler, code, key)
+        _compile(process, compiler, code, value)
+        code.emit_0(STORE_MEMBER, info(key))
 
 
 def _compile_MAP(process, compiler, code, node):
@@ -1287,6 +1303,9 @@ def _compile_node(process, compiler, code, node):
         _compile_LOOKUP(process, compiler, code, node)
     elif NT_LOOKUP_SYMBOL == node_type:
         _compile_LOOKUP_SYMBOL(process, compiler, code, node)
+
+    elif NT_MODIFY == node_type:
+        _compile_MODIFY(process, compiler, code, node)
 
     elif NT_CONS == node_type:
         _compile_CONS(process, compiler, code, node)
