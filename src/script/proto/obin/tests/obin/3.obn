@@ -1,3 +1,4 @@
+
 func test_eq(str, val, expected) ->
     print("test -> ","'" + str + "'", val, val == expected)
     if val != expected
@@ -55,15 +56,7 @@ print("~ y", ~ y)
 print("x | y", x | y)
 print("x & y", x & y)
 print("x ^ y", x ^ y)
-print("x &= 5", x &= 5)
-print("x ^=6", x ^=6)
-print("x |= 7", x |= 7)
 
-print("x += 1", x += 1)
-print("x -= 1", x -= 1)
-print("x *= 2", x *= 2)
-print("x /= 3", x /= 3)
-print("x %= 4", x %= 4)
 
 print("true when 5 > 4 else false", true when 5 > 4 else false)
 print("x is y", x is y)
@@ -239,7 +232,7 @@ for x in A
 
 x = 10
 while x > 0
-    x-=1
+    x = x - 1
     print(x) end
 
 // ONE LINE
@@ -249,7 +242,7 @@ if x == 13; 1 + 1; elif x == 14; 2 + 2; else 4 + 4; end
 )
 
 x = 10
-while x > 0; x-=1; print(x); end
+while x > 0; x = x - 1; print(x); end
 
 for i in range(10,20); print(i) end
 
@@ -269,7 +262,7 @@ end
 
 x = 20
 while x > 0
-    x -= 5
+    x = x - 5
     if x == 10
         print("SKIP", x)
         continue
@@ -282,7 +275,7 @@ func inner_loop_outer() ->
     func f() ->
         outer x
         while x < 100
-            x += 1
+            x = x + 1
             if x == 8
                 continue
             elif x == 11
@@ -401,3 +394,37 @@ print(x)
 //nil(1,2)
 //error(:BadAss)
 //# asds
+
+M = {
+    line = {
+        data = [1,2,3,4],
+        index = 1
+    },
+
+    id = 12
+}
+print(M)
+M1 = M {
+    line = M.line {
+        index_2 = M.line.index + 42,
+        data = [4, 3, 2, 1]
+    },
+    id = "ID M1"
+}
+print(M1)
+
+Common = {height=187, weight=60}
+print(Common)
+Alice = Common{age = 28, name="Alice"}
+Bob = Common{age = 29, name="Bob", height=225}
+print(Alice)
+print(Bob)
+print(Common)
+
+
+match (1, 2, 3)
+    case (A, x, A)  -> 24
+    case (3, A) -> 42
+end
+
+

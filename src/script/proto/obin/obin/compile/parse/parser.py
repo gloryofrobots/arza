@@ -148,17 +148,9 @@ def main_parser_init(parser):
 
     """
     precedence 10
-    = += -= *= /= %= &= ^= |=
+    =
     """
     infixr(parser, TT_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_ADD_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_SUB_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_MUL_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_DIV_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_MOD_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_BITOR_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_BITAND_ASSIGN, 10, led_infixr_assign)
-    infixr(parser, TT_BITXOR_ASSIGN, 10, led_infixr_assign)
 
     """
     precedence 20

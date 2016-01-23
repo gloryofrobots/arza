@@ -610,71 +610,6 @@ def _compile_ASSIGN(process, compiler, code, node):
     _emit_store_name(process, compiler, code, left)
 
 
-# TODO REMOVE MOD_ASSIGN
-def _compile_modify_assignment_dot_primitive(process, compiler, code, node, operation):
-    member = node.first()
-
-    obj = member.first()
-
-    _compile(process, compiler, code, obj)
-
-    _emit_symbol_name(process, compiler, code, member.second())
-
-    _compile(process, compiler, code, node.first())
-    _compile(process, compiler, code, node.second())
-    code.emit_1(CALL_INTERNAL, operation, info(obj))
-
-    code.emit_0(STORE_MEMBER, info(obj))
-
-
-def _compile_modify_assignment_primitive(process, compiler, code, node, operation):
-    left = node.first()
-    if left.node_type == NT_LOOKUP_SYMBOL:
-        return _compile_modify_assignment_dot_primitive(process, compiler, code, node, operation)
-
-    name = obs.newsymbol_py_str(process, left.value)
-    if not _is_modifiable_binding(process, compiler, name):
-        compile_error(process, compiler, code, node, u"unreachable variable")
-
-    # _compile(process, compiler,code, left)
-    _compile(process, compiler, code, node.first())
-    _compile(process, compiler, code, node.second())
-    code.emit_1(CALL_INTERNAL, operation, info(node))
-    _emit_store_name(process, compiler, code, left)
-
-
-def _compile_ADD_ASSIGN(process, compiler, code, node):
-    _compile_modify_assignment_primitive(process, compiler, code, node, internals.ADD)
-
-
-def _compile_SUB_ASSIGN(process, compiler, code, node):
-    _compile_modify_assignment_primitive(process, compiler, code, node, internals.SUB)
-
-
-def _compile_MUL_ASSIGN(process, compiler, code, node):
-    _compile_modify_assignment_primitive(process, compiler, code, node, internals.MUL)
-
-
-def _compile_DIV_ASSIGN(process, compiler, code, node):
-    _compile_modify_assignment_primitive(process, compiler, code, node, internals.DIV)
-
-
-def _compile_MOD_ASSIGN(process, compiler, code, node):
-    _compile_modify_assignment_primitive(process, compiler, code, node, internals.MOD)
-
-
-def _compile_BITOR_ASSIGN(process, compiler, code, node):
-    _compile_modify_assignment_primitive(process, compiler, code, node, internals.BITOR)
-
-
-def _compile_BITAND_ASSIGN(process, compiler, code, node):
-    _compile_modify_assignment_primitive(process, compiler, code, node, internals.BITAND)
-
-
-def _compile_BITXOR_ASSIGN(process, compiler, code, node):
-    _compile_modify_assignment_primitive(process, compiler, code, node, internals.BITXOR)
-
-
 def _compile_node_name_lookup(process, compiler, code, node):
     name_value = _get_name_value(node)
     name = obs.newsymbol_py_str(process, name_value)
@@ -1369,22 +1304,6 @@ def _compile_node(process, compiler, code, node):
 
     elif NT_ASSIGN == node_type:
         _compile_ASSIGN(process, compiler, code, node)
-    elif NT_ADD_ASSIGN == node_type:
-        _compile_ADD_ASSIGN(process, compiler, code, node)
-    elif NT_SUB_ASSIGN == node_type:
-        _compile_SUB_ASSIGN(process, compiler, code, node)
-    elif NT_MUL_ASSIGN == node_type:
-        _compile_MUL_ASSIGN(process, compiler, code, node)
-    elif NT_DIV_ASSIGN == node_type:
-        _compile_DIV_ASSIGN(process, compiler, code, node)
-    elif NT_MOD_ASSIGN == node_type:
-        _compile_MOD_ASSIGN(process, compiler, code, node)
-    elif NT_BITAND_ASSIGN == node_type:
-        _compile_BITAND_ASSIGN(process, compiler, code, node)
-    elif NT_BITXOR_ASSIGN == node_type:
-        _compile_BITXOR_ASSIGN(process, compiler, code, node)
-    elif NT_BITOR_ASSIGN == node_type:
-        _compile_BITOR_ASSIGN(process, compiler, code, node)
     else:
         compile_error(process, compiler, code, node, u"Unknown node")
 

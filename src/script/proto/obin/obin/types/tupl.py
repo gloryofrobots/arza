@@ -124,6 +124,7 @@ class W_Tuple(W_Hashable):
 
     def _tostring_(self):
         repr = ", ".join([v._tostring_() for v in self.elements])
+
         if self._length_() == 1:
             return "(%s,)" % repr
         return "(%s)" % repr

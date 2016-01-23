@@ -55,7 +55,7 @@ class BaseRoutine:
         raise NotImplementedError()
 
     def terminate(self, signal):
-        assert not self.is_closed()
+        # assert not self.is_closed()
         self.result = signal
         self._state = BaseRoutine.State.TERMINATED
 

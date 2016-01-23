@@ -37,7 +37,10 @@ class PMap(W_Any):
         pairs = self._root.reduce(_tostring, space.newvector([]))
         lst = pairs.to_py_list()
         repr = u"{%s}" % u", ".join(lst)
-        return space.newstring(repr)
+        return str(repr)
+
+    def _behavior_(self, process):
+        return process.std.behaviors.Map
 
     def _length_(self):
         return self._cnt
