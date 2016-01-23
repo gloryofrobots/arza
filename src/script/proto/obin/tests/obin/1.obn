@@ -1,10 +1,15 @@
-match (1, 2, 3)
-    case (A, x, A)  -> 24
-    case (3, A) -> 42
-end
+M = {age=45, name="Bob"}
+M[:age]
+print(M)
 
 
-
+//match (1, 2, 3)
+//    case (A, x, A)  -> 24
+//    case (3, A) -> 42
+//end
+//
+//
+//
 //func f(fn) ->
 //    first_call = false
 //
@@ -36,4 +41,4 @@ end
 //print(co())
 //print(co(1, 2))
 //
-//
+

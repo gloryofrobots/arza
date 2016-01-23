@@ -142,17 +142,6 @@ class W_Any:
         return not_implemented_error(u"_clone_")
 
 
-class W_Cell(W_Any):
-    def __init__(self):
-        self.__frozen = False
-
-    def freeze(self):
-        self.__frozen = True
-
-    def isfrozen(self):
-        return self.__frozen
-
-
 class W_Hashable(W_Any):
     def __init__(self):
         self.__hash = None

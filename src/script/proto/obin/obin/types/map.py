@@ -1,5 +1,5 @@
 from obin.types import api
-from obin.types.root import W_Any, W_Cell
+from obin.types.root import W_Any
 from obin.utils.misc import is_absent_index, absent_index
 from obin.runtime import error
 
@@ -192,14 +192,12 @@ class TableIterator(W_Any):
         return True
 
 
-class W_Map(W_Cell):
+class W_Map(W_Any):
     """
         Dict which supports access by key and by index
     """
 
     def __init__(self):
-        W_Cell.__init__(self)
-
         self.slot_values = None
         self.slot_bindings = None
         self.index = 0

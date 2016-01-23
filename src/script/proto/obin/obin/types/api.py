@@ -53,7 +53,7 @@ collection stuff
 
 def delete(obj, k):
     assert not space.isundefined(k)
-    obj._delete_(k)
+    return obj._delete_(k)
 
 
 def at(obj, k):
@@ -115,12 +115,7 @@ def n_contains(obj, k):
 def put(obj, k, v):
     assert not space.isundefined(v)
     assert not space.isundefined(k)
-    assert space.iscell(obj)
-    # you can determine outer set and inner later
-    if obj.isfrozen():
-        return error.throw_3(error.Errors.FROZEN, obj, k, v)
-
-    obj._put_(k, v)
+    return obj._put_(k, v)
 
 
 def at_index(obj, i):

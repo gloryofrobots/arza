@@ -279,13 +279,14 @@ class CodeRoutine(BaseRoutine):
                 stack.push(next_el)
             # *************************************
             elif MAP == tag:
-                obj = space.newmap()
-
+                args = []
                 for _ in xrange(arg1):
                     name = stack.pop()
                     w_elem = stack.pop()
-                    api.put(obj, name, w_elem)
+                    args.append(name)
+                    args.append(w_elem)
 
+                obj = space.newpmap(args)
                 stack.push(obj)
             # *************************************
             elif FUNCTION == tag:

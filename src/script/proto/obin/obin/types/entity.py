@@ -1,4 +1,4 @@
-from obin.types.root import W_Cell
+from obin.types.root import W_Any
 from obin.runtime import error
 from obin.types import api
 from obin.types import plist
@@ -8,11 +8,10 @@ def _tostring_foldl_(traits, trait):
     traits.append(api.tostring(trait.name))
     return traits
 
-class W_Entity(W_Cell):
+class W_Entity(W_Any):
     # _immutable_fields_ = ['_slots']
 
     def __init__(self, behavior, source):
-        W_Cell.__init__(self)
         self.source = source
         self.behavior = behavior
 

@@ -137,6 +137,9 @@ def newmap():
     from obin.types.map import create_empty_map
     return create_empty_map()
 
+def newpmap(args):
+    from obin.types.pmap import pmap
+    return pmap(args)
 
 def newvector(items):
     assert isinstance(items, list)
@@ -194,11 +197,6 @@ def isinterrupt(value):
     return value is w_Interrupt
 
 
-def iscell(value):
-    from obin.types.root import W_Cell
-    return isinstance(value, W_Cell)
-
-
 def isentity(value):
     from obin.types.entity import W_Entity
     return isinstance(value, W_Entity)
@@ -224,9 +222,11 @@ def isfunction(value):
     from obin.types.native_function import W_NativeFunction
     return isinstance(value, W_Function) or isinstance(value, W_NativeFunction)
 
+
 def isnativefunction(value):
     from obin.types.native_function import W_NativeFunction
     return isinstance(value, W_NativeFunction)
+
 
 def isvector(value):
     from obin.types.vector import W_Vector

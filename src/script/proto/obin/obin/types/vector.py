@@ -1,13 +1,12 @@
-from obin.types.root import W_Cell
+from obin.types.root import W_Any
 from sequence import W_SequenceIterator
 from obin.utils.misc import absent_index
 from obin.runtime import error
 
 
 
-class W_Vector(W_Cell):
+class W_Vector(W_Any):
     def __init__(self, items):
-        W_Cell.__init__(self)
         assert isinstance(items, list)
         self._items = items
 
