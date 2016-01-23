@@ -53,7 +53,11 @@ class W_PList(W_Any):
         return nth(self, int_index)
 
     def _put_(self, k, v):
-        pass
+        from obin.types.space import isint
+        from obin.types import api
+        assert isint(k)
+        i = api.to_native_integer(k)
+        return update(self, i, v)
 
     def _slice_(self, start, end):
         from obin.types.space import isundefined, newundefined
@@ -82,6 +86,7 @@ class W_PList(W_Any):
         if isempty(other) and isempty(self):
             return True
         return False
+
 
 __EMPTY__ = W_PList(space.newundefined(), space.newundefined())
 
@@ -221,6 +226,16 @@ def insert(pl, index, v):
         return error.throw_1(error.Errors.INDEX, space.newint(index))
 
     return W_PList(head(pl), insert(tail(pl), index - 1, v))
+
+
+def update(pl, index, v):
+    if index == 0:
+        return prepend(v, tail(pl))
+
+    if isempty(tail(pl)):
+        return error.throw_1(error.Errors.INDEX, space.newint(index))
+
+    return W_PList(head(pl), update(tail(pl), index - 1, v))
 
 
 def remove_all(pl, v):

@@ -15,7 +15,7 @@ def inc(el):
 class PListTestCase(unittest.TestCase):
     def _test_equal(self, pl, check):
         check = make_test_data(check)
-        assert plist.length(pl) == len(check)
+        self.assertEqual(plist.length(pl), len(check))
         for li, ci in zip(pl, check):
             self.assertTrue(api.n_equal(li, ci))
             # print "TEST FAILED ", pl, check
@@ -44,23 +44,37 @@ class PListTestCase(unittest.TestCase):
 
         l8 = plist.cons_n_list(NIS([123, 124, 125, 123, 124, 125]), l7)
         self._test_equal(l8, [123, 124, 125, 123, 124, 125, 3, 55])
-        # print remove_all(l8, ni(125))
+        l8_1 = plist.remove_all(l8, NI(125))
+        self._test_equal(l8_1, [123, 124, 123, 124, 3, 55])
+
         l9 = plist.reverse(l8)
-        # print l9
+        self._test_equal(l9, list(reversed([123, 124, 125, 123, 124, 125, 3, 55])))
+
         l10 = plist.concat(l8, l9)
-        # print l10
+        self._test_equal(l10, [123, 124, 125, 123, 124, 125, 3, 55, 55, 3, 125, 124, 123, 125, 124, 123])
 
         l11 = plist.fmap(inc, l10)
-        # print l11
+        self._test_equal(l11, [124, 125, 126, 124, 125, 126, 4, 56, 56, 4, 126, 125, 124, 126, 125, 124])
+
         l12 = plist.plist(NIS([1, 2, 3]))
         l13 = plist.plist(NIS([1, 2, 3, 4, 5]))
         l14 = plist.substract(l13, l12)
         self._test_equal(l14, [4, 5])
-        # l9 = newlist(nis([1,2,2,3,4,5,2,6,2,7]))
-        # l9 = newlist(nis([1,2,3]))
-        # print l9
-        # l10 = remove_all(l9, ni(2))
-        # print l10
+
+        l15 = plist.plist(NIS([1, 2, 3, 4, 5, 6, 7, 8]))
+
+        l16 = plist.slice(l15, 0, 3)
+        self._test_equal(l16, [1, 2, 3])
+
+        l17 = plist.slice(l15, 1, 6)
+        self._test_equal(l17, [2, 3, 4, 5, 6])
+
+        l18 = plist.update(l17, 0, NI(102))
+        self._test_equal(l18, [102, 3, 4, 5, 6])
+        l19 = plist.update(l18, 3, NI(105))
+        self._test_equal(l19, [102, 3, 4, 105, 6])
+        l20 = plist.update(l19, 4, NI(106))
+        self._test_equal(l20, [102, 3, 4, 105, 106])
 
 
 def suite():
