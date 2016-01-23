@@ -52,6 +52,9 @@ class W_PList(W_Any):
 
         return nth(self, int_index)
 
+    def _put_(self, k, v):
+        pass
+
     def _slice_(self, start, end):
         from obin.types.space import isundefined, newundefined
         from obin.types import api
@@ -351,67 +354,6 @@ def plist1(item):
 
 ##############################################################
 
-def test():
-    from obin.types.space import newint
-    from obin.types import api
-    def test_list(pl, check):
-        check = make_test_data(check)
-        assert length(pl) == len(check)
-        for li, ci in zip(pl, check):
-            if not api.n_equal(li.head, ci[0]):
-                print "TEST FAILED", pl, check
-                raise RuntimeError("Test Failed")
-
-        print "TEST SUCCESS", pl
-
-    def make_test_data(vals):
-        w_vals = [newint(val) for val in vals]
-        return zip(w_vals, reversed(range(1, len(w_vals) + 1)))
-
-    ni = newint
-    nis = lambda items: [newint(i) for i in items]
-
-    l = plist(nis([0]))
-    l1 = prepend(ni(1), l)
-    l2 = prepend(ni(2), l1)
-    l3 = prepend(ni(3), l2, )
-    test_list(l3, [3, 2, 1, 0])
-    l4 = insert(l3, 1, ni(44))
-    test_list(l4, [3, 44, 2, 1, 0])
-
-    l5 = insert(l4, 2, ni(55))
-    test_list(l5, [3, 44, 55, 2, 1, 0])
-    l6 = take(l5, 3)
-    test_list(l6, [3, 44, 55])
-
-    l7 = remove(l6, ni(44))
-    test_list(l7, [3, 55])
-    l7_1 = remove(l6, ni(55))
-    test_list(l7_1, [3, 44])
-
-    l8 = cons_n_list(nis([123, 124, 125, 123, 124, 125]), l7)
-    test_list(l8, [123, 124, 125, 123, 124, 125, 3, 55])
-    # print remove_all(l8, ni(125))
-    l9 = reverse(l8)
-    print l9
-    l10 = concat(l8, l9)
-    print l10
-
-    def inc(el):
-        from obin.types import api, space
-        return space.newint(api.to_native_integer(el) + 1)
-
-    l11 = fmap(inc, l10)
-    print l11
-    l12 = plist(nis([1, 2, 3]))
-    l13 = plist(nis([1, 2, 3, 4, 5]))
-    l14 = substract(l13, l12)
-    test_list(l14, [4, 5])
-    # l9 = newlist(nis([1,2,2,3,4,5,2,6,2,7]))
-    # l9 = newlist(nis([1,2,3]))
-    # print l9
-    # l10 = remove_all(l9, ni(2))
-    # print l10
 
 
 if __name__ == "__main__":

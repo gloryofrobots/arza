@@ -11,7 +11,7 @@ def printmessage(msg):
 def main(argv):
     script_file = argv[1]
     if script_file == "--test":
-        from tests.vm import tests
+        from test.vm import tests
         return tests.run()
 
     result = run(script_file)

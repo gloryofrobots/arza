@@ -3,7 +3,7 @@ from obin.types import pmap, space, api
 from obin.runtime.error import ObinError
 import unittest
 
-class TestPMap(unittest.TestCase):
+class PMapTestCase(unittest.TestCase):
     def test_pmap(self):
         S = space.newstring
         undef = space.newundefined()
@@ -20,3 +20,9 @@ class TestPMap(unittest.TestCase):
         self.assertNotEqual(api.lookup(m2, S(u"age"), undef), S(u"43"))
         self.assertRaises(ObinError, api.at, m2, S(u"surname1"))
 
+def suite():
+    # tests = ['test_pmap']
+    # suite = unittest.TestSuite()
+    # suite.addTests(map(PMapTestCase, tests))
+    suite = unittest.TestLoader().loadTestsFromTestCase(PMapTestCase)
+    return suite
