@@ -59,6 +59,9 @@ class W_PList(W_Any):
         i = api.to_native_integer(k)
         return update(self, i, v)
 
+    def _behavior_(self, process):
+        return process.std.behaviors.List
+
     def _slice_(self, start, end):
         from obin.types.space import isundefined, newundefined
         from obin.types import api

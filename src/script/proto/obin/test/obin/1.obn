@@ -1,38 +1,16 @@
-//
-//
-//
-//func f(fn) ->
-//    first_call = false
-//
-//    func(...args) ->
-//        outer first_call
-//        if first_call == false
-//            first_call = true
-//            args
-//        else
-//            apply(fn, args)
-//        end
-//    end
-//end
-//
-//f1 = f(func (x,y) ->
-//                x + y end)
-//
-//
-//
-//print(f1(2, 2))
-//print(f1(2, 2))
-//
-//
-//co = coroutine(func ff(yield) ->
-//                    (x,y) = yield(1)
-//                    yield(x, y)
-//                end)
-////
-//print(co())
-//print(co(1, 2))
-//
+trait Animal
+trait Bacteria
 
-L = [1,2,3,4,5]
-l1 = L{0=102, 1=103, 4=105}
+origin Human(name, surname) ->
+    [{name=name, surname=surname}, Human, Animal]
+end
 
+h = Human("X", "Y")
+
+print(kindof(h, Map))
+print(kindof(h, Bacteria))
+print(kindof(h, Human))
+print(kindof(Bacteria, Any))
+print(kindof(Bacteria, Trait))
+print(kindof(Human, Origin))
+print(kindof(Human, Trait))

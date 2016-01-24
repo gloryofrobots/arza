@@ -1,6 +1,7 @@
 __author__ = 'gloryofrobots'
 from obin.types import space
 from obin.runtime import error
+
 """
 type conversions
 """
@@ -159,15 +160,15 @@ def behavior(process, obj):
     return obj._behavior_(process)
 
 
-def kindof(obj, trait):
-    raise NotImplementedError()
-    return newbool(n_kindof(obj, trait))
+def kindof(process, obj, trait):
+    return space.newbool(n_kindof(process, obj, trait))
 
 
-def n_kindof(obj, trait):
-    raise NotImplementedError()
+def n_kindof(process, obj, trait):
     t = totrait(trait)
-    return obj._kindof_(t)
+    from obin.types import behavior as _behavior
+    b = behavior(process, obj)
+    return _behavior.is_behavior_of(b, t)
 
 
 def totrait(obj):

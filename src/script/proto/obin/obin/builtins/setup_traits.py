@@ -28,3 +28,5 @@ def setup(process, module, stdlib):
     api.put(module, traits.Primitive.name, traits.Primitive)
     api.put(module, traits.Module.name, traits.Module)
     api.put(module, traits.Behavior.name, traits.Behavior)
+    api.put(module, traits.Trait.name, traits.Trait)
+

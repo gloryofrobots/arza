@@ -427,4 +427,22 @@ match (1, 2, 3)
     case (3, A) -> 42
 end
 
+L = [1,2,3,4,5]
+l1 = L{0=102, 1=103, 4=105}
 
+trait Animal
+trait Bacteria
+
+origin Human(name, surname) ->
+    [{name=name, surname=surname}, Human, Animal]
+end
+
+h = Human("X", "Y")
+
+print(kindof(h, Map))
+print(kindof(h, Bacteria))
+print(kindof(h, Human))
+print(kindof(Bacteria, Any))
+print(kindof(Bacteria, Trait))
+print(kindof(Human, Origin))
+print(kindof(Human, Trait))

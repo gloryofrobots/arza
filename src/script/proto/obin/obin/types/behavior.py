@@ -1,5 +1,5 @@
 from obin.types.root import W_Hashable
-from obin.types import api
+from obin.types import api, plist
 
 
 class W_Behavior(W_Hashable):
@@ -21,10 +21,13 @@ class W_Behavior(W_Hashable):
         return W_Behavior(self.traits)
 
     def _compute_hash_(self):
-        from obin.types.plist import compute_hash
-        return compute_hash(self.traits)
+        return plist.compute_hash(self.traits)
 
 
 def traits(process, obj):
     b = api.behavior(process, obj)
     return b.traits
+
+
+def is_behavior_of(b, trait):
+    return plist.contains(b.traits, trait)

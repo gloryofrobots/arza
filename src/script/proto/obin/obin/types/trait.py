@@ -10,6 +10,9 @@ class W_Trait(W_Hashable):
         W_Hashable.__init__(self)
         self.name = name
 
+    def _behavior_(self, process):
+        return process.std.behaviors.Trait
+
     def _compute_hash_(self):
         return int((1 - random()) * 10000000)
 

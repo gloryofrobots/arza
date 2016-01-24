@@ -16,8 +16,6 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'spawn_fiber', spawn_fiber, 0)
     api.put_native_function(process, module, u'activate_fiber', activate_fiber, 2)
     api.put_native_function(process, module, u'range', _range, 2)
-    api.put_native_function(process, module, u'clone', clone, 1)
-    api.put_native_function(process, module, u'trait', trait, 1)
     api.put_native_function(process, module, u'attach', attach, -1)
     api.put_native_function(process, module, u'detach', detach, -1)
     api.put_native_function(process, module, u'apply', apply, 2)
@@ -27,6 +25,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'is_seq', is_seq, 1)
     api.put_native_function(process, module, u'is_map', is_map, 1)
 
+    api.put_native_function(process, module, u'kindof', kindof, 2)
     api.put_native_function(process, module, u'length', length, 1)
     api.put_native_function(process, module, u'first', first, 1)
     api.put_native_function(process, module, u'rest', rest, 1)
@@ -237,7 +236,7 @@ def detach(process, routine):
 def kindof(process, routine):
     obj = routine.get_arg(0)
     trait = routine.get_arg(1)
-    return api.kindof(trait, obj)
+    return api.kindof(process, obj, trait)
 
 
 @complete_native_routine
