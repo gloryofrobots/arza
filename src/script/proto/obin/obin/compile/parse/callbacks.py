@@ -552,7 +552,7 @@ def stmt_trait(parser, node):
     node.init(NT_TRAIT, 1)
     name = expression(parser, 0)
     if name.type != TT_NAME:
-        parse_error(parser, u"Invalid trait nam", parser.node)
+        parse_error(parser, u"Invalid trait name", parser.node)
     node.setfirst(name)
     return node
 

@@ -16,11 +16,10 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'spawn_fiber', spawn_fiber, 0)
     api.put_native_function(process, module, u'activate_fiber', activate_fiber, 2)
     api.put_native_function(process, module, u'range', _range, 2)
-    api.put_native_function(process, module, u'attach', attach, -1)
-    api.put_native_function(process, module, u'detach', detach, -1)
     api.put_native_function(process, module, u'apply', apply, 2)
     api.put_native_function(process, module, u'concat', concat_tuples, 2)
     api.put_native_function(process, module, u'time', time, 0)
+    api.put_native_function(process, module, u'traits', traits, 1)
     api.put_native_function(process, module, u'is_indexed', is_indexed, 1)
     api.put_native_function(process, module, u'is_seq', is_seq, 1)
     api.put_native_function(process, module, u'is_map', is_map, 1)
@@ -206,30 +205,8 @@ def clone(process, routine):
 
 @complete_native_routine
 def traits(process, routine):
-    from obin.types import behavior
     obj = routine.get_arg(0)
-    return behavior.traits(process, obj)
-
-
-@complete_native_routine
-def attach(process, routine):
-    args = routine.args().to_py_list()
-    obj = routine.get_arg(0)
-    for i in range(len(args) - 1, 0, -1):
-        trait = routine.get_arg(i)
-        api.attach(process, obj, trait)
-    return obj
-
-
-@complete_native_routine
-def detach(process, routine):
-    args = routine.args().to_py_list()
-    obj = routine.get_arg(0)
-    for i in range(1, len(args)):
-        trait = routine.get_arg(i)
-        api.detach(process, obj, trait)
-
-    return obj
+    return api.traits(process, obj)
 
 
 @complete_native_routine

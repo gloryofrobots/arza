@@ -459,7 +459,7 @@ alice2 = alice isa [Insectoid, MegaPihar, Galvanizator]
 alice3 = alice2 nota Alice
 alice4 = alice2 nota [Insectoid, Galvanizator]
 
-print(alice)
-print(alice2)
-print(alice3)
-print(alice4)
+print(alice, traits(alice))
+print(alice2, traits(alice2))
+print(alice3, traits(alice3))
+print(alice4, traits(alice4))

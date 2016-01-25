@@ -160,6 +160,11 @@ def behavior(process, obj):
     return obj._behavior_(process)
 
 
+def traits(process, obj):
+    b = behavior(process, obj)
+    return b.traits
+
+
 def kindof(process, obj, trait):
     return space.newbool(n_kindof(process, obj, trait))
 

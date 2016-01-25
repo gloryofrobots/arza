@@ -79,8 +79,7 @@ class TraitDiscriminator(Discriminator):
                and other.trait == self.trait
 
     def _evaluate(self, process, arg):
-        from obin.types import behavior
-        return api.get_index(behavior.traits(process, arg), self.trait)
+        return api.get_index(api.traits(process, arg), self.trait)
 
     # def __str__(self):
     #     return "<TraitDiscriminator %s %s %s>" % (str(self.position), str(self.trait), str(self.status))

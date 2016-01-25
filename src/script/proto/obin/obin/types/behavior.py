@@ -24,9 +24,6 @@ class W_Behavior(W_Hashable):
         return plist.compute_hash(self.traits)
 
 
-def traits(process, obj):
-    b = api.behavior(process, obj)
-    return b.traits
 
 
 def is_behavior_of(b, trait):

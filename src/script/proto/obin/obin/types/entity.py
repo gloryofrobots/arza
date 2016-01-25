@@ -3,11 +3,6 @@ from obin.runtime import error
 from obin.types import api, plist, space, behavior
 
 
-def _tostring_foldl_(traits, trait):
-    traits.append(api.tostring(trait.name))
-    return traits
-
-
 class W_Entity(W_Any):
     # _immutable_fields_ = ['_slots']
 
@@ -16,10 +11,7 @@ class W_Entity(W_Any):
         self.behavior = behavior
 
     def _tostring_(self):
-        traits_repr = plist.foldl(_tostring_foldl_, space.newvector([]), self.behavior.traits)
-        traits_repr = ",".join([api.to_native_string(t) for t in traits_repr.to_py_list()])
-
-        return "<entity of %s and %s>" % (api.to_native_string(self.source), traits_repr)
+        return api.to_native_string(self.source)
 
     # BEHAVIOR
     def _at_(self, key):
@@ -81,19 +73,16 @@ class W_Entity(W_Any):
         return W_Entity(self.behavior, source)
 
 
-def has_traits(entity):
-    return entity.traits is not None
-
 
 def newentity_with_traits(process, obj, traits):
     traits = plist.fmap(api.totrait, traits)
-    source_traits = behavior.traits(process, obj)
+    source_traits = api.traits(process, obj)
     new_traits = plist.concat(traits, source_traits)
     return W_Entity(space.newbehavior(new_traits), obj)
 
 
 def newentity_with_trait(process, obj, trait):
-    source_traits = behavior.traits(process, obj)
+    source_traits = api.traits(process, obj)
     new_traits = plist.prepend(trait, source_traits)
     return W_Entity(space.newbehavior(new_traits), obj)
 
