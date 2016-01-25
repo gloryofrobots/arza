@@ -23,7 +23,7 @@ def create_native_routine(stack, name, native, args, arity):
 
 
 def create_origin_routine(stack, constructor, args):
-    from obin.runtime.routine.origin_routine import OriginRoutine
+    from obin.runtime.routine.lazy_routine import OriginRoutine
     return OriginRoutine(stack, constructor, args)
 
 

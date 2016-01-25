@@ -116,12 +116,6 @@ def newnativefunc(name, function, arity):
     return obj
 
 
-def neworigin(function):
-    from obin.types.origin import W_Origin
-    obj = W_Origin(function)
-    return obj
-
-
 def newentity(process, source, traits):
     from obin.types import entity
     if istrait(traits):
@@ -201,11 +195,6 @@ def isinterrupt(value):
 def isentity(value):
     from obin.types.entity import W_Entity
     return isinstance(value, W_Entity)
-
-
-def isorigin(value):
-    from obin.types.origin import W_Origin
-    return isinstance(value, W_Origin)
 
 
 def ismap(value):

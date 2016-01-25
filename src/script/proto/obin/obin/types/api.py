@@ -179,8 +179,6 @@ def n_kindof(process, obj, trait):
 def totrait(obj):
     if space.istrait(obj):
         return obj
-    elif space.isorigin(obj):
-        return obj.trait
     elif space.isentity(obj):
         return totrait(obj.source)
 
