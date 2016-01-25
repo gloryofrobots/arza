@@ -76,6 +76,7 @@ RULES = [
     (keyword('match'), TT_MATCH),
     (keyword('case'), TT_CASE),
     (keyword('func'), TT_FUNC),
+    (keyword('def'), TT_DEF),
     (keyword('end'), TT_END),
     (keyword('and'), TT_AND),
     (keyword('or'), TT_OR),
@@ -96,14 +97,27 @@ RULES = [
     (keyword('of'), TT_OF),
     (keyword('as'), TT_AS),
     (keyword('when'), TT_WHEN),
-    # **********
-    (keyword('in'), TT_IN),
-    (keyword('is'), TT_IS),
-    (keyword('isnot'), TT_ISNOT),
-    (keyword('return'), TT_RETURN),
+
     (keyword('origin'), TT_ORIGIN),
     (keyword('outer'), TT_OUTER),
+
+    (keyword('var'), TT_VAR),
+    (keyword('lazy'), TT_LAZY),
+
+    (keyword('in'), TT_IN),
+    (keyword('notin'), TT_NOTIN),
+    (keyword('is'), TT_IS),
+    (keyword('isnot'), TT_ISNOT),
+
+    (keyword('isa'), TT_ISA),
+    (keyword('nota'), TT_NOTA),
+
+    (keyword('return'), TT_RETURN),
+
     (keyword('_'), TT_WILDCARD),
+
+    # **********
+
     (floating_constant, TT_FLOAT),
     (decimal_constant, TT_INT),
     (string_literal, TT_STR),

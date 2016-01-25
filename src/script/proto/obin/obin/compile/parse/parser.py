@@ -190,12 +190,12 @@ def main_parser_init(parser):
 
     """
     precedence 50
-    in, is, <, <=, >, >=, !=, ==
+    in, is, <, <=, >, >=, !=, == isnot, notin, isa, nota
     """
-    # TODO is not and not in
 
     infix(parser, TT_ISNOT, 50, led_infix)
     infix(parser, TT_IN, 50, led_infix)
+    infix(parser, TT_NOTIN, 50, led_infix)
     infix(parser, TT_IS, 50, led_infix)
     infix(parser, TT_LT, 50, led_infix)
     infix(parser, TT_LE, 50, led_infix)
@@ -203,6 +203,9 @@ def main_parser_init(parser):
     infix(parser, TT_GE, 50, led_infix)
     infix(parser, TT_NE, 50, led_infix)
     infix(parser, TT_EQ, 50, led_infix)
+
+    infix(parser, TT_ISA, 50, led_infix)
+    infix(parser, TT_NOTA, 50, led_infix)
 
     """
     precedence 55

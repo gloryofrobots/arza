@@ -1,12 +1,12 @@
 from obin.types.root import W_Any
 from obin.runtime import error
-from obin.types import api
-from obin.types import plist
-from obin.types import space
+from obin.types import api, plist, space, behavior
+
 
 def _tostring_foldl_(traits, trait):
     traits.append(api.tostring(trait.name))
     return traits
+
 
 class W_Entity(W_Any):
     # _immutable_fields_ = ['_slots']
@@ -85,22 +85,50 @@ def has_traits(entity):
     return entity.traits is not None
 
 
-def add_trait(process, entity, trait):
+def newentity_with_traits(process, obj, traits):
+    traits = plist.fmap(api.totrait, traits)
+    source_traits = behavior.traits(process, obj)
+    new_traits = plist.concat(traits, source_traits)
+    return W_Entity(space.newbehavior(new_traits), obj)
+
+
+def newentity_with_trait(process, obj, trait):
+    source_traits = behavior.traits(process, obj)
+    new_traits = plist.prepend(trait, source_traits)
+    return W_Entity(space.newbehavior(new_traits), obj)
+
+
+def add_trait(process, obj, trait):
     assert space.istrait(trait)
-    assert space.isentity(entity)
-    traits = entity.behavior.traits
-    from obin.types.plist import prepend
+
     try:
-        return space.newentity(process, space.newbehavior(prepend(traits, trait)), entity.source)
-    except:
-        error.throw(process, error.Errors.ADD_TRAIT, space.newtuple([entity, trait]))
+        return W_Entity(space.newbehavior(plist.prepend(trait, obj.behavior.traits)), obj.source)
+    except Exception as e:
+        error.throw_3(error.Errors.ADD_TRAIT, obj, trait, space.newstring_from_str(str(e)))
+
+
+def add_traits(process, obj, traits):
+    assert space.islist(traits)
+
+    try:
+        return W_Entity(space.newbehavior(plist.concat(traits, obj.behavior.traits)), obj.source)
+    except Exception as e:
+        error.throw_3(error.Errors.ADD_TRAIT, obj, traits, space.newstring_from_str(str(e)))
 
 
 def remove_trait(process, entity, trait):
     assert space.istrait(trait)
     assert space.isentity(entity)
-    traits = entity.behavior.traits
     try:
-        return space.newentity(process, space.newbehavior(plist.remove(traits, trait)), entity.source)
-    except:
-        error.throw(process, error.Errors.REMOVE_TRAIT, space.newtuple([entity, trait]))
+        return W_Entity(space.newbehavior(plist.remove(entity.behavior.traits, trait)), entity.source)
+    except Exception as e:
+        error.throw_3(error.Errors.REMOVE_TRAIT, entity, trait, space.newstring_from_str(str(e)))
+
+
+def remove_traits(process, entity, traits):
+    assert space.islist(traits)
+    assert space.isentity(entity)
+    try:
+        return W_Entity(space.newbehavior(plist.substract(entity.behavior.traits, traits)), entity.source)
+    except Exception as e:
+        error.throw_3(error.Errors.REMOVE_TRAIT, entity, traits, space.newstring_from_str(str(e)))

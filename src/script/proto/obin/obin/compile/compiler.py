@@ -357,8 +357,20 @@ def _compile_ISNOT(process, compiler, code, node):
     _on_binary_primitive(process, compiler, code, node, internals.ISNOT)
 
 
+def _compile_ISA(process, compiler, code, node):
+    _on_binary_primitive(process, compiler, code, node, internals.ISA)
+
+
+def _compile_NOTA(process, compiler, code, node):
+    _on_binary_primitive(process, compiler, code, node, internals.NOTA)
+
+
 def _compile_IN(process, compiler, code, node):
     _on_binary_primitive(process, compiler, code, node, internals.IN)
+
+
+def _compile_NOTIN(process, compiler, code, node):
+    _on_binary_primitive(process, compiler, code, node, internals.NOTIN)
 
 
 def _compile_EQ(process, compiler, code, node):
@@ -1241,15 +1253,22 @@ def _compile_node(process, compiler, code, node):
 
     elif NT_MODIFY == node_type:
         _compile_MODIFY(process, compiler, code, node)
-
     elif NT_CONS == node_type:
         _compile_CONS(process, compiler, code, node)
+
     elif NT_IN == node_type:
         _compile_IN(process, compiler, code, node)
+    elif NT_NOTIN == node_type:
+        _compile_NOTIN(process, compiler, code, node)
     elif NT_IS == node_type:
         _compile_IS(process, compiler, code, node)
     elif NT_ISNOT == node_type:
         _compile_ISNOT(process, compiler, code, node)
+    elif NT_ISA == node_type:
+        _compile_ISA(process, compiler, code, node)
+    elif NT_NOTA == node_type:
+        _compile_NOTA(process, compiler, code, node)
+
     elif NT_AND == node_type:
         _compile_AND(process, compiler, code, node)
     elif NT_OR == node_type:

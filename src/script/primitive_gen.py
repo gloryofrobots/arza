@@ -3,7 +3,7 @@ PRIMITIVES = [
     "ADD", "MOD", "MUL", "DIV", "SUB",
     "UMINUS", "UPLUS", "GE", "GT", "LT", "LE",
     "BITNOT", "BITOR", "BITXOR", "BITAND",
-    "LSH", "RSH", "URSH", "CONS",
+    "LSH", "RSH", "URSH", "CONS", "NOTIN", "NOTA", "ISA",
     "__LENGTH__"
 ]
     

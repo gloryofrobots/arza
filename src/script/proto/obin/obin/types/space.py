@@ -123,23 +123,24 @@ def neworigin(function):
 
 
 def newentity(process, source, traits):
-    from obin.types import behavior
-    from obin.types.entity import W_Entity
-    from obin.types.plist import concat
-    assert islist(traits)
-    source_traits = behavior.traits(process, source)
-    behavior_traits = concat(traits, source_traits)
-    behavior = newbehavior(behavior_traits)
-    return W_Entity(behavior, source)
+    from obin.types import entity
+    if istrait(traits):
+        return entity.newentity_with_trait(process, source, traits)
+    elif islist(traits):
+        return entity.newentity_with_traits(process, source, traits)
+    else:
+        assert False, "Invalid traits type"
 
 
 def newmap():
     from obin.types.map import create_empty_map
     return create_empty_map()
 
+
 def newpmap(args):
     from obin.types.pmap import pmap
     return pmap(args)
+
 
 def newvector(items):
     assert isinstance(items, list)

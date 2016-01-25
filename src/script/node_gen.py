@@ -52,9 +52,14 @@ NODES = [
   "NT_AS",
 
   "NT_IN",
+  "NT_NOTIN",
   "NT_IS",
   "NT_ISNOT",
 
+  "NT_ISA",
+  "NT_NOTA",
+  "NT_VAR",
+  "NT_LAZY", 
   "NT_AND",
   "NT_OR",
   "NT_NOT",

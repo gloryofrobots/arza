@@ -1,31 +1,85 @@
 
 
-exports customers, items, foodcort
+module customers(panic, log)
+    trait Hungry, Adult, Customer, Vegan, Ordinary, Child, Male, Female
+
+    generic visit(self of Customer, cort of FoodCort) ->
+        foodcort:prepare(cort, self, self.money) end
+
+
+    func customer(traits, name, money) ->
+        {name=name, money=money} isa traits ++ [Customer] end
+
+    func adult_customer = Adult => customer(adult)
+
+
+    def customer(traits, name, money) ->
+
+    def vegan(name, money, beard_size) ->
+       customer(name, money) {beard_size=beard_size} end
+
+    ordinary = Ordinary => customer
+
+    def child(name, parent) ->
+        customer(name, parent.money) {parent=parent} nota Adult isa [Child, Hungry] end
+end
+
+
+
 
 module customers
+    trait Hungry
+    trait Male
+    trait Female
 
-trait Customer;
-exports visit, Vegan, Ordinary
+    origin Adult
+        case (passport_id) ->
+            {passport_id = passport_id};
 
-generic visit(self of Customer, cort of FoodCort) =>
-    foodcort:prepare(cort, self, self.money)
+    origin Child
+        case (parent) ->
+            {parent = parent};
+
+    origin Customer
+        case(name, money) ->
+            {name = name, money = money};
+
+    origin AdultCustomer(Customer, Adult);
+    origin Vegan(AdultCustomer)
+        case (self, beard_size) -> self {beard_size=beard_size};
+
+    origin Ordinary(Customer)
+    origin ChildCostumer(Costumer, Child)
+        case (self) ->
+            delete(self, :money);
+
+    generic visit(self of Customer, cort of FoodCort) =>
+        foodcort:prepare(cort, self, self.money);
+
 end
 
+module customers
+    trait Customer;
+    trait Vegan
+    trait Ordinary
 
-func _customer(_trait, name, money) =>
-   construct([_trait, Customer], {name=name, money=money})
+    origin Customer(*traits) ->
+        func (name, money) ->
+           {name, money, traits}
+
+    generic visit(self of Customer, cort of FoodCort) =>
+        foodcort:prepare(cort, self, self.money)
+    end
+
+    func customer(name, money, traits) ->
+        object({name=name, money=money}, traits :: [Customer]) end
+
+    func vegan(name, money) ->
+        _customer(name, money, Vegan) end
+
+    func ordinary(name, money) ->
+        _customer(name, money, Ordinary) end
 end
-
-
-factory Vegan(name, money) =>
-    _customer(Vegan, name, money)
-end
-
-
-factory Ordinary(name, money) =>
-    _customer(Ordinary, name, money)
-end
-
 #########################################################################
 
 module items
@@ -46,21 +100,21 @@ generic _item(traits of Enumerable, price of Float, name of String) =>
 end
 
 
-factory VegBurger() =>
+origin VegBurger() =>
     _item([VegBurger, Burger], 0.25, "VegBurger")
 end
 
 
-factory ChickenBurger() =>
+origin ChickenBurger() =>
     _item([ChickenBurger, Burger], 40.45, "ChickenBurger")
 end
 
 
-factory Pepsi() =>
+origin Pepsi() =>
     _item([Pepsi, ColdDrink], 1.45, "Pepsi")
 end
 
-factory Coke() =>
+origin Coke() =>
     _item([Coke, ColdDrink], 1.65, "Coke")
 end
 
@@ -105,7 +159,7 @@ end
 
 
 // It answers to append and all other list funcs
-factory Menu(items) =>
+origin Menu(items) =>
     construct([Menu], items) end
 
 
@@ -121,7 +175,7 @@ specify __tostring__(self of Menu) =>
            self as Vector);;
 
 
-factory FoodCort =>
+origin FoodCort =>
     construct(FoodCort, nil) end
 
 

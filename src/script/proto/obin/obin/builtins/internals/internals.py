@@ -250,6 +250,16 @@ def internal_IN(process, routine):
         call2(process, process.std.generics.In, left, right)
 
 
+def internal_NOTIN(process, routine):
+    right = routine.stack.pop()
+    left = routine.stack.pop()
+
+    if is_not_entities(left, right):
+        apply_binary(process, routine, notin_w, left, right)
+    else:
+        call2(process, process.std.generics.NotIn, left, right)
+
+
 def internal_IS(process, routine):
     right = routine.stack.pop()
     left = routine.stack.pop()
@@ -267,8 +277,20 @@ def internal_CONS(process, routine):
     left = routine.stack.pop()
     apply_binary(process, routine, cons_w, left, right)
 
-# ********************  INTERNALS IDS ********************
 
+def internal_NOTA(process, routine):
+    right = routine.stack.pop()
+    left = routine.stack.pop()
+    apply_binary(process, routine, nota_w, left, right)
+
+
+def internal_ISA(process, routine):
+    right = routine.stack.pop()
+    left = routine.stack.pop()
+    apply_binary(process, routine, isa_w, left, right)
+
+
+# ********************  INTERNALS IDS ********************
 IS = 0
 NE = 1
 EQ = 2
@@ -294,7 +316,10 @@ LSH = 21
 RSH = 22
 URSH = 23
 CONS = 24
-__LENGTH__ = 25
+NOTIN = 25
+NOTA = 26
+ISA = 27
+__LENGTH__ = 28
 
 
 # ********************* INTERNALS REPR ***************
@@ -324,6 +349,9 @@ __INTERNALS_REPR__[LSH] = "LSH"
 __INTERNALS_REPR__[RSH] = "RSH"
 __INTERNALS_REPR__[URSH] = "URSH"
 __INTERNALS_REPR__[CONS] = "CONS"
+__INTERNALS_REPR__[NOTIN] = "NOTIN"
+__INTERNALS_REPR__[NOTA] = "NOTA"
+__INTERNALS_REPR__[ISA] = "ISA"
 
 
 def newinternals():
@@ -354,6 +382,9 @@ def newinternals():
     P[RSH] = internal_RSH
     P[URSH] = internal_URSH
     P[CONS] = internal_CONS
+    P[NOTIN] = internal_NOTIN
+    P[NOTA] = internal_NOTA
+    P[ISA] = internal_ISA
     return P
 
 

@@ -217,6 +217,10 @@ def in_w(process, left, right):
     return api.contains(right, left)
 
 
+def notin_w(process, left, right):
+    return space.newbool(not api.n_contains(right, left))
+
+
 def bitand_i_i(process, op1_w, op2_w):
     op1 = api.to_native_integer(op1_w)
     op2 = api.to_native_integer(op2_w)
@@ -306,8 +310,10 @@ def str_w(process, op1):
 def len_w(process, op1):
     return api.length(op1)
 
+
 def list_v(process, op1):
     pass
+
 
 def cons_w(process, op1, op2):
     from obin.types.plist import plist1, prepend
@@ -317,3 +323,30 @@ def cons_w(process, op1, op2):
     else:
         l = op2
     return prepend(op1, l)
+
+
+def isa_w(process, obj, trait):
+    from obin.types import entity
+    if space.islist(trait):
+        if not space.isentity(obj):
+            return entity.newentity_with_traits(process, obj, trait)
+        return entity.add_traits(process, obj, trait)
+    elif space.istrait(trait):
+        if not space.isentity(obj):
+            return entity.newentity_with_trait(process, obj, trait)
+        return entity.add_trait(process, obj, trait)
+    else:
+        error.throw_2(error.Errors.TYPE, trait, space.newstring(u"expected trait or list of traits"))
+
+
+def nota_w(process, obj, trait):
+    from obin.types import entity
+    if not space.isentity(obj):
+        return error.throw_2(error.Errors.TYPE, obj, space.newstring(u"expected entity, got primitive type"))
+
+    if space.islist(trait):
+        return entity.remove_traits(process, obj, trait)
+    elif space.istrait(trait):
+        return entity.remove_trait(process, obj, trait)
+    else:
+        error.throw_2(error.Errors.TYPE, trait, space.newstring(u"expected trait or list of traits"))

@@ -146,12 +146,12 @@ f5(1, (2,3), 4,5, {name=6, age=(7,8)}, 9,10,11,12)
 
 trait Animal
 
-origin Human(name, surname) ->
-    [{name=name, surname=surname}, Human, Animal]
+func Human(name, surname) ->
+    {name=name, surname=surname} isa [Human, Animal]
 end
 //
-origin Wolf(name) ->
-    [{name=name}, Wolf, Animal]
+func Wolf(name) ->
+    {name=name} isa [Wolf, Animal]
 end
 
 print(Human)
@@ -207,8 +207,7 @@ print(co(44))
 
 generic gg1
 func ff1(a,b,...c) ->  1 end
-origin o1() ->  1 end
-print(gg1, ff1, o1)
+print(gg1, ff1)
 
 x = 12
 
@@ -430,11 +429,12 @@ end
 L = [1,2,3,4,5]
 l1 = L{0=102, 1=103, 4=105}
 
+
 trait Animal
 trait Bacteria
 
-origin Human(name, surname) ->
-    [{name=name, surname=surname}, Human, Animal]
+func Human(name, surname) ->
+    {name=name, surname=surname} isa  [Human, Animal]
 end
 
 h = Human("X", "Y")
@@ -446,3 +446,18 @@ print(kindof(Bacteria, Any))
 print(kindof(Bacteria, Trait))
 print(kindof(Human, Origin))
 print(kindof(Human, Trait))
+
+trait Alice
+trait Insectoid
+trait MegaPihar
+trait Galvanizator
+
+alice = {name = "Alice", age = 42} isa Alice
+alice2 = alice isa [Insectoid, MegaPihar, Galvanizator]
+alice3 = alice2 nota Alice
+alice4 = alice2 nota [Insectoid, Galvanizator]
+
+print(alice)
+print(alice2)
+print(alice3)
+print(alice4)

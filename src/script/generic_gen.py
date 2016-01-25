@@ -35,6 +35,8 @@ GENERICS = [
     ("Compare", "compare",None),
     ("In", "contains",
          [((A,A),"in_w")]),
+    ("NotIn", "not_contains",
+         [((A,A),"notin_w")]),
     ("GreaterThen", ">",
          [((I,I),"compare_gt_i_i"), ((F,F),"compare_gt_f_f"),
           ((N, N), "compare_gt_n_n")]),
