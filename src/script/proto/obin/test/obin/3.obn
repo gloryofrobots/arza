@@ -143,14 +143,15 @@ end
 f5(1, (2,3), 4,5, {name=6, age=(7,8)}, 9,10,11,12)
 
 ////////////////////////////////////////////////////////////////////////////
-
 trait Animal
+trait Human
+trait Wolf
 
-func Human(name, surname) ->
+func Human_New(name, surname) ->
     {name=name, surname=surname} isa [Human, Animal]
 end
 //
-func Wolf(name) ->
+func Wolf_New(name) ->
     {name=name} isa [Wolf, Animal]
 end
 
@@ -164,8 +165,8 @@ specify `-=-=-=`(self of Human) ->
     print("I am nice human",self.name, self.surname)
 end
 
-h = Human("Bob", "Alice")
-w = Wolf("Jack")
+h = Human_New("Bob", "Alice")
+w = Wolf_New("Jack")
 `-=-=-=`(h)
 `-=-=-=`(w)
 
@@ -432,12 +433,13 @@ l1 = L{0=102, 1=103, 4=105}
 
 trait Animal
 trait Bacteria
+trait Human
 
-func Human(name, surname) ->
+func Human_New(name, surname) ->
     {name=name, surname=surname} isa  [Human, Animal]
 end
 
-h = Human("X", "Y")
+h = Human_New("X", "Y")
 
 print(kindof(h, Map))
 print(kindof(h, Bacteria))
