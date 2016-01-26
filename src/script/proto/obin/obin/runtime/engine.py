@@ -1,4 +1,4 @@
-from obin.types import space
+from obin.types import space, api
 from obin.compile.compiler import compile_module
 from obin.utils import fs
 from obin.builtins import setup_builtins
@@ -8,12 +8,13 @@ from obin.runtime.load import import_module
 
 
 def initialize(libdirs):
-    proc_data = process_data.create(libdirs)
-
+    core_prelude = space.newmodule(None, None, space.newenv(space.newmap(), None))
+    proc_data = process_data.create(libdirs, core_prelude)
     process = Process(proc_data)
+    setup_builtins(process, core_prelude)
+
     prelude = import_module(process, space.newsymbol(process, u"obin"))
-    process.builtins = prelude.env
-    setup_builtins(process)
+    process.modules.set_prelude(prelude)
 
     return process
 
@@ -21,17 +22,17 @@ def initialize(libdirs):
 def evaluate_file(process, filename):
     from obin.builtins.setup_globals import compile_module
 
-    module = process.run(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 2),
+    module = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 2),
                                 space.newtuple([space.newstring_from_str(filename), space.newsymbol(process,u"__main__")]))
     if process.is_terminated():
         # error here
         return module
-    return space.newtuple([space.newsymbol(process, u"ok"), module.result])
-    # src = fs.load_file_content(filename)
-    # sourcename = space.newsymbol_py_str(process, filename)
-    # module = evaluate_module(process, , filename)
-    # module = compile_module(process, space.newsymbol(process,u"__main__"), src, sourcename)
-    # result = process.run(module, None)
-    # return result
 
+    main = api.at(module, space.newsymbol(process, u"main"))
+    result = process.run(main, space.newtuple([]))
 
+    if process.is_terminated():
+        # error here
+        return result
+
+    return space.newtuple([space.newsymbol(process, u"ok"), result])

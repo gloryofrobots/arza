@@ -1,3 +1,7 @@
+from obin.types import api, space
+from obin.types.root import W_Any
+from obin.types.space import isstring
+from obin.utils.misc import is_absent_index
 from obin.runtime import error
 
 
@@ -71,7 +75,57 @@ class Reference:
 
     def get_value(self):
         # print "Reference.ref_get_value", self.env, self.index
-        return self.env.get_local(self.index)
+        return api.at_index(self.env, self.index)
 
     def put_value(self, value):
-        self.env.set_local(self.index, value)
+        api.put_at_index(self.env, self.index, value)
+
+
+def get_reference(lex, identifier):
+    # print "get_reference lex", lex
+    if lex is None:
+        return None
+
+    index = api.get_index(lex, identifier)
+    if not is_absent_index(index):
+        ref = Reference(lex, identifier, index)
+        return ref
+    else:
+        outer = lex.parent_env
+        return get_reference(outer, identifier)
+
+
+class W_Env(W_Any):
+    _immutable_fields_ = ['binding_object', 'outer_environment']
+
+    def __init__(self, obj, parent_environment):
+        assert isinstance(parent_environment, W_Env) or parent_environment is None
+        self.parent_env = parent_environment
+        self.data = obj
+
+    def get_reference(self, identifier):
+        # print "Environment.get_reference"
+        return get_reference(self.parent_env, identifier)
+
+    def _behavior_(self, process):
+        return process.std.behaviors.Environment
+
+    def _put_at_index_(self, idx, v):
+        api.put_at_index(self.data, idx, v)
+
+    def _get_index_(self, n):
+        return api.get_index(self.data, n)
+
+    def _at_index_(self, i):
+        return api.at_index(self.data, i)
+
+    def _put_(self, k, v):
+        assert space.issymbol(k)
+        api.put(self.data, k, v)
+
+    def _at_(self, n):
+        assert space.issymbol(n)
+        return api.at(self.data, n)
+
+    def _tostring_(self):
+        return self.data._tostring_()

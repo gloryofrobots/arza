@@ -1,34 +1,45 @@
-from obin.types.root import W_Any
+from obin.types.root import W_Any, W_Callable
+from obin.types import space, api
 from obin.runtime import error
 
 
-class W_Module(W_Any):
-    def __init__(self, name, bytecode, builtins):
+def create_environment(process, source, parent_env):
+    if source.env:
+        return source.env
+
+    modulefunc = W_ModuleFunction(source.name, source.bytecode, parent_env)
+    process.subprocess(modulefunc, space.newundefined())
+
+    source.env = modulefunc.env
+    return source.env
+
+
+class W_ModuleFunction(W_Callable):
+    def __init__(self, name, bytecode, parent_env):
         self.name = name
         self.bytecode = bytecode
-        self.is_compiled = False
-        self.builtins = builtins
-        self.env = self.bytecode.scope.create_env_bindings()
-        self.result = None
+        self.parent_env = parent_env
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Module
+        bindings = self.bytecode.scope.create_env_bindings()
+        self.env = space.newenv(bindings, parent_env)
 
-    def _tostring_(self):
-        return self.env._tostring_()
+    def _to_routine_(self, stack, args):
+        from obin.runtime.routine import create_module_routine
+        routine = create_module_routine(self.name, stack, self.bytecode, self.env)
+        return routine
+
+
+class W_Module(W_Any):
+    def __init__(self, name, bytecode, env):
+        self.name = name
+        self.bytecode = bytecode
+        self.env = env
 
     def _at_(self, key):
         return self.env._at_(key)
 
-    def _to_routine_(self, stack, args):
-        if self.is_compiled:
-            raise RuntimeError("Module Already compiled")
+    def _put_(self, k, v):
+        return self.env._put_(k, v)
 
-        from obin.runtime.routine import create_module_routine
-
-        routine = create_module_routine(self.name, stack, self.bytecode, self.env, self.builtins)
-        # print "*********"
-        # for i, c in enumerate([str(c) for c in self._bytecode_.opcodes]): print i,c
-        # print "*********"
-        self.is_compiled = True
-        return routine
+    def _tostring_(self):
+        return self.env._tostring_()

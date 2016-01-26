@@ -19,8 +19,10 @@ NODE_TYPE_MAPPING = {
     TT_IF: NT_IF,
     TT_WHEN: NT_WHEN,
     TT_MATCH: NT_MATCH,
-    TT_ORIGIN: NT_ORIGIN,
     TT_IMPORT: NT_IMPORT,
+    TT_EXPORT: NT_EXPORT,
+    TT_USE: NT_USE,
+    TT_LOAD: NT_LOAD,
     TT_TRAIT: NT_TRAIT,
     TT_GENERIC: NT_GENERIC,
     TT_SPECIFY: NT_SPECIFY,
@@ -536,18 +538,6 @@ def stmt_for(parser, node):
     return node
 
 
-def stmt_origin(parser, node):
-    node.init(NT_ORIGIN, 4)
-    name, args, outers, body = parse_func(parser)
-    if is_empty_node(name):
-        parse_error(parser, u"expected origin name", node)
-    node.setfirst(name)
-    node.setsecond(args)
-    node.setthird(outers)
-    node.setfourth(body)
-    return node
-
-
 def stmt_trait(parser, node):
     node.init(NT_TRAIT, 1)
     name = expression(parser, 0)
@@ -639,21 +629,11 @@ def stmt_specify(parser, node):
     return node
 
 
-def stmt_import(parser, node):
-    # statement can be import x.y.z as c
+def stmt_load(parser, node):
     imported = expression(parser.module_name_alias_parser, 0)
-    node.init(NT_IMPORT, 2)
-    node.setfirst(imported)
-    # SET HERE empty node to show compiler it is a statement
-    # BAD DESIGN. NEED NODE TYPE
-    node.setsecond(empty_node())
-
-    return node
-
-
-def prefix_import(parser, node):
-    imported = expression(parser.module_name_parser, 0)
-    node.init(NT_IMPORT, 1)
+    node.init(NT_LOAD, 1)
     node.setfirst(imported)
 
     return node
+
+

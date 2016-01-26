@@ -1,3 +1,6 @@
+from obin.types import space
+
+
 class Symbols:
     def __init__(self):
         self.symbols = []
@@ -24,10 +27,11 @@ class Symbols:
 
 
 class Modules:
-    def __init__(self, path):
+    def __init__(self, path, prelude):
         assert isinstance(path, list)
         self.modules = {}
         self.path = path
+        self.prelude = prelude
 
     def add_path(self, path):
         assert isinstance(path, str)
@@ -39,14 +43,17 @@ class Modules:
     def get_module(self, name):
         return self.modules[name]
 
+    def set_prelude(self, prelude):
+        self.prelude = prelude
+
 
 class ProcessData:
-    def __init__(self, modules, std, builtins, symbols, io):
+    def __init__(self, modules, std, symbols, io):
         self.modules = modules
         self.std_objects = std
-        self.builtins = builtins
         self.symbols = symbols
         self.io = io
+
 
 class IO:
     def __init__(self):
@@ -57,12 +64,10 @@ class IO:
         self.stdin = IoDevice(sys.stdin)
 
 
-def create(libdirs):
-    from obin.types.space import newmap
+def create(libdirs, prelude):
     from obin.builtins.std import Std
     symbols = Symbols()
     stdlib = Std(symbols)
-    builtins = newmap()
-    modules = Modules(libdirs)
+    modules = Modules(libdirs, prelude)
     io = IO()
-    return ProcessData(modules, stdlib, builtins, symbols, io)
+    return ProcessData(modules, stdlib, symbols, io)

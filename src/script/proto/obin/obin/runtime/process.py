@@ -120,20 +120,12 @@ class Process(object):
         return self.__data.std_objects
 
     @property
-    def builtins(self):
-        return self.__data.builtins
-
-    @property
     def symbols(self):
         return self.__data.symbols
 
     @property
     def io(self):
         return self.__data.io
-
-    @builtins.setter
-    def builtins(self, b):
-        self.__data.builtins = b
 
     @property
     def fiber(self):
@@ -276,6 +268,9 @@ class Process(object):
 
     def __catch_signal(self, signal):
         trace = plist.empty()
+        if self.fiber is None:
+            return False, trace
+        
         while True:
             if not self.fiber.routine.is_terminated():
                 self.fiber.routine.terminate(signal)

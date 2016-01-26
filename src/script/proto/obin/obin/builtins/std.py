@@ -62,7 +62,7 @@ class Behaviors:
         self.Generic = newbehavior(newlist([traits.Generic, traits.Callable, traits.Any]))
         self.Primitive = newbehavior(newlist([traits.Primitive, traits.Callable, traits.Any]))
 
-        self.Module = newbehavior(newlist([traits.Module, traits.Collection, traits.Any]))
+        self.Environment = newbehavior(newlist([traits.Collection, traits.Any]))
         self.Behavior = newbehavior(newlist([traits.Behavior, traits.Any]))
 
 

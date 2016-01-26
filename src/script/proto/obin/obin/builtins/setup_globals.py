@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from obin.runtime.routine import complete_native_routine
-from obin.types import api
-from obin.types import space
+from obin.types import api, space, plist, module
 from rpython.rlib.rstring import UnicodeBuilder
 from obin.runistr import encode_unicode_utf8
-
+from rpython.rlib.objectmodel import compute_unique_id
+from obin.utils import fs
+from obin.compile import compiler
 
 def setup(process, module, stdlib):
     ### Traits
@@ -38,22 +39,17 @@ def setup(process, module, stdlib):
 
 @complete_native_routine
 def compile_module(process, routine):
-    from obin.utils import fs
-    from obin.compile import compiler
-
     sourcename = routine.get_arg(0)
     modulename = routine.get_arg(1)
     filename = api.to_native_string(sourcename)
     script = fs.load_file_content(filename)
-
-    module = compiler.compile_module(process, modulename, script, sourcename)
-    module.result = process.subprocess(module, space.newundefined())
-    process.modules.add_module(api.to_native_string(modulename), module)
-    return module
+    _module = compiler.compile_module(process, modulename, script, sourcename)
+    module.create_environment(process, _module, process.modules.prelude.env)
+    process.modules.add_module(api.to_native_string(modulename), _module)
+    return _module
 
 @complete_native_routine
 def _id(process, routine):
-    from rpython.rlib.objectmodel import compute_unique_id
     this = routine.get_arg(0)
     return space.newstring(unicode(hex(compute_unique_id(this))))
 
@@ -78,15 +74,13 @@ def _print(process, routine):
 
 
 def _eval(process, routine):
-    from obin.runtime.environment import newenv
-    from obin.compile import compiler
     x = routine.get_arg(0)
 
     assert space.issymbol(x)
     src = api.to_native_string(x)
     source = compiler.compile_function_source(process, src, space.newsymbol(process, u"__eval__"))
     obj = source.code.scope.create_env_bindings()
-    env = newenv(obj, None)
+    env = space.newenv(obj, None)
     func = space.newfunc(source.name, source.code, env)
     args = space.newtuple([])
     api.call(process, func, args)
@@ -95,8 +89,7 @@ def _eval(process, routine):
 def apply(process, routine):
     func = routine.get_arg(0)
     args = routine.get_arg(1)
-    from obin.types.space import istuple
-    assert istuple(args)
+    assert space.istuple(args)
     api.call(process, func, args)
 
 
@@ -110,18 +103,16 @@ def concat_tuples(process, routine):
 
 @complete_native_routine
 def time(process, routine):
-    from obin.types.space import newfloat
     import time
-    return newfloat(time.time())
+    return space.newfloat(time.time())
 
 
 @complete_native_routine
 def is_indexed(process, routine):
-    from obin.types.space import isvector, istuple, newbool
     v1 = routine.get_arg(0)
-    if not isvector(v1) and not istuple(v1):
-        return newbool(False)
-    return newbool(True)
+    if not space.isvector(v1) and not space.istuple(v1):
+        return space.newbool(False)
+    return space.newbool(True)
 
 
 @complete_native_routine
@@ -135,11 +126,10 @@ def is_seq(process, routine):
 
 @complete_native_routine
 def is_map(process, routine):
-    from obin.types.space import ismap, newbool
     v1 = routine.get_arg(0)
-    if not ismap(v1):
-        return newbool(False)
-    return newbool(True)
+    if not space.ismap(v1):
+        return space.newbool(False)
+    return space.newbool(True)
 
 
 @complete_native_routine
@@ -150,10 +140,9 @@ def length(process, routine):
 
 @complete_native_routine
 def first(process, routine):
-    from obin.types.plist import head, isempty
-    from obin.types.space import islist
+    from obin.types.plist import head
     lst = routine.get_arg(0)
-    assert islist(lst)
+    assert space.islist(lst)
     v = head(lst)
     return v
 

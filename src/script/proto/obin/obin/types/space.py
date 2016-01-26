@@ -153,11 +153,17 @@ def newtuple(tupl):
     return W_Tuple(list(tupl))
 
 
-def newmodule(process, name, code):
-    assert issymbol(name)
+def newmodule(name, code, env):
+    assert name is None or issymbol(name)
     from obin.types.module import W_Module
-    obj = W_Module(name, code, process.builtins)
+    obj = W_Module(name, code, env)
     return obj
+
+
+def newenv(obj, outer_environment):
+    from obin.types.environment import W_Env
+    env = W_Env(obj, outer_environment)
+    return env
 
 
 def newgeneric(name):
@@ -252,6 +258,9 @@ def ismodule(w):
     from obin.types.module import W_Module
     return isinstance(w, W_Module)
 
+def isenv(w):
+    from obin.types.environment import W_Env
+    return isinstance(w, W_Env)
 
 def isboolean(value):
     return value is w_False or value is w_True

@@ -1,13 +1,10 @@
 from obin.compile.code import *
 from obin.runtime import error
-from obin.runtime.reference import References
 from obin.runtime.routine.base_routine import BaseRoutine
-from obin.types.dispatch.generic import specify
-from obin.types import api
 from obin.runtime.load import import_module
 from obin.builtins.internals.internals import get_internal
-from obin.types import space
-from obin.types import string
+from obin.types import api, space, string, environment, module
+from obin.types.dispatch import generic
 
 
 class CodeRoutine(BaseRoutine):
@@ -30,7 +27,7 @@ class CodeRoutine(BaseRoutine):
         refs_size = scope.count_refs
         self.literals = scope.literals
         if refs_size != 0:
-            self.refs = References(env, refs_size)
+            self.refs = environment.References(env, refs_size)
         else:
             self.refs = None
 
@@ -129,7 +126,7 @@ class CodeRoutine(BaseRoutine):
                 stack.push(l)
             # *************************************
             elif LOCAL == tag:
-                value = env.get_local(arg1)
+                value = api.at_index(env, arg1)
                 if space.isundefined(value):
                     literal = literals[arg2]
                     return error.throw_1(error.Errors.REFERENCE, literal)
@@ -157,7 +154,7 @@ class CodeRoutine(BaseRoutine):
             # TODO WHY NOT POP HERE?
             elif STORE_LOCAL == tag:
                 value = stack.top()
-                env.set_local(arg1, value)
+                api.put_at_index(env, arg1, value)
             # *************************************
             elif STORE_OUTER == tag:
                 value = stack.top()
@@ -293,12 +290,6 @@ class CodeRoutine(BaseRoutine):
                 w_func = space.newfunc(source.name, source.code, env)
                 stack.push(w_func)
             # *************************************
-            elif ORIGIN == tag:
-                source = literals[arg1]
-                w_func = space.newfunc(source.name, source.code, env)
-                w_origin = space.neworigin(w_func)
-                stack.push(w_origin)
-            # *************************************
             elif THROW == tag:
                 val = stack.pop()
                 self.terminate(val)
@@ -309,10 +300,16 @@ class CodeRoutine(BaseRoutine):
             elif POP_CATCH == tag:
                 self.catches.pop()
             # *************************************
-            elif IMPORT == tag:
+            elif LOAD == tag:
                 name = literals[arg1]
-                module = import_module(process, name)
-                stack.push(module)
+                _module = import_module(process, name)
+                stack.push(_module)
+            # *************************************
+            elif USE == tag:
+                args = stack.pop()
+                modulesource = stack.pop()
+                _module = module.create_environment(modulesource, args, env)
+                stack.push(_module)
             # *************************************
             elif TRAIT == tag:
                 name = literals[arg1]
@@ -327,8 +324,8 @@ class CodeRoutine(BaseRoutine):
             elif SPECIFY == tag:
                 methods = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
                 methods = space.newtuple(methods)
-                generic = stack.top()
-                specify(process, generic, methods)
+                gen_fn = stack.top()
+                generic.specify(process, gen_fn, methods)
             # *************************************
             elif LABEL == tag:
                 raise RuntimeError("Uncompiled label opcode")

@@ -279,15 +279,12 @@ def main_parser_init(parser):
 
     prefix(parser, TT_FUNC, prefix_func)
 
-    prefix(parser, TT_IMPORT, prefix_import)
     prefix(parser, TT_MATCH, prefix_match)
     prefix(parser, TT_TRY, prefix_try)
 
     """
     STATEMENTS
     """
-
-    stmt(parser, TT_ORIGIN, stmt_origin)
 
     stmt(parser, TT_RETURN, stmt_single)
     stmt(parser, TT_THROW, stmt_single)
@@ -307,7 +304,7 @@ def main_parser_init(parser):
 
     stmt(parser, TT_SPECIFY, stmt_specify)
 
-    stmt(parser, TT_IMPORT, stmt_import)
+    stmt(parser, TT_LOAD, stmt_load)
     return parser
 
 

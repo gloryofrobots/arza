@@ -19,8 +19,10 @@ NODES = [
   "NT_MATCH",
   "NT_TRY",
 
-  "NT_ORIGIN",
   "NT_IMPORT",
+  "NT_EXPORT",
+  "NT_LOAD",
+  "NT_USE",
   "NT_TRAIT",
   "NT_GENERIC",
   "NT_SPECIFY",

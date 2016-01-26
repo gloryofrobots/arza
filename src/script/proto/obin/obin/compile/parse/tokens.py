@@ -92,13 +92,17 @@ RULES = [
     (keyword('generic'), TT_GENERIC),
     (keyword('specify'), TT_SPECIFY),
     (keyword('trait'), TT_TRAIT),
+
     (keyword('import'), TT_IMPORT),
+    (keyword('export'), TT_EXPORT),
+    (keyword('load'), TT_LOAD),
+    (keyword('use'), TT_USE),
+
     (keyword('from'), TT_FROM),
     (keyword('of'), TT_OF),
     (keyword('as'), TT_AS),
     (keyword('when'), TT_WHEN),
 
-    (keyword('origin'), TT_ORIGIN),
     (keyword('outer'), TT_OUTER),
 
     (keyword('var'), TT_VAR),

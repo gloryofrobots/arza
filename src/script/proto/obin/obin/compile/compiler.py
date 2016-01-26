@@ -767,9 +767,7 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params, outer
         for outer in outers:
             _declare_outer(process, compiler, code, outer)
 
-    # avoid recursive name lookups for origins because in this case
-    # index will be pointed to constructor function instead of origin
-    if not api.isempty(funcname) and not opcode == ORIGIN:
+    if not api.isempty(funcname):
         _declare_function_name(process, compiler, funcname)
 
     _compile(process, compiler, funccode, body)
@@ -806,20 +804,6 @@ def _compile_FUNC(process, compiler, code, node):
 
     funcname_index = _declare_literal(process, compiler, funcname)
     code.emit_2(STORE_LOCAL, index, funcname_index, info(node))
-
-
-def _compile_ORIGIN(process, compiler, code, node):
-    name = node.first()
-    funcname = obs.newsymbol_py_str(process, name.value)
-    funcname_index = _declare_literal(process, compiler, funcname)
-    index = _declare_local(process, compiler, funcname)
-
-    params = node.second()
-    outers = node.third()
-    body = node.fourth()
-    _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, ORIGIN, info(node))
-
-    code.emit_2(STORE_LOCAL, index, funcname_index, info(name))
 
 
 def _compile_branch(process, compiler, code, condition, body, endif):
@@ -902,7 +886,7 @@ def _dot_to_string(process, compiler, node):
         return node.value
 
 
-def _compile_IMPORT_STMT(process, compiler, code, node):
+def _compile_LOAD(process, compiler, code, node):
     exp = node.first()
     if exp.node_type == NT_AS:
         import_name = exp.second()
@@ -915,30 +899,10 @@ def _compile_IMPORT_STMT(process, compiler, code, node):
         import_name = exp
         module_path = exp.value
 
-    module_path_literal = _declare_literal(process, compiler, obs.newstring_from_str(module_path))
-    code.emit_1(IMPORT, module_path_literal, info(node))
+    module_path_literal = _declare_literal(process, compiler, obs.newsymbol_py_str(process, module_path))
+    code.emit_1(LOAD, module_path_literal, info(node))
 
     _emit_store_name(process, compiler, code, import_name)
-
-
-def _compile_IMPORT_EXP(process, compiler, code, node):
-    exp = node.first()
-    if exp.node_type == NT_LOOKUP_SYMBOL:
-        module_path = _dot_to_string(process, compiler, exp)
-    else:
-        assert exp.node_type == NT_NAME
-        module_path = exp.value
-
-    module_path = obs.newstring_from_str(module_path)
-    module_path_literal = _declare_literal(process, compiler, module_path)
-    code.emit_1(IMPORT, module_path_literal, info(node))
-
-
-def _compile_IMPORT(process, compiler, code, node):
-    if node.arity == 2:
-        _compile_IMPORT_STMT(process, compiler, code, node)
-    else:
-        _compile_IMPORT_EXP(process, compiler, code, node)
 
 
 def _compile_GENERIC(process, compiler, code, node):
@@ -1115,7 +1079,7 @@ def _compile_CALL_MEMBER(process, compiler, code, node):
     args_count = _compile_args_list(process, compiler, code, args)
 
     _compile(process, compiler, code, obj)
-    _emit_symbol_name(process, compiler, code, method.value)
+    _emit_symbol_name(process, compiler, code, method)
     # TODO LITERAL HERE
     # declare_symbol(process, compiler,name)
 
@@ -1162,15 +1126,7 @@ def _compile_nodes(process, compiler, code, ast):
 
 def _compile_node(process, compiler, code, node):
     from obin.compile.parse.node import BaseNode
-    if node is None:
-        print None
-    if is_list_node(node):
-        print node
-    if not isinstance(node, BaseNode):
-        print node
     node_type = node.node_type
-    if node_type is None:
-        print 1
 
     assert node_type is not None
 
@@ -1209,12 +1165,10 @@ def _compile_node(process, compiler, code, node):
     elif NT_TRY == node_type:
         _compile_TRY(process, compiler, code, node)
 
-    elif NT_IMPORT == node_type:
-        _compile_IMPORT(process, compiler, code, node)
+    elif NT_LOAD == node_type:
+        _compile_LOAD(process, compiler, code, node)
     elif NT_TRAIT == node_type:
         _compile_TRAIT(process, compiler, code, node)
-    elif NT_ORIGIN == node_type:
-        _compile_ORIGIN(process, compiler, code, node)
     elif NT_GENERIC == node_type:
         _compile_GENERIC(process, compiler, code, node)
     elif NT_SPECIFY == node_type:
@@ -1358,16 +1312,14 @@ def compile(process, src, sourcename):
 
 
 def compile_module(process, modulename, src, sourcename):
-    from obin.types.space import newmodule
     code = compile(process, src, sourcename)
-    module = newmodule(process, modulename, code)
+    module = obs.newmodule(modulename, code, None)
     return module
 
 
 def compile_function_source(process, src, name):
-    from obin.types.space import newfuncsource
     code = compile(process, src, name)
-    fn = newfuncsource(name, code)
+    fn = obs.newfuncsource(name, code)
     return fn
 
 

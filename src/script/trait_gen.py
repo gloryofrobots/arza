@@ -28,8 +28,7 @@ TRAITS = [
         "Generic", 
         "Primitive", 
 
-
-        "Module", 
+        "Environment", 
         "Behavior", 
         "Trait",
         ]

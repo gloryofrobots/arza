@@ -71,6 +71,5 @@ class Errors:
     PARSE = u"ParseError"
     ZERO_DIVISION = u"ZeroDivisionError"
     UNPACK_SEQUENCE = u"UnpackSequenceError"
-    ORIGINATE = u"OriginateError"
     FIBER_FLOW = u"FiberFlowError"
     NOT_IMPLEMENTED = u"NotImplementedError"
