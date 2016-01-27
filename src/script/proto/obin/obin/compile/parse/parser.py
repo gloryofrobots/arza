@@ -4,6 +4,7 @@ from obin.compile.parse.tokenstream import TokenStream
 from obin.compile.parse.callbacks import *
 from obin.compile.parse.rlexer import UnknownTokenError
 
+
 class BaseParser:
     def __init__(self, ts):
         self.handlers = {}
@@ -35,16 +36,24 @@ class BaseParser:
         return self.token_type == TT_ENDSTREAM
 
 
-class Parser(BaseParser):
+class ExpressionParser(BaseParser):
     def __init__(self, ts):
         BaseParser.__init__(self, ts)
         self.args_parser = args_parser_init(BaseParser(ts))
-        self.module_name_parser = module_name_parser_init(BaseParser(ts))
-        self.module_name_alias_parser = module_name_alias_parser_init(BaseParser(ts))
-        self.generic_signature_parser = generic_signature_parser_init(BaseParser(ts))
         self.pattern_parser = pattern_parser_init(BaseParser(ts))
         # self.expression_parser = expression_parser_init(BaseParser(ts))
-        main_parser_init(self)
+        expression_parser_init(base_parser_init(self))
+
+
+class ModuleParser(BaseParser):
+    def __init__(self, ts):
+        BaseParser.__init__(self, ts)
+        self.args_parser = args_parser_init(BaseParser(ts))
+        self.load_parser = load_parser_init(BaseParser(ts))
+        self.generic_signature_parser = generic_signature_parser_init(BaseParser(ts))
+        self.pattern_parser = pattern_parser_init(BaseParser(ts))
+        self.expression_parser = ExpressionParser(ts)
+        module_parser_init(base_parser_init(self))
 
 
 def args_parser_init(parser):
@@ -62,18 +71,12 @@ def args_parser_init(parser):
     return parser
 
 
-def module_name_parser_init(parser):
-    symbol(parser, TT_COMMA, None)
-    infix(parser, TT_DOT, 10, infix_simple_pair)
-    literal(parser, TT_NAME)
-    return parser
-
-
-def module_name_alias_parser_init(parser):
+def load_parser_init(parser):
     symbol(parser, TT_COMMA, None)
     infix(parser, TT_DOT, 10, infix_simple_pair)
     infix(parser, TT_AS, 20, infix_simple_pair)
     literal(parser, TT_NAME)
+
     return parser
 
 
@@ -116,8 +119,7 @@ def pattern_parser_init(parser):
     return parser
 
 
-def main_parser_init(parser):
-    # *********************************************
+def base_parser_init(parser):
     literal(parser, TT_INT)
     literal(parser, TT_FLOAT)
     literal(parser, TT_CHAR)
@@ -140,17 +142,28 @@ def main_parser_init(parser):
     symbol(parser, TT_END, None)
     symbol(parser, TT_ELSE, None)
     symbol(parser, TT_SEMI, empty)
+    """
+    precedence 10
+    =
+    """
+    infixr(parser, TT_ASSIGN, 10, led_infixr_assign)
+
+    prefix(parser, TT_LPAREN, prefix_lparen)
+    prefix(parser, TT_LSQUARE, prefix_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly)
+    prefix(parser, TT_COLON, prefix_colon)
+
+    return parser
+
+
+def expression_parser_init(parser):
+    # *********************************************
     # symbol(parser, TT_WILDCARD, nud_wildcard)
     # symbol(parser, TT_DOUBLE_DOT, None)
 
     # precedence 5
     # infix(parser, TT_COMMA, 5)
 
-    """
-    precedence 10
-    =
-    """
-    infixr(parser, TT_ASSIGN, 10, led_infixr_assign)
 
     """
     precedence 20
@@ -264,23 +277,17 @@ def main_parser_init(parser):
 
     prefix(parser, TT_BITNOT, prefix_nud)
     prefix(parser, TT_NOT, prefix_nud)
-    prefix(parser, TT_COLON, prefix_colon)
 
     prefix(parser, TT_SUB, prefix_unary_minus)
     prefix(parser, TT_ADD, prefix_unary_plus)
 
     prefix(parser, TT_IF, prefix_if)
 
-    prefix(parser, TT_LPAREN, prefix_lparen)
-
-    prefix(parser, TT_LSQUARE, prefix_lsquare)
-
-    prefix(parser, TT_LCURLY, prefix_lcurly)
-
     prefix(parser, TT_FUNC, prefix_func)
 
     prefix(parser, TT_MATCH, prefix_match)
     prefix(parser, TT_TRY, prefix_try)
+
 
     """
     STATEMENTS
@@ -288,23 +295,22 @@ def main_parser_init(parser):
 
     stmt(parser, TT_RETURN, stmt_single)
     stmt(parser, TT_THROW, stmt_single)
-
     stmt(parser, TT_OUTER, stmt_outer)
-
     stmt(parser, TT_BREAK, stmt_loop_flow)
     stmt(parser, TT_CONTINUE, stmt_loop_flow)
-
     stmt(parser, TT_WHILE, stmt_while)
-
     stmt(parser, TT_FOR, stmt_for)
 
+    return parser
+
+
+def module_parser_init(parser):
     stmt(parser, TT_GENERIC, stmt_generic)
-
     stmt(parser, TT_TRAIT, stmt_trait)
-
     stmt(parser, TT_SPECIFY, stmt_specify)
-
     stmt(parser, TT_LOAD, stmt_load)
+
+    prefix(parser, TT_FUNC, prefix_module_func)
     return parser
 
 
@@ -319,7 +325,7 @@ def parser_from_str(txt):
     lx = lexer.lexer(txt)
     tokens = lx.tokens()
     ts = TokenStream(tokens, txt)
-    parser = Parser(ts)
+    parser = ModuleParser(ts)
     return parser
 
 
@@ -342,20 +348,20 @@ def write_ast(ast):
         f.write(repr)
 
 
-ast = parse_string(
-    """
-    try
-        x = 1
-        x / 0
-    catch e
-        print("Error occured")
-        print(e)
-    finally
-        print("Cleanup")
-        return 23
-    end
-    """
-)
+# ast = parse_string(
+#     """
+#     try
+#         x = 1
+#         x / 0
+#     catch e
+#         print("Error occured")
+#         print(e)
+#     finally
+#         print("Cleanup")
+#         return 23
+#     end
+#     """
+# )
 """
 match (a,b):
     case (true, b):

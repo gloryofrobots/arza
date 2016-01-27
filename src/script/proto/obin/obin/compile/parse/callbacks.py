@@ -424,6 +424,19 @@ def parse_func(parser):
     return name, args, list_node(outers), body
 
 
+# REPEATING MYSELF HERE BECAUSE I DON`T WONT TO HAVE DEF AND FUNC,
+# AND MODULE FUNC IS DIFFERENT FROM EXPRESSION FUNC. IT DIDN'T HAVE ACCESS TO TRAIT GENERIC SPECIFY ...
+
+def prefix_module_func(parser, node):
+    node.init(NT_FUNC, 4)
+    name, args, outers, body = parse_func(parser.expression_parser)
+    node.setfirst(name)
+    node.setsecond(args)
+    node.setthird(outers)
+    node.setfourth(body)
+    return node
+
+
 def prefix_func(parser, node):
     node.init(NT_FUNC, 4)
     name, args, outers, body = parse_func(parser)
@@ -538,33 +551,9 @@ def stmt_for(parser, node):
     return node
 
 
-def stmt_trait(parser, node):
-    node.init(NT_TRAIT, 1)
-    name = expression(parser, 0)
-    if name.type != TT_NAME:
-        parse_error(parser, u"Invalid trait name", parser.node)
-    node.setfirst(name)
-    return node
-
-
-def stmt_generic(parser, node):
-    if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
-        parse_error(parser, u"Invalid generic name", parser.node)
-
-    name = _init_current_node(parser, 0)
-    advance(parser)
-
-    if parser.token_type == TT_CASE or parser.token_type == TT_LPAREN:
-        node.init(NT_GENERIC, 2)
-        funcs = parse_specify_funcs(parser)
-        node.setfirst(name)
-        node.setsecond(funcs)
-    else:
-        node.init(NT_GENERIC, 1)
-        node.setfirst(name)
-
-    return node
-
+###############################################################
+# MODULE STATEMENTS
+###############################################################
 
 def parse_specify_fn(_parser, _signature_parser):
     signature = []
@@ -595,14 +584,14 @@ def parse_specify_funcs(parser):
     generic_signature_parser = parser.generic_signature_parser
     funcs = []
     if parser.token_type == TT_LPAREN:
-        func = parse_specify_fn(parser, generic_signature_parser)
+        func = parse_specify_fn(parser.expression_parser, generic_signature_parser)
         funcs.append(func)
         advance_expected(parser, TT_END)
     else:
         # advance_expected(parser, TT_COLON)
         while parser.token_type == TT_CASE:
             advance_expected(generic_signature_parser, TT_CASE)
-            func = parse_specify_fn(parser, generic_signature_parser)
+            func = parse_specify_fn(parser.expression_parser, generic_signature_parser)
             funcs.append(func)
 
         advance_expected(parser, TT_END)
@@ -629,11 +618,37 @@ def stmt_specify(parser, node):
     return node
 
 
-def stmt_load(parser, node):
-    imported = expression(parser.module_name_alias_parser, 0)
-    node.init(NT_LOAD, 1)
-    node.setfirst(imported)
+def stmt_generic(parser, node):
+    if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
+        parse_error(parser, u"Invalid generic name", parser.node)
+
+    name = _init_current_node(parser, 0)
+    advance(parser)
+
+    if parser.token_type == TT_CASE or parser.token_type == TT_LPAREN:
+        node.init(NT_GENERIC, 2)
+        funcs = parse_specify_funcs(parser)
+        node.setfirst(name)
+        node.setsecond(funcs)
+    else:
+        node.init(NT_GENERIC, 1)
+        node.setfirst(name)
 
     return node
 
 
+def stmt_trait(parser, node):
+    node.init(NT_TRAIT, 1)
+    name = expression(parser, 0)
+    if name.type != TT_NAME:
+        parse_error(parser, u"Invalid trait name", parser.node)
+    node.setfirst(name)
+    return node
+
+
+def stmt_load(parser, node):
+    imported = expression(parser.load_parser, 0)
+    node.init(NT_LOAD, 1)
+    node.setfirst(imported)
+
+    return node
