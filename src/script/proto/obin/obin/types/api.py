@@ -62,7 +62,7 @@ def at(obj, k):
     v = obj._at_(k)
     assert v is not None
     if space.isundefined(v):
-        return error.throw_2(error.Errors.KEY, obj, k)
+        return error.throw_2(error.Errors.KEY, k, obj)
     return v
 
 

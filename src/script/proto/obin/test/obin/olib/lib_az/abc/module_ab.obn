@@ -2,3 +2,9 @@ load lib_az.abc.module_c as c
 
 func f_ab(num) ->
     num + c.f_c(num) end
+
+func f_ab_2(num, num) -> num + num end
+
+CONST = 12345
+
+generic gen_ab(self of Any) -> "gen_ab" end
