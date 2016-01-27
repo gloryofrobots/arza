@@ -618,6 +618,20 @@ def stmt_specify(parser, node):
     return node
 
 
+def stmt_module(parser, node):
+    if parser.token_type != TT_NAME:
+        parse_error(parser, u"Invalid module name", parser.node)
+
+    name = _init_current_node(parser, 0)
+    advance(parser)
+    stmts = statements(parser, [TT_END])
+    advance_expected(parser, TT_END)
+    node.init(NT_MODULE, 2)
+    node.setfirst(name)
+    node.setsecond(stmts)
+    return node
+
+
 def stmt_generic(parser, node):
     if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
         parse_error(parser, u"Invalid generic name", parser.node)

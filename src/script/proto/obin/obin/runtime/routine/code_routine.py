@@ -306,9 +306,11 @@ class CodeRoutine(BaseRoutine):
                 stack.push(_module)
             # *************************************
             elif USE == tag:
-                args = stack.pop()
-                modulesource = stack.pop()
-                _module = module.create_environment(modulesource, args, env)
+                raise NotImplementedError()
+            # *************************************
+            elif MODULE == tag:
+                _module = literals[arg1]
+                module.create_environment(process, _module, env)
                 stack.push(_module)
             # *************************************
             elif TRAIT == tag:

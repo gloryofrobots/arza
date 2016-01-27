@@ -42,6 +42,7 @@ TOKENS = [
   ("TT_NOTA", "nota"),
   ("TT_OUTER", "outer"),
   ("TT_FROM", "from"),
+  ("TT_MODULE", "module"),
   ("TT_IMPORT", "import"),
   ("TT_EXPORT", "export"),
   ("TT_LOAD", "load"),

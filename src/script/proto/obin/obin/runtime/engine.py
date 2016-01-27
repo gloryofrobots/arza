@@ -22,8 +22,10 @@ def initialize(libdirs):
 def evaluate_file(process, filename):
     from obin.builtins.setup_globals import compile_module
 
-    module = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 2),
-                                space.newtuple([space.newstring_from_str(filename), space.newsymbol(process,u"__main__")]))
+    module = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 3),
+                                space.newtuple([space.newstring_from_str(filename),
+                                                space.newsymbol(process, u"__main__"),
+                                                process.modules.prelude.env]))
     if process.is_terminated():
         # error here
         return module

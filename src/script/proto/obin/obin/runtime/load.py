@@ -34,8 +34,8 @@ def load_module(process, name):
 
 def evaluate_module(process, name, filename):
     from obin.builtins.setup_globals import compile_module
-    module = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 2),
-                              space.newtuple([space.newstring_from_str(filename), name]))
+    module = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 3),
+                              space.newtuple([space.newstring_from_str(filename), name, process.modules.prelude.env]))
     return module
     # script = load_file_content(filename)
     # sourcename = space.newsymbol_py_str(process, filename)

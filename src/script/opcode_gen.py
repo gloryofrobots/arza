@@ -15,6 +15,7 @@ OPCODES = [
     ("NEXT", 1),
     ("LOAD", 1),
     ("USE", -1),
+    ("MODULE", 1),
     ("GENERIC", 1),
     ("TRAIT", 1),
     ("ARGUMENTS", 1),

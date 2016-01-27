@@ -1,18 +1,19 @@
-func coroutine(fn) ->
-    (fiber1, fiber2) = spawn_fiber()
+//func coroutine(fn) ->
+//    (fiber1, fiber2) = spawn_fiber()
+//
+//    first_call = false
+//
+//    func(...args) ->
+//        outer first_call
+//        if first_call == false
+//            first_call = true
+//            activate_fiber(fiber2,
+//                    func() ->
+//                        apply(fn, concat((fiber1, ), args)) end)
+//        else
+//            apply(fiber2, args)
+//        end
+//    end
+//end
 
-    first_call = false
-
-    func(...args) ->
-        outer first_call
-        if first_call == false
-            first_call = true
-            activate_fiber(fiber2,
-                    func() ->
-                        apply(fn, concat((fiber1, ), args)) end)
-        else
-            apply(fiber2, args)
-        end
-    end
-end
-
+nil

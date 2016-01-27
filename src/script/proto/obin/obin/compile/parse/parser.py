@@ -309,6 +309,7 @@ def module_parser_init(parser):
     stmt(parser, TT_TRAIT, stmt_trait)
     stmt(parser, TT_SPECIFY, stmt_specify)
     stmt(parser, TT_LOAD, stmt_load)
+    stmt(parser, TT_MODULE, stmt_module)
 
     prefix(parser, TT_FUNC, prefix_module_func)
     return parser
@@ -350,16 +351,21 @@ def write_ast(ast):
 
 # ast = parse_string(
 #     """
-#     try
-#         x = 1
-#         x / 0
-#     catch e
-#         print("Error occured")
-#         print(e)
-#     finally
-#         print("Cleanup")
-#         return 23
+# module boolean
+#     generic op_and
+#         case (t of True, t of True) ->
+#             true
+#         case (a of Any, a of Any) ->
+#             false
 #     end
+#
+# end
+#
+# module inner_boolean
+#     generic tostring(t of True) ->
+#         "IamTrue"
+#     end
+# end
 #     """
 # )
 """

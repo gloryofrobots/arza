@@ -433,6 +433,9 @@ def _compile_ASSIGN_SYMBOL(process, compiler, code, node):
 
 def _emit_store_name(process, compiler, code, namenode):
     name = obs.newsymbol_py_str(process, namenode.value)
+    _emit_store(process, compiler, code, name, namenode)
+
+def _emit_store(process, compiler, code, name, namenode):
     index, is_local = _declare_variable(process, compiler, name)
 
     name_index = _declare_literal(process, compiler, name)
@@ -757,7 +760,6 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params, outer
         length = args.length()
         funccode.emit_0(ARGUMENTS, codeinfo_unknown())
 
-        # TODO REMOVE
         last_param = args[-1]
         is_variadic = True if last_param.node_type == NT_REST else False
         _declare_arguments(process, compiler, length, is_variadic)
@@ -904,6 +906,30 @@ def _compile_LOAD(process, compiler, code, node):
 
     _emit_store_name(process, compiler, code, import_name)
 
+def _compile_MODULE(process, compiler, code, node):
+    name_node = node.first()
+    body = node.second()
+
+    compiled_code = compile_ast(process, compiler, body)
+    # _enter_scope(process, compiler)
+    #
+    # modulecode = newcode(compiler)
+    #
+    # _compile(process, compiler, modulecode, body)
+    # current_scope = _current_scope(process, compiler)
+    # scope = current_scope.finalize()
+    # _exit_scope(process, compiler)
+    # compiled_code = modulecode.finalize_compilation(scope)
+
+    module_name = obs.newsymbol_py_str(process, _get_name_value(name_node))
+    module = obs.newmodule(module_name, compiled_code, None)
+    module_index = _declare_literal(process, compiler, module)
+    code.emit_1(MODULE, module_index, info(node))
+
+    _emit_store(process, compiler, code, module_name, name_node)
+    # module_name_index = _declare_local(process, compiler, module_name)
+    # module_name_literal_index = _declare_literal(process, compiler, module_name)
+    # code.emit_2(STORE_LOCAL, module_name_index, module_name_literal_index, info(name_node))
 
 def _compile_GENERIC(process, compiler, code, node):
     name_node = node.first()
@@ -1167,6 +1193,8 @@ def _compile_node(process, compiler, code, node):
 
     elif NT_LOAD == node_type:
         _compile_LOAD(process, compiler, code, node)
+    elif NT_MODULE == node_type:
+        _compile_MODULE(process, compiler, code, node)
     elif NT_TRAIT == node_type:
         _compile_TRAIT(process, compiler, code, node)
     elif NT_GENERIC == node_type:
@@ -1292,15 +1320,9 @@ def compile_ast(process, compiler, ast):
     _compile(process, compiler, code, ast)
     scope = _current_scope(process, compiler)
     final_scope = scope.finalize()
+    _exit_scope(process, compiler)
     compiled_code = code.finalize_compilation(final_scope)
     return compiled_code
-
-
-def testprogram():
-    with open("program2.obn") as f:
-        data = f.read()
-
-    return data
 
 
 def compile(process, src, sourcename):

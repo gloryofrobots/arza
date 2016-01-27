@@ -41,10 +41,12 @@ def setup(process, module, stdlib):
 def compile_module(process, routine):
     sourcename = routine.get_arg(0)
     modulename = routine.get_arg(1)
+    parent_env = routine.get_arg(2)
     filename = api.to_native_string(sourcename)
     script = fs.load_file_content(filename)
+
     _module = compiler.compile_module(process, modulename, script, sourcename)
-    module.create_environment(process, _module, process.modules.prelude.env)
+    module.create_environment(process, _module, parent_env)
     process.modules.add_module(api.to_native_string(modulename), _module)
     return _module
 

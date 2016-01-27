@@ -2,8 +2,8 @@ from obin.compile.code.opcode import *
 # ************************************************
 
 __OPCODE_REPR__ = ["UNDEFINED", "NULL", "TRUE", "FALSE", "LITERAL", "SYMBOL", "OUTER", "LOCAL", "FUNCTION", "INTEGER",
-                   "DUP", "NEXT", "LOAD", "USE", "GENERIC", "TRAIT", "ARGUMENTS", "LABEL", "STORE_OUTER", "STORE_LOCAL",
-                   "ITERATOR", "RETURN", "POP_CATCH", "CALL_INTERNAL", "CALL", "CALL_METHOD", "JUMP",
+                   "DUP", "NEXT", "LOAD", "USE", "MODULE", "GENERIC", "TRAIT", "ARGUMENTS", "LABEL", "STORE_OUTER",
+                   "STORE_LOCAL", "ITERATOR", "RETURN", "POP_CATCH", "CALL_INTERNAL", "CALL", "CALL_METHOD", "JUMP",
                    "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "PUSH_CATCH",
                    "JUMP_IF_ITERATOR_EMPTY", "MEMBER_DOT", "MEMBER", "POP", "THROW", "STORE_MEMBER", "SLICE",
                    "UNPACK_SEQUENCE", "VECTOR", "TUPLE", "MAP", "LIST", "SPECIFY", ]
@@ -12,7 +12,7 @@ __OPCODE_REPR__ = ["UNDEFINED", "NULL", "TRUE", "FALSE", "LITERAL", "SYMBOL", "O
 
 __UNKNOWN_CHANGE__ = -128
 
-__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                      -1, -1, -1, -1, -1, -2, -3, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
                      __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
 
