@@ -948,13 +948,14 @@ def _compile_GENERIC(process, compiler, code, node):
 
 
 def _compile_TRAIT(process, compiler, code, node):
-    name = node.first()
-    name = obs.newsymbol_py_str(process, name.value)
-    index = _declare_local(process, compiler, name)
+    names = node.first()
+    for name in names:
+        name = obs.newsymbol_py_str(process, name.value)
+        index = _declare_local(process, compiler, name)
 
-    name_index = _declare_literal(process, compiler, name)
-    code.emit_1(TRAIT, name_index, info(node))
-    code.emit_2(STORE_LOCAL, index, name_index, info(node))
+        name_index = _declare_literal(process, compiler, name)
+        code.emit_1(TRAIT, name_index, info(node))
+        code.emit_2(STORE_LOCAL, index, name_index, info(node))
 
 
 def _emit_specify(process, compiler, code, node, methods):

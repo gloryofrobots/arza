@@ -654,9 +654,19 @@ def stmt_generic(parser, node):
 def stmt_trait(parser, node):
     node.init(NT_TRAIT, 1)
     name = expression(parser, 0)
-    if name.type != TT_NAME:
+    if name.node_type == NT_TUPLE:
+        children = name.first()
+        for child in children:
+            if child.type != TT_NAME:
+                parse_error(parser, u"Invalid trait name", child)
+
+        node.setfirst(children)
+
+    elif name.type == TT_NAME:
+        node.setfirst(list_node([name]))
+    else:
         parse_error(parser, u"Invalid trait name", parser.node)
-    node.setfirst(name)
+
     return node
 
 

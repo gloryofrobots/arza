@@ -1,10 +1,23 @@
 load lib_az.abc.module_ab as ab
 load lib_az.efg.module_e as e
-
+trait (A, B, C, D)
+trait G
+trait G1
 module m1
-    func f_1() -> "f_1" end
     module m3
         func f_3() -> "f_3" end
+    end
+
+    func f_1() -> "f_1" end
+
+    generic g_1(self of Integer) ->
+        if self < 10
+            "< 10"
+        elif self == 10
+            "== 10"
+        else
+            "> 10"
+        end
     end
 end
 
@@ -15,8 +28,10 @@ end
 func main() ->
     {gen_ab, f_ab, f_ab_2, CONST=const} = ab
 
+    print(A,B,C,D,G)
     print(gen_ab, f_ab, f_ab_2, const)
     print(m1, m2, m1.m3)
     print(m1.f_1(), m1.m3.f_3(), m2.f_2())
+    print(m1.g_1(12))
 end
 

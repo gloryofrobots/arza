@@ -205,6 +205,9 @@ def _lookup_method(process, gf, args):
     arity = api.n_length(args)
     # print "LOOKUP", gf._name_, args, arity
     if arity == 0:
+        if gf.signatures[0] is None:
+            return error.throw_2(error.Errors.METHOD_INVOKE, gf, args)
+
         sig = gf.signatures[0][0]
         return sig.method
 
