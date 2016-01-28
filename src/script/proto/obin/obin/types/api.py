@@ -239,11 +239,9 @@ def to_routine(obj, stack, args):
 
 
 """
-native funcs
+put helpers
 """
 
-
-# TODO move to object
 
 def put_symbol(process, obj, k, v):
     put(obj, space.newsymbol(process, k), v)

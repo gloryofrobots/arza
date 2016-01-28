@@ -1,5 +1,5 @@
 from rpython.rlib import jit
-from obin.compile.code import *
+from obin.compile.code.opcode import *
 from obin.utils.misc import get_line
 
 

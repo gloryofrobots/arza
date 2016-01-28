@@ -2,40 +2,46 @@ from obin.types import api
 from obin.runtime import error
 from obin.utils.fs import load_file_content, is_file, join_and_normalise_path
 import os
-from obin.types import space
+from obin.types import space, api
 from obin.compile import compiler
 
 
 def import_module(process, name):
     try:
-        return process.modules.get_module(name)
+        return process.modules.get_module(api.to_native_string(name))
     except KeyError:
         return load_module(process, name)
+
+
+def find_module_file(path, dirs):
+    for directory in dirs:
+        filename = join_and_normalise_path(directory, path)
+        if is_file(filename):
+            return filename
+
+    return None
 
 
 def load_module(process, name):
     modules = process.modules
 
     raw = api.to_native_string(name)
-    path = raw.replace(".", os.sep)
-    path = path + ".obn"
-    filename = None
-    for directory in modules.path:
-        filename = join_and_normalise_path(directory, path)
-        if is_file(filename):
-            break
+    path = "%s.obn" % raw.replace(".", os.sep)
+
+    filename = find_module_file(path, modules.path)
 
     if not filename:
         return error.throw_1(error.Errors.IMPORT, name)
 
-    return evaluate_module(process, name, filename)
+    return evaluate_module_file(process, name, filename)
 
 
-
-def evaluate_module(process, name, filename):
+def evaluate_module_file(process, name, filename):
     from obin.builtins.setup_globals import compile_module
     module = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 3),
-                              space.newtuple([space.newstring_from_str(filename), name, process.modules.prelude.env]))
+                                space.newtuple([space.newstring_from_str(filename), name, process.modules.prelude.env]))
+
+    process.modules.add_module(api.to_native_string(name), module)
     return module
     # script = load_file_content(filename)
     # sourcename = space.newsymbol_py_str(process, filename)

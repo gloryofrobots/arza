@@ -56,13 +56,16 @@ class Behaviors:
         self.Map = newbehavior(newlist([traits.Map, traits.Enumerable, traits.Collection, traits.Any]))
 
         self.Function = newbehavior(newlist([traits.Function, traits.Callable, traits.Any]))
-        self.Origin = newbehavior(newlist([traits.Origin, traits.Trait, traits.Function, traits.Callable, traits.Any]))
-        self.Trait = newbehavior(newlist([traits.Trait, traits.Any]))
-        self.Fiber = newbehavior(newlist([traits.Fiber, traits.Callable, traits.Any]))
         self.Generic = newbehavior(newlist([traits.Generic, traits.Callable, traits.Any]))
         self.Primitive = newbehavior(newlist([traits.Primitive, traits.Callable, traits.Any]))
 
-        self.Environment = newbehavior(newlist([traits.Collection, traits.Any]))
+        self.Trait = newbehavior(newlist([traits.Trait, traits.Any]))
+        self.Fiber = newbehavior(newlist([traits.Fiber, traits.Callable, traits.Any]))
+        self.TVar = newbehavior(newlist([traits.TVar, traits.Any]))
+
+
+        self.Environment = newbehavior(newlist([traits.Environment, traits.Collection, traits.Any]))
+        self.Module = newbehavior(newlist([traits.Module, traits.Collection, traits.Any]))
         self.Behavior = newbehavior(newlist([traits.Behavior, traits.Any]))
 
 
@@ -89,11 +92,12 @@ class Traits:
         self.Map = newtrait(symbols.symbol(u"Map"))
         self.Callable = newtrait(symbols.symbol(u"Callable"))
         self.Function = newtrait(symbols.symbol(u"Function"))
-        self.Origin = newtrait(symbols.symbol(u"Origin"))
         self.Fiber = newtrait(symbols.symbol(u"Fiber"))
         self.Generic = newtrait(symbols.symbol(u"Generic"))
         self.Primitive = newtrait(symbols.symbol(u"Primitive"))
         self.Module = newtrait(symbols.symbol(u"Module"))
+        self.Environment = newtrait(symbols.symbol(u"Environment"))
+        self.TVar = newtrait(symbols.symbol(u"TVar"))
         self.Behavior = newtrait(symbols.symbol(u"Behavior"))
         self.Trait = newtrait(symbols.symbol(u"Trait"))
 

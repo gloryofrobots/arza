@@ -1,5 +1,7 @@
+load tvar
 load lib_az.abc.module_ab as ab
 load lib_az.efg.module_e as e
+
 trait (A, B, C, D)
 trait G
 trait G1
@@ -26,6 +28,8 @@ module m2
 end
 
 func main() ->
+    v1 = tvar.create(:IAmTVar)
+    print(v1)
     {gen_ab, f_ab, f_ab_2, CONST=const} = ab
 
     print(A,B,C,D,G)

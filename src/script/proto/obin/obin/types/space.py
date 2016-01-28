@@ -136,6 +136,11 @@ def newpmap(args):
     return pmap(args)
 
 
+def newtvar(value):
+    from obin.types.tvar import W_TVar
+    return W_TVar(value)
+
+
 def newvector(items):
     assert isinstance(items, list)
     from obin.types.vector import W_Vector
@@ -208,6 +213,11 @@ def ismap(value):
     return isinstance(value, W_Map)
 
 
+def istvar(value):
+    from obin.types.tvar import W_TVar
+    return isinstance(value, W_TVar)
+
+
 def isvaluetype(value):
     from obin.types.root import W_ValueType
     return isinstance(value, W_ValueType)
@@ -258,9 +268,11 @@ def ismodule(w):
     from obin.types.module import W_Module
     return isinstance(w, W_Module)
 
+
 def isenv(w):
     from obin.types.environment import W_Env
     return isinstance(w, W_Env)
+
 
 def isboolean(value):
     return value is w_False or value is w_True

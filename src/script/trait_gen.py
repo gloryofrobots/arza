@@ -23,12 +23,13 @@ TRAITS = [
 
         "Callable", 
         "Function", 
-        "Origin", 
         "Fiber", 
         "Generic", 
         "Primitive", 
 
         "Environment", 
+        "TVar",
+        "Module", 
         "Behavior", 
         "Trait",
         ]

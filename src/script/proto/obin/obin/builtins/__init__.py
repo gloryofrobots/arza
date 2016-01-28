@@ -25,6 +25,8 @@ def setup_builtins(process, module):
     import obin.builtins.setup_globals
     obin.builtins.setup_globals.setup(process, module, stdlib)
 
+    import obin.builtins.setup_tvar
+    obin.builtins.setup_tvar.setup(process, module, stdlib)
     # import obin.builtins.object_builitns
     # obin.builtins.object_builitns.setup(object_space.traits.Object)
 

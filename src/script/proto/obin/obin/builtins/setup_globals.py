@@ -47,7 +47,6 @@ def compile_module(process, routine):
 
     _module = compiler.compile_module(process, modulename, script, sourcename)
     module.create_environment(process, _module, parent_env)
-    process.modules.add_module(api.to_native_string(modulename), _module)
     return _module
 
 @complete_native_routine

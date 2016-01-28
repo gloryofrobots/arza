@@ -9,6 +9,7 @@ class W_Symbol(W_Any):
     def __init__(self, string, idx):
         self.idx = idx
         self.string = string
+        self.repr = ":%s" % api.to_native_string(self.string)
 
     def __eq__(self, other):
         return self._equal_(other)

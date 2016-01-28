@@ -45,7 +45,6 @@ class W_Function(W_Callable):
     def _call_(self, process, args):
         process.call_object(self, args)
 
-
     def _equal_(self, other):
         from obin.types import space
         if not space.isfunction(other):

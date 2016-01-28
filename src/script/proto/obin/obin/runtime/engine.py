@@ -4,7 +4,7 @@ from obin.utils import fs
 from obin.builtins import setup_builtins
 from obin.runtime.process import Process
 from obin.runtime import process_data
-from obin.runtime.load import import_module
+from obin.runtime.load import import_module, evaluate_module_file
 
 
 def initialize(libdirs):
@@ -20,18 +20,14 @@ def initialize(libdirs):
 
 
 def evaluate_file(process, filename):
-    from obin.builtins.setup_globals import compile_module
+    module_or_error = evaluate_module_file(process, space.newsymbol(process, u"__main__"), filename)
 
-    module = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 3),
-                                space.newtuple([space.newstring_from_str(filename),
-                                                space.newsymbol(process, u"__main__"),
-                                                process.modules.prelude.env]))
     if process.is_terminated():
         # error here
-        return module
+        return module_or_error
 
-    main = api.at(module, space.newsymbol(process, u"main"))
-    result = process.run(main, space.newtuple([]))
+    main = api.at(module_or_error, space.newsymbol(process, u"main"))
+    result = process.subprocess(main, space.newtuple([]))
 
     if process.is_terminated():
         # error here

@@ -7,7 +7,7 @@ from obin.types import space as obs
 from obin.types import api
 from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
-from obin.compile.code import *
+from obin.compile.code.opcode import *
 from obin.utils.misc import is_absent_index
 from obin.runtime import error
 
@@ -435,14 +435,12 @@ def _emit_store_name(process, compiler, code, namenode):
     name = obs.newsymbol_py_str(process, namenode.value)
     _emit_store(process, compiler, code, name, namenode)
 
+
 def _emit_store(process, compiler, code, name, namenode):
-    index, is_local = _declare_variable(process, compiler, name)
+    index = _declare_local(process, compiler, name)
 
     name_index = _declare_literal(process, compiler, name)
-    if is_local:
-        code.emit_2(STORE_LOCAL, index, name_index, info(namenode))
-    else:
-        code.emit_2(STORE_OUTER, index, name_index, info(namenode))
+    code.emit_2(STORE_LOCAL, index, name_index, info(namenode))
 
 
 #########################################################
@@ -906,6 +904,7 @@ def _compile_LOAD(process, compiler, code, node):
 
     _emit_store_name(process, compiler, code, import_name)
 
+
 def _compile_MODULE(process, compiler, code, node):
     name_node = node.first()
     body = node.second()
@@ -930,6 +929,7 @@ def _compile_MODULE(process, compiler, code, node):
     # module_name_index = _declare_local(process, compiler, module_name)
     # module_name_literal_index = _declare_literal(process, compiler, module_name)
     # code.emit_2(STORE_LOCAL, module_name_index, module_name_literal_index, info(name_node))
+
 
 def _compile_GENERIC(process, compiler, code, node):
     name_node = node.first()
@@ -1347,7 +1347,7 @@ def compile_function_source(process, src, name):
 
 
 def print_code(code):
-    from code.utils import opcode_to_str
+    from code.opcode import opcode_to_str
     print "\n".join([str((opcode_to_str(c[0]), str(c[1:]))) for c in code.opcodes])
 
 # CODE = compile(None, PATTERN_DATA)

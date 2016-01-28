@@ -22,11 +22,13 @@ def setup(process, module, stdlib):
     api.put(module, traits.Map.name, traits.Map)
     api.put(module, traits.Callable.name, traits.Callable)
     api.put(module, traits.Function.name, traits.Function)
-    api.put(module, traits.Origin.name, traits.Origin)
     api.put(module, traits.Fiber.name, traits.Fiber)
     api.put(module, traits.Generic.name, traits.Generic)
     api.put(module, traits.Primitive.name, traits.Primitive)
+    api.put(module, traits.Environment.name, traits.Environment)
+    api.put(module, traits.TVar.name, traits.TVar)
     api.put(module, traits.Module.name, traits.Module)
     api.put(module, traits.Behavior.name, traits.Behavior)
     api.put(module, traits.Trait.name, traits.Trait)
+
 

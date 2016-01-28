@@ -21,7 +21,6 @@ OPCODES = [
     ("ARGUMENTS", 1),
 
     ("LABEL", 0),
-    ("STORE_OUTER", 0),
     ("STORE_LOCAL", 0),
     ("ITERATOR", 0),
     ("RETURN", 0),
