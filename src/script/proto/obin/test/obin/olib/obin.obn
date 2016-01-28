@@ -1,4 +1,4 @@
-import tvar
+load tvar
 
 func coroutine(fn) ->
     (fiber1, fiber2) = spawn_fiber()
@@ -6,8 +6,7 @@ func coroutine(fn) ->
     first_call = tvar.create(false)
 
     func(...args) ->
-        state = tvar.read(first_call)
-        if state is false
+        if tvar.read(first_call) is false
             tvar.swap(first_call, true)
             activate_fiber(fiber2,
                     func() ->
@@ -18,4 +17,3 @@ func coroutine(fn) ->
     end
 end
 
-nil

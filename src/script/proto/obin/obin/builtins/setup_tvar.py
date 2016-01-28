@@ -28,4 +28,4 @@ def tvar_swap(process, routine):
     var = routine.get_arg(0)
     value = routine.get_arg(1)
     tvar.swap(var, value)
-    return tvar
+    return var

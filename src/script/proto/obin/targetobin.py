@@ -33,7 +33,10 @@ def run(script_file):
     script_dir = fs.get_dirname(script_file)
     path = fs.join_and_normalise_path(script_dir, "olib")
 
-    process = engine.initialize([path])
+    process, error = engine.initialize([path])
+    if error is not None:
+        print "Initialization error"
+        return error
     return engine.evaluate_file(process, script_file)
 
 # _____ Define and setup target ___

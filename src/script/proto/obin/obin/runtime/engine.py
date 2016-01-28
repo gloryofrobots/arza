@@ -14,9 +14,12 @@ def initialize(libdirs):
     setup_builtins(process, core_prelude)
 
     prelude = import_module(process, space.newsymbol(process, u"obin"))
+    if process.is_terminated():
+        # error here
+        return process, prelude
     process.modules.set_prelude(prelude)
 
-    return process
+    return process, None
 
 
 def evaluate_file(process, filename):

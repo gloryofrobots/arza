@@ -37,5 +37,30 @@ func main() ->
     print(m1, m2, m1.m3)
     print(m1.f_1(), m1.m3.f_3(), m2.f_2())
     print(m1.g_1(12))
+    co = coroutine(
+            func(yield, x) ->
+                   Z = "1111"
+                   _co1 = coroutine(
+                        func(yield2, y) ->
+                           Y = "2222"
+                           func send() ->
+                                X = "3333"
+                                yield2(42 + y)
+                           end
+                           send()
+                        end)
+
+                print("x", x)
+                v = _co1(x)
+                t = yield(v)
+                print("t", t)
+                x = yield(t)
+                print("x", x)
+                return x
+            end)
+
+    print(co(23))
+    print(co(34))
+    print(co(44))
 end
 
