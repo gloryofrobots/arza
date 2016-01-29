@@ -1,13 +1,13 @@
 __author__ = 'gloryofrobots'
-from obin.compile.parse.node import (is_empty_node, is_list_node, is_iterable_node,
-                                     create_tuple_node, is_wildcard_node)
-from obin.compile.parse.parser import *
+from obin.compile.code.opcode import *
+from obin.compile.parse import parser
+from obin.compile.parse import nodes
+from obin.compile.parse.node_type import *
 from obin.compile.scope import Scope
 from obin.types import space as obs
 from obin.types import api
 from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
-from obin.compile.code.opcode import *
 from obin.utils.misc import is_absent_index
 from obin.runtime import error
 
@@ -44,9 +44,9 @@ class Compiler:
 
 
 def info(node):
-    if is_empty_node(node):
+    if nodes.is_empty_node(node):
         return codeinfo_unknown()
-    return codeinfo(node.position, node.line, node.column)
+    return codeinfo(nodes.node_position(node), nodes.node_line(node), nodes.node_column(node))
 
 
 ########################
@@ -175,13 +175,13 @@ def _current_scope(process, compiler):
 
 
 def _compile_FLOAT(process, compiler, code, node):
-    value = float(node.value)
+    value = float(nodes.node_value(node))
     idx = _declare_literal(process, compiler, obs.newfloat(value))
     code.emit_1(LITERAL, idx, info(node))
 
 
 def _compile_INT(process, compiler, code, node):
-    value = int(node.value)
+    value = int(nodes.node_value(node))
     idx = _declare_literal(process, compiler, obs.newint(value))
     code.emit_1(LITERAL, idx, info(node))
 
@@ -207,7 +207,7 @@ def _get_name_value(name):
     if name.node_type == NT_SPECIAL_NAME:
         value = _get_special_name_value(name)
     elif name.node_type == NT_NAME:
-        value = name.value
+        value = nodes.node_value(name)
     else:
         assert False, "Invalid call"
     return value
@@ -236,7 +236,7 @@ def _compile_STR(process, compiler, code, node):
     from obin.runistr import unicode_unescape, decode_str_utf8
 
     try:
-        strval = str(node.value)
+        strval = str(nodes.node_value(node))
         strval = decode_str_utf8(strval)
         strval = string_unquote(strval)
         strval = unicode_unescape(strval)
@@ -252,7 +252,7 @@ def _compile_CHAR(process, compiler, code, node):
     # TODO CHAR
 
     try:
-        strval = str(node.value)
+        strval = str(nodes.node_value(node))
         strval = decode_str_utf8(strval)
         strval = string_unquote(strval)
         strval = unicode_unescape(strval)
@@ -428,7 +428,7 @@ def _compile_ASSIGN_SYMBOL(process, compiler, code, node):
 
 
 def _emit_store_name(process, compiler, code, namenode):
-    name = obs.newsymbol_py_str(process, namenode.value)
+    name = obs.newsymbol_py_str(process, nodes.node_value(namenode))
     _emit_store(process, compiler, code, name, namenode)
 
 
@@ -451,7 +451,7 @@ PATTERN_DATA = """
 
 def _compile_MATCH(process, compiler, code, node):
     from obin.compile.match import transform
-    from obin.compile.parse.node import create_goto_node
+    from obin.compile.parse.nodes import create_goto_node
     from obin.compile import MATCH_SYS_VAR
     exp = node.first()
     patterns = node.second()
@@ -480,7 +480,7 @@ def _compile_GOTO(process, compiler, code, node):
     if last_code[0] == POP:
         code.remove_last()
 
-    value = int(node.value)
+    value = int(nodes.node_value(node))
     code.emit_1(JUMP, value, codeinfo_unknown())
 
 
@@ -524,7 +524,7 @@ def _compile_destruct_recur_map(process, compiler, code, node):
         key = pair[0]
         value = pair[1]
         varname = None
-        if is_empty_node(value):
+        if nodes.is_empty_node(value):
             varname = key
         elif value.node_type == NT_NAME:
             varname = value
@@ -633,7 +633,7 @@ def _compile_node_name_lookup(process, compiler, code, node):
 
 def _get_special_name_value(node):
     # REMOVE BACKTICKS `xxx`
-    return node.value[1:len(node.value) - 1]
+    return nodes.node_value(node)[1:len(nodes.node_value(node)) - 1]
 
 
 def _compile_SPECIAL_NAME(process, compiler, code, node):
@@ -651,7 +651,7 @@ def _compile_SYMBOL(process, compiler, code, node):
 
 def _compile_RETURN(process, compiler, code, node):
     expr = node.first()
-    if is_empty_node(expr):
+    if nodes.is_empty_node(expr):
         _emit_nil(code)
     else:
         _compile(process, compiler, code, expr)
@@ -661,7 +661,7 @@ def _compile_RETURN(process, compiler, code, node):
 
 def _compile_THROW(process, compiler, code, node):
     expr = node.first()
-    if is_empty_node(expr):
+    if nodes.is_empty_node(expr):
         _emit_nil(code)
     else:
         _compile(process, compiler, code, expr)
@@ -695,7 +695,7 @@ def _compile_MAP(process, compiler, code, node):
     for c in items:
         key = c[0]
         value = c[1]
-        if is_empty_node(value):
+        if nodes.is_empty_node(value):
             _compile_NIL(process, compiler, code, value)
         else:
             _compile(process, compiler, code, value)
@@ -747,7 +747,7 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params, outer
 
     funccode = newcode(compiler)
 
-    if is_empty_node(params):
+    if nodes.is_empty_node(params):
         _declare_arguments(process, compiler, 0, False)
     else:
         args = params.first()
@@ -759,7 +759,7 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params, outer
         _declare_arguments(process, compiler, length, is_variadic)
         _compile_destruct_recur(process, compiler, funccode, params)
 
-    if is_iterable_node(outers):
+    if nodes.is_iterable_node(outers):
         for outer in outers:
             _declare_outer(process, compiler, code, outer)
 
@@ -783,8 +783,8 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params, outer
 
 def _compile_FUNC(process, compiler, code, node):
     name = node.first()
-    if not is_empty_node(name):
-        funcname = obs.newsymbol_py_str(process, name.value)
+    if not nodes.is_empty_node(name):
+        funcname = obs.newsymbol_py_str(process, nodes.node_value(name))
     else:
         funcname = obs.newsymbol_py_str(process, "")
 
@@ -831,7 +831,7 @@ def _compile_IF(process, compiler, code, node):
         _compile_branch(process, compiler, code, branch[0], branch[1], endif)
 
     elsebranch = branches[-1]
-    if is_empty_node(elsebranch):
+    if nodes.is_empty_node(elsebranch):
         _emit_nil(code)
     else:
         _compile(process, compiler, code, elsebranch[1])
@@ -845,7 +845,7 @@ def _compile_TRY(process, compiler, code, node):
     catchvar = catch[0]
     catchnode = catch[1]
     finallynode = node.third()
-    if not is_empty_node(finallynode):
+    if not nodes.is_empty_node(finallynode):
         finallylabel = code.prealocate_label()
     else:
         finallylabel = None
@@ -858,7 +858,7 @@ def _compile_TRY(process, compiler, code, node):
         code.emit_1(JUMP, finallylabel, codeinfo_unknown())
 
     code.emit_1(LABEL, catchlabel, codeinfo_unknown())
-    if not is_empty_node(catchvar):
+    if not nodes.is_empty_node(catchvar):
         _emit_store_name(process, compiler, code, catchvar)
     else:
         _emit_pop(code)
@@ -877,9 +877,9 @@ def _compile_TRY(process, compiler, code, node):
 
 def _dot_to_string(process, compiler, node):
     if node.node_type == NT_LOOKUP_SYMBOL:
-        return _dot_to_string(process, compiler, node.first()) + '.' + node.second().value
+        return _dot_to_string(process, compiler, node.first()) + '.' + nodes.node_value(node.second())
     else:
-        return node.value
+        return nodes.node_value(node)
 
 
 def _compile_LOAD(process, compiler, code, node):
@@ -893,7 +893,7 @@ def _compile_LOAD(process, compiler, code, node):
     else:
         assert exp.node_type == NT_NAME
         import_name = exp
-        module_path = exp.value
+        module_path = nodes.node_value(exp)
 
     module_path_literal = _declare_literal(process, compiler, obs.newsymbol_py_str(process, module_path))
     code.emit_1(LOAD, module_path_literal, info(node))
@@ -946,7 +946,7 @@ def _compile_GENERIC(process, compiler, code, node):
 def _compile_TRAIT(process, compiler, code, node):
     names = node.first()
     for name in names:
-        name = obs.newsymbol_py_str(process, name.value)
+        name = obs.newsymbol_py_str(process, nodes.node_value(name))
         index = _declare_local(process, compiler, name)
 
         name_index = _declare_literal(process, compiler, name)
@@ -977,8 +977,8 @@ def _emit_specify(process, compiler, code, node, methods):
         code.emit_1(TUPLE, len(signature), info(node))
 
         method_name = obs.newsymbol(process, u"")
-        args_node = create_tuple_node(node, args)
-        _compile_func_args_and_body(process, compiler, code, method_name, args_node, empty_node(),
+        args_node = nodes.create_tuple_node(node, args)
+        _compile_func_args_and_body(process, compiler, code, method_name, args_node, nodes.empty_node(),
                                     method_body,
                                     FUNCTION, info(node))
         code.emit_1(TUPLE, 2, info(node))
@@ -1011,7 +1011,7 @@ def _compile_FOR(process, compiler, code, node):
     code.emit_0(NEXT, codeinfo_unknown())
 
     vars = node.first()
-    name = obs.newsymbol_py_str(process, vars[0].value)
+    name = obs.newsymbol_py_str(process, nodes.node_value(vars[0]))
     index = _declare_local(process, compiler, name)
 
     name_index = _declare_literal(process, compiler, name)
@@ -1058,12 +1058,12 @@ def _emit_SLICE(process, compiler, code, obj, slice):
 
     _compile(process, compiler, code, obj)
 
-    if is_wildcard_node(start):
+    if nodes.is_wildcard_node(start):
         _emit_nil(code)
     else:
         _compile(process, compiler, code, start)
 
-    if is_wildcard_node(end):
+    if nodes.is_wildcard_node(end):
         _emit_nil(code)
     else:
         _compile(process, compiler, code, end)
@@ -1128,7 +1128,7 @@ def _compile_CALL(process, compiler, code, node):
 
 
 def _compile(process, compiler, code, ast):
-    if is_list_node(ast):
+    if nodes.is_list_node(ast):
         _compile_nodes(process, compiler, code, ast)
     else:
         _compile_node(process, compiler, code, ast)
@@ -1148,7 +1148,7 @@ def _compile_nodes(process, compiler, code, ast):
 
 
 def _compile_node(process, compiler, code, node):
-    from obin.compile.parse.node import BaseNode
+    from obin.compile.parse.nodes import BaseNode
     node_type = node.node_type
 
     assert node_type is not None
@@ -1321,7 +1321,7 @@ def compile_ast(process, compiler, ast):
 
 
 def compile(process, src, sourcename):
-    ast = parse_string(src)
+    ast = parser.parse_string(src)
     # print ast
     compiler = Compiler(sourcename, src)
     code = compile_ast(process, compiler, ast)

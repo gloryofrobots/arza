@@ -1,4 +1,4 @@
-from obin.compile.parse.tokens import token_type_to_str
+from obin.compile.parse import tokens
 from obin.compile.parse import token_type as tt
 from obin.compile.parse import node_type as nt
 from obin.types.root import W_Any
@@ -22,12 +22,8 @@ class EmptyNode(BaseNode):
 
 
 class Node(BaseNode):
-    def __init__(self, _type, value, position, line, column):
-        self.type = _type
-        self.value = value
-        self.position = position
-        self.line = line
-        self.column = column
+    def __init__(self, token):
+        self.token = token
         self.children = None
         self.arity = 0
         self.node_type = None
@@ -79,10 +75,10 @@ class Node(BaseNode):
         return [child.to_json_value() for child in self.children]
 
     def to_json_value(self):
-        d = {"_type": token_type_to_str(self.type),
+        d = {"_type": tokens.token_type_to_str(node_token_type(self)),
              "_ntype": nt.node_type_to_str(self.node_type) if self.node_type is not None else "",
-             "_value": self.value,
-             "_line": self.line
+             "_value": node_value(self),
+             "_line": node_line(self)
              # "arity": self.arity, "pos": self.position
              }
 
@@ -106,19 +102,39 @@ class Node(BaseNode):
     def __eq__(self, other):
         if not isinstance(other, Node):
             return False
-        if self.type != other.type:
+        if node_token_type(self) != node_token_type(other):
             return False
         if self.arity != other.arity:
             return False
 
         if self.arity == 0:
-            return self.value == other.value
+            return node_value(self) == node_value(other)
 
         for item1, item2 in zip(self.children, other.children):
             res = item1 == item2
             if not res:
                 return False
         return True
+
+
+def node_token_type(node):
+    return node.token.type
+
+
+def node_value(node):
+    return node.token.value
+
+
+def node_position(node):
+    return node.token.position
+
+
+def node_line(node):
+    return node.token.line
+
+
+def node_column(node):
+    return node.token.column
 
 
 class NodeList(BaseNode):
@@ -202,16 +218,18 @@ def list_node(items):
 def is_list_node(node):
     return isinstance(node, NodeList)
 
+def create_token_from_node(type, value, node):
+    return tokens.Token(type, value, node_position(node), node_line(node), node_column(node))
 
 def create_tuple_node(basenode, elements):
-    node = Node(tt.TT_LPAREN, "(", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_LPAREN, "(", basenode))
     node.init(nt.NT_TUPLE, 1)
     node.setfirst(list_node(elements))
     return node
 
 
 def create_call_node(basenode, func, exp):
-    node = Node(tt.TT_LPAREN, "(", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_LPAREN, "(", basenode))
     node.init(nt.NT_CALL, 2)
     node.setfirst(func)
     node.setsecond(list_node([exp]))
@@ -219,14 +237,14 @@ def create_call_node(basenode, func, exp):
 
 
 def create_if_node(basenode, branches):
-    node = Node(tt.TT_IF, "(", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_IF, "if", basenode))
     node.init(nt.NT_IF, 1)
     node.setfirst(list_node(branches))
     return node
 
 
 def create_eq_node(basenode, left, right):
-    node = Node(tt.TT_EQ, "==", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_EQ, "==", basenode))
     node.init(nt.NT_EQ, 2)
     node.setfirst(left)
     node.setsecond(right)
@@ -234,19 +252,21 @@ def create_eq_node(basenode, left, right):
 
 
 def create_empty_list_node(basenode):
-    node = Node(tt.TT_LSQUARE, "[", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_LSQUARE, "[", basenode))
     node.init(nt.NT_LIST, 1)
     node.setfirst(list_node([]))
     return node
 
+
 def create_empty_map_node(basenode):
-    node = Node(tt.TT_LCURLY, "{", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_LCURLY, "{", basenode))
     node.init(nt.NT_MAP, 1)
     node.setfirst(list_node([]))
     return node
 
+
 def create_isnot_node(basenode, left, right):
-    node = Node(tt.TT_ISNOT, "isnot", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_ISNOT, "isnot", basenode))
     node.init(nt.NT_ISNOT, 2)
     node.setfirst(left)
     node.setsecond(right)
@@ -254,21 +274,23 @@ def create_isnot_node(basenode, left, right):
 
 
 def create_is_node(basenode, left, right):
-    node = Node(tt.TT_IS, "is", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_IS, "is", basenode))
     node.init(nt.NT_IS, 2)
     node.setfirst(left)
     node.setsecond(right)
     return node
 
+
 def create_in_node(basenode, left, right):
-    node = Node(tt.TT_IN, "in", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_IN, "in", basenode))
     node.init(nt.NT_IN, 2)
     node.setfirst(left)
     node.setsecond(right)
     return node
 
+
 def create_and_node(basenode, left, right):
-    node = Node(tt.TT_AND, "and", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_AND, "and", basenode))
     node.init(nt.NT_AND, 2)
     node.setfirst(left)
     node.setsecond(right)
@@ -276,7 +298,7 @@ def create_and_node(basenode, left, right):
 
 
 def create_assign_node(basenode, var, exp):
-    node = Node(tt.TT_ASSIGN, "=", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_ASSIGN, "=", basenode))
     node.init(nt.NT_ASSIGN, 2)
     node.setfirst(var)
     node.setsecond(exp)
@@ -284,23 +306,25 @@ def create_assign_node(basenode, var, exp):
 
 
 def create_name_node(basenode, name):
-    node = Node(tt.TT_NAME, name, basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_NAME, name, basenode))
     node.init(nt.NT_NAME, 0)
     return node
 
+
 def create_str_node(basenode, strval):
-    node = Node(tt.TT_STR, strval, basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_STR, strval, basenode))
     node.init(nt.NT_STR, 0)
     return node
 
-def create_int_node(basenode, strval):
-    node = Node(tt.TT_INT, strval, basenode.position, basenode.line, basenode.column)
+
+def create_int_node(basenode, val):
+    node = Node(create_token_from_node(tt.TT_INT, str(val), basenode))
     node.init(nt.NT_INT, 0)
     return node
 
 
 def create_lookup_node(basenode, left, right):
-    node = Node(tt.TT_LSQUARE, "[", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_LSQUARE, "[", basenode))
     node.init(nt.NT_LOOKUP, 2)
     node.setfirst(left)
     node.setsecond(right)
@@ -308,19 +332,19 @@ def create_lookup_node(basenode, left, right):
 
 
 def create_true_node(basenode):
-    node = Node(tt.TT_TRUE, "true", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_TRUE, "true", basenode))
     node.init(nt.NT_TRUE, 0)
     return node
 
 
 def create_nil_node(basenode):
-    node = Node(tt.TT_NIL, "nil", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_NIL, "nil", basenode))
     node.init(nt.NT_NIL, 0)
     return node
 
 
 def create_slice_til_the_end(basenode):
-    node = Node(tt.TT_DOUBLE_COLON, "..", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_DOUBLE_COLON, "..", basenode))
     node.init(nt.NT_RANGE, 2)
     first = create_int_node(basenode, "1")
     second = create_wildcard_node(basenode)
@@ -330,19 +354,19 @@ def create_slice_til_the_end(basenode):
 
 
 def create_goto_node(label):
-    node = Node(tt.TT_GOTO, label, -1, -1, -1)
+    node = Node(tokens.Token(tt.TT_GOTO, str(label), -1, -1, -1))
     node.init(nt.NT_GOTO, 0)
     return node
 
 
 def create_wildcard_node(basenode):
-    node = Node(tt.TT_WILDCARD, "_", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_WILDCARD, "_", basenode))
     node.init(nt.NT_WILDCARD, 0)
     return node
 
 
 def create_try_statement_node(basenode, exp, success, fail):
-    node = Node(tt.TT_TRY, "try", basenode.position, basenode.line, basenode.column)
+    node = Node(create_token_from_node(tt.TT_TRY, "try", basenode))
     node.init(nt.NT_TRY, 3)
     node.setfirst(list_node([exp, success]))
     node.setsecond(list_node([empty_node(), list_node([fail])]))

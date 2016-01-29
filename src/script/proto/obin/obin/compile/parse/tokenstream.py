@@ -1,5 +1,5 @@
 from obin.compile.parse.token_type import TT_NEWLINE
-from obin.compile.parse.node import Node
+from obin.compile.parse.nodes import Node
 
 
 
@@ -26,5 +26,5 @@ class TokenStream:
 
         # print token
         self.token = token
-        self.node = Node(self.token.type, self.token.val, self.token.pos, self.token.line, self.token.column)
+        self.node = Node(self.token)
         return self.node

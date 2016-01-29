@@ -165,3 +165,29 @@ RULES = [
 ]
 
 
+class Token:
+    def __init__(self, type, val, pos, line, column):
+        assert isinstance(type, int)
+        assert isinstance(val, str)
+        assert isinstance(pos, int)
+        assert isinstance(line, int)
+        self.type = type
+        self.value = val
+        self.position = pos
+        self.line = line
+        self.column = column
+
+    def __str__(self):
+        try:
+            t_repr = token_type_to_str(self.type)
+        except:
+            t_repr = self.type
+
+        if self.type == TT_NEWLINE:
+            val = '\\n'
+        else:
+            val = self.value
+
+        return '<%s %s %d:%d>' % (t_repr, val, self.line, self.position)
+
+

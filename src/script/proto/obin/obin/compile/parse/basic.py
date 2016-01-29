@@ -1,5 +1,5 @@
 from obin.compile.parse.token_type import *
-from obin.compile.parse.node import list_node, empty_node
+from obin.compile.parse import nodes
 from obin.compile.parse.tokens import token_type_to_str
 from obin.types import space, api
 from obin.runtime import error
@@ -17,11 +17,12 @@ def parser_error_unknown(parser, position):
 
 
 def parse_error(parser, message, node):
-    line = get_line(parser.ts.src, node.line)
+    line = get_line(parser.ts.src, nodes.node_line(node))
     return error.throw(error.Errors.PARSE,
                        space.newtuple([
-                           space.newtuple([space.newint(node.position), space.newint(node.line),
-                                           space.newint(node.column)]),
+                           space.newtuple([space.newint(nodes.node_position(node)),
+                                           space.newint(nodes.node_line(node)),
+                                           space.newint(nodes.node_column(node))]),
                            space.newstring(api.to_native_unicode(node)),
                            space.newstring(message),
                            space.newstring(line)
@@ -44,7 +45,7 @@ def set_handler(parser, ttype, h):
 
 
 def node_handler(parser, node):
-    return handler(parser, node.type)
+    return handler(parser, nodes.node_token_type(node))
 
 
 def handler(parser, ttype):
@@ -240,12 +241,12 @@ def statements(parser, endlist=None):
 
     length = len(stmts)
     if length == 0:
-        return empty_node()
+        return nodes.empty_node()
     # TODO REMOVE IT
     elif length == 1:
         return stmts[0]
 
-    return list_node(stmts)
+    return nodes.list_node(stmts)
 
 
 def infix(parser, ttype, lbp, led):
@@ -285,7 +286,7 @@ def empty(parser, node):
 
 
 def is_assignment_node(node):
-    token_type = node.type
+    token_type = nodes.node_token_type(node)
     assert isinstance(token_type, int)
     if token_type == TT_ASSIGN:
         return True

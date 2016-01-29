@@ -6,7 +6,7 @@ from obin.runtime.process import Process
 from obin.runtime import process_data
 from obin.runtime.load import import_module, evaluate_module_file
 
-
+# TODO MOVE ALL OF IT TO PROCESS
 def initialize(libdirs):
     core_prelude = space.newmodule(None, None, space.newenv(space.newmap(), None))
     proc_data = process_data.create(libdirs, core_prelude)
