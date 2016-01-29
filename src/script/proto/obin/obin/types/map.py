@@ -1,4 +1,4 @@
-from obin.types import api
+from obin.types import api, space
 from obin.types.root import W_Any
 from obin.utils.misc import is_absent_index, absent_index
 from obin.runtime import error
@@ -13,23 +13,21 @@ class Bindings:
     PERTURB_SHIFT = 5
 
     def __init__(self):
-        from obin.types.space import newundefined
         self._minsize = Bindings.MINSIZE
         self._perturb_shift = Bindings.PERTURB_SHIFT
         self._backing = None
         self._used = 0
         self._deleted = 0
-        self.empty_pair = (newundefined(), absent_index())
+        self.empty_pair = (space.newnil(), absent_index())
 
         self._build(self._minsize)
 
     def _lookup(self, key):
-        from obin.types.space import isundefined
         backing = self._backing
         for i in self._indices(key, len(backing)):
             kv_pair = backing[i]
             _key = kv_pair[0]
-            if isundefined(_key) or api.n_equal(_key, key):
+            if space.isnil(_key) or api.n_equal(_key, key):
                 return i, kv_pair
 
         return absent_index(), self.empty_pair
@@ -49,9 +47,8 @@ class Bindings:
         return False
 
     def insert(self, key, value):
-        from obin.types.space import isundefined, isany
-        assert isany(key)
-        assert not isundefined(key)
+        assert space.isany(key)
+        assert not space.isnil(key)
         assert isinstance(value, int)
         """
         Sets the value of the Hashmap at the key. It resizes the backing
@@ -75,23 +72,20 @@ class Bindings:
         return not self.is_empty_pair(kv_pair)
 
     def keys(self):
-        from obin.types.space import isundefined
         l = []
         for kv_pair in self._backing:
-            if kv_pair and not isundefined(kv_pair[0]):
+            if kv_pair and not space.isnil(kv_pair[0]):
                 l.append(kv_pair[0])
         return l
 
     def __iter__(self):
-        from obin.types.space import isundefined
         for kv_pair in self._backing:
-            if kv_pair and not isundefined(kv_pair[0]):
+            if kv_pair and not space.isnil(kv_pair[0]):
                 yield kv_pair[0]
 
     def items(self):
-        from obin.types.space import isundefined
         for kv_pair in self._backing:
-            if kv_pair and not isundefined(kv_pair[0]):
+            if kv_pair and not space.isnil(kv_pair[0]):
                 yield kv_pair[0], kv_pair[1]
 
     def copy(self):
@@ -170,15 +164,14 @@ class TableIterator(W_Any):
         self.source_length = length
 
     def _next_(self):
-        from obin.types.space import newundefined, isundefined
         while True:
             if self.index >= self.source_length:
-                return newundefined()
+                return space.newnil()
 
             pair = self.source.slot_bindings[self.index]
             self.index += 1
             key = pair[0]
-            if isundefined(key):
+            if space.isnil(key):
                 continue
 
             return key
@@ -235,10 +228,9 @@ class W_Map(W_Any):
         return process.std.behaviors.Map
 
     def _at_(self, name):
-        from obin.types.space import newundefined
         idx = self._get_index_(name)
         if is_absent_index(idx):
-            return newundefined()
+            return space.newnil()
 
         return self._at_index_(idx)
 
@@ -266,11 +258,8 @@ class W_Map(W_Any):
         self.insert(name, value)
 
     def insert(self, name, value):
-        from obin.types.space import isany, issymbol, isstring
-        if isstring(name):
-            print name
-        assert isany(name)
-        assert isany(value)
+        assert space.isany(name)
+        assert space.isany(value)
         # print "Slots_ass", api.to_native_string(name), api.to_native_string(value)
         idx = self._get_index_(name)
         # print "Slots_add, IDX", idx
@@ -312,11 +301,9 @@ def _create_map(values, bindings, index):
 
 
 def create_map_with_size(size):
-    from obin.types.space import newvector
-    return _create_map(newvector([None] * size), Bindings(), 0)
+    return _create_map(space.newvector([None] * size), Bindings(), 0)
 
 
 def create_empty_map():
-    from obin.types.space import newvector
-    return _create_map(newvector([]), Bindings(), 0)
+    return _create_map(space.newvector([]), Bindings(), 0)
 

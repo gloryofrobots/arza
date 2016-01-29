@@ -8,7 +8,7 @@ def create_environment(process, source, parent_env):
         return source.env
 
     modulefunc = W_ModuleFunction(source.name, source.bytecode, parent_env)
-    process.subprocess(modulefunc, space.newundefined())
+    process.subprocess(modulefunc, space.newnil())
 
     source.env = modulefunc.env
     return source.env

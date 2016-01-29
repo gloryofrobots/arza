@@ -84,7 +84,6 @@ RULES = [
     (keyword('true'), TT_TRUE),
     (keyword('false'), TT_FALSE),
     (keyword('nil'), TT_NIL),
-    (keyword('undefined'), TT_UNDEFINED),
     (keyword('throw'), TT_THROW),
     (keyword('try'), TT_TRY),
     (keyword('catch'), TT_CATCH),

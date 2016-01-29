@@ -38,15 +38,15 @@ class W_Vector(W_Any):
         return W_Vector(items)
 
     def _slice_(self, start, end):
-        from obin.types.space import isundefined
+        from obin.types.space import isnil
         from obin.types import api
 
-        if isundefined(start):
+        if isnil(start):
             start_index = 0
         else:
             start_index = api.to_native_integer(start)
 
-        if isundefined(end):
+        if isnil(end):
             end_index = self._length_()
         else:
             end_index = api.to_native_integer(end)
@@ -55,13 +55,13 @@ class W_Vector(W_Any):
         return W_Vector(items)
 
     def _at_(self, index):
-        from obin.types.space import newundefined, isint
+        from obin.types.space import newnil, isint
         from obin.types import api
         assert isint(index)
         try:
             el = self._items[api.to_native_integer(index)]
         except KeyError:
-            return newundefined()
+            return newnil()
 
         return el
 

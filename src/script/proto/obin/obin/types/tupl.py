@@ -64,12 +64,12 @@ class W_Tuple(W_Hashable):
         return W_Tuple(self.elements)
 
     def _at_(self, index):
-        from obin.types.space import newundefined, isint
+        from obin.types.space import newnil, isint
         assert isint(index)
         try:
             el = self.elements[api.to_native_integer(index)]
         except KeyError:
-            return newundefined()
+            return newnil()
 
         return el
 
@@ -77,15 +77,15 @@ class W_Tuple(W_Hashable):
         return self.elements[i]
 
     def _slice_(self, start, end):
-        from obin.types.space import isundefined
+        from obin.types.space import isnil
         from obin.types import api
 
-        if isundefined(start):
+        if isnil(start):
             start_index = 0
         else:
             start_index = api.to_native_integer(start)
 
-        if isundefined(end):
+        if isnil(end):
             end_index = self._length_()
         else:
             end_index = api.to_native_integer(end)

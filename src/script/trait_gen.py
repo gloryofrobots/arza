@@ -5,7 +5,6 @@ TRAITS = [
         "True", 
         "False", 
         "Nil", 
-        "Undefined", 
         "Char", 
 
         "Number", 

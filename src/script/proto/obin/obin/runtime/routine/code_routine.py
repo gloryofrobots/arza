@@ -94,17 +94,14 @@ class CodeRoutine(BaseRoutine):
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
             self.pc += 1
             # *************************************
-            if UNDEFINED == tag:
-                stack.push(space.newundefined())
+            if NIL == tag:
+                stack.push(space.newnil())
             # *************************************
             elif ARGUMENTS == tag:
                 stack.push(self.args)
             # *************************************
             elif RETURN == tag:
                 self.complete(process, stack.top())
-            # *************************************
-            elif NULL == tag:
-                stack.push(space.newnil())
             # *************************************
             elif TRUE == tag:
                 stack.push(space.newbool(True))
@@ -127,7 +124,7 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif LOCAL == tag:
                 value = api.at_index(env, arg1)
-                if space.isundefined(value):
+                if space.isnil(value):
                     literal = literals[arg2]
                     return error.throw_1(error.Errors.REFERENCE, literal)
 

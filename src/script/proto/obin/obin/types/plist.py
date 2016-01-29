@@ -44,11 +44,11 @@ class W_PList(W_Any):
         return index(self, obj)
 
     def _at_(self, key):
-        from obin.types.space import newundefined
+        from obin.types.space import newnil
         from obin.types import api
         int_index = api.to_native_integer(key)
         if int_index < 0:
-            return newundefined()
+            return newnil()
 
         return nth(self, int_index)
 
@@ -63,26 +63,26 @@ class W_PList(W_Any):
         return process.std.behaviors.List
 
     def _slice_(self, start, end):
-        from obin.types.space import isundefined, newundefined
+        from obin.types.space import isnil, newnil
         from obin.types import api
 
-        if isundefined(start):
+        if isnil(start):
             start_index = 0
         else:
             start_index = api.to_native_integer(start)
 
         # INTELLIGENT ERROR HERE, BECAUSE LISTS DON`T SUPPORT RELATIVE SLICING
         if start_index < 0:
-            return newundefined()
+            return newnil()
 
-        if isundefined(end):
+        if isnil(end):
             return drop(self, start_index)
         else:
             end_index = api.to_native_integer(end)
 
         # INTELLIGENT ERROR HERE, BECAUSE LISTS DON`T SUPPORT RELATIVE SLICING
         if end_index < 0:
-            return newundefined()
+            return newnil()
         return slice(self, start_index, end_index)
 
     def _equal_(self, other):
@@ -91,7 +91,7 @@ class W_PList(W_Any):
         return False
 
 
-__EMPTY__ = W_PList(space.newundefined(), space.newundefined())
+__EMPTY__ = W_PList(space.newnil(), space.newnil())
 
 
 def empty():
@@ -223,11 +223,11 @@ def slice(pl, start, end):
 ##############################################
 
 def _nth(pl, index):
-    from obin.types.space import newundefined
+    from obin.types.space import newnil
     if index == 0:
         return head(pl)
     if isempty(pl):
-        return newundefined()
+        return newnil()
     return nth(tail(pl), index - 1)
 
 

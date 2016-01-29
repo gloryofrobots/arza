@@ -1,5 +1,4 @@
-from obin.types.space import issymbol
-from obin.types.space import newmap
+from obin.types import space
 from obin.utils.misc import absent_index, is_absent_index
 from obin.types import api
 
@@ -22,7 +21,7 @@ class ScopeSet:
 
 class Scope:
     def __init__(self):
-        self.locals = newmap()
+        self.locals = space.newmap()
 
         self.arg_count = -1
         self.fn_name_index = -1
@@ -36,7 +35,7 @@ class Scope:
         return self.references.get(name)
 
     def add_reference(self, name):
-        assert issymbol(name)
+        assert space.issymbol(name)
         return self.references.add(name)
 
     def get_literal(self, literal):
@@ -60,22 +59,21 @@ class Scope:
         self.is_variadic = is_varargs
 
     def add_local(self, local):
-        from obin.types.space import newundefined
-        assert issymbol(local)
+        assert space.issymbol(local)
         self.check_arg_count()
         assert is_absent_index(self.get_local_index(local))
-        return self.locals.insert(local, newundefined())
+        return self.locals.insert(local, space.newnil())
 
     def get_local_index(self, local):
         return api.get_index(self.locals, local)
 
     def add_outer(self, name):
-        assert issymbol(name)
+        assert space.issymbol(name)
         assert name not in self.outers
         self.outers.append(name)
 
     def has_outer(self, name):
-        assert issymbol(name)
+        assert space.issymbol(name)
         return name in self.outers
 
     def finalize(self):

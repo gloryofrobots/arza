@@ -200,11 +200,7 @@ def _compile_FALSE(process, compiler, code, node):
 
 
 def _compile_NIL(process, compiler, code, node):
-    code.emit_0(NULL, info(node))
-
-
-def _compile_UNDEFINED(process, compiler, code, node):
-    code.emit_0(UNDEFINED, info(node))
+    code.emit_0(NIL, info(node))
 
 
 def _get_name_value(name):
@@ -225,8 +221,8 @@ def _emit_dup(code):
     code.emit_0(DUP, codeinfo_unknown())
 
 
-def _emit_undefined(code):
-    code.emit_0(UNDEFINED, codeinfo_unknown())
+def _emit_nil(code):
+    code.emit_0(NIL, codeinfo_unknown())
 
 
 def _emit_symbol_name(process, compiler, code, name):
@@ -553,7 +549,7 @@ def _compile_destruct_recur_seq_rest(process, compiler, code, last_item, last_in
     _emit_dup(code)
     varname = last_item.first()
     _emit_integer(process, compiler, code, last_index)
-    code.emit_0(UNDEFINED, codeinfo_unknown())
+    _emit_nil(code)
     code.emit_0(SLICE, codeinfo_unknown())
     _emit_store_name(process, compiler, code, varname)
     _emit_pop(code)
@@ -656,7 +652,7 @@ def _compile_SYMBOL(process, compiler, code, node):
 def _compile_RETURN(process, compiler, code, node):
     expr = node.first()
     if is_empty_node(expr):
-        _emit_undefined(code)
+        _emit_nil(code)
     else:
         _compile(process, compiler, code, expr)
 
@@ -666,7 +662,7 @@ def _compile_RETURN(process, compiler, code, node):
 def _compile_THROW(process, compiler, code, node):
     expr = node.first()
     if is_empty_node(expr):
-        _emit_undefined(code)
+        _emit_nil(code)
     else:
         _compile(process, compiler, code, expr)
 
@@ -735,13 +731,13 @@ def _compile_LIST(process, compiler, code, node):
 
 
 def _compile_BREAK(process, compiler, code, node):
-    _emit_undefined(code)
+    _emit_nil(code)
     if not code.emit_break():
         compile_error(process, compiler, code, node, u"break outside loop")
 
 
 def _compile_CONTINUE(process, compiler, code, node):
-    _emit_undefined(code)
+    _emit_nil(code)
     if not code.emit_continue():
         compile_error(process, compiler, code, node, u"continue outside loop")
 
@@ -836,7 +832,7 @@ def _compile_IF(process, compiler, code, node):
 
     elsebranch = branches[-1]
     if is_empty_node(elsebranch):
-        _emit_undefined(code)
+        _emit_nil(code)
     else:
         _compile(process, compiler, code, elsebranch[1])
 
@@ -974,7 +970,7 @@ def _emit_specify(process, compiler, code, node, methods):
 
         for trait in signature:
             if trait is None:
-                _emit_undefined(code)
+                _emit_nil(code)
             else:
                 _compile(process, compiler, code, trait)
 
@@ -1003,7 +999,7 @@ def _compile_FOR(process, compiler, code, node):
     _compile(process, compiler, code, source)
     code.emit_0(ITERATOR, info(node))
     # load the "last" iterations result
-    _emit_undefined(code)
+    _emit_nil(code)
     precond = code.emit_startloop_label()
     code.continue_at_label(precond)
     finish = code.prealocate_endloop_label(False)
@@ -1032,7 +1028,7 @@ def _compile_FOR(process, compiler, code, node):
 def _compile_WHILE(process, compiler, code, node):
     condition = node.first()
     body = node.second()
-    _emit_undefined(code)
+    _emit_nil(code)
     startlabel = code.emit_startloop_label()
     code.continue_at_label(startlabel)
     _compile(process, compiler, code, condition)
@@ -1063,12 +1059,12 @@ def _emit_SLICE(process, compiler, code, obj, slice):
     _compile(process, compiler, code, obj)
 
     if is_wildcard_node(start):
-        _emit_undefined(code)
+        _emit_nil(code)
     else:
         _compile(process, compiler, code, start)
 
     if is_wildcard_node(end):
-        _emit_undefined(code)
+        _emit_nil(code)
     else:
         _compile(process, compiler, code, end)
 
@@ -1163,8 +1159,6 @@ def _compile_node(process, compiler, code, node):
         _compile_FALSE(process, compiler, code, node)
     elif NT_NIL == node_type:
         _compile_NIL(process, compiler, code, node)
-    elif NT_UNDEFINED == node_type:
-        _compile_UNDEFINED(process, compiler, code, node)
     elif NT_INT == node_type:
         _compile_INT(process, compiler, code, node)
     elif NT_FLOAT == node_type:

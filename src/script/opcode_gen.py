@@ -1,8 +1,7 @@
 UNKNOW_CHANGE = -128
 
 OPCODES = [
-    ("UNDEFINED", 1),
-    ("NULL", 1),
+    ("NIL", 1),
     ("TRUE", 1),
     ("FALSE", 1),
     ("LITERAL", 1),

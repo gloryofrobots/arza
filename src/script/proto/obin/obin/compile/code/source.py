@@ -48,7 +48,7 @@ class CodeSource:
         self.estimated_stack_size = -1
         self.scope = None
         # VALUE FOR AUTOMATIC RETURN
-        self.emit_0(UNDEFINED, codeinfo_unknown())
+        self.emit_0(NIL, codeinfo_unknown())
 
     def finalize_compilation(self, scope_info):
         assert scope_info

@@ -114,7 +114,6 @@ def pattern_parser_init(parser):
     literal(parser, TT_TRUE)
     literal(parser, TT_FALSE)
     literal(parser, TT_NIL)
-    literal(parser, TT_UNDEFINED)
     literal(parser, TT_WILDCARD)
     return parser
 
@@ -129,7 +128,6 @@ def base_parser_init(parser):
     literal(parser, TT_TRUE)
     literal(parser, TT_FALSE)
     literal(parser, TT_NIL)
-    literal(parser, TT_UNDEFINED)
     literal(parser, TT_WILDCARD)
 
     symbol(parser, TT_RSQUARE, None)

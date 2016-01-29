@@ -70,8 +70,8 @@ def _print(process, routine):
 
     u_print_str = builder.build()
     print_str = encode_unicode_utf8(u_print_str)
-    print(print_str)
-    return space.newundefined()
+    print print_str
+    return space.newnil()
 
 
 def _eval(process, routine):
@@ -173,7 +173,7 @@ def activate_fiber(process, routine):
     # args = routine.get_arg(2)
     args = space.newtuple([])
     activate(process, fiber, func, args)
-    return space.newundefined()
+    return space.newnil()
 
 
 @complete_native_routine

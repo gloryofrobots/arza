@@ -72,11 +72,11 @@ class W_String(W_Hashable):
         return self.__length
 
     def _at_index_(self, i):
-        from obin.types.space import newundefined, newchar
+        from obin.types.space import newnil, newchar
         try:
             ch = self.string_value[i]
         except:
-            return newundefined()
+            return newnil()
 
         return newchar(ch)
 

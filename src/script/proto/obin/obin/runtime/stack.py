@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
 from rpython.rlib import jit
-from obin.types.space import newundefined, newtuple
+from obin.types.space import newnil, newtuple
 from obin.types import plist
 from obin.runtime import error
 # TODO proper stack operations
@@ -9,7 +9,7 @@ class Stack:
     def __init__(self, size):
         self.data = None
         self.__pointer = 0
-        self.data = [newundefined()] * size
+        self.data = [newnil()] * size
 
     def pointer(self):
         return jit.promote(self.__pointer)
@@ -18,7 +18,7 @@ class Stack:
         e = self.top()
         i = self.pointer() - 1
         assert i >= 0
-        self.data[i] = newundefined()
+        self.data[i] = newnil()
         self.set_pointer(i)
         return e
 
@@ -34,13 +34,13 @@ class Stack:
         if size <= l:
             return
 
-        self.data = self.data + [newundefined()] * (size - l)
+        self.data = self.data + [newnil()] * (size - l)
 
     def size(self):
         return len(self.data)
 
     def push(self, element):
-        from obin.types.space import isnull, isany
+        from obin.types.space import isany
         if not isany(element):
             raise RuntimeError(u"Not Any product", element)
 

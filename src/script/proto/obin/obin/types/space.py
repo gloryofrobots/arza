@@ -2,18 +2,15 @@ from rpython.rlib.objectmodel import specialize, enforceargs
 from rpython.rlib import jit
 from obin.types.boolean import W_True, W_False
 from obin.types.nil import W_Nil
-from obin.types.undefined import W_Undefined
 from obin.types.root import W_UniqueType
 
 w_True = W_True()
 w_False = W_False()
-w_Undefined = W_Undefined()
 w_Interrupt = W_UniqueType()
 w_Nil = W_Nil()
 
 jit.promote(w_True)
 jit.promote(w_False)
-jit.promote(w_Undefined)
 jit.promote(w_Nil)
 jit.promote(w_Interrupt)
 
@@ -74,10 +71,6 @@ def newinterrupt():
 
 def newnil():
     return w_Nil
-
-
-def newundefined():
-    return w_Undefined
 
 
 @enforceargs(bool)
@@ -195,8 +188,8 @@ def isany(value):
     return isinstance(value, W_Any)
 
 
-def isundefined(value):
-    return value is w_Undefined
+def isnil(value):
+    return value is w_Nil
 
 
 def isinterrupt(value):
@@ -286,10 +279,6 @@ def isfalse(value):
     return value is w_False
 
 
-def isnull(value):
-    return value is w_Nil
-
-
 def isstring(w):
     from obin.types.string import W_String
     return isinstance(w, W_String)
@@ -318,8 +307,3 @@ def isuniquetype(w):
     from obin.types.root import W_UniqueType
     return isinstance(w, W_UniqueType)
 
-
-def isnull_or_undefined(obj):
-    if isnull(obj) or isundefined(obj):
-        return True
-    return False

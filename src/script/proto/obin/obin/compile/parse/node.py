@@ -10,7 +10,7 @@ class BaseNode(W_Any):
 
 class EmptyNode(BaseNode):
     def to_json_value(self):
-        return "{ EmptyNode }"
+        return "{ EmptyNode:'EmptyNode' }"
 
     def _equal_(self, other):
         return self.__eq__(other)
@@ -313,9 +313,9 @@ def create_true_node(basenode):
     return node
 
 
-def create_undefined_node(basenode):
-    node = Node(tt.TT_UNDEFINED, "undefined", basenode.position, basenode.line, basenode.column)
-    node.init(nt.NT_UNDEFINED, 0)
+def create_nil_node(basenode):
+    node = Node(tt.TT_NIL, "nil", basenode.position, basenode.line, basenode.column)
+    node.init(nt.NT_NIL, 0)
     return node
 
 

@@ -1,6 +1,6 @@
 from obin.types.space import _w
 from obin.runtime.routine import complete_native_routine
-from obin.types.space import isnull_or_undefined, newundefined
+from obin.types.space import isnull_or_undefined, newnil
 from obin.types import api
 
 
@@ -69,14 +69,14 @@ def length(routine):
 @complete_native_routine
 def join(routine):
     this, args = routine.method_args()
-    from obin.types.space import isundefined
+    from obin.types.space import isnil
 
     separator = get_arg(args, 0)
 
     o = this.ToObject()
     length = o.length()
 
-    if isundefined(separator):
+    if isnil(separator):
         sep = u','
     else:
         sep = separator.to_string()
@@ -119,7 +119,7 @@ def shift(routine):
 
     if l == 0:
         o.put(u'length', _w(0))
-        return newundefined()
+        return newnil()
     else:
         new_length = l - 1
         element = o.get(u"0")
@@ -215,7 +215,7 @@ def for_each(routine):
 
     for i in xrange(length):
         x = obj.get(unicode(str(i)))
-        callback.Call(args=[x], this=newundefined())
+        callback.Call(args=[x], this=newnil())
 
 
 # 15.4.4.11
@@ -248,8 +248,8 @@ def sort(routine):
     return obj
 
 
-def sort_compare(obj, j, k, comparefn=newundefined()):
-    from obin.types.space import isundefined
+def sort_compare(obj, j, k, comparefn=newnil()):
+    from obin.types.space import isnil
 
     j_string = j
     k_string = k
@@ -266,21 +266,21 @@ def sort_compare(obj, j, k, comparefn=newundefined()):
     x = obj.get(j_string)
     y = obj.get(k_string)
 
-    if isundefined(x) and isundefined(y):
+    if isnil(x) and isnil(y):
         return 0
-    if isundefined(x):
+    if isnil(x):
         return 1
-    if isundefined(y):
+    if isnil(y):
         return -1
 
-    if not isundefined(comparefn):
+    if not isnil(comparefn):
         if not comparefn.is_callable():
             from obin.runtime.error import ObinTypeError
             raise ObinTypeError(u'')
 
         from obin.types.object import W_BasicFunction
         assert isinstance(comparefn, W_BasicFunction)
-        res = comparefn.Call(args=[x, y], this=newundefined())
+        res = comparefn.Call(args=[x, y], this=newnil())
         return res.ToInteger()
 
     x_string = x.to_string()

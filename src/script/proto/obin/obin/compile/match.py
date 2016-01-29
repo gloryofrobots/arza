@@ -184,7 +184,7 @@ def _group_branches(process, branches):
 
 
 def _create_variable_undefs(basenode, variables):
-    undefs = [create_assign_node(basenode, var, create_undefined_node(basenode)) for var in variables]
+    undefs = [create_assign_node(basenode, var, create_nil_node(basenode)) for var in variables]
     return undefs
 
 

@@ -2,7 +2,6 @@ NODES = [
   "NT_TRUE",
   "NT_FALSE",
   "NT_NIL",
-  "NT_UNDEFINED",
   "NT_INT",
   "NT_FLOAT",
   "NT_STR",
