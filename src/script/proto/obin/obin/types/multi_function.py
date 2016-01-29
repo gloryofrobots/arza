@@ -18,7 +18,7 @@ class W_MultiFunction(W_Callable):
         return len(self.methods)
 
     def _tostring_(self):
-        return "multifunction %s {}" % api.to_native_string(self.name)
+        return "multifunction %s {}" % api.to_s(self.name)
 
     def _tobool_(self):
         return True

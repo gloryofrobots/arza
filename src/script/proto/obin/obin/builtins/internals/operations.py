@@ -21,14 +21,14 @@ w_NEGATIVE_INFINITY = space.newnumber(-INFINITY)
 
 
 def add_s_s(process, l, r):
-    sleft = api.to_native_unicode(l)
-    sright = api.to_native_unicode(r)
+    sleft = api.to_u(l)
+    sright = api.to_u(r)
     return space.newstring(sleft + sright)
 
 
 def add_i_i(process, l, r):
-    ileft = api.to_native_integer(l)
-    iright = api.to_native_integer(r)
+    ileft = api.to_i(l)
+    iright = api.to_i(r)
     try:
         return space.newint(ovfcheck(ileft + iright))
     except OverflowError:
@@ -36,8 +36,8 @@ def add_i_i(process, l, r):
 
 
 def add_f_f(process, l, r):
-    fleft = api.to_native_float(l)
-    fright = api.to_native_float(r)
+    fleft = api.to_f(l)
+    fright = api.to_f(r)
     return space.newfloat(fleft + fright)
 
 
@@ -52,8 +52,8 @@ def add_n_n(process, lprim, rprim):
 
 
 def sub_i_i(process, nleft, nright):
-    ileft = api.to_native_integer(nleft)
-    iright = api.to_native_integer(nright)
+    ileft = api.to_i(nleft)
+    iright = api.to_i(nright)
     try:
         return space.newint(ovfcheck(ileft - iright))
     except OverflowError:
@@ -61,8 +61,8 @@ def sub_i_i(process, nleft, nright):
 
 
 def sub_f_f(process, nleft, nright):
-    fleft = api.to_native_float(nleft)
-    fright = api.to_native_float(nright)
+    fleft = api.to_f(nleft)
+    fright = api.to_f(nright)
     return space.newfloat(fleft - fright)
 
 
@@ -73,14 +73,14 @@ def sub_n_n(process, nleft, nright):
 
 
 def mult_f_f(process, nleft, nright):
-    fleft = api.to_native_float(nleft)
-    fright = api.to_native_float(nright)
+    fleft = api.to_f(nleft)
+    fright = api.to_f(nright)
     return space.newfloat(fleft * fright)
 
 
 def mult_i_i(process, nleft, nright):
-    ileft = api.to_native_integer(nleft)
-    iright = api.to_native_integer(nright)
+    ileft = api.to_i(nleft)
+    iright = api.to_i(nright)
     try:
         return space.newint(ovfcheck(ileft * iright))
     except OverflowError:
@@ -94,8 +94,8 @@ def mult_n_n(process, nleft, nright):
 
 
 def div_i_i(process, nleft, nright):
-    ileft = api.to_native_integer(nleft)
-    iright = api.to_native_integer(nright)
+    ileft = api.to_i(nleft)
+    iright = api.to_i(nright)
     try:
         z = ovfcheck(ileft // iright)
     except ZeroDivisionError:
@@ -105,8 +105,8 @@ def div_i_i(process, nleft, nright):
 
 def div_f_f(process, nleft, nright):
     # TODO EXCEPTIONS
-    fleft = api.to_native_float(nleft)
-    fright = api.to_native_float(nright)
+    fleft = api.to_f(nleft)
+    fright = api.to_f(nright)
 
     if isnan(fleft) or isnan(fright):
         return w_NAN
@@ -133,8 +133,8 @@ def div_n_n(process, nleft, nright):
 
 
 def mod_f_f(process, nleft, nright):
-    fleft = api.to_native_float(nleft)
-    fright = api.to_native_float(nright)
+    fleft = api.to_f(nleft)
+    fright = api.to_f(nright)
 
     if isnan(fleft) or isnan(fright):
         return w_NAN
@@ -156,12 +156,12 @@ def mod_n_n(process, nleft, nright):
 
 
 def uminus_f(process, obj):
-    n1 = api.to_native_float(obj)
+    n1 = api.to_f(obj)
     return space.newfloat(-n1)
 
 
 def uminus_i(process, obj):
-    intval = api.to_native_integer(obj)
+    intval = api.to_i(obj)
     if intval == 0:
         return space.newfloat(-float(intval))
     return space.newint(-intval)
@@ -174,14 +174,14 @@ def uminus_n(process, obj):
 
 
 def compare_gt_i_i(process, w_x, w_y):
-    x = api.to_native_integer(w_x)
-    y = api.to_native_integer(w_y)
+    x = api.to_i(w_x)
+    y = api.to_i(w_y)
     return space.newbool(x > y)
 
 
 def compare_gt_f_f(process, w_x, w_y):
-    x = api.to_native_float(w_x)
-    y = api.to_native_float(w_y)
+    x = api.to_f(w_x)
+    y = api.to_f(w_y)
     return space.newbool(x > y)
 
 
@@ -194,14 +194,14 @@ def compare_gt_n_n(process, x, y):
 
 
 def compare_ge_i_i(process, w_x, w_y):
-    x = api.to_native_integer(w_x)
-    y = api.to_native_integer(w_y)
+    x = api.to_i(w_x)
+    y = api.to_i(w_y)
     return space.newbool(x >= y)
 
 
 def compare_ge_f_f(process, w_x, w_y):
-    x = api.to_native_float(w_x)
-    y = api.to_native_float(w_y)
+    x = api.to_f(w_x)
+    y = api.to_f(w_y)
     return space.newbool(x >= y)
 
 
@@ -222,31 +222,31 @@ def notin_w(process, left, right):
 
 
 def bitand_i_i(process, op1_w, op2_w):
-    op1 = api.to_native_integer(op1_w)
-    op2 = api.to_native_integer(op2_w)
+    op1 = api.to_i(op1_w)
+    op2 = api.to_i(op2_w)
     return space.newint(int(op1 & op2))
 
 
 def bitxor_i_i(process, op1_w, op2_w):
-    op1 = api.to_native_integer(op1_w)
-    op2 = api.to_native_integer(op2_w)
+    op1 = api.to_i(op1_w)
+    op2 = api.to_i(op2_w)
     return space.newint(int(op1 ^ op2))
 
 
 def bitor_i_i(process, op1_w, op2_w):
-    op1 = api.to_native_integer(op1_w)
-    op2 = api.to_native_integer(op2_w)
+    op1 = api.to_i(op1_w)
+    op2 = api.to_i(op2_w)
     return space.newint(int(op1 | op2))
 
 
 def bitnot_i(process, op1_w):
-    op = api.to_native_integer(op1_w)
+    op = api.to_i(op1_w)
     return space.newint(~op)
 
 
 def ursh_i_i(process, lval, rval):
-    lnum = api.to_native_integer(lval)
-    rnum = api.to_native_integer(rval)
+    lnum = api.to_i(lval)
+    rnum = api.to_i(rval)
 
     # from rpython.rlib.rarithmetic import ovfcheck_float_to_int
 
@@ -256,8 +256,8 @@ def ursh_i_i(process, lval, rval):
 
 
 def rsh_i_i(process, lval, rval):
-    lnum = api.to_native_integer(lval)
-    rnum = api.to_native_integer(rval)
+    lnum = api.to_i(lval)
+    rnum = api.to_i(rval)
 
     # from rpython.rlib.rarithmetic import ovfcheck_float_to_int
 
@@ -267,8 +267,8 @@ def rsh_i_i(process, lval, rval):
 
 
 def lsh_i_i(process, lval, rval):
-    lnum = api.to_native_integer(lval)
-    rnum = api.to_native_integer(rval)
+    lnum = api.to_i(lval)
+    rnum = api.to_i(rval)
 
     shift_count = intmask(rnum & 0x1F)
     res = lnum << shift_count
@@ -281,7 +281,7 @@ def uplus_n(process, op1):
 
 
 def not_w(process, val):
-    v = api.to_native_bool(val)
+    v = api.to_b(val)
     return space.newbool(not v)
 
 
@@ -291,12 +291,12 @@ def eq_w(process, op1, op2):
 
 def noteq_w(process, op1, op2):
     # TODO api.ne
-    return space.newbool(not api.to_native_bool(api.equal(op1, op2)))
+    return space.newbool(not api.to_b(api.equal(op1, op2)))
 
 
 def isnot_w(process, op1, op2):
     # TODO api.isnot
-    return space.newbool(not api.to_native_bool(api.strict_equal(op1, op2)))
+    return space.newbool(not api.to_b(api.strict_equal(op1, op2)))
 
 
 def is_w(process, op1, op2):

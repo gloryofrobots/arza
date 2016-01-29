@@ -24,7 +24,7 @@ def _tostring(pair, vec):
     else:
         tpl = u'%s = %s'
 
-    repr = tpl % (api.to_native_unicode(key), api.to_native_unicode(value))
+    repr = tpl % (api.to_u(key), api.to_u(value))
     vec.to_py_list().append(repr)
     return vec
 

@@ -19,7 +19,7 @@ class W_Integer(W_ValueType):
 
     def _equal_(self, other):
         try:
-            val = api.to_native_integer(other)
+            val = api.to_i(other)
             return self.int_value == val
         except:
             return False

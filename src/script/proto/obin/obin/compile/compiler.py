@@ -13,7 +13,7 @@ from obin.runtime import error
 
 
 def compile_error(process, compiler, code, node, message):
-    line = code.info.get_line(node.line)
+    line = code.info.get_line(api.to_i(nodes.node_line(node)))
     return error.throw(error.Errors.COMPILE,
                        obs.newtuple([
                            obs.newtuple(info(node)),
@@ -742,7 +742,7 @@ def _compile_CONTINUE(process, compiler, code, node):
         compile_error(process, compiler, code, node, u"continue outside loop")
 
 
-def _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, opcode, emitinfo):
+def _compile_func_args_and_body(process, compiler, code, funcname, params,  body, opcode, emitinfo):
     _enter_scope(process, compiler)
 
     funccode = newcode(compiler)
@@ -758,10 +758,6 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params, outer
         is_variadic = True if last_param.node_type == NT_REST else False
         _declare_arguments(process, compiler, length, is_variadic)
         _compile_destruct_recur(process, compiler, funccode, params)
-
-    if nodes.is_iterable_node(outers):
-        for outer in outers:
-            _declare_outer(process, compiler, code, outer)
 
     if not api.isempty(funcname):
         _declare_function_name(process, compiler, funcname)
@@ -789,9 +785,8 @@ def _compile_FUNC(process, compiler, code, node):
         funcname = obs.newsymbol_py_str(process, "")
 
     params = node.second()
-    outers = node.third()
-    body = node.fourth()
-    _compile_func_args_and_body(process, compiler, code, funcname, params, outers, body, FUNCTION, info(name))
+    body = node.third()
+    _compile_func_args_and_body(process, compiler, code, funcname, params, body, FUNCTION, info(name))
 
     if api.isempty(funcname):
         return
@@ -978,9 +973,7 @@ def _emit_specify(process, compiler, code, node, methods):
 
         method_name = obs.newsymbol(process, u"")
         args_node = nodes.create_tuple_node(node, args)
-        _compile_func_args_and_body(process, compiler, code, method_name, args_node, nodes.empty_node(),
-                                    method_body,
-                                    FUNCTION, info(node))
+        _compile_func_args_and_body(process, compiler, code, method_name, args_node, method_body, FUNCTION, info(node))
         code.emit_1(TUPLE, 2, info(node))
 
     code.emit_1(SPECIFY, len(methods), info(node))

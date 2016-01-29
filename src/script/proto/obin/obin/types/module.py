@@ -52,7 +52,7 @@ class W_Module(W_Any):
 
     def _tostring_(self):
         if not self.env:
-            return "<module %s>" % api.to_native_string(self.name)
+            return "<module %s>" % api.to_s(self.name)
         if not self.name:
             return "<module>"
-        return "<module %s where %s>" % (api.to_native_string(self.name), api.to_native_string(self.env))
+        return "<module %s where %s>" % (api.to_s(self.name), api.to_s(self.env))

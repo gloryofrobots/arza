@@ -67,7 +67,7 @@ class W_Tuple(W_Hashable):
         from obin.types.space import newnil, isint
         assert isint(index)
         try:
-            el = self.elements[api.to_native_integer(index)]
+            el = self.elements[api.to_i(index)]
         except KeyError:
             return newnil()
 
@@ -83,12 +83,12 @@ class W_Tuple(W_Hashable):
         if isnil(start):
             start_index = 0
         else:
-            start_index = api.to_native_integer(start)
+            start_index = api.to_i(start)
 
         if isnil(end):
             end_index = self._length_()
         else:
-            end_index = api.to_native_integer(end)
+            end_index = api.to_i(end)
 
         elements = self.elements[start_index:end_index]
         return W_Tuple(elements)

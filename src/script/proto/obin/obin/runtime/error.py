@@ -45,7 +45,7 @@ class ObinError(Exception):
 
     def __str__(self):
         from obin.types import api
-        return "%s%s" % (str(self.name), api.to_native_string(self.args_tuple))
+        return "%s%s" % (str(self.name), api.to_s(self.args_tuple))
 
     def __repr__(self):
         return self.__str__()

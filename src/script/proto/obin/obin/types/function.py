@@ -10,7 +10,7 @@ class W_FunctionSource(W_Any):
         self.code = code
 
     def _tostring_(self):
-        return "<funcsource %s>" % (api.to_native_string(self.name))
+        return "<funcsource %s>" % (api.to_s(self.name))
 
 class W_Function(W_Callable):
     # _immutable_fields_ = ['scope',  'is_variadic', 'arity', '_name_']
@@ -26,7 +26,7 @@ class W_Function(W_Callable):
     def _tostring_(self):
         # params = ",".join([api.to_native_string(p) for p in self.bytecode.scope.arguments])
         # return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
-        return "<func %s/%d>" % (api.to_native_string(self.name) ,self.arity)
+        return "<func %s/%d>" % (api.to_s(self.name) ,self.arity)
 
     def _tobool_(self):
         return True

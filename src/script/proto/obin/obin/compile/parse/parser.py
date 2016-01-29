@@ -1,8 +1,8 @@
 __author__ = 'gloryofrobots'
-import obin.compile.parse.rlexer as lexer
+import obin.compile.parse.lexer as lexer
 from obin.compile.parse.tokenstream import TokenStream
 from obin.compile.parse.callbacks import *
-from obin.compile.parse.rlexer import UnknownTokenError
+from obin.compile.parse.lexer import UnknownTokenError
 
 
 class BaseParser:
@@ -293,7 +293,6 @@ def expression_parser_init(parser):
 
     stmt(parser, TT_RETURN, stmt_single)
     stmt(parser, TT_THROW, stmt_single)
-    stmt(parser, TT_OUTER, stmt_outer)
     stmt(parser, TT_BREAK, stmt_loop_flow)
     stmt(parser, TT_CONTINUE, stmt_loop_flow)
     stmt(parser, TT_WHILE, stmt_while)

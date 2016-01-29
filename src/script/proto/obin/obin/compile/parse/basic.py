@@ -17,13 +17,13 @@ def parser_error_unknown(parser, position):
 
 
 def parse_error(parser, message, node):
-    line = get_line(parser.ts.src, nodes.node_line(node))
+    line = get_line(parser.ts.src, api.to_i(nodes.node_line(node)))
     return error.throw(error.Errors.PARSE,
                        space.newtuple([
-                           space.newtuple([space.newint(nodes.node_position(node)),
-                                           space.newint(nodes.node_line(node)),
-                                           space.newint(nodes.node_column(node))]),
-                           space.newstring(api.to_native_unicode(node)),
+                           space.newtuple([nodes.node_position(node),
+                                           nodes.node_line(node),
+                                           nodes.node_column(node)]),
+                           space.newstring(api.to_u(node)),
                            space.newstring(message),
                            space.newstring(line)
                        ]))

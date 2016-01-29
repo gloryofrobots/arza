@@ -7,7 +7,7 @@ class IoDevice(W_Any):
         self.file = fd
 
     def write(self, obj):
-        ustr = api.to_native_unicode(obj)
+        ustr = api.to_u(obj)
         self.file.write(ustr)
 
 

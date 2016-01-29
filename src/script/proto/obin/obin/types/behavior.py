@@ -12,7 +12,7 @@ class W_Behavior(W_Hashable):
         self.traits = traits
 
     def _tostring_(self):
-        return "<Behavior %s>" % (api.to_native_string(self.traits))
+        return "<Behavior %s>" % (api.to_s(self.traits))
 
     def _behavior_(self, process):
         return process.std.behaviors.Behavior

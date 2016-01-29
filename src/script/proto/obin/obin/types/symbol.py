@@ -9,7 +9,7 @@ class W_Symbol(W_Any):
     def __init__(self, string, idx):
         self.idx = idx
         self.string = string
-        self.repr = ":%s" % api.to_native_string(self.string)
+        self.repr = ":%s" % api.to_s(self.string)
 
     def __eq__(self, other):
         return self._equal_(other)
@@ -44,7 +44,7 @@ class W_Symbol(W_Any):
         return self.string._compare_(arg)
 
     def _tostring_(self):
-        return api.to_native_string(self.string)
+        return api.to_s(self.string)
 
     def _iterator_(self):
         return self.string._iterator_()

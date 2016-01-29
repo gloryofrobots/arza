@@ -13,7 +13,7 @@ class W_NativeFunction(W_Callable):
         self.arity = arity
 
     def _tostring_(self):
-        return "function %s {[native code]}" % api.to_native_string(self._name_)
+        return "function %s {[native code]}" % api.to_s(self._name_)
 
     def _tobool_(self):
         return True

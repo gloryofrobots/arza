@@ -40,8 +40,8 @@ class CodeRoutine(BaseRoutine):
             info_str = u""
             curline = u""
         else:
-            info_str = u"{line = %d, column = %d}" % (info[1], info[2])
-            curline = self._code_.info.get_line(info[1])
+            info_str = u"{line = %d, column = %d}" % (api.to_i(info[1]), api.to_i(info[2]))
+            curline = self._code_.info.get_line(api.to_i(info[1]))
 
         builder = string.Builder().add(self._name_).space().add_u(info_str).space() \
             .add_u(u"from: \"").add(self._code_.info.path).add_u(u"\"")
@@ -71,7 +71,7 @@ class CodeRoutine(BaseRoutine):
         catch = self.catches.pop()
         self.pc = catch
         self.stack.push(signal)
-        self.inprocess()
+        self._state = BaseRoutine.State.INPROCESS
         return True
 
     def _execute(self, process):
@@ -216,19 +216,19 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif JUMP_IF_FALSE == tag:
                 value = stack.pop()
-                decision = api.to_native_bool(value)
+                decision = api.to_b(value)
                 if not decision:
                     self.pc = arg1
             # *************************************
             elif JUMP_IF_TRUE == tag:
                 value = stack.pop()
-                decision = api.to_native_bool(value)
+                decision = api.to_b(value)
                 if decision:
                     self.pc = arg1
             # *************************************
             elif JUMP_IF_FALSE_NOPOP == tag:
                 value = stack.top()
-                decision = api.to_native_bool(value)
+                decision = api.to_b(value)
                 if not decision:
                     self.pc = arg1
                 else:
@@ -236,7 +236,7 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif JUMP_IF_TRUE_NOPOP == tag:
                 value = stack.top()
-                decision = api.to_native_bool(value)
+                decision = api.to_b(value)
                 if decision:
                     self.pc = arg1
                 else:
@@ -250,7 +250,7 @@ class CodeRoutine(BaseRoutine):
             elif JUMP_IF_ITERATOR_EMPTY == tag:
                 last_block_value = stack.pop()
                 iterator = stack.top()
-                value = api.to_native_bool(iterator)
+                value = api.to_b(iterator)
                 if not value:
                     # discard the iterator
                     stack.pop()

@@ -25,25 +25,32 @@ def tobool(obj):
     return space.newbool(obj._tobool_())
 
 
-def to_native_unicode(obj):
+"""
+PYTHON TYPES
+"""
+
+
+# TODO REMOVE UNNECESSARRY ASSERTS OR REPLACE THEM WITH DEBUG MODE
+
+def to_u(obj):
     return unicode(obj._tostring_())
 
 
-def to_native_integer(obj):
+def to_i(obj):
     return obj._tointeger_()
 
 
-def to_native_float(obj):
+def to_f(obj):
     return obj._tofloat_()
 
 
-def to_native_string(obj):
+def to_s(obj):
     s = obj._tostring_()
     assert isinstance(s, str)
     return s
 
 
-def to_native_bool(obj):
+def to_b(obj):
     return obj._tobool_()
 
 

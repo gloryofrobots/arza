@@ -25,7 +25,7 @@ class NativeRoutine(BaseRoutine):
 
     def _info(self):
         return space.newstring(u"obin.%s %s" %
-                               (api.to_native_unicode(self._name_), api.to_native_unicode(self._args)))
+                               (api.to_u(self._name_), api.to_u(self._args)))
 
     def args(self):
         return self._args

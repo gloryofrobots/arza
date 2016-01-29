@@ -2,6 +2,7 @@ from obin.compile.parse import tokens
 from obin.compile.parse import token_type as tt
 from obin.compile.parse import node_type as nt
 from obin.types.root import W_Any
+from obin.types import space, api
 
 
 class BaseNode(W_Any):
@@ -78,7 +79,7 @@ class Node(BaseNode):
         d = {"_type": tokens.token_type_to_str(node_token_type(self)),
              "_ntype": nt.node_type_to_str(self.node_type) if self.node_type is not None else "",
              "_value": node_value(self),
-             "_line": node_line(self)
+             "_line": api.to_i(node_line(self))
              # "arity": self.arity, "pos": self.position
              }
 
@@ -354,7 +355,7 @@ def create_slice_til_the_end(basenode):
 
 
 def create_goto_node(label):
-    node = Node(tokens.Token(tt.TT_GOTO, str(label), -1, -1, -1))
+    node = Node(tokens.Token(tt.TT_GOTO, str(label), space.newint(-1), space.newint(-1), space.newint(-1)))
     node.init(nt.NT_GOTO, 0)
     return node
 

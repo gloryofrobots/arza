@@ -90,7 +90,7 @@ class W_String(W_Hashable):
         from obin.types.space import isint
         from obin.types import api
         assert isint(index)
-        return self._at_index_(api.to_native_integer(index))
+        return self._at_index_(api.to_i(index))
 
     def _behavior_(self, process):
         return process.std.behaviors.String
@@ -113,7 +113,7 @@ class Builder:
         return self
 
     def add(self, obj):
-        self.els.append(api.to_native_unicode(obj))
+        self.els.append(api.to_u(obj))
         return self
 
     def add_u(self, unistr):

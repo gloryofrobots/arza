@@ -198,7 +198,7 @@ class W_Map(W_Any):
     def to_dict(self):
         m = {}
         for k, i in self.slot_bindings.items():
-            m[api.to_native_string(k)] = api.at_index(self.slot_values, i)
+            m[api.to_s(k)] = api.at_index(self.slot_values, i)
 
         return m
 
@@ -207,7 +207,7 @@ class W_Map(W_Any):
         res = []
         for k, i in self.slot_bindings.items():
             v = api.at_index(self.slot_values, i)
-            res.append("%s = %s" % (api.to_native_string(k), api.to_native_string(v)))
+            res.append("%s = %s" % (api.to_s(k), api.to_s(v)))
 
         return "{%s}" % ", ".join(res)
 

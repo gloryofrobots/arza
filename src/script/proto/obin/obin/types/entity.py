@@ -11,7 +11,7 @@ class W_Entity(W_Any):
         self.behavior = behavior
 
     def _tostring_(self):
-        return api.to_native_string(self.source)
+        return api.to_s(self.source)
 
     # BEHAVIOR
     def _at_(self, key):

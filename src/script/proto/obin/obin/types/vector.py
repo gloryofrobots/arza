@@ -21,7 +21,7 @@ class W_Vector(W_Any):
         from obin.types.space import isint
         from obin.types import api
         assert isint(k)
-        i = api.to_native_integer(k)
+        i = api.to_i(k)
         try:
             self._items[i] = v
             return True
@@ -44,12 +44,12 @@ class W_Vector(W_Any):
         if isnil(start):
             start_index = 0
         else:
-            start_index = api.to_native_integer(start)
+            start_index = api.to_i(start)
 
         if isnil(end):
             end_index = self._length_()
         else:
-            end_index = api.to_native_integer(end)
+            end_index = api.to_i(end)
 
         items = self._items[start_index:end_index]
         return W_Vector(items)
@@ -59,7 +59,7 @@ class W_Vector(W_Any):
         from obin.types import api
         assert isint(index)
         try:
-            el = self._items[api.to_native_integer(index)]
+            el = self._items[api.to_i(index)]
         except KeyError:
             return newnil()
 

@@ -10,7 +10,7 @@ class W_TVar(W_Any):
         self.value = value
 
     def _tostring_(self):
-        return "TVar(%s)" % api.to_native_string(self.value)
+        return "TVar(%s)" % api.to_s(self.value)
 
     def _behavior_(self, process):
         return process.std.behaviors.TVar

@@ -33,7 +33,7 @@ class W_PList(W_Any):
         while True:
             if isempty(cur):
                 break
-            els.append(api.to_native_string(head(cur)))
+            els.append(api.to_s(head(cur)))
             cur = cur.tail
         return "[%s]" % (", ".join(els))
 
@@ -46,7 +46,7 @@ class W_PList(W_Any):
     def _at_(self, key):
         from obin.types.space import newnil
         from obin.types import api
-        int_index = api.to_native_integer(key)
+        int_index = api.to_i(key)
         if int_index < 0:
             return newnil()
 
@@ -56,7 +56,7 @@ class W_PList(W_Any):
         from obin.types.space import isint
         from obin.types import api
         assert isint(k)
-        i = api.to_native_integer(k)
+        i = api.to_i(k)
         return update(self, i, v)
 
     def _behavior_(self, process):
@@ -69,7 +69,7 @@ class W_PList(W_Any):
         if isnil(start):
             start_index = 0
         else:
-            start_index = api.to_native_integer(start)
+            start_index = api.to_i(start)
 
         # INTELLIGENT ERROR HERE, BECAUSE LISTS DON`T SUPPORT RELATIVE SLICING
         if start_index < 0:
@@ -78,7 +78,7 @@ class W_PList(W_Any):
         if isnil(end):
             return drop(self, start_index)
         else:
-            end_index = api.to_native_integer(end)
+            end_index = api.to_i(end)
 
         # INTELLIGENT ERROR HERE, BECAUSE LISTS DON`T SUPPORT RELATIVE SLICING
         if end_index < 0:

@@ -9,7 +9,7 @@ def make_test_data(vals):
 
 def inc(el):
     from obin.types import api, space
-    return space.newint(api.to_native_integer(el) + 1)
+    return space.newint(api.to_i(el) + 1)
 
 
 class PListTestCase(unittest.TestCase):

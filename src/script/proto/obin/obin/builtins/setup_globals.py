@@ -42,7 +42,7 @@ def compile_module(process, routine):
     sourcename = routine.get_arg(0)
     modulename = routine.get_arg(1)
     parent_env = routine.get_arg(2)
-    filename = api.to_native_string(sourcename)
+    filename = api.to_s(sourcename)
     script = fs.load_file_content(filename)
 
     _module = compiler.compile_module(process, modulename, script, sourcename)
@@ -63,10 +63,10 @@ def _print(process, routine):
 
     builder = UnicodeBuilder()
     for arg in args[:-1]:
-        builder.append(api.to_native_unicode(arg))
+        builder.append(api.to_u(arg))
         builder.append(u' ')
 
-    builder.append(api.to_native_unicode(args[-1]))
+    builder.append(api.to_u(args[-1]))
 
     u_print_str = builder.build()
     print_str = encode_unicode_utf8(u_print_str)
@@ -78,7 +78,7 @@ def _eval(process, routine):
     x = routine.get_arg(0)
 
     assert space.issymbol(x)
-    src = api.to_native_string(x)
+    src = api.to_s(x)
     source = compiler.compile_function_source(process, src, space.newsymbol(process, u"__eval__"))
     obj = source.code.scope.create_env_bindings()
     env = space.newenv(obj, None)
@@ -180,8 +180,8 @@ def activate_fiber(process, routine):
 def _range(process, routine):
     start = routine.get_arg(0)
     end = routine.get_arg(1)
-    start = api.to_native_integer(start)
-    end = api.to_native_integer(end)
+    start = api.to_i(start)
+    end = api.to_i(end)
     items = [space.newint(i) for i in xrange(start, end)]
     return space.newtuple(items)
 

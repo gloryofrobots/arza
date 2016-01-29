@@ -21,7 +21,7 @@ class W_Float(W_Number):
 
     def _equal_(self, other):
         try:
-            fother = api.to_native_float(other)
+            fother = api.to_f(other)
             return self.float_value == fother
         except:
             return False

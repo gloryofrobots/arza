@@ -316,23 +316,6 @@ func main() ->
         print("X", x)
     end
 
-    func inner_loop_outer() ->
-        x = 0
-        func f() ->
-            outer x
-            while x < 100
-                x = x + 1
-                if x == 8
-                    continue
-                elif x == 11
-                    break
-                end
-                print(x)
-            end
-        end
-        f()
-    end
-
     print ("**************************************************************************")
 
     //////////////////////////////////////////////////////////////////////////
@@ -501,5 +484,12 @@ func main() ->
     print(alice3, traits(alice3))
     print(alice4, traits(alice4))
 
-    Galvanizator
+
+    try
+        print(asdsadasda)
+    catch e
+        print(e)
+    finally
+        Galvanizator
+    end
 end

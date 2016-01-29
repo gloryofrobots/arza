@@ -387,7 +387,6 @@ def prefix_lcurly(parser, node):
 
 
 def parse_func(parser):
-    outers = []
     if parser.token_type == TT_NAME:
         name = _init_current_node(parser, 0)
         advance(parser)
@@ -400,49 +399,31 @@ def parse_func(parser):
         args = expression(args_parser, 0)
 
     advance_expected(parser, TT_ARROW)
-    if parser.token_type == TT_OUTER:
-        advance_expected(parser, TT_OUTER)
-        while True:
-            if parser.token_type == TT_NAME:
-                outer = _init_current_node(parser, 0)
-                outers.append(outer)
-                advance(parser)
-
-            if parser.token_type != TT_COMMA:
-                break
-
-            advance_expected(parser, TT_COMMA)
-
-        if len(outers) == 0:
-            parse_error(parser, u"Wrong outer declaration", parser.node)
-
     body = statements(parser)
     if not body:
         body = nodes.empty_node()
     advance_expected(parser, TT_END)
-    return name, args, nodes.list_node(outers), body
+    return name, args, body
 
 
 # REPEATING MYSELF HERE BECAUSE I DON`T WONT TO HAVE DEF AND FUNC,
 # AND MODULE FUNC IS DIFFERENT FROM EXPRESSION FUNC. IT DIDN'T HAVE ACCESS TO TRAIT GENERIC SPECIFY ...
 
 def prefix_module_func(parser, node):
-    node.init(NT_FUNC, 4)
-    name, args, outers, body = parse_func(parser.expression_parser)
+    node.init(NT_FUNC, 3)
+    name, args, body = parse_func(parser.expression_parser)
     node.setfirst(name)
     node.setsecond(args)
-    node.setthird(outers)
-    node.setfourth(body)
+    node.setthird(body)
     return node
 
 
 def prefix_func(parser, node):
-    node.init(NT_FUNC, 4)
-    name, args, outers, body = parse_func(parser)
+    node.init(NT_FUNC, 3)
+    name, args,  body = parse_func(parser)
     node.setfirst(name)
     node.setsecond(args)
-    node.setthird(outers)
-    node.setfourth(body)
+    node.setthird(body)
     return node
 
 
@@ -504,9 +485,6 @@ def stmt_single(parser, node):
     endofexpression(parser)
     return node
 
-
-def stmt_outer(parser, node):
-    parse_error(parser, u"Outer variables can be declared only in first function statement", node)
 
 
 def stmt_loop_flow(parser, node):

@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
 from obin.compile.parse.token_type import *
-
+from obin.types import space
 # import rpython.rlib.rsre.rsre_re as re
 
 
@@ -103,7 +103,6 @@ RULES = [
     (keyword('as'), TT_AS),
     (keyword('when'), TT_WHEN),
 
-    (keyword('outer'), TT_OUTER),
 
     (keyword('var'), TT_VAR),
     (keyword('lazy'), TT_LAZY),
@@ -169,10 +168,13 @@ class Token:
     def __init__(self, type, val, pos, line, column):
         assert isinstance(type, int)
         assert isinstance(val, str)
-        assert isinstance(pos, int)
-        assert isinstance(line, int)
+        assert space.isint(pos)
+        assert space.isint(line)
+        assert space.isint(column)
+
         self.type = type
         self.value = val
+
         self.position = pos
         self.line = line
         self.column = column
