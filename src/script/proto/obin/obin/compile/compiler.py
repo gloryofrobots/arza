@@ -2,6 +2,8 @@ __author__ = 'gloryofrobots'
 from obin.compile.code.opcode import *
 from obin.compile.parse import parser
 from obin.compile.parse import nodes
+from obin.compile.parse.nodes import (node_type, node_arity, 
+                                      node_first, node_second, node_third)
 from obin.compile.parse.node_type import *
 from obin.compile.scope import Scope
 from obin.types import space as obs
@@ -204,9 +206,9 @@ def _compile_NIL(process, compiler, code, node):
 
 
 def _get_name_value(name):
-    if name.node_type == NT_SPECIAL_NAME:
+    if node_type(name) == NT_SPECIAL_NAME:
         value = _get_special_name_value(name)
-    elif name.node_type == NT_NAME:
+    elif node_type(name) == NT_NAME:
         value = nodes.node_value(name)
     else:
         assert False, "Invalid call"
@@ -266,18 +268,18 @@ def _compile_CHAR(process, compiler, code, node):
 # def _compile_OUTER(process, compiler, code, node):
 #     # TODO REMOVE IT
 #     assert False, "Why you need it?"
-#     name = obs.newstring_from_str(node.first().value)
+#     name = obs.newstring_from_str(node_first(node).value)
 #     _declare_outer(process, compiler, name)
 
 
 def _on_binary_primitive(process, compiler, code, node, name):
-    _compile(process, compiler, code, node.first())
-    _compile(process, compiler, code, node.second())
+    _compile(process, compiler, code, node_first(node))
+    _compile(process, compiler, code, node_second(node))
     code.emit_1(CALL_INTERNAL, name, info(node))
 
 
 def _on_unary_primitive(process, compiler, code, node, name):
-    _compile(process, compiler, code, node.first())
+    _compile(process, compiler, code, node_first(node))
     code.emit_1(CALL_INTERNAL, name, info(node))
 
 
@@ -390,26 +392,26 @@ def _compile_URSHIFT(process, compiler, code, node):
 
 
 def _compile_AND(process, compiler, code, node):
-    _compile(process, compiler, code, node.first())
+    _compile(process, compiler, code, node_first(node))
     one = code.prealocate_label()
     code.emit_1(JUMP_IF_FALSE_NOPOP, one, info(node))
-    _compile(process, compiler, code, node.second())
+    _compile(process, compiler, code, node_second(node))
     code.emit_1(LABEL, one, info(node))
 
 
 def _compile_OR(process, compiler, code, node):
-    _compile(process, compiler, code, node.first())
+    _compile(process, compiler, code, node_first(node))
     one = code.prealocate_label()
     code.emit_1(JUMP_IF_TRUE_NOPOP, one, info(node))
-    _compile(process, compiler, code, node.second())
+    _compile(process, compiler, code, node_second(node))
     code.emit_1(LABEL, one, info(node))
 
 
 def _compile_ASSIGN_MEMBER(process, compiler, code, node):
-    member = node.first()
-    value = node.second()
-    obj = member.first()
-    item = member.second()
+    member = node_first(node)
+    value = node_second(node)
+    obj = node_first(member)
+    item = node_second(member)
 
     _compile(process, compiler, code, obj)
     _compile(process, compiler, code, item)
@@ -418,12 +420,12 @@ def _compile_ASSIGN_MEMBER(process, compiler, code, node):
 
 
 def _compile_ASSIGN_SYMBOL(process, compiler, code, node):
-    member = node.first()
+    member = node_first(node)
 
-    obj = member.first()
+    obj = node_first(member)
     _compile(process, compiler, code, obj)
-    _emit_symbol_name(process, compiler, code, member.second())
-    _compile(process, compiler, code, node.second())
+    _emit_symbol_name(process, compiler, code, node_second(member))
+    _compile(process, compiler, code, node_second(node))
     code.emit_0(STORE_MEMBER, info(node))
 
 
@@ -453,8 +455,8 @@ def _compile_MATCH(process, compiler, code, node):
     from obin.compile.match import transform
     from obin.compile.parse.nodes import create_goto_node
     from obin.compile import MATCH_SYS_VAR
-    exp = node.first()
-    patterns = node.second()
+    exp = node_first(node)
+    patterns = node_second(node)
 
     name = obs.newsymbol_py_str(process, MATCH_SYS_VAR)
 
@@ -489,35 +491,35 @@ def _compile_GOTO(process, compiler, code, node):
 # DESTRUCT DESTRUCT
 ####
 def _compile_destruct(process, compiler, code, node):
-    _compile(process, compiler, code, node.second())
-    return _compile_destruct_recur(process, compiler, code, node.first())
+    _compile(process, compiler, code, node_second(node))
+    return _compile_destruct_recur(process, compiler, code, node_first(node))
 
 
 def _is_optimizable_unpack_seq_pattern(node):
-    items = node.first()
+    items = node_first(node)
     for child in items:
         if child is None:
             print ""
-        if child.node_type != NT_NAME:
+        if node_type(child) != NT_NAME:
             return False
     return True
 
 
 def _compile_destruct_recur(process, compiler, code, node):
-    if node.node_type == NT_TUPLE:
+    if node_type(node) == NT_TUPLE:
         # x,y,z = foo() optimisation to single unpack opcode
         if _is_optimizable_unpack_seq_pattern(node):
             return _compile_destruct_unpack_seq(process, compiler, code, node)
         else:
             return _compile_destruct_recur_seq(process, compiler, code, node)
-    elif node.node_type == NT_MAP:
+    elif node_type(node) == NT_MAP:
         return _compile_destruct_recur_map(process, compiler, code, node)
     else:
         compile_error(process, compiler, code, node, u"unsupported assignment syntax")
 
 
 def _compile_destruct_recur_map(process, compiler, code, node):
-    pairs = node.first()
+    pairs = node_first(node)
     for pair in pairs:
         _emit_dup(code)
 
@@ -526,7 +528,7 @@ def _compile_destruct_recur_map(process, compiler, code, node):
         varname = None
         if nodes.is_empty_node(value):
             varname = key
-        elif value.node_type == NT_NAME:
+        elif node_type(value) == NT_NAME:
             varname = value
 
         _emit_map_key(process, compiler, code, key)
@@ -547,7 +549,7 @@ def _compile_destruct_recur_map(process, compiler, code, node):
 
 def _compile_destruct_recur_seq_rest(process, compiler, code, last_item, last_index):
     _emit_dup(code)
-    varname = last_item.first()
+    varname = node_first(last_item)
     _emit_integer(process, compiler, code, last_index)
     _emit_nil(code)
     code.emit_0(SLICE, codeinfo_unknown())
@@ -559,7 +561,7 @@ def _compile_destruct_recur_seq_item(process, compiler, code, item, index):
     _emit_dup(code)
 
     varname = None
-    if item.node_type == NT_NAME:
+    if node_type(item) == NT_NAME:
         varname = item
 
     idx = _declare_literal(process, compiler, obs.newint(index))
@@ -575,7 +577,7 @@ def _compile_destruct_recur_seq_item(process, compiler, code, item, index):
 
 
 def _compile_destruct_recur_seq(process, compiler, code, node):
-    items = node.first()
+    items = node_first(node)
     length = len(items)
 
     last_index = length - 1
@@ -585,7 +587,7 @@ def _compile_destruct_recur_seq(process, compiler, code, node):
         _compile_destruct_recur_seq_item(process, compiler, code, item, i)
 
     last_item = items[last_index]
-    if last_item.node_type == NT_REST:
+    if node_type(last_item) == NT_REST:
         _compile_destruct_recur_seq_rest(process, compiler, code, last_item, last_index)
     else:
         _compile_destruct_recur_seq_item(process, compiler, code, last_item, last_index)
@@ -593,7 +595,7 @@ def _compile_destruct_recur_seq(process, compiler, code, node):
 
 def _compile_destruct_unpack_seq(process, compiler, code, node):
     _emit_dup(code)
-    names = node.first()
+    names = node_first(node)
     length = len(names)
     code.emit_1(UNPACK_SEQUENCE, length, info(node))
     for name in names[0:-1]:
@@ -607,15 +609,15 @@ def _compile_destruct_unpack_seq(process, compiler, code, node):
 ################################################################################
 
 def _compile_ASSIGN(process, compiler, code, node):
-    left = node.first()
-    if left.node_type == NT_LOOKUP_SYMBOL:
+    left = node_first(node)
+    if node_type(left) == NT_LOOKUP_SYMBOL:
         return _compile_ASSIGN_SYMBOL(process, compiler, code, node)
-    elif left.node_type == NT_LOOKUP:
+    elif node_type(left) == NT_LOOKUP:
         return _compile_ASSIGN_MEMBER(process, compiler, code, node)
-    elif left.node_type == NT_TUPLE or left.node_type == NT_MAP:
+    elif node_type(left) == NT_TUPLE or node_type(left) == NT_MAP:
         return _compile_destruct(process, compiler, code, node)
 
-    _compile(process, compiler, code, node.second())
+    _compile(process, compiler, code, node_second(node))
     _emit_store_name(process, compiler, code, left)
 
 
@@ -645,12 +647,12 @@ def _compile_NAME(process, compiler, code, node):
 
 
 def _compile_SYMBOL(process, compiler, code, node):
-    name = node.first()
+    name = node_first(node)
     _emit_symbol_name(process, compiler, code, name)
 
 
 def _compile_RETURN(process, compiler, code, node):
-    expr = node.first()
+    expr = node_first(node)
     if nodes.is_empty_node(expr):
         _emit_nil(code)
     else:
@@ -660,7 +662,7 @@ def _compile_RETURN(process, compiler, code, node):
 
 
 def _compile_THROW(process, compiler, code, node):
-    expr = node.first()
+    expr = node_first(node)
     if nodes.is_empty_node(expr):
         _emit_nil(code)
     else:
@@ -670,7 +672,7 @@ def _compile_THROW(process, compiler, code, node):
 
 
 def _emit_map_key(process, compiler, code, key):
-    if key.node_type == NT_NAME:
+    if node_type(key) == NT_NAME:
         # in case of names in object literal we must convert them to symbols
         _emit_symbol_name(process, compiler, code, key)
     else:
@@ -678,8 +680,8 @@ def _emit_map_key(process, compiler, code, key):
 
 
 def _compile_MODIFY(process, compiler, code, node):
-    obj = node.first()
-    modifications = node.second()
+    obj = node_first(node)
+    modifications = node_second(node)
     _compile(process, compiler, code, obj)
 
     for m in modifications:
@@ -691,7 +693,7 @@ def _compile_MODIFY(process, compiler, code, node):
 
 
 def _compile_MAP(process, compiler, code, node):
-    items = node.first()
+    items = node_first(node)
     for c in items:
         key = c[0]
         value = c[1]
@@ -706,7 +708,7 @@ def _compile_MAP(process, compiler, code, node):
 
 
 def _compile_TUPLE(process, compiler, code, node):
-    items = node.first()
+    items = node_first(node)
     for c in items:
         _compile(process, compiler, code, c)
 
@@ -714,7 +716,7 @@ def _compile_TUPLE(process, compiler, code, node):
 
 
 def _compile_LIST(process, compiler, code, node):
-    items = node.first()
+    items = node_first(node)
     for c in items:
         _compile(process, compiler, code, c)
 
@@ -722,7 +724,7 @@ def _compile_LIST(process, compiler, code, node):
 
 
 # def _emit_list(process, compiler, code, node):
-#     items = node.first()
+#     items = node_first(node)
 #
 #     for c in items:
 #         _compile(process, compiler, code, c)
@@ -750,12 +752,12 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params,  body
     if nodes.is_empty_node(params):
         _declare_arguments(process, compiler, 0, False)
     else:
-        args = params.first()
+        args = node_first(params)
         length = args.length()
         funccode.emit_0(ARGUMENTS, codeinfo_unknown())
 
         last_param = args[-1]
-        is_variadic = True if last_param.node_type == NT_REST else False
+        is_variadic = True if node_type(last_param) == NT_REST else False
         _declare_arguments(process, compiler, length, is_variadic)
         _compile_destruct_recur(process, compiler, funccode, params)
 
@@ -778,14 +780,14 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params,  body
 
 
 def _compile_FUNC(process, compiler, code, node):
-    name = node.first()
+    name = node_first(node)
     if not nodes.is_empty_node(name):
         funcname = obs.newsymbol_py_str(process, nodes.node_value(name))
     else:
         funcname = obs.newsymbol_py_str(process, "")
 
-    params = node.second()
-    body = node.third()
+    params = node_second(node)
+    body = node_third(node)
     _compile_func_args_and_body(process, compiler, code, funcname, params, body, FUNCTION, info(name))
 
     if api.isempty(funcname):
@@ -807,9 +809,9 @@ def _compile_branch(process, compiler, code, condition, body, endif):
 
 
 def _compile_WHEN(process, compiler, code, node):
-    condition = node.first()
-    truebranch = node.second()
-    falsebranch = node.third()
+    condition = node_first(node)
+    truebranch = node_second(node)
+    falsebranch = node_third(node)
     endif = code.prealocate_label()
     _compile_branch(process, compiler, code, condition, truebranch, endif)
     _compile(process, compiler, code, falsebranch)
@@ -817,7 +819,7 @@ def _compile_WHEN(process, compiler, code, node):
 
 
 def _compile_IF(process, compiler, code, node):
-    branches = node.first()
+    branches = node_first(node)
 
     endif = code.prealocate_label()
 
@@ -835,11 +837,11 @@ def _compile_IF(process, compiler, code, node):
 
 
 def _compile_TRY(process, compiler, code, node):
-    trynode = node.first()
-    catch = node.second()
+    trynode = node_first(node)
+    catch = node_second(node)
     catchvar = catch[0]
     catchnode = catch[1]
-    finallynode = node.third()
+    finallynode = node_third(node)
     if not nodes.is_empty_node(finallynode):
         finallylabel = code.prealocate_label()
     else:
@@ -871,22 +873,22 @@ def _compile_TRY(process, compiler, code, node):
 #############################
 
 def _dot_to_string(process, compiler, node):
-    if node.node_type == NT_LOOKUP_SYMBOL:
-        return _dot_to_string(process, compiler, node.first()) + '.' + nodes.node_value(node.second())
+    if node_type(node) == NT_LOOKUP_SYMBOL:
+        return _dot_to_string(process, compiler, node_first(node)) + '.' + nodes.node_value(node_second(node))
     else:
         return nodes.node_value(node)
 
 
 def _compile_LOAD(process, compiler, code, node):
-    exp = node.first()
-    if exp.node_type == NT_AS:
-        import_name = exp.second()
-        module_path = _dot_to_string(process, compiler, exp.first())
-    elif exp.node_type == NT_LOOKUP_SYMBOL:
-        import_name = exp.second()
+    exp = node_first(node)
+    if node_type(exp) == NT_AS:
+        import_name = node_second(exp)
+        module_path = _dot_to_string(process, compiler, node_first(exp))
+    elif node_type(exp) == NT_LOOKUP_SYMBOL:
+        import_name = node_second(exp)
         module_path = _dot_to_string(process, compiler, exp)
     else:
-        assert exp.node_type == NT_NAME
+        assert node_type(exp) == NT_NAME
         import_name = exp
         module_path = nodes.node_value(exp)
 
@@ -897,8 +899,8 @@ def _compile_LOAD(process, compiler, code, node):
 
 
 def _compile_MODULE(process, compiler, code, node):
-    name_node = node.first()
-    body = node.second()
+    name_node = node_first(node)
+    body = node_second(node)
 
     compiled_code = compile_ast(process, compiler, body)
     # _enter_scope(process, compiler)
@@ -923,7 +925,7 @@ def _compile_MODULE(process, compiler, code, node):
 
 
 def _compile_GENERIC(process, compiler, code, node):
-    name_node = node.first()
+    name_node = node_first(node)
     name_value = _get_name_value(name_node)
 
     name = obs.newsymbol_py_str(process, name_value)
@@ -933,13 +935,13 @@ def _compile_GENERIC(process, compiler, code, node):
     code.emit_1(GENERIC, name_index, info(node))
     code.emit_2(STORE_LOCAL, index, name_index, info(name_node))
 
-    if node.arity == 2:
-        methods = node.second()
+    if node_arity(node) == 2:
+        methods = node_second(node)
         _emit_specify(process, compiler, code, node, methods)
 
 
 def _compile_TRAIT(process, compiler, code, node):
-    names = node.first()
+    names = node_first(node)
     for name in names:
         name = obs.newsymbol_py_str(process, nodes.node_value(name))
         index = _declare_local(process, compiler, name)
@@ -956,9 +958,9 @@ def _emit_specify(process, compiler, code, node, methods):
         args = []
         signature = []
         for arg in method_args:
-            if arg.node_type == NT_OF:
-                args.append(arg.first())
-                signature.append(arg.second())
+            if node_type(arg) == NT_OF:
+                args.append(node_first(arg))
+                signature.append(node_second(arg))
             else:
                 args.append(arg)
                 signature.append(None)
@@ -980,15 +982,15 @@ def _emit_specify(process, compiler, code, node, methods):
 
 
 def _compile_SPECIFY(process, compiler, code, node):
-    name = node.first()
+    name = node_first(node)
     _compile_node_name_lookup(process, compiler, code, name)
-    methods = node.second()
+    methods = node_second(node)
     _emit_specify(process, compiler, code, node, methods)
 
 
 def _compile_FOR(process, compiler, code, node):
-    source = node.second()
-    body = node.third()
+    source = node_second(node)
+    body = node_third(node)
     _compile(process, compiler, code, source)
     code.emit_0(ITERATOR, info(node))
     # load the "last" iterations result
@@ -1003,7 +1005,7 @@ def _compile_FOR(process, compiler, code, node):
     # put next iterator value on stack
     code.emit_0(NEXT, codeinfo_unknown())
 
-    vars = node.first()
+    vars = node_first(node)
     name = obs.newsymbol_py_str(process, nodes.node_value(vars[0]))
     index = _declare_local(process, compiler, name)
 
@@ -1019,8 +1021,8 @@ def _compile_FOR(process, compiler, code, node):
 
 
 def _compile_WHILE(process, compiler, code, node):
-    condition = node.first()
-    body = node.second()
+    condition = node_first(node)
+    body = node_second(node)
     _emit_nil(code)
     startlabel = code.emit_startloop_label()
     code.continue_at_label(startlabel)
@@ -1039,15 +1041,15 @@ def _compile_CONS(process, compiler, code, node):
 
 
 def _compile_LOOKUP_SYMBOL(process, compiler, code, node):
-    obj = node.first()
+    obj = node_first(node)
     _compile(process, compiler, code, obj)
-    _emit_symbol_name(process, compiler, code, node.second())
+    _emit_symbol_name(process, compiler, code, node_second(node))
     code.emit_0(MEMBER, info(node))
 
 
 def _emit_SLICE(process, compiler, code, obj, slice):
-    start = slice.first()
-    end = slice.second()
+    start = node_first(slice)
+    end = node_second(slice)
 
     _compile(process, compiler, code, obj)
 
@@ -1066,9 +1068,9 @@ def _emit_SLICE(process, compiler, code, obj, slice):
 
 def _compile_LOOKUP(process, compiler, code, node):
     # TODO OPTIMISATION FOR INDEX LOOKUP
-    obj = node.first()
-    expr = node.second()
-    if expr.node_type == NT_RANGE:
+    obj = node_first(node)
+    expr = node_second(node)
+    if node_type(expr) == NT_RANGE:
         return _emit_SLICE(process, compiler, code, obj, expr)
 
     _compile(process, compiler, code, obj)
@@ -1087,9 +1089,9 @@ def _compile_args_list(process, compiler, code, args):
 
 
 def _compile_CALL_MEMBER(process, compiler, code, node):
-    obj = node.first()
-    method = node.second()
-    args = node.third()
+    obj = node_first(node)
+    method = node_second(node)
+    args = node_third(node)
     # print "_compile_LPAREN_MEMBER", obj, method, args
 
     args_count = _compile_args_list(process, compiler, code, args)
@@ -1103,8 +1105,8 @@ def _compile_CALL_MEMBER(process, compiler, code, node):
 
 
 def _compile_CALL(process, compiler, code, node):
-    func = node.first()
-    args = node.second()
+    func = node_first(node)
+    args = node_second(node)
 
     # print "_compile_LPAREN", func, args
 
@@ -1142,156 +1144,156 @@ def _compile_nodes(process, compiler, code, ast):
 
 def _compile_node(process, compiler, code, node):
     from obin.compile.parse.nodes import BaseNode
-    node_type = node.node_type
+    ntype = node_type(node)
 
-    assert node_type is not None
+    assert ntype is not None
 
-    if NT_TRUE == node_type:
+    if NT_TRUE == ntype:
         _compile_TRUE(process, compiler, code, node)
-    elif NT_FALSE == node_type:
+    elif NT_FALSE == ntype:
         _compile_FALSE(process, compiler, code, node)
-    elif NT_NIL == node_type:
+    elif NT_NIL == ntype:
         _compile_NIL(process, compiler, code, node)
-    elif NT_INT == node_type:
+    elif NT_INT == ntype:
         _compile_INT(process, compiler, code, node)
-    elif NT_FLOAT == node_type:
+    elif NT_FLOAT == ntype:
         _compile_FLOAT(process, compiler, code, node)
-    elif NT_STR == node_type:
+    elif NT_STR == ntype:
         _compile_STR(process, compiler, code, node)
-    elif NT_CHAR == node_type:
+    elif NT_CHAR == ntype:
         _compile_CHAR(process, compiler, code, node)
-    elif NT_NAME == node_type:
+    elif NT_NAME == ntype:
         _compile_NAME(process, compiler, code, node)
-    elif NT_SPECIAL_NAME == node_type:
+    elif NT_SPECIAL_NAME == ntype:
         _compile_SPECIAL_NAME(process, compiler, code, node)
-    elif NT_SYMBOL == node_type:
+    elif NT_SYMBOL == ntype:
         _compile_SYMBOL(process, compiler, code, node)
 
-    elif NT_FUNC == node_type:
+    elif NT_FUNC == ntype:
         _compile_FUNC(process, compiler, code, node)
 
-    elif NT_IF == node_type:
+    elif NT_IF == ntype:
         _compile_IF(process, compiler, code, node)
-    elif NT_WHEN == node_type:
+    elif NT_WHEN == ntype:
         _compile_WHEN(process, compiler, code, node)
-    elif NT_MATCH == node_type:
+    elif NT_MATCH == ntype:
         _compile_MATCH(process, compiler, code, node)
-    elif NT_TRY == node_type:
+    elif NT_TRY == ntype:
         _compile_TRY(process, compiler, code, node)
 
-    elif NT_LOAD == node_type:
+    elif NT_LOAD == ntype:
         _compile_LOAD(process, compiler, code, node)
-    elif NT_MODULE == node_type:
+    elif NT_MODULE == ntype:
         _compile_MODULE(process, compiler, code, node)
-    elif NT_TRAIT == node_type:
+    elif NT_TRAIT == ntype:
         _compile_TRAIT(process, compiler, code, node)
-    elif NT_GENERIC == node_type:
+    elif NT_GENERIC == ntype:
         _compile_GENERIC(process, compiler, code, node)
-    elif NT_SPECIFY == node_type:
+    elif NT_SPECIFY == ntype:
         _compile_SPECIFY(process, compiler, code, node)
 
-    elif NT_RETURN == node_type:
+    elif NT_RETURN == ntype:
         _compile_RETURN(process, compiler, code, node)
-    elif NT_THROW == node_type:
+    elif NT_THROW == ntype:
         _compile_THROW(process, compiler, code, node)
 
-    elif NT_BREAK == node_type:
+    elif NT_BREAK == ntype:
         _compile_BREAK(process, compiler, code, node)
-    elif NT_CONTINUE == node_type:
+    elif NT_CONTINUE == ntype:
         _compile_CONTINUE(process, compiler, code, node)
-    elif NT_FOR == node_type:
+    elif NT_FOR == ntype:
         _compile_FOR(process, compiler, code, node)
-    elif NT_WHILE == node_type:
+    elif NT_WHILE == ntype:
         _compile_WHILE(process, compiler, code, node)
 
-    elif NT_CALL == node_type:
+    elif NT_CALL == ntype:
         _compile_CALL(process, compiler, code, node)
-    elif NT_CALL_MEMBER == node_type:
+    elif NT_CALL_MEMBER == ntype:
         _compile_CALL_MEMBER(process, compiler, code, node)
 
-    elif NT_LIST == node_type:
+    elif NT_LIST == ntype:
         _compile_LIST(process, compiler, code, node)
-    elif NT_TUPLE == node_type:
+    elif NT_TUPLE == ntype:
         _compile_TUPLE(process, compiler, code, node)
-    elif NT_MAP == node_type:
+    elif NT_MAP == ntype:
         _compile_MAP(process, compiler, code, node)
 
-    elif NT_LOOKUP == node_type:
+    elif NT_LOOKUP == ntype:
         _compile_LOOKUP(process, compiler, code, node)
-    elif NT_LOOKUP_SYMBOL == node_type:
+    elif NT_LOOKUP_SYMBOL == ntype:
         _compile_LOOKUP_SYMBOL(process, compiler, code, node)
 
-    elif NT_MODIFY == node_type:
+    elif NT_MODIFY == ntype:
         _compile_MODIFY(process, compiler, code, node)
-    elif NT_CONS == node_type:
+    elif NT_CONS == ntype:
         _compile_CONS(process, compiler, code, node)
 
-    elif NT_IN == node_type:
+    elif NT_IN == ntype:
         _compile_IN(process, compiler, code, node)
-    elif NT_NOTIN == node_type:
+    elif NT_NOTIN == ntype:
         _compile_NOTIN(process, compiler, code, node)
-    elif NT_IS == node_type:
+    elif NT_IS == ntype:
         _compile_IS(process, compiler, code, node)
-    elif NT_ISNOT == node_type:
+    elif NT_ISNOT == ntype:
         _compile_ISNOT(process, compiler, code, node)
-    elif NT_ISA == node_type:
+    elif NT_ISA == ntype:
         _compile_ISA(process, compiler, code, node)
-    elif NT_NOTA == node_type:
+    elif NT_NOTA == ntype:
         _compile_NOTA(process, compiler, code, node)
 
-    elif NT_AND == node_type:
+    elif NT_AND == ntype:
         _compile_AND(process, compiler, code, node)
-    elif NT_OR == node_type:
+    elif NT_OR == ntype:
         _compile_OR(process, compiler, code, node)
-    elif NT_NOT == node_type:
+    elif NT_NOT == ntype:
         _compile_NOT(process, compiler, code, node)
-    elif NT_EQ == node_type:
+    elif NT_EQ == ntype:
         _compile_EQ(process, compiler, code, node)
-    elif NT_LE == node_type:
+    elif NT_LE == ntype:
         _compile_LE(process, compiler, code, node)
-    elif NT_GE == node_type:
+    elif NT_GE == ntype:
         _compile_GE(process, compiler, code, node)
-    elif NT_NE == node_type:
+    elif NT_NE == ntype:
         _compile_NE(process, compiler, code, node)
-    elif NT_BITAND == node_type:
+    elif NT_BITAND == ntype:
         _compile_BITAND(process, compiler, code, node)
-    elif NT_BITNOT == node_type:
+    elif NT_BITNOT == ntype:
         _compile_BITNOT(process, compiler, code, node)
-    elif NT_BITOR == node_type:
+    elif NT_BITOR == ntype:
         _compile_BITOR(process, compiler, code, node)
-    elif NT_BITXOR == node_type:
+    elif NT_BITXOR == ntype:
         _compile_BITXOR(process, compiler, code, node)
-    elif NT_SUB == node_type:
+    elif NT_SUB == ntype:
         _compile_SUB(process, compiler, code, node)
-    elif NT_ADD == node_type:
+    elif NT_ADD == ntype:
         _compile_ADD(process, compiler, code, node)
-    elif NT_MUL == node_type:
+    elif NT_MUL == ntype:
         _compile_MUL(process, compiler, code, node)
-    elif NT_DIV == node_type:
+    elif NT_DIV == ntype:
         _compile_DIV(process, compiler, code, node)
-    elif NT_MOD == node_type:
+    elif NT_MOD == ntype:
         _compile_MOD(process, compiler, code, node)
-    elif NT_LT == node_type:
+    elif NT_LT == ntype:
         _compile_LT(process, compiler, code, node)
-    elif NT_GT == node_type:
+    elif NT_GT == ntype:
         _compile_GT(process, compiler, code, node)
 
-    elif NT_RSHIFT == node_type:
+    elif NT_RSHIFT == ntype:
         _compile_RSHIFT(process, compiler, code, node)
-    elif NT_URSHIFT == node_type:
+    elif NT_URSHIFT == ntype:
         _compile_URSHIFT(process, compiler, code, node)
-    elif NT_LSHIFT == node_type:
+    elif NT_LSHIFT == ntype:
         _compile_LSHIFT(process, compiler, code, node)
 
-    elif NT_UNARY_PLUS == node_type:
+    elif NT_UNARY_PLUS == ntype:
         _compile_UNARY_PLUS(process, compiler, code, node)
-    elif NT_UNARY_MINUS == node_type:
+    elif NT_UNARY_MINUS == ntype:
         _compile_UNARY_MINUS(process, compiler, code, node)
 
-    elif NT_GOTO == node_type:
+    elif NT_GOTO == ntype:
         _compile_GOTO(process, compiler, code, node)
 
-    elif NT_ASSIGN == node_type:
+    elif NT_ASSIGN == ntype:
         _compile_ASSIGN(process, compiler, code, node)
     else:
         compile_error(process, compiler, code, node, u"Unknown node")

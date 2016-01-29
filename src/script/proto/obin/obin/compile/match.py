@@ -26,7 +26,7 @@ def _create_path_node(basenode, path):
 ###################################################################################
 
 def _process_tuple(process, compiler, pattern, stack, path):
-    children = pattern.first()
+    children = node_first(pattern)
     count = children.length()
     stack.append(["is_indexed", _create_path_node(pattern, path)])
     stack.append(["length", _create_path_node(pattern, path), count])
@@ -39,7 +39,7 @@ def _process_tuple(process, compiler, pattern, stack, path):
 def _process_list(process, compiler, pattern, stack, path):
     stack.append(["is_seq", _create_path_node(pattern, path)])
 
-    children = pattern.first()
+    children = node_first(pattern)
     count = children.length()
     # list_length doesnt`t calculate we need this node for branch merge checker
     # so [a,b] and [a,b,c] didn`t cause the error
@@ -48,7 +48,7 @@ def _process_list(process, compiler, pattern, stack, path):
     # first process all args except last which might be ...rest param
     cur_path = path
     for i, child in enumerate(children[:-1]):
-        if child.node_type == NT_REST:
+        if node_type(child) == NT_REST:
             return match_transform_error(process, compiler, child, u'Invalid use of Rest')
 
         stack.append(["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(child)])
@@ -59,8 +59,8 @@ def _process_list(process, compiler, pattern, stack, path):
         _process_pattern(process, compiler, child, stack, child_path)
 
     last_child = children[-1]
-    if last_child.node_type == NT_REST:
-        last_child = last_child.first()
+    if node_type(last_child) == NT_REST:
+        last_child = node_first(last_child)
         child_path = cur_path
         _process_pattern(process, compiler, last_child, stack, child_path)
     else:
@@ -79,7 +79,7 @@ def _process_list(process, compiler, pattern, stack, path):
 def _process_map(process, compiler, pattern, stack, path):
     stack.append(["is_map", _create_path_node(pattern, path)])
 
-    children = pattern.first()
+    children = node_first(pattern)
     count = children.length()
     # empty map
     if count == 0:
@@ -91,12 +91,12 @@ def _process_map(process, compiler, pattern, stack, path):
     for child in children:
         key = child[0]
 
-        if key.node_type == NT_NAME:
+        if node_type(key) == NT_NAME:
             name = '"%s"' % node_value(key)
             symbols.append(name)
             symbol_key = create_str_node(key, name)
             varname = key
-        elif key.node_type == NT_STR:
+        elif node_type(key) == NT_STR:
             symbols.append(node_value(key))
             symbol_key = key
             varname = create_name_node(key, node_value(key))
@@ -138,17 +138,17 @@ def _process_literal(process, compiler, pattern, stack, path):
 
 
 def _process_pattern(process, compiler, pattern, stack, path):
-    if pattern.node_type == NT_TUPLE:
+    if node_type(pattern) == NT_TUPLE:
         _process_tuple(process, compiler, pattern, stack, path)
-    elif pattern.node_type == NT_LIST:
+    elif node_type(pattern) == NT_LIST:
         _process_list(process, compiler, pattern, stack, path)
-    elif pattern.node_type == NT_MAP:
+    elif node_type(pattern) == NT_MAP:
         _process_map(process, compiler, pattern, stack, path)
-    elif pattern.node_type == NT_NAME:
+    elif node_type(pattern) == NT_NAME:
         _process_name(process, compiler, pattern, stack, path)
-    elif pattern.node_type == NT_WILDCARD:
+    elif node_type(pattern) == NT_WILDCARD:
         _process_wildcard(process, compiler, pattern, stack, path)
-    elif pattern.node_type in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_NIL, NT_STR, NT_CHAR]:
+    elif node_type(pattern) in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_NIL, NT_STR, NT_CHAR]:
         _process_literal(process, compiler, pattern, stack, path)
     else:
         assert False
