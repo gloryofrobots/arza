@@ -363,8 +363,6 @@ def prefix_lcurly(parser, node):
             check_token_types(parser, [TT_NAME, TT_COLON, TT_INT, TT_STR, TT_CHAR, TT_FLOAT])
             # WE NEED LBP=10 TO OVERRIDE ASSIGNMENT LBP(9)
             key = expression(parser, 10)
-            # key = _init_current_node(parser, 0)
-            # advance(parser)
 
             if parser.token_type == TT_COMMA:
                 value = nodes.empty_node()

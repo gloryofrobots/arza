@@ -253,9 +253,6 @@ def infix(parser, ttype, lbp, led):
     set_led(parser, ttype, lbp, led)
 
 
-def infixr(parser, ttype, lbp, led):
-    set_led(parser, ttype, lbp, led)
-
 
 def prefix(parser, ttype, nud):
     set_nud(parser, ttype, nud)

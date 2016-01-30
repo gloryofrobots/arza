@@ -144,7 +144,7 @@ def base_parser_init(parser):
     precedence 10
     =
     """
-    infixr(parser, TT_ASSIGN, 10, led_infixr_assign)
+    infix(parser, TT_ASSIGN, 10, led_infixr_assign)
 
     prefix(parser, TT_LPAREN, prefix_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
@@ -185,19 +185,19 @@ def expression_parser_init(parser):
     precedence 35
     |
     """
-    infixr(parser, TT_BITOR, 35, led_infixr)
+    infix(parser, TT_BITOR, 35, led_infixr)
 
     """
     precedence 40
     ^
     """
-    infixr(parser, TT_BITXOR, 40, led_infixr)
+    infix(parser, TT_BITXOR, 40, led_infixr)
 
     """
     precedence 45
     &
     """
-    infixr(parser, TT_BITAND, 45, led_infixr)
+    infix(parser, TT_BITAND, 45, led_infixr)
 
     """
     precedence 50
@@ -247,7 +247,7 @@ def expression_parser_init(parser):
     """
 
     infix(parser, TT_DOT, 70, infix_dot)
-    infixr(parser, TT_DOUBLE_COLON, 70, led_infixr)
+    infix(parser, TT_DOUBLE_COLON, 70, led_infixr)
 
     """
     precedence 75
