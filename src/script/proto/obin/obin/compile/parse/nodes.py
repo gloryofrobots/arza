@@ -1,66 +1,7 @@
 from obin.compile.parse import tokens
 from obin.compile.parse import token_type as tt
 from obin.compile.parse import node_type as nt
-from obin.types.root import W_Any
 from obin.types import space, api
-
-
-class BaseNode(W_Any):
-    pass
-
-
-class EmptyNode(BaseNode):
-    pass
-
-
-class Node(BaseNode):
-    def __init__(self, ntype, token, children):
-        self.token = token
-        self._children = children
-        self._node_type = ntype
-
-
-class NodeList(BaseNode):
-    def __init__(self, items):
-        assert isinstance(items, list)
-        self.items = items
-
-    def __iter__(self):
-        return iter(self.items)
-
-    def __getitem__(self, item):
-        return self.items[item]
-
-    def __len__(self):
-        return len(self.items)
-
-
-def node_to_d(node):
-    if is_empty_node(node):
-        return "{ EmptyNode:'EmptyNode' }"
-    elif is_list_node(node):
-        return [node_to_d(child) for child in node]
-    else:
-        d = {"_type": tokens.token_type_to_str(node_token_type(node)),
-             "_ntype": nt.node_type_to_str(node_type(node)) if node_type(node) is not None else "",
-             "_value": node_value(node),
-             "_line": api.to_i(node_line(node))
-             # "arity": node.arity, "pos": node.position
-             }
-
-        if node._children:
-            d['children'] = [node_to_d(child) for child in node._children]
-            # d['children'] = [child.to_dict() if isinstance(child, Node) else child
-            #                         for child in node.children if child is not None]
-
-        return d
-
-
-def node_to_string(node):
-    import json
-    d = node_to_d(node)
-    return space.newstring_from_str(json.dumps(d, sort_keys=True,
-                                               indent=2, separators=(',', ': ')))
 
 
 def __newnode(ntype, token, children):
@@ -69,11 +10,35 @@ def __newnode(ntype, token, children):
             if not is_node(child):
                 print child
             assert is_node(child), child
-    return Node(ntype, token, children)
+        return space.newtuple([space.newint(ntype), token, space.newlist(children)])
+    else:
+        return space.newtuple([space.newint(ntype), token])
+
+
+def empty_node():
+    return space.newnil()
+
+
+def is_empty_node(n):
+    return space.isnil(n)
+
+
+def list_node(items):
+    for item in items:
+        assert is_node(item)
+    return space.newlist(items)
+
+
+def is_list_node(node):
+    return space.islist(node)
+
+
+def is_node(node):
+    return space.islist(node) or space.istuple(node) or space.isnil(node)
 
 
 def node_blank(token):
-    return __newnode(None, token, None)
+    return __newnode(-1, token, None)
 
 
 def node_0(ntype, token):
@@ -96,8 +61,28 @@ def node_4(ntype, token, child1, child2, child3, child4):
     return __newnode(ntype, token, [child1, child2, child3, child4])
 
 
+def node_type(node):
+    return api.to_i(api.at_index(node, 0))
+
+
+def node_token(node):
+    return api.at_index(node, 1)
+
+
+def node_children(node):
+    return api.at_index(node, 2)
+
+
+def node_token_type(node):
+    return tokens.token_type(node_token(node))
+
+
+def node_arity(node):
+    return api.n_length(node_children(node))
+
+
 def node_getchild(node, index):
-    return node._children[index]
+    return node_children(node)[index]
 
 
 def node_first(node):
@@ -116,62 +101,49 @@ def node_fourth(node):
     return node_getchild(node, 3)
 
 
-def node_type(node):
-    return node._node_type
-
-
-def node_arity(node):
-    return len(node._children)
-
-
-def node_token_type(node):
-    return tokens.token_type(node.token)
-
-
-def node_token(node):
-    return node.token
-
-
 def node_value(node):
-    return tokens.token_value(node.token)
+    return tokens.token_value(node_token(node))
 
 
 def node_position(node):
-    return tokens.token_position(node.token)
+    return tokens.token_position(node_token(node))
 
 
 def node_line(node):
-    return tokens.token_line(node.token)
+    return tokens.token_line(node_token(node))
 
 
 def node_column(node):
-    return tokens.token_column(node.token)
-
-
-def empty_node():
-    return EmptyNode()
-
-
-def is_empty_node(n):
-    return isinstance(n, EmptyNode)
+    return tokens.token_column(node_token(node))
 
 
 def is_wildcard_node(n):
     return node_type(n) == nt.NT_WILDCARD
 
 
-def is_node(node):
-    return space.islist(node) or space.istuple(node) or space.isnil(node) or isinstance(node, BaseNode)
+def node_to_d(node):
+    if is_empty_node(node):
+        return "{ EmptyNode:'EmptyNode' }"
+    elif is_list_node(node):
+        return [node_to_d(child) for child in node]
+    else:
+        d = {"_type": tokens.token_type_to_str(node_token_type(node)),
+             "_ntype": nt.node_type_to_str(node_type(node)) if node_type(node) is not None else "",
+             "_value": node_value(node),
+             "_line": api.to_i(node_line(node))
+             }
+
+        if not api.isempty(node_children(node)):
+            d['children'] = [node_to_d(child) for child in node_children(node)]
+
+        return d
 
 
-def list_node(items):
-    for item in items:
-        assert is_node(item)
-    return space.newlist(items)
-
-
-def is_list_node(node):
-    return space.islist(node)
+def node_to_string(node):
+    import json
+    d = node_to_d(node)
+    return space.newstring_from_str(json.dumps(d, sort_keys=True,
+                                               indent=2, separators=(',', ': ')))
 
 
 def create_token_from_node(type, value, node):

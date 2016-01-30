@@ -1156,10 +1156,7 @@ def _compile_nodes(process, compiler, code, ast):
 
 
 def _compile_node(process, compiler, code, node):
-    from obin.compile.parse.nodes import BaseNode
     ntype = node_type(node)
-
-    assert ntype is not None
 
     if NT_TRUE == ntype:
         _compile_TRUE(process, compiler, code, node)
