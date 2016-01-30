@@ -23,7 +23,7 @@ def parse_error(parser, message, node):
                            space.newtuple([nodes.node_position(node),
                                            nodes.node_line(node),
                                            nodes.node_column(node)]),
-                           space.newstring(api.to_u(node)),
+                           nodes.node_to_string(node),
                            space.newstring(message),
                            space.newstring(line)
                        ]))
@@ -39,26 +39,29 @@ class Handler:
         self.value = None
 
 
+def has_handler(parser, ttype):
+    return ttype in parser.handlers
+
+
+def handler(parser, ttype):
+    assert ttype < TT_UNKNOWN
+    return parser.handlers[ttype]
+
+
+def get_or_create_handler(parser, ttype):
+    if not has_handler(parser, ttype):
+        return set_handler(parser, ttype, Handler())
+    return handler(parser, ttype)
+
+
 def set_handler(parser, ttype, h):
     parser.handlers[ttype] = h
     return handler(parser, ttype)
 
 
 def node_handler(parser, node):
-    return handler(parser, nodes.node_token_type(node))
-
-
-def handler(parser, ttype):
-    assert ttype < TT_UNKNOWN
-    if ttype in parser.handlers:
-        print "EXISTS"
-    try:
-        return parser.handlers[ttype]
-    except:
-        return set_handler(parser, ttype, Handler())
-        # parser.handlers[ttype] = Handler()
-        # return handler(parser, ttype)
-        # error(parser, "Handler not exists %s" % TT_TO_STR(ttype))
+    ttype = nodes.node_token_type(node)
+    return handler(parser, ttype)
 
 
 def nud(parser, node):
@@ -116,17 +119,17 @@ def led(parser, node, left):
 
 
 def set_nud(parser, ttype, fn):
-    h = handler(parser, ttype)
+    h = get_or_create_handler(parser, ttype)
     h.nud = fn
 
 
 def set_std(parser, ttype, fn):
-    h = handler(parser, ttype)
+    h = get_or_create_handler(parser, ttype)
     h.std = fn
 
 
 def set_led(parser, ttype, lbp, fn):
-    h = handler(parser, ttype)
+    h = get_or_create_handler(parser, ttype)
     h.lbp = lbp
     h.led = fn
 
@@ -243,16 +246,12 @@ def statements(parser, endlist=None):
     length = len(stmts)
     if length == 0:
         return nodes.empty_node()
-    # TODO REMOVE IT
-    elif length == 1:
-        return stmts[0]
 
     return nodes.list_node(stmts)
 
 
 def infix(parser, ttype, lbp, led):
     set_led(parser, ttype, lbp, led)
-
 
 
 def prefix(parser, ttype, nud):
@@ -269,7 +268,7 @@ def literal(parser, ttype):
 
 
 def symbol(parser, ttype, nud):
-    h = handler(parser, ttype)
+    h = get_or_create_handler(parser, ttype)
     h.lbp = 0
     set_nud(parser, ttype, nud)
 

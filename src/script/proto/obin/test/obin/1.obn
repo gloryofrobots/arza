@@ -2,6 +2,8 @@ load tvar
 load lib_az.abc.module_ab as ab
 load lib_az.efg.module_e as e
 
+func t_1() -> 12 end
+
 trait (A, B, C, D)
 trait G
 trait G1
@@ -62,6 +64,7 @@ specify `-=-=-=`(self of Human) ->
 end
 
 func main() ->
+    print(t_1())
     print("IN MAIN NOW")
     x = ab.f_ab(312)
     x = e.f_e(x)
@@ -348,43 +351,46 @@ func main() ->
 
     //print(Z, X)
 
-
-    T = match (1, (23, (24, 25)))
-            case (Z, (G, 1)) ->  12 + Z
-            case (1, 23) ->   11
-            case (1, (23, X)) ->   11
-            case _ ->  nil
-    end
-    A = [(1,2), (2,3,4), 5, [6,7,8]]
-    print(
-    match A
-        case [a,b,c] ->  (a, b, c)
-        case [a, b] ->  (a,b)
-        case (x, y, z) ->  (x, y, z)
-        case [(1, X), Y, 5, [6,7, Z]] ->  (X, Y, Z)
-        case _ ->  123
-    end
-    )
-
-    A = {name="Bob", surname=("Alice", "Dou"), age=42}
-    print(A)
-    print(
-    match A
-        case {name="Bob2", age=42} ->  (name, age)
-        case {name="Bob", surname="Alice"} ->  (name, surname)
-        case {name="Bob", surname=("Alice", "Dou")} ->  (surname, name)
-        case _ ->  42
-    end
-    )
-    print(
-    match A
-        case {age=41, names} ->  (name, age, 0)
-        case {name, age=41} ->  (name, age, 1)
-        case {age=42} ->  (age, 2)
-        case _ ->  42
-    end
-    )
-
+//    T = match (1, (23, (24, 25)))
+//            case (Z, (G, 1)) ->  12 + Z
+//            case (1, 23) ->   11
+//            case (1, (23, X)) ->   11
+//            case _ ->  nil
+//    end
+//    A = [(1,2), (2,3,4), 5, [6,7,8]]
+//    print(
+//    match A
+//        case [a,b,c] ->  (a, b, c)
+//        case [a, b] ->  (a,b)
+//        case (x, y, z) ->  (x, y, z)
+//        case [(1, X), Y, 5, [6,7, Z]] ->  (X, Y, Z)
+//        case _ ->  123
+//    end
+//    )
+//
+//    A = {name="Bob", surname=("Alice", "Dou"), age=42}
+//    print(A)
+//    print(
+//    match A
+//        case {name="Bob2", age=42} ->  (name, age)
+//        case {name="Bob", surname="Alice"} ->  (name, surname)
+//        case {name="Bob", surname=("Alice", "Dou")} ->  (surname, name)
+//        case _ ->  42
+//    end
+//    )
+//    print(
+//    match A
+//        case {age=41, names} ->  (name, age, 0)
+//        case {name, age=41} ->  (name, age, 1)
+//        case {age=42} ->  (age, 2)
+//        case _ ->  42
+//    end
+//    )
+//
+//    match (1, 2, 3)
+//        case (A, x, A)  -> 24
+//        case (3, A) -> 42
+//    end
 
     print("name" == :name)
     print(:name == "name")
@@ -451,10 +457,6 @@ func main() ->
     print(common)
 
 
-    match (1, 2, 3)
-        case (A, x, A)  -> 24
-        case (3, A) -> 42
-    end
 
     L = [1,2,3,4,5]
     l1 = L{0=102, 1=103, 4=105}

@@ -136,6 +136,7 @@ def newtvar(value):
 
 def newvector(items):
     assert isinstance(items, list)
+    verify_list(items)
     from obin.types.vector import W_Vector
     obj = W_Vector(items)
     return obj
@@ -143,12 +144,20 @@ def newvector(items):
 
 def newlist(items):
     from obin.types.plist import plist
+    verify_list(items)
     return plist(items)
 
 
-def newtuple(tupl):
+def verify_list(items):
+    for i in items:
+        assert isany(i)
+
+
+def newtuple(items):
     from obin.types.tupl import W_Tuple
-    return W_Tuple(list(tupl))
+    assert isinstance(items, list)
+    verify_list(items)
+    return W_Tuple(list(items))
 
 
 def newmodule(name, code, env):
@@ -306,4 +315,3 @@ def isnumber(w):
 def isuniquetype(w):
     from obin.types.root import W_UniqueType
     return isinstance(w, W_UniqueType)
-

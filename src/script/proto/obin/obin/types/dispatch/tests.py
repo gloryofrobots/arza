@@ -27,7 +27,7 @@ def objects(traits_list):
 
 def test(gen, expected, args):
     m = gen.lookup_method(args)
-    res = m._function_(*(args.to_py_list()))
+    res = m._function_(*(args.to_l()))
     if res != expected:
         print "ERROR", res, expected
         raise RuntimeError((res, expected))

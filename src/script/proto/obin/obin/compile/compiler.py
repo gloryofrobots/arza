@@ -6,8 +6,7 @@ from obin.compile.parse.nodes import (node_type, node_arity,
                                       node_first, node_second, node_third)
 from obin.compile.parse.node_type import *
 from obin.compile.scope import Scope
-from obin.types import space as obs
-from obin.types import api
+from obin.types import space, api, plist
 from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
 from obin.utils.misc import is_absent_index
@@ -17,10 +16,10 @@ from obin.runtime import error
 def compile_error(process, compiler, code, node, message):
     line = code.info.get_line(api.to_i(nodes.node_line(node)))
     return error.throw(error.Errors.COMPILE,
-                       obs.newtuple([
-                           obs.newtuple(info(node)),
-                           obs.newstring(message),
-                           obs.newstring(line)
+                       space.newtuple([
+                           space.newtuple(info(node)),
+                           space.newstring(message),
+                           space.newstring(line)
                        ]))
 
 
@@ -76,7 +75,7 @@ def _is_modifiable_binding(process, compiler, name):
 
 def _declare_outer(process, compiler, code, outer):
     value = _get_name_value(outer)
-    symbol = obs.newsymbol_py_str(process, value)
+    symbol = space.newsymbol_py_str(process, value)
     scope = _current_scope(process, compiler)
     if not scope.is_function_scope():
         compile_error(process, compiler, code, symbol, u"outer variables can be declared only inside functions")
@@ -95,7 +94,7 @@ def _declare_function_name(process, compiler, name):
 
 
 def _declare_reference(process, compiler, symbol):
-    assert obs.issymbol(symbol)
+    assert space.issymbol(symbol)
     scope = _current_scope(process, compiler)
     idx = scope.get_reference(symbol)
     if is_absent_index(idx):
@@ -104,7 +103,7 @@ def _declare_reference(process, compiler, symbol):
 
 
 def _declare_literal(process, compiler, literal):
-    assert obs.isany(literal)
+    assert space.isany(literal)
     scope = _current_scope(process, compiler)
     idx = scope.get_literal(literal)
     if is_absent_index(idx):
@@ -113,7 +112,7 @@ def _declare_literal(process, compiler, literal):
 
 
 def _declare_local(process, compiler, symbol):
-    assert obs.issymbol(symbol)
+    assert space.issymbol(symbol)
     assert not api.isempty(symbol)
     scope = _current_scope(process, compiler)
     idx = scope.get_local_index(symbol)
@@ -178,18 +177,18 @@ def _current_scope(process, compiler):
 
 def _compile_FLOAT(process, compiler, code, node):
     value = float(nodes.node_value(node))
-    idx = _declare_literal(process, compiler, obs.newfloat(value))
+    idx = _declare_literal(process, compiler, space.newfloat(value))
     code.emit_1(LITERAL, idx, info(node))
 
 
 def _compile_INT(process, compiler, code, node):
     value = int(nodes.node_value(node))
-    idx = _declare_literal(process, compiler, obs.newint(value))
+    idx = _declare_literal(process, compiler, space.newint(value))
     code.emit_1(LITERAL, idx, info(node))
 
 
 def _emit_integer(process, compiler, code, integer):
-    idx = _declare_literal(process, compiler, obs.newint(integer))
+    idx = _declare_literal(process, compiler, space.newint(integer))
     code.emit_1(LITERAL, idx, codeinfo_unknown())
 
 
@@ -229,7 +228,7 @@ def _emit_nil(code):
 
 def _emit_symbol_name(process, compiler, code, name):
     value = _get_name_value(name)
-    symbol = obs.newsymbol_py_str(process, value)
+    symbol = space.newsymbol_py_str(process, value)
     idx = _declare_literal(process, compiler, symbol)
     code.emit_1(LITERAL, idx, info(name))
 
@@ -242,7 +241,7 @@ def _compile_STR(process, compiler, code, node):
         strval = decode_str_utf8(strval)
         strval = string_unquote(strval)
         strval = unicode_unescape(strval)
-        string = obs.newstring(strval)
+        string = space.newstring(strval)
         idx = _declare_literal(process, compiler, string)
         code.emit_1(LITERAL, idx, info(node))
     except RuntimeError as e:
@@ -258,7 +257,7 @@ def _compile_CHAR(process, compiler, code, node):
         strval = decode_str_utf8(strval)
         strval = string_unquote(strval)
         strval = unicode_unescape(strval)
-        string = obs.newstring(strval)
+        string = space.newstring(strval)
         idx = _declare_literal(process, compiler, string)
         code.emit_1(LITERAL, idx, info(node))
     except RuntimeError as e:
@@ -268,7 +267,7 @@ def _compile_CHAR(process, compiler, code, node):
 # def _compile_OUTER(process, compiler, code, node):
 #     # TODO REMOVE IT
 #     assert False, "Why you need it?"
-#     name = obs.newstring_from_str(node_first(node).value)
+#     name = space.newstring_from_str(node_first(node).value)
 #     _declare_outer(process, compiler, name)
 
 
@@ -430,7 +429,7 @@ def _compile_ASSIGN_SYMBOL(process, compiler, code, node):
 
 
 def _emit_store_name(process, compiler, code, namenode):
-    name = obs.newsymbol_py_str(process, nodes.node_value(namenode))
+    name = space.newsymbol_py_str(process, nodes.node_value(namenode))
     _emit_store(process, compiler, code, name, namenode)
 
 
@@ -458,7 +457,7 @@ def _compile_MATCH(process, compiler, code, node):
     exp = node_first(node)
     patterns = node_second(node)
 
-    name = obs.newsymbol_py_str(process, MATCH_SYS_VAR)
+    name = space.newsymbol_py_str(process, MATCH_SYS_VAR)
 
     name_index = _declare_literal(process, compiler, name)
     index = _declare_local(process, compiler, name)
@@ -564,7 +563,7 @@ def _compile_destruct_recur_seq_item(process, compiler, code, item, index):
     if node_type(item) == NT_NAME:
         varname = item
 
-    idx = _declare_literal(process, compiler, obs.newint(index))
+    idx = _declare_literal(process, compiler, space.newint(index))
     code.emit_1(LITERAL, idx, info(item))
     code.emit_0(MEMBER, info(item))
 
@@ -598,10 +597,12 @@ def _compile_destruct_unpack_seq(process, compiler, code, node):
     names = node_first(node)
     length = len(names)
     code.emit_1(UNPACK_SEQUENCE, length, info(node))
-    for name in names[0:-1]:
-        _emit_store_name(process, compiler, code, name)
-        _emit_pop(code)
-    last_name = names[-1]
+    # TODO FIX IT
+    if length > 1:
+        for name in names[0:length-1]:
+            _emit_store_name(process, compiler, code, name)
+            _emit_pop(code)
+    last_name = names[length - 1]
     _emit_store_name(process, compiler, code, last_name)
     _emit_pop(code)
 
@@ -623,7 +624,7 @@ def _compile_ASSIGN(process, compiler, code, node):
 
 def _compile_node_name_lookup(process, compiler, code, node):
     name_value = _get_name_value(node)
-    name = obs.newsymbol_py_str(process, name_value)
+    name = space.newsymbol_py_str(process, name_value)
 
     index, is_local = _get_variable_index(process, compiler, name)
     name_index = _declare_literal(process, compiler, name)
@@ -753,10 +754,10 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params,  body
         _declare_arguments(process, compiler, 0, False)
     else:
         args = node_first(params)
-        length = args.length()
+        length = len(args)
         funccode.emit_0(ARGUMENTS, codeinfo_unknown())
 
-        last_param = args[-1]
+        last_param = args[length - 1]
         is_variadic = True if node_type(last_param) == NT_REST else False
         _declare_arguments(process, compiler, length, is_variadic)
         _compile_destruct_recur(process, compiler, funccode, params)
@@ -774,7 +775,7 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params,  body
     # print [str(c) for c in compiled_code.opcodes]
     # print "-------------------------"
 
-    source = obs.newfuncsource(funcname, compiled_code)
+    source = space.newfuncsource(funcname, compiled_code)
     source_index = _declare_literal(process, compiler, source)
     code.emit_1(opcode, source_index, emitinfo)
 
@@ -782,9 +783,9 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params,  body
 def _compile_FUNC(process, compiler, code, node):
     name = node_first(node)
     if not nodes.is_empty_node(name):
-        funcname = obs.newsymbol_py_str(process, nodes.node_value(name))
+        funcname = space.newsymbol_py_str(process, nodes.node_value(name))
     else:
-        funcname = obs.newsymbol_py_str(process, "")
+        funcname = space.newsymbol_py_str(process, "")
 
     params = node_second(node)
     body = node_third(node)
@@ -822,12 +823,12 @@ def _compile_IF(process, compiler, code, node):
     branches = node_first(node)
 
     endif = code.prealocate_label()
-
-    for i in range(len(branches) - 1):
+    length = len(branches)
+    for i in range(length - 1):
         branch = branches[i]
         _compile_branch(process, compiler, code, branch[0], branch[1], endif)
 
-    elsebranch = branches[-1]
+    elsebranch = branches[length - 1]
     if nodes.is_empty_node(elsebranch):
         _emit_nil(code)
     else:
@@ -892,7 +893,7 @@ def _compile_LOAD(process, compiler, code, node):
         import_name = exp
         module_path = nodes.node_value(exp)
 
-    module_path_literal = _declare_literal(process, compiler, obs.newsymbol_py_str(process, module_path))
+    module_path_literal = _declare_literal(process, compiler, space.newsymbol_py_str(process, module_path))
     code.emit_1(LOAD, module_path_literal, info(node))
 
     _emit_store_name(process, compiler, code, import_name)
@@ -913,8 +914,8 @@ def _compile_MODULE(process, compiler, code, node):
     # _exit_scope(process, compiler)
     # compiled_code = modulecode.finalize_compilation(scope)
 
-    module_name = obs.newsymbol_py_str(process, _get_name_value(name_node))
-    module = obs.newmodule(module_name, compiled_code, None)
+    module_name = space.newsymbol_py_str(process, _get_name_value(name_node))
+    module = space.newmodule(module_name, compiled_code, None)
     module_index = _declare_literal(process, compiler, module)
     code.emit_1(MODULE, module_index, info(node))
 
@@ -928,7 +929,7 @@ def _compile_GENERIC(process, compiler, code, node):
     name_node = node_first(node)
     name_value = _get_name_value(name_node)
 
-    name = obs.newsymbol_py_str(process, name_value)
+    name = space.newsymbol_py_str(process, name_value)
 
     name_index = _declare_literal(process, compiler, name)
     index = _declare_local(process, compiler, name)
@@ -943,7 +944,7 @@ def _compile_GENERIC(process, compiler, code, node):
 def _compile_TRAIT(process, compiler, code, node):
     names = node_first(node)
     for name in names:
-        name = obs.newsymbol_py_str(process, nodes.node_value(name))
+        name = space.newsymbol_py_str(process, nodes.node_value(name))
         index = _declare_local(process, compiler, name)
 
         name_index = _declare_literal(process, compiler, name)
@@ -973,7 +974,7 @@ def _emit_specify(process, compiler, code, node, methods):
 
         code.emit_1(TUPLE, len(signature), info(node))
 
-        method_name = obs.newsymbol(process, u"")
+        method_name = space.newsymbol(process, u"")
         args_node = nodes.create_tuple_node(node, args)
         _compile_func_args_and_body(process, compiler, code, method_name, args_node, method_body, FUNCTION, info(node))
         code.emit_1(TUPLE, 2, info(node))
@@ -1006,7 +1007,7 @@ def _compile_FOR(process, compiler, code, node):
     code.emit_0(NEXT, codeinfo_unknown())
 
     vars = node_first(node)
-    name = obs.newsymbol_py_str(process, nodes.node_value(vars[0]))
+    name = space.newsymbol_py_str(process, nodes.node_value(vars[0]))
     index = _declare_local(process, compiler, name)
 
     name_index = _declare_literal(process, compiler, name)
@@ -1130,6 +1131,18 @@ def _compile(process, compiler, code, ast):
 
 
 def _compile_nodes(process, compiler, code, ast):
+    length = plist.length(ast)
+    if length > 1:
+        nodes_except_last = plist.slice(ast, 0, length - 1)
+        for node in nodes_except_last:
+            _compile(process, compiler, code, node)
+            _emit_pop(code)
+
+    if length > 0:
+        last_node = plist.nth(ast, length - 1)
+        _compile(process, compiler, code, last_node)
+
+    return
     nodes = ast.items
 
     if len(nodes) > 1:
@@ -1325,13 +1338,13 @@ def compile(process, src, sourcename):
 
 def compile_module(process, modulename, src, sourcename):
     code = compile(process, src, sourcename)
-    module = obs.newmodule(modulename, code, None)
+    module = space.newmodule(modulename, code, None)
     return module
 
 
 def compile_function_source(process, src, name):
     code = compile(process, src, name)
-    fn = obs.newfuncsource(name, code)
+    fn = space.newfuncsource(name, code)
     return fn
 
 

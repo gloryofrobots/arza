@@ -27,7 +27,7 @@ def _create_path_node(basenode, path):
 
 def _process_tuple(process, compiler, pattern, stack, path):
     children = node_first(pattern)
-    count = children.length()
+    count = len(children)
     stack.append(["is_indexed", _create_path_node(pattern, path)])
     stack.append(["length", _create_path_node(pattern, path), count])
 
@@ -40,7 +40,7 @@ def _process_list(process, compiler, pattern, stack, path):
     stack.append(["is_seq", _create_path_node(pattern, path)])
 
     children = node_first(pattern)
-    count = children.length()
+    count = len(children)
     # list_length doesnt`t calculate we need this node for branch merge checker
     # so [a,b] and [a,b,c] didn`t cause the error
     stack.append(["list", _create_path_node(pattern, path), count])
@@ -80,7 +80,7 @@ def _process_map(process, compiler, pattern, stack, path):
     stack.append(["is_map", _create_path_node(pattern, path)])
 
     children = node_first(pattern)
-    count = children.length()
+    count = len(children)
     # empty map
     if count == 0:
         stack.append(["equal", _create_path_node(pattern, path), create_empty_map_node(pattern)])
@@ -198,10 +198,12 @@ def _create_variable_undefs(basenode, variables):
 
 def _prepend_to_body(statements, body):
     assert isinstance(statements, list)
-    if is_list_node(body):
-        return list_node(statements + body.items)
-    else:
-        return list_node(statements + [body])
+    # TODO NO MORE ITEMS HERE
+    return list_node(statements + body.items)
+    # REMOVE IT LATER
+    # if is_list_node(body):
+    # else:
+    #     return list_node(statements + [body])
 
 
 ###################################################################################
@@ -441,8 +443,10 @@ def transform(process, compiler, node, patterns, decision_node):
         _process_pattern(process, compiler, clause, stack, path)
 
         body = pattern[1]
-        if not is_list_node(body):
-            body = list_node([body])
+        # TODO REMOVE LATER
+        assert is_list_node(body)
+        # if not is_list_node(body):
+        #     body = list_node([body])
 
         body.append(decision_node)
 

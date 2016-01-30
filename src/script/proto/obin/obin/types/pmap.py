@@ -25,7 +25,7 @@ def _tostring(pair, vec):
         tpl = u'%s = %s'
 
     repr = tpl % (api.to_u(key), api.to_u(value))
-    vec.to_py_list().append(repr)
+    vec.to_l().append(repr)
     return vec
 
 class PMap(W_Any):
@@ -35,7 +35,7 @@ class PMap(W_Any):
 
     def _tostring_(self):
         pairs = self._root.reduce(_tostring, space.newvector([]))
-        lst = pairs.to_py_list()
+        lst = pairs.to_l()
         repr = u"{%s}" % u", ".join(lst)
         return str(repr)
 

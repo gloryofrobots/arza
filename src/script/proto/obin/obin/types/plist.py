@@ -15,6 +15,17 @@ class W_PList(W_Any):
             yield head(cur)
             cur = cur.tail
 
+    def __getitem__(self, index):
+        assert isinstance(index, int)
+        return nth(self, index)
+
+    def __len__(self):
+        return self._length_()
+
+    def __getslice__(self, start, end):
+        return slice(self, start, end)
+
+
     def show(self):
         els = []
         cur = self
@@ -379,12 +390,12 @@ def compute_hash(pl):
 ##############################################################
 
 def plist_vec(process, vec):
-    items = vec.to_py_list()
+    items = vec.to_l()
     return plist(items)
 
 
 def plist_tuple(process, tupl):
-    items = tupl.to_py_list()
+    items = tupl.to_l()
     return plist(items)
 
 

@@ -1,7 +1,7 @@
 from obin.types.root import W_Hashable, W_Any
 from sequence import W_SequenceIterator
 from obin.runtime import error
-from obin.types import api
+from obin.types import api, space
 
 """
  @jit.look_inside_iff(lambda self, _1: _unroll_condition(self))
@@ -129,7 +129,7 @@ class W_Tuple(W_Hashable):
             return "(%s,)" % repr
         return "(%s)" % repr
 
-    def to_py_list(self):
+    def to_l(self):
         return self.elements
 
 

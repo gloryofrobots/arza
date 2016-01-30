@@ -10,17 +10,7 @@ class BaseNode(W_Any):
 
 
 class EmptyNode(BaseNode):
-    def to_json_value(self):
-        return "{ EmptyNode:'EmptyNode' }"
-
-    def _equal_(self, other):
-        return self.__eq__(other)
-
-    def __eq__(self, other):
-        if not isinstance(other, EmptyNode):
-            return False
-        return True
-
+    pass
 
 class Node(BaseNode):
     def __init__(self, token):
@@ -29,50 +19,48 @@ class Node(BaseNode):
         self._arity = 0
         self._node_type = None
 
-    def __children_repr(self):
-        return [child.to_json_value() for child in self._children]
 
-    def to_json_value(self):
-        d = {"_type": tokens.token_type_to_str(node_token_type(self)),
-             "_ntype": nt.node_type_to_str(self._node_type) if self._node_type is not None else "",
-             "_value": node_value(self),
-             "_line": api.to_i(node_line(self))
-             # "arity": self.arity, "pos": self.position
+class NodeList(BaseNode):
+    def __init__(self, items):
+        assert isinstance(items, list)
+        self.items = items
+
+    def __iter__(self):
+        return iter(self.items)
+
+    def __getitem__(self, item):
+        return self.items[item]
+
+    def __len__(self):
+        return len(self.items)
+
+
+def node_to_d(node):
+    if is_empty_node(node):
+        return "{ EmptyNode:'EmptyNode' }"
+    elif is_list_node(node):
+        return [node_to_d(child) for child in node]
+    else:
+        d = {"_type": tokens.token_type_to_str(node_token_type(node)),
+             "_ntype": nt.node_type_to_str(node_type(node)) if node_type(node) is not None else "",
+             "_value": node_value(node),
+             "_line": api.to_i(node_line(node))
+             # "arity": node.arity, "pos": node.position
              }
 
-        if self._children:
-            d['children'] = self.__children_repr()
+        if node._children:
+            d['children'] = [node_to_d(child) for child in node._children]
             # d['children'] = [child.to_dict() if isinstance(child, Node) else child
-            #                         for child in self.children if child is not None]
+            #                         for child in node.children if child is not None]
 
         return d
 
-    def _tostring_(self):
-        import json
 
-        d = self.to_json_value()
-        return json.dumps(d, sort_keys=True,
-                          indent=2, separators=(',', ': '))
-
-    def _equal_(self, other):
-        return self.__eq__(other)
-
-    def __eq__(self, other):
-        if not isinstance(other, Node):
-            return False
-        if node_token_type(self) != node_token_type(other):
-            return False
-        if self._arity != other._arity:
-            return False
-
-        if self._arity == 0:
-            return node_value(self) == node_value(other)
-
-        for item1, item2 in zip(self._children, other._children):
-            res = item1 == item2
-            if not res:
-                return False
-        return True
+def node_to_string(node):
+    import json
+    d = node_to_d(node)
+    return space.newstring_from_str(json.dumps(d, sort_keys=True,
+                      indent=2, separators=(',', ': ')))
 
 
 def node_init(node, node_type, arity):
@@ -87,9 +75,10 @@ def node_init(node, node_type, arity):
 
 
 def node_setchild(node, index, value):
-    if not isinstance(value, BaseNode):
-        print type(value)
-    assert isinstance(value, BaseNode), value
+
+    # if not isinstance(value, BaseNode):
+    #     print type(value)
+    assert isinstance(value, BaseNode) or space.islist(value), value
     node._children[index] = value
 
 
@@ -157,57 +146,6 @@ def node_column(node):
     return tokens.token_column(node.token)
 
 
-class NodeList(BaseNode):
-    def __init__(self, items):
-        assert isinstance(items, list)
-        self.items = items
-
-    def _equal_(self, other):
-        return self.__eq__(other)
-
-    def __eq__(self, other):
-        if not isinstance(other, NodeList):
-            return False
-        if self.length() != other.length():
-            return False
-
-        for item1, item2 in zip(self.items, other.items):
-            if item1 != item2:
-                return False
-        return True
-
-    def __reversed__(self):
-        return reversed(self.items)
-
-    def __iter__(self):
-        return iter(self.items)
-
-    def __getitem__(self, item):
-        return self.items[item]
-
-    def length(self):
-        return len(self.items)
-
-    def to_json_value(self):
-        return [child.to_json_value() for child in self.items]
-
-    def _tostring_(self):
-        import json
-        d = self.to_json_value()
-        return json.dumps(d, sort_keys=True,
-                          indent=2, separators=(',', ': '))
-
-    def __len__(self):
-        return len(self.items)
-
-    def append(self, item):
-        assert isinstance(item, BaseNode), item
-        self.items.append(item)
-
-    def append_list(self, items):
-        self.items.append(list_node(items))
-
-
 def empty_node():
     return EmptyNode()
 
@@ -220,15 +158,9 @@ def is_wildcard_node(n):
     return node_type(n) == nt.NT_WILDCARD
 
 
-def is_iterable_node(node):
-    return is_list_node(node) and len(node) > 0
-
-
 def list_node(items):
+    return space.newlist(items)
     assert isinstance(items, list)
-    if len(items):
-        o = items[0]
-        assert not isinstance(o, list)
     for item in items:
         assert isinstance(item, BaseNode)
 
@@ -236,6 +168,7 @@ def list_node(items):
 
 
 def is_list_node(node):
+    return space.islist(node)
     return isinstance(node, NodeList)
 
 

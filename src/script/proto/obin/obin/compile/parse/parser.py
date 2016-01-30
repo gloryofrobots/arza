@@ -13,7 +13,7 @@ class BaseParser:
 
     @property
     def token_type(self):
-        tokens.token_type(self.ts.token)
+        return tokens.token_type(self.ts.token)
 
     @property
     def is_newline_occurred(self):

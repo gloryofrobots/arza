@@ -257,13 +257,13 @@ def infix_lparen(parser, node, left):
 def prefix_if(parser, node):
     IF_TERMINATION_TOKENS = [TT_ELIF, TT_ELSE, TT_END]
     nodes.node_init(node, NT_IF, 1)
-    branches = nodes.list_node([])
+    branches = []
 
     cond = condition(parser)
     endofexpression(parser)
     body = (statements(parser, IF_TERMINATION_TOKENS))
 
-    branches.append_list([cond, body])
+    branches.append(nodes.list_node([cond, body]))
     check_token_types(parser, IF_TERMINATION_TOKENS)
 
     while parser.token_type == TT_ELIF:
@@ -274,19 +274,19 @@ def prefix_if(parser, node):
         endofexpression(parser)
         body = statements(parser, IF_TERMINATION_TOKENS)
 
-        branches.append_list([cond, body])
+        branches.append(nodes.list_node([cond, body]))
         check_token_types(parser, IF_TERMINATION_TOKENS)
     if parser.token_type == TT_ELSE:
         advance_expected(parser, TT_ELSE)
         body = statements(parser)
-        branches.append_list([nodes.empty_node(), body])
+        branches.append(nodes.list_node([nodes.empty_node(), body]))
         advance_expected(parser, TT_END)
     else:
         advance_expected(parser, TT_END)
         branches.append(nodes.empty_node())
 
     # append else branch anyway
-    nodes.node_setfirst(node, branches)
+    nodes.node_setfirst(node, nodes.list_node(branches))
     return node
 
 

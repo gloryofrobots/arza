@@ -57,7 +57,7 @@ def _id(process, routine):
 
 @complete_native_routine
 def _print(process, routine):
-    args = routine._args.to_py_list()
+    args = routine._args.to_l()
     if len(args) == 0:
         return
 

@@ -128,7 +128,7 @@ class W_Vector(W_Any):
         assert isany(v)
         self._items.remove(v)
 
-    def to_py_list(self):
+    def to_l(self):
         return self._items
 
     def pop(self):

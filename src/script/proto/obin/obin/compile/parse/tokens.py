@@ -199,8 +199,10 @@ def newtoken(type, val, pos, line, column):
     assert space.isint(column)
     return space.newtuple([space.newint(type), space.newstring_from_str(val), pos, line, column])
 
+
 def token_type(token):
     return api.to_i(api.at_index(token, 0))
+
 
 def token_value(token):
     return api.to_s(api.at_index(token, 1))
