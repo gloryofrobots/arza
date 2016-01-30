@@ -63,20 +63,12 @@ def node_to_string(node):
                                                indent=2, separators=(',', ': ')))
 
 
-def node_init(node, node_type, arity):
-    assert node_type is not None
-    node._node_type = node_type
-
-    if arity == 0:
-        return
-
-    node._children = [None] * arity
-    node._arity = arity
-
-
 def __newnode(ntype, token, children):
-    for child in children:
-        assert is_node(child)
+    if children is not None:
+        for child in children:
+            if not is_node(child):
+                print child
+            assert is_node(child), child
     return Node(ntype, token, children)
 
 
@@ -129,7 +121,7 @@ def node_type(node):
 
 
 def node_arity(node):
-    return node._arity
+    return len(node._children)
 
 
 def node_token_type(node):
@@ -169,7 +161,7 @@ def is_wildcard_node(n):
 
 
 def is_node(node):
-    return space.islist(node) or space.istuple(node) or space.isnil(node)
+    return space.islist(node) or space.istuple(node) or space.isnil(node) or isinstance(node, BaseNode)
 
 
 def list_node(items):
