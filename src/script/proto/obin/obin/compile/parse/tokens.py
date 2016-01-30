@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
 from obin.compile.parse.token_type import *
-from obin.types import space
+from obin.types import space, api
 # import rpython.rlib.rsre.rsre_re as re
 
 
@@ -103,7 +103,6 @@ RULES = [
     (keyword('as'), TT_AS),
     (keyword('when'), TT_WHEN),
 
-
     (keyword('var'), TT_VAR),
     (keyword('lazy'), TT_LAZY),
 
@@ -164,32 +163,56 @@ RULES = [
 ]
 
 
-class Token:
-    def __init__(self, type, val, pos, line, column):
-        assert isinstance(type, int)
-        assert isinstance(val, str)
-        assert space.isint(pos)
-        assert space.isint(line)
-        assert space.isint(column)
+# class Token:
+#     def __init__(self, type, val, pos, line, column):
+#         assert isinstance(type, int)
+#         assert isinstance(val, str)
+#         assert space.isint(pos)
+#         assert space.isint(line)
+#         assert space.isint(column)
+#
+#         self.type = type
+#         self.value = val
+#
+#         self.position = pos
+#         self.line = line
+#         self.column = column
+#
+#     def __str__(self):
+#         try:
+#             t_repr = token_type_to_str(self.type)
+#         except:
+#             t_repr = self.type
+#
+#         if self.type == TT_NEWLINE:
+#             val = '\\n'
+#         else:
+#             val = self.value
+#
+#         return '<%s %s %d:%d>' % (t_repr, val, self.line, self.position)
 
-        self.type = type
-        self.value = val
+def newtoken(type, val, pos, line, column):
+    assert isinstance(type, int)
+    assert isinstance(val, str)
+    assert space.isint(pos)
+    assert space.isint(line)
+    assert space.isint(column)
+    return space.newtuple([space.newint(type), space.newstring_from_str(val), pos, line, column])
 
-        self.position = pos
-        self.line = line
-        self.column = column
+def token_type(token):
+    return api.to_i(api.at_index(token, 0))
 
-    def __str__(self):
-        try:
-            t_repr = token_type_to_str(self.type)
-        except:
-            t_repr = self.type
-
-        if self.type == TT_NEWLINE:
-            val = '\\n'
-        else:
-            val = self.value
-
-        return '<%s %s %d:%d>' % (t_repr, val, self.line, self.position)
+def token_value(token):
+    return api.to_s(api.at_index(token, 1))
 
 
+def token_position(token):
+    return api.at_index(token, 2)
+
+
+def token_line(token):
+    return api.at_index(token, 3)
+
+
+def token_column(token):
+    return api.at_index(token, 4)

@@ -60,10 +60,10 @@ class Lexer:
     def _token(self):
         t = next(self.stream)
         # print tokens.token_type_to_str(t.name), t.value
-        token = tokens.Token(t.name, t.value,
+        token = tokens.newtoken(t.name, t.value,
                              space.newint(t.source_pos.idx),
                              space.newint(t.source_pos.lineno), space.newint(t.source_pos.colno))
-        if token.type == -1:
+        if tokens.token_type(token) == -1:
             return self._token()
 
         return token
@@ -74,7 +74,7 @@ class Lexer:
         while 1:
             tok = self.token()
             if tok is None:
-                yield tokens.Token(tokens.TT_ENDSTREAM, "", space.newint(0), space.newint(0), space.newint(0))
+                yield tokens.newtoken(tokens.TT_ENDSTREAM, "", space.newint(0), space.newint(0), space.newint(0))
                 break
             yield tok
 

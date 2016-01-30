@@ -50,6 +50,8 @@ def node_handler(parser, node):
 
 def handler(parser, ttype):
     assert ttype < TT_UNKNOWN
+    if ttype in parser.handlers:
+        print "EXISTS"
     try:
         return parser.handlers[ttype]
     except:
@@ -190,7 +192,6 @@ def expression(parser, _rbp):
     # print "previous", previous
 
     advance(parser)
-    # print "current", parser.token
 
     left = nud(parser, previous)
     # print "left", left.value

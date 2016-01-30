@@ -138,23 +138,23 @@ def node_arity(node):
 
 
 def node_token_type(node):
-    return node.token.type
+    return tokens.token_type(node.token)
 
 
 def node_value(node):
-    return node.token.value
+    return tokens.token_value(node.token)
 
 
 def node_position(node):
-    return node.token.position
+    return tokens.token_position(node.token)
 
 
 def node_line(node):
-    return node.token.line
+    return tokens.token_line(node.token)
 
 
 def node_column(node):
-    return node.token.column
+    return tokens.token_column(node.token)
 
 
 class NodeList(BaseNode):
@@ -240,7 +240,7 @@ def is_list_node(node):
 
 
 def create_token_from_node(type, value, node):
-    return tokens.Token(type, value, node_position(node), node_line(node), node_column(node))
+    return tokens.newtoken(type, value, node_position(node), node_line(node), node_column(node))
 
 
 def create_tuple_node(basenode, elements):
@@ -376,7 +376,7 @@ def create_slice_til_the_end(basenode):
 
 
 def create_goto_node(label):
-    node = Node(tokens.Token(tt.TT_GOTO, str(label), space.newint(-1), space.newint(-1), space.newint(-1)))
+    node = Node(tokens.newtoken(tt.TT_GOTO, str(label), space.newint(-1), space.newint(-1), space.newint(-1)))
     node_init(node, nt.NT_GOTO, 0)
     return node
 

@@ -1,5 +1,6 @@
 from obin.compile.parse.token_type import TT_NEWLINE
 from obin.compile.parse.nodes import Node
+from obin.compile.parse import tokens
 
 
 
@@ -15,10 +16,10 @@ class TokenStream:
     def next(self):
         token = self.tokens.next()
 
-        if token.type == TT_NEWLINE:
+        if tokens.token_type(token) == TT_NEWLINE:
             # print "NEW LINE"
             self.is_newline_occurred = True
-            while token.type == TT_NEWLINE:
+            while tokens.token_type(token) == TT_NEWLINE:
                 token = self.tokens.next()
         else:
             # print "TOKEN"

@@ -3,6 +3,7 @@ import obin.compile.parse.lexer as lexer
 from obin.compile.parse.tokenstream import TokenStream
 from obin.compile.parse.callbacks import *
 from obin.compile.parse.lexer import UnknownTokenError
+from obin.compile.parse import tokens
 
 
 class BaseParser:
@@ -12,7 +13,7 @@ class BaseParser:
 
     @property
     def token_type(self):
-        return self.ts.token.type
+        tokens.token_type(self.ts.token)
 
     @property
     def is_newline_occurred(self):
@@ -321,8 +322,8 @@ def parse(parser):
 
 def parser_from_str(txt):
     lx = lexer.lexer(txt)
-    tokens = lx.tokens()
-    ts = TokenStream(tokens, txt)
+    tokens_iter = lx.tokens()
+    ts = TokenStream(tokens_iter, txt)
     parser = ModuleParser(ts)
     return parser
 
