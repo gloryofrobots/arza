@@ -214,6 +214,9 @@ def ismap(value):
     from obin.types.map import W_Map
     return isinstance(value, W_Map)
 
+def ispmap(value):
+    from obin.types.pmap import W_PMap
+    return isinstance(value, W_PMap)
 
 def istvar(value):
     from obin.types.tvar import W_TVar

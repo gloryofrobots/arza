@@ -209,7 +209,7 @@ def drop(pl, count):
 
 def _slice(pl, index, start, end):
     if isempty(pl):
-        return error.throw_4(error.Errors.SLICE, space.newint(index),
+        return error.throw_3(error.Errors.SLICE, space.newint(index),
                              space.newint(start), space.newint(end))
 
     if index < start:
@@ -223,9 +223,13 @@ def _slice(pl, index, start, end):
 
 def slice(pl, start, end):
     assert space.islist(pl)
+    if start == end:
+        return empty()
+
     assert start >= 0
     assert end > start
     assert end > 0
+
     # return take(drop(pl, start), end - 1)
     return _slice(pl, 0, start, end)
 
@@ -293,17 +297,18 @@ def remove(pl, v):
 
     return W_PList(head(pl), remove(tail(pl), v))
 
-
-def contains(pl, v):
+def contains_with(pl, v, condition):
     assert space.islist(pl)
-    from obin.types import api
     if isempty(pl):
         return False
 
-    if api.n_equal(v, head(pl)):
+    if condition(v, head(pl)):
         return True
 
-    return contains(tail(pl), v)
+    return contains_with(tail(pl), v, condition)
+
+def contains(pl, v):
+    return contains_with(pl, v, api.n_equal)
 
 
 ######################################################

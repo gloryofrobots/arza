@@ -128,7 +128,7 @@ def is_seq(process, routine):
 @complete_native_routine
 def is_map(process, routine):
     v1 = routine.get_arg(0)
-    if not space.ismap(v1):
+    if not space.ispmap(v1):
         return space.newbool(False)
     return space.newbool(True)
 

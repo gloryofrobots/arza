@@ -28,7 +28,7 @@ def _tostring(pair, vec):
     vec.to_l().append(repr)
     return vec
 
-class PMap(W_Any):
+class W_PMap(W_Any):
     def __init__(self, cnt, root):
         self._cnt = cnt
         self._root = root
@@ -54,7 +54,7 @@ class PMap(W_Any):
         if new_root is self._root:
             return self
 
-        return PMap(self._cnt if added_leaf._val is None else self._cnt + 1, new_root)
+        return W_PMap(self._cnt if added_leaf._val is None else self._cnt + 1, new_root)
 
     def _at_(self, key):
         if self._root is None:
@@ -70,7 +70,7 @@ class PMap(W_Any):
 
         if new_root is self._root:
             return self
-        return PMap(self._cnt - 1, new_root)
+        return W_PMap(self._cnt - 1, new_root)
 
 
 class INode(W_Any):
@@ -419,7 +419,7 @@ def remove_pair(array, i):
 
 ### hook into RT
 
-EMPTY = PMap(r_uint(0), None)
+EMPTY = W_PMap(r_uint(0), None)
 
 
 def pmap(args):

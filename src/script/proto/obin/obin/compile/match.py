@@ -58,13 +58,14 @@ def _process_list(process, compiler, pattern, patterns, path):
 
     children = node_first(pattern)
     count = api.length(children)
+    count_i = api.to_i(count)
     # list_length will not be calculated, we need this node for branch merge checker
     # so [a,b] and [a,b,c] didn`t cause the error
     patterns = add_pattern(patterns, ["list", _create_path_node(pattern, path), count])
 
     # first process all args except last which might be ...rest param
     cur_path = path
-    for i, child in enumerate(children[:-1]):
+    for i, child in enumerate(children[0:count_i - 1]):
         if node_type(child) == NT_REST:
             return match_transform_error(process, compiler, child, u'Invalid use of Rest')
 
@@ -75,7 +76,7 @@ def _process_list(process, compiler, pattern, patterns, path):
         cur_path = add_path(cur_slice, cur_path)
         patterns = _process_pattern(process, compiler, child, patterns, child_path)
 
-    last_child = children[-1]
+    last_child = children[count_i - 1]
     if node_type(last_child) == NT_REST:
         last_child = node_first(last_child)
         child_path = cur_path
@@ -125,8 +126,9 @@ def _process_map(process, compiler, pattern, patterns, path):
         value = child[1]
 
         items.append(((symbol_key, varname), value))
+    symbols = [space.newstring_from_str(symbol) for symbol in sorted(symbols)]
 
-    patterns = add_pattern(patterns, ["map", space.newtuple(sorted(symbols)), _create_path_node(pattern, path)])
+    patterns = add_pattern(patterns, ["map", space.newlist(symbols), _create_path_node(pattern, path)])
 
     # for item in items:
     #     symbol_key, varname = item[0]
@@ -349,12 +351,14 @@ def _transform_is(history, head, variables):
 
 
 def _create_in_and_chain(keys, map_node):
-    key = keys[0]
-    in_node = create_in_node(map_node, create_str_node(map_node, key), map_node)
-    if len(keys) == 1:
+    key, rest = plist.split(keys)
+
+    in_node = create_in_node(map_node,
+                             create_str_node(map_node, api.to_s(key)), map_node)
+    if plist.isempty(rest):
         return in_node
 
-    return create_and_node(map_node, in_node, _create_in_and_chain(keys[1:], map_node))
+    return create_and_node(map_node, in_node, _create_in_and_chain(rest, map_node))
 
 
 def _transform_map(history, head, variables):
@@ -380,10 +384,13 @@ def _transform_isnot(history, head, variables):
     return left, condition, prefixes + prefixes1, variables
 
 
+def _is_same_var(var1, var2):
+    return node_value(var1) == node_value(var2)
+
 def _transform_assign(history, head, variables):
     left = head[1]
     right, prefixes = _history_get_var(history, head[2])
-    if plist.contains(variables, left):
+    if plist.contains_with(variables, left, _is_same_var):
         _condition = create_eq_node(left, left, right)
         condition, prefixes1 = _history_get_condition(history, _condition)
         return left, condition, prefixes + prefixes1, variables
@@ -484,6 +491,6 @@ def transform(process, compiler, node, decisions, decision_node):
     tree = _group_branches(process, branches)
     # print tree
     transformed_node, vars = _transform_pattern(node, bodies, [], plist.empty(), tree)
-    # print transformed_node
+    # print nodes.node_to_string(transformed_node)
     # raise SystemExit()
     return transformed_node
