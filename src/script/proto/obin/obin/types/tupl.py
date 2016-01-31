@@ -43,11 +43,17 @@ class W_Tuple(W_Hashable):
     def __init__(self, items):
         assert isinstance(items, list)
         W_Hashable.__init__(self)
-        self.elements = list(items)
+        self.elements = items
 
     def __iter__(self):
         for v in self.elements:
             yield v
+
+    def __getitem__(self, item):
+        return self.elements[item]
+
+    def __getslice__(self, start, end):
+        return W_Tuple(self.elements[start:end])
 
     def _compute_hash_(self):
         from rpython.rlib.rarithmetic import intmask
@@ -77,18 +83,22 @@ class W_Tuple(W_Hashable):
         return self.elements[i]
 
     def _slice_(self, start, end):
-        from obin.types.space import isnil
-        from obin.types import api
 
-        if isnil(start):
+        if space.isnil(start):
             start_index = 0
         else:
             start_index = api.to_i(start)
 
-        if isnil(end):
+        if space.isnil(end):
             end_index = self._length_()
         else:
             end_index = api.to_i(end)
+
+        if start_index < 0:
+            return space.newnil()
+
+        if end_index <= 0:
+            return space.newnil()
 
         elements = self.elements[start_index:end_index]
         return W_Tuple(elements)

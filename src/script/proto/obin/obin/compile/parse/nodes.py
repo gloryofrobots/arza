@@ -12,7 +12,7 @@ def __newnode(ntype, token, children):
             assert is_node(child), child
         return space.newtuple([space.newint(ntype), token, space.newlist(children)])
     else:
-        return space.newtuple([space.newint(ntype), token])
+        return space.newtuple([space.newint(ntype), token, space.newlist([])])
 
 
 def empty_node():

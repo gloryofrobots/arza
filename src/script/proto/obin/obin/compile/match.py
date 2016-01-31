@@ -1,16 +1,16 @@
 from obin.compile.parse.parser import *
 from obin.types import plist
 from obin.compile.parse.nodes import *
-from obin.types import space as obs, api
+from obin.types import space, api
 from obin.runtime import error
 
 
 def match_transform_error(process, compiler, node, message):
     from obin.compile.compiler import info
     return error.throw(error.Errors.COMPILE,
-                       obs.newtuple([
-                           obs.newtuple(info(node)),
-                           obs.newstring(message),
+                       space.newtuple([
+                           space.newtuple(info(node)),
+                           space.newstring(message),
                        ]))
 
 
@@ -25,25 +25,42 @@ def _create_path_node(basenode, path):
 ###################################################################################
 ###################################################################################
 
-def _process_tuple(process, compiler, pattern, stack, path):
+def add_pattern(patterns, args):
+    assert isinstance(args, list)
+    args[0] = space.newstring_from_str(args[0])
+    return plist.prepend(space.newtuple(args), patterns)
+
+def empty_pattern(pattern):
+    return plist.isempty(pattern)
+
+def split_patterns(patterns):
+    return plist.split(patterns)
+
+
+def add_path(node, path):
+    return plist.prepend(node, path)
+
+
+def _process_tuple(process, compiler, pattern, patterns, path):
     children = node_first(pattern)
-    count = len(children)
-    stack.append(["is_indexed", _create_path_node(pattern, path)])
-    stack.append(["length", _create_path_node(pattern, path), count])
+    count = api.length(children)
+    patterns = add_pattern(patterns, ["is_indexed", _create_path_node(pattern, path)])
+    patterns = add_pattern(patterns, ["length", _create_path_node(pattern, path), count])
 
     for i, child in enumerate(children):
-        _process_pattern(process, compiler, child, stack,
-                         plist.prepend(create_int_node(child, i), path))
+        patterns = _process_pattern(process, compiler, child, patterns,
+                                    add_path(create_int_node(child, i), path))
+    return patterns
 
 
-def _process_list(process, compiler, pattern, stack, path):
-    stack.append(["is_seq", _create_path_node(pattern, path)])
+def _process_list(process, compiler, pattern, patterns, path):
+    patterns = add_pattern(patterns, ["is_seq", _create_path_node(pattern, path)])
 
     children = node_first(pattern)
-    count = len(children)
-    # list_length doesnt`t calculate we need this node for branch merge checker
+    count = api.length(children)
+    # list_length will not be calculated, we need this node for branch merge checker
     # so [a,b] and [a,b,c] didn`t cause the error
-    stack.append(["list", _create_path_node(pattern, path), count])
+    patterns = add_pattern(patterns, ["list", _create_path_node(pattern, path), count])
 
     # first process all args except last which might be ...rest param
     cur_path = path
@@ -51,40 +68,42 @@ def _process_list(process, compiler, pattern, stack, path):
         if node_type(child) == NT_REST:
             return match_transform_error(process, compiler, child, u'Invalid use of Rest')
 
-        stack.append(["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(child)])
+        patterns = add_pattern(patterns, ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(child)])
 
-        child_path = plist.prepend(create_int_node(child, 0), cur_path)
+        child_path = add_path(create_int_node(child, 0), cur_path)
         cur_slice = create_slice_til_the_end(child)
-        cur_path = plist.prepend(cur_slice, cur_path)
-        _process_pattern(process, compiler, child, stack, child_path)
+        cur_path = add_path(cur_slice, cur_path)
+        patterns = _process_pattern(process, compiler, child, patterns, child_path)
 
     last_child = children[-1]
     if node_type(last_child) == NT_REST:
         last_child = node_first(last_child)
         child_path = cur_path
-        _process_pattern(process, compiler, last_child, stack, child_path)
+        patterns = _process_pattern(process, compiler, last_child, patterns, child_path)
     else:
-        stack.append(["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(last_child)])
-        child_path = plist.prepend(create_int_node(last_child, 0), cur_path)
+        patterns = add_pattern(patterns,
+                               ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(last_child)])
+        child_path = add_path(create_int_node(last_child, 0), cur_path)
         # process child
-        _process_pattern(process, compiler, last_child, stack, child_path)
+        patterns = _process_pattern(process, compiler, last_child, patterns, child_path)
 
         # Ensure that list is empty
         # IMPORTANT IT NEED TO BE THE LAST CHECK, OTHERWISE CACHED VARIABLES WILL NOT INITIALIZE
         last_slice = create_slice_til_the_end(last_child)
-        last_path = plist.prepend(last_slice, cur_path)
-        stack.append(["is", _create_path_node(pattern, last_path), create_empty_list_node(last_child)])
+        last_path = add_path(last_slice, cur_path)
+        patterns = add_pattern(patterns, ["is", _create_path_node(pattern, last_path),
+                                          create_empty_list_node(last_child)])
+    return patterns
 
 
-def _process_map(process, compiler, pattern, stack, path):
-    stack.append(["is_map", _create_path_node(pattern, path)])
-
+def _process_map(process, compiler, pattern, patterns, path):
+    patterns = add_pattern(patterns, ["is_map", _create_path_node(pattern, path)])
     children = node_first(pattern)
     count = len(children)
     # empty map
     if count == 0:
-        stack.append(["equal", _create_path_node(pattern, path), create_empty_map_node(pattern)])
-        return
+        patterns = add_pattern(patterns, ["equal", _create_path_node(pattern, path), create_empty_map_node(pattern)])
+        return patterns
 
     items = []
     symbols = []
@@ -107,7 +126,7 @@ def _process_map(process, compiler, pattern, stack, path):
 
         items.append(((symbol_key, varname), value))
 
-    stack.append(["map", sorted(symbols), _create_path_node(pattern, path)])
+    patterns = add_pattern(patterns, ["map", space.newtuple(sorted(symbols)), _create_path_node(pattern, path)])
 
     # for item in items:
     #     symbol_key, varname = item[0]
@@ -117,41 +136,53 @@ def _process_map(process, compiler, pattern, stack, path):
     for item in items:
         symbol_key, varname = item[0]
         value = item[1]
-        child_path = plist.prepend(symbol_key, path)
+        child_path = add_path(symbol_key, path)
         if is_empty_node(value):
-            _process_pattern(process, compiler, varname, stack, child_path)
+            patterns = _process_pattern(process, compiler, varname, patterns, child_path)
         else:
-            _process_pattern(process, compiler, varname, stack, child_path)
-            _process_pattern(process, compiler, value, stack, child_path)
+            patterns = _process_pattern(process, compiler, varname, patterns, child_path)
+            patterns = _process_pattern(process, compiler, value, patterns, child_path)
+
+    return patterns
 
 
-def _process_name(process, compiler, pattern, stack, path):
-    stack.append(["assign", pattern, _create_path_node(pattern, path)])
+def _process_name(process, compiler, pattern, patterns, path):
+    patterns = add_pattern(patterns, ["assign", pattern, _create_path_node(pattern, path)])
+    return patterns
 
 
-def _process_wildcard(process, compiler, pattern, stack, path):
-    stack.append(["wildcard"])
+def _process_wildcard(process, compiler, pattern, patterns, path):
+    patterns = add_pattern(patterns, ["wildcard"])
+    return patterns
 
 
-def _process_literal(process, compiler, pattern, stack, path):
-    stack.append(["equal", _create_path_node(pattern, path), pattern])
+def _process_literal(process, compiler, pattern, patterns, path):
+    patterns = add_pattern(patterns, ["equal", _create_path_node(pattern, path), pattern])
+    return patterns
 
 
-def _process_pattern(process, compiler, pattern, stack, path):
+def _process_pattern(process, compiler, pattern, patterns, path):
     if node_type(pattern) == NT_TUPLE:
-        _process_tuple(process, compiler, pattern, stack, path)
+        return _process_tuple(process, compiler, pattern, patterns, path)
     elif node_type(pattern) == NT_LIST:
-        _process_list(process, compiler, pattern, stack, path)
+        return _process_list(process, compiler, pattern, patterns, path)
     elif node_type(pattern) == NT_MAP:
-        _process_map(process, compiler, pattern, stack, path)
+        return _process_map(process, compiler, pattern, patterns, path)
     elif node_type(pattern) == NT_NAME:
-        _process_name(process, compiler, pattern, stack, path)
+        return _process_name(process, compiler, pattern, patterns, path)
     elif node_type(pattern) == NT_WILDCARD:
-        _process_wildcard(process, compiler, pattern, stack, path)
+        return _process_wildcard(process, compiler, pattern, patterns, path)
     elif node_type(pattern) in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_NIL, NT_STR, NT_CHAR]:
-        _process_literal(process, compiler, pattern, stack, path)
+        return _process_literal(process, compiler, pattern, patterns, path)
     else:
         assert False
+
+
+def process_patterns(process, compiler, pattern, path, index):
+    patterns = _process_pattern(process, compiler, pattern, plist.empty(), path)
+    patterns = plist.prepend(space.newint(index), patterns)
+    patterns = plist.reverse(patterns)
+    return patterns
 
 
 ###################################################################################
@@ -160,7 +191,7 @@ def _process_pattern(process, compiler, pattern, stack, path):
 
 def _place_branch_node(tree, head, tail):
     for leaf in tree:
-        if leaf[0] == head:
+        if api.n_equal(leaf[0], head):
             leaf[1].append(tail)
             return
 
@@ -169,11 +200,10 @@ def _place_branch_node(tree, head, tail):
 
 def _group_branches(process, branches):
     groups = []
-    for b in branches:
-        head = b[0]
-        tail = b[1:]
-        if isinstance(head, int):
-            assert tail == []
+    for branch in branches:
+        head, tail = split_patterns(branch)
+        if space.isint(head):
+            assert empty_pattern(tail)
             assert len(branches) == 1
             groups.append([head, None])
             break
@@ -181,7 +211,7 @@ def _group_branches(process, branches):
 
     result = []
     for leaf in groups:
-        if isinstance(leaf[0], int):
+        if space.isint(leaf[0]):
             merged = leaf[1]
         else:
             merged = _group_branches(process, leaf[1])
@@ -198,8 +228,10 @@ def _create_variable_undefs(basenode, variables):
 
 def _prepend_to_body(statements, body):
     assert isinstance(statements, list)
+    assert space.islist(body)
     # TODO NO MORE ITEMS HERE
-    return list_node(statements + body.items)
+    return plist.concat(list_node(statements), body)
+    # return list_node(statements + body.items)
     # REMOVE IT LATER
     # if is_list_node(body):
     # else:
@@ -386,7 +418,7 @@ TRANSFORM_DISPATCH = {
 
 def _transform_pattern(node, methods, history, variables, tree):
     assert isinstance(history, list)
-    assert obs.islist(variables)
+    assert space.islist(variables)
 
     nodes = []
 
@@ -397,12 +429,12 @@ def _transform_pattern(node, methods, history, variables, tree):
         tail = branch[1]
 
         if tail is None:
-            assert isinstance(head, int)
+            assert space.isint(head)
             assert len(tree) == 1
-            return methods[head], variables
+            return methods[api.to_i(head)], variables
 
-        type = head[0]
-        transformer = TRANSFORM_DISPATCH[type]
+        dtype = api.to_s(head[0])
+        transformer = TRANSFORM_DISPATCH[dtype]
 
         undefs = plist.substract(vars, variables)
         condition, body, prefixes, vars = \
@@ -431,30 +463,23 @@ def _transform_pattern(node, methods, history, variables, tree):
     return list_node(result), vars
 
 
-def transform(process, compiler, node, patterns, decision_node):
+def transform(process, compiler, node, decisions, decision_node):
     from obin.compile import MATCH_SYS_VAR
     branches = []
     path = plist.plist1(create_name_node(node, MATCH_SYS_VAR))
     bodies = []
 
-    for pattern in patterns:
-        stack = []
+    for pattern in decisions:
         clause = pattern[0]
-        _process_pattern(process, compiler, clause, stack, path)
-
-        body = pattern[1]
+        body = plist.append(pattern[1], decision_node)
+        bodies.append(body)
+        index = len(bodies) - 1
         # TODO REMOVE LATER
         assert is_list_node(body)
         # if not is_list_node(body):
         #     body = list_node([body])
-
-        body.append(decision_node)
-
-        bodies.append(body)
-        index = len(bodies) - 1
-        stack.append(index)
-
-        branches.append(stack)
+        patterns = process_patterns(process, compiler, clause, path, index)
+        branches.append(patterns)
 
     tree = _group_branches(process, branches)
     # print tree

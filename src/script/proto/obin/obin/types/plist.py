@@ -25,7 +25,6 @@ class W_PList(W_Any):
     def __getslice__(self, start, end):
         return slice(self, start, end)
 
-
     def show(self):
         els = []
         cur = self
@@ -172,7 +171,7 @@ def cons_n_list(items, pl):
 
 def append(pl, v):
     assert space.islist(pl)
-    insert(pl, pl.count, v)
+    return insert(pl, length(pl), v)
 
 
 def concat(pl1, pl2):

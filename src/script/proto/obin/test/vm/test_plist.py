@@ -75,6 +75,9 @@ class PListTestCase(unittest.TestCase):
         self._test_equal(l19, [102, 3, 4, 105, 6])
         l20 = plist.update(l19, 4, NI(106))
         self._test_equal(l20, [102, 3, 4, 105, 106])
+        l21 = plist.plist(NIS([1, 2, 3, 4]))
+        l22 = plist.append(l21, NI(5))
+        self._test_equal(l22, [1, 2, 3, 4, 5])
 
 
 def suite():
