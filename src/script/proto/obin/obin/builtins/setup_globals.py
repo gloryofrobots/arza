@@ -59,7 +59,7 @@ def _id(process, routine):
 def _print(process, routine):
     args = routine._args.to_l()
     if len(args) == 0:
-        return
+        return space.newnil()
 
     builder = UnicodeBuilder()
     for arg in args[:-1]:

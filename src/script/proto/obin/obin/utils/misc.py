@@ -73,3 +73,24 @@ def get_line_for_position(string, pos):
     except:
         result = string[pos:]
     return unicode(result)
+
+
+def is_quoted_string(string):
+    if string.startswith('"') and string.endswith('"'):
+        return True
+    if string.startswith("'") and string.endswith("'"):
+        return True
+    return False
+
+
+def string_unquote(string):
+    s = string
+    if s.startswith('"'):
+        assert s.endswith('"')
+    else:
+        assert s.startswith("'")
+        assert s.endswith("'")
+    s = s[:-1]
+    s = s[1:]
+
+    return s

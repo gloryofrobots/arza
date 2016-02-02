@@ -9,7 +9,7 @@ from obin.compile.scope import Scope
 from obin.types import space, api, plist
 from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
-from obin.utils.misc import is_absent_index
+from obin.utils.misc import is_absent_index, string_unquote
 from obin.runtime import error
 
 
@@ -23,17 +23,6 @@ def compile_error(process, compiler, code, node, message):
                        ]))
 
 
-def string_unquote(string):
-    s = string
-    if s.startswith('"'):
-        assert s.endswith('"')
-    else:
-        assert s.startswith("'")
-        assert s.endswith("'")
-    s = s[:-1]
-    s = s[1:]
-
-    return s
 
 
 class Compiler:

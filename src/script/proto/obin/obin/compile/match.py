@@ -3,7 +3,7 @@ from obin.types import plist
 from obin.compile.parse.nodes import *
 from obin.types import space, api
 from obin.runtime import error
-
+from obin.utils import misc
 
 def match_transform_error(process, compiler, node, message):
     from obin.compile.compiler import info
@@ -98,6 +98,14 @@ def _process_list(process, compiler, pattern, patterns, path):
                                           create_empty_list_node(last_child)])
     return patterns
 
+def _get_map_symbol(key_node):
+    key_type = node_type(key_node)
+    if key_type == NT_NAME:
+        return node_value(key_node)
+    elif key_type == NT_SYMBOL:
+        return node_value(node_first(key_node))
+    elif key_type == NT_STR:
+        return misc.string_unquote(node_value(key_node))
 
 def _process_map(process, compiler, pattern, patterns, path):
     patterns = add_pattern(patterns, ["is_map", _create_path_node(pattern, path)])
@@ -119,20 +127,26 @@ def _process_map(process, compiler, pattern, patterns, path):
         if key_type == NT_NAME:
             key = create_symbol_node(key_node, key_node)
             var_name = key_node
+            sym = _get_map_symbol(key_node)
         elif key_type == NT_SYMBOL:
             key = key_node
             var_name = empty_node()
+            sym = _get_map_symbol(key_node)
         elif key_type == NT_STR:
             key = key_node
             var_name = empty_node()
+            sym = _get_map_symbol(key_node)
         elif key_type == NT_BIND:
             key = node_second(key_node)
             var_name = node_first(key_node)
+            sym = _get_map_symbol(key)
         else:
             assert False
 
-        symbols.append(node_value(key_node))
+        symbols.append(sym)
         items.append(((key, var_name), key_value))
+    # symbols used for in chains and grouping maps in matches
+    # TODO implement sorting for symbols amd maps
     symbols = [space.newstring_from_str(symbol) for symbol in sorted(symbols)]
 
     patterns = add_pattern(patterns, ["map", space.newlist(symbols), _create_path_node(pattern, path)])
@@ -371,7 +385,6 @@ def _transform_is(history, head, variables):
 # THIS function creates in chain for maps like if x in $$ and y in $$ and z in $$
 def _create_in_and_chain(keys, map_node):
     key, rest = plist.split(keys)
-
     in_node = create_in_node(map_node,
                              create_symbol_node(map_node,
                                                 create_name_node(
@@ -476,7 +489,7 @@ def _transform_pattern(node, methods, history, variables, tree):
 
         if not plist.isempty(undefs):
             undef_nodes = _create_variable_undefs(node, undefs)
-            prefixes = prefixes + undef_nodes
+            prefixes = undef_nodes + prefixes
 
         nodes.append((condition, body, prefixes))
 
@@ -515,6 +528,6 @@ def transform(process, compiler, node, decisions, decision_node):
     tree = _group_branches(process, branches)
     # print tree
     transformed_node, vars = _transform_pattern(node, bodies, [], plist.empty(), tree)
-    print nodes.node_to_string(transformed_node)
-    raise SystemExit()
+    # print nodes.node_to_string(transformed_node)
+    # raise SystemExit()
     return transformed_node
