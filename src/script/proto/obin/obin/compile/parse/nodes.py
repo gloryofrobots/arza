@@ -134,7 +134,7 @@ def node_to_d(node):
         return [node_to_d(child) for child in node]
     else:
         d = {"_type": tokens.token_type_to_str(node_token_type(node)),
-             "_ntype": nt.node_type_to_str(node_type(node)) if node_type(node) is not None else "",
+             "_ntype": nt.node_type_to_str(node_type(node)) if node_type(node) != -1 else "",
              "_value": node_value(node),
              "_line": api.to_i(node_line(node))
              }

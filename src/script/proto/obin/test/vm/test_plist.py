@@ -79,6 +79,11 @@ class PListTestCase(unittest.TestCase):
         l22 = plist.append(l21, NI(5))
         self._test_equal(l22, [1, 2, 3, 4, 5])
 
+        l23 = plist.plist(NIS([3, 4, 5]))
+        self.assertTrue(plist.contains_list(l22, l23))
+        l24 = plist.plist(NIS([2, 4, 5]))
+        self.assertFalse(plist.contains_list(l22, l24))
+
 
 def suite():
     suite = unittest.TestLoader().loadTestsFromTestCase(PListTestCase)

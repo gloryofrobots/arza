@@ -219,6 +219,7 @@ def expression_parser_init(parser):
 
     infix(parser, TT_ISA, 50, led_infix)
     infix(parser, TT_NOTA, 50, led_infix)
+    infix(parser, TT_KINDOF, 50, led_infix)
 
     """
     precedence 55

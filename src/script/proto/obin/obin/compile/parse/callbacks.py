@@ -65,9 +65,9 @@ NODE_TYPE_MAPPING = {
     TT_LSHIFT: NT_LSHIFT,
     TT_DOUBLE_COLON: NT_CONS,
     TT_DOUBLE_DOT: NT_RANGE,
-    TT_COLON: NT_SYMBOL
+    TT_COLON: NT_SYMBOL,
+    TT_KINDOF: NT_KINDOF,
 }
-
 
 def __ntype(node):
     node_type = NODE_TYPE_MAPPING[nodes.node_token_type(node)]

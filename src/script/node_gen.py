@@ -28,7 +28,7 @@ NODES = [
   "NT_SPECIFY",
 
   "NT_BIND",
-  
+
   "NT_RETURN",
   "NT_THROW",
 
@@ -53,6 +53,7 @@ NODES = [
   "NT_CONS",
 
   "NT_OF",
+  "NT_KINDOF",
   "NT_AS",
 
   "NT_IN",

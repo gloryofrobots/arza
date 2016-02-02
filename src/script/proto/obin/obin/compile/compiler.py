@@ -2,7 +2,7 @@ __author__ = 'gloryofrobots'
 from obin.compile.code.opcode import *
 from obin.compile.parse import parser
 from obin.compile.parse import nodes
-from obin.compile.parse.nodes import (node_type, node_arity, 
+from obin.compile.parse.nodes import (node_type, node_arity,
                                       node_first, node_second, node_third)
 from obin.compile.parse.node_type import *
 from obin.compile.scope import Scope
@@ -17,12 +17,11 @@ def compile_error(process, compiler, code, node, message):
     line = code.info.get_line(api.to_i(nodes.node_line(node)))
     return error.throw(error.Errors.COMPILE,
                        space.newtuple([
-                           space.newtuple(info(node)),
                            space.newstring(message),
+                           space.newstring_from_str(nodes.node_value(node)),
+                           space.newtuple(list(info(node))),
                            space.newstring(line)
                        ]))
-
-
 
 
 class Compiler:
@@ -351,6 +350,10 @@ def _compile_NOTA(process, compiler, code, node):
     _on_binary_primitive(process, compiler, code, node, internals.NOTA)
 
 
+def _compile_KINDOF(process, compiler, code, node):
+    _on_binary_primitive(process, compiler, code, node, internals.KINDOF)
+
+
 def _compile_IN(process, compiler, code, node):
     _on_binary_primitive(process, compiler, code, node, internals.IN)
 
@@ -588,7 +591,7 @@ def _compile_destruct_unpack_seq(process, compiler, code, node):
     code.emit_1(UNPACK_SEQUENCE, length, info(node))
     # TODO FIX IT
     if length > 1:
-        for name in names[0:length-1]:
+        for name in names[0:length - 1]:
             _emit_store_name(process, compiler, code, name)
             _emit_pop(code)
     last_name = names[length - 1]
@@ -734,7 +737,7 @@ def _compile_CONTINUE(process, compiler, code, node):
         compile_error(process, compiler, code, node, u"continue outside loop")
 
 
-def _compile_func_args_and_body(process, compiler, code, funcname, params,  body, opcode, emitinfo):
+def _compile_func_args_and_body(process, compiler, code, funcname, params, body, opcode, emitinfo):
     _enter_scope(process, compiler)
 
     funccode = newcode(compiler)
@@ -1236,6 +1239,8 @@ def _compile_node(process, compiler, code, node):
         _compile_ISA(process, compiler, code, node)
     elif NT_NOTA == ntype:
         _compile_NOTA(process, compiler, code, node)
+    elif NT_KINDOF == ntype:
+        _compile_KINDOF(process, compiler, code, node)
 
     elif NT_AND == ntype:
         _compile_AND(process, compiler, code, node)

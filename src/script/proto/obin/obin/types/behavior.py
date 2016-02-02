@@ -24,7 +24,9 @@ class W_Behavior(W_Hashable):
         return plist.compute_hash(self.traits)
 
 
-
-
 def is_behavior_of(b, trait):
     return plist.contains(b.traits, trait)
+
+
+def has_traits(b, traits):
+    return plist.contains_list(b.traits, traits)

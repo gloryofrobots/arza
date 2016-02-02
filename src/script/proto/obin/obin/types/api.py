@@ -176,6 +176,14 @@ def kindof(process, obj, trait):
     return space.newbool(n_kindof(process, obj, trait))
 
 
+def kindof_list(process, obj, traits):
+    from obin.types import behavior as _behavior
+    assert space.islist(traits)
+
+    b = behavior(process, obj)
+    return space.newbool(_behavior.has_traits(b, traits))
+
+
 def n_kindof(process, obj, trait):
     t = totrait(trait)
     from obin.types import behavior as _behavior

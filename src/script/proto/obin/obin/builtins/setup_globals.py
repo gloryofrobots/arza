@@ -25,7 +25,6 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'is_seq', is_seq, 1)
     api.put_native_function(process, module, u'is_map', is_map, 1)
 
-    api.put_native_function(process, module, u'kindof', kindof, 2)
     api.put_native_function(process, module, u'length', length, 1)
     api.put_native_function(process, module, u'first', first, 1)
     api.put_native_function(process, module, u'rest', rest, 1)
@@ -198,12 +197,6 @@ def traits(process, routine):
     obj = routine.get_arg(0)
     return api.traits(process, obj)
 
-
-@complete_native_routine
-def kindof(process, routine):
-    obj = routine.get_arg(0)
-    trait = routine.get_arg(1)
-    return api.kindof(process, obj, trait)
 
 
 @complete_native_routine

@@ -1,0 +1,23 @@
+func fail(error) ->
+    throw error
+end
+
+func assert_equal(val1, val2) ->
+    if val1 != val2
+        fail([val1, "!=", val2])
+    end
+end
+
+func assert_is(val1, val2) ->
+    if val1 isnot val2
+        fail([val1, "isnot", val2])
+    end
+end
+
+func assert_true(val1) ->
+    assert_is(val1, true)
+end
+
+func assert_false(val1) ->
+    assert_is(val1, false)
+end

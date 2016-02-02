@@ -113,6 +113,7 @@ RULES = [
 
     (keyword('isa'), TT_ISA),
     (keyword('nota'), TT_NOTA),
+    (keyword('kindof'), TT_KINDOF),
 
     (keyword('return'), TT_RETURN),
 

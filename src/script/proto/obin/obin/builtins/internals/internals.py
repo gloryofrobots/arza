@@ -290,6 +290,12 @@ def internal_ISA(process, routine):
     apply_binary(process, routine, isa_w, left, right)
 
 
+def internal_KINDOF(process, routine):
+    right = routine.stack.pop()
+    left = routine.stack.pop()
+    apply_binary(process, routine, kindof_w, left, right)
+
+
 # ********************  INTERNALS IDS ********************
 IS = 0
 NE = 1
@@ -319,7 +325,8 @@ CONS = 24
 NOTIN = 25
 NOTA = 26
 ISA = 27
-__LENGTH__ = 28
+KINDOF = 28
+__LENGTH__ = 29
 
 
 # ********************* INTERNALS REPR ***************
@@ -352,6 +359,7 @@ __INTERNALS_REPR__[CONS] = "CONS"
 __INTERNALS_REPR__[NOTIN] = "NOTIN"
 __INTERNALS_REPR__[NOTA] = "NOTA"
 __INTERNALS_REPR__[ISA] = "ISA"
+__INTERNALS_REPR__[KINDOF] = "KINDOF"
 
 
 def newinternals():
@@ -385,6 +393,7 @@ def newinternals():
     P[NOTIN] = internal_NOTIN
     P[NOTA] = internal_NOTA
     P[ISA] = internal_ISA
+    P[KINDOF] = internal_KINDOF
     return P
 
 

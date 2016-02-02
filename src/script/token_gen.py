@@ -37,6 +37,7 @@ TOKENS = [
   ("TT_IS", "is"),
   ("TT_NOTIN", "notin"),
   ("TT_ISNOT", "isnot"),
+  ("TT_KINDOF", "kindof"),
   ("TT_ISA", "isa"),
   ("TT_NOTA", "nota"),
   ("TT_FROM", "from"),

@@ -350,3 +350,9 @@ def nota_w(process, obj, trait):
         return entity.remove_trait(process, obj, trait)
     else:
         error.throw_2(error.Errors.TYPE, trait, space.newstring(u"expected trait or list of traits"))
+
+
+def kindof_w(process, obj, trait):
+    if space.islist(trait):
+        return api.kindof_list(process, obj, trait)
+    return api.kindof(process, obj, trait)

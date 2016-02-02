@@ -17,7 +17,8 @@ class W_Trait(W_Hashable):
         return int((1 - random()) * 10000000)
 
     def _tostring_(self):
-        return "<trait %s>" % (api.to_s(self.name))
+        return api.to_s(self.name)
+        # return "<trait %s>" % (api.to_s(self.name))
 
     def _equal_(self, other):
         return other is self

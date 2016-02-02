@@ -96,9 +96,12 @@ class W_PList(W_Any):
         return slice(self, start_index, end_index)
 
     def _equal_(self, other):
+        if not space.islist(other):
+            return False
+
         if isempty(other) and isempty(self):
             return True
-        return False
+        return equal(self, other)
 
 
 __EMPTY__ = W_PList(space.newnil(), space.newnil())
@@ -297,6 +300,7 @@ def remove(pl, v):
 
     return W_PList(head(pl), remove(tail(pl), v))
 
+
 def contains_with(pl, v, condition):
     assert space.islist(pl)
     if isempty(pl):
@@ -307,8 +311,58 @@ def contains_with(pl, v, condition):
 
     return contains_with(tail(pl), v, condition)
 
+
 def contains(pl, v):
     return contains_with(pl, v, api.n_equal)
+
+
+def contains_split(pl, v):
+    assert space.islist(pl)
+    if isempty(pl):
+        return False, empty()
+
+    if api.n_equal(v, head(pl)):
+        return True, tail(pl)
+
+    return contains_split(tail(pl), v)
+
+
+def _contains_list(pl1, pl2):
+    if isempty(pl2):
+        return True
+    if isempty(pl1):
+        return False
+
+    if not api.n_equal(head(pl1), head(pl2)):
+        return False
+    else:
+        return _contains_list(tail(pl1), tail(pl2))
+
+
+def contains_list(pl1, pl2):
+    if isempty(pl2):
+        return True
+    if isempty(pl1):
+        return False
+
+    find, pl1_tail = contains_split(pl1, head(pl2))
+    if not find:
+        return False
+    return _contains_list(pl1_tail, tail(pl2))
+
+
+def equal(pl1, pl2):
+    if isempty(pl2) and isempty(pl1):
+        return True
+    if isempty(pl1):
+        return False
+    if isempty(pl2):
+        return False
+
+    if not api.n_equal(head(pl1), head(pl2)):
+        return False
+    else:
+        return equal(tail(pl1), tail(pl2))
 
 
 ######################################################

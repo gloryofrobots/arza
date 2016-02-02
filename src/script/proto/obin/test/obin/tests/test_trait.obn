@@ -1,62 +1,48 @@
-trait Animal
+load testit
+trait (Animal, Wolf, Bird)
 trait Human
-trait Wolf
 trait Bacteria
-trait Alice
-trait Insectoid
-trait MegaPihar
-trait Galvanizator
 
-trait (A, B, C, D)
-trait G
-trait G1
+func Human_New(name, surname) ->
+    {name=name, surname=surname} isa [Human, Animal] end
 
+func Wolf_New(name) ->
+    {name=name} isa [Wolf, Animal] end
+
+// backticks name
 generic `-=-=-=`(self of Animal) ->
-    print("I am animal", self.name)
+    ["I am animal", self.name]
 end
 //
 specify `-=-=-=`(self of Human) ->
-    print("I am nice human",self.name, self.surname)
+    ["I am nice human",self.name, self.surname]
 end
 
 func test ->
-    print(A,B,C,D,G)
+    {assert_false, assert_true, assert_equal} = testit
 
-    func Human_New(name, surname) ->
-        {name=name, surname=surname} isa [Human, Animal]
-    end
-    //
-    func Wolf_New(name) ->
-        {name=name} isa [Wolf, Animal]
-    end
-
-    print(Human)
+    bob_alice = Human_New("Bob", "Alice")
+    wolf = Wolf_New("Jack")
+    assert_equal(`-=-=-=`(bob_alice), ["I am nice human", "Bob", "Alice"])
+    assert_equal(`-=-=-=`(wolf), ["I am animal", "Jack"])
 
 
-    h = Human_New("Bob", "Alice")
-    w = Wolf_New("Jack")
-    `-=-=-=`(h)
-    `-=-=-=`(w)
+    assert_true(bob_alice kindof Map)
+    assert_false(bob_alice kindof Bacteria)
+    assert_true(bob_alice kindof Human)
+    assert_true(wolf kindof [Wolf, Animal])
+    assert_true(Bacteria kindof Any)
+    assert_true(Bacteria kindof Trait)
+    assert_true(Human kindof Trait)
 
-    print(h)
+    alice = {name = "Alice", age = 42} isa Human
+    alice2 = alice isa [Bird, Animal, Bacteria]
+    alice3 = alice2 nota Animal
+    alice4 = alice2 nota [Bird, Bacteria]
 
-    h = Human_New("X", "Y")
-
-    print(kindof(h, Map))
-    print(kindof(h, Bacteria))
-    print(kindof(h, Human))
-    print(kindof(Bacteria, Any))
-    print(kindof(Bacteria, Trait))
-    print(kindof(Human, Trait))
-
-
-    alice = {name = "Alice", age = 42} isa Alice
-    alice2 = alice isa [Insectoid, MegaPihar, Galvanizator]
-    alice3 = alice2 nota Alice
-    alice4 = alice2 nota [Insectoid, Galvanizator]
-
-    print(alice, traits(alice))
-    print(alice2, traits(alice2))
-    print(alice3, traits(alice3))
-    print(alice4, traits(alice4))
+    assert_false(alice2 kindof [Animal, Bird, Animal])
+    assert_true(alice2 kindof [Bird, Animal])
+    assert_false(alice3 kindof Animal)
+    assert_equal(traits(alice3), [Bird, Bacteria, Human, Map, Enumerable, Collection, Any])
+    assert_equal(traits(alice4), [Animal, Human, Map, Enumerable, Collection, Any])
 end
