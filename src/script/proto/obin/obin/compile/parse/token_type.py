@@ -57,36 +57,37 @@ TT_URSHIFT = 54
 TT_LSHIFT = 55
 TT_ARROW = 56
 TT_FAT_ARROW = 57
-TT_EQ = 58
-TT_LE = 59
-TT_GE = 60
-TT_NE = 61
-TT_SEMI = 62
-TT_COLON = 63
-TT_DOUBLE_COLON = 64
-TT_LCURLY = 65
-TT_RCURLY = 66
-TT_COMMA = 67
-TT_ASSIGN = 68
-TT_LPAREN = 69
-TT_RPAREN = 70
-TT_LSQUARE = 71
-TT_RSQUARE = 72
-TT_DOT = 73
-TT_DOUBLE_DOT = 74
-TT_BITAND = 75
-TT_BITNOT = 76
-TT_BITOR = 77
-TT_BITXOR = 78
-TT_SUB = 79
-TT_ADD = 80
-TT_MUL = 81
-TT_DIV = 82
-TT_BACKTICK = 83
-TT_MOD = 84
-TT_LT = 85
-TT_GT = 86
-TT_UNKNOWN = 87
+TT_AT_SIGN = 58
+TT_EQ = 59
+TT_LE = 60
+TT_GE = 61
+TT_NE = 62
+TT_SEMI = 63
+TT_COLON = 64
+TT_DOUBLE_COLON = 65
+TT_LCURLY = 66
+TT_RCURLY = 67
+TT_COMMA = 68
+TT_ASSIGN = 69
+TT_LPAREN = 70
+TT_RPAREN = 71
+TT_LSQUARE = 72
+TT_RSQUARE = 73
+TT_DOT = 74
+TT_DOUBLE_DOT = 75
+TT_BITAND = 76
+TT_BITNOT = 77
+TT_BITOR = 78
+TT_BITXOR = 79
+TT_SUB = 80
+TT_ADD = 81
+TT_MUL = 82
+TT_DIV = 83
+TT_BACKTICK = 84
+TT_MOD = 85
+TT_LT = 86
+TT_GT = 87
+TT_UNKNOWN = 88
 # ************************ OBIN TOKENS REPR *****************************
 __TT_REPR__ = [u"TT_ENDSTREAM", u"TT_INT", u"TT_FLOAT", u"TT_STR", u"TT_CHAR", u"TT_NAME", u"TT_NEWLINE", u"TT_BREAK",
                u"TT_CASE", u"TT_CONTINUE", u"TT_ELSE", u"TT_FOR", u"TT_WHILE", u"TT_IF", u"TT_WHEN", u"TT_ELIF",
@@ -95,11 +96,11 @@ __TT_REPR__ = [u"TT_ENDSTREAM", u"TT_INT", u"TT_FLOAT", u"TT_STR", u"TT_CHAR", u
                u"TT_IN", u"TT_IS", u"TT_NOTIN", u"TT_ISNOT", u"TT_ISA", u"TT_NOTA", u"TT_FROM", u"TT_MODULE",
                u"TT_IMPORT", u"TT_EXPORT", u"TT_LOAD", u"TT_USE", u"TT_TRAIT", u"TT_GENERIC", u"TT_SPECIFY", u"TT_END",
                u"TT_RETURN", u"TT_ELLIPSIS", u"TT_WILDCARD", u"TT_GOTO", u"TT_RSHIFT", u"TT_URSHIFT", u"TT_LSHIFT",
-               u"TT_ARROW", u"TT_FAT_ARROW", u"TT_EQ", u"TT_LE", u"TT_GE", u"TT_NE", u"TT_SEMI", u"TT_COLON",
-               u"TT_DOUBLE_COLON", u"TT_LCURLY", u"TT_RCURLY", u"TT_COMMA", u"TT_ASSIGN", u"TT_LPAREN", u"TT_RPAREN",
-               u"TT_LSQUARE", u"TT_RSQUARE", u"TT_DOT", u"TT_DOUBLE_DOT", u"TT_BITAND", u"TT_BITNOT", u"TT_BITOR",
-               u"TT_BITXOR", u"TT_SUB", u"TT_ADD", u"TT_MUL", u"TT_DIV", u"TT_BACKTICK", u"TT_MOD", u"TT_LT", u"TT_GT",
-               u"TT_UNKNOWN", ]
+               u"TT_ARROW", u"TT_FAT_ARROW", u"TT_AT_SIGN", u"TT_EQ", u"TT_LE", u"TT_GE", u"TT_NE", u"TT_SEMI",
+               u"TT_COLON", u"TT_DOUBLE_COLON", u"TT_LCURLY", u"TT_RCURLY", u"TT_COMMA", u"TT_ASSIGN", u"TT_LPAREN",
+               u"TT_RPAREN", u"TT_LSQUARE", u"TT_RSQUARE", u"TT_DOT", u"TT_DOUBLE_DOT", u"TT_BITAND", u"TT_BITNOT",
+               u"TT_BITOR", u"TT_BITXOR", u"TT_SUB", u"TT_ADD", u"TT_MUL", u"TT_DIV", u"TT_BACKTICK", u"TT_MOD",
+               u"TT_LT", u"TT_GT", u"TT_UNKNOWN", ]
 
 
 def token_type_to_str(ttype):

@@ -30,8 +30,10 @@ def add_pattern(patterns, args):
     args[0] = space.newstring_from_str(args[0])
     return plist.prepend(space.newtuple(args), patterns)
 
+
 def empty_pattern(pattern):
     return plist.isempty(pattern)
+
 
 def split_patterns(patterns):
     return plist.split(patterns)
@@ -109,23 +111,28 @@ def _process_map(process, compiler, pattern, patterns, path):
     items = []
     symbols = []
     for child in children:
-        key = child[0]
+        key_node = child[0]
+        key_value = child[1]
 
-        if node_type(key) == NT_NAME:
-            name = '"%s"' % node_value(key)
-            symbols.append(name)
-            symbol_key = create_str_node(key, name)
-            varname = key
-        elif node_type(key) == NT_STR:
-            symbols.append(node_value(key))
-            symbol_key = key
-            varname = create_name_node(key, node_value(key))
+        key_type = node_type(key_node)
+
+        if key_type == NT_NAME:
+            key = create_symbol_node(key_node, key_node)
+            var_name = key_node
+        elif key_type == NT_SYMBOL:
+            key = key_node
+            var_name = empty_node()
+        elif key_type == NT_STR:
+            key = key_node
+            var_name = empty_node()
+        elif key_type == NT_BIND:
+            key = node_second(key_node)
+            var_name = node_first(key_node)
         else:
             assert False
 
-        value = child[1]
-
-        items.append(((symbol_key, varname), value))
+        symbols.append(node_value(key_node))
+        items.append(((key, var_name), key_value))
     symbols = [space.newstring_from_str(symbol) for symbol in sorted(symbols)]
 
     patterns = add_pattern(patterns, ["map", space.newlist(symbols), _create_path_node(pattern, path)])
@@ -137,14 +144,21 @@ def _process_map(process, compiler, pattern, patterns, path):
 
     for item in items:
         symbol_key, varname = item[0]
-        value = item[1]
+        key_value = item[1]
         child_path = add_path(symbol_key, path)
-        if is_empty_node(value):
+        if not is_empty_node(varname):
             patterns = _process_pattern(process, compiler, varname, patterns, child_path)
-        else:
-            patterns = _process_pattern(process, compiler, varname, patterns, child_path)
-            patterns = _process_pattern(process, compiler, value, patterns, child_path)
+        if not is_empty_node(key_value):
+            patterns = _process_pattern(process, compiler, key_value, patterns, child_path)
 
+    return patterns
+
+
+def _process_bind(process, compiler, pattern, patterns, path):
+    name = nodes.node_first(pattern)
+    exp = nodes.node_second(pattern)
+    patterns = add_pattern(patterns, ["assign", name, _create_path_node(exp, path)])
+    patterns = _process_pattern(process, compiler, exp, patterns, path)
     return patterns
 
 
@@ -164,17 +178,21 @@ def _process_literal(process, compiler, pattern, patterns, path):
 
 
 def _process_pattern(process, compiler, pattern, patterns, path):
-    if node_type(pattern) == NT_TUPLE:
+    ntype = node_type(pattern)
+
+    if ntype == NT_TUPLE:
         return _process_tuple(process, compiler, pattern, patterns, path)
-    elif node_type(pattern) == NT_LIST:
+    elif ntype == NT_LIST:
         return _process_list(process, compiler, pattern, patterns, path)
-    elif node_type(pattern) == NT_MAP:
+    elif ntype == NT_MAP:
         return _process_map(process, compiler, pattern, patterns, path)
-    elif node_type(pattern) == NT_NAME:
+    elif ntype == NT_BIND:
+        return _process_bind(process, compiler, pattern, patterns, path)
+    elif ntype == NT_NAME:
         return _process_name(process, compiler, pattern, patterns, path)
-    elif node_type(pattern) == NT_WILDCARD:
+    elif ntype == NT_WILDCARD:
         return _process_wildcard(process, compiler, pattern, patterns, path)
-    elif node_type(pattern) in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_NIL, NT_STR, NT_CHAR]:
+    elif ntype in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_NIL, NT_STR, NT_CHAR]:
         return _process_literal(process, compiler, pattern, patterns, path)
     else:
         assert False
@@ -350,11 +368,16 @@ def _transform_is(history, head, variables):
     return left, condition, prefixes + prefixes1, variables
 
 
+# THIS function creates in chain for maps like if x in $$ and y in $$ and z in $$
 def _create_in_and_chain(keys, map_node):
     key, rest = plist.split(keys)
 
     in_node = create_in_node(map_node,
-                             create_str_node(map_node, api.to_s(key)), map_node)
+                             create_symbol_node(map_node,
+                                                create_name_node(
+                                                    map_node,
+                                                    api.to_s(key))),
+                             map_node)
     if plist.isempty(rest):
         return in_node
 
@@ -386,6 +409,7 @@ def _transform_isnot(history, head, variables):
 
 def _is_same_var(var1, var2):
     return node_value(var1) == node_value(var2)
+
 
 def _transform_assign(history, head, variables):
     left = head[1]
@@ -491,6 +515,6 @@ def transform(process, compiler, node, decisions, decision_node):
     tree = _group_branches(process, branches)
     # print tree
     transformed_node, vars = _transform_pattern(node, bodies, [], plist.empty(), tree)
-    # print nodes.node_to_string(transformed_node)
-    # raise SystemExit()
+    print nodes.node_to_string(transformed_node)
+    raise SystemExit()
     return transformed_node

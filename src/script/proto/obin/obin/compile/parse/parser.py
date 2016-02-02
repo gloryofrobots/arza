@@ -95,9 +95,10 @@ def pattern_parser_init(parser):
     prefix(parser, TT_ELLIPSIS, prefix_nud)
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly)
+    prefix(parser, TT_LCURLY, prefix_lcurly_patterns)
 
     infix(parser, TT_OF, 10, infix_simple_pair)
+    infix(parser, TT_AT_SIGN, 10, infix_at)
 
     symbol(parser, TT_CASE, None)
     symbol(parser, TT_COMMA, None)
@@ -287,7 +288,6 @@ def expression_parser_init(parser):
     prefix(parser, TT_MATCH, prefix_match)
     prefix(parser, TT_TRY, prefix_try)
 
-
     """
     STATEMENTS
     """
@@ -349,23 +349,16 @@ def write_ast(ast):
 
 # ast = parse_string(
 #     """
-# module boolean
-#     generic op_and
-#         case (t of True, t of True) ->
-#             true
-#         case (a of Any, a of Any) ->
-#             false
+#     module M
+#         func f ->
+#             match X
+#                 case { XXX @ name="Alice", surname="Bob" } -> 1
+#             end
+#         end
 #     end
-#
-# end
-#
-# module inner_boolean
-#     generic tostring(t of True) ->
-#         "IamTrue"
-#     end
-# end
 #     """
 # )
+# print nodes.node_to_string(ast)
 """
 match (a,b):
     case (true, b):
@@ -383,5 +376,4 @@ end
     A[..4];
     A[5];
 """
-# print ast
-# write_ast(ast)
+

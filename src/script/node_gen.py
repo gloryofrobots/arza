@@ -27,6 +27,8 @@ NODES = [
   "NT_GENERIC",
   "NT_SPECIFY",
 
+  "NT_BIND",
+  
   "NT_RETURN",
   "NT_THROW",
 

@@ -31,9 +31,9 @@ def run(script_file):
     from obin.runtime import engine
     from obin.utils import fs
     script_dir = fs.get_dirname(script_file)
-    path = fs.join_and_normalise_path(script_dir, "olib")
+    path_lib = fs.join_and_normalise_path(script_dir, "__lib__")
 
-    process, error = engine.initialize([path])
+    process, error = engine.initialize([script_dir, path_lib])
     if error is not None:
         print "Initialization error"
         return error

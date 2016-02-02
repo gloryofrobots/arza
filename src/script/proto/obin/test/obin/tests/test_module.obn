@@ -21,7 +21,7 @@ end
 
 module m2
     func f_2() -> "f_2" end
-    end
+end
 
 func test ->
     {gen_ab, f_ab, f_ab_2, CONST=const} = ab

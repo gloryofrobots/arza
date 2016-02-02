@@ -78,6 +78,11 @@ def _init_default_current_0(parser):
     return nodes.node_0(__ntype(parser.node), __ntok(parser.node))
 
 
+##############################################################
+# INFIX
+##############################################################
+
+
 def led_infix(parser, node, left):
     h = node_handler(parser, node)
     exp = None
@@ -95,10 +100,9 @@ def led_infixr(parser, node, left):
 
 def led_infixr_assign(parser, node, left):
     ltype = nodes.node_token_type(left)
-    # NOT TUPLE ASSIGNMENT
+
     if ltype != TT_DOT and ltype != TT_LSQUARE \
-            and ltype != TT_NAME and ltype != TT_COMMA \
-            and ltype != TT_LCURLY and ltype != TT_LPAREN:
+            and ltype != TT_NAME and ltype != TT_LCURLY and ltype != TT_LPAREN:
         parse_error(parser, u"Bad lvalue in assignment", left)
 
     if ltype == TT_LPAREN and nodes.node_arity(left) != 1:
@@ -110,37 +114,6 @@ def led_infixr_assign(parser, node, left):
     exp = expression(parser, 9)
 
     return node_2(__ntype(node), __ntok(node), left, exp)
-
-
-def _prefix_nud(parser, node_type, node):
-    exp = expression(parser, 70)
-    return node_1(node_type, __ntok(node), exp)
-
-
-def prefix_nud(parser, node):
-    node_type = __ntype(node)
-    return _prefix_nud(parser, node_type, node)
-
-
-def itself(parser, node):
-    return node_0(__ntype(node), __ntok(node))
-
-
-def prefix_colon(parser, node):
-    check_token_types(parser, [TT_NAME, TT_BACKTICK])
-    return _prefix_nud(parser, NT_SYMBOL, node)
-
-
-def prefix_unary_minus(parser, node):
-    return _prefix_nud(parser, NT_UNARY_MINUS, node)
-
-
-def prefix_unary_plus(parser, node):
-    return _prefix_nud(parser, NT_UNARY_PLUS, node)
-
-
-def nud_wildcard(parser, node):
-    return parse_error(parser, u"Invalid use of _ pattern", node)
 
 
 def infix_when(parser, node, left):
@@ -212,6 +185,53 @@ def infix_lparen(parser, node, left):
                       nodes.list_node(items))
     else:
         return node_2(NT_CALL, __ntok(node), left, nodes.list_node(items))
+
+
+def infix_at(parser, node, left):
+    ltype = nodes.node_token_type(left)
+    if ltype != TT_NAME:
+        parse_error(parser, u"Bad lvalue in pattern binding", left)
+
+    exp = expression(parser, 9)
+    return node_2(NT_BIND, __ntok(node), left, exp)
+
+
+##############################################################
+# INFIX
+##############################################################
+
+
+
+
+def _prefix_nud(parser, node_type, node):
+    exp = expression(parser, 70)
+    return node_1(node_type, __ntok(node), exp)
+
+
+def prefix_nud(parser, node):
+    node_type = __ntype(node)
+    return _prefix_nud(parser, node_type, node)
+
+
+def itself(parser, node):
+    return node_0(__ntype(node), __ntok(node))
+
+
+def prefix_colon(parser, node):
+    check_token_types(parser, [TT_NAME, TT_BACKTICK])
+    return _prefix_nud(parser, NT_SYMBOL, node)
+
+
+def prefix_unary_minus(parser, node):
+    return _prefix_nud(parser, NT_UNARY_MINUS, node)
+
+
+def prefix_unary_plus(parser, node):
+    return _prefix_nud(parser, NT_UNARY_PLUS, node)
+
+
+def symbol_wildcard(parser, node):
+    return parse_error(parser, u"Invalid use of _ pattern", node)
 
 
 IF_TERMINATION_TOKENS = [TT_ELIF, TT_ELSE, TT_END]
@@ -307,23 +327,53 @@ def prefix_lsquare(parser, node):
     return node_1(NT_LIST, __ntok(node), nodes.list_node(items))
 
 
+def on_bind_node(parser, key):
+    if nodes.node_type(key) != NT_NAME:
+        parse_error(parser, u"Invalid bind name", key)
+
+    advance_expected(parser, TT_AT_SIGN)
+    real_key, value = _parse_map_key_pair(parser, [TT_NAME, TT_COLON, TT_STR], None)
+
+    bind_key = nodes.create_bind_node(key, key, real_key)
+    return bind_key, value
+
+
+# this callback used in pattern matching
+def prefix_lcurly_patterns(parser, node):
+    return _prefix_lcurly(parser, node, [TT_NAME, TT_COLON, TT_STR], on_bind_node)
+
+
 def prefix_lcurly(parser, node):
+    return _prefix_lcurly(parser, node, [TT_NAME, TT_COLON, TT_INT, TT_STR, TT_CHAR, TT_FLOAT], None)
+
+
+def _parse_map_key_pair(parser, types, on_unknown):
+    check_token_types(parser, types)
+    # WE NEED LBP=10 TO OVERRIDE ASSIGNMENT LBP(9)
+    key = expression(parser, 10)
+
+    if parser.token_type == TT_COMMA:
+        value = nodes.empty_node()
+    elif parser.token_type == TT_RCURLY:
+        value = nodes.empty_node()
+    elif parser.token_type == TT_ASSIGN:
+        advance_expected(parser, TT_ASSIGN)
+        value = expression(parser, 0)
+    else:
+        if on_unknown is None:
+            parse_error(parser, u"Invalid map declaration syntax", parser.node)
+        key, value = on_unknown(parser, key)
+
+    return key, value
+
+
+def _prefix_lcurly(parser, node, types, on_unknown):
+    # on_unknown used for pattern_match in binds {NAME @ name = "Alice"}
     items = []
     if parser.token_type != TT_RCURLY:
         while True:
             # TODO check it
-            check_token_types(parser, [TT_NAME, TT_COLON, TT_INT, TT_STR, TT_CHAR, TT_FLOAT])
-            # WE NEED LBP=10 TO OVERRIDE ASSIGNMENT LBP(9)
-            key = expression(parser, 10)
-
-            if parser.token_type == TT_COMMA:
-                value = nodes.empty_node()
-            elif parser.token_type == TT_RCURLY:
-                value = nodes.empty_node()
-            else:
-                advance_expected(parser, TT_ASSIGN)
-                value = expression(parser, 0)
-
+            key, value = _parse_map_key_pair(parser, types, on_unknown)
             items.append(nodes.list_node([key, value]))
 
             if parser.token_type != TT_COMMA:
@@ -560,4 +610,3 @@ def stmt_trait(parser, node):
 def stmt_load(parser, node):
     imported = expression(parser.load_parser, 0)
     return node_1(NT_LOAD, __ntok(node), imported)
-

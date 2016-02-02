@@ -10,9 +10,15 @@ def __newnode(ntype, token, children):
             if not is_node(child):
                 print child
             assert is_node(child), child
-        return space.newtuple([space.newint(ntype), token, space.newlist(children)])
+        return space.newtuple([
+            space.newint(ntype), token, space.newlist(children),
+            space.newstring(tt.token_type_to_str(tokens.token_type(token)))
+        ])
     else:
-        return space.newtuple([space.newint(ntype), token, space.newlist([])])
+        return space.newtuple([
+            space.newint(ntype), token, space.newlist([]),
+            space.newstring(tt.token_type_to_str(tokens.token_type(token)))
+        ])
 
 
 def empty_node():
@@ -158,6 +164,10 @@ def create_str_node(basenode, strval):
     return node_0(nt.NT_STR, create_token_from_node(tt.TT_STR, strval, basenode))
 
 
+def create_symbol_node(basenode, name):
+    return node_1(nt.NT_SYMBOL, create_token_from_node(tt.TT_COLON, ":", basenode), name)
+
+
 def create_int_node(basenode, val):
     return node_0(nt.NT_INT, create_token_from_node(tt.TT_INT, str(val), basenode))
 
@@ -231,6 +241,10 @@ def create_slice_til_the_end(basenode):
 
 def create_lookup_node(basenode, left, right):
     return node_2(nt.NT_LOOKUP, create_token_from_node(tt.TT_LSQUARE, "[", basenode), left, right)
+
+
+def create_bind_node(basenode, left, right):
+    return node_2(nt.NT_BIND, create_token_from_node(tt.TT_AT_SIGN, "@", basenode), left, right)
 
 
 def create_try_statement_node(basenode, exp, success, fail):

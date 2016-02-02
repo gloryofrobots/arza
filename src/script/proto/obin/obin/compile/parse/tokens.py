@@ -160,6 +160,7 @@ RULES = [
     (token('\%'), TT_MOD),
     (token('\<'), TT_LT),
     (token('\>'), TT_GT),
+    (token('\@'), TT_AT_SIGN),
 ]
 
 

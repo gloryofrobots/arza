@@ -58,6 +58,7 @@ TOKENS = [
   ("TT_LSHIFT", "<<"),
   ("TT_ARROW", "->"),
   ("TT_FAT_ARROW", "=>"),
+  ("TT_AT_SIGN", "@"),
   
   ("TT_EQ", "=="),
 
