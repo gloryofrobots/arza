@@ -2,6 +2,17 @@ func test ->
     func error(reason) ->
         throw (:error, {reason=reason}) end
 
+    try
+        1/0
+    catch e
+        print("ERROR", e)
+    end
+    try
+        nil
+    catch e
+        print("ERROR", e)
+    end
+
     x =
     try
         print("IN TRY")

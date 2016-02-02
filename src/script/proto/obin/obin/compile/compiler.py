@@ -832,18 +832,15 @@ def _compile_TRY(process, compiler, code, node):
     catchvar = catch[0]
     catchnode = catch[1]
     finallynode = node_third(node)
-    if not nodes.is_empty_node(finallynode):
-        finallylabel = code.prealocate_label()
-    else:
-        finallylabel = None
+    finallylabel = code.prealocate_label()
 
     catchlabel = code.prealocate_label()
     code.emit_1(PUSH_CATCH, catchlabel, codeinfo_unknown())
     _compile(process, compiler, code, trynode)
     code.emit_0(POP_CATCH, codeinfo_unknown())
-    if finallylabel is not None:
-        code.emit_1(JUMP, finallylabel, codeinfo_unknown())
+    code.emit_1(JUMP, finallylabel, codeinfo_unknown())
 
+    # exception on top of the stack due to internal process/routine logic
     code.emit_1(LABEL, catchlabel, codeinfo_unknown())
     if not nodes.is_empty_node(catchvar):
         _emit_store_name(process, compiler, code, catchvar)
@@ -852,9 +849,9 @@ def _compile_TRY(process, compiler, code, node):
 
     _compile(process, compiler, code, catchnode)
 
-    if finallylabel is not None:
-        code.emit_1(JUMP, finallylabel, codeinfo_unknown())
-        code.emit_1(LABEL, finallylabel, codeinfo_unknown())
+    code.emit_1(JUMP, finallylabel, codeinfo_unknown())
+    code.emit_1(LABEL, finallylabel, codeinfo_unknown())
+    if not nodes.is_empty_node(finallynode):
         _compile(process, compiler, code, finallynode)
 
 
