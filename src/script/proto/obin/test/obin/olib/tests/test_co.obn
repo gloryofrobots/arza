@@ -1,0 +1,27 @@
+
+func test->
+    co = coroutine(
+            func(yield, x) ->
+                   Z = "1111"
+                   _co1 = coroutine(
+                        func(yield2, y) ->
+                           Y = "2222"
+                           func send() ->
+                                X = "3333"
+                                yield2(42 + y)
+                           end
+                           send()
+                        end)
+
+                print("x", x)
+                v = _co1(x)
+                t = yield(v)
+                print("t", t)
+                x = yield(t)
+                print("x", x)
+                return x
+            end)
+    print(co(23))
+    print(co(34))
+    print(co(44))
+end

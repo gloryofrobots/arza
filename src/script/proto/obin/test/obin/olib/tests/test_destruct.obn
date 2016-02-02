@@ -1,0 +1,25 @@
+func test ->
+    metadata = {
+        title= "Nemesis Games",
+        subject= "SCIFI",
+        translationsUa={title="IGRU DOLI", translator="PILIP LUN" },
+        translationsEn={ titleEn=("GAMES OF NEMESIS", "NEMESIS GAMES"), translatorEn="Jhon DOU" },
+        author= ("James", "Corey")
+    }
+
+
+    print(metadata.title, metadata.subject, metadata.translationsUa["title"], metadata.translationsUa.translator,
+          metadata.translationsEn.titleEn,  metadata.translationsEn.translatorEn, metadata.author)
+
+    print ("**************************************************************************")
+
+    {
+        title=englishTitle,
+        subject,
+        translationsUa={ title=localeTitle, translator },
+        translationsEn={ titleEn=(localeTitleEn, origTitleEn), translatorEn },
+        author=author_data
+    } = metadata;
+
+    print(englishTitle, subject, localeTitle,translator,(localeTitleEn, origTitleEn), translatorEn, author_data )
+end

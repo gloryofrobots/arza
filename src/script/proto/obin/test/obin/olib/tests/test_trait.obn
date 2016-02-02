@@ -1,0 +1,62 @@
+trait Animal
+trait Human
+trait Wolf
+trait Bacteria
+trait Alice
+trait Insectoid
+trait MegaPihar
+trait Galvanizator
+
+trait (A, B, C, D)
+trait G
+trait G1
+
+generic `-=-=-=`(self of Animal) ->
+    print("I am animal", self.name)
+end
+//
+specify `-=-=-=`(self of Human) ->
+    print("I am nice human",self.name, self.surname)
+end
+
+func test ->
+    print(A,B,C,D,G)
+
+    func Human_New(name, surname) ->
+        {name=name, surname=surname} isa [Human, Animal]
+    end
+    //
+    func Wolf_New(name) ->
+        {name=name} isa [Wolf, Animal]
+    end
+
+    print(Human)
+
+
+    h = Human_New("Bob", "Alice")
+    w = Wolf_New("Jack")
+    `-=-=-=`(h)
+    `-=-=-=`(w)
+
+    print(h)
+
+    h = Human_New("X", "Y")
+
+    print(kindof(h, Map))
+    print(kindof(h, Bacteria))
+    print(kindof(h, Human))
+    print(kindof(Bacteria, Any))
+    print(kindof(Bacteria, Trait))
+    print(kindof(Human, Trait))
+
+
+    alice = {name = "Alice", age = 42} isa Alice
+    alice2 = alice isa [Insectoid, MegaPihar, Galvanizator]
+    alice3 = alice2 nota Alice
+    alice4 = alice2 nota [Insectoid, Galvanizator]
+
+    print(alice, traits(alice))
+    print(alice2, traits(alice2))
+    print(alice3, traits(alice3))
+    print(alice4, traits(alice4))
+end

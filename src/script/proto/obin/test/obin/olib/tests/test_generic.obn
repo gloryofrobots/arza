@@ -1,0 +1,26 @@
+
+generic _and_
+    case (t of True, f of True) ->
+        true
+    case (t of Boolean, f of Boolean) ->
+        false
+end
+
+
+specify _and_ (i of Integer, i of Float) ->
+    false
+end
+
+specify _and_
+    case (i of String, i of Integer) ->
+        true
+end
+
+func test ->
+    print(_and_(true, true))
+
+    print(_and_(true, false), _and_(false, true),  _and_(true, true))
+
+    print(_and_(1, 1.0), _and_("hhh", 1))
+end
+

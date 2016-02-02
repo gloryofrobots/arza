@@ -1,77 +1,14 @@
 load tvar
 load lib_az.abc.module_ab as ab
 load lib_az.efg.module_e as e
+load test.test_module
+load test.test_match
 
 func t_1() -> 12 end
 
-module match_test
-    func main() ->
-        T = match (1, (23, (24, 25)))
-                case (Z, (G, 1)) ->  12 + Z
-                case (1, 23) ->   11
-                case (1, (23, X)) ->   11
-                case _ ->  nil
-        end
-        A = [(1,2), (2,3,4), 5, [6,7,8]]
-        print(
-        match A
-            case [a,b,c] ->  (a, b, c)
-            case [a, b] ->  (a,b)
-            case (x, y, z) ->  (x, y, z)
-            case [(1, X), Y, 5, [6,7, Z]] ->  (X, Y, Z)
-            case _ ->  123
-        end
-        )
-
-        A = {name="Bob", surname=("Alice", "Dou"), age=42}
-        print(A)
-        print(
-        match A
-            case {name="Bob2", age=42} ->  (name, age)
-            case {name="Bob", surname="Alice"} ->  (name, surname)
-            case {name="Bob", surname=("Alice", "Dou")} ->  (surname, name)
-            case _ ->  42
-        end
-        )
-        print(
-        match A
-            case {age=41, names} ->  (name, age, 0)
-            case {name, age=41} ->  (name, age, 1)
-            case {age=42} ->  (age, 2)
-            case _ ->  42
-        end
-        )
-
-        match (1, 2, 3)
-            case (A, x, A)  -> 24
-            case (3, A) -> 42
-        end
-    end
-end
 trait (A, B, C, D)
 trait G
 trait G1
-module m1
-    module m3
-        func f_3() -> "f_3" end
-    end
-
-    func f_1() -> "f_1" end
-
-    generic g_1(self of Integer) ->
-        if self < 10
-            "< 10"
-        elif self == 10
-            "== 10"
-        else
-            "> 10"
-        end
-    end
-end
-
-module m2
-    func f_2() -> "f_2" end
-end
 
 generic _and_
     case (t of True, f of True) ->
@@ -108,9 +45,9 @@ specify `-=-=-=`(self of Human) ->
 end
 
 func main() ->
-    match_test.main()
-    return
-
+    test_module.test()
+    test_match.test()
+    test_ops.test()
 
     print(t_1())
     print("IN MAIN NOW")
@@ -123,9 +60,6 @@ func main() ->
 
     print(A,B,C,D,G)
     print(gen_ab, f_ab, f_ab_2, const)
-    print(m1, m2, m1.m3)
-    print(m1.f_1(), m1.m3.f_3(), m2.f_2())
-    print(m1.g_1(12))
 
     func test_eq(str, val, expected) ->
         print("test -> ","'" + str + "'", val, val == expected)

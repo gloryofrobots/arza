@@ -1,0 +1,26 @@
+func test ->
+    func error(reason) ->
+        throw (:error, {reason=reason}) end
+
+    x =
+    try
+        print("IN TRY")
+        error(:TestError)
+    catch e
+        print("CATCH")
+        print(e)
+    finally
+        print("Finally")
+        42
+    end
+
+    print(x)
+
+    try
+        print(asdsadasda)
+    catch e
+        print(e)
+    finally
+        42
+    end
+end

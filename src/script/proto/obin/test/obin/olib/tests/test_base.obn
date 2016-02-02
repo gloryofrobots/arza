@@ -1,0 +1,167 @@
+func test ->
+    func test_eq(str, val, expected) ->
+        print("test -> ","'" + str + "'", val, val == expected)
+        if val != expected
+            throw "Test error"
+        end
+    end
+
+    x = 1
+    test_eq("x = 1", x, 1)
+
+    x = "Hello"
+    test_eq("x = 'Hello'", x, "Hello")
+
+    x = 42.234433444
+    test_eq("x = 42.234433444", x, 42.234433444)
+
+    x = (1, "Hello", 35.44555)
+    print(x)
+    print(x[1])
+
+    x = (42,)
+    print(x)
+
+    x = (1,2, ["Alice", "Bob", (45,), 54.000000001])
+    print(x)
+
+    x = {name= "XXX"}
+    print(x.name)
+
+    print((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"})
+
+    x = true
+    print(x)
+
+    x = false
+    print(x)
+
+    x = { name="X", age=42.24 }
+    print(x)
+
+    x = 1
+    y = 0
+    print("x = ", x, "y = ", y)
+
+    print("x or y", x or y)
+
+    print("x and y", x and y)
+    print("not y", not y)
+    print("~ y", ~ y)
+    print("~ y", ~ y)
+
+
+    print("x | y", x | y)
+    print("x & y", x & y)
+    print("x ^ y", x ^ y)
+
+
+    print("true when 5 > 4 else false", true when 5 > 4 else false)
+    print("x is y", x is y)
+    print("x isnot y", x isnot y)
+    print("5 > 5", 5 > 5)
+    print("5 >= 3", 5 >= 3)
+    print("5 < 4", 5 < 4)
+    print("5 <= 3", 5 <= 3)
+    print("x != 6", x != 6)
+    print("x == y", x == y)
+
+    print("11 >> 43", 11 >> 43)
+    print("11 << 10001", 11 << 10001)
+    print("11 >>> 1001001001", 11 >>> 1001001001)
+    print("x + 34", x + 34)
+    print("x - 34", x - 34)
+    print("x * 34", x * 34)
+    print("x / 45", x / 45)
+    print("x % 32", x % 32)
+
+
+    x = `+`(1,2)
+    print(x)
+    x = `+`(1.0,2.0)
+    print(x)
+    x = `+`(1,2.0)
+    print(x)
+
+    A = [1,2,3,4,5,6]
+    print(length(A))
+
+    A = [0, 1, 2, x]
+    print(x,"in",A, x in A)
+
+    print("name" == :name)
+    print(:name == "name")
+    print(:`++++ ---- <> $$` == "++++ ---- <> $$")
+    print("++++ ---- <> $$" == :`++++ ---- <> $$`)
+
+    m = {name = "Alice", :surname="Bob",
+            :child={
+                :little_name="Sweetie",
+                :toy={
+                    :model="SXR 123344:44332"
+                }
+             }
+     }
+    print(m.name)
+    print(m[:child][:toy][:model])
+    print(m.child.toy.model)
+
+    x = 12
+
+    print(
+    if x == 13
+        1 + 1;
+    elif x == 14
+        2 + 2;
+    elif x == 15
+        3 + 3;
+    else
+        4 + 4;
+    end
+    )
+
+
+    A = (1,2,3,4,5,6)
+    for x in A
+        print(x) end
+
+    x = 10
+    while x > 0
+        x = x - 1
+        print(x) end
+
+    // ONE LINE
+    x = 12
+    print(
+    if x == 13; 1 + 1; elif x == 14; 2 + 2; else 4 + 4; end
+    )
+
+    x = 10
+    while x > 0; x = x - 1; print(x); end
+
+    for i in range(10,20); print(i) end
+
+    A = (1, 2, 3, 4, 5, 6, 35, 110, 122)
+    for a in A
+        if a == 35
+           continue
+        end
+
+        if a > 115
+            if 1 < 2
+                break
+            end
+        end
+        print(a)
+    end
+
+    x = 20
+    while x > 0
+        x = x - 5
+        if x == 10
+            print("SKIP", x)
+            continue
+        end
+        print("X", x)
+    end
+end

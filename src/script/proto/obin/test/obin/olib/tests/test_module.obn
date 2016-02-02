@@ -1,0 +1,36 @@
+load lib_az.abc.module_ab as ab
+load lib_az.efg.module_e as e
+
+module m1
+    module m3
+        func f_3() -> "f_3" end
+    end
+
+    func f_1() -> "f_1" end
+
+    generic g_1(self of Integer) ->
+        if self < 10
+            "< 10"
+        elif self == 10
+            "== 10"
+        else
+            "> 10"
+        end
+    end
+end
+
+module m2
+    func f_2() -> "f_2" end
+    end
+
+func test ->
+    {gen_ab, f_ab, f_ab_2, CONST=const} = ab
+    print(gen_ab, f_ab, f_ab_2, const)
+
+    x = ab.f_ab(312)
+    x = e.f_e(x)
+
+    print(m1, m2, m1.m3)
+    print(m1.f_1(), m1.m3.f_3(), m2.f_2())
+    print(m1.g_1(12))
+end

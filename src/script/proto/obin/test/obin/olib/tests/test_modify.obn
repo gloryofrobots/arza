@@ -1,0 +1,32 @@
+func test ->
+    M = {
+        line = {
+            data = [1,2,3,4],
+            index = 1
+        },
+
+        id = 12
+    }
+    print(M)
+    M1 = M {
+        line = M.line {
+            index_2 = M.line.index + 42,
+            data = [4, 3, 2, 1]
+        },
+        id = "ID M1"
+    }
+    print(M1)
+
+    common = {height=187, weight=60}
+    print(common)
+    alice = common{age = 28, name="Alice"}
+    bob = common{age = 29, name="Bob", height=225}
+    print(alice)
+    print(bob)
+    print(common)
+
+
+
+    L = [1,2,3,4,5]
+    l1 = L{0=102, 1=103, 4=105}
+end
