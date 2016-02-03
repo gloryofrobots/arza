@@ -1,5 +1,7 @@
 load testit
 
+trait (T1, T2, T3, T4)
+
 func test() ->
     testit.assert_equal(
         match [1,2,3]
@@ -103,6 +105,16 @@ func test() ->
             case (A, x, A)  -> (24, A)
             case (3, A) -> 42 end,
         (24, 1)
+    )
+
+   ////////////////////////////////////////////////////////////////
+
+   testit.assert_equal(
+        match 42
+            case N1 of String  -> ("Is String", N1)
+            case N1 of Integer  -> ("Is Integer", N1)
+        end,
+         ("Is Integer", 42)
     )
 end
 

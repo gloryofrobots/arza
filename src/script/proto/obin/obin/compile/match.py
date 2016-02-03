@@ -476,6 +476,7 @@ TRANSFORM_DISPATCH = {
     "isnot": _transform_isnot,
     "is": _transform_is,
     "in": _transform_in,
+    "kindof": _transform_kindof,
     "list": _skip_transform,
     "map": _transform_map,
 }
