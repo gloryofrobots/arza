@@ -102,9 +102,19 @@ func test() ->
 
    testit.assert_equal(
         match (1, 2, 1)
-            case (A, x, A)  -> (24, A)
-            case (3, A) -> 42 end,
-        (24, 1)
+            case (A, x, A)  -> (:first, A)
+            case (A, x, B)  -> (:second, A, B)
+            case (3, A) -> :third end,
+        (:first, 1)
+    )
+
+   ////////////////////////////////////////////////////////////////
+
+   testit.assert_equal(
+        match (1, 2, 2)
+            case (A, x, A)  -> (:first, A)
+            case (A, x, B)  -> (:second, A, B) end,
+        (:second, 1, 2)
     )
 
    ////////////////////////////////////////////////////////////////
@@ -115,6 +125,16 @@ func test() ->
             case N1 of Integer  -> ("Is Integer", N1)
         end,
          ("Is Integer", 42)
+    )
+
+   ////////////////////////////////////////////////////////////////
+
+   testit.assert_equal(
+        match {x=(10,0), y=(0,10)} isa [T1, T2, T3]
+            case N2 of [T2, T1]  -> (:first, N2)
+            case N3 of [T1, T2]  -> (:second, N3)
+        end,
+         (:second, {x=(10,0), y=(0,10)})
     )
 end
 
