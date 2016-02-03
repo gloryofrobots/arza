@@ -21,3 +21,12 @@ end
 func assert_false(val1) ->
     assert_is(val1, false)
 end
+
+func assert_throw_any(fn) ->
+    try
+        fn()
+        fail(["exception expected", fn])
+    catch e
+        true
+    end
+end

@@ -1,68 +1,108 @@
-func test() ->
-     print(
-        match [1,2,3]
-            case x @ [a, b, y @ c] ->  (x, y, a, b, c)
-            case _ -> 42
-        end
-     )
+load testit
 
-    print(
+func test() ->
+    testit.assert_equal(
         match [1,2,3]
-            case [x @ 1, 2, 4] -> (:res1, x)
-            case [x @ 1, 2, 3] -> (:res2, x)
-        end
+            case B1 @ [a, b, B2 @ c] ->  (B1, B2, a, b, c)
+            case _ -> 42
+        end,
+        ([1, 2, 3], 3, 1, 2, 3)
+     )
+    testit.assert_equal(B1, [1, 2, 3])
+    testit.assert_equal(B2, 3)
+
+    ////////////////////////////////////////////////////////////////
+
+    testit.assert_equal(
+        match [1,2,3]
+            case [B3 @ 1, 2, 4] -> (:res1, B3)
+            case [B3 @ 1, 2, 3] -> (:res2, B3)
+        end,
+        (:res2, 1)
     )
-    print(
+
+    ////////////////////////////////////////////////////////////////
+
+    testit.assert_equal(
         match 42
-            case Bind @ 2 -> (:result1, Bind)
-            case Bind @ 42 -> (:result2, Bind)
+            case B4 @ 2 -> (:result1, B4)
+            case B4 @ 42 -> (:result2, B4)
         end
+        , (:result2, 42)
     )
-    print(
+
+    ////////////////////////////////////////////////////////////////
+
+    testit.assert_equal(
     match {genre = "XXX", actress="Lily", age=25}
         case Result @ {genre, LilyName @ "actress"="Lily", age=13} -> (Result, genre, 42, LilyName)
         case Result @ {genre, LilyName2 @ "actress"="Lily", age=25} -> (Result, genre, "OLOLO", LilyName2, age)
 //        case {genre, length} ->  (name, age, 1)
         case _ ->  42
-    end)
+    end,
+    ({age = 25, actress = "Lily", genre = "XXX"}, "XXX", "OLOLO", "Lily", 25)
+    )
 
 
-    print(
+    testit.assert_equal(LilyName2, "Lily")
+    testit.assert_equal(Result, {age = 25, actress = "Lily", genre = "XXX"})
+    testit.assert_throw_any(func -> LilyName  end)
+
+    ////////////////////////////////////////////////////////////////
+
+    testit.assert_equal(
         match (1, (23, (24, 25)))
             case (Z, (G, 1)) ->  12 + Z
             case (1, 23) ->   12
             case (1, (23, X)) ->  (:third, X)
-            case _ ->  nil end)
+            case _ ->  nil end,
+        (:third, (24, 25))
+    )
 
-    A = [(1,2), (2,3,4), 5, [6,7,8]]
-    print(
-        match A
-            case [a,b,c] ->  (a, b, c)
-            case [a, b] ->  (a,b)
-            case (x, y, z) ->  (x, y, z)
+    testit.assert_throw_any(func -> Z  end)
+
+    ////////////////////////////////////////////////////////////////
+
+    testit.assert_equal(
+        match [(1,2), (2,3,4), 5, [6,7,8]]
+            case [a1,b1,c1] ->  (a1, b1, c1)
+            case [a1, b1] ->  (a1, b1)
+            case (x1, y1, 5) ->  (x1, y1, z1)
             case [(1, X), Y, 5, [6,7, Z]] ->  (X, Y, Z)
-            case _ ->  123 end)
+            case _ ->  123 end,
+        (2, (2, 3, 4), 8)
+     )
+    testit.assert_throw_any(func -> [a1,b1,c1, x1,y1,z1]  end)
 
-    A = {name="Bob", surname=("Alice", "Dou"), age=42}
-    print(A)
+    ////////////////////////////////////////////////////////////////
 
-    print(
-        match A
+    testit.assert_equal(
+        match {name="Bob", surname=("Alice", "Dou"), age=42}
             case {name="Bob", surname="Alice"} ->  (name, surname)
             case {name="Bob2", age=42} ->  (name, age)
             case {name="Bob", surname=("Alice", "Dou"), age=42} ->  (surname, name, age + 100)
-            case _ ->  42 end)
+            case _ ->  42 end,
+        ((:Alice, :Dou), :Bob, 142)
+    )
 
-    print(
-    match A
-        case {age=41, names} ->  (name, age, 0)
-        case {name, age=42} ->  (name, age, 1)
-        case {age=42} ->  (age, 2)
-        case _ ->  42 end)
+    ////////////////////////////////////////////////////////////////
 
-    print(
+    testit.assert_equal(
+        match {name="Bob", surname=("Alice", "Dou"), age=42}
+            case {age=41, names} ->  (name, age, 0)
+            case {name, age=42} ->  (name, age, 1)
+            case {age=42} ->  (age, 2)
+            case _ ->  42 end
+        , ("Bob", 42, 1)
+   )
+
+   ////////////////////////////////////////////////////////////////
+
+   testit.assert_equal(
         match (1, 2, 1)
             case (A, x, A)  -> (24, A)
-            case (3, A) -> 42 end)
+            case (3, A) -> 42 end,
+        (24, 1)
+    )
 end
 

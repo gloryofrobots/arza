@@ -247,6 +247,10 @@ def create_bind_node(basenode, left, right):
     return node_2(nt.NT_BIND, create_token_from_node(tt.TT_AT_SIGN, "@", basenode), left, right)
 
 
+def create_kindof_node(basenode, left, right):
+    return node_2(nt.NT_KINDOF, create_token_from_node(tt.TT_KINDOF, "kindof", basenode), left, right)
+
+
 def create_try_statement_node(basenode, exp, success, fail):
     return node_3(nt.NT_TRY,
                   create_token_from_node(tt.TT_TRY, "try", basenode),

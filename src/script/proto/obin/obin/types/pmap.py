@@ -2,6 +2,7 @@ from rpython.rlib.rarithmetic import r_int, r_uint, intmask
 import rpython.rlib.jit as jit
 from obin.types.root import W_UniqueType, W_Any
 from obin.types import api, space, vector
+from obin.runtime import error
 
 MASK_32 = r_uint(0xFFFFFFFF)
 
@@ -16,6 +17,7 @@ class Box:
 def _hash(key):
     return api.n_hash(key) & MASK_32
 
+
 def _tostring(pair, vec):
     key = api.at(pair, space.newint(0))
     value = api.at(pair, space.newint(1))
@@ -28,14 +30,23 @@ def _tostring(pair, vec):
     vec.to_l().append(repr)
     return vec
 
+
+def _equal(pair, other):
+    key = api.at(pair, space.newint(0))
+    value = api.at(pair, space.newint(1))
+    value2 = api.at(other, key)
+    if not api.n_equal(value, value2):
+        return error.throw_2(error.Errors.KEY, key, other)
+    return other
+
+
 class W_PMap(W_Any):
     def __init__(self, cnt, root):
         self._cnt = cnt
         self._root = root
 
     def _tostring_(self):
-        pairs = self._root.reduce(_tostring, space.newvector([]))
-        lst = pairs.to_l()
+        lst = self.to_l()
         repr = u"{%s}" % u", ".join(lst)
         return str(repr)
 
@@ -71,6 +82,20 @@ class W_PMap(W_Any):
         if new_root is self._root:
             return self
         return W_PMap(self._cnt - 1, new_root)
+
+    def _equal_(self, other):
+        if not space.ispmap(other):
+            return False
+        try:
+            self._root.reduce(_equal, other)
+            return True
+        except error.ObinError as e:
+            return False
+
+    def to_l(self):
+        pairs = self._root.reduce(_tostring, space.newvector([]))
+        lst = pairs.to_l()
+        return lst
 
 
 class INode(W_Any):
@@ -304,7 +329,7 @@ class HashCollisionNode(INode):
 
             val = self._array[x + 1]
             init = f(space.newtuple([key_or_nil, val]), init)
-            
+
         return init
 
     def assoc_inode(self, shift, hash_val, key, val, added_leaf):

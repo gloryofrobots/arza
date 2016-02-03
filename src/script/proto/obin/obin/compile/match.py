@@ -5,6 +5,7 @@ from obin.types import space, api
 from obin.runtime import error
 from obin.utils import misc
 
+
 def match_transform_error(process, compiler, node, message):
     from obin.compile.compiler import info
     return error.throw(error.Errors.COMPILE,
@@ -98,6 +99,7 @@ def _process_list(process, compiler, pattern, patterns, path):
                                           create_empty_list_node(last_child)])
     return patterns
 
+
 def _get_map_symbol(key_node):
     key_type = node_type(key_node)
     if key_type == NT_NAME:
@@ -106,6 +108,7 @@ def _get_map_symbol(key_node):
         return node_value(node_first(key_node))
     elif key_type == NT_STR:
         return misc.string_unquote(node_value(key_node))
+
 
 def _process_map(process, compiler, pattern, patterns, path):
     patterns = add_pattern(patterns, ["is_map", _create_path_node(pattern, path)])
@@ -186,6 +189,14 @@ def _process_wildcard(process, compiler, pattern, patterns, path):
     return patterns
 
 
+def _process_of(process, compiler, pattern, patterns, path):
+    element = node_first(pattern)
+    trait = node_second(pattern)
+    patterns = add_pattern(patterns, ["kindof", _create_path_node(element, path), trait])
+    patterns = _process_pattern(process, compiler, element, patterns, path)
+    return patterns
+
+
 def _process_literal(process, compiler, pattern, patterns, path):
     patterns = add_pattern(patterns, ["equal", _create_path_node(pattern, path), pattern])
     return patterns
@@ -204,6 +215,8 @@ def _process_pattern(process, compiler, pattern, patterns, path):
         return _process_bind(process, compiler, pattern, patterns, path)
     elif ntype == NT_NAME:
         return _process_name(process, compiler, pattern, patterns, path)
+    elif ntype == NT_OF:
+        return _process_of(process, compiler, pattern, patterns, path)
     elif ntype == NT_WILDCARD:
         return _process_wildcard(process, compiler, pattern, patterns, path)
     elif ntype in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_NIL, NT_STR, NT_CHAR]:
@@ -370,6 +383,14 @@ def _transform_equal(history, head, variables):
     left, prefixes = _history_get_var(history, head[1])
     right = head[2]
     _condition = create_eq_node(left, left, right)
+    condition, prefixes1 = _history_get_condition(history, _condition)
+    return left, condition, prefixes + prefixes1, variables
+
+
+def _transform_kindof(history, head, variables):
+    left, prefixes = _history_get_var(history, head[1])
+    right = head[2]
+    _condition = create_kindof_node(left, left, right)
     condition, prefixes1 = _history_get_condition(history, _condition)
     return left, condition, prefixes + prefixes1, variables
 

@@ -4,10 +4,10 @@
 //load tests.test_exception
 //load tests.test_func
 //load tests.test_generic
-//load tests.test_match
+load tests.test_match
 //load tests.test_modify
 //load tests.test_module
-load tests.test_trait
+//load tests.test_trait
 
 
 func main() ->
@@ -17,8 +17,8 @@ func main() ->
 //    test_exception.test()
 //    test_func.test()
 //    test_generic.test()
-//    test_match.test()
+    test_match.test()
 //    test_modify.test()
 //    test_module.test()
-    test_trait.test()
+//    test_trait.test()
 end
