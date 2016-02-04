@@ -110,13 +110,13 @@ func test ->
 
     print(
     if x == 13
-        1 + 1;
+        1 + 1
     elif x == 14
-        2 + 2;
+        2 + 2
     elif x == 15
-        3 + 3;
+        3 + 3
     else
-        4 + 4;
+        4 + 4
     end
     )
 
@@ -130,16 +130,17 @@ func test ->
         x = x - 1
         print(x) end
 
-    // ONE LINE
     x = 12
     print(
-    if x == 13; 1 + 1; elif x == 14; 2 + 2; else 4 + 4; end
+    if x == 13, 1 + 1, elif x == 14, 2 + 2, else 4 + 4 end
     )
 
     x = 10
-    while x > 0; x = x - 1; print(x); end
+    while x > 0, x = x - 1, print(x), end
 
-    for i in range(10,20); print(i) end
+    for i in range(10,20), print(i) end
+
+    ////////////////////////////////////// ONE LINE
 
     A = (1, 2, 3, 4, 5, 6, 35, 110, 122)
     for a in A

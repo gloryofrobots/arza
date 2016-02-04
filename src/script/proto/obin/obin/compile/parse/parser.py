@@ -141,7 +141,7 @@ def base_parser_init(parser):
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_END, None)
     symbol(parser, TT_ELSE, None)
-    symbol(parser, TT_SEMI, empty)
+    symbol(parser, TT_SEMI, None)
     """
     precedence 10
     =
@@ -316,7 +316,7 @@ def module_parser_init(parser):
 
 def parse(parser):
     parser.next()
-    stmts = statements(parser)
+    stmts = statements(parser, TERM_FILE)
     check_token_type(parser, TT_ENDSTREAM)
     return stmts
 

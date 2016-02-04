@@ -164,6 +164,10 @@ def advance_expected(parser, ttype):
     return parser.next()
 
 
+def advance_end(parser):
+    advance_expected(parser, TT_END)
+
+
 def advance_expected_one_of(parser, ttypes):
     check_token_types(parser, ttypes)
 
@@ -177,15 +181,13 @@ def endofexpression(parser):
     if parser.isend():
         return None
     if parser.is_newline_occurred:
-        # print "NL"
         return parser.node
     if parser.token_type == TT_END:
         return parser.node
-    if parser.token_type == TT_SEMI:
-        # print "SEMI"
+    if parser.token_type == TT_COMMA:
         return advance(parser)
 
-    parse_error(parser, u"Expected new line or ;", parser.node)
+    parse_error(parser, u"Expected end of expression mark", parser.node)
 
 
 def expression(parser, _rbp):
@@ -229,10 +231,7 @@ def token_is_one_of(parser, types):
     return parser.token_type in types
 
 
-def statements(parser, endlist=None):
-    if not endlist:
-        endlist = [TT_END, TT_ENDSTREAM]
-
+def statements(parser, endlist):
     stmts = []
     while True:
         if token_is_one_of(parser, endlist):
@@ -245,7 +244,7 @@ def statements(parser, endlist=None):
 
     length = len(stmts)
     if length == 0:
-        return nodes.empty_node()
+        return parse_error(parser, u"Expected one or more expressions", parser.node)
 
     return nodes.list_node(stmts)
 
@@ -294,4 +293,13 @@ def condition(parser):
     node = expression(parser, 0)
     if is_assignment_node(node):
         parse_error(parser, u"Assignment operators not allowed in conditions", node)
+    return node
+
+
+def prefix_condition(parser):
+    node = expression(parser, 0)
+    if is_assignment_node(node):
+        parse_error(parser, u"Assignment operators not allowed in conditions", node)
+    # call endofexpression to allow one line prefixes like if x == 1, x end
+    endofexpression(parser)
     return node

@@ -19,7 +19,7 @@ func test ->
         translationsUa={ title=localeTitle, translator },
         translationsEn={ titleEn=(localeTitleEn, origTitleEn), translatorEn },
         author=author_data
-    } = metadata;
+    } = metadata
 
     print(englishTitle, subject, localeTitle,translator,(localeTitleEn, origTitleEn), translatorEn, author_data )
 end

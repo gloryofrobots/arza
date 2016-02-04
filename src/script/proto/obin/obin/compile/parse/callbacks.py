@@ -3,6 +3,13 @@ from obin.compile.parse.node_type import *
 from obin.compile.parse import nodes
 from obin.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3)
 
+TERM_IF = [TT_ELIF, TT_ELSE, TT_END]
+TERM_BLOCK = [TT_END]
+TERM_FILE = [TT_ENDSTREAM]
+TERM_CASE = [TT_END, TT_CASE]
+TERM_CATCH = [TT_FINALLY, TT_END]
+TERM_TRY = [TT_CATCH]
+
 NODE_TYPE_MAPPING = {
     TT_DOT: NT_LOOKUP_SYMBOL,
     TT_TRUE: NT_TRUE,
@@ -68,6 +75,7 @@ NODE_TYPE_MAPPING = {
     TT_COLON: NT_SYMBOL,
     TT_KINDOF: NT_KINDOF,
 }
+
 
 def __ntype(node):
     node_type = NODE_TYPE_MAPPING[nodes.node_token_type(node)]
@@ -204,6 +212,7 @@ def infix_at(parser, node, left):
 
 
 def _prefix_nud(parser, node_type, node):
+    # TODO WHY 70 here?!!!!
     exp = expression(parser, 70)
     return node_1(node_type, __ntok(node), exp)
 
@@ -234,36 +243,30 @@ def symbol_wildcard(parser, node):
     return parse_error(parser, u"Invalid use of _ pattern", node)
 
 
-IF_TERMINATION_TOKENS = [TT_ELIF, TT_ELSE, TT_END]
-
-
 def prefix_if(parser, node):
     branches = []
 
-    cond = condition(parser)
-    endofexpression(parser)
-    body = (statements(parser, IF_TERMINATION_TOKENS))
+    cond = prefix_condition(parser)
+    body = (statements(parser, TERM_IF))
 
     branches.append(nodes.list_node([cond, body]))
-    check_token_types(parser, IF_TERMINATION_TOKENS)
+    check_token_types(parser, TERM_IF)
 
     while parser.token_type == TT_ELIF:
         advance_expected(parser, TT_ELIF)
 
-        cond = condition(parser)
-        # call endofexpression to allow one line ifs
-        endofexpression(parser)
-        body = statements(parser, IF_TERMINATION_TOKENS)
+        cond = prefix_condition(parser)
+        body = statements(parser, TERM_IF)
 
         branches.append(nodes.list_node([cond, body]))
-        check_token_types(parser, IF_TERMINATION_TOKENS)
+        check_token_types(parser, TERM_IF)
     if parser.token_type == TT_ELSE:
         advance_expected(parser, TT_ELSE)
-        body = statements(parser)
+        body = statements(parser, TERM_BLOCK)
         branches.append(nodes.list_node([nodes.empty_node(), body]))
-        advance_expected(parser, TT_END)
+        advance_end(parser)
     else:
-        advance_expected(parser, TT_END)
+        advance_end(parser)
         branches.append(nodes.empty_node())
 
     return node_1(NT_IF, __ntok(node), nodes.list_node(branches))
@@ -398,10 +401,8 @@ def parse_func(parser):
         args = expression(args_parser, 0)
 
     advance_expected(parser, TT_ARROW)
-    body = statements(parser)
-    if not body:
-        body = nodes.empty_node()
-    advance_expected(parser, TT_END)
+    body = statements(parser, TERM_BLOCK)
+    advance_end(parser)
     return name, args, body
 
 
@@ -419,20 +420,20 @@ def prefix_func(parser, node):
 
 
 def prefix_try(parser, node):
-    trybody = statements(parser, [TT_CATCH])
+    trybody = statements(parser, TERM_TRY)
 
     advance_expected(parser, TT_CATCH)
     check_token_type(parser, TT_NAME)
     varname = expression(parser, 0)
-    catchstmts = statements(parser, [TT_FINALLY, TT_END])
+    catchstmts = statements(parser, TERM_CATCH)
     catchbody = nodes.list_node([varname, catchstmts])
     if parser.token_type == TT_FINALLY:
         advance_expected(parser, TT_FINALLY)
-        finallybody = statements(parser, [TT_END])
+        finallybody = statements(parser, TERM_BLOCK)
     else:
         finallybody = nodes.empty_node()
 
-    advance_expected(parser, TT_END)
+    advance_end(parser)
     return node_3(NT_TRY, __ntok(node), trybody, catchbody, finallybody)
 
 
@@ -446,11 +447,11 @@ def prefix_match(parser, node):
         pattern = expression(pattern_parser, 0)
         advance_expected(parser, TT_ARROW)
 
-        body = statements(parser, [TT_END, TT_CASE])
+        body = statements(parser, TERM_CASE)
 
         branches.append(nodes.list_node([pattern, body]))
 
-    advance_expected(parser, TT_END)
+    advance_end(parser)
 
     if len(branches) == 0:
         parse_error(parser, u"Empty match expression", node)
@@ -459,10 +460,7 @@ def prefix_match(parser, node):
 
 
 def stmt_single(parser, node):
-    if token_is_one_of(parser, [TT_SEMI, TT_END]) or parser.is_newline_occurred:
-        exp = nodes.list_node([])
-    else:
-        exp = expression(parser, 0)
+    exp = expression(parser, 0)
     endofexpression(parser)
     return node_1(__ntype(node), __ntok(node), exp)
 
@@ -475,11 +473,9 @@ def stmt_loop_flow(parser, node):
 
 
 def stmt_while(parser, node):
-    cond = condition(parser)
-    # CALL endofexpression for one line while
-    endofexpression(parser)
-    stmts = statements(parser, [TT_END])
-    advance_expected(parser, TT_END)
+    cond = prefix_condition(parser)
+    stmts = statements(parser, TERM_BLOCK)
+    advance_end(parser)
     return node_2(NT_WHILE, __ntok(node), cond, stmts)
 
 
@@ -499,9 +495,9 @@ def stmt_for(parser, node):
     # CALL endofexpression for one line for i in 1..2; i end
     endofexpression(parser)
 
-    stmts = statements(parser, [TT_END])
+    stmts = statements(parser, TERM_BLOCK)
 
-    advance_expected(parser, TT_END)
+    advance_end(parser)
     return node_3(NT_FOR, __ntok(node), vars, exp, stmts)
 
 
@@ -525,12 +521,7 @@ def parse_specify_fn(_parser, _signature_parser):
     advance_expected(_parser, TT_RPAREN)
     advance_expected(_parser, TT_ARROW)
 
-    body = statements(_parser, [TT_CASE, TT_END])
-    # TODO FIX IT
-    if not body:
-        body = nodes.empty_node()
-
-    # advance_expected(_parser, TT_END)
+    body = statements(_parser, TERM_CASE)
     return nodes.list_node([nodes.list_node(signature), body])
 
 
@@ -540,7 +531,7 @@ def parse_specify_funcs(parser):
     if parser.token_type == TT_LPAREN:
         func = parse_specify_fn(parser.expression_parser, generic_signature_parser)
         funcs.append(func)
-        advance_expected(parser, TT_END)
+        advance_end(parser)
     else:
         # advance_expected(parser, TT_COLON)
         while parser.token_type == TT_CASE:
@@ -548,7 +539,7 @@ def parse_specify_funcs(parser):
             func = parse_specify_fn(parser.expression_parser, generic_signature_parser)
             funcs.append(func)
 
-        advance_expected(parser, TT_END)
+        advance_end(parser)
 
     if len(funcs) == 0:
         parse_error(parser, u"Empty specify statement", parser.node)
@@ -573,8 +564,8 @@ def stmt_module(parser, node):
 
     name = _init_default_current_0(parser)
     advance(parser)
-    stmts = statements(parser, [TT_END])
-    advance_expected(parser, TT_END)
+    stmts = statements(parser, TERM_BLOCK)
+    advance_end(parser)
     return node_2(NT_MODULE, __ntok(node), name, stmts)
 
 
