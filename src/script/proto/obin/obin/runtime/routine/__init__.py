@@ -1,5 +1,6 @@
 from rpython.rlib import jit
 from obin.types.space import isany
+from obin.runtime import error
 from obin.runtime.routine.code_routine import CodeRoutine
 from obin.runtime.routine.native_routine import NativeRoutine
 from obin.types import api, space
@@ -43,12 +44,17 @@ def create_function_routine(stack, func, args, outer_env):
 
 def create_function_environment(func, scope, args, outer_env):
 
-    declared_args_count = scope.count_args if not scope.is_variadic else scope.count_args -1
+    declared_args_count = scope.count_args if not scope.is_variadic else scope.count_args - 1
     args_count = api.n_length(args)
 
+    if not scope.is_variadic:
+        if args_count != declared_args_count:
+            return error.throw_3(error.Errors.INVALID_ARG_COUNT,
+                                 space.newint(args_count), space.newstring(u"!="), space.newint(declared_args_count))
     if args_count < declared_args_count:
-        raise RuntimeError("Wrong argument count in function call %d < %d %s" % (args_count, declared_args_count,
-                                                                                 str(scope.variables.keys())))
+        return error.throw_3(error.Errors.INVALID_ARG_COUNT,
+                             space.newint(args_count), space.newstring(u"<"), space.newint(declared_args_count))
+
     slots = scope.create_env_bindings()
     env = space.newenv(slots, outer_env)
 

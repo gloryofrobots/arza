@@ -2,17 +2,12 @@ from obin.compile.parse.parser import *
 from obin.types import plist
 from obin.compile.parse.nodes import *
 from obin.types import space, api
-from obin.runtime import error
 from obin.utils import misc
 
 
-def match_transform_error(process, compiler, node, message):
-    from obin.compile.compiler import info
-    return error.throw(error.Errors.COMPILE,
-                       space.newtuple([
-                           space.newtuple(info(node)),
-                           space.newstring(message),
-                       ]))
+def transform_error(process, compiler, code, node, message):
+    from obin.compile.compiler import compile_error
+    return compile_error(process, compiler, code, node, message)
 
 
 def _create_path_node(basenode, path):
@@ -44,7 +39,7 @@ def add_path(node, path):
     return plist.prepend(node, path)
 
 
-def _process_tuple(process, compiler, pattern, patterns, path):
+def _process_tuple(process, compiler, code, pattern, patterns, path):
     children = node_first(pattern)
     count = api.length(children)
     count_i = api.to_i(count)
@@ -62,17 +57,17 @@ def _process_tuple(process, compiler, pattern, patterns, path):
         for i, child in enumerate(children[0:last_index]):
             # TODO MOVE TO PARSER
             if node_type(child) == NT_REST:
-                return match_transform_error(process, compiler, child, u'Invalid use of ... in tuple pattern')
+                return transform_error(process, compiler, child, u'Invalid use of ... in tuple pattern')
 
-            patterns = _process_pattern(process, compiler, child, patterns,
+            patterns = _process_pattern(process, compiler, code, child, patterns,
                                         add_path(create_int_node(child, i), path))
     last_child = children[last_index]
     if node_type(last_child) == NT_REST:
         last_child = node_first(last_child)
         cur_slice = create_slice_n_end(last_child, create_int_node(last_child, last_index))
-        patterns = _process_pattern(process, compiler, last_child, patterns, add_path(cur_slice, path))
+        patterns = _process_pattern(process, compiler, code, last_child, patterns, add_path(cur_slice, path))
     else:
-        patterns = _process_pattern(process, compiler, last_child, patterns,
+        patterns = _process_pattern(process, compiler, code, last_child, patterns,
                                     add_path(create_int_node(last_child, last_index), path))
 
     # for i, child in enumerate(children):
@@ -81,7 +76,7 @@ def _process_tuple(process, compiler, pattern, patterns, path):
     return patterns
 
 
-def _process_list(process, compiler, pattern, patterns, path):
+def _process_list(process, compiler, code, pattern, patterns, path):
     patterns = add_pattern(patterns, ["is_seq", _create_path_node(pattern, path)])
 
     children = node_first(pattern)
@@ -95,26 +90,26 @@ def _process_list(process, compiler, pattern, patterns, path):
     cur_path = path
     for i, child in enumerate(children[0:count_i - 1]):
         if node_type(child) == NT_REST:
-            return match_transform_error(process, compiler, child, u'Invalid use of Rest')
+            return transform_error(process, compiler, child, u'Invalid use of Rest')
 
         patterns = add_pattern(patterns, ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(child)])
 
         child_path = add_path(create_int_node(child, 0), cur_path)
         cur_slice = create_slice_1_end(child)
         cur_path = add_path(cur_slice, cur_path)
-        patterns = _process_pattern(process, compiler, child, patterns, child_path)
+        patterns = _process_pattern(process, compiler, code, child, patterns, child_path)
 
     last_child = children[count_i - 1]
     if node_type(last_child) == NT_REST:
         last_child = node_first(last_child)
         child_path = cur_path
-        patterns = _process_pattern(process, compiler, last_child, patterns, child_path)
+        patterns = _process_pattern(process, compiler, code, last_child, patterns, child_path)
     else:
         patterns = add_pattern(patterns,
                                ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(last_child)])
         child_path = add_path(create_int_node(last_child, 0), cur_path)
         # process child
-        patterns = _process_pattern(process, compiler, last_child, patterns, child_path)
+        patterns = _process_pattern(process, compiler, code, last_child, patterns, child_path)
 
         # Ensure that list is empty
         # IMPORTANT IT NEED TO BE THE LAST CHECK, OTHERWISE CACHED VARIABLES WILL NOT INITIALIZE
@@ -135,7 +130,7 @@ def _get_map_symbol(key_node):
         return misc.string_unquote(node_value(key_node))
 
 
-def _process_map(process, compiler, pattern, patterns, path):
+def _process_map(process, compiler, code, pattern, patterns, path):
     patterns = add_pattern(patterns, ["is_map", _create_path_node(pattern, path)])
     children = node_first(pattern)
     count = len(children)
@@ -189,69 +184,73 @@ def _process_map(process, compiler, pattern, patterns, path):
         key_value = item[1]
         child_path = add_path(symbol_key, path)
         if not is_empty_node(varname):
-            patterns = _process_pattern(process, compiler, varname, patterns, child_path)
+            patterns = _process_pattern(process, compiler, code, varname, patterns, child_path)
         if not is_empty_node(key_value):
-            patterns = _process_pattern(process, compiler, key_value, patterns, child_path)
+            patterns = _process_pattern(process, compiler, code, key_value, patterns, child_path)
 
     return patterns
 
 
-def _process_bind(process, compiler, pattern, patterns, path):
+def _process_bind(process, compiler, code, pattern, patterns, path):
     name = nodes.node_first(pattern)
     exp = nodes.node_second(pattern)
     patterns = add_pattern(patterns, ["assign", name, _create_path_node(exp, path)])
-    patterns = _process_pattern(process, compiler, exp, patterns, path)
+    patterns = _process_pattern(process, compiler, code, exp, patterns, path)
     return patterns
 
 
-def _process_name(process, compiler, pattern, patterns, path):
+def _process_name(process, compiler, code, pattern, patterns, path):
     patterns = add_pattern(patterns, ["assign", pattern, _create_path_node(pattern, path)])
     return patterns
 
 
-def _process_wildcard(process, compiler, pattern, patterns, path):
+def _process_wildcard(process, compiler, code, pattern, patterns, path):
     patterns = add_pattern(patterns, ["wildcard"])
     return patterns
 
 
-def _process_of(process, compiler, pattern, patterns, path):
+def _process_of(process, compiler, code, pattern, patterns, path):
     element = node_first(pattern)
     trait = node_second(pattern)
     patterns = add_pattern(patterns, ["kindof", _create_path_node(element, path), trait])
-    patterns = _process_pattern(process, compiler, element, patterns, path)
+    patterns = _process_pattern(process, compiler, code, element, patterns, path)
     return patterns
 
 
-def _process_literal(process, compiler, pattern, patterns, path):
+def _process_literal(process, compiler, code, pattern, patterns, path):
     patterns = add_pattern(patterns, ["equal", _create_path_node(pattern, path), pattern])
     return patterns
 
 
-def _process_pattern(process, compiler, pattern, patterns, path):
+def _process_pattern(process, compiler, code, pattern, patterns, path):
+    # in case of o-arity case functions
+    if is_empty_node(pattern):
+        return _process_wildcard(process, compiler, code, pattern, patterns, path)
+
     ntype = node_type(pattern)
 
     if ntype == NT_TUPLE:
-        return _process_tuple(process, compiler, pattern, patterns, path)
+        return _process_tuple(process, compiler, code, pattern, patterns, path)
     elif ntype == NT_LIST:
-        return _process_list(process, compiler, pattern, patterns, path)
+        return _process_list(process, compiler, code, pattern, patterns, path)
     elif ntype == NT_MAP:
-        return _process_map(process, compiler, pattern, patterns, path)
+        return _process_map(process, compiler, code, pattern, patterns, path)
     elif ntype == NT_BIND:
-        return _process_bind(process, compiler, pattern, patterns, path)
+        return _process_bind(process, compiler, code, pattern, patterns, path)
     elif ntype == NT_NAME:
-        return _process_name(process, compiler, pattern, patterns, path)
+        return _process_name(process, compiler, code, pattern, patterns, path)
     elif ntype == NT_OF:
-        return _process_of(process, compiler, pattern, patterns, path)
+        return _process_of(process, compiler, code, pattern, patterns, path)
     elif ntype == NT_WILDCARD:
-        return _process_wildcard(process, compiler, pattern, patterns, path)
+        return _process_wildcard(process, compiler, code, pattern, patterns, path)
     elif ntype in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_NIL, NT_STR, NT_CHAR, NT_SYMBOL]:
-        return _process_literal(process, compiler, pattern, patterns, path)
+        return _process_literal(process, compiler, code, pattern, patterns, path)
     else:
         assert False, ntype
 
 
 def process_patterns(process, compiler, pattern, path, index):
-    patterns = _process_pattern(process, compiler, pattern, plist.empty(), path)
+    patterns = _process_pattern(process, compiler, code, pattern, plist.empty(), path)
     patterns = plist.prepend(space.newint(index), patterns)
     patterns = plist.reverse(patterns)
     return patterns
@@ -270,13 +269,14 @@ def _place_branch_node(tree, head, tail):
     tree.append([head, [tail]])
 
 
-def _group_branches(process, branches):
+def _group_branches(process, compiler, code, node, branches):
     groups = []
     for branch in branches:
         head, tail = split_patterns(branch)
         if space.isint(head):
             assert empty_pattern(tail)
-            assert len(branches) == 1
+            if len(branches) != 1:
+                transform_error(process, compiler, code, node, u"Invalid match/case transformation: branch overlap")
             groups.append([head, None])
             break
         _place_branch_node(groups, head, tail)
@@ -286,7 +286,7 @@ def _group_branches(process, branches):
         if space.isint(leaf[0]):
             merged = leaf[1]
         else:
-            merged = _group_branches(process, leaf[1])
+            merged = _group_branches(process, compiler, code, node, leaf[1])
 
         result.append((leaf[0], merged))
 
@@ -568,7 +568,7 @@ def _transform_pattern(node, methods, history, variables, tree):
     return list_node(result), vars
 
 
-def transform(process, compiler, node, decisions, decision_node):
+def transform(process, compiler, code, node, decisions, decision_node):
     from obin.compile import MATCH_SYS_VAR
     branches = []
     path = plist.plist1(create_name_node(node, MATCH_SYS_VAR))
@@ -586,7 +586,7 @@ def transform(process, compiler, node, decisions, decision_node):
         patterns = process_patterns(process, compiler, clause, path, index)
         branches.append(patterns)
 
-    tree = _group_branches(process, branches)
+    tree = _group_branches(process, compiler, code, node, branches)
     # print tree
     transformed_node, vars = _transform_pattern(node, bodies, [], plist.empty(), tree)
     # print nodes.node_to_string(transformed_node)

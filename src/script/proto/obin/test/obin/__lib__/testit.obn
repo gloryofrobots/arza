@@ -1,15 +1,20 @@
+def assert_equal_batch(fn, ...calls) ->
+    for call in calls
+        assert_equal(apply(fn, call[0]), call[1])
+    ;;
+
 def fail(error) ->
     throw error;
 
 def assert_equal(val1, val2) ->
     if val1 != val2
-        fail([val1, "!=", val2]);
-;
+        fail([val1, "!=", val2])
+    ;;
 
 def assert_is(val1, val2) ->
     if val1 isnot val2
-        fail([val1, "isnot", val2]);
-;
+        fail([val1, "isnot", val2])
+    ;;
 
 
 def assert_true(val1) ->
@@ -19,11 +24,12 @@ def assert_false(val1) ->
     assert_is(val1, false);
 
 
+
 def assert_throw_any(fn) ->
     try
         fn()
         fail(["exception expected", fn])
     catch e
-        true;
-;
+        true
+    ;;
 

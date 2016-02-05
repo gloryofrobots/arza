@@ -64,6 +64,7 @@ class Errors:
     SLICE = u"SliceError"
     INDEX = u"IndexError"
     INVOKE = u"InvokeError"
+    INVALID_ARG_COUNT = u"InvalidArgCount"
     METHOD_INVOKE = u"MethodInvokeError"
     METHOD_SPECIALIZE = u"MethodSpecializeError"
     FROZEN = u"FrozenValueIllegalOperationError"

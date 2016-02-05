@@ -330,6 +330,10 @@ def on_bind_node(parser, key):
     advance_expected(parser, TT_AT_SIGN)
     real_key, value = _parse_map_key_pair(parser, [TT_NAME, TT_COLON, TT_STR], None)
 
+    # allow syntax like {var1@ key}
+    if nodes.node_type(real_key) == NT_NAME:
+        real_key = nodes.create_symbol_node(real_key, real_key)
+
     bind_key = nodes.create_bind_node(key, key, real_key)
     return bind_key, value
 
@@ -359,6 +363,7 @@ def _parse_map_key_pair(parser, types, on_unknown):
         if on_unknown is None:
             parse_error(parser, u"Invalid map declaration syntax", parser.node)
         key, value = on_unknown(parser, key)
+
 
     return key, value
 
@@ -395,7 +400,7 @@ def parse_def(parser):
         while pattern_parser.token_type == TT_CASE:
             advance_expected(pattern_parser, TT_CASE)
             args = expression(pattern_parser, 0)
-            if nodes.node_type(args) != NT_TUPLE:
+            if not nodes.is_empty_node(args) and nodes.node_type(args) != NT_TUPLE:
                 parse_error(parser, u"Invalid  syntax in function arguments", args)
 
             advance_expected(parser, TT_ARROW)

@@ -452,7 +452,7 @@ def _compile_match(process, compiler, code, node, patterns):
     code.emit_2(STORE_LOCAL, index, name_index, codeinfo_unknown())
 
     endmatch = code.prealocate_label()
-    graph = transform(process, compiler, node, patterns, create_goto_node(endmatch))
+    graph = transform(process, compiler, code, node, patterns, create_goto_node(endmatch))
     _compile(process, compiler, code, graph)
     code.emit_1(LABEL, endmatch, codeinfo_unknown())
 
@@ -666,6 +666,7 @@ def _compile_THROW(process, compiler, code, node):
     code.emit_0(THROW, info(node))
 
 
+# TODO MAKE NAMES from SYMBOLS in parser
 def _emit_map_key(process, compiler, code, key):
     if node_type(key) == NT_NAME:
         # in case of names in object literal we must convert them to symbols

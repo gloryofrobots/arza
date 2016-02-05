@@ -352,17 +352,11 @@ def write_ast(ast):
 ast = parse_string(
     """
     module M
-        //def somefunc1 (x,y,z) ->
-        //       x + y + z;
         def somefunc
             case (x,y,z) ->
                 0
-            case (x,y) ->
-                1
-            case ([x, y]) ->
-                2
-            case (_) ->
-                3;
+            case () ->
+                1;
     ;
     """
 )
