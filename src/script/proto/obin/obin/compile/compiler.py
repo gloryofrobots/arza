@@ -442,24 +442,26 @@ PATTERN_DATA = """
 """
 
 
-def _compile_MATCH(process, compiler, code, node):
+def _compile_match(process, compiler, code, node, patterns):
     from obin.compile.match import transform
     from obin.compile.parse.nodes import create_goto_node
     from obin.compile import MATCH_SYS_VAR
-    exp = node_first(node)
-    patterns = node_second(node)
-
     name = space.newsymbol_py_str(process, MATCH_SYS_VAR)
-
     name_index = _declare_literal(process, compiler, name)
     index = _declare_local(process, compiler, name)
-    _compile(process, compiler, code, exp)
     code.emit_2(STORE_LOCAL, index, name_index, codeinfo_unknown())
 
     endmatch = code.prealocate_label()
     graph = transform(process, compiler, node, patterns, create_goto_node(endmatch))
     _compile(process, compiler, code, graph)
     code.emit_1(LABEL, endmatch, codeinfo_unknown())
+
+
+def _compile_MATCH(process, compiler, code, node):
+    exp = node_first(node)
+    patterns = node_second(node)
+    _compile(process, compiler, code, exp)
+    _compile_match(process, compiler, code, node, patterns)
 
 
 def _compile_GOTO(process, compiler, code, node):
@@ -737,7 +739,8 @@ def _compile_CONTINUE(process, compiler, code, node):
         compile_error(process, compiler, code, node, u"continue outside loop")
 
 
-def _compile_func_args_and_body(process, compiler, code, funcname, params, body, opcode, emitinfo):
+def _compile_func_args_and_body(process, compiler, code, name, params, body):
+    funcname = _get_symbol_name_or_empty(process, name)
     _enter_scope(process, compiler)
 
     funccode = newcode(compiler)
@@ -769,19 +772,54 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params, body,
 
     source = space.newfuncsource(funcname, compiled_code)
     source_index = _declare_literal(process, compiler, source)
-    code.emit_1(opcode, source_index, emitinfo)
+    code.emit_1(FUNCTION, source_index, info(name))
+
+
+def _compile_case_function(process, compiler, code, name, cases):
+    funcname = _get_symbol_name_or_empty(process, name)
+    _enter_scope(process, compiler)
+
+    funccode = newcode(compiler)
+
+    _declare_arguments(process, compiler, 0, True)
+
+    if not api.isempty(funcname):
+        _declare_function_name(process, compiler, funcname)
+
+    funccode.emit_0(ARGUMENTS, codeinfo_unknown())
+
+    _compile_match(process, compiler, funccode, name, cases)
+    current_scope = _current_scope(process, compiler)
+    scope = current_scope.finalize()
+    _exit_scope(process, compiler)
+
+    compiled_code = funccode.finalize_compilation(scope)
+
+    source = space.newfuncsource(funcname, compiled_code)
+    source_index = _declare_literal(process, compiler, source)
+    code.emit_1(FUNCTION, source_index, info(name))
+
+
+def _get_symbol_name_or_empty(process, name):
+    if nodes.is_empty_node(name):
+        return space.newsymbol(process, u"")
+    else:
+        return space.newsymbol_py_str(process, nodes.node_value(name))
 
 
 def _compile_DEF(process, compiler, code, node):
     name = node_first(node)
-    if not nodes.is_empty_node(name):
-        funcname = space.newsymbol_py_str(process, nodes.node_value(name))
-    else:
-        funcname = space.newsymbol_py_str(process, "")
+    funcname = _get_symbol_name_or_empty(process, name)
 
-    params = node_second(node)
-    body = node_third(node)
-    _compile_func_args_and_body(process, compiler, code, funcname, params, body, FUNCTION, info(name))
+    funcs = node_second(node)
+    # single function
+    if len(funcs) == 1:
+        func = funcs[0]
+        params = func[0]
+        body = func[1]
+        _compile_func_args_and_body(process, compiler, code, name, params, body)
+    else:
+        _compile_case_function(process, compiler, code, name, funcs)
 
     if api.isempty(funcname):
         return
@@ -963,9 +1001,9 @@ def _emit_specify(process, compiler, code, node, methods):
 
         code.emit_1(TUPLE, len(signature), info(node))
 
-        method_name = space.newsymbol(process, u"")
         args_node = nodes.create_tuple_node(node, args)
-        _compile_func_args_and_body(process, compiler, code, method_name, args_node, method_body, FUNCTION, info(node))
+        _compile_func_args_and_body(process, compiler, code, nodes.empty_node(), args_node,
+                                    method_body)
         code.emit_1(TUPLE, 2, info(node))
 
     code.emit_1(SPECIFY, len(methods), info(node))

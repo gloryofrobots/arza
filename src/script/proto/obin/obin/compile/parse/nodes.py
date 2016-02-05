@@ -213,6 +213,10 @@ def create_eq_node(basenode, left, right):
     return node_2(nt.NT_EQ, create_token_from_node(tt.TT_EQ, "==", basenode), left, right)
 
 
+def create_gt_node(basenode, left, right):
+    return node_2(nt.NT_GT, create_token_from_node(tt.TT_GT, ">=", basenode), left, right)
+
+
 def create_isnot_node(basenode, left, right):
     return node_2(nt.NT_ISNOT, create_token_from_node(tt.TT_ISNOT, "isnot", basenode), left, right)
 
@@ -233,11 +237,14 @@ def create_assign_node(basenode, left, right):
     return node_2(nt.NT_ASSIGN, create_token_from_node(tt.TT_ASSIGN, "=", basenode), left, right)
 
 
-def create_slice_til_the_end(basenode):
+def create_slice_1_end(basenode):
     first = create_int_node(basenode, "1")
     second = create_wildcard_node(basenode)
     return node_2(nt.NT_RANGE, create_token_from_node(tt.TT_DOUBLE_COLON, "..", basenode), first, second)
 
+def create_slice_n_end(basenode, first):
+    second = create_wildcard_node(basenode)
+    return node_2(nt.NT_RANGE, create_token_from_node(tt.TT_DOUBLE_COLON, "..", basenode), first, second)
 
 def create_lookup_node(basenode, left, right):
     return node_2(nt.NT_LOOKUP, create_token_from_node(tt.TT_LSQUARE, "[", basenode), left, right)
@@ -249,6 +256,10 @@ def create_bind_node(basenode, left, right):
 
 def create_kindof_node(basenode, left, right):
     return node_2(nt.NT_KINDOF, create_token_from_node(tt.TT_KINDOF, "kindof", basenode), left, right)
+
+
+def create_match_node(basenode, exp, branches):
+    return node_2(nt.NT_MATCH, create_token_from_node(tt.TT_MATCH, "match", basenode), exp, list_node(branches))
 
 
 def create_try_statement_node(basenode, exp, success, fail):

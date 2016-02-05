@@ -1,25 +1,43 @@
-load tests.test_base
-load tests.test_co
-load tests.test_destruct
-load tests.test_exception
-load tests.test_def
-load tests.test_generic
-load tests.test_match
-load tests.test_modify
-load tests.test_module
-load tests.test_trait
+load testit
+//load tests.test_base
+//load tests.test_co
+//load tests.test_destruct
+//load tests.test_exception
+//load tests.test_def
+//load tests.test_generic
+//load tests.test_match
+//load tests.test_modify
+//load tests.test_module
+//load tests.test_trait
 
+def fact
+    case (0) -> 1
+    case (n) -> n * fact(n - 1);
+
+def func1
+    case (1,2,3,4,5,var0, var1, var2, ...var4) -> (var0, var1, var2, var4)
+    case ({key1, var1 @ key2, key3=25}, [var2, :second, var3 @ :third, ...var4]) -> (var1, var2, var3, var4)
+    case (var6, var7) -> var6 + var7
+    case (42) -> "Main question answer"
+    case (_) -> :nothing;
 
 
 def main() ->
-    test_base.test()
-    test_co.test()
-    test_destruct.test()
-    test_exception.test()
-    test_def.test()
-    test_generic.test()
-    test_match.test()
-    test_modify.test()
-    test_module.test()
-    test_trait.test()
+//    match (1,2,3,4,5)
+//        case (a,b,c,...rest) -> rest
+//        case _ -> 42;
+
+//    print(func1(1,2,3,4,5,6,7,8,9,10,11))
+//    print(func1({key1=:key1, key2=:key2, key3=25}, [:first, :second, :third, 4,5,6,7]))
+//    print(fact(7))
+//    test_base.test()
+//    test_co.test()
+//    test_destruct.test()
+//    test_exception.test()
+//    test_def.test()
+//    test_generic.test()
+//    test_match.test()
+//    test_modify.test()
+//    test_module.test()
+//    test_trait.test()
 ;

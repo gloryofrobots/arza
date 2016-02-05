@@ -381,35 +381,53 @@ def _prefix_lcurly(parser, node, types, on_unknown):
     return node_1(NT_MAP, __ntok(node), nodes.list_node(items))
 
 
-def parse_func(parser):
+def parse_def(parser):
     if parser.token_type == TT_NAME:
         name = _init_default_current_0(parser)
         advance(parser)
     else:
         name = nodes.empty_node()
-    args_parser = parser.args_parser
-    if args_parser.token_type == TT_ARROW:
-        args = nodes.empty_node()
-    else:
-        args = expression(args_parser, 0)
 
-    advance_expected(parser, TT_ARROW)
-    body = statements(parser, TERM_BLOCK)
+    funcs = []
+    pattern_parser = parser.pattern_parser
+
+    if parser.token_type == TT_CASE:
+        while pattern_parser.token_type == TT_CASE:
+            advance_expected(pattern_parser, TT_CASE)
+            args = expression(pattern_parser, 0)
+            if nodes.node_type(args) != NT_TUPLE:
+                parse_error(parser, u"Invalid  syntax in function arguments", args)
+
+            advance_expected(parser, TT_ARROW)
+            body = statements(parser, TERM_CASE)
+            funcs.append(nodes.list_node([args, body]))
+    else:
+        args_parser = parser.args_parser
+
+        if args_parser.token_type == TT_ARROW:
+            args = nodes.empty_node()
+        else:
+            args = expression(args_parser, 0)
+
+        advance_expected(parser, TT_ARROW)
+        body = statements(parser, TERM_BLOCK)
+        funcs.append(nodes.list_node([args, body]))
+
     advance_end(parser)
-    return name, args, body
+    return name, nodes.list_node(funcs)
 
 
 # REPEATING MYSELF HERE BECAUSE I DON`T WONT TO HAVE DEF AND FUNC,
 # AND MODULE FUNC IS DIFFERENT FROM EXPRESSION FUNC. IT DIDN'T HAVE ACCESS TO TRAIT, GENERIC, SPECIFY ...
 
 def prefix_module_def(parser, node):
-    name, args, body = parse_func(parser.expression_parser)
-    return node_3(NT_DEF, __ntok(node), name, args, body)
+    name, funcs = parse_def(parser.expression_parser)
+    return node_2(NT_DEF, __ntok(node), name, funcs)
 
 
 def prefix_def(parser, node):
-    name, args, body = parse_func(parser)
-    return node_3(NT_DEF, __ntok(node), name, args, body)
+    name, funcs = parse_def(parser)
+    return node_2(NT_DEF, __ntok(node), name, funcs)
 
 
 def prefix_try(parser, node):
@@ -575,12 +593,14 @@ def stmt_generic(parser, node):
     else:
         return node_1(NT_GENERIC, __ntok(node), name)
 
+
 def trait_name(parser):
     check_token_type(parser, TT_NAME)
     exp = expression(parser, 0)
     if nodes.node_type(exp) != NT_NAME:
         parse_error(parser, u"Invalid trait name", parser.node)
     return exp
+
 
 def stmt_trait(parser, node):
     names = [trait_name(parser)]
@@ -589,17 +609,6 @@ def stmt_trait(parser, node):
         names.append(trait_name(parser))
 
     return node_1(NT_TRAIT, __ntok(node), nodes.list_node(names))
-
-    # if nodes.node_type(name) == NT_TUPLE:
-    #     children = nodes.node_first(name)
-    #     for child in children:
-    #         if nodes.node_token_type(child) != TT_NAME:
-    #             parse_error(parser, u"Invalid trait name", child)
-    #
-    #     return node_1(NT_TRAIT, __ntok(node), children)
-    # elif nodes.node_token_type(name) == TT_NAME:
-    # else:
-    #     return parse_error(parser, u"Invalid trait name", parser.node)
 
 
 def stmt_load(parser, node):

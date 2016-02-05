@@ -96,6 +96,7 @@ def pattern_parser_init(parser):
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly_patterns)
+    prefix(parser, TT_COLON, prefix_colon)
 
     infix(parser, TT_OF, 10, led_infix)
     infix(parser, TT_AT_SIGN, 10, infix_at)
@@ -348,21 +349,23 @@ def write_ast(ast):
         f.write(repr)
 
 
-# ast = parse_string(
-#     """
-#     module M
-#         def fn =
-#             case (x,y,z) ->
-#                 0
-#             case (x,y) ->
-#                 1
-#             case ([x, y]) ->
-#                 2
-#             case _ ->
-#                 3;
-#     ;
-#     """
-# )
+ast = parse_string(
+    """
+    module M
+        //def somefunc1 (x,y,z) ->
+        //       x + y + z;
+        def somefunc
+            case (x,y,z) ->
+                0
+            case (x,y) ->
+                1
+            case ([x, y]) ->
+                2
+            case (_) ->
+                3;
+    ;
+    """
+)
 # print nodes.node_to_string(ast)
 """
 match (a,b):
