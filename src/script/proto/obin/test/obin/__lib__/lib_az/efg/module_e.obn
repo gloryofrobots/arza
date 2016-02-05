@@ -1,2 +1,2 @@
-func f_e(num) ->
+def f_e(num) ->
     num - 1023 / 0.001 end

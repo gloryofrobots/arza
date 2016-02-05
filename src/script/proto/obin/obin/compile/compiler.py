@@ -772,7 +772,7 @@ def _compile_func_args_and_body(process, compiler, code, funcname, params, body,
     code.emit_1(opcode, source_index, emitinfo)
 
 
-def _compile_FUNC(process, compiler, code, node):
+def _compile_DEF(process, compiler, code, node):
     name = node_first(node)
     if not nodes.is_empty_node(name):
         funcname = space.newsymbol_py_str(process, nodes.node_value(name))
@@ -1168,8 +1168,8 @@ def _compile_node(process, compiler, code, node):
     elif NT_SYMBOL == ntype:
         _compile_SYMBOL(process, compiler, code, node)
 
-    elif NT_FUNC == ntype:
-        _compile_FUNC(process, compiler, code, node)
+    elif NT_DEF == ntype:
+        _compile_DEF(process, compiler, code, node)
 
     elif NT_IF == ntype:
         _compile_IF(process, compiler, code, node)

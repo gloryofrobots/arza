@@ -16,7 +16,7 @@ specify _and_
         true
 end
 
-func test ->
+def test ->
     print(_and_(true, true))
 
     print(_and_(true, false), _and_(false, true),  _and_(true, true))

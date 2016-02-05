@@ -1,12 +1,12 @@
 load testit
-trait (Animal, Wolf, Bird)
+trait Animal, Wolf, Bird
 trait Human
 trait Bacteria
 
-func Human_New(name, surname) ->
+def Human_New(name, surname) ->
     {name=name, surname=surname} isa [Human, Animal] end
 
-func Wolf_New(name) ->
+def Wolf_New(name) ->
     {name=name} isa [Wolf, Animal] end
 
 // backticks name
@@ -18,7 +18,7 @@ specify `-=-=-=`(self of Human) ->
     ["I am nice human",self.name, self.surname]
 end
 
-func test ->
+def test ->
     {assert_false, assert_true, assert_equal} = testit
 
     bob_alice = Human_New("Bob", "Alice")

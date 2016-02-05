@@ -5,6 +5,14 @@ from obin.types import space, api
 from obin.runtime import error
 from obin.utils.misc import get_line, get_line_for_position
 
+TERM_BLOCK = [TT_END, TT_SEMI]
+TERM_IF = [TT_ELIF, TT_ELSE] + TERM_BLOCK
+TERM_FILE = [TT_ENDSTREAM]
+TERM_CASE = [TT_CASE] + TERM_BLOCK
+TERM_CATCH = [TT_FINALLY] + TERM_BLOCK
+TERM_TRY = [TT_CATCH]
+
+LOOP_CONTROL_TOKENS = [TT_END, TT_ELSE, TT_ELIF, TT_CASE]
 
 def parser_error_unknown(parser, position):
     line = get_line_for_position(parser.ts.src, position)
@@ -165,7 +173,7 @@ def advance_expected(parser, ttype):
 
 
 def advance_end(parser):
-    advance_expected(parser, TT_END)
+    advance_expected_one_of(parser, TERM_BLOCK)
 
 
 def advance_expected_one_of(parser, ttypes):
@@ -182,7 +190,7 @@ def endofexpression(parser):
         return None
     if parser.is_newline_occurred:
         return parser.node
-    if parser.token_type == TT_END:
+    if parser.token_type in TERM_BLOCK:
         return parser.node
     if parser.token_type == TT_COMMA:
         return advance(parser)

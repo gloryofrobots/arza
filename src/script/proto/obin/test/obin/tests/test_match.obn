@@ -1,8 +1,8 @@
 load testit
 
-trait (T1, T2, T3, T4)
+trait T1, T2, T3, T4
 
-func test() ->
+def test() ->
     testit.assert_equal(
         match [1,2,3]
             case B1 @ [a, b, B2 @ c] ->  (B1, B2, a, b, c)
@@ -48,7 +48,7 @@ func test() ->
 
     testit.assert_equal(LilyName2, "Lily")
     testit.assert_equal(Result, {age = 25, actress = "Lily", genre = "XXX"})
-    testit.assert_throw_any(func -> LilyName  end)
+    testit.assert_throw_any(def -> LilyName  end)
 
     ////////////////////////////////////////////////////////////////
 
@@ -57,11 +57,11 @@ func test() ->
             case (Z, (G, 1)) ->  12 + Z
             case (1, 23) ->   12
             case (1, (23, X)) ->  (:third, X)
-            case _ ->  nil end,
-        (:third, (24, 25))
+            case _ ->  nil;
+        , (:third, (24, 25))
     )
 
-    testit.assert_throw_any(func -> Z  end)
+    testit.assert_throw_any(def -> Z  end)
 
     ////////////////////////////////////////////////////////////////
 
@@ -74,7 +74,7 @@ func test() ->
             case _ ->  123 end,
         (2, (2, 3, 4), 8)
      )
-    testit.assert_throw_any(func -> [a1,b1,c1, x1,y1,z1]  end)
+    testit.assert_throw_any(def -> [a1,b1,c1, x1,y1,z1]  end)
 
     ////////////////////////////////////////////////////////////////
 

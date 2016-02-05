@@ -3,13 +3,6 @@ from obin.compile.parse.node_type import *
 from obin.compile.parse import nodes
 from obin.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3)
 
-TERM_IF = [TT_ELIF, TT_ELSE, TT_END]
-TERM_BLOCK = [TT_END]
-TERM_FILE = [TT_ENDSTREAM]
-TERM_CASE = [TT_END, TT_CASE]
-TERM_CATCH = [TT_FINALLY, TT_END]
-TERM_TRY = [TT_CATCH]
-
 NODE_TYPE_MAPPING = {
     TT_DOT: NT_LOOKUP_SYMBOL,
     TT_TRUE: NT_TRUE,
@@ -22,7 +15,7 @@ NODE_TYPE_MAPPING = {
     TT_WILDCARD: NT_WILDCARD,
     TT_NAME: NT_NAME,
     TT_BACKTICK: NT_SPECIAL_NAME,
-    TT_FUNC: NT_FUNC,
+    TT_DEF: NT_DEF,
     TT_IF: NT_IF,
     TT_WHEN: NT_WHEN,
     TT_MATCH: NT_MATCH,
@@ -409,14 +402,14 @@ def parse_func(parser):
 # REPEATING MYSELF HERE BECAUSE I DON`T WONT TO HAVE DEF AND FUNC,
 # AND MODULE FUNC IS DIFFERENT FROM EXPRESSION FUNC. IT DIDN'T HAVE ACCESS TO TRAIT, GENERIC, SPECIFY ...
 
-def prefix_module_func(parser, node):
+def prefix_module_def(parser, node):
     name, args, body = parse_func(parser.expression_parser)
-    return node_3(NT_FUNC, __ntok(node), name, args, body)
+    return node_3(NT_DEF, __ntok(node), name, args, body)
 
 
-def prefix_func(parser, node):
+def prefix_def(parser, node):
     name, args, body = parse_func(parser)
-    return node_3(NT_FUNC, __ntok(node), name, args, body)
+    return node_3(NT_DEF, __ntok(node), name, args, body)
 
 
 def prefix_try(parser, node):
@@ -467,7 +460,7 @@ def stmt_single(parser, node):
 
 def stmt_loop_flow(parser, node):
     endofexpression(parser)
-    if parser.token_type not in [TT_END, TT_ELSE, TT_ELIF, TT_CASE]:
+    if parser.token_type not in LOOP_CONTROL_TOKENS:
         parse_error(parser, u"Unreachable statement", node)
     return node_0(__ntype(node), __ntok(node))
 
@@ -582,20 +575,31 @@ def stmt_generic(parser, node):
     else:
         return node_1(NT_GENERIC, __ntok(node), name)
 
+def trait_name(parser):
+    check_token_type(parser, TT_NAME)
+    exp = expression(parser, 0)
+    if nodes.node_type(exp) != NT_NAME:
+        parse_error(parser, u"Invalid trait name", parser.node)
+    return exp
 
 def stmt_trait(parser, node):
-    name = expression(parser, 0)
-    if nodes.node_type(name) == NT_TUPLE:
-        children = nodes.node_first(name)
-        for child in children:
-            if nodes.node_token_type(child) != TT_NAME:
-                parse_error(parser, u"Invalid trait name", child)
+    names = [trait_name(parser)]
+    while parser.token_type == TT_COMMA:
+        advance_expected(parser, TT_COMMA)
+        names.append(trait_name(parser))
 
-        return node_1(NT_TRAIT, __ntok(node), children)
-    elif nodes.node_token_type(name) == TT_NAME:
-        return node_1(NT_TRAIT, __ntok(node), nodes.list_node([name]))
-    else:
-        return parse_error(parser, u"Invalid trait name", parser.node)
+    return node_1(NT_TRAIT, __ntok(node), nodes.list_node(names))
+
+    # if nodes.node_type(name) == NT_TUPLE:
+    #     children = nodes.node_first(name)
+    #     for child in children:
+    #         if nodes.node_token_type(child) != TT_NAME:
+    #             parse_error(parser, u"Invalid trait name", child)
+    #
+    #     return node_1(NT_TRAIT, __ntok(node), children)
+    # elif nodes.node_token_type(name) == TT_NAME:
+    # else:
+    #     return parse_error(parser, u"Invalid trait name", parser.node)
 
 
 def stmt_load(parser, node):

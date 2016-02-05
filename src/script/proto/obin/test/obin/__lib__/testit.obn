@@ -1,32 +1,29 @@
-func fail(error) ->
-    throw error
-end
+def fail(error) ->
+    throw error;
 
-func assert_equal(val1, val2) ->
+def assert_equal(val1, val2) ->
     if val1 != val2
-        fail([val1, "!=", val2])
-    end
-end
+        fail([val1, "!=", val2]);
+;
 
-func assert_is(val1, val2) ->
+def assert_is(val1, val2) ->
     if val1 isnot val2
-        fail([val1, "isnot", val2])
-    end
-end
+        fail([val1, "isnot", val2]);
+;
 
-func assert_true(val1) ->
-    assert_is(val1, true)
-end
 
-func assert_false(val1) ->
-    assert_is(val1, false)
-end
+def assert_true(val1) ->
+    assert_is(val1, true);
 
-func assert_throw_any(fn) ->
+def assert_false(val1) ->
+    assert_is(val1, false);
+
+
+def assert_throw_any(fn) ->
     try
         fn()
         fail(["exception expected", fn])
     catch e
-        true
-    end
-end
+        true;
+;
+

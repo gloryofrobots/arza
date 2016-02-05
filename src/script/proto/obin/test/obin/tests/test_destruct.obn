@@ -1,4 +1,4 @@
-func test ->
+def test ->
     metadata = {
         title= "Nemesis Games",
         subject= "SCIFI",

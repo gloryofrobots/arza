@@ -11,7 +11,7 @@ NODES = [
   "NT_SPECIAL_NAME",
   "NT_SYMBOL",
 
-  "NT_FUNC",
+  "NT_DEF",
 
   "NT_IF",
   "NT_WHEN",

@@ -284,7 +284,7 @@ def expression_parser_init(parser):
 
     prefix(parser, TT_IF, prefix_if)
 
-    prefix(parser, TT_FUNC, prefix_func)
+    prefix(parser, TT_DEF, prefix_def)
 
     prefix(parser, TT_MATCH, prefix_match)
     prefix(parser, TT_TRY, prefix_try)
@@ -310,7 +310,7 @@ def module_parser_init(parser):
     stmt(parser, TT_LOAD, stmt_load)
     stmt(parser, TT_MODULE, stmt_module)
 
-    prefix(parser, TT_FUNC, prefix_module_func)
+    prefix(parser, TT_DEF, prefix_module_def)
     return parser
 
 
@@ -351,12 +351,16 @@ def write_ast(ast):
 # ast = parse_string(
 #     """
 #     module M
-#         func f ->
-#             match X
-#                 case { XXX @ name="Alice", surname="Bob" } -> 1
-#             end
-#         end
-#     end
+#         def fn =
+#             case (x,y,z) ->
+#                 0
+#             case (x,y) ->
+#                 1
+#             case ([x, y]) ->
+#                 2
+#             case _ ->
+#                 3;
+#     ;
 #     """
 # )
 # print nodes.node_to_string(ast)

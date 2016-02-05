@@ -1,5 +1,5 @@
-func test ->
-    func error(reason) ->
+def test ->
+    def error(reason) ->
         throw (:error, {reason=reason}) end
 
     try

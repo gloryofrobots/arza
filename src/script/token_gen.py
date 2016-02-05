@@ -19,7 +19,6 @@ TOKENS = [
   ("TT_OF", "of"),
   ("TT_AS", "as"),
   ("TT_MATCH", "match"),
-  ("TT_FUNC", "func"),
   ("TT_DEF", "def"),
   ("TT_VAR", "var"),
   ("TT_LAZY", "lazy"),
