@@ -712,6 +712,10 @@ def _compile_TUPLE(process, compiler, code, node):
     code.emit_1(TUPLE, len(items), info(node))
 
 
+def _compile_UNIT(process, compiler, code, node):
+    code.emit_1(TUPLE, 0, info(node))
+
+
 def _compile_LIST(process, compiler, code, node):
     items = node_first(node)
     for c in items:
@@ -747,7 +751,7 @@ def _compile_func_args_and_body(process, compiler, code, name, params, body):
 
     funccode = newcode(compiler)
 
-    if nodes.is_empty_node(params):
+    if node_type(params) == NT_UNIT:
         _declare_arguments(process, compiler, 0, False)
     else:
         args = node_first(params)
@@ -1242,6 +1246,8 @@ def _compile_node(process, compiler, code, node):
         _compile_LIST(process, compiler, code, node)
     elif NT_TUPLE == ntype:
         _compile_TUPLE(process, compiler, code, node)
+    elif NT_UNIT == ntype:
+        _compile_UNIT(process, compiler, code, node)
     elif NT_MAP == ntype:
         _compile_MAP(process, compiler, code, node)
 

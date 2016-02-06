@@ -352,6 +352,7 @@ def write_ast(ast):
 ast = parse_string(
     """
     module M
+        def main() -> 1 end
         def somefunc
             case (x,y,z) ->
                 0

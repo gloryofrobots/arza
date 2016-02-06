@@ -10,11 +10,19 @@ load testit
 //load tests.test_module
 //load tests.test_trait
 
+def fn
+    case (1) -> :one
+    case (42) -> :forty_two
+    case () -> :empty;
+
+def fn_empty() -> :empty end
 
 def main() ->
     {assert_equal, assert_equal_batch} = testit
     print(1,2,3)
     print(())
+    [fn(1), fn(42), fn()]
+
 //    test_base.test()
 //    test_co.test()
 //    test_destruct.test()

@@ -231,10 +231,6 @@ def _process_literal(state, pattern, patterns, path):
 
 
 def _process_pattern(state, pattern, patterns, path):
-    # in case of o-arity case functions
-    if is_empty_node(pattern):
-        return _process_wildcard(state, pattern, patterns, path)
-
     ntype = node_type(pattern)
 
     if ntype == NT_TUPLE:

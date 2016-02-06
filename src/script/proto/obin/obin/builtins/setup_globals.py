@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from obin.runtime.routine import complete_native_routine
+from obin.runtime import error
 from obin.types import api, space, plist, module
 from rpython.rlib.rstring import UnicodeBuilder
 from obin.runistr import encode_unicode_utf8
@@ -89,7 +90,8 @@ def _eval(process, routine):
 def apply(process, routine):
     func = routine.get_arg(0)
     args = routine.get_arg(1)
-    assert space.istuple(args)
+    if not space.istuple(args):
+        return error.throw_1(error.Errors.TYPE, space.newstring(u"arguments tuple expected"))
     api.call(process, func, args)
 
 

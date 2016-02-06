@@ -11,6 +11,11 @@ NODES = [
   "NT_SPECIAL_NAME",
   "NT_SYMBOL",
 
+  "NT_MAP",
+  "NT_LIST",
+  "NT_TUPLE",
+  "NT_UNIT",
+
   "NT_DEF",
 
   "NT_IF",
@@ -39,12 +44,10 @@ NODES = [
 
   "NT_REST",
 
-  "NT_MAP",
   "NT_ASSIGN",
   "NT_CALL",
   "NT_CALL_MEMBER",
-  "NT_LIST",
-  "NT_TUPLE",
+
   "NT_LOOKUP",
   "NT_LOOKUP_SYMBOL",
   "NT_SLICE",

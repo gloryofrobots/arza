@@ -85,8 +85,7 @@ def slice(obj, start, end):
     v = obj._slice_(start, end)
     assert v is not None
     if space.isnil(v):
-        if space.isnil(v):
-            return error.throw_3(error.Errors.SLICE, obj, start, end)
+        return error.throw_3(error.Errors.SLICE, obj, start, end)
     return v
 
 

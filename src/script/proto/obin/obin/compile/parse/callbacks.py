@@ -265,11 +265,11 @@ def prefix_if(parser, node):
     return node_1(NT_IF, __ntok(node), nodes.list_node(branches))
 
 
-# TODO MADE it only one lparen handler
+# separate lparen handle for match case declarations
 def prefix_lparen_tuple(parser, node):
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
-        return nodes.empty_node()
+        return nodes.create_unit_node(node)
 
     items = []
     while True:
@@ -287,7 +287,7 @@ def prefix_lparen_tuple(parser, node):
 def prefix_lparen(parser, node):
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
-        return nodes.empty_node()
+        return nodes.create_unit_node(node)
 
     e = expression(parser, 0)
     if parser.token_type != TT_COMMA:
@@ -364,7 +364,6 @@ def _parse_map_key_pair(parser, types, on_unknown):
             parse_error(parser, u"Invalid map declaration syntax", parser.node)
         key, value = on_unknown(parser, key)
 
-
     return key, value
 
 
@@ -400,8 +399,12 @@ def parse_def(parser):
         while pattern_parser.token_type == TT_CASE:
             advance_expected(pattern_parser, TT_CASE)
             args = expression(pattern_parser, 0)
-            if not nodes.is_empty_node(args) and nodes.node_type(args) != NT_TUPLE:
+            args_type = nodes.node_type(args)
+            if args_type != NT_UNIT and args_type != NT_TUPLE:
                 parse_error(parser, u"Invalid  syntax in function arguments", args)
+            # in case of 0-arity functions
+            if args_type == NT_UNIT:
+                args = nodes.create_wildcard_node(args)
 
             advance_expected(parser, TT_ARROW)
             body = statements(parser, TERM_CASE)
@@ -410,7 +413,7 @@ def parse_def(parser):
         args_parser = parser.args_parser
 
         if args_parser.token_type == TT_ARROW:
-            args = nodes.empty_node()
+            args = nodes.create_unit_node(parser.node)
         else:
             args = expression(args_parser, 0)
 
