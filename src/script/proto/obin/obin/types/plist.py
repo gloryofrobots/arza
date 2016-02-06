@@ -351,7 +351,7 @@ def contains_list(pl1, pl2):
     return _contains_list(pl1_tail, tail(pl2))
 
 
-def equal(pl1, pl2):
+def equal_with(pl1, pl2, condition):
     if isempty(pl2) and isempty(pl1):
         return True
     if isempty(pl1):
@@ -359,10 +359,14 @@ def equal(pl1, pl2):
     if isempty(pl2):
         return False
 
-    if not api.n_equal(head(pl1), head(pl2)):
+    if not condition(head(pl1), head(pl2)):
         return False
     else:
-        return equal(tail(pl1), tail(pl2))
+        return equal_with(tail(pl1), tail(pl2), condition)
+
+
+def equal(pl1, pl2):
+    return equal_with(pl1, pl2, api.n_equal)
 
 
 ######################################################

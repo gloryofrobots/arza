@@ -4,12 +4,14 @@ from obin.compile.parse.nodes import *
 from obin.types import space, api
 from obin.utils import misc
 
+
 class TransformState:
     def __init__(self, process, compiler, code, node):
         self.process = process
         self.compiler = compiler
         self.code = code
         self.node = node
+
 
 def transform_error(state, node, message):
     from obin.compile.compiler import compile_error
@@ -30,7 +32,7 @@ def _create_path_node(basenode, path):
 def add_pattern(patterns, args):
     assert isinstance(args, list)
     args[0] = space.newstring_from_str(args[0])
-    return plist.prepend(space.newtuple(args), patterns)
+    return plist.prepend(space.newlist(args), patterns)
 
 
 def empty_pattern(pattern):
@@ -265,10 +267,16 @@ def process_patterns(state, pattern, path, index):
 ###################################################################################
 ###################################################################################
 
+def _equal_pattern(pat1, pat2):
+    if is_node(pat1) and is_node(pat2):
+        return node_equal(pat1, pat2)
+
+    return api.n_equal(pat1, pat2)
+
 
 def _place_branch_node(tree, head, tail):
     for leaf in tree:
-        if api.n_equal(leaf[0], head):
+        if plist.equal_with(leaf[0], head, _equal_pattern):
             leaf[1].append(tail)
             return
 
@@ -282,7 +290,8 @@ def _group_branches(state, branches):
         if space.isint(head):
             assert empty_pattern(tail)
             if len(branches) != 1:
-                transform_error(state, state.node, u"Invalid match/case transformation: branch overlap")
+                transform_error(state, state.node,
+                                u"Invalid match/case transformation: at least two branches are overlapped")
             groups.append([head, None])
             break
         _place_branch_node(groups, head, tail)

@@ -19,7 +19,8 @@ def compile_error(process, compiler, code, node, message):
                        space.newtuple([
                            space.newstring(message),
                            space.newstring_from_str(nodes.node_value(node)),
-                           space.newtuple(list(info(node))),
+                           space.newtuple([space.newstring(u"line"), nodes.node_line(node),
+                                           space.newstring(u"column"), nodes.node_column(node)]),
                            space.newstring(line)
                        ]))
 
@@ -435,9 +436,9 @@ def _emit_store(process, compiler, code, name, namenode):
 #########################################################
 
 PATTERN_DATA = """
-    match [1, 2, 3]:
-        case {age=41, name="Bob"}: (name, age) end
-        case {name="Bob", surname=("Alice", "Dou")}: (surname, name) end
+    match (1,2)
+        case (a, b) -> a + b
+        case (x, y) -> a - b
     end
 """
 
@@ -1169,18 +1170,6 @@ def _compile_nodes(process, compiler, code, ast):
     if length > 0:
         last_node = plist.nth(ast, length - 1)
         _compile(process, compiler, code, last_node)
-
-    return
-    nodes = ast.items
-
-    if len(nodes) > 1:
-        for node in nodes[:-1]:
-            _compile(process, compiler, code, node)
-            _emit_pop(code)
-
-    if len(nodes) > 0:
-        node = nodes[-1]
-        _compile(process, compiler, code, node)
 
 
 def _compile_node(process, compiler, code, node):

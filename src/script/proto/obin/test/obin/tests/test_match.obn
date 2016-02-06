@@ -145,6 +145,13 @@ def test() ->
         case _ -> 42 end,
     (4, 5)
     )
+
+    ///////////////////////////////////////////////////////////////
+    // here error must be
+    match (1,2)
+        case a -> a[0]
+        case b -> a[1]
+    end
 end
 
 

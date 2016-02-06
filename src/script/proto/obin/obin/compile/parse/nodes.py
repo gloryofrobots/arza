@@ -1,14 +1,12 @@
 from obin.compile.parse import tokens
 from obin.compile.parse import token_type as tt
 from obin.compile.parse import node_type as nt
-from obin.types import space, api
+from obin.types import space, api, plist
 
 
 def __newnode(ntype, token, children):
     if children is not None:
         for child in children:
-            if not is_node(child):
-                print child
             assert is_node(child), child
         return space.newtuple([
             space.newint(ntype), token, space.newlist(children),
@@ -41,6 +39,28 @@ def is_list_node(node):
 
 def is_node(node):
     return space.islist(node) or space.istuple(node) or space.isnil(node)
+
+
+def node_equal(node1, node2):
+    if is_list_node(node1) and is_list_node(node2):
+        return plist.equal_with(node1, node2, node_equal)
+
+    if is_list_node(node1) and is_list_node(node2):
+        return False
+
+    if is_empty_node(node1) and is_empty_node(node2):
+        return True
+
+    if is_empty_node(node1) or is_empty_node(node2):
+        return False
+
+    if node_type(node1) != node_type(node2):
+        return False
+
+    if node_value(node1) != node_value(node2):
+        return False
+
+    return plist.equal_with(node_children(node1), node_children(node2), node_equal)
 
 
 def node_blank(token):
@@ -242,9 +262,11 @@ def create_slice_1_end(basenode):
     second = create_wildcard_node(basenode)
     return node_2(nt.NT_RANGE, create_token_from_node(tt.TT_DOUBLE_COLON, "..", basenode), first, second)
 
+
 def create_slice_n_end(basenode, first):
     second = create_wildcard_node(basenode)
     return node_2(nt.NT_RANGE, create_token_from_node(tt.TT_DOUBLE_COLON, "..", basenode), first, second)
+
 
 def create_lookup_node(basenode, left, right):
     return node_2(nt.NT_LOOKUP, create_token_from_node(tt.TT_LSQUARE, "[", basenode), left, right)

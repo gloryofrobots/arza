@@ -1,3 +1,6 @@
+import testit
+{assert_equal, assert_equal_batch} = testit
+
 def test ->
     f1 = def (a,b,c) ->
         print(a, b, c)
@@ -22,4 +25,39 @@ def test ->
                 "a", a,"b",b,"{name=name, age=(years, month)}", name, years, month,"rest", rest )
     end
     f5(1, (2,3), 4,5, {name=6, age=(7,8)}, 9,10,11,12)
+
+    def fact
+        case (0) -> 1
+        case (n) -> n * fact(n - 1);
+
+    assert_equal(fact(7), 5040)
+    assert_equal(fact(0), 1)
+
+    def func1
+        case (1,2,3,4,5,var0, var1, var2, ...var4) -> (var0, var1, var2, var4)
+        case ({key1, var1 @ key2, key3=25}, [var2, :second, var3 @ :third, ...var4]) -> (var1, var2, var3, var4)
+        case (var6, var7) -> var6 + var7
+        case (42) -> "Main question answer"
+        case (_) -> :nothing;
+
+    assert_equal(func1(1,2,3,4,5,6,7,8,9,10,11),
+                    (6, 7, 8, (9, 10, 11)))
+    assert_equal(
+        func1({key1=:key1, key2=:key2, key3=25}, [:first, :second, :third, 4,5,6,7])
+        ,(:key2, :first, :third, [4, 5, 6, 7]))
+
+    def func2
+        case (a,b,c) -> (:first, a, b, c)
+        case (a, b) -> (:second, a, b)
+        case (a) -> (:third, a)
+        case () -> (:fourth);
+
+    assert_equal_batch(
+              func2,
+              ((1,2,3), (:first, 1,2,3)),
+              ((4,5), (:second, 4,5)),
+              ((6,), (:third, 6))
+    )
+
+    assert_equal(func2(), :fourth)
 end
