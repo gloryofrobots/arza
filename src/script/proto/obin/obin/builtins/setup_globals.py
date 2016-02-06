@@ -90,7 +90,9 @@ def _eval(process, routine):
 def apply(process, routine):
     func = routine.get_arg(0)
     args = routine.get_arg(1)
-    if not space.istuple(args):
+    if space.islist(args):
+        args = plist.to_tuple(args)
+    elif not space.istuple(args):
         return error.throw_1(error.Errors.TYPE, space.newstring(u"arguments tuple expected"))
     api.call(process, func, args)
 

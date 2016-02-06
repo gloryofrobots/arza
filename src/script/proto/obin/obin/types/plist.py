@@ -103,12 +103,19 @@ class W_PList(W_Any):
             return True
         return equal(self, other)
 
+    def to_l(self):
+        return [i for i in self]
+
 
 __EMPTY__ = W_PList(space.newnil(), space.newnil())
 
 
 def empty():
     return __EMPTY__
+
+
+def to_tuple(pl):
+    return space.newtuple(pl.to_l())
 
 
 def foldl(func, acc, pl):
