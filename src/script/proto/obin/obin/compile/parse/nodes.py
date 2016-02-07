@@ -33,8 +33,13 @@ def list_node(items):
     return space.newlist(items)
 
 
+# TODO THIS IS SILLY IMPLEMENT IT AS WRAPS
 def is_list_node(node):
     return space.islist(node)
+
+
+def is_ast_node(node):
+    return space.istuple(node) and api.n_length(node) == 4
 
 
 def is_node(node):
@@ -42,6 +47,11 @@ def is_node(node):
 
 
 def node_equal(node1, node2):
+    if not is_node(node1) or not is_node(node2):
+        print ""
+
+    assert is_node(node1) and is_node(node2)
+
     if is_list_node(node1) and is_list_node(node2):
         return plist.equal_with(node1, node2, node_equal)
 

@@ -269,7 +269,7 @@ def process_patterns(state, pattern, path, index):
 ###################################################################################
 
 def _equal_pattern(pat1, pat2):
-    if is_node(pat1) and is_node(pat2):
+    if is_ast_node(pat1) and is_ast_node(pat2):
         return node_equal(pat1, pat2)
 
     return api.n_equal(pat1, pat2)
