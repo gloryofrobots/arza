@@ -152,6 +152,19 @@ def test() ->
         case a -> a[0]
         case b -> a[1]
     end
+    //////////////////////////////////////////////////////
+    testit.assert_equal(
+            try
+                match 42
+                    case 23 -> :first
+                    case 13 -> :second;
+            catch exc
+                exc
+            finally
+                [exc, exc, exc]
+            end,
+            [(:MatchError,), (:MatchError,), (:MatchError,)])
+        )
 end
 
 

@@ -2,6 +2,7 @@ from obin.compile.parse import tokens
 from obin.compile.parse import token_type as tt
 from obin.compile.parse import node_type as nt
 from obin.types import space, api, plist
+from obin.runtime import error
 
 
 def __newnode(ntype, token, children):
@@ -198,6 +199,11 @@ def create_symbol_node(basenode, name):
     return node_1(nt.NT_SYMBOL, create_token_from_node(tt.TT_COLON, ":", basenode), name)
 
 
+def create_symbol_node_s(basenode, name):
+    return node_1(nt.NT_SYMBOL, create_token_from_node(tt.TT_COLON, ":", basenode),
+                  create_name_node(basenode, name))
+
+
 def create_int_node(basenode, val):
     return node_0(nt.NT_INT, create_token_from_node(tt.TT_INT, str(val), basenode))
 
@@ -225,6 +231,10 @@ def create_unit_node(basenode):
 
 def create_tuple_node(basenode, elements):
     return node_1(nt.NT_TUPLE, create_token_from_node(tt.TT_LPAREN, "(", basenode), list_node(elements))
+
+def create_match_fail_node(basenode, val):
+    sym = create_symbol_node_s(basenode, val)
+    return create_tuple_node(basenode, [sym])
 
 
 def create_if_node(basenode, branches):

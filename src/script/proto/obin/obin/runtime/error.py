@@ -74,3 +74,4 @@ class Errors:
     UNPACK_SEQUENCE = u"UnpackSequenceError"
     FIBER_FLOW = u"FiberFlowError"
     NOT_IMPLEMENTED = u"NotImplementedError"
+    MATCH = u"MatchError"

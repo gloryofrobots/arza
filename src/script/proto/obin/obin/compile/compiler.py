@@ -12,6 +12,8 @@ from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, Sou
 from obin.utils.misc import is_absent_index, string_unquote
 from obin.runtime import error
 
+# TODO REMOVE NIL IN ELSE FROM IF. ADD IF_NO_ELSE NODE_TYPE FOR PATTERN MATCHING
+# TODO REMOVE NIL as token and node_type
 
 def compile_error(process, compiler, code, node, message):
     line = code.info.get_line(api.to_i(nodes.node_line(node)))
@@ -194,12 +196,13 @@ def _compile_NIL(process, compiler, code, node):
 
 
 def _get_name_value(name):
-    if node_type(name) == NT_SPECIAL_NAME:
+    ntype = node_type(name)
+    if ntype == NT_SPECIAL_NAME:
         value = _get_special_name_value(name)
-    elif node_type(name) == NT_NAME:
+    elif ntype == NT_NAME:
         value = nodes.node_value(name)
     else:
-        assert False, "Invalid call"
+        assert False, ("_get_name_value", ntype)
     return value
 
 
@@ -442,7 +445,6 @@ PATTERN_DATA = """
     end
 """
 
-
 def _compile_match(process, compiler, code, node, patterns):
     from obin.compile.match import transform
     from obin.compile.parse.nodes import create_goto_node
@@ -455,6 +457,12 @@ def _compile_match(process, compiler, code, node, patterns):
     endmatch = code.prealocate_label()
     graph = transform(process, compiler, code, node, patterns, create_goto_node(endmatch))
     _compile(process, compiler, code, graph)
+
+    # Allocate error in case of no match
+    err_node = nodes.create_match_fail_node(node, str(error.Errors.MATCH))
+    _compile(process, compiler, code, err_node)
+    code.emit_0(THROW, info(node))
+
     code.emit_1(LABEL, endmatch, codeinfo_unknown())
 
 
@@ -649,21 +657,14 @@ def _compile_SYMBOL(process, compiler, code, node):
 
 def _compile_RETURN(process, compiler, code, node):
     expr = node_first(node)
-    if nodes.is_empty_node(expr):
-        _emit_nil(code)
-    else:
-        _compile(process, compiler, code, expr)
+    _compile(process, compiler, code, expr)
 
     code.emit_0(RETURN, info(node))
 
 
 def _compile_THROW(process, compiler, code, node):
     expr = node_first(node)
-    if nodes.is_empty_node(expr):
-        _emit_nil(code)
-    else:
-        _compile(process, compiler, code, expr)
-
+    _compile(process, compiler, code, expr)
     code.emit_0(THROW, info(node))
 
 
