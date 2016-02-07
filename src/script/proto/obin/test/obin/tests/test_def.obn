@@ -75,4 +75,23 @@ def test ->
               ([42], :second),
               ((), :third)
     )
+
+    ////////////////////////////////////////////////////
+
+    // when possible function compiles
+    // into destructive assignment automaton instead of more complicated pattern matching graph
+    //destruct func
+    def fn_simple(arg1, arg2, ...rest) -> (arg1, arg2, rest) end
+    //case func
+    def fn_case(arg1, arg2 of Integer,  ...rest) -> (arg1, arg2, rest) end
+
+    assert_equal(fn_simple(0,1,4,5,6), fn_case(0,1,4,5,6))
+
+    ////////////////////////////////////////////////////
+
+    //destruct func
+    def fn_simple1(arg1, arg2, {key1, key2}, ...rest) -> (arg1, arg2, key1, key2, rest) end
+    //case func
+    def fn_case1(arg1, arg2, { var1 @ key1=2, key2} of Map, ...rest) -> (arg1, arg2, var1, key2, rest) end
+    assert_equal(fn_simple1(0,1, {key1=2, key2=3}, 4,5,6), fn_case1(0,1, {key1=2, key2=3}, 4,5,6))
 end

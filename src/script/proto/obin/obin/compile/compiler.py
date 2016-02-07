@@ -3,7 +3,7 @@ from obin.compile.code.opcode import *
 from obin.compile.parse import parser
 from obin.compile.parse import nodes
 from obin.compile.parse.nodes import (node_type, node_arity,
-                                      node_first, node_second, node_third)
+                                      node_first, node_second, node_third, node_children)
 from obin.compile.parse.node_type import *
 from obin.compile.scope import Scope
 from obin.types import space, api, plist
@@ -812,6 +812,31 @@ def _get_symbol_name_or_empty(process, name):
     else:
         return space.newsymbol_py_str(process, nodes.node_value(name))
 
+def is_simple_func_declaration(params):
+    ntype = node_type(params)
+    if ntype == NT_TUPLE:
+        for child in node_first(params):
+            child_type = node_type(child)
+            if child_type == NT_MAP:
+                if not is_simple_func_declaration(child):
+                    return False
+            elif node_type(child) not in [NT_REST, NT_NAME]:
+                # print "node_type(child) not in [NT_REST, NT_NAME]:", node_type(child)
+                return False
+        return True
+    elif ntype == NT_MAP:
+        for child in node_first(params):
+            if node_type(child[0]) != NT_NAME:
+                # print "node_type(child[0]) != NT_NAME:"
+                return False
+            if not nodes.is_empty_node(child[1]):
+                # print "not nodes.is_empty_node(child[1]): "
+                return False
+        return True
+    elif ntype == NT_UNIT:
+        return True
+    # print "NOT SIMPLE ", ntype
+    return False
 
 def _compile_DEF(process, compiler, code, node):
     name = node_first(node)
@@ -823,7 +848,11 @@ def _compile_DEF(process, compiler, code, node):
         func = funcs[0]
         params = func[0]
         body = func[1]
-        _compile_func_args_and_body(process, compiler, code, name, params, body)
+        if not is_simple_func_declaration(params):
+            _compile_case_function(process, compiler, code, name, funcs)
+        else:
+            # print "SIMPLE FUNC", funcname
+            _compile_func_args_and_body(process, compiler, code, name, params, body)
     else:
         _compile_case_function(process, compiler, code, name, funcs)
 

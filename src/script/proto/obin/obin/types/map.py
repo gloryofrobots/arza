@@ -55,6 +55,13 @@ class Bindings:
         structure if the utilization of the Hashmap is > ~ 2/3
         """
         i, kv_pair = self._lookup(key)
+        if is_absent_index(i):
+            self._resize(self._incr_size(len(self._backing)))
+
+        i, kv_pair = self._lookup(key)
+        if is_absent_index(i):
+            raise RuntimeError("Unable to insert value")
+
         self._backing[i] = (key, value)
         if self.is_empty_pair(kv_pair):
             self._used += 1
