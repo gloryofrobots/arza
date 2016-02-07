@@ -12,6 +12,7 @@ from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, Sou
 from obin.utils.misc import is_absent_index, string_unquote
 from obin.runtime import error
 
+
 # TODO REMOVE NIL IN ELSE FROM IF. ADD IF_NO_ELSE NODE_TYPE FOR PATTERN MATCHING
 # TODO REMOVE NIL as token and node_type
 
@@ -20,6 +21,7 @@ def compile_error(process, compiler, code, node, message):
     return error.throw(error.Errors.COMPILE,
                        space.newtuple([
                            space.newstring(message),
+                           space.newint(nodes.node_type(node)),
                            space.newstring_from_str(nodes.node_value(node)),
                            space.newtuple([space.newstring(u"line"), nodes.node_line(node),
                                            space.newstring(u"column"), nodes.node_column(node)]),
@@ -445,6 +447,7 @@ PATTERN_DATA = """
     end
 """
 
+
 def _compile_match(process, compiler, code, node, patterns):
     from obin.compile.match import transform
     from obin.compile.parse.nodes import create_goto_node
@@ -813,6 +816,7 @@ def _get_symbol_name_or_empty(process, name):
     else:
         return space.newsymbol_py_str(process, nodes.node_value(name))
 
+
 def is_simple_func_declaration(params):
     ntype = node_type(params)
     if ntype == NT_TUPLE:
@@ -838,6 +842,7 @@ def is_simple_func_declaration(params):
         return True
     # print "NOT SIMPLE ", ntype
     return False
+
 
 def _compile_DEF(process, compiler, code, node):
     name = node_first(node)
@@ -882,6 +887,15 @@ def _compile_WHEN(process, compiler, code, node):
     endif = code.prealocate_label()
     _compile_branch(process, compiler, code, condition, truebranch, endif)
     _compile(process, compiler, code, falsebranch)
+    code.emit_1(LABEL, endif, codeinfo_unknown())
+
+
+def _compile_WHEN_NO_ELSE(process, compiler, code, node):
+    condition = node_first(node)
+    body = node_second(node)
+    endif = code.prealocate_label()
+    _compile_branch(process, compiler, code, condition, body, endif)
+    _emit_nil(code)
     code.emit_1(LABEL, endif, codeinfo_unknown())
 
 
@@ -1237,6 +1251,8 @@ def _compile_node(process, compiler, code, node):
         _compile_IF(process, compiler, code, node)
     elif NT_WHEN == ntype:
         _compile_WHEN(process, compiler, code, node)
+    elif NT_WHEN_NO_ELSE == ntype:
+        _compile_WHEN_NO_ELSE(process, compiler, code, node)
     elif NT_MATCH == ntype:
         _compile_MATCH(process, compiler, code, node)
     elif NT_TRY == ntype:

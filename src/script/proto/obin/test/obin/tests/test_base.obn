@@ -144,12 +144,12 @@ def test ->
 
     A = (1, 2, 3, 4, 5, 6, 35, 110, 122)
     for a in A
-        if a == 35
+        when a == 35
            continue
         end
 
-        if a > 115
-            if 1 < 2
+        when a > 115
+            when 1 < 2
                 break
             end
         end
@@ -159,7 +159,7 @@ def test ->
     x = 20
     while x > 0
         x = x - 5
-        if x == 10
+        when x == 10
             print("SKIP", x)
             continue
         end

@@ -575,11 +575,9 @@ def _transform_pattern(node, methods, history, variables, tree):
         if condition is None:
             result.append(_prepend_to_body(prefixes, body))
         else:
-            if_node = create_if_node(node,
-                                     [list_node([condition, body]),
-                                      empty_node()])
+            cond_node = create_when_no_else_node(node, condition, body)
 
-            result.append(_prepend_to_body(prefixes, list_node([if_node])))
+            result.append(_prepend_to_body(prefixes, list_node([cond_node])))
 
     return list_node(result), vars
 

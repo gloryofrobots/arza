@@ -20,6 +20,7 @@ NODES = [
 
   "NT_IF",
   "NT_WHEN",
+  "NT_WHEN_NO_ELSE",
   "NT_MATCH",
   "NT_TRY",
 

@@ -253,14 +253,11 @@ def prefix_if(parser, node):
 
         branches.append(nodes.list_node([cond, body]))
         check_token_types(parser, TERM_IF)
-    if parser.token_type == TT_ELSE:
-        advance_expected(parser, TT_ELSE)
-        body = statements(parser, TERM_BLOCK)
-        branches.append(nodes.list_node([nodes.empty_node(), body]))
-        advance_end(parser)
-    else:
-        advance_end(parser)
-        branches.append(nodes.empty_node())
+
+    advance_expected(parser, TT_ELSE)
+    body = statements(parser, TERM_BLOCK)
+    branches.append(nodes.list_node([nodes.empty_node(), body]))
+    advance_end(parser)
 
     return node_1(NT_IF, __ntok(node), nodes.list_node(branches))
 
@@ -517,6 +514,11 @@ def stmt_for(parser, node):
     advance_end(parser)
     return node_3(NT_FOR, __ntok(node), vars, exp, stmts)
 
+def stmt_when(parser, node):
+    cond = prefix_condition(parser)
+    body = statements(parser, TERM_BLOCK)
+    advance_end(parser)
+    return node_2(NT_WHEN_NO_ELSE, __ntok(node), cond, body)
 
 ###############################################################
 # MODULE STATEMENTS

@@ -300,7 +300,7 @@ def expression_parser_init(parser):
     stmt(parser, TT_CONTINUE, stmt_loop_flow)
     stmt(parser, TT_WHILE, stmt_while)
     stmt(parser, TT_FOR, stmt_for)
-
+    stmt(parser, TT_WHEN, stmt_when)
     return parser
 
 
@@ -352,12 +352,10 @@ def write_ast(ast):
 ast = parse_string(
     """
     module M
-        def main() -> 1 end
-        def somefunc
-            case (x,y,z) ->
-                0
-            case () ->
-                1;
+        def main() ->
+            when 2 == 2
+                 false end
+        end
     ;
     """
 )

@@ -19,6 +19,11 @@ def fn_fail
 
 def main() ->
 //    {assert_equal, assert_equal_batch} = testit
+    y = 2
+    when y == 2
+       print("y == 2");
+
+
     x = try
             fn_fail(5)
         catch exc

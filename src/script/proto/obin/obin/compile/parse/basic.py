@@ -6,7 +6,7 @@ from obin.runtime import error
 from obin.utils.misc import get_line, get_line_for_position
 
 TERM_BLOCK = [TT_END, TT_SEMI]
-TERM_IF = [TT_ELIF, TT_ELSE] + TERM_BLOCK
+TERM_IF = [TT_ELIF, TT_ELSE]
 TERM_FILE = [TT_ENDSTREAM]
 TERM_CASE = [TT_CASE] + TERM_BLOCK
 TERM_CATCH = [TT_FINALLY] + TERM_BLOCK

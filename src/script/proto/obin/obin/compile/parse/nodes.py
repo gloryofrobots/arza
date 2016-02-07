@@ -232,6 +232,7 @@ def create_unit_node(basenode):
 def create_tuple_node(basenode, elements):
     return node_1(nt.NT_TUPLE, create_token_from_node(tt.TT_LPAREN, "(", basenode), list_node(elements))
 
+
 def create_match_fail_node(basenode, val):
     sym = create_symbol_node_s(basenode, val)
     return create_tuple_node(basenode, [sym])
@@ -255,6 +256,10 @@ def create_call_node(basenode, func, exp):
 
 def create_eq_node(basenode, left, right):
     return node_2(nt.NT_EQ, create_token_from_node(tt.TT_EQ, "==", basenode), left, right)
+
+
+def create_when_no_else_node(basenode, cond, body):
+    return node_2(nt.NT_WHEN_NO_ELSE, create_token_from_node(tt.TT_WHEN, "whne", basenode), cond, body)
 
 
 def create_gt_node(basenode, left, right):
