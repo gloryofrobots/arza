@@ -410,12 +410,10 @@ def parse_def(parser):
             body = statements(parser, TERM_CASE)
             funcs.append(nodes.list_node([args, body]))
     else:
-        args_parser = parser.args_parser
-
-        if args_parser.token_type == TT_ARROW:
+        if parser.token_type == TT_ARROW:
             args = nodes.create_unit_node(parser.node)
         else:
-            args = expression(args_parser, 0)
+            args = expression(pattern_parser, 0)
 
         advance_expected(parser, TT_ARROW)
         body = statements(parser, TERM_BLOCK)
