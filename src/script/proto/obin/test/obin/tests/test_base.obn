@@ -1,9 +1,8 @@
 def test ->
-    def test_eq(str, val, expected) ->
+    fun test_eq(str, val, expected) ->
         print("test -> ","'" + str + "'", val, val == expected)
-        if val != expected
-            throw "Test error"
-        end
+        when val != expected
+            throw "Test error";
     end
 
     x = 1

@@ -100,10 +100,10 @@ def get_reference(lex, identifier):
 class W_Env(W_Any):
     _immutable_fields_ = ['binding_object', 'outer_environment']
 
-    def __init__(self, obj, parent_environment):
+    def __init__(self, data, parent_environment):
         assert isinstance(parent_environment, W_Env) or parent_environment is None
         self.parent_env = parent_environment
-        self.data = obj
+        self.data = data
 
     def get_reference(self, identifier):
         # print "Environment.get_reference"

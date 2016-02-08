@@ -35,15 +35,6 @@ class W_Module(W_Any):
         self.bytecode = bytecode
         self.env = env
 
-    def _equal_(self, other):
-        if not isinstance(other, W_Module):
-            return False
-
-        if not api.n_equal(self.name, other.name):
-            return False
-
-        return True
-
     def _at_(self, key):
         return self.env._at_(key)
 

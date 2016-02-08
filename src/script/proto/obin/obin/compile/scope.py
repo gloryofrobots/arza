@@ -25,8 +25,6 @@ class Scope:
 
         self.arg_count = -1
         self.fn_name_index = -1
-        self.outers = []
-
         self.literals = ScopeSet()
         self.references = ScopeSet()
         self.is_variadic = None
@@ -43,9 +41,6 @@ class Scope:
 
     def add_literal(self, literal):
         return self.literals.add(literal)
-
-    def is_function_scope(self):
-        return self.arg_count != -1
 
     def check_arg_count(self):
         assert self.arg_count != -1
@@ -66,15 +61,6 @@ class Scope:
 
     def get_local_index(self, local):
         return api.get_index(self.locals, local)
-
-    def add_outer(self, name):
-        assert space.issymbol(name)
-        assert name not in self.outers
-        self.outers.append(name)
-
-    def has_outer(self, name):
-        assert space.issymbol(name)
-        return name in self.outers
 
     def finalize(self):
         return FinalScope(self.locals, self.references.values,

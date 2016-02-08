@@ -60,22 +60,8 @@ def _is_modifiable_binding(process, compiler, name):
     scope = _current_scope(process, compiler)
     if not is_absent_index(scope.get_local_index(name)):
         return True
-    if scope.has_outer(name):
-        return True
 
     return False
-
-
-def _declare_outer(process, compiler, code, outer):
-    value = _get_name_value(outer)
-    symbol = space.newsymbol_py_str(process, value)
-    scope = _current_scope(process, compiler)
-    if not scope.is_function_scope():
-        compile_error(process, compiler, code, symbol, u"outer variables can be declared only inside functions")
-
-    if scope.has_outer(symbol):
-        compile_error(process, compiler, code, symbol, u"outer variable has already been declared")
-    scope.add_outer(symbol)
 
 
 def _declare_arguments(process, compiler, args_count, varargs):
@@ -137,20 +123,6 @@ def _get_variable_index(process, compiler, name):
     # COMMENT ERROR BECAUSE OF LATER LINKING OF BUILTINS
     ref_id = _declare_reference(process, compiler, name)
     return ref_id, False
-
-
-def _declare_variable(process, compiler, symbol):
-    """
-        return var_index, is_local
-    """
-
-    scope = _current_scope(process, compiler)
-    if scope.has_outer(symbol):
-        idx = _declare_reference(process, compiler, symbol)
-        return idx, False
-
-    idx = _declare_local(process, compiler, symbol)
-    return idx, True
 
 
 def _exit_scope(process, compiler):
@@ -257,12 +229,6 @@ def _compile_CHAR(process, compiler, code, node):
     except RuntimeError as e:
         compile_error(process, compiler, code, node, unicode(e.args[0]))
 
-
-# def _compile_OUTER(process, compiler, code, node):
-#     # TODO REMOVE IT
-#     assert False, "Why you need it?"
-#     name = space.newstring_from_str(node_first(node).value)
-#     _declare_outer(process, compiler, name)
 
 
 def _on_binary_primitive(process, compiler, code, node, name):

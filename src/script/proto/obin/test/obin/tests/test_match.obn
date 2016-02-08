@@ -48,7 +48,7 @@ def test() ->
 
     testit.assert_equal(LilyName2, "Lily")
     testit.assert_equal(Result, {age = 25, actress = "Lily", genre = "XXX"})
-    testit.assert_throw_any(def -> LilyName  end)
+    testit.assert_throw(fun -> LilyName  end, ())
 
     ////////////////////////////////////////////////////////////////
 
@@ -61,7 +61,7 @@ def test() ->
         , (:third, (24, 25))
     )
 
-    testit.assert_throw_any(def -> Z  end)
+    testit.assert_throw(fun -> Z  end, ())
 
     ////////////////////////////////////////////////////////////////
 
@@ -74,7 +74,7 @@ def test() ->
             case _ ->  123 end,
         (2, (2, 3, 4), 8)
      )
-    testit.assert_throw_any(def -> [a1,b1,c1, x1,y1,z1]  end)
+    testit.assert_throw(fun -> [a1,b1,c1, x1,y1,z1]  end, ())
 
     ////////////////////////////////////////////////////////////////
 
@@ -164,7 +164,6 @@ def test() ->
                 [exc, exc, exc]
             end,
             [(:MatchError,), (:MatchError,), (:MatchError,)])
-        )
 end
 
 
