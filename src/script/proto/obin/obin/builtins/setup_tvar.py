@@ -4,7 +4,7 @@ from obin.runtime.routine import complete_native_routine
 
 
 def setup(process, module, stdlib):
-    tvar_module = space.newmodule(space.newsymbol(process, u"tvar"), None, space.newenv(space.newmap(), None))
+    tvar_module = space.newmodule(space.newsymbol(process, u"tvar"),  space.newmap(), None)
     api.put_native_function(process, tvar_module, u'read', tvar_read, 1)
     api.put_native_function(process, tvar_module, u'swap', tvar_swap, 2)
     api.put_native_function(process, tvar_module, u'create', tvar_create, 1)

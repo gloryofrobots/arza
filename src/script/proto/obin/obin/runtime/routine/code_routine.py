@@ -3,7 +3,7 @@ from obin.runtime import error
 from obin.runtime.routine.base_routine import BaseRoutine
 from obin.runtime.load import import_module
 from obin.builtins.internals.internals import get_internal
-from obin.types import api, space, string, environment, module
+from obin.types import api, space, string, environment
 from obin.types.dispatch import generic
 
 
@@ -301,8 +301,8 @@ class CodeRoutine(BaseRoutine):
                 raise NotImplementedError()
             # *************************************
             elif MODULE == tag:
-                _module = literals[arg1]
-                module.create_environment(process, _module, env)
+                _source = literals[arg1]
+                _module = environment.create_environment(process, _source, env)
                 stack.push(_module)
             # *************************************
             elif TRAIT == tag:

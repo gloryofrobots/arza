@@ -12,11 +12,8 @@ load tests.test_trait
 
 
 def main() ->
-    {assert_equal, assert_equal_batch} = testit
+//    {assert_equal, assert_equal_batch} = testit
 
-//    print(1,2,3)
-//    print(())
-//    fn(22)
     test_base.test()
     test_co.test()
     test_destruct.test()

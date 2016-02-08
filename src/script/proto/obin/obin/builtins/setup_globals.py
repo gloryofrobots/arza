@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from obin.runtime.routine import complete_native_routine
 from obin.runtime import error
-from obin.types import api, space, plist, module
+from obin.types import api, space, plist, environment
 from rpython.rlib.rstring import UnicodeBuilder
 from obin.runistr import encode_unicode_utf8
 from rpython.rlib.objectmodel import compute_unique_id
@@ -45,9 +45,9 @@ def compile_module(process, routine):
     filename = api.to_s(sourcename)
     script = fs.load_file_content(filename)
 
-    _module = compiler.compile_module(process, modulename, script, sourcename)
-    module.create_environment(process, _module, parent_env)
-    return _module
+    _module = compiler.compile_env(process, modulename, script, sourcename)
+    env = environment.create_environment(process, _module, parent_env)
+    return env
 
 @complete_native_routine
 def _id(process, routine):

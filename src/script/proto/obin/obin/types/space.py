@@ -29,6 +29,7 @@ def isuniquetype(w):
     from obin.types.root import W_UniqueType
     return isinstance(w, W_UniqueType)
 
+
 ########################################################
 
 # TODO CHECK FOR BIGINT OVERFLOW
@@ -67,12 +68,14 @@ def newnumber(value):
 def isnumber(w):
     return isint(w) or isfloat(w)
 
+
 ########################################################
 
 @enforceargs(str)
 def newchar(c):
     from obin.types.character import W_Char
     return W_Char(ord(c))
+
 
 ########################################################
 
@@ -91,6 +94,7 @@ def isstring(w):
     from obin.types.string import W_String
     return isinstance(w, W_String)
 
+
 ########################################################
 
 def newsymbol(process, s):
@@ -107,6 +111,7 @@ def issymbol(w):
     from obin.types.symbol import W_Symbol
     return isinstance(w, W_Symbol)
 
+
 ########################################################
 
 def newinterrupt():
@@ -116,6 +121,7 @@ def newinterrupt():
 def isinterrupt(value):
     return value is w_Interrupt
 
+
 ########################################################
 
 def newnil():
@@ -124,6 +130,7 @@ def newnil():
 
 def isnil(value):
     return value is w_Nil
+
 
 ########################################################
 
@@ -152,6 +159,7 @@ def istrue(value):
 
 def isfalse(value):
     return value is w_False
+
 
 ########################################################
 
@@ -186,6 +194,7 @@ def isnativefunction(value):
     from obin.types.native_function import W_NativeFunction
     return isinstance(value, W_NativeFunction)
 
+
 ########################################################
 
 def newentity(process, source, traits):
@@ -202,6 +211,7 @@ def isentity(value):
     from obin.types.entity import W_Entity
     return isinstance(value, W_Entity)
 
+
 ########################################################
 
 def newmap():
@@ -212,6 +222,7 @@ def newmap():
 def ismap(value):
     from obin.types.map import W_Map
     return isinstance(value, W_Map)
+
 
 ########################################################
 
@@ -224,6 +235,7 @@ def ispmap(value):
     from obin.types.pmap import W_PMap
     return isinstance(value, W_PMap)
 
+
 ########################################################
 
 def newtvar(value):
@@ -234,6 +246,7 @@ def newtvar(value):
 def istvar(value):
     from obin.types.tvar import W_TVar
     return isinstance(value, W_TVar)
+
 
 ########################################################
 
@@ -248,6 +261,7 @@ def newvector(items):
 def isvector(value):
     from obin.types.vector import W_Vector
     return isinstance(value, W_Vector)
+
 
 ########################################################
 
@@ -266,6 +280,7 @@ def verify_list(items):
     for i in items:
         assert isany(i)
 
+
 ########################################################
 
 def newtuple(items):
@@ -279,30 +294,31 @@ def istuple(w):
     from obin.types.tupl import W_Tuple
     return isinstance(w, W_Tuple)
 
-########################################################
-
-def newmodule(name, code, env):
-    assert name is None or issymbol(name)
-    from obin.types.module import W_Module
-    obj = W_Module(name, code, env)
-    return obj
-
-
-def ismodule(w):
-    from obin.types.module import W_Module
-    return isinstance(w, W_Module)
 
 ########################################################
 
-def newenv(obj, outer_environment):
+def newenv(name, obj, outer_environment):
     from obin.types.environment import W_Env
-    env = W_Env(obj, outer_environment)
+    env = W_Env(name, obj, outer_environment)
     return env
 
 
 def isenv(w):
     from obin.types.environment import W_Env
     return isinstance(w, W_Env)
+
+
+########################################################
+
+newmodule = newenv
+
+
+def newenvsource(name, code):
+    assert name is None or issymbol(name)
+    from obin.types.environment import W_EnvSource
+    obj = W_EnvSource(name, code)
+    return obj
+
 
 ########################################################
 
@@ -317,6 +333,7 @@ def isgeneric(w):
     from obin.types.dispatch.generic import W_Generic
     return isinstance(w, W_Generic)
 
+
 ########################################################
 
 def newtrait(name):
@@ -328,6 +345,7 @@ def newtrait(name):
 def istrait(w):
     from obin.types.trait import W_Trait
     return isinstance(w, W_Trait)
+
 
 ########################################################
 

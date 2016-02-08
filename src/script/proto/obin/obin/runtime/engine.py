@@ -1,6 +1,4 @@
 from obin.types import space, api
-from obin.compile.compiler import compile_module
-from obin.utils import fs
 from obin.builtins import setup_builtins
 from obin.runtime.process import Process
 from obin.runtime import process_data
@@ -8,7 +6,7 @@ from obin.runtime.load import import_module, evaluate_module_file
 
 # TODO MOVE ALL OF IT TO PROCESS
 def initialize(libdirs):
-    core_prelude = space.newmodule(None, None, space.newenv(space.newmap(), None))
+    core_prelude = space.newenv(space.newstring(u"__core__"), space.newmap(), None)
     proc_data = process_data.create(libdirs, core_prelude)
     process = Process(proc_data)
     setup_builtins(process, core_prelude)

@@ -960,7 +960,7 @@ def _compile_MODULE(process, compiler, code, node):
     # compiled_code = modulecode.finalize_compilation(scope)
 
     module_name = space.newsymbol_py_str(process, _get_name_value(name_node))
-    module = space.newmodule(module_name, compiled_code, None)
+    module = space.newenvsource(module_name, compiled_code)
     module_index = _declare_literal(process, compiler, module)
     code.emit_1(MODULE, module_index, info(node))
 
@@ -1374,9 +1374,9 @@ def compile(process, src, sourcename):
     return code
 
 
-def compile_module(process, modulename, src, sourcename):
+def compile_env(process, modulename, src, sourcename):
     code = compile(process, src, sourcename)
-    module = space.newmodule(modulename, code, None)
+    module = space.newenvsource(modulename, code)
     return module
 
 

@@ -1,5 +1,5 @@
 from obin.types import api, space
-from obin.types.root import W_Any
+from obin.types.root import W_Any, W_Callable
 from obin.types.space import isstring
 from obin.utils.misc import is_absent_index
 from obin.runtime import error
@@ -97,11 +97,45 @@ def get_reference(lex, identifier):
         return get_reference(outer, identifier)
 
 
+def create_environment(process, source, parent_env):
+    if source.env:
+        return source.env
+
+    modulefunc = W_EnvCompileFunction(source.name, source.bytecode, parent_env)
+    process.subprocess(modulefunc, space.newnil())
+
+    source.env = modulefunc.env
+    return source.env
+
+
+class W_EnvCompileFunction(W_Callable):
+    def __init__(self, name, bytecode, parent_env):
+        self.name = name
+        self.bytecode = bytecode
+        self.parent_env = parent_env
+
+        bindings = self.bytecode.scope.create_env_bindings()
+        self.env = space.newenv(self.name, bindings, parent_env)
+
+    def _to_routine_(self, stack, args):
+        from obin.runtime.routine import create_module_routine
+        routine = create_module_routine(self.name, stack, self.bytecode, self.env)
+        return routine
+
+
+class W_EnvSource(W_Any):
+    def __init__(self, name, bytecode):
+        self.name = name
+        self.bytecode = bytecode
+        self.env = None
+
+
 class W_Env(W_Any):
     _immutable_fields_ = ['binding_object', 'outer_environment']
 
-    def __init__(self, data, parent_environment):
+    def __init__(self, name, data, parent_environment):
         assert isinstance(parent_environment, W_Env) or parent_environment is None
+        self.name = name
         self.parent_env = parent_environment
         self.data = data
 
