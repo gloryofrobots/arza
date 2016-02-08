@@ -1,5 +1,5 @@
 def test ->
-    def error(reason) ->
+    fun error(reason) ->
         throw (:error, {reason=reason}) end
 
     try

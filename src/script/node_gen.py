@@ -17,6 +17,7 @@ NODES = [
   "NT_UNIT",
 
   "NT_DEF",
+  "NT_FUN",
 
   "NT_IF",
   "NT_WHEN",

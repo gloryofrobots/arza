@@ -785,8 +785,7 @@ def _compile_func_args_and_body(process, compiler, code, name, params, body):
     code.emit_1(FUNCTION, source_index, info(name))
 
 
-def _compile_case_function(process, compiler, code, name, cases):
-    funcname = _get_symbol_name_or_empty(process, name)
+def _compile_case_function(process, compiler, code, node, funcname, cases):
     _enter_scope(process, compiler)
 
     funccode = newcode(compiler)
@@ -798,7 +797,7 @@ def _compile_case_function(process, compiler, code, name, cases):
 
     funccode.emit_0(ARGUMENTS, codeinfo_unknown())
 
-    _compile_match(process, compiler, funccode, name, cases, error.Errors.FUNCTION_MATCH)
+    _compile_match(process, compiler, funccode, node, cases, error.Errors.FUNCTION_MATCH)
     current_scope = _current_scope(process, compiler)
     scope = current_scope.finalize()
     _exit_scope(process, compiler)
@@ -807,7 +806,7 @@ def _compile_case_function(process, compiler, code, name, cases):
 
     source = space.newfuncsource(funcname, compiled_code)
     source_index = _declare_literal(process, compiler, source)
-    code.emit_1(FUNCTION, source_index, info(name))
+    code.emit_1(FUNCTION, source_index, info(node))
 
 
 def _get_symbol_name_or_empty(process, name):
@@ -855,12 +854,12 @@ def _compile_DEF(process, compiler, code, node):
         params = func[0]
         body = func[1]
         if not is_simple_func_declaration(params):
-            _compile_case_function(process, compiler, code, name, funcs)
+            _compile_case_function(process, compiler, code, node, funcname, funcs)
         else:
             # print "SIMPLE FUNC", funcname
             _compile_func_args_and_body(process, compiler, code, name, params, body)
     else:
-        _compile_case_function(process, compiler, code, name, funcs)
+        _compile_case_function(process, compiler, code, node, funcname, funcs)
 
     if api.isempty(funcname):
         return
@@ -869,6 +868,9 @@ def _compile_DEF(process, compiler, code, node):
 
     funcname_index = _declare_literal(process, compiler, funcname)
     code.emit_2(STORE_LOCAL, index, funcname_index, info(node))
+
+# now they are identical except of scope
+_compile_FUN = _compile_DEF
 
 
 def _compile_branch(process, compiler, code, condition, body, endif):
@@ -1246,6 +1248,8 @@ def _compile_node(process, compiler, code, node):
 
     elif NT_DEF == ntype:
         _compile_DEF(process, compiler, code, node)
+    elif NT_FUN == ntype:
+        _compile_FUN(process, compiler, code, node)
 
     elif NT_IF == ntype:
         _compile_IF(process, compiler, code, node)

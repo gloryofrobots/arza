@@ -53,8 +53,10 @@ def has_handler(parser, ttype):
 
 def handler(parser, ttype):
     assert ttype < TT_UNKNOWN
-    return parser.handlers[ttype]
-
+    try:
+        return parser.handlers[ttype]
+    except:
+        parse_error(parser, u"Invalid token", parser.node)
 
 def get_or_create_handler(parser, ttype):
     if not has_handler(parser, ttype):

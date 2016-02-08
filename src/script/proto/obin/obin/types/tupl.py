@@ -74,7 +74,7 @@ class W_Tuple(W_Hashable):
         assert isint(index)
         try:
             el = self.elements[api.to_i(index)]
-        except KeyError:
+        except IndexError:
             return newnil()
 
         return el

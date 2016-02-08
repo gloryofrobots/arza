@@ -1,6 +1,9 @@
 def assert_equal_batch(fn, ...calls) ->
+    _batch(assert_equal, fn, calls);
+
+def _batch(checker, fn, calls) ->
     for call in calls
-        assert_equal(apply(fn, call[0]), call[1])
+        checker(apply(fn, call[0]), call[1])
     ;;
 
 def fail(error) ->

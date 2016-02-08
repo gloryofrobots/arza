@@ -76,6 +76,7 @@ RULES = [
     (keyword('match'), TT_MATCH),
     (keyword('case'), TT_CASE),
     (keyword('def'), TT_DEF),
+    (keyword('fun'), TT_FUN),
     (keyword('end'), TT_END),
     (keyword('and'), TT_AND),
     (keyword('or'), TT_OR),

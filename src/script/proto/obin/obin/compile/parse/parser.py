@@ -285,7 +285,7 @@ def expression_parser_init(parser):
 
     prefix(parser, TT_IF, prefix_if)
 
-    prefix(parser, TT_DEF, prefix_def)
+    prefix(parser, TT_FUN, prefix_fun)
 
     prefix(parser, TT_MATCH, prefix_match)
     prefix(parser, TT_TRY, prefix_try)
@@ -311,7 +311,7 @@ def module_parser_init(parser):
     stmt(parser, TT_LOAD, stmt_load)
     stmt(parser, TT_MODULE, stmt_module)
 
-    prefix(parser, TT_DEF, prefix_module_def)
+    prefix(parser, TT_DEF, prefix_def)
     return parser
 
 
@@ -349,16 +349,16 @@ def write_ast(ast):
         f.write(repr)
 
 
-ast = parse_string(
-    """
-    module M
-        def main() ->
-            when 2 == 2
-                 false end
-        end
-    ;
-    """
-)
+# ast = parse_string(
+#     """
+#     module M
+#         def main() ->
+#             when 2 == 2
+#                  false end
+#         end
+#     ;
+#     """
+# )
 # print nodes.node_to_string(ast)
 """
 match (a,b):

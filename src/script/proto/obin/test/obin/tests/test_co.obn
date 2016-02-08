@@ -1,12 +1,12 @@
 
 def test->
     co = coroutine(
-            def(yield, x) ->
+            fun(yield, x) ->
                    Z = "1111"
                    _co1 = coroutine(
-                        def(yield2, y) ->
+                        fun(yield2, y) ->
                            Y = "2222"
-                           def send() ->
+                           fun send() ->
                                 X = "3333"
                                 yield2(42 + y)
                            end

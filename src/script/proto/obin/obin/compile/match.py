@@ -83,9 +83,11 @@ def _process_tuple(state, pattern, patterns, path):
     #                                 add_path(create_int_node(child, i), path))
     return patterns
 
+
 def _process_unit(state, pattern, patterns, path):
     patterns = add_pattern(patterns, ["equal", _create_path_node(pattern, path), create_unit_node(pattern)])
     return patterns
+
 
 def _process_list(state, pattern, patterns, path):
     patterns = add_pattern(patterns, ["is_seq", _create_path_node(pattern, path)])

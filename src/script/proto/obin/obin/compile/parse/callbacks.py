@@ -382,12 +382,15 @@ def _prefix_lcurly(parser, node, types, on_unknown):
     return node_1(NT_MAP, __ntok(node), nodes.list_node(items))
 
 
-def parse_def(parser):
+def parse_function(parser, can_has_empty_name):
     if parser.token_type == TT_NAME:
         name = _init_default_current_0(parser)
         advance(parser)
     else:
-        name = nodes.empty_node()
+        if can_has_empty_name is True:
+            name = nodes.empty_node()
+        else:
+            return parse_error(parser, u"Expected function name", parser.node)
 
     funcs = []
     pattern_parser = parser.pattern_parser
@@ -399,9 +402,6 @@ def parse_def(parser):
             args_type = nodes.node_type(args)
             if args_type != NT_UNIT and args_type != NT_TUPLE:
                 parse_error(parser, u"Invalid  syntax in function arguments", args)
-            # in case of 0-arity functions
-            if args_type == NT_UNIT:
-                args = nodes.create_wildcard_node(args)
 
             advance_expected(parser, TT_ARROW)
             body = statements(parser, TERM_CASE)
@@ -420,17 +420,14 @@ def parse_def(parser):
     return name, nodes.list_node(funcs)
 
 
-# REPEATING MYSELF HERE BECAUSE I DON`T WONT TO HAVE DEF AND FUNC,
-# AND MODULE FUNC IS DIFFERENT FROM EXPRESSION FUNC. IT DIDN'T HAVE ACCESS TO TRAIT, GENERIC, SPECIFY ...
-
-def prefix_module_def(parser, node):
-    name, funcs = parse_def(parser.expression_parser)
-    return node_2(NT_DEF, __ntok(node), name, funcs)
-
-
 def prefix_def(parser, node):
-    name, funcs = parse_def(parser)
+    name, funcs = parse_function(parser.expression_parser, False)
     return node_2(NT_DEF, __ntok(node), name, funcs)
+
+
+def prefix_fun(parser, node):
+    name, funcs = parse_function(parser, True)
+    return node_2(NT_FUN, __ntok(node), name, funcs)
 
 
 def prefix_try(parser, node):
