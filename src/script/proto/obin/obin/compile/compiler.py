@@ -448,7 +448,7 @@ PATTERN_DATA = """
 """
 
 
-def _compile_match(process, compiler, code, node, patterns):
+def _compile_match(process, compiler, code, node, patterns, error_code):
     from obin.compile.match import transform
     from obin.compile.parse.nodes import create_goto_node
     from obin.compile import MATCH_SYS_VAR
@@ -462,7 +462,7 @@ def _compile_match(process, compiler, code, node, patterns):
     _compile(process, compiler, code, graph)
 
     # Allocate error in case of no match
-    err_node = nodes.create_match_fail_node(node, str(error.Errors.MATCH))
+    err_node = nodes.create_match_fail_node(node, str(error_code))
     _compile(process, compiler, code, err_node)
     code.emit_0(THROW, info(node))
 
@@ -473,7 +473,7 @@ def _compile_MATCH(process, compiler, code, node):
     exp = node_first(node)
     patterns = node_second(node)
     _compile(process, compiler, code, exp)
-    _compile_match(process, compiler, code, node, patterns)
+    _compile_match(process, compiler, code, node, patterns, error.Errors.MATCH)
 
 
 def _compile_GOTO(process, compiler, code, node):
@@ -798,7 +798,7 @@ def _compile_case_function(process, compiler, code, name, cases):
 
     funccode.emit_0(ARGUMENTS, codeinfo_unknown())
 
-    _compile_match(process, compiler, funccode, name, cases)
+    _compile_match(process, compiler, funccode, name, cases, error.Errors.FUNCTION_MATCH)
     current_scope = _current_scope(process, compiler)
     scope = current_scope.finalize()
     _exit_scope(process, compiler)

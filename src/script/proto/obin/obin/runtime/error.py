@@ -75,3 +75,4 @@ class Errors:
     FIBER_FLOW = u"FiberFlowError"
     NOT_IMPLEMENTED = u"NotImplementedError"
     MATCH = u"MatchError"
+    FUNCTION_MATCH = u"FunctionArgumentsMatchError"

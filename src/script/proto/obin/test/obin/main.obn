@@ -1,9 +1,9 @@
-//load testit
+load testit
 //load tests.test_base
 //load tests.test_co
 //load tests.test_destruct
 //load tests.test_exception
-//load tests.test_def
+load tests.test_def
 //load tests.test_generic
 //load tests.test_match
 //load tests.test_modify
@@ -11,23 +11,10 @@
 //load tests.test_trait
 
 
-def fn_fail
-    case (1) -> :one
-    case (2) -> :two
-    case (3) -> :three
-    case (4) -> :four;
 
 def main() ->
 //    {assert_equal, assert_equal_batch} = testit
-    y = 2
-    when y == 2
-       print("y == 2");
 
-
-    x = try
-            fn_fail(5)
-        catch exc
-            [exc, exc, exc];
 
 //    print(1,2,3)
 //    print(())
@@ -36,7 +23,7 @@ def main() ->
 //    test_co.test()
 //    test_destruct.test()
 //    test_exception.test()
-//    test_def.test()
+    test_def.test()
 //    test_generic.test()
 //    test_match.test()
 //    test_modify.test()

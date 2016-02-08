@@ -1,6 +1,5 @@
 load testit
-{assert_equal, assert_equal_batch} = testit
-
+{assert_equal, assert_equal_batch, assert_throw, assert_throw_expected} = testit
 def test ->
     f1 = def (a,b,c) ->
         print(a, b, c)
@@ -39,6 +38,7 @@ def test ->
         case (var6, var7) -> var6 + var7
         case (42) -> "Main question answer"
         case (_) -> :nothing;
+
 
     assert_equal(func1(1,2,3,4,5,6,7,8,9,10,11),
                     (6, 7, 8, (9, 10, 11)))
@@ -93,6 +93,7 @@ def test ->
     def fn_simple1(arg1, arg2, {key1, key2}, ...rest) -> (arg1, arg2, key1, key2, rest) end
     //case func
     def fn_case1(arg1, arg2, { var1 @ key1=2, key2} of Map, ...rest) -> (arg1, arg2, var1, key2, rest) end
+
     assert_equal(fn_simple1(0,1, {key1=2, key2=3}, 4,5,6), fn_case1(0,1, {key1=2, key2=3}, 4,5,6))
 
     ////////////////////////////////////////////////////
@@ -100,4 +101,28 @@ def test ->
         def (x, y) ->
             x + y end (2,3),
         5)
+
+    ////////////////////////////////////////////////////
+    def fn_fail
+        case (1) -> :one
+        case (2) -> :two
+        case (3) -> :three
+        case (4) -> :four;
+
+    assert_equal_batch(fn_fail,
+        ([1], :one),
+        ([2], :two),
+        ([3], :three),
+        ([4], :four))
+    1 / 0
+    assert_throw(fn_fail, [5])
+    assert_throw_expected(fn_fail, [0], (:FunctionArgumentsMatchError,))
+    assert_equal(
+        try
+           fn_fail("I am string")
+        catch exc
+           [exc, exc, exc];
+        , [(:FunctionArgumentsMatchError,), (:FunctionArgumentsMatchError,), (:FunctionArgumentsMatchError,)]
+    )
+
 end

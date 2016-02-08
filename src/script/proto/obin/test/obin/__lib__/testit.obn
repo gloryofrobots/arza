@@ -9,11 +9,15 @@ def fail(error) ->
 def assert_equal(val1, val2) ->
     if val1 != val2
         fail([val1, "!=", val2])
+    else
+        true
     ;;
 
 def assert_is(val1, val2) ->
     if val1 isnot val2
         fail([val1, "isnot", val2])
+    else
+        true
     ;;
 
 
@@ -24,12 +28,18 @@ def assert_false(val1) ->
     assert_is(val1, false);
 
 
-
-def assert_throw_any(fn) ->
+def assert_throw(fn, args) ->
     try
-        fn()
+        apply(fn, args)
         fail(["exception expected", fn])
     catch e
         true
     ;;
 
+def assert_throw_expected(fn, args, exc) ->
+    try
+        apply(fn, args)
+        fail(["exception expected", fn])
+    catch e
+        return assert_equal(e, exc)
+    ;;
