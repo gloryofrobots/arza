@@ -8,7 +8,7 @@ class W_Fiber(W_Callable):
     def __init__(self, fiber):
         self.fiber = fiber
 
-    def _tostring_(self):
+    def _to_string_(self):
         return "<fiber>"
 
     def _behavior_(self, process):
@@ -19,9 +19,9 @@ class W_Fiber(W_Callable):
         if not self.fiber.is_waiting():
             error.throw_1(error.Errors.FIBER_FLOW, space.newstring(u"Can't resume active fiber"))
 
-        if api.n_length(args) == 0:
+        if api.length_i(args) == 0:
             value = space.newnil()
-        elif api.n_length(args) == 1:
+        elif api.length_i(args) == 1:
             value = api.at_index(args, 0)
         else:
             value = args

@@ -43,7 +43,7 @@ class W_Symbol(W_Any):
 
         return self.string._compare_(arg)
 
-    def _tostring_(self):
+    def _to_string_(self):
         return api.to_s(self.string)
 
     def _iterator_(self):

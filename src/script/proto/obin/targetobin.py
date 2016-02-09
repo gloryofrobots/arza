@@ -3,10 +3,12 @@
 import os
 from rpython.rlib.objectmodel import enforceargs
 
+
 @enforceargs(unicode)
 def printmessage(msg):
     from obin.runistr import encode_unicode_utf8
     os.write(1, encode_unicode_utf8(msg))
+
 
 def main(argv):
     script_file = argv[1]
@@ -27,31 +29,42 @@ def main(argv):
     # finally:
     #     return 0
 
+
 def run(script_file):
     from obin.runtime import engine
-    from obin.utils import fs
+    from obin.tools import fs
     script_dir = fs.get_dirname(script_file)
     path_lib = fs.join_and_normalise_path(script_dir, "__lib__")
 
     process, error = engine.initialize([script_dir, path_lib])
     if error is not None:
-        print "Initialization error"
         return error
     return engine.evaluate_file(process, script_file)
 
-# _____ Define and setup target ___
+
+# # _____ Define and setup target ___
 def target(driver, args):
     driver.exe_name = 'obin_i'
     return entry_point, None
+
 
 def jitpolicy(driver):
     from rpython.jit.codewriter.policy import JitPolicy
     return JitPolicy()
 
+
 def entry_point(argv):
     return main(argv)
 
+
+# class writer(object):
+#     def write(self, data):
+#         pass
+#
+#     def isatty(self):
+#         return False
+
 if __name__ == '__main__':
     import sys
+    # sys.stderr = writer()
     entry_point(sys.argv)
-

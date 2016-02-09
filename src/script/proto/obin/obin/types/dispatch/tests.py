@@ -5,7 +5,7 @@ def make_method(process, name, arity=3):
     return newnativefunc(newsymbol(process, unicode(name)), lambda *args: name, arity)
 
 def specify(generic, sig, name):
-    arity = api.n_length(sig)
+    arity = api.length_i(sig)
     method = make_method(name, arity)
     generic.specify_single(sig, method)
 

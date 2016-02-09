@@ -45,7 +45,7 @@ def create_function_routine(stack, func, args, outer_env):
 def create_function_environment(func, scope, args, outer_env):
 
     declared_args_count = scope.count_args if not scope.is_variadic else scope.count_args - 1
-    args_count = api.n_length(args)
+    args_count = api.length_i(args)
 
     if not scope.is_variadic:
         if args_count != declared_args_count:

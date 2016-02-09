@@ -59,7 +59,7 @@ class W_String(W_Hashable):
     def isempty(self):
         return not bool(len(self.string_value))
 
-    def _tostring_(self):
+    def _to_string_(self):
         return str(self.string_value)
 
     def _iterator_(self):

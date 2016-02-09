@@ -13,7 +13,7 @@ class NativeRoutine(BaseRoutine):
         self._name_ = name
         self.native_func = function
         self.arity = arity
-        self.count_args = api.n_length(args)
+        self.count_args = api.length_i(args)
         self._args = args
 
     # redefine resume because we can call bytecode routine from native and after it resumes as we must complete

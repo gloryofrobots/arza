@@ -13,6 +13,7 @@ def check_implementation_0(operation_name):
 
     return _check
 
+
 def check_implementation_1(operation_name):
     def _check(f):
         def wrapper(self, arg1):
@@ -60,6 +61,7 @@ def check_implementation_3(operation_name):
 
     return _check
 
+
 def not_implemented_error(name, *args):
     from obin.types import space
     from obin.runtime import error
@@ -73,9 +75,10 @@ def not_implemented_error(name, *args):
         return error.throw_5(error.Errors.NOT_IMPLEMENTED, space.newstring(name), args[0], args[1], args[2], args[3])
     raise RuntimeError("not_implemented_error for arity not defined", len(args))
 
+
 class W_Any:
     def __str__(self):
-        return self._tostring_()
+        return self._to_string_()
 
     def __repr__(self):
         return self.__str__()
@@ -107,17 +110,20 @@ class W_Any:
     def _remove_at_(self, key):
         return not_implemented_error(u"_remove_at_", self, key)
 
-    def _tostring_(self):
+    def _to_string_(self):
         return not_implemented_error(u"_tostring_", self)
 
-    def _tobool_(self):
+    def _to_bool_(self):
         return not_implemented_error(u"_tobool_", self)
 
-    def _tointeger_(self):
+    def _to_integer_(self):
         return not_implemented_error(u"_tointeger_", self)
 
-    def _tofloat_(self):
+    def _to_float_(self):
         return not_implemented_error(u"_tofloat_", self)
+
+    def _to_sequence_(self):
+        return not_implemented_error(u"_tosequence_", self)
 
     def _equal_(self, other):
         return not_implemented_error(u"_equal_", self, other)
@@ -175,4 +181,3 @@ class W_Number(W_ValueType):
 class W_UniqueType(W_Any):
     def _equal_(self, other):
         return self is other
-

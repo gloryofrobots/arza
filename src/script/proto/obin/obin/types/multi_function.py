@@ -17,7 +17,7 @@ class W_MultiFunction(W_Callable):
     def _length_(self):
         return len(self.methods)
 
-    def _tostring_(self):
+    def _to_string_(self):
         return "multifunction %s {}" % api.to_s(self.name)
 
 
@@ -31,8 +31,8 @@ class W_MultiFunction(W_Callable):
 
 
 def _get_method(process, func, args):
-    arity = api.n_length(args)
-    length = api.n_length(func)
+    arity = api.length_i(args)
+    length = api.length_i(func)
     # print "LOOKUP", gf._name_, args, arity
 
     if arity >= length:
@@ -47,7 +47,7 @@ def _get_method(process, func, args):
 
 def _add_method(func, method):
     arity = method.arity
-    length = api.n_length(func)
+    length = api.length_i(func)
 
     if arity >= length:
         func.methods = func.methods + ([None] * ((arity + 1) - length))

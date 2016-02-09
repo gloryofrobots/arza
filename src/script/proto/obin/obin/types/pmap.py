@@ -1,7 +1,7 @@
 from rpython.rlib.rarithmetic import r_int, r_uint, intmask
 import rpython.rlib.jit as jit
 from obin.types.root import W_UniqueType, W_Any
-from obin.types import api, space, vector
+from obin.types import api, space, plist
 from obin.runtime import error
 
 MASK_32 = r_uint(0xFFFFFFFF)
@@ -15,7 +15,7 @@ class Box:
 
 
 def _hash(key):
-    return api.n_hash(key) & MASK_32
+    return api.hash_i(key) & MASK_32
 
 
 def _tostring(pair, vec):
@@ -31,6 +31,10 @@ def _tostring(pair, vec):
     return vec
 
 
+def _tolist(pair, lst):
+    return plist.prepend(pair, lst)
+
+
 def _equal(pair, other):
     key = api.at(pair, space.newint(0))
     value = api.at(pair, space.newint(1))
@@ -44,8 +48,9 @@ class W_PMap(W_Any):
     def __init__(self, cnt, root):
         self._cnt = cnt
         self._root = root
+        self._seq = None
 
-    def _tostring_(self):
+    def _to_string_(self):
         lst = self.to_l()
         repr = u"{%s}" % u", ".join(lst)
         return str(repr)
@@ -66,6 +71,11 @@ class W_PMap(W_Any):
             return self
 
         return W_PMap(self._cnt if added_leaf._val is None else self._cnt + 1, new_root)
+
+    def _to_sequence_(self):
+        if self._seq is None:
+            self._seq = self.to_list()
+        return self._seq
 
     def _contains_(self, key):
         value = self._at_(key)
@@ -96,6 +106,11 @@ class W_PMap(W_Any):
         except error.ObinError as e:
             return False
 
+    # To Obin list
+    def to_list(self):
+        return self._root.reduce(_tolist, plist.empty())
+
+    # To Python list
     def to_l(self):
         if not self._root:
             return []
@@ -185,7 +200,7 @@ class BitmapIndexedNode(INode):
                         if self._array[j] is None:
                             nodes[i] = self._array[j + 1]
                         else:
-                            nodes[i] = BitmapIndexedNode_EMPTY.assoc_inode(shift + 5, api.n_hash(self._array[j]),
+                            nodes[i] = BitmapIndexedNode_EMPTY.assoc_inode(shift + 5, api.hash_i(self._array[j]),
                                                                            self._array[j], self._array[j + 1],
                                                                            added_leaf)
                         j += 2
@@ -386,7 +401,7 @@ class HashCollisionNode(INode):
 
 
 def create_node(shift, key1, val1, key2hash, key2, val2):
-    key1hash = api.n_hash(key1) & MASK_32
+    key1hash = api.hash_i(key1) & MASK_32
     if key1hash == key2hash:
         return HashCollisionNode(None, key1hash, [key1, val1, key2, val2])
     added_leaf = Box()

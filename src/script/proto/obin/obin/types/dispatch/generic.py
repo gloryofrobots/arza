@@ -39,7 +39,7 @@ class W_Generic(W_Callable):
         self.dags = []
         self.signatures = []
 
-    def _tostring_(self):
+    def _to_string_(self):
         return "<generic %s>" % api.to_s(self.name)
 
     def _call_(self, process, args):
@@ -199,7 +199,7 @@ def _specify_empty(gf, method):
 
 
 def _lookup_method(process, gf, args):
-    arity = api.n_length(args)
+    arity = api.length_i(args)
     # print "LOOKUP", gf._name_, args, arity
     if arity == 0:
         if gf.signatures[0] is None:

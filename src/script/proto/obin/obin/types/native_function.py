@@ -12,7 +12,7 @@ class W_NativeFunction(W_Callable):
         self._function_ = function
         self.arity = arity
 
-    def _tostring_(self):
+    def _to_string_(self):
         return "function %s {[native code]}" % api.to_s(self._name_)
 
     def _behavior_(self, process):
@@ -20,7 +20,7 @@ class W_NativeFunction(W_Callable):
 
     def _to_routine_(self, stack, args):
         from obin.runtime.routine import create_native_routine
-        if self.arity != -1 and api.n_length(args) != self.arity:
+        if self.arity != -1 and api.length_i(args) != self.arity:
             return error.throw_3(error.Errors.INVOKE,
                                  space.newstring(u"Invalid native call wrong count of arguments"),
                                  args, self)
@@ -31,7 +31,7 @@ class W_NativeFunction(W_Callable):
         return routine
 
     def _call_(self, process, args):
-        if self.arity != -1 and api.n_length(args) != self.arity:
+        if self.arity != -1 and api.length_i(args) != self.arity:
             return error.throw_3(error.Errors.INVOKE,
                          space.newstring(u"Invalid native call wrong count of arguments"),
                          args, self)

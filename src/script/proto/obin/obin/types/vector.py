@@ -1,6 +1,6 @@
 from obin.types.root import W_Any
 from sequence import W_SequenceIterator
-from obin.utils.misc import absent_index
+from obin.tools.misc import absent_index
 from obin.runtime import error
 
 
@@ -74,7 +74,7 @@ class W_Vector(W_Any):
     def _delete_(self, key):
         del self._items[key]
 
-    def _tostring_(self):
+    def _to_string_(self):
         return str(self._items)
 
     def _at_index_(self, i):

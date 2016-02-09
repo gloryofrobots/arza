@@ -161,7 +161,7 @@ class Signature(BaseSignature):
 
 def newsignature(process, args, method):
     from obin.types import space, api
-    arity = api.n_length(args)
+    arity = api.length_i(args)
     sig_args = []
     traits = process.std.traits
 

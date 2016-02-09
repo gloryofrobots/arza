@@ -9,7 +9,7 @@ from obin.compile.compile_scope import Scope
 from obin.types import space, api, plist
 from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
-from obin.utils.misc import is_absent_index, string_unquote
+from obin.tools.misc import is_absent_index, string_unquote
 from obin.runtime import error
 
 

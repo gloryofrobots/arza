@@ -13,7 +13,7 @@ class W_Char(W_ValueType):
     def __str__(self):
         return "%s" % (chr(self.char_value),)
 
-    def _tostring_(self):
+    def _to_string_(self):
         return chr(self.char_value)
 
     def _equal_(self, other):

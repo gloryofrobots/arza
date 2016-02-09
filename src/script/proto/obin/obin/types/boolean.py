@@ -8,10 +8,10 @@ class W_Boolean(W_UniqueType):
 
 
 class W_True(W_Boolean):
-    def _tostring_(self):
+    def _to_string_(self):
         return 'true'
 
-    def _tobool_(self):
+    def _to_bool_(self):
         return True
 
     def _behavior_(self, process):
@@ -25,10 +25,10 @@ class W_True(W_Boolean):
 
 
 class W_False(W_Boolean):
-    def _tostring_(self):
+    def _to_string_(self):
         return 'false'
 
-    def _tobool_(self):
+    def _to_bool_(self):
         return False
 
     def _behavior_(self, process):

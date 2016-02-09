@@ -7,7 +7,7 @@ class W_SequenceIterator(W_Any):
         assert isany(source)
         self.index = 0
         self.source = source
-        self.source_length = api.n_length(source)
+        self.source_length = api.length_i(source)
 
     def _next_(self):
         from obin.types.space import newnil
@@ -18,10 +18,10 @@ class W_SequenceIterator(W_Any):
         self.index += 1
         return el
 
-    def _tostring_(self):
+    def _to_string_(self):
         return "<Iterator %d:%d>" % (self.index, self.source_length)
 
-    def _tobool_(self):
+    def _to_bool_(self):
         if self.index >= self.source_length:
             return False
         return True

@@ -25,12 +25,12 @@ def absent_index():
 
 
 @specialize.argtype(0)
-def ohash(obj):
+def obin_hash(obj):
     return compute_identity_hash(obj)
 
 
 @specialize.argtype(0)
-def oid(obj):
+def obin_id(obj):
     return compute_unique_id(obj)
 
 

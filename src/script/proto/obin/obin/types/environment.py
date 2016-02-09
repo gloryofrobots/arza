@@ -1,6 +1,6 @@
 from obin.types import api, space
 from obin.types.root import W_Any, W_Callable
-from obin.utils.misc import is_absent_index
+from obin.tools.misc import is_absent_index
 from obin.runtime import error
 
 
@@ -149,5 +149,5 @@ class W_Env(W_Any):
         assert space.issymbol(n)
         return api.at(self.data, n)
 
-    def _tostring_(self):
-        return self.data._tostring_()
+    def _to_string_(self):
+        return self.data._to_string_()

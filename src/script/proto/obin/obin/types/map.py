@@ -1,6 +1,6 @@
 from obin.types import api, space
 from obin.types.root import W_Any
-from obin.utils.misc import is_absent_index, absent_index
+from obin.tools.misc import is_absent_index, absent_index
 from obin.runtime import error
 
 # from rpython.rlib.objectmodel import specialize, enforceargs, always_inline
@@ -130,7 +130,7 @@ class Bindings:
         #
         # Based on:
         # http://svn.python.org/view/python/trunk/Objects/dictobject.c?view=markup
-        j = perturb = api.n_hash(key)
+        j = perturb = api.hash_i(key)
         for _ in range(size):
             j %= size
             yield j
@@ -183,7 +183,7 @@ class TableIterator(W_Any):
 
             return key
 
-    def _tostring_(self):
+    def _to_string_(self):
         return "<TableIterator %d:%d>" % (self.index, self.source_length)
 
 
@@ -204,7 +204,7 @@ class W_Map(W_Any):
 
         return m
 
-    def _tostring_(self):
+    def _to_string_(self):
         from obin.types import api
         res = []
         for k, i in self.slot_bindings.items():

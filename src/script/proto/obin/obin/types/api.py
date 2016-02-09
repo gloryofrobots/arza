@@ -7,22 +7,22 @@ type conversions
 """
 
 
-def tostring(obj):
-    s = obj._tostring_()
+def to_string(obj):
+    s = obj._to_string_()
     assert isinstance(s, str)
     return space.newstring(unicode(s))
 
 
-def tointeger(obj):
-    return space.newint(obj._tointeger_())
+def to_integer(obj):
+    return space.newint(obj._to_integer_())
 
 
-def tofloat(obj):
-    return space.newfloat(obj._tofloat_())
+def to_float(obj):
+    return space.newfloat(obj._to_float_())
 
 
-def tobool(obj):
-    return space.newbool(obj._tobool_())
+def to_bool(obj):
+    return space.newbool(obj._to_bool_())
 
 
 """
@@ -33,25 +33,25 @@ PYTHON TYPES
 # TODO REMOVE UNNECESSARRY ASSERTS OR REPLACE THEM WITH DEBUG MODE
 
 def to_u(obj):
-    return unicode(obj._tostring_())
+    return unicode(obj._to_string_())
 
 
 def to_i(obj):
-    return obj._tointeger_()
+    return obj._to_integer_()
 
 
 def to_f(obj):
-    return obj._tofloat_()
+    return obj._to_float_()
 
 
 def to_s(obj):
-    s = obj._tostring_()
+    s = obj._to_string_()
     assert isinstance(s, str)
     return s
 
 
 def to_b(obj):
-    return obj._tobool_()
+    return obj._to_bool_()
 
 
 """
@@ -90,26 +90,26 @@ def slice(obj, start, end):
 
 
 def is_empty(obj):
-    return space.newbool(n_is_empty(obj))
+    return space.newbool(is_empty_b(obj))
 
 
-def n_is_empty(obj):
+def is_empty_b(obj):
     return obj._length_() == 0
 
 
-def n_contains_index(obj, i):
+def contains_index_b(obj, i):
     assert space.isint(i)
 
-    l = n_length(obj)
+    l = length_i(obj)
     if i > 0 and i < l:
         return True
     return False
 
 
 def contains(obj, k):
-    return space.newbool(n_contains(obj, k))
+    return space.newbool(contains_b(obj, k))
 
-def n_contains(obj, k):
+def contains_b(obj, k):
     assert not space.isnil(k)
     v = obj._contains_(k)
     assert isinstance(v, bool)
@@ -138,10 +138,10 @@ def put_at_index(obj, i, v):
 
 
 def length(obj):
-    return space.newint(n_length(obj))
+    return space.newint(length_i(obj))
 
 
-def n_length(obj):
+def length_i(obj):
     return obj._length_()
 
 
@@ -200,7 +200,7 @@ basic
 """
 
 
-def n_hash(obj):
+def hash_i(obj):
     return obj._hash_()
 
 

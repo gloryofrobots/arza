@@ -10,13 +10,13 @@ class W_Float(W_Number):
         self.float_value = value
 
     def _hash_(self):
-        from obin.utils.misc import ohash
-        return ohash(self.float_value)
+        from obin.tools.misc import obin_hash
+        return obin_hash(self.float_value)
 
-    def _tointeger_(self):
+    def _to_integer_(self):
         return int(self.float_value)
 
-    def _tofloat_(self):
+    def _to_float_(self):
         return self.float_value
 
     def _equal_(self, other):
@@ -35,7 +35,7 @@ class W_Float(W_Number):
         else:
             return 0
 
-    def _tostring_(self):
+    def _to_string_(self):
         return str(self.float_value)
 
     def _behavior_(self, process):

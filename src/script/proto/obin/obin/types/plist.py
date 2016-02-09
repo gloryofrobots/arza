@@ -36,7 +36,7 @@ class W_PList(W_Any):
             cur = cur.tail
         return str(els)
 
-    def _tostring_(self):
+    def _to_string_(self):
         from obin.types import api
         els = []
         cur = self
@@ -46,6 +46,9 @@ class W_PList(W_Any):
             els.append(api.to_s(head(cur)))
             cur = cur.tail
         return "[%s]" % (", ".join(els))
+
+    def _to_sequence_(self):
+        return self
 
     def _length_(self):
         return length(self)
@@ -111,6 +114,7 @@ class W_PList(W_Any):
         if isempty(other) and isempty(self):
             return True
         return equal(self, other)
+
 
     def to_l(self):
         return [i for i in self]
@@ -456,7 +460,7 @@ def reverse(pl):
 def _hash(acc, el):
     from obin.types import api
     from rpython.rlib.rarithmetic import intmask
-    y = api.n_hash(el)
+    y = api.hash_i(el)
     return intmask((1000003 * acc) ^ y)
 
 

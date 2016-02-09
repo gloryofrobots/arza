@@ -1,5 +1,5 @@
 from obin.types import space
-from obin.utils.misc import absent_index, is_absent_index
+from obin.tools.misc import absent_index, is_absent_index
 from obin.types import api
 
 

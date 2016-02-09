@@ -5,7 +5,7 @@ from obin.types import api, space, plist, environment
 from rpython.rlib.rstring import UnicodeBuilder
 from obin.runistr import encode_unicode_utf8
 from rpython.rlib.objectmodel import compute_unique_id
-from obin.utils import fs
+from obin.tools import fs
 from obin.compile import compiler
 
 def setup(process, module, stdlib):

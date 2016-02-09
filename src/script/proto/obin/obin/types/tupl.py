@@ -59,7 +59,7 @@ class W_Tuple(W_Hashable):
         from rpython.rlib.rarithmetic import intmask
         x = 0x345678
         for item in self.elements:
-            y = api.n_hash(item)
+            y = api.hash_i(item)
             x = intmask((1000003 * x) ^ y)
         return x
 
@@ -135,8 +135,8 @@ class W_Tuple(W_Hashable):
 
         return True
 
-    def _tostring_(self):
-        repr = ", ".join([v._tostring_() for v in self.elements])
+    def _to_string_(self):
+        repr = ", ".join([v._to_string_() for v in self.elements])
 
         if self._length_() == 1:
             return "(%s,)" % repr

@@ -40,7 +40,7 @@ def is_list_node(node):
 
 
 def is_ast_node(node):
-    return space.istuple(node) and api.n_length(node) == 4
+    return space.istuple(node) and api.length_i(node) == 4
 
 
 def is_node(node):
@@ -115,7 +115,7 @@ def node_token_type(node):
 
 
 def node_arity(node):
-    return api.n_length(node_children(node))
+    return api.length_i(node_children(node))
 
 
 def node_getchild(node, index):

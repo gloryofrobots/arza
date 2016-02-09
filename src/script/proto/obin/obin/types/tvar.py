@@ -9,7 +9,7 @@ class W_TVar(W_Any):
     def __init__(self, value):
         self.value = value
 
-    def _tostring_(self):
+    def _to_string_(self):
         return "TVar(%s)" % api.to_s(self.value)
 
     def _behavior_(self, process):

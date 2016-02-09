@@ -14,7 +14,7 @@ class W_Scope(W_Any):
         self.literals = literals
         self.is_variadic = is_varargs
         self.count_refs = len(self.references)
-        self.count_vars = api.n_length(self.variables)
+        self.count_vars = api.length_i(self.variables)
 
     def create_env_bindings(self):
         return api.clone(self.variables)

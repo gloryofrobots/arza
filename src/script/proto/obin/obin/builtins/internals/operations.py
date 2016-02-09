@@ -219,7 +219,7 @@ def in_w(process, left, right):
 
 
 def notin_w(process, left, right):
-    return space.newbool(not api.n_contains(right, left))
+    return space.newbool(not api.contains_b(right, left))
 
 
 def bitand_i_i(process, op1_w, op2_w):
@@ -307,7 +307,7 @@ def is_w(process, op1, op2):
 
 
 def str_w(process, op1):
-    return api.tostring(op1)
+    return api.to_string(op1)
 
 
 def len_w(process, op1):

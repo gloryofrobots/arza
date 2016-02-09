@@ -11,10 +11,10 @@ class W_Integer(W_ValueType):
     def _hash_(self):
         return self.int_value
 
-    def _tointeger_(self):
+    def _to_integer_(self):
         return self.int_value
 
-    def _tofloat_(self):
+    def _to_float_(self):
         return float(self.int_value)
 
     def _equal_(self, other):
@@ -33,7 +33,7 @@ class W_Integer(W_ValueType):
         else:
             return 0
 
-    def _tostring_(self):
+    def _to_string_(self):
         return str(self.int_value)
 
     def _behavior_(self, process):

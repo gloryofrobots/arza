@@ -9,7 +9,7 @@ class W_FunctionSource(W_Any):
         self.name = name
         self.code = code
 
-    def _tostring_(self):
+    def _to_string_(self):
         return "<funcsource %s>" % (api.to_s(self.name))
 
 class W_Function(W_Callable):
@@ -23,7 +23,7 @@ class W_Function(W_Callable):
         self.is_variadic = scope_info.is_variadic
         self.scope = scope
 
-    def _tostring_(self):
+    def _to_string_(self):
         # params = ",".join([api.to_native_string(p) for p in self.bytecode.scope.arguments])
         # return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
         return "<func %s/%d>" % (api.to_s(self.name) ,self.arity)

@@ -55,7 +55,7 @@ def isfloat(w):
 
 @specialize.argtype(0)
 def newnumber(value):
-    from obin.utils import misc
+    from obin.tools import misc
     if isinstance(value, float):
          return newfloat(value)
     try:

@@ -10,7 +10,7 @@ class W_Entity(W_Any):
         self.source = source
         self.behavior = behavior
 
-    def _tostring_(self):
+    def _to_string_(self):
         return api.to_s(self.source)
 
     # BEHAVIOR
@@ -35,14 +35,14 @@ class W_Entity(W_Any):
     def _remove_at_(self, key):
         self.source._remove_at_(key)
 
-    def _tobool_(self):
-        return self.source._tobool_()
+    def _to_bool_(self):
+        return self.source._to_bool_()
 
-    def _tointeger_(self):
-        return self.source._tointeger_()
+    def _to_integer_(self):
+        return self.source._to_integer_()
 
-    def _tofloat_(self):
-        return self.source._tofloat_()
+    def _to_float_(self):
+        return self.source._to_float_()
 
     def _equal_(self, other):
         return self.source._equal_(other)

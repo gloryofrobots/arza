@@ -11,7 +11,7 @@ class W_Behavior(W_Hashable):
         assert islist(traits)
         self.traits = traits
 
-    def _tostring_(self):
+    def _to_string_(self):
         return "<Behavior %s>" % (api.to_s(self.traits))
 
     def _behavior_(self, process):
