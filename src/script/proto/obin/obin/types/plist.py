@@ -459,9 +459,9 @@ def reverse(pl):
 
 def _hash(acc, el):
     from obin.types import api
-    from rpython.rlib.rarithmetic import intmask
+    from obin.misc.platform import rarithmetic
     y = api.hash_i(el)
-    return intmask((1000003 * acc) ^ y)
+    return rarithmetic.intmask((1000003 * acc) ^ y)
 
 
 def compute_hash(pl):

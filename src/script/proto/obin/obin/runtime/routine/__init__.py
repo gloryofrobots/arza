@@ -1,4 +1,4 @@
-from rpython.rlib import jit
+from obin.misc.platform import jit
 from obin.types.space import isany
 from obin.runtime import error
 from obin.runtime.routine.code_routine import CodeRoutine

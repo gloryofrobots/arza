@@ -1,5 +1,4 @@
-from rpython.rlib.objectmodel import specialize, enforceargs
-from rpython.rlib import jit
+from obin.misc.platform import jit, specialize, enforceargs
 from obin.types.boolean import W_True, W_False
 from obin.types.nil import W_Nil
 from obin.types.root import W_UniqueType
@@ -55,11 +54,11 @@ def isfloat(w):
 
 @specialize.argtype(0)
 def newnumber(value):
-    from obin.misc import platform
+    from obin.misc.platform import rarithmetic
     if isinstance(value, float):
          return newfloat(value)
     try:
-        return newint(platform.ovfcheck(value))
+        return newint(rarithmetic.ovfcheck(value))
     except OverflowError:
         return newfloat(float(value))
 

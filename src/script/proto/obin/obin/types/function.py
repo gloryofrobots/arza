@@ -1,7 +1,7 @@
 from obin.types.root import W_Callable, W_Any
 from obin.runtime.error import *
 from obin.types import api
-from rpython.rlib import jit
+from obin.misc.platform import jit
 
 
 class W_FunctionSource(W_Any):

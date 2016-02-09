@@ -1,5 +1,5 @@
 __author__ = 'gloryofrobots'
-from rpython.rlib import jit
+from obin.misc.platform import jit
 from obin.types.space import newnil, newtuple
 from obin.types import plist
 from obin.runtime import error

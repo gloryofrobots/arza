@@ -26,7 +26,7 @@ def _dict_hash(obj1):
 
 
 def group_dict():
-    from rpython.rlib.objectmodel import r_dict
+    from obin.misc.platform import r_dict
     return r_dict(_dict_key, _dict_hash)
 
 

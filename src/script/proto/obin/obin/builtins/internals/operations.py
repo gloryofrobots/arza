@@ -1,7 +1,6 @@
 import math
 from obin.types import api, space
-from rpython.rlib.rarithmetic import ovfcheck, intmask
-from rpython.rlib.rfloat import NAN, INFINITY, isnan, isinf
+from obin.misc.platform import rarithmetic, rfloat
 from obin.runtime import error
 
 # 15.7.3.2
@@ -11,13 +10,13 @@ w_MAX_VALUE = space.newnumber(1.7976931348623157e308)
 w_MIN_VALUE = space.newnumber(5e-320)
 
 # 15.7.3.4
-w_NAN = space.newnumber(NAN)
+w_NAN = space.newnumber(rfloat.NAN)
 
 # 15.7.3.5
-w_POSITIVE_INFINITY = space.newnumber(INFINITY)
+w_POSITIVE_INFINITY = space.newnumber(rfloat.INFINITY)
 
 # 15.7.3.6
-w_NEGATIVE_INFINITY = space.newnumber(-INFINITY)
+w_NEGATIVE_INFINITY = space.newnumber(-rfloat.INFINITY)
 
 
 def add_s_s(process, l, r):
@@ -30,7 +29,7 @@ def add_i_i(process, l, r):
     ileft = api.to_i(l)
     iright = api.to_i(r)
     try:
-        return space.newint(ovfcheck(ileft + iright))
+        return space.newint(rarithmetic.ovfcheck(ileft + iright))
     except OverflowError:
         return space.newfloat(float(ileft) + float(iright))
 
@@ -55,7 +54,7 @@ def sub_i_i(process, nleft, nright):
     ileft = api.to_i(nleft)
     iright = api.to_i(nright)
     try:
-        return space.newint(ovfcheck(ileft - iright))
+        return space.newint(rarithmetic.ovfcheck(ileft - iright))
     except OverflowError:
         return space.newfloat(float(ileft) - float(iright))
 
@@ -82,7 +81,7 @@ def mult_i_i(process, nleft, nright):
     ileft = api.to_i(nleft)
     iright = api.to_i(nright)
     try:
-        return space.newint(ovfcheck(ileft * iright))
+        return space.newint(rarithmetic.ovfcheck(ileft * iright))
     except OverflowError:
         return space.newfloat(float(ileft) * float(iright))
 
@@ -97,7 +96,7 @@ def div_i_i(process, nleft, nright):
     ileft = api.to_i(nleft)
     iright = api.to_i(nright)
     try:
-        z = ovfcheck(ileft // iright)
+        z = rarithmetic.ovfcheck(ileft // iright)
     except ZeroDivisionError:
         return error.throw_2(error.Errors.ZERO_DIVISION, nleft, nright)
     except OverflowError:
@@ -111,13 +110,13 @@ def div_f_f(process, nleft, nright):
     fleft = api.to_f(nleft)
     fright = api.to_f(nright)
 
-    if isnan(fleft) or isnan(fright):
+    if rfloat.isnan(fleft) or rfloat.isnan(fright):
         return w_NAN
 
-    if isinf(fleft) and isinf(fright):
+    if rfloat.isinf(fleft) and rfloat.isinf(fright):
         return w_NAN
 
-    if isinf(fright):
+    if rfloat.isinf(fright):
         return space.newfloat(0.0)
 
     try:
@@ -139,13 +138,13 @@ def mod_f_f(process, nleft, nright):
     fleft = api.to_f(nleft)
     fright = api.to_f(nright)
 
-    if isnan(fleft) or isnan(fright):
+    if rfloat.isnan(fleft) or rfloat.isnan(fright):
         return w_NAN
 
-    if isinf(fright) or fright == 0:
+    if rfloat.isinf(fright) or fright == 0:
         return w_NAN
 
-    if isinf(fright):
+    if rfloat.isinf(fright):
         return nleft
 
     if fleft == 0:
@@ -249,7 +248,7 @@ def ursh_i_i(process, lval, rval):
     lnum = api.to_i(lval)
     rnum = api.to_i(rval)
 
-    # from rpython.rlib.rarithmetic import ovfcheck_float_to_int
+    # from obin.misc.platform.rarithmetic import ovfcheck_float_to_int
 
     shift_count = rnum & 0x1F
     res = lnum >> shift_count
@@ -260,7 +259,7 @@ def rsh_i_i(process, lval, rval):
     lnum = api.to_i(lval)
     rnum = api.to_i(rval)
 
-    # from rpython.rlib.rarithmetic import ovfcheck_float_to_int
+    # from obin.misc.platform.rarithmetic import ovfcheck_float_to_int
 
     # shift_count = rnum & 0x1F
     # res = lnum >> shift_count
@@ -273,7 +272,7 @@ def lsh_i_i(process, lval, rval):
     rnum = api.to_i(rval)
 
     res = lnum << rnum
-    # shift_count = intmask(rnum & 0x1F)
+    # shift_count = rarithmetic.intmask(rnum & 0x1F)
     # res = lnum << shift_count
 
     return space.newnumber(res)

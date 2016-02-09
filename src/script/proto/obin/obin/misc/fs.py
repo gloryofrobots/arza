@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
 import os
-# from rpython.rlib import rpath as path
+# from .rlib import rpath as path
 from os import path
 import shutil
 import distutils.dir_util
@@ -109,8 +109,8 @@ def is_file(p):
 
 
 def load_file_content(filename):
-    from rpython.rlib.streamio import open_file_as_stream
-    f = open_file_as_stream(str(filename))
+    from obin.misc.platform import streamio
+    f = streamio.open_file_as_stream(str(filename))
     src = f.readall()
     return src
 

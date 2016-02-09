@@ -1,10 +1,7 @@
 __author__ = 'gloryofrobots'
 from obin.compile.parse.token_type import *
 from obin.types import space, api
-# import rpython.rlib.rsre.rsre_re as re
-
-
-import re
+from obin.misc.platform import re
 
 
 def keyword(literal):

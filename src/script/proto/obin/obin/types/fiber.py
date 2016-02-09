@@ -1,8 +1,7 @@
 from root import W_Callable
 from obin.runtime import error
 from obin.types import api, space
-from rpython.rlib import jit
-
+from obin.misc.platform import jit
 
 class W_Fiber(W_Callable):
     def __init__(self, fiber):

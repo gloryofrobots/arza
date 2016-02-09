@@ -2,7 +2,16 @@ from rpython.rlib.objectmodel import (specialize, enforceargs,
                                       compute_unique_id, compute_identity_hash,
                                       always_inline)
 from rpython.rlib.rrandom import Random
-from rpython.rlib.rarithmetic import ovfcheck, intmask
+from rpython.rlib import rarithmetic, runicode, rstring, rfloat
+from rpython.jit.codewriter.policy import JitPolicy
+from rpython.rlib import jit
+from rpython.rlib import streamio
+from rpython.rlib.objectmodel import r_dict
+
+
+import re
+# import rpython.rlib.rsre.rsre_re as re
+
 
 r = Random()
 

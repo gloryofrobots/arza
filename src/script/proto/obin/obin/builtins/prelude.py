@@ -2,9 +2,9 @@
 from obin.runtime.routine import complete_native_routine
 from obin.runtime import error
 from obin.types import api, space, plist, environment
-from rpython.rlib.rstring import UnicodeBuilder
+
 from obin.runistr import encode_unicode_utf8
-from rpython.rlib.objectmodel import compute_unique_id
+from obin.misc.platform import rstring, compute_unique_id
 from obin.misc import fs
 from obin.compile import compiler
 
@@ -61,7 +61,7 @@ def _print(process, routine):
     if len(args) == 0:
         return space.newnil()
 
-    builder = UnicodeBuilder()
+    builder = rstring.UnicodeBuilder()
     for arg in args[:-1]:
         builder.append(api.to_u(arg))
         builder.append(u' ')

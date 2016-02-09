@@ -1,4 +1,4 @@
-from rpython.rlib import jit
+from obin.misc.platform import jit
 from obin.compile.code.opcode import *
 from obin.misc.strutil import get_line
 

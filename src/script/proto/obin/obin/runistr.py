@@ -1,5 +1,4 @@
-from rpython.rlib.objectmodel import enforceargs
-from rpython.rlib import runicode
+from obin.misc.platform import (runicode, rarithmetic, enforceargs, rstring)
 
 @enforceargs(str)
 def decode_str_utf8(string):
@@ -35,12 +34,11 @@ def unicode_unescape(string):
     errorhandler = unescape_errorhandler
     errors = 'strict'
 
-    from rpython.rlib.rstring import UnicodeBuilder
 
     if size == 0:
         return u''
 
-    builder = UnicodeBuilder(size)
+    builder = rstring.UnicodeBuilder(size)
     pos = 0
     while pos < size:
         ch = s[pos]
@@ -117,8 +115,6 @@ hexdigits = "0123456789ABCDEFabcdef"
 
 
 def hexescape(builder, s, pos, digits, encoding, errorhandler, message, errors):
-    from rpython.rlib.rarithmetic import r_uint
-    from rpython.rlib.runicode import MAXUNICODE, UNICHR
 
     chr = 0
     if pos + digits > len(s):
@@ -127,7 +123,7 @@ def hexescape(builder, s, pos, digits, encoding, errorhandler, message, errors):
         builder.append(res)
     else:
         try:
-            chr = r_uint(int(str(s[pos:pos + digits]), 16))
+            chr = rarithmetic.r_uint(int(str(s[pos:pos + digits]), 16))
         except ValueError:
             endinpos = pos
             while s[endinpos] in hexdigits:
@@ -136,8 +132,8 @@ def hexescape(builder, s, pos, digits, encoding, errorhandler, message, errors):
             builder.append(res)
         else:
             # when we get here, chr is a 32-bit unicode character
-            if chr <= MAXUNICODE:
-                builder.append(UNICHR(chr))
+            if chr <= runicode.MAXUNICODE:
+                builder.append(runicode.UNICHR(chr))
                 pos += digits
 
             elif chr <= 0x10ffff:

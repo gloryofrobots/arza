@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-from rpython.rlib.objectmodel import enforceargs
+from obin.misc.platform import enforceargs
 
 
 @enforceargs(unicode)
@@ -49,7 +49,7 @@ def target(driver, args):
 
 
 def jitpolicy(driver):
-    from rpython.jit.codewriter.policy import JitPolicy
+    from obin.misc.platform import JitPolicy
     return JitPolicy()
 
 

@@ -1,8 +1,5 @@
-from obin.runtime.routine import complete_native_routine
 from obin.types import api
 from obin.types import space
-from rpython.rlib.rstring import UnicodeBuilder
-from obin.runistr import encode_unicode_utf8
 
 
 def setup(process, module, stdlib):

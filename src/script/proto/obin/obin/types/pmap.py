@@ -1,10 +1,9 @@
-from rpython.rlib.rarithmetic import r_int, r_uint, intmask
-import rpython.rlib.jit as jit
+from obin.misc.platform import jit, rarithmetic
 from obin.types.root import W_UniqueType, W_Any
 from obin.types import api, space, plist
 from obin.runtime import error
 
-MASK_32 = r_uint(0xFFFFFFFF)
+MASK_32 = rarithmetic.r_uint(0xFFFFFFFF)
 
 NOT_FOUND = W_UniqueType()
 
@@ -65,7 +64,7 @@ class W_PMap(W_Any):
         added_leaf = Box()
 
         new_root = (BitmapIndexedNode_EMPTY if self._root is None else self._root) \
-            .assoc_inode(r_uint(0), _hash(key), key, val, added_leaf)
+            .assoc_inode(rarithmetic.r_uint(0), _hash(key), key, val, added_leaf)
 
         if new_root is self._root:
             return self
@@ -85,7 +84,7 @@ class W_PMap(W_Any):
         if self._root is None:
             return space.newnil()
 
-        return self._root.find(r_uint(0), _hash(key), key)
+        return self._root.find(rarithmetic.r_uint(0), _hash(key), key)
 
     def _delete_(self, key):
         if self._root is None:
@@ -257,7 +256,7 @@ class BitmapIndexedNode(INode):
         return self
 
 
-BitmapIndexedNode_EMPTY = BitmapIndexedNode(None, r_uint(0), [])
+BitmapIndexedNode_EMPTY = BitmapIndexedNode(None, rarithmetic.r_uint(0), [])
 
 
 class ArrayNode(INode):
@@ -289,7 +288,7 @@ class ArrayNode(INode):
         return ArrayNode(None, self._cnt, clone_and_set(self._array, idx, n))
 
     def without_inode(self, shift, hash_val, key):
-        idx = r_uint(mask(hash_val, shift))
+        idx = rarithmetic.r_uint(mask(hash_val, shift))
         node = self._array[idx]
         if node is None:
             return self
@@ -305,23 +304,23 @@ class ArrayNode(INode):
 
     def pack(self, idx):
         new_array = [None] * (2 * (self._cnt - 1))
-        j = r_uint(1)
-        bitmap = r_uint(0)
+        j = rarithmetic.r_uint(1)
+        bitmap = rarithmetic.r_uint(0)
 
-        i = r_uint(0)
+        i = rarithmetic.r_uint(0)
         while i < idx:
             if self._array[i] is not None:
                 new_array[j] = self._array[i]
-                bitmap |= r_uint(1) << i
+                bitmap |= rarithmetic.r_uint(1) << i
                 j += 2
 
             i += 1
 
-        i = r_uint(idx) + 1
+        i = rarithmetic.r_uint(idx) + 1
         while i < len(self._array):
             if self._array[i] is not None:
                 new_array[j] = self._array[i]
-                bitmap |= r_uint(1) << i
+                bitmap |= rarithmetic.r_uint(1) << i
                 j += 2
 
             i += 1
@@ -360,7 +359,7 @@ class HashCollisionNode(INode):
             if idx != -1:
                 if self._array[idx + 1] == val:
                     return self;
-                return HashCollisionNode(None, hash_val, clone_and_set(self._array, r_uint(idx + 1), val))
+                return HashCollisionNode(None, hash_val, clone_and_set(self._array, rarithmetic.r_uint(idx + 1), val))
 
             new_array = [None] * (count + 2)
             list_copy(self._array, 0, new_array, 0, count)
@@ -380,14 +379,14 @@ class HashCollisionNode(INode):
         return space.newnil()
 
     def find_index(self, key):
-        i = r_int(0)
+        i = rarithmetic.r_int(0)
         while i < len(self._array):
             if api.n_equal(key, self._array[i]):
                 return i
 
             i += 2
 
-        return r_int(-1)
+        return rarithmetic.r_int(-1)
 
     def without_inode(self, shift, hash, key):
         idx = self.find_index(key)
@@ -397,7 +396,7 @@ class HashCollisionNode(INode):
         if len(self._array) == 1:
             return None
 
-        return HashCollisionNode(None, self._hash, remove_pair(self._array, r_uint(idx) / 2))
+        return HashCollisionNode(None, self._hash, remove_pair(self._array, rarithmetic.r_uint(idx) / 2))
 
 
 def create_node(shift, key1, val1, key2hash, key2, val2):
@@ -410,19 +409,19 @@ def create_node(shift, key1, val1, key2hash, key2, val2):
 
 
 def bit_count(i):
-    assert isinstance(i, r_uint)
-    i = i - ((i >> 1) & r_uint(0x55555555))
-    i = (i & r_uint(0x33333333)) + ((i >> 2) & r_uint(0x33333333))
-    return (((i + (i >> 4) & r_uint(0xF0F0F0F)) * r_uint(0x1010101)) & r_uint(0xffffffff)) >> 24
+    assert isinstance(i, rarithmetic.r_uint)
+    i = i - ((i >> 1) & rarithmetic.r_uint(0x55555555))
+    i = (i & rarithmetic.r_uint(0x33333333)) + ((i >> 2) & rarithmetic.r_uint(0x33333333))
+    return (((i + (i >> 4) & rarithmetic.r_uint(0xF0F0F0F)) * rarithmetic.r_uint(0x1010101)) & rarithmetic.r_uint(0xffffffff)) >> 24
 
 
 @jit.unroll_safe
 def list_copy(from_lst, from_loc, to_list, to_loc, count):
-    from_loc = r_uint(from_loc)
-    to_loc = r_uint(to_loc)
-    count = r_uint(count)
+    from_loc = rarithmetic.r_uint(from_loc)
+    to_loc = rarithmetic.r_uint(to_loc)
+    count = rarithmetic.r_uint(count)
 
-    i = r_uint(0)
+    i = rarithmetic.r_uint(0)
     while i < count:
         to_list[to_loc + i] = from_lst[from_loc + i]
         i += 1
@@ -433,7 +432,7 @@ def list_copy(from_lst, from_loc, to_list, to_loc, count):
 def clone_and_set(array, i, a):
     clone = [None] * len(array)
 
-    idx = r_uint(0)
+    idx = rarithmetic.r_uint(0)
     while idx < len(array):
         clone[idx] = array[idx]
         idx += 1
@@ -446,7 +445,7 @@ def clone_and_set(array, i, a):
 def clone_and_set2(array, i, a, j, b):
     clone = [None] * len(array)
 
-    idx = r_uint(0)
+    idx = rarithmetic.r_uint(0)
     while idx < len(array):
         clone[idx] = array[idx]
         idx += 1
@@ -465,7 +464,7 @@ def remove_pair(array, i):
 
 ### hook into RT
 
-EMPTY = W_PMap(r_uint(0), None)
+EMPTY = W_PMap(rarithmetic.r_uint(0), None)
 
 
 def pmap(args):

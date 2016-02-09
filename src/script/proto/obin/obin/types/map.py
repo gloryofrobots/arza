@@ -3,8 +3,7 @@ from obin.types.root import W_Any
 from obin.misc import platform
 from obin.runtime import error
 
-# from rpython.rlib.objectmodel import specialize, enforceargs, always_inline
-# from rpython.rlib import jit
+# from obin.misc.platform import jit
 
 
 

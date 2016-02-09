@@ -17,17 +17,17 @@ class W_String(W_Hashable):
 
     def _compute_hash_(self):
         """The algorithm behind compute_hash() for a string or a unicode."""
-        from rpython.rlib.rarithmetic import intmask
+        from obin.misc.platform import rarithmetic
         length = len(self.string_value)
         if length == 0:
             return -1
         x = ord(self.string_value[0]) << 7
         i = 0
         while i < length:
-            x = intmask((1000003 * x) ^ ord(self.string_value[i]))
+            x = rarithmetic.intmask((1000003 * x) ^ ord(self.string_value[i]))
             i += 1
         x ^= length
-        return intmask(x)
+        return rarithmetic.intmask(x)
 
     def _compare_(self, other):
         assert isinstance(other, W_String)

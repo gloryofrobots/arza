@@ -56,11 +56,11 @@ class W_Tuple(W_Hashable):
         return W_Tuple(self.elements[start:end])
 
     def _compute_hash_(self):
-        from rpython.rlib.rarithmetic import intmask
+        from obin.misc.platform import rarithmetic
         x = 0x345678
         for item in self.elements:
             y = api.hash_i(item)
-            x = intmask((1000003 * x) ^ y)
+            x = rarithmetic.intmask((1000003 * x) ^ y)
         return x
 
     def _behavior_(self, process):
