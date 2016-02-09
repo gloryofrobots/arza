@@ -1,4 +1,4 @@
-load testit
+load affirm
 trait Animal, Wolf, Bird
 trait Human
 trait Bacteria
@@ -19,30 +19,29 @@ specify `-=-=-=`(self of Human) ->
 end
 
 def test ->
-    {assert_false, assert_true, assert_equal} = testit
 
     bob_alice = Human_New("Bob", "Alice")
     wolf = Wolf_New("Jack")
-    assert_equal(`-=-=-=`(bob_alice), ["I am nice human", "Bob", "Alice"])
-    assert_equal(`-=-=-=`(wolf), ["I am animal", "Jack"])
+    affirm.is_equal(`-=-=-=`(bob_alice), ["I am nice human", "Bob", "Alice"])
+    affirm.is_equal(`-=-=-=`(wolf), ["I am animal", "Jack"])
 
 
-    assert_true(bob_alice kindof Map)
-    assert_false(bob_alice kindof Bacteria)
-    assert_true(bob_alice kindof Human)
-    assert_true(wolf kindof [Wolf, Animal])
-    assert_true(Bacteria kindof Any)
-    assert_true(Bacteria kindof Trait)
-    assert_true(Human kindof Trait)
+    affirm.is_true(bob_alice kindof Map)
+    affirm.is_false(bob_alice kindof Bacteria)
+    affirm.is_true(bob_alice kindof Human)
+    affirm.is_true(wolf kindof [Wolf, Animal])
+    affirm.is_true(Bacteria kindof Any)
+    affirm.is_true(Bacteria kindof Trait)
+    affirm.is_true(Human kindof Trait)
 
     alice = {name = "Alice", age = 42} isa Human
     alice2 = alice isa [Bird, Animal, Bacteria]
     alice3 = alice2 nota Animal
     alice4 = alice2 nota [Bird, Bacteria]
 
-    assert_false(alice2 kindof [Animal, Bird, Animal])
-    assert_true(alice2 kindof [Bird, Animal])
-    assert_false(alice3 kindof Animal)
-    assert_equal(traits(alice3), [Bird, Bacteria, Human, Map, Enumerable, Collection, Any])
-    assert_equal(traits(alice4), [Animal, Human, Map, Enumerable, Collection, Any])
+    affirm.is_false(alice2 kindof [Animal, Bird, Animal])
+    affirm.is_true(alice2 kindof [Bird, Animal])
+    affirm.is_false(alice3 kindof Animal)
+    affirm.is_equal(traits(alice3), [Bird, Bacteria, Human, Map, Enumerable, Collection, Any])
+    affirm.is_equal(traits(alice4), [Animal, Human, Map, Enumerable, Collection, Any])
 end

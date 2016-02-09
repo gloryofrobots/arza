@@ -1,5 +1,5 @@
-def assert_equal_batch(fn, ...calls) ->
-    _batch(assert_equal, fn, calls);
+def is_equal_batch(fn, ...calls) ->
+    _batch(is_equal, fn, calls);
 
 def _batch(checker, fn, calls) ->
     for call in calls
@@ -7,9 +7,9 @@ def _batch(checker, fn, calls) ->
     ;;
 
 def fail(error) ->
-    throw error;
+    throw (:AffirmationError, error);
 
-def assert_not_equal(val1, val2) ->
+def is_not_equal(val1, val2) ->
     if val1 == val2
         fail([val1, "==", val2])
     else
@@ -17,9 +17,9 @@ def assert_not_equal(val1, val2) ->
     ;;
 
 
-def assert_equal
+def is_equal
     case (val1 of Float, val2 of Float) ->
-        assert_equal_float(val1, val2)
+        is_equal_float(val1, val2)
     case (val1, val2) ->
         if val1 != val2
             fail([val1, "!=", val2])
@@ -34,37 +34,37 @@ def _abs(v) ->
         v
     ;;
 
-def assert_equal_float
-    case (val1, val2) -> assert_equal_float(val1, val2, 0.0001)
+def is_equal_float
+    case (val1, val2) -> is_equal_float(val1, val2, 0.0001)
     case (val1, val2, delta) ->
         try
-            assert_true(_abs(val1) - _abs(val2) < delta)
+            is_true(_abs(val1) - _abs(val2) < delta)
         catch e
             fail([val1, "!=", val2])
      ;;
 
-def assert_is(val1, val2) ->
+def is_same(val1, val2) ->
     if val1 isnot val2
         fail([val1, "isnot", val2])
     else
         true
     ;;
 
-def assert_isnot(val1, val2) ->
+def isnot_same(val1, val2) ->
     if val1 is val2
         fail([val1, "is", val2])
     else
         true
     ;;
 
-def assert_true(val1) ->
-    assert_is(val1, true);
+def is_true(val1) ->
+    is_same(val1, true);
 
-def assert_false(val1) ->
-    assert_is(val1, false);
+def is_false(val1) ->
+    is_same(val1, false);
 
 
-def assert_throw(fn, args) ->
+def is_throw(fn, args) ->
     try
         apply(fn, args)
         fail(["exception expected", fn])
@@ -72,5 +72,5 @@ def assert_throw(fn, args) ->
         e
     ;;
 
-def assert_throw_expected(fn, args, exc) ->
-    assert_equal(assert_throw(fn, args), exc);
+def is_throw_expected(fn, args, exc) ->
+    is_equal(is_throw(fn, args), exc);

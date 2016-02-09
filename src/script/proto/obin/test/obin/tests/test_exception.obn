@@ -1,4 +1,4 @@
-load testit
+load affirm
 
 def test ->
     fun error(reason) ->
@@ -10,7 +10,7 @@ def test ->
     end
 
 
-    testit.assert_equal(
+    affirm.is_equal(
         try
             try
                 1/0
@@ -30,7 +30,7 @@ def test ->
 
     //////////////////////////////////////////////////////////////
 
-    testit.assert_equal(
+    affirm.is_equal(
         try
             try
                 1/0
@@ -50,7 +50,7 @@ def test ->
 
     ///////////////////////////////////////////
 
-    testit.assert_equal(
+    affirm.is_equal(
         try
             try
                 1/0
@@ -72,7 +72,7 @@ def test ->
 
     ///////////////////////////////////////////
 
-    testit.assert_equal(
+    affirm.is_equal(
         try
             try
                 1/0
@@ -99,7 +99,7 @@ def test ->
 
     ///////////////////////////////////////////
 
-    testit.assert_throw_expected(
+    affirm.is_throw_expected(
         fun ->
             try
                 try
@@ -129,7 +129,7 @@ def test ->
 
     /////////////////////////////////////////////
 
-    testit.assert_throw_expected(
+    affirm.is_throw_expected(
         fun (arg1, arg2) ->
             try
                 1/0

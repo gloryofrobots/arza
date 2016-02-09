@@ -1,4 +1,4 @@
-load testit
+load affirm
 
 def test ->
     m = {name = "Alice", :surname="Bob",
@@ -9,12 +9,12 @@ def test ->
                 }
              }
      }
-    testit.assert_equal(m.name, "Alice")
-    testit.assert_equal(m[:child][:toy][:model], "SXR 123344:44332")
-    testit.assert_equal(m[:child][:toy][:model], m.child.toy.model)
+    affirm.is_equal(m.name, "Alice")
+    affirm.is_equal(m[:child][:toy][:model], "SXR 123344:44332")
+    affirm.is_equal(m[:child][:toy][:model], m.child.toy.model)
 
-    testit.assert_true(:name in m)
-    testit.assert_true(:surname in m)
-    testit.assert_true(:little_name in m.child)
-    testit.assert_false(:serial in m.child.toy)
+    affirm.is_true(:name in m)
+    affirm.is_true(:surname in m)
+    affirm.is_true(:little_name in m.child)
+    affirm.is_false(:serial in m.child.toy)
 end

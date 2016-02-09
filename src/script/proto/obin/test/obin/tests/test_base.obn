@@ -1,43 +1,43 @@
-load testit
+load affirm
 
 def test() ->
     t1 = (1, "Hello", 35.44555)
-    testit.assert_equal(t1, (1, "Hello", 35.44555))
-    testit.assert_equal(t1[0], 1)
-    testit.assert_equal(t1[1], "Hello")
-    testit.assert_equal(t1[2], 35.44555)
-    testit.assert_equal((1, "Hello", 35.44555)[2], 35.44555)
-    testit.assert_equal((1,2, ["Alice", "Bob", (45,), 54.000000001])[2], ["Alice", "Bob", (45,), 54.000000001])
+    affirm.is_equal(t1, (1, "Hello", 35.44555))
+    affirm.is_equal(t1[0], 1)
+    affirm.is_equal(t1[1], "Hello")
+    affirm.is_equal(t1[2], 35.44555)
+    affirm.is_equal((1, "Hello", 35.44555)[2], 35.44555)
+    affirm.is_equal((1,2, ["Alice", "Bob", (45,), 54.000000001])[2], ["Alice", "Bob", (45,), 54.000000001])
 
-    testit.assert_equal((1,2, ["Alice", "Bob", (45,), 54.000000001])[2], ["Alice", "Bob", (45,), 54.000000001])
+    affirm.is_equal((1,2, ["Alice", "Bob", (45,), 54.000000001])[2], ["Alice", "Bob", (45,), 54.000000001])
 
     m1 = {name= "XXX"}
-    testit.assert_equal({name= "XXX"}.name, "XXX")
-    testit.assert_equal(m1.name, "XXX")
-    testit.assert_not_equal(m1.name, "YYY")
+    affirm.is_equal({name= "XXX"}.name, "XXX")
+    affirm.is_equal(m1.name, "XXX")
+    affirm.is_not_equal(m1.name, "YYY")
 
     t2 = ((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"})
 
-    testit.assert_equal(t2, ((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"}))
-    testit.assert_not_equal(t2, ((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Alice"}))
-    testit.assert_equal(t2, t2)
+    affirm.is_equal(t2, ((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"}))
+    affirm.is_not_equal(t2, ((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Alice"}))
+    affirm.is_equal(t2, t2)
 
 
-    testit.assert_true(true when 5 > 4 else false)
-    testit.assert_false(true when 5 < 4 else false)
-    testit.assert_false(true when 5 == 4 else false)
-    testit.assert_equal(42 * 2 when 13 == 12 else 12 * 2 when 13 == 14 else 1, 1)
+    affirm.is_true(true when 5 > 4 else false)
+    affirm.is_false(true when 5 < 4 else false)
+    affirm.is_false(true when 5 == 4 else false)
+    affirm.is_equal(42 * 2 when 13 == 12 else 12 * 2 when 13 == 14 else 1, 1)
 
 
     a2_4 = :four
     a2 = [0, 1, 2, a2_4]
-    testit.assert_true(:four in a2)
-    testit.assert_true(a2_4 in a2)
+    affirm.is_true(:four in a2)
+    affirm.is_true(a2_4 in a2)
 
-    testit.assert_equal("name", :name)
-    testit.assert_equal(:name, "name")
-    testit.assert_equal(:`++++ ---- <> $$`, "++++ ---- <> $$")
-    testit.assert_equal("++++ ---- <> $$", :`++++ ---- <> $$`)
+    affirm.is_equal("name", :name)
+    affirm.is_equal(:name, "name")
+    affirm.is_equal(:`++++ ---- <> $$`, "++++ ---- <> $$")
+    affirm.is_equal("++++ ---- <> $$", :`++++ ---- <> $$`)
 
 
     x = 12
