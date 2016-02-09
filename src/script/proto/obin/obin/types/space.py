@@ -33,11 +33,9 @@ def isuniquetype(w):
 ########################################################
 
 # TODO CHECK FOR BIGINT OVERFLOW
-@enforceargs(int)
 def newint(i):
     from obin.types.integer import W_Integer
     return W_Integer(i)
-
 
 def isint(w):
     from obin.types.integer import W_Integer
@@ -57,12 +55,13 @@ def isfloat(w):
 
 @specialize.argtype(0)
 def newnumber(value):
-    if isinstance(value, int):
-        return newint(value)
-    elif isinstance(value, float):
-        return newfloat(value)
-
-    assert False, "invalid number type"
+    from obin.utils import misc
+    if isinstance(value, float):
+         return newfloat(value)
+    try:
+        return newint(misc.ovfcheck(value))
+    except OverflowError:
+        return newfloat(float(value))
 
 
 def isnumber(w):

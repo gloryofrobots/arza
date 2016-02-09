@@ -2,6 +2,7 @@ from rpython.rlib.objectmodel import (specialize, enforceargs,
                                       compute_unique_id, compute_identity_hash,
                                       always_inline)
 from rpython.rlib.rrandom import Random
+from rpython.rlib.rarithmetic import ovfcheck, intmask
 
 r = Random()
 

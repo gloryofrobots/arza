@@ -211,8 +211,7 @@ def _prefix_nud(parser, node_type, node):
 
 
 def prefix_nud(parser, node):
-    node_type = __ntype(node)
-    return _prefix_nud(parser, node_type, node)
+    return _prefix_nud(parser, __ntype(node), node)
 
 
 def itself(parser, node):
@@ -221,7 +220,9 @@ def itself(parser, node):
 
 def prefix_colon(parser, node):
     check_token_types(parser, [TT_NAME, TT_BACKTICK])
-    return _prefix_nud(parser, NT_SYMBOL, node)
+    exp = expression(parser, 70)
+    check_node_types(parser, exp, [NT_NAME, NT_SPECIAL_NAME])
+    return node_1(__ntype(node), __ntok(node), exp)
 
 
 def prefix_unary_minus(parser, node):
@@ -431,6 +432,7 @@ def prefix_fun(parser, node):
 
 
 def prefix_try(parser, node):
+    endofexpression(parser)
     trybody = statements(parser, TERM_TRY)
 
     advance_expected(parser, TT_CATCH)

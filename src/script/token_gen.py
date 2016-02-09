@@ -111,6 +111,14 @@ for name,pattern in TOKENS:
 
 """
 ## FOR PYTHON LEXER
+OPS = [t[1] for t in TOKENS]
+OPS = OPS[OPS.index('>>'):]
+print OPS
+raise SystemExit()
+print "# ************************ OBIN TOKENS*****************************"
+for number, token in enumerate(TOKENS):
+    print "%s = %d" % (token[0],number)
+## FOR PYTHON LEXER
 print "# ************************ OBIN TOKENS*****************************"
 for number, token in enumerate(TOKENS):
     print "%s = %d" % (token[0],number)

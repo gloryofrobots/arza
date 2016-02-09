@@ -81,10 +81,10 @@ def create_environment(process, source, parent_env):
     if source.env:
         return source.env
 
-    modulefunc = W_EnvCompileFunction(source.name, source.bytecode, parent_env)
-    process.subprocess(modulefunc, space.newnil())
+    compile_func = W_EnvCompileFunction(source.name, source.bytecode, parent_env)
+    process.subprocess(compile_func, space.newnil())
 
-    source.env = modulefunc.env
+    source.env = compile_func.env
     return source.env
 
 
@@ -109,7 +109,7 @@ class W_EnvSource(W_Any):
 
 
 class W_Env(W_Any):
-    _immutable_fields_ = ['binding_object', 'outer_environment']
+    _immutable_fields_ = ['name', 'parent_env', 'scope', 'literals']
 
     def __init__(self, name, scope, parent_environment):
         assert isinstance(parent_environment, W_Env) or parent_environment is None

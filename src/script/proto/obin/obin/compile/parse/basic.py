@@ -1,4 +1,5 @@
 from obin.compile.parse.token_type import *
+from obin.compile.parse import node_type
 from obin.compile.parse import nodes
 from obin.compile.parse.tokens import token_type_to_str
 from obin.types import space, api
@@ -157,6 +158,12 @@ def check_token_types(parser, types):
                     (unicode([token_type_to_str(type) for type in types]),
                      token_type_to_str(parser.token_type)), parser.node)
 
+def check_node_types(parser, node, types):
+    ntype = nodes.node_type(node)
+    if ntype not in types:
+        parse_error(parser, u"Wrong node type, expected one of %s, got %s" %
+                    (unicode([node_type.node_type_to_str(type) for type in types]),
+                     node_type.node_type_to_str(ntype)), node)
 
 def advance(parser):
     if parser.isend():

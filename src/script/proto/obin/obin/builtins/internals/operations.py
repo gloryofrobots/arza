@@ -100,6 +100,9 @@ def div_i_i(process, nleft, nright):
         z = ovfcheck(ileft // iright)
     except ZeroDivisionError:
         return error.throw_2(error.Errors.ZERO_DIVISION, nleft, nright)
+    except OverflowError:
+        return space.newfloat(float(ileft // iright))
+
     return space.newint(z)
 
 
@@ -188,9 +191,9 @@ def compare_gt_f_f(process, w_x, w_y):
 def compare_gt_n_n(process, x, y):
     if space.isint(x) and space.isint(y):
         return compare_gt_i_i(process, x, y)
-    if space.isfloat(x) and space.isfloat(y):
-        return compare_gt_f_f(process, x, y)
-    assert False
+
+    return compare_gt_f_f(process, x, y)
+
 
 
 def compare_ge_i_i(process, w_x, w_y):
@@ -208,9 +211,7 @@ def compare_ge_f_f(process, w_x, w_y):
 def compare_ge_n_n(process, x, y):
     if space.isint(x) and space.isint(y):
         return compare_ge_i_i(process, x, y)
-    if space.isfloat(x) and space.isfloat(y):
-        return compare_ge_f_f(process, x, y)
-    assert False
+    return compare_ge_f_f(process, x, y)
 
 
 def in_w(process, left, right):
@@ -261,8 +262,9 @@ def rsh_i_i(process, lval, rval):
 
     # from rpython.rlib.rarithmetic import ovfcheck_float_to_int
 
-    shift_count = rnum & 0x1F
-    res = lnum >> shift_count
+    # shift_count = rnum & 0x1F
+    # res = lnum >> shift_count
+    res = lnum >> rnum
     return space.newnumber(res)
 
 
@@ -270,8 +272,9 @@ def lsh_i_i(process, lval, rval):
     lnum = api.to_i(lval)
     rnum = api.to_i(rval)
 
-    shift_count = intmask(rnum & 0x1F)
-    res = lnum << shift_count
+    res = lnum << rnum
+    # shift_count = intmask(rnum & 0x1F)
+    # res = lnum << shift_count
 
     return space.newnumber(res)
 

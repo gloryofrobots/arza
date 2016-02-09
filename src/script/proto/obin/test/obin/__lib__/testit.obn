@@ -9,12 +9,32 @@ def _batch(checker, fn, calls) ->
 def fail(error) ->
     throw error;
 
-def assert_equal(val1, val2) ->
-    if val1 != val2
-        fail([val1, "!=", val2])
+def assert_equal
+    case (val1 of Float, val2 of Float) ->
+        assert_equal_float(val1, val2)
+    case (val1, val2) ->
+        if val1 != val2
+            fail([val1, "!=", val2])
+        else
+            true;
+end
+
+def _abs(v) ->
+    if v < 0
+        -1 * v
     else
-        true
+        v
     ;;
+
+def assert_equal_float
+    case (val1, val2) -> assert_equal_float(val1, val2, 0.0001)
+    case (val1, val2, delta) ->
+        try
+            assert_true(_abs(val1) - _abs(val2) < delta)
+        catch e
+            fail([val1, "!=", val2])
+        end
+end
 
 def assert_is(val1, val2) ->
     if val1 isnot val2

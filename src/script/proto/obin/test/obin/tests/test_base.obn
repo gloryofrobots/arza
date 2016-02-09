@@ -1,19 +1,4 @@
 def test ->
-    fun test_eq(str, val, expected) ->
-        print("test -> ","'" + str + "'", val, val == expected)
-        when val != expected
-            throw "Test error";
-    end
-
-    x = 1
-    test_eq("x = 1", x, 1)
-
-    x = "Hello"
-    test_eq("x = 'Hello'", x, "Hello")
-
-    x = 42.234433444
-    test_eq("x = 42.234433444", x, 42.234433444)
-
     x = (1, "Hello", 35.44555)
     print(x)
     print(x[1])
@@ -58,21 +43,6 @@ def test ->
     print("true when 5 > 4 else false", true when 5 > 4 else false)
     print("x is y", x is y)
     print("x isnot y", x isnot y)
-    print("5 > 5", 5 > 5)
-    print("5 >= 3", 5 >= 3)
-    print("5 < 4", 5 < 4)
-    print("5 <= 3", 5 <= 3)
-    print("x != 6", x != 6)
-    print("x == y", x == y)
-
-    print("11 >> 43", 11 >> 43)
-    print("11 << 10001", 11 << 10001)
-    print("11 >>> 1001001001", 11 >>> 1001001001)
-    print("x + 34", x + 34)
-    print("x - 34", x - 34)
-    print("x * 34", x * 34)
-    print("x / 45", x / 45)
-    print("x % 32", x % 32)
 
 
     x = `+`(1,2)

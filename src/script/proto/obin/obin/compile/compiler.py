@@ -148,7 +148,7 @@ def _compile_FLOAT(process, compiler, code, node):
 
 def _compile_INT(process, compiler, code, node):
     value = int(nodes.node_value(node))
-    idx = _declare_literal(process, compiler, space.newint(value))
+    idx = _declare_literal(process, compiler, space.newnumber(value))
     code.emit_1(LITERAL, idx, info(node))
 
 
