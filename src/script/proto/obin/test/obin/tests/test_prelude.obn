@@ -1,0 +1,8 @@
+def test ->
+    x = `+`(1,2)
+    print(x)
+    x = `+`(1.0,2.0)
+    print(x)
+    x = `+`(1,2.0)
+    print(x)
+end

@@ -1,0 +1,10 @@
+load testit
+
+def test ->
+    a1 = (1,2,:three,4,5,:six)
+    testit.assert_true(:three in a1)
+    testit.assert_true(:six in a1)
+    testit.assert_true(:six in a1)
+    testit.assert_true(:two notin a1)
+    testit.assert_false(:two in a1)
+end

@@ -1,0 +1,9 @@
+load tests.datastructs.test_list
+load tests.datastructs.test_map
+load tests.datastructs.test_tuple
+
+def test() ->
+    test_list.test()
+    test_map.test()
+    test_tuple.test()
+end

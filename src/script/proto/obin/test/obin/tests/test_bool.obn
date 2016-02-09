@@ -1,0 +1,39 @@
+load testit
+
+def test() ->
+    {assert_equal, assert_not_equal, assert_true, assert_false, assert_is, assert_throw} = testit
+
+    assert_equal(false, false)
+    assert_equal(true, true)
+    assert_not_equal(true, false)
+    assert_not_equal(false, true)
+    assert_equal(not false, true)
+    assert_equal(not true, false)
+    assert_true(true and true)
+    assert_false(false and true)
+    assert_false(false and false)
+    assert_false(true and false)
+    assert_true(true or false)
+    assert_true(false or true)
+    assert_false(false or false)
+    assert_is(false, false)
+    assert_is(true, true)
+
+    //only true and false can be used in boolean operators
+    assert_throw(fun -> 1 or 0 end, ())
+    assert_throw(fun -> 1 and 0 end, ())
+    assert_throw(fun -> not 0 end, ())
+    assert_throw(fun -> not {} end, ())
+    assert_throw(fun -> not "" end, ())
+    assert_throw(fun -> not [] end, ())
+    assert_throw(fun -> not () end, ())
+    assert_throw(fun -> not nil end, ())
+    assert_throw(fun -> not 1.2 end, ())
+    assert_throw(fun -> not :symbol end, ())
+
+    x = 0
+    y = 1
+    testit.assert_false(x is y)
+    testit.assert_true(x isnot y)
+end
+
