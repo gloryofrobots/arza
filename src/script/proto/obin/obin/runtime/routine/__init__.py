@@ -55,8 +55,7 @@ def create_function_environment(func, scope, args, outer_env):
         return error.throw_3(error.Errors.INVALID_ARG_COUNT,
                              space.newint(args_count), space.newstring(u"<"), space.newint(declared_args_count))
 
-    slots = scope.create_env_bindings()
-    env = space.newenv(func.name, slots, outer_env)
+    env = space.newenv(func.name, scope, outer_env)
 
     fn_index = scope.fn_name_index
     if fn_index != -1:

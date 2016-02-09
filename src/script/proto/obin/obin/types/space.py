@@ -295,6 +295,18 @@ def istuple(w):
     return isinstance(w, W_Tuple)
 
 
+#########################################################
+
+def newscope(variables, references, literals, arg_count, is_varargs, fn_name_index):
+    from obin.types.scope import W_Scope
+    return W_Scope(variables, references, literals, arg_count, is_varargs, fn_name_index)
+
+
+def isscope(w):
+    from obin.types.scope import W_Scope
+    return isinstance(w, W_Scope)
+
+
 ########################################################
 
 def newenvsource(name, code):
@@ -304,10 +316,14 @@ def newenvsource(name, code):
     return obj
 
 
-def newenv(name, obj, outer_environment):
+def newenv(name, scope, outer_environment):
     from obin.types.environment import W_Env
-    env = W_Env(name, obj, outer_environment)
+    env = W_Env(name, scope, outer_environment)
     return env
+
+
+def newemptyenv(name):
+    return newenv(name, newscope(newmap(), [], [], 0, False, -1), None)
 
 
 def isenv(w):

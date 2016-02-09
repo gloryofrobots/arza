@@ -1,6 +1,5 @@
 from obin.types import api, space
 from obin.types.root import W_Any, W_Callable
-from obin.types.space import isstring
 from obin.utils.misc import is_absent_index
 from obin.runtime import error
 
@@ -9,18 +8,15 @@ class References(object):
     _virtualizable2_ = ['_refs_[*]']
     _settled_ = True
 
-    def __init__(self, env, size):
+    def __init__(self, size):
         self._refs_ = [None] * size
         self._resizable_ = not bool(size)
-        self.env = env
 
     def _resize_refs(self, index):
         if index >= len(self._refs_):
             self._refs_ += ([None] * (1 + index - len(self._refs_)))
 
     def _get_refs(self, index):
-        if index >= len(self._refs_):
-            print "OLOLO"
         assert index < len(self._refs_)
         assert index >= 0
 
@@ -36,26 +32,12 @@ class References(object):
         assert index >= 0
         self._refs_[index] = value
 
-    def store_ref(self, symbol, index, value):
-        ref = self._get_refs(index)
-
-        if ref is not None:
-            ref.put_value(value)
-            return
-
-        ref = self.env.get_reference(symbol)
-        if not ref:
-            return error.throw_1(error.Errors.REFERENCE, symbol)
-
-        ref.put_value(value)
-        self._set_refs(index, ref)
-
-    def get_ref(self, symbol, index):
+    def get_ref(self, env, symbol, index):
         # print "get_ref", symbol, index, self._refs_
         ref = self._get_refs(index)
         # print "ref", ref, ref is None
         if ref is None:
-            ref = self.env.get_reference(symbol)
+            ref = get_reference(env, symbol)
             # print " new ref", ref
             # assert ref is not None
             if not ref:
@@ -79,21 +61,19 @@ class Reference:
         # print "Reference.ref_get_value", self.env, self.index
         return api.at_index(self.env, self.index)
 
-    def put_value(self, value):
-        api.put_at_index(self.env, self.index, value)
 
-
-def get_reference(lex, identifier):
+# lookup ref in  environment
+def get_reference(env, identifier):
     # print "get_reference lex", lex
-    if lex is None:
+    if env is None:
         return None
 
-    index = api.get_index(lex, identifier)
+    index = api.get_index(env, identifier)
     if not is_absent_index(index):
-        ref = Reference(lex, identifier, index)
+        ref = Reference(env, identifier, index)
         return ref
     else:
-        outer = lex.parent_env
+        outer = env.parent_env
         return get_reference(outer, identifier)
 
 
@@ -113,9 +93,7 @@ class W_EnvCompileFunction(W_Callable):
         self.name = name
         self.bytecode = bytecode
         self.parent_env = parent_env
-
-        bindings = self.bytecode.scope.create_env_bindings()
-        self.env = space.newenv(self.name, bindings, parent_env)
+        self.env = space.newenv(self.name, self.bytecode.scope, parent_env)
 
     def _to_routine_(self, stack, args):
         from obin.runtime.routine import create_module_routine
@@ -133,15 +111,23 @@ class W_EnvSource(W_Any):
 class W_Env(W_Any):
     _immutable_fields_ = ['binding_object', 'outer_environment']
 
-    def __init__(self, name, data, parent_environment):
+    def __init__(self, name, scope, parent_environment):
         assert isinstance(parent_environment, W_Env) or parent_environment is None
         self.name = name
         self.parent_env = parent_environment
-        self.data = data
+        self.scope = scope
+        self.data = scope.create_env_bindings()
 
-    def get_reference(self, identifier):
-        # print "Environment.get_reference"
-        return get_reference(self.parent_env, identifier)
+        refs_size = scope.count_refs
+        self.literals = scope.literals
+        if refs_size != 0:
+            self.refs = References(refs_size)
+        else:
+            self.refs = None
+
+    def ref(self, symbol, index):
+        # lookup in self parent environment
+        return self.refs.get_ref(self.parent_env, symbol, index)
 
     def _behavior_(self, process):
         return process.std.behaviors.Environment

@@ -1,37 +1,145 @@
+load testit
+
 def test ->
     fun error(reason) ->
         throw (:error, {reason=reason}) end
 
-    try
-        1/0
-    catch e
-        print("ERROR", e)
-    end
-    try
-        nil
-    catch e
-        print("ERROR", e)
+    fun error2(reason) ->
+        fun ->
+            error(reason) end ()
     end
 
-    x =
-    try
-        print("IN TRY")
-        error(:TestError)
-    catch e
-        print("CATCH")
-        print(e)
-    finally
-        print("Finally")
-        42
-    end
 
-    print(x)
+    testit.assert_equal(
+        try
+            try
+                1/0
+            catch e1
+                throw e1
+            end
+        catch e2
+            try
+                error(:LifeSucks)
+            catch e3
+                //result
+                e3
+            end
+        end
+        ,(:error, {reason=:LifeSucks})
+    )
 
-    try
-        print(asdsadasda)
-    catch e
-        print(e)
-    finally
-        42
-    end
+    //////////////////////////////////////////////////////////////
+
+    testit.assert_equal(
+        try
+            try
+                1/0
+            catch e1
+                //result
+                e1
+            end
+        catch e2
+            try
+                error(:LifeSucks)
+            catch e3
+                e3
+            end
+        end
+        ,(:ZeroDivisionError, (1, 0))
+    )
+
+    ///////////////////////////////////////////
+
+    testit.assert_equal(
+        try
+            try
+                1/0
+            catch e1
+                e1
+            finally
+                //result
+                (:Finally, e1)
+            end
+        catch e2
+            try
+                error(:LifeSucks)
+            catch e3
+                e3
+            end
+        end
+        ,(:Finally, (:ZeroDivisionError, (1, 0)))
+    )
+
+    ///////////////////////////////////////////
+
+    testit.assert_equal(
+        try
+            try
+                1/0
+            catch e1
+                e1
+            finally
+                error2(:Finally)
+            end
+        catch e2
+            try
+                error(:Catch)
+            catch e3
+                42
+            finally
+                //result
+                (e2, e3)
+            end
+        end
+        ,(
+            (:error, {reason=:Finally}),
+            (:error, {reason=:Catch})
+         )
+    )
+
+    ///////////////////////////////////////////
+
+    testit.assert_throw_expected(
+        fun ->
+            try
+                try
+                    1/0
+                catch e1
+                    e1
+                finally
+                    error2(:Finally)
+                end
+            catch e2
+                try
+                    error(:Catch)
+                catch e3
+                    42
+                finally
+                    //uncatched
+                    throw (e2, e3)
+                end
+            end
+         end,
+         (),
+         (
+            (:error, {reason=:Finally}),
+            (:error, {reason=:Catch})
+         )
+    )
+
+    /////////////////////////////////////////////
+
+    testit.assert_throw_expected(
+        fun (arg1, arg2) ->
+            try
+                1/0
+            catch e
+                throw (arg1, arg2)
+            finally
+                throw e
+            end
+        end,
+        (33, 22),
+        (33, 22)
+    )
 end

@@ -23,13 +23,6 @@ class CodeRoutine(BaseRoutine):
 
         self.catches = []
 
-        scope = code.scope
-        refs_size = scope.count_refs
-        self.literals = scope.literals
-        if refs_size != 0:
-            self.refs = environment.References(env, refs_size)
-        else:
-            self.refs = None
 
     def name(self):
         return self._name_
@@ -85,8 +78,7 @@ class CodeRoutine(BaseRoutine):
             arg2 = opcode[2]
             stack = self.stack
             env = self.env
-            literals = self.literals
-            refs = self.refs
+            literals = env.literals
             # print "_execute", opcode
             # print "------ routine ----", api.to_s(self._name_)
             # self._print_stack()
@@ -134,7 +126,7 @@ class CodeRoutine(BaseRoutine):
                 assert arg1 > -1
 
                 name = literals[arg2]
-                value = refs.get_ref(name, arg1)
+                value = env.ref(name, arg1)
                 # check for none value here too
                 # for unbounded clojure vars X = 1 + func() -> 1 + X;
                 if value is None:

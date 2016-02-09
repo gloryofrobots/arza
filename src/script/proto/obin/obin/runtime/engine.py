@@ -6,7 +6,7 @@ from obin.runtime.load import import_module, evaluate_module_file
 
 # TODO MOVE ALL OF IT TO PROCESS
 def initialize(libdirs):
-    core_prelude = space.newenv(space.newstring(u"__core__"), space.newmap(), None)
+    core_prelude = space.newemptyenv(space.newstring(u"__core__"))
     proc_data = process_data.create(libdirs, core_prelude)
     process = Process(proc_data)
     setup_builtins(process, core_prelude)

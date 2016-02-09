@@ -5,7 +5,7 @@ from obin.compile.parse import nodes
 from obin.compile.parse.nodes import (node_type, node_arity,
                                       node_first, node_second, node_third, node_children)
 from obin.compile.parse.node_type import *
-from obin.compile.scope import Scope
+from obin.compile.compile_scope import Scope
 from obin.types import space, api, plist
 from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
@@ -58,35 +58,35 @@ def _enter_scope(process, compiler):
 
 def _is_modifiable_binding(process, compiler, name):
     scope = _current_scope(process, compiler)
-    if not is_absent_index(scope.get_local_index(name)):
+    if not is_absent_index(scope.get_scope_local_index(name)):
         return True
 
     return False
 
 
 def _declare_arguments(process, compiler, args_count, varargs):
-    _current_scope(process, compiler).declare_arguments(args_count, varargs)
+    _current_scope(process, compiler).declare_scope_arguments(args_count, varargs)
 
 
 def _declare_function_name(process, compiler, name):
-    _current_scope(process, compiler).add_function_name(name)
+    _current_scope(process, compiler).add_scope_function_name(name)
 
 
 def _declare_reference(process, compiler, symbol):
     assert space.issymbol(symbol)
     scope = _current_scope(process, compiler)
-    idx = scope.get_reference(symbol)
+    idx = scope.get_scope_reference(symbol)
     if is_absent_index(idx):
-        idx = scope.add_reference(symbol)
+        idx = scope.add_scope_reference(symbol)
     return idx
 
 
 def _declare_literal(process, compiler, literal):
     assert space.isany(literal)
     scope = _current_scope(process, compiler)
-    idx = scope.get_literal(literal)
+    idx = scope.get_scope_literal(literal)
     if is_absent_index(idx):
-        idx = scope.add_literal(literal)
+        idx = scope.add_scope_literal(literal)
     return idx
 
 
@@ -94,11 +94,11 @@ def _declare_local(process, compiler, symbol):
     assert space.issymbol(symbol)
     assert not api.isempty(symbol)
     scope = _current_scope(process, compiler)
-    idx = scope.get_local_index(symbol)
+    idx = scope.get_scope_local_index(symbol)
     if not is_absent_index(idx):
         return idx
 
-    idx = scope.add_local(symbol)
+    idx = scope.add_scope_local(symbol)
     assert not is_absent_index(idx)
     return idx
 
@@ -109,7 +109,7 @@ def _get_variable_index(process, compiler, name):
     """
     scope_id = 0
     for scope in reversed(compiler.scopes):
-        idx = scope.get_local_index(name)
+        idx = scope.get_scope_local_index(name)
         if not is_absent_index(idx):
             if scope_id == 0:
                 return idx, True

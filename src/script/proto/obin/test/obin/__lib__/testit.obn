@@ -36,13 +36,8 @@ def assert_throw(fn, args) ->
         apply(fn, args)
         fail(["exception expected", fn])
     catch e
-        true
+        e
     ;;
 
 def assert_throw_expected(fn, args, exc) ->
-    try
-        apply(fn, args)
-        fail(["exception expected", fn])
-    catch e
-        return assert_equal(e, exc)
-    ;;
+    assert_equal(assert_throw(fn, args), exc);

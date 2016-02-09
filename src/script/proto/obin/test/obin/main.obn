@@ -12,15 +12,14 @@ load tests.test_trait
 
 
 def main() ->
-//    {assert_equal, assert_equal_batch} = testit
-//    test_base.test()
-//    test_co.test()
+    test_base.test()
+    test_co.test()
     test_destruct.test()
-//    test_exception.test()
-//    test_def.test()
-//    test_generic.test()
-//    test_match.test()
-//    test_modify.test()
-//    test_module.test()
-//    test_trait.test()
+    test_exception.test()
+    test_def.test()
+    test_generic.test()
+    test_match.test()
+    test_modify.test()
+    test_module.test()
+    test_trait.test()
 ;
