@@ -1,16 +1,21 @@
+load testit
+
 def test ->
-    x = (1, "Hello", 35.44555)
-    print(x)
-    print(x[1])
+    t1 = (1, "Hello", 35.44555)
+    testit.assert_equal(t1, (1, "Hello", 35.44555))
+    testit.assert_equal(t1[0], 1)
+    testit.assert_equal(t1[1], "Hello")
+    testit.assert_equal(t1[2], 35.44555)
+    testit.assert_equal((1, "Hello", 35.44555)[2], 35.44555)
+    testit.assert_equal((1,2, ["Alice", "Bob", (45,), 54.000000001])[2], ["Alice", "Bob", (45,), 54.000000001])
 
-    x = (42,)
-    print(x)
+    testit.assert_equal((1,2, ["Alice", "Bob", (45,), 54.000000001])[2], ["Alice", "Bob", (45,), 54.000000001])
 
-    x = (1,2, ["Alice", "Bob", (45,), 54.000000001])
-    print(x)
+    m1 = {name= "XXX"}
+    testit.assert_equal({name= "XXX"}.name, "XXX")
+    testit.assert_equal(m1.name, "XXX")
+    testit.assert_not_equal(m1.name, "YYY")
 
-    x = {name= "XXX"}
-    print(x.name)
 
     print((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"})
 

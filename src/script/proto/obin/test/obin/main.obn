@@ -1,6 +1,6 @@
 load testit
-//load tests.test_base
-load tests.test_operators
+load tests.test_base
+//load tests.test_operators
 //load tests.test_co
 //load tests.test_destruct
 //load tests.test_exception
@@ -13,7 +13,8 @@ load tests.test_operators
 
 
 def main() ->
-    test_operators.test()
+//    test_operators.test()
+    test_base.test()
 //    test_co.test()
 //    test_destruct.test()
 //    test_exception.test()

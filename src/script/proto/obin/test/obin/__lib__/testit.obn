@@ -9,6 +9,16 @@ def _batch(checker, fn, calls) ->
 def fail(error) ->
     throw error;
 
+def assert_not_equal(val1, val2) ->
+    if val1 == val2
+        fail([val1, "==", val2])
+    else
+        true
+    end
+end
+
+
+
 def assert_equal
     case (val1 of Float, val2 of Float) ->
         assert_equal_float(val1, val2)
