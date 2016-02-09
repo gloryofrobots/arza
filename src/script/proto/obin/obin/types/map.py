@@ -186,11 +186,6 @@ class TableIterator(W_Any):
     def _tostring_(self):
         return "<TableIterator %d:%d>" % (self.index, self.source_length)
 
-    def _tobool_(self):
-        if self.index >= self.source_length:
-            return False
-        return True
-
 
 class W_Map(W_Any):
     """

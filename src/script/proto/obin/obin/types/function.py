@@ -28,9 +28,6 @@ class W_Function(W_Callable):
         # return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
         return "<func %s/%d>" % (api.to_s(self.name) ,self.arity)
 
-    def _tobool_(self):
-        return True
-
     def _behavior_(self, process):
         return process.std.behaviors.Function
 

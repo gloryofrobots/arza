@@ -1,6 +1,6 @@
 load testit
 
-def test ->
+def test() ->
     t1 = (1, "Hello", 35.44555)
     testit.assert_equal(t1, (1, "Hello", 35.44555))
     testit.assert_equal(t1[0], 1)
@@ -16,69 +16,29 @@ def test ->
     testit.assert_equal(m1.name, "XXX")
     testit.assert_not_equal(m1.name, "YYY")
 
+    t2 = ((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"})
 
-    print((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"})
-
-    x = true
-    print(x)
-
-    x = false
-    print(x)
-
-    x = { name="X", age=42.24 }
-    print(x)
-
-    x = 1
-    y = 0
-    print("x = ", x, "y = ", y)
-
-    print("x or y", x or y)
-
-    print("x and y", x and y)
-    print("not y", not y)
-    print("~ y", ~ y)
-    print("~ y", ~ y)
+    testit.assert_equal(t2, ((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"}))
+    testit.assert_not_equal(t2, ((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Alice"}))
+    testit.assert_equal(t2, t2)
 
 
-    print("x | y", x | y)
-    print("x & y", x & y)
-    print("x ^ y", x ^ y)
+    testit.assert_true(true when 5 > 4 else false)
+    testit.assert_false(true when 5 < 4 else false)
+    testit.assert_false(true when 5 == 4 else false)
+    testit.assert_equal(42 * 2 when 13 == 12 else 12 * 2 when 13 == 14 else 1, 1)
 
 
-    print("true when 5 > 4 else false", true when 5 > 4 else false)
-    print("x is y", x is y)
-    print("x isnot y", x isnot y)
+    a2_4 = :four
+    a2 = [0, 1, 2, a2_4]
+    testit.assert_true(:four in a2)
+    testit.assert_true(a2_4 in a2)
 
+    testit.assert_equal("name", :name)
+    testit.assert_equal(:name, "name")
+    testit.assert_equal(:`++++ ---- <> $$`, "++++ ---- <> $$")
+    testit.assert_equal("++++ ---- <> $$", :`++++ ---- <> $$`)
 
-    x = `+`(1,2)
-    print(x)
-    x = `+`(1.0,2.0)
-    print(x)
-    x = `+`(1,2.0)
-    print(x)
-
-    A = [1,2,3,4,5,6]
-    print(length(A))
-
-    A = [0, 1, 2, x]
-    print(x,"in",A, x in A)
-
-    print("name" == :name)
-    print(:name == "name")
-    print(:`++++ ---- <> $$` == "++++ ---- <> $$")
-    print("++++ ---- <> $$" == :`++++ ---- <> $$`)
-
-    m = {name = "Alice", :surname="Bob",
-            :child={
-                :little_name="Sweetie",
-                :toy={
-                    :model="SXR 123344:44332"
-                }
-             }
-     }
-    print(m.name)
-    print(m[:child][:toy][:model])
-    print(m.child.toy.model)
 
     x = 12
 

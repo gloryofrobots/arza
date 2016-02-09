@@ -84,6 +84,9 @@ class W_Any:
     def _at_(self, key):
         return not_implemented_error(u"_at_", self, key)
 
+    def _contains_(self, key):
+        return not_implemented_error(u"_contains_", self, key)
+
     def _at_index_(self, i):
         from obin.types import space
         return not_implemented_error(u"_at_index_", self, space.newint(i))

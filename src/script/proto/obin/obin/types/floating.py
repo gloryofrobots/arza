@@ -38,9 +38,6 @@ class W_Float(W_Number):
     def _tostring_(self):
         return str(self.float_value)
 
-    def _tobool_(self):
-        return bool(self.float_value)
-
     def _behavior_(self, process):
         return process.std.behaviors.Float
 

@@ -253,7 +253,7 @@ class CodeRoutine(BaseRoutine):
             elif NEXT == tag:
                 iterator = stack.top()
                 next_el = api.next(iterator)
-                # call is interrupted, probably coself call
+                # call is interrupted, probably co call
                 if space.isinterrupt(next_el):
                     return
                 stack.push(next_el)

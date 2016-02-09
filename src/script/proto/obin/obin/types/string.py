@@ -65,9 +65,6 @@ class W_String(W_Hashable):
     def _iterator_(self):
         return W_SequenceIterator(self)
 
-    def _tobool_(self):
-        return bool(self.string_value)
-
     def _length_(self):
         return self.__length
 

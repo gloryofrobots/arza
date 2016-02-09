@@ -69,6 +69,12 @@ class W_Tuple(W_Hashable):
     def _clone_(self):
         return W_Tuple(self.elements)
 
+    def _contains_(self, key):
+        for item in self.elements:
+            if api.n_equal(item, key):
+                return True
+        return False
+
     def _at_(self, index):
         from obin.types.space import newnil, isint
         assert isint(index)
@@ -111,9 +117,6 @@ class W_Tuple(W_Hashable):
 
     def _iterator_(self):
         return W_SequenceIterator(self)
-
-    def _tobool_(self):
-        return bool(self.elements)
 
     def _length_(self):
         return len(self.elements)

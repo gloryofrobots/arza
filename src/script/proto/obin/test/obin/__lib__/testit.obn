@@ -14,9 +14,7 @@ def assert_not_equal(val1, val2) ->
         fail([val1, "==", val2])
     else
         true
-    end
-end
-
+    ;;
 
 
 def assert_equal
@@ -26,8 +24,8 @@ def assert_equal
         if val1 != val2
             fail([val1, "!=", val2])
         else
-            true;
-end
+            true
+    ;;
 
 def _abs(v) ->
     if v < 0
@@ -43,8 +41,7 @@ def assert_equal_float
             assert_true(_abs(val1) - _abs(val2) < delta)
         catch e
             fail([val1, "!=", val2])
-        end
-end
+     ;;
 
 def assert_is(val1, val2) ->
     if val1 isnot val2
@@ -53,6 +50,12 @@ def assert_is(val1, val2) ->
         true
     ;;
 
+def assert_isnot(val1, val2) ->
+    if val1 is val2
+        fail([val1, "is", val2])
+    else
+        true
+    ;;
 
 def assert_true(val1) ->
     assert_is(val1, true);

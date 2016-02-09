@@ -109,15 +109,11 @@ def n_contains_index(obj, i):
 def contains(obj, k):
     return space.newbool(n_contains(obj, k))
 
-
 def n_contains(obj, k):
     assert not space.isnil(k)
-    v = obj._at_(k)
-    if space.isnil(v):
-        return False
-    else:
-        return True
-
+    v = obj._contains_(k)
+    assert isinstance(v, bool)
+    return v
 
 def put(obj, k, v):
     assert not space.isnil(v)

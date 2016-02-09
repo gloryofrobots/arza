@@ -20,8 +20,6 @@ class W_MultiFunction(W_Callable):
     def _tostring_(self):
         return "multifunction %s {}" % api.to_s(self.name)
 
-    def _tobool_(self):
-        return True
 
     def _call_(self, process, args):
         method = _get_method(process, self, args)

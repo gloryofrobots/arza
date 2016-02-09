@@ -42,9 +42,6 @@ class W_Generic(W_Callable):
     def _tostring_(self):
         return "<generic %s>" % api.to_s(self.name)
 
-    def _tobool_(self):
-        return True
-
     def _call_(self, process, args):
         method = _lookup_method(process, self, args)
         # print "GEN CALL", str(method)

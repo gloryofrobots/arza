@@ -67,6 +67,10 @@ class W_PMap(W_Any):
 
         return W_PMap(self._cnt if added_leaf._val is None else self._cnt + 1, new_root)
 
+    def _contains_(self, key):
+        value = self._at_(key)
+        return not space.isnil(value)
+
     def _at_(self, key):
         if self._root is None:
             return space.newnil()
@@ -93,6 +97,8 @@ class W_PMap(W_Any):
             return False
 
     def to_l(self):
+        if not self._root:
+            return []
         pairs = self._root.reduce(_tostring, space.newvector([]))
         lst = pairs.to_l()
         return lst

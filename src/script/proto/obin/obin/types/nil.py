@@ -8,9 +8,6 @@ class W_Nil(W_UniqueType):
     def _tostring_(self):
         return 'nil'
 
-    def _tobool_(self):
-        return False
-
     def _behavior_(self, process):
         return process.std.behaviors.Nil
 

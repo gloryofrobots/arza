@@ -68,9 +68,6 @@ class W_Vector(W_Any):
     def _iterator_(self):
         return W_SequenceIterator(self)
 
-    def _tobool_(self):
-        return bool(self._items)
-
     def _length_(self):
         return len(self._items)
 

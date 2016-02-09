@@ -11,9 +11,6 @@ class W_Fiber(W_Callable):
     def _tostring_(self):
         return "<fiber>"
 
-    def _tobool_(self):
-        return True
-
     def _behavior_(self, process):
         return process.std.behaviors.Fiber
 
