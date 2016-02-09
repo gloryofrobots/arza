@@ -85,13 +85,15 @@ class W_Any:
         return not_implemented_error(u"_at_", self, key)
 
     def _at_index_(self, i):
-        return not_implemented_error(u"_at_index_", self, i)
+        from obin.types import space
+        return not_implemented_error(u"_at_index_", self, space.newint(i))
 
     def _get_index_(self, obj):
         return not_implemented_error(u"_get_index_", self, obj)
 
     def _put_at_index_(self, i, obj):
-        return not_implemented_error(u"_put_at_index_", self, i, obj)
+        from obin.types import space
+        return not_implemented_error(u"_put_at_index_", self, space.newint(i), obj)
 
     def _length_(self):
         return not_implemented_error(u"_length_", self)

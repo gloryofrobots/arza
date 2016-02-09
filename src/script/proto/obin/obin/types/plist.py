@@ -53,12 +53,15 @@ class W_PList(W_Any):
     def _get_index_(self, obj):
         return index(self, obj)
 
+    def _at_index_(self, i):
+        if i < 0:
+            return space.newnil()
+        return nth(self, i)
+
     def _at_(self, key):
-        from obin.types.space import newnil
-        from obin.types import api
         int_index = api.to_i(key)
         if int_index < 0:
-            return newnil()
+            return space.newnil()
 
         return nth(self, int_index)
 

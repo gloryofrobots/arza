@@ -127,7 +127,6 @@ print
 print "def token_type_to_str(ttype):"
 print "    return __TT_REPR__[ttype]"
 
-    
 
 # print "# ************************ COMPILE SWITCH*****************************"
 # for number, token in enumerate(TOKENS):

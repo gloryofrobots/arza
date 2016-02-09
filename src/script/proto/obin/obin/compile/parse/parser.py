@@ -149,6 +149,12 @@ def base_parser_init(parser):
     """
     infix(parser, TT_ASSIGN, 10, led_infixr_assign)
 
+    """
+    precedence 70
+    .
+    """
+    infix(parser, TT_DOT, 70, infix_dot)
+
     prefix(parser, TT_LPAREN, prefix_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly)

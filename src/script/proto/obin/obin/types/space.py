@@ -297,6 +297,13 @@ def istuple(w):
 
 ########################################################
 
+def newenvsource(name, code):
+    assert name is None or issymbol(name)
+    from obin.types.environment import W_EnvSource
+    obj = W_EnvSource(name, code)
+    return obj
+
+
 def newenv(name, obj, outer_environment):
     from obin.types.environment import W_Env
     env = W_Env(name, obj, outer_environment)
@@ -306,18 +313,6 @@ def newenv(name, obj, outer_environment):
 def isenv(w):
     from obin.types.environment import W_Env
     return isinstance(w, W_Env)
-
-
-########################################################
-
-newmodule = newenv
-
-
-def newenvsource(name, code):
-    assert name is None or issymbol(name)
-    from obin.types.environment import W_EnvSource
-    obj = W_EnvSource(name, code)
-    return obj
 
 
 ########################################################

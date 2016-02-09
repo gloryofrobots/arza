@@ -22,8 +22,8 @@ def setup_builtins(process, module):
     import obin.builtins.setup_generics
     obin.builtins.setup_generics.setup(process, module, stdlib)
 
-    import obin.builtins.setup_globals
-    obin.builtins.setup_globals.setup(process, module, stdlib)
+    import obin.builtins.prelude
+    obin.builtins.prelude.setup(process, module, stdlib)
 
     import obin.builtins.setup_tvar
     obin.builtins.setup_tvar.setup(process, module, stdlib)

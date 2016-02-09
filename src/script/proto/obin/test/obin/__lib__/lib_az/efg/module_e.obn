@@ -1,2 +1,2 @@
 def f_e(num) ->
-    num - 1023 / 0.001 end
+    num - 1 / 0.001 end

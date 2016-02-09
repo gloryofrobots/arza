@@ -37,7 +37,7 @@ def load_module(process, name):
 
 
 def evaluate_module_file(process, name, filename):
-    from obin.builtins.setup_globals import compile_module
+    from obin.builtins.prelude import compile_module
     module = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 3),
                                 space.newtuple([space.newstring_from_str(filename), name, process.modules.prelude]))
 

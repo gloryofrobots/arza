@@ -1,4 +1,13 @@
+load testit
+
 def test ->
+    (x,y,z) = (1,2,3)
+    testit.assert_equal((x,y,z), (1,2,3))
+
+    (a,b,c,d) = [4,5,6,7]
+    testit.assert_equal((a,b,c,d), (4,5,6,7))
+
+
     metadata = {
         title= "Nemesis Games",
         subject= "SCIFI",
@@ -8,10 +17,12 @@ def test ->
     }
 
 
-    print(metadata.title, metadata.subject, metadata.translationsUa["title"], metadata.translationsUa.translator,
-          metadata.translationsEn.titleEn,  metadata.translationsEn.translatorEn, metadata.author)
+    testit.assert_equal(
+            (metadata.title, metadata.subject, metadata.translationsUa["title"], metadata.translationsUa.translator,
+                metadata.translationsEn.titleEn,  metadata.translationsEn.translatorEn, metadata.author),
+            ("Nemesis Games", "SCIFI", "IGRU DOLI", "PILIP LUN",
+                 ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU", ("James", "Corey")))
 
-    print ("**************************************************************************")
 
     {
         title=englishTitle,
@@ -21,5 +32,8 @@ def test ->
         author=author_data
     } = metadata
 
-    print(englishTitle, subject, localeTitle,translator,(localeTitleEn, origTitleEn), translatorEn, author_data )
+    testit.assert_equal(
+                (englishTitle, subject, localeTitle,translator,(localeTitleEn, origTitleEn), translatorEn, author_data),
+                ("Nemesis Games", "SCIFI", "IGRU DOLI", "PILIP LUN",
+                 ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU", ("James", "Corey")))
 end
