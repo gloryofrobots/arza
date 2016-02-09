@@ -1,6 +1,7 @@
 # TODO STRING LITERALS PROPER, CHARS, SYMBOLS
 from root import W_Number
 from obin.types import api
+from obin.misc import platform
 
 class W_Float(W_Number):
     # _immutable_fields_ = ['float_value']
@@ -10,8 +11,7 @@ class W_Float(W_Number):
         self.float_value = value
 
     def _hash_(self):
-        from obin.tools.misc import obin_hash
-        return obin_hash(self.float_value)
+        return platform.obin_hash(self.float_value)
 
     def _to_integer_(self):
         return int(self.float_value)

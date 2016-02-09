@@ -55,11 +55,11 @@ def isfloat(w):
 
 @specialize.argtype(0)
 def newnumber(value):
-    from obin.tools import misc
+    from obin.misc import platform
     if isinstance(value, float):
          return newfloat(value)
     try:
-        return newint(misc.ovfcheck(value))
+        return newint(platform.ovfcheck(value))
     except OverflowError:
         return newfloat(float(value))
 

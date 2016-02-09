@@ -4,7 +4,7 @@ from obin.compile.parse import nodes
 from obin.compile.parse.tokens import token_type_to_str
 from obin.types import space, api
 from obin.runtime import error
-from obin.tools.misc import get_line, get_line_for_position
+from obin.misc.strutil import get_line, get_line_for_position
 
 TERM_BLOCK = [TT_END, TT_SEMI]
 TERM_IF = [TT_ELIF, TT_ELSE]

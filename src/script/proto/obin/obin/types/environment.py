@@ -1,6 +1,6 @@
 from obin.types import api, space
 from obin.types.root import W_Any, W_Callable
-from obin.tools.misc import is_absent_index
+from obin.misc.platform import is_absent_index
 from obin.runtime import error
 
 

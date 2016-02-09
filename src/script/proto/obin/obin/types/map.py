@@ -1,6 +1,6 @@
 from obin.types import api, space
 from obin.types.root import W_Any
-from obin.tools.misc import is_absent_index, absent_index
+from obin.misc import platform
 from obin.runtime import error
 
 # from rpython.rlib.objectmodel import specialize, enforceargs, always_inline
@@ -18,7 +18,7 @@ class Bindings:
         self._backing = None
         self._used = 0
         self._deleted = 0
-        self.empty_pair = (space.newnil(), absent_index())
+        self.empty_pair = (space.newnil(), platform.absent_index())
 
         self._build(self._minsize)
 
@@ -30,7 +30,7 @@ class Bindings:
             if space.isnil(_key) or api.n_equal(_key, key):
                 return i, kv_pair
 
-        return absent_index(), self.empty_pair
+        return platform.absent_index(), self.empty_pair
 
     def get(self, key):
         # Performs a lookup to find the index and value of the key
@@ -42,7 +42,7 @@ class Bindings:
         return kv_pair[1]
 
     def is_empty_pair(self, kv_pair):
-        if is_absent_index(kv_pair[1]):
+        if platform.is_absent_index(kv_pair[1]):
             return True
         return False
 
@@ -55,11 +55,11 @@ class Bindings:
         structure if the utilization of the Hashmap is > ~ 2/3
         """
         i, kv_pair = self._lookup(key)
-        if is_absent_index(i):
+        if platform.is_absent_index(i):
             self._resize(self._incr_size(len(self._backing)))
 
         i, kv_pair = self._lookup(key)
-        if is_absent_index(i):
+        if platform.is_absent_index(i):
             raise RuntimeError("Unable to insert value")
 
         self._backing[i] = (key, value)
@@ -231,7 +231,7 @@ class W_Map(W_Any):
 
     def _at_(self, name):
         idx = self._get_index_(name)
-        if is_absent_index(idx):
+        if platform.is_absent_index(idx):
             return space.newnil()
 
         return self._at_index_(idx)
@@ -246,7 +246,7 @@ class W_Map(W_Any):
             # print "get_index Exception", e
             # for k in self.property_bindings:
             #     print api.to_native_string(k),
-            return absent_index()
+            return platform.absent_index()
 
     def _put_at_index_(self, idx, value):
         # accessing protected method instead of api.put_at_index for avoiding multiple 0 < idx < length check
@@ -265,7 +265,7 @@ class W_Map(W_Any):
         # print "Slots_ass", api.to_native_string(name), api.to_native_string(value)
         idx = self._get_index_(name)
         # print "Slots_add, IDX", idx
-        if is_absent_index(idx):
+        if platform.is_absent_index(idx):
             idx = self.index
             self.slot_bindings.insert(name, idx)
             self.index += 1
@@ -286,7 +286,7 @@ class W_Map(W_Any):
 
     def _remove_at_(self, name):
         idx = self._get_index_(name)
-        if is_absent_index(idx):
+        if platform.is_absent_index(idx):
             raise RuntimeError("Illegal call")
 
         assert idx >= 0

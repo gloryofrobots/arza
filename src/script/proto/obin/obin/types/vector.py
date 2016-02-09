@@ -1,6 +1,6 @@
 from obin.types.root import W_Any
 from sequence import W_SequenceIterator
-from obin.tools.misc import absent_index
+from obin.misc import platform
 from obin.runtime import error
 
 
@@ -87,7 +87,7 @@ class W_Vector(W_Any):
         try:
             return self._items.index(obj)
         except ValueError:
-            return absent_index()
+            return platform.absent_index()
 
     def ensure_size(self, size):
         assert size > 0

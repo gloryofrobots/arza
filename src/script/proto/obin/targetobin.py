@@ -32,7 +32,7 @@ def main(argv):
 
 def run(script_file):
     from obin.runtime import engine
-    from obin.tools import fs
+    from obin.misc import fs
     script_dir = fs.get_dirname(script_file)
     path_lib = fs.join_and_normalise_path(script_dir, "__lib__")
 

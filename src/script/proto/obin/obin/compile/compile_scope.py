@@ -1,5 +1,5 @@
 from obin.types import space
-from obin.tools.misc import absent_index, is_absent_index
+from obin.misc import platform
 from obin.types import api
 
 
@@ -11,7 +11,7 @@ class ScopeSet:
         try:
             return self.values.index(val)
         except ValueError:
-            return absent_index()
+            return platform.absent_index()
 
     def add(self, val):
         assert val not in self.values
@@ -56,7 +56,7 @@ class Scope:
     def add_scope_local(self, local):
         assert space.issymbol(local)
         self.check_arg_count()
-        assert is_absent_index(self.get_scope_local_index(local))
+        assert platform.is_absent_index(self.get_scope_local_index(local))
         return self.locals.insert(local, space.newnil())
 
     def get_scope_local_index(self, local):

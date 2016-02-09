@@ -2,7 +2,7 @@ from obin.compile.parse.parser import *
 from obin.types import plist
 from obin.compile.parse.nodes import *
 from obin.types import space, api
-from obin.tools import misc
+from obin.misc import platform, strutil
 
 
 class TransformState:
@@ -140,7 +140,7 @@ def _get_map_symbol(key_node):
     elif key_type == NT_SYMBOL:
         return node_value(node_first(key_node))
     elif key_type == NT_STR:
-        return misc.string_unquote(node_value(key_node))
+        return strutil.string_unquote(node_value(key_node))
 
 
 def _process_map(state, pattern, patterns, path):

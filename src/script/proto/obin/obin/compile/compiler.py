@@ -9,7 +9,7 @@ from obin.compile.compile_scope import Scope
 from obin.types import space, api, plist
 from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
-from obin.tools.misc import is_absent_index, string_unquote
+from obin.misc import platform, strutil
 from obin.runtime import error
 
 
@@ -58,7 +58,7 @@ def _enter_scope(process, compiler):
 
 def _is_modifiable_binding(process, compiler, name):
     scope = _current_scope(process, compiler)
-    if not is_absent_index(scope.get_scope_local_index(name)):
+    if not platform.is_absent_index(scope.get_scope_local_index(name)):
         return True
 
     return False
@@ -76,7 +76,7 @@ def _declare_reference(process, compiler, symbol):
     assert space.issymbol(symbol)
     scope = _current_scope(process, compiler)
     idx = scope.get_scope_reference(symbol)
-    if is_absent_index(idx):
+    if platform.is_absent_index(idx):
         idx = scope.add_scope_reference(symbol)
     return idx
 
@@ -85,7 +85,7 @@ def _declare_literal(process, compiler, literal):
     assert space.isany(literal)
     scope = _current_scope(process, compiler)
     idx = scope.get_scope_literal(literal)
-    if is_absent_index(idx):
+    if platform.is_absent_index(idx):
         idx = scope.add_scope_literal(literal)
     return idx
 
@@ -95,11 +95,11 @@ def _declare_local(process, compiler, symbol):
     assert not api.isempty(symbol)
     scope = _current_scope(process, compiler)
     idx = scope.get_scope_local_index(symbol)
-    if not is_absent_index(idx):
+    if not platform.is_absent_index(idx):
         return idx
 
     idx = scope.add_scope_local(symbol)
-    assert not is_absent_index(idx)
+    assert not platform.is_absent_index(idx)
     return idx
 
 
@@ -110,7 +110,7 @@ def _get_variable_index(process, compiler, name):
     scope_id = 0
     for scope in reversed(compiler.scopes):
         idx = scope.get_scope_local_index(name)
-        if not is_absent_index(idx):
+        if not platform.is_absent_index(idx):
             if scope_id == 0:
                 return idx, True
             else:
@@ -205,7 +205,7 @@ def _compile_STR(process, compiler, code, node):
     try:
         strval = str(nodes.node_value(node))
         strval = decode_str_utf8(strval)
-        strval = string_unquote(strval)
+        strval = strutil.string_unquote(strval)
         strval = unicode_unescape(strval)
         string = space.newstring(strval)
         idx = _declare_literal(process, compiler, string)
@@ -221,7 +221,7 @@ def _compile_CHAR(process, compiler, code, node):
     try:
         strval = str(nodes.node_value(node))
         strval = decode_str_utf8(strval)
-        strval = string_unquote(strval)
+        strval = strutil.string_unquote(strval)
         strval = unicode_unescape(strval)
         string = space.newstring(strval)
         idx = _declare_literal(process, compiler, string)
