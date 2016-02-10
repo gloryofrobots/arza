@@ -90,6 +90,9 @@ class Scope:
             return None
 
         refs = environment.newreferences_size(size)
+        if prev_scope is None:
+            return refs
+
         for static_record in self.static_references:
             static_ref = api.at_index(static_record, 0)
             static_ref_id = api.to_i(api.at_index(static_record, 1))

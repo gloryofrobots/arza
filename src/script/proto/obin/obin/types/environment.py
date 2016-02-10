@@ -12,6 +12,13 @@ class References(W_Any):
         self._refs_ = references
         self._resizable_ = not bool(len(self._refs_))
 
+    def _to_string_(self):
+        return str(self._refs_)
+
+    __str__ = _to_string_
+
+    __repr__ = _to_string_
+
     def _clone_(self):
         return References([ref for ref in self._refs_])
 
@@ -68,6 +75,13 @@ class Reference(W_Any):
         self.env = env
         self.name = referenced
         self.index = index
+
+    def _to_string_(self):
+        return api.to_s(self.name)
+
+    __str__ = _to_string_
+
+    __repr__ = _to_string_
 
     def get_value(self):
         # print "Reference.ref_get_value", self.env, self.index
@@ -131,6 +145,10 @@ class W_Env(W_Any):
         self.data = scope.create_env_bindings()
         self.literals = scope.literals
         self.refs = scope.create_references()
+        # TODO MAKE TEST FOR CORRECT STATIC REFS SOMEHOW
+        # print "--------------------------ENV------------------------------"
+        # print self.refs
+        # print scope.reference_names
 
     def ref(self, symbol, index):
         # lookup in self parent environment

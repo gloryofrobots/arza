@@ -88,7 +88,7 @@ def _declare_static_reference(compiler, ref):
     if scope.has_possible_static_reference(ref):
         return
 
-    print "REF", ref.name
+    # print "REF", ref.name
     scope.add_possible_static_reference(ref)
 
 
