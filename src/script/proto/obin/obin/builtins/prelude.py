@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from obin.runtime.routine import complete_native_routine
 from obin.runtime import error
 from obin.types import api, space, plist, environment
@@ -9,9 +8,6 @@ from obin.misc import fs
 from obin.compile import compiler
 
 def setup(process, module, stdlib):
-    ### Traits
-
-    # 15.1.2.1
     api.put_native_function(process, module, u'eval', _eval, 1)
     api.put_native_function(process, module, u'print', _print, -1)
     api.put_native_function(process, module, u'id', _id, 1)

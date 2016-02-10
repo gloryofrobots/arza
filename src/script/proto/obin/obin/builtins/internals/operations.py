@@ -317,6 +317,7 @@ def list_v(process, op1):
     pass
 
 
+# TODO MAKE IT GENERIC
 def cons_w(process, op1, op2):
     from obin.types.plist import plist1, prepend
     from obin.types.space import islist
