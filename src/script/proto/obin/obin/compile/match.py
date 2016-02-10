@@ -6,8 +6,7 @@ from obin.misc import platform, strutil
 
 
 class TransformState:
-    def __init__(self, process, compiler, code, node):
-        self.process = process
+    def __init__(self, compiler, code, node):
         self.compiler = compiler
         self.code = code
         self.node = node
@@ -15,7 +14,7 @@ class TransformState:
 
 def transform_error(state, node, message):
     from obin.compile.compiler import compile_error
-    return compile_error(state.process, state.compiler, state.code, node, message)
+    return compile_error(state.compiler, state.code, node, message)
 
 
 def _create_path_node(basenode, path):
@@ -584,8 +583,8 @@ def _transform_pattern(node, methods, history, variables, tree):
     return list_node(result), vars
 
 
-def transform(process, compiler, code, node, decisions, decision_node):
-    state = TransformState(process, compiler, code, node)
+def transform(compiler, code, node, decisions, decision_node):
+    state = TransformState(compiler, code, node)
     from obin.compile import MATCH_SYS_VAR
     branches = []
     path = plist.plist1(create_name_node(node, MATCH_SYS_VAR))
