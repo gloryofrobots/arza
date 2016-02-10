@@ -16,9 +16,32 @@ def assignment(parser, ttype, lbp):
 
 
 class BaseParser:
-    def __init__(self, ts):
+    def __init__(self):
         self.handlers = {}
+        self.ts = None
+        self.process = None
+        self.env = None
+
+    def open(self, process, env, ts):
+        assert self.ts is None
+        assert self.process is None
+        assert self.env is None
         self.ts = ts
+        self.process = process
+        self.env = env
+        self._on_open(process, env, ts)
+
+    def _on_open(self, process, env, ts):
+        pass
+
+    def close(self):
+        self.ts = None
+        self.process = None
+        self.env = None
+        self._on_close()
+
+    def _on_close(self):
+        pass
 
     @property
     def token_type(self):
@@ -47,24 +70,46 @@ class BaseParser:
 
 
 class ExpressionParser(BaseParser):
-    def __init__(self, ts):
-        BaseParser.__init__(self, ts)
-        self.args_parser = args_parser_init(BaseParser(ts))
-        self.pattern_parser = pattern_parser_init(BaseParser(ts))
+    def __init__(self):
+        BaseParser.__init__(self)
+        self.args_parser = args_parser_init(BaseParser())
+        self.pattern_parser = pattern_parser_init(BaseParser())
         # self.expression_parser = expression_parser_init(BaseParser(ts))
         expression_parser_init(base_parser_init(self))
 
+    def _on_open(self, process, env, ts):
+        self.args_parser.open(process, env, ts)
+        self.pattern_parser.open(process, env, ts)
+
+    def _on_close(self):
+        self.args_parser.close()
+        self.pattern_parser.close()
 
 class ModuleParser(BaseParser):
-    def __init__(self, ts):
-        BaseParser.__init__(self, ts)
-        self.args_parser = args_parser_init(BaseParser(ts))
-        self.load_parser = load_parser_init(BaseParser(ts))
-        self.generic_signature_parser = generic_signature_parser_init(BaseParser(ts))
-        self.pattern_parser = pattern_parser_init(BaseParser(ts))
-        self.expression_parser = ExpressionParser(ts)
+    def __init__(self):
+        BaseParser.__init__(self)
+
+        self.args_parser = args_parser_init(BaseParser())
+        self.load_parser = load_parser_init(BaseParser())
+        self.generic_signature_parser = generic_signature_parser_init(BaseParser())
+        self.pattern_parser = pattern_parser_init(BaseParser())
+        self.expression_parser = ExpressionParser()
+
         module_parser_init(base_parser_init(self))
 
+    def _on_open(self, process, env, ts):
+        self.args_parser.open(process, env, ts)
+        self.pattern_parser.open(process, env, ts)
+        self.generic_signature_parser.open(process, env, ts)
+        self.expression_parser.open(process, env, ts)
+        self.load_parser.open(process, env, ts)
+
+    def _on_close(self):
+        self.args_parser.close()
+        self.pattern_parser.close()
+        self.generic_signature_parser.close()
+        self.expression_parser.close()
+        self.load_parser.close()
 
 def args_parser_init(parser):
     prefix(parser, TT_ELLIPSIS, prefix_nud)
@@ -330,24 +375,30 @@ def module_parser_init(parser):
     return parser
 
 
-def parse(parser):
+def newparser():
+    parser = ModuleParser()
+    return parser
+
+
+def newstream(source):
+    lx = lexer.lexer(source)
+    tokens_iter = lx.tokens()
+    return TokenStream(tokens_iter, source)
+
+
+def _parse(parser):
     parser.next()
     stmts = statements(parser, TERM_FILE)
     check_token_type(parser, TT_ENDSTREAM)
     return stmts
 
 
-def parser_from_str(txt):
-    lx = lexer.lexer(txt)
-    tokens_iter = lx.tokens()
-    ts = TokenStream(tokens_iter, txt)
-    parser = ModuleParser(ts)
-    return parser
-
-
-def parse_string(txt):
-    parser = parser_from_str(txt)
-    stmts = parse(parser)
+def parse(process, env, src):
+    parser = process.parser
+    ts = newstream(src)
+    parser.open(process, env, ts)
+    stmts = _parse(parser)
+    parser.close()
     # print stmts
     return stmts
 

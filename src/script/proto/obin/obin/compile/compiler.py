@@ -1390,7 +1390,7 @@ def compile_ast(compiler, ast):
 
 
 def compile(process, env, src, sourcename):
-    ast = parser.parse_string(src)
+    ast = parser.parse(process, env, src)
     # print ast
     compiler = Compiler(process, env, sourcename, src)
     code = compile_ast(compiler, ast)

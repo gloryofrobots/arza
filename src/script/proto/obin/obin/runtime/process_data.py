@@ -1,4 +1,5 @@
 from obin.types import space
+from obin.compile.parse.parser import newparser
 
 
 class Symbols:
@@ -53,6 +54,7 @@ class ProcessData:
         self.std_objects = std
         self.symbols = symbols
         self.io = io
+        self.parser = newparser()
 
 
 class IO:

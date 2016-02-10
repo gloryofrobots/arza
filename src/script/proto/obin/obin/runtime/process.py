@@ -128,6 +128,10 @@ class Process(object):
         return self.__data.io
 
     @property
+    def parser(self):
+        return self.__data.parser
+
+    @property
     def fiber(self):
         return self.__fiber
 
