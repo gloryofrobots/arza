@@ -6,6 +6,15 @@ from obin.compile.parse.lexer import UnknownTokenError
 from obin.compile.parse import tokens
 
 
+# additional helpers
+def infixr(parser, ttype, lbp):
+    infix(parser, ttype, lbp, led_infixr)
+
+
+def assignment(parser, ttype, lbp):
+    infix(parser, ttype, lbp, led_infixr_assign)
+
+
 class BaseParser:
     def __init__(self, ts):
         self.handlers = {}
@@ -147,7 +156,7 @@ def base_parser_init(parser):
     precedence 10
     =
     """
-    infix(parser, TT_ASSIGN, 10, led_infixr_assign)
+    assignment(parser, TT_ASSIGN, 10)
 
     """
     precedence 70
@@ -194,19 +203,19 @@ def expression_parser_init(parser):
     precedence 35
     |
     """
-    infix(parser, TT_BITOR, 35, led_infixr)
+    infixr(parser, TT_BITOR, 35)
 
     """
     precedence 40
     ^
     """
-    infix(parser, TT_BITXOR, 40, led_infixr)
+    infixr(parser, TT_BITXOR, 40)
 
     """
     precedence 45
     &
     """
-    infix(parser, TT_BITAND, 45, led_infixr)
+    infixr(parser, TT_BITAND, 45)
 
     """
     precedence 50
@@ -257,7 +266,7 @@ def expression_parser_init(parser):
     """
 
     infix(parser, TT_DOT, 70, infix_dot)
-    infix(parser, TT_DOUBLE_COLON, 70, led_infixr)
+    infixr(parser, TT_DOUBLE_COLON, 70)
 
     """
     precedence 75
@@ -383,4 +392,3 @@ end
     A[..4];
     A[5];
 """
-
