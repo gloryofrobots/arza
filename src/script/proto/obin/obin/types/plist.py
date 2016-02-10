@@ -301,7 +301,7 @@ def remove_all(pl, v):
     if isempty(pl):
         return pl
 
-    if api.n_equal(v, head(pl)):
+    if api.equal_b(v, head(pl)):
         l = remove_all(tail(pl), v)
         return l
     l = W_PList(head(pl), remove_all(tail(pl), v))
@@ -315,7 +315,7 @@ def remove(pl, v):
     if isempty(pl):
         return error.throw_1(error.Errors.VALUE, space.newint(v))
 
-    if api.n_equal(v, head(pl)):
+    if api.equal_b(v, head(pl)):
         return tail(pl)
 
     return W_PList(head(pl), remove(tail(pl), v))
@@ -333,7 +333,7 @@ def contains_with(pl, v, condition):
 
 
 def contains(pl, v):
-    return contains_with(pl, v, api.n_equal)
+    return contains_with(pl, v, api.equal_b)
 
 
 def contains_split(pl, v):
@@ -341,7 +341,7 @@ def contains_split(pl, v):
     if isempty(pl):
         return False, empty()
 
-    if api.n_equal(v, head(pl)):
+    if api.equal_b(v, head(pl)):
         return True, tail(pl)
 
     return contains_split(tail(pl), v)
@@ -353,7 +353,7 @@ def _contains_list(pl1, pl2):
     if isempty(pl1):
         return False
 
-    if not api.n_equal(head(pl1), head(pl2)):
+    if not api.equal_b(head(pl1), head(pl2)):
         return False
     else:
         return _contains_list(tail(pl1), tail(pl2))
@@ -386,7 +386,7 @@ def equal_with(pl1, pl2, condition):
 
 
 def equal(pl1, pl2):
-    return equal_with(pl1, pl2, api.n_equal)
+    return equal_with(pl1, pl2, api.equal_b)
 
 
 ######################################################
@@ -416,7 +416,7 @@ def index(pl, elem):
     while True:
         if isempty(cur):
             return -1
-        if api.n_equal(head(cur), elem):
+        if api.equal_b(head(cur), elem):
             return idx
         idx += 1
         cur = cur.tail

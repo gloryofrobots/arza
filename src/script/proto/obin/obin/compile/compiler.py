@@ -6,7 +6,7 @@ from obin.compile.parse.nodes import (node_type, node_arity,
                                       node_first, node_second, node_third, node_children)
 from obin.compile.parse.node_type import *
 from obin.compile.compile_scope import Scope
-from obin.types import space, api, plist
+from obin.types import space, api, plist, environment
 from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
 from obin.misc import platform, strutil
@@ -30,8 +30,9 @@ def compile_error(compiler, code, node, message):
 
 
 class Compiler:
-    def __init__(self, process, path, src):
+    def __init__(self, process, env, path, src):
         self.process = process
+        self.env = env
         self.scopes = []
         self.depth = -1
         self.source_path = path
@@ -82,6 +83,15 @@ def _declare_reference(compiler, symbol):
     return idx
 
 
+def _declare_static_reference(compiler, ref):
+    scope = _current_scope(compiler)
+    if scope.has_possible_static_reference(ref):
+        return
+
+    print "REF", ref.name
+    scope.add_possible_static_reference(ref)
+
+
 def _declare_literal(compiler, literal):
     assert space.isany(literal)
     scope = _current_scope(compiler)
@@ -104,7 +114,8 @@ def _declare_local(compiler, symbol):
     return idx
 
 
-def _get_variable_index(compiler, name):
+def _get_variable_index(compiler, code, node, name):
+    assert space.issymbol(name)
     """
         return var_index, is_local_variable
     """
@@ -120,9 +131,13 @@ def _get_variable_index(compiler, name):
                 return ref_id, False
         scope_id += 1
 
-    # compile_error(process,process, compiler.current_node, "Non reachable variable", name)
-    # COMMENT ERROR BECAUSE OF LATER LINKING OF BUILTINS
     ref_id = _declare_reference(compiler, name)
+
+    ref = environment.get_reference(compiler.env, name)
+    if ref is not None:
+        _declare_static_reference(compiler, ref)
+
+    # return compile_error(compiler, code, node, u"Non reachable variable")
     return ref_id, False
 
 
@@ -134,6 +149,13 @@ def _exit_scope(compiler):
 
 def _current_scope(compiler):
     return compiler.scopes[-1]
+
+
+def _previous_scope(compiler):
+    if len(compiler.scopes) == 1:
+        return None
+
+    return compiler.scopes[-2]
 
 
 """
@@ -229,7 +251,6 @@ def _compile_CHAR(compiler, code, node):
         code.emit_1(LITERAL, idx, info(node))
     except RuntimeError as e:
         compile_error(compiler, code, node, unicode(e.args[0]))
-
 
 
 def _on_binary_primitive(compiler, code, node, name):
@@ -599,7 +620,7 @@ def _compile_node_name_lookup(compiler, code, node):
     name_value = _get_name_value(node)
     name = space.newsymbol_py_str(compiler.process, name_value)
 
-    index, is_local = _get_variable_index(compiler, name)
+    index, is_local = _get_variable_index(compiler, code, node, name)
     name_index = _declare_literal(compiler, name)
     if is_local:
         code.emit_2(LOCAL, index, name_index, info(node))
@@ -739,7 +760,7 @@ def _compile_func_args_and_body(compiler, code, name, params, body):
 
     _compile(compiler, funccode, body)
     current_scope = _current_scope(compiler)
-    scope = current_scope.finalize()
+    scope = current_scope.finalize(_previous_scope(compiler))
     _exit_scope(compiler)
     # print "LOCALS:", str(scope.variables.keys())
     # print "REFS:", str(scope.references)
@@ -766,7 +787,7 @@ def _compile_case_function(compiler, code, node, funcname, cases):
 
     _compile_match(compiler, funccode, node, cases, error.Errors.FUNCTION_MATCH)
     current_scope = _current_scope(compiler)
-    scope = current_scope.finalize()
+    scope = current_scope.finalize(_previous_scope(compiler))
     _exit_scope(compiler)
 
     compiled_code = funccode.finalize_compilation(scope)
@@ -835,6 +856,7 @@ def _compile_DEF(compiler, code, node):
 
     funcname_index = _declare_literal(compiler, funcname)
     code.emit_2(STORE_LOCAL, index, funcname_index, info(node))
+
 
 # now they are identical except of scope
 _compile_FUN = _compile_DEF
@@ -956,7 +978,7 @@ def _compile_MODULE(compiler, code, node):
     #
     # _compile(compiler, modulecode, body)
     # current_scope = _current_scope(compiler)
-    # scope = current_scope.finalize()
+    # scope = current_scope.finalize(_previous_scope(compiler))
     # _exit_scope(compiler)
     # compiled_code = modulecode.finalize_compilation(scope)
 
@@ -1361,28 +1383,28 @@ def compile_ast(compiler, ast):
     _declare_arguments(compiler, 0, False)
     _compile(compiler, code, ast)
     scope = _current_scope(compiler)
-    final_scope = scope.finalize()
+    final_scope = scope.finalize(_previous_scope(compiler))
     _exit_scope(compiler)
     compiled_code = code.finalize_compilation(final_scope)
     return compiled_code
 
 
-def compile(process, src, sourcename):
+def compile(process, env, src, sourcename):
     ast = parser.parse_string(src)
     # print ast
-    compiler = Compiler(process, sourcename, src)
+    compiler = Compiler(process, env, sourcename, src)
     code = compile_ast(compiler, ast)
     return code
 
 
-def compile_env(process, modulename, src, sourcename):
-    code = compile(process, src, sourcename)
+def compile_env(process, parent_env, modulename, src, sourcename):
+    code = compile(process, parent_env, src, sourcename)
     module = space.newenvsource(modulename, code)
     return module
 
 
-def compile_function_source(process, src, name):
-    code = compile(process, src, name)
+def compile_function_source(process, parent_env, src, name):
+    code = compile(process, parent_env, src, name)
     fn = space.newfuncsource(name, code)
     return fn
 

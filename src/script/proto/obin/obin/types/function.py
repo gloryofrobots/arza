@@ -47,7 +47,7 @@ class W_Function(W_Callable):
         if not space.isfunction(other):
             return False
 
-        if not api.n_equal(self.name, other.name):
+        if not api.equal_b(self.name, other.name):
             return False
 
         return self.bytecode == other.bytecode

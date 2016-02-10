@@ -16,7 +16,6 @@ def is_not_equal(val1, val2) ->
         true
     ;;
 
-
 def is_equal
     case (val1 of Float, val2 of Float) ->
         is_equal_float(val1, val2)
@@ -62,7 +61,6 @@ def is_true(val1) ->
 
 def is_false(val1) ->
     is_same(val1, false);
-
 
 def is_throw(fn, args) ->
     try

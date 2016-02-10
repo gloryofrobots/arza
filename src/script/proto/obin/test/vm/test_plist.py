@@ -17,7 +17,7 @@ class PListTestCase(unittest.TestCase):
         check = make_test_data(check)
         self.assertEqual(plist.length(pl), len(check))
         for li, ci in zip(pl, check):
-            self.assertTrue(api.n_equal(li, ci))
+            self.assertTrue(api.equal_b(li, ci))
             # print "TEST FAILED ", pl, check
 
     def test_plist(self):

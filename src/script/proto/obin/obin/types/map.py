@@ -26,7 +26,7 @@ class Bindings:
         for i in self._indices(key, len(backing)):
             kv_pair = backing[i]
             _key = kv_pair[0]
-            if space.isnil(_key) or api.n_equal(_key, key):
+            if space.isnil(_key) or api.equal_b(_key, key):
                 return i, kv_pair
 
         return platform.absent_index(), self.empty_pair

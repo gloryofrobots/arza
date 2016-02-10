@@ -45,7 +45,7 @@ def compile_module(process, routine):
     filename = api.to_s(sourcename)
     script = fs.load_file_content(filename)
 
-    _module = compiler.compile_env(process, modulename, script, sourcename)
+    _module = compiler.compile_env(process, parent_env, modulename, script, sourcename)
     env = environment.create_environment(process, _module, parent_env)
     return env
 
@@ -78,9 +78,10 @@ def _eval(process, routine):
     x = routine.get_arg(0)
 
     assert space.issymbol(x)
+    parent_env = routine.env
     src = api.to_s(x)
-    source = compiler.compile_function_source(process, src, space.newsymbol(process, u"__eval__"))
-    env = space.newenv(space.newsymbol(process, u"__eval__"), source.code.scope, None)
+    source = compiler.compile_function_source(process, parent_env, src, space.newsymbol(process, u"__eval__"))
+    env = space.newenv(space.newsymbol(process, u"__eval__"),  source.code.scope, parent_env)
 
     func = space.newfunc(source.name, source.code, env)
     args = space.newtuple([])

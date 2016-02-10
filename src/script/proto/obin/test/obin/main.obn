@@ -1,31 +1,45 @@
-load affirm
-load tests.test_base
-load tests.test_bool
-load tests.datastructs.test_datastructs
+//load affirm
+//load tests.test_base
+//load tests.test_bool
+//load tests.datastructs.test_datastructs
 //load tests.test_operators
-load tests.test_co
-load tests.test_destruct
-load tests.test_exception
-load tests.test_def
-load tests.test_generic
-load tests.test_match
-load tests.test_modify
-load tests.test_module
-load tests.test_trait
+//load tests.test_co
+//load tests.test_destruct
+//load tests.test_exception
+//load tests.test_def
+//load tests.test_generic
+//load tests.test_match
+//load tests.test_modify
+//load tests.test_module
+//load tests.test_trait
 
+def length(x) -> x - 100;
 
 def main() ->
+//    fun length(x) ->
+//        x - 2000
+//    end
+    fun f1(x) ->
+//        fun length(x) ->
+//            x + 100
+//        end
+        fun f2(x) ->
+            length(x) + length(x)
+        end
+        f2(x)
+    end
+    f1(1)
 //    test_operators.test()
-    test_bool.test()
-    test_base.test()
-    test_datastructs.test()
-    test_co.test()
-    test_destruct.test()
-    test_exception.test()
-    test_def.test()
-    test_generic.test()
-    test_match.test()
-    test_modify.test()
-    test_module.test()
-    test_trait.test()
-;
+//    test_bool.test()
+//    test_base.test()
+//    test_datastructs.test()
+//    test_co.test()
+//    test_destruct.test()
+//    test_exception.test()
+//    test_def.test()
+//    test_generic.test()
+//    test_match.test()
+//    test_modify.test()
+//    test_module.test()
+//    test_trait.test()
+end

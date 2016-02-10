@@ -4,13 +4,16 @@ from obin.misc.platform import is_absent_index
 from obin.runtime import error
 
 
-class References(object):
+class References(W_Any):
     _virtualizable2_ = ['_refs_[*]']
     _settled_ = True
 
-    def __init__(self, size):
-        self._refs_ = [None] * size
-        self._resizable_ = not bool(size)
+    def __init__(self, references):
+        self._refs_ = references
+        self._resizable_ = not bool(len(self._refs_))
+
+    def _clone_(self):
+        return References([ref for ref in self._refs_])
 
     def _resize_refs(self, index):
         if index >= len(self._refs_):
@@ -47,7 +50,16 @@ class References(object):
         return ref.get_value()
 
 
-class Reference:
+def newreferences(refs):
+    return References(refs)
+
+
+def newreferences_size(size):
+    _refs_ = [None] * size
+    return newreferences(_refs_)
+
+
+class Reference(W_Any):
     _immutable_fields_ = ['env', 'name', 'index']
     _settled_ = True
 
@@ -117,13 +129,8 @@ class W_Env(W_Any):
         self.parent_env = parent_environment
         self.scope = scope
         self.data = scope.create_env_bindings()
-
-        refs_size = scope.count_refs
         self.literals = scope.literals
-        if refs_size != 0:
-            self.refs = References(refs_size)
-        else:
-            self.refs = None
+        self.refs = scope.create_references()
 
     def ref(self, symbol, index):
         # lookup in self parent environment

@@ -38,7 +38,7 @@ def _equal(pair, other):
     key = api.at(pair, space.newint(0))
     value = api.at(pair, space.newint(1))
     value2 = api.at(other, key)
-    if not api.n_equal(value, value2):
+    if not api.equal_b(value, value2):
         return error.throw_2(error.Errors.KEY, key, other)
     return other
 
@@ -174,7 +174,7 @@ class BitmapIndexedNode(INode):
                     return self
                 return BitmapIndexedNode(None, self._bitmap, clone_and_set(self._array, 2 * idx + 1, n))
 
-            if api.n_equal(key, key_or_null):
+            if api.equal_b(key, key_or_null):
                 if val is val_or_node:
                     return self
                 return BitmapIndexedNode(None, self._bitmap, clone_and_set(self._array, 2 * idx + 1, val))
@@ -224,7 +224,7 @@ class BitmapIndexedNode(INode):
         val_or_node = self._array[2 * idx + 1]
         if key_or_null is None:
             return val_or_node.find(shift + 5, hash_val, key)
-        if api.n_equal(key, key_or_null):
+        if api.equal_b(key, key_or_null):
             return val_or_node
 
         return space.newnil()
@@ -250,7 +250,7 @@ class BitmapIndexedNode(INode):
 
             return BitmapIndexedNode(None, self._bitmap ^ bit, remove_pair(self._array, idx))
 
-        if api.n_equal(key, key_or_none):
+        if api.equal_b(key, key_or_none):
             return BitmapIndexedNode(None, self._bitmap ^ bit, remove_pair(self._array, idx))
 
         return self
@@ -373,7 +373,7 @@ class HashCollisionNode(INode):
     def find(self, shift, hash_val, key):
         for x in range(0, len(self._array), 2):
             key_or_nil = self._array[x]
-            if key_or_nil is not None and api.n_equal(key_or_nil, key):
+            if key_or_nil is not None and api.equal_b(key_or_nil, key):
                 return self._array[x + 1]
 
         return space.newnil()
@@ -381,7 +381,7 @@ class HashCollisionNode(INode):
     def find_index(self, key):
         i = rarithmetic.r_int(0)
         while i < len(self._array):
-            if api.n_equal(key, self._array[i]):
+            if api.equal_b(key, self._array[i]):
                 return i
 
             i += 2

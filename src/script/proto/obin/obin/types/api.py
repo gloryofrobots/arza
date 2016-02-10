@@ -214,11 +214,11 @@ def strict_equal(obj, other):
 
 
 def equal(obj, other):
-    res = n_equal(obj, other)
+    res = equal_b(obj, other)
     return space.newbool(res)
 
 
-def n_equal(obj, other):
+def equal_b(obj, other):
     v = obj._equal_(other)
     return v
 

@@ -111,10 +111,6 @@ for name,pattern in TOKENS:
 
 """
 ## FOR PYTHON LEXER
-OPS = [t[1] for t in TOKENS]
-OPS = OPS[OPS.index('>>'):]
-print OPS
-raise SystemExit()
 print "# ************************ OBIN TOKENS*****************************"
 for number, token in enumerate(TOKENS):
     print "%s = %d" % (token[0],number)
@@ -136,6 +132,18 @@ print "def token_type_to_str(ttype):"
 print "    return __TT_REPR__[ttype]"
 
 
+def length(x):
+    return x + 100
+
+def f1(x):
+    def f2(x):
+        return length(x)
+
+    def length(x):
+        return x - 100
+    return f2(x)
+
+print f1(1)
 # print "# ************************ COMPILE SWITCH*****************************"
 # for number, token in enumerate(TOKENS):
 #     t_str = token[0].replace("TT_", "")

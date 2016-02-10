@@ -71,7 +71,7 @@ class W_Tuple(W_Hashable):
 
     def _contains_(self, key):
         for item in self.elements:
-            if api.n_equal(item, key):
+            if api.equal_b(item, key):
                 return True
         return False
 
@@ -130,7 +130,7 @@ class W_Tuple(W_Hashable):
             return False
 
         for el1, el2 in zip(self.elements, other.elements):
-            if not api.n_equal(el1, el2):
+            if not api.equal_b(el1, el2):
                 return False
 
         return True
