@@ -1,0 +1,65 @@
+// Test for static refs catched by compiler
+// for example if you use builtin function length()
+// reference to function for your scope will be created during compile time
+
+load affirm
+
+def test_local_overwrite(x) ->
+    fun length(x) ->
+        x - 1000
+    end
+    fun f1(x) ->
+        fun f2(x) ->
+            length(x) + length(x)
+        end
+        f2(x)
+    end
+    f1(x)
+end
+
+def test_local_overwrite_2(x) ->
+    fun f1(x) ->
+        fun length(x) ->
+            x - 100
+        end
+        fun f2(x) ->
+            length(x) + length(x)
+        end
+        f2(x)
+    end
+    f1(x)
+end
+
+def test_use_static_and_fail(x) ->
+    fun f1(x) ->
+        fun f2(x) ->
+            length(x) + length(x)
+        end
+        f2(x)
+    end
+    f1(x)
+end
+
+def test_use_static_and_fail_because_of_single_pass(x) ->
+    fun f1(x) ->
+        fun f2(x) ->
+            length(x) + length(x)
+        end
+        fun length(x) ->
+            x + 100
+        end
+        f2(x)
+    end
+    f1(x)
+end
+
+
+def test() ->
+    affirm.is_equal(test_local_overwrite(1), -1998)
+    affirm.is_equal(test_local_overwrite_2(1), -198)
+    affirm.is_throw_expected(fun(x) -> test_use_static_and_fail(x) end
+                    , [1]
+                    , (:NotImplementedError, (:_length_, 1)))
+    affirm.is_throw(fun(x) -> test_use_static_and_fail_because_of_single_pass(x) end
+                    , [1])
+end
