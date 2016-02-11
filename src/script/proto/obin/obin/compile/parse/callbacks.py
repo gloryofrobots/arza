@@ -3,6 +3,7 @@ from obin.compile.parse.node_type import *
 from obin.compile.parse import nodes
 from obin.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3)
 from obin.types import space
+from obin.misc import strutil
 
 NODE_TYPE_MAPPING = {
     TT_DOT: NT_LOOKUP_SYMBOL,
@@ -467,8 +468,6 @@ def stmt_loop_flow(parser, op, node):
     return node_0(__ntype(node), __ntok(node))
 
 
-def stmt_operator(parser, op, node):
-    pass
 
 
 def stmt_while(parser, op, node):
@@ -609,3 +608,47 @@ def stmt_trait(parser, op, node):
 def stmt_load(parser, op, node):
     imported = expression(parser.load_parser, 0)
     return node_1(NT_LOAD, __ntok(node), imported)
+
+def stmt_module_at(parser, op, node):
+    """
+    @infixl(10, "+", ___add)
+    @infixr(10, "::", ___cons)
+    @prefix("+", ___unary_plus)
+    """
+    check_token_type(parser, TT_NAME)
+    type_node = parser.node
+    if nodes.node_value_s(type_node) == "prefix":
+        advance(parser)
+        options = expression(parser, 0)
+        check_node_type(parser, options, NT_TUPLE)
+
+
+        op_node = advance_expected_after(parser, TT_ID)
+        func_node = advance_expected_after(parser, TT_NAME)
+        op = operator_prefix(newoperator(), prefix_nud_function, nodes.node_value(func_node))
+    else:
+        if nodes.node_value_s(type_node) == "infixl":
+            infix_function = led_infix_function
+        elif nodes.node_value_s(type_node) == "infixr":
+            infix_function = led_infixr_function
+        else:
+            return parse_error(parser, u"Invalid operator type expected infixl, infixr or prefix", parser.node)
+
+        precedence_node = advance_expected_after(parser, TT_INT)
+
+        try:
+            precedence = strutil.string_to_int(nodes.node_value_s(precedence_node))
+        except:
+            return parse_error(parser, u"Invalid infix operator precedence", precedence_node)
+
+        op_node = advance_expected_after(parser, TT_ID)
+        func_node = advance_expected_after(parser, TT_NAME)
+        op = operator_infix(newoperator(), precedence, infix_function, nodes.node_value(func_node))
+
+    advance(parser)
+    endofexpression(parser)
+    parser_add_operator(parser, op_node, op)
+    return node_2(NT_OPERATOR, __ntok(node), op_node, op)
+
+
+

@@ -32,47 +32,6 @@ def assignment(parser, ttype, lbp):
     infix(parser, ttype, lbp, led_infixr_assign)
 
 
-class ParserScope(root.W_Any):
-    def __init__(self):
-        self.operators = space.newmap()
-        self.macros = space.newmap()
-
-
-class ParseState:
-    def __init__(self, process, env, ts):
-        self.ts = ts
-        self.process = process
-        self.env = env
-        self.scopes = plist.empty()
-
-
-def parser_enter_scope(parser):
-    parser.state.scopes = plist.prepend(ParserScope(), parser.state.scopes)
-
-
-def parser_exit_scope(parser):
-    parser.state.scopes = plist.tail(parser.state.scopes)
-
-
-def current_parse_scope(parser):
-    return plist.head(parser.state.scopes)
-
-
-def parser_find_operator(parser, op_name):
-    undef = space.newnil()
-    scopes = parser.state.scopes
-    for scope in scopes:
-        op = api.lookup(scope.operators, op_name, undef)
-        if not space.isnil(op):
-            return op
-
-    op = environment.get_operator(parser.state.env, op_name)
-    if op is not None:
-        api.put(current_parse_scope(parser).operators, op_name, op)
-
-    return op
-
-
 class BaseParser:
     def __init__(self):
         self.handlers = {}
@@ -266,7 +225,6 @@ def base_parser_init(parser):
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly)
     prefix(parser, TT_COLON, prefix_colon)
-    prefix(parser, TT_OPERATOR, prefix_operator)
 
     return parser
 
@@ -322,7 +280,6 @@ def expression_parser_init(parser):
     STATEMENTS
     """
 
-    stmt(parser, TT_OPERATOR, stmt_operator)
     stmt(parser, TT_RETURN, stmt_single)
     stmt(parser, TT_THROW, stmt_single)
     stmt(parser, TT_BREAK, stmt_loop_flow)
@@ -341,6 +298,7 @@ def module_parser_init(parser):
     stmt(parser, TT_LOAD, stmt_load)
     stmt(parser, TT_MODULE, stmt_module)
 
+    stmt(parser, TT_AT_SIGN, stmt_module_at)
     prefix(parser, TT_DEF, prefix_def)
     return parser
 
@@ -357,8 +315,11 @@ def newtokenstream(source):
 
 
 def _parse(parser):
+    parser_enter_scope(parser)
     parser.next()
     stmts = statements(parser, TERM_FILE)
+    parser_exit_scope(parser)
+    assert plist.isempty(parser.state.scopes)
     check_token_type(parser, TT_ENDSTREAM)
     return stmts
 
@@ -389,9 +350,13 @@ def __parse__():
     from obin.runtime.engine import newprocess
     source = """
     module M
-        def main() ->
-            a(not x)
+        @infixl(10, +, ___add)
+        @infixr(10, ::, ___cons)
+        @prefix(+, ___unary_plus)
 
+
+        def main() ->
+            1 + 2
         end
     ;
     """
@@ -414,16 +379,6 @@ if __name__ == "__main__":
 #     """
 # )
 # print nodes.node_to_string(ast)
-"""
-match (a,b):
-    case (true, b):
-        1 + 1
-    end
-    case ({name="Bob", surname="Alice"}, (1,2)): 2 + 2 end
-    case 42: 3 + 3 end
-    case _: nil end
-end
-"""
 """
     A[1..];
     A[2..3];

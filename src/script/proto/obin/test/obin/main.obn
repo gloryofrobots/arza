@@ -14,7 +14,10 @@
 //load tests.test_module
 //load tests.test_trait
 
+
 def f(x,y) -> [x,y] end
+
+@infixl 10 + ___add
 
 def main() ->
     1

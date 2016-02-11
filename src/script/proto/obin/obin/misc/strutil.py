@@ -1,3 +1,5 @@
+from obin.runtime import error
+
 def get_line(string, line_no):
     index = -1
     for _ in range(line_no - 1):
@@ -28,6 +30,10 @@ def is_quoted_string(string):
     if string.startswith("'") and string.endswith("'"):
         return True
     return False
+
+
+def string_to_int(string):
+    return int(string)
 
 
 def string_unquote(string):

@@ -2,7 +2,7 @@ from obin.compile.parse.token_type import *
 from obin.compile.parse import node_type
 from obin.compile.parse import nodes
 from obin.compile.parse.tokens import token_type_to_str
-from obin.types import space, api, root
+from obin.types import space, api, root, plist, environment
 from obin.runtime import error
 from obin.misc.strutil import get_line, get_line_for_position
 
@@ -39,6 +39,59 @@ def parse_error(parser, message, node):
                        ]))
 
 
+class ParserScope(root.W_Any):
+    def __init__(self):
+        self.operators = space.newmap()
+        self.macros = space.newmap()
+
+
+class ParseState:
+    def __init__(self, process, env, ts):
+        self.ts = ts
+        self.process = process
+        self.env = env
+        self.scopes = plist.empty()
+
+
+def parser_enter_scope(parser):
+    parser.state.scopes = plist.prepend(ParserScope(), parser.state.scopes)
+
+
+def parser_exit_scope(parser):
+    parser.state.scopes = plist.tail(parser.state.scopes)
+
+
+def parser_current_scope(parser):
+    return plist.head(parser.state.scopes)
+
+
+def parser_add_operator(parser, op_node, op):
+    cur_scope = parser_current_scope(parser)
+
+    op_name = nodes.node_value(op_node)
+    old_operator = api.lookup(cur_scope.operators, op_name, space.newnil())
+    if not space.isnil(old_operator):
+        if api.equal_b(old_operator, op):
+            parse_error(parser, u"Such operator has been already declared", op_node)
+
+    api.put(cur_scope.operators, op_name, op)
+
+
+def parser_find_operator(parser, op_name):
+    undef = space.newnil()
+    scopes = parser.state.scopes
+    for scope in scopes:
+        op = api.lookup(scope.operators, op_name, undef)
+        if not space.isnil(op):
+            return op
+
+    op = environment.get_operator(parser.state.env, op_name)
+    if op is not None:
+        api.put(parser_current_scope(parser).operators, op_name, op)
+
+    return op
+
+
 class W_Operator(root.W_Any):
     def __init__(self):
         self.nud = None
@@ -48,6 +101,10 @@ class W_Operator(root.W_Any):
 
         self.prefix_function = None
         self.infix_function = None
+
+    def _to_string_(self):
+        return '<operator %s %s>' % (api.to_s(self.prefix_function) if self.prefix_function else "",
+                                       api.to_s(self.infix_function) if self.infix_function else "")
 
 
 def newoperator():
@@ -83,7 +140,7 @@ def node_operator(parser, node):
         return parser_operator(parser, ttype)
 
     # in case of operator
-    op = parser.state.find_operator(nodes.node_value_string(node))
+    op = parser_find_operator(parser, nodes.node_value(node))
     if op is None:
         return parse_error(parser, u"Invalid operator", node)
     return op
@@ -119,7 +176,6 @@ def node_has_std(parser, node):
     return handler.std is not None
 
 
-
 def node_lbp(parser, node):
     handler = node_operator(parser, node)
     lbp = handler.lbp
@@ -141,10 +197,12 @@ def parser_set_nud(parser, ttype, fn):
     h.nud = fn
     return h
 
+
 def parser_set_std(parser, ttype, fn):
     h = get_or_create_operator(parser, ttype)
     h.std = fn
     return h
+
 
 def parser_set_led(parser, ttype, lbp, fn):
     h = get_or_create_operator(parser, ttype)
@@ -157,11 +215,13 @@ def operator_infix(h, lbp, led, infix_fn):
     h.lbp = lbp
     h.led = led
     h.infix_function = infix_fn
+    return h
 
 
 def operator_prefix(h, nud, prefix_fn):
     h.nud = nud
     h.prefix_function = prefix_fn
+    return h
 
 
 def check_token_type(parser, type):
@@ -176,6 +236,14 @@ def check_token_types(parser, types):
         parse_error(parser, u"Wrong token type, expected one of %s, got %s" %
                     (unicode([token_type_to_str(type) for type in types]),
                      token_type_to_str(parser.token_type)), parser.node)
+
+
+def check_node_type(parser, node, expected_type):
+    ntype = nodes.node_type(node)
+    if ntype != expected_type:
+        parse_error(parser, u"Wrong node type, expected  %s, got %s" %
+                    (node_type.node_type_to_str(expected_type),
+                     node_type.node_type_to_str(ntype)), node)
 
 
 def check_node_types(parser, node, types):
@@ -193,13 +261,16 @@ def advance(parser):
     return parser.next()
 
 
+def advance_expected_after(parser, ttype):
+    node = advance(parser)
+    check_token_type(parser, ttype)
+    return node
+
+
 def advance_expected(parser, ttype):
     check_token_type(parser, ttype)
 
-    if parser.isend():
-        return None
-
-    return parser.next()
+    return advance(parser)
 
 
 def advance_end(parser):

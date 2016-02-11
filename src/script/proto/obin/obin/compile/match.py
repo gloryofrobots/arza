@@ -135,11 +135,11 @@ def _process_list(state, pattern, patterns, path):
 def _get_map_symbol(key_node):
     key_type = node_type(key_node)
     if key_type == NT_NAME:
-        return node_value(key_node)
+        return node_value_s(key_node)
     elif key_type == NT_SYMBOL:
-        return node_value(node_first(key_node))
+        return node_value_s(node_first(key_node))
     elif key_type == NT_STR:
-        return strutil.string_unquote(node_value(key_node))
+        return strutil.string_unquote(node_value_s(key_node))
 
 
 def _process_map(state, pattern, patterns, path):
@@ -497,7 +497,7 @@ def _transform_isnot(history, head, variables):
 
 
 def _is_same_var(var1, var2):
-    return node_value(var1) == node_value(var2)
+    return node_value_s(var1) == node_value_s(var2)
 
 
 def _transform_assign(history, head, variables):

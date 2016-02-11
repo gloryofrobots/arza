@@ -11,6 +11,7 @@ from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, Sou
 from obin.misc import platform, strutil
 from obin.runtime import error
 
+
 # TODO REMOVE NIL as token and node_type
 
 def compile_error(compiler, code, node, message):
@@ -19,7 +20,7 @@ def compile_error(compiler, code, node, message):
                        space.newtuple([
                            space.newstring(message),
                            space.newint(nodes.node_type(node)),
-                           space.newstring_from_str(nodes.node_value(node)),
+                           space.newstring_from_str(nodes.node_value_s(node)),
                            space.newtuple([space.newstring(u"line"), nodes.node_line(node),
                                            space.newstring(u"column"), nodes.node_column(node)]),
                            space.newstring(line)
@@ -109,6 +110,13 @@ def _declare_literal(compiler, literal):
     return idx
 
 
+def _declare_operator(compiler, name, op):
+    assert space.issymbol(name)
+    assert not api.isempty(name)
+    scope = _current_scope(compiler)
+    scope.add_operator(name, op)
+
+
 def _declare_local(compiler, symbol):
     assert space.issymbol(symbol)
     assert not api.isempty(symbol)
@@ -155,13 +163,13 @@ def _get_variable_index(compiler, code, node, name):
 
 
 def _compile_FLOAT(compiler, code, node):
-    value = float(nodes.node_value(node))
+    value = float(nodes.node_value_s(node))
     idx = _declare_literal(compiler, space.newfloat(value))
     code.emit_1(LITERAL, idx, info(node))
 
 
 def _compile_INT(compiler, code, node):
-    value = int(nodes.node_value(node))
+    value = strutil.string_to_int(nodes.node_value_s(node))
     idx = _declare_literal(compiler, space.newnumber(value))
     code.emit_1(LITERAL, idx, info(node))
 
@@ -188,11 +196,14 @@ def _get_name_value(name):
     if ntype == NT_SPECIAL_NAME:
         value = _get_special_name_value(name)
     elif ntype == NT_NAME:
-        value = nodes.node_value(name)
+        value = nodes.node_value_s(name)
     else:
         assert False, ("_get_name_value", ntype)
     return value
 
+def _get_name_symbol(compiler, name):
+    sym = _get_name_value(name)
+    return space.newsymbol_py_str(compiler.process, sym)
 
 def _emit_pop(code):
     code.emit_0(POP, codeinfo_unknown())
@@ -207,8 +218,7 @@ def _emit_nil(code):
 
 
 def _emit_symbol_name(compiler, code, name):
-    value = _get_name_value(name)
-    symbol = space.newsymbol_py_str(compiler.process, value)
+    symbol = _get_name_symbol(compiler, name)
     idx = _declare_literal(compiler, symbol)
     code.emit_1(LITERAL, idx, info(name))
 
@@ -217,7 +227,7 @@ def _compile_STR(compiler, code, node):
     from obin.runistr import unicode_unescape, decode_str_utf8
 
     try:
-        strval = str(nodes.node_value(node))
+        strval = str(nodes.node_value_s(node))
         strval = decode_str_utf8(strval)
         strval = strutil.string_unquote(strval)
         strval = unicode_unescape(strval)
@@ -233,7 +243,7 @@ def _compile_CHAR(compiler, code, node):
     # TODO CHAR
 
     try:
-        strval = str(nodes.node_value(node))
+        strval = str(nodes.node_value_s(node))
         strval = decode_str_utf8(strval)
         strval = strutil.string_unquote(strval)
         strval = unicode_unescape(strval)
@@ -306,7 +316,7 @@ def _compile_ASSIGN_SYMBOL(compiler, code, node):
 
 
 def _emit_store_name(compiler, code, namenode):
-    name = space.newsymbol_py_str(compiler.process, nodes.node_value(namenode))
+    name = space.newsymbol_py_str(compiler.process, nodes.node_value_s(namenode))
     _emit_store(compiler, code, name, namenode)
 
 
@@ -355,6 +365,12 @@ def _compile_MATCH(compiler, code, node):
     _compile_match(compiler, code, node, patterns, error.Errors.MATCH)
 
 
+def _compile_OPERATOR(compiler, code, node):
+    op_name = node_first(node)
+    name = _get_name_symbol(compiler, op_name)
+    op = node_second(node)
+    _declare_operator(compiler, name, op)
+
 def _compile_GOTO(compiler, code, node):
     # TODO REMOVE THIS SHIT
     # WE NEED TO REMOVE POPS ON GOTO BECAUSE OF AUTOMATIC POP INSERTION
@@ -366,7 +382,7 @@ def _compile_GOTO(compiler, code, node):
     if last_code[0] == POP:
         code.remove_last()
 
-    value = int(nodes.node_value(node))
+    value = int(nodes.node_value_s(node))
     code.emit_1(JUMP, value, codeinfo_unknown())
 
 
@@ -508,8 +524,7 @@ def _compile_ASSIGN(compiler, code, node):
 
 
 def _compile_node_name_lookup(compiler, code, node):
-    name_value = _get_name_value(node)
-    name = space.newsymbol_py_str(compiler.process, name_value)
+    name = _get_name_symbol(compiler, node)
 
     index, is_local = _get_variable_index(compiler, code, node, name)
     name_index = _declare_literal(compiler, name)
@@ -521,7 +536,7 @@ def _compile_node_name_lookup(compiler, code, node):
 
 def _get_special_name_value(node):
     # REMOVE BACKTICKS `xxx`
-    return nodes.node_value(node)[1:len(nodes.node_value(node)) - 1]
+    return nodes.node_value_s(node)[1:len(nodes.node_value_s(node)) - 1]
 
 
 def _compile_SPECIAL_NAME(compiler, code, node):
@@ -692,7 +707,7 @@ def _get_symbol_name_or_empty(process, name):
     if nodes.is_empty_node(name):
         return space.newsymbol(process, u"")
     else:
-        return space.newsymbol_py_str(process, nodes.node_value(name))
+        return space.newsymbol_py_str(process, nodes.node_value_s(name))
 
 
 def is_simple_func_declaration(params):
@@ -834,9 +849,9 @@ def _compile_TRY(compiler, code, node):
 
 def _dot_to_string(compiler, node):
     if node_type(node) == NT_LOOKUP_SYMBOL:
-        return _dot_to_string(compiler, node_first(node)) + '.' + nodes.node_value(node_second(node))
+        return _dot_to_string(compiler, node_first(node)) + '.' + nodes.node_value_s(node_second(node))
     else:
-        return nodes.node_value(node)
+        return nodes.node_value_s(node)
 
 
 def _compile_LOAD(compiler, code, node):
@@ -850,7 +865,7 @@ def _compile_LOAD(compiler, code, node):
     else:
         assert node_type(exp) == NT_NAME
         import_name = exp
-        module_path = nodes.node_value(exp)
+        module_path = nodes.node_value_s(exp)
 
     module_path_literal = _declare_literal(compiler, space.newsymbol_py_str(compiler.process, module_path))
     code.emit_1(LOAD, module_path_literal, info(node))
@@ -864,7 +879,7 @@ def _compile_MODULE(compiler, code, node):
 
     compiled_code = compile_ast(compiler, body)
 
-    module_name = space.newsymbol_py_str(compiler.process, _get_name_value(name_node))
+    module_name = _get_name_symbol(compiler, name_node)
     module = space.newenvsource(module_name, compiled_code)
     module_index = _declare_literal(compiler, module)
     code.emit_1(MODULE, module_index, info(node))
@@ -874,9 +889,7 @@ def _compile_MODULE(compiler, code, node):
 
 def _compile_GENERIC(compiler, code, node):
     name_node = node_first(node)
-    name_value = _get_name_value(name_node)
-
-    name = space.newsymbol_py_str(compiler.process, name_value)
+    name = _get_name_symbol(compiler, name_node)
 
     name_index = _declare_literal(compiler, name)
     index = _declare_local(compiler, name)
@@ -891,7 +904,7 @@ def _compile_GENERIC(compiler, code, node):
 def _compile_TRAIT(compiler, code, node):
     names = node_first(node)
     for name in names:
-        name = space.newsymbol_py_str(compiler.process, nodes.node_value(name))
+        name = space.newsymbol_py_str(compiler.process, nodes.node_value_s(name))
         index = _declare_local(compiler, name)
 
         name_index = _declare_literal(compiler, name)
@@ -954,7 +967,7 @@ def _compile_FOR(compiler, code, node):
     code.emit_0(NEXT, codeinfo_unknown())
 
     vars = node_first(node)
-    name = space.newsymbol_py_str(compiler.process, nodes.node_value(vars[0]))
+    name = space.newsymbol_py_str(compiler.process, nodes.node_value_s(vars[0]))
     index = _declare_local(compiler, name)
 
     name_index = _declare_literal(compiler, name)
@@ -1110,6 +1123,9 @@ def _compile_node(compiler, code, node):
     elif NT_SYMBOL == ntype:
         _compile_SYMBOL(compiler, code, node)
 
+    elif NT_ASSIGN == ntype:
+        _compile_ASSIGN(compiler, code, node)
+
     elif NT_DEF == ntype:
         _compile_DEF(compiler, code, node)
     elif NT_FUN == ntype:
@@ -1184,9 +1200,9 @@ def _compile_node(compiler, code, node):
         _compile_OR(compiler, code, node)
     elif NT_GOTO == ntype:
         _compile_GOTO(compiler, code, node)
+    elif NT_OPERATOR == ntype:
+        _compile_OPERATOR(compiler, code, node)
 
-    elif NT_ASSIGN == ntype:
-        _compile_ASSIGN(compiler, code, node)
     else:
         compile_error(compiler, code, node, u"Unknown node")
 

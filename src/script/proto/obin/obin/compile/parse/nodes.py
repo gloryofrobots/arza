@@ -28,6 +28,10 @@ def is_empty_node(n):
     return space.isnil(n)
 
 
+def is_operator_node(n):
+    return space.isoperator(n)
+
+
 def list_node(items):
     for item in items:
         assert is_node(item)
@@ -44,20 +48,19 @@ def is_ast_node(node):
 
 
 def is_node(node):
-    return space.islist(node) or space.istuple(node) or space.isnil(node)
+    return space.islist(node) or space.istuple(node) or space.isnil(node) or space.isoperator(node)
 
 
 def node_equal(node1, node2):
-    if not is_node(node1) or not is_node(node2):
-        print ""
-
     assert is_node(node1) and is_node(node2)
 
     if is_list_node(node1) and is_list_node(node2):
         return plist.equal_with(node1, node2, node_equal)
 
-    if is_list_node(node1) and is_list_node(node2):
+    if is_list_node(node1) or is_list_node(node2):
         return False
+
+    #################################################
 
     if is_empty_node(node1) and is_empty_node(node2):
         return True
@@ -65,10 +68,20 @@ def node_equal(node1, node2):
     if is_empty_node(node1) or is_empty_node(node2):
         return False
 
+    #################################################
+
+    if is_operator_node(node1) and is_operator_node(node2):
+        return api.equal_b(node1, node2)
+
+    if is_operator_node(node1) or is_operator_node(node2):
+        return False
+
+    #################################################
+
     if node_type(node1) != node_type(node2):
         return False
 
-    if node_value(node1) != node_value(node2):
+    if node_value_s(node1) != node_value_s(node2):
         return False
 
     return plist.equal_with(node_children(node1), node_children(node2), node_equal)
@@ -138,12 +151,12 @@ def node_fourth(node):
     return node_getchild(node, 3)
 
 
+def node_value_s(node):
+    return tokens.token_value_s(node_token(node))
+
+
 def node_value(node):
     return tokens.token_value(node_token(node))
-
-
-def node_value_string(node):
-    return tokens.token_value_string(node_token(node))
 
 
 def node_position(node):
@@ -164,13 +177,15 @@ def is_wildcard_node(n):
 
 def node_to_d(node):
     if is_empty_node(node):
-        return "{ EmptyNode:'EmptyNode' }"
+        return {'empty': True}
     elif is_list_node(node):
         return [node_to_d(child) for child in node]
+    elif is_operator_node(node):
+        return {'operator': api.to_s(node)}
     else:
         d = {"_type": tokens.token_type_to_str(node_token_type(node)),
              "_ntype": nt.node_type_to_str(node_type(node)) if node_type(node) != -1 else "",
-             "_value": node_value(node),
+             "_value": node_value_s(node),
              "_line": api.to_i(node_line(node))
              }
 
@@ -261,7 +276,7 @@ def create_call_node_1(basenode, func, exp):
 def create_call_node_name(basenode, funcname, exps):
     return node_2(nt.NT_CALL,
                   create_token_from_node(tt.TT_LPAREN, "(", basenode),
-                  create_name_node(basenode, funcname),
+                  create_name_node(basenode, api.to_s(funcname)),
                   list_node(exps))
 
 

@@ -111,7 +111,6 @@ RULES = [
     (keyword('var'), TT_VAR),
     (keyword('lazy'), TT_LAZY),
 
-
     (keyword('return'), TT_RETURN),
 
     (keyword('_'), TT_WILDCARD),
@@ -138,13 +137,17 @@ RULES = [
     (token('\]'), TT_RSQUARE),
     (token('\.'), TT_DOT),
     (token('\.\.'), TT_DOUBLE_DOT),
-    (keyword('\@'), TT_AT_SIGN),
-    (keyword('='), TT_ASSIGN),
+    (token('@'), TT_AT_SIGN),
+    (token('[^a-zA-Z0-9_ ][=]+'), TT_ID),
+    (token('[=][^a-zA-Z0-9_ ]+'), TT_ID),
+
+    (token('='), TT_ASSIGN),
+
     # that can catch op
     (identifier, TT_ID),
 ]
 
-
+#[<>:\-\+\*\/\\!@#\$%\^\|]=
 # class Token:
 #     def __init__(self, type, val, pos, line, column):
 #         assert isinstance(type, int)
@@ -186,10 +189,11 @@ def token_type(token):
     return api.to_i(api.at_index(token, 0))
 
 
-def token_value(token):
+def token_value_s(token):
     return api.to_s(api.at_index(token, 1))
 
-def token_value_string(token):
+
+def token_value(token):
     return api.at_index(token, 1)
 
 

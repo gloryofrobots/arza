@@ -33,7 +33,7 @@ class Scope:
         self.fn_name_index = -1
         self.literals = ScopeSet()
         self.references = ScopeSet()
-        self.operators = plist.empty()
+        self.operators = space.newmap()
 
         self.static_references = plist.empty()
         self.is_variadic = None
@@ -47,11 +47,11 @@ class Scope:
 
         self.static_references = plist.prepend(space.newtuple([ref, space.newint(ref_idx)]), self.static_references)
 
-    def has_operator(self, op):
-        return plist.contains(self.operators, op)
+    def has_operator(self, op_name):
+        return api.contains_b(self.operators, op_name)
 
-    def add_operator(self, op):
-        self.operators = plist.prepend(op, self.operators)
+    def add_operator(self, op_name, op):
+        self.operators.insert(op_name, op)
 
     def get_scope_reference(self, name):
         return self.references.get(name)

@@ -36,6 +36,7 @@ def newint(i):
     from obin.types.integer import W_Integer
     return W_Integer(i)
 
+
 def isint(w):
     from obin.types.integer import W_Integer
     return isinstance(w, W_Integer)
@@ -56,7 +57,7 @@ def isfloat(w):
 def newnumber(value):
     from obin.misc.platform import rarithmetic
     if isinstance(value, float):
-         return newfloat(value)
+        return newfloat(value)
     try:
         return newint(rarithmetic.ovfcheck(value))
     except OverflowError:
@@ -321,7 +322,7 @@ def newenv(name, scope, outer_environment):
 
 
 def newemptyenv(name):
-    return newenv(name, newscope(newmap(), None, [], [], None, 0, False, -1), None)
+    return newenv(name, newscope(newmap(), None, [], [], newmap(), 0, False, -1), None)
 
 
 def isenv(w):
@@ -367,3 +368,10 @@ def newbehavior(traits):
 def isbehavior(w):
     from obin.types.behavior import W_Behavior
     return isinstance(w, W_Behavior)
+
+
+########################################################
+
+def isoperator(w):
+    from obin.compile.parse.basic import W_Operator
+    return isinstance(w, W_Operator)
