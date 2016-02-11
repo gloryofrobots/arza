@@ -142,6 +142,10 @@ def node_value(node):
     return tokens.token_value(node_token(node))
 
 
+def node_value_string(node):
+    return tokens.token_value_string(node_token(node))
+
+
 def node_position(node):
     return tokens.token_position(node_token(node))
 
@@ -252,6 +256,13 @@ def create_empty_map_node(basenode):
 
 def create_call_node(basenode, func, exp):
     return node_2(nt.NT_CALL, create_token_from_node(tt.TT_LPAREN, "(", basenode), func, list_node([exp]))
+
+
+def create_call_node_name(basenode, funcname, exps):
+    return node_2(nt.NT_CALL,
+                  create_token_from_node(tt.TT_LPAREN, "(", basenode),
+                  create_name_node(basenode, funcname),
+                  list_node([exps]))
 
 
 def create_eq_node(basenode, left, right):

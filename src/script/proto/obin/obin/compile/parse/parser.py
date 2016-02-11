@@ -4,9 +4,26 @@ from obin.compile.parse.tokenstream import TokenStream
 from obin.compile.parse.callbacks import *
 from obin.compile.parse.lexer import UnknownTokenError
 from obin.compile.parse import tokens
+from obin.types import api, space, plist, root, environment
+from obin.builtins.internals import operators
 
 
 # additional helpers
+def infix_operator(parser, ttype, lbp, infix_function):
+    op = get_or_create_operator(parser, ttype)
+    operator_infix(op, lbp, led_infix_function, infix_function)
+
+
+def infixr_operator(parser, ttype, lbp, infix_function):
+    op = get_or_create_operator(parser, ttype)
+    operator_infix(op, lbp, led_infixr_function, infix_function)
+
+
+def prefix_operator(parser, ttype, prefix_function):
+    op = get_or_create_operator(parser, ttype)
+    operator_prefix(op, prefix_nud_function, prefix_function)
+
+
 def infixr(parser, ttype, lbp):
     infix(parser, ttype, lbp, led_infixr)
 
@@ -15,33 +32,71 @@ def assignment(parser, ttype, lbp):
     infix(parser, ttype, lbp, led_infixr_assign)
 
 
-class BaseParser:
+class ParserScope(root.W_Any):
     def __init__(self):
-        self.handlers = {}
-        self.ts = None
-        self.process = None
-        self.env = None
+        self.operators = space.newmap()
+        self.macros = space.newmap()
 
-    def open(self, process, env, ts):
-        assert self.ts is None
-        assert self.process is None
-        assert self.env is None
+
+class ParseState:
+    def __init__(self, process, env, ts):
         self.ts = ts
         self.process = process
         self.env = env
-        self._on_open(process, env, ts)
+        self.scopes = plist.empty()
 
-    def _on_open(self, process, env, ts):
+
+def parser_enter_scope(parser):
+    parser.state.scopes = plist.prepend(ParserScope(), parser.state.scopes)
+
+
+def parser_exit_scope(parser):
+    parser.state.scopes = plist.tail(parser.state.scopes)
+
+
+def current_parse_scope(parser):
+    return plist.head(parser.state.scopes)
+
+
+def parser_find_operator(parser, op_name):
+    undef = space.newnil()
+    scopes = parser.state.scopes
+    for scope in scopes:
+        op = api.lookup(scope.operators, op_name, undef)
+        if not space.isnil(op):
+            return op
+
+    op = environment.get_operator(parser.state.env, op_name)
+    if op is not None:
+        api.put(current_parse_scope(parser).operators, op_name, op)
+
+    return op
+
+
+class BaseParser:
+    def __init__(self):
+        self.handlers = {}
+        self.state = None
+        self.allow_overloading = False
+
+    def open(self, state):
+        assert self.state is None
+        self.state = state
+        self._on_open(state)
+
+    def _on_open(self, state):
         pass
 
     def close(self):
-        self.ts = None
-        self.process = None
-        self.env = None
+        self.state = None
         self._on_close()
 
     def _on_close(self):
         pass
+
+    @property
+    def ts(self):
+        return self.state.ts
 
     @property
     def token_type(self):
@@ -72,18 +127,21 @@ class BaseParser:
 class ExpressionParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
+        self.allow_overloading = True
         self.args_parser = args_parser_init(BaseParser())
         self.pattern_parser = pattern_parser_init(BaseParser())
         # self.expression_parser = expression_parser_init(BaseParser(ts))
+
         expression_parser_init(base_parser_init(self))
 
-    def _on_open(self, process, env, ts):
-        self.args_parser.open(process, env, ts)
-        self.pattern_parser.open(process, env, ts)
+    def _on_open(self, state):
+        self.args_parser.open(state)
+        self.pattern_parser.open(state)
 
     def _on_close(self):
         self.args_parser.close()
         self.pattern_parser.close()
+
 
 class ModuleParser(BaseParser):
     def __init__(self):
@@ -97,12 +155,12 @@ class ModuleParser(BaseParser):
 
         module_parser_init(base_parser_init(self))
 
-    def _on_open(self, process, env, ts):
-        self.args_parser.open(process, env, ts)
-        self.pattern_parser.open(process, env, ts)
-        self.generic_signature_parser.open(process, env, ts)
-        self.expression_parser.open(process, env, ts)
-        self.load_parser.open(process, env, ts)
+    def _on_open(self, state):
+        self.args_parser.open(state)
+        self.pattern_parser.open(state)
+        self.generic_signature_parser.open(state)
+        self.expression_parser.open(state)
+        self.load_parser.open(state)
 
     def _on_close(self):
         self.args_parser.close()
@@ -110,6 +168,7 @@ class ModuleParser(BaseParser):
         self.generic_signature_parser.close()
         self.expression_parser.close()
         self.load_parser.close()
+
 
 def args_parser_init(parser):
     prefix(parser, TT_ELLIPSIS, prefix_nud)
@@ -198,15 +257,22 @@ def base_parser_init(parser):
     symbol(parser, TT_ELSE, None)
     symbol(parser, TT_SEMI, None)
 
+    # 10
     assignment(parser, TT_ASSIGN, 10)
+    # 70
     infix(parser, TT_DOT, 70, infix_dot)
 
     prefix(parser, TT_LPAREN, prefix_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly)
     prefix(parser, TT_COLON, prefix_colon)
+    prefix(parser, TT_OPERATOR, prefix_operator)
 
     return parser
+
+
+def funcname(parser, name):
+    return space.newsymbol(parser.state.process, name)
 
 
 def expression_parser_init(parser):
@@ -226,11 +292,12 @@ def expression_parser_init(parser):
     infix(parser, TT_NOTA, 50, led_infix)
     infix(parser, TT_KINDOF, 50, led_infix)
 
-    # 70
-    infix(parser, TT_DOT, 70, infix_dot)
+    infix_operator(parser, TT_ISNOT, 50, funcname(parser, operators.OP_ISNOT))
+    infix_operator(parser, TT_IN, 50, funcname(parser, operators.OP_IN))
+    infix_operator(parser, TT_NOTIN, 50, funcname(parser, operators.OP_NOTIN))
+    infix_operator(parser, TT_IS, 50, funcname(parser, operators.OP_IS))
 
-    # 75
-    infix(parser, TT_DOUBLE_DOT, 75, led_infix)
+    infix(parser, TT_DOT, 70, infix_dot)
 
     # 80
     infix(parser, TT_LCURLY, 80, infix_lcurly)
@@ -242,8 +309,7 @@ def expression_parser_init(parser):
     """
     PREFIXES
     """
-
-    prefix(parser, TT_NOT, prefix_nud)
+    prefix_operator(parser, TT_NOT, funcname(parser, operators.OP_NOT))
 
     prefix(parser, TT_IF, prefix_if)
 
@@ -257,7 +323,6 @@ def expression_parser_init(parser):
     """
 
     stmt(parser, TT_OPERATOR, stmt_operator)
-
     stmt(parser, TT_RETURN, stmt_single)
     stmt(parser, TT_THROW, stmt_single)
     stmt(parser, TT_BREAK, stmt_loop_flow)
@@ -265,7 +330,6 @@ def expression_parser_init(parser):
     stmt(parser, TT_WHILE, stmt_while)
     stmt(parser, TT_FOR, stmt_for)
     stmt(parser, TT_WHEN, stmt_when)
-
 
     return parser
 
@@ -286,7 +350,7 @@ def newparser():
     return parser
 
 
-def newstream(source):
+def newtokenstream(source):
     lx = lexer.lexer(source)
     tokens_iter = lx.tokens()
     return TokenStream(tokens_iter, source)
@@ -301,8 +365,8 @@ def _parse(parser):
 
 def parse(process, env, src):
     parser = process.parser
-    ts = newstream(src)
-    parser.open(process, env, ts)
+    ts = newtokenstream(src)
+    parser.open(ParseState(process, env, ts))
     stmts = _parse(parser)
     parser.close()
     # print stmts
@@ -320,6 +384,29 @@ def write_ast(ast):
                           indent=2, separators=(',', ': '))
         f.write(repr)
 
+
+def __parse__():
+    from obin.runtime.engine import newprocess
+    source = """
+    module M
+        def main() ->
+            //false + true not T1
+            //x[1] + 23 * 17 - 345 >> 32
+            x.y.z + 34 + c(23, 34) * s[:name][:surname](45 + T2)
+            //if x == 1 and y == 2
+            //    print(x)
+            //else
+            //    23 + f(y + 1 * 23 when z == 1 and t == 2 else 432 / 47);
+        end
+    ;
+    """
+    process = newprocess(["."])
+    ast = parse(process, None, source)
+    print nodes.node_to_string(ast)
+
+
+if __name__ == "__main__":
+    __parse__()
 
 # ast = parse_string(
 #     """

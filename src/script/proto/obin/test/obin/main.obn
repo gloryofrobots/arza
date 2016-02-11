@@ -1,33 +1,41 @@
 //load affirm
-load tests.test_base
-load tests.test_static_refs
-load tests.test_bool
-load tests.datastructs.test_datastructs
-load tests.test_operators
-load tests.test_co
-load tests.test_destruct
-load tests.test_exception
-load tests.test_def
-load tests.test_generic
-load tests.test_match
-load tests.test_modify
-load tests.test_module
-load tests.test_trait
+//load tests.test_base
+//load tests.test_static_refs
+//load tests.test_bool
+//load tests.datastructs.test_datastructs
+//load tests.test_operators
+//load tests.test_co
+//load tests.test_destruct
+//load tests.test_exception
+//load tests.test_def
+//load tests.test_generic
+//load tests.test_match
+//load tests.test_modify
+//load tests.test_module
+//load tests.test_trait
 
+def f(x,y) -> [x,y] end
 
 def main() ->
-    test_static_refs.test()
+    1
+    [1,2,3]
+    (x, y, z) = (1,2,3)
+    {x=1, y=1}
+
+    f(x,y)
+
+//    test_static_refs.test()
 //    test_operators.test()
-    test_bool.test()
-    test_base.test()
-    test_datastructs.test()
-    test_co.test()
-    test_destruct.test()
-    test_exception.test()
-    test_def.test()
-    test_generic.test()
-    test_match.test()
+//    test_bool.test()
+//    test_base.test()
+//    test_datastructs.test()
+//    test_co.test()
+//    test_destruct.test()
+//    test_exception.test()
+//    test_def.test()
+//    test_generic.test()
+//    test_match.test()
 //    test_modify.test()
-    test_module.test()
-    test_trait.test()
+//    test_module.test()
+//    test_trait.test()
 end

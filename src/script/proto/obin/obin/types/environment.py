@@ -96,11 +96,21 @@ def get_reference(env, identifier):
 
     index = api.get_index(env, identifier)
     if not is_absent_index(index):
-        ref = Reference(env, identifier, index)
-        return ref
+        return Reference(env, identifier, index)
     else:
-        outer = env.parent_env
-        return get_reference(outer, identifier)
+        return get_reference(env.parent_env, identifier)
+
+
+def get_operator(env, identifier):
+    # print "get_reference lex", lex
+    if env is None:
+        return None
+    undef = space.newnil()
+    op = api.lookup(env.operators, identifier, undef)
+    if not space.isnil(op):
+        return op
+
+    return get_operator(env.parent_env, identifier)
 
 
 def create_environment(process, source, parent_env):
@@ -144,6 +154,7 @@ class W_Env(W_Any):
         self.scope = scope
         self.data = scope.create_env_bindings()
         self.literals = scope.literals
+        self.operators = scope.create_operators()
         self.refs = scope.create_references()
         # TODO MAKE TEST FOR CORRECT STATIC REFS SOMEHOW
         # print "--------------------------ENV------------------------------"

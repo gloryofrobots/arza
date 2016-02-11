@@ -44,6 +44,7 @@ NODE_TYPE_MAPPING = {
     TT_DOUBLE_DOT: NT_RANGE,
     TT_COLON: NT_SYMBOL,
     TT_KINDOF: NT_KINDOF,
+    TT_ID: NT_NAME,
 }
 
 
@@ -62,7 +63,8 @@ def _init_default_current_0(parser):
 
 #
 def led_infix(parser, node, left):
-    h = node_handler(parser, node)
+    h = node_operator(parser, node)
+    # TODO CHECK IF THIS CYCLE IS STILL NEEDED
     exp = None
     while exp is None:
         exp = expression(parser, h.lbp)
@@ -71,9 +73,28 @@ def led_infix(parser, node, left):
 
 
 def led_infixr(parser, node, left):
-    h = node_handler(parser, node)
+    h = node_operator(parser, node)
     exp = expression(parser, h.lbp - 1)
     return node_2(__ntype(node), __ntok(node), left, exp)
+
+
+def led_infixr_function(parser, node, left):
+    exp = expression(parser, op.lbp - 1)
+    return nodes.create_call_node_name(node, op.infix_function, [left, exp])
+
+
+def prefix_nud_function(parser, node):
+    # TODO WHY 70 here?!!!!
+    exp = expression(parser, 70)
+    return nodes.create_call_node_name(node, op.prefix_function, [exp])
+
+
+def led_infix_function(parser, node, left):
+    exp = None
+    while exp is None:
+        exp = expression(parser, op.lbp)
+
+    return nodes.create_call_node_name(node, op.infix_function, [left, exp])
 
 
 def led_infixr_assign(parser, node, left):

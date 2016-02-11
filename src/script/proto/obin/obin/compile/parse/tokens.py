@@ -78,7 +78,6 @@ RULES = [
     (keyword('end'), TT_END),
     (keyword('and'), TT_AND),
     (keyword('or'), TT_OR),
-    (keyword('not'), TT_NOT),
     (keyword('true'), TT_TRUE),
     (keyword('false'), TT_FALSE),
     (keyword('nil'), TT_NIL),
@@ -127,14 +126,14 @@ RULES = [
     (token('\{'), TT_LCURLY),
     (token('\}'), TT_RCURLY),
     (token('\,'), TT_COMMA),
-    (token('='), TT_ASSIGN),
     (token('\('), TT_LPAREN),
     (token('\)'), TT_RPAREN),
     (token('\['), TT_LSQUARE),
     (token('\]'), TT_RSQUARE),
     (token('\.'), TT_DOT),
     (token('\.\.'), TT_DOUBLE_DOT),
-    (token('\@'), TT_AT_SIGN),
+    (keyword('\@'), TT_AT_SIGN),
+    (keyword('='), TT_ASSIGN),
     # that can catch op
     (identifier, TT_ID),
 ]
@@ -183,6 +182,9 @@ def token_type(token):
 
 def token_value(token):
     return api.to_s(api.at_index(token, 1))
+
+def token_value_string(token):
+    return api.at_index(token, 1)
 
 
 def token_position(token):

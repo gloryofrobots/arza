@@ -11,8 +11,6 @@ from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, Sou
 from obin.misc import platform, strutil
 from obin.runtime import error
 
-
-# TODO REMOVE NIL IN ELSE FROM IF. ADD IF_NO_ELSE NODE_TYPE FOR PATTERN MATCHING
 # TODO REMOVE NIL as token and node_type
 
 def compile_error(compiler, code, node, message):
@@ -33,7 +31,6 @@ class Compiler:
         self.process = process
         self.env = env
         self.scopes = []
-        self.depth = -1
         self.source_path = path
         self.source = src
 
@@ -50,11 +47,23 @@ def info(node):
 
 
 def _enter_scope(compiler):
-    compiler.depth += 1
-
     new_scope = Scope()
     compiler.scopes.append(new_scope)
-    # print 'starting new scope %d' % (compiler.process, compiler.depth, )
+
+
+def _exit_scope(compiler):
+    compiler.scopes.pop()
+
+
+def _current_scope(compiler):
+    return compiler.scopes[-1]
+
+
+def _previous_scope(compiler):
+    if len(compiler.scopes) == 1:
+        return None
+
+    return compiler.scopes[-2]
 
 
 def _is_modifiable_binding(compiler, name):
@@ -138,23 +147,6 @@ def _get_variable_index(compiler, code, node, name):
 
     # return compile_error(compiler, code, node, u"Non reachable variable")
     return ref_id, False
-
-
-def _exit_scope(compiler):
-    compiler.depth = compiler.depth - 1
-    compiler.scopes.pop()
-    # print 'closing scope, returning to %d' % (process, compiler.depth, )
-
-
-def _current_scope(compiler):
-    return compiler.scopes[-1]
-
-
-def _previous_scope(compiler):
-    if len(compiler.scopes) == 1:
-        return None
-
-    return compiler.scopes[-2]
 
 
 """
@@ -871,15 +863,6 @@ def _compile_MODULE(compiler, code, node):
     body = node_second(node)
 
     compiled_code = compile_ast(compiler, body)
-    # _enter_scope(compiler)
-    #
-    # modulecode = newcode(compiler)
-    #
-    # _compile(compiler, modulecode, body)
-    # current_scope = _current_scope(compiler)
-    # scope = current_scope.finalize(_previous_scope(compiler))
-    # _exit_scope(compiler)
-    # compiled_code = modulecode.finalize_compilation(scope)
 
     module_name = space.newsymbol_py_str(compiler.process, _get_name_value(name_node))
     module = space.newenvsource(module_name, compiled_code)
@@ -887,9 +870,6 @@ def _compile_MODULE(compiler, code, node):
     code.emit_1(MODULE, module_index, info(node))
 
     _emit_store(compiler, code, module_name, name_node)
-    # module_name_index = _declare_local(compiler, module_name)
-    # module_name_literal_index = _declare_literal(compiler, module_name)
-    # code.emit_2(STORE_LOCAL, module_name_index, module_name_literal_index, info(name_node))
 
 
 def _compile_GENERIC(compiler, code, node):

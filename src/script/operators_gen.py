@@ -12,11 +12,19 @@ OPERATORS = [
 def operator_func_name(prim):
     return '___%s' % prim 
 
+def op_name_var(name):
+   return "OP_%s" %  name.upper()
+
+def gen_names():
+    for operator, name, arity in OPERATORS:
+        print "%s = u\"%s\"" % (op_name_var(name), operator_func_name(name))
+
+
 
 def gen_setup():
-    TPL_SETUP = "    api.put_native_function(process, module, u\"%s\", %s, %d)"
+    TPL_SETUP = "    api.put_native_function(process, module, operators.%s, %s, %d)"
     for operator, name, arity in OPERATORS:
-        print TPL_SETUP % (operator_func_name(name), operator_func_name(name), arity )
+        print TPL_SETUP % (op_name_var(name), operator_func_name(name), arity )
 
 def gen_defs():
     TPL_IMPL_UNARY = """
@@ -35,5 +43,8 @@ def %s(process, routine):
         tpl = TPL_IMPL_UNARY if arity == 1 else TPL_IMPL_BINARY
 
         print tpl % (operator_func_name(name),)
+
+
+gen_names()
 gen_setup()
 gen_defs()

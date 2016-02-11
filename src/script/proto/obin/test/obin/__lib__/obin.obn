@@ -1,19 +1,19 @@
 load tvar
 //
-def coroutine(fn) ->
-    (fiber1, fiber2) = spawn_fiber()
-
-    first_call = tvar.create(false)
-
-    fun(...args) ->
-        if tvar.read(first_call) is false
-            tvar.swap(first_call, true)
-            activate_fiber(fiber2,
-                    fun ->
-                        apply(fn, concat((fiber1, ), args)) end)
-        else
-            apply(fiber2, args)
-        end
-    end
-end
+//def coroutine(fn) ->
+//    (fiber1, fiber2) = spawn_fiber()
+//
+//    first_call = tvar.create(false)
+//
+//    fun(...args) ->
+//        if tvar.read(first_call) is false
+//            tvar.swap(first_call, true)
+//            activate_fiber(fiber2,
+//                    fun ->
+//                        apply(fn, concat((fiber1, ), args)) end)
+//        else
+//            apply(fiber2, args)
+//        end
+//    end
+//end
 

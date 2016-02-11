@@ -46,35 +46,41 @@ TT_RETURN = 43
 TT_ISA = 44
 TT_NOTA = 45
 TT_KINDOF = 46
-TT_ELLIPSIS = 47
-TT_WILDCARD = 48
-TT_GOTO = 49
-TT_ARROW = 50
-TT_AT_SIGN = 51
-TT_SEMI = 52
-TT_COLON = 53
-TT_LCURLY = 54
-TT_RCURLY = 55
-TT_COMMA = 56
-TT_ASSIGN = 57
-TT_LPAREN = 58
-TT_RPAREN = 59
-TT_LSQUARE = 60
-TT_RSQUARE = 61
-TT_DOT = 62
-TT_DOUBLE_DOT = 63
-TT_BACKTICK = 64
-TT_UNKNOWN = 65
+TT_IN = 47
+TT_IS = 48
+TT_ISNOT = 49
+TT_NOTIN = 50
+TT_NOT = 51
+TT_ELLIPSIS = 52
+TT_WILDCARD = 53
+TT_GOTO = 54
+TT_ARROW = 55
+TT_AT_SIGN = 56
+TT_SEMI = 57
+TT_COLON = 58
+TT_LCURLY = 59
+TT_RCURLY = 60
+TT_COMMA = 61
+TT_ASSIGN = 62
+TT_LPAREN = 63
+TT_RPAREN = 64
+TT_LSQUARE = 65
+TT_RSQUARE = 66
+TT_DOT = 67
+TT_DOUBLE_DOT = 68
+TT_BACKTICK = 69
+TT_UNKNOWN = 70
 # ************************ OBIN TOKENS REPR *****************************
 __TT_REPR__ = [u"TT_ENDSTREAM", u"TT_INT", u"TT_FLOAT", u"TT_STR", u"TT_CHAR", u"TT_NAME", u"TT_ID", u"TT_NEWLINE",
                u"TT_OPERATOR", u"TT_BREAK", u"TT_CASE", u"TT_CONTINUE", u"TT_ELSE", u"TT_FOR", u"TT_WHILE", u"TT_IF",
                u"TT_WHEN", u"TT_ELIF", u"TT_OF", u"TT_AS", u"TT_MATCH", u"TT_DEF", u"TT_FUN", u"TT_VAR", u"TT_LAZY",
                u"TT_AND", u"TT_OR", u"TT_TRUE", u"TT_FALSE", u"TT_NIL", u"TT_TRY", u"TT_THROW", u"TT_CATCH",
                u"TT_FINALLY", u"TT_MODULE", u"TT_IMPORT", u"TT_EXPORT", u"TT_LOAD", u"TT_USE", u"TT_TRAIT",
-               u"TT_GENERIC", u"TT_SPECIFY", u"TT_END", u"TT_RETURN", u"TT_ISA", u"TT_NOTA", u"TT_KINDOF",
-               u"TT_ELLIPSIS", u"TT_WILDCARD", u"TT_GOTO", u"TT_ARROW", u"TT_AT_SIGN", u"TT_SEMI", u"TT_COLON",
-               u"TT_LCURLY", u"TT_RCURLY", u"TT_COMMA", u"TT_ASSIGN", u"TT_LPAREN", u"TT_RPAREN", u"TT_LSQUARE",
-               u"TT_RSQUARE", u"TT_DOT", u"TT_DOUBLE_DOT", u"TT_BACKTICK", u"TT_UNKNOWN", ]
+               u"TT_GENERIC", u"TT_SPECIFY", u"TT_END", u"TT_RETURN", u"TT_ISA", u"TT_NOTA", u"TT_KINDOF", u"TT_IN",
+               u"TT_IS", u"TT_ISNOT", u"TT_NOTIN", u"TT_NOT", u"TT_ELLIPSIS", u"TT_WILDCARD", u"TT_GOTO", u"TT_ARROW",
+               u"TT_AT_SIGN", u"TT_SEMI", u"TT_COLON", u"TT_LCURLY", u"TT_RCURLY", u"TT_COMMA", u"TT_ASSIGN",
+               u"TT_LPAREN", u"TT_RPAREN", u"TT_LSQUARE", u"TT_RSQUARE", u"TT_DOT", u"TT_DOUBLE_DOT", u"TT_BACKTICK",
+               u"TT_UNKNOWN", ]
 
 
 def token_type_to_str(ttype):

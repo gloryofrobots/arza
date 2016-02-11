@@ -54,7 +54,8 @@ NT_VAR = 51
 NT_LAZY = 52
 NT_AND = 53
 NT_OR = 54
-NT_GOTO = 55
+NT_OPERATOR = 55
+NT_GOTO = 56
 # ************************ OBIN NODES REPR *****************************
 __NT_REPR__ = ["NT_TRUE", "NT_FALSE", "NT_NIL", "NT_INT", "NT_FLOAT", "NT_STR", "NT_CHAR", "NT_WILDCARD", "NT_NAME",
                "NT_SPECIAL_NAME", "NT_SYMBOL", "NT_MAP", "NT_LIST", "NT_TUPLE", "NT_UNIT", "NT_DEF", "NT_FUN", "NT_IF",
@@ -62,7 +63,7 @@ __NT_REPR__ = ["NT_TRUE", "NT_FALSE", "NT_NIL", "NT_INT", "NT_FLOAT", "NT_STR", 
                "NT_USE", "NT_TRAIT", "NT_GENERIC", "NT_SPECIFY", "NT_BIND", "NT_RETURN", "NT_THROW", "NT_BREAK",
                "NT_CONTINUE", "NT_FOR", "NT_WHILE", "NT_REST", "NT_ASSIGN", "NT_CALL", "NT_CALL_MEMBER", "NT_LOOKUP",
                "NT_LOOKUP_SYMBOL", "NT_SLICE", "NT_RANGE", "NT_MODIFY", "NT_OF", "NT_KINDOF", "NT_AS", "NT_ISA",
-               "NT_NOTA", "NT_VAR", "NT_LAZY", "NT_AND", "NT_OR", "NT_GOTO", ]
+               "NT_NOTA", "NT_VAR", "NT_LAZY", "NT_AND", "NT_OR", "NT_OPERATOR", "NT_GOTO", ]
 
 
 def node_type_to_str(ttype):

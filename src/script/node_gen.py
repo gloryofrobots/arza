@@ -68,6 +68,7 @@ NODES = [
   "NT_AND",
   "NT_OR",
 
+  "NT_OPERATOR",
   "NT_GOTO",
 ]
 

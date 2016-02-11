@@ -47,6 +47,13 @@ TOKENS = [
   ("TT_ISA", "isa"),
   ("TT_NOTA", "nota"),
   ("TT_KINDOF", "kindof"),
+  ("TT_IN", "in"),
+  ("TT_IS", "is"),
+  ("TT_ISNOT", "isnot"),
+  ("TT_NOTIN", "notin"),
+  ("TT_NOT", "not"),
+
+
   ("TT_ELLIPSIS", "..."),
   ("TT_WILDCARD", "_"),
   ("TT_GOTO", "goto"),
