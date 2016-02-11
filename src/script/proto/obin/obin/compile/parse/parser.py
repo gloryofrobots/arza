@@ -292,6 +292,7 @@ def expression_parser_init(parser):
 
 
 def module_parser_init(parser):
+    literal(parser, TT_ID)
     stmt(parser, TT_GENERIC, stmt_generic)
     stmt(parser, TT_TRAIT, stmt_trait)
     stmt(parser, TT_SPECIFY, stmt_specify)
@@ -350,13 +351,13 @@ def __parse__():
     from obin.runtime.engine import newprocess
     source = """
     module M
-        @infixl(10, +, ___add)
-        @infixr(10, ::, ___cons)
+        @infixl(+, ___add, 10)
+        @infixr(|, ___bitor, 10)
         @prefix(+, ___unary_plus)
 
-
         def main() ->
-            1 + 2
+            nil
+            //1 + 2
         end
     ;
     """

@@ -39,7 +39,7 @@ def load_module(process, name):
 def evaluate_module_file(process, name, filename):
     from obin.builtins.prelude import compile_module
     module = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 3),
-                                space.newtuple([space.newstring_from_str(filename), name, process.modules.prelude]))
+                                space.newtuple([space.newstring_s(filename), name, process.modules.prelude]))
 
     process.modules.add_module(api.to_s(name), module)
     return module

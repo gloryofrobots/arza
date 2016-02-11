@@ -93,7 +93,7 @@ def add_trait(process, obj, trait):
     try:
         return W_Entity(space.newbehavior(plist.prepend(trait, obj.behavior.traits)), obj.source)
     except Exception as e:
-        error.throw_3(error.Errors.ADD_TRAIT, obj, trait, space.newstring_from_str(str(e)))
+        error.throw_3(error.Errors.ADD_TRAIT, obj, trait, space.newstring_s(str(e)))
 
 
 def add_traits(process, obj, traits):
@@ -102,7 +102,7 @@ def add_traits(process, obj, traits):
     try:
         return W_Entity(space.newbehavior(plist.concat(traits, obj.behavior.traits)), obj.source)
     except Exception as e:
-        error.throw_3(error.Errors.ADD_TRAIT, obj, traits, space.newstring_from_str(str(e)))
+        error.throw_3(error.Errors.ADD_TRAIT, obj, traits, space.newstring_s(str(e)))
 
 
 def remove_trait(process, entity, trait):
@@ -111,7 +111,7 @@ def remove_trait(process, entity, trait):
     try:
         return W_Entity(space.newbehavior(plist.remove(entity.behavior.traits, trait)), entity.source)
     except Exception as e:
-        error.throw_3(error.Errors.REMOVE_TRAIT, entity, trait, space.newstring_from_str(str(e)))
+        error.throw_3(error.Errors.REMOVE_TRAIT, entity, trait, space.newstring_s(str(e)))
 
 
 def remove_traits(process, entity, traits):
@@ -120,4 +120,4 @@ def remove_traits(process, entity, traits):
     try:
         return W_Entity(space.newbehavior(plist.substract(entity.behavior.traits, traits)), entity.source)
     except Exception as e:
-        error.throw_3(error.Errors.REMOVE_TRAIT, entity, traits, space.newstring_from_str(str(e)))
+        error.throw_3(error.Errors.REMOVE_TRAIT, entity, traits, space.newstring_s(str(e)))

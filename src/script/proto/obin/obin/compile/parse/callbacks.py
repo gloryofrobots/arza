@@ -210,7 +210,7 @@ def itself(parser, op, node):
 
 
 def prefix_colon(parser, op, node):
-    check_token_types(parser, [TT_NAME, TT_BACKTICK])
+    check_token_types(parser, [TT_NAME, TT_BACKTICK, TT_ID])
     exp = expression(parser, 70)
     check_node_types(parser, exp, [NT_NAME, NT_SPECIAL_NAME])
     return node_1(__ntype(node), __ntok(node), exp)
@@ -609,23 +609,33 @@ def stmt_load(parser, op, node):
     imported = expression(parser.load_parser, 0)
     return node_1(NT_LOAD, __ntok(node), imported)
 
+
 def stmt_module_at(parser, op, node):
     """
-    @infixl(10, "+", ___add)
-    @infixr(10, "::", ___cons)
-    @prefix("+", ___unary_plus)
+    @infixl(+, ___add, 10)
+    @infixr(::, ___cons, 10)
+    @prefix(+, ___unary_plus)
     """
     check_token_type(parser, TT_NAME)
     type_node = parser.node
+    advance(parser)
     if nodes.node_value_s(type_node) == "prefix":
-        advance(parser)
-        options = expression(parser, 0)
-        check_node_type(parser, options, NT_TUPLE)
-
-
+        advance_expected_after(parser, TT_LPAREN)
         op_node = advance_expected_after(parser, TT_ID)
+        advance_expected_after(parser, TT_COMMA)
         func_node = advance_expected_after(parser, TT_NAME)
-        op = operator_prefix(newoperator(), prefix_nud_function, nodes.node_value(func_node))
+
+        options_tuple = expression(parser, 0)
+        check_node_type(parser, options_tuple, NT_TUPLE)
+        options = nodes.node_first(options_tuple)
+        if api.length_i(options) != 2:
+            return parse_error(parser, u"Invalid prefix operator options", parser.node)
+        op_node = options[0]
+        func_node = options[1]
+        check_node_type(parser, op_node, NT_NAME)
+        check_node_types(parser, func_node, [NT_NAME, NT_SPECIAL_NAME])
+        op = parser_current_scope_find_operator_or_create_new(parser, nodes.node_value(op_node))
+        op = operator_prefix(op, prefix_nud_function, nodes.node_value(func_node))
     else:
         if nodes.node_value_s(type_node) == "infixl":
             infix_function = led_infix_function
@@ -634,20 +644,28 @@ def stmt_module_at(parser, op, node):
         else:
             return parse_error(parser, u"Invalid operator type expected infixl, infixr or prefix", parser.node)
 
-        precedence_node = advance_expected_after(parser, TT_INT)
+        options_tuple = expression(parser, 0)
+        check_node_type(parser, options_tuple, NT_TUPLE)
+        options = nodes.node_first(options_tuple)
+        if api.length_i(options) != 3:
+            return parse_error(parser, u"Invalid prefix operator options", parser.node)
+        op_node = options[0]
+        func_node = options[1]
+        precedence_node = options[2]
+        check_node_type(parser, precedence_node, NT_INT)
+        check_node_type(parser, op_node, NT_NAME)
+        check_node_types(parser, func_node, [NT_NAME, NT_SPECIAL_NAME])
 
         try:
             precedence = strutil.string_to_int(nodes.node_value_s(precedence_node))
         except:
             return parse_error(parser, u"Invalid infix operator precedence", precedence_node)
+        op = parser_current_scope_find_operator_or_create_new(parser, nodes.node_value(op_node))
+        op = operator_infix(op, precedence, infix_function, nodes.node_value(func_node))
 
-        op_node = advance_expected_after(parser, TT_ID)
-        func_node = advance_expected_after(parser, TT_NAME)
-        op = operator_infix(newoperator(), precedence, infix_function, nodes.node_value(func_node))
-
-    advance(parser)
+    # advance(parser)
     endofexpression(parser)
-    parser_add_operator(parser, op_node, op)
+    parser_current_scope_add_operator(parser, op_node, op)
     return node_2(NT_OPERATOR, __ntok(node), op_node, op)
 
 

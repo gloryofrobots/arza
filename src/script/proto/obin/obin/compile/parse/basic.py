@@ -65,20 +65,21 @@ def parser_current_scope(parser):
     return plist.head(parser.state.scopes)
 
 
-def parser_add_operator(parser, op_node, op):
+def parser_current_scope_add_operator(parser, op_name, op):
     cur_scope = parser_current_scope(parser)
-
-    op_name = nodes.node_value(op_node)
-    old_operator = api.lookup(cur_scope.operators, op_name, space.newnil())
-    if not space.isnil(old_operator):
-        if api.equal_b(old_operator, op):
-            parse_error(parser, u"Such operator has been already declared", op_node)
-
     api.put(cur_scope.operators, op_name, op)
 
 
+def parser_current_scope_find_operator_or_create_new(parser, op_name):
+    cur_scope = parser_current_scope(parser)
+    op = api.lookup(cur_scope.operators, op_name, space.newnil())
+    if space.isnil(op):
+        return newoperator()
+    return op
+
 def parser_find_operator(parser, op_name):
     undef = space.newnil()
+    cur_scope = parser_current_scope(parser)
     scopes = parser.state.scopes
     for scope in scopes:
         op = api.lookup(scope.operators, op_name, undef)
@@ -87,7 +88,7 @@ def parser_find_operator(parser, op_name):
 
     op = environment.get_operator(parser.state.env, op_name)
     if op is not None:
-        api.put(parser_current_scope(parser).operators, op_name, op)
+        api.put(cur_scope.operators, op_name, op)
 
     return op
 
@@ -102,9 +103,35 @@ class W_Operator(root.W_Any):
         self.prefix_function = None
         self.infix_function = None
 
+    def prefix_s(self):
+        api.to_s(self.prefix_function) if self.prefix_function else ""
+
+    def infix_s(self):
+        api.to_s(self.infix_function) if self.infix_function else ""
+
+    def _equal_(self, other):
+        if not isinstance(other, W_Operator):
+            return False
+        if self.nud != other.nud or self.led != other.led \
+                or self.std != other.std and self.lbp != other.lbp:
+            return False
+
+        if self.prefix_function and other.prefix_function:
+            if not api.equal_b(self.prefix_function, other.prefix_function):
+                return False
+        elif self.prefix_function or other.prefix_function:
+            return False
+
+        if self.infix_function and other.infix_function:
+            if not api.equal_b(self.infix_function, other.infix_function):
+                return False
+        elif self.infix_function or other.infix_function:
+            return False
+
+        return True
+
     def _to_string_(self):
-        return '<operator %s %s>' % (api.to_s(self.prefix_function) if self.prefix_function else "",
-                                       api.to_s(self.infix_function) if self.infix_function else "")
+        return '<operator %s %s>' % (self.prefix_s(), self.infix_s())
 
 
 def newoperator():

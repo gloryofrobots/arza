@@ -79,7 +79,7 @@ def newchar(c):
 ########################################################
 
 @enforceargs(str)
-def newstring_from_str(s):
+def newstring_s(s):
     return newstring(unicode(s))
 
 

@@ -20,7 +20,7 @@ def compile_error(compiler, code, node, message):
                        space.newtuple([
                            space.newstring(message),
                            space.newint(nodes.node_type(node)),
-                           space.newstring_from_str(nodes.node_value_s(node)),
+                           space.newstring_s(nodes.node_value_s(node)),
                            space.newtuple([space.newstring(u"line"), nodes.node_line(node),
                                            space.newstring(u"column"), nodes.node_column(node)]),
                            space.newstring(line)

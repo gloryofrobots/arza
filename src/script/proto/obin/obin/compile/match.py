@@ -30,7 +30,7 @@ def _create_path_node(basenode, path):
 
 def add_pattern(patterns, args):
     assert isinstance(args, list)
-    args[0] = space.newstring_from_str(args[0])
+    args[0] = space.newstring_s(args[0])
     return plist.prepend(space.newlist(args), patterns)
 
 
@@ -182,7 +182,7 @@ def _process_map(state, pattern, patterns, path):
         items.append(((key, var_name), key_value))
     # symbols used for in chains and grouping maps in matches
     # TODO implement sorting for symbols amd maps
-    symbols = [space.newstring_from_str(symbol) for symbol in sorted(symbols)]
+    symbols = [space.newstring_s(symbol) for symbol in sorted(symbols)]
 
     patterns = add_pattern(patterns, ["map", space.newlist(symbols), _create_path_node(pattern, path)])
 

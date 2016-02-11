@@ -1,4 +1,5 @@
 from obin.runtime import error
+from obin.types import api, space
 
 def get_line(string, line_no):
     index = -1
@@ -35,6 +36,8 @@ def is_quoted_string(string):
 def string_to_int(string):
     return int(string)
 
+def w_string_unquote(w):
+    return space.newstring_s(string_unquote(api.to_s(w)))
 
 def string_unquote(string):
     s = string

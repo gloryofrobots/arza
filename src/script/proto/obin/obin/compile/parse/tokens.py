@@ -182,7 +182,7 @@ def newtoken(type, val, pos, line, column):
     assert space.isint(pos)
     assert space.isint(line)
     assert space.isint(column)
-    return space.newtuple([space.newint(type), space.newstring_from_str(val), pos, line, column])
+    return space.newtuple([space.newint(type), space.newstring_s(val), pos, line, column])
 
 
 def token_type(token):

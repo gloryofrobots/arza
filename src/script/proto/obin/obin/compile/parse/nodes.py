@@ -198,7 +198,7 @@ def node_to_d(node):
 def node_to_string(node):
     import json
     d = node_to_d(node)
-    return space.newstring_from_str(json.dumps(d, sort_keys=True,
+    return space.newstring_s(json.dumps(d, sort_keys=True,
                                                indent=2, separators=(',', ': ')))
 
 
