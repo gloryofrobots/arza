@@ -2,6 +2,7 @@ from obin.compile.parse.basic import *
 from obin.compile.parse.node_type import *
 from obin.compile.parse import nodes
 from obin.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3)
+from obin.types import space
 
 NODE_TYPE_MAPPING = {
     TT_DOT: NT_LOOKUP_SYMBOL,
@@ -36,34 +37,10 @@ NODE_TYPE_MAPPING = {
     TT_ASSIGN: NT_ASSIGN,
     TT_OF: NT_OF,
     TT_AS: NT_AS,
-    TT_IN: NT_IN,
-    TT_NOTIN: NT_NOTIN,
-    TT_IS: NT_IS,
-    TT_ISNOT: NT_ISNOT,
     TT_ISA: NT_ISA,
     TT_NOTA: NT_NOTA,
     TT_AND: NT_AND,
     TT_OR: NT_OR,
-    TT_NOT: NT_NOT,
-    TT_EQ: NT_EQ,
-    TT_LE: NT_LE,
-    TT_GE: NT_GE,
-    TT_NE: NT_NE,
-    TT_BITAND: NT_BITAND,
-    TT_BITNOT: NT_BITNOT,
-    TT_BITOR: NT_BITOR,
-    TT_BITXOR: NT_BITXOR,
-    TT_SUB: NT_SUB,
-    TT_ADD: NT_ADD,
-    TT_MUL: NT_MUL,
-    TT_DIV: NT_DIV,
-    TT_MOD: NT_MOD,
-    TT_LT: NT_LT,
-    TT_GT: NT_GT,
-    TT_RSHIFT: NT_RSHIFT,
-    TT_URSHIFT: NT_URSHIFT,
-    TT_LSHIFT: NT_LSHIFT,
-    TT_DOUBLE_COLON: NT_CONS,
     TT_DOUBLE_DOT: NT_RANGE,
     TT_COLON: NT_SYMBOL,
     TT_KINDOF: NT_KINDOF,
@@ -83,7 +60,7 @@ def _init_default_current_0(parser):
 # INFIX
 ##############################################################
 
-
+#
 def led_infix(parser, node, left):
     h = node_handler(parser, node)
     exp = None
@@ -223,14 +200,6 @@ def prefix_colon(parser, node):
     exp = expression(parser, 70)
     check_node_types(parser, exp, [NT_NAME, NT_SPECIAL_NAME])
     return node_1(__ntype(node), __ntok(node), exp)
-
-
-def prefix_unary_minus(parser, node):
-    return _prefix_nud(parser, NT_UNARY_MINUS, node)
-
-
-def prefix_unary_plus(parser, node):
-    return _prefix_nud(parser, NT_UNARY_PLUS, node)
 
 
 def symbol_wildcard(parser, node):
@@ -485,6 +454,10 @@ def stmt_loop_flow(parser, node):
     return node_0(__ntype(node), __ntok(node))
 
 
+def stmt_operator(parser, node):
+    pass
+
+
 def stmt_while(parser, node):
     cond = prefix_condition(parser)
     stmts = statements(parser, TERM_BLOCK)
@@ -513,11 +486,13 @@ def stmt_for(parser, node):
     advance_end(parser)
     return node_3(NT_FOR, __ntok(node), vars, exp, stmts)
 
+
 def stmt_when(parser, node):
     cond = prefix_condition(parser)
     body = statements(parser, TERM_BLOCK)
     advance_end(parser)
     return node_2(NT_WHEN_NO_ELSE, __ntok(node), cond, body)
+
 
 ###############################################################
 # MODULE STATEMENTS

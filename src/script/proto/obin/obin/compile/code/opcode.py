@@ -101,7 +101,6 @@ def opcode_estimate_stack_change(opcode):
 
 
 def opcode_info(routine, opcode):
-    from obin.builtins.internals.internals import internal_to_str
 
     tag = opcode[0]
     arg1 = opcode[1]
@@ -126,9 +125,6 @@ def opcode_info(routine, opcode):
     elif tag == LOAD:
         literal = routine.literals[arg1]
         return 'LOAD %s' % (literal,)
-    # ********************************
-    elif tag == CALL_INTERNAL:
-        return 'CALL_PRIMITIVE %s ' % (internal_to_str(arg1))
     # ********************************
     elif tag == FUNCTION:
         return 'LOAD_FUNCTION'

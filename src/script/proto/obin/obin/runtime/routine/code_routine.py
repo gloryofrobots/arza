@@ -2,7 +2,6 @@ from obin.compile.code.opcode import *
 from obin.runtime import error
 from obin.runtime.routine.base_routine import BaseRoutine
 from obin.runtime.load import import_module
-from obin.builtins.internals.internals import get_internal
 from obin.types import api, space, string, environment
 from obin.types.dispatch import generic
 

@@ -45,53 +45,24 @@ NT_LOOKUP_SYMBOL = 42
 NT_SLICE = 43
 NT_RANGE = 44
 NT_MODIFY = 45
-NT_CONS = 46
-NT_OF = 47
-NT_KINDOF = 48
-NT_AS = 49
-NT_IN = 50
-NT_NOTIN = 51
-NT_IS = 52
-NT_ISNOT = 53
-NT_ISA = 54
-NT_NOTA = 55
-NT_VAR = 56
-NT_LAZY = 57
-NT_AND = 58
-NT_OR = 59
-NT_NOT = 60
-NT_EQ = 61
-NT_LE = 62
-NT_GE = 63
-NT_NE = 64
-NT_BITAND = 65
-NT_BITNOT = 66
-NT_BITOR = 67
-NT_BITXOR = 68
-NT_SUB = 69
-NT_ADD = 70
-NT_MUL = 71
-NT_DIV = 72
-NT_MOD = 73
-NT_LT = 74
-NT_GT = 75
-NT_RSHIFT = 76
-NT_URSHIFT = 77
-NT_LSHIFT = 78
-NT_UNARY_PLUS = 79
-NT_UNARY_MINUS = 80
-NT_GOTO = 81
+NT_OF = 46
+NT_KINDOF = 47
+NT_AS = 48
+NT_ISA = 49
+NT_NOTA = 50
+NT_VAR = 51
+NT_LAZY = 52
+NT_AND = 53
+NT_OR = 54
+NT_GOTO = 55
 # ************************ OBIN NODES REPR *****************************
 __NT_REPR__ = ["NT_TRUE", "NT_FALSE", "NT_NIL", "NT_INT", "NT_FLOAT", "NT_STR", "NT_CHAR", "NT_WILDCARD", "NT_NAME",
                "NT_SPECIAL_NAME", "NT_SYMBOL", "NT_MAP", "NT_LIST", "NT_TUPLE", "NT_UNIT", "NT_DEF", "NT_FUN", "NT_IF",
                "NT_WHEN", "NT_WHEN_NO_ELSE", "NT_MATCH", "NT_TRY", "NT_MODULE", "NT_IMPORT", "NT_EXPORT", "NT_LOAD",
                "NT_USE", "NT_TRAIT", "NT_GENERIC", "NT_SPECIFY", "NT_BIND", "NT_RETURN", "NT_THROW", "NT_BREAK",
                "NT_CONTINUE", "NT_FOR", "NT_WHILE", "NT_REST", "NT_ASSIGN", "NT_CALL", "NT_CALL_MEMBER", "NT_LOOKUP",
-               "NT_LOOKUP_SYMBOL", "NT_SLICE", "NT_RANGE", "NT_MODIFY", "NT_CONS", "NT_OF", "NT_KINDOF", "NT_AS",
-               "NT_IN", "NT_NOTIN", "NT_IS", "NT_ISNOT", "NT_ISA", "NT_NOTA", "NT_VAR", "NT_LAZY", "NT_AND", "NT_OR",
-               "NT_NOT", "NT_EQ", "NT_LE", "NT_GE", "NT_NE", "NT_BITAND", "NT_BITNOT", "NT_BITOR", "NT_BITXOR",
-               "NT_SUB", "NT_ADD", "NT_MUL", "NT_DIV", "NT_MOD", "NT_LT", "NT_GT", "NT_RSHIFT", "NT_URSHIFT",
-               "NT_LSHIFT", "NT_UNARY_PLUS", "NT_UNARY_MINUS", "NT_GOTO", ]
+               "NT_LOOKUP_SYMBOL", "NT_SLICE", "NT_RANGE", "NT_MODIFY", "NT_OF", "NT_KINDOF", "NT_AS", "NT_ISA",
+               "NT_NOTA", "NT_VAR", "NT_LAZY", "NT_AND", "NT_OR", "NT_GOTO", ]
 
 
 def node_type_to_str(ttype):

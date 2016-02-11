@@ -197,16 +197,8 @@ def base_parser_init(parser):
     symbol(parser, TT_END, None)
     symbol(parser, TT_ELSE, None)
     symbol(parser, TT_SEMI, None)
-    """
-    precedence 10
-    =
-    """
-    assignment(parser, TT_ASSIGN, 10)
 
-    """
-    precedence 70
-    .
-    """
+    assignment(parser, TT_ASSIGN, 10)
     infix(parser, TT_DOT, 70, infix_dot)
 
     prefix(parser, TT_LPAREN, prefix_lparen)
@@ -218,130 +210,40 @@ def base_parser_init(parser):
 
 
 def expression_parser_init(parser):
-    # *********************************************
-    # symbol(parser, TT_WILDCARD, nud_wildcard)
-    # symbol(parser, TT_DOUBLE_DOT, None)
+    # OTHER OPERATORS ARE DECLARED IN PRELUDE
 
-    # precedence 5
-    # infix(parser, TT_COMMA, 5)
-
-
-    """
-    precedence 20
-    when
-    """
-
+    # 20
     infix(parser, TT_WHEN, 20, infix_when)
 
-    """
-    precedence 25
-    or
-    """
+    # 25
     infix(parser, TT_OR, 25, led_infix)
 
-    """
-    precedence 30
-    AND
-    """
+    # 30
     infix(parser, TT_AND, 30, led_infix)
-    """
-    precedence 35
-    |
-    """
-    infixr(parser, TT_BITOR, 35)
 
-    """
-    precedence 40
-    ^
-    """
-    infixr(parser, TT_BITXOR, 40)
-
-    """
-    precedence 45
-    &
-    """
-    infixr(parser, TT_BITAND, 45)
-
-    """
-    precedence 50
-    in, is, <, <=, >, >=, !=, == isnot, notin, isa, nota
-    """
-
-    infix(parser, TT_ISNOT, 50, led_infix)
-    infix(parser, TT_IN, 50, led_infix)
-    infix(parser, TT_NOTIN, 50, led_infix)
-    infix(parser, TT_IS, 50, led_infix)
-    infix(parser, TT_LT, 50, led_infix)
-    infix(parser, TT_LE, 50, led_infix)
-    infix(parser, TT_GT, 50, led_infix)
-    infix(parser, TT_GE, 50, led_infix)
-    infix(parser, TT_NE, 50, led_infix)
-    infix(parser, TT_EQ, 50, led_infix)
-
+    # 50
     infix(parser, TT_ISA, 50, led_infix)
     infix(parser, TT_NOTA, 50, led_infix)
     infix(parser, TT_KINDOF, 50, led_infix)
 
-    """
-    precedence 55
-    >> << >>>
-    """
-    infix(parser, TT_LSHIFT, 55, led_infix)
-    infix(parser, TT_RSHIFT, 55, led_infix)
-    infix(parser, TT_URSHIFT, 55, led_infix)
-
-    """
-    precedence 60
-    + -
-    """
-    infix(parser, TT_ADD, 60, led_infix)
-    infix(parser, TT_SUB, 60, led_infix)
-
-    """
-    precedence 65
-    * / %
-    """
-    infix(parser, TT_MUL, 65, led_infix)
-    infix(parser, TT_DIV, 65, led_infix)
-    infix(parser, TT_MOD, 65, led_infix)
-
-    """
-    precedence 70
-    .
-    """
-
+    # 70
     infix(parser, TT_DOT, 70, infix_dot)
-    infixr(parser, TT_DOUBLE_COLON, 70)
 
-    """
-    precedence 75
-    ..
-    """
+    # 75
     infix(parser, TT_DOUBLE_DOT, 75, led_infix)
 
-    """
-    precedence 80
-    [
-    """
-
+    # 80
     infix(parser, TT_LCURLY, 80, infix_lcurly)
     infix(parser, TT_LSQUARE, 80, infix_lsquare)
 
-    """
-    precedence 90
-    (
-    """
+    # 90
     infix(parser, TT_LPAREN, 90, infix_lparen)
 
     """
     PREFIXES
     """
 
-    prefix(parser, TT_BITNOT, prefix_nud)
     prefix(parser, TT_NOT, prefix_nud)
-
-    prefix(parser, TT_SUB, prefix_unary_minus)
-    prefix(parser, TT_ADD, prefix_unary_plus)
 
     prefix(parser, TT_IF, prefix_if)
 
@@ -354,6 +256,8 @@ def expression_parser_init(parser):
     STATEMENTS
     """
 
+    stmt(parser, TT_OPERATOR, stmt_operator)
+
     stmt(parser, TT_RETURN, stmt_single)
     stmt(parser, TT_THROW, stmt_single)
     stmt(parser, TT_BREAK, stmt_loop_flow)
@@ -361,6 +265,8 @@ def expression_parser_init(parser):
     stmt(parser, TT_WHILE, stmt_while)
     stmt(parser, TT_FOR, stmt_for)
     stmt(parser, TT_WHEN, stmt_when)
+
+
     return parser
 
 

@@ -7,7 +7,6 @@ from obin.compile.parse.nodes import (node_type, node_arity,
 from obin.compile.parse.node_type import *
 from obin.compile.compile_scope import Scope
 from obin.types import space, api, plist, environment
-from obin.builtins.internals import internals
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
 from obin.misc import platform, strutil
 from obin.runtime import error
@@ -264,116 +263,16 @@ def _on_unary_primitive(compiler, code, node, name):
     code.emit_1(CALL_INTERNAL, name, info(node))
 
 
-def _compile_BITAND(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.BITAND)
-
-
-def _compile_BITOR(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.BITOR)
-
-
-def _compile_BITXOR(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.BITXOR)
-
-
-def _compile_UNARY_PLUS(compiler, code, node):
-    _on_unary_primitive(compiler, code, node, internals.UPLUS)
-
-
-def _compile_ADD(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.ADD)
-
-
-def _compile_MUL(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.MUL)
-
-
-def _compile_MOD(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.MOD)
-
-
-def _compile_DIV(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.DIV)
-
-
-def _compile_UNARY_MINUS(compiler, code, node):
-    _on_unary_primitive(compiler, code, node, internals.UMINUS)
-
-
-def _compile_SUB(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.SUB)
-
-
-def _compile_BITNOT(compiler, code, node):
-    _on_unary_primitive(compiler, code, node, internals.BITNOT)
-
-
-def _compile_NOT(compiler, code, node):
-    _on_unary_primitive(compiler, code, node, internals.NOT)
-
-
-def _compile_GE(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.GE)
-
-
-def _compile_GT(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.GT)
-
-
-def _compile_LE(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.LE)
-
-
-def _compile_LT(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.LT)
-
-
-def _compile_IS(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.IS)
-
-
-def _compile_ISNOT(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.ISNOT)
-
-
 def _compile_ISA(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.ISA)
+    assert False
 
 
 def _compile_NOTA(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.NOTA)
+    assert False
 
 
 def _compile_KINDOF(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.KINDOF)
-
-
-def _compile_IN(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.IN)
-
-
-def _compile_NOTIN(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.NOTIN)
-
-
-def _compile_EQ(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.EQ)
-
-
-def _compile_NE(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.NE)
-
-
-def _compile_LSHIFT(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.LSH)
-
-
-def _compile_RSHIFT(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.RSH)
-
-
-def _compile_URSHIFT(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.URSH)
+    assert False
 
 
 def _compile_AND(compiler, code, node):
@@ -1105,10 +1004,6 @@ def _compile_WHILE(compiler, code, node):
     code.done_continue()
 
 
-def _compile_CONS(compiler, code, node):
-    _on_binary_primitive(compiler, code, node, internals.CONS)
-
-
 def _compile_LOOKUP_SYMBOL(compiler, code, node):
     obj = node_first(node)
     _compile(compiler, code, obj)
@@ -1297,73 +1192,16 @@ def _compile_node(compiler, code, node):
 
     elif NT_MODIFY == ntype:
         _compile_MODIFY(compiler, code, node)
-    elif NT_CONS == ntype:
-        _compile_CONS(compiler, code, node)
-
-    elif NT_IN == ntype:
-        _compile_IN(compiler, code, node)
-    elif NT_NOTIN == ntype:
-        _compile_NOTIN(compiler, code, node)
-    elif NT_IS == ntype:
-        _compile_IS(compiler, code, node)
-    elif NT_ISNOT == ntype:
-        _compile_ISNOT(compiler, code, node)
     elif NT_ISA == ntype:
         _compile_ISA(compiler, code, node)
     elif NT_NOTA == ntype:
         _compile_NOTA(compiler, code, node)
     elif NT_KINDOF == ntype:
         _compile_KINDOF(compiler, code, node)
-
     elif NT_AND == ntype:
         _compile_AND(compiler, code, node)
     elif NT_OR == ntype:
         _compile_OR(compiler, code, node)
-    elif NT_NOT == ntype:
-        _compile_NOT(compiler, code, node)
-    elif NT_EQ == ntype:
-        _compile_EQ(compiler, code, node)
-    elif NT_LE == ntype:
-        _compile_LE(compiler, code, node)
-    elif NT_GE == ntype:
-        _compile_GE(compiler, code, node)
-    elif NT_NE == ntype:
-        _compile_NE(compiler, code, node)
-    elif NT_BITAND == ntype:
-        _compile_BITAND(compiler, code, node)
-    elif NT_BITNOT == ntype:
-        _compile_BITNOT(compiler, code, node)
-    elif NT_BITOR == ntype:
-        _compile_BITOR(compiler, code, node)
-    elif NT_BITXOR == ntype:
-        _compile_BITXOR(compiler, code, node)
-    elif NT_SUB == ntype:
-        _compile_SUB(compiler, code, node)
-    elif NT_ADD == ntype:
-        _compile_ADD(compiler, code, node)
-    elif NT_MUL == ntype:
-        _compile_MUL(compiler, code, node)
-    elif NT_DIV == ntype:
-        _compile_DIV(compiler, code, node)
-    elif NT_MOD == ntype:
-        _compile_MOD(compiler, code, node)
-    elif NT_LT == ntype:
-        _compile_LT(compiler, code, node)
-    elif NT_GT == ntype:
-        _compile_GT(compiler, code, node)
-
-    elif NT_RSHIFT == ntype:
-        _compile_RSHIFT(compiler, code, node)
-    elif NT_URSHIFT == ntype:
-        _compile_URSHIFT(compiler, code, node)
-    elif NT_LSHIFT == ntype:
-        _compile_LSHIFT(compiler, code, node)
-
-    elif NT_UNARY_PLUS == ntype:
-        _compile_UNARY_PLUS(compiler, code, node)
-    elif NT_UNARY_MINUS == ntype:
-        _compile_UNARY_MINUS(compiler, code, node)
-
     elif NT_GOTO == ntype:
         _compile_GOTO(compiler, code, node)
 

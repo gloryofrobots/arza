@@ -18,7 +18,8 @@ token = re.compile
 ##
 
 # valid  identifiers (K&R2: A.2.3), plus '$' (supported by some compilers)
-identifier = token('[a-zA-Z_$][0-9a-zA-Z_$]*')
+name = token('[a-zA-Z_$][0-9a-zA-Z_$]*')
+identifier = token('[^\s]+')
 
 hex_prefix = '0[xX]'
 hex_digits = '[0-9a-fA-F]+'
@@ -95,7 +96,9 @@ RULES = [
     (keyword('load'), TT_LOAD),
     (keyword('use'), TT_USE),
 
-    (keyword('from'), TT_FROM),
+    (keyword('isa'), TT_ISA),
+    (keyword('nota'), TT_NOTA),
+    (keyword('kindof'), TT_KINDOF),
     (keyword('of'), TT_OF),
     (keyword('as'), TT_AS),
     (keyword('when'), TT_WHEN),
@@ -103,14 +106,6 @@ RULES = [
     (keyword('var'), TT_VAR),
     (keyword('lazy'), TT_LAZY),
 
-    (keyword('in'), TT_IN),
-    (keyword('notin'), TT_NOTIN),
-    (keyword('is'), TT_IS),
-    (keyword('isnot'), TT_ISNOT),
-
-    (keyword('isa'), TT_ISA),
-    (keyword('nota'), TT_NOTA),
-    (keyword('kindof'), TT_KINDOF),
 
     (keyword('return'), TT_RETURN),
 
@@ -122,20 +117,12 @@ RULES = [
     (decimal_constant, TT_INT),
     (string_literal, TT_STR),
     (char_const, TT_CHAR),
-    (identifier, TT_NAME),
     (backtick_const, TT_BACKTICK),
+    (name, TT_NAME),
+
     (token('\-\>'), TT_ARROW),
     (token('\.\.\.'), TT_ELLIPSIS),
-    (token('\>\>\>'), TT_URSHIFT),
-    (token('\>\>'), TT_RSHIFT),
-    (token('\<\<'), TT_LSHIFT),
-    # ('=>', TT_FAT_ARROW),
-    (token('=='), TT_EQ),
-    (token('<='), TT_LE),
-    (token('>='), TT_GE),
-    (token('!='), TT_NE),
     (token('\;'), TT_SEMI),
-    (token('\:\:'), TT_DOUBLE_COLON),
     (token('\:'), TT_COLON),
     (token('\{'), TT_LCURLY),
     (token('\}'), TT_RCURLY),
@@ -145,20 +132,11 @@ RULES = [
     (token('\)'), TT_RPAREN),
     (token('\['), TT_LSQUARE),
     (token('\]'), TT_RSQUARE),
-    (token('\.\.'), TT_DOUBLE_DOT),
     (token('\.'), TT_DOT),
-    (token('\&'), TT_BITAND),
-    (token('\~'), TT_BITNOT),
-    (token('\|'), TT_BITOR),
-    (token('\^'), TT_BITXOR),
-    (token('\-'), TT_SUB),
-    (token('\+'), TT_ADD),
-    (token('\*'), TT_MUL),
-    (token('/'), TT_DIV),
-    (token('\%'), TT_MOD),
-    (token('\<'), TT_LT),
-    (token('\>'), TT_GT),
+    (token('\.\.'), TT_DOUBLE_DOT),
     (token('\@'), TT_AT_SIGN),
+    # that can catch op
+    (identifier, TT_ID),
 ]
 
 
