@@ -101,6 +101,12 @@ RULES = [
     (keyword('of'), TT_OF),
     (keyword('as'), TT_AS),
     (keyword('when'), TT_WHEN),
+    (keyword('not'), TT_NOT),
+
+    (keyword('in'), TT_IN),
+    (keyword('notin'), TT_NOTIN),
+    (keyword('is'), TT_IS),
+    (keyword('isnot'), TT_ISNOT),
 
     (keyword('var'), TT_VAR),
     (keyword('lazy'), TT_LAZY),

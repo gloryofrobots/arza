@@ -375,7 +375,7 @@ def transform_body(func, methods, history, node, head, tail, variables):
 def _transform_is_map(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_node(arg_node,
-                                create_call_node(arg_node,
+                                create_call_node_1(arg_node,
                                                  create_name_node(arg_node, "is_map"),
                                                  arg_node),
                                 create_true_node(arg_node))
@@ -387,7 +387,7 @@ def _transform_is_map(history, head, variables):
 def _transform_is_seq(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_node(arg_node,
-                                create_call_node(arg_node,
+                                create_call_node_1(arg_node,
                                                  create_name_node(arg_node, "is_seq"),
                                                  arg_node),
                                 create_true_node(arg_node))
@@ -399,7 +399,7 @@ def _transform_is_seq(history, head, variables):
 def _transform_is_indexed(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_node(arg_node,
-                                create_call_node(arg_node,
+                                create_call_node_1(arg_node,
                                                  create_name_node(arg_node, "is_indexed"),
                                                  arg_node),
                                 create_true_node(arg_node))
@@ -412,7 +412,7 @@ def _transform_length_ge(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     count = head[2]
     _condition = create_gt_node(arg_node,
-                                create_call_node(arg_node,
+                                create_call_node_1(arg_node,
                                                  create_name_node(arg_node, "length"),
                                                  arg_node),
                                 create_int_node(arg_node, str(count)))
@@ -425,7 +425,7 @@ def _transform_length(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     count = head[2]
     _condition = create_eq_node(arg_node,
-                                create_call_node(arg_node,
+                                create_call_node_1(arg_node,
                                                  create_name_node(arg_node, "length"),
                                                  arg_node),
                                 create_int_node(arg_node, str(count)))

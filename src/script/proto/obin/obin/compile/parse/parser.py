@@ -272,7 +272,7 @@ def base_parser_init(parser):
 
 
 def funcname(parser, name):
-    return space.newsymbol(parser.state.process, name)
+    return space.newstring(name)
 
 
 def expression_parser_init(parser):
@@ -390,13 +390,8 @@ def __parse__():
     source = """
     module M
         def main() ->
-            //false + true not T1
-            //x[1] + 23 * 17 - 345 >> 32
-            x.y.z + 34 + c(23, 34) * s[:name][:surname](45 + T2)
-            //if x == 1 and y == 2
-            //    print(x)
-            //else
-            //    23 + f(y + 1 * 23 when z == 1 and t == 2 else 432 / 47);
+            a(not x)
+
         end
     ;
     """

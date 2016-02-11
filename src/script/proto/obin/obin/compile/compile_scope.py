@@ -5,6 +5,7 @@ from obin.types import api
 
 class ScopeSet:
     def __init__(self):
+        # TODO USE PLIST
         self.values = []
 
     def get(self, val):
@@ -32,6 +33,8 @@ class Scope:
         self.fn_name_index = -1
         self.literals = ScopeSet()
         self.references = ScopeSet()
+        self.operators = plist.empty()
+
         self.static_references = plist.empty()
         self.is_variadic = None
 
@@ -43,6 +46,12 @@ class Scope:
         assert not platform.is_absent_index(ref_idx), "Invalid static reference declaration. Reference id not defined"
 
         self.static_references = plist.prepend(space.newtuple([ref, space.newint(ref_idx)]), self.static_references)
+
+    def has_operator(self, op):
+        return plist.contains(self.operators, op)
+
+    def add_operator(self, op):
+        self.operators = plist.prepend(op, self.operators)
 
     def get_scope_reference(self, name):
         return self.references.get(name)
@@ -110,5 +119,5 @@ class Scope:
         refs = self._create_references(previous_scope)
 
         return space.newscope(self.locals, refs, self.declared_references(),
-                              self.declared_literals(),
+                              self.declared_literals(), self.operators,
                               self.arg_count, self.is_variadic, self.fn_name_index)
