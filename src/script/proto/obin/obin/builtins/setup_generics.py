@@ -25,6 +25,8 @@ def _install(process, module, stdlib):
     api.put(module, generics.notin.name, generics.notin)
     api.put(module, generics.gt.name, generics.gt)
     api.put(module, generics.ge.name, generics.ge)
+    api.put(module, generics.le.name, generics.le)
+    api.put(module, generics.lt.name, generics.lt)
     api.put(module, generics.bitnot.name, generics.bitnot)
     api.put(module, generics.bitor.name, generics.bitor)
     api.put(module, generics.bitxor.name, generics.bitxor)
@@ -167,6 +169,30 @@ def _specify(process, module, stdlib):
     specify_single(process, generics.ge,
                    newtuple([traits.Number, traits.Number, ]),
                    newnativefunc(newsymbol(process, u"compare_ge_n_n"), wrappers.builtin_compare_ge_n_n, 2))
+
+    specify_single(process, generics.le,
+                   newtuple([traits.Integer, traits.Integer, ]),
+                   newnativefunc(newsymbol(process, u"compare_le_i_i"), wrappers.builtin_compare_le_i_i, 2))
+
+    specify_single(process, generics.le,
+                   newtuple([traits.Float, traits.Float, ]),
+                   newnativefunc(newsymbol(process, u"compare_le_f_f"), wrappers.builtin_compare_le_f_f, 2))
+
+    specify_single(process, generics.le,
+                   newtuple([traits.Number, traits.Number, ]),
+                   newnativefunc(newsymbol(process, u"compare_le_n_n"), wrappers.builtin_compare_le_n_n, 2))
+
+    specify_single(process, generics.lt,
+                   newtuple([traits.Integer, traits.Integer, ]),
+                   newnativefunc(newsymbol(process, u"compare_lt_i_i"), wrappers.builtin_compare_lt_i_i, 2))
+
+    specify_single(process, generics.lt,
+                   newtuple([traits.Float, traits.Float, ]),
+                   newnativefunc(newsymbol(process, u"compare_lt_f_f"), wrappers.builtin_compare_lt_f_f, 2))
+
+    specify_single(process, generics.lt,
+                   newtuple([traits.Number, traits.Number, ]),
+                   newnativefunc(newsymbol(process, u"compare_lt_n_n"), wrappers.builtin_compare_lt_n_n, 2))
 
     specify_single(process, generics.bitnot,
                    newtuple([traits.Integer, ]),

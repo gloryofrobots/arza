@@ -43,11 +43,17 @@ GENERICS = [
     ("ge", ">=",
          [((I,I),"compare_ge_i_i"), ((F,F),"compare_ge_f_f"),
           ((N, N), "compare_ge_n_n")]),
-    ("bitnot", "!",
+    ("le", "<=",
+         [((I,I),"compare_le_i_i"), ((F,F),"compare_le_f_f"),
+          ((N, N), "compare_le_n_n")]),
+    ("lt", "<",
+         [((I,I),"compare_lt_i_i"), ((F,F),"compare_lt_f_f"),
+          ((N, N), "compare_lt_n_n")]),
+    ("bitnot", "~",
          [((I,),"bitnot_i")]),
-     ("bitor", "^",
+     ("bitor", "|",
          [((I,I),"bitor_i_i")]),
-     ("bitxor", "~",
+     ("bitxor", "^",
          [((I,I),"bitxor_i_i")]),
      ("bitand", "&",
          [((I,I),"bitand_i_i")]),
@@ -167,4 +173,4 @@ def print_reify():
 
 # print_implementations()
 # print_builtin_puts()
-# print_reify()
+print_reify()

@@ -194,10 +194,8 @@ def _get_symbol_or_name_value(name):
     ntype = node_type(name)
     if ntype == NT_SYMBOL:
         return _get_name_value(node_first(name))
-    elif ntype == NT_NAME:
-        return _get_name_value(name)
     else:
-        assert False, "Invalid symbol"
+        return _get_name_value(name)
 
 def _get_name_value(name):
     ntype = node_type(name)

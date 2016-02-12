@@ -1,10 +1,10 @@
 load affirm
 
 def test ->
-    a1 = (1,2,:three,4,5,:six)
-    affirm.is_true(:three in a1)
-    affirm.is_true(:six in a1)
-    affirm.is_true(:six in a1)
-    affirm.is_true(:two notin a1)
-    affirm.is_false(:two in a1)
+    a1 = (1,2,#three,4,5,#six)
+    affirm.is_true(#three in a1)
+    affirm.is_true(#six in a1)
+    affirm.is_true(#six in a1)
+    affirm.is_true(#two notin a1)
+    affirm.is_false(#two in a1)
 end

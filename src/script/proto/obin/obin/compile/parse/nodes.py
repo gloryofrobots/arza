@@ -199,7 +199,7 @@ def node_to_string(node):
     import json
     d = node_to_d(node)
     return space.newstring_s(json.dumps(d, sort_keys=True,
-                                               indent=2, separators=(',', ': ')))
+                                        indent=2, separators=(',', ': ')))
 
 
 def create_token_from_node(type, value, node):
@@ -274,35 +274,47 @@ def create_call_node_1(basenode, func, exp):
 
 
 def create_call_node_name(basenode, funcname, exps):
+    return create_call_node_s(basenode, api.to_s(funcname), exps)
+
+
+def create_call_node_s(basenode, funcname, exps):
     return node_2(nt.NT_CALL,
                   create_token_from_node(tt.TT_LPAREN, "(", basenode),
-                  create_name_node(basenode, api.to_s(funcname)),
+                  create_name_node(basenode, funcname),
                   list_node(exps))
 
 
-def create_eq_node(basenode, left, right):
-    return node_2(nt.NT_EQ, create_token_from_node(tt.TT_EQ, "==", basenode), left, right)
-
-
 def create_when_no_else_node(basenode, cond, body):
-    return node_2(nt.NT_WHEN_NO_ELSE, create_token_from_node(tt.TT_WHEN, "whne", basenode), cond, body)
+    return node_2(nt.NT_WHEN_NO_ELSE, create_token_from_node(tt.TT_WHEN, "when", basenode), cond, body)
+
+
+# CALL TO OPERATOR FUNCS
+# TODO MAKE IT CONSISTENT WITH OPERATOR REDECLARATION
+
+def create_eq_node(basenode, left, right):
+    return create_call_node_s(basenode, '==', [left, right])
 
 
 def create_gt_node(basenode, left, right):
-    return node_2(nt.NT_GT, create_token_from_node(tt.TT_GT, ">=", basenode), left, right)
+    return create_call_node_s(basenode, '>=', [left, right])
+
+
+def create_kindof_node(basenode, left, right):
+    return create_call_node_s(basenode, 'kindof', [left, right])
 
 
 def create_isnot_node(basenode, left, right):
-    return node_2(nt.NT_ISNOT, create_token_from_node(tt.TT_ISNOT, "isnot", basenode), left, right)
+    return create_call_node_s(basenode, 'isnot', [left, right])
 
 
 def create_is_node(basenode, left, right):
-    return node_2(nt.NT_IS, create_token_from_node(tt.TT_IS, "is", basenode), left, right)
+    return create_call_node_s(basenode, 'is', [left, right])
 
 
 def create_in_node(basenode, left, right):
-    return node_2(nt.NT_IN, create_token_from_node(tt.TT_IN, "in", basenode), left, right)
+    return create_call_node_s(basenode, 'in', [left, right])
 
+##############################
 
 def create_and_node(basenode, left, right):
     return node_2(nt.NT_AND, create_token_from_node(tt.TT_AND, "and", basenode), left, right)
@@ -315,12 +327,12 @@ def create_assign_node(basenode, left, right):
 def create_slice_1_end(basenode):
     first = create_int_node(basenode, "1")
     second = create_wildcard_node(basenode)
-    return node_2(nt.NT_RANGE, create_token_from_node(tt.TT_DOUBLE_COLON, "..", basenode), first, second)
+    return node_2(nt.NT_RANGE, create_token_from_node(tt.TT_DOUBLE_DOT, "..", basenode), first, second)
 
 
 def create_slice_n_end(basenode, first):
     second = create_wildcard_node(basenode)
-    return node_2(nt.NT_RANGE, create_token_from_node(tt.TT_DOUBLE_COLON, "..", basenode), first, second)
+    return node_2(nt.NT_RANGE, create_token_from_node(tt.TT_DOUBLE_DOT, "..", basenode), first, second)
 
 
 def create_lookup_node(basenode, left, right):
@@ -329,10 +341,6 @@ def create_lookup_node(basenode, left, right):
 
 def create_bind_node(basenode, left, right):
     return node_2(nt.NT_BIND, create_token_from_node(tt.TT_AT_SIGN, "@", basenode), left, right)
-
-
-def create_kindof_node(basenode, left, right):
-    return node_2(nt.NT_KINDOF, create_token_from_node(tt.TT_KINDOF, "kindof", basenode), left, right)
 
 
 def create_match_node(basenode, exp, branches):

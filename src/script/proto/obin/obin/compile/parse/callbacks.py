@@ -202,17 +202,36 @@ def prefix_nud(parser, op, node):
 def itself(parser, op, node):
     return node_0(__ntype(node), __ntok(node))
 
+def _parse_name(parser):
+    if parser.token_type == TT_SHARP:
+        node = parser.node
+        advance(parser)
+        return _parse_symbol(parser, node)
+
+    check_token_types(parser, [TT_STR, TT_NAME])
+    node = parser.node
+    advance(parser)
+    return node_0(__ntype(node), __ntok(node))
+
+
+def _parse_symbol(parser, node):
+    check_token_types(parser, [TT_NAME, TT_STR, TT_OPERATOR])
+    exp = node_0(__ntype(parser.node), __ntok(parser.node))
+    advance(parser)
+    return node_1(__ntype(node), __ntok(node), exp)
 
 def prefix_sharp(parser, op, node):
-    check_token_types(parser, [TT_NAME, TT_STR, TT_OPERATOR])
-    if parser.token_type == TT_OPERATOR:
-        exp = node_0(NT_NAME, __ntok(parser.node))
-        advance(parser)
-    else:
-        exp = literal_expression(parser)
-        check_node_types(parser, exp, [NT_NAME, NT_STR])
-
-    return node_1(__ntype(node), __ntok(node), exp)
+    return _parse_symbol(parser, node)
+# def prefix_sharp(parser, op, node):
+#     check_token_types(parser, [TT_NAME, TT_STR, TT_OPERATOR])
+#     if parser.token_type == TT_OPERATOR:
+#         exp = node_0(NT_NAME, __ntok(parser.node))
+#         advance(parser)
+#     else:
+#         exp = literal_expression(parser)
+#         check_node_types(parser, exp, [NT_NAME, NT_STR])
+#
+#     return node_1(__ntype(node), __ntok(node), exp)
 
 
 def symbol_wildcard(parser, op, node):
@@ -550,12 +569,8 @@ def parse_specify_funcs(parser):
 
 
 def stmt_specify(parser, op, node):
-    if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
-        parse_error(parser, u"Invalid generic name", parser.node)
-
-    name = _init_default_current_0(parser)
-    advance(parser)
-
+    name = _parse_name(parser)
+    check_node_types(parser, name, [NT_SYMBOL, NT_NAME])
     funcs = parse_specify_funcs(parser)
     return node_2(NT_SPECIFY, __ntok(node), name, funcs)
 
@@ -572,11 +587,9 @@ def stmt_module(parser, op, node):
 
 
 def stmt_generic(parser, op, node):
-    if parser.token_type != TT_NAME and parser.token_type != TT_BACKTICK:
-        parse_error(parser, u"Invalid generic name", parser.node)
-
-    name = _init_default_current_0(parser)
-    advance(parser)
+    # name = literal_expression(parser.name_parser)
+    name = _parse_name(parser)
+    check_node_types(parser, name, [NT_SYMBOL, NT_NAME])
 
     if parser.token_type == TT_CASE or parser.token_type == TT_LPAREN:
         funcs = parse_specify_funcs(parser)

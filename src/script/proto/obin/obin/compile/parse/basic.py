@@ -374,6 +374,11 @@ def literal_expression(parser):
     # TODO WHY 70 here?!!!!
     return expression(parser, 70)
 
+def literal_terminated_expression(parser):
+    exp = literal_expression(parser)
+    endofexpression(parser)
+    return exp
+
 def statement(parser):
     node = parser.node
 

@@ -100,13 +100,13 @@ def test_binary(op, data, result):
 def test_call_binary(op, fn, data, result):
     for x,y in pairwise(data):
         test_str = "%s %s %s" % (str(x), op, str(y))
-        eval_str = "%s(%s, %s)" % (fn, str(x), str(y))
+        eval_str = "%s(%s , %s)" % (fn, str(x), str(y))
         result.append(format_result(test_str, eval_str))
 
 
 def test_unary(op, data, result):
     for x in data:
-        test_str = "%s%s" % (op, str(x))
+        test_str = "%s %s" % (op, str(x))
         result.append(format_result(test_str))
 
 RESULT = []

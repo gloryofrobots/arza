@@ -19,7 +19,8 @@ token = re.compile
 
 # valid  identifiers (K&R2: A.2.3), plus '$' (supported by some compilers)
 name = token('[a-zA-Z_$][0-9a-zA-Z_$]*')
-identifier = token('[^\s\,\.\@\#\)\(\]\[\}\{\;\w]+')
+operator_char = '^\s\,\.\@\#\)\(\]\[\}\{\;\w"'
+operator = token('[%s]+' % operator_char)
 
 hex_prefix = '0[xX]'
 hex_digits = '[0-9a-fA-F]+'
@@ -138,13 +139,13 @@ RULES = [
     (token('\.'), TT_DOT),
     (token('\.\.'), TT_DOUBLE_DOT),
     (token('@'), TT_AT_SIGN),
-    (token('[^a-zA-Z0-9_ ][=]+'), TT_OPERATOR),
-    (token('[=][^a-zA-Z0-9_ ]+'), TT_OPERATOR),
+    (token('[%s][=]+' % operator_char), TT_OPERATOR),
+    (token('[=][%s]+' % operator_char), TT_OPERATOR),
 
     (token('='), TT_ASSIGN),
 
     # that can catch op
-    (identifier, TT_OPERATOR),
+    (operator, TT_OPERATOR),
 ]
 
 #[<>:\-\+\*\/\\!@#\$%\^\|]=

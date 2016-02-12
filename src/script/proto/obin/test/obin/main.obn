@@ -21,19 +21,18 @@ def f(x,y) -> [x,y] end
 def main() ->
     3 * 2
     A = [1,2,3,4]
-
-//    test_static_refs.test()
-//    test_operators.test()
-//    test_bool.test()
-//    test_base.test()
-//    test_datastructs.test()
-//    test_co.test()
-//    test_destruct.test()
-//    test_exception.test()
-//    test_def.test()
-//    test_generic.test()
-//    test_match.test()
-//    test_modify.test()
-//    test_module.test()
-//    test_trait.test()
+    test_static_refs.test()
+    test_operators.test()
+    test_bool.test()
+    test_base.test()
+    test_datastructs.test()
+    test_co.test()
+    test_destruct.test()
+    test_exception.test()
+    test_def.test()
+    test_generic.test()
+    test_match.test()
+    test_modify.test()
+    test_module.test()
+    test_trait.test()
 end

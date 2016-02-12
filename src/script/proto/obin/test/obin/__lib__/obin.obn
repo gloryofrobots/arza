@@ -1,7 +1,7 @@
 load tvar
 
-@prefix(#-, #uminus)
-@prefix(#+, #uplus)
+@prefix(#-, #__uminus__)
+@prefix(#+, #__uplus__)
 @prefix(#~, #~)
 @infixr(#|, #|, 35)
 @infixr(#^, #^, 45)
@@ -19,7 +19,7 @@ load tvar
 @infixl(#-, #-, 60)
 @infixl(#%, #%, 65)
 @infixl(#*, #*, 65)
-@infixl(#\, #\, 65)
+@infixl(#/, #/, 65)
 
 def coroutine(fn) ->
     (fiber1, fiber2) = spawn_fiber()

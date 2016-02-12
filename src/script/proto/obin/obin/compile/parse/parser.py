@@ -111,6 +111,7 @@ class ModuleParser(BaseParser):
         self.generic_signature_parser = generic_signature_parser_init(BaseParser())
         self.pattern_parser = pattern_parser_init(BaseParser())
         self.expression_parser = ExpressionParser(proc_data)
+        self.name_parser = name_parser_init(BaseParser())
 
         module_parser_init(base_parser_init(self))
 
@@ -120,6 +121,7 @@ class ModuleParser(BaseParser):
         self.generic_signature_parser.open(state)
         self.load_parser.open(state)
         self.expression_parser.open(state)
+        self.name_parser.open(state)
 
     def _on_close(self):
         self.args_parser.close()
@@ -127,6 +129,7 @@ class ModuleParser(BaseParser):
         self.generic_signature_parser.close()
         self.load_parser.close()
         self.expression_parser.close()
+        self.name_parser.close()
 
 
 def args_parser_init(parser):
@@ -140,6 +143,13 @@ def args_parser_init(parser):
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_RCURLY, None)
     symbol(parser, TT_ARROW, None)
+    literal(parser, TT_NAME)
+    return parser
+
+def name_parser_init(parser):
+    symbol(parser, TT_COMMA, None)
+    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
+    prefix(parser, TT_SHARP, prefix_sharp)
     literal(parser, TT_NAME)
     return parser
 
@@ -226,10 +236,6 @@ def base_parser_init(parser):
 
     return parser
 
-def _generics(proc_data):
-    return
-
-
 def expression_parser_init(proc_data, parser):
     # OTHER OPERATORS ARE DECLARED IN PRELUDE
 
@@ -243,13 +249,13 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_AND, 30, led_infix)
 
     # 50
-    infix(parser, TT_ISA, 50, proc_data.std.generics.isa.name)
-    infix(parser, TT_NOTA, 50, proc_data.std.generics.nota.name)
-    infix(parser, TT_KINDOF, 50, proc_data.std.generics.kindof.name)
+    infix_operator(parser, TT_ISA, 50, proc_data.std.generics.isa.name)
+    infix_operator(parser, TT_NOTA, 50, proc_data.std.generics.nota.name)
+    infix_operator(parser, TT_KINDOF, 50, proc_data.std.generics.kindof.name)
 
     infix_operator(parser, TT_ISNOT, 50, proc_data.std.generics.isnot.name)
     infix_operator(parser, TT_IN, 50, proc_data.std.generics.in_.name)
-    infix_operator(parser, TT_NOTIN, 50, proc_data.std.generics.notin)
+    infix_operator(parser, TT_NOTIN, 50, proc_data.std.generics.notin.name)
     infix_operator(parser, TT_IS, 50, proc_data.std.generics.is_.name)
 
     infix(parser, TT_DOT, 70, infix_dot)
@@ -351,6 +357,20 @@ def __parse__():
         @infixl(#*, #*, 20)
         @infixr(#|, ___bitor, 10)
         @prefix(#"+", ___unary_plus)
+
+        generic gt_10(self of Integer) -> 42 end
+        generic gt_10
+            case (self of Integer) -> 42 end
+
+        generic gt_11
+        generic #++++++ (self of Any) -> 42 end
+        generic #++++++ case (self of Any) -> 42 end
+        generic #++++++
+            case (self of Any) -> 42
+            case (self of Many) -> 24
+
+        end
+
         x = #+
         def main() ->
             +1 * +x
@@ -388,4 +408,7 @@ if __name__ == "__main__":
     A[..];
     A[..4];
     A[5];
+"""
+"""
+
 """

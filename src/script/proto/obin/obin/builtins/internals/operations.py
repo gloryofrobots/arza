@@ -212,6 +212,30 @@ def compare_ge_n_n(process, x, y):
     return compare_ge_f_f(process, x, y)
 
 
+def compare_lt_i_i(process, w_x, w_y):
+    return compare_gt_i_i(process, w_y, w_x)
+
+
+def compare_lt_f_f(process, w_x, w_y):
+    return compare_gt_f_f(process, w_y, w_x)
+
+
+def compare_lt_n_n(process, w_x, w_y):
+    return compare_gt_n_n(process, w_y, w_x)
+
+
+def compare_le_i_i(process, w_x, w_y):
+    return compare_ge_i_i(process, w_y, w_x)
+
+
+def compare_le_f_f(process, w_x, w_y):
+    return compare_ge_f_f(process, w_y, w_x)
+
+
+def compare_le_n_n(process, w_x, w_y):
+    return compare_ge_n_n(process, w_y, w_x)
+
+
 def in_w(process, left, right):
     return api.contains(right, left)
 
@@ -290,8 +314,6 @@ def eq_w(process, op1, op2):
     return api.equal(op1, op2)
 
 
-
-
 def str_w(process, op1):
     return api.to_string(op1)
 
@@ -316,6 +338,7 @@ def isnot_w_w(process, op1, op2):
 
 def is_w_w(process, op1, op2):
     return api.strict_equal(op1, op2)
+
 
 # TODO MAKE IT GENERIC
 def cons_w(process, op1, op2):
