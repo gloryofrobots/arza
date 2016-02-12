@@ -84,14 +84,14 @@ class BaseParser:
 
 
 class ExpressionParser(BaseParser):
-    def __init__(self):
+    def __init__(self, proc_data):
         BaseParser.__init__(self)
         self.allow_overloading = True
         self.args_parser = args_parser_init(BaseParser())
         self.pattern_parser = pattern_parser_init(BaseParser())
         # self.expression_parser = expression_parser_init(BaseParser(ts))
 
-        expression_parser_init(base_parser_init(self))
+        expression_parser_init(proc_data, base_parser_init(self))
 
     def _on_open(self, state):
         self.args_parser.open(state)
@@ -103,14 +103,14 @@ class ExpressionParser(BaseParser):
 
 
 class ModuleParser(BaseParser):
-    def __init__(self):
+    def __init__(self, proc_data):
         BaseParser.__init__(self)
 
         self.args_parser = args_parser_init(BaseParser())
         self.load_parser = load_parser_init(BaseParser())
         self.generic_signature_parser = generic_signature_parser_init(BaseParser())
         self.pattern_parser = pattern_parser_init(BaseParser())
-        self.expression_parser = ExpressionParser()
+        self.expression_parser = ExpressionParser(proc_data)
 
         module_parser_init(base_parser_init(self))
 
@@ -198,7 +198,6 @@ def base_parser_init(parser):
     literal(parser, TT_CHAR)
     literal(parser, TT_STR)
     literal(parser, TT_NAME)
-    literal(parser, TT_BACKTICK)
     literal(parser, TT_TRUE)
     literal(parser, TT_FALSE)
     literal(parser, TT_NIL)
@@ -227,12 +226,11 @@ def base_parser_init(parser):
 
     return parser
 
+def _generics(proc_data):
+    return
 
-def funcname(parser, name):
-    return space.newstring(name)
 
-
-def expression_parser_init(parser):
+def expression_parser_init(proc_data, parser):
     # OTHER OPERATORS ARE DECLARED IN PRELUDE
 
     # 20
@@ -245,14 +243,14 @@ def expression_parser_init(parser):
     infix(parser, TT_AND, 30, led_infix)
 
     # 50
-    infix(parser, TT_ISA, 50, led_infix)
-    infix(parser, TT_NOTA, 50, led_infix)
-    infix(parser, TT_KINDOF, 50, led_infix)
+    infix(parser, TT_ISA, 50, proc_data.std.generics.isa.name)
+    infix(parser, TT_NOTA, 50, proc_data.std.generics.nota.name)
+    infix(parser, TT_KINDOF, 50, proc_data.std.generics.kindof.name)
 
-    infix_operator(parser, TT_ISNOT, 50, funcname(parser, operators.OP_ISNOT))
-    infix_operator(parser, TT_IN, 50, funcname(parser, operators.OP_IN))
-    infix_operator(parser, TT_NOTIN, 50, funcname(parser, operators.OP_NOTIN))
-    infix_operator(parser, TT_IS, 50, funcname(parser, operators.OP_IS))
+    infix_operator(parser, TT_ISNOT, 50, proc_data.std.generics.isnot.name)
+    infix_operator(parser, TT_IN, 50, proc_data.std.generics.in_.name)
+    infix_operator(parser, TT_NOTIN, 50, proc_data.std.generics.notin)
+    infix_operator(parser, TT_IS, 50, proc_data.std.generics.is_.name)
 
     infix(parser, TT_DOT, 70, infix_dot)
 
@@ -266,7 +264,7 @@ def expression_parser_init(parser):
     """
     PREFIXES
     """
-    prefix_operator(parser, TT_NOT, funcname(parser, operators.OP_NOT))
+    prefix_operator(parser, TT_NOT, proc_data.std.generics.not_.name)
 
     prefix(parser, TT_IF, prefix_if)
 
@@ -302,8 +300,8 @@ def module_parser_init(parser):
     return parser
 
 
-def newparser():
-    parser = ModuleParser()
+def newparser(proc_data):
+    parser = ModuleParser(proc_data)
     return parser
 
 
@@ -349,15 +347,18 @@ def __parse__():
     from obin.runtime.engine import newprocess
     source = """
     module M
-        @infixl(#+, ___add, 10)
+        @infixl(#+, #+, 10)
+        @infixl(#*, #*, 20)
         @infixr(#|, ___bitor, 10)
         @prefix(#"+", ___unary_plus)
         x = #+
         def main() ->
+
             nil
-            x = (1,2, #+, #"dsa asd asd ")
-            //x = + 2
-            //1 | 2 | 3 | 4
+            //x = (1,2, #+, #"dsa asd asd ")
+            x = + 2
+            1 | 2 | 3 | 4
+            1  + 2 + 3 * 4
         end
     ;
     """
@@ -365,6 +366,7 @@ def __parse__():
     ast = parse(process, None, source)
     print nodes.node_to_string(ast)
 
+# TODO DOUBLE DOT AS RANGE
 
 if __name__ == "__main__":
     __parse__()

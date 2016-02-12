@@ -335,7 +335,15 @@ def isenv(w):
 def newgeneric(name):
     assert issymbol(name)
     from obin.types.dispatch.generic import W_Generic
-    obj = W_Generic(name)
+    obj = W_Generic(name, None)
+    return obj
+
+
+def newgeneric_hotpath(name, hot_path):
+    assert issymbol(name)
+    assert hot_path is not None
+    from obin.types.dispatch.generic import W_Generic
+    obj = W_Generic(name, hot_path)
     return obj
 
 

@@ -176,10 +176,6 @@ class CodeRoutine(BaseRoutine):
                 lst = stack.pop_n_list(arg1)  # [:] # pop_n returns a non-resizable list
                 stack.push(lst)
             # *************************************
-            elif CALL_INTERNAL == tag:
-                internal = get_internal(arg1)
-                internal(process, self)
-            # *************************************
             elif CALL == tag:
                 func = stack.pop()
                 args = stack.pop_n_tuple(arg1)

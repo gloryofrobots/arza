@@ -194,7 +194,6 @@ def compare_gt_n_n(process, x, y):
     return compare_gt_f_f(process, x, y)
 
 
-
 def compare_ge_i_i(process, w_x, w_y):
     x = api.to_i(w_x)
     y = api.to_i(w_y)
@@ -291,18 +290,6 @@ def eq_w(process, op1, op2):
     return api.equal(op1, op2)
 
 
-def noteq_w(process, op1, op2):
-    # TODO api.ne
-    return space.newbool(not api.to_b(api.equal(op1, op2)))
-
-
-def isnot_w(process, op1, op2):
-    # TODO api.isnot
-    return space.newbool(not api.to_b(api.strict_equal(op1, op2)))
-
-
-def is_w(process, op1, op2):
-    return api.strict_equal(op1, op2)
 
 
 def str_w(process, op1):
@@ -317,6 +304,19 @@ def list_v(process, op1):
     pass
 
 
+def noteq_w(process, op1, op2):
+    # TODO api.ne
+    return space.newbool(not api.to_b(api.equal(op1, op2)))
+
+
+def isnot_w_w(process, op1, op2):
+    # TODO api.isnot
+    return space.newbool(not api.to_b(api.strict_equal(op1, op2)))
+
+
+def is_w_w(process, op1, op2):
+    return api.strict_equal(op1, op2)
+
 # TODO MAKE IT GENERIC
 def cons_w(process, op1, op2):
     from obin.types.plist import plist1, prepend
@@ -328,7 +328,7 @@ def cons_w(process, op1, op2):
     return prepend(op1, l)
 
 
-def isa_w(process, obj, trait):
+def isa_w_w(process, obj, trait):
     from obin.types import entity
     if space.islist(trait):
         if not space.isentity(obj):
@@ -342,7 +342,7 @@ def isa_w(process, obj, trait):
         error.throw_2(error.Errors.TYPE, trait, space.newstring(u"expected trait or list of traits"))
 
 
-def nota_w(process, obj, trait):
+def nota_w_w(process, obj, trait):
     from obin.types import entity
     if not space.isentity(obj):
         return error.throw_2(error.Errors.TYPE, obj, space.newstring(u"expected entity, got primitive type"))
@@ -355,7 +355,12 @@ def nota_w(process, obj, trait):
         error.throw_2(error.Errors.TYPE, trait, space.newstring(u"expected trait or list of traits"))
 
 
-def kindof_w(process, obj, trait):
+def kindof_w_w(process, obj, trait):
     if space.islist(trait):
         return api.kindof_list(process, obj, trait)
     return api.kindof(process, obj, trait)
+
+
+# TODO IMPLEMENT
+def as_w_w(process, op1, op2):
+    raise NotImplementedError()

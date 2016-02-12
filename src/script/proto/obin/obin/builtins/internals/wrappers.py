@@ -1,6 +1,7 @@
 #################### WRAPPERS #################################################
 from obin.runtime.routine import complete_native_routine
 
+
 @complete_native_routine
 def builtin_add_i_i(process, routine):
     from obin.builtins.internals.operations import add_i_i
@@ -173,6 +174,14 @@ def builtin_in_w(process, routine):
 
 
 @complete_native_routine
+def builtin_notin_w(process, routine):
+    from obin.builtins.internals.operations import notin_w
+    arg1 = routine.get_arg(0)
+    arg2 = routine.get_arg(1)
+    return notin_w(process, arg1, arg2)
+
+
+@complete_native_routine
 def builtin_compare_gt_i_i(process, routine):
     from obin.builtins.internals.operations import compare_gt_i_i
     arg1 = routine.get_arg(0)
@@ -276,6 +285,54 @@ def builtin_ursh_i_i(process, routine):
 
 
 @complete_native_routine
+def builtin_as_w_w(process, routine):
+    from obin.builtins.internals.operations import as_w_w
+    arg1 = routine.get_arg(0)
+    arg2 = routine.get_arg(1)
+    return as_w_w(process, arg1, arg2)
+
+
+@complete_native_routine
+def builtin_kindof_w_w(process, routine):
+    from obin.builtins.internals.operations import kindof_w_w
+    arg1 = routine.get_arg(0)
+    arg2 = routine.get_arg(1)
+    return kindof_w_w(process, arg1, arg2)
+
+
+@complete_native_routine
+def builtin_is_w_w(process, routine):
+    from obin.builtins.internals.operations import is_w_w
+    arg1 = routine.get_arg(0)
+    arg2 = routine.get_arg(1)
+    return is_w_w(process, arg1, arg2)
+
+
+@complete_native_routine
+def builtin_isnot_w_w(process, routine):
+    from obin.builtins.internals.operations import isnot_w_w
+    arg1 = routine.get_arg(0)
+    arg2 = routine.get_arg(1)
+    return isnot_w_w(process, arg1, arg2)
+
+
+@complete_native_routine
+def builtin_isa_w_w(process, routine):
+    from obin.builtins.internals.operations import isa_w_w
+    arg1 = routine.get_arg(0)
+    arg2 = routine.get_arg(1)
+    return isa_w_w(process, arg1, arg2)
+
+
+@complete_native_routine
+def builtin_nota_w_w(process, routine):
+    from obin.builtins.internals.operations import nota_w_w
+    arg1 = routine.get_arg(0)
+    arg2 = routine.get_arg(1)
+    return nota_w_w(process, arg1, arg2)
+
+
+@complete_native_routine
 def builtin_len_w(process, routine):
     from obin.builtins.internals.operations import len_w
     arg1 = routine.get_arg(0)
@@ -288,12 +345,6 @@ def builtin_str_w(process, routine):
     arg1 = routine.get_arg(0)
     return str_w(process, arg1)
 
-
-@complete_native_routine
-def builtin_plist_vec(process, routine):
-    from obin.types.plist import plist_vec
-    arg1 = routine.get_arg(0)
-    return plist_vec(process, arg1)
 
 @complete_native_routine
 def builtin_plist_tuple(process, routine):

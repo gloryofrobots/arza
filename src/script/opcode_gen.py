@@ -25,7 +25,6 @@ OPCODES = [
     ("RETURN", 0),
     ("POP_CATCH", 0),
 
-    ("CALL_INTERNAL", 0),
     ("CALL", 0),
     ("CALL_METHOD", 0),
     

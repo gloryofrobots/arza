@@ -33,16 +33,23 @@ def group_dict():
 class W_Generic(W_Callable):
     # _immutable_fields_ = ["_name_"]
 
-    def __init__(self, name):
+    def __init__(self, name, hotpath):
         self.name = name
         self.methods = []
         self.dags = []
         self.signatures = []
+        self.hot_path = None
 
     def _to_string_(self):
         return "<generic %s>" % api.to_s(self.name)
 
     def _call_(self, process, args):
+        if self.hot_path is not None:
+            res = self.hot_path.apply(process, args)
+            if res is not None:
+                process.fiber.push_into_stack(res)
+                return
+
         method = _lookup_method(process, self, args)
         # print "GEN CALL", str(method)
         process.call_object(method, args)

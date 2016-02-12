@@ -8,7 +8,6 @@ NODES = [
   "NT_CHAR",
   "NT_WILDCARD",
   "NT_NAME",
-  "NT_SPECIAL_NAME",
   "NT_SYMBOL",
 
   "NT_MAP",
@@ -57,11 +56,7 @@ NODES = [
   "NT_MODIFY",
 
   "NT_OF",
-  "NT_KINDOF",
   "NT_AS",
-
-  "NT_ISA",
-  "NT_NOTA",
   "NT_VAR",
   "NT_LAZY", 
 

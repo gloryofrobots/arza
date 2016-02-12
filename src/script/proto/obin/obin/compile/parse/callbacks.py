@@ -16,7 +16,6 @@ NODE_TYPE_MAPPING = {
     TT_CHAR: NT_CHAR,
     TT_WILDCARD: NT_WILDCARD,
     TT_NAME: NT_NAME,
-    TT_BACKTICK: NT_SPECIAL_NAME,
     TT_DEF: NT_DEF,
     TT_IF: NT_IF,
     TT_WHEN: NT_WHEN,
@@ -38,13 +37,10 @@ NODE_TYPE_MAPPING = {
     TT_ASSIGN: NT_ASSIGN,
     TT_OF: NT_OF,
     TT_AS: NT_AS,
-    TT_ISA: NT_ISA,
-    TT_NOTA: NT_NOTA,
     TT_AND: NT_AND,
     TT_OR: NT_OR,
     TT_DOUBLE_DOT: NT_RANGE,
     TT_SHARP: NT_SYMBOL,
-    TT_KINDOF: NT_KINDOF,
     TT_OPERATOR: NT_NAME,
 }
 
@@ -694,55 +690,5 @@ def _meta_prefix(parser, node):
 
 def _meta_add_operator(parser, node, op, op_node, op_value):
     parser_current_scope_add_operator(parser, op_value, op)
-    return node_2(NT_OPERATOR, __ntok(node), node_0(NT_NAME, __ntok(op_node)), op)
+    return node_2(NT_OPERATOR, __ntok(node), op_node, op)
 
-#
-# def stmt_module_at(parser, op, node):
-#     """
-#     @infixl(+, ___add, 10)
-#     @infixr(::, ___cons, 10)
-#     @prefix(+, ___unary_plus)
-#     """
-#     check_token_type(parser, TT_NAME)
-#     type_node = parser.node
-#     advance(parser)
-#     if nodes.node_value_s(type_node) == "prefix":
-#         op_node = advance_expected(parser, TT_LPAREN)
-#         advance_expected(parser, TT_OPERATOR)
-#         func_node = advance_expected(parser, TT_COMMA)
-#         advance_expected(parser, TT_NAME)
-#         advance_expected(parser, TT_RPAREN)
-#
-#         op_value = nodes.node_value(op_node)
-#         op = parser_current_scope_find_operator_or_create_new(parser, op_value)
-#         op = operator_prefix(op, prefix_nud_function, nodes.node_value(func_node))
-#     else:
-#         if nodes.node_value_s(type_node) == "infixl":
-#             infix_function = led_infix_function
-#         elif nodes.node_value_s(type_node) == "infixr":
-#             infix_function = led_infixr_function
-#         else:
-#             return parse_error(parser, u"Invalid operator type expected infixl, infixr or prefix", parser.node)
-#
-#         op_node = advance_expected(parser, TT_LPAREN)
-#         advance_expected(parser, TT_OPERATOR)
-#         func_node = advance_expected(parser, TT_COMMA)
-#         advance_expected(parser, TT_NAME)
-#         precedence_node = advance_expected(parser, TT_COMMA)
-#         advance_expected(parser, TT_INT)
-#         advance_expected(parser, TT_RPAREN)
-#         try:
-#             precedence = strutil.string_to_int(nodes.node_value_s(precedence_node))
-#         except:
-#             return parse_error(parser, u"Invalid infix operator precedence", precedence_node)
-#
-#         op_value = nodes.node_value(op_node)
-#         op = parser_current_scope_find_operator_or_create_new(parser, op_value)
-#         op = operator_infix(op, precedence, infix_function, nodes.node_value(func_node))
-#
-#     # advance(parser)
-#     endofexpression(parser)
-#     parser_current_scope_add_operator(parser, op_value, op)
-#     return node_2(NT_OPERATOR, __ntok(node), node_0(NT_NAME, __ntok(op_node)), op)
-#
-#

@@ -190,10 +190,20 @@ def _compile_FALSE(compiler, code, node):
 def _compile_NIL(compiler, code, node):
     code.emit_0(NIL, info(node))
 
+def _get_symbol_or_name_value(name):
+    ntype = node_type(name)
+    if ntype == NT_SYMBOL:
+        return _get_name_value(node_first(name))
+    elif ntype == NT_NAME:
+        return _get_name_value(name)
+    else:
+        assert False, "Invalid symbol"
 
 def _get_name_value(name):
     ntype = node_type(name)
-    if ntype == NT_STR:
+    if ntype == NT_SYMBOL:
+        return _get_name_value(node_first(name))
+    elif ntype == NT_STR:
         value = _get_special_name_value(name)
     elif ntype == NT_NAME:
         value = nodes.node_value_s(name)
@@ -202,8 +212,8 @@ def _get_name_value(name):
     return value
 
 
-def _get_name_symbol(compiler, name):
-    sym = _get_name_value(name)
+def _get_symbol_name(compiler, name):
+    sym = _get_symbol_or_name_value(name)
     return space.newsymbol_py_str(compiler.process, sym)
 
 
@@ -220,7 +230,7 @@ def _emit_nil(code):
 
 
 def _emit_symbol_name(compiler, code, name):
-    symbol = _get_name_symbol(compiler, name)
+    symbol = _get_symbol_name(compiler, name)
     idx = _declare_literal(compiler, symbol)
     code.emit_1(LITERAL, idx, info(name))
 
@@ -254,29 +264,6 @@ def _compile_CHAR(compiler, code, node):
         code.emit_1(LITERAL, idx, info(node))
     except RuntimeError as e:
         compile_error(compiler, code, node, unicode(e.args[0]))
-
-
-def _on_binary_primitive(compiler, code, node, name):
-    _compile(compiler, code, node_first(node))
-    _compile(compiler, code, node_second(node))
-    code.emit_1(CALL_INTERNAL, name, info(node))
-
-
-def _on_unary_primitive(compiler, code, node, name):
-    _compile(compiler, code, node_first(node))
-    code.emit_1(CALL_INTERNAL, name, info(node))
-
-
-def _compile_ISA(compiler, code, node):
-    assert False
-
-
-def _compile_NOTA(compiler, code, node):
-    assert False
-
-
-def _compile_KINDOF(compiler, code, node):
-    assert False
 
 
 def _compile_AND(compiler, code, node):
@@ -369,7 +356,7 @@ def _compile_MATCH(compiler, code, node):
 
 def _compile_OPERATOR(compiler, code, node):
     op_name = node_first(node)
-    name = _get_name_symbol(compiler, op_name)
+    name = _get_symbol_name(compiler, op_name)
     op = node_second(node)
     _declare_operator(compiler, name, op)
     _emit_nil(code)
@@ -528,7 +515,7 @@ def _compile_ASSIGN(compiler, code, node):
 
 
 def _compile_node_name_lookup(compiler, code, node):
-    name = _get_name_symbol(compiler, node)
+    name = _get_symbol_name(compiler, node)
 
     index, is_local = _get_variable_index(compiler, code, node, name)
     name_index = _declare_literal(compiler, name)
@@ -879,7 +866,7 @@ def _compile_MODULE(compiler, code, node):
 
     compiled_code = compile_ast(compiler, body)
 
-    module_name = _get_name_symbol(compiler, name_node)
+    module_name = _get_symbol_name(compiler, name_node)
     module = space.newenvsource(module_name, compiled_code)
     module_index = _declare_literal(compiler, module)
     code.emit_1(MODULE, module_index, info(node))
@@ -889,7 +876,7 @@ def _compile_MODULE(compiler, code, node):
 
 def _compile_GENERIC(compiler, code, node):
     name_node = node_first(node)
-    name = _get_name_symbol(compiler, name_node)
+    name = _get_symbol_name(compiler, name_node)
 
     name_index = _declare_literal(compiler, name)
     index = _declare_local(compiler, name)
@@ -1186,12 +1173,6 @@ def _compile_node(compiler, code, node):
 
     elif NT_MODIFY == ntype:
         _compile_MODIFY(compiler, code, node)
-    elif NT_ISA == ntype:
-        _compile_ISA(compiler, code, node)
-    elif NT_NOTA == ntype:
-        _compile_NOTA(compiler, code, node)
-    elif NT_KINDOF == ntype:
-        _compile_KINDOF(compiler, code, node)
     elif NT_AND == ntype:
         _compile_AND(compiler, code, node)
     elif NT_OR == ntype:

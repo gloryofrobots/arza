@@ -73,7 +73,7 @@ TOKENS = [
   ("TT_RSQUARE", "]"),
   ("TT_DOT", "."),
   ("TT_DOUBLE_DOT", ".."),
-  ("TT_BACKTICK", "`"),
+  # ("TT_BACKTICK", "`"),
   ("TT_UNKNOWN", None)
 ]
 

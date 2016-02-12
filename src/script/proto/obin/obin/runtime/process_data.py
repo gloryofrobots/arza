@@ -51,10 +51,10 @@ class Modules:
 class ProcessData:
     def __init__(self, modules, std, symbols, io):
         self.modules = modules
-        self.std_objects = std
+        self.std = std
         self.symbols = symbols
         self.io = io
-        self.parser = newparser()
+        self.parser = newparser(self)
 
 
 class IO:

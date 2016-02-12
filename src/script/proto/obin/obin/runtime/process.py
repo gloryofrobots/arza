@@ -37,6 +37,9 @@ class Fiber:
     def is_waiting(self):
         return self.routine.is_suspended()
 
+    def push_into_stack(self, val):
+        self.routine.stack.push(val)
+
     def stop_routine(self):
         self.routine.suspend()
 
@@ -117,7 +120,7 @@ class Process(object):
 
     @property
     def std(self):
-        return self.__data.std_objects
+        return self.__data.std
 
     @property
     def symbols(self):
