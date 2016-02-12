@@ -123,10 +123,10 @@ class W_Operator(root.W_Hashable):
         return hash
 
     def prefix_s(self):
-        api.to_s(self.prefix_function) if self.prefix_function else ""
+        return api.to_s(self.prefix_function) if self.prefix_function else ""
 
     def infix_s(self):
-        api.to_s(self.infix_function) if self.infix_function else ""
+        return api.to_s(self.infix_function) if self.infix_function else ""
 
     def _equal_(self, other):
         if not isinstance(other, W_Operator):
@@ -166,7 +166,7 @@ def parser_operator(parser, ttype):
     try:
         return parser.handlers[ttype]
     except:
-        parse_error(parser, u"Invalid token", parser.node)
+        return parse_error(parser, u"Invalid token", parser.node)
 
 
 def get_or_create_operator(parser, ttype):
@@ -182,7 +182,10 @@ def parser_set_operator(parser, ttype, h):
 
 def node_operator(parser, node):
     ttype = nodes.node_token_type(node)
-    if not parser.allow_overloading or ttype != TT_ID:
+    if not parser.allow_overloading:
+        return parser_operator(parser, ttype)
+
+    if ttype != TT_OPERATOR:
         return parser_operator(parser, ttype)
 
     # in case of operator
@@ -367,6 +370,9 @@ def expression(parser, _rbp):
 
     return left
 
+def literal_expression(parser):
+    # TODO WHY 70 here?!!!!
+    return expression(parser, 70)
 
 def statement(parser):
     node = parser.node

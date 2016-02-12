@@ -118,15 +118,15 @@ class ModuleParser(BaseParser):
         self.args_parser.open(state)
         self.pattern_parser.open(state)
         self.generic_signature_parser.open(state)
-        self.expression_parser.open(state)
         self.load_parser.open(state)
+        self.expression_parser.open(state)
 
     def _on_close(self):
         self.args_parser.close()
         self.pattern_parser.close()
         self.generic_signature_parser.close()
-        self.expression_parser.close()
         self.load_parser.close()
+        self.expression_parser.close()
 
 
 def args_parser_init(parser):
@@ -152,7 +152,6 @@ def load_parser_init(parser):
 
     return parser
 
-
 def generic_signature_parser_init(parser):
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_LPAREN, None)
@@ -168,7 +167,7 @@ def pattern_parser_init(parser):
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly_patterns)
-    prefix(parser, TT_COLON, prefix_colon)
+    prefix(parser, TT_SHARP, prefix_sharp)
 
     infix(parser, TT_OF, 10, led_infix)
     infix(parser, TT_AT_SIGN, 10, infix_at)
@@ -224,7 +223,7 @@ def base_parser_init(parser):
     prefix(parser, TT_LPAREN, prefix_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly)
-    prefix(parser, TT_COLON, prefix_colon)
+    prefix(parser, TT_SHARP, prefix_sharp)
 
     return parser
 
@@ -350,15 +349,15 @@ def __parse__():
     from obin.runtime.engine import newprocess
     source = """
     module M
-        @infixl(+, ___add, 10)
-        @infixr(|, ___bitor, 10)
-        @prefix(+, ___unary_plus)
-
+        @infixl(#+, ___add, 10)
+        @infixr(#|, ___bitor, 10)
+        @prefix(#"+", ___unary_plus)
+        x = #+
         def main() ->
             nil
-            x = + 2
-
-            1 | 2 | 3 | 4
+            x = (1,2, #+, #"dsa asd asd ")
+            //x = + 2
+            //1 | 2 | 3 | 4
         end
     ;
     """

@@ -36,10 +36,10 @@ def is_quoted_string(string):
 def string_to_int(string):
     return int(string)
 
-def w_string_unquote(w):
-    return space.newstring_s(string_unquote(api.to_s(w)))
+def unquote_w(w):
+    return space.newstring_s(unquote_s(api.to_s(w)))
 
-def string_unquote(string):
+def unquote_s(string):
     s = string
     if s.startswith('"'):
         assert s.endswith('"')

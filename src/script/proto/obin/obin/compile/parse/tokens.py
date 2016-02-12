@@ -121,13 +121,13 @@ RULES = [
     (decimal_constant, TT_INT),
     (string_literal, TT_STR),
     (char_const, TT_CHAR),
-    (backtick_const, TT_BACKTICK),
+    # (backtick_const, TT_BACKTICK),
     (name, TT_NAME),
 
     (token('\-\>'), TT_ARROW),
     (token('\.\.\.'), TT_ELLIPSIS),
     (token('\;'), TT_SEMI),
-    (token('\:'), TT_COLON),
+    (token('#'), TT_SHARP),
     (token('\{'), TT_LCURLY),
     (token('\}'), TT_RCURLY),
     (token('\,'), TT_COMMA),
@@ -138,13 +138,13 @@ RULES = [
     (token('\.'), TT_DOT),
     (token('\.\.'), TT_DOUBLE_DOT),
     (token('@'), TT_AT_SIGN),
-    (token('[^a-zA-Z0-9_ ][=]+'), TT_ID),
-    (token('[=][^a-zA-Z0-9_ ]+'), TT_ID),
+    (token('[^a-zA-Z0-9_ ][=]+'), TT_OPERATOR),
+    (token('[=][^a-zA-Z0-9_ ]+'), TT_OPERATOR),
 
     (token('='), TT_ASSIGN),
 
     # that can catch op
-    (identifier, TT_ID),
+    (identifier, TT_OPERATOR),
 ]
 
 #[<>:\-\+\*\/\\!@#\$%\^\|]=

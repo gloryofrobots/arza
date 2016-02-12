@@ -139,7 +139,7 @@ def _get_map_symbol(key_node):
     elif key_type == NT_SYMBOL:
         return node_value_s(node_first(key_node))
     elif key_type == NT_STR:
-        return strutil.string_unquote(node_value_s(key_node))
+        return strutil.unquote_s(node_value_s(key_node))
 
 
 def _process_map(state, pattern, patterns, path):

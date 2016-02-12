@@ -193,7 +193,7 @@ def _compile_NIL(compiler, code, node):
 
 def _get_name_value(name):
     ntype = node_type(name)
-    if ntype == NT_SPECIAL_NAME:
+    if ntype == NT_STR:
         value = _get_special_name_value(name)
     elif ntype == NT_NAME:
         value = nodes.node_value_s(name)
@@ -231,7 +231,7 @@ def _compile_STR(compiler, code, node):
     try:
         strval = str(nodes.node_value_s(node))
         strval = decode_str_utf8(strval)
-        strval = strutil.string_unquote(strval)
+        strval = strutil.unquote_s(strval)
         strval = unicode_unescape(strval)
         string = space.newstring(strval)
         idx = _declare_literal(compiler, string)
@@ -247,7 +247,7 @@ def _compile_CHAR(compiler, code, node):
     try:
         strval = str(nodes.node_value_s(node))
         strval = decode_str_utf8(strval)
-        strval = strutil.string_unquote(strval)
+        strval = strutil.unquote_s(strval)
         strval = unicode_unescape(strval)
         string = space.newstring(strval)
         idx = _declare_literal(compiler, string)
@@ -541,10 +541,6 @@ def _compile_node_name_lookup(compiler, code, node):
 def _get_special_name_value(node):
     # REMOVE BACKTICKS `xxx`
     return nodes.node_value_s(node)[1:len(nodes.node_value_s(node)) - 1]
-
-
-def _compile_SPECIAL_NAME(compiler, code, node):
-    _compile_node_name_lookup(compiler, code, node)
 
 
 def _compile_NAME(compiler, code, node):
@@ -1122,8 +1118,6 @@ def _compile_node(compiler, code, node):
         _compile_CHAR(compiler, code, node)
     elif NT_NAME == ntype:
         _compile_NAME(compiler, code, node)
-    elif NT_SPECIAL_NAME == ntype:
-        _compile_SPECIAL_NAME(compiler, code, node)
     elif NT_SYMBOL == ntype:
         _compile_SYMBOL(compiler, code, node)
 

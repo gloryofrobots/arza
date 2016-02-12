@@ -5,10 +5,9 @@ TOKENS = [
   ("TT_STR", None,),
   ("TT_CHAR", None,),
   ("TT_NAME", None),
-  ("TT_ID", None),
+  ("TT_OPERATOR", None),
   ("TT_NEWLINE", None,),
 
-  ("TT_OPERATOR", "operator"),
   ("TT_BREAK", "break"),
   ("TT_CASE", "case"),
   ("TT_CONTINUE", "continue"),
@@ -62,7 +61,7 @@ TOKENS = [
   
 
   ("TT_SEMI", ";"),
-  ("TT_COLON", ":"),
+  ("TT_SHARP", "#"),
 
   ("TT_LCURLY", "{"),
   ("TT_RCURLY", "}"),
