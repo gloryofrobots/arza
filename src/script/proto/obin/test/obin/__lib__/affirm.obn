@@ -7,7 +7,7 @@ def _batch(checker, fn, calls) ->
     ;;
 
 def fail(error) ->
-    throw (:AffirmationError, error);
+    throw (#AffirmationError, error);
 
 def is_not_equal(val1, val2) ->
     if val1 == val2
@@ -28,7 +28,7 @@ def is_equal
 
 def _abs(v) ->
     if v < 0
-        -1 * v
+        - 1 * v
     else
         v
     ;;

@@ -17,20 +17,20 @@ def test() ->
 
     affirm.is_equal(
         match [1,2,3]
-            case [B3 @ 1, 2, 4] -> (:res1, B3)
-            case [B3 @ 1, 2, 3] -> (:res2, B3)
+            case [B3 @ 1, 2, 4] -> (#res1, B3)
+            case [B3 @ 1, 2, 3] -> (#res2, B3)
         end,
-        (:res2, 1)
+        (#res2, 1)
     )
 
     ////////////////////////////////////////////////////////////////
 
     affirm.is_equal(
         match 42
-            case B4 @ 2 -> (:result1, B4)
-            case B4 @ 42 -> (:result2, B4)
+            case B4 @ 2 -> (#result1, B4)
+            case B4 @ 42 -> (#result2, B4)
         end
-        , (:result2, 42)
+        , (#result2, 42)
     )
 
     ////////////////////////////////////////////////////////////////
@@ -56,9 +56,9 @@ def test() ->
         match (1, (23, (24, 25)))
             case (Z, (G, 1)) ->  12 + Z
             case (1, 23) ->   12
-            case (1, (23, X)) ->  (:third, X)
+            case (1, (23, X)) ->  (#third, X)
             case _ ->  nil;
-        , (:third, (24, 25))
+        , (#third, (24, 25))
     )
 
     affirm.is_throw(fun -> Z  end, ())
@@ -84,7 +84,7 @@ def test() ->
             case {name="Bob2", age=42} ->  (name, age)
             case {name="Bob", surname=("Alice", "Dou"), age=42} ->  (surname, name, age + 100)
             case _ ->  42 end,
-        ((:Alice, :Dou), :Bob, 142)
+        ((#Alice, #Dou), #Bob, 142)
     )
 
     ////////////////////////////////////////////////////////////////
@@ -102,19 +102,19 @@ def test() ->
 
    affirm.is_equal(
         match (1, 2, 1)
-            case (A, x, A)  -> (:first, A)
-            case (A, x, B)  -> (:second, A, B)
-            case (3, A) -> :third end,
-        (:first, 1)
+            case (A, x, A)  -> (#first, A)
+            case (A, x, B)  -> (#second, A, B)
+            case (3, A) -> #third end,
+        (#first, 1)
     )
 
    ////////////////////////////////////////////////////////////////
 
    affirm.is_equal(
         match (1, 2, 2)
-            case (A, x, A)  -> (:first, A)
-            case (A, x, B)  -> (:second, A, B) end,
-        (:second, 1, 2)
+            case (A, x, A)  -> (#first, A)
+            case (A, x, B)  -> (#second, A, B) end,
+        (#second, 1, 2)
     )
 
    ////////////////////////////////////////////////////////////////
@@ -131,10 +131,10 @@ def test() ->
 
    affirm.is_equal(
         match {x=(10,0), y=(0,10)} isa [T1, T2, T3]
-            case N2 of [T2, T1]  -> (:first, N2)
-            case N3 of [T1, T2]  -> (:second, N3)
+            case N2 of [T2, T1]  -> (#first, N2)
+            case N3 of [T1, T2]  -> (#second, N3)
         end,
-         (:second, {x=(10,0), y=(0,10)})
+         (#second, {x=(10,0), y=(0,10)})
     )
 
    ////////////////////////////////////////////////////////////////
@@ -156,14 +156,14 @@ def test() ->
     affirm.is_equal(
             try
                 match 42
-                    case 23 -> :first
-                    case 13 -> :second;
+                    case 23 -> #first
+                    case 13 -> #second;
             catch exc
                 exc
             finally
                 [exc, exc, exc]
             end,
-            [(:MatchError,), (:MatchError,), (:MatchError,)])
+            [(#MatchError,), (#MatchError,), (#MatchError,)])
 end
 
 

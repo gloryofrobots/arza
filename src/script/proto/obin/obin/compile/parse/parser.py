@@ -353,7 +353,7 @@ def __parse__():
         @prefix(#"+", ___unary_plus)
         x = #+
         def main() ->
-
+            +1 * +x
             nil
             //x = (1,2, #+, #"dsa asd asd ")
             x = + 2

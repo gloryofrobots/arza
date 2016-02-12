@@ -28,7 +28,7 @@ def test() ->
     affirm.is_throw(fun -> not () end, ())
     affirm.is_throw(fun -> not nil end, ())
     affirm.is_throw(fun -> not 1.2 end, ())
-    affirm.is_throw(fun -> not :symbol end, ())
+    affirm.is_throw(fun -> not #symbol end, ())
 
     x = 0
     y = 1

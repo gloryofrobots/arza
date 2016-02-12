@@ -196,7 +196,7 @@ def infix_at(parser, op, node, left):
 
 def prefix_nud(parser, op, node):
     exp = literal_expression(parser)
-    return node_1(node_type, __ntok(node), exp)
+    return node_1(__ntype(node), __ntok(node), exp)
 
 
 def itself(parser, op, node):

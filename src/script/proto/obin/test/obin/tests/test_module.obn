@@ -6,42 +6,42 @@ module m1
     CONST = ab.CONST
     module m3
         CONST = 10
-        def f_3() -> :m1_m3_f_3 ;
+        def f_3() -> #m1_m3_f_3 ;
     end
     
-    def f_1() -> :m1_f_1;
+    def f_1() -> #m1_f_1;
 
 
     generic gt_10(self of Integer) ->
         if self < 10
-            :m1_g1_less
+            #m1_g1_less
         elif self == 10
-            :m1_g1_equal
+            #m1_g1_equal
         else
-            :m1_g1_greater;
+            #m1_g1_greater;
     end
 end
 
 module m4
     module m5
-        def f_3() -> :m4_m5_f_3 end
+        def f_3() -> #m4_m5_f_3 end
     end
     CONST = 10
 
-    def f_1() -> :m4_f_1 end
+    def f_1() -> #m4_f_1 end
 
     generic gt_10(self of Integer) ->
         if self < 10
-            :m4_g1_less
+            #m4_g1_less
         elif self == 10
-            :m4_g1_equal
+            #m4_g1_equal
         else
-            :m4_g1_greater;
+            #m4_g1_greater;
     end
 end
 
 module m2
-    def f_2() -> :m2_f_2;
+    def f_2() -> #m2_f_2;
 end
 
 def test ->
@@ -49,8 +49,8 @@ def test ->
 //    print(gen_ab, f_ab, f_ab_2, const)
 
     affirm.is_equal(
-                    gen_ab({point=(10, 12, 0, -1), type=:Point}),
-                    {point=(10, 12, 0, -1), type=:Point})
+                    gen_ab({point=(10, 12, 0, -1), type=#Point}),
+                    {point=(10, 12, 0, -1), type=#Point})
 
     affirm.is_equal(f_ab_2(32, 10), 42)
     affirm.is_equal(ab.f_ab_2(32, 10), 42)
@@ -62,19 +62,19 @@ def test ->
     affirm.is_equal(m1.CONST, m4.CONST)
 
 
-    affirm.is_equal(m1.m3.f_3(), :m1_m3_f_3)
-    affirm.is_equal(m1.f_1(), :m1_f_1)
+    affirm.is_equal(m1.m3.f_3(), #m1_m3_f_3)
+    affirm.is_equal(m1.f_1(), #m1_f_1)
     affirm.is_equal_batch(m1.gt_10,
-                        ([2],:m1_g1_less),
-                        ([10],:m1_g1_equal),
-                        ([11],:m1_g1_greater))
+                        ([2],#m1_g1_less),
+                        ([10],#m1_g1_equal),
+                        ([11],#m1_g1_greater))
 
-    affirm.is_equal(m4.m5.f_3(), :m4_m5_f_3)
-    affirm.is_equal(m4.f_1(), :m4_f_1)
+    affirm.is_equal(m4.m5.f_3(), #m4_m5_f_3)
+    affirm.is_equal(m4.f_1(), #m4_f_1)
     affirm.is_equal_batch(m4.gt_10,
-                        ([2],:m4_g1_less),
-                        ([10],:m4_g1_equal),
-                        ([11],:m4_g1_greater))
+                        ([2],#m4_g1_less),
+                        ([10],#m4_g1_equal),
+                        ([11],#m4_g1_greater))
 
-    affirm.is_equal(m2.f_2(), :m2_f_2)
+    affirm.is_equal(m2.f_2(), #m2_f_2)
 end

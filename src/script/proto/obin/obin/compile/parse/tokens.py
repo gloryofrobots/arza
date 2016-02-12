@@ -19,7 +19,7 @@ token = re.compile
 
 # valid  identifiers (K&R2: A.2.3), plus '$' (supported by some compilers)
 name = token('[a-zA-Z_$][0-9a-zA-Z_$]*')
-identifier = token('[^\s\,\.\@\#\)\(\]\[\}\{\;]+')
+identifier = token('[^\s\,\.\@\#\)\(\]\[\}\{\;\w]+')
 
 hex_prefix = '0[xX]'
 hex_digits = '[0-9a-fA-F]+'

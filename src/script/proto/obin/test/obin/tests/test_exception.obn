@@ -2,7 +2,7 @@ load affirm
 
 def test ->
     fun error(reason) ->
-        throw (:error, {reason=reason}) end
+        throw (#error, {reason=reason}) end
 
     fun error2(reason) ->
         fun ->
@@ -19,13 +19,13 @@ def test ->
             end
         catch e2
             try
-                error(:LifeSucks)
+                error(#LifeSucks)
             catch e3
                 //result
                 e3
             end
         end
-        ,(:error, {reason=:LifeSucks})
+        ,(#error, {reason=#LifeSucks})
     )
 
     //////////////////////////////////////////////////////////////
@@ -40,12 +40,12 @@ def test ->
             end
         catch e2
             try
-                error(:LifeSucks)
+                error(#LifeSucks)
             catch e3
                 e3
             end
         end
-        ,(:ZeroDivisionError, (1, 0))
+        ,(#ZeroDivisionError, (1, 0))
     )
 
     ///////////////////////////////////////////
@@ -58,16 +58,16 @@ def test ->
                 e1
             finally
                 //result
-                (:Finally, e1)
+                (#Finally, e1)
             end
         catch e2
             try
-                error(:LifeSucks)
+                error(#LifeSucks)
             catch e3
                 e3
             end
         end
-        ,(:Finally, (:ZeroDivisionError, (1, 0)))
+        ,(#Finally, (#ZeroDivisionError, (1, 0)))
     )
 
     ///////////////////////////////////////////
@@ -79,11 +79,11 @@ def test ->
             catch e1
                 e1
             finally
-                error2(:Finally)
+                error2(#Finally)
             end
         catch e2
             try
-                error(:Catch)
+                error(#Catch)
             catch e3
                 42
             finally
@@ -92,8 +92,8 @@ def test ->
             end
         end
         ,(
-            (:error, {reason=:Finally}),
-            (:error, {reason=:Catch})
+            (#error, {reason=#Finally}),
+            (#error, {reason=#Catch})
          )
     )
 
@@ -107,11 +107,11 @@ def test ->
                 catch e1
                     e1
                 finally
-                    error2(:Finally)
+                    error2(#Finally)
                 end
             catch e2
                 try
-                    error(:Catch)
+                    error(#Catch)
                 catch e3
                     42
                 finally
@@ -122,8 +122,8 @@ def test ->
          end,
          (),
          (
-            (:error, {reason=:Finally}),
-            (:error, {reason=:Catch})
+            (#error, {reason=#Finally}),
+            (#error, {reason=#Catch})
          )
     )
 

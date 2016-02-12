@@ -59,7 +59,7 @@ def test() ->
     affirm.is_equal(test_local_overwrite_2(1), -198)
     affirm.is_throw_expected(fun(x) -> test_use_static_and_fail(x) end
                     , [1]
-                    , (:NotImplementedError, (:_length_, 1)))
+                    , (#NotImplementedError, (#_length_, 1)))
     affirm.is_throw(fun(x) -> test_use_static_and_fail_because_of_single_pass(x) end
                     , [1])
 end

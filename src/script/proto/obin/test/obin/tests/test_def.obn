@@ -38,46 +38,46 @@ def test ->
 
     fun func1
         case (1,2,3,4,5,var0, var1, var2, ...var4) -> (var0, var1, var2, var4)
-        case ({key1, var1 @ key2, key3=25}, [var2, :second, var3 @ :third, ...var4]) -> (var1, var2, var3, var4)
+        case ({key1, var1 @ key2, key3=25}, [var2, #second, var3 @ #third, ...var4]) -> (var1, var2, var3, var4)
         case (var6, var7) -> var6 + var7
         case (42) -> "Main question answer"
-        case (_) -> :nothing;
+        case (_) -> #nothing;
 
 
     affirm.is_equal(func1(1,2,3,4,5,6,7,8,9,10,11),
                     (6, 7, 8, (9, 10, 11)))
     affirm.is_equal(
-        func1({key1=:key1, key2=:key2, key3=25}, [:first, :second, :third, 4,5,6,7])
-        ,(:key2, :first, :third, [4, 5, 6, 7]))
+        func1({key1=#key1, key2=#key2, key3=25}, [#first, #second, #third, 4,5,6,7])
+        ,(#key2, #first, #third, [4, 5, 6, 7]))
 
     fun func2
-        case (a,b,c) -> (:first, a, b, c)
-        case (a, b) -> (:second, a, b)
-        case (a) -> (:third, a)
-        case () -> (:fourth);
+        case (a,b,c) -> (#first, a, b, c)
+        case (a, b) -> (#second, a, b)
+        case (a) -> (#third, a)
+        case () -> (#fourth);
 
     affirm.is_equal_batch(
               func2,
-              ((1,2,3), (:first, 1,2,3)),
-              ((4,5), (:second, 4,5)),
-              ((6,), (:third, 6)),
-              ([], :fourth)
+              ((1,2,3), (#first, 1,2,3)),
+              ((4,5), (#second, 4,5)),
+              ((6,), (#third, 6)),
+              ([], #fourth)
     )
 
 
-    affirm.is_equal(apply(fun () -> :empty end, ()), :empty)
-    affirm.is_equal(apply(fun -> :empty end, ()), :empty)
+    affirm.is_equal(apply(fun () -> #empty end, ()), #empty)
+    affirm.is_equal(apply(fun -> #empty end, ()), #empty)
 
     fun func3
-        case (1) -> :first
-        case (42) -> :second
-        case () -> :third;
+        case (1) -> #first
+        case (42) -> #second
+        case () -> #third;
 
     affirm.is_equal_batch(
               func3,
-              ([1], :first),
-              ([42], :second),
-              ((), :third)
+              ([1], #first),
+              ([42], #second),
+              ((), #third)
     )
 
     ////////////////////////////////////////////////////
@@ -108,25 +108,25 @@ def test ->
 
     ////////////////////////////////////////////////////
     fun fn_fail
-        case (1) -> :one
-        case (2) -> :two
-        case (3) -> :three
-        case (4) -> :four;
+        case (1) -> #one
+        case (2) -> #two
+        case (3) -> #three
+        case (4) -> #four;
 
     affirm.is_equal_batch(fn_fail,
-        ([1], :one),
-        ([2], :two),
-        ([3], :three),
-        ([4], :four))
+        ([1], #one),
+        ([2], #two),
+        ([3], #three),
+        ([4], #four))
 
     affirm.is_throw(fn_fail, [5])
-    affirm.is_throw_expected(fn_fail, [0], (:FunctionArgumentsMatchError,))
+    affirm.is_throw_expected(fn_fail, [0], (#FunctionArgumentsMatchError,))
     affirm.is_equal(
         try
            fn_fail("I am string")
         catch exc
            [exc, exc, exc];
-        , [(:FunctionArgumentsMatchError,), (:FunctionArgumentsMatchError,), (:FunctionArgumentsMatchError,)]
+        , [(#FunctionArgumentsMatchError,), (#FunctionArgumentsMatchError,), (#FunctionArgumentsMatchError,)]
     )
 
     ////////////////////////////////////////////////

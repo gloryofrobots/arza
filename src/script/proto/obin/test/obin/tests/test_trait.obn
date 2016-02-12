@@ -9,12 +9,11 @@ def Human_New(name, surname) ->
 def Wolf_New(name) ->
     {name=name} isa [Wolf, Animal] end
 
-// backticks name
-generic `-=-=-=`(self of Animal) ->
+generic #"-=-=-="(self of Animal) ->
     ["I am animal", self.name]
 end
 //
-specify `-=-=-=`(self of Human) ->
+specify #"-=-=-="(self of Human) ->
     ["I am nice human",self.name, self.surname]
 end
 
@@ -22,8 +21,8 @@ def test ->
 
     bob_alice = Human_New("Bob", "Alice")
     wolf = Wolf_New("Jack")
-    affirm.is_equal(`-=-=-=`(bob_alice), ["I am nice human", "Bob", "Alice"])
-    affirm.is_equal(`-=-=-=`(wolf), ["I am animal", "Jack"])
+    affirm.is_equal(#"-=-=-="(bob_alice), ["I am nice human", "Bob", "Alice"])
+    affirm.is_equal(#"-=-=-="(wolf), ["I am animal", "Jack"])
 
 
     affirm.is_true(bob_alice kindof Map)

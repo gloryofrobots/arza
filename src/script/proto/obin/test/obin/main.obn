@@ -1,18 +1,18 @@
-//load affirm
-//load tests.test_base
-//load tests.test_static_refs
-//load tests.test_bool
-//load tests.datastructs.test_datastructs
-//load tests.test_operators
-//load tests.test_co
-//load tests.test_destruct
-//load tests.test_exception
-//load tests.test_def
-//load tests.test_generic
-//load tests.test_match
-//load tests.test_modify
-//load tests.test_module
-//load tests.test_trait
+load affirm
+load tests.test_base
+load tests.test_static_refs
+load tests.test_bool
+load tests.datastructs.test_datastructs
+load tests.test_operators
+load tests.test_co
+load tests.test_destruct
+load tests.test_exception
+load tests.test_def
+load tests.test_generic
+load tests.test_match
+load tests.test_modify
+load tests.test_module
+load tests.test_trait
 
 
 def f(x,y) -> [x,y] end
@@ -20,6 +20,7 @@ def f(x,y) -> [x,y] end
 
 def main() ->
     3 * 2
+    A = [1,2,3,4]
 
 //    test_static_refs.test()
 //    test_operators.test()
