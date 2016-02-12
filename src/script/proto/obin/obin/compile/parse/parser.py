@@ -5,7 +5,6 @@ from obin.compile.parse.callbacks import *
 from obin.compile.parse.lexer import UnknownTokenError
 from obin.compile.parse import tokens
 from obin.types import api, space, plist, root, environment
-from obin.builtins.internals import operators
 
 
 # additional helpers
