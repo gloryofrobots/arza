@@ -409,7 +409,7 @@ def create_node(shift, key1, val1, key2hash, key2, val2):
 
 
 def bit_count(i):
-    assert isinstance(i, rarithmetic.r_uint)
+    assert isinstance(i, rarithmetic.r_uint), type(i)
     i = i - ((i >> 1) & rarithmetic.r_uint(0x55555555))
     i = (i & rarithmetic.r_uint(0x33333333)) + ((i >> 2) & rarithmetic.r_uint(0x33333333))
     return (((i + (i >> 4) & rarithmetic.r_uint(0xF0F0F0F)) * rarithmetic.r_uint(0x1010101)) & rarithmetic.r_uint(0xffffffff)) >> 24

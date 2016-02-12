@@ -1,30 +1,29 @@
 __author__ = 'gloryofrobots'
-# runicode, rstring,
-
-from rpython.rlib import rarithmetic,  rfloat
 import re
 import random as r
+class rfloat:
+    INFINITY = 1e200 * 1e200
+    NAN = abs(INFINITY / INFINITY)    
+    @staticmethod
+    def isnan(v):
+        return v == rfloat.NAN
+    @staticmethod
+    def isinf(v):
+        return v == rfloat.INFINITY
 
+class rarithmetic:
+    r_uint = long
+    r_int = int
 
-def dummy(*args, **kwargs):
-    pass
+    @staticmethod
+    def intmask(i):
+        return i
 
-
-# class DecoratorArguments(object):
-#
-#     @classmethod
-#     def argtype(*args):
-#         return decorator_args
-#
-#     def __init__(self, *args):
-#         self.args = args
-#
-#     def __call__(self, f):
-#         def wrapped_f(*args):
-#             f(*args)
-#         return wrapped_f
-
-
+    @staticmethod
+    def ovfcheck(i):
+        if not isinstance(i, int):
+            raise OverflowError()
+        return i
 
 def decorator_args(*args, **kwargs):
     def wrap(f):
@@ -36,7 +35,7 @@ def decorator_args(*args, **kwargs):
     return wrap
 
 
-def decorator(f):
+def always_inline(f):
     def wrapped_f(*args):
         f(*args)
 
@@ -91,7 +90,6 @@ class jit:
 
 compute_unique_id = id
 compute_identity_hash = hash
-always_inline = decorator
 
 NOT_FOUND = -1
 
