@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
 import os
-from obin.misc.platform import enforceargs
 
-
-@enforceargs(unicode)
 def printmessage(msg):
+    assert isinstance(msg, unicode)
     from obin.runistr import encode_unicode_utf8
     os.write(1, encode_unicode_utf8(msg))
 

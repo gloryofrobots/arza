@@ -109,11 +109,16 @@ def is_file(p):
 
 
 def load_file_content(filename):
-    from obin.misc.platform import streamio
-    f = streamio.open_file_as_stream(str(filename))
-    src = f.readall()
-    return src
-
+    from obin.misc.platform import USE_RPYTHON
+    if USE_RPYTHON:
+        from obin.misc.platform import streamio
+        f = streamio.open_file_as_stream(str(filename))
+        src = f.readall()
+        return src
+    else:
+        with open(str(filename), "r") as f:
+            data = f.read()
+        return data
 
 def make_dirs_recursive_if_not_exist(p):
     if len(p) == 0:

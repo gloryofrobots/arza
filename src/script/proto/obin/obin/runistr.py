@@ -1,19 +1,19 @@
-from obin.misc.platform import (runicode, rarithmetic, enforceargs, rstring)
+from obin.misc.platform import (runicode, rarithmetic, rstring)
 
-@enforceargs(str)
 def decode_str_utf8(string):
+    assert isinstance(string, str)
     result, consumed = runicode.str_decode_utf_8(string, len(string), "strict", True)
     return result
 
 
-@enforceargs(unicode)
 def encode_unicode_utf8(string):
+    assert isinstance(string, unicode)
     result = runicode.unicode_encode_utf_8(string, len(string), None)
     return result
 
 
-@enforceargs(str)
 def decode_unicode_escape(string):
+    assert isinstance(string, str)
     result, consumed = runicode.str_decode_unicode_escape(string, len(string), "strict", True)
     return result
 
@@ -27,8 +27,8 @@ def unescape_errorhandler(errors, encoding, msg, s, startingpos, endingpos):
 
 
 # based on pypy.rlib.runicode str_decode_unicode_escape
-@enforceargs(unicode)
 def unicode_unescape(string):
+    assert isinstance(string, unicode)
     s = string
     size = len(string)
     errorhandler = unescape_errorhandler

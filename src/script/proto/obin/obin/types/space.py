@@ -1,4 +1,4 @@
-from obin.misc.platform import jit, specialize, enforceargs
+from obin.misc.platform import jit
 from obin.types.boolean import W_True, W_False
 from obin.types.nil import W_Nil
 from obin.types.root import W_UniqueType
@@ -42,8 +42,8 @@ def isint(w):
     return isinstance(w, W_Integer)
 
 
-@enforceargs(float)
 def newfloat(f):
+    assert isinstance(f, float)
     from obin.types.floating import W_Float
     return W_Float(f)
 
@@ -53,7 +53,6 @@ def isfloat(w):
     return isinstance(w, W_Float)
 
 
-@specialize.argtype(0)
 def newnumber(value):
     from obin.misc.platform import rarithmetic
     if isinstance(value, float):
@@ -70,21 +69,21 @@ def isnumber(w):
 
 ########################################################
 
-@enforceargs(str)
 def newchar(c):
+    assert isinstance(c, str)
     from obin.types.character import W_Char
     return W_Char(ord(c))
 
 
 ########################################################
 
-@enforceargs(str)
 def newstring_s(s):
+    assert isinstance(s, str)
     return newstring(unicode(s))
 
 
-@enforceargs(unicode)
 def newstring(s):
+    assert isinstance(s, unicode)
     from obin.types.string import W_String
     return W_String(s)
 
@@ -133,8 +132,8 @@ def isnil(value):
 
 ########################################################
 
-@enforceargs(bool)
 def newbool(val):
+    assert isinstance(val, bool)
     if val:
         return w_True
     return w_False
