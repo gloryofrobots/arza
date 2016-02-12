@@ -5,6 +5,16 @@ from obin.runtime.routine.code_routine import CodeRoutine
 from obin.runtime.routine.native_routine import NativeRoutine
 from obin.types import api, space
 
+def complete_or_interrupt_native_routine(func):
+    def func_wrapper(process, routine):
+        result = func(process, routine)
+        assert isany(result)
+        if space.isinterrupt(result):
+            return
+        if not routine.is_closed():
+            routine.complete(process, result)
+
+    return func_wrapper
 
 def complete_native_routine(func):
     def func_wrapper(process, routine):

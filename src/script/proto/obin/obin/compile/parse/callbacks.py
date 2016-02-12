@@ -77,15 +77,12 @@ def led_infixr(parser, op, node, left):
     return node_2(__ntype(node), __ntok(node), left, exp)
 
 
-def led_infixr_function(parser, op, node, left):
-    exp = expression(parser, op.lbp - 1)
-    return nodes.create_call_node_name(node, api.to_s(op.infix_function), [left, exp])
 
 
 def prefix_nud_function(parser, op, node):
     # TODO WHY 70 here?!!!!
     exp = expression(parser, 70)
-    return nodes.create_call_node_name(node, api.to_s(op.prefix_function), [exp])
+    return nodes.create_call_node_name(node, op.prefix_function, [exp])
 
 
 def led_infix_function(parser, op, node, left):
@@ -95,6 +92,9 @@ def led_infix_function(parser, op, node, left):
 
     return nodes.create_call_node_name(node, op.infix_function, [left, exp])
 
+def led_infixr_function(parser, op, node, left):
+    exp = expression(parser, op.lbp - 1)
+    return nodes.create_call_node_name(node, op.infix_function, [left, exp])
 
 def led_infixr_assign(parser, op, node, left):
     ltype = nodes.node_token_type(left)
@@ -620,21 +620,14 @@ def stmt_module_at(parser, op, node):
     type_node = parser.node
     advance(parser)
     if nodes.node_value_s(type_node) == "prefix":
-        advance_expected_after(parser, TT_LPAREN)
-        op_node = advance_expected_after(parser, TT_ID)
-        advance_expected_after(parser, TT_COMMA)
-        func_node = advance_expected_after(parser, TT_NAME)
+        op_node = advance_expected(parser, TT_LPAREN)
+        advance_expected(parser, TT_ID)
+        func_node = advance_expected(parser, TT_COMMA)
+        advance_expected(parser, TT_NAME)
+        advance_expected(parser, TT_RPAREN)
 
-        options_tuple = expression(parser, 0)
-        check_node_type(parser, options_tuple, NT_TUPLE)
-        options = nodes.node_first(options_tuple)
-        if api.length_i(options) != 2:
-            return parse_error(parser, u"Invalid prefix operator options", parser.node)
-        op_node = options[0]
-        func_node = options[1]
-        check_node_type(parser, op_node, NT_NAME)
-        check_node_types(parser, func_node, [NT_NAME, NT_SPECIAL_NAME])
-        op = parser_current_scope_find_operator_or_create_new(parser, nodes.node_value(op_node))
+        op_value = nodes.node_value(op_node)
+        op = parser_current_scope_find_operator_or_create_new(parser, op_value)
         op = operator_prefix(op, prefix_nud_function, nodes.node_value(func_node))
     else:
         if nodes.node_value_s(type_node) == "infixl":
@@ -644,29 +637,26 @@ def stmt_module_at(parser, op, node):
         else:
             return parse_error(parser, u"Invalid operator type expected infixl, infixr or prefix", parser.node)
 
-        options_tuple = expression(parser, 0)
-        check_node_type(parser, options_tuple, NT_TUPLE)
-        options = nodes.node_first(options_tuple)
-        if api.length_i(options) != 3:
-            return parse_error(parser, u"Invalid prefix operator options", parser.node)
-        op_node = options[0]
-        func_node = options[1]
-        precedence_node = options[2]
-        check_node_type(parser, precedence_node, NT_INT)
-        check_node_type(parser, op_node, NT_NAME)
-        check_node_types(parser, func_node, [NT_NAME, NT_SPECIAL_NAME])
-
+        op_node = advance_expected(parser, TT_LPAREN)
+        advance_expected(parser, TT_ID)
+        func_node = advance_expected(parser, TT_COMMA)
+        advance_expected(parser, TT_NAME)
+        precedence_node = advance_expected(parser, TT_COMMA)
+        advance_expected(parser, TT_INT)
+        advance_expected(parser, TT_RPAREN)
         try:
             precedence = strutil.string_to_int(nodes.node_value_s(precedence_node))
         except:
             return parse_error(parser, u"Invalid infix operator precedence", precedence_node)
-        op = parser_current_scope_find_operator_or_create_new(parser, nodes.node_value(op_node))
+
+        op_value = nodes.node_value(op_node)
+        op = parser_current_scope_find_operator_or_create_new(parser, op_value)
         op = operator_infix(op, precedence, infix_function, nodes.node_value(func_node))
 
     # advance(parser)
     endofexpression(parser)
-    parser_current_scope_add_operator(parser, op_node, op)
-    return node_2(NT_OPERATOR, __ntok(node), op_node, op)
+    parser_current_scope_add_operator(parser, op_value, op)
+    return node_2(NT_OPERATOR, __ntok(node), node_0(NT_NAME, __ntok(op_node)), op)
 
 
 

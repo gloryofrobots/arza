@@ -292,7 +292,6 @@ def expression_parser_init(parser):
 
 
 def module_parser_init(parser):
-    literal(parser, TT_ID)
     stmt(parser, TT_GENERIC, stmt_generic)
     stmt(parser, TT_TRAIT, stmt_trait)
     stmt(parser, TT_SPECIFY, stmt_specify)
@@ -357,7 +356,9 @@ def __parse__():
 
         def main() ->
             nil
-            //1 + 2
+            x = + 2
+
+            1 | 2 | 3 | 4
         end
     ;
     """

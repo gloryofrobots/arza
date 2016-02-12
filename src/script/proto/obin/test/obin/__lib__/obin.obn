@@ -1,4 +1,28 @@
+@prefix(-, ___uminus)
+@prefix(+, ___uplus)
+@prefix(~, ___bitnot)
+@infixr(|, ___bitor, 35)
+@infixr(^, ___bitxor, 45)
+@infixr(&, ___bitand, 45)
+@infixl(<, ___lt, 50)
+@infixl(>, ___gt, 50)
+@infixl(>=, ___ge, 50)
+@infixl(<=, ___le, 50)
+@infixl(==, ___eq, 50)
+@infixl(!=, ___ne, 50)
+@infixl(<<, ___lsh, 55)
+@infixl(>>, ___rsh, 55)
+@infixl(>>>, ___ursh, 55)
+@infixl(+, ___add, 60)
+@infixl(-, ___sub, 60)
+@infixl(%, ___mod, 65)
+@infixl(*, ___mul, 65)
+@infixl(\, ___div, 65)
+//@infixr(::, ___cons, 70)
+
 load tvar
+
+
 //
 //def coroutine(fn) ->
 //    (fiber1, fiber2) = spawn_fiber()

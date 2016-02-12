@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
 from obin.builtins.internals.operations import *
-from obin.runtime.routine import complete_native_routine
+from obin.runtime.routine import complete_native_routine, complete_or_interrupt_native_routine
 from obin.runtime import error
 from obin.types import api, space
 from obin.types.space import newtuple, isnumber, isint, isentity
@@ -45,10 +45,12 @@ def setup(process, module, stdlib):
 
 def call2(process, generic, l, r):
     api.call(process, generic, newtuple([l, r]))
+    return space.newinterrupt()
 
 
 def call1(process, generic, w):
     api.call(process, generic, newtuple([w]))
+    return space.newinterrupt()
 
 
 # TODO INLINE
@@ -152,15 +154,15 @@ def ___mod(process, routine):
         call2(process, process.std.generics.Mod, left, right)
 
 
-@complete_native_routine
+@complete_or_interrupt_native_routine
 def ___mul(process, routine):
     left = routine.get_arg(0)
     right = routine.get_arg(1)
 
     if is_both_numbers(left, right):
-        apply_binary(process, routine, mult_n_n, left, right)
+        return mult_n_n(process, left, right)
     else:
-        call2(process, process.std.generics.Mul, left, right)
+        return call2(process, process.std.generics.Mul, left, right)
 
 
 @complete_native_routine
@@ -359,64 +361,4 @@ def ___kindof(process, routine):
     right = routine.get_arg(1)
     apply_binary(process, routine, kindof_w, left, right)
 
-
-    # """
-    # precedence 35
-    # |
-    # """
-    # """
-    # precedence 40
-    # ^
-    # """
-    # """
-    # precedence 45
-    # &
-    # """
-    # """
-    # precedence 50
-    # in, is, <, <=, >, >=, !=, == isnot, notin, isa, nota
-    # """
-    # """
-    # precedence 55
-    # >> << >>>
-    # """
-    # """
-    # precedence 60
-    # + -
-    # """
-    # """
-    # precedence 65
-    # * / %
-    # """
-    # infixr(parser, TT_BITOR, 35)
-    #
-    # infixr(parser, TT_BITXOR, 40)
-    #
-    # infixr(parser, TT_BITAND, 45)
-    # infixr(parser, TT_DOUBLE_COLON, 70)
-    #
-    #
-    # infix(parser, TT_LT, 50, led_infix)
-    # infix(parser, TT_LE, 50, led_infix)
-    # infix(parser, TT_GT, 50, led_infix)
-    # infix(parser, TT_GE, 50, led_infix)
-    # infix(parser, TT_NE, 50, led_infix)
-    # infix(parser, TT_EQ, 50, led_infix)
-    #
-    # infix(parser, TT_LSHIFT, 55, led_infix)
-    # infix(parser, TT_RSHIFT, 55, led_infix)
-    # infix(parser, TT_URSHIFT, 55, led_infix)
-    #
-    # infix(parser, TT_ADD, 60, led_infix)
-    # infix(parser, TT_SUB, 60, led_infix)
-    #
-    # infix(parser, TT_MUL, 65, led_infix)
-    # infix(parser, TT_DIV, 65, led_infix)
-    # infix(parser, TT_MOD, 65, led_infix)
-    #
-    #
-    #
-    # prefix(parser, TT_BITNOT, prefix_nud)
-    # prefix(parser, TT_SUB, prefix_unary_minus)
-    # prefix(parser, TT_ADD, prefix_unary_plus)
 

@@ -107,23 +107,23 @@ def opcode_info(routine, opcode):
     arg2 = opcode[2]
     # ********************************
     if tag == LOCAL:
-        literal = routine.literals[arg2]
+        literal = routine.env.literals[arg2]
         return 'LOCAL %s (%d)' % (literal, arg1)
     # ********************************
     elif tag == OUTER:
-        literal = routine.literals[arg2]
+        literal = routine.env.literals[arg2]
         return 'OUTER %s (%d)' % (literal, arg1)
     # ********************************
     elif tag == LITERAL:
-        literal = routine.literals[arg1]
+        literal = routine.env.literals[arg1]
         return 'LITERAL %s (%d)' % (literal, arg1)
     # ********************************
     elif tag == STORE_LOCAL:
-        literal = routine.literals[arg2]
+        literal = routine.env.literals[arg2]
         return 'STORE_LOCAL %s (%d)' % (literal, arg1)
     # ********************************
     elif tag == LOAD:
-        literal = routine.literals[arg1]
+        literal = routine.env.literals[arg1]
         return 'LOAD %s' % (literal,)
     # ********************************
     elif tag == FUNCTION:

@@ -58,7 +58,9 @@ def parser_enter_scope(parser):
 
 
 def parser_exit_scope(parser):
+    head = parser.state.scopes
     parser.state.scopes = plist.tail(parser.state.scopes)
+    return head
 
 
 def parser_current_scope(parser):
@@ -77,6 +79,7 @@ def parser_current_scope_find_operator_or_create_new(parser, op_name):
         return newoperator()
     return op
 
+
 def parser_find_operator(parser, op_name):
     undef = space.newnil()
     cur_scope = parser_current_scope(parser)
@@ -93,8 +96,16 @@ def parser_find_operator(parser, op_name):
     return op
 
 
-class W_Operator(root.W_Any):
+def parse_statements(parser, termination_tokens):
+    parser_enter_scope(parser)
+    stmts = statements(parser, termination_tokens)
+    scope = parser_exit_scope(parser)
+    return stmts, scope
+
+
+class W_Operator(root.W_Hashable):
     def __init__(self):
+        root.W_Hashable.__init__(self)
         self.nud = None
         self.led = None
         self.std = None
@@ -102,6 +113,14 @@ class W_Operator(root.W_Any):
 
         self.prefix_function = None
         self.infix_function = None
+
+    def _compute_hash_(self):
+        hash = 0
+        if self.prefix_function:
+            hash += api.hash_i(self.prefix_function)
+        if self.infix_function:
+            hash += api.hash_i(self.infix_function)
+        return hash
 
     def prefix_s(self):
         api.to_s(self.prefix_function) if self.prefix_function else ""

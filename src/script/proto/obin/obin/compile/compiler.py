@@ -201,9 +201,11 @@ def _get_name_value(name):
         assert False, ("_get_name_value", ntype)
     return value
 
+
 def _get_name_symbol(compiler, name):
     sym = _get_name_value(name)
     return space.newsymbol_py_str(compiler.process, sym)
+
 
 def _emit_pop(code):
     code.emit_0(POP, codeinfo_unknown())
@@ -370,6 +372,8 @@ def _compile_OPERATOR(compiler, code, node):
     name = _get_name_symbol(compiler, op_name)
     op = node_second(node)
     _declare_operator(compiler, name, op)
+    _emit_nil(code)
+
 
 def _compile_GOTO(compiler, code, node):
     # TODO REMOVE THIS SHIT
