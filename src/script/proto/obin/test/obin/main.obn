@@ -3,7 +3,7 @@ load tests.test_base
 load tests.test_static_refs
 load tests.test_bool
 load tests.datastructs.test_datastructs
-load tests.test_operators
+//load tests.test_operators
 load tests.test_co
 load tests.test_destruct
 load tests.test_exception
@@ -22,7 +22,7 @@ def main() ->
     3 * 2
     A = [1,2,3,4]
     test_static_refs.test()
-    test_operators.test()
+//    test_operators.test()
     test_bool.test()
     test_base.test()
     test_datastructs.test()

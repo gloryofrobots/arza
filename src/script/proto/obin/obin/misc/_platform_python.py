@@ -3,7 +3,7 @@ import re
 import random as r
 class rfloat:
     INFINITY = 1e200 * 1e200
-    NAN = abs(INFINITY / INFINITY)    
+    NAN = abs(INFINITY / INFINITY)
     @staticmethod
     def isnan(v):
         return v == rfloat.NAN

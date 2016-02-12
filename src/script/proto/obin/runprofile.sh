@@ -1,0 +1,1 @@
+/usr/lib/pypy/bin/pypy-c  -m cProfile -o obin_profile.prof /home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/targetobin.py /home/gloryofrobots/develop/languages/obin/obin/src/script/proto/obin/test/obin/main.obn
