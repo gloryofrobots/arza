@@ -202,6 +202,7 @@ def prefix_nud(parser, op, node):
 def itself(parser, op, node):
     return node_0(__ntype(node), __ntok(node))
 
+
 def _parse_name(parser):
     if parser.token_type == TT_SHARP:
         node = parser.node
@@ -220,8 +221,18 @@ def _parse_symbol(parser, node):
     advance(parser)
     return node_1(__ntype(node), __ntok(node), exp)
 
+
 def prefix_sharp(parser, op, node):
     return _parse_symbol(parser, node)
+
+
+def prefix_backtick(parser, op, node):
+    val = strutil.cat_both_ends(nodes.node_value_s(node))
+    if not val:
+        return parse_error(parser, u"invalid variable name", node)
+    return nodes.create_name_node(node, val)
+
+
 # def prefix_sharp(parser, op, node):
 #     check_token_types(parser, [TT_NAME, TT_STR, TT_OPERATOR])
 #     if parser.token_type == TT_OPERATOR:
@@ -704,4 +715,3 @@ def _meta_prefix(parser, node):
 def _meta_add_operator(parser, node, op, op_node, op_value):
     parser_current_scope_add_operator(parser, op_value, op)
     return node_2(NT_OPERATOR, __ntok(node), op_node, op)
-

@@ -270,6 +270,7 @@ def expression_parser_init(proc_data, parser):
     """
     PREFIXES
     """
+    prefix(parser, TT_BACKTICK, prefix_backtick)
     prefix_operator(parser, TT_NOT, proc_data.std.generics.not_.name)
 
     prefix(parser, TT_IF, prefix_if)

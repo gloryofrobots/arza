@@ -19,7 +19,7 @@ token = re.compile
 
 # valid  identifiers (K&R2: A.2.3), plus '$' (supported by some compilers)
 name = token('[a-zA-Z_$][0-9a-zA-Z_$]*')
-operator_char = '^\s\,\.\@\#\)\(\]\[\}\{\;\w"'
+operator_char = '^\s\,\.\@\#\)\(\]\[\}\{\;\w"`\''
 operator = token('[%s]+' % operator_char)
 
 hex_prefix = '0[xX]'
@@ -122,7 +122,7 @@ RULES = [
     (decimal_constant, TT_INT),
     (string_literal, TT_STR),
     (char_const, TT_CHAR),
-    # (backtick_const, TT_BACKTICK),
+    (backtick_const, TT_BACKTICK),
     (name, TT_NAME),
 
     (token('\-\>'), TT_ARROW),

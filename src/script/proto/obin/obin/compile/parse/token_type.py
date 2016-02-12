@@ -67,7 +67,8 @@ TT_LSQUARE = 64
 TT_RSQUARE = 65
 TT_DOT = 66
 TT_DOUBLE_DOT = 67
-TT_UNKNOWN = 68
+TT_BACKTICK = 68
+TT_UNKNOWN = 69
 # ************************ OBIN TOKENS REPR *****************************
 __TT_REPR__ = [u"TT_ENDSTREAM", u"TT_INT", u"TT_FLOAT", u"TT_STR", u"TT_CHAR", u"TT_NAME", u"TT_OPERATOR",
                u"TT_NEWLINE", u"TT_BREAK", u"TT_CASE", u"TT_CONTINUE", u"TT_ELSE", u"TT_FOR", u"TT_WHILE", u"TT_IF",
@@ -77,7 +78,8 @@ __TT_REPR__ = [u"TT_ENDSTREAM", u"TT_INT", u"TT_FLOAT", u"TT_STR", u"TT_CHAR", u
                u"TT_GENERIC", u"TT_SPECIFY", u"TT_END", u"TT_RETURN", u"TT_ISA", u"TT_NOTA", u"TT_KINDOF", u"TT_IN",
                u"TT_IS", u"TT_ISNOT", u"TT_NOTIN", u"TT_NOT", u"TT_ELLIPSIS", u"TT_WILDCARD", u"TT_GOTO", u"TT_ARROW",
                u"TT_AT_SIGN", u"TT_SEMI", u"TT_SHARP", u"TT_LCURLY", u"TT_RCURLY", u"TT_COMMA", u"TT_ASSIGN",
-               u"TT_LPAREN", u"TT_RPAREN", u"TT_LSQUARE", u"TT_RSQUARE", u"TT_DOT", u"TT_DOUBLE_DOT", u"TT_UNKNOWN", ]
+               u"TT_LPAREN", u"TT_RPAREN", u"TT_LSQUARE", u"TT_RSQUARE", u"TT_DOT", u"TT_DOUBLE_DOT", u"TT_BACKTICK",
+               u"TT_UNKNOWN", ]
 
 
 def token_type_to_str(ttype):

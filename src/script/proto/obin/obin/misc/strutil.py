@@ -36,6 +36,11 @@ def is_quoted_string(string):
 def string_to_int(string):
     return int(string)
 
+def cat_both_ends(string):
+    if len(string) < 2:
+        return None
+    return string[1:len(string) - 1]
+
 def unquote_w(w):
     return space.newstring_s(unquote_s(api.to_s(w)))
 
