@@ -44,7 +44,12 @@ def is_single_node(node):
 
 
 def is_node(node):
-    return space.islist(node) or space.istuple(node) or space.isnil(node)
+    return space.islist(node) or space.istuple(node) or space.isnil(node) or is_scope_node(node)
+
+
+def is_scope_node(node):
+    from obin.compile.parse.basic import ParserScope
+    return isinstance(node, ParserScope)
 
 
 def node_equal(node1, node2):
@@ -168,6 +173,8 @@ def node_to_d(node):
         return {'empty': True}
     elif is_list_node(node):
         return [node_to_d(child) for child in node]
+    elif is_scope_node(node):
+        return {'scope': True}
     else:
         d = {"_type": tokens.token_type_to_str(node_token_type(node)),
              "_ntype": nt.node_type_to_str(node_type(node)) if node_type(node) != -1 else "",
@@ -299,6 +306,7 @@ def create_is_node(basenode, left, right):
 
 def create_in_node(basenode, left, right):
     return create_call_node_s(basenode, 'in', [left, right])
+
 
 ##############################
 

@@ -879,8 +879,9 @@ def _compile_LOAD(compiler, code, node):
 def _compile_MODULE(compiler, code, node):
     name_node = node_first(node)
     body = node_second(node)
+    parse_scope = node_third(node)
 
-    compiled_code = compile_ast(compiler, body, None)
+    compiled_code = compile_ast(compiler, body, parse_scope)
 
     module_name = _get_symbol_name(compiler, name_node)
     module = space.newenvsource(module_name, compiled_code)

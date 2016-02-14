@@ -47,6 +47,7 @@ module m2
     def f_2() -> #m2_f_2;
 end
 
+
 def test ->
     {gen_ab, f_ab, f_ab_2, CONST=const} = ab
 //    print(gen_ab, f_ab, f_ab_2, const)

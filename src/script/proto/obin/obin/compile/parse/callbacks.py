@@ -597,9 +597,9 @@ def stmt_specify(parser, op, node):
 def stmt_module(parser, op, node):
     name = literal_terminated_expression(parser)
     check_node_type(parser, name, NT_NAME)
-    stmts = statements(parser, TERM_BLOCK)
+    stmts, scope = parse_env_statements(parser, TERM_BLOCK)
     advance_end(parser)
-    return node_2(NT_MODULE, __ntok(node), name, stmts)
+    return node_3(NT_MODULE, __ntok(node), name, stmts, scope)
 
 
 def stmt_generic(parser, op, node):
