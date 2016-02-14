@@ -49,9 +49,10 @@ class Scope:
         self.functions.insert(symbol, space.newint(idx))
 
     def get_function(self, symbol):
-        idx = api.at(self.functions, symbol)
+        idx = api.lookup(self.functions, symbol, space.newnil())
+        if space.isnil(idx):
+            return platform.absent_index()
         return api.to_i(idx)
-
 
     def has_possible_static_reference(self, ref):
         return plist.contains_with(self.static_references, ref, _find_static_ref)
@@ -121,10 +122,10 @@ class Scope:
             static_ref = api.at_index(static_record, 0)
             static_ref_id = api.to_i(api.at_index(static_record, 1))
 
-            prev_local_idx = prev_scope.get_scope_local_index(static_ref.name)
-            # local in prev scope overrides static reference
-            if not platform.is_absent_index(prev_local_idx):
-                continue
+            # prev_local_idx = prev_scope.get_scope_local_index(static_ref.name)
+            # # local in prev scope overrides static reference
+            # if not platform.is_absent_index(prev_local_idx):
+            #     continue
 
             refs._set_refs(static_ref_id, static_ref)
 

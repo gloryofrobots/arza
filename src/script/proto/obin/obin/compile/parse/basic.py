@@ -90,7 +90,7 @@ def parser_find_operator(parser, op_name):
             return op
 
     op = environment.get_operator(parser.state.env, op_name)
-    if op is not None:
+    if not space.isnil(op):
         api.put(cur_scope.operators, op_name, op)
 
     return op

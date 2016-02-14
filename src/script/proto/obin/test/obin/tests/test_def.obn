@@ -7,6 +7,11 @@ def `++-__+` case (x,y) -> 42 end
 def `++---^--^`
     case (x,y) -> 42 end
 
+// compiler single pass problem example
+//    [fun length(x) -> 1 + length(x - 1) when x > 0 else 0 end]
+//    fun Y(y) -> length(y) end
+//    Y(3)
+
 def test ->
     f1 = fun (a, b, c) -> (a, b, c) end
     affirm.is_equal(f1(1,2,3), (1,2,3))

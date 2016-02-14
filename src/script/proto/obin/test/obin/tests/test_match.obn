@@ -69,12 +69,12 @@ def test() ->
         match [(1,2), (2,3,4), 5, [6,7,8]]
             case [a1,b1,c1] ->  (a1, b1, c1)
             case [a1, b1] ->  (a1, b1)
-            case (x1, y1, 5) ->  (x1, y1, z1)
+            case (x1, y1, 5) ->  (x1, y1)
             case [(1, X), Y, 5, [6,7, Z]] ->  (X, Y, Z)
             case _ ->  123 end,
         (2, (2, 3, 4), 8)
      )
-    affirm.is_throw(fun -> [a1,b1,c1, x1,y1,z1]  end, ())
+    affirm.is_throw(fun -> [a1,b1,c1, x1,y1]  end, ())
 
     ////////////////////////////////////////////////////////////////
 

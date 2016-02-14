@@ -122,14 +122,8 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif OUTER == tag:
                 assert arg1 > -1
-
                 name = literals[arg2]
                 value = env.ref(name, arg1)
-                # check for none value here too
-                # for unbounded clojure vars X = 1 + func() -> 1 + X;
-                if value is None:
-                    literal = literals[arg2]
-                    return error.throw_1(error.Errors.REFERENCE, literal)
                 stack.push(value)
             # *************************************
             elif MEMBER == tag:

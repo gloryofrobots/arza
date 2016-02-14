@@ -50,12 +50,14 @@ class References(W_Any):
             ref = get_reference(env, symbol)
             # print " new ref", ref
             # assert ref is not None
-            if not ref:
+            if space.isnil(ref):
                 return error.throw_1(error.Errors.REFERENCE, symbol)
             self._set_refs(index, ref)
 
-        return ref.get_value()
-
+        val = ref.get_value()
+        if space.isnil(val):
+            return error.throw_1(error.Errors.REFERENCE, symbol)
+        return val
 
 def newreferences(refs):
     return References(refs)
@@ -92,7 +94,7 @@ class Reference(W_Any):
 def get_reference(env, identifier):
     # print "get_reference lex", lex
     if env is None:
-        return None
+        return space.newnil()
 
     index = api.get_index(env, identifier)
     if not is_absent_index(index):
@@ -103,9 +105,9 @@ def get_reference(env, identifier):
 
 def get_operator(env, identifier):
     # print "get_reference lex", lex
-    if env is None:
-        return None
     undef = space.newnil()
+    if env is None:
+        return undef
     op = api.lookup(env.operators, identifier, undef)
     if not space.isnil(op):
         return op

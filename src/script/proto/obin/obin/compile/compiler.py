@@ -79,6 +79,7 @@ def _declare_arguments(compiler, args_count, varargs):
     _current_scope(compiler).declare_scope_arguments(args_count, varargs)
 
 
+# TODO GET RID OF
 def _declare_function_name(compiler, name):
     _current_scope(compiler).add_scope_function_name(name)
 
@@ -141,10 +142,15 @@ def _declare_function(compiler, code, node):
     scope.add_function(symbol, idx)
     return idx
 
+
 def _get_function_index(compiler, symbol):
     scope = _current_scope(compiler)
     idx = scope.get_function(symbol)
-    assert not platform.is_absent_index(idx), (u"Invalid function name", symbol, idx)
+
+    # TODO make two compiler passes
+    # non statement function like fun f-> end ()
+    if platform.is_absent_index(idx):
+        return _declare_local(compiler, symbol)
     return idx
 
 
@@ -168,10 +174,11 @@ def _get_variable_index(compiler, code, node, name):
     ref_id = _declare_reference(compiler, name)
 
     ref = environment.get_reference(compiler.env, name)
-    if ref is not None:
-        _declare_static_reference(compiler, ref)
+    if space.isnil(ref):
+        return compile_error(compiler, code, node, u"Non reachable variable")
 
-    # return compile_error(compiler, code, node, u"Non reachable variable")
+    _declare_static_reference(compiler, ref)
+
     return ref_id, False
 
 
@@ -208,12 +215,14 @@ def _compile_FALSE(compiler, code, node):
 def _compile_NIL(compiler, code, node):
     code.emit_0(NIL, info(node))
 
+
 def _get_symbol_or_name_value(name):
     ntype = node_type(name)
     if ntype == NT_SYMBOL:
         return _get_name_value(node_first(name))
     else:
         return _get_name_value(name)
+
 
 def _get_name_value(name):
     ntype = node_type(name)
@@ -765,7 +774,6 @@ def _compile_DEF(compiler, code, node):
 
     funcname_index = _declare_literal(compiler, funcname)
     code.emit_2(STORE_LOCAL, index, funcname_index, info(node))
-
 
 
 def _compile_branch(compiler, code, condition, body, endif):

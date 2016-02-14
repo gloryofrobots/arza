@@ -15,14 +15,9 @@ load tests.test_module
 load tests.test_trait
 
 
-def f(x,y) -> [x,y] end
-
-
 def main() ->
-    3 * 2
-    A = [1,2,3,4]
-    test_static_refs.test()
 //    test_operators.test()
+    test_static_refs.test()
     test_bool.test()
     test_base.test()
     test_datastructs.test()

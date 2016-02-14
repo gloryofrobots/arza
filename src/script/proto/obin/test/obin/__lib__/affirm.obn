@@ -65,10 +65,12 @@ def is_false(val1) ->
 def is_throw(fn, args) ->
     try
         apply(fn, args)
-        fail(["exception expected", fn])
     catch e
-        e
-    ;;
+        return e
+    end
+
+    fail(["exception expected", fn])
+end
 
 def is_throw_expected(fn, args, exc) ->
     is_equal(is_throw(fn, args), exc);
