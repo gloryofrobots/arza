@@ -320,6 +320,7 @@ def remove(pl, v):
 
     return W_PList(head(pl), remove(tail(pl), v))
 
+########################################################################
 
 def contains_with(pl, v, condition):
     assert space.islist(pl)
@@ -335,6 +336,7 @@ def contains_with(pl, v, condition):
 def contains(pl, v):
     return contains_with(pl, v, api.equal_b)
 
+############################################################
 
 def contains_split(pl, v):
     assert space.islist(pl)

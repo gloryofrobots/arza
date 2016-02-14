@@ -25,6 +25,10 @@ def _find_static_ref(ref1, ref2):
     return api.equal_b(ref1.name, api.at_index(ref2, 0).name)
 
 
+def _find_function(symbol, record):
+    return api.equal_b(symbol, api.at_index(record, 0))
+
+
 class Scope:
     def __init__(self):
         self.locals = space.newmap()
@@ -35,8 +39,19 @@ class Scope:
         self.references = ScopeSet()
         self.operators = space.newmap()
 
+        self.functions = space.newmap()
         self.static_references = plist.empty()
         self.is_variadic = None
+
+    ######################################################
+
+    def add_function(self, symbol, idx):
+        self.functions.insert(symbol, space.newint(idx))
+
+    def get_function(self, symbol):
+        idx = api.at(self.functions, symbol)
+        return api.to_i(idx)
+
 
     def has_possible_static_reference(self, ref):
         return plist.contains_with(self.static_references, ref, _find_static_ref)

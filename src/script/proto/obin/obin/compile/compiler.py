@@ -130,6 +130,24 @@ def _declare_local(compiler, symbol):
     return idx
 
 
+def _declare_function(compiler, code, node):
+    symbol = _get_symbol_name_or_empty(compiler.process, node)
+    scope = _current_scope(compiler)
+    idx = scope.get_scope_local_index(symbol)
+    if not platform.is_absent_index(idx):
+        compile_error(compiler, code, node, u"Name has already assigned")
+
+    idx = scope.add_scope_local(symbol)
+    scope.add_function(symbol, idx)
+    return idx
+
+def _get_function_index(compiler, symbol):
+    scope = _current_scope(compiler)
+    idx = scope.get_function(symbol)
+    assert not platform.is_absent_index(idx), (u"Invalid function name", symbol, idx)
+    return idx
+
+
 def _get_variable_index(compiler, code, node, name):
     assert space.issymbol(name)
     """
@@ -743,7 +761,7 @@ def _compile_DEF(compiler, code, node):
     if api.isempty(funcname):
         return
 
-    index = _declare_local(compiler, funcname)
+    index = _get_function_index(compiler, funcname)
 
     funcname_index = _declare_literal(compiler, funcname)
     code.emit_2(STORE_LOCAL, index, funcname_index, info(node))
@@ -874,7 +892,8 @@ def _compile_GENERIC(compiler, code, node):
     name = _get_symbol_name(compiler, name_node)
 
     name_index = _declare_literal(compiler, name)
-    index = _declare_local(compiler, name)
+    index = _get_function_index(compiler, name)
+    # index = _declare_local(compiler, name)
     code.emit_1(GENERIC, name_index, info(node))
     code.emit_2(STORE_LOCAL, index, name_index, info(name_node))
 
@@ -1069,6 +1088,18 @@ def _compile(compiler, code, ast):
 
 
 def _compile_nodes(compiler, code, ast):
+    # TODO MAKE ALL NODES HAS TYPE
+
+    # bind function names first
+    for node in ast:
+        if nodes.is_list_node(node) or nodes.is_empty_node(node):
+            continue
+
+        ntype = node_type(node)
+        if ntype == NT_DEF or ntype == NT_FUN or ntype == NT_GENERIC:
+            name = node_first(node)
+            _declare_function(compiler, code, name)
+
     length = plist.length(ast)
     if length > 1:
         nodes_except_last = plist.slice(ast, 0, length - 1)
