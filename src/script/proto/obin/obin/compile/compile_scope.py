@@ -66,8 +66,11 @@ class Scope:
     def has_operator(self, op_name):
         return api.contains_b(self.operators, op_name)
 
-    def add_operator(self, op_name, op):
-        self.operators.insert(op_name, op)
+    def add_operators(self, operators):
+        for record in operators:
+            op_name = api.at_index(record, 0)
+            op = api.at_index(record, 1)
+            self.operators.insert(op_name, op)
 
     def get_scope_reference(self, name):
         return self.references.get(name)
@@ -131,7 +134,10 @@ class Scope:
 
         return refs
 
-    def finalize(self, previous_scope):
+    def finalize(self, previous_scope, parse_scope):
+        if parse_scope is not None:
+            self.add_operators(parse_scope.operators.to_list())
+
         refs = self._create_references(previous_scope)
 
         return space.newscope(self.locals, refs, self.declared_references(),

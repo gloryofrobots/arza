@@ -28,10 +28,6 @@ def is_empty_node(n):
     return space.isnil(n)
 
 
-def is_operator_node(n):
-    return space.isoperator(n)
-
-
 def list_node(items):
     for item in items:
         assert is_node(item)
@@ -43,16 +39,16 @@ def is_list_node(node):
     return space.islist(node)
 
 
-def is_ast_node(node):
+def is_single_node(node):
     return space.istuple(node) and api.length_i(node) == 4
 
 
 def is_node(node):
-    return space.islist(node) or space.istuple(node) or space.isnil(node) or space.isoperator(node)
+    return space.islist(node) or space.istuple(node) or space.isnil(node)
 
 
 def node_equal(node1, node2):
-    assert is_node(node1) and is_node(node2)
+    assert is_node(node1) and is_node(node2), (node1, node2)
 
     if is_list_node(node1) and is_list_node(node2):
         return plist.equal_with(node1, node2, node_equal)
@@ -66,14 +62,6 @@ def node_equal(node1, node2):
         return True
 
     if is_empty_node(node1) or is_empty_node(node2):
-        return False
-
-    #################################################
-
-    if is_operator_node(node1) and is_operator_node(node2):
-        return api.equal_b(node1, node2)
-
-    if is_operator_node(node1) or is_operator_node(node2):
         return False
 
     #################################################
@@ -180,8 +168,6 @@ def node_to_d(node):
         return {'empty': True}
     elif is_list_node(node):
         return [node_to_d(child) for child in node]
-    elif is_operator_node(node):
-        return {'operator': api.to_s(node)}
     else:
         d = {"_type": tokens.token_type_to_str(node_token_type(node)),
              "_ntype": nt.node_type_to_str(node_type(node)) if node_type(node) != -1 else "",

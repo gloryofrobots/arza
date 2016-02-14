@@ -42,7 +42,7 @@ def parse_error(parser, message, node):
 class ParserScope(root.W_Any):
     def __init__(self):
         self.operators = space.newmap()
-        self.macros = space.newmap()
+        self.macro = space.newmap()
 
 
 class ParseState:
@@ -58,7 +58,7 @@ def parser_enter_scope(parser):
 
 
 def parser_exit_scope(parser):
-    head = parser.state.scopes
+    head = plist.head(parser.state.scopes)
     parser.state.scopes = plist.tail(parser.state.scopes)
     return head
 
@@ -96,7 +96,7 @@ def parser_find_operator(parser, op_name):
     return op
 
 
-def parse_statements(parser, termination_tokens):
+def parse_env_statements(parser, termination_tokens):
     parser_enter_scope(parser)
     stmts = statements(parser, termination_tokens)
     scope = parser_exit_scope(parser)

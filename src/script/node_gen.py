@@ -1,4 +1,9 @@
 NODES = [
+  # internals
+  "NT_GROUP",
+  "NT_GOTO",
+
+  # code nodes 
   "NT_TRUE",
   "NT_FALSE",
   "NT_NIL",
@@ -63,8 +68,6 @@ NODES = [
   "NT_AND",
   "NT_OR",
 
-  "NT_OPERATOR",
-  "NT_GOTO",
 ]
 
 

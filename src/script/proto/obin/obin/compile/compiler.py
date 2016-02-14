@@ -111,11 +111,6 @@ def _declare_literal(compiler, literal):
     return idx
 
 
-def _declare_operator(compiler, name, op):
-    assert space.issymbol(name)
-    assert not api.isempty(name)
-    scope = _current_scope(compiler)
-    scope.add_operator(name, op)
 
 
 def _declare_local(compiler, symbol):
@@ -678,7 +673,7 @@ def _compile_func_args_and_body(compiler, code, name, params, body):
 
     _compile(compiler, funccode, body)
     current_scope = _current_scope(compiler)
-    scope = current_scope.finalize(_previous_scope(compiler))
+    scope = current_scope.finalize(_previous_scope(compiler), None)
     _exit_scope(compiler)
     # print "LOCALS:", str(scope.variables.keys())
     # print "REFS:", str(scope.references)
@@ -705,7 +700,7 @@ def _compile_case_function(compiler, code, node, funcname, cases):
 
     _compile_match(compiler, funccode, node, cases, error.Errors.FUNCTION_MATCH)
     current_scope = _current_scope(compiler)
-    scope = current_scope.finalize(_previous_scope(compiler))
+    scope = current_scope.finalize(_previous_scope(compiler), None)
     _exit_scope(compiler)
 
     compiled_code = funccode.finalize_compilation(scope)
@@ -885,7 +880,7 @@ def _compile_MODULE(compiler, code, node):
     name_node = node_first(node)
     body = node_second(node)
 
-    compiled_code = compile_ast(compiler, body)
+    compiled_code = compile_ast(compiler, body, None)
 
     module_name = _get_symbol_name(compiler, name_node)
     module = space.newenvsource(module_name, compiled_code)
@@ -1223,24 +1218,23 @@ def _compile_node(compiler, code, node):
 def newcode(compiler):
     return CodeSource(SourceInfo(compiler.source_path, compiler.source))
 
-
-def compile_ast(compiler, ast):
+def compile_ast(compiler, ast, ast_scope):
     code = newcode(compiler)
     _enter_scope(compiler)
     _declare_arguments(compiler, 0, False)
     _compile(compiler, code, ast)
     scope = _current_scope(compiler)
-    final_scope = scope.finalize(_previous_scope(compiler))
+    final_scope = scope.finalize(_previous_scope(compiler), ast_scope)
     _exit_scope(compiler)
     compiled_code = code.finalize_compilation(final_scope)
     return compiled_code
 
 
 def compile(process, env, src, sourcename):
-    ast = parser.parse(process, env, src)
+    ast, ast_scope = parser.parse(process, env, src)
     # print ast
     compiler = Compiler(process, env, sourcename, src)
-    code = compile_ast(compiler, ast)
+    code = compile_ast(compiler, ast, ast_scope)
     return code
 
 

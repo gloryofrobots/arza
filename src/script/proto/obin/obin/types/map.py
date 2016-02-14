@@ -1,4 +1,4 @@
-from obin.types import api, space
+from obin.types import api, space, plist
 from obin.types.root import W_Any
 from obin.misc import platform
 from obin.runtime import error
@@ -203,6 +203,13 @@ class W_Map(W_Any):
 
         return m
 
+    def to_list(self):
+        result = plist.empty()
+        for k, i in self.slot_bindings.items():
+            result = plist.prepend(space.newtuple([k, api.at_index(self.slot_values, i)]), result)
+
+        return result
+
     def _to_string_(self):
         from obin.types import api
         res = []
@@ -282,6 +289,7 @@ class W_Map(W_Any):
 
     def keys(self):
         return self.slot_bindings.keys()
+
 
     def _remove_at_(self, name):
         idx = self._get_index_(name)

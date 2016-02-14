@@ -14,7 +14,6 @@ load tests.test_modify
 load tests.test_module
 load tests.test_trait
 
-
 def main() ->
 //    test_operators.test()
     test_static_refs.test()

@@ -253,7 +253,7 @@ def prefix_if(parser, op, node):
     branches = []
 
     cond = prefix_condition(parser)
-    body = (statements(parser, TERM_IF))
+    body = statements(parser, TERM_IF)
 
     branches.append(nodes.list_node([cond, body]))
     check_token_types(parser, TERM_IF)
@@ -595,11 +595,8 @@ def stmt_specify(parser, op, node):
 
 
 def stmt_module(parser, op, node):
-    if parser.token_type != TT_NAME:
-        parse_error(parser, u"Invalid module name", parser.node)
-
-    name = _init_default_current_0(parser)
-    advance(parser)
+    name = literal_terminated_expression(parser)
+    check_node_type(parser, name, NT_NAME)
     stmts = statements(parser, TERM_BLOCK)
     advance_end(parser)
     return node_2(NT_MODULE, __ntok(node), name, stmts)
@@ -697,7 +694,7 @@ def _meta_infix(parser, node, infix_function):
     op = parser_current_scope_find_operator_or_create_new(parser, op_value)
     op = operator_infix(op, precedence, infix_function, func_value)
     endofexpression(parser)
-    return _meta_add_operator(parser, node, op, op_node, op_value)
+    parser_current_scope_add_operator(parser, op_value, op)
 
 
 def _meta_prefix(parser, node):
@@ -718,9 +715,6 @@ def _meta_prefix(parser, node):
     op = operator_prefix(op, prefix_nud_function, func_value)
 
     endofexpression(parser)
-    return _meta_add_operator(parser, node, op, op_node, op_value)
-
-
-def _meta_add_operator(parser, node, op, op_node, op_value):
     parser_current_scope_add_operator(parser, op_value, op)
-    return node_2(NT_OPERATOR, __ntok(node), op_node, op)
+
+

@@ -323,24 +323,20 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-def _parse(parser):
-    parser_enter_scope(parser)
-    parser.next()
-    stmts = statements(parser, TERM_FILE)
-    parser_exit_scope(parser)
-    assert plist.isempty(parser.state.scopes)
-    check_token_type(parser, TT_ENDSTREAM)
-    return stmts
-
-
 def parse(process, env, src):
     parser = process.parser
     ts = newtokenstream(src)
     parser.open(ParseState(process, env, ts))
-    stmts = _parse(parser)
+
+
+    parser.next()
+    stmts, scope = parse_env_statements(parser, TERM_FILE)
+    assert plist.isempty(parser.state.scopes)
+    check_token_type(parser, TT_ENDSTREAM)
+
     parser.close()
     # print stmts
-    return stmts
+    return stmts, scope
 
 
 def write_ast(ast):
