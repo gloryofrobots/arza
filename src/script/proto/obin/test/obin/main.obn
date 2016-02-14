@@ -1,22 +1,33 @@
 load affirm
-//load tests.test_base
-//load tests.test_static_refs
-//load tests.test_bool
-//load tests.datastructs.test_datastructs
+load tests.test_base
+load tests.test_static_refs
+load tests.test_bool
+load tests.datastructs.test_datastructs
 //load tests.test_operators
-//load tests.test_co
-//load tests.test_destruct
-//load tests.test_exception
-//load tests.test_def
-//load tests.test_generic
-//load tests.test_match
-//load tests.test_modify
-//load tests.test_module
+load tests.test_co
+load tests.test_destruct
+load tests.test_exception
+load tests.test_def
+load tests.test_generic
+load tests.test_match
+load tests.test_modify
+load tests.test_module
 load tests.test_operator_override
-//load tests.test_trait
+load tests.test_trait
 
+module m1
+    def f1(x,y ) -> add(x, y) end
+    def add(x,y) -> x+ y end
+end
 
 def main() ->
+//    fun add(x,y) -> x+ y end(1, 2)
+//    fun f1(x,y ) -> add(x, y) end(2,3)
+    print(x)
+    when 1 == 2
+        x = 1;
+
+      m1.f1(1,2)
 //    test_operators.test()
 //    test_static_refs.test()
 //    test_bool.test()
@@ -30,6 +41,6 @@ def main() ->
 //    test_match.test()
 //    test_modify.test()
 //    test_module.test()
-    test_operator_override.test()
+//    test_operator_override.test()
 //    test_trait.test()
 end
