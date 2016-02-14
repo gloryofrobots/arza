@@ -9,11 +9,13 @@ def Human_New(name, surname) ->
 def Wolf_New(name) ->
     {name=name} isa [Wolf, Animal] end
 
-generic #"-+-+-+-+"(self of Animal) ->
+generic `-+-+-+-+`
+case (self of Animal) ->
     ["I am animal", self.name]
 end
 //
-specify #-+-+-+-+(self of Human) ->
+specify `-+-+-+-+`
+case (self of Human) ->
     ["I am nice human",self.name, self.surname]
 end
 

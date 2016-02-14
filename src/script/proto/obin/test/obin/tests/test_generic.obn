@@ -7,8 +7,9 @@ generic _and_
 end
 
 
-specify _and_ (i of Integer, i of Float) ->
-    false
+specify _and_
+    case (i of Integer, i of Float) ->
+        false
 end
 
 specify _and_

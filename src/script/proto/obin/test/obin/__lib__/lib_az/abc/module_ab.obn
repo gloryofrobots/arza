@@ -7,4 +7,5 @@ def f_ab_2(num1, num2) -> num1 + num2 end
 
 CONST = 10
 
-generic gen_ab(self of Any) -> self end
+generic gen_ab
+    case (self of Any) -> self end

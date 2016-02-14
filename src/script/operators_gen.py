@@ -1,6 +1,6 @@
 OPERATORS = [
-    ("-", "uminus", 'prefix'),
-    ("+", "uplus", 'prefix'),
+    ("-", "__uminus__", 'prefix'),
+    ("+", "__uminus__", 'prefix'),
     ("~", "~", 'prefix'),
     ("not", "not", 'prefix'),
 
@@ -40,7 +40,7 @@ OPERATORS = [
 ]
 
 def symbol(name):
-    return "#%s" % name
+    return "`%s`" % name
 
 
 def gen_declarations():

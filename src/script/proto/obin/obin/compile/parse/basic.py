@@ -348,6 +348,34 @@ def endofexpression(parser):
     parse_error(parser, u"Expected end of expression mark", parser.node)
 
 
+def closed_expression(parser, _rbp):
+    res = expression(parser, _rbp)
+    endofexpression(parser)
+    return res
+
+# SAME AS EXPRESSION BUT WITH TERMINATION CONDITION
+# USED in parsing name declarations like specify a.b.c () -> end
+# so () can be in same line as a.b.c
+def terminated_expression(parser, _rbp, token_types):
+    previous = parser.node
+    advance(parser)
+
+    left = nud(parser, previous)
+    while True:
+        if parser.token_type in token_types:
+            break
+        if parser.is_newline_occurred:
+            break
+        _lbp = node_lbp(parser, parser.node)
+        if _rbp >= _lbp:
+            break
+        previous = parser.node
+        advance(parser)
+        left = node_led(parser, previous, left)
+
+    return left
+
+
 def expression(parser, _rbp):
     previous = parser.node
     # print "******"
@@ -370,14 +398,17 @@ def expression(parser, _rbp):
 
     return left
 
+
 def literal_expression(parser):
     # TODO WHY 70 here?!!!!
     return expression(parser, 70)
+
 
 def literal_terminated_expression(parser):
     exp = literal_expression(parser)
     endofexpression(parser)
     return exp
+
 
 def statement(parser):
     node = parser.node

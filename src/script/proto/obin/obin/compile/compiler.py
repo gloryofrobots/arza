@@ -749,9 +749,6 @@ def _compile_DEF(compiler, code, node):
     code.emit_2(STORE_LOCAL, index, funcname_index, info(node))
 
 
-# now they are identical except of scope
-_compile_FUN = _compile_DEF
-
 
 def _compile_branch(compiler, code, condition, body, endif):
     _compile(compiler, code, condition)
@@ -1112,7 +1109,7 @@ def _compile_node(compiler, code, node):
     elif NT_DEF == ntype:
         _compile_DEF(compiler, code, node)
     elif NT_FUN == ntype:
-        _compile_FUN(compiler, code, node)
+        _compile_DEF(compiler, code, node)
 
     elif NT_IF == ntype:
         _compile_IF(compiler, code, node)

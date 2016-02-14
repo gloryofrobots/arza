@@ -395,15 +395,17 @@ def _prefix_lcurly(parser, op, node, types, on_unknown):
     return node_1(NT_MAP, __ntok(node), nodes.list_node(items))
 
 
+FUN_NAME_TERMINATORS = [TT_LPAREN, TT_CASE, TT_ARROW]
+
+
 def parse_function(parser, can_has_empty_name):
-    if parser.token_type == TT_NAME:
-        name = _init_default_current_0(parser)
-        advance(parser)
-    else:
+    if parser.token_type in FUN_NAME_TERMINATORS:
         if can_has_empty_name is True:
             name = nodes.empty_node()
         else:
             return parse_error(parser, u"Expected function name", parser.node)
+    else:
+        name = terminated_expression(parser.name_parser, 0, FUN_NAME_TERMINATORS)
 
     funcs = []
     pattern_parser = parser.pattern_parser
@@ -580,8 +582,14 @@ def parse_specify_funcs(parser):
 
 
 def stmt_specify(parser, op, node):
-    name = _parse_name(parser)
-    check_node_types(parser, name, [NT_SYMBOL, NT_NAME])
+    # name = closed_expression(parser.name_parser, 0)
+    name = terminated_expression(parser.name_parser, 0, [TT_CASE, TT_LPAREN])
+    check_node_types(parser, name, [NT_SYMBOL, NT_NAME, NT_LOOKUP_SYMBOL, NT_LOOKUP])
+
+    check_token_types(parser, [TT_CASE, TT_LPAREN])
+    # name = _parse_name(parser)
+    # check_node_types(parser, name, [NT_SYMBOL, NT_NAME])
+
     funcs = parse_specify_funcs(parser)
     return node_2(NT_SPECIFY, __ntok(node), name, funcs)
 
@@ -599,7 +607,8 @@ def stmt_module(parser, op, node):
 
 def stmt_generic(parser, op, node):
     # name = literal_expression(parser.name_parser)
-    name = _parse_name(parser)
+    # name = _parse_name(parser)
+    name = terminated_expression(parser.name_parser, 0, [TT_CASE, TT_LPAREN])
     check_node_types(parser, name, [NT_SYMBOL, NT_NAME])
 
     if parser.token_type == TT_CASE or parser.token_type == TT_LPAREN:
@@ -666,7 +675,7 @@ def stmt_module_at(parser, op, node):
 
 
 def _meta_infix(parser, node, infix_function):
-    options_tuple = expression(parser, 0)
+    options_tuple = expression(parser.name_parser, 0)
     check_node_type(parser, options_tuple, NT_TUPLE)
     options = nodes.node_first(options_tuple)
     if api.length_i(options) != 3:
@@ -674,7 +683,7 @@ def _meta_infix(parser, node, infix_function):
     op_node = options[0]
     func_node = options[1]
     precedence_node = options[2]
-    check_node_type(parser, op_node, NT_SYMBOL)
+    check_node_type(parser, op_node, NT_NAME)
     check_node_types(parser, func_node, [NT_NAME, NT_SYMBOL])
     check_node_type(parser, precedence_node, NT_INT)
 
@@ -692,14 +701,14 @@ def _meta_infix(parser, node, infix_function):
 
 
 def _meta_prefix(parser, node):
-    options_tuple = expression(parser, 0)
+    options_tuple = expression(parser.name_parser, 0)
     check_node_type(parser, options_tuple, NT_TUPLE)
     options = nodes.node_first(options_tuple)
     if api.length_i(options) != 2:
         return parse_error(parser, u"Invalid prefix operator options", parser.node)
     op_node = options[0]
     func_node = options[1]
-    check_node_type(parser, op_node, NT_SYMBOL)
+    check_node_type(parser, op_node, NT_NAME)
     check_node_types(parser, func_node, [NT_NAME, NT_SYMBOL])
 
     op_value = symbol_or_name_value(parser, op_node)

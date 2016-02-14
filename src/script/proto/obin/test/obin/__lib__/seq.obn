@@ -1,0 +1,5 @@
+generic seq
+generic first
+generic rest
+generic is_empty
+generic empty

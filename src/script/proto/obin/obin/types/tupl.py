@@ -38,7 +38,6 @@ from obin.types import api, space
         return space.w_True
 """
 
-
 class W_Tuple(W_Hashable):
     def __init__(self, items):
         assert isinstance(items, list)

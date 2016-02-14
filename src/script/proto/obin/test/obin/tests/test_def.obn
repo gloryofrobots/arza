@@ -1,5 +1,11 @@
 load affirm
 
+// SYNTAX
+def `+++++` -> 42 end
+def `+++++`(x,y) -> 42 end
+def `+++++` case (x,y) -> 42 end
+def `+++++`
+    case (x,y) -> 42 end
 
 def test ->
     f1 = fun (a, b, c) -> (a, b, c) end

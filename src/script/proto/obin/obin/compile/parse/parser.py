@@ -88,17 +88,19 @@ class ExpressionParser(BaseParser):
         self.allow_overloading = True
         self.args_parser = args_parser_init(BaseParser())
         self.pattern_parser = pattern_parser_init(BaseParser())
-        # self.expression_parser = expression_parser_init(BaseParser(ts))
+        self.name_parser = name_parser_init(BaseParser())
 
         expression_parser_init(proc_data, base_parser_init(self))
 
     def _on_open(self, state):
         self.args_parser.open(state)
         self.pattern_parser.open(state)
+        self.name_parser.open(state)
 
     def _on_close(self):
         self.args_parser.close()
         self.pattern_parser.close()
+        self.name_parser.close()
 
 
 class ModuleParser(BaseParser):
@@ -147,9 +149,13 @@ def args_parser_init(parser):
 
 def name_parser_init(parser):
     symbol(parser, TT_COMMA, None)
-    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
-    prefix(parser, TT_SHARP, prefix_sharp)
+    symbol(parser, TT_RPAREN, None)
     literal(parser, TT_NAME)
+    literal(parser, TT_INT)
+
+    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
+    prefix(parser, TT_BACKTICK, prefix_backtick)
+    infix(parser, TT_DOT, 10, infix_simple_pair)
     return parser
 
 
@@ -353,23 +359,13 @@ def __parse__():
     from obin.runtime.engine import newprocess
     source = """
     module M
-        @infixl(#+, #+, 10)
-        @infixl(#*, #*, 20)
-        @infixr(#|, ___bitor, 10)
-        @prefix(#"+", ___unary_plus)
+        @infixl(`+`, `+`, 10)
+        @infixl(`*`, `*`, 20)
+        @infixr(`|`, ___bitor, 10)
+        @prefix(`+`, ___unary_plus)
 
-        generic gt_10(self of Integer) -> 42 end
-        generic gt_10
-            case (self of Integer) -> 42 end
 
-        generic gt_11
-        generic #++++++ (self of Any) -> 42 end
-        generic #++++++ case (self of Any) -> 42 end
-        generic #++++++
-            case (self of Any) -> 42
-            case (self of Many) -> 24
-
-        end
+        specify seq.seq.seq.list (l of List) -> l end
 
         x = #+
         def main() ->

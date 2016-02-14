@@ -83,7 +83,6 @@ class W_Any:
     def __repr__(self):
         return self.__str__()
 
-    # BEHAVIOR
     def _at_(self, key):
         return not_implemented_error(u"_at_", self, key)
 

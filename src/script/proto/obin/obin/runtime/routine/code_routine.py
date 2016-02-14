@@ -22,7 +22,6 @@ class CodeRoutine(BaseRoutine):
 
         self.catches = []
 
-
     def name(self):
         return self._name_
 
