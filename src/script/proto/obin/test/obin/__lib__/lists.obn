@@ -5,9 +5,9 @@ load _lists
 
 specify seq.seq(l of List) -> l;
 
-specify seq.first(l of List) -> head(l);
+specify seq.head(l of List) -> head(l);
 
-specify seq.rest(l of List) -> tail(l);
+specify seq.tail(l of List) -> tail(l);
 
 specify seq.empty(l of List) -> empty();
 
