@@ -21,40 +21,37 @@ load lists
 load seq
 
 def main() ->
-//    print("START TEST")
-    l = [1,2,3,4,5,6,7,8]
-//    affirm.is_equal(seq.cons(0, l), [0,1,2,3,4,5,6,7,8])
-//    affirm.is_equal(seq.cons(-1, seq.cons(0, l)), [-1,0,1,2,3,4,5,6,7,8])
-//    affirm.is_equal(seq.tail(l), [2,3,4,5,6,7,8])
-//    affirm.is_equal(seq.tail(seq.tail(l)), [3,4,5,6,7,8])
-//    affirm.is_equal(seq.tail(seq.tail([1,2])), [])
-//    affirm.is_true(seq.is_empty([]))
-//    affirm.is_false(seq.is_empty([1,2]))
-//    affirm.is_equal(seq.empty([]), [])
-//    affirm.is_equal(lists.empty(), [])
-//
-    l1 = [0,1,2,3,4,5,6,7,8,9]
-//    affirm.is_equal(seq.length(l1), 10)
-//    affirm.is_equal(seq.concat([0,1,2,3,4,5], [6,7,8,9]), l1)
-//    affirm.is_equal(seq.concat([], l1), l1)
-//    affirm.is_equal(seq.concat(l1, []), l1)
-//    affirm.is_equal(seq.concat([], []), [])
-//    affirm.is_equal(seq.reverse(l1), [9,8,7,6,5,4,3,2,1,0])
+    l = lists.range(1, 9)
+    affirm.is_equal(lists.cons(0, l), [0,1,2,3,4,5,6,7,8])
+    affirm.is_equal(lists.cons(-1, lists.cons(0, l)), [-1,0,1,2,3,4,5,6,7,8])
+    affirm.is_equal(lists.tail(l), [2,3,4,5,6,7,8])
+    affirm.is_equal(lists.tail(lists.tail(l)), [3,4,5,6,7,8])
+    affirm.is_equal(lists.tail(lists.tail([1,2])), [])
+    affirm.is_true(lists.is_empty([]))
+    affirm.is_false(lists.is_empty([1,2]))
+    affirm.is_equal(seq.empty([]), [])
+    affirm.is_equal(lists.empty(), [])
 
-//
-//    affirm.is_true(seq.prefix([1,2,3,4], [1,2,3,4,5,6]))
-//    affirm.is_false(seq.prefix([0,1,2,3,4], [1,2,3,4,5,6]))
-//    affirm.is_false(seq.prefix([1,2,3,4], [1,2,3,5,4,6]))
+    l1 = lists.range(0, 10)
+    affirm.is_equal(lists.length(l1), 10)
+    affirm.is_equal(lists.concat([0,1,2,3,4,5], [6,7,8,9]), l1)
+    affirm.is_equal(lists.concat([], l1), l1)
+    affirm.is_equal(lists.concat(l1, []), l1)
+    affirm.is_equal(lists.concat([], []), [])
+    affirm.is_equal(lists.reverse(l1), [9,8,7,6,5,4,3,2,1,0])
 
-//    affirm.is_true(seq.suffix([4,5,6], [1,2,3,4,5,6]))
-//    affirm.is_false(seq.suffix([3,5,6], [1,2,3,4,5,6]))
-//    affirm.is_false(seq.suffix([4,5,6], [1,2,3,4,6,5]))
-//
-//    affirm.is_equal(seq.drop(3, l1), [3,4,5,6,7,8,9])
-//    affirm.is_equal(seq.map(fun (x) -> x+1 end, l1), [1,2,3,4,5,6,7,8,9,10])
-//    affirm.is_equal(seq.intersperse(0, l1), [0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0])
-    
+    affirm.is_true(lists.prefix([1,2,3,4], [1,2,3,4,5,6]))
+    affirm.is_false(lists.prefix([0,1,2,3,4], [1,2,3,4,5,6]))
+    affirm.is_false(lists.prefix([1,2,3,4], [1,2,3,5,4,6]))
 
+    affirm.is_true(lists.suffix([4,5,6], [1,2,3,4,5,6]))
+    affirm.is_false(lists.suffix([3,5,6], [1,2,3,4,5,6]))
+    affirm.is_false(lists.suffix([4,5,6], [1,2,3,4,6,5]))
+
+    affirm.is_equal(lists.drop(3, l1), [3,4,5,6,7,8,9])
+    affirm.is_equal(lists.map(fun (x) -> x+1 end, l1), [1,2,3,4,5,6,7,8,9,10])
+    affirm.is_equal(lists.intersperse(0, l1), [0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0])
+    affirm.is_equal(lists.scanl(`+`, 0, lists.range(1, 11)),  [0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55])
 
 
 //    test_operators.test()

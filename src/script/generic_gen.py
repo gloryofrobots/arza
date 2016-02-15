@@ -1,4 +1,4 @@
-I = "Integer"
+I = "Int"
 N = "Number"
 F = "Float"
 A = "Any"

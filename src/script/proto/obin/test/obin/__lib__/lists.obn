@@ -16,4 +16,156 @@ specify seq.is_empty(l of List) -> is_empty(l);
 specify seq.cons(a of Any, l of List) -> cons(a, l);
 
 
+//TRANSFORMERS///////////////////////////////////////////////////////
+
+def map(f of Callable, l of List) ->
+    fun _map
+         case (f, []) -> []
+         case (f, [hd, ...tl]) -> cons(f(hd), _map(f, tl))
+    end
+    _map(f, l)
+end
+
+def intersperse(val, l of List) ->
+    fun _intersperse
+        case (val, []) -> []
+        case (val, [hd, ...tl]) -> cons(hd, cons(val, _intersperse(val, tl)))
+    end
+    _intersperse(val, l)
+end
+
+def reverse(l of List) ->
+    fun _acc
+        case ([], result) -> result
+        case ([hd, ...tl], result) -> _acc(tl, cons(hd, result))
+    end
+    _acc(l, [])
+end
+
+//REDUCERS///////////////////////////////////////////////////////
+
+def foldl(f of Callable, init_val, l of List) ->
+    fun _foldl
+        case (f, acc, []) -> acc
+        case (f, acc, [hd, ...tl]) ->
+            try
+                foldl(f, f(hd, acc), tl)
+            catch e
+                if e == #StopIteration
+                    acc
+                else
+                   throw e;
+            end
+    end
+    _foldl(f, init_val, l)
+end
+
+
+def foldr(f of Callable, init_val, l of List) ->
+    fun _foldr
+        case (f, acc, []) -> acc
+        case (f, acc, [hd, ...tl]) ->
+            try
+                 f(hd, foldr(f, acc, tl))
+            catch e
+                if e == #StopIteration
+                    acc
+                else
+                   throw e;
+            end
+    end
+    _foldr(f, init_val, l)
+end
+
+def on_reduced
+    case (#ReducedValue, val) -> val
+    case (e) -> throw e
+end
+
+def scanl(f of Callable, init_val, l of List) ->
+    fun _scanl
+        case (f, acc, []) -> cons(acc, [])
+        case (f, acc, [hd, ...tl]) -> cons(acc, _scanl(f, f(hd, acc), tl))
+    end
+    try
+        _scanl(f, init_val, l)
+    catch e
+        on_reduced(e)
+    end
+end
+
+///ACCESSORS//////////////////////////////////////
+
+def nth_tail
+    case (0, l) -> l
+    case (1, [_, ...t]) -> t
+    case (n, [_, ...t]) ->
+        nth_tail(n - 1, t) when n >= 0 else throw (#InvalidIndex, n)
+end
+
+def nth
+    case (0, L) -> L
+    case (1, [h, ...t]) -> h
+    case (n, [h, ...t]) ->
+        nth(n - 1, t) when n >= 0 else throw (#InvalidIndex, n)
+end
+
+
+def length(l of List) ->
+    foldl(fun (_, acc) -> acc + 1 end, 0, l);
+
+//QUERIES///////////////////////////////////////////////////
+
+def prefix
+    case ([hd, ...pre_tail], [hd, ...tail]) -> prefix(pre_tail, tail)
+    case ([], l) -> true
+    case ([_, ..._], l) -> false
+end
+
+def suffix(suf of List, l of List) ->
+   delta = length(l) - length(suf)
+   delta >= 0 and nth_tail(delta, l) == suf
+end
+
+//SUBLISTS/////////////////////////////////////////////////////////////
+
+def drop(count of Int, l of List) ->
+    fun _drop
+        case (0, l) -> l
+        case (count, [hd, ...tl]) -> _drop(count - 1, tl);
+    _drop(count, l)
+end
+
+//BUILDERS/////////////////////////////////////////////////////////////
+
+def concat(l1 of List, l2 of List) ->
+     foldr(cons, l2, l1);
+
+
+def range
+    case (first of Int, last of Int) ->
+        if last < 0
+            step = - 1
+        else
+            step = 1
+        end
+        range(first, last, step)
+    case (first of Int, last of Int, step of Int) ->
+        when step == 0
+            throw (#RangeError, "Step cannot be zero.");
+
+        when last < first and step > 0
+            throw (#RangeError, "Expected negative step.");
+
+        fun _range(first, last, step, condition, result) ->
+             if condition(first, last)
+                reverse(result)
+             else
+                _range(first + step, last, step, condition, cons(first, result))
+             end
+        end
+
+        condition = `>=` when step > 0 else `<=`
+        _range(first, last, step, condition, [])
+end
 

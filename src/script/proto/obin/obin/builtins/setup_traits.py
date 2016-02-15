@@ -9,7 +9,7 @@ def setup(process, module, stdlib):
     api.put(module, traits.Nil.name, traits.Nil)
     api.put(module, traits.Char.name, traits.Char)
     api.put(module, traits.Number.name, traits.Number)
-    api.put(module, traits.Integer.name, traits.Integer)
+    api.put(module, traits.Int.name, traits.Int)
     api.put(module, traits.Float.name, traits.Float)
     api.put(module, traits.Symbol.name, traits.Symbol)
     api.put(module, traits.String.name, traits.String)

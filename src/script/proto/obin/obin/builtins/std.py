@@ -54,7 +54,7 @@ class Behaviors:
         self.False = newbehavior(newlist([traits.False, traits.Boolean, traits.Any]))
         self.Nil = newbehavior(newlist([traits.Nil, traits.Any]))
         self.Char = newbehavior(newlist([traits.Char, traits.Any]))
-        self.Integer = newbehavior(newlist([traits.Integer, traits.Number, traits.Any]))
+        self.Integer = newbehavior(newlist([traits.Int, traits.Number, traits.Any]))
         self.Float = newbehavior(newlist([traits.Float, traits.Number, traits.Any]))
         self.Symbol = newbehavior(newlist([traits.Symbol, traits.Callable, traits.Any]))
 
@@ -88,7 +88,7 @@ class Traits:
         self.Nil = newtrait(symbols.symbol(u"Nil"))
         self.Char = newtrait(symbols.symbol(u"Char"))
         self.Number = newtrait(symbols.symbol(u"Number"))
-        self.Integer = newtrait(symbols.symbol(u"Integer"))
+        self.Int = newtrait(symbols.symbol(u"Int"))
         self.Float = newtrait(symbols.symbol(u"Float"))
         self.Symbol = newtrait(symbols.symbol(u"Symbol"))
         self.String = newtrait(symbols.symbol(u"String"))

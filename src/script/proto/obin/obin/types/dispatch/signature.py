@@ -177,7 +177,7 @@ def newsignature(process, args, method):
             arg = PredicateArgument(i, space.isstring)
         elif traits.Function is trait:
             arg = PredicateArgument(i, space.isfunction)
-        elif traits.Integer is trait:
+        elif traits.Int is trait:
             arg = PredicateArgument(i, space.isint)
         elif traits.Float is trait:
             arg = PredicateArgument(i, space.isfloat)

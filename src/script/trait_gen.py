@@ -8,7 +8,7 @@ TRAITS = [
         "Char", 
 
         "Number", 
-        "Integer", 
+        "Int", 
         "Float", 
         "Symbol", 
         "String", 
