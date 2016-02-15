@@ -1,5 +1,5 @@
 __author__ = 'gloryofrobots'
-from obin.builtins.internals.operations import *
+from obin.builtins.generics.operations import *
 from obin.runtime import error
 from obin.types import api, space
 from obin.types.space import isnumber, isint, isentity

@@ -150,11 +150,11 @@ def first(process, routine):
 
 @complete_native_routine
 def rest(process, routine):
-    from obin.types.plist import tail, isempty
+    from obin.types.plist import tail, is_empty
     from obin.types.space import islist
     lst = routine.get_arg(0)
     assert islist(lst)
-    assert not isempty(lst)
+    assert not is_empty(lst)
     v = tail(lst)
     return v
 

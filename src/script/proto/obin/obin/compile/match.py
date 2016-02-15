@@ -19,7 +19,7 @@ def transform_error(state, node, message):
 
 def _create_path_node(basenode, path):
     head, tail = plist.split(path)
-    if plist.isempty(tail):
+    if plist.is_empty(tail):
         return head
 
     return create_lookup_node(basenode, _create_path_node(basenode, tail), head)
@@ -31,11 +31,11 @@ def _create_path_node(basenode, path):
 def add_pattern(patterns, args):
     assert isinstance(args, list)
     args[0] = space.newstring_s(args[0])
-    return plist.prepend(space.newlist(args), patterns)
+    return plist.cons(space.newlist(args), patterns)
 
 
 def empty_pattern(pattern):
-    return plist.isempty(pattern)
+    return plist.is_empty(pattern)
 
 
 def split_patterns(patterns):
@@ -43,7 +43,7 @@ def split_patterns(patterns):
 
 
 def add_path(node, path):
-    return plist.prepend(node, path)
+    return plist.cons(node, path)
 
 
 def _process_tuple(state, pattern, patterns, path):
@@ -261,7 +261,7 @@ def _process_pattern(state, pattern, patterns, path):
 
 def process_patterns(state, pattern, path, index):
     patterns = _process_pattern(state, pattern, plist.empty(), path)
-    patterns = plist.prepend(space.newint(index), patterns)
+    patterns = plist.cons(space.newint(index), patterns)
     patterns = plist.reverse(patterns)
     return patterns
 
@@ -467,7 +467,7 @@ def _create_in_and_chain(keys, map_node):
                                                     map_node,
                                                     api.to_s(key))),
                              map_node)
-    if plist.isempty(rest):
+    if plist.is_empty(rest):
         return in_node
 
     return create_and_node(map_node, in_node, _create_in_and_chain(rest, map_node))
@@ -509,7 +509,7 @@ def _transform_assign(history, head, variables):
         return left, condition, prefixes + prefixes1, variables
     else:
         prefixes1 = (prefixes + [create_assign_node(left, left, right)])
-        return left, None, prefixes1, plist.prepend(left, variables)
+        return left, None, prefixes1, plist.cons(left, variables)
         # left = head[1]
         # right = head[2]
         # prefixes = [create_assign_node(left, left, right)]
@@ -565,7 +565,7 @@ def _transform_pattern(node, methods, history, variables, tree):
         assert body is not None
         assert prefixes is not None
 
-        if not plist.isempty(undefs):
+        if not plist.is_empty(undefs):
             undef_nodes = _create_variable_undefs(node, undefs)
             prefixes = undef_nodes + prefixes
 

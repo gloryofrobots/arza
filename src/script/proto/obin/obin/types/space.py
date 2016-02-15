@@ -100,7 +100,7 @@ def newsymbol(process, s):
     return process.symbols.symbol(s)
 
 
-def newsymbol_py_str(process, s):
+def newsymbol_s(process, s):
     assert isinstance(s, str)
     return newsymbol(process, unicode(s))
 

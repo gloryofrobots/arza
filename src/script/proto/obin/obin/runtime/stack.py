@@ -94,6 +94,6 @@ class Stack:
         while i > 0:
             i -= 1
             value = self.pop()
-            lst = plist.prepend(value, lst)
+            lst = plist.cons(value, lst)
 
         return lst

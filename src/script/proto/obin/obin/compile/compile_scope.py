@@ -61,7 +61,7 @@ class Scope:
         ref_idx = self.get_scope_reference(ref.name)
         assert not platform.is_absent_index(ref_idx), "Invalid static reference declaration. Reference id not defined"
 
-        self.static_references = plist.prepend(space.newtuple([ref, space.newint(ref_idx)]), self.static_references)
+        self.static_references = plist.cons(space.newtuple([ref, space.newint(ref_idx)]), self.static_references)
 
     def has_operator(self, op_name):
         return api.contains_b(self.operators, op_name)

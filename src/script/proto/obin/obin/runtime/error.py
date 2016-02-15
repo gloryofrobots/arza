@@ -1,7 +1,9 @@
 from obin.types import space
 
+
 def convert_to_script_error(process, err):
     return error(process, err.name, err.args_tuple)
+
 
 def error(process, symbol_unistr, args_tuple):
     assert space.istuple(args_tuple)
@@ -36,6 +38,22 @@ def throw_4(symbol_unistr, arg1, arg2, arg3, arg4):
 
 def throw_5(symbol_unistr, arg1, arg2, arg3, arg4, arg5):
     throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4, arg5]))
+
+
+def affirm_type(obj, condition):
+    if not condition(obj):
+        return throw_1(Errors.TYPE, obj)
+    return True
+
+
+def affirm_any(obj):
+    affirm_type(obj, space.isany)
+
+
+def affirm(condition, message):
+    if not condition:
+        return throw_1(Errors.RUNTIME, space.newstring(message))
+    return True
 
 
 class ObinError(Exception):

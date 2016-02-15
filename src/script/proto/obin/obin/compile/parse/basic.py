@@ -54,7 +54,7 @@ class ParseState:
 
 
 def parser_enter_scope(parser):
-    parser.state.scopes = plist.prepend(ParserScope(), parser.state.scopes)
+    parser.state.scopes = plist.cons(ParserScope(), parser.state.scopes)
 
 
 def parser_exit_scope(parser):

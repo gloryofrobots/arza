@@ -109,11 +109,13 @@ def contains_index_b(obj, i):
 def contains(obj, k):
     return space.newbool(contains_b(obj, k))
 
+
 def contains_b(obj, k):
     assert not space.isnil(k)
     v = obj._contains_(k)
     assert isinstance(v, bool)
     return v
+
 
 def put(obj, k, v):
     assert not space.isnil(v)
@@ -221,6 +223,7 @@ def equal(obj, other):
 def equal_b(obj, other):
     v = obj._equal_(other)
     return v
+
 
 
 def compare(process, obj, other):

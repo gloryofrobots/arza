@@ -1,19 +1,21 @@
 load affirm
-load tests.test_base
-load tests.test_static_refs
-load tests.test_bool
-load tests.datastructs.test_datastructs
+//load tests.test_base
+//load tests.test_static_refs
+//load tests.test_bool
+//load tests.datastructs.test_datastructs
 //load tests.test_operators
-load tests.test_co
-load tests.test_destruct
-load tests.test_exception
-load tests.test_def
-load tests.test_generic
-load tests.test_match
-load tests.test_modify
-load tests.test_module
-load tests.test_operator_override
-load tests.test_trait
+//load tests.test_co
+//load tests.test_destruct
+//load tests.test_exception
+//load tests.test_def
+//load tests.test_generic
+//load tests.test_match
+//load tests.test_modify
+//load tests.test_module
+//load tests.test_operator_override
+//load tests.test_trait
+
+load lists
 
 module m1
     def f1(x,y ) -> add(x, y) end
@@ -22,19 +24,30 @@ end
 
 def main() ->
 
+    l = [1,2,3,4,5,6,7,8]
+    affirm.is_equal(lists.cons(0, l), [0,1,2,3,4,5,6,7,8])
+    affirm.is_equal(lists.cons(-1, lists.cons(0, l)), [-1,0,1,2,3,4,5,6,7,8])
+    affirm.is_equal(lists.tail(l), [2,3,4,5,6,7,8])
+    affirm.is_equal(lists.tail(lists.tail(l)), [3,4,5,6,7,8])
+    affirm.is_equal(lists.tail(lists.tail([1,2])), [])
+    affirm.is_true(lists.is_empty([]))
+    affirm.is_false(lists.is_empty([1,2]))
+    affirm.is_equal(lists.empty(), [])
+
+
 //    test_operators.test()
-    test_static_refs.test()
-    test_bool.test()
-    test_base.test()
-    test_datastructs.test()
-    test_co.test()
-    test_destruct.test()
-    test_exception.test()
-    test_def.test()
-    test_generic.test()
-    test_match.test()
-    test_modify.test()
-    test_module.test()
-    test_operator_override.test()
-    test_trait.test()
+//    test_static_refs.test()
+//    test_bool.test()
+//    test_base.test()
+//    test_datastructs.test()
+//    test_co.test()
+//    test_destruct.test()
+//    test_exception.test()
+//    test_def.test()
+//    test_generic.test()
+//    test_match.test()
+//    test_modify.test()
+//    test_module.test()
+//    test_operator_override.test()
+//    test_trait.test()
 end

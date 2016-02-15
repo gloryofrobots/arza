@@ -11,7 +11,7 @@ class W_PList(W_Any):
 
     def __iter__(self):
         cur = self
-        while not isempty(cur):
+        while not is_empty(cur):
             yield head(cur)
             cur = cur.tail
 
@@ -29,7 +29,7 @@ class W_PList(W_Any):
         els = []
         cur = self
         while True:
-            if isempty(cur):
+            if is_empty(cur):
                 els.append("()")
                 break
             els.append("%s" % (cur.head))
@@ -41,7 +41,7 @@ class W_PList(W_Any):
         els = []
         cur = self
         while True:
-            if isempty(cur):
+            if is_empty(cur):
                 break
             els.append(api.to_s(head(cur)))
             cur = cur.tail
@@ -75,9 +75,8 @@ class W_PList(W_Any):
         return nth(self, int_index)
 
     def _put_(self, k, v):
-        from obin.types.space import isint
         from obin.types import api
-        assert isint(k)
+        error.affirm_type(k, space.isint)
         i = api.to_i(k)
         return update(self, i, v)
 
@@ -111,7 +110,7 @@ class W_PList(W_Any):
         if not space.islist(other):
             return False
 
-        if isempty(other) and isempty(self):
+        if is_empty(other) and is_empty(self):
             return True
         return equal(self, other)
 
@@ -132,8 +131,8 @@ def to_tuple(pl):
 
 
 def foldl(func, acc, pl):
-    assert space.islist(pl)
-    if isempty(pl):
+    type_check(pl)
+    if is_empty(pl):
         return acc
 
     return foldl(func,
@@ -142,30 +141,32 @@ def foldl(func, acc, pl):
 
 
 def foldr(func, acc, pl):
-    assert space.islist(pl)
-    if isempty(pl):
+    type_check(pl)
+    if is_empty(pl):
         return acc
 
     return func(head(pl),
                 foldr(func, acc, tail(pl)))
 
 
-def isempty(pl):
+def is_empty(pl):
     return pl is __EMPTY__
 
 
 def head(pl):
-    assert space.islist(pl)
+    type_check(pl)
     return pl.head
 
+def type_check(pl):
+    error.affirm_type(pl, space.islist)
 
 def tail(pl):
-    assert space.islist(pl)
+    type_check(pl)
     return pl.tail
 
 
 def split(pl):
-    assert space.islist(pl)
+    type_check(pl)
     return head(pl), tail(pl)
 
 
@@ -174,55 +175,55 @@ def _length_foldl(acc, el):
 
 
 def length(pl):
-    assert space.islist(pl)
+    type_check(pl)
     return foldl(_length_foldl, 0, pl)
 
 
-def prepend(v, pl):
-    assert space.islist(pl)
-    assert v is not None
+def cons(v, pl):
+    error.affirm_any(v)
+    type_check(pl)
     return W_PList(v, pl)
 
 
 def cons_n_list(items, pl):
-    assert space.islist(pl)
+    type_check(pl)
     head = pl
     for item in reversed(items):
-        head = prepend(item, head)
+        head = cons(item, head)
     return head
 
 
 def append(pl, v):
-    assert space.islist(pl)
+    type_check(pl)
     return insert(pl, length(pl), v)
 
 
 def concat(pl1, pl2):
-    assert space.islist(pl1)
-    assert space.islist(pl2)
-    return foldr(prepend, pl2, pl1)
+    type_check(pl1)
+    type_check(pl2)
+    return foldr(cons, pl2, pl1)
 
 
 def pop(pl):
-    assert space.islist(pl)
+    type_check(pl)
     return pl.tail
 
 
 def take(pl, count):
-    assert space.islist(pl)
+    type_check(pl)
     if count <= 0:
         return empty()
 
-    if isempty(pl):
+    if is_empty(pl):
         return error.throw_1(error.Errors.INDEX, space.newint(count))
-    return prepend(head(pl), take(pop(pl), count - 1))
+    return cons(head(pl), take(pop(pl), count - 1))
 
 
 def drop(pl, count):
-    assert space.islist(pl)
+    type_check(pl)
     if count == 0:
         return pl
-    if isempty(pl):
+    if is_empty(pl):
         return error.throw_1(error.Errors.INDEX, space.newint(count))
 
     return drop(tail(pl), count - 1)
@@ -231,7 +232,7 @@ def drop(pl, count):
 ##############################################
 
 def _slice(pl, index, start, end):
-    if isempty(pl):
+    if is_empty(pl):
         return error.throw_3(error.Errors.SLICE, space.newint(index),
                              space.newint(start), space.newint(end))
 
@@ -239,19 +240,19 @@ def _slice(pl, index, start, end):
         return _slice(tail(pl), index + 1, start, end)
 
     if index < end:
-        return prepend(head(pl), _slice(tail(pl), index + 1, start, end))
+        return cons(head(pl), _slice(tail(pl), index + 1, start, end))
 
     return empty()
 
 
 def slice(pl, start, end):
-    assert space.islist(pl)
+    type_check(pl)
     if start == end:
         return empty()
 
-    assert start >= 0
-    assert end > start
-    assert end > 0
+    error.affirm(start >= 0, u"Invalid slice : start < 0")
+    error.affirm(end > start, u"Invalid slice : end <= start")
+    error.affirm(end > 0, u"Invalid slice : end <= 0 start")
 
     # return take(drop(pl, start), end - 1)
     return _slice(pl, 0, start, end)
@@ -263,42 +264,42 @@ def _nth(pl, index):
     from obin.types.space import newnil
     if index == 0:
         return head(pl)
-    if isempty(pl):
+    if is_empty(pl):
         return newnil()
     return nth(tail(pl), index - 1)
 
 
 def nth(pl, index):
-    assert space.islist(pl)
-    assert index >= 0
+    type_check(pl)
+    error.affirm(index >= 0, u"Invalid index index < 0")
     return _nth(pl, index)
 
 
 def insert(pl, index, v):
-    assert space.islist(pl)
+    type_check(pl)
     if index == 0:
-        return prepend(v, pl)
+        return cons(v, pl)
 
-    if isempty(pl):
+    if is_empty(pl):
         return error.throw_1(error.Errors.INDEX, space.newint(index))
 
     return W_PList(head(pl), insert(tail(pl), index - 1, v))
 
 
 def update(pl, index, v):
-    assert space.islist(pl)
+    type_check(pl)
     if index == 0:
-        return prepend(v, tail(pl))
+        return cons(v, tail(pl))
 
-    if isempty(tail(pl)):
+    if is_empty(tail(pl)):
         return error.throw_1(error.Errors.INDEX, space.newint(index))
 
     return W_PList(head(pl), update(tail(pl), index - 1, v))
 
 
 def remove_all(pl, v):
-    assert space.islist(pl)
-    if isempty(pl):
+    type_check(pl)
+    if is_empty(pl):
         return pl
 
     if api.equal_b(v, head(pl)):
@@ -309,10 +310,9 @@ def remove_all(pl, v):
 
 
 def remove(pl, v):
-    assert space.islist(pl)
-    assert isinstance(pl, W_PList)
+    type_check(pl)
     from obin.types import api
-    if isempty(pl):
+    if is_empty(pl):
         return error.throw_1(error.Errors.VALUE, space.newint(v))
 
     if api.equal_b(v, head(pl)):
@@ -323,8 +323,8 @@ def remove(pl, v):
 ########################################################################
 
 def contains_with(pl, v, condition):
-    assert space.islist(pl)
-    if isempty(pl):
+    type_check(pl)
+    if is_empty(pl):
         return False
 
     if condition(v, head(pl)):
@@ -339,8 +339,8 @@ def contains(pl, v):
 ############################################################
 
 def contains_split(pl, v):
-    assert space.islist(pl)
-    if isempty(pl):
+    type_check(pl)
+    if is_empty(pl):
         return False, empty()
 
     if api.equal_b(v, head(pl)):
@@ -350,9 +350,9 @@ def contains_split(pl, v):
 
 
 def _contains_list(pl1, pl2):
-    if isempty(pl2):
+    if is_empty(pl2):
         return True
-    if isempty(pl1):
+    if is_empty(pl1):
         return False
 
     if not api.equal_b(head(pl1), head(pl2)):
@@ -362,9 +362,9 @@ def _contains_list(pl1, pl2):
 
 
 def contains_list(pl1, pl2):
-    if isempty(pl2):
+    if is_empty(pl2):
         return True
-    if isempty(pl1):
+    if is_empty(pl1):
         return False
 
     find, pl1_tail = contains_split(pl1, head(pl2))
@@ -374,11 +374,11 @@ def contains_list(pl1, pl2):
 
 
 def equal_with(pl1, pl2, condition):
-    if isempty(pl2) and isempty(pl1):
+    if is_empty(pl2) and is_empty(pl1):
         return True
-    if isempty(pl1):
+    if is_empty(pl1):
         return False
-    if isempty(pl2):
+    if is_empty(pl2):
         return False
 
     if not condition(head(pl1), head(pl2)):
@@ -394,29 +394,29 @@ def equal(pl1, pl2):
 ######################################################
 
 def _substract(pl1, pl2, result):
-    if isempty(pl1):
+    if is_empty(pl1):
         return result
 
     if not contains(pl2, head(pl1)):
-        return _substract(tail(pl1), pl2, prepend(head(pl1), result))
+        return _substract(tail(pl1), pl2, cons(head(pl1), result))
     else:
         return _substract(tail(pl1), pl2, result)
 
 
 def substract(pl1, pl2):
-    assert space.islist(pl1)
-    assert space.islist(pl2)
+    type_check(pl1)
+    type_check(pl2)
     return reverse(_substract(pl1, pl2, empty()))
 
 
 ######################################################
 
 def index(pl, elem):
-    assert space.islist(pl)
+    type_check(pl)
     cur = pl
     idx = 0
     while True:
-        if isempty(cur):
+        if is_empty(cur):
             return -1
         if api.equal_b(head(cur), elem):
             return idx
@@ -425,16 +425,16 @@ def index(pl, elem):
 
 
 def fmap(func, pl):
-    assert space.islist(pl)
-    if isempty(pl):
+    type_check(pl)
+    if is_empty(pl):
         return empty()
 
-    return prepend(func(head(pl)), fmap(func, tail(pl)))
+    return cons(func(head(pl)), fmap(func, tail(pl)))
 
 
 def each(func, pl):
-    assert space.islist(pl)
-    if isempty(pl):
+    type_check(pl)
+    if is_empty(pl):
         return None
 
     result = func(head(pl))
@@ -447,13 +447,13 @@ def each(func, pl):
 ##############################################################
 
 def _reverse_acc(pl, result):
-    if isempty(pl):
+    if is_empty(pl):
         return result
-    return _reverse_acc(tail(pl), prepend(head(pl), result))
+    return _reverse_acc(tail(pl), cons(head(pl), result))
 
 
 def reverse(pl):
-    assert space.islist(pl)
+    type_check(pl)
     return _reverse_acc(pl, empty())
 
 
@@ -467,7 +467,7 @@ def _hash(acc, el):
 
 
 def compute_hash(pl):
-    assert space.islist(pl)
+    type_check(pl)
     return foldl(_hash, 0x345678, pl)
 
 
@@ -486,9 +486,9 @@ def plist_tuple(process, tupl):
 def plist(items):
     lst = empty()
     for item in reversed(items):
-        lst = prepend(item, lst)
+        lst = cons(item, lst)
     return lst
 
 
 def plist1(item):
-    return prepend(item, empty())
+    return cons(item, empty())

@@ -31,7 +31,7 @@ def _tostring(pair, vec):
 
 
 def _tolist(pair, lst):
-    return plist.prepend(pair, lst)
+    return plist.cons(pair, lst)
 
 
 def _equal(pair, other):

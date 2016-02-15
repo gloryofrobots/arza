@@ -342,13 +342,13 @@ def is_w_w(process, op1, op2):
 
 # TODO MAKE IT GENERIC
 def cons_w(process, op1, op2):
-    from obin.types.plist import plist1, prepend
+    from obin.types.plist import plist1, cons
     from obin.types.space import islist
     if not islist(op2):
         l = plist1(op2)
     else:
         l = op2
-    return prepend(op1, l)
+    return cons(op1, l)
 
 
 def isa_w_w(process, obj, trait):

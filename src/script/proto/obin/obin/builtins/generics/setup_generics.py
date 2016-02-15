@@ -46,7 +46,7 @@ def _install(process, module, stdlib):
 
 
 def _specify(process, module, stdlib):
-    import obin.builtins.internals.wrappers as wrappers
+    import obin.builtins.generics.wrappers as wrappers
     from obin.types.dispatch.generic import specify_single
     from obin.types.space import newtuple, newnativefunc, newsymbol
     generics = stdlib.generics

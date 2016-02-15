@@ -232,7 +232,7 @@ def _get_name_value(name):
 
 def _get_symbol_name(compiler, name):
     sym = _get_symbol_or_name_value(name)
-    return space.newsymbol_py_str(compiler.process, sym)
+    return space.newsymbol_s(compiler.process, sym)
 
 
 def _emit_pop(code):
@@ -323,7 +323,7 @@ def _compile_ASSIGN_SYMBOL(compiler, code, node):
 
 
 def _emit_store_name(compiler, code, namenode):
-    name = space.newsymbol_py_str(compiler.process, nodes.node_value_s(namenode))
+    name = space.newsymbol_s(compiler.process, nodes.node_value_s(namenode))
     _emit_store(compiler, code, name, namenode)
 
 
@@ -348,7 +348,7 @@ def _compile_match(compiler, code, node, patterns, error_code):
     from obin.compile.match import transform
     from obin.compile.parse.nodes import create_goto_node
     from obin.compile import MATCH_SYS_VAR
-    name = space.newsymbol_py_str(compiler.process, MATCH_SYS_VAR)
+    name = space.newsymbol_s(compiler.process, MATCH_SYS_VAR)
     name_index = _declare_literal(compiler, name)
     index = _declare_local(compiler, name)
     code.emit_2(STORE_LOCAL, index, name_index, codeinfo_unknown())
@@ -704,7 +704,7 @@ def _get_symbol_name_or_empty(process, name):
     if nodes.is_empty_node(name):
         return space.newsymbol(process, u"")
     else:
-        return space.newsymbol_py_str(process, nodes.node_value_s(name))
+        return space.newsymbol_s(process, nodes.node_value_s(name))
 
 
 def is_simple_func_declaration(params):
@@ -861,7 +861,7 @@ def _compile_LOAD(compiler, code, node):
         import_name = exp
         module_path = nodes.node_value_s(exp)
 
-    module_path_literal = _declare_literal(compiler, space.newsymbol_py_str(compiler.process, module_path))
+    module_path_literal = _declare_literal(compiler, space.newsymbol_s(compiler.process, module_path))
     code.emit_1(LOAD, module_path_literal, info(node))
 
     _emit_store_name(compiler, code, import_name)
@@ -900,7 +900,7 @@ def _compile_GENERIC(compiler, code, node):
 def _compile_TRAIT(compiler, code, node):
     names = node_first(node)
     for name in names:
-        name = space.newsymbol_py_str(compiler.process, nodes.node_value_s(name))
+        name = space.newsymbol_s(compiler.process, nodes.node_value_s(name))
         index = _declare_local(compiler, name)
 
         name_index = _declare_literal(compiler, name)
@@ -963,7 +963,7 @@ def _compile_FOR(compiler, code, node):
     code.emit_0(NEXT, codeinfo_unknown())
 
     vars = node_first(node)
-    name = space.newsymbol_py_str(compiler.process, nodes.node_value_s(vars[0]))
+    name = space.newsymbol_s(compiler.process, nodes.node_value_s(vars[0]))
     index = _declare_local(compiler, name)
 
     name_index = _declare_literal(compiler, name)

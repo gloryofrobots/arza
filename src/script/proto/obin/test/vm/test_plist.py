@@ -25,9 +25,9 @@ class PListTestCase(unittest.TestCase):
         NIS = lambda items: [NI(i) for i in items]
 
         l = plist.plist(NIS([0]))
-        l1 = plist.prepend(NI(1), l)
-        l2 = plist.prepend(NI(2), l1)
-        l3 = plist.prepend(NI(3), l2, )
+        l1 = plist.cons(NI(1), l)
+        l2 = plist.cons(NI(2), l1)
+        l3 = plist.cons(NI(3), l2, )
         self._test_equal(l3, [3, 2, 1, 0])
         l4 = plist.insert(l3, 1, NI(44))
         self._test_equal(l4, [3, 44, 2, 1, 0])

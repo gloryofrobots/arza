@@ -85,7 +85,7 @@ class Fiber:
         assert routine.is_terminated()
         while not routine.catch(signal):
             info = routine.info()
-            trace = plist.prepend(info, trace)
+            trace = plist.cons(info, trace)
             routine = self.__pop()
             if routine is None:
                 return False, trace

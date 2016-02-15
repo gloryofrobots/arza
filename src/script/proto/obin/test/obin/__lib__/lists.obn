@@ -1,15 +1,21 @@
 load seq
 load _lists
 
-generic seq
-generic first
-generic rest
-generic is_empty
-generic empty
+{head, tail, empty, is_empty, cons} = _lists
+
+/////////////////////////////////////////////////////////////
+
+specify seq.seq(l of List) -> l end
+
+specify seq.first(l of List) -> head(l);
+
+specify seq.rest(l of List) -> tail(l);
+
+specify seq.empty(l of List) -> empty();
+
+specify seq.is_empty(l of List) -> is_empty(l);
+
+specify seq.cons(a of Any, l of List) -> cons(a, l);
 
 
-specify seq.seq
-    case (l of List) -> l end
 
-specify seq.first case(l of List) = _lists.head
-    case (l of List) -> l end

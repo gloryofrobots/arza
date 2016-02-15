@@ -206,7 +206,7 @@ class W_Map(W_Any):
     def to_list(self):
         result = plist.empty()
         for k, i in self.slot_bindings.items():
-            result = plist.prepend(space.newtuple([k, api.at_index(self.slot_values, i)]), result)
+            result = plist.cons(space.newtuple([k, api.at_index(self.slot_values, i)]), result)
 
         return result
 

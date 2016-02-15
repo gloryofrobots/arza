@@ -83,7 +83,7 @@ def newentity_with_traits(process, obj, traits):
 
 def newentity_with_trait(process, obj, trait):
     source_traits = api.traits(process, obj)
-    new_traits = plist.prepend(trait, source_traits)
+    new_traits = plist.cons(trait, source_traits)
     return W_Entity(space.newbehavior(new_traits), obj)
 
 
@@ -91,7 +91,7 @@ def add_trait(process, obj, trait):
     assert space.istrait(trait)
 
     try:
-        return W_Entity(space.newbehavior(plist.prepend(trait, obj.behavior.traits)), obj.source)
+        return W_Entity(space.newbehavior(plist.cons(trait, obj.behavior.traits)), obj.source)
     except Exception as e:
         error.throw_3(error.Errors.ADD_TRAIT, obj, trait, space.newstring_s(str(e)))
 
