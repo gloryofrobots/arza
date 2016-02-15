@@ -8,6 +8,7 @@ def `++---^--^`
     case (x,y) -> 42 end
 
 // compiler single pass problem example
+//    I decided not to optimize it.
 //    [fun length(x) -> 1 + length(x - 1) when x > 0 else 0 end]
 //    fun Y(y) -> length(y) end
 //    Y(3)
@@ -151,4 +152,9 @@ def test ->
     ////////////////////////////////////////////////
     affirm.is_equal(fun () -> 42 end(), 42)
     affirm.is_equal(fun -> 42 end(), 42)
+    ////////////////////////////////////////////////
+    fun f1(x,y ) -> add(x, y) end
+    fun add(x,y) -> x+ y + f2() end
+    fun f2()-> 42 end
+    affirm.is_equal(f1(1,2), 45)
 end

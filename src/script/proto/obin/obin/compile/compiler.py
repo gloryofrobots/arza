@@ -285,18 +285,18 @@ def _compile_CHAR(compiler, code, node):
 
 
 def _compile_AND(compiler, code, node):
-    _compile_2(compiler, code, node_first(node))
+    _compile(compiler, code, node_first(node))
     one = code.prealocate_label()
     code.emit_1(JUMP_IF_FALSE_NOPOP, one, info(node))
-    _compile_2(compiler, code, node_second(node))
+    _compile(compiler, code, node_second(node))
     code.emit_1(LABEL, one, info(node))
 
 
 def _compile_OR(compiler, code, node):
-    _compile_2(compiler, code, node_first(node))
+    _compile(compiler, code, node_first(node))
     one = code.prealocate_label()
     code.emit_1(JUMP_IF_TRUE_NOPOP, one, info(node))
-    _compile_2(compiler, code, node_second(node))
+    _compile(compiler, code, node_second(node))
     code.emit_1(LABEL, one, info(node))
 
 
@@ -306,9 +306,9 @@ def _compile_ASSIGN_MEMBER(compiler, code, node):
     obj = node_first(member)
     item = node_second(member)
 
-    _compile_2(compiler, code, obj)
-    _compile_2(compiler, code, item)
-    _compile_2(compiler, code, value)
+    _compile(compiler, code, obj)
+    _compile(compiler, code, item)
+    _compile(compiler, code, value)
     code.emit_0(STORE_MEMBER, info(node))
 
 
@@ -316,9 +316,9 @@ def _compile_ASSIGN_SYMBOL(compiler, code, node):
     member = node_first(node)
 
     obj = node_first(member)
-    _compile_2(compiler, code, obj)
+    _compile(compiler, code, obj)
     _emit_symbol_name(compiler, code, node_second(member))
-    _compile_2(compiler, code, node_second(node))
+    _compile(compiler, code, node_second(node))
     code.emit_0(STORE_MEMBER, info(node))
 
 
@@ -355,11 +355,11 @@ def _compile_match(compiler, code, node, patterns, error_code):
 
     endmatch = code.prealocate_label()
     graph = transform(compiler, code, node, patterns, create_goto_node(endmatch))
-    _compile_2(compiler, code, graph)
+    _compile(compiler, code, graph)
 
     # Allocate error in case of no match
     err_node = nodes.create_match_fail_node(node, str(error_code))
-    _compile_2(compiler, code, err_node)
+    _compile(compiler, code, err_node)
     code.emit_0(THROW, info(node))
 
     code.emit_1(LABEL, endmatch, codeinfo_unknown())
@@ -368,7 +368,7 @@ def _compile_match(compiler, code, node, patterns, error_code):
 def _compile_MATCH(compiler, code, node):
     exp = node_first(node)
     patterns = node_second(node)
-    _compile_2(compiler, code, exp)
+    _compile(compiler, code, exp)
     _compile_match(compiler, code, node, patterns, error.Errors.MATCH)
 
 
@@ -392,7 +392,7 @@ def _compile_GOTO(compiler, code, node):
 # DESTRUCT DESTRUCT
 ####
 def _compile_destruct(compiler, code, node):
-    _compile_2(compiler, code, node_second(node))
+    _compile(compiler, code, node_second(node))
     return _compile_destruct_recur(compiler, code, node_first(node))
 
 
@@ -520,7 +520,7 @@ def _compile_ASSIGN(compiler, code, node):
     elif node_type(left) == NT_TUPLE or node_type(left) == NT_MAP:
         return _compile_destruct(compiler, code, node)
 
-    _compile_2(compiler, code, node_second(node))
+    _compile(compiler, code, node_second(node))
     _emit_store_name(compiler, code, left)
 
 
@@ -551,14 +551,14 @@ def _compile_SYMBOL(compiler, code, node):
 
 def _compile_RETURN(compiler, code, node):
     expr = node_first(node)
-    _compile_2(compiler, code, expr)
+    _compile(compiler, code, expr)
 
     code.emit_0(RETURN, info(node))
 
 
 def _compile_THROW(compiler, code, node):
     expr = node_first(node)
-    _compile_2(compiler, code, expr)
+    _compile(compiler, code, expr)
     code.emit_0(THROW, info(node))
 
 
@@ -568,19 +568,19 @@ def _emit_map_key(compiler, code, key):
         # in case of names in object literal we must convert them to symbols
         _emit_symbol_name(compiler, code, key)
     else:
-        _compile_2(compiler, code, key)
+        _compile(compiler, code, key)
 
 
 def _compile_MODIFY(compiler, code, node):
     obj = node_first(node)
     modifications = node_second(node)
-    _compile_2(compiler, code, obj)
+    _compile(compiler, code, obj)
 
     for m in modifications:
         key = m[0]
         value = m[1]
         _emit_map_key(compiler, code, key)
-        _compile_2(compiler, code, value)
+        _compile(compiler, code, value)
         code.emit_0(STORE_MEMBER, info(key))
 
 
@@ -592,7 +592,7 @@ def _compile_MAP(compiler, code, node):
         if nodes.is_empty_node(value):
             _compile_NIL(compiler, code, value)
         else:
-            _compile_2(compiler, code, value)
+            _compile(compiler, code, value)
 
         _emit_map_key(compiler, code, key)
 
@@ -602,7 +602,7 @@ def _compile_MAP(compiler, code, node):
 def _compile_TUPLE(compiler, code, node):
     items = node_first(node)
     for c in items:
-        _compile_2(compiler, code, c)
+        _compile(compiler, code, c)
 
     code.emit_1(TUPLE, len(items), info(node))
 
@@ -614,7 +614,7 @@ def _compile_UNIT(compiler, code, node):
 def _compile_LIST(compiler, code, node):
     items = node_first(node)
     for c in items:
-        _compile_2(compiler, code, c)
+        _compile(compiler, code, c)
 
     code.emit_1(LIST, len(items), info(node))
 
@@ -661,7 +661,7 @@ def _compile_func_args_and_body(compiler, code, name, params, body):
     if not api.isempty(funcname):
         _declare_function_name(compiler, funcname)
 
-    _compile(compiler, funccode, body)
+    _compile_2(compiler, funccode, body)
     current_scope = _current_scope(compiler)
     scope = current_scope.finalize(_previous_scope(compiler), None)
     _exit_scope(compiler)
@@ -755,18 +755,18 @@ def _compile_DEF(compiler, code, node):
     if api.isempty(funcname):
         return
 
-    index = _get_function_index(compiler, funcname)
-    # index = _declare_local(compiler, funcname)
+    # index = _get_function_index(compiler, funcname)
+    index = _declare_local(compiler, funcname)
 
     funcname_index = _declare_literal(compiler, funcname)
     code.emit_2(STORE_LOCAL, index, funcname_index, info(node))
 
 
 def _compile_branch(compiler, code, condition, body, endif):
-    _compile_2(compiler, code, condition)
+    _compile(compiler, code, condition)
     end_body = code.prealocate_label()
     code.emit_1(JUMP_IF_FALSE, end_body, info(condition))
-    _compile_2(compiler, code, body)
+    _compile(compiler, code, body)
     code.emit_1(JUMP, endif, codeinfo_unknown())
     code.emit_1(LABEL, end_body, codeinfo_unknown())
 
@@ -777,7 +777,7 @@ def _compile_WHEN(compiler, code, node):
     falsebranch = node_third(node)
     endif = code.prealocate_label()
     _compile_branch(compiler, code, condition, truebranch, endif)
-    _compile_2(compiler, code, falsebranch)
+    _compile(compiler, code, falsebranch)
     code.emit_1(LABEL, endif, codeinfo_unknown())
 
 
@@ -803,7 +803,7 @@ def _compile_IF(compiler, code, node):
     if nodes.is_empty_node(elsebranch):
         _emit_nil(code)
     else:
-        _compile_2(compiler, code, elsebranch[1])
+        _compile(compiler, code, elsebranch[1])
 
     code.emit_1(LABEL, endif, codeinfo_unknown())
 
@@ -818,7 +818,7 @@ def _compile_TRY(compiler, code, node):
 
     catchlabel = code.prealocate_label()
     code.emit_1(PUSH_CATCH, catchlabel, codeinfo_unknown())
-    _compile_2(compiler, code, trynode)
+    _compile(compiler, code, trynode)
     code.emit_0(POP_CATCH, codeinfo_unknown())
     code.emit_1(JUMP, finallylabel, codeinfo_unknown())
 
@@ -829,12 +829,12 @@ def _compile_TRY(compiler, code, node):
     else:
         _emit_pop(code)
 
-    _compile_2(compiler, code, catchnode)
+    _compile(compiler, code, catchnode)
 
     code.emit_1(JUMP, finallylabel, codeinfo_unknown())
     code.emit_1(LABEL, finallylabel, codeinfo_unknown())
     if not nodes.is_empty_node(finallynode):
-        _compile_2(compiler, code, finallynode)
+        _compile(compiler, code, finallynode)
 
 
 ############################
@@ -887,8 +887,8 @@ def _compile_GENERIC(compiler, code, node):
     name = _get_symbol_name(compiler, name_node)
 
     name_index = _declare_literal(compiler, name)
-    index = _get_function_index(compiler, name)
-    # index = _declare_local(compiler, name)
+    # index = _get_function_index(compiler, name)
+    index = _declare_local(compiler, name)
     code.emit_1(GENERIC, name_index, info(node))
     code.emit_2(STORE_LOCAL, index, name_index, info(name_node))
 
@@ -926,7 +926,7 @@ def _emit_specify(compiler, code, node, methods):
             if trait is None:
                 _emit_nil(code)
             else:
-                _compile_2(compiler, code, trait)
+                _compile(compiler, code, trait)
 
         code.emit_1(TUPLE, len(signature), info(node))
 
@@ -948,7 +948,7 @@ def _compile_SPECIFY(compiler, code, node):
 def _compile_FOR(compiler, code, node):
     source = node_second(node)
     body = node_third(node)
-    _compile_2(compiler, code, source)
+    _compile(compiler, code, source)
     code.emit_0(ITERATOR, info(node))
     # load the "last" iterations result
     _emit_nil(code)
@@ -970,7 +970,7 @@ def _compile_FOR(compiler, code, node):
     code.emit_2(STORE_LOCAL, index, name_index, info(node))
     _emit_pop(code)
 
-    _compile_2(compiler, code, body)
+    _compile(compiler, code, body)
     # code.emit_updateloop_label(update)
 
     code.emit_1(JUMP, precond, codeinfo_unknown())
@@ -983,11 +983,11 @@ def _compile_WHILE(compiler, code, node):
     _emit_nil(code)
     startlabel = code.emit_startloop_label()
     code.continue_at_label(startlabel)
-    _compile_2(compiler, code, condition)
+    _compile(compiler, code, condition)
     endlabel = code.prealocate_endloop_label()
     code.emit_1(JUMP_IF_FALSE, endlabel, codeinfo_unknown())
     _emit_pop(code)
-    _compile_2(compiler, code, body)
+    _compile(compiler, code, body)
     code.emit_1(JUMP, startlabel, codeinfo_unknown())
     code.emit_endloop_label(endlabel)
     code.done_continue()
@@ -995,7 +995,7 @@ def _compile_WHILE(compiler, code, node):
 
 def _compile_LOOKUP_SYMBOL(compiler, code, node):
     obj = node_first(node)
-    _compile_2(compiler, code, obj)
+    _compile(compiler, code, obj)
     _emit_symbol_name(compiler, code, node_second(node))
     code.emit_0(MEMBER, info(node))
 
@@ -1004,17 +1004,17 @@ def _emit_SLICE(compiler, code, obj, slice):
     start = node_first(slice)
     end = node_second(slice)
 
-    _compile_2(compiler, code, obj)
+    _compile(compiler, code, obj)
 
     if nodes.is_wildcard_node(start):
         _emit_nil(code)
     else:
-        _compile_2(compiler, code, start)
+        _compile(compiler, code, start)
 
     if nodes.is_wildcard_node(end):
         _emit_nil(code)
     else:
-        _compile_2(compiler, code, end)
+        _compile(compiler, code, end)
 
     code.emit_0(SLICE, info(slice))
 
@@ -1026,8 +1026,8 @@ def _compile_LOOKUP(compiler, code, node):
     if node_type(expr) == NT_RANGE:
         return _emit_SLICE(compiler, code, obj, expr)
 
-    _compile_2(compiler, code, obj)
-    _compile_2(compiler, code, expr)
+    _compile(compiler, code, obj)
+    _compile(compiler, code, expr)
     code.emit_0(MEMBER, info(node))
 
 
@@ -1035,7 +1035,7 @@ def _compile_args_list(compiler, code, args):
     args_count = 0
 
     for arg in args:
-        _compile_2(compiler, code, arg)
+        _compile(compiler, code, arg)
         args_count += 1
 
     return args_count
@@ -1049,7 +1049,7 @@ def _compile_CALL_MEMBER(compiler, code, node):
 
     args_count = _compile_args_list(compiler, code, args)
 
-    _compile_2(compiler, code, obj)
+    _compile(compiler, code, obj)
     _emit_symbol_name(compiler, code, method)
     # TODO LITERAL HERE
     # declare_symbol(compiler.process, compiler,name)
@@ -1065,7 +1065,7 @@ def _compile_CALL(compiler, code, node):
 
     arg_count = _compile_args_list(compiler, code, args)
 
-    _compile_2(compiler, code, func)
+    _compile(compiler, code, func)
 
     code.emit_1(CALL, arg_count, info(node))
 
@@ -1090,29 +1090,34 @@ def _compile_1(compiler, code, ast):
     else:
         ntype = node_type(ast)
         #FIRST_PASS_FUNCS
+
         if ntype == NT_DEF or ntype == NT_FUN or ntype == NT_GENERIC:
             name = node_first(ast)
             if not nodes.is_empty_node(name):
-                _declare_function(compiler, code, name)
-        # NEW_SCOPE_NODES
-        elif ntype == NT_MODULE or ntype == NT_SPECIFY or nodes.node_arity(ast) == 0:
-            return
+                symbol = _get_symbol_name_or_empty(compiler.process, name)
+                _declare_local(compiler, symbol)
+                # _declare_function(compiler, code, name)
         else:
-            children = nodes.node_children(ast)
-            for node in children:
-                _compile_1(compiler, code, node)
+            return
+        # NEW_SCOPE_NODES
+        # elif ntype == NT_MODULE or ntype == NT_SPECIFY or nodes.node_arity(ast) == 0:
+        #     return
+        # else:
+        #     children = nodes.node_children(ast)
+        #     for node in children:
+        #         _compile_1(compiler, code, node)
 
 
 # compiler second_pass
-def _compile_2(compiler, code, ast):
+def _compile(compiler, code, ast):
     if nodes.is_list_node(ast):
         _compile_nodes(compiler, code, ast)
     else:
         _compile_node(compiler, code, ast)
 
-def _compile(compiler, code, ast):
+def _compile_2(compiler, code, ast):
     _compile_1(compiler, code, ast)
-    _compile_2(compiler, code, ast)
+    _compile(compiler, code, ast)
 
 
 def _compile_nodes(compiler, code, ast):
@@ -1122,12 +1127,12 @@ def _compile_nodes(compiler, code, ast):
     if length > 1:
         nodes_except_last = plist.slice(ast, 0, length - 1)
         for node in nodes_except_last:
-            _compile_2(compiler, code, node)
+            _compile(compiler, code, node)
             _emit_pop(code)
 
     if length > 0:
         last_node = plist.nth(ast, length - 1)
-        _compile_2(compiler, code, last_node)
+        _compile(compiler, code, last_node)
 
 
 def _compile_node(compiler, code, node):
@@ -1235,7 +1240,7 @@ def compile_ast(compiler, ast, ast_scope):
     code = newcode(compiler)
     _enter_scope(compiler)
     _declare_arguments(compiler, 0, False)
-    _compile(compiler, code, ast)
+    _compile_2(compiler, code, ast)
     scope = _current_scope(compiler)
     final_scope = scope.finalize(_previous_scope(compiler), ast_scope)
     _exit_scope(compiler)
