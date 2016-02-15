@@ -1,20 +1,5 @@
 from jinja2 import Template
 
-BUILTIN_MEHOD_TPL = """
-OAny {{generic_name}}(OState* S{% for arg in args %}, {{arg.type}} {{arg.name}}{% endfor %}) {
-    {{ type }} method;
-    method = _method(S, {{ args[0].name }}, {{ name }});
-    {% if isMutator %}
-    _CHECK_FROZEN(S, {{ args[0].name }});
-    {% endif %}
-    if (!method) {
-        oraise(S, oerrors(S)->TypeError,
-                "{{ name }} protocol not supported", {{ args[0].name }});
-    }
-
-    return method(S{% for arg in args %}, {{arg.name}}{% endfor %});
-}"""
-
 
 TPL_SETUP_HEADER = """
 def setup(process, module, stdlib):
@@ -87,7 +72,7 @@ def module(module_name, funcs):
         funcs=funcs
     )
 
-LISTS = module("lists", [
+LISTS = module("_lists", [
     func(func_name="tail", func_native_name="_tail", func_arity=1,
              source_module="plist", source_function="tail"),
     func(func_name="empty", func_native_name="_empty", func_arity=0,

@@ -114,7 +114,6 @@ class W_PList(W_Any):
             return True
         return equal(self, other)
 
-
     def to_l(self):
         return [i for i in self]
 
@@ -136,7 +135,7 @@ def foldl(func, acc, pl):
         return acc
 
     return foldl(func,
-                 func(acc, head(pl)),
+                 func(head(pl), acc),
                  tail(pl))
 
 
@@ -157,8 +156,10 @@ def head(pl):
     type_check(pl)
     return pl.head
 
+
 def type_check(pl):
     error.affirm_type(pl, space.islist)
+
 
 def tail(pl):
     type_check(pl)
@@ -170,7 +171,7 @@ def split(pl):
     return head(pl), tail(pl)
 
 
-def _length_foldl(acc, el):
+def _length_foldl(el, acc):
     return acc + 1
 
 
@@ -266,13 +267,30 @@ def _nth(pl, index):
         return head(pl)
     if is_empty(pl):
         return newnil()
-    return nth(tail(pl), index - 1)
+    return _nth(tail(pl), index - 1)
 
 
 def nth(pl, index):
     type_check(pl)
     error.affirm(index >= 0, u"Invalid index index < 0")
     return _nth(pl, index)
+
+
+##############################################
+
+def _nth_tail(pl, index):
+    from obin.types.space import newnil
+    if index == 0:
+        return tail(pl)
+    if is_empty(pl):
+        return newnil()
+    return _nth_tail(tail(pl), index - 1)
+
+
+def nth_tail(pl, index):
+    type_check(pl)
+    error.affirm(index >= 0, u"Invalid index index < 0")
+    return _nth_tail(pl, index)
 
 
 def insert(pl, index, v):
@@ -320,6 +338,7 @@ def remove(pl, v):
 
     return W_PList(head(pl), remove(tail(pl), v))
 
+
 ########################################################################
 
 def contains_with(pl, v, condition):
@@ -335,6 +354,7 @@ def contains_with(pl, v, condition):
 
 def contains(pl, v):
     return contains_with(pl, v, api.equal_b)
+
 
 ############################################################
 
@@ -459,7 +479,7 @@ def reverse(pl):
 
 ##############################################################
 
-def _hash(acc, el):
+def _hash(el, acc):
     from obin.types import api
     from obin.misc.platform import rarithmetic
     y = api.hash_i(el)

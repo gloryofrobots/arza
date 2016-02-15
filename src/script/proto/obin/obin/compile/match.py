@@ -3,6 +3,7 @@ from obin.types import plist
 from obin.compile.parse.nodes import *
 from obin.types import space, api
 from obin.misc import platform, strutil
+from obin.builtins import prelude
 
 
 class TransformState:
@@ -98,20 +99,26 @@ def _process_list(state, pattern, patterns, path):
     # so [a,b] and [a,b,c] didn`t cause the error
     patterns = add_pattern(patterns, ["list", _create_path_node(pattern, path), count])
 
+    if count_i == 0:
+        return add_pattern(patterns, ["is", _create_path_node(pattern, path),
+                                          create_empty_list_node(pattern)])
+
     # first process all args except last which might be ...rest param
+    last_index = count_i - 1
     cur_path = path
-    for i, child in enumerate(children[0:count_i - 1]):
-        if node_type(child) == NT_REST:
-            return transform_error(state, child, u'Invalid use of Rest')
+    if last_index > 0:
+        for i, child in enumerate(children[0:last_index]):
+            if node_type(child) == NT_REST:
+                return transform_error(state, child, u'Invalid use of Rest')
 
-        patterns = add_pattern(patterns, ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(child)])
+            patterns = add_pattern(patterns, ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(child)])
 
-        child_path = add_path(create_int_node(child, 0), cur_path)
-        cur_slice = create_slice_1_end(child)
-        cur_path = add_path(cur_slice, cur_path)
-        patterns = _process_pattern(state, child, patterns, child_path)
+            child_path = add_path(create_int_node(child, 0), cur_path)
+            cur_slice = create_slice_1_end(child)
+            cur_path = add_path(cur_slice, cur_path)
+            patterns = _process_pattern(state, child, patterns, child_path)
 
-    last_child = children[count_i - 1]
+    last_child = children[last_index]
     if node_type(last_child) == NT_REST:
         last_child = node_first(last_child)
         child_path = cur_path
@@ -376,7 +383,7 @@ def _transform_is_map(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                 create_name_node(arg_node, "is_map"),
+                                                 create_name_node(arg_node, prelude.PRIM_IS_MAP),
                                                  arg_node),
                                 create_true_node(arg_node))
 
@@ -388,7 +395,7 @@ def _transform_is_seq(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                 create_name_node(arg_node, "is_seq"),
+                                                 create_name_node(arg_node, prelude.PRIM_IS_SEQ),
                                                  arg_node),
                                 create_true_node(arg_node))
 
@@ -400,7 +407,7 @@ def _transform_is_indexed(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                 create_name_node(arg_node, "is_indexed"),
+                                                 create_name_node(arg_node, prelude.PRIM_IS_INDEXED),
                                                  arg_node),
                                 create_true_node(arg_node))
 
@@ -413,7 +420,7 @@ def _transform_length_ge(history, head, variables):
     count = head[2]
     _condition = create_gt_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                 create_name_node(arg_node, "length"),
+                                                 create_name_node(arg_node, prelude.PRIM_LENGTH),
                                                  arg_node),
                                 create_int_node(arg_node, str(count)))
 
@@ -426,7 +433,7 @@ def _transform_length(history, head, variables):
     count = head[2]
     _condition = create_eq_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                 create_name_node(arg_node, "length"),
+                                                 create_name_node(arg_node, prelude.PRIM_LENGTH),
                                                  arg_node),
                                 create_int_node(arg_node, str(count)))
 

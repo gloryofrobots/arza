@@ -278,6 +278,7 @@ def expression_parser_init(proc_data, parser):
     prefix(parser, TT_BACKTICK, prefix_backtick)
     prefix_operator(parser, TT_NOT, proc_data.std.generics.not_.name)
 
+    prefix(parser, TT_THROW, stmt_single)
     prefix(parser, TT_IF, prefix_if)
 
     prefix(parser, TT_FUN, prefix_fun)
@@ -290,7 +291,6 @@ def expression_parser_init(proc_data, parser):
     """
 
     stmt(parser, TT_RETURN, stmt_single)
-    stmt(parser, TT_THROW, stmt_single)
     stmt(parser, TT_BREAK, stmt_loop_flow)
     stmt(parser, TT_CONTINUE, stmt_loop_flow)
     stmt(parser, TT_WHILE, stmt_while)
@@ -331,7 +331,7 @@ def parse(process, env, src):
 
     parser.next()
     stmts, scope = parse_env_statements(parser, TERM_FILE)
-    assert plist.isempty(parser.state.scopes)
+    assert plist.is_empty(parser.state.scopes)
     check_token_type(parser, TT_ENDSTREAM)
 
     parser.close()
@@ -354,28 +354,21 @@ def write_ast(ast):
 def __parse__():
     from obin.runtime.engine import newprocess
     source = """
-    module M
-        @infixl(`+`, `+`, 10)
-        @infixl(`*`, `*`, 20)
-        @infixr(`|`, ___bitor, 10)
-        @prefix(`+`, ___unary_plus)
+        @infixl(`-`, `-`, 60)
+        @infixl(`>=`, `>=`, 50)
 
-
-        specify seq.seq.seq.list (l of List) -> l end
-
-        x = #+
-        def main() ->
-            +1 * +x
-            nil
-            //x = (1,2, #+, #"dsa asd asd ")
-            x = + 2
-            1 | 2 | 3 | 4
-            1  + 2 + 3 * 4
+        def nth_tail
+            case (0, L) -> L
+            case (1, [_, ...T]) -> T
+            case (N, [_, ...T]) ->
+                nth_tail(N - 1, T) when N >= 0 else throw (#InvalidIndex, N)
         end
-    ;
     """
     process = newprocess(["."])
-    ast = parse(process, None, source)
+    ast,scope = parse(process, None, source)
+    print "************************** OPERATORS ****************************************"
+    print scope.operators
+    print "************************** AST ****************************************"
     print nodes.node_to_string(ast)
 
 # TODO DOUBLE DOT AS RANGE

@@ -13,8 +13,6 @@ TRAITS = [
         "Symbol", 
         "String", 
 
-        "Enumerable", 
-        "Collection", 
         "List", 
         "Vector", 
         "Tuple", 
@@ -31,6 +29,9 @@ TRAITS = [
         "Module", 
         "Behavior", 
         "Trait",
+        "Collection",
+        "Seq",
+        "Indexed", 
         ]
 
 print "#####################################################"

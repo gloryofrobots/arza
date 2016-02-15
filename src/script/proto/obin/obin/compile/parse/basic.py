@@ -123,10 +123,10 @@ class W_Operator(root.W_Hashable):
         return hash
 
     def prefix_s(self):
-        return api.to_s(self.prefix_function) if self.prefix_function else ""
+        return "'%s'" % api.to_s(self.prefix_function) if self.prefix_function else ""
 
     def infix_s(self):
-        return api.to_s(self.infix_function) if self.infix_function else ""
+        return "'%s'" % api.to_s(self.infix_function) if self.infix_function else ""
 
     def _equal_(self, other):
         if not isinstance(other, W_Operator):
@@ -190,7 +190,7 @@ def node_operator(parser, node):
 
     # in case of operator
     op = parser_find_operator(parser, nodes.node_value(node))
-    if op is None:
+    if op is None or space.isnil(op):
         return parse_error(parser, u"Invalid operator", node)
     return op
 

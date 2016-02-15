@@ -1,11 +1,9 @@
 load seq
 load _lists
 
-{head, tail, empty, is_empty, cons} = _lists
+{head, tail, empty, is_empty, cons } = _lists
 
-/////////////////////////////////////////////////////////////
-
-specify seq.seq(l of List) -> l end
+specify seq.seq(l of List) -> l;
 
 specify seq.first(l of List) -> head(l);
 

@@ -94,6 +94,7 @@ def _declare_reference(compiler, symbol):
 
 
 def _declare_static_reference(compiler, ref):
+
     scope = _current_scope(compiler)
     if scope.has_possible_static_reference(ref):
         return
@@ -940,7 +941,7 @@ def _emit_specify(compiler, code, node, methods):
 
 def _compile_SPECIFY(compiler, code, node):
     name = node_first(node)
-    _compile_node_name_lookup(compiler, code, name)
+    _compile(compiler, code, name)
     methods = node_second(node)
     _emit_specify(compiler, code, node, methods)
 

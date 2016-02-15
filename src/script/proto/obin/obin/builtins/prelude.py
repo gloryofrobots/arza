@@ -7,6 +7,13 @@ from obin.misc.platform import rstring, compute_unique_id
 from obin.misc import fs
 from obin.compile import compiler
 
+PRIM_IS_INDEXED = "___is_indexed"
+PRIM_IS_SEQ = "___is_seq"
+PRIM_IS_MAP = "___is_map"
+PRIM_LENGTH = "___length"
+PRIM_FIRST = "___first"
+PRIM_REST = "___rest"
+
 def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
     api.put_native_function(process, module, u'print', _print, -1)
@@ -18,13 +25,13 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'concat', concat_tuples, 2)
     api.put_native_function(process, module, u'time', time, 0)
     api.put_native_function(process, module, u'traits', traits, 1)
-    api.put_native_function(process, module, u'is_indexed', is_indexed, 1)
-    api.put_native_function(process, module, u'is_seq', is_seq, 1)
-    api.put_native_function(process, module, u'is_map', is_map, 1)
+    api.put_native_function(process, module, unicode(PRIM_IS_INDEXED), is_indexed, 1)
+    api.put_native_function(process, module, unicode(PRIM_IS_SEQ), is_seq, 1)
+    api.put_native_function(process, module, unicode(PRIM_IS_MAP), is_map, 1)
 
-    api.put_native_function(process, module, u'length', length, 1)
-    api.put_native_function(process, module, u'first', first, 1)
-    api.put_native_function(process, module, u'rest', rest, 1)
+    api.put_native_function(process, module, unicode(PRIM_LENGTH), length, 1)
+    # api.put_native_function(process, module, unicode(PRIM_FIRST), first, 1)
+    # api.put_native_function(process, module, unicode(PRIM_REST), rest, 1)
     ## debugging
     # if not we_are_translated():
     #     api.put_native_function(process, obj, u'pypy_repr', pypy_repr)
@@ -139,24 +146,24 @@ def length(process, routine):
     return api.length(v1)
 
 
-@complete_native_routine
-def first(process, routine):
-    from obin.types.plist import head
-    lst = routine.get_arg(0)
-    assert space.islist(lst)
-    v = head(lst)
-    return v
-
-
-@complete_native_routine
-def rest(process, routine):
-    from obin.types.plist import tail, is_empty
-    from obin.types.space import islist
-    lst = routine.get_arg(0)
-    assert islist(lst)
-    assert not is_empty(lst)
-    v = tail(lst)
-    return v
+# @complete_native_routine
+# def first(process, routine):
+#     from obin.types.plist import head
+#     lst = routine.get_arg(0)
+#     assert space.islist(lst)
+#     v = head(lst)
+#     return v
+#
+#
+# @complete_native_routine
+# def rest(process, routine):
+#     from obin.types.plist import tail, is_empty
+#     from obin.types.space import islist
+#     lst = routine.get_arg(0)
+#     assert islist(lst)
+#     assert not is_empty(lst)
+#     v = tail(lst)
+#     return v
 
 
 @complete_native_routine

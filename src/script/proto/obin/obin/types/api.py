@@ -125,7 +125,8 @@ def put(obj, k, v):
 
 def at_index(obj, i):
     assert isinstance(i, int)
-
+    if obj is None:
+        print obj
     v = obj._at_index_(i)
     return v
 
