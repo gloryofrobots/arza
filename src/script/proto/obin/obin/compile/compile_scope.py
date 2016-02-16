@@ -64,7 +64,7 @@ class Scope:
         self.static_references = plist.cons(space.newtuple([ref, space.newint(ref_idx)]), self.static_references)
 
     def has_operator(self, op_name):
-        return api.contains_b(self.operators, op_name)
+        return api.in_b(self.operators, op_name)
 
     def add_operators(self, operators):
         for record in operators:

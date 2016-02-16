@@ -16,8 +16,8 @@ M = "Map"
 def arg(index):
     return dict(name="arg%d" % index, index=index, source_index=index)
 
-def generic(name, script_name, implementations):
-    g = dict(name=name, script_name=script_name, implementations=implementations)
+def generic(name, script_name, implementations, hot_path):
+    g = dict(name=name, script_name=script_name, implementations=implementations, hot_path=hot_path)
     if g['implementations']:
         for f in g['implementations']:
             f['generic'] = g
@@ -67,7 +67,8 @@ def print_declarations(generics):
         varname = G['name']
         funcname = G['script_name']
         impls = G['implementations']
-        if impls is None:
+        hot_path = G['hot_path']
+        if not hot_path:
             print TPL % (varname, funcname)
         else:
             print TPL_HOT % (varname, funcname, hotpath_name(varname))
@@ -94,107 +95,107 @@ def print_reify(generics):
 GENERICS = [
     generic("uplus", "__uplus__", [
             unary(N, "uplus_n"),
-    ]),
+    ], True),
     generic("uminus", "__uminus__", [
             unary(I, "uminus_i"),
             unary(F, "uminus_f"),
             unary(N, "uminus_n"),
-    ]),
+    ], True),
     generic("not_", "not", [
             unary(A, "not_w"),
-    ]),
+    ], True),
     generic("eq", "==", [
             binary(A,A, "eq_w"),
-    ]),
+    ], True),
     generic("ne", "!=", [
             binary(A, A, "noteq_w"),
-    ]),
+    ], True),
     generic("in_", "in", [
             binary(A, A, "in_w"),
-    ]),
+    ], True),
     generic("notin", "notin", [
             binary(A, A, "notin_w"),
-    ]),
-    generic("compare", "compare", None),
+    ], True),
+    generic("compare", "compare", None, False),
     generic("add", "+", [
-            binary(I,I, "add_i_i"),
-            binary(F,F, "add_f_f"),
-            binary(N,N, "add_n_n"),
-    ]),
+            binary(I,I, "add_i_i", module_name='number'),
+            binary(F,F, "add_f_f", module_name='number'),
+            binary(N,N, "add_n_n", module_name='number'),
+    ], True),
     generic("sub", "-", [
-            binary(I,I, "sub_i_i"),
-            binary(F,F, "sub_f_f"),
-            binary(N,N, "sub_n_n"),
-    ]),
+            binary(I,I, "sub_i_i", module_name='number'),
+            binary(F,F, "sub_f_f", module_name='number'),
+            binary(N,N, "sub_n_n", module_name='number'),
+    ], True),
      generic("mul", "*", [
-            binary(I,I, "mult_i_i"),
-            binary(F,F, "mult_f_f"),
-            binary(N,N, "mult_n_n"),
-    ]),
+            binary(I,I, "mul_i_i", module_name='number'),
+            binary(F,F, "mul_f_f", module_name='number'),
+            binary(N,N, "mul_n_n", module_name='number'),
+    ], True),
     generic("div", "/", [
-            binary(I,I, "div_i_i"),
-            binary(F,F, "div_f_f"),
-            binary(N,N, "div_n_n"),
-    ]),
+            binary(I,I, "div_i_i", module_name='number'),
+            binary(F,F, "div_f_f", module_name='number'),
+            binary(N,N, "div_n_n", module_name='number'),
+    ], True),
     generic("mod", "%", [
-            binary(F,F, "mod_f_f"),
-            binary(N,N, "mod_n_n"),
-    ]),
+            binary(F,F, "mod_f_f", module_name='number'),
+            binary(N,N, "mod_n_n", module_name='number'),
+    ], True),
    
     generic("gt", ">", [
-            binary(I,I, "compare_gt_i_i"),
-            binary(F,F, "compare_gt_f_f"),
-            binary(N,N, "compare_gt_n_n"),
-    ]),
+            binary(I,I, "compare_gt_i_i", module_name='number'),
+            binary(F,F, "compare_gt_f_f", module_name='number'),
+            binary(N,N, "compare_gt_n_n", module_name='number'),
+    ], True),
     generic("ge", ">=", [
-            binary(I,I, "compare_ge_i_i"),
-            binary(F,F, "compare_ge_f_f"),
-            binary(N,N, "compare_ge_n_n"),
-    ]),
+            binary(I,I, "compare_ge_i_i", module_name='number'),
+            binary(F,F, "compare_ge_f_f", module_name='number'),
+            binary(N,N, "compare_ge_n_n", module_name='number'),
+    ], True),
      generic("le", "<=", [
-            binary(I,I, "compare_le_i_i"),
-            binary(F,F, "compare_le_f_f"),
-            binary(N,N, "compare_le_n_n"),
-    ]),
+            binary(I,I, "compare_le_i_i", module_name='number'),
+            binary(F,F, "compare_le_f_f", module_name='number'),
+            binary(N,N, "compare_le_n_n", module_name='number'),
+    ], True),
     generic("lt", "<", [
-            binary(I,I, "compare_lt_i_i"),
-            binary(F,F, "compare_lt_f_f"),
-            binary(N,N, "compare_lt_n_n"),
-    ]),
+            binary(I,I, "compare_lt_i_i", module_name='number'),
+            binary(F,F, "compare_lt_f_f", module_name='number'),
+            binary(N,N, "compare_lt_n_n", module_name='number'),
+    ], True),
     generic("bitnot", "~", [
-           unary(I, "bitnot_i"),
-    ]),
+           unary(I, "bitnot_i", module_name='number'),
+    ], True),
     generic("bitor", "|", [
-           unary(I, "bitor_i_i"),
-    ]),
+           unary(I, "bitor_i_i", module_name='number'),
+    ], True),
     generic("bitxor", "^", [
-           unary(I, "bitxor_i_i"),
-    ]),
+           unary(I, "bitxor_i_i", module_name='number'),
+    ], True),
     generic("bitand", "&", [
-           unary(I, "bitand_i_i"),
-    ]),
+           unary(I, "bitand_i_i", module_name='number'),
+    ], True),
     generic("lsh", "<<", [
-           binary(I,I, "lsh_i_i"),
-    ]),
+           binary(I,I, "lsh_i_i", module_name='number'),
+    ], True),
     generic("rsh", ">>", [
-           binary(I,I, "rsh_i_i"),
-    ]),
+           binary(I,I, "rsh_i_i", module_name='number'),
+    ], True),
     generic("ursh", ">>>", [
-           binary(I,I, "ursh_i_i"),
-    ]),
+           binary(I,I, "ursh_i_i", module_name='number'),
+    ], True),
     generic("cons", "::", [
             binary(L, L, "cons", module_name="plist", process_as_0_arg=False),
-    ]),
+    ], True),
     generic("concat", "++", [
             binary(L, L, "concat", wrapper_name='concat_l', module_name="plist", process_as_0_arg=False),
             binary(S, S, "concat", wrapper_name='concat_s', module_name="string", process_as_0_arg=False),
             binary(T, T, "concat", wrapper_name='concat_t', module_name="tupl", process_as_0_arg=False),
-    ]),
+    ], True),
 ]
 
 
-# print_declarations(GENERICS)
+print_declarations(GENERICS)
 
-print_implementations(GENERICS)
+# print_implementations(GENERICS)
 # print_builtin_puts(GENERICS)
 # print_reify(GENERICS)

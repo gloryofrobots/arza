@@ -1,6 +1,6 @@
 from obin.runtime.routine import complete_native_routine
 from obin.runtime import error
-from obin.types import api, space, plist, environment
+from obin.types import api, space, plist, environment, entity
 
 from obin.runistr import encode_unicode_utf8
 from obin.misc.platform import rstring, compute_unique_id
@@ -13,6 +13,12 @@ PRIM_IS_MAP = "___is_map"
 PRIM_LENGTH = "___length"
 PRIM_FIRST = "___first"
 PRIM_REST = "___rest"
+PRIM_IS = "___is"
+PRIM_ISNOT = "___isnot"
+PRIM_NOTA = "___nota"
+PRIM_ISA = "___isa"
+PRIM_KINDOF = "___kindof"
+
 
 def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
@@ -20,7 +26,6 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'id', _id, 1)
     api.put_native_function(process, module, u'spawn_fiber', spawn_fiber, 0)
     api.put_native_function(process, module, u'activate_fiber', activate_fiber, 2)
-    api.put_native_function(process, module, u'range', _range, 2)
     api.put_native_function(process, module, u'apply', apply, 2)
     api.put_native_function(process, module, u'concat', concat_tuples, 2)
     api.put_native_function(process, module, u'time', time, 0)
@@ -28,10 +33,14 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, unicode(PRIM_IS_INDEXED), is_indexed, 1)
     api.put_native_function(process, module, unicode(PRIM_IS_SEQ), is_seq, 1)
     api.put_native_function(process, module, unicode(PRIM_IS_MAP), is_map, 1)
-
     api.put_native_function(process, module, unicode(PRIM_LENGTH), length, 1)
-    # api.put_native_function(process, module, unicode(PRIM_FIRST), first, 1)
-    # api.put_native_function(process, module, unicode(PRIM_REST), rest, 1)
+    api.put_native_function(process, module, unicode(PRIM_IS), __is, 1)
+    api.put_native_function(process, module, unicode(PRIM_ISNOT), __isnot, 1)
+    api.put_native_function(process, module, unicode(PRIM_NOTA), __nota, 1)
+    api.put_native_function(process, module, unicode(PRIM_ISA), __isa, 1)
+    api.put_native_function(process, module, unicode(PRIM_KINDOF), __kindof, 1)
+
+
     ## debugging
     # if not we_are_translated():
     #     api.put_native_function(process, obj, u'pypy_repr', pypy_repr)
@@ -51,6 +60,7 @@ def compile_module(process, routine):
     _module = compiler.compile_env(process, parent_env, modulename, script, sourcename)
     env = environment.create_environment(process, _module, parent_env)
     return env
+
 
 @complete_native_routine
 def _id(process, routine):
@@ -84,7 +94,7 @@ def _eval(process, routine):
     parent_env = routine.env
     src = api.to_s(x)
     source = compiler.compile_function_source(process, parent_env, src, space.newsymbol(process, u"__eval__"))
-    env = space.newenv(space.newsymbol(process, u"__eval__"),  source.code.scope, parent_env)
+    env = space.newenv(space.newsymbol(process, u"__eval__"), source.code.scope, parent_env)
 
     func = space.newfunc(source.name, source.code, env)
     args = space.newtuple([])
@@ -146,25 +156,36 @@ def length(process, routine):
     return api.length(v1)
 
 
-# @complete_native_routine
-# def first(process, routine):
-#     from obin.types.plist import head
-#     lst = routine.get_arg(0)
-#     assert space.islist(lst)
-#     v = head(lst)
-#     return v
-#
-#
-# @complete_native_routine
-# def rest(process, routine):
-#     from obin.types.plist import tail, is_empty
-#     from obin.types.space import islist
-#     lst = routine.get_arg(0)
-#     assert islist(lst)
-#     assert not is_empty(lst)
-#     v = tail(lst)
-#     return v
+@complete_native_routine
+def __is(process, routine):
+    left = routine.get_arg(0)
+    right = routine.get_arg(1)
+    return api.is_(left, right)
 
+
+@complete_native_routine
+def __isnot(process, routine):
+    left = routine.get_arg(0)
+    right = routine.get_arg(1)
+    return api.isnot(left, right)
+
+@complete_native_routine
+def __kindof(process, routine):
+    left = routine.get_arg(0)
+    right = routine.get_arg(1)
+    return entity.kindof(process, left, right)
+
+@complete_native_routine
+def __nota(process, routine):
+    left = routine.get_arg(0)
+    right = routine.get_arg(1)
+    return entity.nota(process, left, right)
+
+@complete_native_routine
+def __isa(process, routine):
+    left = routine.get_arg(0)
+    right = routine.get_arg(1)
+    return entity.isa(process, left, right)
 
 @complete_native_routine
 def spawn_fiber(process, routine):
@@ -204,7 +225,6 @@ def clone(process, routine):
 def traits(process, routine):
     obj = routine.get_arg(0)
     return api.traits(process, obj)
-
 
 
 @complete_native_routine

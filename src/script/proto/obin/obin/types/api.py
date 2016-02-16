@@ -106,15 +106,19 @@ def contains_index_b(obj, i):
     return False
 
 
-def contains(obj, k):
-    return space.newbool(contains_b(obj, k))
+def in_(obj, k):
+    return space.newbool(in_b(obj, k))
 
 
-def contains_b(obj, k):
+def in_b(obj, k):
     assert not space.isnil(k)
     v = obj._contains_(k)
     assert isinstance(v, bool)
     return v
+
+
+def notin(obj, k):
+    return space.newbool(not in_b(obj, k))
 
 
 def put(obj, k, v):
@@ -212,8 +216,16 @@ def clone(obj):
     return c
 
 
-def strict_equal(obj, other):
+def is_(obj, other):
     return space.newbool(obj is other)
+
+
+def not_(obj):
+    return space.newbool(not to_bool(obj))
+
+
+def isnot(obj, other):
+    return space.newbool(obj is not other)
 
 
 def equal(obj, other):
@@ -225,6 +237,10 @@ def equal_b(obj, other):
     v = obj._equal_(other)
     return v
 
+
+def not_equal(obj, other):
+    v = obj._equal_(other)
+    return space.newbool(not v)
 
 
 def compare(process, obj, other):
