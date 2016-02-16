@@ -1,0 +1,5 @@
+load seq
+
+specify seq.length(self of Tuple) ->
+    ___length(self)
+end
