@@ -21,7 +21,7 @@ specify seq.cons(a of Any, l of List) -> cons(a, l);
 def map(f of Callable, l of List) ->
     fun _map
          case (f, []) -> []
-         case (f, [hd, ...tl]) -> cons(f(hd), _map(f, tl))
+         case (f, [hd, ...tl]) -> f(hd) :: _map(f, tl)
     end
     _map(f, l)
 end
@@ -29,7 +29,7 @@ end
 def intersperse(val, l of List) ->
     fun _intersperse
         case (val, []) -> []
-        case (val, [hd, ...tl]) -> cons(hd, cons(val, _intersperse(val, tl)))
+        case (val, [hd, ...tl]) -> hd :: val :: _intersperse(val, tl)
     end
     _intersperse(val, l)
 end
@@ -37,7 +37,7 @@ end
 def reverse(l of List) ->
     fun _reverse
         case ([], result) -> result
-        case ([hd, ...tl], result) -> _reverse(tl, cons(hd, result))
+        case ([hd, ...tl], result) -> _reverse(tl, hd :: result)
     end
     _reverse(l, [])
 end
@@ -76,8 +76,8 @@ end
 
 def scanl(f of Callable, init_val, l of List) ->
     fun _scanl
-        case (f, acc, []) -> cons(acc, [])
-        case (f, acc, [hd, ...tl]) -> cons(acc, _scanl(f, f(hd, acc), tl))
+        case (f, acc, []) -> acc::[]
+        case (f, acc, [hd, ...tl]) -> acc :: _scanl(f, f(hd, acc), tl)
     end
     try
         _scanl(f, init_val, l)
@@ -130,7 +130,7 @@ end
 //BUILDERS/////////////////////////////////////////////////////////////
 
 def concat(l1 of List, l2 of List) ->
-     foldr(cons, l2, l1);
+     foldr(`::`, l2, l1);
 
 
 def range
@@ -152,7 +152,7 @@ def range
              if condition(first, last)
                 reverse(result)
              else
-                _range(first + step, last, step, condition, cons(first, result));
+                _range(first + step, last, step, condition, first :: result);
         end
 
         condition = `>=` when step > 0 else `<=`
