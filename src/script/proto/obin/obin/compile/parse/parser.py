@@ -357,11 +357,16 @@ def __parse__():
         @infixl(`-`, `-`, 60)
         @infixl(`>=`, `>=`, 50)
 
-        def nth_tail
-            case (0, L) -> L
-            case (1, [_, ...T]) -> T
-            case (N, [_, ...T]) ->
-                nth_tail(N - 1, T) when N >= 0 else throw (#InvalidIndex, N)
+        def nth_tail ->
+            try
+                something_stupid()
+            catch (1,2,3) ->
+                1 - 1
+            catch _ ->
+                1 - 2
+            finally
+                42
+            end
         end
     """
     process = newprocess(["."])

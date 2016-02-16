@@ -811,9 +811,8 @@ def _compile_IF(compiler, code, node):
 
 def _compile_TRY(compiler, code, node):
     trynode = node_first(node)
-    catch = node_second(node)
-    catchvar = catch[0]
-    catchnode = catch[1]
+    catches = node_second(node)
+
     finallynode = node_third(node)
     finallylabel = code.prealocate_label()
 
@@ -825,12 +824,7 @@ def _compile_TRY(compiler, code, node):
 
     # exception on top of the stack due to internal process/routine logic
     code.emit_1(LABEL, catchlabel, codeinfo_unknown())
-    if not nodes.is_empty_node(catchvar):
-        _emit_store_name(compiler, code, catchvar)
-    else:
-        _emit_pop(code)
-
-    _compile(compiler, code, catchnode)
+    _compile_match(compiler, code, node, catches, error.Errors.EXCEPTION_MATCH)
 
     code.emit_1(JUMP, finallylabel, codeinfo_unknown())
     code.emit_1(LABEL, finallylabel, codeinfo_unknown())

@@ -8,7 +8,7 @@ load affirm
 //load tests.test_operators
 //load tests.test_co
 //load tests.test_destruct
-//load tests.test_exception
+load tests.test_exception
 //load tests.test_def
 //load tests.test_generic
 //load tests.test_match

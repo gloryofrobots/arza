@@ -94,3 +94,4 @@ class Errors:
     NOT_IMPLEMENTED = u"NotImplementedError"
     MATCH = u"MatchError"
     FUNCTION_MATCH = u"FunctionArgumentsMatchError"
+    EXCEPTION_MATCH = u"ExceptionMatchError"

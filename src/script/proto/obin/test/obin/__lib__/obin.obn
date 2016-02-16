@@ -1,6 +1,6 @@
 load tvar
 @prefix(`-`, `__uminus__`)
-@prefix(`+`, `__uminus__`)
+@prefix(`+`, `__plus__`)
 @prefix(`~`, `~`)
 @infixr(`|`, `|`, 35)
 @infixr(`^`, `^`, 45)
@@ -19,6 +19,12 @@ load tvar
 @infixl(`%`, `%`, 65)
 @infixl(`*`, `*`, 65)
 @infixl(`/`, `/`, 65)
+@infixr(`::`, `::`, 70)
+@infixl(`++`, `++`, 70)
+
+//TODO
+//Symbols can also be created using symbol(),
+//which takes any number of arguments and creates a new symbol by concatenating their string representations together:
 
 def coroutine(fn) ->
     (fiber1, fiber2) = spawn_fiber()

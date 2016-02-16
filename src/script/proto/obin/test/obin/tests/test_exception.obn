@@ -14,13 +14,13 @@ def test ->
         try
             try
                 1/0
-            catch e1
+            catch e1 ->
                 throw e1
             end
-        catch e2
+        catch e2 ->
             try
                 error(#LifeSucks)
-            catch e3
+            catch e3 ->
                 //result
                 e3
             end
@@ -34,14 +34,14 @@ def test ->
         try
             try
                 1/0
-            catch e1
+            catch e1 ->
                 //result
                 e1
             end
-        catch e2
+        catch e2 ->
             try
                 error(#LifeSucks)
-            catch e3
+            catch e3 ->
                 e3
             end
         end
@@ -54,16 +54,16 @@ def test ->
         try
             try
                 1/0
-            catch e1
+            catch e1 ->
                 e1
             finally
                 //result
                 (#Finally, e1)
             end
-        catch e2
+        catch e2 ->
             try
                 error(#LifeSucks)
-            catch e3
+            catch e3 ->
                 e3
             end
         end
@@ -76,15 +76,15 @@ def test ->
         try
             try
                 1/0
-            catch e1
+            catch e1 ->
                 e1
             finally
                 error2(#Finally)
             end
-        catch e2
+        catch e2 ->
             try
                 error(#Catch)
-            catch e3
+            catch e3 ->
                 42
             finally
                 //result
@@ -104,15 +104,15 @@ def test ->
             try
                 try
                     1/0
-                catch e1
+                catch e1 ->
                     e1
                 finally
                     error2(#Finally)
                 end
-            catch e2
+            catch e2 ->
                 try
                     error(#Catch)
-                catch e3
+                catch e3 ->
                     42
                 finally
                     //uncatched
@@ -133,7 +133,7 @@ def test ->
         fun (arg1, arg2) ->
             try
                 1/0
-            catch e
+            catch e ->
                 throw (arg1, arg2)
             finally
                 throw e
@@ -142,4 +142,16 @@ def test ->
         (33, 22),
         (33, 22)
     )
+    affirm.is_equal(
+        try
+            throw (1,2,"ERROR")
+        catch err @ (1, y, 3) ->
+            #first
+        catch (1,2, "ERROR@") ->
+            #second
+        catch  err @ (1, 2, x) ->
+            #third
+        finally
+            (#fourth, err, x)
+        end, (#fourth, (1, 2, "ERROR"), "ERROR"))
 end

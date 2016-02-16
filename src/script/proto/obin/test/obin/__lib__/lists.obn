@@ -35,14 +35,18 @@ def intersperse(val, l of List) ->
 end
 
 def reverse(l of List) ->
-    fun _acc
+    fun _reverse
         case ([], result) -> result
-        case ([hd, ...tl], result) -> _acc(tl, cons(hd, result))
+        case ([hd, ...tl], result) -> _reverse(tl, cons(hd, result))
     end
-    _acc(l, [])
+    _reverse(l, [])
 end
 
 //REDUCERS///////////////////////////////////////////////////////
+def on_reduced
+    case (#ReducedValue, val) -> val
+    case (e) -> throw e
+end
 
 def foldl(f of Callable, init_val, l of List) ->
     fun _foldl
@@ -50,12 +54,8 @@ def foldl(f of Callable, init_val, l of List) ->
         case (f, acc, [hd, ...tl]) ->
             try
                 foldl(f, f(hd, acc), tl)
-            catch e
-                if e == #StopIteration
-                    acc
-                else
-                   throw e;
-            end
+            catch e ->
+                on_reduced(e);
     end
     _foldl(f, init_val, l)
 end
@@ -67,20 +67,12 @@ def foldr(f of Callable, init_val, l of List) ->
         case (f, acc, [hd, ...tl]) ->
             try
                  f(hd, foldr(f, acc, tl))
-            catch e
-                if e == #StopIteration
-                    acc
-                else
-                   throw e;
-            end
+            catch e ->
+                on_reduced(e);
     end
     _foldr(f, init_val, l)
 end
 
-def on_reduced
-    case (#ReducedValue, val) -> val
-    case (e) -> throw e
-end
 
 def scanl(f of Callable, init_val, l of List) ->
     fun _scanl
@@ -89,9 +81,8 @@ def scanl(f of Callable, init_val, l of List) ->
     end
     try
         _scanl(f, init_val, l)
-    catch e
-        on_reduced(e)
-    end
+    catch e ->
+        on_reduced(e);
 end
 
 ///ACCESSORS//////////////////////////////////////
@@ -147,9 +138,9 @@ def range
         if last < 0
             step = - 1
         else
-            step = 1
-        end
+            step = 1;
         range(first, last, step)
+    ///////////////////////////////////////
     case (first of Int, last of Int, step of Int) ->
         when step == 0
             throw (#RangeError, "Step cannot be zero.");
@@ -161,8 +152,7 @@ def range
              if condition(first, last)
                 reverse(result)
              else
-                _range(first + step, last, step, condition, cons(first, result))
-             end
+                _range(first + step, last, step, condition, cons(first, result));
         end
 
         condition = `>=` when step > 0 else `<=`

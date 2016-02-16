@@ -1,6 +1,6 @@
 OPERATORS = [
     ("-", "__uminus__", 'prefix'),
-    ("+", "__uminus__", 'prefix'),
+    ("+", "__plus__", 'prefix'),
     ("~", "~", 'prefix'),
     ("not", "not", 'prefix'),
 
@@ -35,7 +35,8 @@ OPERATORS = [
     ("*", "*", 'infixl', 65),
     ("/", "/", 'infixl', 65),
 
-    # ("::", "::", 'infixr', 70),
+    ("::", "::", 'infixr', 70),
+    ("++", "++", 'infixl', 70),
 
 ]
 

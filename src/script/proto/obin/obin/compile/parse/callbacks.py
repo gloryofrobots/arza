@@ -448,12 +448,17 @@ def prefix_fun(parser, op, node):
 def prefix_try(parser, op, node):
     endofexpression(parser)
     trybody = statements(parser, TERM_TRY)
+    catches = []
+    check_token_type(parser, TT_CATCH)
+    while parser.token_type == TT_CATCH:
+        advance_expected(parser, TT_CATCH)
+        pattern = expression(parser.pattern_parser, 0)
+        advance_expected(parser, TT_ARROW)
 
-    advance_expected(parser, TT_CATCH)
-    check_token_type(parser, TT_NAME)
-    varname = expression(parser, 0)
-    catchstmts = statements(parser, TERM_CATCH)
-    catchbody = nodes.list_node([varname, catchstmts])
+        body = statements(parser, TERM_CATCH)
+
+        catches.append(nodes.list_node([pattern, body]))
+
     if parser.token_type == TT_FINALLY:
         advance_expected(parser, TT_FINALLY)
         finallybody = statements(parser, TERM_BLOCK)
@@ -461,7 +466,7 @@ def prefix_try(parser, op, node):
         finallybody = nodes.empty_node()
 
     advance_end(parser)
-    return node_3(NT_TRY, __ntok(node), trybody, catchbody, finallybody)
+    return node_3(NT_TRY, __ntok(node), trybody, nodes.list_node(catches), finallybody)
 
 
 def prefix_match(parser, op, node):

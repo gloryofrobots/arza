@@ -38,7 +38,7 @@ def is_equal_float
     case (val1, val2, delta) ->
         try
             is_true(_abs(val1) - _abs(val2) < delta)
-        catch e
+        catch e ->
             fail([val1, "!=", val2])
      ;;
 
@@ -65,7 +65,7 @@ def is_false(val1) ->
 def is_throw(fn, args) ->
     try
         apply(fn, args)
-    catch e
+    catch e ->
         return e
     end
 
