@@ -86,3 +86,24 @@ LISTS = module("_lists", [
     ])
 
 print generate(LISTS)
+
+
+
+ generic("as_", "as", [
+            binary(A,A, "as_w_w"),
+    ]),
+    generic("kindof", "kindof", [
+            binary(A,A, "kindof_w_w"),
+    ]),
+    generic("is_", "is", [
+            binary(A,A, "is_w_w"),
+    ]),
+    generic("isnot", "isnot", [
+            binary(A,A, "isnot_w_w"),
+    ]),
+    generic("isa", "isa", [
+            binary(A,A, "isnot_w_w"),
+    ]),
+    generic("nota", "nota", [
+            binary(A,A, "nota_w_w"),
+    ]),

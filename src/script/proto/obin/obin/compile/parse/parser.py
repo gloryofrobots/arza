@@ -356,17 +356,16 @@ def __parse__():
     source = """
         @infixl(`-`, `-`, 60)
         @infixl(`>=`, `>=`, 50)
-
-        def nth_tail ->
-            try
-                something_stupid()
-            catch (1,2,3) ->
-                1 - 1
-            catch _ ->
-                1 - 2
-            finally
-                42
-            end
+        @infixl(`+`, `+`, 60)
+        @infixl(`-`, `-`, 60)
+        @infixl(`%`, `%`, 65)
+        @infixl(`*`, `*`, 65)
+        @infixl(`/`, `/`, 65)
+        @infixr(`::`, `::`, 70)
+        @infixl(`++`, `++`, 70)
+        def main ->
+            1 + 2
+            1 ++ 2
         end
     """
     process = newprocess(["."])

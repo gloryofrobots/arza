@@ -1,6 +1,8 @@
 from obin.types.root import W_Hashable
 from sequence import W_SequenceIterator
-from obin.types import api
+from obin.types import api, space
+
+
 # from obin.types import plist
 # from obin.types import space
 # from obin.runtime.error import *
@@ -91,6 +93,12 @@ class W_String(W_Hashable):
 
     def _behavior_(self, process):
         return process.std.behaviors.String
+
+
+def concat(l, r):
+    sleft = api.to_u(l)
+    sright = api.to_u(r)
+    return W_String(sleft + sright)
 
 
 class Builder:

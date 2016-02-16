@@ -73,7 +73,6 @@ class W_Entity(W_Any):
         return W_Entity(self.behavior, source)
 
 
-
 def newentity_with_traits(process, obj, traits):
     traits = plist.fmap(api.totrait, traits)
     source_traits = api.traits(process, obj)
@@ -121,3 +120,39 @@ def remove_traits(process, entity, traits):
         return W_Entity(space.newbehavior(plist.substract(entity.behavior.traits, traits)), entity.source)
     except Exception as e:
         error.throw_3(error.Errors.REMOVE_TRAIT, entity, traits, space.newstring_s(str(e)))
+
+
+def isa(process, obj, trait):
+    if space.islist(trait):
+        if not space.isentity(obj):
+            return newentity_with_traits(process, obj, trait)
+        return add_traits(process, obj, trait)
+    elif space.istrait(trait):
+        if not space.isentity(obj):
+            return newentity_with_trait(process, obj, trait)
+        return add_trait(process, obj, trait)
+    else:
+        error.throw_2(error.Errors.TYPE, trait, space.newstring(u"expected trait or list of traits"))
+
+
+def nota(process, obj, trait):
+    if not space.isentity(obj):
+        return error.throw_2(error.Errors.TYPE, obj, space.newstring(u"expected entity, got primitive type"))
+
+    if space.islist(trait):
+        return remove_traits(process, obj, trait)
+    elif space.istrait(trait):
+        return remove_trait(process, obj, trait)
+    else:
+        error.throw_2(error.Errors.TYPE, trait, space.newstring(u"expected trait or list of traits"))
+
+
+def kindof(process, obj, trait):
+    if space.islist(trait):
+        return api.kindof_list(process, obj, trait)
+    return api.kindof(process, obj, trait)
+
+
+# TODO IMPLEMENT
+def as_(process, op1, op2):
+    raise NotImplementedError()

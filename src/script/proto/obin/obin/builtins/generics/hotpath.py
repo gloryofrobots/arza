@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
 from obin.builtins.generics.operations import *
 from obin.runtime import error
-from obin.types import api, space
+from obin.types import api, space, plist, string
 from obin.types.space import isnumber, isint, isentity
 
 
@@ -104,8 +104,6 @@ def hp_add(process, args):
 
     if is_both_numbers(left, right):
         return apply_binary(process, add_n_n, left, right)
-    elif is_both_strings(left, right):
-        return apply_binary(process, add_s_s, left, right)
     else:
         return None
 
@@ -281,12 +279,23 @@ def hp_ursh(process, args):
     else:
         return None
 
-
 def hp_cons(process, args):
     left = api.at_index(args, 0)
     right = api.at_index(args, 1)
+    if space.islist(right):
+        return plist.cons(left, right)
+    else:
+        return None
 
-    return apply_binary(process, cons_w, left, right)
+def hp_concat(process, args):
+    left = api.at_index(args, 0)
+    right = api.at_index(args, 1)
+    if space.islist(right) and space.islist(left):
+        return plist.concat(left, right)
+    elif space.isstring(right) and space.isstring(left):
+        return string.concat(left, right)
+    else:
+        return None
 
 
 def hp_notin(process, args):
