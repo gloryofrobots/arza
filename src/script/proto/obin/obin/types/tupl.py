@@ -144,6 +144,9 @@ class W_Tuple(W_Hashable):
     def to_l(self):
         return self.elements
 
+def type_check(t):
+    error.affirm_type(t, space.istuple)
+
 
 def concat(process, tupl1, tupl2):
     return W_Tuple(tupl1.elements + tupl2.elements)

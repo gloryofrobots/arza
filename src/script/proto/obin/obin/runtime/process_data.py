@@ -7,6 +7,9 @@ class Symbols:
         self.symbols = []
         self.bindings = {}
 
+    def symbol_s(self, strval):
+        return self.symbol(unicode(strval))
+
     def symbol(self, ustrval):
         assert isinstance(ustrval, unicode)
         try:

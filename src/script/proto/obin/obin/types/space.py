@@ -338,17 +338,18 @@ def newgeneric(name):
     return obj
 
 
-def newgeneric_hotpath(name, hot_path):
-    assert issymbol(name)
-    assert hot_path is not None
-    from obin.types.dispatch.generic import W_Generic
-    obj = W_Generic(name, hot_path)
-    return obj
-
-
 def isgeneric(w):
     from obin.types.dispatch.generic import W_Generic
     return isinstance(w, W_Generic)
+
+
+def newgeneric_hotpath(name, hot_path, arity):
+    assert issymbol(name)
+    assert hot_path is not None
+    from obin.types.dispatch.generic import W_Generic
+    from obin.builtins.generics.hotpath import HotPath
+    obj = W_Generic(name, HotPath(hot_path, arity))
+    return obj
 
 
 ########################################################

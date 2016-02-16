@@ -22,6 +22,9 @@ load tvar
 @infixr(`::`, `::`, 70)
 @infixl(`++`, `++`, 70)
 
+//TODO FIX IT
+length = ___length
+
 //TODO
 //Symbols can also be created using symbol(),
 //which takes any number of arguments and creates a new symbol by concatenating their string representations together:

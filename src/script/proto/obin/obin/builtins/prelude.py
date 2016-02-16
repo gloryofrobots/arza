@@ -19,7 +19,6 @@ PRIM_NOTA = "___nota"
 PRIM_ISA = "___isa"
 PRIM_KINDOF = "___kindof"
 
-
 def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
     api.put_native_function(process, module, u'print', _print, -1)
@@ -30,15 +29,16 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'concat', concat_tuples, 2)
     api.put_native_function(process, module, u'time', time, 0)
     api.put_native_function(process, module, u'traits', traits, 1)
+    api.put_native_function(process, module, u'range', _range, 2)
     api.put_native_function(process, module, unicode(PRIM_IS_INDEXED), is_indexed, 1)
     api.put_native_function(process, module, unicode(PRIM_IS_SEQ), is_seq, 1)
     api.put_native_function(process, module, unicode(PRIM_IS_MAP), is_map, 1)
     api.put_native_function(process, module, unicode(PRIM_LENGTH), length, 1)
-    api.put_native_function(process, module, unicode(PRIM_IS), __is, 1)
-    api.put_native_function(process, module, unicode(PRIM_ISNOT), __isnot, 1)
-    api.put_native_function(process, module, unicode(PRIM_NOTA), __nota, 1)
-    api.put_native_function(process, module, unicode(PRIM_ISA), __isa, 1)
-    api.put_native_function(process, module, unicode(PRIM_KINDOF), __kindof, 1)
+    api.put_native_function(process, module, unicode(PRIM_IS), __is, 2)
+    api.put_native_function(process, module, unicode(PRIM_ISNOT), __isnot, 2)
+    api.put_native_function(process, module, unicode(PRIM_NOTA), __nota, 2)
+    api.put_native_function(process, module, unicode(PRIM_ISA), __isa, 2)
+    api.put_native_function(process, module, unicode(PRIM_KINDOF), __kindof, 2)
 
 
     ## debugging

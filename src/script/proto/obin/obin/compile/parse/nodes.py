@@ -293,15 +293,18 @@ def create_gt_node(basenode, left, right):
 
 
 def create_kindof_node(basenode, left, right):
-    return create_call_node_s(basenode, 'kindof', [left, right])
+    from obin.builtins import prelude
+    return create_call_node_s(basenode, prelude.PRIM_KINDOF, [left, right])
 
 
 def create_isnot_node(basenode, left, right):
-    return create_call_node_s(basenode, 'isnot', [left, right])
+    from obin.builtins import prelude
+    return create_call_node_s(basenode, prelude.PRIM_ISNOT, [left, right])
 
 
 def create_is_node(basenode, left, right):
-    return create_call_node_s(basenode, 'is', [left, right])
+    from obin.builtins import prelude
+    return create_call_node_s(basenode, prelude.PRIM_IS, [left, right])
 
 
 def create_in_node(basenode, left, right):

@@ -99,7 +99,7 @@ def test ->
     //destruct func
     fun fn_simple(arg1, arg2, ...rest) -> (arg1, arg2, rest) end
     //case func
-    fun fn_case(arg1, arg2 of Integer,  ...rest) -> (arg1, arg2, rest) end
+    fun fn_case(arg1, arg2 of Int,  ...rest) -> (arg1, arg2, rest) end
 
     affirm.is_equal(fn_simple(0,1,4,5,6), fn_case(0,1,4,5,6))
 
@@ -136,7 +136,7 @@ def test ->
     affirm.is_equal(
         try
            fn_fail("I am string")
-        catch exc
+        catch exc ->
            [exc, exc, exc];
         , [(#FunctionArgumentsMatchError,), (#FunctionArgumentsMatchError,), (#FunctionArgumentsMatchError,)]
     )

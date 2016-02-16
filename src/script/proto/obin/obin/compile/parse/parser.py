@@ -243,6 +243,7 @@ def base_parser_init(parser):
 
 def expression_parser_init(proc_data, parser):
     # OTHER OPERATORS ARE DECLARED IN PRELUDE
+    from obin.builtins import  prelude
 
     # 20
     infix(parser, TT_WHEN, 20, infix_when)
@@ -254,14 +255,15 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_AND, 30, led_infix)
 
     # 50
-    infix_operator(parser, TT_ISA, 50, proc_data.std.generics.isa.name)
-    infix_operator(parser, TT_NOTA, 50, proc_data.std.generics.nota.name)
-    infix_operator(parser, TT_KINDOF, 50, proc_data.std.generics.kindof.name)
+    infix_operator(parser, TT_ISA, 50, proc_data.symbols.symbol_s(prelude.PRIM_ISA))
+    infix_operator(parser, TT_NOTA, 50, proc_data.symbols.symbol_s(prelude.PRIM_NOTA))
+    infix_operator(parser, TT_KINDOF, 50, proc_data.symbols.symbol_s(prelude.PRIM_KINDOF))
 
-    infix_operator(parser, TT_ISNOT, 50, proc_data.std.generics.isnot.name)
+    infix_operator(parser, TT_IS, 50,  proc_data.symbols.symbol_s(prelude.PRIM_IS))
+    infix_operator(parser, TT_ISNOT, 50,  proc_data.symbols.symbol_s(prelude.PRIM_ISNOT))
+
     infix_operator(parser, TT_IN, 50, proc_data.std.generics.in_.name)
     infix_operator(parser, TT_NOTIN, 50, proc_data.std.generics.notin.name)
-    infix_operator(parser, TT_IS, 50, proc_data.std.generics.is_.name)
 
     infix(parser, TT_DOT, 70, infix_dot)
 
@@ -328,7 +330,6 @@ def parse(process, env, src):
     ts = newtokenstream(src)
     parser.open(ParseState(process, env, ts))
 
-
     parser.next()
     stmts, scope = parse_env_statements(parser, TERM_FILE)
     assert plist.is_empty(parser.state.scopes)
@@ -362,11 +363,8 @@ def __parse__():
         @infixl(`*`, `*`, 65)
         @infixl(`/`, `/`, 65)
         @infixr(`::`, `::`, 70)
-        @infixl(`++`, `++`, 70)
-        def main ->
-            1 + 2
-            1 ++ 2
-        end
+        @infixl(`!=`, `++`, 70)
+
     """
     process = newprocess(["."])
     ast,scope = parse(process, None, source)

@@ -23,16 +23,16 @@ specify shape {
           of (Rectangle, Shape)
           isa RectangleEntity
 
-    (width of Integer, height of Integer) {
+    (width of Int, height of Int) {
         RectangleEntity {width = width, height = height}
     }
-    (width of Integer, height of Integer, logging of True) {
+    (width of Int, height of Int, logging of True) {
         LoggedRectangleEntity {width = width, height = height}
     }
-    (width of Integer, height of Integer, logging of False) {
+    (width of Int, height of Int, logging of False) {
         create_rectangle(width, height)
     }
-    (side of Integer) {
+    (side of Int) {
         SquareEntity {side = side}
     }
 }

@@ -110,12 +110,12 @@ print(_and_(true, true))
 
 print(_and_(true, false), _and_(false, true),  _and_(true, true))
 
-specify _and_ (i of Integer, i of Float) ->
+specify _and_ (i of Int, i of Float) ->
     false
 end
 
 specify _and_
-    case (i of String, i of Integer) ->
+    case (i of String, i of Int) ->
         true
 end
 

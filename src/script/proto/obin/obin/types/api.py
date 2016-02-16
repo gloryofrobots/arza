@@ -106,7 +106,7 @@ def contains_index_b(obj, i):
     return False
 
 
-def in_(obj, k):
+def in_(k, obj):
     return space.newbool(in_b(obj, k))
 
 
@@ -117,7 +117,7 @@ def in_b(obj, k):
     return v
 
 
-def notin(obj, k):
+def notin(k, obj):
     return space.newbool(not in_b(obj, k))
 
 
@@ -221,7 +221,7 @@ def is_(obj, other):
 
 
 def not_(obj):
-    return space.newbool(not to_bool(obj))
+    return space.newbool(not to_b(obj))
 
 
 def isnot(obj, other):

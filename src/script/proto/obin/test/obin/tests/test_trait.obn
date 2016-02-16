@@ -43,6 +43,6 @@ def test ->
     affirm.is_false(alice2 kindof [Animal, Bird, Animal])
     affirm.is_true(alice2 kindof [Bird, Animal])
     affirm.is_false(alice3 kindof Animal)
-    affirm.is_equal(traits(alice3), [Bird, Bacteria, Human, Map, Enumerable, Collection, Any])
-    affirm.is_equal(traits(alice4), [Animal, Human, Map, Enumerable, Collection, Any])
+    affirm.is_equal(traits(alice3), [Bird, Bacteria, Human, Map, Indexed, Collection, Any])
+    affirm.is_equal(traits(alice4), [Animal, Human, Map, Indexed, Collection, Any])
 end

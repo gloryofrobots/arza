@@ -85,25 +85,11 @@ LISTS = module("_lists", [
              source_module="plist", source_function="cons"),
     ])
 
-print generate(LISTS)
+TUPLES = module("_tuples", [
+    func(func_name="length", func_native_name="_length", func_arity=1,
+             source_module="tupl", source_function="length"),
+    ])
 
+# print generate(LISTS)
+print generate(TUPLES)
 
-
- generic("as_", "as", [
-            binary(A,A, "as_w_w"),
-    ]),
-    generic("kindof", "kindof", [
-            binary(A,A, "kindof_w_w"),
-    ]),
-    generic("is_", "is", [
-            binary(A,A, "is_w_w"),
-    ]),
-    generic("isnot", "isnot", [
-            binary(A,A, "isnot_w_w"),
-    ]),
-    generic("isa", "isa", [
-            binary(A,A, "isnot_w_w"),
-    ]),
-    generic("nota", "nota", [
-            binary(A,A, "nota_w_w"),
-    ]),

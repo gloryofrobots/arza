@@ -13,7 +13,7 @@ module m1
 
 
     generic gt_10
-        case (self of Integer) ->
+        case (self of Int) ->
             if self < 10
                 #m1_g1_less
             elif self == 10
@@ -33,7 +33,7 @@ module m4
     def f_1() -> #m4_f_1 end
 
     generic gt_10
-    case (self of Integer) ->
+    case (self of Int) ->
         if self < 10
             #m4_g1_less
         elif self == 10

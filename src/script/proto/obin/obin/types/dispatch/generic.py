@@ -35,10 +35,10 @@ class W_Generic(W_Callable):
 
     def __init__(self, name, hotpath):
         self.name = name
-        self.methods = []
         self.dags = []
+        self.methods = []
         self.signatures = []
-        self.hot_path = None
+        self.hot_path = hotpath
 
     def _to_string_(self):
         return "<generic %s>" % api.to_s(self.name)

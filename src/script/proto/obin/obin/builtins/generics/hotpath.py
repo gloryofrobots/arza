@@ -74,6 +74,14 @@ def hp_in_(process, args):
     else:
         return None
 
+def hp_notin(process, args):
+    left = api.at_index(args, 0)
+    right = api.at_index(args, 1)
+
+    if is_not_entities(left, right):
+        return api.notin(left, right)
+    else:
+        return None
 ####NUMBERS##########################################################
 
 def hp_add(process, args):
@@ -138,7 +146,7 @@ def hp_uminus(process, args):
 def hp_uplus(process, args):
     left = api.at_index(args, 0)
     if isnumber(left):
-        return  uplus_n(left)
+        return uplus_n(left)
     else:
         return None
 
@@ -269,13 +277,5 @@ def hp_concat(process, args):
         return None
 
 
-def hp_notin(process, args):
-    left = api.at_index(args, 0)
-    right = api.at_index(args, 1)
-
-    if is_not_entities(left, right):
-        return api.notin(left, right)
-    else:
-        return None
 
 
