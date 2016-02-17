@@ -15,13 +15,13 @@ class W_FunctionSource(W_Any):
 class W_Function(W_Callable):
     # _immutable_fields_ = ['scope',  'is_variadic', 'arity', '_name_']
 
-    def __init__(self, name, bytecode, scope):
+    def __init__(self, name, bytecode, env):
         self.name = name
         self.bytecode = bytecode
         scope_info = bytecode.scope
         self.arity = scope_info.count_args
         self.is_variadic = scope_info.is_variadic
-        self.scope = scope
+        self.env = env
 
     def _to_string_(self):
         # params = ",".join([api.to_native_string(p) for p in self.bytecode.scope.arguments])
@@ -36,7 +36,7 @@ class W_Function(W_Callable):
 
     def _to_routine_(self, stack, args):
         from obin.runtime.routine import create_function_routine
-        routine = create_function_routine(stack, self, args, self.scope)
+        routine = create_function_routine(stack, self, args, self.env)
         return routine
 
     def _call_(self, process, args):

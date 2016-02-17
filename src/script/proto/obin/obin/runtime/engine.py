@@ -5,7 +5,7 @@ from obin.runtime import process_data
 from obin.runtime.load import import_module, evaluate_module_file
 
 def newprocess(libdirs):
-    core_prelude = space.newemptyenv(space.newstring(u"__core__"))
+    core_prelude = space.newemptyenv(space.newstring(u"obin"))
     proc_data = process_data.create(libdirs, core_prelude)
     process = Process(proc_data)
     builtins.setup(process, core_prelude, process.std)
