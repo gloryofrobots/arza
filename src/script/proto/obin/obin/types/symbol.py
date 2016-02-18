@@ -1,7 +1,7 @@
-from obin.types import api, space
+from obin.types import api, space, string
 from obin.types.root import W_Any
-from obin.types.string import W_String
 from obin.runtime import error
+
 
 class W_Symbol(W_Any):
     # _immutable_fields_ = ['value']
@@ -65,9 +65,17 @@ class W_Symbol(W_Any):
         return process.std.behaviors.Symbol
 
 
+def concat_2(process, sym1, sym2):
+    return space.newsymbol_string(process, string.concat(sym1.string, sym2.string))
+
+
+def concat_3(process, sym1, sym2, sym3):
+    return space.newsymbol_string(process, string.concat(string.concat(sym1.string, sym2.string), sym3.string))
+
+
 def string_or_symbol_string(var):
-    if isinstance(var, W_String):
+    if space.isstring(var):
         return var
-    if isinstance(var, W_Symbol):
+    if space.issymbol(var):
         return var.string
     return None

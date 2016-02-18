@@ -33,11 +33,11 @@ length = ___length
 def coroutine(fn) ->
     (fiber1, fiber2) = spawn_fiber()
 
-    first_call = tvar.create(false)
+    first_call = tvar:create(false)
 
     fun(...args) ->
-        if tvar.read(first_call) is false
-            tvar.swap(first_call, true)
+        if tvar:read(first_call) is false
+            tvar:swap(first_call, true)
             activate_fiber(fiber2,
                     fun ->
                         apply(fn, concat((fiber1, ), args)) end)

@@ -126,6 +126,10 @@ class CodeRoutine(BaseRoutine):
                 value = env.ref(name, arg1)
                 stack.push(value)
             # *************************************
+            elif IMPORTED == tag:
+                l = env.get_import(arg1)
+                stack.push(l)
+            # *************************************
             elif MEMBER == tag:
                 name = stack.pop()
                 obj = stack.pop()

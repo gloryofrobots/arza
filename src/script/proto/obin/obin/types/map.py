@@ -3,6 +3,7 @@ from obin.types.root import W_Any
 from obin.misc import platform
 from obin.runtime import error
 
+
 # from obin.misc.platform import jit
 
 
@@ -290,7 +291,6 @@ class W_Map(W_Any):
     def keys(self):
         return self.slot_bindings.keys()
 
-
     def _remove_at_(self, name):
         idx = self._get_index_(name)
         if platform.is_absent_index(idx):
@@ -315,4 +315,3 @@ def create_map_with_size(size):
 
 def create_empty_map():
     return _create_map(space.newvector([]), Bindings(), 0)
-

@@ -38,12 +38,21 @@ class Scope:
         self.literals = ScopeSet()
         self.references = ScopeSet()
         self.operators = space.newmap()
+        self.imports = space.newmap()
 
         self.functions = space.newmap()
         self.static_references = plist.empty()
         self.is_variadic = None
 
     ######################################################
+
+    def add_imported(self, name, func):
+        assert space.issymbol(name)
+        assert platform.is_absent_index(self.get_imported_index(name))
+        return self.imports.insert(name, func)
+
+    def get_imported_index(self, name):
+        return api.get_index(self.imports, name)
 
     def add_function(self, symbol, idx):
         self.functions.insert(symbol, space.newint(idx))
@@ -141,5 +150,5 @@ class Scope:
         refs = self._create_references(previous_scope)
 
         return space.newscope(self.locals, refs, self.declared_references(),
-                              self.declared_literals(), self.operators,
+                              self.declared_literals(), self.operators, self.imports,
                               self.arg_count, self.is_variadic, self.fn_name_index)

@@ -589,7 +589,7 @@ def parse_specify_funcs(parser):
 def stmt_specify(parser, op, node):
     # name = closed_expression(parser.name_parser, 0)
     name = terminated_expression(parser.name_parser, 0, [TT_CASE, TT_LPAREN])
-    check_node_types(parser, name, [NT_SYMBOL, NT_NAME, NT_LOOKUP_SYMBOL, NT_LOOKUP])
+    check_node_types(parser, name, [NT_NAME, NT_LOOKUP_MODULE])
 
     check_token_types(parser, [TT_CASE, TT_LPAREN])
     # name = _parse_name(parser)

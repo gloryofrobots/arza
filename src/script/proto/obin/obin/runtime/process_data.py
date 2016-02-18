@@ -1,6 +1,7 @@
 from obin.types import space
 from obin.compile.parse.parser import newparser
 from obin.runtime import error
+from obin.types import api
 
 class Symbols:
     def __init__(self):
@@ -9,6 +10,9 @@ class Symbols:
 
     def symbol_s(self, strval):
         return self.symbol(unicode(strval))
+
+    def symbol_string(self, string):
+        return self.symbol(api.to_u(string))
 
     def symbol(self, ustrval):
         assert isinstance(ustrval, unicode)

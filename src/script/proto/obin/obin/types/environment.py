@@ -154,14 +154,21 @@ class W_Env(W_Any):
         self.name = name
         self.parent_env = parent_environment
         self.scope = scope
-        self.data = scope.create_env_bindings()
         self.literals = scope.literals
         self.operators = scope.create_operators()
         self.refs = scope.create_references()
+        self.imports = scope.imports
+        self.data = scope.create_env_bindings()
         # TODO MAKE TEST FOR CORRECT STATIC REFS SOMEHOW
         # print "--------------------------ENV------------------------------"
         # print self.refs
         # print scope.reference_names
+
+    def exports(self):
+        return self.data.keys()
+
+    def get_import(self, index):
+        return api.at_index(self.imports, index)
 
     def ref(self, symbol, index):
         # lookup in self parent environment

@@ -8,6 +8,7 @@ OPCODES = [
     ("SYMBOL", 1),
     ("OUTER", 1),
     ("LOCAL", 1),
+    ("IMPORTED", 1),
     ("FUNCTION", 1),
     ("INTEGER", 1),
     ("DUP", 1),

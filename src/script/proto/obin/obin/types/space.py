@@ -102,8 +102,11 @@ def newsymbol(process, s):
 
 def newsymbol_s(process, s):
     assert isinstance(s, str)
-    return newsymbol(process, unicode(s))
+    return process.symbols.symbol_s(s)
 
+def newsymbol_string(process, s):
+    assert isstring(s)
+    return process.symbols.symbol_string(s)
 
 def issymbol(w):
     from obin.types.symbol import W_Symbol
@@ -295,9 +298,9 @@ def istuple(w):
 
 #########################################################
 
-def newscope(variables, references, reference_names, literals, operators, arg_count, is_varargs, fn_name_index):
+def newscope(variables, references, reference_names, literals, operators, imports, arg_count, is_varargs, fn_name_index):
     from obin.types.scope import W_Scope
-    return W_Scope(variables, references, reference_names, literals, operators, arg_count, is_varargs, fn_name_index)
+    return W_Scope(variables, references, reference_names, literals, operators, imports, arg_count, is_varargs, fn_name_index)
 
 
 def isscope(w):
@@ -321,7 +324,7 @@ def newenv(name, scope, outer_environment):
 
 
 def newemptyenv(name):
-    return newenv(name, newscope(newmap(), None, [], [], newmap(), 0, False, -1), None)
+    return newenv(name, newscope(newmap(), None, [], [], newmap(), newmap(), 0, False, -1), None)
 
 
 def isenv(w):

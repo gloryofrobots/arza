@@ -1,19 +1,24 @@
 import seq
 import _lists
+cons = _lists:cons
+tail = _lists:tail
+head = _lists:head
+empty = _lists:empty
+is_empty = _lists:is_empty
 
-{head, tail, empty, is_empty, cons } = _lists
+specify seq:seq(l of List) -> l;
 
-specify seq.seq(l of List) -> l;
+specify seq:head(l of List) -> head(l);
 
-specify seq.head(l of List) -> head(l);
+specify seq:tail(l of List) -> tail(l);
 
-specify seq.tail(l of List) -> tail(l);
+specify seq:empty(l of List) -> empty();
 
-specify seq.empty(l of List) -> empty();
+specify seq:is_empty(l of List) -> is_empty(l);
 
-specify seq.is_empty(l of List) -> is_empty(l);
+specify seq:cons(a of Any, l of List) -> cons(a, l);
 
-specify seq.cons(a of Any, l of List) -> cons(a, l);
+
 
 
 //TRANSFORMERS///////////////////////////////////////////////////////

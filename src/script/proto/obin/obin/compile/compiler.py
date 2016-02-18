@@ -6,7 +6,7 @@ from obin.compile.parse.nodes import (node_type, node_arity,
                                       node_first, node_second, node_third, node_children)
 from obin.compile.parse.node_type import *
 from obin.compile.compile_scope import Scope
-from obin.types import space, api, plist, environment
+from obin.types import space, api, plist, environment, symbol as symbols
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
 from obin.misc import platform, strutil
 from obin.runtime import error
@@ -123,6 +123,17 @@ def _declare_local(compiler, symbol):
     assert not platform.is_absent_index(idx)
     return idx
 
+def _declare_import(compiler, name, func):
+    assert space.issymbol(name)
+    assert not api.isempty(name)
+    scope = _current_scope(compiler)
+    idx = scope.get_imported_index(name)
+    if not platform.is_absent_index(idx):
+        return idx
+
+    idx = scope.add_imported(name, func)
+    assert not platform.is_absent_index(idx)
+    return idx
 
 def _declare_function(compiler, code, node):
     symbol = _get_symbol_name_or_empty(compiler.process, node)
@@ -853,9 +864,10 @@ def _module_path_to_string(node):
 
 
 def _compile_IMPORT(compiler, code, node):
+    from obin.runtime import load
+
     exp = node_first(node)
     names = node_second(node)
-
 
     if node_type(exp) == NT_AS:
         import_name = node_second(exp)
@@ -868,12 +880,23 @@ def _compile_IMPORT(compiler, code, node):
         import_name = exp
         module_path = nodes.node_value_s(exp)
 
-    from obin.runtime import load
     module = load.import_module(compiler.process, space.newsymbol_s(compiler.process, module_path))
+    if nodes.is_empty_node(names):
+        var_names = module.exports()
+    else:
+        var_names = [_get_symbol_name(compiler, name) for name in names]
+
+    colon = space.newsymbol(compiler.process, u":")
 
     module_literal = _declare_literal(compiler, module)
     code.emit_1(LITERAL, module_literal, info(node))
-    _emit_store_name(compiler, code, import_name)
+    import_name_s = _get_symbol_name(compiler, import_name)
+    for var_name in var_names:
+        full_name = symbols.concat_3(compiler.process, import_name_s, colon, var_name)
+        func = api.at(module, var_name)
+        idx = _declare_import(compiler, full_name, func)
+        code.emit_1(IMPORTED, idx, info(node))
+        _emit_store(compiler, code, full_name, node)
 
 
 def _compile_MODULE(compiler, code, node):

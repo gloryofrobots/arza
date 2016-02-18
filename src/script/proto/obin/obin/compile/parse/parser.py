@@ -236,6 +236,8 @@ def base_parser_init(parser):
     # 70
     infix(parser, TT_DOT, 70, infix_dot)
 
+    infix(parser, TT_COLON, 80, infix_name_pair)
+
     prefix(parser, TT_LPAREN, prefix_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly)
@@ -272,7 +274,6 @@ def expression_parser_init(proc_data, parser):
     # 80
     infix(parser, TT_LCURLY, 80, infix_lcurly)
     infix(parser, TT_LSQUARE, 80, infix_lsquare)
-    infix(parser, TT_COLON, 80, infix_name_pair)
 
     # 90
     infix(parser, TT_LPAREN, 90, infix_lparen)

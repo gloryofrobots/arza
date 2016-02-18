@@ -6,7 +6,7 @@ class W_Scope(W_Any):
     # _immutable_fields_ = ['vars', 'arg_count', 'fn_name_index',
     #                       'references[*]', 'is_varargs', 'count_refs', 'count_vars', 'literals', 'functions']
 
-    def __init__(self, variables, references, reference_names, literals, operators, arg_count, is_varargs,
+    def __init__(self, variables, references, reference_names, literals, operators, imports, arg_count, is_varargs,
                  fn_name_index):
         self.variables = variables
         self.count_args = arg_count
@@ -14,6 +14,7 @@ class W_Scope(W_Any):
         self.references = references
         self.reference_names = reference_names
         self.literals = literals
+        self.imports = imports
         self.is_variadic = is_varargs
         self.operators = operators
 
