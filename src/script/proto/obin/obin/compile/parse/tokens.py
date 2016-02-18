@@ -93,9 +93,6 @@ RULES = [
 
     (keyword('import'), TT_IMPORT),
     (keyword('export'), TT_EXPORT),
-    (keyword('load'), TT_LOAD),
-    (keyword('use'), TT_USE),
-
     (keyword('isa'), TT_ISA),
     (keyword('nota'), TT_NOTA),
     (keyword('kindof'), TT_KINDOF),
@@ -141,7 +138,10 @@ RULES = [
     (token('@'), TT_AT_SIGN),
     (token('[%s][=]+' % operator_char), TT_OPERATOR),
     (token('[=][%s]+' % operator_char), TT_OPERATOR),
+    (token('[%s][:]+' % operator_char), TT_OPERATOR),
+    (token('[:][%s]+' % operator_char), TT_OPERATOR),
 
+    (token(':'), TT_COLON),
     (token('='), TT_ASSIGN),
 
     # that can catch op

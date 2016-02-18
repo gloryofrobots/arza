@@ -1,46 +1,35 @@
-load affirm
-load tests.test_base
-load tests.test_static_refs
-load tests.test_bool
-load tests.datastructs.test_datastructs
-//load tests.test_operators
-load tests.test_co
-load tests.test_destruct
-load tests.test_exception
-load tests.test_def
-load tests.test_generic
-load tests.test_match
-load tests.test_modify
-load tests.test_module
-load tests.test_operator_override
-load tests.test_trait
+import affirm
+import tests:test_base
+import tests:test_static_refs
+import tests:test_bool
+import tests:datastructs:test_datastructs
+import tests:test_operators
+import tests:test_co
+import tests:test_destruct
+import tests:test_exception
+import tests:test_def
+import tests:test_generic
+import tests:test_match
+import tests:test_modify
+import tests:test_module
+import tests:test_operator_override
+import tests:test_trait
 
-load lists
-module X
-    name = "X Name"
-    def get_name() -> name end
-end
-
-module Y
-    name = "Y Name"
-    get_name = X.get_name
-end
 
 def main() ->
-    print(Y.get_name())
-//    test_operators.test()
-//    test_static_refs.test()
-//    test_bool.test()
-//    test_base.test()
-//    test_co.test()
-//    test_destruct.test()
-//    test_exception.test()
-//    test_def.test()
-//    test_generic.test()
-//    test_match.test()
-//    test_modify.test()
-//    test_module.test()
-//    test_operator_override.test()
-//    test_trait.test()
-    test_datastructs.test()
+    test_operators:test()
+    test_static_refs:test()
+    test_bool:test()
+    test_base:test()
+    test_co:test()
+    test_destruct:test()
+    test_exception:test()
+    test_def:test()
+    test_generic:test()
+    test_match:test()
+    test_modify:test()
+    test_module:test()
+    test_operator_override:test()
+    test_trait:test()
+    test_datastructs:test()
 end

@@ -94,7 +94,6 @@ def _declare_reference(compiler, symbol):
 
 
 def _declare_static_reference(compiler, ref):
-
     scope = _current_scope(compiler)
     if scope.has_possible_static_reference(ref):
         return
@@ -214,6 +213,8 @@ def _get_symbol_or_name_value(name):
     ntype = node_type(name)
     if ntype == NT_SYMBOL:
         return _get_name_value(node_first(name))
+    elif ntype == NT_LOOKUP_MODULE:
+        return _module_path_to_string(name)
     else:
         return _get_name_value(name)
 
@@ -248,10 +249,14 @@ def _emit_nil(code):
     code.emit_0(NIL, codeinfo_unknown())
 
 
+def _emit_literal(compiler, code, node, literal):
+    idx = _declare_literal(compiler, literal)
+    code.emit_1(LITERAL, idx, info(node))
+
+
 def _emit_symbol_name(compiler, code, name):
     symbol = _get_symbol_name(compiler, name)
-    idx = _declare_literal(compiler, symbol)
-    code.emit_1(LITERAL, idx, info(name))
+    _emit_literal(compiler, code, name, symbol)
 
 
 def _compile_STR(compiler, code, node):
@@ -836,29 +841,38 @@ def _compile_TRY(compiler, code, node):
 # IMPORT
 #############################
 
-def _dot_to_string(compiler, node):
-    if node_type(node) == NT_LOOKUP_SYMBOL:
-        return _dot_to_string(compiler, node_first(node)) + '.' + nodes.node_value_s(node_second(node))
+def _compile_LOOKUP_MODULE(compiler, code, node):
+    _compile_node_name_lookup(compiler, code, node)
+
+
+def _module_path_to_string(node):
+    if node_type(node) == NT_LOOKUP_MODULE:
+        return _module_path_to_string(node_first(node)) + ':' + nodes.node_value_s(node_second(node))
     else:
         return nodes.node_value_s(node)
 
 
-def _compile_LOAD(compiler, code, node):
+def _compile_IMPORT(compiler, code, node):
     exp = node_first(node)
+    names = node_second(node)
+
+
     if node_type(exp) == NT_AS:
         import_name = node_second(exp)
-        module_path = _dot_to_string(compiler, node_first(exp))
-    elif node_type(exp) == NT_LOOKUP_SYMBOL:
+        module_path = _module_path_to_string(node_first(exp))
+    elif node_type(exp) == NT_LOOKUP_MODULE:
         import_name = node_second(exp)
-        module_path = _dot_to_string(compiler, exp)
+        module_path = _module_path_to_string(exp)
     else:
         assert node_type(exp) == NT_NAME
         import_name = exp
         module_path = nodes.node_value_s(exp)
 
-    module_path_literal = _declare_literal(compiler, space.newsymbol_s(compiler.process, module_path))
-    code.emit_1(LOAD, module_path_literal, info(node))
+    from obin.runtime import load
+    module = load.import_module(compiler.process, space.newsymbol_s(compiler.process, module_path))
 
+    module_literal = _declare_literal(compiler, module)
+    code.emit_1(LITERAL, module_literal, info(node))
     _emit_store_name(compiler, code, import_name)
 
 
@@ -1075,6 +1089,7 @@ def _compile_CALL(compiler, code, node):
 FIRST_PASS_FUNCS = [NT_DEF, NT_FUN, NT_GENERIC]
 NEW_SCOPE_NODES = [NT_MODULE, NT_SPECIFY]
 
+
 def _compile_1(compiler, code, ast):
     if nodes.is_empty_node(ast):
         return
@@ -1084,7 +1099,7 @@ def _compile_1(compiler, code, ast):
             _compile_1(compiler, code, node)
     else:
         ntype = node_type(ast)
-        #FIRST_PASS_FUNCS
+        # FIRST_PASS_FUNCS
 
         if ntype == NT_DEF or ntype == NT_FUN or ntype == NT_GENERIC:
             name = node_first(ast)
@@ -1094,13 +1109,13 @@ def _compile_1(compiler, code, ast):
                 # _declare_function(compiler, code, name)
         else:
             return
-        # NEW_SCOPE_NODES
-        # elif ntype == NT_MODULE or ntype == NT_SPECIFY or nodes.node_arity(ast) == 0:
-        #     return
-        # else:
-        #     children = nodes.node_children(ast)
-        #     for node in children:
-        #         _compile_1(compiler, code, node)
+            # NEW_SCOPE_NODES
+            # elif ntype == NT_MODULE or ntype == NT_SPECIFY or nodes.node_arity(ast) == 0:
+            #     return
+            # else:
+            #     children = nodes.node_children(ast)
+            #     for node in children:
+            #         _compile_1(compiler, code, node)
 
 
 # compiler second_pass
@@ -1109,6 +1124,7 @@ def _compile(compiler, code, ast):
         _compile_nodes(compiler, code, ast)
     else:
         _compile_node(compiler, code, ast)
+
 
 def _compile_2(compiler, code, ast):
     _compile_1(compiler, code, ast)
@@ -1171,8 +1187,8 @@ def _compile_node(compiler, code, node):
     elif NT_TRY == ntype:
         _compile_TRY(compiler, code, node)
 
-    elif NT_LOAD == ntype:
-        _compile_LOAD(compiler, code, node)
+    elif NT_IMPORT == ntype:
+        _compile_IMPORT(compiler, code, node)
     elif NT_MODULE == ntype:
         _compile_MODULE(compiler, code, node)
     elif NT_TRAIT == ntype:
@@ -1214,6 +1230,8 @@ def _compile_node(compiler, code, node):
         _compile_LOOKUP(compiler, code, node)
     elif NT_LOOKUP_SYMBOL == ntype:
         _compile_LOOKUP_SYMBOL(compiler, code, node)
+    elif NT_LOOKUP_MODULE == ntype:
+        _compile_LOOKUP_MODULE(compiler, code, node)
 
     elif NT_MODIFY == ntype:
         _compile_MODIFY(compiler, code, node)

@@ -46,8 +46,10 @@ class BaseParser:
         pass
 
     def close(self):
+        state = self.state
         self.state = None
         self._on_close()
+        return state
 
     def _on_close(self):
         pass
@@ -155,14 +157,14 @@ def name_parser_init(parser):
 
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_BACKTICK, prefix_backtick)
-    infix(parser, TT_DOT, 10, infix_simple_pair)
+    infix(parser, TT_COLON, 10, infix_name_pair)
     return parser
 
 
 def load_parser_init(parser):
     symbol(parser, TT_COMMA, None)
-    infix(parser, TT_DOT, 10, infix_simple_pair)
-    infix(parser, TT_AS, 20, infix_simple_pair)
+    infix(parser, TT_COLON, 10, infix_name_pair)
+    infix(parser, TT_AS, 20, infix_name_pair)
     literal(parser, TT_NAME)
 
     return parser
@@ -172,7 +174,7 @@ def generic_signature_parser_init(parser):
     symbol(parser, TT_LPAREN, None)
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_CASE, None)
-    infix(parser, TT_OF, 10, infix_simple_pair)
+    infix(parser, TT_OF, 10, infix_name_pair)
     literal(parser, TT_NAME)
     return parser
 
@@ -270,6 +272,7 @@ def expression_parser_init(proc_data, parser):
     # 80
     infix(parser, TT_LCURLY, 80, infix_lcurly)
     infix(parser, TT_LSQUARE, 80, infix_lsquare)
+    infix(parser, TT_COLON, 80, infix_name_pair)
 
     # 90
     infix(parser, TT_LPAREN, 90, infix_lparen)
@@ -306,7 +309,7 @@ def module_parser_init(parser):
     stmt(parser, TT_GENERIC, stmt_generic)
     stmt(parser, TT_TRAIT, stmt_trait)
     stmt(parser, TT_SPECIFY, stmt_specify)
-    stmt(parser, TT_LOAD, stmt_load)
+    stmt(parser, TT_IMPORT, stmt_import)
     stmt(parser, TT_MODULE, stmt_module)
 
     stmt(parser, TT_AT_SIGN, stmt_module_at)
@@ -364,9 +367,15 @@ def __parse__():
         @infixl(`/`, `/`, 65)
         @infixr(`::`, `::`, 70)
         @infixl(`!=`, `++`, 70)
+        import lib_az:abc:module_ab as ab (cons, length)
+        import lib_az:abc:module_ab as ab2
 
     """
-    process = newprocess(["."])
+    import os
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    lib_path = os.path.realpath(os.path.join(script_dir, '../../../test/obin/__lib__'))
+    process = newprocess([lib_path])
+
     ast,scope = parse(process, None, source)
     print "************************** OPERATORS ****************************************"
     print scope.operators

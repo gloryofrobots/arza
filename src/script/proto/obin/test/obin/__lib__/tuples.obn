@@ -1,4 +1,4 @@
-load seq
+import seq
 
 specify seq.length(self of Tuple) ->
     ___length(self)

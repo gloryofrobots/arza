@@ -8,8 +8,11 @@ from obin.compile import compiler
 
 def import_module(process, name):
     try:
-        return process.modules.get_module(api.to_s(name))
+        m = process.modules.get_module(api.to_s(name))
+        print "ALREADY LOADED", name
+        return m
     except KeyError:
+        print "FILE LOAD", name
         return load_module(process, name)
 
 
@@ -24,9 +27,9 @@ def find_module_file(path, dirs):
 
 def load_module(process, name):
     modules = process.modules
-
+    modules.before_load(name)
     raw = api.to_s(name)
-    path = "%s.obn" % raw.replace(".", os.sep)
+    path = "%s.obn" % raw.replace(":", os.sep)
 
     filename = find_module_file(path, modules.path)
 

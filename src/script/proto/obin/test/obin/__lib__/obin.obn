@@ -1,4 +1,5 @@
-load tvar
+import lib_az:efg:module_f
+import tvar
 @prefix(`-`, `__uminus__`)
 @prefix(`+`, `__plus__`)
 @prefix(`~`, `~`)

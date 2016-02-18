@@ -1,14 +1,14 @@
-load affirm
+import affirm
 
 def test ->
     (x,y,z) = (1,2,3)
-    affirm.is_equal((x,y,z), (1,2,3))
+    affirm:is_equal((x,y,z), (1,2,3))
 
     // tuples can't be matched on lists
     // TODO do it in right way
-    affirm.is_throw(fun -> (a,b,c,d) = [4,5,6,7] end, ())
+    affirm:is_throw(fun -> (a,b,c,d) = [4,5,6,7] end, ())
 
-//    affirm.is_equal((a,b,c,d), (4,5,6,7))
+//    affirm:is_equal((a,b,c,d), (4,5,6,7))
 
 
     metadata = {
@@ -20,7 +20,7 @@ def test ->
     }
 
 
-    affirm.is_equal(
+    affirm:is_equal(
             (metadata.title, metadata.subject, metadata.translationsUa["title"], metadata.translationsUa.translator,
                 metadata.translationsEn.titleEn,  metadata.translationsEn.translatorEn, metadata.author),
             ("Nemesis Games", "SCIFI", "IGRU DOLI", "PILIP LUN",
@@ -35,7 +35,7 @@ def test ->
         author=author_data
     } = metadata
 
-    affirm.is_equal(
+    affirm:is_equal(
                 (englishTitle, subject, localeTitle,translator,(localeTitleEn, origTitleEn), translatorEn, author_data),
                 ("Nemesis Games", "SCIFI", "IGRU DOLI", "PILIP LUN",
                  ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU", ("James", "Corey")))

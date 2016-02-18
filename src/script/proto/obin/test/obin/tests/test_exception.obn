@@ -1,4 +1,4 @@
-load affirm
+import affirm
 
 def test ->
     fun error(reason) ->
@@ -10,7 +10,7 @@ def test ->
     end
 
 
-    affirm.is_equal(
+    affirm:is_equal(
         try
             try
                 1/0
@@ -30,7 +30,7 @@ def test ->
 
     //////////////////////////////////////////////////////////////
 
-    affirm.is_equal(
+    affirm:is_equal(
         try
             try
                 1/0
@@ -50,7 +50,7 @@ def test ->
 
     ///////////////////////////////////////////
 
-    affirm.is_equal(
+    affirm:is_equal(
         try
             try
                 1/0
@@ -72,7 +72,7 @@ def test ->
 
     ///////////////////////////////////////////
 
-    affirm.is_equal(
+    affirm:is_equal(
         try
             try
                 1/0
@@ -99,7 +99,7 @@ def test ->
 
     ///////////////////////////////////////////
 
-    affirm.is_throw_expected(
+    affirm:is_throw_expected(
         fun ->
             try
                 try
@@ -129,7 +129,7 @@ def test ->
 
     /////////////////////////////////////////////
 
-    affirm.is_throw_expected(
+    affirm:is_throw_expected(
         fun (arg1, arg2) ->
             try
                 1/0
@@ -142,7 +142,7 @@ def test ->
         (33, 22),
         (33, 22)
     )
-    affirm.is_equal(
+    affirm:is_equal(
         try
             throw (1,2,"ERROR")
         catch err @ (1, y, 3) ->

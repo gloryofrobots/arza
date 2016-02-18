@@ -1,38 +1,38 @@
-load affirm
+import affirm
 
 def test() ->
 
-    affirm.is_equal(false, false)
-    affirm.is_equal(true, true)
-    affirm.is_not_equal(true, false)
-    affirm.is_not_equal(false, true)
-    affirm.is_equal(not false, true)
-    affirm.is_equal(not true, false)
-    affirm.is_true(true and true)
-    affirm.is_false(false and true)
-    affirm.is_false(false and false)
-    affirm.is_false(true and false)
-    affirm.is_true(true or false)
-    affirm.is_true(false or true)
-    affirm.is_false(false or false)
-    affirm.is_same(false, false)
-    affirm.is_same(true, true)
+    affirm:is_equal(false, false)
+    affirm:is_equal(true, true)
+    affirm:is_not_equal(true, false)
+    affirm:is_not_equal(false, true)
+    affirm:is_equal(not false, true)
+    affirm:is_equal(not true, false)
+    affirm:is_true(true and true)
+    affirm:is_false(false and true)
+    affirm:is_false(false and false)
+    affirm:is_false(true and false)
+    affirm:is_true(true or false)
+    affirm:is_true(false or true)
+    affirm:is_false(false or false)
+    affirm:is_same(false, false)
+    affirm:is_same(true, true)
 
     //only true and false can be used in boolean operators
-    affirm.is_throw(fun -> 1 or 0 end, ())
-    affirm.is_throw(fun -> 1 and 0 end, ())
-    affirm.is_throw(fun -> not 0 end, ())
-    affirm.is_throw(fun -> not {} end, ())
-    affirm.is_throw(fun -> not "" end, ())
-    affirm.is_throw(fun -> not [] end, ())
-    affirm.is_throw(fun -> not () end, ())
-    affirm.is_throw(fun -> not nil end, ())
-    affirm.is_throw(fun -> not 1.2 end, ())
-    affirm.is_throw(fun -> not #symbol end, ())
+    affirm:is_throw(fun -> 1 or 0 end, ())
+    affirm:is_throw(fun -> 1 and 0 end, ())
+    affirm:is_throw(fun -> not 0 end, ())
+    affirm:is_throw(fun -> not {} end, ())
+    affirm:is_throw(fun -> not "" end, ())
+    affirm:is_throw(fun -> not [] end, ())
+    affirm:is_throw(fun -> not () end, ())
+    affirm:is_throw(fun -> not nil end, ())
+    affirm:is_throw(fun -> not 1.2 end, ())
+    affirm:is_throw(fun -> not #symbol end, ())
 
     x = 0
     y = 1
-    affirm.is_false(x is y)
-    affirm.is_true(x isnot y)
+    affirm:is_false(x is y)
+    affirm:is_true(x isnot y)
 end
 

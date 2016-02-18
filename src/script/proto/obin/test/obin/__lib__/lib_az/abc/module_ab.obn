@@ -1,4 +1,4 @@
-load lib_az.abc.module_c as c
+import lib_az:abc:module_c as c
 
 def f_ab(num) ->
     num + c.f_c(num) end

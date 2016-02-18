@@ -1,5 +1,5 @@
-load seq
-load _lists
+import seq
+import _lists
 
 {head, tail, empty, is_empty, cons } = _lists
 

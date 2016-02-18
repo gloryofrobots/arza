@@ -36,8 +36,6 @@ TOKENS = [
   ("TT_MODULE", "module"),
   ("TT_IMPORT", "import"),
   ("TT_EXPORT", "export"),
-  ("TT_LOAD", "load"),
-  ("TT_USE", "use"),
   ("TT_TRAIT", "trait"),
   ("TT_GENERIC", "generic"),
   ("TT_SPECIFY", "specify"),
@@ -72,6 +70,7 @@ TOKENS = [
   ("TT_LSQUARE", "["),
   ("TT_RSQUARE", "]"),
   ("TT_DOT", "."),
+  ("TT_COLON", ":"),
   ("TT_DOUBLE_DOT", ".."),
   ("TT_BACKTICK", "`"),
   ("TT_UNKNOWN", None)

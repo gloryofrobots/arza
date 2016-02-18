@@ -2,7 +2,7 @@
 // for example if you use builtin function length()
 // reference to function for your scope will be created during compile time
 
-load affirm
+import affirm
 
 def test_local_overwrite(x) ->
     fun length(x) ->
@@ -55,10 +55,10 @@ end
 
 
 def test() ->
-    affirm.is_equal(test_local_overwrite(1), -1998)
-    affirm.is_equal(test_local_overwrite_2(1), -198)
-    affirm.is_throw_expected(fun(x) -> test_use_static_and_fail(x) end
+    affirm:is_equal(test_local_overwrite(1), -1998)
+    affirm:is_equal(test_local_overwrite_2(1), -198)
+    affirm:is_throw_expected(fun(x) -> test_use_static_and_fail(x) end
                     , [1]
                     , (#NotImplementedError, (#_length_, 1)))
-    affirm.is_equal(test_use_static_single_pass(1), 202)
+    affirm:is_equal(test_use_static_single_pass(1), 202)
 end

@@ -1,4 +1,4 @@
-load affirm
+import affirm
 trait Animal, Wolf, Bird
 trait Human
 trait Bacteria
@@ -23,26 +23,26 @@ def test ->
 
     bob_alice = Human_New("Bob", "Alice")
     wolf = Wolf_New("Jack")
-    affirm.is_equal(`-+-+-+-+`(bob_alice), ["I am nice human", "Bob", "Alice"])
-    affirm.is_equal(`-+-+-+-+`(wolf), ["I am animal", "Jack"])
+    affirm:is_equal(`-+-+-+-+`(bob_alice), ["I am nice human", "Bob", "Alice"])
+    affirm:is_equal(`-+-+-+-+`(wolf), ["I am animal", "Jack"])
 
 
-    affirm.is_true(bob_alice kindof Map)
-    affirm.is_false(bob_alice kindof Bacteria)
-    affirm.is_true(bob_alice kindof Human)
-    affirm.is_true(wolf kindof [Wolf, Animal])
-    affirm.is_true(Bacteria kindof Any)
-    affirm.is_true(Bacteria kindof Trait)
-    affirm.is_true(Human kindof Trait)
+    affirm:is_true(bob_alice kindof Map)
+    affirm:is_false(bob_alice kindof Bacteria)
+    affirm:is_true(bob_alice kindof Human)
+    affirm:is_true(wolf kindof [Wolf, Animal])
+    affirm:is_true(Bacteria kindof Any)
+    affirm:is_true(Bacteria kindof Trait)
+    affirm:is_true(Human kindof Trait)
 
     alice = {name = "Alice", age = 42} isa Human
     alice2 = alice isa [Bird, Animal, Bacteria]
     alice3 = alice2 nota Animal
     alice4 = alice2 nota [Bird, Bacteria]
 
-    affirm.is_false(alice2 kindof [Animal, Bird, Animal])
-    affirm.is_true(alice2 kindof [Bird, Animal])
-    affirm.is_false(alice3 kindof Animal)
-    affirm.is_equal(traits(alice3), [Bird, Bacteria, Human, Map, Indexed, Collection, Any])
-    affirm.is_equal(traits(alice4), [Animal, Human, Map, Indexed, Collection, Any])
+    affirm:is_false(alice2 kindof [Animal, Bird, Animal])
+    affirm:is_true(alice2 kindof [Bird, Animal])
+    affirm:is_false(alice3 kindof Animal)
+    affirm:is_equal(traits(alice3), [Bird, Bacteria, Human, Map, Indexed, Collection, Any])
+    affirm:is_equal(traits(alice4), [Animal, Human, Map, Indexed, Collection, Any])
 end

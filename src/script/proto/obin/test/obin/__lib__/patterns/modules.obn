@@ -1,5 +1,5 @@
-load log
-load utils.errors
+import log
+import utils.errors
 
 unit database
     import error, info, log

@@ -344,7 +344,7 @@ def create_match_node(basenode, exp, branches):
     return node_2(nt.NT_MATCH, create_token_from_node(tt.TT_MATCH, "match", basenode), exp, list_node(branches))
 
 
-def create_try_statement_node(basenode, exp, success, fail):
+def create_try_statement_node(basenode, exp, success, fai):
     return node_3(nt.NT_TRY,
                   create_token_from_node(tt.TT_TRY, "try", basenode),
                   list_node([exp, success]),

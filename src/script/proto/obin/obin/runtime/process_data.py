@@ -1,6 +1,6 @@
 from obin.types import space
 from obin.compile.parse.parser import newparser
-
+from obin.runtime import error
 
 class Symbols:
     def __init__(self):
@@ -44,8 +44,15 @@ class Modules:
     def add_module(self, name, module):
         self.modules[name] = module
 
+    def before_load(self, name):
+        assert name not in self.modules
+        self.modules[name] = None
+
     def get_module(self, name):
-        return self.modules[name]
+        m = self.modules[name]
+        if m is None:
+            raise RuntimeError("Load cycle")
+        return m
 
     def set_prelude(self, prelude):
         self.prelude = prelude

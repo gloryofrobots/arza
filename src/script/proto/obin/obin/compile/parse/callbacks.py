@@ -7,6 +7,7 @@ from obin.misc import strutil
 
 NODE_TYPE_MAPPING = {
     TT_DOT: NT_LOOKUP_SYMBOL,
+    TT_COLON: NT_LOOKUP_MODULE,
     TT_TRUE: NT_TRUE,
     TT_FALSE: NT_FALSE,
     TT_NIL: NT_NIL,
@@ -20,10 +21,8 @@ NODE_TYPE_MAPPING = {
     TT_IF: NT_IF,
     TT_WHEN: NT_WHEN,
     TT_MATCH: NT_MATCH,
-    TT_IMPORT: NT_IMPORT,
     TT_EXPORT: NT_EXPORT,
-    TT_USE: NT_USE,
-    TT_LOAD: NT_LOAD,
+    TT_IMPORT: NT_IMPORT,
     TT_TRAIT: NT_TRAIT,
     TT_GENERIC: NT_GENERIC,
     TT_SPECIFY: NT_SPECIFY,
@@ -152,7 +151,7 @@ def infix_lsquare(parser, op, node, left):
     return node_2(NT_LOOKUP, __ntok(node), left, exp)
 
 
-def infix_simple_pair(parser, op, node, left):
+def infix_name_pair(parser, op, node, left):
     check_token_type(parser, TT_NAME)
     name = _init_default_current_0(parser)
     advance(parser)
@@ -405,7 +404,8 @@ def parse_function(parser, can_has_empty_name):
         else:
             return parse_error(parser, u"Expected function name", parser.node)
     else:
-        name = terminated_expression(parser.name_parser, 0, FUN_NAME_TERMINATORS)
+        name = terminated_expression(parser, 0, FUN_NAME_TERMINATORS)
+        check_node_type(parser, name, NT_NAME)
 
     funcs = []
     pattern_parser = parser.pattern_parser
@@ -636,10 +636,41 @@ def stmt_trait(parser, op, node):
 
     return node_1(NT_TRAIT, __ntok(node), nodes.list_node(names))
 
+def _load_path_s(node):
+    if nodes.node_type(node) == NT_LOOKUP_MODULE:
+        return _load_path_s(nodes.node_first(node)) + ':' + nodes.node_value_s(nodes.node_second(node))
+    else:
+        return nodes.node_value_s(node)
 
-def stmt_load(parser, op, node):
-    imported = expression(parser.load_parser, 0)
-    return node_1(NT_LOAD, __ntok(node), imported)
+def _load_module(parser, exp):
+    from obin.runtime import load
+
+    if nodes.node_type(exp) == NT_AS:
+        import_name = nodes.node_second(exp)
+        module_path = _load_path_s(nodes.node_first(exp))
+    elif nodes.node_type(exp) == NT_LOOKUP_MODULE:
+        import_name = nodes.node_second(exp)
+        module_path = _load_path_s(exp)
+    else:
+        assert nodes.node_type(exp) == NT_NAME
+        import_name = exp
+        module_path = nodes.node_value_s(exp)
+
+    state = parser.close()
+    module = load.import_module(state.process, space.newsymbol_s(state.process, module_path))
+    parser.open(state)
+
+
+def stmt_import(parser, op, node):
+    imported = terminated_expression(parser.load_parser, 0, [TT_LPAREN])
+    if parser.token_type == TT_LPAREN:
+        names = expression(parser, 0)
+        check_node_type(parser, names, NT_TUPLE)
+    else:
+        names = nodes.empty_node()
+    _load_module(parser, imported)
+    return node_2(NT_IMPORT, __ntok(node), imported, names)
+
 
 
 def symbol_or_name_value(parser, name):

@@ -1,4 +1,10 @@
 
+
+to_string = seq:to_string
+specify to_string(Map) -> 42;
+
+//BOTH METHODS MUST BE AVAILABLE
+
 generic _and_
     case (t of True, f of True) ->
         true

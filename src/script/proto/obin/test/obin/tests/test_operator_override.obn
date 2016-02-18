@@ -1,4 +1,4 @@
-load affirm
+import affirm
 
 module sub_override
     module not_change_anything_in_parent_module
@@ -41,10 +41,10 @@ module sub_not_override
 end
 
 def test ->
-    affirm.is_equal(sub_override.sub(1,2), 3)
-    affirm.is_equal(sub_override.mul(4,2), 8)
-    affirm.is_equal(sub_override.and_mul_override.sub(1,2), 3)
-    affirm.is_equal(sub_override.and_mul_override.mul(4,2), 2)
+    affirm:is_equal(sub_override.sub(1,2), 3)
+    affirm:is_equal(sub_override.mul(4,2), 8)
+    affirm:is_equal(sub_override.and_mul_override.sub(1,2), 3)
+    affirm:is_equal(sub_override.and_mul_override.mul(4,2), 2)
 
-    affirm.is_equal(sub_not_override.sub(1,2), -1)
+    affirm:is_equal(sub_not_override.sub(1,2), -1)
 end

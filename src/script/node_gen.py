@@ -33,7 +33,6 @@ NODES = [
   "NT_IMPORT",
   "NT_EXPORT",
   "NT_LOAD",
-  "NT_USE",
   "NT_TRAIT",
   "NT_GENERIC",
   "NT_SPECIFY",
@@ -56,6 +55,7 @@ NODES = [
 
   "NT_LOOKUP",
   "NT_LOOKUP_SYMBOL",
+  "NT_LOOKUP_MODULE",
   "NT_SLICE",
   "NT_RANGE",
   "NT_MODIFY",
