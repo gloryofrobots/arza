@@ -123,6 +123,7 @@ def _declare_local(compiler, symbol):
     assert not platform.is_absent_index(idx)
     return idx
 
+
 def _declare_import(compiler, name, func):
     assert space.issymbol(name)
     assert not api.isempty(name)
@@ -134,6 +135,7 @@ def _declare_import(compiler, name, func):
     idx = scope.add_imported(name, func)
     assert not platform.is_absent_index(idx)
     return idx
+
 
 def _declare_function(compiler, code, node):
     symbol = _get_symbol_name_or_empty(compiler.process, node)
@@ -863,9 +865,8 @@ def _module_path_to_string(node):
         return nodes.node_value_s(node)
 
 
-def _compile_IMPORT(compiler, code, node):
+def _get_import_data_and_emit_module(compiler, code, node):
     from obin.runtime import load
-
     exp = node_first(node)
     names = node_second(node)
 
@@ -880,23 +881,76 @@ def _compile_IMPORT(compiler, code, node):
         import_name = exp
         module_path = nodes.node_value_s(exp)
 
+    import_name_s = _get_symbol_name(compiler, import_name)
     module = load.import_module(compiler.process, space.newsymbol_s(compiler.process, module_path))
+    var_names = []
     if nodes.is_empty_node(names):
-        var_names = module.exports()
+        _var_names = module.exports()
+        for _name in _var_names:
+            var_names.append((_name, _name))
     else:
-        var_names = [_get_symbol_name(compiler, name) for name in names]
-
-    colon = space.newsymbol(compiler.process, u":")
+        for _name_node in node_first(names):
+            if node_type(_name_node) == NT_NAME:
+                _name = _get_symbol_name(compiler, _name_node)
+                var_names.append((_name, _name))
+            elif node_type(_name_node) == NT_AS:
+                _name = _get_symbol_name(compiler, node_first(_name_node))
+                _bind_name = _get_symbol_name(compiler, node_second(_name_node))
+                var_names.append((_name, _bind_name))
 
     module_literal = _declare_literal(compiler, module)
     code.emit_1(LITERAL, module_literal, info(node))
-    import_name_s = _get_symbol_name(compiler, import_name)
+    return module, import_name_s, var_names
+
+
+def _emit_imported(compiler, code, node, module, var_name, bind_name):
+    func = api.at(module, var_name)
+    idx = _declare_import(compiler, bind_name, func)
+    code.emit_1(IMPORTED, idx, info(node))
+    _emit_store(compiler, code, bind_name, node)
+
+
+def _compile_IMPORT(compiler, code, node):
+    colon = space.newsymbol(compiler.process, u":")
+    module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
+    if api.to_s(import_name) == "_lists":
+        print 1
+    for var_name, bind_name in var_names:
+        full_bind_name = symbols.concat_3(compiler.process, import_name, colon, bind_name)
+        _emit_imported(compiler, code, node, module, var_name, full_bind_name)
+
+
+def _compile_IMPORT_FROM(compiler, code, node):
+    module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
+    for var_name, bind_name in var_names:
+        _emit_imported(compiler, code, node, module, var_name, bind_name)
+
+
+def _delete_hiding_names(compiler, code, node, module, var_names):
+    exports = module.exports()
+    imported = []
+    for var_name, bind_name in var_names:
+        if var_name in exports:
+            continue
+        imported.append(var_name)
+    return imported
+
+
+def _compile_IMPORT_HIDING(compiler, code, node):
+    colon = space.newsymbol(compiler.process, u":")
+    module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
+    var_names = _delete_hiding_names(compiler, code, node, module, var_names)
     for var_name in var_names:
-        full_name = symbols.concat_3(compiler.process, import_name_s, colon, var_name)
-        func = api.at(module, var_name)
-        idx = _declare_import(compiler, full_name, func)
-        code.emit_1(IMPORTED, idx, info(node))
-        _emit_store(compiler, code, full_name, node)
+        bind_name = symbols.concat_3(compiler.process, import_name, colon, var_name)
+        _emit_imported(compiler, code, node, module, var_name, bind_name)
+
+
+def _compile_IMPORT_FROM_HIDING(compiler, code, node):
+    colon = space.newsymbol(compiler.process, u":")
+    module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
+    var_names = _delete_hiding_names(compiler, code, node, module, var_names)
+    for var_name in var_names:
+        _emit_imported(compiler, code, node, module, var_name, var_name)
 
 
 def _compile_MODULE(compiler, code, node):
@@ -1212,6 +1266,13 @@ def _compile_node(compiler, code, node):
 
     elif NT_IMPORT == ntype:
         _compile_IMPORT(compiler, code, node)
+    elif NT_IMPORT_HIDING == ntype:
+        _compile_IMPORT_HIDING(compiler, code, node)
+    elif NT_IMPORT_FROM == ntype:
+        _compile_IMPORT_FROM(compiler, code, node)
+    elif NT_IMPORT_FROM_HIDING == ntype:
+        _compile_IMPORT_FROM_HIDING(compiler, code, node)
+
     elif NT_MODULE == ntype:
         _compile_MODULE(compiler, code, node)
     elif NT_TRAIT == ntype:

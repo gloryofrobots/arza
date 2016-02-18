@@ -35,6 +35,8 @@ TOKENS = [
   ("TT_FINALLY", "finally"),
   ("TT_MODULE", "module"),
   ("TT_IMPORT", "import"),
+  ("TT_FROM", "from"),
+  ("TT_HIDING", "hiding"),
   ("TT_EXPORT", "export"),
   ("TT_TRAIT", "trait"),
   ("TT_GENERIC", "generic"),

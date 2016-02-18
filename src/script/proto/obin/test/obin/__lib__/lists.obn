@@ -1,10 +1,5 @@
 import seq
-import _lists
-cons = _lists:cons
-tail = _lists:tail
-head = _lists:head
-empty = _lists:empty
-is_empty = _lists:is_empty
+import from _lists (cons, tail, head, empty, is_empty)
 
 specify seq:seq(l of List) -> l;
 
@@ -17,7 +12,6 @@ specify seq:empty(l of List) -> empty();
 specify seq:is_empty(l of List) -> is_empty(l);
 
 specify seq:cons(a of Any, l of List) -> cons(a, l);
-
 
 
 

@@ -1,11 +1,10 @@
 from obin.types import space, api
 from obin.builtins import builtins
 from obin.runtime.process import Process
-from obin.runtime import process_data
+from obin.runtime import process_data, error
 from obin.runtime.load import import_module, evaluate_module_file
 
 def newprocess(libdirs):
-    print libdirs
     core_prelude = space.newemptyenv(space.newstring(u"obin"))
     proc_data = process_data.create(libdirs, core_prelude)
     process = Process(proc_data)
@@ -25,13 +24,12 @@ def initialize(libdirs):
 
 
 def evaluate_file(process, filename):
-    module_or_error = evaluate_module_file(process, space.newsymbol(process, u"__main__"), filename)
+    try:
+        module = evaluate_module_file(process, space.newsymbol(process, u"__main__"), filename)
+    except error.ObinSignal as e:
+        return e.signal
 
-    if process.is_terminated():
-        # error here
-        return module_or_error
-
-    main = api.at(module_or_error, space.newsymbol(process, u"main"))
+    main = api.at(module, space.newsymbol(process, u"main"))
     result = process.subprocess(main, space.newtuple([]))
 
     if process.is_terminated():

@@ -636,11 +636,13 @@ def stmt_trait(parser, op, node):
 
     return node_1(NT_TRAIT, __ntok(node), nodes.list_node(names))
 
+
 def _load_path_s(node):
     if nodes.node_type(node) == NT_LOOKUP_MODULE:
         return _load_path_s(nodes.node_first(node)) + ':' + nodes.node_value_s(nodes.node_second(node))
     else:
         return nodes.node_value_s(node)
+
 
 def _load_module(parser, exp):
     from obin.runtime import load
@@ -662,15 +664,37 @@ def _load_module(parser, exp):
 
 
 def stmt_import(parser, op, node):
-    imported = terminated_expression(parser.load_parser, 0, [TT_LPAREN])
-    if parser.token_type == TT_LPAREN:
-        names = expression(parser, 0)
-        check_node_type(parser, names, NT_TUPLE)
+    if parser.token_type == TT_FROM:
+        ntype1 = NT_IMPORT_FROM
+        advance(parser)
     else:
-        names = nodes.empty_node()
-    _load_module(parser, imported)
-    return node_2(NT_IMPORT, __ntok(node), imported, names)
+        ntype1 = NT_IMPORT
 
+    imported = terminated_expression(parser.load_parser, 0, [TT_LPAREN, TT_HIDING])
+    if parser.token_type == TT_HIDING:
+        hiding = True
+        if ntype1 == NT_IMPORT:
+            ntype = NT_IMPORT_HIDING
+        else:
+            ntype = NT_IMPORT_FROM_HIDING
+        advance(parser)
+    else:
+        hiding = False
+        ntype = ntype1
+
+    if parser.token_type == TT_LPAREN:
+        names = expression(parser.import_names_parser, 0)
+        check_node_type(parser, names, NT_TUPLE)
+        if hiding is True:
+            # hiding names can't have as binding
+            check_list_node_types(parser, nodes.node_first(names), [NT_NAME])
+    else:
+        if hiding is True:
+            parse_error(parser, u"expected definitions tuple", node)
+        names = nodes.empty_node()
+
+    # _load_module(parser, imported)
+    return node_2(ntype, __ntok(node), imported, names)
 
 
 def symbol_or_name_value(parser, name):
@@ -752,5 +776,3 @@ def _meta_prefix(parser, node):
 
     endofexpression(parser)
     parser_current_scope_add_operator(parser, op_value, op)
-
-

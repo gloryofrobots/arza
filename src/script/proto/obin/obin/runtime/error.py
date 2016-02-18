@@ -12,6 +12,11 @@ def error(process, symbol_unistr, args_tuple):
     return space.newtuple([symbol, args_tuple])
 
 
+def signal(err):
+    assert space.isany(err)
+    raise ObinSignal(err)
+
+
 def throw(symbol_unistr, args_tuple):
     raise ObinError(symbol_unistr, args_tuple)
 
@@ -64,6 +69,18 @@ class ObinError(Exception):
     def __str__(self):
         from obin.types import api
         return "%s%s" % (str(self.name), api.to_s(self.args_tuple))
+
+    def __repr__(self):
+        return self.__str__()
+
+
+class ObinSignal(Exception):
+    def __init__(self, signal):
+        self.signal = signal
+
+    def __str__(self):
+        from obin.types import api
+        return api.to_s(self.signal)
 
     def __repr__(self):
         return self.__str__()

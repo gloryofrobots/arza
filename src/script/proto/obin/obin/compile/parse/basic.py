@@ -287,6 +287,11 @@ def check_token_types(parser, types):
                      token_type_to_str(parser.token_type)), parser.node)
 
 
+def check_list_node_types(parser, node, expected_types):
+    for child in node:
+        check_node_types(parser, child, expected_types)
+
+
 def check_node_type(parser, node, expected_type):
     ntype = nodes.node_type(node)
     if ntype != expected_type:
@@ -352,6 +357,7 @@ def closed_expression(parser, _rbp):
     res = expression(parser, _rbp)
     endofexpression(parser)
     return res
+
 
 # SAME AS EXPRESSION BUT WITH TERMINATION CONDITION
 # USED in parsing name declarations like specify a.b.c () -> end

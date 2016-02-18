@@ -115,6 +115,7 @@ class ModuleParser(BaseParser):
         self.pattern_parser = pattern_parser_init(BaseParser())
         self.expression_parser = ExpressionParser(proc_data)
         self.name_parser = name_parser_init(BaseParser())
+        self.import_names_parser = import_names_parser_init(BaseParser())
 
         module_parser_init(base_parser_init(self))
 
@@ -125,6 +126,7 @@ class ModuleParser(BaseParser):
         self.load_parser.open(state)
         self.expression_parser.open(state)
         self.name_parser.open(state)
+        self.import_names_parser.open(state)
 
     def _on_close(self):
         self.args_parser.close()
@@ -133,6 +135,7 @@ class ModuleParser(BaseParser):
         self.load_parser.close()
         self.expression_parser.close()
         self.name_parser.close()
+        self.import_names_parser.close()
 
 
 def args_parser_init(parser):
@@ -158,6 +161,14 @@ def name_parser_init(parser):
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_BACKTICK, prefix_backtick)
     infix(parser, TT_COLON, 10, infix_name_pair)
+    return parser
+
+def import_names_parser_init(parser):
+    symbol(parser, TT_COMMA, None)
+    symbol(parser, TT_RPAREN, None)
+    literal(parser, TT_NAME)
+    infix(parser, TT_AS, 20, infix_name_pair)
+    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     return parser
 
 
@@ -370,6 +381,11 @@ def __parse__():
         @infixl(`!=`, `++`, 70)
         import lib_az:abc:module_ab as ab (cons, length)
         import lib_az:abc:module_ab as ab2
+        import lib_az:abc:module_ab
+        import from lib_az:abc:module_ab
+        import from lib_az:abc:module_ab as ab (cons, length)
+        import from lib_az:abc:module_ab as ab hiding (cons, length)
+        import lib_az:abc:module_ab as ab hiding (cons, length)
 
     """
     import os

@@ -11,7 +11,7 @@ import tests:test_def
 import tests:test_generic
 import tests:test_match
 import tests:test_modify
-//import tests:test_module
+import tests:test_module
 import tests:test_operator_override
 import tests:test_trait
 
@@ -28,7 +28,7 @@ def main() ->
     test_generic:test()
     test_match:test()
     test_modify:test()
-//    test_module:test()
+    test_module:test()
     test_operator_override:test()
     test_trait:test()
     test_datastructs:test()

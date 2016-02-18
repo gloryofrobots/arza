@@ -9,10 +9,10 @@ from obin.compile import compiler
 def import_module(process, name):
     try:
         m = process.modules.get_module(api.to_s(name))
-        print "ALREADY LOADED", name
+        # print "ALREADY LOADED", name
         return m
     except KeyError:
-        print "FILE LOAD", name
+        # print "FILE LOAD", name
         return load_module(process, name)
 
 
@@ -44,6 +44,8 @@ def evaluate_module_file(process, name, filename):
     module = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 3),
                                 space.newtuple([space.newstring_s(filename), name, process.modules.prelude]))
 
+    if process.is_terminated():
+        error.signal(module)
     process.modules.add_module(api.to_s(name), module)
     return module
     # script = load_file_content(filename)

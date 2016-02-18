@@ -91,8 +91,11 @@ RULES = [
     (keyword('trait'), TT_TRAIT),
     (keyword('module'), TT_MODULE),
 
-    (keyword('import'), TT_IMPORT),
     (keyword('export'), TT_EXPORT),
+    (keyword('import'), TT_IMPORT),
+    (keyword('from'), TT_FROM),
+    (keyword('hiding'), TT_HIDING),
+
     (keyword('isa'), TT_ISA),
     (keyword('nota'), TT_NOTA),
     (keyword('kindof'), TT_KINDOF),
