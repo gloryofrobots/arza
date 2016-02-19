@@ -710,7 +710,6 @@ def _compile_case_function(compiler, code, node, name, cases):
         _emit_fself(compiler, funccode, name, funcname)
 
     funccode.emit_0(ARGUMENTS, codeinfo_unknown())
-
     _compile_match(compiler, funccode, node, cases, error.Errors.FUNCTION_MATCH)
     current_scope = _current_scope(compiler)
     scope = current_scope.finalize(_previous_scope(compiler), None)

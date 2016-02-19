@@ -50,9 +50,6 @@ import from lib_az:abc:module_ab (gen_ab, f_ab, f_ab_2, CONST as const)
 //
 //
 def test ->
-
-//    print(gen_ab, f_ab, f_ab_2, const)
-
     affirm:is_equal(
                     gen_ab({point=(10, 12, 0, -1), type=#Point}),
                     {point=(10, 12, 0, -1), type=#Point})

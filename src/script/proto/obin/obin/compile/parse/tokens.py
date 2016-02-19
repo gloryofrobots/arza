@@ -89,7 +89,7 @@ RULES = [
     (keyword('generic'), TT_GENERIC),
     (keyword('specify'), TT_SPECIFY),
     (keyword('trait'), TT_TRAIT),
-    (keyword('module'), TT_MODULE),
+    # (keyword('module'), TT_MODULE),
 
     (keyword('export'), TT_EXPORT),
     (keyword('import'), TT_IMPORT),
