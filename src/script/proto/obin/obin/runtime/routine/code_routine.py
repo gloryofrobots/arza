@@ -9,10 +9,11 @@ from obin.types.dispatch import generic
 class CodeRoutine(BaseRoutine):
     # _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
 
-    def __init__(self, stack, args, name, code, env):
+    def __init__(self, func, stack, args, name, code, env):
         BaseRoutine.__init__(self, stack)
 
         assert space.issymbol(name)
+        self._func_ = func
         self._code_ = code
         self._name_ = name
         self.args = args
@@ -194,6 +195,8 @@ class CodeRoutine(BaseRoutine):
                 obj = stack.pop()
                 v = api.slice(obj, start, end)
                 stack.push(v)
+            elif FSELF == tag:
+                stack.push(self._func_)
             # *************************************
             elif JUMP == tag:
                 self.pc = arg1
@@ -275,14 +278,6 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif POP_CATCH == tag:
                 self.catches.pop()
-            # *************************************
-            elif LOAD == tag:
-                name = literals[arg1]
-                _module = import_module(process, name)
-                stack.push(_module)
-            # *************************************
-            elif USE == tag:
-                raise NotImplementedError()
             # *************************************
             elif MODULE == tag:
                 _source = literals[arg1]

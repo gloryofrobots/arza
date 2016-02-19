@@ -13,12 +13,11 @@ OPCODES = [
     ("INTEGER", 1),
     ("DUP", 1),
     ("NEXT", 1),
-    ("LOAD", 1),
-    ("USE", -1),
     ("MODULE", 1),
     ("GENERIC", 1),
     ("TRAIT", 1),
     ("ARGUMENTS", 1),
+    ("FSELF", 1),
 
     ("LABEL", 0),
     ("STORE_LOCAL", 0),

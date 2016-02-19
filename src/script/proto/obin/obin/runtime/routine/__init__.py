@@ -39,7 +39,7 @@ def create_lazy_routine(stack, constructor, args):
 
 
 def create_module_routine(name, stack, code, env):
-    return jit.promote(CodeRoutine(stack, None, name, code, env))
+    return jit.promote(CodeRoutine(space.newnil(), stack, None, name, code, env))
 
 
 def create_function_routine(stack, func, args, outer_env):
@@ -48,7 +48,7 @@ def create_function_routine(stack, func, args, outer_env):
     name = func.name
 
     env = create_function_environment(func, scope, args, outer_env)
-    routine = jit.promote(CodeRoutine(stack, args, name, code, env))
+    routine = jit.promote(CodeRoutine(func, stack, args, name, code, env))
     return routine
 
 
@@ -68,9 +68,4 @@ def create_function_environment(func, scope, args, outer_env):
                              func.name)
 
     env = space.newenv(func.name, scope, outer_env)
-
-    fn_index = scope.fn_name_index
-    if fn_index != -1:
-        api.put_at_index(env, fn_index, func)
-
     return env

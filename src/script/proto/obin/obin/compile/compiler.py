@@ -80,8 +80,11 @@ def _declare_arguments(compiler, args_count, varargs):
 
 
 # TODO GET RID OF
-def _declare_function_name(compiler, name):
-    _current_scope(compiler).add_scope_function_name(name)
+def _emit_fself(compiler, code, node, name):
+    code.emit_0(FSELF, info(node))
+    _emit_store(compiler, code, name, node)
+
+
 
 
 def _declare_reference(compiler, symbol):
@@ -678,7 +681,7 @@ def _compile_func_args_and_body(compiler, code, name, params, body):
         _compile_destruct_recur(compiler, funccode, params)
 
     if not api.isempty(funcname):
-        _declare_function_name(compiler, funcname)
+        _emit_fself(compiler, funccode, name, funcname)
 
     _compile_2(compiler, funccode, body)
     current_scope = _current_scope(compiler)
@@ -695,7 +698,8 @@ def _compile_func_args_and_body(compiler, code, name, params, body):
     code.emit_1(FUNCTION, source_index, info(name))
 
 
-def _compile_case_function(compiler, code, node, funcname, cases):
+def _compile_case_function(compiler, code, node, name, cases):
+    funcname = _get_symbol_name_or_empty(compiler.process, name)
     _enter_scope(compiler)
 
     funccode = newcode(compiler)
@@ -703,7 +707,7 @@ def _compile_case_function(compiler, code, node, funcname, cases):
     _declare_arguments(compiler, 0, True)
 
     if not api.isempty(funcname):
-        _declare_function_name(compiler, funcname)
+        _emit_fself(compiler, funccode, name, funcname)
 
     funccode.emit_0(ARGUMENTS, codeinfo_unknown())
 
@@ -754,8 +758,8 @@ def is_simple_func_declaration(params):
 
 
 def _compile_DEF(compiler, code, node):
-    name = node_first(node)
-    funcname = _get_symbol_name_or_empty(compiler.process, name)
+    namenode = node_first(node)
+    funcname = _get_symbol_name_or_empty(compiler.process, namenode)
 
     funcs = node_second(node)
     # single function
@@ -764,12 +768,12 @@ def _compile_DEF(compiler, code, node):
         params = func[0]
         body = func[1]
         if not is_simple_func_declaration(params):
-            _compile_case_function(compiler, code, node, funcname, funcs)
+            _compile_case_function(compiler, code, node, namenode, funcs)
         else:
             # print "SIMPLE FUNC", funcname
-            _compile_func_args_and_body(compiler, code, name, params, body)
+            _compile_func_args_and_body(compiler, code, namenode, params, body)
     else:
-        _compile_case_function(compiler, code, node, funcname, funcs)
+        _compile_case_function(compiler, code, node, namenode, funcs)
 
     if api.isempty(funcname):
         return
