@@ -85,8 +85,6 @@ def _emit_fself(compiler, code, node, name):
     _emit_store(compiler, code, name, node)
 
 
-
-
 def _declare_reference(compiler, symbol):
     assert space.issymbol(symbol)
     scope = _current_scope(compiler)
@@ -125,6 +123,15 @@ def _declare_local(compiler, symbol):
     idx = scope.add_scope_local(symbol)
     assert not platform.is_absent_index(idx)
     return idx
+
+
+def _declare_export(compiler, code, node):
+    name = _get_symbol_name(compiler, node)
+    scope = _current_scope(compiler)
+    if scope.has_export(name):
+        compile_error(compiler, code, node, u"Name has already exported")
+
+    scope.add_export(name)
 
 
 def _declare_import(compiler, name, func):
@@ -853,6 +860,13 @@ def _compile_TRY(compiler, code, node):
         _compile(compiler, code, finallynode)
 
 
+def _compile_EXPORT(compiler, code, node):
+    name_node = node_first(node)
+    names = node_first(name_node)
+    for name in names:
+        _declare_export(compiler, code, name)
+
+
 ############################
 # IMPORT
 #############################
@@ -1266,7 +1280,8 @@ def _compile_node(compiler, code, node):
         _compile_MATCH(compiler, code, node)
     elif NT_TRY == ntype:
         _compile_TRY(compiler, code, node)
-
+    elif NT_EXPORT == ntype:
+        _compile_EXPORT(compiler, code, node)
     elif NT_IMPORT == ntype:
         _compile_IMPORT(compiler, code, node)
     elif NT_IMPORT_HIDING == ntype:

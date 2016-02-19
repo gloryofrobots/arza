@@ -696,6 +696,13 @@ def stmt_import(parser, op, node):
     # _load_module(parser, imported)
     return node_2(ntype, __ntok(node), imported, names)
 
+def stmt_export(parser, op, node):
+    check_token_type(parser, TT_LPAREN)
+    names = expression(parser.import_names_parser, 0)
+    check_node_type(parser, names, NT_TUPLE)
+    check_list_node_types(parser, nodes.node_first(names), [NT_NAME])
+    return node_1(NT_EXPORT, __ntok(node), names)
+
 
 def symbol_or_name_value(parser, name):
     if nodes.node_type(name) == NT_SYMBOL:

@@ -39,12 +39,21 @@ class Scope:
         self.references = ScopeSet()
         self.operators = space.newmap()
         self.imports = space.newmap()
+        self.exports = plist.empty()
 
         self.functions = space.newmap()
         self.static_references = plist.empty()
         self.is_variadic = None
 
     ######################################################
+    def add_export(self, name):
+        assert space.issymbol(name)
+        assert not self.has_export(name)
+        self.exports = plist.cons(name, self.exports)
+
+    def has_export(self, name):
+        assert space.issymbol(name)
+        return plist.contains(self.exports, name)
 
     def add_imported(self, name, func):
         assert space.issymbol(name)
