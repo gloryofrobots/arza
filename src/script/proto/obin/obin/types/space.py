@@ -324,7 +324,7 @@ def newenv(name, scope, outer_environment):
 
 
 def newemptyenv(name):
-    return newenv(name, newscope(), None)
+    return newenv(name, newscope().finalize(None, None), None)
 
 
 def isenv(w):

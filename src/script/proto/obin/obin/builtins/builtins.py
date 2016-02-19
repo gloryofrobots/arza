@@ -17,6 +17,8 @@ def setup(process, module, stdlib):
     import obin.builtins.modules.module_lists
     obin.builtins.modules.module_lists.setup(process, module, stdlib)
 
+    module.export_all()
+
     # import obin.builtins.object_builitns
     # obin.builtins.object_builitns.setup(object_space.traits.Object)
 

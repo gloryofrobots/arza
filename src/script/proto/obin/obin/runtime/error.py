@@ -112,3 +112,4 @@ class Errors:
     MATCH = u"MatchError"
     FUNCTION_MATCH = u"FunctionArgumentsMatchError"
     EXCEPTION_MATCH = u"ExceptionMatchError"
+    EXPORT = u"ExportError"

@@ -1,4 +1,4 @@
-from obin.types import api, space
+from obin.types import api, space, plist
 from obin.types.root import W_Any, W_Callable
 from obin.misc.platform import is_absent_index
 from obin.runtime import error
@@ -154,8 +154,9 @@ class W_Env(W_Any):
         self.name = name
         self.parent_env = parent_environment
         self.scope = scope
-        self.literals = scope.declared_literals()
+        self.literals = scope.literals
         self.operators = scope.create_operators()
+        self.exported_names = scope.exports
         self.refs = scope.create_references()
         self.imports = scope.imports
         self.data = scope.create_env_bindings()
@@ -164,8 +165,14 @@ class W_Env(W_Any):
         # print self.refs
         # print scope.reference_names
 
+    def export_all(self):
+        self.exported_names = self.data.keys_list()
+
+    def can_export(self, symbol):
+        return plist.contains(self.exported_names, symbol)
+
     def exports(self):
-        return self.data.keys()
+        return self.exported_names
 
     def get_import(self, index):
         return api.at_index(self.imports, index)

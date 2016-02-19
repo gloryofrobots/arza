@@ -900,19 +900,26 @@ def _get_import_data_and_emit_module(compiler, code, node):
     import_name_s = _get_symbol_name(compiler, import_name)
     module = load.import_module(compiler.process, space.newsymbol_s(compiler.process, module_path))
     var_names = []
+    exports = module.exports()
     if nodes.is_empty_node(names):
-        _var_names = module.exports()
+        _var_names = exports
         for _name in _var_names:
             var_names.append((_name, _name))
     else:
         for _name_node in node_first(names):
             if node_type(_name_node) == NT_NAME:
                 _name = _get_symbol_name(compiler, _name_node)
-                var_names.append((_name, _name))
+                _bind_name = _name
             elif node_type(_name_node) == NT_AS:
                 _name = _get_symbol_name(compiler, node_first(_name_node))
                 _bind_name = _get_symbol_name(compiler, node_second(_name_node))
-                var_names.append((_name, _bind_name))
+            else:
+                assert False
+
+            if not module.can_export(_name):
+                compile_error(compiler, code, node, u"Invalid import name %s. Please, check source module export list"
+                              % api.to_u(_name))
+            var_names.append((_name, _bind_name))
 
     module_literal = _declare_literal(compiler, module)
     code.emit_1(LITERAL, module_literal, info(node))
@@ -929,8 +936,6 @@ def _emit_imported(compiler, code, node, module, var_name, bind_name):
 def _compile_IMPORT(compiler, code, node):
     colon = space.newsymbol(compiler.process, u":")
     module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
-    if api.to_s(import_name) == "_lists":
-        print 1
     for var_name, bind_name in var_names:
         full_bind_name = symbols.concat_3(compiler.process, import_name, colon, bind_name)
         _emit_imported(compiler, code, node, module, var_name, full_bind_name)

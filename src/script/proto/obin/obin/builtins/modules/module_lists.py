@@ -11,6 +11,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, _module, u'head', _head, 1)
     api.put_native_function(process, _module, u'cons', _cons, 2)
 
+    _module.export_all()
     process.modules.add_module('_lists', _module)
 
 

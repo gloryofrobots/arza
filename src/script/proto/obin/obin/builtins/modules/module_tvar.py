@@ -8,6 +8,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, tvar_module, u'read', tvar_read, 1)
     api.put_native_function(process, tvar_module, u'swap', tvar_swap, 2)
     api.put_native_function(process, tvar_module, u'create', tvar_create, 1)
+    tvar_module.export_all()
     process.modules.add_module("tvar", tvar_module)
 
 

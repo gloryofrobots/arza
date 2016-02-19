@@ -7,6 +7,7 @@ def setup(process, module, stdlib):
     _module = space.newemptyenv(space.newsymbol(process, u'_tuples'))
     api.put_native_function(process, _module, u'length', _length, 1)
 
+    _module.export_all()
     process.modules.add_module('_tuples', _module)
 
 @complete_native_routine

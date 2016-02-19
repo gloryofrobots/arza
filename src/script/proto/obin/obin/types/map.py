@@ -291,6 +291,9 @@ class W_Map(W_Any):
     def keys(self):
         return self.slot_bindings.keys()
 
+    def keys_list(self):
+        return space.newlist(self.keys())
+
     def _remove_at_(self, name):
         idx = self._get_index_(name)
         if platform.is_absent_index(idx):

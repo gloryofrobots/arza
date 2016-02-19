@@ -2,6 +2,7 @@ from obin.types import space, plist, environment
 from obin.types.root import W_Any
 from obin.misc import platform
 from obin.types import api
+from obin.runtime import error
 
 
 class ScopeSet:
@@ -34,26 +35,29 @@ class W_Scope(W_Any):
     def __init__(self):
         self.__locals = space.newmap()
 
-        self.arg_count = -1
         self.__literals = ScopeSet()
         self.__local_references = ScopeSet()
         self.__operators = space.newmap()
-        self.imports = space.newmap()
-        self.exports = plist.empty()
-        self.functions = space.newmap()
+        self.__declared_exports = plist.empty()
         self.__static_references = plist.empty()
-        self.__references = None
+
+        self.literals = None
+        self.imports = space.newmap()
+        self.functions = space.newmap()
+        self.arg_count = -1
+        self.references = None
         self.is_variadic = None
+        self.exports = None
 
     ######################################################
     def add_export(self, name):
         assert space.issymbol(name)
         assert not self.has_export(name)
-        self.exports = plist.cons(name, self.exports)
+        self.__declared_exports = plist.cons(name, self.__declared_exports)
 
     def has_export(self, name):
         assert space.issymbol(name)
-        return plist.contains(self.exports, name)
+        return plist.contains(self.__declared_exports, name)
 
     def add_imported(self, name, func):
         assert space.issymbol(name)
@@ -123,14 +127,11 @@ class W_Scope(W_Any):
     def get_scope_local_index(self, local):
         return api.get_index(self.__locals, local)
 
-    def declared_references(self):
-        return self.__local_references.values
-
-    def declared_literals(self):
-        return self.__literals.values
+    def has_local(self, local):
+        return not platform.is_absent_index(api.get_index(self.__locals, local))
 
     def _create_references(self, prev_scope):
-        declared = self.declared_references()
+        declared =  self.__local_references.values
         size = len(declared)
         if size == 0:
             return None
@@ -152,21 +153,30 @@ class W_Scope(W_Any):
 
         return refs
 
+    def _create_exports(self):
+        if plist.is_empty(self.__declared_exports):
+            return self.__locals.keys_list()
+
+        for exported in self.__declared_exports:
+            if not self.has_local(exported):
+                error.throw_2(error.Errors.EXPORT, space.newstring(u"Unreachable export variable"), exported)
+
+        return self.__declared_exports
+
     def finalize(self, previous_scope, parse_scope):
         if parse_scope is not None:
             self.add_operators(parse_scope.operators.to_list())
 
-        self.__references = self._create_references(previous_scope)
+        self.literals = self.__literals.values
+        self.exports = self._create_exports()
+        self.references = self._create_references(previous_scope)
 
         return self
-        # return space.newscope(self.locals, refs, self.declared_references(),
-        #                       self.declared_literals(), self._operators, self._imports,
-        #                       self.arg_count, self.is_variadic, self.fn_name_index)
 
     def create_references(self):
-        if self.__references is None:
+        if self.references is None:
             return None
-        return api.clone(self.__references)
+        return api.clone(self.references)
 
     def create_operators(self):
         if self.__operators is None:
@@ -175,3 +185,4 @@ class W_Scope(W_Any):
 
     def create_env_bindings(self):
         return api.clone(self.__locals)
+

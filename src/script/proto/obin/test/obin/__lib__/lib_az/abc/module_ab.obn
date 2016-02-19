@@ -1,5 +1,7 @@
 import lib_az:abc:module_c as c
 
+export (f_ab, f_ab_2, CONST, gen_ab)
+
 def f_ab(num) ->
     num + c:f_c(num) end
 
@@ -9,3 +11,5 @@ CONST = 10
 
 generic gen_ab
     case (self of Any) -> self end
+
+def f_ab_3() -> 0 end
