@@ -154,7 +154,7 @@ class W_Env(W_Any):
         self.name = name
         self.parent_env = parent_environment
         self.scope = scope
-        self.literals = scope.literals
+        self.literals = scope.declared_literals()
         self.operators = scope.create_operators()
         self.refs = scope.create_references()
         self.imports = scope.imports

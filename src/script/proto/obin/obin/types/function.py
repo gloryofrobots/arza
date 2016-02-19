@@ -19,7 +19,7 @@ class W_Function(W_Callable):
         self.name = name
         self.bytecode = bytecode
         scope_info = bytecode.scope
-        self.arity = scope_info.count_args
+        self.arity = scope_info.arg_count
         self.is_variadic = scope_info.is_variadic
         self.env = env
 

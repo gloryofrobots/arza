@@ -5,7 +5,6 @@ from obin.compile.parse import nodes
 from obin.compile.parse.nodes import (node_type, node_arity,
                                       node_first, node_second, node_third, node_children)
 from obin.compile.parse.node_type import *
-from obin.compile.compile_scope import Scope
 from obin.types import space, api, plist, environment, symbol as symbols
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
 from obin.misc import platform, strutil
@@ -48,7 +47,7 @@ def info(node):
 
 
 def _enter_scope(compiler):
-    new_scope = Scope()
+    new_scope = space.newscope()
     compiler.scopes.append(new_scope)
 
 

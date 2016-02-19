@@ -298,9 +298,9 @@ def istuple(w):
 
 #########################################################
 
-def newscope(variables, references, reference_names, literals, operators, imports, arg_count, is_varargs, fn_name_index):
+def newscope():
     from obin.types.scope import W_Scope
-    return W_Scope(variables, references, reference_names, literals, operators, imports, arg_count, is_varargs, fn_name_index)
+    return W_Scope()
 
 
 def isscope(w):
@@ -324,7 +324,7 @@ def newenv(name, scope, outer_environment):
 
 
 def newemptyenv(name):
-    return newenv(name, newscope(newmap(), None, [], [], newmap(), newmap(), 0, False, -1), None)
+    return newenv(name, newscope(), None)
 
 
 def isenv(w):
