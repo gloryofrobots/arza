@@ -190,7 +190,7 @@ def _get_variable_index(compiler, code, node, name):
 
     ref = environment.get_reference(compiler.env, name)
     if space.isnil(ref):
-        return compile_error(compiler, code, node, u"Non reachable variable")
+        return compile_error(compiler, code, node, u"Unreachable variable")
 
     _declare_static_reference(compiler, ref)
 

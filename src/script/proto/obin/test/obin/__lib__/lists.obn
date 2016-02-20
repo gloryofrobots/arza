@@ -158,3 +158,66 @@ def range
         _range(first, last, step, condition, [])
 end
 
+def range2
+    case (first of Int, last of Int) ->
+        if last < 0
+            step = - 1
+        else
+            step = 1;
+        range2(first, last, step)
+    ///////////////////////////////////////
+    case (first of Int, last of Int, step of Int) ->
+        fun _range
+            case (N, X, D, L) when N >= 4 ->
+                print("first", L)
+                print(#N, N)
+                print(#X, X)
+                print(#D, D)
+                Y = X - D
+                Z = Y - D
+                W = Z - D
+                print(#Y, Y)
+                print(#Z, Z)
+                print(#W, W)
+                _range(N - 4, W - D, D, W ::Z :: Y :: X :: L)
+            case (N, X, D, L) when N >= 2 ->
+                print("second", L)
+                Y = X - D
+                _range(N - 2, Y - D, D, Y :: X :: L)
+            case (1, X, _, L) ->
+                print("third", L)
+                X :: L
+            case (0, _, _, L) -> print ("fourth ", L), L;
+
+        if step > 0 and first - step <= last or
+            step < 0 and first - step >= last
+            n = (last - first + step) / step
+            print("N", n)
+            _range(n-1, step * (n - 1) + first - 1, step, [])
+        elif step == 0 and first == last
+            _range(1, first, step, [])
+        else
+            throw (#InvalidRange, first, last, step)
+        end
+end
+//seq(First, Last, Inc)
+//    when is_integer(First), is_integer(Last), is_integer(Inc) ->
+//    if
+//        Inc > 0, First - Inc =< Last;
+//        Inc < 0, First - Inc >= Last ->
+//            N = (Last - First + Inc) div Inc,
+//            seq_loop(N, Inc*(N-1)+First, Inc, []);
+//        Inc =:= 0, First =:= Last ->
+//            seq_loop(1, First, Inc, [])
+//    end.
+
+//seq_loop(N, X, D, L) when N >= 4 ->
+//     Y = X-D, Z = Y-D, W = Z-D,
+//     seq_loop(N-4, W-D, D, [W,Z,Y,X|L]);
+//seq_loop(N, X, D, L) when N >= 2 ->
+//     Y = X-D,
+//     seq_loop(N-2, Y-D, D, [Y,X|L]);
+//seq_loop(1, X, _, L) ->
+//     [X|L];
+//seq_loop(0, _, _, L) ->
+//     L.
