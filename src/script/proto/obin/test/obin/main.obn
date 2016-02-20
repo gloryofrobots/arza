@@ -15,6 +15,7 @@ import tests:test_module
 import tests:test_operator_override
 import tests:test_trait
 
+
 def main() ->
     test_operators:test()
     test_static_refs:test()
