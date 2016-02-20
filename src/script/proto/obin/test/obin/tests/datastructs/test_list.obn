@@ -42,4 +42,37 @@ def test ->
     affirm:is_equal(lists:map(fun (x) -> x+1 end, l1), [1,2,3,4,5,6,7,8,9,10])
     affirm:is_equal(lists:intersperse(0, l1), [0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0])
     affirm:is_equal(lists:scanl(`+`, 0, lists:range(1, 11)),  [0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55])
+
+    affirm:is_equal(lists:last(l1), 9)
+    affirm:is_equal(lists:init(l1), [0, 1, 2, 3, 4, 5, 6, 7, 8])
+    affirm:is_equal(lists:replicate(5, 42), [42, 42, 42, 42, 42])
+    affirm:is_equal(lists:take(3, l1), [0,1,2])
+    affirm:is_equal(lists:split_at(3, l1), ([0, 1, 2], [3, 4, 5, 6, 7, 8, 9]))
+    affirm:is_equal(lists:take_while(fun (x) -> x < 5 end, l1), [0, 1, 2, 3, 4])
+    affirm:is_equal(lists:drop_while(fun (x) -> x < 5 end, l1), [5, 6, 7, 8, 9])
+    affirm:is_equal(lists:span(fun (x) -> x < 3 end, [1,2,3,4,1,2,3,4]),
+                   ([1, 2], [3, 4, 1, 2, 3, 4]))
+
+    affirm:is_equal(lists:span(fun (x) -> x < 9 end, [1,2,3]),
+                   ([1, 2, 3], []))
+    affirm:is_equal(lists:span(fun (x) -> x < 0 end, [1,2,3]),
+                   ([], [1, 2, 3]))
+
+    affirm:is_true(lists:conjunction([true, true, true, true]))
+    affirm:is_false(lists:conjunction([true, true, true, false]))
+    affirm:is_true(lists:all(fun (x) -> x < 7 end,  [0,1,2,3,4,5,6]))
+    affirm:is_false(lists:all(fun (x) -> x < 3 end,  [0,1,2,3,4,5,6]))
+    affirm:is_true(lists:any(fun (x) -> x < 7 end,  [0,1,2,3,4,5,6]))
+    affirm:is_true(lists:any(fun (x) -> x < 3 end,  [0,1,2,3,4,5,6]))
+    affirm:is_false(lists:any(fun (x) -> x < -1 end,  [0,1,2,3,4,5,6]))
+
+    affirm:is_equal(lists:delete(8, l1), [0,1,2,3,4,5,6,7,9])
+
+    print(
+        lists:conjunction([true, true, true, true])
+    )
+
+//    span (< 3) [1,2,3,4,1,2,3,4] == ([1,2],[3,4,1,2,3,4])
+//span (< 9) [1,2,3] == ([1,2,3],[])
+//span (< 0) [1,2,3] == ([],[1,2,3])
 end

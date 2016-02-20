@@ -120,10 +120,6 @@ def opcode_info(routine, opcode):
         literal = routine.env.literals[arg2]
         return 'STORE_LOCAL %s (%d)' % (literal, arg1)
     # ********************************
-    elif tag == LOAD:
-        literal = routine.env.literals[arg1]
-        return 'LOAD %s' % (literal,)
-    # ********************************
     elif tag == FUNCTION:
         return 'LOAD_FUNCTION'
     else:

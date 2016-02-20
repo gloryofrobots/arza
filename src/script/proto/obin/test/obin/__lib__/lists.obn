@@ -126,11 +126,97 @@ def drop(count of Int, l of List) ->
     _drop(count, l)
 end
 
+def take (n of Int, l) ->
+    fun _take
+        case (0, _) -> []
+        case (_, []) -> []
+        case (n, [x, ...xs]) -> x :: _take(n-1, xs);
+    _take(n, l)
+end
+
+def split_at(n of Int, l of List) -> (take(n, l), drop(n, l));
+
+def take_while
+    case (p, []) -> []
+    case (p, [x, ...xs]) -> x :: take_while(p, xs) when p(x) else []
+end
+
+def drop_while
+    case (p, []) -> []
+    case (p, xs@[x, ...xs1]) -> drop_while(p, xs1) when p(x) else xs
+end
+
+def span
+    case (p, []) -> ([], [])
+    case (p, xs@[x, ...xs1]) ->
+        if not p(x)
+            ([], xs)
+        else
+            (ys, zs) = span(p, xs1)
+            (x::ys, zs);
+end
+
+def delete
+    case (item, [item, ...xs]) -> xs
+    case (item, [x, ...xs]) -> x :: delete(item, xs)
+    case (_, []) -> []
+end
+////QUERIES//////////////////////////////////////////////////////////////////
+
+def conjunction(l of List) -> foldr(fun(v, acc) -> v and acc end, true, l);
+def disjunction(l of List) -> foldr(fun(v, acc) -> v or acc end, false, l);
+def any(p, l of List) ->  disjunction(map(p, l));
+def all(p, l of List) ->  conjunction(map(p, l));
+def element(x, l of List) ->  any(fun (v) -> v == x end, l);
+def contains(l of List, x) ->  element(x, l);
+
+////
+//-- Applied to a predicate and a list, any determines if any element
+//-- of the list satisfies the predicate.  Similarly, for all.
+//
+//any, all         :: (a -> Bool) -> [a] -> Bool
+//any p            =  or . map p
+//all p            =  and . map p
+//
+//-- elem is the list membership predicate, usually written in infix form,
+//-- e.g., x `elem` xs.  notElem is the negation.
+//
+//elem, notElem    :: (Eq a) => a -> [a] -> Bool
+//elem x           =  any (== x)
+//notElem x        =  all (/= x)
+
+
 //BUILDERS/////////////////////////////////////////////////////////////
 
 def concat(l1 of List, l2 of List) ->
      foldr(`::`, l2, l1);
 
+
+//def range
+//    case (first of Int, last of Int) ->
+//        if last < 0
+//            step = - 1
+//        else
+//            step = 1;
+//        range(first, last, step)
+//    ///////////////////////////////////////
+//    case (first of Int, last of Int, step of Int) ->
+//        when step == 0
+//            throw (#RangeError, "Step cannot be zero.");
+//
+//        when last < first and step > 0
+//            throw (#RangeError, "Expected negative step.");
+//
+//        fun _range(first, last, step, condition, result) ->
+//             if condition(first, last)
+//                reverse(result)
+//             else
+//                _range(first + step, last, step, condition, first :: result);
+//        end
+//
+//        condition = `>=` when step > 0 else `<=`
+//        _range(first, last, step, condition, [])
+//end
 
 def range
     case (first of Int, last of Int) ->
@@ -141,83 +227,48 @@ def range
         range(first, last, step)
     ///////////////////////////////////////
     case (first of Int, last of Int, step of Int) ->
-        when step == 0
-            throw (#RangeError, "Step cannot be zero.");
-
-        when last < first and step > 0
-            throw (#RangeError, "Expected negative step.");
-
-        fun _range(first, last, step, condition, result) ->
-             if condition(first, last)
-                reverse(result)
-             else
-                _range(first + step, last, step, condition, first :: result);
-        end
-
-        condition = `>=` when step > 0 else `<=`
-        _range(first, last, step, condition, [])
-end
-
-def range2
-    case (first of Int, last of Int) ->
-        if last < 0
-            step = - 1
-        else
-            step = 1;
-        range2(first, last, step)
-    ///////////////////////////////////////
-    case (first of Int, last of Int, step of Int) ->
         fun _range
             case (N, X, D, L) when N >= 4 ->
-                print("first", L)
-                print(#N, N)
-                print(#X, X)
-                print(#D, D)
                 Y = X - D
                 Z = Y - D
                 W = Z - D
-                print(#Y, Y)
-                print(#Z, Z)
-                print(#W, W)
-                _range(N - 4, W - D, D, W ::Z :: Y :: X :: L)
+                _range(N - 4, W - D, D, W :: Z :: Y :: X :: L)
             case (N, X, D, L) when N >= 2 ->
-                print("second", L)
                 Y = X - D
                 _range(N - 2, Y - D, D, Y :: X :: L)
             case (1, X, _, L) ->
-                print("third", L)
                 X :: L
-            case (0, _, _, L) -> print ("fourth ", L), L;
+            case (0, _, _, L) -> L;
 
         if step > 0 and first - step <= last or
             step < 0 and first - step >= last
-            n = (last - first + step) / step
-            print("N", n)
-            _range(n-1, step * (n - 1) + first - 1, step, [])
+            n = ((last - first + step) / step) - 1
+            _range(n, step * (n - 1) + first, step, [])
         elif step == 0 and first == last
             _range(1, first, step, [])
         else
             throw (#InvalidRange, first, last, step)
         end
 end
-//seq(First, Last, Inc)
-//    when is_integer(First), is_integer(Last), is_integer(Inc) ->
-//    if
-//        Inc > 0, First - Inc =< Last;
-//        Inc < 0, First - Inc >= Last ->
-//            N = (Last - First + Inc) div Inc,
-//            seq_loop(N, Inc*(N-1)+First, Inc, []);
-//        Inc =:= 0, First =:= Last ->
-//            seq_loop(1, First, Inc, [])
-//    end.
 
-//seq_loop(N, X, D, L) when N >= 4 ->
-//     Y = X-D, Z = Y-D, W = Z-D,
-//     seq_loop(N-4, W-D, D, [W,Z,Y,X|L]);
-//seq_loop(N, X, D, L) when N >= 2 ->
-//     Y = X-D,
-//     seq_loop(N-2, Y-D, D, [Y,X|L]);
-//seq_loop(1, X, _, L) ->
-//     [X|L];
-//seq_loop(0, _, _, L) ->
-//     L.
+def last
+    case ([x, ...xs]) -> last(x, xs)
+    case (_, [x, ...xs]) -> last(x, xs)
+    case (x, []) -> x
+end
+
+def uncons([x, ...xs]) -> (x, xs);
+
+
+def init
+    case ([x]) -> []
+    case ([x, ...xs]) -> x :: init(xs)
+    case ([]) ->  throw #EmptyListError
+end
+
+def replicate
+    case (n of Int, x) when n >= 0 -> replicate(n, x, [])
+    case (0, _, l) -> l
+    case (n, x, l) -> replicate(n-1, x, x :: l)
+end
+

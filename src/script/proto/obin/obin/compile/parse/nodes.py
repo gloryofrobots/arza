@@ -245,9 +245,9 @@ def create_tuple_node(basenode, elements):
     return node_1(nt.NT_TUPLE, create_token_from_node(tt.TT_LPAREN, "(", basenode), list_node(elements))
 
 
-def create_match_fail_node(basenode, val):
+def create_match_fail_node(basenode, val, var):
     sym = create_symbol_node_s(basenode, val)
-    return create_tuple_node(basenode, [sym])
+    return create_tuple_node(basenode, [sym, create_name_node(basenode, var)])
 
 
 def create_if_node(basenode, branches):

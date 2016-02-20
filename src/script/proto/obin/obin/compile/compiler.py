@@ -386,7 +386,7 @@ def _compile_match(compiler, code, node, patterns, error_code):
     _compile(compiler, code, graph)
 
     # Allocate error in case of no match
-    err_node = nodes.create_match_fail_node(node, str(error_code))
+    err_node = nodes.create_match_fail_node(node, str(error_code), MATCH_SYS_VAR)
     _compile(compiler, code, err_node)
     code.emit_0(THROW, info(node))
 
