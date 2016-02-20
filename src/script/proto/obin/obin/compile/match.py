@@ -101,7 +101,7 @@ def _process_list(state, pattern, patterns, path):
 
     if count_i == 0:
         return add_pattern(patterns, ["is", _create_path_node(pattern, path),
-                                          create_empty_list_node(pattern)])
+                                      create_empty_list_node(pattern)])
 
     # first process all args except last which might be ...rest param
     last_index = count_i - 1
@@ -111,7 +111,8 @@ def _process_list(state, pattern, patterns, path):
             if node_type(child) == NT_REST:
                 return transform_error(state, child, u'Invalid use of Rest')
 
-            patterns = add_pattern(patterns, ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(child)])
+            patterns = add_pattern(patterns,
+                                   ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(child)])
 
             child_path = add_path(create_int_node(child, 0), cur_path)
             cur_slice = create_slice_1_end(child)
@@ -236,6 +237,14 @@ def _process_of(state, pattern, patterns, path):
     return patterns
 
 
+def _process_when_no_else(state, pattern, patterns, path):
+    pat = node_first(pattern)
+    guard = node_second(pattern)
+    patterns = _process_pattern(state, pat, patterns, path)
+    patterns = add_pattern(patterns, ["when", guard])
+    return patterns
+
+
 def _process_literal(state, pattern, patterns, path):
     patterns = add_pattern(patterns, ["equal", _create_path_node(pattern, path), pattern])
     return patterns
@@ -260,6 +269,8 @@ def _process_pattern(state, pattern, patterns, path):
         return _process_of(state, pattern, patterns, path)
     elif ntype == NT_WILDCARD:
         return _process_wildcard(state, pattern, patterns, path)
+    elif ntype == NT_WHEN_NO_ELSE:
+        return _process_when_no_else(state, pattern, patterns, path)
     elif ntype in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_NIL, NT_STR, NT_CHAR, NT_SYMBOL]:
         return _process_literal(state, pattern, patterns, path)
     else:
@@ -383,8 +394,8 @@ def _transform_is_map(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                 create_name_node(arg_node, prelude.PRIM_IS_MAP),
-                                                 arg_node),
+                                                   create_name_node(arg_node, prelude.PRIM_IS_MAP),
+                                                   arg_node),
                                 create_true_node(arg_node))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -395,8 +406,8 @@ def _transform_is_seq(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                 create_name_node(arg_node, prelude.PRIM_IS_SEQ),
-                                                 arg_node),
+                                                   create_name_node(arg_node, prelude.PRIM_IS_SEQ),
+                                                   arg_node),
                                 create_true_node(arg_node))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -407,8 +418,8 @@ def _transform_is_indexed(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                 create_name_node(arg_node, prelude.PRIM_IS_INDEXED),
-                                                 arg_node),
+                                                   create_name_node(arg_node, prelude.PRIM_IS_INDEXED),
+                                                   arg_node),
                                 create_true_node(arg_node))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -420,8 +431,8 @@ def _transform_length_ge(history, head, variables):
     count = head[2]
     _condition = create_gt_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                 create_name_node(arg_node, prelude.PRIM_LENGTH),
-                                                 arg_node),
+                                                   create_name_node(arg_node, prelude.PRIM_LENGTH),
+                                                   arg_node),
                                 create_int_node(arg_node, str(count)))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -433,8 +444,8 @@ def _transform_length(history, head, variables):
     count = head[2]
     _condition = create_eq_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                 create_name_node(arg_node, prelude.PRIM_LENGTH),
-                                                 arg_node),
+                                                   create_name_node(arg_node, prelude.PRIM_LENGTH),
+                                                   arg_node),
                                 create_int_node(arg_node, str(count)))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -447,6 +458,15 @@ def _transform_equal(history, head, variables):
     _condition = create_eq_node(left, left, right)
     condition, prefixes1 = _history_get_condition(history, _condition)
     return left, condition, prefixes + prefixes1, variables
+
+
+def _transform_when(history, head, variables):
+    guard_node, prefixes = _history_get_var(history, head[1])
+    _condition = create_is_node(guard_node,
+                                guard_node,
+                                create_true_node(guard_node))
+    condition, prefixes1 = _history_get_condition(history, _condition)
+    return guard_node, condition, prefixes + prefixes1, variables
 
 
 def _transform_kindof(history, head, variables):
@@ -541,6 +561,7 @@ TRANSFORM_DISPATCH = {
     "in": _transform_in,
     "kindof": _transform_kindof,
     "list": _skip_transform,
+    "when": _transform_when,
     "map": _transform_map,
 }
 

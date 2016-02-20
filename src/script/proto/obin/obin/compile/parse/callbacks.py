@@ -413,8 +413,11 @@ def parse_function(parser, can_has_empty_name):
     if parser.token_type == TT_CASE:
         while pattern_parser.token_type == TT_CASE:
             advance_expected(pattern_parser, TT_CASE)
-            args = expression(pattern_parser, 0)
+            args = _parse_pattern(parser)
             args_type = nodes.node_type(args)
+            if args_type == NT_WHEN_NO_ELSE:
+                args_type = nodes.node_type(nodes.node_first(args))
+
             if args_type != NT_UNIT and args_type != NT_TUPLE:
                 parse_error(parser, u"Invalid  syntax in function arguments", args)
 
@@ -468,23 +471,28 @@ def prefix_try(parser, op, node):
     advance_end(parser)
     return node_3(NT_TRY, __ntok(node), trybody, nodes.list_node(catches), finallybody)
 
+
 TERM_PATTERN = [TT_WHEN]
 TERM_GUARD = [TT_ARROW]
+
+
+def _parse_pattern(parser):
+    pattern = terminated_expression(parser.pattern_parser, 0, TERM_PATTERN)
+    if parser.token_type == TT_WHEN:
+        advance(parser)
+        guard = terminated_expression(parser.guard_parser, 0, TERM_GUARD)
+        pattern = node_2(NT_WHEN_NO_ELSE, __ntok(guard), pattern, guard)
+
+    return pattern
+
 
 def prefix_match(parser, op, node):
     exp = expression(parser, 0)
     pattern_parser = parser.pattern_parser
-    guard_parser = parser.guard_parser
     branches = []
     while pattern_parser.token_type == TT_CASE:
         advance_expected(pattern_parser, TT_CASE)
-
-        pattern = terminated_expression(pattern_parser, 0, TERM_PATTERN)
-        if parser.token_type == TT_WHEN:
-            advance(parser)
-            guard = terminated_expression(guard_parser, 0, TERM_GUARD)
-            pattern = node_2(NT_WHEN_NO_ELSE, __ntok(guard), pattern, guard)
-
+        pattern = _parse_pattern(parser)
         advance_expected(parser, TT_ARROW)
 
         body = statements(parser, TERM_CASE)
@@ -703,6 +711,7 @@ def stmt_import(parser, op, node):
 
     # _load_module(parser, imported)
     return node_2(ntype, __ntok(node), imported, names)
+
 
 def stmt_export(parser, op, node):
     check_token_type(parser, TT_LPAREN)

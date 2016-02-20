@@ -166,7 +166,7 @@ def parser_operator(parser, ttype):
     try:
         return parser.handlers[ttype]
     except:
-        return parse_error(parser, u"Invalid token", parser.node)
+        return parse_error(parser, u"Invalid token %s" % token_type_to_str(ttype),  parser.node)
 
 
 def get_or_create_operator(parser, ttype):

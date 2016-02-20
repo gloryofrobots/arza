@@ -89,7 +89,7 @@ class ExpressionParser(BaseParser):
     def __init__(self, proc_data):
         BaseParser.__init__(self)
         self.pattern_parser = pattern_parser_init(BaseParser())
-        self.guard_parser = guard_parser_init(BaseParser())
+        self.guard_parser = guard_parser_init(proc_data, BaseParser())
         self.name_parser = name_parser_init(BaseParser())
         expression_parser_init(proc_data, base_parser_init(self))
 
@@ -111,7 +111,7 @@ class ModuleParser(BaseParser):
         self.load_parser = load_parser_init(BaseParser())
         self.generic_signature_parser = generic_signature_parser_init(BaseParser())
         self.pattern_parser = pattern_parser_init(BaseParser())
-        self.guard_parser = guard_parser_init(BaseParser())
+        self.guard_parser = guard_parser_init(proc_data, BaseParser())
         self.expression_parser = ExpressionParser(proc_data)
         self.name_parser = name_parser_init(BaseParser())
         self.import_names_parser = import_names_parser_init(BaseParser())
@@ -177,15 +177,35 @@ def generic_signature_parser_init(parser):
     return parser
 
 
-def guard_parser_init(parser):
-    parser = init_parser_literals(parser)
+def guard_parser_init(proc_data, parser):
+    from obin.builtins import prelude
     parser.allow_overloading = True
+    parser = init_parser_literals(parser)
+
+    symbol(parser, TT_COMMA, None)
+    symbol(parser, TT_RPAREN, None)
+    symbol(parser, TT_RCURLY, None)
+    symbol(parser, TT_RSQUARE, None)
     symbol(parser, TT_ARROW, None)
-    
+
+    prefix(parser, TT_LPAREN, prefix_lparen)
+    prefix(parser, TT_LSQUARE, prefix_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
+
+    prefix_operator(parser, TT_NOT, proc_data.std.generics.not_.name)
+
+    infix(parser, TT_DOT, 70, infix_dot)
+    infix(parser, TT_COLON, 80, infix_name_pair)
     infix(parser, TT_LPAREN, 90, infix_lparen)
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
+
+    infix_operator(parser, TT_KINDOF, 50, proc_data.symbols.symbol_s(prelude.PRIM_KINDOF))
+    infix_operator(parser, TT_IS, 50, proc_data.symbols.symbol_s(prelude.PRIM_IS))
+    infix_operator(parser, TT_ISNOT, 50, proc_data.symbols.symbol_s(prelude.PRIM_ISNOT))
+    infix_operator(parser, TT_IN, 50, proc_data.std.generics.in_.name)
+    infix_operator(parser, TT_NOTIN, 50, proc_data.std.generics.notin.name)
     return parser
 
 
@@ -382,9 +402,15 @@ def __parse__():
 
 
         def main ->
-            match X
-                case (A, B, C) when A != 3 and B == 23 -> A - 12
-            end
+        A = false
+        match (1,2,3)
+            case (x, y, z) when z == 2 -> #first
+            case (x, y, z) when z == 3 and y == 3 -> #second
+            case (x, y, z) when z == 3 and y == 2 and x == 3 -> #third
+            case (x, y, z) when z == 3 and y == 2 and x == 1 and A == 2 -> #fourth
+            case (x, y, z) when z == 3 and y == 2 and x == 1 and not A is true -> #fifth
+            case _ -> 12
+        end
         end
     """
     import os
