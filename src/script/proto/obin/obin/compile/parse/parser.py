@@ -84,24 +84,23 @@ class BaseParser:
         return self.token_type == TT_ENDSTREAM
 
 
+
 class ExpressionParser(BaseParser):
     def __init__(self, proc_data):
         BaseParser.__init__(self)
-        self.allow_overloading = True
-        self.args_parser = args_parser_init(BaseParser())
         self.pattern_parser = pattern_parser_init(BaseParser())
+        self.guard_parser = guard_parser_init(BaseParser())
         self.name_parser = name_parser_init(BaseParser())
-
         expression_parser_init(proc_data, base_parser_init(self))
 
     def _on_open(self, state):
-        self.args_parser.open(state)
         self.pattern_parser.open(state)
+        self.guard_parser.open(state)
         self.name_parser.open(state)
 
     def _on_close(self):
-        self.args_parser.close()
         self.pattern_parser.close()
+        self.guard_parser.close()
         self.name_parser.close()
 
 
@@ -109,10 +108,10 @@ class ModuleParser(BaseParser):
     def __init__(self, proc_data):
         BaseParser.__init__(self)
 
-        self.args_parser = args_parser_init(BaseParser())
         self.load_parser = load_parser_init(BaseParser())
         self.generic_signature_parser = generic_signature_parser_init(BaseParser())
         self.pattern_parser = pattern_parser_init(BaseParser())
+        self.guard_parser = guard_parser_init(BaseParser())
         self.expression_parser = ExpressionParser(proc_data)
         self.name_parser = name_parser_init(BaseParser())
         self.import_names_parser = import_names_parser_init(BaseParser())
@@ -120,8 +119,8 @@ class ModuleParser(BaseParser):
         module_parser_init(base_parser_init(self))
 
     def _on_open(self, state):
-        self.args_parser.open(state)
         self.pattern_parser.open(state)
+        self.guard_parser.open(state)
         self.generic_signature_parser.open(state)
         self.load_parser.open(state)
         self.expression_parser.open(state)
@@ -129,28 +128,14 @@ class ModuleParser(BaseParser):
         self.import_names_parser.open(state)
 
     def _on_close(self):
-        self.args_parser.close()
         self.pattern_parser.close()
+        self.guard_parser.close()
         self.generic_signature_parser.close()
         self.load_parser.close()
         self.expression_parser.close()
         self.name_parser.close()
         self.import_names_parser.close()
 
-
-def args_parser_init(parser):
-    prefix(parser, TT_ELLIPSIS, prefix_nud)
-    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
-    prefix(parser, TT_LSQUARE, prefix_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly)
-
-    symbol(parser, TT_ASSIGN, None)
-    symbol(parser, TT_COMMA, None)
-    symbol(parser, TT_RPAREN, None)
-    symbol(parser, TT_RCURLY, None)
-    symbol(parser, TT_ARROW, None)
-    literal(parser, TT_NAME)
-    return parser
 
 def name_parser_init(parser):
     symbol(parser, TT_COMMA, None)
@@ -162,6 +147,7 @@ def name_parser_init(parser):
     prefix(parser, TT_BACKTICK, prefix_backtick)
     infix(parser, TT_COLON, 10, infix_name_pair)
     return parser
+
 
 def import_names_parser_init(parser):
     symbol(parser, TT_COMMA, None)
@@ -180,6 +166,7 @@ def load_parser_init(parser):
 
     return parser
 
+
 def generic_signature_parser_init(parser):
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_LPAREN, None)
@@ -187,6 +174,18 @@ def generic_signature_parser_init(parser):
     symbol(parser, TT_CASE, None)
     infix(parser, TT_OF, 10, infix_name_pair)
     literal(parser, TT_NAME)
+    return parser
+
+
+def guard_parser_init(parser):
+    parser = init_parser_literals(parser)
+    parser.allow_overloading = True
+    symbol(parser, TT_ARROW, None)
+    
+    prefix(parser, TT_SHARP, prefix_sharp)
+    infix(parser, TT_LPAREN, 90, infix_lparen)
+    infix(parser, TT_OR, 25, led_infix)
+    infix(parser, TT_AND, 30, led_infix)
     return parser
 
 
@@ -208,11 +207,16 @@ def pattern_parser_init(parser):
     symbol(parser, TT_ARROW, None)
     symbol(parser, TT_ASSIGN, None)
 
-    literal(parser, TT_NAME)
+    parser = init_parser_literals(parser)
+    return parser
+
+
+def init_parser_literals(parser):
     literal(parser, TT_INT)
     literal(parser, TT_FLOAT)
     literal(parser, TT_CHAR)
     literal(parser, TT_STR)
+    literal(parser, TT_NAME)
     literal(parser, TT_TRUE)
     literal(parser, TT_FALSE)
     literal(parser, TT_NIL)
@@ -221,15 +225,7 @@ def pattern_parser_init(parser):
 
 
 def base_parser_init(parser):
-    literal(parser, TT_INT)
-    literal(parser, TT_FLOAT)
-    literal(parser, TT_CHAR)
-    literal(parser, TT_STR)
-    literal(parser, TT_NAME)
-    literal(parser, TT_TRUE)
-    literal(parser, TT_FALSE)
-    literal(parser, TT_NIL)
-    literal(parser, TT_WILDCARD)
+    parser = init_parser_literals(parser)
 
     symbol(parser, TT_RSQUARE, None)
     symbol(parser, TT_ENDSTREAM, None)
@@ -256,9 +252,11 @@ def base_parser_init(parser):
 
     return parser
 
+
 def expression_parser_init(proc_data, parser):
+    parser.allow_overloading = True
     # OTHER OPERATORS ARE DECLARED IN PRELUDE
-    from obin.builtins import  prelude
+    from obin.builtins import prelude
 
     # 20
     infix(parser, TT_WHEN, 20, infix_when)
@@ -274,8 +272,8 @@ def expression_parser_init(proc_data, parser):
     infix_operator(parser, TT_NOTA, 50, proc_data.symbols.symbol_s(prelude.PRIM_NOTA))
     infix_operator(parser, TT_KINDOF, 50, proc_data.symbols.symbol_s(prelude.PRIM_KINDOF))
 
-    infix_operator(parser, TT_IS, 50,  proc_data.symbols.symbol_s(prelude.PRIM_IS))
-    infix_operator(parser, TT_ISNOT, 50,  proc_data.symbols.symbol_s(prelude.PRIM_ISNOT))
+    infix_operator(parser, TT_IS, 50, proc_data.symbols.symbol_s(prelude.PRIM_IS))
+    infix_operator(parser, TT_ISNOT, 50, proc_data.symbols.symbol_s(prelude.PRIM_ISNOT))
 
     infix_operator(parser, TT_IN, 50, proc_data.std.generics.in_.name)
     infix_operator(parser, TT_NOTIN, 50, proc_data.std.generics.notin.name)
@@ -373,32 +371,33 @@ def __parse__():
     source = """
         @infixl(`-`, `-`, 60)
         @infixl(`>=`, `>=`, 50)
+        @infixl(`==`, `==`, 50)
         @infixl(`+`, `+`, 60)
         @infixl(`-`, `-`, 60)
         @infixl(`%`, `%`, 65)
         @infixl(`*`, `*`, 65)
         @infixl(`/`, `/`, 65)
         @infixr(`::`, `::`, 70)
-        @infixl(`!=`, `++`, 70)
-        import lib_az:abc:module_ab as ab (cons, length)
-        import lib_az:abc:module_ab as ab2
-        import lib_az:abc:module_ab
-        import from lib_az:abc:module_ab
-        import from lib_az:abc:module_ab as ab (cons, length)
-        import from lib_az:abc:module_ab as ab hiding (cons, length)
-        import lib_az:abc:module_ab as ab hiding (cons, length)
+        @infixl(`!=`, `!=`, 70)
 
+
+        def main ->
+            match X
+                case (A, B, C) when A != 3 and B == 23 -> A - 12
+            end
+        end
     """
     import os
     script_dir = os.path.dirname(os.path.realpath(__file__))
     lib_path = os.path.realpath(os.path.join(script_dir, '../../../test/obin/__lib__'))
     process = newprocess([lib_path])
 
-    ast,scope = parse(process, None, source)
+    ast, scope = parse(process, None, source)
     print "************************** OPERATORS ****************************************"
     print scope.operators
     print "************************** AST ****************************************"
     print nodes.node_to_string(ast)
+
 
 # TODO DOUBLE DOT AS RANGE
 
@@ -424,5 +423,11 @@ if __name__ == "__main__":
     A[5];
 """
 """
-
+import lib_az:abc:module_ab as ab (cons, length)
+import lib_az:abc:module_ab as ab2
+import lib_az:abc:module_ab
+import from lib_az:abc:module_ab
+import from lib_az:abc:module_ab as ab (cons, length)
+import from lib_az:abc:module_ab as ab hiding (cons, length)
+import lib_az:abc:module_ab as ab hiding (cons, length)
 """

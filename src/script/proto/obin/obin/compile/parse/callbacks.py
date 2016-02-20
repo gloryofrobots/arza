@@ -468,15 +468,23 @@ def prefix_try(parser, op, node):
     advance_end(parser)
     return node_3(NT_TRY, __ntok(node), trybody, nodes.list_node(catches), finallybody)
 
+TERM_PATTERN = [TT_WHEN]
+TERM_GUARD = [TT_ARROW]
 
 def prefix_match(parser, op, node):
     exp = expression(parser, 0)
-
     pattern_parser = parser.pattern_parser
+    guard_parser = parser.guard_parser
     branches = []
     while pattern_parser.token_type == TT_CASE:
         advance_expected(pattern_parser, TT_CASE)
-        pattern = expression(pattern_parser, 0)
+
+        pattern = terminated_expression(pattern_parser, 0, TERM_PATTERN)
+        if parser.token_type == TT_WHEN:
+            advance(parser)
+            guard = terminated_expression(guard_parser, 0, TERM_GUARD)
+            pattern = node_2(NT_WHEN_NO_ELSE, __ntok(guard), pattern, guard)
+
         advance_expected(parser, TT_ARROW)
 
         body = statements(parser, TERM_CASE)
