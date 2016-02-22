@@ -8,20 +8,25 @@ TOKENS = [
   ("TT_OPERATOR", None),
   ("TT_NEWLINE", None,),
 
+  ("TT_FUN", "fun"),
+
+  ("TT_MATCH", "match"),
+  ("TT_CASE", "|"),
+
   ("TT_BREAK", "break"),
-  ("TT_CASE", "case"),
   ("TT_CONTINUE", "continue"),
-  ("TT_ELSE", "else"),
   ("TT_FOR", "for"),
   ("TT_WHILE", "while"),
+
+  ("TT_CONDITION", "condition"),
+  ("TT_OTHERWISE", "otherwise"),
   ("TT_IF", "if"),
+  ("TT_THEN", "then"),
+  ("TT_ELSE", "else"),
   ("TT_WHEN", "when"),
-  ("TT_ELIF", "elif"),
+
   ("TT_OF", "of"),
   ("TT_AS", "as"),
-  ("TT_MATCH", "match"),
-  ("TT_DEF", "def"),
-  ("TT_FUN", "fun"),
   ("TT_VAR", "var"),
   ("TT_LAZY", "lazy"),
   ("TT_AND", "and"),

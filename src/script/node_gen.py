@@ -21,11 +21,10 @@ NODES = [
   "NT_UNIT",
   "NT_COMMA",
 
-  "NT_DEF",
   "NT_FUN",
 
-  "NT_IF",
-  "NT_TERNARY_IF",
+  "NT_CONDITION",
+  "NT_TERNARY_CONDITION",
   "NT_WHEN",
   "NT_MATCH",
   "NT_TRY",

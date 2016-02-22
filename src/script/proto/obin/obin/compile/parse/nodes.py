@@ -254,7 +254,7 @@ def create_match_fail_node(basenode, val, var):
 
 
 def create_if_node(basenode, branches):
-    return node_1(nt.NT_IF, create_token_from_node(tt.TT_IF, "if", basenode), list_node(branches))
+    return node_1(nt.NT_CONDITION, create_token_from_node(tt.TT_IF, "if", basenode), list_node(branches))
 
 
 def create_empty_list_node(basenode):

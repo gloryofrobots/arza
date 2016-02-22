@@ -144,6 +144,7 @@ def name_parser_init(parser):
     symbol(parser, TT_RPAREN, None)
     literal(parser, TT_NAME)
     literal(parser, TT_INT)
+    symbol(parser, TT_CASE, None)
 
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_BACKTICK, prefix_backtick)
@@ -174,6 +175,7 @@ def generic_signature_parser_init(parser):
     symbol(parser, TT_LPAREN, None)
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_CASE, None)
+    symbol(parser, TT_ARROW, None)
     infix(parser, TT_OF, 10, infix_name_pair)
     literal(parser, TT_NAME)
     return parser
@@ -259,7 +261,6 @@ def base_parser_init(parser):
     symbol(parser, TT_LCURLY, None)
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_END, None)
-    symbol(parser, TT_ELSE, None)
     symbol(parser, TT_SEMI, None)
 
     # 10
@@ -282,6 +283,10 @@ def expression_parser_init(proc_data, parser):
     parser.allow_juxtaposition = True
     # OTHER OPERATORS ARE DECLARED IN PRELUDE
     from obin.builtins import prelude
+
+    symbol(parser, TT_ELSE, None)
+    symbol(parser, TT_CASE, None)
+    symbol(parser, TT_THEN, None)
 
     # 20
     infix(parser, TT_IF, 20, infix_if)
@@ -321,7 +326,8 @@ def expression_parser_init(proc_data, parser):
     prefix_operator(parser, TT_NOT, proc_data.std.generics.not_.name)
 
     prefix(parser, TT_THROW, stmt_single)
-    prefix(parser, TT_IF, prefix_if)
+    # prefix(parser, TT_IF, prefix_if)
+    prefix(parser, TT_CONDITION, prefix_condition)
 
     prefix(parser, TT_FUN, prefix_fun)
 
@@ -332,11 +338,9 @@ def expression_parser_init(proc_data, parser):
     STATEMENTS
     """
 
-    stmt(parser, TT_RETURN, stmt_single)
+    # stmt(parser, TT_RETURN, stmt_single)
     stmt(parser, TT_BREAK, stmt_loop_flow)
     stmt(parser, TT_CONTINUE, stmt_loop_flow)
-    stmt(parser, TT_WHILE, stmt_while)
-    stmt(parser, TT_FOR, stmt_for)
     stmt(parser, TT_WHEN, stmt_when)
 
     return parser
@@ -351,7 +355,7 @@ def module_parser_init(parser):
     stmt(parser, TT_MODULE, stmt_module)
 
     stmt(parser, TT_AT_SIGN, stmt_module_at)
-    prefix(parser, TT_DEF, prefix_def)
+    prefix(parser, TT_FUN, prefix_module_fun)
     return parser
 
 

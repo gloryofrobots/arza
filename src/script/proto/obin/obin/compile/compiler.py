@@ -1184,7 +1184,7 @@ def _compile_CALL(compiler, code, node):
 # MAIN SWITCH
 ####
 
-FIRST_PASS_FUNCS = [NT_DEF, NT_FUN, NT_GENERIC]
+FIRST_PASS_FUNCS = [NT_FUN, NT_GENERIC]
 NEW_SCOPE_NODES = [NT_MODULE, NT_SPECIFY]
 
 
@@ -1199,7 +1199,7 @@ def _compile_1(compiler, code, ast):
         ntype = node_type(ast)
         # FIRST_PASS_FUNCS
 
-        if ntype == NT_DEF or ntype == NT_FUN or ntype == NT_GENERIC:
+        if ntype == NT_FUN or ntype == NT_GENERIC:
             name = node_first(ast)
             if not nodes.is_empty_node(name):
                 symbol = _get_symbol_name_or_empty(compiler.process, name)
@@ -1269,14 +1269,12 @@ def _compile_node(compiler, code, node):
     elif NT_ASSIGN == ntype:
         _compile_ASSIGN(compiler, code, node)
 
-    elif NT_DEF == ntype:
-        _compile_DEF(compiler, code, node)
     elif NT_FUN == ntype:
         _compile_DEF(compiler, code, node)
 
-    elif NT_IF == ntype:
+    elif NT_CONDITION == ntype:
         _compile_IF(compiler, code, node)
-    elif NT_TERNARY_IF == ntype:
+    elif NT_TERNARY_CONDITION == ntype:
         _compile_WHEN(compiler, code, node)
     elif NT_WHEN == ntype:
         _compile_WHEN_NO_ELSE(compiler, code, node)

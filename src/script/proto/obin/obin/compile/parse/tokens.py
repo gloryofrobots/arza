@@ -66,14 +66,15 @@ RULES = [
     (token('/\*[^\*\/]*\*/'), -1),
     (keyword('break'), TT_BREAK),
     (keyword('continue'), TT_CONTINUE),
-    (keyword('else'), TT_ELSE),
     (keyword('for'), TT_FOR),
     (keyword('while'), TT_WHILE),
+    (keyword('condition'), TT_CONDITION),
+    (keyword('otherwise'), TT_OTHERWISE),
     (keyword('if'), TT_IF),
-    (keyword('elif'), TT_ELIF),
+    (keyword('else'), TT_ELSE),
+    (keyword('then'), TT_THEN),
     (keyword('of'), TT_OF),
     (keyword('match'), TT_MATCH),
-    (keyword('def'), TT_DEF),
     (keyword('fun'), TT_FUN),
     (keyword('end'), TT_END),
     (keyword('and'), TT_AND),
@@ -111,7 +112,7 @@ RULES = [
     (keyword('var'), TT_VAR),
     (keyword('lazy'), TT_LAZY),
 
-    (keyword('return'), TT_RETURN),
+    # (keyword('return'), TT_RETURN),
 
     (keyword('_'), TT_WILDCARD),
 
