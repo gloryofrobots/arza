@@ -36,6 +36,7 @@ class BaseParser:
         self.handlers = {}
         self.state = None
         self.allow_overloading = False
+        self.allow_juxtaposition = False
 
     def open(self, state):
         assert self.state is None
@@ -181,6 +182,7 @@ def generic_signature_parser_init(parser):
 def guard_parser_init(proc_data, parser):
     from obin.builtins import prelude
     parser.allow_overloading = True
+    parser.allow_juxtaposition = True
     parser = init_parser_literals(parser)
 
     symbol(parser, TT_COMMA, None)
@@ -220,6 +222,7 @@ def pattern_parser_init(parser):
     infix(parser, TT_OF, 10, led_infix)
     infix(parser, TT_AT_SIGN, 10, infix_at)
 
+    symbol(parser, TT_WHEN, None)
     symbol(parser, TT_CASE, None)
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_RPAREN, None)
@@ -276,11 +279,12 @@ def base_parser_init(parser):
 
 def expression_parser_init(proc_data, parser):
     parser.allow_overloading = True
+    parser.allow_juxtaposition = True
     # OTHER OPERATORS ARE DECLARED IN PRELUDE
     from obin.builtins import prelude
 
     # 20
-    infix(parser, TT_WHEN, 20, infix_when)
+    infix(parser, TT_IF, 20, infix_if)
 
     # 25
     infix(parser, TT_OR, 25, led_infix)

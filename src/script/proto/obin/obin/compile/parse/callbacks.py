@@ -19,7 +19,7 @@ NODE_TYPE_MAPPING = {
     TT_NAME: NT_NAME,
     TT_DEF: NT_DEF,
     TT_IF: NT_IF,
-    TT_WHEN: NT_WHEN,
+    TT_WHEN: NT_TERNARY_IF,
     TT_MATCH: NT_MATCH,
     TT_EXPORT: NT_EXPORT,
     TT_IMPORT: NT_IMPORT,
@@ -59,11 +59,6 @@ def _init_default_current_0(parser):
 ##############################################################
 
 #
-def compose(parser, node, left):
-    exp = expressions(parser, 0)
-    return node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), left, exp)
-
-
 def led_infix(parser, op, node, left):
     exp = expressions(parser, op.lbp)
     return node_2(__ntype(node), __ntok(node), left, exp)
@@ -107,11 +102,11 @@ def led_infixr_assign(parser, op, node, left):
     return node_2(__ntype(node), __ntok(node), left, exp)
 
 
-def infix_when(parser, op, node, left):
+def infix_if(parser, op, node, left):
     first = condition(parser)
     advance_expected(parser, TT_ELSE)
     exp = expressions(parser, 0)
-    return node_3(NT_WHEN, __ntok(node), first, left, exp)
+    return node_3(NT_TERNARY_IF, __ntok(node), first, left, exp)
 
 
 def infix_dot(parser, op, node, left):
@@ -404,11 +399,10 @@ def _parse_func_pattern(parser):
     if parser.token_type == TT_WHEN:
         advance(parser)
         guard = terminated_expression(parser.guard_parser, 0, TERM_GUARD)
-        pattern = node_2(NT_WHEN_NO_ELSE, __ntok(guard), pattern, guard)
+        pattern = node_2(NT_WHEN, __ntok(guard), pattern, guard)
 
     return pattern
 
-NODE_FUNC_NAME = [NT_NAME]
 
 def parse_function_variants(parser):
     funcs = []
@@ -479,16 +473,16 @@ TERM_GUARD = [TT_ARROW]
 
 
 def _parse_pattern(parser):
-    pattern = terminated_expression(parser.pattern_parser, 0, TERM_PATTERN)
+    pattern = expressions(parser.pattern_parser, 0, TERM_PATTERN)
     if parser.token_type == TT_WHEN:
         advance(parser)
         guard = terminated_expression(parser.guard_parser, 0, TERM_GUARD)
-        pattern = node_2(NT_WHEN_NO_ELSE, __ntok(guard), pattern, guard)
+        pattern = node_2(NT_WHEN, __ntok(guard), pattern, guard)
 
     return pattern
 
 def prefix_match(parser, op, node):
-    exp = expressions(parser, 0)
+    exp = expression(parser, 0)
     pattern_parser = parser.pattern_parser
     branches = []
     while pattern_parser.token_type == TT_CASE:
@@ -554,7 +548,7 @@ def stmt_when(parser, op, node):
     cond = prefix_condition(parser)
     body = statements(parser, TERM_BLOCK)
     advance_end(parser)
-    return node_2(NT_WHEN_NO_ELSE, __ntok(node), cond, body)
+    return node_2(NT_WHEN, __ntok(node), cond, body)
 
 
 ###############################################################

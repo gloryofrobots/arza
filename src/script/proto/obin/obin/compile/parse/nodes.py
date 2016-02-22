@@ -281,7 +281,7 @@ def create_call_node_s(basenode, funcname, exps):
 
 
 def create_when_no_else_node(basenode, cond, body):
-    return node_2(nt.NT_WHEN_NO_ELSE, create_token_from_node(tt.TT_WHEN, "when", basenode), cond, body)
+    return node_2(nt.NT_WHEN, create_token_from_node(tt.TT_WHEN, "when", basenode), cond, body)
 
 
 # CALL TO OPERATOR FUNCS

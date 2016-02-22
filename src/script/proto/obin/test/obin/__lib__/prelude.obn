@@ -29,26 +29,22 @@
 //Symbols can also be created using symbol(),
 //which takes any number of arguments and creates a new symbol by concatenating their string representations together:
 
-//def f (x,y,z) -> (x,y,z) end
-//
-//def f2 -> 42 end
-
-def map
-| f [] -> []
-| f [hd, ...tl] -> f hd :: (map f tl)
--------------------------------------
 
 def main _ ->
-//    foo (2 + 2) a.b (x.y.z 1) (hello () 1)
-//   (F 1 (F2 2 3 4 5))
-//
-    f (-1)
-
-//    (1,2,3)
-//    F1 a 1 2 (b 2 3)
-//    F2 a 1 2  b 2 3
-//    F3 a 1 2 (b, 2, 3)
+    [1,2,3,4, (foo 1 2 3), 5]
 ---
 
 
-
+//def map
+//| f [] -> []
+//| f [hd, ...tl] -> f hd :: (map f tl)
+//-------------------------------------
+//    match (1,2,3)
+//    | (x, y, z) when z == 2 -> #first
+//    | (x, y, z) when z == 3 and y == 3 -> #second
+//    | (x, y, z) when z == 3 and y == 2 and x == 3 -> #third
+//    | (x, y, z) when z == 3 and y == 2 and x == 1 and A == 2 -> #fourth
+//    | (x, y, z) when z == 3 and y == 2 and x == 1 and not A is true and greater_then_ten 9 -> #fifth
+//    | (x, y, z) when z == 3 and y == 2 and x == 1 and A is true or greater_then_ten 11 -> #sixth
+//    | _ -> 12
+//    -------------------------------------------------------------------------------------------------

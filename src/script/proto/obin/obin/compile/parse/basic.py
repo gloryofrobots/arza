@@ -13,6 +13,9 @@ TERM_CASE = [TT_CASE] + TERM_BLOCK
 TERM_CATCH = [TT_CATCH, TT_FINALLY] + TERM_BLOCK
 TERM_TRY = [TT_CATCH]
 
+NODE_FUNC_NAME = [NT_NAME]
+NODE_DOT = [NT_NAME, NT_INT]
+
 LOOP_CONTROL_TOKENS = [TT_END, TT_ELSE, TT_ELIF, TT_CASE]
 
 
@@ -361,12 +364,12 @@ def closed_expression(parser, _rbp):
 
 
 def expect_expression(parser, _rbp, expected_types):
-    exp, _ = expression(parser, _rbp)
+    exp = expression(parser, _rbp)
     check_node_types(parser, exp, expected_types)
     return exp
 
 
-def expression(parser, _rbp):
+def _expression(parser, _rbp, terminators=None):
     previous = parser.node
     # print "******"
     # print "rbp ", _rbp
@@ -383,6 +386,10 @@ def expression(parser, _rbp):
         _lbp = node_lbp(parser, parser.node)
         # juxtaposition support
         if _lbp < 0:
+            if terminators is not None:
+                if parser.token_type in terminators:
+                    return left, 0
+
             return left, _lbp
 
         if _rbp >= _lbp:
@@ -395,29 +402,38 @@ def expression(parser, _rbp):
     return left, 0
 
 
-def _juxtaposition_expression(parser, _rbp):
-    expr, _lbp = expression(parser, _rbp)
+def expression(parser, _rbp):
+    exp, _lbp = _expression(parser, _rbp)
+
+    if _lbp < 0:
+        return parse_error(parser, u"Invalid use of juxtaposition", parser.node)
+
+    return exp
+
+
+def _juxtaposition_expression(parser, _rbp, terminators):
+    expr, _lbp = _expression(parser, _rbp, terminators)
     if _lbp < 0:
         if _lbp == -2:
             advance(parser)
         return nodes.node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), expr,
-                            _juxtaposition_expression(parser, _rbp))
+                            _juxtaposition_expression(parser, _rbp, terminators))
     return expr
 
 
-def expressions(parser, _rbp, terminators=None, juxtaposition=True):
-    expr, _lbp = expression(parser, _rbp)
+def expressions(parser, _rbp, terminators=None):
+    expr, _lbp = _expression(parser, _rbp, terminators)
 
     if _lbp == -1:
-        if terminators is not None:
-            if parser.token_type in terminators:
-                return expr
-        if not juxtaposition:
-            parse_error(parser, u"Invalid syntax, unknown juxtaposition", parser.node)
+        if not parser.allow_juxtaposition:
+            parse_error(parser, u"Invalid juxtaposition syntax", parser.node)
 
-        return nodes.node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), expr,
-                            _juxtaposition_expression(parser, _rbp))
-    return expr
+        expr = nodes.node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), expr,
+                            _juxtaposition_expression(parser, _rbp, terminators))
+        expr = process_juxtaposition_expression(parser, expr)
+        return expr
+    else:
+        return expr
 
 
 # SAME AS EXPRESSION BUT WITH TERMINATION CONDITION

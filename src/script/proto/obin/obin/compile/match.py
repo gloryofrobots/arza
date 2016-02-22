@@ -269,7 +269,7 @@ def _process_pattern(state, pattern, patterns, path):
         return _process_of(state, pattern, patterns, path)
     elif ntype == NT_WILDCARD:
         return _process_wildcard(state, pattern, patterns, path)
-    elif ntype == NT_WHEN_NO_ELSE:
+    elif ntype == NT_WHEN:
         return _process_when_no_else(state, pattern, patterns, path)
     elif ntype in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_NIL, NT_STR, NT_CHAR, NT_SYMBOL]:
         return _process_literal(state, pattern, patterns, path)

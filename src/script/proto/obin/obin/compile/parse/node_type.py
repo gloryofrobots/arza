@@ -19,8 +19,8 @@ NT_COMMA = 16
 NT_DEF = 17
 NT_FUN = 18
 NT_IF = 19
-NT_WHEN = 20
-NT_WHEN_NO_ELSE = 21
+NT_TERNARY_IF = 20
+NT_WHEN = 21
 NT_MATCH = 22
 NT_TRY = 23
 NT_MODULE = 24
@@ -60,7 +60,7 @@ NT_OR = 57
 # ************************ OBIN NODES REPR *****************************
 __NT_REPR__ = ["NT_GROUP", "NT_GOTO", "NT_TRUE", "NT_FALSE", "NT_NIL", "NT_INT", "NT_FLOAT", "NT_STR", "NT_CHAR",
                "NT_WILDCARD", "NT_NAME", "NT_SYMBOL", "NT_MAP", "NT_LIST", "NT_TUPLE", "NT_UNIT", "NT_COMMA", "NT_DEF",
-               "NT_FUN", "NT_IF", "NT_WHEN", "NT_WHEN_NO_ELSE", "NT_MATCH", "NT_TRY", "NT_MODULE", "NT_IMPORT",
+               "NT_FUN", "NT_IF", "NT_TERNARY_IF", "NT_WHEN", "NT_MATCH", "NT_TRY", "NT_MODULE", "NT_IMPORT",
                "NT_IMPORT_HIDING", "NT_IMPORT_FROM", "NT_IMPORT_FROM_HIDING", "NT_EXPORT", "NT_LOAD", "NT_TRAIT",
                "NT_GENERIC", "NT_SPECIFY", "NT_BIND", "NT_RETURN", "NT_THROW", "NT_BREAK", "NT_CONTINUE", "NT_FOR",
                "NT_WHILE", "NT_REST", "NT_ASSIGN", "NT_CALL", "NT_JUXTAPOSITION", "NT_CALL_MEMBER", "NT_LOOKUP",

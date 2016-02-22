@@ -1276,9 +1276,9 @@ def _compile_node(compiler, code, node):
 
     elif NT_IF == ntype:
         _compile_IF(compiler, code, node)
-    elif NT_WHEN == ntype:
+    elif NT_TERNARY_IF == ntype:
         _compile_WHEN(compiler, code, node)
-    elif NT_WHEN_NO_ELSE == ntype:
+    elif NT_WHEN == ntype:
         _compile_WHEN_NO_ELSE(compiler, code, node)
     elif NT_MATCH == ntype:
         _compile_MATCH(compiler, code, node)
