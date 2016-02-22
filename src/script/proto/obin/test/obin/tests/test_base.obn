@@ -1,15 +1,15 @@
 import affirm
 
-fun test() ->
+fun test () ->
     t1 = (1, "Hello", 35.44555)
     affirm:is_equal t1, (1, "Hello", 35.44555)
     affirm:is_equal t1.[0] 1
     affirm:is_equal t1.[1] "Hello"
     affirm:is_equal t1.[2] 35.44555
     affirm:is_equal (1, "Hello", 35.44555).[2],  35.44555
-    affirm:is_equal (1,2, ["Alice", "Bob", (45,), 54.000000001]).[2], ["Alice", "Bob", (45,), 54.000000001]
+    affirm:is_equal (1,2, ["Alice", "Bob", (45,), 54.000000001]).[2] ["Alice", "Bob", (45,), 54.000000001]
 
-    affirm:is_equal (1,2, ["Alice", "Bob", (45,), 54.000000001]).[2], ["Alice", "Bob", (45,), 54.000000001]
+    affirm:is_equal (1,2, ["Alice", "Bob", (45,), 54.000000001]).[2] ["Alice", "Bob", (45,), 54.000000001]
 
     m1 = {name="XXX"}
     affirm:is_equal {name="XXX"}.name "XXX"
@@ -38,56 +38,40 @@ fun test() ->
     affirm:is_equal "++++ ---- <> $$" #"++++ ---- <> $$"
 
     x = 12
+    affirm:is_equal condition
+                    | x == 13 -> 1 + 1
+                    | x == 14 -> 2 + 2
+                    | x == 15 -> 3 + 3
+                    | otherwise -> 4 + 4
+                    ---,
+                    8
 
-    print condition
-    | x == 13 -> 1 + 1
-    | x == 14 -> 2 + 2
-    | x == 15 -> 3 + 3
-    | otherwise -> 4 + 4
-    -------------------
 
     A = (1,2,3,4,5,6)
+    l = []
     for x in A
-        print x
-    -----------
+        l = x :: l
+    ---
+    affirm:is_equal l [6,5,4,3,2,1]
 
-//    x = 10
-//    while x > 0
-//        x = x - 1
-//        print (x)
-//    ------------
-
-//    x = 12
-//    print if x == 13, 1 + 1, elif x == 14, 2 + 2, else 4 + 4 end
-//    x = 10
-//    while x > 0, x = x - 1, print(x), end
-
-    for i in range 10 20; print(i) end
-
-    ////////////////////////////////////// ONE LINE
+    for x1 in range 10 20; l = x1 :: l end
+    affirm:is_equal l [19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 6, 5, 4, 3, 2, 1]
 
     A = (1, 2, 3, 4, 5, 6, 35, 110, 122)
+    l1 = []
     for a in A
         when a == 35
            continue
-        end
+        ---
 
         when a > 115
             when 1 < 2
                 break
-            end
-        end
-        print(a)
-    end
+            ---
+        ---
+        l1 = a :: l1
+    ---
 
-//    x = 20
-//    while x > 0
-//        x = x - 5
-//        when x == 10
-//            print("SKIP", x)
-//            continue
-//        end
-//        print("X", x)
-//    end
+    affirm:is_equal l1 [110, 6, 5, 4, 3, 2, 1]
 end
 
