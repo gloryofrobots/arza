@@ -355,9 +355,69 @@ def endofexpression(parser):
 
 
 def closed_expression(parser, _rbp):
-    res = expression(parser, _rbp)
+    res = expressions(parser, _rbp)
     endofexpression(parser)
     return res
+
+
+def expect_expression(parser, _rbp, expected_types):
+    exp, _ = expression(parser, _rbp)
+    check_node_types(parser, exp, expected_types)
+    return exp
+
+
+def expression(parser, _rbp):
+    previous = parser.node
+    # print "******"
+    # print "rbp ", _rbp
+    # print "previous", previous
+
+    advance(parser)
+
+    left = nud(parser, previous)
+    # print "left", left.value
+    while True:
+        if parser.is_newline_occurred:
+            break
+
+        _lbp = node_lbp(parser, parser.node)
+        # juxtaposition support
+        if _lbp < 0:
+            return left, _lbp
+
+        if _rbp >= _lbp:
+            break
+        previous = parser.node
+        advance(parser)
+        left = node_led(parser, previous, left)
+
+    assert left is not None
+    return left, 0
+
+
+def _juxtaposition_expression(parser, _rbp):
+    expr, _lbp = expression(parser, _rbp)
+    if _lbp < 0:
+        if _lbp == -2:
+            advance(parser)
+        return nodes.node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), expr,
+                            _juxtaposition_expression(parser, _rbp))
+    return expr
+
+
+def expressions(parser, _rbp, terminators=None, juxtaposition=True):
+    expr, _lbp = expression(parser, _rbp)
+
+    if _lbp == -1:
+        if terminators is not None:
+            if parser.token_type in terminators:
+                return expr
+        if not juxtaposition:
+            parse_error(parser, u"Invalid syntax, unknown juxtaposition", parser.node)
+
+        return nodes.node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), expr,
+                            _juxtaposition_expression(parser, _rbp))
+    return expr
 
 
 # SAME AS EXPRESSION BUT WITH TERMINATION CONDITION
@@ -383,75 +443,56 @@ def terminated_expression(parser, _rbp, token_types):
     return left
 
 
-def _expression(parser, _rbp):
-    previous = parser.node
-    # print "******"
-    # print "rbp ", _rbp
-    # print "previous", previous
-
-    advance(parser)
-
-    left = nud(parser, previous)
-    # print "left", left.value
-    while True:
-        if parser.is_newline_occurred:
-            break
-        _lbp = node_lbp(parser, parser.node)
-        if _lbp == - 1:
-            return left, True
-        if _lbp == -2:
-            advance(parser)
-            return left, True
-        if _rbp >= _lbp:
-            break
-        previous = parser.node
-        advance(parser)
-        left = node_led(parser, previous, left)
-
-    assert left is not None
-    return left, False
-
+# def flatten_comma(parser, node, commas_as_tuples):
+#     ntype = nodes.node_type(node)
+#     if ntype == NT_COMMA:
+#         first = nodes.node_first(node)
+#         second = nodes.node_second(node)
+#         head = flatten_comma(parser, first, commas_as_tuples)
+#         tail = flatten_comma(parser, second, commas_as_tuples)
+#         return plist.cons(head, tail)
+#     else:
+#         return nodes.list_node([finalize_expression(node, commas_as_tuples)])
 
 def flatten_juxtaposition(parser, node):
     ntype = nodes.node_type(node)
-    if ntype == NT_JUXTAPOSITION:
+    if ntype == NT_JUXTAPOSITION or ntype == NT_COMMA:
         first = nodes.node_first(node)
         second = nodes.node_second(node)
+        head = flatten_juxtaposition(parser, first)
         tail = flatten_juxtaposition(parser, second)
-        return plist.cons(first, tail)
+        return plist.concat(head, tail)
     else:
         return nodes.list_node([node])
 
 
-def flatten_comma(parser, node):
+def arg_declaration_expression(parser, terminators):
+    node = expressions(parser, 0, terminators)
     ntype = nodes.node_type(node)
-    if ntype == NT_COMMA:
-        first = nodes.node_first(node)
-        second = nodes.node_second(node)
-        head = flatten_comma(parser, first)
-        tail = flatten_comma(parser, second)
-        return plist.cons(head, tail)
+    if ntype == NT_JUXTAPOSITION:
+        items = flatten_juxtaposition(parser, node)
+        return nodes.node_1(NT_TUPLE, nodes.node_token(node), items)
     else:
-        return nodes.list_node([node])
+        return nodes.node_1(NT_TUPLE, nodes.node_token(node), nodes.list_node([node]))
 
-def finalize_expression(parser, node):
-    if nodes.node_type(node) == NT_JUXTAPOSITION:
+
+def process_juxtaposition_expression(parser, node):
+    ntype = nodes.node_type(node)
+    if ntype == NT_JUXTAPOSITION:
         caller = nodes.node_first(node)
         if nodes.node_type(caller) == NT_JUXTAPOSITION:
             parse_error(parser, u"Invalid use of juxtaposition operator", caller)
         args = nodes.node_second(node)
         flatten_arg = flatten_juxtaposition(parser, args)
         return nodes.node_2(NT_CALL, nodes.node_token(node), caller, flatten_arg)
+    # elif ntype == NT_COMMA:
+    #     if not commas_as_tuples:
+    #         parse_error(parser, u"Invalid use of comma operator", node)
+    #
+    #     args = flatten_comma(parser, node, commas_as_tuples)
+    #     return nodes.node_1(NT_TUPLE, nodes.node_token(node), args)
     else:
         return node
-
-
-def expression(parser, _rbp):
-    expr, is_juxtposition = _expression(parser, _rbp)
-    if is_juxtposition:
-        return nodes.node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), expr,
-                            expression(parser, _rbp))
-    return expr
 
 
 def expression_2(parser, _rbp):
@@ -479,7 +520,7 @@ def expression_2(parser, _rbp):
 
 def literal_expression(parser):
     # TODO WHY 70 here?!!!!
-    return expression(parser, 70)
+    return expressions(parser, 70)
 
 
 def literal_terminated_expression(parser):
@@ -497,10 +538,10 @@ def statement(parser):
         endofexpression(parser)
         return value
 
-    value = expression(parser, 0)
+    value = expressions(parser, 0)
     endofexpression(parser)
     # return value
-    return finalize_expression(parser, value)
+    return process_juxtaposition_expression(parser, value)
 
 
 def token_is_one_of(parser, types):
@@ -566,14 +607,14 @@ def is_assignment_node(node):
 
 
 def condition(parser):
-    node = expression(parser, 0)
+    node = expressions(parser, 0)
     if is_assignment_node(node):
         parse_error(parser, u"Assignment operators not allowed in conditions", node)
     return node
 
 
 def prefix_condition(parser):
-    node = expression(parser, 0)
+    node = expressions(parser, 0)
     if is_assignment_node(node):
         parse_error(parser, u"Assignment operators not allowed in conditions", node)
     # call endofexpression to allow one line prefixes like if x == 1, x end

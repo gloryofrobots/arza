@@ -73,7 +73,6 @@ RULES = [
     (keyword('elif'), TT_ELIF),
     (keyword('of'), TT_OF),
     (keyword('match'), TT_MATCH),
-    (keyword('case'), TT_CASE),
     (keyword('def'), TT_DEF),
     (keyword('fun'), TT_FUN),
     (keyword('end'), TT_END),
@@ -124,6 +123,9 @@ RULES = [
     (char_const, TT_CHAR),
     (backtick_const, TT_BACKTICK),
     (name, TT_NAME),
+
+    (token('\|'), TT_CASE),
+    (token('---[-]*'), TT_END),
 
     (token('\-\>'), TT_ARROW),
     (token('\.\.\.'), TT_ELLIPSIS),

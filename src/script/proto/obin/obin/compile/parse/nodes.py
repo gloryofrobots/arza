@@ -241,6 +241,8 @@ def create_wildcard_node(basenode):
 def create_unit_node(basenode):
     return node_0(nt.NT_UNIT, create_token_from_node(tt.TT_LPAREN, "(", basenode))
 
+# def create_tuple_with_unit_node(basenode):
+#     return create_tuple_node(basenode, node_0(nt.NT_UNIT, create_token_from_node(tt.TT_LPAREN, "(", basenode)))
 
 def create_tuple_node(basenode, elements):
     return node_1(nt.NT_TUPLE, create_token_from_node(tt.TT_LPAREN, "(", basenode), list_node(elements))

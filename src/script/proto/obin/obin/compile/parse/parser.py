@@ -139,6 +139,7 @@ class ModuleParser(BaseParser):
 
 def name_parser_init(parser):
     symbol(parser, TT_COMMA, None)
+    symbol(parser, TT_WILDCARD, None)
     symbol(parser, TT_RPAREN, None)
     literal(parser, TT_NAME)
     literal(parser, TT_INT)
@@ -299,6 +300,7 @@ def expression_parser_init(proc_data, parser):
     infix_operator(parser, TT_NOTIN, 50, proc_data.std.generics.notin.name)
 
     infix(parser, TT_DOT, 70, infix_dot)
+    # infix(parser, TT_COMMA, 90, led_infix)
     infix(parser, TT_COMMA, -2, None)
 
     # 80
