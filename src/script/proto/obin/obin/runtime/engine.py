@@ -30,7 +30,7 @@ def evaluate_file(process, filename):
         return e.signal
 
     main = api.at(module, space.newsymbol(process, u"main"))
-    result = process.subprocess(main, space.newtuple([]))
+    result = process.subprocess(main, space.newtuple([space.newtuple([])]))
 
     if process.is_terminated():
         # error here

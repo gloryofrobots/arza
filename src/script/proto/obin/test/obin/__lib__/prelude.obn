@@ -21,8 +21,24 @@
 @infixr(`::`, `::`, 70)
 @infixl(`++`, `++`, 70)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////
 //TODO FIX IT
 length = ___length
+//import affirm
 
 //generic _and_
 //| t1 of True, t2 of True -> True
@@ -42,7 +58,10 @@ length = ___length
 //-------------------------------------
 
 //fun main _ ->
-//    affirm.is_equal(~ -9171, 9170)
+//    condition
+//    | val1 == val2 -> fail [val1, "==", val2]
+//    | otherwise ->  true
+//    ---
 //---
 
 

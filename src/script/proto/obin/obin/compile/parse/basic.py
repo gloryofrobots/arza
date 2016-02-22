@@ -43,7 +43,11 @@ def parser_error_unknown(parser, position):
 
 
 def parse_error(parser, message, node):
-    line = get_line(parser.ts.src, api.to_i(nodes.node_line(node)))
+    if nodes.node_token_type(node) == TT_ENDSTREAM:
+        line = u"Unclosed top level statement"
+    else:
+        line = get_line(parser.ts.src, api.to_i(nodes.node_line(node)))
+
     return error.throw(error.Errors.PARSE,
                        space.newtuple([
                            space.newtuple([nodes.node_position(node),
@@ -438,6 +442,9 @@ def expressions(parser, _rbp, terminators=None):
     expr, _lbp = _expression(parser, _rbp, terminators)
 
     if _lbp == -1:
+        if parser.break_on_juxtaposition:
+            return expr
+
         if not parser.allow_juxtaposition:
             parse_error(parser, u"Invalid juxtaposition syntax", parser.node)
 

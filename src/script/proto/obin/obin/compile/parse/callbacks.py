@@ -151,25 +151,25 @@ def infix_name_pair(parser, op, node, left):
     return node_2(__ntype(node), __ntok(node), left, name)
 
 
-def infix_lparen(parser, op, node, left):
-    items = []
-    if parser.token_type != TT_RPAREN:
-        while True:
-            items.append(expressions(parser, 0))
-            if parser.token_type != TT_COMMA:
-                break
-
-            advance_expected(parser, TT_COMMA)
-
-    advance_expected(parser, TT_RPAREN)
-
-    if nodes.node_token_type(left) == TT_DOT:
-        return node_3(NT_CALL_MEMBER, __ntok(node),
-                      nodes.node_first(left),
-                      nodes.node_second(left),
-                      nodes.list_node(items))
-    else:
-        return node_2(NT_CALL, __ntok(node), left, nodes.list_node(items))
+# def infix_lparen(parser, op, node, left):
+#     items = []
+#     if parser.token_type != TT_RPAREN:
+#         while True:
+#             items.append(expressions(parser, 0))
+#             if parser.token_type != TT_COMMA:
+#                 break
+#
+#             advance_expected(parser, TT_COMMA)
+#
+#     advance_expected(parser, TT_RPAREN)
+#
+#     if nodes.node_token_type(left) == TT_DOT:
+#         return node_3(NT_CALL_MEMBER, __ntok(node),
+#                       nodes.node_first(left),
+#                       nodes.node_second(left),
+#                       nodes.list_node(items))
+#     else:
+#         return node_2(NT_CALL, __ntok(node), left, nodes.list_node(items))
 
 
 def infix_at(parser, op, node, left):
@@ -670,7 +670,7 @@ def stmt_import(parser, op, node):
     else:
         ntype1 = NT_IMPORT
 
-    imported = expression(parser.load_parser, 0, [TT_LPAREN, TT_HIDING])
+    imported = expression(parser.import_parser, 0, [TT_LPAREN, TT_HIDING])
     if parser.token_type == TT_HIDING:
         hiding = True
         if ntype1 == NT_IMPORT:

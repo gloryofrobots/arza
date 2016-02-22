@@ -37,6 +37,7 @@ class BaseParser:
         self.state = None
         self.allow_overloading = False
         self.allow_juxtaposition = False
+        self.break_on_juxtaposition = False
 
     def open(self, state):
         assert self.state is None
@@ -109,7 +110,7 @@ class ModuleParser(BaseParser):
     def __init__(self, proc_data):
         BaseParser.__init__(self)
 
-        self.load_parser = load_parser_init(BaseParser())
+        self.import_parser = import_parser_init(BaseParser())
         self.generic_signature_parser = generic_signature_parser_init(BaseParser())
         self.pattern_parser = pattern_parser_init(BaseParser())
         self.guard_parser = guard_parser_init(proc_data, BaseParser())
@@ -123,7 +124,7 @@ class ModuleParser(BaseParser):
         self.pattern_parser.open(state)
         self.guard_parser.open(state)
         self.generic_signature_parser.open(state)
-        self.load_parser.open(state)
+        self.import_parser.open(state)
         self.expression_parser.open(state)
         self.name_parser.open(state)
         self.import_names_parser.open(state)
@@ -132,13 +133,14 @@ class ModuleParser(BaseParser):
         self.pattern_parser.close()
         self.guard_parser.close()
         self.generic_signature_parser.close()
-        self.load_parser.close()
+        self.import_parser.close()
         self.expression_parser.close()
         self.name_parser.close()
         self.import_names_parser.close()
 
 
 def name_parser_init(parser):
+    parser.break_on_juxtaposition = True
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_WILDCARD, None)
     symbol(parser, TT_RPAREN, None)
@@ -161,7 +163,7 @@ def import_names_parser_init(parser):
     return parser
 
 
-def load_parser_init(parser):
+def import_parser_init(parser):
     symbol(parser, TT_COMMA, None)
     infix(parser, TT_COLON, 10, infix_name_pair)
     infix(parser, TT_AS, 20, infix_name_pair)
@@ -171,6 +173,7 @@ def load_parser_init(parser):
 
 
 def generic_signature_parser_init(parser):
+    parser.break_on_juxtaposition = True
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_LPAREN, None)
     symbol(parser, TT_RPAREN, None)
@@ -202,7 +205,6 @@ def guard_parser_init(proc_data, parser):
 
     infix(parser, TT_DOT, 70, infix_dot)
     infix(parser, TT_COLON, 80, infix_name_pair)
-    infix(parser, TT_LPAREN, 90, infix_lparen)
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
 
@@ -215,6 +217,8 @@ def guard_parser_init(proc_data, parser):
 
 
 def pattern_parser_init(parser):
+    parser.break_on_juxtaposition = True
+
     prefix(parser, TT_ELLIPSIS, prefix_nud)
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
@@ -258,7 +262,6 @@ def base_parser_init(parser):
     symbol(parser, TT_ARROW, None)
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_RCURLY, None)
-    symbol(parser, TT_LCURLY, None)
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_END, None)
     symbol(parser, TT_SEMI, None)
@@ -313,8 +316,8 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_COMMA, -2, None)
 
     # 80
-    infix(parser, TT_LCURLY, 80, infix_lcurly)
-    infix(parser, TT_LSQUARE, 80, infix_lsquare)
+    infix(parser, TT_INFIX_LCURLY, 80, infix_lcurly)
+    infix(parser, TT_INFIX_LSQUARE, 80, infix_lsquare)
 
     # 90
     # infix(parser, TT_LPAREN, 90, infix_lparen)
@@ -370,6 +373,7 @@ def newtokenstream(source):
     tokens_iter = lx.tokens()
     return TokenStream(tokens_iter, source)
 
+PARSE_DEBUG = False
 
 def parse(process, env, src):
     parser = process.parser
@@ -383,14 +387,16 @@ def parse(process, env, src):
 
     parser.close()
     # print stmts
-    print "************************** OPERATORS ****************************************"
-    print scope.operators
-    print "************************** AST ****************************************"
-    ast = str(nodes.node_to_string(stmts))
-    f = open('ast.json', 'w')
-    f.write(ast)
-    f.close()
-    raise SystemExit()
+    if PARSE_DEBUG:
+        print "************************** OPERATORS ****************************************"
+        print scope.operators
+        print "************************** AST ****************************************"
+        ast = str(nodes.node_to_string(stmts))
+        f = open('ast.json', 'w')
+        f.write(ast)
+        f.close()
+        raise SystemExit()
+
     return stmts, scope
 
 
