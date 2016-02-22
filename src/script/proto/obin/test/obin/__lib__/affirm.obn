@@ -1,22 +1,27 @@
-def is_equal_batch(fn, ...calls) ->
-    _batch(is_equal, fn, calls);
+fun is_equal_batch(fn, ...calls) ->
+    _batch(is_equal, fn, calls)
+---
 
-def _batch(checker, fn, calls) ->
+fun _batch(checker, fn, calls) ->
     for call in calls
         checker(apply(fn, call[0]), call[1])
-    ;;
+    ---
+---
 
-def fail(error) ->
+
+fun fail(error) ->
     throw (#AffirmationError, error);
+---
 
-def is_not_equal(val1, val2) ->
+fun is_not_equal(val1, val2) ->
     if val1 == val2
         fail([val1, "==", val2])
     else
         true
-    ;;
+    ---
+---
 
-def is_equal
+fun is_equal
     case (val1 of Float, val2 of Float) ->
         is_equal_float(val1, val2)
     case (val1, val2) ->
@@ -24,53 +29,56 @@ def is_equal
             fail([val1, "!=", val2])
         else
             true
-    ;;
+    ---
+---
 
-def _abs(v) ->
-    if v < 0
-        - 1 * v
-    else
-        v
-    ;;
+fun _abs(v) ->
+    condition
+    | v < 0 -> - 1 * v
+    | otherwise -> v
+    ---
+---
 
-def is_equal_float
-    case (val1, val2) -> is_equal_float(val1, val2, 0.0001)
-    case (val1, val2, delta) ->
-        try
-            is_true(_abs(val1) - _abs(val2) < delta)
-        catch e ->
-            fail([val1, "!=", val2])
-     ;;
+fun is_equal_float
+| val1 val2 ->
+    is_equal_float val1, val2, 0.0001
+| val1 val2 delta ->
+    try
+        is_true ((_abs val1) - (_abs val2)) < delta
+    | e ->
+        fail [val1, "!=", val2]
+    ---
+---
 
-def is_same(val1, val2) ->
-    if val1 isnot val2
-        fail([val1, "isnot", val2])
-    else
-        true
-    ;;
+fun is_same(val1, val2) ->
+    condition
+    | val1 isnot val2 -> fail([val1, "isnot", val2])
+    | otherwise -> true
+    ---
+---
 
-def isnot_same(val1, val2) ->
-    if val1 is val2
-        fail([val1, "is", val2])
-    else
-        true
-    ;;
+fun isnot_same(val1, val2) ->
+    condition
+    | val1 is val2 -> fail([val1, "is", val2])
+    | otherwise -> true
+    ---
+---
 
-def is_true(val1) ->
-    is_same(val1, true);
+fun is_true(val1) -> is_same(val1, true)
+---
 
-def is_false(val1) ->
-    is_same(val1, false);
+fun is_false(val1) -> is_same(val1, false)
+---
 
-def is_throw(fn, args) ->
+fun is_throw(fn, args) ->
     try
         apply(fn, args)
-    catch e ->
+    | e ->
         return e
-    end
+    ----------
 
     fail(["exception expected", fn])
-end
+-----------
 
-def is_throw_expected(fn, args, exc) ->
-    is_equal(is_throw(fn, args), exc);
+fun is_throw_expected(fn, args, exc) -> is_equal(is_throw(fn, args), exc)
+---

@@ -476,6 +476,21 @@ def stmt_when(parser, op, node):
     advance_end(parser)
     return node_2(NT_WHEN, __ntok(node), cond, body)
 
+def stmt_for(parser, op, node):
+    # set big lbp to overriding IN binding power
+    check_token_type(parser, TT_NAME)
+    var = _init_default_current_0(parser)
+    vars = nodes.list_node([var])
+    advance(parser)
+    advance_expected(parser, TT_IN)
+    exp = expressions(parser, 0)
+    # CALL endofexpression for one line for i in 1..2; i end
+    endofexpression(parser)
+
+    stmts = statements(parser, TERM_BLOCK)
+
+    advance_end(parser)
+    return node_3(NT_FOR, __ntok(node), vars, exp, stmts)
 
 def _parse_func_pattern(parser):
     pattern = arg_declaration_expression(parser.pattern_parser, [TT_WHEN, TT_ARROW])

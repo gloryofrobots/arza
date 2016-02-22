@@ -342,6 +342,7 @@ def expression_parser_init(proc_data, parser):
     stmt(parser, TT_BREAK, stmt_loop_flow)
     stmt(parser, TT_CONTINUE, stmt_loop_flow)
     stmt(parser, TT_WHEN, stmt_when)
+    stmt(parser, TT_FOR, stmt_for)
 
     return parser
 

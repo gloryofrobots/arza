@@ -22,12 +22,12 @@
 @infixl(`++`, `++`, 70)
 
 //TODO FIX IT
-//length = ___length
+length = ___length
 
-generic _and_
-| t1 of True, t2 of True -> True
-| a1 of Any, a2 of Any -> False
-------------------------------
+//generic _and_
+//| t1 of True, t2 of True -> True
+//| a1 of Any, a2 of Any -> False
+//------------------------------
 
 //TODO
 //Symbols can also be created using symbol(),
@@ -41,30 +41,9 @@ generic _and_
 //| f [hd, ...tl] -> f hd :: (map f tl)
 //-------------------------------------
 
-fun main _ ->
-    condition
-    | x == 2 -> f 42 42
-    | otherwise -> l 42 42
-    --------------
-
-    try
-        try 1/0
-        | e1 ->
-            e1
-        | finally ->
-            //result
-            (#Finally, e1)
-        ----------------
-    | e2 ->
-        try
-            error(#LifeSucks)
-        | e3 ->
-            e3
-        ----------------
-    ----------------
-
-    [1,2,3,4, (foo 1 2 3), 5]
----
+//fun main _ ->
+//    affirm.is_equal(~ -9171, 9170)
+//---
 
 
 //    match (1,2,3)
@@ -76,3 +55,26 @@ fun main _ ->
 //    | (x, y, z) when z == 3 and y == 2 and x == 1 and A is true or greater_then_ten 11 -> #sixth
 //    | _ -> 12
 //    -------------------------------------------------------------------------------------------------
+
+//    condition
+//    | x == 2 -> f 42 42
+//    | otherwise -> l 42 42
+//    --------------
+//
+//    try
+//        try 1/0
+//        | e1 ->
+//            e1
+//        | finally ->
+//            //result
+//            (#Finally, e1)
+//        ----------------
+//    | e2 ->
+//        try
+//            error(#LifeSucks)
+//        | e3 ->
+//            e3
+//        ----------------
+//    ----------------
+//
+//    [1,2,3,4, (foo 1 2 3), 5]
