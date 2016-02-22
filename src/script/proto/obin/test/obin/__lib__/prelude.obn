@@ -1,0 +1,48 @@
+//import lib_az:efg:module_f
+@prefix(`-`, `__uminus__`)
+@prefix(`+`, `__plus__`)
+@prefix(`~`, `~`)
+@infixr(`|`, `|`, 35)
+@infixr(`^`, `^`, 45)
+@infixr(`&`, `&`, 45)
+@infixl(`<`, `<`, 50)
+@infixl(`>`, `>`, 50)
+@infixl(`>=`, `>=`, 50)
+@infixl(`<=`, `<=`, 50)
+@infixl(`==`, `==`, 50)
+@infixl(`!=`, `!=`, 50)
+@infixl(`<<`, `<<`, 55)
+@infixl(`>>`, `>>`, 55)
+@infixl(`>>>`, `>>>`, 55)
+@infixl(`+`, `+`, 60)
+@infixl(`-`, `-`, 60)
+@infixl(`%`, `%`, 65)
+@infixl(`*`, `*`, 65)
+@infixl(`/`, `/`, 65)
+@infixr(`::`, `::`, 70)
+@infixl(`++`, `++`, 70)
+
+//TODO FIX IT
+//length = ___length
+
+//TODO
+//Symbols can also be created using symbol(),
+//which takes any number of arguments and creates a new symbol by concatenating their string representations together:
+
+//def f (x,y,z) -> (x,y,z) end
+//
+//def f2 -> 42 end
+
+def main ->
+//    foo (2 + 2) a.b (x.y.z 1) (hello () 1)
+//   (F 1 (F2 2 3 4 5))
+//
+    F, 1, 2, 3
+    (1,2,3)
+//    F1 a 1 2 (b 2 3)
+//    F2 a 1 2  b 2 3
+//    F3 a 1 2 (b, 2, 3)
+end
+
+
+
