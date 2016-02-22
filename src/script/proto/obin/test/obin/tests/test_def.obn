@@ -132,13 +132,15 @@ def test ->
         ([4], #four))
 
     affirm:is_throw(fn_fail, [5])
-    affirm:is_throw_expected(fn_fail, [0], (#FunctionArgumentsMatchError,))
+    affirm:is_throw_expected(fn_fail, [0], (#FunctionArgumentsMatchError, (0,)))
     affirm:is_equal(
         try
            fn_fail("I am string")
         catch exc ->
            [exc, exc, exc];
-        , [(#FunctionArgumentsMatchError,), (#FunctionArgumentsMatchError,), (#FunctionArgumentsMatchError,)]
+        , [(#FunctionArgumentsMatchError, ("I am string",)),
+            (#FunctionArgumentsMatchError, ("I am string",)), (#FunctionArgumentsMatchError,
+            ("I am string",))]
     )
 
     ////////////////////////////////////////////////

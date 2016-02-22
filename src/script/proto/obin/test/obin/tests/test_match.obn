@@ -163,7 +163,7 @@ def test() ->
             finally
                 [exc, exc, exc]
             end,
-            [(#MatchError,), (#MatchError,), (#MatchError,)])
+            [(#MatchError, 42), (#MatchError, 42), (#MatchError, 42)])
 
 
     A = false

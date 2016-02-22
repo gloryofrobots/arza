@@ -299,13 +299,14 @@ def expression_parser_init(proc_data, parser):
     infix_operator(parser, TT_NOTIN, 50, proc_data.std.generics.notin.name)
 
     infix(parser, TT_DOT, 70, infix_dot)
+    infix(parser, TT_COMMA, -2, None)
 
     # 80
     infix(parser, TT_LCURLY, 80, infix_lcurly)
     infix(parser, TT_LSQUARE, 80, infix_lsquare)
 
     # 90
-    infix(parser, TT_LPAREN, 90, infix_lparen)
+    # infix(parser, TT_LPAREN, 90, infix_lparen)
 
     """
     PREFIXES
@@ -371,6 +372,14 @@ def parse(process, env, src):
 
     parser.close()
     # print stmts
+    print "************************** OPERATORS ****************************************"
+    print scope.operators
+    print "************************** AST ****************************************"
+    ast = str(nodes.node_to_string(stmts))
+    f = open('ast.json', 'w')
+    f.write(ast)
+    f.close()
+    raise SystemExit()
     return stmts, scope
 
 
@@ -402,15 +411,6 @@ def __parse__():
 
 
         def main ->
-        A = false
-        match (1,2,3)
-            case (x, y, z) when z == 2 -> #first
-            case (x, y, z) when z == 3 and y == 3 -> #second
-            case (x, y, z) when z == 3 and y == 2 and x == 3 -> #third
-            case (x, y, z) when z == 3 and y == 2 and x == 1 and A == 2 -> #fourth
-            case (x, y, z) when z == 3 and y == 2 and x == 1 and not A is true -> #fifth
-            case _ -> 12
-        end
         end
     """
     import os

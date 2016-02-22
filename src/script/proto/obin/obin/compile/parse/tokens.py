@@ -151,34 +151,6 @@ RULES = [
     (operator, TT_OPERATOR),
 ]
 
-#[<>:\-\+\*\/\\!@#\$%\^\|]=
-# class Token:
-#     def __init__(self, type, val, pos, line, column):
-#         assert isinstance(type, int)
-#         assert isinstance(val, str)
-#         assert space.isint(pos)
-#         assert space.isint(line)
-#         assert space.isint(column)
-#
-#         self.type = type
-#         self.value = val
-#
-#         self.position = pos
-#         self.line = line
-#         self.column = column
-#
-#     def __str__(self):
-#         try:
-#             t_repr = token_type_to_str(self.type)
-#         except:
-#             t_repr = self.type
-#
-#         if self.type == TT_NEWLINE:
-#             val = '\\n'
-#         else:
-#             val = self.value
-#
-#         return '<%s %s %d:%d>' % (t_repr, val, self.line, self.position)
 
 def newtoken(type, val, pos, line, column):
     assert isinstance(type, int)
@@ -187,6 +159,9 @@ def newtoken(type, val, pos, line, column):
     assert space.isint(line)
     assert space.isint(column)
     return space.newtuple([space.newint(type), space.newstring_s(val), pos, line, column])
+
+def newtoken_without_meta(type, val):
+    return newtoken(type, val, space.newint(-1), space.newint(-1),space.newint(-1),)
 
 
 def token_type(token):

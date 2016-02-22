@@ -176,10 +176,11 @@ def node_to_d(node):
     elif is_scope_node(node):
         return {'scope': True}
     else:
-        d = {"_type": tokens.token_type_to_str(node_token_type(node)),
+        d = {
+            # "_type": tokens.token_type_to_str(node_token_type(node)),
              "_ntype": nt.node_type_to_str(node_type(node)) if node_type(node) != -1 else "",
              "_value": node_value_s(node),
-             "_line": api.to_i(node_line(node))
+             # "_line": api.to_i(node_line(node))
              }
 
         if not api.isempty(node_children(node)):

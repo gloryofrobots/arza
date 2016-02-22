@@ -1,6 +1,6 @@
 from obin.compile.parse.basic import *
 from obin.compile.parse.node_type import *
-from obin.compile.parse import nodes
+from obin.compile.parse import nodes, tokens
 from obin.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3)
 from obin.types import space
 from obin.misc import strutil
@@ -41,6 +41,7 @@ NODE_TYPE_MAPPING = {
     TT_DOUBLE_DOT: NT_RANGE,
     TT_SHARP: NT_SYMBOL,
     TT_OPERATOR: NT_NAME,
+    TT_COMMA: NT_COMMA,
 }
 
 
@@ -58,12 +59,13 @@ def _init_default_current_0(parser):
 ##############################################################
 
 #
-def led_infix(parser, op, node, left):
-    # TODO CHECK IF THIS CYCLE IS STILL NEEDED
-    exp = None
-    while exp is None:
-        exp = expression(parser, op.lbp)
+def compose(parser, node, left):
+    exp = expression(parser, 0)
+    return node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), left, exp)
 
+
+def led_infix(parser, op, node, left):
+    exp = expression(parser, op.lbp)
     return node_2(__ntype(node), __ntok(node), left, exp)
 
 
@@ -78,10 +80,7 @@ def prefix_nud_function(parser, op, node):
 
 
 def led_infix_function(parser, op, node, left):
-    exp = None
-    while exp is None:
-        exp = expression(parser, op.lbp)
-
+    exp = expression(parser, op.lbp)
     return nodes.create_call_node_name(node, op.infix_function, [left, exp])
 
 
@@ -292,16 +291,16 @@ def prefix_lparen_tuple(parser, op, node):
     advance_expected(parser, TT_RPAREN)
     return node_1(NT_TUPLE, __ntok(node), nodes.list_node(items))
 
-
 def prefix_lparen(parser, op, node):
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
         return nodes.create_unit_node(node)
 
     e = expression(parser, 0)
+
     if parser.token_type != TT_COMMA:
         advance_expected(parser, TT_RPAREN)
-        return e
+        return finalize_expression(parser, e)
 
     items = [e]
     advance_expected(parser, TT_COMMA)

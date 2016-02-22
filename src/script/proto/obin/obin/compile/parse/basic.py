@@ -1,12 +1,12 @@
 from obin.compile.parse.token_type import *
-from obin.compile.parse import node_type
+from obin.compile.parse.node_type import *
 from obin.compile.parse import nodes
-from obin.compile.parse.tokens import token_type_to_str
+from obin.compile.parse import tokens
 from obin.types import space, api, root, plist, environment
 from obin.runtime import error
 from obin.misc.strutil import get_line, get_line_for_position
 
-TERM_BLOCK = [TT_END, TT_SEMI]
+TERM_BLOCK = [TT_END]
 TERM_IF = [TT_ELIF, TT_ELSE]
 TERM_FILE = [TT_ENDSTREAM]
 TERM_CASE = [TT_CASE] + TERM_BLOCK
@@ -166,7 +166,7 @@ def parser_operator(parser, ttype):
     try:
         return parser.handlers[ttype]
     except:
-        return parse_error(parser, u"Invalid token %s" % token_type_to_str(ttype),  parser.node)
+        return parse_error(parser, u"Invalid token %s" % tokens.token_type_to_str(ttype), parser.node)
 
 
 def get_or_create_operator(parser, ttype):
@@ -228,8 +228,9 @@ def node_has_std(parser, node):
 def node_lbp(parser, node):
     handler = node_operator(parser, node)
     lbp = handler.lbp
-    if lbp == -1:
-        parse_error(parser, u"Left binding power error", node)
+    # if lbp < 0:
+    #   parse_error(parser, u"Left binding power error", node)
+
     return lbp
 
 
@@ -275,16 +276,16 @@ def operator_prefix(h, nud, prefix_fn):
 
 def check_token_type(parser, type):
     if parser.token_type != type:
-        parse_error(parser, u"Wrong token type, expected %s, got %s" % (token_type_to_str(type),
-                                                                        token_type_to_str(parser.token_type)),
+        parse_error(parser, u"Wrong token type, expected %s, got %s" % (tokens.token_type_to_str(type),
+                                                                        tokens.token_type_to_str(parser.token_type)),
                     parser.node)
 
 
 def check_token_types(parser, types):
     if parser.token_type not in types:
         parse_error(parser, u"Wrong token type, expected one of %s, got %s" %
-                    (unicode([token_type_to_str(type) for type in types]),
-                     token_type_to_str(parser.token_type)), parser.node)
+                    (unicode([tokens.token_type_to_str(type) for type in types]),
+                     tokens.token_type_to_str(parser.token_type)), parser.node)
 
 
 def check_list_node_types(parser, node, expected_types):
@@ -296,16 +297,16 @@ def check_node_type(parser, node, expected_type):
     ntype = nodes.node_type(node)
     if ntype != expected_type:
         parse_error(parser, u"Wrong node type, expected  %s, got %s" %
-                    (node_type.node_type_to_str(expected_type),
-                     node_type.node_type_to_str(ntype)), node)
+                    (node_type_to_str(expected_type),
+                     node_type_to_str(ntype)), node)
 
 
 def check_node_types(parser, node, types):
     ntype = nodes.node_type(node)
     if ntype not in types:
         parse_error(parser, u"Wrong node type, expected one of %s, got %s" %
-                    (unicode([node_type.node_type_to_str(type) for type in types]),
-                     node_type.node_type_to_str(ntype)), node)
+                    (unicode([node_type_to_str(type) for type in types]),
+                     node_type_to_str(ntype)), node)
 
 
 def advance(parser):
@@ -347,7 +348,7 @@ def endofexpression(parser):
         return parser.node
     if parser.token_type in TERM_BLOCK:
         return parser.node
-    if parser.token_type == TT_COMMA:
+    if parser.token_type == TT_SEMI:
         return advance(parser)
 
     parse_error(parser, u"Expected end of expression mark", parser.node)
@@ -382,7 +383,78 @@ def terminated_expression(parser, _rbp, token_types):
     return left
 
 
+def _expression(parser, _rbp):
+    previous = parser.node
+    # print "******"
+    # print "rbp ", _rbp
+    # print "previous", previous
+
+    advance(parser)
+
+    left = nud(parser, previous)
+    # print "left", left.value
+    while True:
+        if parser.is_newline_occurred:
+            break
+        _lbp = node_lbp(parser, parser.node)
+        if _lbp == - 1:
+            return left, True
+        if _lbp == -2:
+            advance(parser)
+            return left, True
+        if _rbp >= _lbp:
+            break
+        previous = parser.node
+        advance(parser)
+        left = node_led(parser, previous, left)
+
+    assert left is not None
+    return left, False
+
+
+def flatten_juxtaposition(parser, node):
+    ntype = nodes.node_type(node)
+    if ntype == NT_JUXTAPOSITION:
+        first = nodes.node_first(node)
+        second = nodes.node_second(node)
+        tail = flatten_juxtaposition(parser, second)
+        return plist.cons(first, tail)
+    else:
+        return nodes.list_node([node])
+
+
+def flatten_comma(parser, node):
+    ntype = nodes.node_type(node)
+    if ntype == NT_COMMA:
+        first = nodes.node_first(node)
+        second = nodes.node_second(node)
+        head = flatten_comma(parser, first)
+        tail = flatten_comma(parser, second)
+        return plist.cons(head, tail)
+    else:
+        return nodes.list_node([node])
+
+def finalize_expression(parser, node):
+    if nodes.node_type(node) == NT_JUXTAPOSITION:
+        caller = nodes.node_first(node)
+        if nodes.node_type(caller) == NT_JUXTAPOSITION:
+            parse_error(parser, u"Invalid use of juxtaposition operator", caller)
+        args = nodes.node_second(node)
+        flatten_arg = flatten_juxtaposition(parser, args)
+        return nodes.node_2(NT_CALL, nodes.node_token(node), caller, flatten_arg)
+    else:
+        return node
+
+
 def expression(parser, _rbp):
+    expr, is_juxtposition = _expression(parser, _rbp)
+    if is_juxtposition:
+        return nodes.node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), expr,
+                            expression(parser, _rbp))
+    return expr
+
+
+def expression_2(parser, _rbp):
     previous = parser.node
     # print "******"
     # print "rbp ", _rbp
@@ -427,7 +499,8 @@ def statement(parser):
 
     value = expression(parser, 0)
     endofexpression(parser)
-    return value
+    # return value
+    return finalize_expression(parser, value)
 
 
 def token_is_one_of(parser, types):

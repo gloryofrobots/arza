@@ -19,6 +19,7 @@ NODES = [
   "NT_LIST",
   "NT_TUPLE",
   "NT_UNIT",
+  "NT_COMMA",
 
   "NT_DEF",
   "NT_FUN",
@@ -54,6 +55,7 @@ NODES = [
 
   "NT_ASSIGN",
   "NT_CALL",
+  "NT_JUXTAPOSITION",
   "NT_CALL_MEMBER",
 
   "NT_LOOKUP",
