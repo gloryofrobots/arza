@@ -1,28 +1,24 @@
-
+import affirm
 
 generic _and_
-    case (t of True, f of True) ->
-        true
-    case (t of Boolean, f of Boolean) ->
-        false
-end
-
+| t of True, f of True -> true
+| a1 of Any, a2 of Any -> false
+--------------------------------------------------
 
 specify _and_
-    case (i of Int, i of Float) ->
-        false
-end
+| i of Int i of Float -> #_and_i_f
+--------------------------------------------------
 
 specify _and_
-    case (i of String, i of Int) ->
-        true
-end
+| i of String, i of Int -> #_and_s_i
+--------------------------------------------------
 
-def test ->
-    print(_and_(true, true))
-
-    print(_and_(true, false), _and_(false, true),  _and_(true, true))
-
-    print(_and_(1, 1.0), _and_("hhh", 1))
-end
+fun test () ->
+    affirm:is_equal (_and_ true true) true
+    affirm:is_equal (_and_ true false) false
+    affirm:is_equal (_and_ false true) false
+    affirm:is_equal (_and_ #ss []) false
+    affirm:is_equal (_and_ "str" 1) #_and_s_i
+    affirm:is_equal (_and_ 1 1.02) #_and_i_f
+--------------------------------------------------
 

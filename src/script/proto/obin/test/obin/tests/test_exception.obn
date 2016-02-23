@@ -5,7 +5,7 @@ fun test () ->
         throw (#error, {reason=reason}) end
 
     fun error2 reason ->
-        (\x -> error(reason)) ()
+        lambda x -> error reason; ()
     end
 
 

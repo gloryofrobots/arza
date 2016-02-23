@@ -89,6 +89,7 @@ RULES = [
     (keyword('generic'), TT_GENERIC),
     (keyword('specify'), TT_SPECIFY),
     (keyword('trait'), TT_TRAIT),
+    (keyword('lambda'), TT_LAMBDA),
     # (keyword('module'), TT_MODULE),
 
     (keyword('export'), TT_EXPORT),
@@ -129,7 +130,6 @@ RULES = [
     (token('---[-]*'), TT_END),
 
     (token('\-\>'), TT_ARROW),
-    (token('\\\\'), TT_LAMBDA),
     (token('\.\.\.'), TT_ELLIPSIS),
     (token('\;'), TT_SEMI),
     (token('#'), TT_SHARP),

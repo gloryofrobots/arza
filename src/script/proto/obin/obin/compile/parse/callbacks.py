@@ -554,6 +554,7 @@ def prefix_lambda(parser, op, node):
     advance_expected(parser, TT_ARROW)
     # body = statements(parser, TERM_BLOCK)
     body = nodes.list_node([expressions(parser, 0, terminators=None)])
+    endofexpression(parser)
     # advance_end(parser)
     return node_2(
             NT_FUN, __ntok(node), name, nodes.list_node([nodes.list_node([args, body])]))

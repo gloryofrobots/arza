@@ -1,0 +1,164 @@
+import affirm
+
+// SYNTAX
+fun `++++/` () -> 42 end
+fun `++>>` x y -> 42 end
+fun `++-__+` | x y -> 42 end
+fun `++---^--^`
+    | x y -> 42 end
+
+
+// compiler single pass problem example
+//    I decided not to optimize it.
+//    [fun length(x) -> 1 + length(x - 1) when x > 0 else 0 end]
+//    fun Y(y) -> length(y) end
+//    Y(3)
+
+fun test () ->
+    f1 = fun | a b c -> (a, b, c) end
+    affirm:is_equal (f1 1 2 3) (1,2,3)
+    //call after declaration
+    affirm:is_equal (fun | (a,b,c) -> (c, b, a) end (1,2,3)) (3,2,1)
+
+    affirm:is_equal (fun | (a,b,c) -> (c, b, a) end(1,2,3)) (3,2,1)
+
+    //////////////////////////////////////////////////////////////////////////
+
+    fun f4 a b c ...rest ->
+            [a, b, c, rest] end
+
+    affirm:is_equal (f4 1 2 3 4 5 6)  [1, 2, 3, (4, 5, 6)]
+
+    //////////////////////////////////////////////////////////////////////////
+
+    fun f5
+    | x (y,z) a b {name=name, age=(years, month)} ...rest ->
+        (x, y, z, a, b, name, years, month, rest)
+    --------------------------------------------------------
+
+    affirm:is_equal (f5 1 (2,3) 4 5  {name=6, age=(7,8)}  9 10 11 12) (1, 2, 3, 4, 5, 6, 7, 8, (9, 10, 11, 12))
+
+    //////////////////////////////////////////////////////////////////////////
+
+    fun fact
+    | 0 -> 1
+    | n -> n * (fact n - 1)
+    ------------------
+
+    affirm:is_equal (fact 7) 5040
+    affirm:is_equal (fact 0) 1
+
+    fun func1
+    | 1 2 3 4 5 var0 var1 var2 ...var4 -> (var0, var1, var2, var4)
+    | {key1, var1 @ key2, key3=25}  [var2, #second, var3 @ #third, ...var4] -> (var1, var2, var3, var4)
+    | var6 var7 -> var6 + var7
+    | 42 -> "Main question answer"
+    | _ -> #nothing
+    ------------------------------
+
+
+    affirm:is_equal (func1 1,2,3,4,5,6,7,8,9,10,11),
+                    (6, 7, 8, (9, 10, 11))
+
+    affirm:is_equal (func1 {key1=#key1, key2=#key2, key3=25} [#first, #second, #third, 4,5,6,7]),
+                    (#key2, #first, #third, [4, 5, 6, 7])
+
+    fun func2
+    | a b c -> (#first, a, b, c)
+    | a b -> (#second, a, b)
+    | () -> (#fourth)
+    | a -> (#third, a)
+    ---------------------
+
+    affirm:is_equal_batch func2,
+                          ((1,2,3), (#first, 1,2,3)),
+                          ((4,5), (#second, 4,5)),
+                          ((6,), (#third, 6)),
+                          ([()], #fourth)
+
+
+    affirm:is_equal (apply fun | () -> #empty end [()]) #empty
+    fun func3
+    | 1 -> #first
+    | 42 -> #second
+    | () -> #third
+    ---------------
+
+    affirm:is_equal_batch func3,
+                          ([1], #first),
+                          ([42], #second),
+                          ([()], #third)
+
+    // when possible function compiles
+    // into destructive assignment automaton instead of more complicated pattern matching graph
+    //destruct func
+    fun fn_simple arg1 arg2 ...rest -> (arg1, arg2, rest) end
+    //case func
+    fun fn_case arg1 arg2 of Int  ...rest -> (arg1, arg2, rest) end
+
+    affirm:is_equal (fn_simple 0 1 4 5 6) (fn_case 0 1 4 5 6)
+
+    ////////////////////////////////////////////////////
+
+    //destruct func
+    fun fn_simple1 | arg1 arg2 {key1, key2} ...rest -> (arg1, arg2, key1, key2, rest) end
+    //case func
+    fun fn_case1 | arg1  arg2 { var1 @ key1=2, key2} of Map ...rest -> (arg1, arg2, var1, key2, rest) end
+
+    affirm:is_equal (fn_simple1 0,1, {key1=2, key2=3}, 4,5,6) (fn_case1 0,1, {key1=2, key2=3}, 4,5,6)
+
+    ////////////////////////////////////////////////////
+
+    //tuple args here
+    affirm:is_equal (lambda(x,y) -> x + y; (2, 3)) 5
+
+    ////////////////////////////////////////////////////
+    fun fn_fail
+    | 1 -> #one
+    | 2 -> #two
+    | 3 -> #three
+    | 4 -> #four
+    --------------------
+
+    affirm:is_equal_batch   fn_fail,
+                            ([1], #one),
+                            ([2], #two),
+                            ([3], #three),
+                            ([4], #four)
+
+    affirm:is_throw fn_fail [5]
+    affirm:is_throw_expected fn_fail [0] (#FunctionArgumentsMatchError, (0,))
+    affirm:is_equal try
+                       fn_fail("I am string")
+                    | exc ->
+                       [exc, exc, exc]
+                    ---,
+                    [(#FunctionArgumentsMatchError, ("I am string",)),
+                     (#FunctionArgumentsMatchError, ("I am string",)),
+                     (#FunctionArgumentsMatchError,("I am string",))]
+
+    ////////////////////////////////////////////////
+    //Empty args first
+    affirm:is_equal_batch   fun
+                            | () -> 42
+                            | x,y -> x + y
+                            ---,
+                            [(1,2), 3],
+                            [[()], 42]
+
+    ////////////////////////////////////////////////
+    affirm:is_equal (fun | () -> 42 end ()) 42
+    affirm:is_equal (lambda () -> 42; ()) 42
+    ////////////////////////////////////////////////
+    fun f2 () -> 42 end
+    fun add x y -> x + y + (f2 ()) end
+    f1 = lambda x y -> add x y
+    affirm:is_equal (f1 1 2) 45
+    ////////////////////////////////////////////////
+    f3 = fun | x [a, b] -> x +  a + b end
+    f4 = lambda x [a, b] -> x + a + b
+    affirm:is_equal (f3 1 [2, 3]) (f4 1 [2, 3])
+    affirm:is_equal (f4 1 [2, 3]) 6
+    affirm:is_equal (lambda x [a,b,c,...tl] {N, Z} -> (x + a + b + c + N + Z) :: tl; 1 [1, 1, 1, 33,33,33] {N=1, Z = 1}),
+                    [6, 33, 33, 33]
+---------

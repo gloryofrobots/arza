@@ -5,14 +5,14 @@ import tests:test_bool
 import tests:test_co
 import tests:test_destruct
 import tests:test_exception
-import tests:test_def
+import tests:test_fun
+import tests:test_generic
+import tests:test_modify
+import tests:test_operator_override
 //import tests:datastructs:test_datastructs
 //import tests:test_operators
-//import tests:test_generic
 //import tests:test_match
-//import tests:test_modify
 //import tests:test_module
-//import tests:test_operator_override
 //import tests:test_trait
 //import lists
 
@@ -24,14 +24,14 @@ fun main () ->
     test_co:test()
     test_destruct:test()
     test_exception:test()
-    test_def:test()
+    test_fun:test()
+    test_generic:test()
+    test_modify:test()
+    test_operator_override:test()
 
 //    test_operators:test()
-//    test_generic:test()
 //    test_match:test()
-//    test_modify:test()
 //    test_module:test()
-//    test_operator_override:test()
 //    test_trait:test()
 //    test_datastructs:test()
 end
