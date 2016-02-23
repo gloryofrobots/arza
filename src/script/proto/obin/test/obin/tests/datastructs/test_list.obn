@@ -1,8 +1,8 @@
 import affirm
-import lists
+import list
 import seq
 
-def test ->
+fun test () ->
     a1 = [1,2,#three,4,5,#six]
     affirm:is_equal (length a1) 6
     affirm:is_true #three in a1
@@ -11,67 +11,67 @@ def test ->
     affirm:is_true #two notin a1
     affirm:is_false #two in a1
 
-    l = lists:range 1 9
-    affirm:is_equal (lists:cons 0 l) [0,1,2,3,4,5,6,7,8]
-    affirm:is_equal (lists:cons -1 (lists:cons 0 l))  [-1,0,1,2,3,4,5,6,7,8]
-    affirm:is_equal (lists:tail l) [2,3,4,5,6,7,8]
-    affirm:is_equal (lists:tail (lists:tail l)) [3,4,5,6,7,8]
-    affirm:is_equal (lists:tail (lists:tail [1,2]))  []
-    affirm:is_true  (lists:is_empty [])
-    affirm:is_false (lists:is_empty [1,2])
+    l = list:range 1 9
+    affirm:is_equal (list:cons 0 l) [0,1,2,3,4,5,6,7,8]
+    affirm:is_equal (list:cons (-1) (list:cons 0 l))  [-1,0,1,2,3,4,5,6,7,8]
+    affirm:is_equal (list:tail l) [2,3,4,5,6,7,8]
+    affirm:is_equal (list:tail (list:tail l)) [3,4,5,6,7,8]
+    affirm:is_equal (list:tail (list:tail [1,2]))  []
+    affirm:is_true  (list:is_empty [])
+    affirm:is_false (list:is_empty [1,2])
     affirm:is_equal (seq:empty []) []
-    affirm:is_equal (lists:empty() [])
+    affirm:is_equal (list:empty()) []
 
-    l1 = lists:range 0 10
-    affirm:is_equal (lists:length l1) 10
-    affirm:is_equal (lists:concat [0,1,2,3,4,5] [6,7,8,9]) l1
-    affirm:is_equal (lists:concat [] l1) l1
-    affirm:is_equal (lists:concat l1 []) l1
-    affirm:is_equal (lists:concat [] []) []
-    affirm:is_equal (lists:reverse l1) [9,8,7,6,5,4,3,2,1,0]
+    l1 = list:range 0 10
+    affirm:is_equal (list:length l1) 10
+    affirm:is_equal (list:concat [0,1,2,3,4,5] [6,7,8,9]) l1
+    affirm:is_equal (list:concat [] l1) l1
+    affirm:is_equal (list:concat l1 []) l1
+    affirm:is_equal (list:concat [] []) []
+    affirm:is_equal (list:reverse l1) [9,8,7,6,5,4,3,2,1,0]
 
-    affirm:is_true (lists:prefix [1,2,3,4] [1,2,3,4,5,6])
-    affirm:is_false (lists:prefix [0,1,2,3,4] [1,2,3,4,5,6])
-    affirm:is_false (lists:prefix [1,2,3,4] [1,2,3,5,4,6])
+    affirm:is_true (list:prefix [1,2,3,4] [1,2,3,4,5,6])
+    affirm:is_false (list:prefix [0,1,2,3,4] [1,2,3,4,5,6])
+    affirm:is_false (list:prefix [1,2,3,4] [1,2,3,5,4,6])
 
-    affirm:is_true (lists:suffix [4,5,6] [1,2,3,4,5,6])
-    affirm:is_false (lists:suffix [3,5,6] [1,2,3,4,5,6])
-    affirm:is_false (lists:suffix [4,5,6] [1,2,3,4,6,5])
+    affirm:is_true (list:suffix [4,5,6] [1,2,3,4,5,6])
+    affirm:is_false (list:suffix [3,5,6] [1,2,3,4,5,6])
+    affirm:is_false (list:suffix [4,5,6] [1,2,3,4,6,5])
 
-    affirm:is_equal (lists:drop 3 l1) [3,4,5,6,7,8,9]
-    affirm:is_equal (lists:map lambda x -> x+1; l1) [1,2,3,4,5,6,7,8,9,10]
-    affirm:is_equal (lists:intersperse 0 l1) [0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0]
-    affirm:is_equal (lists:scanl `+` 0  (lists:range 1  11))  [0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55]
+    affirm:is_equal (list:drop 3 l1) [3,4,5,6,7,8,9]
+    affirm:is_equal (list:map lambda x -> x+1; l1) [1,2,3,4,5,6,7,8,9,10]
+    affirm:is_equal (list:intersperse 0 l1) [0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0]
+    affirm:is_equal (list:scanl `+` 0  (list:range 1  11))  [0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55]
 
-    affirm:is_equal (lists:last l1) 9
-    affirm:is_equal (lists:init l1) [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    affirm:is_equal (lists:replicate 5 42) [42, 42, 42, 42, 42]
-    affirm:is_equal (lists:take 3 l1) [0,1,2]
-    affirm:is_equal (lists:split_at 3 l1)  ([0, 1, 2], [3, 4, 5, 6, 7, 8, 9])
-    affirm:is_equal (lists:take_while lambda x -> x < 5; l1) [0, 1, 2, 3, 4]
-    affirm:is_equal (lists:drop_while lambda x -> x < 5; l1) [5, 6, 7, 8, 9]
-    affirm:is_equal (lists:span lambda x -> x < 3; [1,2,3,4,1,2,3,4]),
+    affirm:is_equal (list:last l1) 9
+    affirm:is_equal (list:init l1) [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    affirm:is_equal (list:replicate 5 42) [42, 42, 42, 42, 42]
+    affirm:is_equal (list:take 3 l1) [0,1,2]
+    affirm:is_equal (list:split_at 3 l1)  ([0, 1, 2], [3, 4, 5, 6, 7, 8, 9])
+    affirm:is_equal (list:take_while lambda x -> x < 5; l1) [0, 1, 2, 3, 4]
+    affirm:is_equal (list:drop_while lambda x -> x < 5; l1) [5, 6, 7, 8, 9]
+    affirm:is_equal (list:span lambda x -> x < 3; [1,2,3,4,1,2,3,4]),
                     ([1, 2], [3, 4, 1, 2, 3, 4])
 
-    affirm:is_equal (lists:span lambda x -> x < 9; [1,2,3]),
+    affirm:is_equal (list:span lambda x -> x < 9; [1,2,3]),
                     ([1, 2, 3], [])
 
-    affirm:is_equal (lists:span lambda x -> x < 0; [1,2,3]),
+    affirm:is_equal (list:span lambda x -> x < 0; [1,2,3]),
                     ([], [1, 2, 3])
 
-    affirm:is_true (lists:conjunction [true, true, true, true])
-    affirm:is_false (lists:conjunction [true, true, true, false])
-    affirm:is_true (lists:all lambda (x) -> x < 7;  [0,1,2,3,4,5,6])
-    affirm:is_false (lists:all lambda (x) -> x < 3;  [0,1,2,3,4,5,6])
-    affirm:is_true (lists:any lambda (x) -> x < 7;  [0,1,2,3,4,5,6])
-    affirm:is_true (lists:any lambda (x) -> x < 3;  [0,1,2,3,4,5,6])
-    affirm:is_false (lists:any lambda (x) -> x < -1;  [0,1,2,3,4,5,6])
+    affirm:is_true (list:conjunction [true, true, true, true])
+    affirm:is_false (list:conjunction [true, true, true, false])
+    affirm:is_true (list:all lambda x -> x < 7;  [0,1,2,3,4,5,6])
+    affirm:is_false (list:all lambda x -> x < 3;  [0,1,2,3,4,5,6])
+    affirm:is_true (list:any lambda x -> x < 7;  [0,1,2,3,4,5,6])
+    affirm:is_true (list:any lambda x -> x < 3;  [0,1,2,3,4,5,6])
+    affirm:is_false (list:any lambda x -> x < -1;  [0,1,2,3,4,5,6])
 
-    affirm:is_equal (lists:delete 8 l1) [0,1,2,3,4,5,6,7,9]
+    affirm:is_equal (list:delete 8 l1) [0,1,2,3,4,5,6,7,9]
 
-    print (
-        (lists:conjunction [true, true, true, true]),
-    )
+//    print (
+//        (list:conjunction [true, true, true, true]),
+//    )
 
 
 //    span (< 3) [1,2,3,4,1,2,3,4] == ([1,2],[3,4,1,2,3,4])
