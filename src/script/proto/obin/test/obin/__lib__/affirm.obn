@@ -67,7 +67,11 @@ fun is_true val1 -> is_same val1 true
 fun is_false val1 -> is_same val1 false
 ---
 
-fun is_throw fn args ->
+//apply needed tuple of arguments
+// so we need to convert () to ((),)
+fun is_throw
+| fn () -> is_throw fn ((),)
+| fn args ->
     match
         try
             apply fn args
@@ -80,5 +84,6 @@ fun is_throw fn args ->
     ---
 ---
 
-fun is_throw_expected fn args exc -> is_equal (is_throw fn args) exc
+fun is_throw_expected fn args exc ->
+    is_equal (is_throw fn args) exc
 ---

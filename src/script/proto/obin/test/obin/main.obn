@@ -1,13 +1,13 @@
 import affirm
-//import tests:test_base
-//import tests:test_static_refs
-//import tests:test_bool
+import tests:test_base
+import tests:test_static_refs
+import tests:test_bool
 import tests:test_co
+import tests:test_destruct
+import tests:test_exception
+import tests:test_def
 //import tests:datastructs:test_datastructs
 //import tests:test_operators
-//import tests:test_destruct
-//import tests:test_exception
-//import tests:test_def
 //import tests:test_generic
 //import tests:test_match
 //import tests:test_modify
@@ -18,17 +18,15 @@ import tests:test_co
 
 
 fun main () ->
-//    test_base:test()
-//    test_static_refs:test()
-//    test_bool:test()
+    test_base:test()
+    test_static_refs:test()
+    test_bool:test()
     test_co:test()
-//    (\x [a,b,c,...tl] {N, Z} -> (x + a + b + c + N + Z) :: tl) 1 [1, 1, 1, 33,33,33] {N=1, Z = 1}
+    test_destruct:test()
+    test_exception:test()
+    test_def:test()
 
 //    test_operators:test()
-//    test_base:test()
-//    test_destruct:test()
-//    test_exception:test()
-//    test_def:test()
 //    test_generic:test()
 //    test_match:test()
 //    test_modify:test()

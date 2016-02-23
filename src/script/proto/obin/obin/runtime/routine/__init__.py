@@ -59,10 +59,12 @@ def create_function_environment(func, scope, args, outer_env):
 
     if not scope.is_variadic:
         if args_count != declared_args_count:
+            print "INVALID ARG1"
             return error.throw_4(error.Errors.INVALID_ARG_COUNT,
                                  space.newint(args_count), space.newstring(u"!="), space.newint(declared_args_count),
                                  func.name)
     if args_count < declared_args_count:
+        print "INVALID ARG2"
         return error.throw_4(error.Errors.INVALID_ARG_COUNT,
                              space.newint(args_count), space.newstring(u"<"), space.newint(declared_args_count),
                              func.name)

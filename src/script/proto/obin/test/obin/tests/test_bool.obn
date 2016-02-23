@@ -16,9 +16,11 @@ fun test() ->
     affirm:is_false false or false
     affirm:is_same false false
     affirm:is_same true true
-
+//
     //only true and false can be used in boolean operators
-    affirm:is_throw (\x -> 1 or 0) ()
+    affirm:is_throw (fun t_or | x -> 1 or 0 end) ()
+    affirm:is_throw_expected (fun t_or | x -> 1 or 0 end) () (#NotImplementedError, (#_tobool_, 1))
+
     affirm:is_throw (\x -> 1 and 0) ()
     affirm:is_throw (\x -> not 0) ()
     affirm:is_throw (\x -> not {}) ()

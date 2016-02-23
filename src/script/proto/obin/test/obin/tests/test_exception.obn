@@ -1,157 +1,136 @@
 import affirm
 
-def test ->
-    fun error(reason) ->
+fun test () ->
+    fun error reason ->
         throw (#error, {reason=reason}) end
 
-    fun error2(reason) ->
-        fun ->
-            error(reason) end ()
+    fun error2 reason ->
+        (\x -> error(reason)) ()
     end
 
 
-    affirm:is_equal(
+    e1 =
+    try
         try
-            try
-                1/0
-            catch e1 ->
-                throw e1
-            end
-        catch e2 ->
-            try
-                error(#LifeSucks)
-            catch e3 ->
-                //result
-                e3
-            end
-        end
-        ,(#error, {reason=#LifeSucks})
-    )
+            1/0
+        | e1 ->
+            throw e1
+        ---
+    | e2 ->
+        try
+            error(#LifeSucks)
+        | e3 ->
+            //result
+            e3
+        ---
+    ---
+    affirm:is_equal e1 (#error, {reason=#LifeSucks})
 
     //////////////////////////////////////////////////////////////
 
-    affirm:is_equal(
+    affirm:is_equal (
         try
             try
                 1/0
-            catch e1 ->
+            | e1 ->
                 //result
                 e1
-            end
-        catch e2 ->
+            ---
+        | e2 ->
             try
                 error(#LifeSucks)
-            catch e3 ->
+            | e3 ->
                 e3
-            end
-        end
-        ,(#ZeroDivisionError, (1, 0))
-    )
+            ---
+        end) (#ZeroDivisionError, (1, 0))
+
 
     ///////////////////////////////////////////
 
-    affirm:is_equal(
+    affirm:is_equal (
         try
             try
                 1/0
-            catch e1 ->
+            | e1 ->
                 e1
-            finally
+            | finally ->
                 //result
                 (#Finally, e1)
-            end
-        catch e2 ->
+            ---
+        | e2 ->
             try
                 error(#LifeSucks)
-            catch e3 ->
+            | e3 ->
                 e3
-            end
-        end
-        ,(#Finally, (#ZeroDivisionError, (1, 0)))
-    )
+            ---
+        end) (#Finally, (#ZeroDivisionError, (1, 0)))
+
 
     ///////////////////////////////////////////
 
-    affirm:is_equal(
+    affirm:is_equal (
         try
             try
                 1/0
-            catch e1 ->
+            | e1 ->
                 e1
-            finally
+            | finally ->
                 error2(#Finally)
-            end
-        catch e2 ->
+            ----------
+        | e2 ->
             try
                 error(#Catch)
-            catch e3 ->
+            | e3 ->
                 42
-            finally
+            | finally ->
                 //result
                 (e2, e3)
-            end
-        end
-        ,(
-            (#error, {reason=#Finally}),
-            (#error, {reason=#Catch})
-         )
-    )
+            -------------
+        end) ((#error, {reason=#Finally}), (#error, {reason=#Catch}))
 
     ///////////////////////////////////////////
 
-    affirm:is_throw_expected(
-        fun ->
+    affirm:is_throw_expected (
+        fun | () ->
             try
                 try
                     1/0
-                catch e1 ->
+                | e1 ->
                     e1
-                finally
+                | finally ->
                     error2(#Finally)
-                end
-            catch e2 ->
+                ---
+            | e2 ->
                 try
                     error(#Catch)
-                catch e3 ->
+                | e3 ->
                     42
-                finally
+                | finally ->
                     //uncatched
                     throw (e2, e3)
-                end
-            end
-         end,
-         (),
-         (
-            (#error, {reason=#Finally}),
-            (#error, {reason=#Catch})
-         )
-    )
+                ---
+            ---
+        end) () ( (#error, {reason=#Finally}), (#error, {reason=#Catch}) )
 
     /////////////////////////////////////////////
 
     affirm:is_throw_expected(
-        fun (arg1, arg2) ->
+        fun
+        | arg1 arg2 ->
             try
                 1/0
-            catch e ->
+            | e ->
                 throw (arg1, arg2)
-            finally
+            | finally ->
                 throw e
-            end
-        end,
-        (33, 22),
-        (33, 22)
-    )
-    affirm:is_equal(
-        try
-            throw (1,2,"ERROR")
-        catch err @ (1, y, 3) ->
-            #first
-        catch (1,2, "ERROR@") ->
-            #second
-        catch  err @ (1, 2, x) ->
-            #third
-        finally
-            (#fourth, err, x)
-        end, (#fourth, (1, 2, "ERROR"), "ERROR"))
-end
+            ---
+        end) (33, 22) (33, 22)
+
+    affirm:is_equal try throw (1,2,"ERROR")
+                    | err @ (1, y, 3) -> #first
+                    |(1,2, "ERROR@") -> #second
+                    | err @ (1, 2, x) -> #third
+                    | finally -> (#fourth, err, x)
+                    -------------------------------,
+                    (#fourth, (1, 2, "ERROR"), "ERROR")
+--------------------------------------------------------------
