@@ -1,5 +1,5 @@
 import seq
 
-specify seq.length(self of Tuple) ->
-    ___length(self)
-end
+specify seq.length
+| self of Tuple -> ___length self
+----------

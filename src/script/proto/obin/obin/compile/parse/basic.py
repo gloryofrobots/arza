@@ -360,6 +360,8 @@ def advance_expected_one_of(parser, ttypes):
 
     return parser.next()
 
+def isendofexpressiontoken(parser):
+    return parser.token_type == TT_SEMI
 
 def endofexpression(parser):
     if parser.isend():

@@ -1,244 +1,192 @@
 import seq
+
 import from _lists (cons, tail, head, empty, is_empty)
 
-specify seq:seq(l of List) -> l;
+specify seq:seq | l of List -> l end
 
-specify seq:head(l of List) -> head(l);
+specify seq:head | l of List -> head l end
 
-specify seq:tail(l of List) -> tail(l);
+specify seq:tail | l of List -> tail l end
 
-specify seq:empty(l of List) -> empty();
+specify seq:empty | l of List -> empty () end
 
-specify seq:is_empty(l of List) -> is_empty(l);
+specify seq:is_empty | l of List -> is_empty l end
 
-specify seq:cons(a of Any, l of List) -> cons(a, l);
-
-
+specify seq:cons | a of Any l of List -> cons a l end
 
 //TRANSFORMERS///////////////////////////////////////////////////////
 
-def map(f of Callable, l of List) ->
-    fun _map
-         case (f, []) -> []
-         case (f, [hd, ...tl]) -> f(hd) :: _map(f, tl)
-    end
-    _map(f, l)
-end
+fun map
+| f [] -> []
+| f [hd, ...tl] -> (f hd) :: (map f tl)
+----------------------------------------
 
-def intersperse(val, l of List) ->
-    fun _intersperse
-        case (val, []) -> []
-        case (val, [hd, ...tl]) -> hd :: val :: _intersperse(val, tl)
-    end
-    _intersperse(val, l)
-end
+fun intersperse
+| val [] -> []
+| val [hd, ...tl] -> hd :: val :: (intersperse val tl)
+--------------------------------------------------
 
-def reverse(l of List) ->
-    fun _reverse
-        case ([], result) -> result
-        case ([hd, ...tl], result) -> _reverse(tl, hd :: result)
-    end
-    _reverse(l, [])
-end
+fun reverse
+| [] result -> result
+| [hd, ...tl] result -> (reverse tl hd :: result)
+----------------------------------------
 
 //REDUCERS///////////////////////////////////////////////////////
-def on_reduced
-    case (#ReducedValue, val) -> val
-    case (e) -> throw e
-end
 
-def foldl(f of Callable, init_val, l of List) ->
-    fun _foldl
-        case (f, acc, []) -> acc
-        case (f, acc, [hd, ...tl]) ->
-            try
-                foldl(f, f(hd, acc), tl)
-            catch e ->
-                on_reduced(e);
-    end
-    _foldl(f, init_val, l)
-end
+fun foldl
+| f acc [] -> acc
+| f acc [hd, ...tl] -> foldl f (f hd acc) tl
+----------------------------------------
 
+fun foldr
+| f acc [] -> acc
+| f acc [hd, ...tl] -> f hd (foldr f acc tl)
+--------------------------------------------------
 
-def foldr(f of Callable, init_val, l of List) ->
-    fun _foldr
-        case (f, acc, []) -> acc
-        case (f, acc, [hd, ...tl]) ->
-            try
-                 f(hd, foldr(f, acc, tl))
-            catch e ->
-                on_reduced(e);
-    end
-    _foldr(f, init_val, l)
-end
+fun _scanl
+| f acc [] -> acc::[]
+| f acc [hd, ...tl] -> acc :: (_scanl f (f hd acc) tl)
+--------------------------------------------------
 
-
-def scanl(f of Callable, init_val, l of List) ->
-    fun _scanl
-        case (f, acc, []) -> acc::[]
-        case (f, acc, [hd, ...tl]) -> acc :: _scanl(f, f(hd, acc), tl)
-    end
-    try
-        _scanl(f, init_val, l)
-    catch e ->
-        on_reduced(e);
-end
 
 ///ACCESSORS//////////////////////////////////////
 
-def nth_tail
-    case (0, l) -> l
-    case (1, [_, ...t]) -> t
-    case (n, [_, ...t]) ->
-        nth_tail(n - 1, t) when n >= 0 else throw (#InvalidIndex, n)
-end
+fun nth_tail
+| 0 l -> l
+| 1 [_, ...t] -> t
+| n [_, ...t] when n >= 0 -> nth_tail n - 1 t
+--------------------------------------------------
 
-def nth
-    case (0, L) -> L
-    case (1, [h, ...t]) -> h
-    case (n, [h, ...t]) ->
-        nth(n - 1, t) when n >= 0 else throw (#InvalidIndex, n)
-end
+fun nth
+| 0 l -> l
+| 1 [h, ...t] -> h
+| n [h, ...t] when n >= 0 -> nth n - 1 t
+--------------------------------------------------
 
-
-def length(l of List) ->
-    foldl(fun (_, acc) -> acc + 1 end, 0, l);
+fun length | l of List ->
+    foldl lambda _ acc -> acc + 1; 0 l
+--------------------------------------------------
 
 //QUERIES///////////////////////////////////////////////////
 
-def prefix
-    case ([hd, ...pre_tail], [hd, ...tail]) -> prefix(pre_tail, tail)
-    case ([], l) -> true
-    case ([_, ..._], l) -> false
-end
+fun prefix
+| [hd, ...pre_tail] [hd, ...tail] -> prefix pre_tail tail
+| [] l -> true
+| [_, ..._] l -> false
+--------------------------------------------------
 
-def suffix(suf of List, l of List) ->
-   delta = length(l) - length(suf)
-   delta >= 0 and nth_tail(delta, l) == suf
-end
+fun suffix | suf of List l of List ->
+   delta = (length l) - (length suf)
+   delta >= 0 and (nth_tail delta l) == suf
+--------------------------------------------------
 
 //SUBLISTS/////////////////////////////////////////////////////////////
 
-def drop(count of Int, l of List) ->
+fun drop(count of Int, l of List) ->
     fun _drop
-        case (0, l) -> l
-        case (count, [hd, ...tl]) -> _drop(count - 1, tl);
+    | (0, l) -> l
+    | (count, [hd, ...tl]) -> _drop(count - 1, tl) end
     _drop(count, l)
 end
 
-def take (n of Int, l) ->
+fun take (n of Int, l) ->
     fun _take
-        case (0, _) -> []
-        case (_, []) -> []
-        case (n, [x, ...xs]) -> x :: _take(n-1, xs);
+    | (0, _) -> []
+    | (_, []) -> []
+    | (n, [x, ...xs]) -> x :: _take(n-1, xs) end
     _take(n, l)
 end
 
-def split_at(n of Int, l of List) -> (take(n, l), drop(n, l));
+fun split_at(n of Int, l of List) -> (take(n, l), drop(n, l)) end
 
-def take_while
-    case (p, []) -> []
-    case (p, [x, ...xs]) -> x :: take_while(p, xs) when p(x) else []
+fun take_while
+| (p, []) -> []
+| (p, [x, ...xs]) -> x :: take_while(p, xs) when p(x) else []
 end
 
-def drop_while
-    case (p, []) -> []
-    case (p, xs@[x, ...xs1]) -> drop_while(p, xs1) when p(x) else xs
+fun drop_while
+| (p, []) -> []
+| (p, xs@[x, ...xs1]) -> drop_while(p, xs1) when p(x) else xs
 end
 
-def span
-    case (p, []) -> ([], [])
-    case (p, xs@[x, ...xs1]) ->
+fun span
+| (p, []) -> ([], [])
+| (p, xs@[x, ...xs1]) ->
         if not p(x)
             ([], xs)
         else
             (ys, zs) = span(p, xs1)
-            (x::ys, zs);
+            (x::ys, zs) end
 end
 
-def delete
-    case (item, [item, ...xs]) -> xs
-    case (item, [x, ...xs]) -> x :: delete(item, xs)
-    case (_, []) -> []
+fun delete
+| (item, [item, ...xs]) -> xs
+| (item, [x, ...xs]) -> x :: delete(item, xs)
+| (_, []) -> []
 end
 ////QUERIES//////////////////////////////////////////////////////////////////
 
-def conjunction(l of List) -> foldr(fun(v, acc) -> v and acc end, true, l);
-def disjunction(l of List) -> foldr(fun(v, acc) -> v or acc end, false, l);
-def any(p, l of List) ->  disjunction(map(p, l));
-def all(p, l of List) ->  conjunction(map(p, l));
-def element(x, l of List) ->  any(fun (v) -> v == x end, l);
-def contains(l of List, x) ->  element(x, l);
-
-////
-//-- Applied to a predicate and a list, any determines if any element
-//-- of the list satisfies the predicate.  Similarly, for all.
-//
-//any, all         :: (a -> Bool) -> [a] -> Bool
-//any p            =  or . map p
-//all p            =  and . map p
-//
-//-- elem is the list membership predicate, usually written in infix form,
-//-- e.g., x `elem` xs.  notElem is the negation.
-//
-//elem, notElem    :: (Eq a) => a -> [a] -> Bool
-//elem x           =  any (== x)
-//notElem x        =  all (/= x)
+fun conjunction(l of List) -> foldr(fun(v, acc) -> v and acc end, true, l) end
+fun disjunction(l of List) -> foldr(fun(v, acc) -> v or acc end, false, l) end
+fun any(p, l of List) ->  disjunction(map(p, l)) end
+fun all(p, l of List) ->  conjunction(map(p, l)) end
+fun element(x, l of List) ->  any(fun (v) -> v == x end, l) end
+fun contains(l of List, x) ->  element(x, l) end
 
 
 //BUILDERS/////////////////////////////////////////////////////////////
 
-def concat(l1 of List, l2 of List) ->
-     foldr(`::`, l2, l1);
+fun concat(l1 of List, l2 of List) ->
+     foldr(`::`, l2, l1) end
 
 
-//def range
-//    case (first of Int, last of Int) ->
+//fun range
+//| (first of Int, last of Int) ->
 //        if last < 0
 //            step = - 1
 //        else
-//            step = 1;
+//            step = 1 end
 //        range(first, last, step)
 //    ///////////////////////////////////////
-//    case (first of Int, last of Int, step of Int) ->
+//| (first of Int, last of Int, step of Int) ->
 //        when step == 0
-//            throw (#RangeError, "Step cannot be zero.");
+//            throw (#RangeError, "Step cannot be zero.") end
 //
 //        when last < first and step > 0
-//            throw (#RangeError, "Expected negative step.");
+//            throw (#RangeError, "Expected negative step.") end
 //
 //        fun _range(first, last, step, condition, result) ->
 //             if condition(first, last)
 //                reverse(result)
 //             else
-//                _range(first + step, last, step, condition, first :: result);
+//                _range(first + step, last, step, condition, first :: result) end
 //        end
 //
 //        condition = `>=` when step > 0 else `<=`
 //        _range(first, last, step, condition, [])
 //end
 
-def range
-    case (first of Int, last of Int) ->
+fun range
+| (first of Int, last of Int) ->
         if last < 0
             step = - 1
         else
-            step = 1;
+            step = 1 end
         range(first, last, step)
     ///////////////////////////////////////
-    case (first of Int, last of Int, step of Int) ->
+| (first of Int, last of Int, step of Int) ->
         fun _range
-            case (N, X, D, L) when N >= 4 ->
+        | (N, X, D, L) when N >= 4 ->
                 Y = X - D
                 Z = Y - D
                 W = Z - D
                 _range(N - 4, W - D, D, W :: Z :: Y :: X :: L)
-            case (N, X, D, L) when N >= 2 ->
+        | (N, X, D, L) when N >= 2 ->
                 Y = X - D
                 _range(N - 2, Y - D, D, Y :: X :: L)
-            case (1, X, _, L) ->
+        | (1, X, _, L) ->
                 X :: L
-            case (0, _, _, L) -> L;
+        | (0, _, _, L) -> L end
 
         if step > 0 and first - step <= last or
             step < 0 and first - step >= last
@@ -251,24 +199,24 @@ def range
         end
 end
 
-def last
-    case ([x, ...xs]) -> last(x, xs)
-    case (_, [x, ...xs]) -> last(x, xs)
-    case (x, []) -> x
+fun last
+| ([x, ...xs]) -> last(x, xs)
+| (_, [x, ...xs]) -> last(x, xs)
+| (x, []) -> x
 end
 
-def uncons([x, ...xs]) -> (x, xs);
+fun uncons([x, ...xs]) -> (x, xs) end
 
 
-def init
-    case ([x]) -> []
-    case ([x, ...xs]) -> x :: init(xs)
-    case ([]) ->  throw #EmptyListError
+fun init
+| ([x]) -> []
+| ([x, ...xs]) -> x :: init(xs)
+| ([]) ->  throw #EmptyListError
 end
 
-def replicate
-    case (n of Int, x) when n >= 0 -> replicate(n, x, [])
-    case (0, _, l) -> l
-    case (n, x, l) -> replicate(n-1, x, x :: l)
+fun replicate
+| (n of Int, x) when n >= 0 -> replicate(n, x, [])
+| (0, _, l) -> l
+| (n, x, l) -> replicate(n-1, x, x :: l)
 end
 
