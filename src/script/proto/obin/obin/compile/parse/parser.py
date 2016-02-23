@@ -142,11 +142,11 @@ class ModuleParser(BaseParser):
 def name_parser_init(parser):
     parser.break_on_juxtaposition = True
     symbol(parser, TT_COMMA, None)
-    symbol(parser, TT_WILDCARD, None)
+    # symbol(parser, TT_WILDCARD, None)
     symbol(parser, TT_RPAREN, None)
-    literal(parser, TT_NAME)
-    literal(parser, TT_INT)
+    init_parser_literals(parser)
     symbol(parser, TT_CASE, None)
+    symbol(parser, TT_ELLIPSIS, None)
 
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_BACKTICK, prefix_backtick)
@@ -165,6 +165,8 @@ def import_names_parser_init(parser):
 
 def import_parser_init(parser):
     symbol(parser, TT_COMMA, None)
+    symbol(parser, TT_LPAREN, None)
+    symbol(parser, TT_HIDING, None)
     infix(parser, TT_COLON, 10, infix_name_pair)
     infix(parser, TT_AS, 20, infix_name_pair)
     literal(parser, TT_NAME)

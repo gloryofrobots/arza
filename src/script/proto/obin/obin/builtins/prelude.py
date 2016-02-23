@@ -23,8 +23,6 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
     api.put_native_function(process, module, u'print', _print, -1)
     api.put_native_function(process, module, u'id', _id, 1)
-    api.put_native_function(process, module, u'spawn_fiber', spawn_fiber, 0)
-    api.put_native_function(process, module, u'activate_fiber', activate_fiber, 2)
     api.put_native_function(process, module, u'apply', apply, 2)
     api.put_native_function(process, module, u'concat', concat_tuples, 2)
     api.put_native_function(process, module, u'time', time, 0)
@@ -186,22 +184,6 @@ def __isa(process, routine):
     left = routine.get_arg(0)
     right = routine.get_arg(1)
     return entity.isa(process, left, right)
-
-@complete_native_routine
-def spawn_fiber(process, routine):
-    from obin.types.fiber import newfiber
-    y1, y2 = newfiber(process)
-    return space.newtuple([y1, y2])
-
-
-def activate_fiber(process, routine):
-    from obin.types.fiber import activate_fiber as activate
-    fiber = routine.get_arg(0)
-    func = routine.get_arg(1)
-    # args = routine.get_arg(2)
-    args = space.newtuple([])
-    activate(process, fiber, func, args)
-    return space.newnil()
 
 
 @complete_native_routine

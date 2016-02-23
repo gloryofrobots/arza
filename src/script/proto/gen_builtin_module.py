@@ -2,7 +2,7 @@ from jinja2 import Template
 
 
 TPL_SETUP_HEADER = """
-def setup(process, module, stdlib):
+def setup(process, stdlib):
     _module = space.newemptyenv(space.newsymbol(process, u'{{module_name}}'))
 """
 
@@ -72,7 +72,7 @@ def module(module_name, funcs):
         funcs=funcs
     )
 
-LISTS = module("_lists", [
+LISTS = module("_list", [
     func(func_name="tail", func_native_name="_tail", func_arity=1,
              source_module="plist", source_function="tail"),
     func(func_name="empty", func_native_name="_empty", func_arity=0,
@@ -85,7 +85,7 @@ LISTS = module("_lists", [
              source_module="plist", source_function="cons"),
     ])
 
-TUPLES = module("_tuples", [
+TUPLES = module("_tuple", [
     func(func_name="length", func_native_name="_length", func_arity=1,
              source_module="tupl", source_function="length"),
     ])

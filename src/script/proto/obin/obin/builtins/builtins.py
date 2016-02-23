@@ -12,10 +12,13 @@ def setup(process, module, stdlib):
     # MODULES
 
     import obin.builtins.modules.module_tvar
-    obin.builtins.modules.module_tvar.setup(process, module, stdlib)
+    obin.builtins.modules.module_tvar.setup(process, stdlib)
 
-    import obin.builtins.modules.module_lists
-    obin.builtins.modules.module_lists.setup(process, module, stdlib)
+    import obin.builtins.modules.module_list
+    obin.builtins.modules.module_list.setup(process, stdlib)
+
+    import obin.builtins.modules.module_fiber
+    obin.builtins.modules.module_fiber.setup(process, stdlib)
 
     module.export_all()
 

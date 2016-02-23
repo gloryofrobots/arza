@@ -3,7 +3,7 @@ from obin.types import api, space, tvar
 from obin.runtime.routine import complete_native_routine
 
 
-def setup(process, module, stdlib):
+def setup(process, stdlib):
     tvar_module = space.newemptyenv(space.newsymbol(process, u"tvar"))
     api.put_native_function(process, tvar_module, u'read', tvar_read, 1)
     api.put_native_function(process, tvar_module, u'swap', tvar_swap, 2)

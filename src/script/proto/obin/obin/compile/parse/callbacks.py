@@ -530,9 +530,16 @@ def parse_function_variants(parser):
     return nodes.list_node(funcs)
 
 
-def parse_function(parser):
-    name = expect_expression(parser.name_parser, 0, NODE_FUNC_NAME,
-                             terminators=TERM_GUARD, error_on_juxtaposition=False)
+def parse_function(parser, allow_empty_name):
+    if parser.token_type == TT_CASE:
+        if allow_empty_name:
+            name = nodes.empty_node()
+        else:
+            return parse_error(parser, u"Expected function name", parser.node)
+    else:
+        name = expect_expression(parser.name_parser, 0, NODE_FUNC_NAME,
+                                 terminators=TERM_GUARD, error_on_juxtaposition=False)
+
     funcs = parse_function_variants(parser)
     advance_end(parser)
     return name, funcs
@@ -541,24 +548,23 @@ def prefix_lambda(parser, op, node):
     name = nodes.empty_node()
     if parser.token_type == TT_ARROW:
         return parse_error(parser, u"Empty function arguments pattern", parser.node)
-        # args = nodes.create_unit_node(parser.node)
     else:
         args = _parse_func_pattern(parser)
 
     advance_expected(parser, TT_ARROW)
     # body = statements(parser, TERM_BLOCK)
-    body = expression(parser, 0, terminators=None, error_on_juxtaposition=False)
+    body = nodes.list_node([expression(parser, 0, terminators=None, error_on_juxtaposition=False)])
     # advance_end(parser)
     return node_2(
             NT_FUN, __ntok(node), name, nodes.list_node([nodes.list_node([args, body])]))
 
 def prefix_fun(parser, op, node):
-    name, funcs = parse_function(parser)
+    name, funcs = parse_function(parser, True)
     return node_2(NT_FUN, __ntok(node), name, funcs)
 
 
 def prefix_module_fun(parser, op, node):
-    name, funcs = parse_function(parser.expression_parser)
+    name, funcs = parse_function(parser.expression_parser, False)
     return node_2(NT_FUN, __ntok(node), name, funcs)
 
 

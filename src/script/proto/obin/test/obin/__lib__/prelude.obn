@@ -22,11 +22,13 @@
 @infixl(`++`, `++`, 70)
 
 
+//import from fiber (coroutine)
 
-
+//fun f ...args -> 42 end
 
 //fun main _ ->
-//    (\x [hd, ...tl] {N,Z} -> x + x) 2 [1,2,3,4] {N=#N, Z=#Z}
+//     fun | x [a, b] -> x + a + b end
+//     \x [a, b] -> x + a + b
 //---
 
 

@@ -159,4 +159,9 @@ def test ->
     fun add(x,y) -> x+ y + f2() end
     fun f2()-> 42 end
     affirm:is_equal(f1(1,2), 45)
+    ////////////////////////////////////////////////
+    f = fun | x [a, b] -> x +  a + b end
+    f1 = \x [a, b] -> x + a + b
+    affirm:is_equal (f 1 [2, 3]) (f1 1 [2, 3])
+    affirm:is_equal (f 1 [2, 3]) 6
 end
