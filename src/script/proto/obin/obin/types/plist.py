@@ -331,7 +331,7 @@ def remove(pl, v):
     type_check(pl)
     from obin.types import api
     if is_empty(pl):
-        return error.throw_1(error.Errors.VALUE, space.newint(v))
+        return error.throw_1(error.Errors.VALUE_ERROR, space.newint(v))
 
     if api.equal_b(v, head(pl)):
         return tail(pl)

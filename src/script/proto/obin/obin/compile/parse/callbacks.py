@@ -537,6 +537,20 @@ def parse_function(parser):
     advance_end(parser)
     return name, funcs
 
+def prefix_lambda(parser, op, node):
+    name = nodes.empty_node()
+    if parser.token_type == TT_ARROW:
+        return parse_error(parser, u"Empty function arguments pattern", parser.node)
+        # args = nodes.create_unit_node(parser.node)
+    else:
+        args = _parse_func_pattern(parser)
+
+    advance_expected(parser, TT_ARROW)
+    # body = statements(parser, TERM_BLOCK)
+    body = expression(parser, 0, terminators=None, error_on_juxtaposition=False)
+    # advance_end(parser)
+    return node_2(
+            NT_FUN, __ntok(node), name, nodes.list_node([nodes.list_node([args, body])]))
 
 def prefix_fun(parser, op, node):
     name, funcs = parse_function(parser)

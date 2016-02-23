@@ -68,6 +68,8 @@ TOKENS = [
   ("TT_SEMI", ";"),
   ("TT_SHARP", "#"),
 
+  ("TT_LAMBDA", "\\"),
+
   ("TT_INFIX_LCURLY", ".{"),
   ("TT_LCURLY", "{"),
   ("TT_RCURLY", "}"),

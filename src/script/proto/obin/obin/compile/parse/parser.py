@@ -333,6 +333,7 @@ def expression_parser_init(proc_data, parser):
     prefix(parser, TT_CONDITION, prefix_condition)
 
     prefix(parser, TT_FUN, prefix_fun)
+    prefix(parser, TT_LAMBDA, prefix_lambda)
 
     prefix(parser, TT_MATCH, prefix_match)
     prefix(parser, TT_TRY, prefix_try)

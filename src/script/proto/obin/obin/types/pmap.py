@@ -39,7 +39,7 @@ def _equal(pair, other):
     value = api.at(pair, space.newint(1))
     value2 = api.at(other, key)
     if not api.equal_b(value, value2):
-        return error.throw_2(error.Errors.KEY, key, other)
+        return error.throw_2(error.Errors.KEY_ERROR, key, other)
     return other
 
 

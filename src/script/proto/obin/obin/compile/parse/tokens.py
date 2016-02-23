@@ -129,6 +129,7 @@ RULES = [
     (token('---[-]*'), TT_END),
 
     (token('\-\>'), TT_ARROW),
+    (token('\\\\'), TT_LAMBDA),
     (token('\.\.\.'), TT_ELLIPSIS),
     (token('\;'), TT_SEMI),
     (token('#'), TT_SHARP),

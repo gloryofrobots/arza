@@ -4,7 +4,7 @@ fun is_equal_batch fn ...calls ->
 
 fun _batch checker fn calls ->
     for call in calls
-        checker (apply fn call[0])  call[1]
+        checker (apply fn call.[0])  call.[1]
     ---
 ---
 
@@ -68,17 +68,15 @@ fun is_false val1 -> is_same val1 false
 ---
 
 fun is_throw fn args ->
-    throwed = false
-
-    try
-        apply fn args
-    | e ->
-        throwed = true
-        e
-    ----------
-
-    when not throwed
-        fail ["exception expected", fn]
+    match
+        try
+            apply fn args
+            nil
+        | e ->
+            e
+        ---
+    | nil -> fail ["exception expected", fn]
+    | err -> err
     ---
 ---
 

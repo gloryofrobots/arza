@@ -25,13 +25,9 @@
 
 
 
-
-
-
-
-
-
-
+//fun main _ ->
+//    (\x [hd, ...tl] {N,Z} -> x + x) 2 [1,2,3,4] {N=#N, Z=#Z}
+//---
 
 
 
@@ -57,12 +53,6 @@ length = ___length
 //| f [hd, ...tl] -> f hd :: (map f tl)
 //-------------------------------------
 
-//fun main _ ->
-//    condition
-//    | val1 == val2 -> fail [val1, "==", val2]
-//    | otherwise ->  true
-//    ---
-//---
 
 
 //    match (1,2,3)
