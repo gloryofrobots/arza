@@ -1,2 +1,2 @@
-def f_c(num) ->
+fun f_c | num ->
     num + 42 end

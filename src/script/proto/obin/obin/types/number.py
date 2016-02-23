@@ -4,6 +4,8 @@ from obin.types import api, space
 from obin.misc.platform import rarithmetic, rfloat
 from obin.runtime import error
 
+# TODO error here 2 % 0
+
 # 15.7.3.2
 w_MAX_VALUE = space.newnumber(1.7976931348623157e308)
 

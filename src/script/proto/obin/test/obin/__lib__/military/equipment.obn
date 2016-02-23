@@ -1,8 +1,0 @@
-object Weapon {
-    power = 0
-    ammo = 0
-}
-
-fn fire(weapon) {
-    print("Fire", weapon)
-}

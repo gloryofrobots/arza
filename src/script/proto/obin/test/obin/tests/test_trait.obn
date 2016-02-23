@@ -3,28 +3,29 @@ trait Animal, Wolf, Bird
 trait Human
 trait Bacteria
 
-def Human_New(name, surname) ->
-    {name=name, surname=surname} isa [Human, Animal] end
+fun Human_New  name surname ->
+    {name=name, surname=surname} isa [Human, Animal]
+--------------------------------------------------
 
-def Wolf_New(name) ->
-    {name=name} isa [Wolf, Animal] end
+fun Wolf_New  name ->
+    {name=name} isa [Wolf, Animal]
+--------------------------------------------------
 
 generic `-+-+-+-+`
-case (self of Animal) ->
+| self of Animal ->
     ["I am animal", self.name]
-end
-//
+--------------------------------------------------
+
 specify `-+-+-+-+`
-case (self of Human) ->
+| self of Human ->
     ["I am nice human",self.name, self.surname]
-end
+--------------------------------------------------
 
-def test ->
-
-    bob_alice = Human_New("Bob", "Alice")
-    wolf = Wolf_New("Jack")
-    affirm:is_equal(`-+-+-+-+`(bob_alice), ["I am nice human", "Bob", "Alice"])
-    affirm:is_equal(`-+-+-+-+`(wolf), ["I am animal", "Jack"])
+fun test () ->
+    bob_alice = Human_New "Bob" "Alice"
+    wolf = Wolf_New "Jack"
+    affirm:is_equal (`-+-+-+-+` bob_alice) ["I am nice human", "Bob", "Alice"]
+    affirm:is_equal (`-+-+-+-+` wolf) ["I am animal", "Jack"]
 
 
     affirm:is_true(bob_alice kindof Map)
@@ -43,6 +44,6 @@ def test ->
     affirm:is_false(alice2 kindof [Animal, Bird, Animal])
     affirm:is_true(alice2 kindof [Bird, Animal])
     affirm:is_false(alice3 kindof Animal)
-    affirm:is_equal(traits(alice3), [Bird, Bacteria, Human, Map, Indexed, Collection, Any])
-    affirm:is_equal(traits(alice4), [Animal, Human, Map, Indexed, Collection, Any])
-end
+    affirm:is_equal (traits alice3) [Bird, Bacteria, Human, Map, Indexed, Collection, Any]
+    affirm:is_equal (traits alice4) [Animal, Human, Map, Indexed, Collection, Any]
+--------------------------------------------------

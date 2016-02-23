@@ -70,17 +70,20 @@ fun is_false val1 -> is_same val1 false
 
 //apply needed tuple of arguments
 // so we need to convert () to ((),)
+
+trait Success
+
 fun is_throw
-| fn () -> is_throw fn ((),)
+| fn () -> is_throw fn [()]
 | fn args ->
     match
         try
             apply fn args
-            nil
+            true isa Success
         | e ->
             e
         ---
-    | nil -> fail ["exception expected", fn]
+    | _ of Success -> fail ["exception expected", fn]
     | err -> err
     ---
 ---

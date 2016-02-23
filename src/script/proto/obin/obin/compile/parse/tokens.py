@@ -81,7 +81,7 @@ RULES = [
     (keyword('or'), TT_OR),
     (keyword('true'), TT_TRUE),
     (keyword('false'), TT_FALSE),
-    (keyword('nil'), TT_NIL),
+    # (keyword('nil'), TT_NIL),
     (keyword('throw'), TT_THROW),
     (keyword('try'), TT_TRY),
     (keyword('catch'), TT_CATCH),

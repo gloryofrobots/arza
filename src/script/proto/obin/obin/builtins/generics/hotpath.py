@@ -1,5 +1,4 @@
 __author__ = 'gloryofrobots'
-from obin.builtins.generics.operations import *
 from obin.types.number import *
 from obin.runtime import error
 from obin.types import api, space, plist, string

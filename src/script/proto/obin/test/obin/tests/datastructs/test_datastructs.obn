@@ -1,9 +1,9 @@
-import tests:datastructs:test_list
+//import tests:datastructs:test_list
 import tests:datastructs:test_map
 import tests:datastructs:test_tuple
 
-def test() ->
-    test_list:test()
-    test_map:test()
-    test_tuple:test()
+fun test () ->
+//    test_list:test()
+    test_map:test ()
+    test_tuple:test ()
 end

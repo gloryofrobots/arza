@@ -50,23 +50,22 @@ import from lib_az:abc:module_ab (gen_ab, f_ab, f_ab_2, CONST as const)
 //end
 //
 //
-def test ->
-    affirm:is_equal(
-                    gen_ab({point=(10, 12, 0, -1), type=#Point}),
-                    {point=(10, 12, 0, -1), type=#Point})
+fun test () ->
+    affirm:is_equal (gen_ab {point=(10, 12, 0, -1), type=#Point}),
+                    {point=(10, 12, 0, -1), type=#Point}
 
-    affirm:is_equal(f_ab_2(32, 10), 42)
-    affirm:is_equal(ab:f_ab_2(32, 10), 42)
-    affirm:is_equal(ab:f_ab(42), 126)
-    affirm:is_equal(e:f_e(f_ab(100)), -758)
+//    affirm:is_equal (f_ab 32 10) 42
+    affirm:is_equal (ab:f_ab_2 32 10) 42
+    affirm:is_equal (ab:f_ab 42) 126
+    affirm:is_equal (e:f_e (f_ab 100)) (-758)
+
+//    affirm:is_equal m1:CONST const
+//    affirm:is_equal m1:CONST m4:CONST
+//    affirm:is_equal m1:CONST m4:CONST
 //
-//    affirm:is_equal(m1:CONST, const)
-//    affirm:is_equal(m1:CONST, m4:CONST)
-//    affirm:is_equal(m1:CONST, m4:CONST)
 //
-//
-//    affirm:is_equal(m1:m3:f_3(), #m1_m3_f_3)
-//    affirm:is_equal(m1:f_1(), #m1_f_1)
+//    affirm:is_equal (m1:m3:f_3 ()) #m1_m3_f_3
+//    affirm:is_equal (m1:f_1 ()) #m1_f_1
 //    affirm:is_equal_batch(m1:gt_10,
 //                        ([2],#m1_g1_less),
 //                        ([10],#m1_g1_equal),

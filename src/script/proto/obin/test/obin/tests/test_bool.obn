@@ -27,7 +27,6 @@ fun test() ->
     affirm:is_throw lambda x -> not ""; ()
     affirm:is_throw lambda x -> not []; ()
     affirm:is_throw lambda x -> not (); ()
-    affirm:is_throw lambda x -> not nil; ()
     affirm:is_throw lambda x -> not 1.2; ()
     affirm:is_throw lambda x -> not #symbol; ()
 
