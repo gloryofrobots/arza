@@ -120,7 +120,7 @@ def create_environment(process, source, parent_env):
         return source.env
 
     compile_func = W_EnvCompileFunction(source.name, source.bytecode, parent_env)
-    process.subprocess(compile_func, space.newnil())
+    process.subprocess(compile_func, space.newunit())
 
     source.env = compile_func.env
     return source.env

@@ -27,8 +27,10 @@
 //fun f ...args -> 42 end
 
 //fun main _ ->
-//     fun | x [a, b] -> x + a + b end
-//     \x [a, b] -> x + a + b
+////     fun | x [a, b] -> x + a + b end
+////     \x [a, b] -> x + a + b
+////     activate fiber2 \() -> apply fn (concat (fiber1, ), args)
+//     \() -> apply fn 2
 //---
 
 

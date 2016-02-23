@@ -1,7 +1,7 @@
 import affirm
-import tests:test_base
-import tests:test_static_refs
-import tests:test_bool
+//import tests:test_base
+//import tests:test_static_refs
+//import tests:test_bool
 import tests:test_co
 //import tests:datastructs:test_datastructs
 //import tests:test_operators
@@ -18,9 +18,9 @@ import tests:test_co
 
 
 fun main () ->
-    test_base:test()
-    test_static_refs:test()
-    test_bool:test()
+//    test_base:test()
+//    test_static_refs:test()
+//    test_bool:test()
     test_co:test()
 //    (\x [a,b,c,...tl] {N, Z} -> (x + a + b + c + N + Z) :: tl) 1 [1, 1, 1, 33,33,33] {N=1, Z = 1}
 

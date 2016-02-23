@@ -1,8 +1,8 @@
 import from fiber (coroutine)
 fun test () ->
-    co = coroutine fun yield x ->
+    co = coroutine fun | yield x ->
                        Z = "1111"
-                       _co1 = coroutine fun yield2 y ->
+                       _co1 = coroutine fun | yield2 y ->
                                            Y = "2222"
                                            fun send () ->
                                                 X = "3333"

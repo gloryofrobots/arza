@@ -290,6 +290,9 @@ def newtuple(items):
     verify_list(items)
     return W_Tuple(list(items))
 
+def newunit():
+    from obin.types.tupl import W_Tuple
+    return W_Tuple([])
 
 def istuple(w):
     from obin.types.tupl import W_Tuple

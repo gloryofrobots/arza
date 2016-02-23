@@ -10,8 +10,7 @@ fun coroutine fn ->
         condition
         | (tvar:read first_call) is false ->
             tvar:swap first_call true
-            activate fiber2,
-                    (\() -> apply fn (concat (fiber1, ), args))
+            activate fiber2 \() -> apply fn (concat (fiber1, ), args)
         | otherwise ->
             apply fiber2 args
         ---

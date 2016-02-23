@@ -19,7 +19,7 @@ class W_Fiber(W_Callable):
             error.throw_1(error.Errors.FIBER_FLOW, space.newstring(u"Can't resume active fiber"))
 
         if api.length_i(args) == 0:
-            value = space.newnil()
+            value = space.newunit()
         elif api.length_i(args) == 1:
             value = api.at_index(args, 0)
         else:
