@@ -14,7 +14,8 @@ specify seq:is_empty | l of List -> is_empty l end
 
 specify seq:cons | a of Any l of List -> cons a l end
 
-//TRANSFORMERS///////////////////////////////////////////////////////
+
+
 
 fun map
 | f [] -> []
@@ -25,6 +26,7 @@ fun intersperse
 | val [] -> []
 | val [hd, ...tl] -> hd :: val :: (intersperse val tl)
 --------------------------------------------------
+
 
 fun reverse
 | l of List -> reverse l []
@@ -84,7 +86,6 @@ fun suffix
    delta >= 0 and tl == suf
 --------------------------------------------------
 
-//SUBLISTS/////////////////////////////////////////////////////////////
 fun drop
 | 0 l -> l
 | count [hd, ...tl] -> drop (count - 1) tl
@@ -125,7 +126,7 @@ fun delete
 | _ [] -> []
 --------------------------------------------------
 
-////QUERIES//////////////////////////////////////////////////////////////////
+//QUERIES**************************************************//
 
 fun conjunction l ->
     foldr lambda v acc -> v and acc; true l end
@@ -145,7 +146,7 @@ fun element x l ->
 fun contains l x ->
     element x l end
 
-//BUILDERS/////////////////////////////////////////////////////////////
+//**BUILDERS **************************************************
 
 fun concat | l1 l2 ->
     foldr `::` l2 l1 end
@@ -154,7 +155,7 @@ fun range
 | first of Int last of Int ->
     step = -1 if last < 0 else 1
     range first last step
-    ///////////////////////////////////////
+
 | first of Int, last of Int, step of Int ->
     fun _range
     | N X D L when N >= 4 ->
@@ -162,13 +163,10 @@ fun range
         Z = Y - D
         W = Z - D
         _range (N - 4)  (W - D)  D  (W :: Z :: Y :: X :: L)
-
     | N X D L when N >= 2 ->
         Y = X - D
         _range (N - 2) (Y - D) D (Y :: X :: L)
-
     | 1 X _ L -> X :: L
-
     | 0 _ _ L -> L
     --------------------------------------------------
 
