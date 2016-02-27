@@ -1,3 +1,9 @@
+//TODO FIX IT
+length = ___length
+//TODO
+//Symbols can also be created using symbol(),
+//which takes any number of arguments and creates a new symbol by concatenating their string representations together:
+
 @prefix(`-`, `__uminus__`)
 @prefix(`+`, `__plus__`)
 @prefix(`~`, `~`)
@@ -21,70 +27,9 @@
 @infixr(`::`, `::`, 70)
 @infixl(`++`, `++`, 70)
 
+data Maybe = None | Just v
 
-//import from fiber (coroutine)
-
-//fun f ...args -> 42 end
-
-//fun main _ ->
-//    f n - 1 t
-//---
-
-
-
-////////////////////////////////////////
-//TODO FIX IT
-length = ___length
-//import affirm
-
-//generic _and_
-//| t1 of True, t2 of True -> True
-//| a1 of Any, a2 of Any -> False
-//------------------------------
-
-//TODO
-//Symbols can also be created using symbol(),
-//which takes any number of arguments and creates a new symbol by concatenating their string representations together:
-
-
-//fun f x2 {x1=x2, x4=x5} -> x6 end
-
-//fun map
-//| f [] -> []
-//| f [hd, ...tl] -> f hd :: (map f tl)
-//-------------------------------------
-
-
-
-//    match (1,2,3)
-//    | (x, y, z) when z == 2 -> #first
-//    | (x, y, z) when z == 3 and y == 3 -> #second
-//    | (x, y, z) when z == 3 and y == 2 and x == 3 -> #third
-//    | (x, y, z) when z == 3 and y == 2 and x == 1 and A == 2 -> #fourth
-//    | (x, y, z) when z == 3 and y == 2 and x == 1 and not A is true and greater_then_ten 9 -> #fifth
-//    | (x, y, z) when z == 3 and y == 2 and x == 1 and A is true or greater_then_ten 11 -> #sixth
-//    | _ -> 12
-//    -------------------------------------------------------------------------------------------------
-
-//    condition
-//    | x == 2 -> f 42 42
-//    | otherwise -> l 42 42
-//    --------------
-//
-//    try
-//        try 1/0
-//        | e1 ->
-//            e1
-//        | finally ->
-//            //result
-//            (#Finally, e1)
-//        ----------------
-//    | e2 ->
-//        try
-//            error(#LifeSucks)
-//        | e3 ->
-//            e3
-//        ----------------
-//    ----------------
-//
-//    [1,2,3,4, (foo 1 2 3), 5]
+fun main () ->
+    r = Just x
+    n = None
+------------

@@ -1,13 +1,14 @@
 from obin.types.root import W_Hashable
-from obin.types import api
+from obin.types import api, space
 from obin.misc import platform
 
 
 class W_Trait(W_Hashable):
     # _immutable_fields_ = ['_name_']
 
-    def __init__(self, name):
+    def __init__(self, name, generics):
         W_Hashable.__init__(self)
+        self.generics = generics
         self.name = name
 
     def _behavior_(self, process):

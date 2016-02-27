@@ -265,6 +265,7 @@ class W_Map(W_Any):
 
     def _put_(self, name, value):
         self.insert(name, value)
+        return self
 
     def insert(self, name, value):
         assert space.isany(name)

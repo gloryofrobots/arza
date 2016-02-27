@@ -35,7 +35,7 @@ class W_Function(W_Callable):
     #     return 'Function %s' % self._tostring_()
 
     def _to_routine_(self, stack, args):
-        from obin.runtime.routine import create_function_routine
+        from obin.runtime.routine.routine import create_function_routine
         routine = create_function_routine(stack, self, args, self.env)
         return routine
 

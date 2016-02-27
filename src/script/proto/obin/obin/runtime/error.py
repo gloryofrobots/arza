@@ -93,6 +93,7 @@ class Errors:
     REMOVE_TRAIT = u"RemoveTraitError"
     TYPE = u"TypeError"
     REFERENCE = u"ReferenceError"
+    CONSTRUCTOR = u"ConstructorError"
     RANGE = u"RangeError"
     KEY_ERROR = u"KeyError"
     VALUE_ERROR = u"ValueError"

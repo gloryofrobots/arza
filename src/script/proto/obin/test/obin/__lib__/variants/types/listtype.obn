@@ -1,0 +1,89 @@
+trait Seq of
+    generic is_empty _
+    generic size _
+    generic first _
+    generic rest _
+    generic cons a _
+------------
+
+trait List of
+    trait Seq
+-------------
+
+type Cons {head, tail}
+| head tail
+--------------------
+
+type Nil
+--------
+
+implement List
+for Cons
+    specify is_empty
+    | self of _ -> False
+    specify size
+    | self of _ -> 1 + (size  (tail self))
+    specify first
+    |  self of _  -> Cons:head self
+    specify rest
+    | self of _  -> Cons:tail self
+    specify cons
+    a of Any self of _ -> Cons a self
+
+for Nil
+    specify is_empty
+    | self of _ -> True
+    specify size
+    | self of _ -> 0
+    fail first
+    fail rest
+    specify cons
+    a of Any self of _ -> Cons a self
+------------------------------------
+
+
+///////////////////////////////////////////////////////
+trait List
+
+type Cons {head, tail}
+| head tail
+isa List
+---------------
+
+type Nil
+isa List
+------------------
+
+module seq
+    generic is_empty _
+    generic size _
+    generic first _
+    generic rest _
+    generic cons a _
+-----------------
+
+specify seq:is_empty
+| self of Nil -> true
+| self if Cons -> false
+----------------------
+
+specify seq:size
+| self of Nil -> 0
+| self of Cons -> 1 + (seq:size (tail self))
+----
+
+specify seq:first
+| self of Nil -> throw #NilListError
+| self of Cons -> self.head
+----
+
+specify seq:rest
+| self of Nil -> throw #NilListError
+| self of Cons -> self.tail
+----
+
+specify seq:cons
+| self of Any, self of Nil -> Cons a self
+| self of Any, self of Cons -> Cons a self
+----
+

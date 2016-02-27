@@ -1,0 +1,41 @@
+#########################################################################
+################################BRANCH HERE###############################
+#########################################################################
+fun range
+| first of Int last of Int ->
+    step = -1 if last < 0 else 1
+    range first last step
+################################BRANCH HERE###############################
+| first of Int, last of Int, step of Int ->
+    fun _range
+    ################################BRANCH HERE###############################
+    | N X D L when N >= 4 ->
+        Y = X - D
+        Z = Y - D
+        W = Z - D
+        _range (N - 4)  (W - D)  D  (W :: Z :: Y :: X :: L)
+    ## TODO CHOOSE COMMENT
+    ################################BRANCH HERE###############################
+    | N X D L when N >= 2 ->
+        Y = X - D
+        _range (N - 2) (Y - D) D (Y :: X :: L)
+    ## TODO CHOOSE COMMENT
+    ################################BRANCH HERE###############################
+    | 1 X _ L -> X :: L
+    ## TODO CHOOSE COMMENT
+    ################################BRANCH HERE###############################
+    | 0 _ _ L -> L
+    --------------------------------------------------
+
+    condition
+    | step > 0 and first - step <= last or step < 0 and first - step >= last ->
+        n = ((last - first + step) # step) - 1
+        _range n (step * (n - 1) + first) step []
+    ## COMMENT
+    | step == 0 and first == last ->
+        _range 1  first step []
+    ########### COMMENT
+    | otherwise ->
+        throw (#InvalidRange, first, last, step)
+    ------------------------------
+--------------------------------------------------
