@@ -16,19 +16,23 @@ import affirm
 //import tests:datastructs:test_datastructs
 //import list
 
-type Zero end
+type Zero
+---------
 
 type Point2 x y
     construct
-    | x y
+    | {x, y}
+    | (x, y)
     | x -> y = x
+    | x y
     -------------
 ---------
+
 // TODO error here 2 % 0
 fun main () ->
     p = Point2 0 1
     p1 = Point2 42
-    print p p1
+    print (Point2 0 1) (Point2 42) (Point2 {x=33, y=34})
 //    test_base:test()
 //    test_static_refs:test()
 //    test_bool:test()

@@ -59,7 +59,10 @@ class W_DataType(W_Hashable):
         self.name = name
         self.fields = fields
         self.descriptors = descriptors(self.fields)
-        self.set = None
+
+        # parent types declared with union
+        self.set_type = None
+
         self.ctor = constructor
         self.traits = None
 

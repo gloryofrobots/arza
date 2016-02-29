@@ -789,7 +789,7 @@ def _parse_construct(parser, node):
             advance_expected(parser, TT_ARROW)
             body = statements(parser, TERM_CASE)
             body = plist.append(body, fenv_node)
-        elif parser.token_type == TT_CASE:
+        elif parser.token_type == TT_CASE or parser.token_type == TT_END:
             body = nodes.list_node([fenv_node])
         else:
             return parse_error(parser, u"Invalid construct syntax", parser.node)

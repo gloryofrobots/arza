@@ -31,8 +31,9 @@ type Zero end
 
 type Point2 x y
     construct
-    | x y
-    | x -> y = x
+//    | x y
+//    | x -> y = x
+    | {x, y}
     -------------
 ---------
 
