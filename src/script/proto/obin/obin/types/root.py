@@ -139,8 +139,8 @@ class W_Any:
     def _slice_(self, start, end):
         return not_implemented_error(u"_call_", self, start, end)
 
-    def _behavior_(self, process):
-        return not_implemented_error(u"_behavior_", self)
+    def _type_(self, process):
+        return not_implemented_error(u"_type_", self)
 
     def _compute_hash_(self):
         return not_implemented_error(u"_compute_hash_", self)

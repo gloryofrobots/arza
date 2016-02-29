@@ -1,5 +1,6 @@
 from obin.types import api
 
+
 class Discriminator:
     def __init__(self, position):
         self.position = position
@@ -48,7 +49,7 @@ class PredicateDiscriminator(Discriminator):
     def _equal_(self, other):
         return other.__class__ == self.__class__ \
                and other.position == self.position \
-               and other.trait == self.predicate
+               and other.predicate == self.predicate
 
     def _evaluate(self, process, arg):
         # TODO GET RID OF MAGIC NUMBERS
@@ -57,13 +58,6 @@ class PredicateDiscriminator(Discriminator):
         else:
             return -1000
 
-    # def __str__(self):
-    #     if self.status is None:
-    #         status = '"None"'
-    #     else:
-    #         status = self.status
-    #
-    #     return '["%s", %s, %s]' % (str(self.predicate), str(self.position), str(status))
     def __str__(self):
         return '"%s:%s"' % (str(self.position), str(self.predicate))
 
@@ -81,16 +75,25 @@ class TraitDiscriminator(Discriminator):
     def _evaluate(self, process, arg):
         return api.get_index(api.traits(process, arg), self.trait)
 
-    # def __str__(self):
-    #     return "<TraitDiscriminator %s %s %s>" % (str(self.position), str(self.trait), str(self.status))
-
-    # def __str__(self):
-    #     if self.status is None:
-    #         status = '"nil"'
-    #     else:
-    #         status = self.status
-    #
-    #     return '["%s", %s, %s]' % (str(self.trait._name_), str(self.position), str(status))
-
     def __str__(self):
         return '"%s:%s"' % (str(self.position), str(self.trait._name_))
+
+
+class TypeDiscriminator(Discriminator):
+    def __init__(self, position, type):
+        Discriminator.__init__(self, position)
+        self.type = type
+
+    def _equal_(self, other):
+        return other.__class__ == self.__class__ \
+               and other.position == self.position \
+               and other.type == self.type
+
+    def _evaluate(self, process, arg):
+        if api.typeof_b(process, arg, self.type):
+            return 0
+        else:
+            return -1000
+
+    def __str__(self):
+        return '"%s:%s"' % (str(self.position), str(self.type._name_))

@@ -14,8 +14,8 @@ class W_True(W_Boolean):
     def _to_bool_(self):
         return True
 
-    def _behavior_(self, process):
-        return process.std.behaviors.True
+    def _type_(self, process):
+        return process.std.types.True
 
     def _hash_(self):
         return 1
@@ -31,8 +31,8 @@ class W_False(W_Boolean):
     def _to_bool_(self):
         return False
 
-    def _behavior_(self, process):
-        return process.std.behaviors.False
+    def _type_(self, process):
+        return process.std.types.False
 
     def _hash_(self):
         return 0

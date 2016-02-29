@@ -10,8 +10,8 @@ class W_Fiber(W_Callable):
     def _to_string_(self):
         return "<fiber>"
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Fiber
+    def _type_(self, process):
+        return process.std.types.Fiber
 
     def _call_(self, process, args):
 

@@ -28,8 +28,8 @@ class W_Function(W_Callable):
         # return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
         return "<func %s/%d>" % (api.to_s(self.name) ,self.arity)
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Function
+    def _type_(self, process):
+        return process.std.types.Function
 
     # def __str__(self):
     #     return 'Function %s' % self._tostring_()

@@ -1,6 +1,6 @@
 from obin.runtime.routine.routine import complete_native_routine
 from obin.runtime import error
-from obin.types import api, space, plist, environment, entity
+from obin.types import api, space, plist, environment
 
 from obin.runistr import encode_unicode_utf8
 from obin.misc.platform import rstring, compute_unique_id
@@ -171,7 +171,7 @@ def __isnot(process, routine):
 def __kindof(process, routine):
     left = routine.get_arg(0)
     right = routine.get_arg(1)
-    return entity.kindof(process, left, right)
+    return api.kindof(process, left, right)
 
 @complete_native_routine
 def __nota(process, routine):

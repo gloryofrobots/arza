@@ -54,8 +54,8 @@ class W_Generic(W_Callable):
         # print "GEN CALL", str(method)
         process.call_object(method, args)
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Generic
+    def _type_(self, process):
+        return process.std.types.Generic
 
 
 def specify(process, gf, signatures):

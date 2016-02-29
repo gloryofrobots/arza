@@ -31,73 +31,45 @@ class Generics:
         self.cons = newgeneric_hotpath(symbols.symbol(u"::"), hotpath.hp_cons, 2)
         self.concat = newgeneric_hotpath(symbols.symbol(u"++"), hotpath.hp_concat, 2)
 
-class Behaviors:
-    def __init__(self, traits):
-        self.create_builtins(traits)
-        # from obin.objects.space import newmap
-        # self.behaviors = newmap()
-        # self.create_cache = newmap()
-        # self.attach_cache = newmap()
-        # self.detach_cache = newmap()
 
-    def create_builtins(self, traits):
-        from obin.types.space import newlist, newbehavior
-        self.True = newbehavior(newlist([traits.True, traits.Boolean, traits.Any]))
-        self.False = newbehavior(newlist([traits.False, traits.Boolean, traits.Any]))
-        self.Nil = newbehavior(newlist([traits.Nil, traits.Any]))
-        self.Char = newbehavior(newlist([traits.Char, traits.Any]))
-        self.Integer = newbehavior(newlist([traits.Int, traits.Number, traits.Any]))
-        self.Float = newbehavior(newlist([traits.Float, traits.Number, traits.Any]))
-        self.Symbol = newbehavior(newlist([traits.Symbol, traits.Callable, traits.Any]))
-
-        self.String = newbehavior(newlist([traits.String, traits.Indexed, traits.Collection, traits.Any]))
-        self.List = newbehavior(newlist([traits.List, traits.Seq, traits.Collection, traits.Any]))
-        self.Vector = newbehavior(newlist([traits.Vector, traits.Indexed, traits.Collection, traits.Any]))
-        self.Tuple = newbehavior(newlist([traits.Tuple, traits.Indexed, traits.Collection, traits.Any]))
-        self.Map = newbehavior(newlist([traits.Map, traits.Indexed, traits.Collection, traits.Any]))
-
-        self.Function = newbehavior(newlist([traits.Function, traits.Callable, traits.Any]))
-        self.Generic = newbehavior(newlist([traits.Generic, traits.Callable, traits.Any]))
-        self.Primitive = newbehavior(newlist([traits.Primitive, traits.Callable, traits.Any]))
-
-        self.Trait = newbehavior(newlist([traits.Trait, traits.Any]))
-        self.Fiber = newbehavior(newlist([traits.Fiber, traits.Callable, traits.Any]))
-        self.TVar = newbehavior(newlist([traits.TVar, traits.Any]))
-
-
-        self.Environment = newbehavior(newlist([traits.Environment, traits.Collection, traits.Any]))
-        self.Module = newbehavior(newlist([traits.Module, traits.Collection, traits.Any]))
-        self.Behavior = newbehavior(newlist([traits.Behavior, traits.Any]))
+class Types:
+    def __init__(self, symbols, traits):
+        from obin.types.space import newlist, newnativedatatype as newtype, newnativetypeconstructor as newctor
+        _s = symbols.symbol
+        # ***************
+        self.Bool = newtype(_s(u"Bool"), newlist([traits.Any]))
+        self.True = newctor(_s(u"True"), self.Bool)
+        self.False = newctor(_s(u"False"), self.False)
+        # ***************
+        self.Option = newtype(_s(u"Option"), newlist([traits.Any]))
+        self.Nil = newctor(_s(u"Nil"), self.Option)
+        # ***************
+        self.Char = newtype(_s(u"Char"), newlist([traits.Any]))
+        self.Int = newtype(_s(u"Int"), newlist([traits.Number, traits.Any]))
+        self.Float = newtype(_s(u"Float"), newlist([traits.Number, traits.Any]))
+        self.Symbol = newtype(_s(u"Symbol"), newlist([traits.Callable, traits.Any]))
+        self.String = newtype(_s(u"String"), newlist([traits.Any]))
+        self.List = newtype(_s(u"List"), newlist([traits.Any]))
+        self.Vector = newtype(_s(u"Vector"), newlist([traits.Any]))
+        self.Tuple = newtype(_s(u"Tuple"), newlist([traits.Any]))
+        self.Map = newtype(_s(u"Map"), newlist([traits.Any]))
+        # ***************
+        self.Function = newtype(_s(u"Function"), newlist([traits.Callable, traits.Any]))
+        self.Generic = newtype(_s(u"Generic"), newlist([traits.Callable, traits.Any]))
+        self.NativeFunction = newtype(_s(u"NativeFunction"), newlist([traits.Callable, traits.Any]))
+        self.Fiber = newtype(_s(u"Fiber"), newlist([traits.Callable, traits.Any]))
+        # ***************
+        self.Trait = newtype(_s(u"Trait"), newlist([traits.Any]))
+        self.TVar = newtype(_s(u"TVar"), newlist([traits.Any]))
+        self.Env = newtype(_s(u"Env"), newlist([traits.Any]))
 
 
 class Traits:
     def __init__(self, symbols):
         from obin.types.space import newtrait
         self.Any = newtrait(symbols.symbol(u"Any"))
-        self.Boolean = newtrait(symbols.symbol(u"Boolean"))
-        self.True = newtrait(symbols.symbol(u"True"))
-        self.False = newtrait(symbols.symbol(u"False"))
-        self.Nil = newtrait(symbols.symbol(u"Nil"))
-        self.Char = newtrait(symbols.symbol(u"Char"))
         self.Number = newtrait(symbols.symbol(u"Number"))
-        self.Int = newtrait(symbols.symbol(u"Int"))
-        self.Float = newtrait(symbols.symbol(u"Float"))
-        self.Symbol = newtrait(symbols.symbol(u"Symbol"))
-        self.String = newtrait(symbols.symbol(u"String"))
-        self.List = newtrait(symbols.symbol(u"List"))
-        self.Vector = newtrait(symbols.symbol(u"Vector"))
-        self.Tuple = newtrait(symbols.symbol(u"Tuple"))
-        self.Map = newtrait(symbols.symbol(u"Map"))
         self.Callable = newtrait(symbols.symbol(u"Callable"))
-        self.Function = newtrait(symbols.symbol(u"Function"))
-        self.Fiber = newtrait(symbols.symbol(u"Fiber"))
-        self.Generic = newtrait(symbols.symbol(u"Generic"))
-        self.Primitive = newtrait(symbols.symbol(u"Primitive"))
-        self.Environment = newtrait(symbols.symbol(u"Environment"))
-        self.TVar = newtrait(symbols.symbol(u"TVar"))
-        self.Module = newtrait(symbols.symbol(u"Module"))
-        self.Behavior = newtrait(symbols.symbol(u"Behavior"))
-        self.Trait = newtrait(symbols.symbol(u"Trait"))
         self.Collection = newtrait(symbols.symbol(u"Collection"))
         self.Seq = newtrait(symbols.symbol(u"Seq"))
         self.Indexed = newtrait(symbols.symbol(u"Indexed"))
@@ -105,5 +77,5 @@ class Traits:
 class Std:
     def __init__(self, symbols):
         self.traits = Traits(symbols)
-        self.behaviors = Behaviors(self.traits)
+        self.types = Types(symbols, self.traits)
         self.generics = Generics(symbols)

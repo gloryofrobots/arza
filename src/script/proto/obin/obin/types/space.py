@@ -377,6 +377,15 @@ def newdatatype(name, fields, constructor):
     assert issymbol(name)
     return W_DataType(name, fields, constructor)
 
+def newnativedatatype(name, traits):
+    datatype = newdatatype(name, newlist([]), newnil())
+    datatype.add_traits(traits)
+    return datatype
+
+def newnativetypeconstructor(name, union):
+    datatype = newdatatype(name, newlist([]), newnil())
+    datatype.be_part_of_union(union)
+    return datatype
 
 def isdatatype(w):
     from obin.types.datatype import W_DataType

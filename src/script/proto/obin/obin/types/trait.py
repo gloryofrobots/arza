@@ -11,8 +11,8 @@ class W_Trait(W_Hashable):
         self.generics = generics
         self.name = name
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Trait
+    def _type_(self, process):
+        return process.std.types.Trait
 
     def _compute_hash_(self):
         return int((1 - platform.random()) * 10000000)
@@ -23,3 +23,4 @@ class W_Trait(W_Hashable):
 
     def _equal_(self, other):
         return other is self
+

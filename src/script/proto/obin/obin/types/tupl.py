@@ -62,8 +62,8 @@ class W_Tuple(W_Hashable):
             x = rarithmetic.intmask((1000003 * x) ^ y)
         return x
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Tuple
+    def _type_(self, process):
+        return process.std.types.Tuple
 
     def _clone_(self):
         return W_Tuple(self.elements)

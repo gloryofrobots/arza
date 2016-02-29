@@ -61,8 +61,8 @@ class W_Symbol(W_Any):
     def _at_(self, i):
         return self.string._at_index_(i)
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Symbol
+    def _type_(self, process):
+        return process.std.types.Symbol
 
 
 def concat_2(process, sym1, sym2):

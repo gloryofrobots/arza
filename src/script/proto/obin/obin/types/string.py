@@ -91,8 +91,8 @@ class W_String(W_Hashable):
         assert isint(index)
         return self._at_index_(api.to_i(index))
 
-    def _behavior_(self, process):
-        return process.std.behaviors.String
+    def _type_(self, process):
+        return process.std.types.String
 
 
 def concat(l, r):

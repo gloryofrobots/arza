@@ -1,34 +1,7 @@
 TRAITS = [
         "Any", 
-        "Boolean", 
-
-        "True", 
-        "False", 
-        "Nil", 
-        "Char", 
-
         "Number", 
-        "Int", 
-        "Float", 
-        "Symbol", 
-        "String", 
-
-        "List", 
-        "Vector", 
-        "Tuple", 
-        "Map", 
-
         "Callable", 
-        "Function", 
-        "Fiber", 
-        "Generic", 
-        "Primitive", 
-
-        "Environment", 
-        "TVar",
-        "Module", 
-        "Behavior", 
-        "Trait",
         "Collection",
         "Seq",
         "Indexed", 

@@ -54,8 +54,8 @@ class W_PMap(W_Any):
         repr = u"{%s}" % u", ".join(lst)
         return str(repr)
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Map
+    def _type_(self, process):
+        return process.std.types.Map
 
     def _length_(self):
         return self._cnt

@@ -114,3 +114,5 @@ class Errors:
     FUNCTION_MATCH = u"FunctionArgumentsMatchError"
     EXCEPTION_MATCH = u"ExceptionMatchError"
     EXPORT = u"ExportError"
+    TRAIT_ALREADY_IMPLEMENTED = u"TraitAlreadyImplementedError"
+    TRAIT_IMPLEMENTATION = u"TraitImplementationError"

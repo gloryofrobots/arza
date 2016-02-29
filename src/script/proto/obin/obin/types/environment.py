@@ -181,8 +181,8 @@ class W_Env(W_Any):
         # lookup in self parent environment
         return self.refs.get_ref(self.parent_env, symbol, index)
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Environment
+    def _type_(self, process):
+        return process.std.types.Env
 
     def _put_at_index_(self, idx, v):
         api.put_at_index(self.data, idx, v)

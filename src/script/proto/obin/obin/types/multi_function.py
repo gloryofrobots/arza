@@ -26,8 +26,8 @@ class W_MultiFunction(W_Callable):
         # print "GEN CALL", str(method)
         process.call_object(method, args)
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Function
+    def _type_(self, process):
+        return process.std.types.Function
 
 
 def _get_method(process, func, args):

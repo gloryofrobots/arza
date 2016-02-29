@@ -85,8 +85,8 @@ class W_PList(W_Any):
         i = api.to_i(k)
         return update(self, i, v)
 
-    def _behavior_(self, process):
-        return process.std.behaviors.List
+    def _type_(self, process):
+        return process.std.types.List
 
     def _slice_(self, start, end):
         from obin.types.space import isnil, newnil

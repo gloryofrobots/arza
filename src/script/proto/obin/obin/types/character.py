@@ -29,6 +29,6 @@ class W_Char(W_ValueType):
         else:
             return 0
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Char
+    def _type_(self, process):
+        return process.std.types.Char
 

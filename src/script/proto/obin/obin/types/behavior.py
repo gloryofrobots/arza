@@ -14,8 +14,8 @@ class W_Behavior(W_Hashable):
     def _to_string_(self):
         return "<Behavior %s>" % (api.to_s(self.traits))
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Behavior
+    def _type_(self, process):
+        return process.std.types.Behavior
 
     def _clone_(self):
         return W_Behavior(self.traits)

@@ -163,41 +163,51 @@ Traits
 """
 
 
-def behavior(process, obj):
-    return obj._behavior_(process)
+def get_type(process, obj):
+    return obj._type_(process)
 
 
 def traits(process, obj):
-    b = behavior(process, obj)
+    b = get_type(process, obj)
     return b.traits
 
 
 def kindof(process, obj, trait):
-    return space.newbool(n_kindof(process, obj, trait))
+    return space.newbool(kindof_b(process, obj, trait))
 
 
-def kindof_list(process, obj, traits):
-    from obin.types import behavior as _behavior
-    assert space.islist(traits)
-
-    b = behavior(process, obj)
-    return space.newbool(_behavior.has_traits(b, traits))
-
-
-def n_kindof(process, obj, trait):
-    t = totrait(trait)
-    from obin.types import behavior as _behavior
-    b = behavior(process, obj)
-    return _behavior.is_behavior_of(b, t)
+def kindof_b(process, obj, kind):
+    if space.istrait(kind):
+        return traitof_b(process, obj, kind)
+    elif space.isdatatype(kind):
+        return typeof_b(process, obj, kind)
+    else:
+        return error.throw_2(error.Errors.TYPE, obj, kind)
 
 
-def totrait(obj):
-    if space.istrait(obj):
-        return obj
-    elif space.isentity(obj):
-        return totrait(obj.source)
+def traitof(process, obj, trait):
+    return traitof_b(process, obj, trait)
 
-    error.throw_1(error.Errors.TYPE, obj)
+
+def traitof_b(process, obj, trait):
+    if not space.istrait(trait):
+        return error.throw_1(error.Errors.TYPE, trait)
+
+    obj_type = get_type(process, obj)
+    return obj_type.implements(trait)
+
+
+def typeof(process, obj, _type):
+    return typeof_b(process, obj, _type)
+
+
+def typeof_b(process, obj, _type):
+    from obin.types import datatype
+    if not space.isdatatype(_type):
+        return error.throw_1(error.Errors.TYPE, _type)
+
+    obj_type = get_type(process, obj)
+    return datatype.can_coerce(obj_type, _type)
 
 
 """

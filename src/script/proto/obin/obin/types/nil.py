@@ -7,8 +7,8 @@ class W_Nil(W_UniqueType):
     def _to_string_(self):
         return 'nil'
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Nil
+    def _type_(self, process):
+        return process.std.types.Nil
 
     def _hash_(self):
         return self.__hash

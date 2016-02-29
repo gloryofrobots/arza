@@ -18,7 +18,7 @@ class W_Record(W_Hashable):
             v = api.at_index(self.values, i)
             res.append("%s = %s" % (api.to_s(k), api.to_s(v)))
 
-        return "%s {%s}" % (api.to_s(self.type),  ", ".join(res))
+        return "%s {%s}" % (api.to_s(self.type), ", ".join(res))
 
     def _at_(self, name):
         idx = api.lookup(self.descriptors, name, space.newnil())
@@ -50,7 +50,7 @@ def descriptors(fields):
     return d
 
 
-# TODO PROPER KINDOF
+# BOTH TYPE CONSTRUCTOR AND TYPE IN ONE CLASS
 class W_DataType(W_Hashable):
     # _immutable_fields_ = ['_name_']
 
@@ -61,10 +61,40 @@ class W_DataType(W_Hashable):
         self.descriptors = descriptors(self.fields)
 
         # parent types declared with union
-        self.set_type = None
+        self.union = None
 
         self.ctor = constructor
-        self.traits = None
+        self.traits = plist.empty()
+
+    def add_trait(self, trait):
+        if self.is_type_constructor():
+            return error.throw_2(error.Errors.TRAIT_ALREADY_IMPLEMENTED, trait,
+                                 space.newstring(u"Cant implement trait for type constructor. Use type instead"))
+
+        if self.implements(trait):
+            return error.throw_1(error.Errors.TRAIT_ALREADY_IMPLEMENTED, trait)
+
+        self.traits = plist.cons(trait, self.traits)
+
+    def add_traits(self, traits):
+        for trait in traits:
+            self.add_trait(trait)
+
+    def implements(self, trait):
+        return plist.contains(self.traits, trait)
+
+    def is_type_constructor(self):
+        return self.union is not None
+
+    def be_part_of_union(self, union):
+        assert plist.is_empty(self.traits)
+        assert self.union is None
+        self.union = union
+
+    def is_part_of_union(self, union):
+        assert union is not None
+        assert self.union is not None
+        return api.equal_b(self.union, union)
 
     def create_record(self, env):
         undef = space.newnil()
@@ -87,7 +117,7 @@ class W_DataType(W_Hashable):
     def _call_(self, process, args):
         process.call_object(self, args)
 
-    def _behavior_(self, process):
+    def _type_(self, process):
         raise NotImplementedError()
 
     def _compute_hash_(self):
@@ -99,3 +129,14 @@ class W_DataType(W_Hashable):
 
     def _equal_(self, other):
         return other is self
+
+
+def can_coerce(_type, kind):
+    if kind.is_type_constructor():
+        return api.equal_b(_type, kind)
+
+    if not _type.is_type_constructor():
+        return api.equal_b(_type, kind)
+
+    return _type.is_part_of_union(kind)
+

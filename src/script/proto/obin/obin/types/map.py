@@ -233,8 +233,8 @@ class W_Map(W_Any):
     def _iterator_(self):
         return TableIterator(self, self._length_())
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Map
+    def _type_(self, process):
+        return process.std.types.Map
 
     def _at_(self, name):
         idx = self._get_index_(name)

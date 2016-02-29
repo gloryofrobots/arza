@@ -1,6 +1,8 @@
 __author__ = 'gloryofrobots'
 from discriminator import *
 from obin.types.root import W_Any
+from obin.types import space, api
+from obin.runtime import error
 
 
 class Argument(W_Any):
@@ -127,6 +129,43 @@ class ArgumentTrait(Argument):
         return self.trait._hash_()
 
 
+class ArgumentType(Argument):
+    def __init__(self, position, type):
+        Argument.__init__(self, position)
+        self.type = type
+
+    def find_old_discriminator(self, discriminators):
+        position = self.position
+        type = self.type
+        for d in discriminators:
+
+            if isinstance(d, TypeDiscriminator) \
+                    and d.position == position \
+                    and d.type == type:
+                return d
+
+        return None
+
+    def make_discriminator(self):
+        return TypeDiscriminator(self.position, self.type)
+
+    def _equal_(self, other):
+        if other.__class__ is self.__class__ \
+                and other.type == self.type \
+                and other.position == self.position:
+            return True
+        return False
+
+    def __repr__(self):
+        return str(self.type)
+
+    def __str__(self):
+        return self.__repr__()
+
+    def _hash_(self):
+        return self.type._hash_()
+
+
 class BaseSignature:
     def __init__(self, method):
         self.method = method
@@ -159,46 +198,65 @@ class Signature(BaseSignature):
         return self.args[index]
 
 
-def newsignature(process, args, method):
-    from obin.types import space, api
-    arity = api.length_i(args)
-    sig_args = []
+def _get_trait_predicate(process, trait, index):
     traits = process.std.traits
 
-    for i in range(arity):
-        trait = api.totrait(api.at_index(args, i))
-        if traits.Any is trait:
-            arg = ArgumentAny(i)
-        elif traits.Map is trait:
-            arg = PredicateArgument(i, space.ismap)
-        elif traits.Vector is trait:
-            arg = PredicateArgument(i, space.isvector)
-        elif traits.String is trait:
-            arg = PredicateArgument(i, space.isstring)
-        elif traits.Function is trait:
-            arg = PredicateArgument(i, space.isfunction)
-        elif traits.Int is trait:
-            arg = PredicateArgument(i, space.isint)
-        elif traits.Float is trait:
-            arg = PredicateArgument(i, space.isfloat)
-        elif traits.Tuple is trait:
-            arg = PredicateArgument(i, space.istuple)
-        elif traits.Generic is trait:
-            arg = PredicateArgument(i, space.isgeneric)
-        elif traits.Nil is trait:
-            arg = PredicateArgument(i, space.isnil)
-        elif traits.Boolean is trait:
-            arg = PredicateArgument(i, space.isboolean)
-        elif traits.False is trait:
-            arg = PredicateArgument(i, space.isfalse)
-        elif traits.True is trait:
-            arg = PredicateArgument(i, space.istrue)
+    if traits.Any is trait:
+        arg = ArgumentAny(index)
+    else:
+        arg = ArgumentTrait(index, trait)
+
+    return arg
+
+
+def _get_type_predicate(process, _type, index):
+    types = process.std.types
+    if types.Map is _type:
+        arg = PredicateArgument(index, space.ismap)
+    elif types.Vector is _type:
+        arg = PredicateArgument(index, space.isvector)
+    elif types.String is _type:
+        arg = PredicateArgument(index, space.isstring)
+    elif types.Function is _type:
+        arg = PredicateArgument(index, space.isfunction)
+    elif types.Int is _type:
+        arg = PredicateArgument(index, space.isint)
+    elif types.Float is _type:
+        arg = PredicateArgument(index, space.isfloat)
+    elif types.Tuple is _type:
+        arg = PredicateArgument(index, space.istuple)
+    elif types.Generic is _type:
+        arg = PredicateArgument(index, space.isgeneric)
+    elif types.Nil is _type:
+        arg = PredicateArgument(index, space.isnil)
+    elif types.Boolean is _type:
+        arg = PredicateArgument(index, space.isboolean)
+    elif types.False is _type:
+        arg = PredicateArgument(index, space.isfalse)
+    elif types.True is _type:
+        arg = PredicateArgument(index, space.istrue)
+    else:
+        arg = ArgumentType(index, _type)
+
+
+def newsignature(process, args, method):
+    arity = api.length_i(args)
+    sig_args = []
+
+    for index in range(arity):
+        kind = api.at_index(args, index)
+        if space.istrait(kind):
+            arg = _get_trait_predicate(process, kind, index)
+        elif space.isdatatype(kind):
+            arg = _get_type_predicate(process, kind, index)
         else:
-            arg = ArgumentTrait(i, trait)
+            return error.throw_2(error.Errors.TYPE,
+                                 space.newstring(u"Invalid signature type. Expected type or trait"), kind)
 
         sig_args.append(arg)
 
     return Signature(sig_args, method)
+
 
 def new_base_signature(method):
     return BaseSignature(method)

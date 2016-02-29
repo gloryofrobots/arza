@@ -28,8 +28,8 @@ class W_Vector(W_Any):
         except IndexError:
             return False
 
-    def _behavior_(self, process):
-        return process.std.behaviors.Vector
+    def _type_(self, process):
+        return process.std.types.Vector
 
     def _clone_(self):
         items = []
