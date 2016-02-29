@@ -22,6 +22,8 @@ class SourceInfo:
     def get_line(self, line_no):
         return get_line(self.src, line_no)
 
+    def length(self):
+        return len(self.map)
 
 def codeinfo(pos, line, col):
     return pos, line, col
@@ -197,7 +199,7 @@ class Code:
 
     @jit.elidable
     def get_opcode_info(self, pc):
-        if pc <= 0:
+        if pc <= 0 or pc >= self.info.length():
             return None
         info = self.info.map[pc]
         if info[0] == -1:

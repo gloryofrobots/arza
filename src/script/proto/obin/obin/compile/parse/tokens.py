@@ -19,6 +19,7 @@ token = re.compile
 
 # valid  identifiers (K&R2: A.2.3), plus '$' (supported by some compilers)
 name = token('[a-zA-Z_$][0-9a-zA-Z_$]*')
+typename = token('[A-Z][0-9a-zA-Z_$]*')
 operator_char = '^\s\,\.\@\#\)\(\]\[\}\{\;\w"`\''
 operator = token('[%s]+' % operator_char)
 
@@ -66,7 +67,6 @@ RULES = [
     (token('/\*[^\*\/]*\*/'), -1),
     (keyword('break'), TT_BREAK),
     (keyword('continue'), TT_CONTINUE),
-    (keyword('for'), TT_FOR),
     (keyword('while'), TT_WHILE),
     (keyword('condition'), TT_CONDITION),
     (keyword('otherwise'), TT_OTHERWISE),
@@ -86,11 +86,19 @@ RULES = [
     (keyword('try'), TT_TRY),
     (keyword('catch'), TT_CATCH),
     (keyword('finally'), TT_FINALLY),
+    (keyword('lambda'), TT_LAMBDA),
+    # (keyword('module'), TT_MODULE),
+
     (keyword('generic'), TT_GENERIC),
     (keyword('specify'), TT_SPECIFY),
     (keyword('trait'), TT_TRAIT),
-    (keyword('lambda'), TT_LAMBDA),
-    # (keyword('module'), TT_MODULE),
+    (keyword('construct'), TT_CONSTRUCT),
+    (keyword('implement'), TT_IMPLEMENT),
+    (keyword('method'), TT_METHOD),
+    (keyword('union'), TT_UNION),
+    (keyword('type'), TT_TYPE),
+    (keyword('for'), TT_FOR),
+
 
     (keyword('export'), TT_EXPORT),
     (keyword('import'), TT_IMPORT),
@@ -124,6 +132,7 @@ RULES = [
     (string_literal, TT_STR),
     (char_const, TT_CHAR),
     (backtick_const, TT_BACKTICK),
+    # (typename, TT_TYPENAME),
     (name, TT_NAME),
 
     (token('\|'), TT_CASE),

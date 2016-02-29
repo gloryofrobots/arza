@@ -15,7 +15,7 @@ class W_Record(W_Hashable):
         from obin.types import api
         res = []
         for k, i in self.descriptors.items():
-            v = api.at(self.values, i)
+            v = api.at_index(self.values, i)
             res.append("%s = %s" % (api.to_s(k), api.to_s(v)))
 
         return "%s {%s}" % (api.to_s(self.type),  ", ".join(res))
@@ -42,15 +42,6 @@ class W_Record(W_Hashable):
         return api.length(self.values)
 
 
-class W_Constructor(W_Hashable):
-    def __init__(self, name, _type, fields, constructor):
-        W_Hashable.__init__(self)
-        self.name = name
-        self.type = _type
-        self.constructor = constructor
-        self.fields = fields
-
-
 def descriptors(fields):
     d = space.newmap()
     for i in range(len(fields)):
@@ -60,17 +51,17 @@ def descriptors(fields):
 
 
 # TODO PROPER KINDOF
-
 class W_DataType(W_Hashable):
     # _immutable_fields_ = ['_name_']
 
-    def __init__(self, name, _type, fields, constructor):
+    def __init__(self, name, fields, constructor):
         W_Hashable.__init__(self)
         self.name = name
-        self.type = _type
         self.fields = fields
         self.descriptors = descriptors(self.fields)
+        self.set = None
         self.ctor = constructor
+        self.traits = None
 
     def create_record(self, env):
         undef = space.newnil()

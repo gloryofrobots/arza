@@ -234,6 +234,10 @@ def create_goto_node(label):
     return node_0(nt.NT_GOTO,
                   tokens.newtoken(tt.TT_GOTO, str(label), space.newint(-1), space.newint(-1), space.newint(-1)))
 
+def create_fenv_node(basenode):
+    return node_0(nt.NT_FENV,
+                  create_token_from_node(tt.TT_NAME, "___fenv", basenode))
+
 
 def create_wildcard_node(basenode):
     return node_0(nt.NT_WILDCARD, create_token_from_node(tt.TT_WILDCARD, "_", basenode))

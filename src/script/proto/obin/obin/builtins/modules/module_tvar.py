@@ -1,6 +1,6 @@
 from obin.types import api, space, tvar
 
-from obin.runtime.routine import complete_native_routine
+from obin.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):

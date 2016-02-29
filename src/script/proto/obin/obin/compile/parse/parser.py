@@ -86,7 +86,6 @@ class BaseParser:
         return self.token_type == TT_ENDSTREAM
 
 
-
 class ExpressionParser(BaseParser):
     def __init__(self, proc_data):
         BaseParser.__init__(self)
@@ -117,10 +116,12 @@ class ModuleParser(BaseParser):
         self.expression_parser = ExpressionParser(proc_data)
         self.name_parser = name_parser_init(BaseParser())
         self.import_names_parser = import_names_parser_init(BaseParser())
+        self.type_parser = type_parser_init(BaseParser())
 
         module_parser_init(base_parser_init(self))
 
     def _on_open(self, state):
+        self.type_parser.open(state)
         self.pattern_parser.open(state)
         self.guard_parser.open(state)
         self.generic_signature_parser.open(state)
@@ -130,6 +131,7 @@ class ModuleParser(BaseParser):
         self.import_names_parser.open(state)
 
     def _on_close(self):
+        self.type_parser.close()
         self.pattern_parser.close()
         self.guard_parser.close()
         self.generic_signature_parser.close()
@@ -151,6 +153,15 @@ def name_parser_init(parser):
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_BACKTICK, prefix_backtick)
     infix(parser, TT_COLON, 10, infix_name_pair)
+    return parser
+
+
+def type_parser_init(parser):
+    parser.break_on_juxtaposition = True
+    # literal(parser, TT_TYPENAME)
+    prefix(parser, TT_NAME, literal_type_field)
+    symbol(parser, TT_CASE, None)
+    symbol(parser, TT_CONSTRUCT, None)
     return parser
 
 
@@ -249,6 +260,7 @@ def init_parser_literals(parser):
     literal(parser, TT_CHAR)
     literal(parser, TT_STR)
     literal(parser, TT_NAME)
+    literal(parser, TT_TYPENAME)
     literal(parser, TT_TRUE)
     literal(parser, TT_FALSE)
     literal(parser, TT_NIL)
@@ -359,7 +371,8 @@ def module_parser_init(parser):
     stmt(parser, TT_SPECIFY, stmt_specify)
     stmt(parser, TT_IMPORT, stmt_import)
     stmt(parser, TT_EXPORT, stmt_export)
-    stmt(parser, TT_MODULE, stmt_module)
+    # stmt(parser, TT_MODULE, stmt_module)
+    stmt(parser, TT_TYPE, stmt_type)
 
     stmt(parser, TT_AT_SIGN, stmt_module_at)
     prefix(parser, TT_FUN, prefix_module_fun)
@@ -376,7 +389,9 @@ def newtokenstream(source):
     tokens_iter = lx.tokens()
     return TokenStream(tokens_iter, source)
 
+
 PARSE_DEBUG = False
+
 
 def parse(process, env, src):
     parser = process.parser

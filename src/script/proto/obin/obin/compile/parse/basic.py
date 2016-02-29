@@ -19,8 +19,15 @@ TERM_CASE = [TT_CASE] + TERM_BLOCK
 TERM_TRY = [TT_CASE]
 
 TERM_PATTERN = [TT_WHEN]
-TERM_GUARD = [TT_ARROW]
+TERM_FUN_GUARD = [TT_ARROW]
+TERM_FUN_PATTERN = [TT_WHEN, TT_ARROW]
+
 TERM_CONDITION_BODY = [TT_CASE] + TERM_BLOCK
+
+TERM_TYPE_ARGS = [TT_CONSTRUCT] + TERM_BLOCK
+
+TERM_CONSTRUCT_GUARD = [TT_ARROW, TT_CASE]
+TERM_CONSTRUCT_PATTERN = [TT_WHEN, TT_ARROW, TT_CASE]
 
 TERM_CONDITION_CONDITION = [TT_ARROW]
 
@@ -360,8 +367,10 @@ def advance_expected_one_of(parser, ttypes):
 
     return parser.next()
 
+
 def isendofexpressiontoken(parser):
     return parser.token_type == TT_SEMI
+
 
 def endofexpression(parser):
     if parser.isend():
@@ -470,7 +479,7 @@ def flatten_juxtaposition(parser, node):
         return nodes.list_node([node])
 
 
-def arg_declaration_expression(parser, terminators):
+def juxtaposition_list(parser, terminators):
     args = []
     while True:
         node, _lbp = _expression(parser, 0, terminators)
@@ -480,16 +489,17 @@ def arg_declaration_expression(parser, terminators):
             advance(parser)
 
         if parser.token_type in terminators:
-            return nodes.node_1(NT_TUPLE, nodes.node_token(node), nodes.list_node(args))
+            return node, args
 
 
 
-    # ntype = nodes.node_type(node)
-    # if ntype == NT_JUXTAPOSITION:
-    #     items = flatten_juxtaposition(parser, node)
-    #     return nodes.node_1(NT_TUPLE, nodes.node_token(node), items)
-    # else:
-    #     return nodes.node_1(NT_TUPLE, nodes.node_token(node), nodes.list_node([node]))
+
+            # ntype = nodes.node_type(node)
+            # if ntype == NT_JUXTAPOSITION:
+            #     items = flatten_juxtaposition(parser, node)
+            #     return nodes.node_1(NT_TUPLE, nodes.node_token(node), items)
+            # else:
+            #     return nodes.node_1(NT_TUPLE, nodes.node_token(node), nodes.list_node([node]))
 
 
 def process_juxtaposition_expression(parser, node):

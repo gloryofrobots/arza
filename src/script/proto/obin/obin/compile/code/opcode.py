@@ -15,49 +15,51 @@ GENERIC = 13
 TRAIT = 14
 ARGUMENTS = 15
 FSELF = 16
-LABEL = 17
-STORE_LOCAL = 18
-ITERATOR = 19
-RETURN = 20
-POP_CATCH = 21
-CALL = 22
-CALL_METHOD = 23
-JUMP = 24
-JUMP_IF_FALSE_NOPOP = 25
-JUMP_IF_TRUE_NOPOP = 26
-JUMP_IF_FALSE = 27
-JUMP_IF_TRUE = 28
-PUSH_CATCH = 29
-JUMP_IF_ITERATOR_EMPTY = 30
-MEMBER_DOT = 31
-MEMBER = 32
-POP = 33
-THROW = 34
-STORE_MEMBER = 35
-SLICE = 36
-UNPACK_SEQUENCE = 37
-VECTOR = 38
-TUPLE = 39
-MAP = 40
-LIST = 41
-SPECIFY = 42
+FENV = 17
+LABEL = 18
+STORE_LOCAL = 19
+ITERATOR = 20
+RETURN = 21
+POP_CATCH = 22
+CALL = 23
+CALL_METHOD = 24
+JUMP = 25
+JUMP_IF_FALSE_NOPOP = 26
+JUMP_IF_TRUE_NOPOP = 27
+JUMP_IF_FALSE = 28
+JUMP_IF_TRUE = 29
+PUSH_CATCH = 30
+JUMP_IF_ITERATOR_EMPTY = 31
+MEMBER_DOT = 32
+MEMBER = 33
+POP = 34
+THROW = 35
+STORE_MEMBER = 36
+SLICE = 37
+UNPACK_SEQUENCE = 38
+VECTOR = 39
+TUPLE = 40
+MAP = 41
+TYPE = 42
+LIST = 43
+SPECIFY = 44
 
 # ************************************************
 
 __OPCODE_REPR__ = ["NIL", "TRUE", "FALSE", "LITERAL", "SYMBOL", "OUTER", "LOCAL", "IMPORTED", "FUNCTION", "INTEGER",
-                   "DUP", "NEXT", "MODULE", "GENERIC", "TRAIT", "ARGUMENTS", "FSELF", "LABEL", "STORE_LOCAL",
+                   "DUP", "NEXT", "MODULE", "GENERIC", "TRAIT", "ARGUMENTS", "FSELF", "FENV", "LABEL", "STORE_LOCAL",
                    "ITERATOR", "RETURN", "POP_CATCH", "CALL", "CALL_METHOD", "JUMP", "JUMP_IF_FALSE_NOPOP",
                    "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "PUSH_CATCH", "JUMP_IF_ITERATOR_EMPTY",
                    "MEMBER_DOT", "MEMBER", "POP", "THROW", "STORE_MEMBER", "SLICE", "UNPACK_SEQUENCE", "VECTOR",
-                   "TUPLE", "MAP", "LIST", "SPECIFY", ]
+                   "TUPLE", "MAP", "TYPE", "LIST", "SPECIFY", ]
 
 # ************************************************
 
 __UNKNOWN_CHANGE__ = -128
 
-__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1,
-                     -1, -1, -1, -2, -3, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
-                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
+__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1,
+                     -1, -1, -1, -1, -2, -3, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
+                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
 
 
 # ************************************************
@@ -96,6 +98,8 @@ def opcode_estimate_stack_change(opcode):
     # pop generic from stack too
     elif tag == SPECIFY:
         return -1 * (arg1 + 1) + 1
+    elif tag == TYPE:
+        return -1 * arg1 + 2
     return 0
 
 

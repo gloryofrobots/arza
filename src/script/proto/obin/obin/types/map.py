@@ -292,6 +292,9 @@ class W_Map(W_Any):
     def keys(self):
         return self.slot_bindings.keys()
 
+    def items(self):
+        return self.slot_bindings.items()
+
     def keys_list(self):
         return space.newlist(self.keys())
 

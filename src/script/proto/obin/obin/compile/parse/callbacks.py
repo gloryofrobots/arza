@@ -17,6 +17,7 @@ NODE_TYPE_MAPPING = {
     TT_CHAR: NT_CHAR,
     TT_WILDCARD: NT_WILDCARD,
     TT_NAME: NT_NAME,
+    TT_TYPENAME: NT_NAME,
     TT_IF: NT_CONDITION,
     TT_WHEN: NT_TERNARY_CONDITION,
     TT_MATCH: NT_MATCH,
@@ -43,6 +44,14 @@ NODE_TYPE_MAPPING = {
     TT_COMMA: NT_COMMA,
 }
 
+
+def node_tuple_juxtaposition(parser, terminators):
+    node, args = juxtaposition_list(parser, terminators)
+    return nodes.node_1(NT_TUPLE, nodes.node_token(node), nodes.list_node(args))
+
+def node_list_juxtaposition(parser, terminators):
+    node, args = juxtaposition_list(parser, terminators)
+    return nodes.node_1(NT_LIST, nodes.node_token(node), nodes.list_node(args))
 
 def __ntype(node):
     node_type = NODE_TYPE_MAPPING[nodes.node_token_type(node)]
@@ -430,7 +439,7 @@ def _parse_pattern(parser):
     pattern = expressions(parser.pattern_parser, 0, TERM_PATTERN)
     if parser.token_type == TT_WHEN:
         advance(parser)
-        guard = expression(parser.guard_parser, 0, TERM_GUARD)
+        guard = expression(parser.guard_parser, 0, TERM_FUN_GUARD)
         pattern = node_2(NT_WHEN, __ntok(guard), pattern, guard)
 
     return pattern
@@ -476,6 +485,7 @@ def stmt_when(parser, op, node):
     advance_end(parser)
     return node_2(NT_WHEN, __ntok(node), cond, body)
 
+
 def stmt_for(parser, op, node):
     # set big lbp to overriding IN binding power
     check_token_type(parser, TT_NAME)
@@ -492,8 +502,9 @@ def stmt_for(parser, op, node):
     advance_end(parser)
     return node_3(NT_FOR, __ntok(node), vars, exp, stmts)
 
-def _parse_func_pattern(parser):
-    pattern = arg_declaration_expression(parser.pattern_parser, [TT_WHEN, TT_ARROW])
+
+def _parse_func_pattern(parser, arg_terminator, guard_terminator):
+    pattern = node_tuple_juxtaposition(parser.pattern_parser, arg_terminator)
     args_type = nodes.node_type(pattern)
 
     if args_type != NT_TUPLE:
@@ -501,7 +512,7 @@ def _parse_func_pattern(parser):
 
     if parser.token_type == TT_WHEN:
         advance(parser)
-        guard = expression(parser.guard_parser, 0, TERM_GUARD)
+        guard = expression(parser.guard_parser, 0, guard_terminator)
         pattern = node_2(NT_WHEN, __ntok(guard), pattern, guard)
 
     return pattern
@@ -513,7 +524,7 @@ def parse_function_variants(parser):
     if parser.token_type == TT_CASE:
         while parser.token_type == TT_CASE:
             advance_expected(parser, TT_CASE)
-            args = _parse_func_pattern(parser)
+            args = _parse_func_pattern(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD)
             advance_expected(parser, TT_ARROW)
             body = statements(parser, TERM_CASE)
             funcs.append(nodes.list_node([args, body]))
@@ -522,7 +533,7 @@ def parse_function_variants(parser):
             return parse_error(parser, u"Empty function arguments pattern", parser.node)
             # args = nodes.create_unit_node(parser.node)
         else:
-            args = _parse_func_pattern(parser)
+            args = _parse_func_pattern(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD)
 
         advance_expected(parser, TT_ARROW)
         body = statements(parser, TERM_BLOCK)
@@ -538,18 +549,19 @@ def parse_function(parser, allow_empty_name):
             return parse_error(parser, u"Expected function name", parser.node)
     else:
         name = expect_expression(parser.name_parser, 0, NODE_FUNC_NAME,
-                                 terminators=TERM_GUARD, error_on_juxtaposition=False)
+                                 terminators=TERM_FUN_GUARD, error_on_juxtaposition=False)
 
     funcs = parse_function_variants(parser)
     advance_end(parser)
     return name, funcs
+
 
 def prefix_lambda(parser, op, node):
     name = nodes.empty_node()
     if parser.token_type == TT_ARROW:
         return parse_error(parser, u"Empty function arguments pattern", parser.node)
     else:
-        args = _parse_func_pattern(parser)
+        args = _parse_func_pattern(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD)
 
     advance_expected(parser, TT_ARROW)
     # body = statements(parser, TERM_BLOCK)
@@ -559,7 +571,8 @@ def prefix_lambda(parser, op, node):
 
     # advance_end(parser)
     return node_2(
-            NT_FUN, __ntok(node), name, nodes.list_node([nodes.list_node([args, body])]))
+        NT_FUN, __ntok(node), name, nodes.list_node([nodes.list_node([args, body])]))
+
 
 def prefix_fun(parser, op, node):
     name, funcs = parse_function(parser, True)
@@ -579,7 +592,7 @@ def parse_specify_fn(parser):
     _expression_parser = parser.expression_parser
     _signature_parser = parser.generic_signature_parser
 
-    signature = arg_declaration_expression(_signature_parser, TERM_GUARD)
+    signature = node_tuple_juxtaposition(_signature_parser, TERM_FUN_GUARD)
 
     # if nodes.node_type(pattern) != NT_TUPLE:
     #     parse_error(parser, u"Invalid  syntax in specify function arguments", pattern)
@@ -603,9 +616,10 @@ def parse_specify_funcs(parser):
 
     return nodes.list_node(funcs)
 
+
 def generic_name(parser):
     return expect_expression(parser.name_parser, 0, NODE_SPECIFY_NAME, terminators=TERM_CASE,
-                            error_on_juxtaposition=False)
+                             error_on_juxtaposition=False)
 
 
 def stmt_specify(parser, op, node):
@@ -760,6 +774,56 @@ def stmt_module_at(parser, op, node):
         return _meta_infix(parser, node, led_infixr_function)
     else:
         return parse_error(parser, u"Invalid operator type expected infixl, infixr or prefix", parser.node)
+
+
+# TYPES ************************
+
+def _parse_construct(parser, node):
+    funcs = []
+    check_token_type(parser, TT_CASE)
+    fenv_node = nodes.create_fenv_node(node)
+    while parser.token_type == TT_CASE:
+        advance_expected(parser, TT_CASE)
+        args = _parse_func_pattern(parser, TERM_CONSTRUCT_PATTERN, TERM_CONSTRUCT_GUARD)
+        if parser.token_type == TT_ARROW:
+            advance_expected(parser, TT_ARROW)
+            body = statements(parser, TERM_CASE)
+            body = plist.append(body, fenv_node)
+        elif parser.token_type == TT_CASE:
+            body = nodes.list_node([fenv_node])
+        else:
+            return parse_error(parser, u"Invalid construct syntax", parser.node)
+
+        funcs.append(nodes.list_node([args, body]))
+    advance_end(parser)
+
+    return nodes.list_node(funcs)
+
+def literal_type_field(parser, op, node):
+    name = itself(parser, op, node)
+    return nodes.create_symbol_node(name, name)
+
+# TODO BETTER PARSE ERRORS HERE
+def stmt_type(parser, op, node):
+    type_parser = parser.type_parser
+    check_token_type(type_parser, TT_NAME)
+    typename = _init_default_current_0(type_parser)
+    advance(type_parser)
+
+    if parser.token_type == TT_END:
+        fields = nodes.empty_node()
+        construct_funcs = nodes.empty_node()
+    else:
+        fields = node_list_juxtaposition(type_parser, TERM_TYPE_ARGS)
+        if parser.token_type == TT_CONSTRUCT:
+            advance(parser)
+            construct_funcs = _parse_construct(parser.expression_parser, node)
+        else:
+            # default constructor
+            construct_funcs = nodes.list_node([nodes.list_node([fields, nodes.empty_node()])])
+
+    advance_end(parser)
+    return nodes.node_3(NT_TYPE, __ntok(node), typename, fields, construct_funcs)
 
 
 def _meta_infix(parser, node, infix_function):

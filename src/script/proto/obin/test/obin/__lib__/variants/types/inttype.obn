@@ -9,6 +9,7 @@ type Zero {use Int}
 trait Number
     generic is_zero _  -> false
     generic add _ a
+
 implement
     for Int
         specify add
@@ -25,6 +26,26 @@ implement
         specify add
         | self of Zero i of Number -> i
         | i of Number, self of Zero -> i
+-----------------------------------------
+
+trait Number
+    generic is_zero _  -> false
+    generic add _ a
+
+implement for Int BigInt Zero
+
+    specify is_zero
+    | self of Int  -> false
+    | self of BigInt  -> false
+    | self of Zero  -> true
+
+    specify add
+    | self of Int, i of BigInt -> (int_to_big_int self) + i
+    | self of Int, i of Int -> int_add self i
+    | self of BigInt, i of Int -> add self (int_to_big_int i)
+    | self of BigInt, i of BigInt -> big_int_add self i
+    | self of Zero, i of Number -> i
+    | i of Number, self of Zero -> i
 -----------------------------------------
 
 ///////////////////////////////////

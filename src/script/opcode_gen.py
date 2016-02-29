@@ -18,6 +18,7 @@ OPCODES = [
     ("TRAIT", 1),
     ("ARGUMENTS", 1),
     ("FSELF", 1),
+    ("FENV", 1),
 
     ("LABEL", 0),
     ("STORE_LOCAL", 0),
@@ -48,6 +49,7 @@ OPCODES = [
     ("VECTOR", "__UNKNOWN_CHANGE__"),
     ("TUPLE", "__UNKNOWN_CHANGE__"),
     ("MAP", "__UNKNOWN_CHANGE__"),
+    ("TYPE", "__UNKNOWN_CHANGE__"),
     ("LIST", "__UNKNOWN_CHANGE__"),
     ("SPECIFY", "__UNKNOWN_CHANGE__"),
 ]

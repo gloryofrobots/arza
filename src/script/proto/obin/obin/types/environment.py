@@ -134,7 +134,7 @@ class W_EnvCompileFunction(W_Callable):
         self.env = space.newenv(self.name, self.bytecode.scope, parent_env)
 
     def _to_routine_(self, stack, args):
-        from obin.runtime.routine import create_module_routine
+        from obin.runtime.routine.routine import create_module_routine
         routine = create_module_routine(self.name, stack, self.bytecode, self.env)
         return routine
 

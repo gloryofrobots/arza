@@ -279,7 +279,7 @@ def islist(value):
 
 def verify_list(items):
     for i in items:
-        assert isany(i)
+        assert isany(i), i
 
 
 ########################################################
@@ -363,12 +363,24 @@ def newgeneric_hotpath(name, hot_path, arity):
 def newtrait(name):
     from obin.types.trait import W_Trait
     assert issymbol(name)
-    return W_Trait(name)
+    return W_Trait(name, None)
 
 
 def istrait(w):
     from obin.types.trait import W_Trait
     return isinstance(w, W_Trait)
+
+########################################################
+
+def newdatatype(name, fields, constructor):
+    from obin.types.datatype import W_DataType
+    assert issymbol(name)
+    return W_DataType(name, fields, constructor)
+
+
+def isdatatype(w):
+    from obin.types.datatype import W_DataType
+    return isinstance(w, W_DataType)
 
 
 ########################################################

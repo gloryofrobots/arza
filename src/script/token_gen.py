@@ -5,6 +5,7 @@ TOKENS = [
   ("TT_STR", None,),
   ("TT_CHAR", None,),
   ("TT_NAME", None),
+  ("TT_TYPENAME", None),
   ("TT_OPERATOR", None),
   ("TT_NEWLINE", None,),
 
@@ -17,6 +18,12 @@ TOKENS = [
   ("TT_CONTINUE", "continue"),
   ("TT_FOR", "for"),
   ("TT_WHILE", "while"),
+
+  ("TT_CONSTRUCT", "construct"),
+  ("TT_IMPLEMENT", "implement"),
+  ("TT_METHOD", "method"),
+  ("TT_UNION", "union"),
+  ("TT_TYPE", "type"),
 
   ("TT_CONDITION", "condition"),
   ("TT_OTHERWISE", "otherwise"),

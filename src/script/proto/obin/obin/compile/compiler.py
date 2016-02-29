@@ -3,7 +3,7 @@ from obin.compile.code.opcode import *
 from obin.compile.parse import parser
 from obin.compile.parse import nodes
 from obin.compile.parse.nodes import (node_type, node_arity,
-                                      node_first, node_second, node_third, node_children)
+                                      node_first, node_second, node_third, node_children, is_empty_node)
 from obin.compile.parse.node_type import *
 from obin.types import space, api, plist, environment, symbol as symbols
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
@@ -36,7 +36,7 @@ class Compiler:
 
 
 def info(node):
-    if nodes.is_empty_node(node):
+    if is_empty_node(node):
         return codeinfo_unknown()
     return codeinfo(nodes.node_position(node), nodes.node_line(node), nodes.node_column(node))
 
@@ -270,6 +270,8 @@ def _emit_dup(code):
 def _emit_nil(code):
     code.emit_0(NIL, codeinfo_unknown())
 
+def _emit_empty_list(code):
+    code.emit_1(LIST, 0, codeinfo_unknown())
 
 def _emit_literal(compiler, code, node, literal):
     idx = _declare_literal(compiler, literal)
@@ -455,7 +457,7 @@ def _compile_destruct_recur_map(compiler, code, node):
         key = pair[0]
         value = pair[1]
         varname = None
-        if nodes.is_empty_node(value):
+        if is_empty_node(value):
             varname = key
         elif node_type(value) == NT_NAME:
             varname = value
@@ -617,7 +619,7 @@ def _compile_MAP(compiler, code, node):
     for c in items:
         key = c[0]
         value = c[1]
-        if nodes.is_empty_node(value):
+        if is_empty_node(value):
             _compile_NIL(compiler, code, value)
         else:
             _compile(compiler, code, value)
@@ -729,7 +731,7 @@ def _compile_case_function(compiler, code, node, name, cases):
 
 
 def _get_symbol_name_or_empty(process, name):
-    if nodes.is_empty_node(name):
+    if is_empty_node(name):
         return space.newsymbol(process, u"")
     else:
         return space.newsymbol_s(process, nodes.node_value_s(name))
@@ -752,8 +754,8 @@ def is_simple_func_declaration(params):
             if node_type(child[0]) != NT_NAME:
                 # print "node_type(child[0]) != NT_NAME:"
                 return False
-            if not nodes.is_empty_node(child[1]):
-                # print "not nodes.is_empty_node(child[1]): "
+            if not is_empty_node(child[1]):
+                # print "not is_empty_node(child[1]): "
                 return False
         return True
     elif ntype == NT_UNIT:
@@ -828,7 +830,7 @@ def _compile_IF(compiler, code, node):
         _compile_branch(compiler, code, branch[0], branch[1], endif)
 
     elsebranch = branches[length - 1]
-    if nodes.is_empty_node(elsebranch):
+    if is_empty_node(elsebranch):
         _emit_nil(code)
     else:
         _compile(compiler, code, elsebranch[1])
@@ -855,7 +857,7 @@ def _compile_TRY(compiler, code, node):
 
     code.emit_1(JUMP, finallylabel, codeinfo_unknown())
     code.emit_1(LABEL, finallylabel, codeinfo_unknown())
-    if not nodes.is_empty_node(finallynode):
+    if not is_empty_node(finallynode):
         _compile(compiler, code, finallynode)
 
 
@@ -901,7 +903,7 @@ def _get_import_data_and_emit_module(compiler, code, node):
     module = load.import_module(compiler.process, space.newsymbol_s(compiler.process, module_path))
     var_names = []
     exports = module.exports()
-    if nodes.is_empty_node(names):
+    if is_empty_node(names):
         _var_names = exports
         for _name in _var_names:
             var_names.append((_name, _name))
@@ -1002,6 +1004,32 @@ def _compile_GENERIC(compiler, code, node):
     if node_arity(node) == 2:
         methods = node_second(node)
         _emit_specify(compiler, code, node, methods)
+
+
+def _compile_TYPE(compiler, code, node):
+    name_node = node_first(node)
+    name = _get_symbol_name(compiler, name_node)
+
+    name_index = _declare_literal(compiler, name)
+    index = _declare_local(compiler, name)
+
+    constructor = node_third(node)
+    fields = node_second(node)
+
+    _emit_nil(code)
+    if is_empty_node(fields):
+        _emit_empty_list(code)
+        _emit_nil(code)
+    else:
+        _compile(compiler, code, fields)
+        _compile_case_function(compiler, code, node, nodes.empty_node(), constructor)
+
+    code.emit_1(TYPE, name_index, info(node))
+    code.emit_2(STORE_LOCAL, index, name_index, info(name_node))
+
+
+def _compile_FENV(compiler, code, node):
+    code.emit_0(FENV, info(node))
 
 
 def _compile_TRAIT(compiler, code, node):
@@ -1189,7 +1217,7 @@ NEW_SCOPE_NODES = [NT_MODULE, NT_SPECIFY]
 
 
 def _compile_1(compiler, code, ast):
-    if nodes.is_empty_node(ast):
+    if is_empty_node(ast):
         return
 
     if nodes.is_list_node(ast):
@@ -1201,7 +1229,7 @@ def _compile_1(compiler, code, ast):
 
         if ntype == NT_FUN or ntype == NT_GENERIC:
             name = node_first(ast)
-            if not nodes.is_empty_node(name):
+            if not is_empty_node(name):
                 symbol = _get_symbol_name_or_empty(compiler.process, name)
                 _declare_local(compiler, symbol)
                 # _declare_function(compiler, code, name)
@@ -1329,6 +1357,8 @@ def _compile_node(compiler, code, node):
         _compile_UNIT(compiler, code, node)
     elif NT_MAP == ntype:
         _compile_MAP(compiler, code, node)
+    elif NT_TYPE == ntype:
+        _compile_TYPE(compiler, code, node)
 
     elif NT_LOOKUP == ntype:
         _compile_LOOKUP(compiler, code, node)
@@ -1345,6 +1375,8 @@ def _compile_node(compiler, code, node):
         _compile_OR(compiler, code, node)
     elif NT_GOTO == ntype:
         _compile_GOTO(compiler, code, node)
+    elif NT_FENV == ntype:
+        _compile_FENV(compiler, code, node)
     else:
         compile_error(compiler, code, node, u"Unknown node")
 

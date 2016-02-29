@@ -15,6 +15,7 @@ NODES = [
   "NT_NAME",
   "NT_SYMBOL",
 
+  "NT_TYPE",
   "NT_MAP",
   "NT_LIST",
   "NT_TUPLE",
@@ -22,6 +23,8 @@ NODES = [
   "NT_COMMA",
 
   "NT_FUN",
+
+  "NT_FENV",
 
   "NT_CONDITION",
   "NT_TERNARY_CONDITION",

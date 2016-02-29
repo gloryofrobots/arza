@@ -1,4 +1,4 @@
-from obin.runtime.routine import complete_native_routine
+from obin.runtime.routine.routine import complete_native_routine
 from obin.runtime import error
 from obin.types import api, space, plist, environment, entity
 

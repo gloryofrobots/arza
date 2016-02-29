@@ -195,8 +195,12 @@ class CodeRoutine(BaseRoutine):
                 obj = stack.pop()
                 v = api.slice(obj, start, end)
                 stack.push(v)
+            # *************************************
             elif FSELF == tag:
                 stack.push(self._func_)
+            # *************************************
+            elif FENV == tag:
+                stack.push(self.env)
             # *************************************
             elif JUMP == tag:
                 self.pc = arg1
@@ -283,6 +287,14 @@ class CodeRoutine(BaseRoutine):
                 _source = literals[arg1]
                 _module = environment.create_environment(process, _source, env)
                 stack.push(_module)
+            # *************************************
+            elif TYPE == tag:
+                name = literals[arg1]
+                constructor = stack.pop()
+                fields = stack.pop()
+
+                datatype = space.newdatatype(name, fields, constructor)
+                stack.push(datatype)
             # *************************************
             elif TRAIT == tag:
                 name = literals[arg1]

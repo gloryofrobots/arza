@@ -1,77 +1,5 @@
 [
   {
-    "_ntype": "NT_FUN",
-    "_value": "fun",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "main"
-      },
-      [
-        [
-          {
-            "_ntype": "NT_TUPLE",
-            "_value": "_",
-            "children": [
-              [
-                {
-                  "_ntype": "NT_WILDCARD",
-                  "_value": "_"
-                }
-              ]
-            ]
-          },
-          [
-            {
-              "_ntype": "NT_CALL",
-              "_value": "",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "f"
-                },
-                [
-                  {
-                    "_ntype": "NT_CALL",
-                    "_value": "(",
-                    "children": [
-                      {
-                        "_ntype": "NT_NAME",
-                        "_value": "-"
-                      },
-                      [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "n"
-                        },
-                        {
-                          "_ntype": "NT_CALL",
-                          "_value": "",
-                          "children": [
-                            {
-                              "_ntype": "NT_INT",
-                              "_value": "1"
-                            },
-                            [
-                              {
-                                "_ntype": "NT_NAME",
-                                "_value": "t"
-                              }
-                            ]
-                          ]
-                        }
-                      ]
-                    ]
-                  }
-                ]
-              ]
-            }
-          ]
-        ]
-      ]
-    ]
-  },
-  {
     "_ntype": "NT_ASSIGN",
     "_value": "=",
     "children": [
@@ -83,6 +11,113 @@
         "_ntype": "NT_NAME",
         "_value": "___length"
       }
+    ]
+  },
+  {
+    "_ntype": "NT_TYPE",
+    "_value": "type",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "Zero"
+      },
+      {
+        "empty": true
+      },
+      {
+        "empty": true
+      }
+    ]
+  },
+  {
+    "_ntype": "NT_TYPE",
+    "_value": "type",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "Point2"
+      },
+      {
+        "_ntype": "NT_LIST",
+        "_value": "#",
+        "children": [
+          [
+            {
+              "_ntype": "NT_SYMBOL",
+              "_value": "#",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "x"
+                }
+              ]
+            },
+            {
+              "_ntype": "NT_SYMBOL",
+              "_value": "#",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "y"
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      [
+        [
+          {
+            "_ntype": "NT_TUPLE",
+            "_value": "y",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "x"
+                },
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "y"
+                }
+              ]
+            ]
+          },
+          {
+            "empty": true
+          }
+        ],
+        [
+          {
+            "_ntype": "NT_TUPLE",
+            "_value": "x",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "x"
+                }
+              ]
+            ]
+          },
+          [
+            {
+              "_ntype": "NT_ASSIGN",
+              "_value": "=",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "y"
+                },
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "x"
+                }
+              ]
+            }
+          ]
+        ]
+      ]
     ]
   }
 ]

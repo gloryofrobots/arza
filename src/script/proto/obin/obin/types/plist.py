@@ -64,6 +64,11 @@ class W_PList(W_Any):
     def _contains_(self, key):
         return contains(self, key)
 
+    def _at_index_(self, i):
+        if i < 0:
+            return space.newnil()
+        return nth(self, i)
+
     def _at_(self, key):
         if not space.isint(key):
             error.throw_1(error.Errors.TYPE, key)
