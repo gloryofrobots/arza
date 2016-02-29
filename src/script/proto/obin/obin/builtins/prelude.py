@@ -7,12 +7,11 @@ from obin.misc.platform import rstring, compute_unique_id
 from obin.misc import fs
 from obin.compile import compiler
 
+# TODO MAKE IT obin:is_seq ...
 PRIM_IS_INDEXED = "___is_indexed"
 PRIM_IS_SEQ = "___is_seq"
 PRIM_IS_MAP = "___is_map"
 PRIM_LENGTH = "___length"
-PRIM_FIRST = "___first"
-PRIM_REST = "___rest"
 PRIM_IS = "___is"
 PRIM_ISNOT = "___isnot"
 PRIM_NOTA = "___nota"
@@ -34,9 +33,8 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, unicode(PRIM_LENGTH), length, 1)
     api.put_native_function(process, module, unicode(PRIM_IS), __is, 2)
     api.put_native_function(process, module, unicode(PRIM_ISNOT), __isnot, 2)
-    api.put_native_function(process, module, unicode(PRIM_NOTA), __nota, 2)
-    api.put_native_function(process, module, unicode(PRIM_ISA), __isa, 2)
     api.put_native_function(process, module, unicode(PRIM_KINDOF), __kindof, 2)
+    api.put_native_function(process, module, u"kindof", __kindof, 2)
 
 
     ## debugging
@@ -172,18 +170,6 @@ def __kindof(process, routine):
     left = routine.get_arg(0)
     right = routine.get_arg(1)
     return api.kindof(process, left, right)
-
-@complete_native_routine
-def __nota(process, routine):
-    left = routine.get_arg(0)
-    right = routine.get_arg(1)
-    return entity.nota(process, left, right)
-
-@complete_native_routine
-def __isa(process, routine):
-    left = routine.get_arg(0)
-    right = routine.get_arg(1)
-    return entity.isa(process, left, right)
 
 
 @complete_native_routine

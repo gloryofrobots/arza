@@ -71,7 +71,8 @@ fun is_false val1 -> is_same val1 false
 //apply needed tuple of arguments
 // so we need to convert () to ((),)
 
-trait Success
+type Success val
+---
 
 fun is_throw
 | fn () -> is_throw fn [()]
@@ -79,7 +80,7 @@ fun is_throw
     match
         try
             apply fn args
-            true isa Success
+            Success true
         | e ->
             e
         ---

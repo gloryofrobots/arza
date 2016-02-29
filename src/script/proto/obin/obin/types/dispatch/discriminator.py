@@ -63,6 +63,8 @@ class PredicateDiscriminator(Discriminator):
 
 
 class TraitDiscriminator(Discriminator):
+    TRAIT_PENALTY = 3
+
     def __init__(self, position, trait):
         Discriminator.__init__(self, position)
         self.trait = trait
@@ -73,7 +75,7 @@ class TraitDiscriminator(Discriminator):
                and other.trait == self.trait
 
     def _evaluate(self, process, arg):
-        return api.get_index(api.traits(process, arg), self.trait)
+        return api.get_index(api.traits(process, arg), self.trait) + self.TRAIT_PENALTY
 
     def __str__(self):
         return '"%s:%s"' % (str(self.position), str(self.trait._name_))

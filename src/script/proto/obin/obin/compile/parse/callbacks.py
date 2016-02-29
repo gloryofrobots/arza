@@ -803,6 +803,16 @@ def literal_type_field(parser, op, node):
     name = itself(parser, op, node)
     return nodes.create_symbol_node(name, name)
 
+def symbol_list_to_arg_tuple(parser, node, symbols):
+    args = []
+    children = nodes.node_first(symbols)
+    for child in children:
+        assert nodes.node_type(child) == NT_SYMBOL
+        name = nodes.node_first(child)
+        args.append(name)
+
+    return nodes.node_1(NT_TUPLE, nodes.node_token(node), nodes.list_node(args))
+
 # TODO BETTER PARSE ERRORS HERE
 def stmt_type(parser, op, node):
     type_parser = parser.type_parser
@@ -820,7 +830,9 @@ def stmt_type(parser, op, node):
             construct_funcs = _parse_construct(parser.expression_parser, node)
         else:
             # default constructor
-            construct_funcs = nodes.list_node([nodes.list_node([fields, nodes.empty_node()])])
+            args = symbol_list_to_arg_tuple(parser, node, fields)
+            body = nodes.list_node([nodes.create_fenv_node(node)])
+            construct_funcs = nodes.list_node([args, body])
 
     advance_end(parser)
     return nodes.node_3(NT_TYPE, __ntok(node), typename, fields, construct_funcs)

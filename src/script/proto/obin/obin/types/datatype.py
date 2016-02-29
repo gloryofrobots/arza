@@ -59,11 +59,12 @@ class W_DataType(W_Hashable):
         self.name = name
         self.fields = fields
         self.descriptors = descriptors(self.fields)
+        self.ctor = constructor
+
 
         # parent types declared with union
         self.union = None
-
-        self.ctor = constructor
+        # if union is set traits must be empty
         self.traits = plist.empty()
 
     def add_trait(self, trait):
@@ -118,7 +119,7 @@ class W_DataType(W_Hashable):
         process.call_object(self, args)
 
     def _type_(self, process):
-        raise NotImplementedError()
+        return process.std.types.Datatype
 
     def _compute_hash_(self):
         return int((1 - platform.random()) * 10000000)

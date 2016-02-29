@@ -104,9 +104,11 @@ def newsymbol_s(process, s):
     assert isinstance(s, str)
     return process.symbols.symbol_s(s)
 
+
 def newsymbol_string(process, s):
     assert isstring(s)
     return process.symbols.symbol_string(s)
+
 
 def issymbol(w):
     from obin.types.symbol import W_Symbol
@@ -198,23 +200,6 @@ def isnativefunction(value):
 
 ########################################################
 
-def newentity(process, source, traits):
-    from obin.types import entity
-    if istrait(traits):
-        return entity.newentity_with_trait(process, source, traits)
-    elif islist(traits):
-        return entity.newentity_with_traits(process, source, traits)
-    else:
-        assert False, "Invalid traits type"
-
-
-def isentity(value):
-    from obin.types.entity import W_Entity
-    return isinstance(value, W_Entity)
-
-
-########################################################
-
 def newmap():
     from obin.types.map import create_empty_map
     return create_empty_map()
@@ -290,9 +275,11 @@ def newtuple(items):
     verify_list(items)
     return W_Tuple(list(items))
 
+
 def newunit():
     from obin.types.tupl import W_Tuple
     return W_Tuple([])
+
 
 def istuple(w):
     from obin.types.tupl import W_Tuple
@@ -370,6 +357,7 @@ def istrait(w):
     from obin.types.trait import W_Trait
     return isinstance(w, W_Trait)
 
+
 ########################################################
 
 def newdatatype(name, fields, constructor):
@@ -377,32 +365,27 @@ def newdatatype(name, fields, constructor):
     assert issymbol(name)
     return W_DataType(name, fields, constructor)
 
+
 def newnativedatatype(name, traits):
     datatype = newdatatype(name, newlist([]), newnil())
     datatype.add_traits(traits)
     return datatype
+
 
 def newnativetypeconstructor(name, union):
     datatype = newdatatype(name, newlist([]), newnil())
     datatype.be_part_of_union(union)
     return datatype
 
+
 def isdatatype(w):
     from obin.types.datatype import W_DataType
     return isinstance(w, W_DataType)
 
 
-########################################################
-
-def newbehavior(traits):
-    assert islist(traits)
-    from obin.types.behavior import W_Behavior
-    return W_Behavior(traits)
-
-
-def isbehavior(w):
-    from obin.types.behavior import W_Behavior
-    return isinstance(w, W_Behavior)
+def isrecord(w):
+    from obin.types.datatype import W_Record
+    return isinstance(w, W_Record)
 
 
 ########################################################

@@ -19,23 +19,7 @@
     "children": [
       {
         "_ntype": "NT_NAME",
-        "_value": "Zero"
-      },
-      {
-        "empty": true
-      },
-      {
-        "empty": true
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "Point2"
+        "_value": "Maybe"
       },
       {
         "_ntype": "NT_LIST",
@@ -48,17 +32,7 @@
               "children": [
                 {
                   "_ntype": "NT_NAME",
-                  "_value": "x"
-                }
-              ]
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "#",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "y"
+                  "_value": "val"
                 }
               ]
             }
@@ -66,47 +40,23 @@
         ]
       },
       [
+        {
+          "_ntype": "NT_TUPLE",
+          "_value": "type",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "val"
+              }
+            ]
+          ]
+        },
         [
           {
-            "_ntype": "NT_TUPLE",
-            "_value": "{",
-            "children": [
-              [
-                {
-                  "_ntype": "NT_MAP",
-                  "_value": "{",
-                  "children": [
-                    [
-                      [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "x"
-                        },
-                        {
-                          "empty": true
-                        }
-                      ],
-                      [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "y"
-                        },
-                        {
-                          "empty": true
-                        }
-                      ]
-                    ]
-                  ]
-                }
-              ]
-            ]
-          },
-          [
-            {
-              "_ntype": "NT_FENV",
-              "_value": "___fenv"
-            }
-          ]
+            "_ntype": "NT_FENV",
+            "_value": "___fenv"
+          }
         ]
       ]
     ]

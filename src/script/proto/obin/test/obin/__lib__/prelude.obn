@@ -27,15 +27,18 @@ length = ___length
 @infixr(`::`, `::`, 70)
 @infixl(`++`, `++`, 70)
 
-type Zero end
+type Maybe val
+end
 
-type Point2 x y
-    construct
-//    | x y
-//    | x -> y = x
-    | {x, y}
-    -------------
----------
+//type Zero end
+//
+//type Point2 x y
+//    construct
+////    | x y
+////    | x -> y = x
+//    | {x, y}
+//    -------------
+//---------
 
 //type Vec2 p1 p2
 //    construct

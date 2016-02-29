@@ -221,7 +221,6 @@ def guard_parser_init(proc_data, parser):
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
 
-    infix_operator(parser, TT_KINDOF, 50, proc_data.symbols.symbol_s(prelude.PRIM_KINDOF))
     infix_operator(parser, TT_IS, 50, proc_data.symbols.symbol_s(prelude.PRIM_IS))
     infix_operator(parser, TT_ISNOT, 50, proc_data.symbols.symbol_s(prelude.PRIM_ISNOT))
     infix_operator(parser, TT_IN, 50, proc_data.std.generics.in_.name)
@@ -315,9 +314,6 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_AND, 30, led_infix)
 
     # 50
-    infix_operator(parser, TT_ISA, 50, proc_data.symbols.symbol_s(prelude.PRIM_ISA))
-    infix_operator(parser, TT_NOTA, 50, proc_data.symbols.symbol_s(prelude.PRIM_NOTA))
-    infix_operator(parser, TT_KINDOF, 50, proc_data.symbols.symbol_s(prelude.PRIM_KINDOF))
 
     infix_operator(parser, TT_IS, 50, proc_data.symbols.symbol_s(prelude.PRIM_IS))
     infix_operator(parser, TT_ISNOT, 50, proc_data.symbols.symbol_s(prelude.PRIM_ISNOT))

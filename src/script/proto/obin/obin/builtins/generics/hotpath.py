@@ -2,7 +2,7 @@ __author__ = 'gloryofrobots'
 from obin.types.number import *
 from obin.runtime import error
 from obin.types import api, space, plist, string
-from obin.types.space import isnumber, isint, isentity
+from obin.types.space import isnumber, isint, isrecord
 
 
 class HotPath:
@@ -31,7 +31,7 @@ def is_both_strings(w1, w2):
 
 
 def is_not_entities(w1, w2):
-    return (not isentity(w1)) and (not isentity(w2))
+    return (not isrecord(w1)) and (not isrecord(w2))
 
 
 
@@ -57,7 +57,7 @@ def hp_eq(process, args):
 
 def hp_not_(process, args):
     left = api.at_index(args, 0)
-    if not space.isentity(left):
+    if not space.isrecord(left):
         return api.not_(left)
     else:
         return None

@@ -36,32 +36,28 @@ class Types:
     def __init__(self, symbols, traits):
         from obin.types.space import newlist, newnativedatatype as newtype, newnativetypeconstructor as newctor
         _s = symbols.symbol
-        # ***************
-        self.Bool = newtype(_s(u"Bool"), newlist([traits.Any]))
+        self.Bool = newtype(_s(u"Bool"), newlist([traits.Any, ]))
         self.True = newctor(_s(u"True"), self.Bool)
-        self.False = newctor(_s(u"False"), self.False)
-        # ***************
-        self.Option = newtype(_s(u"Option"), newlist([traits.Any]))
+        self.False = newctor(_s(u"False"), self.Bool)
+        self.Option = newtype(_s(u"Option"), newlist([traits.Any, ]))
         self.Nil = newctor(_s(u"Nil"), self.Option)
-        # ***************
-        self.Char = newtype(_s(u"Char"), newlist([traits.Any]))
-        self.Int = newtype(_s(u"Int"), newlist([traits.Number, traits.Any]))
-        self.Float = newtype(_s(u"Float"), newlist([traits.Number, traits.Any]))
-        self.Symbol = newtype(_s(u"Symbol"), newlist([traits.Callable, traits.Any]))
-        self.String = newtype(_s(u"String"), newlist([traits.Any]))
-        self.List = newtype(_s(u"List"), newlist([traits.Any]))
-        self.Vector = newtype(_s(u"Vector"), newlist([traits.Any]))
-        self.Tuple = newtype(_s(u"Tuple"), newlist([traits.Any]))
-        self.Map = newtype(_s(u"Map"), newlist([traits.Any]))
-        # ***************
-        self.Function = newtype(_s(u"Function"), newlist([traits.Callable, traits.Any]))
-        self.Generic = newtype(_s(u"Generic"), newlist([traits.Callable, traits.Any]))
-        self.NativeFunction = newtype(_s(u"NativeFunction"), newlist([traits.Callable, traits.Any]))
-        self.Fiber = newtype(_s(u"Fiber"), newlist([traits.Callable, traits.Any]))
-        # ***************
-        self.Trait = newtype(_s(u"Trait"), newlist([traits.Any]))
-        self.TVar = newtype(_s(u"TVar"), newlist([traits.Any]))
-        self.Env = newtype(_s(u"Env"), newlist([traits.Any]))
+        self.Char = newtype(_s(u"Char"), newlist([traits.Any, ]))
+        self.Int = newtype(_s(u"Int"), newlist([traits.Number, traits.Any, ]))
+        self.Float = newtype(_s(u"Float"), newlist([traits.Number, traits.Any, ]))
+        self.Symbol = newtype(_s(u"Symbol"), newlist([traits.Any, ]))
+        self.String = newtype(_s(u"String"), newlist([traits.Any, ]))
+        self.List = newtype(_s(u"List"), newlist([traits.Any, ]))
+        self.Vector = newtype(_s(u"Vector"), newlist([traits.Any, ]))
+        self.Tuple = newtype(_s(u"Tuple"), newlist([traits.Any, ]))
+        self.Map = newtype(_s(u"Map"), newlist([traits.Any, ]))
+        self.Function = newtype(_s(u"Function"), newlist([traits.Callable, traits.Any, ]))
+        self.Generic = newtype(_s(u"Generic"), newlist([traits.Callable, traits.Any, ]))
+        self.NativeFunction = newtype(_s(u"NativeFunction"), newlist([traits.Callable, traits.Any, ]))
+        self.Fiber = newtype(_s(u"Fiber"), newlist([traits.Callable, traits.Any, ]))
+        self.Trait = newtype(_s(u"Trait"), newlist([traits.Any, ]))
+        self.Datatype = newtype(_s(u"Datatype"), newlist([traits.Any, ]))
+        self.TVar = newtype(_s(u"TVar"), newlist([traits.Any, ]))
+        self.Env = newtype(_s(u"Env"), newlist([traits.Any, ]))
 
 
 class Traits:
