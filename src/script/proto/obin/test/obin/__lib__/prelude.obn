@@ -30,6 +30,12 @@ length = ___length
 type Maybe val
 end
 
+type Maybe2 val
+    construct
+    | val
+    end
+end
+
 //type Zero end
 //
 //type Point2 x y

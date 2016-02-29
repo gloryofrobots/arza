@@ -182,7 +182,7 @@ def kindof_b(process, obj, kind):
     elif space.isdatatype(kind):
         return typeof_b(process, obj, kind)
     else:
-        return error.throw_2(error.Errors.TYPE, obj, kind)
+        return error.throw_3(error.Errors.TYPE, obj, kind, space.newstring(u"Wrong kindof argument"))
 
 
 def traitof(process, obj, trait):
@@ -191,7 +191,7 @@ def traitof(process, obj, trait):
 
 def traitof_b(process, obj, trait):
     if not space.istrait(trait):
-        return error.throw_1(error.Errors.TYPE, trait)
+        return error.throw_2(error.Errors.TYPE, trait, space.newstring(u"Trait expected"))
 
     obj_type = get_type(process, obj)
     return obj_type.implements(trait)
@@ -204,7 +204,7 @@ def typeof(process, obj, _type):
 def typeof_b(process, obj, _type):
     from obin.types import datatype
     if not space.isdatatype(_type):
-        return error.throw_1(error.Errors.TYPE, _type)
+        return error.throw_2(error.Errors.TYPE, _type, space.newstring(u"Datatype expected"))
 
     obj_type = get_type(process, obj)
     return datatype.can_coerce(obj_type, _type)
@@ -253,7 +253,7 @@ def not_equal(obj, other):
 
 def compare(process, obj, other):
     if space.isuniquetype(obj):
-        return error.throw_1(error.Errors.TYPE, obj)
+        return error.throw_2(error.Errors.TYPE, obj, space.newstring(u"Unique expected"))
 
     v = obj._compare_(other)
 

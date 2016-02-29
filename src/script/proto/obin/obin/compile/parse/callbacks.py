@@ -832,7 +832,7 @@ def stmt_type(parser, op, node):
             # default constructor
             args = symbol_list_to_arg_tuple(parser, node, fields)
             body = nodes.list_node([nodes.create_fenv_node(node)])
-            construct_funcs = nodes.list_node([args, body])
+            construct_funcs = nodes.list_node([nodes.list_node([args, body])])
 
     advance_end(parser)
     return nodes.node_3(NT_TYPE, __ntok(node), typename, fields, construct_funcs)

@@ -47,7 +47,7 @@ def throw_5(symbol_unistr, arg1, arg2, arg3, arg4, arg5):
 
 def affirm_type(obj, condition):
     if not condition(obj):
-        return throw_1(Errors.TYPE, obj)
+        return throw_2(Errors.TYPE, obj, space.newstring(u"Wrong object type"))
     return True
 
 

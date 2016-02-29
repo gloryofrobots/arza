@@ -40,23 +40,75 @@
         ]
       },
       [
-        {
-          "_ntype": "NT_TUPLE",
-          "_value": "type",
-          "children": [
-            [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "val"
-              }
-            ]
-          ]
-        },
         [
           {
-            "_ntype": "NT_FENV",
-            "_value": "___fenv"
-          }
+            "_ntype": "NT_TUPLE",
+            "_value": "type",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "val"
+                }
+              ]
+            ]
+          },
+          [
+            {
+              "_ntype": "NT_FENV",
+              "_value": "___fenv"
+            }
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "_ntype": "NT_TYPE",
+    "_value": "type",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "Maybe2"
+      },
+      {
+        "_ntype": "NT_LIST",
+        "_value": "#",
+        "children": [
+          [
+            {
+              "_ntype": "NT_SYMBOL",
+              "_value": "#",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "val"
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      [
+        [
+          {
+            "_ntype": "NT_TUPLE",
+            "_value": "val",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "val"
+                }
+              ]
+            ]
+          },
+          [
+            {
+              "_ntype": "NT_FENV",
+              "_value": "___fenv"
+            }
+          ]
         ]
       ]
     ]
