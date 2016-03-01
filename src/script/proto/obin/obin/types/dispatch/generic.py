@@ -1,7 +1,7 @@
 from obin.types.root import W_Callable
 from obin.runtime import error
-from signature import newsignature, new_base_signature
 from obin.types import api, space
+from signature import newsignature, new_base_signature
 from dag import *
 
 

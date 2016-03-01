@@ -52,6 +52,7 @@ class Types:
         self.Map = newtype(_s(u"Map"), newlist([traits.Any, ]))
         self.Function = newtype(_s(u"Function"), newlist([traits.Callable, traits.Any, ]))
         self.Generic = newtype(_s(u"Generic"), newlist([traits.Callable, traits.Any, ]))
+        self.Method = newtype(_s(u"Method"), newlist([traits.Callable, traits.Any, ]))
         self.NativeFunction = newtype(_s(u"NativeFunction"), newlist([traits.Callable, traits.Any, ]))
         self.Fiber = newtype(_s(u"Fiber"), newlist([traits.Callable, traits.Any, ]))
         self.Trait = newtype(_s(u"Trait"), newlist([traits.Any, ]))

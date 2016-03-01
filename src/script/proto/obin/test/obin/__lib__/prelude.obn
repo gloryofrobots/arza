@@ -28,7 +28,7 @@ length = ___length
 @infixl(`++`, `++`, 70)
 
 type Maybe val
-end
+---------------
 
 type Maybe2 val
     construct
@@ -53,22 +53,31 @@ end
 //    | p2 @ p1
 //    -----------
 //
-//trait Num self
-//    method is_zero self
-//    method add self a
-//---------------
+//TODO open types
+//TODO CONTEXSTS LIKE ELA
+
+trait Num num
+    method is_zero num
+    method add num a
+    method some_action a num b c d e
+---
+
+implement Num Point2
+    method foo for Num self Vec2 self self Vec2
+    method foo for Num  Vec2  Vec2
+---
 //
 //
-//implement Num for Point2
-//    specify is_zero
-//        | self -> self.x == 0 and self.y == 0
-//    specify add Point2
-//        | self {x=0, y=0} -> self
-//        | {x=0, y=0} p2 -> p2
-//        | self p2 -> Point2 (self.x + p2.x) (self.y + p2.y)
-//    specify add Vec2
-//        | self v -> add (Vec2 self) v
-//---------------------------
+implement Num for Point2
+    specify is_zero
+        | self -> self.x == 0 and self.y == 0
+    specify add Point2
+        | self {x=0, y=0} -> self
+        | {x=0, y=0} p2 -> p2
+        | self p2 -> Point2 (self.x + p2.x) (self.y + p2.y)
+    specify add Vec2
+        | self v -> add (Vec2 self) v
+---------------------------
 //
 //
 //implement Num for Vec2

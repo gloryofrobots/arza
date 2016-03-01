@@ -107,10 +107,10 @@ def contains_index_b(obj, i):
 
 
 def in_(k, obj):
-    return space.newbool(in_b(obj, k))
+    return space.newbool(contains_b(obj, k))
 
 
-def in_b(obj, k):
+def contains_b(obj, k):
     assert not space.isnil(k)
     v = obj._contains_(k)
     assert isinstance(v, bool)
@@ -118,7 +118,7 @@ def in_b(obj, k):
 
 
 def notin(k, obj):
-    return space.newbool(not in_b(obj, k))
+    return space.newbool(not contains_b(obj, k))
 
 
 def put(obj, k, v):
@@ -194,7 +194,7 @@ def traitof_b(process, obj, trait):
         return error.throw_2(error.Errors.TYPE, trait, space.newstring(u"Trait expected"))
 
     obj_type = get_type(process, obj)
-    return obj_type.implements(trait)
+    return obj_type.implements_trait(trait)
 
 
 def typeof(process, obj, _type):

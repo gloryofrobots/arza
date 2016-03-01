@@ -6,10 +6,10 @@ from obin.misc import platform
 class W_Trait(W_Hashable):
     # _immutable_fields_ = ['_name_']
 
-    def __init__(self, name, generics):
+    def __init__(self, name, typevar):
         W_Hashable.__init__(self)
-        self.generics = generics
         self.name = name
+        self.typevar = typevar
 
     def _type_(self, process):
         return process.std.types.Trait

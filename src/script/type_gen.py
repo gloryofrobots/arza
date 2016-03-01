@@ -36,6 +36,7 @@ TYPES = [
 
     mktype("Function", [C, A]),
     mktype("Generic", [C, A]),
+    mktype("Method", [C, A]),
     mktype("NativeFunction", [C, A]),
     mktype("Fiber", [C, A]),
 
@@ -70,6 +71,6 @@ def gen_puts():
         for c in t["ctors"]:
             print t_put(c)
 
-# gen_declaration()
+gen_declaration()
 
 gen_puts()

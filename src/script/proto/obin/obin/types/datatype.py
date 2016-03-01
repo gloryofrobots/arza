@@ -1,5 +1,5 @@
 from obin.types.root import W_Hashable
-from obin.types import api, space, plist
+from obin.types import api, space, plist, pmap
 from obin.misc import platform
 from obin.runtime import error
 
@@ -61,28 +61,43 @@ class W_DataType(W_Hashable):
         self.descriptors = descriptors(self.fields)
         self.ctor = constructor
 
-
         # parent types declared with union
         self.union = None
         # if union is set traits must be empty
-        self.traits = plist.empty()
+        self.traits = space.newmap()
 
-    def add_trait(self, trait):
+    def add_trait_implementation(self, trait, implementations):
         if self.is_type_constructor():
-            return error.throw_2(error.Errors.TRAIT_ALREADY_IMPLEMENTED, trait,
-                                 space.newstring(u"Cant implement trait for type constructor. Use type instead"))
+            return error.throw_2(error.Errors.TYPE, trait,
+                                 space.newstring(u"Can't implement trait for type constructor. Use type instead"))
 
-        if self.implements(trait):
+        if self.is_trait_implemented(trait):
             return error.throw_1(error.Errors.TRAIT_ALREADY_IMPLEMENTED, trait)
 
-        self.traits = plist.cons(trait, self.traits)
+        impl_map = space.newmap()
+        for impl in implementations:
+            method = api.at_index(impl, 0)
+            func = api.at_index(impl, 1)
+            api.put(impl_map, method, func)
 
-    def add_traits(self, traits):
-        for trait in traits:
-            self.add_trait(trait)
+        api.put(self.traits, trait, impl_map)
 
-    def implements(self, trait):
-        return plist.contains(self.traits, trait)
+    def is_trait_implemented(self, trait):
+        return api.contains_b(self.traits, trait)
+
+    def get_method_implementation(self, method):
+        void = space.newnil()
+        if self.is_type_constructor():
+            return void
+
+        trait = method.trait
+
+        impl_map = api.lookup(self.traits, trait, void)
+        if impl_map is void:
+            return void
+
+        impl = api.at(impl_map, method)
+        return impl
 
     def is_type_constructor(self):
         return self.union is not None
@@ -140,4 +155,3 @@ def can_coerce(_type, kind):
         return api.equal_b(_type, kind)
 
     return _type.is_part_of_union(kind)
-

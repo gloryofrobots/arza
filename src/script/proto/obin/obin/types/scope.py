@@ -86,7 +86,7 @@ class W_Scope(W_Any):
         self.__static_references = plist.cons(space.newtuple([ref, space.newint(ref_idx)]), self.__static_references)
 
     def has_operator(self, op_name):
-        return api.in_b(self.__operators, op_name)
+        return api.contains_b(self.__operators, op_name)
 
     def add_operators(self, operators):
         for record in operators:
