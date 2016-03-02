@@ -11,12 +11,12 @@ fun Wolf_New  name ->
     {name=name} isa [Wolf, Animal]
 --------------------------------------------------
 
-generic `-+-+-+-+`
+generic -+-+-+-+
 | self of Animal ->
     ["I am animal", self.name]
 --------------------------------------------------
 
-specify `-+-+-+-+`
+specify -+-+-+-+
 | self of Human ->
     ["I am nice human",self.name, self.surname]
 --------------------------------------------------
@@ -24,8 +24,8 @@ specify `-+-+-+-+`
 fun test () ->
     bob_alice = Human_New "Bob" "Alice"
     wolf = Wolf_New "Jack"
-    affirm:is_equal (`-+-+-+-+` bob_alice) ["I am nice human", "Bob", "Alice"]
-    affirm:is_equal (`-+-+-+-+` wolf) ["I am animal", "Jack"]
+    affirm:is_equal ((-+-+-+-+) bob_alice) ["I am nice human", "Bob", "Alice"]
+    affirm:is_equal ((-+-+-+-+) wolf) ["I am animal", "Jack"]
 
 
     affirm:is_true(bob_alice kindof Map)

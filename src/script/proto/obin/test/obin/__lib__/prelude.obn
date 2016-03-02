@@ -3,6 +3,8 @@ length = ___length
 //TODO
 //Symbols can also be created using symbol(),
 //which takes any number of arguments and creates a new symbol by concatenating their string representations together:
+// True False None
+// lam
 
 @prefix(-, negate)
 @infixl(<, <, 50)
@@ -19,7 +21,7 @@ length = ___length
 @infixr(::, ::, 70)
 @infixl(++, ++, 70)
 
-fun + ar1 arg2 -> x `in` y end
+fun foo () -> (+) 1 2 3 end
 
 
 //type Maybe val

@@ -167,27 +167,6 @@ def infix_name_pair(parser, op, node, left):
     return node_2(__ntype(node), __ntok(node), left, name)
 
 
-# def infix_lparen(parser, op, node, left):
-#     items = []
-#     if parser.token_type != TT_RPAREN:
-#         while True:
-#             items.append(expressions(parser, 0))
-#             if parser.token_type != TT_COMMA:
-#                 break
-#
-#             advance_expected(parser, TT_COMMA)
-#
-#     advance_expected(parser, TT_RPAREN)
-#
-#     if nodes.node_token_type(left) == TT_DOT:
-#         return node_3(NT_CALL_MEMBER, __ntok(node),
-#                       nodes.node_first(left),
-#                       nodes.node_second(left),
-#                       nodes.list_node(items))
-#     else:
-#         return node_2(NT_CALL, __ntok(node), left, nodes.list_node(items))
-
-
 def infix_at(parser, op, node, left):
     ltype = nodes.node_token_type(left)
     if ltype != TT_NAME:
@@ -314,6 +293,16 @@ def prefix_lparen_tuple(parser, op, node):
 
 
 def prefix_lparen(parser, op, node):
+    if parser.token_type == TT_OPERATOR:
+        name = _init_default_current_0(parser)
+        op = nodes.create_name_from_operator(node, name)
+        advance(parser)
+        if parser.token_type != TT_RPAREN:
+            parse_error(parser, u"Invalid syntax for operator in prefix mode, use (op)", node)
+
+        advance_expected(parser, TT_RPAREN)
+        return op
+
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
         return nodes.create_unit_node(node)
@@ -783,10 +772,9 @@ def stmt_module_at(parser, op, node):
         return parse_error(parser, u"Invalid operator type expected infixl, infixr or prefix", parser.node)
 
 # TRAITS
-
 def symbol_operator_name(parser, op, node):
     name = itself(parser, op, node)
-    return nodes.create_name_node(name, nodes.node_value_s(name))
+    return nodes.create_name_from_operator(node, name)
 
 # TYPES ************************
 

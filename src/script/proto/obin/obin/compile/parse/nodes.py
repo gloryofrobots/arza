@@ -201,6 +201,10 @@ def create_token_from_node(type, value, node):
     return tokens.newtoken(type, value, node_position(node), node_line(node), node_column(node))
 
 
+def create_name_from_operator(basenode, op):
+    return create_name_node(basenode, node_value_s(op))
+
+
 def create_name_node(basenode, name):
     return node_0(nt.NT_NAME, create_token_from_node(tt.TT_NAME, name, basenode))
 

@@ -1,10 +1,10 @@
 import affirm
 
 // SYNTAX
-fun `++++/` () -> 42 end
-fun `++>>` x y -> 42 end
-fun `++-__+` | x y -> 42 end
-fun `++---^--^`
+fun ++++/ () -> 42 end
+fun ++>> x y -> 42 end
+fun ++-__+ | x y -> 42 end
+fun ++---^--^
     | x y -> 42 end
 
 

@@ -19,22 +19,18 @@
     "children": [
       {
         "_ntype": "NT_NAME",
-        "_value": "+"
+        "_value": "foo"
       },
       [
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "arg2",
+            "_value": "(",
             "children": [
               [
                 {
-                  "_ntype": "NT_NAME",
-                  "_value": "ar1"
-                },
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "arg2"
+                  "_ntype": "NT_UNIT",
+                  "_value": "("
                 }
               ]
             ]
@@ -42,20 +38,24 @@
           [
             {
               "_ntype": "NT_CALL",
-              "_value": "(",
+              "_value": "",
               "children": [
                 {
                   "_ntype": "NT_NAME",
-                  "_value": "in"
+                  "_value": "+"
                 },
                 [
                   {
-                    "_ntype": "NT_NAME",
-                    "_value": "x"
+                    "_ntype": "NT_INT",
+                    "_value": "1"
                   },
                   {
-                    "_ntype": "NT_NAME",
-                    "_value": "y"
+                    "_ntype": "NT_INT",
+                    "_value": "2"
+                  },
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "3"
                   }
                 ]
               ]
