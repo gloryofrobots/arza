@@ -14,7 +14,8 @@ TPL_FOOTER = """
 TPL_FUNC = """
 @complete_native_routine
 def {{func_native_name}}(process, routine):
-    {% for arg in args %}{{arg.name}} = routine.get_arg({{arg.index}}) 
+    {% for arg in args %}{{arg.name}} = routine.get_arg({{arg.index}}) {%if  affirm_type != ''  %} 
+    error.affirm_type({{arg.name}}, {{affirm_type}}) {% endif %}
     {% endfor %}
     {%if  result_wrap == ''  %}return {{source_module}}.{{source_function}}({% for arg in args|sort(attribute='source_index') %}{{arg.name}}{% if not loop.last %}, {% endif %}{% endfor %})
     {% else %}return {{result_wrap}}({{source_module}}.{{source_function}}({% for arg in args|sort(attribute='source_index') %}{{arg.name}}{% if not loop.last %}, {% endif %}{% endfor %})){% endif %}
@@ -54,7 +55,7 @@ def arg(index):
 
 def func(func_name=None, func_native_name=None,
          func_arity=None, source_module=None,
-        source_function=None, result_wrap=''):
+        source_function=None, result_wrap='', affirm_type=''):
     return dict(
         func_name=func_name,
         func_native_name=func_native_name,
@@ -62,6 +63,7 @@ def func(func_name=None, func_native_name=None,
         source_module = source_module,
         source_function=source_function if source_function else func_name,
         result_wrap = result_wrap,
+        affirm_type = affirm_type,
         args = args(func_arity)
         )
 
@@ -90,6 +92,42 @@ TUPLES = module("_tuple", [
              source_module="tupl", source_function="length"),
     ])
 
+BIT = module("_bit",  [
+    func(func_name="bitnot", func_native_name="bitnot", func_arity=1,
+             source_module="number", source_function="bitnot_i",
+                affirm_type='space.isint'),
+
+    func(func_name="bitor", func_native_name="bitor", func_arity=2,
+             source_module="number", source_function="bitor_i_i",
+                affirm_type='space.isint'),
+
+    
+    func(func_name="bitxor", func_native_name="bitxor", func_arity=2,
+             source_module="number", source_function="bitxor_i_i",
+                affirm_type='space.isint'),
+
+
+
+    func(func_name="bitand", func_native_name="bitand", func_arity=2,
+             source_module="number", source_function="bitand_i_i",
+                affirm_type='space.isint'),
+
+
+    func(func_name="lshift", func_native_name="lshift", func_arity=2,
+             source_module="number", source_function="lsh_i_i",
+                affirm_type='space.isint'),
+
+    func(func_name="rshift", func_native_name="rshift", func_arity=2,
+             source_module="number", source_function="rsh_i_i",
+              affirm_type='space.isint'),
+
+    ])
+
+
 # print generate(LISTS)
-print generate(TUPLES)
+print generate(BIT)
+
+
+
+
 

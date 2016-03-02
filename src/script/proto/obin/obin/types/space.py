@@ -367,17 +367,18 @@ def newgeneric_hotpath(name, hot_path, arity):
     assert issymbol(name)
     assert hot_path is not None
     from obin.types.dispatch.generic import W_Generic
-    from obin.builtins.generics.hotpath import HotPath
+    from obin.builtins.hotpath import HotPath
     obj = W_Generic(name, HotPath(hot_path, arity))
     return obj
 
 
 ########################################################
 
-def newtrait(name):
+def newtrait(name, varname):
     from obin.types.trait import W_Trait
     assert issymbol(name)
-    return W_Trait(name, None)
+    assert issymbol(varname)
+    return W_Trait(name, varname)
 
 
 def istrait(w):
@@ -393,9 +394,8 @@ def newdatatype(name, fields, constructor):
     return W_DataType(name, fields, constructor)
 
 
-def newnativedatatype(name, traits):
+def newnativedatatype(name):
     datatype = newdatatype(name, newlist([]), newnil())
-    datatype.add_traits(traits)
     return datatype
 
 

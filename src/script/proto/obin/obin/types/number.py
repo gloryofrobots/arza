@@ -286,5 +286,3 @@ def lsh_i_i(lval, rval):
     return space.newnumber(res)
 
 
-def uplus_n(op1):
-    return op1

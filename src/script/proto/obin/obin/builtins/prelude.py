@@ -35,6 +35,10 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, unicode(PRIM_ISNOT), __isnot, 2)
     api.put_native_function(process, module, unicode(PRIM_KINDOF), __kindof, 2)
     api.put_native_function(process, module, u"kindof", __kindof, 2)
+    api.put_native_function(process, module, u"not", __not, 1)
+
+
+
 
 
     ## debugging
@@ -105,6 +109,11 @@ def apply(process, routine):
     elif not space.istuple(args):
         return error.throw_1(error.Errors.TYPE, space.newstring(u"arguments tuple expected"))
     api.call(process, func, args)
+
+def __not(process, routine):
+    left = routine.get_arg(0)
+    error.affirm_type(left, space.isboolean)
+    return api.not_(left)
 
 
 @complete_native_routine

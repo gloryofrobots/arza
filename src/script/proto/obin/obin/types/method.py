@@ -1,8 +1,8 @@
 from obin.types.root import W_Callable
 from obin.runtime import error
-from obin.types import api, space
+from obin.types import api
 from obin.misc import platform
-from obin.builtins.generics.hotpath import HotPath
+from obin.builtins.hotpath import HotPath
 
 
 class W_Method(W_Callable):
