@@ -16,6 +16,9 @@ class W_Trait(W_Hashable):
         assert space.ismethod(method)
         self.methods = plist.cons(method, self.methods)
 
+    def has_method(self, method):
+        return plist.contains(self.methods, method)
+
     def _type_(self, process):
         return process.std.types.Trait
 

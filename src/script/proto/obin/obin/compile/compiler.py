@@ -1064,6 +1064,24 @@ def _compile_TRAIT(compiler, code, node):
             _emit_pop(code)
 
 
+def _compile_IMPLEMENT(compiler, code, node):
+    traitname = node_first(node)
+    typename = node_second(node)
+    methods = node_third(node)
+
+    len_methods = len(methods)
+    for i, method in enumerate(methods):
+        method_name = method[0]
+        method_impl = method[1]
+        _compile_node_name_lookup(compiler, code, method_name)
+        _compile_case_function(compiler, code, node, nodes.empty_node(), method_impl)
+        code.emit_1(TUPLE, 2, info(method_name))
+
+    code.emit_1(LIST, len_methods, info(traitname))
+
+    _compile_node_name_lookup(compiler, code, traitname)
+    _compile_node_name_lookup(compiler, code, typename)
+    code.emit_0(IMPLEMENT, info(traitname))
 
 def _emit_specify(compiler, code, node, methods):
     for method in methods:
@@ -1347,6 +1365,8 @@ def _compile_node(compiler, code, node):
         _compile_MODULE(compiler, code, node)
     elif NT_TRAIT == ntype:
         _compile_TRAIT(compiler, code, node)
+    elif NT_IMPLEMENT == ntype:
+        _compile_IMPLEMENT(compiler, code, node)
     elif NT_GENERIC == ntype:
         _compile_GENERIC(compiler, code, node)
     elif NT_SPECIFY == ntype:

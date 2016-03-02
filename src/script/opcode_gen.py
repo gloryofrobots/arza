@@ -20,7 +20,7 @@ OPCODES = [
     ("FENV", 1),
 
     ("TRAIT", 0),
-    
+
     ("LABEL", 0),
     ("STORE_LOCAL", 0),
     ("ITERATOR", 0),
@@ -46,8 +46,8 @@ OPCODES = [
 
     ("STORE_MEMBER", -2),
     ("SLICE", -3),
+    ("IMPLEMENT", -2),
 
-    ("IMPLEMENT", "__UNKNOWN_CHANGE__"),
     ("UNPACK_SEQUENCE", "__UNKNOWN_CHANGE__"),
     ("VECTOR", "__UNKNOWN_CHANGE__"),
     ("TUPLE", "__UNKNOWN_CHANGE__"),

@@ -26,14 +26,6 @@ length = ___length
 //fun foo () -> 1 + 2 end
 
 
-//implement Num for Point2
-//    method is_zero
-//        | self -> self.x == 0 and self.y == 0
-//    method add
-//        | self p2 of Point2 -> Point2 (self.x + p2.x) (self.y + p2.y)
-//        | self i of Int -> Point2 (self.x + i) (self.y + i)
-//---
-
 //type Maybe val
 //---------------
 //

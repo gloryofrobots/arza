@@ -5,23 +5,27 @@ from obin.runtime import error
 
 
 class W_Record(W_Hashable):
-    def __init__(self, type, descriptors, values):
+    def __init__(self, type, values):
         W_Hashable.__init__(self)
-        self.descriptors = descriptors
         self.values = values
         self.type = type
 
     def _to_string_(self):
         from obin.types import api
         res = []
-        for k, i in self.descriptors.items():
-            v = api.at_index(self.values, i)
-            res.append("%s = %s" % (api.to_s(k), api.to_s(v)))
+
+        for f in self.type.fields:
+            i = api.at(self.type.descriptors, f)
+            v = api.at_index(self.values, api.to_i(i))
+            res.append("%s = %s" % (api.to_s(f), api.to_s(v)))
 
         return "%s {%s}" % (api.to_s(self.type), ", ".join(res))
 
+    def _type_(self, process):
+        return self.type
+
     def _at_(self, name):
-        idx = api.lookup(self.descriptors, name, space.newnil())
+        idx = api.lookup(self.type.descriptors, name, space.newnil())
         if space.isnil(idx):
             error.throw_1(error.Errors.KEY_ERROR, name)
         return api.at(self.values, idx)
@@ -31,12 +35,12 @@ class W_Record(W_Hashable):
         return self.values._at_index_(idx)
 
     def _put_(self, name, value):
-        idx = api.lookup(self.descriptors, name, space.newnil())
+        idx = api.lookup(self.type.descriptors, name, space.newnil())
         if space.isnil(idx):
             error.throw_1(error.Errors.KEY_ERROR, name)
 
         newvalues = api.put(self.values, name, value)
-        return W_Record(self.descriptors, newvalues)
+        return W_Record(self.type.descriptors, newvalues)
 
     def _length_(self):
         return api.length(self.values)
@@ -112,7 +116,7 @@ class W_DataType(W_Hashable):
         assert self.union is not None
         return api.equal_b(self.union, union)
 
-    def create_record(self, env):
+    def create_instance(self, env):
         undef = space.newnil()
         values = space.newlist([])
         for f in self.fields:
@@ -122,12 +126,12 @@ class W_DataType(W_Hashable):
 
             values = plist.cons(v, values)
 
-        return W_Record(self, self.descriptors, values)
+        return W_Record(self, values)
 
     # TODO CREATE CALLBACK OBJECT
     def _to_routine_(self, stack, args):
         from obin.runtime.routine.routine import create_callback_routine
-        routine = create_callback_routine(stack, self.create_record, self.ctor, args)
+        routine = create_callback_routine(stack, self.create_instance, self.ctor, args)
         return routine
 
     def _call_(self, process, args):
@@ -146,6 +150,17 @@ class W_DataType(W_Hashable):
     def _equal_(self, other):
         return other is self
 
+
+def implement_trait(_type, trait, implementations):
+    error.affirm_type(_type, space.isdatatype)
+    error.affirm_type(trait, space.istrait)
+    error.affirm_type(implementations, space.islist)
+    for impl in implementations:
+        method = api.at_index(impl, 0)
+        if not trait.has_method(method):
+            error.throw_2(error.Errors.TRAIT_IMPLEMENTATION, space.newstring(u"Unknown trait method"), method)
+    _type.add_trait_implementation(trait, implementations)
+    return _type
 
 def can_coerce(_type, kind):
     if kind.is_type_constructor():

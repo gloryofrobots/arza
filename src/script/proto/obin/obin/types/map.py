@@ -243,6 +243,12 @@ class W_Map(W_Any):
 
         return self._at_index_(idx)
 
+    def _contains_(self, key):
+        idx = self._get_index_(key)
+        if platform.is_absent_index(idx):
+            return False
+        return True
+
     def _get_index_(self, name):
         # from obin.objects import api
         # print "get_index", api.to_native_string(name)

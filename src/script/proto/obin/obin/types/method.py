@@ -1,14 +1,16 @@
-from obin.types.root import W_Callable
+from obin.types.root import W_Hashable
 from obin.runtime import error
 from obin.types import api
 from obin.misc import platform
 from obin.builtins.hotpath import HotPath
 
 
-class W_Method(W_Callable):
+class W_Method(W_Hashable):
     # _immutable_fields_ = ["_name_"]
 
     def __init__(self, name, trait, arity, dispatch_arg_index, typevar, signature, hotpath):
+        W_Hashable.__init__(self)
+
         self.name = name
         self.trait = trait
         self.trait.add_method(self)
@@ -78,7 +80,8 @@ def method_with_hotpath(name, trait, signature, hotpath):
         error.throw_2(error.Errors.METHOD_SPECIALIZE,
                       u"Unspecified type variable in method signature. expected variable", typevar)
 
-    return W_Method(name, trait, arity, dispatch_arg_index, typevar, signature, HotPath(hotpath, arity))
+    h = HotPath(hotpath, arity) if hotpath is not None else None
+    return W_Method(name, trait, arity, dispatch_arg_index, typevar, signature, h)
 
 
 def method(name, trait, signature):

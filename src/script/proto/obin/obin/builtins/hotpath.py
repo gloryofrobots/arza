@@ -14,6 +14,8 @@ class HotPath:
     def apply(self, process, args):
         if api.length_i(args) != self.arity:
             return None
+        if not self.fn:
+            print "OLOO"
         return self.fn(process, args)
 
 

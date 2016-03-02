@@ -2,7 +2,7 @@ from obin.compile.code.opcode import *
 from obin.runtime import error
 from obin.runtime.routine.base_routine import BaseRoutine
 from obin.runtime.load import import_module
-from obin.types import api, space, string, environment
+from obin.types import api, space, string, environment, datatype
 from obin.types.dispatch import generic
 
 
@@ -293,14 +293,21 @@ class CodeRoutine(BaseRoutine):
                 constructor = stack.pop()
                 fields = stack.pop()
 
-                datatype = space.newdatatype(name, fields, constructor)
-                stack.push(datatype)
+                _datatype = space.newdatatype(name, fields, constructor)
+                stack.push(_datatype)
             # *************************************
             elif TRAIT == tag:
                 varname = stack.pop()
                 name = literals[arg1]
                 trait = space.newtrait(name, varname)
                 stack.push(trait)
+            # *************************************
+            elif IMPLEMENT == tag:
+                _type = stack.pop()
+                _trait = stack.pop()
+                _impls = stack.pop()
+                _type = datatype.implement_trait(_type, _trait, _impls)
+                stack.push(_type)
             # *************************************
             elif METHOD == tag:
                 signature = stack.pop()
