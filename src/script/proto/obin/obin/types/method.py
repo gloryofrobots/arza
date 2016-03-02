@@ -25,9 +25,6 @@ class W_Method(W_Callable):
     def _to_string_(self):
         return "<method %s of %s>" % (api.to_s(self.name), api.to_s(self.trait))
 
-    def lookup_method(self, args):
-        pass
-
     def _call_(self, process, args):
         arity = api.length_i(args)
         if self.arity != arity:

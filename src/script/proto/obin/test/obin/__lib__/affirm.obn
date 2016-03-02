@@ -4,7 +4,7 @@ fun is_equal_batch fn ...calls ->
 ---
 
 fun _batch checker fn calls ->
-    for call in calls
+    for call <- calls
         checker (apply fn call.[0])  call.[1]
     ---
 ---
@@ -50,14 +50,14 @@ fun is_equal_float
 
 fun is_same val1 val2 ->
     condition
-    | val1 isnot val2 -> fail [val1, "isnot", val2]
+    | val1 `isnot` val2 -> fail [val1, "isnot", val2]
     | otherwise -> true
     ---
 ---
 
 fun isnot_same val1 val2 ->
     condition
-    | val1 is val2 -> fail [val1, "is", val2]
+    | val1 `is` val2 -> fail [val1, "is", val2]
     | otherwise -> true
     ---
 ---

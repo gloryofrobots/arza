@@ -848,8 +848,8 @@ def stmt_trait(parser, op, node):
         method_name = grab_name(parser)
         check_token_type(parser, TT_NAME)
 
-        sig = node_tuple_juxtaposition(sig_parser, TERM_METHOD_SIG)
-        check_node_type(parser, sig, NT_TUPLE)
+        sig = node_list_juxtaposition(sig_parser, TERM_METHOD_SIG)
+        check_node_type(parser, sig, NT_LIST)
 
         methods.append(nodes.list_node([method_name, sig]))
     advance_end(parser)

@@ -28,6 +28,12 @@ type Point2 x y
     -------------
 ---------
 
+
+trait Num self
+    method is_zero self
+    method add self a
+----
+
 // TODO error here 2 % 0
 fun main () ->
     p = Point2 0 1

@@ -15,11 +15,12 @@ OPCODES = [
     ("NEXT", 1),
     ("MODULE", 1),
     ("GENERIC", 1),
-    ("TRAIT", 1),
     ("ARGUMENTS", 1),
     ("FSELF", 1),
     ("FENV", 1),
 
+    ("TRAIT", 0),
+    
     ("LABEL", 0),
     ("STORE_LOCAL", 0),
     ("ITERATOR", 0),
@@ -37,6 +38,7 @@ OPCODES = [
     ("PUSH_CATCH", 0),
     ("JUMP_IF_ITERATOR_EMPTY", -1),
 
+    ("METHOD", -1),
     ("MEMBER_DOT", -1),
     ("MEMBER", -1),
     ("POP", -1),
@@ -45,6 +47,7 @@ OPCODES = [
     ("STORE_MEMBER", -2),
     ("SLICE", -3),
 
+    ("IMPLEMENT", "__UNKNOWN_CHANGE__"),
     ("UNPACK_SEQUENCE", "__UNKNOWN_CHANGE__"),
     ("VECTOR", "__UNKNOWN_CHANGE__"),
     ("TUPLE", "__UNKNOWN_CHANGE__"),

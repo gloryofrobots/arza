@@ -12,11 +12,9 @@ PRIM_IS_INDEXED = "___is_indexed"
 PRIM_IS_SEQ = "___is_seq"
 PRIM_IS_MAP = "___is_map"
 PRIM_LENGTH = "___length"
-PRIM_IS = "___is"
-PRIM_ISNOT = "___isnot"
-PRIM_NOTA = "___nota"
-PRIM_ISA = "___isa"
-PRIM_KINDOF = "___kindof"
+PRIM_IS = "is"
+PRIM_ISNOT = "isnot"
+PRIM_KINDOF = "kindof"
 
 def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)

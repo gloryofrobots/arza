@@ -1031,16 +1031,38 @@ def _compile_TYPE(compiler, code, node):
 def _compile_FENV(compiler, code, node):
     code.emit_0(FENV, info(node))
 
+def _declare_local_name(compiler, code, node):
+    sym = space.newsymbol_s(compiler.process, nodes.node_value_s(node))
+    name_index = _declare_literal(compiler, sym)
+    index = _declare_local(compiler, sym)
+    return sym, index, name_index
+
 
 def _compile_TRAIT(compiler, code, node):
-    names = node_first(node)
-    for name in names:
-        name = space.newsymbol_s(compiler.process, nodes.node_value_s(name))
-        index = _declare_local(compiler, name)
+    tname_node = node_first(node)
+    trait_name, trait_index, trait_name_index = _declare_local_name(compiler, code, tname_node)
+    varname = _get_symbol_name(compiler, node_second(node))
+    varname_literal = _declare_literal(compiler, varname)
 
-        name_index = _declare_literal(compiler, name)
-        code.emit_1(TRAIT, name_index, info(node))
-        code.emit_2(STORE_LOCAL, index, name_index, info(node))
+    code.emit_1(LITERAL, varname_literal, info(node))
+    code.emit_1(TRAIT, trait_name_index, info(node))
+    code.emit_2(STORE_LOCAL, trait_index, trait_name_index, info(node))
+
+    methods = node_third(node)
+    last_index = len(methods) - 1
+    for i, method in enumerate(methods):
+        # duplicate trait on top
+        _emit_dup(code)
+        method_name_node = method[0]
+        method_sig = method[1]
+
+        _compile(compiler, code, method_sig)
+        method_name, method_index, method_name_index = _declare_local_name(compiler, code, method_name_node)
+        code.emit_1(METHOD, method_name_index, info(node))
+        code.emit_2(STORE_LOCAL, method_index, method_name_index, info(node))
+        if i != last_index:
+            _emit_pop(code)
+
 
 
 def _emit_specify(compiler, code, node, methods):

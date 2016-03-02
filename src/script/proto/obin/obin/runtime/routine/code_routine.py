@@ -297,9 +297,17 @@ class CodeRoutine(BaseRoutine):
                 stack.push(datatype)
             # *************************************
             elif TRAIT == tag:
+                varname = stack.pop()
                 name = literals[arg1]
-                trait = space.newtrait(name)
+                trait = space.newtrait(name, varname)
                 stack.push(trait)
+            # *************************************
+            elif METHOD == tag:
+                signature = stack.pop()
+                trait = stack.pop()
+                name = literals[arg1]
+                method = space.newmethod(name, trait, signature)
+                stack.push(method)
             # *************************************
             elif GENERIC == tag:
                 name = literals[arg1]

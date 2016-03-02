@@ -12,10 +12,10 @@ DUP = 10
 NEXT = 11
 MODULE = 12
 GENERIC = 13
-TRAIT = 14
-ARGUMENTS = 15
-FSELF = 16
-FENV = 17
+ARGUMENTS = 14
+FSELF = 15
+FENV = 16
+TRAIT = 17
 LABEL = 18
 STORE_LOCAL = 19
 ITERATOR = 20
@@ -30,36 +30,39 @@ JUMP_IF_FALSE = 28
 JUMP_IF_TRUE = 29
 PUSH_CATCH = 30
 JUMP_IF_ITERATOR_EMPTY = 31
-MEMBER_DOT = 32
-MEMBER = 33
-POP = 34
-THROW = 35
-STORE_MEMBER = 36
-SLICE = 37
-UNPACK_SEQUENCE = 38
-VECTOR = 39
-TUPLE = 40
-MAP = 41
-TYPE = 42
-LIST = 43
-SPECIFY = 44
+METHOD = 32
+MEMBER_DOT = 33
+MEMBER = 34
+POP = 35
+THROW = 36
+STORE_MEMBER = 37
+SLICE = 38
+IMPLEMENT = 39
+UNPACK_SEQUENCE = 40
+VECTOR = 41
+TUPLE = 42
+MAP = 43
+TYPE = 44
+LIST = 45
+SPECIFY = 46
 
 # ************************************************
 
 __OPCODE_REPR__ = ["NIL", "TRUE", "FALSE", "LITERAL", "SYMBOL", "OUTER", "LOCAL", "IMPORTED", "FUNCTION", "INTEGER",
-                   "DUP", "NEXT", "MODULE", "GENERIC", "TRAIT", "ARGUMENTS", "FSELF", "FENV", "LABEL", "STORE_LOCAL",
+                   "DUP", "NEXT", "MODULE", "GENERIC", "ARGUMENTS", "FSELF", "FENV", "TRAIT", "LABEL", "STORE_LOCAL",
                    "ITERATOR", "RETURN", "POP_CATCH", "CALL", "CALL_METHOD", "JUMP", "JUMP_IF_FALSE_NOPOP",
                    "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "PUSH_CATCH", "JUMP_IF_ITERATOR_EMPTY",
-                   "MEMBER_DOT", "MEMBER", "POP", "THROW", "STORE_MEMBER", "SLICE", "UNPACK_SEQUENCE", "VECTOR",
-                   "TUPLE", "MAP", "TYPE", "LIST", "SPECIFY", ]
+                   "METHOD", "MEMBER_DOT", "MEMBER", "POP", "THROW", "STORE_MEMBER", "SLICE", "IMPLEMENT",
+                   "UNPACK_SEQUENCE", "VECTOR", "TUPLE", "MAP", "TYPE", "LIST", "SPECIFY", ]
 
 # ************************************************
 
 __UNKNOWN_CHANGE__ = -128
 
-__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1,
-                     -1, -1, -1, -1, -2, -3, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
-                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
+__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1,
+                     -1, -1, -1, -1, -1, -2, -3, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
+                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
+                     __UNKNOWN_CHANGE__, ]
 
 
 # ************************************************
@@ -99,6 +102,8 @@ def opcode_estimate_stack_change(opcode):
     elif tag == SPECIFY:
         return -1 * (arg1 + 1) + 1
     elif tag == TYPE:
+        return -1 * arg1 + 2
+    elif tag == IMPLEMENT:
         return -1 * arg1 + 2
     return 0
 
