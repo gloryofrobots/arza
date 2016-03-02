@@ -1,28 +1,42 @@
 //TODO FIX IT
 length = ___length
 //TODO
+//open types
+//CONTEXSTS LIKE ELA
 //Symbols can also be created using symbol(),
 //which takes any number of arguments and creates a new symbol by concatenating their string representations together:
 // True False None
 // lam
 
-@prefix(-, negate)
-@infixl(<, <, 50)
-@infixl(>, >, 50)
-@infixl(>=, >=, 50)
-@infixl(<=, <=, 50)
-@infixl(==, ==, 50)
-@infixl(!=, !=, 50)
-@infixl(+, +, 60)
-@infixl(-, -, 60)
-@infixl(%, %, 65)
-@infixl(*, *, 65)
-@infixl(/, /, 65)
-@infixr(::, ::, 70)
-@infixl(++, ++, 70)
+@prefix - negate
+@infixl < < 50
+@infixl > > 50
+@infixl >= >= 50
+@infixl <= <= 50
+@infixl == == 50
+@infixl != != 50
+@infixl + + 60
+@infixl - - 60
+@infixl % % 65
+@infixl * * 65
+@infixl / / 65
+@infixr :: :: 70
+@infixl ++ ++ 70
 
-fun foo () -> (+) 1 2 3 end
+//fun foo () -> 1 + 2 end
 
+//trait Num self
+//    method is_zero self
+//    method add self a
+//----
+
+implement Num for Point2
+    method is_zero
+        | self -> self.x == 0 and self.y == 0
+    method add
+        | self p2 of Point2 -> Point2 (self.x + p2.x) (self.y + p2.y)
+        | self v of Vec2 -> add (Vec2 self) v
+---------------------------
 
 //type Maybe val
 //---------------
@@ -50,69 +64,8 @@ fun foo () -> (+) 1 2 3 end
 //    | p2 @ p1
 //    -----------
 //
-//TODO open types
-//TODO CONTEXSTS LIKE ELA
 
-//trait Num num
-//    method is_zero num
-//    method add num a
-//    method some_action a num b c d e
-//---
-//
-//implement Num Point2
-//    method foo for Num self Vec2 self self Vec2
-//    method foo for Num  Vec2  Vec2
-//---
-//
-//
-//implement Num for Point2
-//    specify is_zero
-//        | self -> self.x == 0 and self.y == 0
-//    specify add Point2
-//        | self {x=0, y=0} -> self
-//        | {x=0, y=0} p2 -> p2
-//        | self p2 -> Point2 (self.x + p2.x) (self.y + p2.y)
-//    specify add Vec2
-//        | self v -> add (Vec2 self) v
-//---------------------------
-//
-//
-//implement Num for Vec2
-//    specify is_zero
-//        | self -> (is_zero self.p1) and (is_zero self.p2)
-//    specify add for Vec2
-//        | self v  -> Vec2 (add self.p1  v.p1) (add self.p2 v.p2)
-//    specify add for Point2
-//        | self p -> (add self (Vec2 p))
-//--------------------
-//
-//implement Num for Zero
-//    specify is_zero
-//        | self -> true
-//    specify add for Number
-//        | self i -> i
-//------------
-//
-//specify add for Num Zero
-//    | self i -> self
-//---
-//
-//specify add
-//    for Point2 Point2
-//        | self {x=0, y=0} -> self
-//        | {x=0, y=0} p2 -> p2
-//        | p1 p2 -> Point2 (p1.x + p2.x) (p1.y + p2.y)
-//    for Point2 Vec2
-//        | self v -> add (Vec2 self) v
-//    for Vec2 Vec2
-//        | self v  -> Vec2 (add self.p1  v.p1) (add self.p2 v.p2)
-//    for Vec2 Point2
-//        | self p -> (add self (Vec2 p))
-//    for Zero Num
-//        | self i -> i
-//    for Num Zero
-//        | self i -> self
-//------------------------------------
+
 ////union Option = None | Some v
 
 //fun main () ->

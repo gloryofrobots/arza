@@ -48,9 +48,11 @@ def node_tuple_juxtaposition(parser, terminators):
     node, args = juxtaposition_list(parser, terminators)
     return nodes.node_1(NT_TUPLE, nodes.node_token(node), nodes.list_node(args))
 
+
 def node_list_juxtaposition(parser, terminators):
     node, args = juxtaposition_list(parser, terminators)
     return nodes.node_1(NT_LIST, nodes.node_token(node), nodes.list_node(args))
+
 
 def __ntype(node):
     node_type = NODE_TYPE_MAPPING[nodes.node_token_type(node)]
@@ -108,6 +110,7 @@ def led_infixr_assign(parser, op, node, left):
 
     return node_2(__ntype(node), __ntok(node), left, exp)
 
+
 def infix_backtick(parser, op, node, left):
     funcname = strutil.cat_both_ends(nodes.node_value_s(node))
     if not funcname:
@@ -116,6 +119,7 @@ def infix_backtick(parser, op, node, left):
 
     right = expressions(parser, op.lbp)
     return nodes.create_call_node_2(node, funcnode, left, right)
+
 
 def infix_if(parser, op, node, left):
     first = condition(parser)
@@ -653,23 +657,6 @@ def stmt_module(parser, op, node):
     return node_3(NT_MODULE, __ntok(node), name, stmts, scope)
 
 
-def trait_name(parser):
-    check_token_type(parser, TT_NAME)
-    exp = expressions(parser, 0)
-    if nodes.node_type(exp) != NT_NAME:
-        parse_error(parser, u"Invalid trait name", parser.node)
-    return exp
-
-
-def stmt_trait(parser, op, node):
-    names = [trait_name(parser)]
-    while parser.token_type == TT_COMMA:
-        advance_expected(parser, TT_COMMA)
-        names.append(trait_name(parser))
-
-    return node_1(NT_TRAIT, __ntok(node), nodes.list_node(names))
-
-
 def _load_path_s(node):
     if nodes.node_type(node) == NT_LOOKUP_MODULE:
         return _load_path_s(nodes.node_first(node)) + ':' + nodes.node_value_s(nodes.node_second(node))
@@ -771,10 +758,6 @@ def stmt_module_at(parser, op, node):
     else:
         return parse_error(parser, u"Invalid operator type expected infixl, infixr or prefix", parser.node)
 
-# TRAITS
-def symbol_operator_name(parser, op, node):
-    name = itself(parser, op, node)
-    return nodes.create_name_from_operator(node, name)
 
 # TYPES ************************
 
@@ -804,6 +787,7 @@ def literal_type_field(parser, op, node):
     name = itself(parser, op, node)
     return nodes.create_symbol_node(name, name)
 
+
 def symbol_list_to_arg_tuple(parser, node, symbols):
     args = []
     children = nodes.node_first(symbols)
@@ -813,6 +797,7 @@ def symbol_list_to_arg_tuple(parser, node, symbols):
         args.append(name)
 
     return nodes.node_1(NT_TUPLE, nodes.node_token(node), nodes.list_node(args))
+
 
 # TODO BETTER PARSE ERRORS HERE
 def stmt_type(parser, op, node):
@@ -839,10 +824,69 @@ def stmt_type(parser, op, node):
     return nodes.node_3(NT_TYPE, __ntok(node), typename, fields, construct_funcs)
 
 
+# TRAIT
+def symbol_operator_name(parser, op, node):
+    name = itself(parser, op, node)
+    return nodes.create_name_from_operator(node, name)
+
+
+def grab_name(parser):
+    check_token_type(parser, TT_NAME)
+    name = _init_default_current_0(parser)
+    advance(parser)
+    return name
+
+
+def stmt_trait(parser, op, node):
+    type_parser = parser.type_parser
+    sig_parser = parser.method_signature_parser
+    name = grab_name(type_parser)
+    instance_name = grab_name(type_parser)
+    methods = []
+    while parser.token_type == TT_METHOD:
+        advance_expected(parser, TT_METHOD)
+        method_name = grab_name(parser)
+        check_token_type(parser, TT_NAME)
+
+        sig = node_tuple_juxtaposition(sig_parser, TERM_METHOD_SIG)
+        check_node_type(parser, sig, NT_TUPLE)
+
+        methods.append(nodes.list_node([method_name, sig]))
+    advance_end(parser)
+    return nodes.node_3(NT_TRAIT, __ntok(node), name, instance_name, nodes.list_node(methods))
+
+
+def stmt_implement(parser, op, node):
+    type_parser = parser.type_parser
+    trait_name = grab_name(type_parser)
+    advance_expected(parser, TT_FOR)
+    type_name = grab_name(type_parser)
+
+    methods = []
+
+    check_token_type(parser, TT_METHOD)
+    while parser.token_type == TT_METHOD:
+        advance_expected(parser, TT_METHOD)
+
+        funcs = []
+        method_name = grab_name(parser.name_parser)
+        check_token_type(parser, TT_CASE)
+        while parser.token_type == TT_CASE:
+            advance_expected(parser, TT_CASE)
+            args = _parse_func_pattern(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD)
+            advance_expected(parser, TT_ARROW)
+            body = statements(parser.expression_parser, TERM_IMPL_BODY)
+            funcs.append(nodes.list_node([args, body]))
+        methods.append(nodes.list_node([method_name, nodes.list_node(funcs)]))
+
+    advance_end(parser)
+    return nodes.node_3(NT_IMPLEMENT, __ntok(node), trait_name, type_name, nodes.list_node(methods))
+
 def _meta_infix(parser, node, infix_function):
-    options_tuple = expressions(parser.name_parser, 0)
-    check_node_type(parser, options_tuple, NT_TUPLE)
-    options = nodes.node_first(options_tuple)
+    # options_tuple = expressions(parser.name_parser, 0)
+    # check_node_type(parser, options_tuple, NT_TUPLE)
+    _, options = juxtaposition_list_while_not_breaks(parser.name_parser)
+    # options = nodes.node_first(options_tuple)
     if api.length_i(options) != 3:
         return parse_error(parser, u"Invalid prefix operator options", parser.node)
     op_node = options[0]
@@ -866,9 +910,10 @@ def _meta_infix(parser, node, infix_function):
 
 
 def _meta_prefix(parser, node):
-    options_tuple = expressions(parser.name_parser, 0)
-    check_node_type(parser, options_tuple, NT_TUPLE)
-    options = nodes.node_first(options_tuple)
+    # options_tuple = expressions(parser.name_parser, 0)
+    # check_node_type(parser, options_tuple, NT_TUPLE)
+    # options = nodes.node_first(options_tuple)
+    _, options = juxtaposition_list_while_not_breaks(parser.name_parser)
     if api.length_i(options) != 2:
         return parse_error(parser, u"Invalid prefix operator options", parser.node)
     op_node = options[0]

@@ -54,11 +54,11 @@ def gen_declarations():
         if not op_test.match(operator):
             continue
         if arityname == 'prefix':
-            print '@%s(%s, %s)' % (arityname, symbol(operator), symbol(name))
+            print '@%s %s %s' % (arityname, symbol(operator), symbol(name))
         else:
             precedence = op[3]
             if precedence:
-                print '@%s(%s, %s, %d)' % (arityname, symbol(operator), symbol(name), precedence)
+                print '@%s %s %s %d' % (arityname, symbol(operator), symbol(name), precedence)
 
 
 

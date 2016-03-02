@@ -1,6 +1,5 @@
 NODES = [
   # internals
-  "NT_GROUP",
   "NT_GOTO",
 
   # code nodes 
@@ -40,6 +39,7 @@ NODES = [
   "NT_EXPORT",
   "NT_LOAD",
   "NT_TRAIT",
+  "NT_IMPLEMENT",
   "NT_GENERIC",
   "NT_SPECIFY",
 

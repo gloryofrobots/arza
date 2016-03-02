@@ -27,6 +27,9 @@ TERM_TYPE_ARGS = [TT_CONSTRUCT] + TERM_BLOCK
 TERM_CONSTRUCT_GUARD = [TT_ARROW, TT_CASE, TT_END]
 TERM_CONSTRUCT_PATTERN = [TT_WHEN, TT_ARROW, TT_CASE, TT_END]
 
+TERM_METHOD_SIG = [TT_METHOD] + TERM_BLOCK
+TERM_IMPL_BODY = [TT_CASE, TT_METHOD] + TERM_BLOCK
+
 TERM_CONDITION_CONDITION = [TT_ARROW]
 
 NODE_FOR_NAME = [NT_NAME]
@@ -489,15 +492,17 @@ def juxtaposition_list(parser, terminators):
         if parser.token_type in terminators:
             return node, args
 
+def juxtaposition_list_while_not_breaks(parser):
+    args = []
+    while True:
+        node, _lbp = _expression(parser, 0, None)
+        args.append(node)
 
+        if parser.token_type == TT_COMMA:
+            advance(parser)
 
-
-            # ntype = nodes.node_type(node)
-            # if ntype == NT_JUXTAPOSITION:
-            #     items = flatten_juxtaposition(parser, node)
-            #     return nodes.node_1(NT_TUPLE, nodes.node_token(node), items)
-            # else:
-            #     return nodes.node_1(NT_TUPLE, nodes.node_token(node), nodes.list_node([node]))
+        if parser.is_newline_occurred:
+            return node, nodes.list_node(args)
 
 
 def process_juxtaposition_expression(parser, node):
@@ -509,12 +514,6 @@ def process_juxtaposition_expression(parser, node):
         args = nodes.node_second(node)
         flatten_arg = flatten_juxtaposition(parser, args)
         return nodes.node_2(NT_CALL, nodes.node_token(node), caller, flatten_arg)
-    # elif ntype == NT_COMMA:
-    #     if not commas_as_tuples:
-    #         parse_error(parser, u"Invalid use of comma operator", node)
-    #
-    #     args = flatten_comma(parser, node, commas_as_tuples)
-    #     return nodes.node_1(NT_TUPLE, nodes.node_token(node), args)
     else:
         return node
 

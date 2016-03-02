@@ -117,10 +117,12 @@ class ModuleParser(BaseParser):
         self.name_parser = name_parser_init(BaseParser())
         self.import_names_parser = import_names_parser_init(BaseParser())
         self.type_parser = type_parser_init(BaseParser())
+        self.method_signature_parser = method_signature_parser_init(BaseParser())
 
         module_parser_init(base_parser_init(self))
 
     def _on_open(self, state):
+        self.method_signature_parser.open(state)
         self.type_parser.open(state)
         self.pattern_parser.open(state)
         self.guard_parser.open(state)
@@ -131,6 +133,7 @@ class ModuleParser(BaseParser):
         self.import_names_parser.open(state)
 
     def _on_close(self):
+        self.method_signature_parser.close()
         self.type_parser.close()
         self.pattern_parser.close()
         self.guard_parser.close()
@@ -164,6 +167,13 @@ def type_parser_init(parser):
     symbol(parser, TT_CONSTRUCT, None)
     return parser
 
+
+def method_signature_parser_init(parser):
+    parser.break_on_juxtaposition = True
+    # literal(parser, TT_TYPENAME)
+    prefix(parser, TT_NAME, literal_type_field)
+    symbol(parser, TT_METHOD, None)
+    return parser
 
 def import_names_parser_init(parser):
     symbol(parser, TT_COMMA, None)
@@ -338,6 +348,7 @@ def expression_parser_init(proc_data, parser):
 def module_parser_init(parser):
     stmt(parser, TT_GENERIC, stmt_generic)
     stmt(parser, TT_TRAIT, stmt_trait)
+    stmt(parser, TT_IMPLEMENT, stmt_implement)
     stmt(parser, TT_SPECIFY, stmt_specify)
     stmt(parser, TT_IMPORT, stmt_import)
     stmt(parser, TT_EXPORT, stmt_export)
