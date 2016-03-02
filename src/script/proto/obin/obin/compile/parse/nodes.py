@@ -273,6 +273,8 @@ def create_empty_map_node(basenode):
 def create_call_node_1(basenode, func, exp):
     return node_2(nt.NT_CALL, create_token_from_node(tt.TT_LPAREN, "(", basenode), func, list_node([exp]))
 
+def create_call_node_2(basenode, func, exp1, exp2):
+    return node_2(nt.NT_CALL, create_token_from_node(tt.TT_LPAREN, "(", basenode), func, list_node([exp1, exp2]))
 
 def create_call_node_name(basenode, funcname, exps):
     return create_call_node_s(basenode, api.to_s(funcname), exps)

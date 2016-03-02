@@ -8,20 +8,32 @@ def keyword(literal):
     return re.compile('\\b%s\\b' % literal)
 
 
-# def token(literal):
-#     return literal
-
 token = re.compile
 
 ## Regexes for use in tokens
 ##
 ##
+# OLD STUFF
+# simple_escape = """([a-zA-Z._~!=&\^\-\\?'"])"""
+# decimal_escape = """(\d+)"""
+# hex_escape = """(x[0-9a-fA-F]+)"""
+
+# escape_sequence = """(\\(""" + simple_escape + '|' + decimal_escape + '|' + hex_escape + '))'
+# cconst_char = """([^'\\\n]|""" + escape_sequence + ')'
+# char_const = "'" + cconst_char + "'"
+
+# string literals (K&R2: A.2.6)
+# string_char = """([^"\\\n]|""" + escape_sequence + ')'
+# string_literal = '"' + string_char + '*"'
+# wstring_literal = 'L' + string_literal
+# string_literal = "\"[^\"]*\""
+
 
 # valid  identifiers (K&R2: A.2.3), plus '$' (supported by some compilers)
-name = token('[a-zA-Z_$][0-9a-zA-Z_$]*')
-typename = token('[A-Z][0-9a-zA-Z_$]*')
+name_const = '[a-zA-Z_$][0-9a-zA-Z_$]*'
+typename = '[A-Z][0-9a-zA-Z_$]*'
 operator_char = '^\s\,\.\@\#\)\(\]\[\}\{\;\w"`\''
-operator = token('[%s]+' % operator_char)
+operator_const = '[%s]+' % operator_char
 
 hex_prefix = '0[xX]'
 hex_digits = '[0-9a-fA-F]+'
@@ -29,36 +41,22 @@ bin_prefix = '0[bB]'
 bin_digits = '[01]+'
 
 integer_suffix_opt = '(([uU]ll)|([uU]LL)|(ll[uU]?)|(LL[uU]?)|([uU][lL])|([lL][uU]?)|[uU])?'
-decimal_constant = token('(0' + integer_suffix_opt + ')|([1-9][0-9]*' + integer_suffix_opt + ')')
+decimal_constant = '(0' + integer_suffix_opt + ')|([1-9][0-9]*' + integer_suffix_opt + ')'
 octal_constant = '0[0-7]*' + integer_suffix_opt
 hex_constant = hex_prefix + hex_digits + integer_suffix_opt
 bin_constant = bin_prefix + bin_digits + integer_suffix_opt
 
-simple_escape = """([a-zA-Z._~!=&\^\-\\?'"])"""
-decimal_escape = """(\d+)"""
-hex_escape = """(x[0-9a-fA-F]+)"""
-
-escape_sequence = """(\\(""" + simple_escape + '|' + decimal_escape + '|' + hex_escape + '))'
-cconst_char = """([^'\\\n]|""" + escape_sequence + ')'
-char_const = "'" + cconst_char + "'"
-char_const = token("'[^']+'")
-backtick_const = token("`[^`]+`")
-
-# string literals (K&R2: A.2.6)
-# string_char = """([^"\\\n]|""" + escape_sequence + ')'
-# string_literal = token('"' + string_char + '*"')
-string_literal = token('(""".*?""")|(".*?")|(\'.*?\')')
-# wstring_literal = 'L' + string_literal
-# string_literal = "\"[^\"]*\""
-
 # floating constants (K&R2: A.2.5.3)
 exponent_part = """([eE][-+]?[0-9]+)"""
 fractional_constant = """([0-9]*\.[0-9]+)"""
-floating_constant = token(
-    '((((' + fractional_constant + ')' + exponent_part + '?)|([0-9]+' + exponent_part + '))[FfLl]?)')
+floating_constant = '((((' + fractional_constant + ')' + exponent_part + '?)|([0-9]+' + exponent_part + '))[FfLl]?)'
 binary_exponent_part = '''([pP][+-]?[0-9]+)'''
 hex_fractional_constant = '(((' + hex_digits + r""")?\.""" + hex_digits + ')|(' + hex_digits + r"""\.))"""
 hex_floating_constant = '(' + hex_prefix + '(' + hex_digits + '|' + hex_fractional_constant + ')' + binary_exponent_part + '[FfLl]?)'
+
+char_const = "'[^']+'"
+backtick_const = "`[^`]+`"
+string_literal = '(""".*?""")|(".*?")|(\'.*?\')'
 
 RULES = [
     (token('\n'), TT_NEWLINE),
@@ -99,24 +97,15 @@ RULES = [
     (keyword('type'), TT_TYPE),
     (keyword('for'), TT_FOR),
 
-
     (keyword('export'), TT_EXPORT),
     (keyword('import'), TT_IMPORT),
     (keyword('from'), TT_FROM),
     (keyword('hiding'), TT_HIDING),
 
-    (keyword('isa'), TT_ISA),
-    (keyword('nota'), TT_NOTA),
-    (keyword('kindof'), TT_KINDOF),
     (keyword('of'), TT_OF),
     (keyword('as'), TT_AS),
     (keyword('when'), TT_WHEN),
-    (keyword('not'), TT_NOT),
 
-    (keyword('in'), TT_IN),
-    (keyword('notin'), TT_NOTIN),
-    (keyword('is'), TT_IS),
-    (keyword('isnot'), TT_ISNOT),
 
     (keyword('var'), TT_VAR),
     (keyword('lazy'), TT_LAZY),
@@ -127,18 +116,19 @@ RULES = [
 
     # **********
 
-    (floating_constant, TT_FLOAT),
-    (decimal_constant, TT_INT),
-    (string_literal, TT_STR),
-    (char_const, TT_CHAR),
-    (backtick_const, TT_BACKTICK),
+    (token(floating_constant), TT_FLOAT),
+    (token(decimal_constant), TT_INT),
+    (token(string_literal), TT_STR),
+    (token(char_const), TT_CHAR),
+    (token(backtick_const), TT_BACKTICK),
     # (typename, TT_TYPENAME),
-    (name, TT_NAME),
+    (token(name_const), TT_NAME),
 
     (token('\|'), TT_CASE),
     (token('---[-]*'), TT_END),
 
     (token('\-\>'), TT_ARROW),
+    (token('\<\-'), TT_BACKARROW),
     (token('\.\.\.'), TT_ELLIPSIS),
     (token('\;'), TT_SEMI),
     (token('#'), TT_SHARP),
@@ -163,7 +153,7 @@ RULES = [
     (token('='), TT_ASSIGN),
 
     # that can catch op
-    (operator, TT_OPERATOR),
+    (token(operator_const), TT_OPERATOR),
 ]
 
 
@@ -175,8 +165,9 @@ def newtoken(type, val, pos, line, column):
     assert space.isint(column)
     return space.newtuple([space.newint(type), space.newstring_s(val), pos, line, column])
 
+
 def newtoken_without_meta(type, val):
-    return newtoken(type, val, space.newint(-1), space.newint(-1),space.newint(-1),)
+    return newtoken(type, val, space.newint(-1), space.newint(-1), space.newint(-1), )
 
 
 def token_type(token):

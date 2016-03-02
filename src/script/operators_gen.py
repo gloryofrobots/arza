@@ -1,13 +1,13 @@
 OPERATORS = [
-    ("-", "__uminus__", 'prefix'),
-    ("+", "__plus__", 'prefix'),
-    ("~", "~", 'prefix'),
-    ("not", "not", 'prefix'),
+    ("-", "negate", 'prefix'),
+    # ("+", "__plus__", 'prefix'),
+    # ("~", "~", 'prefix'),
+    # ("not", "not", 'prefix'),
 
 
-    ("|", "|", 'infixr', 35),
-    ("^","^", 'infixr', 45),
-    ("&", "&", 'infixr', 45),
+    # ("|", "|", 'infixr', 35),
+    # ("^","^", 'infixr', 45),
+    # ("&", "&", 'infixr', 45),
 
     ("<", "<", 'infixl', 50),
     (">", ">", 'infixl', 50),
@@ -24,9 +24,9 @@ OPERATORS = [
     ("isnot","isnot", 'infixl', 50),
     ("in","in", 'infixl', 50), 
 
-    ("<<","<<", 'infixl', 55),
-    (">>",">>", 'infixl', 55),
-    (">>>", ">>>", 'infixl', 55),
+    # ("<<","<<", 'infixl', 55),
+    # (">>",">>", 'infixl', 55),
+    # (">>>", ">>>", 'infixl', 55),
 
     ("+","+", 'infixl', 60), 
     ("-", "-", 'infixl', 60),
@@ -41,7 +41,7 @@ OPERATORS = [
 ]
 
 def symbol(name):
-    return "`%s`" % name
+    return "%s" % name
 
 
 def gen_declarations():

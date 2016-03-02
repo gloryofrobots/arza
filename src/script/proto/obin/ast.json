@@ -14,99 +14,51 @@
     ]
   },
   {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
+    "_ntype": "NT_FUN",
+    "_value": "fun",
     "children": [
       {
         "_ntype": "NT_NAME",
-        "_value": "Maybe"
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "#",
-        "children": [
-          [
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "#",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "val"
-                }
-              ]
-            }
-          ]
-        ]
+        "_value": "+"
       },
       [
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "arg2",
             "children": [
               [
                 {
                   "_ntype": "NT_NAME",
-                  "_value": "val"
+                  "_value": "ar1"
+                },
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "arg2"
                 }
               ]
             ]
           },
           [
             {
-              "_ntype": "NT_FENV",
-              "_value": "___fenv"
-            }
-          ]
-        ]
-      ]
-    ]
-  },
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "Maybe2"
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "#",
-        "children": [
-          [
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "#",
+              "_ntype": "NT_CALL",
+              "_value": "(",
               "children": [
                 {
                   "_ntype": "NT_NAME",
-                  "_value": "val"
-                }
+                  "_value": "in"
+                },
+                [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
               ]
-            }
-          ]
-        ]
-      },
-      [
-        [
-          {
-            "_ntype": "NT_TUPLE",
-            "_value": "val",
-            "children": [
-              [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "val"
-                }
-              ]
-            ]
-          },
-          [
-            {
-              "_ntype": "NT_FENV",
-              "_value": "___fenv"
             }
           ]
         ]

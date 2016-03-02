@@ -103,7 +103,7 @@ class W_DataType(W_Hashable):
         return self.union is not None
 
     def be_part_of_union(self, union):
-        assert plist.is_empty(self.traits)
+        assert api.is_empty(self.traits)
         assert self.union is None
         self.union = union
 

@@ -151,7 +151,7 @@ def name_parser_init(parser):
     symbol(parser, TT_ELLIPSIS, None)
 
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
-    prefix(parser, TT_BACKTICK, prefix_backtick)
+    symbol(parser, TT_OPERATOR, symbol_operator_name)
     infix(parser, TT_COLON, 10, infix_name_pair)
     return parser
 
@@ -214,17 +214,10 @@ def guard_parser_init(proc_data, parser):
     prefix(parser, TT_LCURLY, prefix_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
 
-    prefix_operator(parser, TT_NOT, proc_data.std.generics.not_.name)
-
     infix(parser, TT_DOT, 70, infix_dot)
     infix(parser, TT_COLON, 80, infix_name_pair)
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
-
-    infix_operator(parser, TT_IS, 50, proc_data.symbols.symbol_s(prelude.PRIM_IS))
-    infix_operator(parser, TT_ISNOT, 50, proc_data.symbols.symbol_s(prelude.PRIM_ISNOT))
-    infix_operator(parser, TT_IN, 50, proc_data.std.generics.in_.name)
-    infix_operator(parser, TT_NOTIN, 50, proc_data.std.generics.notin.name)
     return parser
 
 
@@ -297,49 +290,31 @@ def base_parser_init(parser):
 def expression_parser_init(proc_data, parser):
     parser.allow_overloading = True
     parser.allow_juxtaposition = True
-    # OTHER OPERATORS ARE DECLARED IN PRELUDE
-    from obin.builtins import prelude
+    # OTHER OPERATORS ARE DECLARED IN prelude.obn
 
     symbol(parser, TT_ELSE, None)
     symbol(parser, TT_CASE, None)
     symbol(parser, TT_THEN, None)
 
-    # 20
-    infix(parser, TT_IF, 20, infix_if)
-
-    # 25
-    infix(parser, TT_OR, 25, led_infix)
-
-    # 30
-    infix(parser, TT_AND, 30, led_infix)
-
-    # 50
-
-    infix_operator(parser, TT_IS, 50, proc_data.symbols.symbol_s(prelude.PRIM_IS))
-    infix_operator(parser, TT_ISNOT, 50, proc_data.symbols.symbol_s(prelude.PRIM_ISNOT))
-
-    infix_operator(parser, TT_IN, 50, proc_data.std.generics.in_.name)
-    infix_operator(parser, TT_NOTIN, 50, proc_data.std.generics.notin.name)
-
-    infix(parser, TT_DOT, 70, infix_dot)
-    # infix(parser, TT_COMMA, 90, led_infix)
     infix(parser, TT_COMMA, -2, None)
 
-    # 80
+    infix(parser, TT_IF, 20, infix_if)
+
+    infix(parser, TT_OR, 25, led_infix)
+
+    infix(parser, TT_AND, 30, led_infix)
+
+    infix(parser, TT_BACKTICK, 50, infix_backtick)
+
+    infix(parser, TT_DOT, 70, infix_dot)
+
     infix(parser, TT_INFIX_LCURLY, 80, infix_lcurly)
     infix(parser, TT_INFIX_LSQUARE, 80, infix_lsquare)
-
-    # 90
-    # infix(parser, TT_LPAREN, 90, infix_lparen)
 
     """
     PREFIXES
     """
-    prefix(parser, TT_BACKTICK, prefix_backtick)
-    prefix_operator(parser, TT_NOT, proc_data.std.generics.not_.name)
-
     prefix(parser, TT_THROW, stmt_single)
-    # prefix(parser, TT_IF, prefix_if)
     prefix(parser, TT_CONDITION, prefix_condition)
 
     prefix(parser, TT_FUN, prefix_fun)
@@ -352,7 +327,6 @@ def expression_parser_init(proc_data, parser):
     STATEMENTS
     """
 
-    # stmt(parser, TT_RETURN, stmt_single)
     stmt(parser, TT_BREAK, stmt_loop_flow)
     stmt(parser, TT_CONTINUE, stmt_loop_flow)
     stmt(parser, TT_WHEN, stmt_when)
@@ -386,7 +360,7 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = False
+PARSE_DEBUG = True
 
 
 def parse(process, env, src):

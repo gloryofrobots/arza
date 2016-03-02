@@ -1,5 +1,5 @@
 from obin.types.root import W_Hashable
-from obin.types import api, space
+from obin.types import api, space, plist
 from obin.misc import platform
 
 
@@ -10,6 +10,11 @@ class W_Trait(W_Hashable):
         W_Hashable.__init__(self)
         self.name = name
         self.typevar = typevar
+        self.methods = plist.empty()
+
+    def add_method(self, method):
+        assert space.ismethod(method)
+        self.methods = plist.cons(method, self.methods)
 
     def _type_(self, process):
         return process.std.types.Trait

@@ -26,7 +26,6 @@ NODE_TYPE_MAPPING = {
     TT_TRAIT: NT_TRAIT,
     TT_GENERIC: NT_GENERIC,
     TT_SPECIFY: NT_SPECIFY,
-    TT_RETURN: NT_RETURN,
     TT_THROW: NT_THROW,
     TT_BREAK: NT_BREAK,
     TT_CONTINUE: NT_CONTINUE,
@@ -109,6 +108,14 @@ def led_infixr_assign(parser, op, node, left):
 
     return node_2(__ntype(node), __ntok(node), left, exp)
 
+def infix_backtick(parser, op, node, left):
+    funcname = strutil.cat_both_ends(nodes.node_value_s(node))
+    if not funcname:
+        return parse_error(parser, u"invalid variable name in backtick expression", node)
+    funcnode = nodes.create_name_node(node, funcname)
+
+    right = expressions(parser, op.lbp)
+    return nodes.create_call_node_2(node, funcnode, left, right)
 
 def infix_if(parser, op, node, left):
     first = condition(parser)
@@ -227,11 +234,12 @@ def prefix_sharp(parser, op, node):
     return _parse_symbol(parser, node)
 
 
-def prefix_backtick(parser, op, node):
-    val = strutil.cat_both_ends(nodes.node_value_s(node))
-    if not val:
-        return parse_error(parser, u"invalid variable name", node)
-    return nodes.create_name_node(node, val)
+# def prefix_backtick(parser, op, node):
+#     val = strutil.cat_both_ends(nodes.node_value_s(node))
+#     if not val:
+#         return parse_error(parser, u"invalid variable name", node)
+#     return nodes.create_name_node(node, val)
+
 
 
 # def prefix_sharp(parser, op, node):
@@ -487,14 +495,13 @@ def stmt_when(parser, op, node):
 
 
 def stmt_for(parser, op, node):
-    # set big lbp to overriding IN binding power
     check_token_type(parser, TT_NAME)
     var = _init_default_current_0(parser)
     vars = nodes.list_node([var])
     advance(parser)
-    advance_expected(parser, TT_IN)
+    advance_expected(parser, TT_BACKARROW)
     exp = expressions(parser, 0)
-    # CALL endofexpression for one line for i in 1..2; i end
+    # CALL endofexpression for one line for i <- 1..2; i end
     endofexpression(parser)
 
     stmts = statements(parser, TERM_BLOCK)
@@ -775,6 +782,11 @@ def stmt_module_at(parser, op, node):
     else:
         return parse_error(parser, u"Invalid operator type expected infixl, infixr or prefix", parser.node)
 
+# TRAITS
+
+def symbol_operator_name(parser, op, node):
+    name = itself(parser, op, node)
+    return nodes.create_name_node(name, nodes.node_value_s(name))
 
 # TYPES ************************
 
@@ -798,6 +810,7 @@ def _parse_construct(parser, node):
     advance_end(parser)
 
     return nodes.list_node(funcs)
+
 
 def literal_type_field(parser, op, node):
     name = itself(parser, op, node)
