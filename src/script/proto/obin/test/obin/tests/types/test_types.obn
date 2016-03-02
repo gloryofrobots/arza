@@ -1,0 +1,5 @@
+import tests:types:test_simple
+
+fun test () ->
+    test_simple:test()
+end

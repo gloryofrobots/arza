@@ -836,6 +836,14 @@ def grab_name(parser):
     advance(parser)
     return name
 
+def grab_name_or_operator(parser):
+    check_token_types(parser, [TT_NAME, TT_OPERATOR])
+    name = _init_default_current_0(parser)
+    if parser.token_type == TT_OPERATOR:
+        name = nodes.create_name_from_operator(name, name)
+    advance(parser)
+    return name
+
 
 def stmt_trait(parser, op, node):
     type_parser = parser.type_parser
@@ -845,7 +853,7 @@ def stmt_trait(parser, op, node):
     methods = []
     while parser.token_type == TT_METHOD:
         advance_expected(parser, TT_METHOD)
-        method_name = grab_name(parser)
+        method_name = grab_name_or_operator(parser)
         check_token_type(parser, TT_NAME)
 
         sig = node_list_juxtaposition(sig_parser, TERM_METHOD_SIG)
@@ -869,7 +877,7 @@ def stmt_implement(parser, op, node):
         advance_expected(parser, TT_METHOD)
 
         funcs = []
-        method_name = grab_name(parser.name_parser)
+        method_name = grab_name_or_operator(parser.name_parser)
         check_token_type(parser, TT_CASE)
         while parser.token_type == TT_CASE:
             advance_expected(parser, TT_CASE)

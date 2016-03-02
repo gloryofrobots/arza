@@ -1,6 +1,6 @@
 from obin.types.root import W_Hashable
 from obin.runtime import error
-from obin.types import api
+from obin.types import api, space
 from obin.misc import platform
 from obin.builtins.hotpath import HotPath
 
@@ -39,6 +39,9 @@ class W_Method(W_Hashable):
                 return
 
         method = lookup_implementation(process, self, args)
+        if space.isnil(method):
+            return error.throw_2(error.Errors.METHOD_NOT_IMPLEMENTED, self, args)
+
         # print "GEN CALL", str(method)
         process.call_object(method, args)
 

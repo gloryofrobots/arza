@@ -1,49 +1,47 @@
 import affirm
-trait Animal, Wolf, Bird
-trait Human
-trait Bacteria
 
-fun Human_New  name surname ->
-    {name=name, surname=surname} isa [Human, Animal]
+type Zero
+--------
+
+type Point2 x y
+    construct
+    | {x, y}
+    | (x, y)
+    | x -> y = x
+    | x y
+    -------------
+-----------------
+
+trait Add self
+    method is_zero self
+    method add self a
+    method !! self
+--------------------
+
+
+implement Add for Point2
+    method is_zero
+        | self -> self.x == 0 and self.y == 0
+    method add
+        | self p2 of Point2 -> Point2 (self.x + p2.x) (self.y + p2.y)
+        | self i of Int -> Point2 (self.x + i) (self.y + i)
+-----------------------------------------------------
+
+implement Eq for Point2
+    method ==
+        | self other -> self.x == other.x and self.y == other.y
+    method !=
+        | self other -> not (self == other)
 --------------------------------------------------
 
-fun Wolf_New  name ->
-    {name=name} isa [Wolf, Animal]
---------------------------------------------------
-
-generic -+-+-+-+
-| self of Animal ->
-    ["I am animal", self.name]
---------------------------------------------------
-
-specify -+-+-+-+
-| self of Human ->
-    ["I am nice human",self.name, self.surname]
---------------------------------------------------
-
+// TODO error here 2 % 0
 fun test () ->
-    bob_alice = Human_New "Bob" "Alice"
-    wolf = Wolf_New "Jack"
-    affirm:is_equal ((-+-+-+-+) bob_alice) ["I am nice human", "Bob", "Alice"]
-    affirm:is_equal ((-+-+-+-+) wolf) ["I am animal", "Jack"]
-
-
-    affirm:is_true(bob_alice kindof Map)
-    affirm:is_false(bob_alice kindof Bacteria)
-    affirm:is_true(bob_alice kindof Human)
-    affirm:is_true(wolf kindof [Wolf, Animal])
-    affirm:is_true(Bacteria kindof Any)
-    affirm:is_true(Bacteria kindof Trait)
-    affirm:is_true(Human kindof Trait)
-
-    alice = {name = "Alice", age = 42} isa Human
-    alice2 = alice isa [Bird, Animal, Bacteria]
-    alice3 = alice2 nota Animal
-    alice4 = alice2 nota [Bird, Bacteria]
-
-    affirm:is_false(alice2 kindof [Animal, Bird, Animal])
-    affirm:is_true(alice2 kindof [Bird, Animal])
-    affirm:is_false(alice3 kindof Animal)
-    affirm:is_equal (traits alice3) [Bird, Bacteria, Human, Map, Indexed, Collection, Any]
-    affirm:is_equal (traits alice4) [Animal, Human, Map, Indexed, Collection, Any]
+    p = Point2 0 1
+    p1 = Point2 42
+    print (Point2 0 1) (Point2 42) (Point2 {x=33, y=34})
+    print (add p 4)
+    print (add p p1)
+    print p == p1
+    print p == p
+    print p == (Point2 0 1)
 --------------------------------------------------

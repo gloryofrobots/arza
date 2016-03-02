@@ -105,9 +105,9 @@ def put_methods():
         for M in T["methods"]:
             print render(TPL, M)
 
+trait_declarations()
 put_traits()
 put_methods()
-# trait_declarations()
 
 method_declaration()
         

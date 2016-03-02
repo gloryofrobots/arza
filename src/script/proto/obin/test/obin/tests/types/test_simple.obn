@@ -1,21 +1,4 @@
 import affirm
-//import tests:test_base
-//import tests:test_static_refs
-//import tests:test_bool
-//import tests:test_co
-//import tests:test_destruct
-//import tests:test_exception
-//import tests:test_fun
-//import tests:test_generic
-//import tests:test_modify
-//import tests:test_operator_override
-//import tests:test_module
-//import tests:test_trait
-//import tests:test_match
-//import tests:test_operators
-//import tests:datastructs:test_datastructs
-//import list
-import tests:types:test_types
 
 type Zero
 ---------
@@ -56,7 +39,6 @@ implement Add for Point2
         | self v of Vec2 -> add (Vec2 self) v
 ---
 
-//TODO default implementation
 implement Eq for Point2
     method ==
         | self other of Point2 -> self.x == other.x and self.y == other.y
@@ -81,26 +63,19 @@ implement Eq for Vec2
 
 
 // TODO error here 2 % 0
-fun main () ->
-    test_types:test()
+fun test () ->
     p = Point2 0 1
     p1 = Point2 42
 
-//    (Vec2 10 12 14 16)
+    affirm:is_true p == p
+    affirm:is_true p == (Point2 0 1)
+    affirm:is_false p == p1
+    affirm:is_equal p.[0] p.x
+    affirm:is_equal p.[1] p.y
+    affirm:is_equal p (Point2 0 1)
 
-//    test_base:test()
-//    test_static_refs:test()
-//    test_bool:test()
-//    test_co:test()
-//    test_destruct:test()
-//    test_exception:test()
-//    test_fun:test()
-//    test_generic:test()
-//    test_modify:test()
-//    test_operator_override:test()
-//    test_module:test()
-//    test_trait:test()
-//    test_match:test()
-//    test_operators:test()
-//    test_datastructs:test()
+    affirm:is_equal (Vec2 1) (Vec2 (Point2 1 1))
+    v1 = Vec2 0 1 2 3
+    v2 = Vec2 (Point2 10 11) (Point2 12 13)
+    affirm:is_equal (add v1 v2) (Vec2 10 12 14 16)
 end

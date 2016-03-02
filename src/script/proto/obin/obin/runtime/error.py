@@ -102,6 +102,7 @@ class Errors:
     INVOKE = u"InvokeError"
     INVALID_ARG_COUNT = u"InvalidArgCount"
     METHOD_INVOKE = u"MethodInvokeError"
+    METHOD_NOT_IMPLEMENTED = u"MethodNotImplementedError"
     METHOD_SPECIALIZE = u"MethodSpecializeError"
     FROZEN = u"FrozenValueIllegalOperationError"
     COMPILE = u"CompileError"

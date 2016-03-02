@@ -26,35 +26,21 @@ length = ___length
 //fun foo () -> 1 + 2 end
 
 
-//type Maybe val
-//---------------
-//
-//type Maybe2 val
-//    construct
-//    | val
-//    end
-//end
-
-//type Zero end
-//
-//type Point2 x y
-//    construct
-////    | x y
-////    | x -> y = x
-//    | {x, y}
-//    -------------
-//---------
-
-//type Vec2 p1 p2
-//    construct
-//    | p1 of Point2, p2 of Point2
-//    | x1 y1 x2 y2 -> p1 = Point2 x y; p2 = Point2 x2 y2;
-//    | p2 @ p1
-//    -----------
-//
-
-
-////union Option = None | Some v
+union Maybe = None | Just v
+union Shape =
+    Square width height
+        construct
+        | width height
+        | width -> height = width
+        ----
+    | Rect left top right bottom
+    | Line x y
+        construct
+        | x y
+        | x -> y = x
+        ---
+    | Empty
+-----------------------
 
 //fun main () ->
 //    p1 = Point2 1 2

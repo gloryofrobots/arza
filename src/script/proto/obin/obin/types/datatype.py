@@ -25,6 +25,9 @@ class W_Record(W_Hashable):
         return self.type
 
     def _at_(self, name):
+        if space.isint(name):
+            return self._at_index_(api.to_i(name))
+
         idx = api.lookup(self.type.descriptors, name, space.newnil())
         if space.isnil(idx):
             error.throw_1(error.Errors.KEY_ERROR, name)
@@ -118,15 +121,14 @@ class W_DataType(W_Hashable):
 
     def create_instance(self, env):
         undef = space.newnil()
-        values = space.newlist([])
+        values = []
         for f in self.fields:
             v = api.lookup(env, f, undef)
             if space.isnil(v):
                 error.throw_2(error.Errors.CONSTRUCTOR, space.newstring(u"Missing required field"), f)
+            values.append(v)
 
-            values = plist.cons(v, values)
-
-        return W_Record(self, values)
+        return W_Record(self, plist.plist(values))
 
     # TODO CREATE CALLBACK OBJECT
     def _to_routine_(self, stack, args):

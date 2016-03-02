@@ -108,6 +108,7 @@ def apply(process, routine):
         return error.throw_1(error.Errors.TYPE, space.newstring(u"arguments tuple expected"))
     api.call(process, func, args)
 
+@complete_native_routine
 def __not(process, routine):
     left = routine.get_arg(0)
     error.affirm_type(left, space.isboolean)
