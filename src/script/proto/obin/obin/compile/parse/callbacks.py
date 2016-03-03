@@ -870,6 +870,8 @@ def stmt_trait(parser, op, node):
     type_parser = parser.type_parser
     sig_parser = parser.method_signature_parser
     name = grab_name(type_parser)
+    check_token_type(parser, TT_FOR)
+    advance(parser)
     instance_name = grab_name(type_parser)
     methods = []
     while parser.token_type == TT_METHOD:

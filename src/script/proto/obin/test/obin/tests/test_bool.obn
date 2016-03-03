@@ -21,14 +21,14 @@ fun test() ->
     affirm:is_throw (fun t_or | x -> 1 or 0 end) ()
     affirm:is_throw_expected (fun t_or | x -> 1 or 0 end) () (#NotImplementedError, (#_tobool_, 1))
 
-    affirm:is_throw lambda x -> 1 and 0; ()
-    affirm:is_throw lambda x -> not 0; ()
-    affirm:is_throw lambda x -> not {}; ()
-    affirm:is_throw lambda x -> not ""; ()
-    affirm:is_throw lambda x -> not []; ()
-    affirm:is_throw lambda x -> not (); ()
-    affirm:is_throw lambda x -> not 1.2; ()
-    affirm:is_throw lambda x -> not #symbol; ()
+    affirm:is_throw lam x -> 1 and 0; ()
+    affirm:is_throw lam x -> not 0; ()
+    affirm:is_throw lam x -> not {}; ()
+    affirm:is_throw lam x -> not ""; ()
+    affirm:is_throw lam x -> not []; ()
+    affirm:is_throw lam x -> not (); ()
+    affirm:is_throw lam x -> not 1.2; ()
+    affirm:is_throw lam x -> not #symbol; ()
 
     x = 0
     y = 1

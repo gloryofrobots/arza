@@ -66,7 +66,7 @@ fun nth
 --------------------------------------------------
 
 fun length | l of List ->
-    foldl lambda _ acc -> acc + 1; 0 l
+    foldl lam _ acc -> acc + 1; 0 l
 --------------------------------------------------
 
 //QUERIES///////////////////////////////////////////////////
@@ -128,10 +128,10 @@ fun delete
 ////QUERIES//////////////////////////////////////////////////////////////////
 
 fun conjunction l ->
-    foldr lambda v acc -> v and acc; true l end
+    foldr lam v acc -> v and acc; true l end
 
 fun disjunction l ->
-    foldr lambda v acc -> v or acc; false l end
+    foldr lam v acc -> v or acc; false l end
 
 fun any p l ->
     disjunction (map p l) end
@@ -140,7 +140,7 @@ fun all p l ->
     conjunction (map p l) end
 
 fun element x l ->
-    any lambda v -> v == x; l end
+    any lam v -> v == x; l end
 
 fun contains l x ->
     element x l end

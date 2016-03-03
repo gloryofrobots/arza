@@ -3,12 +3,12 @@ import affirm
 union Ordering | EQ | GT | LT
 ------
 
-trait Equal x
+trait Equal for x
     method eq x y -> not (ne x y)
     method ne x y -> not (eq x y)
 ---
 
-trait Order x
+trait Order for x
     method le x y -> (cmp x y) != GT
     method lt x y -> (cmp x y) == LT
     method ge x y -> (cmp x y) != LT

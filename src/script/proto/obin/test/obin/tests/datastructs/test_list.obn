@@ -39,7 +39,7 @@ fun test () ->
     affirm:is_false (list:suffix [4,5,6] [1,2,3,4,6,5])
 
     affirm:is_equal (list:drop 3 l1) [3,4,5,6,7,8,9]
-    affirm:is_equal (list:map lambda x -> x+1; l1) [1,2,3,4,5,6,7,8,9,10]
+    affirm:is_equal (list:map lam x -> x+1; l1) [1,2,3,4,5,6,7,8,9,10]
     affirm:is_equal (list:intersperse 0 l1) [0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0]
     affirm:is_equal (list:scanl (+) 0  (list:range 1  11))  [0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55]
 
@@ -48,24 +48,24 @@ fun test () ->
     affirm:is_equal (list:replicate 5 42) [42, 42, 42, 42, 42]
     affirm:is_equal (list:take 3 l1) [0,1,2]
     affirm:is_equal (list:split_at 3 l1)  ([0, 1, 2], [3, 4, 5, 6, 7, 8, 9])
-    affirm:is_equal (list:take_while lambda x -> x < 5; l1) [0, 1, 2, 3, 4]
-    affirm:is_equal (list:drop_while lambda x -> x < 5; l1) [5, 6, 7, 8, 9]
-    affirm:is_equal (list:span lambda x -> x < 3; [1,2,3,4,1,2,3,4]),
+    affirm:is_equal (list:take_while lam x -> x < 5; l1) [0, 1, 2, 3, 4]
+    affirm:is_equal (list:drop_while lam x -> x < 5; l1) [5, 6, 7, 8, 9]
+    affirm:is_equal (list:span lam x -> x < 3; [1,2,3,4,1,2,3,4]),
                     ([1, 2], [3, 4, 1, 2, 3, 4])
 
-    affirm:is_equal (list:span lambda x -> x < 9; [1,2,3]),
+    affirm:is_equal (list:span lam x -> x < 9; [1,2,3]),
                     ([1, 2, 3], [])
 
-    affirm:is_equal (list:span lambda x -> x < 0; [1,2,3]),
+    affirm:is_equal (list:span lam x -> x < 0; [1,2,3]),
                     ([], [1, 2, 3])
 
     affirm:is_true (list:conjunction [true, true, true, true])
     affirm:is_false (list:conjunction [true, true, true, false])
-    affirm:is_true (list:all lambda x -> x < 7;  [0,1,2,3,4,5,6])
-    affirm:is_false (list:all lambda x -> x < 3;  [0,1,2,3,4,5,6])
-    affirm:is_true (list:any lambda x -> x < 7;  [0,1,2,3,4,5,6])
-    affirm:is_true (list:any lambda x -> x < 3;  [0,1,2,3,4,5,6])
-    affirm:is_false (list:any lambda x -> x < -1;  [0,1,2,3,4,5,6])
+    affirm:is_true (list:all lam x -> x < 7;  [0,1,2,3,4,5,6])
+    affirm:is_false (list:all lam x -> x < 3;  [0,1,2,3,4,5,6])
+    affirm:is_true (list:any lam x -> x < 7;  [0,1,2,3,4,5,6])
+    affirm:is_true (list:any lam x -> x < 3;  [0,1,2,3,4,5,6])
+    affirm:is_false (list:any lam x -> x < -1;  [0,1,2,3,4,5,6])
 
     affirm:is_equal (list:delete 8 l1) [0,1,2,3,4,5,6,7,9]
 

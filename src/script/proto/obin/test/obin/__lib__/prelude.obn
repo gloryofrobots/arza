@@ -1,18 +1,10 @@
 //TODO FIX IT
 length = ___length
-//TODO
-//TODO open types
-//TODO CONTEXSTS LIKE ELA
-//TODO Symbols can also be created using symbol(),
-//TODO which takes any number of arguments and creates a new symbol by concatenating their string representations together:
 //TODO True False None
-//TODO lam
 //TODO of in {literal}
-//TODO SUPPORT RECURSIVE CONSTRUCTORS AT THE LEVEL OF PARSER (NOT PUSH FENV FOR SUCH CALLS)
 //TODO default implementation
 //TODO impls without |
 // TODO trait for
-
 // TODO error here 2 % 0
 
 @prefix - negate

@@ -83,7 +83,7 @@ RULES = [
     (keyword('try'), TT_TRY),
     (keyword('catch'), TT_CATCH),
     (keyword('finally'), TT_FINALLY),
-    (keyword('lambda'), TT_LAMBDA),
+    (keyword('lam'), TT_LAMBDA),
     # (keyword('module'), TT_MODULE),
 
     (keyword('generic'), TT_GENERIC),
