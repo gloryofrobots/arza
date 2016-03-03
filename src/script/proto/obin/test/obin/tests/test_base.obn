@@ -38,11 +38,11 @@ fun test () ->
     affirm:is_equal "++++ ---- <> $$" #"++++ ---- <> $$"
 
     x = 12
-    affirm:is_equal condition
+    affirm:is_equal cond
                     | x == 13 -> 1 + 1
                     | x == 14 -> 2 + 2
                     | x == 15 -> 3 + 3
-                    | otherwise -> 4 + 4
+                    | else -> 4 + 4
                     ---,
                     8
 

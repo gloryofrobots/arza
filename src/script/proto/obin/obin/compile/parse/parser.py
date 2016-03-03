@@ -327,6 +327,10 @@ def expression_parser_init(proc_data, parser):
     """
     prefix(parser, TT_THROW, stmt_single)
     prefix(parser, TT_CONDITION, prefix_condition)
+    # PREFIX IF IS NOT SUPPORTED BECAUSE OF PROBLEM WITH END BLOCK
+    # CONSIDER if False then 1 else 0 42
+    # HERE RESULT WILL BE 42 not 0
+    # prefix(parser, TT_IF, prefix_if)
 
     prefix(parser, TT_FUN, prefix_fun)
     prefix(parser, TT_LAMBDA, prefix_lambda)

@@ -11,6 +11,9 @@ length = ___length
 //TODO SUPPORT RECURSIVE CONSTRUCTORS AT THE LEVEL OF PARSER (NOT PUSH FENV FOR SUCH CALLS)
 //TODO default implementation
 //TODO impls without |
+// TODO trait for
+
+// TODO error here 2 % 0
 
 @prefix - negate
 @infixl < < 50
@@ -48,22 +51,22 @@ length = ___length
 //    method ge x y -> (cmp x y) != LT
 //    method gt x y -> (cmp x y) == GT
 //    method cmp x y ->
-//        condition
+//        cond
 //        | x == x -> EQ
 //        | x <= y -> LT
-//        | otherwise -> GT
+//        | else -> GT
 //        ---
 //
 //    method max x y ->
-//        condition
+//        cond
 //        | x <= y -> y
-//        | otherwise -> y
+//        | else -> y
 //        ----
 //
 //    method min x y ->
-//        condition
+//        cond
 //        | x <= y -> x
-//        | otherwise -> y
+//        | else -> y
 //        -------
 //-----
 //fun foo () -> 1 + 2 end

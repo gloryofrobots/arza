@@ -111,9 +111,9 @@ fun drop_while
 fun span
 | p [] -> ([], [])
 | p xs@[x, ...xs1] ->
-    condition
+    cond
     | not (p x) -> ([], xs)
-    | otherwise ->
+    | else ->
         (ys, zs) = (span p xs1)
         (x::ys, zs)
     ------------------------------
@@ -172,7 +172,7 @@ fun range
     | 0 _ _ L -> L
     --------------------------------------------------
 
-    condition
+    cond
     | step > 0 and first - step <= last or
       step < 0 and first - step >= last ->
         n = ((last - first + step) / step) - 1
@@ -180,7 +180,7 @@ fun range
 
     | step == 0 and first == last ->
         _range 1  first step []
-    | otherwise ->
+    | else ->
         throw (#InvalidRange, first, last, step)
     ------------------------------
 --------------------------------------------------

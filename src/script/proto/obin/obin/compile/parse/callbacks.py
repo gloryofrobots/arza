@@ -246,7 +246,7 @@ def prefix_condition(parser, op, node):
     while parser.token_type == TT_CASE:
         advance_expected(parser, TT_CASE)
 
-        if parser.token_type == TT_OTHERWISE:
+        if parser.token_type == TT_ELSE:
             break
 
         cond = condition_terminated_expression(parser, TERM_CONDITION_CONDITION)
@@ -254,7 +254,7 @@ def prefix_condition(parser, op, node):
         check_token_types(parser, TERM_CONDITION_BODY)
         branches.append(nodes.list_node([cond, body]))
 
-    advance_expected(parser, TT_OTHERWISE)
+    advance_expected(parser, TT_ELSE)
     advance_expected(parser, TT_ARROW)
     body = statements(parser, TERM_BLOCK)
     branches.append(nodes.list_node([nodes.empty_node(), body]))

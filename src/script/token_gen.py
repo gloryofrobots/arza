@@ -25,8 +25,7 @@ TOKENS = [
   ("TT_UNION", "union"),
   ("TT_TYPE", "type"),
 
-  ("TT_CONDITION", "condition"),
-  ("TT_OTHERWISE", "otherwise"),
+  ("TT_CONDITION", "cond"),
   ("TT_IF", "if"),
   ("TT_THEN", "then"),
   ("TT_ELSE", "else"),

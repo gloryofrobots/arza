@@ -27,7 +27,7 @@ fun range
     | 0 _ _ L -> L
     --------------------------------------------------
 
-    condition
+    cond
     | step > 0 and first - step <= last or step < 0 and first - step >= last ->
         n = ((last - first + step) # step) - 1
         _range n (step * (n - 1) + first) step []
@@ -35,7 +35,7 @@ fun range
     | step == 0 and first == last ->
         _range 1  first step []
     ## COMMENT
-    | otherwise ->
+    | else ->
         throw (#InvalidRange, first, last, step)
     ------------------------------
 --------------------------------------------------
