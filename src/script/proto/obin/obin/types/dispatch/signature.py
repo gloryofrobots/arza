@@ -229,7 +229,7 @@ def _get_type_predicate(process, _type, index):
         arg = PredicateArgument(index, space.isgeneric)
     elif types.Nil is _type:
         arg = PredicateArgument(index, space.isnil)
-    elif types.Boolean is _type:
+    elif types.Bool is _type:
         arg = PredicateArgument(index, space.isboolean)
     elif types.False is _type:
         arg = PredicateArgument(index, space.isfalse)
@@ -237,6 +237,8 @@ def _get_type_predicate(process, _type, index):
         arg = PredicateArgument(index, space.istrue)
     else:
         arg = ArgumentType(index, _type)
+
+    return arg
 
 
 def newsignature(process, args, method):

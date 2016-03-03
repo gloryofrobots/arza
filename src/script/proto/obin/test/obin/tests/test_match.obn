@@ -153,8 +153,8 @@ fun test() ->
         | (x, y, z) when z == 3 and y == 3 -> #second
         | (x, y, z) when z == 3 and y == 2 and x == 3 -> #third
         | (x, y, z) when z == 3 and y == 2 and x == 1 and A == 2 -> #fourth
-        | (x, y, z) when z == 3 and y == 2 and x == 1 and not A is true and (greater_then_ten 9) -> #fifth
-        | (x, y, z) when z == 3 and y == 2 and x == 1 and A is true or (greater_then_ten 11) -> #sixth
+        | (x, y, z) when z == 3 and y == 2 and x == 1 and not (A `is` true) and (greater_then_ten 9) -> #fifth
+        | (x, y, z) when z == 3 and y == 2 and x == 1 and A `is` true or (greater_then_ten 11) -> #sixth
         | _ -> 12
         end) #sixth
 
@@ -163,7 +163,7 @@ fun test() ->
             | x y z when z == 3 and y == 3 -> #second
             | x y z when z == 3 and y == 2 and x == 3 -> #third
             | x y z when z == 3 and y == 2 and x == 1 and (x + y == 6 or true) -> #fourth
-            | x y z when z == 3 and y == 2 and x == 2 or (A is true or (greater_then_ten 11)) -> #fifth
+            | x y z when z == 3 and y == 2 and x == 2 or (A `is` true or (greater_then_ten 11)) -> #fifth
             | _ -> 12
         end),
         ([1,2,2], #first),

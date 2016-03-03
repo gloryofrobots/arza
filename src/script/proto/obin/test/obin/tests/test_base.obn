@@ -29,8 +29,8 @@ fun test () ->
 
     a2_4 = #four
     a2 = [0, 1, 2, a2_4]
-    affirm:is_true #four in a2
-    affirm:is_true a2_4 in a2
+    affirm:is_true #four `in` a2
+    affirm:is_true a2_4 `in` a2
 
     affirm:is_equal "name" #name
     affirm:is_equal #name "name"
@@ -49,17 +49,17 @@ fun test () ->
 
     A = (1,2,3,4,5,6)
     l = []
-    for x in A
+    for x <- A
         l = x :: l
     ---
     affirm:is_equal l [6,5,4,3,2,1]
 
-    for x1 in range 10 20; l = x1 :: l end
+    for x1 <- range 10 20; l = x1 :: l end
     affirm:is_equal l [19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 6, 5, 4, 3, 2, 1]
 
     A = (1, 2, 3, 4, 5, 6, 35, 110, 122)
     l1 = []
-    for a in A
+    for a <- A
         when a == 35
            continue
         ---

@@ -216,25 +216,14 @@ def _parse_symbol(parser, node):
 def prefix_sharp(parser, op, node):
     return _parse_symbol(parser, node)
 
+def prefix_amp(parser, op, node):
+    return grab_name_or_operator(parser)
 
 # def prefix_backtick(parser, op, node):
 #     val = strutil.cat_both_ends(nodes.node_value_s(node))
 #     if not val:
 #         return parse_error(parser, u"invalid variable name", node)
 #     return nodes.create_name_node(node, val)
-
-
-
-# def prefix_sharp(parser, op, node):
-#     check_token_types(parser, [TT_NAME, TT_STR, TT_OPERATOR])
-#     if parser.token_type == TT_OPERATOR:
-#         exp = node_0(NT_NAME, __ntok(parser.node))
-#         advance(parser)
-#     else:
-#         exp = literal_expression(parser)
-#         check_node_types(parser, exp, [NT_NAME, NT_STR])
-#
-#     return node_1(__ntype(node), __ntok(node), exp)
 
 
 def symbol_wildcard(parser, op, node):
@@ -297,15 +286,15 @@ def prefix_lparen_tuple(parser, op, node):
 
 
 def prefix_lparen(parser, op, node):
-    if parser.token_type == TT_OPERATOR:
-        name = _init_default_current_0(parser)
-        op = nodes.create_name_from_operator(node, name)
-        advance(parser)
-        if parser.token_type != TT_RPAREN:
-            parse_error(parser, u"Invalid syntax for operator in prefix mode, use (op)", node)
-
-        advance_expected(parser, TT_RPAREN)
-        return op
+    # if parser.token_type == TT_OPERATOR:
+    #     name = _init_default_current_0(parser)
+    #     op = nodes.create_name_from_operator(node, name)
+    #     advance(parser)
+    #     if parser.token_type != TT_RPAREN:
+    #         parse_error(parser, u"Invalid syntax for operator in prefix mode, use (op)", node)
+    #
+    #     advance_expected(parser, TT_RPAREN)
+    #     return op
 
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
@@ -518,25 +507,23 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
     return pattern
 
 
-def parse_function_variants(parser):
+def parse_function_variants(parser, term_pattern, term_guard, term_case_body, term_single_body):
     funcs = []
 
     if parser.token_type == TT_CASE:
         while parser.token_type == TT_CASE:
             advance_expected(parser, TT_CASE)
-            args = _parse_func_pattern(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD)
+            args = _parse_func_pattern(parser, term_pattern, term_guard)
             advance_expected(parser, TT_ARROW)
-            body = statements(parser, TERM_CASE)
+            body = statements(parser, term_case_body)
             funcs.append(nodes.list_node([args, body]))
     else:
         if parser.token_type == TT_ARROW:
             return parse_error(parser, u"Empty function arguments pattern", parser.node)
             # args = nodes.create_unit_node(parser.node)
-        else:
-            args = _parse_func_pattern(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD)
-
+        args = _parse_func_pattern(parser, term_pattern, term_guard)
         advance_expected(parser, TT_ARROW)
-        body = statements(parser, TERM_BLOCK)
+        body = statements(parser, term_single_body)
         funcs.append(nodes.list_node([args, body]))
     return nodes.list_node(funcs)
 
@@ -551,7 +538,7 @@ def parse_function(parser, allow_empty_name):
         name = expect_expression(parser.name_parser, 0, NODE_FUNC_NAME,
                                  terminators=TERM_FUN_GUARD, error_on_juxtaposition=False)
 
-    funcs = parse_function_variants(parser)
+    funcs = parse_function_variants(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
     advance_end(parser)
     return name, funcs
 
@@ -894,6 +881,7 @@ def stmt_trait(parser, op, node):
     return nodes.node_3(NT_TRAIT, __ntok(node), name, instance_name, nodes.list_node(methods))
 
 
+# TODO GET RID OF DUPLICATION
 def stmt_implement(parser, op, node):
     type_parser = parser.type_parser
     trait_name = grab_name(type_parser)
@@ -905,17 +893,10 @@ def stmt_implement(parser, op, node):
     check_token_type(parser, TT_METHOD)
     while parser.token_type == TT_METHOD:
         advance_expected(parser, TT_METHOD)
-
-        funcs = []
         method_name = grab_name_or_operator(parser.name_parser)
-        check_token_type(parser, TT_CASE)
-        while parser.token_type == TT_CASE:
-            advance_expected(parser, TT_CASE)
-            args = _parse_func_pattern(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD)
-            advance_expected(parser, TT_ARROW)
-            body = statements(parser.expression_parser, TERM_IMPL_BODY)
-            funcs.append(nodes.list_node([args, body]))
-        methods.append(nodes.list_node([method_name, nodes.list_node(funcs)]))
+        funcs = parse_function_variants(parser.expression_parser,
+                                        TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_IMPL_BODY, TERM_IMPL_BODY)
+        methods.append(nodes.list_node([method_name, funcs]))
 
     advance_end(parser)
     return nodes.node_3(NT_IMPLEMENT, __ntok(node), trait_name, type_name, nodes.list_node(methods))

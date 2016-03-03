@@ -209,7 +209,6 @@ def generic_signature_parser_init(parser):
 
 
 def guard_parser_init(proc_data, parser):
-    from obin.builtins import prelude
     parser.allow_overloading = True
     parser.allow_juxtaposition = True
     parser = init_parser_literals(parser)
@@ -225,6 +224,7 @@ def guard_parser_init(proc_data, parser):
     prefix(parser, TT_LCURLY, prefix_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
 
+    infix(parser, TT_BACKTICK, 50, infix_backtick)
     infix(parser, TT_DOT, 70, infix_dot)
     infix(parser, TT_COLON, 80, infix_name_pair)
     infix(parser, TT_OR, 25, led_infix)
@@ -325,6 +325,7 @@ def expression_parser_init(proc_data, parser):
     """
     PREFIXES
     """
+    prefix(parser, TT_AMP, prefix_amp)
     prefix(parser, TT_THROW, stmt_single)
     prefix(parser, TT_CONDITION, prefix_condition)
     # PREFIX IF IS NOT SUPPORTED BECAUSE OF PROBLEM WITH END BLOCK

@@ -1,6 +1,6 @@
 import affirm
-@infixl(*, /, 60)
-@infixl(-, +, 60)
+@infixl * / 60
+@infixl - + 60
 fun sub x y -> x - y end
 fun mul x y -> x * y end
 

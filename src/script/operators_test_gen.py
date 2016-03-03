@@ -92,33 +92,59 @@ def format_result(test, evalstring=None):
         return "    affirm:is_throw fun | () -> %s end ()" % test
 
 
-def test_binary(op, data, result):
+def test_binary(py_op, obin_op, data, result):
     for x,y in pairwise(data):
-        test_str = "%s %s %s" % (str(x), op, str(y))
-        result.append(format_result(test_str))
+        test_str = "%s %s %s" % (str(x), obin_op, str(y))
+        eval_str = "%s %s %s" % (str(x), py_op, str(y))
+        result.append(format_result(test_str, eval_str))
 
-def test_call_binary(op, fn, data, result):
+def test_call_binary(obin_op, fn, data, result):
     for x,y in pairwise(data):
-        test_str = "%s %s %s" % (str(x), op, str(y))
+        test_str = "%s %s %s" % (str(x), obin_op, str(y))
         eval_str = "%s(%s , %s)" % (fn, str(x), str(y))
         result.append(format_result(test_str, eval_str))
 
 
-def test_unary(op, data, result):
+def test_unary(py_op, obin_op, data, result):
     for x in data:
-        test_str = "%s %s" % (op, str(x))
-        result.append(format_result(test_str))
+        test_str = "%s (%s)" % (obin_op, str(x))
+        eval_str = "%s %s" % (py_op, str(x))
+        result.append(format_result(test_str, eval_str))
+
+
+OP_TABLE = {
+  "-":"negate",
+  "<":"<",
+  ">":">",
+  ">=":">=",
+  "<=":"<=",
+  "==":"==",
+  "!=":"!=",
+  "+":"+",
+  "-":"-",
+  "%":"%",
+  "*":"*",
+  "/":"/",
+  # "::":"::",
+  # "++":"++",
+  "<<": "`lshift`",
+  ">>": "`rshift`",
+  "&": "`bitand`",
+  "^": "`bitxor`",
+  "~": "bitnot",
+  "%": "`mod`",
+}
 
 RESULT = []
 for op in ['-', '+', '*', '/', '<', '>', '==', '>=', '<=']:
-    test_binary(op, ARITH_TESTS, RESULT)
+    test_binary(op, OP_TABLE[op], ARITH_TESTS, RESULT)
 
-test_call_binary('%', 'math.fmod', ARITH_TESTS, RESULT)
+test_call_binary(OP_TABLE['%'], 'math.fmod', ARITH_TESTS, RESULT)
 
 for op in ['>>', '<<', '&', '^']:
-    test_binary(op, BIT_SHIFT_TESTS, RESULT)
+    test_binary(op, OP_TABLE[op], BIT_SHIFT_TESTS, RESULT)
 
-test_unary('~', BIT_SHIFT_TESTS, RESULT)
+test_unary('~', OP_TABLE["~"], BIT_SHIFT_TESTS, RESULT)
 
 
 

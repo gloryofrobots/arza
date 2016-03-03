@@ -13,8 +13,8 @@ fun test | () ->
     affirm:is_equal m.[#child].[#toy].[#model] "SXR 123344#44332"
     affirm:is_equal m.[#child].[#toy].[#model] m.child.toy.model
 
-    affirm:is_true #name in m
-    affirm:is_true #surname in m
-    affirm:is_true #little_name in m.child
-    affirm:is_false #serial in m.child.toy
+    affirm:is_true #name `in` m
+    affirm:is_true #surname `in` m
+    affirm:is_true #little_name `in` m.child
+    affirm:is_false #serial `in` m.child.toy
 end

@@ -2,10 +2,8 @@
 length = ___length
 //TODO True False None
 //TODO of in {literal}
-//TODO default implementation
-//TODO impls without |
-// TODO trait for
 // TODO error here 2 % 0
+//TODO check affirm:is_throw fun | () -> (a,b,c,d) = [4,5,6,7] end ()
 
 @prefix - negate
 @infixl < < 50
@@ -21,6 +19,7 @@ length = ___length
 @infixl / / 65
 @infixr :: :: 70
 @infixl ++ ++ 70
+
 
 //trait Equal x
 //    method eq x y -> not (ne x y)

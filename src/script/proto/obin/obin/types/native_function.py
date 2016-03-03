@@ -16,7 +16,7 @@ class W_NativeFunction(W_Callable):
         return "function %s {[native code]}" % api.to_s(self._name_)
 
     def _type_(self, process):
-        return process.std.types.Primitive
+        return process.std.types.NativeFunction
 
     def _to_routine_(self, stack, args):
         from obin.runtime.routine.routine import create_native_routine

@@ -941,17 +941,23 @@ def _emit_imported(compiler, code, node, module, var_name, bind_name, is_pop):
 def _compile_IMPORT(compiler, code, node):
     colon = space.newsymbol(compiler.process, u":")
     module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
+    i = 0
+    last_index = len(var_names) - 1
     for var_name, bind_name in var_names:
         full_bind_name = symbols.concat_3(compiler.process, import_name, colon, bind_name)
-        is_pop = True
-        _emit_imported(compiler, code, node, module, var_name, full_bind_name, is_pop)
+        need_pop = False if i == last_index else True
+        _emit_imported(compiler, code, node, module, var_name, full_bind_name, need_pop)
+        i += 1
 
 
 def _compile_IMPORT_FROM(compiler, code, node):
     module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
+    i = 0
+    last_index = len(var_names) - 1
     for var_name, bind_name in var_names:
-        is_pop = True
-        _emit_imported(compiler, code, node, module, var_name, bind_name, is_pop)
+        need_pop = False if i == last_index else True
+        _emit_imported(compiler, code, node, module, var_name, bind_name, need_pop)
+        i += 1
 
 
 def _delete_hiding_names(compiler, code, node, module, var_names):
@@ -968,19 +974,25 @@ def _compile_IMPORT_HIDING(compiler, code, node):
     colon = space.newsymbol(compiler.process, u":")
     module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
     var_names = _delete_hiding_names(compiler, code, node, module, var_names)
+    i = 0
+    last_index = len(var_names) - 1
     for var_name in var_names:
         bind_name = symbols.concat_3(compiler.process, import_name, colon, var_name)
-        is_pop = True
-        _emit_imported(compiler, code, node, module, var_name, bind_name, is_pop)
+        need_pop = False if i == last_index else True
+        _emit_imported(compiler, code, node, module, var_name, bind_name, need_pop)
+        i += 1
 
 
 def _compile_IMPORT_FROM_HIDING(compiler, code, node):
     colon = space.newsymbol(compiler.process, u":")
     module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
     var_names = _delete_hiding_names(compiler, code, node, module, var_names)
+    i = 0
+    last_index = len(var_names) - 1
     for var_name in var_names:
-        is_pop = True
-        _emit_imported(compiler, code, node, module, var_name, var_name, is_pop)
+        need_pop = False if i == last_index else True
+        _emit_imported(compiler, code, node, module, var_name, var_name, need_pop)
+        i += 1
 
 
 def _compile_MODULE(compiler, code, node):

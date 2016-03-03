@@ -51,8 +51,8 @@ import from lib_az:abc:module_ab (gen_ab, f_ab, f_ab_2, CONST as const)
 //
 //
 fun test () ->
-    affirm:is_equal (gen_ab {point=(10, 12, 0, -1), type=#Point}),
-                    {point=(10, 12, 0, -1), type=#Point}
+    affirm:is_equal (gen_ab {point=(10, 12, 0, -1), _type=#Point}),
+                    {point=(10, 12, 0, -1), _type=#Point}
 
 //    affirm:is_equal (f_ab 32 10) 42
     affirm:is_equal (ab:f_ab_2 32 10) 42

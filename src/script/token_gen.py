@@ -55,6 +55,7 @@ TOKENS = [
   ("TT_END", "end"),
 
 
+  ("TT_AMP", "&"),
   ("TT_ELLIPSIS", "..."),
   ("TT_WILDCARD", "_"),
   ("TT_GOTO", "goto"),

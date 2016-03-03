@@ -8,7 +8,7 @@ fun coroutine fn ->
 
     fun _coroutine_handler ...args ->
         cond
-        | (tvar:read first_call) is false ->
+        | (tvar:read first_call) `is` false ->
             tvar:swap first_call true
             activate fiber2,
                      lam () -> apply fn (concat (fiber1, ), args)

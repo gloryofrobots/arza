@@ -123,6 +123,7 @@ RULES = [
     # (typename, TT_TYPENAME),
     (token(name_const), TT_NAME),
 
+    (token('\&'), TT_AMP),
     (token('\|'), TT_CASE),
     (token('---[-]*'), TT_END),
 

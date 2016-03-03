@@ -16,14 +16,6 @@ OPERATORS = [
     ("==", "==", 'infixl', 50),
     ("!=", "!=", 'infixl', 50), 
 
-    ("notin", "notin", 'infixl', 50),
-    ("nota", "nota", 'infixl', 50),
-    ("isa", "isa", 'infixl', 50),
-    ("kindof", "kindof", 'infixl', 50),
-    ("is", "is", 'infixl', 50),   
-    ("isnot","isnot", 'infixl', 50),
-    ("in","in", 'infixl', 50), 
-
     # ("<<","<<", 'infixl', 55),
     # (">>",">>", 'infixl', 55),
     # (">>>", ">>>", 'infixl', 55),
@@ -60,7 +52,15 @@ def gen_declarations():
             if precedence:
                 print '@%s %s %s %d' % (arityname, symbol(operator), symbol(name), precedence)
 
+def gen_pairs():
+    for op in OPERATORS:
+        operator = op[0]
+        name = op[1]
+        arityname = op[2]
+        print '"%s":"%s",' % (operator, name)
 
 
 
-gen_declarations()
+
+# gen_declarations()
+gen_pairs()

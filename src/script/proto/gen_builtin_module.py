@@ -8,6 +8,7 @@ def setup(process, stdlib):
 
 TPL_INSTALL_FUNC = "    api.put_native_function(process, _module, u'{{func_name}}', {{func_native_name}}, {{func_arity}})"
 TPL_FOOTER = """
+    _module.export_all()
     process.modules.add_module('{{module_name}}', _module)
 """
 

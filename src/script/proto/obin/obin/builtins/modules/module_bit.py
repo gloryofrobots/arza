@@ -13,6 +13,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'lshift', lshift, 2)
     api.put_native_function(process, _module, u'rshift', rshift, 2)
 
+    _module.export_all()
     process.modules.add_module('_bit', _module)
 
 @complete_native_routine
