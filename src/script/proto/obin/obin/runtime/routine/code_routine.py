@@ -154,6 +154,7 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif UNPACK_SEQUENCE == tag:
                 seq = stack.pop()
+                error.affirm_type(seq, space.istuple)
                 seq_length = api.length_i(seq)
                 if seq_length != arg1:
                     return error.throw_1(error.Errors.UNPACK_SEQUENCE, seq)

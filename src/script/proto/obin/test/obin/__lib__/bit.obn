@@ -2,6 +2,3 @@ import from _bit (bitand, bitor, bitxor, bitnot, lshift, rshift)
 export (bitand, bitor, bitxor, bitnot, lshift, rshift)
 
 
-fun dummy () -> false end
-fun dummy () -> false end
-fun dummy () -> false end

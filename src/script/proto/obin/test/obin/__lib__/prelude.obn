@@ -2,8 +2,8 @@
 length = ___length
 //TODO True False None
 //TODO of in {literal}
-// TODO error here 2 % 0
-//TODO check affirm:is_throw fun | () -> (a,b,c,d) = [4,5,6,7] end ()
+//TODO error here 2 % 0
+//TODO think about unification destruct assign with pattern matching
 
 @prefix - negate
 @infixl < < 50
@@ -21,7 +21,7 @@ length = ___length
 @infixl ++ ++ 70
 
 
-//trait Equal x
+//trait Equal xn
 //    method eq x y -> not (ne x y)
 //    method === x y
 //    method ====== x y

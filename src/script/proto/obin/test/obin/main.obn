@@ -16,8 +16,6 @@ import tests:datastructs:test_datastructs
 import tests:types:test_types
 
 
-
-
 fun main () ->
     test_types:test()
     test_operators:test()
