@@ -201,6 +201,9 @@ def create_token_from_node(type, value, node):
     return tokens.newtoken(type, value, node_position(node), node_line(node), node_column(node))
 
 
+def create_function_variants(args, body):
+    return list_node([list_node([args, body])])
+
 def create_name_from_operator(basenode, op):
     return create_name_node(basenode, node_value_s(op))
 

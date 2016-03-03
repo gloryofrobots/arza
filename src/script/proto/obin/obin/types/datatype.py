@@ -144,7 +144,7 @@ class W_DataType(W_Hashable):
     def _call_(self, process, args):
         if not self.has_constructor():
             error.throw_2(error.Errors.CONSTRUCTOR,
-                              space.newstring(u"Type is not constructor"), self)
+                          space.newstring(u"Type is not constructor"), self)
 
         process.call_object(self, args)
 
@@ -165,10 +165,27 @@ class W_DataType(W_Hashable):
         return other is self
 
 
+def _is_exist_implementation(method, impl):
+    impl_method = api.at_index(impl, 0)
+    return api.equal_b(impl_method, method)
+
+
 def implement_trait(_type, trait, implementations):
     error.affirm_type(_type, space.isdatatype)
     error.affirm_type(trait, space.istrait)
     error.affirm_type(implementations, space.islist)
+    # GET DEFAULTS FIRST
+    for m in trait.methods:
+        if plist.contains_with(implementations, m, _is_exist_implementation):
+            continue
+
+        if not m.has_default_implementation():
+            error.throw_2(error.Errors.TRAIT_IMPLEMENTATION,
+                          space.newstring(u"Expected implementation of method"), m)
+
+        implementations = plist.cons(plist.plist([m, m.default_implementation]),
+                                     implementations)
+
     for impl in implementations:
         method = api.at_index(impl, 0)
         if not trait.has_method(method):
@@ -185,6 +202,7 @@ def newunion(union, types):
         _type.be_part_of(union)
 
     return union
+
 
 def can_coerce(_type, kind):
     if kind.is_part_of_some_union():

@@ -10,6 +10,7 @@ length = ___length
 //TODO of in {literal}
 //TODO SUPPORT RECURSIVE CONSTRUCTORS AT THE LEVEL OF PARSER (NOT PUSH FENV FOR SUCH CALLS)
 //TODO default implementation
+//TODO impls without |
 
 @prefix - negate
 @infixl < < 50
@@ -26,6 +27,45 @@ length = ___length
 @infixr :: :: 70
 @infixl ++ ++ 70
 
+//trait Equal x
+//    method eq x y -> not (ne x y)
+//    method === x y
+//    method ====== x y
+//    method ne x y -> not (eq x y)
+//    method ===== x y
+//---
+//
+//
+//trait Add x
+//    method add x y
+//    method sub x y
+// --------------------------------------------------
+//
+//
+//trait Order x
+//    method le x y -> (cmp x y) != GT
+//    method lt x y -> (cmp x y) == LT
+//    method ge x y -> (cmp x y) != LT
+//    method gt x y -> (cmp x y) == GT
+//    method cmp x y ->
+//        condition
+//        | x == x -> EQ
+//        | x <= y -> LT
+//        | otherwise -> GT
+//        ---
+//
+//    method max x y ->
+//        condition
+//        | x <= y -> y
+//        | otherwise -> y
+//        ----
+//
+//    method min x y ->
+//        condition
+//        | x <= y -> x
+//        | otherwise -> y
+//        -------
+//-----
 //fun foo () -> 1 + 2 end
 
 //fun main () ->

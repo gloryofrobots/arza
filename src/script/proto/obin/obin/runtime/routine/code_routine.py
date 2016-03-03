@@ -316,10 +316,12 @@ class CodeRoutine(BaseRoutine):
                 stack.push(_type)
             # *************************************
             elif METHOD == tag:
+                impl = stack.pop()
                 signature = stack.pop()
                 trait = stack.pop()
+
                 name = literals[arg1]
-                method = space.newmethod(name, trait, signature)
+                method = space.newmethod_default_implementation(name, trait, signature, impl)
                 stack.push(method)
             # *************************************
             elif GENERIC == tag:

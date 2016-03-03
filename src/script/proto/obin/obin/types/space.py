@@ -325,12 +325,22 @@ def isenv(w):
 ########################################################
 
 def newmethod(name, trait, signature):
+    from obin.types.method import method
     assert issymbol(name)
     assert istrait(trait)
     assert islist(signature)
 
+    obj = method(name, trait, signature, newnil())
+    return obj
+
+
+def newmethod_default_implementation(name, trait, signature, default):
     from obin.types.method import method
-    obj = method(name, trait, signature)
+    assert issymbol(name)
+    assert istrait(trait)
+    assert islist(signature)
+    assert isfunction(default) or isnil(default)
+    obj = method(name, trait, signature, default)
     return obj
 
 
@@ -346,8 +356,9 @@ def newmethod_hotpath(name, trait, signature, hot_path):
 
     assert hot_path is not None
     from obin.types.method import method_with_hotpath
-    obj = method_with_hotpath(name, trait, signature, hot_path)
+    obj = method_with_hotpath(name, trait, signature, newnil(), hot_path)
     return obj
+
 
 ########################################################
 

@@ -173,6 +173,7 @@ def method_signature_parser_init(parser):
     # literal(parser, TT_TYPENAME)
     prefix(parser, TT_NAME, literal_type_field)
     symbol(parser, TT_METHOD, None)
+    symbol(parser, TT_ARROW, None)
     return parser
 
 def import_names_parser_init(parser):

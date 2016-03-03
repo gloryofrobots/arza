@@ -1066,14 +1066,28 @@ def _compile_TRAIT(compiler, code, node):
 
     methods = node_third(node)
     last_index = len(methods) - 1
+
+    method_locals = []
+    # DECLARE METHODS FIRST TO ALLOW DEFAULT IMPLEMENTATION USE ALL TRAIT METHODS
+    for i, method in enumerate(methods):
+        method_name_node = method[0]
+        method_name, method_index, method_name_index = _declare_local_name(compiler, code, method_name_node)
+        method_locals.append((method_name, method_index, method_name_index))
+
     for i, method in enumerate(methods):
         # duplicate trait on top
         _emit_dup(code)
-        method_name_node = method[0]
         method_sig = method[1]
+        method_default_impl = method[2]
+        local_info = method_locals[i]
+        method_name, method_index, method_name_index = local_info
 
         _compile(compiler, code, method_sig)
-        method_name, method_index, method_name_index = _declare_local_name(compiler, code, method_name_node)
+        if nodes.is_empty_node(method_default_impl):
+            _emit_nil(code)
+        else:
+            _compile_case_function(compiler, code, node, nodes.empty_node(), method_default_impl)
+
         code.emit_1(METHOD, method_name_index, info(node))
         code.emit_2(STORE_LOCAL, method_index, method_name_index, info(node))
         if i != last_index:

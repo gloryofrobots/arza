@@ -8,13 +8,13 @@ from obin.builtins.hotpath import HotPath
 class W_Method(W_Hashable):
     # _immutable_fields_ = ["_name_"]
 
-    def __init__(self, name, trait, arity, dispatch_arg_index, typevar, signature, hotpath):
+    def __init__(self, name, trait, arity, dispatch_arg_index, typevar, signature, default_impl, hotpath):
         W_Hashable.__init__(self)
 
         self.name = name
         self.trait = trait
         self.trait.add_method(self)
-
+        self.default_implementation = default_impl
         self.arity = arity
         self.dispatch_arg_index = dispatch_arg_index
         self.typevar = typevar
@@ -23,6 +23,10 @@ class W_Method(W_Hashable):
 
         self.signature = signature
         self.hot_path = hotpath
+
+
+    def has_default_implementation(self):
+        return not space.isnil(self.default_implementation)
 
     def _to_string_(self):
         return "<method %s of %s>" % (api.to_s(self.name), api.to_s(self.trait))
@@ -72,7 +76,7 @@ def lookup_implementation(process, method, args):
     return impl
 
 
-def method_with_hotpath(name, trait, signature, hotpath):
+def method_with_hotpath(name, trait, signature, default, hotpath):
     arity = api.length_i(signature)
     typevar = trait.typevar
     if arity == 0:
@@ -84,8 +88,8 @@ def method_with_hotpath(name, trait, signature, hotpath):
                       u"Unspecified type variable in method signature. expected variable", typevar)
 
     h = HotPath(hotpath, arity) if hotpath is not None else None
-    return W_Method(name, trait, arity, dispatch_arg_index, typevar, signature, h)
+    return W_Method(name, trait, arity, dispatch_arg_index, typevar, signature, default, h)
 
 
-def method(name, trait, signature):
-    return method_with_hotpath(name, trait, signature, None)
+def method(name, trait, signature, default):
+    return method_with_hotpath(name, trait, signature, default, None)

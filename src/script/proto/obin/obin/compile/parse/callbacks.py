@@ -811,7 +811,7 @@ def _parse_type(parser, node, term):
             # default constructor
             args = symbol_list_to_arg_tuple(parser, node, fields)
             body = nodes.list_node([nodes.create_fenv_node(node)])
-            construct_funcs = nodes.list_node([nodes.list_node([args, body])])
+            construct_funcs = nodes.create_function_variants(args, body)
     else:
         fields = nodes.empty_node()
         construct_funcs = nodes.empty_node()
@@ -879,8 +879,15 @@ def stmt_trait(parser, op, node):
 
         sig = node_list_juxtaposition(sig_parser, TERM_METHOD_SIG)
         check_node_type(parser, sig, NT_LIST)
+        if parser.token_type == TT_ARROW:
+            advance(parser)
+            args = symbol_list_to_arg_tuple(parser, node, sig)
+            body = statements(parser.expression_parser, TERM_METHOD_DEFAULT_BODY)
+            default_impl = nodes.create_function_variants(args, body)
+        else:
+            default_impl = nodes.empty_node()
 
-        methods.append(nodes.list_node([method_name, sig]))
+        methods.append(nodes.list_node([method_name, sig, default_impl]))
     advance_end(parser)
     return nodes.node_3(NT_TRAIT, __ntok(node), name, instance_name, nodes.list_node(methods))
 

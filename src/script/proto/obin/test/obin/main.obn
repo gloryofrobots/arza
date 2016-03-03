@@ -16,14 +16,12 @@ import affirm
 //import tests:datastructs:test_datastructs
 //import list
 import tests:types:test_types
-
-
+// TODO trait for
+// TODO condition to cond
 
 // TODO error here 2 % 0
 fun main () ->
     test_types:test()
-
-
 //    test_base:test()
 //    test_static_refs:test()
 //    test_bool:test()
