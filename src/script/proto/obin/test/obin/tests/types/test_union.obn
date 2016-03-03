@@ -1,0 +1,42 @@
+import affirm
+
+union Maybe
+    | Nothing
+    | Just v
+----
+
+
+union Shape
+    | X x
+    | Y y
+    | Point x y
+    | Square width height
+        construct
+        | width height
+        | width -> height = width
+        ----
+    | Rect left top right bottom
+    | Line point1 point2
+        construct
+        | x y
+        | x -> y = x
+        ---
+    | Empty
+-----------------------
+
+fun test () ->
+    m = Just 42
+    n = Nothing
+    affirm:is_kindof n Maybe
+    affirm:is_kindof Just Maybe
+    affirm:is_kindof m Maybe
+    affirm:is_kindof m Just
+    affirm:is_not_kindof m Nothing
+    affirm:is_kindof n Nothing
+    affirm:is_not_kindof n Just
+
+
+    affirm:is_kindof (X 1) Shape
+    affirm:is_kindof (X 1) X
+    affirm:is_not_kindof (X 1) Y
+---
