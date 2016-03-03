@@ -183,6 +183,11 @@ def _process_map(state, pattern, patterns, path):
             key = node_second(key_node)
             var_name = node_first(key_node)
             sym = _get_map_symbol(key)
+        elif key_type == NT_OF:
+            key_node_first = node_first(key_node)
+            key = create_symbol_node(key_node_first, key_node_first)
+            var_name = key_node
+            sym = _get_map_symbol(key)
         else:
             assert False
 

@@ -338,6 +338,11 @@ def prefix_lsquare(parser, op, node):
 def on_bind_node(parser, key):
     if nodes.node_type(key) != NT_NAME:
         parse_error(parser, u"Invalid bind name", key)
+    if parser.token_type == TT_OF:
+        advance_expected(parser, TT_OF)
+        check_token_type(parser, TT_NAME)
+        typename = grab_name(parser)
+        return nodes.create_of_node(key, key, typename), nodes.empty_node()
 
     advance_expected(parser, TT_AT_SIGN)
     real_key, value = _parse_map_key_pair(parser, [TT_NAME, TT_SHARP, TT_STR], None)

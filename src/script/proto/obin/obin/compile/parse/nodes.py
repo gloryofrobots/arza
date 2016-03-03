@@ -179,10 +179,10 @@ def node_to_d(node):
     else:
         d = {
             # "_type": tokens.token_type_to_str(node_token_type(node)),
-             "_ntype": nt.node_type_to_str(node_type(node)) if node_type(node) != -1 else "",
-             "_value": node_value_s(node),
-             # "_line": api.to_i(node_line(node))
-             }
+            "_ntype": nt.node_type_to_str(node_type(node)) if node_type(node) != -1 else "",
+            "_value": node_value_s(node),
+            # "_line": api.to_i(node_line(node))
+        }
 
         if not api.isempty(node_children(node)):
             d['children'] = [node_to_d(child) for child in node_children(node)]
@@ -203,6 +203,7 @@ def create_token_from_node(type, value, node):
 
 def create_function_variants(args, body):
     return list_node([list_node([args, body])])
+
 
 def create_name_from_operator(basenode, op):
     return create_name_node(basenode, node_value_s(op))
@@ -241,6 +242,7 @@ def create_goto_node(label):
     return node_0(nt.NT_GOTO,
                   tokens.newtoken(tt.TT_GOTO, str(label), space.newint(-1), space.newint(-1), space.newint(-1)))
 
+
 def create_fenv_node(basenode):
     return node_0(nt.NT_FENV,
                   create_token_from_node(tt.TT_NAME, "___fenv", basenode))
@@ -252,6 +254,7 @@ def create_wildcard_node(basenode):
 
 def create_unit_node(basenode):
     return node_0(nt.NT_UNIT, create_token_from_node(tt.TT_LPAREN, "(", basenode))
+
 
 # def create_tuple_with_unit_node(basenode):
 #     return create_tuple_node(basenode, node_0(nt.NT_UNIT, create_token_from_node(tt.TT_LPAREN, "(", basenode)))
@@ -280,8 +283,10 @@ def create_empty_map_node(basenode):
 def create_call_node_1(basenode, func, exp):
     return node_2(nt.NT_CALL, create_token_from_node(tt.TT_LPAREN, "(", basenode), func, list_node([exp]))
 
+
 def create_call_node_2(basenode, func, exp1, exp2):
     return node_2(nt.NT_CALL, create_token_from_node(tt.TT_LPAREN, "(", basenode), func, list_node([exp1, exp2]))
+
 
 def create_call_node_name(basenode, funcname, exps):
     return create_call_node_s(basenode, api.to_s(funcname), exps)
@@ -355,6 +360,10 @@ def create_lookup_node(basenode, left, right):
 
 def create_bind_node(basenode, left, right):
     return node_2(nt.NT_BIND, create_token_from_node(tt.TT_AT_SIGN, "@", basenode), left, right)
+
+
+def create_of_node(basenode, left, right):
+    return node_2(nt.NT_OF, create_token_from_node(tt.TT_OF, "of", basenode), left, right)
 
 
 def create_match_node(basenode, exp, branches):
