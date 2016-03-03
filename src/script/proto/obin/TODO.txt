@@ -1,0 +1,5 @@
+//TODO open types
+//TODO CONTEXSTS LIKE ELA
+//TODO Symbols can also be created using symbol(),
+//TODO which takes any number of arguments and creates a new symbol by concatenating their string representations together:
+//TODO SUPPORT RECURSIVE CONSTRUCTORS AT THE LEVEL OF PARSER (NOT PUSH FENV FOR SUCH CALLS)
