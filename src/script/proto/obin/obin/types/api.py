@@ -202,9 +202,15 @@ def typeof(process, obj, _type):
 
 
 def typeof_b(process, obj, _type):
+
     from obin.types import datatype
     if not space.isdatatype(_type):
         return error.throw_2(error.Errors.TYPE, _type, space.newstring(u"Datatype expected"))
+
+    # if Nothing kindof Nothing
+    if space.isdatatype(obj) and space.isdatatype(_type):
+        if equal_b(obj, _type):
+            return True
 
     obj_type = get_type(process, obj)
     return datatype.can_coerce(obj_type, _type)

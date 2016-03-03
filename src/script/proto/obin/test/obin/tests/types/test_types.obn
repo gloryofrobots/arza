@@ -1,5 +1,7 @@
 import tests:types:test_simple
+import tests:types:test_union
 
 fun test () ->
     test_simple:test()
-end
+    test_union:test()
+---------------

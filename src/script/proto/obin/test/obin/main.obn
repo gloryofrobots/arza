@@ -16,38 +16,13 @@ import affirm
 //import tests:datastructs:test_datastructs
 //import list
 import tests:types:test_types
-union Maybe
-    | Nothing
-    | Just v
-----
-
-
-union Shape
-    | X x
-    | Y y
-    | Point x y
-    | Square width height
-        construct
-        | width height
-        | width -> height = width
-        ----
-    | Rect left top right bottom
-    | Line point1 point2
-        construct
-        | x y
-        | x -> y = x
-        ---
-    | Empty
------------------------
 
 
 
 // TODO error here 2 % 0
 fun main () ->
     test_types:test()
-    m = Just 42
-    n = Nothing
-//    Maybe 42
+
 
 //    test_base:test()
 //    test_static_refs:test()

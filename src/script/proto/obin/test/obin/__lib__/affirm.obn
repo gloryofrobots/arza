@@ -55,6 +55,20 @@ fun is_same val1 val2 ->
     ---
 ---
 
+fun is_kindof val1 val2 ->
+    condition
+    | not (val1 `kindof` val2) -> fail [val1, "not kindof", val2]
+    | otherwise -> true
+    ---
+---
+
+fun is_not_kindof val1 val2 ->
+    condition
+    | val1 `kindof` val2 -> fail [val1, "kindof", val2]
+    | otherwise -> true
+    ---
+---
+
 fun isnot_same val1 val2 ->
     condition
     | val1 `is` val2 -> fail [val1, "is", val2]

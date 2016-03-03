@@ -149,6 +149,9 @@ class W_DataType(W_Hashable):
         process.call_object(self, args)
 
     def _type_(self, process):
+        if self.union:
+            return self.union
+
         return process.std.types.Datatype
 
     def _compute_hash_(self):
