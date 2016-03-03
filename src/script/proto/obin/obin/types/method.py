@@ -80,12 +80,12 @@ def method_with_hotpath(name, trait, signature, default, hotpath):
     arity = api.length_i(signature)
     typevar = trait.typevar
     if arity == 0:
-        error.throw_1(error.Errors.METHOD_SPECIALIZE, u"Method arity == 0")
+        error.throw_1(error.Errors.METHOD_SPECIALIZE, space.newstring(u"Method arity == 0"))
 
     dispatch_arg_index = api.get_index(signature, typevar)
     if platform.is_absent_index(dispatch_arg_index):
         error.throw_2(error.Errors.METHOD_SPECIALIZE,
-                      u"Unspecified type variable in method signature. expected variable", typevar)
+                      space.newstring(u"Unspecified type variable in method signature. expected variable"), typevar)
 
     h = HotPath(hotpath, arity) if hotpath is not None else None
     return W_Method(name, trait, arity, dispatch_arg_index, typevar, signature, default, h)
