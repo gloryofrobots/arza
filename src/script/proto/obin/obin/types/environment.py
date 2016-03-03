@@ -185,21 +185,21 @@ class W_Env(W_Any):
         return process.std.types.Env
 
     def _put_at_index_(self, idx, v):
-        api.put_at_index(self.data, idx, v)
+        return self.data._put_at_index_(idx, v)
 
     def _get_index_(self, n):
-        return api.get_index(self.data, n)
+        return self.data._get_index_(n)
 
     def _at_index_(self, i):
-        return api.at_index(self.data, i)
+        return self.data._at_index_(i)
 
     def _put_(self, k, v):
         assert space.issymbol(k)
-        api.put(self.data, k, v)
+        return self.data._put_(k, v)
 
     def _at_(self, n):
         assert space.issymbol(n)
-        return api.at(self.data, n)
+        return self.data._at_(n)
 
     def _to_string_(self):
         return self.data._to_string_()

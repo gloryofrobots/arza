@@ -14,6 +14,7 @@ NODES = [
   "NT_NAME",
   "NT_SYMBOL",
 
+  "NT_UNION",
   "NT_TYPE",
   "NT_MAP",
   "NT_LIST",

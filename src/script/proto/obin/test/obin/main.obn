@@ -16,77 +16,38 @@ import affirm
 //import tests:datastructs:test_datastructs
 //import list
 import tests:types:test_types
-
-type Zero
----------
-
-//TODO of in {literal}
-type Point2 x y
-    construct
-    | {x, y}
-    | (x, y)
-    | x -> y = x
-    | x of Int y of Int
-    -------------
----------
-
-// TODO RECURSIVE
-type Vec2 p1 p2
-    construct
-    | p1 of Point2, p2 of Point2
-    | p2 @ p1 of Point2
-    | x of Int ->
-        p1 = (Point2 x x);
-        p2 = p1
-    | x1 y1 x2 y2 ->
-        p1 = Point2 x1 y1
-        p2 = Point2 x2 y2
-    -----------
-------------
-
-trait Add self
-    method add self a
+union Maybe
+    | Nothing
+    | Just v
 ----
 
 
-implement Add for Point2
-    method add
-        | self p2 of Point2 -> Point2 (self.x + p2.x) (self.y + p2.y)
-        | self i of Int -> Point2 (self.x + i) (self.y + i)
-        | self v of Vec2 -> add (Vec2 self) v
----
+union Shape
+    | X x
+    | Y y
+    | Point x y
+    | Square width height
+        construct
+        | width height
+        | width -> height = width
+        ----
+    | Rect left top right bottom
+    | Line point1 point2
+        construct
+        | x y
+        | x -> y = x
+        ---
+    | Empty
+-----------------------
 
-//TODO default implementation
-implement Eq for Point2
-    method ==
-        | self other of Point2 -> self.x == other.x and self.y == other.y
-    method !=
-        | self other of Point2 -> not (self == other)
--------------------
-
-
-implement Add for Vec2
-    method add
-        | self v of Vec2 -> Vec2 (add self.p1 v.p1) (add self.p2 v.p2)
-        | self i of Int -> Vec2 (add self.p1 i) (add self.p2 i)
-        | self p of Point2 -> Vec2 (add self.p1 p) (add self.p2 p)
----------------------------------
-
-implement Eq for Vec2
-    method ==
-        | self other of Vec2 -> (self.p1 == other.p1) and (self.p2 == other.p2)
-    method !=
-        | self other -> not (self == other)
-----------------------------
 
 
 // TODO error here 2 % 0
 fun main () ->
     test_types:test()
-    p = Point2 0 1
-    p1 = Point2 42
-
-//    (Vec2 10 12 14 16)
+    m = Just 42
+    n = Nothing
+//    Maybe 42
 
 //    test_base:test()
 //    test_static_refs:test()

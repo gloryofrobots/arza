@@ -12,6 +12,7 @@ from obin.runtime import error
 
 
 # TODO REMOVE NIL as token and node_type
+# TODO OPTIMISE STORE_LOCAL
 
 def compile_error(compiler, code, node, message):
     line = code.info.get_line(api.to_i(nodes.node_line(node)))
@@ -928,11 +929,13 @@ def _get_import_data_and_emit_module(compiler, code, node):
     return module, import_name_s, var_names
 
 
-def _emit_imported(compiler, code, node, module, var_name, bind_name):
+def _emit_imported(compiler, code, node, module, var_name, bind_name, is_pop):
     func = api.at(module, var_name)
     idx = _declare_import(compiler, bind_name, func)
     code.emit_1(IMPORTED, idx, info(node))
     _emit_store(compiler, code, bind_name, node)
+    if is_pop:
+        _emit_pop(code)
 
 
 def _compile_IMPORT(compiler, code, node):
@@ -940,13 +943,15 @@ def _compile_IMPORT(compiler, code, node):
     module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
     for var_name, bind_name in var_names:
         full_bind_name = symbols.concat_3(compiler.process, import_name, colon, bind_name)
-        _emit_imported(compiler, code, node, module, var_name, full_bind_name)
+        is_pop = True
+        _emit_imported(compiler, code, node, module, var_name, full_bind_name, is_pop)
 
 
 def _compile_IMPORT_FROM(compiler, code, node):
     module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
     for var_name, bind_name in var_names:
-        _emit_imported(compiler, code, node, module, var_name, bind_name)
+        is_pop = True
+        _emit_imported(compiler, code, node, module, var_name, bind_name, is_pop)
 
 
 def _delete_hiding_names(compiler, code, node, module, var_names):
@@ -965,7 +970,8 @@ def _compile_IMPORT_HIDING(compiler, code, node):
     var_names = _delete_hiding_names(compiler, code, node, module, var_names)
     for var_name in var_names:
         bind_name = symbols.concat_3(compiler.process, import_name, colon, var_name)
-        _emit_imported(compiler, code, node, module, var_name, bind_name)
+        is_pop = True
+        _emit_imported(compiler, code, node, module, var_name, bind_name, is_pop)
 
 
 def _compile_IMPORT_FROM_HIDING(compiler, code, node):
@@ -973,7 +979,8 @@ def _compile_IMPORT_FROM_HIDING(compiler, code, node):
     module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
     var_names = _delete_hiding_names(compiler, code, node, module, var_names)
     for var_name in var_names:
-        _emit_imported(compiler, code, node, module, var_name, var_name)
+        is_pop = True
+        _emit_imported(compiler, code, node, module, var_name, var_name, is_pop)
 
 
 def _compile_MODULE(compiler, code, node):
@@ -1016,7 +1023,7 @@ def _compile_TYPE(compiler, code, node):
     constructor = node_third(node)
     fields = node_second(node)
 
-    _emit_nil(code)
+    # _emit_nil(code)
     if is_empty_node(fields):
         _emit_empty_list(code)
         _emit_nil(code)
@@ -1027,6 +1034,15 @@ def _compile_TYPE(compiler, code, node):
     code.emit_1(TYPE, name_index, info(node))
     code.emit_2(STORE_LOCAL, index, name_index, info(name_node))
 
+def _compile_UNION(compiler, code, node):
+    union = node_first(node)
+    types = node_second(node)
+    for _type in types:
+        _compile_TYPE(compiler, code, _type)
+
+    code.emit_1(LIST, len(types), info(union))
+    _compile_TYPE(compiler, code, union)
+    code.emit_0(UNION, info(union))
 
 def _compile_FENV(compiler, code, node):
     code.emit_0(FENV, info(node))
@@ -1399,8 +1415,11 @@ def _compile_node(compiler, code, node):
         _compile_UNIT(compiler, code, node)
     elif NT_MAP == ntype:
         _compile_MAP(compiler, code, node)
+
     elif NT_TYPE == ntype:
         _compile_TYPE(compiler, code, node)
+    elif NT_UNION == ntype:
+        _compile_UNION(compiler, code, node)
 
     elif NT_LOOKUP == ntype:
         _compile_LOOKUP(compiler, code, node)

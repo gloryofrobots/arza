@@ -1,12 +1,15 @@
 //TODO FIX IT
 length = ___length
 //TODO
-//open types
-//CONTEXSTS LIKE ELA
-//Symbols can also be created using symbol(),
-//which takes any number of arguments and creates a new symbol by concatenating their string representations together:
-// True False None
-// lam
+//TODO open types
+//TODO CONTEXSTS LIKE ELA
+//TODO Symbols can also be created using symbol(),
+//TODO which takes any number of arguments and creates a new symbol by concatenating their string representations together:
+//TODO True False None
+//TODO lam
+//TODO of in {literal}
+//TODO SUPPORT RECURSIVE CONSTRUCTORS AT THE LEVEL OF PARSER (NOT PUSH FENV FOR SUCH CALLS)
+//TODO default implementation
 
 @prefix - negate
 @infixl < < 50
@@ -24,23 +27,6 @@ length = ___length
 @infixl ++ ++ 70
 
 //fun foo () -> 1 + 2 end
-
-
-union Maybe = None | Just v
-union Shape =
-    Square width height
-        construct
-        | width height
-        | width -> height = width
-        ----
-    | Rect left top right bottom
-    | Line x y
-        construct
-        | x y
-        | x -> y = x
-        ---
-    | Empty
------------------------
 
 //fun main () ->
 //    p1 = Point2 1 2

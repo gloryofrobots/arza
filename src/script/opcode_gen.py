@@ -43,6 +43,8 @@ OPCODES = [
     ("MEMBER", -1),
     ("POP", -1),
     ("THROW", -1),
+    ("TYPE", -1),
+    ("UNION", -1),
 
     ("STORE_MEMBER", -2),
     ("SLICE", -3),
@@ -52,7 +54,6 @@ OPCODES = [
     ("VECTOR", "__UNKNOWN_CHANGE__"),
     ("TUPLE", "__UNKNOWN_CHANGE__"),
     ("MAP", "__UNKNOWN_CHANGE__"),
-    ("TYPE", "__UNKNOWN_CHANGE__"),
     ("LIST", "__UNKNOWN_CHANGE__"),
     ("SPECIFY", "__UNKNOWN_CHANGE__"),
 ]

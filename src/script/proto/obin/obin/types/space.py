@@ -401,7 +401,7 @@ def newnativedatatype(name):
 
 def newnativetypeconstructor(name, union):
     datatype = newdatatype(name, newlist([]), newnil())
-    datatype.be_part_of_union(union)
+    datatype.be_part_of(union)
     return datatype
 
 

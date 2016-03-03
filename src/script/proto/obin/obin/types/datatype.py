@@ -74,7 +74,7 @@ class W_DataType(W_Hashable):
         self.traits = space.newmap()
 
     def add_trait_implementation(self, trait, implementations):
-        if self.is_type_constructor():
+        if self.is_part_of_some_union():
             return error.throw_2(error.Errors.TYPE, trait,
                                  space.newstring(u"Can't implement trait for type constructor. Use type instead"))
 
@@ -94,7 +94,7 @@ class W_DataType(W_Hashable):
 
     def get_method_implementation(self, method):
         void = space.newnil()
-        if self.is_type_constructor():
+        if self.is_part_of_some_union():
             return void
 
         trait = method.trait
@@ -106,26 +106,31 @@ class W_DataType(W_Hashable):
         impl = api.at(impl_map, method)
         return impl
 
-    def is_type_constructor(self):
+    def is_part_of_some_union(self):
         return self.union is not None
 
-    def be_part_of_union(self, union):
+    def be_part_of(self, union):
         assert api.is_empty(self.traits)
         assert self.union is None
         self.union = union
 
-    def is_part_of_union(self, union):
+    def is_part_of(self, union):
         assert union is not None
         assert self.union is not None
         return api.equal_b(self.union, union)
 
+    def has_constructor(self):
+        return not space.isnil(self.ctor)
+
     def create_instance(self, env):
         undef = space.newnil()
         values = []
+
         for f in self.fields:
             v = api.lookup(env, f, undef)
             if space.isnil(v):
-                error.throw_2(error.Errors.CONSTRUCTOR, space.newstring(u"Missing required field"), f)
+                error.throw_2(error.Errors.CONSTRUCTOR,
+                              space.newstring(u"Missing required field. Check recursive constructor call"), f)
             values.append(v)
 
         return W_Record(self, plist.plist(values))
@@ -137,6 +142,10 @@ class W_DataType(W_Hashable):
         return routine
 
     def _call_(self, process, args):
+        if not self.has_constructor():
+            error.throw_2(error.Errors.CONSTRUCTOR,
+                              space.newstring(u"Type is not constructor"), self)
+
         process.call_object(self, args)
 
     def _type_(self, process):
@@ -164,11 +173,21 @@ def implement_trait(_type, trait, implementations):
     _type.add_trait_implementation(trait, implementations)
     return _type
 
+
+def newunion(union, types):
+    error.affirm_type(union, space.isdatatype)
+    error.affirm_type(types, space.islist)
+    for _type in types:
+        error.affirm_type(_type, space.isdatatype)
+        _type.be_part_of(union)
+
+    return union
+
 def can_coerce(_type, kind):
-    if kind.is_type_constructor():
+    if kind.is_part_of_some_union():
         return api.equal_b(_type, kind)
 
-    if not _type.is_type_constructor():
+    if not _type.is_part_of_some_union():
         return api.equal_b(_type, kind)
 
-    return _type.is_part_of_union(kind)
+    return _type.is_part_of(kind)

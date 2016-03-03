@@ -799,18 +799,11 @@ def symbol_list_to_arg_tuple(parser, node, symbols):
     return nodes.node_1(NT_TUPLE, nodes.node_token(node), nodes.list_node(args))
 
 
-# TODO BETTER PARSE ERRORS HERE
-def stmt_type(parser, op, node):
-    type_parser = parser.type_parser
-    check_token_type(type_parser, TT_NAME)
-    typename = _init_default_current_0(type_parser)
-    advance(type_parser)
+def _parse_type(parser, node, term):
+    typename = grab_name(parser.type_parser)
 
-    if parser.token_type == TT_END:
-        fields = nodes.empty_node()
-        construct_funcs = nodes.empty_node()
-    else:
-        fields = node_list_juxtaposition(type_parser, TERM_TYPE_ARGS)
+    if parser.token_type == TT_NAME:
+        fields = node_list_juxtaposition(parser.type_parser, term)
         if parser.token_type == TT_CONSTRUCT:
             advance(parser)
             construct_funcs = _parse_construct(parser.expression_parser, node)
@@ -819,12 +812,39 @@ def stmt_type(parser, op, node):
             args = symbol_list_to_arg_tuple(parser, node, fields)
             body = nodes.list_node([nodes.create_fenv_node(node)])
             construct_funcs = nodes.list_node([nodes.list_node([args, body])])
+    else:
+        fields = nodes.empty_node()
+        construct_funcs = nodes.empty_node()
 
-    advance_end(parser)
     return nodes.node_3(NT_TYPE, __ntok(node), typename, fields, construct_funcs)
 
 
-# TRAIT
+# TODO BETTER PARSE ERRORS HERE
+def stmt_type(parser, op, node):
+    _type = _parse_type(parser, node, TERM_TYPE_ARGS)
+    advance_end(parser)
+    return _type
+
+
+def stmt_union(parser, op, node):
+    type_parser = parser.type_parser
+    unionname = grab_name(type_parser)
+    types = []
+    check_token_type(parser, TT_CASE)
+    while parser.token_type == TT_CASE:
+        advance(parser)
+        _type = _parse_type(parser, node, TERM_UNION_TYPE_ARGS)
+        types.append(_type)
+
+    if len(types) < 2:
+        parse_error(parser, u"union must have at least two constructors", parser.node)
+
+    advance_end(parser)
+    union = nodes.node_3(NT_TYPE, __ntok(node), unionname, nodes.empty_node(), nodes.empty_node())
+    return nodes.node_2(NT_UNION, __ntok(node), union, nodes.list_node(types))
+
+
+# TRAIT*************************
 def symbol_operator_name(parser, op, node):
     name = itself(parser, op, node)
     return nodes.create_name_from_operator(node, name)
@@ -835,6 +855,7 @@ def grab_name(parser):
     name = _init_default_current_0(parser)
     advance(parser)
     return name
+
 
 def grab_name_or_operator(parser):
     check_token_types(parser, [TT_NAME, TT_OPERATOR])
@@ -889,6 +910,7 @@ def stmt_implement(parser, op, node):
 
     advance_end(parser)
     return nodes.node_3(NT_IMPLEMENT, __ntok(node), trait_name, type_name, nodes.list_node(methods))
+
 
 def _meta_infix(parser, node, infix_function):
     # options_tuple = expressions(parser.name_parser, 0)

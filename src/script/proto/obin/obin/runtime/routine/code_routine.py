@@ -296,6 +296,12 @@ class CodeRoutine(BaseRoutine):
                 _datatype = space.newdatatype(name, fields, constructor)
                 stack.push(_datatype)
             # *************************************
+            elif UNION == tag:
+                _union = stack.pop()
+                _types = stack.pop()
+                _union = datatype.newunion(_union, _types)
+                stack.push(_union)
+            # *************************************
             elif TRAIT == tag:
                 varname = stack.pop()
                 name = literals[arg1]
