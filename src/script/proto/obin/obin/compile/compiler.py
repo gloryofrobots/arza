@@ -584,7 +584,7 @@ def _compile_func_args_and_body(compiler, code, name, params, body):
     else:
         args = node_first(params)
         length = len(args)
-        funccode.emit_0(ARGUMENTS, codeinfo_unknown())
+        funccode.emit_0(FARGS, codeinfo_unknown())
 
         last_param = args[length - 1]
         is_variadic = True if node_type(last_param) == NT_REST else False
@@ -620,7 +620,7 @@ def _compile_case_function(compiler, code, node, name, cases):
     if not api.isempty(funcname):
         _emit_fself(compiler, funccode, name, funcname)
 
-    funccode.emit_0(ARGUMENTS, codeinfo_unknown())
+    funccode.emit_0(FARGS, codeinfo_unknown())
     _compile_match(compiler, funccode, node, cases, error.Errors.FUNCTION_MATCH)
     current_scope = _current_scope(compiler)
     scope = current_scope.finalize(_previous_scope(compiler), None)

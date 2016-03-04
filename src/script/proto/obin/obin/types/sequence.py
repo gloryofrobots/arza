@@ -21,8 +21,6 @@ class W_SequenceIterator(W_Any):
     def _to_string_(self):
         return "<Iterator %d:%d>" % (self.index, self.source_length)
 
-    def _to_bool_(self):
-        if self.index >= self.source_length:
-            return False
-        return True
+    def _length_(self):
+        return self.source_length - self.index
 

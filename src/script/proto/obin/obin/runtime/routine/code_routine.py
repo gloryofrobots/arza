@@ -87,7 +87,7 @@ class CodeRoutine(BaseRoutine):
             if VOID == tag:
                 stack.push(space.newvoid())
             # *************************************
-            elif ARGUMENTS == tag:
+            elif FARGS == tag:
                 stack.push(self.args)
             # *************************************
             elif RETURN == tag:
@@ -231,8 +231,8 @@ class CodeRoutine(BaseRoutine):
             elif JUMP_IF_ITERATOR_EMPTY == tag:
                 last_block_value = stack.pop()
                 iterator = stack.top()
-                value = api.to_b(iterator)
-                if not value:
+                length = api.length_i(iterator)
+                if length <= 0:
                     # discard the iterator
                     stack.pop()
                     # put the last block value on the stack
@@ -272,11 +272,6 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif POP_CATCH == tag:
                 self.catches.pop()
-            # *************************************
-            elif MODULE == tag:
-                _source = literals[arg1]
-                _module = environment.create_environment(process, _source, env)
-                stack.push(_module)
             # *************************************
             elif TYPE == tag:
                 name = literals[arg1]

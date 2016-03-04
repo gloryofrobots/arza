@@ -1,12 +1,12 @@
 from obin.misc.platform import jit
 from obin.types.boolean import W_True, W_False
-from obin.types.nil import W_Nil
+from obin.types.void import W_Void
 from obin.types.root import W_UniqueType
 
 w_True = W_True()
 w_False = W_False()
 w_Interrupt = W_UniqueType()
-w_Void = W_Nil()
+w_Void = W_Void()
 
 jit.promote(w_True)
 jit.promote(w_False)

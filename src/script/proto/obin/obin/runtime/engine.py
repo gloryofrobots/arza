@@ -14,6 +14,7 @@ def newprocess(libdirs):
 # TODO MOVE ALL OF IT TO PROCESS
 def initialize(libdirs):
     process = newprocess(libdirs)
+    # space.initialise(process)
     prelude = import_module(process, space.newsymbol(process, u"prelude"))
     if process.is_terminated():
         # error here

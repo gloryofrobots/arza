@@ -49,7 +49,7 @@ COMMENT
 
 match x,v {
     [_, 2, 2], true => 1
-    [_, 2, 3], false => 2
+    [_, 2, 3], False => 2
     [1, 2, 4], _ => 3
     else => fail
 }
@@ -58,7 +58,7 @@ match x,v {
       x true]
   (match [v x]
     [[_ 2 2] true] 1
-    [[_ 2 3] false] 2
+    [[_ 2 3] False] 2
     [[1 2 4] _] 3
     :else 4))
 \print x,y, (\write z,"1111"), [1,2]

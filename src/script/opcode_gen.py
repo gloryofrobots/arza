@@ -13,8 +13,8 @@ OPCODES = [
     ("INTEGER", 1),
     ("DUP", 1),
     ("NEXT", 1),
-    ("MODULE", 1),
-    ("ARGUMENTS", 1),
+    
+    ("FARGS", 1),
     ("FSELF", 1),
     ("FENV", 1),
 

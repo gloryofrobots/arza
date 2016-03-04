@@ -115,6 +115,13 @@ def __not(process, routine):
     return api.not_(left)
 
 
+# CURRENTLY NOT USED
+@complete_native_routine
+def _module(process, routine):
+    _source = routine.get_arg(0)
+    _module = environment.create_environment(process, _source, env)
+    return _module
+
 @complete_native_routine
 def concat_tuples(process, routine):
     from obin.types.tupl import concat

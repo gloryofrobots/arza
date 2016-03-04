@@ -1,37 +1,14 @@
 __author__ = 'gloryofrobots'
+# TODO REMOVE UNNECESSARRY ASSERTS OR REPLACE THEM WITH DEBUG MODE
+
 from obin.types import space
 from obin.runtime import error
 
-"""
-type conversions
-"""
 
-
-def to_string(obj):
-    s = obj._to_string_()
-    assert isinstance(s, str)
-    return space.newstring(unicode(s))
-
-
-def to_integer(obj):
-    return space.newint(obj._to_integer_())
-
-
-def to_float(obj):
-    return space.newfloat(obj._to_float_())
-
-
-def to_bool(obj):
-    return space.newbool(obj._to_bool_())
-
-
-"""
-PYTHON TYPES
-"""
-
-
-# TODO REMOVE UNNECESSARRY ASSERTS OR REPLACE THEM WITH DEBUG MODE
-
+# *************************
+# type conversions
+# **************************************
+# PYTHON TYPES
 def to_u(obj):
     return unicode(obj._to_string_())
 
@@ -51,7 +28,30 @@ def to_s(obj):
 
 
 def to_b(obj):
-    return obj._to_bool_()
+    if obj is space.w_True:
+        return True
+    elif obj is space.w_False:
+        return False
+
+    error.throw_2(error.Errors.TYPE, space.newstring(u"Bool expected"), obj)
+
+
+def to_string(obj):
+    s = obj._to_string_()
+    assert isinstance(s, str)
+    return space.newstring(unicode(s))
+
+
+def to_integer(obj):
+    return space.newint(obj._to_integer_())
+
+
+def to_float(obj):
+    return space.newfloat(obj._to_float_())
+
+
+def to_bool(obj):
+    return space.newbool(to_b(obj))
 
 
 """
@@ -202,7 +202,6 @@ def typeof(process, obj, _type):
 
 
 def typeof_b(process, obj, _type):
-
     from obin.types import datatype
     if not space.isdatatype(_type):
         return error.throw_2(error.Errors.TYPE, _type, space.newstring(u"Datatype expected"))
