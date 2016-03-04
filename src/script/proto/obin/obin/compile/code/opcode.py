@@ -11,57 +11,55 @@ INTEGER = 9
 DUP = 10
 NEXT = 11
 MODULE = 12
-GENERIC = 13
-ARGUMENTS = 14
-FSELF = 15
-FENV = 16
-TRAIT = 17
-LABEL = 18
-STORE_LOCAL = 19
-ITERATOR = 20
-RETURN = 21
-POP_CATCH = 22
-CALL = 23
-JUMP = 24
-JUMP_IF_FALSE_NOPOP = 25
-JUMP_IF_TRUE_NOPOP = 26
-JUMP_IF_FALSE = 27
-JUMP_IF_TRUE = 28
-PUSH_CATCH = 29
-JUMP_IF_ITERATOR_EMPTY = 30
-METHOD = 31
-MEMBER_DOT = 32
-MEMBER = 33
-POP = 34
-THROW = 35
-TYPE = 36
-UNION = 37
-STORE_MEMBER = 38
-SLICE = 39
-IMPLEMENT = 40
-UNPACK_SEQUENCE = 41
-VECTOR = 42
-TUPLE = 43
-MAP = 44
-LIST = 45
-SPECIFY = 46
+ARGUMENTS = 13
+FSELF = 14
+FENV = 15
+TRAIT = 16
+LABEL = 17
+STORE_LOCAL = 18
+ITERATOR = 19
+RETURN = 20
+POP_CATCH = 21
+CALL = 22
+JUMP = 23
+JUMP_IF_FALSE_NOPOP = 24
+JUMP_IF_TRUE_NOPOP = 25
+JUMP_IF_FALSE = 26
+JUMP_IF_TRUE = 27
+PUSH_CATCH = 28
+JUMP_IF_ITERATOR_EMPTY = 29
+METHOD = 30
+MEMBER_DOT = 31
+MEMBER = 32
+POP = 33
+THROW = 34
+TYPE = 35
+UNION = 36
+STORE_MEMBER = 37
+SLICE = 38
+IMPLEMENT = 39
+UNPACK_SEQUENCE = 40
+VECTOR = 41
+TUPLE = 42
+MAP = 43
+LIST = 44
 
 # ************************************************
 
 __OPCODE_REPR__ = ["VOID", "TRUE", "FALSE", "LITERAL", "SYMBOL", "OUTER", "LOCAL", "IMPORTED", "FUNCTION", "INTEGER",
-                   "DUP", "NEXT", "MODULE", "GENERIC", "ARGUMENTS", "FSELF", "FENV", "TRAIT", "LABEL", "STORE_LOCAL",
-                   "ITERATOR", "RETURN", "POP_CATCH", "CALL", "JUMP", "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP",
-                   "JUMP_IF_FALSE", "JUMP_IF_TRUE", "PUSH_CATCH", "JUMP_IF_ITERATOR_EMPTY", "METHOD", "MEMBER_DOT",
-                   "MEMBER", "POP", "THROW", "TYPE", "UNION", "STORE_MEMBER", "SLICE", "IMPLEMENT", "UNPACK_SEQUENCE",
-                   "VECTOR", "TUPLE", "MAP", "LIST", "SPECIFY", ]
+                   "DUP", "NEXT", "MODULE", "ARGUMENTS", "FSELF", "FENV", "TRAIT", "LABEL", "STORE_LOCAL", "ITERATOR",
+                   "RETURN", "POP_CATCH", "CALL", "JUMP", "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE",
+                   "JUMP_IF_TRUE", "PUSH_CATCH", "JUMP_IF_ITERATOR_EMPTY", "METHOD", "MEMBER_DOT", "MEMBER", "POP",
+                   "THROW", "TYPE", "UNION", "STORE_MEMBER", "SLICE", "IMPLEMENT", "UNPACK_SEQUENCE", "VECTOR", "TUPLE",
+                   "MAP", "LIST", ]
 
 # ************************************************
 
 __UNKNOWN_CHANGE__ = -128
 
-__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1,
-                     -1, -1, -1, -1, -1, -1, -2, -3, -2, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
-                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
+__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1,
+                     -1, -1, -1, -1, -1, -2, -3, -2, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
+                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
 
 
 # ************************************************
@@ -97,9 +95,6 @@ def opcode_estimate_stack_change(opcode):
         return arg1 - 1
     elif tag == TUPLE:
         return -1 * arg1 + 1
-    # pop generic from stack too
-    elif tag == SPECIFY:
-        return -1 * (arg1 + 1) + 1
     return 0
 
 

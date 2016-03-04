@@ -354,29 +354,6 @@ def newmethod_hotpath(name, trait, signature, hot_path):
 
 ########################################################
 
-def newgeneric(name):
-    assert issymbol(name)
-    from obin.types.dispatch.generic import W_Generic
-    obj = W_Generic(name, None)
-    return obj
-
-
-def isgeneric(w):
-    from obin.types.dispatch.generic import W_Generic
-    return isinstance(w, W_Generic)
-
-
-def newgeneric_hotpath(name, hot_path, arity):
-    assert issymbol(name)
-    assert hot_path is not None
-    from obin.types.dispatch.generic import W_Generic
-    from obin.builtins.hotpath import HotPath
-    obj = W_Generic(name, HotPath(hot_path, arity))
-    return obj
-
-
-########################################################
-
 def newtrait(name, varname):
     from obin.types.trait import W_Trait
     assert issymbol(name)

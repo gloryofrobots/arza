@@ -86,8 +86,6 @@ RULES = [
     (keyword('lam'), TT_LAMBDA),
     # (keyword('module'), TT_MODULE),
 
-    (keyword('generic'), TT_GENERIC),
-    (keyword('specify'), TT_SPECIFY),
     (keyword('trait'), TT_TRAIT),
     (keyword('construct'), TT_CONSTRUCT),
     (keyword('implement'), TT_IMPLEMENT),

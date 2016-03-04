@@ -49,8 +49,6 @@ TOKENS = [
   ("TT_HIDING", "hiding"),
   ("TT_EXPORT", "export"),
   ("TT_TRAIT", "trait"),
-  ("TT_GENERIC", "generic"),
-  ("TT_SPECIFY", "specify"),
   ("TT_END", "end"),
 
 

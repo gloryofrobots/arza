@@ -1,7 +1,0 @@
-generic seq
-generic head
-generic tail
-generic is_empty
-generic empty
-generic cons
-generic length

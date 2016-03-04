@@ -14,7 +14,6 @@ OPCODES = [
     ("DUP", 1),
     ("NEXT", 1),
     ("MODULE", 1),
-    ("GENERIC", 1),
     ("ARGUMENTS", 1),
     ("FSELF", 1),
     ("FENV", 1),
@@ -54,7 +53,6 @@ OPCODES = [
     ("TUPLE", "__UNKNOWN_CHANGE__"),
     ("MAP", "__UNKNOWN_CHANGE__"),
     ("LIST", "__UNKNOWN_CHANGE__"),
-    ("SPECIFY", "__UNKNOWN_CHANGE__"),
 ]
 
 def gen_ocode_ids():

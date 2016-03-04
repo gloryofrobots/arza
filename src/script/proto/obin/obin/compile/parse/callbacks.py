@@ -23,8 +23,6 @@ NODE_TYPE_MAPPING = {
     TT_EXPORT: NT_EXPORT,
     TT_IMPORT: NT_IMPORT,
     TT_TRAIT: NT_TRAIT,
-    TT_GENERIC: NT_GENERIC,
-    TT_SPECIFY: NT_SPECIFY,
     TT_THROW: NT_THROW,
     TT_BREAK: NT_BREAK,
     TT_CONTINUE: NT_CONTINUE,
@@ -95,8 +93,8 @@ def led_infixr_function(parser, op, node, left):
 def led_infixr_assign(parser, op, node, left):
     ntype = nodes.node_type(left)
     if ntype == NT_LOOKUP or ntype == NT_LOOKUP_SYMBOL:
-         parse_error(parser, u"Bad left value in assignment expression, use operator .{} "
-                             u"for creating new data structures", left)
+        parse_error(parser, u"Bad left value in assignment expression, use operator .{} "
+                            u"for creating new data structures", left)
 
     # ltype = nodes.node_token_type(left)
 
@@ -220,8 +218,10 @@ def _parse_symbol(parser, node):
 def prefix_sharp(parser, op, node):
     return _parse_symbol(parser, node)
 
+
 def prefix_amp(parser, op, node):
     return grab_name_or_operator(parser)
+
 
 # def prefix_backtick(parser, op, node):
 #     val = strutil.cat_both_ends(nodes.node_value_s(node))
@@ -584,67 +584,6 @@ def prefix_module_fun(parser, op, node):
 # MODULE STATEMENTS
 ###############################################################
 
-def parse_specify_fn(parser):
-    _expression_parser = parser.expression_parser
-    _signature_parser = parser.generic_signature_parser
-
-    signature = node_tuple_juxtaposition(_signature_parser, TERM_FUN_GUARD)
-
-    # if nodes.node_type(pattern) != NT_TUPLE:
-    #     parse_error(parser, u"Invalid  syntax in specify function arguments", pattern)
-
-    advance_expected(_expression_parser, TT_ARROW)
-    body = statements(_expression_parser, TERM_CASE)
-    return nodes.list_node([nodes.node_first(signature), body])
-
-
-def parse_specify_funcs(parser):
-    funcs = []
-    while parser.token_type == TT_CASE:
-        advance_expected(parser, TT_CASE)
-        func = parse_specify_fn(parser)
-        funcs.append(func)
-
-    advance_end(parser)
-
-    if len(funcs) == 0:
-        parse_error(parser, u"Empty specify statement", parser.node)
-
-    return nodes.list_node(funcs)
-
-
-def generic_name(parser):
-    return expect_expression(parser.name_parser, 0, NODE_SPECIFY_NAME, terminators=TERM_CASE,
-                             error_on_juxtaposition=False)
-
-
-def stmt_specify(parser, op, node):
-    # name = closed_expression(parser.name_parser, 0)
-    name = generic_name(parser)
-    # name = terminated_expression(parser.name_parser, 0, [TT_CASE])
-    # check_node_types(parser, name, [NT_NAME, NT_LOOKUP_MODULE])
-
-    check_token_types(parser, [TT_CASE])
-    # name = _parse_name(parser)
-    # check_node_types(parser, name, [NT_SYMBOL, NT_NAME])
-
-    funcs = parse_specify_funcs(parser)
-    return node_2(NT_SPECIFY, __ntok(node), name, funcs)
-
-
-def stmt_generic(parser, op, node):
-    # name = literal_expression(parser.name_parser)
-    # name = _parse_name(parser)
-    # name = terminated_expression(parser.name_parser, 0, [TT_CASE, TT_LPAREN])
-    name = generic_name(parser)
-
-    if parser.token_type == TT_CASE:
-        funcs = parse_specify_funcs(parser)
-        return node_2(NT_GENERIC, __ntok(node), name, funcs)
-    else:
-        return node_1(NT_GENERIC, __ntok(node), name)
-
-
 def stmt_module(parser, op, node):
     name = literal_terminated_expression(parser)
     check_node_type(parser, name, NT_NAME)
@@ -709,7 +648,7 @@ def stmt_import(parser, op, node):
             parse_error(parser, u"expected definitions tuple", node)
         names = nodes.empty_node()
 
-    # _load_module(parser, imported)
+    _load_module(parser, imported)
     return node_2(ntype, __ntok(node), imported, names)
 
 

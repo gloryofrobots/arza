@@ -1,6 +1,6 @@
 import lib_az:abc:module_c as c
 
-export (f_ab, f_ab_2, CONST, gen_ab)
+export (f_ab, f_ab_2, CONST)
 
 fun f_ab | num ->
     num + (c:f_c num) end
@@ -8,7 +8,5 @@ fun f_ab | num ->
 fun f_ab_2 | num1 num2 -> num1 + num2 end
 
 CONST = 10
-
-generic gen_ab | self of Any -> self end
 
 fun f_ab_3 () -> 0 end

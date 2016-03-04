@@ -6,7 +6,6 @@ import tests:test_co
 import tests:test_destruct
 import tests:test_exception
 import tests:test_fun
-import tests:test_generic
 import tests:test_modify
 import tests:test_operator_override
 import tests:test_module
@@ -26,7 +25,6 @@ fun test() ->
     test_exception:test()
 
     test_fun:test()
-    test_generic:test()
     test_modify:test()
     test_operator_override:test()
     test_module:test()

@@ -3,7 +3,6 @@ from obin.runtime import error
 from obin.runtime.routine.base_routine import BaseRoutine
 from obin.runtime.load import import_module
 from obin.types import api, space, string, environment, datatype
-from obin.types.dispatch import generic
 
 
 class CodeRoutine(BaseRoutine):
@@ -314,17 +313,6 @@ class CodeRoutine(BaseRoutine):
                 name = literals[arg1]
                 method = space.newmethod_default_implementation(name, trait, signature, impl)
                 stack.push(method)
-            # *************************************
-            elif GENERIC == tag:
-                name = literals[arg1]
-                trait = space.newgeneric(name)
-                stack.push(trait)
-            # *************************************
-            elif SPECIFY == tag:
-                methods = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
-                methods = space.newtuple(methods)
-                gen_fn = stack.top()
-                generic.specify(process, gen_fn, methods)
             # *************************************
             elif LABEL == tag:
                 assert False, "Uncompiled label opcode"

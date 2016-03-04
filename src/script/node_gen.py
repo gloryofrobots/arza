@@ -40,8 +40,6 @@ NODES = [
   "NT_LOAD",
   "NT_TRAIT",
   "NT_IMPLEMENT",
-  "NT_GENERIC",
-  "NT_SPECIFY",
 
   "NT_BIND",
 

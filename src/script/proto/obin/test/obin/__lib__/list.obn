@@ -1,18 +1,4 @@
-import seq
-
 import from _list (cons, tail, head, empty, is_empty)
-
-specify seq:seq | l of List -> l end
-
-specify seq:head | l of List -> head l end
-
-specify seq:tail | l of List -> tail l end
-
-specify seq:empty | l of List -> empty () end
-
-specify seq:is_empty | l of List -> is_empty l end
-
-specify seq:cons | a of Any l of List -> cons a l end
 
 //TRANSFORMERS///////////////////////////////////////////////////////
 

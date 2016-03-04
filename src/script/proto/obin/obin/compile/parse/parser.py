@@ -356,14 +356,12 @@ def expression_parser_init(proc_data, parser):
 
 
 def module_parser_init(parser):
-    stmt(parser, TT_GENERIC, stmt_generic)
 
     stmt(parser, TT_TRAIT, stmt_trait)
     stmt(parser, TT_TYPE, stmt_type)
     stmt(parser, TT_IMPLEMENT, stmt_implement)
     stmt(parser, TT_UNION, stmt_union)
 
-    stmt(parser, TT_SPECIFY, stmt_specify)
     stmt(parser, TT_IMPORT, stmt_import)
     stmt(parser, TT_EXPORT, stmt_export)
     # stmt(parser, TT_MODULE, stmt_module)

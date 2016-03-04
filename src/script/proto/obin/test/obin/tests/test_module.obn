@@ -1,82 +1,10 @@
 import lib_az:abc:module_ab as ab
 import lib_az:efg:module_e as e
 import affirm
-import from lib_az:abc:module_ab (gen_ab, f_ab, f_ab_2, CONST as const)
+import from lib_az:abc:module_ab (f_ab, f_ab_2, CONST as const)
 
-
-//module m1
-//    CONST = ab:CONST
-//    module m3
-//        CONST = 10
-//        def f_3() -> #m1_m3_f_3 ;
-//    end
-//
-//    def f_1() -> #m1_f_1;
-//
-//
-//    generic gt_10
-//        case (self of Int) ->
-//            if self < 10
-//                #m1_g1_less
-//            elif self == 10
-//                #m1_g1_equal
-//            else
-//                #m1_g1_greater
-//            end
-//    end
-//end
-//
-//module m4
-//    module m5
-//        def f_3() -> #m4_m5_f_3 end
-//    end
-//    CONST = 10
-//
-//    def f_1() -> #m4_f_1 end
-//
-//    generic gt_10
-//    case (self of Int) ->
-//        if self < 10
-//            #m4_g1_less
-//        elif self == 10
-//            #m4_g1_equal
-//        else
-//            #m4_g1_greater;
-//    end
-//end
-//
-//module m2
-//    def f_2() -> #m2_f_2;
-//end
-//
-//
 fun test () ->
-    affirm:is_equal (gen_ab {point=(10, 12, 0, -1), _type=#Point}),
-                    {point=(10, 12, 0, -1), _type=#Point}
-
-//    affirm:is_equal (f_ab 32 10) 42
     affirm:is_equal (ab:f_ab_2 32 10) 42
     affirm:is_equal (ab:f_ab 42) 126
     affirm:is_equal (e:f_e (f_ab 100)) (-758)
-
-//    affirm:is_equal m1:CONST const
-//    affirm:is_equal m1:CONST m4:CONST
-//    affirm:is_equal m1:CONST m4:CONST
-//
-//
-//    affirm:is_equal (m1:m3:f_3 ()) #m1_m3_f_3
-//    affirm:is_equal (m1:f_1 ()) #m1_f_1
-//    affirm:is_equal_batch(m1:gt_10,
-//                        ([2],#m1_g1_less),
-//                        ([10],#m1_g1_equal),
-//                        ([11],#m1_g1_greater))
-//
-//    affirm:is_equal(m4:m5:f_3(), #m4_m5_f_3)
-//    affirm:is_equal(m4:f_1(), #m4_f_1)
-//    affirm:is_equal_batch(m4:gt_10,
-//                        ([2],#m4_g1_less),
-//                        ([10],#m4_g1_equal),
-//                        ([11],#m4_g1_greater))
-//
-//    affirm:is_equal(m2:f_2(), #m2_f_2)
 end

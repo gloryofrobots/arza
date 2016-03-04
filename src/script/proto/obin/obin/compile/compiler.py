@@ -886,21 +886,6 @@ def _compile_MODULE(compiler, code, node):
     _emit_store(compiler, code, module_name, name_node)
 
 
-def _compile_GENERIC(compiler, code, node):
-    name_node = node_first(node)
-    name = _get_symbol_name(compiler, name_node)
-
-    name_index = _declare_literal(compiler, name)
-    # index = _get_function_index(compiler, name)
-    index = _declare_local(compiler, name)
-    code.emit_1(GENERIC, name_index, info(node))
-    code.emit_2(STORE_LOCAL, index, name_index, info(name_node))
-
-    if node_arity(node) == 2:
-        methods = node_second(node)
-        _emit_specify(compiler, code, node, methods)
-
-
 def _compile_TYPE(compiler, code, node):
     name_node = node_first(node)
     name = _get_symbol_name(compiler, name_node)
@@ -1004,42 +989,6 @@ def _compile_IMPLEMENT(compiler, code, node):
     _compile_node_name_lookup(compiler, code, typename)
     code.emit_0(IMPLEMENT, info(traitname))
 
-
-def _emit_specify(compiler, code, node, methods):
-    for method in methods:
-        method_args = method[0]
-        method_body = method[1]
-        args = []
-        signature = []
-        for arg in method_args:
-            if node_type(arg) == NT_OF:
-                args.append(node_first(arg))
-                signature.append(node_second(arg))
-            else:
-                args.append(arg)
-                signature.append(None)
-
-        for trait in signature:
-            if trait is None:
-                _emit_void(code)
-            else:
-                _compile(compiler, code, trait)
-
-        code.emit_1(TUPLE, len(signature), info(node))
-
-        args_node = nodes.create_tuple_node(node, args)
-        _compile_func_args_and_body(compiler, code, nodes.empty_node(), args_node,
-                                    method_body)
-        code.emit_1(TUPLE, 2, info(node))
-
-    code.emit_1(SPECIFY, len(methods), info(node))
-
-
-def _compile_SPECIFY(compiler, code, node):
-    name = node_first(node)
-    _compile(compiler, code, name)
-    methods = node_second(node)
-    _emit_specify(compiler, code, node, methods)
 
 
 def _compile_FOR(compiler, code, node):
@@ -1158,8 +1107,8 @@ def _compile_CALL(compiler, code, node):
 # MAIN SWITCH
 ####
 
-FIRST_PASS_FUNCS = [NT_FUN, NT_GENERIC]
-NEW_SCOPE_NODES = [NT_MODULE, NT_SPECIFY]
+FIRST_PASS_FUNCS = [NT_FUN]
+NEW_SCOPE_NODES = [NT_MODULE]
 
 
 def _compile_1(compiler, code, ast):
@@ -1173,7 +1122,7 @@ def _compile_1(compiler, code, ast):
         ntype = node_type(ast)
         # FIRST_PASS_FUNCS
 
-        if ntype == NT_FUN or ntype == NT_GENERIC:
+        if ntype == NT_FUN:
             name = node_first(ast)
             if not is_empty_node(name):
                 symbol = _get_symbol_name_or_empty(compiler.process, name)
@@ -1271,14 +1220,8 @@ def _compile_node(compiler, code, node):
         _compile_TRAIT(compiler, code, node)
     elif NT_IMPLEMENT == ntype:
         _compile_IMPLEMENT(compiler, code, node)
-    elif NT_GENERIC == ntype:
-        _compile_GENERIC(compiler, code, node)
-    elif NT_SPECIFY == ntype:
-        _compile_SPECIFY(compiler, code, node)
-
     elif NT_THROW == ntype:
         _compile_THROW(compiler, code, node)
-
     elif NT_BREAK == ntype:
         _compile_BREAK(compiler, code, node)
     elif NT_CONTINUE == ntype:

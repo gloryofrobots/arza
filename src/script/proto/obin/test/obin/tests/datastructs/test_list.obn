@@ -1,6 +1,6 @@
 import affirm
 import list
-import seq
+//import seq
 
 fun test () ->
     a1 = [1, 2, #three, 4, 5, #six]
@@ -19,7 +19,7 @@ fun test () ->
     affirm:is_equal (list:tail (list:tail [1,2]))  []
     affirm:is_true  (list:is_empty [])
     affirm:is_false (list:is_empty [1,2])
-    affirm:is_equal (seq:empty []) []
+//    affirm:is_equal (seq:empty []) []
     affirm:is_equal (list:empty()) []
 
     l1 = list:range 0 10
