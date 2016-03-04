@@ -1,23 +1,23 @@
 import affirm
 
 fun test() ->
-    affirm:is_equal false false
-    affirm:is_equal true true
-    affirm:is_not_equal true false
-    affirm:is_not_equal false true
-    affirm:is_equal (not false) true
-    affirm:is_equal (not true) false
-    affirm:is_true true and true
-    affirm:is_false false and true
-    affirm:is_false false and false
-    affirm:is_false true and false
-    affirm:is_true true or false
-    affirm:is_true false or true
-    affirm:is_false false or false
-    affirm:is_same false false
-    affirm:is_same true true
+    affirm:is_equal False False
+    affirm:is_equal True True
+    affirm:is_not_equal True False
+    affirm:is_not_equal False True
+    affirm:is_equal (not False) True
+    affirm:is_equal (not True) False
+    affirm:is_true True and True
+    affirm:is_false False and True
+    affirm:is_false False and False
+    affirm:is_false True and False
+    affirm:is_true True or False
+    affirm:is_true False or True
+    affirm:is_false False or False
+    affirm:is_same False False
+    affirm:is_same True True
 //
-    //only true and false can be used in boolean operators
+    //only True and False can be used in boolean operators
     affirm:is_throw (fun | x -> 1 or 0 end) ()
     affirm:is_throw_expected (fun | x -> 1 or 0 end) () (#TypeError, ("Bool expected", 1))
 

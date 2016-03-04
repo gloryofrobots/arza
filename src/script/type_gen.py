@@ -20,8 +20,7 @@ N = "Number"
 C = "Callable"
 
 TYPES = [
-    mktype("Bool", [A], [mkctor("True"), mkctor("False")]),
-    mktype("Option", [A], [mkctor("Nil")]),
+    mktype("Bool", [A]),
     mktype("Char", [A]),
 
     mktype("Int", [N, A]),

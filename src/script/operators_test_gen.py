@@ -81,9 +81,9 @@ def format_result(test, evalstring=None):
     try:
         value = eval(evalstring)
         if value is True:
-            test_result = "true"
+            test_result = "True"
         elif value is False:
-            test_result = "false"
+            test_result = "False"
         else:
             test_result = str(value)
         return "    affirm:is_equal (%s) (%s)" %  (test, test_result)

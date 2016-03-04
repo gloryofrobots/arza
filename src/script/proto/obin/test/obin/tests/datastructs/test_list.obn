@@ -59,8 +59,8 @@ fun test () ->
     affirm:is_equal (list:span lam x -> x < 0; [1,2,3]),
                     ([], [1, 2, 3])
 
-    affirm:is_true (list:conjunction [true, true, true, true])
-    affirm:is_false (list:conjunction [true, true, true, false])
+    affirm:is_true (list:conjunction [True, True, True, True])
+    affirm:is_false (list:conjunction [True, True, True, False])
     affirm:is_true (list:all lam x -> x < 7;  [0,1,2,3,4,5,6])
     affirm:is_false (list:all lam x -> x < 3;  [0,1,2,3,4,5,6])
     affirm:is_true (list:any lam x -> x < 7;  [0,1,2,3,4,5,6])
@@ -70,7 +70,7 @@ fun test () ->
     affirm:is_equal (list:delete 8 l1) [0,1,2,3,4,5,6,7,9]
 
 //    print (
-//        (list:conjunction [true, true, true, true]),
+//        (list:conjunction [True, True, True, True]),
 //    )
 
 

@@ -9,13 +9,13 @@ class W_Boolean(W_UniqueType):
 
 class W_True(W_Boolean):
     def _to_string_(self):
-        return 'true'
+        return 'True'
 
     def _to_bool_(self):
         return True
 
     def _type_(self, process):
-        return process.std.types.True
+        return process.std.types.Bool
 
     def _hash_(self):
         return 1
@@ -26,13 +26,13 @@ class W_True(W_Boolean):
 
 class W_False(W_Boolean):
     def _to_string_(self):
-        return 'false'
+        return 'False'
 
     def _to_bool_(self):
         return False
 
     def _type_(self, process):
-        return process.std.types.False
+        return process.std.types.Bool
 
     def _hash_(self):
         return 0

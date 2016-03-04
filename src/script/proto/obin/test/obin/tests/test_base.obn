@@ -22,9 +22,9 @@ fun test () ->
     affirm:is_not_equal t2 ((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Alice"})
     affirm:is_equal t2 t2
 
-    affirm:is_true true if 5 > 4 else false
-    affirm:is_false true if 5 < 4 else false
-    affirm:is_false true if 5 == 4 else false
+    affirm:is_true True if 5 > 4 else False
+    affirm:is_false True if 5 < 4 else False
+    affirm:is_false True if 5 == 4 else False
     affirm:is_equal (42 * 2 if 13 == 12 else 12 * 2 if 13 == 14 else 1) 1
 
     a2_4 = #four
