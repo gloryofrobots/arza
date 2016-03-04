@@ -279,7 +279,7 @@ def _process_pattern(state, pattern, patterns, path):
     elif ntype in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_NIL, NT_STR, NT_CHAR, NT_SYMBOL]:
         return _process_literal(state, pattern, patterns, path)
     else:
-        assert False, ntype
+        transform_error(state, pattern, u"Invalid pattern syntax")
 
 
 def process_patterns(state, pattern, path, index):

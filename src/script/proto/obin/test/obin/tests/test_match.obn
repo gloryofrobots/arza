@@ -39,7 +39,6 @@ fun test() ->
         end) ({age = 25, actress = "Lily", genre = "XXX"}, "XXX", "OLOLO", "Lily", 25)
 
 
-
     affirm:is_equal LilyName2 "Lily"
     affirm:is_equal Result {age = 25, actress = "Lily", genre = "XXX"}
     affirm:is_throw fun | () -> LilyName end ()

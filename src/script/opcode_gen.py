@@ -28,7 +28,6 @@ OPCODES = [
     ("POP_CATCH", 0),
 
     ("CALL", 0),
-    ("CALL_METHOD", 0),
     
     ("JUMP", 0),
     ("JUMP_IF_FALSE_NOPOP", 0),

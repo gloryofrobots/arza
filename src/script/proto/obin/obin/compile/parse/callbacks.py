@@ -94,7 +94,12 @@ def led_infixr_function(parser, op, node, left):
 
 
 def led_infixr_assign(parser, op, node, left):
-    ltype = nodes.node_token_type(left)
+    ntype = nodes.node_type(left)
+    if ntype == NT_LOOKUP or ntype == NT_LOOKUP_SYMBOL:
+         parse_error(parser, u"Bad left value in assignment expression, use operator .{} "
+                             u"for creating new data structures", left)
+
+    # ltype = nodes.node_token_type(left)
 
     # if ltype != TT_DOT and ltype != TT_LSQUARE \
     #         and ltype != TT_NAME and ltype != TT_LCURLY and ltype != TT_LPAREN:

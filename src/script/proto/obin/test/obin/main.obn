@@ -1,9 +1,9 @@
-import affirm
+//import affirm
 //import tests:test_base
 //import tests:test_static_refs
 //import tests:test_bool
 //import tests:test_co
-import tests:test_destruct
+//import tests:test_destruct
 //import tests:test_exception
 //import tests:test_fun
 //import tests:test_generic
@@ -17,8 +17,19 @@ import tests:test_destruct
 
 //fun l () -> 42 end
 
+fun foo() -> print "FOO"; {a=42, b=24} end
+
 fun main () ->
-    1 = 1
+    {a,b} = foo ()
+
+//    m = {x=1, y= 2}
+//    l = [1,2,3]
+
+//    at l 1
+//    l.[1] = 1
+//    l.{1=1}
+//    l.(0) = 1
+//    1 = 1
 //    try
 //        true=false
 //    | err@(#MatchError, ..._) ->

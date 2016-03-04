@@ -46,7 +46,6 @@ NODES = [
 
   "NT_BIND",
 
-  "NT_RETURN",
   "NT_THROW",
 
   "NT_BREAK",
@@ -59,7 +58,8 @@ NODES = [
   "NT_ASSIGN",
   "NT_CALL",
   "NT_JUXTAPOSITION",
-  "NT_CALL_MEMBER",
+
+  "NT_UNDEFINE",
 
   "NT_LOOKUP",
   "NT_LOOKUP_SYMBOL",

@@ -70,7 +70,7 @@ def _id(process, routine):
 def _print(process, routine):
     args = routine._args.to_l()
     if len(args) == 0:
-        return space.newnil()
+        return space.newunit()
 
     builder = rstring.UnicodeBuilder()
     for arg in args[:-1]:
@@ -82,7 +82,7 @@ def _print(process, routine):
     u_print_str = builder.build()
     print_str = encode_unicode_utf8(u_print_str)
     print print_str
-    return space.newnil()
+    return space.newunit()
 
 
 def _eval(process, routine):
