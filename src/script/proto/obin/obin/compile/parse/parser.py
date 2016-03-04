@@ -266,7 +266,6 @@ def init_parser_literals(parser):
     literal(parser, TT_TYPENAME)
     literal(parser, TT_TRUE)
     literal(parser, TT_FALSE)
-    literal(parser, TT_NIL)
     literal(parser, TT_WILDCARD)
     return parser
 

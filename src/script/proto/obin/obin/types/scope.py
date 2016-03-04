@@ -71,8 +71,8 @@ class W_Scope(W_Any):
         self.functions.insert(symbol, space.newint(idx))
 
     def get_function(self, symbol):
-        idx = api.lookup(self.functions, symbol, space.newnil())
-        if space.isnil(idx):
+        idx = api.lookup(self.functions, symbol, space.newvoid())
+        if space.isvoid(idx):
             return platform.absent_index()
         return api.to_i(idx)
 
@@ -122,7 +122,7 @@ class W_Scope(W_Any):
         assert space.issymbol(local)
         self.check_arg_count()
         assert platform.is_absent_index(self.get_scope_local_index(local))
-        return self.__locals.insert(local, space.newnil())
+        return self.__locals.insert(local, space.newvoid())
 
     def get_scope_local_index(self, local):
         return api.get_index(self.__locals, local)

@@ -26,7 +26,7 @@ class W_Method(W_Hashable):
 
 
     def has_default_implementation(self):
-        return not space.isnil(self.default_implementation)
+        return not space.isvoid(self.default_implementation)
 
     def _to_string_(self):
         return "<method %s of %s>" % (api.to_s(self.name), api.to_s(self.trait))
@@ -43,7 +43,7 @@ class W_Method(W_Hashable):
                 return
 
         method = lookup_implementation(process, self, args)
-        if space.isnil(method):
+        if space.isvoid(method):
             return error.throw_2(error.Errors.METHOD_NOT_IMPLEMENTED, self, args)
 
         # print "GEN CALL", str(method)

@@ -66,7 +66,7 @@ class W_PList(W_Any):
 
     def _at_index_(self, i):
         if i < 0:
-            return space.newnil()
+            return space.newvoid()
         return nth(self, i)
 
     def _at_(self, key):
@@ -75,7 +75,7 @@ class W_PList(W_Any):
 
         int_index = api.to_i(key)
         if int_index < 0:
-            return space.newnil()
+            return space.newvoid()
 
         return nth(self, int_index)
 
@@ -89,26 +89,26 @@ class W_PList(W_Any):
         return process.std.types.List
 
     def _slice_(self, start, end):
-        from obin.types.space import isnil, newnil
+        from obin.types.space import isvoid, newvoid
         from obin.types import api
 
-        if isnil(start):
+        if isvoid(start):
             start_index = 0
         else:
             start_index = api.to_i(start)
 
         # INTELLIGENT ERROR HERE, BECAUSE LISTS DON`T SUPPORT RELATIVE SLICING
         if start_index < 0:
-            return newnil()
+            return newvoid()
 
-        if isnil(end):
+        if isvoid(end):
             return drop(self, start_index)
         else:
             end_index = api.to_i(end)
 
         # INTELLIGENT ERROR HERE, BECAUSE LISTS DON`T SUPPORT RELATIVE SLICING
         if end_index < 0:
-            return newnil()
+            return newvoid()
         return slice(self, start_index, end_index)
 
     def _equal_(self, other):
@@ -123,7 +123,7 @@ class W_PList(W_Any):
         return [i for i in self]
 
 
-__EMPTY__ = W_PList(space.newnil(), space.newnil())
+__EMPTY__ = W_PList(space.newvoid(), space.newvoid())
 
 
 def empty():
@@ -267,11 +267,11 @@ def slice(pl, start, end):
 ##############################################
 
 def _nth(pl, index):
-    from obin.types.space import newnil
+    from obin.types.space import newvoid
     if index == 0:
         return head(pl)
     if is_empty(pl):
-        return newnil()
+        return newvoid()
     return _nth(tail(pl), index - 1)
 
 
@@ -284,11 +284,11 @@ def nth(pl, index):
 ##############################################
 
 def _nth_tail(pl, index):
-    from obin.types.space import newnil
+    from obin.types.space import newvoid
     if index == 0:
         return tail(pl)
     if is_empty(pl):
-        return newnil()
+        return newvoid()
     return _nth_tail(tail(pl), index - 1)
 
 

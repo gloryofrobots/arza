@@ -184,7 +184,7 @@ def _get_variable_index(compiler, code, node, name):
     ref_id = _declare_reference(compiler, name)
 
     ref = environment.get_reference(compiler.env, name)
-    if space.isnil(ref):
+    if space.isvoid(ref):
         return compile_error(compiler, code, node, u"Unreachable variable")
 
     _declare_static_reference(compiler, ref)
@@ -216,8 +216,8 @@ def _emit_dup(code):
     code.emit_0(DUP, codeinfo_unknown())
 
 
-def _emit_nil(code):
-    code.emit_0(NIL, codeinfo_unknown())
+def _emit_void(code):
+    code.emit_0(VOID, codeinfo_unknown())
 
 
 def _emit_empty_list(code):
@@ -312,9 +312,6 @@ def _compile_FALSE(compiler, code, node):
     code.emit_0(FALSE, info(node))
 
 
-def _compile_NIL(compiler, code, node):
-    code.emit_0(NIL, info(node))
-
 
 def _compile_STR(compiler, code, node):
     from obin.runistr import unicode_unescape, decode_str_utf8
@@ -400,6 +397,11 @@ def _compile_MATCH(compiler, code, node):
     _compile(compiler, code, exp)
     _compile_match(compiler, code, node, patterns, error.Errors.MATCH)
 
+def _compile_UNDEFINE(compiler, code, node):
+    varname = node_first(node)
+    name = _get_symbol_name(compiler, varname)
+    _emit_void(code)
+    _emit_store(compiler, code, name, node)
 
 def _compile_GOTO(compiler, code, node):
     # TODO REMOVE THIS SHIT
@@ -530,7 +532,7 @@ def _compile_MAP(compiler, code, node):
         key = c[0]
         value = c[1]
         if is_empty_node(value):
-            _compile_NIL(compiler, code, value)
+            compile_error(compiler, code, node, u"Value expected")
         else:
             _compile(compiler, code, value)
 
@@ -560,13 +562,13 @@ def _compile_LIST(compiler, code, node):
 
 
 def _compile_BREAK(compiler, code, node):
-    _emit_nil(code)
+    _emit_void(code)
     if not code.emit_break():
         compile_error(compiler, code, node, u"break outside loop")
 
 
 def _compile_CONTINUE(compiler, code, node):
-    _emit_nil(code)
+    _emit_void(code)
     if not code.emit_continue():
         compile_error(compiler, code, node, u"continue outside loop")
 
@@ -695,11 +697,11 @@ def _compile_WHEN_NO_ELSE(compiler, code, node):
     body = node_second(node)
     endif = code.prealocate_label()
     _compile_branch(compiler, code, condition, body, endif)
-    _emit_nil(code)
+    _emit_void(code)
     code.emit_1(LABEL, endif, codeinfo_unknown())
 
 
-def _compile_IF(compiler, code, node):
+def _compile_CONDITION(compiler, code, node):
     branches = node_first(node)
 
     endif = code.prealocate_label()
@@ -709,11 +711,7 @@ def _compile_IF(compiler, code, node):
         _compile_branch(compiler, code, branch[0], branch[1], endif)
 
     elsebranch = branches[length - 1]
-    if is_empty_node(elsebranch):
-        _emit_nil(code)
-    else:
-        _compile(compiler, code, elsebranch[1])
-
+    _compile(compiler, code, elsebranch[1])
     code.emit_1(LABEL, endif, codeinfo_unknown())
 
 
@@ -916,7 +914,7 @@ def _compile_TYPE(compiler, code, node):
     # _emit_nil(code)
     if is_empty_node(fields):
         _emit_empty_list(code)
-        _emit_nil(code)
+        _emit_void(code)
     else:
         _compile(compiler, code, fields)
         _compile_case_function(compiler, code, node, nodes.empty_node(), constructor)
@@ -977,7 +975,7 @@ def _compile_TRAIT(compiler, code, node):
 
         _compile(compiler, code, method_sig)
         if nodes.is_empty_node(method_default_impl):
-            _emit_nil(code)
+            _emit_void(code)
         else:
             _compile_case_function(compiler, code, node, nodes.empty_node(), method_default_impl)
 
@@ -1023,7 +1021,7 @@ def _emit_specify(compiler, code, node, methods):
 
         for trait in signature:
             if trait is None:
-                _emit_nil(code)
+                _emit_void(code)
             else:
                 _compile(compiler, code, trait)
 
@@ -1050,7 +1048,7 @@ def _compile_FOR(compiler, code, node):
     _compile(compiler, code, source)
     code.emit_0(ITERATOR, info(node))
     # load the "last" iterations result
-    _emit_nil(code)
+    _emit_void(code)
     precond = code.emit_startloop_label()
     code.continue_at_label(precond)
     finish = code.prealocate_endloop_label(False)
@@ -1079,7 +1077,7 @@ def _compile_FOR(compiler, code, node):
 def _compile_WHILE(compiler, code, node):
     condition = node_first(node)
     body = node_second(node)
-    _emit_nil(code)
+    _emit_void(code)
     startlabel = code.emit_startloop_label()
     code.continue_at_label(startlabel)
     _compile(compiler, code, condition)
@@ -1106,12 +1104,12 @@ def _emit_SLICE(compiler, code, obj, slice):
     _compile(compiler, code, obj)
 
     if nodes.is_wildcard_node(start):
-        _emit_nil(code)
+        _emit_void(code)
     else:
         _compile(compiler, code, start)
 
     if nodes.is_wildcard_node(end):
-        _emit_nil(code)
+        _emit_void(code)
     else:
         _compile(compiler, code, end)
 
@@ -1227,12 +1225,10 @@ def _compile_node(compiler, code, node):
         _compile_TRUE(compiler, code, node)
     elif NT_FALSE == ntype:
         _compile_FALSE(compiler, code, node)
-    elif NT_NIL == ntype:
-        _compile_NIL(compiler, code, node)
-    elif NT_INT == ntype:
-        _compile_INT(compiler, code, node)
     elif NT_FLOAT == ntype:
         _compile_FLOAT(compiler, code, node)
+    elif NT_INT == ntype:
+        _compile_INT(compiler, code, node)
     elif NT_STR == ntype:
         _compile_STR(compiler, code, node)
     elif NT_CHAR == ntype:
@@ -1249,7 +1245,7 @@ def _compile_node(compiler, code, node):
         _compile_FUN(compiler, code, node)
 
     elif NT_CONDITION == ntype:
-        _compile_IF(compiler, code, node)
+        _compile_CONDITION(compiler, code, node)
     elif NT_TERNARY_CONDITION == ntype:
         _compile_WHEN(compiler, code, node)
     elif NT_WHEN == ntype:
@@ -1324,6 +1320,8 @@ def _compile_node(compiler, code, node):
         _compile_OR(compiler, code, node)
     elif NT_GOTO == ntype:
         _compile_GOTO(compiler, code, node)
+    elif NT_UNDEFINE == ntype:
+        _compile_UNDEFINE(compiler, code, node)
     elif NT_FENV == ntype:
         _compile_FENV(compiler, code, node)
     else:

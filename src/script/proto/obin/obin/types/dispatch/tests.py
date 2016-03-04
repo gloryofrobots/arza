@@ -54,7 +54,7 @@ def test_3():
 
 def test_any():
     from obin.types.space import newtrait, newgeneric, newsymbol,\
-        stdlib, newtuple, newnil, newbool, newint, newprocess
+        stdlib, newtuple, newvoid, newbool, newint, newprocess
     newprocess(["."])
 
     Any = stdlib.traits.Any
@@ -97,14 +97,14 @@ def test_any():
     ]))
 
     test(g, "m3", newtuple([
-        newnil(),
+        newvoid(),
         newint(42),
         newint(111),
         newsymbol(u"S1")
     ]))
 
     test(g, "m4", newtuple([
-        newnil(),
+        newvoid(),
         makeobject([Z,Z,Y,Z,X]),
         newtuple([newbool(True), newbool(False)]),
         newsymbol(u"S1")
@@ -116,10 +116,10 @@ def test_any():
         makeobject([X,Z]),
     ]))
     test(g, "m6", newtuple([
-        newnil(),
-        newnil(),
-        newnil(),
-        newnil(),
+        newvoid(),
+        newvoid(),
+        newvoid(),
+        newvoid(),
     ]))
 
     test(g, "m7", newtuple([
@@ -130,13 +130,13 @@ def test_any():
     ]))
 
     test(g, "m8", newtuple([
-        newnil(),
+        newvoid(),
         newtuple([newbool(True), newbool(False)]),
-        newnil(),
+        newvoid(),
     ]))
 
     test(g, "m9", newtuple([
-        newnil(),
+        newvoid(),
         newtuple([newbool(True), newbool(False)]),
         makeobject([X,Z]),
     ]))

@@ -60,15 +60,15 @@ collection stuff
 
 
 def delete(obj, k):
-    assert not space.isnil(k)
+    assert not space.isvoid(k)
     return obj._delete_(k)
 
 
 def at(obj, k):
-    assert not space.isnil(k)
+    assert not space.isvoid(k)
     v = obj._at_(k)
     assert v is not None
-    if space.isnil(v):
+    if space.isvoid(v):
         return error.throw_2(error.Errors.KEY_ERROR, k, obj)
     return v
 
@@ -76,7 +76,7 @@ def at(obj, k):
 def lookup(obj, k, default):
     v = obj._at_(k)
     assert v is not None
-    if space.isnil(v):
+    if space.isvoid(v):
         return default
     return v
 
@@ -84,7 +84,7 @@ def lookup(obj, k, default):
 def slice(obj, start, end):
     v = obj._slice_(start, end)
     assert v is not None
-    if space.isnil(v):
+    if space.isvoid(v):
         return error.throw_3(error.Errors.SLICE, obj, start, end)
     return v
 
@@ -111,7 +111,7 @@ def in_(k, obj):
 
 
 def contains_b(obj, k):
-    assert not space.isnil(k)
+    assert not space.isvoid(k)
     v = obj._contains_(k)
     assert isinstance(v, bool)
     return v
@@ -122,8 +122,8 @@ def notin(k, obj):
 
 
 def put(obj, k, v):
-    assert not space.isnil(v)
-    assert not space.isnil(k)
+    assert not space.isvoid(v)
+    assert not space.isvoid(k)
     return obj._put_(k, v)
 
 

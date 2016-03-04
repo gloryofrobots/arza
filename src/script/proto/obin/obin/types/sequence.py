@@ -10,9 +10,9 @@ class W_SequenceIterator(W_Any):
         self.source_length = api.length_i(source)
 
     def _next_(self):
-        from obin.types.space import newnil
+        from obin.types.space import newvoid
         if self.index >= self.source_length:
-            return newnil()
+            return newvoid()
 
         el = api.at_index(self.source, self.index)
         self.index += 1

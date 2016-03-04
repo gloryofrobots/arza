@@ -28,8 +28,8 @@ class W_Record(W_Hashable):
         if space.isint(name):
             return self._at_index_(api.to_i(name))
 
-        idx = api.lookup(self.type.descriptors, name, space.newnil())
-        if space.isnil(idx):
+        idx = api.lookup(self.type.descriptors, name, space.newvoid())
+        if space.isvoid(idx):
             error.throw_1(error.Errors.KEY_ERROR, name)
         return api.at(self.values, idx)
 
@@ -38,8 +38,8 @@ class W_Record(W_Hashable):
         return self.values._at_index_(idx)
 
     def _put_(self, name, value):
-        idx = api.lookup(self.type.descriptors, name, space.newnil())
-        if space.isnil(idx):
+        idx = api.lookup(self.type.descriptors, name, space.newvoid())
+        if space.isvoid(idx):
             error.throw_1(error.Errors.KEY_ERROR, name)
 
         newvalues = api.put(self.values, name, value)
@@ -93,7 +93,7 @@ class W_DataType(W_Hashable):
         return api.contains_b(self.traits, trait)
 
     def get_method_implementation(self, method):
-        void = space.newnil()
+        void = space.newvoid()
         if self.is_part_of_some_union():
             return void
 
@@ -120,15 +120,15 @@ class W_DataType(W_Hashable):
         return api.equal_b(self.union, union)
 
     def has_constructor(self):
-        return not space.isnil(self.ctor)
+        return not space.isvoid(self.ctor)
 
     def create_instance(self, env):
-        undef = space.newnil()
+        undef = space.newvoid()
         values = []
 
         for f in self.fields:
             v = api.lookup(env, f, undef)
-            if space.isnil(v):
+            if space.isvoid(v):
                 error.throw_2(error.Errors.CONSTRUCTOR,
                               space.newstring(u"Missing required field. Check recursive constructor call"), f)
             values.append(v)

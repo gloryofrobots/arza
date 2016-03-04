@@ -18,7 +18,7 @@ class Bindings:
         self._backing = None
         self._used = 0
         self._deleted = 0
-        self.empty_pair = (space.newnil(), platform.absent_index())
+        self.empty_pair = (space.newvoid(), platform.absent_index())
 
         self._build(self._minsize)
 
@@ -27,7 +27,7 @@ class Bindings:
         for i in self._indices(key, len(backing)):
             kv_pair = backing[i]
             _key = kv_pair[0]
-            if space.isnil(_key) or api.equal_b(_key, key):
+            if space.isvoid(_key) or api.equal_b(_key, key):
                 return i, kv_pair
 
         return platform.absent_index(), self.empty_pair
@@ -48,7 +48,7 @@ class Bindings:
 
     def insert(self, key, value):
         assert space.isany(key)
-        assert not space.isnil(key)
+        assert not space.isvoid(key)
         assert isinstance(value, int)
         """
         Sets the value of the Hashmap at the key. It resizes the backing
@@ -81,18 +81,18 @@ class Bindings:
     def keys(self):
         l = []
         for kv_pair in self._backing:
-            if kv_pair and not space.isnil(kv_pair[0]):
+            if kv_pair and not space.isvoid(kv_pair[0]):
                 l.append(kv_pair[0])
         return l
 
     def __iter__(self):
         for kv_pair in self._backing:
-            if kv_pair and not space.isnil(kv_pair[0]):
+            if kv_pair and not space.isvoid(kv_pair[0]):
                 yield kv_pair[0]
 
     def items(self):
         for kv_pair in self._backing:
-            if kv_pair and not space.isnil(kv_pair[0]):
+            if kv_pair and not space.isvoid(kv_pair[0]):
                 yield kv_pair[0], kv_pair[1]
 
     def copy(self):
@@ -173,12 +173,12 @@ class TableIterator(W_Any):
     def _next_(self):
         while True:
             if self.index >= self.source_length:
-                return space.newnil()
+                return space.newvoid()
 
             pair = self.source.slot_bindings[self.index]
             self.index += 1
             key = pair[0]
-            if space.isnil(key):
+            if space.isvoid(key):
                 continue
 
             return key
@@ -239,7 +239,7 @@ class W_Map(W_Any):
     def _at_(self, name):
         idx = self._get_index_(name)
         if platform.is_absent_index(idx):
-            return space.newnil()
+            return space.newvoid()
 
         return self._at_index_(idx)
 

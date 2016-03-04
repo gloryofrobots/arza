@@ -75,12 +75,12 @@ class W_Tuple(W_Hashable):
         return False
 
     def _at_(self, index):
-        from obin.types.space import newnil, isint
+        from obin.types.space import newvoid, isint
         assert isint(index)
         try:
             el = self.elements[api.to_i(index)]
         except IndexError:
-            return newnil()
+            return newvoid()
 
         return el
 
@@ -89,21 +89,21 @@ class W_Tuple(W_Hashable):
 
     def _slice_(self, start, end):
 
-        if space.isnil(start):
+        if space.isvoid(start):
             start_index = 0
         else:
             start_index = api.to_i(start)
 
-        if space.isnil(end):
+        if space.isvoid(end):
             end_index = self._length_()
         else:
             end_index = api.to_i(end)
 
         if start_index < 0:
-            return space.newnil()
+            return space.newvoid()
 
         if end_index <= 0:
-            return space.newnil()
+            return space.newvoid()
 
         elements = self.elements[start_index:end_index]
         return W_Tuple(elements)

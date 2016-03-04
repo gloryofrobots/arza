@@ -21,11 +21,11 @@ def __newnode(ntype, token, children):
 
 
 def empty_node():
-    return space.newnil()
+    return space.newvoid()
 
 
 def is_empty_node(n):
-    return space.isnil(n)
+    return space.isvoid(n)
 
 
 def list_node(items):
@@ -45,7 +45,7 @@ def is_single_node(node):
 
 
 def is_node(node):
-    return space.islist(node) or space.istuple(node) or space.isnil(node) or is_scope_node(node)
+    return space.islist(node) or space.istuple(node) or space.isvoid(node) or is_scope_node(node)
 
 
 def is_scope_node(node):
@@ -234,13 +234,13 @@ def create_true_node(basenode):
     return node_0(nt.NT_TRUE, create_token_from_node(tt.TT_TRUE, "true", basenode))
 
 
-def create_nil_node(basenode):
-    return node_0(nt.NT_NIL, create_token_from_node(tt.TT_NIL, "nil", basenode))
+def create_undefine_node(basenode, varname):
+    return node_1(nt.NT_UNDEFINE, create_token_from_node(tt.TT_UNKNOWN, "undefine", basenode), varname)
 
 
 def create_goto_node(label):
     return node_0(nt.NT_GOTO,
-                  tokens.newtoken(tt.TT_GOTO, str(label), space.newint(-1), space.newint(-1), space.newint(-1)))
+                  tokens.newtoken(tt.TT_UNKNOWN, str(label), space.newint(-1), space.newint(-1), space.newint(-1)))
 
 
 def create_fenv_node(basenode):

@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
 from obin.misc.platform import jit
-from obin.types.space import newnil, newtuple
+from obin.types.space import newvoid, newtuple
 from obin.types import plist
 from obin.runtime import error
 # TODO proper stack operations
@@ -9,7 +9,7 @@ class Stack:
     def __init__(self, size):
         self.data = None
         self.__pointer = 0
-        self.data = [newnil()] * size
+        self.data = [newvoid()] * size
 
     def pointer(self):
         return jit.promote(self.__pointer)
@@ -18,7 +18,7 @@ class Stack:
         e = self.top()
         i = self.pointer() - 1
         assert i >= 0
-        self.data[i] = newnil()
+        self.data[i] = newvoid()
         self.set_pointer(i)
         return e
 
@@ -34,7 +34,7 @@ class Stack:
         if size <= l:
             return
 
-        self.data = self.data + [newnil()] * (size - l)
+        self.data = self.data + [newvoid()] * (size - l)
 
     def size(self):
         return len(self.data)

@@ -24,4 +24,4 @@ def _activate(process, routine):
     # args = routine.get_arg(2)
     args = space.newtuple([space.newunit()])
     activate(process, fiber, func, args)
-    return space.newnil()
+    return space.newvoid()

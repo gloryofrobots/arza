@@ -233,7 +233,7 @@ def _rsplit(value, by, maxsplit=-1):
 # 15.5.4.14
 @complete_native_routine
 def split(routine):
-    from obin.types.space import isnil
+    from obin.types.space import isvoid
     this, args = routine.args()
 
     this.check_object_coercible()
@@ -243,7 +243,7 @@ def split(routine):
 
     string = this.to_string()
 
-    if isnil(limit):
+    if isvoid(limit):
         import math
         lim = int(math.pow(2, 32) - 1)
     else:

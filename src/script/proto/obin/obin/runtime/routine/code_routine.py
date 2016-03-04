@@ -85,8 +85,8 @@ class CodeRoutine(BaseRoutine):
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
             self.pc += 1
             # *************************************
-            if NIL == tag:
-                stack.push(space.newnil())
+            if VOID == tag:
+                stack.push(space.newvoid())
             # *************************************
             elif ARGUMENTS == tag:
                 stack.push(self.args)
@@ -115,7 +115,7 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif LOCAL == tag:
                 value = api.at_index(env, arg1)
-                if space.isnil(value):
+                if space.isvoid(value):
                     literal = literals[arg2]
                     return error.throw_1(error.Errors.REFERENCE, literal)
 

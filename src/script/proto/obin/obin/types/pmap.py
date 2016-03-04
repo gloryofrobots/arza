@@ -78,11 +78,11 @@ class W_PMap(W_Any):
 
     def _contains_(self, key):
         value = self._at_(key)
-        return not space.isnil(value)
+        return not space.isvoid(value)
 
     def _at_(self, key):
         if self._root is None:
-            return space.newnil()
+            return space.newvoid()
 
         return self._root.find(rarithmetic.r_uint(0), _hash(key), key)
 
@@ -217,7 +217,7 @@ class BitmapIndexedNode(INode):
     def find(self, shift, hash_val, key):
         bit = bitpos(hash_val, shift)
         if (self._bitmap & bit) == 0:
-            return space.newnil()
+            return space.newvoid()
 
         idx = self.index(bit)
         key_or_null = self._array[2 * idx]
@@ -227,7 +227,7 @@ class BitmapIndexedNode(INode):
         if api.equal_b(key, key_or_null):
             return val_or_node
 
-        return space.newnil()
+        return space.newvoid()
 
     def without_inode(self, shift, hash, key):
         bit = bitpos(hash, shift)
@@ -331,7 +331,7 @@ class ArrayNode(INode):
         idx = mask(hash_val, shift)
         node = self._array[idx]
         if node is None:
-            return space.newnil()
+            return space.newvoid()
         return node.find(shift + 5, hash_val, key)
 
 
@@ -376,7 +376,7 @@ class HashCollisionNode(INode):
             if key_or_nil is not None and api.equal_b(key_or_nil, key):
                 return self._array[x + 1]
 
-        return space.newnil()
+        return space.newvoid()
 
     def find_index(self, key):
         i = rarithmetic.r_int(0)

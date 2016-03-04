@@ -1,4 +1,4 @@
-NIL = 0
+VOID = 0
 TRUE = 1
 FALSE = 2
 LITERAL = 3
@@ -48,7 +48,7 @@ SPECIFY = 46
 
 # ************************************************
 
-__OPCODE_REPR__ = ["NIL", "TRUE", "FALSE", "LITERAL", "SYMBOL", "OUTER", "LOCAL", "IMPORTED", "FUNCTION", "INTEGER",
+__OPCODE_REPR__ = ["VOID", "TRUE", "FALSE", "LITERAL", "SYMBOL", "OUTER", "LOCAL", "IMPORTED", "FUNCTION", "INTEGER",
                    "DUP", "NEXT", "MODULE", "GENERIC", "ARGUMENTS", "FSELF", "FENV", "TRAIT", "LABEL", "STORE_LOCAL",
                    "ITERATOR", "RETURN", "POP_CATCH", "CALL", "JUMP", "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP",
                    "JUMP_IF_FALSE", "JUMP_IF_TRUE", "PUSH_CATCH", "JUMP_IF_ITERATOR_EMPTY", "METHOD", "MEMBER_DOT",

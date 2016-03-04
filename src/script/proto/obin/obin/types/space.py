@@ -6,11 +6,11 @@ from obin.types.root import W_UniqueType
 w_True = W_True()
 w_False = W_False()
 w_Interrupt = W_UniqueType()
-w_Nil = W_Nil()
+w_Void = W_Nil()
 
 jit.promote(w_True)
 jit.promote(w_False)
-jit.promote(w_Nil)
+jit.promote(w_Void)
 jit.promote(w_Interrupt)
 
 
@@ -127,12 +127,12 @@ def isinterrupt(value):
 
 ########################################################
 
-def newnil():
-    return w_Nil
+def newvoid():
+    return w_Void
 
 
-def isnil(value):
-    return value is w_Nil
+def isvoid(value):
+    return value is w_Void
 
 
 ########################################################
@@ -141,14 +141,6 @@ def newbool(val):
     assert isinstance(val, bool)
     if val:
         return w_True
-    return w_False
-
-
-def newtrue():
-    return w_True
-
-
-def newfalse():
     return w_False
 
 
@@ -330,7 +322,7 @@ def newmethod(name, trait, signature):
     assert istrait(trait)
     assert islist(signature)
 
-    obj = method(name, trait, signature, newnil())
+    obj = method(name, trait, signature, newvoid())
     return obj
 
 
@@ -339,7 +331,7 @@ def newmethod_default_implementation(name, trait, signature, default):
     assert issymbol(name)
     assert istrait(trait)
     assert islist(signature)
-    assert isfunction(default) or isnil(default)
+    assert isfunction(default) or isvoid(default)
     obj = method(name, trait, signature, default)
     return obj
 
@@ -356,7 +348,7 @@ def newmethod_hotpath(name, trait, signature, hot_path):
 
     assert hot_path is not None
     from obin.types.method import method_with_hotpath
-    obj = method_with_hotpath(name, trait, signature, newnil(), hot_path)
+    obj = method_with_hotpath(name, trait, signature, newvoid(), hot_path)
     return obj
 
 
@@ -406,12 +398,12 @@ def newdatatype(name, fields, constructor):
 
 
 def newnativedatatype(name):
-    datatype = newdatatype(name, newlist([]), newnil())
+    datatype = newdatatype(name, newlist([]), newvoid())
     return datatype
 
 
 def newnativetypeconstructor(name, union):
-    datatype = newdatatype(name, newlist([]), newnil())
+    datatype = newdatatype(name, newlist([]), newvoid())
     datatype.be_part_of(union)
     return datatype
 

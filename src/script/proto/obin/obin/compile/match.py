@@ -276,7 +276,7 @@ def _process_pattern(state, pattern, patterns, path):
         return _process_wildcard(state, pattern, patterns, path)
     elif ntype == NT_WHEN:
         return _process_when_no_else(state, pattern, patterns, path)
-    elif ntype in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_NIL, NT_STR, NT_CHAR, NT_SYMBOL]:
+    elif ntype in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_STR, NT_CHAR, NT_SYMBOL]:
         return _process_literal(state, pattern, patterns, path)
     else:
         transform_error(state, pattern, u"Invalid pattern syntax")
@@ -334,8 +334,7 @@ def _group_branches(state, branches):
 
 
 def _create_variable_undefs(basenode, variables):
-    undefs = [create_assign_node(basenode, var, create_nil_node(basenode)) for var in variables]
-    return undefs
+    return [create_undefine_node(basenode, var) for var in variables]
 
 
 def _prepend_to_body(statements, body):

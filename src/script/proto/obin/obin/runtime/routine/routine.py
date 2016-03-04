@@ -46,7 +46,7 @@ def create_callback_routine(stack, callback, constructor, args):
 
 
 def create_module_routine(name, stack, code, env):
-    return jit.promote(CodeRoutine(space.newnil(), stack, None, name, code, env))
+    return jit.promote(CodeRoutine(space.newvoid(), stack, None, name, code, env))
 
 
 def create_function_routine(stack, func, args, outer_env):

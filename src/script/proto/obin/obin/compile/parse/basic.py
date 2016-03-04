@@ -105,23 +105,23 @@ def parser_current_scope_add_operator(parser, op_name, op):
 
 def parser_current_scope_find_operator_or_create_new(parser, op_name):
     cur_scope = parser_current_scope(parser)
-    op = api.lookup(cur_scope.operators, op_name, space.newnil())
-    if space.isnil(op):
+    op = api.lookup(cur_scope.operators, op_name, space.newvoid())
+    if space.isvoid(op):
         return newoperator()
     return op
 
 
 def parser_find_operator(parser, op_name):
-    undef = space.newnil()
+    undef = space.newvoid()
     cur_scope = parser_current_scope(parser)
     scopes = parser.state.scopes
     for scope in scopes:
         op = api.lookup(scope.operators, op_name, undef)
-        if not space.isnil(op):
+        if not space.isvoid(op):
             return op
 
     op = environment.get_operator(parser.state.env, op_name)
-    if not space.isnil(op):
+    if not space.isvoid(op):
         api.put(cur_scope.operators, op_name, op)
 
     return op
@@ -221,7 +221,7 @@ def node_operator(parser, node):
 
     # in case of operator
     op = parser_find_operator(parser, nodes.node_value(node))
-    if op is None or space.isnil(op):
+    if op is None or space.isvoid(op):
         return parse_error(parser, u"Invalid operator", node)
     return op
 

@@ -1,6 +1,6 @@
 from obin.types.space import _w
 from obin.runtime.routine import complete_native_routine
-from obin.types.space import isnull_or_undefined, newnil
+from obin.types.space import isnull_or_undefined, newvoid
 from obin.types import api
 
 
@@ -69,14 +69,14 @@ def length(routine):
 @complete_native_routine
 def join(routine):
     this, args = routine.method_args()
-    from obin.types.space import isnil
+    from obin.types.space import isvoid
 
     separator = get_arg(args, 0)
 
     o = this.ToObject()
     length = o.length()
 
-    if isnil(separator):
+    if isvoid(separator):
         sep = u','
     else:
         sep = separator.to_string()
@@ -119,7 +119,7 @@ def shift(routine):
 
     if l == 0:
         o.put(u'length', _w(0))
-        return newnil()
+        return newvoid()
     else:
         new_length = l - 1
         element = o.get(u"0")
@@ -215,7 +215,7 @@ def for_each(routine):
 
     for i in xrange(length):
         x = obj.get(unicode(str(i)))
-        callback.Call(args=[x], this=newnil())
+        callback.Call(args=[x], this=newvoid())
 
 
 # 15.4.4.11
@@ -248,8 +248,8 @@ def sort(routine):
     return obj
 
 
-def sort_compare(obj, j, k, comparefn=newnil()):
-    from obin.types.space import isnil
+def sort_compare(obj, j, k, comparefn=newvoid()):
+    from obin.types.space import isvoid
 
     j_string = j
     k_string = k
@@ -266,21 +266,21 @@ def sort_compare(obj, j, k, comparefn=newnil()):
     x = obj.get(j_string)
     y = obj.get(k_string)
 
-    if isnil(x) and isnil(y):
+    if isvoid(x) and isvoid(y):
         return 0
-    if isnil(x):
+    if isvoid(x):
         return 1
-    if isnil(y):
+    if isvoid(y):
         return -1
 
-    if not isnil(comparefn):
+    if not isvoid(comparefn):
         if not comparefn.is_callable():
             from obin.runtime.error import ObinTypeError
             raise ObinTypeError(u'')
 
         from obin.types.object import W_BasicFunction
         assert isinstance(comparefn, W_BasicFunction)
-        res = comparefn.Call(args=[x, y], this=newnil())
+        res = comparefn.Call(args=[x, y], this=newvoid())
         return res.ToInteger()
 
     x_string = x.to_string()

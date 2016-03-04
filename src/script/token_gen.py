@@ -39,7 +39,6 @@ TOKENS = [
   ("TT_OR", "or"),
   ("TT_TRUE", "true"),
   ("TT_FALSE", "false"),
-  ("TT_NIL", "nil"),
   ("TT_TRY", "try"),
   ("TT_THROW", "throw"),
   ("TT_CATCH", "catch"),
