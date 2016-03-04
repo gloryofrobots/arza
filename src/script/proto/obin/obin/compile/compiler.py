@@ -544,15 +544,24 @@ def _compile_destruct_unpack_seq(compiler, code, node):
 
 def _compile_ASSIGN(compiler, code, node):
     left = node_first(node)
-    if node_type(left) == NT_LOOKUP_SYMBOL:
-        return _compile_ASSIGN_SYMBOL(compiler, code, node)
-    elif node_type(left) == NT_LOOKUP:
-        return _compile_ASSIGN_MEMBER(compiler, code, node)
-    elif node_type(left) == NT_TUPLE or node_type(left) == NT_MAP:
-        return _compile_destruct(compiler, code, node)
+    exp = node_second(node)
 
-    _compile(compiler, code, node_second(node))
-    _emit_store_name(compiler, code, left)
+    ntype = node_type(left)
+    if ntype == NT_NAME:
+        _compile(compiler, code, exp)
+        _emit_store_name(compiler, code, left)
+    elif ntype == NT_LOOKUP_SYMBOL:
+        _compile_ASSIGN_SYMBOL(compiler, code, node)
+    elif node_type(left) == NT_LOOKUP:
+        _compile_ASSIGN_MEMBER(compiler, code, node)
+    else:
+        if is_simple_pattern(left, False):
+            return _compile_destruct(compiler, code, node)
+        else:
+            match = nodes.create_match_node(node, exp, [nodes.list_node(
+                [left, nodes.list_node([exp])]
+            )])
+            _compile(compiler, code, match)
 
 
 def _compile_node_name_lookup(compiler, code, node):
@@ -738,20 +747,21 @@ def _get_symbol_name_or_empty(process, name):
         return space.newsymbol_s(process, nodes.node_value_s(name))
 
 
-def is_simple_func_declaration(params):
-    ntype = node_type(params)
+
+def is_simple_pattern(pattern, allow_unit):
+    ntype = node_type(pattern)
     if ntype == NT_TUPLE:
-        for child in node_first(params):
+        for child in node_first(pattern):
             child_type = node_type(child)
             if child_type == NT_MAP:
-                if not is_simple_func_declaration(child):
+                if not is_simple_pattern(child, allow_unit):
                     return False
             elif node_type(child) not in [NT_REST, NT_NAME]:
                 # print "node_type(child) not in [NT_REST, NT_NAME]:", node_type(child)
                 return False
         return True
     elif ntype == NT_MAP:
-        for child in node_first(params):
+        for child in node_first(pattern):
             if node_type(child[0]) != NT_NAME:
                 # print "node_type(child[0]) != NT_NAME:"
                 return False
@@ -759,13 +769,13 @@ def is_simple_func_declaration(params):
                 # print "not is_empty_node(child[1]): "
                 return False
         return True
-    elif ntype == NT_UNIT:
+    elif ntype == NT_UNIT and allow_unit is True:
         return True
     # print "NOT SIMPLE ", ntype
     return False
 
 
-def _compile_DEF(compiler, code, node):
+def _compile_FUN(compiler, code, node):
     namenode = node_first(node)
     funcname = _get_symbol_name_or_empty(compiler.process, namenode)
 
@@ -775,7 +785,7 @@ def _compile_DEF(compiler, code, node):
         func = funcs[0]
         params = func[0]
         body = func[1]
-        if not is_simple_func_declaration(params):
+        if not is_simple_pattern(params, True):
             _compile_case_function(compiler, code, node, namenode, funcs)
         else:
             # print "SIMPLE FUNC", funcname
@@ -1380,7 +1390,7 @@ def _compile_node(compiler, code, node):
         _compile_ASSIGN(compiler, code, node)
 
     elif NT_FUN == ntype:
-        _compile_DEF(compiler, code, node)
+        _compile_FUN(compiler, code, node)
 
     elif NT_CONDITION == ntype:
         _compile_IF(compiler, code, node)

@@ -235,7 +235,6 @@ def guard_parser_init(proc_data, parser):
 def pattern_parser_init(parser):
     parser.break_on_juxtaposition = True
 
-    prefix(parser, TT_ELLIPSIS, prefix_nud)
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly_patterns)
@@ -243,6 +242,7 @@ def pattern_parser_init(parser):
 
     infix(parser, TT_OF, 10, led_infix)
     infix(parser, TT_AT_SIGN, 10, infix_at)
+    prefix(parser, TT_ELLIPSIS, prefix_nud)
 
     symbol(parser, TT_WHEN, None)
     symbol(parser, TT_CASE, None)
@@ -302,6 +302,11 @@ def expression_parser_init(proc_data, parser):
     parser.allow_overloading = True
     parser.allow_juxtaposition = True
     # OTHER OPERATORS ARE DECLARED IN prelude.obn
+
+    # support for destructive assignments, would work only in assignment expressions
+    infix(parser, TT_OF, 10, led_infix)
+    symbol(parser, TT_AT_SIGN, None)
+    prefix(parser, TT_ELLIPSIS, prefix_nud)
 
     symbol(parser, TT_ELSE, None)
     symbol(parser, TT_CASE, None)

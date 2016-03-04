@@ -1,9 +1,9 @@
-//import affirm
+import affirm
 //import tests:test_base
 //import tests:test_static_refs
 //import tests:test_bool
 //import tests:test_co
-//import tests:test_destruct
+import tests:test_destruct
 //import tests:test_exception
 //import tests:test_fun
 //import tests:test_generic
@@ -15,21 +15,24 @@
 //import tests:datastructs:test_datastructs
 //import tests:types:test_types
 
+//fun l () -> 42 end
 
 fun main () ->
-    match {x=1, y=2}
-    | {x, y=2 of Int} of Map -> (x, y)
-    ---
-
+    1 = 1
+//    try
+//        true=false
+//    | err@(#MatchError, ..._) ->
+//        err
+//    ---
+//    test_destruct:test()
 //    test_types:test()
 //    test_operators:test()
 //    test_base:test()
 //    test_static_refs:test()
 //    test_bool:test()
 //    test_co:test()
-//    test_destruct:test()
 //    test_exception:test()
-//
+
 //    test_fun:test()
 //    test_generic:test()
 //    test_modify:test()

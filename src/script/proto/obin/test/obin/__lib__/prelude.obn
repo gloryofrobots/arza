@@ -1,9 +1,10 @@
 //TODO FIX IT
 length = ___length
 //TODO True False None
-//TODO of in {literal}
 //TODO error here 2 % 0
 //TODO think about unification destruct assign with pattern matching
+//TODO proper UNIT
+//TODO ERRORS
 
 @prefix - negate
 @infixl < < 50

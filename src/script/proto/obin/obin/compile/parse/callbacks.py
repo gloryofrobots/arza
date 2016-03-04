@@ -96,15 +96,15 @@ def led_infixr_function(parser, op, node, left):
 def led_infixr_assign(parser, op, node, left):
     ltype = nodes.node_token_type(left)
 
-    if ltype != TT_DOT and ltype != TT_LSQUARE \
-            and ltype != TT_NAME and ltype != TT_LCURLY and ltype != TT_LPAREN:
-        parse_error(parser, u"Bad lvalue in assignment", left)
-
-    if ltype == TT_LPAREN and nodes.node_arity(left) != 1:
-        parse_error(parser, u"Bad lvalue in assignment, wrong tuple destructuring", left)
-
-    if ltype == TT_LCURLY and nodes.node_arity(left) == 0:
-        parse_error(parser, u"Bad lvalue in assignment, empty map", left)
+    # if ltype != TT_DOT and ltype != TT_LSQUARE \
+    #         and ltype != TT_NAME and ltype != TT_LCURLY and ltype != TT_LPAREN:
+    #     parse_error(parser, u"Bad lvalue in assignment", left)
+    #
+    # if ltype == TT_LPAREN and nodes.node_arity(left) != 1:
+    #     parse_error(parser, u"Bad lvalue in assignment, wrong tuple destructuring", left)
+    #
+    # if ltype == TT_LCURLY and nodes.node_arity(left) == 0:
+    #     parse_error(parser, u"Bad lvalue in assignment, empty map", left)
 
     exp = expressions(parser, 9)
 
@@ -357,11 +357,11 @@ def on_bind_node(parser, key):
 
 # this callback used in pattern matching
 def prefix_lcurly_patterns(parser, op, node):
-    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_STR], on_bind_node)
+    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_CHAR, TT_FLOAT], on_bind_node)
 
 
 def prefix_lcurly(parser, op, node):
-    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_CHAR, TT_FLOAT], None)
+    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_CHAR, TT_FLOAT], on_bind_node)
 
 
 def _parse_map_key_pair(parser, types, on_unknown):
