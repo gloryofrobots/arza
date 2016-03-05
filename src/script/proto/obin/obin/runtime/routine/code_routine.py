@@ -160,15 +160,14 @@ class CodeRoutine(BaseRoutine):
                     stack.push(el)
             # *************************************
             elif TUPLE == tag:
-                tupl = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
-                stack.push(space.newtuple(tupl))
+                tupl = stack.pop_n_tuple(arg1)
+                stack.push(tupl)
             # *************************************
             elif VECTOR == tag:
-                lst = stack.pop_n(arg1)  # [:] # pop_n returns a non-resizable list
-                stack.push(space.newvector(lst))
+                raise NotImplementedError()
             # *************************************
             elif LIST == tag:
-                lst = stack.pop_n_list(arg1)  # [:] # pop_n returns a non-resizable list
+                lst = stack.pop_n_list(arg1)
                 stack.push(lst)
             # *************************************
             elif CALL == tag:

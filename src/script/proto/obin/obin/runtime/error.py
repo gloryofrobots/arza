@@ -22,7 +22,7 @@ def throw(symbol_unistr, args_tuple):
 
 
 def throw_0(symbol_unistr):
-    throw(symbol_unistr, space.newtuple([]))
+    throw(symbol_unistr, space.newunit())
 
 
 def throw_1(symbol_unistr, arg):

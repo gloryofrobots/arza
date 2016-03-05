@@ -2,6 +2,7 @@ from obin.types.root import W_Hashable, W_Any
 from sequence import W_SequenceIterator
 from obin.runtime import error
 from obin.types import api, space
+from obin.misc import platform
 
 """
  @jit.look_inside_iff(lambda self, _1: _unroll_condition(self))
@@ -37,6 +38,55 @@ from obin.types import api, space
                 return space.w_False
         return space.w_True
 """
+
+class W_Unit(W_Any):
+    def _hash_(self):
+        return 0x345678
+
+    def _clone_(self):
+        return self
+
+    def __iter__(self):
+        raise StopIteration()
+
+    def __getitem__(self, item):
+        raise RuntimeError("Unit has no elements")
+
+    def _type_(self, process):
+        return process.std.types.Tuple
+
+    def _contains_(self, key):
+        return False
+
+    def _at_(self, index):
+        return space.newvoid()
+
+    def _at_index_(self, i):
+        return space.newvoid()
+
+    def _slice_(self, start, end):
+        return space.newvoid()
+
+    def _get_index_(self, obj):
+        return platform.absent_index()
+
+    def _iterator_(self):
+        return self
+
+    def _length_(self):
+        return 0
+
+    def _equal_(self, other):
+        if isinstance(other, W_Unit):
+            return True
+        return False
+
+    def _to_string_(self):
+        return "()"
+
+    def to_l(self):
+        return []
+
 
 class W_Tuple(W_Hashable):
     def __init__(self, items):

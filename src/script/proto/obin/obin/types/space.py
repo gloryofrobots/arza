@@ -230,7 +230,7 @@ def istvar(value):
 
 def newvector(items):
     assert isinstance(items, list)
-    verify_list(items)
+    verify_list_DEBUG(items)
     from obin.types.vector import W_Vector
     obj = W_Vector(items)
     return obj
@@ -245,7 +245,7 @@ def isvector(value):
 
 def newlist(items):
     from obin.types.plist import plist
-    verify_list(items)
+    verify_list_DEBUG(items)
     return plist(items)
 
 
@@ -254,7 +254,7 @@ def islist(value):
     return isinstance(value, W_PList)
 
 
-def verify_list(items):
+def verify_list_DEBUG(items):
     for i in items:
         assert isany(i), i
 
@@ -262,20 +262,23 @@ def verify_list(items):
 ########################################################
 
 def newtuple(items):
-    from obin.types.tupl import W_Tuple
+    from obin.types.tuples import W_Tuple
     assert isinstance(items, list)
-    verify_list(items)
-    return W_Tuple(list(items))
+    if len(items) == 0:
+        return newunit()
+
+    verify_list_DEBUG(items)
+    return W_Tuple(items)
 
 
 def newunit():
-    from obin.types.tupl import W_Tuple
-    return W_Tuple([])
+    from obin.types.tuples import W_Unit
+    return W_Unit()
 
 
 def istuple(w):
-    from obin.types.tupl import W_Tuple
-    return isinstance(w, W_Tuple)
+    from obin.types.tuples import W_Tuple, W_Unit
+    return isinstance(w, W_Tuple) or isinstance(w, W_Unit)
 
 
 #########################################################

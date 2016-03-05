@@ -1,7 +1,6 @@
 __author__ = 'gloryofrobots'
 from obin.misc.platform import jit
-from obin.types.space import newvoid, newtuple
-from obin.types import plist
+from obin.types import plist, space
 from obin.runtime import error
 # TODO proper stack operations
 
@@ -9,7 +8,7 @@ class Stack:
     def __init__(self, size):
         self.data = None
         self.__pointer = 0
-        self.data = [newvoid()] * size
+        self.data = [space.newvoid()] * size
 
     def pointer(self):
         return jit.promote(self.__pointer)
@@ -18,7 +17,7 @@ class Stack:
         e = self.top()
         i = self.pointer() - 1
         assert i >= 0
-        self.data[i] = newvoid()
+        self.data[i] = space.newvoid()
         self.set_pointer(i)
         return e
 
@@ -34,7 +33,7 @@ class Stack:
         if size <= l:
             return
 
-        self.data = self.data + [newvoid()] * (size - l)
+        self.data = self.data + [space.newvoid()] * (size - l)
 
     def size(self):
         return len(self.data)
@@ -57,23 +56,9 @@ class Stack:
         self.__pointer = p
 
     @jit.unroll_safe
-    def pop_n(self, n):
-        if n < 1:
-            return []
-
-        result = []
-        i = n
-        while i > 0:
-            i -= 1
-            e = self.pop()
-            result = [e] + result
-
-        return result
-
-    @jit.unroll_safe
     def pop_n_tuple(self, n):
         if n < 1:
-            return newtuple([])
+            return space.newunit()
 
         result = []
         i = n
@@ -82,7 +67,7 @@ class Stack:
             e = self.pop()
             result = [e] + result
 
-        return newtuple(result)
+        return space.newtuple(result)
 
     @jit.unroll_safe
     def pop_n_list(self, n):

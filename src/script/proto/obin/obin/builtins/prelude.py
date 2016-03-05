@@ -95,7 +95,7 @@ def _eval(process, routine):
     env = space.newenv(space.newsymbol(process, u"__eval__"), source.code.scope, parent_env)
 
     func = space.newfunc(source.name, source.code, env)
-    args = space.newtuple([])
+    args = space.newunit()
     api.call(process, func, args)
 
 
@@ -172,7 +172,7 @@ def __implement(process, routine):
 
 @complete_native_routine
 def concat_tuples(process, routine):
-    from obin.types.tupl import concat
+    from obin.types.tuples import concat
     v1 = routine.get_arg(0)
     v2 = routine.get_arg(1)
     return concat(process, v1, v2)

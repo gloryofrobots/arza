@@ -1,5 +1,5 @@
 __author__ = 'gloryofrobots'
-from obin.types import tupl, space, api
+from obin.types import tuples, space, api
 from obin.runtime.routine.routine import complete_native_routine
 
 def setup(process, stdlib):
