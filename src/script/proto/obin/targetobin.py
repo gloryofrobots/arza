@@ -31,14 +31,20 @@ def main(argv):
 def run(script_file):
     from obin.runtime import engine
     from obin.misc import fs
-    script_dir = fs.get_dirname(script_file)
+    abs_script_path = fs.abspath(script_file)
+    if not fs.is_file(abs_script_path):
+        raise RuntimeError("Invalid script path " + abs_script_path)
+
+    script_dir = fs.get_dirname(fs.abspath(script_file))
     path_lib = fs.join_and_normalise_path(script_dir, "__lib__")
+
+    if not fs.is_directory(path_lib):
+        raise RuntimeError("Invalid __lib__ dir path " + path_lib)
 
     process, error = engine.initialize([script_dir, path_lib])
     if error is not None:
         return error
     return engine.evaluate_file(process, script_file)
-
 
 # # _____ Define and setup target ___
 def target(driver, args):

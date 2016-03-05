@@ -17,9 +17,12 @@ def import_module(process, name):
 
 
 def find_module_file(path, dirs):
+    # print "DIRS", dirs
     for directory in dirs:
         filename = join_and_normalise_path(directory, path)
+        # print "TRY TO IMPORT", filename
         if is_file(filename):
+            # print "SUCCESS"
             return filename
 
     return None
