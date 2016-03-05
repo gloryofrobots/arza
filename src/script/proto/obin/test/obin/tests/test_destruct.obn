@@ -8,6 +8,7 @@ fun test () ->
     affirm:is_throw lam () -> (a,b,c,d) = [4,5,6,7]; ()
     affirm:is_throw lam () -> [a,b,c] = (1,2,3); ()
 
+    ///////////////////////////////////////////
 
     metadata = {
         title= "Nemesis Games",
@@ -33,6 +34,8 @@ fun test () ->
     affirm:is_equal (englishTitle, subject, localeTitle,translator,(localeTitleEn, origTitleEn), translatorEn, author_data),
                     ("Nemesis Games", "SCIFI", "IGRU DOLI", "PILIP LUN",
                      ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU", ("James", "Corey"))
+
+    /////////////////////////////////////////
 
     {a=[x,y,...z], B @ b="I am B", c of Float, D@d={e=(x,y,...zz)}} =
         {a=[1,2,3,4,5], b="I am B", c=3.14, d={e=(1,2,3,4,5)}}

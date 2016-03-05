@@ -31,7 +31,7 @@ POP = 29
 THROW = 30
 STORE_MEMBER = 31
 SLICE = 32
-UNPACK_SEQUENCE = 33
+UNPACK_TUPLE = 33
 VECTOR = 34
 TUPLE = 35
 MAP = 36
@@ -43,7 +43,7 @@ __OPCODE_REPR__ = ["VOID", "TRUE", "FALSE", "LITERAL", "SYMBOL", "OUTER", "LOCAL
                    "NEXT", "FARGS", "FSELF", "FENV", "LABEL", "STORE_LOCAL", "ITERATOR", "RETURN", "POP_CATCH", "CALL",
                    "JUMP", "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "PUSH_CATCH",
                    "JUMP_IF_ITERATOR_EMPTY", "MEMBER_DOT", "MEMBER", "POP", "THROW", "STORE_MEMBER", "SLICE",
-                   "UNPACK_SEQUENCE", "VECTOR", "TUPLE", "MAP", "LIST", ]
+                   "UNPACK_TUPLE", "VECTOR", "TUPLE", "MAP", "LIST", ]
 
 # ************************************************
 
@@ -83,7 +83,7 @@ def opcode_estimate_stack_change(opcode):
         return -1 * arg1 + 1
     elif tag == VECTOR:
         return -1 * arg1 + 1
-    elif tag == UNPACK_SEQUENCE:
+    elif tag == UNPACK_TUPLE:
         return arg1 - 1
     elif tag == TUPLE:
         return -1 * arg1 + 1

@@ -148,7 +148,7 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             # TODO STORE_SYMBOL_MEMBER WITH LITERAL AS ARGUMENT
             # *************************************
-            elif UNPACK_SEQUENCE == tag:
+            elif UNPACK_TUPLE == tag:
                 seq = stack.pop()
                 error.affirm_type(seq, space.istuple)
                 seq_length = api.length_i(seq)

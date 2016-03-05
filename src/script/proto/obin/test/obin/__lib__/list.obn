@@ -41,8 +41,7 @@ fun scanl
 fun nth_tail
 | 0 l -> l
 | 1 [_, ...t] -> t
-| n [_, ...t] when n >= 0 ->
-    nth_tail (n - 1) t
+| n [_, ...t] when n >= 0 -> nth_tail (n - 1) t
 --------------------------------------------------
 
 fun nth

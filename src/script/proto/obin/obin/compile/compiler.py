@@ -452,7 +452,7 @@ def _compile_destruct_unpack_seq(compiler, code, node):
     _emit_dup(code)
     names = node_first(node)
     length = len(names)
-    code.emit_1(UNPACK_SEQUENCE, length, info(node))
+    code.emit_1(UNPACK_TUPLE, length, info(node))
     if length > 1:
         for name in names[0:length - 1]:
             _emit_store_name(compiler, code, name)
