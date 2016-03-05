@@ -9,12 +9,14 @@ import tests:test_modify
 import tests:test_operator_override
 import tests:test_module
 import tests:test_match
-//import tests:test_operators
+import tests:test_operators
 import tests:test_bool
 import tests:datastructs:test_datastructs
 import tests:types:test_types
 
 fun test() ->
+    42
+
     test_types:test()
     test_datastructs:test()
     test_match:test()
@@ -22,7 +24,7 @@ fun test() ->
 
     test_base:test()
     test_destruct:test()
-//    test_operators:test()
+    test_operators:test()
     test_static_refs:test()
     test_co:test()
     test_exception:test()

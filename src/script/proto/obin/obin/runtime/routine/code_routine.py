@@ -99,9 +99,6 @@ class CodeRoutine(BaseRoutine):
             elif FALSE == tag:
                 stack.push(space.newbool(False))
             # *************************************
-            elif INTEGER == tag:
-                stack.push(space.newint(arg1))
-            # *************************************
             elif DUP == tag:
                 stack.push(stack.top())
             # *************************************
@@ -126,7 +123,7 @@ class CodeRoutine(BaseRoutine):
                 value = env.ref(name, arg1)
                 stack.push(value)
             # *************************************
-            elif IMPORTED == tag:
+            elif IMPORT_NAME == tag:
                 l = env.get_import(arg1)
                 stack.push(l)
             # *************************************
@@ -273,46 +270,10 @@ class CodeRoutine(BaseRoutine):
             elif POP_CATCH == tag:
                 self.catches.pop()
             # *************************************
-            elif TYPE == tag:
-                name = literals[arg1]
-                constructor = stack.pop()
-                fields = stack.pop()
-
-                _datatype = space.newdatatype(name, fields, constructor)
-                stack.push(_datatype)
-            # *************************************
-            elif UNION == tag:
-                _union = stack.pop()
-                _types = stack.pop()
-                _union = datatype.newunion(_union, _types)
-                stack.push(_union)
-            # *************************************
-            elif TRAIT == tag:
-                varname = stack.pop()
-                name = literals[arg1]
-                trait = space.newtrait(name, varname)
-                stack.push(trait)
-            # *************************************
-            elif IMPLEMENT == tag:
-                _type = stack.pop()
-                _trait = stack.pop()
-                _impls = stack.pop()
-                _type = datatype.implement_trait(_type, _trait, _impls)
-                stack.push(_type)
-            # *************************************
-            elif METHOD == tag:
-                impl = stack.pop()
-                signature = stack.pop()
-                trait = stack.pop()
-
-                name = literals[arg1]
-                method = space.newmethod_default_implementation(name, trait, signature, impl)
-                stack.push(method)
-            # *************************************
             elif LABEL == tag:
                 assert False, "Uncompiled label opcode"
             else:
-                assert False, "Unknown opcode"
+                assert False, ("Unknown opcode", tag)
 
     def bytecode(self):
         return self._code_

@@ -9,6 +9,7 @@ from obin.types import space, api, plist, environment, symbol as symbols
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
 from obin.misc import platform, strutil
 from obin.runtime import error
+from obin.builtins import primitives
 
 
 # TODO REMOVE NIL as token and node_type
@@ -195,9 +196,14 @@ def _get_variable_index(compiler, code, node, name):
 # *******************************************************
 # EMIT HELPERS *******************************************
 # **************************************************
+def _emit_call(compiler, code, node, arg_count, funcname):
+    func = nodes.create_name_node(node, funcname)
+    _compile(compiler, code, func)
+    code.emit_1(CALL, arg_count, info(node))
 
 def _emit_store_name(compiler, code, namenode):
-    name = space.newsymbol_s(compiler.process, nodes.node_value_s(namenode))
+    name = _get_symbol_name(compiler, namenode)
+    # name = space.newsymbol_s(compiler.process, nodes.node_value_s(namenode))
     _emit_store(compiler, code, name, namenode)
 
 
@@ -227,11 +233,14 @@ def _emit_empty_list(code):
 def _emit_literal(compiler, code, node, literal):
     idx = _declare_literal(compiler, literal)
     code.emit_1(LITERAL, idx, info(node))
+    return idx
 
+def _emit_literal_index(compiler, code, node, idx):
+    code.emit_1(LITERAL, idx, info(node))
 
-def _emit_symbol_name(compiler, code, name):
+def _emit_symbol_literal(compiler, code, name):
     symbol = _get_symbol_name(compiler, name)
-    _emit_literal(compiler, code, name, symbol)
+    return _emit_literal(compiler, code, name, symbol)
 
 
 def _emit_fself(compiler, code, node, name):
@@ -495,7 +504,7 @@ def _compile_NAME(compiler, code, node):
 
 def _compile_SYMBOL(compiler, code, node):
     name = node_first(node)
-    _emit_symbol_name(compiler, code, name)
+    _emit_symbol_literal(compiler, code, name)
 
 
 def _compile_THROW(compiler, code, node):
@@ -508,7 +517,7 @@ def _compile_THROW(compiler, code, node):
 def _emit_map_key(compiler, code, key):
     if node_type(key) == NT_NAME:
         # in case of names in object literal we must convert them to symbols
-        _emit_symbol_name(compiler, code, key)
+        _emit_symbol_literal(compiler, code, key)
     else:
         _compile(compiler, code, key)
 
@@ -808,7 +817,7 @@ def _get_import_data_and_emit_module(compiler, code, node):
 def _emit_imported(compiler, code, node, module, var_name, bind_name, is_pop):
     func = api.at(module, var_name)
     idx = _declare_import(compiler, bind_name, func)
-    code.emit_1(IMPORTED, idx, info(node))
+    code.emit_1(IMPORT_NAME, idx, info(node))
     _emit_store(compiler, code, bind_name, node)
     if is_pop:
         _emit_pop(code)
@@ -886,37 +895,6 @@ def _compile_MODULE(compiler, code, node):
     _emit_store(compiler, code, module_name, name_node)
 
 
-def _compile_TYPE(compiler, code, node):
-    name_node = node_first(node)
-    name = _get_symbol_name(compiler, name_node)
-
-    name_index = _declare_literal(compiler, name)
-    index = _declare_local(compiler, name)
-
-    constructor = node_third(node)
-    fields = node_second(node)
-
-    # _emit_nil(code)
-    if is_empty_node(fields):
-        _emit_empty_list(code)
-        _emit_void(code)
-    else:
-        _compile(compiler, code, fields)
-        _compile_case_function(compiler, code, node, nodes.empty_node(), constructor)
-
-    code.emit_1(TYPE, name_index, info(node))
-    code.emit_2(STORE_LOCAL, index, name_index, info(name_node))
-
-
-def _compile_UNION(compiler, code, node):
-    union = node_first(node)
-    types = node_second(node)
-    for _type in types:
-        _compile_TYPE(compiler, code, _type)
-
-    code.emit_1(LIST, len(types), info(union))
-    _compile_TYPE(compiler, code, union)
-    code.emit_0(UNION, info(union))
 
 
 def _compile_FENV(compiler, code, node):
@@ -930,15 +908,51 @@ def _declare_local_name(compiler, code, node):
     return sym, index, name_index
 
 
-def _compile_TRAIT(compiler, code, node):
-    tname_node = node_first(node)
-    trait_name, trait_index, trait_name_index = _declare_local_name(compiler, code, tname_node)
-    varname = _get_symbol_name(compiler, node_second(node))
-    varname_literal = _declare_literal(compiler, varname)
+def _compile_TYPE(compiler, code, node):
+    # compiles to call to type function instead of some opcode
+    name_node = node_first(node)
 
-    code.emit_1(LITERAL, varname_literal, info(node))
-    code.emit_1(TRAIT, trait_name_index, info(node))
-    code.emit_2(STORE_LOCAL, trait_index, trait_name_index, info(node))
+    # first arg
+    _emit_symbol_literal(compiler, code, name_node)
+
+    # second arg
+    fields = node_second(node)
+    # third arg
+    constructor = node_third(node)
+
+    if is_empty_node(fields):
+        _emit_empty_list(code)
+        _emit_void(code)
+    else:
+        _compile(compiler, code, fields)
+        _compile_case_function(compiler, code, node, nodes.empty_node(), constructor)
+
+    _emit_call(compiler, code, node, 3, primitives.PRIM_TYPE)
+    _emit_store_name(compiler, code, name_node)
+
+
+def _compile_UNION(compiler, code, node):
+    union = node_first(node)
+    types = node_second(node)
+
+    _compile_TYPE(compiler, code, union)
+
+    for _type in types:
+        _compile_TYPE(compiler, code, _type)
+
+    code.emit_1(LIST, len(types), info(union))
+    _emit_call(compiler, code, node, 2, primitives.PRIM_UNION)
+
+
+def _compile_TRAIT(compiler, code, node):
+    trait_name_node = node_first(node)
+    var_name_node = node_second(node)
+
+    _emit_symbol_literal(compiler, code, trait_name_node)
+    _emit_symbol_literal(compiler, code, var_name_node)
+
+    _emit_call(compiler, code, node, 2, primitives.PRIM_TRAIT)
+    _emit_store_name(compiler, code, trait_name_node)
 
     methods = node_third(node)
     last_index = len(methods) - 1
@@ -953,10 +967,13 @@ def _compile_TRAIT(compiler, code, node):
     for i, method in enumerate(methods):
         # duplicate trait on top
         _emit_dup(code)
+
         method_sig = method[1]
         method_default_impl = method[2]
         local_info = method_locals[i]
         method_name, method_index, method_name_index = local_info
+
+        _emit_literal_index(compiler, code, node, method_name_index)
 
         _compile(compiler, code, method_sig)
         if nodes.is_empty_node(method_default_impl):
@@ -964,7 +981,8 @@ def _compile_TRAIT(compiler, code, node):
         else:
             _compile_case_function(compiler, code, node, nodes.empty_node(), method_default_impl)
 
-        code.emit_1(METHOD, method_name_index, info(node))
+        _emit_call(compiler, code, node, 4, primitives.PRIM_METHOD)
+        # code.emit_1(METHOD, method_name_index, info(node))
         code.emit_2(STORE_LOCAL, method_index, method_name_index, info(node))
         if i != last_index:
             _emit_pop(code)
@@ -974,6 +992,9 @@ def _compile_IMPLEMENT(compiler, code, node):
     traitname = node_first(node)
     typename = node_second(node)
     methods = node_third(node)
+
+    _compile_node_name_lookup(compiler, code, traitname)
+    _compile_node_name_lookup(compiler, code, typename)
 
     len_methods = len(methods)
     for i, method in enumerate(methods):
@@ -985,9 +1006,8 @@ def _compile_IMPLEMENT(compiler, code, node):
 
     code.emit_1(LIST, len_methods, info(traitname))
 
-    _compile_node_name_lookup(compiler, code, traitname)
-    _compile_node_name_lookup(compiler, code, typename)
-    code.emit_0(IMPLEMENT, info(traitname))
+    # code.emit_0(IMPLEMENT, info(traitname))
+    _emit_call(compiler, code, node, 3, primitives.PRIM_IMPLEMENT)
 
 
 
@@ -1042,7 +1062,7 @@ def _compile_WHILE(compiler, code, node):
 def _compile_LOOKUP_SYMBOL(compiler, code, node):
     obj = node_first(node)
     _compile(compiler, code, obj)
-    _emit_symbol_name(compiler, code, node_second(node))
+    _emit_symbol_literal(compiler, code, node_second(node))
     code.emit_0(MEMBER, info(node))
 
 

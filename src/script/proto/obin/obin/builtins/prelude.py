@@ -1,6 +1,6 @@
 from obin.runtime.routine.routine import complete_native_routine
 from obin.runtime import error
-from obin.types import api, space, plist, environment
+from obin.types import api, space, plist, environment, datatype
 
 from obin.runistr import encode_unicode_utf8
 from obin.misc.platform import rstring, compute_unique_id
@@ -8,13 +8,8 @@ from obin.misc import fs
 from obin.compile import compiler
 
 # TODO MAKE IT obin:is_seq ...
-PRIM_IS_INDEXED = "___is_indexed"
-PRIM_IS_SEQ = "___is_seq"
-PRIM_IS_MAP = "___is_map"
-PRIM_LENGTH = "___length"
-PRIM_IS = "is"
-PRIM_ISNOT = "isnot"
-PRIM_KINDOF = "kindof"
+from obin.builtins.primitives import *
+
 
 def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
@@ -32,6 +27,11 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, unicode(PRIM_IS), __is, 2)
     api.put_native_function(process, module, unicode(PRIM_ISNOT), __isnot, 2)
     api.put_native_function(process, module, unicode(PRIM_KINDOF), __kindof, 2)
+    api.put_native_function(process, module, unicode(PRIM_UNION), __union, 2)
+    api.put_native_function(process, module, unicode(PRIM_TYPE), __type, 3)
+    api.put_native_function(process, module, unicode(PRIM_METHOD), __method, 4)
+    api.put_native_function(process, module, unicode(PRIM_TRAIT), __trait, 2)
+    api.put_native_function(process, module, unicode(PRIM_IMPLEMENT), __implement, 3)
     api.put_native_function(process, module, u"kindof", __kindof, 2)
     api.put_native_function(process, module, u"not", __not, 1)
 
@@ -108,6 +108,7 @@ def apply(process, routine):
         return error.throw_1(error.Errors.TYPE, space.newstring(u"arguments tuple expected"))
     api.call(process, func, args)
 
+
 @complete_native_routine
 def __not(process, routine):
     left = routine.get_arg(0)
@@ -117,10 +118,57 @@ def __not(process, routine):
 
 # CURRENTLY NOT USED
 @complete_native_routine
-def _module(process, routine):
-    _source = routine.get_arg(0)
-    _module = environment.create_environment(process, _source, env)
-    return _module
+def __module(process, routine):
+    source = routine.get_arg(0)
+    # fenv opcode
+    env = routine.get_arg(1)
+    m = environment.create_environment(process, source, env)
+    return m
+
+
+@complete_native_routine
+def __union(process, routine):
+    _union = routine.get_arg(0)
+    _types = routine.get_arg(1)
+    return datatype.newunion(_union, _types)
+
+
+@complete_native_routine
+def __type(process, routine):
+    name = routine.get_arg(0)
+    fields = routine.get_arg(1)
+    constructor = routine.get_arg(2)
+
+    _datatype = space.newdatatype(name, fields, constructor)
+    return _datatype
+
+
+@complete_native_routine
+def __method(process, routine):
+    _trait = routine.get_arg(0)
+    name = routine.get_arg(1)
+    signature = routine.get_arg(2)
+    impl = routine.get_arg(3)
+    method = space.newmethod_default_implementation(name, _trait, signature, impl)
+    return method
+
+
+@complete_native_routine
+def __trait(process, routine):
+    name = routine.get_arg(0)
+    varname = routine.get_arg(1)
+    _trait = space.newtrait(name, varname)
+    return _trait
+
+
+@complete_native_routine
+def __implement(process, routine):
+    _trait = routine.get_arg(0)
+    _type = routine.get_arg(1)
+    _impls = routine.get_arg(2)
+    _type = datatype.implement_trait(_type, _trait, _impls)
+    return _type
+
 
 @complete_native_routine
 def concat_tuples(process, routine):
@@ -179,6 +227,7 @@ def __isnot(process, routine):
     left = routine.get_arg(0)
     right = routine.get_arg(1)
     return api.isnot(left, right)
+
 
 @complete_native_routine
 def __kindof(process, routine):

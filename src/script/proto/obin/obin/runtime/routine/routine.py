@@ -21,9 +21,8 @@ def complete_or_interrupt_native_routine(func):
 def complete_native_routine(func):
     def func_wrapper(process, routine):
         result = func(process, routine)
-        if not isany(result):
-            raise RuntimeError((result, func))
-        assert isany(result)
+        assert space.isany(result)
+        assert not space.isvoid(result)
         if not routine.is_closed():
             routine.complete(process, result)
 

@@ -8,17 +8,15 @@ OPCODES = [
     ("SYMBOL", 1),
     ("OUTER", 1),
     ("LOCAL", 1),
-    ("IMPORTED", 1),
+    ("IMPORT_NAME", 1),
     ("FUNCTION", 1),
-    ("INTEGER", 1),
     ("DUP", 1),
     ("NEXT", 1),
-    
+
     ("FARGS", 1),
     ("FSELF", 1),
     ("FENV", 1),
 
-    ("TRAIT", 0),
 
     ("LABEL", 0),
     ("STORE_LOCAL", 0),
@@ -36,17 +34,13 @@ OPCODES = [
     ("PUSH_CATCH", 0),
     ("JUMP_IF_ITERATOR_EMPTY", -1),
 
-    ("METHOD", -1),
     ("MEMBER_DOT", -1),
     ("MEMBER", -1),
     ("POP", -1),
     ("THROW", -1),
-    ("TYPE", -1),
-    ("UNION", -1),
 
     ("STORE_MEMBER", -2),
     ("SLICE", -3),
-    ("IMPLEMENT", -2),
 
     ("UNPACK_SEQUENCE", "__UNKNOWN_CHANGE__"),
     ("VECTOR", "__UNKNOWN_CHANGE__"),

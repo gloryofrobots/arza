@@ -5,60 +5,53 @@ LITERAL = 3
 SYMBOL = 4
 OUTER = 5
 LOCAL = 6
-IMPORTED = 7
+IMPORT_NAME = 7
 FUNCTION = 8
-INTEGER = 9
-DUP = 10
-NEXT = 11
-FARGS = 12
-FSELF = 13
-FENV = 14
-TRAIT = 15
-LABEL = 16
-STORE_LOCAL = 17
-ITERATOR = 18
-RETURN = 19
-POP_CATCH = 20
-CALL = 21
-JUMP = 22
-JUMP_IF_FALSE_NOPOP = 23
-JUMP_IF_TRUE_NOPOP = 24
-JUMP_IF_FALSE = 25
-JUMP_IF_TRUE = 26
-PUSH_CATCH = 27
-JUMP_IF_ITERATOR_EMPTY = 28
-METHOD = 29
-MEMBER_DOT = 30
-MEMBER = 31
-POP = 32
-THROW = 33
-TYPE = 34
-UNION = 35
-STORE_MEMBER = 36
-SLICE = 37
-IMPLEMENT = 38
-UNPACK_SEQUENCE = 39
-VECTOR = 40
-TUPLE = 41
-MAP = 42
-LIST = 43
+DUP = 9
+NEXT = 10
+FARGS = 11
+FSELF = 12
+FENV = 13
+LABEL = 14
+STORE_LOCAL = 15
+ITERATOR = 16
+RETURN = 17
+POP_CATCH = 18
+CALL = 19
+JUMP = 20
+JUMP_IF_FALSE_NOPOP = 21
+JUMP_IF_TRUE_NOPOP = 22
+JUMP_IF_FALSE = 23
+JUMP_IF_TRUE = 24
+PUSH_CATCH = 25
+JUMP_IF_ITERATOR_EMPTY = 26
+MEMBER_DOT = 27
+MEMBER = 28
+POP = 29
+THROW = 30
+STORE_MEMBER = 31
+SLICE = 32
+UNPACK_SEQUENCE = 33
+VECTOR = 34
+TUPLE = 35
+MAP = 36
+LIST = 37
 
 # ************************************************
 
-__OPCODE_REPR__ = ["VOID", "TRUE", "FALSE", "LITERAL", "SYMBOL", "OUTER", "LOCAL", "IMPORTED", "FUNCTION", "INTEGER",
-                   "DUP", "NEXT", "FARGS", "FSELF", "FENV", "TRAIT", "LABEL", "STORE_LOCAL", "ITERATOR", "RETURN",
-                   "POP_CATCH", "CALL", "JUMP", "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE",
-                   "JUMP_IF_TRUE", "PUSH_CATCH", "JUMP_IF_ITERATOR_EMPTY", "METHOD", "MEMBER_DOT", "MEMBER", "POP",
-                   "THROW", "TYPE", "UNION", "STORE_MEMBER", "SLICE", "IMPLEMENT", "UNPACK_SEQUENCE", "VECTOR", "TUPLE",
-                   "MAP", "LIST", ]
+__OPCODE_REPR__ = ["VOID", "TRUE", "FALSE", "LITERAL", "SYMBOL", "OUTER", "LOCAL", "IMPORT_NAME", "FUNCTION", "DUP",
+                   "NEXT", "FARGS", "FSELF", "FENV", "LABEL", "STORE_LOCAL", "ITERATOR", "RETURN", "POP_CATCH", "CALL",
+                   "JUMP", "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "JUMP_IF_TRUE", "PUSH_CATCH",
+                   "JUMP_IF_ITERATOR_EMPTY", "MEMBER_DOT", "MEMBER", "POP", "THROW", "STORE_MEMBER", "SLICE",
+                   "UNPACK_SEQUENCE", "VECTOR", "TUPLE", "MAP", "LIST", ]
 
 # ************************************************
 
 __UNKNOWN_CHANGE__ = -128
 
-__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1,
-                     -1, -1, -1, -1, -2, -3, -2, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
-                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
+__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1,
+                     -2, -3, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
+                     __UNKNOWN_CHANGE__, ]
 
 
 # ************************************************
