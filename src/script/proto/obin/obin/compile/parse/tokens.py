@@ -48,7 +48,7 @@ bin_constant = bin_prefix + bin_digits + integer_suffix_opt
 
 # floating constants (K&R2: A.2.5.3)
 exponent_part = """([eE][-+]?[0-9]+)"""
-fractional_constant = """([0-9]*\.[0-9]+)"""
+fractional_constant = """([0-9]+\.[0-9]+)"""
 floating_constant = '((((' + fractional_constant + ')' + exponent_part + '?)|([0-9]+' + exponent_part + '))[FfLl]?)'
 binary_exponent_part = '''([pP][+-]?[0-9]+)'''
 hex_fractional_constant = '(((' + hex_digits + r""")?\.""" + hex_digits + ')|(' + hex_digits + r"""\.))"""
@@ -57,6 +57,7 @@ hex_floating_constant = '(' + hex_prefix + '(' + hex_digits + '|' + hex_fraction
 char_const = "'[^']+'"
 backtick_const = "`[^`]+`"
 string_literal = '(""".*?""")|(".*?")|(\'.*?\')'
+
 
 RULES = [
     (token('\n'), TT_NEWLINE),
@@ -136,7 +137,7 @@ RULES = [
     (token('\,'), TT_COMMA),
     (token('\('), TT_LPAREN),
     (token('\)'), TT_RPAREN),
-    (token('\.\['), TT_INFIX_LSQUARE),
+    (token('\.\('), TT_INFIX_LPAREN),
     (token('\['), TT_LSQUARE),
     (token('\]'), TT_RSQUARE),
     (token('\.'), TT_DOT),

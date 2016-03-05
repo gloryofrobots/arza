@@ -131,6 +131,11 @@ def infix_if(parser, op, node, left):
 
 
 def infix_dot(parser, op, node, left):
+    if parser.token_type == TT_INT:
+        idx = _init_default_current_0(parser)
+        advance(parser)
+        return node_2(NT_LOOKUP, __ntok(node), left, idx)
+
     check_token_type(parser, TT_NAME)
     symbol = _init_default_current_0(parser)
     advance(parser)
@@ -160,9 +165,9 @@ def infix_lcurly(parser, op, node, left):
     return node_2(NT_MODIFY, __ntok(node), left, nodes.list_node(items))
 
 
-def infix_lsquare(parser, op, node, left):
+def infix_lparen(parser, op, node, left):
     exp = expressions(parser, 0)
-    advance_expected(parser, TT_RSQUARE)
+    advance_expected(parser, TT_RPAREN)
     return node_2(NT_LOOKUP, __ntok(node), left, exp)
 
 

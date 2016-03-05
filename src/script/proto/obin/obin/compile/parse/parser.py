@@ -324,7 +324,7 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_DOT, 70, infix_dot)
 
     infix(parser, TT_INFIX_LCURLY, 80, infix_lcurly)
-    infix(parser, TT_INFIX_LSQUARE, 80, infix_lsquare)
+    infix(parser, TT_INFIX_LPAREN, 80, infix_lparen)
 
     """
     PREFIXES

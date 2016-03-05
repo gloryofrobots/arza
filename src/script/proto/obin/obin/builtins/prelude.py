@@ -32,7 +32,6 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, unicode(PRIM_METHOD), __method, 4)
     api.put_native_function(process, module, unicode(PRIM_TRAIT), __trait, 2)
     api.put_native_function(process, module, unicode(PRIM_IMPLEMENT), __implement, 3)
-    api.put_native_function(process, module, u"kindof", __kindof, 2)
     api.put_native_function(process, module, u"not", __not, 1)
 
 

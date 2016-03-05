@@ -3,13 +3,13 @@ import affirm
 fun test () ->
     t1 = (1, "Hello", 35.44555)
     affirm:is_equal t1, (1, "Hello", 35.44555)
-    affirm:is_equal t1.[0] 1
-    affirm:is_equal t1.[1] "Hello"
-    affirm:is_equal t1.[2] 35.44555
-    affirm:is_equal (1, "Hello", 35.44555).[2],  35.44555
-    affirm:is_equal (1,2, ["Alice", "Bob", (45,), 54.000000001]).[2] ["Alice", "Bob", (45,), 54.000000001]
+    affirm:is_equal t1.0 1
+    affirm:is_equal t1.1 "Hello"
+    affirm:is_equal t1.2 35.44555
+    affirm:is_equal (1, "Hello", 35.44555).2,  35.44555
+    affirm:is_equal (1,2, ["Alice", "Bob", (45,), 54.000000001]).2 ["Alice", "Bob", (45,), 54.000000001]
 
-    affirm:is_equal (1,2, ["Alice", "Bob", (45,), 54.000000001]).[2] ["Alice", "Bob", (45,), 54.000000001]
+    affirm:is_equal (1,2, ["Alice", "Bob", (45,), 54.000000001]).2 ["Alice", "Bob", (45,), 54.000000001]
 
     m1 = {name="XXX"}
     affirm:is_equal {name="XXX"}.name "XXX"

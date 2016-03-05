@@ -71,9 +71,11 @@ TOKENS = [
   ("TT_RCURLY", "}"),
   ("TT_COMMA", ","),
   ("TT_ASSIGN", "="),
+
+  ("TT_INFIX_LPAREN", ".("),
   ("TT_LPAREN", "("),
   ("TT_RPAREN", ")"),
-  ("TT_INFIX_LSQUARE", ".["),
+  
   ("TT_LSQUARE", "["),
   ("TT_RSQUARE", "]"),
   ("TT_DOT", "."),
