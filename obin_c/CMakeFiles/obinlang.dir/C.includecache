@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/gloryofrobots/develop/languages/obin/obin/src/core/_memory.c
+stdlib.h
+-
+string.h
+-
+assert.h
+-
+omemory.h
+/home/gloryofrobots/develop/languages/obin/obin/src/core/omemory.h
+
+/home/gloryofrobots/develop/languages/obin/obin/src/core/obuiltin.h
+oconf.h
+/home/gloryofrobots/develop/languages/obin/obin/src/core/oconf.h
+
+/home/gloryofrobots/develop/languages/obin/obin/src/core/oconf.h
+limits.h
+-
+stddef.h
+-
+stdint.h
+-
+assert.h
+-
+
+/home/gloryofrobots/develop/languages/obin/obin/src/core/omemory.h
+obuiltin.h
+/home/gloryofrobots/develop/languages/obin/obin/src/core/obuiltin.h
+

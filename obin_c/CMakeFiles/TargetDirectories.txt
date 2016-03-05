@@ -1,0 +1,3 @@
+/home/gloryofrobots/develop/languages/obin/obin/CMakeFiles/libobin.dir
+/home/gloryofrobots/develop/languages/obin/obin/test/CMakeFiles/obin-tests.dir
+/home/gloryofrobots/develop/languages/obin/obin/CMakeFiles/obinepa.dir

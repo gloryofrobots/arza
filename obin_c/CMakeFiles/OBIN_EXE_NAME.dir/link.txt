@@ -1,0 +1,1 @@
+/usr/bin/cc  -std=c89 -g -Wall    CMakeFiles/OBIN_EXE_NAME.dir/main.c.o  -o OBIN_EXE_NAME -rdynamic libOBIN_LIB_NAME.a 

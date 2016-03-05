@@ -1,0 +1,2 @@
+/usr/bin/ar cr libobincore.a  CMakeFiles/obincore.dir/core/_memory.c.o
+/usr/bin/ranlib libobincore.a

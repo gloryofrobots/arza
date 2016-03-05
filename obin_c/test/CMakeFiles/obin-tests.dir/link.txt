@@ -1,0 +1,1 @@
+/usr/bin/cc  -std=c89 -gdwarf-4 -g3 -g -Wall    CMakeFiles/obin-tests.dir/main.c.o  -o obin-tests -rdynamic ../libobin.a -lcunit -lm 
