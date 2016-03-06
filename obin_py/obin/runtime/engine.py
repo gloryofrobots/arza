@@ -8,19 +8,29 @@ def newprocess(libdirs):
     core_prelude = space.newemptyenv(space.newstring(u"prelude"))
     proc_data = process_data.create(libdirs, core_prelude)
     process = Process(proc_data)
-    builtins.setup(process, core_prelude, process.std)
+    builtins.presetup(process, core_prelude, process.std)
     return process
+
+def load_prelude_script(process, script_name):
+    result = import_module(process, space.newsymbol(process, script_name))
+    if process.is_terminated():
+        # error here
+        return process, result
+
+    process.modules.set_prelude(result)
+    return process, None
 
 # TODO MOVE ALL OF IT TO PROCESS
 def initialize(libdirs):
     process = newprocess(libdirs)
     # space.initialise(process)
-    prelude = import_module(process, space.newsymbol(process, u"prelude"))
-    if process.is_terminated():
-        # error here
-        return process, prelude
-    process.modules.set_prelude(prelude)
+    scripts = [u"prelude"]
+    for script in scripts:
+        process, err = load_prelude_script(process, script)
+        if err is not None:
+            return process, err
 
+    builtins.postsetup(process)
     return process, None
 
 

@@ -1,3 +1,5 @@
+from tpl import render
+
 NODES = [
   # internals
   "NT_GOTO",

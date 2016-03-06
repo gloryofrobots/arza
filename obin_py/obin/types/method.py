@@ -24,6 +24,8 @@ class W_Method(W_Hashable):
         self.signature = signature
         self.hot_path = hotpath
 
+    def set_hotpath(self, hotpath):
+        self.hot_path = HotPath(hotpath, self.arity)
 
     def has_default_implementation(self):
         return not space.isvoid(self.default_implementation)

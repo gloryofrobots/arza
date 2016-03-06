@@ -1,9 +1,4 @@
-from jinja2 import Template, Environment
-# env = Environment(trim_blocks=True)
-
-def render(body, data):
-    tpl = Template(body, trim_blocks=True, lstrip_blocks=True)
-    return tpl.render(data)
+from tpl import render
 
 def trait(name, varname, methods):
     t = dict(name=name, varname =varname, methods=methods)
@@ -44,7 +39,7 @@ TRAITS = [
             method("sub", "-", ["num", "other"], "hp_sub"),
             method("mul", "*", ["num", "other"], "hp_mul"),
             method("div", "/", ["num", "other"], "hp_div"),
-             method("mod", "mod", ["num", "other"], "hp_mod"),
+            method("mod", "mod", ["num", "other"], "hp_mod"),
         ]),
 
    
@@ -104,6 +99,7 @@ def put_methods():
             print "    # %s" % T["name"]
         for M in T["methods"]:
             print render(TPL, M)
+
 
 trait_declarations()
 put_traits()

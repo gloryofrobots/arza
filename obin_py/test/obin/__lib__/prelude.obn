@@ -1,8 +1,7 @@
+import from obin:core:types (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+                             Function, Generic, Method, NativeFunction, Fiber, Trait, Datatype, TVar, Env)
 //TODO FIX IT
 length = ___length
-//TODO error here 2 % 0
-//TODO proper UNIT
-//TODO ERRORS
 
 @prefix - negate
 @infixl < < 50
@@ -16,54 +15,96 @@ length = ___length
 @infixl % % 65
 @infixl * * 65
 @infixl / / 65
-@infixr :: :: 70
+@infixr :: cons 70
 @infixl ++ ++ 70
 
+union Ordering
+    | LT | GT | EQ
+-------------------
 
-//trait Equal xn
-//    method eq x y -> not (ne x y)
-//    method === x y
-//    method ====== x y
-//    method ne x y -> not (eq x y)
-//    method ===== x y
-//---
-//
-//
-//trait Add x
-//    method add x y
-//    method sub x y
-// --------------------------------------------------
-//
-//
-//trait Order x
-//    method le x y -> (cmp x y) != GT
-//    method lt x y -> (cmp x y) == LT
-//    method ge x y -> (cmp x y) != LT
-//    method gt x y -> (cmp x y) == GT
-//    method cmp x y ->
-//        cond
-//        | x == x -> EQ
-//        | x <= y -> LT
-//        | else -> GT
-//        ---
-//
-//    method max x y ->
-//        cond
-//        | x <= y -> y
-//        | else -> y
-//        ----
-//
-//    method min x y ->
-//        cond
-//        | x <= y -> x
-//        | else -> y
-//        -------
-//-----
-//fun foo () -> 1 + 2 end
+trait Eq for x
+    method == x y -> not (x != y)
+    method != x y -> not (x == y)
+---------------------------------
 
-//fun main () ->
-//    p1 = Point2 1 2
-//    v1 = Vec2 p1
-//    v2 = Vec2 (Point2 2 3) (Point2 4 5)
-//    v3 = add v1 v2
-//------------
+trait Ord  for x
+    method <= x y -> cmp x y != GT
+    method < x y -> cmp x y == LT
+    method >= x y -> cmp x y != LT
+    method > x y -> cmp x y == GT
+
+    method cmp x y ->
+                cond
+                | x == y -> EQ
+                | x <= y  -> LT
+                | else -> GT
+                ---
+
+    method max x y -> y if x <= y else x
+    method min x y -> x if x <= y else y
+---------------------------------
+
+trait Num for x
+    method - x y
+    method + x y
+    method * x y
+    method / x y
+    method mod x y
+    // unary -
+    method negate x
+---------------
+
+trait Stringable for self
+    method str self
+---
+
+trait Inspectable for self // of Show
+    method inspect self -> str self
+---
+
+trait Parsable for self
+    method from_str self
+---
+
+trait Mappable for self
+    method map f self
+---
+
+
+trait Appendable for self
+    //concat operator
+    method ++ self other
+    method append self value
+---------------------------------
+
+trait Collection for self
+    method len self
+    method is_empty self -> (len self) == 0
+
+    method at self key
+    method put self key value
+    method remove self obj
+    method contains self key
+---------------------------------
+
+
+trait Seq for self
+    method first self
+    method rest self
+    // prepend/cons operator
+    method cons value self
+---
+
+trait Indexed for self
+    method index_of self obj
+    method last self
+---
+
+trait Seqable for self
+    method seq self
+---
+
+fun in obj storage -> contains storage obj end
+fun notin obj storage -> not (contains storage obj) end
+
+fun :: val self -> cons val self end

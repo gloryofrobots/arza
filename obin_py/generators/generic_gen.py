@@ -1,7 +1,4 @@
-from jinja2 import Template
-def render(body, data):
-    tpl = Template(body)
-    return tpl.render(data)
+from tpl import render
 
 I = "Int"
 N = "Number"

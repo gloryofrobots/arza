@@ -9,10 +9,29 @@ import tests:test_modify
 import tests:test_operator_override
 import tests:test_module
 import tests:test_match
-//import tests:test_operators
+import tests:test_operators
 import tests:test_bool
 import tests:datastructs:test_datastructs
 import tests:types:test_types
+
+//trait X for self
+//    method xxx self
+//---
+//
+//trait Y for self of X
+//    method yyy self -> xxx self
+//    method zzz self
+//---
+//
+//type A val end
+//
+//implement X for A
+//    method xxx self -> self.val + 42
+//---
+//
+//implement Y for A
+//    method zzz self -> yyy self
+//---
 
 fun test() ->
     42
@@ -21,10 +40,10 @@ fun test() ->
     test_datastructs:test()
     test_match:test()
     test_bool:test()
-
+//
     test_base:test()
     test_destruct:test()
-//    test_operators:test()
+    test_operators:test()
     test_static_refs:test()
     test_co:test()
     test_exception:test()
@@ -38,8 +57,6 @@ fun test() ->
 //fun foo() -> print "FOO"; {a=42, b=24} end
 
 fun main () ->
-//    {a,b} = foo ()
-    test ()
-
+    test()
 -------------------------
 

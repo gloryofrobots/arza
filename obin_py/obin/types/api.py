@@ -106,7 +106,7 @@ def contains_index_b(obj, i):
     return False
 
 
-def in_(k, obj):
+def contains(obj, k):
     return space.newbool(contains_b(obj, k))
 
 

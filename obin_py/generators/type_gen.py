@@ -1,7 +1,4 @@
-from jinja2 import Template
-def render(body, data):
-    tpl = Template(body)
-    return tpl.render(data)
+from tpl import render
 
 def mktype(name, traits, ctors=None):
     t = dict(name=name, traits=traits)
@@ -70,6 +67,22 @@ def gen_puts():
         for c in t["ctors"]:
             print t_put(c)
 
-gen_declaration()
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in xrange(0, len(l), n):
+        yield l[i:i+n]
 
-gen_puts()
+def gen_export():
+    names = [type["name"] for type in TYPES]
+    type_chunks = list(chunks(names, 10))
+    lines = [", ".join(line) for line in type_chunks]
+    exports = ",\n                             ".join(lines)
+    
+    TPL = "import from obin:core:types ({{exports}})"
+    print render(TPL, dict(exports=exports))
+
+# gen_declaration()
+
+# gen_puts()
+
+gen_export()

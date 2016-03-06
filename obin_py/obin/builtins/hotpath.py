@@ -56,22 +56,12 @@ def hp_eq(process, args):
         return None
 
 
-def hp_in_(process, args):
+def hp_contains(process, args):
     left = api.at_index(args, 0)
     right = api.at_index(args, 1)
 
     if is_not_records(left, right):
-        return api.in_(left, right)
-    else:
-        return None
-
-
-def hp_notin(process, args):
-    left = api.at_index(args, 0)
-    right = api.at_index(args, 1)
-
-    if is_not_records(left, right):
-        return api.notin(left, right)
+        return api.contains(left, right)
     else:
         return None
 

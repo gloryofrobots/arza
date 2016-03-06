@@ -1,0 +1,48 @@
+//TODO error here 2 % 0
+//TODO :: in pattern matching
+//TODO ranges
+//TODO meta
+//TODO trait constraints
+//TODO ERRORS AS TYPES
+//TODO strings in import modules
+//TODO ERRORS
+//TODO SLICES
+
+//trait Any for self
+//
+////    method id self -> obin:unique_id self
+////    method type_id self -> obin:type_id self
+//---
+
+//trait Range for arg
+//    // first..last
+//    method range arg last
+//    // first.._
+//    method range_from arg
+//    // first.._..step
+//    method range_from_step arg step
+//    // _..last
+//    method range_to arg
+//    // _..last..step
+//    method range_to_by arg step
+//    // first..last..step
+//    method range_from_to_by arg last step
+//---
+
+//fun is_identical self other -> (id self) == (id other)
+//
+//
+//fun lookup self key default ->
+//    try
+//        at self key
+//    | (#KeyError, ..._) -> default
+//    ---
+//---
+//
+//
+
+
+//trait Sliceable for first
+//    method slice first last
+//---
+
