@@ -4,6 +4,6 @@ import tests:types:test_default_implementations
 
 fun test () ->
     test_simple:test()
-    test_union:test()
-    test_default_implementations:test()
+//    test_union:test()
+//    test_default_implementations:test()
 ---------------

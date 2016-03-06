@@ -5,7 +5,7 @@ from obin.compile.parse import nodes
 from obin.compile.parse.nodes import (node_type, node_arity,
                                       node_first, node_second, node_third, node_children, is_empty_node)
 from obin.compile.parse.node_type import *
-from obin.types import space, api, plist, environment, symbol as symbols
+from obin.types import space, api, plist, environment, symbol as symbols, string as strings
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
 from obin.misc import platform, strutil
 from obin.runtime import error
@@ -988,6 +988,7 @@ def _compile_TRAIT(compiler, code, node):
             _emit_pop(code)
 
 
+
 def _compile_IMPLEMENT(compiler, code, node):
     traitname = node_first(node)
     typename = node_second(node)
@@ -1001,7 +1002,9 @@ def _compile_IMPLEMENT(compiler, code, node):
         method_name = method[0]
         method_impl = method[1]
         _compile_node_name_lookup(compiler, code, method_name)
-        _compile_case_function(compiler, code, node, nodes.empty_node(), method_impl)
+        _compile_case_function(compiler, code, node,
+                               nodes.empty_node(),
+                               method_impl)
         code.emit_1(TUPLE, 2, info(method_name))
 
     code.emit_1(LIST, len_methods, info(traitname))

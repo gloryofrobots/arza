@@ -23,15 +23,15 @@ union Ordering
 -------------------
 
 trait Eq for x
-    method == x y -> not (x != y)
+    method == x y -> throw (#NotImplemented, x, y)
     method != x y -> not (x == y)
 ---------------------------------
 
 trait Ord  for x
-    method <= x y -> cmp x y != GT
-    method < x y -> cmp x y == LT
-    method >= x y -> cmp x y != LT
-    method > x y -> cmp x y == GT
+    method <= x y -> throw (#NotImplemented, x, y)
+    method < x y -> (cmp x y) == LT
+    method >= x y -> (cmp x y) != LT
+    method > x y -> (cmp x y) == GT
 
     method cmp x y ->
                 cond

@@ -11,28 +11,43 @@ def newprocess(libdirs):
     builtins.presetup(process, core_prelude, process.std)
     return process
 
-def load_prelude_script(process, script_name):
+def load_prelude(process, script_name):
     result = import_module(process, space.newsymbol(process, script_name))
     if process.is_terminated():
         # error here
-        return process, result
+        return result
 
     process.modules.set_prelude(result)
-    return process, None
+    return None
+
+def load_module(process, script_name):
+    result = import_module(process, space.newsymbol(process, script_name))
+    if process.is_terminated():
+        # error here
+        return result
+    return None
 
 # TODO MOVE ALL OF IT TO PROCESS
 def initialize(libdirs):
     process = newprocess(libdirs)
     # space.initialise(process)
-    scripts = [u"prelude"]
-    for script in scripts:
-        process, err = load_prelude_script(process, script)
+    err = load_prelude(process, u"prelude")
+    if err is not None:
+        return process, err
+
+    builtins.postsetup(process)
+
+    modules = [u"bool", u"int", u"bit", u"float",
+               u"string", u"symbol",
+               u"list",
+               u"tuple", u"map"]
+    for module_name in modules:
+        err = load_module(process, module_name)
         if err is not None:
             return process, err
 
-    builtins.postsetup(process)
+    print "INITIALIZED"
     return process, None
-
 
 def evaluate_file(process, filename):
     try:

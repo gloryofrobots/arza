@@ -1,4 +1,5 @@
 import from _list (cons, tail, head, empty, is_empty)
+implement Eq for List end
 
 //TRANSFORMERS///////////////////////////////////////////////////////
 

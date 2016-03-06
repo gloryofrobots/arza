@@ -1,5 +1,7 @@
 from root import W_ValueType
-from obin.types import api
+from obin.types import api, space
+from obin.runtime import error
+
 
 class W_Integer(W_ValueType):
     # _immutable_fields_ = ['int_value']
@@ -18,11 +20,10 @@ class W_Integer(W_ValueType):
         return float(self.int_value)
 
     def _equal_(self, other):
-        try:
-            val = api.to_i(other)
-            return self.int_value == val
-        except:
+        if not space.isnumber(other):
             return False
+        val = api.to_i(other)
+        return self.int_value == val
 
     def _compare_(self, other):
         assert isinstance(other, W_Integer)
@@ -38,5 +39,3 @@ class W_Integer(W_ValueType):
 
     def _type_(self, process):
         return process.std.types.Int
-
-

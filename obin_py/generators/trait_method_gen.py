@@ -6,7 +6,7 @@ def method(name, funcname, signature, hotpath):
 
 METHODS = [
         method("eq", "==", ["self", "other"], "hp_eq"),
-        # method("ne", "!=", ["self", "other"], "hp_ne"),
+        method("ne", "!=", ["self", "other"], "hp_ne"),
         
         # method("gt", ">", ["self", "other"], "hp_gt"),
         # method("ge", ">=", ["self", "other"], "hp_ge"),

@@ -1,0 +1,2 @@
+implement Eq for Int end
+implement Ord for Int end

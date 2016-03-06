@@ -842,8 +842,6 @@ def stmt_implement(parser, op, node):
     type_name = grab_name(type_parser)
 
     methods = []
-
-    check_token_type(parser, TT_METHOD)
     while parser.token_type == TT_METHOD:
         advance_expected(parser, TT_METHOD)
         method_name = grab_name_or_operator(parser.name_parser)

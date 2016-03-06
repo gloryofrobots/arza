@@ -1,0 +1,2 @@
+implement Eq for Float end
+implement Ord for Float end

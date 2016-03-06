@@ -256,13 +256,13 @@ def not_equal(obj, other):
     return space.newbool(not v)
 
 
-def compare(process, obj, other):
-    if space.isuniquetype(obj):
-        return error.throw_2(error.Errors.TYPE, obj, space.newstring(u"Unique expected"))
-
-    v = obj._compare_(other)
-
-    return space.newint(v)
+# def compare(process, obj, other):
+#     if space.isuniquetype(obj):
+#         return error.throw_2(error.Errors.TYPE, obj, space.newstring(u"Unique expected"))
+#
+#     v = obj._compare_(other)
+#
+#     return space.newint(v)
 
 
 def next(obj):

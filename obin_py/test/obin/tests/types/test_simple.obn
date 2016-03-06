@@ -41,7 +41,8 @@ implement Add for Point2
 
 implement Eq for Point2
     method ==
-        | self other of Point2 -> self.x == other.x and self.y == other.y
+        | self other of Point2 ->
+            self.x == other.x and self.y == other.y
     method !=
         | self other of Point2 -> not (self == other)
 -------------------
