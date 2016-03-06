@@ -43,12 +43,13 @@ NODE_TYPE_MAPPING = {
 
 def node_tuple_juxtaposition(parser, terminators):
     node, args = juxtaposition_list(parser, terminators)
-    return nodes.node_1(NT_TUPLE, nodes.node_token(node), nodes.list_node(args))
+    # return nodes.node_1(NT_TUPLE, nodes.node_token(node), nodes.list_node(args))
+    return nodes.create_tuple_node(node, args)
 
 
 def node_list_juxtaposition(parser, terminators):
     node, args = juxtaposition_list(parser, terminators)
-    return nodes.node_1(NT_LIST, nodes.node_token(node), nodes.list_node(args))
+    return nodes.create_list_node(node, args)
 
 
 def __ntype(node):
@@ -813,6 +814,12 @@ def stmt_trait(parser, op, node):
     check_token_type(parser, TT_FOR)
     advance(parser)
     instance_name = grab_name(type_parser)
+    if parser.token_type == TT_OF:
+        advance(parser)
+        constraints = node_list_juxtaposition(parser.name_parser, TERM_METHOD_CONSTRAINTS)
+    else:
+        constraints = nodes.create_empty_list_node(node)
+
     methods = []
     while parser.token_type == TT_METHOD:
         advance_expected(parser, TT_METHOD)
@@ -831,7 +838,7 @@ def stmt_trait(parser, op, node):
 
         methods.append(nodes.list_node([method_name, sig, default_impl]))
     advance_end(parser)
-    return nodes.node_3(NT_TRAIT, __ntok(node), name, instance_name, nodes.list_node(methods))
+    return nodes.node_4(NT_TRAIT, __ntok(node), name, instance_name, constraints, nodes.list_node(methods))
 
 
 # TODO GET RID OF DUPLICATION

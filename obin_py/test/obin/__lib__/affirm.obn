@@ -89,6 +89,7 @@ type Success val
 ---
 
 fun is_throw
+| fn -> is_throw fn [()]
 | fn () -> is_throw fn [()]
 | fn args ->
     match
@@ -105,4 +106,20 @@ fun is_throw
 
 fun is_throw_expected fn args exc ->
     is_equal (is_throw fn args) exc
+---
+
+fun is_not_throw
+| fn -> is_not_throw fn [()]
+| fn () -> is_not_throw fn [()]
+| fn args ->
+    match
+        try
+            apply fn args
+            Success True
+        | e ->
+            e
+        ---
+    | _ of Success ->  True
+    | err -> fail ["unexpected exception", fn, err]
+    ---
 ---

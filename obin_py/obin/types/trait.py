@@ -6,11 +6,12 @@ from obin.misc import platform
 class W_Trait(W_Hashable):
     # _immutable_fields_ = ['_name_']
 
-    def __init__(self, name, typevar):
+    def __init__(self, name, typevar, constraints):
         W_Hashable.__init__(self)
         self.name = name
         self.typevar = typevar
         self.methods = plist.empty()
+        self.constraints = constraints
 
     def add_method(self, method):
         assert space.ismethod(method)

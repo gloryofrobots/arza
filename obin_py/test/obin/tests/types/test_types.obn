@@ -1,9 +1,11 @@
 import tests:types:test_simple
 import tests:types:test_union
 import tests:types:test_default_implementations
+import tests:types:test_constraints
 
 fun test () ->
     test_simple:test()
-//    test_union:test()
-//    test_default_implementations:test()
+    test_union:test()
+    test_default_implementations:test()
+    test_constraints:test()
 ---------------

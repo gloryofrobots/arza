@@ -1,7 +1,7 @@
 import from obin:core:types (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                              Function, Generic, Method, NativeFunction, Fiber, Trait, Datatype, TVar, Env)
 //TODO FIX IT
-length = ___length
+length = obin:lang:length
 
 @prefix - negate
 @infixl < < 50
@@ -27,7 +27,7 @@ trait Eq for x
     method != x y -> not (x == y)
 ---------------------------------
 
-trait Ord  for x
+trait Ord  for x of Eq
     method <= x y -> throw (#NotImplemented, x, y)
     method < x y -> (cmp x y) == LT
     method >= x y -> (cmp x y) != LT

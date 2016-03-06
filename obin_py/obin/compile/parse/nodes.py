@@ -272,6 +272,10 @@ def create_if_node(basenode, branches):
     return node_1(nt.NT_CONDITION, create_token_from_node(tt.TT_IF, "if", basenode), list_node(branches))
 
 
+def create_list_node(basenode, items):
+    return node_1(nt.NT_LIST, create_token_from_node(tt.TT_LSQUARE, "[", basenode), list_node(items))
+
+
 def create_empty_list_node(basenode):
     return node_1(nt.NT_LIST, create_token_from_node(tt.TT_LSQUARE, "[", basenode), list_node([]))
 

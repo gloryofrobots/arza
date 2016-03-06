@@ -30,7 +30,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, unicode(PRIM_UNION), __union, 2)
     api.put_native_function(process, module, unicode(PRIM_TYPE), __type, 3)
     api.put_native_function(process, module, unicode(PRIM_METHOD), __method, 4)
-    api.put_native_function(process, module, unicode(PRIM_TRAIT), __trait, 2)
+    api.put_native_function(process, module, unicode(PRIM_TRAIT), __trait, 3)
     api.put_native_function(process, module, unicode(PRIM_IMPLEMENT), __implement, 3)
     api.put_native_function(process, module, u"not", __not, 1)
 
@@ -156,7 +156,8 @@ def __method(process, routine):
 def __trait(process, routine):
     name = routine.get_arg(0)
     varname = routine.get_arg(1)
-    _trait = space.newtrait(name, varname)
+    constraints = routine.get_arg(2)
+    _trait = space.newtrait(name, varname, constraints)
     return _trait
 
 

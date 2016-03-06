@@ -13,7 +13,7 @@ class W_NativeFunction(W_Callable):
         self.arity = arity
 
     def _to_string_(self):
-        return "function %s {[native code]}" % api.to_s(self._name_)
+        return "fun %s/%d [native code]" % (api.to_s(self._name_), self.arity)
 
     def _type_(self, process):
         return process.std.types.NativeFunction

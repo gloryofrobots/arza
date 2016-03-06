@@ -3,7 +3,7 @@ from obin.compile.code.opcode import *
 from obin.compile.parse import parser
 from obin.compile.parse import nodes
 from obin.compile.parse.nodes import (node_type, node_arity,
-                                      node_first, node_second, node_third, node_children, is_empty_node)
+                                      node_first, node_second, node_third, node_fourth, node_children, is_empty_node)
 from obin.compile.parse.node_type import *
 from obin.types import space, api, plist, environment, symbol as symbols, string as strings
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
@@ -947,14 +947,16 @@ def _compile_UNION(compiler, code, node):
 def _compile_TRAIT(compiler, code, node):
     trait_name_node = node_first(node)
     var_name_node = node_second(node)
+    constraints_node = node_third(node)
 
     _emit_symbol_literal(compiler, code, trait_name_node)
     _emit_symbol_literal(compiler, code, var_name_node)
+    _compile(compiler, code, constraints_node)
 
-    _emit_call(compiler, code, node, 2, primitives.PRIM_TRAIT)
+    _emit_call(compiler, code, node, 3, primitives.PRIM_TRAIT)
     _emit_store_name(compiler, code, trait_name_node)
 
-    methods = node_third(node)
+    methods = node_fourth(node)
     last_index = len(methods) - 1
 
     method_locals = []

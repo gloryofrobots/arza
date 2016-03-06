@@ -357,11 +357,15 @@ def newmethod_hotpath(name, trait, signature, hot_path):
 
 ########################################################
 
-def newtrait(name, varname):
+def newtrait(name, varname, constraints):
     from obin.types.trait import W_Trait
-    assert issymbol(name)
-    assert issymbol(varname)
-    return W_Trait(name, varname)
+    from obin.runtime import error
+    error.affirm_type(name, issymbol)
+    error.affirm_type(varname, issymbol)
+    error.affirm_type(constraints, islist)
+    error.affirm_iterable(constraints, istrait)
+    
+    return W_Trait(name, varname, constraints)
 
 
 def istrait(w):

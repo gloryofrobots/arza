@@ -44,6 +44,9 @@ def throw_4(symbol_unistr, arg1, arg2, arg3, arg4):
 def throw_5(symbol_unistr, arg1, arg2, arg3, arg4, arg5):
     throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4, arg5]))
 
+def affirm_iterable(it, condition):
+    for i in it:
+        affirm_type(i, condition)
 
 def affirm_type(obj, condition):
     if not condition(obj):
@@ -117,3 +120,4 @@ class Errors:
     EXPORT = u"ExportError"
     TRAIT_ALREADY_IMPLEMENTED = u"TraitAlreadyImplementedError"
     TRAIT_IMPLEMENTATION = u"TraitImplementationError"
+    TRAIT_CONSTRAINT = u"TraitConstraintError"

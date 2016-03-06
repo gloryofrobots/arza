@@ -175,6 +175,11 @@ def implement_trait(_type, trait, implementations):
     error.affirm_type(trait, space.istrait)
     error.affirm_type(implementations, space.islist)
     # GET DEFAULTS FIRST
+    for constraint in trait.constraints:
+        if not _type.is_trait_implemented(constraint):
+            error.throw_2(error.Errors.TRAIT_CONSTRAINT,
+                          space.newstring(u"Unsatisfied trait constraint"), constraint)
+
     for m in trait.methods:
         if plist.contains_with(implementations, m, _is_exist_implementation):
             continue
