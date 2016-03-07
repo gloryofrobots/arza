@@ -88,29 +88,6 @@ class W_PList(W_Any):
     def _type_(self, process):
         return process.std.types.List
 
-    def _slice_(self, start, end):
-        from obin.types.space import isvoid, newvoid
-        from obin.types import api
-
-        if isvoid(start):
-            start_index = 0
-        else:
-            start_index = api.to_i(start)
-
-        # INTELLIGENT ERROR HERE, BECAUSE LISTS DON`T SUPPORT RELATIVE SLICING
-        if start_index < 0:
-            return newvoid()
-
-        if isvoid(end):
-            return drop(self, start_index)
-        else:
-            end_index = api.to_i(end)
-
-        # INTELLIGENT ERROR HERE, BECAUSE LISTS DON`T SUPPORT RELATIVE SLICING
-        if end_index < 0:
-            return newvoid()
-        return slice(self, start_index, end_index)
-
     def _equal_(self, other):
         if not space.islist(other):
             return False

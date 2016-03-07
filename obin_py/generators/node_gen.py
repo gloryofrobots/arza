@@ -63,10 +63,12 @@ NODES = [
   "NT_LOOKUP",
   "NT_LOOKUP_SYMBOL",
   "NT_LOOKUP_MODULE",
-  "NT_SLICE",
+  
   "NT_HEAD",
   "NT_TAIL",
+  "NT_DROP",
   "NT_RANGE",
+
   "NT_MODIFY",
 
   "NT_OF",

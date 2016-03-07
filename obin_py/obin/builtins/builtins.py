@@ -53,14 +53,20 @@ def postsetup(process):
     method.set_hotpath(hp.hp_mod)
     method = api.at(prelude, _s(u"contains"))
     method.set_hotpath(hp.hp_contains)
+    method = api.at(prelude, _s(u"++"))
+    method.set_hotpath(hp.hp_concat)
     method = api.at(prelude, _s(u"cons"))
     method.set_hotpath(hp.hp_cons)
     method = api.at(prelude, _s(u"first"))
     method.set_hotpath(hp.hp_first)
     method = api.at(prelude, _s(u"rest"))
     method.set_hotpath(hp.hp_rest)
-    method = api.at(prelude, _s(u"++"))
-    method.set_hotpath(hp.hp_concat)
+    method = api.at(prelude, _s(u"slice"))
+    method.set_hotpath(hp.hp_slice)
+    method = api.at(prelude, _s(u"take"))
+    method.set_hotpath(hp.hp_take)
+    method = api.at(prelude, _s(u"drop"))
+    method.set_hotpath(hp.hp_drop)
 
 def setup_traits(process, module, stdlib):
     traits = stdlib.traits

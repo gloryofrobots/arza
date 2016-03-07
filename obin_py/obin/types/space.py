@@ -281,6 +281,11 @@ def istuple(w):
     return isinstance(w, W_Tuple) or isinstance(w, W_Unit)
 
 
+def isrealtuple(w):
+    from obin.types.tuples import W_Tuple
+    return isinstance(w, W_Tuple)
+
+
 #########################################################
 
 def newscope():
@@ -364,7 +369,7 @@ def newtrait(name, varname, constraints):
     error.affirm_type(varname, issymbol)
     error.affirm_type(constraints, islist)
     error.affirm_iterable(constraints, istrait)
-    
+
     return W_Trait(name, varname, constraints)
 
 

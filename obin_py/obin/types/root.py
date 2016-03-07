@@ -136,9 +136,6 @@ class W_Any:
     def _call_(self, process, args):
         return not_implemented_error(u"_call_", self, args)
 
-    def _slice_(self, start, end):
-        return not_implemented_error(u"_call_", self, start, end)
-
     def _type_(self, process):
         return not_implemented_error(u"_type_", self)
 

@@ -19,10 +19,13 @@ METHODS = [
         method("div", "/", ["num", "other"], "hp_div"),
         method("mod", "mod", ["num", "other"], "hp_mod"),
         method("contains", "contains", ["self", "other"], "hp_contains"),
+        method("concat", "++", ["self", "other"], "hp_concat"),
         method("cons", "cons", ["other", "self"], "hp_cons"),
         method("first", "first", ["self"], "hp_first"),
         method("rest", "rest", ["self"], "hp_rest"),
-        method("concat", "++", ["self", "other"], "hp_concat"),
+        method("slice", "slice", ["self","from", "to"], "hp_slice"),
+        method("take", "take", ["self","count"], "hp_take"),
+        method("drop", "drop", ["self","count"], "hp_drop"),
 ]
 
 

@@ -1,6 +1,7 @@
 from obin.types.root import W_Hashable
 from sequence import W_SequenceIterator
 from obin.types import api, space
+from obin.runtime import error
 
 
 # from obin.types import plist
@@ -93,6 +94,25 @@ class W_String(W_Hashable):
 
     def _type_(self, process):
         return process.std.types.String
+
+
+def slice(s, first, last):
+    error.affirm_type(s, space.isstring)
+    assert isinstance(first, int)
+    assert isinstance(last, int)
+    return W_String(s.string_value[first:last])
+
+
+def take(s, count):
+    error.affirm_type(s, space.isstring)
+    assert isinstance(count, int)
+    return W_String(s.string_value[:count])
+
+
+def drop(s, count):
+    error.affirm_type(s, space.isstring)
+    assert isinstance(count, int)
+    return W_String(s.string_value[count:])
 
 
 def concat(l, r):

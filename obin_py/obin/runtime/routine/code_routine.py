@@ -175,14 +175,6 @@ class CodeRoutine(BaseRoutine):
                 args = stack.pop_n_tuple(arg1)
                 api.call(process, func, args)
             # *************************************
-            elif SLICE == tag:
-                end = stack.pop()
-                start = stack.pop()
-                obj = stack.pop()
-                print "SLICE",start, end
-                v = api.slice(obj, start, end)
-                stack.push(v)
-            # *************************************
             elif FSELF == tag:
                 stack.push(self._func_)
             # *************************************

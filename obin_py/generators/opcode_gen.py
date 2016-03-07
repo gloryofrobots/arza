@@ -42,7 +42,6 @@ OPCODES = [
     ("THROW", -1),
 
     ("STORE_MEMBER", -2),
-    ("SLICE", -3),
 
     ("UNPACK_TUPLE", "__UNKNOWN_CHANGE__"),
     ("VECTOR", "__UNKNOWN_CHANGE__"),

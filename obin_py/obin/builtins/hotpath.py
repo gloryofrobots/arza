@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
 from obin.types.number import *
 from obin.runtime import error
-from obin.types import api, space, plist, string
+from obin.types import api, space, plist, string, tuples
 from obin.types.space import isnumber, isint, isrecord
 
 
@@ -175,6 +175,7 @@ def hp_cons(process, args):
     else:
         return None
 
+
 def hp_first(process, args):
     left = api.at_index(args, 0)
     if space.islist(left):
@@ -182,12 +183,76 @@ def hp_first(process, args):
     else:
         return None
 
+
 def hp_rest(process, args):
     left = api.at_index(args, 0)
     if space.islist(left):
         return plist.tail(left)
     else:
         return None
+
+
+def hp_slice(process, args):
+    obj = api.at_index(args, 0)
+    if isrecord(obj):
+        return None
+
+    first = api.at_index(args, 1)
+    last = api.at_index(args, 2)
+
+    error.affirm_type(first, space.isint)
+    error.affirm_type(last, space.isint)
+    first_i = api.to_i(first)
+    last_i = api.to_i(last)
+    if space.islist(obj):
+        return plist.slice(obj, first_i, last_i)
+    elif space.istuple(obj):
+        return tuples.slice(obj, first_i, last_i)
+    elif space.isstring(obj):
+        return string.slice(obj, first_i, last_i)
+    else:
+        return None
+
+
+def hp_take(process, args):
+    obj = api.at_index(args, 0)
+    if isrecord(obj):
+        return None
+
+    count = api.at_index(args, 1)
+
+    error.affirm_type(count, space.isint)
+    count_i = api.to_i(count)
+
+    if space.islist(obj):
+        return plist.take(obj, count_i)
+    elif space.istuple(obj):
+        return tuples.take(obj, count_i)
+    elif space.isstring(obj):
+        return string.take(obj, count_i)
+    else:
+        return None
+
+
+def hp_drop(process, args):
+    obj = api.at_index(args, 0)
+    if isrecord(obj):
+        return None
+
+    count = api.at_index(args, 1)
+
+    error.affirm_type(count, space.isint)
+    count_i = api.to_i(count)
+
+    if space.islist(obj):
+        return plist.drop(obj, count_i)
+    elif space.istuple(obj):
+        return tuples.drop(obj, count_i)
+    elif space.isstring(obj):
+        return string.drop(obj, count_i)
+    else:
+        return None
+
 
 def hp_concat(process, args):
     left = api.at_index(args, 0)

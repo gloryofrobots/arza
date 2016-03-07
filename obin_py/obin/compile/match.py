@@ -72,15 +72,12 @@ def _process_tuple(state, pattern, patterns, path):
     last_child = children[last_index]
     if node_type(last_child) == NT_REST:
         last_child = node_first(last_child)
-        cur_slice = create_slice_n_end(last_child, create_int_node(last_child, last_index))
+        cur_slice = create_drop_node(last_child, create_int_node(last_child, last_index))
         patterns = _process_pattern(state, last_child, patterns, add_path(cur_slice, path))
     else:
         patterns = _process_pattern(state, last_child, patterns,
                                     add_path(create_int_node(last_child, last_index), path))
 
-    # for i, child in enumerate(children):
-    #     patterns = _process_pattern(state, child, patterns,
-    #                                 add_path(create_int_node(child, i), path))
     return patterns
 
 

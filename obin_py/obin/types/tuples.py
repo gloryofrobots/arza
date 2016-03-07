@@ -64,9 +64,6 @@ class W_Unit(W_Any):
     def _at_index_(self, i):
         return space.newvoid()
 
-    def _slice_(self, start, end):
-        return space.newvoid()
-
     def _get_index_(self, obj):
         return platform.absent_index()
 
@@ -137,27 +134,6 @@ class W_Tuple(W_Hashable):
     def _at_index_(self, i):
         return self.elements[i]
 
-    def _slice_(self, start, end):
-
-        if space.isvoid(start):
-            start_index = 0
-        else:
-            start_index = api.to_i(start)
-
-        if space.isvoid(end):
-            end_index = self._length_()
-        else:
-            end_index = api.to_i(end)
-
-        if start_index < 0:
-            return space.newvoid()
-
-        if end_index <= 0:
-            return space.newvoid()
-
-        elements = self.elements[start_index:end_index]
-        return W_Tuple(elements)
-
     def _get_index_(self, obj):
         try:
             return self.elements.index(obj)
@@ -200,6 +176,26 @@ def type_check(t):
 
 def concat(process, tupl1, tupl2):
     return W_Tuple(tupl1.elements + tupl2.elements)
+
+
+
+def slice(t, first, last):
+    error.affirm_type(t, space.isrealtuple)
+    assert isinstance(first, int)
+    assert isinstance(last, int)
+    return W_Tuple(t.elements[first:last])
+
+
+def take(t, count):
+    error.affirm_type(t, space.isrealtuple)
+    assert isinstance(count, int)
+    return W_Tuple(t.elements[:count])
+
+
+def drop(t, count):
+    error.affirm_type(t, space.isrealtuple)
+    assert isinstance(count, int)
+    return W_Tuple(t.elements[count:])
 
 # def append(tupl, v):
 #     items = tupl.values + [v]

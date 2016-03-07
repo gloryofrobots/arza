@@ -355,9 +355,8 @@ def create_tail_node(basenode):
     return node_0(nt.NT_TAIL, create_token_from_node(tt.TT_UNKNOWN, "", basenode))
 
 
-def create_slice_n_end(basenode, first):
-    second = create_wildcard_node(basenode)
-    return node_2(nt.NT_RANGE, create_token_from_node(tt.TT_DOUBLE_DOT, "..", basenode), first, second)
+def create_drop_node(basenode, count):
+    return node_1(nt.NT_DROP, create_token_from_node(tt.TT_UNKNOWN, "..", basenode), count)
 
 
 def create_lookup_node(basenode, left, right):

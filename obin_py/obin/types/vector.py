@@ -37,23 +37,6 @@ class W_Vector(W_Any):
             items.append(v)
         return W_Vector(items)
 
-    def _slice_(self, start, end):
-        from obin.types.space import isvoid
-        from obin.types import api
-
-        if isvoid(start):
-            start_index = 0
-        else:
-            start_index = api.to_i(start)
-
-        if isvoid(end):
-            end_index = self._length_()
-        else:
-            end_index = api.to_i(end)
-
-        items = self._items[start_index:end_index]
-        return W_Vector(items)
-
     def _at_(self, index):
         from obin.types.space import newvoid, isint
         from obin.types import api
