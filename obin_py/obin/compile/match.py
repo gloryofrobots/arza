@@ -114,8 +114,8 @@ def _process_list(state, pattern, patterns, path):
             patterns = add_pattern(patterns,
                                    ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(child)])
 
-            child_path = add_path(create_int_node(child, 0), cur_path)
-            cur_slice = create_slice_1_end(child)
+            child_path = add_path(create_head_node(child), cur_path)
+            cur_slice = create_tail_node(child)
             cur_path = add_path(cur_slice, cur_path)
             patterns = _process_pattern(state, child, patterns, child_path)
 
@@ -127,13 +127,13 @@ def _process_list(state, pattern, patterns, path):
     else:
         patterns = add_pattern(patterns,
                                ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(last_child)])
-        child_path = add_path(create_int_node(last_child, 0), cur_path)
+        child_path = add_path(create_head_node(last_child), cur_path)
         # process child
         patterns = _process_pattern(state, last_child, patterns, child_path)
 
         # Ensure that list is empty
         # IMPORTANT IT NEED TO BE THE LAST CHECK, OTHERWISE CACHED VARIABLES WILL NOT INITIALIZE
-        last_slice = create_slice_1_end(last_child)
+        last_slice = create_tail_node(last_child)
         last_path = add_path(last_slice, cur_path)
         patterns = add_pattern(patterns, ["is", _create_path_node(pattern, last_path),
                                           create_empty_list_node(last_child)])

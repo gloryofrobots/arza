@@ -104,6 +104,12 @@ trait Seqable for self
     method seq self
 ---
 
+trait Sliceable for self
+    method slice self first last
+    method drop self count
+    method take self count
+---
+
 fun in obj storage -> contains storage obj end
 fun notin obj storage -> not (contains storage obj) end
 

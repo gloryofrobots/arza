@@ -2,12 +2,11 @@
 //TODO :: in pattern matching
 //TODO ranges
 //TODO meta
-//TODO trait constraints
 //TODO ERRORS AS TYPES
 //TODO strings in import modules
 //TODO ERRORS
 //TODO SLICES
-//? in funcs
+//TODO remove voids as values in datastructs
 
 //trait Any for self
 //
@@ -43,7 +42,4 @@
 //
 
 
-//trait Sliceable for first
-//    method slice first last
-//---
 

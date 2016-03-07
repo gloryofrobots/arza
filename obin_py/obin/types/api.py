@@ -130,6 +130,10 @@ def put(obj, k, v):
 def at_index(obj, i):
     assert isinstance(i, int)
     v = obj._at_index_(i)
+
+    # if space.isvoid(v):
+    #     return error.throw_2(error.Errors.KEY_ERROR, space.newint(i), obj)
+
     return v
 
 

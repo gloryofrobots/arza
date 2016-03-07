@@ -347,10 +347,12 @@ def create_assign_node(basenode, left, right):
     return node_2(nt.NT_ASSIGN, create_token_from_node(tt.TT_ASSIGN, "=", basenode), left, right)
 
 
-def create_slice_1_end(basenode):
-    first = create_int_node(basenode, "1")
-    second = create_wildcard_node(basenode)
-    return node_2(nt.NT_RANGE, create_token_from_node(tt.TT_DOUBLE_DOT, "..", basenode), first, second)
+def create_head_node(basenode):
+    return node_0(nt.NT_HEAD, create_token_from_node(tt.TT_UNKNOWN, "", basenode))
+
+
+def create_tail_node(basenode):
+    return node_0(nt.NT_TAIL, create_token_from_node(tt.TT_UNKNOWN, "", basenode))
 
 
 def create_slice_n_end(basenode, first):

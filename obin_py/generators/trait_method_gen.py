@@ -20,6 +20,8 @@ METHODS = [
         method("mod", "mod", ["num", "other"], "hp_mod"),
         method("contains", "contains", ["self", "other"], "hp_contains"),
         method("cons", "cons", ["other", "self"], "hp_cons"),
+        method("first", "first", ["self"], "hp_first"),
+        method("rest", "rest", ["self"], "hp_rest"),
         method("concat", "++", ["self", "other"], "hp_concat"),
 ]
 

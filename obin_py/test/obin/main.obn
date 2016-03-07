@@ -15,6 +15,8 @@ import tests:test_bool
 import tests:datastructs:test_datastructs
 import tests:types:test_types
 
+import list
+
 fun log ...msgs ->
     cond
     | False -> apply print msgs
@@ -58,6 +60,7 @@ fun test() ->
 
 
 fun main () ->
-    test()
+    list:drop 3 [1,2,3,4,5]
+//    test()
 -------------------------
 

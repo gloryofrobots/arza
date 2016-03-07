@@ -179,6 +179,7 @@ class CodeRoutine(BaseRoutine):
                 end = stack.pop()
                 start = stack.pop()
                 obj = stack.pop()
+                print "SLICE",start, end
                 v = api.slice(obj, start, end)
                 stack.push(v)
             # *************************************

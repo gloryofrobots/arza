@@ -47,14 +47,16 @@ NT_LOOKUP = 44
 NT_LOOKUP_SYMBOL = 45
 NT_LOOKUP_MODULE = 46
 NT_SLICE = 47
-NT_RANGE = 48
-NT_MODIFY = 49
-NT_OF = 50
-NT_AS = 51
-NT_VAR = 52
-NT_LAZY = 53
-NT_AND = 54
-NT_OR = 55
+NT_HEAD = 48
+NT_TAIL = 49
+NT_RANGE = 50
+NT_MODIFY = 51
+NT_OF = 52
+NT_AS = 53
+NT_VAR = 54
+NT_LAZY = 55
+NT_AND = 56
+NT_OR = 57
 # ************************ OBIN NODES REPR *****************************
 __NT_REPR__ = ["NT_GOTO", "NT_TRUE", "NT_FALSE", "NT_INT", "NT_FLOAT", "NT_STR", "NT_CHAR", "NT_WILDCARD", "NT_NAME",
                "NT_SYMBOL", "NT_UNION", "NT_TYPE", "NT_MAP", "NT_LIST", "NT_TUPLE", "NT_UNIT", "NT_COMMA", "NT_FUN",
@@ -62,8 +64,8 @@ __NT_REPR__ = ["NT_GOTO", "NT_TRUE", "NT_FALSE", "NT_INT", "NT_FLOAT", "NT_STR",
                "NT_IMPORT", "NT_IMPORT_HIDING", "NT_IMPORT_FROM", "NT_IMPORT_FROM_HIDING", "NT_EXPORT", "NT_LOAD",
                "NT_TRAIT", "NT_IMPLEMENT", "NT_BIND", "NT_THROW", "NT_BREAK", "NT_CONTINUE", "NT_FOR", "NT_WHILE",
                "NT_REST", "NT_ASSIGN", "NT_CALL", "NT_JUXTAPOSITION", "NT_UNDEFINE", "NT_LOOKUP", "NT_LOOKUP_SYMBOL",
-               "NT_LOOKUP_MODULE", "NT_SLICE", "NT_RANGE", "NT_MODIFY", "NT_OF", "NT_AS", "NT_VAR", "NT_LAZY", "NT_AND",
-               "NT_OR", ]
+               "NT_LOOKUP_MODULE", "NT_SLICE", "NT_HEAD", "NT_TAIL", "NT_RANGE", "NT_MODIFY", "NT_OF", "NT_AS",
+               "NT_VAR", "NT_LAZY", "NT_AND", "NT_OR", ]
 
 
 def node_type_to_str(ttype):

@@ -175,6 +175,19 @@ def hp_cons(process, args):
     else:
         return None
 
+def hp_first(process, args):
+    left = api.at_index(args, 0)
+    if space.islist(left):
+        return plist.head(left)
+    else:
+        return None
+
+def hp_rest(process, args):
+    left = api.at_index(args, 0)
+    if space.islist(left):
+        return plist.tail(left)
+    else:
+        return None
 
 def hp_concat(process, args):
     left = api.at_index(args, 0)

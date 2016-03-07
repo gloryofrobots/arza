@@ -55,6 +55,10 @@ def postsetup(process):
     method.set_hotpath(hp.hp_contains)
     method = api.at(prelude, _s(u"cons"))
     method.set_hotpath(hp.hp_cons)
+    method = api.at(prelude, _s(u"first"))
+    method.set_hotpath(hp.hp_first)
+    method = api.at(prelude, _s(u"rest"))
+    method.set_hotpath(hp.hp_rest)
     method = api.at(prelude, _s(u"++"))
     method.set_hotpath(hp.hp_concat)
 

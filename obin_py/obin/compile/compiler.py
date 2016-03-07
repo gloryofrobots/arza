@@ -201,6 +201,7 @@ def _emit_call(compiler, code, node, arg_count, funcname):
     _compile(compiler, code, func)
     code.emit_1(CALL, arg_count, info(node))
 
+
 def _emit_store_name(compiler, code, namenode):
     name = _get_symbol_name(compiler, namenode)
     # name = space.newsymbol_s(compiler.process, nodes.node_value_s(namenode))
@@ -235,8 +236,10 @@ def _emit_literal(compiler, code, node, literal):
     code.emit_1(LITERAL, idx, info(node))
     return idx
 
+
 def _emit_literal_index(compiler, code, node, idx):
     code.emit_1(LITERAL, idx, info(node))
+
 
 def _emit_symbol_literal(compiler, code, name):
     symbol = _get_symbol_name(compiler, name)
@@ -319,7 +322,6 @@ def _compile_TRUE(compiler, code, node):
 
 def _compile_FALSE(compiler, code, node):
     code.emit_0(FALSE, info(node))
-
 
 
 def _compile_STR(compiler, code, node):
@@ -406,11 +408,13 @@ def _compile_MATCH(compiler, code, node):
     _compile(compiler, code, exp)
     _compile_match(compiler, code, node, patterns, error.Errors.MATCH)
 
+
 def _compile_UNDEFINE(compiler, code, node):
     varname = node_first(node)
     name = _get_symbol_name(compiler, varname)
     _emit_void(code)
     _emit_store(compiler, code, name, node)
+
 
 def _compile_GOTO(compiler, code, node):
     # TODO REMOVE THIS SHIT
@@ -895,8 +899,6 @@ def _compile_MODULE(compiler, code, node):
     _emit_store(compiler, code, module_name, name_node)
 
 
-
-
 def _compile_FENV(compiler, code, node):
     code.emit_0(FENV, info(node))
 
@@ -990,7 +992,6 @@ def _compile_TRAIT(compiler, code, node):
             _emit_pop(code)
 
 
-
 def _compile_IMPLEMENT(compiler, code, node):
     traitname = node_first(node)
     typename = node_second(node)
@@ -1013,7 +1014,6 @@ def _compile_IMPLEMENT(compiler, code, node):
 
     # code.emit_0(IMPLEMENT, info(traitname))
     _emit_call(compiler, code, node, 3, primitives.PRIM_IMPLEMENT)
-
 
 
 def _compile_FOR(compiler, code, node):
@@ -1071,6 +1071,16 @@ def _compile_LOOKUP_SYMBOL(compiler, code, node):
     code.emit_0(MEMBER, info(node))
 
 
+def _emit_TAIL(compiler, code, node):
+    _compile(compiler, code, node)
+    _emit_call(compiler, code, node, 1, primitives.PRIM_REST)
+
+
+def _emit_HEAD(compiler, code, node):
+    _compile(compiler, code, node)
+    _emit_call(compiler, code, node, 1, primitives.PRIM_FIRST)
+
+
 def _emit_SLICE(compiler, code, obj, slice):
     start = node_first(slice)
     end = node_second(slice)
@@ -1094,7 +1104,11 @@ def _compile_LOOKUP(compiler, code, node):
     # TODO OPTIMISATION FOR INDEX LOOKUP
     obj = node_first(node)
     expr = node_second(node)
-    if node_type(expr) == NT_RANGE:
+    if node_type(expr) == NT_TAIL:
+        return _emit_TAIL(compiler, code, obj)
+    elif node_type(expr) == NT_HEAD:
+        return _emit_HEAD(compiler, code, obj)
+    elif node_type(expr) == NT_RANGE:
         return _emit_SLICE(compiler, code, obj, expr)
 
     _compile(compiler, code, obj)
