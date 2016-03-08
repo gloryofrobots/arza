@@ -76,7 +76,16 @@ def led_infixr(parser, op, node, left):
     return node_2(__ntype(node), __ntok(node), left, exp)
 
 
+def prefix_operator_infix_nud_default(parser, op, node):
+    if parser.token_type == TT_RPAREN:
+        return nodes.create_name_node(node, api.to_s(op.infix_function))
+    else:
+        parse_error(parser, u"Invalid use of infix operator.", node)
+
+
 def prefix_nud_function(parser, op, node):
+    if parser.token_type == TT_RPAREN:
+        return nodes.create_name_node(node, api.to_s(op.prefix_function))
     exp = literal_expression(parser)
     return nodes.create_call_node_name(node, op.prefix_function, [exp])
 
@@ -883,6 +892,8 @@ def _meta_infix(parser, node, infix_function):
 
     op = parser_current_scope_find_operator_or_create_new(parser, op_value)
     op = operator_infix(op, precedence, infix_function, func_value)
+    if op.nud is None:
+        op = operator_prefix(op, prefix_operator_infix_nud_default, None)
     endofexpression(parser)
     parser_current_scope_add_operator(parser, op_value, op)
 

@@ -12,105 +12,111 @@ length = obin:lang:length
 @infixl != != 50
 @infixl + + 60
 @infixl - - 60
-@infixl % % 65
 @infixl * * 65
 @infixl / / 65
 @infixr :: cons 70
 @infixl ++ ++ 70
 
-union Ordering
-    | LT | GT | EQ
--------------------
+fun t x ->
+    (1, 3, 4, -)
+end
 
-trait Eq for x
-    method == x y -> throw (#NotImplemented, x, y)
-    method != x y -> not (x == y)
----------------------------------
-
-trait Ord  for x of Eq
-    method <= x y -> throw (#NotImplemented, x, y)
-    method < x y -> (cmp x y) == LT
-    method >= x y -> (cmp x y) != LT
-    method > x y -> (cmp x y) == GT
-
-    method cmp x y ->
-                cond
-                | x == y -> EQ
-                | x <= y  -> LT
-                | else -> GT
-                ---
-
-    method max x y -> y if x <= y else x
-    method min x y -> x if x <= y else y
----------------------------------
-
-trait Num for x
-    method - x y
-    method + x y
-    method * x y
-    method / x y
-    method mod x y
-    // unary -
-    method negate x
----------------
-
-trait Stringable for self
-    method str self
----
-
-trait Inspectable for self // of Show
-    method inspect self -> str self
----
-
-trait Parsable for self
-    method from_str self
----
-
-trait Mappable for self
-    method map f self
----
-
-
-trait Appendable for self
-    //concat operator
-    method ++ self other
-    method append self value
----------------------------------
-
-trait Collection for self
-    method len self
-    method is_empty self -> (len self) == 0
-
-    method at self key
-    method put self key value
-    method remove self obj
-    method contains self key
----------------------------------
-
-
-trait Seq for self
-    method first self
-    method rest self
-    // prepend/cons operator
-    method cons value self
----
-
-trait Indexed for self
-    method index_of self obj
-    method last self
----
-
-trait Seqable for self
-    method seq self
----
-
-trait Sliceable for self
-    method slice self first last
-    method drop self count
-    method take self count
----
-
-fun in obj storage -> contains storage obj end
-fun notin obj storage -> not (contains storage obj) end
-
-fun :: val self -> cons val self end
+//
+//
+//
+//union Ordering
+//    | LT | GT | EQ
+//-------------------
+//
+//trait Eq for x
+//    method == x y -> throw (#NotImplemented, x, y)
+//    method != x y -> not (x == y)
+//---------------------------------
+//
+//trait Ord  for x of Eq
+//    method <= x y -> throw (#NotImplemented, x, y)
+//    method < x y -> (cmp x y) == LT
+//    method >= x y -> (cmp x y) != LT
+//    method > x y -> (cmp x y) == GT
+//
+//    method cmp x y ->
+//                cond
+//                | x == y -> EQ
+//                | x <= y  -> LT
+//                | else -> GT
+//                ---
+//
+//    method max x y -> y if x <= y else x
+//    method min x y -> x if x <= y else y
+//---------------------------------
+//
+//trait Num for x
+//    method - x y
+//    method + x y
+//    method * x y
+//    method / x y
+//    method mod x y
+//    // unary -
+//    method negate x
+//---------------
+//
+//trait Stringable for self
+//    method str self
+//---
+//
+//trait Inspectable for self // of Show
+//    method inspect self -> str self
+//---
+//
+//trait Parsable for self
+//    method from_str self
+//---
+//
+//trait Mappable for self
+//    method map f self
+//---
+//
+//
+//trait Appendable for self
+//    //concat operator
+//    method ++ self other
+//    method append self value
+//---------------------------------
+//
+//trait Collection for self
+//    method len self
+//    method is_empty self -> (len self) == 0
+//
+//    method at self key
+//    method put self key value
+//    method remove self obj
+//    method contains self key
+//---------------------------------
+//
+//
+//trait Seq for self
+//    method first self
+//    method rest self
+//    // prepend/cons operator
+//    method cons value self
+//---
+//
+//trait Indexed for self
+//    method index_of self obj
+//    method last self
+//---
+//
+//trait Seqable for self
+//    method seq self
+//---
+//
+//trait Sliceable for self
+//    method slice self first last
+//    method drop self count
+//    method take self count
+//---
+//
+//fun in obj storage -> contains storage obj end
+//fun notin obj storage -> not (contains storage obj) end
+//
+//fun :: val self -> cons val self end
