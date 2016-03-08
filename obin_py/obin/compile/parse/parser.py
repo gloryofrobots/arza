@@ -273,14 +273,14 @@ def init_parser_literals(parser):
 def base_parser_init(parser):
     parser = init_parser_literals(parser)
 
-    symbol(parser, TT_RSQUARE, None)
-    symbol(parser, TT_ENDSTREAM, None)
-    symbol(parser, TT_ARROW, None)
-    symbol(parser, TT_RPAREN, None)
-    symbol(parser, TT_RCURLY, None)
-    symbol(parser, TT_COMMA, None)
-    symbol(parser, TT_END, None)
-    symbol(parser, TT_SEMI, None)
+    breaker(parser, TT_RSQUARE)
+    breaker(parser, TT_ENDSTREAM)
+    breaker(parser, TT_ARROW)
+    breaker(parser, TT_RPAREN)
+    breaker(parser, TT_RCURLY)
+    breaker(parser, TT_COMMA)
+    breaker(parser, TT_END)
+    breaker(parser, TT_SEMI)
 
     # 10
     assignment(parser, TT_ASSIGN, 10)
@@ -307,9 +307,9 @@ def expression_parser_init(proc_data, parser):
     symbol(parser, TT_AT_SIGN, None)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
 
-    symbol(parser, TT_ELSE, None)
-    symbol(parser, TT_CASE, None)
-    symbol(parser, TT_THEN, None)
+    breaker(parser, TT_ELSE)
+    breaker(parser, TT_CASE, None)
+    breaker(parser, TT_THEN, None)
 
     infix(parser, TT_COMMA, -2, None)
 

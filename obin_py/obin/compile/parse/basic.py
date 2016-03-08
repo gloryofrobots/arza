@@ -141,6 +141,7 @@ class W_Operator(root.W_Hashable):
         self.led = None
         self.std = None
         self.lbp = -1
+        self.is_breaker = False
 
         self.prefix_function = None
         self.infix_function = None
@@ -225,6 +226,9 @@ def node_operator(parser, node):
         return parse_error(parser, u"Invalid operator", node)
     return op
 
+def is_breaker(parser, node):
+    handler = node_operator(parser, node)
+    return handler.is_breaker
 
 def nud(parser, node):
     handler = node_operator(parser, node)
@@ -406,7 +410,6 @@ def _expression(parser, _rbp, terminators=None):
     # print "******"
     # print "rbp ", _rbp
     # print "previous", previous
-
     advance(parser)
 
     left = nud(parser, previous)
@@ -513,6 +516,7 @@ def expressions(parser, _rbp, terminators=None):
     else:
         return expr
 
+
 def flatten_juxtaposition(parser, node):
     ntype = nodes.node_type(node)
     if ntype == NT_JUXTAPOSITION or ntype == NT_COMMA:
@@ -538,6 +542,7 @@ def juxtaposition_list(parser, terminators, skip_commas=True):
 
         if parser.token_type in terminators:
             return node, args
+
 
 def juxtaposition_list_while_not_breaks(parser):
     args = []
@@ -657,6 +662,13 @@ def symbol(parser, ttype, nud):
     h = get_or_create_operator(parser, ttype)
     h.lbp = 0
     parser_set_nud(parser, ttype, nud)
+    return h
+
+
+def breaker(parser, ttype):
+    h = symbol(parser, ttype, None)
+    h.is_breaker = True
+    return h
 
 
 def skip(parser, ttype):
