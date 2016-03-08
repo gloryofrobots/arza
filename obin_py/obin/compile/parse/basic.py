@@ -483,13 +483,15 @@ def flatten_juxtaposition(parser, node):
         return nodes.list_node([node])
 
 
-def juxtaposition_list(parser, terminators):
+def juxtaposition_list(parser, terminators, skip_commas=True):
     args = []
+    if parser.token_type in terminators:
+        return None, args
     while True:
         node, _lbp = _expression(parser, 0, terminators)
         args.append(node)
 
-        if parser.token_type == TT_COMMA:
+        if parser.token_type == TT_COMMA and skip_commas:
             advance(parser)
 
         if parser.token_type in terminators:

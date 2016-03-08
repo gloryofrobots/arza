@@ -189,7 +189,7 @@
                   },
                   {
                     "_ntype": "NT_NAME",
-                    "_value": "negate"
+                    "_value": "*"
                   }
                 ]
               ]

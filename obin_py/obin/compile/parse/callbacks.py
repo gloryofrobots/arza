@@ -76,16 +76,7 @@ def led_infixr(parser, op, node, left):
     return node_2(__ntype(node), __ntok(node), left, exp)
 
 
-def prefix_operator_infix_nud_default(parser, op, node):
-    if parser.token_type == TT_RPAREN:
-        return nodes.create_name_node(node, api.to_s(op.infix_function))
-    else:
-        parse_error(parser, u"Invalid use of infix operator.", node)
-
-
 def prefix_nud_function(parser, op, node):
-    if parser.token_type == TT_RPAREN:
-        return nodes.create_name_node(node, api.to_s(op.prefix_function))
     exp = literal_expression(parser)
     return nodes.create_call_node_name(node, op.prefix_function, [exp])
 
@@ -303,23 +294,47 @@ def prefix_lparen_tuple(parser, op, node):
     advance_expected(parser, TT_RPAREN)
     return node_1(NT_TUPLE, __ntok(node), nodes.list_node(items))
 
+def prefix_lparen_operator(parser):
+    op_node = grab_name_or_operator(parser)
+    _, args = juxtaposition_list(parser, [TT_RPAREN, TT_COMMA], False)
 
+    op = parser_find_operator(parser, nodes.node_value(op_node))
+    if op is None or space.isvoid(op):
+        return parse_error(parser, u"Invalid operator", op_node)
+
+    length = len(args)
+    if length == 0:
+        return nodes.create_name_node(op_node, api.to_s(op.infix_function))
+    elif length == 1:
+        if op.nud is None:
+            return parse_error(parser, u"Invalid prefix operator", op_node)
+
+        return nodes.create_call_node_name(op_node, op.prefix_function, args)
+
+    else:
+        return parse_error(parser, u"Invalid use of infix operator", op_node)
+
+
+# MOST complicated operator
+# handles
+# function application (f a 1 2 3)
+# function application with commas (f a, 1, 2, 3) == (f a 1 2 3)
+# tuples (1,2,3,4,5)
+# operators as functions (+)
 def prefix_lparen(parser, op, node):
-    # if parser.token_type == TT_OPERATOR:
-    #     name = _init_default_current_0(parser)
-    #     op = nodes.create_name_from_operator(node, name)
-    #     advance(parser)
-    #     if parser.token_type != TT_RPAREN:
-    #         parse_error(parser, u"Invalid syntax for operator in prefix mode, use (op)", node)
-    #
-    #     advance_expected(parser, TT_RPAREN)
-    #     return op
-
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
         return nodes.create_unit_node(node)
 
-    e = expressions(parser, 0)
+    if parser.token_type == TT_OPERATOR:
+        operator = prefix_lparen_operator(parser)
+        if parser.token_type == TT_RPAREN:
+            advance_expected(parser, TT_RPAREN)
+            return operator
+        else:
+            e = operator
+    else:
+        e = expressions(parser, 0)
 
     if parser.token_type != TT_COMMA:
         advance_expected(parser, TT_RPAREN)
@@ -892,8 +907,6 @@ def _meta_infix(parser, node, infix_function):
 
     op = parser_current_scope_find_operator_or_create_new(parser, op_value)
     op = operator_infix(op, precedence, infix_function, func_value)
-    if op.nud is None:
-        op = operator_prefix(op, prefix_operator_infix_nud_default, None)
     endofexpression(parser)
     parser_current_scope_add_operator(parser, op_value, op)
 
