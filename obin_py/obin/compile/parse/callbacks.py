@@ -295,6 +295,7 @@ def prefix_lparen_tuple(parser, op, node):
     return node_1(NT_TUPLE, __ntok(node), nodes.list_node(items))
 
 def prefix_lparen_operator(parser):
+    # return operator as function name or prefix expression (-) or (-1)
     op_node = grab_name_or_operator(parser)
     _, args = juxtaposition_list(parser, [TT_RPAREN, TT_COMMA], False)
 
@@ -334,7 +335,7 @@ def prefix_lparen(parser, op, node):
         else:
             e = operator
     else:
-        e = expressions(parser, 0)
+        e = expressions(parser, 0, [TT_RPAREN])
 
     if parser.token_type != TT_COMMA:
         advance_expected(parser, TT_RPAREN)
@@ -345,7 +346,7 @@ def prefix_lparen(parser, op, node):
 
     if parser.token_type != TT_RPAREN:
         while True:
-            items.append(expressions(parser, 0))
+            items.append(expressions(parser, 0, [TT_COMMA]))
             if parser.token_type != TT_COMMA:
                 break
 

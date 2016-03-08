@@ -1,8 +1,5 @@
-import from obin:core:types (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
-                             Function, Generic, Method, NativeFunction, Fiber, Trait, Datatype, TVar, Env)
-//TODO FIX IT
-length = obin:lang:length
-
+//import from obin:core:types (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+//                             Function, Generic, Method, NativeFunction, Fiber, Trait, Datatype, TVar, Env)
 @prefix - negate
 @infixl < < 50
 @infixl > > 50
@@ -17,13 +14,18 @@ length = obin:lang:length
 @infixr :: cons 70
 @infixl ++ ++ 70
 
-fun t x ->
-//    (ast 2 -3)
-    (1, 3, 4, (*))
-end
+//fun t x ->
+//
+////    add 13 16 + 14 + 15
+//end
 
-//
-//
+
+////TODO FIX IT
+//length = obin:lang:length
+fun take_while
+| p [] -> []
+| p [x, ...xs] -> x :: (take_while p xs) if p x else []
+--------------------------------------------------
 //
 //union Ordering
 //    | LT | GT | EQ

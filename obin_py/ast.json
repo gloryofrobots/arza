@@ -1,159 +1,11 @@
 [
   {
-    "_ntype": "NT_IMPORT_FROM",
-    "_value": "import",
-    "children": [
-      {
-        "_ntype": "NT_LOOKUP_MODULE",
-        "_value": ":",
-        "children": [
-          {
-            "_ntype": "NT_LOOKUP_MODULE",
-            "_value": ":",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "obin"
-              },
-              {
-                "_ntype": "NT_NAME",
-                "_value": "core"
-              }
-            ]
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "types"
-          }
-        ]
-      },
-      {
-        "_ntype": "NT_TUPLE",
-        "_value": "(",
-        "children": [
-          [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Bool"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Char"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Int"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Float"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Symbol"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "String"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "List"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Vector"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Tuple"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Map"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Function"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Generic"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Method"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "NativeFunction"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Fiber"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Trait"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Datatype"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "TVar"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Env"
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_ASSIGN",
-    "_value": "=",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "length"
-      },
-      {
-        "_ntype": "NT_LOOKUP_MODULE",
-        "_value": ":",
-        "children": [
-          {
-            "_ntype": "NT_LOOKUP_MODULE",
-            "_value": ":",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "obin"
-              },
-              {
-                "_ntype": "NT_NAME",
-                "_value": "lang"
-              }
-            ]
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "length"
-          }
-        ]
-      }
-    ]
-  },
-  {
     "_ntype": "NT_FUN",
     "_value": "fun",
     "children": [
       {
         "_ntype": "NT_NAME",
-        "_value": "t"
+        "_value": "take_while"
       },
       [
         [
@@ -164,34 +16,127 @@
               [
                 {
                   "_ntype": "NT_NAME",
-                  "_value": "x"
+                  "_value": "p"
+                },
+                {
+                  "_ntype": "NT_LIST",
+                  "_value": "[",
+                  "children": [
+                    []
+                  ]
                 }
               ]
             ]
           },
           [
             {
-              "_ntype": "NT_TUPLE",
-              "_value": "(",
+              "_ntype": "NT_LIST",
+              "_value": "[",
               "children": [
-                [
-                  {
-                    "_ntype": "NT_INT",
-                    "_value": "1"
-                  },
-                  {
-                    "_ntype": "NT_INT",
-                    "_value": "3"
-                  },
-                  {
-                    "_ntype": "NT_INT",
-                    "_value": "4"
-                  },
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "*"
-                  }
-                ]
+                []
+              ]
+            }
+          ]
+        ],
+        [
+          {
+            "_ntype": "NT_TUPLE",
+            "_value": "(",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "p"
+                },
+                {
+                  "_ntype": "NT_LIST",
+                  "_value": "[",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "x"
+                      },
+                      {
+                        "_ntype": "NT_REST",
+                        "_value": "...",
+                        "children": [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "xs"
+                          }
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          },
+          [
+            {
+              "_ntype": "NT_TERNARY_CONDITION",
+              "_value": "if",
+              "children": [
+                {
+                  "_ntype": "NT_CALL",
+                  "_value": "p",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "p"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "x"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "_ntype": "NT_CALL",
+                  "_value": "(",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "cons"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "x"
+                      },
+                      {
+                        "_ntype": "NT_CALL",
+                        "_value": "take_while",
+                        "children": [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "take_while"
+                          },
+                          [
+                            {
+                              "_ntype": "NT_NAME",
+                              "_value": "p"
+                            },
+                            {
+                              "_ntype": "NT_NAME",
+                              "_value": "xs"
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "_ntype": "NT_LIST",
+                  "_value": "[",
+                  "children": [
+                    []
+                  ]
+                }
               ]
             }
           ]
