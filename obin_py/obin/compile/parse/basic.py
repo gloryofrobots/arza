@@ -410,6 +410,8 @@ def _expression(parser, _rbp, terminators=None):
     # print "******"
     # print "rbp ", _rbp
     # print "previous", previous
+    if is_breaker(parser, previous):
+        return previous, -1000
     advance(parser)
 
     left = nud(parser, previous)
@@ -489,6 +491,8 @@ def expressions(parser, _rbp, terminators=None):
         new_terminators = terminators + [TT_OPERATOR]
         while True:
             node, _lbp = _expression(parser, _rbp, new_terminators)
+            if _lbp == -1000:
+                break
             args.append(node)
 
             if parser.token_type == TT_OPERATOR:
@@ -504,8 +508,7 @@ def expressions(parser, _rbp, terminators=None):
 
             if parser.token_type == TT_COMMA:
                 advance(parser)
-
-            if parser.token_type in terminators or parser.is_newline_occurred:
+            elif parser.token_type in terminators or parser.is_newline_occurred:
                 break
 
         return nodes.node_2(NT_CALL, nodes.node_token(expr), expr, nodes.list_node(args))
@@ -515,7 +518,22 @@ def expressions(parser, _rbp, terminators=None):
         # return expr
     else:
         return expr
-
+# def expressions(parser, _rbp, terminators=None):
+#     expr, _lbp = _expression(parser, _rbp, terminators)
+#
+#     if _lbp == -1:
+#         if parser.break_on_juxtaposition:
+#             return expr
+#
+#         if not parser.allow_juxtaposition:
+#             parse_error(parser, u"Invalid juxtaposition syntax", parser.node)
+#
+#         expr = nodes.node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), expr,
+#                             _juxtaposition_expression(parser, _rbp, terminators))
+#         expr = process_juxtaposition_expression(parser, expr)
+#         return expr
+#     else:
+#         return expr
 
 def flatten_juxtaposition(parser, node):
     ntype = nodes.node_type(node)
@@ -658,14 +676,14 @@ def literal(parser, ttype):
     parser_set_nud(parser, ttype, itself)
 
 
-def symbol(parser, ttype, nud):
+def symbol(parser, ttype, nud=None):
     h = get_or_create_operator(parser, ttype)
     h.lbp = 0
     parser_set_nud(parser, ttype, nud)
     return h
 
 
-def breaker(parser, ttype):
+def breaker(parser, ttype, _=None):
     h = symbol(parser, ttype, None)
     h.is_breaker = True
     return h

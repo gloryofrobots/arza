@@ -469,7 +469,7 @@ def _parse_pattern(parser):
     pattern = expressions(parser.pattern_parser, 0, TERM_PATTERN)
     if parser.token_type == TT_WHEN:
         advance(parser)
-        guard = expression(parser.guard_parser, 0, TERM_FUN_GUARD)
+        guard = expressions(parser.guard_parser, 0, TERM_FUN_GUARD)
         pattern = node_2(NT_WHEN, __ntok(guard), pattern, guard)
 
     return pattern

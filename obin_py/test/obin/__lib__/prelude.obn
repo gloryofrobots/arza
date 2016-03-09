@@ -14,18 +14,24 @@
 @infixr :: cons 70
 @infixl ++ ++ 70
 
-//fun t x ->
-//
-////    add 13 16 + 14 + 15
-//end
+fun t x ->
+    f 1 2 3 + 4
+//    not 1 and not 2
+//    match (1,2,3)
+////      | (1,2, 3) when not x == True -> 1
+//    | (x, y, z) when z == 3 and not (A `is` True) and (greater_then_ten 9) -> #fifth
+////    | (x, y, z) when z == 3 and y == 2 and x == 1 and A `is` True or (greater_then_ten 11) -> #sixth
+//    | _ -> 12
+//    end
+end
 
 
-////TODO FIX IT
-//length = obin:lang:length
-fun take_while
-| p [] -> []
-| p [x, ...xs] -> x :: (take_while p xs) if p x else []
---------------------------------------------------
+////////TODO FIX IT
+length = obin:lang:length
+//fun take_while
+//| p [] -> []
+//| p [x, ...xs] -> x :: (take_while p xs) if p x else []
+//--------------------------------------------------
 //
 //union Ordering
 //    | LT | GT | EQ
