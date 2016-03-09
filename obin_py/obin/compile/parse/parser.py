@@ -345,6 +345,7 @@ def expression_parser_init(proc_data, parser):
 
 
 def module_parser_init(parser):
+    stmt(parser, TT_FUN, prefix_module_fun)
 
     stmt(parser, TT_TRAIT, stmt_trait)
     stmt(parser, TT_TYPE, stmt_type)
@@ -355,8 +356,9 @@ def module_parser_init(parser):
     stmt(parser, TT_EXPORT, stmt_export)
     # stmt(parser, TT_MODULE, stmt_module)
 
-    stmt(parser, TT_AT_SIGN, stmt_module_at)
-    prefix(parser, TT_FUN, prefix_module_fun)
+    stmt(parser, TT_INFIXL, stmt_infixl)
+    stmt(parser, TT_INFIXR, stmt_infixr)
+    stmt(parser, TT_PREFIX, stmt_prefix)
     return parser
 
 

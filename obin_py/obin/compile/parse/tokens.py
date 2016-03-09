@@ -7,7 +7,6 @@ from obin.misc.platform import re
 def keyword(literal):
     return re.compile('\\b%s\\b' % literal)
 
-
 token = re.compile
 
 ## Regexes for use in tokens
@@ -111,6 +110,10 @@ RULES = [
 
     (keyword('var'), TT_VAR),
     (keyword('lazy'), TT_LAZY),
+    
+    (keyword('infixl'), TT_INFIXL),
+    (keyword('infixr'), TT_INFIXR),
+    (keyword('prefixes'), TT_PREFIX),
 
     # (keyword('return'), TT_RETURN),
 

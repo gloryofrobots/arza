@@ -51,6 +51,10 @@ TOKENS = [
   ("TT_TRAIT", "trait"),
   ("TT_END", "end"),
 
+  ("TT_INFIXL", "infixl"),
+  ("TT_INFIXR", "infixr"),
+  ("TT_PREFIX", "prefix"),
+
 
   ("TT_AMP", "&"),
   ("TT_ELLIPSIS", "..."),

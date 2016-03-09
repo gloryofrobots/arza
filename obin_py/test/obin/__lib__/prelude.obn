@@ -1,19 +1,20 @@
 import from obin:core:types (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                              Function, Generic, Method, NativeFunction, Fiber, Trait, Datatype, TVar, Env)
 
-@prefix - negate
-@infixl < < 50
-@infixl > > 50
-@infixl >= >= 50
-@infixl <= <= 50
-@infixl == == 50
-@infixl != != 50
-@infixl + + 60
-@infixl - - 60
-@infixl * * 65
-@infixl / / 65
-@infixr :: cons 70
-@infixl ++ ++ 70
+//TODO RENAME to prefix
+prefixes - negate
+infixl < < 50
+infixl > > 50
+infixl >= >= 50
+infixl <= <= 50
+infixl == == 50
+infixl != != 50
+infixl + + 60
+infixl - - 60
+infixl * * 65
+infixl / / 65
+infixr :: cons 70
+infixl ++ ++ 70
 
 
 //fun t  x . y ->

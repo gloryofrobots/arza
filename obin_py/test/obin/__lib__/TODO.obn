@@ -7,6 +7,8 @@
 //TODO ERRORS
 //TODO SLICES
 //TODO remove voids as values in datastructs
+//TODO separate token streams
+//TODO syntax block with macros and custom operators
 
 //trait Any for self
 //
