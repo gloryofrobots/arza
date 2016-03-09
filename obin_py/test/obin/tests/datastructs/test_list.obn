@@ -50,13 +50,13 @@ fun test () ->
     affirm:is_equal (list:split_at 3 l1)  ([0, 1, 2], [3, 4, 5, 6, 7, 8, 9])
     affirm:is_equal (list:take_while lam x -> x < 5; l1) [0, 1, 2, 3, 4]
     affirm:is_equal (list:drop_while lam x -> x < 5; l1) [5, 6, 7, 8, 9]
-    affirm:is_equal (list:span lam x -> x < 3; [1,2,3,4,1,2,3,4]),
+    affirm:is_equal (list:span lam x -> x < 3; [1,2,3,4,1,2,3,4]) . 
                     ([1, 2], [3, 4, 1, 2, 3, 4])
 
-    affirm:is_equal (list:span lam x -> x < 9; [1,2,3]),
+    affirm:is_equal (list:span lam x -> x < 9; [1,2,3]) . 
                     ([1, 2, 3], [])
 
-    affirm:is_equal (list:span lam x -> x < 0; [1,2,3]),
+    affirm:is_equal (list:span lam x -> x < 0; [1,2,3]) . 
                     ([], [1, 2, 3])
 
     affirm:is_true (list:conjunction [True, True, True, True])

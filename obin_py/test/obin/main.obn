@@ -1,5 +1,5 @@
 import affirm
-import tests:test_operators
+//import tests:test_operators
 
 import tests:test_co
 import tests:test_destruct
@@ -55,7 +55,7 @@ fun test() ->
     log "TEST MODULE"
     test_module:test()
 
-    test_operators:test()
+//    test_operators:test()
 ---
 
 fun add x y -> x + y end

@@ -58,8 +58,8 @@ fun test () ->
     affirm:is_equal (test_local_overwrite 1) (-1998)
     affirm:is_equal (test_local_overwrite_2 1) (-198)
 
-    affirm:is_throw_expected fun f x -> test_use_static_and_fail x end,
-                             [1],
+    affirm:is_throw_expected fun f x -> test_use_static_and_fail x end . 
+                             [1] . 
                              (#NotImplementedError, (#_length_, 1))
 
     affirm:is_equal (test_use_static_single_pass 1) 202

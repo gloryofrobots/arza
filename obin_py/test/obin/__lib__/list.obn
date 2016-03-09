@@ -141,7 +141,7 @@ fun range
     step = -1 if last < 0 else 1
     range first last step
     ///////////////////////////////////////
-| first of Int, last of Int, step of Int ->
+| first of Int . last of Int . step of Int ->
     fun _range
     | N X D L when N >= 4 ->
         Y = X - D

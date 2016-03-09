@@ -36,7 +36,7 @@ class BaseParser:
         self.handlers = {}
         self.state = None
         self.allow_overloading = False
-        self.allow_juxtaposition = False
+        # TODO REMOVE IT
         self.break_on_juxtaposition = False
 
     def open(self, state):
@@ -195,11 +195,10 @@ def import_parser_init(parser):
 
 def guard_parser_init(proc_data, parser):
     parser.allow_overloading = True
-    parser.allow_juxtaposition = True
     parser = init_parser_literals(parser)
 
 
-    breaker(parser, TT_COMMA, None)
+    symbol(parser, TT_COMMA, None)
     breaker(parser, TT_RPAREN, None)
     breaker(parser, TT_RCURLY, None)
     breaker(parser, TT_RSQUARE, None)
@@ -222,7 +221,7 @@ def guard_parser_init(proc_data, parser):
 def pattern_parser_init(parser):
     parser.break_on_juxtaposition = True
 
-
+    # infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly_patterns)
@@ -235,7 +234,7 @@ def pattern_parser_init(parser):
     symbol(parser, TT_JUXTAPOSITION)
     breaker(parser, TT_WHEN)
     breaker(parser, TT_CASE)
-    breaker(parser, TT_COMMA)
+    symbol(parser, TT_COMMA)
     breaker(parser, TT_RPAREN)
     breaker(parser, TT_RCURLY)
     breaker(parser, TT_RSQUARE)
@@ -288,7 +287,6 @@ def base_parser_init(parser):
 
 def expression_parser_init(proc_data, parser):
     parser.allow_overloading = True
-    parser.allow_juxtaposition = True
     # OTHER OPERATORS ARE DECLARED IN prelude.obn
 
     # support for destructive assignments, would work only in assignment expressions

@@ -141,7 +141,7 @@ class W_Operator(root.W_Hashable):
         self.led = None
         self.std = None
         self.lbp = -1
-        self.is_breaker = False
+        # self.is_breaker = False
 
         self.prefix_function = None
         self.infix_function = None
@@ -225,9 +225,9 @@ def node_operator(parser, node):
         return parse_error(parser, u"Invalid operator", node)
     return op
 
-def is_breaker(parser, node):
-    handler = node_operator(parser, node)
-    return handler.is_breaker
+# def is_breaker(parser, node):
+#     handler = node_operator(parser, node)
+#     return handler.is_breaker
 
 def nud(parser, node):
     handler = node_operator(parser, node)
@@ -409,8 +409,6 @@ def base_expression(parser, _rbp, terminators=None):
     # print "******"
     # print "rbp ", _rbp
     # print "previous", previous
-    if is_breaker(parser, previous):
-        return previous, -1000
     advance(parser)
 
     left = nud(parser, previous)
@@ -548,6 +546,7 @@ def juxtaposition_list(parser, terminators, skip=None):
                 advance(parser)
 
         node, _lbp = base_expression(parser, 0, terminators)
+        print node
         args.append(node)
 
         if parser.token_type in terminators:
@@ -720,9 +719,10 @@ def symbol(parser, ttype, nud=None):
     return h
 
 
+# TODO REMOVE IT
 def breaker(parser, ttype, _=None):
     h = symbol(parser, ttype, None)
-    h.is_breaker = True
+    # h.is_breaker = True
     return h
 
 
