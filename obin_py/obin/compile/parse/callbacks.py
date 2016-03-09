@@ -298,27 +298,27 @@ def prefix_lparen_tuple(parser, op, node):
     advance_expected(parser, TT_RPAREN)
     return node_1(NT_TUPLE, __ntok(node), nodes.list_node(items))
 
-def prefix_lparen_operator(parser):
-    # return operator as function name or prefix expression (-) or (-1)
-    op_node = grab_name_or_operator(parser)
-    _, args = juxtaposition_list(parser, [TT_RPAREN])
-
-    op = parser_find_operator(parser, nodes.node_value(op_node))
-    if op is None or space.isvoid(op):
-        return parse_error(parser, u"Invalid operator", op_node)
-
-    length = len(args)
-    if length == 0:
-        return nodes.create_name_node(op_node, api.to_s(op.infix_function))
-    elif length == 1:
-        if op.nud is None:
-            return parse_error(parser, u"Invalid prefix operator", op_node)
-
-        return nodes.create_call_node_name(op_node, op.prefix_function, args)
-
-    else:
-        return parse_error(parser, u"Invalid use of infix operator", op_node)
-
+# def prefix_lparen_operator(parser):
+#     # return operator as function name or prefix expression (-) or (-1)
+#     op_node = grab_name_or_operator(parser)
+#     _, args = juxtaposition_list(parser, [TT_RPAREN])
+# 
+#     op = parser_find_operator(parser, nodes.node_value(op_node))
+#     if op is None or space.isvoid(op):
+#         return parse_error(parser, u"Invalid operator", op_node)
+# 
+#     length = len(args)
+#     if length == 0:
+#         return nodes.create_name_node(op_node, api.to_s(op.infix_function))
+#     elif length == 1:
+#         if op.nud is None:
+#             return parse_error(parser, u"Invalid prefix operator", op_node)
+# 
+#         return nodes.create_call_node_name(op_node, op.prefix_function, args)
+# 
+#     else:
+#         return parse_error(parser, u"Invalid use of infix operator", op_node)
+# 
 
 # MOST complicated operator
 # handles
@@ -331,13 +331,13 @@ def prefix_lparen(parser, op, node):
         advance_expected(parser, TT_RPAREN)
         return nodes.create_unit_node(node)
 
-    if parser.token_type == TT_OPERATOR:
-        operator = prefix_lparen_operator(parser)
-        if parser.token_type == TT_RPAREN:
-            advance_expected(parser, TT_RPAREN)
-            return operator
-        else:
-            e = operator
+    # if parser.token_type == TT_OPERATOR:
+    #     operator = prefix_lparen_operator(parser)
+    #     if parser.token_type == TT_RPAREN:
+    #         advance_expected(parser, TT_RPAREN)
+    #         return operator
+    #     else:
+    #         e = operator
     else:
         e = expressions(parser, 0, [TT_RPAREN])
 

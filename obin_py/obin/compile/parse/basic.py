@@ -546,7 +546,6 @@ def juxtaposition_list(parser, terminators, skip=None):
                 advance(parser)
 
         node, _lbp = base_expression(parser, 0, terminators)
-        print node
         args.append(node)
 
         if parser.token_type in terminators:

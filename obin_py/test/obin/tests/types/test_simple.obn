@@ -68,9 +68,9 @@ fun test () ->
     p = Point2 0 1
     p1 = Point2 42
 
-    affirm:is_true p == p
-    affirm:is_true p == (Point2 0 1)
-    affirm:is_false p == p1
+    affirm:is_true (p == p)
+    affirm:is_true (p == (Point2 0 1))
+    affirm:is_false (p == p1)
     affirm:is_equal p.0 p.x
     affirm:is_equal p.1 p.y
     affirm:is_equal p (Point2 0 1)

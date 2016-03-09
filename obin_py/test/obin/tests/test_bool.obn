@@ -7,13 +7,13 @@ fun test() ->
     affirm:is_not_equal False True
     affirm:is_equal (not False) True
     affirm:is_equal (not True) False
-    affirm:is_true True and True
-    affirm:is_false False and True
-    affirm:is_false False and False
-    affirm:is_false True and False
-    affirm:is_true True or False
-    affirm:is_true False or True
-    affirm:is_false False or False
+    affirm:is_true (True and True)
+    affirm:is_false (False and True)
+    affirm:is_false (False and False)
+    affirm:is_false (True and False)
+    affirm:is_true (True or False)
+    affirm:is_true (False or True)
+    affirm:is_false (False or False)
     affirm:is_same False False
     affirm:is_same True True
 //
@@ -32,7 +32,7 @@ fun test() ->
 
     x = 0
     y = 1
-    affirm:is_false x `is` y
-    affirm:is_true x `isnot` y
+    affirm:is_false (x `is` y)
+    affirm:is_true (x `isnot` y)
 end
 

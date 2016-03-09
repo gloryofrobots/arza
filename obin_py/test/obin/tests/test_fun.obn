@@ -42,7 +42,7 @@ fun test () ->
 
     fun fact
     | 0 -> 1
-    | n -> n * (fact n - 1)
+    | n -> n * fact (n - 1)
     ------------------
 
     affirm:is_equal (fact 7) 5040
@@ -57,10 +57,10 @@ fun test () ->
     ------------------------------
 
 
-    affirm:is_equal (func1 1,2,3,4,5,6,7,8,9,10,11) . 
+    affirm:is_equal (func1 1 2 3 4 5 6 7 8 9 10 11) . 
                     (6, 7, 8, (9, 10, 11))
 
-    affirm:is_equal (func1 {key1=#key1, key2=#key2, key3=25} [#first, #second, #third, 4,5,6,7]) . 
+    affirm:is_equal (func1 {key1=#key1, key2=#key2, key3=25} [#first, #second, #third, 4,5,6,7]) .  
                     (#key2, #first, #third, [4, 5, 6, 7])
 
     fun func2
@@ -105,7 +105,7 @@ fun test () ->
     //case func
     fun fn_case1 | arg1  arg2 { var1 @ key1=2, key2} of Map ...rest -> (arg1, arg2, var1, key2, rest) end
 
-    affirm:is_equal (fn_simple1 0,1, {key1=2, key2=3}, 4,5,6) (fn_case1 0,1, {key1=2, key2=3}, 4,5,6)
+    affirm:is_equal (fn_simple1 0 1 {key1=2, key2=3}  4 5 6) (fn_case1 0 1  {key1=2, key2=3}  4 5 6)
 
     ////////////////////////////////////////////////////
 

@@ -16,7 +16,7 @@ fun intersperse
 fun reverse
 | l of List -> reverse l []
 | [] result -> result
-| [hd, ...tl] result -> (reverse tl hd :: result)
+| [hd, ...tl] result -> (reverse tl (hd :: result))
 ----------------------------------------
 
 //REDUCERS///////////////////////////////////////////////////////
@@ -79,7 +79,7 @@ fun drop
 fun take
 | 0 _ -> []
 | _ [] -> []
-| n [x, ...xs] -> x :: (take n-1, xs)
+| n [x, ...xs] -> x :: (take (n-1)  xs)
 --------------------------------------------------
 
 fun split_at | n of Int l of List -> ((take n l), (drop n  l)) end

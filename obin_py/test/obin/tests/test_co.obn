@@ -9,7 +9,7 @@ fun test () ->
                     coroutine fun
                               | yield2 y ->
                                    fun send () ->
-                                        yield2 42 + y
+                                        yield2 (42 + y)
                                    ------------------
                                    send ()
                               -------------------

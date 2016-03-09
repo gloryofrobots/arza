@@ -39,10 +39,10 @@ fun _abs v ->
 
 fun is_equal_float
 | val1 val2 ->
-    is_equal_float . val1 . val2 . 0.0001
+    is_equal_float  val1  val2  0.0001
 | val1 val2 delta ->
     try
-        is_true ((_abs val1) - (_abs val2)) < delta
+        is_true (((_abs val1) - (_abs val2)) < delta)
     | e ->
         fail [val1, "!=", val2]
     ---
