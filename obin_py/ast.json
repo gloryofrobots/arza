@@ -17,6 +17,10 @@
                 {
                   "_ntype": "NT_NAME",
                   "_value": "x"
+                },
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "y"
                 }
               ]
             ]
@@ -28,57 +32,35 @@
               "children": [
                 {
                   "_ntype": "NT_CALL",
-                  "_value": "f",
+                  "_value": "not",
                   "children": [
                     {
                       "_ntype": "NT_NAME",
-                      "_value": "f"
+                      "_value": "not"
                     },
                     [
                       {
                         "_ntype": "NT_INT",
-                        "_value": "331"
-                      },
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "332"
-                      },
-                      {
-                        "_ntype": "NT_OR",
-                        "_value": "or",
-                        "children": [
-                          {
-                            "_ntype": "NT_CALL",
-                            "_value": "c",
-                            "children": [
-                              {
-                                "_ntype": "NT_NAME",
-                                "_value": "c"
-                              },
-                              [
-                                {
-                                  "_ntype": "NT_INT",
-                                  "_value": "333"
-                                },
-                                {
-                                  "_ntype": "NT_INT",
-                                  "_value": "334"
-                                }
-                              ]
-                            ]
-                          },
-                          {
-                            "_ntype": "NT_INT",
-                            "_value": "1"
-                          }
-                        ]
+                        "_value": "1"
                       }
                     ]
                   ]
                 },
                 {
-                  "_ntype": "NT_INT",
-                  "_value": "3"
+                  "_ntype": "NT_CALL",
+                  "_value": "not",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "not"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_INT",
+                        "_value": "2"
+                      }
+                    ]
+                  ]
                 }
               ]
             }

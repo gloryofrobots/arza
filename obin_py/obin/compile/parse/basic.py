@@ -426,6 +426,9 @@ def base_expression(parser, _rbp, terminators=None):
                 return left, 0
 
         if _lbp < 0:
+            if parser.break_on_juxtaposition is True:
+                return left, _lbp
+
             op = parser_operator(parser, TT_JUXTAPOSITION)
             _lbp = op.lbp
             # return left, _lbp
@@ -533,22 +536,6 @@ def expressions(parser, _rbp, terminators=None):
     expr, _lbp = base_expression(parser, _rbp, terminators)
     expr = process_juxtaposition_expression(parser, expr)
     return expr
-
-
-    if _lbp == -1:
-        if parser.break_on_juxtaposition:
-            return expr
-
-        if not parser.allow_juxtaposition:
-            parse_error(parser, u"Invalid juxtaposition syntax", parser.node)
-
-        expr = nodes.node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), expr,
-                            _juxtaposition_expression(parser, _rbp, terminators))
-        expr = process_juxtaposition_expression(parser, expr)
-        return expr
-    else:
-        return expr
-
 
 
 def juxtaposition_list(parser, terminators, skip_commas=True):
