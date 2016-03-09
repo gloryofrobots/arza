@@ -51,12 +51,12 @@ class References(W_Any):
             # print " new ref", ref
             # assert ref is not None
             if space.isvoid(ref):
-                return error.throw_1(error.Errors.REFERENCE, symbol)
+                return error.throw_1(error.Errors.REFERENCE_ERROR, symbol)
             self._set_refs(index, ref)
 
         val = ref.get_value()
         if space.isvoid(val):
-            return error.throw_1(error.Errors.REFERENCE, symbol)
+            return error.throw_1(error.Errors.REFERENCE_ERROR, symbol)
         return val
 
 def newreferences(refs):

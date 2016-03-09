@@ -71,7 +71,7 @@ class W_PList(W_Any):
 
     def _at_(self, key):
         if not space.isint(key):
-            error.throw_1(error.Errors.TYPE, key)
+            error.throw_1(error.Errors.TYPE_ERROR, key)
 
         int_index = api.to_i(key)
         if int_index < 0:
@@ -198,7 +198,7 @@ def take(pl, count):
         return empty()
 
     if is_empty(pl):
-        return error.throw_1(error.Errors.INDEX, space.newint(count))
+        return error.throw_1(error.Errors.INDEX_ERROR, space.newint(count))
     return cons(head(pl), take(pop(pl), count - 1))
 
 
@@ -207,7 +207,7 @@ def drop(pl, count):
     if count == 0:
         return pl
     if is_empty(pl):
-        return error.throw_1(error.Errors.INDEX, space.newint(count))
+        return error.throw_1(error.Errors.INDEX_ERROR, space.newint(count))
 
     return drop(tail(pl), count - 1)
 
@@ -216,7 +216,7 @@ def drop(pl, count):
 
 def _slice(pl, index, start, end):
     if is_empty(pl):
-        return error.throw_3(error.Errors.SLICE, space.newint(index),
+        return error.throw_3(error.Errors.SLICE_ERROR, space.newint(index),
                              space.newint(start), space.newint(end))
 
     if index < start:
@@ -281,7 +281,7 @@ def insert(pl, index, v):
         return cons(v, pl)
 
     if is_empty(pl):
-        return error.throw_1(error.Errors.INDEX, space.newint(index))
+        return error.throw_1(error.Errors.INDEX_ERROR, space.newint(index))
 
     return W_PList(head(pl), insert(tail(pl), index - 1, v))
 
@@ -292,7 +292,7 @@ def update(pl, index, v):
         return cons(v, tail(pl))
 
     if is_empty(tail(pl)):
-        return error.throw_1(error.Errors.INDEX, space.newint(index))
+        return error.throw_1(error.Errors.INDEX_ERROR, space.newint(index))
 
     return W_PList(head(pl), update(tail(pl), index - 1, v))
 

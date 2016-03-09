@@ -820,7 +820,6 @@ def stmt_trait(parser, op, node):
     return nodes.node_4(NT_TRAIT, __ntok(node), name, instance_name, constraints, nodes.list_node(methods))
 
 
-# TODO GET RID OF DUPLICATION
 def stmt_implement(parser, op, node):
     type_parser = parser.type_parser
     trait_name = grab_name(type_parser)
@@ -842,16 +841,8 @@ def stmt_implement(parser, op, node):
 # OPERATORS
 
 def stmt_prefix(parser, op, node):
-    # options_tuple = expressions(parser.name_parser, 0)
-    # check_node_type(parser, options_tuple, NT_TUPLE)
-    # options = nodes.node_first(options_tuple)
-    _, options = juxtaposition_list_while_not_breaks(parser.name_parser)
-    if api.length_i(options) != 2:
-        return parse_error(parser, u"Invalid prefix operator options", parser.node)
-    op_node = options[0]
-    func_node = options[1]
-    check_node_type(parser, op_node, NT_NAME)
-    check_node_types(parser, func_node, [NT_NAME, NT_SYMBOL])
+    op_node = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    func_node = expect_expression_of(parser.name_parser, 0, NT_NAME)
 
     op_value = symbol_or_name_value(parser, op_node)
     func_value = symbol_or_name_value(parser, func_node)

@@ -104,7 +104,7 @@ def apply(process, routine):
     if space.islist(args):
         args = plist.to_tuple(args)
     elif not space.istuple(args):
-        return error.throw_1(error.Errors.TYPE, space.newstring(u"arguments tuple expected"))
+        return error.throw_1(error.Errors.TYPE_ERROR, space.newstring(u"arguments tuple expected"))
     api.call(process, func, args)
 
 

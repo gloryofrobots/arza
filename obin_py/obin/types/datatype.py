@@ -75,11 +75,11 @@ class W_DataType(W_Hashable):
 
     def add_trait_implementation(self, trait, implementations):
         if self.is_part_of_some_union():
-            return error.throw_2(error.Errors.TYPE, trait,
+            return error.throw_2(error.Errors.TYPE_ERROR, trait,
                                  space.newstring(u"Can't implement trait for type constructor. Use type instead"))
 
         if self.is_trait_implemented(trait):
-            return error.throw_1(error.Errors.TRAIT_ALREADY_IMPLEMENTED, trait)
+            return error.throw_1(error.Errors.TRAIT_ALREADY_IMPLEMENTED_ERROR, trait)
 
         impl_map = space.newmap()
         for impl in implementations:
@@ -129,7 +129,7 @@ class W_DataType(W_Hashable):
         for f in self.fields:
             v = api.lookup(env, f, undef)
             if space.isvoid(v):
-                error.throw_2(error.Errors.CONSTRUCTOR,
+                error.throw_2(error.Errors.CONSTRUCTOR_ERROR,
                               space.newstring(u"Missing required field. Check recursive constructor call"), f)
             values.append(v)
 
@@ -143,7 +143,7 @@ class W_DataType(W_Hashable):
 
     def _call_(self, process, args):
         if not self.has_constructor():
-            error.throw_2(error.Errors.CONSTRUCTOR,
+            error.throw_2(error.Errors.CONSTRUCTOR_ERROR,
                           space.newstring(u"Type is not constructor"), self)
 
         process.call_object(self, args)
@@ -177,7 +177,7 @@ def implement_trait(_type, trait, implementations):
     # GET DEFAULTS FIRST
     for constraint in trait.constraints:
         if not _type.is_trait_implemented(constraint):
-            error.throw_2(error.Errors.TRAIT_CONSTRAINT,
+            error.throw_2(error.Errors.TRAIT_CONSTRAINT_ERROR,
                           space.newstring(u"Unsatisfied trait constraint"), constraint)
 
     for m in trait.methods:
@@ -185,7 +185,7 @@ def implement_trait(_type, trait, implementations):
             continue
 
         if not m.has_default_implementation():
-            error.throw_2(error.Errors.TRAIT_IMPLEMENTATION,
+            error.throw_2(error.Errors.TRAIT_IMPLEMENTATION_ERROR,
                           space.newstring(u"Expected implementation of method"), m)
 
         implementations = plist.cons(plist.plist([m, m.default_implementation]),
@@ -194,7 +194,7 @@ def implement_trait(_type, trait, implementations):
     for impl in implementations:
         method = api.at_index(impl, 0)
         if not trait.has_method(method):
-            error.throw_2(error.Errors.TRAIT_IMPLEMENTATION, space.newstring(u"Unknown trait method"), method)
+            error.throw_2(error.Errors.TRAIT_IMPLEMENTATION_ERROR, space.newstring(u"Unknown trait method"), method)
     _type.add_trait_implementation(trait, implementations)
     return _type
 

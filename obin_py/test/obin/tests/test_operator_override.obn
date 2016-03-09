@@ -50,10 +50,10 @@ fun mul x y -> x * y end
 fun test () ->
     affirm:is_equal (sub 1 2) 3
     affirm:is_equal (mul 4 2) 2
-//    affirm:is_equal(sub_override.sub(1,2), 3)
-//    affirm:is_equal(sub_override.mul(4,2), 8)
-//    affirm:is_equal(sub_override.and_mul_override.sub(1,2), 3)
-//    affirm:is_equal(sub_override.and_mul_override.mul(4,2), 2)
+//    affirm:is_equal (sub_override.sub(1,2), 3)
+//    affirm:is_equal (sub_override.mul(4,2), 8)
+//    affirm:is_equal (sub_override.and_mul_override.sub(1,2), 3)
+//    affirm:is_equal (sub_override.and_mul_override.mul(4,2), 2)
 //
 //    affirm:is_equal(sub_not_override.sub(1,2), -1)
 --------------------------------------------------

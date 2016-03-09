@@ -36,11 +36,11 @@ def _get_method(process, func, args):
     # print "LOOKUP", gf._name_, args, arity
 
     if arity >= length:
-        return error.throw_2(error.Errors.METHOD_INVOKE, func, args)
+        return error.throw_2(error.Errors.METHOD_INVOKE_ERROR, func, args)
 
     method = func.methods[arity]
     if method is None:
-        return error.throw_2(error.Errors.METHOD_INVOKE, func, args)
+        return error.throw_2(error.Errors.METHOD_INVOKE_ERROR, func, args)
 
     return method
 

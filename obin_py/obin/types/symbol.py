@@ -39,7 +39,7 @@ class W_Symbol(W_Any):
     def _compare_(self, other):
         arg = string_or_symbol_string(other)
         if arg is None:
-            return error.throw_3(error.Errors.NOT_IMPLEMENTED, space.newstring(u"_compare_"), self, other)
+            return error.throw_3(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(u"_compare_"), self, other)
 
         return self.string._compare_(arg)
 

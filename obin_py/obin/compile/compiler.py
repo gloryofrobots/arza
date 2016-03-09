@@ -17,7 +17,7 @@ from obin.builtins import primitives
 
 def compile_error(compiler, code, node, message):
     line = code.info.get_line(api.to_i(nodes.node_line(node)))
-    return error.throw(error.Errors.COMPILE,
+    return error.throw(error.Errors.COMPILE_ERROR,
                        space.newtuple([
                            space.newstring(message),
                            space.newint(nodes.node_type(node)),
@@ -406,7 +406,7 @@ def _compile_MATCH(compiler, code, node):
     exp = node_first(node)
     patterns = node_second(node)
     _compile(compiler, code, exp)
-    _compile_match(compiler, code, node, patterns, error.Errors.MATCH)
+    _compile_match(compiler, code, node, patterns, error.Errors.MATCH_ERROR)
 
 
 def _compile_UNDEFINE(compiler, code, node):
@@ -634,7 +634,7 @@ def _compile_case_function(compiler, code, node, name, cases):
         _emit_fself(compiler, funccode, name, funcname)
 
     funccode.emit_0(FARGS, codeinfo_unknown())
-    _compile_match(compiler, funccode, node, cases, error.Errors.FUNCTION_MATCH)
+    _compile_match(compiler, funccode, node, cases, error.Errors.FUNCTION_MATCH_ERROR)
     current_scope = _current_scope(compiler)
     scope = current_scope.finalize(_previous_scope(compiler), None)
     _exit_scope(compiler)
@@ -743,7 +743,7 @@ def _compile_TRY(compiler, code, node):
 
     # exception on top of the stack due to internal process/routine logic
     code.emit_1(LABEL, catchlabel, codeinfo_unknown())
-    _compile_match(compiler, code, node, catches, error.Errors.EXCEPTION_MATCH)
+    _compile_match(compiler, code, node, catches, error.Errors.EXCEPTION_MATCH_ERROR)
 
     code.emit_1(JUMP, finallylabel, codeinfo_unknown())
     code.emit_1(LABEL, finallylabel, codeinfo_unknown())

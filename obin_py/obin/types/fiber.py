@@ -16,7 +16,7 @@ class W_Fiber(W_Callable):
     def _call_(self, process, args):
 
         if not self.fiber.is_waiting():
-            error.throw_1(error.Errors.FIBER_FLOW, space.newstring(u"Can't resume active fiber"))
+            error.throw_1(error.Errors.FIBER_FLOW_ERROR, space.newstring(u"Can't resume active fiber"))
 
         if api.length_i(args) == 0:
             value = space.newunit()

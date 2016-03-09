@@ -45,7 +45,7 @@ LOOP_CONTROL_TOKENS = [TT_END, TT_ELSE, TT_CASE]
 
 def parser_error_unknown(parser, position):
     line = get_line_for_position(parser.ts.src, position)
-    return error.throw(error.Errors.PARSE,
+    return error.throw(error.Errors.PARSE_ERROR,
                        space.newtuple([
                            space.newint(position),
                            space.newstring(u"Unknown Token"),
@@ -59,7 +59,7 @@ def parse_error(parser, message, node):
     else:
         line = get_line(parser.ts.src, api.to_i(nodes.node_line(node)))
 
-    return error.throw(error.Errors.PARSE,
+    return error.throw(error.Errors.PARSE_ERROR,
                        space.newtuple([
                            space.newtuple([nodes.node_position(node),
                                            nodes.node_line(node),

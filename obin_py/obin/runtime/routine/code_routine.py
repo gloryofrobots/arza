@@ -113,7 +113,7 @@ class CodeRoutine(BaseRoutine):
                 value = api.at_index(env, arg1)
                 if space.isvoid(value):
                     literal = literals[arg2]
-                    return error.throw_1(error.Errors.REFERENCE, literal)
+                    return error.throw_1(error.Errors.REFERENCE_ERROR, literal)
 
                 stack.push(value)
             # *************************************
@@ -153,7 +153,7 @@ class CodeRoutine(BaseRoutine):
                 error.affirm_type(seq, space.istuple)
                 seq_length = api.length_i(seq)
                 if seq_length != arg1:
-                    return error.throw_1(error.Errors.UNPACK_SEQUENCE, seq)
+                    return error.throw_1(error.Errors.UNPACK_SEQUENCE_ERROR, seq)
 
                 for i in range(seq_length - 1, -1, -1):
                     el = api.at_index(seq, i)

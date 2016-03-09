@@ -7,7 +7,7 @@ def check_implementation_0(operation_name):
             except NotImplementedError:
                 from obin.runtime import error
                 from obin.types import space
-                return error.throw_2(error.Errors.NOT_IMPLEMENTED, space.newstring(unicode(operation_name)), self)
+                return error.throw_2(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(unicode(operation_name)), self)
 
         return wrapper
 
@@ -22,7 +22,7 @@ def check_implementation_1(operation_name):
             except NotImplementedError:
                 from obin.runtime import error
                 from obin.types import space
-                return error.throw_3(error.Errors.NOT_IMPLEMENTED, space.newstring(unicode(operation_name)), self, arg1)
+                return error.throw_3(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(unicode(operation_name)), self, arg1)
 
         return wrapper
 
@@ -37,7 +37,7 @@ def check_implementation_2(operation_name):
             except NotImplementedError:
                 from obin.runtime import error
                 from obin.types import space
-                return error.throw_4(error.Errors.NOT_IMPLEMENTED,
+                return error.throw_4(error.Errors.NOT_IMPLEMENTED_ERROR,
                                      space.newstring(unicode(operation_name)), self, arg1, arg2)
 
         return wrapper
@@ -53,7 +53,7 @@ def check_implementation_3(operation_name):
             except NotImplementedError:
                 from obin.runtime import error
                 from obin.types import space
-                return error.throw_5(error.Errors.NOT_IMPLEMENTED,
+                return error.throw_5(error.Errors.NOT_IMPLEMENTED_ERROR,
                                      space.newstring(unicode(operation_name)),
                                      self, arg1, arg2, arg3)
 
@@ -66,13 +66,13 @@ def not_implemented_error(name, *args):
     from obin.types import space
     from obin.runtime import error
     if len(args) == 1:
-        return error.throw_2(error.Errors.NOT_IMPLEMENTED, space.newstring(name), args[0])
+        return error.throw_2(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name), args[0])
     elif len(args) == 2:
-        return error.throw_3(error.Errors.NOT_IMPLEMENTED, space.newstring(name), args[0], args[1])
+        return error.throw_3(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name), args[0], args[1])
     elif len(args) == 3:
-        return error.throw_4(error.Errors.NOT_IMPLEMENTED, space.newstring(name), args[0], args[1], args[2])
+        return error.throw_4(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name), args[0], args[1], args[2])
     elif len(args) == 4:
-        return error.throw_5(error.Errors.NOT_IMPLEMENTED, space.newstring(name), args[0], args[1], args[2], args[3])
+        return error.throw_5(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name), args[0], args[1], args[2], args[3])
     raise RuntimeError("not_implemented_error for arity not defined", len(args))
 
 

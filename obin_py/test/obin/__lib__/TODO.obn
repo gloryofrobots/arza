@@ -2,13 +2,15 @@
 //TODO :: in pattern matching
 //TODO ranges
 //TODO meta
-//TODO ERRORS AS TYPES
 //TODO strings in import modules
 //TODO ERRORS
 //TODO SLICES
 //TODO remove voids as values in datastructs
 //TODO separate token streams
 //TODO syntax block with macros and custom operators
+//TODO ast transform
+
+//TODO ERRORS AS TYPES
 
 //trait Any for self
 //

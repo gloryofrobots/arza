@@ -37,7 +37,7 @@ def load_module(process, name):
     filename = find_module_file(path, modules.path)
 
     if not filename:
-        return error.throw_1(error.Errors.IMPORT, name)
+        return error.throw_1(error.Errors.IMPORT_ERROR, name)
 
     return evaluate_module_file(process, name, filename)
 

@@ -33,7 +33,7 @@ def to_b(obj):
     elif obj is space.w_False:
         return False
 
-    error.throw_2(error.Errors.TYPE, space.newstring(u"Bool expected"), obj)
+    error.throw_2(error.Errors.TYPE_ERROR, space.newstring(u"Bool expected"), obj)
 
 
 def to_string(obj):
@@ -178,7 +178,7 @@ def kindof_b(process, obj, kind):
     elif space.isdatatype(kind):
         return typeof_b(process, obj, kind)
     else:
-        return error.throw_3(error.Errors.TYPE, obj, kind, space.newstring(u"Wrong kindof argument"))
+        return error.throw_3(error.Errors.TYPE_ERROR, obj, kind, space.newstring(u"Wrong kindof argument"))
 
 
 def traitof(process, obj, trait):
@@ -187,7 +187,7 @@ def traitof(process, obj, trait):
 
 def traitof_b(process, obj, trait):
     if not space.istrait(trait):
-        return error.throw_2(error.Errors.TYPE, trait, space.newstring(u"Trait expected"))
+        return error.throw_2(error.Errors.TYPE_ERROR, trait, space.newstring(u"Trait expected"))
 
     obj_type = get_type(process, obj)
     return obj_type.implements_trait(trait)
@@ -200,7 +200,7 @@ def typeof(process, obj, _type):
 def typeof_b(process, obj, _type):
     from obin.types import datatype
     if not space.isdatatype(_type):
-        return error.throw_2(error.Errors.TYPE, _type, space.newstring(u"Datatype expected"))
+        return error.throw_2(error.Errors.TYPE_ERROR, _type, space.newstring(u"Datatype expected"))
 
     # if Nothing kindof Nothing
     if space.isdatatype(obj) and space.isdatatype(_type):

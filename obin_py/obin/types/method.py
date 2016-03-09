@@ -36,7 +36,7 @@ class W_Method(W_Hashable):
     def _call_(self, process, args):
         arity = api.length_i(args)
         if self.arity != arity:
-            return error.throw_1(error.Errors.INVALID_ARG_COUNT, args)
+            return error.throw_1(error.Errors.INVALID_ARG_COUNT_ERROR, args)
 
         if self.hot_path is not None:
             res = self.hot_path.apply(process, args)
@@ -46,7 +46,7 @@ class W_Method(W_Hashable):
 
         method = lookup_implementation(process, self, args)
         if space.isvoid(method):
-            return error.throw_2(error.Errors.METHOD_NOT_IMPLEMENTED, self, args)
+            return error.throw_2(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR, self, args)
 
         # print "GEN CALL", str(method)
         process.call_object(method, args)
@@ -82,11 +82,11 @@ def method_with_hotpath(name, trait, signature, default, hotpath):
     arity = api.length_i(signature)
     typevar = trait.typevar
     if arity == 0:
-        error.throw_1(error.Errors.METHOD_SPECIALIZE, space.newstring(u"Method arity == 0"))
+        error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR, space.newstring(u"Method arity == 0"))
 
     dispatch_arg_index = api.get_index(signature, typevar)
     if platform.is_absent_index(dispatch_arg_index):
-        error.throw_2(error.Errors.METHOD_SPECIALIZE,
+        error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
                       space.newstring(u"Unspecified type variable in method signature. expected variable"), typevar)
 
     h = HotPath(hotpath, arity) if hotpath is not None else None

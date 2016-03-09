@@ -91,7 +91,7 @@ def div_i_i(nleft, nright):
     try:
         z = rarithmetic.ovfcheck(ileft // iright)
     except ZeroDivisionError:
-        return error.throw_2(error.Errors.ZERO_DIVISION, nleft, nright)
+        return error.throw_2(error.Errors.ZERO_DIVISION_ERROR, nleft, nright)
     except OverflowError:
         return space.newfloat(float(ileft // iright))
 
@@ -115,7 +115,7 @@ def div_f_f(nleft, nright):
     try:
         val = fleft / fright
     except ZeroDivisionError:
-        return error.throw_2(error.Errors.ZERO_DIVISION, nleft, nright)
+        return error.throw_2(error.Errors.ZERO_DIVISION_ERROR, nleft, nright)
 
     return space.newfloat(val)
 

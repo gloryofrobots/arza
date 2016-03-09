@@ -159,7 +159,7 @@ class W_Scope(W_Any):
 
         for exported in self.__declared_exports:
             if not self.has_local(exported):
-                error.throw_2(error.Errors.EXPORT, space.newstring(u"Unreachable export variable"), exported)
+                error.throw_2(error.Errors.EXPORT_ERROR, space.newstring(u"Unreachable export variable"), exported)
 
         return self.__declared_exports
 

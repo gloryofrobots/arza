@@ -50,7 +50,7 @@ def affirm_iterable(it, condition):
 
 def affirm_type(obj, condition):
     if not condition(obj):
-        return throw_2(Errors.TYPE, obj, space.newstring(u"Wrong object type"))
+        return throw_2(Errors.TYPE_ERROR, obj, space.newstring(u"Wrong object type"))
     return True
 
 
@@ -60,7 +60,7 @@ def affirm_any(obj):
 
 def affirm(condition, message):
     if not condition:
-        return throw_1(Errors.RUNTIME, space.newstring(message))
+        return throw_1(Errors.RUNTIME_ERROR, space.newstring(message))
     return True
 
 
@@ -90,34 +90,33 @@ class ObinSignal(Exception):
 
 
 class Errors:
-    IMPORT = u"ImportError"
-    RUNTIME = u"RuntimeError"
-    ADD_TRAIT = u"AddTraitError"
-    REMOVE_TRAIT = u"RemoveTraitError"
-    TYPE = u"TypeError"
-    REFERENCE = u"ReferenceError"
-    CONSTRUCTOR = u"ConstructorError"
-    RANGE = u"RangeError"
+    IMPORT_ERROR = u"ImportError"
+    RUNTIME_ERROR = u"RuntimeError"
+    ADD_TRAIT_ERROR = u"AddTraitError"
+    REMOVE_TRAIT_ERROR = u"RemoveTraitError"
+    TYPE_ERROR = u"TypeError"
+    REFERENCE_ERROR = u"ReferenceError"
+    CONSTRUCTOR_ERROR = u"ConstructorError"
+    RANGE_ERROR = u"RangeError"
     KEY_ERROR = u"KeyError"
     VALUE_ERROR = u"ValueError"
-    SLICE = u"SliceError"
-    INDEX = u"IndexError"
-    INVOKE = u"InvokeError"
-    INVALID_ARG_COUNT = u"InvalidArgCount"
-    METHOD_INVOKE = u"MethodInvokeError"
-    METHOD_NOT_IMPLEMENTED = u"MethodNotImplementedError"
-    METHOD_SPECIALIZE = u"MethodSpecializeError"
-    FROZEN = u"FrozenValueIllegalOperationError"
-    COMPILE = u"CompileError"
-    PARSE = u"ParseError"
-    ZERO_DIVISION = u"ZeroDivisionError"
-    UNPACK_SEQUENCE = u"UnpackSequenceError"
-    FIBER_FLOW = u"FiberFlowError"
-    NOT_IMPLEMENTED = u"NotImplementedError"
-    MATCH = u"MatchError"
-    FUNCTION_MATCH = u"FunctionArgumentsMatchError"
-    EXCEPTION_MATCH = u"ExceptionMatchError"
-    EXPORT = u"ExportError"
-    TRAIT_ALREADY_IMPLEMENTED = u"TraitAlreadyImplementedError"
-    TRAIT_IMPLEMENTATION = u"TraitImplementationError"
-    TRAIT_CONSTRAINT = u"TraitConstraintError"
+    SLICE_ERROR = u"SliceError"
+    INDEX_ERROR = u"IndexError"
+    INVOKE_ERROR = u"InvokeError"
+    INVALID_ARG_COUNT_ERROR = u"InvalidArgCount"
+    METHOD_INVOKE_ERROR = u"MethodInvokeError"
+    METHOD_NOT_IMPLEMENTED_ERROR = u"MethodNotImplementedError"
+    METHOD_SPECIALIZE_ERROR = u"MethodSpecializeError"
+    COMPILE_ERROR = u"CompileError"
+    PARSE_ERROR = u"ParseError"
+    ZERO_DIVISION_ERROR = u"ZeroDivisionError"
+    UNPACK_SEQUENCE_ERROR = u"UnpackSequenceError"
+    FIBER_FLOW_ERROR = u"FiberFlowError"
+    NOT_IMPLEMENTED_ERROR = u"NotImplementedError"
+    MATCH_ERROR = u"MatchError"
+    FUNCTION_MATCH_ERROR = u"FunctionArgumentsMatchError"
+    EXCEPTION_MATCH_ERROR = u"ExceptionMatchError"
+    EXPORT_ERROR = u"ExportError"
+    TRAIT_ALREADY_IMPLEMENTED_ERROR = u"TraitAlreadyImplementedError"
+    TRAIT_IMPLEMENTATION_ERROR = u"TraitImplementationError"
+    TRAIT_CONSTRAINT_ERROR = u"TraitConstraintError"
