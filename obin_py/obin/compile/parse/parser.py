@@ -110,7 +110,6 @@ class ModuleParser(BaseParser):
         BaseParser.__init__(self)
 
         self.import_parser = import_parser_init(BaseParser())
-        self.generic_signature_parser = generic_signature_parser_init(BaseParser())
         self.pattern_parser = pattern_parser_init(BaseParser())
         self.guard_parser = guard_parser_init(proc_data, BaseParser())
         self.expression_parser = ExpressionParser(proc_data)
@@ -126,7 +125,6 @@ class ModuleParser(BaseParser):
         self.type_parser.open(state)
         self.pattern_parser.open(state)
         self.guard_parser.open(state)
-        self.generic_signature_parser.open(state)
         self.import_parser.open(state)
         self.expression_parser.open(state)
         self.name_parser.open(state)
@@ -137,7 +135,6 @@ class ModuleParser(BaseParser):
         self.type_parser.close()
         self.pattern_parser.close()
         self.guard_parser.close()
-        self.generic_signature_parser.close()
         self.import_parser.close()
         self.expression_parser.close()
         self.name_parser.close()
@@ -196,24 +193,13 @@ def import_parser_init(parser):
     return parser
 
 
-def generic_signature_parser_init(parser):
-    parser.break_on_juxtaposition = True
-    symbol(parser, TT_COMMA, None)
-    breaker(parser, TT_LPAREN, None)
-    breaker(parser, TT_RPAREN, None)
-    breaker(parser, TT_CASE, None)
-    breaker(parser, TT_ARROW, None)
-    infix(parser, TT_OF, 10, infix_name_pair)
-    literal(parser, TT_NAME)
-    return parser
-
-
 def guard_parser_init(proc_data, parser):
     parser.allow_overloading = True
     parser.allow_juxtaposition = True
     parser = init_parser_literals(parser)
 
-    symbol(parser, TT_COMMA, None)
+
+    breaker(parser, TT_COMMA, None)
     breaker(parser, TT_RPAREN, None)
     breaker(parser, TT_RCURLY, None)
     breaker(parser, TT_RSQUARE, None)
@@ -229,11 +215,13 @@ def guard_parser_init(proc_data, parser):
     infix(parser, TT_COLON, 80, infix_name_pair)
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
+    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     return parser
 
 
 def pattern_parser_init(parser):
     parser.break_on_juxtaposition = True
+
 
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
@@ -244,9 +232,10 @@ def pattern_parser_init(parser):
     infix(parser, TT_AT_SIGN, 10, infix_at)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
 
+    symbol(parser, TT_JUXTAPOSITION)
     breaker(parser, TT_WHEN)
     breaker(parser, TT_CASE)
-    symbol(parser, TT_COMMA)
+    breaker(parser, TT_COMMA)
     breaker(parser, TT_RPAREN)
     breaker(parser, TT_RCURLY)
     breaker(parser, TT_RSQUARE)
@@ -278,7 +267,7 @@ def base_parser_init(parser):
     breaker(parser, TT_ARROW)
     breaker(parser, TT_RPAREN)
     breaker(parser, TT_RCURLY)
-    symbol(parser, TT_COMMA)
+    breaker(parser, TT_COMMA)
     breaker(parser, TT_END)
     breaker(parser, TT_SEMI)
 
@@ -311,7 +300,7 @@ def expression_parser_init(proc_data, parser):
     breaker(parser, TT_CASE)
     breaker(parser, TT_THEN)
 
-    infix(parser, TT_COMMA, -2, None)
+    breaker(parser, TT_COMMA)
 
     infix(parser, TT_IF, 20, infix_if)
 
@@ -321,12 +310,12 @@ def expression_parser_init(proc_data, parser):
 
     infix(parser, TT_BACKTICK, 50, infix_backtick)
 
-    infix(parser, TT_DOT, 70, infix_dot)
+    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
+    infix(parser, TT_DOT, 95, infix_dot)
 
-    infix(parser, TT_INFIX_DOT_LCURLY, 80, infix_lcurly)
-    infix(parser, TT_INFIX_DOT_LPAREN, 80, infix_lparen)
+    infix(parser, TT_INFIX_DOT_LCURLY, 95, infix_lcurly)
+    infix(parser, TT_INFIX_DOT_LPAREN, 95, infix_lparen)
 
-    infix(parser, TT_JUXTAPOSITION, 100, infix_juxtaposition)
 
     """
     PREFIXES
@@ -384,7 +373,7 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = True
+PARSE_DEBUG = False
 
 
 def parse(process, env, src):

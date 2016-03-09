@@ -41,14 +41,14 @@ NODE_TYPE_MAPPING = {
 }
 
 
-def node_tuple_juxtaposition(parser, terminators):
-    node, args = juxtaposition_list(parser, terminators)
+def node_tuple_juxtaposition(parser, terminators, skip=None):
+    node, args = juxtaposition_list(parser, terminators, skip)
     # return nodes.node_1(NT_TUPLE, nodes.node_token(node), nodes.list_node(args))
     return nodes.create_tuple_node(node, args)
 
 
-def node_list_juxtaposition(parser, terminators):
-    node, args = juxtaposition_list(parser, terminators)
+def node_list_juxtaposition(parser, terminators,skip=None):
+    node, args = juxtaposition_list(parser, terminators, skip)
     return nodes.create_list_node(node, args)
 
 
@@ -301,7 +301,7 @@ def prefix_lparen_tuple(parser, op, node):
 def prefix_lparen_operator(parser):
     # return operator as function name or prefix expression (-) or (-1)
     op_node = grab_name_or_operator(parser)
-    _, args = juxtaposition_list(parser, [TT_RPAREN, TT_COMMA], False)
+    _, args = juxtaposition_list(parser, [TT_RPAREN])
 
     op = parser_find_operator(parser, nodes.node_value(op_node))
     if op is None or space.isvoid(op):
@@ -537,7 +537,7 @@ def stmt_for(parser, op, node):
 
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
-    pattern = node_tuple_juxtaposition(parser.pattern_parser, arg_terminator)
+    pattern = node_tuple_juxtaposition(parser.pattern_parser, arg_terminator, [TT_JUXTAPOSITION])
     args_type = nodes.node_type(pattern)
 
     if args_type != NT_TUPLE:
@@ -892,6 +892,7 @@ def stmt_implement(parser, op, node):
 def _meta_infix(parser, node, infix_function):
     # options_tuple = expressions(parser.name_parser, 0)
     # check_node_type(parser, options_tuple, NT_TUPLE)
+    # TODO MAKE IT SIMPLE EXPRESSION AND POSTPROCESS
     _, options = juxtaposition_list_while_not_breaks(parser.name_parser)
     # options = nodes.node_first(options_tuple)
     if api.length_i(options) != 3:

@@ -538,16 +538,17 @@ def expressions(parser, _rbp, terminators=None):
     return expr
 
 
-def juxtaposition_list(parser, terminators, skip_commas=True):
+def juxtaposition_list(parser, terminators, skip=None):
     args = []
     if parser.token_type in terminators:
         return None, args
     while True:
+        if skip is not None:
+            while parser.token_type in skip:
+                advance(parser)
+
         node, _lbp = base_expression(parser, 0, terminators)
         args.append(node)
-
-        if parser.token_type == TT_COMMA and skip_commas:
-            advance(parser)
 
         if parser.token_type in terminators:
             return node, args

@@ -61,6 +61,10 @@ string_literal = '(""".*?""")|(".*?")|(\'.*?\')'
 
 RULES = [
     (token('\n'), TT_NEWLINE),
+    (token('\.\.\.'), TT_ELLIPSIS),
+    (token(' \. '), TT_JUXTAPOSITION),
+    (token('\.\{'), TT_INFIX_DOT_LCURLY),
+    (token('\.\('), TT_INFIX_DOT_LPAREN),
     (token(' '), -1),
     (token('//[^\n]*'), -1),
     (token('/\*[^\*\/]*\*/'), -1),
@@ -128,16 +132,13 @@ RULES = [
 
     (token('\-\>'), TT_ARROW),
     (token('\<\-'), TT_BACKARROW),
-    (token('\.\.\.'), TT_ELLIPSIS),
     (token('\;'), TT_SEMI),
     (token('#'), TT_SHARP),
-    (token('\.\{'), TT_INFIX_DOT_LCURLY),
     (token('\{'), TT_LCURLY),
     (token('\}'), TT_RCURLY),
     (token('\,'), TT_COMMA),
     (token('\('), TT_LPAREN),
     (token('\)'), TT_RPAREN),
-    (token('\.\('), TT_INFIX_DOT_LPAREN),
     (token('\['), TT_LSQUARE),
     (token('\]'), TT_RSQUARE),
     (token('\.'), TT_DOT),
