@@ -123,6 +123,10 @@ def infix_backtick(parser, op, node, left):
     right = expressions(parser, op.lbp)
     return nodes.create_call_node_2(node, funcnode, left, right)
 
+def infix_juxtaposition(parser, op, node, left):
+    right,_ = base_expression(parser, op.lbp)
+    # right = expressions(parser, op.lbp)
+    return nodes.node_2(NT_JUXTAPOSITION, __ntok(node), left, right)
 
 def infix_if(parser, op, node, left):
     first = condition(parser)

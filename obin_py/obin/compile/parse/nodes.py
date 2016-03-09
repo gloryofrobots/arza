@@ -5,7 +5,7 @@ from obin.types import space, api, plist
 from obin.runtime import error
 
 
-def __newnode(ntype, token, children):
+def newnode(ntype, token, children):
     if children is not None:
         for child in children:
             assert is_node(child), child
@@ -82,27 +82,27 @@ def node_equal(node1, node2):
 
 
 def node_blank(token):
-    return __newnode(-1, token, None)
+    return newnode(-1, token, None)
 
 
 def node_0(ntype, token):
-    return __newnode(ntype, token, None)
+    return newnode(ntype, token, None)
 
 
 def node_1(ntype, token, child):
-    return __newnode(ntype, token, [child])
+    return newnode(ntype, token, [child])
 
 
 def node_2(ntype, token, child1, child2):
-    return __newnode(ntype, token, [child1, child2])
+    return newnode(ntype, token, [child1, child2])
 
 
 def node_3(ntype, token, child1, child2, child3):
-    return __newnode(ntype, token, [child1, child2, child3])
+    return newnode(ntype, token, [child1, child2, child3])
 
 
 def node_4(ntype, token, child1, child2, child3, child4):
-    return __newnode(ntype, token, [child1, child2, child3, child4])
+    return newnode(ntype, token, [child1, child2, child3, child4])
 
 
 def node_type(node):

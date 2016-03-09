@@ -211,7 +211,6 @@ def parser_set_operator(parser, ttype, h):
     parser.handlers[ttype] = h
     return parser_operator(parser, ttype)
 
-
 def node_operator(parser, node):
     ttype = nodes.node_token_type(node)
     if not parser.allow_overloading:
@@ -405,7 +404,7 @@ def expect_expression(parser, _rbp, expected_types, terminators=None, error_on_j
     return exp
 
 
-def _expression(parser, _rbp, terminators=None):
+def base_expression(parser, _rbp, terminators=None):
     previous = parser.node
     # print "******"
     # print "rbp ", _rbp
@@ -427,20 +426,32 @@ def _expression(parser, _rbp, terminators=None):
                 return left, 0
 
         if _lbp < 0:
-            return left, _lbp
+            op = parser_operator(parser, TT_JUXTAPOSITION)
+            _lbp = op.lbp
+            # return left, _lbp
 
-        if _rbp >= _lbp:
-            break
-        previous = parser.node
-        advance(parser)
-        left = node_led(parser, previous, left)
+            if _rbp >= _lbp:
+                break
+            previous = parser.node
+            # advance(parser)
+            if not op.led:
+                parse_error(parser, u"Unknown token led", previous)
+
+            left = op.led(parser, op, previous, left)
+        else:
+            if _rbp >= _lbp:
+                break
+            previous = parser.node
+            advance(parser)
+
+            left = node_led(parser, previous, left)
 
     assert left is not None
     return left, 0
 
 
 def expression(parser, _rbp, terminators=None, error_on_juxtaposition=True):
-    exp, _lbp = _expression(parser, _rbp, terminators)
+    exp, _lbp = base_expression(parser, _rbp, terminators)
 
     if _lbp < 0 and error_on_juxtaposition:
         return parse_error(parser, u"Invalid use of juxtaposition", parser.node)
@@ -449,7 +460,7 @@ def expression(parser, _rbp, terminators=None, error_on_juxtaposition=True):
 
 
 def _juxtaposition_expression(parser, _rbp, terminators):
-    expr, _lbp = _expression(parser, _rbp, terminators)
+    expr, _lbp = base_expression(parser, _rbp, terminators)
     if _lbp < 0:
         if _lbp == -2:
             advance(parser)
@@ -475,50 +486,9 @@ def _juxtaposition_expression(parser, _rbp, terminators):
 #     else:
 #         return expr
 
-def expressions(parser, _rbp, terminators=None):
-    if terminators is None:
-        terminators = [TT_SEMI, TT_END]
-    expr, _lbp = _expression(parser, _rbp, terminators)
-
-    if _lbp == -1:
-        if parser.break_on_juxtaposition:
-            return expr
-
-        if not parser.allow_juxtaposition:
-            parse_error(parser, u"Invalid juxtaposition syntax", parser.node)
-
-        args = []
-        new_terminators = terminators + [TT_OPERATOR]
-        while True:
-            node, _lbp = _expression(parser, _rbp, new_terminators)
-            if _lbp == -1000:
-                break
-            args.append(node)
-
-            if parser.token_type == TT_OPERATOR:
-                left = nodes.node_2(NT_CALL, nodes.node_token(expr), expr, nodes.list_node(args))
-                op = parser_find_operator(parser, nodes.node_value(parser.node))
-                if op is None or space.isvoid(op):
-                    return parse_error(parser, u"Invalid operator", parser.node)
-
-                advance(parser)
-
-                exp = expressions(parser, op.lbp)
-                return nodes.create_call_node_name(node, op.infix_function, [left, exp])
-
-            if parser.token_type == TT_COMMA:
-                advance(parser)
-            elif parser.token_type in terminators or parser.is_newline_occurred:
-                break
-
-        return nodes.node_2(NT_CALL, nodes.node_token(expr), expr, nodes.list_node(args))
-        # expr = nodes.node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), expr,
-        #                     _juxtaposition_expression(parser, _rbp, terminators))
-        # expr = process_juxtaposition_expression(parser, expr)
-        # return expr
-    else:
-        return expr
 # def expressions(parser, _rbp, terminators=None):
+#     if terminators is None:
+#         terminators = [TT_SEMI, TT_END]
 #     expr, _lbp = _expression(parser, _rbp, terminators)
 #
 #     if _lbp == -1:
@@ -528,23 +498,57 @@ def expressions(parser, _rbp, terminators=None):
 #         if not parser.allow_juxtaposition:
 #             parse_error(parser, u"Invalid juxtaposition syntax", parser.node)
 #
-#         expr = nodes.node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), expr,
-#                             _juxtaposition_expression(parser, _rbp, terminators))
-#         expr = process_juxtaposition_expression(parser, expr)
-#         return expr
+#         args = []
+#         new_terminators = terminators + [TT_OPERATOR]
+#         while True:
+#             node, _lbp = _expression(parser, _rbp, new_terminators)
+#             if _lbp == -1000:
+#                 break
+#             args.append(node)
+#
+#             if parser.token_type == TT_OPERATOR:
+#                 left = nodes.node_2(NT_CALL, nodes.node_token(expr), expr, nodes.list_node(args))
+#                 op = parser_find_operator(parser, nodes.node_value(parser.node))
+#                 if op is None or space.isvoid(op):
+#                     return parse_error(parser, u"Invalid operator", parser.node)
+#
+#                 advance(parser)
+#
+#                 exp = expressions(parser, op.lbp)
+#                 return nodes.create_call_node_name(node, op.infix_function, [left, exp])
+#
+#             if parser.token_type == TT_COMMA:
+#                 advance(parser)
+#             elif parser.token_type in terminators or parser.is_newline_occurred:
+#                 break
+#
+#         return nodes.node_2(NT_CALL, nodes.node_token(expr), expr, nodes.list_node(args))
+#         # expr = nodes.node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), expr,
+#         #                     _juxtaposition_expression(parser, _rbp, terminators))
+#         # expr = process_juxtaposition_expression(parser, expr)
+#         # return expr
 #     else:
 #         return expr
+def expressions(parser, _rbp, terminators=None):
+    expr, _lbp = base_expression(parser, _rbp, terminators)
+    expr = process_juxtaposition_expression(parser, expr)
+    return expr
 
-def flatten_juxtaposition(parser, node):
-    ntype = nodes.node_type(node)
-    if ntype == NT_JUXTAPOSITION or ntype == NT_COMMA:
-        first = nodes.node_first(node)
-        second = nodes.node_second(node)
-        head = flatten_juxtaposition(parser, first)
-        tail = flatten_juxtaposition(parser, second)
-        return plist.concat(head, tail)
+
+    if _lbp == -1:
+        if parser.break_on_juxtaposition:
+            return expr
+
+        if not parser.allow_juxtaposition:
+            parse_error(parser, u"Invalid juxtaposition syntax", parser.node)
+
+        expr = nodes.node_2(NT_JUXTAPOSITION, tokens.newtoken_without_meta(TT_LPAREN, ""), expr,
+                            _juxtaposition_expression(parser, _rbp, terminators))
+        expr = process_juxtaposition_expression(parser, expr)
+        return expr
     else:
-        return nodes.list_node([node])
+        return expr
+
 
 
 def juxtaposition_list(parser, terminators, skip_commas=True):
@@ -552,7 +556,7 @@ def juxtaposition_list(parser, terminators, skip_commas=True):
     if parser.token_type in terminators:
         return None, args
     while True:
-        node, _lbp = _expression(parser, 0, terminators)
+        node, _lbp = base_expression(parser, 0, terminators)
         args.append(node)
 
         if parser.token_type == TT_COMMA and skip_commas:
@@ -565,7 +569,7 @@ def juxtaposition_list(parser, terminators, skip_commas=True):
 def juxtaposition_list_while_not_breaks(parser):
     args = []
     while True:
-        node, _lbp = _expression(parser, 0, None)
+        node, _lbp = base_expression(parser, 0, None)
         args.append(node)
 
         if parser.token_type == TT_COMMA:
@@ -575,18 +579,63 @@ def juxtaposition_list_while_not_breaks(parser):
             return node, nodes.list_node(args)
 
 
-def process_juxtaposition_expression(parser, node):
+def flatten_juxtaposition(parser, node):
+    ntype = nodes.node_type(node)
+    if ntype == NT_JUXTAPOSITION or ntype == NT_COMMA:
+        first = nodes.node_first(node)
+        second = nodes.node_second(node)
+        head = flatten_juxtaposition(parser, first)
+        tail = flatten_juxtaposition(parser, second)
+        return plist.concat(head, tail)
+    else:
+        return nodes.list_node([node])
+
+def postprocess(parser, node):
+    if nodes.is_empty_node(node):
+        return node
+    elif nodes.is_list_node(node):
+        children = []
+        for c in node:
+            children.append(postprocess(parser, c))
+        return nodes.list_node(children)
+
     ntype = nodes.node_type(node)
     if ntype == NT_JUXTAPOSITION:
-        caller = nodes.node_first(node)
-        if nodes.node_type(caller) == NT_JUXTAPOSITION:
-            parse_error(parser, u"Invalid use of juxtaposition operator", caller)
-        args = nodes.node_second(node)
-        flatten_arg = flatten_juxtaposition(parser, args)
-        return nodes.node_2(NT_CALL, nodes.node_token(node), caller, flatten_arg)
-    else:
-        return node
+        flatten = flatten_juxtaposition(parser, node)
+        # probably overkill
+        if len(flatten) < 2:
+            parse_error(parser, u"Invalid use of juxtaposition operator", node)
 
+        caller = plist.head(flatten)
+        args = plist.tail(flatten)
+        return postprocess(parser, nodes.node_2(NT_CALL, nodes.node_token(caller), caller, args))
+    else:
+        children = []
+        node_children = nodes.node_children(node)
+        if node_children is None:
+            return node
+
+        for c in node_children:
+            new_child = postprocess(parser, c)
+            children.append(new_child)
+        return nodes.newnode(nodes.node_type(node), nodes.node_token(node), children)
+
+def process_juxtaposition_expression(parser, node):
+    return postprocess(parser, node)
+
+# def process_juxtaposition_expression(parser, node):
+#     ntype = nodes.node_type(node)
+#     if ntype == NT_JUXTAPOSITION:
+#         flatten = flatten_juxtaposition(parser, node)
+#         # probably overkill
+#         if len(flatten) < 2:
+#             parse_error(parser, u"Invalid use of juxtaposition operator", node)
+#
+#         caller = plist.head(flatten)
+#         args = plist.tail(flatten)
+#         return nodes.node_2(NT_CALL, nodes.node_token(caller), caller, args)
+#     else:
+#         return node
 
 def expression_2(parser, _rbp):
     previous = parser.node

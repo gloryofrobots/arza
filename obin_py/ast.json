@@ -23,82 +23,68 @@
           },
           [
             {
-              "_ntype": "NT_CALL",
-              "_value": "(",
+              "_ntype": "NT_AND",
+              "_value": "and",
               "children": [
                 {
-                  "_ntype": "NT_NAME",
-                  "_value": "+"
-                },
-                [
-                  {
-                    "_ntype": "NT_CALL",
-                    "_value": "f",
-                    "children": [
+                  "_ntype": "NT_CALL",
+                  "_value": "f",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "f"
+                    },
+                    [
                       {
-                        "_ntype": "NT_NAME",
-                        "_value": "f"
+                        "_ntype": "NT_INT",
+                        "_value": "331"
                       },
-                      [
-                        {
-                          "_ntype": "NT_INT",
-                          "_value": "1"
-                        },
-                        {
-                          "_ntype": "NT_INT",
-                          "_value": "2"
-                        },
-                        {
-                          "_ntype": "NT_INT",
-                          "_value": "3"
-                        }
-                      ]
+                      {
+                        "_ntype": "NT_INT",
+                        "_value": "332"
+                      },
+                      {
+                        "_ntype": "NT_OR",
+                        "_value": "or",
+                        "children": [
+                          {
+                            "_ntype": "NT_CALL",
+                            "_value": "c",
+                            "children": [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "c"
+                              },
+                              [
+                                {
+                                  "_ntype": "NT_INT",
+                                  "_value": "333"
+                                },
+                                {
+                                  "_ntype": "NT_INT",
+                                  "_value": "334"
+                                }
+                              ]
+                            ]
+                          },
+                          {
+                            "_ntype": "NT_INT",
+                            "_value": "1"
+                          }
+                        ]
+                      }
                     ]
-                  },
-                  {
-                    "_ntype": "NT_INT",
-                    "_value": "4"
-                  }
-                ]
+                  ]
+                },
+                {
+                  "_ntype": "NT_INT",
+                  "_value": "3"
+                }
               ]
             }
           ]
         ]
       ]
-    ]
-  },
-  {
-    "_ntype": "NT_ASSIGN",
-    "_value": "=",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "length"
-      },
-      {
-        "_ntype": "NT_LOOKUP_MODULE",
-        "_value": ":",
-        "children": [
-          {
-            "_ntype": "NT_LOOKUP_MODULE",
-            "_value": ":",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "obin"
-              },
-              {
-                "_ntype": "NT_NAME",
-                "_value": "lang"
-              }
-            ]
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "length"
-          }
-        ]
-      }
     ]
   }
 ]
