@@ -1,6 +1,6 @@
 import affirm
-//import tests:test_operators
-//
+import tests:test_operators
+
 import tests:test_co
 import tests:test_destruct
 import tests:test_exception
@@ -14,8 +14,7 @@ import tests:datastructs:test_datastructs
 import tests:types:test_types
 import tests:test_static_refs
 import tests:test_fun
-
-import list
+//
 
 fun log ...msgs ->
     cond
@@ -55,11 +54,13 @@ fun test() ->
     log "TEST FUN"
     test_fun:test()
 
-//    log "TEST OPERATORS"
-//    test_operators:test()
+    log "TEST OPERATORS"
+    test_operators:test()
 ---
 
 fun add x y -> x + y end
+
+fun vargs ...args -> args end
 
 fun main () ->
     //shift
@@ -68,7 +69,6 @@ fun main () ->
 
 //    (/ 2) 3 == 3 / 2
 //    (_ / 2)
-
     test() 
 -------------------------
 

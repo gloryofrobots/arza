@@ -45,6 +45,7 @@ class LexerStream(object):
             if match:
                 self._update_pos(match)
                 return self.next()
+        # print self.s[self.idx:]
         for rule in self.lexer.rules:
             match = rule.matches(self.s, self.idx)
             if match:

@@ -182,7 +182,7 @@ fun uncons | [x, ...xs] -> (x, xs) end
 fun init
 | [x] -> []
 | [x, ...xs] -> x :: (init xs)
-| [] -> throw #EmptyListError
+| [] -> throw (ValueError "empty list in init")
 ------------------------------
 
 fun replicate

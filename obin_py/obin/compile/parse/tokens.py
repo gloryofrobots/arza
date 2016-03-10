@@ -60,8 +60,8 @@ string_literal = '(""".*?""")|(".*?")|(\'.*?\')'
 
 RULES = [
     (token('\n'), TT_NEWLINE),
-    (token('\.\.\.'), TT_ELLIPSIS),
-    (token(' \. '), TT_JUXTAPOSITION),
+    (token('[ ]*\.\.\.'), TT_ELLIPSIS),
+    (token(' \.'), TT_JUXTAPOSITION),
     (token('\.\{'), TT_INFIX_DOT_LCURLY),
     (token('\.\('), TT_INFIX_DOT_LPAREN),
     (token(' '), -1),

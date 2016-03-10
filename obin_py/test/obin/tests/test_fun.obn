@@ -57,10 +57,10 @@ fun test () ->
     ------------------------------
 
 
-    affirm:is_equal (func1 1 2 3 4 5 6 7 8 9 10 11) . 
+    affirm:is_equal (func1 1 2 3 4 5 6 7 8 9 10 11) .
                     (6, 7, 8, (9, 10, 11))
 
-    affirm:is_equal (func1 {key1=#key1, key2=#key2, key3=25} [#first, #second, #third, 4,5,6,7]) .  
+    affirm:is_equal (func1 {key1=#key1, key2=#key2, key3=25} [#first, #second, #third, 4,5,6,7]) .
                     (#key2, #first, #third, [4, 5, 6, 7])
 
     fun func2
@@ -70,11 +70,11 @@ fun test () ->
     | a -> (#third, a)
     ---------------------
 
-    affirm:is_equal_batch func2 . 
-                          ((1,2,3), (#first, 1,2,3)) . 
-                          ((4,5), (#second, 4,5)) . 
-                          ((6,), (#third, 6)) . 
-                          ([()], #fourth) 
+    affirm:is_equal_batch func2 .
+                          ((1,2,3), (#first, 1,2,3)) .
+                          ((4,5), (#second, 4,5)) .
+                          ((6,), (#third, 6)) .
+                          ([()], #fourth)
 
 
     affirm:is_equal (apply fun | () -> #empty end [()]) #empty
@@ -84,9 +84,9 @@ fun test () ->
     | () -> #third
     ---------------
 
-    affirm:is_equal_batch func3 . 
-                          ([1], #first) . 
-                          ([42], #second) . 
+    affirm:is_equal_batch func3 .
+                          ([1], #first) .
+                          ([42], #second) .
                           ([()], #third)
 
     // when possible function compiles
@@ -120,10 +120,10 @@ fun test () ->
     | 4 -> #four
     --------------------
 
-    affirm:is_equal_batch   fn_fail . 
-                            ([1], #one) . 
-                            ([2], #two) . 
-                            ([3], #three) . 
+    affirm:is_equal_batch   fn_fail .
+                            ([1], #one) .
+                            ([2], #two) .
+                            ([3], #three) .
                             ([4], #four)
 
     affirm:is_throw fn_fail [5]
@@ -132,7 +132,7 @@ fun test () ->
                        fn_fail("I am string")
                     | exc ->
                        [exc, exc, exc]
-                    --- . 
+                    --- .
                     [(#FunctionArgumentsMatchError, ("I am string",)),
                      (#FunctionArgumentsMatchError, ("I am string",)),
                      (#FunctionArgumentsMatchError,("I am string",))]
@@ -142,8 +142,8 @@ fun test () ->
     affirm:is_equal_batch   fun
                             | () -> 42
                             | x y -> x + y
-                            --- . 
-                            [(1,2), 3] . 
+                            --- .
+                            [(1,2), 3] .
                             [[()], 42]
 
     ////////////////////////////////////////////////
@@ -160,7 +160,7 @@ fun test () ->
     affirm:is_equal (f3 1 [2, 3]) (f4 1 [2, 3])
     affirm:is_equal (f4 1 [2, 3]) 6
     affirm:is_equal (lam x [a,b,c,...tl] {N, Z} ->
-                            (x + a + b + c + N + Z) :: tl; . 
-                          1 [1, 1, 1, 33,33,33] {N=1, Z = 1}) . 
+                            (x + a + b + c + N + Z) :: tl; .
+                          1 [1, 1, 1, 33,33,33] {N=1, Z = 1}) .
                     [6, 33, 33, 33]
 ---------
