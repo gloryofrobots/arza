@@ -1,8 +1,7 @@
 import from obin:core:types (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                              Function, Generic, Method, NativeFunction, Fiber, Trait, Datatype, TVar, Env)
 
-//TODO RENAME to prefix
-prefixes - negate
+prefix - negate
 infixl < < 50
 infixl > > 50
 infixl >= >= 50
@@ -20,8 +19,8 @@ infixl ++ ++ 70
 //fun t  x . y ->
 ////    -5 - (-9)
 ////    -5 - -9
-//    (-5 - -9)  
-////    
+//    (-5 - -9)
+////
 ////    f 331 332 334 .
 ////      (g 441 442 .
 ////         443 444) . 551 . 552 553 .
@@ -98,12 +97,17 @@ trait Collection for self
     method len self
     method is_empty self -> (len self) == 0
 
-    method at self key
     method put self key value
-    method remove self obj
+    method at self key
+    method del self obj
     method contains self key
 ---------------------------------
 
+
+trait Associative for self of Collection
+    method keys self
+    method values self
+------
 
 trait Seq for self
     method first self
@@ -114,7 +118,6 @@ trait Seq for self
 
 trait Indexed for self
     method index_of self obj
-    method last self
 ---
 
 trait Seqable for self
@@ -137,7 +140,7 @@ type RuntimeError args end
 
 type TypeError args end
 implement Eq for TypeError method == self other of TypeError -> self.args == other.args end
-type NotImplementedError args end 
+type NotImplementedError args end
 implement Eq for NotImplementedError method == self other of NotImplementedError -> self.args == other.args end
 type ZeroDivisionError args end
 implement Eq for ZeroDivisionError method == self other of ZeroDivisionError -> self.args == other.args end

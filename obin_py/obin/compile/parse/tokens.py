@@ -110,12 +110,10 @@ RULES = [
 
     (keyword('var'), TT_VAR),
     (keyword('lazy'), TT_LAZY),
-    
+
     (keyword('infixl'), TT_INFIXL),
     (keyword('infixr'), TT_INFIXR),
-    (keyword('prefixes'), TT_PREFIX),
-
-    # (keyword('return'), TT_RETURN),
+    (keyword('prefix'), TT_PREFIX),
 
     (keyword('_'), TT_WILDCARD),
 

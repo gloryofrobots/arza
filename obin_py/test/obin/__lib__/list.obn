@@ -57,13 +57,13 @@ fun length | l of List ->
 
 //QUERIES///////////////////////////////////////////////////
 
-fun prefix
-| [hd, ...pre_tail] [hd, ...tail] -> prefix pre_tail tail
+fun prefix_of
+| [hd, ...pre_tail] [hd, ...tail] -> prefix_of pre_tail tail
 | [] l -> True
 | [_, ..._] l -> False
 --------------------------------------------------
 
-fun suffix
+fun suffix_of
 | suf of List l of List ->
    delta = (length l) - (length suf)
    tl = nth_tail delta l

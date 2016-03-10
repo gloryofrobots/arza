@@ -69,6 +69,9 @@ fun main () ->
 
 //    (/ 2) 3 == 3 / 2
 //    (_ / 2)
-    test() 
+    test()
 -------------------------
 
+//            impl.append(_t([self.methods.str,
+//                            _f(_s(u""), derived.str_, 1)
+//                            ]))

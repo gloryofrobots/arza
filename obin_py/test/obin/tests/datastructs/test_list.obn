@@ -30,13 +30,13 @@ fun test () ->
     affirm:is_equal (list:concat [] []) []
     affirm:is_equal (list:reverse l1) [9,8,7,6,5,4,3,2,1,0]
 
-    affirm:is_true (list:prefix [1,2,3,4] [1,2,3,4,5,6])
-    affirm:is_false (list:prefix [0,1,2,3,4] [1,2,3,4,5,6])
-    affirm:is_false (list:prefix [1,2,3,4] [1,2,3,5,4,6])
+    affirm:is_true (list:prefix_of [1,2,3,4] [1,2,3,4,5,6])
+    affirm:is_false (list:prefix_of [0,1,2,3,4] [1,2,3,4,5,6])
+    affirm:is_false (list:prefix_of [1,2,3,4] [1,2,3,5,4,6])
 
-    affirm:is_true (list:suffix [4,5,6] [1,2,3,4,5,6])
-    affirm:is_false (list:suffix [3,5,6] [1,2,3,4,5,6])
-    affirm:is_false (list:suffix [4,5,6] [1,2,3,4,6,5])
+    affirm:is_true (list:suffix_of [4,5,6] [1,2,3,4,5,6])
+    affirm:is_false (list:suffix_of [3,5,6] [1,2,3,4,5,6])
+    affirm:is_false (list:suffix_of [4,5,6] [1,2,3,4,6,5])
 
     affirm:is_equal (list:drop 3 l1) [3,4,5,6,7,8,9]
     affirm:is_equal (list:map lam x -> x+1; l1) [1,2,3,4,5,6,7,8,9,10]
@@ -50,13 +50,13 @@ fun test () ->
     affirm:is_equal (list:split_at 3 l1)  ([0, 1, 2], [3, 4, 5, 6, 7, 8, 9])
     affirm:is_equal (list:take_while lam x -> x < 5; l1) [0, 1, 2, 3, 4]
     affirm:is_equal (list:drop_while lam x -> x < 5; l1) [5, 6, 7, 8, 9]
-    affirm:is_equal (list:span lam x -> x < 3; [1,2,3,4,1,2,3,4]) . 
+    affirm:is_equal (list:span lam x -> x < 3; [1,2,3,4,1,2,3,4]) .
                     ([1, 2], [3, 4, 1, 2, 3, 4])
 
-    affirm:is_equal (list:span lam x -> x < 9; [1,2,3]) . 
+    affirm:is_equal (list:span lam x -> x < 9; [1,2,3]) .
                     ([1, 2, 3], [])
 
-    affirm:is_equal (list:span lam x -> x < 0; [1,2,3]) . 
+    affirm:is_equal (list:span lam x -> x < 0; [1,2,3]) .
                     ([], [1, 2, 3])
 
     affirm:is_true (list:conjunction [True, True, True, True])

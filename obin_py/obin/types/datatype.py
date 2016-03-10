@@ -11,7 +11,9 @@ class W_Record(W_Hashable):
         self.type = type
 
     def _to_string_(self):
-        from obin.types import api
+        # if not self.type.derive.collection:
+        #     raise NotImplementedError()
+
         res = []
 
         for f in self.type.fields:
@@ -25,6 +27,9 @@ class W_Record(W_Hashable):
         return self.type
 
     def _at_(self, name):
+        # if not self.type.derive.collection:
+        #     raise NotImplementedError()
+
         if space.isint(name):
             return self._at_index_(api.to_i(name))
 
@@ -38,6 +43,9 @@ class W_Record(W_Hashable):
         return self.values._at_index_(idx)
 
     def _put_(self, name, value):
+        # if not self.type.derive.collection:
+        #     raise NotImplementedError()
+
         idx = api.lookup(self.type.descriptors, name, space.newvoid())
         if space.isvoid(idx):
             error.throw_1(error.Errors.KEY_ERROR, name)
@@ -46,7 +54,35 @@ class W_Record(W_Hashable):
         return W_Record(self.type.descriptors, newvalues)
 
     def _length_(self):
+        # if not self.type.derive.collection:
+        #     raise NotImplementedError()
+
         return api.length(self.values)
+
+    def _equal_(self, other):
+        # if not self.type.derive.eq:
+        #     raise NotImplementedError()
+
+        if not isinstance(other, W_Record):
+            return False
+        if not api.equal_b(self.type, other.type):
+            return False
+        return api.equal_b(self.values, other.values)
+
+    def seq(self):
+        return self.values
+
+    def keys(self):
+        return self.type.fields
+
+    def values(self):
+        return self.values
+
+    def index_of(self, val):
+        idx = self.values.index(val)
+        if platform.is_absent_index(idx):
+            error.throw_1(error.Errors.VALUE_ERROR, val)
+        return idx
 
 
 def descriptors(fields):
@@ -60,18 +96,26 @@ def descriptors(fields):
 # BOTH TYPE CONSTRUCTOR AND TYPE IN ONE CLASS
 class W_DataType(W_Hashable):
     # _immutable_fields_ = ['_name_']
-
     def __init__(self, name, fields, constructor):
+        from obin.builtins.derived import Derive
         W_Hashable.__init__(self)
         self.name = name
         self.fields = fields
         self.descriptors = descriptors(self.fields)
         self.ctor = constructor
-
+        self.derive = Derive()
         # parent types declared with union
         self.union = None
         # if union is set traits must be empty
         self.traits = space.newmap()
+
+    def derive_trait(self, process, trait):
+        if self.is_trait_implemented(trait):
+            return error.throw_3(error.Errors.TRAIT_IMPLEMENTATION_ERROR, trait, self,
+                                 space.newstring(u"Trait already implemented"))
+
+        implementation = process.std.traits.derive(self, trait)
+        self.add_trait_implementation(trait, implementation)
 
     def add_trait_implementation(self, trait, implementations):
         if self.is_part_of_some_union():

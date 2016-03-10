@@ -4,12 +4,14 @@ from obin.runtime.process import Process
 from obin.runtime import process_data, error
 from obin.runtime.load import import_module, evaluate_module_file
 
+
 def newprocess(libdirs):
     core_prelude = space.newemptyenv(space.newstring(u"prelude"))
     proc_data = process_data.create(libdirs, core_prelude)
     process = Process(proc_data)
     builtins.presetup(process, core_prelude, process.std)
     return process
+
 
 def load_prelude(process, script_name):
     result = import_module(process, space.newsymbol(process, script_name))
@@ -20,12 +22,14 @@ def load_prelude(process, script_name):
     process.modules.set_prelude(result)
     return None
 
+
 def load_module(process, script_name):
     result = import_module(process, space.newsymbol(process, script_name))
     if process.is_terminated():
         # error here
         return result
     return None
+
 
 # TODO MOVE ALL OF IT TO PROCESS
 def initialize(libdirs):
@@ -38,6 +42,7 @@ def initialize(libdirs):
     error.initialise(process)
 
     builtins.postsetup(process)
+    process.std.postsetup(process)
 
     modules = [u"bool", u"int", u"bit", u"float",
                u"string", u"symbol",
@@ -50,6 +55,7 @@ def initialize(libdirs):
 
     print "INITIALIZED"
     return process, None
+
 
 def evaluate_file(process, filename):
     try:

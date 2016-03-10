@@ -12,6 +12,7 @@
 //TODO obin:*
 //TODO deriving
 //TODO deep calls in datastructs data -> (1, record) == (1, record) NotIImplementedError in record._equal_(record)
+//TODO CHOOSE INDENT BASED OR IMPLEMENT SYNTAX FOR TYPE AND TRAITS WITHOUT END TOKEN
 
 
 //trait Any for self

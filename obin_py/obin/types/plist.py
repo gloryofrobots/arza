@@ -337,6 +337,21 @@ def contains_with(pl, v, condition):
 def contains(pl, v):
     return contains_with(pl, v, api.equal_b)
 
+########################################################################
+
+def find_with(pl, v, condition):
+    type_check(pl)
+    if is_empty(pl):
+        return space.newvoid()
+
+    if condition(v, head(pl)):
+        return head(pl)
+
+    return contains_with(tail(pl), v, condition)
+
+
+def find(pl, v):
+    return contains_with(pl, v, api.equal_b)
 
 ############################################################
 

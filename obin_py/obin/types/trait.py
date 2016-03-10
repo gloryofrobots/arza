@@ -2,6 +2,8 @@ from obin.types.root import W_Hashable
 from obin.types import api, space, plist
 from obin.misc import platform
 
+def find_by_name(name, method):
+    return api.equal_b(method.name, name)
 
 class W_Trait(W_Hashable):
     # _immutable_fields_ = ['_name_']
@@ -12,6 +14,9 @@ class W_Trait(W_Hashable):
         self.typevar = typevar
         self.methods = plist.empty()
         self.constraints = constraints
+
+    def find_method_by_name(self, name):
+        return plist.find_with(self.methods, name, find_by_name)
 
     def add_method(self, method):
         assert space.ismethod(method)
