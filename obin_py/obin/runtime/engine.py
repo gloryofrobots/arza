@@ -35,6 +35,8 @@ def initialize(libdirs):
     if err is not None:
         return process, err
 
+    error.initialise(process)
+
     builtins.postsetup(process)
 
     modules = [u"bool", u"int", u"bit", u"float",

@@ -42,28 +42,7 @@ fun test () ->
             | e3 ->
                 e3
             ---
-        end) (#ZeroDivisionError, (1, 0))
-
-
-    ///////////////////////////////////////////
-
-    affirm:is_equal (
-        try
-            try
-                1/0
-            | e1 ->
-                e1
-            | finally ->
-                //result
-                (#Finally, e1)
-            ---
-        | e2 ->
-            try
-                error(#LifeSucks)
-            | e3 ->
-                e3
-            ---
-        end) (#Finally, (#ZeroDivisionError, (1, 0)))
+        end) (ZeroDivisionError (1, 0))
 
 
     ///////////////////////////////////////////

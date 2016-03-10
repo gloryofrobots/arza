@@ -6,10 +6,19 @@ def convert_to_script_error(process, err):
 
 
 def error(process, symbol_unistr, args_tuple):
+    from obin.types import api
     assert space.istuple(args_tuple)
     assert isinstance(symbol_unistr, unicode)
+    prelude = process.modules.prelude
     symbol = space.newsymbol(process, symbol_unistr)
-    return space.newtuple([symbol, args_tuple])
+    err_type = api.lookup(prelude, symbol, space.newvoid())
+    if space.isvoid(err_type):
+        return space.newtuple([symbol, args_tuple])
+    else:
+        affirm_type(err_type, space.isdatatype)
+        m = space.newpmap([space.newsymbol(process, u"args"), args_tuple])
+        instance = err_type.create_instance(m)
+        return instance
 
 
 def signal(err):
@@ -44,9 +53,11 @@ def throw_4(symbol_unistr, arg1, arg2, arg3, arg4):
 def throw_5(symbol_unistr, arg1, arg2, arg3, arg4, arg5):
     throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4, arg5]))
 
+
 def affirm_iterable(it, condition):
     for i in it:
         affirm_type(i, condition)
+
 
 def affirm_type(obj, condition):
     if not condition(obj):
@@ -89,15 +100,16 @@ class ObinSignal(Exception):
         return self.__str__()
 
 
+def panic(msg):
+    raise RuntimeError(msg)
+
+
 class Errors:
     IMPORT_ERROR = u"ImportError"
     RUNTIME_ERROR = u"RuntimeError"
-    ADD_TRAIT_ERROR = u"AddTraitError"
-    REMOVE_TRAIT_ERROR = u"RemoveTraitError"
     TYPE_ERROR = u"TypeError"
     REFERENCE_ERROR = u"ReferenceError"
     CONSTRUCTOR_ERROR = u"ConstructorError"
-    RANGE_ERROR = u"RangeError"
     KEY_ERROR = u"KeyError"
     VALUE_ERROR = u"ValueError"
     SLICE_ERROR = u"SliceError"
@@ -120,3 +132,15 @@ class Errors:
     TRAIT_ALREADY_IMPLEMENTED_ERROR = u"TraitAlreadyImplementedError"
     TRAIT_IMPLEMENTATION_ERROR = u"TraitImplementationError"
     TRAIT_CONSTRAINT_ERROR = u"TraitConstraintError"
+
+
+def initialise(process):
+    from obin.types import api
+    prelude = process.modules.prelude
+    for key, errname in Errors.__dict__.items():
+        if not key.endswith(u"_ERROR"):
+            continue
+
+        sym = space.newsymbol(process, errname)
+        if not api.contains(prelude, sym):
+            panic(u"Missing type %s in prelude for internal error" % errname)

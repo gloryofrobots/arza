@@ -131,3 +131,37 @@ fun in obj storage -> contains storage obj end
 fun notin obj storage -> not (contains storage obj) end
 
 fun :: val self -> cons val self end
+
+type ImportError args end
+type RuntimeError args end
+
+type TypeError args end
+implement Eq for TypeError method == self other of TypeError -> self.args == other.args end
+type NotImplementedError args end 
+implement Eq for NotImplementedError method == self other of NotImplementedError -> self.args == other.args end
+type ZeroDivisionError args end
+implement Eq for ZeroDivisionError method == self other of ZeroDivisionError -> self.args == other.args end
+
+type ReferenceError args end
+type ConstructorError args end
+type KeyError args end
+type ValueError args end
+type SliceError args end
+type IndexError args end
+type InvokeError args end
+type InvalidArgCount args end
+type MethodInvokeError args end
+type MethodNotImplementedError args end
+type MethodSpecializeError args end
+type CompileError args end
+type ParseError args end
+type UnpackSequenceError args end
+type FiberFlowError args end
+type MatchError args end
+type FunctionArgumentsMatchError args end
+type ExceptionMatchError args end
+type ExportError args end
+type TraitAlreadyImplementedError args end
+type TraitImplementationError args end
+type TraitConstraintError args end
+

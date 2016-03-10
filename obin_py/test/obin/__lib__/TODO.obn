@@ -9,6 +9,9 @@
 //TODO separate token streams
 //TODO syntax block with macros and custom operators
 //TODO ast transform
+//TODO obin:*
+//TODO deriving
+//TODO deep calls in datastructs data -> (1, record) == (1, record) NotIImplementedError in record._equal_(record)
 
 //TODO ERRORS AS TYPES
 

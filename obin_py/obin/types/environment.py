@@ -201,5 +201,8 @@ class W_Env(W_Any):
         assert space.issymbol(n)
         return self.data._at_(n)
 
+    def _contains_(self, key):
+        return self.data._contains_(key)
+
     def _to_string_(self):
         return self.data._to_string_()
