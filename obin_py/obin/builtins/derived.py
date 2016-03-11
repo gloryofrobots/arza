@@ -1,7 +1,7 @@
 from obin.types import space, api
 from obin.runtime.routine.routine import complete_native_routine
 from obin.runtime import error
-from obin.types.space import newtuple as _t, newnativefunc as _f
+from obin.types.space import newtuple as _t, newnativefunc as _f, newlist as _l
 
 
 class Derive:
@@ -70,37 +70,37 @@ class Traits:
         self.methods = Methods(self)
 
     def str_methods(self):
-        return [
+        return _l([
                 _t([self.methods.str,
                    _f(self.methods.str.name, str_, 1)
                    ])
-                ]
+                ])
     def eq_methods(self):
-        return [
+        return _l([
             _t([self.methods.equal,
                 _f(self.methods.equal.name, equal_, 2)
                 ])
-        ]
+        ])
 
     def indexed_methods(self):
-        return [
+        return _l([
             _t([self.methods.index_of,
                 _f(self.methods.index_of.name, index_of_, 2)
                 ])
-        ]
+        ])
 
     def dict_methods(self):
-        return [
+        return _l([
             _t([self.methods.keys,
                 _f(self.methods.keys.name, keys_, 1)
                 ]),
             _t([self.methods.values,
                 _f(self.methods.values.name, values_, 1)
                 ])
-        ]
+        ])
 
     def collection_methods(self):
-        return [
+        return _l([
             _t([self.methods.len,
                 _f(self.methods.len.name, len_, 1)
                 ]),
@@ -119,47 +119,47 @@ class Traits:
             _t([self.methods.put,
                 _f(self.methods.put.name, put_, 3)
                 ]),
-        ]
+        ])
 
 
     def sequable_methods(self):
-        return [
+        return _l([
             _t([self.methods.seq,
                 _f(self.methods.seq.name, seq_, 1)
                 ]),
-        ]
+        ])
 
     def derive(self, _type, trait):
         impls = []
         if api.equal_b(self.Str, trait):
             _type.derive.str = True
-            impls.append([trait, self.str_methods()])
+            impls.append(_l([trait, self.str_methods()]))
 
         elif api.equal_b(self.Eq, trait):
             _type.derive.eq = True
-            impls.append([trait, self.eq_methods()])
+            impls.append(_l([trait, self.eq_methods()]))
 
         elif api.equal_b(self.Indexed, trait):
             _type.derive.indexed = True
             if not _type.is_trait_implemented(self.Collection):
-                impls.append([self.Collection, self.collection_methods()])
-            impls.append([trait, self.indexed_methods()])
+                impls.append(_l([self.Collection, self.collection_methods()]))
+            impls.append(_l([trait, self.indexed_methods()]))
 
         elif api.equal_b(self.Dict, trait):
             _type.derive.dict = True
             if not _type.is_trait_implemented(self.Collection):
-                impls.append([self.Collection, self.collection_methods()])
+                impls.append(_l([self.Collection, self.collection_methods()]))
 
-            impls.append([trait, self.dict_methods()])
+            impls.append(_l([trait, self.dict_methods()]))
 
         elif api.equal_b(self.Seqable, trait):
             _type.derive.sequable = True
-            impls.append([trait, self.sequable_methods()])
+            impls.append(_l([trait, self.sequable_methods()]))
         else:
             return error.throw_3(error.Errors.TRAIT_IMPLEMENTATION_ERROR,
                                  space.newstring(u"Trait is not derivable"), trait, _type)
 
-        return impls
+        return _l(impls)
 
 # Eq
 @complete_native_routine

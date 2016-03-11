@@ -909,6 +909,13 @@ def _declare_local_name(compiler, code, node):
     index = _declare_local(compiler, sym)
     return sym, index, name_index
 
+def _compile_DERIVE(compiler, code, node):
+    traits = node_first(node)
+    types = node_second(node)
+    _compile(compiler, code, traits)
+    _compile(compiler, code, types)
+
+    _emit_call(compiler, code, node, 2, primitives.PRIM_DERIVE)
 
 def _compile_TYPE(compiler, code, node):
     # compiles to call to type function instead of some opcode
@@ -931,19 +938,6 @@ def _compile_TYPE(compiler, code, node):
 
     _emit_call(compiler, code, node, 3, primitives.PRIM_TYPE)
     _emit_store_name(compiler, code, name_node)
-
-
-def _compile_UNION(compiler, code, node):
-    union = node_first(node)
-    types = node_second(node)
-
-    _compile_TYPE(compiler, code, union)
-
-    for _type in types:
-        _compile_TYPE(compiler, code, _type)
-
-    code.emit_1(LIST, len(types), info(union))
-    _emit_call(compiler, code, node, 2, primitives.PRIM_UNION)
 
 
 def _compile_TRAIT(compiler, code, node):
@@ -1086,6 +1080,7 @@ def _emit_DROP(compiler, code, node, drop):
     _compile(compiler, code, count)
     _compile(compiler, code, node)
     _emit_call(compiler, code, node, 2, primitives.PRIM_DROP)
+
 
 def _compile_LOOKUP(compiler, code, node):
     # TODO OPTIMISATION FOR INDEX LOOKUP
@@ -1274,8 +1269,8 @@ def _compile_node(compiler, code, node):
 
     elif NT_TYPE == ntype:
         _compile_TYPE(compiler, code, node)
-    elif NT_UNION == ntype:
-        _compile_UNION(compiler, code, node)
+    elif NT_DERIVE == ntype:
+        _compile_DERIVE(compiler, code, node)
 
     elif NT_LOOKUP == ntype:
         _compile_LOOKUP(compiler, code, node)

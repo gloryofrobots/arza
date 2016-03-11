@@ -94,8 +94,8 @@ RULES = [
     (keyword('construct'), TT_CONSTRUCT),
     (keyword('implement'), TT_IMPLEMENT),
     (keyword('method'), TT_METHOD),
-    (keyword('union'), TT_UNION),
     (keyword('type'), TT_TYPE),
+    (keyword('derive'), TT_DERIVE),
     (keyword('for'), TT_FOR),
 
     (keyword('export'), TT_EXPORT),

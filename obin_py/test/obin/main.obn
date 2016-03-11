@@ -1,6 +1,7 @@
 import affirm
 //import tests:test_operators
-//
+
+//import tests:types:test_types
 //import tests:test_co
 //import tests:test_destruct
 //import tests:test_exception
@@ -10,11 +11,9 @@ import affirm
 //import tests:test_match
 //import tests:test_base
 //import tests:test_bool
-//import tests:datastructs:test_datastructs
-//import tests:types:test_types
 //import tests:test_static_refs
 //import tests:test_fun
-//
+//import tests:datastructs:test_datastructs
 
 fun log ...msgs ->
     cond
@@ -28,11 +27,12 @@ fun test() ->
 
 //    log "TEST TYPES"
 //    test_types:test()
+
+//    log "TEST BOOL"
+//    test_bool:test()
 //
 //    log "TEST DATASTRUCTS"
 //    test_datastructs:test()
-//    log "TEST BOOL"
-//    test_bool:test()
 //    log "TEST MATCH"
 //    test_match:test()
 //    log "TEST BASE"
@@ -53,24 +53,18 @@ fun test() ->
 //    test_module:test()
 //    log "TEST FUN"
 //    test_fun:test()
-//
+
 //    log "TEST OPERATORS"
 //    test_operators:test()
 ---
 
-fun add x y -> x + y end
-
-fun vargs ...args -> args end
+type X x y end
 
 fun main () ->
-    //shift
-//    list:foldl [1,2,3,4,5] 4
-//    list:foldl _ 4
-
-//    (/ 2) 3 == 3 / 2
-//    (_ / 2)
-    test()
--------------------------
+    x = X 1 2
+    print x.0
+//    test()
+---
 
 //            impl.append(_t([self.methods.str,
 //                            _f(_s(u""), derived.str_, 1)

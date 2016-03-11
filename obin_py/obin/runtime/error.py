@@ -60,6 +60,7 @@ def affirm_iterable(it, condition):
 
 
 def affirm_type(obj, condition):
+    assert space.isany(obj), obj
     if not condition(obj):
         return throw_2(Errors.TYPE_ERROR, obj, space.newstring(u"Wrong object type"))
     return True

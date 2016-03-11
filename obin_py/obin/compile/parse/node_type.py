@@ -9,7 +9,7 @@ NT_CHAR = 6
 NT_WILDCARD = 7
 NT_NAME = 8
 NT_SYMBOL = 9
-NT_UNION = 10
+NT_DERIVE = 10
 NT_TYPE = 11
 NT_MAP = 12
 NT_LIST = 13
@@ -59,7 +59,7 @@ NT_AND = 56
 NT_OR = 57
 # ************************ OBIN NODES REPR *****************************
 __NT_REPR__ = ["NT_GOTO", "NT_TRUE", "NT_FALSE", "NT_INT", "NT_FLOAT", "NT_STR", "NT_CHAR", "NT_WILDCARD", "NT_NAME",
-               "NT_SYMBOL", "NT_UNION", "NT_TYPE", "NT_MAP", "NT_LIST", "NT_TUPLE", "NT_UNIT", "NT_COMMA", "NT_FUN",
+               "NT_SYMBOL", "NT_DERIVE", "NT_TYPE", "NT_MAP", "NT_LIST", "NT_TUPLE", "NT_UNIT", "NT_COMMA", "NT_FUN",
                "NT_FENV", "NT_CONDITION", "NT_TERNARY_CONDITION", "NT_WHEN", "NT_MATCH", "NT_TRY", "NT_MODULE",
                "NT_IMPORT", "NT_IMPORT_HIDING", "NT_IMPORT_FROM", "NT_IMPORT_FROM_HIDING", "NT_EXPORT", "NT_LOAD",
                "NT_TRAIT", "NT_IMPLEMENT", "NT_BIND", "NT_THROW", "NT_BREAK", "NT_CONTINUE", "NT_FOR", "NT_WHILE",

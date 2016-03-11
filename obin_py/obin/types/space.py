@@ -391,12 +391,6 @@ def newnativedatatype(name):
     return datatype
 
 
-def newnativetypeconstructor(name, union):
-    datatype = newdatatype(name, newlist([]), newvoid())
-    datatype.be_part_of(union)
-    return datatype
-
-
 def isdatatype(w):
     from obin.types.datatype import W_DataType
     return isinstance(w, W_DataType)

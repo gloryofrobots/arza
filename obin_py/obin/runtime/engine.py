@@ -39,12 +39,11 @@ def initialize(libdirs):
     if err is not None:
         return process, err
 
+    process.std.postsetup(process)
+    builtins.postsetup(process)
     error.initialise(process)
 
-    builtins.postsetup(process)
-    process.std.postsetup(process)
-
-    modules = [u"bool", u"int", u"bit", u"float",
+    modules = [u"errors", u"bool", u"int", u"bit", u"float",
                u"string", u"symbol",
                u"list",
                u"tuple", u"map"]

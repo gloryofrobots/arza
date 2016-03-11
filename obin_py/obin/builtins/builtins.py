@@ -5,8 +5,8 @@ def presetup(process, module, stdlib):
     # setup_traits(process, module, stdlib)
     # setup_methods(process, module, stdlib)
     # setup_types(process, module, stdlib)
-    import obin.builtins.prelude
-    obin.builtins.prelude.setup(process, module, stdlib)
+    import obin.builtins.lang
+    obin.builtins.lang.setup(process, module, stdlib)
 
     # MODULES
     import obin.builtins.modules.module_core_types

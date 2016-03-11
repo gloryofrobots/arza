@@ -3,7 +3,7 @@ from obin.types import plist
 from obin.compile.parse.nodes import *
 from obin.types import space, api
 from obin.misc import platform, strutil
-from obin.builtins import prelude
+from obin.builtins import lang
 
 
 class TransformState:
@@ -395,7 +395,7 @@ def _transform_is_map(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                   create_name_node(arg_node, prelude.PRIM_IS_MAP),
+                                                   create_name_node(arg_node, lang.PRIM_IS_MAP),
                                                    arg_node),
                                 create_true_node(arg_node))
 
@@ -407,7 +407,7 @@ def _transform_is_seq(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                   create_name_node(arg_node, prelude.PRIM_IS_SEQ),
+                                                   create_name_node(arg_node, lang.PRIM_IS_SEQ),
                                                    arg_node),
                                 create_true_node(arg_node))
 
@@ -419,7 +419,7 @@ def _transform_is_indexed(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                   create_name_node(arg_node, prelude.PRIM_IS_INDEXED),
+                                                   create_name_node(arg_node, lang.PRIM_IS_INDEXED),
                                                    arg_node),
                                 create_true_node(arg_node))
 
@@ -432,7 +432,7 @@ def _transform_length_ge(history, head, variables):
     count = head[2]
     _condition = create_gt_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                   create_name_node(arg_node, prelude.PRIM_LENGTH),
+                                                   create_name_node(arg_node, lang.PRIM_LENGTH),
                                                    arg_node),
                                 create_int_node(arg_node, str(count)))
 
@@ -445,7 +445,7 @@ def _transform_length(history, head, variables):
     count = head[2]
     _condition = create_eq_node(arg_node,
                                 create_call_node_1(arg_node,
-                                                   create_name_node(arg_node, prelude.PRIM_LENGTH),
+                                                   create_name_node(arg_node, lang.PRIM_LENGTH),
                                                    arg_node),
                                 create_int_node(arg_node, str(count)))
 

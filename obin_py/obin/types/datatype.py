@@ -11,9 +11,6 @@ class W_Record(W_Hashable):
         self.type = type
 
     def _to_string_(self):
-        # if not self.type.derive.collection:
-        #     raise NotImplementedError()
-
         res = []
 
         for f in self.type.fields:
@@ -27,9 +24,6 @@ class W_Record(W_Hashable):
         return self.type
 
     def _at_(self, name):
-        # if not self.type.derive.collection:
-        #     raise NotImplementedError()
-
         if space.isint(name):
             return self._at_index_(api.to_i(name))
 
@@ -43,9 +37,6 @@ class W_Record(W_Hashable):
         return self.values._at_index_(idx)
 
     def _put_(self, name, value):
-        # if not self.type.derive.collection:
-        #     raise NotImplementedError()
-
         idx = api.lookup(self.type.descriptors, name, space.newvoid())
         if space.isvoid(idx):
             error.throw_1(error.Errors.KEY_ERROR, name)
@@ -54,15 +45,9 @@ class W_Record(W_Hashable):
         return W_Record(self.type.descriptors, newvalues)
 
     def _length_(self):
-        # if not self.type.derive.collection:
-        #     raise NotImplementedError()
-
         return api.length(self.values)
 
     def _equal_(self, other):
-        # if not self.type.derive.eq:
-        #     raise NotImplementedError()
-
         if not isinstance(other, W_Record):
             return False
         if not api.equal_b(self.type, other.type):
@@ -93,28 +78,19 @@ def descriptors(fields):
     return d
 
 
-# BOTH TYPE CONSTRUCTOR AND TYPE IN ONE CLASS
 class W_DataType(W_Hashable):
-    # _immutable_fields_ = ['_name_']
     def __init__(self, name, fields, constructor):
         from obin.builtins.derived import Derive
         W_Hashable.__init__(self)
+
         self.name = name
         self.fields = fields
         self.descriptors = descriptors(self.fields)
         self.ctor = constructor
         self.derive = Derive()
-        # parent types declared with union
-        self.union = None
-        # if union is set traits must be empty
         self.traits = space.newmap()
 
-
     def add_trait_implementation(self, trait, implementations):
-        if self.is_part_of_some_union():
-            return error.throw_2(error.Errors.TYPE_ERROR, trait,
-                                 space.newstring(u"Can't implement trait for type constructor. Use type instead"))
-
         if self.is_trait_implemented(trait):
             return error.throw_1(error.Errors.TRAIT_ALREADY_IMPLEMENTED_ERROR, trait)
 
@@ -131,9 +107,6 @@ class W_DataType(W_Hashable):
 
     def get_method_implementation(self, method):
         void = space.newvoid()
-        if self.is_part_of_some_union():
-            return void
-
         trait = method.trait
 
         impl_map = api.lookup(self.traits, trait, void)
@@ -142,19 +115,6 @@ class W_DataType(W_Hashable):
 
         impl = api.at(impl_map, method)
         return impl
-
-    def is_part_of_some_union(self):
-        return self.union is not None
-
-    def be_part_of(self, union):
-        assert api.is_empty_b(self.traits)
-        assert self.union is None
-        self.union = union
-
-    def is_part_of(self, union):
-        assert union is not None
-        assert self.union is not None
-        return api.equal_b(self.union, union)
 
     def has_constructor(self):
         return not space.isvoid(self.ctor)
@@ -186,9 +146,6 @@ class W_DataType(W_Hashable):
         process.call_object(self, args)
 
     def _type_(self, process):
-        if self.union:
-            return self.union
-
         return process.std.types.Datatype
 
     def _compute_hash_(self):
@@ -208,7 +165,9 @@ def _is_exist_implementation(method, impl):
 
 
 def derive_traits(process, _type, traits):
+    error.affirm_type(_type, space.isdatatype)
     for trait in traits:
+        error.affirm_type(trait, space.istrait)
         if _type.is_trait_implemented(trait):
             return error.throw_3(error.Errors.TRAIT_IMPLEMENTATION_ERROR, trait, _type,
                                  space.newstring(u"Trait already implemented"))
@@ -248,21 +207,3 @@ def implement_trait(_type, trait, implementations):
     return _type
 
 
-def newunion(union, types):
-    error.affirm_type(union, space.isdatatype)
-    error.affirm_type(types, space.islist)
-    for _type in types:
-        error.affirm_type(_type, space.isdatatype)
-        _type.be_part_of(union)
-
-    return union
-
-
-def can_coerce(_type, kind):
-    if kind.is_part_of_some_union():
-        return api.equal_b(_type, kind)
-
-    if not _type.is_part_of_some_union():
-        return api.equal_b(_type, kind)
-
-    return _type.is_part_of(kind)

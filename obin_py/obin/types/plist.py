@@ -347,7 +347,7 @@ def find_with(pl, v, condition):
     if condition(v, head(pl)):
         return head(pl)
 
-    return contains_with(tail(pl), v, condition)
+    return find_with(tail(pl), v, condition)
 
 
 def find(pl, v):

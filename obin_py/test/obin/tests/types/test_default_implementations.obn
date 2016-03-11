@@ -1,7 +1,8 @@
 import affirm
 
-union Ordering | EQ | GT | LT
-------
+type EQ
+type GT
+type LT
 
 trait Equal for x
     method eq x y -> not (ne x y)
