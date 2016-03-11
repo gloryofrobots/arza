@@ -213,8 +213,11 @@ def derive_traits(process, _type, traits):
             return error.throw_3(error.Errors.TRAIT_IMPLEMENTATION_ERROR, trait, _type,
                                  space.newstring(u"Trait already implemented"))
 
-        implementation = process.std.traits.derive(_type, trait)
-        implement_trait(_type, trait, implementation)
+        # more then one trait can be returned
+        # example deriving Dict causes deriving Collection
+        implementations = process.std.traits.derive(_type, trait)
+        for _t, _i in implementations:
+            implement_trait(_type, _t, _i)
 
 def implement_trait(_type, trait, implementations):
     error.affirm_type(_type, space.isdatatype)

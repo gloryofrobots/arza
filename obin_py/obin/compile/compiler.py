@@ -1083,8 +1083,8 @@ def _emit_HEAD(compiler, code, node):
 
 def _emit_DROP(compiler, code, node, drop):
     count = node_first(drop)
-    _compile(compiler, code, node)
     _compile(compiler, code, count)
+    _compile(compiler, code, node)
     _emit_call(compiler, code, node, 2, primitives.PRIM_DROP)
 
 def _compile_LOOKUP(compiler, code, node):

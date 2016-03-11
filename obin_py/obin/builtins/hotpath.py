@@ -56,12 +56,12 @@ def hp_eq(process, args):
         return None
 
 
-def hp_contains(process, args):
+def hp_elem(process, args):
     left = api.at_index(args, 0)
     right = api.at_index(args, 1)
 
-    if is_not_records(left, right):
-        return api.contains(left, right)
+    if not isrecord(right):
+        return api.contains(right, left)
     else:
         return None
 
@@ -193,12 +193,12 @@ def hp_rest(process, args):
 
 
 def hp_slice(process, args):
-    obj = api.at_index(args, 0)
+    obj = api.at_index(args, 2)
     if isrecord(obj):
         return None
 
-    first = api.at_index(args, 1)
-    last = api.at_index(args, 2)
+    first = api.at_index(args, 0)
+    last = api.at_index(args, 1)
 
     error.affirm_type(first, space.isint)
     error.affirm_type(last, space.isint)
@@ -215,11 +215,12 @@ def hp_slice(process, args):
 
 
 def hp_take(process, args):
-    obj = api.at_index(args, 0)
+    count = api.at_index(args, 0)
+
+    obj = api.at_index(args, 1)
     if isrecord(obj):
         return None
 
-    count = api.at_index(args, 1)
 
     error.affirm_type(count, space.isint)
     count_i = api.to_i(count)
@@ -235,11 +236,11 @@ def hp_take(process, args):
 
 
 def hp_drop(process, args):
-    obj = api.at_index(args, 0)
+    count = api.at_index(args, 0)
+
+    obj = api.at_index(args, 1)
     if isrecord(obj):
         return None
-
-    count = api.at_index(args, 1)
 
     error.affirm_type(count, space.isint)
     count_i = api.to_i(count)
