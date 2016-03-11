@@ -144,11 +144,11 @@ class ModuleParser(BaseParser):
 def name_parser_init(parser):
     parser.break_on_juxtaposition = True
     symbol(parser, TT_COMMA, None)
-    # breaker(parser, TT_WILDCARD, None)
-    breaker(parser, TT_RPAREN, None)
+    # symbol(parser, TT_WILDCARD, None)
+    symbol(parser, TT_RPAREN, None)
     init_parser_literals(parser)
-    breaker(parser, TT_CASE, None)
-    breaker(parser, TT_ELLIPSIS, None)
+    symbol(parser, TT_CASE, None)
+    symbol(parser, TT_ELLIPSIS, None)
 
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
@@ -156,12 +156,13 @@ def name_parser_init(parser):
     return parser
 
 
+
 def type_parser_init(parser):
     parser.break_on_juxtaposition = True
     # literal(parser, TT_TYPENAME)
     prefix(parser, TT_NAME, literal_type_field)
-    breaker(parser, TT_CASE, None)
-    breaker(parser, TT_CONSTRUCT, None)
+    symbol(parser, TT_CASE, None)
+    symbol(parser, TT_CONSTRUCT, None)
     return parser
 
 
@@ -169,13 +170,13 @@ def method_signature_parser_init(parser):
     parser.break_on_juxtaposition = True
     # literal(parser, TT_TYPENAME)
     prefix(parser, TT_NAME, literal_type_field)
-    breaker(parser, TT_METHOD, None)
-    breaker(parser, TT_ARROW, None)
+    symbol(parser, TT_METHOD, None)
+    symbol(parser, TT_ARROW, None)
     return parser
 
 def import_names_parser_init(parser):
     symbol(parser, TT_COMMA, None)
-    breaker(parser, TT_RPAREN, None)
+    symbol(parser, TT_RPAREN, None)
     literal(parser, TT_NAME)
     infix(parser, TT_AS, 20, infix_name_pair)
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
@@ -184,8 +185,8 @@ def import_names_parser_init(parser):
 
 def import_parser_init(parser):
     symbol(parser, TT_COMMA, None)
-    breaker(parser, TT_LPAREN, None)
-    breaker(parser, TT_HIDING, None)
+    symbol(parser, TT_LPAREN, None)
+    symbol(parser, TT_HIDING, None)
     infix(parser, TT_COLON, 10, infix_name_pair)
     infix(parser, TT_AS, 20, infix_name_pair)
     literal(parser, TT_NAME)
@@ -199,10 +200,10 @@ def guard_parser_init(proc_data, parser):
 
 
     symbol(parser, TT_COMMA, None)
-    breaker(parser, TT_RPAREN, None)
-    breaker(parser, TT_RCURLY, None)
-    breaker(parser, TT_RSQUARE, None)
-    breaker(parser, TT_ARROW, None)
+    symbol(parser, TT_RPAREN, None)
+    symbol(parser, TT_RCURLY, None)
+    symbol(parser, TT_RSQUARE, None)
+    symbol(parser, TT_ARROW, None)
 
     prefix(parser, TT_LPAREN, prefix_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
@@ -232,14 +233,14 @@ def pattern_parser_init(parser):
     prefix(parser, TT_ELLIPSIS, prefix_nud)
 
     symbol(parser, TT_JUXTAPOSITION)
-    breaker(parser, TT_WHEN)
-    breaker(parser, TT_CASE)
+    symbol(parser, TT_WHEN)
+    symbol(parser, TT_CASE)
     symbol(parser, TT_COMMA)
-    breaker(parser, TT_RPAREN)
-    breaker(parser, TT_RCURLY)
-    breaker(parser, TT_RSQUARE)
-    breaker(parser, TT_ARROW)
-    breaker(parser, TT_ASSIGN)
+    symbol(parser, TT_RPAREN)
+    symbol(parser, TT_RCURLY)
+    symbol(parser, TT_RSQUARE)
+    symbol(parser, TT_ARROW)
+    symbol(parser, TT_ASSIGN)
 
     parser = init_parser_literals(parser)
     return parser
@@ -261,14 +262,14 @@ def init_parser_literals(parser):
 def base_parser_init(parser):
     parser = init_parser_literals(parser)
 
-    breaker(parser, TT_RSQUARE)
-    breaker(parser, TT_ENDSTREAM)
-    breaker(parser, TT_ARROW)
-    breaker(parser, TT_RPAREN)
-    breaker(parser, TT_RCURLY)
-    breaker(parser, TT_COMMA)
-    breaker(parser, TT_END)
-    breaker(parser, TT_SEMI)
+    symbol(parser, TT_RSQUARE)
+    symbol(parser, TT_ENDSTREAM)
+    symbol(parser, TT_ARROW)
+    symbol(parser, TT_RPAREN)
+    symbol(parser, TT_RCURLY)
+    symbol(parser, TT_COMMA)
+    symbol(parser, TT_END)
+    symbol(parser, TT_SEMI)
 
     # 10
     assignment(parser, TT_ASSIGN, 10)
@@ -294,11 +295,11 @@ def expression_parser_init(proc_data, parser):
     symbol(parser, TT_AT_SIGN, None)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
 
-    breaker(parser, TT_ELSE)
-    breaker(parser, TT_CASE)
-    breaker(parser, TT_THEN)
+    symbol(parser, TT_ELSE)
+    symbol(parser, TT_CASE)
+    symbol(parser, TT_THEN)
 
-    breaker(parser, TT_COMMA)
+    symbol(parser, TT_COMMA)
 
     infix(parser, TT_IF, 20, infix_if)
 
@@ -350,6 +351,7 @@ def module_parser_init(parser):
     stmt(parser, TT_TRAIT, stmt_trait)
     stmt(parser, TT_TYPE, stmt_type)
     stmt(parser, TT_IMPLEMENT, stmt_implement)
+    stmt(parser, TT_DERIVE, stmt_derive)
     stmt(parser, TT_UNION, stmt_union)
 
     stmt(parser, TT_IMPORT, stmt_import)

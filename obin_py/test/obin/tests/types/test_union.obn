@@ -3,7 +3,7 @@ import affirm
 union Maybe
     | Nothing
     | Just v
-----
+-------------
 
 
 union Shape
@@ -14,7 +14,7 @@ union Shape
         construct
         | width height
         | width -> height = width
-        ----
+        ---
     | Rect left top right bottom
     | Line point1 point2
         construct

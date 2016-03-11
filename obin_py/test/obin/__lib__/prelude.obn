@@ -1,169 +1,217 @@
-import from obin:core:types (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
-                             Function, Generic, Method, NativeFunction, Fiber, Trait, Datatype, TVar, Env)
+type T end
+// No constructor
+x of T // can't be
 
-prefix - negate
-infixl < < 50
-infixl > > 50
-infixl >= >= 50
-infixl <= <= 50
-infixl == == 50
-infixl != != 50
-infixl + + 60
-infixl - - 60
-infixl * * 65
-infixl / / 65
-infixr :: cons 70
-infixl ++ ++ 70
+x of T // can be, default costrcutor in accessible
+
+type T x y end
+// Default Constructor
+
+type T C end
+// constructor without fields
+
+type T
+    | C
+    | C2 x y z
+        construct
+        | x -> y = x; z = x;
+        ---------
+    | C3 a b c d
+-----
+// many constructors
 
 
-//fun t  x . y ->
-////    -5 - (-9)
-////    -5 - -9
-//    (-5 - -9)
-////
-////    f 331 332 334 .
-////      (g 441 442 .
-////         443 444) . 551 . 552 553 .
-////       554
-//end
 
-//
-//
-//
-//
-//TODO FIX IT
-length = obin:lang:length
-//
+union Maybe
+    | Nothing
+    | Just v
+    deriving (Eq, Str, Dict)
+---
+
+
 union Ordering
     | LT | GT | EQ
--------------------
+    deriving (Eq, Str, Dict)
+----
 
-trait Eq for x
-    method == x y -> throw (#NotImplemented, x, y)
-    method != x y -> not (x == y)
----------------------------------
 
-trait Ord  for x of Eq
-    method <= x y -> throw (#NotImplemented, x, y)
-    method < x y -> (cmp x y) == LT
-    method >= x y -> (cmp x y) != LT
-    method > x y -> (cmp x y) == GT
+type Point2 x y
+    construct
+    | {x, y}
+    | (x, y)
+    | x -> y = x
+    | x of Int y of Int
+    -------------
+    deriving (Eq, Str, Dict)
+---------
 
-    method cmp x y ->
-                cond
-                | x == y -> EQ
-                | x <= y  -> LT
-                | else -> GT
-                ---
-
-    method max x y -> y if x <= y else x
-    method min x y -> x if x <= y else y
----------------------------------
-
-trait Num for x
-    method - x y
-    method + x y
-    method * x y
-    method / x y
-    method mod x y
-    // unary -
-    method negate x
----------------
-
-trait Str for self
-    method str self
----
-
-//YOU need kinds here
-//trait FromStr for self of ToStr
-//    method from_str self
+//
+//import from obin:core:types (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+//                             Function, Generic, Method, NativeFunction, Fiber, Trait, Datatype, TVar, Env)
+//
+//prefix - negate
+//infixl < < 50
+//infixl > > 50
+//infixl >= >= 50
+//infixl <= <= 50
+//infixl == == 50
+//infixl != != 50
+//infixl + + 60
+//infixl - - 60
+//infixl * * 65
+//infixl / / 65
+//infixr :: cons 70
+//infixl ++ ++ 70
+//
+//
+////fun t  x . y ->
+//////    -5 - (-9)
+//////    -5 - -9
+////    (-5 - -9)
+//////
+//////    f 331 332 334 .
+//////      (g 441 442 .
+//////         443 444) . 551 . 552 553 .
+//////       554
+////end
+//
+////
+////
+////
+////
+////TODO FIX IT
+//length = obin:lang:length
+////
+//union Ordering
+//    | LT | GT | EQ
+//-------------------
+//
+//trait Eq for x
+//    method == x y -> throw (#NotImplemented, x, y)
+//    method != x y -> not (x == y)
+//---------------------------------
+//
+//trait Ord  for x of Eq
+//    method <= x y -> throw (#NotImplemented, x, y)
+//    method < x y -> (cmp x y) == LT
+//    method >= x y -> (cmp x y) != LT
+//    method > x y -> (cmp x y) == GT
+//
+//    method cmp x y ->
+//                cond
+//                | x == y -> EQ
+//                | x <= y  -> LT
+//                | else -> GT
+//                ---
+//
+//    method max x y -> y if x <= y else x
+//    method min x y -> x if x <= y else y
+//---------------------------------
+//
+//trait Num for x
+//    method - x y
+//    method + x y
+//    method * x y
+//    method / x y
+//    method mod x y
+//    // unary -
+//    method negate x
+//---------------
+//
+//trait Str for self
+//    method str self
 //---
-
-trait Inspectable for self of Str
-    method inspect self -> str self
----
-
-trait Mappable for self
-    method map f self
----
-
-trait Appendable for self
-    //concat operator
-    method ++ self other
-    method append self value
----------------------------------
-
-trait Collection for self
-    method len self
-    method is_empty self -> len self == 0
-
-    method put key value self
-    method at key self
-    method del obj self
-    method elem key self
----------------------------------
-
-trait Dict for self of Collection
-    method keys self
-    method values self
-------
-
-trait Seq for self
-    method first self
-    method rest self
-    // prepend/cons operator
-    method cons value self
----
-
-trait Indexed for self
-    method index_of obj self
----
-
-trait Seqable for self
-    method seq self
----
-
-trait Sliceable for self
-    method slice first last self
-    method drop count self
-    method take count self
----
-
-in = elem
-fun notin obj storage -> not (obj elem storage) end
-
-fun :: val self -> cons val self end
-
-type ImportError args end
-type RuntimeError args end
-
-type TypeError args end
-implement Eq for TypeError method == self other of TypeError -> self.args == other.args end
-type NotImplementedError args end
-implement Eq for NotImplementedError method == self other of NotImplementedError -> self.args == other.args end
-type ZeroDivisionError args end
-implement Eq for ZeroDivisionError method == self other of ZeroDivisionError -> self.args == other.args end
-
-type ReferenceError args end
-type ConstructorError args end
-type KeyError args end
-type ValueError args end
-type SliceError args end
-type IndexError args end
-type InvokeError args end
-type InvalidArgCount args end
-type MethodInvokeError args end
-type MethodNotImplementedError args end
-type MethodSpecializeError args end
-type CompileError args end
-type ParseError args end
-type UnpackSequenceError args end
-type FiberFlowError args end
-type MatchError args end
-type FunctionArgumentsMatchError args end
-type ExceptionMatchError args end
-type ExportError args end
-type TraitAlreadyImplementedError args end
-type TraitImplementationError args end
-type TraitConstraintError args end
+//
+////YOU need kinds here
+////trait FromStr for self of ToStr
+////    method from_str self
+////---
+//
+//trait Inspectable for self of Str
+//    method inspect self -> str self
+//---
+//
+//trait Mappable for self
+//    method map f self
+//---
+//
+//trait Appendable for self
+//    //concat operator
+//    method ++ self other
+//    method append self value
+//---------------------------------
+//
+//trait Collection for self
+//    method len self
+//    method is_empty self -> len self == 0
+//
+//    method put key value self
+//    method at key self
+//    method del obj self
+//    method elem key self
+//---------------------------------
+//
+//trait Dict for self of Collection
+//    method keys self
+//    method values self
+//------
+//
+//trait Seq for self
+//    method first self
+//    method rest self
+//    // prepend/cons operator
+//    method cons value self
+//---
+//
+//trait Indexed for self
+//    method index_of obj self
+//---
+//
+//trait Seqable for self
+//    method seq self
+//---
+//
+//trait Sliceable for self
+//    method slice first last self
+//    method drop count self
+//    method take count self
+//---
+//
+//in = elem
+//fun notin obj storage -> not (obj elem storage) end
+//
+//fun :: val self -> cons val self end
+//
+//type ImportError args end
+//type RuntimeError args end
+//
+//type TypeError args end
+//implement Eq for TypeError method == self other of TypeError -> self.args == other.args end
+//type NotImplementedError args end
+//implement Eq for NotImplementedError method == self other of NotImplementedError -> self.args == other.args end
+//type ZeroDivisionError args end
+//implement Eq for ZeroDivisionError method == self other of ZeroDivisionError -> self.args == other.args end
+//
+//type ReferenceError args end
+//type ConstructorError args end
+//type KeyError args end
+//type ValueError args end
+//type SliceError args end
+//type IndexError args end
+//type InvokeError args end
+//type InvalidArgCount args end
+//type MethodInvokeError args end
+//type MethodNotImplementedError args end
+//type MethodSpecializeError args end
+//type CompileError args end
+//type ParseError args end
+//type UnpackSequenceError args end
+//type FiberFlowError args end
+//type MatchError args end
+//type FunctionArgumentsMatchError args end
+//type ExceptionMatchError args end
+//type ExportError args end
+//type TraitAlreadyImplementedError args end
+//type TraitImplementationError args end
+//type TraitConstraintError args end
 

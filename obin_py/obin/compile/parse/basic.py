@@ -404,7 +404,7 @@ def base_expression(parser, _rbp, terminators=None):
     while True:
         if parser.is_newline_occurred:
             break
-            
+
         if terminators is not None:
             if parser.token_type in terminators:
                 return left, 0
@@ -468,19 +468,6 @@ def juxtaposition_list(parser, terminators, skip=None):
             return node, args
 
 
-def juxtaposition_list_while_not_breaks(parser):
-    args = []
-    while True:
-        node, _lbp = base_expression(parser, 0, None)
-        args.append(node)
-
-        if parser.token_type == TT_COMMA:
-            advance(parser)
-
-        if parser.is_newline_occurred:
-            return node, nodes.list_node(args)
-
-
 def flatten_juxtaposition(parser, node):
     ntype = nodes.node_type(node)
     if ntype == NT_JUXTAPOSITION or ntype == NT_COMMA:
@@ -526,7 +513,7 @@ def postprocess(parser, node):
 
 def literal_expression(parser):
     # Override most operators in literals
-    # because of prefix operators 
+    # because of prefix operators
     return expressions(parser, 70)
 
 
@@ -585,12 +572,6 @@ def symbol(parser, ttype, nud=None):
     parser_set_nud(parser, ttype, nud)
     return h
 
-
-# TODO REMOVE IT
-def breaker(parser, ttype, _=None):
-    h = symbol(parser, ttype, None)
-    # h.is_breaker = True
-    return h
 
 
 def skip(parser, ttype):
