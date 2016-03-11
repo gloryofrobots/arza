@@ -9,9 +9,9 @@ def error(process, symbol_unistr, args_tuple):
     from obin.types import api
     assert space.istuple(args_tuple)
     assert isinstance(symbol_unistr, unicode)
-    prelude = process.modules.prelude
+    module = process.modules.get_module("err")
     symbol = space.newsymbol(process, symbol_unistr)
-    err_type = api.lookup(prelude, symbol, space.newvoid())
+    err_type = api.lookup(module, symbol, space.newvoid())
     if space.isvoid(err_type):
         return space.newtuple([symbol, args_tuple])
     else:
@@ -137,11 +137,11 @@ class Errors:
 
 def initialise(process):
     from obin.types import api
-    prelude = process.modules.prelude
+    err_module = process.modules.get_module("err")
     for key, errname in Errors.__dict__.items():
         if not key.endswith(u"_ERROR"):
             continue
 
         sym = space.newsymbol(process, errname)
-        if not api.contains(prelude, sym):
+        if not api.contains(err_module, sym):
             panic(u"Missing type %s in prelude for internal error" % errname)

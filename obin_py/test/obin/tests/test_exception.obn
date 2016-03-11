@@ -1,3 +1,4 @@
+import err
 import affirm
 
 fun test () ->
@@ -42,7 +43,7 @@ fun test () ->
             | e3 ->
                 e3
             ---
-        end) (ZeroDivisionError (1, 0))
+        end) (err:ZeroDivisionError (1, 0))
 
 
     ///////////////////////////////////////////
@@ -110,6 +111,6 @@ fun test () ->
                     |(1,2, "ERROR@") -> #second
                     | err @ (1, 2, x) -> #third
                     | finally -> (#fourth, err, x)
-                    ------------------------------- . 
+                    ------------------------------- .
                     (#fourth, (1, 2, "ERROR"), "ERROR")
 --------------------------------------------------------------

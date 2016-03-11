@@ -53,6 +53,7 @@ class Modules:
         self.modules[name] = None
 
     def get_module(self, name):
+        assert isinstance(name, str)
         m = self.modules[name]
         if m is None:
             raise RuntimeError("Load cycle")

@@ -1,3 +1,4 @@
+import err
 import from _list (cons, tail, head, empty, is_empty)
 implement Eq for List end
 
@@ -182,7 +183,7 @@ fun uncons | [x, ...xs] -> (x, xs) end
 fun init
 | [x] -> []
 | [x, ...xs] -> x :: (init xs)
-| [] -> throw (ValueError "empty list in init")
+| [] -> throw (err:ValueError "empty list in init")
 ------------------------------
 
 fun replicate
