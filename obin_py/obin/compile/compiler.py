@@ -909,6 +909,7 @@ def _declare_local_name(compiler, code, node):
     index = _declare_local(compiler, sym)
     return sym, index, name_index
 
+
 def _compile_DERIVE(compiler, code, node):
     traits = node_first(node)
     types = node_second(node)
@@ -916,6 +917,7 @@ def _compile_DERIVE(compiler, code, node):
     _compile(compiler, code, types)
 
     _emit_call(compiler, code, node, 2, primitives.PRIM_DERIVE)
+
 
 def _compile_TYPE(compiler, code, node):
     # compiles to call to type function instead of some opcode
@@ -1058,12 +1060,6 @@ def _compile_WHILE(compiler, code, node):
     code.done_continue()
 
 
-def _compile_LOOKUP_SYMBOL(compiler, code, node):
-    obj = node_first(node)
-    _compile(compiler, code, obj)
-    _emit_symbol_literal(compiler, code, node_second(node))
-    code.emit_0(MEMBER, info(node))
-
 
 def _emit_TAIL(compiler, code, node):
     _compile(compiler, code, node)
@@ -1096,10 +1092,24 @@ def _compile_LOOKUP(compiler, code, node):
         return _emit_DROP(compiler, code, obj, expr)
 
     # USUAL LOOKUP
-    _compile(compiler, code, obj)
-    _compile(compiler, code, expr)
-    code.emit_0(MEMBER, info(node))
+    # _compile(compiler, code, obj)
+    # _compile(compiler, code, expr)
+    # code.emit_0(MEMBER, info(node))
 
+    _compile(compiler, code, expr)
+    _compile(compiler, code, obj)
+    _emit_call(compiler, code, node, 2, primitives.PRIM_AT)
+
+def _compile_LOOKUP_SYMBOL(compiler, code, node):
+    obj = node_first(node)
+
+    # _compile(compiler, code, obj)
+    # _emit_symbol_literal(compiler, code, node_second(node))
+    # code.emit_0(MEMBER, info(node))
+
+    _emit_symbol_literal(compiler, code, node_second(node))
+    _compile(compiler, code, obj)
+    _emit_call(compiler, code, node, 2, primitives.PRIM_AT)
 
 def _compile_args_list(compiler, code, args):
     args_count = 0

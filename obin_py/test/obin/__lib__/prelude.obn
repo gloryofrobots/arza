@@ -31,12 +31,19 @@ infixl ++ ++ 70
 //
 //
 //
-//TODO FIX IT
-length = obin:lang:length
 
 type LT
 type GT
 type EQ
+
+trait Collection for self
+    method len self
+    method is_empty self
+    method put key value self
+    method at key self
+    method del obj self
+    method elem key self
+---------------------------------
 
 trait Eq for x
     method == x y -> throw (#NotImplemented, x, y)
@@ -93,15 +100,6 @@ trait Appendable for self
     method append self value
 ---------------------------------
 
-trait Collection for self
-    method len self
-    method is_empty self -> len self == 0
-
-    method put key value self
-    method at key self
-    method del obj self
-    method elem key self
----------------------------------
 
 trait Dict for self of Collection
     method keys self
@@ -162,3 +160,6 @@ type ExportError args end
 type TraitAlreadyImplementedError args end
 type TraitImplementationError args end
 type TraitConstraintError args end
+
+//TODO FIX IT
+length = obin:lang:length

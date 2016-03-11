@@ -53,6 +53,8 @@ def postsetup(process):
     method.set_hotpath(hp.hp_mod)
     method = api.at(prelude, _s(u"elem"))
     method.set_hotpath(hp.hp_elem)
+    method = api.at(prelude, _s(u"at"))
+    method.set_hotpath(hp.hp_at)
     method = api.at(prelude, _s(u"++"))
     method.set_hotpath(hp.hp_concat)
     method = api.at(prelude, _s(u"cons"))

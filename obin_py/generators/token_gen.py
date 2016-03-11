@@ -22,6 +22,7 @@ TOKENS = [
   ("TT_CONSTRUCT", "construct"),
   ("TT_IMPLEMENT", "implement"),
   ("TT_DERIVE", "derive"),
+  ("TT_DERIVING", "deriving"),
   ("TT_METHOD", "method"),
   ("TT_TYPE", "type"),
 

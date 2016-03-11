@@ -18,5 +18,7 @@ PRIM_SLICE = "slice"
 PRIM_DROP = "drop"
 PRIM_TAKE = "take"
 
+PRIM_AT = "at"
+
 PRIM_REST = "rest"
 PRIM_FIRST = "first"

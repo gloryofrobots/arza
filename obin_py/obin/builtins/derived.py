@@ -16,7 +16,7 @@ class Derive:
 
 class Methods:
     def __init__(self, traits):
-        self.len_ = self.find_method(u"len", traits.Collection)
+        self.len = self.find_method(u"len", traits.Collection)
         self.is_empty = self.find_method(u"is_empty", traits.Collection)
         self.at = self.find_method(u"at", traits.Collection)
         self.put = self.find_method(u"put", traits.Collection)
@@ -24,7 +24,7 @@ class Methods:
         self.elem = self.find_method(u"elem", traits.Collection)
 
         self.equal = self.find_method(u"==", traits.Eq)
-        self.index_of = self.find_method(u"==", traits.Indexed)
+        self.index_of = self.find_method(u"index_of", traits.Indexed)
 
         self.seq = self.find_method(u"seq", traits.Seqable)
 
@@ -35,7 +35,7 @@ class Methods:
 
     def find_method(self, name, trait):
         method = trait.find_method_by_name(space.newstring(name))
-        if method is None:
+        if space.isvoid(method):
             return error.throw_2(error.Errors.RUNTIME_ERROR,
                                  space.newstring(u"Expected method %s of trait" % name),
                                  trait)
@@ -113,8 +113,8 @@ class Traits:
             _t([self.methods.del_,
                 _f(self.methods.del_.name, del_, 2)
                 ]),
-            _t([self.methods.elem_,
-                _f(self.methods.elem_.name, elem_, 2)
+            _t([self.methods.elem,
+                _f(self.methods.elem.name, elem_, 2)
                 ]),
             _t([self.methods.put,
                 _f(self.methods.put.name, put_, 3)
@@ -141,12 +141,14 @@ class Traits:
 
         elif api.equal_b(self.Indexed, trait):
             _type.derive.indexed = True
+            _type.derive.collection = True
             if not _type.is_trait_implemented(self.Collection):
                 impls.append(_l([self.Collection, self.collection_methods()]))
             impls.append(_l([trait, self.indexed_methods()]))
 
         elif api.equal_b(self.Dict, trait):
             _type.derive.dict = True
+            _type.derive.collection = True
             if not _type.is_trait_implemented(self.Collection):
                 impls.append(_l([self.Collection, self.collection_methods()]))
 

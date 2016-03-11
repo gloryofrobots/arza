@@ -65,6 +65,14 @@ def hp_elem(process, args):
     else:
         return None
 
+def hp_at(process, args):
+    left = api.at_index(args, 0)
+    right = api.at_index(args, 1)
+
+    if not isrecord(right):
+        return api.at(right, left)
+    else:
+        return None
 
 ####NUMBERS##########################################################
 
