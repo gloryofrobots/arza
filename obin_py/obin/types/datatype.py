@@ -109,13 +109,6 @@ class W_DataType(W_Hashable):
         # if union is set traits must be empty
         self.traits = space.newmap()
 
-    def derive_trait(self, process, trait):
-        if self.is_trait_implemented(trait):
-            return error.throw_3(error.Errors.TRAIT_IMPLEMENTATION_ERROR, trait, self,
-                                 space.newstring(u"Trait already implemented"))
-
-        implementation = process.std.traits.derive(self, trait)
-        self.add_trait_implementation(trait, implementation)
 
     def add_trait_implementation(self, trait, implementations):
         if self.is_part_of_some_union():
@@ -213,6 +206,15 @@ def _is_exist_implementation(method, impl):
     impl_method = api.at_index(impl, 0)
     return api.equal_b(impl_method, method)
 
+
+def derive_traits(process, _type, traits):
+    for trait in traits:
+        if _type.is_trait_implemented(trait):
+            return error.throw_3(error.Errors.TRAIT_IMPLEMENTATION_ERROR, trait, _type,
+                                 space.newstring(u"Trait already implemented"))
+
+        implementation = process.std.traits.derive(_type, trait)
+        implement_trait(_type, trait, implementation)
 
 def implement_trait(_type, trait, implementations):
     error.affirm_type(_type, space.isdatatype)
