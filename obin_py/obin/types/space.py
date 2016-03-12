@@ -15,8 +15,8 @@ jit.promote(w_Interrupt)
 
 
 def isany(value):
-    from obin.types.root import W_Any
-    return isinstance(value, W_Any)
+    from obin.types.root import W_Root
+    return isinstance(value, W_Root)
 
 
 def isvaluetype(value):
@@ -406,3 +406,12 @@ def isrecord(w):
 def isoperator(w):
     from obin.compile.parse.basic import W_Operator
     return isinstance(w, W_Operator)
+
+
+############################################################
+
+def safe_w(obj):
+    if not isany(obj):
+        s = "<PyObj type:%s, repr:%s>" % (type(obj), repr(obj))
+        return newstring_s(s)
+    return obj

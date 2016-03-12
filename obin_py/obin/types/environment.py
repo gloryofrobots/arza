@@ -1,10 +1,10 @@
 from obin.types import api, space, plist
-from obin.types.root import W_Any, W_Callable
+from obin.types.root import W_Root, W_Callable
 from obin.misc.platform import is_absent_index
 from obin.runtime import error
 
 
-class References(W_Any):
+class References(W_Root):
     _virtualizable2_ = ['_refs_[*]']
     _settled_ = True
 
@@ -68,7 +68,7 @@ def newreferences_size(size):
     return newreferences(_refs_)
 
 
-class Reference(W_Any):
+class Reference(W_Root):
     _immutable_fields_ = ['env', 'name', 'index']
     _settled_ = True
 
@@ -139,14 +139,14 @@ class W_EnvCompileFunction(W_Callable):
         return routine
 
 
-class W_EnvSource(W_Any):
+class W_EnvSource(W_Root):
     def __init__(self, name, bytecode):
         self.name = name
         self.bytecode = bytecode
         self.env = None
 
 
-class W_Env(W_Any):
+class W_Env(W_Root):
     _immutable_fields_ = ['name', 'parent_env', 'scope', 'literals']
 
     def __init__(self, name, scope, parent_environment):

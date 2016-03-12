@@ -72,7 +72,7 @@ def parse_error(parser, message, node):
                        ]))
 
 
-class ParserScope(root.W_Any):
+class ParserScope(root.W_Root):
     def __init__(self):
         self.operators = space.newmap()
         self.macro = space.newmap()

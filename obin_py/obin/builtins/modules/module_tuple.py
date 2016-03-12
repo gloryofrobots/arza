@@ -1,13 +1,14 @@
 __author__ = 'gloryofrobots'
 from obin.types import tuples, space, api
-from obin.runtime.routine import complete_native_routine
+from obin.runtime.routine.routine import complete_native_routine
 
 def setup(process,  stdlib):
-    _module = space.newemptyenv(space.newsymbol(process, u'_tuple'))
+    name = space.newsymbol(process, u'_tuple')
+    _module = space.newemptyenv(name)
     api.put_native_function(process, _module, u'length', _length, 1)
 
     _module.export_all()
-    process.modules.add_module('_tuple', _module)
+    process.modules.add_module(name, _module)
 
 @complete_native_routine
 def _length(process, routine):

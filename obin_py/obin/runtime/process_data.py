@@ -1,4 +1,4 @@
-from obin.types import space
+from obin.types import space, api, plist
 from obin.compile.parse.parser import newparser
 from obin.runtime import error
 from obin.types import api
@@ -36,27 +36,37 @@ class Symbols:
 
 class Modules:
     def __init__(self, path, prelude):
-        assert isinstance(path, list)
-        self.modules = {}
+        error.affirm_type(path, space.islist)
+        error.affirm_iterable(path, space.isstring)
+
+        self.modules = space.newmap()
         self.path = path
         self.prelude = prelude
 
     def add_path(self, path):
-        assert isinstance(path, str)
-        self.path.append(path)
+        error.affirm_type(path, space.isstring)
+        self.path = plist.cons(path, self.path)
 
     def add_module(self, name, module):
-        self.modules[name] = module
+        error.affirm_type(name, space.issymbol)
+        error.affirm_type(module, space.isenv)
+        api.put(self.modules, name, module)
 
     def before_load(self, name):
-        assert name not in self.modules
-        self.modules[name] = None
+        error.affirm_type(name, space.issymbol)
+
+        assert not api.contains_b(self.modules, name)
+        api.put(self.modules, name, space.newint(0))
+
+    def has_module(self, name):
+        error.affirm_type(name, space.issymbol)
+        return api.contains_b(self.modules, name)
 
     def get_module(self, name):
-        assert isinstance(name, str)
-        m = self.modules[name]
-        if m is None:
-            raise RuntimeError("Load cycle")
+        error.affirm_type(name, space.issymbol)
+        m = api.at(self.modules, name)
+        if space.isint(m):
+            error.throw_2(error.Errors.IMPORT_ERROR, u"Cross reference import", name)
         return m
 
     def set_prelude(self, prelude):

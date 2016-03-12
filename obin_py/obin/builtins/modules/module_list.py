@@ -4,7 +4,8 @@ from obin.runtime.routine.routine import complete_native_routine
 
 
 def setup(process,  stdlib):
-    _module = space.newemptyenv(space.newsymbol(process, u'_list'))
+    name = space.newsymbol(process, u'_list')
+    _module = space.newemptyenv(name)
     api.put_native_function(process, _module, u'tail', _tail, 1)
     api.put_native_function(process, _module, u'empty', _empty, 1)
     api.put_native_function(process, _module, u'is_empty', _is_empty, 1)
@@ -12,7 +13,7 @@ def setup(process,  stdlib):
     api.put_native_function(process, _module, u'cons', _cons, 2)
 
     _module.export_all()
-    process.modules.add_module('_list', _module)
+    process.modules.add_module(name, _module)
 
 
 @complete_native_routine

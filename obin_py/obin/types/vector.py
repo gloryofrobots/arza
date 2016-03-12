@@ -1,11 +1,11 @@
-from obin.types.root import W_Any
+from obin.types.root import W_Root
 from sequence import W_SequenceIterator
 from obin.misc import platform
 from obin.runtime import error
 
 
 
-class W_Vector(W_Any):
+class W_Vector(W_Root):
     def __init__(self, items):
         assert isinstance(items, list)
         self._items = items

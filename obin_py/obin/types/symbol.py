@@ -1,9 +1,9 @@
 from obin.types import api, space, string
-from obin.types.root import W_Any
+from obin.types.root import W_Root
 from obin.runtime import error
 
 
-class W_Symbol(W_Any):
+class W_Symbol(W_Root):
     # _immutable_fields_ = ['value']
 
     def __init__(self, string, idx):

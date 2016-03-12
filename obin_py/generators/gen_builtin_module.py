@@ -3,13 +3,14 @@ from jinja2 import Template
 
 TPL_SETUP_HEADER = """
 def setup(process, stdlib):
-    _module = space.newemptyenv(space.newsymbol(process, u'{{module_name}}'))
+    _module_name space.newsymbol(process, u'{{module_name}}')
+    _module = space.newemptyenv(_module_name)
 """
 
 TPL_INSTALL_FUNC = "    api.put_native_function(process, _module, u'{{func_name}}', {{func_native_name}}, {{func_arity}})"
 TPL_FOOTER = """
     _module.export_all()
-    process.modules.add_module('{{module_name}}', _module)
+    process.modules.add_module(_module_name, _module)
 """
 
 TPL_FUNC = """

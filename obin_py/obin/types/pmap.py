@@ -1,5 +1,5 @@
 from obin.misc.platform import jit, rarithmetic
-from obin.types.root import W_UniqueType, W_Any
+from obin.types.root import W_UniqueType, W_Root
 from obin.types import api, space, plist
 from obin.runtime import error
 
@@ -43,7 +43,7 @@ def _equal(pair, other):
     return other
 
 
-class W_PMap(W_Any):
+class W_PMap(W_Root):
     def __init__(self, cnt, root):
         self._cnt = cnt
         self._root = root
@@ -118,7 +118,7 @@ class W_PMap(W_Any):
         return lst
 
 
-class INode(W_Any):
+class INode(W_Root):
     def assoc_inode(self, shift, hash_val, key, val, added_leaf):
         pass
 

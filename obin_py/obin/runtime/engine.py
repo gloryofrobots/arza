@@ -33,7 +33,9 @@ def load_module(process, script_name):
 
 # TODO MOVE ALL OF IT TO PROCESS
 def initialize(libdirs):
-    process = newprocess(libdirs)
+    path = space.newlist([space.newstring_s(p) for p in libdirs])
+
+    process = newprocess(path)
     # space.initialise(process)
     err = load_prelude(process, u"prelude")
     if err is not None:

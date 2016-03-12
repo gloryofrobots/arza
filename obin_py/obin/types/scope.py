@@ -1,5 +1,5 @@
 from obin.types import space, plist, environment
-from obin.types.root import W_Any
+from obin.types.root import W_Root
 from obin.misc import platform
 from obin.types import api
 from obin.runtime import error
@@ -31,7 +31,7 @@ def _find_function(symbol, record):
     return api.equal_b(symbol, api.at_index(record, 0))
 
 
-class W_Scope(W_Any):
+class W_Scope(W_Root):
     def __init__(self):
         self.__locals = space.newmap()
 

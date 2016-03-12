@@ -1,8 +1,8 @@
 __author__ = 'gloryofrobots'
-from obin.types.root import W_Any
+from obin.types.root import W_Root
 from obin.types import api
 
-class IoDevice(W_Any):
+class IoDevice(W_Root):
     def __init__(self, fd):
         self.file = fd
 

@@ -2,18 +2,18 @@
 //TODO :: in pattern matching
 //TODO ranges
 //TODO meta
-//TODO strings in import modules
 //TODO ERRORS
 //TODO SLICES
 //TODO remove voids as values in datastructs
 //TODO separate token streams
 //TODO syntax block with macros and custom operators
 //TODO ast transform
-//TODO obin:*
-//TODO deriving
 //TODO deep calls in datastructs data -> (1, record) == (1, record) NotIImplementedError in record._equal_(record)
+//TODO deriving for records
 //TODO CHOOSE INDENT BASED OR IMPLEMENT SYNTAX FOR TYPE AND TRAITS WITHOUT END TOKEN
 //TODO PATTERN_MATCH_ERRORS as ERRORS NOT TUPLES
+//TODO carrying
+//TODO strings in import modules
 
 
 //trait Any for self

@@ -1,4 +1,4 @@
-from obin.types.root import W_Hashable, W_Any
+from obin.types.root import W_Hashable, W_Root
 from sequence import W_SequenceIterator
 from obin.runtime import error
 from obin.types import api, space
@@ -39,7 +39,7 @@ from obin.misc import platform
         return space.w_True
 """
 
-class W_Unit(W_Any):
+class W_Unit(W_Root):
     def _hash_(self):
         return 0x345678
 

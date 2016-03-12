@@ -7,19 +7,17 @@ from obin.compile import compiler
 
 
 def import_module(process, name):
-    try:
-        m = process.modules.get_module(api.to_s(name))
-        # print "ALREADY LOADED", name
-        return m
-    except KeyError:
-        # print "FILE LOAD", name
+    if process.modules.has_module(name):
+        return process.modules.get_module(name)
+    else:
         return load_module(process, name)
 
 
 def find_module_file(path, dirs):
     # print "DIRS", dirs
     for directory in dirs:
-        filename = join_and_normalise_path(directory, path)
+        dir_s = api.to_s(directory)
+        filename = join_and_normalise_path(dir_s, path)
         # print "TRY TO IMPORT", filename
         if is_file(filename):
             # print "SUCCESS"
@@ -49,12 +47,5 @@ def evaluate_module_file(process, name, filename):
 
     if process.is_terminated():
         error.signal(module)
-    process.modules.add_module(api.to_s(name), module)
+    process.modules.add_module(name, module)
     return module
-    # script = load_file_content(filename)
-    # sourcename = space.newsymbol_py_str(process, filename)
-    #
-    # module = compiler.compile_module(process, name, script, sourcename)
-    # module.result = process.subprocess(module, space.newundefined())
-    # process.modules.add_module(name, module)
-    # return module

@@ -1,5 +1,5 @@
 from obin.types import api, space, plist
-from obin.types.root import W_Any
+from obin.types.root import W_Root
 from obin.misc import platform
 from obin.runtime import error
 
@@ -162,7 +162,7 @@ class Bindings:
         return max(self._minsize, size // 2)
 
 
-class TableIterator(W_Any):
+class TableIterator(W_Root):
     def __init__(self, source, length):
         assert isinstance(source, W_Map)
         assert isinstance(length, int)
@@ -187,7 +187,7 @@ class TableIterator(W_Any):
         return "<TableIterator %d:%d>" % (self.index, self.source_length)
 
 
-class W_Map(W_Any):
+class W_Map(W_Root):
     """
         Dict which supports access by key and by index
     """

@@ -5,7 +5,8 @@ from obin.runtime import error
 
 
 def setup(process, stdlib):
-    _module = space.newemptyenv(space.newsymbol(process, u'_bit'))
+    name = space.newsymbol(process, u'_bit')
+    _module = space.newemptyenv(name)
     api.put_native_function(process, _module, u'bitnot', bitnot, 1)
     api.put_native_function(process, _module, u'bitor', bitor, 2)
     api.put_native_function(process, _module, u'bitxor', bitxor, 2)
@@ -14,7 +15,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'rshift', rshift, 2)
 
     _module.export_all()
-    process.modules.add_module('_bit', _module)
+    process.modules.add_module(name, _module)
 
 @complete_native_routine
 def bitnot(process, routine):

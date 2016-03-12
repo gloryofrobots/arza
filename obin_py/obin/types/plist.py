@@ -1,10 +1,10 @@
-from obin.types.root import W_Any
+from obin.types.root import W_Root
 from obin.types import space
 from obin.types import api
 from obin.runtime import error
 
 
-class W_PList(W_Any):
+class W_PList(W_Root):
     def __init__(self, head, tail):
         self.head = head
         self.tail = tail

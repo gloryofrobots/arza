@@ -1,11 +1,11 @@
 from obin.types import api, space
-from obin.types.root import W_Any
+from obin.types.root import W_Root
 from obin.runtime import error
 
 
 # TODO STM
 
-class W_TVar(W_Any):
+class W_TVar(W_Root):
     def __init__(self, value):
         self.value = value
 

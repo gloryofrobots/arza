@@ -3,12 +3,13 @@ from obin.types import tuples, space, api
 from obin.runtime.routine.routine import complete_native_routine
 
 def setup(process, stdlib):
-    _module = space.newemptyenv(space.newsymbol(process, u'_fiber'))
+    name = space.newsymbol(process, u'_fiber')
+    _module = space.newemptyenv(name)
     api.put_native_function(process, _module, u'spawn', _spawn, 1)
     api.put_native_function(process, _module, u'activate', _activate, 2)
 
     _module.export_all()
-    process.modules.add_module('_fiber', _module)
+    process.modules.add_module(name, _module)
 
 @complete_native_routine
 def _spawn(process, routine):

@@ -66,17 +66,21 @@ def not_implemented_error(name, *args):
     from obin.types import space
     from obin.runtime import error
     if len(args) == 1:
-        return error.throw_2(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name), args[0])
+        return error.throw_2(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name), space.safe_w(args[0]))
     elif len(args) == 2:
-        return error.throw_3(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name), args[0], args[1])
+        return error.throw_3(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name),
+                             space.safe_w(args[0]), space.safe_w(args[1]))
     elif len(args) == 3:
-        return error.throw_4(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name), args[0], args[1], args[2])
+        return error.throw_4(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name),
+                             space.safe_w(args[0]), space.safe_w(args[1]), space.safe_w(args[2]))
     elif len(args) == 4:
-        return error.throw_5(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name), args[0], args[1], args[2], args[3])
+        return error.throw_5(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name),
+                             space.safe_w(args[0]), space.safe_w(args[1]), space.safe_w(args[2]),
+                             space.safe_w(args[3]))
     raise RuntimeError("not_implemented_error for arity not defined", len(args))
 
 
-class W_Any:
+class W_Root:
     def __str__(self):
         return self._to_string_()
 
@@ -149,7 +153,7 @@ class W_Any:
         return not_implemented_error(u"_clone_")
 
 
-class W_Hashable(W_Any):
+class W_Hashable(W_Root):
     def __init__(self):
         self.__hash = None
 
@@ -162,11 +166,11 @@ class W_Hashable(W_Any):
         return self.__hash
 
 
-class W_Callable(W_Any):
+class W_Callable(W_Root):
     pass
 
 
-class W_ValueType(W_Any):
+class W_ValueType(W_Root):
     pass
 
 
@@ -174,6 +178,6 @@ class W_Number(W_ValueType):
     pass
 
 
-class W_UniqueType(W_Any):
+class W_UniqueType(W_Root):
     def _equal_(self, other):
         return self is other
