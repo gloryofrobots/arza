@@ -5,35 +5,35 @@ implement Eq for List end
 
 fun map
 | f [] -> []
-| f [hd, ...tl] -> (f hd) :: (map f tl)
+| f hd::tl -> (f hd) :: (map f tl)
 ----------------------------------------
 
 fun intersperse
 | val [] -> []
-| val [hd, ...tl] -> hd :: val :: (intersperse val tl)
+| val hd::tl  -> hd :: val :: (intersperse val tl)
 --------------------------------------------------
 
 fun reverse
 | l of List -> reverse l []
 | [] result -> result
-| [hd, ...tl] result -> (reverse tl (hd :: result))
+| hd::tl result -> (reverse tl (hd :: result))
 ----------------------------------------
 
 //REDUCERS///////////////////////////////////////////////////////
 
 fun foldl
 | f acc [] -> acc
-| f acc [hd, ...tl] -> foldl f (f hd acc) tl
+| f acc hd::tl -> foldl f (f hd acc) tl
 ----------------------------------------
 
 fun foldr
 | f acc [] -> acc
-| f acc [hd, ...tl] -> f hd (foldr f acc tl)
+| f acc hd::tl -> f hd (foldr f acc tl)
 --------------------------------------------------
 
 fun scanl
 | f acc [] -> acc::[]
-| f acc [hd, ...tl] -> acc :: (scanl f (f hd acc) tl)
+| f acc hd::tl -> acc :: (scanl f (f hd acc) tl)
 --------------------------------------------------
 
 
@@ -73,7 +73,7 @@ fun suffix_of
 //SUBLISTS/////////////////////////////////////////////////////////////
 fun drop
 | 0 l -> l
-| count [hd, ...tl] -> drop (count - 1) tl
+| count hd::tl -> drop (count - 1) tl
 --------------------------------------------------
 
 fun take

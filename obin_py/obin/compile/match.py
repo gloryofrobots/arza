@@ -85,6 +85,20 @@ def _process_unit(state, pattern, patterns, path):
     return patterns
 
 
+def _process_cons(state, pattern, patterns, path):
+    patterns = add_pattern(patterns, ["is_seq", _create_path_node(pattern, path)])
+    head = nodes.node_first(pattern)
+    tail = nodes.node_second(pattern)
+    patterns = add_pattern(patterns,
+                           ["isnot", _create_path_node(pattern, path), create_empty_list_node(head)])
+
+    head_path = add_path(create_head_node(head), path)
+    patterns = _process_pattern(state, head, patterns, head_path)
+
+    tail_path = add_path(create_tail_node(tail), path)
+    patterns = _process_pattern(state, tail, patterns, tail_path)
+    return patterns
+
 def _process_list(state, pattern, patterns, path):
     patterns = add_pattern(patterns, ["is_seq", _create_path_node(pattern, path)])
 
@@ -264,6 +278,8 @@ def _process_pattern(state, pattern, patterns, path):
         return _process_map(state, pattern, patterns, path)
     elif ntype == NT_BIND:
         return _process_bind(state, pattern, patterns, path)
+    elif ntype == NT_CONS:
+        return _process_cons(state, pattern, patterns, path)
     elif ntype == NT_NAME:
         return _process_name(state, pattern, patterns, path)
     elif ntype == NT_OF:

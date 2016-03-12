@@ -228,6 +228,7 @@ def pattern_parser_init(parser):
     prefix(parser, TT_LCURLY, prefix_lcurly_patterns)
     prefix(parser, TT_SHARP, prefix_sharp)
 
+    infix(parser, TT_DOUBLE_COLON, 70, led_infixr)
     infix(parser, TT_OF, 10, led_infix)
     infix(parser, TT_AT_SIGN, 10, infix_at)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
