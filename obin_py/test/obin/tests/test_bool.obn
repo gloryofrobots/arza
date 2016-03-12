@@ -1,4 +1,3 @@
-import err
 import affirm
 
 fun test() ->
@@ -20,7 +19,7 @@ fun test() ->
 //
     //only True and False can be used in boolean operators
     affirm:is_throw (fun | x -> 1 or 0 end) ()
-    affirm:is_throw_expected (fun | x -> 1 or 0 end) () (err:TypeError ("Bool expected", 1))
+    affirm:is_throw_expected (fun | x -> 1 or 0 end) () (TypeError ("Bool expected", 1))
 
     affirm:is_throw lam x -> 1 and 0; ()
     affirm:is_throw lam x -> not 0; ()

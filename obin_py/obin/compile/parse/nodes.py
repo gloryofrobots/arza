@@ -3,6 +3,7 @@ from obin.compile.parse import token_type as tt
 from obin.compile.parse import node_type as nt
 from obin.types import space, api, plist
 from obin.runtime import error
+from obin.builtins import lang_names
 
 
 def newnode(ntype, token, children):
@@ -266,6 +267,7 @@ def create_tuple_node(basenode, elements):
 def create_match_fail_node(basenode, val, var):
     sym = create_symbol_node_s(basenode, val)
     return create_tuple_node(basenode, [sym, create_name_node(basenode, var)])
+    # return create_call_node_s(basenode, val, [create_name_node(basenode, var)])
 
 
 def create_if_node(basenode, branches):
@@ -319,22 +321,35 @@ def create_gt_node(basenode, left, right):
 
 
 def create_kindof_node(basenode, left, right):
-    from obin.builtins import lang
-    return create_call_node_s(basenode, lang.PRIM_KINDOF, [left, right])
+    return create_call_node_s(basenode, lang_names.KINDOF, [left, right])
 
 
 def create_isnot_node(basenode, left, right):
-    from obin.builtins import lang
-    return create_call_node_s(basenode, lang.PRIM_ISNOT, [left, right])
+    return create_call_node_s(basenode, lang_names.ISNOT, [left, right])
 
 
 def create_is_node(basenode, left, right):
-    from obin.builtins import lang
-    return create_call_node_s(basenode, lang.PRIM_IS, [left, right])
+    return create_call_node_s(basenode, lang_names.IS, [left, right])
 
 
 def create_in_node(basenode, left, right):
-    return create_call_node_s(basenode, 'in', [left, right])
+    return create_call_node_s(basenode, lang_names.ELEM, [left, right])
+
+
+def create_is_indexed_node(basenode, val):
+    return create_call_node_s(basenode, lang_names.IS_INDEXED, [val])
+
+
+def create_is_dict_node(basenode, val):
+    return create_call_node_s(basenode, lang_names.IS_DICT, [val])
+
+
+def create_is_seq_node(basenode, val):
+    return create_call_node_s(basenode, lang_names.IS_SEQ, [val])
+
+
+def create_len_node(basenode, val):
+    return create_call_node_s(basenode, lang_names.LEN, [val])
 
 
 ##############################

@@ -41,7 +41,7 @@ fun test() ->
     test_destruct:test()
     log "TEST STATIC REFS"
     test_static_refs:test()
-    log "TEST  CO"
+    log "TEST CO"
     test_co:test()
     log "TEST EXCEPTION"
     test_exception:test()

@@ -74,6 +74,14 @@ def hp_at(process, args):
     else:
         return None
 
+def hp_len(process, args):
+    left = api.at_index(args, 0)
+
+    if not isrecord(left):
+        return api.length(left)
+    else:
+        return None
+
 ####NUMBERS##########################################################
 
 def hp_add(process, args):

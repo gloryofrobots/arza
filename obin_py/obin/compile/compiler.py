@@ -9,7 +9,7 @@ from obin.types import space, api, plist, environment, symbol as symbols, string
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
 from obin.misc import platform, strutil
 from obin.runtime import error
-from obin.builtins import primitives
+from obin.builtins import lang_names
 
 
 # TODO REMOVE NIL as token and node_type
@@ -186,9 +186,11 @@ def _get_variable_index(compiler, code, node, name):
 
     ref = environment.get_reference(compiler.env, name)
     if space.isvoid(ref):
-        return compile_error(compiler, code, node, u"Unreachable variable")
-
-    _declare_static_reference(compiler, ref)
+        names_s = api.to_s(name)
+        if not names_s.startswith(lang_names.PREFIX):
+            return compile_error(compiler, code, node, u"Unreachable variable")
+    else:
+        _declare_static_reference(compiler, ref)
 
     return ref_id, False
 
@@ -916,7 +918,7 @@ def _compile_DERIVE(compiler, code, node):
     _compile(compiler, code, traits)
     _compile(compiler, code, types)
 
-    _emit_call(compiler, code, node, 2, primitives.PRIM_DERIVE)
+    _emit_call(compiler, code, node, 2, lang_names.DERIVE)
 
 
 def _compile_TYPE(compiler, code, node):
@@ -938,7 +940,7 @@ def _compile_TYPE(compiler, code, node):
         _compile(compiler, code, fields)
         _compile_case_function(compiler, code, node, nodes.empty_node(), constructor)
 
-    _emit_call(compiler, code, node, 3, primitives.PRIM_TYPE)
+    _emit_call(compiler, code, node, 3, lang_names.TYPE)
     _emit_store_name(compiler, code, name_node)
 
 
@@ -951,7 +953,7 @@ def _compile_TRAIT(compiler, code, node):
     _emit_symbol_literal(compiler, code, var_name_node)
     _compile(compiler, code, constraints_node)
 
-    _emit_call(compiler, code, node, 3, primitives.PRIM_TRAIT)
+    _emit_call(compiler, code, node, 3, lang_names.TRAIT)
     _emit_store_name(compiler, code, trait_name_node)
 
     methods = node_fourth(node)
@@ -981,7 +983,7 @@ def _compile_TRAIT(compiler, code, node):
         else:
             _compile_case_function(compiler, code, node, nodes.empty_node(), method_default_impl)
 
-        _emit_call(compiler, code, node, 4, primitives.PRIM_METHOD)
+        _emit_call(compiler, code, node, 4, lang_names.METHOD)
         # code.emit_1(METHOD, method_name_index, info(node))
         code.emit_2(STORE_LOCAL, method_index, method_name_index, info(node))
         if i != last_index:
@@ -1009,7 +1011,7 @@ def _compile_IMPLEMENT(compiler, code, node):
     code.emit_1(LIST, len_methods, info(traitname))
 
     # code.emit_0(IMPLEMENT, info(traitname))
-    _emit_call(compiler, code, node, 3, primitives.PRIM_IMPLEMENT)
+    _emit_call(compiler, code, node, 3, lang_names.IMPLEMENT)
 
 
 def _compile_FOR(compiler, code, node):
@@ -1063,19 +1065,19 @@ def _compile_WHILE(compiler, code, node):
 
 def _emit_TAIL(compiler, code, node):
     _compile(compiler, code, node)
-    _emit_call(compiler, code, node, 1, primitives.PRIM_REST)
+    _emit_call(compiler, code, node, 1, lang_names.REST)
 
 
 def _emit_HEAD(compiler, code, node):
     _compile(compiler, code, node)
-    _emit_call(compiler, code, node, 1, primitives.PRIM_FIRST)
+    _emit_call(compiler, code, node, 1, lang_names.FIRST)
 
 
 def _emit_DROP(compiler, code, node, drop):
     count = node_first(drop)
     _compile(compiler, code, count)
     _compile(compiler, code, node)
-    _emit_call(compiler, code, node, 2, primitives.PRIM_DROP)
+    _emit_call(compiler, code, node, 2, lang_names.DROP)
 
 
 def _compile_LOOKUP(compiler, code, node):
@@ -1098,7 +1100,7 @@ def _compile_LOOKUP(compiler, code, node):
 
     _compile(compiler, code, expr)
     _compile(compiler, code, obj)
-    _emit_call(compiler, code, node, 2, primitives.PRIM_AT)
+    _emit_call(compiler, code, node, 2, lang_names.AT)
 
 def _compile_LOOKUP_SYMBOL(compiler, code, node):
     obj = node_first(node)
@@ -1109,7 +1111,7 @@ def _compile_LOOKUP_SYMBOL(compiler, code, node):
 
     _emit_symbol_literal(compiler, code, node_second(node))
     _compile(compiler, code, obj)
-    _emit_call(compiler, code, node, 2, primitives.PRIM_AT)
+    _emit_call(compiler, code, node, 2, lang_names.AT)
 
 def _compile_args_list(compiler, code, args):
     args_count = 0

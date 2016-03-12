@@ -9,7 +9,7 @@ def error(process, symbol_unistr, args_tuple):
     from obin.types import api
     assert space.istuple(args_tuple)
     assert isinstance(symbol_unistr, unicode)
-    module = process.modules.get_module("err")
+    module = process.modules.prelude
     symbol = space.newsymbol(process, symbol_unistr)
     err_type = api.lookup(module, symbol, space.newvoid())
     if space.isvoid(err_type):
@@ -137,7 +137,7 @@ class Errors:
 
 def initialise(process):
     from obin.types import api
-    err_module = process.modules.get_module("err")
+    err_module = process.modules.prelude
     for key, errname in Errors.__dict__.items():
         if not key.endswith(u"_ERROR"):
             continue

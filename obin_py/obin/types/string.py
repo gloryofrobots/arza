@@ -116,6 +116,8 @@ def drop(s, count):
 
 
 def concat(l, r):
+    error.affirm_type(l, space.isstring)
+    error.affirm_type(r, space.isstring)
     sleft = api.to_u(l)
     sright = api.to_u(r)
     return W_String(sleft + sright)
