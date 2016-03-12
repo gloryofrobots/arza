@@ -1,1 +1,3 @@
+import from obin:lang:tuple
+
 implement Eq for Tuple end

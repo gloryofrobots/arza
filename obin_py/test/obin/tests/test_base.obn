@@ -43,35 +43,7 @@ fun test () ->
                     | x == 14 -> 2 + 2
                     | x == 15 -> 3 + 3
                     | else -> 4 + 4
-                    --- . 
+                    --- .
                     8
-
-
-    A = (1,2,3,4,5,6)
-    l = []
-    for x <- A
-        l = x :: l
-    ---
-    affirm:is_equal l [6,5,4,3,2,1]
-
-    for x1 <- range 10 20; l = x1 :: l end
-    affirm:is_equal l [19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 6, 5, 4, 3, 2, 1]
-
-    A = (1, 2, 3, 4, 5, 6, 35, 110, 122)
-    l1 = []
-    for a <- A
-        when a == 35
-           continue
-        ---
-
-        when a > 115
-            when 1 < 2
-                break
-            ---
-        ---
-        l1 = a :: l1
-    ---
-
-    affirm:is_equal l1 [110, 6, 5, 4, 3, 2, 1]
 end
 

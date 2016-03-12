@@ -3,7 +3,7 @@ from jinja2 import Template
 
 TPL_SETUP_HEADER = """
 def setup(process, stdlib):
-    _module_name space.newsymbol(process, u'{{module_name}}')
+    _module_name = space.newsymbol(process, u'{{module_name}}')
     _module = space.newemptyenv(_module_name)
 """
 
@@ -45,19 +45,19 @@ def generate(module):
     return data
 
 def args(arity):
-    return [arg(i) for i in range(arity)]
+    return [arg(i, i) for i in range(arity)]
 
-def arg(index):
+def arg(index, source_index):
     return {
         "name":"arg%d" % index,
         "index": index,
-        "source_index": index,
+        "source_index": source_index,
 
     }
 
 def func(func_name=None, func_native_name=None,
          func_arity=None, source_module=None,
-        source_function=None, result_wrap='', affirm_type=''):
+        source_function=None, result_wrap='', affirm_type='', arguments=None):
     return dict(
         func_name=func_name,
         func_native_name=func_native_name,
@@ -66,7 +66,7 @@ def func(func_name=None, func_native_name=None,
         source_function=source_function if source_function else func_name,
         result_wrap = result_wrap,
         affirm_type = affirm_type,
-        args = args(func_arity)
+        args = args(func_arity) if arguments is None else arguments
         )
 
 
@@ -76,7 +76,7 @@ def module(module_name, funcs):
         funcs=funcs
     )
 
-LISTS = module("_list", [
+LISTS = module("obin:lang:list", [
     func(func_name="tail", func_native_name="_tail", func_arity=1,
              source_module="plist", source_function="tail"),
     func(func_name="empty", func_native_name="_empty", func_arity=0,
@@ -87,11 +87,16 @@ LISTS = module("_list", [
              source_module="plist", source_function="head"),
     func(func_name="cons", func_native_name="_cons", func_arity=2,
              source_module="plist", source_function="cons"),
+    func(func_name="slice", func_native_name="_slice", func_arity=2,
+             source_module="plist", source_function="slice",
+            arguments=[arg(2,0), arg(1,1), arg(0, 0)]),
     ])
 
-TUPLES = module("_tuple", [
+TUPLES = module("obin:lang:tuple", [
     func(func_name="length", func_native_name="_length", func_arity=1,
-             source_module="tupl", source_function="length"),
+             source_module="api", source_function="length"),
+    func(func_name="to_list", func_native_name="_to_list", func_arity=1,
+             source_module="tuples", source_function="to_list"),
     ])
 
 BIT = module("_bit",  [
@@ -126,8 +131,8 @@ BIT = module("_bit",  [
     ])
 
 
-# print generate(LISTS)
-print generate(BIT)
+print generate(TUPLES)
+# print generate(BIT)
 
 
 

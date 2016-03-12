@@ -1,11 +1,18 @@
-import from _list (cons, tail, head, empty, is_empty)
+import from obin:lang:list (tail, head, cons as _cons, is_empty as _is_empty, empty as _empty, slice as _slice)
 implement Eq for List end
+
+
 
 //TRANSFORMERS///////////////////////////////////////////////////////
 
 fun map
 | f [] -> []
 | f hd::tl -> (f hd) :: (map f tl)
+----------------------------------------
+
+fun foreach
+| f [] -> []
+| f hd::tl -> f hd; foreach f tl
 ----------------------------------------
 
 fun intersperse
@@ -137,7 +144,7 @@ fun concat | l1 l2 ->
     foldr (&::) l2 l1 end
 
 fun range
-| first of Int last of Int ->
+| first of Int . last of Int ->
     step = -1 if last < 0 else 1
     range first last step
     ///////////////////////////////////////
@@ -191,3 +198,24 @@ fun replicate
 | n x l -> replicate (n - 1) x (x :: l)
 ---------------------------------------------------
 
+//TRAITS
+
+implement Seq for List
+    method first self -> head self
+    method rest self -> tail self
+    method cons value self -> _cons value self
+    method empty self -> []
+--------------------------------------------------
+
+implement Seqable for List
+    method seq self -> self
+--------------------------------------------------
+
+implement Collection for List
+    method len self -> length
+    method is_empty self -> _is_empty self
+    method put key value self -> False
+    method at key self -> False
+    method del obj self -> False
+    method elem key self -> False
+---------------------------------

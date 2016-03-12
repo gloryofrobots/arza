@@ -23,6 +23,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'concat', concat_tuples, 2)
     api.put_native_function(process, module, u'time', time, 0)
     api.put_native_function(process, module, u'traits', traits, 1)
+    api.put_native_function(process, module, u'get_type', _type, 1)
     api.put_native_function(process, module, u'range', _range, 2)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
     put_lang_func(process, module, lang_names.IS_INDEXED, is_indexed, 1)
@@ -110,6 +111,11 @@ def apply(process, routine):
         return error.throw_1(error.Errors.TYPE_ERROR, space.newstring(u"arguments tuple expected"))
     api.call(process, func, args)
 
+
+@complete_native_routine
+def _type(process, routine):
+    left = routine.get_arg(0)
+    return api.get_type(process, left)
 
 @complete_native_routine
 def __not(process, routine):

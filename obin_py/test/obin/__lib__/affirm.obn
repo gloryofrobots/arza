@@ -1,12 +1,14 @@
 // TODO REMOVE for and add support for () args
+import tuple
+import list
+
 fun is_equal_batch fn ...calls ->
     _batch is_equal fn calls
 ---
 
 fun _batch checker fn calls ->
-    for call <- calls
-        checker (apply fn call.0)  call.1
-    ---
+    calls_list = tuple:to_list calls
+    list:foreach lam call -> checker (apply fn call.0)  call.1; calls_list
 ---
 
 

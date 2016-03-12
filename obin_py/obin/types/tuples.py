@@ -1,7 +1,7 @@
 from obin.types.root import W_Hashable, W_Root
 from sequence import W_SequenceIterator
 from obin.runtime import error
-from obin.types import api, space
+from obin.types import api, space, plist
 from obin.misc import platform
 
 """
@@ -38,6 +38,7 @@ from obin.misc import platform
                 return space.w_False
         return space.w_True
 """
+
 
 class W_Unit(W_Root):
     def _hash_(self):
@@ -170,13 +171,20 @@ class W_Tuple(W_Hashable):
     def to_l(self):
         return self.elements
 
+
 def type_check(t):
     error.affirm_type(t, space.istuple)
 
 
 def concat(process, tupl1, tupl2):
+    type_check(tupl1)
+    type_check(tupl2)
     return W_Tuple(tupl1.elements + tupl2.elements)
 
+
+def to_list(t):
+    type_check(t)
+    return space.newlist(t.elements)
 
 
 def slice(t, first, last):

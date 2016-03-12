@@ -104,6 +104,7 @@ trait Seq for self
     method rest self
     // prepend/cons operator
     method cons value self
+    method empty self
 ---
 
 trait Indexed for self

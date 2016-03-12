@@ -190,7 +190,7 @@ def traitof_b(process, obj, trait):
         return error.throw_2(error.Errors.TYPE_ERROR, trait, space.newstring(u"Trait expected"))
 
     obj_type = get_type(process, obj)
-    return obj_type.implements_trait(trait)
+    return obj_type.is_trait_implemented(trait)
 
 
 def typeof(process, obj, _type):
