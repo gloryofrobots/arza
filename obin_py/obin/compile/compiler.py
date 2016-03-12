@@ -107,6 +107,16 @@ def _declare_literal(compiler, literal):
     return idx
 
 
+def _declare_temporary(compiler):
+    scope = _current_scope(compiler)
+    return scope.add_temporary()
+
+
+def _has_temporary(compiler, idx):
+    scope = _current_scope(compiler)
+    return scope.has_temporary(idx)
+
+
 def _declare_local(compiler, symbol):
     assert space.issymbol(symbol)
     assert not api.isempty(symbol)
@@ -386,18 +396,16 @@ PATTERN_DATA = """
 def _compile_match(compiler, code, node, patterns, error_code):
     from obin.compile.match import transform
     from obin.compile.parse.nodes import create_goto_node
-    from obin.compile import MATCH_SYS_VAR
-    name = space.newsymbol_s(compiler.process, MATCH_SYS_VAR)
-    name_index = _declare_literal(compiler, name)
-    index = _declare_local(compiler, name)
-    code.emit_2(STORE_LOCAL, index, name_index, codeinfo_unknown())
+    temp_idx = _declare_temporary(compiler)
+    code.emit_1(STORE_TEMPORARY, temp_idx, codeinfo_unknown())
 
     endmatch = code.prealocate_label()
-    graph = transform(compiler, code, node, patterns, create_goto_node(endmatch))
+
+    graph = transform(compiler, code, node, patterns, create_goto_node(endmatch), temp_idx)
     _compile(compiler, code, graph)
 
     # Allocate error in case of no match
-    err_node = nodes.create_match_fail_node(node, str(error_code), MATCH_SYS_VAR)
+    err_node = nodes.create_match_fail_node(node, str(error_code), temp_idx)
     _compile(compiler, code, err_node)
     code.emit_0(THROW, info(node))
 
@@ -484,9 +492,9 @@ def _compile_ASSIGN(compiler, code, node):
         return _compile_destruct(compiler, code, left, exp)
     else:
         # print " MATCH ASSIGN"
-        # TODO GET RID OF MATCH_SYS_VAR NONSENSE
-        from obin.compile import MATCH_SYS_VAR
-        exp_node = nodes.create_name_node_s(node, MATCH_SYS_VAR)
+        scope = _current_scope(compiler)
+        idx = scope.what_next_temporary()
+        exp_node = nodes.create_temporary_node(node, idx)
         match = nodes.create_match_node(node, exp, [nodes.list_node(
             [left, nodes.list_node([exp_node])]
         )])
@@ -502,6 +510,14 @@ def _compile_node_name_lookup(compiler, code, node):
         code.emit_2(LOCAL, index, name_index, info(node))
     else:
         code.emit_2(OUTER, index, name_index, info(node))
+
+
+def _compile_TEMPORARY(compiler, code, node):
+    idx_node = node_first(node)
+    idx = api.to_i(idx_node)
+    if not _has_temporary(compiler, idx):
+        compile_error(compiler, code, node, u"Invalid temporary variable %d" % idx)
+    code.emit_1(TEMPORARY, idx, info(node))
 
 
 def _compile_NAME(compiler, code, node):
@@ -886,19 +902,19 @@ def _compile_IMPORT_FROM_HIDING(compiler, code, node):
         i += 1
 
 
-def _compile_MODULE(compiler, code, node):
-    name_node = node_first(node)
-    body = node_second(node)
-    parse_scope = node_third(node)
-
-    compiled_code = compile_ast(compiler, body, parse_scope)
-
-    module_name = _get_symbol_name(compiler, name_node)
-    module = space.newenvsource(module_name, compiled_code)
-    module_index = _declare_literal(compiler, module)
-    code.emit_1(MODULE, module_index, info(node))
-
-    _emit_store(compiler, code, module_name, name_node)
+# def _compile_MODULE(compiler, code, node):
+#     name_node = node_first(node)
+#     body = node_second(node)
+#     parse_scope = node_third(node)
+#
+#     compiled_code = compile_ast(compiler, body, parse_scope)
+#
+#     module_name = _get_symbol_name(compiler, name_node)
+#     module = space.newenvsource(module_name, compiled_code)
+#     module_index = _declare_literal(compiler, module)
+#     code.emit_1(MODULE, module_index, info(node))
+#
+#     _emit_store(compiler, code, module_name, name_node)
 
 
 def _compile_FENV(compiler, code, node):
@@ -1062,7 +1078,6 @@ def _compile_WHILE(compiler, code, node):
     code.done_continue()
 
 
-
 def _emit_TAIL(compiler, code, node):
     _compile(compiler, code, node)
     _emit_call(compiler, code, node, 1, lang_names.REST)
@@ -1102,6 +1117,7 @@ def _compile_LOOKUP(compiler, code, node):
     _compile(compiler, code, obj)
     _emit_call(compiler, code, node, 2, lang_names.AT)
 
+
 def _compile_LOOKUP_SYMBOL(compiler, code, node):
     obj = node_first(node)
 
@@ -1112,6 +1128,7 @@ def _compile_LOOKUP_SYMBOL(compiler, code, node):
     _emit_symbol_literal(compiler, code, node_second(node))
     _compile(compiler, code, obj)
     _emit_call(compiler, code, node, 2, lang_names.AT)
+
 
 def _compile_args_list(compiler, code, args):
     args_count = 0
@@ -1222,6 +1239,10 @@ def _compile_node(compiler, code, node):
         _compile_NAME(compiler, code, node)
     elif NT_SYMBOL == ntype:
         _compile_SYMBOL(compiler, code, node)
+    elif NT_TEMPORARY == ntype:
+        _compile_TEMPORARY(compiler, code, node)
+
+
 
     elif NT_ASSIGN == ntype:
         _compile_ASSIGN(compiler, code, node)

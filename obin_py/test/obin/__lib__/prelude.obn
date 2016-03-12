@@ -12,7 +12,6 @@ infixl + + 60
 infixl - - 60
 infixl * * 65
 infixl / / 65
-//infixr :: cons 70
 infixl ++ ++ 70
 
 
@@ -26,15 +25,9 @@ infixl ++ ++ 70
 ////       554
 //end
 
-//
-//
-//
-//
-
 type LT
 type GT
 type EQ
-
 
 trait Collection for self
     method len self
@@ -127,11 +120,8 @@ trait Sliceable for self
     method take count self
 ---
 
-in = elem
-//notin = in
-fun notin obj storage -> not (obj `elem` storage) end
-
 //ERRORS
+//TODO MAKE THIS DECLARATION ONE MACRO
 type ImportError args end
 type RuntimeError args end
 type TypeError args end
@@ -159,3 +149,17 @@ type ExportError args end
 type TraitAlreadyImplementedError args end
 type TraitImplementationError args end
 type TraitConstraintError args end
+
+//FUNS
+
+in = elem
+//notin = in
+fun notin obj storage -> not (obj `elem` storage) end
+
+fun lookup key default coll ->
+    try
+        at key coll
+    | e of KeyError -> default
+    | e -> throw e
+    ---
+---

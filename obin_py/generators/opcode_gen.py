@@ -10,6 +10,7 @@ OPCODES = [
     ("SYMBOL", 1),
     ("OUTER", 1),
     ("LOCAL", 1),
+    ("TEMPORARY", 1),
     ("IMPORT_NAME", 1),
     ("FUNCTION", 1),
     ("DUP", 1),
@@ -22,6 +23,7 @@ OPCODES = [
 
     ("LABEL", 0),
     ("STORE_LOCAL", 0),
+    ("STORE_TEMPORARY", 0),
     ("ITERATOR", 0),
     ("RETURN", 0),
     ("POP_CATCH", 0),

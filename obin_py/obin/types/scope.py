@@ -35,6 +35,8 @@ class W_Scope(W_Root):
     def __init__(self):
         self.__locals = space.newmap()
 
+        self.__temp_index = 0
+
         self.__literals = ScopeSet()
         self.__local_references = ScopeSet()
         self.__operators = space.newmap()
@@ -50,6 +52,17 @@ class W_Scope(W_Root):
         self.exports = None
 
     ######################################################
+    def add_temporary(self):
+        idx = self.__temp_index
+        self.__temp_index += 1
+        return idx
+
+    def has_temporary(self, idx):
+        return idx >= 0 and idx < self.__temp_index
+
+    def what_next_temporary(self):
+        return self.__temp_index
+
     def add_export(self, name):
         assert space.issymbol(name)
         assert not self.has_export(name)
@@ -131,7 +144,7 @@ class W_Scope(W_Root):
         return not platform.is_absent_index(api.get_index(self.__locals, local))
 
     def _create_references(self, prev_scope):
-        declared =  self.__local_references.values
+        declared = self.__local_references.values
         size = len(declared)
         if size == 0:
             return None
@@ -186,3 +199,7 @@ class W_Scope(W_Root):
     def create_env_bindings(self):
         return api.clone(self.__locals)
 
+    def create_temporaries(self):
+        if self.__temp_index == 0:
+            return None
+        return [space.newvoid() for _ in range(self.__temp_index)]

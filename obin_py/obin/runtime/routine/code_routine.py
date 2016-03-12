@@ -123,6 +123,13 @@ class CodeRoutine(BaseRoutine):
                 value = env.ref(name, arg1)
                 stack.push(value)
             # *************************************
+            elif TEMPORARY == tag:
+                _temp = env.temporary(arg1)
+                if space.isvoid(_temp):
+                    return error.throw_1(error.Errors.RUNTIME_ERROR,
+                                         space.newstring(u"Internal error! Invalid temporary index %d" % arg1))
+                stack.push(_temp)
+            # *************************************
             elif IMPORT_NAME == tag:
                 l = env.get_import(arg1)
                 stack.push(l)
@@ -137,6 +144,10 @@ class CodeRoutine(BaseRoutine):
             elif STORE_LOCAL == tag:
                 value = stack.top()
                 api.put_at_index(env, arg1, value)
+            # *************************************
+            elif STORE_TEMPORARY == tag:
+                value = stack.top()
+                env.set_temporary(arg1, value)
             # *************************************
             elif STORE_MEMBER == tag:
                 value = stack.pop()

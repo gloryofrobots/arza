@@ -352,14 +352,7 @@ def _create_variable_undefs(basenode, variables):
 def _prepend_to_body(statements, body):
     assert isinstance(statements, list)
     assert space.islist(body)
-    # TODO NO MORE ITEMS HERE
     return plist.concat(list_node(statements), body)
-    # return list_node(statements + body.items)
-    # REMOVE IT LATER
-    # if is_list_node(body):
-    # else:
-    #     return list_node(statements + [body])
-
 
 ###################################################################################
 ###################################################################################
@@ -494,7 +487,7 @@ def _transform_is(history, head, variables):
 # THIS function creates in chain for maps like if x in $$ and y in $$ and z in $$
 def _create_in_and_chain(keys, map_node):
     key, rest = plist.split(keys)
-    in_node = create_in_node(map_node,
+    in_node = create_elem_node(map_node,
                              create_symbol_node(map_node,
                                                 create_name_node_s(
                                                     map_node,
@@ -516,7 +509,7 @@ def _transform_map(history, head, variables):
 def _transform_in(history, head, variables):
     left, prefixes = _history_get_var(history, head[1])
     right = head[2]
-    _condition = create_in_node(left, left, right)
+    _condition = create_elem_node(left, left, right)
     condition, prefixes1 = _history_get_condition(history, _condition)
     return left, condition, prefixes + prefixes1, variables
 
@@ -617,11 +610,10 @@ def _transform_pattern(node, methods, history, variables, tree):
     return list_node(result), vars
 
 
-def transform(compiler, code, node, decisions, decision_node):
+def transform(compiler, code, node, decisions, decision_node, temp_idx):
     state = TransformState(compiler, code, node)
-    from obin.compile import MATCH_SYS_VAR
     branches = []
-    path = plist.plist1(create_name_node_s(node, MATCH_SYS_VAR))
+    path = plist.plist1(create_temporary_node(node, temp_idx))
     bodies = []
 
     for pattern in decisions:

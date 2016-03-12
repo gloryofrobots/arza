@@ -158,6 +158,7 @@ class W_Env(W_Root):
         self.operators = scope.create_operators()
         self.exported_names = scope.exports
         self.refs = scope.create_references()
+        self.temps = scope.create_temporaries()
         self.imports = scope.imports
         self.data = scope.create_env_bindings()
         # TODO MAKE TEST FOR CORRECT STATIC REFS SOMEHOW
@@ -180,6 +181,17 @@ class W_Env(W_Root):
     def ref(self, symbol, index):
         # lookup in self parent environment
         return self.refs.get_ref(self.parent_env, symbol, index)
+
+    def temporary(self, idx):
+        if not self.scope.has_temporary(idx):
+            return space.newvoid()
+        return self.temps[idx]
+
+    def set_temporary(self, idx, val):
+        if not self.scope.has_temporary(idx):
+            return error.throw_2(error.Errors.RUNTIME_ERROR, space.newstring(u"Invalid temporary variable %d" % idx, val))
+
+        self.temps[idx] = val
 
     def _type_(self, process):
         return process.std.types.Env

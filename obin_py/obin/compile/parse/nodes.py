@@ -46,12 +46,17 @@ def is_single_node(node):
 
 
 def is_node(node):
-    return space.islist(node) or space.istuple(node) or space.isvoid(node) or is_scope_node(node)
+    return space.islist(node) or space.istuple(node) \
+           or space.isvoid(node) or is_scope_node(node) or is_int_node(node)
 
 
 def is_scope_node(node):
     from obin.compile.parse.basic import ParserScope
     return isinstance(node, ParserScope)
+
+
+def is_int_node(node):
+    return space.isint(node)
 
 
 def node_equal(node1, node2):
@@ -69,6 +74,14 @@ def node_equal(node1, node2):
         return True
 
     if is_empty_node(node1) or is_empty_node(node2):
+        return False
+
+    #################################################
+
+    if is_int_node(node1) and is_int_node(node2):
+        return api.equal_b(node1, node2)
+
+    if is_int_node(node1) or is_int_node(node2):
         return False
 
     #################################################
@@ -177,6 +190,8 @@ def node_to_d(node):
         return [node_to_d(child) for child in node]
     elif is_scope_node(node):
         return {'scope': True}
+    elif is_int_node(node):
+        return {'intValue': api.to_i(node)}
     else:
         d = {
             # "_type": tokens.token_type_to_str(node_token_type(node)),
@@ -206,6 +221,10 @@ def create_function_variants(args, body):
     return list_node([list_node([args, body])])
 
 
+def create_temporary_node(basenode, idx):
+    return node_1(nt.NT_TEMPORARY, create_token_from_node(tt.TT_UNKNOWN, "", basenode), space.newint(idx))
+
+
 def create_name_from_operator(basenode, op):
     return create_name_node_s(basenode, node_value_s(op))
 
@@ -213,8 +232,10 @@ def create_name_from_operator(basenode, op):
 def create_name_node_s(basenode, name):
     return node_0(nt.NT_NAME, create_token_from_node(tt.TT_NAME, name, basenode))
 
+
 def create_name_node(basenode, name):
     return create_name_node_s(basenode, api.to_s(name))
+
 
 def create_str_node(basenode, strval):
     return node_0(nt.NT_STR, create_token_from_node(tt.TT_STR, strval, basenode))
@@ -266,9 +287,9 @@ def create_tuple_node(basenode, elements):
     return node_1(nt.NT_TUPLE, create_token_from_node(tt.TT_LPAREN, "(", basenode), list_node(elements))
 
 
-def create_match_fail_node(basenode, val, var):
+def create_match_fail_node(basenode, val, idx):
     sym = create_symbol_node_s(basenode, val)
-    return create_tuple_node(basenode, [sym, create_name_node_s(basenode, var)])
+    return create_tuple_node(basenode, [sym, create_temporary_node(basenode, idx)])
     # return create_call_node_s(basenode, val, [create_name_node(basenode, var)])
 
 
@@ -315,11 +336,11 @@ def create_when_no_else_node(basenode, cond, body):
 # TODO MAKE IT CONSISTENT WITH OPERATOR REDECLARATION
 
 def create_eq_node(basenode, left, right):
-    return create_call_node_s(basenode, '==', [left, right])
+    return create_call_node_s(basenode, lang_names.EQ, [left, right])
 
 
 def create_gt_node(basenode, left, right):
-    return create_call_node_s(basenode, '>=', [left, right])
+    return create_call_node_s(basenode, lang_names.GE, [left, right])
 
 
 def create_kindof_node(basenode, left, right):
@@ -334,7 +355,7 @@ def create_is_node(basenode, left, right):
     return create_call_node_s(basenode, lang_names.IS, [left, right])
 
 
-def create_in_node(basenode, left, right):
+def create_elem_node(basenode, left, right):
     return create_call_node_s(basenode, lang_names.ELEM, [left, right])
 
 

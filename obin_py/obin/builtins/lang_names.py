@@ -25,3 +25,6 @@ AT = PREFIX + "at"
 REST = PREFIX + "rest"
 FIRST = PREFIX + "first"
 CONS = PREFIX + "cons"
+
+EQ = PREFIX + "=="
+GE = PREFIX + ">="

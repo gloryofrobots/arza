@@ -13,6 +13,7 @@ NODES = [
   "NT_CHAR",
   "NT_WILDCARD",
   "NT_NAME",
+  "NT_TEMPORARY",
   "NT_SYMBOL",
 
   "NT_DERIVE",
