@@ -131,14 +131,14 @@ def mod_f_f(nleft, nright):
     fleft = api.to_f(nleft)
     fright = api.to_f(nright)
 
+    if fright == 0:
+        error.throw_2(error.Errors.ZERO_DIVISION_ERROR, nleft, nright)
+
     if rfloat.isnan(fleft) or rfloat.isnan(fright):
         return w_NAN
 
-    if rfloat.isinf(fright) or fright == 0:
-        return w_NAN
-
     if rfloat.isinf(fright):
-        return nleft
+        return w_NAN
 
     if fleft == 0:
         return nleft

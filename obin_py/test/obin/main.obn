@@ -27,10 +27,8 @@ fun test() ->
 
     log "TEST TYPES"
     test_types:test()
-
     log "TEST BOOL"
     test_bool:test()
-
     log "TEST DATASTRUCTS"
     test_datastructs:test()
     log "TEST MATCH"

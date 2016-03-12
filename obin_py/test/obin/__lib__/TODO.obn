@@ -1,18 +1,26 @@
-//TODO error here 2 % 0
-//TODO ranges
-//TODO meta
+//TODO deep calls in datastructs data -> (1, record) == (1, record) NotIImplementedError in record._equal_(record)
+// we need to put process in every api call it is very very big annoying job/ it is better to rewrite all interpreter in
+// with this in mind
+
+//TODO ranges sugar 1..2..1
+// not now it is not very hot need
+
+//TODO syntax block with macros and custom operators
+// a lot of work and i dont know how to do it exactly
+
 //TODO ERRORS
+//TODO meta
 //TODO remove voids as values in datastructs
 //TODO separate token streams
-//TODO syntax block with macros and custom operators
-//TODO deep calls in datastructs data -> (1, record) == (1, record) NotIImplementedError in record._equal_(record)
 //TODO proper deriving for records
 //TODO CHOOSE INDENT BASED OR IMPLEMENT SYNTAX FOR TYPE AND TRAITS WITHOUT END TOKEN
 //TODO PATTERN_MATCH_ERRORS as ERRORS NOT TUPLES
 //TODO carrying
-//TODO TEMP VARS @@ AS SPECIAL CASE
+//TODO nested block comments
+//TODO single value assignment
 
 //TODO ast transform
+//TODO get rid of for loop
 
 
 //trait Any for self
