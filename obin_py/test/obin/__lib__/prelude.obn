@@ -12,7 +12,7 @@ infixl + + 60
 infixl - - 60
 infixl * * 65
 infixl / / 65
-infixr :: cons 70
+//infixr :: cons 70
 infixl ++ ++ 70
 
 
@@ -131,8 +131,6 @@ trait Sliceable for self
 in = elem
 //notin = in
 fun notin obj storage -> not (obj `elem` storage) end
-
-fun :: val self -> cons val self end
 
 //ERRORS
 type ImportError args end

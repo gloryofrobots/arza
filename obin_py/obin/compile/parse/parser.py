@@ -309,6 +309,7 @@ def expression_parser_init(proc_data, parser):
 
     infix(parser, TT_BACKTICK, 50, infix_backtick)
 
+    infix(parser, TT_DOUBLE_COLON, 70, infix_double_colon)
     infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     infix(parser, TT_DOT, 95, infix_dot)
 

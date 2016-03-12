@@ -480,7 +480,7 @@ def _create_in_and_chain(keys, map_node):
     key, rest = plist.split(keys)
     in_node = create_in_node(map_node,
                              create_symbol_node(map_node,
-                                                create_name_node(
+                                                create_name_node_s(
                                                     map_node,
                                                     api.to_s(key))),
                              map_node)
@@ -605,7 +605,7 @@ def transform(compiler, code, node, decisions, decision_node):
     state = TransformState(compiler, code, node)
     from obin.compile import MATCH_SYS_VAR
     branches = []
-    path = plist.plist1(create_name_node(node, MATCH_SYS_VAR))
+    path = plist.plist1(create_name_node_s(node, MATCH_SYS_VAR))
     bodies = []
 
     for pattern in decisions:

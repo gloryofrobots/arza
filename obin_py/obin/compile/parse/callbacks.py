@@ -4,6 +4,7 @@ from obin.compile.parse import nodes, tokens
 from obin.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3, list_node, empty_node)
 from obin.types import space
 from obin.misc import strutil
+from obin.builtins import lang_names
 
 NODE_TYPE_MAPPING = {
     TT_DOT: NT_LOOKUP_SYMBOL,
@@ -37,6 +38,7 @@ NODE_TYPE_MAPPING = {
     TT_DOUBLE_DOT: NT_RANGE,
     TT_SHARP: NT_SYMBOL,
     TT_OPERATOR: NT_NAME,
+    TT_DOUBLE_COLON: NT_NAME,
     TT_COMMA: NT_COMMA,
 }
 
@@ -118,10 +120,15 @@ def infix_backtick(parser, op, node, left):
     funcname = strutil.cat_both_ends(nodes.node_value_s(node))
     if not funcname:
         return parse_error(parser, u"invalid variable name in backtick expression", node)
-    funcnode = nodes.create_name_node(node, funcname)
+    funcnode = nodes.create_name_node_s(node, funcname)
 
     right = expressions(parser, op.lbp)
     return nodes.create_call_node_2(node, funcnode, left, right)
+
+
+def infix_double_colon(parser, op, node, left):
+    right = expressions(parser, op.lbp - 1)
+    return nodes.create_cons_node(node, left, right)
 
 
 def infix_juxtaposition(parser, op, node, left):
@@ -718,6 +725,7 @@ def symbol_list_to_arg_tuple(parser, node, symbols):
 
     return nodes.node_1(NT_TUPLE, nodes.node_token(node), list_node(args))
 
+
 def grab_name_or_tuple(parser, term):
     if parser.token_type == TT_NAME:
         return grab_name(parser)
@@ -729,17 +737,20 @@ def grab_name_or_tuple(parser, term):
     check_list_node_types(parser, nodes.node_first(exp), [NT_NAME])
     return exp
 
+
 def grab_name_or_tuple_as_tuple(parser, term):
     exp = grab_name_or_tuple(parser, term)
     if nodes.node_type(exp) == NT_NAME:
         return nodes.create_tuple_node(exp, [exp])
     return exp
 
+
 def stmt_derive(parser, op, node):
     traits = grab_name_or_tuple_as_tuple(parser.name_parser, TERM_DERIVE)
     advance_expected(parser, TT_FOR)
     types = grab_name_or_tuple_as_tuple(parser.name_parser, None)
     return node_2(NT_DERIVE, __ntok(node), traits, types)
+
 
 # TODO BETTER PARSE ERRORS HERE
 def stmt_type(parser, op, node):
@@ -781,10 +792,16 @@ def grab_name(parser):
 
 
 def grab_name_or_operator(parser):
-    check_token_types(parser, [TT_NAME, TT_OPERATOR])
+    check_token_types(parser, [TT_NAME, TT_OPERATOR, TT_DOUBLE_COLON])
     name = _init_default_current_0(parser)
     if parser.token_type == TT_OPERATOR:
-        name = nodes.create_name_from_operator(name, name)
+        op = parser_find_operator(parser, nodes.node_value(name))
+        if op is None or space.isvoid(op):
+            return parse_error(parser, u"Invalid operator", name)
+        name = nodes.create_name_node(name, op.infix_function)
+    elif parser.token_type == TT_DOUBLE_COLON:
+        name = nodes.create_name_node_s(name, lang_names.CONS)
+
     advance(parser)
     return name
 

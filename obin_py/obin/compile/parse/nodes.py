@@ -207,12 +207,14 @@ def create_function_variants(args, body):
 
 
 def create_name_from_operator(basenode, op):
-    return create_name_node(basenode, node_value_s(op))
+    return create_name_node_s(basenode, node_value_s(op))
 
 
-def create_name_node(basenode, name):
+def create_name_node_s(basenode, name):
     return node_0(nt.NT_NAME, create_token_from_node(tt.TT_NAME, name, basenode))
 
+def create_name_node(basenode, name):
+    return create_name_node_s(basenode, api.to_s(name))
 
 def create_str_node(basenode, strval):
     return node_0(nt.NT_STR, create_token_from_node(tt.TT_STR, strval, basenode))
@@ -224,7 +226,7 @@ def create_symbol_node(basenode, name):
 
 def create_symbol_node_s(basenode, name):
     return node_1(nt.NT_SYMBOL, create_token_from_node(tt.TT_SHARP, "#", basenode),
-                  create_name_node(basenode, name))
+                  create_name_node_s(basenode, name))
 
 
 def create_int_node(basenode, val):
@@ -266,7 +268,7 @@ def create_tuple_node(basenode, elements):
 
 def create_match_fail_node(basenode, val, var):
     sym = create_symbol_node_s(basenode, val)
-    return create_tuple_node(basenode, [sym, create_name_node(basenode, var)])
+    return create_tuple_node(basenode, [sym, create_name_node_s(basenode, var)])
     # return create_call_node_s(basenode, val, [create_name_node(basenode, var)])
 
 
@@ -301,7 +303,7 @@ def create_call_node_name(basenode, funcname, exps):
 def create_call_node_s(basenode, funcname, exps):
     return node_2(nt.NT_CALL,
                   create_token_from_node(tt.TT_LPAREN, "(", basenode),
-                  create_name_node(basenode, funcname),
+                  create_name_node_s(basenode, funcname),
                   list_node(exps))
 
 
@@ -350,6 +352,10 @@ def create_is_seq_node(basenode, val):
 
 def create_len_node(basenode, val):
     return create_call_node_s(basenode, lang_names.LEN, [val])
+
+
+def create_cons_node(basenode, left, right):
+    return create_call_node_s(basenode, lang_names.CONS, [left, right])
 
 
 ##############################

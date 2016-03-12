@@ -86,6 +86,7 @@ TOKENS = [
   ("TT_RSQUARE", "]"),
   ("TT_DOT", "."),
   ("TT_COLON", ":"),
+  ("TT_DOUBLE_COLON", "::"),
   ("TT_DOUBLE_DOT", ".."),
   ("TT_BACKTICK", "`"),
   ("TT_UNKNOWN", None)

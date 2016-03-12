@@ -145,12 +145,13 @@ RULES = [
     (token('\.'), TT_DOT),
     (token('\.\.'), TT_DOUBLE_DOT),
     (token('@'), TT_AT_SIGN),
+    (token('::'), TT_DOUBLE_COLON),
+    (token(':'), TT_COLON),
     (token('[%s][=]+' % operator_char), TT_OPERATOR),
     (token('[=][%s]+' % operator_char), TT_OPERATOR),
-    (token('[%s][:]+' % operator_char), TT_OPERATOR),
-    (token('[:][%s]+' % operator_char), TT_OPERATOR),
+    # (token('[%s][:]+' % operator_char), TT_OPERATOR),
+    # (token('[:][%s]+' % operator_char), TT_OPERATOR),
 
-    (token(':'), TT_COLON),
     (token('='), TT_ASSIGN),
 
     # that can catch op

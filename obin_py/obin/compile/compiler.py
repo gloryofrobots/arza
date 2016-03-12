@@ -199,7 +199,7 @@ def _get_variable_index(compiler, code, node, name):
 # EMIT HELPERS *******************************************
 # **************************************************
 def _emit_call(compiler, code, node, arg_count, funcname):
-    func = nodes.create_name_node(node, funcname)
+    func = nodes.create_name_node_s(node, funcname)
     _compile(compiler, code, func)
     code.emit_1(CALL, arg_count, info(node))
 
@@ -486,7 +486,7 @@ def _compile_ASSIGN(compiler, code, node):
         # print " MATCH ASSIGN"
         # TODO GET RID OF MATCH_SYS_VAR NONSENSE
         from obin.compile import MATCH_SYS_VAR
-        exp_node = nodes.create_name_node(node, MATCH_SYS_VAR)
+        exp_node = nodes.create_name_node_s(node, MATCH_SYS_VAR)
         match = nodes.create_match_node(node, exp, [nodes.list_node(
             [left, nodes.list_node([exp_node])]
         )])
