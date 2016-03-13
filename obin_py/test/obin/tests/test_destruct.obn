@@ -20,7 +20,7 @@ fun test () ->
 
     affirm:is_equal (metadata.title,
                      metadata.subject, metadata.translationsUa.("title"), metadata.translationsUa.translator,
-                     metadata.translationsEn.titleEn,  metadata.translationsEn.translatorEn, metadata.author) . 
+                     metadata.translationsEn.titleEn,  metadata.translationsEn.translatorEn, metadata.author) .
                     ("Nemesis Games", "SCIFI", "IGRU DOLI", "PILIP LUN",
                      ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU", ("James", "Corey"))
     {
@@ -32,16 +32,17 @@ fun test () ->
     } = metadata
 
     affirm:is_equal (englishTitle, subject, localeTitle,
-                    translator,(localeTitleEn, origTitleEn), translatorEn, author_data) . 
+                    translator,(localeTitleEn, origTitleEn), translatorEn, author_data) .
                     ("Nemesis Games", "SCIFI", "IGRU DOLI", "PILIP LUN",
                      ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU", ("James", "Corey"))
 
     /////////////////////////////////////////
+    fun | () ->
+        {a=[x,y,...z], B @ b="I am B", c of Float, D@d={e=(x,y,...zz)}} =
+            {a=[1,2,3,4,5], b="I am B", c=3.14, d={e=(1,2,3,4,5)}}
 
-    {a=[x,y,...z], B @ b="I am B", c of Float, D@d={e=(x,y,...zz)}} =
-        {a=[1,2,3,4,5], b="I am B", c=3.14, d={e=(1,2,3,4,5)}}
-
-    affirm:is_equal (a, B, D, e, x, y, z, zz) ([1,2,3,4,5],
-        "I am B", {e=(1,2,3,4,5)}, (1,2,3,4,5), 1, 2, [3,4,5], (3,4,5))
+        affirm:is_equal (a, B, D, e, x, y, z, zz) ([1,2,3,4,5],
+            "I am B", {e=(1,2,3,4,5)}, (1,2,3,4,5), 1, 2, [3,4,5], (3,4,5))
+    end ()
 
 end

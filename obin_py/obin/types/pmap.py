@@ -99,6 +99,9 @@ class W_PMap(W_Root):
     def _equal_(self, other):
         if not space.ispmap(other):
             return False
+        if self._root is None:
+            return other._root is None
+
         try:
             self._root.reduce(_equal, other)
             return True

@@ -15,6 +15,8 @@ class W_TVar(W_Root):
     def _type_(self, process):
         return process.std.types.TVar
 
+    def _equal_(self, other):
+        return self is other
 
 def read(var):
     return var.value

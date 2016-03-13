@@ -1,33 +1,30 @@
 import affirm
+fun error reason ->
+    throw (#error, {reason=reason}) end
 
-fun test () ->
-    fun error reason ->
-        throw (#error, {reason=reason}) end
+fun error2 reason ->
+    lam x -> error reason; () end
 
-    fun error2 reason ->
-        lam x -> error reason; ()
-    end
-
-
+fun test_1 () ->
     e1 =
     try
         try
             1/0
-        | e1 ->
-            throw e1
+        | e2 ->
+            throw e2
         ---
-    | e2 ->
+    | e3 ->
         try
             error(#LifeSucks)
-        | e3 ->
+        | e4 ->
             //result
-            e3
+            e4
         ---
     ---
     affirm:is_equal e1 (#error, {reason=#LifeSucks})
+--------------------------------------------------
 
-    //////////////////////////////////////////////////////////////
-
+fun test_2 () ->
     affirm:is_equal (
         try
             try
@@ -44,9 +41,9 @@ fun test () ->
             ---
         end) (ZeroDivisionError (1, 0))
 
+--------------------------------------------------
 
-    ///////////////////////////////////////////
-
+fun test_3 () ->
     affirm:is_equal (
         try
             try
@@ -66,9 +63,9 @@ fun test () ->
                 (e2, e3)
             -------------
         end) ((#error, {reason=#Finally}), (#error, {reason=#Catch}))
+--------------------------------------------------
 
-    ///////////////////////////////////////////
-
+fun test_4() ->
     affirm:is_throw_expected (
         fun | () ->
             try
@@ -90,9 +87,9 @@ fun test () ->
                 ---
             ---
         end) () ( (#error, {reason=#Finally}), (#error, {reason=#Catch}) )
+--------------------------------------------------
 
-    /////////////////////////////////////////////
-
+fun test_5() ->
     affirm:is_throw_expected(
         fun
         | arg1 arg2 ->
@@ -104,7 +101,9 @@ fun test () ->
                 throw e
             ---
         end) (33, 22) (33, 22)
+----------------------------------
 
+fun test_6() ->
     affirm:is_equal try throw (1,2,"ERROR")
                     | err @ (1, y, 3) -> #first
                     |(1,2, "ERROR@") -> #second
@@ -112,4 +111,13 @@ fun test () ->
                     | finally -> (#fourth, err, x)
                     ------------------------------- .
                     (#fourth, (1, 2, "ERROR"), "ERROR")
+---------------------------
+
+fun test () ->
+    test_1()
+    test_2()
+    test_3()
+    test_4()
+    test_5()
+    test_6()
 --------------------------------------------------------------

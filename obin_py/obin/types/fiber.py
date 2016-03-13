@@ -3,6 +3,7 @@ from obin.runtime import error
 from obin.types import api, space
 from obin.misc.platform import jit
 
+
 class W_Fiber(W_Callable):
     def __init__(self, fiber):
         self.fiber = fiber
@@ -25,6 +26,9 @@ class W_Fiber(W_Callable):
         else:
             value = args
         process.switch_to_fiber(self.fiber, value)
+
+    def _equal_(self, other):
+        return self is other
 
 
 def newfiber(process):

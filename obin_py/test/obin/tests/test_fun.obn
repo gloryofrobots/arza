@@ -15,12 +15,12 @@ fun ++---^--^
 //    Y(3)
 
 fun test () ->
-    f1 = fun | a b c -> (a, b, c) end
-    affirm:is_equal (f1 1 2 3) (1,2,3)
+    func_0 = fun | a b c -> (a, b, c) end
+    affirm:is_equal (func_0 1 2 3) (1,2,3)
     //call after declaration
     affirm:is_equal (fun | (a,b,c) -> (c, b, a) end (1,2,3)) (3,2,1)
 
-    affirm:is_equal (fun | (a,b,c) -> (c, b, a) end(1,2,3)) (3,2,1)
+    affirm:is_equal (lam (a,b,c) -> (c, b, a); (1,2,3)) (3,2,1)
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +28,6 @@ fun test () ->
             [a, b, c, rest] end
 
     affirm:is_equal (f4 1 2 3 4 5 6)  [1, 2, 3, (4, 5, 6)]
-
     //////////////////////////////////////////////////////////////////////////
 
     fun f5
@@ -156,9 +155,9 @@ fun test () ->
     affirm:is_equal (f1 1 2) 45
     ////////////////////////////////////////////////
     f3 = fun | x [a, b] -> x +  a + b end
-    f4 = lam x [a, b] -> x + a + b
-    affirm:is_equal (f3 1 [2, 3]) (f4 1 [2, 3])
-    affirm:is_equal (f4 1 [2, 3]) 6
+    f4_1 = lam x [a, b] -> x + a + b
+    affirm:is_equal (f3 1 [2, 3]) (f4_1 1 [2, 3])
+    affirm:is_equal (f4_1 1 [2, 3]) 6
     affirm:is_equal (lam x [a,b,c,...tl] {N, Z} ->
                             (x + a + b + c + N + Z) :: tl; .
                           1 [1, 1, 1, 33,33,33] {N=1, Z = 1}) .
