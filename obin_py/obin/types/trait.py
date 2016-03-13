@@ -2,8 +2,10 @@ from obin.types.root import W_Hashable
 from obin.types import api, space, plist
 from obin.misc import platform
 
+
 def find_by_name(name, method):
     return api.equal_b(method.name, name)
+
 
 class W_Trait(W_Hashable):
     # _immutable_fields_ = ['_name_']
@@ -17,6 +19,12 @@ class W_Trait(W_Hashable):
 
     def find_method_by_name(self, name):
         return plist.find_with(self.methods, name, find_by_name)
+
+    def has_method_name(self, name):
+        return not space.isvoid(plist.find_with(self.methods, name, find_by_name))
+
+    def _at_(self, key):
+        return plist.find_with(self.methods, key, find_by_name)
 
     def add_method(self, method):
         assert space.ismethod(method)
@@ -37,4 +45,3 @@ class W_Trait(W_Hashable):
 
     def _equal_(self, other):
         return other is self
-

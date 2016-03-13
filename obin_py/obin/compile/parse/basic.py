@@ -448,6 +448,12 @@ def expect_expression_of(parser, _rbp, expected_type, terminators=None):
     return exp
 
 
+def expect_expression_of_types(parser, _rbp, expected_types, terminators=None):
+    exp = expressions(parser, _rbp, terminators=terminators)
+    check_node_types(parser, exp, expected_types)
+    return exp
+
+
 def expressions(parser, _rbp, terminators=None):
     expr, _lbp = base_expression(parser, _rbp, terminators)
     expr = postprocess(parser, expr)
@@ -573,7 +579,6 @@ def symbol(parser, ttype, nud=None):
     h.lbp = 0
     parser_set_nud(parser, ttype, nud)
     return h
-
 
 
 def skip(parser, ttype):

@@ -176,34 +176,49 @@ def derive_traits(process, _type, traits):
         # example deriving Dict causes deriving Collection
         implementations = process.std.traits.derive(_type, trait)
         for _t, _i in implementations:
-            implement_trait(_type, _t, _i)
+            _implement_trait(_type, _t, _i)
+
 
 def implement_trait(_type, trait, implementations):
     error.affirm_type(_type, space.isdatatype)
     error.affirm_type(trait, space.istrait)
     error.affirm_type(implementations, space.islist)
-    # GET DEFAULTS FIRST
+    method_impls = plist.empty()
+    # Collect methods by names from trait
+    for im in implementations:
+        method_name = api.at_index(im, 0)
+        fn = api.at_index(im, 1)
+        method = trait.find_method_by_name(method_name)
+        if space.isvoid(method):
+            error.throw_2(error.Errors.TRAIT_IMPLEMENTATION_ERROR,
+                          space.newstring(u"Unknown method"), method_name)
+        method_impls = plist.cons(space.newlist([method, fn]), method_impls)
+    return _implement_trait(_type, trait, method_impls)
+
+
+def _implement_trait(_type, trait, method_impls):
+    error.affirm_type(_type, space.isdatatype)
+    error.affirm_type(trait, space.istrait)
+    error.affirm_type(method_impls, space.islist)
     for constraint in trait.constraints:
         if not _type.is_trait_implemented(constraint):
             error.throw_2(error.Errors.TRAIT_CONSTRAINT_ERROR,
                           space.newstring(u"Unsatisfied trait constraint"), constraint)
-
+    # GET DEFAULTS FIRST
     for m in trait.methods:
-        if plist.contains_with(implementations, m, _is_exist_implementation):
+        if plist.contains_with(method_impls, m, _is_exist_implementation):
             continue
 
         if not m.has_default_implementation():
             error.throw_2(error.Errors.TRAIT_IMPLEMENTATION_ERROR,
                           space.newstring(u"Expected implementation of method"), m)
 
-        implementations = plist.cons(plist.plist([m, m.default_implementation]),
-                                     implementations)
+        method_impls = plist.cons(space.newlist([m, m.default_implementation]),
+                                  method_impls)
 
-    for impl in implementations:
+    for impl in method_impls:
         method = api.at_index(impl, 0)
         if not trait.has_method(method):
             error.throw_2(error.Errors.TRAIT_IMPLEMENTATION_ERROR, space.newstring(u"Unknown trait method"), method)
-    _type.add_trait_implementation(trait, implementations)
+    _type.add_trait_implementation(trait, method_impls)
     return _type
-
-

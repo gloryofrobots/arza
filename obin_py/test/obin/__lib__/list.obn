@@ -211,6 +211,7 @@ implement Seqable for List
     method seq self -> self
 --------------------------------------------------
 
+
 implement Collection for List
     method len self -> length
     method is_empty self -> _is_empty self
@@ -218,4 +219,10 @@ implement Collection for List
     method at key self -> False
     method del obj self -> False
     method elem key self -> False
+---------------------------------
+
+implement Sliceable for List
+    method slice first last self -> _slice first last self
+    method drop count self -> drop count self
+    method take count self -> take count self
 ---------------------------------

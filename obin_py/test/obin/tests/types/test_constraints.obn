@@ -5,7 +5,7 @@ type X x
 derive Dict for X
 
 fun test () ->
-    affirm:is_throw lam () -> obin:lang:defimplement Ord X [[(&<=), lam a b -> a.x<=b.x]];
-    affirm:is_not_throw lam () -> obin:lang:defimplement Eq X [[(&==), lam a b -> a.x==b.x]];
+    affirm:is_throw lam () -> obin:lang:defimplement Ord X [[#<=, lam a b -> a.x<=b.x]];
+    affirm:is_not_throw lam () -> obin:lang:defimplement Eq X [[#==, lam a b -> a.x==b.x]];
 ---
 

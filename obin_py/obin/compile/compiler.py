@@ -1021,7 +1021,8 @@ def _compile_IMPLEMENT(compiler, code, node):
     for i, method in enumerate(methods):
         method_name = method[0]
         method_impl = method[1]
-        _compile_node_name_lookup(compiler, code, method_name)
+        _compile(compiler, code, method_name)
+        # _compile_node_name_lookup(compiler, code, method_name)
         _compile_case_function(compiler, code, node,
                                nodes.empty_node(),
                                method_impl)

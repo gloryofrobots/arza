@@ -74,8 +74,8 @@ class CodeSource:
         return opcode
 
     def emit_0(self, operation, info):
-        # if operation == NIL:
-        #     print "NIL"
+        # if operation == VOID:
+        #     print "VOID"
         self.emit_2(operation, 0, 0, info)
 
     def emit_1(self, operation, arg1, info):

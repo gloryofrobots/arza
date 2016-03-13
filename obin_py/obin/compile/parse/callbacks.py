@@ -829,7 +829,11 @@ def stmt_implement(parser, op, node):
     methods = []
     while parser.token_type == TT_METHOD:
         advance_expected(parser, TT_METHOD)
+        # creating name spaced methods
         method_name = grab_name_or_operator(parser.name_parser)
+        method_name = nodes.create_symbol_node_s(method_name, nodes.node_value_s(method_name))
+        # method_name = nodes.create_lookup_node(node, trait_name, method_name)
+
         funcs = parse_function_variants(parser.expression_parser,
                                         TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_IMPL_BODY, TERM_IMPL_BODY)
         methods.append(list_node([method_name, funcs]))

@@ -209,11 +209,6 @@ def _process_map(state, pattern, patterns, path):
 
     patterns = add_pattern(patterns, ["map", space.newlist(symbols), _create_path_node(pattern, path)])
 
-    # for item in items:
-    #     symbol_key, varname = item[0]
-    #     value = item[1]
-    #     child_path = plist.prepend(symbol_key, path)
-
     for item in items:
         symbol_key, varname = item[0]
         key_value = item[1]
