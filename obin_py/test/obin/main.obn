@@ -70,6 +70,7 @@ fun main () ->
 //            ([3,2,3], #third) .
 //            ([1,2,3], #fourth)
     test()
+    affirm:is_throw lam () -> throw 1;
 ---
 
 //            impl.append(_t([self.methods.str,

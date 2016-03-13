@@ -49,13 +49,7 @@ NODES = [
 
   "NT_THROW",
 
-  "NT_BREAK",
-  "NT_CONTINUE",
-  "NT_FOR",
-  "NT_WHILE",
-
   "NT_REST",
-
   "NT_ASSIGN",
   "NT_CALL",
   "NT_JUXTAPOSITION",

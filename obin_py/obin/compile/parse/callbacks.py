@@ -25,10 +25,6 @@ NODE_TYPE_MAPPING = {
     TT_IMPORT: NT_IMPORT,
     TT_TRAIT: NT_TRAIT,
     TT_THROW: NT_THROW,
-    TT_BREAK: NT_BREAK,
-    TT_CONTINUE: NT_CONTINUE,
-    TT_FOR: NT_FOR,
-    TT_WHILE: NT_WHILE,
     TT_ELLIPSIS: NT_REST,
     TT_ASSIGN: NT_ASSIGN,
     TT_OF: NT_OF,
@@ -495,22 +491,6 @@ def stmt_when(parser, op, node):
     body = statements(parser, TERM_BLOCK)
     advance_end(parser)
     return node_2(NT_WHEN, __ntok(node), cond, body)
-
-
-def stmt_for(parser, op, node):
-    check_token_type(parser, TT_NAME)
-    var = _init_default_current_0(parser)
-    vars = list_node([var])
-    advance(parser)
-    advance_expected(parser, TT_BACKARROW)
-    exp = expressions(parser, 0)
-    # CALL endofexpression for one line for i <- 1..2; i end
-    endofexpression(parser)
-
-    stmts = statements(parser, TERM_BLOCK)
-
-    advance_end(parser)
-    return node_3(NT_FOR, __ntok(node), vars, exp, stmts)
 
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):

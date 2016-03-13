@@ -14,7 +14,6 @@ OPCODES = [
     ("IMPORT_NAME", 1),
     ("FUNCTION", 1),
     ("DUP", 1),
-    ("NEXT", 1),
 
     ("FARGS", 1),
     ("FSELF", 1),
@@ -24,7 +23,6 @@ OPCODES = [
     ("LABEL", 0),
     ("STORE_LOCAL", 0),
     ("STORE_TEMPORARY", 0),
-    ("ITERATOR", 0),
     ("RETURN", 0),
     ("POP_CATCH", 0),
 
@@ -34,12 +32,10 @@ OPCODES = [
     ("JUMP_IF_FALSE_NOPOP", 0),
     ("JUMP_IF_TRUE_NOPOP", 0),
     ("JUMP_IF_FALSE", 0),
-    ("JUMP_IF_TRUE", 0),
+    # PUSH CATCH MUST BE PLACED BETWEEN JUMPS BECAUSE OF SPECIAL CARE IN source.py
     ("PUSH_CATCH", 0),
-    ("JUMP_IF_ITERATOR_EMPTY", -1),
+    ("JUMP_IF_TRUE", 0),
 
-    ("MEMBER_DOT", -1),
-    ("MEMBER", -1),
     ("POP", -1),
     ("THROW", -1),
 

@@ -9,49 +9,44 @@ TEMPORARY = 7
 IMPORT_NAME = 8
 FUNCTION = 9
 DUP = 10
-NEXT = 11
-FARGS = 12
-FSELF = 13
-FENV = 14
-LABEL = 15
-STORE_LOCAL = 16
-STORE_TEMPORARY = 17
-ITERATOR = 18
-RETURN = 19
-POP_CATCH = 20
-CALL = 21
-JUMP = 22
-JUMP_IF_FALSE_NOPOP = 23
-JUMP_IF_TRUE_NOPOP = 24
-JUMP_IF_FALSE = 25
-JUMP_IF_TRUE = 26
-PUSH_CATCH = 27
-JUMP_IF_ITERATOR_EMPTY = 28
-MEMBER_DOT = 29
-MEMBER = 30
-POP = 31
-THROW = 32
-STORE_MEMBER = 33
-UNPACK_TUPLE = 34
-VECTOR = 35
-TUPLE = 36
-MAP = 37
-LIST = 38
+FARGS = 11
+FSELF = 12
+FENV = 13
+LABEL = 14
+STORE_LOCAL = 15
+STORE_TEMPORARY = 16
+RETURN = 17
+POP_CATCH = 18
+CALL = 19
+JUMP = 20
+JUMP_IF_FALSE_NOPOP = 21
+JUMP_IF_TRUE_NOPOP = 22
+JUMP_IF_FALSE = 23
+PUSH_CATCH = 24
+JUMP_IF_TRUE = 25
+POP = 26
+THROW = 27
+STORE_MEMBER = 28
+UNPACK_TUPLE = 29
+VECTOR = 30
+TUPLE = 31
+MAP = 32
+LIST = 33
 
 # ************************************************
 
 __OPCODE_REPR__ = ["VOID", "TRUE", "FALSE", "LITERAL", "SYMBOL", "OUTER", "LOCAL", "TEMPORARY", "IMPORT_NAME",
-                   "FUNCTION", "DUP", "NEXT", "FARGS", "FSELF", "FENV", "LABEL", "STORE_LOCAL", "STORE_TEMPORARY",
-                   "ITERATOR", "RETURN", "POP_CATCH", "CALL", "JUMP", "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP",
-                   "JUMP_IF_FALSE", "JUMP_IF_TRUE", "PUSH_CATCH", "JUMP_IF_ITERATOR_EMPTY", "MEMBER_DOT", "MEMBER",
-                   "POP", "THROW", "STORE_MEMBER", "UNPACK_TUPLE", "VECTOR", "TUPLE", "MAP", "LIST", ]
+                   "FUNCTION", "DUP", "FARGS", "FSELF", "FENV", "LABEL", "STORE_LOCAL", "STORE_TEMPORARY", "RETURN",
+                   "POP_CATCH", "CALL", "JUMP", "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE",
+                   "PUSH_CATCH", "JUMP_IF_TRUE", "POP", "THROW", "STORE_MEMBER", "UNPACK_TUPLE", "VECTOR", "TUPLE",
+                   "MAP", "LIST", ]
 
 # ************************************************
 
 __UNKNOWN_CHANGE__ = -128
 
-__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1,
-                     -1, -2, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
+__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -2,
+                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
                      __UNKNOWN_CHANGE__, ]
 
 
@@ -119,7 +114,7 @@ def opcode_info(routine, opcode):
 
 
 def is_jump_opcode(tag):
-    if tag >= JUMP and tag <= JUMP_IF_ITERATOR_EMPTY:
+    if tag >= JUMP and tag <= JUMP_IF_TRUE:
         return True
     return False
 

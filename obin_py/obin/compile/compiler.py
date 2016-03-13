@@ -592,18 +592,6 @@ def _compile_LIST(compiler, code, node):
     code.emit_1(LIST, len(items), info(node))
 
 
-def _compile_BREAK(compiler, code, node):
-    _emit_void(code)
-    if not code.emit_break():
-        compile_error(compiler, code, node, u"break outside loop")
-
-
-def _compile_CONTINUE(compiler, code, node):
-    _emit_void(code)
-    if not code.emit_continue():
-        compile_error(compiler, code, node, u"continue outside loop")
-
-
 def _compile_func_args_and_body(compiler, code, name, params, body):
     funcname = _get_symbol_name_or_empty(compiler.process, name)
     _enter_scope(compiler)
@@ -902,19 +890,20 @@ def _compile_IMPORT_FROM_HIDING(compiler, code, node):
         i += 1
 
 
-# def _compile_MODULE(compiler, code, node):
-#     name_node = node_first(node)
-#     body = node_second(node)
-#     parse_scope = node_third(node)
-#
-#     compiled_code = compile_ast(compiler, body, parse_scope)
-#
-#     module_name = _get_symbol_name(compiler, name_node)
-#     module = space.newenvsource(module_name, compiled_code)
-#     module_index = _declare_literal(compiler, module)
-#     code.emit_1(MODULE, module_index, info(node))
-#
-#     _emit_store(compiler, code, module_name, name_node)
+def _compile_MODULE(compiler, code, node):
+    raise DeprecationWarning("inner modules not supported")
+    # name_node = node_first(node)
+    # body = node_second(node)
+    # parse_scope = node_third(node)
+    #
+    # compiled_code = compile_ast(compiler, body, parse_scope)
+    #
+    # module_name = _get_symbol_name(compiler, name_node)
+    # module = space.newenvsource(module_name, compiled_code)
+    # module_index = _declare_literal(compiler, module)
+    # code.emit_1(MODULE, module_index, info(node))
+    #
+    # _emit_store(compiler, code, module_name, name_node)
 
 
 def _compile_FENV(compiler, code, node):
@@ -1030,54 +1019,6 @@ def _compile_IMPLEMENT(compiler, code, node):
     _emit_call(compiler, code, node, 3, lang_names.IMPLEMENT)
 
 
-def _compile_FOR(compiler, code, node):
-    source = node_second(node)
-    body = node_third(node)
-    _compile(compiler, code, source)
-    code.emit_0(ITERATOR, info(node))
-    # load the "last" iterations result
-    _emit_void(code)
-    precond = code.emit_startloop_label()
-    code.continue_at_label(precond)
-    finish = code.prealocate_endloop_label(False)
-    # update = code.prealocate_updateloop_label()
-
-    code.emit_1(JUMP_IF_ITERATOR_EMPTY, finish, codeinfo_unknown())
-
-    # put next iterator value on stack
-    code.emit_0(NEXT, codeinfo_unknown())
-
-    vars = node_first(node)
-    name = space.newsymbol_s(compiler.process, nodes.node_value_s(vars[0]))
-    index = _declare_local(compiler, name)
-
-    name_index = _declare_literal(compiler, name)
-    code.emit_2(STORE_LOCAL, index, name_index, info(node))
-    _emit_pop(code)
-
-    _compile(compiler, code, body)
-    # code.emit_updateloop_label(update)
-
-    code.emit_1(JUMP, precond, codeinfo_unknown())
-    code.emit_endloop_label(finish)
-
-
-def _compile_WHILE(compiler, code, node):
-    condition = node_first(node)
-    body = node_second(node)
-    _emit_void(code)
-    startlabel = code.emit_startloop_label()
-    code.continue_at_label(startlabel)
-    _compile(compiler, code, condition)
-    endlabel = code.prealocate_endloop_label()
-    code.emit_1(JUMP_IF_FALSE, endlabel, codeinfo_unknown())
-    _emit_pop(code)
-    _compile(compiler, code, body)
-    code.emit_1(JUMP, startlabel, codeinfo_unknown())
-    code.emit_endloop_label(endlabel)
-    code.done_continue()
-
-
 def _emit_TAIL(compiler, code, node):
     _compile(compiler, code, node)
     _emit_call(compiler, code, node, 1, lang_names.REST)
@@ -1108,11 +1049,6 @@ def _compile_LOOKUP(compiler, code, node):
     elif node_type(expr) == NT_DROP:
         return _emit_DROP(compiler, code, obj, expr)
 
-    # USUAL LOOKUP
-    # _compile(compiler, code, obj)
-    # _compile(compiler, code, expr)
-    # code.emit_0(MEMBER, info(node))
-
     _compile(compiler, code, expr)
     _compile(compiler, code, obj)
     _emit_call(compiler, code, node, 2, lang_names.AT)
@@ -1120,11 +1056,6 @@ def _compile_LOOKUP(compiler, code, node):
 
 def _compile_LOOKUP_SYMBOL(compiler, code, node):
     obj = node_first(node)
-
-    # _compile(compiler, code, obj)
-    # _emit_symbol_literal(compiler, code, node_second(node))
-    # code.emit_0(MEMBER, info(node))
-
     _emit_symbol_literal(compiler, code, node_second(node))
     _compile(compiler, code, obj)
     _emit_call(compiler, code, node, 2, lang_names.AT)
@@ -1242,8 +1173,6 @@ def _compile_node(compiler, code, node):
     elif NT_TEMPORARY == ntype:
         _compile_TEMPORARY(compiler, code, node)
 
-
-
     elif NT_ASSIGN == ntype:
         _compile_ASSIGN(compiler, code, node)
 
@@ -1279,15 +1208,6 @@ def _compile_node(compiler, code, node):
         _compile_IMPLEMENT(compiler, code, node)
     elif NT_THROW == ntype:
         _compile_THROW(compiler, code, node)
-    elif NT_BREAK == ntype:
-        _compile_BREAK(compiler, code, node)
-    elif NT_CONTINUE == ntype:
-        _compile_CONTINUE(compiler, code, node)
-    elif NT_FOR == ntype:
-        _compile_FOR(compiler, code, node)
-    elif NT_WHILE == ntype:
-        _compile_WHILE(compiler, code, node)
-
     elif NT_CALL == ntype:
         _compile_CALL(compiler, code, node)
 

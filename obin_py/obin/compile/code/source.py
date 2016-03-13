@@ -36,17 +36,10 @@ def codeinfo_unknown():
 class CodeSource:
     # _immutable_fields_ = ['compiled_opcodes[*]', 'scope']
 
-    """ That object stands for code of a single javascript function
-    """
-
     def __init__(self, info):
         self.info = info
         self.opcodes = []
         self.label_count = 0
-        self.startlooplabel = []
-        self.endlooplabel = []
-        self.pop_after_break = []
-        self.updatelooplabel = []
         self.estimated_stack_size = -1
         self.scope = None
 
@@ -61,17 +54,6 @@ class CodeSource:
     def prealocate_label(self):
         num = self.label_count
         self.label_count += 1
-        return num
-
-    def prealocate_endloop_label(self, pop=False):
-        num = self.prealocate_label()
-        self.endlooplabel.append(num)
-        self.pop_after_break.append(pop)
-        return num
-
-    def prealocate_updateloop_label(self):
-        num = self.prealocate_label()
-        self.updatelooplabel.append(num)
         return num
 
     def remove_last(self):
@@ -99,46 +81,11 @@ class CodeSource:
     def emit_1(self, operation, arg1, info):
         self.emit_2(operation, arg1, 0, info)
 
-    def emit_endloop_label(self, label):
-        self.endlooplabel.pop()
-        self.startlooplabel.pop()
-        self.pop_after_break.pop()
-        self.emit_label(label)
-
-    def emit_updateloop_label(self, label):
-        self.updatelooplabel.pop()
-        self.emit_label(label)
-
-    def emit_break(self):
-        if not self.endlooplabel:
-            return False
-        if self.pop_after_break[-1] is True:
-            self.emit_0(POP, codeinfo_unknown())
-        self.emit_1(JUMP, self.endlooplabel[-1], codeinfo_unknown())
-        return True
-
-    def emit_continue(self):
-        if not self.startlooplabel:
-            return False
-        self.emit_1(JUMP, self.updatelooplabel[-1], codeinfo_unknown())
-        return True
-
     def emit_label(self, num=-1):
         if num == -1:
             num = self.prealocate_label()
         self.emit_1(LABEL, num, codeinfo_unknown())
         return num
-
-    def emit_startloop_label(self):
-        num = self.emit_label()
-        self.startlooplabel.append(num)
-        return num
-
-    def continue_at_label(self, label):
-        self.updatelooplabel.append(label)
-
-    def done_continue(self):
-        self.updatelooplabel.pop()
 
     def __remove_labels(self):
         """ Basic optimization to remove all labels and change
