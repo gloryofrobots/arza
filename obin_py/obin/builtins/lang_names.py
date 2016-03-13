@@ -21,6 +21,7 @@ DROP = PREFIX + "drop"
 TAKE = PREFIX + "take"
 
 AT = PREFIX + "at"
+PUT = PREFIX + "put"
 
 REST = PREFIX + "rest"
 FIRST = PREFIX + "first"

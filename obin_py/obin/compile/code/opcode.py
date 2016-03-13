@@ -26,26 +26,24 @@ PUSH_CATCH = 24
 JUMP_IF_TRUE = 25
 POP = 26
 THROW = 27
-STORE_MEMBER = 28
-UNPACK_TUPLE = 29
-VECTOR = 30
-TUPLE = 31
-MAP = 32
-LIST = 33
+UNPACK_TUPLE = 28
+VECTOR = 29
+TUPLE = 30
+MAP = 31
+LIST = 32
 
 # ************************************************
 
 __OPCODE_REPR__ = ["VOID", "TRUE", "FALSE", "LITERAL", "SYMBOL", "OUTER", "LOCAL", "TEMPORARY", "IMPORT_NAME",
                    "FUNCTION", "DUP", "FARGS", "FSELF", "FENV", "LABEL", "STORE_LOCAL", "STORE_TEMPORARY", "RETURN",
                    "POP_CATCH", "CALL", "JUMP", "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE",
-                   "PUSH_CATCH", "JUMP_IF_TRUE", "POP", "THROW", "STORE_MEMBER", "UNPACK_TUPLE", "VECTOR", "TUPLE",
-                   "MAP", "LIST", ]
+                   "PUSH_CATCH", "JUMP_IF_TRUE", "POP", "THROW", "UNPACK_TUPLE", "VECTOR", "TUPLE", "MAP", "LIST", ]
 
 # ************************************************
 
 __UNKNOWN_CHANGE__ = -128
 
-__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -2,
+__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1,
                      __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
                      __UNKNOWN_CHANGE__, ]
 

@@ -65,6 +65,18 @@ def hp_elem(process, args):
     else:
         return None
 
+def hp_put(process, args):
+    key = api.at_index(args, 0)
+    value = api.at_index(args, 1)
+    obj = api.at_index(args, 2)
+    # print "IN PUT", key, value, obj
+
+    if not isrecord(obj):
+        return api.put(obj, key, value)
+    else:
+        return None
+
+
 def hp_at(process, args):
     left = api.at_index(args, 0)
     right = api.at_index(args, 1)

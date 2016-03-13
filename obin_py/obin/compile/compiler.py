@@ -544,17 +544,31 @@ def _emit_map_key(compiler, code, key):
         _compile(compiler, code, key)
 
 
-def _compile_MODIFY(compiler, code, node):
-    obj = node_first(node)
-    modifications = node_second(node)
-    _compile(compiler, code, obj)
+def _transform_modify(compiler, node, func, source, modifications):
+    """
+    transforms modify x.{a=1, b=2, 0=4} into series of puts
+    put 0 4 (put b 2 (put a 1 x))
+    """
+    if plist.is_empty(modifications):
+        return source
 
-    for m in modifications:
-        key = m[0]
-        value = m[1]
-        _emit_map_key(compiler, code, key)
-        _compile(compiler, code, value)
-        code.emit_0(STORE_MEMBER, info(key))
+    m, tail = plist.split(modifications)
+    key = m[0]
+    value = m[1]
+
+    if node_type(key) == NT_NAME:
+        key = nodes.create_symbol_node(key, key)
+    return _transform_modify(compiler, node,
+                             func,
+                             nodes.create_call_node_3(node, func, key, value, source),
+                             tail)
+
+def _compile_MODIFY(compiler, code, node):
+    call = _transform_modify(compiler, node,
+                             nodes.create_name_node_s(node, lang_names.PUT),
+                             node_first(node),
+                             node_second(node))
+    _compile(compiler, code, call)
 
 
 def _compile_MAP(compiler, code, node):

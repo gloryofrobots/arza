@@ -83,6 +83,9 @@ def setup_hotpath(process):
     method = api.at(prelude, _s(u"at"))
     method.set_hotpath(hp.hp_at)
 
+    method = api.at(prelude, _s(u"put"))
+    method.set_hotpath(hp.hp_put)
+
     method = api.at(prelude, _s(u"len"))
     method.set_hotpath(hp.hp_len)
 

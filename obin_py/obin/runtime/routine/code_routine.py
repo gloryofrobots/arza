@@ -155,16 +155,6 @@ class CodeRoutine(BaseRoutine):
                 value = stack.top()
                 env.set_temporary(arg1, value)
             # *************************************
-            elif STORE_MEMBER == tag:
-                value = stack.pop()
-                name = stack.pop()
-                left = stack.pop()
-                result = api.put(left, name, value)
-
-                stack.push(result)
-            # *************************************
-            # TODO STORE_SYMBOL_MEMBER WITH LITERAL AS ARGUMENT
-            # *************************************
             elif UNPACK_TUPLE == tag:
                 seq = stack.pop()
                 error.affirm_type(seq, space.istuple)
