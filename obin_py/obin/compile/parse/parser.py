@@ -172,6 +172,7 @@ def method_signature_parser_init(parser):
     prefix(parser, TT_NAME, literal_type_field)
     symbol(parser, TT_METHOD, None)
     symbol(parser, TT_ARROW, None)
+    symbol(parser, TT_JUXTAPOSITION)
     return parser
 
 def import_names_parser_init(parser):
@@ -197,7 +198,6 @@ def import_parser_init(parser):
 def guard_parser_init(proc_data, parser):
     parser.allow_overloading = True
     parser = init_parser_literals(parser)
-
 
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_RPAREN, None)
@@ -374,7 +374,7 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = False
+PARSE_DEBUG = True
 
 
 def parse(process, env, src):

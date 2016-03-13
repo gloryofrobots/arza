@@ -103,7 +103,7 @@ trait Seq for self
     method first self
     method rest self
     // prepend/cons operator
-    method cons value self
+    method cons  value self
     method empty self
 ---
 
@@ -116,7 +116,7 @@ trait Seqable for self
 ---
 
 trait Sliceable for self
-    method slice first last self
+    method slice first . last . self
     method drop count self
     method take count self
 ---

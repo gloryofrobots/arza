@@ -44,6 +44,7 @@ NODE_DOT = [NT_NAME, NT_INT]
 
 LOOP_CONTROL_TOKENS = [TT_END, TT_ELSE, TT_CASE]
 
+SKIP_JUXTAPOSITION = [TT_JUXTAPOSITION]
 
 def parser_error_unknown(parser, position):
     line = get_line_for_position(parser.ts.src, position)

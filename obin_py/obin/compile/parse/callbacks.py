@@ -494,7 +494,7 @@ def stmt_when(parser, op, node):
 
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
-    pattern = node_tuple_juxtaposition(parser.pattern_parser, arg_terminator, [TT_JUXTAPOSITION])
+    pattern = node_tuple_juxtaposition(parser.pattern_parser, arg_terminator, SKIP_JUXTAPOSITION)
     args_type = nodes.node_type(pattern)
 
     if args_type != NT_TUPLE:
@@ -805,7 +805,7 @@ def stmt_trait(parser, op, node):
         method_name = grab_name_or_operator(parser)
         check_token_type(parser, TT_NAME)
 
-        sig = node_list_juxtaposition(sig_parser, TERM_METHOD_SIG)
+        sig = node_list_juxtaposition(sig_parser, TERM_METHOD_SIG, SKIP_JUXTAPOSITION)
         check_node_type(parser, sig, NT_LIST)
         if parser.token_type == TT_ARROW:
             advance(parser)
