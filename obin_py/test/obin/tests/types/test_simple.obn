@@ -3,7 +3,6 @@ import affirm
 type Zero
 ---------
 
-//TODO of in {literal}
 type Point2 x y
     construct
     | {x, y}
@@ -12,7 +11,6 @@ type Point2 x y
     | x of Int y of Int
     -------------
 ---------
-derive (Dict, Indexed) for Point2
 
 // TODO RECURSIVE
 type Vec2 p1 p2
@@ -27,7 +25,8 @@ type Vec2 p1 p2
         p2 = Point2 x2 y2
     -----------
 ------------
-derive (Dict, Indexed) for Vec2
+
+derive (Dict, Indexed) for (Point2, Vec2)
 
 trait Add for self
     method add self a
