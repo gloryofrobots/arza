@@ -530,7 +530,26 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
 
 
 def _parse_function_signature(parser):
-    pattern = node_tuple_juxtaposition(parser.fun_signature_parser, [TT_ARROW, TT_CASE], SKIP_JUXTAPOSITION)
+    """
+        signature can be one of
+        arg1 arg2
+        arg1 . arg2 ...arg3
+        arg1 of T arg2 of T
+        ()
+        (arg1 arg2 of T ...arg3)
+    """
+    if parser.token_type == TT_LPAREN:
+        advance(parser)
+        if parser.token_type == TT_RPAREN:
+            advance(parser)
+            unit = nodes.create_unit_node(parser.node)
+            pattern = nodes.create_tuple_node(unit, [unit])
+        else:
+            pattern = node_tuple_juxtaposition(parser.fun_signature_parser, [TT_RPAREN], SKIP_JUXTAPOSITION)
+            advance_expected(parser, TT_RPAREN)
+    else:
+        pattern = node_tuple_juxtaposition(parser.fun_signature_parser, [TT_ARROW, TT_CASE], SKIP_JUXTAPOSITION)
+
     args_type = nodes.node_type(pattern)
 
     if args_type != NT_TUPLE:

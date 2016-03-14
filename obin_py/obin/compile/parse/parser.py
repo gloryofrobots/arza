@@ -257,7 +257,8 @@ def fun_signature_parser_init(parser):
     literal(parser, TT_NAME)
     infix(parser, TT_OF, 10, led_infix)
 
-    prefix(parser, TT_LPAREN, prefix_lparen_unit)
+    symbol(parser, TT_RPAREN)
+    # prefix(parser, TT_LPAREN, prefix_lparen_unit)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
     infix(parser, TT_COLON, 80, infix_name_pair)
 

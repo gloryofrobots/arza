@@ -28,11 +28,9 @@
 //TODO remove constructs from types
 //TODO make it possible to declare type in map syntax with default values
 // big task. you probably needed default values for this
-//TODO replace cond with if
 
-//TODO check if you can implement qualified name module:Trait
-//TODO check if you can use clauses in method implementation
 //TODO check precedences
+//TODO replace cond with if
 
 //trait Any for self
 ////    method id self -> obin:unique_id self
