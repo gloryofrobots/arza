@@ -12,7 +12,7 @@ fun _batch checker fn calls ->
 
 
 fun fail error ->
-    throw (#AffirmationError, error);
+    throw (#AffirmationError, error)
 ---
 
 fun is_not_equal val1 val2 ->
@@ -23,12 +23,12 @@ fun is_not_equal val1 val2 ->
 ---
 
 fun is_equal val1 val2
-| val1 of Float  val2 of Float -> is_equal_float val1 val2
-| val1 val2  ->
-    cond
-    | val1 != val2 -> fail [val1, "!=", val2]
-    | else -> True
-    ---
+    | val1 of Float  val2 of Float -> is_equal_float val1 val2
+    | val1 val2  ->
+        cond
+        | val1 != val2 -> fail [val1, "!=", val2]
+        | else -> True
+        ---
 ---
 
 fun _abs v ->

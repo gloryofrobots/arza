@@ -1,0 +1,220 @@
+fun is_throw fn args
+    | fn () -> is_throw fn [()]
+    | fn args ->
+        match
+            try
+                apply fn args
+                Success True
+            | e ->
+                print e
+                e
+            -----------
+        | _ of Success -> fail ["exception expected", fn]
+        | err ->
+            print err
+            err
+        --------------------
+------------------------
+
+fun range_by  first of Int . last of Int . step of Int ->
+    fun _range_by N X D L
+        | N X D L when N >= 4 ->
+            Y = X - D
+            Z = Y - D
+            W = Z - D
+            _range_by (N - 4)  (W - D)  D  (W :: Z :: Y :: X :: L)
+
+        | N X D L when N >= 2 ->
+            Y = X - D
+            _range_by (N - 2) (Y - D) D (Y :: X :: L)
+
+        | 1 X _ L -> X :: L
+
+        | 0 _ _ L -> L
+    --------------------------------------------------
+
+    cond
+    | step > 0 and first - step <= last or
+      step < 0 and first - step >= last ->
+        n = ((last - first + step) / step) - 1
+        _range_by n (step * (n - 1) + first) step []
+
+    | step == 0 and first == last ->
+        _range_by 1  first step []
+    | else ->
+        throw (#InvalidRange, first, last, step)
+    ------------------------------
+--------------------------------------------------
+
+fun range_by  first of Int . last of Int . step of Int ->
+    fun _range_by N X D L
+        | N X D L when N >= 4 ->
+            Y = X - D
+            Z = Y - D
+            W = Z - D
+            _range_by (N - 4)  (W - D)  D  (W :: Z :: Y :: X :: L)
+
+        | N X D L when N >= 2 ->
+            Y = X - D
+            _range_by (N - 2) (Y - D) D (Y :: X :: L)
+
+        | 1 X _ L -> X :: L
+
+        | 0 _ _ L -> L
+    --------------------------------------------------
+
+    if step > 0 and first - step <= last or
+                            step < 0 and first - step >= last ->
+        n = ((last - first + step) / step) - 1
+        _range_by n (step * (n - 1) + first) step []
+
+    elif step == 0 and first == last ->
+        _range_by 1  first step []
+    else ->
+        throw (#InvalidRange, first, last, step)
+    -----------------------------------------------
+
+--------------------------------------------------
+
+cond
+| step > 0 and first - step <= last or
+  step < 0 and first - step >= last ->
+    n = ((last - first + step) / step) - 1
+    _range_by n (step * (n - 1) + first) step []
+
+| step == 0 and first == last ->
+    _range_by 1  first step []
+| else ->
+    throw (#InvalidRange, first, last, step)
+------------------------------
+
+
+if step > 0 and first - step <= last or
+    step < 0 and first - step >= last ->
+    n = ((last - first + step) / step) - 1
+    _range_by n (step * (n - 1) + first) step []
+
+| step == 0 and first == last ->
+    _range_by 1  first step []
+| else ->
+    throw (#InvalidRange, first, last, step)
+------------------------------
+
+if step > 0 and first - step <= last or
+    step < 0 and first - step >= last then
+
+    n = ((last - first + step) / step) - 1
+    _range_by n (step * (n - 1) + first) step []
+
+elif step == 0 and first == last then
+    _range_by 1  first step []
+else
+    throw (#InvalidRange, first, last, step)
+------------------------------
+
+fun test_6() ->
+    affirm:is_equal try throw (1,2,"ERROR")
+                    | err @ (1, y, 3) -> #first
+                    |(1,2, "ERROR@") -> #second
+                    | err @ (1, 2, x) -> #third
+                    | finally -> (#fourth, err, x)
+                    ------------------------------- .
+                    (#fourth, (1, 2, "ERROR"), "ERROR")
+---------------------------
+
+
+fun test_6() ->
+    affirm:is_equal try
+                        throw (1,2,"ERROR")
+                    catch err @ (1, y, 3) ->
+                        #first
+                    catch (1,2, "ERROR@") ->
+                        #second
+                    catch err @ (1, 2, x) ->
+                        #third
+                    finally ->
+                        (#fourth, err, x)
+                    ------------------------------- .
+                    (#fourth, (1, 2, "ERROR"), "ERROR")
+---------------------------
+
+
+fun test_6() ->
+    affirm:is_equal try
+                       throw (1,2,"ERROR")
+                    | err @ (1, y, 3) ->
+                        #first
+                    | (1,2, "ERROR@") ->
+                        #second
+                    | err @ (1, 2, x) ->
+                        #third
+                    | finally ->
+                        (#fourth, err, x)
+                    ------------------------------- .
+                    (#fourth, (1, 2, "ERROR"), "ERROR")
+---------------------------
+
+fun test_4() ->
+    affirm:is_throw_expected (
+        lam () ->
+            try
+                try
+                    1/0
+                catch
+                    | e1 -> e1
+                finally ->
+                    error2(#Finally)
+                ---
+            | e2 ->
+                try
+                    error(#Catch)
+                catch
+                    | e of Int -> e
+                    | e3 ->
+                        42
+                finally ->
+                    //uncatched
+                    throw (e2, e3)
+                ---
+            ---
+        end) () ( (#error, {reason=#Finally}), (#error, {reason=#Catch}) )
+--------------------------------------------------
+
+fun test_4() ->
+    affirm:is_throw_expected (
+        lam () ->
+            try
+                try
+                    1/0
+                catch
+                    | e1 ->  e1
+                finally ->
+                    error2(#Finally)
+                ---------------
+            catch e2 ->
+                try
+                    error(#Catch)
+                catch e3 ->
+                    42
+                finally ->
+                    //uncatched
+                    throw (e2, e3)
+                ----------------
+            ----------------------------
+        end) () ( (#error, {reason=#Finally}), (#error, {reason=#Catch}) )
+--------------------------------------------------
+
+fun is_throw (fn args)
+    | fn () -> is_throw fn [()]
+    | fn args ->
+        match
+            try
+                apply fn args
+                Success True
+            | e ->
+                e
+            ---
+        | _ of Success -> fail ["exception expected", fn]
+        | err -> err
+        ---
+---
