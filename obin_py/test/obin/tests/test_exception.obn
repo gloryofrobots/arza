@@ -11,13 +11,13 @@ fun test_1 () ->
     try
         try
             1/0
-        | e2 ->
+        catch e2 ->
             throw e2
         ---
-    | e3 ->
+    catch e3 ->
         try
             error(#LifeSucks)
-        | e4 ->
+        catch e4 ->
             //result
             e4
         ---
@@ -30,14 +30,14 @@ fun test_2 () ->
         try
             try
                 1/0
-            | e1 ->
+            catch e1 ->
                 //result
                 e1
             ---
-        | e2 ->
+        catch e2 ->
             try
                 error(#LifeSucks)
-            | e3 ->
+            catch e3 ->
                 e3
             ---
         end) (ZeroDivisionError (1, 0))
@@ -49,17 +49,17 @@ fun test_3 () ->
         try
             try
                 1/0
-            | e1 ->
+            catch e1 ->
                 e1
-            | finally ->
+            finally ->
                 error2(#Finally)
             ----------
-        | e2 ->
+        catch e2 ->
             try
                 error(#Catch)
-            | e3 ->
+            catch e3 ->
                 42
-            | finally ->
+            finally ->
                 //result
                 (e2, e3)
             -------------
@@ -72,17 +72,17 @@ fun test_4() ->
             try
                 try
                     1/0
-                | e1 ->
+                catch e1 ->
                     e1
-                | finally ->
+                finally ->
                     error2(#Finally)
                 ---
-            | e2 ->
+            catch e2 ->
                 try
                     error(#Catch)
-                | e3 ->
+                catch e3 ->
                     42
-                | finally ->
+                finally ->
                     //uncatched
                     throw (e2, e3)
                 ---
@@ -95,23 +95,25 @@ fun test_5() ->
         lam arg1 arg2 ->
             try
                 1/0
-            | e ->
+            catch e ->
                 throw (arg1, arg2)
-            | finally ->
+            finally ->
                 throw e
             ---
         end) (33, 22) (33, 22)
 ----------------------------------
 
 fun test_6() ->
-    affirm:is_equal try throw (1,2,"ERROR")
-                    | err @ (1, y, 3) -> #first
-                    |(1,2, "ERROR@") -> #second
-                    | err @ (1, 2, x) -> #third
-                    | finally -> (#fourth, err, x)
+    affirm:is_equal try
+                        throw (1,2,"ERROR")
+                    catch
+                        | err @ (1, y, 3) -> #first
+                        | (1,2, "ERROR@") -> #second
+                        | err @ (1, 2, x) -> #third
+                    finally -> (#fourth, err, x)
                     ------------------------------- .
                     (#fourth, (1, 2, "ERROR"), "ERROR")
----------------------------
+-----------------------------------------------------------------------------
 
 fun test () ->
     test_1()
@@ -120,4 +122,4 @@ fun test () ->
     test_4()
     test_5()
     test_6()
---------------------------------------------------------------
+------------

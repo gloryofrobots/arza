@@ -126,7 +126,7 @@ fun test () ->
     affirm:is_throw_expected fn_fail [0] (#FunctionArgumentsMatchError, (0,))
     affirm:is_equal try
                        fn_fail("I am string")
-                    | exc ->
+                    catch exc ->
                        [exc, exc, exc]
                     --- .
                     [(#FunctionArgumentsMatchError, ("I am string",)),

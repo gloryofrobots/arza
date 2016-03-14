@@ -39,7 +39,7 @@ fun is_equal_float val1 val2 ->
     fun _eq_f val1 val2 delta ->
         try
              is_true (((_abs val1) - (_abs val2)) < delta)
-        | e ->
+        catch e ->
             fail [val1, "!=", val2]
         ---
     ---
@@ -89,9 +89,9 @@ fun is_throw fn args
         try
             apply fn args
             Success True
-        | e ->
-            e
-        ---
+        catch e -> e
+        --------------
+
     | _ of Success -> fail ["exception expected", fn]
     | err -> err
     ---
@@ -108,7 +108,7 @@ fun is_not_throw fn args
         try
             apply fn args
             Success True
-        | e ->
+        catch e ->
             e
         ---
     | _ of Success ->  True

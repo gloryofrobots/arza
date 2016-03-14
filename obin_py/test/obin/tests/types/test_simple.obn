@@ -30,7 +30,7 @@ derive (Dict, Indexed) for (Point2, Vec2)
 
 trait Add for self
     def add self a
-----
+----------------------------------
 
 
 implement Add for Point2
@@ -38,7 +38,7 @@ implement Add for Point2
         | _ p2 of Point2 -> Point2 (self.x + p2.x) (self.y + p2.y)
         | _ i of Int -> Point2 (self.x + i) (self.y + i)
         | _ v of Vec2 -> add (Vec2 self) v
----
+---------------------------------
 
 implement Eq for Point2
     def == self other of Point2 ->

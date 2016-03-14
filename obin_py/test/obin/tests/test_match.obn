@@ -137,9 +137,9 @@ fun test() ->
                     | 23 -> #first
                     | 13 -> #second
                 ---------------
-            | exc ->
+            catch exc ->
                 exc
-            | finally ->
+            finally ->
                 [exc, exc, exc]
             end) [(#MatchError, 42), (#MatchError, 42), (#MatchError, 42)]
 

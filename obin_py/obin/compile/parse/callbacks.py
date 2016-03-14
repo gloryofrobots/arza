@@ -419,20 +419,25 @@ def _prefix_lcurly(parser, op, node, types, on_unknown):
 
 
 def prefix_try(parser, op, node):
-    # endofexpression(parser)
     trybody = statements(parser, TERM_TRY)
     catches = []
-    check_token_type(parser, TT_CASE)
-    while parser.token_type == TT_CASE:
-        advance_expected(parser, TT_CASE)
 
-        if parser.token_type == TT_FINALLY:
-            break
-        # pattern = expressions(parser.pattern_parser, 0)
+    check_token_type(parser, TT_CATCH)
+
+    advance(parser)
+    if parser.token_type == TT_CASE:
+        while parser.token_type == TT_CASE:
+            advance_expected(parser, TT_CASE)
+            # pattern = expressions(parser.pattern_parser, 0)
+            pattern = _parse_pattern(parser)
+            advance_expected(parser, TT_ARROW)
+
+            body = statements(parser, TERM_CATCH_CASE)
+            catches.append(list_node([pattern, body]))
+    else:
         pattern = _parse_pattern(parser)
         advance_expected(parser, TT_ARROW)
-
-        body = statements(parser, TERM_CASE)
+        body = statements(parser, TERM_SINGLE_CATCH)
         catches.append(list_node([pattern, body]))
 
     if parser.token_type == TT_FINALLY:

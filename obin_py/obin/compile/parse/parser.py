@@ -323,6 +323,8 @@ def expression_parser_init(proc_data, parser):
     symbol(parser, TT_ELIF)
     symbol(parser, TT_CASE)
     symbol(parser, TT_THEN)
+    symbol(parser, TT_CATCH)
+    symbol(parser, TT_FINALLY)
 
     symbol(parser, TT_COMMA)
 
