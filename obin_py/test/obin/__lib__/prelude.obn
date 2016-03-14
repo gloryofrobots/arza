@@ -15,20 +15,31 @@ infixl / / 65
 infixl ++ ++ 70
 
 
-//fun t  x . y ->
-////    match [1,2,3,4]
-////    | 1::2::xs -> xs
-////    ---
-////    f 331 332 334 .
-////      (g 441 442 .
-////         443 444) . 551 . 552 553 .
-////       554
-//end
 
+//lam x y
+//    | 0 _ -> []
+//    | _ [] -> []
+//    | n [x, ...xs] -> x :: (take (n-1)  xs)
+//end
+//
+//lam () -> 42 end
+//lam list | x::xs end
+
+//
+////fun t  x . y ->
+//////    match [1,2,3,4]
+//////    | 1::2::xs -> xs
+//////    ---
+//////    f 331 332 334 .
+//////      (g 441 442 .
+//////         443 444) . 551 . 552 553 .
+//////       554
+////end
+//
 type LT
 type GT
 type EQ
-
+//
 trait Collection for self
     method len self
     method is_empty self
@@ -153,14 +164,14 @@ type TraitConstraintError args end
 
 //FUNS
 
-in = elem
-//notin = in
-fun notin obj storage -> not (obj `elem` storage) end
-
-fun lookup key default coll ->
-    try
-        at key coll
-    | e of KeyError -> default
-    | e -> throw e
-    ---
----
+//in = elem
+////notin = in
+//fun notin obj storage -> not (obj `elem` storage) end
+//
+//fun lookup key default coll ->
+//    try
+//        at key coll
+//    | e of KeyError -> default
+//    | e -> throw e
+//    ---
+//---

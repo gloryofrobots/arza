@@ -182,6 +182,9 @@ def node_column(node):
 def is_wildcard_node(n):
     return node_type(n) == nt.NT_WILDCARD
 
+def tuple_node_length(n):
+    assert node_type(n) == nt.NT_TUPLE
+    return api.length_i(node_first(n))
 
 def node_to_d(node):
     if is_empty_node(node):
@@ -219,6 +222,10 @@ def create_token_from_node(type, value, node):
 
 def create_function_variants(args, body):
     return list_node([list_node([args, body])])
+
+
+def create_fun_node(basenode, name, funcs):
+    return node_2(nt.NT_FUN, create_token_from_node(tt.TT_STR, "fun", basenode), name, funcs)
 
 
 def create_temporary_node(basenode, idx):
@@ -309,6 +316,10 @@ def create_empty_map_node(basenode):
     return node_1(nt.NT_MAP, create_token_from_node(tt.TT_LCURLY, "{", basenode), list_node([]))
 
 
+def create_call_node(basenode, func, exps):
+    return node_2(nt.NT_CALL, create_token_from_node(tt.TT_LPAREN, "(", basenode), func, exps)
+
+
 def create_call_node_1(basenode, func, exp):
     return node_2(nt.NT_CALL, create_token_from_node(tt.TT_LPAREN, "(", basenode), func, list_node([exp]))
 
@@ -316,8 +327,10 @@ def create_call_node_1(basenode, func, exp):
 def create_call_node_2(basenode, func, exp1, exp2):
     return node_2(nt.NT_CALL, create_token_from_node(tt.TT_LPAREN, "(", basenode), func, list_node([exp1, exp2]))
 
+
 def create_call_node_3(basenode, func, exp1, exp2, exp3):
     return node_2(nt.NT_CALL, create_token_from_node(tt.TT_LPAREN, "(", basenode), func, list_node([exp1, exp2, exp3]))
+
 
 def create_call_node_name(basenode, funcname, exps):
     return create_call_node_s(basenode, api.to_s(funcname), exps)

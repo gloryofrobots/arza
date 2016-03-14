@@ -42,6 +42,8 @@ NODE_TYPE_MAPPING = {
 def node_tuple_juxtaposition(parser, terminators, skip=None):
     node, args = juxtaposition_list(parser, terminators, skip)
     # return nodes.node_1(NT_TUPLE, nodes.node_token(node), list_node(args))
+    if node is None:
+        parse_error(parser, u"Empty declaration", parser.node)
     return nodes.create_tuple_node(node, args)
 
 
@@ -304,6 +306,11 @@ def prefix_lparen_tuple(parser, op, node):
     return node_1(NT_TUPLE, __ntok(node), list_node(items))
 
 
+def prefix_lparen_unit(parser, op, node):
+    advance_expected(parser, TT_RPAREN)
+    return nodes.create_unit_node(node)
+
+
 # MOST complicated operator
 # expressions (f 1 2 3) (2 + 3) (-1)
 # tuples (1,2,3,4,5)
@@ -493,6 +500,8 @@ def stmt_when(parser, op, node):
     return node_2(NT_WHEN, __ntok(node), cond, body)
 
 
+################################################333
+
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
     pattern = node_tuple_juxtaposition(parser.pattern_parser, arg_terminator, SKIP_JUXTAPOSITION)
     args_type = nodes.node_type(pattern)
@@ -543,6 +552,78 @@ def parse_function(parser, allow_empty_name):
     return name, funcs
 
 
+##################################
+def _parse_function_signature(parser):
+    pattern = node_tuple_juxtaposition(parser.fun_signature_parser, [TT_ARROW, TT_CASE], SKIP_JUXTAPOSITION)
+    args_type = nodes.node_type(pattern)
+
+    if args_type != NT_TUPLE:
+        parse_error(parser, u"Invalid  syntax in function signature", pattern)
+    return pattern
+
+
+def parse_function_variants_with_sig(parser, signature, term_pattern, term_guard, term_case_body, term_single_body):
+    if parser.token_type == TT_ARROW:
+        advance_expected(parser, TT_ARROW)
+        body = statements(parser, term_single_body)
+        return nodes.create_function_variants(signature, body)
+
+    # bind to different name for not confusing reading code
+    # it serves as basenode for node factory functions
+    node = signature
+    check_token_type(parser, TT_CASE)
+
+    funcs = []
+    sig_args = nodes.node_first(signature)
+    sig_arity = api.length_i(sig_args)
+
+    while parser.token_type == TT_CASE:
+        advance_expected(parser, TT_CASE)
+        args = _parse_func_pattern(parser, term_pattern, term_guard)
+        if nodes.tuple_node_length(args) != sig_arity:
+            return parse_error(parser, u"Inconsistent clause arity with function signature", args)
+
+        advance_expected(parser, TT_ARROW)
+        body = statements(parser, term_case_body)
+        funcs.append(list_node([args, body]))
+
+    func = nodes.create_fun_node(node, empty_node(), list_node(funcs))
+
+    call_list = []
+    for arg in sig_args:
+        ntype = nodes.node_type(arg)
+        if ntype == NT_OF or ntype == NT_REST:
+            arg = nodes.node_first(arg)
+        call_list.append(arg)
+
+    body = list_node([nodes.create_call_node(node, func, list_node(call_list))])
+    main_func = nodes.create_function_variants(signature, body)
+    return main_func
+
+
+def parse_function_with_sig(parser):
+    signature = _parse_function_signature(parser)
+    funcs = parse_function_variants_with_sig(parser, signature, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
+    advance_end(parser)
+    return funcs
+
+
+def parse_named_function(parser):
+    name = grab_name_or_operator(parser.name_parser)
+    func = parse_function_with_sig(parser)
+    return name, func
+
+
+def prefix_fun(parser, op, node):
+    name, funcs = parse_named_function(parser)
+    return node_2(NT_FUN, __ntok(node), name, funcs)
+
+
+def prefix_module_fun(parser, op, node):
+    name, funcs = parse_named_function(parser.expression_parser)
+    return node_2(NT_FUN, __ntok(node), name, funcs)
+
+
 def prefix_lambda(parser, op, node):
     name = empty_node()
     if parser.token_type == TT_ARROW:
@@ -559,16 +640,6 @@ def prefix_lambda(parser, op, node):
     # advance_end(parser)
     return node_2(
         NT_FUN, __ntok(node), name, list_node([list_node([args, body])]))
-
-
-def prefix_fun(parser, op, node):
-    name, funcs = parse_function(parser, True)
-    return node_2(NT_FUN, __ntok(node), name, funcs)
-
-
-def prefix_module_fun(parser, op, node):
-    name, funcs = parse_function(parser.expression_parser, False)
-    return node_2(NT_FUN, __ntok(node), name, funcs)
 
 
 ###############################################################

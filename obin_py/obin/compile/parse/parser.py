@@ -91,16 +91,19 @@ class ExpressionParser(BaseParser):
         BaseParser.__init__(self)
         self.pattern_parser = pattern_parser_init(BaseParser())
         self.guard_parser = guard_parser_init(proc_data, BaseParser())
+        self.fun_signature_parser = fun_signature_parser_init(BaseParser())
         self.name_parser = name_parser_init(BaseParser())
         expression_parser_init(proc_data, base_parser_init(self))
 
     def _on_open(self, state):
         self.pattern_parser.open(state)
+        self.fun_signature_parser.open(state)
         self.guard_parser.open(state)
         self.name_parser.open(state)
 
     def _on_close(self):
         self.pattern_parser.close()
+        self.fun_signature_parser.close()
         self.guard_parser.close()
         self.name_parser.close()
 
@@ -111,6 +114,7 @@ class ModuleParser(BaseParser):
 
         self.import_parser = import_parser_init(BaseParser())
         self.pattern_parser = pattern_parser_init(BaseParser())
+        self.fun_signature_parser = fun_signature_parser_init(BaseParser())
         self.guard_parser = guard_parser_init(proc_data, BaseParser())
         self.expression_parser = ExpressionParser(proc_data)
         self.name_parser = name_parser_init(BaseParser())
@@ -124,6 +128,7 @@ class ModuleParser(BaseParser):
         self.method_signature_parser.open(state)
         self.type_parser.open(state)
         self.pattern_parser.open(state)
+        self.fun_signature_parser.open(state)
         self.guard_parser.open(state)
         self.import_parser.open(state)
         self.expression_parser.open(state)
@@ -134,6 +139,7 @@ class ModuleParser(BaseParser):
         self.method_signature_parser.close()
         self.type_parser.close()
         self.pattern_parser.close()
+        self.fun_signature_parser.close()
         self.guard_parser.close()
         self.import_parser.close()
         self.expression_parser.close()
@@ -166,9 +172,22 @@ def type_parser_init(parser):
     return parser
 
 
+def fun_signature_parser_init(parser):
+    parser.break_on_juxtaposition = True
+    literal(parser, TT_NAME)
+    infix(parser, TT_OF, 10, led_infix)
+
+    prefix(parser, TT_LPAREN, prefix_lparen_unit)
+    prefix(parser, TT_ELLIPSIS, prefix_nud)
+
+    symbol(parser, TT_METHOD, None)
+    symbol(parser, TT_ARROW, None)
+    symbol(parser, TT_CASE, None)
+    symbol(parser, TT_JUXTAPOSITION)
+    return parser
+
 def method_signature_parser_init(parser):
     parser.break_on_juxtaposition = True
-    # literal(parser, TT_TYPENAME)
     prefix(parser, TT_NAME, literal_type_field)
     symbol(parser, TT_METHOD, None)
     symbol(parser, TT_ARROW, None)
@@ -374,7 +393,7 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = True
+PARSE_DEBUG = False
 
 
 def parse(process, env, src):
