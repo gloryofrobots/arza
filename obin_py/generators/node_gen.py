@@ -58,7 +58,7 @@ NODES = [
 
   "NT_LOOKUP",
   "NT_LOOKUP_SYMBOL",
-  "NT_LOOKUP_MODULE",
+  "NT_IMPORTED_NAME",
   
   "NT_HEAD",
   "NT_TAIL",

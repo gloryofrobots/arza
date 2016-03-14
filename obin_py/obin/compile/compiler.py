@@ -281,7 +281,7 @@ def _get_symbol_or_name_value(name):
     ntype = node_type(name)
     if ntype == NT_SYMBOL:
         return _get_name_value(node_first(name))
-    elif ntype == NT_LOOKUP_MODULE:
+    elif ntype == NT_IMPORTED_NAME:
         return _module_path_to_string(name)
     else:
         return _get_name_value(name)
@@ -787,7 +787,7 @@ def _compile_LOOKUP_MODULE(compiler, code, node):
 
 
 def _module_path_to_string(node):
-    if node_type(node) == NT_LOOKUP_MODULE:
+    if node_type(node) == NT_IMPORTED_NAME:
         return _module_path_to_string(node_first(node)) + ':' + nodes.node_value_s(node_second(node))
     else:
         return nodes.node_value_s(node)
@@ -801,7 +801,7 @@ def _get_import_data_and_emit_module(compiler, code, node):
     if node_type(exp) == NT_AS:
         import_name = node_second(exp)
         module_path = _module_path_to_string(node_first(exp))
-    elif node_type(exp) == NT_LOOKUP_MODULE:
+    elif node_type(exp) == NT_IMPORTED_NAME:
         import_name = node_second(exp)
         module_path = _module_path_to_string(exp)
     else:
@@ -1244,7 +1244,7 @@ def _compile_node(compiler, code, node):
         _compile_LOOKUP(compiler, code, node)
     elif NT_LOOKUP_SYMBOL == ntype:
         _compile_LOOKUP_SYMBOL(compiler, code, node)
-    elif NT_LOOKUP_MODULE == ntype:
+    elif NT_IMPORTED_NAME == ntype:
         _compile_LOOKUP_MODULE(compiler, code, node)
 
     elif NT_MODIFY == ntype:

@@ -1,9 +1,11 @@
 import tests:types:test_simple
 import tests:types:test_default_implementations
+import tests:types:test_implement_qualified
 import tests:types:test_constraints
 
 fun test () ->
     test_simple:test()
     test_default_implementations:test()
     test_constraints:test()
+    test_implement_qualified:test()
 ---------------

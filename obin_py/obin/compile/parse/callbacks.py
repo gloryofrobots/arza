@@ -8,7 +8,7 @@ from obin.builtins import lang_names
 
 NODE_TYPE_MAPPING = {
     TT_DOT: NT_LOOKUP_SYMBOL,
-    TT_COLON: NT_LOOKUP_MODULE,
+    TT_COLON: NT_IMPORTED_NAME,
     TT_TRUE: NT_TRUE,
     TT_FALSE: NT_FALSE,
     TT_INT: NT_INT,
@@ -188,6 +188,7 @@ def infix_name_pair(parser, op, node, left):
     name = _init_default_current_0(parser)
     advance(parser)
     return node_2(__ntype(node), __ntok(node), left, name)
+
 
 
 def infix_at(parser, op, node, left):
@@ -622,7 +623,7 @@ def stmt_module(parser, op, node):
 
 
 def _load_path_s(node):
-    if nodes.node_type(node) == NT_LOOKUP_MODULE:
+    if nodes.node_type(node) == NT_IMPORTED_NAME:
         return _load_path_s(nodes.node_first(node)) + ':' + nodes.node_value_s(nodes.node_second(node))
     else:
         return nodes.node_value_s(node)
@@ -634,7 +635,7 @@ def _load_module(parser, exp):
     if nodes.node_type(exp) == NT_AS:
         import_name = nodes.node_second(exp)
         module_path = _load_path_s(nodes.node_first(exp))
-    elif nodes.node_type(exp) == NT_LOOKUP_MODULE:
+    elif nodes.node_type(exp) == NT_IMPORTED_NAME:
         import_name = nodes.node_second(exp)
         module_path = _load_path_s(exp)
     else:
@@ -728,7 +729,7 @@ def _parse_construct(parser, node):
     return list_node(funcs)
 
 
-def literal_type_field(parser, op, node):
+def prefix_name_as_symbol(parser, op, node):
     name = itself(parser, op, node)
     return nodes.create_symbol_node(name, name)
 
@@ -743,30 +744,20 @@ def symbol_list_to_arg_tuple(parser, node, symbols):
 
     return nodes.node_1(NT_TUPLE, nodes.node_token(node), list_node(args))
 
-
-def grab_name_or_tuple(parser, term):
-    if parser.token_type == TT_NAME:
-        return grab_name(parser)
-    if parser.token_type != TT_LPAREN:
-        parse_error(parser, u"Expected name or tuple of names", parser.node)
-
-    exp = expressions(parser, 0, term)
-    check_node_type(parser, exp, NT_TUPLE)
-    check_list_node_types(parser, nodes.node_first(exp), [NT_NAME])
-    return exp
-
-
-def grab_name_or_tuple_as_tuple(parser, term):
-    exp = grab_name_or_tuple(parser, term)
-    if nodes.node_type(exp) == NT_NAME:
+# DERIVE ################################
+def _parse_tuple_of_names(parser, term):
+    exp = expect_expression_of_types(parser, 0, [NT_NAME, NT_IMPORTED_NAME, NT_TUPLE], term)
+    if nodes.node_type(exp) == NT_TUPLE:
+        check_list_node_types(parser, nodes.node_first(exp), [NT_NAME, NT_IMPORTED_NAME])
+        return exp
+    elif nodes.node_type(exp) != NT_TUPLE:
         return nodes.create_tuple_node(exp, [exp])
-    return exp
 
 
 def stmt_derive(parser, op, node):
-    traits = grab_name_or_tuple_as_tuple(parser.name_parser, TERM_DERIVE)
+    traits = _parse_tuple_of_names(parser.name_parser, TERM_BEFORE_FOR)
     advance_expected(parser, TT_FOR)
-    types = grab_name_or_tuple_as_tuple(parser.name_parser, None)
+    types = _parse_tuple_of_names(parser.name_parser, None)
     return node_2(NT_DERIVE, __ntok(node), traits, types)
 
 
@@ -856,18 +847,17 @@ def stmt_trait(parser, op, node):
 
 
 def stmt_implement(parser, op, node):
-    type_parser = parser.type_parser
-    trait_name = grab_name(type_parser)
+    trait_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_BEFORE_FOR)
     advance_expected(parser, TT_FOR)
-    type_name = grab_name(type_parser)
+    type_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_IMPL_HEADER)
 
     methods = []
     while parser.token_type == TT_METHOD:
         advance_expected(parser, TT_METHOD)
-        # creating name spaced methods
-        method_name = grab_name_or_operator(parser.name_parser)
+        # creating converting method names to symbols
+        # method_name = grab_name_or_operator(parser.name_parser)
+        method_name = expect_expression_of(parser.name_parser, 0, NT_NAME)
         method_name = nodes.create_symbol_node_s(method_name, nodes.node_value_s(method_name))
-        # method_name = nodes.create_lookup_node(node, trait_name, method_name)
 
         funcs = _parse_function(parser.expression_parser,
                                TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_IMPL_BODY, TERM_IMPL_BODY)

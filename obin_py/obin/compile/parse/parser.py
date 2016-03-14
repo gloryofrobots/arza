@@ -158,15 +158,15 @@ def name_parser_init(parser):
 
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
-    infix(parser, TT_COLON, 10, infix_name_pair)
+    infix(parser, TT_COLON, 80, infix_name_pair)
     return parser
-
 
 
 def type_parser_init(parser):
     parser.break_on_juxtaposition = True
     # literal(parser, TT_TYPENAME)
-    prefix(parser, TT_NAME, literal_type_field)
+    prefix(parser, TT_NAME, prefix_name_as_symbol)
+    infix(parser, TT_COLON, 80, infix_name_pair)
     symbol(parser, TT_CASE, None)
     symbol(parser, TT_CONSTRUCT, None)
     return parser
@@ -174,7 +174,7 @@ def type_parser_init(parser):
 
 def method_signature_parser_init(parser):
     parser.break_on_juxtaposition = True
-    prefix(parser, TT_NAME, literal_type_field)
+    prefix(parser, TT_NAME, prefix_name_as_symbol)
     symbol(parser, TT_METHOD, None)
     symbol(parser, TT_ARROW, None)
     symbol(parser, TT_JUXTAPOSITION)
@@ -193,7 +193,7 @@ def import_parser_init(parser):
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_LPAREN, None)
     symbol(parser, TT_HIDING, None)
-    infix(parser, TT_COLON, 10, infix_name_pair)
+    infix(parser, TT_COLON, 80, infix_name_pair)
     infix(parser, TT_AS, 20, infix_name_pair)
     literal(parser, TT_NAME)
 
@@ -232,11 +232,12 @@ def pattern_parser_init(parser):
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly_patterns)
     prefix(parser, TT_SHARP, prefix_sharp)
+    prefix(parser, TT_ELLIPSIS, prefix_nud)
 
     infix(parser, TT_DOUBLE_COLON, 70, led_infixr)
     infix(parser, TT_OF, 10, led_infix)
     infix(parser, TT_AT_SIGN, 10, infix_at)
-    prefix(parser, TT_ELLIPSIS, prefix_nud)
+    infix(parser, TT_COLON, 80, infix_name_pair)
 
     symbol(parser, TT_JUXTAPOSITION)
     symbol(parser, TT_WHEN)
@@ -258,6 +259,7 @@ def fun_signature_parser_init(parser):
 
     prefix(parser, TT_LPAREN, prefix_lparen_unit)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
+    infix(parser, TT_COLON, 80, infix_name_pair)
 
     literal(parser, TT_WILDCARD)
     symbol(parser, TT_METHOD, None)
@@ -265,7 +267,6 @@ def fun_signature_parser_init(parser):
     symbol(parser, TT_CASE, None)
     symbol(parser, TT_JUXTAPOSITION)
     return parser
-
 
 
 def init_parser_literals(parser):
