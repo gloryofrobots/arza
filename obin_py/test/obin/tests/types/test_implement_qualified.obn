@@ -1,0 +1,52 @@
+import tests:types:types
+import tests:types:types as stuff
+import from tests:types:types
+
+//prefix ++-+*++  ++-+*++
+//
+//type X x end
+//
+//derive Dict for X
+//derive Dict for stuff:TestType
+//
+//trait TraitWithOp for self
+//    method ++-+*++  self -> self.val
+//---
+//
+//implement types:TestTrait for X
+//    method test_method_1 a1 of X a2 of X self -> a1.x + a2.x + self.x
+//    method test_method_2 a1 self a2 -> a1.x + a2.x + self.x
+//    method test_method_3 self a1 a2 -> a1.x + a2.x + self.x
+//    method test_method_4 self -> self.x
+//--------------------------------------------------
+//
+///////////////////////////////////
+//
+//implement types:TestTrait for stuff:TestType
+//    method ++-+*++  self -> self.val
+//-------------------
+//
+//implement stuff:TestTrait for stuff:TestType
+//    method test_method_1 a1 of stuff:TestType . a2 of stuff:TestType . self -> a1.val + a2.val + self.val
+//    method test_method_2 a1 self a2 -> a1.val + a2.val + self.val
+//    method test_method_3 self a1 a2 -> a1.val + a2.val + self.val
+//--------------------------------------------------
+
+fun test () ->
+    print tests:types:types:test_method_1
+//    x = X 42
+//    x_2 = X (-42)
+//
+//    affirm:is_equal (stuff:test_method_1 x_2 x x) 42
+//    affirm:is_equal (stuff:test_method_2 x x_2 x) 42
+//    affirm:is_equal (stuff:test_method_3 x x x_2) 42
+//    affirm:is_equal (stuff:test_method_4 x) 42
+//
+//
+//    t = stuff:TestType 42
+//    t_2 = stuff:TestType (-42)
+//    affirm:is_equal (stuff:test_method_1 t_2 t t) 42
+//    affirm:is_equal (stuff:test_method_2 t t_2 t) 42
+//    affirm:is_equal (stuff:test_method_3 t t t_2) 42
+//    affirm:is_equal (++-+*++ t) 42
+---

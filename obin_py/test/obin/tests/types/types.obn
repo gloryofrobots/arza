@@ -1,0 +1,8 @@
+type TestType val end
+
+trait TestTrait for a
+    method test_method_1 x y a
+    method test_method_2 x a y
+    method test_method_3 a x y
+    method test_method_4 a
+----------
