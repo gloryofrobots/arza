@@ -15,22 +15,19 @@ trait Order for x
     method ge x y -> (cmp x y) != LT
     method gt x y -> (cmp x y) == GT
     method cmp x y ->
-        cond
-        | eq x x -> EQ
-        | le x y -> LT
-        | else -> GT
+        if eq x x -> EQ
+        elif le x y -> LT
+        else -> GT
         ---
 
     method max x y ->
-        cond
-        | x `le` y -> y
-        | else -> y
+        if x `le` y -> y
+        else -> y
         ----
 
     method min x y ->
-        cond
-        | x `le` y -> x
-        | else -> y
+        if x `le` y -> x
+        else -> y
         -------
 -----
 
@@ -52,10 +49,10 @@ implement Equal for Val2
 
 implement Order for Val
     method cmp self other ->
-            cond
-            | self.v == other.v -> EQ
-            | self.v <= other.v -> LT
-            | else -> GT
+
+            if self.v == other.v -> EQ
+            elif self.v <= other.v -> LT
+            else -> GT
             ---
 -------
 

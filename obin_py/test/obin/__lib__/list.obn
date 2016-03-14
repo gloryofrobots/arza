@@ -95,20 +95,20 @@ fun split_at n of Int . l of List -> ((take n l), (drop n  l)) end
 
 fun take_while predicate list
     | p [] -> []
-    | p [x, ...xs] -> x :: (take_while p xs) if p x else []
+    | p [x, ...xs] -> x :: (take_while p xs) in_case p x else []
 --------------------------------------------------
 
 fun drop_while predicate list
     | p [] -> []
-    | p xs@[x, ...xs1] -> (drop_while p xs1) if p x else xs
+    | p xs@[x, ...xs1] -> (drop_while p xs1) in_case p x else xs
 --------------------------------------------------
 
 fun span predicate list
     | p [] -> ([], [])
     | p xs@[x, ...xs1] ->
-        cond
-        | not (p x) -> ([], xs)
-        | else ->
+        if not (p x) ->
+            ([], xs)
+        else ->
             (ys, zs) = (span p xs1)
             (x::ys, zs)
         ------------------------------
@@ -146,7 +146,7 @@ fun concat l1 l2 ->
     foldr (&::) l2 l1 end
 
 fun range first of Int  last of Int ->
-    step = -1 if last < 0 else 1
+    step = -1 in_case last < 0 else 1
     range_by first last step
 --------------------------------------------------
 
@@ -167,15 +167,14 @@ fun range_by  first of Int . last of Int . step of Int ->
         | 0 _ _ L -> L
     --------------------------------------------------
 
-    cond
-    | step > 0 and first - step <= last or
+    if step > 0 and first - step <= last or
       step < 0 and first - step >= last ->
         n = ((last - first + step) / step) - 1
         _range_by n (step * (n - 1) + first) step []
 
-    | step == 0 and first == last ->
+    elif step == 0 and first == last ->
         _range_by 1  first step []
-    | else ->
+    else ->
         throw (#InvalidRange, first, last, step)
     ------------------------------
 --------------------------------------------------
@@ -198,15 +197,15 @@ fun init list
 ------------------------------
 
 fun replicate count element ->
-    cond
-    | count >= 0 ->
+    if count >= 0 ->
         fun _replicate n x result
             | 0 _ l -> l
             | n x l -> _replicate (n - 1) x (x :: l)
         -------------
 
         _replicate count element []
-    | else -> throw ValueError count
+    else ->
+        throw ValueError count
     --------------------------------
 ---------------------------------------------------
 

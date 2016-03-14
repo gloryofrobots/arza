@@ -67,12 +67,13 @@ RULES = [
     (token(' '), -1),
     (token('//[^\n]*'), -1),
     (token('/\*[^\*\/]*\*/'), -1),
-    (keyword('break'), TT_BREAK),
-    (keyword('continue'), TT_CONTINUE),
-    (keyword('while'), TT_WHILE),
-    (keyword('cond'), TT_CONDITION),
+
     (keyword('if'), TT_IF),
+    (keyword('elif'), TT_ELIF),
     (keyword('else'), TT_ELSE),
+
+    (keyword('in_case'), TT_IN_CASE),
+
     (keyword('then'), TT_THEN),
     (keyword('of'), TT_OF),
     (keyword('match'), TT_MATCH),

@@ -16,25 +16,22 @@ fun fail error ->
 ---
 
 fun is_not_equal val1 val2 ->
-    cond
-    | val1 == val2 -> fail [val1, "==", val2]
-    | else -> True
-    ---
+    if val1 == val2 -> fail [val1, "==", val2]
+    else -> True
+    -------------------
 ---
 
 fun is_equal val1 val2
     | val1 of Float  val2 of Float -> is_equal_float val1 val2
     | val1 val2  ->
-        cond
-        | val1 != val2 -> fail [val1, "!=", val2]
-        | else -> True
+        if val1 != val2 -> fail [val1, "!=", val2]
+        else -> True
         ---
 ---
 
 fun _abs v ->
-    cond
-    | v < 0 -> - 1 * v
-    | else -> v
+    if v < 0 -> - 1 * v
+    else -> v
     ---
 ---
 
@@ -50,30 +47,26 @@ fun is_equal_float val1 val2 ->
 ---
 
 fun is_same val1 val2 ->
-    cond
-    | val1 `isnot` val2 -> fail [val1, "isnot", val2]
-    | else -> True
+    if val1 `isnot` val2 -> fail [val1, "isnot", val2]
+    else -> True
     ---
 ---
 
 fun is_kindof val1 val2 ->
-    cond
-    | not (val1 `kindof` val2) -> fail [val1, "not kindof", val2]
-    | else -> True
+    if not (val1 `kindof` val2) -> fail [val1, "not kindof", val2]
+    else -> True
     ---
 ---
 
 fun is_not_kindof val1 val2 ->
-    cond
-    | val1 `kindof` val2 -> fail [val1, "kindof", val2]
-    | else -> True
+    if val1 `kindof` val2 -> fail [val1, "kindof", val2]
+    else -> True
     ---
 ---
 
 fun isnot_same val1 val2 ->
-    cond
-    | val1 `is` val2 -> fail [val1, "is", val2]
-    | else -> True
+    if val1 `is` val2 -> fail [val1, "is", val2]
+    else -> True
     ---
 ---
 

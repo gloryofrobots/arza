@@ -24,6 +24,12 @@ infixl ++ ++ 70
 
 
 //fun t  x . y ->
+//    affirm:is_equal if x == 13 -> 1 + 1
+//                    elif x == 14 -> 2 + 2
+//                    elif x == 15 -> 3 + 3
+//                    else -> 4 + 4
+//                    --- .
+//                    8
 ////    match [1,2,3,4]
 ////    | 1::2::xs -> xs
 ////    ---
@@ -58,14 +64,13 @@ trait Ord  for x of Eq
     method > x y -> (cmp x y) == GT
 
     method cmp x y ->
-                cond
-                | x == y -> EQ
-                | x <= y  -> LT
-                | else -> GT
-                ---
+                if x == y -> EQ
+                elif x <= y -> LT
+                else -> GT
+                --------------
 
-    method max x y -> y if x <= y else x
-    method min x y -> x if x <= y else y
+    method max x y ->  y in_case x <= y else x
+    method min x y -> x in_case x <= y else y
 ---------------------------------
 
 trait Num for x

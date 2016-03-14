@@ -320,12 +320,13 @@ def expression_parser_init(proc_data, parser):
     prefix(parser, TT_ELLIPSIS, prefix_nud)
 
     symbol(parser, TT_ELSE)
+    symbol(parser, TT_ELIF)
     symbol(parser, TT_CASE)
     symbol(parser, TT_THEN)
 
     symbol(parser, TT_COMMA)
 
-    infix(parser, TT_IF, 20, infix_if)
+    infix(parser, TT_IN_CASE, 20, infix_in_case)
 
     infix(parser, TT_OR, 25, led_infix)
 
@@ -346,11 +347,7 @@ def expression_parser_init(proc_data, parser):
     """
     prefix(parser, TT_AMP, prefix_amp)
     prefix(parser, TT_THROW, stmt_single)
-    prefix(parser, TT_CONDITION, prefix_condition)
-    # PREFIX IF IS NOT SUPPORTED BECAUSE OF PROBLEM WITH END BLOCK
-    # CONSIDER if False then 1 else 0 42
-    # HERE RESULT WILL BE 42 not 0
-    # prefix(parser, TT_IF, prefix_if)
+    prefix(parser, TT_IF, prefix_if)
 
     prefix(parser, TT_FUN, prefix_fun)
     prefix(parser, TT_LAMBDA, prefix_lambda)

@@ -8,8 +8,8 @@ from obin.misc.strutil import get_line, get_line_for_position
 
 TERM_BLOCK = [TT_END]
 
-TERM_IF_BODY = [TT_ELSE]
-TERM_IF_CONDITION = [TT_THEN]
+TERM_IF_BODY = [TT_ELSE, TT_ELIF]
+TERM_IF_CONDITION = [TT_ARROW]
 
 TERM_FILE = [TT_ENDSTREAM]
 TERM_CASE = [TT_CASE] + TERM_BLOCK

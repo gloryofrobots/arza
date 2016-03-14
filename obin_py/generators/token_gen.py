@@ -26,10 +26,12 @@ TOKENS = [
   ("TT_METHOD", "method"),
   ("TT_TYPE", "type"),
 
-  ("TT_CONDITION", "cond"),
   ("TT_IF", "if"),
-  ("TT_THEN", "then"),
+  ("TT_IN_CASE", "in_case"),
+  ("TT_ELIF", "elif"),
   ("TT_ELSE", "else"),
+
+  ("TT_THEN", "then"),
   ("TT_WHEN", "when"),
 
   ("TT_OF", "of"),

@@ -17,9 +17,10 @@ import tests:datastructs:test_datastructs
 
 
 fun log ...msgs ->
-    cond
-    | True -> apply print msgs
-    | else -> ()
+    if True ->
+        apply print msgs
+    else ->
+        ()
     ---
 ---
 

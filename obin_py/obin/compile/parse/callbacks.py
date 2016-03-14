@@ -135,7 +135,7 @@ def infix_juxtaposition(parser, op, node, left):
     return nodes.node_2(NT_JUXTAPOSITION, __ntok(node), left, right)
 
 
-def infix_if(parser, op, node, left):
+def infix_in_case(parser, op, node, left):
     first = condition(parser)
     advance_expected(parser, TT_ELSE)
     exp = expressions(parser, 0)
@@ -188,7 +188,6 @@ def infix_name_pair(parser, op, node, left):
     name = _init_default_current_0(parser)
     advance(parser)
     return node_2(__ntype(node), __ntok(node), left, name)
-
 
 
 def infix_at(parser, op, node, left):
@@ -263,17 +262,18 @@ def symbol_wildcard(parser, op, node):
     return parse_error(parser, u"Invalid use of _ pattern", node)
 
 
-def prefix_condition(parser, op, node):
+def prefix_if(parser, op, node):
     branches = []
-    while parser.token_type == TT_CASE:
-        advance_expected(parser, TT_CASE)
+    cond = condition_terminated_expression(parser, TERM_IF_CONDITION)
+    body = statements(parser, TERM_IF_BODY)
+    branches.append(list_node([cond, body]))
+    check_token_types(parser, TERM_IF_BODY)
 
-        if parser.token_type == TT_ELSE:
-            break
-
-        cond = condition_terminated_expression(parser, TERM_CONDITION_CONDITION)
-        body = statements(parser, TERM_CONDITION_BODY)
-        check_token_types(parser, TERM_CONDITION_BODY)
+    while parser.token_type == TT_ELIF:
+        advance_expected(parser, TT_ELIF)
+        cond = condition_terminated_expression(parser, TERM_IF_CONDITION)
+        body = statements(parser, TERM_IF_BODY)
+        check_token_types(parser, TERM_IF_BODY)
         branches.append(list_node([cond, body]))
 
     advance_expected(parser, TT_ELSE)
@@ -282,21 +282,6 @@ def prefix_condition(parser, op, node):
     branches.append(list_node([empty_node(), body]))
     advance_end(parser)
     return node_1(NT_CONDITION, __ntok(node), list_node(branches))
-
-
-# def prefix_if(parser, op, node):
-#     branches = []
-#     cond = condition_terminated_expression(parser, TERM_IF_CONDITION)
-#     ifbody = expressions(parser, 0, TERM_IF_BODY)
-#
-#     branches.append(list_node([cond, ifbody]))
-#     check_token_types(parser, TERM_IF_BODY)
-#
-#     advance_expected(parser, TT_ELSE)
-#     elsebody = expressions(parser, 0)
-#
-#     branches.append(list_node([empty_node(), elsebody]))
-#     return node_1(NT_CONDITION, __ntok(node), list_node(branches))
 
 
 # separate lparen handle for match case declarations
@@ -763,6 +748,7 @@ def symbol_list_to_arg_tuple(parser, node, symbols):
 
     return nodes.node_1(NT_TUPLE, nodes.node_token(node), list_node(args))
 
+
 # DERIVE ################################
 def _parse_tuple_of_names(parser, term):
     exp = expect_expression_of_types(parser, 0, [NT_NAME, NT_IMPORTED_NAME, NT_TUPLE], term)
@@ -879,7 +865,7 @@ def stmt_implement(parser, op, node):
         method_name = nodes.create_symbol_node_s(method_name, nodes.node_value_s(method_name))
 
         funcs = _parse_function(parser.expression_parser,
-                               TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_IMPL_BODY, TERM_IMPL_BODY)
+                                TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_IMPL_BODY, TERM_IMPL_BODY)
         methods.append(list_node([method_name, funcs]))
 
     advance_end(parser)
