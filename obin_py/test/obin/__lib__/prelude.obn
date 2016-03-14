@@ -14,6 +14,7 @@ infixl * * 65
 infixl / / 65
 infixl ++ ++ 70
 
+
 //implement stuff:TestTrait for stuff:TestType
 //    method ++-+*++  self -> self.val
 //    method test_method_1 a1 of stuff:TestType . a2 of stuff:TestType . self -> a1.val + a2.val + self.val
@@ -21,17 +22,17 @@ infixl ++ ++ 70
 //    method test_method_3 self a1 a2 ->  a1.val + a2.val + self.val
 //--------------------------------------------------
 
-//
-////fun t  x . y ->
-//////    match [1,2,3,4]
-//////    | 1::2::xs -> xs
-//////    ---
-//////    f 331 332 334 .
-//////      (g 441 442 .
-//////         443 444) . 551 . 552 553 .
-//////       554
-////end
-//
+
+//fun t  x . y ->
+////    match [1,2,3,4]
+////    | 1::2::xs -> xs
+////    ---
+////    f 331 332 334 .
+////      (g 441 442 .
+////         443 444) . 551 . 552 553 .
+////       554
+//end
+
 type LT
 type GT
 type EQ

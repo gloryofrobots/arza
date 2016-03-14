@@ -158,7 +158,7 @@ def name_parser_init(parser):
 
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
-    infix(parser, TT_COLON, 80, infix_name_pair)
+    infix(parser, TT_COLON, 10, infix_name_pair)
     return parser
 
 
@@ -299,7 +299,7 @@ def base_parser_init(parser):
     # 70
     infix(parser, TT_DOT, 70, infix_dot)
 
-    infix(parser, TT_COLON, 80, infix_name_pair)
+    infix(parser, TT_COLON, 95, infix_name_pair)
 
     prefix(parser, TT_LPAREN, prefix_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
