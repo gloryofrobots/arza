@@ -5,8 +5,8 @@ fun test () ->
     affirm:is_equal (x,y,z) (1,2,3)
 
     // tuples can't be matched on lists
-    affirm:is_throw lam () -> (a,b,c,d) = [4,5,6,7]; ()
-    affirm:is_throw lam () -> [a,b,c] = (1,2,3); ()
+    affirm:is_throw lam () -> (a,b,c,d) = [4,5,6,7] end ()
+    affirm:is_throw lam () -> [a,b,c] = (1,2,3) end ()
 
     ///////////////////////////////////////////
 
@@ -37,7 +37,7 @@ fun test () ->
                      ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU", ("James", "Corey"))
 
     /////////////////////////////////////////
-    fun | () ->
+    lam () ->
         {a=[x,y,...z], B @ b="I am B", c of Float, D@d={e=(x,y,...zz)}} =
             {a=[1,2,3,4,5], b="I am B", c=3.14, d={e=(1,2,3,4,5)}}
 

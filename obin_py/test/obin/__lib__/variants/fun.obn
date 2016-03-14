@@ -1,0 +1,40 @@
+/*
+parse name
+    if next is | then parse lambda clauses and create named func
+    parse signature
+           if next is -> then signature is pattern and create named func
+           elif next is | then signature is function signature and it must contain names and types only
+*/
+
+
+fun take_data_and_push_it_away  c of Int . l of List . m of Map
+    | 0 _ -> []
+    | _ [] -> []
+    | n [x, ...xs] -> x :: (take (n-1)  xs)
+-------------------------------------------
+
+fun take_data_and_push_it_away c l
+    | 0 _ -> []
+    | _ [] -> []
+    | n [x, ...xs] -> x :: (take (n-1)  xs)
+-------------------------------------------
+
+fun take count list
+    | 0 _ -> []
+    | _ [] -> []
+    | n [x, ...xs] -> x :: (take (n-1)  xs)
+-------------------------------------------
+
+fun take (count of Int . l of List)
+    | 0 _ -> []
+    | _ [] -> []
+    | n [x, ...xs] -> x :: (take (n-1)  xs)
+-------------------------------------------
+
+fun uncons l
+    | [x, ...xs] -> (x, xs) end
+
+fun something x l
+    | x [a, b] -> x +  a + b end
+
+fun contains l x -> element x l end

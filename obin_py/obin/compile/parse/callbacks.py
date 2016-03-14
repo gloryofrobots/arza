@@ -237,7 +237,18 @@ def prefix_sharp(parser, op, node):
 
 
 def prefix_amp(parser, op, node):
-    return grab_name_or_operator(parser)
+    check_token_types(parser, [TT_NAME, TT_OPERATOR, TT_DOUBLE_COLON])
+    name = _init_default_current_0(parser)
+    if parser.token_type == TT_OPERATOR:
+        op = parser_find_operator(parser, nodes.node_value(name))
+        if op is None or space.isvoid(op):
+            return parse_error(parser, u"Invalid operator", name)
+        name = nodes.create_name_node(name, op.infix_function)
+    elif parser.token_type == TT_DOUBLE_COLON:
+        name = nodes.create_name_node_s(name, lang_names.CONS)
+
+    advance(parser)
+    return name
 
 
 # def prefix_backtick(parser, op, node):
@@ -629,21 +640,8 @@ def prefix_module_fun(parser, op, node):
 
 
 def prefix_lambda(parser, op, node):
-    name = empty_node()
-    if parser.token_type == TT_ARROW:
-        return parse_error(parser, u"Empty function arguments pattern", parser.node)
-    else:
-        args = _parse_func_pattern(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD)
-
-    advance_expected(parser, TT_ARROW)
-    # body = statements(parser, TERM_BLOCK)
-    body = list_node([expressions(parser, 0, terminators=None)])
-    if isendofexpressiontoken(parser):
-        endofexpression(parser)
-
-    # advance_end(parser)
-    return node_2(
-        NT_FUN, __ntok(node), name, list_node([list_node([args, body])]))
+    func = parse_function_with_sig(parser)
+    return node_2(NT_FUN, __ntok(node), empty_node(), func)
 
 
 ###############################################################
@@ -850,10 +848,7 @@ def grab_name_or_operator(parser):
     check_token_types(parser, [TT_NAME, TT_OPERATOR, TT_DOUBLE_COLON])
     name = _init_default_current_0(parser)
     if parser.token_type == TT_OPERATOR:
-        op = parser_find_operator(parser, nodes.node_value(name))
-        if op is None or space.isvoid(op):
-            return parse_error(parser, u"Invalid operator", name)
-        name = nodes.create_name_node(name, op.infix_function)
+        name = nodes.create_name_from_operator(name, name)
     elif parser.token_type == TT_DOUBLE_COLON:
         name = nodes.create_name_node_s(name, lang_names.CONS)
 

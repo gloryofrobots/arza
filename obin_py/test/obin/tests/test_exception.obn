@@ -3,7 +3,8 @@ fun error reason ->
     throw (#error, {reason=reason}) end
 
 fun error2 reason ->
-    lam x -> error reason; () end
+    lam x -> error reason end ()
+end
 
 fun test_1 () ->
     e1 =
@@ -67,7 +68,7 @@ fun test_3 () ->
 
 fun test_4() ->
     affirm:is_throw_expected (
-        fun | () ->
+        lam () ->
             try
                 try
                     1/0
@@ -91,8 +92,7 @@ fun test_4() ->
 
 fun test_5() ->
     affirm:is_throw_expected(
-        fun
-        | arg1 arg2 ->
+        lam arg1 arg2 ->
             try
                 1/0
             | e ->

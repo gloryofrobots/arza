@@ -41,101 +41,101 @@ fun test() ->
 
     affirm:is_equal LilyName2 "Lily"
     affirm:is_equal Result {age = 25, actress = "Lily", genre = "XXX"}
-    affirm:is_throw fun | () -> LilyName end ()
+    affirm:is_throw lam () -> LilyName end ()
 
     ////////////////////////////////////////////////////////////////
 
-    affirm:is_equal(
+    affirm:is_equal .
         match (1, (23, (24, 25)))
-        | (Z, (G, 1)) ->  12 + Z
-        | (1, 23) ->   12
-        | (1, (23, X)) ->  (#third, X)
-        | _ ->  #fourth
-        end) (#third, (24, 25))
+            | (Z, (G, 1)) ->  12 + Z
+            | (1, 23) ->   12
+            | (1, (23, X)) ->  (#third, X)
+            | _ ->  #fourth
+        end (#third, (24, 25))
 
-    affirm:is_throw fun | () -> Z end ()
+    affirm:is_throw lam () -> Z end ()
 
     ////////////////////////////////////////////////////////////////
 
-    affirm:is_equal(
+    affirm:is_equal .
         match [(1,2), (2,3,4), 5, [6,7,8]]
-        | [a1,b1,c1] ->  (a1, b1, c1)
-        | [a1, b1] ->  (a1, b1)
-        | (x1, y1, 5) ->  (x1, y1)
-        | [(1, X1), Y1, 5, [6,7, Z1]] ->  (X1, Y1, Z1)
-        | _ ->  123
-        end) (2, (2, 3, 4), 8)
+            | [a1,b1,c1] ->  (a1, b1, c1)
+            | [a1, b1] ->  (a1, b1)
+            | (x1, y1, 5) ->  (x1, y1)
+            | [(1, X1), Y1, 5, [6,7, Z1]] ->  (X1, Y1, Z1)
+            | _ ->  123
+        end (2, (2, 3, 4), 8)
 
-    affirm:is_throw lam () -> [a1,b1,c1, x1,y1]; ()
-
-    ////////////////////////////////////////////////////////////////
-
-    affirm:is_equal(
-        match {name="Bob", surname=("Alice", "Dou"), age=42}
-        | {name="Bob", surname="Alice"} ->  (name, surname)
-        | {name="Bob2", age=42} ->  (name, age)
-        | {name="Bob", surname=("Alice", "Dou"), age=42} ->  (surname, name, age + 100)
-        | _ ->  42
-        end) ((#Alice, #Dou), #Bob, 142)
-
+    affirm:is_throw lam () -> [a1, b1, c1, x1, y1] end ()
 
     ////////////////////////////////////////////////////////////////
 
-    affirm:is_equal(
+    affirm:is_equal .
         match {name="Bob", surname=("Alice", "Dou"), age=42}
-        | {age=41, names} ->  (name, age, 0)
-        | {name, age=42} ->  (name, age, 1)
-        | {age=42} ->  (age, 2)
-        | _ ->  42
-        end) ("Bob", 42, 1)
+            | {name="Bob", surname="Alice"} ->  (name, surname)
+            | {name="Bob2", age=42} ->  (name, age)
+            | {name="Bob", surname=("Alice", "Dou"), age=42} ->  (surname, name, age + 100)
+            | _ ->  42
+        end ((#Alice, #Dou), #Bob, 142)
+
+
+    ////////////////////////////////////////////////////////////////
+
+    affirm:is_equal .
+        match {name="Bob", surname=("Alice", "Dou"), age=42}
+            | {age=41, names} ->  (name, age, 0)
+            | {name, age=42} ->  (name, age, 1)
+            | {age=42} ->  (age, 2)
+            | _ ->  42
+        end ("Bob", 42, 1)
 
    ////////////////////////////////////////////////////////////////
 
-   affirm:is_equal(
+   affirm:is_equal .
         match (1, 2, 1)
-        | (A, x, A)  -> (#first, A)
-        | (A, x, B)  -> (#second, A, B)
-        | (3, A) -> #third
-        end) (#first, 1)
+            | (A, x, A)  -> (#first, A)
+            | (A, x, B)  -> (#second, A, B)
+            | (3, A) -> #third
+        end (#first, 1)
 
    ////////////////////////////////////////////////////////////////
 
-   affirm:is_equal(
+   affirm:is_equal .
         match (1, 2, 2)
-        | (A, x, A)  -> (#first, A)
-        | (A, x, B)  -> (#second, A, B)
-        end) (#second, 1, 2)
+            | (A, x, A)  -> (#first, A)
+            | (A, x, B)  -> (#second, A, B)
+        end (#second, 1, 2)
 
    ////////////////////////////////////////////////////////////////
 
-   affirm:is_equal(
+   affirm:is_equal .
         match 42
-        | N1 of String  -> ("Is String", N1)
-        | N1 of Int  -> ("Is Integer", N1)
-        end) ("Is Integer", 42)
+            | N1 of String  -> ("Is String", N1)
+            | N1 of Int  -> ("Is Integer", N1)
+        end ("Is Integer", 42)
 
 
    ////////////////////////////////////////////////////////////////
 
-   affirm:is_equal(
-    match (1,2,3,4,5)
-    | (a,b,c,...rest) -> rest
-    | _ -> 42
-    end) (4, 5)
+   affirm:is_equal .
+        match (1,2,3,4,5)
+            | (a,b,c,...rest) -> rest
+            | _ -> 42
+        end (4, 5)
 
     ///////////////////////////////////////////////////////////////
     // here error must be
     match (1,2)
-    | a1 -> a1.0
-    | b1 -> b1.1
+        | a1 -> a1.0
+        | b1 -> b1.1
     end
     //////////////////////////////////////////////////////
 
     affirm:is_equal(
             try
                 match 42
-                | 23 -> #first
-                | 13 -> #second
+                    | 23 -> #first
+                    | 13 -> #second
                 ---------------
             | exc ->
                 exc
@@ -143,10 +143,10 @@ fun test() ->
                 [exc, exc, exc]
             end) [(#MatchError, 42), (#MatchError, 42), (#MatchError, 42)]
 
-    fun greater_then_ten | v -> v > 10 end
+    fun greater_then_ten v -> v > 10 end
 
     //////////////////////////////////////////////////////
-    fun | () ->
+    lam () ->
         A = False
         affirm:is_equal(
             match (1,2,3)
@@ -161,14 +161,15 @@ fun test() ->
     end ()
 
     //////////////////////////////////////////////////////
-    fun | () ->
+    lam () ->
         affirm:is_equal_batch(
-            fun | x y z when z == 2 -> #first
+            fun fxyz x y z
+                | x y z when z == 2 -> #first
                 | x y z when z == 3 and y == 3 -> #second
                 | x y z when z == 3 and y == 2 and x == 3 -> #third
                 | x y z when z == 3 and y == 2 and x == 1 and (x + y == 6 or True) -> #fourth
                 | x y z when z == 3 and y == 2 and x == 2 or (A `is` True or (greater_then_ten 11)) -> #fifth
-                | _ -> 12
+                | _ _ _ -> 12
             end) .
             ([1,2,2], #first) .
             ([1,3,3], #second) .

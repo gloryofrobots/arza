@@ -14,17 +14,6 @@ infixl * * 65
 infixl / / 65
 infixl ++ ++ 70
 
-
-
-//lam x y
-//    | 0 _ -> []
-//    | _ [] -> []
-//    | n [x, ...xs] -> x :: (take (n-1)  xs)
-//end
-//
-//lam () -> 42 end
-//lam list | x::xs end
-
 //
 ////fun t  x . y ->
 //////    match [1,2,3,4]
@@ -163,15 +152,12 @@ type TraitImplementationError args end
 type TraitConstraintError args end
 
 //FUNS
+fun lookup key default coll ->
+    try
+        at key coll
+    | e of KeyError -> default
+    | e -> throw e
+    ---
+---
 
-//in = elem
-////notin = in
-//fun notin obj storage -> not (obj `elem` storage) end
-//
-//fun lookup key default coll ->
-//    try
-//        at key coll
-//    | e of KeyError -> default
-//    | e -> throw e
-//    ---
-//---
+fun not_elem x c -> not (elem x c) end

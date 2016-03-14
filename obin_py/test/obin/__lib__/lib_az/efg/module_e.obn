@@ -1,2 +1,2 @@
-fun f_e | num ->
+fun f_e  num ->
     num - 1 / 0.001 end

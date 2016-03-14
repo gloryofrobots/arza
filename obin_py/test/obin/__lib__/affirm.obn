@@ -1,4 +1,3 @@
-// TODO REMOVE for and add support for () args
 import tuple
 import list
 
@@ -8,7 +7,7 @@ fun is_equal_batch fn ...calls ->
 
 fun _batch checker fn calls ->
     calls_list = tuple:to_list calls
-    list:foreach lam call -> checker (apply fn call.0)  call.1; calls_list
+    list:foreach lam call -> checker (apply fn call.0)  call.1 end calls_list
 ---
 
 
@@ -23,7 +22,7 @@ fun is_not_equal val1 val2 ->
     ---
 ---
 
-fun is_equal
+fun is_equal val1 val2
 | val1 of Float  val2 of Float -> is_equal_float val1 val2
 | val1 val2  ->
     cond
@@ -39,15 +38,15 @@ fun _abs v ->
     ---
 ---
 
-fun is_equal_float
-| val1 val2 ->
-    is_equal_float  val1  val2  0.0001
-| val1 val2 delta ->
-    try
-        is_true (((_abs val1) - (_abs val2)) < delta)
-    | e ->
-        fail [val1, "!=", val2]
+fun is_equal_float val1 val2 ->
+    fun _eq_f val1 val2 delta ->
+        try
+             is_true (((_abs val1) - (_abs val2)) < delta)
+        | e ->
+            fail [val1, "!=", val2]
+        ---
     ---
+    _eq_f val1  val2  0.0001
 ---
 
 fun is_same val1 val2 ->
@@ -90,8 +89,7 @@ fun is_false val1 -> is_same val1 False
 type Success val
 ---
 
-fun is_throw
-| fn -> is_throw fn [()]
+fun is_throw fn args
 | fn () -> is_throw fn [()]
 | fn args ->
     match
@@ -110,8 +108,7 @@ fun is_throw_expected fn args exc ->
     is_equal (is_throw fn args) exc
 ---
 
-fun is_not_throw
-| fn -> is_not_throw fn [()]
+fun is_not_throw fn args
 | fn () -> is_not_throw fn [()]
 | fn args ->
     match

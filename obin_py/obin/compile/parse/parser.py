@@ -172,20 +172,6 @@ def type_parser_init(parser):
     return parser
 
 
-def fun_signature_parser_init(parser):
-    parser.break_on_juxtaposition = True
-    literal(parser, TT_NAME)
-    infix(parser, TT_OF, 10, led_infix)
-
-    prefix(parser, TT_LPAREN, prefix_lparen_unit)
-    prefix(parser, TT_ELLIPSIS, prefix_nud)
-
-    symbol(parser, TT_METHOD, None)
-    symbol(parser, TT_ARROW, None)
-    symbol(parser, TT_CASE, None)
-    symbol(parser, TT_JUXTAPOSITION)
-    return parser
-
 def method_signature_parser_init(parser):
     parser.break_on_juxtaposition = True
     prefix(parser, TT_NAME, literal_type_field)
@@ -264,6 +250,22 @@ def pattern_parser_init(parser):
 
     parser = init_parser_literals(parser)
     return parser
+
+def fun_signature_parser_init(parser):
+    parser.break_on_juxtaposition = True
+    literal(parser, TT_NAME)
+    infix(parser, TT_OF, 10, led_infix)
+
+    prefix(parser, TT_LPAREN, prefix_lparen_unit)
+    prefix(parser, TT_ELLIPSIS, prefix_nud)
+
+    literal(parser, TT_WILDCARD)
+    symbol(parser, TT_METHOD, None)
+    symbol(parser, TT_ARROW, None)
+    symbol(parser, TT_CASE, None)
+    symbol(parser, TT_JUXTAPOSITION)
+    return parser
+
 
 
 def init_parser_literals(parser):
