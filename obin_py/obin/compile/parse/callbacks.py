@@ -511,7 +511,7 @@ def stmt_when(parser, op, node):
     return node_2(NT_WHEN, __ntok(node), cond, body)
 
 
-################################################333
+# FUNCTION STUFF################################
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
     pattern = node_tuple_juxtaposition(parser.pattern_parser, arg_terminator, SKIP_JUXTAPOSITION)
@@ -528,42 +528,6 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
     return pattern
 
 
-def parse_function_variants(parser, term_pattern, term_guard, term_case_body, term_single_body):
-    funcs = []
-
-    if parser.token_type == TT_CASE:
-        while parser.token_type == TT_CASE:
-            advance_expected(parser, TT_CASE)
-            args = _parse_func_pattern(parser, term_pattern, term_guard)
-            advance_expected(parser, TT_ARROW)
-            body = statements(parser, term_case_body)
-            funcs.append(list_node([args, body]))
-    else:
-        if parser.token_type == TT_ARROW:
-            return parse_error(parser, u"Empty function arguments pattern", parser.node)
-            # args = nodes.create_unit_node(parser.node)
-        args = _parse_func_pattern(parser, term_pattern, term_guard)
-        advance_expected(parser, TT_ARROW)
-        body = statements(parser, term_single_body)
-        funcs.append(list_node([args, body]))
-    return list_node(funcs)
-
-
-def parse_function(parser, allow_empty_name):
-    if parser.token_type == TT_CASE:
-        if allow_empty_name:
-            name = empty_node()
-        else:
-            return parse_error(parser, u"Expected function name", parser.node)
-    else:
-        name = expect_expression_of(parser.name_parser, 0, NT_NAME, TERM_FUN_GUARD)
-
-    funcs = parse_function_variants(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
-    advance_end(parser)
-    return name, funcs
-
-
-##################################
 def _parse_function_signature(parser):
     pattern = node_tuple_juxtaposition(parser.fun_signature_parser, [TT_ARROW, TT_CASE], SKIP_JUXTAPOSITION)
     args_type = nodes.node_type(pattern)
@@ -573,7 +537,7 @@ def _parse_function_signature(parser):
     return pattern
 
 
-def parse_function_variants_with_sig(parser, signature, term_pattern, term_guard, term_case_body, term_single_body):
+def _parse_function_variants(parser, signature, term_pattern, term_guard, term_case_body, term_single_body):
     if parser.token_type == TT_ARROW:
         advance_expected(parser, TT_ARROW)
         body = statements(parser, term_single_body)
@@ -616,31 +580,32 @@ def parse_function_variants_with_sig(parser, signature, term_pattern, term_guard
     return main_func
 
 
-def parse_function_with_sig(parser):
+def _parse_function(parser, term_pattern, term_guard, term_case_body, term_single_body):
     signature = _parse_function_signature(parser)
-    funcs = parse_function_variants_with_sig(parser, signature, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
-    advance_end(parser)
+    funcs = _parse_function_variants(parser, signature, term_pattern, term_guard, term_case_body, term_single_body)
     return funcs
 
 
-def parse_named_function(parser):
+def _parse_named_function(parser):
     name = grab_name_or_operator(parser.name_parser)
-    func = parse_function_with_sig(parser)
+    func = _parse_function(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
+    advance_end(parser)
     return name, func
 
 
 def prefix_fun(parser, op, node):
-    name, funcs = parse_named_function(parser)
+    name, funcs = _parse_named_function(parser)
     return node_2(NT_FUN, __ntok(node), name, funcs)
 
 
 def prefix_module_fun(parser, op, node):
-    name, funcs = parse_named_function(parser.expression_parser)
+    name, funcs = _parse_named_function(parser.expression_parser)
     return node_2(NT_FUN, __ntok(node), name, funcs)
 
 
 def prefix_lambda(parser, op, node):
-    func = parse_function_with_sig(parser)
+    func = _parse_function(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
+    advance_end(parser)
     return node_2(NT_FUN, __ntok(node), empty_node(), func)
 
 
@@ -904,8 +869,8 @@ def stmt_implement(parser, op, node):
         method_name = nodes.create_symbol_node_s(method_name, nodes.node_value_s(method_name))
         # method_name = nodes.create_lookup_node(node, trait_name, method_name)
 
-        funcs = parse_function_variants(parser.expression_parser,
-                                        TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_IMPL_BODY, TERM_IMPL_BODY)
+        funcs = _parse_function(parser.expression_parser,
+                               TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_IMPL_BODY, TERM_IMPL_BODY)
         methods.append(list_node([method_name, funcs]))
 
     advance_end(parser)

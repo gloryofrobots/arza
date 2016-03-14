@@ -51,8 +51,7 @@ implement Equal for Val2
 ---
 
 implement Order for Val
-    method cmp
-        | self other ->
+    method cmp self other ->
             cond
             | self.v == other.v -> EQ
             | self.v <= other.v -> LT
@@ -61,7 +60,7 @@ implement Order for Val
 -------
 
 implement Order for Val2
-    method le | self other -> self.v <= other.v
+    method le self other -> self.v <= other.v
 -------
 
 
