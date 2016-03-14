@@ -16,10 +16,10 @@ infixl ++ ++ 70
 
 
 //implement stuff:TestTrait for stuff:TestType
-//    method ++-+*++  self -> self.val
-//    method test_method_1 a1 of stuff:TestType . a2 of stuff:TestType . self -> a1.val + a2.val + self.val
-//    method test_method_2 a1 self a2 ->  a1.val + a2.val + self.val
-//    method test_method_3 self a1 a2 ->  a1.val + a2.val + self.val
+//    def ++-+*++  self -> self.val
+//    def test_method_1 a1 of stuff:TestType . a2 of stuff:TestType . self -> a1.val + a2.val + self.val
+//    def test_method_2 a1 self a2 ->  a1.val + a2.val + self.val
+//    def test_method_3 self a1 a2 ->  a1.val + a2.val + self.val
 //--------------------------------------------------
 
 
@@ -44,94 +44,94 @@ type GT
 type EQ
 //
 trait Collection for self
-    method len self
-    method is_empty self
-    method put key value self
-    method at key self
-    method del obj self
-    method elem key self
+    def len self
+    def is_empty self
+    def put key value self
+    def at key self
+    def del obj self
+    def elem key self
 ---------------------------------
 
 trait Eq for x
-    method == x y -> throw (#NotImplemented, x, y)
-    method != x y -> not (x == y)
+    def == x y -> throw (#NotImplemented, x, y)
+    def != x y -> not (x == y)
 ---------------------------------
 
 trait Ord  for x of Eq
-    method <= x y -> throw (#NotImplemented, x, y)
-    method < x y -> (cmp x y) == LT
-    method >= x y -> (cmp x y) != LT
-    method > x y -> (cmp x y) == GT
+    def <= x y -> throw (#NotImplemented, x, y)
+    def < x y -> (cmp x y) == LT
+    def >= x y -> (cmp x y) != LT
+    def > x y -> (cmp x y) == GT
 
-    method cmp x y ->
+    def cmp x y ->
                 if x == y -> EQ
                 elif x <= y -> LT
                 else -> GT
                 --------------
 
-    method max x y ->  y in_case x <= y else x
-    method min x y -> x in_case x <= y else y
+    def max x y ->  y in_case x <= y else x
+    def min x y -> x in_case x <= y else y
 ---------------------------------
 
 trait Num for x
-    method - x y
-    method + x y
-    method * x y
-    method / x y
-    method mod x y
+    def - x y
+    def + x y
+    def * x y
+    def / x y
+    def mod x y
     // unary -
-    method negate x
+    def negate x
 ---------------
 
 trait Str for self
-    method str self
+    def str self
 ---
 
 //YOU need kinds here
 //trait FromStr for self of ToStr
-//    method from_str self
+//    def from_str self
 //---
 
 trait Inspectable for self of Str
-    method inspect self -> str self
+    def inspect self -> str self
 ---
 
 trait Mappable for self
-    method map f self
+    def map f self
 ---
 
 trait Appendable for self
     //concat operator
-    method ++ self other
-    method append self value
+    def ++ self other
+    def append self value
 ---------------------------------
 
 
 trait Dict for self of Collection
-    method keys self
-    method values self
+    def keys self
+    def values self
 ------
 
 trait Seq for self
-    method first self
-    method rest self
+    def first self
+    def rest self
     // prepend/cons operator
-    method cons  value self
-    method empty self
+    def cons  value self
+    def empty self
 ---
 
 trait Indexed for self
-    method index_of obj self
+    def index_of obj self
 ---
 
 trait Seqable for self
-    method seq self
+    def seq self
 ---
 
 trait Sliceable for self
-    method slice first . last . self
-    method drop count self
-    method take count self
+    def slice first . last . self
+    def drop count self
+    def take count self
 ---
 
 //ERRORS

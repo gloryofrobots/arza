@@ -175,7 +175,7 @@ def type_parser_init(parser):
 def method_signature_parser_init(parser):
     parser.break_on_juxtaposition = True
     prefix(parser, TT_NAME, prefix_name_as_symbol)
-    symbol(parser, TT_METHOD, None)
+    symbol(parser, TT_DEF, None)
     symbol(parser, TT_ARROW, None)
     symbol(parser, TT_JUXTAPOSITION)
     return parser
@@ -263,7 +263,7 @@ def fun_signature_parser_init(parser):
     infix(parser, TT_COLON, 80, infix_name_pair)
 
     literal(parser, TT_WILDCARD)
-    symbol(parser, TT_METHOD, None)
+    symbol(parser, TT_DEF, None)
     symbol(parser, TT_ARROW, None)
     symbol(parser, TT_CASE, None)
     symbol(parser, TT_JUXTAPOSITION)

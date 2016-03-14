@@ -5,27 +5,27 @@ type GT
 type LT
 
 trait Equal for x
-    method eq x y -> not (ne x y)
-    method ne x y -> not (eq x y)
+    def eq x y -> not (ne x y)
+    def ne x y -> not (eq x y)
 ---
 
 trait Order for x
-    method le x y -> (cmp x y) != GT
-    method lt x y -> (cmp x y) == LT
-    method ge x y -> (cmp x y) != LT
-    method gt x y -> (cmp x y) == GT
-    method cmp x y ->
+    def le x y -> (cmp x y) != GT
+    def lt x y -> (cmp x y) == LT
+    def ge x y -> (cmp x y) != LT
+    def gt x y -> (cmp x y) == GT
+    def cmp x y ->
         if eq x x -> EQ
         elif le x y -> LT
         else -> GT
         ---
 
-    method max x y ->
+    def max x y ->
         if x `le` y -> y
         else -> y
         ----
 
-    method min x y ->
+    def min x y ->
         if x `le` y -> x
         else -> y
         -------
@@ -40,15 +40,15 @@ type Val2 v
 derive Dict for Val2
 
 implement Equal for Val
-    method eq v1 v2 -> v1.v == v2.v
+    def eq v1 v2 -> v1.v == v2.v
 ---
 
 implement Equal for Val2
-    method ne v1 v2 -> v1.v != v2.v
+    def ne v1 v2 -> v1.v != v2.v
 ---
 
 implement Order for Val
-    method cmp self other ->
+    def cmp self other ->
 
             if self.v == other.v -> EQ
             elif self.v <= other.v -> LT
@@ -57,7 +57,7 @@ implement Order for Val
 -------
 
 implement Order for Val2
-    method le self other -> self.v <= other.v
+    def le self other -> self.v <= other.v
 -------
 
 

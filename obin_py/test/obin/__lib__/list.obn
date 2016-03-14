@@ -212,28 +212,28 @@ fun replicate count element ->
 //TRAITS
 
 implement Seq for List
-    method first self -> head self
-    method rest self -> tail self
-    method cons value self -> _cons value self
-    method empty self -> []
+    def first self -> head self
+    def rest self -> tail self
+    def cons value self -> _cons value self
+    def empty self -> []
 --------------------------------------------------
 
 implement Seqable for List
-    method seq self -> self
+    def seq self -> self
 --------------------------------------------------
 
 
 implement Collection for List
-    method len self -> length
-    method is_empty self -> _is_empty self
-    method put key value self -> False
-    method at key self -> False
-    method del obj self -> False
-    method elem key self -> False
+    def len self -> length
+    def is_empty self -> _is_empty self
+    def put key value self -> False
+    def at key self -> False
+    def del obj self -> False
+    def elem key self -> False
 ---------------------------------
 
 implement Sliceable for List
-    method slice first last self -> _slice first last self
-    method drop count self -> drop count self
-    method take count self -> take count self
+    def slice first last self -> _slice first last self
+    def drop count self -> drop count self
+    def take count self -> take count self
 ---------------------------------

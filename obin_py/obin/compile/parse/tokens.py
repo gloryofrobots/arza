@@ -94,7 +94,7 @@ RULES = [
     (keyword('trait'), TT_TRAIT),
     (keyword('construct'), TT_CONSTRUCT),
     (keyword('implement'), TT_IMPLEMENT),
-    (keyword('method'), TT_METHOD),
+    (keyword('def'), TT_DEF),
     (keyword('type'), TT_TYPE),
     (keyword('derive'), TT_DERIVE),
     (keyword('for'), TT_FOR),

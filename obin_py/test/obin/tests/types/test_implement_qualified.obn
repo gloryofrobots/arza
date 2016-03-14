@@ -10,27 +10,27 @@ derive Dict for X
 derive Dict for stuff:TestType
 
 trait TraitWithOp for self
-    method ++-+*++  self -> self.val
+    def ++-+*++  self -> self.val
 ---
 
 implement types:TestTrait for X
-    method test_method_1 a1 of X a2 of X self -> a1.x + a2.x + self.x
-    method test_method_2 a1 self a2 -> a1.x + a2.x + self.x
-    method test_method_3 self a1 a2 -> a1.x + a2.x + self.x
-    method test_method_4 self -> self.x
+    def test_method_1 a1 of X a2 of X self -> a1.x + a2.x + self.x
+    def test_method_2 a1 self a2 -> a1.x + a2.x + self.x
+    def test_method_3 self a1 a2 -> a1.x + a2.x + self.x
+    def test_method_4 self -> self.x
 --------------------------------------------------
 
 /////////////////////////////////
 
 implement TraitWithOp for stuff:TestType
-    method ++-+*++  self -> self.val
+    def ++-+*++  self -> self.val
 -------------------
 
 implement stuff:TestTrait for stuff:TestType
-    method test_method_1 (a1 of stuff:TestType . a2 of stuff:TestType . self) -> a1.val + a2.val + self.val
-    method test_method_2 a1 self a2 -> a1.val + a2.val + self.val
-    method test_method_3 self a1 a2 -> a1.val + a2.val + self.val
-    method test_method_4 self -> self.val
+    def test_method_1 (a1 of stuff:TestType . a2 of stuff:TestType . self) -> a1.val + a2.val + self.val
+    def test_method_2 a1 self a2 -> a1.val + a2.val + self.val
+    def test_method_3 self a1 a2 -> a1.val + a2.val + self.val
+    def test_method_4 self -> self.val
 --------------------------------------------------
 
 fun test () ->

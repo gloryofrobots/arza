@@ -831,8 +831,8 @@ def stmt_trait(parser, op, node):
         constraints = nodes.create_empty_list_node(node)
 
     methods = []
-    while parser.token_type == TT_METHOD:
-        advance_expected(parser, TT_METHOD)
+    while parser.token_type == TT_DEF:
+        advance_expected(parser, TT_DEF)
         method_name = grab_name_or_operator(parser)
         check_token_type(parser, TT_NAME)
 
@@ -857,8 +857,8 @@ def stmt_implement(parser, op, node):
     type_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_IMPL_HEADER)
 
     methods = []
-    while parser.token_type == TT_METHOD:
-        advance_expected(parser, TT_METHOD)
+    while parser.token_type == TT_DEF:
+        advance_expected(parser, TT_DEF)
         # creating converting method names to symbols
         # method_name = grab_name_or_operator(parser.name_parser)
         method_name = expect_expression_of(parser.name_parser, 0, NT_NAME)
