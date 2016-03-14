@@ -5,40 +5,43 @@ implement Eq for List end
 
 //TRANSFORMERS///////////////////////////////////////////////////////
 
-fun map
+fun map f l
 | f [] -> []
 | f hd::tl -> (f hd) :: (map f tl)
 ----------------------------------------
 
-fun foreach
+fun foreach f l
 | f [] -> []
 | f hd::tl -> f hd; foreach f tl
 ----------------------------------------
 
-fun intersperse
+fun intersperse f l
 | val [] -> []
 | val hd::tl  -> hd :: val :: (intersperse val tl)
 --------------------------------------------------
 
-fun reverse
-| l of List -> reverse l []
-| [] result -> result
-| hd::tl result -> (reverse tl (hd :: result))
+fun reverse l ->
+    fun _reverse l result
+    | [] result -> result
+    | hd::tl result -> (_reverse tl (hd :: result))
+    ---------------
+
+    _reverse l []
 ----------------------------------------
 
 //REDUCERS///////////////////////////////////////////////////////
 
-fun foldl
+fun foldl func accumulator list
 | f acc [] -> acc
 | f acc hd::tl -> foldl f (f hd acc) tl
 ----------------------------------------
 
-fun foldr
+fun foldr func accumulator list
 | f acc [] -> acc
 | f acc hd::tl -> f hd (foldr f acc tl)
 --------------------------------------------------
 
-fun scanl
+fun scanl func accumulator list
 | f acc [] -> acc::[]
 | f acc hd::tl -> acc :: (scanl f (f hd acc) tl)
 --------------------------------------------------
@@ -46,62 +49,61 @@ fun scanl
 
 ///ACCESSORS//////////////////////////////////////
 
-fun nth_tail
+fun nth_tail count list
 | 0 l -> l
 | 1 [_, ...t] -> t
 | n [_, ...t] when n >= 0 -> nth_tail (n - 1) t
 --------------------------------------------------
 
-fun nth
+fun nth count list
 | 0 l -> l
 | 1 [h, ...t] -> h
 | n [h, ...t] when n >= 0 -> nth (n - 1) t
 --------------------------------------------------
 
-fun length | l of List ->
+fun length l of List ->
     foldl lam _ acc -> acc + 1; 0 l
 --------------------------------------------------
 
 //QUERIES///////////////////////////////////////////////////
 
-fun prefix_of
+fun prefix_of list1 list2
 | [hd, ...pre_tail] [hd, ...tail] -> prefix_of pre_tail tail
 | [] l -> True
 | [_, ..._] l -> False
 --------------------------------------------------
 
-fun suffix_of
-| suf of List l of List ->
+fun suffix_of suf l  ->
    delta = (length l) - (length suf)
    tl = nth_tail delta l
    delta >= 0 and tl == suf
 --------------------------------------------------
 
 //SUBLISTS/////////////////////////////////////////////////////////////
-fun drop
+fun drop count list
 | 0 l -> l
 | count hd::tl -> drop (count - 1) tl
 --------------------------------------------------
 
-fun take
+fun take count list
 | 0 _ -> []
 | _ [] -> []
 | n [x, ...xs] -> x :: (take (n-1)  xs)
 --------------------------------------------------
 
-fun split_at | n of Int l of List -> ((take n l), (drop n  l)) end
+fun split_at n of Int . l of List -> ((take n l), (drop n  l)) end
 
-fun take_while
+fun take_while predicate list
 | p [] -> []
 | p [x, ...xs] -> x :: (take_while p xs) if p x else []
 --------------------------------------------------
 
-fun drop_while
+fun drop_while predicate list
 | p [] -> []
 | p xs@[x, ...xs1] -> (drop_while p xs1) if p x else xs
 --------------------------------------------------
 
-fun span
+fun span predicate list
 | p [] -> ([], [])
 | p xs@[x, ...xs1] ->
     cond
@@ -112,7 +114,7 @@ fun span
     ------------------------------
 --------------------------------------------------
 
-fun delete
+fun delete item list
 | item [item, ...xs] -> xs
 | item [x, ...xs] -> x :: (delete item xs)
 | _ [] -> []
@@ -140,25 +142,25 @@ fun contains l x ->
 
 //BUILDERS/////////////////////////////////////////////////////////////
 
-fun concat | l1 l2 ->
+fun concat l1 l2 ->
     foldr (&::) l2 l1 end
 
-fun range
-| first of Int . last of Int ->
+fun range first of Int  last of Int ->
     step = -1 if last < 0 else 1
-    range first last step
-    ///////////////////////////////////////
-| first of Int . last of Int . step of Int ->
-    fun _range
+    range_by first last step
+--------------------------------------------------
+
+fun range_by  first of Int . last of Int . step of Int ->
+    fun _range_by N X D L
     | N X D L when N >= 4 ->
         Y = X - D
         Z = Y - D
         W = Z - D
-        _range (N - 4)  (W - D)  D  (W :: Z :: Y :: X :: L)
+        _range_by (N - 4)  (W - D)  D  (W :: Z :: Y :: X :: L)
 
     | N X D L when N >= 2 ->
         Y = X - D
-        _range (N - 2) (Y - D) D (Y :: X :: L)
+        _range_by (N - 2) (Y - D) D (Y :: X :: L)
 
     | 1 X _ L -> X :: L
 
@@ -169,33 +171,39 @@ fun range
     | step > 0 and first - step <= last or
       step < 0 and first - step >= last ->
         n = ((last - first + step) / step) - 1
-        _range n (step * (n - 1) + first) step []
+        _range_by n (step * (n - 1) + first) step []
 
     | step == 0 and first == last ->
-        _range 1  first step []
+        _range_by 1  first step []
     | else ->
         throw (#InvalidRange, first, last, step)
     ------------------------------
 --------------------------------------------------
 
-fun last
-| [x, ...xs] -> last x xs
-| _ [x, ...xs] -> last x xs
-| x [] -> x
+fun last list | [x, ...xs] ->
+    fun _last hd tl
+    | _ [x, ...xs] -> _last x xs
+    | x [] -> x
+    ---------
+
+    last x xs
 --------------------------------------------------
 
-fun uncons | [x, ...xs] -> (x, xs) end
+fun uncons list | [x, ...xs] -> (x, xs) end
 
-fun init
+fun init list
 | [x] -> []
 | [x, ...xs] -> x :: (init xs)
 | [] -> throw (ValueError "empty list in init")
 ------------------------------
 
-fun replicate
-| n  x when n >= 0 -> replicate n x []
-| 0 _ l -> l
-| n x l -> replicate (n - 1) x (x :: l)
+fun replicate count element
+| n  x when n >= 0 ->
+    fun _replicate n x result
+    | 0 _ l -> l
+    | n x l -> replicate (n - 1) x (x :: l)
+    -----
+    _replicate n x []
 ---------------------------------------------------
 
 //TRAITS

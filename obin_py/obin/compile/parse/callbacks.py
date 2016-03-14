@@ -580,7 +580,11 @@ def parse_function_variants_with_sig(parser, signature, term_pattern, term_guard
     while parser.token_type == TT_CASE:
         advance_expected(parser, TT_CASE)
         args = _parse_func_pattern(parser, term_pattern, term_guard)
-        if nodes.tuple_node_length(args) != sig_arity:
+        if nodes.node_type(args) == NT_WHEN:
+            args_sig = nodes.node_first(args)
+        else:
+            args_sig = args
+        if nodes.tuple_node_length(args_sig) != sig_arity:
             return parse_error(parser, u"Inconsistent clause arity with function signature", args)
 
         advance_expected(parser, TT_ARROW)

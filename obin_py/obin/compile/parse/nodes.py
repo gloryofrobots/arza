@@ -183,7 +183,7 @@ def is_wildcard_node(n):
     return node_type(n) == nt.NT_WILDCARD
 
 def tuple_node_length(n):
-    assert node_type(n) == nt.NT_TUPLE
+    assert node_type(n) == nt.NT_TUPLE, nt.node_type_to_str(node_type(n))
     return api.length_i(node_first(n))
 
 def node_to_d(node):
