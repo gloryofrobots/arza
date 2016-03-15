@@ -1,9 +1,35 @@
+import affirm
 import lib_az:abc:module_ab as ab
 import lib_az:efg:module_e as e
-import affirm
+//
+////unqualified names f_ab,f_ab_2,const
 import from lib_az:abc:module_ab (f_ab, f_ab_2, CONST as const)
+//
+////ab2:f_ab
+import lib_az:abc:module_ab as ab2 (f_ab, f_ab_2)
+//
+////module_ab:f_ab, module_ab:f_ab_2
+import lib_az:abc:module_ab (f_ab, f_ab_2)
+//
+////all exported names imported
+import from lib_az:efg:module_e
+
+//ab_3_f_ab
+import from lib_az:abc:module_ab  (f_ab as ab_3_f_ab)
+//importing same names dont cause errors because names are equal
+import from lib_az:abc:module_ab  hiding (CONST)
+//ab5:f_ab_2 only
+import lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
 
 fun test () ->
+    affirm:is_true (f_ab == f_ab)
+    affirm:is_true (ab2:f_ab == ab2:f_ab)
+    affirm:is_true (ab2:f_ab == f_ab)
+    affirm:is_true (ab2:f_ab == ab_3_f_ab)
+
+    affirm:is_true (f_ab_2 == module_ab:f_ab_2)
+    affirm:is_true (f_ab_2 == ab2:f_ab_2)
+
     affirm:is_equal (ab:f_ab_2 32 10) 42
     affirm:is_equal (ab:f_ab 42) 126
     affirm:is_equal (e:f_e (f_ab 100)) (-758)

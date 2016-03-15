@@ -303,11 +303,6 @@ def prefix_lparen_tuple(parser, op, node):
     return node_1(NT_TUPLE, __ntok(node), list_node(items))
 
 
-def prefix_lparen_unit(parser, op, node):
-    advance_expected(parser, TT_RPAREN)
-    return nodes.create_unit_node(node)
-
-
 # MOST complicated operator
 # expressions (f 1 2 3) (2 + 3) (-1)
 # tuples (1,2,3,4,5)
@@ -487,21 +482,6 @@ def stmt_single(parser, op, node):
     endofexpression(parser)
     return node_1(__ntype(node), __ntok(node), exp)
 
-
-def stmt_loop_flow(parser, op, node):
-    endofexpression(parser)
-    if parser.token_type not in LOOP_CONTROL_TOKENS:
-        parse_error(parser, u"Unreachable statement", node)
-    return node_0(__ntype(node), __ntok(node))
-
-
-def stmt_when(parser, op, node):
-    cond = condition_expression(parser)
-    body = statements(parser, TERM_BLOCK)
-    advance_end(parser)
-    return node_2(NT_WHEN, __ntok(node), cond, body)
-
-
 # FUNCTION STUFF################################
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
@@ -665,6 +645,11 @@ def stmt_import(parser, op, node):
         ntype1 = NT_IMPORT
 
     imported = expressions(parser.import_parser, 0, [TT_LPAREN, TT_HIDING])
+    if ntype1 == NT_IMPORT_FROM and nodes.node_type(imported) == NT_AS:
+        parse_error(parser,
+                    u"Invalid use of as binding in unqualified import",
+                    imported)
+
     if parser.token_type == TT_HIDING:
         hiding = True
         if ntype1 == NT_IMPORT:

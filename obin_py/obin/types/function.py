@@ -50,4 +50,4 @@ class W_Function(W_Callable):
         if not api.equal_b(self.name, other.name):
             return False
 
-        return self.bytecode == other.bytecode
+        return self.bytecode is other.bytecode

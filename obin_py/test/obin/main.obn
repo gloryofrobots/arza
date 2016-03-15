@@ -1,5 +1,5 @@
 import affirm
-//import tests:test_operators
+import tests:test_operators
 
 import tests:types:test_types
 import tests:test_co
@@ -53,9 +53,9 @@ fun test() ->
     test_module:test()
     log "TEST FUN"
     test_fun:test()
-//
-//    log "TEST OPERATORS"
-//    test_operators:test()
+
+    log "TEST OPERATORS"
+    test_operators:test()
 ---
 
 

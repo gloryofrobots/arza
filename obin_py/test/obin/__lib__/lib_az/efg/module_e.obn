@@ -1,2 +1,7 @@
 fun f_e  num ->
     num - 1 / 0.001 end
+
+
+fun f_e_1 () ->
+    (((())))
+end

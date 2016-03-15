@@ -83,18 +83,19 @@ type Success val
 ---
 
 fun is_throw fn args
-| fn () -> is_throw fn [()]
-| fn args ->
-    match
-        try
-            apply fn args
-            Success True
-        catch e -> e
-        --------------
+    | fn () -> is_throw fn [()]
+    | fn args ->
+        match
+            try
+                apply fn args
+                Success True
+            catch e ->
+                e
+            ---
 
-    | _ of Success -> fail ["exception expected", fn]
-    | err -> err
-    ---
+        | _ of Success -> fail ["exception expected", fn]
+        | err -> err
+        ---
 ---
 
 fun is_throw_expected fn args exc ->

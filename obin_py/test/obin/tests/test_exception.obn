@@ -110,7 +110,8 @@ fun test_6() ->
                         | err @ (1, y, 3) -> #first
                         | (1,2, "ERROR@") -> #second
                         | err @ (1, 2, x) -> #third
-                    finally -> (#fourth, err, x)
+                    finally ->
+                        (#fourth, err, x)
                     ------------------------------- .
                     (#fourth, (1, 2, "ERROR"), "ERROR")
 -----------------------------------------------------------------------------

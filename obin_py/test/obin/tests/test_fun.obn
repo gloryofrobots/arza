@@ -31,7 +31,7 @@ fun test () ->
     affirm:is_equal (f4 1 2 3 4 5 6)  [1, 2, 3, (4, 5, 6)]
     //////////////////////////////////////////////////////////////////////////
 
-    fun f5 a1 a2 a3 a4 a5 ...rest
+    fun f5 (a1 a2 a3 a4 a5 ...rest)
         | x (y,z) a b {name=name, age=(years, month)} _ ->
             (x, y, z, a, b, name, years, month, rest)
     --------------------------------------------------------

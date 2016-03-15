@@ -197,7 +197,11 @@ def _get_variable_index(compiler, code, node, name):
     ref = environment.get_reference(compiler.env, name)
     if space.isvoid(ref):
         names_s = api.to_s(name)
+        # HACK for late binding of internal names in prelude
+
         if not names_s.startswith(lang_names.PREFIX):
+            for name in _current_scope(compiler).imports.keys():
+                print name
             return compile_error(compiler, code, node, u"Unreachable variable")
     else:
         _declare_static_reference(compiler, ref)
@@ -842,6 +846,7 @@ def _emit_imported(compiler, code, node, module, var_name, bind_name, is_pop):
     func = api.at(module, var_name)
     idx = _declare_import(compiler, bind_name, func)
     code.emit_1(IMPORT_NAME, idx, info(node))
+    # print "IMPORT", bind_name, var_name
     _emit_store(compiler, code, bind_name, node)
     if is_pop:
         _emit_pop(code)
@@ -872,10 +877,12 @@ def _compile_IMPORT_FROM(compiler, code, node):
 def _delete_hiding_names(compiler, code, node, module, var_names):
     exports = module.exports()
     imported = []
-    for var_name, bind_name in var_names:
-        if var_name in exports:
+    deleted = [var[0] for var in var_names]
+
+    for name in exports:
+        if name in deleted:
             continue
-        imported.append(var_name)
+        imported.append(name)
     return imported
 
 
@@ -893,7 +900,6 @@ def _compile_IMPORT_HIDING(compiler, code, node):
 
 
 def _compile_IMPORT_FROM_HIDING(compiler, code, node):
-    colon = space.newsymbol(compiler.process, u":")
     module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
     var_names = _delete_hiding_names(compiler, code, node, module, var_names)
     i = 0
