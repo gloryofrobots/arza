@@ -19,15 +19,15 @@
 //TODO separate token streams
 //TODO proper deriving for records
 //TODO CHOOSE INDENT BASED OR IMPLEMENT SYNTAX FOR TYPE AND TRAITS WITHOUT END TOKEN
-//TODO RETURN UNION TYPES
+//TODO RESURECT UNION TYPES
 //TODO PATTERN_MATCH_ERRORS as ERRORS NOT TUPLES
 //TODO carrying
 //TODO nested block comments
-//TODO single value assignment support in compiler
 
-//CAN`T DO THAT YOU LOOSE YOUR match semantics
-//x=1; x=1; x=2->error
-//INSTEAD determine if it first assignment or it needs check
+//TODO single value assignment support in compiler
+    //CAN`T DO THAT YOU LOOSE YOUR match semantics
+    //x=1; x=1; x=2->error
+    //INSTEAD determine if it first assignment or it needs check
 
 //TODO ast transform
 //with ast transform you can add support for same syntax rules for tuples in patterns as for expressions
