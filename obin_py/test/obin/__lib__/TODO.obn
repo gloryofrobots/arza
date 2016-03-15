@@ -23,7 +23,6 @@
 //TODO PATTERN_MATCH_ERRORS as ERRORS NOT TUPLES
 //TODO carrying
 //TODO nested block comments
-
 //TODO single value assignment support in compiler
     //CAN`T DO THAT YOU LOOSE YOUR match semantics
     //x=1; x=1; x=2->error
@@ -32,19 +31,27 @@
 //TODO ast transform
 //with ast transform you can add support for same syntax rules for tuples in patterns as for expressions
 //and add grouping with parens for any pattern which be very logical
-// and remove ridiculous code in signature parse
+//and remove ridiculous code in signature parse
 
 //TODO compile function clauses into match instead of func
 
-//TODO MAYBE add (arg1 arg2 arg3) for fun signature
 //TODO think about default values
 //TODO check interesting case in test matches
 //TODO remove constructs from types
-//TODO make it possible to declare type in map syntax with default values
-// big task. you probably needed default values for this
 
-//TODO check precedences
 //TODO remove NT_WHEN after refactoring pattern compiler
+
+//TODO
+//// this is error prone code, currently branches not merged because
+////distinction goes with variable names and a1 != b1
+////FIXME
+//match (1,2)
+//    | a1 -> a1.0
+//    | b1 -> a1.1
+//---------
+
+
+
 
 //trait Any for self
 ////    def id self -> obin:unique_id self

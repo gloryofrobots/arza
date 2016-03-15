@@ -425,19 +425,7 @@ def write_ast(ast):
 def __parse__():
     from obin.runtime.engine import newprocess
     source = """
-        @infixl(`-`, `-`, 60)
-        @infixl(`>=`, `>=`, 50)
-        @infixl(`==`, `==`, 50)
-        @infixl(`+`, `+`, 60)
-        @infixl(`-`, `-`, 60)
-        @infixl(`%`, `%`, 65)
-        @infixl(`*`, `*`, 65)
-        @infixl(`/`, `/`, 65)
-        @infixr(`::`, `::`, 70)
-        @infixl(`!=`, `!=`, 70)
-
-
-        def main ->
+        fun main ->
         end
     """
     import os

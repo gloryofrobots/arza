@@ -33,13 +33,13 @@ fun test_2 () ->
             catch e1 ->
                 //result
                 e1
-            ---
+            end
         catch e2 ->
             try
                 error(#LifeSucks)
             catch e3 ->
                 e3
-            ---
+            end
         end) (ZeroDivisionError (1, 0))
 
 --------------------------------------------------
@@ -112,7 +112,7 @@ fun test_6() ->
                         | err @ (1, 2, x) -> #third
                     finally ->
                         (#fourth, err, x)
-                    ------------------------------- .
+                    end .
                     (#fourth, (1, 2, "ERROR"), "ERROR")
 -----------------------------------------------------------------------------
 
