@@ -567,6 +567,7 @@ def _transform_modify(compiler, node, func, source, modifications):
                              nodes.create_call_node_3(node, func, key, value, source),
                              tail)
 
+
 def _compile_MODIFY(compiler, code, node):
     call = _transform_modify(compiler, node,
                              nodes.create_name_node_s(node, lang_names.PUT),
@@ -946,6 +947,22 @@ def _compile_DERIVE(compiler, code, node):
     _emit_call(compiler, code, node, 2, lang_names.DERIVE)
 
 
+def _compile_UNION(compiler, code, node):
+    union_name = node_first(node)
+    # first arg
+    _emit_symbol_literal(compiler, code, union_name)
+
+    types = node_second(node)
+
+    for _type in types:
+        _compile_TYPE(compiler, code, _type)
+
+    # second arg
+    code.emit_1(LIST, len(types), info(node))
+
+    _emit_call(compiler, code, node, 2, lang_names.UNION)
+
+
 def _compile_TYPE(compiler, code, node):
     # compiles to call to type function instead of some opcode
     name_node = node_first(node)
@@ -1243,6 +1260,8 @@ def _compile_node(compiler, code, node):
 
     elif NT_TYPE == ntype:
         _compile_TYPE(compiler, code, node)
+    elif NT_UNION == ntype:
+        _compile_UNION(compiler, code, node)
     elif NT_DERIVE == ntype:
         _compile_DERIVE(compiler, code, node)
 

@@ -158,6 +158,9 @@ class W_DataType(W_Hashable):
     def _equal_(self, other):
         return other is self
 
+class W_Union(object):
+    pass
+
 
 def _is_exist_implementation(method, impl):
     impl_method = api.at_index(impl, 0)

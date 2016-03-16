@@ -482,6 +482,7 @@ def stmt_single(parser, op, node):
     endofexpression(parser)
     return node_1(__ntype(node), __ntok(node), exp)
 
+
 # FUNCTION STUFF################################
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
@@ -756,6 +757,40 @@ def stmt_derive(parser, op, node):
     return node_2(NT_DERIVE, __ntok(node), traits, types)
 
 
+def _parse_union(parser, node, unionname):
+    types = []
+    check_token_type(parser, TT_CASE)
+    while parser.token_type == TT_CASE:
+        advance(parser)
+        _typename = grab_name(parser.type_parser)
+        _type = _parse_type(parser, node, _typename, TERM_UNION_TYPE_ARGS)
+        types.append(_type)
+
+    if len(types) < 2:
+        parse_error(parser, u"Sum type must have at least two constructors", parser.node)
+
+    advance_end(parser)
+    return nodes.node_2(NT_UNION, __ntok(node), unionname, nodes.list_node(types))
+
+
+def _parse_type(parser, node, typename, term):
+    if parser.token_type == TT_NAME:
+        fields = node_list_juxtaposition(parser.type_parser, term)
+        if parser.token_type == TT_CONSTRUCT:
+            advance(parser)
+            construct_funcs = _parse_construct(parser.expression_parser, parser.node)
+        else:
+            # default constructor
+            args = symbol_list_to_arg_tuple(parser, parser.node, fields)
+            body = list_node([nodes.create_fenv_node(parser.node)])
+            construct_funcs = nodes.create_function_variants(args, body)
+    else:
+        fields = empty_node()
+        construct_funcs = empty_node()
+
+    return nodes.node_3(NT_TYPE, __ntok(node), typename, fields, construct_funcs)
+
+
 # TODO BETTER PARSE ERRORS HERE
 def stmt_type(parser, op, node):
     typename = grab_name(parser.type_parser)
@@ -764,22 +799,12 @@ def stmt_type(parser, op, node):
             advance_end(parser)
         return nodes.node_3(NT_TYPE, __ntok(node), typename, empty_node(), empty_node())
 
-    if parser.token_type == TT_NAME:
-        fields = node_list_juxtaposition(parser.type_parser, TERM_TYPE_ARGS)
-        if parser.token_type == TT_CONSTRUCT:
-            advance(parser)
-            construct_funcs = _parse_construct(parser.expression_parser, node)
-        else:
-            # default constructor
-            args = symbol_list_to_arg_tuple(parser, node, fields)
-            body = list_node([nodes.create_fenv_node(node)])
-            construct_funcs = nodes.create_function_variants(args, body)
-    else:
-        fields = empty_node()
-        construct_funcs = empty_node()
+    if parser.token_type == TT_CASE:
+        return _parse_union(parser, node, typename)
 
+    _t = _parse_type(parser, node, typename, TERM_TYPE_ARGS)
     advance_end(parser)
-    return nodes.node_3(NT_TYPE, __ntok(node), typename, fields, construct_funcs)
+    return _t
 
 
 # TRAIT*************************

@@ -15,6 +15,7 @@ TYPE = PREFIX + "deftype"
 METHOD = PREFIX + "defmethod"
 TRAIT = PREFIX + "deftrait"
 IMPLEMENT = PREFIX + "defimplement"
+UNION = PREFIX + "defunion"
 
 SLICE = PREFIX + "slice"
 DROP = PREFIX + "drop"

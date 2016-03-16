@@ -18,6 +18,7 @@ NODES = [
 
   "NT_DERIVE",
   "NT_TYPE",
+  "NT_UNION",
   "NT_MAP",
   "NT_LIST",
   "NT_TUPLE",
