@@ -385,11 +385,13 @@ def newdatatype(name, fields, constructor):
     assert issymbol(name)
     return W_DataType(name, fields, constructor)
 
-def newuniontype(name, types):
-    from obin.types.datatype import newunion
+
+def newunion(name, types):
+    from obin.types.datatype import W_Union
     assert issymbol(name)
     assert islist(types)
-    return newunion(name, types)
+
+    return W_Union(name, types)
 
 
 def newnativedatatype(name):

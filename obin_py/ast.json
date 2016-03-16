@@ -1,164 +1,140 @@
 [
   {
-    "_ntype": "NT_IMPORT_FROM",
-    "_value": "import",
+    "_ntype": "NT_UNION",
+    "_value": "type",
     "children": [
       {
-        "_ntype": "NT_IMPORTED_NAME",
-        "_value": ":",
-        "children": [
-          {
-            "_ntype": "NT_IMPORTED_NAME",
-            "_value": ":",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "obin"
-              },
-              {
-                "_ntype": "NT_NAME",
-                "_value": "core"
-              }
-            ]
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "types"
-          }
-        ]
+        "_ntype": "NT_NAME",
+        "_value": "Maybe"
       },
-      {
-        "_ntype": "NT_TUPLE",
-        "_value": "(",
-        "children": [
-          [
+      [
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
             {
               "_ntype": "NT_NAME",
-              "_value": "Bool"
+              "_value": "Just"
             },
             {
-              "_ntype": "NT_NAME",
-              "_value": "Char"
+              "_ntype": "NT_LIST",
+              "_value": "[",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "x"
+                      }
+                    ]
+                  }
+                ]
+              ]
             },
+            [
+              [
+                {
+                  "_ntype": "NT_TUPLE",
+                  "_value": "|",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "x"
+                      }
+                    ]
+                  ]
+                },
+                [
+                  {
+                    "_ntype": "NT_FENV",
+                    "_value": "___fenv"
+                  }
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
             {
               "_ntype": "NT_NAME",
-              "_value": "Int"
+              "_value": "Nothing"
             },
             {
-              "_ntype": "NT_NAME",
-              "_value": "Float"
+              "empty": true
             },
             {
-              "_ntype": "NT_NAME",
-              "_value": "Symbol"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "String"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "List"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Vector"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Tuple"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Map"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Function"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Generic"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Method"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "NativeFunction"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Fiber"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Trait"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Datatype"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "TVar"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Env"
+              "empty": true
             }
           ]
-        ]
-      }
+        }
+      ]
     ]
   },
   {
-    "_ntype": "NT_TYPE",
+    "_ntype": "NT_UNION",
     "_value": "type",
     "children": [
       {
         "_ntype": "NT_NAME",
-        "_value": "LT"
+        "_value": "Ordering"
       },
-      {
-        "empty": true
-      },
-      {
-        "empty": true
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "GT"
-      },
-      {
-        "empty": true
-      },
-      {
-        "empty": true
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "EQ"
-      },
-      {
-        "empty": true
-      },
-      {
-        "empty": true
-      }
+      [
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "LT"
+            },
+            {
+              "empty": true
+            },
+            {
+              "empty": true
+            }
+          ]
+        },
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "GT"
+            },
+            {
+              "empty": true
+            },
+            {
+              "empty": true
+            }
+          ]
+        },
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "EQ"
+            },
+            {
+              "empty": true
+            },
+            {
+              "empty": true
+            }
+          ]
+        }
+      ]
     ]
   },
   {
@@ -2333,7 +2309,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -2383,7 +2359,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -2433,7 +2409,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -2483,7 +2459,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -2533,7 +2509,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -2583,7 +2559,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -2633,7 +2609,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -2683,7 +2659,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -2733,7 +2709,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -2783,7 +2759,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -2833,7 +2809,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -2883,7 +2859,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -2933,7 +2909,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -2983,7 +2959,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -3033,7 +3009,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -3083,7 +3059,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -3133,7 +3109,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -3183,7 +3159,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -3233,7 +3209,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -3283,7 +3259,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -3333,7 +3309,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -3383,7 +3359,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -3433,7 +3409,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -3483,7 +3459,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -3533,7 +3509,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -3583,7 +3559,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {
@@ -3633,7 +3609,7 @@
         [
           {
             "_ntype": "NT_TUPLE",
-            "_value": "type",
+            "_value": "end",
             "children": [
               [
                 {

@@ -1,8 +1,8 @@
 import affirm
 
-type EQ
-type GT
-type LT
+type EQ end
+type GT end
+type LT end
 
 trait Equal for x
     def eq x y -> not (ne x y)

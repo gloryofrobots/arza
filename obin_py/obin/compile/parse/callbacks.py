@@ -757,7 +757,7 @@ def stmt_derive(parser, op, node):
     return node_2(NT_DERIVE, __ntok(node), traits, types)
 
 
-def _parse_union(parser, node, unionname):
+def _parse_union(parser, node, union_name):
     types = []
     check_token_type(parser, TT_CASE)
     while parser.token_type == TT_CASE:
@@ -767,10 +767,10 @@ def _parse_union(parser, node, unionname):
         types.append(_type)
 
     if len(types) < 2:
-        parse_error(parser, u"Sum type must have at least two constructors", parser.node)
+        parse_error(parser, u"Union type must have at least two constructors", parser.node)
 
     advance_end(parser)
-    return nodes.node_2(NT_UNION, __ntok(node), unionname, nodes.list_node(types))
+    return nodes.node_2(NT_UNION, __ntok(node), union_name, nodes.list_node(types))
 
 
 def _parse_type(parser, node, typename, term):
@@ -794,9 +794,9 @@ def _parse_type(parser, node, typename, term):
 # TODO BETTER PARSE ERRORS HERE
 def stmt_type(parser, op, node):
     typename = grab_name(parser.type_parser)
-    if parser.token_type != TT_NAME:
-        if parser.token_type == TT_END:
-            advance_end(parser)
+
+    if parser.token_type == TT_END:
+        advance_end(parser)
         return nodes.node_3(NT_TYPE, __ntok(node), typename, empty_node(), empty_node())
 
     if parser.token_type == TT_CASE:

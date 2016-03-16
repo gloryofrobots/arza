@@ -158,8 +158,26 @@ class W_DataType(W_Hashable):
     def _equal_(self, other):
         return other is self
 
-class W_Union(object):
-    pass
+class W_Union(W_Hashable):
+    def __init__(self, name, types):
+        W_Hashable.__init__(self)
+        self.name = name
+        self.types = types
+
+    def has_type(self, _type):
+        return plist.contains(self.types, _type)
+
+    def _type_(self, process):
+        return process.std.types.Datatype
+
+    def _compute_hash_(self):
+        return int((1 - platform.random()) * 10000000)
+
+    def _to_string_(self):
+        return "<type %s>" % api.to_s(self.name)
+
+    def _equal_(self, other):
+        return other is self
 
 
 def _is_exist_implementation(method, impl):
@@ -168,7 +186,12 @@ def _is_exist_implementation(method, impl):
 
 
 def derive_traits(process, _type, traits):
+    if space.isunion(_type):
+        for t in _type.types:
+            derive_traits(process, t, traits)
+
     error.affirm_type(_type, space.isdatatype)
+
     for trait in traits:
         error.affirm_type(trait, space.istrait)
         if _type.is_trait_implemented(trait):
@@ -183,6 +206,10 @@ def derive_traits(process, _type, traits):
 
 
 def implement_trait(_type, trait, implementations):
+    if space.isunion(_type):
+        for t in _type.types:
+            implement_trait(t, trait, implementations)
+
     error.affirm_type(_type, space.isdatatype)
     error.affirm_type(trait, space.istrait)
     error.affirm_type(implementations, space.islist)

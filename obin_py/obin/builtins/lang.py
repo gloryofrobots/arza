@@ -149,8 +149,10 @@ def __type(process, routine):
 def __union(process, routine):
     name = routine.get_arg(0)
     types = routine.get_arg(1)
-
-    union = space.newuniontype(name, types)
+    error.affirm_type(name, space.issymbol)
+    error.affirm_type(types, space.islist)
+    error.affirm_iterable(types, space.isdatatype)
+    union = space.newunion(name, types)
     return union
 
 @complete_native_routine

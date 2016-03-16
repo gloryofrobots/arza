@@ -16,7 +16,6 @@ infixl ++ ++ 70
 
 
 
-
 //fun t  x . y ->
 ////    f 331 332 334 .
 ////      (g 441 442 .
@@ -24,10 +23,10 @@ infixl ++ ++ 70
 ////       554
 //end
 
-type LT
-type GT
-type EQ
-//
+type Ordering
+    | LT | GT | EQ
+------------------
+
 trait Collection for self
     def len self
     def is_empty self

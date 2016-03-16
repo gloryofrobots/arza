@@ -961,6 +961,7 @@ def _compile_UNION(compiler, code, node):
     code.emit_1(LIST, len(types), info(node))
 
     _emit_call(compiler, code, node, 2, lang_names.UNION)
+    _emit_store_name(compiler, code, union_name)
 
 
 def _compile_TYPE(compiler, code, node):
