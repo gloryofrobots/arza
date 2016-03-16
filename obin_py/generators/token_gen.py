@@ -19,7 +19,6 @@ TOKENS = [
   ("TT_FOR", "for"),
   ("TT_WHILE", "while"),
 
-  ("TT_CONSTRUCT", "construct"),
   ("TT_IMPLEMENT", "implement"),
   ("TT_DERIVE", "derive"),
   ("TT_DERIVING", "deriving"),
@@ -66,7 +65,7 @@ TOKENS = [
   ("TT_ARROW", "->"),
   ("TT_BACKARROW", "<-"),
   ("TT_AT_SIGN", "@"),
-  
+
 
   ("TT_SEMI", ";"),
   ("TT_SHARP", "#"),
@@ -83,7 +82,7 @@ TOKENS = [
   ("TT_INFIX_DOT_LPAREN", ".("),
   ("TT_LPAREN", "("),
   ("TT_RPAREN", ")"),
-  
+
   ("TT_LSQUARE", "["),
   ("TT_RSQUARE", "]"),
   ("TT_DOT", "."),
@@ -113,16 +112,16 @@ for name,pattern in TOKENS:
 print "# ************************ OBIN TOKENS*****************************"
 for number, token in enumerate(TOKENS):
     print "%s = %d" % (token[0],number)
-    
-  
+
+
 print "# ************************ OBIN TOKENS REPR *****************************"
 S = "__TT_REPR__ = ["
 for name,pattern in TOKENS:
     S += "%s, " % str(("u\"%s\"" % name))
 S += "]"
 print S
-print 
-print 
+print
+print
 print "def token_type_to_str(ttype):"
 print "    return __TT_REPR__[ttype]"
 

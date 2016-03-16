@@ -4,7 +4,8 @@ import tests:types:types as stuff
 
 prefix ++-+*++  ++-+*++
 
-type X x end
+type X x
+---------
 
 derive Dict for X
 derive Dict for stuff:TestType

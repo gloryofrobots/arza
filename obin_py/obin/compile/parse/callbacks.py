@@ -701,29 +701,6 @@ def symbol_or_name_value(parser, name):
 
 
 # TYPES ************************
-
-def _parse_construct(parser, node):
-    funcs = []
-    check_token_type(parser, TT_CASE)
-    fenv_node = nodes.create_fenv_node(node)
-    while parser.token_type == TT_CASE:
-        advance_expected(parser, TT_CASE)
-        args = _parse_func_pattern(parser, TERM_CONSTRUCT_PATTERN, TERM_CONSTRUCT_GUARD)
-        if parser.token_type == TT_ARROW:
-            advance_expected(parser, TT_ARROW)
-            body = statements(parser, TERM_CASE)
-            body = plist.append(body, fenv_node)
-        elif parser.token_type == TT_CASE or parser.token_type == TT_END:
-            body = list_node([fenv_node])
-        else:
-            return parse_error(parser, u"Invalid construct syntax", parser.node)
-
-        funcs.append(list_node([args, body]))
-    advance_end(parser)
-
-    return list_node(funcs)
-
-
 def prefix_name_as_symbol(parser, op, node):
     name = itself(parser, op, node)
     return nodes.create_symbol_node(name, name)
@@ -776,14 +753,9 @@ def _parse_union(parser, node, union_name):
 def _parse_type(parser, node, typename, term):
     if parser.token_type == TT_NAME:
         fields = node_list_juxtaposition(parser.type_parser, term)
-        if parser.token_type == TT_CONSTRUCT:
-            advance(parser)
-            construct_funcs = _parse_construct(parser.expression_parser, parser.node)
-        else:
-            # default constructor
-            args = symbol_list_to_arg_tuple(parser, parser.node, fields)
-            body = list_node([nodes.create_fenv_node(parser.node)])
-            construct_funcs = nodes.create_function_variants(args, body)
+        args = symbol_list_to_arg_tuple(parser, parser.node, fields)
+        body = list_node([nodes.create_fenv_node(parser.node)])
+        construct_funcs = nodes.create_function_variants(args, body)
     else:
         fields = empty_node()
         construct_funcs = empty_node()

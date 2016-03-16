@@ -167,7 +167,6 @@ def type_parser_init(parser):
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     infix(parser, TT_COLON, 95, infix_name_pair)
     symbol(parser, TT_CASE, None)
-    symbol(parser, TT_CONSTRUCT, None)
     return parser
 
 

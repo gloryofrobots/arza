@@ -92,7 +92,6 @@ RULES = [
     # (keyword('module'), TT_MODULE),
 
     (keyword('trait'), TT_TRAIT),
-    (keyword('construct'), TT_CONSTRUCT),
     (keyword('implement'), TT_IMPLEMENT),
     (keyword('def'), TT_DEF),
     (keyword('type'), TT_TYPE),

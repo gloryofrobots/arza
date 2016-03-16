@@ -38,6 +38,7 @@
 //TODO think about default values
 //TODO check interesting case in test matches
 //TODO remove constructs from types
+// make {} syntax in fields and constructing with keyword args
 
 //TODO remove NT_WHEN after refactoring pattern compiler
 
