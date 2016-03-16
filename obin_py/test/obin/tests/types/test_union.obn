@@ -1,0 +1,41 @@
+import affirm
+
+type Maybe
+    | Nothing
+    | Just v
+-------------
+
+
+type Shape
+    | X x
+    | Y y
+    | Point x y
+    | Square width height
+    | Rect left top right bottom
+    | Line point1 point2
+    | Empty
+-----------------------
+
+fun test () ->
+    m = Just 42
+    n = Nothing
+    affirm:is_kindof n Maybe
+    affirm:is_kindof Just Maybe
+    affirm:is_kindof m Maybe
+    affirm:is_kindof m Just
+    affirm:is_not_kindof m Nothing
+    affirm:is_kindof n Nothing
+    affirm:is_not_kindof n Just
+
+
+    affirm:is_kindof (X 1) Shape
+    affirm:is_kindof (X 1) X
+    affirm:is_not_kindof (X 1) Y
+    affirm:is_kindof (Point 1 2) Shape
+    affirm:is_kindof (Point 1 2) Point
+    affirm:is_kindof Point Shape
+    affirm:is_kindof Rect Shape
+    affirm:is_kindof Line Shape
+    affirm:is_not_kindof Line Rect
+    affirm:is_not_kindof X Y
+---

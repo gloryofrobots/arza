@@ -59,20 +59,9 @@ fun test() ->
 ---
 
 
-type Maybe
-    | Just x
-    | Nothing
----
 
 fun main () ->
-    j = Just 42
-    n = Nothing
-    print (kindof j Just)
-    print (kindof j Maybe)
-    print (kindof n Maybe)
-    print (kindof n Just)
-
-//    test()
+    test()
 ---
 
 //            impl.append(_t([self.methods.str,
