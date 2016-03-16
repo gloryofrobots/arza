@@ -61,7 +61,12 @@ fun test() ->
 
 
 fun main () ->
-    test()
+    match {x=1, y="OLOLO"}
+    | {x of String, y of Int} -> #first
+    | {x of Int, y="OL" of String} -> #second
+    | {x of Int, y="OLOLO" of String} -> #third
+    -----
+//    test()
 ---
 
 //            impl.append(_t([self.methods.str,
