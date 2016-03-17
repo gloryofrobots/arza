@@ -37,6 +37,7 @@ class BaseParser:
         self.state = None
         self.allow_overloading = False
         self.break_on_juxtaposition = False
+        self.juxtaposition_as_list = False
 
     def open(self, state):
         assert self.state is None
@@ -162,11 +163,18 @@ def name_parser_init(parser):
 
 
 def type_parser_init(parser):
-    parser.break_on_juxtaposition = True
+    # parser.break_on_juxtaposition = True
+    parser.juxtaposition_as_list = True
     # literal(parser, TT_TYPENAME)
+    symbol(parser, TT_COMMA)
+    symbol(parser, TT_RCURLY)
+    prefix(parser, TT_LCURLY, prefix_lcurly_type)
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     infix(parser, TT_COLON, 95, infix_name_pair)
-    symbol(parser, TT_CASE, None)
+    infix(parser, TT_CASE, 15, led_infixr)
+    infix(parser, TT_ASSIGN, 10, led_infixr)
+    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
+    # symbol(parser, TT_CASE, None)
     return parser
 
 
@@ -216,7 +224,7 @@ def guard_parser_init(proc_data, parser):
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
     infix(parser, TT_BACKTICK, 50, infix_backtick)
-    infix(parser, TT_JUXTAPOSITION, 80, infix_juxtaposition)
+    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     infix(parser, TT_DOT, 95, infix_dot)
     infix(parser, TT_COLON, 95, infix_name_pair)
     return parser
@@ -381,7 +389,7 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = False
+PARSE_DEBUG = True
 
 
 def parse(process, env, src):

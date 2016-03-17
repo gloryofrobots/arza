@@ -25,6 +25,7 @@ NODES = [
   "NT_UNIT",
   "NT_CONS",
   "NT_COMMA",
+  "NT_CASE",
 
   "NT_FUN",
 

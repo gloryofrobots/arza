@@ -444,18 +444,18 @@ def base_expression(parser, _rbp, terminators=None):
 
 
 def expect_expression_of(parser, _rbp, expected_type, terminators=None):
-    exp = expressions(parser, _rbp, terminators=terminators)
+    exp = expression(parser, _rbp, terminators=terminators)
     check_node_type(parser, exp, expected_type)
     return exp
 
 
 def expect_expression_of_types(parser, _rbp, expected_types, terminators=None):
-    exp = expressions(parser, _rbp, terminators=terminators)
+    exp = expression(parser, _rbp, terminators=terminators)
     check_node_types(parser, exp, expected_types)
     return exp
 
 
-def expressions(parser, _rbp, terminators=None):
+def expression(parser, _rbp, terminators=None):
     expr, _lbp = base_expression(parser, _rbp, terminators)
     expr = postprocess(parser, expr)
     return expr
@@ -479,7 +479,7 @@ def juxtaposition_list(parser, terminators, skip=None):
 
 def flatten_juxtaposition(parser, node):
     ntype = nodes.node_type(node)
-    if ntype == NT_JUXTAPOSITION or ntype == NT_COMMA:
+    if ntype == NT_JUXTAPOSITION:
         first = nodes.node_first(node)
         second = nodes.node_second(node)
         head = flatten_juxtaposition(parser, first)
@@ -505,9 +505,12 @@ def postprocess(parser, node):
         if len(flatten) < 2:
             parse_error(parser, u"Invalid use of juxtaposition operator", node)
 
-        caller = plist.head(flatten)
-        args = plist.tail(flatten)
-        return postprocess(parser, nodes.node_2(NT_CALL, nodes.node_token(caller), caller, args))
+        if parser.juxtaposition_as_list:
+            return postprocess(parser, nodes.create_list_node_from_list(node, flatten))
+        else:
+            caller = plist.head(flatten)
+            args = plist.tail(flatten)
+            return postprocess(parser, nodes.node_2(NT_CALL, nodes.node_token(caller), caller, args))
     else:
         children = []
         node_children = nodes.node_children(node)
@@ -523,7 +526,7 @@ def postprocess(parser, node):
 def literal_expression(parser):
     # Override most operators in literals
     # because of prefix operators
-    return expressions(parser, 70)
+    return expression(parser, 70)
 
 
 def statement(parser):
@@ -535,7 +538,7 @@ def statement(parser):
         endofexpression(parser)
         return value
 
-    value = expressions(parser, 0)
+    value = expression(parser, 0)
     endofexpression(parser)
     return value
 
@@ -600,14 +603,14 @@ def is_assignment_node(node):
 
 
 def condition(parser):
-    node = expressions(parser, 0)
+    node = expression(parser, 0)
     if is_assignment_node(node):
         parse_error(parser, u"Assignment operators not allowed in conditions", node)
     return node
 
 
 def condition_expression(parser):
-    node = expressions(parser, 0)
+    node = expression(parser, 0)
     if is_assignment_node(node):
         parse_error(parser, u"Assignment operators not allowed in conditions", node)
     # call endofexpression to allow one line prefixes like if x == 1, x end
@@ -616,7 +619,7 @@ def condition_expression(parser):
 
 
 def condition_terminated_expression(parser, terminators):
-    node = expressions(parser, 0, terminators)
+    node = expression(parser, 0, terminators)
 
     if is_assignment_node(node):
         parse_error(parser, u"Assignment operators not allowed in conditions", node)
