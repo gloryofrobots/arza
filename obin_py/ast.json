@@ -1,91 +1,101 @@
 [
   {
-    "_ntype": "NT_UNION",
-    "_value": "=",
+    "_ntype": "NT_FUN",
+    "_value": "fun",
     "children": [
       {
-        "_ntype": "NT_SYMBOL",
-        "_value": "#",
-        "children": [
-          {
-            "_ntype": "NT_NAME",
-            "_value": "Maybe"
-          }
-        ]
+        "_ntype": "NT_NAME",
+        "_value": "split_at"
       },
       [
-        {
-          "_ntype": "NT_TYPE",
-          "_value": "[",
-          "children": [
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "#",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "Just"
-                }
-              ]
-            },
-            [
-              {
-                "_ntype": "NT_SYMBOL",
-                "_value": "#",
-                "children": [
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "x"
-                  }
-                ]
-              }
-            ],
-            [
+        [
+          {
+            "_ntype": "NT_TUPLE",
+            "_value": "(",
+            "children": [
               [
                 {
-                  "_ntype": "NT_TUPLE",
-                  "_value": "",
+                  "_ntype": "NT_OF",
+                  "_value": "of",
                   "children": [
-                    [
-                      {
-                        "_ntype": "NT_NAME",
-                        "_value": "x"
-                      }
-                    ]
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "n"
+                    },
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "Int"
+                    }
                   ]
                 },
+                {
+                  "_ntype": "NT_OF",
+                  "_value": "of",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "l"
+                    },
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "List"
+                    }
+                  ]
+                }
+              ]
+            ]
+          },
+          [
+            {
+              "_ntype": "NT_TUPLE",
+              "_value": "(",
+              "children": [
                 [
                   {
-                    "_ntype": "NT_FENV",
-                    "_value": "___fenv"
+                    "_ntype": "NT_CALL",
+                    "_value": "take",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "take"
+                      },
+                      [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "n"
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "l"
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_CALL",
+                    "_value": "drop",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "drop"
+                      },
+                      [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "n"
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "l"
+                        }
+                      ]
+                    ]
                   }
                 ]
               ]
-            ]
-          ]
-        },
-        {
-          "_ntype": "NT_TYPE",
-          "_value": "#",
-          "children": [
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "#",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "Nothing"
-                }
-              ]
-            },
-            {
-              "empty": true
-            },
-            {
-              "empty": true
             }
           ]
-        }
+        ]
       ]
     ]
   }

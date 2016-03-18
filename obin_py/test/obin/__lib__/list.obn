@@ -91,7 +91,7 @@ fun take count list
     | n [x, ...xs] -> x :: (take (n-1)  xs)
 --------------------------------------------------
 
-fun split_at n of Int . l of List -> ((take n l), (drop n  l)) end
+fun split_at (n of Int) (l of List) -> ((take n l), (drop n  l)) end
 
 fun take_while predicate list
     | p [] -> []
@@ -145,12 +145,12 @@ fun contains l x ->
 fun concat l1 l2 ->
     foldr (&::) l2 l1 end
 
-fun range first of Int  last of Int ->
+fun range (first of Int) (last of Int) ->
     step = -1 in_case last < 0 else 1
     range_by first last step
 --------------------------------------------------
 
-fun range_by  first of Int . last of Int . step of Int ->
+fun range_by  (first of Int) (last of Int) (step of Int) ->
     fun _range_by N X D L
         | N X D L when N >= 4 ->
             Y = X - D

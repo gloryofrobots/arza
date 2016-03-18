@@ -1,6 +1,6 @@
 from obin.runtime.routine.routine import complete_native_routine
 from obin.runtime import error
-from obin.types import api, space, plist, environment, datatype
+from obin.types import api, space, plist, environment, datatype, tuples
 
 from obin.runistr import encode_unicode_utf8
 from obin.misc.platform import rstring, compute_unique_id
@@ -170,6 +170,8 @@ def __trait(process, routine):
     name = routine.get_arg(0)
     varname = routine.get_arg(1)
     constraints = routine.get_arg(2)
+    if space.istuple(constraints):
+        constraints = tuples.to_list(constraints)
     _trait = space.newtrait(name, varname, constraints)
     return _trait
 

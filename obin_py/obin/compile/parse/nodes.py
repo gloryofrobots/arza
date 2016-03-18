@@ -293,6 +293,10 @@ def create_unit_node(basenode):
 def create_tuple_node(basenode, elements):
     return node_1(nt.NT_TUPLE, create_token_from_node(tt.TT_LPAREN, "(", basenode), list_node(elements))
 
+def create_tuple_node_from_list(basenode, elements):
+    assert node_type(elements) == nt.NT_LIST
+    items = node_first(elements)
+    return node_1(nt.NT_TUPLE, create_token_from_node(tt.TT_LPAREN, "(", basenode), items)
 
 def create_match_fail_node(basenode, val, idx):
     sym = create_symbol_node_s(basenode, val)

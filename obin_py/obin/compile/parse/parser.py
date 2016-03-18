@@ -167,23 +167,25 @@ def type_parser_init(parser):
     parser.juxtaposition_as_list = True
     # literal(parser, TT_TYPENAME)
     symbol(parser, TT_COMMA)
+    symbol(parser, TT_END)
     symbol(parser, TT_RCURLY)
     prefix(parser, TT_LCURLY, prefix_lcurly_type)
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     infix(parser, TT_COLON, 95, infix_name_pair)
-    infix(parser, TT_CASE, 15, led_infixr)
-    infix(parser, TT_ASSIGN, 10, led_infixr)
+    # infix(parser, TT_CASE, 15, led_infixr)
+    # infix(parser, TT_ASSIGN, 10, led_infixr)
     infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
-    # symbol(parser, TT_CASE, None)
+    symbol(parser, TT_CASE, None)
     return parser
 
 
 def method_signature_parser_init(parser):
-    parser.break_on_juxtaposition = True
+    parser.juxtaposition_as_list = True
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     symbol(parser, TT_DEF, None)
     symbol(parser, TT_ARROW, None)
-    symbol(parser, TT_JUXTAPOSITION)
+    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
+    # symbol(parser, TT_JUXTAPOSITION)
     return parser
 
 def import_names_parser_init(parser):
@@ -258,21 +260,23 @@ def pattern_parser_init(parser):
     parser = init_parser_literals(parser)
     return parser
 
+
 def fun_signature_parser_init(parser):
-    parser.break_on_juxtaposition = True
+    parser.juxtaposition_as_list = True
     literal(parser, TT_NAME)
 
+    prefix(parser, TT_LPAREN, prefix_lparen)
     symbol(parser, TT_RPAREN)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
 
-    infix(parser, TT_OF, 10, led_infix)
+    infix(parser, TT_OF, 91, led_infix)
     infix(parser, TT_COLON, 95, infix_name_pair)
 
     literal(parser, TT_WILDCARD)
-    symbol(parser, TT_DEF, None)
-    symbol(parser, TT_ARROW, None)
-    symbol(parser, TT_CASE, None)
-    symbol(parser, TT_JUXTAPOSITION)
+    symbol(parser, TT_DEF)
+    symbol(parser, TT_ARROW)
+    symbol(parser, TT_CASE)
+    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     return parser
 
 
@@ -389,7 +393,7 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = True
+PARSE_DEBUG = False
 
 
 def parse(process, env, src):

@@ -169,6 +169,8 @@ def traits(process, obj):
 
 
 def kindof(process, obj, trait):
+    # TODO REMOVE IT AFTER YOU FINISH REMOVING node_juxtaposition_list
+    assert not space.islist(trait)
     return space.newbool(kindof_b(process, obj, trait))
 
 

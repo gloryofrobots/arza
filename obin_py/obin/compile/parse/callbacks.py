@@ -48,9 +48,19 @@ def node_tuple_juxtaposition(parser, terminators, skip=None):
     return nodes.create_tuple_node(node, args)
 
 
-def node_list_juxtaposition(parser, terminators, skip=None):
-    node, args = juxtaposition_list(parser, terminators, skip)
-    return nodes.create_list_node(node, args)
+def juxtaposition_as_list(parser, terminators):
+    node = expression(parser, 0, terminators)
+    if nodes.node_type(node) != NT_LIST:
+        return nodes.create_list_node(node, [node])
+    return node
+
+
+def juxtaposition_as_tuple(parser, terminators):
+    node = expression(parser, 0, terminators)
+    if nodes.node_type(node) != NT_LIST:
+        return nodes.create_tuple_node(node, [node])
+
+    return nodes.create_tuple_node_from_list(node, node)
 
 
 def __ntype(node):
@@ -383,6 +393,7 @@ def prefix_lcurly_type(parser, op, node):
     advance_expected(parser, TT_RCURLY)
     return node_1(NT_LIST, __ntok(node), list_node(items))
 
+
 # this callback used in pattern matching
 def prefix_lcurly_patterns(parser, op, node):
     return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_CHAR, TT_FLOAT], on_bind_node)
@@ -526,18 +537,18 @@ def _parse_function_signature(parser):
         ()
         (arg1 arg2 of T ...arg3)
     """
-    if parser.token_type == TT_LPAREN:
-        advance(parser)
-        if parser.token_type == TT_RPAREN:
-            advance(parser)
-            unit = nodes.create_unit_node(parser.node)
-            pattern = nodes.create_tuple_node(unit, [unit])
-        else:
-            pattern = node_tuple_juxtaposition(parser.fun_signature_parser, [TT_RPAREN], SKIP_JUXTAPOSITION)
-            advance_expected(parser, TT_RPAREN)
-    else:
-        pattern = node_tuple_juxtaposition(parser.fun_signature_parser, [TT_ARROW, TT_CASE], SKIP_JUXTAPOSITION)
-
+    # if parser.token_type == TT_LPAREN:
+    #     advance(parser)
+    #     if parser.token_type == TT_RPAREN:
+    #         advance(parser)
+    #         unit = nodes.create_unit_node(parser.node)
+    #         pattern = nodes.create_tuple_node(unit, [unit])
+    #     else:
+    #         pattern = node_tuple_juxtaposition(parser.fun_signature_parser, [TT_RPAREN], SKIP_JUXTAPOSITION)
+    #         advance_expected(parser, TT_RPAREN)
+    # else:
+    #     pattern = node_tuple_juxtaposition(parser.fun_signature_parser, [TT_ARROW, TT_CASE], SKIP_JUXTAPOSITION)
+    pattern = juxtaposition_as_tuple(parser.fun_signature_parser, TERM_FUN_SIGNATURE)
     args_type = nodes.node_type(pattern)
 
     if args_type != NT_TUPLE:
@@ -733,6 +744,7 @@ def symbol_list_to_arg_tuple(parser, node, symbols):
 
     return nodes.node_1(NT_TUPLE, nodes.node_token(node), list_node(args))
 
+
 def _symbols_to_args(parser, node, symbols):
     args = []
     for child in symbols:
@@ -741,6 +753,7 @@ def _symbols_to_args(parser, node, symbols):
         args.append(name)
 
     return nodes.node_1(NT_TUPLE, nodes.node_token(node), list_node(args))
+
 
 # DERIVE ################################
 def _parse_tuple_of_names(parser, term):
@@ -759,115 +772,46 @@ def stmt_derive(parser, op, node):
     return node_2(NT_DERIVE, __ntok(node), traits, types)
 
 
-# def _parse_union(parser, node, union_name):
-#     types = []
-#     check_token_type(parser, TT_CASE)
-#     while parser.token_type == TT_CASE:
-#         advance(parser)
-#         _typename = grab_name(parser.type_parser)
-#         _type = _parse_type(parser, node, _typename, TERM_UNION_TYPE_ARGS)
-#         types.append(_type)
-#
-#     if len(types) < 2:
-#         parse_error(parser, u"Union type must have at least two constructors", parser.node)
-#
-#     advance_end(parser)
-#     return nodes.node_2(NT_UNION, __ntok(node), union_name, nodes.list_node(types))
-#
-#
-# def _parse_type(parser, node, typename, term):
-#     if parser.token_type == TT_NAME:
-#
-#         fields = node_list_juxtaposition(parser.type_parser, term)
-#         args = symbol_list_to_arg_tuple(parser, parser.node, fields)
-#         body = list_node([nodes.create_fenv_node(parser.node)])
-#         construct_funcs = nodes.create_function_variants(args, body)
-#     else:
-#         fields = empty_node()
-#         construct_funcs = empty_node()
-#
-#     return nodes.node_3(NT_TYPE, __ntok(node), typename, fields, construct_funcs)
-#
-#
-# # TODO BETTER PARSE ERRORS HERE
-# def stmt_type(parser, op, node):
-#     typename = grab_name(parser.type_parser)
-#
-#     if parser.token_type == TT_CASE:
-#         return _parse_union(parser, node, typename)
-#
-#     _t = _parse_type(parser, node, typename, TERM_TYPE_ARGS)
-#     advance_end(parser)
-#     return _t
+def _parse_union(parser, node, union_name):
+    types = []
+    check_token_type(parser, TT_CASE)
+    while parser.token_type == TT_CASE:
+        advance(parser)
+        _typename = grab_name(parser.type_parser)
+        _type = _parse_type(parser, node, _typename, TERM_UNION_TYPE_ARGS)
+        types.append(_type)
 
-def _flatten_case(node, result):
-    if nodes.node_type(node) == NT_CASE:
-        first = nodes.node_first(node)
-        assert nodes.node_type(first) != NT_CASE
-        second = nodes.node_second(node)
-        return _flatten_case(second, plist.cons(first, result))
+    if len(types) < 2:
+        parse_error(parser, u"Union type must have at least two constructors", parser.node)
+
+    advance_end(parser)
+    return nodes.node_2(NT_UNION, __ntok(node), union_name, nodes.list_node(types))
+
+
+def _parse_type(parser, node, typename, term):
+    if parser.token_type == TT_NAME:
+        fields = juxtaposition_as_list(parser.type_parser, term)
+        args = symbol_list_to_arg_tuple(parser, parser.node, fields)
+        body = list_node([nodes.create_fenv_node(parser.node)])
+        construct_funcs = nodes.create_function_variants(args, body)
     else:
-        return plist.cons(node, result)
-
-
-def _mk_union(parser, union):
-    name = nodes.node_first(union)
-    types = nodes.node_second(union)
-    check_node_type(parser, name, NT_SYMBOL)
-    compiled_types = []
-    flatten = _flatten_case(types, plist.empty())
-    for _type in flatten:
-        compiled_type = _mk_type(parser, _type)
-        compiled_types.append(compiled_type)
-
-    return nodes.node_2(NT_UNION, __ntok(union), name, nodes.list_node(compiled_types))
-
-
-def _mk_type_from_name_and_fields(parser, _type, name, fields):
-    if api.length_i(fields) == 1:
-        first = api.at_index(fields, 0)
-        if nodes.node_type(first) == NT_LIST:
-            fields = nodes.node_first(first)
-
-    args = _symbols_to_args(parser, parser.node, fields)
-    body = list_node([nodes.create_fenv_node(parser.node)])
-    construct_funcs = nodes.create_function_variants(args, body)
-    return nodes.node_3(NT_TYPE, __ntok(_type), name, fields, construct_funcs)
-
-def _mk_type(parser, _type):
-    ntype = nodes.node_type(_type)
-    if ntype == NT_SYMBOL:
-        name = _type
         fields = empty_node()
         construct_funcs = empty_node()
-        return nodes.node_3(NT_TYPE, __ntok(_type), name, fields, construct_funcs)
-    elif ntype == NT_LIST:
-        l = nodes.node_first(_type)
-        name = plist.head(l)
-        fields = plist.tail(l)
-        return _mk_type_from_name_and_fields(parser, _type, name, fields)
-    else:
-        assert False, "Shouldn't reach here. invalid type node"
+
+    return nodes.node_3(NT_TYPE, __ntok(node), typename, fields, construct_funcs)
 
 
+# TODO BETTER PARSE ERRORS HERE
 def stmt_type(parser, op, node):
-    _type = expression(parser.type_parser, 0)
-    ntype = nodes.node_type(_type)
-    if ntype == NT_ASSIGN:
-        name = nodes.node_first(_type)
-        check_node_type(parser, name, NT_SYMBOL)
-        body = nodes.node_second(_type)
-        btype = nodes.node_type(body)
-        if btype == NT_CASE:
-            return _mk_union(parser, _type)
-        check_node_type(parser, body, NT_MAP)
-        return _mk_type_from_name_and_fields(parser, _type, name, body)
-    if ntype == NT_SYMBOL or ntype == NT_LIST:
-        return _mk_type(parser, _type)
-    elif ntype == NT_CASE:
-        return _mk_union(parser, _type)
-    else:
-        parse_error(parser, u"Invalid type syntax", _type)
+    typename = grab_name(parser.type_parser)
+
+    if parser.token_type == TT_CASE:
+        return _parse_union(parser, node, typename)
+
+    _t = _parse_type(parser, node, typename, TERM_TYPE_ARGS)
+    advance_end(parser)
+    return _t
+
 
 # TRAIT*************************
 def symbol_operator_name(parser, op, node):
@@ -903,7 +847,7 @@ def stmt_trait(parser, op, node):
     instance_name = grab_name(type_parser)
     if parser.token_type == TT_OF:
         advance(parser)
-        constraints = node_list_juxtaposition(parser.name_parser, TERM_METHOD_CONSTRAINTS)
+        constraints = _parse_tuple_of_names(parser.name_parser, TERM_METHOD_CONSTRAINTS)
     else:
         constraints = nodes.create_empty_list_node(node)
 
@@ -913,7 +857,7 @@ def stmt_trait(parser, op, node):
         method_name = grab_name_or_operator(parser)
         check_token_type(parser, TT_NAME)
 
-        sig = node_list_juxtaposition(sig_parser, TERM_METHOD_SIG, SKIP_JUXTAPOSITION)
+        sig = juxtaposition_as_list(sig_parser, TERM_METHOD_SIG)
         check_node_type(parser, sig, NT_LIST)
         if parser.token_type == TT_ARROW:
             advance(parser)
