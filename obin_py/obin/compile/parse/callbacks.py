@@ -40,29 +40,6 @@ NODE_TYPE_MAPPING = {
 }
 
 
-def node_tuple_juxtaposition(parser, terminators, skip=None):
-    node, args = juxtaposition_list(parser, terminators, skip)
-    # return nodes.node_1(NT_TUPLE, nodes.node_token(node), list_node(args))
-    if node is None:
-        parse_error(parser, u"Empty declaration", parser.node)
-    return nodes.create_tuple_node(node, args)
-
-
-def juxtaposition_as_list(parser, terminators):
-    node = expression(parser, 0, terminators)
-    if nodes.node_type(node) != NT_LIST:
-        return nodes.create_list_node(node, [node])
-    return node
-
-
-def juxtaposition_as_tuple(parser, terminators):
-    node = expression(parser, 0, terminators)
-    if nodes.node_type(node) != NT_LIST:
-        return nodes.create_tuple_node(node, [node])
-
-    return nodes.create_tuple_node_from_list(node, node)
-
-
 def __ntype(node):
     node_type = NODE_TYPE_MAPPING[nodes.node_token_type(node)]
     return node_type
@@ -295,6 +272,7 @@ def prefix_if(parser, op, node):
     return node_1(NT_CONDITION, __ntok(node), list_node(branches))
 
 
+# TODO REMOVE IT
 # separate lparen handle for match case declarations
 def prefix_lparen_tuple(parser, op, node):
     if parser.token_type == TT_RPAREN:
@@ -514,7 +492,7 @@ def stmt_single(parser, op, node):
 # FUNCTION STUFF################################
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
-    pattern = node_tuple_juxtaposition(parser.pattern_parser, arg_terminator, SKIP_JUXTAPOSITION)
+    pattern = juxtaposition_as_tuple(parser.fun_pattern_parser, arg_terminator)
     args_type = nodes.node_type(pattern)
 
     if args_type != NT_TUPLE:
@@ -537,17 +515,6 @@ def _parse_function_signature(parser):
         ()
         (arg1 arg2 of T ...arg3)
     """
-    # if parser.token_type == TT_LPAREN:
-    #     advance(parser)
-    #     if parser.token_type == TT_RPAREN:
-    #         advance(parser)
-    #         unit = nodes.create_unit_node(parser.node)
-    #         pattern = nodes.create_tuple_node(unit, [unit])
-    #     else:
-    #         pattern = node_tuple_juxtaposition(parser.fun_signature_parser, [TT_RPAREN], SKIP_JUXTAPOSITION)
-    #         advance_expected(parser, TT_RPAREN)
-    # else:
-    #     pattern = node_tuple_juxtaposition(parser.fun_signature_parser, [TT_ARROW, TT_CASE], SKIP_JUXTAPOSITION)
     pattern = juxtaposition_as_tuple(parser.fun_signature_parser, TERM_FUN_SIGNATURE)
     args_type = nodes.node_type(pattern)
 

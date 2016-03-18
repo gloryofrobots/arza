@@ -150,7 +150,7 @@ fun range (first of Int) (last of Int) ->
     range_by first last step
 --------------------------------------------------
 
-fun range_by  (first of Int) (last of Int) (step of Int) ->
+fun range_by (first of Int) (last of Int) (step of Int) ->
     fun _range_by N X D L
         | N X D L when N >= 4 ->
             Y = X - D

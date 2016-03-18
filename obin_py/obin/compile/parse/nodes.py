@@ -182,9 +182,11 @@ def node_column(node):
 def is_wildcard_node(n):
     return node_type(n) == nt.NT_WILDCARD
 
+
 def tuple_node_length(n):
     assert node_type(n) == nt.NT_TUPLE, nt.node_type_to_str(node_type(n))
     return api.length_i(node_first(n))
+
 
 def node_to_d(node):
     if is_empty_node(node):
@@ -293,10 +295,28 @@ def create_unit_node(basenode):
 def create_tuple_node(basenode, elements):
     return node_1(nt.NT_TUPLE, create_token_from_node(tt.TT_LPAREN, "(", basenode), list_node(elements))
 
+
 def create_tuple_node_from_list(basenode, elements):
-    assert node_type(elements) == nt.NT_LIST
-    items = node_first(elements)
-    return node_1(nt.NT_TUPLE, create_token_from_node(tt.TT_LPAREN, "(", basenode), items)
+    assert is_list_node(elements)
+    return node_1(nt.NT_TUPLE, create_token_from_node(tt.TT_LPAREN, "(", basenode), elements)
+
+
+def create_list_node(basenode, items):
+    return node_1(nt.NT_LIST, create_token_from_node(tt.TT_LSQUARE, "[", basenode), list_node(items))
+
+
+def create_list_node_from_list(basenode, items):
+    assert is_list_node(items)
+    return node_1(nt.NT_LIST, create_token_from_node(tt.TT_LSQUARE, "[", basenode), items)
+
+
+def create_empty_list_node(basenode):
+    return node_1(nt.NT_LIST, create_token_from_node(tt.TT_LSQUARE, "[", basenode), list_node([]))
+
+
+def create_empty_map_node(basenode):
+    return node_1(nt.NT_MAP, create_token_from_node(tt.TT_LCURLY, "{", basenode), list_node([]))
+
 
 def create_match_fail_node(basenode, val, idx):
     sym = create_symbol_node_s(basenode, val)
@@ -306,20 +326,6 @@ def create_match_fail_node(basenode, val, idx):
 
 def create_if_node(basenode, branches):
     return node_1(nt.NT_CONDITION, create_token_from_node(tt.TT_IF, "if", basenode), list_node(branches))
-
-
-def create_list_node(basenode, items):
-    return node_1(nt.NT_LIST, create_token_from_node(tt.TT_LSQUARE, "[", basenode), list_node(items))
-
-def create_list_node_from_list(basenode, items):
-    return node_1(nt.NT_LIST, create_token_from_node(tt.TT_LSQUARE, "[", basenode), items)
-
-def create_empty_list_node(basenode):
-    return node_1(nt.NT_LIST, create_token_from_node(tt.TT_LSQUARE, "[", basenode), list_node([]))
-
-
-def create_empty_map_node(basenode):
-    return node_1(nt.NT_MAP, create_token_from_node(tt.TT_LCURLY, "{", basenode), list_node([]))
 
 
 def create_call_node(basenode, func, exps):

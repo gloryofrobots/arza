@@ -47,6 +47,7 @@ LOOP_CONTROL_TOKENS = [TT_END, TT_ELSE, TT_CASE]
 
 SKIP_JUXTAPOSITION = [TT_JUXTAPOSITION]
 
+
 def parser_error_unknown(parser, position):
     line = get_line_for_position(parser.ts.src, position)
     return error.throw(error.Errors.PARSE_ERROR,
@@ -462,20 +463,22 @@ def expression(parser, _rbp, terminators=None):
     return expr
 
 
-def juxtaposition_list(parser, terminators, skip=None):
-    args = []
-    if parser.token_type in terminators:
-        return None, args
-    while True:
-        if skip is not None:
-            while parser.token_type in skip:
-                advance(parser)
+def juxtaposition_as_list(parser, terminators):
+    node = parser.node
+    exp = expression(parser, 0, terminators)
+    if not nodes.is_list_node(exp):
+        return nodes.create_list_node(node, [exp])
 
-        node, _lbp = base_expression(parser, 0, terminators)
-        args.append(node)
+    return nodes.create_list_node_from_list(node, exp)
 
-        if parser.token_type in terminators:
-            return node, args
+
+def juxtaposition_as_tuple(parser, terminators):
+    node = parser.node
+    exp = expression(parser, 0, terminators)
+    if not nodes.is_list_node(exp):
+        return nodes.create_tuple_node(node, [exp])
+
+    return nodes.create_tuple_node_from_list(node, exp)
 
 
 def flatten_juxtaposition(parser, node):
@@ -507,7 +510,7 @@ def postprocess(parser, node):
             parse_error(parser, u"Invalid use of juxtaposition operator", node)
 
         if parser.juxtaposition_as_list:
-            return postprocess(parser, nodes.create_list_node_from_list(node, flatten))
+            return postprocess(parser, flatten)
         else:
             caller = plist.head(flatten)
             args = plist.tail(flatten)

@@ -90,6 +90,7 @@ class ExpressionParser(BaseParser):
     def __init__(self, proc_data):
         BaseParser.__init__(self)
         self.pattern_parser = pattern_parser_init(BaseParser())
+        self.fun_pattern_parser = fun_pattern_parser_init(BaseParser())
         self.guard_parser = guard_parser_init(proc_data, BaseParser())
         self.fun_signature_parser = fun_signature_parser_init(BaseParser())
         self.name_parser = name_parser_init(BaseParser())
@@ -97,12 +98,14 @@ class ExpressionParser(BaseParser):
 
     def _on_open(self, state):
         self.pattern_parser.open(state)
+        self.fun_pattern_parser.open(state)
         self.fun_signature_parser.open(state)
         self.guard_parser.open(state)
         self.name_parser.open(state)
 
     def _on_close(self):
         self.pattern_parser.close()
+        self.fun_pattern_parser.close()
         self.fun_signature_parser.close()
         self.guard_parser.close()
         self.name_parser.close()
@@ -113,9 +116,13 @@ class ModuleParser(BaseParser):
         BaseParser.__init__(self)
 
         self.import_parser = import_parser_init(BaseParser())
+
         self.pattern_parser = pattern_parser_init(BaseParser())
-        self.fun_signature_parser = fun_signature_parser_init(BaseParser())
         self.guard_parser = guard_parser_init(proc_data, BaseParser())
+
+        self.fun_pattern_parser = fun_pattern_parser_init(BaseParser())
+        self.fun_signature_parser = fun_signature_parser_init(BaseParser())
+
         self.expression_parser = ExpressionParser(proc_data)
         self.name_parser = name_parser_init(BaseParser())
         self.import_names_parser = import_names_parser_init(BaseParser())
@@ -127,9 +134,12 @@ class ModuleParser(BaseParser):
     def _on_open(self, state):
         self.method_signature_parser.open(state)
         self.type_parser.open(state)
+
         self.pattern_parser.open(state)
-        self.fun_signature_parser.open(state)
         self.guard_parser.open(state)
+        self.fun_pattern_parser.open(state)
+        self.fun_signature_parser.open(state)
+
         self.import_parser.open(state)
         self.expression_parser.open(state)
         self.name_parser.open(state)
@@ -139,6 +149,7 @@ class ModuleParser(BaseParser):
         self.method_signature_parser.close()
         self.type_parser.close()
         self.pattern_parser.close()
+        self.fun_pattern_parser.close()
         self.fun_signature_parser.close()
         self.guard_parser.close()
         self.import_parser.close()
@@ -174,7 +185,7 @@ def type_parser_init(parser):
     infix(parser, TT_COLON, 95, infix_name_pair)
     # infix(parser, TT_CASE, 15, led_infixr)
     # infix(parser, TT_ASSIGN, 10, led_infixr)
-    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
+    infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
     symbol(parser, TT_CASE, None)
     return parser
 
@@ -184,9 +195,10 @@ def method_signature_parser_init(parser):
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     symbol(parser, TT_DEF, None)
     symbol(parser, TT_ARROW, None)
-    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
+    infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
     # symbol(parser, TT_JUXTAPOSITION)
     return parser
+
 
 def import_names_parser_init(parser):
     symbol(parser, TT_COMMA, None)
@@ -233,9 +245,6 @@ def guard_parser_init(proc_data, parser):
 
 
 def pattern_parser_init(parser):
-    parser.break_on_juxtaposition = True
-
-    # infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly_patterns)
@@ -247,7 +256,6 @@ def pattern_parser_init(parser):
     infix(parser, TT_DOUBLE_COLON, 70, led_infixr)
     infix(parser, TT_COLON, 95, infix_name_pair)
 
-    symbol(parser, TT_JUXTAPOSITION)
     symbol(parser, TT_WHEN)
     symbol(parser, TT_CASE)
     symbol(parser, TT_COMMA)
@@ -261,6 +269,14 @@ def pattern_parser_init(parser):
     return parser
 
 
+def fun_pattern_parser_init(parser):
+    parser = pattern_parser_init(parser)
+    parser.break_on_juxtaposition = False
+    parser.juxtaposition_as_list = True
+    infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
+    return parser
+
+
 def fun_signature_parser_init(parser):
     parser.juxtaposition_as_list = True
     literal(parser, TT_NAME)
@@ -269,14 +285,14 @@ def fun_signature_parser_init(parser):
     symbol(parser, TT_RPAREN)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
 
-    infix(parser, TT_OF, 91, led_infix)
+    infix(parser, TT_OF, 10, led_infix)
     infix(parser, TT_COLON, 95, infix_name_pair)
 
     literal(parser, TT_WILDCARD)
     symbol(parser, TT_DEF)
     symbol(parser, TT_ARROW)
     symbol(parser, TT_CASE)
-    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
+    infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
     return parser
 
 
@@ -291,6 +307,7 @@ def init_parser_literals(parser):
     literal(parser, TT_FALSE)
     literal(parser, TT_WILDCARD)
     return parser
+
 
 def expression_parser_init(proc_data, parser):
     parser.allow_overloading = True
