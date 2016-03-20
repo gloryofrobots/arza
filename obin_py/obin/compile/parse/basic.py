@@ -641,8 +641,10 @@ def skip(parser, ttype):
         advance(parser)
 
 
-def empty(parser, node):
-    return None
+def empty(parser, op, node):
+    print "EMPTY"
+    return expression(parser,0)
+    # return None
 
 
 def is_assignment_node(node):

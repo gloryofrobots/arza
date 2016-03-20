@@ -5,7 +5,7 @@
     "children": [
       {
         "_ntype": "NT_NAME",
-        "_value": "f3"
+        "_value": "f"
       },
       [
         [
@@ -16,55 +16,47 @@
               [
                 {
                   "_ntype": "NT_NAME",
-                  "_value": "a1"
-                },
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "a2"
-                },
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "a3"
+                  "_value": "x"
                 }
               ]
             ]
           },
           [
             {
-              "_ntype": "NT_TUPLE",
-              "_value": "(",
-              "children": [
-                [
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "a1"
-                  },
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "a2"
-                  },
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "a3"
-                  }
-                ]
-              ]
-            },
-            {
-              "_ntype": "NT_CALL",
-              "_value": "f",
-              "children": [
+              "_ntype": "NT_INT",
+              "_value": "123"
+            }
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "_ntype": "NT_FUN",
+    "_value": "fun",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "f2"
+      },
+      [
+        [
+          {
+            "_ntype": "NT_TUPLE",
+            "_value": "(",
+            "children": [
+              [
                 {
                   "_ntype": "NT_NAME",
-                  "_value": "f"
-                },
-                [
-                  {
-                    "_ntype": "NT_INT",
-                    "_value": "42"
-                  }
-                ]
+                  "_value": "x"
+                }
               ]
+            ]
+          },
+          [
+            {
+              "_ntype": "NT_INT",
+              "_value": "42"
             }
           ]
         ]
