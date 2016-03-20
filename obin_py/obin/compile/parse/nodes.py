@@ -12,12 +12,12 @@ def newnode(ntype, token, children):
             assert is_node(child), child
         return space.newtuple([
             space.newint(ntype), token, space.newlist(children),
-            space.newstring(tt.token_type_to_str(tokens.token_type(token)))
+            space.newstring(tt.token_type_to_s(tokens.token_type(token)))
         ])
     else:
         return space.newtuple([
             space.newint(ntype), token, space.newlist([]),
-            space.newstring(tt.token_type_to_str(tokens.token_type(token)))
+            space.newstring(tt.token_type_to_s(tokens.token_type(token)))
         ])
 
 
@@ -184,7 +184,7 @@ def is_wildcard_node(n):
 
 
 def tuple_node_length(n):
-    assert node_type(n) == nt.NT_TUPLE, nt.node_type_to_str(node_type(n))
+    assert node_type(n) == nt.NT_TUPLE, nt.node_type_to_s(node_type(n))
     return api.length_i(node_first(n))
 
 
@@ -200,7 +200,7 @@ def node_to_d(node):
     else:
         d = {
             # "_type": tokens.token_type_to_str(node_token_type(node)),
-            "_ntype": nt.node_type_to_str(node_type(node)) if node_type(node) != -1 else "",
+            "_ntype": nt.node_type_to_s(node_type(node)) if node_type(node) != -1 else "",
             "_value": node_value_s(node),
             # "_line": api.to_i(node_line(node))
         }

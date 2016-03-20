@@ -68,5 +68,5 @@ __NT_REPR__ = ["NT_GOTO", "NT_TRUE", "NT_FALSE", "NT_INT", "NT_FLOAT", "NT_STR",
                "NT_LAZY", "NT_AND", "NT_OR", ]
 
 
-def node_type_to_str(ttype):
-    return __NT_REPR__[ttype]
+def node_type_to_s(ntype):
+    return __NT_REPR__[ntype]

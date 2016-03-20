@@ -77,6 +77,8 @@ NODES = [
   "NT_AND",
   "NT_OR",
 
+  "NT_END_EXPR",
+  "NT_END",
 ]
 
 
@@ -97,8 +99,8 @@ S += "]"
 print S
 print 
 print 
-print "def node_type_to_str(ttype):"
-print "    return __NT_REPR__[ttype]"
+print "def node_type_to_s(ntype):"
+print "    return __NT_REPR__[ntype]"
 
 # print "# ************************ OBIN NODES MAPPING *****************************"
 # for name in NODES:

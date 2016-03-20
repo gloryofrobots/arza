@@ -209,7 +209,8 @@ def create_end_expression_token(token):
                     token_line(token),
                     token_column(token))
 
+
 def token_to_s(token):
-    return "(%s, %s, %d, %d)" % (token_type_to_str(token_type(token)),
+    return "(%s, %s, %d, %d)" % (token_type_to_s(token_type(token)),
                                  repr(token_value_s(token)), api.to_i(token_line(token)),
                                  api.to_i(token_column(token)))

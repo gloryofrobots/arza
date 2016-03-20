@@ -124,7 +124,7 @@ S += "]"
 print S
 print
 print
-print "def token_type_to_str(ttype):"
+print "def token_type_to_s(ttype):"
 print "    return __TT_REPR__[ttype]"
 
 

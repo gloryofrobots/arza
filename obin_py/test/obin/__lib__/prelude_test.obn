@@ -1,5 +1,13 @@
 fun f3 a1 a2 a3 ->
+    
     (a1, a2, a3)
+
+//fun f a1 a2 a3 -> (a1, a2, a3) end
+
+
+
+
+
 
 //fun f a1 a2 a3 -> (a1, a2, a3) end
 //fun f2 a1 a2 a3 -> (a1, a2, a3)

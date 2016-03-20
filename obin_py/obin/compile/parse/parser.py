@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
 import obin.compile.parse.lexer as lexer
 from obin.compile.parse.tokenstream import TokenStream
-from obin.compile.parse.indentation_tokenstream import IndentationTokenStream, InvalidIndentationError
+from obin.compile.parse.indenter import IndentationTokenStream, InvalidIndentationError
 from obin.compile.parse.callbacks import *
 from obin.compile.parse.lexer import UnknownTokenError
 from obin.compile.parse import tokens
@@ -283,7 +283,6 @@ def fun_pattern_parser_init(parser):
 def fun_signature_parser_init(parser):
     parser.juxtaposition_as_list = True
     literal(parser, TT_NAME)
-    literal(parser, TT_END_EXPR)
 
     prefix(parser, TT_LPAREN, prefix_lparen)
     symbol(parser, TT_RPAREN)
@@ -310,7 +309,6 @@ def init_parser_literals(parser):
     literal(parser, TT_TRUE)
     literal(parser, TT_FALSE)
     literal(parser, TT_WILDCARD)
-    symbol(parser, TT_END_EXPR, itself)
     return parser
 
 

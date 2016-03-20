@@ -37,7 +37,7 @@ NODE_TYPE_MAPPING = {
     TT_DOUBLE_COLON: NT_CONS,
     # TT_COMMA: NT_COMMA,
     TT_CASE: NT_CASE,
-    TT_END_EXPR: -100,
+    # TT_END_EXPR: -100,
 }
 
 
@@ -526,6 +526,7 @@ def _parse_function_signature(parser):
 
 def _parse_function_variants(parser, signature, term_pattern, term_guard, term_case_body, term_single_body):
     if parser.token_type == TT_ARROW:
+        init_code_block(parser)
         advance_expected(parser, TT_ARROW)
         body = statements(parser, term_single_body)
         return nodes.create_function_variants(signature, body)

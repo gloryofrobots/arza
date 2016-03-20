@@ -232,7 +232,7 @@ def parser_operator(parser, ttype):
     try:
         return parser.handlers[ttype]
     except:
-        return parse_error(parser, u"Invalid token %s" % tokens.token_type_to_str(ttype), parser.node)
+        return parse_error(parser, u"Invalid token %s" % tokens.token_type_to_s(ttype), parser.node)
 
 
 def get_or_create_operator(parser, ttype):
@@ -350,16 +350,16 @@ def token_is_one_of(parser, types):
 
 def check_token_type(parser, type):
     if parser.token_type != type:
-        parse_error(parser, u"Wrong token type, expected %s, got %s" % (tokens.token_type_to_str(type),
-                                                                        tokens.token_type_to_str(parser.token_type)),
+        parse_error(parser, u"Wrong token type, expected %s, got %s" % (tokens.token_type_to_s(type),
+                                                                        tokens.token_type_to_s(parser.token_type)),
                     parser.node)
 
 
 def check_token_types(parser, types):
     if parser.token_type not in types:
         parse_error(parser, u"Wrong token type, expected one of %s, got %s" %
-                    (unicode([tokens.token_type_to_str(type) for type in types]),
-                     tokens.token_type_to_str(parser.token_type)), parser.node)
+                    (unicode([tokens.token_type_to_s(type) for type in types]),
+                     tokens.token_type_to_s(parser.token_type)), parser.node)
 
 
 def check_list_node_types(parser, node, expected_types):
@@ -371,16 +371,16 @@ def check_node_type(parser, node, expected_type):
     ntype = nodes.node_type(node)
     if ntype != expected_type:
         parse_error(parser, u"Wrong node type, expected  %s, got %s" %
-                    (node_type_to_str(expected_type),
-                     node_type_to_str(ntype)), node)
+                    (node_type_to_s(expected_type),
+                     node_type_to_s(ntype)), node)
 
 
 def check_node_types(parser, node, types):
     ntype = nodes.node_type(node)
     if ntype not in types:
         parse_error(parser, u"Wrong node type, expected one of %s, got %s" %
-                    (unicode([node_type_to_str(type) for type in types]),
-                     node_type_to_str(ntype)), node)
+                    (unicode([node_type_to_s(type) for type in types]),
+                     node_type_to_s(ntype)), node)
 
 
 def advance(parser):
@@ -488,8 +488,6 @@ def expression(parser, _rbp, terminators=None):
     if terminators is None:
         terminators = TERM_EXP
     expr, _lbp = base_expression(parser, _rbp, terminators)
-    if parser.token_type == TT_END_EXPR:
-        advance(parser)
     expr = postprocess(parser, expr)
     return expr
 
@@ -597,13 +595,21 @@ def _statements(parser, endlist):
 
 
 def statements(parser, endlist):
-    init_code_block(parser)
-    return _statements(parser, endlist)
+    stmts = []
+    while True:
+        if token_is_one_of(parser, endlist):
+            break
+        s = statement(parser)
 
+        if s is None:
+            continue
+        stmts.append(s)
 
-def nested_statements(parser, endlist):
-    init_nested_code_block(parser)
-    return _statements(parser, endlist)
+    length = len(stmts)
+    if length == 0:
+        return parse_error(parser, u"Expected one or more expressions", parser.node)
+
+    return nodes.list_node(stmts)
 
 
 def infix(parser, ttype, lbp, led):

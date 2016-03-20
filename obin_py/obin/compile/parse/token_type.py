@@ -90,5 +90,5 @@ __TT_REPR__ = [u"TT_ENDSTREAM", u"TT_INT", u"TT_FLOAT", u"TT_STR", u"TT_CHAR", u
                u"TT_DOUBLE_COLON", u"TT_DOUBLE_DOT", u"TT_BACKTICK", u"TT_UNKNOWN", ]
 
 
-def token_type_to_str(ttype):
+def token_type_to_s(ttype):
     return __TT_REPR__[ttype]
