@@ -7,6 +7,7 @@ from obin.misc.platform import re
 def keyword(literal):
     return re.compile('\\b%s\\b' % literal)
 
+
 token = re.compile
 
 ## Regexes for use in tokens
@@ -57,7 +58,6 @@ char_const = "'[^']+'"
 backtick_const = "`[^`]+`"
 string_literal = '(""".*?""")|(".*?")|(\'.*?\')'
 
-
 RULES = [
     (token('\n'), TT_NEWLINE),
     (token('[ ]*\.\.\.'), TT_ELLIPSIS),
@@ -106,7 +106,6 @@ RULES = [
     (keyword('of'), TT_OF),
     (keyword('as'), TT_AS),
     (keyword('when'), TT_WHEN),
-
 
     (keyword('var'), TT_VAR),
     (keyword('lazy'), TT_LAZY),
@@ -194,3 +193,17 @@ def token_line(token):
 
 def token_column(token):
     return api.at_index(token, 4)
+
+
+def create_end_token(token):
+    return newtoken(TT_END, "end",
+                    token_position(token),
+                    token_line(token),
+                    token_column(token))
+
+
+def create_end_expression_token(token):
+    return newtoken(TT_END_EXPR, ";",
+                    token_position(token),
+                    token_line(token),
+                    token_column(token))
