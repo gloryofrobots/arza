@@ -62,7 +62,7 @@ trait Collection for self
     def len self
     def is_empty self
     def put key value self
-    def at key self
+    def at key seslf
     def del obj self
     def elem key self
 ---------------------------------

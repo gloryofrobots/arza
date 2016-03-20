@@ -133,7 +133,7 @@ RULES = [
 
     (token('\-\>'), TT_ARROW),
     (token('\<\-'), TT_BACKARROW),
-    (token('\;'), TT_SEMI),
+    (token('\;'), TT_END_EXPR),
     (token('#'), TT_SHARP),
     (token('\{'), TT_LCURLY),
     (token('\}'), TT_RCURLY),

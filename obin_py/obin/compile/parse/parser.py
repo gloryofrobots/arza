@@ -1,6 +1,7 @@
 __author__ = 'gloryofrobots'
 import obin.compile.parse.lexer as lexer
 from obin.compile.parse.tokenstream import TokenStream
+from obin.compile.parse.indentation_tokenstream import IndentationTokenStream, InvalidIndentationError
 from obin.compile.parse.callbacks import *
 from obin.compile.parse.lexer import UnknownTokenError
 from obin.compile.parse import tokens
@@ -64,9 +65,9 @@ class BaseParser:
     def token_type(self):
         return tokens.token_type(self.ts.token)
 
-    @property
-    def is_newline_occurred(self):
-        return self.ts.is_newline_occurred
+    # @property
+    # def is_newline_occurred(self):
+    #     return self.ts.is_newline_occurred
 
     @property
     def node(self):
@@ -79,6 +80,8 @@ class BaseParser:
     def next(self):
         try:
             return self.ts.next()
+        except InvalidIndentationError as e:
+            parser_error_indentation(self, e.msg, e.position, e.line, e.column)
         except UnknownTokenError as e:
             parser_error_unknown(self, e.position)
 
@@ -280,6 +283,7 @@ def fun_pattern_parser_init(parser):
 def fun_signature_parser_init(parser):
     parser.juxtaposition_as_list = True
     literal(parser, TT_NAME)
+    literal(parser, TT_END_EXPR)
 
     prefix(parser, TT_LPAREN, prefix_lparen)
     symbol(parser, TT_RPAREN)
@@ -306,6 +310,7 @@ def init_parser_literals(parser):
     literal(parser, TT_TRUE)
     literal(parser, TT_FALSE)
     literal(parser, TT_WILDCARD)
+    symbol(parser, TT_END_EXPR, itself)
     return parser
 
 
@@ -320,7 +325,7 @@ def expression_parser_init(proc_data, parser):
     symbol(parser, TT_RPAREN)
     symbol(parser, TT_RCURLY)
     symbol(parser, TT_COMMA)
-    symbol(parser, TT_SEMI)
+    symbol(parser, TT_END_EXPR)
     symbol(parser, TT_AT_SIGN)
     symbol(parser, TT_ELSE)
     symbol(parser, TT_ELIF)
@@ -407,10 +412,10 @@ def newparser(proc_data):
 def newtokenstream(source):
     lx = lexer.lexer(source)
     tokens_iter = lx.tokens()
-    return TokenStream(tokens_iter, source)
+    return IndentationTokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = False
+PARSE_DEBUG = True
 
 
 def parse(process, env, src):

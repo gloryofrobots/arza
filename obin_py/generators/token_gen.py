@@ -51,7 +51,10 @@ TOKENS = [
   ("TT_HIDING", "hiding"),
   ("TT_EXPORT", "export"),
   ("TT_TRAIT", "trait"),
+
   ("TT_END", "end"),
+  ("TT_END_EXPR", ";"),
+  ("TT_SPACES", "(spaces)"),
 
   ("TT_INFIXL", "infixl"),
   ("TT_INFIXR", "infixr"),
@@ -67,7 +70,6 @@ TOKENS = [
   ("TT_AT_SIGN", "@"),
 
 
-  ("TT_SEMI", ";"),
   ("TT_SHARP", "#"),
 
   ("TT_LAMBDA", "\\"),

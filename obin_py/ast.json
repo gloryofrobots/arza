@@ -5,7 +5,7 @@
     "children": [
       {
         "_ntype": "NT_NAME",
-        "_value": "split_at"
+        "_value": "span"
       },
       [
         [
@@ -15,81 +15,273 @@
             "children": [
               [
                 {
-                  "_ntype": "NT_OF",
-                  "_value": "of",
-                  "children": [
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "n"
-                    },
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "Int"
-                    }
-                  ]
+                  "_ntype": "NT_NAME",
+                  "_value": "predicate"
                 },
                 {
-                  "_ntype": "NT_OF",
-                  "_value": "of",
-                  "children": [
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "l"
-                    },
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "List"
-                    }
-                  ]
+                  "_ntype": "NT_NAME",
+                  "_value": "list"
                 }
               ]
             ]
           },
           [
             {
-              "_ntype": "NT_TUPLE",
+              "_ntype": "NT_CALL",
               "_value": "(",
               "children": [
+                {
+                  "_ntype": "NT_FUN",
+                  "_value": "fun",
+                  "children": [
+                    {
+                      "empty": true
+                    },
+                    [
+                      [
+                        {
+                          "_ntype": "NT_TUPLE",
+                          "_value": "(",
+                          "children": [
+                            [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "p"
+                              },
+                              {
+                                "_ntype": "NT_LIST",
+                                "_value": "[",
+                                "children": [
+                                  []
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        [
+                          {
+                            "_ntype": "NT_TUPLE",
+                            "_value": "(",
+                            "children": [
+                              [
+                                {
+                                  "_ntype": "NT_LIST",
+                                  "_value": "[",
+                                  "children": [
+                                    []
+                                  ]
+                                },
+                                {
+                                  "_ntype": "NT_LIST",
+                                  "_value": "[",
+                                  "children": [
+                                    []
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      ],
+                      [
+                        {
+                          "_ntype": "NT_TUPLE",
+                          "_value": "(",
+                          "children": [
+                            [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "p"
+                              },
+                              {
+                                "_ntype": "NT_BIND",
+                                "_value": "@",
+                                "children": [
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "xs"
+                                  },
+                                  {
+                                    "_ntype": "NT_LIST",
+                                    "_value": "[",
+                                    "children": [
+                                      [
+                                        {
+                                          "_ntype": "NT_NAME",
+                                          "_value": "x"
+                                        },
+                                        {
+                                          "_ntype": "NT_REST",
+                                          "_value": " ...",
+                                          "children": [
+                                            {
+                                              "_ntype": "NT_NAME",
+                                              "_value": "xs1"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        [
+                          {
+                            "_ntype": "NT_CONDITION",
+                            "_value": "if",
+                            "children": [
+                              [
+                                [
+                                  {
+                                    "_ntype": "NT_CALL",
+                                    "_value": "not",
+                                    "children": [
+                                      {
+                                        "_ntype": "NT_NAME",
+                                        "_value": "not"
+                                      },
+                                      [
+                                        {
+                                          "_ntype": "NT_CALL",
+                                          "_value": "p",
+                                          "children": [
+                                            {
+                                              "_ntype": "NT_NAME",
+                                              "_value": "p"
+                                            },
+                                            [
+                                              {
+                                                "_ntype": "NT_NAME",
+                                                "_value": "x"
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    ]
+                                  },
+                                  [
+                                    {
+                                      "_ntype": "NT_TUPLE",
+                                      "_value": "(",
+                                      "children": [
+                                        [
+                                          {
+                                            "_ntype": "NT_LIST",
+                                            "_value": "[",
+                                            "children": [
+                                              []
+                                            ]
+                                          },
+                                          {
+                                            "_ntype": "NT_NAME",
+                                            "_value": "xs"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                ],
+                                [
+                                  {
+                                    "empty": true
+                                  },
+                                  [
+                                    {
+                                      "_ntype": "NT_ASSIGN",
+                                      "_value": "=",
+                                      "children": [
+                                        {
+                                          "_ntype": "NT_TUPLE",
+                                          "_value": "(",
+                                          "children": [
+                                            [
+                                              {
+                                                "_ntype": "NT_NAME",
+                                                "_value": "ys"
+                                              },
+                                              {
+                                                "_ntype": "NT_NAME",
+                                                "_value": "zs"
+                                              }
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "_ntype": "NT_CALL",
+                                          "_value": "span",
+                                          "children": [
+                                            {
+                                              "_ntype": "NT_NAME",
+                                              "_value": "span"
+                                            },
+                                            [
+                                              {
+                                                "_ntype": "NT_NAME",
+                                                "_value": "p"
+                                              },
+                                              {
+                                                "_ntype": "NT_NAME",
+                                                "_value": "xs1"
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "_ntype": "NT_TUPLE",
+                                      "_value": "(",
+                                      "children": [
+                                        [
+                                          {
+                                            "_ntype": "NT_CALL",
+                                            "_value": "(",
+                                            "children": [
+                                              {
+                                                "_ntype": "NT_NAME",
+                                                "_value": "obin:lang:cons"
+                                              },
+                                              [
+                                                {
+                                                  "_ntype": "NT_NAME",
+                                                  "_value": "x"
+                                                },
+                                                {
+                                                  "_ntype": "NT_NAME",
+                                                  "_value": "ys"
+                                                }
+                                              ]
+                                            ]
+                                          },
+                                          {
+                                            "_ntype": "NT_NAME",
+                                            "_value": "zs"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                ]
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  ]
+                },
                 [
                   {
-                    "_ntype": "NT_CALL",
-                    "_value": "take",
-                    "children": [
-                      {
-                        "_ntype": "NT_NAME",
-                        "_value": "take"
-                      },
-                      [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "n"
-                        },
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "l"
-                        }
-                      ]
-                    ]
+                    "_ntype": "NT_NAME",
+                    "_value": "predicate"
                   },
                   {
-                    "_ntype": "NT_CALL",
-                    "_value": "drop",
-                    "children": [
-                      {
-                        "_ntype": "NT_NAME",
-                        "_value": "drop"
-                      },
-                      [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "n"
-                        },
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "l"
-                        }
-                      ]
-                    ]
+                    "_ntype": "NT_NAME",
+                    "_value": "list"
                   }
                 ]
               ]

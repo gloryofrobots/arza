@@ -7,6 +7,7 @@ from obin.runtime import error
 from obin.misc.strutil import get_line, get_line_for_position
 
 TERM_BLOCK = [TT_END]
+TERM_EXP = [TT_END_EXPR]
 
 TERM_IF_BODY = [TT_ELSE, TT_ELIF]
 TERM_IF_CONDITION = [TT_ARROW]
@@ -21,7 +22,7 @@ TERM_SINGLE_CATCH = [TT_FINALLY] + TERM_BLOCK
 TERM_PATTERN = [TT_WHEN]
 TERM_FUN_GUARD = [TT_ARROW]
 TERM_FUN_PATTERN = [TT_WHEN, TT_ARROW]
-TERM_FUN_SIGNATURE = [TT_ARROW, TT_CASE]
+TERM_FUN_SIGNATURE = [TT_ARROW, TT_CASE, TT_END_EXPR]
 
 TERM_CONDITION_BODY = [TT_CASE] + TERM_BLOCK
 TERM_BEFORE_FOR = [TT_FOR]
@@ -54,6 +55,18 @@ def parser_error_unknown(parser, position):
                        space.newtuple([
                            space.newint(position),
                            space.newstring(u"Unknown Token"),
+                           space.newstring(line)
+                       ]))
+
+
+def parser_error_indentation(parser, msg, position, lineno, column):
+    line = get_line_for_position(parser.ts.src, position)
+    return error.throw(error.Errors.PARSE_ERROR,
+                       space.newtuple([
+                           space.newint(position),
+                           space.newint(lineno),
+                           space.newint(column),
+                           space.newstring(msg),
                            space.newstring(line)
                        ]))
 
@@ -358,7 +371,9 @@ def advance(parser):
     if parser.isend():
         return None
 
-    return parser.next()
+    node = parser.next()
+    print "ADVANCE", node
+    return node
 
 
 def advance_expected(parser, ttype):
@@ -381,17 +396,17 @@ def advance_end(parser):
 
 
 def isendofexpressiontoken(parser):
-    return parser.token_type == TT_SEMI
+    return parser.token_type == TT_END_EXPR
 
 
 def endofexpression(parser):
     if parser.isend():
         return None
-    if parser.is_newline_occurred:
-        return parser.node
+    # if parser.is_newline_occurred:
+    #     return parser.node
     if parser.token_type in TERM_BLOCK:
         return parser.node
-    if parser.token_type == TT_SEMI:
+    if parser.token_type == TT_END_EXPR:
         return advance(parser)
 
     parse_error(parser, u"Expected end of expression mark", parser.node)
@@ -399,16 +414,12 @@ def endofexpression(parser):
 
 def base_expression(parser, _rbp, terminators=None):
     previous = parser.node
-    # print "******"
-    # print "rbp ", _rbp
-    # print "previous", previous
     advance(parser)
 
     left = nud(parser, previous)
-    # print "left", left.value
     while True:
-        if parser.is_newline_occurred:
-            break
+        # if parser.is_newline_occurred:
+        #     break
 
         if terminators is not None:
             if parser.token_type in terminators:
@@ -458,7 +469,11 @@ def expect_expression_of_types(parser, _rbp, expected_types, terminators=None):
 
 
 def expression(parser, _rbp, terminators=None):
+    if terminators is None:
+        terminators = TERM_EXP
     expr, _lbp = base_expression(parser, _rbp, terminators)
+    if parser.token_type == TT_END_EXPR:
+        advance(parser)
     expr = postprocess(parser, expr)
     return expr
 

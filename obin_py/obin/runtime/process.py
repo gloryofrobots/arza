@@ -213,11 +213,11 @@ class Process(object):
                 break
             try:
                 result = self.__execute()
-            except error.ObinError as e:
-                signal = error.convert_to_script_error(self, e)
-                result = self._catch_or_terminate(signal)
-            except error.ObinSignal as e:
-                result = self._catch_or_terminate(e.signal)
+            # except error.ObinError as e:
+            #     signal = error.convert_to_script_error(self, e)
+            #     result = self._catch_or_terminate(signal)
+            # except error.ObinSignal as e:
+            #     result = self._catch_or_terminate(e.signal)
             except Exception as e:
                 # TODO IF WE ARE TRANSLATED
                 # print e
@@ -282,7 +282,7 @@ class Process(object):
         trace = plist.empty()
         if self.fiber is None:
             return False, trace
-        
+
         while True:
             if not self.fiber.routine.is_terminated():
                 self.fiber.routine.terminate(signal)
