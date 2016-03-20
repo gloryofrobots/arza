@@ -88,6 +88,22 @@ def parse_error(parser, message, node):
                        ]))
 
 
+def init_nested_code_block(parser):
+    parser.ts.add_nested_code_block()
+
+
+def init_code_block(parser):
+    parser.ts.add_code_block()
+
+
+def init_expression_block(parser):
+    parser.ts.add_expression_block()
+
+
+def init_free_block(parser):
+    parser.ts.add_free_block()
+
+
 class ParserScope(root.W_Root):
     def __init__(self):
         self.operators = space.newmap()
@@ -562,7 +578,7 @@ def statement(parser):
     return value
 
 
-def statements(parser, endlist):
+def _statements(parser, endlist):
     stmts = []
     while True:
         if token_is_one_of(parser, endlist):
@@ -578,6 +594,16 @@ def statements(parser, endlist):
         return parse_error(parser, u"Expected one or more expressions", parser.node)
 
     return nodes.list_node(stmts)
+
+
+def statements(parser, endlist):
+    init_code_block(parser)
+    return _statements(parser, endlist)
+
+
+def nested_statements(parser, endlist):
+    init_nested_code_block(parser)
+    return _statements(parser, endlist)
 
 
 def infix(parser, ttype, lbp, led):

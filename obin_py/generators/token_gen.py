@@ -54,7 +54,7 @@ TOKENS = [
 
   ("TT_END", "end"),
   ("TT_END_EXPR", ";"),
-  ("TT_SPACES", "(spaces)"),
+  ("TT_INDENTATION", "(indentation)"),
 
   ("TT_INFIXL", "infixl"),
   ("TT_INFIXR", "infixr"),

@@ -46,7 +46,7 @@ TT_EXPORT = 43
 TT_TRAIT = 44
 TT_END = 45
 TT_END_EXPR = 46
-TT_SPACES = 47
+TT_INDENTATION = 47
 TT_INFIXL = 48
 TT_INFIXR = 49
 TT_PREFIX = 50
@@ -83,7 +83,7 @@ __TT_REPR__ = [u"TT_ENDSTREAM", u"TT_INT", u"TT_FLOAT", u"TT_STR", u"TT_CHAR", u
                u"TT_IN_CASE", u"TT_ELIF", u"TT_ELSE", u"TT_THEN", u"TT_WHEN", u"TT_OF", u"TT_AS", u"TT_VAR", u"TT_LAZY",
                u"TT_AND", u"TT_OR", u"TT_TRUE", u"TT_FALSE", u"TT_TRY", u"TT_THROW", u"TT_CATCH", u"TT_FINALLY",
                u"TT_MODULE", u"TT_IMPORT", u"TT_FROM", u"TT_HIDING", u"TT_EXPORT", u"TT_TRAIT", u"TT_END",
-               u"TT_END_EXPR", u"TT_SPACES", u"TT_INFIXL", u"TT_INFIXR", u"TT_PREFIX", u"TT_AMP", u"TT_ELLIPSIS",
+               u"TT_END_EXPR", u"TT_INDENTATION", u"TT_INFIXL", u"TT_INFIXR", u"TT_PREFIX", u"TT_AMP", u"TT_ELLIPSIS",
                u"TT_WILDCARD", u"TT_GOTO", u"TT_ARROW", u"TT_BACKARROW", u"TT_AT_SIGN", u"TT_SHARP", u"TT_LAMBDA",
                u"TT_JUXTAPOSITION", u"TT_INFIX_DOT_LCURLY", u"TT_LCURLY", u"TT_RCURLY", u"TT_COMMA", u"TT_ASSIGN",
                u"TT_INFIX_DOT_LPAREN", u"TT_LPAREN", u"TT_RPAREN", u"TT_LSQUARE", u"TT_RSQUARE", u"TT_DOT", u"TT_COLON",
