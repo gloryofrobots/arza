@@ -16,47 +16,78 @@
               [
                 {
                   "_ntype": "NT_NAME",
-                  "_value": "x"
-                }
-              ]
-            ]
-          },
-          [
-            {
-              "_ntype": "NT_INT",
-              "_value": "123"
-            }
-          ]
-        ]
-      ]
-    ]
-  },
-  {
-    "_ntype": "NT_FUN",
-    "_value": "fun",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "f2"
-      },
-      [
-        [
-          {
-            "_ntype": "NT_TUPLE",
-            "_value": "(",
-            "children": [
-              [
+                  "_value": "a"
+                },
                 {
                   "_ntype": "NT_NAME",
-                  "_value": "x"
+                  "_value": "b"
+                },
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "c"
                 }
               ]
             ]
           },
           [
             {
-              "_ntype": "NT_INT",
-              "_value": "42"
+              "_ntype": "NT_CALL",
+              "_value": "(",
+              "children": [
+                {
+                  "_ntype": "NT_FUN",
+                  "_value": "fun",
+                  "children": [
+                    {
+                      "empty": true
+                    },
+                    [
+                      [
+                        {
+                          "_ntype": "NT_TUPLE",
+                          "_value": "(",
+                          "children": [
+                            [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "d"
+                              },
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "e"
+                              },
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "f"
+                              }
+                            ]
+                          ]
+                        },
+                        [
+                          {
+                            "_ntype": "NT_INT",
+                            "_value": "1"
+                          }
+                        ]
+                      ]
+                    ]
+                  ]
+                },
+                [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "a"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "b"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "c"
+                  }
+                ]
+              ]
             }
           ]
         ]

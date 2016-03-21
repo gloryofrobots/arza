@@ -526,7 +526,6 @@ def _parse_function_signature(parser):
 
 def _parse_function_variants(parser, signature, term_pattern, term_guard, term_case_body, term_single_body):
     if parser.token_type == TT_ARROW:
-        init_code_block(parser)
         advance_expected(parser, TT_ARROW)
         body = statements(parser, term_single_body)
         return nodes.create_function_variants(signature, body)
@@ -550,6 +549,7 @@ def _parse_function_variants(parser, signature, term_pattern, term_guard, term_c
         if nodes.tuple_node_length(args_sig) != sig_arity:
             return parse_error(parser, u"Inconsistent clause arity with function signature", args)
 
+        init_nested_code_block(parser)
         advance_expected(parser, TT_ARROW)
         body = statements(parser, term_case_body)
         funcs.append(list_node([args, body]))
@@ -569,6 +569,7 @@ def _parse_function_variants(parser, signature, term_pattern, term_guard, term_c
 
 
 def _parse_function(parser, term_pattern, term_guard, term_case_body, term_single_body):
+    init_code_block(parser)
     signature = _parse_function_signature(parser)
     funcs = _parse_function_variants(parser, signature, term_pattern, term_guard, term_case_body, term_single_body)
     return funcs
@@ -604,7 +605,7 @@ def prefix_lambda(parser, op, node):
 def stmt_module(parser, op, node):
     name = expression(parser.name_parser, 0)
     check_node_type(parser, name, NT_NAME)
-    stmts, scope = parse_env_statements(parser, TERM_BLOCK)
+    stmts, scope = parse_module(parser, TERM_BLOCK)
     advance_end(parser)
     return node_3(NT_MODULE, __ntok(node), name, stmts, scope)
 

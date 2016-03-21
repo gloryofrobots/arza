@@ -104,6 +104,10 @@ def init_free_block(parser):
     parser.ts.add_free_block()
 
 
+def pop_block(parser):
+    parser.ts.pop_block()
+
+
 class ParserScope(root.W_Root):
     def __init__(self):
         self.operators = space.newmap()
@@ -161,9 +165,9 @@ def parser_find_operator(parser, op_name):
     return op
 
 
-def parse_env_statements(parser, termination_tokens):
+def parse_module(parser, termination_tokens):
     parser_enter_scope(parser)
-    stmts = statements(parser, termination_tokens)
+    stmts = module_statements(parser, termination_tokens)
     scope = parser_exit_scope(parser)
     return stmts, scope
 
@@ -564,7 +568,6 @@ def literal_expression(parser):
 
 def statement(parser):
     node = parser.node
-
     if node_has_std(parser, node):
         advance(parser)
         value = std(parser, node)
@@ -576,12 +579,23 @@ def statement(parser):
     return value
 
 
-def _statements(parser, endlist):
+def statement_no_end_expr(parser):
+    node = parser.node
+    if node_has_std(parser, node):
+        advance(parser)
+        value = std(parser, node)
+        return value
+
+    value = expression(parser, 0)
+    return value
+
+
+def _statements(parser, parse_func, endlist):
     stmts = []
     while True:
         if token_is_one_of(parser, endlist):
             break
-        s = statement(parser)
+        s = parse_func(parser)
 
         if s is None:
             continue
@@ -595,21 +609,11 @@ def _statements(parser, endlist):
 
 
 def statements(parser, endlist):
-    stmts = []
-    while True:
-        if token_is_one_of(parser, endlist):
-            break
-        s = statement(parser)
+    return _statements(parser, statement, endlist)
 
-        if s is None:
-            continue
-        stmts.append(s)
 
-    length = len(stmts)
-    if length == 0:
-        return parse_error(parser, u"Expected one or more expressions", parser.node)
-
-    return nodes.list_node(stmts)
+def module_statements(parser, endlist):
+    return _statements(parser, statement_no_end_expr, endlist)
 
 
 def infix(parser, ttype, lbp, led):
@@ -643,7 +647,7 @@ def skip(parser, ttype):
 
 def empty(parser, op, node):
     print "EMPTY"
-    return expression(parser,0)
+    return expression(parser, 0)
     # return None
 
 
