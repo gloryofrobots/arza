@@ -19,6 +19,7 @@ class Block(root.W_Root):
     def __init__(self, parent_level, level, push_end_on_dedent, push_end_of_expression_on_new_line, ignore_new_lines):
         self.parent_level = parent_level
         self.level = level
+        self.pop_nested_block = False
         self.push_end_on_dedent = push_end_on_dedent
         self.push_end_of_expression_on_new_line = push_end_of_expression_on_new_line
         self.ignore_new_lines = ignore_new_lines
@@ -77,6 +78,7 @@ class IndentationTokenStream:
 
     def add_nested_code_block(self):
         cur = self.current_block()
+        cur.pop_nested_block = True
         self._add_block(Block(cur.level, -1, False, True, False))
 
     def add_code_block(self):
@@ -124,25 +126,27 @@ class IndentationTokenStream:
 
         # new uninitialized block
         # FIXME IT WILL BROKE COMBINED APPROACH when if x == 1 -> somecode \n somecode
-        if block.level == -1:
+        elif block.level == -1:
+
             if level < block.parent_level:
                 return indentation_error(u"Indentation level must be <= then parent level", token)
+            if level <= block.parent_level:
+                self.on_dedent(block, token)
+                self.pop_block()
+                return self.dedent(token, level)
 
             block.level = level
-            if level == block.parent_level:
-                if block.push_end_of_expression_on_new_line is True:
-                    self.add_to_generated(tokens.create_end_expression_token(token))
-                if block.push_end_on_dedent is True:
-                    self.add_to_generated(tokens.create_end_token(token))
-
-            # if block.push_end_of_expression_on_new_line is True:
-            #     self.add_to_generated(tokens.create_end_expression_token(token))
+            self.on_newline(block, token)
+            if block.push_end_of_expression_on_new_line is True:
+                self.add_to_generated(tokens.create_end_expression_token(token))
             return self.next()
 
-        if level > block.level:
+        elif level > block.level:
             return indentation_error(u"Invalid indentation level", token)
+        else:
+            return self.dedent(token, level)
 
-        # dedent
+    def dedent(self, token, level):
         blocks = self.blocks
         while True:
             block = plist.head(blocks)
@@ -153,16 +157,23 @@ class IndentationTokenStream:
             if block.level < level:
                 return indentation_error(u"Invalid indentation level", token)
             elif block.level > level:
-                # if block.push_end_of_expression_on_new_line is True:
-                #     self.add_to_generated(tokens.create_end_expression_token(token))
-                if block.push_end_on_dedent is True:
-                    self.add_to_generated(tokens.create_end_token(token))
+                self.on_dedent(block, token)
             elif block.level == level:
-                if block.push_end_of_expression_on_new_line is True:
-                    self.add_to_generated(tokens.create_end_expression_token(token))
-
+                self.on_newline(block, token)
                 return self.next()
             self.blocks = blocks
+
+    def on_newline(self, block, token):
+        if block.pop_nested_block is True:
+            self.pop_block()
+        elif block.push_end_of_expression_on_new_line is True:
+            self.add_to_generated(tokens.create_end_expression_token(token))
+
+    def on_dedent(self, block, token):
+        if block.push_end_on_dedent is True:
+            self.add_to_generated(tokens.create_end_token(token))
+        elif block.push_end_of_expression_on_new_line is True:
+            self.add_to_generated(tokens.create_end_expression_token(token))
 
     def attach_token(self, token):
         self.token = token
