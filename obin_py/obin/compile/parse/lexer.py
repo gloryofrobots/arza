@@ -74,6 +74,8 @@ class Lexer:
         while 1:
             tok = self.token()
             if tok is None:
+                # ADD FAKE NEWLINE TO SUPPORT ONE LINE SCRIPT FILES
+                yield tokens.newtoken(tokens.TT_NEWLINE, "\n", space.newint(-1), space.newint(-1), space.newint(1))
                 yield tokens.newtoken(tokens.TT_ENDSTREAM, "", space.newint(-1), space.newint(-1), space.newint(1))
                 break
             yield tok

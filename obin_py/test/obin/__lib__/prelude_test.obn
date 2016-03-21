@@ -1,5 +1,21 @@
-//fun f a b c -> [42,43,44]
-//               (42,43,44)
-//               
-//fun f3 (()) -> 43
+fun f a 
+    | a -> 1
+    | z -> 2
+    | x -> 3
+    
+fun f a  | a -> 1
+         | z -> 2
+         | x -> 3
+fun f a b c 
+    | a b c -> 42
+    | z e f -> 24
+    | x [x:xs] l -> 31
 
+fun f a b c | a b c -> 13
+
+fun f3 (()) -> 43
+fun f a b c -> [42,43,44]
+               (42,43,44)
+fun f a b c ->
+    a :: b :: c
+    tail (c :: f)

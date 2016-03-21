@@ -516,11 +516,13 @@ def _parse_function_signature(parser):
         ()
         (arg1 arg2 of T ...arg3)
     """
+    init_free_code_block(parser)
     pattern = juxtaposition_as_tuple(parser.fun_signature_parser, TERM_FUN_SIGNATURE)
     args_type = nodes.node_type(pattern)
 
     if args_type != NT_TUPLE:
         parse_error(parser, u"Invalid  syntax in function signature", pattern)
+    pop_block(parser)
     return pattern
 
 
@@ -536,6 +538,8 @@ def _parse_function_variants(parser, signature, term_pattern, term_guard, term_c
     node = signature
     check_token_type(parser, TT_CASE)
 
+    init_parent_code_block(parser)
+
     funcs = []
     sig_args = nodes.node_first(signature)
     sig_arity = api.length_i(sig_args)
@@ -550,7 +554,7 @@ def _parse_function_variants(parser, signature, term_pattern, term_guard, term_c
         if nodes.tuple_node_length(args_sig) != sig_arity:
             return parse_error(parser, u"Inconsistent clause arity with function signature", args)
 
-        init_nested_code_block(parser)
+        init_child_code_block(parser)
         advance_expected(parser, TT_ARROW)
         body = statements(parser, term_case_body)
         funcs.append(list_node([args, body]))

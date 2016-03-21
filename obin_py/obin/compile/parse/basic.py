@@ -22,7 +22,7 @@ TERM_SINGLE_CATCH = [TT_FINALLY] + TERM_BLOCK
 TERM_PATTERN = [TT_WHEN]
 TERM_FUN_GUARD = [TT_ARROW]
 TERM_FUN_PATTERN = [TT_WHEN, TT_ARROW]
-TERM_FUN_SIGNATURE = [TT_ARROW, TT_CASE, TT_END_EXPR]
+TERM_FUN_SIGNATURE = [TT_ARROW, TT_CASE]
 
 TERM_CONDITION_BODY = [TT_CASE] + TERM_BLOCK
 TERM_BEFORE_FOR = [TT_FOR]
@@ -88,20 +88,20 @@ def parse_error(parser, message, node):
                        ]))
 
 
-def init_nested_code_block(parser):
-    parser.ts.add_nested_code_block()
+def init_child_code_block(parser):
+    parser.ts.add_child_code_block()
 
 
 def init_code_block(parser):
     parser.ts.add_code_block()
 
 
-def init_expression_block(parser):
-    parser.ts.add_expression_block()
+def init_parent_code_block(parser):
+    parser.ts.add_parent_code_block()
 
 
-def init_free_block(parser):
-    parser.ts.add_free_block()
+def init_free_code_block(parser):
+    parser.ts.add_free_code_block()
 
 
 def pop_block(parser):
@@ -392,7 +392,7 @@ def advance(parser):
         return None
 
     node = parser.next()
-    print "ADVANCE", node
+    # print "ADVANCE", node
     return node
 
 
@@ -424,8 +424,8 @@ def endofexpression(parser):
         return None
     # if parser.is_newline_occurred:
     #     return parser.node
-    if parser.token_type in TERM_BLOCK:
-        return parser.node
+    # if parser.token_type in TERM_BLOCK:
+    #     return parser.node
     if parser.token_type == TT_END_EXPR:
         return advance(parser)
 
