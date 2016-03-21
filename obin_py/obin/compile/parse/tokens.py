@@ -59,8 +59,8 @@ backtick_const = "`[^`]+`"
 string_literal = '(""".*?""")|(".*?")|(\'.*?\')'
 
 RULES = [
-    (token('\n[ ]*'), TT_INDENTATION),
-    # (token('\n'), -1),
+    # (token('\n[ ]*'), TT_INDENTATION),
+    (token('\n'), TT_NEWLINE),
     (token('[ ]*\.\.\.'), TT_ELLIPSIS),
     (token(' \.'), TT_JUXTAPOSITION),
     (token('\.\{'), TT_INFIX_DOT_LCURLY),
@@ -194,6 +194,18 @@ def token_line(token):
 
 def token_column(token):
     return api.at_index(token, 4)
+
+
+def token_position_i(token):
+    return api.to_i(token_position(token))
+
+
+def token_line_i(token):
+    return api.to_i(token_line(token))
+
+
+def token_column_i(token):
+    return api.to_i(token_column(token))
 
 
 def create_end_token(token):

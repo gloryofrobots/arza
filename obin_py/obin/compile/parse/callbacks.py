@@ -526,7 +526,8 @@ def _parse_function_signature(parser):
 
 def _parse_function_variants(parser, signature, term_pattern, term_guard, term_case_body, term_single_body):
     if parser.token_type == TT_ARROW:
-        advance_expected(parser, TT_ARROW)
+        init_code_block(parser)
+        advance(parser)
         body = statements(parser, term_single_body)
         return nodes.create_function_variants(signature, body)
 
@@ -569,7 +570,6 @@ def _parse_function_variants(parser, signature, term_pattern, term_guard, term_c
 
 
 def _parse_function(parser, term_pattern, term_guard, term_case_body, term_single_body):
-    init_code_block(parser)
     signature = _parse_function_signature(parser)
     funcs = _parse_function_variants(parser, signature, term_pattern, term_guard, term_case_body, term_single_body)
     return funcs

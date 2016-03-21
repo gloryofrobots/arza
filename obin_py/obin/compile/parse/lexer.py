@@ -74,7 +74,7 @@ class Lexer:
         while 1:
             tok = self.token()
             if tok is None:
-                yield tokens.newtoken(tokens.TT_ENDSTREAM, "", space.newint(0), space.newint(0), space.newint(0))
+                yield tokens.newtoken(tokens.TT_ENDSTREAM, "", space.newint(-1), space.newint(-1), space.newint(1))
                 break
             yield tok
 

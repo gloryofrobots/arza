@@ -19,7 +19,6 @@ class Block(root.W_Root):
     def __init__(self, parent_level, level, push_end_on_dedent, push_end_of_expression_on_new_line, ignore_new_lines):
         self.parent_level = parent_level
         self.level = level
-        self.pop_nested_block = False
         self.push_end_on_dedent = push_end_on_dedent
         self.push_end_of_expression_on_new_line = push_end_of_expression_on_new_line
         self.ignore_new_lines = ignore_new_lines
@@ -41,28 +40,22 @@ class IndentationTokenStream:
     def __init__(self, _tokens, src):
         self.tokens = [token for token in _tokens]
 
-        # CHECK FIRST TOKEN HERE BECAUSE TRAILING SPACE AT FIRST LINE ARE IGNORED
-        # IT HAPPENS BECAUSE TT_INDENTATION IS PARSED as \n[ ]*
-        if self.has_tokens():
-            first = self.tokens[0]
-            if api.to_i(tokens.token_column(first)) != 1:
-                indentation_error(u"First line indented", first)
-
         self.index = 0
         self.length = len(self.tokens)
         self.node = None
         self.token = None
         self.src = src
-        self.generated_tokens = []
-        self.blocks = plist.empty()
-        self.add_top_level_block()
+        self.logical_tokens = []
+
+        # first = self.tokens[0]
+        # if api.to_i(tokens.token_column(first)) != 1:
+        #     indentation_error(u"First line indented", first)
+
+        level = self._find_level()
+        self.blocks = plist.plist([Block(-1, level, False, False, False)])
 
     def current_block(self):
         return plist.head(self.blocks)
-
-    def _add_block(self, block):
-        print "ADD BLOCK", block
-        self.blocks = plist.cons(block, self.blocks)
 
     def pop_block(self):
         self.blocks = plist.tail(self.blocks)
@@ -71,36 +64,40 @@ class IndentationTokenStream:
         return len(self.tokens) > 0
 
     def has_blocks(self):
-        return plist.is_empty(self.blocks)
+        return not plist.is_empty(self.blocks)
 
-    def add_top_level_block(self):
-        self._add_block(Block(-1, 0, False, False, False))
+    def _find_level(self):
+        token = self._advance_to_physical_token()
+        return tokens.token_column_i(token) - 1
+
+    def _add_block(self, push_end_on_dedent, push_end_of_expression_on_new_line, ignore_new_lines):
+        cur = self.current_block()
+        level = self._find_level()
+        block = Block(cur.level, level, push_end_on_dedent, push_end_of_expression_on_new_line, ignore_new_lines)
+        print "ADD BLOCK", block
+        self.blocks = plist.cons(block, self.blocks)
 
     def add_nested_code_block(self):
-        cur = self.current_block()
-        cur.pop_nested_block = True
-        self._add_block(Block(cur.level, -1, False, True, False))
+        self._add_block(False, True, False)
 
     def add_code_block(self):
-        cur = self.current_block()
-        self._add_block(Block(cur.level, -1, True, True, False))
+        self._add_block(True, True, False)
 
     def add_free_block(self):
-        cur = self.current_block()
-        self._add_block(Block(cur.level, api.to_i(tokens.token_column(self.token)), False, False, True))
+        self._add_block(False, False, True)
 
-    def add_to_generated(self, token):
-        self.generated_tokens.append(token)
+    def add_logical_token(self, token):
+        self.logical_tokens.append(token)
 
-    def next_generated(self):
-        token = self.generated_tokens.pop()
-        print "NEXT GENERATED TOKEN", tokens.token_to_s(token)
+    def next_logical(self):
+        token = self.logical_tokens.pop()
+        print "NEXT LOGICAL TOKEN", tokens.token_to_s(token)
         return self.attach_token(token)
 
     def has_generated(self):
-        return len(self.generated_tokens) != 0
+        return len(self.logical_tokens) != 0
 
-    def _next(self):
+    def next_physical(self):
         token = self.tokens[self.index]
         print "NEXT STREAM TOKEN", tokens.token_to_s(token)
         self.index += 1
@@ -109,12 +106,19 @@ class IndentationTokenStream:
     def _whats_next(self):
         return tokens.token_type(self.tokens[self.index])
 
-    def _on_indentation(self, token):
-        while self._whats_next() == tt.TT_INDENTATION:
+    def _advance_to_physical_token(self):
+        token = self.next_physical()
+        while tokens.token_type(token) == tt.TT_NEWLINE:
             print "SKIP"
-            token = self._next()
-        # subtract \n from spaces
-        level = len(tokens.token_value_s(token)) - 1
+            token = self.next_physical()
+
+        self.index -= 1
+        return token
+
+    def _on_indentation(self):
+        token = self._advance_to_physical_token()
+        level = tokens.token_column_i(token) - 1
+
         block = self.current_block()
 
         # new free block
@@ -124,56 +128,34 @@ class IndentationTokenStream:
                                          token)
             return self.next()
 
-        # new uninitialized block
-        # FIXME IT WILL BROKE COMBINED APPROACH when if x == 1 -> somecode \n somecode
-        elif block.level == -1:
-
-            if level < block.parent_level:
-                return indentation_error(u"Indentation level must be <= then parent level", token)
-            if level <= block.parent_level:
-                self.on_dedent(block, token)
-                self.pop_block()
-                return self.dedent(token, level)
-
-            block.level = level
-            self.on_newline(block, token)
-            if block.push_end_of_expression_on_new_line is True:
-                self.add_to_generated(tokens.create_end_expression_token(token))
-            return self.next()
-
         elif level > block.level:
             return indentation_error(u"Invalid indentation level", token)
         else:
-            return self.dedent(token, level)
+            blocks = self.blocks
+            while True:
+                block = plist.head(blocks)
+                blocks = plist.tail(blocks)
+                if space.isvoid(block):
+                    return indentation_error(u"Indentation does not match with any of previous levels", token)
 
-    def dedent(self, token, level):
-        blocks = self.blocks
-        while True:
-            block = plist.head(blocks)
-            blocks = plist.tail(blocks)
-            if space.isvoid(block):
-                return indentation_error(u"Indentation does not match with any of previous levels", token)
-
-            if block.level < level:
-                return indentation_error(u"Invalid indentation level", token)
-            elif block.level > level:
-                self.on_dedent(block, token)
-            elif block.level == level:
-                self.on_newline(block, token)
-                return self.next()
-            self.blocks = blocks
+                if block.level < level:
+                    return indentation_error(u"Invalid indentation level", token)
+                elif block.level > level:
+                    self.on_dedent(block, token)
+                elif block.level == level:
+                    self.on_newline(block, token)
+                    return self.next()
+                self.blocks = blocks
 
     def on_newline(self, block, token):
-        if block.pop_nested_block is True:
-            self.pop_block()
-        elif block.push_end_of_expression_on_new_line is True:
-            self.add_to_generated(tokens.create_end_expression_token(token))
+        if block.push_end_of_expression_on_new_line is True:
+            self.add_logical_token(tokens.create_end_expression_token(token))
 
     def on_dedent(self, block, token):
         if block.push_end_on_dedent is True:
-            self.add_to_generated(tokens.create_end_token(token))
+            self.add_logical_token(tokens.create_end_token(token))
         elif block.push_end_of_expression_on_new_line is True:
-            self.add_to_generated(tokens.create_end_expression_token(token))
+            self.add_logical_token(tokens.create_end_expression_token(token))
 
     def attach_token(self, token):
         self.token = token
@@ -182,18 +164,18 @@ class IndentationTokenStream:
 
     def next(self):
         if self.has_generated():
-            return self.next_generated()
+            return self.next_logical()
 
         if self.index >= self.length:
             return self.node
 
-        token = self._next()
+        token = self.next_physical()
         ttype = tokens.token_type(token)
-        if ttype == tt.TT_INDENTATION:
-            return self._on_indentation(token)
+        if ttype == tt.TT_NEWLINE:
+            return self._on_indentation()
         elif ttype == tt.TT_END:
             self.pop_block()
-            if self.has_blocks():
+            if not self.has_blocks():
                 indentation_error(u"End keyword without an block", token)
 
         return self.attach_token(token)
