@@ -119,7 +119,7 @@ class IndentationTokenStream:
         return plist.head(self.blocks)
 
     def pop_block(self):
-        print "POP_BLOCK", self.current_block()
+        print "---- POP_BLOCK", self.current_block()
         self.blocks = plist.tail(self.blocks)
 
     def _find_level(self):
@@ -127,7 +127,7 @@ class IndentationTokenStream:
         return tokens.token_level(token)
 
     def __add_block(self, block):
-        print "ADD BLOCK", block
+        print "---- ADD BLOCK", block
         self.blocks = plist.cons(block, self.blocks)
 
     def _add_block_for_next_token(self, type):
@@ -168,23 +168,24 @@ class IndentationTokenStream:
         return not self.logical_tokens.is_empty()
 
     def add_logical_token(self, token):
+        print "=*=* ADD LOGICAL", token
         self.logical_tokens.append(token)
 
     def next_logical(self):
         token = self.logical_tokens.pop()
-        print "NEXT LOGICAL TOKEN", tokens.token_to_s(token)
+        print "=*=* NEXT LOGICAL TOKEN", tokens.token_to_s(token)
         return self.attach_token(token)
 
     def next_physical(self):
         token = self.tokens[self.index]
-        print "NEXT STREAM TOKEN", tokens.token_to_s(token)
+        print "++++ NEXT STREAM TOKEN", tokens.token_to_s(token)
         self.index += 1
         return token
 
     def _skip_newlines(self):
         token = self.next_physical()
         while tokens.token_type(token) == tt.TT_NEWLINE:
-            print "SKIP"
+            print "++++ SKIP"
             token = self.next_physical()
 
         self.index -= 1
@@ -250,7 +251,13 @@ class IndentationTokenStream:
             return self._on_indentation()
             
         elif ttype == tt.TT_END:
-            self.pop_block()
+            block = self.current_block()
+            if block.is_child():
+                self.pop_block()
+                self.pop_block()
+            else:
+                self.pop_block()
+                
             if not self.has_blocks():
                 indentation_error(u"End keyword without an block", token)
 

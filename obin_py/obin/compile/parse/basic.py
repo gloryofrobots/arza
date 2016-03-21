@@ -424,8 +424,8 @@ def endofexpression(parser):
         return None
     # if parser.is_newline_occurred:
     #     return parser.node
-    # if parser.token_type in TERM_BLOCK:
-    #     return parser.node
+    if parser.token_type in TERM_BLOCK:
+        return parser.node
     if parser.token_type == TT_END_EXPR:
         return advance(parser)
 
@@ -496,9 +496,16 @@ def expression(parser, _rbp, terminators=None):
     return expr
 
 
+def expression_free(parser, _rbp, terminators=None):
+    init_free_code_block(parser)
+    exp = expression(parser, _rbp, terminators)
+    pop_block(parser)
+    return exp
+
+
 def juxtaposition_as_list(parser, terminators):
     node = parser.node
-    exp = expression(parser, 0, terminators)
+    exp = expression_free(parser, 0, terminators)
     if not nodes.is_list_node(exp):
         return nodes.create_list_node(node, [exp])
 
@@ -507,7 +514,7 @@ def juxtaposition_as_list(parser, terminators):
 
 def juxtaposition_as_tuple(parser, terminators):
     node = parser.node
-    exp = expression(parser, 0, terminators)
+    exp = expression_free(parser, 0, terminators)
     if not nodes.is_list_node(exp):
         return nodes.create_tuple_node(node, [exp])
 

@@ -301,10 +301,12 @@ def prefix_lparen(parser, op, node):
         advance_expected(parser, TT_RPAREN)
         return nodes.create_unit_node(node)
 
+    init_free_code_block(parser)
     e = expression(parser, 0, [TT_RPAREN])
 
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
+        pop_block(parser)
         return e
 
     items = [e]
@@ -318,6 +320,7 @@ def prefix_lparen(parser, op, node):
 
             advance_expected(parser, TT_COMMA)
 
+    pop_block(parser)
     advance_expected(parser, TT_RPAREN)
     return node_1(NT_TUPLE, __ntok(node), list_node(items))
 
@@ -516,13 +519,11 @@ def _parse_function_signature(parser):
         ()
         (arg1 arg2 of T ...arg3)
     """
-    init_free_code_block(parser)
     pattern = juxtaposition_as_tuple(parser.fun_signature_parser, TERM_FUN_SIGNATURE)
     args_type = nodes.node_type(pattern)
 
     if args_type != NT_TUPLE:
         parse_error(parser, u"Invalid  syntax in function signature", pattern)
-    pop_block(parser)
     return pattern
 
 
