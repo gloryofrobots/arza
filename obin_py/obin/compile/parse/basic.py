@@ -96,8 +96,8 @@ def init_code_block(parser):
     parser.ts.add_code_block()
 
 
-def init_parent_code_block(parser):
-    parser.ts.add_parent_code_block()
+def init_parent_code_block(parser, node=None):
+    parser.ts.add_parent_code_block(node=None)
 
 
 def init_free_code_block(parser):
@@ -681,13 +681,9 @@ def condition_expression(parser):
     endofexpression(parser)
     return node
 
-
-def condition_terminated_expression(parser, terminators):
-    node = expression(parser, 0, terminators)
-
+def check_if_assignment(parser, node):
     if is_assignment_node(node):
         parse_error(parser, u"Assignment operators not allowed in conditions", node)
-
-    check_token_types(parser, terminators)
-    advance(parser)
+    
+def condition_terminated_expression(parser, terminators):
     return node

@@ -55,10 +55,35 @@ fun f ((x of Int) y z) ->
      25)
                 
     (1
+     ,2,
+        3)
+        
+    (1
      , lam x | x -> 25
              | y -> 45
-     , lam x
+     ,lam x
         | x -> 25
         | y -> 45
      , lam x -> 25
      25)
+
+    (1,
+  2,
+3)
+    56 
+    
+    (1,
+ lam x
+    | x -> 25
+    | y -> 45 end,
+                        lam x -> 25 end,
+     25)
+     
+    {x=1,
+  x=2,
+  
+ l=lam x y
+    | x y -> 1
+    | a v -> 2 end,
+    n = 1
+    }

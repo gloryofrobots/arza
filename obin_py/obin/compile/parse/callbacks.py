@@ -145,6 +145,7 @@ def infix_dot(parser, op, node, left):
 
 def infix_lcurly(parser, op, node, left):
     items = []
+    init_free_code_block(parser)
     if parser.token_type != TT_RCURLY:
         while True:
             # TODO check it
@@ -162,6 +163,7 @@ def infix_lcurly(parser, op, node, left):
 
             advance_expected(parser, TT_COMMA)
 
+    pop_block(parser)
     advance_expected(parser, TT_RCURLY)
     return node_2(NT_MODIFY, __ntok(node), left, list_node(items))
 
@@ -252,21 +254,33 @@ def symbol_wildcard(parser, op, node):
 
 
 def prefix_if(parser, op, node):
+    init_parent_code_block(parser, node=node)
     branches = []
-    cond = condition_terminated_expression(parser, TERM_IF_CONDITION)
+
+    cond = expression(parser, 0, TERM_IF_CONDITION)
+    init_child_code_block(parser)
+    advance_expected_one_of(parser, TERM_IF_CONDITION)
+
     body = statements(parser, TERM_IF_BODY)
+
     branches.append(list_node([cond, body]))
     check_token_types(parser, TERM_IF_BODY)
 
     while parser.token_type == TT_ELIF:
         advance_expected(parser, TT_ELIF)
-        cond = condition_terminated_expression(parser, TERM_IF_CONDITION)
+
+        cond = expression(parser, 0, TERM_IF_CONDITION)
+        init_child_code_block(parser)
+        advance_expected_one_of(parser, TERM_IF_CONDITION)
+
         body = statements(parser, TERM_IF_BODY)
         check_token_types(parser, TERM_IF_BODY)
         branches.append(list_node([cond, body]))
 
+    init_child_code_block(parser)
     advance_expected(parser, TT_ELSE)
     advance_expected(parser, TT_ARROW)
+
     body = statements(parser, TERM_BLOCK)
     branches.append(list_node([empty_node(), body]))
     advance_end(parser)
@@ -327,6 +341,7 @@ def prefix_lparen(parser, op, node):
 
 def prefix_lsquare(parser, op, node):
     items = []
+    init_free_code_block(parser)
     if parser.token_type != TT_RSQUARE:
         while True:
             items.append(expression(parser, 0))
@@ -335,6 +350,7 @@ def prefix_lsquare(parser, op, node):
 
             advance_expected(parser, TT_COMMA)
 
+    pop_block(parser)
     advance_expected(parser, TT_RSQUARE)
     return node_1(NT_LIST, __ntok(node), list_node(items))
 
@@ -361,6 +377,7 @@ def on_bind_node(parser, key):
 
 def prefix_lcurly_type(parser, op, node):
     items = []
+    init_free_code_block(parser)
     if parser.token_type != TT_RCURLY:
         while True:
             name = expression(parser, 0)
@@ -372,6 +389,7 @@ def prefix_lcurly_type(parser, op, node):
 
             advance_expected(parser, TT_COMMA)
 
+    pop_block(parser)
     advance_expected(parser, TT_RCURLY)
     return node_1(NT_LIST, __ntok(node), list_node(items))
 
@@ -408,6 +426,7 @@ def _parse_map_key_pair(parser, types, on_unknown):
 def _prefix_lcurly(parser, op, node, types, on_unknown):
     # on_unknown used for pattern_match in binds {NAME @ name = "Alice"}
     items = []
+    init_free_code_block(parser)
     if parser.token_type != TT_RCURLY:
         while True:
             # TODO check it
@@ -419,6 +438,7 @@ def _prefix_lcurly(parser, op, node, types, on_unknown):
 
             advance_expected(parser, TT_COMMA)
 
+    pop_block(parser)
     advance_expected(parser, TT_RCURLY)
     return node_1(NT_MAP, __ntok(node), list_node(items))
 

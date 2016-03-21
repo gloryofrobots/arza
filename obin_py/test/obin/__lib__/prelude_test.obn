@@ -1,18 +1,15 @@
 fun f x ->
-    (1,
-     lam x | x -> 25
-           | y -> 45 end,
-     lam x
-        | x -> 25
-        | y -> 45 end,
-     lam x -> 25 end,
-     25)
-                
-    (1
-     , lam x | x -> 25
-             | y -> 45
-     , lam x
-        | x -> 25
-        | y -> 45
-     , lam x -> 25
-     25)
+    if x ->
+        2
+    else ->
+        3 
+        
+//    lam x 
+//        | x -> 34  
+//        | x -> 4  
+    
+//    if x :: 2 -> 42
+//    elif (1,2,3) -> 
+//        24
+//    elif {x=1, y=2} -> 35
+//    else -> 15

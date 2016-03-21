@@ -72,7 +72,7 @@ class Block(root.W_Root):
         return self.type == CODE or self.type == PARENT
 
     def _to_string_(self):
-        return "<Block level %d %d %s >" % (self.parent_level, self.level, self.block_type_to_string())
+        return "<Block pl=%d, l=%d, t=%s>" % (self.parent_level, self.level, self.block_type_to_string())
 
     def is_code(self):
         return self.type == CODE
@@ -135,7 +135,14 @@ class IndentationTokenStream:
         level = self._find_level()
         block = Block(cur.level, level, type)
         self.__add_block(block)
-
+    
+    def _add_block_for_node_token(self, node, type):
+        token = nodes.node_token(node)
+        cur = self.current_block()
+        level = tokens.token_level(token) 
+        block = Block(cur.level, level, type)
+        self.__add_block(block)
+    
     def _add_block_for_current_token(self, type):
         cur = self.current_block()
         level = tokens.token_level(self.token)
@@ -152,9 +159,12 @@ class IndentationTokenStream:
     def add_code_block(self):
         self._add_block_for_next_token(CODE)
 
-    def add_parent_code_block(self):
-        self._add_block_for_current_token(PARENT)
-
+    def add_parent_code_block(self, node=None):
+        if node is None:
+            self._add_block_for_current_token(PARENT)
+        else:
+            self._add_block_for_node_token(node, PARENT)
+        
     def add_free_code_block(self):
         self._add_block_for_current_token(FREE)
 
@@ -199,9 +209,9 @@ class IndentationTokenStream:
 
         # new free block
         if block.is_free() is True:
-            if level <= block.parent_level:
-                return indentation_error(u"Indentation level of free block must be lesser then of parent block",
-                                         token)
+            # if level <= block.parent_level:
+            #     return indentation_error(u"Indentation level of free block must be lesser then of parent block",
+            #                              token)
             return self.next()
 
         elif level > block.level:
@@ -221,6 +231,7 @@ class IndentationTokenStream:
                 elif block.level == level:
                     self.on_newline(block, token)
                     return self.next()
+                print "---- POP_BLOCK", block
                 self.blocks = blocks
     
     def on_newline(self, block, token):
