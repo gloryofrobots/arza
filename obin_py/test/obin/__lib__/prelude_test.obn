@@ -1,3 +1,7 @@
 fun f a b c 
-    | d e f -> 1
+//    | d e f -> 1  
+//    | f e d -> 2  
+    | a b c -> 3  
+
+
 

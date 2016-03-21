@@ -552,6 +552,7 @@ def _parse_function_variants(parser, signature, term_pattern, term_guard, term_c
         init_nested_code_block(parser)
         advance_expected(parser, TT_ARROW)
         body = statements(parser, term_case_body)
+        pop_block(parser)
         funcs.append(list_node([args, body]))
 
     func = nodes.create_fun_node(node, empty_node(), list_node(funcs))

@@ -114,15 +114,6 @@ class IndentationTokenStream:
         # subtract \n from spaces
         level = len(tokens.token_value_s(token)) - 1
         block = self.current_block()
-        # new uninitialized block
-        # FIXME IT WILL BROKE COMBINED APPROACH when if x == 1 -> somecode \n somecode
-        if block.level == -1:
-            if level <= block.parent_level:
-                return indentation_error(u"Indentation level must be <= then parent level", token)
-            block.level = level
-            # if block.push_end_of_expression_on_new_line is True:
-            #     self.add_to_generated(tokens.create_end_expression_token(token))
-            return self.next()
 
         # new free block
         if block.ignore_new_lines is True:
@@ -131,6 +122,22 @@ class IndentationTokenStream:
                                          token)
             return self.next()
 
+        # new uninitialized block
+        # FIXME IT WILL BROKE COMBINED APPROACH when if x == 1 -> somecode \n somecode
+        if block.level == -1:
+            if level < block.parent_level:
+                return indentation_error(u"Indentation level must be <= then parent level", token)
+
+            block.level = level
+            if level == block.parent_level:
+                if block.push_end_of_expression_on_new_line is True:
+                    self.add_to_generated(tokens.create_end_expression_token(token))
+                if block.push_end_on_dedent is True:
+                    self.add_to_generated(tokens.create_end_token(token))
+
+            # if block.push_end_of_expression_on_new_line is True:
+            #     self.add_to_generated(tokens.create_end_expression_token(token))
+            return self.next()
 
         if level > block.level:
             return indentation_error(u"Invalid indentation level", token)
