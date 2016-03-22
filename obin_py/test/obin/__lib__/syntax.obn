@@ -87,3 +87,15 @@ fun f ((x of Int) y z) ->
     | a v -> 2 end,
     n = 1
     }
+    if x ->
+        2
+    else ->
+        4
+    
+    5
+    if x :: 2 ->
+                          42
+    elif (1,2,3) -> 
+        24
+    elif {x=1, y=2} -> 35
+    else -> 15

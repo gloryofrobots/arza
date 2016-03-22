@@ -104,6 +104,14 @@ def init_free_code_block(parser):
     parser.ts.add_free_code_block()
 
 
+def set_current_block_as_parent(parser):
+    return parser.ts.set_current_block_as_parent()
+
+
+def set_current_block_type(parser, type):
+    parser.ts.set_current_block_type(type)
+
+
 def pop_block(parser):
     parser.ts.pop_block()
 
@@ -443,18 +451,17 @@ def base_expression(parser, _rbp, terminators=None):
 
         if terminators is not None:
             if parser.token_type in terminators:
-                return left, 0
+                return left
 
         _lbp = node_lbp(parser, parser.node)
 
         # juxtaposition support
         if _lbp < 0:
             if parser.break_on_juxtaposition is True:
-                return left, _lbp
+                return left
 
             op = parser_operator(parser, TT_JUXTAPOSITION)
             _lbp = op.lbp
-            # return left, _lbp
 
             if _rbp >= _lbp:
                 break
@@ -473,7 +480,7 @@ def base_expression(parser, _rbp, terminators=None):
             left = node_led(parser, previous, left)
 
     assert left is not None
-    return left, 0
+    return left
 
 
 def expect_expression_of(parser, _rbp, expected_type, terminators=None):
@@ -491,7 +498,7 @@ def expect_expression_of_types(parser, _rbp, expected_types, terminators=None):
 def expression(parser, _rbp, terminators=None):
     if terminators is None:
         terminators = TERM_EXP
-    expr, _lbp = base_expression(parser, _rbp, terminators)
+    expr = base_expression(parser, _rbp, terminators)
     expr = postprocess(parser, expr)
     return expr
 
@@ -681,9 +688,11 @@ def condition_expression(parser):
     endofexpression(parser)
     return node
 
+
 def check_if_assignment(parser, node):
     if is_assignment_node(node):
         parse_error(parser, u"Assignment operators not allowed in conditions", node)
-    
+
+
 def condition_terminated_expression(parser, terminators):
     return node

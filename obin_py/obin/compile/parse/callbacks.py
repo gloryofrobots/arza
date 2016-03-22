@@ -119,7 +119,7 @@ def infix_double_colon(parser, op, node, left):
 
 
 def infix_juxtaposition(parser, op, node, left):
-    right, _ = base_expression(parser, op.lbp)
+    right = base_expression(parser, op.lbp)
     # right = expressions(parser, op.lbp)
     return nodes.node_2(NT_JUXTAPOSITION, __ntok(node), left, right)
 
@@ -254,7 +254,8 @@ def symbol_wildcard(parser, op, node):
 
 
 def prefix_if(parser, op, node):
-    init_parent_code_block(parser, node=node)
+    block_type = set_current_block_as_parent(parser)
+    # init_parent_code_block(parser, node=node)
     branches = []
 
     cond = expression(parser, 0, TERM_IF_CONDITION)
@@ -277,8 +278,10 @@ def prefix_if(parser, op, node):
         check_token_types(parser, TERM_IF_BODY)
         branches.append(list_node([cond, body]))
 
-    init_child_code_block(parser)
     advance_expected(parser, TT_ELSE)
+
+    set_current_block_type(parser, block_type)
+    init_code_block(parser)
     advance_expected(parser, TT_ARROW)
 
     body = statements(parser, TERM_BLOCK)
