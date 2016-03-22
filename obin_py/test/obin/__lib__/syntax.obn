@@ -99,3 +99,10 @@ fun f ((x of Int) y z) ->
         24
     elif {x=1, y=2} -> 35
     else -> 15
+    
+    match (1,2,3) | (x,y,z) -> 2
+                  | _ -> 1
+                  
+    match (1,2,3) 
+        | (x,y,z) -> 2
+        | _ -> 1

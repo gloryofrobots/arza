@@ -490,14 +490,17 @@ def _parse_pattern(parser):
 
 
 def prefix_match(parser, op, node):
-    exp = expression(parser, 0)
+    exp = expression_free(parser, 0, TERM_MATCH_PATTERN)
     pattern_parser = parser.pattern_parser
     branches = []
+    check_token_type(parser, TT_CASE)
+    init_parent_code_block(parser)
     while pattern_parser.token_type == TT_CASE:
         advance_expected(pattern_parser, TT_CASE)
         pattern = _parse_pattern(parser)
-        advance_expected(parser, TT_ARROW)
 
+        init_child_code_block(parser)
+        advance_expected(parser, TT_ARROW)
         body = statements(parser, TERM_CASE)
 
         branches.append(list_node([pattern, body]))

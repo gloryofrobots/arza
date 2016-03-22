@@ -226,6 +226,7 @@ class IndentationTokenStream:
             return self.next()
 
         elif level > block.level:
+            print "%%%%%Invalid indentation level", level, block, self.blocks
             return indentation_error(u"Invalid indentation level", token)
         else:
             blocks = self.blocks
