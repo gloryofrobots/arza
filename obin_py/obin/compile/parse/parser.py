@@ -197,6 +197,7 @@ def method_signature_parser_init(parser):
     parser.juxtaposition_as_list = True
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     symbol(parser, TT_DEF, None)
+    symbol(parser, TT_END, None)
     symbol(parser, TT_ARROW, None)
     infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
     # symbol(parser, TT_JUXTAPOSITION)
@@ -340,7 +341,6 @@ def expression_parser_init(proc_data, parser):
     prefix(parser, TT_SHARP, prefix_sharp)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
     prefix(parser, TT_AMP, prefix_amp)
-    prefix(parser, TT_THROW, stmt_single)
     prefix(parser, TT_IF, prefix_if)
 
     prefix(parser, TT_FUN, prefix_fun)
@@ -365,6 +365,8 @@ def expression_parser_init(proc_data, parser):
 
     infix(parser, TT_INFIX_DOT_LCURLY, 95, infix_lcurly)
     infix(parser, TT_INFIX_DOT_LPAREN, 95, infix_lparen)
+   
+    stmt(parser, TT_THROW, prefix_throw)
     return parser
 
 

@@ -68,25 +68,26 @@ trait Collection for self
 ---------------------------------
 
 trait Eq for x
+    def dummy a b c x
     def == x y -> throw (#NotImplemented, x, y)
     def != x y -> not (x == y)
 ---------------------------------
 
-trait Ord  for x of Eq
-    def <= x y -> throw (#NotImplemented, x, y)
-    def < x y -> (cmp x y) == LT
-    def >= x y -> (cmp x y) != LT
-    def > x y -> (cmp x y) == GT
-
-    def cmp x y ->
-                if x == y -> EQ
-                elif x <= y -> LT
-                else -> GT
-                --------------
-
-    def max x y ->  y in_case x <= y else x
-    def min x y -> x in_case x <= y else y
----------------------------------
+//trait Ord  for x of Eq
+//    def <= x y -> throw (#NotImplemented, x, y)
+//    def < x y -> (cmp x y) == LT
+//    def >= x y -> (cmp x y) != LT
+//    def > x y -> (cmp x y) == GT
+//
+//    def cmp x y ->
+//                if x == y -> EQ
+//                elif x <= y -> LT
+//                else -> GT
+//                --------------
+//
+//    def max x y ->  y in_case x <= y else x
+//    def min x y -> x in_case x <= y else y
+//---------------------------------
 
 trait Num for x
     def - x y

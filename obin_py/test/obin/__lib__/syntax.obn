@@ -106,3 +106,22 @@ fun f ((x of Int) y z) ->
     match (1,2,3) 
         | (x,y,z) -> 2
         | _ -> 1
+        
+trait Eq for x
+    def == x y -> throw (#NotImplemented, x, y)
+    def != x y -> not x 
+    
+trait Ord  for x of Eq
+    def <= x y -> throw (#NotImplemented, x, y)
+    def < x y -> (cmp x y) `is` LT
+    def >= x y -> (cmp x y) `ne` LT
+    def > x y -> (cmp x y) `eq` GT
+
+    def cmp x y ->
+                if x `eq` y -> EQ
+                elif x `le` y -> LT
+                else -> GT
+                
+
+    def max x y ->  y in_case x `le` y else x
+    def min x y -> x in_case x `le` y else y

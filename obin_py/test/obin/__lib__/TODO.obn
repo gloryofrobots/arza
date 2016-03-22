@@ -41,6 +41,7 @@
 // make {} syntax in fields and constructing with keyword args
 
 //TODO remove NT_WHEN after refactoring pattern compiler
+//TODO add support for | in trait statement defs
 
 //TODO
 //// this is error prone code, currently branches not merged because

@@ -520,6 +520,15 @@ def juxtaposition_as_list(parser, terminators):
     return nodes.create_list_node_from_list(node, exp)
 
 
+def juxtaposition_as_list_no_free(parser, terminators):
+    node = parser.node
+    exp = expression(parser, 0, terminators)
+    if not nodes.is_list_node(exp):
+        return nodes.create_list_node(node, [exp])
+
+    return nodes.create_list_node_from_list(node, exp)
+
+
 def juxtaposition_as_tuple(parser, terminators):
     node = parser.node
     exp = expression_free(parser, 0, terminators)

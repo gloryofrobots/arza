@@ -513,9 +513,8 @@ def prefix_match(parser, op, node):
     return node_2(NT_MATCH, __ntok(node), exp, list_node(branches))
 
 
-def stmt_single(parser, op, node):
+def prefix_throw(parser, op, node):
     exp = expression(parser, 0)
-    endofexpression(parser)
     return node_1(__ntype(node), __ntok(node), exp)
 
 
@@ -839,9 +838,9 @@ def grab_name_or_operator(parser):
     return name
 
 
-def stmt_trait(parser, op, node):
+def _parser_trait_header(parser, node):
+    init_free_code_block(parser)
     type_parser = parser.type_parser
-    sig_parser = parser.method_signature_parser
     name = grab_name(type_parser)
     check_token_type(parser, TT_FOR)
     advance(parser)
@@ -851,16 +850,23 @@ def stmt_trait(parser, op, node):
         constraints = _parse_tuple_of_names(parser.name_parser, TERM_METHOD_CONSTRAINTS)
     else:
         constraints = nodes.create_empty_list_node(node)
+    pop_block(parser)
+    return name, instance_name, constraints
 
+
+def stmt_trait(parser, op, node):
+    name, instance_name, constraints = _parser_trait_header(parser, node)
     methods = []
+    init_parent_code_block(parser)
     while parser.token_type == TT_DEF:
         advance_expected(parser, TT_DEF)
         method_name = grab_name_or_operator(parser)
         check_token_type(parser, TT_NAME)
 
-        sig = juxtaposition_as_list(sig_parser, TERM_METHOD_SIG)
+        sig = juxtaposition_as_list_no_free(parser.method_signature_parser, TERM_METHOD_SIG)
         check_node_type(parser, sig, NT_LIST)
         if parser.token_type == TT_ARROW:
+            init_child_code_block(parser)
             advance(parser)
             args = symbol_list_to_arg_tuple(parser, node, sig)
             body = statements(parser.expression_parser, TERM_METHOD_DEFAULT_BODY)
