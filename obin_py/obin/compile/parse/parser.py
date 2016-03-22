@@ -183,8 +183,10 @@ def name_parser_init(parser):
 def type_parser_init(parser):
     # parser.break_on_juxtaposition = True
     parser.juxtaposition_as_list = True
+    parser.allow_unknown = True
     # literal(parser, TT_TYPENAME)
     symbol(parser, TT_COMMA)
+    symbol(parser, TT_UNKNOWN)
     symbol(parser, TT_END)
     symbol(parser, TT_RCURLY)
     prefix(parser, TT_LCURLY, prefix_lcurly_type)

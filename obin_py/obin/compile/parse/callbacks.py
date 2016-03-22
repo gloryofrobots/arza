@@ -778,6 +778,7 @@ def stmt_derive(parser, op, node):
 
 def _parse_union(parser, node, union_name):
     types = []
+    init_parent_code_block(parser) 
     check_token_type(parser, TT_CASE)
     while parser.token_type == TT_CASE:
         advance(parser)
@@ -794,7 +795,7 @@ def _parse_union(parser, node, union_name):
 
 def _parse_type(parser, node, typename, term):
     if parser.token_type == TT_NAME:
-        fields = juxtaposition_as_list(parser.type_parser, term)
+        fields = juxtaposition_as_list_no_free(parser.type_parser, term)
         args = symbol_list_to_arg_tuple(parser, parser.node, fields)
         body = list_node([nodes.create_fenv_node(parser.node)])
         construct_funcs = nodes.create_function_variants(args, body)
@@ -807,13 +808,16 @@ def _parse_type(parser, node, typename, term):
 
 # TODO BETTER PARSE ERRORS HERE
 def stmt_type(parser, op, node):
+    init_free_code_block(parser)
     typename = grab_name(parser.type_parser)
-
+    pop_block(parser)
+    
+    
     if parser.token_type == TT_CASE:
         return _parse_union(parser, node, typename)
-
+    
     _t = _parse_type(parser, node, typename, TERM_TYPE_ARGS)
-    advance_end(parser)
+    # advance_end(parser)
     return _t
 
 
@@ -898,7 +902,7 @@ def stmt_implement(parser, op, node):
     methods = []
     if parser.token_type != TT_DEF:
         return nodes.node_3(NT_IMPLEMENT, __ntok(node), trait_name, type_name, list_node(methods))
-        
+
     init_parent_code_block(parser)
     while parser.token_type == TT_DEF:
         advance_expected(parser, TT_DEF)

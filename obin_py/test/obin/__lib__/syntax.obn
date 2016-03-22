@@ -139,3 +139,41 @@ implement types:TestTrait for X
         | x -> self.x
         | y -> 42
     def test_method_3 self a1 a2 -> a1.x a2.x self.x
+    
+implement X:x for T:t
+
+
+derive Dict for Val
+//
+derive (Eq, Str) for (TypeError, RuntimeError, ImportError, NotImplementedError,
+                     ZeroDivisionError, ReferenceError, ConstructorError, KeyError, ValueError,
+                     SliceError, IndexError, InvokeError, InvalidArgCount, MethodInvokeError,
+                     MethodNotImplementedError, MethodSpecializeError, CompileError, ParseError,
+                     UnpackSequenceError, FiberFlowError, MatchError, FunctionArgumentsMatchError,
+                     ExceptionMatchError, ExportError, TraitAlreadyImplementedError, TraitImplementationError,
+                     TraitConstraintError)
+type Maybe | Nothing
+           | Just v
+    
+type Maybe
+    | Nothing
+    | Just v
+    
+
+type None
+type Vec2 p1 p2
+
+type P4 x y z c
+type None
+
+
+//
+//
+type Shape
+    | X x
+    | Y y
+    | Point x y
+    | Square width height
+    | Rect left top right bottom
+    | Line point1 point2
+    | Empty
