@@ -241,10 +241,15 @@ def parser_has_operator(parser, ttype):
 
 
 def parser_operator(parser, ttype):
-    assert ttype < TT_UNKNOWN
+    assert ttype <= TT_UNKNOWN
     try:
         return parser.handlers[ttype]
     except:
+        if ttype == TT_UNKNOWN:
+            return parse_error(parser, u"Invalid token", parser.node)
+
+        if parser.allow_unknown is True:
+            return parser_operator(parser, TT_UNKNOWN)
         return parse_error(parser, u"Invalid token %s" % tokens.token_type_to_s(ttype), parser.node)
 
 

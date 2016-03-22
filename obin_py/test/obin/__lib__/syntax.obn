@@ -125,3 +125,17 @@ trait Ord  for x of Eq
 
     def max x y ->  y in_case x `le` y else x
     def min x y -> x in_case x `le` y else y
+    
+implement types:TestTrait for X
+    def f a of X b c -> 42
+    def f a of X b c -> 42
+
+
+implement types:TestTrait for X
+    def test_method_1 a1 of X a2 of X self -> a1.x a2.x self.x
+    def test_method_2 a1 self a2 -> a1.x a2.x self.x
+    def test_method_3 self a1 a2 -> a1.x a2.x self.x
+    def test_method_4 self 
+        | x -> self.x
+        | y -> 42
+    def test_method_3 self a1 a2 -> a1.x a2.x self.x

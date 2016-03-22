@@ -118,6 +118,9 @@ class IndentationTokenStream:
     def current_block(self):
         return plist.head(self.blocks)
 
+    def next_block(self):
+        return plist.head(plist.tail(self.blocks))
+
     def pop_block(self):
         print "---- POP_BLOCK", self.current_block()
         self.blocks = plist.tail(self.blocks)
@@ -181,6 +184,9 @@ class IndentationTokenStream:
 
     def has_blocks(self):
         return not plist.is_empty(self.blocks)
+
+    def count_blocks(self):
+        return plist.length(self.blocks)
 
     def has_tokens(self):
         return len(self.tokens) > 0
@@ -276,11 +282,20 @@ class IndentationTokenStream:
 
         elif ttype == tt.TT_END:
             block = self.current_block()
+            # TODO SOME CHILDS DONT HAVE PARENTS so you can
             if block.is_child():
+                if self.count_blocks() < 3:
+                    indentation_error(u"Invalid end keyword", token)
+
+                if not self.next_block().is_parent():
+                    indentation_error(u"Invalid end keyword", token)
+
                 self.pop_block()
+                self.pop_block()
+            elif block.is_code():
                 self.pop_block()
             else:
-                self.pop_block()
+                indentation_error(u"Invalid end keyword", token)
 
             if not self.has_blocks():
                 indentation_error(u"End keyword without an block", token)

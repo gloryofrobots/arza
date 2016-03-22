@@ -298,6 +298,7 @@ def prefix_lparen_tuple(parser, op, node):
         return nodes.create_unit_node(node)
 
     items = []
+    init_free_code_block(parser)
     while True:
         exp = expression(parser, 0)
         items.append(exp)
@@ -306,6 +307,7 @@ def prefix_lparen_tuple(parser, op, node):
 
         advance_expected(parser, TT_COMMA)
 
+    pop_block(parser)
     advance_expected(parser, TT_RPAREN)
     return node_1(NT_TUPLE, __ntok(node), list_node(items))
 
@@ -766,9 +768,11 @@ def _parse_tuple_of_names(parser, term):
 
 
 def stmt_derive(parser, op, node):
+    # init_child_code_block(parser)
     traits = _parse_tuple_of_names(parser.name_parser, TERM_BEFORE_FOR)
     advance_expected(parser, TT_FOR)
     types = _parse_tuple_of_names(parser.name_parser, None)
+    # endofexpression(parser)
     return node_2(NT_DERIVE, __ntok(node), traits, types)
 
 
@@ -879,12 +883,23 @@ def stmt_trait(parser, op, node):
     return nodes.node_4(NT_TRAIT, __ntok(node), name, instance_name, constraints, list_node(methods))
 
 
-def stmt_implement(parser, op, node):
+def _parser_implement_header(parser):
+    init_free_code_block(parser)
     trait_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_BEFORE_FOR)
     advance_expected(parser, TT_FOR)
     type_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_IMPL_HEADER)
+    pop_block(parser)
+    return trait_name, type_name
+
+
+def stmt_implement(parser, op, node):
+    trait_name, type_name = _parser_implement_header(parser)
 
     methods = []
+    if parser.token_type != TT_DEF:
+        return nodes.node_3(NT_IMPLEMENT, __ntok(node), trait_name, type_name, list_node(methods))
+        
+    init_parent_code_block(parser)
     while parser.token_type == TT_DEF:
         advance_expected(parser, TT_DEF)
         # creating converting method names to symbols
@@ -894,6 +909,7 @@ def stmt_implement(parser, op, node):
 
         funcs = _parse_function(parser.expression_parser,
                                 TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_IMPL_BODY, TERM_IMPL_BODY)
+        advance_end(parser)
         methods.append(list_node([method_name, funcs]))
 
     advance_end(parser)

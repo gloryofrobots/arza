@@ -38,6 +38,7 @@ class BaseParser:
         self.state = None
         self.allow_overloading = False
         self.break_on_juxtaposition = False
+        self.allow_unknown = True
         self.juxtaposition_as_list = False
 
     def open(self, state):
@@ -163,12 +164,15 @@ class ModuleParser(BaseParser):
 
 def name_parser_init(parser):
     parser.break_on_juxtaposition = True
+    parser.allow_unknown = True
     symbol(parser, TT_COMMA, None)
+    symbol(parser, TT_UNKNOWN, None)
     # symbol(parser, TT_WILDCARD, None)
     symbol(parser, TT_RPAREN, None)
     init_parser_literals(parser)
     symbol(parser, TT_CASE, None)
     symbol(parser, TT_ELLIPSIS, None)
+    symbol(parser, TT_ENDSTREAM)
 
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
@@ -365,7 +369,7 @@ def expression_parser_init(proc_data, parser):
 
     infix(parser, TT_INFIX_DOT_LCURLY, 95, infix_lcurly)
     infix(parser, TT_INFIX_DOT_LPAREN, 95, infix_lparen)
-   
+
     stmt(parser, TT_THROW, prefix_throw)
     return parser
 
