@@ -703,7 +703,7 @@ def stmt_import(parser, op, node):
             parse_error(parser, u"expected definitions tuple", node)
         names = empty_node()
 
-    _load_module(parser, imported)
+    # _load_module(parser, imported)
     return node_2(ntype, __ntok(node), imported, names)
 
 
@@ -932,7 +932,6 @@ def stmt_prefix(parser, op, node):
     op = parser_current_scope_find_operator_or_create_new(parser, op_value)
     op = operator_prefix(op, prefix_nud_function, func_value)
 
-    endofexpression(parser)
     parser_current_scope_add_operator(parser, op_value, op)
 
 
@@ -958,5 +957,4 @@ def _meta_infix(parser, node, infix_function):
 
     op = parser_current_scope_find_operator_or_create_new(parser, op_value)
     op = operator_infix(op, precedence, infix_function, func_value)
-    endofexpression(parser)
     parser_current_scope_add_operator(parser, op_value, op)
