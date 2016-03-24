@@ -1,23 +1,39 @@
-import affirm
-import lib_az:abc:module_ab as ab
-import lib_az:efg:module_e as e
-////
-//////unqualified names f_ab,f_ab_2,const
-import from lib_az:abc:module_ab (f_ab, f_ab_2, CONST as const)
-////
-//////ab2:f_ab
-import lib_az:abc:module_ab as ab2 (f_ab, f_ab_2)
-////
-////module_ab:f_ab, module_ab:f_ab_2
-import lib_az:abc:module_ab (f_ab, f_ab_2)
-////
-//////all exported names imported
-import from lib_az:efg:module_e
-//
-////ab_3_f_ab
-import from lib_az:abc:module_ab  (f_ab as ab_3_f_ab)
-////importing same names dont cause errors because names are equal
-import from lib_az:abc:module_ab  hiding (CONST)
-////ab5:f_ab_2 only
-import lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
-fun f x -> 12
+fun f x -> 
+    try 42
+    catch 3 -> #first
+    finally -> 13
+        
+//    try
+//        42
+//    catch 3 -> #first
+    
+//    try
+//        42
+//    catch 3 -> #first
+//    finally ->
+//        13
+        
+
+//    if x ->
+//        2
+//    else ->
+//        4
+//    
+//    5
+//    if x :: 2 ->
+//                          42
+//    elif (1,2,3) -> 
+//        24
+//    elif {x=1, y=2} -> 35
+//    else -> 15
+//     
+//    try
+//        throw (1,2,"ERROR")
+//    catch
+//        | err @ (1, y, 3) -> #first
+//        | (1,2, "ERROR@") -> #second
+//        | err @ (1, 2, x) -> #third
+//    finally ->
+//        (#fourth, err, x)
+//     
+////     

@@ -1,449 +1,5 @@
 [
   {
-    "_ntype": "NT_IMPORT",
-    "_value": "import",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "affirm"
-      },
-      {
-        "empty": true
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_IMPORT",
-    "_value": "import",
-    "children": [
-      {
-        "_ntype": "NT_AS",
-        "_value": "as",
-        "children": [
-          {
-            "_ntype": "NT_IMPORTED_NAME",
-            "_value": ":",
-            "children": [
-              {
-                "_ntype": "NT_IMPORTED_NAME",
-                "_value": ":",
-                "children": [
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "lib_az"
-                  },
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "abc"
-                  }
-                ]
-              },
-              {
-                "_ntype": "NT_NAME",
-                "_value": "module_ab"
-              }
-            ]
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "ab"
-          }
-        ]
-      },
-      {
-        "empty": true
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_IMPORT",
-    "_value": "import",
-    "children": [
-      {
-        "_ntype": "NT_AS",
-        "_value": "as",
-        "children": [
-          {
-            "_ntype": "NT_IMPORTED_NAME",
-            "_value": ":",
-            "children": [
-              {
-                "_ntype": "NT_IMPORTED_NAME",
-                "_value": ":",
-                "children": [
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "lib_az"
-                  },
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "efg"
-                  }
-                ]
-              },
-              {
-                "_ntype": "NT_NAME",
-                "_value": "module_e"
-              }
-            ]
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "e"
-          }
-        ]
-      },
-      {
-        "empty": true
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_IMPORT_FROM",
-    "_value": "import",
-    "children": [
-      {
-        "_ntype": "NT_IMPORTED_NAME",
-        "_value": ":",
-        "children": [
-          {
-            "_ntype": "NT_IMPORTED_NAME",
-            "_value": ":",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "lib_az"
-              },
-              {
-                "_ntype": "NT_NAME",
-                "_value": "abc"
-              }
-            ]
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "module_ab"
-          }
-        ]
-      },
-      {
-        "_ntype": "NT_TUPLE",
-        "_value": "(",
-        "children": [
-          [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "f_ab"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "f_ab_2"
-            },
-            {
-              "_ntype": "NT_AS",
-              "_value": "as",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "CONST"
-                },
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "const"
-                }
-              ]
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_IMPORT",
-    "_value": "import",
-    "children": [
-      {
-        "_ntype": "NT_AS",
-        "_value": "as",
-        "children": [
-          {
-            "_ntype": "NT_IMPORTED_NAME",
-            "_value": ":",
-            "children": [
-              {
-                "_ntype": "NT_IMPORTED_NAME",
-                "_value": ":",
-                "children": [
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "lib_az"
-                  },
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "abc"
-                  }
-                ]
-              },
-              {
-                "_ntype": "NT_NAME",
-                "_value": "module_ab"
-              }
-            ]
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "ab2"
-          }
-        ]
-      },
-      {
-        "_ntype": "NT_TUPLE",
-        "_value": "(",
-        "children": [
-          [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "f_ab"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "f_ab_2"
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_IMPORT",
-    "_value": "import",
-    "children": [
-      {
-        "_ntype": "NT_IMPORTED_NAME",
-        "_value": ":",
-        "children": [
-          {
-            "_ntype": "NT_IMPORTED_NAME",
-            "_value": ":",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "lib_az"
-              },
-              {
-                "_ntype": "NT_NAME",
-                "_value": "abc"
-              }
-            ]
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "module_ab"
-          }
-        ]
-      },
-      {
-        "_ntype": "NT_TUPLE",
-        "_value": "(",
-        "children": [
-          [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "f_ab"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "f_ab_2"
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_IMPORT_FROM",
-    "_value": "import",
-    "children": [
-      {
-        "_ntype": "NT_IMPORTED_NAME",
-        "_value": ":",
-        "children": [
-          {
-            "_ntype": "NT_IMPORTED_NAME",
-            "_value": ":",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "lib_az"
-              },
-              {
-                "_ntype": "NT_NAME",
-                "_value": "efg"
-              }
-            ]
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "module_e"
-          }
-        ]
-      },
-      {
-        "empty": true
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_IMPORT_FROM",
-    "_value": "import",
-    "children": [
-      {
-        "_ntype": "NT_IMPORTED_NAME",
-        "_value": ":",
-        "children": [
-          {
-            "_ntype": "NT_IMPORTED_NAME",
-            "_value": ":",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "lib_az"
-              },
-              {
-                "_ntype": "NT_NAME",
-                "_value": "abc"
-              }
-            ]
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "module_ab"
-          }
-        ]
-      },
-      {
-        "_ntype": "NT_TUPLE",
-        "_value": "(",
-        "children": [
-          [
-            {
-              "_ntype": "NT_AS",
-              "_value": "as",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "f_ab"
-                },
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "ab_3_f_ab"
-                }
-              ]
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_IMPORT_FROM_HIDING",
-    "_value": "import",
-    "children": [
-      {
-        "_ntype": "NT_IMPORTED_NAME",
-        "_value": ":",
-        "children": [
-          {
-            "_ntype": "NT_IMPORTED_NAME",
-            "_value": ":",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "lib_az"
-              },
-              {
-                "_ntype": "NT_NAME",
-                "_value": "abc"
-              }
-            ]
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "module_ab"
-          }
-        ]
-      },
-      {
-        "_ntype": "NT_TUPLE",
-        "_value": "(",
-        "children": [
-          [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "CONST"
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_IMPORT_HIDING",
-    "_value": "import",
-    "children": [
-      {
-        "_ntype": "NT_AS",
-        "_value": "as",
-        "children": [
-          {
-            "_ntype": "NT_IMPORTED_NAME",
-            "_value": ":",
-            "children": [
-              {
-                "_ntype": "NT_IMPORTED_NAME",
-                "_value": ":",
-                "children": [
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "lib_az"
-                  },
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "abc"
-                  }
-                ]
-              },
-              {
-                "_ntype": "NT_NAME",
-                "_value": "module_ab"
-              }
-            ]
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "ab5"
-          }
-        ]
-      },
-      {
-        "_ntype": "NT_TUPLE",
-        "_value": "(",
-        "children": [
-          [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "f_ab"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "CONST"
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
     "_ntype": "NT_FUN",
     "_value": "fun",
     "children": [
@@ -467,8 +23,80 @@
           },
           [
             {
-              "_ntype": "NT_INT",
-              "_value": "12"
+              "_ntype": "NT_TRY",
+              "_value": "try",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "42"
+                  }
+                ],
+                [
+                  [
+                    {
+                      "_ntype": "NT_INT",
+                      "_value": "3"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_SYMBOL",
+                        "_value": "#",
+                        "children": [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "first"
+                          }
+                        ]
+                      }
+                    ]
+                  ]
+                ],
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "13"
+                  },
+                  {
+                    "_ntype": "NT_TRY",
+                    "_value": "try",
+                    "children": [
+                      [
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "42"
+                        }
+                      ],
+                      [
+                        [
+                          {
+                            "_ntype": "NT_INT",
+                            "_value": "3"
+                          },
+                          [
+                            {
+                              "_ntype": "NT_SYMBOL",
+                              "_value": "#",
+                              "children": [
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "first"
+                                }
+                              ]
+                            }
+                          ]
+                        ]
+                      ],
+                      [
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "13"
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              ]
             }
           ]
         ]

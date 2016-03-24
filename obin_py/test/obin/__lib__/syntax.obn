@@ -1,3 +1,26 @@
+import affirm
+import lib_az:abc:module_ab as ab
+import lib_az:efg:module_e as e
+//
+////unqualified names f_ab,f_ab_2,const
+import from lib_az:abc:module_ab (f_ab, f_ab_2, CONST as const)
+//
+////ab2:f_ab
+import lib_az:abc:module_ab as ab2 (f_ab, f_ab_2)
+//
+////module_ab:f_ab, module_ab:f_ab_2
+import lib_az:abc:module_ab (f_ab, f_ab_2)
+//
+////all exported names imported
+import from lib_az:efg:module_e
+
+//ab_3_f_ab
+import from lib_az:abc:module_ab  (f_ab as ab_3_f_ab)
+//importing same names dont cause errors because names are equal
+import from lib_az:abc:module_ab  hiding (CONST)
+//ab5:f_ab_2 only
+import lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
+
 fun f a 
     | a -> 1
     | z -> 2
@@ -107,6 +130,15 @@ fun f ((x of Int) y z) ->
         | (x,y,z) -> 2
         | _ -> 1
         
+    try
+        throw (1,2,"ERROR")
+    catch
+        | err @ (1, y, 3) -> #first
+        | (1,2, "ERROR@") -> #second
+        | err @ (1, 2, x) -> #third
+    finally ->
+        (#fourth, err, x)
+     
 trait Eq for x
     def == x y -> throw (#NotImplemented, x, y)
     def != x y -> not x 
@@ -161,14 +193,11 @@ type Maybe
     
 
 type None
+
 type Vec2 p1 p2
 
 type P4 x y z c
-type None
 
-
-//
-//
 type Shape
     | X x
     | Y y

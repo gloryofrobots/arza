@@ -195,6 +195,10 @@ def infix_at(parser, op, node, left):
 ##############################################################
 
 
+def prefix_indent(parser, op, node):
+    return parse_error(parser, u"Invalid indentation level", node)
+
+
 def prefix_nud(parser, op, node):
     exp = literal_expression(parser)
     return node_1(__ntype(node), __ntok(node), exp)
@@ -251,43 +255,6 @@ def prefix_amp(parser, op, node):
 
 def symbol_wildcard(parser, op, node):
     return parse_error(parser, u"Invalid use of _ pattern", node)
-
-
-def prefix_if(parser, op, node):
-    block_type = set_current_block_as_parent(parser)
-    # init_parent_code_block(parser, node=node)
-    branches = []
-
-    cond = expression(parser, 0, TERM_IF_CONDITION)
-    init_child_code_block(parser)
-    advance_expected_one_of(parser, TERM_IF_CONDITION)
-
-    body = statements(parser, TERM_IF_BODY)
-
-    branches.append(list_node([cond, body]))
-    check_token_types(parser, TERM_IF_BODY)
-
-    while parser.token_type == TT_ELIF:
-        advance_expected(parser, TT_ELIF)
-
-        cond = expression(parser, 0, TERM_IF_CONDITION)
-        init_child_code_block(parser)
-        advance_expected_one_of(parser, TERM_IF_CONDITION)
-
-        body = statements(parser, TERM_IF_BODY)
-        check_token_types(parser, TERM_IF_BODY)
-        branches.append(list_node([cond, body]))
-
-    advance_expected(parser, TT_ELSE)
-
-    set_current_block_type(parser, block_type)
-    init_code_block(parser)
-    advance_expected(parser, TT_ARROW)
-
-    body = statements(parser, TERM_BLOCK)
-    branches.append(list_node([empty_node(), body]))
-    advance_end(parser)
-    return node_1(NT_CONDITION, __ntok(node), list_node(branches))
 
 
 # TODO REMOVE IT
@@ -448,36 +415,93 @@ def _prefix_lcurly(parser, op, node, types, on_unknown):
     return node_1(NT_MAP, __ntok(node), list_node(items))
 
 
+def prefix_if(parser, op, node):
+    # block_type = set_current_block_as_parent(parser)
+    init_parent_code_block(parser, node=node)
+    branches = []
+
+    cond = expression(parser, 0, TERM_IF_CONDITION)
+    init_child_code_block(parser)
+    advance_expected_one_of(parser, TERM_IF_CONDITION)
+
+    body = statements(parser, TERM_IF_BODY)
+
+    branches.append(list_node([cond, body]))
+    check_token_types(parser, TERM_IF_BODY)
+
+    while parser.token_type == TT_ELIF:
+        advance_expected(parser, TT_ELIF)
+
+        cond = expression(parser, 0, TERM_IF_CONDITION)
+        init_child_code_block(parser)
+        advance_expected_one_of(parser, TERM_IF_CONDITION)
+
+        body = statements(parser, TERM_IF_BODY)
+        check_token_types(parser, TERM_IF_BODY)
+        branches.append(list_node([cond, body]))
+
+    advance_expected(parser, TT_ELSE)
+
+    # set_current_block_type(parser, block_type)
+    pop_block(parser)
+    init_code_block(parser)
+    advance_expected(parser, TT_ARROW)
+
+    body = statements(parser, TERM_BLOCK)
+    branches.append(list_node([empty_node(), body]))
+    advance_end(parser)
+    return node_1(NT_CONDITION, __ntok(node), list_node(branches))
+
+
+# def prefix_newline(parser, op, node):
+#     parser.ts._on_indentation()
+#     return expression(parser, 0)
+
+def skip_indent(parser):
+    if parser.token_type == TT_INDENT:
+        advance(parser)
+
 def prefix_try(parser, op, node):
+    init_parent_code_block(parser, node)
+    init_child_code_block(parser)
+    skip_indent(parser)
     trybody = statements(parser, TERM_TRY)
     catches = []
 
     check_token_type(parser, TT_CATCH)
-
     advance(parser)
+    skip_indent(parser)
+    
     if parser.token_type == TT_CASE:
+        init_parent_code_block(parser)
         while parser.token_type == TT_CASE:
             advance_expected(parser, TT_CASE)
             # pattern = expressions(parser.pattern_parser, 0)
             pattern = _parse_pattern(parser)
+            init_child_code_block(parser)
             advance_expected(parser, TT_ARROW)
-
             body = statements(parser, TERM_CATCH_CASE)
             catches.append(list_node([pattern, body]))
     else:
         pattern = _parse_pattern(parser)
+        init_code_block(parser)
         advance_expected(parser, TT_ARROW)
         body = statements(parser, TERM_SINGLE_CATCH)
         catches.append(list_node([pattern, body]))
 
+    advance_end(parser)
+
     if parser.token_type == TT_FINALLY:
         advance_expected(parser, TT_FINALLY)
+        init_child_code_block(parser)
         advance_expected(parser, TT_ARROW)
         finallybody = statements(parser, TERM_BLOCK)
+        advance_end(parser)
     else:
         finallybody = empty_node()
 
-    advance_end(parser)
+    # advance_end(parser)
+    pop_block(parser)
     return node_3(NT_TRY, __ntok(node), trybody, list_node(catches), finallybody)
 
 
@@ -778,7 +802,7 @@ def stmt_derive(parser, op, node):
 
 def _parse_union(parser, node, union_name):
     types = []
-    init_parent_code_block(parser) 
+    init_parent_code_block(parser)
     check_token_type(parser, TT_CASE)
     while parser.token_type == TT_CASE:
         advance(parser)
@@ -811,11 +835,10 @@ def stmt_type(parser, op, node):
     init_free_code_block(parser)
     typename = grab_name(parser.type_parser)
     pop_block(parser)
-    
-    
+
     if parser.token_type == TT_CASE:
         return _parse_union(parser, node, typename)
-    
+
     _t = _parse_type(parser, node, typename, TERM_TYPE_ARGS)
     # advance_end(parser)
     return _t

@@ -345,6 +345,7 @@ def expression_parser_init(proc_data, parser):
     symbol(parser, TT_COMMA)
     symbol(parser, TT_END)
 
+    prefix(parser, TT_INDENT, prefix_indent)
     prefix(parser, TT_LPAREN, prefix_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly)

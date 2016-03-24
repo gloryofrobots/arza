@@ -98,7 +98,7 @@ def init_code_block(parser):
 
 
 def init_parent_code_block(parser, node=None):
-    parser.ts.add_parent_code_block(node=None)
+    parser.ts.add_parent_code_block(node)
 
 
 def init_free_code_block(parser):
@@ -279,18 +279,14 @@ def node_operator(parser, node):
     return op
 
 
-# def is_breaker(parser, node):
-#     handler = node_operator(parser, node)
-#     return handler.is_breaker
-
-def nud(parser, node):
+def node_nud(parser, node):
     handler = node_operator(parser, node)
     if not handler.nud:
         parse_error(parser, u"Unknown token nud", node)
     return handler.nud(parser, handler, node)
 
 
-def std(parser, node):
+def node_std(parser, node):
     handler = node_operator(parser, node)
     if not handler.std:
         parse_error(parser, u"Unknown token std", node)
@@ -450,7 +446,7 @@ def base_expression(parser, _rbp, terminators=None):
     previous = parser.node
     advance(parser)
 
-    left = nud(parser, previous)
+    left = node_nud(parser, previous)
     while True:
         # if parser.is_newline_occurred:
         #     break
@@ -599,7 +595,7 @@ def statement(parser):
     node = parser.node
     if node_has_std(parser, node):
         advance(parser)
-        value = std(parser, node)
+        value = node_std(parser, node)
         endofexpression(parser)
         return value
 
@@ -612,7 +608,7 @@ def statement_no_end_expr(parser):
     node = parser.node
     if node_has_std(parser, node):
         advance(parser)
-        value = std(parser, node)
+        value = node_std(parser, node)
         return value
 
     value = expression(parser, 0)

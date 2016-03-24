@@ -218,7 +218,7 @@ class IndentationTokenStream:
         self.index -= 1
         return token
 
-    def _on_indentation(self):
+    def _on_newline(self):
         token = self._skip_newlines()
         level = tokens.token_level(token)
 
@@ -232,13 +232,15 @@ class IndentationTokenStream:
             return self.next()
 
         elif level > block.level:
-            print "%%%%%Invalid indentation level", level, block, self.blocks
-            return indentation_error(u"Invalid indentation level", token)
+            self.add_logical_token(tokens.create_indent_token(token))
+            return self.next()
         else:
+            # last_block_level = -1
             blocks = self.blocks
             while True:
                 block = plist.head(blocks)
                 blocks = plist.tail(blocks)
+                # last_block_level = block.level
                 if space.isvoid(block):
                     return indentation_error(u"Indentation does not match with any of previous levels", token)
 
@@ -278,7 +280,7 @@ class IndentationTokenStream:
         token = self.next_physical()
         ttype = tokens.token_type(token)
         if ttype == tt.TT_NEWLINE:
-            return self._on_indentation()
+            return self._on_newline()
 
         elif ttype == tt.TT_END:
             block = self.current_block()
@@ -301,3 +303,4 @@ class IndentationTokenStream:
                 indentation_error(u"End keyword without an block", token)
 
         return self.attach_token(token)
+        

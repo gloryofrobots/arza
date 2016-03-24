@@ -7,7 +7,6 @@ TOKENS = [
   ("TT_NAME", None),
   ("TT_TYPENAME", None),
   ("TT_OPERATOR", None),
-  ("TT_NEWLINE", None,),
 
   ("TT_FUN", "fun"),
 
@@ -54,7 +53,8 @@ TOKENS = [
 
   ("TT_END", "end"),
   ("TT_END_EXPR", ";"),
-  ("TT_INDENTATION", "(indentation)"),
+  ("TT_INDENT", "(indent)"),
+  ("TT_NEWLINE", "(newline)"),
 
   ("TT_INFIXL", "infixl"),
   ("TT_INFIXR", "infixr"),
