@@ -6,7 +6,8 @@ fun f x ->
         42
     catch 3 ->
         #first
-        
+    
+     
     try
         throw (1,2,"ERROR")
     catch
