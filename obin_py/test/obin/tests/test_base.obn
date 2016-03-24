@@ -41,8 +41,6 @@ fun test () ->
     affirm:is_equal if x == 13 -> 1 + 1
                     elif x == 14 -> 2 + 2
                     elif x == 15 -> 3 + 3
-                    else -> 4 + 4
-                    --- .
+                    else -> 4 + 4 .
                     8
-end
 

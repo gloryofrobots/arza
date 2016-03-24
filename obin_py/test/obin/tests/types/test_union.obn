@@ -3,7 +3,6 @@ import affirm
 type Maybe
     | Nothing
     | Just v
--------------
 
 
 type Shape
@@ -14,7 +13,6 @@ type Shape
     | Rect left top right bottom
     | Line point1 point2
     | Empty
------------------------
 
 fun test () ->
     m = Just 42
@@ -38,4 +36,3 @@ fun test () ->
     affirm:is_kindof Line Shape
     affirm:is_not_kindof Line Rect
     affirm:is_not_kindof X Y
----

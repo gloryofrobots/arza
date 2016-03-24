@@ -3,8 +3,8 @@ import affirm
 fun test() ->
     affirm:is_equal(
         match [1,2,3]
-        | B1 @ [a, b, B2 @ c] ->  (B1, B2, a, b, c)
-        | _ -> 42
+            | B1 @ [a, b, B2 @ c] ->  (B1, B2, a, b, c)
+            | _ -> 42
         end) ([1, 2, 3], 3, 1, 2, 3)
 
     affirm:is_equal B1 [1, 2, 3]
@@ -14,8 +14,8 @@ fun test() ->
 
     affirm:is_equal(
         match [1,2,3]
-        | [B3 @ 1, 2, 4] -> (#res1, B3)
-        | [B3 @ 1, 2, 3] -> (#res2, B3)
+            | [B3 @ 1, 2, 4] -> (#res1, B3)
+            | [B3 @ 1, 2, 3] -> (#res2, B3)
         end) (#res2, 1)
 
 
@@ -23,8 +23,8 @@ fun test() ->
 
     affirm:is_equal(
         match 42
-        | B4 @ 2 -> (#result1, B4)
-        | B4 @ 42 -> (#result2, B4)
+            | B4 @ 2 -> (#result1, B4)
+            | B4 @ 42 -> (#result2, B4)
         end) (#result2, 42)
 
 
@@ -32,10 +32,10 @@ fun test() ->
 
     affirm:is_equal(
         match {genre = "XXX", actress="Lily", age=25}
-        | Result @ {genre, LilyName @ "actress"="Lily", age=13} -> (Result, genre, 42, LilyName)
-        | Result @ {genre, LilyName2 @ "actress"="Lily", age=25} -> (Result, genre, "OLOLO", LilyName2, age)
-    //    | {genre, length} ->  (name, age, 1)
-        | _ ->  42
+            | Result @ {genre, LilyName @ "actress"="Lily", age=13} -> (Result, genre, 42, LilyName)
+            | Result @ {genre, LilyName2 @ "actress"="Lily", age=25} -> (Result, genre, "OLOLO", LilyName2, age)
+        //    | {genre, length} ->  (name, age, 1)
+            | _ ->  42
         end) ({age = 25, actress = "Lily", genre = "XXX"}, "XXX", "OLOLO", "Lily", 25)
 
 
@@ -130,7 +130,7 @@ fun test() ->
     match (1,2)
         | a1 -> a1.0
         | b1 -> a1.1
-    ---------
+        
     //////////////////////////////////////////////////////
 
     affirm:is_equal(
@@ -138,7 +138,6 @@ fun test() ->
                 match 42
                     | 23 -> #first
                     | 13 -> #second
-                ---------------
             catch exc ->
                 exc
             finally ->
@@ -152,13 +151,13 @@ fun test() ->
         A = False
         affirm:is_equal(
             match (1,2,3)
-            | (x, y, z) when z == 2 -> #first
-            | (x, y, z) when z == 3 and y == 3 -> #second
-            | (x, y, z) when z == 3 and y == 2 and x == 3 -> #third
-            | (x, y, z) when z == 3 and y == 2 and x == 1 and A == 2 -> #fourth
-            | (x, y, z) when z == 3 and y == 2 and x == 1 and not (A `is` True) and (greater_then_ten 9) -> #fifth
-            | (x, y, z) when z == 3 and y == 2 and x == 1 and A `is` True or (greater_then_ten 11) -> #sixth
-            | _ -> 12
+                | (x, y, z) when z == 2 -> #first
+                | (x, y, z) when z == 3 and y == 3 -> #second
+                | (x, y, z) when z == 3 and y == 2 and x == 3 -> #third
+                | (x, y, z) when z == 3 and y == 2 and x == 1 and A == 2 -> #fourth
+                | (x, y, z) when z == 3 and y == 2 and x == 1 and not (A `is` True) and (greater_then_ten 9) -> #fifth
+                | (x, y, z) when z == 3 and y == 2 and x == 1 and A `is` True or (greater_then_ten 11) -> #sixth
+                | _ -> 12
             end) #sixth
     end ()
 
@@ -185,19 +184,17 @@ fun test() ->
 
     affirm:is_equal (
         match [1,2,3,4]
-        | 1::2::3::4::[] -> #ok
-        | x::xs -> (x, xs)
-        ---
+            | 1::2::3::4::[] -> #ok
+            | x::xs -> (x, xs)
     ) #ok
 
     //////////////////////////////////////////////////////
 
     affirm:is_equal (
         match {x=1, y="OLOLO"}
-        | {x of String, y of Int} -> #first
-        | {x of Int, y="OL" of String} -> #second
-        | {x of Int, y="OLOLO" of String} -> #third
-        -------------------------
+            | {x of String, y of Int} -> #first
+            | {x of Int, y="OL" of String} -> #second
+            | {x of Int, y="OLOLO" of String} -> #third
     ) #third
 end
 

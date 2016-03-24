@@ -1,21 +1,15 @@
 import affirm
 
 type Zero
----------
 
 type Point2 x y
----------
 
-
-// TODO RECURSIVE
 type Vec2 p1 p2
-------------
 
 derive (Dict, Indexed) for (Point2, Vec2)
 
 trait Add for self
     def add self a
-----------------------------------
 
 
 implement Add for Point2
@@ -23,13 +17,11 @@ implement Add for Point2
         | _ p2 of Point2 -> Point2 (self.x + p2.x) (self.y + p2.y)
         | _ i of Int -> Point2 (self.x + i) (self.y + i)
         | _ v of Vec2 -> add (Vec2 self self) v
----------------------------------
 
 implement Eq for Point2
     def == self other of Point2 ->
             self.x == other.x and self.y == other.y
     def != self other of Point2 -> not (self == other)
--------------------
 
 
 implement Add for Vec2
@@ -37,15 +29,12 @@ implement Add for Vec2
         | self v of Vec2 -> Vec2 (add self.p1 v.p1) (add self.p2 v.p2)
         | self i of Int -> Vec2 (add self.p1 i) (add self.p2 i)
         | self p of Point2 -> Vec2 (add self.p1 p) (add self.p2 p)
----------------------------------
 
 implement Eq for Vec2
     def == self other of Vec2 -> (self.p1 == other.p1) and (self.p2 == other.p2)
     def != self other -> not (self == other)
-----------------------------
 
 
-// TODO error here 2 % 0
 fun test () ->
     p = Point2 0 1
     p1 = Point2 42 42
@@ -60,4 +49,3 @@ fun test () ->
     v1 = Vec2 (Point2 0 1) (Point2 2 3)
     v2 = Vec2 (Point2 10 11) (Point2 12 13)
     affirm:is_equal (add v1 v2) (Vec2 (Point2 10 12)  (Point2 14 16))
-end

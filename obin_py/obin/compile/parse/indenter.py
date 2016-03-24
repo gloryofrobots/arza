@@ -3,6 +3,9 @@ from obin.compile.parse import nodes
 from obin.compile.parse import tokens
 from obin.types import api, space, plist, root
 
+SKIP_NEWLINE_TOKENS = [tt.TT_JUXTAPOSITION, tt.TT_DOUBLE_COLON,
+                       tt.TT_COLON, tt.TT_OPERATOR, tt.TT_DOT, tt.TT_ASSIGN]
+
 
 class Fifo:
     def __init__(self):
@@ -221,11 +224,23 @@ class IndentationTokenStream:
         self.index -= 1
         return token
 
+    def current_type(self):
+        return tokens.token_type(self.token)
+
     def _on_newline(self):
+        ctype = self.current_type()
         token = self._skip_newlines()
+        block = self.current_block()
         level = tokens.token_level(token)
 
-        block = self.current_block()
+        if self.current_type() in SKIP_NEWLINE_TOKENS:
+            if level <= block.level:
+                return indentation_error(u"Indentation level of token next to"
+                                         u" operator must be bigger then of parent block",
+                                         token)
+
+            return self.next()
+
 
         # new free block
         if block.is_free() is True:
@@ -245,13 +260,13 @@ class IndentationTokenStream:
                 blocks = plist.tail(blocks)
                 if space.isvoid(block):
                     return indentation_error(u"Indentation does not match with any of previous levels", token)
-                
+
                 if last_block_level == block.level:
                     print "---- POP_BLOCK", block
                     self.blocks = blocks
                     return self.next()
                     continue
-                    
+
                 last_block_level = block.level
 
                 if block.level < level:
@@ -313,4 +328,3 @@ class IndentationTokenStream:
                 indentation_error(u"End keyword without an block", token)
 
         return self.attach_token(token)
-        

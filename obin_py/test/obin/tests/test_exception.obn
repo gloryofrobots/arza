@@ -4,7 +4,8 @@ fun error reason ->
 
 fun error2 reason ->
     lam x -> error reason end ()
-end
+    
+--------------------------------------------------
 
 fun test_1 () ->
     e1 =
@@ -13,16 +14,14 @@ fun test_1 () ->
             1/0
         catch e2 ->
             throw e2
-        ---
     catch e3 ->
         try
             error(#LifeSucks)
         catch e4 ->
             //result
             e4
-        ---
-    ---
     affirm:is_equal e1 (#error, {reason=#LifeSucks})
+    
 --------------------------------------------------
 
 fun test_2 () ->
@@ -33,14 +32,12 @@ fun test_2 () ->
             catch e1 ->
                 //result
                 e1
-            end
         catch e2 ->
             try
                 error(#LifeSucks)
             catch e3 ->
                 e3
-            end
-        end) (ZeroDivisionError (1, 0))
+        ) (ZeroDivisionError (1, 0))
 
 --------------------------------------------------
 
@@ -53,7 +50,6 @@ fun test_3 () ->
                 e1
             finally ->
                 error2(#Finally)
-            ----------
         catch e2 ->
             try
                 error(#Catch)
@@ -62,8 +58,8 @@ fun test_3 () ->
             finally ->
                 //result
                 (e2, e3)
-            -------------
         end) ((#error, {reason=#Finally}), (#error, {reason=#Catch}))
+        
 --------------------------------------------------
 
 fun test_4() ->
@@ -76,7 +72,7 @@ fun test_4() ->
                     e1
                 finally ->
                     error2(#Finally)
-                ---
+                    
             catch e2 ->
                 try
                     error(#Catch)
@@ -85,9 +81,8 @@ fun test_4() ->
                 finally ->
                     //uncatched
                     throw (e2, e3)
-                ---
-            ---
         end) () ( (#error, {reason=#Finally}), (#error, {reason=#Catch}) )
+
 --------------------------------------------------
 
 fun test_5() ->
@@ -99,9 +94,9 @@ fun test_5() ->
                 throw (arg1, arg2)
             finally ->
                 throw e
-            ---
         end) (33, 22) (33, 22)
-----------------------------------
+        
+--------------------------------------------------
 
 fun test_6() ->
     affirm:is_equal try
@@ -114,7 +109,8 @@ fun test_6() ->
                         (#fourth, err, x)
                     end .
                     (#fourth, (1, 2, "ERROR"), "ERROR")
------------------------------------------------------------------------------
+
+--------------------------------------------------
 
 fun test () ->
     test_1()
@@ -123,4 +119,3 @@ fun test () ->
     test_4()
     test_5()
     test_6()
-------------

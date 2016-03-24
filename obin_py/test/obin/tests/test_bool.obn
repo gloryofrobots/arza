@@ -34,5 +34,4 @@ fun test() ->
     y = 1
     affirm:is_false (x `is` y)
     affirm:is_true (x `isnot` y)
-end
 

@@ -34,7 +34,6 @@ fun test () ->
     fun f5 (a1 a2 a3 a4 a5 ...rest)
         | x (y,z) a b {name=name, age=(years, month)} _ ->
             (x, y, z, a, b, name, years, month, rest)
-    --------------------------------------------------------
 
     affirm:is_equal (f5 1 (2,3) 4 5  {name=6, age=(7,8)}  9 10 11 12) (1, 2, 3, 4, 5, 6, 7, 8, (9, 10, 11, 12))
 
@@ -43,7 +42,6 @@ fun test () ->
     fun fact n
         | 0 -> 1
         | n -> n * fact (n - 1)
-    ------------------
 
     affirm:is_equal (fact 7) 5040
     affirm:is_equal (fact 0) 1
@@ -52,7 +50,6 @@ fun test () ->
         | 1 2 3 4 5 var0 var1 var2 var4 -> (var0, var1, var2, var4)
         | _ _ _ _ _ _ _ {key1, var1 @ key2, key3=25}  ([var2, #second, var3 @ #third, ...var4]) ->
             (var1, var2, var3, var4)
-    ------------------------------
 
 
     affirm:is_equal (func1 1 2 3 4 5 6 7 8 9 10 11) .
@@ -68,7 +65,6 @@ fun test () ->
         | 1 -> #first
         | 42 -> #second
         | () -> #third
-    ---------------
 
     affirm:is_equal_batch func3 .
                           ([1], #first) .
@@ -114,7 +110,6 @@ fun test () ->
         | 2 -> #two
         | 3 -> #three
         | 4 -> #four
-    --------------------
 
     affirm:is_equal_batch   fn_fail .
                             ([1], #one) .
@@ -128,7 +123,7 @@ fun test () ->
                        fn_fail("I am string")
                     catch exc ->
                        [exc, exc, exc]
-                    --- .
+                    end .
                     [(#FunctionArgumentsMatchError, ("I am string",)),
                      (#FunctionArgumentsMatchError, ("I am string",)),
                      (#FunctionArgumentsMatchError,("I am string",))]
@@ -138,7 +133,7 @@ fun test () ->
     affirm:is_equal_batch   lam arg1 arg2
                                 | () () -> 42
                                 | x y -> x + y
-                            -------------------- .
+                            end .
                             [(1,2), 3] .
                             [[(), ()], 42]
 

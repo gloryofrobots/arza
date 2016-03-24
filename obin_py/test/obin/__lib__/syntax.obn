@@ -149,6 +149,18 @@ fun f ((x of Int) y z) ->
     finally ->
         (#fourth, err, x)
      
+    co =
+        coroutine lam yield x ->
+                       _co1 =
+                            coroutine lam yield2 y ->
+                                           fun send () ->
+                                                yield2 (42 + y)
+                                                
+                                           send () 
+    foo 2 .
+            3 .
+        4
+        
 trait Eq for x
     def == x y -> throw (#NotImplemented, x, y)
     def != x y -> not x 

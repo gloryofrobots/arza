@@ -823,5 +823,4 @@ fun test() ->
     affirm:is_equal (bitnot (34)) (-35)
     affirm:is_equal (bitnot (-9013)) (9012)
     affirm:is_equal (bitnot (35)) (-36)
-end
 

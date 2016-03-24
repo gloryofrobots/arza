@@ -6,4 +6,3 @@ fun test () ->
     affirm:is_true (#six `elem` a1)
     affirm:is_true (#two `not_elem` a1)
     affirm:is_false (#two `elem` a1)
---------------------------------------------------

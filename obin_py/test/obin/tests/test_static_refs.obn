@@ -7,26 +7,26 @@ import affirm
 fun test_local_overwrite x ->
     fun len x ->
         x - 1000
-    end
+        
     fun f1 x ->
         fun f2 x ->
             (len x) + (len x)
-        end
+            
         f2 x
-    end
+        
     f1 x
 end
 
 fun test_local_overwrite_2 x ->
     fun f1 x ->
         fun len x ->
-            x - 100
-        end
+            x - 100 end
+            
         fun f2 x ->
-            (len x) + (len x)
-        end
+            (len x) + (len x) end
+            
         f2 x
-    end
+        
     f1 x
 end
 
@@ -63,4 +63,3 @@ fun test () ->
                              (NotImplementedError (#_length_, 1))
 
     affirm:is_equal (test_use_static_single_pass 1) 202
-end

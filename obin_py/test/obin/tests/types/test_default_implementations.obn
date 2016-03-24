@@ -7,59 +7,48 @@ type LT end
 trait Equal for x
     def eq x y -> not (ne x y)
     def ne x y -> not (eq x y)
----
 
 trait Order for x
     def le x y -> (cmp x y) != GT
     def lt x y -> (cmp x y) == LT
     def ge x y -> (cmp x y) != LT
     def gt x y -> (cmp x y) == GT
+    
     def cmp x y ->
         if eq x x -> EQ
         elif le x y -> LT
         else -> GT
-        ---
 
     def max x y ->
         if x `le` y -> y
         else -> y
-        ----
 
     def min x y ->
         if x `le` y -> x
         else -> y
-        -------
------
 
 type Val v
----
+
 derive Dict for Val
 
 type Val2 v
----
+
 derive Dict for Val2
 
 implement Equal for Val
     def eq v1 v2 -> v1.v == v2.v
----
 
 implement Equal for Val2
     def ne v1 v2 -> v1.v != v2.v
----
 
 implement Order for Val
     def cmp self other ->
-
-            if self.v == other.v -> EQ
-            elif self.v <= other.v -> LT
-            else -> GT
-            ---
--------
+        if self.v == other.v -> EQ
+        elif self.v <= other.v -> LT
+        else -> GT
 
 implement Order for Val2
     def le self other -> self.v <= other.v
--------
-
 
 fun test () ->
     v1_1 = (Val 1)
@@ -94,4 +83,3 @@ fun test () ->
     affirm:is_true (le v2_3 v2_3)
     affirm:is_false (gt v2_3 v2_3)
     affirm:is_true (ge v2_3 v2_3)
-end
