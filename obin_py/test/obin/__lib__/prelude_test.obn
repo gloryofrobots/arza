@@ -1,18 +1,13 @@
 infixl + + 50 
 infixl == == 10 
 fun f x -> 
-    if 1 ->
-        1
-    else ->
-        4
+    try 42
+    catch 3 ->#first
+    finally -> 
+        12
         
-    if 1 ->
-        1
-    else ->
-        4
-    
-    25
-        
+    try 42
+    catch 3 ->#first
     
 fun x () ->
     24

@@ -1,3 +1,5 @@
+infixl + + 50
+infixl == == 10 
 import affirm
 import lib_az:abc:module_ab as ab
 import lib_az:efg:module_e as e

@@ -414,12 +414,9 @@ def _prefix_lcurly(parser, op, node, types, on_unknown):
     advance_expected(parser, TT_RCURLY)
     return node_1(NT_MAP, __ntok(node), list_node(items))
 
-LEVELS_IF = [TT_ELSE, TT_ELIF]
 
 def prefix_if(parser, op, node):
-    # block_type = set_current_block_as_parent(parser)
     init_node_block(parser, node, LEVELS_IF)
-    # init_parent_code_block(parser, node=node)
     branches = []
 
     cond = expression(parser, 0, TERM_IF_CONDITION)
@@ -450,35 +447,32 @@ def prefix_if(parser, op, node):
 
     body = statements(parser, TERM_BLOCK)
     branches.append(list_node([empty_node(), body]))
-    # pop_node_block(parser)
     # print parser.ts.advanced_values()
     advance_end(parser)
     return node_1(NT_CONDITION, __ntok(node), list_node(branches))
 
-
-# def prefix_newline(parser, op, node):
-#     parser.ts._on_indentation()
-#     return expression(parser, 0)
 
 def skip_indent(parser):
     if parser.token_type == TT_INDENT:
         advance(parser)
 
 
-def prefix_try(parser, op, node):
-    init_parent_code_block(parser, node)
+def init_indented_child_block(parser, node):
     if parser.token_type == TT_INDENT:
         init_child_code_block(parser)
         skip_indent(parser)
     else:
-        init_child_code_block(parser, parser.node)
+        init_child_code_block(parser, node)
+
+
+def prefix_try(parser, op, node):
+    init_node_block(parser, node, LEVELS_TRY)
+    init_indented_child_block(parser, parser.node)
 
     trybody = statements(parser, TERM_TRY)
-    # endofexpression(parser)
     catches = []
 
     check_token_type(parser, TT_CATCH)
-    pop_block(parser)
     advance(parser)
     skip_indent(parser)
 
@@ -494,24 +488,20 @@ def prefix_try(parser, op, node):
             catches.append(list_node([pattern, body]))
     else:
         pattern = _parse_pattern(parser)
-        init_code_block(parser)
+        init_child_code_block(parser)
         advance_expected(parser, TT_ARROW)
         body = statements(parser, TERM_SINGLE_CATCH)
         catches.append(list_node([pattern, body]))
 
-    advance_end(parser)
-    advance(parser)
     if parser.token_type == TT_FINALLY:
         advance_expected(parser, TT_FINALLY)
-        init_code_block(parser)
+        init_child_code_block(parser)
         advance_expected(parser, TT_ARROW)
         finallybody = statements(parser, TERM_BLOCK)
-        advance_end(parser)
     else:
         finallybody = empty_node()
-    
-    # advance_end(parser)
 
+    advance_end(parser)
 
     return node_3(NT_TRY, __ntok(node), trybody, list_node(catches), finallybody)
 

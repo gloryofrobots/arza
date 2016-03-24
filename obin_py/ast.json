@@ -23,70 +23,77 @@
           },
           [
             {
-              "_ntype": "NT_CONDITION",
-              "_value": "if",
+              "_ntype": "NT_TRY",
+              "_value": "try",
               "children": [
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "42"
+                  }
+                ],
                 [
                   [
                     {
                       "_ntype": "NT_INT",
-                      "_value": "1"
+                      "_value": "3"
                     },
                     [
                       {
-                        "_ntype": "NT_INT",
-                        "_value": "1"
-                      }
-                    ]
-                  ],
-                  [
-                    {
-                      "empty": true
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "4"
+                        "_ntype": "NT_SYMBOL",
+                        "_value": "#",
+                        "children": [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "first"
+                          }
+                        ]
                       }
                     ]
                   ]
+                ],
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "12"
+                  }
                 ]
               ]
             },
             {
-              "_ntype": "NT_CONDITION",
-              "_value": "if",
+              "_ntype": "NT_TRY",
+              "_value": "try",
               "children": [
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "42"
+                  }
+                ],
                 [
                   [
                     {
                       "_ntype": "NT_INT",
-                      "_value": "1"
+                      "_value": "3"
                     },
                     [
                       {
-                        "_ntype": "NT_INT",
-                        "_value": "1"
-                      }
-                    ]
-                  ],
-                  [
-                    {
-                      "empty": true
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "4"
+                        "_ntype": "NT_SYMBOL",
+                        "_value": "#",
+                        "children": [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "first"
+                          }
+                        ]
                       }
                     ]
                   ]
-                ]
+                ],
+                {
+                  "empty": true
+                }
               ]
-            },
-            {
-              "_ntype": "NT_INT",
-              "_value": "25"
             }
           ]
         ]
