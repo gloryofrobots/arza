@@ -86,6 +86,7 @@ RULES = [
     (keyword('False'), TT_FALSE),
     # (keyword('nil'), TT_NIL),
     (keyword('throw'), TT_THROW),
+    (keyword('ensure'), TT_ENSURE),
     (keyword('try'), TT_TRY),
     (keyword('catch'), TT_CATCH),
     (keyword('finally'), TT_FINALLY),

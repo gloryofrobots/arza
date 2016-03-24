@@ -41,6 +41,7 @@ TOKENS = [
   ("TT_TRUE", "true"),
   ("TT_FALSE", "false"),
   ("TT_TRY", "try"),
+  ("TT_ENSURE", "ensure"),
   ("TT_THROW", "throw"),
   ("TT_CATCH", "catch"),
   ("TT_FINALLY", "finally"),

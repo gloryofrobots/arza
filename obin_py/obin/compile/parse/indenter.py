@@ -247,7 +247,9 @@ class IndentationTokenStream:
                     return indentation_error(u"Indentation does not match with any of previous levels", token)
                 
                 if last_block_level == block.level:
+                    print "---- POP_BLOCK", block
                     self.blocks = blocks
+                    return self.next()
                     continue
                     
                 last_block_level = block.level

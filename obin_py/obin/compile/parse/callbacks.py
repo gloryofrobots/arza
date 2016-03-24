@@ -471,9 +471,11 @@ def prefix_try(parser, op, node):
         init_child_code_block(parser, parser.node)
 
     trybody = statements(parser, TERM_TRY)
+    # endofexpression(parser)
     catches = []
 
     check_token_type(parser, TT_CATCH)
+    pop_block(parser)
     advance(parser)
     skip_indent(parser)
 
@@ -495,8 +497,7 @@ def prefix_try(parser, op, node):
         catches.append(list_node([pattern, body]))
 
     advance_end(parser)
-    pop_block(parser)
-
+    advance(parser)
     if parser.token_type == TT_FINALLY:
         advance_expected(parser, TT_FINALLY)
         init_code_block(parser)
