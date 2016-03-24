@@ -89,8 +89,8 @@ def parse_error(parser, message, node):
                        ]))
 
 
-def init_child_code_block(parser):
-    parser.ts.add_child_code_block()
+def init_child_code_block(parser, node=None):
+    parser.ts.add_child_code_block(node)
 
 
 def init_code_block(parser):

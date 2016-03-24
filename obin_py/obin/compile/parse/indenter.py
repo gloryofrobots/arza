@@ -152,13 +152,16 @@ class IndentationTokenStream:
         block = Block(cur.level, level, type)
         self.__add_block(block)
 
-    def add_child_code_block(self):
+    def add_child_code_block(self, node=None):
         # # support for f x y | x y -> 1 | x y -> 3
         # if self.current_block().type == CHILD:
         #     self.pop_block()
 
         assert not self.current_block().is_child()
-        self._add_block_for_next_token(CHILD)
+        if node is None:
+            self._add_block_for_next_token(CHILD)
+        else:
+            self._add_block_for_node_token(node, CHILD)
 
     def add_code_block(self):
         self._add_block_for_next_token(CODE)
@@ -235,14 +238,19 @@ class IndentationTokenStream:
             self.add_logical_token(tokens.create_indent_token(token))
             return self.next()
         else:
-            # last_block_level = -1
+            last_block_level = -2
             blocks = self.blocks
             while True:
                 block = plist.head(blocks)
                 blocks = plist.tail(blocks)
-                # last_block_level = block.level
                 if space.isvoid(block):
                     return indentation_error(u"Indentation does not match with any of previous levels", token)
+                
+                if last_block_level == block.level:
+                    self.blocks = blocks
+                    continue
+                    
+                last_block_level = block.level
 
                 if block.level < level:
                     return indentation_error(u"Invalid indentation level", token)

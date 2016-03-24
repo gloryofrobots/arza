@@ -461,17 +461,22 @@ def skip_indent(parser):
     if parser.token_type == TT_INDENT:
         advance(parser)
 
+
 def prefix_try(parser, op, node):
     init_parent_code_block(parser, node)
-    init_child_code_block(parser)
-    skip_indent(parser)
+    if parser.token_type == TT_INDENT:
+        init_child_code_block(parser)
+        skip_indent(parser)
+    else:
+        init_child_code_block(parser, parser.node)
+
     trybody = statements(parser, TERM_TRY)
     catches = []
 
     check_token_type(parser, TT_CATCH)
     advance(parser)
     skip_indent(parser)
-    
+
     if parser.token_type == TT_CASE:
         init_parent_code_block(parser)
         while parser.token_type == TT_CASE:
@@ -490,18 +495,20 @@ def prefix_try(parser, op, node):
         catches.append(list_node([pattern, body]))
 
     advance_end(parser)
+    pop_block(parser)
 
     if parser.token_type == TT_FINALLY:
         advance_expected(parser, TT_FINALLY)
-        init_child_code_block(parser)
+        init_code_block(parser)
         advance_expected(parser, TT_ARROW)
         finallybody = statements(parser, TERM_BLOCK)
         advance_end(parser)
     else:
         finallybody = empty_node()
-
+    
     # advance_end(parser)
-    pop_block(parser)
+
+
     return node_3(NT_TRY, __ntok(node), trybody, list_node(catches), finallybody)
 
 
