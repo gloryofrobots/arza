@@ -414,10 +414,12 @@ def _prefix_lcurly(parser, op, node, types, on_unknown):
     advance_expected(parser, TT_RCURLY)
     return node_1(NT_MAP, __ntok(node), list_node(items))
 
+LEVELS_IF = [TT_ELSE, TT_ELIF]
 
 def prefix_if(parser, op, node):
     # block_type = set_current_block_as_parent(parser)
-    init_parent_code_block(parser, node=node)
+    init_node_block(parser, node, LEVELS_IF)
+    # init_parent_code_block(parser, node=node)
     branches = []
 
     cond = expression(parser, 0, TERM_IF_CONDITION)
@@ -442,13 +444,14 @@ def prefix_if(parser, op, node):
 
     advance_expected(parser, TT_ELSE)
 
-    # set_current_block_type(parser, block_type)
-    pop_block(parser)
-    init_code_block(parser)
+    # pop_block(parser)
+    init_child_code_block(parser)
     advance_expected(parser, TT_ARROW)
 
     body = statements(parser, TERM_BLOCK)
     branches.append(list_node([empty_node(), body]))
+    # pop_node_block(parser)
+    # print parser.ts.advanced_values()
     advance_end(parser)
     return node_1(NT_CONDITION, __ntok(node), list_node(branches))
 

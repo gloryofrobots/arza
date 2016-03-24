@@ -130,7 +130,7 @@ RULES = [
 
     (token('\&'), TT_AMP),
     (token('\|'), TT_CASE),
-    (token('---[-]*'), TT_END),
+    # (token('---[-]*'), TT_END),
 
     (token('\-\>'), TT_ARROW),
     (token('\<\-'), TT_BACKARROW),

@@ -1,51 +1,19 @@
 infixl + + 50 
+infixl == == 10 
 fun f x -> 
-    42
-     
-//    affirm:is_equal if 13 -> 1
-//                    elif 14 ->
-//                       2 
-//                    else -> 4 
-//                    8
-//    lam arg1 arg2 ->
-//        try
-//            1/0
-//        catch e ->
-//            throw (arg1, arg2)
-//        finally ->
-//            throw e
-//    end (33, 22) (33, 22)
-//    
-//    affirm:is_equal (
-//        try
-//            try
-//                1/0
-//            catch e1 ->
-//                //result
-//                e1
-//        catch e2 ->
-//            try
-//                error(#LifeSucks)
-//            catch e3 ->
-//                e3
-//        ) (ZeroDivisionError (1, 0))
+    if 1 ->
+        1
+    else ->
+        4
         
+    if 1 ->
+        1
+    else ->
+        4
+    
+    25
+        
+    
 fun x () ->
     24
-
-//    try 42
-//    catch 3 ->#first
-//    
-//    try 42
-//    catch 3 ->#first
-//    finally -> 12
-//    
-//    try
-//        throw (1,2,"ERROR")
-//    catch
-//        | err @ (1, y, 3) -> #first
-//        | (1,2, "ERROR@") -> #second
-//        | err @ (1, 2, x) -> #third
-//    finally ->
-//        (#fourth, err, x)
 

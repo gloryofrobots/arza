@@ -390,6 +390,7 @@ def module_parser_init(parser):
     symbol(parser, TT_RCURLY)
     symbol(parser, TT_COMMA)
     symbol(parser, TT_END)
+    symbol(parser, TT_END_EXPR)
     symbol(parser, TT_ENDSTREAM)
 
     prefix(parser, TT_LPAREN, prefix_lparen)

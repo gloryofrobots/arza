@@ -73,6 +73,7 @@ def parser_error_indentation(parser, msg, position, lineno, column):
 
 
 def parse_error(parser, message, node):
+    print parser.ts.advanced_values()
     if nodes.node_token_type(node) == TT_ENDSTREAM:
         line = u"Unclosed top level statement"
     else:
@@ -97,6 +98,10 @@ def init_code_block(parser):
     parser.ts.add_code_block()
 
 
+def init_node_block(parser, node, level_tokens=None):
+    parser.ts.add_node_block(node, level_tokens)
+
+
 def init_parent_code_block(parser, node=None):
     parser.ts.add_parent_code_block(node)
 
@@ -116,6 +121,8 @@ def set_current_block_type(parser, type):
 def pop_block(parser):
     parser.ts.pop_block()
 
+def pop_node_block(parser):
+    parser.ts.pop_node_block()
 
 class ParserScope(root.W_Root):
     def __init__(self):
