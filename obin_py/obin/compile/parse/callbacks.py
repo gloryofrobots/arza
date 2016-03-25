@@ -259,21 +259,21 @@ def symbol_wildcard(parser, op, node):
 # TODO REMOVE IT
 # separate lparen handle for match case declarations
 def prefix_lparen_tuple(parser, op, node):
+    init_free_code_block(parser, node, [TT_RPAREN])
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
         return nodes.create_unit_node(node)
 
     items = []
-    init_free_code_block(parser)
     while True:
         exp = expression(parser, 0)
+        skip_end_expression(parser)
         items.append(exp)
         if parser.token_type != TT_COMMA:
             break
 
         advance_expected(parser, TT_COMMA)
 
-    pop_block(parser)
     advance_expected(parser, TT_RPAREN)
     return node_1(NT_TUPLE, __ntok(node), list_node(items))
 
@@ -282,11 +282,11 @@ def prefix_lparen_tuple(parser, op, node):
 # expressions (f 1 2 3) (2 + 3) (-1)
 # tuples (1,2,3,4,5)
 def prefix_lparen(parser, op, node):
+    init_free_code_block(parser, node, [TT_RPAREN])
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
         return nodes.create_unit_node(node)
 
-    init_free_code_block(parser, node, [TT_RPAREN])
     e = expression(parser, 0, [TT_RPAREN])
     skip_end_expression(parser)
 
@@ -311,16 +311,17 @@ def prefix_lparen(parser, op, node):
 
 def prefix_lsquare(parser, op, node):
     items = []
-    init_free_code_block(parser)
+    init_free_code_block(parser, node, [TT_RSQUARE])
     if parser.token_type != TT_RSQUARE:
         while True:
             items.append(expression(parser, 0))
+            skip_end_expression(parser)
+
             if parser.token_type != TT_COMMA:
                 break
 
             advance_expected(parser, TT_COMMA)
 
-    pop_block(parser)
     advance_expected(parser, TT_RSQUARE)
     return node_1(NT_LIST, __ntok(node), list_node(items))
 
@@ -347,10 +348,11 @@ def on_bind_node(parser, key):
 
 def prefix_lcurly_type(parser, op, node):
     items = []
-    init_free_code_block(parser)
+    init_free_code_block(parser, node, [TT_RCURLY])
     if parser.token_type != TT_RCURLY:
         while True:
             name = expression(parser, 0)
+            skip_end_expression(parser)
             check_node_type(parser, name, NT_SYMBOL)
 
             items.append(name)
@@ -359,17 +361,18 @@ def prefix_lcurly_type(parser, op, node):
 
             advance_expected(parser, TT_COMMA)
 
-    pop_block(parser)
     advance_expected(parser, TT_RCURLY)
     return node_1(NT_LIST, __ntok(node), list_node(items))
 
 
 # this callback used in pattern matching
 def prefix_lcurly_patterns(parser, op, node):
+    init_free_code_block(parser, node, [TT_RCURLY])
     return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_CHAR, TT_FLOAT], on_bind_node)
 
 
 def prefix_lcurly(parser, op, node):
+    init_free_code_block(parser, node, [TT_RCURLY])
     return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_CHAR, TT_FLOAT], on_bind_node)
 
 
@@ -385,6 +388,7 @@ def _parse_map_key_pair(parser, types, on_unknown):
     elif parser.token_type == TT_ASSIGN:
         advance_expected(parser, TT_ASSIGN)
         value = expression(parser, 0)
+        skip_end_expression(parser)
     else:
         if on_unknown is None:
             parse_error(parser, u"Invalid map declaration syntax", parser.node)
@@ -396,7 +400,6 @@ def _parse_map_key_pair(parser, types, on_unknown):
 def _prefix_lcurly(parser, op, node, types, on_unknown):
     # on_unknown used for pattern_match in binds {NAME @ name = "Alice"}
     items = []
-    init_free_code_block(parser)
     if parser.token_type != TT_RCURLY:
         while True:
             # TODO check it
@@ -408,7 +411,6 @@ def _prefix_lcurly(parser, op, node, types, on_unknown):
 
             advance_expected(parser, TT_COMMA)
 
-    pop_block(parser)
     advance_expected(parser, TT_RCURLY)
     return node_1(NT_MAP, __ntok(node), list_node(items))
 
