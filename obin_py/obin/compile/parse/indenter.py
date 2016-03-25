@@ -331,9 +331,9 @@ class IndentationTokenStream:
                             self.index += 1
                             self.add_logical_token(tokens.create_end_token(token))
                             self.pop_block()
-                            if self.current_physical_type() == tt.TT_NEWLINE:
-                                self.add_logical_token(tokens.create_end_expression_token(token))
-                                self._skip_newlines()
+                            # if self.current_physical_type() == tt.TT_NEWLINE:
+                                # self.add_logical_token(tokens.create_end_expression_token(token))
+                                # self._skip_newlines()
 
                             return self.next_token()
 

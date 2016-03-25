@@ -61,13 +61,17 @@
                         ]
                       ]
                     ]
+                  },
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "3"
                   }
                 ]
               ]
             },
             {
               "_ntype": "NT_INT",
-              "_value": "1"
+              "_value": "2"
             }
           ]
         ]

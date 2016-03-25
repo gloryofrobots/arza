@@ -205,6 +205,17 @@ fun f ((x of Int) y z) ->
             3 .
         4
         
+fun f x -> 
+    f lam x ->    
+        1
+      end . 
+        3 
+    2
+end
+fun x () ->
+    24
+end
+
 trait Eq for x
     def == x y -> throw (#NotImplemented, x, y)
     def != x y -> not x 
