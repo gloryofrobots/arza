@@ -477,7 +477,7 @@ def prefix_try(parser, op, node):
     skip_indent(parser)
 
     if parser.token_type == TT_CASE:
-        init_parent_code_block(parser)
+        init_offside_block(parser, parser.node)
         while parser.token_type == TT_CASE:
             advance_expected(parser, TT_CASE)
             # pattern = expressions(parser.pattern_parser, 0)
@@ -581,7 +581,7 @@ def _parse_function_signature(parser):
 
 def _parse_function_variants(parser, signature, term_pattern, term_guard, term_case_body, term_single_body):
     if parser.token_type == TT_ARROW:
-        init_code_block(parser)
+        init_child_code_block(parser)
         advance(parser)
         body = statements(parser, term_single_body)
         return nodes.create_function_variants(signature, body)
@@ -591,7 +591,7 @@ def _parse_function_variants(parser, signature, term_pattern, term_guard, term_c
     node = signature
     check_token_type(parser, TT_CASE)
 
-    init_parent_code_block(parser)
+    init_offside_block(parser, parser.node)
 
     funcs = []
     sig_args = nodes.node_first(signature)
@@ -632,7 +632,8 @@ def _parse_function(parser, term_pattern, term_guard, term_case_body, term_singl
     return funcs
 
 
-def _parse_named_function(parser):
+def _parse_named_function(parser, node):
+    init_node_block(parser, node)
     name = grab_name_or_operator(parser.name_parser)
     func = _parse_function(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
     advance_end(parser)
@@ -640,16 +641,17 @@ def _parse_named_function(parser):
 
 
 def prefix_fun(parser, op, node):
-    name, funcs = _parse_named_function(parser)
+    name, funcs = _parse_named_function(parser, node)
     return node_2(NT_FUN, __ntok(node), name, funcs)
 
 
 def prefix_module_fun(parser, op, node):
-    name, funcs = _parse_named_function(parser.expression_parser)
+    name, funcs = _parse_named_function(parser.expression_parser, node)
     return node_2(NT_FUN, __ntok(node), name, funcs)
 
 
 def prefix_lambda(parser, op, node):
+    init_node_block(parser, node)
     func = _parse_function(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
     advance_end(parser)
     return node_2(NT_FUN, __ntok(node), empty_node(), func)

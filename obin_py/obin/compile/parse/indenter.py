@@ -46,6 +46,7 @@ PARENT = 1
 CHILD = 2
 FREE = 3
 NODE = 4
+OFFSIDE = 5
 
 
 class Block(root.W_Root):
@@ -69,10 +70,12 @@ class Block(root.W_Root):
             return "MODULE"
         elif bt == NODE:
             return "NODE"
+        elif bt == OFFSIDE:
+            return "OFFSIDE"
 
     @property
     def push_end_of_expression_on_new_line(self):
-        return self.type == CHILD or self.type == CODE
+        return self.type == CHILD or self.type == CODE or self.type == MODULE
 
     @property
     def push_end_on_dedent(self):
@@ -193,6 +196,9 @@ class IndentationTokenStream:
 
     def add_code_block(self):
         self._add_block_for_next_token(CODE)
+
+    def add_offside_block(self, node):
+        self._add_block_for_node_token(node, OFFSIDE)
 
     def add_parent_code_block(self, node=None):
         if node is None:
@@ -348,24 +354,21 @@ class IndentationTokenStream:
             return self._on_newline()
 
         elif ttype == tt.TT_END:
-            block = self.current_block()
-            # TODO SOME CHILDS DONT HAVE PARENTS so you can
-            if block.is_child():
-                if self.count_blocks() < 3:
+            blocks = self.blocks
+            popped = []
+            while True:
+                block = plist.head(blocks)
+                blocks = plist.tail(blocks)
+                if block.is_node():
+                    print "---- POP NODE BLOCK ON END TOKEN"
+                    print "POPPED BLOCKS", popped
+                    print self.advanced_values()
+                    break
+                elif block.is_module():
                     indentation_error(u"Invalid end keyword", token)
-
-                if not self.next_block().is_parent():
-                    indentation_error(u"Invalid end keyword", token)
-
-                self.pop_block()
-                self.pop_block()
-            elif block.is_code():
-                self.pop_block()
-            else:
-                indentation_error(u"Invalid end keyword", token)
-
-            if not self.has_blocks():
-                indentation_error(u"End keyword without an block", token)
+                else:
+                    popped.append(block)
+            self.blocks = blocks
         elif ttype == tt.TT_ENDSTREAM:
             if not self.current_block().is_module():
                 indentation_error(u"Not all blocks closed", token)

@@ -142,6 +142,28 @@ fun f ((x of Int) y z) ->
     catch 3 ->#first
     finally -> 12
     
+    try 1
+    catch 2 ->
+        11
+        try 
+            3
+        catch 4 ->12
+        finally ->
+            if 6 -> 7
+            elif 7 ->
+                if 9 -> 14
+                else -> 15
+            else -> 
+                try 
+                    9
+                catch 
+                    | 10 -> 11
+                    | 13 -> 14
+                finally ->
+                    24
+                8
+    finally -> 
+        5
     try
         throw (1,2,"ERROR")
     catch

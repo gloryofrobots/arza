@@ -101,6 +101,10 @@ def init_code_block(parser):
     parser.ts.add_code_block()
 
 
+def init_offside_block(parser, node):
+    parser.ts.add_offside_block(node)
+
+
 def init_node_block(parser, node, level_tokens=None):
     parser.ts.add_node_block(node, level_tokens)
 
@@ -124,8 +128,10 @@ def set_current_block_type(parser, type):
 def pop_block(parser):
     parser.ts.pop_block()
 
+
 def pop_node_block(parser):
     parser.ts.pop_node_block()
+
 
 class ParserScope(root.W_Root):
     def __init__(self):
@@ -186,7 +192,7 @@ def parser_find_operator(parser, op_name):
 
 def parse_module(parser, termination_tokens):
     parser_enter_scope(parser)
-    stmts = module_statements(parser, termination_tokens)
+    stmts = statements(parser, termination_tokens)
     scope = parser_exit_scope(parser)
     return stmts, scope
 
@@ -449,7 +455,7 @@ def endofexpression(parser):
     if parser.token_type == TT_END_EXPR:
         return advance(parser)
 
-    parse_error(parser, u"Expected end of expression mark", parser.node)
+    parse_error(parser, u"Expected end of expression mark got '%s'" % tokens.token_value_s(parser.token), parser.node)
 
 
 def base_expression(parser, _rbp, terminators=None):
@@ -625,12 +631,12 @@ def statement_no_end_expr(parser):
     return value
 
 
-def _statements(parser, parse_func, endlist):
+def statements(parser, endlist):
     stmts = []
     while True:
         if token_is_one_of(parser, endlist):
             break
-        s = parse_func(parser)
+        s = statement(parser)
 
         if s is None:
             continue
@@ -643,12 +649,12 @@ def _statements(parser, parse_func, endlist):
     return nodes.list_node(stmts)
 
 
-def statements(parser, endlist):
-    return _statements(parser, statement, endlist)
-
-
-def module_statements(parser, endlist):
-    return _statements(parser, statement_no_end_expr, endlist)
+# def statements(parser, endlist):
+#     return _statements(parser, statement, endlist)
+# 
+# 
+# def module_statements(parser, endlist):
+#     return _statements(parser, statement_no_end_expr, endlist)
 
 
 def infix(parser, ttype, lbp, led):
