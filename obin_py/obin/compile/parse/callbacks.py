@@ -288,19 +288,19 @@ def prefix_lparen(parser, op, node):
 
     init_free_code_block(parser, node, [TT_RPAREN])
     e = expression(parser, 0, [TT_RPAREN])
+    skip_end_expression(parser)
 
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
         return e
 
     items = [e]
-    advance_expected_one_of(parser, [TT_COMMA, TT_END_EXPR])
+    advance_expected(parser, TT_COMMA)
 
     if parser.token_type != TT_RPAREN:
         while True:
             items.append(expression(parser, 0, [TT_COMMA]))
-            if parser.token_type == TT_END_EXPR:
-                advance(parser)
+            skip_end_expression(parser)
             if parser.token_type == TT_RPAREN:
                 break
             advance_expected(parser, TT_COMMA)
@@ -448,7 +448,6 @@ def prefix_if(parser, op, node):
     # print parser.ts.advanced_values()
     advance_end(parser)
     return node_1(NT_CONDITION, __ntok(node), list_node(branches))
-
 
 
 def init_indented_child_block(parser, node):
@@ -875,7 +874,7 @@ def _parser_trait_header(parser, node):
         constraints = _parse_tuple_of_names(parser.name_parser, TERM_METHOD_CONSTRAINTS)
     else:
         constraints = nodes.create_empty_list_node(node)
-        
+
     return name, instance_name, constraints
 
 

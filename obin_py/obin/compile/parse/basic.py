@@ -117,6 +117,7 @@ def skip_indent(parser):
     if parser.token_type == TT_INDENT:
         advance(parser)
 
+
 def init_free_code_block(parser, node, terminator):
     skip_indent(parser)
     parser.ts.add_free_code_block(node, terminator)
@@ -518,12 +519,23 @@ def expect_expression_of_types(parser, _rbp, expected_types, terminators=None):
     return exp
 
 
+def skip_end_expression(parser):
+    if parser.token_type == TT_END_EXPR:
+        advance(parser)
+
+
 def expression(parser, _rbp, terminators=None):
     if terminators is None:
         terminators = TERM_EXP
     expr = base_expression(parser, _rbp, terminators)
     expr = postprocess(parser, expr)
     return expr
+
+
+def expression_with_optional_end_of_expression(parser, _rbp, terminators):
+    exp = expression(parser, _rbp, terminators)
+    skip_end_expression(parser)
+    return exp
 
 
 def expression_free(parser, _rbp, terminators=None):
