@@ -417,7 +417,7 @@ def advance(parser):
     if parser.isend():
         return None
 
-    node = parser.next()
+    node = parser.next_token()
     # print "ADVANCE", node
     return node
 
@@ -434,7 +434,7 @@ def advance_expected_one_of(parser, ttypes):
     if parser.isend():
         return None
 
-    return parser.next()
+    return parser.next_token()
 
 
 def advance_end(parser):

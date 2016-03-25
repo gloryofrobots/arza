@@ -1,9 +1,12 @@
 infixl + + 50 
 infixl == == 10 
-fun f x ->
-   (lam x -> 42 end) 2
-        
-   
+fun f x -> 
+    f lam x -> 
+          1 
+      end . 
+              3
+end 
+
 fun x () ->
     24
 

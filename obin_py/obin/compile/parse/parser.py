@@ -78,9 +78,9 @@ class BaseParser:
     def token(self):
         return self.ts.token
 
-    def next(self):
+    def next_token(self):
         try:
-            return self.ts.next()
+            return self.ts.next_token()
         except InvalidIndentationError as e:
             parser_error_indentation(self, e.msg, e.position, e.line, e.column)
         except UnknownTokenError as e:
@@ -297,6 +297,7 @@ def fun_signature_parser_init(parser):
 
     prefix(parser, TT_LPAREN, prefix_lparen)
     symbol(parser, TT_RPAREN)
+    symbol(parser, TT_INDENT)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
 
     infix(parser, TT_OF, 10, led_infix)
@@ -435,7 +436,7 @@ def parse(process, env, src):
     ts = newtokenstream(src)
     parser.open(ParseState(process, env, ts))
 
-    parser.next()
+    parser.next_token()
     stmts, scope = parse_module(parser, TERM_FILE)
     assert plist.is_empty(parser.state.scopes)
     check_token_type(parser, TT_ENDSTREAM)

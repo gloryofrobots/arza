@@ -569,8 +569,8 @@ def _parse_function_signature(parser):
         (arg1 arg2 of T ...arg3)
     """
     pattern = juxtaposition_as_tuple(parser.fun_signature_parser, TERM_FUN_SIGNATURE)
+    skip_indent(parser)
     args_type = nodes.node_type(pattern)
-
     if args_type != NT_TUPLE:
         parse_error(parser, u"Invalid  syntax in function signature", pattern)
     return pattern

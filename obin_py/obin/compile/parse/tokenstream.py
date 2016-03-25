@@ -14,13 +14,13 @@ class TokenStream:
         self.src = src
 
     def next(self):
-        token = self.tokens.next()
+        token = self.tokens.next_token()
 
         if tokens.token_type(token) == TT_NEWLINE:
             # print "NEW LINE"
             self.is_newline_occurred = True
             while tokens.token_type(token) == TT_NEWLINE:
-                token = self.tokens.next()
+                token = self.tokens.next_token()
         else:
             # print "TOKEN"
             self.is_newline_occurred = False
