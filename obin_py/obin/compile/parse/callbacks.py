@@ -821,7 +821,7 @@ def _parse_union(parser, node, union_name):
 
 def _parse_type(parser, node, typename, term):
     if parser.token_type == TT_NAME:
-        fields = juxtaposition_as_list_no_free(parser.type_parser, term)
+        fields = juxtaposition_as_list(parser.type_parser, term)
         args = symbol_list_to_arg_tuple(parser, parser.node, fields)
         body = list_node([nodes.create_fenv_node(parser.node)])
         construct_funcs = nodes.create_function_variants(args, body)
@@ -893,7 +893,7 @@ def stmt_trait(parser, op, node):
         method_name = grab_name_or_operator(parser)
         check_token_type(parser, TT_NAME)
 
-        sig = juxtaposition_as_list_no_free(parser.method_signature_parser, TERM_METHOD_SIG)
+        sig = juxtaposition_as_list(parser.method_signature_parser, TERM_METHOD_SIG)
         check_node_type(parser, sig, NT_LIST)
         if parser.token_type == TT_ARROW:
             init_child_code_block(parser)

@@ -84,13 +84,13 @@ fun f ((x of Int) y z) ->
         3)
         
     (1
-     , lam x | x -> 25
-             | y -> 45
-     ,lam x
+    , lam x | x -> 25
+            | y -> 45
+    , lam x
         | x -> 25
         | y -> 45
-     , lam x -> 25
-     25)
+    , lam x -> 25
+    25)
 
     (1,
   2,
@@ -160,6 +160,13 @@ fun f ((x of Int) y z) ->
                (1 + 1)
         | y -> 2
         
+    match if x == 1 ->
+             2
+          else -> 
+            3
+          end
+        | x -> 3
+        | y -> 2
     try 42
     catch 3 ->#first
 
