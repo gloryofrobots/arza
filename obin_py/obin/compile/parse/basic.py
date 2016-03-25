@@ -113,8 +113,8 @@ def init_parent_code_block(parser, node=None):
     parser.ts.add_parent_code_block(node)
 
 
-def init_free_code_block(parser):
-    parser.ts.add_free_code_block()
+def init_free_code_block(parser, node, terminator):
+    parser.ts.add_free_code_block(node, terminator)
 
 
 def set_current_block_as_parent(parser):
@@ -548,7 +548,7 @@ def juxtaposition_as_list_no_free(parser, terminators):
 
 def juxtaposition_as_tuple(parser, terminators):
     node = parser.node
-    exp = expression_free(parser, 0, terminators)
+    exp = expression(parser, 0, terminators)
     if not nodes.is_list_node(exp):
         return nodes.create_tuple_node(node, [exp])
 

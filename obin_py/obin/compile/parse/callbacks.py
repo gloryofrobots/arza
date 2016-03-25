@@ -145,7 +145,7 @@ def infix_dot(parser, op, node, left):
 
 def infix_lcurly(parser, op, node, left):
     items = []
-    init_free_code_block(parser)
+    init_free_code_block(parser, node, [TT_RCURLY])
     if parser.token_type != TT_RCURLY:
         while True:
             # TODO check it
@@ -163,7 +163,6 @@ def infix_lcurly(parser, op, node, left):
 
             advance_expected(parser, TT_COMMA)
 
-    pop_block(parser)
     advance_expected(parser, TT_RCURLY)
     return node_2(NT_MODIFY, __ntok(node), left, list_node(items))
 
@@ -287,12 +286,11 @@ def prefix_lparen(parser, op, node):
         advance_expected(parser, TT_RPAREN)
         return nodes.create_unit_node(node)
 
-    init_free_code_block(parser)
+    init_free_code_block(parser, node, [TT_RPAREN])
     e = expression(parser, 0, [TT_RPAREN])
 
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
-        pop_block(parser)
         return e
 
     items = [e]
@@ -306,7 +304,6 @@ def prefix_lparen(parser, op, node):
 
             advance_expected(parser, TT_COMMA)
 
-    pop_block(parser)
     advance_expected(parser, TT_RPAREN)
     return node_1(NT_TUPLE, __ntok(node), list_node(items))
 
@@ -835,9 +832,7 @@ def _parse_type(parser, node, typename, term):
 
 # TODO BETTER PARSE ERRORS HERE
 def stmt_type(parser, op, node):
-    init_free_code_block(parser)
     typename = grab_name(parser.type_parser)
-    pop_block(parser)
 
     if parser.token_type == TT_CASE:
         return _parse_union(parser, node, typename)
@@ -873,7 +868,6 @@ def grab_name_or_operator(parser):
 
 
 def _parser_trait_header(parser, node):
-    init_free_code_block(parser)
     type_parser = parser.type_parser
     name = grab_name(type_parser)
     check_token_type(parser, TT_FOR)
@@ -884,7 +878,7 @@ def _parser_trait_header(parser, node):
         constraints = _parse_tuple_of_names(parser.name_parser, TERM_METHOD_CONSTRAINTS)
     else:
         constraints = nodes.create_empty_list_node(node)
-    pop_block(parser)
+        
     return name, instance_name, constraints
 
 
@@ -914,11 +908,9 @@ def stmt_trait(parser, op, node):
 
 
 def _parser_implement_header(parser):
-    init_free_code_block(parser)
     trait_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_BEFORE_FOR)
     advance_expected(parser, TT_FOR)
     type_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_IMPL_HEADER)
-    pop_block(parser)
     return trait_name, type_name
 
 
