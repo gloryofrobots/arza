@@ -215,6 +215,7 @@ class IndentationTokenStream:
         self._add_block_for_node_token(node, NODE, level_tokens)
 
     def add_free_code_block(self, node, level_tokens):
+        self._skip_newlines()
         self._add_block_for_node_token(node, FREE, level_tokens)
 
     def set_current_block_as_parent(self):

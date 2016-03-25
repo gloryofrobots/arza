@@ -113,7 +113,12 @@ def init_parent_code_block(parser, node=None):
     parser.ts.add_parent_code_block(node)
 
 
+def skip_indent(parser):
+    if parser.token_type == TT_INDENT:
+        advance(parser)
+
 def init_free_code_block(parser, node, terminator):
+    skip_indent(parser)
     parser.ts.add_free_code_block(node, terminator)
 
 

@@ -32,39 +32,20 @@
                 },
                 [
                   {
-                    "_ntype": "NT_FUN",
-                    "_value": "lam",
+                    "_ntype": "NT_TUPLE",
+                    "_value": "(",
                     "children": [
-                      {
-                        "empty": true
-                      },
                       [
-                        [
-                          {
-                            "_ntype": "NT_TUPLE",
-                            "_value": "(",
-                            "children": [
-                              [
-                                {
-                                  "_ntype": "NT_NAME",
-                                  "_value": "x"
-                                }
-                              ]
-                            ]
-                          },
-                          [
-                            {
-                              "_ntype": "NT_INT",
-                              "_value": "1"
-                            }
-                          ]
-                        ]
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "1"
+                        },
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "1"
+                        }
                       ]
                     ]
-                  },
-                  {
-                    "_ntype": "NT_INT",
-                    "_value": "3"
                   }
                 ]
               ]

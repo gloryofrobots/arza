@@ -98,6 +98,16 @@ fun f ((x of Int) y z) ->
     56 
     
     (1,
+    
+    f ( 
+        lam x ->
+            1
+        end .
+            3
+      , 1
+      , 4
+      , 5
+    )
  lam x
     | x -> 25
     | y -> 45 end,

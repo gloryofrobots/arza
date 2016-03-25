@@ -1,10 +1,16 @@
 infixl + + 50 
 infixl == == 10 
 fun f x -> 
-    f lam x -> 
-          1 
-      end . 
-              3
+    f (1; 1)
+//    f ( 
+//        lam x ->
+//            1
+//        end
+//        , 3
+//        , 1
+//        , 4
+//        , 5
+//    )
 end 
 
 fun x () ->

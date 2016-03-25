@@ -294,14 +294,15 @@ def prefix_lparen(parser, op, node):
         return e
 
     items = [e]
-    advance_expected(parser, TT_COMMA)
+    advance_expected_one_of(parser, [TT_COMMA, TT_END_EXPR])
 
     if parser.token_type != TT_RPAREN:
         while True:
             items.append(expression(parser, 0, [TT_COMMA]))
-            if parser.token_type != TT_COMMA:
+            if parser.token_type == TT_END_EXPR:
+                advance(parser)
+            if parser.token_type == TT_RPAREN:
                 break
-
             advance_expected(parser, TT_COMMA)
 
     advance_expected(parser, TT_RPAREN)
@@ -448,10 +449,6 @@ def prefix_if(parser, op, node):
     advance_end(parser)
     return node_1(NT_CONDITION, __ntok(node), list_node(branches))
 
-
-def skip_indent(parser):
-    if parser.token_type == TT_INDENT:
-        advance(parser)
 
 
 def init_indented_child_block(parser, node):
