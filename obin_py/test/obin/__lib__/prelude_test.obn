@@ -1,18 +1,13 @@
 infixl + + 50 
 infixl == == 10 
 fun f x -> 
-    {x=1; 
-,y=lam x ->1 end
-                        ,z = 2
-    }
-//    {x=1,
-//  x=2,
-//  
-// l=lam x y
-//    | x y -> 1
-//    | a v -> 2 end,
-// n = 1
-//    }
+    match if x == 1 ->
+             2
+          else -> 
+            3
+          end
+        | x -> 3
+        | y -> 2
 end
 
 fun x () ->

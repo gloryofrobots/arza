@@ -512,11 +512,15 @@ def _parse_pattern(parser):
 
 
 def prefix_match(parser, op, node):
-    exp = expression_free(parser, 0, TERM_MATCH_PATTERN)
+    init_node_block(parser, node)
+   
+    exp = expression(parser, 0, TERM_MATCH_PATTERN)
+    skip_indent(parser)
+
     pattern_parser = parser.pattern_parser
     branches = []
     check_token_type(parser, TT_CASE)
-    init_parent_code_block(parser)
+    init_offside_block(parser, parser.node)
     while pattern_parser.token_type == TT_CASE:
         advance_expected(pattern_parser, TT_CASE)
         pattern = _parse_pattern(parser)

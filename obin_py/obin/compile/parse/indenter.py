@@ -324,8 +324,6 @@ class IndentationTokenStream:
                 elif block.level == level:
                     if block.push_end_of_expression_on_new_line is True:
                         self.add_logical_token(tokens.create_end_expression_token(token))
-                        return self.next_token()
-
                     elif block.is_node():
                         if ttype == tt.TT_END:
                             self.index += 1
@@ -334,14 +332,11 @@ class IndentationTokenStream:
                             # if self.current_physical_type() == tt.TT_NEWLINE:
                                 # self.add_logical_token(tokens.create_end_expression_token(token))
                                 # self._skip_newlines()
-
-                            return self.next_token()
-
                         elif ttype not in block.level_tokens:
                             self.add_logical_token(tokens.create_end_token(token))
                             self.add_logical_token(tokens.create_end_expression_token(token))
                             self.pop_block()
-                            return self.next_token()
+                    return self.next_token()
 
                 print "---- POP_BLOCK", block
                 print self.advanced_values()

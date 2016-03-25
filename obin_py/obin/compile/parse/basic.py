@@ -13,7 +13,7 @@ TERM_IF_BODY = [TT_ELSE, TT_ELIF]
 TERM_IF_CONDITION = [TT_ARROW]
 
 TERM_FILE = [TT_ENDSTREAM]
-TERM_MATCH_PATTERN = [TT_CASE]
+TERM_MATCH_PATTERN = [TT_CASE, TT_INDENT]
 TERM_CASE = [TT_CASE] + TERM_BLOCK
 # TERM_CATCH = [TT_CATCH, TT_FINALLY] + TERM_BLOCK
 TERM_TRY = [TT_CATCH, TT_FINALLY]
@@ -539,9 +539,8 @@ def expression_with_optional_end_of_expression(parser, _rbp, terminators):
 
 
 def expression_free(parser, _rbp, terminators=None):
-    init_free_code_block(parser)
+    init_free_code_block(parser, parser.node, terminators)
     exp = expression(parser, _rbp, terminators)
-    pop_block(parser)
     return exp
 
 

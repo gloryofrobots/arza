@@ -152,6 +152,14 @@ fun f ((x of Int) y z) ->
         | (x,y,z) -> 2
         | _ -> 1
         
+    match lam x ->
+              1
+          end
+        | x ->
+           lam () -> () end .
+               (1 + 1)
+        | y -> 2
+        
     try 42
     catch 3 ->#first
 
