@@ -453,7 +453,7 @@ def prefix_if(parser, op, node):
 
 def prefix_try(parser, op, node):
     init_node_block(parser, node, LEVELS_TRY)
-    init_child_code_block(parser, parser.node)
+    init_child_code_block(parser, parser.node, TERM_TRY)
 
     trybody = statements(parser, TERM_TRY)
     catches = []
@@ -469,7 +469,7 @@ def prefix_try(parser, op, node):
             # pattern = expressions(parser.pattern_parser, 0)
             pattern = _parse_pattern(parser)
             advance_expected(parser, TT_ARROW)
-            init_child_code_block(parser, parser.node)
+            init_child_code_block(parser, parser.node, TERM_CATCH_CASE)
             body = statements(parser, TERM_CATCH_CASE)
             catches.append(list_node([pattern, body]))
     else:
@@ -504,13 +504,13 @@ def _parse_pattern(parser):
 
 def prefix_match(parser, op, node):
     init_node_block(parser, node, [TT_WITH])
-    init_child_code_block(parser, parser.node)
+    init_child_code_block(parser, parser.node, [TT_WITH])
 
     exp = expression_with_optional_end_of_expression(parser, 0, TERM_MATCH_PATTERN)
     # skip_indent(parser)
     check_token_type(parser, TT_WITH)
-    skip_indent(parser)
     advance(parser)
+    skip_indent(parser)
 
     pattern_parser = parser.pattern_parser
     branches = []

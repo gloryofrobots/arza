@@ -1,5 +1,5 @@
 infixl + + 50
-infixl == == 10 
+infixl == == 10
 import affirm
 import lib_az:abc:module_ab as ab
 import lib_az:efg:module_e as e
@@ -23,15 +23,15 @@ import from lib_az:abc:module_ab  hiding (CONST)
 //ab5:f_ab_2 only
 import lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
 
-fun f a 
+fun f a
     | a -> 1
     | z -> 2
     | x -> 3
-    
+
 fun f a  | a -> 1
          | z -> 2
          | x -> 3
-fun f a b c 
+fun f a b c
     | a b c -> 42
     | z e f -> 24
     | x [x:xs] l -> 31
@@ -45,31 +45,39 @@ fun f a b c ->
     a :: b :: c
     tail (c :: f)
     lam a b c -> 42
-    
+
 fun f ((x of Int) y z) ->
     lam x y z -> 42
     lam x y z -> 123 end
     lam x y z | [hd::tl] (1,2,3) {x=2, y=3} -> 24
               | _ y z -> 23
-    lam x y z 
+    lam x y z
         | [hd::tl] (1,2,3) {x=2, y=3} -> 24
         | _ y z -> 23
-    
+
     lam x y z -> 25 end 34
     f 23 lam x y z -> 42 end 34
-    
-    f lam x 
-        | x -> 34  
-        | x -> 4 end 
-        
-    f lam x 
-        | x -> 34  
+
+    f lam x
+        | x -> 34
+        | x -> 4 end
+
+    f lam x
+        | x -> 34
         | x -> 4 end (1,2,3) (4,5,6)
     24
-    
+
+    ( lam x
+        | x -> 1
+        | y -> 2
+      end
+                1
+                    2
+
+                     3)
     (1,2, lam x | x -> 25
                 | y -> 13 end, 25)
-                
+
     (1,
      lam x | x -> 25
            | y -> 45 end,
@@ -78,11 +86,11 @@ fun f ((x of Int) y z) ->
         | y -> 45 end,
      lam x -> 25 end,
      25)
-                
+
     (1
      ,2,
         3)
-        
+
     (1
     , lam x | x -> 25
             | y -> 45
@@ -95,12 +103,12 @@ fun f ((x of Int) y z) ->
     (1,
   2,
 3)
-    56 
-    
+    56
+
     (1,
-    
+
     f (2;, 3)
-    f ( 
+    f (
         lam x ->
             1
         end
@@ -109,7 +117,7 @@ fun f ((x of Int) y z) ->
         , 4
         , 5
     )
-    f ( 
+    f (
         lam x ->
             1
         end .
@@ -123,10 +131,10 @@ fun f ((x of Int) y z) ->
     | y -> 45 end,
                         lam x -> 25 end,
      25)
-     
+
     {x=1,
   x=2,
-  
+
  l=lam x y
     | x y -> 1
     | a v -> 2 end,
@@ -136,22 +144,22 @@ fun f ((x of Int) y z) ->
         2
     else ->
         4
-    
+
     5
     if x :: 2 ->
                           42
-    elif (1,2,3) -> 
+    elif (1,2,3) ->
         24
     elif {x=1, y=2} -> 35
     else -> 15
-    
+
     match (1,2,3) | (x,y,z) -> 2
                   | _ -> 1
-                  
-    match (1,2,3) 
+
+    match (1,2,3)
         | (x,y,z) -> 2
         | _ -> 1
-        
+
     match lam x ->
               1
           end
@@ -159,34 +167,52 @@ fun f ((x of Int) y z) ->
            lam () -> () end .
                (1 + 1)
         | y -> 2
-        
+
     match if x == 1 ->
              2
-          else -> 
+          else ->
             3
           end
         | x -> 3
         | y -> 2
-        
+
+    match 1 with
+        | x -> 3
+        | y -> 2
+
+    match 1 with 3 -> 4
+    match 1 with
+        3 -> 4
+
+    match
+        if 1 ->
+            1
+        else ->
+            3
+        end 3 .
+            4
+    with
+        | x -> 3
+        | y -> 2
     try 1; catch 1 -> 1; end
     if 1 -> 1; else -> 2; end
     try 1; catch 1 ->
         1
-    
+
     try 42
     catch 3 ->#first
 
     try 42
     catch 3 ->#first
-    
+
     try 42
     catch 3 ->#first
     finally -> 12
-    
+
     try 1
     catch 2 ->
         11
-        try 
+        try
             3
         catch 4 ->12
         finally ->
@@ -194,16 +220,16 @@ fun f ((x of Int) y z) ->
             elif 7 ->
                 if 9 -> 14
                 else -> 15
-            else -> 
-                try 
+            else ->
+                try
                     9
-                catch 
+                catch
                     | 10 -> 11
                     | 13 -> 14
                 finally ->
                     24
                 8
-    finally -> 
+    finally ->
         5
     try
         throw (1,2,"ERROR")
@@ -213,24 +239,41 @@ fun f ((x of Int) y z) ->
         | err @ (1, 2, x) -> #third
     finally ->
         (#fourth, err, x)
-     
+
+    f try 1; catch | x -> 1; | y -> 2; finally -> 4 end 42
+
+    try 1; catch
+        | x -> 1
+        | y -> 2
+    finally -> 4
+
+    try 1; catch
+        | x -> 1; | y -> 2; finally -> 4
+
+    try 1; catch | x -> 1; | y -> 2; finally -> 4
+
+
+    try 1; catch
+        | x -> 1
+        | y -> 2; finally -> 4
+
     co =
         coroutine lam yield x ->
                        _co1 =
                             coroutine lam yield2 y ->
                                            fun send () ->
                                                 yield2 (42 + y)
-                                                
-                                           send () 
+
+                                           send ()
     foo 2 .
             3 .
         4
-        
-fun f x -> 
-    f lam x ->    
+
+fun f x ->
+    f lam x ->
         1
-      end . 
-        3 
+      end .
+        3
     2
 end
 fun x () ->
@@ -239,8 +282,8 @@ end
 
 trait Eq for x
     def == x y -> throw (#NotImplemented, x, y)
-    def != x y -> not x 
-    
+    def != x y -> not x
+
 trait Ord  for x of Eq
     def <= x y -> throw (#NotImplemented, x, y)
     def < x y -> (cmp x y) `is` LT
@@ -251,11 +294,11 @@ trait Ord  for x of Eq
                 if x `eq` y -> EQ
                 elif x `le` y -> LT
                 else -> GT
-                
+
 
     def max x y ->  y in_case x `le` y else x
     def min x y -> x in_case x `le` y else y
-    
+
 implement types:TestTrait for X
     def f a of X b c -> 42
     def f a of X b c -> 42
@@ -265,11 +308,11 @@ implement types:TestTrait for X
     def test_method_1 a1 of X a2 of X self -> a1.x a2.x self.x
     def test_method_2 a1 self a2 -> a1.x a2.x self.x
     def test_method_3 self a1 a2 -> a1.x a2.x self.x
-    def test_method_4 self 
+    def test_method_4 self
         | x -> self.x
         | y -> 42
     def test_method_3 self a1 a2 -> a1.x a2.x self.x
-    
+
 implement X:x for T:t
 
 
@@ -284,11 +327,11 @@ derive (Eq, Str) for (TypeError, RuntimeError, ImportError, NotImplementedError,
                      TraitConstraintError)
 type Maybe | Nothing
            | Just v
-    
+
 type Maybe
     | Nothing
     | Just v
-    
+
 
 type None
 
@@ -304,18 +347,18 @@ type Shape
     | Rect left top right bottom
     | Line point1 point2
     | Empty
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
    //    affirm:is_equal if 13 -> 1
 //                    elif 14 ->
-//                       2 
-//                    else -> 4 
+//                       2
+//                    else -> 4
 //                    8
 //    lam arg1 arg2 ->
 //        try
@@ -325,7 +368,7 @@ type Shape
 //        finally ->
 //            throw e
 //    end (33, 22) (33, 22)
-//    
+//
 //    affirm:is_equal (
 //        try
 //            try
@@ -341,11 +384,11 @@ type Shape
 //        ) (ZeroDivisionError (1, 0))
 //    try 42
 //    catch 3 ->#first
-//    
+//
 //    try 42
 //    catch 3 ->#first
 //    finally -> 12
-//    
+//
 //    try
 //        throw (1,2,"ERROR")
 //    catch
@@ -354,19 +397,19 @@ type Shape
 //        | err @ (1, 2, x) -> #third
 //    finally ->
 //        (#fourth, err, x)
- 
+
 //    if 1 -> 1
 //    elif 2 -> 2
 //    elif 3 -> 3
 //    else -> 4
-        
-//    lam x -> 
-//        x 
-//    lam x 
+
+//    lam x ->
+//        x
+//    lam x
 //        | x ->
 //            x
 //        | y ->
 //            y
-//        
+//
 //    42
-     
+

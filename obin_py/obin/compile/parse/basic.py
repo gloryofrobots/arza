@@ -93,9 +93,9 @@ def parse_error(parser, message, node):
                        ]))
 
 
-def init_child_code_block(parser, node):
+def init_child_code_block(parser, node, terminators=None):
     skip_indent(parser)
-    parser.ts.add_child_code_block(node)
+    parser.ts.add_child_code_block(node, terminators)
 
 
 def init_offside_block(parser, node):

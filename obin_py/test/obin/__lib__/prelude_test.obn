@@ -2,16 +2,41 @@ infixl + + 50
 infixl == == 10
 
 fun f x ->
-    if x ->
-        2
-    else ->
-        4
+    f try 1; catch | x -> 1; | y -> 2; finally -> 4 end 42
 
+    try 1; catch
+        | x -> 1
+        | y -> 2
+    finally -> 4
+
+    try 1; catch
+        | x -> 1; | y -> 2; finally -> 4
+
+    try 1; catch | x -> 1; | y -> 2; finally -> 4
+
+
+    try 1; catch
+        | x -> 1
+        | y -> 2; finally -> 4
+//    if x -> 1; else -> 2; end
+//
+//    if x ->
+//        2
+//    else ->
+//        4
+//    (1,
+//     lam x | x -> 25
+//           | y -> 45 end,
+//     lam x
+//        | x -> 25
+//        | y -> 45 end,
+//     lam x -> 25 end,
+//     25)
+//    (1
+//     ,2,
+//        3)
     5
 //    match 1 with x -> 2
-//     try 1; catch
-//        | x -> 1
-//        | y -> 2
 
 //    match 1 with
 //        | x -> 3

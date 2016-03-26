@@ -139,18 +139,18 @@ class IndentationTokenStream:
         log("---- ADD BLOCK", block)
         self.blocks = plist.cons(block, self.blocks)
 
-    def add_child_code_block(self, node):
+    def add_child_code_block(self, node, terminators):
         # # support for f x y | x y -> 1 | x y -> 3
         # if self.current_block().type == CHILD:
         #     self.pop_block()
 
         # assert not self.current_block().is_child()
-        self._add_block(node, CHILD)
+        self._add_block(node, CHILD, terminators=terminators)
 
     def add_offside_block(self, node):
         self._add_block(node, OFFSIDE)
 
-    def add_node_block(self, node, level_tokens=None):
+    def add_node_block(self, node, level_tokens):
         self._add_block(node, NODE, level_tokens=level_tokens)
 
     def add_free_code_block(self, node, terminators):
@@ -225,8 +225,8 @@ class IndentationTokenStream:
                 self.pop_block()
                 # IF TOKEN IS TERMINATOR WE STILL NEED TO PROCEED NEWLINE
                 block = self.current_block()
-            else:
-                return self.next_token()
+            # else:
+            return self.next_token()
 
         if level > block.level:
             self.add_logical_token(tokens.create_indent_token(token))
@@ -318,7 +318,7 @@ class IndentationTokenStream:
 
         block = self.current_block()
 
-        if block.is_free() and block.has_terminator(ttype):
+        if block.has_terminator(ttype):
             self.pop_block()
 
         return self.attach_token(token)

@@ -23,9 +23,75 @@
           },
           [
             {
-              "_ntype": "NT_CONDITION",
-              "_value": "if",
+              "_ntype": "NT_CALL",
+              "_value": "f",
               "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "f"
+                },
+                [
+                  {
+                    "_ntype": "NT_TRY",
+                    "_value": "try",
+                    "children": [
+                      [
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "1"
+                        }
+                      ],
+                      [
+                        [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "x"
+                          },
+                          [
+                            {
+                              "_ntype": "NT_INT",
+                              "_value": "1"
+                            }
+                          ]
+                        ],
+                        [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "y"
+                          },
+                          [
+                            {
+                              "_ntype": "NT_INT",
+                              "_value": "2"
+                            }
+                          ]
+                        ]
+                      ],
+                      [
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "4"
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "42"
+                  }
+                ]
+              ]
+            },
+            {
+              "_ntype": "NT_TRY",
+              "_value": "try",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "1"
+                  }
+                ],
                 [
                   [
                     {
@@ -35,21 +101,160 @@
                     [
                       {
                         "_ntype": "NT_INT",
-                        "_value": "2"
+                        "_value": "1"
                       }
                     ]
                   ],
                   [
                     {
-                      "empty": true
+                      "_ntype": "NT_NAME",
+                      "_value": "y"
                     },
                     [
                       {
                         "_ntype": "NT_INT",
-                        "_value": "4"
+                        "_value": "2"
                       }
                     ]
                   ]
+                ],
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "4"
+                  }
+                ]
+              ]
+            },
+            {
+              "_ntype": "NT_TRY",
+              "_value": "try",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "1"
+                  }
+                ],
+                [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "x"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_INT",
+                        "_value": "1"
+                      }
+                    ]
+                  ],
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "y"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_INT",
+                        "_value": "2"
+                      }
+                    ]
+                  ]
+                ],
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "4"
+                  }
+                ]
+              ]
+            },
+            {
+              "_ntype": "NT_TRY",
+              "_value": "try",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "1"
+                  }
+                ],
+                [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "x"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_INT",
+                        "_value": "1"
+                      }
+                    ]
+                  ],
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "y"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_INT",
+                        "_value": "2"
+                      }
+                    ]
+                  ]
+                ],
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "4"
+                  }
+                ]
+              ]
+            },
+            {
+              "_ntype": "NT_TRY",
+              "_value": "try",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "1"
+                  }
+                ],
+                [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "x"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_INT",
+                        "_value": "1"
+                      }
+                    ]
+                  ],
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "y"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_INT",
+                        "_value": "2"
+                      }
+                    ]
+                  ]
+                ],
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "4"
+                  }
                 ]
               ]
             },
