@@ -78,6 +78,7 @@ RULES = [
     (keyword('then'), TT_THEN),
     (keyword('of'), TT_OF),
     (keyword('match'), TT_MATCH),
+    (keyword('with'), TT_WITH),
     (keyword('fun'), TT_FUN),
     (keyword('end'), TT_END),
     (keyword('and'), TT_AND),

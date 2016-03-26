@@ -167,6 +167,12 @@ fun f ((x of Int) y z) ->
           end
         | x -> 3
         | y -> 2
+        
+    try 1; catch 1 -> 1; end
+    if 1 -> 1; else -> 2; end
+    try 1; catch 1 ->
+        1
+    
     try 42
     catch 3 ->#first
 

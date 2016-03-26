@@ -27,69 +27,14 @@
               "_value": "match",
               "children": [
                 {
-                  "_ntype": "NT_CONDITION",
-                  "_value": "if",
-                  "children": [
-                    [
-                      [
-                        {
-                          "_ntype": "NT_CALL",
-                          "_value": "(",
-                          "children": [
-                            {
-                              "_ntype": "NT_NAME",
-                              "_value": "=="
-                            },
-                            [
-                              {
-                                "_ntype": "NT_NAME",
-                                "_value": "x"
-                              },
-                              {
-                                "_ntype": "NT_INT",
-                                "_value": "1"
-                              }
-                            ]
-                          ]
-                        },
-                        [
-                          {
-                            "_ntype": "NT_INT",
-                            "_value": "2"
-                          }
-                        ]
-                      ],
-                      [
-                        {
-                          "empty": true
-                        },
-                        [
-                          {
-                            "_ntype": "NT_INT",
-                            "_value": "3"
-                          }
-                        ]
-                      ]
-                    ]
-                  ]
+                  "_ntype": "NT_INT",
+                  "_value": "1"
                 },
                 [
                   [
                     {
                       "_ntype": "NT_NAME",
                       "_value": "x"
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "3"
-                      }
-                    ]
-                  ],
-                  [
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "y"
                     },
                     [
                       {

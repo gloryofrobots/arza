@@ -11,6 +11,7 @@ TOKENS = [
   ("TT_FUN", "fun"),
 
   ("TT_MATCH", "match"),
+  ("TT_WITH", "with"),
   ("TT_CASE", "|"),
 
   ("TT_BREAK", "break"),

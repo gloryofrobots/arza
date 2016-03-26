@@ -190,10 +190,12 @@ class IndentationTokenStream:
 
     def add_child_code_block(self, node=None):
         # # support for f x y | x y -> 1 | x y -> 3
-        # if self.current_block().type == CHILD:
-        #     self.pop_block()
-
-        assert not self.current_block().is_child()
+        if self.current_block().type == CHILD:
+            self.pop_block()
+        
+        # if self.current_block().is_child():
+        #     print self.blocks
+        # assert not self.current_block().is_child()
         if node is None:
             self._add_block_for_next_token(CHILD)
         else:
@@ -397,5 +399,5 @@ class IndentationTokenStream:
         if block.is_free() is True:
             if ttype in block.level_tokens:
                 self.pop_block()
-
+        
         return self.attach_token(token)

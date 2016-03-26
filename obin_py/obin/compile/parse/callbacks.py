@@ -511,24 +511,65 @@ def _parse_pattern(parser):
     return pattern
 
 
-def prefix_match(parser, op, node):
-    init_node_block(parser, node)
-   
-    exp = expression(parser, 0, TERM_MATCH_PATTERN)
+def prefix_try(parser, op, node):
+    init_node_block(parser, node, LEVELS_TRY)
+    init_indented_child_block(parser, parser.node)
+
+    trybody = statements(parser, TERM_TRY)
+    catches = []
+
+    check_token_type(parser, TT_CATCH)
+    advance(parser)
     skip_indent(parser)
+
+    if parser.token_type == TT_CASE:
+        init_offside_block(parser, parser.node)
+        while parser.token_type == TT_CASE:
+            advance_expected(parser, TT_CASE)
+            # pattern = expressions(parser.pattern_parser, 0)
+            pattern = _parse_pattern(parser)
+            init_child_code_block(parser)
+            advance_expected(parser, TT_ARROW)
+            body = statements(parser, TERM_CATCH_CASE)
+            catches.append(list_node([pattern, body]))
+    else:
+        pattern = _parse_pattern(parser)
+        init_child_code_block(parser)
+        advance_expected(parser, TT_ARROW)
+        body = statements(parser, TERM_SINGLE_CATCH)
+        catches.append(list_node([pattern, body]))
+
+
+def prefix_match(parser, op, node):
+    init_node_block(parser, node, [TT_WITH])
+    init_indented_child_block(parser, parser.node)
+
+    exp = expression_with_optional_end_of_expression(parser, 0, TERM_MATCH_PATTERN)
+    # skip_indent(parser)
+    check_token_type(parser, TT_WITH)
+    skip_indent(parser)
+    advance(parser)
 
     pattern_parser = parser.pattern_parser
     branches = []
-    check_token_type(parser, TT_CASE)
-    init_offside_block(parser, parser.node)
-    while pattern_parser.token_type == TT_CASE:
-        advance_expected(pattern_parser, TT_CASE)
-        pattern = _parse_pattern(parser)
+    # check_token_type(parser, TT_CASE)
 
+    if parser.token_type == TT_CASE:
+        init_offside_block(parser, parser.node)
+        while pattern_parser.token_type == TT_CASE:
+            advance_expected(pattern_parser, TT_CASE)
+            pattern = _parse_pattern(parser)
+
+            init_child_code_block(parser)
+            advance_expected(parser, TT_ARROW)
+            body = statements(parser, TERM_CASE)
+
+            branches.append(list_node([pattern, body]))
+    else:
+        pattern = _parse_pattern(parser)
         init_child_code_block(parser)
         advance_expected(parser, TT_ARROW)
-        body = statements(parser, TERM_CASE)
-
+        body = statements(parser, TERM_BLOCK)
         branches.append(list_node([pattern, body]))
 
     advance_end(parser)

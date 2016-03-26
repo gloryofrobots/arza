@@ -1,13 +1,18 @@
 infixl + + 50 
 infixl == == 10 
 fun f x -> 
-    match if x == 1 ->
-             2
-          else -> 
-            3
-          end
-        | x -> 3
+//    match 1 with x -> 2
+     try 1; catch 
+        | x -> 1
         | y -> 2
+    
+//    match 1 with 
+//        | x -> 3
+//        | y -> 2
+        
+//    match 1
+//        | x -> 3
+//        | y -> 2
 end
 
 fun x () ->
