@@ -106,14 +106,14 @@ def init_node_block(parser, node, level_tokens=None):
     parser.ts.add_node_block(node, level_tokens)
 
 
-def skip_indent(parser):
-    if parser.token_type == TT_INDENT:
-        advance(parser)
-
-
 def init_free_code_block(parser, node, terminators):
     skip_indent(parser)
     parser.ts.add_free_code_block(node, terminators)
+
+
+def skip_indent(parser):
+    if parser.token_type == TT_INDENT:
+        advance(parser)
 
 
 class ParserScope(root.W_Root):

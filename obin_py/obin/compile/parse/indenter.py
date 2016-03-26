@@ -27,20 +27,12 @@ FREE = 3
 
 
 class Block(root.W_Root):
-    def __init__(self, parent_level, level, type):
+    def __init__(self, parent_level, level, type, level_tokens, terminators):
         self.parent_level = parent_level
         self.level = level
         self.type = type
-        self.level_tokens = []
-        self.terminators = []
-
-    def set_level_tokens(self, level_tokens):
-        assert isinstance(level_tokens, list)
-        self.level_tokens = level_tokens
-
-    def set_terminators(self, terminators):
-        assert isinstance(terminators, list)
-        self.terminators = terminators
+        self.level_tokens = level_tokens if level_tokens else []
+        self.terminators = terminators if terminators else []
 
     def has_level(self, token_type):
         return token_type in self.level_tokens
@@ -113,7 +105,7 @@ class IndentationTokenStream:
         #     indentation_error(u"First line indented", first)
         # self.attach_token(self.tokens[0])
         level = self._find_level()
-        self.blocks = plist.plist([Block(-1, level, MODULE)])
+        self.blocks = plist.plist([Block(-1, level, MODULE, None, None)])
 
     def advanced_values(self):
         t = [tokens.token_value_s(token) for token in self.produced_tokens]
@@ -135,34 +127,15 @@ class IndentationTokenStream:
         token = self._skip_newlines()
         return tokens.token_level(token)
 
-    def __add_block(self, block):
-        print "---- ADD BLOCK", block
-        self.blocks = plist.cons(block, self.blocks)
-
-    def _add_block_for_next_token(self, type):
-        cur = self.current_block()
-        level = self._find_level()
-        block = Block(cur.level, level, type)
-        self.__add_block(block)
-
-    def _add_block_for_node_token(self, node, type, level_tokens=None, terminators=None):
+    def _add_block(self, node, type, level_tokens=None, terminators=None):
         token = nodes.node_token(node)
         cur = self.current_block()
         level = tokens.token_level(token)
-        block = Block(cur.level, level, type)
+        block = Block(cur.level, level, type, level_tokens, terminators)
 
-        if level_tokens:
-            block.set_level_tokens(level_tokens)
-        if terminators:
-            block.set_terminators(terminators)
 
-        self.__add_block(block)
-
-    def _add_block_for_current_token(self, type):
-        cur = self.current_block()
-        level = tokens.token_level(self.token)
-        block = Block(cur.level, level, type)
-        self.__add_block(block)
+        print "---- ADD BLOCK", block
+        self.blocks = plist.cons(block, self.blocks)
 
     def add_child_code_block(self, node):
         # # support for f x y | x y -> 1 | x y -> 3
@@ -172,21 +145,18 @@ class IndentationTokenStream:
         # if self.current_block().is_child():
         #     print self.blocks
         # assert not self.current_block().is_child()
-        self._add_block_for_node_token(node, CHILD)
-        # if node is None:
-        #     self._add_block_for_next_token(CHILD)
-        # else:
+        self._add_block(node, CHILD)
 
     def add_offside_block(self, node):
-        self._add_block_for_node_token(node, OFFSIDE)
+        self._add_block(node, OFFSIDE)
 
     def add_node_block(self, node, level_tokens=None):
-        self._add_block_for_node_token(node, NODE, level_tokens=level_tokens)
+        self._add_block(node, NODE, level_tokens=level_tokens)
 
     def add_free_code_block(self, node, terminators):
         # TODO blocks in operators
         self._skip_newlines()
-        self._add_block_for_node_token(node, FREE, terminators=terminators)
+        self._add_block(node, FREE, terminators=terminators)
 
     def has_blocks(self):
         return not plist.is_empty(self.blocks)
