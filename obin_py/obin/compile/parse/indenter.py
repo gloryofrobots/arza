@@ -2,31 +2,10 @@ from obin.compile.parse import token_type as tt
 from obin.compile.parse import nodes
 from obin.compile.parse import tokens
 from obin.types import api, space, plist, root
+from obin.misc.fifo import Fifo
 
 SKIP_NEWLINE_TOKENS = [tt.TT_JUXTAPOSITION, tt.TT_DOUBLE_COLON,
                        tt.TT_COLON, tt.TT_OPERATOR, tt.TT_DOT, tt.TT_ASSIGN]
-
-
-class Fifo:
-    def __init__(self):
-        self.first = ()
-
-    def is_empty(self):
-        v = self.first == ()
-        return v
-
-    def append(self, data):
-        node = [data, ()]
-        if self.first:
-            self.last[1] = node
-        else:
-            self.first = node
-        self.last = node
-
-    def pop(self):
-        node = self.first
-        self.first = node[1]
-        return node[0]
 
 
 class InvalidIndentationError(Exception):
@@ -41,12 +20,10 @@ class InvalidIndentationError(Exception):
 
 
 MODULE = -1
-CODE = 0
-PARENT = 1
-CHILD = 2
+NODE = 0
+CHILD = 1
+OFFSIDE = 2
 FREE = 3
-NODE = 4
-OFFSIDE = 5
 
 
 class Block(root.W_Root):
@@ -55,47 +32,49 @@ class Block(root.W_Root):
         self.level = level
         self.type = type
         self.level_tokens = []
+        self.terminators = []
 
     def set_level_tokens(self, level_tokens):
-        self.level_tokens = level_tokens if level_tokens is not None else []
+        assert isinstance(level_tokens, list)
+        self.level_tokens = level_tokens
 
-    def block_type_to_string(self):
-        bt = self.type
-        if bt == CODE:
-            return "CODE"
-        elif bt == PARENT:
-            return "PARENT"
-        elif bt == CHILD:
-            return "CHILD"
-        elif bt == FREE:
-            return "FREE"
-        elif bt == MODULE:
-            return "MODULE"
-        elif bt == NODE:
-            return "NODE"
-        elif bt == OFFSIDE:
-            return "OFFSIDE"
+    def set_terminators(self, terminators):
+        assert isinstance(terminators, list)
+        self.terminators = terminators
+
+    def has_level(self, token_type):
+        return token_type in self.level_tokens
+
+    def has_terminator(self, token_type):
+        return token_type in self.terminators
 
     @property
     def push_end_of_expression_on_new_line(self):
-        return self.type == CHILD or self.type == CODE or self.type == MODULE
+        return self.type == CHILD or self.type == MODULE
 
     @property
     def push_end_on_dedent(self):
-        return self.type == CODE or self.type == PARENT or self.type == NODE
+        return self.type == NODE
 
     @property
     def push_end_of_expression_on_dedent(self):
         return self.type == NODE
 
     def _to_string_(self):
-        return "<Block pl=%d, l=%d, t=%s>" % (self.parent_level, self.level, self.block_type_to_string())
+        bt = self.type
+        bt_s = None
+        if bt == CHILD:
+            bt_s = "CHILD"
+        elif bt == FREE:
+            bt_s = "FREE"
+        elif bt == MODULE:
+            bt_s = "MODULE"
+        elif bt == NODE:
+            bt_s = "NODE"
+        elif bt == OFFSIDE:
+            bt_s = "OFFSIDE"
+        return "<Block pl=%d, l=%d, t=%s>" % (self.parent_level, self.level, bt_s)
 
-    def is_code(self):
-        return self.type == CODE
-
-    def is_parent(self):
-        return self.type == PARENT
 
     def is_child(self):
         return self.type == CHILD
@@ -152,14 +131,6 @@ class IndentationTokenStream:
         self.blocks = plist.tail(self.blocks)
         return self.current_block()
 
-    def pop_node_block(self):
-        block = self.current_block()
-        print "---- POP NODE BLOCK", block
-        if not block.is_node():
-            indentation_error(u"Node block expected", self.token)
-        self.add_logical_token(tokens.create_end_token(self.token))
-        self.blocks = plist.tail(self.blocks)
-
     def _find_level(self):
         token = self._skip_newlines()
         return tokens.token_level(token)
@@ -174,12 +145,17 @@ class IndentationTokenStream:
         block = Block(cur.level, level, type)
         self.__add_block(block)
 
-    def _add_block_for_node_token(self, node, type, level_tokens=None):
+    def _add_block_for_node_token(self, node, type, level_tokens=None, terminators=None):
         token = nodes.node_token(node)
         cur = self.current_block()
         level = tokens.token_level(token)
         block = Block(cur.level, level, type)
-        block.set_level_tokens(level_tokens)
+
+        if level_tokens:
+            block.set_level_tokens(level_tokens)
+        if terminators:
+            block.set_terminators(terminators)
+
         self.__add_block(block)
 
     def _add_block_for_current_token(self, type):
@@ -188,47 +164,29 @@ class IndentationTokenStream:
         block = Block(cur.level, level, type)
         self.__add_block(block)
 
-    def add_child_code_block(self, node=None):
+    def add_child_code_block(self, node):
         # # support for f x y | x y -> 1 | x y -> 3
-        if self.current_block().type == CHILD:
-            self.pop_block()
-        
+        # if self.current_block().type == CHILD:
+        #     self.pop_block()
+
         # if self.current_block().is_child():
         #     print self.blocks
         # assert not self.current_block().is_child()
-        if node is None:
-            self._add_block_for_next_token(CHILD)
-        else:
-            self._add_block_for_node_token(node, CHILD)
-
-    def add_code_block(self):
-        self._add_block_for_next_token(CODE)
+        self._add_block_for_node_token(node, CHILD)
+        # if node is None:
+        #     self._add_block_for_next_token(CHILD)
+        # else:
 
     def add_offside_block(self, node):
         self._add_block_for_node_token(node, OFFSIDE)
 
-    def add_parent_code_block(self, node=None):
-        if node is None:
-            self._add_block_for_current_token(PARENT)
-        else:
-            self._add_block_for_node_token(node, PARENT)
-
     def add_node_block(self, node, level_tokens=None):
-        self._add_block_for_node_token(node, NODE, level_tokens)
+        self._add_block_for_node_token(node, NODE, level_tokens=level_tokens)
 
-    def add_free_code_block(self, node, level_tokens):
+    def add_free_code_block(self, node, terminators):
+        # TODO blocks in operators
         self._skip_newlines()
-        self._add_block_for_node_token(node, FREE, level_tokens)
-
-    def set_current_block_as_parent(self):
-        type = self.current_block().type
-        print "---- SET PARENT", self.current_block()
-        self.current_block().type = PARENT
-        return type
-
-    def set_current_block_type(self, type):
-        print "---- SET TYPE", type, self.current_block()
-        self.current_block().type = type
+        self._add_block_for_node_token(node, FREE, terminators=terminators)
 
     def has_blocks(self):
         return not plist.is_empty(self.blocks)
@@ -279,7 +237,7 @@ class IndentationTokenStream:
         token = self._skip_newlines()
         ttype = tokens.token_type(token)
         cur_type = self.current_type()
-        
+
         block = self.current_block()
         level = tokens.token_level(token)
         print "----NEW LINE", level, block, tokens.token_to_s(token)
@@ -293,8 +251,9 @@ class IndentationTokenStream:
             return self.next_token()
 
         if block.is_free() is True:
-            if ttype in block.level_tokens:
+            if block.has_terminator(ttype):
                 self.pop_block()
+                # IF TOKEN IS TERMINATOR WE STILL NEED TO PROCEED NEWLINE
                 block = self.current_block()
             else:
                 return self.next_token()
@@ -332,9 +291,10 @@ class IndentationTokenStream:
                             self.add_logical_token(tokens.create_end_token(token))
                             self.pop_block()
                             # if self.current_physical_type() == tt.TT_NEWLINE:
-                                # self.add_logical_token(tokens.create_end_expression_token(token))
-                                # self._skip_newlines()
-                        elif ttype not in block.level_tokens:
+                            # self.add_logical_token(tokens.create_end_expression_token(token))
+                            # self._skip_newlines()
+
+                        elif not block.has_level(ttype):
                             self.add_logical_token(tokens.create_end_token(token))
                             self.add_logical_token(tokens.create_end_expression_token(token))
                             self.pop_block()
@@ -396,8 +356,8 @@ class IndentationTokenStream:
                 indentation_error(u"Not all blocks closed", token)
 
         block = self.current_block()
-        if block.is_free() is True:
-            if ttype in block.level_tokens:
-                self.pop_block()
-        
+
+        if block.is_free() and block.has_terminator(ttype):
+            self.pop_block()
+
         return self.attach_token(token)

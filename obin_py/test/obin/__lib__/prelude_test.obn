@@ -1,19 +1,26 @@
-infixl + + 50 
-infixl == == 10 
-fun f x -> 
+infixl + + 50
+infixl == == 10
+
+fun f x ->
+    if x ->
+        2
+    else ->
+        4
+
+    5
 //    match 1 with x -> 2
-     try 1; catch 
-        | x -> 1
-        | y -> 2
-    
-//    match 1 with 
+//     try 1; catch
+//        | x -> 1
+//        | y -> 2
+
+//    match 1 with
 //        | x -> 3
 //        | y -> 2
-        
+
 //    match 1
 //        | x -> 3
 //        | y -> 2
-end
+
 
 fun x () ->
     24

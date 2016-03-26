@@ -420,8 +420,8 @@ def prefix_if(parser, op, node):
     branches = []
 
     cond = expression(parser, 0, TERM_IF_CONDITION)
-    init_child_code_block(parser)
     advance_expected_one_of(parser, TERM_IF_CONDITION)
+    init_child_code_block(parser, parser.node)
 
     body = statements(parser, TERM_IF_BODY)
 
@@ -432,8 +432,8 @@ def prefix_if(parser, op, node):
         advance_expected(parser, TT_ELIF)
 
         cond = expression(parser, 0, TERM_IF_CONDITION)
-        init_child_code_block(parser)
         advance_expected_one_of(parser, TERM_IF_CONDITION)
+        init_child_code_block(parser, parser.node)
 
         body = statements(parser, TERM_IF_BODY)
         check_token_types(parser, TERM_IF_BODY)
@@ -441,28 +441,19 @@ def prefix_if(parser, op, node):
 
     advance_expected(parser, TT_ELSE)
 
-    # pop_block(parser)
-    init_child_code_block(parser)
     advance_expected(parser, TT_ARROW)
+    init_child_code_block(parser, parser.node)
 
     body = statements(parser, TERM_BLOCK)
     branches.append(list_node([empty_node(), body]))
-    # print parser.ts.advanced_values()
     advance_end(parser)
     return node_1(NT_CONDITION, __ntok(node), list_node(branches))
 
 
-def init_indented_child_block(parser, node):
-    if parser.token_type == TT_INDENT:
-        init_child_code_block(parser)
-        skip_indent(parser)
-    else:
-        init_child_code_block(parser, node)
-
 
 def prefix_try(parser, op, node):
     init_node_block(parser, node, LEVELS_TRY)
-    init_indented_child_block(parser, parser.node)
+    init_child_code_block(parser, parser.node)
 
     trybody = statements(parser, TERM_TRY)
     catches = []
@@ -477,21 +468,21 @@ def prefix_try(parser, op, node):
             advance_expected(parser, TT_CASE)
             # pattern = expressions(parser.pattern_parser, 0)
             pattern = _parse_pattern(parser)
-            init_child_code_block(parser)
             advance_expected(parser, TT_ARROW)
+            init_child_code_block(parser, parser.node)
             body = statements(parser, TERM_CATCH_CASE)
             catches.append(list_node([pattern, body]))
     else:
         pattern = _parse_pattern(parser)
-        init_child_code_block(parser)
         advance_expected(parser, TT_ARROW)
+        init_child_code_block(parser, parser.node)
         body = statements(parser, TERM_SINGLE_CATCH)
         catches.append(list_node([pattern, body]))
 
     if parser.token_type == TT_FINALLY:
         advance_expected(parser, TT_FINALLY)
-        init_child_code_block(parser)
         advance_expected(parser, TT_ARROW)
+        init_child_code_block(parser, parser.node)
         finallybody = statements(parser, TERM_BLOCK)
     else:
         finallybody = empty_node()
@@ -511,38 +502,9 @@ def _parse_pattern(parser):
     return pattern
 
 
-def prefix_try(parser, op, node):
-    init_node_block(parser, node, LEVELS_TRY)
-    init_indented_child_block(parser, parser.node)
-
-    trybody = statements(parser, TERM_TRY)
-    catches = []
-
-    check_token_type(parser, TT_CATCH)
-    advance(parser)
-    skip_indent(parser)
-
-    if parser.token_type == TT_CASE:
-        init_offside_block(parser, parser.node)
-        while parser.token_type == TT_CASE:
-            advance_expected(parser, TT_CASE)
-            # pattern = expressions(parser.pattern_parser, 0)
-            pattern = _parse_pattern(parser)
-            init_child_code_block(parser)
-            advance_expected(parser, TT_ARROW)
-            body = statements(parser, TERM_CATCH_CASE)
-            catches.append(list_node([pattern, body]))
-    else:
-        pattern = _parse_pattern(parser)
-        init_child_code_block(parser)
-        advance_expected(parser, TT_ARROW)
-        body = statements(parser, TERM_SINGLE_CATCH)
-        catches.append(list_node([pattern, body]))
-
-
 def prefix_match(parser, op, node):
     init_node_block(parser, node, [TT_WITH])
-    init_indented_child_block(parser, parser.node)
+    init_child_code_block(parser, parser.node)
 
     exp = expression_with_optional_end_of_expression(parser, 0, TERM_MATCH_PATTERN)
     # skip_indent(parser)
@@ -560,15 +522,15 @@ def prefix_match(parser, op, node):
             advance_expected(pattern_parser, TT_CASE)
             pattern = _parse_pattern(parser)
 
-            init_child_code_block(parser)
             advance_expected(parser, TT_ARROW)
+            init_child_code_block(parser, parser.node)
             body = statements(parser, TERM_CASE)
 
             branches.append(list_node([pattern, body]))
     else:
         pattern = _parse_pattern(parser)
-        init_child_code_block(parser)
         advance_expected(parser, TT_ARROW)
+        init_child_code_block(parser, parser.node)
         body = statements(parser, TERM_BLOCK)
         branches.append(list_node([pattern, body]))
 
@@ -621,8 +583,8 @@ def _parse_function_signature(parser):
 
 def _parse_function_variants(parser, signature, term_pattern, term_guard, term_case_body, term_single_body):
     if parser.token_type == TT_ARROW:
-        init_child_code_block(parser)
         advance(parser)
+        init_child_code_block(parser, parser.node)
         body = statements(parser, term_single_body)
         return nodes.create_function_variants(signature, body)
 
@@ -647,8 +609,8 @@ def _parse_function_variants(parser, signature, term_pattern, term_guard, term_c
         if nodes.tuple_node_length(args_sig) != sig_arity:
             return parse_error(parser, u"Inconsistent clause arity with function signature", args)
 
-        init_child_code_block(parser)
         advance_expected(parser, TT_ARROW)
+        init_child_code_block(parser, parser.node)
         body = statements(parser, term_case_body)
         funcs.append(list_node([args, body]))
 
@@ -845,7 +807,7 @@ def stmt_derive(parser, op, node):
 
 def _parse_union(parser, node, union_name):
     types = []
-    init_parent_code_block(parser)
+    init_offside_block(parser, parser.node)
     check_token_type(parser, TT_CASE)
     while parser.token_type == TT_CASE:
         advance(parser)
@@ -921,14 +883,15 @@ def _parser_trait_header(parser, node):
         constraints = _parse_tuple_of_names(parser.name_parser, TERM_METHOD_CONSTRAINTS)
     else:
         constraints = nodes.create_empty_list_node(node)
-
+    skip_indent(parser)
     return name, instance_name, constraints
 
 
 def stmt_trait(parser, op, node):
+    init_node_block(parser, node)
     name, instance_name, constraints = _parser_trait_header(parser, node)
     methods = []
-    init_parent_code_block(parser)
+    init_offside_block(parser, parser.node)
     while parser.token_type == TT_DEF:
         advance_expected(parser, TT_DEF)
         method_name = grab_name_or_operator(parser)
@@ -937,8 +900,8 @@ def stmt_trait(parser, op, node):
         sig = juxtaposition_as_list(parser.method_signature_parser, TERM_METHOD_SIG)
         check_node_type(parser, sig, NT_LIST)
         if parser.token_type == TT_ARROW:
-            init_child_code_block(parser)
             advance(parser)
+            init_child_code_block(parser, parser.node)
             args = symbol_list_to_arg_tuple(parser, node, sig)
             body = statements(parser.expression_parser, TERM_METHOD_DEFAULT_BODY)
             default_impl = nodes.create_function_variants(args, body)
@@ -954,17 +917,19 @@ def _parser_implement_header(parser):
     trait_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_BEFORE_FOR)
     advance_expected(parser, TT_FOR)
     type_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_IMPL_HEADER)
+    skip_indent(parser)
     return trait_name, type_name
 
 
 def stmt_implement(parser, op, node):
+    init_node_block(parser, node)
     trait_name, type_name = _parser_implement_header(parser)
 
     methods = []
     if parser.token_type != TT_DEF:
         return nodes.node_3(NT_IMPLEMENT, __ntok(node), trait_name, type_name, list_node(methods))
 
-    init_parent_code_block(parser)
+    init_offside_block(parser, parser.node)
     while parser.token_type == TT_DEF:
         advance_expected(parser, TT_DEF)
         # creating converting method names to symbols
@@ -974,7 +939,6 @@ def stmt_implement(parser, op, node):
 
         funcs = _parse_function(parser.expression_parser,
                                 TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_IMPL_BODY, TERM_IMPL_BODY)
-        advance_end(parser)
         methods.append(list_node([method_name, funcs]))
 
     advance_end(parser)

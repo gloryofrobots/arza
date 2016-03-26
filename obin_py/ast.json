@@ -23,13 +23,9 @@
           },
           [
             {
-              "_ntype": "NT_MATCH",
-              "_value": "match",
+              "_ntype": "NT_CONDITION",
+              "_value": "if",
               "children": [
-                {
-                  "_ntype": "NT_INT",
-                  "_value": "1"
-                },
                 [
                   [
                     {
@@ -42,9 +38,24 @@
                         "_value": "2"
                       }
                     ]
+                  ],
+                  [
+                    {
+                      "empty": true
+                    },
+                    [
+                      {
+                        "_ntype": "NT_INT",
+                        "_value": "4"
+                      }
+                    ]
                   ]
                 ]
               ]
+            },
+            {
+              "_ntype": "NT_INT",
+              "_value": "5"
             }
           ]
         ]

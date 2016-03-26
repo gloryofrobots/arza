@@ -93,12 +93,9 @@ def parse_error(parser, message, node):
                        ]))
 
 
-def init_child_code_block(parser, node=None):
+def init_child_code_block(parser, node):
+    skip_indent(parser)
     parser.ts.add_child_code_block(node)
-
-
-def init_code_block(parser):
-    parser.ts.add_code_block()
 
 
 def init_offside_block(parser, node):
@@ -109,34 +106,14 @@ def init_node_block(parser, node, level_tokens=None):
     parser.ts.add_node_block(node, level_tokens)
 
 
-def init_parent_code_block(parser, node=None):
-    parser.ts.add_parent_code_block(node)
-
-
 def skip_indent(parser):
     if parser.token_type == TT_INDENT:
         advance(parser)
 
 
-def init_free_code_block(parser, node, terminator):
+def init_free_code_block(parser, node, terminators):
     skip_indent(parser)
-    parser.ts.add_free_code_block(node, terminator)
-
-
-def set_current_block_as_parent(parser):
-    return parser.ts.set_current_block_as_parent()
-
-
-def set_current_block_type(parser, type):
-    parser.ts.set_current_block_type(type)
-
-
-def pop_block(parser):
-    parser.ts.pop_block()
-
-
-def pop_node_block(parser):
-    parser.ts.pop_node_block()
+    parser.ts.add_free_code_block(node, terminators)
 
 
 class ParserScope(root.W_Root):
@@ -652,8 +629,8 @@ def statements(parser, endlist):
 
 # def statements(parser, endlist):
 #     return _statements(parser, statement, endlist)
-# 
-# 
+#
+#
 # def module_statements(parser, endlist):
 #     return _statements(parser, statement_no_end_expr, endlist)
 

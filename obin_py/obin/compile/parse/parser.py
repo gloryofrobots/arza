@@ -169,6 +169,7 @@ def name_parser_init(parser):
     symbol(parser, TT_UNKNOWN, None)
     # symbol(parser, TT_WILDCARD, None)
     symbol(parser, TT_RPAREN, None)
+    symbol(parser, TT_INDENT, None)
     init_parser_literals(parser)
     symbol(parser, TT_CASE, None)
     symbol(parser, TT_ELLIPSIS, None)
