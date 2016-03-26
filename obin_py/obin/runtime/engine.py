@@ -4,6 +4,9 @@ from obin.runtime.process import Process
 from obin.runtime import process_data, error
 from obin.runtime.load import import_module, evaluate_module_file
 
+PRELUDE_FILE = u"prelude"
+PRELUDE_FILE = u"prelude_test"
+# PRELUDE_FILE = u"syntax"
 
 def newprocess(libdirs):
     core_prelude = space.newemptyenv(space.newstring(u"prelude"))
@@ -37,7 +40,7 @@ def initialize(libdirs):
 
     process = newprocess(path)
     # space.initialise(processs)
-    err = load_prelude(process, u"prelude_test")
+    err = load_prelude(process, PRELUDE_FILE)
     if err is not None:
         return process, err
 

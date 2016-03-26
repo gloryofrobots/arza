@@ -21,7 +21,7 @@ class InvalidIndentationError(Exception):
 
 MODULE = -1
 NODE = 0
-CHILD = 1
+CODE = 1
 OFFSIDE = 2
 FREE = 3
 
@@ -34,7 +34,7 @@ def log(*args):
     print ", ".join([str(arg) for arg in args])
 
 
-class Block(root.W_Root):
+class Layout(root.W_Root):
     def __init__(self, parent_level, level, type, level_tokens, terminators):
         self.parent_level = parent_level
         self.level = level
@@ -50,7 +50,7 @@ class Block(root.W_Root):
 
     @property
     def push_end_of_expression_on_new_line(self):
-        return self.type == CHILD or self.type == MODULE
+        return self.type == CODE or self.type == MODULE
 
     @property
     def push_end_on_dedent(self):
@@ -63,7 +63,7 @@ class Block(root.W_Root):
     def _to_string_(self):
         bt = self.type
         bt_s = None
-        if bt == CHILD:
+        if bt == CODE:
             bt_s = "CHILD"
         elif bt == FREE:
             bt_s = "FREE"
@@ -75,8 +75,8 @@ class Block(root.W_Root):
             bt_s = "OFFSIDE"
         return "<Block pl=%d, l=%d, t=%s>" % (self.parent_level, self.level, bt_s)
 
-    def is_child(self):
-        return self.type == CHILD
+    def is_code(self):
+        return self.type == CODE
 
     def is_node(self):
         return self.type == NODE
@@ -108,61 +108,61 @@ class IndentationTokenStream:
         self.produced_tokens = []
 
         level = self._find_level()
-        self.blocks = plist.plist([Block(-1, level, MODULE, None, None)])
+        self.layouts = plist.plist([Layout(-1, level, MODULE, None, None)])
 
     def advanced_values(self):
         t = [tokens.token_value_s(token) for token in self.produced_tokens]
         return " ".join(t)
 
-    def current_block(self):
-        return plist.head(self.blocks)
+    def current_layout(self):
+        return plist.head(self.layouts)
 
-    def next_block(self):
-        return plist.head(plist.tail(self.blocks))
+    def next_layout(self):
+        return plist.head(plist.tail(self.layouts))
 
-    def pop_block(self):
-        log("---- POP BLOCK", self.current_block())
+    def pop_layout(self):
+        log("---- POP LAYOUT", self.current_layout())
         log(self.advanced_values())
-        self.blocks = plist.tail(self.blocks)
-        return self.current_block()
+        self.layouts = plist.tail(self.layouts)
+        return self.current_layout()
 
     def _find_level(self):
         token = self._skip_newlines()
         return tokens.token_level(token)
 
-    def _add_block(self, node, type, level_tokens=None, terminators=None):
+    def _add_layout(self, node, type, level_tokens=None, terminators=None):
         token = nodes.node_token(node)
-        cur = self.current_block()
+        cur = self.current_layout()
         level = tokens.token_level(token)
-        block = Block(cur.level, level, type, level_tokens, terminators)
+        layout = Layout(cur.level, level, type, level_tokens, terminators)
 
-        log("---- ADD BLOCK", block)
-        self.blocks = plist.cons(block, self.blocks)
+        log("---- ADD LAYOUT", layout)
+        self.layouts = plist.cons(layout, self.layouts)
 
-    def add_child_code_block(self, node, terminators):
+    def add_code_layout(self, node, terminators):
         # # support for f x y | x y -> 1 | x y -> 3
-        # if self.current_block().type == CHILD:
-        #     self.pop_block()
+        # if self.current_layout().type == CHILD:
+        #     self.pop_layout()
 
-        # assert not self.current_block().is_child()
-        self._add_block(node, CHILD, terminators=terminators)
+        assert not self.current_layout().is_code()
+        self._add_layout(node, CODE, terminators=terminators)
 
-    def add_offside_block(self, node):
-        self._add_block(node, OFFSIDE)
+    def add_offside_layout(self, node):
+        self._add_layout(node, OFFSIDE)
 
-    def add_node_block(self, node, level_tokens):
-        self._add_block(node, NODE, level_tokens=level_tokens)
+    def add_node_layout(self, node, level_tokens):
+        self._add_layout(node, NODE, level_tokens=level_tokens)
 
-    def add_free_code_block(self, node, terminators):
-        # TODO blocks in operators
+    def add_free_code_layout(self, node, terminators):
+        # TODO layouts in operators
         self._skip_newlines()
-        self._add_block(node, FREE, terminators=terminators)
+        self._add_layout(node, FREE, terminators=terminators)
 
-    def has_blocks(self):
-        return not plist.is_empty(self.blocks)
+    def has_layouts(self):
+        return not plist.is_empty(self.layouts)
 
-    def count_blocks(self):
-        return plist.length(self.blocks)
+    def count_layouts(self):
+        return plist.length(self.layouts)
 
     def has_tokens(self):
         return len(self.tokens) > 0
@@ -208,69 +208,69 @@ class IndentationTokenStream:
         ttype = tokens.token_type(token)
         cur_type = self.current_type()
 
-        block = self.current_block()
+        layout = self.current_layout()
         level = tokens.token_level(token)
-        log("----NEW LINE", level, block, tokens.token_to_s(token))
+        log("----NEW LINE", level, layout, tokens.token_to_s(token))
 
         if cur_type in SKIP_NEWLINE_TOKENS:
-            if level <= block.level:
+            if level <= layout.level:
                 return indentation_error(u"Indentation level of token next to"
-                                         u" operator must be bigger then of parent block",
+                                         u" operator must be bigger then of parent layout",
                                          token)
 
             return self.next_token()
 
-        if block.is_free() is True:
-            if block.has_terminator(ttype):
-                self.pop_block()
+        if layout.is_free() is True:
+            if layout.has_terminator(ttype):
+                self.pop_layout()
                 # IF TOKEN IS TERMINATOR WE STILL NEED TO PROCEED NEWLINE
-                block = self.current_block()
+                layout = self.current_layout()
             # else:
             return self.next_token()
 
-        if level > block.level:
+        if level > layout.level:
             self.add_logical_token(tokens.create_indent_token(token))
             return self.next_token()
         else:
-            blocks = self.blocks
+            layouts = self.layouts
             while True:
-                block = plist.head(blocks)
-                blocks = plist.tail(blocks)
-                if space.isvoid(block):
+                layout = plist.head(layouts)
+                layouts = plist.tail(layouts)
+                if space.isvoid(layout):
                     return indentation_error(u"Indentation does not match with any of previous levels", token)
 
-                if block.level < level:
+                if layout.level < level:
                     return indentation_error(u"Invalid indentation level", token)
-                elif block.level > level:
-                    self.on_dedent(block, token)
-                elif block.level == level:
-                    if block.push_end_of_expression_on_new_line is True:
+                elif layout.level > level:
+                    self.on_dedent(layout, token)
+                elif layout.level == level:
+                    if layout.push_end_of_expression_on_new_line is True:
                         self.add_logical_token(tokens.create_end_expression_token(token))
-                    elif block.is_node():
+                    elif layout.is_node():
                         if ttype == tt.TT_END:
                             self.index += 1
                             self.add_logical_token(tokens.create_end_token(token))
-                            self.pop_block()
+                            self.pop_layout()
                             # if self.current_physical_type() == tt.TT_NEWLINE:
                             # self.add_logical_token(tokens.create_end_expression_token(token))
                             # self._skip_newlines()
 
-                        elif not block.has_level(ttype):
+                        elif not layout.has_level(ttype):
                             self.add_logical_token(tokens.create_end_token(token))
                             self.add_logical_token(tokens.create_end_expression_token(token))
-                            self.pop_block()
+                            self.pop_layout()
                     return self.next_token()
 
-                log("---- POP_BLOCK", block)
+                log("---- POP_LAYOUT", layout)
                 log(self.advanced_values())
-                self.blocks = blocks
+                self.layouts = layouts
 
-    def on_dedent(self, block, token):
-        if block.push_end_of_expression_on_new_line is True:
+    def on_dedent(self, layout, token):
+        if layout.push_end_of_expression_on_new_line is True:
             self.add_logical_token(tokens.create_end_expression_token(token))
-        if block.push_end_on_dedent is True:
+        if layout.push_end_on_dedent is True:
             self.add_logical_token(tokens.create_end_token(token))
-            # if block.push_end_of_expression_on_dedent is True:
+            # if layout.push_end_of_expression_on_dedent is True:
             #     self.add_logical_token(tokens.create_end_expression_token(token))
 
     def attach_token(self, token):
@@ -281,21 +281,21 @@ class IndentationTokenStream:
         return self.node
 
     def _on_end_token(self, token):
-        blocks = self.blocks
+        layouts = self.layouts
         popped = []
         while True:
-            block = plist.head(blocks)
-            blocks = plist.tail(blocks)
-            if block.is_node():
-                log("---- POP NODE BLOCK ON END TOKEN")
-                log("POPPED BLOCKS", popped)
+            layout = plist.head(layouts)
+            layouts = plist.tail(layouts)
+            if layout.is_node():
+                log("---- POP NODE LAYOUT ON END TOKEN")
+                log("POPPED LAYOUTS", popped)
                 log(self.advanced_values())
                 break
-            elif block.is_module():
+            elif layout.is_module():
                 indentation_error(u"Invalid end keyword", token)
             else:
-                popped.append(block)
-        self.blocks = blocks
+                popped.append(layout)
+        self.layouts = layouts
 
     def next_token(self):
         if self.has_logic_tokens():
@@ -313,12 +313,12 @@ class IndentationTokenStream:
         elif ttype == tt.TT_END:
             self._on_end_token(token)
         elif ttype == tt.TT_ENDSTREAM:
-            if not self.current_block().is_module():
-                indentation_error(u"Not all blocks closed", token)
+            if not self.current_layout().is_module():
+                indentation_error(u"Not all layouts closed", token)
 
-        block = self.current_block()
+        layout = self.current_layout()
 
-        if block.has_terminator(ttype):
-            self.pop_block()
+        if layout.has_terminator(ttype):
+            self.pop_layout()
 
         return self.attach_token(token)

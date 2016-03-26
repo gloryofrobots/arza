@@ -93,22 +93,22 @@ def parse_error(parser, message, node):
                        ]))
 
 
-def init_child_code_block(parser, node, terminators=None):
+def init_code_layout(parser, node, terminators=None):
     skip_indent(parser)
-    parser.ts.add_child_code_block(node, terminators)
+    parser.ts.add_code_layout(node, terminators)
 
 
-def init_offside_block(parser, node):
-    parser.ts.add_offside_block(node)
+def init_offside_layout(parser, node):
+    parser.ts.add_offside_layout(node)
 
 
-def init_node_block(parser, node, level_tokens=None):
-    parser.ts.add_node_block(node, level_tokens)
+def init_node_layout(parser, node, level_tokens=None):
+    parser.ts.add_node_layout(node, level_tokens)
 
 
-def init_free_code_block(parser, node, terminators):
+def init_free_layout(parser, node, terminators):
     skip_indent(parser)
-    parser.ts.add_free_code_block(node, terminators)
+    parser.ts.add_free_code_layout(node, terminators)
 
 
 def skip_indent(parser):
@@ -188,6 +188,7 @@ class W_Operator(root.W_Hashable):
         self.std = None
         self.lbp = -1
         # self.is_breaker = False
+        self.layout = None
 
         self.prefix_function = None
         self.infix_function = None
@@ -298,6 +299,11 @@ def node_has_nud(parser, node):
     return handler.nud is not None
 
 
+def node_has_layout(parser, node):
+    handler = node_operator(parser, node)
+    return handler.layout is not None
+
+
 def node_has_led(parser, node):
     handler = node_operator(parser, node)
     return handler.led is not None
@@ -323,6 +329,20 @@ def node_led(parser, node, left):
         parse_error(parser, u"Unknown token led", node)
 
     return handler.led(parser, handler, node, left)
+
+
+def node_layout(parser, node):
+    handler = node_operator(parser, node)
+    if not handler.layout:
+        parse_error(parser, u"Unknown token layout", node)
+
+    return handler.layout(parser, node)
+
+
+def parser_set_layout(parser, ttype, fn):
+    h = get_or_create_operator(parser, ttype)
+    h.layout = fn
+    return h
 
 
 def parser_set_nud(parser, ttype, fn):
@@ -639,6 +659,10 @@ def statements(parser, endlist):
 
 def infix(parser, ttype, lbp, led):
     parser_set_led(parser, ttype, lbp, led)
+
+
+def layout(parser, ttype, fn):
+    parser_set_layout(parser, ttype, fn)
 
 
 def prefix(parser, ttype, nud):
