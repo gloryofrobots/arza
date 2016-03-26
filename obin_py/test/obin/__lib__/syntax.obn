@@ -240,7 +240,7 @@ fun f ((x of Int) y z) ->
     finally ->
         (#fourth, err, x)
 
-    f try 1; catch | x -> 1; | y -> 2; finally -> 4 end 42
+    f try 1 catch | x -> 1; | y -> 2; finally -> 4 end 42
 
     try 1; catch
         | x -> 1
@@ -250,8 +250,13 @@ fun f ((x of Int) y z) ->
     try 1; catch
         | x -> 1; | y -> 2; finally -> 4
 
-    try 1; catch | x -> 1; | y -> 2; finally -> 4
+    try 1 catch | x -> 1 | y -> 2 finally -> 4
 
+
+    f try 1; catch | x -> 1; | y -> 2
+                   | y -> 2
+      finally -> 4 end .
+      42
 
     try 1; catch
         | x -> 1

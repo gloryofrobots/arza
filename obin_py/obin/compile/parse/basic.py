@@ -424,21 +424,23 @@ def advance_end(parser):
     advance_expected_one_of(parser, TERM_BLOCK)
 
 
-def isendofexpressiontoken(parser):
-    return parser.token_type == TT_END_EXPR
-
-
-def endofexpression(parser):
+def on_endofexpression(parser):
     if parser.isend():
         return None
-    # if parser.is_newline_occurred:
-    #     return parser.node
     if parser.token_type in TERM_BLOCK:
         return parser.node
     if parser.token_type == TT_END_EXPR:
         return advance(parser)
+    return False
 
-    parse_error(parser, u"Expected end of expression mark got '%s'" % tokens.token_value_s(parser.token), parser.node)
+
+def endofexpression(parser):
+    res = on_endofexpression(parser)
+    if res is False:
+        parse_error(parser, u"Expected end of expression mark got '%s'" % tokens.token_value_s(parser.token),
+                    parser.node)
+
+    return res
 
 
 def base_expression(parser, _rbp, terminators=None):
@@ -590,11 +592,9 @@ def statement(parser):
     if node_has_std(parser, node):
         advance(parser)
         value = node_std(parser, node)
-        endofexpression(parser)
         return value
 
     value = expression(parser, 0)
-    endofexpression(parser)
     return value
 
 
@@ -615,10 +615,12 @@ def statements(parser, endlist):
         if token_is_one_of(parser, endlist):
             break
         s = statement(parser)
-
+        end_exp = on_endofexpression(parser)
         if s is None:
             continue
         stmts.append(s)
+        if end_exp is False:
+            break
 
     length = len(stmts)
     if length == 0:
@@ -685,19 +687,6 @@ def condition(parser):
     return node
 
 
-def condition_expression(parser):
-    node = expression(parser, 0)
-    if is_assignment_node(node):
-        parse_error(parser, u"Assignment operators not allowed in conditions", node)
-    # call endofexpression to allow one line prefixes like if x == 1, x end
-    endofexpression(parser)
-    return node
-
-
 def check_if_assignment(parser, node):
     if is_assignment_node(node):
         parse_error(parser, u"Assignment operators not allowed in conditions", node)
-
-
-def condition_terminated_expression(parser, terminators):
-    return node

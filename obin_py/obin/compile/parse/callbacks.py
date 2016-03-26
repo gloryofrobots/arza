@@ -801,7 +801,6 @@ def stmt_derive(parser, op, node):
     traits = _parse_tuple_of_names(parser.name_parser, TERM_BEFORE_FOR)
     advance_expected(parser, TT_FOR)
     types = _parse_tuple_of_names(parser.name_parser, None)
-    # endofexpression(parser)
     return node_2(NT_DERIVE, __ntok(node), traits, types)
 
 
