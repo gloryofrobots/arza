@@ -1,6 +1,5 @@
 import affirm
-
-fun test () ->
+fun t1() ->
     t1 = (1, "Hello", 35.44555)
     affirm:is_equal t1 (1, "Hello", 35.44555)
     affirm:is_equal t1.0 1
@@ -43,7 +42,7 @@ fun test () ->
                     elif x == 15 -> 3 + 3
                     else -> 4 + 4 end .
                     8
-
+fun t2 () ->
     fun id x -> x
     fun sum_list_3 list
         | [x,y,z] -> x + y + z
@@ -66,3 +65,316 @@ fun test () ->
                 ])
     affirm:is_equal V53 53
 
+
+fun t3() ->
+    fun f1 a
+        | 0 -> 1
+        | 1 -> 2
+        | 2 -> 3
+
+    affirm:is_equal (f1 0) 1
+
+    fun f2 a | 0 -> 1
+             | 1 -> 2
+             | 2 -> 3
+
+    affirm:is_equal (f2 0) 1
+
+    fun f3 a b c | 0 1 c -> c
+
+    affirm:is_equal (f3 0 1 42) 42
+
+    fun f4 (()) -> ((()))
+
+    affirm:is_equal (f4 ()) ()
+
+    fun f5 () -> [42,43,44]
+                 (42,43,44)
+
+    affirm:is_equal (f5 ()) (42,43,44)
+
+    fun f6 a b c ->
+        lam a b c -> 42 end a b c
+
+    affirm:is_equal (f6 1 2 3) 42
+
+
+fun t4 () ->
+    l = lam x y z -> 42
+    affirm:is_equal (l 1 2 3) 42
+
+    l1 = lam x y z -> 42 end
+    affirm:is_equal (l1 1 2 3) 42
+
+    l2 =
+        lam x y z | [hd::tl] (1,2,3) {x=2, y=3} -> 24
+                  | _ y z -> 23
+
+    affirm:is_equal (l2 [1,2] (1,2,3) {x=2, y=3}) 23
+
+    affirm:is_equal (
+        lam x y z
+            | [hd::tl] (1,2,3) {x=2, y=3} -> 24
+            | _ y z -> 23
+        end [1,2] (1,2,3) {x=2, y=3}) 23
+
+
+    affirm:is_equal (lam x -> x + 1 end 34) 35
+
+
+    affirm:is_equal .
+        ( lam x y z
+            | 1 2 3 -> 11
+            | 2 4 5 -> 22
+          end
+                    1
+                        2
+
+                         3) 11
+    T =
+        (1,2, lam x | 1 -> 25
+                    | 2 -> 13 end, 25)
+
+    affirm:is_equal (T.2 2) 13
+
+    T1 =
+        (1,
+         lam x | 5 -> 25
+               | 6 -> 45 end,
+         lam x
+            | 5 -> 25
+            | 6 -> 45 end,
+         lam x -> 25 end,
+         25)
+
+    affirm:is_equal (T1.1 5) 25
+    affirm:is_equal (T1.2 5) 25
+    affirm:is_equal (T1.3 5) 25
+
+    T4 =
+        (1
+         ,2,
+            3)
+
+    affirm:is_equal T4 (1,2,3)
+
+    T5 =
+        (1
+        , lam x | 5 -> 25
+                | 6 -> 45
+        , lam x
+            | 5 -> 25
+            | 6 -> 45
+        , lam x -> x
+        , 25)
+
+    affirm:is_equal (T5.1 6) 45
+    affirm:is_equal (T5.2 6) 45
+    affirm:is_equal (T5.3 45) 45
+
+    T6 =
+        (1,
+   2,
+3
+)
+    affirm:is_equal T6 (1,2,3)
+
+
+
+    affirm:is_equal (2;, 3) (2,3)
+
+    T7 =
+        lam x -> x end .
+        (
+            lam x ->
+                1
+            end
+            , 3
+            , 1
+            , 4
+            , 5
+        )
+    affirm:is_equal (T7.0 12313123) 1
+
+    affirm:is_equal .
+         (
+            lam x ->
+                x
+            end .
+                3
+          , 1
+          , 4
+          , 5
+        ).0 3
+
+    //////////////////////////////////////////////////////
+    M1 =
+        {x=1,
+ x=2,
+
+ l=lam x y
+    | 1 2 -> 1
+    | 2 3 -> 2 end,
+    n = 1
+    }
+
+    affirm:is_equal M1.x 1
+    affirm:is_equal (M1.l 2 3) 2
+
+    I1 =
+        if 2 == 2 ->
+            2
+        else ->
+            4
+
+
+    affirm:is_equal I1 2
+
+    I2 =
+        if 2 == 1 ->
+                              2
+        elif 3 == 4 ->
+            3
+        elif {x=1, y=2} == (1,2,3) -> 4
+        else -> 5
+
+
+    affirm:is_equal I2 5
+
+    MT1 =
+        match (1,2,3) with | (x,y,z) -> 2
+                           | _ -> 1
+
+    affirm:is_equal MT1 2
+
+    MT2 =
+        match (1,2,3)
+        with | (x,y,z) -> 2
+             | _ -> 1
+
+    affirm:is_equal MT2 2
+
+    MT3 =
+        match lam x ->
+                  1
+              end
+        with
+            | Y ->
+               lam t
+                    | (a,b) -> a + b end .
+                    (1 + 1, 2 + 2)
+            | _ -> 2
+
+    affirm:is_equal MT3 6
+
+    MT4 =
+        match if 2 == 1 ->
+                 2
+              else ->
+                3
+              end
+        with
+            | 2 -> 3
+            | 3 -> 2
+
+    affirm:is_equal MT4 2
+
+    affirm:is_equal .
+        match 1 with
+            | x -> 3
+            | _ -> 2 end 3
+
+    affirm:is_equal match 1 with 1 -> 4 end 4
+    affirm:is_equal .
+        match 1 with
+            x -> 4
+        end 4
+
+    affirm:is_equal (
+        match
+            if 0 == 1 ->
+                1
+            else ->
+                lam x y -> x + y
+            end 3 .
+                4
+        with
+            | 6 -> 3
+            | 7 -> 42
+        ) 42
+
+    affirm:is_equal if 1 == 1-> 1; else -> 2; end 1
+
+//    try 1; catch 1 -> 1; end
+//    try 1; catch 1 ->
+//        1
+//
+//    try 42
+//    catch 3 ->#first
+//
+//    try 42
+//    catch 3 ->#first
+//
+//    try 42
+//    catch 3 ->#first
+//    finally -> 12
+//
+//    try 1
+//    catch 2 ->
+//        11
+//        try
+//            3
+//        catch 4 ->12
+//        finally ->
+//            if 6 -> 7
+//            elif 7 ->
+//                if 9 -> 14
+//                else -> 15
+//            else ->
+//                try
+//                    9
+//                catch
+//                    | 10 -> 11
+//                    | 13 -> 14
+//                finally ->
+//                    24
+//                8
+//    finally ->
+//        5
+//    try
+//        throw (1,2,"ERROR")
+//    catch
+//        | err @ (1, y, 3) -> #first
+//        | (1,2, "ERROR@") -> #second
+//        | err @ (1, 2, x) -> #third
+//    finally ->
+//        (#fourth, err, x)
+//
+//    f try 1 catch | x -> 1; | y -> 2; finally -> 4 end 42
+//
+//    try 1; catch
+//        | x -> 1
+//        | y -> 2
+//    finally -> 4
+//
+//    try 1; catch
+//        | x -> 1; | y -> 2; finally -> 4
+//
+//    try 1 catch | x -> 1 | y -> 2 finally -> 4
+//
+//
+//    f try 1; catch | x -> 1; | y -> 2
+//                   | y -> 2
+//      finally -> 4 end .
+//      42
+//
+//    try 1; catch
+//        | x -> 1
+//        | y -> 2; finally -> 4
+
+
+fun test () ->
+//    t1 ()
+//    t2 ()
+//    t3 ()
+    t4()
