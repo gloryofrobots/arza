@@ -58,20 +58,4 @@ fun test() ->
 
 fun main () ->
     test()
-//
-//TODO check it
-//    l2 =
-//        lam x y z | [hd::tl] (1,2,3) {x=2, y=3} -> 24
-//                  | _ y z -> 23
-//
-//    affirm:is_equal (l2 [1,2] (1,2,3) {x=2, y=3}) 24
-//FIXME here T5.3 is 25 not a function
-//    T5 =
-//        (1
-//        , lam x | 5 -> 25
-//                | 6 -> 45
-//        , lam x
-//            | 5 -> 25
-//            | 6 -> 45
-//        , lam x -> x
-//        25)
+

@@ -110,13 +110,13 @@ fun t4 () ->
         lam x y z | [hd::tl] (1,2,3) {x=2, y=3} -> 24
                   | _ y z -> 23
 
-    affirm:is_equal (l2 [1,2] (1,2,3) {x=2, y=3}) 23
+    affirm:is_equal (l2 [[1,2]] (1,2,3) {x=2, y=3}) 24
 
     affirm:is_equal (
         lam x y z
             | [hd::tl] (1,2,3) {x=2, y=3} -> 24
             | _ y z -> 23
-        end [1,2] (1,2,3) {x=2, y=3}) 23
+        end [[1,2]] (1,2,3) {x=2, y=3}) 24
 
 
     affirm:is_equal (lam x -> x + 1 end 34) 35
