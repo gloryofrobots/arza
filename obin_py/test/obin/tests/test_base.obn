@@ -166,11 +166,29 @@ fun t4 () ->
             | 5 -> 25
             | 6 -> 45
         , lam x -> x
-        , 25)
+        //WARNING PREV LAMBDA is closed by dedent and as we inside a free block expression evaluates to call
+        // lam x -> x end 45
+        45)
 
     affirm:is_equal (T5.1 6) 45
     affirm:is_equal (T5.2 6) 45
-    affirm:is_equal (T5.3 45) 45
+    affirm:is_equal (T5.3) 45
+
+    T10 =
+        (1
+        , lam x | 5 -> 25
+                | 6 -> 45
+        , lam x
+            | 5 -> 25
+            | 6 -> 45
+        , lam x -> x
+        //WARNING PREV LAMBDA is closed by dedent and as we inside a free block expression evaluates to call
+        // lam x -> x end 45
+        ,45)
+
+    affirm:is_equal (T10.1 6) 45
+    affirm:is_equal (T10.2 6) 45
+    affirm:is_equal (T10.3 45) 45
 
     T6 =
         (1,

@@ -13,26 +13,10 @@ infixl + + 60
 
 
 fun f x ->
-//    M = {line = {
-//            data = [1,2,3,4],
-//            index = 1
-//         },
-//
-//        id = 12
-//    }
-
-//    affirm:is_equal M {line = {index = 1, data = [1, 2, 3, 4]}, id = 12}
-
-    ////////////////////////////////////////////////
-//
-//    M1 = M.{
-//        line = M.line.{
-//            index_2 = M.line.index + 42,
-//            data = [4, 3, 2, 1]
-//        },
-//        id = "ID M1"
-//    }
-//    affirm:is_equal M1 {line = {index = 1, index_2 = 43, data = [4, 3, 2, 1]}, id = "ID M1"}
+    T5 =
+        (
+         lam x -> x end
+        25)
 end
 
 fun x () ->
