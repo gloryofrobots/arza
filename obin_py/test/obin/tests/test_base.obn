@@ -41,6 +41,28 @@ fun test () ->
     affirm:is_equal if x == 13 -> 1 + 1
                     elif x == 14 -> 2 + 2
                     elif x == 15 -> 3 + 3
-                    else -> 4 + 4 .
+                    else -> 4 + 4 end .
                     8
+
+    fun id x -> x
+    fun sum_list_3 list
+        | [x,y,z] -> x + y + z
+    fun sum x y -> x + y
+
+    V53 = sum 1 .
+            (sum_list_3
+                [id 1,
+                 id (id 2),
+                 id (id (id 3))
+                ]) +
+        sum 10 .
+            (sum_list_3
+                [lam x -> x end 11,
+                 lam x
+                    | x -> x end (lam x -> x end 12),
+                 lam x ->
+                    x
+                 end (lam x -> x end (lam x -> x end 13))
+                ])
+    affirm:is_equal V53 53
 

@@ -14,7 +14,4 @@ fun coroutine fn ->
                      lam () -> apply fn (concat (fiber1, ) . args) end
         else ->
             apply fiber2 args
-        ---
-    ---
----
 

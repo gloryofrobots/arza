@@ -55,11 +55,11 @@ fun test() ->
 //    log "TEST OPERATORS"
 //    test_operators:test()
 
-
+fun id x -> x
+fun sum_list_3 list
+    | [x,y,z] -> x + y + z
+fun sum x y -> x + y
 
 fun main () ->
     test()
-
-//            impl.append(_t([self.methods.str,
-//                            _f(_s(u""), derived.str_, 1)
-//                            ]))
+//

@@ -47,65 +47,75 @@ fun f a b c ->
     lam a b c -> 42
 
 fun f ((x of Int) y z) ->
-//    lam x y z -> 42
-//    lam x y z -> 123 end
-//    lam x y z | [hd::tl] (1,2,3) {x=2, y=3} -> 24
-//              | _ y z -> 23
-//    lam x y z
-//        | [hd::tl] (1,2,3) {x=2, y=3} -> 24
-//        | _ y z -> 23
-//
-//    lam x y z -> 25 end 34
-//    f 23 lam x y z -> 42 end 34
-//
-//    f lam x
-//        | x -> 34
-//        | x -> 4 end
-//
-//    f lam x
-//        | x -> 34
-//        | x -> 4 end (1,2,3) (4,5,6)
-//    24
-//
-//    ( lam x
-//        | x -> 1
-//        | y -> 2
-//      end
-//                1
-//                    2
-//
-//                     3)
-//    (1,2, lam x | x -> 25
-//                | y -> 13 end, 25)
-//
-//    (1,
-//     lam x | x -> 25
-//           | y -> 45 end,
-//     lam x
-//        | x -> 25
-//        | y -> 45 end,
-//     lam x -> 25 end,
-//     25)
-//
-//    (1
-//     ,2,
-//        3)
-//
-//    (1
-//    , lam x | x -> 25
-//            | y -> 45
-//    , lam x
-//        | x -> 25
-//        | y -> 45
-//    , lam x -> 25
-//    25)
-//
-//    (1,
-//  2,
-//3)
-//    56
-//
-//    (1,
+    lam x y z -> 42
+    lam x y z -> 123 end
+    lam x y z | [hd::tl] (1,2,3) {x=2, y=3} -> 24
+              | _ y z -> 23
+    lam x y z
+        | [hd::tl] (1,2,3) {x=2, y=3} -> 24
+        | _ y z -> 23
+
+    lam x y z -> 25 end 34
+    f 23 lam x y z -> 42 end 34
+
+    f lam x
+        | x -> 34
+        | x -> 4 end
+
+    f lam x
+        | x -> 34
+        | x -> 4 end (1,2,3) (4,5,6)
+    24
+
+    ( lam x
+        | x -> 1
+        | y -> 2
+      end
+                1
+                    2
+
+                     3)
+    (1,2, lam x | x -> 25
+                | y -> 13 end, 25)
+
+    (1,
+     lam x | x -> 25
+           | y -> 45 end,
+     lam x
+        | x -> 25
+        | y -> 45 end,
+     lam x -> 25 end,
+     25)
+
+    (1
+     ,2,
+        3)
+
+    (1
+    , lam x | x -> 25
+            | y -> 45
+    , lam x
+        | x -> 25
+        | y -> 45
+    , lam x -> 25
+    25)
+
+    (1,
+  2,
+3)
+    56
+
+    {
+        x = {
+            y = 1
+        },
+        z = 2
+    }
+    append impl .
+        (_t [self.methods.str,
+            _f (_s ""),
+            derived.str_,
+            1])
 
     f (2;, 3)
     f (

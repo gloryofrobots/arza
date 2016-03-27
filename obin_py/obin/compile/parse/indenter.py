@@ -4,6 +4,8 @@ from obin.compile.parse import tokens
 from obin.types import api, space, plist, root
 from obin.misc.fifo import Fifo
 
+LOG_INDENTER = False
+
 SKIP_NEWLINE_TOKENS = [tt.TT_JUXTAPOSITION, tt.TT_DOUBLE_COLON,
                        tt.TT_COLON, tt.TT_OPERATOR, tt.TT_DOT, tt.TT_ASSIGN, tt.TT_OR, tt.TT_AND]
 
@@ -25,7 +27,6 @@ CODE = 1
 OFFSIDE = 2
 FREE = 3
 
-LOG_INDENTER = False
 
 
 def log(*args):
@@ -123,6 +124,7 @@ class IndentationTokenStream:
     def pop_layout(self):
         log("---- POP LAYOUT", self.current_layout())
         log(self.advanced_values())
+        log(self.layouts)
         self.layouts = plist.tail(self.layouts)
         return self.current_layout()
 
@@ -188,7 +190,7 @@ class IndentationTokenStream:
     def _skip_newlines(self):
         token = self.next_physical()
         while tokens.token_type(token) == tt.TT_NEWLINE:
-            log("++++ SKIP")
+            # log("++++ SKIP")
             token = self.next_physical()
 
         self.index -= 1
@@ -212,7 +214,8 @@ class IndentationTokenStream:
         level = tokens.token_level(token)
         log("----NEW LINE", level, layout, tokens.token_to_s(token))
 
-        if cur_type in SKIP_NEWLINE_TOKENS:
+        #TODO remove not layout.is_module() after implementing real pragmas ![]
+        if cur_type in SKIP_NEWLINE_TOKENS and not layout.is_module():
             if level <= layout.level:
                 return indentation_error(u"Indentation level of token next to"
                                          u" operator must be bigger then of parent layout",
@@ -221,11 +224,11 @@ class IndentationTokenStream:
             return self.next_token()
 
         if layout.is_free() is True:
-            if layout.has_terminator(ttype):
-                self.pop_layout()
-                # IF TOKEN IS TERMINATOR WE STILL NEED TO PROCEED NEWLINE
-                layout = self.current_layout()
-            # else:
+            # if layout.has_terminator(ttype):
+            #     # self.pop_layout()
+            #     # IF TOKEN IS TERMINATOR WE STILL NEED TO PROCEED NEWLINE
+            #     # layout = self.current_layout()
+            # # else:
             return self.next_token()
 
         if level > layout.level:

@@ -153,7 +153,7 @@ T =\
 """
 fun test() ->
 %s
-end
+
 """
 BODY = "\n".join(RESULT)
 F.write(T % BODY)
