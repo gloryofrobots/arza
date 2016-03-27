@@ -1,11 +1,16 @@
 infixl + + 50
 infixl == == 10
 
-fun f x ->
-    send (1)
-    foo 2 . 3 .
-        4
 
+fun f x ->
+    affirm:is_equal .
+        match (1, (23, (24, 25))) with
+            | (Z, (G, 1)) ->  12 + Z
+            | (1, 23) ->   12
+            | (1, (23, X)) ->  (#third, X)
+            | _ ->  #fourth
+        end (#third, (24, 25))
+end
 
 fun x () ->
     24

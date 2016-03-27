@@ -281,8 +281,10 @@ def prefix_lparen_tuple(parser, op, node):
 # MOST complicated operator
 # expressions (f 1 2 3) (2 + 3) (-1)
 # tuples (1,2,3,4,5)
-def prefix_lparen(parser, op, node):
+def layout_lparen(parser, op, node):
     init_free_layout(parser, node, [TT_RPAREN])
+
+def prefix_lparen(parser, op, node):
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
         return nodes.create_unit_node(node)
@@ -309,9 +311,11 @@ def prefix_lparen(parser, op, node):
     return node_1(NT_TUPLE, __ntok(node), list_node(items))
 
 
+def layout_lsquare(parser,op, node):
+    init_free_layout(parser, node, [TT_RSQUARE])
+
 def prefix_lsquare(parser, op, node):
     items = []
-    init_free_layout(parser, node, [TT_RSQUARE])
     if parser.token_type != TT_RSQUARE:
         while True:
             items.append(expression(parser, 0))
@@ -348,7 +352,6 @@ def on_bind_node(parser, key):
 
 def prefix_lcurly_type(parser, op, node):
     items = []
-    init_free_layout(parser, node, [TT_RCURLY])
     if parser.token_type != TT_RCURLY:
         while True:
             name = expression(parser, 0)
@@ -364,15 +367,15 @@ def prefix_lcurly_type(parser, op, node):
     advance_expected(parser, TT_RCURLY)
     return node_1(NT_LIST, __ntok(node), list_node(items))
 
+def layout_lcurly(parser, op, node):
+    init_free_layout(parser, node, [TT_RCURLY])
 
 # this callback used in pattern matching
 def prefix_lcurly_patterns(parser, op, node):
-    init_free_layout(parser, node, [TT_RCURLY])
     return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_CHAR, TT_FLOAT], on_bind_node)
 
 
 def prefix_lcurly(parser, op, node):
-    init_free_layout(parser, node, [TT_RCURLY])
     return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_CHAR, TT_FLOAT], on_bind_node)
 
 
@@ -421,7 +424,7 @@ def prefix_if(parser, op, node):
 
     cond = expression(parser, 0, TERM_IF_CONDITION)
     advance_expected_one_of(parser, TERM_IF_CONDITION)
-    init_code_layout(parser, parser.node)
+    init_code_layout(parser, parser.node, TERM_IF_BODY)
 
     body = statements(parser, TERM_IF_BODY)
 
@@ -433,7 +436,7 @@ def prefix_if(parser, op, node):
 
         cond = expression(parser, 0, TERM_IF_CONDITION)
         advance_expected_one_of(parser, TERM_IF_CONDITION)
-        init_code_layout(parser, parser.node)
+        init_code_layout(parser, parser.node, TERM_IF_BODY)
 
         body = statements(parser, TERM_IF_BODY)
         check_token_types(parser, TERM_IF_BODY)
@@ -442,7 +445,7 @@ def prefix_if(parser, op, node):
     advance_expected(parser, TT_ELSE)
 
     advance_expected(parser, TT_ARROW)
-    init_code_layout(parser, parser.node)
+    init_code_layout(parser, parser.node, TERM_BLOCK)
 
     body = statements(parser, TERM_BLOCK)
     branches.append(list_node([empty_node(), body]))
@@ -475,7 +478,7 @@ def prefix_try(parser, op, node):
     else:
         pattern = _parse_pattern(parser)
         advance_expected(parser, TT_ARROW)
-        init_code_layout(parser, parser.node)
+        init_code_layout(parser, parser.node, TERM_SINGLE_CATCH)
         body = statements(parser, TERM_SINGLE_CATCH)
         catches.append(list_node([pattern, body]))
 
@@ -503,8 +506,8 @@ def _parse_pattern(parser):
 
 
 def prefix_match(parser, op, node):
-    init_node_layout(parser, node, [TT_WITH])
-    init_code_layout(parser, parser.node, [TT_WITH])
+    init_node_layout(parser, node, LEVELS_MATCH)
+    init_code_layout(parser, parser.node, TERM_MATCH_EXPR)
 
     exp = expression_with_optional_end_of_expression(parser, 0, TERM_MATCH_PATTERN)
     # skip_indent(parser)
@@ -516,6 +519,7 @@ def prefix_match(parser, op, node):
     branches = []
     # check_token_type(parser, TT_CASE)
 
+    # TODO COMMON PATTERN MAKE ONE FUNC with try/fun/match
     if parser.token_type == TT_CASE:
         init_offside_layout(parser, parser.node)
         while pattern_parser.token_type == TT_CASE:
@@ -523,7 +527,7 @@ def prefix_match(parser, op, node):
             pattern = _parse_pattern(parser)
 
             advance_expected(parser, TT_ARROW)
-            init_code_layout(parser, parser.node)
+            init_code_layout(parser, parser.node, TERM_CASE)
             body = statements(parser, TERM_CASE)
 
             branches.append(list_node([pattern, body]))
@@ -584,7 +588,7 @@ def _parse_function_signature(parser):
 def _parse_function_variants(parser, signature, term_pattern, term_guard, term_case_body, term_single_body):
     if parser.token_type == TT_ARROW:
         advance(parser)
-        init_code_layout(parser, parser.node)
+        init_code_layout(parser, parser.node, term_single_body)
         body = statements(parser, term_single_body)
         return nodes.create_function_variants(signature, body)
 
@@ -610,7 +614,7 @@ def _parse_function_variants(parser, signature, term_pattern, term_guard, term_c
             return parse_error(parser, u"Inconsistent clause arity with function signature", args)
 
         advance_expected(parser, TT_ARROW)
-        init_code_layout(parser, parser.node)
+        init_code_layout(parser, parser.node, term_case_body)
         body = statements(parser, term_case_body)
         funcs.append(list_node([args, body]))
 
@@ -844,7 +848,7 @@ def stmt_type(parser, op, node):
         return _parse_union(parser, node, typename)
 
     _t = _parse_type(parser, node, typename, TERM_TYPE_ARGS)
-    # advance_end(parser)
+    advance_end(parser)
     return _t
 
 
@@ -902,7 +906,7 @@ def stmt_trait(parser, op, node):
         check_node_type(parser, sig, NT_LIST)
         if parser.token_type == TT_ARROW:
             advance(parser)
-            init_code_layout(parser, parser.node)
+            init_code_layout(parser, parser.node, TERM_METHOD_DEFAULT_BODY)
             args = symbol_list_to_arg_tuple(parser, node, sig)
             body = statements(parser.expression_parser, TERM_METHOD_DEFAULT_BODY)
             default_impl = nodes.create_function_variants(args, body)
@@ -928,6 +932,7 @@ def stmt_implement(parser, op, node):
 
     methods = []
     if parser.token_type != TT_DEF:
+        advance_end(parser)
         return nodes.node_3(NT_IMPLEMENT, __ntok(node), trait_name, type_name, list_node(methods))
 
     init_offside_layout(parser, parser.node)

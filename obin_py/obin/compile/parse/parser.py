@@ -190,7 +190,7 @@ def type_parser_init(parser):
     symbol(parser, TT_COMMA)
     symbol(parser, TT_END)
     symbol(parser, TT_RCURLY)
-    prefix(parser, TT_LCURLY, prefix_lcurly_type)
+    prefix(parser, TT_LCURLY, prefix_lcurly_type, layout_lcurly)
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     infix(parser, TT_COLON, 95, infix_name_pair)
     # infix(parser, TT_CASE, 15, led_infixr)
@@ -245,9 +245,9 @@ def guard_parser_init(proc_data, parser):
     symbol(parser, TT_RSQUARE, None)
     symbol(parser, TT_ARROW, None)
 
-    prefix(parser, TT_LPAREN, prefix_lparen)
-    prefix(parser, TT_LSQUARE, prefix_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly)
+    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
+    prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly, layout_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
 
     infix(parser, TT_OR, 25, led_infix)
@@ -261,8 +261,8 @@ def guard_parser_init(proc_data, parser):
 
 def pattern_parser_init(parser):
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
-    prefix(parser, TT_LSQUARE, prefix_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly_patterns)
+    prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly_patterns, layout_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
 
@@ -296,7 +296,7 @@ def fun_signature_parser_init(parser):
     parser.juxtaposition_as_list = True
     literal(parser, TT_NAME)
 
-    prefix(parser, TT_LPAREN, prefix_lparen)
+    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
     symbol(parser, TT_RPAREN)
     symbol(parser, TT_INDENT)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
@@ -349,9 +349,9 @@ def expression_parser_init(proc_data, parser):
     symbol(parser, TT_END)
 
     prefix(parser, TT_INDENT, prefix_indent)
-    prefix(parser, TT_LPAREN, prefix_lparen)
-    prefix(parser, TT_LSQUARE, prefix_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly)
+    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
+    prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly, layout_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
     prefix(parser, TT_AMP, prefix_amp)
@@ -396,9 +396,9 @@ def module_parser_init(parser):
     symbol(parser, TT_END_EXPR)
     symbol(parser, TT_ENDSTREAM)
 
-    prefix(parser, TT_LPAREN, prefix_lparen)
-    prefix(parser, TT_LSQUARE, prefix_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly)
+    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
+    prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly, layout_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
 
     assignment(parser, TT_ASSIGN, 10)

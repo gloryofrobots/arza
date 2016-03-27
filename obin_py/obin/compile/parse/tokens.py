@@ -66,6 +66,7 @@ RULES = [
     (token('\.\{'), TT_INFIX_DOT_LCURLY),
     (token('\.\('), TT_INFIX_DOT_LPAREN),
     (token(' '), -1),
+    (token('-----[-]*'), -1),
     (token('//[^\n]*'), -1),
     (token('/\*[^\*\/]*\*/'), -1),
 
@@ -131,7 +132,6 @@ RULES = [
 
     (token('\&'), TT_AMP),
     (token('\|'), TT_CASE),
-    # (token('---[-]*'), TT_END),
 
     (token('\-\>'), TT_ARROW),
     (token('\<\-'), TT_BACKARROW),

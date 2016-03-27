@@ -13,6 +13,8 @@ TERM_IF_BODY = [TT_ELSE, TT_ELIF]
 TERM_IF_CONDITION = [TT_ARROW]
 
 TERM_FILE = [TT_ENDSTREAM]
+
+TERM_MATCH_EXPR = [TT_WITH]
 TERM_MATCH_PATTERN = [TT_WITH]
 TERM_CASE = [TT_CASE] + TERM_BLOCK
 # TERM_CATCH = [TT_CATCH, TT_FINALLY] + TERM_BLOCK
@@ -47,6 +49,7 @@ NODE_IMPLEMENT_NAME = [NT_NAME, NT_IMPORTED_NAME]
 
 LOOP_CONTROL_TOKENS = [TT_END, TT_ELSE, TT_CASE]
 
+LEVELS_MATCH = TERM_MATCH_EXPR
 LEVELS_IF = [TT_ELSE, TT_ELIF]
 LEVELS_TRY = [TT_CATCH, TT_FINALLY]
 
@@ -336,7 +339,7 @@ def node_layout(parser, node):
     if not handler.layout:
         parse_error(parser, u"Unknown token layout", node)
 
-    return handler.layout(parser, node)
+    return handler.layout(parser, handler, node)
 
 
 def parser_set_layout(parser, ttype, fn):
@@ -465,6 +468,9 @@ def endofexpression(parser):
 
 def base_expression(parser, _rbp, terminators=None):
     previous = parser.node
+    if node_has_layout(parser, previous):
+        node_layout(parser, previous)
+
     advance(parser)
 
     left = node_nud(parser, previous)
@@ -661,12 +667,9 @@ def infix(parser, ttype, lbp, led):
     parser_set_led(parser, ttype, lbp, led)
 
 
-def layout(parser, ttype, fn):
-    parser_set_layout(parser, ttype, fn)
-
-
-def prefix(parser, ttype, nud):
+def prefix(parser, ttype, nud, layout=None):
     parser_set_nud(parser, ttype, nud)
+    parser_set_layout(parser, ttype, layout)
 
 
 def stmt(parser, ttype, std):

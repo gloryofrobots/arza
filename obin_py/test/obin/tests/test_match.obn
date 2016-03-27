@@ -2,7 +2,7 @@ import affirm
 
 fun test() ->
     affirm:is_equal(
-        match [1,2,3]
+        match [1,2,3] with
             | B1 @ [a, b, B2 @ c] ->  (B1, B2, a, b, c)
             | _ -> 42
         end) ([1, 2, 3], 3, 1, 2, 3)
@@ -13,7 +13,7 @@ fun test() ->
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match [1,2,3]
+        match [1,2,3] with
             | [B3 @ 1, 2, 4] -> (#res1, B3)
             | [B3 @ 1, 2, 3] -> (#res2, B3)
         end) (#res2, 1)
@@ -22,7 +22,7 @@ fun test() ->
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match 42
+        match 42 with
             | B4 @ 2 -> (#result1, B4)
             | B4 @ 42 -> (#result2, B4)
         end) (#result2, 42)
@@ -31,7 +31,7 @@ fun test() ->
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match {genre = "XXX", actress="Lily", age=25}
+        match {genre = "XXX", actress="Lily", age=25} with
             | Result @ {genre, LilyName @ "actress"="Lily", age=13} -> (Result, genre, 42, LilyName)
             | Result @ {genre, LilyName2 @ "actress"="Lily", age=25} -> (Result, genre, "OLOLO", LilyName2, age)
         //    | {genre, length} ->  (name, age, 1)
@@ -46,7 +46,7 @@ fun test() ->
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal .
-        match (1, (23, (24, 25)))
+        match (1, (23, (24, 25))) with
             | (Z, (G, 1)) ->  12 + Z
             | (1, 23) ->   12
             | (1, (23, X)) ->  (#third, X)
@@ -130,7 +130,7 @@ fun test() ->
     match (1,2)
         | a1 -> a1.0
         | b1 -> a1.1
-        
+
     //////////////////////////////////////////////////////
 
     affirm:is_equal(

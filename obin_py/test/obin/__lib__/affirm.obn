@@ -3,37 +3,34 @@ import list
 
 fun is_equal_batch fn ...calls ->
     _batch is_equal fn calls
----
+--------------------------------------------------
 
 fun _batch checker fn calls ->
     calls_list = tuple:to_list calls
     list:foreach lam call -> checker (apply fn call.0)  call.1 end calls_list
----
+--------------------------------------------------
 
 
 fun fail error ->
     throw (#AffirmationError, error)
----
+--------------------------------------------------
 
 fun is_not_equal val1 val2 ->
     if val1 == val2 -> fail [val1, "==", val2]
     else -> True
-    -------------------
----
+--------------------------------------------------
 
 fun is_equal val1 val2
     | val1 of Float  val2 of Float -> is_equal_float val1 val2
     | val1 val2  ->
         if val1 != val2 -> fail [val1, "!=", val2]
         else -> True
-        ---
----
+--------------------------------------------------
 
 fun _abs v ->
     if v < 0 -> - 1 * v
     else -> v
-    ---
----
+--------------------------------------------------
 
 fun is_equal_float val1 val2 ->
     fun _eq_f val1 val2 delta ->
@@ -41,46 +38,38 @@ fun is_equal_float val1 val2 ->
              is_true (((_abs val1) - (_abs val2)) < delta)
         catch e ->
             fail [val1, "!=", val2]
-        ---
-    ---
+
     _eq_f val1  val2  0.0001
----
+--------------------------------------------------
 
 fun is_same val1 val2 ->
     if val1 `isnot` val2 -> fail [val1, "isnot", val2]
     else -> True
-    ---
----
+--------------------------------------------------
 
 fun is_kindof val1 val2 ->
     if not (val1 `kindof` val2) -> fail [val1, "not kindof", val2]
     else -> True
-    ---
----
+--------------------------------------------------
 
 fun is_not_kindof val1 val2 ->
     if val1 `kindof` val2 -> fail [val1, "kindof", val2]
     else -> True
-    ---
----
+--------------------------------------------------
 
 fun isnot_same val1 val2 ->
     if val1 `is` val2 -> fail [val1, "is", val2]
     else -> True
-    ---
----
+--------------------------------------------------
 
 fun is_true val1 -> is_same val1 True
----
 
 fun is_false val1 -> is_same val1 False
----
 
 //apply needed tuple of arguments
 // so we need to convert () to ((),)
 
 type Success val
----
 
 fun is_throw fn args
     | fn () -> is_throw fn [()]
@@ -91,28 +80,27 @@ fun is_throw fn args
                 Success True
             catch e ->
                 e
-            ---
+        with
+            | _ of Success -> fail ["exception expected", fn]
+            | err -> err
+--------------------------------------------------
 
-        | _ of Success -> fail ["exception expected", fn]
-        | err -> err
-        ---
----
 
 fun is_throw_expected fn args exc ->
     is_equal (is_throw fn args) exc
----
+--------------------------------------------------
 
 fun is_not_throw fn args
-| fn () -> is_not_throw fn [()]
-| fn args ->
-    match
-        try
-            apply fn args
-            Success True
-        catch e ->
-            e
-        ---
-    | _ of Success ->  True
-    | err -> fail ["unexpected exception", fn, err]
-    ---
----
+    | fn () -> is_not_throw fn [()]
+    | fn args ->
+        match
+            try
+                apply fn args
+                Success True
+            catch e ->
+                e
+        with
+            | _ of Success ->  True
+            | err -> fail ["unexpected exception", fn, err]
+--------------------------------------------------
+

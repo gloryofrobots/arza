@@ -141,7 +141,7 @@ class IndentationTokenStream:
 
     def add_code_layout(self, node, terminators):
         # # support for f x y | x y -> 1 | x y -> 3
-        # if self.current_layout().type == CHILD:
+        # if self.current_layout().type == CODE:
         #     self.pop_layout()
 
         assert not self.current_layout().is_code()
@@ -312,6 +312,7 @@ class IndentationTokenStream:
 
         elif ttype == tt.TT_END:
             self._on_end_token(token)
+            return self.attach_token(token)
         elif ttype == tt.TT_ENDSTREAM:
             if not self.current_layout().is_module():
                 indentation_error(u"Not all layouts closed", token)

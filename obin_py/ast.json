@@ -24,40 +24,252 @@
           [
             {
               "_ntype": "NT_CALL",
-              "_value": "send",
+              "_value": ":",
               "children": [
                 {
-                  "_ntype": "NT_NAME",
-                  "_value": "send"
+                  "_ntype": "NT_IMPORTED_NAME",
+                  "_value": ":",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "affirm"
+                    },
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "is_equal"
+                    }
+                  ]
                 },
                 [
                   {
-                    "_ntype": "NT_INT",
-                    "_value": "1"
-                  }
-                ]
-              ]
-            },
-            {
-              "_ntype": "NT_CALL",
-              "_value": "foo",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "foo"
-                },
-                [
-                  {
-                    "_ntype": "NT_INT",
-                    "_value": "2"
+                    "_ntype": "NT_MATCH",
+                    "_value": "match",
+                    "children": [
+                      {
+                        "_ntype": "NT_TUPLE",
+                        "_value": "(",
+                        "children": [
+                          [
+                            {
+                              "_ntype": "NT_INT",
+                              "_value": "1"
+                            },
+                            {
+                              "_ntype": "NT_TUPLE",
+                              "_value": "(",
+                              "children": [
+                                [
+                                  {
+                                    "_ntype": "NT_INT",
+                                    "_value": "23"
+                                  },
+                                  {
+                                    "_ntype": "NT_TUPLE",
+                                    "_value": "(",
+                                    "children": [
+                                      [
+                                        {
+                                          "_ntype": "NT_INT",
+                                          "_value": "24"
+                                        },
+                                        {
+                                          "_ntype": "NT_INT",
+                                          "_value": "25"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      },
+                      [
+                        [
+                          {
+                            "_ntype": "NT_TUPLE",
+                            "_value": "(",
+                            "children": [
+                              [
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "Z"
+                                },
+                                {
+                                  "_ntype": "NT_TUPLE",
+                                  "_value": "(",
+                                  "children": [
+                                    [
+                                      {
+                                        "_ntype": "NT_NAME",
+                                        "_value": "G"
+                                      },
+                                      {
+                                        "_ntype": "NT_INT",
+                                        "_value": "1"
+                                      }
+                                    ]
+                                  ]
+                                }
+                              ]
+                            ]
+                          },
+                          [
+                            {
+                              "_ntype": "NT_CALL",
+                              "_value": "(",
+                              "children": [
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "+"
+                                },
+                                [
+                                  {
+                                    "_ntype": "NT_INT",
+                                    "_value": "12"
+                                  },
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "Z"
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ],
+                        [
+                          {
+                            "_ntype": "NT_TUPLE",
+                            "_value": "(",
+                            "children": [
+                              [
+                                {
+                                  "_ntype": "NT_INT",
+                                  "_value": "1"
+                                },
+                                {
+                                  "_ntype": "NT_INT",
+                                  "_value": "23"
+                                }
+                              ]
+                            ]
+                          },
+                          [
+                            {
+                              "_ntype": "NT_INT",
+                              "_value": "12"
+                            }
+                          ]
+                        ],
+                        [
+                          {
+                            "_ntype": "NT_TUPLE",
+                            "_value": "(",
+                            "children": [
+                              [
+                                {
+                                  "_ntype": "NT_INT",
+                                  "_value": "1"
+                                },
+                                {
+                                  "_ntype": "NT_TUPLE",
+                                  "_value": "(",
+                                  "children": [
+                                    [
+                                      {
+                                        "_ntype": "NT_INT",
+                                        "_value": "23"
+                                      },
+                                      {
+                                        "_ntype": "NT_NAME",
+                                        "_value": "X"
+                                      }
+                                    ]
+                                  ]
+                                }
+                              ]
+                            ]
+                          },
+                          [
+                            {
+                              "_ntype": "NT_TUPLE",
+                              "_value": "(",
+                              "children": [
+                                [
+                                  {
+                                    "_ntype": "NT_SYMBOL",
+                                    "_value": "#",
+                                    "children": [
+                                      {
+                                        "_ntype": "NT_NAME",
+                                        "_value": "third"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "X"
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ],
+                        [
+                          {
+                            "_ntype": "NT_WILDCARD",
+                            "_value": "_"
+                          },
+                          [
+                            {
+                              "_ntype": "NT_SYMBOL",
+                              "_value": "#",
+                              "children": [
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "fourth"
+                                }
+                              ]
+                            }
+                          ]
+                        ]
+                      ]
+                    ]
                   },
                   {
-                    "_ntype": "NT_INT",
-                    "_value": "3"
-                  },
-                  {
-                    "_ntype": "NT_INT",
-                    "_value": "4"
+                    "_ntype": "NT_TUPLE",
+                    "_value": "(",
+                    "children": [
+                      [
+                        {
+                          "_ntype": "NT_SYMBOL",
+                          "_value": "#",
+                          "children": [
+                            {
+                              "_ntype": "NT_NAME",
+                              "_value": "third"
+                            }
+                          ]
+                        },
+                        {
+                          "_ntype": "NT_TUPLE",
+                          "_value": "(",
+                          "children": [
+                            [
+                              {
+                                "_ntype": "NT_INT",
+                                "_value": "24"
+                              },
+                              {
+                                "_ntype": "NT_INT",
+                                "_value": "25"
+                              }
+                            ]
+                          ]
+                        }
+                      ]
+                    ]
                   }
                 ]
               ]
