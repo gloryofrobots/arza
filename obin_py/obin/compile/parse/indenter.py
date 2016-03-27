@@ -224,15 +224,12 @@ class IndentationTokenStream:
             return self.next_token()
 
         if layout.is_free() is True:
-            # if layout.has_terminator(ttype):
-            #     # self.pop_layout()
-            #     # IF TOKEN IS TERMINATOR WE STILL NEED TO PROCEED NEWLINE
-            #     # layout = self.current_layout()
-            # # else:
             return self.next_token()
 
         if level > layout.level:
-            self.add_logical_token(tokens.create_indent_token(token))
+            if ttype not in SKIP_NEWLINE_TOKENS:
+                self.add_logical_token(tokens.create_indent_token(token))
+
             return self.next_token()
         else:
             layouts = self.layouts
@@ -245,7 +242,10 @@ class IndentationTokenStream:
                 if layout.level < level:
                     return indentation_error(u"Invalid indentation level", token)
                 elif layout.level > level:
-                    self.on_dedent(layout, token)
+                    if layout.push_end_of_expression_on_new_line is True:
+                        self.add_logical_token(tokens.create_end_expression_token(token))
+                    if layout.push_end_on_dedent is True:
+                        self.add_logical_token(tokens.create_end_token(token))
                 elif layout.level == level:
                     if layout.push_end_of_expression_on_new_line is True:
                         self.add_logical_token(tokens.create_end_expression_token(token))
@@ -254,9 +254,6 @@ class IndentationTokenStream:
                             self.index += 1
                             self.add_logical_token(tokens.create_end_token(token))
                             self.pop_layout()
-                            # if self.current_physical_type() == tt.TT_NEWLINE:
-                            # self.add_logical_token(tokens.create_end_expression_token(token))
-                            # self._skip_newlines()
 
                         elif not layout.has_level(ttype):
                             self.add_logical_token(tokens.create_end_token(token))
@@ -267,14 +264,6 @@ class IndentationTokenStream:
                 log("---- POP_LAYOUT", layout)
                 log(self.advanced_values())
                 self.layouts = layouts
-
-    def on_dedent(self, layout, token):
-        if layout.push_end_of_expression_on_new_line is True:
-            self.add_logical_token(tokens.create_end_expression_token(token))
-        if layout.push_end_on_dedent is True:
-            self.add_logical_token(tokens.create_end_token(token))
-            # if layout.push_end_of_expression_on_dedent is True:
-            #     self.add_logical_token(tokens.create_end_expression_token(token))
 
     def attach_token(self, token):
         log("^^^^^ATTACH", tokens.token_to_s(token))

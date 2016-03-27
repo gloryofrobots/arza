@@ -131,7 +131,6 @@ RULES = [
     (token(name_const), TT_NAME),
 
     (token('\&'), TT_AMP),
-    (token('\|'), TT_CASE),
 
     (token('\-\>'), TT_ARROW),
     (token('\<\-'), TT_BACKARROW),
@@ -151,9 +150,12 @@ RULES = [
     (token(':'), TT_COLON),
     (token('[%s][=]+' % operator_char), TT_OPERATOR),
     (token('[=][%s]+' % operator_char), TT_OPERATOR),
+    (token('[%s][|]+' % operator_char), TT_OPERATOR),
+    (token('[|][%s]+' % operator_char), TT_OPERATOR),
     # (token('[%s][:]+' % operator_char), TT_OPERATOR),
     # (token('[:][%s]+' % operator_char), TT_OPERATOR),
 
+    (token('\|'), TT_CASE),
     (token('='), TT_ASSIGN),
 
     # that can catch op

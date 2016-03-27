@@ -1,10 +1,10 @@
 import affirm
 fun t1() ->
-    t1 = (1, "Hello", 35.44555)
-    affirm:is_equal t1 (1, "Hello", 35.44555)
-    affirm:is_equal t1.0 1
-    affirm:is_equal t1.1 "Hello"
-    affirm:is_equal t1.2 35.44555
+    tup1 = (1, "Hello", 35.44555)
+    affirm:is_equal tup1 (1, "Hello", 35.44555)
+    affirm:is_equal tup1.0 1
+    affirm:is_equal tup1.1 "Hello"
+    affirm:is_equal tup1.2 35.44555
     affirm:is_equal (1, "Hello", 35.44555).2   35.44555
     affirm:is_equal (1,2, ["Alice", "Bob", (45,), 54.000000001]).2 ["Alice", "Bob", (45,), 54.000000001]
 
@@ -390,9 +390,29 @@ fun t4 () ->
 //        | x -> 1
 //        | y -> 2; finally -> 4
 
+fun t5() ->
+    a = 3
+    -1
+    affirm:is_equal a 3
+
+    x =   1
+        + 2
+        + 3
+        + 4
+
+    affirm:is_equal x 10
+
+    y = x
+            + 3
+                + 2 +
+        5
+
+    affirm:is_equal y 20
+
 
 fun test () ->
-//    t1 ()
-//    t2 ()
-//    t3 ()
+    t1 ()
+    t2 ()
+    t3 ()
     t4()
+    t5()

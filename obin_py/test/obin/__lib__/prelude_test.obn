@@ -1,4 +1,4 @@
-//prefix - negate
+prefix - negate
 //infixl < < 50
 //infixl > > 50
 //infixl >= >= 50
@@ -6,6 +6,7 @@
 infixl == == 50
 //infixl != != 50
 infixl + + 60
+infixl |> |> 50
 //infixl - - 60
 //infixl * * 65
 //infixl / / 65
@@ -13,10 +14,17 @@ infixl + + 60
 
 
 fun f x ->
-    T5 =
-        (
-         lam x -> x end
-        25)
+    try
+        1 +2
+    catch 2 -> 3
+
+    x |> 1
+      |> f 2
+      |> f 4
+
+//    x + 1
+//      + 2
+//      + 4
 end
 
 fun x () ->
