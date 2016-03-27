@@ -175,7 +175,7 @@ def name_parser_init(parser):
     symbol(parser, TT_ELLIPSIS, None)
     symbol(parser, TT_ENDSTREAM)
 
-    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
+    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
     infix(parser, TT_COLON, 95, infix_name_pair)
     return parser
@@ -218,7 +218,7 @@ def import_names_parser_init(parser):
     symbol(parser, TT_RPAREN, None)
     literal(parser, TT_NAME)
     infix(parser, TT_AS, 20, infix_name_pair)
-    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
+    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
     return parser
 
 
@@ -260,7 +260,7 @@ def guard_parser_init(proc_data, parser):
 
 
 def pattern_parser_init(parser):
-    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
+    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly_patterns, layout_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)

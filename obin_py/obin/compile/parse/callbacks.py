@@ -257,33 +257,12 @@ def symbol_wildcard(parser, op, node):
     return parse_error(parser, u"Invalid use of _ pattern", node)
 
 
-# TODO REMOVE IT
-# separate lparen handle for match case declarations
-def prefix_lparen_tuple(parser, op, node):
-    init_free_layout(parser, node, [TT_RPAREN])
-    if parser.token_type == TT_RPAREN:
-        advance_expected(parser, TT_RPAREN)
-        return nodes.create_unit_node(node)
-
-    items = []
-    while True:
-        exp = expression(parser, 0)
-        skip_end_expression(parser)
-        items.append(exp)
-        if parser.token_type != TT_COMMA:
-            break
-
-        advance_expected(parser, TT_COMMA)
-
-    advance_expected(parser, TT_RPAREN)
-    return node_1(NT_TUPLE, __ntok(node), list_node(items))
-
-
 # MOST complicated operator
 # expressions (f 1 2 3) (2 + 3) (-1)
 # tuples (1,2,3,4,5)
 def layout_lparen(parser, op, node):
     init_free_layout(parser, node, [TT_RPAREN])
+
 
 def prefix_lparen(parser, op, node):
     if parser.token_type == TT_RPAREN:
@@ -312,8 +291,9 @@ def prefix_lparen(parser, op, node):
     return node_1(NT_TUPLE, __ntok(node), list_node(items))
 
 
-def layout_lsquare(parser,op, node):
+def layout_lsquare(parser, op, node):
     init_free_layout(parser, node, [TT_RSQUARE])
+
 
 def prefix_lsquare(parser, op, node):
     items = []
@@ -368,8 +348,10 @@ def prefix_lcurly_type(parser, op, node):
     advance_expected(parser, TT_RCURLY)
     return node_1(NT_LIST, __ntok(node), list_node(items))
 
+
 def layout_lcurly(parser, op, node):
     init_free_layout(parser, node, [TT_RCURLY])
+
 
 # this callback used in pattern matching
 def prefix_lcurly_patterns(parser, op, node):
@@ -452,7 +434,6 @@ def prefix_if(parser, op, node):
     branches.append(list_node([empty_node(), body]))
     advance_end(parser)
     return node_1(NT_CONDITION, __ntok(node), list_node(branches))
-
 
 
 def prefix_try(parser, op, node):
@@ -702,6 +683,12 @@ def _load_module(parser, exp):
     parser.open(state)
 
 
+def ensure_tuple(t):
+    if nodes.node_type(t) != NT_TUPLE:
+        return nodes.create_tuple_node(t, [t])
+    return t
+
+
 def stmt_import(parser, op, node):
     if parser.token_type == TT_FROM:
         ntype1 = NT_IMPORT_FROM
@@ -728,7 +715,8 @@ def stmt_import(parser, op, node):
 
     if parser.token_type == TT_LPAREN:
         names = expression(parser.import_names_parser, 0)
-        check_node_type(parser, names, NT_TUPLE)
+        check_node_types(parser, names, [NT_TUPLE, NT_NAME, NT_AS])
+        names = ensure_tuple(names)
         if hiding is True:
             # hiding names can't have as binding
             check_list_node_types(parser, nodes.node_first(names), [NT_NAME])
