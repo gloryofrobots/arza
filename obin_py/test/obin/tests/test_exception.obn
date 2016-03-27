@@ -4,24 +4,24 @@ fun error reason ->
 
 fun error2 reason ->
     lam x -> error reason end ()
-    
+
 --------------------------------------------------
 
 fun test_1 () ->
     e1 =
-    try
         try
-            1/0
-        catch e2 ->
-            throw e2
-    catch e3 ->
-        try
-            error(#LifeSucks)
-        catch e4 ->
-            //result
-            e4
-    affirm:is_equal e1 (#error, {reason=#LifeSucks})
-    
+            try
+                1/0
+            catch e2 ->
+                throw e2
+        catch e3 ->
+            try
+                error(#LifeSucks)
+            catch e4 ->
+                //result
+                e4
+        affirm:is_equal e1 (#error, {reason=#LifeSucks})
+
 --------------------------------------------------
 
 fun test_2 () ->
@@ -59,7 +59,7 @@ fun test_3 () ->
                 //result
                 (e2, e3)
         end) ((#error, {reason=#Finally}), (#error, {reason=#Catch}))
-        
+
 --------------------------------------------------
 
 fun test_4() ->
@@ -72,7 +72,7 @@ fun test_4() ->
                     e1
                 finally ->
                     error2(#Finally)
-                    
+
             catch e2 ->
                 try
                     error(#Catch)
@@ -95,7 +95,7 @@ fun test_5() ->
             finally ->
                 throw e
         end) (33, 22) (33, 22)
-        
+
 --------------------------------------------------
 
 fun test_6() ->

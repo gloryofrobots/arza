@@ -168,7 +168,8 @@ fun range_by (first of Int) (last of Int) (step of Int) ->
     --------------------------------------------------
 
     if step > 0 and first - step <= last or
-      step < 0 and first - step >= last ->
+            step < 0 and first - step >= last ->
+
         n = ((last - first + step) / step) - 1
         _range_by n (step * (n - 1) + first) step []
 
@@ -176,16 +177,16 @@ fun range_by (first of Int) (last of Int) (step of Int) ->
         _range_by 1  first step []
     else ->
         throw (#InvalidRange, first, last, step)
-    ------------------------------
 --------------------------------------------------
 
-fun last list | [x, ...xs] ->
-    fun _last hd tl
-        | _ [x, ...xs] -> _last x xs
-        | x [] -> x
-    ----------------------
+fun last list
+    | [x, ...xs] ->
+        fun _last hd tl
+            | _ [x, ...xs] -> _last x xs
+            | x [] -> x
+        ------------
 
-    _last x xs
+        _last x xs
 --------------------------------------------------
 
 fun uncons list | [x, ...xs] -> (x, xs) end

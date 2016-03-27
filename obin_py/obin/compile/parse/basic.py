@@ -67,6 +67,8 @@ def parser_error_unknown(parser, position):
 
 
 def parser_error_indentation(parser, msg, position, lineno, column):
+    print parser.ts.advanced_values()
+    print parser.ts.layouts
     line = get_line_for_position(parser.ts.src, position)
     return error.throw(error.Errors.PARSE_ERROR,
                        space.newtuple([
@@ -80,6 +82,7 @@ def parser_error_indentation(parser, msg, position, lineno, column):
 
 def parse_error(parser, message, node):
     print parser.ts.advanced_values()
+    print parser.ts.layouts
     if nodes.node_token_type(node) == TT_ENDSTREAM:
         line = u"Unclosed top level statement"
     else:

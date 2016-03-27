@@ -736,7 +736,7 @@ def stmt_import(parser, op, node):
             parse_error(parser, u"expected definitions tuple", node)
         names = empty_node()
 
-    # _load_module(parser, imported)
+    _load_module(parser, imported)
     return node_2(ntype, __ntok(node), imported, names)
 
 

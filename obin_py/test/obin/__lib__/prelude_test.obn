@@ -1,15 +1,21 @@
-infixl + + 50
-infixl == == 10
+prefix - negate
+infixl < < 50
+infixl > > 50
+infixl >= >= 50
+infixl <= <= 50
+infixl == == 50
+infixl != != 50
+infixl + + 60
+infixl - - 60
+infixl * * 65
+infixl / / 65
+infixl ++ ++ 70
 
 
 fun f x ->
-    affirm:is_equal .
-        match (1, (23, (24, 25))) with
-            | (Z, (G, 1)) ->  12 + Z
-            | (1, 23) ->   12
-            | (1, (23, X)) ->  (#third, X)
-            | _ ->  #fourth
-        end (#third, (24, 25))
+    affirm:is_throw_expected fun f x -> test_use_static_and_fail x end .
+                             [1] .
+                             (NotImplementedError (#_length_, 1))
 end
 
 fun x () ->

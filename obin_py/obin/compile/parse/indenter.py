@@ -5,7 +5,7 @@ from obin.types import api, space, plist, root
 from obin.misc.fifo import Fifo
 
 SKIP_NEWLINE_TOKENS = [tt.TT_JUXTAPOSITION, tt.TT_DOUBLE_COLON,
-                       tt.TT_COLON, tt.TT_OPERATOR, tt.TT_DOT, tt.TT_ASSIGN]
+                       tt.TT_COLON, tt.TT_OPERATOR, tt.TT_DOT, tt.TT_ASSIGN, tt.TT_OR, tt.TT_AND]
 
 
 class InvalidIndentationError(Exception):
@@ -25,7 +25,7 @@ CODE = 1
 OFFSIDE = 2
 FREE = 3
 
-LOG_INDENTER = True
+LOG_INDENTER = False
 
 
 def log(*args):

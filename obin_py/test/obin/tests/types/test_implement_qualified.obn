@@ -2,7 +2,7 @@ import affirm
 import tests:types:types
 import tests:types:types as stuff
 
-prefix ++-+*++  ++-+*++
+prefix ++-+*++ ++-+*++
 
 type X x
 
@@ -10,7 +10,7 @@ derive Dict for X
 derive Dict for stuff:TestType
 
 trait TraitWithOp for self
-    def ++-+*++  self -> self.val
+    def ++-+*++ self -> self.val
 
 implement types:TestTrait for X
     def test_method_1 a1 of X a2 of X self -> a1.x + a2.x + self.x
