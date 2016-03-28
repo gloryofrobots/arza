@@ -40,7 +40,6 @@
 //TODO remove NT_WHEN after refactoring pattern compiler
 //TODO add support for | in trait statement defs
 
-//TODO remove lparen_tuple
 //TODO
 //// this is error prone code, currently branches not merged because
 ////distinction goes with variable names and a1 != b1
@@ -49,22 +48,6 @@
 //    | a1 -> a1.0
 //    | b1 -> a1.1
 //---------
-
-//THIS INDENTATION
-//nums |> Seq.filter isOdd
-//     |> Seq.map square
-//     |> Seq.sum
-//
-//... then this is equivalent to passing the input to a function obtained using function composition:
-//
-//let composed =
-//     Seq.filter isOdd
-//  >> Seq.map square
-//  >> Seq.sum
-//
-//composed nums
-
-
 
 //trait Any for self
 ////    def id self -> obin:unique_id self
