@@ -195,9 +195,8 @@ def concat(tupl1, tupl2):
 
 
 def to_list(t):
-    return space.newlist(t.to_l())
-    # type_check(t)
-    # return space.newlist(t.elements)
+    type_check(t)
+    return space.newlist(t.elements)
 
 
 def slice(t, first, last):

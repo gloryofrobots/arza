@@ -1,5 +1,5 @@
 //import affirm
-//import tests:test_operators
+import tests:test_operators
 
 import tests:types:test_types
 import tests:test_co
@@ -52,10 +52,9 @@ fun test() ->
     log "TEST CO"
     test_co:test()
 
-//    log "TEST OPERATORS"
-//    test_operators:test()
+    log "TEST OPERATORS"
+    test_operators:test()
 
-import list
 
 fun main () ->
     test()

@@ -254,8 +254,6 @@ def hp_take(process, args):
 
     if space.islist(obj):
         return plist.take(obj, count_i)
-    elif space.isarguments(obj):
-        return arguments.drop(obj, count_i)
     elif space.istuple(obj):
         return tuples.take(obj, count_i)
     elif space.isstring(obj):

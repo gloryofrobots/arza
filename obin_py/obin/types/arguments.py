@@ -62,23 +62,23 @@ class W_Arguments(W_Root):
     def _length_(self):
         return self.length
 
-    # def _equal_(self, other):
-    #     from obin.types import space
-    #     if not space.istuple(other):
-    #         return False
-    #
-    #     if self._length_() != other._length_():
-    #         return False
-    #
-    #     for el1, el2 in zip(self.elements, other.elements):
-    #         if not api.equal_b(el1, el2):
-    #             return False
-    #
-    #     return True
+    def _equal_(self, other):
+        from obin.types import space
+        if not space.is_tuple_or_arguments(other):
+            return False
+
+        if self._length_() != other._length_():
+            return False
+
+        for el1, el2 in zip(self.to_l(), other.to_l()):
+            if not api.equal_b(el1, el2):
+                return False
+
+        return True
 
     def _to_string_(self):
         repr = ", ".join([v._to_string_() for v in self.to_l()])
-        return "<args -> %s>" % repr
+        return "{> %s <}" % repr
 
 
 def type_check(t):
@@ -90,31 +90,14 @@ def to_list(t):
     return space.newlist(t.elements)
 
 
-def slice(t, first, last):
-    error.affirm_type(t, space.isarguments)
-    assert isinstance(first, int)
-    assert isinstance(last, int)
-    if last >= t.length:
-        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Invalid slice last index"), space.newint(last))
-
-    return W_Arguments(t.stack, t.pointer - first, last)
-
-
-def take(t, count):
-    error.affirm_type(t, space.isarguments)
-    if count >= t.length:
-        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Can not take so much items"), space.newint(count))
-
-    assert isinstance(count, int)
-    return W_Arguments(t.stack, t.pointer, count)
-
-
 def drop(t, count):
     error.affirm_type(t, space.isarguments)
     assert isinstance(count, int)
     if count == 0:
-        return t
+        return space.newtuple(t.to_l())
+
     if count >= t.length:
         error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Can not drop so much items"), space.newint(count))
 
-    return W_Arguments(t.stack, t.pointer - count + 1, t.length - count)
+    return space.newtuple(t.to_l()[count:t.length])
+    # return W_Arguments(t.stack, t.pointer - count + 1, t.length - count)

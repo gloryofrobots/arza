@@ -3,11 +3,9 @@ import from _fiber (spawn, activate)
 
 fun coroutine fn ->
     (fiber1, fiber2) = spawn ()
-
     first_call = tvar:create False
 
     fun _coroutine_handler ...args ->
-
         if (tvar:read first_call) `is` False ->
             tvar:swap first_call True
             activate fiber2 .
