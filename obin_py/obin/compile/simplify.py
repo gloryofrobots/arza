@@ -64,3 +64,47 @@ def simplify_implement(compiler, code, node):
     methods_3_arg = nodes.create_list_node(node, methods_list)
 
     return nodes.create_call_node_s(node, lang_names.IMPLEMENT, [traitname_1_arg, typename_2_arg, methods_3_arg])
+
+
+def simplify_trait(compiler, code, node):
+    trait_name_node = node_first(node)
+    var_name_node = node_second(node)
+    constraints_node = node_third(node)
+
+    trait_name_1_arg = nodes.create_symbol_node(trait_name_node, trait_name_node)
+    var_name_2_arg = nodes.create_symbol_node(trait_name_node, var_name_node)
+    constraints_3_arg = constraints_node
+    call_node = nodes.create_call_node_s(node, lang_names.TRAIT, [trait_name_1_arg, var_name_2_arg, constraints_3_arg])
+    trait_node = nodes.create_assign_node(node, trait_name_node, call_node)
+
+    method_sources = node_fourth(node)
+    methods = []
+
+    # First declare methods name. compiler second pass doesn`t walk through calls and assigns
+    # Possible fix -> separate ast for simple and complicated assigns NT_ASSIGN, NT_ASSIGN_MATCH
+    for method_source in method_sources:
+        name_node = method_source[0]
+        assign_void = nodes.create_assign_node(name_node, name_node, nodes.create_void_node(name_node))
+        methods.append(assign_void)
+
+    for method_source in method_sources:
+        trait_1_arg = trait_name_node
+        name_node = method_source[0]
+        name_2_arg = nodes.create_symbol_node(name_node, name_node)
+
+        sig_3_arg = method_source[1]
+        default_impl = method_source[2]
+
+        if nodes.is_empty_node(default_impl):
+            impl_4_arg = nodes.create_void_node(name_2_arg)
+        else:
+            impl_4_arg = nodes.create_fun_node(name_2_arg, nodes.empty_node(), default_impl)
+
+        method_call_node = nodes.create_call_node_s(node,
+                                                    lang_names.METHOD,
+                                                    [trait_1_arg, name_2_arg, sig_3_arg, impl_4_arg])
+        assign_node = nodes.create_assign_node(node, name_node, method_call_node)
+        methods.append(assign_node)
+    return trait_node, nodes.list_node(methods)
+
+
