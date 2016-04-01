@@ -2,6 +2,8 @@ __author__ = 'gloryofrobots'
 from obin.misc.platform import jit
 from obin.types import plist, space
 from obin.runtime import error
+
+
 # TODO proper stack operations
 
 class Stack:
@@ -19,8 +21,11 @@ class Stack:
         i = self.pointer() - 1
         assert i >= 0
         self.data[i] = space.newvoid()
-        self.set_pointer(i)
+        self.__set_pointer(i)
         return e
+
+    def current_slice(self):
+        return self.data[0:self.pointer()]
 
     def get(self, index):
         return self.data[index]
@@ -57,11 +62,15 @@ class Stack:
             self.grow(size + 32)
 
         self.data[i] = element
-        self.set_pointer(i + 1)
+        self.__set_pointer(i + 1)
 
-    def set_pointer(self, p):
+    def __set_pointer(self, p):
         self.__pointer = p
         self.__pointer = jit.promote(self.__pointer)
+
+    def set_pointer(self, p):
+        # print "STACK SET POINTER", self.__pointer, p
+        self.__set_pointer(p)
 
     @jit.unroll_safe
     def pop_n_tuple(self, n):

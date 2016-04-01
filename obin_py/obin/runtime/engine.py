@@ -53,6 +53,7 @@ def initialize(libdirs):
                u"string", u"symbol",
                u"list",
                u"tuple", u"map"]
+    # modules = []
     for module_name in modules:
         err = load_module(process, module_name)
         if err is not None:

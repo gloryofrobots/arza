@@ -48,7 +48,11 @@ class W_Unit(W_Root):
         return self
 
     def __iter__(self):
-        raise StopIteration()
+        yield self
+        # raise StopIteration()
+
+    def __len__(self):
+        return 0
 
     def __getitem__(self, item):
         raise RuntimeError("Unit has no elements")
@@ -98,6 +102,9 @@ class W_Tuple(W_Hashable):
 
     def __getitem__(self, item):
         return self.elements[item]
+
+    def __len__(self):
+        return len(self.elements)
 
     def __getslice__(self, start, end):
         return W_Tuple(self.elements[start:end])
@@ -188,8 +195,9 @@ def concat(tupl1, tupl2):
 
 
 def to_list(t):
-    type_check(t)
-    return space.newlist(t.elements)
+    return space.newlist(t.to_l())
+    # type_check(t)
+    # return space.newlist(t.elements)
 
 
 def slice(t, first, last):

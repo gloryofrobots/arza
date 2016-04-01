@@ -7,7 +7,7 @@ class NativeRoutine(BaseRoutine):
     # _immutable_fields_ = ['_name_', '_function_']
 
     def __init__(self, stack, name, function, args, arity):
-        BaseRoutine.__init__(self, stack)
+        BaseRoutine.__init__(self, stack, args)
         from obin.types.space import issymbol
         assert issymbol(name)
         self._name_ = name

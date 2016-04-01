@@ -41,8 +41,7 @@ class W_Method(W_Hashable):
         if self.hot_path is not None:
             res = self.hot_path.apply(process, args)
             if res is not None:
-                process.fiber.push_into_stack(res)
-                return
+                return res
 
         method = lookup_implementation(process, self, args)
         if space.isvoid(method):

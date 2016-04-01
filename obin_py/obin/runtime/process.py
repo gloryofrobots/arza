@@ -22,8 +22,19 @@ class Fiber:
         self.parent = parent
         self.stack = Stack(DEFAULT_STACK_SIZE)
 
+    def push_args(self, args):
+        if space.isarguments(args):
+            return args
+
+        assert space.istuple(args), args
+        for arg in args:
+            self.stack.push(arg)
+        return space.newarguments(self.stack, self.stack.pointer(), len(args))
+
     def start_work(self, func, args):
-        routine = api.to_routine(func, self.stack, args)
+        stack_args = self.push_args(args)
+        routine = api.to_routine(func, self.stack, stack_args)
+
         self.routine = routine
         self.routine.activate()
 
@@ -239,7 +250,6 @@ class Process(object):
         routine = fiber.routine
         assert routine
         if not routine.is_inprocess():
-
             print 1
         assert routine.is_inprocess()
         routine.execute(self)
@@ -302,7 +312,7 @@ class Process(object):
         self.fiber = None
         self.fibers = []
 
-    def __terminate_with_signal(self , signal, trace):
+    def __terminate_with_signal(self, signal, trace):
         _print_trace(self.io.stderr, signal, trace)
         self.__terminate()
 

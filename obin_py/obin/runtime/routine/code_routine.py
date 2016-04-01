@@ -9,7 +9,7 @@ class CodeRoutine(BaseRoutine):
     # _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
 
     def __init__(self, func, stack, args, name, code, env):
-        BaseRoutine.__init__(self, stack)
+        BaseRoutine.__init__(self, stack, args)
 
         assert space.issymbol(name)
         self._func_ = func
@@ -156,7 +156,7 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif UNPACK_TUPLE == tag:
                 seq = stack.pop()
-                error.affirm_type(seq, space.istuple)
+                error.affirm_type(seq, space.is_tuple_or_arguments)
                 seq_length = api.length_i(seq)
                 if seq_length != arg1:
                     return error.throw_1(error.Errors.UNPACK_SEQUENCE_ERROR, seq)
@@ -178,17 +178,20 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif CALL == tag:
                 func = stack.pop()
-                args = stack.pop_n_tuple(arg1)
-                # if arg1 < 0:
-                #     args = space.newunit()
-                # else:
-                    # args = space.newarguments(stack, stack.pointer(), arg1)
-                #   print "ARGS-A", args.to_l()
-                #   args = stack.pop_n_tuple(arg1)
-                #
+                # args = stack.pop_n_tuple(arg1)
+                if arg1 < 0:
+                    args = space.newunit()
+                else:
+                    args = space.newarguments(stack, stack.pointer(), arg1)
+                    # print "ARGS-A", args.to_l()
+                  # args = stack.pop_n_tuple(arg1)
+
                 # print "ARGS-T", args.to_l()
+
+                # print "CALL", stack.pointer(), func, args,  stack.current_slice()
                 res = api.call(process, func, args)
                 if res is not None:
+                    stack.pop_n_tuple(arg1)
                     stack.push(res)
             # *************************************
             elif FSELF == tag:

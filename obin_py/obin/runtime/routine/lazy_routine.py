@@ -8,7 +8,7 @@ class LazyRoutine(BaseRoutine):
     # _immutable_fields_ = ['_name_', '_function_']
 
     def __init__(self, stack, function, args):
-        BaseRoutine.__init__(self, stack)
+        BaseRoutine.__init__(self, stack, args)
         self.constructor = function
         self._args = args
 

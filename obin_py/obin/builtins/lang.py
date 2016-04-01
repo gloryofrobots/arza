@@ -7,7 +7,6 @@ from obin.misc.platform import rstring, compute_unique_id
 from obin.misc import fs
 from obin.compile import compiler
 
-# TODO MAKE IT obin:is_seq ...
 from obin.builtins import lang_names
 
 
@@ -41,6 +40,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.IMPLEMENT, __implement, 3)
     put_lang_func(process, module, lang_names.DERIVE, __derive, 2)
     put_lang_func(process, module, lang_names.PARTIAL, __partial, 1)
+    put_lang_func(process, module, "bp", __bp, 1)
 
     ## debugging
     # if not we_are_translated():
@@ -67,6 +67,12 @@ def compile_module(process, routine):
 def _id(process, routine):
     this = routine.get_arg(0)
     return space.newstring(unicode(hex(compute_unique_id(this))))
+
+
+@complete_native_routine
+def __bp(process, routine):
+    arg = routine.get_arg(0)
+    return arg
 
 
 @complete_native_routine
@@ -107,8 +113,9 @@ def apply(process, routine):
     args = routine.get_arg(1)
     if space.islist(args):
         args = plist.to_tuple(args)
-    elif not space.istuple(args):
+    elif not space.is_tuple_or_arguments(args):
         return error.throw_1(error.Errors.TYPE_ERROR, space.newstring(u"arguments tuple expected"))
+    args = process.fiber.push_args(args)
     api.call(process, func, args)
 
 

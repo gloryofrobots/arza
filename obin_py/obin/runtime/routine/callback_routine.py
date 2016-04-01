@@ -7,7 +7,7 @@ class CallbackRoutine(BaseRoutine):
     # _immutable_fields_ = ['_name_', '_function_']
 
     def __init__(self, stack, callback, function, args):
-        BaseRoutine.__init__(self, stack)
+        BaseRoutine.__init__(self, stack, args)
         self.function = function
         self.args = args
         self.callback = callback

@@ -9,7 +9,7 @@ from obin.misc import platform
 class W_Arguments(W_Root):
     def __init__(self, stack, pointer, length):
         assert isinstance(length, int)
-        assert length > 0
+        assert length >= 0
         assert length < stack.size()
         assert isinstance(stack, Stack)
 
@@ -78,11 +78,11 @@ class W_Arguments(W_Root):
 
     def _to_string_(self):
         repr = ", ".join([v._to_string_() for v in self.to_l()])
-        return "<%s>" % repr
+        return "<args -> %s>" % repr
 
 
 def type_check(t):
-    error.affirm_type(t, space.istuple)
+    error.affirm_type(t, space.isarguments)
 
 
 def to_list(t):
@@ -112,7 +112,9 @@ def take(t, count):
 def drop(t, count):
     error.affirm_type(t, space.isarguments)
     assert isinstance(count, int)
+    if count == 0:
+        return t
     if count >= t.length:
         error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Can not drop so much items"), space.newint(count))
 
-    return W_Arguments(t.stack, t.pointer - count, t.length)
+    return W_Arguments(t.stack, t.pointer - count + 1, t.length - count)

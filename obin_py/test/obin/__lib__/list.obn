@@ -152,7 +152,7 @@ fun contains l x ->
 //BUILDERS/////////////////////////////////////////////////////////////
 
 fun concat l1 l2 ->
-    foldr (&::) l2 l1 end
+    foldr (lam x y -> x :: y end) l2 l1 end
 
 fun range (first of Int) (last of Int) ->
     step = -1 in_case last < 0 else 1
@@ -162,24 +162,34 @@ fun range (first of Int) (last of Int) ->
 fun range_by (first of Int) (last of Int) (step of Int) ->
     fun _range_by N X D L
         | N X D L when N >= 4 ->
+//            print "first"
             Y = X - D
             Z = Y - D
             W = Z - D
             _range_by (N - 4)  (W - D)  D  (W :: Z :: Y :: X :: L)
 
         | N X D L when N >= 2 ->
+//            print "second"
             Y = X - D
             _range_by (N - 2) (Y - D) D (Y :: X :: L)
 
-        | 1 X _ L -> X :: L
+        | 1 X _ L ->
+//            print "third"
+            X :: L
 
-        | 0 _ _ L -> L
+        | 0 _ _ L ->
+//            print "fourth"
+            L
     --------------------------------------------------
 
     if step > 0 and first - step <= last or
             step < 0 and first - step >= last ->
 
         n = ((last - first + step) / step) - 1
+//        print n
+//        print "RANGE BY" first last step n
+//        print n (step * (n - 1) + first) step []
+//        print n (1 + 2 / 3 - 1) 2 3
         _range_by n (step * (n - 1) + first) step []
 
     elif step == 0 and first == last ->

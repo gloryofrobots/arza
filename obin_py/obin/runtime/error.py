@@ -61,7 +61,7 @@ def affirm_iterable(it, condition):
 
 def affirm_type(obj, condition):
     if not condition(obj):
-        return throw_2(Errors.TYPE_ERROR, space.safe_w(obj), space.newstring(u"Wrong object type"))
+        return throw_2(Errors.TYPE_ERROR, space.safe_w(obj), space.newstring(u"Wrong object type %s" % unicode(condition)))
     return True
 
 

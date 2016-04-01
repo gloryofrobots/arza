@@ -317,6 +317,9 @@ def isarguments(w):
     from obin.types.arguments import W_Arguments
     return isinstance(w, W_Arguments)
 
+def is_tuple_or_arguments(w):
+    return istuple(w) or isarguments(w)
+
 
 #########################################################
 
