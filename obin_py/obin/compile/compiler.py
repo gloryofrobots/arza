@@ -1003,32 +1003,16 @@ def _compile_LOOKUP(compiler, code, node):
     _emit_call(compiler, code, node, 2, lang_names.AT)
 
 
-def _compile_LOOKUP_SYMBOL(compiler, code, node):
-    obj = node_first(node)
-    _emit_symbol_literal(compiler, code, node_second(node))
-    _compile(compiler, code, obj)
-    _emit_call(compiler, code, node, 2, lang_names.AT)
-
-
-def _compile_args_list(compiler, code, args):
-    args_count = 0
-
-    for arg in args:
-        _compile(compiler, code, arg)
-        args_count += 1
-
-    return args_count
-
-
 def _compile_CALL(compiler, code, node):
     func = node_first(node)
     args = node_second(node)
 
-    arg_count = _compile_args_list(compiler, code, args)
+    for arg in args:
+        _compile(compiler, code, arg)
 
     _compile(compiler, code, func)
 
-    code.emit_1(CALL, arg_count, info(node))
+    code.emit_1(CALL, len(args), info(node))
 
 
 ######################################
@@ -1161,8 +1145,6 @@ def _compile_node(compiler, code, node):
 
     elif NT_LOOKUP == ntype:
         _compile_LOOKUP(compiler, code, node)
-    elif NT_LOOKUP_SYMBOL == ntype:
-        _compile_LOOKUP_SYMBOL(compiler, code, node)
     elif NT_IMPORTED_NAME == ntype:
         _compile_LOOKUP_MODULE(compiler, code, node)
 

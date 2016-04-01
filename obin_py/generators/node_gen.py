@@ -4,7 +4,7 @@ NODES = [
   # internals
   "NT_GOTO",
 
-  # code nodes 
+  # code nodes
   "NT_TRUE",
   "NT_FALSE",
   "NT_VOID",
@@ -60,9 +60,8 @@ NODES = [
   "NT_UNDEFINE",
 
   "NT_LOOKUP",
-  "NT_LOOKUP_SYMBOL",
   "NT_IMPORTED_NAME",
-  
+
   "NT_HEAD",
   "NT_TAIL",
   "NT_DROP",
@@ -73,7 +72,7 @@ NODES = [
   "NT_OF",
   "NT_AS",
   "NT_VAR",
-  "NT_LAZY", 
+  "NT_LAZY",
 
   "NT_AND",
   "NT_OR",
@@ -90,27 +89,27 @@ NODES = [
 print "# ************************ OBIN NODES*****************************"
 for number, token in enumerate(NODES):
     print "%s = %d" % (token, number)
-    
-  
+
+
 print "# ************************ OBIN NODES REPR *****************************"
 S = "__NT_REPR__ = ["
 for name in NODES:
     S += "%s, " % str(("\"%s\"" % name))
 S += "]"
 print S
-print 
-print 
+print
+print
 print "def node_type_to_s(ntype):"
 print "    return __NT_REPR__[ntype]"
 
 # print "# ************************ OBIN NODES MAPPING *****************************"
 # for name in NODES:
 #     print "%s: %s," % (name.replace("NT_", "TT_"), name)
-    
+
 
 # print "# ************************ COMPILE SWITCH*****************************"
 # for number, node in enumerate(NODES):
 #     n_str = node.replace("NT_", "")
 #     print "    elif %s == node_type:" % node
 #     print "        _compile_%s(process, compiler, code, node)" % n_str
-                  
+

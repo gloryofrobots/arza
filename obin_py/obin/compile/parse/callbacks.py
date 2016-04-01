@@ -7,7 +7,6 @@ from obin.misc import strutil
 from obin.builtins import lang_names
 
 NODE_TYPE_MAPPING = {
-    TT_DOT: NT_LOOKUP_SYMBOL,
     TT_COLON: NT_IMPORTED_NAME,
     TT_TRUE: NT_TRUE,
     TT_FALSE: NT_FALSE,
@@ -121,10 +120,8 @@ def infix_dot(parser, op, node, left):
         advance(parser)
         return node_2(NT_LOOKUP, __ntok(node), left, idx)
 
-    check_token_type(parser, TT_NAME)
-    symbol = _init_default_current_0(parser)
-    advance(parser)
-    return node_2(NT_LOOKUP_SYMBOL, __ntok(node), left, symbol)
+    symbol = grab_name(parser)
+    return node_2(NT_LOOKUP, __ntok(node), left, nodes.create_symbol_node(symbol, symbol))
 
 
 def infix_lcurly(parser, op, node, left):
