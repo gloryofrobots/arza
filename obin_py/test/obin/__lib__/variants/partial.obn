@@ -1,0 +1,58 @@
+
+[1,2,3]
+    |> filter lam x -> x `kindof` Int
+    |> map lam x -> x + 1
+    |> map (&* 1)
+    |> filter (&> 1)
+    |> map (divide 1)
+
+
+[1,2,3]
+    |> &filter lam x -> x `kindof` Int
+    |> &map lam x -> x + 1
+    |> &map (&* 1)
+    |> &filter (&> 1)
+    |> &map (&divide 1)
+
+[1,2,3]
+    |> @filter lam x -> x `kindof` Int
+    |> @map lam x -> x + 1
+    |> @map (@* 1)
+    |> @filter (@> 1)
+    |> @map (@divide 1)
+
+[1,2,3]
+    |> $filter lam x -> x `kindof` Int
+    |> $map lam x -> x + 1
+    |> $map ($* 1)
+    |> $filter ($> 1)
+    |> $map ($divide 1)
+
+
+fun compose f g x ->
+    g (f x)
+
+fun >> f g ->
+    &compose f g
+
+fun add x y -> x + y
+fun times x y -> x * y
+fun add_times x -> compose (&add 1) (&times 2) x
+
+add_times = &add 1 >> &times 2
+
+add_times = add 1 >> times 2
+
+//test
+add1Times2 3
+
+This explicit style is quite cluttered. We can do a few things to make it easier to use and understand.
+
+First, we can leave off the x parameter so that the composition operator returns a partial application.
+
+let add1Times2 = (>>) add1 times2
+
+And now we have a binary operation, so we can put the operator in the middle.
+
+let add1Times2 = add1 >> times2
+

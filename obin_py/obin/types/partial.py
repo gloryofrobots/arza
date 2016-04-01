@@ -1,0 +1,46 @@
+from obin.types.root import W_Callable
+from obin.runtime import error
+from obin.types import api, space, tuples
+
+
+class W_Partial(W_Callable):
+    # _immutable_fields_ = ['scope',  'is_variadic', 'arity', '_name_']
+
+    def __init__(self, func, args):
+        self.func = func
+        self.args = args
+        self.arity = func.arity
+
+    def _to_string_(self):
+        # params = ",".join([api.to_native_string(p) for p in self.bytecode.scope.arguments])
+        # return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
+        return "%s with %s" % (api.to_s(self.func), api.to_s(self.args))
+
+    def _type_(self, process):
+        return process.std.types.Function
+
+    def _call_(self, process, args):
+        new_args = tuples.concat(self.args, args)
+        length = api.length_i(new_args)
+        if length == self.arity:
+            api.call(process, self.func, new_args)
+        elif length < self.arity:
+            return W_Partial(self.func, new_args)
+        else:
+            error.throw_3(error.Errors.INVOKE_ERROR, space.newstring(u"Too mach arguments for partial"),
+                          space.newint(length), self.func)
+
+    def _equal_(self, other):
+        from obin.types import space
+        if not space.ispartial(other):
+            return False
+
+        return api.equal_b(self.func, other.func)
+
+def newpartial(func):
+    if space.ispartial(func):
+        return func
+    error.affirm_type(func, space.isfunction)
+    return W_Partial(func, space.newtuple([]))
+
+########################################################

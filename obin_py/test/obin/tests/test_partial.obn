@@ -1,0 +1,81 @@
+import list
+import affirm
+
+infixl |> |> 11
+fun |> x f -> f x
+
+infixl <| <| 10
+fun <| f x -> f x
+
+
+infixl >> >> 12
+fun >> f g ->
+    fun compose_right f g x -> g ( f(x) )
+
+    &compose_right f g
+---------------
+
+infixl << << 12
+fun << f g ->
+    fun compose f g x -> f (g x)
+
+    &compose f g
+---------------
+
+
+fun add x y -> x + y
+fun mul x y -> x * y
+fun not_i x
+    | 0 -> 0
+    | _ -> 1
+
+fun one () -> 1
+
+fun twice f -> &f >> &f
+
+
+fun flip f ->
+    lam x y -> f y x
+
+fun even x -> mod x 2 == 0
+fun odd x -> not (even x)
+
+
+fun test () ->
+    filter = list:filter
+    map = list:map
+    l = list:range 0 10
+    print l
+    sub = flip (&-)
+    square = lam x -> x * x
+    triple = &* 3
+    l1 =
+        l |> &filter even
+          |> &map (&add 1)
+          |> &map (&sub 2)
+          |> &map (triple >> square)
+
+
+    print l1
+//    gt = flip (&>)
+//    gt_3 = &gt 3
+//
+//    print <| gt_3 2
+//    print <| gt_3 3
+//    print <| gt_3 4
+//
+//    print <| 8 `mod` 2
+//    print <| 8 `mod` 3
+//
+//    add1_mul2 = &add 1 >> &mul 2
+//    print (add1_mul2 4)
+//    print <| add1_mul2 4
+//
+//    mul2_add1 = &add 1 << &mul 2
+//    print (mul2_add1 4)
+//
+//
+//    add_1_twice = twice (&add 1)
+//    print (add_1_twice 9)
+
+
