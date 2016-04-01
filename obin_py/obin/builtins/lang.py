@@ -207,7 +207,7 @@ def concat_tuples(process, routine):
     from obin.types.tuples import concat
     v1 = routine.get_arg(0)
     v2 = routine.get_arg(1)
-    return concat(process, v1, v2)
+    return concat(v1, v2)
 
 
 @complete_native_routine

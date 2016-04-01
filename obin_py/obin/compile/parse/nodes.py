@@ -271,6 +271,10 @@ def create_true_node(basenode):
     return node_0(nt.NT_TRUE, create_token_from_node(tt.TT_TRUE, "true", basenode))
 
 
+def create_void_node(basenode):
+    return node_0(nt.NT_VOID, create_token_from_node(tt.TT_TRUE, "void", basenode))
+
+
 def create_undefine_node(basenode, varname):
     return node_1(nt.NT_UNDEFINE, create_token_from_node(tt.TT_UNKNOWN, "undefine", basenode), varname)
 

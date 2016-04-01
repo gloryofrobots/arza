@@ -1,14 +1,15 @@
 __author__ = 'gloryofrobots'
 from obin.compile.code.opcode import *
 from obin.compile.parse import parser
+from obin.compile import simplify
 from obin.compile.parse import nodes
 from obin.compile.parse.nodes import (node_type, node_arity,
                                       node_first, node_second, node_third, node_fourth, node_children, is_empty_node)
 from obin.compile.parse.node_type import *
-from obin.types import space, api, plist, environment, symbol as symbols, string as strings
 from obin.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
 from obin.misc import platform, strutil
 from obin.runtime import error
+from obin.types import space, api, plist, environment, symbol as symbols, string as strings
 from obin.builtins import lang_names
 
 
@@ -338,6 +339,10 @@ def _compile_TRUE(compiler, code, node):
 
 def _compile_FALSE(compiler, code, node):
     code.emit_0(FALSE, info(node))
+
+
+def _compile_VOID(compiler, code, node):
+    code.emit_0(VOID, info(node))
 
 
 def _compile_STR(compiler, code, node):
@@ -965,26 +970,8 @@ def _compile_UNION(compiler, code, node):
 
 
 def _compile_TYPE(compiler, code, node):
-    # compiles to call to type function instead of some opcode
-    name_node = node_first(node)
-
-    # first arg
-    _emit_symbol_literal(compiler, code, name_node)
-
-    # second arg
-    fields = node_second(node)
-    # third arg
-    constructor = node_third(node)
-
-    if is_empty_node(fields):
-        _emit_empty_list(code)
-        _emit_void(code)
-    else:
-        _compile(compiler, code, fields)
-        _compile_case_function(compiler, code, node, nodes.empty_node(), constructor)
-
-    _emit_call(compiler, code, node, 3, lang_names.TYPE)
-    _emit_store_name(compiler, code, name_node)
+    simplified = simplify.simplify_type(compiler, code, node)
+    _compile(compiler, code, simplified)
 
 
 def _compile_TRAIT(compiler, code, node):
@@ -1195,6 +1182,8 @@ def _compile_node(compiler, code, node):
 
     if NT_TRUE == ntype:
         _compile_TRUE(compiler, code, node)
+    elif NT_VOID == ntype:
+        _compile_VOID(compiler, code, node)
     elif NT_FALSE == ntype:
         _compile_FALSE(compiler, code, node)
     elif NT_FLOAT == ntype:
