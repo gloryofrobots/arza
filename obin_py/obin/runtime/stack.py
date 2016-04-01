@@ -8,10 +8,11 @@ class Stack:
     def __init__(self, size):
         self.data = None
         self.__pointer = 0
+        self.__pointer = jit.promote(self.__pointer)
         self.data = [space.newvoid()] * size
 
     def pointer(self):
-        return jit.promote(self.__pointer)
+        return self.__pointer
 
     def pop(self):
         e = self.top()
@@ -21,8 +22,14 @@ class Stack:
         self.set_pointer(i)
         return e
 
+    def get(self, index):
+        return self.data[index]
+
+    def top_index(self):
+        return self.pointer() - 1
+
     def top(self):
-        i = self.pointer() - 1
+        i = self.top_index()
         if i < 0:
             raise RuntimeError(i)
         return self.data[i]
@@ -54,6 +61,7 @@ class Stack:
 
     def set_pointer(self, p):
         self.__pointer = p
+        self.__pointer = jit.promote(self.__pointer)
 
     @jit.unroll_safe
     def pop_n_tuple(self, n):
@@ -65,6 +73,18 @@ class Stack:
         while i > 0:
             i -= 1
             e = self.pop()
+            result = [e] + result
+
+        return space.newtuple(result)
+
+    @jit.unroll_safe
+    def get_n_tuple(self, n):
+        if n < 1:
+            return space.newunit()
+
+        result = []
+        for i in range(n):
+            e = self.get(self.top_index() - i)
             result = [e] + result
 
         return space.newtuple(result)

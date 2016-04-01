@@ -159,7 +159,6 @@ class Process(object):
         return self.state == Process.State.IDLE
 
     def call_object(self, obj, args):
-        assert space.istuple(args)
         self.fiber.call_object(obj, args)
 
     def run(self, func, args):

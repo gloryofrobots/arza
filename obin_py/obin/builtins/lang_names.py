@@ -30,3 +30,5 @@ CONS = PREFIX + "cons"
 
 EQ = PREFIX + "=="
 GE = PREFIX + ">="
+
+PARTIAL = PREFIX + "partial"

@@ -182,7 +182,10 @@ def newnativefunc(name, function, arity):
 def isfunction(value):
     from obin.types.function import W_Function
     from obin.types.native_function import W_NativeFunction
-    return isinstance(value, W_Function) or isinstance(value, W_NativeFunction)
+    from obin.types.partial import W_Partial
+    from obin.types.method import W_Method
+    return isinstance(value, W_Function) or isinstance(value, W_NativeFunction) \
+           or isinstance(value, W_Partial) or isinstance(value, W_Method)
 
 
 def isnativefunction(value):
@@ -191,6 +194,19 @@ def isnativefunction(value):
 
 
 ########################################################
+
+def newpartial(func):
+    from obin.types.partial import newpartial
+    return newpartial(func)
+
+
+def ispartial(w):
+    from obin.types.partial import W_Partial
+    return isinstance(w, W_Partial)
+
+
+########################################################
+
 
 def newmap():
     from obin.types.map import create_empty_map
@@ -276,6 +292,11 @@ def newunit():
     return W_Unit()
 
 
+def isunit(w):
+    from obin.types.tuples import W_Unit
+    return isinstance(w, W_Unit)
+
+
 def istuple(w):
     from obin.types.tuples import W_Tuple, W_Unit
     return isinstance(w, W_Tuple) or isinstance(w, W_Unit)
@@ -284,6 +305,17 @@ def istuple(w):
 def isrealtuple(w):
     from obin.types.tuples import W_Tuple
     return isinstance(w, W_Tuple)
+
+
+#########################################################
+def newarguments(stack, index, length):
+    from obin.types.arguments import W_Arguments
+    return W_Arguments(stack, index, length)
+
+
+def isarguments(w):
+    from obin.types.arguments import W_Arguments
+    return isinstance(w, W_Arguments)
 
 
 #########################################################
@@ -403,9 +435,11 @@ def isdatatype(w):
     from obin.types.datatype import W_DataType
     return isinstance(w, W_DataType)
 
+
 def isunion(w):
     from obin.types.datatype import W_Union
     return isinstance(w, W_Union)
+
 
 def isrecord(w):
     from obin.types.datatype import W_Record

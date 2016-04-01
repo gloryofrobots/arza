@@ -176,9 +176,14 @@ def type_check(t):
     error.affirm_type(t, space.istuple)
 
 
-def concat(process, tupl1, tupl2):
+def concat(tupl1, tupl2):
     type_check(tupl1)
     type_check(tupl2)
+    if space.isunit(tupl1):
+        return tupl2
+    if space.isunit(tupl2):
+        return tupl1
+
     return W_Tuple(tupl1.elements + tupl2.elements)
 
 

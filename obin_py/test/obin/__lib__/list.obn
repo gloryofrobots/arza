@@ -103,6 +103,15 @@ fun drop_while predicate list
     | p xs@[x, ...xs1] -> (drop_while p xs1) in_case p x else xs
 --------------------------------------------------
 
+fun filter predicate list
+    | p [] -> []
+    | p x::xs ->
+        if p x ->
+            x :: filter p xs
+        else ->
+            filter p xs
+--------------------------------------------------
+
 fun span predicate list
     | p [] -> ([], [])
     | p xs@[x, ...xs1] ->

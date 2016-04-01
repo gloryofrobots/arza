@@ -230,6 +230,10 @@ def create_fun_node(basenode, name, funcs):
     return node_2(nt.NT_FUN, create_token_from_node(tt.TT_STR, "fun", basenode), name, funcs)
 
 
+def create_partial_node(basenode, name):
+    return create_call_node_s(basenode, lang_names.PARTIAL, [name])
+
+
 def create_temporary_node(basenode, idx):
     return node_1(nt.NT_TEMPORARY, create_token_from_node(tt.TT_UNKNOWN, "", basenode), space.newint(idx))
 

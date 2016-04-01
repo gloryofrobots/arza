@@ -10,10 +10,12 @@ from obin.compile import compiler
 # TODO MAKE IT obin:is_seq ...
 from obin.builtins import lang_names
 
+
 def put_lang_func(process, module, name, func, arity):
     name_without_prefix = name.replace(lang_names.PREFIX, "")
     api.put_native_function(process, module, unicode(name), func, arity)
     api.put_native_function(process, module, unicode(name_without_prefix), func, arity)
+
 
 def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
@@ -38,10 +40,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.TRAIT, __trait, 3)
     put_lang_func(process, module, lang_names.IMPLEMENT, __implement, 3)
     put_lang_func(process, module, lang_names.DERIVE, __derive, 2)
-
-
-
-
+    put_lang_func(process, module, lang_names.PARTIAL, __partial, 1)
 
     ## debugging
     # if not we_are_translated():
@@ -118,6 +117,7 @@ def _type(process, routine):
     left = routine.get_arg(0)
     return api.get_type(process, left)
 
+
 @complete_native_routine
 def __not(process, routine):
     left = routine.get_arg(0)
@@ -155,6 +155,7 @@ def __union(process, routine):
     union = space.newunion(name, types)
     return union
 
+
 @complete_native_routine
 def __method(process, routine):
     _trait = routine.get_arg(0)
@@ -185,6 +186,7 @@ def __derive(process, routine):
 
     return space.newbool(True)
 
+
 @complete_native_routine
 def __implement(process, routine):
     _trait = routine.get_arg(0)
@@ -192,6 +194,12 @@ def __implement(process, routine):
     _impls = routine.get_arg(2)
     _type = datatype.implement_trait(_type, _trait, _impls)
     return _type
+
+
+@complete_native_routine
+def __partial(process, routine):
+    func = routine.get_arg(0)
+    return space.newpartial(func)
 
 
 @complete_native_routine
@@ -211,7 +219,7 @@ def time(process, routine):
 @complete_native_routine
 def is_indexed(process, routine):
     v1 = routine.get_arg(0)
-    if not space.isvector(v1) and not space.istuple(v1):
+    if not space.istuple(v1) and not space.isarguments(v1):
         return space.newbool(False)
     return space.newbool(True)
 

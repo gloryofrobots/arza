@@ -243,7 +243,7 @@ def prefix_amp(parser, op, node):
         name = nodes.create_name_node_s(name, lang_names.CONS)
 
     advance(parser)
-    return name
+    return nodes.create_partial_node(name, name)
 
 
 # def prefix_backtick(parser, op, node):

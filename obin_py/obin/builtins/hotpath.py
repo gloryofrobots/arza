@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
 from obin.types.number import *
 from obin.runtime import error
-from obin.types import api, space, plist, string, tuples
+from obin.types import api, space, plist, string, tuples, arguments
 from obin.types.space import isnumber, isint, isrecord
 
 
@@ -249,12 +249,13 @@ def hp_take(process, args):
     if isrecord(obj):
         return None
 
-
     error.affirm_type(count, space.isint)
     count_i = api.to_i(count)
 
     if space.islist(obj):
         return plist.take(obj, count_i)
+    elif space.isarguments(obj):
+        return arguments.drop(obj, count_i)
     elif space.istuple(obj):
         return tuples.take(obj, count_i)
     elif space.isstring(obj):
@@ -273,10 +274,12 @@ def hp_drop(process, args):
     error.affirm_type(count, space.isint)
     count_i = api.to_i(count)
 
-    if space.islist(obj):
-        return plist.drop(obj, count_i)
-    elif space.istuple(obj):
+    if space.istuple(obj):
         return tuples.drop(obj, count_i)
+    elif space.isarguments(obj):
+        return arguments.drop(obj, count_i)
+    elif space.islist(obj):
+        return plist.drop(obj, count_i)
     elif space.isstring(obj):
         return string.drop(obj, count_i)
     else:

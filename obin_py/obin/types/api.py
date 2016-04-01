@@ -283,12 +283,12 @@ Callable
 
 
 def call(process, obj, args):
-    assert space.istuple(args)
+    assert space.istuple(args) or space.isarguments(args)
     return obj._call_(process, args)
 
 
 def to_routine(obj, stack, args):
-    assert space.istuple(args)
+    assert space.istuple(args) or space.isarguments(args)
     return obj._to_routine_(stack, args)
 
 

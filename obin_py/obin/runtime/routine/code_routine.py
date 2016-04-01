@@ -179,7 +179,17 @@ class CodeRoutine(BaseRoutine):
             elif CALL == tag:
                 func = stack.pop()
                 args = stack.pop_n_tuple(arg1)
-                api.call(process, func, args)
+                # if arg1 < 0:
+                #     args = space.newunit()
+                # else:
+                    # args = space.newarguments(stack, stack.pointer(), arg1)
+                #   print "ARGS-A", args.to_l()
+                #   args = stack.pop_n_tuple(arg1)
+                #
+                # print "ARGS-T", args.to_l()
+                res = api.call(process, func, args)
+                if res is not None:
+                    stack.push(res)
             # *************************************
             elif FSELF == tag:
                 stack.push(self._func_)
