@@ -944,29 +944,13 @@ def _declare_local_name(compiler, code, node):
 
 
 def _compile_DERIVE(compiler, code, node):
-    traits = node_first(node)
-    types = node_second(node)
-    _compile(compiler, code, traits)
-    _compile(compiler, code, types)
-
-    _emit_call(compiler, code, node, 2, lang_names.DERIVE)
+    simplified = simplify.simplify_derive(compiler, code, node)
+    _compile(compiler, code, simplified)
 
 
 def _compile_UNION(compiler, code, node):
-    union_name = node_first(node)
-    # first arg
-    _emit_symbol_literal(compiler, code, union_name)
-
-    types = node_second(node)
-
-    for _type in types:
-        _compile_TYPE(compiler, code, _type)
-
-    # second arg
-    code.emit_1(LIST, len(types), info(node))
-
-    _emit_call(compiler, code, node, 2, lang_names.UNION)
-    _emit_store_name(compiler, code, union_name)
+    simplified = simplify.simplify_union(compiler, code, node)
+    _compile(compiler, code, simplified)
 
 
 def _compile_TYPE(compiler, code, node):
@@ -1021,28 +1005,8 @@ def _compile_TRAIT(compiler, code, node):
 
 
 def _compile_IMPLEMENT(compiler, code, node):
-    traitname = node_first(node)
-    typename = node_second(node)
-    methods = node_third(node)
-
-    _compile_node_name_lookup(compiler, code, traitname)
-    _compile_node_name_lookup(compiler, code, typename)
-
-    len_methods = len(methods)
-    for i, method in enumerate(methods):
-        method_name = method[0]
-        method_impl = method[1]
-        _compile(compiler, code, method_name)
-        # _compile_node_name_lookup(compiler, code, method_name)
-        _compile_case_function(compiler, code, node,
-                               nodes.empty_node(),
-                               method_impl)
-        code.emit_1(TUPLE, 2, info(method_name))
-
-    code.emit_1(LIST, len_methods, info(traitname))
-
-    # code.emit_0(IMPLEMENT, info(traitname))
-    _emit_call(compiler, code, node, 3, lang_names.IMPLEMENT)
+    simplified = simplify.simplify_implement(compiler, code, node)
+    _compile(compiler, code, simplified)
 
 
 def _emit_TAIL(compiler, code, node):
