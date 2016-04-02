@@ -86,7 +86,19 @@ def led_infixr_assign(parser, op, node, left):
     return node_2(__ntype(node), __ntok(node), left, exp)
 
 
-def infix_backtick(parser, op, node, left):
+def prefix_backtick_operator(parser, op, node):
+    opname_s = strutil.cat_both_ends(nodes.node_value_s(node))
+    if opname_s == "::":
+        return nodes.create_name_node_s(node, lang_names.CONS)
+
+    opname = space.newstring_s(opname_s)
+    op = parser_find_operator(parser, opname)
+    if op is None or space.isvoid(op):
+        return parse_error(parser, u"Invalid operator", node)
+    return nodes.create_name_node(node, op.infix_function)
+
+
+def infix_backtick_name(parser, op, node, left):
     funcname = strutil.cat_both_ends(nodes.node_value_s(node))
     if not funcname:
         return parse_error(parser, u"invalid variable name in backtick expression", node)
@@ -213,18 +225,21 @@ def prefix_sharp(parser, op, node):
 
 
 def prefix_amp(parser, op, node):
-    check_token_types(parser, [TT_NAME, TT_OPERATOR, TT_DOUBLE_COLON])
-    name = _init_default_current_0(parser)
     if parser.token_type == TT_OPERATOR:
+        name = _init_default_current_0(parser)
         op = parser_find_operator(parser, nodes.node_value(name))
         if op is None or space.isvoid(op):
             return parse_error(parser, u"Invalid operator", name)
-        name = nodes.create_name_node(name, op.infix_function)
+        exp = nodes.create_name_node(name, op.infix_function)
+        advance(parser)
     elif parser.token_type == TT_DOUBLE_COLON:
-        name = nodes.create_name_node_s(name, lang_names.CONS)
+        name = _init_default_current_0(parser)
+        exp = nodes.create_name_node_s(name, lang_names.CONS)
+        advance(parser)
+    else:
+        exp = literal_expression(parser)
 
-    advance(parser)
-    return nodes.create_partial_node(name, name)
+    return nodes.create_partial_node(exp, exp)
 
 
 # def prefix_backtick(parser, op, node):

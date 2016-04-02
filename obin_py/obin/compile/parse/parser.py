@@ -249,10 +249,11 @@ def guard_parser_init(proc_data, parser):
     prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly, layout_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
+    prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
 
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
-    infix(parser, TT_BACKTICK, 50, infix_backtick)
+    infix(parser, TT_BACKTICK_NAME, 50, infix_backtick_name)
     infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     infix(parser, TT_DOT, 95, infix_dot)
     infix(parser, TT_COLON, 95, infix_name_pair)
@@ -362,6 +363,7 @@ def expression_parser_init(proc_data, parser):
 
     prefix(parser, TT_MATCH, prefix_match)
     prefix(parser, TT_TRY, prefix_try)
+    prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
 
     assignment(parser, TT_ASSIGN, 10)
 
@@ -372,8 +374,9 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_IN_CASE, 20, infix_in_case)
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
-    infix(parser, TT_BACKTICK, 50, infix_backtick)
+    infix(parser, TT_BACKTICK_NAME, 50, infix_backtick_name)
     infix(parser, TT_DOUBLE_COLON, 70, infix_double_colon)
+
     infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     infix(parser, TT_DOT, 95, infix_dot)
 
@@ -430,7 +433,7 @@ def newtokenstream(source):
     return IndentationTokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = False
+PARSE_DEBUG = True
 
 
 def parse(process, env, src):

@@ -1,6 +1,6 @@
 from obin.types.root import W_Callable, W_Root
 from obin.runtime.error import *
-from obin.types import api
+from obin.types import api, partial
 from obin.misc.platform import jit
 
 
@@ -40,6 +40,10 @@ class W_Function(W_Callable):
         return routine
 
     def _call_(self, process, args):
+        length = api.length_i(args)
+        if length < self.arity:
+            return partial.newfunction_partial(self, args)
+
         process.call_object(self, args)
 
     def _equal_(self, other):

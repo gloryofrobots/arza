@@ -141,7 +141,7 @@ class W_DataType(W_Hashable):
     def _call_(self, process, args):
         if not self.has_constructor():
             error.throw_2(error.Errors.CONSTRUCTOR_ERROR,
-                          space.newstring(u"Type is not constructor"), self)
+                          space.newstring(u"There are no constructor for type"), self)
 
         process.call_object(self, args)
 

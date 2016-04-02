@@ -1,5 +1,5 @@
-import list
 import affirm
+import list
 
 infixl |> |> 11
 fun |> x f -> f x

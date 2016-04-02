@@ -10,6 +10,7 @@ class W_Partial(W_Callable):
         self.func = func
         self.args = args
         self.arity = func.arity
+        self.count = api.length_i(self.args)
 
     def _to_string_(self):
         # params = ",".join([api.to_native_string(p) for p in self.bytecode.scope.arguments])
@@ -23,7 +24,8 @@ class W_Partial(W_Callable):
         new_args = tuples.concat(self.args, args)
         length = api.length_i(new_args)
         if length == self.arity:
-            api.call(process, self.func, new_args)
+            # print "CALL", self.func, new_args
+            return api.call(process, self.func, new_args)
         elif length < self.arity:
             return W_Partial(self.func, new_args)
         else:
@@ -37,10 +39,16 @@ class W_Partial(W_Callable):
 
         return api.equal_b(self.func, other.func)
 
+
 def newpartial(func):
     if space.ispartial(func):
         return func
     error.affirm_type(func, space.isfunction)
     return W_Partial(func, space.newtuple([]))
 
-########################################################
+
+def newfunction_partial(func, args):
+    error.affirm_type(func, space.isfunction)
+    error.affirm_type(args, space.istuple)
+    error.affirm(api.length_i(args) < func.arity, u"Too many arguments for partial function")
+    return W_Partial(func, args)

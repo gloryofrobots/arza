@@ -1,19 +1,19 @@
 import affirm
 //import tests:test_operators
 
-import tests:types:test_types
-import tests:test_co
-import tests:test_destruct
-import tests:test_exception
-import tests:test_modify
-import tests:test_operator_override
-import tests:test_module
-import tests:test_match
-import tests:test_base
-import tests:test_bool
-import tests:test_static_refs
-import tests:test_fun
-import tests:datastructs:test_datastructs
+//import tests:types:test_types
+//import tests:test_co
+//import tests:test_destruct
+//import tests:test_exception
+//import tests:test_modify
+//import tests:test_operator_override
+//import tests:test_module
+//import tests:test_match
+//import tests:test_base
+//import tests:test_bool
+//import tests:test_static_refs
+//import tests:test_fun
+//import tests:datastructs:test_datastructs
 
 
 fun log ...msgs ->
@@ -22,38 +22,135 @@ fun log ...msgs ->
     else ->
         ()
 //
-fun test() ->
-    log "RUN TESTS"
+//fun test() ->
+//    log "RUN TESTS"
 
-    log "TEST TYPES"
-    test_types:test()
-    log "TEST BOOL"
-    test_bool:test()
-    log "TEST DATASTRUCTS"
-    test_datastructs:test()
-    log "TEST MATCH"
-    test_match:test()
-    log "TEST BASE"
-    test_base:test()
-    log "TEST DESTRUCT"
-    test_destruct:test()
-    log "TEST STATIC REFS"
-    test_static_refs:test()
-    log "TEST CO"
-    test_co:test()
-    log "TEST EXCEPTION"
-    test_exception:test()
-    log "TEST MODIFY"
-    test_modify:test()
-    log "TEST OP OVERRIDE"
-    test_operator_override:test()
-    log "TEST MODULE"
-    test_module:test()
-    log "TEST FUN"
-    test_fun:test()
+//    log "TEST TYPES"
+//    test_types:test()
+//    log "TEST BOOL"
+//    test_bool:test()
+//    log "TEST DATASTRUCTS"
+//    test_datastructs:test()
+//    log "TEST MATCH"
+//    test_match:test()
+//    log "TEST BASE"
+//    test_base:test()
+//    log "TEST DESTRUCT"
+//    test_destruct:test()
+//    log "TEST STATIC REFS"
+//    test_static_refs:test()
+//    log "TEST CO"
+//    test_co:test()
+//    log "TEST EXCEPTION"
+//    test_exception:test()
+//    log "TEST MODIFY"
+//    test_modify:test()
+//    log "TEST OP OVERRIDE"
+//    test_operator_override:test()
+//    log "TEST MODULE"
+//    test_module:test()
+//    log "TEST FUN"
+//    test_fun:test()
 
 //    log "TEST OPERATORS"
 //    test_operators:test()
 fun main () ->
     test()
+
+import list
+
+infixl |> |> 10
+fun |> x f -> f x
+
+infixl <| <| 11
+fun <| f x -> f x
+
+
+infixl >> >> 12
+fun >> f g ->
+    fun compose_right f g x -> g ( f(x) )
+
+    &compose_right f g
+---------------
+
+infixl << << 12
+fun << f g ->
+    fun compose f g x -> f (g x)
+
+    &compose f g
+---------------
+
+
+fun add x y -> x + y
+fun mul x y -> x * y
+fun not_i x
+    | 0 -> 0
+    | _ -> 1
+
+fun one () -> 1
+
+fun twice f -> &f >> &f
+
+
+fun flip f ->
+    lam x y -> f y x
+
+fun even x -> mod x 2 == 0
+fun odd x -> not (even x)
+
+
+fun test () ->
+    add = &&&lam x y -> x + y
+    add1 = add 1
+    print <| add1 2
+
+    A = 2
+    div = (
+           & if A == 1 ->
+                   flip lam x y -> x - y end
+             else ->
+                   flip lam x y -> x / y end
+    )
+    div2 = div 2
+    print <| div2 8
+
+    l = list:range 0 10
+    print l
+    sub = (&-)
+    print (sub 1 2)
+    square = lam x -> x * x
+    triple = &* 3
+    l1 =
+        l |> list:filter even
+          |> list:map (add 1)
+          |> &list:map (&sub 2)
+          |> list:map (&triple >> square)
+
+    print l1
+
+//    range_from_1 = range 1
+//    print (range_from_1 10)
+
+
+
+//
+//    gt = flip (&>)
+//    gt_3 = gt 3
+//
+//    print <| gt_3 2
+//    print <| gt_3 3
+//    print <| gt_3 4
+//
+//    print <| 8 `mod` 2
+//    print <| 8 `mod` 3
+//
+//    add1_mul2 = add 1 >> mul 2
+//    print (add1_mul2 4)
+//    print <| add1_mul2 4
+//
+//    mul2_add1 = add 1 << mul 2
+//    print (mul2_add1 4)
+//
+//    add_1_twice = twice (add 1)
+//    print (add_1_twice 9)
 

@@ -1,6 +1,6 @@
 from obin.types.root import W_Callable
 from obin.runtime import error
-from obin.types import api, space
+from obin.types import api, space, partial
 from obin.misc.platform import jit
 
 
@@ -31,10 +31,10 @@ class W_NativeFunction(W_Callable):
         return routine
 
     def _call_(self, process, args):
-        if self.arity != -1 and api.length_i(args) != self.arity:
-            return error.throw_3(error.Errors.INVOKE_ERROR,
-                         space.newstring(u"Invalid native call wrong count of arguments"),
-                         args, self)
+        if self.arity != -1:
+            length = api.length_i(args)
+            if length < self.arity:
+                return partial.newfunction_partial(self, args)
 
         process.call_object(self, args)
 

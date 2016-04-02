@@ -152,7 +152,7 @@ fun contains l x ->
 //BUILDERS/////////////////////////////////////////////////////////////
 
 fun concat l1 l2 ->
-    foldr (&::) l2 l1 end
+    foldr `::` l2 l1 end
 
 fun range (first of Int) (last of Int) ->
     step = -1 in_case last < 0 else 1

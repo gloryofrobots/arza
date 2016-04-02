@@ -1,6 +1,6 @@
 from obin.types.root import W_Hashable
 from obin.runtime import error
-from obin.types import api, space
+from obin.types import api, space, partial
 from obin.misc import platform
 from obin.builtins.hotpath import HotPath
 
@@ -35,20 +35,22 @@ class W_Method(W_Hashable):
 
     def _call_(self, process, args):
         arity = api.length_i(args)
-        if self.arity != arity:
+        if arity < self.arity:
+            return partial.newfunction_partial(self, args)
+
+        elif arity > self.arity:
             return error.throw_1(error.Errors.INVALID_ARG_COUNT_ERROR, args)
 
         if self.hot_path is not None:
             res = self.hot_path.apply(process, args)
             if res is not None:
-                process.fiber.push_into_stack(res)
-                return
+                return res
 
         method = lookup_implementation(process, self, args)
         if space.isvoid(method):
             return error.throw_2(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR, self, args)
 
-        # print "GEN CALL", str(method)
+        # print "METHOD CALL", method, args
         process.call_object(method, args)
 
     def _type_(self, process):

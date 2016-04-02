@@ -55,7 +55,9 @@ hex_fractional_constant = '(((' + hex_digits + r""")?\.""" + hex_digits + ')|(' 
 hex_floating_constant = '(' + hex_prefix + '(' + hex_digits + '|' + hex_fractional_constant + ')' + binary_exponent_part + '[FfLl]?)'
 
 char_const = "'[^']+'"
-backtick_const = "`[^`]+`"
+# backtick_const = "`[^`]+`"
+backtick_name_const = "`%s`" % name_const
+backtick_op_const = "`%s`" % operator_const
 string_literal = '(""".*?""")|(".*?")|(\'.*?\')'
 
 RULES = [
@@ -126,7 +128,8 @@ RULES = [
     (token(decimal_constant), TT_INT),
     (token(string_literal), TT_STR),
     (token(char_const), TT_CHAR),
-    (token(backtick_const), TT_BACKTICK),
+    (token(backtick_name_const), TT_BACKTICK_NAME),
+    (token(backtick_op_const), TT_BACKTICK_OPERATOR),
     # (typename, TT_TYPENAME),
     (token(name_const), TT_NAME),
 
