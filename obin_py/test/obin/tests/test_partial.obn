@@ -1,81 +1,59 @@
 import affirm
 import list
 
-infixl |> |> 11
-fun |> x f -> f x
-
-infixl <| <| 10
-fun <| f x -> f x
-
-
-infixl >> >> 12
-fun >> f g ->
-    fun compose_right f g x -> g ( f(x) )
-
-    &compose_right f g
----------------
-
-infixl << << 12
-fun << f g ->
-    fun compose f g x -> f (g x)
-
-    &compose f g
----------------
-
-
 fun add x y -> x + y
 fun mul x y -> x * y
-fun not_i x
-    | 0 -> 0
-    | _ -> 1
 
 fun one () -> 1
 
-fun twice f -> &f >> &f
+
+fun test_partial() ->
+    affirm:is_equal ((`-` 1) 2) (-1)
+    affirm:is_equal ((flip `-` 1)  2) 1
+    add1 = add 1
+    affirm:is_equal (add1 2) 3
+    affirm:is_equal ((add 1) 2) 3
+
+fun test_composition() ->
+    add1_mul2 = add 1 >> mul 2
+
+    affirm:is_equal (add1_mul2 4) 10
+
+    mul2_add1 = add 1 << mul 2
+    affirm:is_equal (mul2_add1 4) 9
+
+    add_1_twice = twice (add 1)
+    affirm:is_equal (add_1_twice 9) 11
+
+fun test_pipe() ->
+    l = list:range 0 10
+
+    affirm:is_equal (
+        l |> list:filter even
+     ) [0, 2, 4, 6, 8]
+
+    affirm:is_equal (
+        l |> list:filter even
+          |> list:map (`+` 1)
+     ) [1, 3, 5, 7, 9]
+
+    affirm:is_equal (
+        l |> list:filter even
+          |> list:map (`+` 1)
+          |> list:map (flip `-` 2)
+     ) [-1, 1, 3, 5, 7]
 
 
-fun flip f ->
-    lam x y -> f y x
-
-fun even x -> mod x 2 == 0
-fun odd x -> not (even x)
-
+    square = lam x -> x * x
+    triple = `*` 3
+    affirm:is_equal (
+        l |> list:filter even
+          |> list:map (`+` 1)
+          |> list:map (flip `-` 2)
+          |> list:map (triple >> square)
+     )  [9, 9, 81, 225, 441]
 
 fun test () ->
-    filter = list:filter
-    map = list:map
-    l = list:range 0 10
-    print l
-    sub = flip (&-)
-    square = lam x -> x * x
-    triple = &* 3
-    l1 =
-        l |> &filter even
-          |> &map (&add 1)
-          |> &map (&sub 2)
-          |> &map (triple >> square)
-
-
-    print l1
-//    gt = flip (&>)
-//    gt_3 = &gt 3
-//
-//    print <| gt_3 2
-//    print <| gt_3 3
-//    print <| gt_3 4
-//
-//    print <| 8 `mod` 2
-//    print <| 8 `mod` 3
-//
-//    add1_mul2 = &add 1 >> &mul 2
-//    print (add1_mul2 4)
-//    print <| add1_mul2 4
-//
-//    mul2_add1 = &add 1 << &mul 2
-//    print (mul2_add1 4)
-//
-//
-//    add_1_twice = twice (&add 1)
-//    print (add_1_twice 9)
-
-
+    test_partial()
+    test_composition()
+    test_pipe()

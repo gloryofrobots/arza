@@ -2,6 +2,10 @@ import from obin:core:types (Bool, Char, Int, Float, Symbol, String, List, Vecto
                              Function, Generic, Method, NativeFunction, Fiber, Trait, Datatype, TVar, Env)
 
 prefix - negate
+infixl |> |> 10
+infixl <| <| 11
+infixl << << 12
+infixl >> >> 12
 infixl < < 50
 infixl > > 50
 infixl >= >= 50
@@ -13,7 +17,6 @@ infixl - - 60
 infixl * * 65
 infixl / / 65
 infixl ++ ++ 70
-
 
 type Ordering
     | LT | GT | EQ
@@ -136,3 +139,14 @@ fun lookup key default coll ->
         | e -> throw e
 
 fun not_elem x c -> not (elem x c)
+
+fun |> x f -> f x
+fun <| f x -> f x
+fun >> f g x -> g (f x)
+fun << f g x ->  f (g x)
+
+fun twice f -> f >> f
+fun flip f x y -> f y x
+
+fun even x -> mod x 2 == 0
+fun odd x -> not (even x)

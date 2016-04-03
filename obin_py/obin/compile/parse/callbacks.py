@@ -80,9 +80,7 @@ def led_infixr_function(parser, op, node, left):
 
 
 def led_infixr_assign(parser, op, node, left):
-    ntype = nodes.node_type(left)
     exp = expression(parser, 9)
-
     return node_2(__ntype(node), __ntok(node), left, exp)
 
 
@@ -95,6 +93,9 @@ def prefix_backtick_operator(parser, op, node):
     op = parser_find_operator(parser, opname)
     if op is None or space.isvoid(op):
         return parse_error(parser, u"Invalid operator", node)
+    if op.infix_function is None:
+        return parse_error(parser, u"Expected infix operator", node)
+
     return nodes.create_name_node(node, op.infix_function)
 
 
