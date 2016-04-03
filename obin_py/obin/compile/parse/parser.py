@@ -355,7 +355,6 @@ def expression_parser_init(proc_data, parser):
     prefix(parser, TT_LCURLY, prefix_lcurly, layout_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
-    prefix(parser, TT_AMP, prefix_amp)
     prefix(parser, TT_IF, prefix_if)
 
     prefix(parser, TT_FUN, prefix_fun)

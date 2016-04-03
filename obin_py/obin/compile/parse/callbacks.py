@@ -225,24 +225,6 @@ def prefix_sharp(parser, op, node):
     return _parse_symbol(parser, node)
 
 
-def prefix_amp(parser, op, node):
-    if parser.token_type == TT_OPERATOR:
-        name = _init_default_current_0(parser)
-        op = parser_find_operator(parser, nodes.node_value(name))
-        if op is None or space.isvoid(op):
-            return parse_error(parser, u"Invalid operator", name)
-        exp = nodes.create_name_node(name, op.infix_function)
-        advance(parser)
-    elif parser.token_type == TT_DOUBLE_COLON:
-        name = _init_default_current_0(parser)
-        exp = nodes.create_name_node_s(name, lang_names.CONS)
-        advance(parser)
-    else:
-        exp = literal_expression(parser)
-
-    return nodes.create_partial_node(exp, exp)
-
-
 # def prefix_backtick(parser, op, node):
 #     val = strutil.cat_both_ends(nodes.node_value_s(node))
 #     if not val:

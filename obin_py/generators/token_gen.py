@@ -63,7 +63,6 @@ TOKENS = [
   ("TT_PREFIX", "prefix"),
 
 
-  ("TT_AMP", "&"),
   ("TT_ELLIPSIS", "..."),
   ("TT_WILDCARD", "_"),
   ("TT_GOTO", "goto"),
