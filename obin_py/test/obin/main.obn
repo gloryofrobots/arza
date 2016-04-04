@@ -1,20 +1,20 @@
 import affirm
-import tests:test_operators
+//import tests:test_operators
 
-import tests:test_partial
-import tests:types:test_types
-import tests:test_co
-import tests:test_destruct
-import tests:test_exception
-import tests:test_modify
-import tests:test_operator_override
-import tests:test_module
-import tests:test_match
-import tests:test_base
-import tests:test_bool
-import tests:test_static_refs
-import tests:test_fun
-import tests:datastructs:test_datastructs
+//import tests:test_partial
+//import tests:types:test_types
+//import tests:test_co
+//import tests:test_destruct
+//import tests:test_exception
+//import tests:test_modify
+//import tests:test_operator_override
+//import tests:test_module
+//import tests:test_match
+//import tests:test_base
+//import tests:test_bool
+//import tests:test_static_refs
+//import tests:test_fun
+//import tests:datastructs:test_datastructs
 
 
 fun log ...msgs ->
@@ -26,40 +26,73 @@ fun log ...msgs ->
 fun test() ->
     log "RUN TESTS"
 
-    log "TEST TYPES"
-    test_types:test()
-    log "TEST PARTIAL"
-    test_partial:test()
-    log "TEST BOOL"
-    test_bool:test()
-    log "TEST DATASTRUCTS"
-    test_datastructs:test()
-    log "TEST MATCH"
-    test_match:test()
-    log "TEST BASE"
-    test_base:test()
-    log "TEST DESTRUCT"
-    test_destruct:test()
-    log "TEST STATIC REFS"
-    test_static_refs:test()
-    log "TEST CO"
-    test_co:test()
-    log "TEST EXCEPTION"
-    test_exception:test()
-    log "TEST MODIFY"
-    test_modify:test()
-    log "TEST OP OVERRIDE"
-    test_operator_override:test()
-    log "TEST MODULE"
-    test_module:test()
-    log "TEST FUN"
-    test_fun:test()
+//    log "TEST TYPES"
+//    test_types:test()
+//    log "TEST PARTIAL"
+//    test_partial:test()
+//    log "TEST BOOL"
+//    test_bool:test()
+//    log "TEST DATASTRUCTS"
+//    test_datastructs:test()
+//    log "TEST MATCH"
+//    test_match:test()
+//    log "TEST BASE"
+//    test_base:test()
+//    log "TEST DESTRUCT"
+//    test_destruct:test()
+//    log "TEST STATIC REFS"
+//    test_static_refs:test()
+//    log "TEST CO"
+//    test_co:test()
+//    log "TEST EXCEPTION"
+//    test_exception:test()
+//    log "TEST MODIFY"
+//    test_modify:test()
+//    log "TEST OP OVERRIDE"
+//    test_operator_override:test()
+//    log "TEST MODULE"
+//    test_module:test()
+//    log "TEST FUN"
+//    test_fun:test()
 
-    log "TEST OPERATORS"
-    test_operators:test()
+//    log "TEST OPERATORS"
+//    test_operators:test()
 
+import transducers as ts
 fun main () ->
-    test()
+    1
+    fun add x y ->
+        print #add x y
+        x + y
+    fun sub x y ->
+        print #sub x y
+        x - y
+
+    fun mul x y ->
+        print #mul x y
+        x * y
+
+    f = add 1 >> sub 1 >> mul 2
+    f 1
+
+    inc = lam x ->
+            print #inc x
+            x + 1
+
+    even = lam x ->
+            print #even x
+            mod x 2 == 0
+
+    xf = ts:map inc >> ts:filter even
+    ts:transduce xf cons [] [1,2,3,4]
+
+// *     var t = transducers;
+// *     var inc = function(n) { return n+1; };
+// *     var isEven = function(n) { return n % 2 == 0; };
+// *     var apush = function(arr,x) { arr.push(x); return arr; };
+// *     var xf = t.comp(t.map(inc),t.filter(isEven));
+// *     t.transduce(xf, apush, [], [1,2,3,4]); // [2,4]
+//    test()
 
 
 

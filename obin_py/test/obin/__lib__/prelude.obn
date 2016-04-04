@@ -86,7 +86,7 @@ trait Seq for self
     def first self
     def rest self
     // prep/cons operator
-    def cons  value self
+    def cons value self
     def empty self
 
 trait Indexed for self
@@ -140,6 +140,8 @@ fun lookup key default coll ->
 
 fun not_elem x c -> not (elem x c)
 
+fun identity x -> x
+
 fun |> x f -> f x
 fun <| f x -> f x
 fun >> f g x -> g (f x)
@@ -147,6 +149,5 @@ fun << f g x ->  f (g x)
 
 fun twice f -> f >> f
 fun flip f x y -> f y x
-
 fun even x -> mod x 2 == 0
 fun odd x -> not (even x)

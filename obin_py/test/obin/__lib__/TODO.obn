@@ -2,15 +2,14 @@
 // we need to put process in every api call it is very very big annoying job/ it is better to rewrite all interpreter in
 // with this in mind
 
-//TODO ranges sugar 1..2..1
-// not now it is not very hot
+//TODO ranges
 
 //TODO proper or cases
 // match x with
 //    | 1 | 2 | 3 -> printfn "Found 1, 2, or 3!"
 //    | a -> printfn "%d" a
 
-//TODO syntax block with macros and custom operators
+//TODO macros
 // a lot of work and i dont know how to do it exactly
 
 //TODO ERRORS
@@ -19,7 +18,6 @@
 //TODO separate token streams
 //TODO proper deriving for records
 //TODO PATTERN_MATCH_ERRORS as ERRORS NOT TUPLES
-//TODO carrying
 //TODO nested block comments
 //TODO single value assignment support in compiler
     //CAN`T DO THAT YOU LOOSE YOUR match semantics
