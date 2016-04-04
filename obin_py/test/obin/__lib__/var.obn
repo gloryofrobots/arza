@@ -1,0 +1,27 @@
+import fiber
+
+type Var val
+
+fun var v ->
+    co = fiber:coroutine .
+            fun holder yield v ->
+                fun loop v ->
+                    msg = yield v
+                    match msg with
+                        | #Read ->
+                            loop v
+                        | (#Write, new_val) ->
+                            loop new_val
+
+                loop v
+
+    co v
+    Var co
+
+implement Variable for Var
+    def := self value ->
+        self.val (#Write, value)
+    def ! self ->
+        self.val #Read
+
+derive Dict for Var

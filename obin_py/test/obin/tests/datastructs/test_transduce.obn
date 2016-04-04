@@ -1,0 +1,35 @@
+import transduce as ts
+import seq
+import affirm
+
+
+fun test () ->
+    double = lam x -> x + x
+
+    inc = lam x -> x + 1
+
+    even = lam x -> mod x 2 == 0
+    odd = not << even
+
+    print (odd 3) (odd 2)
+    xf = ts:map inc >> ts:filter even
+    affirm:is_equal (ts:transduce xf cons [] [1,2,3,4]) [5, 3]
+    xf_fn = ts:to_fun xf cons
+    affirm:is_equal (seq:foldl xf_fn [] [1,2,3,4]) [5, 3]
+
+    affirm:is_equal (ts:into [] xf [1,2,3,4]) [5, 3]
+
+    affirm:is_equal (ts:into [] (ts:map double >> ts:map inc >> ts:filter even) [1,2,3,4]) [10, 6]
+
+    l = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    affirm:is_equal (ts:into [] (ts:remove even) l) [9, 7, 5, 3, 1]
+    affirm:is_equal (ts:into [] (ts:remove odd) l) [10, 8, 6, 4, 2]
+
+    affirm:is_equal (ts:into [] (ts:remove odd << ts:completing seq:reverse) l) [2, 4, 6, 8, 10]
+    affirm:is_equal (ts:into [] (ts:take 8 << ts:remove odd << ts:completing seq:reverse) l) [2, 4, 6, 8]
+
+    affirm:is_equal (ts:into [] (ts:take_while ((flip `<`) 5) << ts:completing seq:reverse) l) [1, 2, 3, 4]
+
+
+
+

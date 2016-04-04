@@ -1,0 +1,527 @@
+import var
+
+trait Transformer for self
+    def init self
+    def result self res
+    def step self res input
+
+type WrapTransformer fn
+
+implement Transformer for WrapTransformer
+    def init self -> throw NotImplementedError #init
+    def result self acc -> acc
+    def step self input acc -> self.fn input acc
+
+fun wrap f
+    | f of Transformer -> f
+    | f -> WrapTransformer f
+
+type Reduced value
+
+fun reduced x -> Reduced x
+
+fun is_reduced val
+    | val of Reduced -> True
+    | _ -> False
+
+fun ensure_reduced x
+    | val of Reduced -> val
+    | val -> Reduced val
+
+fun deref r of Reduced -> r.value
+
+fun unreduced x
+    | r of Reduced -> deref r
+    | r -> r
+
+fun reduce_seq xf acc coll ->
+    fun _reduce xf acc coll
+        | xf acc [] ->
+            acc
+        | xf acc hd::tl ->
+            acc1 = step xf hd acc
+            if is_reduced acc1 ->
+                deref acc1
+            else ->
+                _reduce xf acc1 tl
+    res = _reduce xf acc coll
+    result xf res
+
+//
+//Given a transducer, a builder function, an initial value
+// and a iterable collection - returns the reduction.
+
+fun transduce xf f init_val coll ->
+    reduce reduce_seq xf f init_val coll
+
+fun reduce reduce_fun xf f init_val coll ->
+    fn = wrap f
+    xf1 = xf fn
+    reduce_fun xf1 init_val coll
+
+fun into init_val xf coll ->
+    f = match init_val with
+            | x of Appendable -> append
+            | x of Seq -> lam x acc -> x::acc
+            | x of Dict ->
+                lam entry coll
+                    | (key, val) coll -> put key val coll
+
+    transduce xf f init_val coll
+
+
+//  Convert a transducer transformer object into a function so
+//  that it can be used with existing reduce implementation i.e. native,
+//  xf = ts:map inc >> ts:filter even
+//  xf_fn = ts:to_fun xf cons
+//  affirm:is_equal (seq:foldl xf_fn [] [1,2,3,4]) [5, 3]
+
+fun to_fun xf builder
+   | xf builder of Transformer ->
+      rxf = xf(builder)
+      lam val acc -> step rxf val acc
+   | xf builder -> to_fun xf (wrap builder)
+
+fun first () ->
+    wrap lam val acc -> reduced val end
+
+type MapTransformer f xf
+
+implement Transformer for MapTransformer
+    def init self -> init self.xf
+    def result self acc -> result self.xf acc
+    def step self val acc ->
+//        print "MAP STEP"
+        step self.xf (self.f val) acc
+
+fun map f xf -> MapTransformer f xf
+
+-------------------------------------------
+
+type FilterTransformer predicate xf
+
+implement Transformer for FilterTransformer
+    def init self -> init self.xf
+    def result self acc -> result self.xf acc
+    def step self val acc ->
+//        print "FILTER STEP"
+        if self.predicate val ->
+            step self.xf val acc
+        else ->
+            acc
+
+fun filter predicate xf -> FilterTransformer predicate xf
+
+// Similar to filter except the predicate is used to
+// eliminate values.
+fun remove predicate xf -> filter (not << predicate) xf
+
+type CompletingTransformer cf xf
+
+implement Transformer for CompletingTransformer
+    def init self -> init self.xf
+    def result self acc -> self.cf acc
+    def step self val acc -> step self.xf val acc
+//
+///
+// A completing transducer constructor. Useful to provide cleanup
+// logic at the end of a reduction/transduction.
+fun completing cf xf -> CompletingTransformer cf xf
+
+
+type TakeTransformer n xf
+
+implement Transformer for TakeTransformer
+    def init self -> init self.xf
+    def result self acc -> result self.xf acc
+    def step self val acc ->
+        n = !self.n
+        self.n := n - 1
+        if n > 0 ->
+           step self.xf val acc
+        else ->
+           ensure_reduced acc
+
+// A take transducer constructor. Will take n values before
+// returning a reduced result.
+fun take n xf -> TakeTransformer (var:var n) xf
+
+type TakeWhileTransformer predicate xf
+
+implement Transformer for TakeWhileTransformer
+    def init self -> init self.xf
+    def result self acc -> result self.xf acc
+    def step self val acc ->
+        if self.predicate val ->
+           step self.xf val acc
+        else ->
+            reduced acc
+
+// Like the take transducer except takes as long as the pred
+// return true for inputs.
+fun take_while p xf -> TakeWhileTransformer p xf
+
+//
+///
+// @constructor
+// @implements {com.cognitect.transducers.ITransformer}
+///
+//transducers.TakeNth = function(n, xf) {
+//    this.i = -1;
+//    this.n = n;
+//    this.xf = xf;
+//};
+//transducers.TakeNth.prototype["@@transducer/init"] = function() {
+//    return this.xf["@@transducer/init"]();
+//};
+//transducers.TakeNth.prototype["@@transducer/result"] = function(result) {
+//    return this.xf["@@transducer/result"](result);
+//};
+//transducers.TakeNth.prototype["@@transducer/step"] = function(result, input) {
+//    this.i++;
+//    if((this.i % this.n) == 0) {
+//        return this.xf["@@transducer/step"](result, input);
+//    } else {
+//        return result;
+//    }
+//};
+//
+///
+// A transducer that takes every Nth input
+// @method transducers.takeNth
+// @param {Number} n an integer
+// @return {com.cognitect.transducers.TakeNth} a takeNth transducer
+// @example
+//     var t = transducers;
+//     var xf = t.takeNth(3);
+//     t.into([], xf, [0,1,2,3,4,5]); // [2,5];
+///
+//transducers.takeNth = function(n) {
+//    if(TRANSDUCERS_DEV && (typeof n != "number")) {
+//        throw new Error("takeNth must be given a number");
+//    } else {
+//        return function(xf) {
+//            return new transducers.TakeNth(n, xf);
+//        };
+//    }
+//};
+//
+///
+// @constructor
+// @implements {com.cognitect.transducers.ITransformer}
+///
+//transducers.Drop = function(n, xf) {
+//    this.n = n;
+//    this.xf = xf;
+//};
+//transducers.Drop.prototype["@@transducer/init"] = function() {
+//    return this.xf["@@transducer/init"]();
+//};
+//transducers.Drop.prototype["@@transducer/result"] = function(result) {
+//    return this.xf["@@transducer/result"](result);
+//};
+//transducers.Drop.prototype["@@transducer/step"] = function(result, input) {
+//    if(this.n > 0) {
+//        this.n--;
+//        return result;
+//    } else {
+//        return this.xf["@@transducer/step"](result, input);
+//    }
+//};
+//
+///
+// A dropping transducer constructor
+// @method transducers.drop
+// @param {Number} n an integer, the number of inputs to drop.
+// @return {com.cognitect.transducers.Drop} a dropping transducer
+// @example
+//     var t = transducers;
+//     var xf = t.drop(3);
+//     t.into([], xf, [0,1,2,3,4,5]); // [3,4,5];
+///
+//transducers.drop = function(n) {
+//    if(TRANSDUCERS_DEV && (typeof n !== "number")) {
+//        throw new Error("drop must be given an integer");
+//    } else {
+//        return function(xf) {
+//            return new transducers.Drop(n, xf);
+//        };
+//    }
+//};
+//
+///
+// @constructor
+// @implements {com.cognitect.transducers.ITransformer}
+///
+//transducers.DropWhile = function(pred, xf) {
+//    this.drop = true;
+//    this.pred = pred;
+//    this.xf = xf;
+//};
+//transducers.DropWhile.prototype["@@transducer/init"] = function() {
+//    return this.xf["@@transducer/init"]();
+//};
+//transducers.DropWhile.prototype["@@transducer/result"] = function(result) {
+//    return this.xf["@@transducer/result"](result);
+//};
+//transducers.DropWhile.prototype["@@transducer/step"] = function(result, input) {
+//    if(this.drop && this.pred(input)) {
+//        return result;
+//    } else {
+//        if(this.drop) this.drop = false;
+//        return this.xf["@@transducer/step"](result, input);
+//    }
+//};
+//
+///
+// A dropping transducer that drop inputs as long as
+// pred is true.
+// @method transducers.dropWhile
+// @param {Function} pred a predicate function
+// @return {com.cognitect.transducers.DropWhile} a dropWhile transducer
+// @example
+//     var t = transducers;
+//     var xf = t.dropWhile(function(n) { return n < 3; });
+//     t.into([], xf, [0,1,2,3,4,5]); // [3,4,5];
+///
+//transducers.dropWhile = function(pred) {
+//    if(TRANSDUCERS_DEV && (typeof pred != "function")) {
+//        throw new Error("dropWhile must be given a function");
+//    } else {
+//        return function(xf) {
+//            return new transducers.DropWhile(pred, xf);
+//        };
+//    }
+//};
+//
+//transducers.NONE = {};
+//
+///
+// @constructor
+// @implements {com.cognitect.transducers.ITransformer}
+///
+//transducers.PartitionBy = function(f, xf) {
+//    this.f = f;
+//    this.xf = xf;
+//    this.a = [];
+//    this.pval = transducers.NONE;
+//};
+//transducers.PartitionBy.prototype["@@transducer/init"] = function() {
+//    return this.xf["@@transducer/init"]()
+//};
+//transducers.PartitionBy.prototype["@@transducer/result"] = function(result) {
+//    if(this.a.length > 0) {
+//        result = transducers.unreduced(this.xf["@@transducer/step"](result, this.a));
+//        this.a = [];
+//    }
+//    return this.xf["@@transducer/result"](result);
+//};
+//transducers.PartitionBy.prototype["@@transducer/step"] = function(result, input) {
+//    var pval = this.pval,
+//        val  = this.f(input);
+//
+//    this.pval = val;
+//
+//    // NOTE: we should probably allow someone to define
+//    // equality? - David
+//    if((pval == transducers.NONE) ||
+//        (pval == val)) {
+//        this.a.push(input);
+//        return result;
+//    } else {
+//        var ret = this.xf["@@transducer/step"](result, this.a);
+//        this.a = [];
+//        if(!transducers.isReduced(ret)) {
+//            this.a.push(input);
+//        }
+//        return ret;
+//    }
+//};
+//
+///
+// A partitioning transducer. Collects inputs into
+// arrays as long as predicate remains true for contiguous
+// inputs.
+// @method transducers.partitionBy
+// @param {Function} f a partition function. When the result
+//   for an input changes from the previous result will create
+//   a partition.
+// @return {com.cognitect.transducers.PartitionBy} a partitionBy transducer
+// @example
+//     var t = transducers;
+//     var xf = t.partitionBy(function(x) { return typeof x == "string"; });
+//     t.into([], xf, [0,1,"foo","bar",2,3,"bar","baz"]); // [[0,1],["foo","bar"],[2,3],["bar","baz"]];
+///
+//transducers.partitionBy = function(f) {
+//    if(TRANSDUCERS_DEV && (typeof f != "function")) {
+//        throw new Error("partitionBy must be given an function");
+//    } else {
+//        return function(xf) {
+//            return new transducers.PartitionBy(f, xf);
+//        };
+//    }
+//};
+//
+///
+// @constructor
+// @implements {com.cognitect.transducers.ITransformer}
+///
+//transducers.PartitionAll = function(n, xf) {
+//    this.n = n;
+//    this.xf = xf;
+//    this.a = [];
+//};
+//transducers.PartitionAll.prototype["@@transducer/init"] = function() {
+//    return this.xf["@@transducer/init"]();
+//};
+//transducers.PartitionAll.prototype["@@transducer/result"] = function(result) {
+//    if(this.a.length > 0) {
+//        result = transducers.unreduced(this.xf["@@transducer/step"](result, this.a));
+//        this.a = [];
+//    }
+//    return this.xf["@@transducer/result"](result);
+//};
+//transducers.PartitionAll.prototype["@@transducer/step"] = function(result, input) {
+//    this.a.push(input);
+//    if(this.n == this.a.length) {
+//        var a = this.a;
+//        this.a = [];
+//        return this.xf["@@transducer/step"](result, a);
+//    } else {
+//        return result;
+//    }
+//};
+//
+///
+// A partitioning transducer. Collects inputs into
+// arrays of size N.
+// @method transducers.partitionAll
+// @param {Number} n an integer
+// @return {com.cognitect.transducers.PartitionAll} a partitionAll transducer
+// @example
+//     var t = transducers;
+//     var xf = t.partitionAll(3);
+//     t.into([], xf, [0,1,2,3,4,5]); // [[0,1,2],[3,4,5]]
+///
+//transducers.partitionAll = function(n) {
+//    if(TRANSDUCERS_DEV && (typeof n != "number")) {
+//        throw new Error("partitionAll must be given a number");
+//    } else {
+//        return function(xf) {
+//            return new transducers.PartitionAll(n, xf);
+//        };
+//    }
+//};
+//
+///
+//
+///
+// @constructor
+// @implements {com.cognitect.transducers.ITransformer}
+///
+//transducers.KeepIndexed = function(f, xf) {
+//    this.i = -1;
+//    this.f = f;
+//    this.xf = xf;
+//};
+//transducers.KeepIndexed.prototype["@@transducer/init"] = function() {
+//    return this.xf["@@transducer/init"]();
+//};
+//transducers.KeepIndexed.prototype["@@transducer/result"] = function(result) {
+//    return this.xf["@@transducer/result"](result);
+//};
+//transducers.KeepIndexed.prototype["@@transducer/step"] = function(result, input) {
+//    this.i++;
+//    var v = this.f(this.i, input);
+//    if(v == null) {
+//        return result;
+//    } else {
+//        return this.xf["@@transducer/step"](result, input);
+//    }
+//};
+//
+///
+// Like keep but the provided function will be passed the
+// index as the first argument and the value second.
+// @method transducers.keepIndexed
+// @param {Function} f a function
+// @return {com.cognitect.transducers.KeepIndexed} a keepIndexed transducer
+// @example
+//     var t = transducers;
+//     var xf = t.keepIndexed(function(i, x) { if(typeof x == "string") return "cool"; });
+//     t.into([], xf, [0,1,"foo",3,4,"bar"]); // ["foo","bar"]
+///
+//transducers.keepIndexed = function(f) {
+//    if(TRANSDUCERS_DEV && (typeof f != "function")) {
+//        throw new Error("keepIndexed must be given a function");
+//    } else {
+//        return function(xf) {
+//            return new transducers.KeepIndexed(f, xf);
+//        };
+//    }
+//};
+//
+///
+// Given a transformer returns a transformer which preserves
+// reduced by wrapping one more time. See cat.
+// @method transducers.preservingReduced
+// @param {com.cognitect.transducers.ITransformer} xf a transformer
+// @return {com.cognitect.transducers.ITransformer} a transformer which preserves reduced
+///
+//transducers.preservingReduced = function(xf) {
+//    return {
+//        "@@transducer/init": function() {
+//            return xf["@@transducer/init"]();
+//        },
+//        "@@transducer/result": function(result) {
+//            return result;
+//        },
+//        "@@transducer/step": function(result, input) {
+//            var ret = xf["@@transducer/step"](result, input);
+//            if(transducers.isReduced(ret)) {
+//                return transducers.reduced(ret);
+//            } else {
+//                return ret;
+//            }
+//        }
+//    };
+//};
+//
+///
+// Given a transformer return a concatenating transformer
+// @method transducers.cat
+// @param {com.cognitect.transducers.ITransformer} xf a transformer
+// @return {com.cognitect.transducers.ITransformer} a concatenating transformer
+///
+//transducers.cat = function(xf) {
+//    var rxf = transducers.preservingReduced(xf);
+//    return {
+//        "@@transducer/init": function() {
+//            return xf["@@transducer/init"]();
+//        },
+//        "@@transducer/result": function(result) {
+//            return xf["@@transducer/result"](result);
+//        },
+//        "@@transducer/step": function(result, input) {
+//            return transducers.reduce(rxf, result, input);
+//        }
+//    };
+//};
+//
+///
+// A mapping concatenating transformer
+// @method transducers.mapcat
+// @param {Function} f the mapping function
+// @return {com.cognitect.transducers.ITransformer} a mapping concatenating transducer
+// @example
+//     var t = transducers;
+//     var reverse = function(arr) { var arr = Array.prototype.slice.call(arr, 0); arr.reverse(); return arr; }
+//     var xf = t.mapcat(reverse);
+//     t.into([], xf, [[3,2,1],[6,5,4]]); // [1,2,3,4,5,6]
+///
+//transducers.mapcat = function(f) {
+//    return transducers.comp(transducers.map(f), transducers.cat);
+//};
+
+derive Dict for (Reduced, MapTransformer, FilterTransformer, WrapTransformer,
+                    CompletingTransformer, TakeTransformer, TakeWhileTransformer)

@@ -1,0 +1,11 @@
+import var
+import affirm
+fun test() ->
+    v = var:var 2
+    affirm:is_equal (!v) 2
+    affirm:is_equal (!v) 2
+    affirm:is_equal (!v) 2
+    v := 3
+    affirm:is_equal (!v) 3
+    affirm:is_equal (!v) 3
+    affirm:is_equal (!v) 3

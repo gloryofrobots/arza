@@ -113,7 +113,7 @@ RULES = [
     (keyword('as'), TT_AS),
     (keyword('when'), TT_WHEN),
 
-    (keyword('var'), TT_VAR),
+    # (keyword('var'), TT_VAR),
     (keyword('lazy'), TT_LAZY),
 
     (keyword('infixl'), TT_INFIXL),
@@ -148,6 +148,7 @@ RULES = [
     (token('\.\.'), TT_DOUBLE_DOT),
     (token('@'), TT_AT_SIGN),
     (token('::'), TT_DOUBLE_COLON),
+    (token('[:^:][%s]+' % operator_char), TT_OPERATOR),
     (token(':'), TT_COLON),
     (token('[%s][=]+' % operator_char), TT_OPERATOR),
     (token('[=][%s]+' % operator_char), TT_OPERATOR),

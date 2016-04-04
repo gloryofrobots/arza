@@ -42,13 +42,13 @@ fun scanl func accumulator coll
 
 ///ACCESSORS//////////////////////////////////////
 
-fun nth_tail (count of Int) (coll of Seq)
+fun nth_tail (count of Int) coll
     | 0 l -> l
     | 1 [_, ...t] -> t
     | n [_, ...t] when n >= 0 -> nth_tail (n - 1) t
 --------------------------------------------------
 
-fun nth (count of Int) (coll of Seq)
+fun nth (count of Int) coll
     | 0 l -> l
     | 1 [h, ...t] -> h
     | n [h, ...t] when n >= 0 -> nth (n - 1) t
@@ -84,18 +84,18 @@ fun suffix_of suf s  ->
 --------------------------------------------------
 
 //SUBLISTS/////////////////////////////////////////////////////////////
-fun drop count coll of Seq
+fun drop count coll
     | 0 l -> l
     | count hd::tl -> drop (count - 1) tl
 --------------------------------------------------
 
-fun take count coll of Seq
+fun take count coll
     | 0 _ -> empty coll
     | _ [] -> empty coll
     | n [x, ...xs] -> x :: (take (n-1)  xs)
 --------------------------------------------------
 
-fun split_at (n of Int) (l of Seq) -> ((take n l), (drop n l)) end
+fun split_at (n of Int) l -> ((take n l), (drop n l)) end
 
 fun take_while predicate coll
     | p [] -> empty coll
@@ -162,7 +162,7 @@ fun concat l1 l2 ->
 
 fun uncons coll | [x, ...xs] -> (x, xs) end
 
-fun init coll of Seq
+fun init coll
     | [x] -> empty coll
     | [x, ...xs] -> x :: (init xs)
     | [] -> throw (ValueError "empty seq in init")
