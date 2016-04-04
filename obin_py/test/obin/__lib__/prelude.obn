@@ -21,20 +21,9 @@ infixl ++ ++ 70
 type Ordering
     | LT | GT | EQ
 
-
-trait Collection for self
-    def len self
-    def is_empty self
-    def put key value self
-    def at key self
-    def del obj self
-    def elem key self
-
-
 trait Eq for x
     def == x y -> throw (#NotImplemented, x, y)
     def != x y -> not (x == y)
-
 
 trait Ord  for x of Eq
     def <= x y -> throw (#NotImplemented, x, y)
@@ -49,6 +38,16 @@ trait Ord  for x of Eq
 
     def max x y ->  y in_case x <= y else x
     def min x y -> x in_case x <= y else y
+
+
+trait Collection for self
+    def len self
+    def is_empty self -> len self == 0
+    def put key value self
+    def at key self
+    def del obj self
+    def elem key self
+
 
 trait Num for x
     def - x y
@@ -72,10 +71,10 @@ trait Inspectable for self of (Str, Eq)
 trait Mappable for self
     def map f self
 
-trait Appable for self
+trait Appendable for self
     //concat operator
     def ++ self other
-    def app self value
+    def append self value
 
 
 trait Dict for self of Collection
@@ -85,7 +84,7 @@ trait Dict for self of Collection
 trait Seq for self
     def first self
     def rest self
-    // prep/cons operator
+    // prepend/cons operator
     def cons value self
     def empty self
 
@@ -93,7 +92,7 @@ trait Indexed for self
     def index_of obj self
 
 trait Seqable for self
-    def seq self
+    def to_seq self
 
 trait Sliceable for self
     def slice first . last . self

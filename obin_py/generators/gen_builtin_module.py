@@ -16,8 +16,9 @@ TPL_FOOTER = """
 TPL_FUNC = """
 @complete_native_routine
 def {{func_native_name}}(process, routine):
-    {% for arg in args %}{{arg.name}} = routine.get_arg({{arg.index}}) {%if  affirm_type != ''  %} 
-    error.affirm_type({{arg.name}}, {{affirm_type}}) {% endif %}
+    {% for arg in args %}{{arg.name}} = 
+        {%-if  arg.wrapper == ''  -%} routine.get_arg({{arg.index}}) {% else %} {{arg.wrapper}}(routine.get_arg({{arg.index}})) {% endif%}
+        {%-if  affirm_type != ''  %}  error.affirm_type({{arg.name}}, {{affirm_type}}) {% endif %}
     {% endfor %}
     {%if  result_wrap == ''  %}return {{source_module}}.{{source_function}}({% for arg in args|sort(attribute='source_index') %}{{arg.name}}{% if not loop.last %}, {% endif %}{% endfor %})
     {% else %}return {{result_wrap}}({{source_module}}.{{source_function}}({% for arg in args|sort(attribute='source_index') %}{{arg.name}}{% if not loop.last %}, {% endif %}{% endfor %})){% endif %}
@@ -47,12 +48,12 @@ def generate(module):
 def args(arity):
     return [arg(i, i) for i in range(arity)]
 
-def arg(index, source_index):
+def arg(index, source_index, wrapper=''):
     return {
         "name":"arg%d" % index,
         "index": index,
         "source_index": source_index,
-
+        "wrapper":wrapper
     }
 
 def func(func_name=None, func_native_name=None,
@@ -76,7 +77,22 @@ def module(module_name, funcs):
         funcs=funcs
     )
 
-LISTS = module("obin:lang:list", [
+LIST = module("obin:lang:list", [
+    func(func_name="length", func_native_name="_length", func_arity=1,
+             source_module="api", source_function="length"),
+    func(func_name="put", func_native_name="put", func_arity=3,
+             source_module="api", source_function="put",
+            arguments=[arg(2,0), arg(1,1), arg(0, 0)]),
+    func(func_name="at", func_native_name="at", func_arity=2,
+             source_module="api", source_function="at",
+            arguments=[arg(1, 0), arg(0, 0)]),
+    func(func_name="elem", func_native_name="elem", func_arity=2,
+             source_module="api", source_function="contains",
+            arguments=[arg(1, 0), arg(0, 0)]),
+    func(func_name="del", func_native_name="delete", func_arity=2,
+             source_module="api", source_function="delete",
+            arguments=[arg(1, 0), arg(0, 0)]),
+
     func(func_name="tail", func_native_name="_tail", func_arity=1,
              source_module="plist", source_function="tail"),
     func(func_name="empty", func_native_name="_empty", func_arity=0,
@@ -87,14 +103,44 @@ LISTS = module("obin:lang:list", [
              source_module="plist", source_function="head"),
     func(func_name="cons", func_native_name="_cons", func_arity=2,
              source_module="plist", source_function="cons"),
-    func(func_name="slice", func_native_name="_slice", func_arity=2,
+
+    func(func_name="slice", func_native_name="slice", func_arity=3,
              source_module="plist", source_function="slice",
-            arguments=[arg(2,0), arg(1,1), arg(0, 0)]),
+            arguments=[arg(2,0), arg(1,1, wrapper='api.to_i'), arg(0, 0, wrapper='api.to_i')]),
+    func(func_name="take", func_native_name="take", func_arity=2,
+             source_module="plist", source_function="take",
+            arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
+    func(func_name="drop", func_native_name="drop", func_arity=2,
+             source_module="plist", source_function="drop",
+            arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
     ])
 
 TUPLES = module("obin:lang:tuple", [
     func(func_name="length", func_native_name="_length", func_arity=1,
              source_module="api", source_function="length"),
+    func(func_name="put", func_native_name="put", func_arity=3,
+             source_module="api", source_function="put",
+            arguments=[arg(2,0), arg(1,1), arg(0, 0)]),
+    func(func_name="at", func_native_name="at", func_arity=2,
+             source_module="api", source_function="at",
+            arguments=[arg(1, 0), arg(0, 0)]),
+    func(func_name="elem", func_native_name="elem", func_arity=2,
+             source_module="api", source_function="contains",
+            arguments=[arg(1, 0), arg(0, 0)]),
+    func(func_name="del", func_native_name="delete", func_arity=2,
+             source_module="api", source_function="delete",
+            arguments=[arg(1, 0), arg(0, 0)]),
+
+    func(func_name="slice", func_native_name="slice", func_arity=3,
+             source_module="tuples", source_function="slice",
+            arguments=[arg(2,0), arg(1,1, wrapper='api.to_i'), arg(0, 0, wrapper='api.to_i')]),
+    func(func_name="take", func_native_name="take", func_arity=2,
+             source_module="tuples", source_function="take",
+            arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
+    func(func_name="drop", func_native_name="drop", func_arity=2,
+             source_module="tuples", source_function="drop",
+            arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
+
     func(func_name="to_list", func_native_name="_to_list", func_arity=1,
              source_module="tuples", source_function="to_list"),
     ])
@@ -131,7 +177,8 @@ BIT = module("_bit",  [
     ])
 
 
-print generate(TUPLES)
+# print generate(TUPLES)
+print generate(LIST)
 # print generate(BIT)
 
 

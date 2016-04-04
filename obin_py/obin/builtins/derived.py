@@ -26,7 +26,7 @@ class Methods:
         self.equal = self.find_method(u"==", traits.Eq)
         self.index_of = self.find_method(u"index_of", traits.Indexed)
 
-        self.seq = self.find_method(u"seq", traits.Seqable)
+        self.to_seq = self.find_method(u"to_seq", traits.Seqable)
 
         self.str = self.find_method(u"str", traits.Str)
 

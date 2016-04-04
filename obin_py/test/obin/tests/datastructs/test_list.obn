@@ -20,59 +20,5 @@ fun test () ->
     affirm:is_true  (is_empty [])
     affirm:is_false (is_empty [1,2])
     affirm:is_equal (empty([1,2,3,4,5])) []
-
-    l1 = list:range 0 10
-    affirm:is_equal (list:length l1) 10
-    affirm:is_equal (list:concat [0,1,2,3,4,5] [6,7,8,9]) l1
-    affirm:is_equal (list:concat [] l1) l1
-    affirm:is_equal (list:concat l1 []) l1
-    affirm:is_equal (list:concat [] []) []
-    affirm:is_equal (list:reverse l1) [9,8,7,6,5,4,3,2,1,0]
-
-    affirm:is_true (list:prefix_of [1,2,3,4] [1,2,3,4,5,6])
-    affirm:is_false (list:prefix_of [0,1,2,3,4] [1,2,3,4,5,6])
-    affirm:is_false (list:prefix_of [1,2,3,4] [1,2,3,5,4,6])
-
-    affirm:is_true (list:suffix_of [4,5,6] [1,2,3,4,5,6])
-    affirm:is_false (list:suffix_of [3,5,6] [1,2,3,4,5,6])
-    affirm:is_false (list:suffix_of [4,5,6] [1,2,3,4,6,5])
-
-    affirm:is_equal (list:drop 3 l1) [3,4,5,6,7,8,9]
-    affirm:is_equal (list:map lam x -> x+1 end l1) [1,2,3,4,5,6,7,8,9,10]
-    affirm:is_equal (list:intersperse 0 l1) [0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0]
-    affirm:is_equal (list:scanl `+` 0 (list:range 1  11))  [0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55]
-
-    affirm:is_equal (list:last l1) 9
-    affirm:is_equal (list:init l1) [0, 1, 2, 3, 4, 5, 6, 7, 8]
     affirm:is_equal (list:replicate 5 42) [42, 42, 42, 42, 42]
-    affirm:is_equal (list:take 3 l1) [0,1,2]
-    affirm:is_equal (list:split_at 3 l1)  ([0, 1, 2], [3, 4, 5, 6, 7, 8, 9])
-    affirm:is_equal (list:take_while lam x -> x < 5 end l1) [0, 1, 2, 3, 4]
-    affirm:is_equal (list:drop_while lam x -> x < 5 end l1) [5, 6, 7, 8, 9]
-    affirm:is_equal (list:span lam x -> x < 3 end [1,2,3,4,1,2,3,4]) .
-                    ([1, 2], [3, 4, 1, 2, 3, 4])
 
-    affirm:is_equal (list:span lam x -> x < 9 end [1,2,3]) .
-                    ([1, 2, 3], [])
-
-    affirm:is_equal (list:span lam x -> x < 0 end [1,2,3]) .
-                    ([], [1, 2, 3])
-
-    affirm:is_true (list:conjunction [True, True, True, True])
-    affirm:is_false (list:conjunction [True, True, True, False])
-    affirm:is_true (list:all lam x -> x < 7 end  [0,1,2,3,4,5,6])
-    affirm:is_false (list:all lam x -> x < 3 end  [0,1,2,3,4,5,6])
-    affirm:is_true (list:any lam x -> x < 7 end  [0,1,2,3,4,5,6])
-    affirm:is_true (list:any lam x -> x < 3 end  [0,1,2,3,4,5,6])
-    affirm:is_false (list:any lam x -> x < -1 end  [0,1,2,3,4,5,6])
-
-    affirm:is_equal (list:delete 8 l1) [0,1,2,3,4,5,6,7,9]
-
-//    print (
-//        (list:conjunction [True, True, True, True]),
-//    )
-
-
-//    span (< 3) [1,2,3,4,1,2,3,4] == ([1,2],[3,4,1,2,3,4])
-//span (< 9) [1,2,3] == ([1,2,3],[])
-//span (< 0) [1,2,3] == ([],[1,2,3])
