@@ -92,7 +92,7 @@ class W_DataType(W_Hashable):
 
     def add_trait_implementation(self, trait, implementations):
         if self.is_trait_implemented(trait):
-            return error.throw_1(error.Errors.TRAIT_ALREADY_IMPLEMENTED_ERROR, trait)
+            return error.throw_2(error.Errors.TRAIT_ALREADY_IMPLEMENTED_ERROR, self, trait)
 
         impl_map = space.newmap()
         for impl in implementations:
