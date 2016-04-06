@@ -130,7 +130,8 @@ class W_DataType(W_Hashable):
                               space.newstring(u"Missing required field. Check recursive constructor call"), f)
             values.append(v)
 
-        return W_Record(self, plist.plist(values))
+        return W_Record(self, space.newpvector(values))
+        # return W_Record(self, plist.plist(values))
 
     # TODO CREATE CALLBACK OBJECT
     def _to_routine_(self, stack, args):

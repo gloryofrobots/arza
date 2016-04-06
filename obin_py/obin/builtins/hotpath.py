@@ -199,7 +199,9 @@ def hp_cons(process, args):
     left = api.at_index(args, 0)
     right = api.at_index(args, 1)
     if space.islist(right):
-        return plist.cons(left, right)
+        res = plist.cons(left, right)
+        # print "CONS", args, res
+        return res
     else:
         return None
 

@@ -1,5 +1,4 @@
 from obin.types.root import W_Hashable
-from sequence import W_SequenceIterator
 from obin.types import api, space
 from obin.runtime import error
 
@@ -64,9 +63,6 @@ class W_String(W_Hashable):
 
     def _to_string_(self):
         return str(self.string_value)
-
-    def _iterator_(self):
-        return W_SequenceIterator(self)
 
     def _length_(self):
         return self.__length

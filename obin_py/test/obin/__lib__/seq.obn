@@ -135,6 +135,15 @@ fun delete item coll
     | _ [] -> empty coll
 --------------------------------------------------
 
+fun insert index v coll
+    | 0 v coll -> v::coll
+    | i v [] -> throw IndexError ("Invalid insertion index", index, v)
+    | i v x::xs -> x :: (insert (i - 1) v xs)
+
+fun append v coll ->
+    print "APPEND" v coll
+    insert (length coll) v coll
+
 ////QUERIES//////////////////////////////////////////////////////////////////
 
 fun conjunction l ->

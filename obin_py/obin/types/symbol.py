@@ -46,9 +46,6 @@ class W_Symbol(W_Root):
     def _to_string_(self):
         return api.to_s(self.string)
 
-    def _iterator_(self):
-        return self.string._iterator_()
-
     def _length_(self):
         return self.string._length_()
 

@@ -62,7 +62,8 @@ fun reduce reduce_fun xf f init_val coll ->
 fun into init_val xf coll ->
     f = match init_val with
             | x of Appendable -> append
-            | x of Seq -> lam x acc -> x::acc
+            | x of Seq -> lam x acc ->
+                                x::acc
             | x of Dict ->
                 lam entry coll
                     | (key, val) coll -> put key val coll
@@ -168,7 +169,6 @@ implement Transformer for TakeNthTransformer
     def result self acc -> result self.xf acc
     def step self val acc ->
         self.i := !self.i + 1
-
         if mod (!self.i) self.n == 0  ->
            step self.xf val acc
         else ->
@@ -178,7 +178,6 @@ implement Transformer for TakeNthTransformer
 fun take_nth n xf -> TakeNthTransformer (var (-1)) n xf
 
 type DropTransformer n xf
-
 implement Transformer for DropTransformer
     def init self -> init self.xf
     def result self acc -> result self.xf acc
@@ -194,7 +193,6 @@ implement Transformer for DropTransformer
 fun drop n xf -> DropTransformer (var n) xf
 
 type DropWhileTransformer continue_dropping predicate xf
-
 implement Transformer for DropWhileTransformer
     def init self -> init self.xf
     def result self acc -> result self.xf acc
@@ -209,115 +207,38 @@ implement Transformer for DropWhileTransformer
 // pred is true.
 fun drop_while predicate xf -> DropWhileTransformer (var True) predicate xf
 
-//
-///
-// @constructor
-// @implements {com.cognitect.transducers.ITransformer}
-///
-//transducers.KeepIndexed = function(f, xf) {
-//    this.i = -1;
-//    this.f = f;
-//    this.xf = xf;
-//};
-//transducers.KeepIndexed.prototype["@@transducer/init"] = function() {
-//    return this.xf["@@transducer/init"]();
-//};
-//transducers.KeepIndexed.prototype["@@transducer/result"] = function(result) {
-//    return this.xf["@@transducer/result"](result);
-//};
-//transducers.KeepIndexed.prototype["@@transducer/step"] = function(result, input) {
-//    this.i++;
-//    var v = this.f(this.i, input);
-//    if(v == null) {
-//        return result;
-//    } else {
-//        return this.xf["@@transducer/step"](result, input);
-//    }
-//};
-//
-///
-// Like keep but the provided function will be passed the
-// index as the first argument and the value second.
-// @method transducers.keepIndexed
-// @param {Function} f a function
-// @return {com.cognitect.transducers.KeepIndexed} a keepIndexed transducer
-// @example
-//     var t = transducers;
-//     var xf = t.keepIndexed(function(i, x) { if(typeof x == "string") return "cool"; });
-//     t.into([], xf, [0,1,"foo",3,4,"bar"]); // ["foo","bar"]
-///
-//transducers.keepIndexed = function(f) {
-//    if(TRANSDUCERS_DEV && (typeof f != "function")) {
-//        throw new Error("keepIndexed must be given a function");
-//    } else {
-//        return function(xf) {
-//            return new transducers.KeepIndexed(f, xf);
-//        };
-//    }
-//};
-//
-///
+
 // Given a transformer returns a transformer which preserves
 // reduced by wrapping one more time. See cat.
-// @method transducers.preservingReduced
-// @param {com.cognitect.transducers.ITransformer} xf a transformer
-// @return {com.cognitect.transducers.ITransformer} a transformer which preserves reduced
-///
-//transducers.preservingReduced = function(xf) {
-//    return {
-//        "@@transducer/init": function() {
-//            return xf["@@transducer/init"]();
-//        },
-//        "@@transducer/result": function(result) {
-//            return result;
-//        },
-//        "@@transducer/step": function(result, input) {
-//            var ret = xf["@@transducer/step"](result, input);
-//            if(transducers.isReduced(ret)) {
-//                return transducers.reduced(ret);
-//            } else {
-//                return ret;
-//            }
-//        }
-//    };
-//};
-//
-///
+type PreserveReduced xf
+implement Transformer for PreserveReduced
+    def init self -> init self.xf
+    def result self acc -> acc
+    def step self val acc ->
+        ret = step self.xf val acc
+        if is_reduced ret ->
+            reduced ret
+        else ->
+            ret
+
+fun preserve_reduced xf -> PreserveReduced xf
+
+type CatTransformer xf rxf
+implement Transformer for CatTransformer
+    def init self -> init self.xf
+    def result self acc -> result self.xf acc
+    def step self val acc ->
+        res = reduce_seq self.rxf val acc
+        res
+
 // Given a transformer return a concatenating transformer
-// @method transducers.cat
-// @param {com.cognitect.transducers.ITransformer} xf a transformer
-// @return {com.cognitect.transducers.ITransformer} a concatenating transformer
-///
-//transducers.cat = function(xf) {
-//    var rxf = transducers.preservingReduced(xf);
-//    return {
-//        "@@transducer/init": function() {
-//            return xf["@@transducer/init"]();
-//        },
-//        "@@transducer/result": function(result) {
-//            return xf["@@transducer/result"](result);
-//        },
-//        "@@transducer/step": function(result, input) {
-//            return transducers.reduce(rxf, result, input);
-//        }
-//    };
-//};
-//
-///
+fun cat xf -> CatTransformer xf (preserve_reduced xf)
+
 // A mapping concatenating transformer
-// @method transducers.mapcat
-// @param {Function} f the mapping function
-// @return {com.cognitect.transducers.ITransformer} a mapping concatenating transducer
-// @example
-//     var t = transducers;
-//     var reverse = function(arr) { var arr = Array.prototype.slice.call(arr, 0); arr.reverse(); return arr; }
-//     var xf = t.mapcat(reverse);
-//     t.into([], xf, [[3,2,1],[6,5,4]]); // [1,2,3,4,5,6]
-///
-//transducers.mapcat = function(f) {
-//    return transducers.comp(transducers.map(f), transducers.cat);
-//};
+fun mapcat f -> (map f) << cat
 
 derive Dict for (Reduced, MapTransformer, FilterTransformer, WrapTransformer,
                  CompletingTransformer, TakeTransformer, TakeWhileTransformer,
-                 TakeNthTransformer, DropTransformer, DropWhileTransformer)
+                 TakeNthTransformer, DropTransformer, DropWhileTransformer,
+                 PreserveReduced, CatTransformer
+                 )

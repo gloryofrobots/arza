@@ -1,5 +1,4 @@
 from obin.types.root import W_Root
-from sequence import W_SequenceIterator
 from obin.misc import platform
 from obin.runtime import error
 
@@ -47,9 +46,6 @@ class W_Vector(W_Root):
             return newvoid()
 
         return el
-
-    def _iterator_(self):
-        return W_SequenceIterator(self)
 
     def _length_(self):
         return len(self._items)

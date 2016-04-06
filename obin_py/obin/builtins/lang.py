@@ -42,6 +42,8 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.DERIVE, __derive, 2)
     put_lang_func(process, module, lang_names.PARTIAL, __partial, 1)
 
+    put_lang_func(process, module, u"vector", __vector, -1)
+
     ## debugging
     # if not we_are_translated():
     #     api.put_native_function(process, obj, u'pypy_repr', pypy_repr)
@@ -86,6 +88,12 @@ def _print(process, routine):
     print_str = encode_unicode_utf8(u_print_str)
     print print_str
     return space.newunit()
+
+
+@complete_native_routine
+def __vector(process, routine):
+    args = routine._args.to_l()
+    return space.newpvector(args)
 
 
 def _eval(process, routine):

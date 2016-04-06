@@ -256,6 +256,20 @@ def isvector(value):
     from obin.types.vector import W_Vector
     return isinstance(value, W_Vector)
 
+########################################################
+
+def newpvector(items):
+    assert isinstance(items, list)
+    verify_list_DEBUG(items)
+    from obin.types.pvector import newpvector
+    obj = newpvector(items)
+    return obj
+
+
+def ispvector(value):
+    from obin.types.pvector import W_PVector
+    return isinstance(value, W_PVector)
+
 
 ########################################################
 

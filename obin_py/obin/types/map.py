@@ -162,31 +162,6 @@ class Bindings:
         return max(self._minsize, size // 2)
 
 
-class TableIterator(W_Root):
-    def __init__(self, source, length):
-        assert isinstance(source, W_Map)
-        assert isinstance(length, int)
-        self.index = 0
-        self.source = source
-        self.source_length = length
-
-    def _next_(self):
-        while True:
-            if self.index >= self.source_length:
-                return space.newvoid()
-
-            pair = self.source.slot_bindings[self.index]
-            self.index += 1
-            key = pair[0]
-            if space.isvoid(key):
-                continue
-
-            return key
-
-    def _to_string_(self):
-        return "<TableIterator %d:%d>" % (self.index, self.source_length)
-
-
 class W_Map(W_Root):
     """
         Dict which supports access by key and by index
@@ -229,9 +204,6 @@ class W_Map(W_Root):
             clone.index = self.index
 
         return clone
-
-    def _iterator_(self):
-        return TableIterator(self, self._length_())
 
     def _type_(self, process):
         return process.std.types.Map

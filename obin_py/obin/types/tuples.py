@@ -1,5 +1,4 @@
 from obin.types.root import W_Hashable, W_Root
-from sequence import W_SequenceIterator
 from obin.runtime import error
 from obin.types import api, space, plist
 from obin.misc import platform
@@ -67,9 +66,6 @@ class W_Unit(W_Root):
 
     def _get_index_(self, obj):
         return platform.absent_index()
-
-    def _iterator_(self):
-        return self
 
     def _length_(self):
         return 0
@@ -140,9 +136,6 @@ class W_Tuple(W_Hashable):
             return self.elements.index(obj)
         except ValueError:
             return -1
-
-    def _iterator_(self):
-        return W_SequenceIterator(self)
 
     def _length_(self):
         return len(self.elements)

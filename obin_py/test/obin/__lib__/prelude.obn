@@ -50,7 +50,11 @@ trait Collection for self
     def at key self
     def del obj self
     def elem key self
-
+    //key?
+    //elem?
+    //put
+    //del
+    //empty?
 
 trait Num for x
     def - x y

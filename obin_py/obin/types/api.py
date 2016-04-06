@@ -150,9 +150,6 @@ def isempty(obj):
     return obj._length_() == 0
 
 
-def iterator(obj):
-    return obj._iterator_()
-
 
 """
 Traits

@@ -1,5 +1,4 @@
 from obin.types.root import W_Hashable, W_Root
-from sequence import W_SequenceIterator
 from obin.runtime import error
 from obin.runtime.stack import Stack
 from obin.types import api, space, plist
@@ -55,9 +54,6 @@ class W_Arguments(W_Root):
             if api.equal_b(item, obj):
                 return i
         return platform.absent_index()
-
-    def _iterator_(self):
-        return W_SequenceIterator(self)
 
     def _length_(self):
         return self.length
