@@ -115,7 +115,7 @@ class W_Vector(W_Root):
         self._items = self._items + [val] * times
 
     def exclude_index(self, idx):
-        assert idx > 0
+        assert idx >= 0
         items = self._items
         self._items = items[:idx] + items[idx + 1:]
 

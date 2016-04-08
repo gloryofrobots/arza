@@ -1,5 +1,5 @@
 import affirm
-import tests:test_operators
+//import tests:test_operators
 
 import tests:test_partial
 import tests:types:test_types
@@ -58,8 +58,9 @@ fun test() ->
     log "TEST DATASTRUCTS"
     test_datastructs:test()
 
-    log "TEST OPERATORS"
-    test_operators:test()
+//    log "TEST OPERATORS"
+//    test_operators:test()
+
 
 
 fun main() ->

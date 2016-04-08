@@ -276,14 +276,14 @@ class W_Map(W_Root):
     def keys_list(self):
         return space.newlist(self.keys())
 
-    def _remove_at_(self, name):
+    def _delete_(self, name):
         idx = self._get_index_(name)
         if platform.is_absent_index(idx):
-            raise RuntimeError("Illegal call")
+            return error.throw_1(error.Errors.KEY_ERROR, name)
 
         assert idx >= 0
         self.slot_values.exclude_index(idx)
-        del self.slot_bindings[name]
+        self.slot_bindings.delete(name)
 
 
 def _create_map(values, bindings, index):

@@ -88,11 +88,29 @@ class W_DataType(W_Hashable):
         self.descriptors = descriptors(self.fields)
         self.ctor = constructor
         self.derive = Derive()
+        self.derived_traits = plist.empty()
         self.traits = space.newmap()
+
+    def register_derived(self, trait):
+        if self.is_derived(trait):
+            return error.throw_3(error.Errors.TRAIT_ALREADY_IMPLEMENTED_ERROR,
+                                 space.newstring(u"Trait has already derived"), self, trait)
+
+        self.derived_traits = plist.cons(trait, self.derived_traits)
+
+    def is_derived(self, trait):
+        if plist.contains(self.derived_traits, trait):
+            return True
+        return False
+
+    def remove_trait_implementation(self, trait):
+        api.delete(self.traits, trait)
 
     def add_trait_implementation(self, trait, implementations):
         if self.is_trait_implemented(trait):
-            return error.throw_2(error.Errors.TRAIT_ALREADY_IMPLEMENTED_ERROR, self, trait)
+            if not self.is_derived(trait):
+                return error.throw_2(error.Errors.TRAIT_ALREADY_IMPLEMENTED_ERROR, self, trait)
+            self.remove_trait_implementation(trait)
 
         impl_map = space.newmap()
         for impl in implementations:
@@ -159,6 +177,7 @@ class W_DataType(W_Hashable):
     def _equal_(self, other):
         return other is self
 
+
 class W_Union(W_Hashable):
     def __init__(self, name, types):
         W_Hashable.__init__(self)
@@ -204,6 +223,7 @@ def derive_traits(process, _type, traits):
         implementations = process.std.traits.derive(_type, trait)
         for _t, _i in implementations:
             _implement_trait(_type, _t, _i)
+            _type.register_derived(_t)
 
 
 def implement_trait(_type, trait, implementations):
