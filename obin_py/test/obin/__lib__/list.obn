@@ -55,18 +55,21 @@ fun replicate count element ->
 implement Seq for List
     def first self -> _list:head self
     def rest self -> _list:tail self
+
+implement Constructable for List
     def cons value self -> _list:cons value self
-    def empty self -> []
---------------------------------------------------
 
 implement Seqable for List
     def to_seq self -> self
---------------------------------------------------
 
-
-implement Collection for List
+implement Sized for List
     def len self -> _list:length
     def is_empty self -> _list:is_empty self
+
+implement Emptiable for List
+    def empty self -> []
+
+implement Collection for List
     def put key value self -> _list:put key value self
     def at key self -> _list:at key self
     def del key self -> _list:del key self

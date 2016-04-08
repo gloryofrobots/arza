@@ -35,7 +35,6 @@ TOKENS = [
 
   ("TT_OF", "of"),
   ("TT_AS", "as"),
-  ("TT_VAR", "var"),
   ("TT_LAZY", "lazy"),
   ("TT_AND", "and"),
   ("TT_OR", "or"),

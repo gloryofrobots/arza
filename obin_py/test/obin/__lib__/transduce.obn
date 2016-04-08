@@ -10,7 +10,9 @@ type WrapTransformer fn
 implement Transformer for WrapTransformer
     def init self -> throw NotImplementedError #init
     def result self acc -> acc
-    def step self input acc -> self.fn input acc
+    def step self input acc ->
+//        print "WRAP" self.fn
+        self.fn input acc
 
 fun wrap f
     | f of Transformer -> f
@@ -37,9 +39,12 @@ fun unreduced x
 fun reduce_seq xf acc coll ->
     fun _reduce xf acc coll
         | xf acc [] ->
+//            print "_REDUCE END"
             acc
         | xf acc hd::tl ->
+//            print "_REDUCE STEP" xf
             acc1 = step xf hd acc
+//            print "ACC1" acc1
             if is_reduced acc1 ->
                 deref acc1
             else ->
@@ -62,8 +67,7 @@ fun reduce reduce_fun xf f init_val coll ->
 fun into init_val xf coll ->
     f = match init_val with
             | x of Appendable -> append
-            | x of Seq -> lam x acc ->
-                                x::acc
+            | x of Seq -> cons
             | x of Dict ->
                 lam entry coll
                     | (key, val) coll -> put key val coll
@@ -92,8 +96,9 @@ implement Transformer for MapTransformer
     def init self -> init self.xf
     def result self acc -> result self.xf acc
     def step self val acc ->
-//        print "MAP STEP"
-        step self.xf (self.f val) acc
+        res = step self.xf (self.f val) acc
+//        print "MAP STEP" res self.xf
+        res
 
 fun map f xf -> MapTransformer f xf
 
@@ -156,7 +161,8 @@ implement Transformer for TakeWhileTransformer
         if self.predicate val ->
            step self.xf val acc
         else ->
-            reduced acc
+            //TAKE WHILE REDUCED acc
+            ensure_reduced acc
 
 // Like the take transducer except takes as long as the pred
 // return true for inputs.
@@ -208,37 +214,38 @@ implement Transformer for DropWhileTransformer
 fun drop_while predicate xf -> DropWhileTransformer (var True) predicate xf
 
 
-// Given a transformer returns a transformer which preserves
-// reduced by wrapping one more time. See cat.
-type PreserveReduced xf
-implement Transformer for PreserveReduced
-    def init self -> init self.xf
-    def result self acc -> acc
-    def step self val acc ->
-        ret = step self.xf val acc
-        if is_reduced ret ->
-            reduced ret
-        else ->
-            ret
-
-fun preserve_reduced xf -> PreserveReduced xf
-
-type CatTransformer xf rxf
-implement Transformer for CatTransformer
-    def init self -> init self.xf
-    def result self acc -> result self.xf acc
-    def step self val acc ->
-        res = reduce_seq self.rxf val acc
-        res
-
-// Given a transformer return a concatenating transformer
-fun cat xf -> CatTransformer xf (preserve_reduced xf)
-
-// A mapping concatenating transformer
-fun mapcat f -> (map f) << cat
 
 derive Dict for (Reduced, MapTransformer, FilterTransformer, WrapTransformer,
                  CompletingTransformer, TakeTransformer, TakeWhileTransformer,
-                 TakeNthTransformer, DropTransformer, DropWhileTransformer,
-                 PreserveReduced, CatTransformer
+                 TakeNthTransformer, DropTransformer, DropWhileTransformer
+//               , PreserveReduced, CatTransformer
                  )
+
+//// Given a transformer returns a transformer which preserves
+//// reduced by wrapping one more time. See cat.
+//type PreserveReduced xf
+//implement Transformer for PreserveReduced
+//    def init self -> init self.xf
+//    def result self acc -> acc
+//    def step self val acc ->
+//        ret = step self.xf val acc
+//        if is_reduced ret ->
+//            reduced ret
+//        else ->
+//            ret
+//
+//fun preserve_reduced xf -> PreserveReduced xf
+//
+//type CatTransformer xf rxf
+//implement Transformer for CatTransformer
+//    def init self -> init self.xf
+//    def result self acc -> result self.xf acc
+//    def step self val acc ->
+//        res = reduce_seq self.rxf val acc
+//        res
+//
+//// Given a transformer return a concatenating transformer
+//fun cat xf -> CatTransformer xf (preserve_reduced xf)
+//
+//// A mapping concatenating transformer
+//fun mapcat f -> (map f) << cat

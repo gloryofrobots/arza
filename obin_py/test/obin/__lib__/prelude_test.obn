@@ -1,3 +1,4 @@
+import var
 prefix - negate
 //infixl < < 50
 //infixl > > 50
@@ -14,9 +15,14 @@ infixl |> |> 50
 
 
 fun f x ->
-    x `is` y
-    `+` 1 2
-    `::` 1 []
+    //PAREN is MISSING but we got NOT ALL LAYOUT IS CLOSED  error
+    1
+//    print (ts:into [] (ts:map lam x ->
+//                                    if x > 4 ->
+//                                        ts:reduced x
+//                                    else ->
+//                                        x
+//                              end) l
 end
 
 

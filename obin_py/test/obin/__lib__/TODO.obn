@@ -4,6 +4,8 @@
 
 //TODO ranges
 
+//TODO allow  'import from _fiber coroutine'
+
 //TODO proper or cases
 // match x with
 //    | 1 | 2 | 3 -> printfn "Found 1, 2, or 3!"
@@ -24,19 +26,14 @@
     //x=1; x=1; x=2->error
     //INSTEAD determine if it first assignment or it needs check
 
-//TODO ast transform
-//with ast transform you can add support for same syntax rules for tuples in patterns as for expressions
-//and add grouping with parens for any pattern which be very logical
-//and remove ridiculous code in signature parse
-
 //TODO compile function clauses into match instead of func
 
 //TODO think about default values
-//TODO remove constructs from types
-// make {} syntax in fields and constructing with keyword args
+//TODO make {} syntax in fields and constructing with keyword args
 
 //TODO remove NT_WHEN after refactoring pattern compiler
 //TODO add support for | in trait statement defs
+//TODO question marks at the end of names elem? empty?
 
 //TODO
 //// this is error prone code, currently branches not merged because

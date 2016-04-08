@@ -30,8 +30,8 @@ token = re.compile
 
 
 # valid  identifiers (K&R2: A.2.3), plus '$' (supported by some compilers)
-name_const = '[a-zA-Z_$][0-9a-zA-Z_$]*'
-typename = '[A-Z][0-9a-zA-Z_$]*'
+name_const = '[a-zA-Z_][0-9a-zA-Z_]*'
+typename = '[A-Z][0-9a-zA-Z_]*'
 operator_char = '^\s\,\.\@\#\)\(\]\[\}\{\;\w"`\''
 operator_const = '[%s]+' % operator_char
 
@@ -113,7 +113,6 @@ RULES = [
     (keyword('as'), TT_AS),
     (keyword('when'), TT_WHEN),
 
-    # (keyword('var'), TT_VAR),
     (keyword('lazy'), TT_LAZY),
 
     (keyword('infixl'), TT_INFIXL),

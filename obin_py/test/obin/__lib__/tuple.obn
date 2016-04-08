@@ -5,9 +5,10 @@ implement Eq for Tuple end
 implement Seqable for Tuple
     def to_seq self -> tuple:to_list self
 
+implement Sized for Tuple
+    def len self -> tuple:length
 
 implement Collection for Tuple
-    def len self -> tuple:length
     def put key value self -> tuple:put key value self
     def at key self -> tuple:at key self
     def del obj self -> tuple:del obj self

@@ -16,12 +16,13 @@ class Derive:
 
 class Methods:
     def __init__(self, traits):
-        self.len = self.find_method(u"len", traits.Collection)
-        self.is_empty = self.find_method(u"is_empty", traits.Collection)
         self.at = self.find_method(u"at", traits.Collection)
         self.put = self.find_method(u"put", traits.Collection)
         self.del_ = self.find_method(u"del", traits.Collection)
         self.elem = self.find_method(u"elem", traits.Collection)
+
+        self.len = self.find_method(u"len", traits.Sized)
+        self.is_empty = self.find_method(u"is_empty", traits.Sized)
 
         self.equal = self.find_method(u"==", traits.Eq)
         self.index_of = self.find_method(u"index_of", traits.Indexed)
@@ -51,6 +52,7 @@ class Traits:
         self.Dict = None
         self.Collection = None
         self.Seqable = None
+        self.Sized = None
         self.methods = None
 
     def find_trait(self, process, prelude, name):
@@ -67,6 +69,7 @@ class Traits:
         self.Dict = self.find_trait(process, prelude, u"Dict")
         self.Collection = self.find_trait(process, prelude, u"Collection")
         self.Seqable = self.find_trait(process, prelude, u"Seqable")
+        self.Sized = self.find_trait(process, prelude, u"Sized")
         self.methods = Methods(self)
 
     def str_methods(self):
@@ -99,7 +102,7 @@ class Traits:
                 ])
         ])
 
-    def collection_methods(self):
+    def sized_methods(self):
         return _l([
             _t([self.methods.len,
                 _f(self.methods.len.name, len_, 1)
@@ -107,6 +110,10 @@ class Traits:
             _t([self.methods.is_empty,
                 _f(self.methods.is_empty.name, is_empty_, 1)
                 ]),
+        ])
+
+    def collection_methods(self):
+        return _l([
             _t([self.methods.at,
                 _f(self.methods.at.name, at_, 2)
                 ]),
@@ -124,8 +131,8 @@ class Traits:
 
     def sequable_methods(self):
         return _l([
-            _t([self.methods.seq,
-                _f(self.methods.seq.name, seq_, 1)
+            _t([self.methods.to_seq,
+                _f(self.methods.to_seq.name, seq_, 1)
                 ]),
         ])
 
@@ -144,11 +151,15 @@ class Traits:
             _type.derive.collection = True
             if not _type.is_trait_implemented(self.Collection):
                 impls.append(_l([self.Collection, self.collection_methods()]))
+            if not _type.is_trait_implemented(self.Sized):
+                impls.append(_l([self.Sized, self.sized_methods()]))
             impls.append(_l([trait, self.indexed_methods()]))
 
         elif api.equal_b(self.Dict, trait):
             _type.derive.dict = True
             _type.derive.collection = True
+            if not _type.is_trait_implemented(self.Sized):
+                impls.append(_l([self.Sized, self.sized_methods()]))
             if not _type.is_trait_implemented(self.Collection):
                 impls.append(_l([self.Collection, self.collection_methods()]))
 
