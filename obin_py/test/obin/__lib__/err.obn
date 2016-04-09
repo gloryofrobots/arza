@@ -1,7 +1,1 @@
-derive (Eq, Str) for (TypeError, RuntimeError, ImportError, NotImplementedError,
-                     ZeroDivisionError, ReferenceError, ConstructorError, KeyError, ValueError,
-                     SliceError, IndexError, InvokeError, InvalidArgCount, MethodInvokeError,
-                     MethodNotImplementedError, MethodSpecializeError, CompileError, ParseError,
-                     UnpackSequenceError, FiberFlowError, MatchError, FunctionArgumentsMatchError,
-                     ExceptionMatchError, ExportError, TraitAlreadyImplementedError, TraitImplementationError,
-                     TraitConstraintError)
+fun x x -> x

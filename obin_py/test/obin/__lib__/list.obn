@@ -1,7 +1,6 @@
 import obin:lang:list as _list
 import from obin:lang:list (tail, head)
 import seq
-implement Eq for List end
 
 fun range (first of Int) (last of Int) ->
     step = -1 in_case last < 0 else 1
@@ -51,6 +50,7 @@ fun replicate count element ->
 ---------------------------------------------------
 
 //TRAITS
+implement Eq for List end
 
 implement Seq for List
     def first self -> _list:head self

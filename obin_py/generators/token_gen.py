@@ -20,8 +20,6 @@ TOKENS = [
   ("TT_WHILE", "while"),
 
   ("TT_IMPLEMENT", "implement"),
-  ("TT_DERIVE", "derive"),
-  ("TT_DERIVING", "deriving"),
   ("TT_DEF", "def"),
   ("TT_TYPE", "type"),
 

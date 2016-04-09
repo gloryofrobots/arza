@@ -70,10 +70,11 @@ class Traits:
 
     def str_methods(self):
         return _l([
-                _t([self.methods.str,
-                   _f(self.methods.str.name, str_, 1)
-                   ])
+            _t([self.methods.str,
+                _f(self.methods.str.name, str_, 1)
                 ])
+        ])
+
     def eq_methods(self):
         return _l([
             _t([self.methods.equal,
@@ -124,8 +125,16 @@ class Traits:
                 ]),
         ])
 
+    def derive_default_singleton(self, _type):
+        impls = []
+        impls.append(_l([self.Eq, self.eq_methods()]))
+        impls.append(_l([self.Str, self.str_methods()]))
 
-    def derive_default(self, _type):
+        _type.derive.str = True
+        _type.derive.eq = True
+        return impls
+
+    def derive_default_record(self, _type):
         impls = []
         impls.append(_l([self.Eq, self.eq_methods()]))
         impls.append(_l([self.Str, self.str_methods()]))
@@ -175,6 +184,7 @@ class Traits:
                                  space.newstring(u"Trait is not derivable"), trait, _type)
 
         return _l(impls)
+
 
 # Eq
 @complete_native_routine
@@ -263,5 +273,3 @@ def index_of_(process, routine):
     coll = routine.get_arg(1)
     error.affirm_type(coll, space.isrecord)
     return space.newint(coll.index_of(obj))
-
-

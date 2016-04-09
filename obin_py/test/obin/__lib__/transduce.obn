@@ -214,13 +214,6 @@ implement Transformer for DropWhileTransformer
 fun drop_while predicate xf -> DropWhileTransformer (var True) predicate xf
 
 
-
-//derive Dict for (Reduced, MapTransformer, FilterTransformer, WrapTransformer,
-//                 CompletingTransformer, TakeTransformer, TakeWhileTransformer,
-//                 TakeNthTransformer, DropTransformer, DropWhileTransformer
-////               , PreserveReduced, CatTransformer
-//                 )
-
 //// Given a transformer returns a transformer which preserves
 //// reduced by wrapping one more time. See cat.
 //type PreserveReduced xf

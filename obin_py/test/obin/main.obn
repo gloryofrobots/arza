@@ -61,7 +61,6 @@ fun test() ->
 //    log "TEST OPERATORS"
 //    test_operators:test()
 
-
 fun main() ->
     test()
 

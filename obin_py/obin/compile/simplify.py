@@ -39,12 +39,6 @@ def simplify_union(compiler, code, node):
     return nodes.create_assign_node(node, name_node, call_node)
 
 
-def simplify_derive(compiler, code, node):
-    traits = node_first(node)
-    types = node_second(node)
-    return nodes.create_call_node_s(node, lang_names.DERIVE, [traits, types])
-
-
 def simplify_implement(compiler, code, node):
     traitname_1_arg = node_first(node)
     typename_2_arg = node_second(node)

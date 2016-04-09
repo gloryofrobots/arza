@@ -768,14 +768,6 @@ def _parse_tuple_of_names(parser, term):
         return nodes.create_tuple_node(exp, [exp])
 
 
-def stmt_derive(parser, op, node):
-    # init_child_code_block(parser)
-    traits = _parse_tuple_of_names(parser.name_parser, TERM_BEFORE_FOR)
-    advance_expected(parser, TT_FOR)
-    types = _parse_tuple_of_names(parser.name_parser, None)
-    return node_2(NT_DERIVE, __ntok(node), traits, types)
-
-
 def _parse_union(parser, node, union_name):
     types = []
     init_offside_layout(parser, parser.node)

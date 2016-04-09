@@ -333,15 +333,6 @@ implement types:TestTrait for X
 implement X:x for T:t
 
 
-derive Dict for Val
-//
-derive (Eq, Str) for (TypeError, RuntimeError, ImportError, NotImplementedError,
-                     ZeroDivisionError, ReferenceError, ConstructorError, KeyError, ValueError,
-                     SliceError, IndexError, InvokeError, InvalidArgCount, MethodInvokeError,
-                     MethodNotImplementedError, MethodSpecializeError, CompileError, ParseError,
-                     UnpackSequenceError, FiberFlowError, MatchError, FunctionArgumentsMatchError,
-                     ExceptionMatchError, ExportError, TraitAlreadyImplementedError, TraitImplementationError,
-                     TraitConstraintError)
 type Maybe | Nothing
            | Just v
 

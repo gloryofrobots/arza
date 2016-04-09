@@ -212,7 +212,7 @@ def newtype(process, name, fields, constructor):
     if process.std.initialized is False:
         return _datatype
 
-    derive_default(process, _datatype)
+    derive_default(process, _datatype, api.is_empty_b(fields))
     return _datatype
 
 
@@ -222,9 +222,12 @@ def newunion(process, name, types):
     return _union
 
 
-def derive_default(process, _type):
-    traits = process.std.traits.derive_default(_type)
-    # print _type, traits
+def derive_default(process, _type, is_singleton):
+    if is_singleton:
+        traits = process.std.traits.derive_default_singleton(_type)
+    else:
+        traits = process.std.traits.derive_default_record(_type)
+
     for _t, _i in traits:
         _implement_trait(_type, _t, _i)
         _type.register_derived(_t)

@@ -101,7 +101,6 @@ RULES = [
     (keyword('implement'), TT_IMPLEMENT),
     (keyword('def'), TT_DEF),
     (keyword('type'), TT_TYPE),
-    (keyword('derive'), TT_DERIVE),
     (keyword('for'), TT_FOR),
 
     (keyword('export'), TT_EXPORT),

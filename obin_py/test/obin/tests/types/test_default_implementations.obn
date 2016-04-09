@@ -29,11 +29,7 @@ trait Order for x
 
 type Val v
 
-//derive Dict for Val
-
 type Val2 v
-
-//derive Dict for Val2
 
 implement Equal for Val
     def eq v1 v2 -> v1.v == v2.v

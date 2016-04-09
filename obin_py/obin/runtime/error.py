@@ -135,12 +135,15 @@ class Errors:
 
 
 def initialise(process):
-    from obin.types import api
+    from obin.types import api, datatype
     err_module = process.modules.prelude
     for key, errname in Errors.__dict__.items():
         if not key.endswith(u"_ERROR"):
             continue
 
         sym = space.newsymbol(process, errname)
-        if not api.contains(err_module, sym):
+        err_type = api.lookup(err_module, sym, space.newvoid())
+        if space.isvoid(err_type):
             panic(u"Missing type %s in prelude for internal error" % errname)
+
+        datatype.derive_default(process, err_type, False)

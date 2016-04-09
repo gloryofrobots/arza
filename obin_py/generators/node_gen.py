@@ -17,7 +17,6 @@ NODES = [
   "NT_TEMPORARY",
   "NT_SYMBOL",
 
-  "NT_DERIVE",
   "NT_TYPE",
   "NT_UNION",
   "NT_MAP",

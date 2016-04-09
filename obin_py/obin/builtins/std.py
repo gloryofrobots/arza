@@ -1,6 +1,6 @@
-from obin.types import api, space, plist
+from obin.types import api, space, plist, datatype
 from obin.runtime import error
-from obin.builtins.derived import Traits
+from obin.builtins import derived
 
 
 class Types:
@@ -28,13 +28,18 @@ class Types:
         self.TVar = newtype(_s(u"TVar"))
         self.Env = newtype(_s(u"Env"))
 
+    # def derive_single(self):
+    #
+    # def postsetup(self, process, traits):
+    #
+    #     pass
 
 
 
 class Std:
     def __init__(self, symbols):
         self.types = Types(symbols)
-        self.traits = Traits()
+        self.traits = derived.Traits()
         self.initialized = False
 
     def postsetup(self, process):

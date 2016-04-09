@@ -24,4 +24,3 @@ implement Variable for Var
     def ! self ->
         self.val #Read
 
-//derive Dict for Var
