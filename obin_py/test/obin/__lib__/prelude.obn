@@ -59,7 +59,7 @@ trait Str for self
 //trait FromStr for self of ToStr
 //    def from_str self
 
-trait Inspectable for self of (Str, Eq)
+trait Inspectable for self of Str
     def inspect self -> str self
 
 trait Sized for self
@@ -71,6 +71,7 @@ trait Collection for self
     def at key self
     def del obj self
     def elem key self
+
 
 trait Seq for self
     def first self
@@ -91,13 +92,15 @@ trait Appendable for self
     def ++ self other
     def append self value
 
-
 trait Dict for self of Collection
     def keys self
     def values self
 
-trait Indexed for self
+trait Indexed for self of Sized
     def index_of obj self
+//    def indexes self
+//    def last_index self -> len self - 1
+//    def at_index idx self -> at idx self
 
 trait Seqable for self
     def to_seq self

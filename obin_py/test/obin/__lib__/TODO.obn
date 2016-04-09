@@ -18,7 +18,11 @@
 //TODO meta
 //TODO remove voids as values in datastructs
 //TODO separate token streams
-//TODO proper deriving for records
+
+//TODO auto deriving
+//TODO REMOVE IMPLEMENTS FOR BASE TYPES
+
+
 //TODO PATTERN_MATCH_ERRORS as ERRORS NOT TUPLES
 //TODO nested block comments
 //TODO single value assignment support in compiler
