@@ -148,8 +148,7 @@ def __type(process, routine):
     name = routine.get_arg(0)
     fields = routine.get_arg(1)
     constructor = routine.get_arg(2)
-
-    _datatype = space.newdatatype(name, fields, constructor)
+    _datatype = space.newdatatype(process, name, fields, constructor)
     return _datatype
 
 
@@ -160,7 +159,7 @@ def __union(process, routine):
     error.affirm_type(name, space.issymbol)
     error.affirm_type(types, space.islist)
     error.affirm_iterable(types, space.isdatatype)
-    union = space.newunion(name, types)
+    union = space.newunion(process, name, types)
     return union
 
 

@@ -426,22 +426,24 @@ def istrait(w):
 
 ########################################################
 
-def newdatatype(name, fields, constructor):
-    from obin.types.datatype import W_DataType
+def newdatatype(process, name, fields, constructor):
+    from obin.types.datatype import newtype
     assert issymbol(name)
-    return W_DataType(name, fields, constructor)
+    return newtype(process, name, fields, constructor)
 
 
-def newunion(name, types):
-    from obin.types.datatype import W_Union
+def newunion(process, name, types):
+    from obin.types.datatype import newunion
     assert issymbol(name)
     assert islist(types)
 
-    return W_Union(name, types)
+    return newunion(process, name, types)
 
 
 def newnativedatatype(name):
-    datatype = newdatatype(name, newlist([]), newvoid())
+    from obin.types.datatype import W_DataType
+    assert issymbol(name)
+    datatype = W_DataType(name, newlist([]), newvoid())
     return datatype
 
 

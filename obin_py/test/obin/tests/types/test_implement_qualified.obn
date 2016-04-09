@@ -6,8 +6,8 @@ prefix ++-+*++ ++-+*++
 
 type X x
 
-derive Dict for X
-derive Dict for stuff:TestType
+//derive Dict for X
+//derive Dict for stuff:TestType
 
 trait TraitWithOp for self
     def ++-+*++ self -> self.val

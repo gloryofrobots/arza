@@ -1,8 +1,8 @@
 import affirm
 //import tests:test_operators
 
-import tests:test_partial
 import tests:types:test_types
+import tests:test_partial
 import tests:test_co
 import tests:test_destruct
 import tests:test_exception
@@ -60,7 +60,6 @@ fun test() ->
 
 //    log "TEST OPERATORS"
 //    test_operators:test()
-
 
 
 fun main() ->

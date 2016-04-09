@@ -54,9 +54,6 @@ class W_Record(W_Hashable):
             return False
         return api.equal_b(self.values, other.values)
 
-    def seq(self):
-        return self.values
-
     def keys(self):
         return self.type.fields
 
@@ -131,7 +128,12 @@ class W_DataType(W_Hashable):
         if impl_map is void:
             return void
 
-        impl = api.at(impl_map, method)
+        impl = api.lookup(impl_map, method, void)
+        if space.isvoid(impl):
+            error.throw_4(error.Errors.METHOD_INVOKE_ERROR, space.newstring(u"Invalid dispatch."
+                                                                            u"Method does not belong to trait"),
+                          trait, method, impl_map)
+
         return impl
 
     def has_constructor(self):
@@ -205,6 +207,29 @@ def _is_exist_implementation(method, impl):
     return api.equal_b(impl_method, method)
 
 
+def newtype(process, name, fields, constructor):
+    _datatype = W_DataType(name, fields, constructor)
+    if process.std.initialized is False:
+        return _datatype
+
+    derive_default(process, _datatype)
+    return _datatype
+
+
+def newunion(process, name, types):
+    _union = W_Union(name, types)
+    # TODO default derived and ENUM FOR UNION
+    return _union
+
+
+def derive_default(process, _type):
+    traits = process.std.traits.derive_default(_type)
+    # print _type, traits
+    for _t, _i in traits:
+        _implement_trait(_type, _t, _i)
+        _type.register_derived(_t)
+
+
 def derive_traits(process, _type, traits):
     if space.isunion(_type):
         for t in _type.types:
@@ -251,10 +276,11 @@ def _implement_trait(_type, trait, method_impls):
     error.affirm_type(_type, space.isdatatype)
     error.affirm_type(trait, space.istrait)
     error.affirm_type(method_impls, space.islist)
+    # print "IMPLEMENT ", _type, trait
     for constraint in trait.constraints:
         if not _type.is_trait_implemented(constraint):
-            error.throw_2(error.Errors.TRAIT_CONSTRAINT_ERROR,
-                          space.newstring(u"Unsatisfied trait constraint"), constraint)
+            error.throw_3(error.Errors.TRAIT_CONSTRAINT_ERROR,
+                          space.newstring(u"Unsatisfied trait constraint"), trait, constraint)
     # GET DEFAULTS FIRST
     for m in trait.methods:
         if plist.contains_with(method_impls, m, _is_exist_implementation):

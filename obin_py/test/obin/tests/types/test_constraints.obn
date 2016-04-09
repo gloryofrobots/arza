@@ -1,10 +1,22 @@
 import affirm
 
+trait T1 for self
+    def t1 self -> self
+
+trait T2 for self of T1
+    def t2 self -> self
+
 type X x
 
-derive Dict for X
 
 fun test () ->
-    affirm:is_throw lam () -> obin:lang:defimplement Ord X [[#<=, lam a b -> a.x<=b.x end]] end ()
+    //EQ is auto derived
+    affirm:is_not_throw lam () -> obin:lang:defimplement Ord X [[#<=, lam a b -> a.x<=b.x end]] end ()
     affirm:is_not_throw lam () -> obin:lang:defimplement Eq X [[#==, lam a b -> a.x==b.x end]] end ()
+
+    affirm:is_throw lam () -> obin:lang:defimplement T2 X [[#t2, lam self -> self end]] end ()
+    affirm:is_throw lam () -> obin:lang:defimplement T1 X [[#t2, lam self -> self end]] end ()
+    affirm:is_not_throw lam () -> obin:lang:defimplement T1 X [[#t1, lam self -> self end]] end ()
+    affirm:is_throw lam () -> obin:lang:defimplement T1 X [[#t1, lam self -> self end]] end ()
+    affirm:is_not_throw lam () -> obin:lang:defimplement T2 X [[#t2, lam self -> self end]] end ()
 

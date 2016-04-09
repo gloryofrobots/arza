@@ -277,13 +277,14 @@ class W_Map(W_Root):
         return space.newlist(self.keys())
 
     def _delete_(self, name):
-        idx = self._get_index_(name)
-        if platform.is_absent_index(idx):
-            return error.throw_1(error.Errors.KEY_ERROR, name)
-
-        assert idx >= 0
-        self.slot_values.exclude_index(idx)
-        self.slot_bindings.delete(name)
+        self._put_(name, space.newvoid())
+        # idx = self._get_index_(name)
+        # if platform.is_absent_index(idx):
+        #     return error.throw_1(error.Errors.KEY_ERROR, name)
+        #
+        # assert idx >= 0
+        # self.slot_values.exclude_index(idx)
+        # self.slot_bindings.delete(name)
 
 
 def _create_map(values, bindings, index):

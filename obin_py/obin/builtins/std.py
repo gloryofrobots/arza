@@ -35,6 +35,8 @@ class Std:
     def __init__(self, symbols):
         self.types = Types(symbols)
         self.traits = Traits()
+        self.initialized = False
 
     def postsetup(self, process):
         self.traits.postsetup(process)
+        self.initialized = True

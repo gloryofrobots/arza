@@ -11,7 +11,6 @@ class Derive:
         self.indexed = False
         self.dict = False
         self.collection = False
-        self.seqable = False
 
 
 class Methods:
@@ -26,8 +25,6 @@ class Methods:
 
         self.equal = self.find_method(u"==", traits.Eq)
         self.index_of = self.find_method(u"index_of", traits.Indexed)
-
-        self.to_seq = self.find_method(u"to_seq", traits.Seqable)
 
         self.str = self.find_method(u"str", traits.Str)
 
@@ -68,7 +65,6 @@ class Traits:
         self.Indexed = self.find_trait(process, prelude, u"Indexed")
         self.Dict = self.find_trait(process, prelude, u"Dict")
         self.Collection = self.find_trait(process, prelude, u"Collection")
-        self.Seqable = self.find_trait(process, prelude, u"Seqable")
         self.Sized = self.find_trait(process, prelude, u"Sized")
         self.methods = Methods(self)
 
@@ -129,12 +125,21 @@ class Traits:
         ])
 
 
-    def sequable_methods(self):
-        return _l([
-            _t([self.methods.to_seq,
-                _f(self.methods.to_seq.name, seq_, 1)
-                ]),
-        ])
+    def derive_default(self, _type):
+        impls = []
+        impls.append(_l([self.Eq, self.eq_methods()]))
+        impls.append(_l([self.Str, self.str_methods()]))
+        impls.append(_l([self.Collection, self.collection_methods()]))
+        impls.append(_l([self.Sized, self.sized_methods()]))
+        impls.append(_l([self.Indexed, self.indexed_methods()]))
+        impls.append(_l([self.Dict, self.dict_methods()]))
+
+        _type.derive.str = True
+        _type.derive.eq = True
+        _type.derive.collection = True
+        _type.derive.indexed = True
+        _type.derive.dict = True
+        return impls
 
     def derive(self, _type, trait):
         impls = []
@@ -165,9 +170,6 @@ class Traits:
 
             impls.append(_l([trait, self.dict_methods()]))
 
-        elif api.equal_b(self.Seqable, trait):
-            _type.derive.sequable = True
-            impls.append(_l([trait, self.sequable_methods()]))
         else:
             return error.throw_3(error.Errors.TRAIT_IMPLEMENTATION_ERROR,
                                  space.newstring(u"Trait is not derivable"), trait, _type)
@@ -263,9 +265,3 @@ def index_of_(process, routine):
     return space.newint(coll.index_of(obj))
 
 
-# Seqable
-@complete_native_routine
-def seq_(process, routine):
-    coll = routine.get_arg(0)
-    error.affirm_type(coll, space.isrecord)
-    return coll.seq()

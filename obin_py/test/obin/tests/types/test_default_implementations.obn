@@ -13,7 +13,7 @@ trait Order for x
     def lt x y -> (cmp x y) == LT
     def ge x y -> (cmp x y) != LT
     def gt x y -> (cmp x y) == GT
-    
+
     def cmp x y ->
         if eq x x -> EQ
         elif le x y -> LT
@@ -29,11 +29,11 @@ trait Order for x
 
 type Val v
 
-derive Dict for Val
+//derive Dict for Val
 
 type Val2 v
 
-derive Dict for Val2
+//derive Dict for Val2
 
 implement Equal for Val
     def eq v1 v2 -> v1.v == v2.v

@@ -6,7 +6,6 @@ type Point2 x y
 
 type Vec2 p1 p2
 
-derive (Dict, Indexed) for (Point2, Vec2)
 
 trait Add for self
     def add self a
