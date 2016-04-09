@@ -332,6 +332,44 @@ implement types:TestTrait for X
 
 implement X:x for T:t
 
+extend Tuple with Eq
+
+extend Tuple
+    with Seq
+        def first self -> _list:head self
+        def rest self -> _list:tail self
+
+
+extend List
+    with Eq
+    with Seq
+        def first self ->
+            match x with
+                | 1 -> 2
+                | 3 -> 4
+            _list:head self
+        def rest self -> _list:tail self
+    with Constructable
+        def cons value self -> _list:cons value self
+    with Seqable
+        def to_seq self ->
+            match x with
+                | 1 -> 2
+                | 3 -> 4
+    with Sized
+        def len self -> _list:length
+        def is_empty self -> _list:is_empty self
+    with Emptiable
+        def empty self -> []
+    with Collection
+        def put key value self -> _list:put key value self
+        def at key self -> _list:at key self
+        def del key self -> _list:del key self
+        def elem key self -> _list:elem key self
+    with Sliceable
+        def slice first last self -> _list:slice first last self
+        def drop count self -> _list:drop count self
+        def take count self -> _list:take count self
 
 type Maybe | Nothing
            | Just v

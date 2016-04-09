@@ -411,6 +411,7 @@ def module_parser_init(parser):
     stmt(parser, TT_TRAIT, stmt_trait)
     stmt(parser, TT_TYPE, stmt_type)
     stmt(parser, TT_IMPLEMENT, stmt_implement)
+    stmt(parser, TT_EXTEND, stmt_extend)
     stmt(parser, TT_IMPORT, stmt_import)
     stmt(parser, TT_EXPORT, stmt_export)
     # stmt(parser, TT_MODULE, stmt_module)

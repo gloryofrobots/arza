@@ -99,6 +99,7 @@ RULES = [
 
     (keyword('trait'), TT_TRAIT),
     (keyword('implement'), TT_IMPLEMENT),
+    (keyword('extend'), TT_EXTEND),
     (keyword('def'), TT_DEF),
     (keyword('type'), TT_TYPE),
     (keyword('for'), TT_FOR),

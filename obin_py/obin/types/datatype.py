@@ -254,6 +254,14 @@ def derive_traits(process, _type, traits):
             _type.register_derived(_t)
 
 
+def extend_type(_type, traits):
+    for trait_data in traits:
+        trait = trait_data[0]
+        impls = trait_data[1]
+        implement_trait(_type, trait, impls)
+    return _type
+
+
 def implement_trait(_type, trait, implementations):
     if space.isunion(_type):
         for t in _type.types:

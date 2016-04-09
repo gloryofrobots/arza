@@ -40,7 +40,6 @@ def initialize(libdirs):
     path = space.newlist([space.newstring_s(p) for p in libdirs])
 
     process = newprocess(path)
-    # space.initialise(processs)
     err = load_prelude(process, PRELUDE_FILE)
     if err is not None:
         return process, err

@@ -959,6 +959,10 @@ def _compile_TRAIT(compiler, code, node):
     _compile(compiler, code, methods)
 
 
+def _compile_EXTEND(compiler, code, node):
+    simplified = simplify.simplify_extend(compiler, code, node)
+    _compile(compiler, code, simplified)
+
 def _compile_IMPLEMENT(compiler, code, node):
     simplified = simplify.simplify_implement(compiler, code, node)
     _compile(compiler, code, simplified)
@@ -1117,6 +1121,8 @@ def _compile_node(compiler, code, node):
         _compile_TRAIT(compiler, code, node)
     elif NT_IMPLEMENT == ntype:
         _compile_IMPLEMENT(compiler, code, node)
+    elif NT_EXTEND == ntype:
+        _compile_EXTEND(compiler, code, node)
     elif NT_THROW == ntype:
         _compile_THROW(compiler, code, node)
     elif NT_CALL == ntype:

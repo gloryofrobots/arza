@@ -49,38 +49,32 @@ fun replicate count element ->
     --------------------------------
 ---------------------------------------------------
 
-//TRAITS
-implement Eq for List end
+extend List
+    with Eq
+    with Seq
+        def first self -> _list:head self
+        def rest self -> _list:tail self
+    with Constructable
+        def cons value self -> _list:cons value self
+    with Seqable
+        def to_seq self -> self
+    with Sized
+        def len self -> _list:length
+        def is_empty self -> _list:is_empty self
+    with Emptiable
+        def empty self -> []
+    with Collection
+        def put key value self -> _list:put key value self
+        def at key self -> _list:at key self
+        def del key self -> _list:del key self
+        def elem key self -> _list:elem key self
+    with Sliceable
+        def slice first last self -> _list:slice first last self
+        def drop count self -> _list:drop count self
+        def take count self -> _list:take count self
 
-implement Seq for List
-    def first self -> _list:head self
-    def rest self -> _list:tail self
 
-implement Constructable for List
-    def cons value self -> _list:cons value self
 
-implement Seqable for List
-    def to_seq self -> self
-
-implement Sized for List
-    def len self -> _list:length
-    def is_empty self -> _list:is_empty self
-
-implement Emptiable for List
-    def empty self -> []
-
-implement Collection for List
-    def put key value self -> _list:put key value self
-    def at key self -> _list:at key self
-    def del key self -> _list:del key self
-    def elem key self -> _list:elem key self
----------------------------------
-
-implement Sliceable for List
-    def slice first last self -> _list:slice first last self
-    def drop count self -> _list:drop count self
-    def take count self -> _list:take count self
----------------------------------
 
 //
 ////TRANSFORMERS///////////////////////////////////////////////////////

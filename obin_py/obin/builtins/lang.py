@@ -39,6 +39,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.METHOD, __method, 4)
     put_lang_func(process, module, lang_names.TRAIT, __trait, 3)
     put_lang_func(process, module, lang_names.IMPLEMENT, __implement, 3)
+    put_lang_func(process, module, lang_names.EXTEND, __extend, 2)
     put_lang_func(process, module, lang_names.DERIVE, __derive, 2)
     put_lang_func(process, module, lang_names.PARTIAL, __partial, 1)
 
@@ -202,6 +203,12 @@ def __implement(process, routine):
     _type = datatype.implement_trait(_type, _trait, _impls)
     return _type
 
+@complete_native_routine
+def __extend(process, routine):
+    _type = routine.get_arg(0)
+    _traits = routine.get_arg(1)
+    _type = datatype.extend_type(_type, _traits)
+    return _type
 
 @complete_native_routine
 def __partial(process, routine):
