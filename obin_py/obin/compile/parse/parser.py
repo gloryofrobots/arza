@@ -172,6 +172,7 @@ def name_parser_init(parser):
     symbol(parser, TT_INDENT, None)
     init_parser_literals(parser)
     symbol(parser, TT_CASE, None)
+    symbol(parser, TT_ASSIGN, None)
     symbol(parser, TT_ELLIPSIS, None)
     symbol(parser, TT_ENDSTREAM)
 
@@ -402,6 +403,7 @@ def module_parser_init(parser):
     prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly, layout_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
+    prefix(parser, TT_LAMBDA, prefix_lambda)
 
     assignment(parser, TT_ASSIGN, 10)
     infix(parser, TT_DOT, 95, infix_dot)

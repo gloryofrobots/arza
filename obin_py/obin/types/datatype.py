@@ -269,12 +269,20 @@ def implement_trait(_type, trait, implementations):
 
     error.affirm_type(_type, space.isdatatype)
     error.affirm_type(trait, space.istrait)
-    error.affirm_type(implementations, space.islist)
+    if space.ispmap(implementations):
+        methods = plist.empty()
+        for method in trait.methods:
+            impl = api.lookup(implementations, method.name, space.newvoid())
+            if not space.isvoid(impl):
+                methods = plist.cons( space.newtuple([method.name, impl]), methods)
+    else:
+        methods = implementations
     method_impls = plist.empty()
     # Collect methods by names from trait
-    for im in implementations:
+    for im in methods:
         method_name = api.at_index(im, 0)
         fn = api.at_index(im, 1)
+        error.affirm_type(fn, space.isfunction)
         method = trait.find_method_by_name(method_name)
         if space.isvoid(method):
             error.throw_2(error.Errors.TRAIT_IMPLEMENTATION_ERROR,

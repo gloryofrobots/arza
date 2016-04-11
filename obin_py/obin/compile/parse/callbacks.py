@@ -922,24 +922,26 @@ def stmt_extend(parser, op, node):
         advance_expected(parser, TT_WITH)
         trait_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_EXTEND_TRAIT)
         skip_indent(parser)
-
-        methods = []
-        # support for form "extend Tuple with Eq" without defs
-
-        if parser.token_type == TT_DEF:
+        if parser.token_type == TT_ASSIGN:
+            advance(parser)
+            implementation = expression(parser, 0, TERM_EXTEND_MIXIN_TRAIT)
+        elif parser.token_type == TT_DEF:
             init_offside_layout(parser, parser.node)
+            methods = []
 
-        while parser.token_type == TT_DEF:
-            advance_expected(parser, TT_DEF)
-            method_name = expect_expression_of(parser.name_parser, 0, NT_NAME)
-            method_name = nodes.create_symbol_node_s(method_name, nodes.node_value_s(method_name))
+            while parser.token_type == TT_DEF:
+                advance_expected(parser, TT_DEF)
+                method_name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+                method_name = nodes.create_symbol_node_s(method_name, nodes.node_value_s(method_name))
 
-            funcs = _parse_function(parser.expression_parser,
-                                    TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_EXTEND_BODY, TERM_EXTEND_BODY)
-            methods.append(list_node([method_name, funcs]))
-
+                funcs = _parse_function(parser.expression_parser,
+                                        TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_EXTEND_BODY, TERM_EXTEND_BODY)
+                methods.append(list_node([method_name, funcs]))
+            implementation = list_node(methods)
+        else:
+            implementation = list_node([])
         # advance_end(parser)
-        traits.append(list_node([trait_name, list_node(methods)]))
+        traits.append(list_node([trait_name, implementation]))
 
     advance_end(parser)
     return nodes.node_2(NT_EXTEND, __ntok(node), type_name, list_node(traits))

@@ -65,20 +65,25 @@ def simplify_extend(compiler, code, node):
     traits_list = []
     for trait_data in traits:
         trait_name = trait_data[0]
-        methods = trait_data[1]
-        methods_list = []
-        for method in methods:
-            method_name = method[0]
-            method_impl = method[1]
-            method_arg = nodes.create_tuple_node(method_name, [
-                method_name,
-                nodes.create_fun_node(method_name, nodes.empty_node(), method_impl)
-            ])
+        impls = trait_data[1]
+        #MIXINS suuport
+        if nodes.is_list_node(impls):
+            methods_list = []
+            for method in impls:
+                method_name = method[0]
+                method_impl = method[1]
+                method_arg = nodes.create_tuple_node(method_name, [
+                    method_name,
+                    nodes.create_fun_node(method_name, nodes.empty_node(), method_impl)
+                ])
 
-            methods_list.append(method_arg)
+                methods_list.append(method_arg)
 
-        methods_node = nodes.create_list_node(trait_name, methods_list)
-        traits_list.append(nodes.create_list_node(trait_name, [trait_name, methods_node]))
+            implementation = nodes.create_list_node(trait_name, methods_list)
+        else:
+            implementation = impls
+
+        traits_list.append(nodes.create_list_node(trait_name, [trait_name, implementation]))
 
     traits_2_arg = nodes.create_list_node(node, traits_list)
     return nodes.create_call_node_s(node, lang_names.EXTEND, [typename_1_arg, traits_2_arg])

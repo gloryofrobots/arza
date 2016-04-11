@@ -1,20 +1,16 @@
 import obin:lang:tuple
-
-implement Eq for Tuple end
-
-implement Seqable for Tuple
-    def to_seq self -> tuple:to_list self
-
-implement Sized for Tuple
-    def len self -> tuple:length
-
-implement Collection for Tuple
-    def put key value self -> tuple:put key value self
-    def at key self -> tuple:at key self
-    def del obj self -> tuple:del obj self
-    def elem key self -> tuple:elem key self
-
-implement Sliceable for Tuple
-    def slice first last self -> tuple:slice first last self
-    def drop count self -> tuple:drop count self
-    def take count self -> tuple:take count self
+extend Tuple
+    with Seqable
+        def to_seq self -> tuple:to_list self
+    with Eq
+    with Sized
+        def len self -> tuple:length
+    with Collection
+        def put key value self -> tuple:put key value self
+        def at key self -> tuple:at key self
+        def del obj self -> tuple:del obj self
+        def elem key self -> tuple:elem key self
+    with Sliceable
+        def slice first last self -> tuple:slice first last self
+        def drop count self -> tuple:drop count self
+        def take count self -> tuple:take count self

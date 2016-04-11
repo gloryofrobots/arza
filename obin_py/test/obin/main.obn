@@ -61,6 +61,33 @@ fun test() ->
 //    log "TEST OPERATORS"
 //    test_operators:test()
 
+trait Trait1 for self
+    def f1 self
+    def f2 self
+
+trait Trait2 for self
+    def f3 self
+    def f4 self
+
+MixinTrait1 = {
+    f1 = lam x -> 12 end,
+    f2 = lam x -> 13 end
+}
+
+type Type1 val1
+type Type2 val2
+
+extend Type1
+    with Trait1 = MixinTrait1
+    with Trait2
+//        def f3 = MixinTrait1.f1
+        def f3 self -> self
+        def f4 self -> self
+
 fun main() ->
+    t = Type1 42
+    print (f1 t)
+    print (f2 t)
+    
     test()
 

@@ -19,8 +19,8 @@
 //TODO remove voids as values in datastructs
 //TODO separate token streams
 
-//TODO auto deriving
 //TODO REMOVE IMPLEMENTS FOR BASE TYPES
+//TODO MIXINS
 
 
 //TODO PATTERN_MATCH_ERRORS as ERRORS NOT TUPLES
