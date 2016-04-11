@@ -82,6 +82,12 @@ class W_DataType(W_Hashable):
 
         self.name = name
         self.fields = fields
+
+        if plist.is_empty(self.fields):
+            self.is_singleton = True
+        else:
+            self.is_singleton = False
+
         self.descriptors = descriptors(self.fields)
         self.ctor = constructor
         self.derive = Derive()
@@ -275,8 +281,16 @@ def implement_trait(_type, trait, implementations):
             impl = api.lookup(implementations, method.name, space.newvoid())
             if not space.isvoid(impl):
                 methods = plist.cons( space.newtuple([method.name, impl]), methods)
-    else:
+    elif space.isdatatype(implementations):
+        methods = plist.empty()
+        for method in trait.methods:
+            impl = implementations.get_method_implementation(method)
+            methods = plist.cons( space.newtuple([method.name, impl]), methods)
+    elif space.islist(implementations):
         methods = implementations
+    else:
+        return error.throw_2(error.Errors.TYPE_ERROR, u"Invalid trait implementation source."
+                                               u"Expected one of Map,List,Type", implementations)
     method_impls = plist.empty()
     # Collect methods by names from trait
     for im in methods:
