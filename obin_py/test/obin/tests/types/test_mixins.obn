@@ -1,0 +1,38 @@
+import affirm
+
+trait Trait1 for self
+    def f1 self
+    def f2 self
+
+trait Trait2 for self
+    def f3 self
+    def f4 self -> 114
+
+MixinTrait1 = {
+    f1 = lam x -> 12 end,
+    f2 = lam x -> 13 end
+}
+
+type Type1 val1
+type Type2 val2
+type Type3
+
+extend Type2
+    with Trait2
+        def f3 _ -> 111
+
+extend Type1
+    with Trait1 = MixinTrait1
+    with Trait2 = Type2
+
+extend Type3
+    with Trait1 = MixinTrait1
+    with Trait2 = Type2
+
+fun test() ->
+    t = Type1 42
+    affirm:is_equal [f1 t, f2 t, f3 t, f4 t] [12, 13, 111, 114]
+//    t3 = Type3
+//    print <| f1 t3
+//    affirm:is_equal [f1 t3, f2 t3, f3 t3, f4 t3] [12, 13, 111, 114]
+

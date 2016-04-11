@@ -86,6 +86,10 @@ def is_empty(obj):
 
 
 def is_empty_b(obj):
+    from obin.types import plist
+    if space.islist(obj):
+        return plist.is_empty(obj)
+
     return obj._length_() == 0
 
 

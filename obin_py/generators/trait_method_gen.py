@@ -26,6 +26,7 @@ METHODS = [
         method("slice", "slice", ["self","from", "to"], "hp_slice"),
         method("take", "take", ["self","count"], "hp_take"),
         method("drop", "drop", ["self","count"], "hp_drop"),
+        method("is_empty", "is_empty", ["self"], "hp_is_empty"),
 ]
 
 

@@ -1,1 +1,5 @@
 implement Eq for String end
+//export (s, s1)
+
+fun s () -> #s
+fun s1 () -> #s1

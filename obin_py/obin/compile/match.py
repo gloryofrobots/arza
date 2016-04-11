@@ -89,8 +89,9 @@ def _process_cons(state, pattern, patterns, path):
     patterns = add_pattern(patterns, ["is_seq", _create_path_node(pattern, path)])
     head = nodes.node_first(pattern)
     tail = nodes.node_second(pattern)
-    patterns = add_pattern(patterns,
-                           ["isnot", _create_path_node(pattern, path), create_empty_list_node(head)])
+    patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(pattern, path)])
+    # patterns = add_pattern(patterns,
+    #                        ["isnot", _create_path_node(pattern, path), create_empty_list_node(head)])
 
     head_path = add_path(create_head_node(head), path)
     patterns = _process_pattern(state, head, patterns, head_path)
@@ -98,6 +99,7 @@ def _process_cons(state, pattern, patterns, path):
     tail_path = add_path(create_tail_node(tail), path)
     patterns = _process_pattern(state, tail, patterns, tail_path)
     return patterns
+
 
 def _process_list(state, pattern, patterns, path):
     patterns = add_pattern(patterns, ["is_seq", _create_path_node(pattern, path)])
@@ -110,8 +112,7 @@ def _process_list(state, pattern, patterns, path):
     patterns = add_pattern(patterns, ["list", _create_path_node(pattern, path), count])
 
     if count_i == 0:
-        return add_pattern(patterns, ["is", _create_path_node(pattern, path),
-                                      create_empty_list_node(pattern)])
+        return add_pattern(patterns, ["is_empty", _create_path_node(pattern, path)])
 
     # first process all args except last which might be ...rest param
     last_index = count_i - 1
@@ -121,8 +122,9 @@ def _process_list(state, pattern, patterns, path):
             if node_type(child) == NT_REST:
                 return transform_error(state, child, u'Invalid use of Rest')
 
-            patterns = add_pattern(patterns,
-                                   ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(child)])
+            patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(pattern, cur_path)])
+            # patterns = add_pattern(patterns,
+            #                        ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(child)])
 
             child_path = add_path(create_head_node(child), cur_path)
             cur_slice = create_tail_node(child)
@@ -135,8 +137,9 @@ def _process_list(state, pattern, patterns, path):
         child_path = cur_path
         patterns = _process_pattern(state, last_child, patterns, child_path)
     else:
-        patterns = add_pattern(patterns,
-                               ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(last_child)])
+        # patterns = add_pattern(patterns,
+        #                        ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(last_child)])
+        patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(pattern, cur_path)])
         child_path = add_path(create_head_node(last_child), cur_path)
         # process child
         patterns = _process_pattern(state, last_child, patterns, child_path)
@@ -145,8 +148,9 @@ def _process_list(state, pattern, patterns, path):
         # IMPORTANT IT NEED TO BE THE LAST CHECK, OTHERWISE CACHED VARIABLES WILL NOT INITIALIZE
         last_slice = create_tail_node(last_child)
         last_path = add_path(last_slice, cur_path)
-        patterns = add_pattern(patterns, ["is", _create_path_node(pattern, last_path),
-                                          create_empty_list_node(last_child)])
+        # patterns = add_pattern(patterns, ["is", _create_path_node(pattern, last_path),
+        #                                   create_empty_list_node(last_child)])
+        return add_pattern(patterns, ["is_empty", _create_path_node(pattern, last_path)])
     return patterns
 
 
@@ -349,6 +353,7 @@ def _prepend_to_body(statements, body):
     assert space.islist(body)
     return plist.concat(list_node(statements), body)
 
+
 ###################################################################################
 ###################################################################################
 
@@ -398,6 +403,26 @@ def _transform_is_map(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_node(arg_node,
                                 create_is_dict_node(arg_node, arg_node),
+                                create_true_node(arg_node))
+
+    condition, prefixes1 = _history_get_condition(history, _condition)
+    return arg_node, condition, prefixes + prefixes1, variables
+
+
+def _transform_is_not_empty(history, head, variables):
+    arg_node, prefixes = _history_get_var(history, head[1])
+    _condition = create_is_node(arg_node,
+                                create_is_empty_node(arg_node, arg_node),
+                                create_false_node(arg_node))
+
+    condition, prefixes1 = _history_get_condition(history, _condition)
+    return arg_node, condition, prefixes + prefixes1, variables
+
+
+def _transform_is_empty(history, head, variables):
+    arg_node, prefixes = _history_get_var(history, head[1])
+    _condition = create_is_node(arg_node,
+                                create_is_empty_node(arg_node, arg_node),
                                 create_true_node(arg_node))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -483,11 +508,11 @@ def _transform_is(history, head, variables):
 def _create_in_and_chain(keys, map_node):
     key, rest = plist.split(keys)
     in_node = create_elem_node(map_node,
-                             create_symbol_node(map_node,
-                                                create_name_node_s(
-                                                    map_node,
-                                                    api.to_s(key))),
-                             map_node)
+                               create_symbol_node(map_node,
+                                                  create_name_node_s(
+                                                      map_node,
+                                                      api.to_s(key))),
+                               map_node)
     if plist.is_empty(rest):
         return in_node
 
@@ -542,6 +567,8 @@ def _skip_transform(history, head, variables):
 
 
 TRANSFORM_DISPATCH = {
+    "is_empty": _transform_is_empty,
+    "is_not_empty": _transform_is_not_empty,
     "is_indexed": _transform_is_indexed,
     "is_seq": _transform_is_seq,
     "is_map": _transform_is_map,

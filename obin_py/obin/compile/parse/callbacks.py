@@ -709,9 +709,10 @@ def stmt_import(parser, op, node):
 
 
 def stmt_export(parser, op, node):
-    check_token_type(parser, TT_LPAREN)
+    check_token_types(parser, [TT_LPAREN, TT_NAME])
     names = expression(parser.import_names_parser, 0)
-    check_node_type(parser, names, NT_TUPLE)
+    check_node_types(parser, names, [NT_TUPLE, NT_NAME])
+    names = ensure_tuple(names)
     check_list_node_types(parser, nodes.node_first(names), [NT_NAME])
     return node_1(NT_EXPORT, __ntok(node), names)
 

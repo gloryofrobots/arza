@@ -31,6 +31,8 @@ class Methods:
         self.keys = self.find_method(u"keys", traits.Dict)
         self.values = self.find_method(u"values", traits.Dict)
 
+        self.to_seq = self.find_method(u"to_seq", traits.Seqable)
+
     def find_method(self, name, trait):
         method = trait.find_method_by_name(space.newstring(name))
         if space.isvoid(method):
@@ -48,8 +50,9 @@ class Traits:
         self.Indexed = None
         self.Dict = None
         self.Collection = None
-        self.Seqable = None
         self.Sized = None
+        self.Seq = None
+        self.Seqable = None
         self.methods = None
 
     def find_trait(self, process, prelude, name):
@@ -66,6 +69,8 @@ class Traits:
         self.Dict = self.find_trait(process, prelude, u"Dict")
         self.Collection = self.find_trait(process, prelude, u"Collection")
         self.Sized = self.find_trait(process, prelude, u"Sized")
+        self.Seq = self.find_trait(process, prelude, u"Seq")
+        self.Seqable = self.find_trait(process, prelude, u"Seqable")
         self.methods = Methods(self)
 
     def str_methods(self):

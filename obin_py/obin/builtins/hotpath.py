@@ -194,6 +194,12 @@ def hp_le(process, args):
 
 
 ############################################################
+def hp_is_empty(process, args):
+    left = api.at_index(args, 0)
+    if not space.isrecord(left):
+        return api.is_empty(left)
+    else:
+        return None
 
 def hp_cons(process, args):
     left = api.at_index(args, 0)

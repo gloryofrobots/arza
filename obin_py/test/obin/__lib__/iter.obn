@@ -1,0 +1,28 @@
+//export (list_generator, ListGenerator)
+
+type Empty
+type ListGenerator val fn
+
+extend ListGenerator
+    with Seqable
+        def to_seq self -> self
+    with Seq
+        def first self ->
+            self.val
+        def rest self ->
+            try
+                ListGenerator (self.fn ()) self.fn
+            catch e of StopIterationError ->
+                []
+    with Sized
+        def len self -> NotImplementedError len
+        def is_empty self -> self.val == Empty
+
+    with Emptiable
+        def empty self -> []
+
+fun list_generator fn ->
+    val = fn ()
+    ListGenerator val fn
+
+

@@ -242,9 +242,12 @@ def is_indexed(process, routine):
 def is_seq(process, routine):
     from obin.types.space import islist, newbool
     v1 = routine.get_arg(0)
-    if not islist(v1):
-        return newbool(False)
-    return newbool(True)
+    if islist(v1):
+        return newbool(True)
+    if api.kindof_b(process, v1,  process.std.traits.Seq):
+        return newbool(True)
+
+    return newbool(False)
 
 
 @complete_native_routine
