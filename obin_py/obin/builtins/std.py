@@ -25,7 +25,7 @@ class Types:
         self.Fiber = newtype(_s(u"Fiber"))
         self.Trait = newtype(_s(u"Trait"))
         self.Datatype = newtype(_s(u"Datatype"))
-        self.TVar = newtype(_s(u"TVar"))
+        self.LazyVal = newtype(_s(u"LazyVal"))
         self.Env = newtype(_s(u"Env"))
 
     # def derive_single(self):

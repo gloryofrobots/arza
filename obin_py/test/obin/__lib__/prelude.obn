@@ -1,5 +1,5 @@
 import from obin:core:types (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
-                             Function, Generic, Method, NativeFunction, Fiber, Trait, Datatype, TVar, Env)
+                             Function, Generic, Method, NativeFunction, Fiber, Trait, Datatype, LazyVal, Env)
 
 prefix - negate
 prefix ! ! 10
@@ -111,9 +111,11 @@ trait Sliceable for self
     def drop count self
     def take count self
 
-trait Variable for self
-    def := self value
+trait Ref for self
     def ! self
+
+trait MutRef for self of Ref
+    def := self value
 
 //ERRORS
 //TODO MAKE THIS DECLARATION ONE MACRO
@@ -144,7 +146,7 @@ type ExportError args
 type TraitAlreadyImplementedError args
 type TraitImplementationError args
 type TraitConstraintError args
-type StopIterationError args
+type args
 
 //FUNS
 fun lookup key default coll ->

@@ -27,6 +27,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'traits', traits, 1)
     api.put_native_function(process, module, u'get_type', _type, 1)
     api.put_native_function(process, module, u'range', _range, 2)
+    api.put_native_function(process, module, u'lazyval', _lazyval, 1)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
     put_lang_func(process, module, lang_names.IS_INDEXED, is_indexed, 1)
     put_lang_func(process, module, lang_names.IS_SEQ, is_seq, 1)
@@ -128,6 +129,13 @@ def _type(process, routine):
 
 
 @complete_native_routine
+def _lazyval(process, routine):
+    left = routine.get_arg(0)
+    error.affirm_type(left, space.isfunction)
+    return space.newlazyval(left)
+
+
+@complete_native_routine
 def __not(process, routine):
     left = routine.get_arg(0)
     error.affirm_type(left, space.isboolean)
@@ -203,12 +211,14 @@ def __implement(process, routine):
     _type = datatype.implement_trait(_type, _trait, _impls)
     return _type
 
+
 @complete_native_routine
 def __extend(process, routine):
     _type = routine.get_arg(0)
     _traits = routine.get_arg(1)
     _type = datatype.extend_type(_type, _traits)
     return _type
+
 
 @complete_native_routine
 def __partial(process, routine):
@@ -244,7 +254,7 @@ def is_seq(process, routine):
     v1 = routine.get_arg(0)
     if islist(v1):
         return newbool(True)
-    if api.kindof_b(process, v1,  process.std.traits.Seq):
+    if api.kindof_b(process, v1, process.std.traits.Seq):
         return newbool(True)
 
     return newbool(False)

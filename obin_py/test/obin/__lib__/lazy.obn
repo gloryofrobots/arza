@@ -1,0 +1,5 @@
+
+extend LazyVal
+    with Ref
+        def ! self -> self ()
+

@@ -204,6 +204,17 @@ def ispartial(w):
     from obin.types.partial import W_Partial
     return isinstance(w, W_Partial)
 
+########################################################
+
+def newlazyval(func):
+    from obin.types.lazyval import W_LazyVal
+    return W_LazyVal(func)
+
+
+def islazyval(w):
+    from obin.types.lazyval import W_LazyVal
+    return isinstance(w, W_LazyVal)
+
 
 ########################################################
 

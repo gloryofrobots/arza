@@ -38,7 +38,7 @@ TYPES = [
 
     mktype("Trait", [A]),
     mktype("Datatype", [A]),
-    mktype("TVar", [A]),
+    mktype("LazyVal", [A]),
     mktype("Env", [A]),
 ]
 

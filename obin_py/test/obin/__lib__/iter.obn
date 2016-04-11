@@ -13,7 +13,7 @@ extend ListGenerator
             try
                 ListGenerator (self.fn ()) self.fn
             catch e of StopIterationError ->
-                []
+                ListGenerator (Empty) self.fn
     with Sized
         def len self -> NotImplementedError len
         def is_empty self -> self.val == Empty

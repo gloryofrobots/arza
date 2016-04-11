@@ -18,9 +18,11 @@ fun var v ->
     co v
     Var co
 
-implement Variable for Var
-    def := self value ->
-        self.val (#Write, value)
-    def ! self ->
-        self.val #Read
+extend Var
+    with Ref
+        def ! self ->
+            self.val #Read
+    with MutRef
+        def := self value ->
+            self.val (#Write, value)
 

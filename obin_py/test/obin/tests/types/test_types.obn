@@ -4,6 +4,7 @@ import tests:types:test_default_implementations
 import tests:types:test_constraints
 import tests:types:test_union
 import tests:types:test_mixins
+import tests:types:test_polymorphism
 
 fun test () ->
     test_simple:test()
@@ -12,3 +13,4 @@ fun test () ->
     test_implement_qualified:test()
     test_union:test()
     test_mixins:test()
+    test_polymorphism:test()

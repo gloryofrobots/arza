@@ -12,9 +12,6 @@ def presetup(process, module, stdlib):
     import obin.builtins.modules.module_core_types
     obin.builtins.modules.module_core_types.setup(process, stdlib)
 
-    import obin.builtins.modules.module_tvar
-    obin.builtins.modules.module_tvar.setup(process, stdlib)
-
     import obin.builtins.modules.module_list
     obin.builtins.modules.module_list.setup(process, stdlib)
 

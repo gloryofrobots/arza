@@ -39,9 +39,9 @@ def create_lazy_routine(stack, constructor, args):
     return LazyRoutine(stack, constructor, args)
 
 
-def create_callback_routine(stack, callback, constructor, args):
+def create_callback_routine(stack, callback, function, args):
     from obin.runtime.routine.callback_routine import CallbackRoutine
-    return CallbackRoutine(stack, callback, constructor, args)
+    return CallbackRoutine(stack, callback, function, args)
 
 
 def create_module_routine(name, stack, code, env):

@@ -90,8 +90,6 @@ def _process_cons(state, pattern, patterns, path):
     head = nodes.node_first(pattern)
     tail = nodes.node_second(pattern)
     patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(pattern, path)])
-    # patterns = add_pattern(patterns,
-    #                        ["isnot", _create_path_node(pattern, path), create_empty_list_node(head)])
 
     head_path = add_path(create_head_node(head), path)
     patterns = _process_pattern(state, head, patterns, head_path)
@@ -123,8 +121,6 @@ def _process_list(state, pattern, patterns, path):
                 return transform_error(state, child, u'Invalid use of Rest')
 
             patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(pattern, cur_path)])
-            # patterns = add_pattern(patterns,
-            #                        ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(child)])
 
             child_path = add_path(create_head_node(child), cur_path)
             cur_slice = create_tail_node(child)
@@ -137,8 +133,6 @@ def _process_list(state, pattern, patterns, path):
         child_path = cur_path
         patterns = _process_pattern(state, last_child, patterns, child_path)
     else:
-        # patterns = add_pattern(patterns,
-        #                        ["isnot", _create_path_node(pattern, cur_path), create_empty_list_node(last_child)])
         patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(pattern, cur_path)])
         child_path = add_path(create_head_node(last_child), cur_path)
         # process child
@@ -148,8 +142,6 @@ def _process_list(state, pattern, patterns, path):
         # IMPORTANT IT NEED TO BE THE LAST CHECK, OTHERWISE CACHED VARIABLES WILL NOT INITIALIZE
         last_slice = create_tail_node(last_child)
         last_path = add_path(last_slice, cur_path)
-        # patterns = add_pattern(patterns, ["is", _create_path_node(pattern, last_path),
-        #                                   create_empty_list_node(last_child)])
         return add_pattern(patterns, ["is_empty", _create_path_node(pattern, last_path)])
     return patterns
 
