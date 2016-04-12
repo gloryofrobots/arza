@@ -1,3 +1,4 @@
+import io
 from var import var
 
 trait Transformer for self
@@ -11,7 +12,7 @@ implement Transformer for WrapTransformer
     def init self -> throw NotImplementedError #init
     def result self acc -> acc
     def step self input acc ->
-//        print "WRAP" self.fn
+//        io:print "WRAP" self.fn
         self.fn input acc
 
 fun wrap f
@@ -39,12 +40,12 @@ fun unreduced x
 fun reduce_seq xf acc coll ->
     fun _reduce xf acc coll
         | xf acc [] ->
-//            print "_REDUCE END"
+//            io:print "_REDUCE END"
             acc
         | xf acc hd::tl ->
-//            print "_REDUCE STEP" xf
+//            io:print "_REDUCE STEP" xf
             acc1 = step xf hd acc
-//            print "ACC1" acc1
+//            io:print "ACC1" acc1
             if is_reduced acc1 ->
                 deref acc1
             else ->
@@ -97,7 +98,7 @@ implement Transformer for MapTransformer
     def result self acc -> result self.xf acc
     def step self val acc ->
         res = step self.xf (self.f val) acc
-//        print "MAP STEP" res self.xf
+//        io:print "MAP STEP" res self.xf
         res
 
 fun map f xf -> MapTransformer f xf
@@ -110,7 +111,7 @@ implement Transformer for FilterTransformer
     def init self -> init self.xf
     def result self acc -> result self.xf acc
     def step self val acc ->
-//        print "FILTER STEP"
+//        io:print "FILTER STEP"
         if self.predicate val ->
             step self.xf val acc
         else ->

@@ -6,12 +6,12 @@ def convert_to_script_error(process, err):
 
 
 def error(process, symbol_unistr, args_tuple):
-    from obin.types import api
+    from obin.types import environment
     assert space.istuple(args_tuple)
     assert isinstance(symbol_unistr, unicode)
     module = process.modules.prelude
     symbol = space.newsymbol(process, symbol_unistr)
-    err_type = api.lookup(module, symbol, space.newvoid())
+    err_type = environment.get_value(module, symbol)
     if space.isvoid(err_type):
         return space.newtuple([symbol, args_tuple])
     else:

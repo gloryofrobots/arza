@@ -59,6 +59,7 @@ class References(W_Root):
             return error.throw_1(error.Errors.REFERENCE_ERROR, symbol)
         return val
 
+
 def newreferences(refs):
     return References(refs)
 
@@ -113,6 +114,18 @@ def get_operator(env, identifier):
         return op
 
     return get_operator(env.parent_env, identifier)
+
+
+def get_value(env, identifier):
+    # print "get_reference lex", lex
+    undef = space.newvoid()
+    if env is None:
+        return undef
+    val = api.lookup(env, identifier, undef)
+    if not space.isvoid(val):
+        return val
+
+    return get_value(env.parent_env, identifier)
 
 
 def create_environment(process, source, parent_env):
@@ -189,7 +202,8 @@ class W_Env(W_Root):
 
     def set_temporary(self, idx, val):
         if not self.scope.has_temporary(idx):
-            return error.throw_2(error.Errors.RUNTIME_ERROR, space.newstring(u"Invalid temporary variable %d" % idx, val))
+            return error.throw_2(error.Errors.RUNTIME_ERROR,
+                                 space.newstring(u"Invalid temporary variable %d" % idx, val))
 
         self.temps[idx] = val
 

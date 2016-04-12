@@ -1,3 +1,4 @@
+import io
 import transduce as ts
 import seq
 import affirm
@@ -34,13 +35,13 @@ fun test () ->
     affirm:is_equal  (ts:into [] (ts:drop_while ((flip `<`) 5) << rev) l) [5, 6, 7, 8, 9, 10]
 
     fun _reverse val ->
-        print #Reverse val (seq:reverse val)
+        io:print #Reverse val (seq:reverse val)
         seq:reverse val
 
     l1 = [[1,2], [50, 60], [110, 120], [-1, -2]]
 
     fun _inc_seq s ->
-        //print "GOT" s (seq:map inc s)
+        //io:print "GOT" s (seq:map inc s)
         seq:map inc s
 
     affirm:is_equal (ts:transduce (ts:map identity) `+` 0 l) 55
@@ -50,7 +51,7 @@ fun test () ->
 
 
 //MAP CAT IS BROKEN
-//    print (ts:transduce (ts:mapcat _inc_seq) seq:append [] l1)
+//     io:print (ts:transduce (ts:mapcat _inc_seq) seq:append [] l1)
 //     var reverse = function(arr) { var arr = Array.prototype.slice.call(arr, 0); arr.reverse(); return arr; }
 //     var xf = t.mapcat(reverse);
 //     t.into([], xf, [[3,2,1],[6,5,4]]); // [1,2,3,4,5,6]
