@@ -1,4 +1,9 @@
-implement Eq for String end
+from datatype import CoreMixin
+
+extend String
+    with Eq = CoreMixin
+    with Str = CoreMixin
+
 //export (s, s1)
 
 fun s () -> #s

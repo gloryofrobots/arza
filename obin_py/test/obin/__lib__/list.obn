@@ -1,5 +1,6 @@
 import obin:lang:list as _list
 from obin:lang:list import (tail, head)
+from datatype import CoreMixin
 import seq
 
 fun range (first of Int) (last of Int) ->
@@ -50,7 +51,8 @@ fun replicate count element ->
 ---------------------------------------------------
 
 extend List
-    with Eq
+    with Eq = CoreMixin
+    with Str = CoreMixin
     with Seq
         def first self -> _list:head self
         def rest self -> _list:tail self

@@ -1,9 +1,0 @@
-import obin:lang:api as api
-
-type CoreMixin
-
-extend CoreMixin
-    with Eq
-        def == self other -> api:equal other self
-    with Str
-        def str self -> api:to_string self

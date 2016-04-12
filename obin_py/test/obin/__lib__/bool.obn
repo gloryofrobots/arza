@@ -1,7 +1,6 @@
-from api import CoreMixin
+from datatype import CoreMixin
 
 extend Bool
     with Eq = CoreMixin
     with Str = CoreMixin
 
-//implement Eq for Bool end

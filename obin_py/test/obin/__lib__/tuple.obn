@@ -1,8 +1,11 @@
 import obin:lang:tuple
+from datatype import CoreMixin
+
 extend Tuple
+    with Eq = CoreMixin
+    with Str = CoreMixin
     with Seqable
         def to_seq self -> tuple:to_list self
-    with Eq
     with Sized
         def len self -> tuple:length
     with Collection

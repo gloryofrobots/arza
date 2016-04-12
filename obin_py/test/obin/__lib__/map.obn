@@ -1,2 +1,5 @@
-implement Eq for Map 
-    
+from datatype import CoreMixin
+
+extend Map
+    with Eq = CoreMixin
+    with Str = CoreMixin

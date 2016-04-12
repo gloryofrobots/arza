@@ -1,2 +1,7 @@
-implement Eq for Int end
+from datatype import CoreMixin
+
+extend Int
+    with Eq = CoreMixin
+    with Str = CoreMixin
+
 implement Ord for Int end

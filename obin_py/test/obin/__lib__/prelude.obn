@@ -25,11 +25,11 @@ type Ordering
     | LT | GT | EQ
 
 trait Eq for x
-    def == x y -> 1
+    def == x y
     def != x y -> not (x == y)
 
 trait Ord  for x of Eq
-    def <= x y -> 2
+    def <= x y -> throw #NotImplementedError
     def < x y -> (cmp x y) == LT
     def >= x y -> (cmp x y) != LT
     def > x y -> (cmp x y) == GT

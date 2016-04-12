@@ -1,1 +1,13 @@
-implement Eq for Datatype end
+import obin:lang:api as api
+
+type CoreMixin
+
+extend CoreMixin
+    with Eq
+        def == self other -> api:equal other self
+    with Str
+        def str self -> api:to_string self
+
+extend Datatype
+    with Eq = CoreMixin
+    with Str = CoreMixin

@@ -1,1 +1,5 @@
-implement Eq for Symbol end
+from datatype import CoreMixin
+
+extend Symbol
+    with Eq = CoreMixin
+    with Str = CoreMixin

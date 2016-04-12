@@ -1,1 +1,5 @@
-implement Eq for Trait end
+from datatype import CoreMixin
+
+extend Trait
+    with Eq = CoreMixin
+    with Str = CoreMixin

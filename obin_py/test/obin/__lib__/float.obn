@@ -1,2 +1,7 @@
-implement Eq for Float end
+from datatype import CoreMixin
+
+extend Float
+    with Eq = CoreMixin
+    with Str = CoreMixin
+
 implement Ord for Float end
