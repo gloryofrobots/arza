@@ -1,4 +1,4 @@
-import from obin:core:types (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+from obin:core:types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                              Function, Generic, Method, NativeFunction, Fiber, Trait, Datatype, LazyVal, Env)
 
 prefix - negate
@@ -25,11 +25,11 @@ type Ordering
     | LT | GT | EQ
 
 trait Eq for x
-    def == x y
+    def == x y -> 1
     def != x y -> not (x == y)
 
 trait Ord  for x of Eq
-    def <= x y
+    def <= x y -> 2
     def < x y -> (cmp x y) == LT
     def >= x y -> (cmp x y) != LT
     def > x y -> (cmp x y) == GT
@@ -150,7 +150,7 @@ type ExportError args
 type TraitAlreadyImplementedError args
 type TraitImplementationError args
 type TraitConstraintError args
-type args
+type StopIterationError args
 
 //FUNS
 fun lookup key default coll ->

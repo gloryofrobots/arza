@@ -145,7 +145,7 @@ TUPLES = module("obin:lang:tuple", [
              source_module="tuples", source_function="to_list"),
     ])
 
-BIT = module("_bit",  [
+BIT = module("obin:lang:bit",  [
     func(func_name="bitnot", func_native_name="bitnot", func_arity=1,
              source_module="number", source_function="bitnot_i",
                 affirm_type='space.isint'),
@@ -202,8 +202,8 @@ API = module("obin:lang:api", [
 
 # print generate(TUPLES)
 # print generate(LIST)
-print generate(API)
-# print generate(BIT)
+# print generate(API)
+print generate(BIT)
 
 
 

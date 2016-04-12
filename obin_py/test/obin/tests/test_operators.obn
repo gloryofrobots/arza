@@ -1,5 +1,5 @@
 import affirm
-import from bit
+from bit import _
 //(bitand, bitor, bitxor, bitnot, lshift, rshift)
 
 

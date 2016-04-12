@@ -1,66 +1,129 @@
 [
   {
-    "_ntype": "NT_EXTEND",
-    "_value": "extend",
+    "_ntype": "NT_IMPORT_FROM",
+    "_value": "from",
     "children": [
       {
-        "_ntype": "NT_NAME",
-        "_value": "Type1"
-      },
-      [
-        [
+        "_ntype": "NT_IMPORTED_NAME",
+        "_value": ":",
+        "children": [
           {
-            "_ntype": "NT_NAME",
-            "_value": "Trait1"
-          },
-          {
-            "_ntype": "NT_NAME",
-            "_value": "MixinTrait1"
-          }
-        ],
-        [
-          {
-            "_ntype": "NT_NAME",
-            "_value": "Trait2"
-          },
-          [
-            [
+            "_ntype": "NT_IMPORTED_NAME",
+            "_value": ":",
+            "children": [
               {
-                "_ntype": "NT_SYMBOL",
-                "_value": "#",
-                "children": [
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "f4"
-                  }
-                ]
+                "_ntype": "NT_NAME",
+                "_value": "lib_az"
               },
-              [
-                [
-                  {
-                    "_ntype": "NT_TUPLE",
-                    "_value": "(",
-                    "children": [
-                      [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "self"
-                        }
-                      ]
-                    ]
-                  },
-                  [
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "self"
-                    }
-                  ]
-                ]
-              ]
+              {
+                "_ntype": "NT_NAME",
+                "_value": "efg"
+              }
             ]
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "module_e"
+          }
+        ]
+      },
+      {
+        "empty": true
+      }
+    ]
+  },
+  {
+    "_ntype": "NT_IMPORT_FROM",
+    "_value": "from",
+    "children": [
+      {
+        "_ntype": "NT_IMPORTED_NAME",
+        "_value": ":",
+        "children": [
+          {
+            "_ntype": "NT_IMPORTED_NAME",
+            "_value": ":",
+            "children": [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "lib_az"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "abc"
+              }
+            ]
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "module_ab"
+          }
+        ]
+      },
+      {
+        "_ntype": "NT_TUPLE",
+        "_value": "(",
+        "children": [
+          [
+            {
+              "_ntype": "NT_AS",
+              "_value": "as",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "f_ab"
+                },
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "ab_3_f_ab"
+                }
+              ]
+            }
           ]
         ]
-      ]
+      }
+    ]
+  },
+  {
+    "_ntype": "NT_IMPORT_FROM_HIDING",
+    "_value": "from",
+    "children": [
+      {
+        "_ntype": "NT_IMPORTED_NAME",
+        "_value": ":",
+        "children": [
+          {
+            "_ntype": "NT_IMPORTED_NAME",
+            "_value": ":",
+            "children": [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "lib_az"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "abc"
+              }
+            ]
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "module_ab"
+          }
+        ]
+      },
+      {
+        "_ntype": "NT_TUPLE",
+        "_value": "(",
+        "children": [
+          [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "CONST"
+            }
+          ]
+        ]
+      }
     ]
   },
   {

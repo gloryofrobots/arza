@@ -1,22 +1,22 @@
 import affirm
 //import tests:test_operators
 
-//import tests:types:test_types
-//import tests:test_partial
-//import tests:test_co
-//import tests:test_destruct
-//import tests:test_exception
-//import tests:test_modify
-//import tests:test_operator_override
-//import tests:test_module
-//import tests:test_match
-//import tests:test_base
-//import tests:test_bool
-//import tests:test_static_refs
-//import tests:test_fun
-//import tests:test_var
-//import tests:datastructs:test_datastructs
-//import tests:test_iter
+import tests:types:test_types
+import tests:test_partial
+import tests:test_co
+import tests:test_destruct
+import tests:test_exception
+import tests:test_modify
+import tests:test_operator_override
+import tests:test_module
+import tests:test_match
+import tests:test_base
+import tests:test_bool
+import tests:test_static_refs
+import tests:test_fun
+import tests:test_var
+import tests:datastructs:test_datastructs
+import tests:test_iter
 
 
 fun log ...msgs ->
@@ -28,38 +28,38 @@ fun log ...msgs ->
 fun test() ->
     log "RUN TESTS"
 
-//    log "TEST TYPES"
-//    test_types:test()
-//    log "TEST PARTIAL"
-//    test_partial:test()
-//    log "TEST BOOL"
-//    test_bool:test()
-//    log "TEST MATCH"
-//    test_match:test()
-//    log "TEST BASE"
-//    test_base:test()
-//    log "TEST DESTRUCT"
-//    test_destruct:test()
-//    log "TEST STATIC REFS"
-//    test_static_refs:test()
-//    log "TEST CO"
-//    test_co:test()
-//    log "TEST EXCEPTION"
-//    test_exception:test()
-//    log "TEST MODIFY"
-//    test_modify:test()
-//    log "TEST OP OVERRIDE"
-//    test_operator_override:test()
-//    log "TEST MODULE"
-//    test_module:test()
-//    log "TEST FUN"
-//    test_fun:test()
-//    log "TEST VAR"
-//    test_var:test()
-//    log "TEST DATASTRUCTS"
-//    test_datastructs:test()
-//    log "TEST ITER"
-//    test_iter:test()
+    log "TEST TYPES"
+    test_types:test()
+    log "TEST PARTIAL"
+    test_partial:test()
+    log "TEST BOOL"
+    test_bool:test()
+    log "TEST MATCH"
+    test_match:test()
+    log "TEST BASE"
+    test_base:test()
+    log "TEST DESTRUCT"
+    test_destruct:test()
+    log "TEST STATIC REFS"
+    test_static_refs:test()
+    log "TEST CO"
+    test_co:test()
+    log "TEST EXCEPTION"
+    test_exception:test()
+    log "TEST MODIFY"
+    test_modify:test()
+    log "TEST OP OVERRIDE"
+    test_operator_override:test()
+    log "TEST MODULE"
+    test_module:test()
+    log "TEST FUN"
+    test_fun:test()
+    log "TEST VAR"
+    test_var:test()
+    log "TEST DATASTRUCTS"
+    test_datastructs:test()
+    log "TEST ITER"
+    test_iter:test()
 
 //    log "TEST OPERATORS"
 //    test_operators:test()
@@ -115,6 +115,6 @@ fun main () ->
 //    sqrs = squares 1
 //    print "TAKE" (seq:take 4 sqrs)
 //    print "TAKE2" (seq:take 5 sqrs)
-    io:p 1 2 "#3" [1,2,3,4,5]
+//    io:p 1 2 "#3" [1,2,3,4,5]
 
-//    test()
+    test()

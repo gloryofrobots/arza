@@ -668,29 +668,45 @@ def ensure_tuple(t):
     return t
 
 
-def stmt_import(parser, op, node):
-    if parser.token_type == TT_FROM:
-        ntype1 = NT_IMPORT_FROM
+def stmt_from(parser, op, node):
+    imported = expression(parser.import_parser, 0, TERM_FROM_IMPORTED)
+    check_token_types(parser, [TT_IMPORT, TT_HIDE])
+    if parser.token_type == TT_IMPORT:
+        hiding = False
+        ntype = NT_IMPORT_FROM
+    else:
+        hiding = True
+        ntype = NT_IMPORT_FROM_HIDING
+
+    advance(parser)
+    if parser.token_type == TT_WILDCARD:
+        if hiding is True:
+            return parse_error(parser, u"Invalid usage of hide keyword. Symbol(s) expected", node)
+
+        names = empty_node()
         advance(parser)
     else:
-        ntype1 = NT_IMPORT
+        names = expression(parser.import_names_parser, 0)
+        check_node_types(parser, names, [NT_TUPLE, NT_NAME, NT_AS])
+        names = ensure_tuple(names)
+        if hiding is True:
+            # hiding names can't have as binding
+            check_list_node_types(parser, nodes.node_first(names), [NT_NAME])
 
+    _load_module(parser, imported)
+    return node_2(ntype, __ntok(node), imported, names)
+
+
+def stmt_import(parser, op, node):
     imported = expression(parser.import_parser, 0, [TT_LPAREN, TT_HIDING])
-    if ntype1 == NT_IMPORT_FROM and nodes.node_type(imported) == NT_AS:
-        parse_error(parser,
-                    u"Invalid use of as binding in unqualified import",
-                    imported)
 
     if parser.token_type == TT_HIDING:
+        ntype = NT_IMPORT_HIDING
         hiding = True
-        if ntype1 == NT_IMPORT:
-            ntype = NT_IMPORT_HIDING
-        else:
-            ntype = NT_IMPORT_FROM_HIDING
         advance(parser)
     else:
         hiding = False
-        ntype = ntype1
+        ntype = NT_IMPORT
 
     if parser.token_type == TT_LPAREN:
         names = expression(parser.import_names_parser, 0)
@@ -701,7 +717,7 @@ def stmt_import(parser, op, node):
             check_list_node_types(parser, nodes.node_first(names), [NT_NAME])
     else:
         if hiding is True:
-            parse_error(parser, u"expected definitions tuple", node)
+            return parse_error(parser, u"Invalid usage of hide keyword. Symbol(s) expected", node)
         names = empty_node()
 
     _load_module(parser, imported)

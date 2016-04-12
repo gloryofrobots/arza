@@ -198,15 +198,15 @@ fun test() ->
             | {x of Int, y="OLOLO" of String} -> #third
     ) #third
 
-    some = Some 11
-    none = None
-    fun __val self ->
-        match self with
-            | x of Some -> self.val
-            | y of None -> y
-
-    affirm:is_equal (__val some) 11
-    affirm:is_equal (__val none) None
+//    some = Some 11
+//    none = None
+//    fun __val self ->
+//        match self with
+//            | {val} of Some -> val
+//            | y of None -> y
+//
+//    affirm:is_equal (__val some) 11
+//    affirm:is_equal (__val none) None
 
 end
 

@@ -1,2 +1,2 @@
-import from _fiber (spawn, activate, coroutine)
+from _fiber import (spawn, activate, coroutine)
 

@@ -1,4 +1,4 @@
-import from fiber (coroutine)
+from fiber import (coroutine)
 import affirm
 
 fun test () ->

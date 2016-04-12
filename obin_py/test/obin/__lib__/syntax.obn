@@ -5,7 +5,7 @@ import lib_az:abc:module_ab as ab
 import lib_az:efg:module_e as e
 //
 ////unqualified names f_ab,f_ab_2,const
-import from lib_az:abc:module_ab (f_ab, f_ab_2, CONST as const)
+from lib_az:abc:module_ab  import (f_ab, f_ab_2, CONST as const)
 //
 ////ab2:f_ab
 import lib_az:abc:module_ab as ab2 (f_ab, f_ab_2)
@@ -14,12 +14,12 @@ import lib_az:abc:module_ab as ab2 (f_ab, f_ab_2)
 import lib_az:abc:module_ab (f_ab, f_ab_2)
 //
 ////all exported names imported
-import from lib_az:efg:module_e
+from lib_az:efg:module_e import _
 
 //ab_3_f_ab
-import from lib_az:abc:module_ab  (f_ab as ab_3_f_ab)
+from lib_az:abc:module_ab import (f_ab as ab_3_f_ab)
 //importing same names dont cause errors because names are equal
-import from lib_az:abc:module_ab  hiding (CONST)
+from lib_az:abc:module_ab hide (CONST)
 //ab5:f_ab_2 only
 import lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
 

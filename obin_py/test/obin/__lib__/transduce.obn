@@ -1,4 +1,4 @@
-import from var (var)
+from var import var
 
 trait Transformer for self
     def init self

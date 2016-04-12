@@ -108,6 +108,7 @@ RULES = [
     (keyword('import'), TT_IMPORT),
     (keyword('from'), TT_FROM),
     (keyword('hiding'), TT_HIDING),
+    (keyword('hide'), TT_HIDE),
 
     (keyword('of'), TT_OF),
     (keyword('as'), TT_AS),

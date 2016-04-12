@@ -12,12 +12,10 @@ infixl |> |> 50
 //infixl / / 65
 //infixl ++ ++ 70
 
+from lib_az:efg:module_e import _
+from lib_az:abc:module_ab import (f_ab as ab_3_f_ab)
+from lib_az:abc:module_ab hide (CONST)
 
-extend Type1
-    with Trait1 = MixinTrait1
-    with Trait2
-//        def f3 = MixinTrait1.f1
-        def f4 self -> self
 
 //extend Type2
 //    with Trait1 = methods Trait1 Type1

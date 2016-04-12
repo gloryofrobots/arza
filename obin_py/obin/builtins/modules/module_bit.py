@@ -3,10 +3,9 @@ from obin.runtime.routine.routine import complete_native_routine
 from obin.runtime import error
 
 
-
 def setup(process, stdlib):
-    name = space.newsymbol(process, u'_bit')
-    _module = space.newemptyenv(name)
+    _module_name = space.newsymbol(process, u'obin:lang:bit')
+    _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'bitnot', bitnot, 1)
     api.put_native_function(process, _module, u'bitor', bitor, 2)
     api.put_native_function(process, _module, u'bitxor', bitxor, 2)
@@ -15,7 +14,8 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'rshift', rshift, 2)
 
     _module.export_all()
-    process.modules.add_module(name, _module)
+    process.modules.add_module(_module_name, _module)
+
 
 @complete_native_routine
 def bitnot(process, routine):

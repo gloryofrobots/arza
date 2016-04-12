@@ -1,5 +1,5 @@
 import obin:lang:list as _list
-import from obin:lang:list (tail, head)
+from obin:lang:list import (tail, head)
 import seq
 
 fun range (first of Int) (last of Int) ->
