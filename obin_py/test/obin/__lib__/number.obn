@@ -1,0 +1,23 @@
+from datatype import CoreMixin
+import obin:lang:number
+
+extend Int
+    with Eq = CoreMixin
+    with Str = CoreMixin
+    with Num
+        def - x y -> number:sub x y
+        def + x y -> number:add x y
+        def * x y -> number:mul x y
+        def / x y -> number:div x y
+        def mod x y -> number:mod x y
+        // unary -
+        def negate x -> number:negate x
+    with Ord
+        def <= x y -> number:le x y
+
+extend Float
+    with Eq = CoreMixin
+    with Str = CoreMixin
+    with Num = Int
+    with Ord = Int
+

@@ -162,71 +162,71 @@ def negate_i(obj):
     return space.newint(-intval)
 
 
-def negate_n(obj):
+def negate(obj):
     if space.isint(obj):
         return negate_i(obj)
     return negate_f(obj)
 
 
-def compare_gt_i_i(w_x, w_y):
+def gt_i_i(w_x, w_y):
     x = api.to_i(w_x)
     y = api.to_i(w_y)
     return space.newbool(x > y)
 
 
-def compare_gt_f_f(w_x, w_y):
+def gt_f_f(w_x, w_y):
     x = api.to_f(w_x)
     y = api.to_f(w_y)
     return space.newbool(x > y)
 
 
-def compare_gt(x, y):
+def gt(x, y):
     if space.isint(x) and space.isint(y):
-        return compare_gt_i_i(x, y)
+        return gt_i_i(x, y)
 
-    return compare_gt_f_f(x, y)
+    return gt_f_f(x, y)
 
 
-def compare_ge_i_i(w_x, w_y):
+def ge_i_i(w_x, w_y):
     x = api.to_i(w_x)
     y = api.to_i(w_y)
     return space.newbool(x >= y)
 
 
-def compare_ge_f_f(w_x, w_y):
+def ge_f_f(w_x, w_y):
     x = api.to_f(w_x)
     y = api.to_f(w_y)
     return space.newbool(x >= y)
 
 
-def compare_ge(x, y):
+def ge(x, y):
     if space.isint(x) and space.isint(y):
-        return compare_ge_i_i(x, y)
-    return compare_ge_f_f(x, y)
+        return ge_i_i(x, y)
+    return ge_f_f(x, y)
 
 
-def compare_lt_i_i(w_x, w_y):
-    return compare_gt_i_i(w_y, w_x)
+def lt_i_i(w_x, w_y):
+    return gt_i_i(w_y, w_x)
 
 
-def compare_lt_f_f(w_x, w_y):
-    return compare_gt_f_f(w_y, w_x)
+def lt_f_f(w_x, w_y):
+    return gt_f_f(w_y, w_x)
 
 
-def compare_lt(w_x, w_y):
-    return compare_gt(w_y, w_x)
+def lt(w_x, w_y):
+    return gt(w_y, w_x)
 
 
-def compare_le_i_i(w_x, w_y):
-    return compare_ge_i_i(w_y, w_x)
+def le_i_i(w_x, w_y):
+    return ge_i_i(w_y, w_x)
 
 
-def compare_le_f_f(w_x, w_y):
-    return compare_ge_f_f(w_y, w_x)
+def le_f_f(w_x, w_y):
+    return ge_f_f(w_y, w_x)
 
 
-def compare_le(w_x, w_y):
-    return compare_ge(w_y, w_x)
+def le(w_x, w_y):
+    return ge(w_y, w_x)
 
 
 def bitand(op1_w, op2_w):

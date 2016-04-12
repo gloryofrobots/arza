@@ -150,7 +150,7 @@ def hp_uminus(process, args):
     left = api.at_index(args, 0)
 
     if isnumber(left):
-        return negate_n(left)
+        return negate(left)
     else:
         return None
 
@@ -159,7 +159,7 @@ def hp_ge(process, args):
     left = api.at_index(args, 0)
     right = api.at_index(args, 1)
     if is_both_numbers(left, right):
-        return compare_ge(left, right)
+        return ge(left, right)
     else:
         return None
 
@@ -169,7 +169,7 @@ def hp_gt(process, args):
     right = api.at_index(args, 1)
 
     if is_both_numbers(left, right):
-        return compare_gt(left, right)
+        return gt(left, right)
     else:
         return None
 
@@ -179,7 +179,7 @@ def hp_lt(process, args):
     right = api.at_index(args, 1)
 
     if is_both_numbers(left, right):
-        return compare_gt(right, left)
+        return gt(right, left)
     else:
         return None
 
@@ -188,7 +188,7 @@ def hp_le(process, args):
     left = api.at_index(args, 0)
     right = api.at_index(args, 1)
     if is_both_numbers(left, right):
-        return compare_ge(right, left)
+        return ge(right, left)
     else:
         return None
 

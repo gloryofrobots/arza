@@ -18,7 +18,7 @@ TPL_FUNC = """
 def {{func_native_name}}(process, routine):
     {% for arg in args %}{{arg.name}} = 
         {%-if  arg.wrapper == ''  -%} routine.get_arg({{arg.index}}) {% else %} {{arg.wrapper}}(routine.get_arg({{arg.index}})) {% endif%}
-        {%-if  affirm_type != ''  %}  error.affirm_type({{arg.name}}, {{affirm_type}}) {% endif %}
+    {%if  affirm_type != ''  -%} error.affirm_type({{arg.name}}, {{affirm_type}}) {% endif %}
     {% endfor %}
     {%if  result_wrap == ''  %}return {{source_module}}.{{source_function}}({% for arg in args|sort(attribute='source_index') %}{{arg.name}}{% if not loop.last %}, {% endif %}{% endfor %})
     {% else %}return {{result_wrap}}({{source_module}}.{{source_function}}({% for arg in args|sort(attribute='source_index') %}{{arg.name}}{% if not loop.last %}, {% endif %}{% endfor %})){% endif %}
@@ -181,7 +181,7 @@ API = module("obin:lang:api", [
     func(func_name="length", func_native_name="length", func_arity=1,
              source_module="api", source_function="length"),
     func(func_name="put", func_native_name="put", func_arity=3,
-             source_module="api", source_function="put",
+             source_module="api", source_function="put", 
             arguments=[arg(2,0), arg(1,1), arg(0, 0)]),
     func(func_name="at", func_native_name="at", func_arity=2,
              source_module="api", source_function="at",
@@ -202,23 +202,27 @@ API = module("obin:lang:api", [
 
 NUMBER = module("obin:lang:number", [
     func(func_name="add", func_native_name="add", func_arity=2,
-             source_module="number", source_function="add",
-            arguments=[arg(0, 0), arg(1, 1)]),
+             source_module="number", source_function="add", 
+             affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
     func(func_name="sub", func_native_name="sub", func_arity=2,
              source_module="number", source_function="sub",
-            arguments=[arg(0, 0), arg(1, 1)]),
+             affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
     func(func_name="mul", func_native_name="mul", func_arity=2,
              source_module="number", source_function="mul",
-            arguments=[arg(0, 0), arg(1, 1)]),
+             affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
     func(func_name="div", func_native_name="div", func_arity=2,
              source_module="number", source_function="div",
-            arguments=[arg(0, 0), arg(1, 1)]),
+             affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
     func(func_name="mod", func_native_name="mod", func_arity=2,
              source_module="number", source_function="mod",
-            arguments=[arg(0, 0), arg(1, 1)]),
+             affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
     func(func_name="negate", func_native_name="negate", func_arity=1,
              source_module="number", source_function="negate",
-            arguments=[arg(0, 0)]),
+             affirm_type='space.isnumber', arguments=[arg(0, 0)]),
+
+    func(func_name="le", func_native_name="le", func_arity=2,
+             source_module="number", source_function="le",
+             affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
 ])
 
 # print generate(TUPLES)

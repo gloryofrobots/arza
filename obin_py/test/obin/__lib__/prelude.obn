@@ -29,7 +29,7 @@ trait Eq for x
     def != x y -> not (x == y)
 
 trait Ord for x of Eq
-    def <= x y -> throw #NotImplementedError
+    def <= x y
     def < x y -> (cmp x y) == LT
     def >= x y -> (cmp x y) != LT
     def > x y -> (cmp x y) == GT

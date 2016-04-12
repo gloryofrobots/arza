@@ -1,4 +1,3 @@
-__author__ = 'gloryofrobots'
 from obin.types import tuples, space, api, fiber
 from obin.runtime.routine.routine import complete_native_routine
 

@@ -27,11 +27,16 @@ def presetup(process, module, stdlib):
     import obin.builtins.modules.module_api
     obin.builtins.modules.module_api.setup(process, stdlib)
 
+    import obin.builtins.modules.module_number
+    obin.builtins.modules.module_number.setup(process, stdlib)
+
     module.export_all()
+
 
 def postsetup(process):
     setup_hotpath(process)
     create_lang_names(process)
+
 
 def create_lang_names(process):
     from obin.builtins import lang_names
@@ -42,6 +47,7 @@ def create_lang_names(process):
         new_name = symbol.concat_2(process, lang_prefix, name)
         val = api.at(prelude, name)
         api.put(prelude, new_name, val)
+
 
 def setup_hotpath(process):
     from obin.builtins import hotpath as hp
@@ -111,7 +117,6 @@ def setup_hotpath(process):
 
     method = api.at(prelude, _s(u"drop"))
     method.set_hotpath(hp.hp_drop)
+
     method = api.at(prelude, _s(u"is_empty"))
     method.set_hotpath(hp.hp_is_empty)
-
-
