@@ -204,6 +204,7 @@ def ispartial(w):
     from obin.types.partial import W_Partial
     return isinstance(w, W_Partial)
 
+
 ########################################################
 
 def newlazyval(func):
@@ -214,6 +215,19 @@ def newlazyval(func):
 def islazyval(w):
     from obin.types.lazyval import W_LazyVal
     return isinstance(w, W_LazyVal)
+
+
+########################################################
+
+
+def newiodevice(_file):
+    from obin.types.iodevice import W_IODevice
+    return W_IODevice(_file)
+
+
+def isiodevice(w):
+    from obin.types.iodevice import W_IODevice
+    return isinstance(w, W_IODevice)
 
 
 ########################################################
@@ -266,6 +280,7 @@ def newvector(items):
 def isvector(value):
     from obin.types.vector import W_Vector
     return isinstance(value, W_Vector)
+
 
 ########################################################
 

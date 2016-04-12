@@ -173,7 +173,8 @@ class W_DataType(W_Hashable):
         process.call_object(self, args)
 
     def _type_(self, process):
-        return process.std.types.Datatype
+        return self
+        # return process.std.types.Datatype
 
     def _compute_hash_(self):
         return int((1 - platform.random()) * 10000000)
@@ -272,6 +273,7 @@ def implement_trait(_type, trait, implementations):
     if space.isunion(_type):
         for t in _type.types:
             implement_trait(t, trait, implementations)
+        return _type
 
     error.affirm_type(_type, space.isdatatype)
     error.affirm_type(trait, space.istrait)

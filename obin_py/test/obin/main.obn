@@ -64,47 +64,107 @@ fun test() ->
 //    log "TEST OPERATORS"
 //    test_operators:test()
 
-fun sqr n -> print "sqr" n; n * n
+//type LazyList pair
+//extend LazyList
+//    with Seq
+//        def first self -> first (! self.pair)
+//        def rest self -> rest (! self.pair)
+//    with Seqable
+//        def to_seq self -> self
+//    with Sized
+//        def len self -> len (! self.pair)
+//        def is_empty self ->
+//            print "IS EMPTY " self.pair
+//            is_empty (! self.pair)
+//    with Emptiable
+//        def empty self ->
+//            print "EMPTY " self.pair
+//            empty (! self.pair)
+//
+//fun lazy_list fn ->
+//    LazyList (lazyval fn)
+//
+//fun sqr n -> print "sqr" n; n * n
+//
+//fun squares n -> lazy_list lam () -> sqr n :: squares (n + 1)
 
-type LazyList first rest
+
+
+//(defn squares
+//  ([n] (cons (mysqr n) (lazy-seq (squares (inc n))))))
+//;; => #'user/squares
+//
+//(def sqrs (squares 1))
+//;; => mysqr  <-- NOTE THAT mysqr WAS CALLED WHEN WE SIMPLY REQUESTED COLLECTION
+//;; => #'user/sqrs
+//
+//(take 1 sqrs)
+//;; => (1) <-- HERE WE ARE GETTING FIRST ELEMENT THAT WAS CALCULATED BEFORE
+//
+//;; Now let's redefine 'squares' by wrapping its entire body in lazy-seq:
+//(defn squares
+//  ([n] (lazy-seq (cons (mysqr n) (squares (inc n))))))
+//;; => #'user/squares
+//
+//;; And when we request the collection:
+//(def sqrs (squares 1))
+//;; => #'user/sqrs
+//;; NOTE THAT mysqr WAS NOT CALLED HERE
+//
+//(take 1 sqrs)
+//;; => mysqr <- AND HERE mysqr IS CALLED WHEN FIRST ELEMENT IS ACTUALLY REQUESTED
+//;; => (1)
+
+type LazyList
+    | LazyCons head tail
+    | LazyNil
+
 extend LazyList
     with Seq
-        def first self -> self.first
+        def first self ->
+            match self with
+                | x of LazyNil -> throw NotImplementedError (first, self)
+                | x of LazyCons -> self.head
+
         def rest self ->
-fun squares n -> sqr n :: lazy
+            match self with
+                | x of LazyNil -> throw NotImplementedError (rest, self)
+                | x of LazyCons -> !self.tail
+    with Seqable
+        def to_seq self -> self
+    with Sized
+        def len self -> throw NotImplementedError (len, self)
+        def is_empty self ->
+            match self with
+                    | x of LazyNil -> True
+                    | x of LazyCons -> False
+    with Constructable
+        def cons val self ->
+            LazyCons val self
+    with Emptiable
+        def empty self ->
+            print "EMPTY " self
+            LazyNil
+//
+fun lcons val fn ->
+    LazyCons val (lazyval fn)
+//
+fun sqr n -> print "sqr" n (n * n); n * n
 
-(defn squares
-  ([n] (cons (mysqr n) (lazy-seq (squares (inc n))))))
-;; => #'user/squares
-
-(def sqrs (squares 1))
-;; => mysqr  <-- NOTE THAT mysqr WAS CALLED WHEN WE SIMPLY REQUESTED COLLECTION
-;; => #'user/sqrs
-
-(take 1 sqrs)
-;; => (1) <-- HERE WE ARE GETTING FIRST ELEMENT THAT WAS CALCULATED BEFORE
-
-;; Now let's redefine 'squares' by wrapping its entire body in lazy-seq:
-(defn squares
-  ([n] (lazy-seq (cons (mysqr n) (squares (inc n))))))
-;; => #'user/squares
-
-;; And when we request the collection:
-(def sqrs (squares 1))
-;; => #'user/sqrs
-;; NOTE THAT mysqr WAS NOT CALLED HERE
-
-(take 1 sqrs)
-;; => mysqr <- AND HERE mysqr IS CALLED WHEN FIRST ELEMENT IS ACTUALLY REQUESTED
-;; => (1)
-fun stream fn ->
+fun squares n -> lcons (sqr n) lam () -> squares (n + 1)
+//
+import seq
+import io
 
 
 fun main () ->
-    l = lazyval lam () -> 42 end
-    print (l ())
-    print (l ())
-    print (l ())
+//    l = lazyval lam () -> 42 end
+//    print (l ())
+//    print (l ())
+//    print (l ())
+//    sqrs = squares 1
+//    print "TAKE" (seq:take 4 sqrs)
+//    print "TAKE2" (seq:take 5 sqrs)
+    io:p 1 2 "#3" [1,2,3,4,5]
 
-    test()
-
+//    test()

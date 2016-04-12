@@ -117,6 +117,10 @@ trait Ref for self
 trait MutRef for self of Ref
     def := self value
 
+type Option
+    | Some val
+    | None
+
 //ERRORS
 //TODO MAKE THIS DECLARATION ONE MACRO
 type ImportError args

@@ -84,11 +84,10 @@ class ProcessData:
 
 class IO:
     def __init__(self):
-        from obin.types.iodevice import IoDevice
         import sys
-        self.stdout = IoDevice(sys.stdout)
-        self.stderr = IoDevice(sys.stderr)
-        self.stdin = IoDevice(sys.stdin)
+        self.stdout = space.newiodevice(sys.stdout)
+        self.stderr = space.newiodevice(sys.stderr)
+        self.stdin = space.newiodevice(sys.stdin)
 
 
 def create(libdirs, prelude):

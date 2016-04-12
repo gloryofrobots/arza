@@ -24,6 +24,9 @@ def presetup(process, module, stdlib):
     import obin.builtins.modules.module_bit
     obin.builtins.modules.module_bit.setup(process, stdlib)
 
+    import obin.builtins.modules.module_io
+    obin.builtins.modules.module_io.setup(process, stdlib)
+
     module.export_all()
 
 def postsetup(process):

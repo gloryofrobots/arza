@@ -33,6 +33,19 @@ implement Eq for Vec2
     def == self other of Vec2 -> (self.p1 == other.p1) and (self.p2 == other.p2)
     def != self other -> not (self == other)
 
+trait Val for self
+    def val self
+
+type Option
+    | Some val
+    | None
+
+extend Option
+    with Val
+        def val self ->
+            match self with
+                | x of Some -> x.val
+                | x of None -> x
 
 fun test () ->
     p = Point2 0 1
@@ -48,3 +61,8 @@ fun test () ->
     v1 = Vec2 (Point2 0 1) (Point2 2 3)
     v2 = Vec2 (Point2 10 11) (Point2 12 13)
     affirm:is_equal (add v1 v2) (Vec2 (Point2 10 12)  (Point2 14 16))
+
+    some = Some 11
+    none = None
+    affirm:is_equal (val some) 11
+    affirm:is_equal (val none) None
