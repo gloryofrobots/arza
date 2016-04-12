@@ -3,11 +3,6 @@ from obin.types import api, space
 from obin.runtime import error
 
 
-# from obin.types import plist
-# from obin.types import space
-# from obin.runtime.error import *
-
-
 class W_String(W_Hashable):
     # _immutable_fields_ = ['value']
 
