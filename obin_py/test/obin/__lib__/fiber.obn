@@ -1,2 +1,2 @@
-from _fiber import (spawn, activate, coroutine)
+from obin:lang:_fiber import (spawn, activate, coroutine)
 

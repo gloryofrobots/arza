@@ -4,7 +4,7 @@ from obin.runtime import error
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'obin:lang:number')
+    _module_name = space.newsymbol(process, u'obin:lang:_number')
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'add', add, 2)
     api.put_native_function(process, _module, u'sub', sub, 2)

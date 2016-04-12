@@ -115,6 +115,7 @@ fun main () ->
 //    sqrs = squares 1
 //    print "TAKE" (seq:take 4 sqrs)
 //    print "TAKE2" (seq:take 5 sqrs)
-//    io:p 1 2 "#3" [1,2,3,4,5]
+//    io:print 1 2 "#3" [1,2,3,4,5]
 
+//    affirm:is_throw_expected (lam x -> 1 or 0 end) () (TypeError ("Bool expected", 1))
     test()

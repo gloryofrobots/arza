@@ -141,7 +141,6 @@ fun insert index v coll
     | i v x::xs -> x :: (insert (i - 1) v xs)
 
 fun append v coll ->
-    print "APPEND" v coll
     insert (length coll) v coll
 
 ////QUERIES//////////////////////////////////////////////////////////////////

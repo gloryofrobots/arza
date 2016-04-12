@@ -4,7 +4,7 @@ from obin.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'obin:lang:api')
+    _module_name = space.newsymbol(process, u'obin:lang:_api')
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'length', length, 1)
     api.put_native_function(process, _module, u'put', put, 3)

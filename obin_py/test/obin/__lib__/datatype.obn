@@ -1,12 +1,12 @@
-import obin:lang:api as api
+import obin:lang:_api
 
 type CoreMixin
 
 extend CoreMixin
     with Eq
-        def == self other -> api:equal other self
+        def == self other -> _api:equal other self
     with Str
-        def str self -> api:to_string self
+        def str self -> _api:to_string self
 
 extend Datatype
     with Eq = CoreMixin

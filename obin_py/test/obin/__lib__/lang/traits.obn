@@ -1,0 +1,117 @@
+prefix - negate
+prefix ! ! 10
+infixr := := 10
+
+infixl |> |> 11
+infixl <| <| 12
+infixl << << 13
+infixl >> >> 13
+infixl < < 50
+infixl > > 50
+infixl >= >= 50
+infixl <= <= 50
+infixl == == 50
+infixl != != 50
+infixl + + 60
+infixl - - 60
+infixl * * 65
+infixl / / 65
+infixl ++ ++ 70
+
+type Ordering
+    | LT | GT | EQ
+
+trait Eq for x
+    def == x y
+    def != x y -> not (x == y)
+
+trait Ord for x of Eq
+    def <= x y
+    def < x y -> (cmp x y) == LT
+    def >= x y -> (cmp x y) != LT
+    def > x y -> (cmp x y) == GT
+
+    def cmp x y ->
+                if x == y -> EQ
+                elif x <= y -> LT
+                else -> GT
+
+    def max x y ->  y in_case x <= y else x
+    def min x y -> x in_case x <= y else y
+
+
+trait Num for x
+    def - x y
+    def + x y
+    def * x y
+    def / x y
+    def mod x y
+    // unary -
+    def negate x
+
+trait Str for self
+    def str self
+
+//YOU need kinds here
+//trait FromStr for self of ToStr
+//    def from_str self
+
+trait Inspectable for self of Str
+    def inspect self -> str self
+
+trait Sized for self
+    def len self
+    def is_empty self -> len self == 0
+
+trait Collection for self
+    def put key value self
+    def at key self
+    def del obj self
+    def elem key self
+
+
+trait Seq for self
+    def first self
+    def rest self
+
+trait Emptiable for self
+    def empty self
+
+trait Constructable for self
+    def cons value self
+
+trait Prependable for self
+    // prepend/cons operator
+    def prepend value self
+
+trait Appendable for self
+    //concat operator
+    def ++ self other
+    def append self value
+
+trait Dict for self of Collection
+    def keys self
+    def values self
+
+trait Indexed for self of Sized
+    def index_of obj self
+//    def indexes self
+//    def last_index self -> len self - 1
+//    def at_index idx self -> at idx self
+
+trait Seqable for self
+    def to_seq self
+//    def from_seq seq self
+
+trait Sliceable for self
+    def slice first . last . self
+    def drop count self
+    def take count self
+
+trait Ref for self
+    def ! self
+
+trait MutRef for self of Ref
+    def := self value
+
+

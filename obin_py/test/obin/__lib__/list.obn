@@ -1,5 +1,5 @@
-import obin:lang:list as _list
-from obin:lang:list import (tail, head)
+import obin:lang:_list
+from obin:lang:_list import (tail, head)
 from datatype import CoreMixin
 import seq
 

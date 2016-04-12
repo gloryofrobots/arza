@@ -4,7 +4,7 @@ from obin.runtime import error
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'obin:lang:bit')
+    _module_name = space.newsymbol(process, u'obin:lang:_bit')
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'bitnot', bitnot, 1)
     api.put_native_function(process, _module, u'bitor', bitor, 2)

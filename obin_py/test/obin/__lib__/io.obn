@@ -1,19 +1,28 @@
-import _io as io
-
+from obin:lang:_io import (write, stdout)
 import seq
 
-fun puts ...args ->
-    print_to args io:stdout ()
+
+fun _write_list_items args func file ->
+    fun _walk x ->
+        file |> write (func x)
+             |> write " "
+
+    seq:foreach _walk (to_seq args)
+    ()
 
 
-fun print_to args file ->
-    seq:foreach (lam x -> io:write (str x) file end) (to_seq args)
+fun echo ...args ->
+    out = stdout ()
+    _write_list_items args inspect out
+    write "\n" out
+    ()
 
 
-fun p ...args ->
-    out = io:stdout ()
-    print_to args out
-    io:write "\n" out
+fun print ...args ->
+    out = stdout ()
+    _write_list_items args str out
+    write "\n" out
+    ()
 
 
 

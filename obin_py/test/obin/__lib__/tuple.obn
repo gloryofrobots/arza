@@ -1,19 +1,19 @@
-import obin:lang:tuple
+import obin:lang:_tuple
 from datatype import CoreMixin
 
 extend Tuple
     with Eq = CoreMixin
     with Str = CoreMixin
     with Seqable
-        def to_seq self -> tuple:to_list self
+        def to_seq self -> _tuple:to_list self
     with Sized
-        def len self -> tuple:length
+        def len self -> _tuple:length
     with Collection
-        def put key value self -> tuple:put key value self
-        def at key self -> tuple:at key self
-        def del obj self -> tuple:del obj self
-        def elem key self -> tuple:elem key self
+        def put key value self -> _tuple:put key value self
+        def at key self -> _tuple:at key self
+        def del obj self -> _tuple:del obj self
+        def elem key self -> _tuple:elem key self
     with Sliceable
-        def slice first last self -> tuple:slice first last self
-        def drop count self -> tuple:drop count self
-        def take count self -> tuple:take count self
+        def slice first last self -> _tuple:slice first last self
+        def drop count self -> _tuple:drop count self
+        def take count self -> _tuple:take count self

@@ -77,7 +77,7 @@ def module(module_name, funcs):
         funcs=funcs
     )
 
-LIST = module("obin:lang:list", [
+LIST = module("obin:lang:_list", [
     func(func_name="length", func_native_name="_length", func_arity=1,
              source_module="api", source_function="length"),
     func(func_name="put", func_native_name="put", func_arity=3,
@@ -115,7 +115,7 @@ LIST = module("obin:lang:list", [
             arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
     ])
 
-TUPLES = module("obin:lang:tuple", [
+TUPLES = module("obin:lang:_tuple", [
     func(func_name="length", func_native_name="_length", func_arity=1,
              source_module="api", source_function="length"),
     func(func_name="put", func_native_name="put", func_arity=3,
@@ -145,7 +145,7 @@ TUPLES = module("obin:lang:tuple", [
              source_module="tuples", source_function="to_list"),
     ])
 
-BIT = module("obin:lang:bit",  [
+BIT = module("obin:lang:_bit",  [
     func(func_name="bitnot", func_native_name="bitnot", func_arity=1,
              source_module="number", source_function="bitnot",
                 affirm_type='space.isint'),
@@ -177,7 +177,7 @@ BIT = module("obin:lang:bit",  [
     ])
 
 
-API = module("obin:lang:api", [
+API = module("obin:lang:_api", [
     func(func_name="length", func_native_name="length", func_arity=1,
              source_module="api", source_function="length"),
     func(func_name="put", func_native_name="put", func_arity=3,
@@ -200,7 +200,7 @@ API = module("obin:lang:api", [
             arguments=[arg(0, 0)]),
 ])
 
-NUMBER = module("obin:lang:number", [
+NUMBER = module("obin:lang:_number", [
     func(func_name="add", func_native_name="add", func_arity=2,
              source_module="number", source_function="add", 
              affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),

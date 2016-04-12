@@ -2,7 +2,7 @@ from obin.types import tuples, space, api, fiber
 from obin.runtime.routine.routine import complete_native_routine
 
 def setup(process, stdlib):
-    name = space.newsymbol(process, u'_fiber')
+    name = space.newsymbol(process, u'obin:lang:_fiber')
     _module = space.newemptyenv(name)
     api.put_native_function(process, _module, u'spawn', _spawn, 1)
     api.put_native_function(process, _module, u'activate', _activate, 2)
