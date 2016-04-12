@@ -22,7 +22,7 @@ def bitnot(process, routine):
     arg0 = routine.get_arg(0)
     error.affirm_type(arg0, space.isint)
 
-    return number.bitnot_i(arg0)
+    return number.bitnot(arg0)
 
 
 @complete_native_routine
@@ -32,7 +32,7 @@ def bitor(process, routine):
     arg1 = routine.get_arg(1)
     error.affirm_type(arg1, space.isint)
 
-    return number.bitor_i_i(arg0, arg1)
+    return number.bitor(arg0, arg1)
 
 
 @complete_native_routine
@@ -42,7 +42,7 @@ def bitxor(process, routine):
     arg1 = routine.get_arg(1)
     error.affirm_type(arg1, space.isint)
 
-    return number.bitxor_i_i(arg0, arg1)
+    return number.bitxor(arg0, arg1)
 
 
 @complete_native_routine
@@ -52,7 +52,7 @@ def bitand(process, routine):
     arg1 = routine.get_arg(1)
     error.affirm_type(arg1, space.isint)
 
-    return number.bitand_i_i(arg0, arg1)
+    return number.bitand(arg0, arg1)
 
 
 @complete_native_routine
@@ -62,7 +62,7 @@ def lshift(process, routine):
     arg1 = routine.get_arg(1)
     error.affirm_type(arg1, space.isint)
 
-    return number.lsh_i_i(arg0, arg1)
+    return number.lsh(arg0, arg1)
 
 
 @complete_native_routine
@@ -72,4 +72,4 @@ def rshift(process, routine):
     arg1 = routine.get_arg(1)
     error.affirm_type(arg1, space.isint)
 
-    return number.rsh_i_i(arg0, arg1)
+    return number.rsh(arg0, arg1)

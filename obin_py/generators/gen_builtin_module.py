@@ -147,31 +147,31 @@ TUPLES = module("obin:lang:tuple", [
 
 BIT = module("obin:lang:bit",  [
     func(func_name="bitnot", func_native_name="bitnot", func_arity=1,
-             source_module="number", source_function="bitnot_i",
+             source_module="number", source_function="bitnot",
                 affirm_type='space.isint'),
 
     func(func_name="bitor", func_native_name="bitor", func_arity=2,
-             source_module="number", source_function="bitor_i_i",
+             source_module="number", source_function="bitor",
                 affirm_type='space.isint'),
 
     
     func(func_name="bitxor", func_native_name="bitxor", func_arity=2,
-             source_module="number", source_function="bitxor_i_i",
+             source_module="number", source_function="bitxor",
                 affirm_type='space.isint'),
 
 
 
     func(func_name="bitand", func_native_name="bitand", func_arity=2,
-             source_module="number", source_function="bitand_i_i",
+             source_module="number", source_function="bitand",
                 affirm_type='space.isint'),
 
 
     func(func_name="lshift", func_native_name="lshift", func_arity=2,
-             source_module="number", source_function="lsh_i_i",
+             source_module="number", source_function="lsh",
                 affirm_type='space.isint'),
 
     func(func_name="rshift", func_native_name="rshift", func_arity=2,
-             source_module="number", source_function="rsh_i_i",
+             source_module="number", source_function="rsh",
               affirm_type='space.isint'),
 
     ])
@@ -200,10 +200,32 @@ API = module("obin:lang:api", [
             arguments=[arg(0, 0)]),
 ])
 
+NUMBER = module("obin:lang:number", [
+    func(func_name="add", func_native_name="add", func_arity=2,
+             source_module="number", source_function="add",
+            arguments=[arg(0, 0), arg(1, 1)]),
+    func(func_name="sub", func_native_name="sub", func_arity=2,
+             source_module="number", source_function="sub",
+            arguments=[arg(0, 0), arg(1, 1)]),
+    func(func_name="mul", func_native_name="mul", func_arity=2,
+             source_module="number", source_function="mul",
+            arguments=[arg(0, 0), arg(1, 1)]),
+    func(func_name="div", func_native_name="div", func_arity=2,
+             source_module="number", source_function="div",
+            arguments=[arg(0, 0), arg(1, 1)]),
+    func(func_name="mod", func_native_name="mod", func_arity=2,
+             source_module="number", source_function="mod",
+            arguments=[arg(0, 0), arg(1, 1)]),
+    func(func_name="negate", func_native_name="negate", func_arity=1,
+             source_module="number", source_function="negate",
+            arguments=[arg(0, 0)]),
+])
+
 # print generate(TUPLES)
 # print generate(LIST)
 # print generate(API)
-print generate(BIT)
+# print generate(BIT)
+print generate(NUMBER)
 
 
 

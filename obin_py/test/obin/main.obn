@@ -1,5 +1,5 @@
 import affirm
-//import tests:test_operators
+import tests:test_operators
 
 import tests:types:test_types
 import tests:test_partial
@@ -61,8 +61,8 @@ fun test() ->
     log "TEST ITER"
     test_iter:test()
 
-//    log "TEST OPERATORS"
-//    test_operators:test()
+    log "TEST OPERATORS"
+    test_operators:test()
 
 
 type LazyList

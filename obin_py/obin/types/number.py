@@ -36,7 +36,7 @@ def add_f_f(l, r):
     return space.newfloat(fleft + fright)
 
 
-def add_n_n(lprim, rprim):
+def add(lprim, rprim):
     if space.isint(lprim) and space.isint(rprim):
         return add_i_i(lprim, rprim)
     else:
@@ -58,7 +58,7 @@ def sub_f_f(nleft, nright):
     return space.newfloat(fleft - fright)
 
 
-def sub_n_n(nleft, nright):
+def sub(nleft, nright):
     if space.isint(nleft) and space.isint(nright):
         return sub_i_i(nleft, nright)
     return sub_f_f(nleft, nright)
@@ -79,7 +79,7 @@ def mult_i_i(nleft, nright):
         return space.newfloat(float(ileft) * float(iright))
 
 
-def mult_n_n(nleft, nright):
+def mul(nleft, nright):
     if space.isint(nleft) and space.isint(nright):
         return mult_i_i(nleft, nright)
     return mult_f_f(nleft, nright)
@@ -120,7 +120,7 @@ def div_f_f(nleft, nright):
     return space.newfloat(val)
 
 
-def div_n_n(nleft, nright):
+def div(nleft, nright):
     if space.isint(nleft) and space.isint(nright):
         return div_i_i(nleft, nright)
 
@@ -146,26 +146,26 @@ def mod_f_f(nleft, nright):
     return space.newfloat(math.fmod(fleft, fright))
 
 
-def mod_n_n(nleft, nright):
+def mod(nleft, nright):
     return mod_f_f(nleft, nright)
 
 
-def uminus_f(obj):
+def negate_f(obj):
     n1 = api.to_f(obj)
     return space.newfloat(-n1)
 
 
-def uminus_i(obj):
+def negate_i(obj):
     intval = api.to_i(obj)
     if intval == 0:
         return space.newfloat(-float(intval))
     return space.newint(-intval)
 
 
-def uminus_n(obj):
+def negate_n(obj):
     if space.isint(obj):
-        return uminus_i(obj)
-    return uminus_f(obj)
+        return negate_i(obj)
+    return negate_f(obj)
 
 
 def compare_gt_i_i(w_x, w_y):
@@ -180,7 +180,7 @@ def compare_gt_f_f(w_x, w_y):
     return space.newbool(x > y)
 
 
-def compare_gt_n_n(x, y):
+def compare_gt(x, y):
     if space.isint(x) and space.isint(y):
         return compare_gt_i_i(x, y)
 
@@ -199,7 +199,7 @@ def compare_ge_f_f(w_x, w_y):
     return space.newbool(x >= y)
 
 
-def compare_ge_n_n(x, y):
+def compare_ge(x, y):
     if space.isint(x) and space.isint(y):
         return compare_ge_i_i(x, y)
     return compare_ge_f_f(x, y)
@@ -213,8 +213,8 @@ def compare_lt_f_f(w_x, w_y):
     return compare_gt_f_f(w_y, w_x)
 
 
-def compare_lt_n_n(w_x, w_y):
-    return compare_gt_n_n(w_y, w_x)
+def compare_lt(w_x, w_y):
+    return compare_gt(w_y, w_x)
 
 
 def compare_le_i_i(w_x, w_y):
@@ -225,34 +225,34 @@ def compare_le_f_f(w_x, w_y):
     return compare_ge_f_f(w_y, w_x)
 
 
-def compare_le_n_n(w_x, w_y):
-    return compare_ge_n_n(w_y, w_x)
+def compare_le(w_x, w_y):
+    return compare_ge(w_y, w_x)
 
 
-def bitand_i_i(op1_w, op2_w):
+def bitand(op1_w, op2_w):
     op1 = api.to_i(op1_w)
     op2 = api.to_i(op2_w)
     return space.newint(int(op1 & op2))
 
 
-def bitxor_i_i(op1_w, op2_w):
+def bitxor(op1_w, op2_w):
     op1 = api.to_i(op1_w)
     op2 = api.to_i(op2_w)
     return space.newint(int(op1 ^ op2))
 
 
-def bitor_i_i(op1_w, op2_w):
+def bitor(op1_w, op2_w):
     op1 = api.to_i(op1_w)
     op2 = api.to_i(op2_w)
     return space.newint(int(op1 | op2))
 
 
-def bitnot_i(op1_w):
+def bitnot(op1_w):
     op = api.to_i(op1_w)
     return space.newint(~op)
 
 
-def ursh_i_i(lval, rval):
+def ursh(lval, rval):
     lnum = api.to_i(lval)
     rnum = api.to_i(rval)
 
@@ -263,7 +263,7 @@ def ursh_i_i(lval, rval):
     return space.newnumber(res)
 
 
-def rsh_i_i(lval, rval):
+def rsh(lval, rval):
     lnum = api.to_i(lval)
     rnum = api.to_i(rval)
 
@@ -275,7 +275,7 @@ def rsh_i_i(lval, rval):
     return space.newnumber(res)
 
 
-def lsh_i_i(lval, rval):
+def lsh(lval, rval):
     lnum = api.to_i(lval)
     rnum = api.to_i(rval)
 
