@@ -2,6 +2,10 @@
 // we need to put process in every api call it is very very big annoying job/ it is better to rewrite all interpreter in
 // with this in mind
 
+// from api import name or tuple
+// from api hide name or tuple
+// import api as api
+
 //TODO ranges
 
 //TODO allow  'import from _fiber coroutine'

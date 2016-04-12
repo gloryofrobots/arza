@@ -1,1 +1,7 @@
-implement Eq for Bool end
+import from api (CoreMixin)
+
+extend Bool
+    with Eq = CoreMixin
+    with Str = CoreMixin
+
+//implement Eq for Bool end

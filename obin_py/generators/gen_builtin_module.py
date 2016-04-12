@@ -177,8 +177,32 @@ BIT = module("_bit",  [
     ])
 
 
+API = module("obin:lang:api", [
+    func(func_name="length", func_native_name="length", func_arity=1,
+             source_module="api", source_function="length"),
+    func(func_name="put", func_native_name="put", func_arity=3,
+             source_module="api", source_function="put",
+            arguments=[arg(2,0), arg(1,1), arg(0, 0)]),
+    func(func_name="at", func_native_name="at", func_arity=2,
+             source_module="api", source_function="at",
+            arguments=[arg(1, 0), arg(0, 0)]),
+    func(func_name="elem", func_native_name="elem", func_arity=2,
+             source_module="api", source_function="contains",
+            arguments=[arg(1, 0), arg(0, 0)]),
+    func(func_name="del", func_native_name="delete", func_arity=2,
+             source_module="api", source_function="delete",
+            arguments=[arg(1, 0), arg(0, 0)]),
+    func(func_name="equal", func_native_name="equal", func_arity=2,
+             source_module="api", source_function="equal",
+            arguments=[arg(1, 0), arg(0, 0)]),
+    func(func_name="to_string", func_native_name="to_string", func_arity=1,
+             source_module="api", source_function="to_string",
+            arguments=[arg(0, 0)]),
+])
+
 # print generate(TUPLES)
-print generate(LIST)
+# print generate(LIST)
+print generate(API)
 # print generate(BIT)
 
 

@@ -48,6 +48,7 @@ TOKENS = [
   ("TT_IMPORT", "import"),
   ("TT_FROM", "from"),
   ("TT_HIDING", "hiding"),
+  ("TT_HIDE", "hide"),
   ("TT_EXPORT", "export"),
   ("TT_TRAIT", "trait"),
 
