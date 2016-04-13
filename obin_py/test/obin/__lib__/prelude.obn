@@ -90,7 +90,7 @@ trait Prependable for self
 trait Appendable for self
     //concat operator
     def ++ self other
-    def append self value
+    def append value self
 
 trait Dict for self of Collection
     def keys self

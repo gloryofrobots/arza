@@ -58,7 +58,7 @@ char_const = "'[^']+'"
 # backtick_const = "`[^`]+`"
 backtick_name_const = "`%s`" % name_const
 backtick_op_const = "`%s`" % operator_const
-string_literal = '(""".*?""")|(".*?")|(\'.*?\')'
+string_literal = '(""".*?""")|(".*?")'
 
 RULES = [
     # (token('\n[ ]*'), TT_INDENTATION),

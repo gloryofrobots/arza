@@ -10,7 +10,7 @@ class W_String(W_Hashable):
         W_Hashable.__init__(self)
         assert value is not None and isinstance(value, unicode)
         self.string_value = value
-        self.__length = len(self.string_value)
+        self.length = len(self.string_value)
 
     def _compute_hash_(self):
         """The algorithm behind compute_hash() for a string or a unicode."""
@@ -60,7 +60,7 @@ class W_String(W_Hashable):
         return str(self.string_value)
 
     def _length_(self):
-        return self.__length
+        return self.length
 
     def _at_index_(self, i):
         from obin.types.space import newvoid, newchar
@@ -86,24 +86,72 @@ class W_String(W_Hashable):
     def _type_(self, process):
         return process.std.types.String
 
+    def to_l(self):
+        return [space.newchar(c) for c in self.string_value]
+
+    def to_list(self):
+        return space.newlist(self.to_l())
+
+
+def to_list(s):
+    error.affirm_type(s, space.isstring)
+    return s.to_list()
+
 
 def slice(s, first, last):
     error.affirm_type(s, space.isstring)
     assert isinstance(first, int)
     assert isinstance(last, int)
+    if first < 0:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"First index < 0"), space.newint(first))
+    if first >= last:
+        error.throw_3(error.Errors.SLICE_ERROR, space.newstring(u"First index >= Last index"),
+                      space.newint(first), space.newint(last))
+    if last >= s.length:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Last index too big"), space.newint(last))
     return W_String(s.string_value[first:last])
 
 
 def take(s, count):
     error.affirm_type(s, space.isstring)
     assert isinstance(count, int)
+    if count < 0:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count < 0"), space.newint(count))
+
+    if count >= s.length:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count too big"), space.newint(count))
+
     return W_String(s.string_value[:count])
 
 
 def drop(s, count):
     error.affirm_type(s, space.isstring)
     assert isinstance(count, int)
+    if count < 0:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count < 0"), space.newint(count))
+
+    if count >= s.length:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count too big"), space.newint(count))
+
     return W_String(s.string_value[count:])
+
+
+def _replace(s, old, new, count):
+    error.affirm_type(s, space.isstring)
+    error.affirm_type(old, space.isstring)
+    error.affirm_type(new, space.isstring)
+    su = api.to_u(s)
+    oldu = api.to_u(old)
+    newu = api.to_u(new)
+    su.string_value.replace(oldu, newu, count)
+
+
+def replace(s, old, new):
+    _replace(s, old, new, -1)
+
+
+def replace_first(s, old, new):
+    _replace(s, old, new, 1)
 
 
 def concat(l, r):
@@ -112,6 +160,32 @@ def concat(l, r):
     sleft = api.to_u(l)
     sright = api.to_u(r)
     return W_String(sleft + sright)
+
+
+def split(s, sep):
+    error.affirm_type(s, space.isstring)
+    error.affirm_type(sep, space.isstring)
+
+    return space.newlist([space.newstring(chunk) for chunk in s.string_value.split(sep.string_value)])
+
+
+def append(s, c):
+    error.affirm_type(s, space.isstring)
+    error.affirm_type(c, space.ischar)
+
+    return W_String(s.string_value + unichr(c.char_value))
+
+
+def prepend(s, c):
+    error.affirm_type(s, space.isstring)
+    error.affirm_type(c, space.ischar)
+
+    return W_String(unichr(c.char_value) + s.string_value)
+
+
+def reverse(s):
+    error.affirm_type(s, space.isstring)
+    return W_String(s.string_value[::-1])
 
 
 class Builder:

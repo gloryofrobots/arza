@@ -362,15 +362,16 @@ def _compile_STR(compiler, code, node):
 
 def _compile_CHAR(compiler, code, node):
     from obin.runistr import unicode_unescape, decode_str_utf8
-    # TODO CHAR
-
     try:
         strval = str(nodes.node_value_s(node))
         strval = decode_str_utf8(strval)
         strval = strutil.unquote_s(strval)
         strval = unicode_unescape(strval)
-        string = space.newstring(strval)
-        idx = _declare_literal(compiler, string)
+        if len(strval) != 1:
+            compile_error(compiler, code, node, u"Invalid char value")
+
+        char = space.newchar(strval)
+        idx = _declare_literal(compiler, char)
         code.emit_1(LITERAL, idx, info(node))
     except RuntimeError as e:
         compile_error(compiler, code, node, unicode(e.args[0]))

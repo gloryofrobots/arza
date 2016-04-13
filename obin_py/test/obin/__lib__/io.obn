@@ -24,6 +24,6 @@ fun print ...args ->
     write "\n" out
     ()
 
-
+p = print
 
 

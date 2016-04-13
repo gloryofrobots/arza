@@ -21,7 +21,7 @@ def isany(value):
 
 def isvaluetype(value):
     from obin.types.root import W_ValueType
-    return isinstance(value, W_ValueType)
+    return isinstance(value, W_ValueType) or isstring(value)
 
 
 def isuniquetype(w):
@@ -70,10 +70,13 @@ def isnumber(w):
 ########################################################
 
 def newchar(c):
-    assert isinstance(c, str)
+    assert isinstance(c, unicode)
     from obin.types.character import W_Char
     return W_Char(ord(c))
 
+def ischar(w):
+    from obin.types.character import W_Char
+    return isinstance(w, W_Char)
 
 ########################################################
 

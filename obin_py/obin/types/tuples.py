@@ -87,6 +87,7 @@ class W_Tuple(W_Hashable):
         assert isinstance(items, list)
         W_Hashable.__init__(self)
         self.elements = items
+        self.length = len(self.elements)
 
     def __iter__(self):
         for v in self.elements:
@@ -189,18 +190,36 @@ def slice(t, first, last):
     error.affirm_type(t, space.isrealtuple)
     assert isinstance(first, int)
     assert isinstance(last, int)
+    if first < 0:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"First index < 0"), space.newint(first))
+    if first >= last:
+        error.throw_3(error.Errors.SLICE_ERROR, space.newstring(u"First index >= Last index"),
+                      space.newint(first), space.newint(last))
+    if last >= t.length:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Last index too big"), space.newint(last))
     return W_Tuple(t.elements[first:last])
 
 
 def take(t, count):
     error.affirm_type(t, space.isrealtuple)
     assert isinstance(count, int)
+    if count < 0:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count < 0"), space.newint(count))
+
+    if count >= t.length:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count too big"), space.newint(count))
+
     return W_Tuple(t.elements[:count])
 
 
 def drop(t, count):
     error.affirm_type(t, space.isrealtuple)
     assert isinstance(count, int)
+    if count < 0:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count < 0"), space.newint(count))
+
+    if count >= t.length:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count too big"), space.newint(count))
     return W_Tuple(t.elements[count:])
 
 # def append(tupl, v):

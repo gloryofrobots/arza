@@ -3,3 +3,6 @@ from datatype import CoreMixin
 extend Map
     with Eq = CoreMixin
     with Str = CoreMixin
+    with Collection = CoreMixin
+    with Sized = CoreMixin
+

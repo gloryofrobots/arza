@@ -1,9 +1,6 @@
-from root import W_ValueType
+from obin.types import  space, api, root
 
-
-class W_Char(W_ValueType):
-    # _immutable_fields_ = ['char_value']
-
+class W_Char(root.W_ValueType):
     def __init__(self, value):
         self.char_value = value
 
@@ -17,7 +14,9 @@ class W_Char(W_ValueType):
         return chr(self.char_value)
 
     def _equal_(self, other):
-        assert isinstance(other, W_Char)
+        if not space.ischar(other):
+            return False
+
         return self.char_value == other.char_value
 
     def _compare_(self, other):

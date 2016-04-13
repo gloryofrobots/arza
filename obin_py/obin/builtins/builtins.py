@@ -30,6 +30,9 @@ def presetup(process, module, stdlib):
     import obin.builtins.modules.module_number
     obin.builtins.modules.module_number.setup(process, stdlib)
 
+    import obin.builtins.modules.module_string
+    obin.builtins.modules.module_string.setup(process, stdlib)
+
     module.export_all()
 
 

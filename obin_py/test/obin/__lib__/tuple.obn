@@ -4,15 +4,10 @@ from datatype import CoreMixin
 extend Tuple
     with Eq = CoreMixin
     with Str = CoreMixin
+    with Collection = CoreMixin
+    with Sized = CoreMixin
     with Seqable
         def to_seq self -> _tuple:to_list self
-    with Sized
-        def len self -> _tuple:length
-    with Collection
-        def put key value self -> _tuple:put key value self
-        def at key self -> _tuple:at key self
-        def del obj self -> _tuple:del obj self
-        def elem key self -> _tuple:elem key self
     with Sliceable
         def slice first last self -> _tuple:slice first last self
         def drop count self -> _tuple:drop count self

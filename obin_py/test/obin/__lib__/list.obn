@@ -53,6 +53,7 @@ fun replicate count element ->
 extend List
     with Eq = CoreMixin
     with Str = CoreMixin
+    with Collection = CoreMixin
     with Seq
         def first self -> _list:head self
         def rest self -> _list:tail self
@@ -65,11 +66,6 @@ extend List
         def is_empty self -> _list:is_empty self
     with Emptiable
         def empty self -> []
-    with Collection
-        def put key value self -> _list:put key value self
-        def at key self -> _list:at key self
-        def del key self -> _list:del key self
-        def elem key self -> _list:elem key self
     with Sliceable
         def slice first last self -> _list:slice first last self
         def drop count self -> _list:drop count self

@@ -78,31 +78,19 @@ def module(module_name, funcs):
     )
 
 LIST = module("obin:lang:_list", [
-    func(func_name="length", func_native_name="_length", func_arity=1,
-             source_module="api", source_function="length"),
-    func(func_name="put", func_native_name="put", func_arity=3,
-             source_module="api", source_function="put",
-            arguments=[arg(2,0), arg(1,1), arg(0, 0)]),
-    func(func_name="at", func_native_name="at", func_arity=2,
-             source_module="api", source_function="at",
-            arguments=[arg(1, 0), arg(0, 0)]),
-    func(func_name="elem", func_native_name="elem", func_arity=2,
-             source_module="api", source_function="contains",
-            arguments=[arg(1, 0), arg(0, 0)]),
-    func(func_name="del", func_native_name="delete", func_arity=2,
-             source_module="api", source_function="delete",
-            arguments=[arg(1, 0), arg(0, 0)]),
-
-    func(func_name="tail", func_native_name="_tail", func_arity=1,
-             source_module="plist", source_function="tail"),
-    func(func_name="empty", func_native_name="_empty", func_arity=0,
-             source_module="plist", source_function="empty"),
+    func(func_name="length", func_native_name="length", func_arity=1,
+             source_module="plist", source_function="length"),
     func(func_name="is_empty", func_native_name="_is_empty", func_arity=1,
              source_module="plist", source_function="is_empty", result_wrap="space.newbool"),
-    func(func_name="head", func_native_name="_head", func_arity=1,
-             source_module="plist", source_function="head"),
+
+    func(func_name="empty", func_native_name="_empty", func_arity=0,
+             source_module="plist", source_function="empty"),
     func(func_name="cons", func_native_name="_cons", func_arity=2,
              source_module="plist", source_function="cons"),
+    func(func_name="head", func_native_name="_head", func_arity=1,
+             source_module="plist", source_function="head"),
+    func(func_name="tail", func_native_name="_tail", func_arity=1,
+             source_module="plist", source_function="tail"),
 
     func(func_name="slice", func_native_name="slice", func_arity=3,
              source_module="plist", source_function="slice",
@@ -116,21 +104,6 @@ LIST = module("obin:lang:_list", [
     ])
 
 TUPLES = module("obin:lang:_tuple", [
-    func(func_name="length", func_native_name="_length", func_arity=1,
-             source_module="api", source_function="length"),
-    func(func_name="put", func_native_name="put", func_arity=3,
-             source_module="api", source_function="put",
-            arguments=[arg(2,0), arg(1,1), arg(0, 0)]),
-    func(func_name="at", func_native_name="at", func_arity=2,
-             source_module="api", source_function="at",
-            arguments=[arg(1, 0), arg(0, 0)]),
-    func(func_name="elem", func_native_name="elem", func_arity=2,
-             source_module="api", source_function="contains",
-            arguments=[arg(1, 0), arg(0, 0)]),
-    func(func_name="del", func_native_name="delete", func_arity=2,
-             source_module="api", source_function="delete",
-            arguments=[arg(1, 0), arg(0, 0)]),
-
     func(func_name="slice", func_native_name="slice", func_arity=3,
              source_module="tuples", source_function="slice",
             arguments=[arg(2,0), arg(1,1, wrapper='api.to_i'), arg(0, 0, wrapper='api.to_i')]),
@@ -144,6 +117,50 @@ TUPLES = module("obin:lang:_tuple", [
     func(func_name="to_list", func_native_name="_to_list", func_arity=1,
              source_module="tuples", source_function="to_list"),
     ])
+
+STRING = module("obin:lang:_string", [
+
+    func(func_name="to_list", func_native_name="to_list", func_arity=1,
+             source_module="string", source_function="to_list"),
+
+    func(func_name="reverse", func_native_name="reverse", func_arity=1,
+             source_module="string", source_function="reverse"),
+
+    func(func_name="slice", func_native_name="slice", func_arity=3,
+             source_module="string", source_function="slice",
+            arguments=[arg(2,0), arg(1,1, wrapper='api.to_i'), arg(0, 0, wrapper='api.to_i')]),
+    func(func_name="take", func_native_name="take", func_arity=2,
+             source_module="string", source_function="take",
+            arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
+    func(func_name="drop", func_native_name="drop", func_arity=2,
+             source_module="string", source_function="drop",
+            arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
+    
+    func(func_name="concat", func_native_name="concat", func_arity=2,
+             source_module="string", source_function="concat",
+            arguments=[arg(0, 0), arg(1, 0)]),
+
+    func(func_name="append", func_native_name="append", func_arity=2,
+             source_module="string", source_function="append",
+            arguments=[arg(1, 0), arg(0, 0)]),
+
+    func(func_name="prepend", func_native_name="prepend", func_arity=2,
+             source_module="string", source_function="prepend",
+            arguments=[arg(1, 0), arg(0, 0)]),
+
+    func(func_name="split", func_native_name="split", func_arity=2,
+             source_module="string", source_function="split",
+            arguments=[arg(1, 0), arg(0, 0)]),
+
+
+    func(func_name="replace", func_native_name="replace", func_arity=3,
+             source_module="string", source_function="replace",
+             arguments=[arg(2,0), arg(1,1), arg(0, 0)]),
+    func(func_name="replace_first", func_native_name="replace_first", func_arity=3,
+             source_module="string", source_function="replace_first",
+             arguments=[arg(2,0), arg(1,1), arg(0, 0)]),
+    ])
+
 
 BIT = module("obin:lang:_bit",  [
     func(func_name="bitnot", func_native_name="bitnot", func_arity=1,
@@ -180,6 +197,8 @@ BIT = module("obin:lang:_bit",  [
 API = module("obin:lang:_api", [
     func(func_name="length", func_native_name="length", func_arity=1,
              source_module="api", source_function="length"),
+    func(func_name="is_empty", func_native_name="is_empty", func_arity=1,
+             source_module="api", source_function="is_empty"),
     func(func_name="put", func_native_name="put", func_arity=3,
              source_module="api", source_function="put", 
             arguments=[arg(2,0), arg(1,1), arg(0, 0)]),
@@ -229,7 +248,8 @@ NUMBER = module("obin:lang:_number", [
 # print generate(LIST)
 # print generate(API)
 # print generate(BIT)
-print generate(NUMBER)
+# print generate(NUMBER)
+print generate(STRING)
 
 
 

@@ -1,0 +1,25 @@
+import io
+import string
+import affirm
+
+fun test () ->
+
+    affirm:is_equal ("AAA" ++ "BBB" ++ "CCC") "AAABBBCCC"
+    affirm:is_equal (prepend 'A' "BBB") "ABBB"
+    affirm:is_equal (append 'A' "BBB") "BBBA"
+    affirm:is_equal (cons 'A' "BBB") "BBBA"
+    affirm:is_equal (to_seq "ABCDEFG") ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+    affirm:is_equal (slice 2 6 "ABCDEFGH") "CDEF"
+    affirm:is_equal (drop 2 "ABCDEFGH") "CDEFGH"
+    affirm:is_equal (take 2 "ABCDEFGH") "AB"
+    affirm:is_equal (string:reverse "ABCDEFGH") "HGFEDCBA"
+
+    affirm:is_equal (string:split "x" "AxBxAxCxAx") ["A", "B", "A", "C", "A", ""]
+    affirm:is_equal (string:split "xy-1" "Axy-1Fxy-1Exy-1Dxy-1CBAAAA") ["A", "F", "E", "D", "CBAAAA"]
+    affirm:is_equal (string:split "x" "x1x2x3x4x5") ["", "1", "2", "3", "4", "5"]
+
+    affirm:is_equal <| string:join ["x", "y", "1", "Z", "V"] "" <| "xy1ZV"
+    affirm:is_equal <| string:join ["x", "y", "1", "Z", "V"] "<><>" <| "x<><>y<><>1<><>Z<><>V"
+
+    affirm:is_equal <| string:join_cast [1,2, ["1", 2,3,4], {x=1, y=(1,2,"ABC")}] "---"
+                    <| "1---2---[1, 2, 3, 4]---{y = (1, 2, ABC), x = 1}"
