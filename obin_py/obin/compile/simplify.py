@@ -29,6 +29,12 @@ def simplify_type(compiler, code, node):
     return nodes.create_assign_node(node, name_node, call_node)
 
 
+def simplify_lazy(compiler, code, node):
+    exp = node_first(node)
+    fun_1_arg = nodes.create_fun_exp_node(node, nodes.empty_node(), exp)
+    return nodes.create_call_node_s(node, lang_names.DELAY, [fun_1_arg])
+
+
 def simplify_union(compiler, code, node):
     name_node = node_first(node)
     types = node_second(node)

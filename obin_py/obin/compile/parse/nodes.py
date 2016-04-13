@@ -226,6 +226,11 @@ def create_function_variants(args, body):
     return list_node([list_node([args, body])])
 
 
+def create_fun_exp_node(basenode, name, exp):
+    return create_fun_node(basenode, name,
+                           create_function_variants(list_node([create_unit_node(basenode)]),
+                                                    list_node([exp])))
+
 def create_fun_node(basenode, name, funcs):
     return node_2(nt.NT_FUN, create_token_from_node(tt.TT_STR, "fun", basenode), name, funcs)
 
@@ -270,8 +275,10 @@ def create_int_node(basenode, val):
 def create_true_node(basenode):
     return node_0(nt.NT_TRUE, create_token_from_node(tt.TT_TRUE, "true", basenode))
 
+
 def create_false_node(basenode):
     return node_0(nt.NT_FALSE, create_token_from_node(tt.TT_FALSE, "false", basenode))
+
 
 def create_void_node(basenode):
     return node_0(nt.NT_VOID, create_token_from_node(tt.TT_TRUE, "void", basenode))
@@ -418,6 +425,14 @@ def create_is_seq_node(basenode, val):
 
 def create_len_node(basenode, val):
     return create_call_node_s(basenode, lang_names.LEN, [val])
+
+
+def create_lazy_node(basenode, exp):
+    return node_1(nt.NT_LAZY, create_token_from_node(tt.TT_LAZY, "lazy", basenode), exp)
+
+
+def create_lazy_cons_node(basenode, left, right):
+    return create_cons_node(basenode, left, create_lazy_node(basenode, right))
 
 
 def create_cons_node(basenode, left, right):

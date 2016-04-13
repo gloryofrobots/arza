@@ -48,7 +48,6 @@ TERM_EXTEND_BODY = [TT_CASE, TT_DEF, TT_WITH] + TERM_BLOCK
 
 TERM_FROM_IMPORTED = [TT_IMPORT, TT_HIDE]
 
-
 TERM_CONDITION_CONDITION = [TT_ARROW]
 
 NODE_FOR_NAME = [NT_NAME]
@@ -547,6 +546,11 @@ def expression(parser, _rbp, terminators=None):
     expr = base_expression(parser, _rbp, terminators)
     expr = postprocess(parser, expr)
     return expr
+
+
+# INFIXR
+def rexpression(parser, op):
+    return expression(parser, op.lbp - 1)
 
 
 def expression_with_optional_end_of_expression(parser, _rbp, terminators):

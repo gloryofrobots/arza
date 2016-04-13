@@ -27,7 +27,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'traits', traits, 1)
     api.put_native_function(process, module, u'get_type', _type, 1)
     api.put_native_function(process, module, u'range', _range, 2)
-    api.put_native_function(process, module, u'lazyval', _lazyval, 1)
+    put_lang_func(process, module, lang_names.DELAY, __delay, 1)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
     put_lang_func(process, module, lang_names.IS_INDEXED, is_indexed, 1)
     put_lang_func(process, module, lang_names.IS_SEQ, is_seq, 1)
@@ -129,7 +129,7 @@ def _type(process, routine):
 
 
 @complete_native_routine
-def _lazyval(process, routine):
+def __delay(process, routine):
     left = routine.get_arg(0)
     error.affirm_type(left, space.isfunction)
     return space.newlazyval(left)

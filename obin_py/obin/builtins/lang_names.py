@@ -19,6 +19,7 @@ TRAIT = PREFIX + "deftrait"
 IMPLEMENT = PREFIX + "defimplement"
 EXTEND = PREFIX + "defextend"
 UNION = PREFIX + "defunion"
+DELAY = PREFIX + "delay"
 
 SLICE = PREFIX + "slice"
 DROP = PREFIX + "drop"

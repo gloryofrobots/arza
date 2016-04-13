@@ -110,8 +110,13 @@ def infix_backtick_name(parser, op, node, left):
 
 
 def infix_double_colon(parser, op, node, left):
-    right = expression(parser, op.lbp - 1)
+    right = rexpression(parser, op)
     return nodes.create_cons_node(node, left, right)
+
+
+def infix_triple_colon(parser, op, node, left):
+    right = rexpression(parser, op)
+    return nodes.create_lazy_cons_node(node, left, right)
 
 
 def infix_juxtaposition(parser, op, node, left):

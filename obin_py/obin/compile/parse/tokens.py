@@ -147,6 +147,7 @@ RULES = [
     (token('\.'), TT_DOT),
     (token('\.\.'), TT_DOUBLE_DOT),
     (token('@'), TT_AT_SIGN),
+    (token(':::'), TT_TRIPLE_COLON),
     (token('::'), TT_DOUBLE_COLON),
     (token('[:^:][%s]+' % operator_char), TT_OPERATOR),
     (token(':'), TT_COLON),

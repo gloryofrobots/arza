@@ -1,8 +1,17 @@
+from datatype import CoreMixin
+import io
+
 extend LazyVal
     with Ref
         def ! self -> self ()
 
+    with Constructable
+        def cons value self ->
+            io:p "CONS" value self
+            LazyCons value self
+
 extend LazyList
+    with Collection = CoreMixin
     with Seq
         def first self ->
             match self with
@@ -28,15 +37,15 @@ extend LazyList
             []
 
 
-def test () ->
+fun test () ->
     fun squares n ->
         n * n ::: squares (n + 1)
 
     sqrs = squares 1
 
-    _s =  (seq:take 4 sqrs)
-    _s2 = (seq:take 10 sqrs)
-    _s3 = (seq:take 20 sqrs)
-    affirm:is_equal (seq:take 4 sqrs) [1, 4, 9, 16]
-    affirm:is_equal (seq:take 10 sqrs) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
-    affirm:is_equal (seq:take 20 sqrs) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400]
+//    _s =  (seq:take 4 sqrs)
+//    _s2 = (seq:take 10 sqrs)
+//    _s3 = (seq:take 20 sqrs)
+//    affirm:is_equal (seq:take 4 sqrs) [1, 4, 9, 16]
+//    affirm:is_equal (seq:take 10 sqrs) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+//    affirm:is_equal (seq:take 20 sqrs) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400]

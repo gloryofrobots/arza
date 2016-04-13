@@ -944,6 +944,11 @@ def _declare_local_name(compiler, code, node):
     return sym, index, name_index
 
 
+def _compile_LAZY(compiler, code, node):
+    simplified = simplify.simplify_lazy(compiler, code, node)
+    _compile(compiler, code, simplified)
+
+
 def _compile_UNION(compiler, code, node):
     simplified = simplify.simplify_union(compiler, code, node)
     _compile(compiler, code, simplified)
@@ -963,6 +968,7 @@ def _compile_TRAIT(compiler, code, node):
 def _compile_EXTEND(compiler, code, node):
     simplified = simplify.simplify_extend(compiler, code, node)
     _compile(compiler, code, simplified)
+
 
 def _compile_IMPLEMENT(compiler, code, node):
     simplified = simplify.simplify_implement(compiler, code, node)
@@ -1142,6 +1148,8 @@ def _compile_node(compiler, code, node):
         _compile_TYPE(compiler, code, node)
     elif NT_UNION == ntype:
         _compile_UNION(compiler, code, node)
+    elif NT_LAZY == ntype:
+        _compile_LAZY(compiler, code, node)
 
     elif NT_LOOKUP == ntype:
         _compile_LOOKUP(compiler, code, node)

@@ -90,6 +90,7 @@ TOKENS = [
   ("TT_DOT", "."),
   ("TT_COLON", ":"),
   ("TT_DOUBLE_COLON", "::"),
+  ("TT_TRIPLE_COLON", ":::"),
   ("TT_DOUBLE_DOT", ".."),
   ("TT_BACKTICK_NAME", "`"),
   ("TT_BACKTICK_OPERATOR", "`"),
