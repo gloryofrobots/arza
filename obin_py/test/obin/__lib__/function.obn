@@ -1,6 +1,9 @@
-from obin:lang:_fiber import (spawn, activate, coroutine)
 from datatype import CoreMixin
 
-extend Fiber
+extend Function
+    with Eq = CoreMixin
+    with Str = CoreMixin
+
+extend Method
     with Eq = CoreMixin
     with Str = CoreMixin

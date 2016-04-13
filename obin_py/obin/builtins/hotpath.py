@@ -37,10 +37,19 @@ def is_not_records(w1, w2):
 
 
 # API#######################################################################
+
+def hp_str(process, args):
+    left = api.at_index(args, 0)
+    if space.isatomictype(left):
+        return api.to_string(left)
+    else:
+        return None
+
+
 def hp_ne(process, args):
     left = api.at_index(args, 0)
     right = api.at_index(args, 1)
-    if is_not_records(left, right):
+    if space.isatomictype(left):
         return api.not_equal(left, right)
     else:
         return None
@@ -50,7 +59,7 @@ def hp_eq(process, args):
     left = api.at_index(args, 0)
     right = api.at_index(args, 1)
 
-    if is_not_records(left, right):
+    if space.isatomictype(left):
         return api.equal(left, right)
     else:
         return None
@@ -64,6 +73,7 @@ def hp_elem(process, args):
         return api.contains(right, left)
     else:
         return None
+
 
 def hp_put(process, args):
     key = api.at_index(args, 0)
@@ -86,6 +96,7 @@ def hp_at(process, args):
     else:
         return None
 
+
 def hp_len(process, args):
     left = api.at_index(args, 0)
 
@@ -93,6 +104,7 @@ def hp_len(process, args):
         return api.length(left)
     else:
         return None
+
 
 ####NUMBERS##########################################################
 
@@ -200,6 +212,7 @@ def hp_is_empty(process, args):
         return api.is_empty(left)
     else:
         return None
+
 
 def hp_cons(process, args):
     left = api.at_index(args, 0)

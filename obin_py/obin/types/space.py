@@ -19,9 +19,12 @@ def isany(value):
     return isinstance(value, W_Root)
 
 
+def isatomictype(value):
+    return isvaluetype(value) or isstring(value)
+
 def isvaluetype(value):
     from obin.types.root import W_ValueType
-    return isinstance(value, W_ValueType) or isstring(value)
+    return isinstance(value, W_ValueType)
 
 
 def isuniquetype(w):

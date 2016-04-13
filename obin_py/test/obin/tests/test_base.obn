@@ -42,6 +42,8 @@ fun t1() ->
                     elif x == 15 -> 3 + 3
                     else -> 4 + 4 end .
                     8
+
+
 fun t2 () ->
     fun id x -> x
     fun sum_list_3 list

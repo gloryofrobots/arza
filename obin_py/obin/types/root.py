@@ -125,9 +125,6 @@ class W_Root:
     def _to_float_(self):
         return not_implemented_error(u"_tofloat_", self)
 
-    def _to_sequence_(self):
-        return not_implemented_error(u"_tosequence_", self)
-
     def _equal_(self, other):
         return not_implemented_error(u"_equal_", self, other)
 

@@ -173,8 +173,7 @@ class W_DataType(W_Hashable):
         process.call_object(self, args)
 
     def _type_(self, process):
-        return self
-        # return process.std.types.Datatype
+        return process.std.types.Datatype
 
     def _compute_hash_(self):
         return int((1 - platform.random()) * 10000000)

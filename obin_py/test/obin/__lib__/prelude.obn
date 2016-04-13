@@ -1,5 +1,5 @@
-from obin:core:types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
-                             Function, Generic, Method, NativeFunction, Fiber, Trait, Datatype, LazyVal, Env)
+from obin:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+                             Function, Method, Fiber, Trait, Datatype, LazyVal, Env)
 
 prefix - negate
 prefix ! ! 10
@@ -151,6 +151,10 @@ type TraitAlreadyImplementedError args
 type TraitImplementationError args
 type TraitConstraintError args
 type StopIterationError args
+
+type LazyList
+    | LazyCons head tail
+    | LazyNil
 
 //FUNS
 fun lookup key default coll ->

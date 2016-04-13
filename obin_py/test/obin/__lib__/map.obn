@@ -1,8 +1,20 @@
+import obin:lang:_map
+import string
 from datatype import CoreMixin
 
 extend Map
     with Eq = CoreMixin
-    with Str = CoreMixin
     with Collection = CoreMixin
     with Sized = CoreMixin
+    with Str
+        def str self ->
+            fun _joiner pair ->
+                str pair.0 ++ "=" ++ str pair.1
+            (
+                "{"
+                    ++ string:join_with _joiner (to_seq self) ", " ++
+                "}"
+            )
 
+    with Seqable
+        def to_seq self -> _map:to_list self

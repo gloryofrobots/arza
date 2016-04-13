@@ -33,6 +33,9 @@ def presetup(process, module, stdlib):
     import obin.builtins.modules.module_string
     obin.builtins.modules.module_string.setup(process, stdlib)
 
+    import obin.builtins.modules.module_map
+    obin.builtins.modules.module_map.setup(process, stdlib)
+
     module.export_all()
 
 
@@ -63,6 +66,9 @@ def setup_hotpath(process):
 
     method = api.at(prelude, _s(u"!="))
     method.set_hotpath(hp.hp_ne)
+
+    method = api.at(prelude, _s(u"str"))
+    method.set_hotpath(hp.hp_str)
 
     method = api.at(prelude, _s(u"<="))
     method.set_hotpath(hp.hp_le)

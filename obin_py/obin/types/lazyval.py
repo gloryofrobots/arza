@@ -15,7 +15,7 @@ class W_LazyVal(W_Root):
         return process.std.types.LazyVal
 
     def on_eval(self, result):
-        print "ON EVAL", result
+        # print "ON EVAL", result
         self.value = result
         return result
 
@@ -23,17 +23,17 @@ class W_LazyVal(W_Root):
         return self.value is not None
 
     def _to_routine_(self, stack, args):
-        print "TO ROUTINE"
+        # print "TO ROUTINE"
         from obin.runtime.routine.routine import create_callback_routine
         routine = create_callback_routine(stack, self.on_eval, self.fn, args)
         return routine
 
     def _call_(self, process, args):
         if self.is_evaluated():
-            print "LAZY CACHE", self.value
+            # print "LAZY CACHE", self.value
             return self.value
 
-        print "LAZY CALL", args
+        # print "LAZY CALL", args
         process.call_object(self, args)
 
     def _equal_(self, other):

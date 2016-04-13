@@ -243,13 +243,18 @@ NUMBER = module("obin:lang:_number", [
              source_module="number", source_function="le",
              affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
 ])
+MAP = module("obin:lang:_map", [
+    func(func_name="to_list", func_native_name="_to_list", func_arity=1,
+             source_module="pmap", source_function="to_list"),
+    ])
 
 # print generate(TUPLES)
 # print generate(LIST)
 # print generate(API)
 # print generate(BIT)
 # print generate(NUMBER)
-print generate(STRING)
+# print generate(STRING)
+print generate(MAP)
 
 
 

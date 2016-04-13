@@ -77,6 +77,9 @@ def lookup_implementation(process, method, args):
     dispatch_arg = api.at_index(args, method.dispatch_arg_index)
     _type = api.get_type(process, dispatch_arg)
     impl = _type.get_method_implementation(method)
+    # SUPPORT FOR DISPATCHING ON SINGLETONS type Union | X | Y | Z
+    if space.isvoid(impl) and space.isdatatype(dispatch_arg) and dispatch_arg.is_singleton:
+        return dispatch_arg.get_method_implementation(method)
     return impl
 
 

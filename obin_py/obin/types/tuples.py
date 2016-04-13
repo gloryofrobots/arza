@@ -183,7 +183,10 @@ def concat(tupl1, tupl2):
 
 def to_list(t):
     type_check(t)
-    return space.newlist(t.elements)
+    if space.isrealtuple(t):
+        return space.newlist(t.elements)
+    else:
+        return plist.empty()
 
 
 def slice(t, first, last):
@@ -222,57 +225,3 @@ def drop(t, count):
         error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count too big"), space.newint(count))
     return W_Tuple(t.elements[count:])
 
-# def append(tupl, v):
-#     items = tupl.values + [v]
-#     return W_Tuple(items)
-#
-#
-# def prepend(tupl, v):
-#     items = [v] + tupl.values
-#     return W_Tuple(items)
-#
-#
-# def insert(tupl, index, v):
-#     items = tupl.values
-#     first = items[0:index]
-#     second = items[index:]
-#     items = first + [v] + second
-#     return W_Tuple(items)
-#
-#
-# def remove(tupl, v):
-#     items = tupl.values
-#     index = tupl.values.index(v)
-#     first = items[0:index - 1]
-#     second = items[index:]
-#     items = first + second
-#     return W_Tuple(items)
-#
-#
-# def append_items(tupl, items):
-#     items = tupl.values + items
-#     return W_Tuple(items)
-#
-#
-# def remove_last(tupl):
-#     items = tupl.values[0:len(tupl.values) - 1]
-#     return W_Tuple(items)
-#
-#
-# def remove_first(tupl):
-#     items = tupl.values[1:len(tupl.values)]
-#     return W_Tuple(items)
-#
-#
-#
-#
-# def fold_slice(tupl, index):
-#     items = tupl.values
-#     slice = items[index:]
-#     rest = items[0:index]
-#     items = rest + [slice,]
-#     return W_Tuple(items)
-#
-#
-# def append_value_multiple_times(tupl, val, times):
-#     tupl.values = tupl.values + [val] * times

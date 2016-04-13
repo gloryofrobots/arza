@@ -23,3 +23,14 @@ fun test () ->
 
     affirm:is_equal <| string:join_cast [1,2, ["1", 2,3,4], {x=1, y=(1,2,"ABC")}] "---"
                     <| "1---2---[1, 2, 3, 4]---{y = (1, 2, ABC), x = 1}"
+
+    affirm:is_equal <| str {x=1, y=2, z=3} <| "{x=1, y=2, z=3}"
+    affirm:is_equal <| str {x=1} <| "{x=1, y=2, z=3}"
+    affirm:is_equal <| str {} <| "{x=1, y=2, z=3}"
+
+    affirm:is_equal <| str (1,2,3,4) <| "(1, 2, 3, 4)"
+    affirm:is_equal <| str (1,) <| "(1,)"
+    affirm:is_equal <| str () <| "()"
+    affirm:is_equal <| str [1,2,3,4] <| "[1, 2, 3, 4]"
+    affirm:is_equal <| str [1] <| "[1]"
+    affirm:is_equal <| str [] <| "[]"

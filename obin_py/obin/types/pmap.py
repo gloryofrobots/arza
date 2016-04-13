@@ -71,7 +71,7 @@ class W_PMap(W_Root):
 
         return W_PMap(self._cnt if added_leaf._val is None else self._cnt + 1, new_root)
 
-    def _to_sequence_(self):
+    def to_seq(self):
         if self._seq is None:
             self._seq = self.to_list()
         return self._seq
@@ -110,7 +110,13 @@ class W_PMap(W_Root):
 
     # To Obin list
     def to_list(self):
-        return self._root.reduce(_tolist, plist.empty())
+        if self._seq is None:
+            if self._root is None:
+                self._seq = plist.empty()
+            else:
+                self._seq = self._root.reduce(_tolist, plist.empty())
+
+        return self._seq
 
     # To Python list
     def to_l(self):
@@ -415,7 +421,8 @@ def bit_count(i):
     assert isinstance(i, rarithmetic.r_uint), type(i)
     i = i - ((i >> 1) & rarithmetic.r_uint(0x55555555))
     i = (i & rarithmetic.r_uint(0x33333333)) + ((i >> 2) & rarithmetic.r_uint(0x33333333))
-    return (((i + (i >> 4) & rarithmetic.r_uint(0xF0F0F0F)) * rarithmetic.r_uint(0x1010101)) & rarithmetic.r_uint(0xffffffff)) >> 24
+    return (((i + (i >> 4) & rarithmetic.r_uint(0xF0F0F0F)) * rarithmetic.r_uint(0x1010101)) & rarithmetic.r_uint(
+        0xffffffff)) >> 24
 
 
 @jit.unroll_safe
@@ -485,3 +492,12 @@ def pmap(args):
         idx += 2
 
     return acc
+
+
+def type_check(m):
+    error.affirm_type(m, space.ispmap)
+
+
+def to_list(m):
+    type_check(m)
+    return m.to_list()
