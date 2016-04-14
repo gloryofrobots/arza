@@ -223,13 +223,17 @@ def create_token_from_node(type, value, node):
 
 
 def create_function_variants(args, body):
+    # print "ARGS", args
+    # print "BODY", body
     return list_node([list_node([args, body])])
 
 
 def create_fun_exp_node(basenode, name, exp):
     return create_fun_node(basenode, name,
-                           create_function_variants(list_node([create_unit_node(basenode)]),
-                                                    list_node([exp])))
+                           create_function_variants(
+                               create_tuple_node(basenode, [create_unit_node(basenode)]),
+                               list_node([exp])))
+
 
 def create_fun_node(basenode, name, funcs):
     return node_2(nt.NT_FUN, create_token_from_node(tt.TT_STR, "fun", basenode), name, funcs)
@@ -413,10 +417,6 @@ def create_is_dict_node(basenode, val):
 
 def create_is_empty_node(basenode, val):
     return create_call_node_s(basenode, lang_names.IS_EMPTY, [val])
-
-
-def create_is_not_empty_node(basenode, val):
-    return create_call_node_s(basenode, lang_names.IS_NOT_EMPTY, [val])
 
 
 def create_is_seq_node(basenode, val):

@@ -230,6 +230,11 @@ def prefix_sharp(parser, op, node):
     return _parse_symbol(parser, node)
 
 
+def prefix_lazy(parser, op, node):
+    exp = expression(parser, 0)
+    return nodes.create_lazy_node(node, exp)
+
+
 # def prefix_backtick(parser, op, node):
 #     val = strutil.cat_both_ends(nodes.node_value_s(node))
 #     if not val:

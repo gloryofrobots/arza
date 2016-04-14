@@ -367,6 +367,7 @@ def expression_parser_init(proc_data, parser):
     prefix(parser, TT_MATCH, prefix_match)
     prefix(parser, TT_TRY, prefix_try)
     prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
+    prefix(parser, TT_LAZY, prefix_lazy)
 
     assignment(parser, TT_ASSIGN, 10)
 
@@ -380,6 +381,7 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_BACKTICK_NAME, 50, infix_backtick_name)
     infix(parser, TT_DOUBLE_COLON, 70, infix_double_colon)
     infix(parser, TT_TRIPLE_COLON, 70, infix_triple_colon)
+
 
     infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     infix(parser, TT_DOT, 95, infix_dot)

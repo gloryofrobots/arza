@@ -152,10 +152,6 @@ type TraitImplementationError args
 type TraitConstraintError args
 type StopIterationError args
 
-type LazyList
-    | LazyCons head tail
-    | LazyNil
-
 //FUNS
 fun lookup key default coll ->
     try

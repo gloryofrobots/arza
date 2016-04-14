@@ -1,0 +1,47 @@
+import seq
+import affirm
+import io
+import var
+
+fun test () ->
+    fun squares n ->
+        (n * n) ::: squares (n + 1)
+
+    sqrs = squares 1
+//
+    _s =  (seq:take 4 sqrs)
+    _s2 = (seq:take 10 sqrs)
+    _s3 = (seq:take 20 sqrs)
+    affirm:is_equal (seq:take 4 sqrs) [1, 4, 9, 16]
+    affirm:is_equal (seq:take 10 sqrs) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+    affirm:is_equal (seq:take 20 sqrs) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400]
+
+//    test()
+    fun squares2 n ->
+        if n <= 10 ->
+            (n * n) ::: squares2 (n + 1)
+        else ->
+            []
+
+    sqrs2 = squares2 1
+    affirm:is_equal (seq:take 9 sqrs2) [1, 4, 9, 16, 25, 36, 49, 64, 81]
+    affirm:is_equal (seq:take 10 sqrs2) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+    affirm:is_equal (seq:take 11 sqrs2) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+
+    //consing with lazy lists is forbidden
+    affirm:is_throw lam () -> 1 :: 2 ::: 3 :: 4 ::: 5 :: [] end ()
+
+    v = var:var 1
+    l = 1 :: lazy (2 + 2) :: lazy (3 + 4)
+          :: lazy (lam () -> v := !v + 1; 42 * 42 end ())
+          ::: []
+
+    io:print (seq:doall l)
+    seq:doall l
+    seq:doall l
+    affirm:is_equal (seq:take 10 l) [1, 4, 7, 1764]
+    //EVALUATES ONLY ONCE
+    affirm:is_equal (!v) 2
+    affirm:is_equal (seq:list l) [1, 4, 7, 1764]
+
+

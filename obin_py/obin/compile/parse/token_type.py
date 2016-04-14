@@ -82,7 +82,7 @@ TT_UNKNOWN = 78
 __TT_REPR__ = [u"TT_ENDSTREAM", u"TT_INT", u"TT_FLOAT", u"TT_STR", u"TT_CHAR", u"TT_NAME", u"TT_TYPENAME",
                u"TT_OPERATOR", u"TT_FUN", u"TT_MATCH", u"TT_WITH", u"TT_CASE", u"TT_BREAK", u"TT_CONTINUE", u"TT_FOR",
                u"TT_WHILE", u"TT_IMPLEMENT", u"TT_EXTEND", u"TT_DEF", u"TT_TYPE", u"TT_IF", u"TT_IN_CASE", u"TT_ELIF",
-               u"TT_ELSE", u"TT_THEN", u"TT_WHEN", u"TT_OF", u"TT_AS", u"TT_LAZY", u"TT_AND", u"TT_OR", u"TT_TRUE",
+               u"TT_ELSE", u"TT_THEN", u"TT_WHEN", u"TT_OF", u"TT_AS", u"TT_DELAY", u"TT_AND", u"TT_OR", u"TT_TRUE",
                u"TT_FALSE", u"TT_TRY", u"TT_ENSURE", u"TT_THROW", u"TT_CATCH", u"TT_FINALLY", u"TT_MODULE",
                u"TT_IMPORT", u"TT_FROM", u"TT_HIDING", u"TT_HIDE", u"TT_EXPORT", u"TT_TRAIT", u"TT_END", u"TT_END_EXPR",
                u"TT_INDENT", u"TT_NEWLINE", u"TT_INFIXL", u"TT_INFIXR", u"TT_PREFIX", u"TT_ELLIPSIS", u"TT_WILDCARD",

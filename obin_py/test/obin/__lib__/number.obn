@@ -1,5 +1,6 @@
 from datatype import CoreMixin
 import obin:lang:_number
+import io
 
 extend Int
     with Eq = CoreMixin

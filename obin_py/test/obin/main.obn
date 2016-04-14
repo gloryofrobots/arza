@@ -20,6 +20,7 @@ import string
 //import tests:test_var
 //import tests:datastructs:test_datastructs
 //import tests:test_iter
+import tests:test_lazy
 
 
 fun log ...msgs ->
@@ -63,6 +64,8 @@ fun test() ->
 //    test_datastructs:test()
 //    log "TEST ITER"
 //    test_iter:test()
+    log "TEST LAZY"
+    test_lazy:test()
 
 //    log "TEST OPERATORS"
 //    test_operators:test()
@@ -71,17 +74,5 @@ fun test() ->
 
 
 fun main () ->
-    fun squares n ->
-        n * n ::: squares (n + 1)
-
-    sqrs = squares 1
-//
-//    _s =  (seq:take 4 sqrs)
-//    _s2 = (seq:take 10 sqrs)
-//    _s3 = (seq:take 20 sqrs)
-//    affirm:is_equal (seq:take 4 sqrs) [1, 4, 9, 16]
-//    affirm:is_equal (seq:take 10 sqrs) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
-//    affirm:is_equal (seq:take 20 sqrs) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400]
-
-//    test()
+    test ()
 

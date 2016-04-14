@@ -3,6 +3,18 @@ fun map f coll
     | f hd::tl -> (f hd) :: (map f tl)
 ----------------------------------------
 
+fun list coll ->
+    reverse (foldl cons [] coll)
+
+//Usable in case of lazy seq
+fun doall coll ->
+    fun walk _coll
+        | [] -> coll
+        | hd::tl -> walk tl
+
+    walk coll
+----------------------------------------
+
 fun foreach f coll
     | f [] -> empty coll
     | f hd::tl -> f hd; foreach f tl

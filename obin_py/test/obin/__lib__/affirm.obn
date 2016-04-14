@@ -82,7 +82,7 @@ fun is_throw fn args
                 e
         with
             | _ of Success -> fail ["exception expected", fn]
-            | err -> err
+            | err -> True
 --------------------------------------------------
 
 
