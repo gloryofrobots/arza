@@ -29,9 +29,17 @@ def simplify_type(compiler, code, node):
     return nodes.create_assign_node(node, name_node, call_node)
 
 
+def simplify_let(compiler, code, node):
+    let_block = node_first(node)
+    in_block = node_second(node)
+    body = plist.concat(let_block, in_block)
+    func = nodes.create_fun_simple_node(node, nodes.empty_node(), body)
+    return nodes.create_call_node_1(node, func, nodes.create_unit_node(node))
+
+
 def simplify_lazy(compiler, code, node):
     exp = node_first(node)
-    fun_1_arg = nodes.create_fun_exp_node(node, nodes.empty_node(), exp)
+    fun_1_arg = nodes.create_fun_simple_node(node, nodes.empty_node(), nodes.list_node([exp]))
     return nodes.create_call_node_s(node, lang_names.DELAY, [fun_1_arg])
 
 
@@ -65,6 +73,7 @@ def simplify_implement(compiler, code, node):
 
     return nodes.create_call_node_s(node, lang_names.IMPLEMENT, [traitname_1_arg, typename_2_arg, methods_3_arg])
 
+
 def simplify_extend(compiler, code, node):
     typename_1_arg = node_first(node)
     traits = node_second(node)
@@ -72,7 +81,7 @@ def simplify_extend(compiler, code, node):
     for trait_data in traits:
         trait_name = trait_data[0]
         impls = trait_data[1]
-        #MIXINS suuport
+        # MIXINS suuport
         if nodes.is_list_node(impls):
             methods_list = []
             for method in impls:
@@ -93,6 +102,7 @@ def simplify_extend(compiler, code, node):
 
     traits_2_arg = nodes.create_list_node(node, traits_list)
     return nodes.create_call_node_s(node, lang_names.EXTEND, [typename_1_arg, traits_2_arg])
+
 
 def simplify_trait(compiler, code, node):
     trait_name_node = node_first(node)
@@ -134,5 +144,3 @@ def simplify_trait(compiler, code, node):
         assign_node = nodes.create_assign_node(node, name_node, method_call_node)
         methods.append(assign_node)
     return trait_node, nodes.list_node(methods)
-
-

@@ -74,5 +74,27 @@ fun test() ->
 
 
 fun main () ->
-    test ()
+    x = 1
+    y = 2
+    let
+        x = 11
+        y = 12
+    in
+        io:print x
+        io:print y
+
+    let x = 111 in io:print x
+    let x = 1111; y = 2222; in io:print x; io:print y
+    let x = 222
+        y = 333 in io:print x
+                   io:print y
+    let x = 444
+        y = 555
+    in io:print x
+       io:print y
+
+    io:print x
+    io:print y
+
+//    test ()
 

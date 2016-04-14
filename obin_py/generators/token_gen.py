@@ -33,6 +33,8 @@ TOKENS = [
   ("TT_WHEN", "when"),
 
   ("TT_OF", "of"),
+  ("TT_LET", "let"),
+  ("TT_IN", "in"),
   ("TT_AS", "as"),
   ("TT_LAZY", "lazy"),
   ("TT_AND", "and"),

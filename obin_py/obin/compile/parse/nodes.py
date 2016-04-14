@@ -228,11 +228,11 @@ def create_function_variants(args, body):
     return list_node([list_node([args, body])])
 
 
-def create_fun_exp_node(basenode, name, exp):
+def create_fun_simple_node(basenode, name, body):
     return create_fun_node(basenode, name,
                            create_function_variants(
                                create_tuple_node(basenode, [create_unit_node(basenode)]),
-                               list_node([exp])))
+                               body))
 
 
 def create_fun_node(basenode, name, funcs):

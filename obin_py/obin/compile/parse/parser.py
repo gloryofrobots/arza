@@ -352,6 +352,7 @@ def expression_parser_init(proc_data, parser):
     symbol(parser, TT_WITH)
     symbol(parser, TT_COMMA)
     symbol(parser, TT_END)
+    symbol(parser, TT_IN)
 
     prefix(parser, TT_INDENT, prefix_indent)
     prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
@@ -368,6 +369,7 @@ def expression_parser_init(proc_data, parser):
     prefix(parser, TT_TRY, prefix_try)
     prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
     prefix(parser, TT_LAZY, prefix_lazy)
+    prefix(parser, TT_LET, prefix_let)
 
     assignment(parser, TT_ASSIGN, 10)
 

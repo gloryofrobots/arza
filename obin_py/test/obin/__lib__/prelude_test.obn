@@ -12,20 +12,16 @@ infixl |> |> 50
 //infixl / / 65
 //infixl ++ ++ 70
 
-from lib_az:efg:module_e import _
-from lib_az:abc:module_ab import (f_ab as ab_3_f_ab)
-from lib_az:abc:module_ab hide (CONST)
 
-
-//extend Type2
-//    with Trait1 = methods Trait1 Type1
-//    with Trait2
-//        def f3 = identity
-//        def f4 = (methods Trait1 Type1).f1
 
 fun f x ->
     //PAREN is MISSING but we got NOT ALL LAYOUT IS CLOSED  error
-    1
+    let
+        x = 11
+        y = 12
+    in
+        io:print x
+        io:print y
 //    print (ts:into [] (ts:map lam x ->
 //                                    if x > 4 ->
 //                                        ts:reduced x

@@ -112,9 +112,11 @@ RULES = [
 
     (keyword('of'), TT_OF),
     (keyword('as'), TT_AS),
+    (keyword('let'), TT_LET),
     (keyword('when'), TT_WHEN),
 
     (keyword('lazy'), TT_LAZY),
+    (keyword('in'), TT_IN),
 
     (keyword('infixl'), TT_INFIXL),
     (keyword('infixr'), TT_INFIXR),

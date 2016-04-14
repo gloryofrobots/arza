@@ -53,8 +53,8 @@ NT_RANGE = 50
 NT_MODIFY = 51
 NT_OF = 52
 NT_AS = 53
-NT_VAR = 54
-NT_LAZY = 55
+NT_LAZY = 54
+NT_LET = 55
 NT_AND = 56
 NT_OR = 57
 NT_END_EXPR = 58
@@ -66,8 +66,8 @@ __NT_REPR__ = ["NT_GOTO", "NT_TRUE", "NT_FALSE", "NT_VOID", "NT_INT", "NT_FLOAT"
                "NT_WHEN", "NT_MATCH", "NT_TRY", "NT_MODULE", "NT_IMPORT", "NT_IMPORT_HIDING", "NT_IMPORT_FROM",
                "NT_IMPORT_FROM_HIDING", "NT_EXPORT", "NT_LOAD", "NT_TRAIT", "NT_IMPLEMENT", "NT_EXTEND", "NT_BIND",
                "NT_THROW", "NT_REST", "NT_ASSIGN", "NT_CALL", "NT_JUXTAPOSITION", "NT_UNDEFINE", "NT_LOOKUP",
-               "NT_IMPORTED_NAME", "NT_HEAD", "NT_TAIL", "NT_DROP", "NT_RANGE", "NT_MODIFY", "NT_OF", "NT_AS", "NT_VAR",
-               "NT_LAZY", "NT_AND", "NT_OR", "NT_END_EXPR", "NT_END", ]
+               "NT_IMPORTED_NAME", "NT_HEAD", "NT_TAIL", "NT_DROP", "NT_RANGE", "NT_MODIFY", "NT_OF", "NT_AS",
+               "NT_LAZY", "NT_LET", "NT_AND", "NT_OR", "NT_END_EXPR", "NT_END", ]
 
 
 def node_type_to_s(ntype):

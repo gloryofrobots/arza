@@ -425,6 +425,18 @@ def prefix_if(parser, op, node):
     return node_1(NT_CONDITION, __ntok(node), list_node(branches))
 
 
+def prefix_let(parser, op, node):
+    init_node_layout(parser, node, LEVELS_LET)
+    init_code_layout(parser, parser.node, TERM_LET)
+    letblock = statements(parser, TERM_LET)
+    advance_expected(parser, TT_IN)
+    skip_indent(parser)
+    init_code_layout(parser, parser.node)
+    inblock = statements(parser, TERM_BLOCK)
+    advance_end(parser)
+    return node_2(NT_LET, __ntok(node), letblock, inblock)
+
+
 def prefix_try(parser, op, node):
     init_node_layout(parser, node, LEVELS_TRY)
     init_code_layout(parser, parser.node, TERM_TRY)

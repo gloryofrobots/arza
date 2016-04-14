@@ -948,6 +948,9 @@ def _compile_LAZY(compiler, code, node):
     simplified = simplify.simplify_lazy(compiler, code, node)
     _compile(compiler, code, simplified)
 
+def _compile_LET(compiler, code, node):
+    simplified = simplify.simplify_let(compiler, code, node)
+    _compile(compiler, code, simplified)
 
 def _compile_UNION(compiler, code, node):
     simplified = simplify.simplify_union(compiler, code, node)
@@ -1150,6 +1153,8 @@ def _compile_node(compiler, code, node):
         _compile_UNION(compiler, code, node)
     elif NT_LAZY == ntype:
         _compile_LAZY(compiler, code, node)
+    elif NT_LET == ntype:
+        _compile_LET(compiler, code, node)
 
     elif NT_LOOKUP == ntype:
         _compile_LOOKUP(compiler, code, node)
