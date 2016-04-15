@@ -100,6 +100,10 @@ class IndentationTokenStream:
     def __init__(self, _tokens, src):
         self.tokens = [token for token in _tokens]
 
+        if LOG_INDENTER:
+            for token in self.tokens:
+                print tokens.token_to_s(token)
+
         self.index = 0
         self.length = len(self.tokens)
         self.node = None

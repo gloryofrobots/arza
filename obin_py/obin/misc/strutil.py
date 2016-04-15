@@ -46,12 +46,17 @@ def unquote_w(w):
 
 def unquote_s(string):
     s = string
-    if s.startswith('"'):
+    if s.startswith('"""'):
+        assert s.endswith('"""')
+        s = s[:-3]
+        s = s[3:]
+    elif s.startswith('"'):
         assert s.endswith('"')
-    else:
-        assert s.startswith("'")
+        s = s[:-1]
+        s = s[1:]
+    elif s.startswith("'"):
         assert s.endswith("'")
-    s = s[:-1]
-    s = s[1:]
+        s = s[:-1]
+        s = s[1:]
 
     return s

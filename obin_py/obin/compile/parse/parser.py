@@ -322,6 +322,7 @@ def init_parser_literals(parser):
     literal(parser, TT_FLOAT)
     literal(parser, TT_CHAR)
     literal(parser, TT_STR)
+    literal(parser, TT_MULTI_STR)
     literal(parser, TT_NAME)
     literal(parser, TT_TYPENAME)
     literal(parser, TT_TRUE)

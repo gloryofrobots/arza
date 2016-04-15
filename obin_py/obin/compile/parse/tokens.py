@@ -8,7 +8,9 @@ def keyword(literal):
     return re.compile('\\b%s\\b' % literal)
 
 
-token = re.compile
+def token(literal):
+    return re.compile(literal)
+
 
 ## Regexes for use in tokens
 ##
@@ -58,7 +60,12 @@ char_const = "'[^']+'"
 # backtick_const = "`[^`]+`"
 backtick_name_const = "`%s`" % name_const
 backtick_op_const = "`%s`" % operator_const
-string_literal = '(""".*?""")|(".*?")'
+# string_literal = '(""".*?""")|(".*?")'
+# string_literal = '"(\\.|[^"])*"'
+# string_literal = '"(\\.|[^"])*"'
+# string_literal = '"([^"]|[a-zA-Z._~!=&\^\-\?\'"])*"'
+string_literal = '"([^\\\"]+|\\.)*"'
+multi_string_literal = '"{3}([\s\S]*?"{3})'
 
 RULES = [
     # (token('\n[ ]*'), TT_INDENTATION),
@@ -128,6 +135,7 @@ RULES = [
 
     (token(floating_constant), TT_FLOAT),
     (token(decimal_constant), TT_INT),
+    (token(multi_string_literal), TT_MULTI_STR),
     (token(string_literal), TT_STR),
     (token(char_const), TT_CHAR),
     (token(backtick_name_const), TT_BACKTICK_NAME),

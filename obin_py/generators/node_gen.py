@@ -11,6 +11,7 @@ NODES = [
   "NT_INT",
   "NT_FLOAT",
   "NT_STR",
+  "NT_MULTI_STR",
   "NT_CHAR",
   "NT_WILDCARD",
   "NT_NAME",

@@ -13,6 +13,7 @@ NODE_TYPE_MAPPING = {
     TT_INT: NT_INT,
     TT_FLOAT: NT_FLOAT,
     TT_STR: NT_STR,
+    TT_MULTI_STR: NT_MULTI_STR,
     TT_CHAR: NT_CHAR,
     TT_WILDCARD: NT_WILDCARD,
     TT_NAME: NT_NAME,
@@ -148,7 +149,7 @@ def infix_lcurly(parser, op, node, left):
     if parser.token_type != TT_RCURLY:
         while True:
             # TODO check it
-            check_token_types(parser, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_CHAR, TT_FLOAT])
+            check_token_types(parser, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_MULTI_STR, TT_CHAR, TT_FLOAT])
             # WE NEED LBP=10 TO OVERRIDE ASSIGNMENT LBP(9)
             key = expression(parser, 10)
 
@@ -213,14 +214,14 @@ def _parse_name(parser):
         advance(parser)
         return _parse_symbol(parser, node)
 
-    check_token_types(parser, [TT_STR, TT_NAME])
+    check_token_types(parser, [TT_STR, TT_MULTI_STR, TT_NAME])
     node = parser.node
     advance(parser)
     return node_0(__ntype(node), __ntok(node))
 
 
 def _parse_symbol(parser, node):
-    check_token_types(parser, [TT_NAME, TT_STR, TT_OPERATOR])
+    check_token_types(parser, [TT_NAME, TT_MULTI_STR, TT_STR, TT_OPERATOR])
     exp = node_0(__ntype(parser.node), __ntok(parser.node))
     advance(parser)
     return node_1(__ntype(node), __ntok(node), exp)
@@ -310,7 +311,7 @@ def on_bind_node(parser, key):
         return nodes.create_of_node(key, key, typename), empty_node()
 
     advance_expected(parser, TT_AT_SIGN)
-    real_key, value = _parse_map_key_pair(parser, [TT_NAME, TT_SHARP, TT_STR], None)
+    real_key, value = _parse_map_key_pair(parser, [TT_NAME, TT_SHARP, TT_STR, TT_MULTI_STR], None)
 
     # allow syntax like {var1@ key}
     if nodes.node_type(real_key) == NT_NAME:
@@ -344,11 +345,11 @@ def layout_lcurly(parser, op, node):
 
 # this callback used in pattern matching
 def prefix_lcurly_patterns(parser, op, node):
-    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_CHAR, TT_FLOAT], on_bind_node)
+    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_MULTI_STR, TT_STR, TT_CHAR, TT_FLOAT], on_bind_node)
 
 
 def prefix_lcurly(parser, op, node):
-    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_CHAR, TT_FLOAT], on_bind_node)
+    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_MULTI_STR, TT_CHAR, TT_FLOAT], on_bind_node)
 
 
 def _parse_map_key_pair(parser, types, on_unknown):

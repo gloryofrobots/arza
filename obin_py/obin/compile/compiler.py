@@ -1089,6 +1089,8 @@ def _compile_node(compiler, code, node):
         _compile_INT(compiler, code, node)
     elif NT_STR == ntype:
         _compile_STR(compiler, code, node)
+    elif NT_MULTI_STR == ntype:
+        _compile_STR(compiler, code, node)
     elif NT_CHAR == ntype:
         _compile_CHAR(compiler, code, node)
     elif NT_NAME == ntype:

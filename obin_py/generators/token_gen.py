@@ -3,6 +3,7 @@ TOKENS = [
   ("TT_INT", None,),
   ("TT_FLOAT", None,),
   ("TT_STR", None,),
+  ("TT_MULTI_STR", None,),
   ("TT_CHAR", None,),
   ("TT_NAME", None),
   ("TT_TYPENAME", None),
