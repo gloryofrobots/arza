@@ -115,7 +115,7 @@ RULES = [
     (keyword('let'), TT_LET),
     (keyword('when'), TT_WHEN),
 
-    (keyword('lazy'), TT_LAZY),
+    (keyword('delay'), TT_DELAY),
     (keyword('in'), TT_IN),
 
     (keyword('infixl'), TT_INFIXL),

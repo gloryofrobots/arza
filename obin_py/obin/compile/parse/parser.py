@@ -368,7 +368,7 @@ def expression_parser_init(proc_data, parser):
     prefix(parser, TT_MATCH, prefix_match)
     prefix(parser, TT_TRY, prefix_try)
     prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
-    prefix(parser, TT_LAZY, prefix_lazy)
+    prefix(parser, TT_DELAY, prefix_delay)
     prefix(parser, TT_LET, prefix_let)
 
     assignment(parser, TT_ASSIGN, 10)

@@ -20,6 +20,12 @@ fun is_not_equal val1 val2 ->
     else -> True
 --------------------------------------------------
 
+fun is_elem el coll ->
+    if not_elem el coll ->
+        fail [el, "not_elem", coll]
+    else ->
+        True
+
 fun is_equal val1 val2
     | val1 of Float  val2 of Float -> is_equal_float val1 val2
     | val1 val2  ->
@@ -71,8 +77,8 @@ fun is_false val1 -> is_same val1 False
 
 type Success val
 
-fun is_throw fn args
-    | fn () -> is_throw fn [()]
+fun _is_throw fn args
+    | fn () -> _is_throw fn [()]
     | fn args ->
         match
             try
@@ -82,12 +88,16 @@ fun is_throw fn args
                 e
         with
             | _ of Success -> fail ["exception expected", fn]
-            | err -> True
+            | err -> err
 --------------------------------------------------
 
+fun is_throw fn args ->
+    _is_throw fn args
+    True
+--------------------------------------------------
 
 fun is_throw_expected fn args exc ->
-    is_equal (is_throw fn args) exc
+    is_equal (_is_throw fn args) exc
 --------------------------------------------------
 
 fun is_not_throw fn args

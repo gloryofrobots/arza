@@ -944,8 +944,8 @@ def _declare_local_name(compiler, code, node):
     return sym, index, name_index
 
 
-def _compile_LAZY(compiler, code, node):
-    simplified = simplify.simplify_lazy(compiler, code, node)
+def _compile_DELAY(compiler, code, node):
+    simplified = simplify.simplify_delay(compiler, code, node)
     _compile(compiler, code, simplified)
 
 def _compile_LET(compiler, code, node):
@@ -1151,8 +1151,8 @@ def _compile_node(compiler, code, node):
         _compile_TYPE(compiler, code, node)
     elif NT_UNION == ntype:
         _compile_UNION(compiler, code, node)
-    elif NT_LAZY == ntype:
-        _compile_LAZY(compiler, code, node)
+    elif NT_DELAY == ntype:
+        _compile_DELAY(compiler, code, node)
     elif NT_LET == ntype:
         _compile_LET(compiler, code, node)
 

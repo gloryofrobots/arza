@@ -37,7 +37,7 @@ def simplify_let(compiler, code, node):
     return nodes.create_call_node_1(node, func, nodes.create_unit_node(node))
 
 
-def simplify_lazy(compiler, code, node):
+def simplify_delay(compiler, code, node):
     exp = node_first(node)
     fun_1_arg = nodes.create_fun_simple_node(node, nodes.empty_node(), nodes.list_node([exp]))
     return nodes.create_call_node_s(node, lang_names.DELAY, [fun_1_arg])

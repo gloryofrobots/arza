@@ -116,7 +116,7 @@ def infix_double_colon(parser, op, node, left):
 
 def infix_triple_colon(parser, op, node, left):
     right = rexpression(parser, op)
-    return nodes.create_lazy_cons_node(node, left, right)
+    return nodes.create_delayed_cons_node(node, left, right)
 
 
 def infix_juxtaposition(parser, op, node, left):
@@ -230,9 +230,9 @@ def prefix_sharp(parser, op, node):
     return _parse_symbol(parser, node)
 
 
-def prefix_lazy(parser, op, node):
+def prefix_delay(parser, op, node):
     exp = expression(parser, 0)
-    return nodes.create_lazy_node(node, exp)
+    return nodes.create_delay_node(node, exp)
 
 
 # def prefix_backtick(parser, op, node):

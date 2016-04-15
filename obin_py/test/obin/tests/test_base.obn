@@ -411,6 +411,33 @@ fun t5() ->
 
     affirm:is_equal y 20
 
+fun test_let() ->
+    x = 1
+    y = 2
+    let
+        x = 11
+        y = 12
+    in
+        affirm:is_equal x 11
+        affirm:is_equal y 12
+
+    let x = 111 in affirm:is_equal x 111
+
+    let x = 1111; y = 2222; in affirm:is_equal x 1111; affirm:is_equal y 2222
+
+    let x = 222
+        y = 333 in affirm:is_equal x 222
+                   affirm:is_equal y 333
+    let x = 444
+        y = 555
+    in affirm:is_equal x 444
+       affirm:is_equal y 555
+
+    affirm:is_equal x 1
+    affirm:is_equal y 2
+
+    v = let x = 1; y = 2 in x + y
+    affirm:is_equal v 3
 
 fun test () ->
     t1 ()
@@ -418,3 +445,4 @@ fun test () ->
     t3 ()
     t4()
     t5()
+    test_let()

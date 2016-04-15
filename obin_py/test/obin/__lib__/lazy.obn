@@ -20,6 +20,8 @@ extend LazyList
         def cons value self -> throw NotImplementedError ("Consing with LazyList directly is forbidden," ++
                                                             " use ::: macro or cons head (lazy tail) instead",)
 
+--------------------------------------------------------------------------
+
 extend LazyVal
     with Ref
         def ! self -> self ()
@@ -29,4 +31,32 @@ extend LazyVal
             LazyList value self
     with Str
         def str self -> "<delayed>"
+
+--------------------------------------------------------------------
+
+type Empty
+type ListGenerator val fn
+
+extend ListGenerator
+    with Seqable
+        def to_seq self -> self
+    with Seq
+        def first self ->
+            self.val
+        def rest self ->
+            try
+                ListGenerator (self.fn ()) self.fn
+            catch e of StopIterationError ->
+                ListGenerator (Empty) self.fn
+    with Sized
+        def len self -> NotImplementedError len
+        def is_empty self -> self.val == Empty
+
+    with Emptiable
+        def empty self -> []
+
+fun list_generator fn ->
+    val = fn ()
+    ListGenerator val fn
+
 

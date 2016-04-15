@@ -71,7 +71,7 @@ NODES = [
 
   "NT_OF",
   "NT_AS",
-  "NT_LAZY",
+  "NT_DELAY",
   "NT_LET",
 
   "NT_AND",

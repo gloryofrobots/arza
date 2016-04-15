@@ -427,12 +427,12 @@ def create_len_node(basenode, val):
     return create_call_node_s(basenode, lang_names.LEN, [val])
 
 
-def create_lazy_node(basenode, exp):
-    return node_1(nt.NT_LAZY, create_token_from_node(tt.TT_LAZY, "lazy", basenode), exp)
+def create_delay_node(basenode, exp):
+    return node_1(nt.NT_DELAY, create_token_from_node(tt.TT_DELAY, "delay", basenode), exp)
 
 
-def create_lazy_cons_node(basenode, left, right):
-    return create_cons_node(basenode, left, create_lazy_node(basenode, right))
+def create_delayed_cons_node(basenode, left, right):
+    return create_cons_node(basenode, left, create_delay_node(basenode, right))
 
 
 def create_cons_node(basenode, left, right):

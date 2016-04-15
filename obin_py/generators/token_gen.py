@@ -36,7 +36,7 @@ TOKENS = [
   ("TT_LET", "let"),
   ("TT_IN", "in"),
   ("TT_AS", "as"),
-  ("TT_LAZY", "lazy"),
+  ("TT_DELAY", "delay"),
   ("TT_AND", "and"),
   ("TT_OR", "or"),
   ("TT_TRUE", "true"),

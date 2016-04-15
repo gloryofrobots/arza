@@ -2,13 +2,14 @@ import seq
 import affirm
 import io
 import var
+import lazy
 
-fun test () ->
+fun test_lazy_cons () ->
     fun squares n ->
         (n * n) ::: squares (n + 1)
 
     sqrs = squares 1
-//
+
     _s =  (seq:take 4 sqrs)
     _s2 = (seq:take 10 sqrs)
     _s3 = (seq:take 20 sqrs)
@@ -16,7 +17,6 @@ fun test () ->
     affirm:is_equal (seq:take 10 sqrs) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
     affirm:is_equal (seq:take 20 sqrs) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400]
 
-//    test()
     fun squares2 n ->
         if n <= 10 ->
             (n * n) ::: squares2 (n + 1)
@@ -32,11 +32,11 @@ fun test () ->
     affirm:is_throw lam () -> 1 :: 2 ::: 3 :: 4 ::: 5 :: [] end ()
 
     v = var:var 1
-    l = 1 :: lazy (2 + 2) :: lazy (3 + 4)
-          :: lazy (lam () -> v := !v + 1; 42 * 42 end ())
+    l = 1 :: delay (2 + 2) :: delay (3 + 4)
+          :: delay (lam () -> v := !v + 1; 42 * 42 end ())
           ::: []
 
-    io:print (seq:doall l)
+//    io:print (seq:doall l)
     seq:doall l
     seq:doall l
     affirm:is_equal (seq:take 10 l) [1, 4, 7, 1764]
@@ -45,3 +45,22 @@ fun test () ->
     affirm:is_equal (seq:list l) [1, 4, 7, 1764]
 
 
+fun test_list_generator () ->
+    v = var:var 0
+    l = lazy:list_generator lam () -> 42
+
+    affirm:is_equal (seq:take 5 l) [42, 42, 42, 42, 42]
+
+    l1 = lazy:list_generator lam () ->
+                                if !v == 5 ->
+                                    throw StopIterationError ()
+                                else ->
+                                    old = !v
+                                    v := old + 1
+    affirm:is_equal  (seq:take 7 l1) [1, 2, 3, 4, 5]
+
+
+
+fun test () ->
+    test_lazy_cons()
+    test_list_generator()

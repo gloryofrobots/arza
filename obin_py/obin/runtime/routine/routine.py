@@ -33,12 +33,6 @@ def create_native_routine(stack, name, native, args, arity):
     return NativeRoutine(stack, name, native, args, arity)
 
 
-# TODO THIS LEFT FROM ORIGIN ROUTINE REMAKE IT AS LAZY
-def create_lazy_routine(stack, constructor, args):
-    from obin.runtime.routine.lazy_routine import LazyRoutine
-    return LazyRoutine(stack, constructor, args)
-
-
 def create_callback_routine(stack, callback, function, args):
     from obin.runtime.routine.callback_routine import CallbackRoutine
     return CallbackRoutine(stack, callback, function, args)
