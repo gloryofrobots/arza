@@ -59,8 +59,8 @@ trait Str for self
 //trait FromStr for self of ToStr
 //    def from_str self
 
-trait Inspectable for self of Str
-    def inspect self -> str self
+trait Repr for self of Str
+    def repr self -> str self
 
 trait Sized for self
     def len self

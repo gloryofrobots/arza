@@ -3,3 +3,4 @@ from datatype import CoreMixin
 extend Symbol
     with Eq = CoreMixin
     with Str = CoreMixin
+    with Repr = CoreMixin

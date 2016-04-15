@@ -17,6 +17,9 @@ class W_Partial(W_Callable):
         # return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
         return "%s with %s" % (api.to_s(self.func), api.to_s(self.args))
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     def _type_(self, process):
         return process.std.types.Function
 

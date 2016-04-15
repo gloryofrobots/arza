@@ -7,9 +7,10 @@ extend Tuple
     with Str
         def str self ->
             if len self == 1 ->
-                "(" ++ str (at 0 self) ++ ",)"
+                "(" ++ repr (at 0 self) ++ ",)"
             else ->
                 "(" ++ string:join_cast self ", " ++ ")"
+    with Repr
     with Collection = CoreMixin
     with Sized = CoreMixin
     with Seqable

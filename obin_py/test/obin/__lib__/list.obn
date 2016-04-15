@@ -56,7 +56,8 @@ extend List
     with Collection = CoreMixin
     with Str
         def str self ->
-            "[" ++ string:join_cast self ", " ++ "]"
+            "[" ++ string:join_with repr self ", " ++ "]"
+    with Repr
     with Seq
         def first self -> _list:head self
         def rest self -> _list:tail self

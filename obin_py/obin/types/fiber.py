@@ -10,6 +10,9 @@ class W_Fiber(W_Callable):
     def _to_string_(self):
         return "<fiber>"
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     def _type_(self, process):
         return process.std.types.Fiber
 
@@ -65,6 +68,9 @@ class W_Coroutine(W_Callable):
 
     def _to_string_(self):
         return self.fn._to_string_()
+
+    def _to_repr_(self):
+        return self._to_string_()
 
     def _type_(self, process):
         return process.std.types.Function

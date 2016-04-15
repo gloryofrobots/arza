@@ -7,6 +7,8 @@ extend CoreMixin
         def == self other -> _api:equal other self
     with Str
         def str self -> _api:to_string self
+    with Repr
+        def repr self -> _api:to_repr self
     with Collection
         def put key value self -> _api:put key value self
         def at key self -> _api:at key self
@@ -19,3 +21,4 @@ extend CoreMixin
 extend Datatype
     with Eq = CoreMixin
     with Str = CoreMixin
+    with Repr = CoreMixin

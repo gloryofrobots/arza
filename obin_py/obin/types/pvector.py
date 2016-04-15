@@ -231,6 +231,9 @@ class W_PVector(W_Root):
         repr = ", ".join([self.nth(i)._to_string_() for i in self.data_range()])
         return "[%s]" % repr
 
+    def _to_repr_(self):
+        return self._to_string_()
+
 
 EMPTY_NODE = Node(None)
 EMPTY = W_PVector(rarithmetic.r_uint(0), rarithmetic.r_uint(5), EMPTY_NODE, [])

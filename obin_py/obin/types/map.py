@@ -195,6 +195,9 @@ class W_Map(W_Root):
 
         return "{%s}" % ", ".join(res)
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     def _clone_(self):
         clone = W_Map()
         values = self.slot_values

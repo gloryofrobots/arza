@@ -13,4 +13,7 @@ class W_IODevice(W_Root):
     def _to_string_(self):
         return "<iodevice>"
 
+    def _to_repr_(self):
+        return self._to_string_()
+
 

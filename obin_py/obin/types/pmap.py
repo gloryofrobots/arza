@@ -54,6 +54,9 @@ class W_PMap(W_Root):
         repr = u"{%s}" % u", ".join(lst)
         return str(repr)
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     def _type_(self, process):
         return process.std.types.Map
 

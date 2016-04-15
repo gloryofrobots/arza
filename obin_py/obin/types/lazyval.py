@@ -11,6 +11,9 @@ class W_LazyVal(W_Root):
     def _to_string_(self):
         return "<LazyValue(%s)>" % api.to_s(self.fn) if self.value is None else api.to_s(self.value)
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     def _type_(self, process):
         return process.std.types.LazyVal
 

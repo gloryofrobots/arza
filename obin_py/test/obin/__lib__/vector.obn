@@ -3,3 +3,4 @@ from datatype import CoreMixin
 extend Vector
     with Eq = CoreMixin
     with Str = CoreMixin
+    with Repr

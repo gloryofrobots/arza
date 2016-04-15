@@ -78,6 +78,9 @@ class W_Unit(W_Root):
     def _to_string_(self):
         return "()"
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     def to_l(self):
         return []
 
@@ -161,6 +164,9 @@ class W_Tuple(W_Hashable):
         if self._length_() == 1:
             return "(%s,)" % repr
         return "(%s)" % repr
+
+    def _to_repr_(self):
+        return self._to_string_()
 
     def to_l(self):
         return self.elements

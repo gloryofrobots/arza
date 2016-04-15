@@ -85,7 +85,10 @@ class W_Root:
         return self._to_string_()
 
     def __repr__(self):
-        return self.__str__()
+        return self._to_repr_()
+
+    def _to_repr_(self):
+        return self._to_string_()
 
     def _at_(self, key):
         return not_implemented_error(u"_at_", self, key)

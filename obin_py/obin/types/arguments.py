@@ -44,7 +44,6 @@ class W_Arguments(W_Root):
 
         return self.get(i)
 
-
     def _at_index_(self, i):
         return self.get(i)
 
@@ -76,6 +75,8 @@ class W_Arguments(W_Root):
         repr = ", ".join([v._to_string_() for v in self.to_l()])
         return "<%s>" % repr
 
+    def _to_repr_(self):
+        return self._to_string_()
 
 def type_check(t):
     error.affirm_type(t, space.istuple)

@@ -20,6 +20,16 @@ class W_Record(W_Hashable):
 
         return "%s {%s}" % (api.to_s(self.type), ", ".join(res))
 
+    def _to_repr_(self):
+        res = []
+
+        for f in self.type.fields:
+            i = api.at(self.type.descriptors, f)
+            v = api.at_index(self.values, api.to_i(i))
+            res.append("%s = %s" % (api.to_r(f), api.to_r(v)))
+
+        return "%s {%s}" % (api.to_r(self.type), ", ".join(res))
+
     def _type_(self, process):
         return self.type
 
@@ -182,6 +192,9 @@ class W_DataType(W_Hashable):
         return api.to_s(self.name)
         # return "<trait %s>" % (api.to_s(self.name))
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     def _equal_(self, other):
         return other is self
 
@@ -203,6 +216,9 @@ class W_Union(W_Hashable):
 
     def _to_string_(self):
         return "<type %s>" % api.to_s(self.name)
+
+    def _to_repr_(self):
+        return self._to_string_()
 
     def _equal_(self, other):
         return other is self
@@ -281,17 +297,17 @@ def implement_trait(_type, trait, implementations):
         for method in trait.methods:
             impl = api.lookup(implementations, method.name, space.newvoid())
             if not space.isvoid(impl):
-                methods = plist.cons( space.newtuple([method.name, impl]), methods)
+                methods = plist.cons(space.newtuple([method.name, impl]), methods)
     elif space.isdatatype(implementations):
         methods = plist.empty()
         for method in trait.methods:
             impl = implementations.get_method_implementation(method)
-            methods = plist.cons( space.newtuple([method.name, impl]), methods)
+            methods = plist.cons(space.newtuple([method.name, impl]), methods)
     elif space.islist(implementations):
         methods = implementations
     else:
         return error.throw_2(error.Errors.TYPE_ERROR, u"Invalid trait implementation source."
-                                               u"Expected one of Map,List,Type", implementations)
+                                                      u"Expected one of Map,List,Type", implementations)
     method_impls = plist.empty()
     # Collect methods by names from trait
     for im in methods:

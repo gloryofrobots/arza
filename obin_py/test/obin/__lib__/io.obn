@@ -11,9 +11,9 @@ fun _write_list_items args func file ->
     ()
 
 
-fun iprint ...args ->
+fun printr ...args ->
     out = stdout ()
-    _write_list_items args inspect out
+    _write_list_items args repr out
     write "\n" out
     ()
 
@@ -25,6 +25,6 @@ fun print ...args ->
     ()
 
 p = print
-ip = iprint
+pr = printr
 
 

@@ -11,6 +11,9 @@ class W_True(W_Boolean):
     def _to_string_(self):
         return 'True'
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     def _to_bool_(self):
         return True
 
@@ -27,6 +30,9 @@ class W_True(W_Boolean):
 class W_False(W_Boolean):
     def _to_string_(self):
         return 'False'
+
+    def _to_repr_(self):
+        return self._to_string_()
 
     def _to_bool_(self):
         return False

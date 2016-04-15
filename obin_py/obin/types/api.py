@@ -27,6 +27,12 @@ def to_s(obj):
     return s
 
 
+def to_r(obj):
+    s = obj._to_repr_()
+    assert isinstance(s, str)
+    return s
+
+
 def to_b(obj):
     if obj is space.w_True:
         return True
@@ -38,6 +44,12 @@ def to_b(obj):
 
 def to_string(obj):
     s = obj._to_string_()
+    assert isinstance(s, str)
+    return space.newstring(unicode(s))
+
+
+def to_repr(obj):
+    s = obj._to_repr_()
     assert isinstance(s, str)
     return space.newstring(unicode(s))
 
@@ -152,7 +164,6 @@ def length_i(obj):
 
 def isempty(obj):
     return obj._length_() == 0
-
 
 
 """

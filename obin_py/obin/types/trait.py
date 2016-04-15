@@ -43,5 +43,8 @@ class W_Trait(W_Hashable):
         return api.to_s(self.name)
         # return "<trait %s>" % (api.to_s(self.name))
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     def _equal_(self, other):
         return other is self

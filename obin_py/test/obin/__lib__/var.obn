@@ -32,4 +32,5 @@ extend Var
 
     with Str
         def str self -> "Var"
+    with Repr
 

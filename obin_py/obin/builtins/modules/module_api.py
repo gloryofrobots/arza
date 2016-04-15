@@ -14,6 +14,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'del', delete, 2)
     api.put_native_function(process, _module, u'equal', equal, 2)
     api.put_native_function(process, _module, u'to_string', to_string, 1)
+    api.put_native_function(process, _module, u'to_repr', to_repr, 1)
 
     _module.export_all()
     process.modules.add_module(_module_name, _module)
@@ -85,3 +86,10 @@ def to_string(process, routine):
     arg0 = routine.get_arg(0)
 
     return api.to_string(arg0)
+
+
+@complete_native_routine
+def to_repr(process, routine):
+    arg0 = routine.get_arg(0)
+
+    return api.to_repr(arg0)

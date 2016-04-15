@@ -217,6 +217,9 @@ API = module("obin:lang:_api", [
     func(func_name="to_string", func_native_name="to_string", func_arity=1,
              source_module="api", source_function="to_string",
             arguments=[arg(0, 0)]),
+    func(func_name="to_repr", func_native_name="to_repr", func_arity=1,
+             source_module="api", source_function="to_repr",
+            arguments=[arg(0, 0)]),
 ])
 
 NUMBER = module("obin:lang:_number", [
@@ -250,11 +253,11 @@ MAP = module("obin:lang:_map", [
 
 # print generate(TUPLES)
 # print generate(LIST)
-# print generate(API)
+print generate(API)
 # print generate(BIT)
 # print generate(NUMBER)
 # print generate(STRING)
-print generate(MAP)
+# print generate(MAP)
 
 
 

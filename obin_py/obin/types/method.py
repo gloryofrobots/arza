@@ -33,6 +33,9 @@ class W_Method(W_Hashable):
     def _to_string_(self):
         return "<method %s of %s>" % (api.to_s(self.name), api.to_s(self.trait))
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     def _call_(self, process, args):
         arity = api.length_i(args)
         if arity < self.arity:

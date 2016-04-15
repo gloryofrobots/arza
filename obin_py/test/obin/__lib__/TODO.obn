@@ -14,11 +14,11 @@
 // a lot of work and i dont know how to do it exactly
 
 //TODO ERRORS
-//let in block
 //TODO meta
 //TODO remove voids as values in datastructs
 //TODO separate token streams
 //TODO add a way to interrupt seq loops
+//single pass and def, maybe
 
 
 //TODO PATTERN_MATCH_ERRORS as ERRORS NOT TUPLES

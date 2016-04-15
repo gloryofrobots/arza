@@ -47,6 +47,9 @@ class W_PList(W_Root):
             cur = cur.tail
         return "[%s]" % (", ".join(els))
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     def _length_(self):
         return length(self)
 

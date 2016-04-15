@@ -56,6 +56,9 @@ class W_Vector(W_Root):
     def _to_string_(self):
         return str(self._items)
 
+    def _to_repr_(self):
+        return repr(self._items)
+
     def _at_index_(self, i):
         return self._items[i]
 

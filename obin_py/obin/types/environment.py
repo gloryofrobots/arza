@@ -15,6 +15,9 @@ class References(W_Root):
     def _to_string_(self):
         return str(self._refs_)
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     __str__ = _to_string_
 
     __repr__ = _to_string_
@@ -81,6 +84,9 @@ class Reference(W_Root):
 
     def _to_string_(self):
         return api.to_s(self.name)
+
+    def _to_repr_(self):
+        return self._to_string_()
 
     __str__ = _to_string_
 
@@ -232,3 +238,6 @@ class W_Env(W_Root):
 
     def _to_string_(self):
         return self.data._to_string_()
+
+    def _to_repr_(self):
+        return self._to_string_()

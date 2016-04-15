@@ -59,6 +59,9 @@ class W_String(W_Hashable):
     def _to_string_(self):
         return str(self.string_value)
 
+    def _to_repr_(self):
+        return str(u"\"%s\"" % self.string_value)
+
     def _length_(self):
         return self.length
 

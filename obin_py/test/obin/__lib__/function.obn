@@ -3,7 +3,9 @@ from datatype import CoreMixin
 extend Function
     with Eq = CoreMixin
     with Str = CoreMixin
+    with Repr = CoreMixin
 
 extend Method
     with Eq = CoreMixin
     with Str = CoreMixin
+    with Repr = CoreMixin

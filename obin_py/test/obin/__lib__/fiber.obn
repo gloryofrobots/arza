@@ -4,3 +4,4 @@ from datatype import CoreMixin
 extend Fiber
     with Eq = CoreMixin
     with Str = CoreMixin
+    with Repr = CoreMixin

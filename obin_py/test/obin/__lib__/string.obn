@@ -9,6 +9,7 @@ extend Char
 extend String
     with Eq = CoreMixin
     with Str = CoreMixin
+    with Repr = CoreMixin
     with Collection = CoreMixin
     with Sized = CoreMixin
     with Appendable

@@ -13,6 +13,9 @@ class W_Char(root.W_ValueType):
     def _to_string_(self):
         return chr(self.char_value)
 
+    def _to_repr_(self):
+        return "'%s'" % self._to_string_()
+
     def _equal_(self, other):
         if not space.ischar(other):
             return False

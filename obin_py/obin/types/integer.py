@@ -37,5 +37,8 @@ class W_Integer(W_ValueType):
     def _to_string_(self):
         return str(self.int_value)
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     def _type_(self, process):
         return process.std.types.Int

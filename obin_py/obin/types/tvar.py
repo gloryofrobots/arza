@@ -12,6 +12,9 @@ class W_TVar(W_Root):
     def _to_string_(self):
         return "TVar(%s)" % api.to_s(self.value)
 
+    def _to_repr_(self):
+        return self._to_string_()
+
     def _type_(self, process):
         return process.std.types.TVar
 
