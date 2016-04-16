@@ -9,7 +9,7 @@ extend Tuple
             if len self == 1 ->
                 "(" ++ repr (at 0 self) ++ ",)"
             else ->
-                "(" ++ string:join_with repr self ", " ++ ")"
+                "(" ++ string:join_with repr (to_seq self) ", " ++ ")"
     with Repr
     with Collection = CoreMixin
     with Sized = CoreMixin

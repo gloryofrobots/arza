@@ -71,7 +71,7 @@ fun f ((x of Int) y z) ->
         | x -> 1
         | y -> 2
       end
-                1
+               1
                     2
 
                      3)
@@ -181,6 +181,9 @@ fun f ((x of Int) y z) ->
 
     match if x == 1 ->
              2
+             3
+             "fgfg"
+
           else ->
             3
           end

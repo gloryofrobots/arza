@@ -35,7 +35,6 @@ fun reverse coll ->
 ----------------------------------------
 
 //REDUCERS///////////////////////////////////////////////////////
-
 fun foldl func accumulator coll
     | f acc [] -> acc
     | f acc hd::tl -> foldl f (f hd acc) tl

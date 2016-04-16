@@ -10,6 +10,7 @@ extend Map
         def str self ->
             fun _joiner pair ->
                 str pair.0 ++ "=" ++ repr pair.1
+            end
             (
                 "{"
                     ++ string:join_with _joiner (to_seq self) ", " ++
