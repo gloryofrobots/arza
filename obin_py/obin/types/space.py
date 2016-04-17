@@ -488,6 +488,11 @@ def isunion(w):
     from obin.types.datatype import W_Union
     return isinstance(w, W_Union)
 
+def isextendable(w):
+    from obin.types.datatype import W_Extendable
+    return isinstance(w, W_Extendable)
+
+
 
 def isrecord(w):
     from obin.types.datatype import W_Record

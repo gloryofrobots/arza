@@ -4,6 +4,8 @@ from datatype import CoreMixin
 
 extend Tuple
     with Eq = CoreMixin
+    with Collection = CoreMixin
+    with Sized = CoreMixin
     with Str
         def str self ->
             if len self == 1 ->
@@ -11,8 +13,6 @@ extend Tuple
             else ->
                 "(" ++ string:join_with repr (to_seq self) ", " ++ ")"
     with Repr
-    with Collection = CoreMixin
-    with Sized = CoreMixin
     with Seqable
         def to_seq self -> _tuple:to_list self
     with Sliceable

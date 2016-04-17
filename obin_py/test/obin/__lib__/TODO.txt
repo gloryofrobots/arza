@@ -3,8 +3,17 @@ deep calls in datastructs data -> (1, record) == (1, record) NotIImplementedErro
  with this in mind
 --------------------------------------------------
 
+THINK ABOUT DEFAULT VALUES
+--------------------------------
+
+MAKE {} SYNTAX IN FIELDS AND CONSTRUCTING WITH KEYWORD ARGS
+--------------------------------
+
 RANGES
 ------------
+
+Rangeable and Bounded for union
+--------------------------------------------------
 
 PROPER OR CASES
  match x with
@@ -57,10 +66,6 @@ INSTEAD determine if it first assignment or it needs check
 COMPILE FUNCTION CLAUSES INTO MATCH INSTEAD OF FUNC
 --------------------------------
 
-THINK ABOUT DEFAULT VALUES
---------------------------------
-MAKE {} SYNTAX IN FIELDS AND CONSTRUCTING WITH KEYWORD ARGS
---------------------------------
 
 REMOVE NT_WHEN AFTER REFACTORING PATTERN COMPILER
 --------------------------------
@@ -80,27 +85,6 @@ match (1,2)
 trait Any for self
     def id self -> obin:unique_id self
     def type_id self -> obin:type_id self
----
-
-trait Range for a
-
-    // first..last
-    def range a last
-
-    // first.._
-    def range_from a
-
-    // first.._..step
-    def range_from_by a step
-
-    // _..last
-    def range_to a
-
-    // _..last..step
-    def range_to_by a step
-
-    // first..last..step
-    def range_from_to_by a last step
 ---
 
 fun is_identical self other -> (id self) == (id other)

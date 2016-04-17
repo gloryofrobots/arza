@@ -19,14 +19,13 @@ def put_lang_func(process, module, name, func, arity):
 
 def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
-    api.put_native_function(process, module, u'pln', _print, -1)
-    api.put_native_function(process, module, u'id', _id, 1)
+    api.put_native_function(process, module, u'echo', _print, -1)
+    api.put_native_function(process, module, u'address', _id, 1)
     api.put_native_function(process, module, u'apply', apply, 2)
     api.put_native_function(process, module, u'concat', concat_tuples, 2)
     api.put_native_function(process, module, u'time', time, 0)
     api.put_native_function(process, module, u'traits', traits, 1)
     api.put_native_function(process, module, u'get_type', _type, 1)
-    api.put_native_function(process, module, u'range', _range, 2)
     put_lang_func(process, module, lang_names.DELAY, __delay, 1)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
     put_lang_func(process, module, lang_names.IS_INDEXED, is_indexed, 1)

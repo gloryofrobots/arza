@@ -1,5 +1,5 @@
 from obin:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
-                             Function, Method, Fiber, Trait, Datatype, LazyVal, Env)
+                             Function, Method, Fiber, Trait, Datatype, Union, LazyVal, Env)
 
 prefix - negate
 prefix ! ! 10
@@ -110,6 +110,20 @@ trait Sliceable for self
     def slice first . last . self
     def drop count self
     def take count self
+
+
+trait Bounded for self
+    def lower_bound self
+    def upper_bound self
+
+
+trait Rangeable for self
+    def range self last
+    def range_by self last step
+
+    def range_from self
+    def range_from_by self step
+
 
 trait Ref for self
     def ! self

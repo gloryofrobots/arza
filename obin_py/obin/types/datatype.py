@@ -85,21 +85,10 @@ def descriptors(fields):
     return d
 
 
-class W_DataType(W_Hashable):
-    def __init__(self, name, fields, constructor):
-        from obin.builtins.derived import Derive
+class W_Extendable(W_Hashable):
+    def __init__(self):
         W_Hashable.__init__(self)
-
-        self.name = name
-        self.fields = fields
-
-        if plist.is_empty(self.fields):
-            self.is_singleton = True
-        else:
-            self.is_singleton = False
-
-        self.descriptors = descriptors(self.fields)
-        self.ctor = constructor
+        from obin.builtins.derived import Derive
         self.derive = Derive()
         self.derived_traits = plist.empty()
         self.traits = space.newmap()
@@ -152,6 +141,23 @@ class W_DataType(W_Hashable):
 
         return impl
 
+
+class W_DataType(W_Extendable):
+    def __init__(self, name, fields, constructor):
+        W_Extendable.__init__(self)
+
+        self.name = name
+        self.fields = fields
+
+        if plist.is_empty(self.fields):
+            self.is_singleton = True
+        else:
+            self.is_singleton = False
+
+        self.descriptors = descriptors(self.fields)
+        self.ctor = constructor
+        self.union = None
+
     def has_constructor(self):
         return not space.isvoid(self.ctor)
 
@@ -199,17 +205,28 @@ class W_DataType(W_Hashable):
         return other is self
 
 
-class W_Union(W_Hashable):
+class W_Union(W_Extendable):
     def __init__(self, name, types):
-        W_Hashable.__init__(self)
+        W_Extendable.__init__(self)
         self.name = name
-        self.types = types
+        self.types_list = types
+        self.types_map = space.newpmap([])
+        for _t in self.types_list:
+            self.types_map = api.put(self.types_map, _t.name, _t)
+
+        self.length = api.length_i(self.types_list)
+
+    def _at_(self, key):
+        return api.at(self.types_map, key)
+
+    def _length_(self):
+        return self.length
 
     def has_type(self, _type):
-        return plist.contains(self.types, _type)
+        return plist.contains(self.types_list, _type)
 
     def _type_(self, process):
-        return process.std.types.Datatype
+        return process.std.types.Union
 
     def _compute_hash_(self):
         return int((1 - platform.random()) * 10000000)
@@ -222,6 +239,25 @@ class W_Union(W_Hashable):
 
     def _equal_(self, other):
         return other is self
+
+    def to_list(self):
+        return self.types_list
+
+
+def union_to_list(union):
+    error.affirm_type(union, space.isunion)
+    return union.to_list()
+
+
+def get_union(process, w):
+    if not space.isdatatype(w):
+        _t = api.get_type(process, w)
+    else:
+        _t = w
+
+    if _t.union is not None:
+        return _t.union
+    return error.throw_2(error.Errors.TYPE_ERROR, space.newstring(u"Type is not part of any union"), _t)
 
 
 def _is_exist_implementation(method, impl):
@@ -239,8 +275,17 @@ def newtype(process, name, fields, constructor):
 
 
 def newunion(process, name, types):
+    error.affirm_type(name, space.issymbol)
+    error.affirm_type(types, space.islist)
+    for _t in types:
+        if _t.union is not None:
+            return error.throw_3(error.Errors.TYPE_ERROR, _t, _t.union,
+                                 space.newstring(u"Type already exists in union"))
     _union = W_Union(name, types)
-    # TODO default derived and ENUM FOR UNION
+    # TODO default derived ENUM FOR UNION
+    for _t in types:
+        _t.union = _union
+
     return _union
 
 
@@ -256,11 +301,11 @@ def derive_default(process, _type, is_singleton):
 
 
 def derive_traits(process, _type, traits):
-    if space.isunion(_type):
-        for t in _type.types:
-            derive_traits(process, t, traits)
+    # if space.isunion(_type):
+    #     for t in _type.types:
+    #         derive_traits(process, t, traits)
 
-    error.affirm_type(_type, space.isdatatype)
+    error.affirm_type(_type, space.isextendable)
 
     for trait in traits:
         error.affirm_type(trait, space.istrait)
@@ -285,12 +330,11 @@ def extend_type(_type, traits):
 
 
 def implement_trait(_type, trait, implementations):
-    if space.isunion(_type):
-        for t in _type.types:
-            implement_trait(t, trait, implementations)
-        return _type
-
-    error.affirm_type(_type, space.isdatatype)
+    # if space.isunion(_type):
+    #     for t in _type.types:
+    #         implement_trait(t, trait, implementations)
+    #     return _type
+    error.affirm_type(_type, space.isextendable)
     error.affirm_type(trait, space.istrait)
     if space.ispmap(implementations):
         methods = plist.empty()
@@ -298,7 +342,7 @@ def implement_trait(_type, trait, implementations):
             impl = api.lookup(implementations, method.name, space.newvoid())
             if not space.isvoid(impl):
                 methods = plist.cons(space.newtuple([method.name, impl]), methods)
-    elif space.isdatatype(implementations):
+    elif space.isextendable(implementations):
         methods = plist.empty()
         for method in trait.methods:
             impl = implementations.get_method_implementation(method)
@@ -323,7 +367,7 @@ def implement_trait(_type, trait, implementations):
 
 
 def _implement_trait(_type, trait, method_impls):
-    error.affirm_type(_type, space.isdatatype)
+    error.affirm_type(_type, space.isextendable)
     error.affirm_type(trait, space.istrait)
     error.affirm_type(method_impls, space.islist)
     # print "IMPLEMENT ", _type, trait

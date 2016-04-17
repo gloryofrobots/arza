@@ -4,6 +4,7 @@ import tests:datastructs:test_tuple
 import tests:datastructs:test_seq
 import tests:datastructs:test_string
 import tests:datastructs:test_transduce
+import tests:datastructs:test_num
 
 
 fun test () ->
@@ -13,3 +14,4 @@ fun test () ->
     test_tuple:test ()
     test_string:test()
     test_transduce:test()
+    test_num:test()

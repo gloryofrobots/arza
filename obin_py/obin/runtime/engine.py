@@ -48,7 +48,7 @@ def initialize(libdirs):
     builtins.postsetup(process)
     error.initialise(process)
 
-    modules = [u"bool", u"number", u"bit", u"env",
+    modules = [u"bool", u"num", u"bit", u"env",
                u"string", u"symbol", u"datatype", u"vector",
                u"list", u"function", u"fiber", u"trait",
                u"tuple", u"map", u"seq", u"lazy"]

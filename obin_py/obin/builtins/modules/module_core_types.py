@@ -28,5 +28,6 @@ def setup_types(module, types):
     api.put(module, types.Fiber.name, types.Fiber)
     api.put(module, types.Trait.name, types.Trait)
     api.put(module, types.Datatype.name, types.Datatype)
+    api.put(module, types.Union.name, types.Union)
     api.put(module, types.LazyVal.name, types.LazyVal)
     api.put(module, types.Env.name, types.Env)

@@ -1,7 +1,8 @@
 import obin:lang:_api
+import obin:lang:_datatype
+import seq
 
 type CoreMixin
-
 extend CoreMixin
     with Eq
         def == self other -> _api:equal other self
@@ -22,3 +23,28 @@ extend Datatype
     with Eq = CoreMixin
     with Str = CoreMixin
     with Repr = CoreMixin
+
+extend Union
+    with Seqable
+        def to_seq self -> _datatype:union_to_list self
+    with Eq = CoreMixin
+    with Collection = CoreMixin
+    with Sized = CoreMixin
+
+type UnionMixin
+extend UnionMixin
+    with Rangeable
+        def range _from  _to  ->
+            union = _datatype:get_union _from
+            if not (kindof _to union) ->
+                throw ValueError("Invalid type for second argument", _to)
+            else ->
+                s1 = seq:drop_while (`!=` _from) (to_seq union)
+                seq:take_while (`!=` _to) s1
+        def range_by _from _to _by ->
+            throw NotImplementedError ("Only range from Rangeable is supported")
+        def range_from _from ->
+            throw NotImplementedError ("Only range from Rangeable is supported")
+        def range_from_by _from _step ->
+            throw NotImplementedError ("Only range from Rangeable is supported")
+
