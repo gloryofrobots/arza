@@ -67,24 +67,6 @@ fun test() ->
 //    log "TEST OPERATORS"
 //    test_operators:test()
 
-type Color
-    | Red
-    | Orange
-    | Yellow
-    | Green
-    | Blue
-    | Indigo
-    | Violet
-
-import datatype
-extend Color
-    with Rangeable = datatype:UnionMixin
-
 fun main () ->
-    io:print (range Orange Indigo)
-    io:print (len Color)
-    io:print (to_seq Color)
-    io:print (at #Yellow Color)
-    io:print (Color.Yellow)
-//    test()
+    test()
 

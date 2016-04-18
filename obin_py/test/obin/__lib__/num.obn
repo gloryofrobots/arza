@@ -16,7 +16,7 @@ extend Int
     with Ord
         def <= x y -> _number:le x y
     ////////////////////////////////////////////////////
-    with Rangeable
+    with Range
         def range first (last of Int) ->
             range_by first last 1
 

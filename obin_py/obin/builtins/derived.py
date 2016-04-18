@@ -11,6 +11,7 @@ class Derive:
         self.indexed = False
         self.dict = False
         self.collection = False
+        self.range = False
 
 
 class Methods:
@@ -55,13 +56,24 @@ class Traits:
         self.Seqable = None
         self.methods = None
 
-    def find_trait(self, process, prelude, name):
+    def _find_in(self, process, prelude, name):
         sym = space.newsymbol(process, name)
         if not api.contains(prelude, sym):
             error.throw_1(error.Errors.KEY_ERROR, space.newstring(u"Missing internal trait %s in prelude" % name))
         return api.at(prelude, sym)
 
+    def find_trait(self, process, module, name):
+        _trait = self._find_in(process, module, name)
+        error.affirm_type(_trait, space.istrait)
+        return _trait
+
+    def find_type(self, process, module, name):
+        _trait = self._find_in(process, module, name)
+        error.affirm_type(_trait, space.isdatatype)
+        return _trait
+
     def postsetup(self, process):
+        from obin.runtime.load import import_module
         prelude = process.modules.prelude
         self.Str = self.find_trait(process, prelude, u"Str")
         self.Eq = self.find_trait(process, prelude, u"Eq")
@@ -71,6 +83,13 @@ class Traits:
         self.Sized = self.find_trait(process, prelude, u"Sized")
         self.Seq = self.find_trait(process, prelude, u"Seq")
         self.Seqable = self.find_trait(process, prelude, u"Seqable")
+        self.Range = self.find_trait(process, prelude, u"Range")
+
+
+        # GET MIXINS from datatype
+        _datatype_ = import_module(process, space.newsymbol(process, u"datatype"))
+        self.UnionDerived = self.find_type(process, _datatype_, u"UnionDerived")
+        self.CoreMixin = self.find_type(process, _datatype_, u"CoreMixin")
         self.methods = Methods(self)
 
     def str_methods(self):
@@ -137,6 +156,12 @@ class Traits:
 
         _type.derive.str = True
         _type.derive.eq = True
+        return impls
+
+    def derive_default_union(self, _type):
+        impls = []
+        impls.append(_l([self.Range, self.UnionDerived]))
+        _type.derive.range = True
         return impls
 
     def derive_default_record(self, _type):
@@ -278,3 +303,28 @@ def index_of_(process, routine):
     coll = routine.get_arg(1)
     error.affirm_type(coll, space.isrecord)
     return space.newint(coll.index_of(obj))
+
+
+@complete_native_routine
+def _union_range(process, routine):
+    _from = routine.get_arg(0)
+    _to = routine.get_arg(0)
+
+"""
+extend __UnionDerived__
+    with Range
+        def range _from  _to  ->
+            union = _datatype:get_union _from
+            if not (kindof _to union) ->
+                throw ValueError("Invalid type for second argument", _to)
+            else ->
+                s1 = seq:drop_while (`!=` _from) (to_seq union)
+                seq:take_while (`!=` _to) s1
+        def range_from _from ->
+            union = _datatype:get_union _from
+            s1 = seq:drop_while (`!=` _from) (to_seq union)
+        def range_from_by _from _by ->
+            throw NotImplementedError ("Only range from Rangeable is supported")
+        def range_by _from _to _by ->
+            throw NotImplementedError ("Only range from Rangeable is supported")
+            """

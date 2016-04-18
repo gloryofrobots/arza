@@ -499,6 +499,10 @@ def isrecord(w):
     return isinstance(w, W_Record)
 
 
+def isdispatchable(w):
+    from obin.types.datatype import W_Record, W_Extendable
+    return isinstance(w, W_Record) or isinstance(w, W_Extendable)
+
 ########################################################
 
 def isoperator(w):

@@ -117,7 +117,7 @@ trait Bounded for self
     def upper_bound self
 
 
-trait Rangeable for self
+trait Range for self
     def range self last
     def range_by self last step
 
@@ -134,6 +134,7 @@ trait MutRef for self of Ref
 type Option
     | Some val
     | None
+
 
 //ERRORS
 //TODO MAKE THIS DECLARATION ONE MACRO

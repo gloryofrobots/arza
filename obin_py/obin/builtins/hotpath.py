@@ -2,7 +2,7 @@ __author__ = 'gloryofrobots'
 from obin.types.number import *
 from obin.runtime import error
 from obin.types import api, space, plist, string, tuples, arguments
-from obin.types.space import isnumber, isint, isrecord
+from obin.types.space import isnumber, isint, isdispatchable
 
 
 class HotPath:
@@ -14,8 +14,6 @@ class HotPath:
     def apply(self, process, args):
         if api.length_i(args) != self.arity:
             return None
-        if not self.fn:
-            print "OLOO"
         return self.fn(process, args)
 
 
@@ -30,10 +28,6 @@ def is_both_integers(w1, w2):
 
 def is_both_strings(w1, w2):
     return space.isstring(w1) and space.isstring(w2)
-
-
-def is_not_records(w1, w2):
-    return (not isrecord(w1)) and (not isrecord(w2))
 
 
 # API#######################################################################
@@ -69,7 +63,7 @@ def hp_elem(process, args):
     left = api.at_index(args, 0)
     right = api.at_index(args, 1)
 
-    if not isrecord(right):
+    if not isdispatchable(right):
         return api.contains(right, left)
     else:
         return None
@@ -81,7 +75,7 @@ def hp_put(process, args):
     obj = api.at_index(args, 2)
     # print "IN PUT", key, value, obj
 
-    if not isrecord(obj):
+    if not isdispatchable(obj):
         return api.put(obj, key, value)
     else:
         return None
@@ -91,7 +85,7 @@ def hp_at(process, args):
     left = api.at_index(args, 0)
     right = api.at_index(args, 1)
 
-    if not isrecord(right):
+    if not isdispatchable(right):
         return api.at(right, left)
     else:
         return None
@@ -100,7 +94,7 @@ def hp_at(process, args):
 def hp_len(process, args):
     left = api.at_index(args, 0)
 
-    if not isrecord(left):
+    if not isdispatchable(left):
         return api.length(left)
     else:
         return None
@@ -208,7 +202,7 @@ def hp_le(process, args):
 ############################################################
 def hp_is_empty(process, args):
     left = api.at_index(args, 0)
-    if not space.isrecord(left):
+    if not space.isdispatchable(left):
         return api.is_empty(left)
     else:
         return None
@@ -243,7 +237,7 @@ def hp_rest(process, args):
 
 def hp_slice(process, args):
     obj = api.at_index(args, 2)
-    if isrecord(obj):
+    if isdispatchable(obj):
         return None
 
     first = api.at_index(args, 0)
@@ -267,7 +261,7 @@ def hp_take(process, args):
     count = api.at_index(args, 0)
 
     obj = api.at_index(args, 1)
-    if isrecord(obj):
+    if isdispatchable(obj):
         return None
 
     error.affirm_type(count, space.isint)
@@ -289,7 +283,7 @@ def hp_drop(process, args):
     count = api.at_index(args, 0)
 
     obj = api.at_index(args, 1)
-    if isrecord(obj):
+    if isdispatchable(obj):
         return None
 
     error.affirm_type(count, space.isint)

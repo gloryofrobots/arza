@@ -12,6 +12,12 @@ def import_module(process, name):
     else:
         return load_module(process, name)
 
+def import_module_by_name(process, script_name):
+    result = import_module(process, space.newsymbol(process, script_name))
+    if process.is_terminated():
+        # error here
+        return result
+    return None
 
 def find_module_file(path, dirs):
     # print "DIRS", dirs

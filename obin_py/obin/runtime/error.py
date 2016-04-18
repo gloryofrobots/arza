@@ -146,4 +146,4 @@ def initialise(process):
         if space.isvoid(err_type):
             panic(u"Missing type %s in prelude for internal error" % errname)
 
-        datatype.derive_default(process, err_type, False)
+        datatype.derive_default(process, err_type)

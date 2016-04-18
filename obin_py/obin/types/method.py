@@ -78,26 +78,8 @@ class W_Method(W_Hashable):
 
 def lookup_implementation(process, method, args):
     dispatch_arg = api.at_index(args, method.dispatch_arg_index)
-    _type = api.get_type(process, dispatch_arg)
-    impl = _type.get_method_implementation(method)
-    # SUPPORT FOR DISPATCHING ON SINGLETONS type Union | X | Y | Z
-    if space.isvoid(impl):
-        # print "IS VOID impl", _type, dispatch_arg,  method
-        if space.isdatatype(dispatch_arg):
-            if dispatch_arg.is_singleton:
-                impl = dispatch_arg.get_method_implementation(method)
-                # print "IS SINGLETON", _type, method, dispatch_arg, impl
-            if space.isvoid(impl) and dispatch_arg.union is not None:
-                impl = dispatch_arg.union.get_method_implementation(method)
-                # print "GET FROM UNION", _type, method, dispatch_arg, dispatch_arg.union, impl
-
-            return impl
-        elif space.isunion(dispatch_arg):
-            impl = dispatch_arg.get_method_implementation(method)
-            # print "IS UNION", _type, method, dispatch_arg, impl
-        else:
-            if _type.union is not None:
-                impl = _type.union.get_method_implementation(method)
+    # print "DISPATCH", method, dispatch_arg, space.isunion(dispatch_arg)
+    impl = api.dispatch(process, dispatch_arg, method)
     return impl
 
 

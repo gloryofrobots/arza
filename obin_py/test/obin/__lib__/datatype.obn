@@ -31,9 +31,9 @@ extend Union
     with Collection = CoreMixin
     with Sized = CoreMixin
 
-type UnionMixin
-extend UnionMixin
-    with Rangeable
+type UnionDerived
+extend UnionDerived
+    with Range
         def range _from  _to  ->
             union = _datatype:get_union _from
             if not (kindof _to union) ->
@@ -41,10 +41,11 @@ extend UnionMixin
             else ->
                 s1 = seq:drop_while (`!=` _from) (to_seq union)
                 seq:take_while (`!=` _to) s1
-        def range_by _from _to _by ->
-            throw NotImplementedError ("Only range from Rangeable is supported")
         def range_from _from ->
+            union = _datatype:get_union _from
+            s1 = seq:drop_while (`!=` _from) (to_seq union)
+        def range_from_by _from _by ->
             throw NotImplementedError ("Only range from Rangeable is supported")
-        def range_from_by _from _step ->
+        def range_by _from _to _by ->
             throw NotImplementedError ("Only range from Rangeable is supported")
 

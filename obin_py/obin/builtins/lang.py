@@ -40,7 +40,6 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.TRAIT, __trait, 3)
     put_lang_func(process, module, lang_names.IMPLEMENT, __implement, 3)
     put_lang_func(process, module, lang_names.EXTEND, __extend, 2)
-    put_lang_func(process, module, lang_names.DERIVE, __derive, 2)
     put_lang_func(process, module, lang_names.PARTIAL, __partial, 1)
 
     put_lang_func(process, module, u"vector", __vector, -1)
@@ -190,16 +189,6 @@ def __trait(process, routine):
         constraints = tuples.to_list(constraints)
     _trait = space.newtrait(name, varname, constraints)
     return _trait
-
-
-@complete_native_routine
-def __derive(process, routine):
-    _traits = routine.get_arg(0)
-    _types = routine.get_arg(1)
-    for t in _types:
-        datatype.derive_traits(process, t, _traits)
-
-    return space.newbool(True)
 
 
 @complete_native_routine

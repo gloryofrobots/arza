@@ -10,6 +10,13 @@ class W_Record(W_Hashable):
         self.values = values
         self.type = type
 
+    def _dispatch_(self, process, method):
+        impl = self.type.get_method_implementation(method)
+        if space.isvoid(impl) and self.type.union is not None:
+            impl = self.type.union.get_method_implementation(method)
+
+        return impl
+
     def _to_string_(self):
         res = []
 
@@ -175,6 +182,17 @@ class W_DataType(W_Extendable):
         return W_Record(self, space.newpvector(values))
         # return W_Record(self, plist.plist(values))
 
+    def _dispatch_(self, process, method):
+        impl = space.newvoid()
+        if self.union is not None:
+            impl = self.union.get_method_implementation(method)
+
+        if space.isvoid(impl):
+            _type = api.get_type(process, self)
+            impl = _type.get_method_implementation(method)
+
+        return impl
+
     # TODO CREATE CALLBACK OBJECT
     def _to_routine_(self, stack, args):
         from obin.runtime.routine.routine import create_callback_routine
@@ -225,6 +243,16 @@ class W_Union(W_Extendable):
     def has_type(self, _type):
         return plist.contains(self.types_list, _type)
 
+    def _dispatch_(self, process, method):
+        # print "UNION DISPATCH", method
+        impl = self.get_method_implementation(method)
+        # print "UNION IMPL1", impl
+        if space.isvoid(impl):
+            _type = self._type_(process)
+            impl = _type.get_method_implementation(method)
+            # print "UNION IMPL2", impl
+        return impl
+
     def _type_(self, process):
         return process.std.types.Union
 
@@ -270,7 +298,7 @@ def newtype(process, name, fields, constructor):
     if process.std.initialized is False:
         return _datatype
 
-    derive_default(process, _datatype, api.is_empty_b(fields))
+    derive_default(process, _datatype)
     return _datatype
 
 
@@ -282,43 +310,32 @@ def newunion(process, name, types):
             return error.throw_3(error.Errors.TYPE_ERROR, _t, _t.union,
                                  space.newstring(u"Type already exists in union"))
     _union = W_Union(name, types)
-    # TODO default derived ENUM FOR UNION
     for _t in types:
         _t.union = _union
 
+    if process.std.initialized is False:
+        return _union
+    derive_default(process, _union)
     return _union
 
 
-def derive_default(process, _type, is_singleton):
-    if is_singleton:
-        traits = process.std.traits.derive_default_singleton(_type)
-    else:
-        traits = process.std.traits.derive_default_record(_type)
-
-    for _t, _i in traits:
-        _implement_trait(_type, _t, _i)
-        _type.register_derived(_t)
-
-
-def derive_traits(process, _type, traits):
-    # if space.isunion(_type):
-    #     for t in _type.types:
-    #         derive_traits(process, t, traits)
-
-    error.affirm_type(_type, space.isextendable)
-
-    for trait in traits:
-        error.affirm_type(trait, space.istrait)
-        if _type.is_trait_implemented(trait):
-            return error.throw_3(error.Errors.TRAIT_IMPLEMENTATION_ERROR, trait, _type,
-                                 space.newstring(u"Trait already implemented"))
-
-        # more then one trait can be returned
-        # example deriving Dict causes deriving Collection
-        implementations = process.std.traits.derive(_type, trait)
-        for _t, _i in implementations:
+def derive_default(process, _type):
+    if space.isdatatype(_type):
+        if _type.is_singleton:
+            traits = process.std.traits.derive_default_singleton(_type)
+        else:
+            traits = process.std.traits.derive_default_record(_type)
+        for _t, _i in traits:
             _implement_trait(_type, _t, _i)
             _type.register_derived(_t)
+    elif space.isunion(_type):
+        traits = process.std.traits.derive_default_union(_type)
+        for _t, _i in traits:
+            methods = _normalise_implementations(_t, _i)
+            _implement_trait(_type, _t, methods)
+            _type.register_derived(_t)
+    else:
+        return error.throw_2(error.Errors.TYPE_ERROR, space.newstring(u"Type or Union Expected"), _type)
 
 
 def extend_type(_type, traits):
@@ -329,13 +346,7 @@ def extend_type(_type, traits):
     return _type
 
 
-def implement_trait(_type, trait, implementations):
-    # if space.isunion(_type):
-    #     for t in _type.types:
-    #         implement_trait(t, trait, implementations)
-    #     return _type
-    error.affirm_type(_type, space.isextendable)
-    error.affirm_type(trait, space.istrait)
+def _normalise_implementations(trait, implementations):
     if space.ispmap(implementations):
         methods = plist.empty()
         for method in trait.methods:
@@ -350,8 +361,9 @@ def implement_trait(_type, trait, implementations):
     elif space.islist(implementations):
         methods = implementations
     else:
-        return error.throw_2(error.Errors.TYPE_ERROR, u"Invalid trait implementation source."
-                                                      u"Expected one of Map,List,Type", implementations)
+        return error.throw_2(error.Errors.TYPE_ERROR,
+                             space.newstring(u"Invalid trait implementation source. Expected one of Map,List,Type"),
+                             implementations)
     method_impls = plist.empty()
     # Collect methods by names from trait
     for im in methods:
@@ -363,7 +375,14 @@ def implement_trait(_type, trait, implementations):
             error.throw_2(error.Errors.TRAIT_IMPLEMENTATION_ERROR,
                           space.newstring(u"Unknown method"), method_name)
         method_impls = plist.cons(space.newlist([method, fn]), method_impls)
-    return _implement_trait(_type, trait, method_impls)
+    return method_impls
+
+
+def implement_trait(_type, trait, implementations):
+    error.affirm_type(_type, space.isextendable)
+    error.affirm_type(trait, space.istrait)
+    methods = _normalise_implementations(trait, implementations)
+    return _implement_trait(_type, trait, methods)
 
 
 def _implement_trait(_type, trait, method_impls):

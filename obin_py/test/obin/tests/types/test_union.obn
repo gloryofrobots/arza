@@ -14,6 +14,21 @@ type Shape
     | Line point1 point2
     | Empty
 
+type Color
+    | Red
+    | Orange
+    | Yellow
+    | Green
+    | Blue
+    | Indigo
+    | Violet
+
+type Cars | BMW | AUDI | FORD
+
+extend Cars
+    with Sized
+        def len self -> 42
+
 fun test () ->
     m = Just 42
     n = Nothing
@@ -36,3 +51,15 @@ fun test () ->
     affirm:is_kindof Line Shape
     affirm:is_not_kindof Line Rect
     affirm:is_not_kindof X Y
+
+    affirm:is_equal (range Orange Indigo) [Orange, Yellow, Green, Blue]
+    affirm:is_equal (range_from Red) [Red, Orange, Yellow, Green, Blue, Indigo, Violet]
+    affirm:is_equal (range_from Green) [Green, Blue, Indigo, Violet]
+    affirm:is_equal (range_from Violet) [Violet]
+
+    affirm:is_equal (len Color) 7
+    affirm:is_equal (len Cars) 42
+    affirm:is_equal (to_seq Color) [Red, Orange, Yellow, Green, Blue, Indigo, Violet]
+    affirm:is_equal (at #Yellow Color) Yellow
+    affirm:is_equal (Color.Yellow) Yellow
+

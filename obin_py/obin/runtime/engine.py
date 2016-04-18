@@ -44,14 +44,16 @@ def initialize(libdirs):
     if err is not None:
         return process, err
 
-    process.std.postsetup(process)
     builtins.postsetup(process)
+    process.std.postsetup(process)
     error.initialise(process)
 
     modules = [u"bool", u"num", u"bit", u"env",
-               u"string", u"symbol", u"datatype", u"vector",
+               u"string", u"symbol", u"vector",
                u"list", u"function", u"fiber", u"trait",
-               u"tuple", u"map", u"seq", u"lazy"]
+               u"tuple", u"map", u"seq", u"lazy",
+               u"datatype",
+               ]
 
     for module_name in modules:
         err = load_module(process, module_name)
