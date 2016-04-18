@@ -333,7 +333,6 @@ def init_parser_literals(parser):
 
 def expression_parser_init(proc_data, parser):
     parser.allow_overloading = True
-    # OTHER OPERATORS ARE DECLARED IN prelude.obn
 
     parser = init_parser_literals(parser)
 
@@ -385,12 +384,13 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_DOUBLE_COLON, 70, infix_double_colon)
     infix(parser, TT_TRIPLE_COLON, 70, infix_triple_colon)
 
-
     infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     infix(parser, TT_DOT, 95, infix_dot)
 
     infix(parser, TT_INFIX_DOT_LCURLY, 95, infix_lcurly)
     infix(parser, TT_INFIX_DOT_LPAREN, 95, infix_lparen)
+
+    # OTHER OPERATORS ARE DECLARED IN prelude.obn
 
     stmt(parser, TT_THROW, prefix_throw)
     return parser
@@ -398,6 +398,7 @@ def expression_parser_init(proc_data, parser):
 
 def module_parser_init(parser):
     parser = init_parser_literals(parser)
+    parser.allow_overloading = True
 
     symbol(parser, TT_RSQUARE)
     symbol(parser, TT_ARROW)
@@ -408,6 +409,7 @@ def module_parser_init(parser):
     symbol(parser, TT_END_EXPR)
     symbol(parser, TT_ENDSTREAM)
 
+    prefix(parser, TT_INDENT, prefix_indent)
     prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly, layout_lcurly)
@@ -415,6 +417,7 @@ def module_parser_init(parser):
     prefix(parser, TT_LAMBDA, prefix_lambda)
 
     assignment(parser, TT_ASSIGN, 10)
+    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     infix(parser, TT_DOT, 95, infix_dot)
     infix(parser, TT_COLON, 95, infix_name_pair)
 

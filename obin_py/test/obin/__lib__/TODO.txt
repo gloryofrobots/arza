@@ -9,9 +9,6 @@ THINK ABOUT DEFAULT VALUES
 MAKE {} SYNTAX IN FIELDS AND CONSTRUCTING WITH KEYWORD ARGS
 --------------------------------
 
-RANGES
-------------
-
 Rangeable and Bounded for union
 --------------------------------------------------
 

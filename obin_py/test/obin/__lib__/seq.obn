@@ -1,26 +1,77 @@
-fun map f coll
-    | f [] -> empty coll
-    | f hd::tl -> (f hd) :: (map f tl)
+//LOOP HELPS///////////////////////////////////////////////////////////
+fun iter1 f arg1  ->
+    try
+        f arg1
+    catch
+        | e of Interrupt -> e.result
+        | e -> throw e
+
+fun iter2 f arg1 arg2 ->
+    try
+        f arg1 arg2
+    catch
+        | e of Interrupt -> e.result
+        | e -> throw e
+
+fun iter3 f arg1 arg2 arg3 ->
+    try
+        f arg1 arg2 arg3
+    catch
+        | e of Interrupt -> e.result
+        | e -> throw e
+
+fun iter4 f arg1 arg2 arg3 arg4 ->
+    try
+        f arg1 arg2 arg3 arg4
+    catch
+        | e of Interrupt -> e.result
+        | e -> throw e
+
+//REDUCERS///////////////////////////////////////////////////////
+
+fun foldl func accumulator coll ->
+    fun _foldl f acc coll
+        | f acc [] -> acc
+        | f acc hd::tl -> _foldl f (f hd acc) tl
+
+    iter3 _foldl func accumulator coll
 ----------------------------------------
 
-fun list coll ->
-    reverse (foldl cons [] coll)
+fun foldr func accumulator coll ->
+    fun _foldr f acc coll
+        | f acc [] -> acc
+        | f acc hd::tl -> f hd (_foldr f acc tl)
 
-//Usable in case of lazy seq
-fun doall coll ->
-    fun walk _coll
-        | [] -> coll
-        | hd::tl -> walk tl
+    iter3 _foldr func accumulator coll
+--------------------------------------------------
 
-    walk coll
+fun scanl func accumulator coll ->
+    fun _scanl f acc coll
+        | f acc [] -> acc::(empty coll)
+        | f acc hd::tl -> acc :: (_scanl f (f hd acc) tl)
+
+    iter3 _scanl func accumulator coll
+--------------------------------------------------
+
+//LOOPS ////////////////////////
+
+fun map f coll ->
+    fun _map f coll
+        | f [] -> empty coll
+        | f hd::tl -> (f hd) :: (_map f tl)
+
+    iter2 _map f coll
 ----------------------------------------
 
-fun foreach f coll
-    | f [] -> empty coll
-    | f hd::tl -> f hd; foreach f tl
+fun foreach f coll ->
+    fun _foreach f coll
+        | f [] -> empty coll
+        | f hd::tl -> f hd; _foreach f tl
+
+    iter2 _foreach f coll
 ----------------------------------------
 
-fun intersperse f coll
+fun intersperse val coll
     | val [] -> empty coll
     | val hd::tl  -> hd :: val :: (intersperse val tl)
 --------------------------------------------------
@@ -34,21 +85,18 @@ fun reverse coll ->
     _reverse coll (empty coll)
 ----------------------------------------
 
-//REDUCERS///////////////////////////////////////////////////////
-fun foldl func accumulator coll
-    | f acc [] -> acc
-    | f acc hd::tl -> foldl f (f hd acc) tl
+
+fun list coll ->
+    reverse (foldl cons [] coll)
+
+//Usable in case of lazy seq
+fun doall coll ->
+    fun walk _coll
+        | [] -> coll
+        | hd::tl -> walk tl
+
+    walk coll
 ----------------------------------------
-
-fun foldr func accumulator coll
-    | f acc [] -> acc
-    | f acc hd::tl -> f hd (foldr f acc tl)
---------------------------------------------------
-
-fun scanl func accumulator coll
-    | f acc [] -> acc::(empty coll)
-    | f acc hd::tl -> acc :: (scanl f (f hd acc) tl)
---------------------------------------------------
 
 
 ///ACCESSORS//////////////////////////////////////

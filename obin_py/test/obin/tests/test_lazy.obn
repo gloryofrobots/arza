@@ -53,7 +53,7 @@ fun test_list_generator () ->
 
     l1 = lazy:list_generator lam () ->
                                 if !v == 5 ->
-                                    throw StopIterationError ()
+                                    throw Interrupt ()
                                 else ->
                                     old = !v
                                     v := old + 1

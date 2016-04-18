@@ -58,8 +58,10 @@ class Traits:
         self.Seq = None
         self.Seqable = None
         self.Range = None
+
         self.UnionDerived = None
         self.TypeDerived = None
+
         self.methods = None
 
     def _find_in(self, process, prelude, name):
@@ -152,4 +154,5 @@ class Traits:
         impls = []
         impls.append(_l([self.Range, self.UnionDerived]))
         _type.derive.range = True
+        _type.derive.bounded = True
         return impls

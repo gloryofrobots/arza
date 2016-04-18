@@ -12,6 +12,13 @@ extend Datatype
 extend Union
     with Seqable
         def to_seq self -> _datatype:union_to_list self
+    with Bounded
+        def lower_bound self ->
+            fst (to_seq self)
+
+        def upper_bound self ->
+            last (to_seq self)
+
     with Eq = TypeDerived
     with Collection = TypeDerived
     with Sized = TypeDerived

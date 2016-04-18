@@ -58,9 +58,6 @@ fun join_cast _coll _str ->
 fun join_with _func _coll _str ->
     seq:foldl (joiner _func _str) "" _coll
 
-
-//    seq:foldl lam s acc -> _string:concat acc (str s)  end  "" _seq
-
 fun split _sep _str -> _string:split _sep _str
 
 //fun count _elem _str -> throw NotImplementedError ()

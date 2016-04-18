@@ -29,6 +29,8 @@ extend Cars
     with Sized
         def len self -> 42
 
+type Alpha | A | B | C | D | E | F | G | H
+
 fun test () ->
     m = Just 42
     n = Nothing
@@ -63,3 +65,5 @@ fun test () ->
     affirm:is_equal (at #Yellow Color) Yellow
     affirm:is_equal (Color.Yellow) Yellow
 
+    affirm:is_equal (lower_bound Alpha) A
+    affirm:is_equal (upper_bound Alpha) H

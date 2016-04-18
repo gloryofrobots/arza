@@ -165,7 +165,9 @@ type ExportError args
 type TraitAlreadyImplementedError args
 type TraitImplementationError args
 type TraitConstraintError args
-type StopIterationError args
+
+//Signal used to interrupt recursive processes
+type Interrupt result
 
 //FUNS
 fun lookup key default coll ->
@@ -188,3 +190,9 @@ fun twice f -> f >> f
 fun flip f x y -> f y x
 fun even x -> mod x 2 == 0
 fun odd x -> not (even x)
+
+fst = at 0
+snd = at 1
+thrd = at 2
+frth = at 3
+fun last coll -> at ((len coll) - 1) coll

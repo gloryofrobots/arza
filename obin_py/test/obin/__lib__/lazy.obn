@@ -46,7 +46,7 @@ extend ListGenerator
         def rest self ->
             try
                 ListGenerator (self.fn ()) self.fn
-            catch e of StopIterationError ->
+            catch e of Interrupt ->
                 ListGenerator (Empty) self.fn
     with Sized
         def len self -> NotImplementedError len
