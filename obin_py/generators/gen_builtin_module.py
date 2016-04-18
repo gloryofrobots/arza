@@ -20,8 +20,8 @@ def {{func_native_name}}(process, routine):
         {%-if  arg.wrapper == ''  -%} routine.get_arg({{arg.index}}) {% else %} {{arg.wrapper}}(routine.get_arg({{arg.index}})) {% endif%}
     {%if  affirm_type != ''  -%} error.affirm_type({{arg.name}}, {{affirm_type}}) {% endif %}
     {% endfor %}
-    {%if  result_wrap == ''  %}return {{source_module}}.{{source_function}}({% for arg in args|sort(attribute='source_index') %}{{arg.name}}{% if not loop.last %}, {% endif %}{% endfor %})
-    {% else %}return {{result_wrap}}({{source_module}}.{{source_function}}({% for arg in args|sort(attribute='source_index') %}{{arg.name}}{% if not loop.last %}, {% endif %}{% endfor %})){% endif %}
+    {%if  result_wrap == ''  %}return {{source_module}}.{{source_function}}({% if process != '' %}process,{%endif%}{% for arg in args|sort(attribute='source_index') %}{{arg.name}}{% if not loop.last %}, {% endif %}{% endfor %})
+    {% else %}return {{result_wrap}}({{source_module}}.{{source_function}}({% if process != '' %}process,{%endif%}{% for arg in args|sort(attribute='source_index') %}{{arg.name}}{% if not loop.last %}, {% endif %}{% endfor %})){% endif %}
 """
 
 def render(body, data):
@@ -58,7 +58,7 @@ def arg(index, source_index, wrapper=''):
 
 def func(func_name=None, func_native_name=None,
          func_arity=None, source_module=None,
-        source_function=None, result_wrap='', affirm_type='', arguments=None):
+        source_function=None, result_wrap='', affirm_type='', arguments=None, process=''):
     return dict(
         func_name=func_name,
         func_native_name=func_native_name,
@@ -67,7 +67,8 @@ def func(func_name=None, func_native_name=None,
         source_function=source_function if source_function else func_name,
         result_wrap = result_wrap,
         affirm_type = affirm_type,
-        args = args(func_arity) if arguments is None else arguments
+        args = args(func_arity) if arguments is None else arguments,
+        process = process
         )
 
 
@@ -213,7 +214,7 @@ API = module("obin:lang:_api", [
             arguments=[arg(1, 0), arg(0, 0)]),
     func(func_name="equal", func_native_name="equal", func_arity=2,
              source_module="api", source_function="equal",
-            arguments=[arg(1, 0), arg(0, 0)]),
+            arguments=[arg(0, 0), arg(1, 0)]),
     func(func_name="to_string", func_native_name="to_string", func_arity=1,
              source_module="api", source_function="to_string",
             arguments=[arg(0, 0)]),
@@ -246,6 +247,19 @@ NUMBER = module("obin:lang:_number", [
              source_module="number", source_function="le",
              affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
 ])
+DATATYPE = module("obin:lang:_datatype", [
+    func(func_name="union_to_list", func_native_name="union_to_list", func_arity=1,
+             source_module="datatype", source_function="union_to_list"),
+    func(func_name="get_union", func_native_name="get_union", func_arity=1,
+             source_module="datatype", source_function="get_union", process=True,),
+    func(func_name="record_keys", func_native_name="record_keys", func_arity=1,
+             source_module="datatype", source_function="record_keys"),
+    func(func_name="record_values", func_native_name="record_values", func_arity=1,
+             source_module="datatype", source_function="record_values"),
+    func(func_name="record_index_of", func_native_name="record_index_of", func_arity=2,
+             source_module="datatype", source_function="record_index_of",
+             arguments=[arg(1, 0), arg(0, 0)]),
+    ])
 MAP = module("obin:lang:_map", [
     func(func_name="to_list", func_native_name="_to_list", func_arity=1,
              source_module="pmap", source_function="to_list"),
@@ -253,11 +267,12 @@ MAP = module("obin:lang:_map", [
 
 # print generate(TUPLES)
 # print generate(LIST)
-print generate(API)
+# print generate(API)
 # print generate(BIT)
 # print generate(NUMBER)
 # print generate(STRING)
 # print generate(MAP)
+print generate(DATATYPE)
 
 
 

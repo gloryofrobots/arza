@@ -1,9 +1,9 @@
-from datatype import CoreMixin
+from datatype import TypeDerived
 import io
 
 type LazyList head tail
 extend LazyList
-    with Collection = CoreMixin
+    with Collection = TypeDerived
     with Seq
         def first self -> self.head
         def rest self -> !self.tail

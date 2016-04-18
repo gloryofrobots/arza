@@ -44,9 +44,11 @@ def initialize(libdirs):
     if err is not None:
         return process, err
 
-    builtins.postsetup(process)
+    # HERE ORDER IS IMPORTANT!!!!!
+    # imports derive.obn
     process.std.postsetup(process)
     error.initialise(process)
+    builtins.postsetup(process)
 
     modules = [u"bool", u"num", u"bit", u"env",
                u"string", u"symbol", u"vector",

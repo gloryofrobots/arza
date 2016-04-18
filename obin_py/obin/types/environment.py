@@ -213,6 +213,9 @@ class W_Env(W_Root):
 
         self.temps[idx] = val
 
+    def symbols(self):
+        return self.data.keys()
+
     def _type_(self, process):
         return process.std.types.Env
 

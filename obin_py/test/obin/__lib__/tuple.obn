@@ -1,11 +1,11 @@
 import obin:lang:_tuple
 import string
-from datatype import CoreMixin
+from datatype import TypeDerived
 
 extend Tuple
-    with Eq = CoreMixin
-    with Collection = CoreMixin
-    with Sized = CoreMixin
+    with Eq = TypeDerived
+    with Collection = TypeDerived
+    with Sized = TypeDerived
     with Str
         def str self ->
             if len self == 1 ->

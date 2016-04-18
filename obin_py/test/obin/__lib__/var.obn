@@ -1,5 +1,5 @@
 import fiber
-from datatype import CoreMixin
+from datatype import TypeDerived
 type Var val
 
 fun var v ->

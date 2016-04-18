@@ -1,11 +1,11 @@
-from datatype import CoreMixin
+from datatype import TypeDerived
 import obin:lang:_number
 import io
 
 extend Int
-    with Eq = CoreMixin
-    with Str = CoreMixin
-    with Repr = CoreMixin
+    with Eq = TypeDerived
+    with Str = TypeDerived
+    with Repr = TypeDerived
     with Num
         def - x y -> _number:sub x y
         def + x y -> _number:add x y
@@ -46,9 +46,9 @@ extend Int
     ////////////////////////////////////////////////////
 
 extend Float
-    with Eq = CoreMixin
-    with Str = CoreMixin
-    with Repr = CoreMixin
+    with Eq = TypeDerived
+    with Str = TypeDerived
+    with Repr = TypeDerived
     with Num = Int
     with Ord = Int
 

@@ -1,6 +1,6 @@
-from datatype import CoreMixin
+from datatype import TypeDerived
 
 extend Trait
-    with Eq = CoreMixin
-    with Str = CoreMixin
-    with Repr = CoreMixin
+    with Eq = TypeDerived
+    with Str = TypeDerived
+    with Repr = TypeDerived

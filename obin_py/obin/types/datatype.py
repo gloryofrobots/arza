@@ -288,6 +288,21 @@ def get_union(process, w):
     return error.throw_2(error.Errors.TYPE_ERROR, space.newstring(u"Type is not part of any union"), _t)
 
 
+def record_index_of(record, obj):
+    error.affirm_type(record, space.isrecord)
+    return record.index_of(obj)
+
+
+def record_keys(record):
+    error.affirm_type(record, space.isrecord)
+    return record.keys()
+
+
+def record_values(record):
+    error.affirm_type(record, space.isrecord)
+    return record.values()
+
+
 def _is_exist_implementation(method, impl):
     impl_method = api.at_index(impl, 0)
     return api.equal_b(impl_method, method)
@@ -320,22 +335,15 @@ def newunion(process, name, types):
 
 
 def derive_default(process, _type):
-    if space.isdatatype(_type):
-        if _type.is_singleton:
-            traits = process.std.traits.derive_default_singleton(_type)
-        else:
-            traits = process.std.traits.derive_default_record(_type)
-        for _t, _i in traits:
-            _implement_trait(_type, _t, _i)
-            _type.register_derived(_t)
-    elif space.isunion(_type):
-        traits = process.std.traits.derive_default_union(_type)
-        for _t, _i in traits:
-            methods = _normalise_implementations(_t, _i)
-            _implement_trait(_type, _t, methods)
-            _type.register_derived(_t)
-    else:
-        return error.throw_2(error.Errors.TYPE_ERROR, space.newstring(u"Type or Union Expected"), _type)
+    traits = process.std.traits.get_derived(_type)
+    # print "DERIVE DEFAULT", _type, traits
+    for _t, _i in traits:
+        if _type.is_trait_implemented(_t):
+            print "ALREADY DEFINED", _type, _t
+            continue
+        methods = _normalise_implementations(_t, _i)
+        _implement_trait(_type, _t, methods)
+        _type.register_derived(_t)
 
 
 def extend_type(_type, traits):

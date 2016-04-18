@@ -1,11 +1,11 @@
 import obin:lang:_map
 import string
-from datatype import CoreMixin
+from datatype import TypeDerived
 
 extend Map
-    with Eq = CoreMixin
-    with Collection = CoreMixin
-    with Sized = CoreMixin
+    with Eq = TypeDerived
+    with Collection = TypeDerived
+    with Sized = TypeDerived
     with Str
         def str self ->
             fun _joiner pair ->

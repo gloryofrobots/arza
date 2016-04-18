@@ -1,6 +1,6 @@
 import obin:lang:_list
 from obin:lang:_list import (tail, head)
-from datatype import CoreMixin
+from datatype import TypeDerived
 import seq
 import string
 
@@ -51,8 +51,8 @@ fun replicate count element ->
 ---------------------------------------------------
 
 extend List
-    with Eq = CoreMixin
-    with Collection = CoreMixin
+    with Eq = TypeDerived
+    with Collection = TypeDerived
     with Str
         def str self ->
             "[" ++ string:join_with repr self ", " ++ "]"
