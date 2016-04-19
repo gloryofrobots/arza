@@ -16,8 +16,8 @@ class CallbackRoutine(BaseRoutine):
         return self.function.name
 
     # HERE WE GOT RESULT OF FUNCTION CALL
-    def _on_resume(self, value):
-        self.result = self.callback(value)
+    def _on_resume(self, process, value):
+        self.result = self.callback(process, value)
 
     def _execute(self, process):
         # ALREADY RESUMED WITH RESULT

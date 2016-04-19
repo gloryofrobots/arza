@@ -36,6 +36,10 @@ def simplify_let(compiler, code, node):
     func = nodes.create_fun_simple_node(node, nodes.empty_node(), body)
     return nodes.create_call_node_1(node, func, nodes.create_unit_node(node))
 
+def simplify_cons(compiler, code, node):
+    left = node_first(node)
+    right = node_second(node)
+    return nodes.create_cons_node(node, left, right)
 
 def simplify_delay(compiler, code, node):
     exp = node_first(node)

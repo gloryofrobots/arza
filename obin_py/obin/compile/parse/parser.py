@@ -381,7 +381,7 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
     infix(parser, TT_BACKTICK_NAME, 50, infix_backtick_name)
-    infix(parser, TT_DOUBLE_COLON, 70, infix_double_colon)
+    infix(parser, TT_DOUBLE_COLON, 70, led_infixr)
     infix(parser, TT_TRIPLE_COLON, 70, infix_triple_colon)
 
     infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)

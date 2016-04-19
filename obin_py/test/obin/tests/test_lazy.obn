@@ -3,10 +3,18 @@ import affirm
 import io
 import var
 import lazy
+import stream
+
+fun squares n ->
+    (n * n) ::: squares (n + 1)
+
+fun test_stream () ->
+    sqrs = squares 1
+    sqrs_odd = stream:filter odd sqrs
+    io:print (stream:take 10 sqrs_odd)
+
 
 fun test_lazy_cons () ->
-    fun squares n ->
-        (n * n) ::: squares (n + 1)
 
     sqrs = squares 1
 
@@ -60,7 +68,12 @@ fun test_list_generator () ->
     affirm:is_equal  (seq:take 7 l1) [1, 2, 3, 4, 5]
 
 
+fun test_delay() ->
+    l = delay delay delay 4 * 3
+    affirm:is_equal (!l) 12
 
 fun test () ->
-    test_lazy_cons()
-    test_list_generator()
+    test_stream ()
+//    test_delay()
+//    test_lazy_cons()
+//    test_list_generator()

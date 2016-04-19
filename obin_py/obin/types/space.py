@@ -22,6 +22,7 @@ def isany(value):
 def isatomictype(value):
     return isvaluetype(value) or isstring(value)
 
+
 def isvaluetype(value):
     from obin.types.root import W_ValueType
     return isinstance(value, W_ValueType)
@@ -77,9 +78,11 @@ def newchar(c):
     from obin.types.character import W_Char
     return W_Char(ord(c))
 
+
 def ischar(w):
     from obin.types.character import W_Char
     return isinstance(w, W_Char)
+
 
 ########################################################
 
@@ -338,6 +341,10 @@ def newunit():
     return W_Unit()
 
 
+def newtupleunit():
+    return newtuple([newunit()])
+
+
 def isunit(w):
     from obin.types.tuples import W_Unit
     return isinstance(w, W_Unit)
@@ -488,10 +495,10 @@ def isunion(w):
     from obin.types.datatype import W_Union
     return isinstance(w, W_Union)
 
+
 def isextendable(w):
     from obin.types.datatype import W_Extendable
     return isinstance(w, W_Extendable)
-
 
 
 def isrecord(w):
@@ -502,6 +509,7 @@ def isrecord(w):
 def isdispatchable(w):
     from obin.types.datatype import W_Record, W_Extendable
     return isinstance(w, W_Record) or isinstance(w, W_Extendable)
+
 
 ########################################################
 

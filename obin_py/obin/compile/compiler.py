@@ -944,13 +944,20 @@ def _declare_local_name(compiler, code, node):
     return sym, index, name_index
 
 
+def _compile_CONS(compiler, code, node):
+    simplified = simplify.simplify_cons(compiler, code, node)
+    _compile(compiler, code, simplified)
+
+
 def _compile_DELAY(compiler, code, node):
     simplified = simplify.simplify_delay(compiler, code, node)
     _compile(compiler, code, simplified)
 
+
 def _compile_LET(compiler, code, node):
     simplified = simplify.simplify_let(compiler, code, node)
     _compile(compiler, code, simplified)
+
 
 def _compile_UNION(compiler, code, node):
     simplified = simplify.simplify_union(compiler, code, node)
@@ -1155,6 +1162,8 @@ def _compile_node(compiler, code, node):
         _compile_UNION(compiler, code, node)
     elif NT_DELAY == ntype:
         _compile_DELAY(compiler, code, node)
+    elif NT_CONS == ntype:
+        _compile_CONS(compiler, code, node)
     elif NT_LET == ntype:
         _compile_LET(compiler, code, node)
 

@@ -1,34 +1,59 @@
 from datatype import TypeDerived
+from obin:lang:_lazy import (is_forced)
 import io
+import seq
 
-type LazyList head tail
+type LazyList
+    | LazyCons head tail
+    | LazyNil
+
 extend LazyList
     with Collection = TypeDerived
     with Seq
         def first self -> self.head
         def rest self -> !self.tail
     with Str
-        def str self -> "[" ++ str self.head ++ ", ...]"
+        def str self ->
+            io:print "TO STRING !!!!!!!!!!!!!!!!!!"
+            fun folder l
+                | [] -> ""
+                | l ->
+                    [x, ...xs] = l
+                    dprint #FOLDER (kindof xs LazyVal) l x xs
+                    if kindof xs LazyVal ->
+                        if  not (is_forced xs)  ->
+                            str x ++ ", ..."
+                        else ->
+                            str x ++ ", " ++ folder (!xs)
+                    else ->
+                        str x ++ ", " ++ folder (xs)
+
+
+            "[" ++ folder self ++ "]"
+//            "[" ++ str self.head ++ ", ...]"
     with Seqable
         def to_seq self -> self
     with Sized
         def len self -> throw NotImplementedError ("len not defined for LazyList",)
-        def is_empty self -> False
+        def is_empty self
+            | self of LazyNil -> True
+            | _ -> False
+
     with Emptiable
-        def empty self -> []
+        def empty self -> LazyNil
     with Constructable
-        def cons value self -> throw NotImplementedError ("Consing with LazyList directly is forbidden," ++
-                                                            " use ::: macro or cons head (lazy tail) instead",)
+        def cons value self -> LazyCons value self
+    with Ref
+        def ! self -> self
 
 --------------------------------------------------------------------------
 
 extend LazyVal
     with Ref
         def ! self -> self ()
-
     with Constructable
         def cons value self ->
-            LazyList value self
+            LazyCons value self
     with Str
         def str self -> "<delayed>"
 
@@ -60,3 +85,37 @@ fun list_generator fn ->
     ListGenerator val fn
 
 
+//extend LazyList
+//    with Collection = TypeDerived
+//    with Seq
+//        def first self -> self.head
+//        def rest self -> !self.tail
+//    with Str
+//        def str self ->
+//            io:print "TO STRING !!!!!!!!!!!!!!!!!!"
+//            fun folder l
+//                | [] -> ""
+//                | l ->
+//                    dprint #folder l
+//
+//                    if not (is_forced l.tail) ->
+//                        str l.head ++ ", ..."
+//                    else ->
+//                        str l.head ++ ", " ++ folder (!l.tail)
+//
+//            "[" ++ folder self ++ "]"
+////            "[" ++ str self.head ++ ", ...]"
+//    with Seqable
+//        def to_seq self -> self
+//    with Sized
+//        def len self -> throw NotImplementedError ("len not defined for LazyList",)
+//        def is_empty self -> False
+//    with Emptiable
+//        def empty self -> []
+//    with Constructable
+//        def cons value self -> throw NotImplementedError ("Consing with LazyList directly is forbidden," ++
+//                                                            " use ::: macro or cons head (lazy tail) instead",)
+//    with Ref
+//        def ! self -> self
+//
+//--------------------------------------------------------------------------

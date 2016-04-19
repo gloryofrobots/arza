@@ -25,13 +25,13 @@ class BaseRoutine:
     def _catch(self, signal):
         return False
 
-    def resume(self, value):
+    def resume(self, process, value):
         # print "RESUME", value
         assert self.is_suspended()
-        self._on_resume(value)
         self._state = BaseRoutine.State.INPROCESS
+        self._on_resume(process, value)
 
-    def _on_resume(self, value):
+    def _on_resume(self, process, value):
         raise NotImplementedError()
 
     def info(self):

@@ -17,7 +17,7 @@ class NativeRoutine(BaseRoutine):
         self._args = args
 
     # redefine resume because we can call bytecode routine from native and after it resumes as we must complete
-    def _on_resume(self, value):
+    def _on_resume(self, process, value):
         self.result = value
 
     def _on_complete(self, process):

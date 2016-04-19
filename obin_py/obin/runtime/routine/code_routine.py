@@ -41,7 +41,7 @@ class CodeRoutine(BaseRoutine):
 
         return builder.nl().space(8).add_u(curline).value()
 
-    def _on_resume(self, value):
+    def _on_resume(self, process, value):
         self.stack.push(value)
 
     def _on_activate(self):

@@ -12,6 +12,7 @@ class W_Record(W_Hashable):
 
     def _dispatch_(self, process, method):
         impl = self.type.get_method_implementation(method)
+
         if space.isvoid(impl) and self.type.union is not None:
             impl = self.type.union.get_method_implementation(method)
 
@@ -168,7 +169,7 @@ class W_DataType(W_Extendable):
     def has_constructor(self):
         return not space.isvoid(self.ctor)
 
-    def create_instance(self, env):
+    def create_instance(self, process, env):
         undef = space.newvoid()
         values = []
 
@@ -390,6 +391,10 @@ def implement_trait(_type, trait, implementations):
     error.affirm_type(_type, space.isextendable)
     error.affirm_type(trait, space.istrait)
     methods = _normalise_implementations(trait, implementations)
+    if space.isunion(_type):
+        for _t in _type.types_list:
+           _implement_trait(_t, trait, methods)
+
     return _implement_trait(_type, trait, methods)
 
 

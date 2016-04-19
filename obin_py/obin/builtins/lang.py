@@ -19,7 +19,7 @@ def put_lang_func(process, module, name, func, arity):
 
 def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
-    api.put_native_function(process, module, u'echo', _print, -1)
+    api.put_native_function(process, module, u'dprint', _print, -1)
     api.put_native_function(process, module, u'address', _id, 1)
     api.put_native_function(process, module, u'apply', apply, 2)
     api.put_native_function(process, module, u'concat', concat_tuples, 2)

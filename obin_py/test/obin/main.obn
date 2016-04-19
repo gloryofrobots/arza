@@ -4,22 +4,22 @@ import seq
 import string
 //import tests:test_operators
 ////
-import tests:types:test_types
-import tests:test_partial
-import tests:test_co
-import tests:test_destruct
-import tests:test_exception
-import tests:test_modify
-import tests:test_operator_override
-import tests:test_module
-import tests:test_match
-import tests:test_base
-import tests:test_bool
-import tests:test_static_refs
-import tests:test_fun
-import tests:test_var
-import tests:datastructs:test_datastructs
-import tests:test_lazy
+//import tests:types:test_types
+//import tests:test_partial
+//import tests:test_co
+//import tests:test_destruct
+//import tests:test_exception
+//import tests:test_modify
+//import tests:test_operator_override
+//import tests:test_module
+//import tests:test_match
+//import tests:test_base
+//import tests:test_bool
+//import tests:test_static_refs
+//import tests:test_fun
+//import tests:test_var
+//import tests:datastructs:test_datastructs
+//import tests:test_lazy
 
 
 fun log ...msgs ->
@@ -31,43 +31,85 @@ fun log ...msgs ->
 fun test() ->
     log "RUN TESTS"
 
-    log "TEST TYPES"
-    test_types:test()
-    log "TEST PARTIAL"
-    test_partial:test()
-    log "TEST BOOL"
-    test_bool:test()
-    log "TEST MATCH"
-    test_match:test()
-    log "TEST BASE"
-    test_base:test()
-    log "TEST DESTRUCT"
-    test_destruct:test()
-    log "TEST STATIC REFS"
-    test_static_refs:test()
-    log "TEST CO"
-    test_co:test()
-    log "TEST EXCEPTION"
-    test_exception:test()
-    log "TEST MODIFY"
-    test_modify:test()
-    log "TEST OP OVERRIDE"
-    test_operator_override:test()
-    log "TEST MODULE"
-    test_module:test()
-    log "TEST FUN"
-    test_fun:test()
-    log "TEST VAR"
-    test_var:test()
-    log "TEST DATASTRUCTS"
-    test_datastructs:test()
-    log "TEST LAZY"
-    test_lazy:test()
+//    log "TEST TYPES"
+//    test_types:test()
+//    log "TEST PARTIAL"
+//    test_partial:test()
+//    log "TEST BOOL"
+//    test_bool:test()
+//    log "TEST MATCH"
+//    test_match:test()
+//    log "TEST BASE"
+//    test_base:test()
+//    log "TEST DESTRUCT"
+//    test_destruct:test()
+//    log "TEST STATIC REFS"
+//    test_static_refs:test()
+//    log "TEST CO"
+//    test_co:test()
+//    log "TEST EXCEPTION"
+//    test_exception:test()
+//    log "TEST MODIFY"
+//    test_modify:test()
+//    log "TEST OP OVERRIDE"
+//    test_operator_override:test()
+//    log "TEST MODULE"
+//    test_module:test()
+//    log "TEST FUN"
+//    test_fun:test()
+//    log "TEST VAR"
+//    test_var:test()
+//    log "TEST DATASTRUCTS"
+//    test_datastructs:test()
+//    log "TEST LAZY"
+//    test_lazy:test()
 
 //    log "TEST OPERATORS"
 //    test_operators:test()
 
 
+//ISSUE
+//            fun folder l
+//                | [] -> ""
+//                | l @ [x::xs of LazyVal] when not (is_forced xs) ->  str x ++ ", ..."
+//                | l @ [x::xs of LazyVal] -> str x ++ ", " ++ folder (!xs)
+//                | l @ [x::xs of LazyList] -> str x ++ ", " ++ folder (xs)
+//x::xs = l
+import stream
+import lazy
+
+fun squares n ->
+    (n * n) ::: squares (n + 1)
+
 fun main () ->
-    test()
+    l = [1,2,3,4,5]
+    x::xs = l
+    sqrs = squares 1
+
+//    io:print sqrs
+//    io:print (obin:lang:is_seq sqrs)
+//    io:print (obin:lang:is_seq lazy:LazyNil)
+//    dprint (traits lazy:LazyNil)
+//    io:print (obin:lang:is_seq [])
+    sqrs_odd_inc = sqrs
+                        |> stream:filter lam x -> odd x end
+                        |> stream:map lam x -> inc x end
+                        |> stream:map lam x ->  x * 2 end
+//
+//    io:print sqrs_odd_inc
+    sqrs_odd_inc_10 = stream:doall (stream:take 10 sqrs_odd_inc)
+    sqrs_odd_inc_10_eager = (seq:take 10 sqrs_odd_inc)
+    sqrs_odd_inc_10_eager2 = sqrs
+                            |> seq:take 20
+                            |> seq:filter lam x -> odd x end
+                            |> stream:map lam x -> inc x end
+                            |> seq:map lam x ->  x * 2 end
+                            |> seq:take 10
+
+    io:print sqrs_odd_inc_10
+//    io:print sqrs_odd_inc_10_eager
+//    io:print sqrs_odd_inc_10_eager2
+
+////    io:print <| stream:doall (stream:take 10 sqrs_odd_inc)
+////    test()
 

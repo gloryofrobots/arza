@@ -110,9 +110,9 @@ def infix_backtick_name(parser, op, node, left):
     return nodes.create_call_node_2(node, funcnode, left, right)
 
 
-def infix_double_colon(parser, op, node, left):
-    right = rexpression(parser, op)
-    return nodes.create_cons_node(node, left, right)
+# def infix_double_colon(parser, op, node, left):
+#     right = rexpression(parser, op)
+#     return nodes.create_cons_node(node, left, right)
 
 
 def infix_triple_colon(parser, op, node, left):

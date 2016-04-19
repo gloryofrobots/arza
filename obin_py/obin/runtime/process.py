@@ -16,10 +16,11 @@ def _print_trace(device, signal, trace):
 
 
 class Fiber:
-    def __init__(self, parent):
+    def __init__(self, process, parent):
         self.routines = []
         self.routine = None
         self.parent = parent
+        self.process = process
         self.stack = Stack(DEFAULT_STACK_SIZE)
 
     def start_work(self, func, args):
@@ -44,10 +45,7 @@ class Fiber:
         self.routine.suspend()
 
     def resume_routine(self, result):
-        self.routine.resume(result)
-        # in case of native routines
-        # while self.routine.is_complete():
-        #     self.next_routine()
+        self.routine.resume(self.process, result)
 
     def finalise(self):
         parent = self.parent
@@ -55,7 +53,7 @@ class Fiber:
             return None
 
         assert parent.routine.is_suspended()
-        parent.routine.resume(self.routine.result)
+        parent.routine.resume(self.process, self.routine.result)
         return parent
 
     def call_object(self, obj, args):
@@ -75,9 +73,9 @@ class Fiber:
         if len(self.routines) == 0:
             return None
 
-        routine = self.routines.pop()
-        routine.resume(self.routine.result)
-        self.routine = routine
+        result = self.routine.result
+        self.routine = self.routines.pop()
+        self.routine.resume(self.process, result)
         return self.routine
 
     def catch(self, signal, trace):
@@ -176,7 +174,7 @@ class Process(object):
         return result
 
     def create_fiber(self):
-        fiber = Fiber(self.__fiber)
+        fiber = Fiber(self, self.__fiber)
         # DEBUG ONLY
         self.fibers.append(fiber)
         return fiber

@@ -17,7 +17,7 @@ def error(process, symbol_unistr, args_tuple):
     else:
         affirm_type(err_type, space.isdatatype)
         m = space.newpmap([space.newsymbol(process, u"args"), args_tuple])
-        instance = err_type.create_instance(m)
+        instance = err_type.create_instance(process, m)
         return instance
 
 

@@ -190,6 +190,8 @@ fun twice f -> f >> f
 fun flip f x y -> f y x
 fun even x -> mod x 2 == 0
 fun odd x -> not (even x)
+fun inc x -> x + 1
+fun dec x -> x - 1
 
 fst = at 0
 snd = at 1

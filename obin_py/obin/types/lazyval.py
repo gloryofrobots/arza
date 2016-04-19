@@ -17,12 +17,15 @@ class W_LazyVal(W_Root):
     def _type_(self, process):
         return process.std.types.LazyVal
 
-    def on_eval(self, result):
+    def on_eval(self, process, result):
         # print "ON EVAL", result
-        self.value = result
-        return result
+        if space.islazyval(result):
+            self.value = process.subprocess(result, space.newtupleunit())
+        else:
+            self.value = result
+        return self.value
 
-    def is_evaluated(self):
+    def is_forced(self):
         return self.value is not None
 
     def _to_routine_(self, stack, args):
@@ -32,7 +35,7 @@ class W_LazyVal(W_Root):
         return routine
 
     def _call_(self, process, args):
-        if self.is_evaluated():
+        if self.is_forced():
             # print "LAZY CACHE", self.value
             return self.value
 
@@ -40,15 +43,20 @@ class W_LazyVal(W_Root):
         process.call_object(self, args)
 
     def _equal_(self, other):
-        if not self.is_evaluated():
+        if not self.is_forced():
             return error.throw_1(error.Errors.VALUE_ERROR,
                                  space.newstring(u"Invalid operation on unevaluated lazy value"))
 
         if space.islazyval(other):
-            if not other.is_evaluated():
+            if not other.is_forced():
                 return error.throw_1(error.Errors.VALUE_ERROR,
                                      space.newstring(u"Invalid operation on unevaluated lazy value"))
 
             return api.equal_b(self.value, other.value)
 
         return api.equal_b(self.value, other)
+
+
+def is_forced(lazy):
+    error.affirm_type(lazy, space.islazyval)
+    return space.newbool(lazy.is_forced())
