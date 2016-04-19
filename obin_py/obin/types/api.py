@@ -219,6 +219,7 @@ def traitof_b(process, obj, trait):
         return True
     if space.isdatatype(obj) and obj.is_singleton:
         return obj.is_trait_implemented(trait)
+    return False
 
 
 def is_part_of_union_b(process, obj, union):

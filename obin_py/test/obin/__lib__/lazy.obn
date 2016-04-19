@@ -13,24 +13,26 @@ extend LazyList
         def first self -> self.head
         def rest self -> !self.tail
     with Str
-        def str self ->
-            io:print "TO STRING !!!!!!!!!!!!!!!!!!"
-            fun folder l
-                | [] -> ""
-                | l ->
-                    [x, ...xs] = l
-                    dprint #FOLDER (kindof xs LazyVal) l x xs
-                    if kindof xs LazyVal ->
-                        if  not (is_forced xs)  ->
-                            str x ++ ", ..."
+        def str self
+            | [] -> "[]"
+            | self ->
+                fun folder l
+                    | [] -> ""
+                    | l ->
+                        //can't do pattern matching because rest method force lazy value to evaluate
+                        x = l.head
+                        xs = l.tail
+
+                        if kindof xs LazyVal ->
+                            if  not (is_forced xs)  ->
+                                ", ..."
+                            else ->
+                                ", " ++ str x ++ folder (!xs)
                         else ->
-                            str x ++ ", " ++ folder (!xs)
-                    else ->
-                        str x ++ ", " ++ folder (xs)
+                                ", " ++ str x ++ folder (xs)
 
 
-            "[" ++ folder self ++ "]"
-//            "[" ++ str self.head ++ ", ...]"
+                "[" ++ (str self.head) ++ folder !self.tail ++ "]"
     with Seqable
         def to_seq self -> self
     with Sized
@@ -45,6 +47,8 @@ extend LazyList
         def cons value self -> LazyCons value self
     with Ref
         def ! self -> self
+    with Eq
+        def == self other -> seq:equal self other
 
 --------------------------------------------------------------------------
 
@@ -84,38 +88,180 @@ fun list_generator fn ->
     val = fn ()
     ListGenerator val fn
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//SEQ FUNCS                                         ///////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+//REDUCERS///////////////////////////////////////////////////////
+fun foldl f acc coll
+    | f acc [] -> acc
+    | f acc hd::tl -> foldl f (f hd acc) tl
+--------------------------------------------------
 
-//extend LazyList
-//    with Collection = TypeDerived
-//    with Seq
-//        def first self -> self.head
-//        def rest self -> !self.tail
-//    with Str
-//        def str self ->
-//            io:print "TO STRING !!!!!!!!!!!!!!!!!!"
-//            fun folder l
-//                | [] -> ""
-//                | l ->
-//                    dprint #folder l
-//
-//                    if not (is_forced l.tail) ->
-//                        str l.head ++ ", ..."
-//                    else ->
-//                        str l.head ++ ", " ++ folder (!l.tail)
-//
-//            "[" ++ folder self ++ "]"
-////            "[" ++ str self.head ++ ", ...]"
-//    with Seqable
-//        def to_seq self -> self
-//    with Sized
-//        def len self -> throw NotImplementedError ("len not defined for LazyList",)
-//        def is_empty self -> False
-//    with Emptiable
-//        def empty self -> []
-//    with Constructable
-//        def cons value self -> throw NotImplementedError ("Consing with LazyList directly is forbidden," ++
-//                                                            " use ::: macro or cons head (lazy tail) instead",)
-//    with Ref
-//        def ! self -> self
-//
-//--------------------------------------------------------------------------
+
+fun foldr func accumulator coll
+    | f acc [] -> acc
+    | f acc hd::tl -> f hd (foldr f acc tl)
+--------------------------------------------------
+
+fun scanl func accumulator coll
+    | f acc [] -> acc ::: (empty coll)
+    | f acc hd::tl -> acc ::: (scanl f (f hd acc) tl)
+--------------------------------------------------
+
+//LOOPS ////////////////////////
+
+fun map f coll
+    | f [] -> empty coll
+    | f hd::tl -> (f hd) ::: (map f tl)
+----------------------------------------
+
+fun intersperse val coll
+    | val [] -> empty coll
+    | val hd::tl  -> hd :: val ::: (intersperse val tl)
+--------------------------------------------------
+
+fun doall coll ->
+    fun walk _coll
+        | [] -> coll
+        | hd::tl -> walk tl
+
+    walk coll
+----------------------------------------
+
+
+///ACCESSORS//////////////////////////////////////
+
+fun nth_tail (count of Int) coll
+    | 0 l -> l
+    | 1 [_, ...t] -> t
+    | n [_, ...t] when n >= 0 -> nth_tail (n - 1) t
+--------------------------------------------------
+
+fun nth (count of Int) coll
+    | 0 l -> l
+    | 1 [h, ...t] -> h
+    | n [h, ...t] when n >= 0 -> nth (n - 1) t
+--------------------------------------------------
+
+//QUERIES///////////////////////////////////////////////////
+
+fun length l of List ->
+    foldl lam _ acc -> acc + 1 end 0 l
+--------------------------------------------------
+
+fun last coll
+    | [x, ...xs] ->
+        fun _last hd tl
+            | _ [x, ...xs] -> _last x xs
+            | x [] -> x
+        ------------
+
+        _last x xs
+--------------------------------------------------
+
+
+fun prefix_of coll1 coll2
+    | [hd, ...pre_tail] [hd, ...tail] -> prefix_of pre_tail tail
+    | [] s -> True
+    | [_, ..._] s -> False
+--------------------------------------------------
+
+fun suffix_of suf s  ->
+   delta = (len s) - (len suf)
+   tl = nth_tail delta s
+   delta >= 0 and tl == suf
+--------------------------------------------------
+
+//SUBLISTS/////////////////////////////////////////////////////////////
+fun drop count coll
+    | 0 l -> l
+    | count hd::tl -> drop (count - 1) tl
+--------------------------------------------------
+
+fun take count coll
+    | 0 _ -> empty coll
+    | _ [] -> empty coll
+    | n [x, ...xs] -> x ::: (take (n-1)  xs)
+--------------------------------------------------
+
+fun split_at (n of Int) l -> ((take n l), (drop n l)) end
+
+fun take_while predicate coll
+    | p [] -> empty coll
+    | p [x, ...xs] -> x ::: (take_while p xs) in_case p x else empty coll
+--------------------------------------------------
+
+fun drop_while predicate coll
+    | p [] -> empty coll
+    | p xs@[x, ...xs1] -> (drop_while p xs1) in_case p x else xs
+--------------------------------------------------
+
+fun filter predicate coll
+    | p [] -> empty coll
+    | p x::xs ->
+        if p x ->
+            x ::: filter p xs
+        else ->
+            filter p xs
+--------------------------------------------------
+
+fun span predicate coll
+    | p [] ->
+        c = empty coll
+        (c, c)
+    | p xs@[x, ...xs1] ->
+        if not (p x) ->
+            (empty coll, xs)
+        else ->
+            (ys, zs) = (span p xs1)
+            (x:::ys, zs)
+        ------------------------------
+--------------------------------------------------
+
+fun delete item coll
+    | item [item, ...xs] -> xs
+    | item [x, ...xs] -> x ::: (delete item xs)
+    | _ [] -> empty coll
+--------------------------------------------------
+
+fun insert index v coll
+    | 0 v coll -> v:::coll
+    | i v [] -> throw IndexError ("Invalid insertion index", index, v)
+    | i v x::xs -> x ::: (insert (i - 1) v xs)
+
+fun append v coll ->
+    insert (length coll) v coll
+
+////QUERIES//////////////////////////////////////////////////////////////////
+
+fun conjunction l ->
+    foldr lam v acc -> v and acc end True l end
+
+fun disjunction l ->
+    foldr lam v acc -> v or acc end False l end
+
+fun any p l ->
+    disjunction (map p l) end
+
+fun all p l ->
+    conjunction (map p l) end
+
+fun element x l ->
+    any lam v -> v == x end l end
+
+fun contains l x ->
+    element x l end
+
+//BUILDERS/////////////////////////////////////////////////////////////
+
+fun concat l1 l2 ->
+    foldr lam x y -> x ::: y end l2 l1 end
+
+fun uncons coll | [x, ...xs] -> (x, xs) end
+
+fun init coll
+    | [x] -> empty coll
+    | [x, ...xs] -> x ::: (init xs)
+    | [] -> throw (ValueError "empty seq in init")
+------------------------------
+

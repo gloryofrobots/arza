@@ -1,8 +1,32 @@
 import affirm
 import list
 import seq
+import lazy
 
-fun test () ->
+fun test_zip() ->
+    l1 = [1,2,3,4,5,6,7,8,9,10]
+    l2 = seq:map (`*` 4) l1
+    affirm:is_equal (seq:zip l1 l2) .
+        [(1, 4), (2, 8), (3, 12), (4, 16), (5, 20), (6, 24), (7, 28), (8, 32), (9, 36), (10, 40)]
+
+    l4 = seq:take 5 l2
+    affirm:is_equal (seq:zip l1 l4) [(1, 4), (2, 8), (3, 12), (4, 16), (5, 20)]
+    l6 = seq:map (`-` 42) l1
+    affirm:is_equal (seq:zip3 l1 l2 l6) .
+            [(1, 4, 41), (2, 8, 40), (3, 12, 39), (4, 16, 38), (5, 20, 37),
+             (6, 24, 36), (7, 28, 35), (8, 32, 34), (9, 36, 33), (10, 40, 32)]
+    affirm:is_equal (seq:zip3 l1 l2 l4) [(1, 4, 4), (2, 8, 8), (3, 12, 12), (4, 16, 16), (5, 20, 20)]
+    (_l1, _l2) = (seq:unzip (seq:zip l1 l2))
+    affirm:is_equal l1 _l1
+    affirm:is_equal l2 _l2
+
+    (__l1, __l2, __l6) = (seq:unzip3 (seq:zip3 l1 l2 l6))
+    affirm:is_equal l1 __l1
+    affirm:is_equal l2 __l2
+    affirm:is_equal l6 __l6
+
+
+fun test_base () ->
     l1 = list:range 0 10
     affirm:is_equal (seq:concat [0,1,2,3,4,5] [6,7,8,9]) l1
     affirm:is_equal (seq:concat [] l1) l1
@@ -56,3 +80,17 @@ fun test () ->
 //    span (< 3) [1,2,3,4,1,2,3,4] == ([1,2],[3,4,1,2,3,4])
 //span (< 9) [1,2,3] == ([1,2,3],[])
 //span (< 0) [1,2,3] == ([],[1,2,3])
+
+fun test_equal() ->
+    l1 = [1,2,3,4]
+    l2 = [1,2,3,4]
+    affirm:is_true (seq:equal l1 l2)
+    affirm:is_false(seq:equal l1 [])
+    affirm:is_false(seq:equal l1 [1,2,3,4,5,6])
+    affirm:is_true(seq:equal l1 (1:::2:::3:::4:::lazy:LazyNil))
+    affirm:is_false (seq:equal l1 (1:::2:::3:::4:::5:::lazy:LazyNil))
+
+fun test() ->
+    test_base()
+    test_zip()
+    test_equal()

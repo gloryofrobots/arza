@@ -1,6 +1,10 @@
 import affirm
 
 fun test () ->
+    let x::xs = [1,2,3,4,5] in
+        affirm:is_equal x 1
+        affirm:is_equal xs [2,3,4,5]
+
     (x,y,z) = (1,2,3)
     affirm:is_equal (x,y,z) (1,2,3)
 

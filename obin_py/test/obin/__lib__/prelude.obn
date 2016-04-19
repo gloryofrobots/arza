@@ -165,7 +165,7 @@ type ExportError args
 type TraitAlreadyImplementedError args
 type TraitImplementationError args
 type TraitConstraintError args
-
+type EmptySeqError args
 //Signal used to interrupt recursive processes
 type Interrupt result
 

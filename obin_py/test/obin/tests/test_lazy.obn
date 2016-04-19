@@ -3,19 +3,51 @@ import affirm
 import io
 import var
 import lazy
-import stream
 
 fun squares n ->
     (n * n) ::: squares (n + 1)
 
-fun test_stream () ->
+fun squares2 n ->
+    if n <= 10 ->
+        (n * n) ::: squares2 (n + 1)
+    else ->
+        []
+
+fun test_sequences () ->
     sqrs = squares 1
-    sqrs_odd = stream:filter odd sqrs
-    io:print (stream:take 10 sqrs_odd)
+    affirm:is_equal (str sqrs) "[1, ...]"
+    lazy:doall (lazy:take 10 sqrs)
+    affirm:is_equal (str sqrs) "[1, 4, 9, 16, 25, 36, 49, 64, 81, 100, ...]"
+
+    affirm:is_equal (obin:lang:is_seq sqrs) True
+    affirm:is_equal (obin:lang:is_seq lazy:LazyNil) True
+
+    sqrs_odd_inc = sqrs
+                        |> lazy:filter lam x -> odd x end
+                        |> lazy:map lam x -> inc x end
+                        |> lazy:map lam x ->  x * 2 end
+
+    affirm:is_equal (str sqrs_odd_inc) "[4, ...]"
+    affirm:is_equal (str lazy:LazyNil) "[]"
+    sqrs_odd_inc_10 =  lazy:take 10 sqrs_odd_inc
+    sqrs_odd_inc_10_eager = (seq:take 10 sqrs_odd_inc)
+    sqrs_odd_inc_10_eager2 = sqrs
+                            |> seq:take 20
+                            |> seq:filter lam x -> odd x end
+                            |> lazy:map lam x -> inc x end
+                            |> seq:map lam x ->  x * 2 end
+                            |> seq:take 10
+
+    affirm:is_equal (str sqrs_odd_inc_10) "[4, ...]"
+    lazy:doall sqrs_odd_inc_10
+    affirm:is_equal (str sqrs_odd_inc_10) "[4, 20, 52, 100, 164, 244, 340, 452, 580, 724]"
+    affirm:is_equal  (str sqrs_odd_inc_10_eager)  "[4, 20, 52, 100, 164, 244, 340, 452, 580, 724]"
+    affirm:is_equal (str sqrs_odd_inc_10_eager2) "[4, 20, 52, 100, 164, 244, 340, 452, 580, 724]"
+
+
 
 
 fun test_lazy_cons () ->
-
     sqrs = squares 1
 
     _s =  (seq:take 4 sqrs)
@@ -25,11 +57,6 @@ fun test_lazy_cons () ->
     affirm:is_equal (seq:take 10 sqrs) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
     affirm:is_equal (seq:take 20 sqrs) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400]
 
-    fun squares2 n ->
-        if n <= 10 ->
-            (n * n) ::: squares2 (n + 1)
-        else ->
-            []
 
     sqrs2 = squares2 1
     affirm:is_equal (seq:take 9 sqrs2) [1, 4, 9, 16, 25, 36, 49, 64, 81]
@@ -44,9 +71,8 @@ fun test_lazy_cons () ->
           :: delay (lam () -> v := !v + 1; 42 * 42 end ())
           ::: []
 
-//    io:print (seq:doall l)
-    seq:doall l
-    seq:doall l
+    lazy:doall l
+    lazy:doall l
     affirm:is_equal (seq:take 10 l) [1, 4, 7, 1764]
     //EVALUATES ONLY ONCE
     affirm:is_equal (!v) 2
@@ -73,7 +99,7 @@ fun test_delay() ->
     affirm:is_equal (!l) 12
 
 fun test () ->
-    test_stream ()
-//    test_delay()
+    test_sequences ()
+    test_delay()
 //    test_lazy_cons()
-//    test_list_generator()
+    test_list_generator()

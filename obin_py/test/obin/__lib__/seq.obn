@@ -1,57 +1,25 @@
-//LOOP HELPS///////////////////////////////////////////////////////////
-fun iter1 f arg1  ->
-    try
-        f arg1
-    catch
-        | e of Interrupt -> e.result
-        | e -> throw e
-
-fun iter2 f arg1 arg2 ->
-    try
-        f arg1 arg2
-    catch
-        | e of Interrupt -> e.result
-        | e -> throw e
-
-fun iter3 f arg1 arg2 arg3 ->
-    try
-        f arg1 arg2 arg3
-    catch
-        | e of Interrupt -> e.result
-        | e -> throw e
-
-fun iter4 f arg1 arg2 arg3 arg4 ->
-    try
-        f arg1 arg2 arg3 arg4
-    catch
-        | e of Interrupt -> e.result
-        | e -> throw e
-
 //REDUCERS///////////////////////////////////////////////////////
-
-fun foldl func accumulator coll ->
-    fun _foldl f acc coll
-        | f acc [] -> acc
-        | f acc hd::tl -> _foldl f (f hd acc) tl
-
-    iter3 _foldl func accumulator coll
+fun foldl func accumulator coll
+    | f acc [] -> acc
+    | f acc hd::tl -> foldl f (f hd acc) tl
 ----------------------------------------
 
-fun foldr func accumulator coll ->
-    fun _foldr f acc coll
-        | f acc [] -> acc
-        | f acc hd::tl -> f hd (_foldr f acc tl)
+fun foldr func accumulator coll
+    | f acc [] -> acc
+    | f acc hd::tl -> f hd (foldr f acc tl)
+--------------------------------------------------
 
-    iter3 _foldr func accumulator coll
+fun reduce f l
+    | f x::xs -> foldl f x xs
+    | f [] -> throw EmptySeqError l
 --------------------------------------------------
 
 fun scanl func accumulator coll
     | f acc [] -> acc::(empty coll)
     | f acc hd::tl -> acc :: (scanl f (f hd acc) tl)
-
+--------------------------------------------------
 
 //LOOPS ////////////////////////
-
 fun map f coll
     | f [] -> empty coll
     | f hd::tl -> (f hd) :: (map f tl)
@@ -201,6 +169,10 @@ fun element x l ->
 fun contains l x ->
     element x l end
 
+fun equal s1 s2
+    | x::xs x::ys -> equal xs ys
+    | [] [] -> True
+    | _ _ -> False
 //BUILDERS/////////////////////////////////////////////////////////////
 
 fun concat l1 l2 ->
@@ -214,3 +186,65 @@ fun init coll
     | [] -> throw (ValueError "empty seq in init")
 ------------------------------
 
+fun zip seq1 seq2
+    | x::xs y::ys -> (x, y) :: zip xs ys
+    | _ _ -> []
+--------------------------------------------------
+
+fun unzip l ->
+    fun _unzip l seq1 seq2
+        | (x, y) :: ts xs ys -> _unzip ts (x :: xs) (y :: ys)
+        | [] xs ys -> (reverse xs, reverse ys)
+    _unzip l [] []
+--------------------------------------------------
+
+fun zip3 s1 s2 s3
+    | x::xs y::ys z::zs -> (x, y, z) :: zip3 xs ys zs
+    | _ _ _ -> []
+--------------------------------------------------
+
+fun unzip3 l ->
+    fun _unzip3 l acc_x acc_y acc_z
+        | [(x, y, z), ...ts] xs ys zs -> _unzip3 ts (x::xs) (y::ys) (z::zs)
+        | [] xs ys zs -> (reverse xs, reverse ys, reverse zs)
+    _unzip3 l [] [] []
+
+//unzip3(Ts) -> unzip3(Ts, [], [], []).
+//
+//unzip3([{X, Y, Z} | Ts], Xs, Ys, Zs) ->
+//    unzip3(Ts, [X | Xs], [Y | Ys], [Z | Zs]);
+//unzip3([], Xs, Ys, Zs) ->
+//    {reverse(Xs), reverse(Ys), reverse(Zs)}.
+//
+//%% Return [F(X0, Y0), F(X1, Y1), ..., F(Xn, Yn)] for lists [X0, X1, ...,
+//%% Xn] and [Y0, Y1, ..., Yn].
+//
+//-spec zipwith(Combine, List1, List2) -> List3 when
+//      Combine :: fun((X, Y) -> T),
+//      List1 :: [X],
+//      List2 :: [Y],
+//      List3 :: [T],
+//      X :: term(),
+//      Y :: term(),
+//      T :: term().
+//
+//zipwith(F, [X | Xs], [Y | Ys]) -> [F(X, Y) | zipwith(F, Xs, Ys)];
+//zipwith(F, [], []) when is_function(F, 2) -> [].
+//
+//%% Return [F(X0, Y0, Z0), F(X1, Y1, Z1), ..., F(Xn, Yn, Zn)] for lists
+//%% [X0, X1, ..., Xn], [Y0, Y1, ..., Yn] and [Z0, Z1, ..., Zn].
+//
+//-spec zipwith3(Combine, List1, List2, List3) -> List4 when
+//      Combine :: fun((X, Y, Z) -> T),
+//      List1 :: [X],
+//      List2 :: [Y],
+//      List3 :: [Z],
+//      List4 :: [T],
+//      X :: term(),
+//      Y :: term(),
+//      Z :: term(),
+//      T :: term().
+//
+//zipwith3(F, [X | Xs], [Y | Ys], [Z | Zs]) ->
+//    [F(X, Y, Z) | zipwith3(F, Xs, Ys, Zs)];
+//zipwith3(F, [], [], []) when is_function(F, 3) -> [].
