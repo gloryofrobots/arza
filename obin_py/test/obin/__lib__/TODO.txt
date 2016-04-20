@@ -12,6 +12,9 @@ MAKE {} SYNTAX IN FIELDS AND CONSTRUCTING WITH KEYWORD ARGS
 Rangeable and Bounded for union
 --------------------------------------------------
 
+PATTERN MATCHING NOW IS SHIT REWRITE IT
+-------------------------------------------
+
 PROPER OR CASES
  match x with
     | 1 | 2 | 3 -> printfn "Found 1, 2, or 3!"

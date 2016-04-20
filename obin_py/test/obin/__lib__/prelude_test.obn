@@ -15,13 +15,15 @@ infixl |> |> 50
 
 
 fun f x ->
+    V = 1
+//    match V with
+//        | v of Int when v == 1 -> 1
+//        | v of Int -> 2
+    match V with
+        | x when x == 1 -> #first
+        | x -> #second
+
     //PAREN is MISSING but we got NOT ALL LAYOUT IS CLOSED  error
-    let
-        x = 11
-        y = 12
-    in
-        io:print x
-        io:print y
 //    print (ts:into [] (ts:map lam x ->
 //                                    if x > 4 ->
 //                                        ts:reduced x

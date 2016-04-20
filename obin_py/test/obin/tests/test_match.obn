@@ -1,4 +1,5 @@
 import affirm
+import lazy
 
 
 fun test() ->
@@ -207,7 +208,17 @@ fun test() ->
 //
 //    affirm:is_equal (__val some) 11
 //    affirm:is_equal (__val none) None
-
+    affirm:is_equal (
+        match 1 ::: 2 ::: 3 ::: 4 ::: lazy:LazyNil with
+            | x::(xs of lazy:LazyList) when x == 2 -> #first
+            | x::(xs of lazy:LazyList) -> #second
+    ) #second
+    affirm:is_equal (
+        match 1 with
+            | x of Int when 2 == 1 -> #first
+            | x of Int -> #second
+            | x of Int when 3 == 2 -> #third
+    ) #second
 end
 
 

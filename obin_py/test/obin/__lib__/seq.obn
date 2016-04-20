@@ -209,42 +209,38 @@ fun unzip3 l ->
         | [] xs ys zs -> (reverse xs, reverse ys, reverse zs)
     _unzip3 l [] [] []
 
-//unzip3(Ts) -> unzip3(Ts, [], [], []).
-//
-//unzip3([{X, Y, Z} | Ts], Xs, Ys, Zs) ->
-//    unzip3(Ts, [X | Xs], [Y | Ys], [Z | Zs]);
-//unzip3([], Xs, Ys, Zs) ->
-//    {reverse(Xs), reverse(Ys), reverse(Zs)}.
-//
-//%% Return [F(X0, Y0), F(X1, Y1), ..., F(Xn, Yn)] for lists [X0, X1, ...,
-//%% Xn] and [Y0, Y1, ..., Yn].
-//
-//-spec zipwith(Combine, List1, List2) -> List3 when
-//      Combine :: fun((X, Y) -> T),
-//      List1 :: [X],
-//      List2 :: [Y],
-//      List3 :: [T],
-//      X :: term(),
-//      Y :: term(),
-//      T :: term().
-//
-//zipwith(F, [X | Xs], [Y | Ys]) -> [F(X, Y) | zipwith(F, Xs, Ys)];
-//zipwith(F, [], []) when is_function(F, 2) -> [].
-//
-//%% Return [F(X0, Y0, Z0), F(X1, Y1, Z1), ..., F(Xn, Yn, Zn)] for lists
-//%% [X0, X1, ..., Xn], [Y0, Y1, ..., Yn] and [Z0, Z1, ..., Zn].
-//
-//-spec zipwith3(Combine, List1, List2, List3) -> List4 when
-//      Combine :: fun((X, Y, Z) -> T),
-//      List1 :: [X],
-//      List2 :: [Y],
-//      List3 :: [Z],
-//      List4 :: [T],
-//      X :: term(),
-//      Y :: term(),
-//      Z :: term(),
-//      T :: term().
-//
-//zipwith3(F, [X | Xs], [Y | Ys], [Z | Zs]) ->
-//    [F(X, Y, Z) | zipwith3(F, Xs, Ys, Zs)];
-//zipwith3(F, [], [], []) when is_function(F, 3) -> [].
+fun zipwith f seq1 seq2
+    | f x::xs y::ys -> (f x y) :: zipwith f xs ys
+    | _ _ _ -> []
+
+fun zipwith3 f seq1 seq2 seq3
+    | f x::xs y::ys z::zs -> (f x y z) :: zipwith3 f xs ys zs
+    | _ _ _ _ -> []
+
+fun split s
+    | [] -> ([], [])
+    | [x] -> (s, [])
+    | x::y::xs ->
+        (l, r) = split xs
+        (x::l, y::r)
+
+fun sort f s ->
+    fun _merge s1 s2
+        | [] ys -> ys
+        | xs [] -> xs
+        | x::xs y::ys ->
+            if f x y -> x :: _merge xs (y::ys)
+            else -> y :: _merge (x::xs) ys
+
+    fun _sort s
+        | [] -> []
+        | [x] -> s
+        | xs ->
+            (ys, zs) = split xs
+            _merge (_sort ys) (_sort zs)
+    ---------
+
+    _sort s
+
+fun sort_asc s -> sort `<=` s
+fun sort_desc s -> sort `>=` s

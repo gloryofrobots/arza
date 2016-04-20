@@ -3,7 +3,7 @@ import affirm
 import seq
 import string
 import lazy
-//import tests:test_operators
+import tests:test_operators
 ////
 import tests:types:test_types
 import tests:test_partial
@@ -65,25 +65,11 @@ fun test() ->
     log "TEST LAZY"
     test_lazy:test()
 
-//    log "TEST OPERATORS"
-//    test_operators:test()
+    log "TEST OPERATORS"
+    test_operators:test()
 
 
-//ISSUE
-//            fun folder l
-//                | [] -> ""
-//                | l @ [x::xs of LazyVal] when not (is_forced xs) ->  str x ++ ", ..."
-//                | l @ [x::xs of LazyVal] -> str x ++ ", " ++ folder (!xs)
-//                | l @ [x::xs of LazyList] -> str x ++ ", " ++ folder (xs)
 
-type Vehicle
-    | Car brand
-    | Plain
 fun main () ->
-    v = Car 2
-    match (1, v) with
-        | (1, x of Plain) -> 1
-        | (1, x of Plain) -> 2
     test()
-
 

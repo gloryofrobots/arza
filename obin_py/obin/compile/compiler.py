@@ -404,7 +404,7 @@ PATTERN_DATA = """
 
 
 def _compile_match(compiler, code, node, patterns, error_code):
-    from obin.compile.match import transform
+    from obin.compile.match_compiler.transform import transform
     from obin.compile.parse.nodes import create_goto_node
     temp_idx = _declare_temporary(compiler)
     code.emit_1(STORE_TEMPORARY, temp_idx, codeinfo_unknown())
