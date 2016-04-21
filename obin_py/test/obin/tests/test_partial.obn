@@ -61,12 +61,12 @@ fun test_pipe() ->
           >> seq:map (triple >> square)) l
      )  [9, 9, 81, 225, 441]
 
-//    affirm:is_equal (
-//        l |> seq:filter even
-//          >> seq:map (`+` 1)
-//          >> seq:map (flip `-` 2)
-//          >> seq:map (triple >> square)
-//     )  [9, 9, 81, 225, 441]
+    affirm:is_equal (
+        l |> seq:filter even
+          >> seq:map (`+` 1)
+          >> seq:map (flip `-` 2)
+          >> seq:map (triple >> square)
+     )  [9, 9, 81, 225, 441]
 
 fun test () ->
     test_partial()

@@ -22,18 +22,18 @@ Precedence    Operator
     40           +  - ++
     35           ==  !=  <  <=  >  >=
     30           and
-    25           or
-    20           |> <| << >>
-    15           " ." @ as of
+    25           or << >>
+    20           |>
+    15           " ." @ as of <|
     10           = :=
 """
 prefix - negate
 prefix ! !
 infixr := := 10
+infixl <| <| 15
 infixl |> |> 20
-infixl <| <| 20
-infixl << << 20
-infixl >> >> 20
+infixl << << 25
+infixl >> >> 25
 infixl < < 35
 infixl > > 35
 infixl >= >= 35

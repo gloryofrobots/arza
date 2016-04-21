@@ -15,20 +15,20 @@ Precedence    Operator
     2             &&
     1             ||
 """
-
-""" OBIN PRECEDENCES
+"""
+OBIN PRECEDENCES
 Precedence    Operator
     100           : . .{ .(
-    90           JUXTAPOSITION
+    95           JUXTAPOSITION
     60           :: :::
     50           *  /
     40           +  - ++
     35           ==  !=  <  <=  >  >=
     30           and
-    25           or
-    20           |> <| << >>
-    15           " ." @ as of
-    10           = :=
+    25           or << >>
+    20           |>
+    15           " ."  as of <|
+    10           = := @
 """
 # additional helpers
 def infix_operator(parser, ttype, lbp, infix_function):

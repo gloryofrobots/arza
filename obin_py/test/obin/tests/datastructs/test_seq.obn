@@ -80,14 +80,7 @@ fun test_base () ->
 
     affirm:is_equal (seq:delete 8 l1) [0,1,2,3,4,5,6,7,9]
 
-//    print (
-//        (seq:conjunction [True, True, True, True]),
-//    )
 
-
-//    span (< 3) [1,2,3,4,1,2,3,4] == ([1,2],[3,4,1,2,3,4])
-//span (< 9) [1,2,3] == ([1,2,3],[])
-//span (< 0) [1,2,3] == ([],[1,2,3])
 
 fun test_equal() ->
     l1 = [1,2,3,4]
