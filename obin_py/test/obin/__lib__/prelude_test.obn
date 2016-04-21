@@ -1,38 +1,38 @@
 prefix - negate
-//infixl < < 50
-//infixl > > 50
-//infixl >= >= 50
-//infixl <= <= 50
-infixl == == 50
-//infixl != != 50
-infixl + + 60
-infixl |> |> 50
-//infixl - - 60
-//infixl * * 65
-//infixl / / 65
-//infixl ++ ++ 70
+prefix ! !
+infixr := := 10
+infixl |> |> 12
+infixl <| <| 20
+infixl << << 20
+infixl >> >> 20
+infixl < < 35
+infixl > > 35
+infixl >= >= 35
+infixl <= <= 35
+infixl == == 35
+infixl != != 35
+infixl ++ ++ 40
+infixl + + 40
+infixl - - 40
+infixl * * 50
+infixl / / 50
 
 
 
 fun f x ->
-//    io:print . -1 . 2
-    if x then 2
-    else 4
+//    print 2 . -1 .  -2 . 3
+//    print 2 . -1 . 2 + 4 . 3 .
+//          4 - pow 2 2
+    l |> f1
+      >> f2
+      >> f3
 
-    5
-    if x :: 2 then
-                          42
-    elif (1,2,3) then
-        24
-    elif {x=1, y=2} then
-        35
-    else
-        15
-
-    if x :: 2 then 42
-    elif (1,2,3) then 24
-    elif {x=1, y=2} then 35
-    else  15
+//    affirm:is_equal (
+//        l |> seq:filter even
+//          >> seq:map (`+` 1)
+//          >> seq:map (flip `-` 2)
+//          >> seq:map (triple >> square)
+//     )  [9, 9, 81, 225, 441]
 
     //PAREN is MISSING but we got NOT ALL LAYOUT IS CLOSED  error
 //    print (ts:into [] (ts:map lam x ->

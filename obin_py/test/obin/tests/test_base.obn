@@ -56,7 +56,7 @@ fun t2 () ->
                  id (id 2),
                  id (id (id 3))
                 ]) +
-        sum 10 .
+        (sum 10 .
             (sum_list_3
                 [lam x -> x end 11,
                  lam x
@@ -64,7 +64,7 @@ fun t2 () ->
                  lam x ->
                     x
                  end (lam x -> x end (lam x -> x end 13))
-                ])
+                ]))
     affirm:is_equal V53 53
 
 
@@ -132,7 +132,7 @@ fun t4 () ->
                     1
                         2
 
-                         3) 11
+                         3) . 11
     T =
         (1,2, lam x | 1 -> 25
                     | 2 -> 13 end, 25)
@@ -225,7 +225,7 @@ fun t4 () ->
           , 1
           , 4
           , 5
-        ).0 3
+        ).0 . 3
 
     //////////////////////////////////////////////////////
     M1 =
@@ -302,13 +302,13 @@ fun t4 () ->
     affirm:is_equal .
         match 1 with
             | x -> 3
-            | _ -> 2 end 3
+            | _ -> 2 end . 3
 
     affirm:is_equal match 1 with 1 -> 4 end 4
     affirm:is_equal .
         match 1 with
             x -> 4
-        end 4
+        end . 4
 
     affirm:is_equal (
         match

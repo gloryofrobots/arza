@@ -28,7 +28,7 @@ fun test_zip() ->
     affirm:is_equal (seq:zipwith `+` (range 0 10) (range 10 100)) [10, 12, 14, 16, 18, 20, 22, 24, 26, 28]
 
     affirm:is_equal (seq:zipwith3 lam x y z -> x + y + z end .
-                                        (range 0 10) (range_by 0 (-10) (-1)) .
+                                        (range 0 10) . (range_by 0 (-10) (-1)) .
                                         (range_by 100 0 (-10))) .
                     [100, 90, 80, 70, 60, 50, 40, 30, 20, 10]
 

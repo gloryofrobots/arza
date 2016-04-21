@@ -1,25 +1,50 @@
 from obin:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                              Function, Method, Fiber, Trait, Datatype, Union, LazyVal, Env)
 
-prefix - negate
-prefix ! ! 10
-infixr := := 10
+"""
+SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
+JUXTAPOSITION means function calls like cons 2 []
+" ." is a juxtaposition with low precedence used to avoid parenthesis but not to produce partials like <|
+for example
+    OBIN                                        SOME OTHER LANGUAGE WITH USUAL INFIX CALL NOTATION (JavaScript, Python, Java, ...)
+    io:print 1 2 3                              io:print(1,2,3)
+    io:print 1 -2 3                             io:print(1, (negate(2(3))) // prefix operator applies to expression 2 3. to avoid it use
+    io:print 1 (-2) 3                           io:print(1, -2, 3) // or
+    io:print 1 . -2 . 3                         io:print(1, -2, 3)
+    io:print 1 . sqrt x . 3 + -5 . pow 2 4      io:print(1, sqrt(x), 3 + -5, pow(2,4) )
 
-infixl |> |> 11
-infixl <| <| 12
-infixl << << 13
-infixl >> >> 13
-infixl < < 50
-infixl > > 50
-infixl >= >= 50
-infixl <= <= 50
-infixl == == 50
-infixl != != 50
-infixl + + 60
-infixl - - 60
-infixl * * 65
-infixl / / 65
-infixl ++ ++ 70
+
+Precedence    Operator
+    100           : . .{ .(
+    95           JUXTAPOSITION
+    60           :: :::
+    50           *  /
+    40           +  - ++
+    35           ==  !=  <  <=  >  >=
+    30           and
+    25           or
+    20           |> <| << >>
+    15           " ." @ as of
+    10           = :=
+"""
+prefix - negate
+prefix ! !
+infixr := := 10
+infixl |> |> 20
+infixl <| <| 20
+infixl << << 20
+infixl >> >> 20
+infixl < < 35
+infixl > > 35
+infixl >= >= 35
+infixl <= <= 35
+infixl == == 35
+infixl != != 35
+infixl ++ ++ 40
+infixl + + 40
+infixl - - 40
+infixl * * 50
+infixl / / 50
 
 type Ordering
     | LT | GT | EQ
@@ -80,7 +105,7 @@ trait Seq for self
 trait Emptiable for self
     def empty self
 
-trait Constructable for self
+trait Consable for self
     def cons value self
 
 trait Prependable for self

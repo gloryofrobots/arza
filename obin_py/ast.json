@@ -23,247 +23,54 @@
           },
           [
             {
-              "_ntype": "NT_CONDITION",
-              "_value": "if",
+              "_ntype": "NT_CALL",
+              "_value": "(",
               "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "|>"
+                },
                 [
-                  [
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "x"
-                    },
-                    [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "l"
+                  },
+                  {
+                    "_ntype": "NT_CALL",
+                    "_value": "(",
+                    "children": [
                       {
-                        "_ntype": "NT_INT",
-                        "_value": "2"
-                      }
-                    ]
-                  ],
-                  [
-                    {
-                      "empty": true
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "4"
-                      }
-                    ]
-                  ]
-                ]
-              ]
-            },
-            {
-              "_ntype": "NT_INT",
-              "_value": "5"
-            },
-            {
-              "_ntype": "NT_CONDITION",
-              "_value": "if",
-              "children": [
-                [
-                  [
-                    {
-                      "_ntype": "NT_CONS",
-                      "_value": "::",
-                      "children": [
+                        "_ntype": "NT_NAME",
+                        "_value": ">>"
+                      },
+                      [
                         {
-                          "_ntype": "NT_NAME",
-                          "_value": "x"
+                          "_ntype": "NT_CALL",
+                          "_value": "(",
+                          "children": [
+                            {
+                              "_ntype": "NT_NAME",
+                              "_value": ">>"
+                            },
+                            [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "f1"
+                              },
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "f2"
+                              }
+                            ]
+                          ]
                         },
                         {
-                          "_ntype": "NT_INT",
-                          "_value": "2"
-                        }
-                      ]
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "42"
-                      }
-                    ]
-                  ],
-                  [
-                    {
-                      "_ntype": "NT_TUPLE",
-                      "_value": "(",
-                      "children": [
-                        [
-                          {
-                            "_ntype": "NT_INT",
-                            "_value": "1"
-                          },
-                          {
-                            "_ntype": "NT_INT",
-                            "_value": "2"
-                          },
-                          {
-                            "_ntype": "NT_INT",
-                            "_value": "3"
-                          }
-                        ]
-                      ]
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "24"
-                      }
-                    ]
-                  ],
-                  [
-                    {
-                      "_ntype": "NT_MAP",
-                      "_value": "{",
-                      "children": [
-                        [
-                          [
-                            {
-                              "_ntype": "NT_NAME",
-                              "_value": "x"
-                            },
-                            {
-                              "_ntype": "NT_INT",
-                              "_value": "1"
-                            }
-                          ],
-                          [
-                            {
-                              "_ntype": "NT_NAME",
-                              "_value": "y"
-                            },
-                            {
-                              "_ntype": "NT_INT",
-                              "_value": "2"
-                            }
-                          ]
-                        ]
-                      ]
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "35"
-                      }
-                    ]
-                  ],
-                  [
-                    {
-                      "empty": true
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "15"
-                      }
-                    ]
-                  ]
-                ]
-              ]
-            },
-            {
-              "_ntype": "NT_CONDITION",
-              "_value": "if",
-              "children": [
-                [
-                  [
-                    {
-                      "_ntype": "NT_CONS",
-                      "_value": "::",
-                      "children": [
-                        {
                           "_ntype": "NT_NAME",
-                          "_value": "x"
-                        },
-                        {
-                          "_ntype": "NT_INT",
-                          "_value": "2"
+                          "_value": "f3"
                         }
                       ]
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "42"
-                      }
                     ]
-                  ],
-                  [
-                    {
-                      "_ntype": "NT_TUPLE",
-                      "_value": "(",
-                      "children": [
-                        [
-                          {
-                            "_ntype": "NT_INT",
-                            "_value": "1"
-                          },
-                          {
-                            "_ntype": "NT_INT",
-                            "_value": "2"
-                          },
-                          {
-                            "_ntype": "NT_INT",
-                            "_value": "3"
-                          }
-                        ]
-                      ]
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "24"
-                      }
-                    ]
-                  ],
-                  [
-                    {
-                      "_ntype": "NT_MAP",
-                      "_value": "{",
-                      "children": [
-                        [
-                          [
-                            {
-                              "_ntype": "NT_NAME",
-                              "_value": "x"
-                            },
-                            {
-                              "_ntype": "NT_INT",
-                              "_value": "1"
-                            }
-                          ],
-                          [
-                            {
-                              "_ntype": "NT_NAME",
-                              "_value": "y"
-                            },
-                            {
-                              "_ntype": "NT_INT",
-                              "_value": "2"
-                            }
-                          ]
-                        ]
-                      ]
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "35"
-                      }
-                    ]
-                  ],
-                  [
-                    {
-                      "empty": true
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "15"
-                      }
-                    ]
-                  ]
+                  }
                 ]
               ]
             }

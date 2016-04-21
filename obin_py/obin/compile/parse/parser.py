@@ -7,7 +7,29 @@ from obin.compile.parse.lexer import UnknownTokenError
 from obin.compile.parse import tokens
 from obin.types import api, space, plist, root, environment
 
+""" GOLANG PRECEDENCES. SOURCE OF INSPIRATION
+Precedence    Operator
+    5             *  /  %  <<  >>  &  &^
+    4             +  -  |  ^
+    3             ==  !=  <  <=  >  >=
+    2             &&
+    1             ||
+"""
 
+""" OBIN PRECEDENCES
+Precedence    Operator
+    100           : . .{ .(
+    90           JUXTAPOSITION
+    60           :: :::
+    50           *  /
+    40           +  - ++
+    35           ==  !=  <  <=  >  >=
+    30           and
+    25           or
+    20           |> <| << >>
+    15           " ." @ as of
+    10           = :=
+"""
 # additional helpers
 def infix_operator(parser, ttype, lbp, infix_function):
     op = get_or_create_operator(parser, ttype)
@@ -178,7 +200,7 @@ def name_parser_init(parser):
 
     prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
-    infix(parser, TT_COLON, 95, infix_name_pair)
+    infix(parser, TT_COLON, 100, infix_name_pair)
     return parser
 
 
@@ -193,10 +215,11 @@ def type_parser_init(parser):
     symbol(parser, TT_RCURLY)
     prefix(parser, TT_LCURLY, prefix_lcurly_type, layout_lcurly)
     prefix(parser, TT_NAME, prefix_name_as_symbol)
-    infix(parser, TT_COLON, 95, infix_name_pair)
+    infix(parser, TT_COLON, 100, infix_name_pair)
     # infix(parser, TT_CASE, 15, led_infixr)
     # infix(parser, TT_ASSIGN, 10, led_infixr)
     infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
+    infix(parser, TT_SPACE_DOT, 5, infix_juxtaposition)
     symbol(parser, TT_CASE, None)
     return parser
 
@@ -208,7 +231,7 @@ def method_signature_parser_init(parser):
     symbol(parser, TT_END, None)
     symbol(parser, TT_ARROW, None)
     infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
-    # symbol(parser, TT_JUXTAPOSITION)
+    infix(parser, TT_SPACE_DOT, 5, infix_juxtaposition)
     return parser
 
 
@@ -218,7 +241,7 @@ def import_names_parser_init(parser):
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_RPAREN, None)
     literal(parser, TT_NAME)
-    infix(parser, TT_AS, 20, infix_name_pair)
+    infix(parser, TT_AS, 15, infix_name_pair)
     prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
     return parser
 
@@ -232,8 +255,8 @@ def import_parser_init(parser):
     symbol(parser, TT_HIDE, None)
     symbol(parser, TT_IMPORT, None)
     symbol(parser, TT_WILDCARD, None)
-    infix(parser, TT_COLON, 95, infix_name_pair)
-    infix(parser, TT_AS, 20, infix_name_pair)
+    infix(parser, TT_COLON, 100, infix_name_pair)
+    infix(parser, TT_AS, 15, infix_name_pair)
     literal(parser, TT_NAME)
 
     return parser
@@ -255,13 +278,16 @@ def guard_parser_init(proc_data, parser):
     prefix(parser, TT_SHARP, prefix_sharp)
     prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
 
+    infix(parser, TT_SPACE_DOT, 15, infix_spacedot)
+
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
-    infix(parser, TT_BACKTICK_NAME, 50, infix_backtick_name)
+    infix(parser, TT_BACKTICK_NAME, 35, infix_backtick_name)
     infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
-    infix(parser, TT_DOT, 95, infix_dot)
-    infix(parser, TT_COLON, 95, infix_name_pair)
+    infix(parser, TT_DOT, 100, infix_dot)
+    infix(parser, TT_COLON, 100, infix_name_pair)
     return parser
+
 
 
 def pattern_parser_init(parser):
@@ -273,8 +299,8 @@ def pattern_parser_init(parser):
 
     infix(parser, TT_OF, 10, led_infix)
     infix(parser, TT_AT_SIGN, 10, infix_at)
-    infix(parser, TT_DOUBLE_COLON, 70, led_infixr)
-    infix(parser, TT_COLON, 95, infix_name_pair)
+    infix(parser, TT_DOUBLE_COLON, 60, led_infixr)
+    infix(parser, TT_COLON, 100, infix_name_pair)
 
     symbol(parser, TT_WHEN)
     symbol(parser, TT_CASE)
@@ -294,6 +320,7 @@ def fun_pattern_parser_init(parser):
     parser.break_on_juxtaposition = False
     parser.juxtaposition_as_list = True
     infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
+    infix(parser, TT_SPACE_DOT, 5, infix_juxtaposition)
     return parser
 
 
@@ -306,14 +333,15 @@ def fun_signature_parser_init(parser):
     symbol(parser, TT_INDENT)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
 
-    infix(parser, TT_OF, 10, led_infix)
-    infix(parser, TT_COLON, 95, infix_name_pair)
+    infix(parser, TT_OF, 15, led_infix)
+    infix(parser, TT_COLON, 100, infix_name_pair)
 
     literal(parser, TT_WILDCARD)
     symbol(parser, TT_DEF)
     symbol(parser, TT_ARROW)
     symbol(parser, TT_CASE)
     infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
+    infix(parser, TT_SPACE_DOT, 5, infix_juxtaposition)
     return parser
 
 
@@ -373,28 +401,25 @@ def expression_parser_init(proc_data, parser):
     prefix(parser, TT_LET, prefix_let)
 
     assignment(parser, TT_ASSIGN, 10)
-
-    infix(parser, TT_DOT, 95, infix_dot)
-    infix(parser, TT_COLON, 95, infix_name_pair)
-    # support for destructive assignments, would work only in assignment expressions
-    infix(parser, TT_OF, 10, led_infix)
+    infix(parser, TT_SPACE_DOT, 15, infix_spacedot)
+    infix(parser, TT_OF, 15, led_infix)
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
-    infix(parser, TT_BACKTICK_NAME, 50, infix_backtick_name)
+    infix(parser, TT_BACKTICK_NAME, 35, infix_backtick_name)
     infix(parser, TT_DOUBLE_COLON, 70, led_infixr)
     infix(parser, TT_TRIPLE_COLON, 70, infix_triple_colon)
 
     infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
-    infix(parser, TT_DOT, 95, infix_dot)
+    infix(parser, TT_COLON, 100, infix_name_pair)
+    infix(parser, TT_DOT, 100, infix_dot)
 
-    infix(parser, TT_INFIX_DOT_LCURLY, 95, infix_lcurly)
-    infix(parser, TT_INFIX_DOT_LPAREN, 95, infix_lparen)
+    infix(parser, TT_INFIX_DOT_LCURLY, 100, infix_lcurly)
+    infix(parser, TT_INFIX_DOT_LPAREN, 100, infix_lparen)
 
     # OTHER OPERATORS ARE DECLARED IN prelude.obn
 
     stmt(parser, TT_THROW, prefix_throw)
     return parser
-
 
 def module_parser_init(parser):
     parser = init_parser_literals(parser)
@@ -417,9 +442,10 @@ def module_parser_init(parser):
     prefix(parser, TT_LAMBDA, prefix_lambda)
 
     assignment(parser, TT_ASSIGN, 10)
+    infix(parser, TT_SPACE_DOT, 15, infix_spacedot)
     infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
-    infix(parser, TT_DOT, 95, infix_dot)
-    infix(parser, TT_COLON, 95, infix_name_pair)
+    infix(parser, TT_DOT, 100, infix_dot)
+    infix(parser, TT_COLON, 100, infix_name_pair)
 
     stmt(parser, TT_FUN, prefix_module_fun)
     stmt(parser, TT_TRAIT, stmt_trait)

@@ -152,6 +152,6 @@ fun test () ->
     affirm:is_equal (f4_1 1 [2, 3]) 6
     affirm:is_equal (lam x l m
                         | x [a,b,c,...tl] {N, Z} -> (x + a + b + c + N + Z) :: tl end .
-                          1 [1, 1, 1, 33,33,33] {N=1, Z = 1}) .
+                          1 . [1, 1, 1, 33,33,33] . {N=1, Z = 1}) .
                     [6, 33, 33, 33]
 ---------

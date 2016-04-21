@@ -66,6 +66,7 @@ def led_infixr(parser, op, node, left):
 
 def prefix_nud_function(parser, op, node):
     exp = literal_expression(parser)
+    # exp = expression(parser, 100)
     return nodes.create_call_node_name(node, op.prefix_function, [exp])
 
 
@@ -119,10 +120,15 @@ def infix_triple_colon(parser, op, node, left):
     return nodes.create_delayed_cons_node(node, left, right)
 
 
+def infix_spacedot(parser, op, node, left):
+    right = expression(parser, op.lbp)
+    return nodes.node_2(NT_JUXTAPOSITION, __ntok(node), left, right)
+
+
 def infix_juxtaposition(parser, op, node, left):
     right = base_expression(parser, op.lbp)
-    # right = expressions(parser, op.lbp)
     return nodes.node_2(NT_JUXTAPOSITION, __ntok(node), left, right)
+
 
 def infix_dot(parser, op, node, left):
     if parser.token_type == TT_INT:
@@ -336,11 +342,13 @@ def layout_lcurly(parser, op, node):
 
 # this callback used in pattern matching
 def prefix_lcurly_patterns(parser, op, node):
-    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_MULTI_STR, TT_STR, TT_CHAR, TT_FLOAT], on_bind_node)
+    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_MULTI_STR, TT_STR, TT_CHAR, TT_FLOAT],
+                          on_bind_node)
 
 
 def prefix_lcurly(parser, op, node):
-    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_MULTI_STR, TT_CHAR, TT_FLOAT], on_bind_node)
+    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_MULTI_STR, TT_CHAR, TT_FLOAT],
+                          on_bind_node)
 
 
 def _parse_map_key_pair(parser, types, on_unknown):

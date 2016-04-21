@@ -6,7 +6,7 @@ from obin.misc.fifo import Fifo
 
 LOG_INDENTER = False
 
-SKIP_NEWLINE_TOKENS = [tt.TT_JUXTAPOSITION, tt.TT_DOUBLE_COLON, tt.TT_TRIPLE_COLON,
+SKIP_NEWLINE_TOKENS = [tt.TT_SPACE_DOT, tt.TT_DOUBLE_COLON, tt.TT_TRIPLE_COLON,
                        tt.TT_COLON, tt.TT_OPERATOR, tt.TT_DOT, tt.TT_ASSIGN, tt.TT_OR, tt.TT_AND]
 
 

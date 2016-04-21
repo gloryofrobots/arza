@@ -61,7 +61,7 @@ extend List
     with Seq
         def first self -> _list:head self
         def rest self -> _list:tail self
-    with Constructable
+    with Consable
         def cons value self -> _list:cons value self
     with Seqable
         def to_seq self -> self

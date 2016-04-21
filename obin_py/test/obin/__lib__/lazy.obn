@@ -43,7 +43,7 @@ extend LazyList
 
     with Emptiable
         def empty self -> LazyNil
-    with Constructable
+    with Consable
         def cons value self -> LazyCons value self
     with Ref
         def ! self -> self
@@ -55,7 +55,7 @@ extend LazyList
 extend LazyVal
     with Ref
         def ! self -> self ()
-    with Constructable
+    with Consable
         def cons value self ->
             LazyCons value self
     with Str

@@ -17,7 +17,7 @@ extend String
         def append value self -> _string:append value self
     with Prependable
         def prepend value self -> _string:prepend value self
-    with Constructable
+    with Consable
         def cons value of Char self -> _string:append value self
     with Seqable
         def to_seq self -> _string:to_list self

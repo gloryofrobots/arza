@@ -35,4 +35,6 @@ CONS = PREFIX + "cons"
 EQ = PREFIX + "=="
 GE = PREFIX + ">="
 
+PIPE_BACK = PREFIX + "<|"
+
 PARTIAL = PREFIX + "partial"

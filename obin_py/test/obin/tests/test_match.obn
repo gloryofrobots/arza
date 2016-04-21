@@ -47,13 +47,13 @@ fun test() ->
 
     ////////////////////////////////////////////////////////////////
 
-    affirm:is_equal .
+    affirm:is_equal (
         match (1, (23, (24, 25))) with
             | (Z, (G, 1)) ->  12 + Z
             | (1, 23) ->   12
             | (1, (23, X)) ->  (#third, X)
             | _ ->  #fourth
-        end (#third, (24, 25))
+        end) (#third, (24, 25))
 
     affirm:is_throw lam () -> Z end ()
 
@@ -66,7 +66,7 @@ fun test() ->
             | (x1, y1, 5) ->  (x1, y1)
             | [(1, X1), Y1, 5, [6,7, Z1]] ->  (X1, Y1, Z1)
             | _ ->  123
-        end (2, (2, 3, 4), 8)
+        end . (2, (2, 3, 4), 8)
 
     affirm:is_throw lam () -> [a1, b1, c1, x1, y1] end ()
 
@@ -78,7 +78,7 @@ fun test() ->
             | {name="Bob2", age=42} ->  (name, age)
             | {name="Bob", surname=("Alice", "Dou"), age=42} ->  (surname, name, age + 100)
             | _ ->  42
-        end ((#Alice, #Dou), #Bob, 142)
+        end . ((#Alice, #Dou), #Bob, 142)
 
 
     ////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ fun test() ->
             | {name, age=42} ->  (name, age, 1)
             | {age=42} ->  (age, 2)
             | _ ->  42
-        end ("Bob", 42, 1)
+        end . ("Bob", 42, 1)
 
     ////////////////////////////////////////////////////////////////
 
@@ -98,7 +98,7 @@ fun test() ->
             | (A, x, A)  -> (#first, A)
             | (A, x, B)  -> (#second, A, B)
             | (3, A) -> #third
-        end (#first, 1)
+        end . (#first, 1)
 
     ////////////////////////////////////////////////////////////////
 
@@ -106,7 +106,7 @@ fun test() ->
         match (1, 2, 2) with
             | (A, x, A)  -> (#first, A)
             | (A, x, B)  -> (#second, A, B)
-        end (#second, 1, 2)
+        end . (#second, 1, 2)
 
     ////////////////////////////////////////////////////////////////
 
@@ -114,7 +114,7 @@ fun test() ->
         match 42 with
             | N1 of String  -> ("Is String", N1)
             | N1 of Int  -> ("Is Integer", N1)
-        end ("Is Integer", 42)
+        end . ("Is Integer", 42)
 
 
     ////////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ fun test() ->
         match (1,2,3,4,5) with
             | (a,b,c,...rest) -> rest
             | _ -> 42
-        end (4, 5)
+        end . (4, 5)
 
     ///////////////////////////////////////////////////////////////
     // this is error prone code, currently branches not merged because

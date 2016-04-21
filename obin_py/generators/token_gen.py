@@ -77,6 +77,7 @@ TOKENS = [
   ("TT_LAMBDA", "\\"),
 
   ("TT_JUXTAPOSITION", " "),
+  ("TT_SPACE_DOT", " ."),
   ("TT_INFIX_DOT_LCURLY", ".{"),
   ("TT_LCURLY", "{"),
   ("TT_RCURLY", "}"),
