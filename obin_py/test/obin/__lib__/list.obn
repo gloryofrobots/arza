@@ -5,7 +5,7 @@ import seq
 import string
 
 fun range (first of Int) (last of Int) ->
-    step = -1 in_case last < 0 else 1
+    step = if last < 0 then -1 else 1
     range_by first last step
 
 fun range_by (first of Int) (last of Int) (step of Int) ->

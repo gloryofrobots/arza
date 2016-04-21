@@ -726,16 +726,6 @@ def _compile_branch(compiler, code, condition, body, endif):
     code.emit_1(LABEL, end_body, codeinfo_unknown())
 
 
-def _compile_WHEN(compiler, code, node):
-    condition = node_first(node)
-    truebranch = node_second(node)
-    falsebranch = node_third(node)
-    endif = code.prealocate_label()
-    _compile_branch(compiler, code, condition, truebranch, endif)
-    _compile(compiler, code, falsebranch)
-    code.emit_1(LABEL, endif, codeinfo_unknown())
-
-
 def _compile_WHEN_NO_ELSE(compiler, code, node):
     condition = node_first(node)
     body = node_second(node)
@@ -1115,8 +1105,6 @@ def _compile_node(compiler, code, node):
 
     elif NT_CONDITION == ntype:
         _compile_CONDITION(compiler, code, node)
-    elif NT_TERNARY_CONDITION == ntype:
-        _compile_WHEN(compiler, code, node)
     elif NT_WHEN == ntype:
         _compile_WHEN_NO_ELSE(compiler, code, node)
     elif NT_MATCH == ntype:

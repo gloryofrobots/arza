@@ -39,8 +39,8 @@ trait Ord for x of Eq
                 elif x <= y then LT
                 else GT
 
-    def max x y ->  y in_case x <= y else x
-    def min x y -> x in_case x <= y else y
+    def max x y -> if x <= y then y else x
+    def min x y -> if x <= y then x else y
 
 
 trait Num for x

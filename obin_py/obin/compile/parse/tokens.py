@@ -83,8 +83,6 @@ RULES = [
     (keyword('elif'), TT_ELIF),
     (keyword('else'), TT_ELSE),
 
-    (keyword('in_case'), TT_IN_CASE),
-
     (keyword('then'), TT_THEN),
     (keyword('of'), TT_OF),
     (keyword('match'), TT_MATCH),

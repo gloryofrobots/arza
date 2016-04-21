@@ -33,7 +33,6 @@ NODES = [
   "NT_FENV",
 
   "NT_CONDITION",
-  "NT_TERNARY_CONDITION",
   "NT_WHEN",
   "NT_MATCH",
   "NT_TRY",

@@ -26,7 +26,6 @@ TOKENS = [
   ("TT_TYPE", "type"),
 
   ("TT_IF", "if"),
-  ("TT_IN_CASE", "in_case"),
   ("TT_ELIF", "elif"),
   ("TT_ELSE", "else"),
 

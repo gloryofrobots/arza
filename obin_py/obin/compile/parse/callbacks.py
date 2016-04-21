@@ -19,7 +19,6 @@ NODE_TYPE_MAPPING = {
     TT_NAME: NT_NAME,
     TT_TYPENAME: NT_NAME,
     TT_IF: NT_CONDITION,
-    TT_WHEN: NT_TERNARY_CONDITION,
     TT_MATCH: NT_MATCH,
     TT_EXPORT: NT_EXPORT,
     TT_IMPORT: NT_IMPORT,
@@ -124,14 +123,6 @@ def infix_juxtaposition(parser, op, node, left):
     right = base_expression(parser, op.lbp)
     # right = expressions(parser, op.lbp)
     return nodes.node_2(NT_JUXTAPOSITION, __ntok(node), left, right)
-
-
-def infix_in_case(parser, op, node, left):
-    first = condition(parser)
-    advance_expected(parser, TT_ELSE)
-    exp = expression(parser, 0)
-    return node_3(NT_TERNARY_CONDITION, __ntok(node), first, left, exp)
-
 
 def infix_dot(parser, op, node, left):
     if parser.token_type == TT_INT:

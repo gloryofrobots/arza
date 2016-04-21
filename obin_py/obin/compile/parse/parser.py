@@ -378,7 +378,6 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_COLON, 95, infix_name_pair)
     # support for destructive assignments, would work only in assignment expressions
     infix(parser, TT_OF, 10, led_infix)
-    infix(parser, TT_IN_CASE, 20, infix_in_case)
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
     infix(parser, TT_BACKTICK_NAME, 50, infix_backtick_name)
