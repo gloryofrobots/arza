@@ -338,6 +338,7 @@ def expression_parser_init(proc_data, parser):
 
     symbol(parser, TT_RSQUARE)
     symbol(parser, TT_ARROW)
+    symbol(parser, TT_THEN)
     symbol(parser, TT_RPAREN)
     symbol(parser, TT_RCURLY)
     symbol(parser, TT_COMMA)

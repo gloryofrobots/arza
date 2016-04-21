@@ -416,8 +416,6 @@ def prefix_if(parser, op, node):
         branches.append(list_node([cond, body]))
 
     advance_expected(parser, TT_ELSE)
-
-    advance_expected(parser, TT_ARROW)
     init_code_layout(parser, parser.node, TERM_BLOCK)
 
     body = statements(parser, TERM_BLOCK)

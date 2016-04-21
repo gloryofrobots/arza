@@ -3,8 +3,8 @@ import affirm
 import seq
 import string
 import lazy
-import tests:test_operators
-////
+//import tests:test_operators
+//////
 import tests:types:test_types
 import tests:test_partial
 import tests:test_co
@@ -24,10 +24,8 @@ import tests:test_lazy
 
 
 fun log ...msgs ->
-    if True ->
-        apply io:print msgs
-    else ->
-        ()
+    if True then apply io:print msgs
+    else ()
 
 fun test() ->
     log "RUN TESTS"
@@ -64,9 +62,9 @@ fun test() ->
     test_datastructs:test()
     log "TEST LAZY"
     test_lazy:test()
-
-    log "TEST OPERATORS"
-    test_operators:test()
+//
+//    log "TEST OPERATORS"
+//    test_operators:test()
 
 
 

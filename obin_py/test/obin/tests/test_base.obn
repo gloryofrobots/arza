@@ -37,10 +37,10 @@ fun t1() ->
     affirm:is_equal "++++ ---- <> $$" #"++++ ---- <> $$"
 
     x = 12
-    affirm:is_equal if x == 13 -> 1 + 1
-                    elif x == 14 -> 2 + 2
-                    elif x == 15 -> 3 + 3
-                    else -> 4 + 4 end .
+    affirm:is_equal if x == 13 then 1 + 1
+                    elif x == 14 then 2 + 2
+                    elif x == 15 then 3 + 3
+                    else 4 + 4 end .
                     8
 
 
@@ -242,21 +242,21 @@ fun t4 () ->
     affirm:is_equal (M1.l 2 3) 2
 
     I1 =
-        if 2 == 2 ->
+        if 2 == 2 then
             2
-        else ->
+        else
             4
 
 
     affirm:is_equal I1 2
 
     I2 =
-        if 2 == 1 ->
+        if 2 == 1 then
                               2
-        elif 3 == 4 ->
+        elif 3 == 4 then
             3
-        elif {x=1, y=2} == (1,2,3) -> 4
-        else -> 5
+        elif {x=1, y=2} == (1,2,3) then 4
+        else 5
 
 
     affirm:is_equal I2 5
@@ -288,9 +288,9 @@ fun t4 () ->
     affirm:is_equal MT3 6
 
     MT4 =
-        match if 2 == 1 ->
+        match if 2 == 1 then
                  2
-              else ->
+              else
                 3
               end
         with
@@ -312,9 +312,9 @@ fun t4 () ->
 
     affirm:is_equal (
         match
-            if 0 == 1 ->
+            if 0 == 1 then
                 1
-            else ->
+            else
                 lam x y -> x + y
             end 3 .
                 4
@@ -323,7 +323,7 @@ fun t4 () ->
             | 7 -> 42
         ) 42
 
-    affirm:is_equal if 1 == 1-> 1; else -> 2; end 1
+    affirm:is_equal if 1 == 1 then 1; else 2; end 1
 
 //    try 1; catch 1 -> 1; end
 //    try 1; catch 1 ->

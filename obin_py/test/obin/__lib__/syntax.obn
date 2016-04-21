@@ -150,18 +150,18 @@ fun f ((x of Int) y z) ->
     | a v -> 2 end,
     n = 1
     }
-    if x ->
+    if x then
         2
-    else ->
+    else
         4
 
     5
-    if x :: 2 ->
+    if x :: 2 then
                           42
-    elif (1,2,3) ->
+    elif (1,2,3) then
         24
-    elif {x=1, y=2} -> 35
-    else -> 15
+    elif {x=1, y=2} then35
+    else  15
 
     match (1,2,3) with | (x,y,z) -> 2
                        | _ -> 1
@@ -179,12 +179,12 @@ fun f ((x of Int) y z) ->
                (1 + 1)
         | y -> 2
 
-    match if x == 1 ->
+    match if x == 1 then
              2
              3
              "fgfg"
 
-          else ->
+          else
             3
           end
     with
@@ -200,9 +200,9 @@ fun f ((x of Int) y z) ->
         3 -> 4
 
     match
-        if 1 ->
+        if 1 then
             1
-        else ->
+        else
             3
         end 3 .
             4
@@ -210,7 +210,7 @@ fun f ((x of Int) y z) ->
         | x -> 3
         | y -> 2
     try 1; catch 1 -> 1; end
-    if 1 -> 1; else -> 2; end
+    if 1 then 1; else 2; end
     try 1; catch 1 ->
         1
 
@@ -231,11 +231,11 @@ fun f ((x of Int) y z) ->
             3
         catch 4 ->12
         finally ->
-            if 6 -> 7
-            elif 7 ->
-                if 9 -> 14
-                else -> 15
-            else ->
+            if 6 then 7
+            elif 7 then
+                if 9 then 14
+                else  15
+            else
                 try
                     9
                 catch
@@ -311,9 +311,9 @@ trait Ord  for x of Eq
     def > x y -> (cmp x y) `eq` GT
 
     def cmp x y ->
-                if x `eq` y -> EQ
-                elif x `le` y -> LT
-                else -> GT
+                if x `eq` y then EQ
+                elif x `le` y then LT
+                else  GT
 
 
     def max x y ->  y in_case x `le` y else x

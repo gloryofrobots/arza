@@ -41,9 +41,9 @@ fun reverse _str -> _string:reverse _str
 
 fun joiner _func _sep ->
     lam s acc ->
-        if acc != "" ->
+        if acc != "" then
             acc ++ _sep ++  _func s
-        else ->
+        else
             _func s
 
 fun join _coll _str ->

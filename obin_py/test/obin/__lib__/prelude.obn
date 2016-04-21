@@ -35,9 +35,9 @@ trait Ord for x of Eq
     def > x y -> (cmp x y) == GT
 
     def cmp x y ->
-                if x == y -> EQ
-                elif x <= y -> LT
-                else -> GT
+                if x == y then EQ
+                elif x <= y then LT
+                else GT
 
     def max x y ->  y in_case x <= y else x
     def min x y -> x in_case x <= y else y

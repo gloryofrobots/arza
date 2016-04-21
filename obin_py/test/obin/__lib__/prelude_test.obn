@@ -15,13 +15,24 @@ infixl |> |> 50
 
 
 fun f x ->
-    V = 1
-//    match V with
-//        | v of Int when v == 1 -> 1
-//        | v of Int -> 2
-    match V with
-        | x when x == 1 -> #first
-        | x -> #second
+//    io:print . -1 . 2
+    if x then 2
+    else 4
+
+    5
+    if x :: 2 then
+                          42
+    elif (1,2,3) then
+        24
+    elif {x=1, y=2} then
+        35
+    else
+        15
+
+    if x :: 2 then 42
+    elif (1,2,3) then 24
+    elif {x=1, y=2} then 35
+    else  15
 
     //PAREN is MISSING but we got NOT ALL LAYOUT IS CLOSED  error
 //    print (ts:into [] (ts:map lam x ->

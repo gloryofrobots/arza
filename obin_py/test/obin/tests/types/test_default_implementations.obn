@@ -15,17 +15,17 @@ trait Order for x
     def gt x y -> (cmp x y) == GT
 
     def cmp x y ->
-        if eq x x -> EQ
-        elif le x y -> LT
-        else -> GT
+        if eq x x then EQ
+        elif le x y then LT
+        else GT
 
     def max x y ->
-        if x `le` y -> y
-        else -> y
+        if x `le` y then y
+        else  y
 
     def min x y ->
-        if x `le` y -> x
-        else -> y
+        if x `le` y then x
+        else  y
 
 type Val v
 
@@ -39,9 +39,9 @@ implement Equal for Val2
 
 implement Order for Val
     def cmp self other ->
-        if self.v == other.v -> EQ
-        elif self.v <= other.v -> LT
-        else -> GT
+        if self.v == other.v then EQ
+        elif self.v <= other.v then LT
+        else GT
 
 implement Order for Val2
     def le self other -> self.v <= other.v

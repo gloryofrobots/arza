@@ -22,14 +22,14 @@ extend Int
 
         def range_by first (last of Int) (step of Int) ->
             cmp =
-                if step > 0 -> `>=`
-                elif step < 0 -> `<=`
-                else -> throw ValueError ("Step can not be zero")
+                if step > 0 then `>=`
+                elif step < 0 then `<=`
+                else throw ValueError ("Step can not be zero")
 
             fun _progression _compare x last step  ->
-                if _compare x last ->
+                if _compare x last then
                     []
-                else ->
+                else
                     x ::: _progression _compare (x + step) last step
 
 

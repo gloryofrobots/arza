@@ -29,9 +29,9 @@ extend UnionDerived
     with Range
         def range _from  _to  ->
             union = _datatype:get_union _from
-            if not (kindof _to union) ->
+            if not (kindof _to union) then
                 throw ValueError("Invalid type for second argument", _to)
-            else ->
+            else
                 s1 = seq:drop_while (`!=` _from) (to_seq union)
                 seq:take_while (`!=` _to) s1
         def range_from _from ->

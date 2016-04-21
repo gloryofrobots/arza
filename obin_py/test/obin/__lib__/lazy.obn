@@ -23,13 +23,13 @@ extend LazyList
                         x = l.head
                         xs = l.tail
 
-                        if kindof xs LazyVal ->
-                            if  not (is_forced xs)  ->
+                        if kindof xs LazyVal then
+                            if  not (is_forced xs) then
                                 ", ..."
-                            else ->
+                            else
                                 ", " ++ str x ++ folder (!xs)
-                        else ->
-                                ", " ++ str x ++ folder (xs)
+                        else
+                            ", " ++ str x ++ folder (xs)
 
 
                 "[" ++ (str self.head) ++ folder !self.tail ++ "]"
@@ -199,9 +199,9 @@ fun drop_while predicate coll
 fun filter predicate coll
     | p [] -> empty coll
     | p x::xs ->
-        if p x ->
+        if p x then
             x ::: filter p xs
-        else ->
+        else
             filter p xs
 --------------------------------------------------
 
@@ -210,9 +210,9 @@ fun span predicate coll
         c = empty coll
         (c, c)
     | p xs@[x, ...xs1] ->
-        if not (p x) ->
+        if not (p x) then
             (empty coll, xs)
-        else ->
+        else
             (ys, zs) = (span p xs1)
             (x:::ys, zs)
         ------------------------------

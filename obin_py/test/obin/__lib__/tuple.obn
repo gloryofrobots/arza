@@ -8,9 +8,9 @@ extend Tuple
     with Sized = TypeDerived
     with Str
         def str self ->
-            if len self == 1 ->
+            if len self == 1 then
                 "(" ++ repr (at 0 self) ++ ",)"
-            else ->
+            else
                 "(" ++ string:join_with repr (to_seq self) ", " ++ ")"
     with Repr
     with Seqable

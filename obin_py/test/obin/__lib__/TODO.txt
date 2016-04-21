@@ -3,14 +3,8 @@ deep calls in datastructs data -> (1, record) == (1, record) NotIImplementedErro
  with this in mind
 --------------------------------------------------
 
-THINK ABOUT DEFAULT VALUES
---------------------------------
-
 MAKE {} SYNTAX IN FIELDS AND CONSTRUCTING WITH KEYWORD ARGS
 --------------------------------
-
-Rangeable and Bounded for union
---------------------------------------------------
 
 PATTERN MATCHING NOW IS SHIT REWRITE IT
 -------------------------------------------
@@ -71,6 +65,14 @@ REMOVE NT_WHEN AFTER REFACTORING PATTERN COMPILER
 --------------------------------
 ADD SUPPORT FOR | IN TRAIT STATEMENT DEFS
 --------------------------------
+
+THINK ABOUT DEFAULT VALUES
+--------------------------------
+
+NO AUTO IMPORT
+-compile({no_auto_import,[max/2]}).
+-compile({no_auto_import,[min/2]})
+---------------------------------------
 
 FIXME
 this is error prone code, currently branches not merged because

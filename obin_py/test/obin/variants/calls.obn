@@ -116,9 +116,9 @@ fun drop_while predicate coll
 fun filter predicate coll
     | p [] -> empty coll
     | p x::xs ->
-        if p x then
+        if p x ->
             x :: filter p xs
-        else
+        else ->
             filter p xs
 --------------------------------------------------
 
@@ -127,9 +127,9 @@ fun span predicate coll
         c = empty coll
         (c, c)
     | p xs@[x, ...xs1] ->
-        if not (p x) then
+        if not (p x) ->
             (empty coll, xs)
-        else
+        else ->
             (ys, zs) = (span p xs1)
             (x::ys, zs)
         ------------------------------
@@ -224,23 +224,80 @@ fun split s
         (l, r) = split xs
         (x::l, y::r)
 
-fun sort f s ->
-    fun _merge s1 s2
-        | [] ys -> ys
-        | xs [] -> xs
-        | x::xs y::ys ->
-            if f x y then x :: _merge xs (y::ys)
-            else y :: _merge (x::xs) ys
+fun split(s)
+    case([]) -> ([], [])
+    case([x]) -> (s, [])
+    case(x::y::xs) ->
+        (l, r) = split xs
+        (x::l, y::r)
 
-    fun _sort s
-        | [] -> []
-        | [x] -> s
-        | xs ->
-            (ys, zs) = split xs
-            _merge (_sort ys) (_sort zs)
-    ---------
 
-    _sort s
+fun zipwith3(f, seq1, seq2, seq3)
+    case(f, x::xs, y::ys, z::zs) -> f(x, y, z) :: zipwith3(f, xs, ys, zs)
+    case (_, _, _, _) -> []
 
-fun sort_asc s -> sort `<=` s
-fun sort_desc s -> sort `>=` s
+fun zipwith3 f seq1 seq2 seq3
+    | f x::xs y::ys z::zs -> (f x y z) :: zipwith3 f xs ys zs
+    | _ _ _ _ -> []
+
+fun sort(f, s) ->
+    fun _merge(s1, s2)
+        case([], ys) -> ys
+        case(xs, []) -> xs
+        case(x::xs, y::ys) ->
+            if f x y then x :: _merge(xs, y::ys)
+            else y :: _merge(x::xs, ys)
+
+    fun _sort(s)
+        case ([]) -> []
+        case ([x]) -> s
+        case (xs) ->
+            (ys, zs) = split(xs)
+            _merge(_sort(ys), _sort(zs))
+
+    _sort(s)
+
+fun sort_asc s -> sort(`<=`, s)
+fun sort_desc s -> sort(`>=`, s)
+
+fun test_pipe() ->
+    l = list:range(0, 10)
+
+    affirm:is_equal(
+        l |> &(seq:filter, even)
+     ) [0, 2, 4, 6, 8]
+
+    affirm:is_equal (
+        l |> &(seq:filter, even)
+          |> &(seq:map, `+`, 1)
+     ) [1, 3, 5, 7, 9]
+
+    affirm:is_equal (
+        l |> &(seq:filter, even)
+          |> &(seq:map, `+`, 1)
+          |> &(seq:map, flip, `-`, 2)
+     ) [-1, 1, 3, 5, 7]
+
+
+    square = lam x -> x * x
+    triple = `*` 3
+    affirm:is_equal (
+        l |> seq:filter even
+          |> seq:map (`+` 1)
+          |> seq:map (flip `-` 2)
+          |> seq:map (triple >> square)
+     )  [9, 9, 81, 225, 441]
+
+    affirm:is_equal (
+         (seq:filter even
+          >> seq:map (`+` 1)
+          >> seq:map (flip `-` 2)
+          >> seq:map (triple >> square)) l
+     )  [9, 9, 81, 225, 441]
+
+    affirm:is_equal (
+        l |> seq:filter even
+          >> seq:map (`+` 1)
+          >> seq:map (flip `-` 2)
+          >> seq:map (triple >> square)
+     )  [9, 9, 81, 225, 441]

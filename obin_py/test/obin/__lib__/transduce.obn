@@ -46,9 +46,9 @@ fun reduce_seq xf acc coll ->
 //            io:print "_REDUCE STEP" xf
             acc1 = step xf hd acc
 //            io:print "ACC1" acc1
-            if is_reduced acc1 ->
+            if is_reduced acc1 then
                 deref acc1
-            else ->
+            else
                 _reduce xf acc1 tl
     res = _reduce xf acc coll
     result xf res
@@ -112,9 +112,9 @@ implement Transformer for FilterTransformer
     def result self acc -> result self.xf acc
     def step self val acc ->
 //        io:print "FILTER STEP"
-        if self.predicate val ->
+        if self.predicate val then
             step self.xf val acc
-        else ->
+        else
             acc
 
 fun filter predicate xf -> FilterTransformer predicate xf
@@ -144,9 +144,9 @@ implement Transformer for TakeTransformer
     def step self val acc ->
         n = !self.n
         self.n := n - 1
-        if n > 0 ->
+        if n > 0 then
            step self.xf val acc
-        else ->
+        else
            ensure_reduced acc
 
 // A take transducer constructor. Will take n values before
@@ -159,9 +159,9 @@ implement Transformer for TakeWhileTransformer
     def init self -> init self.xf
     def result self acc -> result self.xf acc
     def step self val acc ->
-        if self.predicate val ->
+        if self.predicate val then
            step self.xf val acc
-        else ->
+        else
             //TAKE WHILE REDUCED acc
             ensure_reduced acc
 
@@ -176,9 +176,9 @@ implement Transformer for TakeNthTransformer
     def result self acc -> result self.xf acc
     def step self val acc ->
         self.i := !self.i + 1
-        if mod (!self.i) self.n == 0  ->
+        if mod (!self.i) self.n == 0  then
            step self.xf val acc
-        else ->
+        else
             acc
 
 // A transducer that takes every Nth input
@@ -190,10 +190,10 @@ implement Transformer for DropTransformer
     def result self acc -> result self.xf acc
     def step self val acc ->
         n = !self.n
-        if n > 0 ->
+        if n > 0 then
             self.n := n - 1
             acc
-        else ->
+        else
            step self.xf val acc
 
 // A dropping transducer constructor
@@ -204,9 +204,9 @@ implement Transformer for DropWhileTransformer
     def init self -> init self.xf
     def result self acc -> result self.xf acc
     def step self val acc ->
-        if !self.continue_dropping and self.predicate val ->
+        if !self.continue_dropping and self.predicate val then
             acc
-        else ->
+        else
             self.continue_dropping := False
             step self.xf val acc
 
@@ -223,9 +223,9 @@ fun drop_while predicate xf -> DropWhileTransformer (var True) predicate xf
 //    def result self acc -> acc
 //    def step self val acc ->
 //        ret = step self.xf val acc
-//        if is_reduced ret ->
+//        if is_reduced ret then
 //            reduced ret
-//        else ->
+//        else
 //            ret
 //
 //fun preserve_reduced xf -> PreserveReduced xf
