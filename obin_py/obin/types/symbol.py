@@ -12,7 +12,11 @@ class W_Symbol(W_Root):
         self.repr = ":%s" % api.to_s(self.string)
 
     def __eq__(self, other):
-        return self._equal_(other)
+        if space.issymbol(other):
+            val = self.idx == other.idx
+            # print "SYMBOL EQ", self, other, val
+            return val
+        return False
 
     def __hash__(self):
         return self._hash_()

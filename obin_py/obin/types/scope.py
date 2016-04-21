@@ -12,12 +12,15 @@ class ScopeSet:
 
     def get(self, val):
         try:
-            return self.values.index(val)
+            idx = self.values.index(val)
+            # print "FIND", idx, val
+            return idx
         except ValueError:
+            # print "NOT FIND", val
             return platform.absent_index()
 
     def add(self, val):
-        assert val not in self.values
+        assert val not in self.values, (val, self.values)
         self.values = self.values + [val]
         return len(self.values) - 1
 
