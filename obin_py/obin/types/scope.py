@@ -8,7 +8,8 @@ ABSENT = platform.absent_index()
 
 
 class Symbols:
-    def __init__(self):
+    def __init__(self, literals):
+        self.literals = literals
         self.syms_map = {}
         self.syms_list = []
 
@@ -24,8 +25,7 @@ class Symbols:
 
     def add(self, sym):
         assert not self.has(sym)
-        self.syms_list = self.syms_list + [sym]
-        idx = len(self.syms_list) - 1
+        idx = self.literals.add(sym)
         self.syms_map[sym.idx] = idx
         return idx
 
@@ -35,7 +35,8 @@ class Symbols:
 
 
 class Ints:
-    def __init__(self):
+    def __init__(self, literals):
+        self.literals = literals
         self.map = {}
         self.list = []
 
@@ -51,8 +52,7 @@ class Ints:
 
     def add(self, num):
         assert not self.has(num)
-        self.list = self.list + [num]
-        idx = len(self.list) - 1
+        idx = self.literals.add(num)
         self.map[num.int_value] = idx
         return idx
 
@@ -62,7 +62,8 @@ class Ints:
 
 
 class Floats:
-    def __init__(self):
+    def __init__(self, literals):
+        self.literals = literals
         self.map = {}
         self.list = []
 
@@ -79,8 +80,7 @@ class Floats:
     def add(self, num):
         assert space.isfloat(num)
         assert not self.has(num)
-        self.list = self.list + [num]
-        idx = len(self.list) - 1
+        idx = self.literals.add(num)
         self.map[num.float_value] = idx
         return idx
 
@@ -90,7 +90,8 @@ class Floats:
 
 
 class Chars:
-    def __init__(self):
+    def __init__(self, literals):
+        self.literals = literals
         self.map = {}
         self.list = []
 
@@ -107,8 +108,7 @@ class Chars:
     def add(self, num):
         assert space.ischar(num)
         assert not self.has(num)
-        self.list = self.list + [num]
-        idx = len(self.list) - 1
+        idx = self.literals.add(num)
         self.map[num.char_value] = idx
         return idx
 
@@ -118,7 +118,8 @@ class Chars:
 
 
 class Strings:
-    def __init__(self):
+    def __init__(self, literals):
+        self.literals = literals
         self.map = {}
         self.list = []
 
@@ -135,14 +136,25 @@ class Strings:
     def add(self, num):
         assert space.isstring(num)
         assert not self.has(num)
-        self.list = self.list + [num]
-        idx = len(self.list) - 1
+        idx = self.literals.add(num)
         self.map[num.string_value] = idx
         return idx
 
     @property
     def values(self):
         return self.list
+
+
+class Literals:
+    def __init__(self):
+        self.values = []
+
+    def get(self, val):
+        return ABSENT
+
+    def add(self, val):
+        self.values = self.values + [val]
+        return len(self.values) - 1
 
 
 class ScopeSet:
@@ -180,13 +192,13 @@ class W_Scope(W_Root):
 
         self.__temp_index = 0
 
-        self.__floats = Floats()
-        self.__ints = Ints()
-        self.__chars = Chars()
-        self.__strings = Strings()
-        self.__symbols = Symbols()
+        self.__literals = Literals()
+        self.__floats = Floats(self.__literals)
+        self.__ints = Ints(self.__literals)
+        self.__chars = Chars(self.__literals)
+        self.__strings = Strings(self.__literals)
+        self.__symbols = Symbols(self.__literals)
 
-        self.__literals = ScopeSet()
         self.__local_references = ScopeSet()
         self.__operators = space.newmap()
         self.__declared_exports = plist.empty()
@@ -409,20 +421,6 @@ class W_Scope(W_Root):
 
     # FINAL GETTERS
 
-    def symbols(self):
-        return self.__symbols.values
-
     def literals(self):
         return self.__literals.values
 
-    def floats(self):
-        return self.__floats.values
-
-    def ints(self):
-        return self.__ints.values
-
-    def strings(self):
-        return self.__strings.values
-
-    def chars(self):
-        return self.__chars.values

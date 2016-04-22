@@ -175,11 +175,6 @@ class W_Env(W_Root):
         self.scope = scope
 
         self.literals = scope.literals()
-        self.scope_symbols = scope.symbols()
-        self.floats = scope.floats()
-        self.ints = scope.ints()
-        self.strings = scope.strings()
-        self.chars = scope.chars()
 
         self.operators = scope.create_operators()
         self.exported_names = scope.exports

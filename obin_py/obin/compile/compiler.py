@@ -295,7 +295,7 @@ def _emit_empty_list(code):
 
 def _emit_symbol(compiler, code, node, literal):
     idx = _declare_symbol(compiler, literal)
-    code.emit_1(SYMBOL, idx, info(node))
+    code.emit_1(LITERAL, idx, info(node))
     return idx
 
 
@@ -360,7 +360,7 @@ def _get_symbol_name_or_empty(process, name):
 def _compile_FLOAT(compiler, code, node):
     value = float(nodes.node_value_s(node))
     idx = _declare_float(compiler, space.newfloat(value))
-    code.emit_1(FLOAT, idx, info(node))
+    code.emit_1(LITERAL, idx, info(node))
 
 
 def _compile_INT(compiler, code, node):
@@ -368,10 +368,10 @@ def _compile_INT(compiler, code, node):
     num = space.newnumber(value)
     if space.isint(num):
         idx = _declare_int(compiler, num)
-        code.emit_1(INT, idx, info(node))
+        code.emit_1(LITERAL, idx, info(node))
     else:
         idx = _declare_float(compiler, num)
-        code.emit_1(FLOAT, idx, info(node))
+        code.emit_1(LITERAL, idx, info(node))
 
 
 def _compile_TRUE(compiler, code, node):
@@ -396,7 +396,7 @@ def _compile_STR(compiler, code, node):
         strval = unicode_unescape(strval)
         string = space.newstring(strval)
         idx = _declare_string(compiler, string)
-        code.emit_1(STRING, idx, info(node))
+        code.emit_1(LITERAL, idx, info(node))
     except RuntimeError as e:
         compile_error(compiler, code, node, unicode(e.args[0]))
 
@@ -413,7 +413,7 @@ def _compile_CHAR(compiler, code, node):
 
         char = space.newchar(strval)
         idx = _declare_char(compiler, char)
-        code.emit_1(CHAR, idx, info(node))
+        code.emit_1(LITERAL, idx, info(node))
     except RuntimeError as e:
         compile_error(compiler, code, node, unicode(e.args[0]))
 
