@@ -4,6 +4,26 @@ from obin.misc import platform
 from obin.types import api
 from obin.runtime import error
 
+class Literals:
+    def __init__(self):
+        # TODO USE PLIST
+        self.values = []
+
+    def get(self, val):
+        return -1
+        # try:
+        #     idx = self.values.index(val)
+        #     # print "FIND", idx, val
+        #     return idx
+        # except ValueError:
+        #     # print "NOT FIND", val
+        #     return platform.absent_index()
+
+    def add(self, val):
+        # assert val not in self.values, (val, self.values)
+        self.values = self.values + [val]
+        return len(self.values) - 1
+
 
 class ScopeSet:
     def __init__(self):
