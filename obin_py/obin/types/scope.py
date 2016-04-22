@@ -4,25 +4,145 @@ from obin.misc import platform
 from obin.types import api
 from obin.runtime import error
 
-class Literals:
+ABSENT = platform.absent_index()
+
+
+class Symbols:
     def __init__(self):
-        # TODO USE PLIST
-        self.values = []
+        self.syms_map = {}
+        self.syms_list = []
 
-    def get(self, val):
-        return -1
-        # try:
-        #     idx = self.values.index(val)
-        #     # print "FIND", idx, val
-        #     return idx
-        # except ValueError:
-        #     # print "NOT FIND", val
-        #     return platform.absent_index()
+    def has(self, sym):
+        return sym.idx in self.syms_map
 
-    def add(self, val):
-        # assert val not in self.values, (val, self.values)
-        self.values = self.values + [val]
-        return len(self.values) - 1
+    def get(self, sym):
+        assert space.issymbol(sym)
+        try:
+            return self.syms_map[sym.idx]
+        except KeyError:
+            return ABSENT
+
+    def add(self, sym):
+        assert not self.has(sym)
+        self.syms_list = self.syms_list + [sym]
+        idx = len(self.syms_list) - 1
+        self.syms_map[sym.idx] = idx
+        return idx
+
+    @property
+    def values(self):
+        return self.syms_list
+
+
+class Ints:
+    def __init__(self):
+        self.map = {}
+        self.list = []
+
+    def has(self, num):
+        return num.int_value in self.map
+
+    def get(self, num):
+        assert space.isint(num)
+        try:
+            return self.map[num.int_value]
+        except KeyError:
+            return ABSENT
+
+    def add(self, num):
+        assert not self.has(num)
+        self.list = self.list + [num]
+        idx = len(self.list) - 1
+        self.map[num.int_value] = idx
+        return idx
+
+    @property
+    def values(self):
+        return self.list
+
+
+class Floats:
+    def __init__(self):
+        self.map = {}
+        self.list = []
+
+    def has(self, num):
+        return num.float_value in self.map
+
+    def get(self, num):
+        assert space.isfloat(num)
+        try:
+            return self.map[num.float_value]
+        except KeyError:
+            return ABSENT
+
+    def add(self, num):
+        assert space.isfloat(num)
+        assert not self.has(num)
+        self.list = self.list + [num]
+        idx = len(self.list) - 1
+        self.map[num.float_value] = idx
+        return idx
+
+    @property
+    def values(self):
+        return self.list
+
+
+class Chars:
+    def __init__(self):
+        self.map = {}
+        self.list = []
+
+    def has(self, num):
+        return num.char_value in self.map
+
+    def get(self, num):
+        assert space.ischar(num)
+        try:
+            return self.map[num.char_value]
+        except KeyError:
+            return ABSENT
+
+    def add(self, num):
+        assert space.ischar(num)
+        assert not self.has(num)
+        self.list = self.list + [num]
+        idx = len(self.list) - 1
+        self.map[num.char_value] = idx
+        return idx
+
+    @property
+    def values(self):
+        return self.list
+
+
+class Strings:
+    def __init__(self):
+        self.map = {}
+        self.list = []
+
+    def has(self, num):
+        return num.string_value in self.map
+
+    def get(self, num):
+        assert space.isstring(num)
+        try:
+            return self.map[num.string_value]
+        except KeyError:
+            return ABSENT
+
+    def add(self, num):
+        assert space.isstring(num)
+        assert not self.has(num)
+        self.list = self.list + [num]
+        idx = len(self.list) - 1
+        self.map[num.string_value] = idx
+        return idx
+
+    @property
+    def values(self):
+        return self.list
 
 
 class ScopeSet:
@@ -60,13 +180,18 @@ class W_Scope(W_Root):
 
         self.__temp_index = 0
 
+        self.__floats = Floats()
+        self.__ints = Ints()
+        self.__chars = Chars()
+        self.__strings = Strings()
+        self.__symbols = Symbols()
+
         self.__literals = ScopeSet()
         self.__local_references = ScopeSet()
         self.__operators = space.newmap()
         self.__declared_exports = plist.empty()
         self.__static_references = plist.empty()
 
-        self.literals = None
         self.imports = space.newmap()
         self.functions = space.newmap()
         self.arg_count = -1
@@ -86,6 +211,8 @@ class W_Scope(W_Root):
     def what_next_temporary(self):
         return self.__temp_index
 
+    ###########################
+
     def add_export(self, name):
         assert space.issymbol(name)
         assert not self.has_export(name)
@@ -95,6 +222,8 @@ class W_Scope(W_Root):
         assert space.issymbol(name)
         return plist.contains(self.__declared_exports, name)
 
+    ###########################
+
     def add_imported(self, name, func):
         assert space.issymbol(name)
         assert platform.is_absent_index(self.get_imported_index(name))
@@ -102,6 +231,8 @@ class W_Scope(W_Root):
 
     def get_imported_index(self, name):
         return api.get_index(self.imports, name)
+
+    ###########################
 
     def add_function(self, symbol, idx):
         self.functions.insert(symbol, space.newint(idx))
@@ -112,6 +243,8 @@ class W_Scope(W_Root):
             return platform.absent_index()
         return api.to_i(idx)
 
+    ###########################
+
     def has_possible_static_reference(self, ref):
         return plist.contains_with(self.__static_references, ref, _find_static_ref)
 
@@ -120,6 +253,8 @@ class W_Scope(W_Root):
         assert not platform.is_absent_index(ref_idx), "Invalid static reference declaration. Reference id not defined"
 
         self.__static_references = plist.cons(space.newtuple([ref, space.newint(ref_idx)]), self.__static_references)
+
+    ###########################
 
     def has_operator(self, op_name):
         return api.contains_b(self.__operators, op_name)
@@ -130,6 +265,8 @@ class W_Scope(W_Root):
             op = api.at_index(record, 1)
             self.__operators.insert(op_name, op)
 
+    ###########################
+
     def get_scope_reference(self, name):
         return self.__local_references.get(name)
 
@@ -137,11 +274,55 @@ class W_Scope(W_Root):
         assert space.issymbol(name)
         return self.__local_references.add(name)
 
+    ###########################
+
     def get_scope_literal(self, literal):
         return self.__literals.get(literal)
 
     def add_scope_literal(self, literal):
         return self.__literals.add(literal)
+
+    ###########################
+
+    def get_scope_symbol(self, literal):
+        return self.__symbols.get(literal)
+
+    def add_scope_symbol(self, literal):
+        return self.__symbols.add(literal)
+
+    ###########################
+
+    def get_string(self, literal):
+        return self.__strings.get(literal)
+
+    def add_string(self, literal):
+        return self.__strings.add(literal)
+
+    ###########################
+
+    def get_char(self, literal):
+        return self.__chars.get(literal)
+
+    def add_char(self, literal):
+        return self.__chars.add(literal)
+
+    ###########################
+
+    def get_int(self, literal):
+        return self.__ints.get(literal)
+
+    def add_int(self, literal):
+        return self.__ints.add(literal)
+
+    ###########################
+
+    def get_float(self, literal):
+        return self.__floats.get(literal)
+
+    def add_float(self, literal):
+        return self.__floats.add(literal)
+
+    ###########################
 
     def check_arg_count(self):
         assert self.arg_count != -1
@@ -203,7 +384,6 @@ class W_Scope(W_Root):
         if parse_scope is not None:
             self.add_operators(parse_scope.operators.to_list())
 
-        self.literals = self.__literals.values
         self.exports = self._create_exports()
         self.references = self._create_references(previous_scope)
 
@@ -226,3 +406,23 @@ class W_Scope(W_Root):
         if self.__temp_index == 0:
             return None
         return [space.newvoid() for _ in range(self.__temp_index)]
+
+    # FINAL GETTERS
+
+    def symbols(self):
+        return self.__symbols.values
+
+    def literals(self):
+        return self.__literals.values
+
+    def floats(self):
+        return self.__floats.values
+
+    def ints(self):
+        return self.__ints.values
+
+    def strings(self):
+        return self.__strings.values
+
+    def chars(self):
+        return self.__chars.values

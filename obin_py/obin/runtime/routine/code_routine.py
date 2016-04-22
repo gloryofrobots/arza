@@ -76,7 +76,14 @@ class CodeRoutine(BaseRoutine):
             arg2 = opcode[2]
             stack = self.stack
             env = self.env
+
             literals = env.literals
+            strings = env.strings
+            floats = env.floats
+            ints = env.ints
+            chars = env.chars
+            scope_symbols = env.scope_symbols
+
             # print "_execute", opcode
             # print "------ routine ----", api.to_s(self._name_)
             # self._print_stack()
@@ -105,6 +112,26 @@ class CodeRoutine(BaseRoutine):
             elif POP == tag:
                 stack.pop()
             # *************************************
+            elif SYMBOL == tag:
+                l = scope_symbols[arg1]
+                stack.push(l)
+            # *************************************
+            elif STRING == tag:
+                l = strings[arg1]
+                stack.push(l)
+            # *************************************
+            elif CHAR == tag:
+                l = chars[arg1]
+                stack.push(l)
+            # *************************************
+            elif INT == tag:
+                l = ints[arg1]
+                stack.push(l)
+            # *************************************
+            elif FLOAT == tag:
+                l = floats[arg1]
+                stack.push(l)
+            # *************************************
             elif LITERAL == tag:
                 l = literals[arg1]
                 stack.push(l)
@@ -112,14 +139,14 @@ class CodeRoutine(BaseRoutine):
             elif LOCAL == tag:
                 value = api.at_index(env, arg1)
                 if space.isvoid(value):
-                    literal = literals[arg2]
+                    literal = scope_symbols[arg2]
                     return error.throw_1(error.Errors.REFERENCE_ERROR, literal)
 
                 stack.push(value)
             # *************************************
             elif OUTER == tag:
                 assert arg1 > -1
-                name = literals[arg2]
+                name = scope_symbols[arg2]
                 value = env.ref(name, arg1)
                 stack.push(value)
             # *************************************
@@ -143,7 +170,7 @@ class CodeRoutine(BaseRoutine):
                     val = api.at_index(env, arg1)
                     if not space.isvoid(val):
                         if not api.equal_b(val, value):
-                            literal = literals[arg2]
+                            literal = scope_symbols[arg2]
                             error.throw_4(error.Errors.MATCH_ERROR,
                                           space.newstring(u"Variable has been already assigned in current scope"),
                                           literal, val, value)

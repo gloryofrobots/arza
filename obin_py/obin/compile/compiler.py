@@ -108,6 +108,51 @@ def _declare_literal(compiler, literal):
     return idx
 
 
+def _declare_string(compiler, literal):
+    assert space.isstring(literal)
+    scope = _current_scope(compiler)
+    idx = scope.get_string(literal)
+    if platform.is_absent_index(idx):
+        idx = scope.add_string(literal)
+    return idx
+
+
+def _declare_char(compiler, literal):
+    assert space.ischar(literal)
+    scope = _current_scope(compiler)
+    idx = scope.get_char(literal)
+    if platform.is_absent_index(idx):
+        idx = scope.add_char(literal)
+    return idx
+
+
+def _declare_float(compiler, literal):
+    assert space.isfloat(literal)
+    scope = _current_scope(compiler)
+    idx = scope.get_float(literal)
+    if platform.is_absent_index(idx):
+        idx = scope.add_float(literal)
+    return idx
+
+
+def _declare_int(compiler, literal):
+    assert space.isint(literal)
+    scope = _current_scope(compiler)
+    idx = scope.get_int(literal)
+    if platform.is_absent_index(idx):
+        idx = scope.add_int(literal)
+    return idx
+
+
+def _declare_symbol(compiler, sym):
+    assert space.issymbol(sym)
+    scope = _current_scope(compiler)
+    idx = scope.get_scope_symbol(sym)
+    if platform.is_absent_index(idx):
+        idx = scope.add_scope_symbol(sym)
+    return idx
+
+
 def _declare_temporary(compiler):
     scope = _current_scope(compiler)
     return scope.add_temporary()
@@ -228,7 +273,7 @@ def _emit_store_name(compiler, code, namenode):
 def _emit_store(compiler, code, name, namenode):
     index = _declare_local(compiler, name)
 
-    name_index = _declare_literal(compiler, name)
+    name_index = _declare_symbol(compiler, name)
     code.emit_2(STORE_LOCAL, index, name_index, info(namenode))
 
 
@@ -248,29 +293,20 @@ def _emit_empty_list(code):
     code.emit_1(LIST, 0, codeinfo_unknown())
 
 
-def _emit_literal(compiler, code, node, literal):
-    idx = _declare_literal(compiler, literal)
-    code.emit_1(LITERAL, idx, info(node))
+def _emit_symbol(compiler, code, node, literal):
+    idx = _declare_symbol(compiler, literal)
+    code.emit_1(SYMBOL, idx, info(node))
     return idx
-
-
-def _emit_literal_index(compiler, code, node, idx):
-    code.emit_1(LITERAL, idx, info(node))
 
 
 def _emit_symbol_literal(compiler, code, name):
     symbol = _get_symbol_name(compiler, name)
-    return _emit_literal(compiler, code, name, symbol)
+    return _emit_symbol(compiler, code, name, symbol)
 
 
 def _emit_fself(compiler, code, node, name):
     code.emit_0(FSELF, info(node))
     _emit_store(compiler, code, name, node)
-
-
-def _emit_integer(compiler, code, integer):
-    idx = _declare_literal(compiler, space.newint(integer))
-    code.emit_1(LITERAL, idx, codeinfo_unknown())
 
 
 # ********************************************
@@ -323,14 +359,19 @@ def _get_symbol_name_or_empty(process, name):
 
 def _compile_FLOAT(compiler, code, node):
     value = float(nodes.node_value_s(node))
-    idx = _declare_literal(compiler, space.newfloat(value))
-    code.emit_1(LITERAL, idx, info(node))
+    idx = _declare_float(compiler, space.newfloat(value))
+    code.emit_1(FLOAT, idx, info(node))
 
 
 def _compile_INT(compiler, code, node):
     value = strutil.string_to_int(nodes.node_value_s(node))
-    idx = _declare_literal(compiler, space.newnumber(value))
-    code.emit_1(LITERAL, idx, info(node))
+    num = space.newnumber(value)
+    if space.isint(num):
+        idx = _declare_int(compiler, num)
+        code.emit_1(INT, idx, info(node))
+    else:
+        idx = _declare_float(compiler, num)
+        code.emit_1(FLOAT, idx, info(node))
 
 
 def _compile_TRUE(compiler, code, node):
@@ -354,8 +395,8 @@ def _compile_STR(compiler, code, node):
         strval = strutil.unquote_s(strval)
         strval = unicode_unescape(strval)
         string = space.newstring(strval)
-        idx = _declare_literal(compiler, string)
-        code.emit_1(LITERAL, idx, info(node))
+        idx = _declare_string(compiler, string)
+        code.emit_1(STRING, idx, info(node))
     except RuntimeError as e:
         compile_error(compiler, code, node, unicode(e.args[0]))
 
@@ -371,8 +412,8 @@ def _compile_CHAR(compiler, code, node):
             compile_error(compiler, code, node, u"Invalid char value")
 
         char = space.newchar(strval)
-        idx = _declare_literal(compiler, char)
-        code.emit_1(LITERAL, idx, info(node))
+        idx = _declare_char(compiler, char)
+        code.emit_1(CHAR, idx, info(node))
     except RuntimeError as e:
         compile_error(compiler, code, node, unicode(e.args[0]))
 
@@ -515,7 +556,7 @@ def _compile_node_name_lookup(compiler, code, node):
     name = _get_symbol_name(compiler, node)
 
     index, is_local = _get_variable_index(compiler, code, node, name)
-    name_index = _declare_literal(compiler, name)
+    name_index = _declare_symbol(compiler, name)
     if is_local:
         code.emit_2(LOCAL, index, name_index, info(node))
     else:
@@ -713,7 +754,7 @@ def _compile_FUN(compiler, code, node):
     # index = _get_function_index(compiler, funcname)
     index = _declare_local(compiler, funcname)
 
-    funcname_index = _declare_literal(compiler, funcname)
+    funcname_index = _declare_symbol(compiler, funcname)
     code.emit_2(STORE_LOCAL, index, funcname_index, info(node))
 
 
@@ -925,13 +966,6 @@ def _compile_MODULE(compiler, code, node):
 
 def _compile_FENV(compiler, code, node):
     code.emit_0(FENV, info(node))
-
-
-def _declare_local_name(compiler, code, node):
-    sym = space.newsymbol_s(compiler.process, nodes.node_value_s(node))
-    name_index = _declare_literal(compiler, sym)
-    index = _declare_local(compiler, sym)
-    return sym, index, name_index
 
 
 def _compile_CONS(compiler, code, node):

@@ -173,7 +173,14 @@ class W_Env(W_Root):
         self.name = name
         self.parent_env = parent_environment
         self.scope = scope
-        self.literals = scope.literals
+
+        self.literals = scope.literals()
+        self.scope_symbols = scope.symbols()
+        self.floats = scope.floats()
+        self.ints = scope.ints()
+        self.strings = scope.strings()
+        self.chars = scope.chars()
+
         self.operators = scope.create_operators()
         self.exported_names = scope.exports
         self.refs = scope.create_references()
