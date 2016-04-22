@@ -9,6 +9,9 @@ def printmessage(msg):
 
 
 def main(argv):
+    import time
+    start_time = time.time()
+
     script_file = argv[1]
     if script_file == "--test":
         from test.vm import tests
@@ -16,6 +19,7 @@ def main(argv):
 
     result = run(script_file)
     print ">>>", result
+    print("--- %s seconds ---" % (time.time() - start_time))
     # try:
     #     run(script_file)
     # except SystemExit:

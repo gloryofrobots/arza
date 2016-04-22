@@ -85,6 +85,13 @@ class Bindings:
                 l.append(kv_pair[0])
         return l
 
+    def values(self):
+        l = []
+        for kv_pair in self._backing:
+            if kv_pair and not space.isvoid(kv_pair[0]):
+                l.append(kv_pair[1])
+        return l
+
     def __iter__(self):
         for kv_pair in self._backing:
             if kv_pair and not space.isvoid(kv_pair[0]):
@@ -272,6 +279,9 @@ class W_Map(W_Root):
 
     def keys(self):
         return self.slot_bindings.keys()
+
+    def values(self):
+        return self.slot_bindings.values()
 
     def items(self):
         return self.slot_bindings.items()
