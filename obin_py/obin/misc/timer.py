@@ -1,6 +1,7 @@
 class Timer(object):
-    def __init__(self, verbose=True):
+    def __init__(self, msg, verbose=True):
         self.verbose = verbose
+        self.msg = msg
 
     def __enter__(self):
         import time
@@ -13,5 +14,5 @@ class Timer(object):
         self.secs = self.end - self.start
         self.msecs = self.secs * 1000  # millisecs
         if self.verbose:
-            print 'elapsed time: %f ms' % self.msecs
+            print 'Timer %s elapsed time: %d sec %f ms' % (self.msg, self.secs, self.msecs)
 

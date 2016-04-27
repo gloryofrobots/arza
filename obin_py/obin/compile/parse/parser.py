@@ -1,11 +1,15 @@
 __author__ = 'gloryofrobots'
-import obin.compile.parse.lexer as lexer
 from obin.compile.parse.tokenstream import TokenStream
 from obin.compile.parse.indenter import IndentationTokenStream, InvalidIndentationError
 from obin.compile.parse.callbacks import *
 from obin.compile.parse.lexer import UnknownTokenError
 from obin.compile.parse import tokens
 from obin.types import api, space, plist, root, environment
+if tokens.RPLY:
+    import obin.compile.parse.lexer as lexer
+else:
+    import obin.compile.parse.lexer2 as lexer
+
 
 """ GOLANG PRECEDENCES. SOURCE OF INSPIRATION
 Precedence    Operator

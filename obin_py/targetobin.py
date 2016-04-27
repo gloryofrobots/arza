@@ -9,17 +9,16 @@ def printmessage(msg):
 
 
 def main(argv):
-    import time
-    start_time = time.time()
+    from obin.misc import timer
+    with timer.Timer("Obin Main", True):
 
-    script_file = argv[1]
-    if script_file == "--test":
-        from test.vm import tests
-        return tests.run()
+        script_file = argv[1]
+        if script_file == "--test":
+            from test.vm import tests
+            return tests.run()
 
-    result = run(script_file)
-    print ">>>", result
-    print("--- %s seconds ---" % (time.time() - start_time))
+        result = run(script_file)
+        print ">>>", result
     # try:
     #     run(script_file)
     # except SystemExit:

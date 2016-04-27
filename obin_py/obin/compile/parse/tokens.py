@@ -3,14 +3,21 @@ from obin.compile.parse.token_type import *
 from obin.types import space, api, root
 from obin.misc.platform import re
 
+RPLY = False
 
-def keyword(literal):
-    return re.compile('\\b%s\\b' % literal)
+if RPLY:
+    def keyword(literal):
+        return re.compile('\\b%s\\b' % literal)
 
 
-def token(literal):
-    return re.compile(literal)
+    def token(literal):
+        return re.compile(literal)
+else:
+    def keyword(literal):
+        return '\\b%s\\b' % literal
 
+    def token(literal):
+        return literal
 
 ## Regexes for use in tokens
 ##
@@ -43,7 +50,9 @@ bin_prefix = '0[bB]'
 bin_digits = '[01]+'
 
 integer_suffix_opt = '(([uU]ll)|([uU]LL)|(ll[uU]?)|(LL[uU]?)|([uU][lL])|([lL][uU]?)|[uU])?'
-decimal_constant = '(0' + integer_suffix_opt + ')|([1-9][0-9]*' + integer_suffix_opt + ')'
+# decimal_constant = '(0' + integer_suffix_opt + ')|([1-9][0-9]*' + integer_suffix_opt + ')'
+decimal_constant = "[0-9]+"
+
 octal_constant = '0[0-7]*' + integer_suffix_opt
 hex_constant = hex_prefix + hex_digits + integer_suffix_opt
 bin_constant = bin_prefix + bin_digits + integer_suffix_opt
@@ -51,7 +60,9 @@ bin_constant = bin_prefix + bin_digits + integer_suffix_opt
 # floating constants (K&R2: A.2.5.3)
 exponent_part = """([eE][-+]?[0-9]+)"""
 fractional_constant = """([0-9]+\.[0-9]+)"""
-floating_constant = '((((' + fractional_constant + ')' + exponent_part + '?)|([0-9]+' + exponent_part + '))[FfLl]?)'
+# floating_constant = '((((' + fractional_constant + ')' + exponent_part + '?)|([0-9]+' + exponent_part + '))[FfLl]?)'
+floating_constant = fractional_constant
+
 binary_exponent_part = '''([pP][+-]?[0-9]+)'''
 hex_fractional_constant = '(((' + hex_digits + r""")?\.""" + hex_digits + ')|(' + hex_digits + r"""\.))"""
 hex_floating_constant = '(' + hex_prefix + '(' + hex_digits + '|' + hex_fractional_constant + ')' + binary_exponent_part + '[FfLl]?)'
@@ -68,7 +79,6 @@ string_literal = '"([^\\\"]+|\\.)*"'
 multi_string_literal = '"{3}([\s\S]*?"{3})'
 
 RULES = [
-    # (token('\n[ ]*'), TT_INDENTATION),
     (token('\n'), TT_NEWLINE),
     (token('[ ]*\.\.\.'), TT_ELLIPSIS),
     (token(' \.'), TT_SPACE_DOT),
@@ -142,7 +152,7 @@ RULES = [
     (token(name_const), TT_NAME),
 
     (token('\-\>'), TT_ARROW),
-    (token('\<\-'), TT_BACKARROW),
+    # (token('\<\-'), TT_BACKARROW),
     (token('\;'), TT_END_EXPR),
     (token('#'), TT_SHARP),
     (token('\{'), TT_LCURLY),
