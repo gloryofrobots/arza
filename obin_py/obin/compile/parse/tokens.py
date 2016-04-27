@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
 from obin.compile.parse.token_type import *
-from obin.types import space, api
+from obin.types import space, api, root
 from obin.misc.platform import re
 
 
@@ -173,14 +173,53 @@ RULES = [
     (token(operator_const), TT_OPERATOR),
 ]
 
+class Token(root.W_Hashable):
+    def __init__(self,type, val, pos, line, column):
+        root.W_Hashable.__init__(self)
+        assert isinstance(type, int)
+        assert isinstance(val, str)
+        assert space.isint(pos)
+        assert space.isint(line)
+        assert space.isint(column)
+        self.type = type
+        self.val_s = val
+        self.val = space.newstring_s(val)
+        self.pos = pos
+        self.line = line
+        self.column = column
+
+
+    def _compute_hash_(self):
+        from obin.misc.platform import rarithmetic
+        x = 0x345678
+        for item in [self.val, self.pos, self.line, self.column]:
+            y = api.hash_i(item)
+            x = rarithmetic.intmask((1000003 * x) ^ y)
+        return x
+
+    def _type_(self, process):
+        return process.std.types.Tuple
+
+    def _equal_(self, other):
+        if not isinstance(other, Token):
+            return False
+
+        if self.type != other.type:
+            return False
+        if self.val_s != other.val_s:
+            return False
+
+        if token_position_i(self) != token_position_i(other):
+            return False
+
+        return True
+
+    def _to_string_(self):
+        return token_to_s(self)
+
 
 def newtoken(type, val, pos, line, column):
-    assert isinstance(type, int)
-    assert isinstance(val, str)
-    assert space.isint(pos)
-    assert space.isint(line)
-    assert space.isint(column)
-    return space.newtuple([space.newint(type), space.newstring_s(val), pos, line, column])
+    return Token(type, val, pos, line, column)
 
 
 def newtoken_without_meta(type, val):
@@ -188,27 +227,27 @@ def newtoken_without_meta(type, val):
 
 
 def token_type(token):
-    return api.to_i(api.at_index(token, 0))
+    return token.type
 
 
 def token_value_s(token):
-    return api.to_s(api.at_index(token, 1))
+    return token.val_s
 
 
 def token_value(token):
-    return api.at_index(token, 1)
+    return token.val
 
 
 def token_position(token):
-    return api.at_index(token, 2)
+    return token.pos
 
 
 def token_line(token):
-    return api.at_index(token, 3)
+    return token.line
 
 
 def token_column(token):
-    return api.at_index(token, 4)
+    return token.column
 
 
 # indentation level
