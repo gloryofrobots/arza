@@ -54,13 +54,16 @@ def setup(process, module, stdlib):
 
 @complete_native_routine
 def compile_module(process, routine):
+    import time
     sourcename = routine.get_arg(0)
     modulename = routine.get_arg(1)
     parent_env = routine.get_arg(2)
     filename = api.to_s(sourcename)
     script = fs.load_file_content(filename)
 
+    start_time = time.time()
     _module = compiler.compile_env(process, parent_env, modulename, script, sourcename)
+    print("--- compile module  %s seconds %d ---" % (api.to_s(modulename), (time.time() - start_time)))
     env = environment.create_environment(process, _module, parent_env)
     return env
 

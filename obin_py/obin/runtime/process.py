@@ -2,6 +2,7 @@ from obin.types import api, space, string
 from obin.runtime.stack import Stack
 from obin.types import plist
 from obin.runtime import error
+import time
 
 DEFAULT_STACK_SIZE = 32
 
@@ -164,7 +165,10 @@ class Process(object):
         assert not self.fiber
         self.fiber = self.create_fiber()
         self.fiber.start_work(func, args)
-        return self.__run()
+        start_time = time.time()
+        result = self.__run()
+        print("---  process run seconds %d ---" % ((time.time() - start_time)))
+        return result
 
     def subprocess(self, func, args):
         child = Process(self.__data)
