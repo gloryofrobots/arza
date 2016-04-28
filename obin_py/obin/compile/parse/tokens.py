@@ -84,6 +84,7 @@ RULES = [
     (token(' \.'), TT_SPACE_DOT),
     (token('\.\{'), TT_INFIX_DOT_LCURLY),
     (token('\.\('), TT_INFIX_DOT_LPAREN),
+    (token('\.\['), TT_INFIX_DOT_LSQUARE),
     (token(' '), -1),
     (token('-----[-]*'), -1),
     (token('//[^\n]*'), -1),

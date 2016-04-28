@@ -164,10 +164,10 @@ def infix_lcurly(parser, op, node, left):
     return node_2(NT_MODIFY, __ntok(node), left, list_node(items))
 
 
-def infix_lparen(parser, op, node, left):
-    init_free_layout(parser, node, [TT_RPAREN])
+def infix_lsquare(parser, op, node, left):
+    init_free_layout(parser, node, [TT_RSQUARE])
     exp = expression(parser, 0)
-    advance_expected(parser, TT_RPAREN)
+    advance_expected(parser, TT_RSQUARE)
     return node_2(NT_LOOKUP, __ntok(node), left, exp)
 
 

@@ -15,7 +15,7 @@ for example
 
 
 Precedence    Operator
-    100           : . .{ .(
+    100           : . .{ .( .[
     95           JUXTAPOSITION
     60           :: :::
     50           *  /

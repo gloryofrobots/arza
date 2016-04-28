@@ -418,7 +418,7 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_DOT, 100, infix_dot)
 
     infix(parser, TT_INFIX_DOT_LCURLY, 100, infix_lcurly)
-    infix(parser, TT_INFIX_DOT_LPAREN, 100, infix_lparen)
+    infix(parser, TT_INFIX_DOT_LSQUARE, 100, infix_lsquare)
 
     # OTHER OPERATORS ARE DECLARED IN prelude.obn
 
