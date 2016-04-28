@@ -61,8 +61,8 @@ def compile_module(process, routine):
     filename = api.to_s(sourcename)
     script = fs.load_file_content(filename)
 
-    # with Timer("--- compile module  %s " % api.to_s(modulename)):
-    _module = compiler.compile_env(process, parent_env, modulename, script, sourcename)
+    with Timer("--- compile module  %s " % api.to_s(modulename)):
+        _module = compiler.compile_env(process, parent_env, modulename, script, sourcename)
 
     # print("--- compile module  %s seconds %d ---" % (, (time.time() - start_time)))
     env = environment.create_environment(process, _module, parent_env)

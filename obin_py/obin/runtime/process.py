@@ -165,8 +165,8 @@ class Process(object):
         assert not self.fiber
         self.fiber = self.create_fiber()
         self.fiber.start_work(func, args)
-        # with Timer("Process run"):
-        result = self.__run()
+        with Timer("Process run"):
+            result = self.__run()
         return result
 
     def subprocess(self, func, args):
