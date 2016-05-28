@@ -5,9 +5,9 @@ It exists currently only as prototype written in python and i dont plane to deve
 
 ## Currently implemented features
 * modern expressive functional syntax which resembles something between Erlang and F#.
-  for example foldr
+    ```f#
     fun foldr func accumulator coll
-	| f acc [] -> acc
+    	| f acc [] -> acc
 	| f acc hd::tl -> f hd (foldr f acc tl)
 
 * handwritten, extensible operator precedence parser with support of indentation layouts and juxtaposition operator
@@ -31,7 +31,7 @@ It exists currently only as prototype written in python and i dont plane to deve
 * lack of macros, I just don't have time for them
   
 Obin scripts are placed in test/obin
-* __lib__ folder contains stdlib
+* \_\_lib__ folder contains stdlib
 * tests folder contains testing scripts
 
 Obin may not have any practical interest but it may be usefull for people who study compilers and virtual machines
