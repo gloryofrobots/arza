@@ -49,4 +49,3 @@ I abandon project because of
 2. Automatic carrying is very error prone in dynamic languages, but without it lightweiht juxtaposition driven syntax has little sense
 3. I understand that minimal and expressive syntax are also terse and very hard to read with screen readers and accesibility is very important for me.
 4. I want to experiment with type systems and may be create another language later
-

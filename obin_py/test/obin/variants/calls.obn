@@ -127,13 +127,23 @@ fun span predicate coll
         c = empty coll
         (c, c)
     | p xs@[x, ...xs1] ->
-        if not (p x) ->
+        if not (p x) then
             (empty coll, xs)
-        else ->
+        else
             (ys, zs) = (span p xs1)
             (x::ys, zs)
-        ------------------------------
---------------------------------------------------
+
+fun span(predicate, coll)
+    case(p, []) ->
+        c = empty(coll)
+        (c, c)
+
+    case(p, xs@[x, ...xs1]) ->
+        if not p(x) then
+            (empty(coll), xs)
+        else
+            (ys, zs) = span(p, xs1)
+            (x::ys, zs)
 
 fun delete item coll
     | item [item, ...xs] -> xs
@@ -146,6 +156,11 @@ fun insert index v coll
     | i v [] -> throw IndexError ("Invalid insertion index", index, v)
     | i v x::xs -> x :: (insert (i - 1) v xs)
 
+fun insert(index, v, coll)
+    case(0, v, coll) -> v::coll
+    case(i, v, []) -> throw IndexError ("Invalid insertion index", index, v)
+    case(i, v, x::xs) -> x :: insert(i - 1, v, xs)
+
 fun append v coll ->
     insert (length coll) v coll
 
@@ -153,6 +168,11 @@ fun append v coll ->
 
 fun conjunction l ->
     foldr lam v acc -> v and acc end True l end
+
+fun conjunction(l) ->
+    foldr(fun (v, acc) ->
+                 v and acc
+          end, True, l)
 
 fun disjunction l ->
     foldr lam v acc -> v or acc end False l end
@@ -245,17 +265,35 @@ fun sort(f, s) ->
         case([], ys) -> ys
         case(xs, []) -> xs
         case(x::xs, y::ys) ->
-            if f x y then x :: _merge(xs, y::ys)
+            if f(x, y) then x :: _merge(xs, y::ys)
             else y :: _merge(x::xs, ys)
 
     fun _sort(s)
-        case ([]) -> []
-        case ([x]) -> s
-        case (xs) ->
+        case([]) -> []
+        case([x]) -> s
+        case(xs) ->
             (ys, zs) = split(xs)
             _merge(_sort(ys), _sort(zs))
 
     _sort(s)
+
+fun sort f s ->
+    fun _merge s1 s2
+        | [] ys -> ys
+        | xs [] -> xs
+        | x::xs y::ys ->
+            if f x y then x :: _merge xs (y::ys)
+            else y :: _merge (x::xs) ys
+
+    fun _sort s
+        | [] -> []
+        | [x] -> s
+        | xs ->
+            (ys, zs) = split xs
+            _merge (_sort ys) (_sort zs)
+    ---------
+
+    _sort s
 
 fun sort_asc s -> sort(`<=`, s)
 fun sort_desc s -> sort(`>=`, s)
@@ -325,3 +363,105 @@ fun test_pipe() ->
           >> seq:map (triple >> square)
      )  [9, 9, 81, 225, 441]
 
+type TypeDerived
+extend TypeDerived
+    with Eq
+        def ==.(self, other) -> _api:equal.(other, self)
+    with Str
+        def str.(self) -> _api:to_string.(self)
+    with Repr
+        def repr.(self) -> _api:to_repr.(self)
+    with Collection
+        def put.(key, value, self) -> _api:put.(key, value, self)
+        def at.(key, self) -> _api:at.(key, self)
+        def del.(key, self) -> _api:del.(key, self)
+        def elem.(key, self) -> _api:elem.(key, self)
+    with Sized
+        def len.(self) -> _api:length.(self)
+        def is_empty.(self) -> _api:is_empty.(self)
+    with Indexed
+        def index_of.(self) -> _datatype:record_index_of.(self)
+    with Dict
+        def keys.(self) -> _datatype:record_keys.(self)
+        def values.(self) -> _datatype:record_values.(self)
+
+type TypeDerived
+extend TypeDerived
+    with Eq
+        def == (self, other) -> _api:equal(other, self)
+    with Str
+        def str(self) -> _api:to_string(self)
+    with Repr
+        def repr(self) -> _api:to_repr(self)
+    with Collection
+        def put(key, value, self) -> _api:put(key, value, self)
+        def at(key, self) -> _api:at(key, self)
+        def del(key, self) -> _api:del(key, self)
+        def elem(key, self) -> _api:elem(key, self)
+    with Sized
+        def len(self) -> _api:length(self)
+        def is_empty(self) -> _api:is_empty(self)
+    with Indexed
+        def index_of(self) -> _datatype:record_index_of(self)
+    with Dict
+        def keys(self) -> _datatype:record_keys(self)
+        def values(self) -> _datatype:record_values(self)
+
+type TypeDerived
+extend TypeDerived
+    with Eq
+        def == self other -> _api:equal other self
+    with Str
+        def str self -> _api:to_string self
+    with Repr
+        def repr self -> _api:to_repr self
+    with Collection
+        def put key value self -> _api:put key value self
+        def at key self -> _api:at key self
+        def del key self -> _api:del key self
+        def elem key self -> _api:elem key self
+    with Sized
+        def len self -> _api:length self
+        def is_empty self -> _api:is_empty self
+    with Indexed
+        def index_of self -> _datatype:record_index_of self
+    with Dict
+        def keys self -> _datatype:record_keys self
+        def values self -> _datatype:record_values self
+
+
+type UnionDerived
+extend UnionDerived
+    with Range
+        def range _from  _to  ->
+            union = _datatype:get_union _from
+            if not (kindof _to union) then
+                throw ValueError("Invalid type for second argument", _to)
+            else
+                s1 = seq:drop_while (`!=` _from) (to_seq union)
+                seq:take_while (`!=` _to) s1
+        def range_from _from ->
+            union = _datatype:get_union _from
+            s1 = seq:drop_while (`!=` _from) (to_seq union)
+        def range_from_by _from _by ->
+            throw NotImplementedError ("Only range from Rangeable is supported")
+        def range_by _from _to _by ->
+            throw NotImplementedError ("Only range from Rangeable is supported")
+
+type UnionDerived
+extend UnionDerived
+    with Range
+        def range _from  _to  ->
+            union = _datatype:get_union _from
+            if not (kindof _to union) then
+                throw ValueError("Invalid type for second argument", _to)
+            else
+                s1 = seq:drop_while (`!=` _from) (to_seq union)
+                seq:take_while (`!=` _to) s1
+        def range_from _from ->
+            union = _datatype:get_union _from
+            s1 = seq:drop_while (`!=` _from) (to_seq union)
+        def range_from_by _from _by ->
+            throw NotImplementedError ("Only range from Rangeable is supported")
+        def range_by _from _to _by ->
+            throw NotImplementedError ("Only range from Rangeable is supported")

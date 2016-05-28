@@ -9,6 +9,10 @@ MAKE {} SYNTAX IN FIELDS AND CONSTRUCTING WITH KEYWORD ARGS
 PATTERN MATCHING NOW IS SHIT REWRITE IT
 -------------------------------------------
 
+CONTRACTS
+https://dlang.org/spec/contracts.html
+-----------------------------
+
 PROPER OR CASES
  match x with
     | 1 | 2 | 3 -> printfn "Found 1, 2, or 3!"
