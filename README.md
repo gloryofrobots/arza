@@ -203,7 +203,7 @@ Project split into two folders obin_c and obin_py. Folder obin_c is obsolete, I 
 
 
 I abandon project because of
-1. Such language (immutable and functional aka Erlang) needs large ecosystem and well suited for complicated parallel programming but I plan it as a small embeddable language, so I don't have confidence now that i am designing something usefull
-2. Automatic currying is very error prone in dynamic languages, but without it syntax with juxtaposition has little sense
-3. I understand that minimal and expressive syntax are also terse and very hard to read with screen readers and accesibility is very important for me.
-4. I want to experiment with type systems and may be switch to another language
+* Such language (immutable and functional aka Erlang) needs large ecosystem and well suited for complicated parallel programming but I plan it as a small embeddable language, so I don't have confidence now that i am designing something usefull
+* Automatic currying is very error prone in dynamic languages, but without it syntax with juxtaposition has little sense
+* I understand that minimal and expressive syntax are also terse and very hard to read with screen readers and accesibility is very important for me.
+* I want to experiment with type systems and may be switch to another language
