@@ -18,10 +18,30 @@ It exists currently only as prototype written in python and I do not plan to con
 Syntax example
 ```
 //NOTE Obin does not support tabs in any way
+//infix operators, right left associativity
+// operator, function name, precedence
+infixr := := 10
+infixl <| <| 15
+infixl |> |> 20
+infixl << << 25
+infixl >> >> 25
 
-fun foldr func accumulator coll
-    | f acc [] -> acc
-    | f acc hd::tl -> f hd (foldr f acc tl)
+//operators implementation
+//F# like carrying operators
+fun |> x f -> f x
+fun <| f x -> f x
+fun >> f g x -> g (f x)
+fun << f g x ->  f (g x)
+
+//operator as a polymorphic function
+trait MutRef for self of Ref
+    def := self value
+    
+//almost all base operators like + - * / etc are polymorphic functions which can be implemented for user types
+type Data value
+extend Data
+   with MutRef
+     def := self value -> obin:mutable:put self #value value
 
 trait Val for self
     def val self
@@ -36,7 +56,6 @@ extend Option
             match self with
                 | x of Some -> x.val
                 | x of None -> x
-
 
 type Point2 x y
 
@@ -56,6 +75,10 @@ implement Eq for Point2
             self.x == other.x and self.y == other.y
     def != self other of Point2 -> not (self == other)
 
+// simple function for Seq trait
+fun foldr func accumulator coll
+    | f acc [] of Seq -> acc
+    | f acc (hd::tl) of Seq -> f hd (foldr f acc tl)
 
 // () is unit type (empty tuple). Every function must have at least one argument
 fun test () ->
