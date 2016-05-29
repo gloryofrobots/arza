@@ -17,9 +17,9 @@ It exists currently only as prototype written in python and I do not plan to con
 
 Syntax example
 ```
-//NOTE Obin does not support tabs in any way
-//infix operators, right left associativity
-// operator, function name, precedence
+// Obin does not support tabs in any way !!
+
+// keyword(prefix, infixr, infixl) operator, function name, precedence
 infixr := := 10
 infixl <| <| 15
 infixl |> |> 20
@@ -33,11 +33,12 @@ fun <| f x -> f x
 fun >> f g x -> g (f x)
 fun << f g x ->  f (g x)
 
-//operator as a polymorphic function
+// operator as a polymorphic function
 trait MutRef for self of Ref
     def := self value
     
-//almost all base operators like + - * / etc are polymorphic functions which can be implemented for user types
+// almost all base operators like + - * / etc are polymorphic functions
+// which can be implemented for user types
 type Data value
 extend Data
    with MutRef
@@ -89,9 +90,9 @@ fun test () ->
                b = a + 42
                b * 24
              end 1 2 3)
-    //tuples
+    // tuples
     (x,y,z) = (1,2.334353252,3)
-    //lists
+    // lists
     let x::xs = [1,2,3,4,5] in
         affirm:is_equal x 1
         affirm:is_equal xs [2,3,4,5]
@@ -110,8 +111,11 @@ fun test () ->
                                {a=[1,2,3,4,5], b="I am B", c=3.14, d={e=(1,2,3,4,5)}}
                     
 
-    // if function call arguments lays on multiple lines ,we can use syntax f . arg1 . arg1 which is the same as Haskell's $ but does not creates carried functions
-    // important! spaces are very important, for example human.name is member access notation and human . name is function call
+    // if function call arguments lays on multiple lines,
+    // we can use syntax f . arg1 . arg1 which is the same as Haskell's $
+    // but ` .` does not creates clojures or partial functions, it operates on ast level
+    // important! spaces are very important,
+    // for example human.name translates to (obin:lang:at human #name)  and human . name to (human name)
     affirm:is_equal try
                         throw (1,2,"ERROR")
                     catch
@@ -133,7 +137,7 @@ fun test () ->
                         2
 
                          3) 11)
-    //conditions and layouts
+    // conditions and layouts
     affirm:is_false if 5 == 4 then True else False
     affirm:is_equal (if 13 == 12 then 42 * 2 else if 13 == 14 then 12 * 2 else 1 end end) 1
     affirm:is_equal if x == 13 then 1 + 1
@@ -141,8 +145,8 @@ fun test () ->
                     elif x == 15 then 3 + 3
                     else 4 + 4 end . // -> ` .` syntax for multiline
                     8
-    //pattern matching
-    //function signature is mandatory, even if it is very simple
+    // pattern matching
+    // function signature is mandatory, even if it is very simple
     fun f2 a | 0 -> 1
              | 1 -> 2
              | 2 -> 3
@@ -156,10 +160,12 @@ fun test () ->
         | [_, ..._] s -> False
     --------------------------------------------------
     // more than five ----- dashes interpreted as `end` token
-    // [el, el2, ...tl] is equivalent to el1::el2::tl in pattern matching, but it can be also used for tuples as (el1, el2, ...tl)
-//end here is not necessarry, it will be inserted automatically according to indentation layout
+    // [el, el2, ...tl] is equivalent to el1::el2::tl in pattern matching,
+    // but it can be also used for tuples as (el1, el2, ...tl)
+// end here is not necessarry, it will be inserted automatically according to indentation layout
 end 
-// many more examples, such as abstract data types, lazy evaluation, transducers, traits can be found in obin_py/tests/obin
+// many more examples, such as abstract data types, lazy evaluation, transducers, traits
+// can be found in obin_py/tests/obin
 ```
 
 ## Known problems
