@@ -1,15 +1,15 @@
 # Obin programming language
 
-Obin is a small unpure functional programming language with immutable datastructures.
-It exists currently only as prototype written in python and i dont plane to develop it further.
+Obin is a small, unpure functional programming language with immutable datastructures.
+It exists currently only as prototype written in python and I do not plan to continue it's developing.
 
 ## Currently implemented features
 * Modern expressive functional syntax which resembles something between Erlang and F#.
 * Handwritten, extensible operator precedence parser with support of indentation layouts and juxtaposition operator
 * Module system as a cross between Python, Haskell and Lua
-* Polymorphism engine similar to Clojure protocols but with possibility to dispatch not only on first argument
+* Polymorphism engine similar to Clojure's protocols but with possibility to dispatch not only on first argument
 * Automatic carrying with simple push and pop model
-* Stackless stack based virtual machine
+* Stackless, stack based virtual machine
 * Persistant data structures (lists, vectors, maps), shamelessly stolen from [Pixie](https://github.com/pixie-lang/pixie). 
 * Pattern matching, let-in blocks, clojures, try-catch-finally, abstract data types
 * Assymetric coroutines
@@ -17,14 +17,27 @@ It exists currently only as prototype written in python and i dont plane to deve
 
 Syntax example
 ```
+//NOTE Obin does not support tabs in any way
+
 fun foldr func accumulator coll
     | f acc [] -> acc
     | f acc hd::tl -> f hd (foldr f acc tl)
 
-type Maybe
-    | Nothing
-    | Just v
-    
+trait Val for self
+    def val self
+
+type Option
+    | Some val
+    | None
+
+extend Option
+    with Val
+        def val self ->
+            match self with
+                | x of Some -> x.val
+                | x of None -> x
+
+
 type Point2 x y
 
 type Vec2 p1 p2
@@ -43,6 +56,73 @@ implement Eq for Point2
             self.x == other.x and self.y == other.y
     def != self other of Point2 -> not (self == other)
 
+fun test () ->
+   // indentation is important
+   // but layouts are flexible and you can call lambdas after creation, immediately
+   io:print (lam x y z ->
+               a = x + y z
+               b = a + 42
+               b * 24
+             end 1 2 3)
+    //tuples
+    (x,y,z) = (1,2.334353252,3)
+    //lists
+    let x::xs = [1,2,3,4,5] in
+        affirm:is_equal x 1
+        affirm:is_equal xs [2,3,4,5]
+    //maps
+    {a=[x,y,...z], B @ b="I am B", c of Float, D@d={e=(x,y,...zz)}} =
+                               {a=[1,2,3,4,5], b="I am B", c=3.14, d={e=(1,2,3,4,5)}}
+                    
+    // if function call arguments lays on multiple lines ,we can use syntax f . arg1 . arg1 which is the same as Haskell's $ but does not creates carried functions
+    // important! spaces are very important, for example human.name is member access notation and human . name is function call 
+    affirm:is_equal try
+                        throw (1,2,"ERROR")
+                    catch
+                        | err @ (1, y, 3) -> #first
+                        | (1,2, "ERROR@") -> #second
+                        | err @ (1, 2, x) -> #third
+                    finally ->
+                        (#fourth, err, x)
+                    end . // -> this is obin syntax for multiline arguments
+                    (#fourth, (1, 2, "ERROR"), "ERROR")
+    // another way to express multiline call is to use parens in a very lisp like manner
+    (affirm:is_equal 
+          (lam x y z
+            | 1 2 3 -> 11
+            | 2 4 5 -> 22
+          end
+                    1
+                        2
+
+                         3) 11)
+    //conditions and layouts
+    affirm:is_false if 5 == 4 then True else False
+    affirm:is_equal (if 13 == 12 then 42 * 2 else if 13 == 14 then 12 * 2 else 1 end end) 1
+    affirm:is_equal if x == 13 then 1 + 1
+                    elif x == 14 then 2 + 2
+                    elif x == 15 then 3 + 3
+                    else 4 + 4 end . // -> ` .` syntax for multiline
+                    8
+    //pattern matching
+    //function signature is mandatory, even if it is very simple
+    fun f2 a | 0 -> 1
+             | 1 -> 2
+             | 2 -> 3
+    
+    match (1,2,3) with | (x,y,z) -> 2
+                       | _ -> 1
+                       
+    fun prefix_of coll1 coll2
+        | [hd, ...pre_tail] hd::tail -> prefix_of pre_tail tail
+        | [] s -> True
+        | [_, ..._] s -> False
+    --------------------------------------------------
+    // more than five ----- dashes interpreted as `end` token
+    // [el, el2, ...tl] is equivalent to el1::el2::tl in pattern matching, but it can be also used for tuples as (el1, el2, ...tl)
+//end here is not necessarry, it will be inserted automatically according to indentation layout
+end 
+// many more examples, such as abstract data types, lazy evaluation, transducers, traits can be found in obin_py/tests/obin
 ```
 
 ## Known problems
@@ -52,13 +132,17 @@ implement Eq for Point2
     io:print -1 it will be interpreted as sexpr (- io:print 1) you need to type
     io:print (-1) instead
 * Custom operators can be created but they will be exported only from prelude, if declared in other module they will remain local
-* lack of macrosses
-  
-Obin scripts are placed in test/obin
-* \_\_lib__ folder contains stdlib
-* tests folder contains testing scripts
-* 
-Some code (big enums, repeating blocks) generated in manual mode from scripts in obin_py/generators, but using them are not necessary.
+* Lack of macrosses
+* Lack of tail call elimination and other optimizations common to functional languages
+* Because every function call in obin is trampolined as one VM loop iteration, there are no way to easily call obin code from native code
+* Current obin implementation is a draft, so many things need to be optimized for speed and memory
+
+
+Obin scripts are placed in test/obin, where
+* obin_py/test/obin/\_\_lib__ folder contains obin stdlib
+* obin_py/test/tests folder contains testing scripts
+
+Some code (big enums, repeating blocks) generated from scripts in obin_py/generators. Generation is not automatic, I manually run some script and copy paste it's stdout.
 To run interpreter
 ```
 cd obin_py 
@@ -66,7 +150,7 @@ python  targetobin.py test/obin/main.obn
 ```
 Program will run painfully slowly with stock python so I recomend using pypy instead
 You may need pypy toolchain in the path see ```obin_py/runobin.sh``` for details.
-Obin does not compiles with RPython, but it can be done with some effort.
+Obin does not compiles with RPython currently, but it can be done with some effort.
 
 
 Obin may not have any practical interest but it may be usefull for people who begin to study compilers and virtual machines
