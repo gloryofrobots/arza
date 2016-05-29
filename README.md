@@ -56,6 +56,8 @@ implement Eq for Point2
             self.x == other.x and self.y == other.y
     def != self other of Point2 -> not (self == other)
 
+
+// () is unit type (empty tuple). Every function must have at least one argument
 fun test () ->
    // indentation is important
    // but layouts are flexible and you can call lambdas after creation, immediately
@@ -70,12 +72,23 @@ fun test () ->
     let x::xs = [1,2,3,4,5] in
         affirm:is_equal x 1
         affirm:is_equal xs [2,3,4,5]
-    //maps
+    //maps strings, and symbols
+    Alice = {name="Alice", symbol_name = #Alice }
+    Alice.name == ALice.symbol_name
+    
+    // = is not assignment, but matching, like in Erlang
+    a = 1 // 1
+    a = 2 // throws  
+    1 = 1 // 1
+    2 = 1 // throws 
+    
+    // Varname @ pattern binds result of pattern to variable Varname
     {a=[x,y,...z], B @ b="I am B", c of Float, D@d={e=(x,y,...zz)}} =
                                {a=[1,2,3,4,5], b="I am B", c=3.14, d={e=(1,2,3,4,5)}}
                     
+
     // if function call arguments lays on multiple lines ,we can use syntax f . arg1 . arg1 which is the same as Haskell's $ but does not creates carried functions
-    // important! spaces are very important, for example human.name is member access notation and human . name is function call 
+    // important! spaces are very important, for example human.name is member access notation and human . name is function call
     affirm:is_equal try
                         throw (1,2,"ERROR")
                     catch
@@ -86,6 +99,7 @@ fun test () ->
                         (#fourth, err, x)
                     end . // -> this is obin syntax for multiline arguments
                     (#fourth, (1, 2, "ERROR"), "ERROR")
+    
     // another way to express multiline call is to use parens in a very lisp like manner
     (affirm:is_equal 
           (lam x y z
