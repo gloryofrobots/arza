@@ -2,7 +2,28 @@
 fun foldl func accumulator coll
     | f acc [] -> acc
     | f acc hd::tl -> foldl f (f hd acc) tl
-----------------------------------------
+
+fun foldl (func, accumulator, coll)
+    case (f, acc, []) -> acc
+    case (f, acc, hd::tl) -> foldl(f, f(hd, acc), tl)
+
+fun foldl func, accumulator, coll
+    | f, acc, [] -> acc
+    | f, acc, hd::tl -> foldl f, f hd acc, tl
+
+
+func1.arg1.arg2.(func2.arg3.arg4.(func3.arg5.arg6.arg7) / 42 + 56.arg8.arg9) + 1.arg10
+
+func1 arg1 arg2 ((func2 arg3 arg4 ((func3 arg5 arg6 arg7) / 42 + 56) arg8 arg9) + 1) arg10
+(func1 arg1 arg2 (+ (func2 arg3 arg4 (+ (/ (func3 arg5 arg6 arg7) 56) 42) arg8 arg9) 1) arg10)
+
+func1(arg1, arg2, func2(arg3, arg4, func3(arg5, arg6,arg7) / 42 +56),arg8, arg9) + 1, arg10
+
+
+
+fun foldl (func, accumulator, coll)
+    case (f, acc, []) -> acc
+    case (f, acc, hd::tl) -> foldl.(f, f.(hd, acc), tl)
 
 fun foldr func accumulator coll
     | f acc [] -> acc
