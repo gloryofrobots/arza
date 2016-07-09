@@ -5,11 +5,11 @@ from obin.compile.parse.callbacks import *
 from obin.compile.parse.lexer import UnknownTokenError
 from obin.compile.parse import tokens
 from obin.types import api, space, plist, root, environment
+
 if tokens.RPLY:
     import obin.compile.parse.lexer as lexer
 else:
     import obin.compile.parse.lexer2 as lexer
-
 
 """ GOLANG PRECEDENCES. SOURCE OF INSPIRATION
 Precedence    Operator
@@ -34,6 +34,8 @@ Precedence    Operator
     15           " ."  as of <|
     10           = := @
 """
+
+
 # additional helpers
 def infix_operator(parser, ttype, lbp, infix_function):
     op = get_or_create_operator(parser, ttype)
@@ -289,7 +291,6 @@ def guard_parser_init(proc_data, parser):
     return parser
 
 
-
 def pattern_parser_init(parser):
     parser.break_on_juxtaposition = True
     prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
@@ -302,9 +303,9 @@ def pattern_parser_init(parser):
     infix(parser, TT_AT_SIGN, 10, infix_at)
     infix(parser, TT_DOUBLE_COLON, 60, led_infixr)
     infix(parser, TT_COLON, 100, infix_name_pair)
-    infix(parser, TT_WHEN, 1, infix_when)
+    # infix(parser, TT_WHEN, 1, infix_when)
 
-    # symbol(parser, TT_WHEN)
+    symbol(parser, TT_WHEN)
     symbol(parser, TT_CASE)
     symbol(parser, TT_COMMA)
     symbol(parser, TT_RPAREN)
@@ -417,6 +418,7 @@ def expression_parser_init(proc_data, parser):
 
     stmt(parser, TT_THROW, prefix_throw)
     return parser
+
 
 def module_parser_init(parser):
     parser = init_parser_literals(parser)

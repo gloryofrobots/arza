@@ -503,13 +503,15 @@ def prefix_try(parser, op, node):
     advance_end(parser)
 
     return node_3(NT_TRY, __ntok(node), trybody, list_node(catches), finallybody)
-def infix_when(parser, op, node, left):
-    guard = expression(parser.guard_parser, 0, TERM_FUN_GUARD)
-    pattern = node_2(NT_WHEN, __ntok(guard), left, guard)
-    return parser
+
 
 def _parse_pattern(parser):
     pattern = expression(parser.pattern_parser, 0, TERM_PATTERN)
+    if parser.token_type == TT_WHEN:
+        advance(parser)
+        guard = expression(parser.guard_parser, 0, TERM_PATTERN)
+        pattern = node_2(NT_WHEN, __ntok(guard), pattern, guard)
+
     return pattern
 
 
@@ -562,7 +564,7 @@ def prefix_throw(parser, op, node):
 # FUNCTION STUFF################################
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
-    pattern = expect_expression_of(parser, 0, NT_TUPLE)
+    pattern = expect_expression_of_types(parser.fun_pattern_parser, 0, [NT_TUPLE])
     if parser.token_type == TT_WHEN:
         advance(parser)
         guard = expression(parser.guard_parser, 0, guard_terminator)
