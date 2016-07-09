@@ -27,8 +27,8 @@ class W_Vector(W_Root):
         except IndexError:
             return False
 
-    def _type_(self, process):
-        return process.std.types.Vector
+    def _protos_(self, process):
+        return process.std.protos.Vector
 
     def _clone_(self):
         items = []

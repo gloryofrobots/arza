@@ -420,7 +420,7 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_INFIX_DOT_LCURLY, 100, infix_lcurly)
     infix(parser, TT_INFIX_DOT_LSQUARE, 100, infix_lsquare)
 
-    # OTHER OPERATORS ARE DECLARED IN prelude.obn
+    # OTHER OPERATORS ARE DECLARED IN pelude.obn
 
     stmt(parser, TT_THROW, prefix_throw)
     return parser
@@ -446,9 +446,8 @@ def module_parser_init(parser):
     prefix(parser, TT_LAMBDA, prefix_lambda)
 
     assignment(parser, TT_ASSIGN, 10)
-    infix(parser, TT_SPACE_DOT, 15, infix_spacedot)
-    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     infix(parser, TT_DOT, 100, infix_dot)
+    infix(parser, TT_LSQUARE, 100, infix_lsquare)
     infix(parser, TT_COLON, 100, infix_name_pair)
 
     stmt(parser, TT_FUN, prefix_module_fun)
@@ -477,7 +476,7 @@ def newtokenstream(source):
     return IndentationTokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = False
+PARSE_DEBUG = True
 
 
 def parse(process, env, src):

@@ -49,6 +49,7 @@ infixl / / 50
 type Ordering
     | LT | GT | EQ
 
+
 trait Eq for x
     def == x y
     def != x y -> not (x == y)

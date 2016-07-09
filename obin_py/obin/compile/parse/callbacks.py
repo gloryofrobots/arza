@@ -987,8 +987,12 @@ def stmt_extend(parser, op, node):
 # OPERATORS
 
 def stmt_prefix(parser, op, node):
-    op_node = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    func_node = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    t = expect_expression_of(parser.name_parser, 0, NT_TUPLE)
+    children = nodes.node_first(t)
+    op_node = children[0]
+    check_node_type(parser, op_node, NT_NAME)
+    func_node = children[1]
+    check_node_type(parser, func_node, NT_NAME)
 
     op_value = symbol_or_name_value(parser, op_node)
     func_value = symbol_or_name_value(parser, func_node)
@@ -1008,12 +1012,21 @@ def stmt_infixr(parser, op, node):
 
 
 def _meta_infix(parser, node, infix_function):
-    op_node = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    func_node = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    precedence_node = expect_expression_of(parser.name_parser, 0, NT_INT)
+    t = expect_expression_of(parser.name_parser, 0, NT_TUPLE)
+    children = nodes.node_first(t)
+
+    op_node = children[0]
+    check_node_type(parser, op_node, NT_NAME)
+
+    func_node = children[1]
+    check_node_type(parser, func_node, NT_NAME)
+
+    precedence_node = children[2]
+    check_node_type(parser, precedence_node, NT_INT)
 
     op_value = symbol_or_name_value(parser, op_node)
     func_value = symbol_or_name_value(parser, func_node)
+
     try:
         precedence = strutil.string_to_int(nodes.node_value_s(precedence_node))
     except:
