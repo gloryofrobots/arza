@@ -120,11 +120,6 @@ def infix_triple_colon(parser, op, node, left):
     return nodes.create_delayed_cons_node(node, left, right)
 
 
-def infix_spacedot(parser, op, node, left):
-    right = expression(parser, op.lbp)
-    return nodes.node_2(NT_JUXTAPOSITION, __ntok(node), left, right)
-
-
 def infix_juxtaposition(parser, op, node, left):
     right = base_expression(parser, op.lbp)
     return nodes.node_2(NT_JUXTAPOSITION, __ntok(node), left, right)
@@ -138,6 +133,24 @@ def infix_dot(parser, op, node, left):
 
     symbol = grab_name(parser)
     return node_2(NT_LOOKUP, __ntok(node), left, nodes.create_symbol_node(symbol, symbol))
+
+
+def infix_lparen(parser, op, token, left):
+    init_free_layout(parser, token, [TT_RPAREN])
+
+    items = []
+    if parser.token_type != TT_RPAREN:
+        while True:
+            items.append(expression(parser, 0))
+            skip_end_expression(parser)
+
+            if parser.token_type != TT_COMMA:
+                break
+
+            advance_expected(parser, TT_COMMA)
+
+    advance_expected(parser, TT_RPAREN)
+    return node_2(NT_CALL, __ntok(token), left, list_node(items))
 
 
 def infix_lcurly(parser, op, node, left):
@@ -249,6 +262,22 @@ def symbol_wildcard(parser, op, node):
 # tuples (1,2,3,4,5)
 def layout_lparen(parser, op, node):
     init_free_layout(parser, node, [TT_RPAREN])
+
+
+def prefix_lparen_signature(parser, op, node):
+    items = []
+    if parser.token_type != TT_RPAREN:
+        while True:
+            items.append(expression(parser, 0))
+            skip_end_expression(parser)
+
+            if parser.token_type != TT_COMMA:
+                break
+
+            advance_expected(parser, TT_COMMA)
+
+    advance_expected(parser, TT_RPAREN)
+    return node_1(NT_TUPLE, __ntok(node), list_node(items))
 
 
 def prefix_lparen(parser, op, node):
@@ -474,15 +503,13 @@ def prefix_try(parser, op, node):
     advance_end(parser)
 
     return node_3(NT_TRY, __ntok(node), trybody, list_node(catches), finallybody)
-
+def infix_when(parser, op, node, left):
+    guard = expression(parser.guard_parser, 0, TERM_FUN_GUARD)
+    pattern = node_2(NT_WHEN, __ntok(guard), left, guard)
+    return parser
 
 def _parse_pattern(parser):
     pattern = expression(parser.pattern_parser, 0, TERM_PATTERN)
-    if parser.token_type == TT_WHEN:
-        advance(parser)
-        guard = expression(parser.guard_parser, 0, TERM_FUN_GUARD)
-        pattern = node_2(NT_WHEN, __ntok(guard), pattern, guard)
-
     return pattern
 
 
@@ -535,12 +562,7 @@ def prefix_throw(parser, op, node):
 # FUNCTION STUFF################################
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
-    pattern = juxtaposition_as_tuple(parser.fun_pattern_parser, arg_terminator)
-    args_type = nodes.node_type(pattern)
-
-    if args_type != NT_TUPLE:
-        parse_error(parser, u"Invalid  syntax in function arguments", pattern)
-
+    pattern = expect_expression_of(parser, 0, NT_TUPLE)
     if parser.token_type == TT_WHEN:
         advance(parser)
         guard = expression(parser.guard_parser, 0, guard_terminator)
@@ -550,19 +572,8 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
 
 
 def _parse_function_signature(parser):
-    """
-        signature can be one of
-        arg1 arg2
-        arg1 . arg2 ...arg3
-        arg1 of T arg2 of T
-        ()
-        (arg1 arg2 of T ...arg3)
-    """
-    pattern = juxtaposition_as_tuple(parser.fun_signature_parser, TERM_FUN_SIGNATURE)
+    pattern = expect_expression_of(parser.fun_signature_parser, 0, NT_TUPLE)
     skip_indent(parser)
-    args_type = nodes.node_type(pattern)
-    if args_type != NT_TUPLE:
-        parse_error(parser, u"Invalid  syntax in function signature", pattern)
     return pattern
 
 
@@ -897,20 +908,20 @@ def stmt_trait(parser, op, node):
     while parser.token_type == TT_DEF:
         advance_expected(parser, TT_DEF)
         method_name = grab_name_or_operator(parser)
-        check_token_type(parser, TT_NAME)
+        check_token_type(parser, TT_LPAREN)
 
-        sig = juxtaposition_as_list(parser.method_signature_parser, TERM_METHOD_SIG)
-        check_node_type(parser, sig, NT_LIST)
+        sig = expect_expression_of(parser.method_signature_parser, 0, NT_TUPLE)
+        sig_list = node_1(NT_LIST, nodes.node_token(sig), nodes.node_first(sig))
         if parser.token_type == TT_ARROW:
             advance(parser)
             init_code_layout(parser, parser.node, TERM_METHOD_DEFAULT_BODY)
-            args = symbol_list_to_arg_tuple(parser, node, sig)
+            args = sig
             body = statements(parser.expression_parser, TERM_METHOD_DEFAULT_BODY)
             default_impl = nodes.create_function_variants(args, body)
         else:
             default_impl = empty_node()
 
-        methods.append(list_node([method_name, sig, default_impl]))
+        methods.append(list_node([method_name, sig_list, default_impl]))
     advance_end(parser)
     return nodes.node_4(NT_TRAIT, __ntok(node), name, instance_name, constraints, list_node(methods))
 

@@ -65,12 +65,12 @@ fun lookup(key, default, coll) ->
         | e of KeyError -> default
         | e -> throw e
 
-fun not_elem(x, c) -> not elem(x, c)
+fun not_elem(x, c) -> not(elem(x, c))
 
 fun nth (count of Int, coll)
     | (0, l) -> l
     | (1, [h, ...t]) -> h
-    | (n, [h, ...t]) when n >= 0 -> nth (n - 1) t
+    | (n, [h, ...t]) when n >= 0 -> nth(n - 1, t)
 
 
 fun last(coll)
