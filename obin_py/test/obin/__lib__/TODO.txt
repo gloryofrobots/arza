@@ -1,3 +1,9 @@
+traits provide spec
+--------------------------------------------------
+
+= in trait, def, extend
+--------------------------------------------------
+
 deep calls in datastructs data -> (1, record) == (1, record) NotIImplementedError in record._equal_(record)
  we need to put process in every api call it is very very big annoying job/ it is better to rewrite all interpreter in
  with this in mind

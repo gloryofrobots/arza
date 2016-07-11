@@ -236,7 +236,7 @@ def generic_declaration_parser_init(parser):
     parser.break_on_juxtaposition = True
     infix(parser, TT_LPAREN, 100, infix_lparen_generic)
     prefix(parser, TT_NAME, prefix_name_as_symbol)
-    symbol(parser, TT_OPERATOR, symbol_operator_name)
+    symbol(parser, TT_OPERATOR, operator_as_symbol)
     symbol(parser, TT_COMMA)
     symbol(parser, TT_RPAREN)
     symbol(parser, TT_END)
@@ -246,7 +246,7 @@ def generic_declaration_parser_init(parser):
 def interface_parser_init(parser):
     infix(parser, TT_LPAREN, 90, infix_lparen_interface)
     infix(parser, TT_COLON, 100, infix_name_pair)
-    prefix(parser, TT_NAME, prefix_name_as_symbol)
+    literal(parser, TT_NAME)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
     symbol(parser, TT_COMMA)
     symbol(parser, TT_RPAREN)
@@ -255,13 +255,18 @@ def interface_parser_init(parser):
 
 
 def method_signature_parser_init(parser):
-    prefix(parser, TT_NAME, prefix_name_as_symbol)
+    symbol(parser, TT_RPAREN)
+    symbol(parser, TT_INDENT)
+    symbol(parser, TT_COMMA)
+
+    literal(parser, TT_NAME)
+    literal(parser, TT_WILDCARD)
+    infix(parser, TT_OF, 15, led_infix)
+    infix(parser, TT_COLON, 100, infix_name_pair)
     prefix(parser, TT_LPAREN, prefix_lparen_signature, layout_lparen)
-    symbol(parser, TT_COMMA, None)
-    symbol(parser, TT_RPAREN, None)
-    symbol(parser, TT_DEF, None)
-    symbol(parser, TT_END, None)
-    symbol(parser, TT_ARROW, None)
+
+    symbol(parser, TT_ARROW)
+    symbol(parser, TT_CASE)
     return parser
 
 
@@ -475,6 +480,7 @@ def module_parser_init(parser):
     infix(parser, TT_COLON, 100, infix_name_pair)
 
     stmt(parser, TT_FUN, prefix_module_fun)
+    stmt(parser, TT_DEF, prefix_def)
     stmt(parser, TT_TRAIT, stmt_trait)
     stmt(parser, TT_TYPE, stmt_type)
     stmt(parser, TT_GENERIC, stmt_generic)
@@ -544,7 +550,7 @@ def write_ast(ast):
 
 
 def __parse__():
-    
+
     from obin.runtime.engine import newprocess
     source = """
         fun main ->

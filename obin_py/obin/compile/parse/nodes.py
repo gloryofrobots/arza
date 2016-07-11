@@ -251,6 +251,10 @@ def create_name_from_operator(basenode, op):
     return create_name_node_s(basenode, node_value_s(op))
 
 
+def create_symbol_from_operator(basenode, op):
+    return create_symbol_node(basenode, create_name_from_operator(basenode, op))
+
+
 def create_name_node_s(basenode, name):
     return node_0(nt.NT_NAME, create_token_from_node(tt.TT_NAME, name, basenode))
 

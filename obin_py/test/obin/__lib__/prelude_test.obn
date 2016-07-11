@@ -17,14 +17,6 @@ infixl(-, -, 40)
 infixl(*, *, 50)
 infixl(/, /, 50)
 
-type Shape
-    | X x
-    | Y y
-    | Point {x, y}
-    | Square {width, height}
-    | Rect {left, top, right, bottom}
-    | Line {point1, point2}
-    | Empty
 
 generic == (x, y)
 
@@ -43,6 +35,12 @@ interface
     Sized (len, is_empty)
     Dino (behavior:beast, universe:animal:giant, ==, !=, len)
 
+trait TNotEq
+    def != (x, y) -> not (x == y)
+
+trait TSized of (Eq, Ord)
+    def is_empty(self) -> len(self) == 0
+
 trait TDino of Animal
     def behavior:beast(self) -> True
 
@@ -55,18 +53,8 @@ trait TDino of Animal
 
     def len(self) -> self.length
 
-
-trait TSized of (Eq, Ord)
-    def len(self)
-    def is_empty(self) -> len(self) == 0
-
-trait TEq
-    def != (x, y) -> not (x == y)
-    def == (x, y)
-
-type MyList {__list}
-
 def len(self of MyList) -> len(self.__list)
+
 def ==(self of MyList, other)
     | (self, other of MyList) -> self.__list == other.__list
     | (self, _) -> False
@@ -74,7 +62,12 @@ def ==(self of MyList, other)
 //error here type, not defined
 def is_empty(self) -> is_empty(self.__list)
 
+type MyList {__list}
 extend MyList with
+    trait DummyTrait (method1, ==, !=, ++, --)
+    trait TNotEq
+    trait TSized (is_empty)
+
     // define generics without trait
     def first(self) -> first(self.__list)
     def rest(self) -> rest(self.__list)
@@ -82,10 +75,14 @@ extend MyList with
         | (self, other of MyList) -> MyList(self.__list + other.__list)
         | (self, _) -> throw ArgumentError()
 
-    trait TEq
-        def == (self, other of MyList) -> self.__list == other.__list
-        // != defined in trait
-    trait TSized
-        def len(self) -> len(self.__list)
-        //redefine trait func
-        def is_empty(self) -> is_empty(self.__list)
+    def len(self) -> len(self.__list)
+//
+//
+//type Shape
+//    | X x
+//    | Y y
+//    | Point {x, y}
+//    | Square {width, height}
+//    | Rect {left, top, right, bottom}
+//    | Line {point1, point2}
+//    | Empty

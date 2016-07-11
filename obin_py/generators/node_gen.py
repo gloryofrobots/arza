@@ -19,6 +19,7 @@ NODES = [
   "NT_SYMBOL",
 
   "NT_INTERFACE",
+  "NT_METHOD",
   "NT_GENERIC",
   "NT_TYPE",
   "NT_UNION",
