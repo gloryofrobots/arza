@@ -29,8 +29,7 @@ Precedence    Operator
     40           +  - ++
     35           ==  !=  <  <=  >  >=
     30           and
-    25           or << >>
-    20           |>
+    s0           |>
     15           " ."  as of <|
     10           = := @
 """
@@ -159,7 +158,10 @@ class ModuleParser(BaseParser):
         self.name_parser = name_parser_init(BaseParser())
         self.import_names_parser = import_names_parser_init(BaseParser())
         self.type_parser = type_parser_init(BaseParser())
+
         self.method_signature_parser = method_signature_parser_init(BaseParser())
+        self.generic_declaration_parser = generic_declaration_parser_init(BaseParser())
+        self.interface_parser = interface_parser_init(BaseParser())
 
         module_parser_init(self)
 
@@ -176,6 +178,8 @@ class ModuleParser(BaseParser):
         self.expression_parser.open(state)
         self.name_parser.open(state)
         self.import_names_parser.open(state)
+        self.generic_declaration_parser.open(state)
+        self.interface_parser.open(state)
 
     def _on_close(self):
         self.method_signature_parser.close()
@@ -188,10 +192,12 @@ class ModuleParser(BaseParser):
         self.expression_parser.close()
         self.name_parser.close()
         self.import_names_parser.close()
+        self.generic_declaration_parser.close()
+        self.interface_parser.close()
 
 
 def name_parser_init(parser):
-    parser.break_on_juxtaposition = True
+    # parser.break_on_juxtaposition = True
     parser.allow_unknown = True
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_UNKNOWN, None)
@@ -211,8 +217,6 @@ def name_parser_init(parser):
 
 
 def type_parser_init(parser):
-    # parser.break_on_juxtaposition = True
-    parser.juxtaposition_as_list = True
     parser.allow_unknown = True
     symbol(parser, TT_UNKNOWN)
     # literal(parser, TT_TYPENAME)
@@ -224,8 +228,29 @@ def type_parser_init(parser):
     infix(parser, TT_COLON, 100, infix_name_pair)
     # infix(parser, TT_CASE, 15, led_infixr)
     # infix(parser, TT_ASSIGN, 10, led_infixr)
-    infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
     symbol(parser, TT_CASE, None)
+    return parser
+
+
+def generic_declaration_parser_init(parser):
+    parser.break_on_juxtaposition = True
+    infix(parser, TT_LPAREN, 100, infix_lparen_generic)
+    prefix(parser, TT_NAME, prefix_name_as_symbol)
+    symbol(parser, TT_OPERATOR, symbol_operator_name)
+    symbol(parser, TT_COMMA)
+    symbol(parser, TT_RPAREN)
+    symbol(parser, TT_END)
+    return parser
+
+
+def interface_parser_init(parser):
+    infix(parser, TT_LPAREN, 90, infix_lparen_interface)
+    infix(parser, TT_COLON, 100, infix_name_pair)
+    prefix(parser, TT_NAME, prefix_name_as_symbol)
+    symbol(parser, TT_OPERATOR, symbol_operator_name)
+    symbol(parser, TT_COMMA)
+    symbol(parser, TT_RPAREN)
+    symbol(parser, TT_END)
     return parser
 
 
@@ -452,6 +477,9 @@ def module_parser_init(parser):
     stmt(parser, TT_FUN, prefix_module_fun)
     stmt(parser, TT_TRAIT, stmt_trait)
     stmt(parser, TT_TYPE, stmt_type)
+    stmt(parser, TT_GENERIC, stmt_generic)
+    stmt(parser, TT_INTERFACE, stmt_interface)
+
     stmt(parser, TT_IMPLEMENT, stmt_implement)
     stmt(parser, TT_EXTEND, stmt_extend)
     stmt(parser, TT_IMPORT, stmt_import)
@@ -516,6 +544,7 @@ def write_ast(ast):
 
 
 def __parse__():
+    
     from obin.runtime.engine import newprocess
     source = """
         fun main ->

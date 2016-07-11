@@ -20,6 +20,9 @@ TOKENS = [
   ("TT_FOR", "for"),
   ("TT_WHILE", "while"),
 
+  ("TT_GENERIC", "generic"),
+  ("TT_INTERFACE", "interface"),
+
   ("TT_IMPLEMENT", "implement"),
   ("TT_EXTEND", "extend"),
   ("TT_DEF", "def"),

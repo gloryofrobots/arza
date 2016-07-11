@@ -8,11 +8,9 @@ def printmessage(msg):
     os.write(1, encode_unicode_utf8(msg))
 
 
-def main(argv):
+def main(script_file):
     from obin.misc import timer
     with timer.Timer("Obin Main", True):
-
-        script_file = argv[1]
         if script_file == "--test":
             from test.vm import tests
             return tests.run()
@@ -61,7 +59,7 @@ def jitpolicy(driver):
 
 
 def entry_point(argv):
-    return main(argv)
+    return main(argv[1])
 
 
 # class writer(object):

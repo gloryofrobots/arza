@@ -347,24 +347,6 @@ def on_bind_node(parser, key):
     return bind_key, value
 
 
-def prefix_lcurly_type(parser, op, node):
-    items = []
-    if parser.token_type != TT_RCURLY:
-        while True:
-            name = expression(parser, 0)
-            skip_end_expression(parser)
-            check_node_type(parser, name, NT_SYMBOL)
-
-            items.append(name)
-            if parser.token_type != TT_COMMA:
-                break
-
-            advance_expected(parser, TT_COMMA)
-
-    advance_expected(parser, TT_RCURLY)
-    return node_1(NT_LIST, __ntok(node), list_node(items))
-
-
 def layout_lcurly(parser, op, node):
     init_free_layout(parser, node, [TT_RCURLY])
 
@@ -791,7 +773,7 @@ def symbol_list_to_arg_tuple(parser, node, symbols):
     args = []
     children = nodes.node_first(symbols)
     for child in children:
-        assert nodes.node_type(child) == NT_SYMBOL
+        assert nodes.node_type(child) == NT_SYMBOL, child
         name = nodes.node_first(child)
         args.append(name)
 
@@ -835,9 +817,33 @@ def _parse_union(parser, node, union_name):
     return nodes.node_2(NT_UNION, __ntok(node), union_name, nodes.list_node(types))
 
 
+def prefix_lcurly_type(parser, op, node):
+    items = []
+    if parser.token_type != TT_RCURLY:
+        while True:
+            name = expression(parser, 0)
+            skip_end_expression(parser)
+            check_node_type(parser, name, NT_SYMBOL)
+
+            items.append(name)
+            if parser.token_type != TT_COMMA:
+                break
+
+            advance_expected(parser, TT_COMMA)
+
+    advance_expected(parser, TT_RCURLY)
+    return node_1(NT_LIST, __ntok(node), list_node(items))
+
+
 def _parse_type(parser, node, typename, term):
     if parser.token_type == TT_NAME:
-        fields = juxtaposition_as_list(parser.type_parser, term)
+        name = expect_expression_of(parser.type_parser, 0, NT_SYMBOL, term)
+        fields = nodes.create_list_node(node, [name])
+        args = symbol_list_to_arg_tuple(parser, parser.node, fields)
+        body = list_node([nodes.create_fenv_node(parser.node)])
+        construct_funcs = nodes.create_function_variants(args, body)
+    elif parser.token_type == TT_LCURLY:
+        fields = expect_expression_of(parser.type_parser, 0, NT_LIST, term)
         args = symbol_list_to_arg_tuple(parser, parser.node, fields)
         body = list_node([nodes.create_fenv_node(parser.node)])
         construct_funcs = nodes.create_function_variants(args, body)
@@ -934,6 +940,58 @@ def _parser_implement_header(parser):
     type_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_IMPL_HEADER)
     skip_indent(parser)
     return trait_name, type_name
+
+
+def infix_lparen_generic(parser, op, node, left):
+    init_free_layout(parser, node, [TT_RPAREN])
+    check_node_type(parser, left, NT_NAME)
+    items = []
+    if parser.token_type != TT_RPAREN:
+        while True:
+            check_token_type(parser, TT_NAME)
+            items.append(expression(parser, 0))
+            if parser.token_type != TT_COMMA:
+                break
+
+            advance_expected(parser, TT_COMMA)
+
+    advance_expected(parser, TT_RPAREN)
+    return node_2(NT_GENERIC, __ntok(node), left, list_node(items))
+
+
+def infix_lparen_interface(parser, op, node, left):
+    init_free_layout(parser, node, [TT_RPAREN])
+    check_node_type(parser, left, NT_NAME)
+    items = []
+    if parser.token_type != TT_RPAREN:
+        while True:
+            e = expression(parser, 0)
+            check_node_types(parser, e, [NT_NAME, NT_IMPORTED_NAME])
+            items.append(e)
+
+            if parser.token_type != TT_COMMA:
+                break
+
+            advance_expected(parser, TT_COMMA)
+
+    advance_expected(parser, TT_RPAREN)
+    return node_2(NT_INTERFACE, __ntok(node), left, list_node(items))
+
+
+def stmt_interface(parser, op, node):
+    init_node_layout(parser, node)
+    init_code_layout(parser, parser.node, TERM_BLOCK)
+    nodes = statements(parser.interface_parser, TERM_BLOCK)
+    advance_end(parser)
+    return nodes
+
+
+def stmt_generic(parser, op, node):
+    init_node_layout(parser, node)
+    init_code_layout(parser, parser.node, TERM_BLOCK)
+    nodes = statements(parser.generic_declaration_parser, TERM_BLOCK)
+    advance_end(parser)
+    return nodes
 
 
 def stmt_implement(parser, op, node):
