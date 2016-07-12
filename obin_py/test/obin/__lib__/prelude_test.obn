@@ -18,6 +18,12 @@ infixl(*, *, 50)
 infixl(/, /, 50)
 
 
+fun f2(z,m) -> 56
+fun f1(y,w) -> f2()
+fun f3(y,w) -> ()
+fun f4(y,w) -> {}
+fun f5(y,w) -> []
+
 generic == (x, y)
 
 generic
@@ -63,7 +69,12 @@ def ==(self of MyList, other)
 def is_empty(self) -> is_empty(self.__list)
 
 type MyList {__list}
-extend MyList with
+extend MyList
+    def len(self) -> len(self.__list)
+    def + (self, other)
+        | (self, _) ->  MyList(x,y)
+        | (self, other of MyList) -> MyList(self.__list + other.__list)
+
     trait DummyTrait (method1, ==, !=, ++, --)
     trait TNotEq
     trait TSized (is_empty)
@@ -71,18 +82,13 @@ extend MyList with
     // define generics without trait
     def first(self) -> first(self.__list)
     def rest(self) -> rest(self.__list)
-    def + (self, other) ->
-        | (self, other of MyList) -> MyList(self.__list + other.__list)
-        | (self, _) -> throw ArgumentError()
 
-    def len(self) -> len(self.__list)
-//
-//
-//type Shape
-//    | X x
-//    | Y y
-//    | Point {x, y}
-//    | Square {width, height}
-//    | Rect {left, top, right, bottom}
-//    | Line {point1, point2}
-//    | Empty
+
+type Shape
+    | X x
+    | Y y
+    | Point {x, y}
+    | Square {width, height}
+    | Rect {left, top, right, bottom}
+    | Line {point1, point2}
+    | Empty

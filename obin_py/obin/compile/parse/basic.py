@@ -32,7 +32,7 @@ TERM_FUN_SIGNATURE = [TT_ARROW, TT_CASE]
 TERM_CONDITION_BODY = [TT_CASE] + TERM_BLOCK
 TERM_BEFORE_FOR = [TT_FOR]
 
-TERM_BEFORE_WITH = [TT_WITH]
+TERM_BEFORE_WITH = [TT_WITH, TT_TRAIT, TT_DEF]
 
 TERM_TYPE_ARGS = TERM_BLOCK
 TERM_UNION_TYPE_ARGS = [TT_CASE] + TERM_BLOCK
@@ -43,10 +43,9 @@ TERM_METHOD_CONSTRAINTS = [TT_DEF] + TERM_BLOCK
 TERM_IMPL_BODY = [TT_CASE, TT_DEF] + TERM_BLOCK
 TERM_IMPL_HEADER = [TT_DEF] + TERM_BLOCK
 
-TERM_EXTEND_TRAIT = [TT_DEF, TT_ASSIGN] + TERM_BLOCK
-TERM_EXTEND_MIXIN_TRAIT = [TT_WITH] + TERM_BLOCK
 
-TERM_EXTEND_BODY = [TT_CASE, TT_DEF, TT_WITH] + TERM_BLOCK
+TERM_EXTEND_DEF = [TT_CASE, TT_DEF, TT_TRAIT] + TERM_BLOCK
+TERM_EXTEND = [TT_DEF, TT_TRAIT] + TERM_BLOCK
 
 TERM_FROM_IMPORTED = [TT_IMPORT, TT_HIDE]
 
@@ -547,7 +546,7 @@ def expression(parser, _rbp, terminators=None):
     if terminators is None:
         terminators = TERM_EXP
     expr = base_expression(parser, _rbp, terminators)
-    expr = postprocess(parser, expr)
+    # expr = postprocess(parser, expr)
     return expr
 
 
@@ -682,7 +681,7 @@ def statements(parser, endlist):
 #     return _statements(parser, statement_no_end_expr, endlist)
 
 
-def infix(parser, ttype, lbp, led):
+def infix(parser, ttype, lbp, led, layout=None):
     parser_set_led(parser, ttype, lbp, led)
 
 
