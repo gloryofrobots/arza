@@ -1427,7 +1427,7 @@
       },
       {
         "_ntype": "NT_LIST",
-        "_value": "{",
+        "_value": "(",
         "children": [
           [
             {
@@ -2034,7 +2034,7 @@
             },
             {
               "_ntype": "NT_LIST",
-              "_value": "{",
+              "_value": "(",
               "children": [
                 [
                   {
@@ -2098,7 +2098,7 @@
             },
             {
               "_ntype": "NT_LIST",
-              "_value": "{",
+              "_value": "(",
               "children": [
                 [
                   {
@@ -2162,7 +2162,7 @@
             },
             {
               "_ntype": "NT_LIST",
-              "_value": "{",
+              "_value": "(",
               "children": [
                 [
                   {
@@ -2254,7 +2254,7 @@
             },
             {
               "_ntype": "NT_LIST",
-              "_value": "{",
+              "_value": "(",
               "children": [
                 [
                   {

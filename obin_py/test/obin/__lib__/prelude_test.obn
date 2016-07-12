@@ -68,8 +68,9 @@ def ==(self of MyList, other)
 //error here type, not defined
 def is_empty(self) -> is_empty(self.__list)
 
-type MyList {__list}
-extend MyList
+type MyList (__list)
+
+extend MyList 
     def len(self) -> len(self.__list)
     def + (self, other)
         | (self, _) ->  MyList(x,y)
@@ -87,8 +88,8 @@ extend MyList
 type Shape
     | X x
     | Y y
-    | Point {x, y}
-    | Square {width, height}
-    | Rect {left, top, right, bottom}
-    | Line {point1, point2}
+    | Point (x, y)
+    | Square (width, height)
+    | Rect (left, top, right, bottom)
+    | Line (point1, point2)
     | Empty

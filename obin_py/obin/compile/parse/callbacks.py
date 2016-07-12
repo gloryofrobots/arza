@@ -836,9 +836,9 @@ def _parse_union(parser, node, union_name):
     return nodes.node_2(NT_UNION, __ntok(node), union_name, nodes.list_node(types))
 
 
-def prefix_lcurly_type(parser, op, node):
+def prefix_lparen_type(parser, op, node):
     items = []
-    if parser.token_type != TT_RCURLY:
+    if parser.token_type != TT_RPAREN:
         while True:
             name = expression(parser, 0)
             skip_end_expression(parser)
@@ -850,7 +850,7 @@ def prefix_lcurly_type(parser, op, node):
 
             advance_expected(parser, TT_COMMA)
 
-    advance_expected(parser, TT_RCURLY)
+    advance_expected(parser, TT_RPAREN)
     return node_1(NT_LIST, __ntok(node), list_node(items))
 
 
@@ -861,7 +861,7 @@ def _parse_type(parser, node, typename, term):
         args = symbol_list_to_arg_tuple(parser, parser.node, fields)
         body = list_node([nodes.create_fenv_node(parser.node)])
         construct_funcs = nodes.create_function_variants(args, body)
-    elif parser.token_type == TT_LCURLY:
+    elif parser.token_type == TT_LPAREN:
         fields = expect_expression_of(parser.type_parser, 0, NT_LIST, term)
         args = symbol_list_to_arg_tuple(parser, parser.node, fields)
         body = list_node([nodes.create_fenv_node(parser.node)])
