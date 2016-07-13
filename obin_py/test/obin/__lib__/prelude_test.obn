@@ -1,3 +1,21 @@
+from obin:lang:_types import (Bool, Char, Int,
+                              Float, Symbol, String, List, Vector,
+                              Tuple, Map, Function, Method, Fiber, Trait,
+                              Datatype, Union, LazyVal, Env)
+"""
+Precedence    Operator
+    100           : . .{ .( .[
+    95           JUXTAPOSITION
+    60           :: :::
+    50           *  /
+    40           +  - ++
+    35           ==  !=  <  <=  >  >=
+    30           and
+    25           or << >>
+    20           |>
+    15           " ." @ as of <|
+    10           = :=
+"""
 prefix(-, negate)
 prefix(!, not)
 infixr(:=, :=, 10)
@@ -70,7 +88,7 @@ def is_empty(self) -> is_empty(self.__list)
 
 type MyList (__list)
 
-extend MyList 
+extend MyList with
     def len(self) -> len(self.__list)
     def + (self, other)
         | (self, _) ->  MyList(x,y)
@@ -84,6 +102,14 @@ extend MyList
     def first(self) -> first(self.__list)
     def rest(self) -> rest(self.__list)
 
+type ImportError args
+
+type Ordering
+    | LT | GT | EQ
+
+type Option
+    | Some val
+    | None
 
 type Shape
     | X x
@@ -93,3 +119,63 @@ type Shape
     | Rect (left, top, right, bottom)
     | Line (point1, point2)
     | Empty
+
+
+//FUNS
+fun lookup(key, default, coll) ->
+    try
+        at(key, not(coll))
+    catch
+        | e of KeyError -> default
+        | e -> throw e
+
+fun not_elem(x, c) -> not(elem(x, c))
+
+
+fun nth (count of Int, coll)
+    | (n, [h, ...t]) when n >= 0 -> nth(n - 1, t)
+    | (0, l) -> l
+    | (1, [h, ...t]) -> h
+
+fun last(coll)
+    | ([x, ...xs]) ->
+        fun _last(hd, tl)
+            | (_, [x, ...xs]) -> _last(x, xs)
+            | (x, []) -> x
+        end(x, xs)
+end
+
+fun t1() ->
+    tup1 = (1, "Hello", 35.44555)
+    affirm:is_equal(tup1, (1, "Hello", 35.44555))
+    m1 = {name="XXX"}
+    affirm:is_equal({name="XXX"}.name, "XXX")
+
+    t2 = ((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"})
+
+
+fun t2 () ->
+    fun id(x) -> x
+
+    fun sum_list_3(list)
+        | ([x,y,z]) -> x + y + z
+
+
+    fun f1(a)
+        | (0) -> 1
+        | (1) -> 2
+        | (2) -> 3
+
+
+    l = lam (x, y, z) -> 42
+    l2 =
+        lam (x, y, z) | ([hd::tl], (1,2,3), {x=2, y=3}) -> 24
+                      | (_, y, z) -> 23
+
+
+    match [(1,2), (2,3,4), 5, [6,7,8]] with
+        | [a1,b1,c1] ->  (a1, b1, c1)
+        | [a1, b1] ->  (a1, b1)
+        | (x1, y1, 5) ->  (x1, y1)
+        | [(1, X1), Y1, 5, [6,7, Z1]] ->  (X1, Y1, Z1)
+        | _ ->  123

@@ -555,7 +555,7 @@ def prefix_throw(parser, op, node):
 # FUNCTION STUFF################################
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
-    pattern = expect_expression_of_types(parser.fun_pattern_parser, 0, [NT_TUPLE])
+    pattern = expect_expression_of(parser.fun_pattern_parser, 0, NT_TUPLE)
     if parser.token_type == TT_WHEN:
         advance(parser)
         guard = expression(parser.guard_parser, 0, guard_terminator)
@@ -932,8 +932,8 @@ def _parser_trait_header(parser, node):
 def stmt_extend(parser, op, node):
     init_node_layout(parser, node)
     type_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_BEFORE_WITH)
-    # check_token_type(parser, TT_WITH)
-    # advance(parser)
+    check_token_type(parser, TT_WITH)
+    advance(parser)
     skip_indent(parser)
 
     defs = []
@@ -965,44 +965,6 @@ def stmt_extend(parser, op, node):
 
     advance_end(parser)
     return nodes.node_3(NT_EXTEND, __ntok(node), type_name, list_node(traits), list_node(defs))
-
-
-"""
-def stmt_extend(parser, op, node):
-    init_node_layout(parser, node)
-    type_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_BEFORE_WITH)
-    skip_indent(parser)
-    traits = []
-
-    while parser.token_type == TT_WITH:
-        init_offside_layout(parser, parser.node)
-        advance_expected(parser, TT_WITH)
-        trait_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_EXTEND_TRAIT)
-        skip_indent(parser)
-        if parser.token_type == TT_ASSIGN:
-            advance(parser)
-            implementation = expression(parser, 0, TERM_EXTEND_MIXIN_TRAIT)
-        elif parser.token_type == TT_DEF:
-            init_offside_layout(parser, parser.node)
-            methods = []
-
-            while parser.token_type == TT_DEF:
-                advance_expected(parser, TT_DEF)
-                method_name = expect_expression_of(parser.name_parser, 0, NT_NAME)
-                method_name = nodes.create_symbol_node_s(method_name, nodes.node_value_s(method_name))
-
-                funcs = _parse_function(parser.expression_parser,
-                                        TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_EXTEND_BODY, TERM_EXTEND_BODY)
-                methods.append(list_node([method_name, funcs]))
-            implementation = list_node(methods)
-        else:
-            implementation = list_node([])
-        # advance_end(parser)
-        traits.append(list_node([trait_name, implementation]))
-
-    advance_end(parser)
-    return nodes.node_2(NT_EXTEND, __ntok(node), type_name, list_node(traits))
-"""
 
 
 def stmt_trait(parser, op, node):

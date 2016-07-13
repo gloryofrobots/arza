@@ -502,17 +502,19 @@ def base_expression(parser, _rbp, terminators=None):
             if parser.break_on_juxtaposition is True:
                 return left
 
-            op = parser_operator(parser, TT_JUXTAPOSITION)
-            _lbp = op.lbp
+            parse_error(parser, u"Unknown token led", previous)
+            # op = parser_operator(parser, TT_JUXTAPOSITION)
+            # _lbp = op.lbp
 
-            if _rbp >= _lbp:
-                break
-            previous = parser.node
-            # advance(parser)
-            if not op.led:
-                parse_error(parser, u"Unknown token led", previous)
+            # if _rbp >= _lbp:
+            #     break
 
-            left = op.led(parser, op, previous, left)
+            # previous = parser.node
+            # # advance(parser)
+            # if not op.led:
+            #     parse_error(parser, u"Unknown token led", previous)
+
+            # left = op.led(parser, op, previous, left)
         else:
             if _rbp >= _lbp:
                 break

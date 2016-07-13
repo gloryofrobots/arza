@@ -1,25 +1,7 @@
-type Ordering
-    | LT | GT | EQ
-
-type Option
-    | Some val
-    | None
-
-type Shape
-    | X x
-    | Y y
-    | Point {x, y}
-    | Square {width, height}
-    | Rect {left, top, right, bottom}
-    | Line {point1, point2}
-    | Empty
-
-type ImportError args
 from obin:lang:_types import (Bool, Char, Int,
                               Float, Symbol, String, List, Vector,
                               Tuple, Map, Function, Method, Fiber, Trait,
                               Datatype, Union, LazyVal, Env)
-
 """
 Precedence    Operator
     100           : . .{ .( .[
@@ -34,7 +16,6 @@ Precedence    Operator
     15           " ." @ as of <|
     10           = :=
 """
-
 prefix(-, negate)
 prefix(!, not)
 infixr(:=, :=, 10)
@@ -54,6 +35,75 @@ infixl(-, -, 40)
 infixl(*, *, 50)
 infixl(/, /, 50)
 
+
+fun f2(z,m) -> 56
+fun f1(y,w) -> f2()
+fun f3(y,w) -> ()
+fun f4(y,w) -> {}
+fun f5(y,w) -> []
+
+generic == (x, y)
+
+generic
+    != (x, y)
+    + (x, y)
+    first(self)
+    rest(self)
+    len(self)
+    is_empty(self)
+
+interface Eq (==, !=)
+
+interface
+    Seq (first, rest)
+    Sized (len, is_empty)
+    Dino (behavior:beast, universe:animal:giant, ==, !=, len)
+
+trait TNotEq
+    def != (x, y) -> not (x == y)
+
+trait TSized of (Eq, Ord)
+    def is_empty(self) -> len(self) == 0
+
+trait TDino of Animal
+    def behavior:beast(self) -> True
+
+    def universe:animal:giant(self) -> io:print("I am big dino")
+
+    def ==(self, other)
+        | (self, other of Dino) -> self.name == other.name and
+                                    self.length == other.length
+        | (self, _) -> False
+
+    def len(self) -> self.length
+
+def len(self of MyList) -> len(self.__list)
+
+def ==(self of MyList, other)
+    | (self, other of MyList) -> self.__list == other.__list
+    | (self, _) -> False
+
+//error here type, not defined
+def is_empty(self) -> is_empty(self.__list)
+
+type MyList (__list)
+
+extend MyList with
+    def len(self) -> len(self.__list)
+    def + (self, other)
+        | (self, _) ->  MyList(x,y)
+        | (self, other of MyList) -> MyList(self.__list + other.__list)
+
+    trait DummyTrait (method1, ==, !=, ++, --)
+    trait TNotEq
+    trait TSized (is_empty)
+
+    // define generics without trait
+    def first(self) -> first(self.__list)
+    def rest(self) -> rest(self.__list)
+
+type ImportError args
+
 type Ordering
     | LT | GT | EQ
 
@@ -64,43 +114,11 @@ type Option
 type Shape
     | X x
     | Y y
-    | Point {x, y}
-    | Square {width, height}
-    | Rect {left, top, right, bottom}
-    | Line {point1, point2}
+    | Point (x, y)
+    | Square (width, height)
+    | Rect (left, top, right, bottom)
+    | Line (point1, point2)
     | Empty
-
-type ImportError args
-
-def == (x, y)
-def != (x, y)
-
-trait PartialEq for x
-    def != (x, y) -> not (x == y)
-
-interface Eq (==, !=)
-
-def first(self)
-def rest(self)
-def len(self)
-def is_empty(self)
-
-interface Seq (first, rest)
-
-trait Sized for self
-    def len(self)
-    def is_empty(self) -> len(self) == 0
-
-type L l
-
-extend L
-    with Sized
-        def len self -> len self.l
-        def is_empty self ->
-            is_empty self.l
-    with Seq
-        def first self -> self
-        def rest self -> self
 
 
 //FUNS
@@ -153,3 +171,11 @@ fun t2 () ->
     l2 =
         lam (x, y, z) | ([hd::tl], (1,2,3), {x=2, y=3}) -> 24
                       | (_, y, z) -> 23
+
+
+    match [(1,2), (2,3,4), 5, [6,7,8]] with
+        | [a1,b1,c1] ->  (a1, b1, c1)
+        | [a1, b1] ->  (a1, b1)
+        | (x1, y1, 5) ->  (x1, y1)
+        | [(1, X1), Y1, 5, [6,7, Z1]] ->  (X1, Y1, Z1)
+        | _ ->  123

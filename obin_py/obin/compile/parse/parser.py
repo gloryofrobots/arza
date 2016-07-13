@@ -197,7 +197,7 @@ class ModuleParser(BaseParser):
 
 
 def name_parser_init(parser):
-    # parser.break_on_juxtaposition = True
+    parser.break_on_juxtaposition = True
     parser.allow_unknown = True
     symbol(parser, TT_COMMA, None)
     symbol(parser, TT_UNKNOWN, None)
