@@ -55,6 +55,3 @@ fun test () ->
 //     var reverse = function(arr) { var arr = Array.prototype.slice.call(arr, 0); arr.reverse(); return arr; }
 //     var xf = t.mapcat(reverse);
 //     t.into([], xf, [[3,2,1],[6,5,4]]); // [1,2,3,4,5,6]
-
-
-

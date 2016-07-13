@@ -216,8 +216,9 @@ def type_parser_init(parser):
     # literal(parser, TT_TYPENAME)
     symbol(parser, TT_COMMA)
     symbol(parser, TT_END)
-    symbol(parser, TT_RCURLY)
-    prefix(parser, TT_LCURLY, prefix_lcurly_type, layout_lcurly)
+    symbol(parser, TT_RPAREN)
+
+    prefix(parser, TT_LPAREN, prefix_lparen_type, layout_lparen)
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     infix(parser, TT_COLON, 100, infix_name_pair)
     # infix(parser, TT_CASE, 15, led_infixr)
@@ -470,7 +471,7 @@ def newtokenstream(source):
     return IndentationTokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = False
+PARSE_DEBUG = True
 
 
 def parse(process, env, src):

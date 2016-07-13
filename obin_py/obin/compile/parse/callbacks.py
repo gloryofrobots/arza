@@ -312,23 +312,63 @@ def on_bind_node(parser, key):
     bind_key = nodes.create_bind_node(key, key, real_key)
     return bind_key, value
 
+def _parse_comma_separated(parser, node, terminator, expected, isfree=False):
+    if isfree:
+        init_free_layout(parser, node, [terminator])
 
-def prefix_lcurly_type(parser, op, node):
     items = []
-    if parser.token_type != TT_RCURLY:
+    if parser.token_type != terminator:
         while True:
-            name = expression(parser, 0)
-            skip_end_expression(parser)
-            check_node_type(parser, name, NT_SYMBOL)
+            e = expression(parser, 0)
+            check_node_types(parser, e, expected)
+            items.append(e)
 
-            items.append(name)
             if parser.token_type != TT_COMMA:
                 break
 
             advance_expected(parser, TT_COMMA)
 
-    advance_expected(parser, TT_RCURLY)
-    return node_1(NT_LIST, __ntok(node), list_node(items))
+    advance_expected(parser, terminator)
+    return list_node(items)
+
+
+def infix_lparen_generic(parser, op, node, left):
+    if parser.token_type == TT_RPAREN:
+        return parse_error(parser, u"Generic functiom must have 1 or more arguments", node)
+
+    check_node_type(parser, left, NT_SYMBOL)
+    items = _parse_comma_separated(parser, node, TT_RPAREN, [NT_SYMBOL])
+    return node_2(NT_GENERIC, __ntok(node), left, items)
+
+
+def infix_lparen_interface(parser, op, node, left):
+    if parser.token_type == TT_RPAREN:
+        items = list_node([])
+    else:
+        check_node_type(parser, left, NT_NAME)
+        items = _parse_comma_separated(parser, node, TT_RPAREN, [NT_NAME, NT_IMPORTED_NAME])
+    return node_2(NT_INTERFACE, __ntok(node), left, items)
+
+
+def stmt_interface(parser, op, node):
+    init_node_layout(parser, node)
+    init_code_layout(parser, parser.node, TERM_BLOCK)
+    nodes = statements(parser.interface_parser, TERM_BLOCK)
+    advance_end(parser)
+    return nodes
+
+
+def stmt_generic(parser, op, node):
+    init_node_layout(parser, node)
+    init_code_layout(parser, parser.node, TERM_BLOCK)
+    nodes = statements(parser.generic_declaration_parser, TERM_BLOCK)
+    advance_end(parser)
+    return nodes
+
+
+def prefix_lparen_type(parser, op, node):
+    items = _parse_comma_separated(parser, node, TT_RPAREN, [NT_SYMBOL])
+    return node_1(NT_LIST, __ntok(node), items)
 
 
 def layout_lcurly(parser, op, node):
@@ -820,6 +860,11 @@ def _parse_union(parser, node, union_name):
 def _parse_type(parser, node, typename, term):
     if parser.token_type == TT_NAME:
         fields = juxtaposition_as_list(parser.type_parser, term)
+        args = symbol_list_to_arg_tuple(parser, parser.node, fields)
+        body = list_node([nodes.create_fenv_node(parser.node)])
+        construct_funcs = nodes.create_function_variants(args, body)
+    elif parser.token_type == TT_LPAREN:
+        fields = expect_expression_of(parser.type_parser, 0, NT_LIST, term)
         args = symbol_list_to_arg_tuple(parser, parser.node, fields)
         body = list_node([nodes.create_fenv_node(parser.node)])
         construct_funcs = nodes.create_function_variants(args, body)
