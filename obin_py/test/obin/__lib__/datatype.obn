@@ -1,24 +1,18 @@
-import obin:lang:_api
 import obin:lang:_datatype
-from derive import (TypeDerived, UnionDerived)
-import seq
+import derive
 
 
-extend Datatype
-    with Eq = TypeDerived
-    with Str = TypeDerived
-    with Repr = TypeDerived
+extend Datatype with
+    trait derive:TEq
+    trait derive:TStr
+    trait derive:TRepr
 
 extend Union
-    with Seqable
-        def to_seq self -> _datatype:union_to_list self
-    with Bounded
-        def lower_bound self ->
-            fst (to_seq self)
+    def to_seq(self) -> _datatype:union_to_list self
+    def lower_bound(self) -> fst(to_seq(self))
 
-        def upper_bound self ->
-            last (to_seq self)
+    def upper_bound(self) -> last(to_seq(self))
 
-    with Eq = TypeDerived
-    with Collection = TypeDerived
-    with Sized = TypeDerived
+    trait derive:TUnionEq
+    trait derive:TUnionCollection
+    trait derive:TUnionSized

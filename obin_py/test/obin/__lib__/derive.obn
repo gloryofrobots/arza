@@ -2,10 +2,12 @@ import obin:lang:_api
 import obin:lang:_datatype
 import seq
 
+trait TEq
+    def == self other -> _api:equal other self
+
 type TypeDerived
 extend TypeDerived
     with Eq
-        def == self other -> _api:equal other self
     with Str
         def str self -> _api:to_string self
     with Repr
