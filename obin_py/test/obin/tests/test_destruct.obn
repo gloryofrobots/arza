@@ -22,11 +22,11 @@ fun test () ->
         author= ("James", "Corey")
     }
 
-    affirm:is_equal (metadata.title,
+    (affirm:is_equal (metadata.title,
                      metadata.subject, metadata.translationsUa.["title"], metadata.translationsUa.translator,
-                     metadata.translationsEn.titleEn,  metadata.translationsEn.translatorEn, metadata.author) .
+                     metadata.translationsEn.titleEn,  metadata.translationsEn.translatorEn, metadata.author)
                      ("Nemesis Games", "SCIFI", "IGRU DOLI", "PILIP LUN",
-                             ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU", ("James", "Corey"))
+                             ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU", ("James", "Corey")))
     {
         #title=englishTitle,
         subject,
@@ -35,10 +35,10 @@ fun test () ->
         author=author_data
     } = metadata
 
-    affirm:is_equal (englishTitle, subject, localeTitle,
-                    translator,(localeTitleEn, origTitleEn), translatorEn, author_data) .
+    (affirm:is_equal (englishTitle, subject, localeTitle,
+                    translator,(localeTitleEn, origTitleEn), translatorEn, author_data)
                     ("Nemesis Games", "SCIFI", "IGRU DOLI", "PILIP LUN",
-                     ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU", ("James", "Corey"))
+                     ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU", ("James", "Corey")))
 
     /////////////////////////////////////////
     lam () ->

@@ -13,8 +13,8 @@ extend L
 
 fun test () ->
     l1 = L [1,2,3,4,5]
-    affirm:is_equal .
+    (affirm:is_equal
         match l1 with
             | [] -> #empty
             | e -> #not_empty
-        end . #not_empty
+        end  #not_empty)

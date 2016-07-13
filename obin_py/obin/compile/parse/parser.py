@@ -223,7 +223,6 @@ def type_parser_init(parser):
     # infix(parser, TT_CASE, 15, led_infixr)
     # infix(parser, TT_ASSIGN, 10, led_infixr)
     infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
-    infix(parser, TT_SPACE_DOT, 5, infix_juxtaposition)
     symbol(parser, TT_CASE, None)
     return parser
 
@@ -235,7 +234,6 @@ def method_signature_parser_init(parser):
     symbol(parser, TT_END, None)
     symbol(parser, TT_ARROW, None)
     infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
-    infix(parser, TT_SPACE_DOT, 5, infix_juxtaposition)
     return parser
 
 
@@ -282,7 +280,6 @@ def guard_parser_init(proc_data, parser):
     prefix(parser, TT_SHARP, prefix_sharp)
     prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
 
-    infix(parser, TT_SPACE_DOT, 15, infix_spacedot)
 
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
@@ -324,7 +321,6 @@ def fun_pattern_parser_init(parser):
     parser.break_on_juxtaposition = False
     parser.juxtaposition_as_list = True
     infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
-    infix(parser, TT_SPACE_DOT, 5, infix_juxtaposition)
     return parser
 
 
@@ -345,7 +341,6 @@ def fun_signature_parser_init(parser):
     symbol(parser, TT_ARROW)
     symbol(parser, TT_CASE)
     infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
-    infix(parser, TT_SPACE_DOT, 5, infix_juxtaposition)
     return parser
 
 
@@ -405,7 +400,6 @@ def expression_parser_init(proc_data, parser):
     prefix(parser, TT_LET, prefix_let)
 
     assignment(parser, TT_ASSIGN, 10)
-    infix(parser, TT_SPACE_DOT, 15, infix_spacedot)
     infix(parser, TT_OF, 15, led_infix)
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
@@ -446,7 +440,6 @@ def module_parser_init(parser):
     prefix(parser, TT_LAMBDA, prefix_lambda)
 
     assignment(parser, TT_ASSIGN, 10)
-    infix(parser, TT_SPACE_DOT, 15, infix_spacedot)
     infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     infix(parser, TT_DOT, 100, infix_dot)
     infix(parser, TT_COLON, 100, infix_name_pair)

@@ -59,71 +59,71 @@ fun test() ->
 
     ////////////////////////////////////////////////////////////////
 
-    affirm:is_equal .
+    (affirm:is_equal
         match [(1,2), (2,3,4), 5, [6,7,8]] with
             | [a1,b1,c1] ->  (a1, b1, c1)
             | [a1, b1] ->  (a1, b1)
             | (x1, y1, 5) ->  (x1, y1)
             | [(1, X1), Y1, 5, [6,7, Z1]] ->  (X1, Y1, Z1)
             | _ ->  123
-        end . (2, (2, 3, 4), 8)
+        end  (2, (2, 3, 4), 8))
 
     affirm:is_throw lam () -> [a1, b1, c1, x1, y1] end ()
 
     ////////////////////////////////////////////////////////////////
 
-    affirm:is_equal .
+    (affirm:is_equal
         match {name="Bob", surname=("Alice", "Dou"), age=42} with
             | {name="Bob", surname="Alice"} ->  (name, surname)
             | {name="Bob2", age=42} ->  (name, age)
             | {name="Bob", surname=("Alice", "Dou"), age=42} ->  (surname, name, age + 100)
             | _ ->  42
-        end . ((#Alice, #Dou), #Bob, 142)
+        end  ((#Alice, #Dou), #Bob, 142))
 
 
     ////////////////////////////////////////////////////////////////
 
-    affirm:is_equal .
+    (affirm:is_equal
         match {name="Bob", surname=("Alice", "Dou"), age=42} with
             | {age=41, names} ->  (name, age, 0)
             | {name, age=42} ->  (name, age, 1)
             | {age=42} ->  (age, 2)
             | _ ->  42
-        end . ("Bob", 42, 1)
+        end  ("Bob", 42, 1))
 
     ////////////////////////////////////////////////////////////////
 
-    affirm:is_equal .
+    (affirm:is_equal
         match (1, 2, 1) with
             | (A, x, A)  -> (#first, A)
             | (A, x, B)  -> (#second, A, B)
             | (3, A) -> #third
-        end . (#first, 1)
+        end (#first, 1))
 
     ////////////////////////////////////////////////////////////////
 
-    affirm:is_equal .
+    (affirm:is_equal
         match (1, 2, 2) with
             | (A, x, A)  -> (#first, A)
             | (A, x, B)  -> (#second, A, B)
-        end . (#second, 1, 2)
+        end (#second, 1, 2))
 
     ////////////////////////////////////////////////////////////////
 
-    affirm:is_equal .
+    (affirm:is_equal
         match 42 with
             | N1 of String  -> ("Is String", N1)
             | N1 of Int  -> ("Is Integer", N1)
-        end . ("Is Integer", 42)
+        end  ("Is Integer", 42))
 
 
     ////////////////////////////////////////////////////////////////
 
-    affirm:is_equal .
+    (affirm:is_equal
         match (1,2,3,4,5) with
             | (a,b,c,...rest) -> rest
             | _ -> 42
-        end . (4, 5)
+        end  (4, 5))
 
     ///////////////////////////////////////////////////////////////
     // this is error prone code, currently branches not merged because
@@ -166,7 +166,7 @@ fun test() ->
     //////////////////////////////////////////////////////
 
     lam () ->
-        affirm:is_equal_batch(
+        (affirm:is_equal_batch(
             fun fxyz x y z
                 | x y z when z == 2 -> #first
                 | x y z when z == 3 and y == 3 -> #second
@@ -174,12 +174,12 @@ fun test() ->
                 | x y z when z == 3 and y == 2 and x == 1 and (x + y == 6 or True) -> #fourth
                 | x y z when z == 3 and y == 2 and x == 2 or (A `is` True or (greater_then_ten 11)) -> #fifth
                 | _ _ _ -> 12
-            end) .
-            ([1,2,2], #first) .
-            ([1,3,3], #second) .
-            ([3,2,3], #third) .
-            ([1,2,3], #fourth) .
-            ([2,2,3], #fifth)
+            end)
+            ([1,2,2], #first)
+            ([1,3,3], #second)
+            ([3,2,3], #third)
+            ([1,2,3], #fourth)
+            ([2,2,3], #fifth))
     end ()
 
     //////////////////////////////////////////////////////

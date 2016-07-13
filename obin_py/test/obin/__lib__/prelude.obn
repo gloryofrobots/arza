@@ -4,14 +4,12 @@ from obin:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vect
 """
 SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
 JUXTAPOSITION means function calls like cons 2 []
-" ." is a juxtaposition with low precedence used to avoid parenthesis but not to produce partials like <|
 for example
     OBIN                                        SOME OTHER LANGUAGE WITH USUAL INFIX CALL NOTATION (JavaScript, Python, Java, ...)
     io:print 1 2 3                              io:print(1,2,3)
     io:print 1 -2 3                             io:print(1, (negate(2(3))) // prefix operator applies to expression 2 3. to avoid it use
     io:print 1 (-2) 3                           io:print(1, -2, 3) // or
-    io:print 1 . -2 . 3                         io:print(1, -2, 3)
-    io:print 1 . sqrt x . 3 + -5 . pow 2 4      io:print(1, sqrt(x), 3 + -5, pow(2,4) )
+    io:print 1 (sqrt x) (3 + (-5))  (pow 2 4)      io:print(1, sqrt(x), 3 + -5, pow(2,4) )
 
 
 Precedence    Operator
@@ -132,7 +130,7 @@ trait Seqable for self
 //    def from_seq seq self
 
 trait Sliceable for self
-    def slice first . last . self
+    def slice first last self
     def drop count self
     def take count self
 

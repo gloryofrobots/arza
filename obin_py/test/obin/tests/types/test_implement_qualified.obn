@@ -21,7 +21,7 @@ implement TraitWithOp for stuff:TestType
     def ++-+*++  self -> self.val
 
 implement stuff:TestTrait for stuff:TestType
-    def test_method_1 (a1 of stuff:TestType . a2 of stuff:TestType . self) -> a1.val + a2.val + self.val
+    def test_method_1 (a1 of stuff:TestType) (a2 of stuff:TestType) self -> a1.val + a2.val + self.val
     def test_method_2 a1 self a2 -> a1.val + a2.val + self.val
     def test_method_3 self a1 a2 -> a1.val + a2.val + self.val
     def test_method_4 self -> self.val

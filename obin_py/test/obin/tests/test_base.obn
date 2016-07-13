@@ -13,7 +13,7 @@ fun t1() ->
     m1 = {name="XXX"}
     affirm:is_equal {name="XXX"}.name "XXX"
     affirm:is_equal m1.name "XXX"
-    affirm:is_not_equal m1.name . "YYY"
+    affirm:is_not_equal m1.name "YYY"
 
     t2 = ((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"})
 
@@ -37,11 +37,10 @@ fun t1() ->
     affirm:is_equal "++++ ---- <> $$" #"++++ ---- <> $$"
 
     x = 12
-    affirm:is_equal if x == 13 then 1 + 1
-                    elif x == 14 then 2 + 2
-                    elif x == 15 then 3 + 3
-                    else 4 + 4 end .
-                    8
+    (affirm:is_equal (if x == 13 then 1 + 1
+                      elif x == 14 then 2 + 2
+                      elif x == 15 then 3 + 3
+                      else 4 + 4 end) 8)
 
 
 fun t2 () ->
@@ -50,13 +49,13 @@ fun t2 () ->
         | [x,y,z] -> x + y + z
     fun sum x y -> x + y
 
-    V53 = sum 1 .
+    V53 = (sum 1
             (sum_list_3
                 [id 1,
                  id (id 2),
                  id (id (id 3))
-                ]) +
-        (sum 10 .
+                ])) +
+        (sum 10
             (sum_list_3
                 [lam x -> x end 11,
                  lam x
@@ -124,7 +123,7 @@ fun t4 () ->
     affirm:is_equal (lam x -> x + 1 end 34) 35
 
 
-    affirm:is_equal .
+    (affirm:is_equal
         ( lam x y z
             | 1 2 3 -> 11
             | 2 4 5 -> 22
@@ -132,7 +131,7 @@ fun t4 () ->
                     1
                         2
 
-                         3) . 11
+                         3)  11)
     T =
         (1,2, lam x | 1 -> 25
                     | 2 -> 13 end, 25)
@@ -204,28 +203,29 @@ fun t4 () ->
     affirm:is_equal (2;, 3) (2,3)
 
     T7 =
-        lam x -> x end .
         (
-            lam x ->
-                1
-            end
-            , 3
-            , 1
-            , 4
-            , 5
+            lam x -> x end
+            (
+                lam x ->
+                    1
+                end
+                , 3
+                , 1
+                , 4
+                , 5
+            )
         )
     affirm:is_equal (T7.0 12313123) 1
 
-    affirm:is_equal .
+    (affirm:is_equal
          (
-            lam x ->
+            (lam x ->
                 x
-            end .
-                3
+             end) 3
           , 1
           , 4
           , 5
-        ).0 . 3
+        ).0  3)
 
     //////////////////////////////////////////////////////
     M1 =
@@ -280,9 +280,9 @@ fun t4 () ->
               end
         with
             | Y ->
-               lam t
-                    | (a,b) -> a + b end .
-                    (1 + 1, 2 + 2)
+               (lam t
+                    | (a,b) -> a + b end
+                    (1 + 1, 2 + 2))
             | _ -> 2
 
     affirm:is_equal MT3 6
@@ -299,25 +299,25 @@ fun t4 () ->
 
     affirm:is_equal MT4 2
 
-    affirm:is_equal .
+    (affirm:is_equal
         match 1 with
             | x -> 3
-            | _ -> 2 end . 3
+            | _ -> 2 end 3)
 
     affirm:is_equal match 1 with 1 -> 4 end 4
-    affirm:is_equal .
-        match 1 with
+    (affirm:is_equal
+        (match 1 with
             x -> 4
-        end . 4
+         end)  4)
 
     affirm:is_equal (
         match
-            if 0 == 1 then
+            ((if 0 == 1 then
                 1
-            else
+              else
                 lam x y -> x + y
-            end 3 .
-                4
+              end 3)
+                4)
         with
             | 6 -> 3
             | 7 -> 42

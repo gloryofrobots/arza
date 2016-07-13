@@ -99,16 +99,16 @@ fun test_5() ->
 --------------------------------------------------
 
 fun test_6() ->
-    affirm:is_equal try
+    (affirm:is_equal try
                         throw (1,2,"ERROR")
-                    catch
+                     catch
                         | err @ (1, y, 3) -> #first
                         | (1,2, "ERROR@") -> #second
                         | err @ (1, 2, x) -> #third
-                    finally ->
+                     finally ->
                         (#fourth, err, x)
-                    end .
-                    (#fourth, (1, 2, "ERROR"), "ERROR")
+                     end
+                     (#fourth, (1, 2, "ERROR"), "ERROR"))
 
 --------------------------------------------------
 

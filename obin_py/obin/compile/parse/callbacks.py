@@ -120,11 +120,6 @@ def infix_triple_colon(parser, op, node, left):
     return nodes.create_delayed_cons_node(node, left, right)
 
 
-def infix_spacedot(parser, op, node, left):
-    right = expression(parser, op.lbp)
-    return nodes.node_2(NT_JUXTAPOSITION, __ntok(node), left, right)
-
-
 def infix_juxtaposition(parser, op, node, left):
     right = base_expression(parser, op.lbp)
     return nodes.node_2(NT_JUXTAPOSITION, __ntok(node), left, right)

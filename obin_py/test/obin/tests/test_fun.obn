@@ -52,11 +52,10 @@ fun test () ->
             (var1, var2, var3, var4)
 
 
-    affirm:is_equal (func1 1 2 3 4 5 6 7 8 9 10 11) .
-                    (6, 7, 8, (9, 10, 11))
+    affirm:is_equal (func1 1 2 3 4 5 6 7 8 9 10 11) (6, 7, 8, (9, 10, 11))
 
-    affirm:is_equal (func1 42 42 42 42 42 42 42 {key1=#key1, key2=#key2, key3=25} [#first, #second, #third, 4,5,6,7]) .
-                    (#key2, #first, #third, [4, 5, 6, 7])
+    (affirm:is_equal (func1 42 42 42 42 42 42 42 {key1=#key1, key2=#key2, key3=25} [#first, #second, #third, 4,5,6,7])
+                     (#key2, #first, #third, [4, 5, 6, 7]))
 
 
     affirm:is_equal (apply lam () -> #empty end [()]) #empty
@@ -66,10 +65,10 @@ fun test () ->
         | 42 -> #second
         | () -> #third
 
-    affirm:is_equal_batch func3 .
-                          ([1], #first) .
-                          ([42], #second) .
-                          ([()], #third)
+    (affirm:is_equal_batch func3
+                          ([1], #first)
+                          ([42], #second)
+                          ([()], #third))
 
     // when possible function compiles
     // into destructive assignment automaton instead of more complicated pattern matching graph
@@ -111,31 +110,31 @@ fun test () ->
         | 3 -> #three
         | 4 -> #four
 
-    affirm:is_equal_batch   fn_fail .
-                            ([1], #one) .
-                            ([2], #two) .
-                            ([3], #three) .
-                            ([4], #four)
+    (affirm:is_equal_batch  fn_fail
+                            ([1], #one)
+                            ([2], #two)
+                            ([3], #three)
+                            ([4], #four))
 
     affirm:is_throw fn_fail [5]
     affirm:is_throw_expected fn_fail [0] (#FunctionArgumentsMatchError, (0,))
-    affirm:is_equal try
+    (affirm:is_equal try
                        fn_fail("I am string")
-                    catch exc ->
+                     catch exc ->
                        [exc, exc, exc]
-                    end .
+                     end
                     [(#FunctionArgumentsMatchError, ("I am string",)),
                      (#FunctionArgumentsMatchError, ("I am string",)),
-                     (#FunctionArgumentsMatchError,("I am string",))]
+                     (#FunctionArgumentsMatchError,("I am string",))])
 
     ////////////////////////////////////////////////
     //Empty args first
-    affirm:is_equal_batch   lam arg1 arg2
+    (affirm:is_equal_batch   lam arg1 arg2
                                 | () () -> 42
                                 | x y -> x + y
-                            end .
-                            [(1,2), 3] .
-                            [[(), ()], 42]
+                             end
+                             [(1,2), 3]
+                             [[(), ()], 42])
 
     ////////////////////////////////////////////////
     affirm:is_equal (fun f_42 arg | () -> 42 end ()) 42
@@ -150,8 +149,8 @@ fun test () ->
     f4_1 = lam x l | _ [a, b] -> x + a + b end
     affirm:is_equal (f3 1 [2, 3]) (f4_1 1 [2, 3])
     affirm:is_equal (f4_1 1 [2, 3]) 6
-    affirm:is_equal (lam x l m
-                        | x [a,b,c,...tl] {N, Z} -> (x + a + b + c + N + Z) :: tl end .
-                          1 . [1, 1, 1, 33,33,33] . {N=1, Z = 1}) .
-                    [6, 33, 33, 33]
+    (affirm:is_equal (lam x l m
+                        | x [a,b,c,...tl] {N, Z} -> (x + a + b + c + N + Z) :: tl end
+                          1  [1, 1, 1, 33,33,33] {N=1, Z = 1})
+                    [6, 33, 33, 33])
 ---------

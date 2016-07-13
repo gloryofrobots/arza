@@ -6,15 +6,15 @@ import lazy
 fun test_zip() ->
     l1 = [1,2,3,4,5,6,7,8,9,10]
     l2 = seq:map (`*` 4) l1
-    affirm:is_equal (seq:zip l1 l2) .
-        [(1, 4), (2, 8), (3, 12), (4, 16), (5, 20), (6, 24), (7, 28), (8, 32), (9, 36), (10, 40)]
+    (affirm:is_equal (seq:zip l1 l2)
+        [(1, 4), (2, 8), (3, 12), (4, 16), (5, 20), (6, 24), (7, 28), (8, 32), (9, 36), (10, 40)])
 
     l4 = seq:take 5 l2
     affirm:is_equal (seq:zip l1 l4) [(1, 4), (2, 8), (3, 12), (4, 16), (5, 20)]
     l6 = seq:map (`-` 42) l1
-    affirm:is_equal (seq:zip3 l1 l2 l6) .
+    (affirm:is_equal (seq:zip3 l1 l2 l6)
             [(1, 4, 41), (2, 8, 40), (3, 12, 39), (4, 16, 38), (5, 20, 37),
-             (6, 24, 36), (7, 28, 35), (8, 32, 34), (9, 36, 33), (10, 40, 32)]
+             (6, 24, 36), (7, 28, 35), (8, 32, 34), (9, 36, 33), (10, 40, 32)])
     affirm:is_equal (seq:zip3 l1 l2 l4) [(1, 4, 4), (2, 8, 8), (3, 12, 12), (4, 16, 16), (5, 20, 20)]
     (_l1, _l2) = seq:unzip (seq:zip l1 l2)
     affirm:is_equal l1 _l1
@@ -27,10 +27,10 @@ fun test_zip() ->
 
     affirm:is_equal (seq:zipwith `+` (range 0 10) (range 10 100)) [10, 12, 14, 16, 18, 20, 22, 24, 26, 28]
 
-    affirm:is_equal (seq:zipwith3 lam x y z -> x + y + z end .
-                                        (range 0 10) . (range_by 0 (-10) (-1)) .
-                                        (range_by 100 0 (-10))) .
-                    [100, 90, 80, 70, 60, 50, 40, 30, 20, 10]
+    (affirm:is_equal (seq:zipwith3 lam x y z -> x + y + z end
+                                        (range 0 10)  (range_by 0 (-10) (-1))
+                                        (range_by 100 0 (-10)))
+                    [100, 90, 80, 70, 60, 50, 40, 30, 20, 10])
 
 
 
@@ -61,14 +61,14 @@ fun test_base () ->
     affirm:is_equal (seq:split_at 3 l1)  ([0, 1, 2], [3, 4, 5, 6, 7, 8, 9])
     affirm:is_equal (seq:take_while lam x -> x < 5 end l1) [0, 1, 2, 3, 4]
     affirm:is_equal (seq:drop_while lam x -> x < 5 end l1) [5, 6, 7, 8, 9]
-    affirm:is_equal (seq:span lam x -> x < 3 end [1,2,3,4,1,2,3,4]) .
-                    ([1, 2], [3, 4, 1, 2, 3, 4])
+    (affirm:is_equal (seq:span lam x -> x < 3 end [1,2,3,4,1,2,3,4])
+                    ([1, 2], [3, 4, 1, 2, 3, 4]))
 
-    affirm:is_equal (seq:span lam x -> x < 9 end [1,2,3]) .
-                    ([1, 2, 3], [])
+    (affirm:is_equal (seq:span lam x -> x < 9 end [1,2,3])
+                    ([1, 2, 3], []))
 
-    affirm:is_equal (seq:span lam x -> x < 0 end [1,2,3]) .
-                    ([], [1, 2, 3])
+    (affirm:is_equal (seq:span lam x -> x < 0 end [1,2,3])
+                    ([], [1, 2, 3]))
 
     affirm:is_true (seq:conjunction [True, True, True, True])
     affirm:is_false (seq:conjunction [True, True, True, False])
@@ -99,11 +99,11 @@ fun test_sort() ->
                     <| [-456, -25, -10, -10, 0, 0, 1, 1, 2, 4, 128, 489]
 
 
-    affirm:is_equal (seq:sort_desc ([1, 4, 0, 0, 1, -10, -10, -25, -456, 2, 489, 128])) .
-               [489, 128, 4, 2, 1, 1, 0, 0, -10, -10, -25, -456]
+    (affirm:is_equal (seq:sort_desc ([1, 4, 0, 0, 1, -10, -10, -25, -456, 2, 489, 128]))
+               [489, 128, 4, 2, 1, 1, 0, 0, -10, -10, -25, -456])
 
 fun test() ->
-    test_base()
-    test_zip()
-    test_sort()
-    test_equal()
+    test_base ()
+    test_zip ()
+    test_sort ()
+    test_equal ()

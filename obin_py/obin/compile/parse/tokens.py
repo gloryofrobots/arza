@@ -81,7 +81,6 @@ multi_string_literal = '"{3}([\s\S]*?"{3})'
 RULES = [
     (token('\n'), TT_NEWLINE),
     (token('[ ]*\.\.\.'), TT_ELLIPSIS),
-    (token(' \.'), TT_SPACE_DOT),
     (token('\.\{'), TT_INFIX_DOT_LCURLY),
     (token('\.\('), TT_INFIX_DOT_LPAREN),
     (token('\.\['), TT_INFIX_DOT_LSQUARE),
