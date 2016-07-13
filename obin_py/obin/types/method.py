@@ -38,11 +38,10 @@ class W_Method(W_Hashable):
 
     def _call_(self, process, args):
         arity = api.length_i(args)
-        if arity < self.arity:
-            return partial.newfunction_partial(self, args)
+        if arity != self.arity:
+            return error.throw_3(error.Errors.INVALID_ARG_COUNT_ERROR, space.newstring(u"Invalid count of arguments "),
+                          space.newint(arity), space.newint(self.arity))
 
-        elif arity > self.arity:
-            return error.throw_1(error.Errors.INVALID_ARG_COUNT_ERROR, args)
 
         if self.hot_path is not None:
             res = self.hot_path.apply(process, args)

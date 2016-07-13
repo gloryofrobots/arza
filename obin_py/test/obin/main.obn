@@ -63,12 +63,11 @@ fun test() ->
     test_datastructs:test()
     log "TEST LAZY"
     test_lazy:test()
-////
-//    log "TEST OPERATORS"
-//    test_operators:test()
 
+   // log "TEST OPERATORS"
+   // test_operators:test()
 
+fun add x y -> x + y
 
 fun main () ->
     test()
-

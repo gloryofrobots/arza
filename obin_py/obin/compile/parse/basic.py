@@ -629,7 +629,7 @@ def postprocess(parser, node):
 def literal_expression(parser):
     # Override most operators in literals
     # because of prefix operators
-    return expression(parser, 70)
+    return expression(parser, 97)
 
 
 def statement(parser):

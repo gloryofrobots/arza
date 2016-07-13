@@ -4,8 +4,8 @@ import seq
 
 fun _write_list_items args func file ->
     fun _walk x ->
-        file |> write (func x)
-             |> write " "
+        file |> partial write (func x)
+             |> partial write " "
 
     seq:foreach _walk (to_seq args)
     ()

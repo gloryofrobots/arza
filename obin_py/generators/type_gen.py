@@ -31,6 +31,7 @@ TYPES = [
     mktype("Map", [A]),
 
     mktype("Function", [C, A]),
+    mktype("Partial", [C, A]),
     mktype("Method", [C, A]),
     mktype("Fiber", [C, A]),
 
@@ -80,8 +81,8 @@ def gen_export():
     TPL = "from obin:lang:_types import ({{exports}})"
     print render(TPL, dict(exports=exports))
 
-# gen_declaration()
+gen_declaration()
 
-# gen_puts()
+gen_puts()
 #
 gen_export()

@@ -19,6 +19,7 @@ class Types:
         self.Tuple = newtype(_s(u"Tuple"))
         self.Map = newtype(_s(u"Map"))
         self.Function = newtype(_s(u"Function"))
+        self.Partial = newtype(_s(u"Partial"))
         self.Method = newtype(_s(u"Method"))
         self.Fiber = newtype(_s(u"Fiber"))
         self.Trait = newtype(_s(u"Trait"))

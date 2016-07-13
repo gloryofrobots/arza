@@ -1,5 +1,5 @@
 from obin:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
-                             Function, Method, Fiber, Trait, Datatype, Union, LazyVal, Env)
+                             Function, Partial, Method, Fiber, Trait, Datatype, Union, LazyVal, Env)
 
 """
 SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
@@ -27,6 +27,7 @@ Precedence    Operator
 """
 prefix - negate
 prefix ! !
+prefix & &
 infixr := := 10
 infixl <| <| 15
 infixl |> |> 20
@@ -204,10 +205,12 @@ fun not_elem x c -> not (elem x c)
 
 fun identity x -> x
 
+fun & func -> (obin:lang:defpartial func)
+
 fun |> x f -> f x
 fun <| f x -> f x
-fun >> f g x -> g (f x)
-fun << f g x ->  f (g x)
+fun >> f g -> lam x -> g (f x)
+fun << f g -> lam x -> f (g x)
 
 fun twice f -> f >> f
 fun flip f x y -> f y x
@@ -216,8 +219,8 @@ fun odd x -> not (even x)
 fun inc x -> x + 1
 fun dec x -> x - 1
 
-fst = at 0
-snd = at 1
-thrd = at 2
-frth = at 3
+fst = partial at 0
+snd = partial at 1
+thrd = partial at 2
+frth = partial at 3
 fun last coll -> at ((len coll) - 1) coll

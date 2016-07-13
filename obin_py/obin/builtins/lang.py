@@ -1,6 +1,6 @@
 from obin.runtime.routine.routine import complete_native_routine
 from obin.runtime import error
-from obin.types import api, space, plist, environment, datatype, tuples
+from obin.types import api, space, plist, environment, datatype, tuples, partial
 from obin.misc.timer import Timer
 
 from obin.runistr import encode_unicode_utf8
@@ -41,7 +41,8 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.TRAIT, __trait, 3)
     put_lang_func(process, module, lang_names.IMPLEMENT, __implement, 3)
     put_lang_func(process, module, lang_names.EXTEND, __extend, 2)
-    put_lang_func(process, module, lang_names.PARTIAL, __partial, 1)
+    put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
+    put_lang_func(process, module, u"partial", __partial, -1)
 
     put_lang_func(process, module, u"vector", __vector, -1)
 
@@ -213,10 +214,16 @@ def __extend(process, routine):
 
 
 @complete_native_routine
-def __partial(process, routine):
+def __defpartial(process, routine):
     func = routine.get_arg(0)
     return space.newpartial(func)
 
+@complete_native_routine
+def __partial(process, routine):
+    args = routine._args.to_l()
+    func = args[0]
+    args_t = space.newtuple(args[1:])
+    return partial.newfunction_partial(func, args_t)
 
 @complete_native_routine
 def concat_tuples(process, routine):

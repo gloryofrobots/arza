@@ -8,7 +8,7 @@ fun test () ->
     affirm:is_equal (seq:list (range (-10) (-20))) []
 
     affirm:is_equal (seq:list (range_by 5 36 10)) [5, 15, 25, 35]
-    affirm:is_equal (seq:list (range_by 10 <| -10 <| -1)) [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9]
+    affirm:is_equal (seq:list (&range_by <| 10 <| -10 <| -1)) [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9]
     affirm:is_equal (seq:list (range_by  (-10) 0 2)) [-10, -8, -6, -4, -2]
 
     affirm:is_equal (seq:take 10 (range_from 10)) [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]

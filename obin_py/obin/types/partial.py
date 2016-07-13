@@ -21,7 +21,7 @@ class W_Partial(W_Callable):
         return self._to_string_()
 
     def _type_(self, process):
-        return process.std.types.Function
+        return process.std.types.Partial
 
     def _call_(self, process, args):
         new_args = tuples.concat(self.args, args)

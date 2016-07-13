@@ -315,7 +315,7 @@ fun t4 () ->
             ((if 0 == 1 then
                 1
               else
-                lam x y -> x + y
+                &lam x y -> x + y
               end 3)
                 4)
         with

@@ -1,10 +1,10 @@
 
 [1,2,3]
-    |> filter lam x -> x `kindof` Int
-    |> map lam x -> x + 1
-    |> map (&* 1)
-    |> filter (&> 1)
-    |> map (divide 1)
+    |> partial filter lam x -> x `kindof` Int
+    |> partial map lam x -> x + 1
+    |> partial map (&* 1)
+    |> partial filter (&> 1)
+    |> partial map (divide 1)
 
 
 [1,2,3]

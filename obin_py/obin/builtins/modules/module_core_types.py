@@ -24,6 +24,7 @@ def setup_types(module, types):
     api.put(module, types.Tuple.name, types.Tuple)
     api.put(module, types.Map.name, types.Map)
     api.put(module, types.Function.name, types.Function)
+    api.put(module, types.Partial.name, types.Partial)
     api.put(module, types.Method.name, types.Method)
     api.put(module, types.Fiber.name, types.Fiber)
     api.put(module, types.Trait.name, types.Trait)
