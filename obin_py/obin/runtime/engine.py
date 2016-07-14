@@ -4,8 +4,8 @@ from obin.runtime.process import Process
 from obin.runtime import process_data, error
 from obin.runtime.load import import_module, evaluate_module_file
 
-# PRELUDE_FILE = u"prelude"
-PRELUDE_FILE = u"prelude_test"
+PRELUDE_FILE = u"prelude"
+# PRELUDE_FILE = u"prelude_test"
 # PRELUDE_FILE = u"syntax"
 # PRELUDE_FILE = u"affirm"
 
