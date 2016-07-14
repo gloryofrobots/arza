@@ -915,6 +915,7 @@ def grab_name_or_operator(parser):
     advance(parser)
     return name
 
+
 def _parser_trait_header(parser, node):
     type_parser = parser.type_parser
     name = grab_name(type_parser)
@@ -938,12 +939,11 @@ def stmt_trait(parser, op, node):
         method_name = nodes.create_symbol_node_s(method_name, nodes.node_value_s(method_name))
 
         funcs = _parse_function(parser.expression_parser,
-                                TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_EXTEND_DEF, TERM_EXTEND_DEF)
+                                TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_TRAIT_DEF, TERM_TRAIT_DEF)
         methods.append(list_node([method_name, funcs]))
 
     advance_end(parser)
     return nodes.node_3(NT_TRAIT, __ntok(node), name, constraints, list_node(methods))
-
 
 
 # def stmt_trait(parser, op, node):
