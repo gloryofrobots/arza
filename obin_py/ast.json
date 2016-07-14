@@ -1,5 +1,2227 @@
 [
   {
+    "_ntype": "NT_IMPORT_FROM",
+    "_value": "from",
+    "children": [
+      {
+        "_ntype": "NT_IMPORTED_NAME",
+        "_value": ":",
+        "children": [
+          {
+            "_ntype": "NT_IMPORTED_NAME",
+            "_value": ":",
+            "children": [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "obin"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "lang"
+              }
+            ]
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "_types"
+          }
+        ]
+      },
+      {
+        "_ntype": "NT_TUPLE",
+        "_value": "(",
+        "children": [
+          [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Bool"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Char"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Int"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Float"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Symbol"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "String"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "List"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Vector"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Tuple"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Map"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Function"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Method"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Fiber"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Trait"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Datatype"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Union"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "LazyVal"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Env"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "_ntype": "NT_MULTI_STR",
+    "_value": "\"\"\"\nPrecedence    Operator\n    100           : . .{ .( .[\n    95           (\n    60           :: :::\n    50           *  /\n    40           +  - ++\n    35           ==  !=  <  <=  >  >=\n    30           and\n    25           or << >>\n    20           |>\n    15           \" .\" @ as of <|\n    10           = :=\n\"\"\""
+  },
+  [
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "==",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "=="
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "!=",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "!="
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "<=",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "<="
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "<",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "<"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": ">=",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": ">="
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": ">",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": ">"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "cmp",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "cmp"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "first"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "second"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "max",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "max"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "first"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "second"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "min",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "min"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "first"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "second"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "-",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "-"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "+",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "+"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "*",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "*"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "/",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "/"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "mod",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "mod"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "y"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "negate",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "negate"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "x"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "str",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "str"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "repr",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "repr"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "len",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "len"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "is_empty",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "is_empty"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "put",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "put"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "key"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "value"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "at",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "at"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "key"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "del",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "del"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "obj"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "elem",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "elem"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "key"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "first",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "first"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "rest",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "rest"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "empty",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "empty"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "cons",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "cons"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "value"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "prepend",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "prepend"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "value"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "++",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "++"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "other"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "append",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "append"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "value"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "keys",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "keys"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "values",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "values"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "index_of",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "index_of"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "obj"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "to_seq",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "to_seq"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "slice",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "slice"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "first"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "last"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "drop",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "drop"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "count"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "take",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "take"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "count"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "lower_bound",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "lower_bound"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "upper_bound",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "upper_bound"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "range",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "range"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "last"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "range_by",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "range_by"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "last"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "step"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "range_from",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "range_from"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "range_from_by",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "range_from_by"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "step"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "!",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": "!"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": ":=",
+      "children": [
+        {
+          "_ntype": "",
+          "_value": ":="
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "self"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "#",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "value"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Eq"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "=="
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "!="
+          }
+        ]
+      ]
+    }
+  ],
+  [
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "PartialEq"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "=="
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Eq"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "!="
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "=="
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Ord"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "<"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "<="
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": ">"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": ">="
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "cmp"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "max"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "min"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Num"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "-"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "+"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "*"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "/"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "mod"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "negate"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Str"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "str"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Displayed"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "str"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "repr"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Sized"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "len"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "is_empty"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Collection"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "put"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "at"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "del"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "elem"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "ReadOnlyCollection"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "at"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "elem"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Seq"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "first"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "rest"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Emtiable"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "empty"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Consable"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "cons"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Prependable"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "prepend"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Appendable"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "append"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Concatable"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "++"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Dict"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "keys"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "values"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "put"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "at"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "del"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "elem"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Indexed"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "index_of"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Seqable"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "to_seq"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Sliceable"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "slice"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "drop"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "take"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Bounded"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "lower_bound"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "upper_bound"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Ranged"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "range"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "range_by"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "range_from"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": "range_from_by"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Ref"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "!"
+          }
+        ]
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "(",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "MutRef"
+        },
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "!"
+          },
+          {
+            "_ntype": "NT_NAME",
+            "_value": ":="
+          }
+        ]
+      ]
+    }
+  ],
+  {
     "_ntype": "NT_TRAIT",
     "_value": "trait",
     "children": [
@@ -725,6 +2947,1461 @@
             ]
           ]
         ]
+      ]
+    ]
+  },
+  {
+    "_ntype": "NT_METHOD",
+    "_value": "def",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "len"
+      },
+      [
+        [
+          {
+            "_ntype": "NT_TUPLE",
+            "_value": "(",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_OF",
+                  "_value": "of",
+                  "children": [
+                    {
+                      "_ntype": "NT_SYMBOL",
+                      "_value": "#",
+                      "children": [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "self"
+                        }
+                      ]
+                    },
+                    {
+                      "_ntype": "NT_SYMBOL",
+                      "_value": "#",
+                      "children": [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "MyList"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          },
+          [
+            {
+              "_ntype": "NT_CALL",
+              "_value": "len",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "len"
+                },
+                [
+                  {
+                    "_ntype": "NT_LOOKUP",
+                    "_value": ".",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "self"
+                      },
+                      {
+                        "_ntype": "NT_SYMBOL",
+                        "_value": "#",
+                        "children": [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "__list"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "_ntype": "NT_METHOD",
+    "_value": "def",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "=="
+      },
+      [
+        [
+          {
+            "_ntype": "NT_TUPLE",
+            "_value": "(",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_OF",
+                  "_value": "of",
+                  "children": [
+                    {
+                      "_ntype": "NT_SYMBOL",
+                      "_value": "#",
+                      "children": [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "self"
+                        }
+                      ]
+                    },
+                    {
+                      "_ntype": "NT_SYMBOL",
+                      "_value": "#",
+                      "children": [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "MyList"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "_ntype": "NT_SYMBOL",
+                  "_value": "#",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "other"
+                    }
+                  ]
+                }
+              ]
+            ]
+          },
+          [
+            {
+              "_ntype": "NT_CALL",
+              "_value": "(",
+              "children": [
+                {
+                  "_ntype": "NT_FUN",
+                  "_value": "fun",
+                  "children": [
+                    {
+                      "empty": true
+                    },
+                    [
+                      [
+                        {
+                          "_ntype": "NT_TUPLE",
+                          "_value": "(",
+                          "children": [
+                            [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "self"
+                              },
+                              {
+                                "_ntype": "NT_OF",
+                                "_value": "of",
+                                "children": [
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "other"
+                                  },
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "MyList"
+                                  }
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        [
+                          {
+                            "_ntype": "NT_CALL",
+                            "_value": "(",
+                            "children": [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "=="
+                              },
+                              [
+                                {
+                                  "_ntype": "NT_LOOKUP",
+                                  "_value": ".",
+                                  "children": [
+                                    {
+                                      "_ntype": "NT_NAME",
+                                      "_value": "self"
+                                    },
+                                    {
+                                      "_ntype": "NT_SYMBOL",
+                                      "_value": "#",
+                                      "children": [
+                                        {
+                                          "_ntype": "NT_NAME",
+                                          "_value": "__list"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "_ntype": "NT_LOOKUP",
+                                  "_value": ".",
+                                  "children": [
+                                    {
+                                      "_ntype": "NT_NAME",
+                                      "_value": "other"
+                                    },
+                                    {
+                                      "_ntype": "NT_SYMBOL",
+                                      "_value": "#",
+                                      "children": [
+                                        {
+                                          "_ntype": "NT_NAME",
+                                          "_value": "__list"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      ],
+                      [
+                        {
+                          "_ntype": "NT_TUPLE",
+                          "_value": "(",
+                          "children": [
+                            [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "self"
+                              },
+                              {
+                                "_ntype": "NT_WILDCARD",
+                                "_value": "_"
+                              }
+                            ]
+                          ]
+                        },
+                        [
+                          {
+                            "_ntype": "NT_FALSE",
+                            "_value": "False"
+                          }
+                        ]
+                      ]
+                    ]
+                  ]
+                },
+                [
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "self"
+                      }
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "other"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "_ntype": "NT_METHOD",
+    "_value": "def",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "is_empty"
+      },
+      [
+        [
+          {
+            "_ntype": "NT_TUPLE",
+            "_value": "(",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_SYMBOL",
+                  "_value": "#",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "self"
+                    }
+                  ]
+                }
+              ]
+            ]
+          },
+          [
+            {
+              "_ntype": "NT_CALL",
+              "_value": "is_empty",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "is_empty"
+                },
+                [
+                  {
+                    "_ntype": "NT_LOOKUP",
+                    "_value": ".",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "self"
+                      },
+                      {
+                        "_ntype": "NT_SYMBOL",
+                        "_value": "#",
+                        "children": [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "__list"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "_ntype": "NT_TYPE",
+    "_value": "type",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "MyList"
+      },
+      {
+        "_ntype": "NT_LIST",
+        "_value": "(",
+        "children": [
+          [
+            {
+              "_ntype": "NT_SYMBOL",
+              "_value": "#",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "__list"
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      [
+        [
+          {
+            "_ntype": "NT_TUPLE",
+            "_value": "end",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "__list"
+                }
+              ]
+            ]
+          },
+          [
+            {
+              "_ntype": "NT_FENV",
+              "_value": "___fenv"
+            }
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "_ntype": "NT_EXTEND",
+    "_value": "extend",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "MyList"
+      },
+      [
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "DummyTrait"
+          },
+          [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "method1"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "=="
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "!="
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "method2"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "++"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "--"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "method3"
+            }
+          ]
+        ],
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "TNotEq"
+          },
+          {
+            "empty": true
+          }
+        ],
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "TSized"
+          },
+          [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "is_empty"
+            }
+          ]
+        ]
+      ],
+      [
+        [
+          {
+            "_ntype": "NT_SYMBOL",
+            "_value": "#",
+            "children": [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "len"
+              }
+            ]
+          },
+          [
+            [
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": "(",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "self"
+                    }
+                  ]
+                ]
+              },
+              [
+                {
+                  "_ntype": "NT_CALL",
+                  "_value": "len",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "len"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_LOOKUP",
+                        "_value": ".",
+                        "children": [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "self"
+                          },
+                          {
+                            "_ntype": "NT_SYMBOL",
+                            "_value": "#",
+                            "children": [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "__list"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          ]
+        ],
+        [
+          {
+            "_ntype": "NT_SYMBOL",
+            "_value": "#",
+            "children": [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "+"
+              }
+            ]
+          },
+          [
+            [
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": "(",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "self"
+                    },
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "other"
+                    }
+                  ]
+                ]
+              },
+              [
+                {
+                  "_ntype": "NT_CALL",
+                  "_value": "(",
+                  "children": [
+                    {
+                      "_ntype": "NT_FUN",
+                      "_value": "fun",
+                      "children": [
+                        {
+                          "empty": true
+                        },
+                        [
+                          [
+                            {
+                              "_ntype": "NT_TUPLE",
+                              "_value": "(",
+                              "children": [
+                                [
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "self"
+                                  },
+                                  {
+                                    "_ntype": "NT_WILDCARD",
+                                    "_value": "_"
+                                  }
+                                ]
+                              ]
+                            },
+                            [
+                              {
+                                "_ntype": "NT_CALL",
+                                "_value": "MyList",
+                                "children": [
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "MyList"
+                                  },
+                                  [
+                                    {
+                                      "_ntype": "NT_NAME",
+                                      "_value": "x"
+                                    },
+                                    {
+                                      "_ntype": "NT_NAME",
+                                      "_value": "y"
+                                    }
+                                  ]
+                                ]
+                              }
+                            ]
+                          ],
+                          [
+                            {
+                              "_ntype": "NT_TUPLE",
+                              "_value": "(",
+                              "children": [
+                                [
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "self"
+                                  },
+                                  {
+                                    "_ntype": "NT_OF",
+                                    "_value": "of",
+                                    "children": [
+                                      {
+                                        "_ntype": "NT_NAME",
+                                        "_value": "other"
+                                      },
+                                      {
+                                        "_ntype": "NT_NAME",
+                                        "_value": "MyList"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              ]
+                            },
+                            [
+                              {
+                                "_ntype": "NT_CALL",
+                                "_value": "MyList",
+                                "children": [
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "MyList"
+                                  },
+                                  [
+                                    {
+                                      "_ntype": "NT_CALL",
+                                      "_value": "(",
+                                      "children": [
+                                        {
+                                          "_ntype": "NT_NAME",
+                                          "_value": "+"
+                                        },
+                                        [
+                                          {
+                                            "_ntype": "NT_LOOKUP",
+                                            "_value": ".",
+                                            "children": [
+                                              {
+                                                "_ntype": "NT_NAME",
+                                                "_value": "self"
+                                              },
+                                              {
+                                                "_ntype": "NT_SYMBOL",
+                                                "_value": "#",
+                                                "children": [
+                                                  {
+                                                    "_ntype": "NT_NAME",
+                                                    "_value": "__list"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "_ntype": "NT_LOOKUP",
+                                            "_value": ".",
+                                            "children": [
+                                              {
+                                                "_ntype": "NT_NAME",
+                                                "_value": "other"
+                                              },
+                                              {
+                                                "_ntype": "NT_SYMBOL",
+                                                "_value": "#",
+                                                "children": [
+                                                  {
+                                                    "_ntype": "NT_NAME",
+                                                    "_value": "__list"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                ]
+                              }
+                            ]
+                          ]
+                        ]
+                      ]
+                    },
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "self"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "other"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          ]
+        ],
+        [
+          {
+            "_ntype": "NT_SYMBOL",
+            "_value": "#",
+            "children": [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "first"
+              }
+            ]
+          },
+          [
+            [
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": "(",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "self"
+                    }
+                  ]
+                ]
+              },
+              [
+                {
+                  "_ntype": "NT_CALL",
+                  "_value": "first",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "first"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_LOOKUP",
+                        "_value": ".",
+                        "children": [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "self"
+                          },
+                          {
+                            "_ntype": "NT_SYMBOL",
+                            "_value": "#",
+                            "children": [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "__list"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          ]
+        ],
+        [
+          {
+            "_ntype": "NT_SYMBOL",
+            "_value": "#",
+            "children": [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "rest"
+              }
+            ]
+          },
+          [
+            [
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": "(",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "self"
+                    }
+                  ]
+                ]
+              },
+              [
+                {
+                  "_ntype": "NT_CALL",
+                  "_value": "rest",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "rest"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_LOOKUP",
+                        "_value": ".",
+                        "children": [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "self"
+                          },
+                          {
+                            "_ntype": "NT_SYMBOL",
+                            "_value": "#",
+                            "children": [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "__list"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "_ntype": "NT_TYPE",
+    "_value": "type",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "ImportError"
+      },
+      {
+        "_ntype": "NT_LIST",
+        "_value": "[",
+        "children": [
+          [
+            {
+              "_ntype": "NT_SYMBOL",
+              "_value": "#",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "args"
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      [
+        [
+          {
+            "_ntype": "NT_TUPLE",
+            "_value": "end",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "args"
+                }
+              ]
+            ]
+          },
+          [
+            {
+              "_ntype": "NT_FENV",
+              "_value": "___fenv"
+            }
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "_ntype": "NT_UNION",
+    "_value": "type",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "Ordering"
+      },
+      [
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "LT"
+            },
+            {
+              "empty": true
+            },
+            {
+              "empty": true
+            }
+          ]
+        },
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "GT"
+            },
+            {
+              "empty": true
+            },
+            {
+              "empty": true
+            }
+          ]
+        },
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "EQ"
+            },
+            {
+              "empty": true
+            },
+            {
+              "empty": true
+            }
+          ]
+        }
+      ]
+    ]
+  },
+  {
+    "_ntype": "NT_UNION",
+    "_value": "type",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "Option"
+      },
+      [
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Some"
+            },
+            {
+              "_ntype": "NT_LIST",
+              "_value": "[",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "val"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            },
+            [
+              [
+                {
+                  "_ntype": "NT_TUPLE",
+                  "_value": "|",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "val"
+                      }
+                    ]
+                  ]
+                },
+                [
+                  {
+                    "_ntype": "NT_FENV",
+                    "_value": "___fenv"
+                  }
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "None"
+            },
+            {
+              "empty": true
+            },
+            {
+              "empty": true
+            }
+          ]
+        }
+      ]
+    ]
+  },
+  {
+    "_ntype": "NT_UNION",
+    "_value": "type",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "Shape"
+      },
+      [
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "X"
+            },
+            {
+              "_ntype": "NT_LIST",
+              "_value": "[",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "x"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            },
+            [
+              [
+                {
+                  "_ntype": "NT_TUPLE",
+                  "_value": "|",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "x"
+                      }
+                    ]
+                  ]
+                },
+                [
+                  {
+                    "_ntype": "NT_FENV",
+                    "_value": "___fenv"
+                  }
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Y"
+            },
+            {
+              "_ntype": "NT_LIST",
+              "_value": "[",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "y"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            },
+            [
+              [
+                {
+                  "_ntype": "NT_TUPLE",
+                  "_value": "|",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "y"
+                      }
+                    ]
+                  ]
+                },
+                [
+                  {
+                    "_ntype": "NT_FENV",
+                    "_value": "___fenv"
+                  }
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Point"
+            },
+            {
+              "_ntype": "NT_LIST",
+              "_value": "(",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "x"
+                      }
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "y"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            },
+            [
+              [
+                {
+                  "_ntype": "NT_TUPLE",
+                  "_value": "|",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "x"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "y"
+                      }
+                    ]
+                  ]
+                },
+                [
+                  {
+                    "_ntype": "NT_FENV",
+                    "_value": "___fenv"
+                  }
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Square"
+            },
+            {
+              "_ntype": "NT_LIST",
+              "_value": "(",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "width"
+                      }
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "height"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            },
+            [
+              [
+                {
+                  "_ntype": "NT_TUPLE",
+                  "_value": "|",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "width"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "height"
+                      }
+                    ]
+                  ]
+                },
+                [
+                  {
+                    "_ntype": "NT_FENV",
+                    "_value": "___fenv"
+                  }
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Rect"
+            },
+            {
+              "_ntype": "NT_LIST",
+              "_value": "(",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "left"
+                      }
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "top"
+                      }
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "right"
+                      }
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "bottom"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            },
+            [
+              [
+                {
+                  "_ntype": "NT_TUPLE",
+                  "_value": "|",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "left"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "top"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "right"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "bottom"
+                      }
+                    ]
+                  ]
+                },
+                [
+                  {
+                    "_ntype": "NT_FENV",
+                    "_value": "___fenv"
+                  }
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Line"
+            },
+            {
+              "_ntype": "NT_LIST",
+              "_value": "(",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "point1"
+                      }
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "point2"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            },
+            [
+              [
+                {
+                  "_ntype": "NT_TUPLE",
+                  "_value": "|",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "point1"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "point2"
+                      }
+                    ]
+                  ]
+                },
+                [
+                  {
+                    "_ntype": "NT_FENV",
+                    "_value": "___fenv"
+                  }
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_TYPE",
+          "_value": "type",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Empty"
+            },
+            {
+              "empty": true
+            },
+            {
+              "empty": true
+            }
+          ]
+        }
       ]
     ]
   }
