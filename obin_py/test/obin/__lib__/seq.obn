@@ -101,7 +101,7 @@ fun take count coll
     | n [x, ...xs] -> x :: (take (n-1)  xs)
 --------------------------------------------------
 
-fun split_at (n of Int) l -> ((take n l), (drop n l)) end
+fun split_at (n of Int) l -> ((take n l), (drop n l)) 
 
 fun take_while predicate coll
     | p [] -> empty coll

@@ -312,6 +312,7 @@ def on_bind_node(parser, key):
     bind_key = nodes.create_bind_node(key, key, real_key)
     return bind_key, value
 
+
 def _parse_comma_separated(parser, node, terminator, expected, isfree=False):
     if isfree:
         init_free_layout(parser, node, [terminator])
@@ -332,15 +333,6 @@ def _parse_comma_separated(parser, node, terminator, expected, isfree=False):
     return list_node(items)
 
 
-def infix_lparen_generic(parser, op, node, left):
-    if parser.token_type == TT_RPAREN:
-        return parse_error(parser, u"Generic functiom must have 1 or more arguments", node)
-
-    check_node_type(parser, left, NT_SYMBOL)
-    items = _parse_comma_separated(parser, node, TT_RPAREN, [NT_SYMBOL])
-    return node_2(NT_GENERIC, __ntok(node), left, items)
-
-
 def infix_lparen_interface(parser, op, node, left):
     if parser.token_type == TT_RPAREN:
         items = list_node([])
@@ -358,10 +350,20 @@ def stmt_interface(parser, op, node):
     return nodes
 
 
+def operator_as_symbol(parser, op, node):
+    name = itself(parser, op, node)
+    return nodes.create_symbol_from_operator(node, name)
+
+
+def stmt_generic_name(parser, op, node):
+    items = juxtaposition_as_list(parser.generic_signature_parser, None)
+    return node_2(NT_GENERIC, __ntok(node), node, items)
+
+
 def stmt_generic(parser, op, node):
     init_node_layout(parser, node)
     init_code_layout(parser, parser.node, TERM_BLOCK)
-    nodes = statements(parser.generic_declaration_parser, TERM_BLOCK)
+    nodes = statements(parser.generic_parser, TERM_BLOCK)
     advance_end(parser)
     return nodes
 
@@ -913,46 +915,62 @@ def grab_name_or_operator(parser):
     advance(parser)
     return name
 
-
 def _parser_trait_header(parser, node):
     type_parser = parser.type_parser
     name = grab_name(type_parser)
-    check_token_type(parser, TT_FOR)
-    advance(parser)
-    instance_name = grab_name(type_parser)
     if parser.token_type == TT_OF:
         advance(parser)
         constraints = _parse_tuple_of_names(parser.name_parser, TERM_METHOD_CONSTRAINTS)
     else:
         constraints = nodes.create_empty_list_node(node)
     skip_indent(parser)
-    return name, instance_name, constraints
+    return name, constraints
 
 
 def stmt_trait(parser, op, node):
     init_node_layout(parser, node)
-    name, instance_name, constraints = _parser_trait_header(parser, node)
+    name, constraints = _parser_trait_header(parser, node)
     methods = []
     init_offside_layout(parser, parser.node)
     while parser.token_type == TT_DEF:
         advance_expected(parser, TT_DEF)
-        method_name = grab_name_or_operator(parser)
-        check_token_type(parser, TT_NAME)
+        method_name = expect_expression_of_types(parser.name_parser, 0, [NT_NAME, NT_IMPORTED_NAME])
+        method_name = nodes.create_symbol_node_s(method_name, nodes.node_value_s(method_name))
 
-        sig = juxtaposition_as_list(parser.method_signature_parser, TERM_METHOD_SIG)
-        check_node_type(parser, sig, NT_LIST)
-        if parser.token_type == TT_ARROW:
-            advance(parser)
-            init_code_layout(parser, parser.node, TERM_METHOD_DEFAULT_BODY)
-            args = symbol_list_to_arg_tuple(parser, node, sig)
-            body = statements(parser.expression_parser, TERM_METHOD_DEFAULT_BODY)
-            default_impl = nodes.create_function_variants(args, body)
-        else:
-            default_impl = empty_node()
+        funcs = _parse_function(parser.expression_parser,
+                                TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_EXTEND_DEF, TERM_EXTEND_DEF)
+        methods.append(list_node([method_name, funcs]))
 
-        methods.append(list_node([method_name, sig, default_impl]))
     advance_end(parser)
-    return nodes.node_4(NT_TRAIT, __ntok(node), name, instance_name, constraints, list_node(methods))
+    return nodes.node_3(NT_TRAIT, __ntok(node), name, constraints, list_node(methods))
+
+
+
+# def stmt_trait(parser, op, node):
+#     init_node_layout(parser, node)
+#     name, instance_name, constraints = _parser_trait_header(parser, node)
+#     methods = []
+#     init_offside_layout(parser, parser.node)
+
+#     while parser.token_type == TT_DEF:
+#         advance_expected(parser, TT_DEF)
+#         method_name = grab_name_or_operator(parser)
+#         check_token_type(parser, TT_NAME)
+
+#         sig = juxtaposition_as_list(parser.method_signature_parser, TERM_METHOD_SIG)
+#         check_node_type(parser, sig, NT_LIST)
+#         if parser.token_type == TT_ARROW:
+#             advance(parser)
+#             init_code_layout(parser, parser.node, TERM_METHOD_DEFAULT_BODY)
+#             args = symbol_list_to_arg_tuple(parser, node, sig)
+#             body = statements(parser.expression_parser, TERM_METHOD_DEFAULT_BODY)
+#             default_impl = nodes.create_function_variants(args, body)
+#         else:
+#             default_impl = empty_node()
+
+#         methods.append(list_node([method_name, sig, default_impl]))
+#     advance_end(parser)
+#     return nodes.node_4(NT_TRAIT, __ntok(node), name, instance_name, constraints, list_node(methods))
 
 
 def _parser_implement_header(parser):

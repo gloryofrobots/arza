@@ -53,6 +53,8 @@ TOKENS = [
   ("TT_HIDE", "hide"),
   ("TT_EXPORT", "export"),
   ("TT_TRAIT", "trait"),
+  ("TT_GENERIC", "generic"),
+  ("TT_INTERFACE", "interface"),
 
   ("TT_END", "end"),
   ("TT_END_EXPR", ";"),

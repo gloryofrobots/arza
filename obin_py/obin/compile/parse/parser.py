@@ -35,6 +35,8 @@ Precedence    Operator
     10           = := @
 """
 # additional helpers
+
+
 def infix_operator(parser, ttype, lbp, infix_function):
     op = get_or_create_operator(parser, ttype)
     operator_infix(op, lbp, led_infix_function, infix_function)
@@ -59,6 +61,7 @@ def assignment(parser, ttype, lbp):
 
 
 class BaseParser:
+
     def __init__(self):
         self.handlers = {}
         self.state = None
@@ -117,6 +120,7 @@ class BaseParser:
 
 
 class ExpressionParser(BaseParser):
+
     def __init__(self, proc_data):
         BaseParser.__init__(self)
         self.pattern_parser = pattern_parser_init(BaseParser())
@@ -141,7 +145,23 @@ class ExpressionParser(BaseParser):
         self.name_parser.close()
 
 
+class GenericParser(BaseParser):
+
+    def __init__(self, proc_data):
+        BaseParser.__init__(self)
+        self.generic_signature_parser =  \
+            operator_name_symbol_signature_parser_init(BaseParser())
+        generic_parser_init(self)
+
+    def _on_open(self, state):
+        self.generic_signature_parser.open(state)
+
+    def _on_close(self):
+        self.generic_signature_parser.close()
+
+
 class ModuleParser(BaseParser):
+
     def __init__(self, proc_data):
         BaseParser.__init__(self)
 
@@ -157,7 +177,10 @@ class ModuleParser(BaseParser):
         self.name_parser = name_parser_init(BaseParser())
         self.import_names_parser = import_names_parser_init(BaseParser())
         self.type_parser = type_parser_init(BaseParser())
-        self.method_signature_parser = method_signature_parser_init(BaseParser())
+        self.method_signature_parser = method_signature_parser_init(
+            BaseParser())
+        self.generic_parser = GenericParser(proc_data)
+        self.interface_parser = interface_parser_init(BaseParser())
 
         module_parser_init(self)
 
@@ -174,6 +197,8 @@ class ModuleParser(BaseParser):
         self.expression_parser.open(state)
         self.name_parser.open(state)
         self.import_names_parser.open(state)
+        self.generic_parser.open(state)
+        self.interface_parser.open(state)
 
     def _on_close(self):
         self.method_signature_parser.close()
@@ -186,6 +211,36 @@ class ModuleParser(BaseParser):
         self.expression_parser.close()
         self.name_parser.close()
         self.import_names_parser.close()
+        self.generic_parser.close()
+        self.interface_parser.close()
+
+
+def operator_name_symbol_signature_parser_init(parser):
+    parser.juxtaposition_as_list = True
+    parser.allow_unknown = True
+    prefix(parser, TT_NAME, prefix_name_as_symbol)
+    prefix(parser, TT_OPERATOR, operator_as_symbol)
+    symbol(parser, TT_END)
+    symbol(parser, TT_END_EXPR)
+    infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
+    return parser
+
+
+def generic_parser_init(parser):
+    parser.break_on_juxtaposition = True
+    stmt(parser, TT_NAME, stmt_generic_name)
+    stmt(parser, TT_OPERATOR, stmt_generic_name)
+
+
+def interface_parser_init(parser):
+    infix(parser, TT_LPAREN, 90, infix_lparen_interface)
+    infix(parser, TT_COLON, 100, infix_name_pair)
+    literal(parser, TT_NAME)
+    symbol(parser, TT_OPERATOR, symbol_operator_name)
+    symbol(parser, TT_COMMA)
+    symbol(parser, TT_RPAREN)
+    symbol(parser, TT_END)
+    return parser
 
 
 def name_parser_init(parser):
@@ -281,7 +336,6 @@ def guard_parser_init(proc_data, parser):
     prefix(parser, TT_SHARP, prefix_sharp)
     prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
 
-
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
     infix(parser, TT_BACKTICK_NAME, 35, infix_backtick_name)
@@ -289,7 +343,6 @@ def guard_parser_init(proc_data, parser):
     infix(parser, TT_DOT, 100, infix_dot)
     infix(parser, TT_COLON, 100, infix_name_pair)
     return parser
-
 
 
 def pattern_parser_init(parser):
@@ -420,6 +473,7 @@ def expression_parser_init(proc_data, parser):
     stmt(parser, TT_THROW, prefix_throw)
     return parser
 
+
 def module_parser_init(parser):
     parser = init_parser_literals(parser)
     parser.allow_overloading = True
@@ -457,6 +511,8 @@ def module_parser_init(parser):
     stmt(parser, TT_INFIXL, stmt_infixl)
     stmt(parser, TT_INFIXR, stmt_infixr)
     stmt(parser, TT_PREFIX, stmt_prefix)
+    stmt(parser, TT_GENERIC, stmt_generic)
+    stmt(parser, TT_INTERFACE, stmt_interface)
     return parser
 
 
@@ -519,7 +575,8 @@ def __parse__():
     """
     import os
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    lib_path = os.path.realpath(os.path.join(script_dir, '../../../test/obin/__lib__'))
+    lib_path = os.path.realpath(
+        os.path.join(script_dir, '../../../test/obin/__lib__'))
     process = newprocess([lib_path])
 
     ast, scope = parse(process, None, source)

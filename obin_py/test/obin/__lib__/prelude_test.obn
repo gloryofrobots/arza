@@ -1,13 +1,13 @@
-generic == x y
-generic first self
-generic ! self
-generic put index value coll
+interface PEq (==)
+interface Eq (==, !=)
+interface Num (-, +, *, /, mod, negate)
+interface Collection(put, at, del, elem)
 
-generic
-   == x y
-   first self
-   ! self
-   put index value coll
+interface
+    PEq (==)
+    Eq (!=, ==)
+    Num (-, +, *, /, mod, negate)
+    Collection(put, at, del, elem)
 
 // from obin:lang:_types import (Bool, Char, Int,
 //                               Float, Symbol, String, List, Vector,

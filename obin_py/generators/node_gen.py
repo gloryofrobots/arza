@@ -47,6 +47,9 @@ NODES = [
   "NT_TRAIT",
   "NT_IMPLEMENT",
   "NT_EXTEND",
+  "NT_GENERIC",
+  "NT_METHOD",
+  "NT_INTERFACE",
 
   "NT_BIND",
 
