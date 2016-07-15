@@ -409,23 +409,21 @@ def isenv(w):
 
 ########################################################
 
-def newgeneric(name, trait, signature):
+def newgeneric(name, signature):
     from obin.types.generic import generic
     assert issymbol(name)
-    assert istrait(trait)
     assert islist(signature)
 
-    obj = generic(name, trait, signature, newvoid())
-    return obj
+    return generic(name, signature)
 
 
-def newgeneric_default_implementation(name, trait, signature, default):
-    from obin.types.generic import generic
+def newgeneric_hotpath(name, signature, hot_path):
+    from obin.types.generic import generic_with_hotpath
     assert issymbol(name)
-    assert istrait(trait)
     assert islist(signature)
-    assert isfunction(default) or isvoid(default)
-    obj = generic(name, trait, signature, default)
+    assert hot_path is not None
+
+    obj = generic_with_hotpath(name, signature, hot_path)
     return obj
 
 
@@ -434,28 +432,16 @@ def isgeneric(w):
     return isinstance(w, W_Generic)
 
 
-def newgeneric_hotpath(name, trait, signature, hot_path):
-    assert issymbol(name)
-    assert istrait(trait)
-    assert islist(signature)
-
-    assert hot_path is not None
-    from obin.types.generic import generic_with_hotpath
-    obj = generic_with_hotpath(name, trait, signature, newvoid(), hot_path)
-    return obj
-
-
 ########################################################
 
-def newtrait(name, varname, constraints):
+def newtrait(name, constraints):
     from obin.types.trait import W_Trait
     from obin.runtime import error
     error.affirm_type(name, issymbol)
-    error.affirm_type(varname, issymbol)
     error.affirm_type(constraints, islist)
     error.affirm_iterable(constraints, istrait)
 
-    return W_Trait(name, varname, constraints)
+    return W_Trait(name, constraints)
 
 
 def istrait(w):
@@ -465,12 +451,14 @@ def istrait(w):
 
 ########################################################
 
-def newinterface(name):
+def newinterface(name, generics):
     from obin.types.interface import W_Interface
     from obin.runtime import error
     error.affirm_type(name, issymbol)
+    error.affirm_type(generics, islist)
+    error.affirm_iterable(generics, isgeneric)
 
-    return W_Interface(name)
+    return W_Interface(name, generics)
 
 
 def isinterface(w):

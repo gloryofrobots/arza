@@ -37,9 +37,9 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.KINDOF, __kindof, 2)
     put_lang_func(process, module, lang_names.TYPE, __type, 3)
     put_lang_func(process, module, lang_names.UNION, __union, 2)
-    put_lang_func(process, module, lang_names.METHOD, __method, 4)
-    put_lang_func(process, module, lang_names.TRAIT, __trait, 3)
-    put_lang_func(process, module, lang_names.EXTEND, __extend, 2)
+    put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
+    put_lang_func(process, module, lang_names.TRAIT, __trait, 2)
+    put_lang_func(process, module, lang_names.EXTEND, __extend, 3)
     put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
     put_lang_func(process, module, u"partial", __partial, -1)
 
@@ -175,31 +175,32 @@ def __union(process, routine):
 
 
 @complete_native_routine
-def __method(process, routine):
-    _trait = routine.get_arg(0)
-    name = routine.get_arg(1)
-    signature = routine.get_arg(2)
-    impl = routine.get_arg(3)
-    method = space.newgeneric_default_implementation(name, _trait, signature, impl)
+def __generic(process, routine):
+    name = routine.get_arg(0)
+    signature = routine.get_arg(1)
+    method = space.newgeneric(name, signature)
     return method
 
 
 @complete_native_routine
 def __trait(process, routine):
     name = routine.get_arg(0)
-    varname = routine.get_arg(1)
-    constraints = routine.get_arg(2)
+    constraints = routine.get_arg(1)
     if space.istuple(constraints):
         constraints = tuples.to_list(constraints)
-    _trait = space.newtrait(name, varname, constraints)
+    _trait = space.newtrait(name, constraints)
     return _trait
 
 
 @complete_native_routine
 def __extend(process, routine):
     _type = routine.get_arg(0)
-    _traits = routine.get_arg(1)
-    _type = datatype.extend_type(_type, _traits)
+    _methods = routine.get_arg(1)
+    _mixins = routine.get_arg(2)
+    _type = datatype.extend_type(_type, _methods)
+    for mixin in _mixins:
+        _type = datatype.extend_type(_type, mixin)
+
     return _type
 
 
@@ -208,12 +209,14 @@ def __defpartial(process, routine):
     func = routine.get_arg(0)
     return space.newpartial(func)
 
+
 @complete_native_routine
 def __partial(process, routine):
     args = routine._args.to_l()
     func = args[0]
     args_t = space.newtuple(args[1:])
     return partial.newfunction_partial(func, args_t)
+
 
 @complete_native_routine
 def concat_tuples(process, routine):

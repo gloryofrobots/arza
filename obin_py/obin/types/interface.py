@@ -10,10 +10,10 @@ def find_by_name(name, method):
 class W_Interface(W_Hashable):
     # _immutable_fields_ = ['_name_']
 
-    def __init__(self, name):
+    def __init__(self, name, generics):
         W_Hashable.__init__(self)
         self.name = name
-        self.generics = plist.empty()
+        self.generics = generics
 
     def find_generic_by_name(self, name):
         return plist.find_with(self.generics, name, find_by_name)
@@ -24,9 +24,15 @@ class W_Interface(W_Hashable):
     def _at_(self, key):
         return plist.find_with(self.generics, key, find_by_name)
 
-    def add_generic(self, method):
-        assert space.isgeneric(method)
-        self.generics = plist.cons(method, self.generics)
+    def accept_type(self, _type):
+        for generic in self.generics:
+            if not _type.is_generic_implemented(generic):
+                return False
+        return True
+
+    # def add_generic(self, method):
+    #     assert space.isgeneric(method)
+    #     self.generics = plist.cons(method, self.generics)
 
     def has_generic(self, method):
         return plist.contains(self.generics, method)

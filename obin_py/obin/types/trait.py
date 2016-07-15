@@ -10,17 +10,11 @@ def find_by_name(name, method):
 class W_Trait(W_Hashable):
     # _immutable_fields_ = ['_name_']
 
-    def __init__(self, name, typevar, constraints):
+    def __init__(self, name, constraints):
         W_Hashable.__init__(self)
         self.name = name
         self.methods = plist.empty()
         self.constraints = constraints
-
-    def find_method_by_name(self, name):
-        return plist.find_with(self.methods, name, find_by_name)
-
-    def has_method_name(self, name):
-        return not space.isvoid(plist.find_with(self.methods, name, find_by_name))
 
     def _at_(self, key):
         return plist.find_with(self.methods, key, find_by_name)

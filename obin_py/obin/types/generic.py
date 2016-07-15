@@ -89,5 +89,5 @@ def generic_with_hotpath(name, signature, hotpath):
     return W_Generic(name, arity, index, signature, h)
 
 
-def generic(name, signature, index):
-    return generic_with_hotpath(name, signature, index)
+def generic(name, signature):
+    return generic_with_hotpath(name, signature, None)

@@ -96,15 +96,18 @@ def descriptors(fields):
 class W_Extendable(W_Hashable):
     def __init__(self):
         W_Hashable.__init__(self)
-        self.interfaces = plist.empty()
+        self.interfaces = space.newmap()
         self.methods = space.newmap()
         self.derived_generics = plist.empty()
 
-    def is_interface_implemented(self, interface):
-        return plist.contains(self.interfaces, interface)
-
-    def add_interface(self, iface):
-        self.interfaces = plist.cons(iface, self.interfaces)
+    def is_interface_implemented(self, iface):
+        flag = api.lookup(self.interfaces, iface, space.newvoid())
+        if space.isvoid(flag):
+            accepted = iface.accept_type(self)
+            api.put(self.interfaces, iface, space.newbool(accepted))
+            return accepted
+        else:
+            return api.to_b(flag)
 
     def register_derived(self, generic):
         if self.is_derived(generic):

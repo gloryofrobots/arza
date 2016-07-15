@@ -196,8 +196,8 @@ def kindof(process, obj, trait):
 
 
 def kindof_b(process, obj, kind):
-    if space.istrait(kind):
-        return traitof_b(process, obj, kind)
+    if space.isinterface(kind):
+        return interface_b(process, obj, kind)
     elif space.isdatatype(kind):
         return typeof_b(process, obj, kind)
     elif space.isunion(kind):
@@ -206,19 +206,17 @@ def kindof_b(process, obj, kind):
         return error.throw_3(error.Errors.TYPE_ERROR, obj, kind, space.newstring(u"Wrong kindof argument"))
 
 
-def traitof(process, obj, trait):
-    return traitof_b(process, obj, trait)
-
-
-def traitof_b(process, obj, trait):
-    if not space.istrait(trait):
-        return error.throw_2(error.Errors.TYPE_ERROR, trait, space.newstring(u"Trait expected"))
+def interface_b(process, obj, iface):
+    if not space.isinterface(iface):
+        return error.throw_2(error.Errors.TYPE_ERROR, iface, space.newstring(u"Trait expected"))
 
     obj_type = get_type(process, obj)
-    if obj_type.is_trait_implemented(trait):
+    if obj_type.is_interface_implemented(iface):
         return True
+
     if space.isdatatype(obj) and obj.is_singleton:
-        return obj.is_trait_implemented(trait)
+        return obj.is_interface_implemented(iface)
+
     return False
 
 

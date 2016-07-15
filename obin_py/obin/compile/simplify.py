@@ -80,7 +80,10 @@ def simplify_implement(compiler, code, node):
 
 def simplify_extend(compiler, code, node):
     typename_1_arg = node_first(node)
-    traits = node_second(node)
+    mixins = node_second(node)
+    methods = node_third(node)
+
+    
     traits_list = []
     for trait_data in traits:
         trait_name = trait_data[0]
@@ -143,7 +146,7 @@ def simplify_trait(compiler, code, node):
             impl_4_arg = nodes.create_fun_node(name_2_arg, nodes.empty_node(), default_impl)
 
         method_call_node = nodes.create_call_node_s(node,
-                                                    lang_names.METHOD,
+                                                    lang_names.GENERIC,
                                                     [trait_1_arg, name_2_arg, sig_3_arg, impl_4_arg])
         assign_node = nodes.create_assign_node(node, name_node, method_call_node)
         methods.append(assign_node)
