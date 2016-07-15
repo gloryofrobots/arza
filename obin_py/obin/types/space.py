@@ -192,9 +192,9 @@ def isfunction(value):
     from obin.types.function import W_Function
     from obin.types.native_function import W_NativeFunction
     from obin.types.partial import W_Partial
-    from obin.types.method import W_Method
+    from obin.types.generic import W_Generic
     return isinstance(value, W_Function) or isinstance(value, W_NativeFunction) \
-           or isinstance(value, W_Partial) or isinstance(value, W_Method)
+           or isinstance(value, W_Partial) or isinstance(value, W_Generic)
 
 
 def isnativefunction(value):
@@ -409,39 +409,39 @@ def isenv(w):
 
 ########################################################
 
-def newmethod(name, trait, signature):
-    from obin.types.method import method
+def newgeneric(name, trait, signature):
+    from obin.types.generic import generic
     assert issymbol(name)
     assert istrait(trait)
     assert islist(signature)
 
-    obj = method(name, trait, signature, newvoid())
+    obj = generic(name, trait, signature, newvoid())
     return obj
 
 
-def newmethod_default_implementation(name, trait, signature, default):
-    from obin.types.method import method
+def newgeneric_default_implementation(name, trait, signature, default):
+    from obin.types.generic import generic
     assert issymbol(name)
     assert istrait(trait)
     assert islist(signature)
     assert isfunction(default) or isvoid(default)
-    obj = method(name, trait, signature, default)
+    obj = generic(name, trait, signature, default)
     return obj
 
 
-def ismethod(w):
-    from obin.types.method import W_Method
-    return isinstance(w, W_Method)
+def isgeneric(w):
+    from obin.types.generic import W_Generic
+    return isinstance(w, W_Generic)
 
 
-def newmethod_hotpath(name, trait, signature, hot_path):
+def newgeneric_hotpath(name, trait, signature, hot_path):
     assert issymbol(name)
     assert istrait(trait)
     assert islist(signature)
 
     assert hot_path is not None
-    from obin.types.method import method_with_hotpath
-    obj = method_with_hotpath(name, trait, signature, newvoid(), hot_path)
+    from obin.types.generic import generic_with_hotpath
+    obj = generic_with_hotpath(name, trait, signature, newvoid(), hot_path)
     return obj
 
 
@@ -461,6 +461,21 @@ def newtrait(name, varname, constraints):
 def istrait(w):
     from obin.types.trait import W_Trait
     return isinstance(w, W_Trait)
+
+
+########################################################
+
+def newinterface(name):
+    from obin.types.interface import W_Interface
+    from obin.runtime import error
+    error.affirm_type(name, issymbol)
+
+    return W_Interface(name)
+
+
+def isinterface(w):
+    from obin.types.interface import W_Interface
+    return isinstance(w, W_Interface)
 
 
 ########################################################

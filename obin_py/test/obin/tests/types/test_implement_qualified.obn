@@ -11,16 +11,16 @@ trait TraitWithOp
 
 type X x
 
-extend X with
+extend X
     def types:test_method_1 a1 of X a2 of X self -> a1.x + a2.x + self.x
     def types:test_method_2 a1 self a2 -> a1.x + a2.x + self.x
     def types:test_method_3 self a1 a2 -> a1.x + a2.x + self.x
     def types:test_method_4 self -> self.x
 
-extend stuff:TestType with
+extend stuff:TestType 
        trait TraitWithOp
 
-extend stuff:TestType with
+extend stuff:TestType
     def types:test_method_1 (a1 of stuff:TestType) (a2 of stuff:TestType) self -> a1.val + a2.val + self.val
     def types:test_method_2 a1 self a2 -> a1.val + a2.val + self.val
     def types:test_method_3 self a1 a2 -> a1.val + a2.val + self.val

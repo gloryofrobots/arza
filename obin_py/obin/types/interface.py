@@ -7,33 +7,32 @@ def find_by_name(name, method):
     return api.equal_b(method.name, name)
 
 
-class W_Trait(W_Hashable):
+class W_Interface(W_Hashable):
     # _immutable_fields_ = ['_name_']
 
-    def __init__(self, name, typevar, constraints):
+    def __init__(self, name):
         W_Hashable.__init__(self)
         self.name = name
-        self.methods = plist.empty()
-        self.constraints = constraints
+        self.generics = plist.empty()
 
-    def find_method_by_name(self, name):
-        return plist.find_with(self.methods, name, find_by_name)
+    def find_generic_by_name(self, name):
+        return plist.find_with(self.generics, name, find_by_name)
 
-    def has_method_name(self, name):
-        return not space.isvoid(plist.find_with(self.methods, name, find_by_name))
+    def has_generic_name(self, name):
+        return not space.isvoid(plist.find_with(self.generics, name, find_by_name))
 
     def _at_(self, key):
-        return plist.find_with(self.methods, key, find_by_name)
+        return plist.find_with(self.generics, key, find_by_name)
 
-    def add_method(self, method):
+    def add_generic(self, method):
         assert space.isgeneric(method)
-        self.methods = plist.cons(method, self.methods)
+        self.generics = plist.cons(method, self.generics)
 
-    def has_method(self, method):
-        return plist.contains(self.methods, method)
+    def has_generic(self, method):
+        return plist.contains(self.generics, method)
 
     def _type_(self, process):
-        return process.std.types.Trait
+        return process.std.types.Interface
 
     def _compute_hash_(self):
         return int((1 - platform.random()) * 10000000)

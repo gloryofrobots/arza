@@ -69,6 +69,8 @@ hex_floating_constant = '(' + hex_prefix + '(' + hex_digits + '|' + hex_fraction
 
 char_const = "'[^']+'"
 # backtick_const = "`[^`]+`"
+
+singletick_name_const = "`%s" % name_const
 backtick_name_const = "`%s`" % name_const
 backtick_op_const = "`%s`" % operator_const
 # string_literal = '(""".*?""")|(".*?")'
@@ -150,6 +152,7 @@ RULES = [
     (token(char_const), TT_CHAR),
     (token(backtick_name_const), TT_BACKTICK_NAME),
     (token(backtick_op_const), TT_BACKTICK_OPERATOR),
+    (token(singletick_name_const), TT_TICKNAME),
     # (typename, TT_TYPENAME),
     (token(name_const), TT_NAME),
 

@@ -32,10 +32,11 @@ TYPES = [
 
     mktype("Function", [C, A]),
     mktype("Partial", [C, A]),
-    mktype("Method", [C, A]),
+    mktype("Generic", [C, A]),
     mktype("Fiber", [C, A]),
 
     mktype("Trait", [A]),
+    mktype("Interface", [A]),
     mktype("Datatype", [A]),
     mktype("Union", [A]),
     mktype("LazyVal", [A]),

@@ -129,9 +129,8 @@ class Errors:
     FUNCTION_MATCH_ERROR = u"FunctionArgumentsMatchError"
     EXCEPTION_MATCH_ERROR = u"ExceptionMatchError"
     EXPORT_ERROR = u"ExportError"
-    TRAIT_ALREADY_IMPLEMENTED_ERROR = u"TraitAlreadyImplementedError"
-    TRAIT_IMPLEMENTATION_ERROR = u"TraitImplementationError"
-    TRAIT_CONSTRAINT_ERROR = u"TraitConstraintError"
+    IMPLEMENTATION_ERROR = u"ImplementationError"
+    CONSTRAINT_ERROR = u"ConstraintError"
 
 
 def initialise(process):

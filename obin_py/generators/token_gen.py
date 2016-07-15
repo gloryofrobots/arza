@@ -6,6 +6,7 @@ TOKENS = [
   ("TT_MULTI_STR", None,),
   ("TT_CHAR", None,),
   ("TT_NAME", None),
+  ("TT_TICKNAME", None),
   ("TT_TYPENAME", None),
   ("TT_OPERATOR", None),
 

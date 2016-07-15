@@ -35,7 +35,7 @@ type Option
     | Some val
     | None
 
-extend Option with
+extend Option 
     def val self ->
         match self with
             | x of Some -> x.val

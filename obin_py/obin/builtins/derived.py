@@ -4,17 +4,6 @@ from obin.runtime import error
 from obin.types.space import newtuple as _t, newnativefunc as _f, newlist as _l
 
 
-class Derive:
-    def __init__(self):
-        self.eq = False
-        self.str = False
-        self.repr = False
-        self.indexed = False
-        self.dict = False
-        self.collection = False
-        self.range = False
-
-
 class Methods:
     def __init__(self, traits):
         self.at = self.find_method(u"at", traits.Collection)
@@ -127,9 +116,6 @@ class Traits:
         impls.append(_l([self.Eq, self.TypeDerived]))
         impls.append(_l([self.Str, self.TypeDerived]))
         impls.append(_l([self.Repr, self.TypeDerived]))
-        _type.derive.str = True
-        _type.derive.repr = True
-        _type.derive.eq = True
         return impls
 
     def get_derived_default(self, _type):
@@ -142,17 +128,9 @@ class Traits:
         impls.append(_l([self.Indexed, self.TypeDerived]))
         impls.append(_l([self.Dict, self.TypeDerived]))
 
-        _type.derive.str = True
-        _type.derive.repr = True
-        _type.derive.eq = True
-        _type.derive.collection = True
-        _type.derive.indexed = True
-        _type.derive.dict = True
         return impls
 
     def get_derived_union(self, _type):
         impls = []
         impls.append(_l([self.Range, self.UnionDerived]))
-        _type.derive.range = True
-        _type.derive.bounded = True
         return impls

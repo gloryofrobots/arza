@@ -219,6 +219,7 @@ def operator_name_symbol_signature_parser_init(parser):
     parser.juxtaposition_as_list = True
     parser.allow_unknown = True
     prefix(parser, TT_NAME, prefix_name_as_symbol)
+    prefix(parser, TT_TICKNAME, prefix_name_as_symbol)
     prefix(parser, TT_OPERATOR, operator_as_symbol)
     symbol(parser, TT_END)
     symbol(parser, TT_END_EXPR)

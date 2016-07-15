@@ -10,11 +10,11 @@ class W_Record(W_Hashable):
         self.values = values
         self.type = type
 
-    def _dispatch_(self, process, method):
-        impl = self.type.get_method_implementation(method)
+    def _dispatch_(self, process, generic):
+        impl = self.type.get_method(generic)
 
         if space.isvoid(impl) and self.type.union is not None:
-            impl = self.type.union.get_method_implementation(method)
+            impl = self.type.union.get_method(generic)
 
         return impl
 
@@ -96,58 +96,53 @@ def descriptors(fields):
 class W_Extendable(W_Hashable):
     def __init__(self):
         W_Hashable.__init__(self)
-        from obin.builtins.derived import Derive
-        self.derive = Derive()
-        self.derived_traits = plist.empty()
-        self.traits = space.newmap()
+        self.interfaces = plist.empty()
+        self.methods = space.newmap()
+        self.derived_generics = plist.empty()
 
-    def register_derived(self, trait):
-        if self.is_derived(trait):
-            return error.throw_3(error.Errors.TRAIT_ALREADY_IMPLEMENTED_ERROR,
-                                 space.newstring(u"Trait has already derived"), self, trait)
+    def is_interface_implemented(self, interface):
+        return plist.contains(self.interfaces, interface)
 
-        self.derived_traits = plist.cons(trait, self.derived_traits)
+    def add_interface(self, iface):
+        self.interfaces = plist.cons(iface, self.interfaces)
 
-    def is_derived(self, trait):
-        if plist.contains(self.derived_traits, trait):
+    def register_derived(self, generic):
+        if self.is_derived(generic):
+            return error.throw_3(error.Errors.RUNTIME_ERROR,
+                                 space.newstring(u"Generic has already derived"), self, generic)
+
+        self.derived_generics = plist.cons(generic, self.derived_generics)
+
+    def is_derived(self, generic):
+        if plist.contains(self.derived_generics, generic):
             return True
         return False
 
-    def remove_trait_implementation(self, trait):
-        api.delete(self.traits, trait)
-
-    def add_trait_implementation(self, trait, implementations):
-        if self.is_trait_implemented(trait):
-            if not self.is_derived(trait):
-                return error.throw_2(error.Errors.TRAIT_ALREADY_IMPLEMENTED_ERROR, self, trait)
-            self.remove_trait_implementation(trait)
-
-        impl_map = space.newmap()
+    def add_methods(self, implementations):
         for impl in implementations:
-            method = api.at_index(impl, 0)
-            func = api.at_index(impl, 1)
-            api.put(impl_map, method, func)
+            generic = api.at_index(impl, 0)
+            if self.is_generic_implemented(generic):
+                if not self.is_derived(generic):
+                    return error.throw_2(error.Errors.IMPLEMENTATION_ERROR, self,
+                                         space.newstring(u"Generic has already implemented"))
 
-        api.put(self.traits, trait, impl_map)
+                self.remove_method(generic)
 
-    def is_trait_implemented(self, trait):
-        return api.contains_b(self.traits, trait)
+        for impl in implementations:
+            generic = api.at_index(impl, 0)
+            method = api.at_index(impl, 1)
+            api.put(self.methods, generic, method)
 
-    def get_method_implementation(self, method):
+    def is_generic_implemented(self, generic):
+        return api.contains_b(self.methods, generic)
+
+    def get_method(self, generic):
         void = space.newvoid()
-        trait = method.trait
-
-        impl_map = api.lookup(self.traits, trait, void)
-        if impl_map is void:
-            return void
-
-        impl = api.lookup(impl_map, method, void)
-        if space.isvoid(impl):
-            error.throw_4(error.Errors.METHOD_INVOKE_ERROR, space.newstring(u"Invalid dispatch."
-                                                                            u"Method does not belong to trait"),
-                          trait, method, impl_map)
-
+        impl = api.lookup(self.methods, generic, void)
         return impl
+
+    def remove_method(self, generic):
+        api.delete(self.methods, generic)
 
 
 class W_DataType(W_Extendable):
@@ -186,11 +181,11 @@ class W_DataType(W_Extendable):
     def _dispatch_(self, process, method):
         impl = space.newvoid()
         if self.union is not None:
-            impl = self.union.get_method_implementation(method)
+            impl = self.union.get_method(method)
 
         if space.isvoid(impl):
             _type = api.get_type(process, self)
-            impl = _type.get_method_implementation(method)
+            impl = _type.get_method(method)
 
         return impl
 
@@ -244,13 +239,13 @@ class W_Union(W_Extendable):
     def has_type(self, _type):
         return plist.contains(self.types_list, _type)
 
-    def _dispatch_(self, process, method):
+    def _dispatch_(self, process, generic):
         # print "UNION DISPATCH", method
-        impl = self.get_method_implementation(method)
+        impl = self.get_method(generic)
         # print "UNION IMPL1", impl
         if space.isvoid(impl):
             _type = self._type_(process)
-            impl = _type.get_method_implementation(method)
+            impl = _type.get_method(generic)
             # print "UNION IMPL2", impl
         return impl
 
@@ -365,7 +360,7 @@ def _normalise_implementations(trait, implementations):
     elif space.isextendable(implementations):
         methods = plist.empty()
         for method in trait.methods:
-            impl = implementations.get_method_implementation(method)
+            impl = implementations.get_method(method)
             methods = plist.cons(space.newtuple([method.name, impl]), methods)
     elif space.islist(implementations):
         methods = implementations
@@ -381,7 +376,7 @@ def _normalise_implementations(trait, implementations):
         error.affirm_type(fn, space.isfunction)
         method = trait.find_method_by_name(method_name)
         if space.isvoid(method):
-            error.throw_2(error.Errors.TRAIT_IMPLEMENTATION_ERROR,
+            error.throw_2(error.Errors.IMPLEMENTATION_ERROR,
                           space.newstring(u"Unknown method"), method_name)
         method_impls = plist.cons(space.newlist([method, fn]), method_impls)
     return method_impls
@@ -393,7 +388,7 @@ def implement_trait(_type, trait, implementations):
     methods = _normalise_implementations(trait, implementations)
     if space.isunion(_type):
         for _t in _type.types_list:
-           _implement_trait(_t, trait, methods)
+            _implement_trait(_t, trait, methods)
 
     return _implement_trait(_type, trait, methods)
 
@@ -405,7 +400,7 @@ def _implement_trait(_type, trait, method_impls):
     # print "IMPLEMENT ", _type, trait
     for constraint in trait.constraints:
         if not _type.is_trait_implemented(constraint):
-            error.throw_3(error.Errors.TRAIT_CONSTRAINT_ERROR,
+            error.throw_3(error.Errors.CONSTRAINT_ERROR,
                           space.newstring(u"Unsatisfied trait constraint"), trait, constraint)
     # GET DEFAULTS FIRST
     for m in trait.methods:
@@ -413,7 +408,7 @@ def _implement_trait(_type, trait, method_impls):
             continue
 
         if not m.has_default_implementation():
-            error.throw_2(error.Errors.TRAIT_IMPLEMENTATION_ERROR,
+            error.throw_2(error.Errors.IMPLEMENTATION_ERROR,
                           space.newstring(u"Expected implementation of method"), m)
 
         method_impls = plist.cons(space.newlist([m, m.default_implementation]),
@@ -422,6 +417,6 @@ def _implement_trait(_type, trait, method_impls):
     for impl in method_impls:
         method = api.at_index(impl, 0)
         if not trait.has_method(method):
-            error.throw_2(error.Errors.TRAIT_IMPLEMENTATION_ERROR, space.newstring(u"Unknown trait method"), method)
+            error.throw_2(error.Errors.IMPLEMENTATION_ERROR, space.newstring(u"Unknown trait method"), method)
     _type.add_trait_implementation(trait, method_impls)
     return _type

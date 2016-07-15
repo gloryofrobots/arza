@@ -181,7 +181,7 @@ def __method(process, routine):
     name = routine.get_arg(1)
     signature = routine.get_arg(2)
     impl = routine.get_arg(3)
-    method = space.newmethod_default_implementation(name, _trait, signature, impl)
+    method = space.newgeneric_default_implementation(name, _trait, signature, impl)
     return method
 
 

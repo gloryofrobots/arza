@@ -25,7 +25,7 @@ type Color
 
 type Cars | BMW | AUDI | FORD
 
-extend Cars with
+extend Cars 
     def len self -> 42
 
 type Alpha | A | B | C | D | E | F | G | H

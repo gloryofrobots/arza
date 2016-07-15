@@ -1,5 +1,6 @@
 from obin:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
-                             Function, Partial, Method, Fiber, Trait, Datatype, Union, LazyVal, Env)
+                             Function, Partial, Interface,
+                             Generic, Fiber, Trait, Datatype, Union, LazyVal, Env)
 
 """
 SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
@@ -53,62 +54,62 @@ infixl / / 50
 
 
 generic
-    == x y
-    != x y
-    <= x y
-    < x y
-    >= x y
-    > x y
+    == `x y
+    != `x y
+    <= `x y
+    < `x y
+    >= `x y
+    > `x y
 
-    cmp first second
+    cmp `first second
 
-    max first second
-    min first second
+    max `first second
+    min `first second
 
-    - x y
-    + x y
-    * x y
-    / x y
-    mod x y
+    - `x y
+    + `x y
+    * `x y
+    / `x y
+    mod `x y
     // unary -
-    negate x
+    negate `x
 
-    str self
-    repr self
+    str `self
+    repr `self
 
-    len self
-    is_empty self
+    len `self
+    is_empty `self
 
-    put key value self
-    at key self
-    del obj self
-    elem key self
+    put key value `self
+    at key `self
+    del obj `self
+    elem key `self
 
-    first self
-    rest self
+    first `self
+    rest `self
 
-    empty self
-    cons value self
-    prepend value self
-    ++ self other
-    append value self
+    empty `self
+    cons value `self
+    prepend value `self
+    ++ `self other
+    append value `self
     keys self
     values self
-    index_of obj self
+    index_of obj `self
     to_seq self
 
-    slice first last self
-    drop count self
-    take count self
-    lower_bound self
-    upper_bound self
+    slice first last `self
+    drop count `self
+    take count `self
+    lower_bound `self
+    upper_bound `self
 
-    range self last
-    range_by self last step
-    range_from self
-    range_from_by self step
-    ! self
-    := self value
+    range `self last
+    range_by `self last step
+    range_from `self
+    range_from_by `self step
+    ! `self
+    := `self value
 
 
 ////////////////////////////////////////////////////////////
@@ -128,7 +129,7 @@ interface
     Collection(put, at, del, elem)
     ReadOnlyCollection(at, elem)
     Seq(first, rest)
-    Emtiable(empty)
+    Emptiable(empty)
     Consable(cons)
     Prependable(prepend)
     Appendable(append)
@@ -214,9 +215,8 @@ type MatchError args
 type FunctionArgumentsMatchError args
 type ExceptionMatchError args
 type ExportError args
-type TraitAlreadyImplementedError args
-type TraitImplementationError args
-type TraitConstraintError args
+type ImplementationError args
+type ConstraintError args
 type EmptySeqError args
 //Signal used to interrupt recursive processes
 type Interrupt result
