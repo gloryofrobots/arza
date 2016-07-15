@@ -39,7 +39,6 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.UNION, __union, 2)
     put_lang_func(process, module, lang_names.METHOD, __method, 4)
     put_lang_func(process, module, lang_names.TRAIT, __trait, 3)
-    put_lang_func(process, module, lang_names.IMPLEMENT, __implement, 3)
     put_lang_func(process, module, lang_names.EXTEND, __extend, 2)
     put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
     put_lang_func(process, module, u"partial", __partial, -1)
@@ -197,15 +196,6 @@ def __trait(process, routine):
 
 
 @complete_native_routine
-def __implement(process, routine):
-    _trait = routine.get_arg(0)
-    _type = routine.get_arg(1)
-    _impls = routine.get_arg(2)
-    _type = datatype.implement_trait(_type, _trait, _impls)
-    return _type
-
-
-@complete_native_routine
 def __extend(process, routine):
     _type = routine.get_arg(0)
     _traits = routine.get_arg(1)
@@ -253,7 +243,7 @@ def is_seq(process, routine):
     v1 = routine.get_arg(0)
     if islist(v1):
         return newbool(True)
-    if api.kindof_b(process, v1, process.std.traits.Seq):
+    if api.kindof_b(process, v1, process.std.interfaces.Seq):
         return newbool(True)
 
     return newbool(False)

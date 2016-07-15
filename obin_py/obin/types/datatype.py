@@ -118,6 +118,15 @@ class W_Extendable(W_Hashable):
             return True
         return False
 
+    def add_method(self, generic, method):
+        if self.is_generic_implemented(generic):
+            if not self.is_derived(generic):
+                return error.throw_2(error.Errors.IMPLEMENTATION_ERROR, self,
+                                     space.newstring(u"Generic has already implemented"))
+
+            self.remove_method(generic)
+        api.put(self.methods, generic, method)
+
     def add_methods(self, implementations):
         for impl in implementations:
             generic = api.at_index(impl, 0)
@@ -131,7 +140,7 @@ class W_Extendable(W_Hashable):
         for impl in implementations:
             generic = api.at_index(impl, 0)
             method = api.at_index(impl, 1)
-            api.put(self.methods, generic, method)
+            self.add_method(generic, method)
 
     def is_generic_implemented(self, generic):
         return api.contains_b(self.methods, generic)
@@ -331,92 +340,51 @@ def newunion(process, name, types):
 
 
 def derive_default(process, _type):
-    traits = process.std.traits.get_derived(_type)
+    derived = process.std.derived.get_derived(_type)
     # print "DERIVE DEFAULT", _type, traits
-    for _t, _i in traits:
-        if _type.is_trait_implemented(_t):
-            print "ALREADY DEFINED", _type, _t
-            continue
-        methods = _normalise_implementations(_t, _i)
-        _implement_trait(_type, _t, methods)
-        _type.register_derived(_t)
+    for impl in derived:
+        methods = _normalise_implementations(impl)
+        for pair in methods:
+            generic = pair[0]
+            _type.register_derived(generic)
+        _type.add_methods(methods)
 
 
-def extend_type(_type, traits):
-    for trait_data in traits:
-        trait = trait_data[0]
-        impls = trait_data[1]
-        implement_trait(_type, trait, impls)
-    return _type
-
-
-def _normalise_implementations(trait, implementations):
+def _normalise_implementations(implementations):
     if space.ispmap(implementations):
         methods = plist.empty()
-        for method in trait.methods:
-            impl = api.lookup(implementations, method.name, space.newvoid())
-            if not space.isvoid(impl):
-                methods = plist.cons(space.newtuple([method.name, impl]), methods)
-    elif space.isextendable(implementations):
+        for pair in implementations.to_l():
+            generic = pair[0]
+            method = pair[1]
+            methods = plist.cons(space.newtuple([generic, method]), methods)
+    elif space.istrait(implementations):
         methods = plist.empty()
-        for method in trait.methods:
-            impl = implementations.get_method(method)
-            methods = plist.cons(space.newtuple([method.name, impl]), methods)
+        for pair in implementations.methods.to_l():
+            generic = pair[0]
+            method = pair[1]
+            methods = plist.cons(space.newtuple([generic, method]), methods)
     elif space.islist(implementations):
         methods = implementations
     else:
         return error.throw_2(error.Errors.TYPE_ERROR,
                              space.newstring(u"Invalid trait implementation source. Expected one of Map,List,Type"),
                              implementations)
-    method_impls = plist.empty()
-    # Collect methods by names from trait
-    for im in methods:
-        method_name = api.at_index(im, 0)
-        fn = api.at_index(im, 1)
-        error.affirm_type(fn, space.isfunction)
-        method = trait.find_method_by_name(method_name)
-        if space.isvoid(method):
-            error.throw_2(error.Errors.IMPLEMENTATION_ERROR,
-                          space.newstring(u"Unknown method"), method_name)
-        method_impls = plist.cons(space.newlist([method, fn]), method_impls)
-    return method_impls
+    return methods
 
 
-def implement_trait(_type, trait, implementations):
+def extend_type(_type, implementations):
     error.affirm_type(_type, space.isextendable)
-    error.affirm_type(trait, space.istrait)
-    methods = _normalise_implementations(trait, implementations)
+    for impl in implementations:
+        extend_type_with(_type, impl)
+
+    return _type
+
+
+def extend_type_with(_type, implementations):
+    error.affirm_type(_type, space.isextendable)
+    methods = _normalise_implementations(implementations)
     if space.isunion(_type):
         for _t in _type.types_list:
-            _implement_trait(_t, trait, methods)
+            _t.add_methods(methods)
 
-    return _implement_trait(_type, trait, methods)
-
-
-def _implement_trait(_type, trait, method_impls):
-    error.affirm_type(_type, space.isextendable)
-    error.affirm_type(trait, space.istrait)
-    error.affirm_type(method_impls, space.islist)
-    # print "IMPLEMENT ", _type, trait
-    for constraint in trait.constraints:
-        if not _type.is_trait_implemented(constraint):
-            error.throw_3(error.Errors.CONSTRAINT_ERROR,
-                          space.newstring(u"Unsatisfied trait constraint"), trait, constraint)
-    # GET DEFAULTS FIRST
-    for m in trait.methods:
-        if plist.contains_with(method_impls, m, _is_exist_implementation):
-            continue
-
-        if not m.has_default_implementation():
-            error.throw_2(error.Errors.IMPLEMENTATION_ERROR,
-                          space.newstring(u"Expected implementation of method"), m)
-
-        method_impls = plist.cons(space.newlist([m, m.default_implementation]),
-                                  method_impls)
-
-    for impl in method_impls:
-        method = api.at_index(impl, 0)
-        if not trait.has_method(method):
-            error.throw_2(error.Errors.IMPLEMENTATION_ERROR, space.newstring(u"Unknown trait method"), method)
-    _type.add_trait_implementation(trait, method_impls)
-    return _type
+    return _type.add_methods(methods)

@@ -1,6 +1,86 @@
 from obin.types import api, space, plist, datatype
 from obin.runtime import error
-from obin.builtins import derived
+
+
+class Derived:
+    """
+    internally used interfaces,types, and traits
+    """
+
+    def __init__(self, process):
+        from obin.runtime.load import import_module
+        prelude = process.modules.prelude
+        derive_module = import_module(process, space.newsymbol(process, u"derive"))
+
+        self.TEq = self.find_trait(process, derive_module, u"TEq")
+        self.TStr = self.find_trait(process, derive_module, u"TStr")
+        self.TRepr = self.find_trait(process, derive_module, u"TRepr")
+        self.TCollection = self.find_trait(process, derive_module, u"TCollectionq")
+        self.TSized = self.find_trait(process, derive_module, u"TSized")
+        self.TIndexed = self.find_trait(process, derive_module, u"TIndexed")
+        self.TDict = self.find_trait(process, derive_module, u"TDict")
+        self.TUnionRange = self.find_trait(process, derive_module, u"TUnionRange")
+
+        self.derived_for_singleton = [
+            self.TEq, self.TStr, self.TRepr
+        ]
+
+        self.derived_for_type = [
+            self.TEq, self.TStr, self.TRepr,
+            self.TCollection, self.TSized, self.TIndexed, self.TDict
+        ]
+
+        self.derived_for_union = [self.TUnionRange]
+
+        self.postderive(process, prelude)
+        # TODO REMOVE IT
+        # self.TEq = None
+        # self.TStr = None
+        # self.TRepr = None
+        # self.TCollection = None
+        # self.TSized = None
+        # self.TIndexed = None
+        # self.TDict = None
+        # self.TUnionRange = None
+        #
+        # self.derived_for_singleton = None
+        # self.derived_for_union = None
+        # self.derived_for_type = None
+
+    def _find_in(self, process, prelude, name):
+        sym = space.newsymbol(process, name)
+        if not api.contains(prelude, sym):
+            error.throw_1(error.Errors.KEY_ERROR, space.newstring(u"Missing internal trait %s in prelude" % name))
+        return api.at(prelude, sym)
+
+    def find_interface(self, process, module, name):
+        _interface = self._find_in(process, module, name)
+        error.affirm_type(_interface, space.isinterface)
+        return _interface
+
+    def find_trait(self, process, module, name):
+        _trait = self._find_in(process, module, name)
+        error.affirm_type(_trait, space.istrait)
+        return _trait
+
+    def postderive(self, process, module):
+        from obin.types import api, datatype
+        symbols = module.symbols()
+        for sym in symbols:
+            obj = api.at(module, sym)
+            if space.isextendable(obj):
+                datatype.derive_default(process, obj)
+
+    def get_derived(self, _type):
+        if space.isdatatype(_type):
+            if _type.is_singleton:
+                return self.derived_for_singleton
+            else:
+                return self.derived_for_type
+        elif space.isunion(_type):
+            return self.derived_for_union
+        else:
+            return error.throw_2(error.Errors.TYPE_ERROR, space.newstring(u"Type or Union Expected"), _type)
 
 
 class Types:
@@ -30,13 +110,31 @@ class Types:
         self.Env = newtype(_s(u"Env"))
 
 
+class Interfaces:
+    def __init__(self, process):
+        prelude = process.modules.prelude
+        self.Seq = self.find_interface(process, prelude, space.newstring(u"Seq"))
+
+    def _find_in(self, process, prelude, name):
+        sym = space.newsymbol(process, name)
+        if not api.contains(prelude, sym):
+            error.throw_1(error.Errors.KEY_ERROR, space.newstring(u"Missing internal trait %s in prelude" % name))
+        return api.at(prelude, sym)
+
+    def find_interface(self, process, module, name):
+        _interface = self._find_in(process, module, name)
+        error.affirm_type(_interface, space.isinterface)
+        return _interface
+
 
 class Std:
     def __init__(self, symbols):
         self.types = Types(symbols)
-        self.traits = derived.Traits()
+        self.interfaces = None
+        self.derived = None
         self.initialized = False
 
     def postsetup(self, process):
-        self.traits.postsetup(process)
+        self.interfaces = Interfaces(process)
+        self.derived = Derived(process)
         self.initialized = True
