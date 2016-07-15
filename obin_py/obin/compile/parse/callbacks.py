@@ -963,12 +963,12 @@ def stmt_extend(parser, op, node):
     skip_indent(parser)
 
     defs = []
-    traits = []
+    mixins = []
     while True:
-        if parser.token_type == TT_TRAIT:
+        if parser.token_type == TT_USE:
             init_offside_layout(parser, parser.node)
-            advance_expected(parser, TT_TRAIT)
-            trait_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME)
+            advance_expected(parser, TT_USE)
+            mixin_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME)
             if parser.token_type == TT_LPAREN:
                 # names = expect_expression_of_types(parser.name_parser, 0, [NT_TUPLE, NT_NAME])
                 # names = _parse_comma_separated(parser.name_parser)
@@ -976,7 +976,7 @@ def stmt_extend(parser, op, node):
                 names = _parse_comma_separated(parser.interface_parser, node, TT_RPAREN, [NT_NAME, NT_IMPORTED_NAME])
             else:
                 names = empty_node()
-            traits.append(list_node([trait_name, names]))
+            mixins.append(list_node([mixin_name, names]))
 
         elif parser.token_type == TT_DEF:
             init_offside_layout(parser, parser.node)
@@ -991,45 +991,7 @@ def stmt_extend(parser, op, node):
             break
 
     advance_end(parser)
-    return nodes.node_3(NT_EXTEND, __ntok(node), type_name, list_node(traits), list_node(defs))
-
-
-
-# def stmt_extend(parser, op, node):
-#     init_node_layout(parser, node)
-#     type_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_BEFORE_WITH)
-#     skip_indent(parser)
-#     traits = []
-
-#     while parser.token_type == TT_WITH:
-#         init_offside_layout(parser, parser.node)
-#         advance_expected(parser, TT_WITH)
-#         trait_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME, TERM_EXTEND_TRAIT)
-#         skip_indent(parser)
-#         if parser.token_type == TT_ASSIGN:
-#             advance(parser)
-#             implementation = expression(parser, 0, TERM_EXTEND_MIXIN_TRAIT)
-#         elif parser.token_type == TT_DEF:
-#             init_offside_layout(parser, parser.node)
-#             methods = []
-
-#             while parser.token_type == TT_DEF:
-#                 advance_expected(parser, TT_DEF)
-#                 method_name = expect_expression_of(parser.name_parser, 0, NT_NAME)
-#                 method_name = nodes.create_symbol_node_s(method_name, nodes.node_value_s(method_name))
-
-#                 funcs = _parse_function(parser.expression_parser,
-#                                         TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_EXTEND_BODY, TERM_EXTEND_BODY)
-#                 methods.append(list_node([method_name, funcs]))
-#             implementation = list_node(methods)
-#         else:
-#             implementation = list_node([])
-#         # advance_end(parser)
-#         traits.append(list_node([trait_name, implementation]))
-
-#     advance_end(parser)
-#     return nodes.node_2(NT_EXTEND, __ntok(node), type_name, list_node(traits))
-
+    return nodes.node_3(NT_EXTEND, __ntok(node), type_name, list_node(mixins), list_node(defs))
 
 # OPERATORS
 

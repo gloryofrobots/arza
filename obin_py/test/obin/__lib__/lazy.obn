@@ -1,5 +1,6 @@
 from datatype import TypeDerived
 from obin:lang:_lazy import (is_forced)
+import derive
 import io
 import seq
 
@@ -8,81 +9,76 @@ type LazyList
     | LazyNil
 
 extend LazyList
-    with Collection = TypeDerived
-    with Seq
-        def first self -> self.head
-        def rest self -> !self.tail
-    with Str
-        def str self
-            | [] -> "[]"
-            | self ->
-                fun folder l
-                    | [] -> ""
-                    | l ->
-                        //can't do pattern matching because rest method force lazy value to evaluate
-                        x = l.head
-                        xs = l.tail
+    use derive:TCollection
 
-                        if kindof xs LazyVal then
-                            if  not (is_forced xs) then
-                                ", ..."
-                            else
-                                ", " ++ str x ++ folder (!xs)
+    def first self -> self.head
+    def rest self -> !self.tail
+
+    def str self
+        | [] -> "[]"
+        | self ->
+            fun folder l
+                | [] -> ""
+                | l ->
+                    //can't do pattern matching because rest method force lazy value to evaluate
+                    x = l.head
+                    xs = l.tail
+
+                    if kindof xs LazyVal then
+                        if  not (is_forced xs) then
+                            ", ..."
                         else
-                            ", " ++ str x ++ folder (xs)
+                            ", " ++ str x ++ folder (!xs)
+                    else
+                        ", " ++ str x ++ folder (xs)
 
 
                 "[" ++ (str self.head) ++ folder !self.tail ++ "]"
-    with Seqable
-        def to_seq self -> self
-    with Sized
-        def len self -> throw NotImplementedError ("len not defined for LazyList",)
-        def is_empty self
-            | self of LazyNil -> True
-            | _ -> False
+    def to_seq self -> self
 
-    with Emptiable
-        def empty self -> LazyNil
-    with Consable
-        def cons value self -> LazyCons value self
-    with Ref
-        def ! self -> self
-    with Eq
-        def == self other -> seq:equal self other
+    def len self -> throw NotImplementedError ("len not defined for LazyList",)
 
---------------------------------------------------------------------------
+    def is_empty self
+        | self of LazyNil -> True
+        | _ -> False
+
+    def empty self -> LazyNil
+
+    def cons value self -> LazyCons value self
+
+    def ! self -> self
+
+    def == self other -> seq:equal self other
+
 
 extend LazyVal
-    with Ref
-        def ! self -> self ()
-    with Consable
-        def cons value self ->
-            LazyCons value self
-    with Str
-        def str self -> "<delayed>"
+    def ! self -> self ()
 
---------------------------------------------------------------------
+    def cons value self ->
+            LazyCons value self
+
+    def str self -> "<delayed>"
+
 
 type Empty
 type ListGenerator val fn
 
 extend ListGenerator
-    with Seqable
-        def to_seq self -> self
-    with Seq
-        def first self ->
-            self.val
-        def rest self ->
+    def to_seq self -> self
+
+    def first self -> self.val
+
+    def rest self ->
             try
                 ListGenerator (self.fn ()) self.fn
             catch e of Interrupt ->
                 ListGenerator (Empty) self.fn
-    with Sized
-        def len self -> NotImplementedError len
-        def is_empty self -> self.val == Empty
 
-    with Emptiable
-        def empty self -> []
+    def len self -> NotImplementedError len
+
+    def is_empty self -> self.val == Empty
+
+    def empty self -> []
 
 fun list_generator fn ->
     val = fn ()

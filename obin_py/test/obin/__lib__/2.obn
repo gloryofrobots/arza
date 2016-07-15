@@ -1,0 +1,91 @@
+{Bool, Char, Int, Float, Symbol, String, List, Vector,
+       Tuple, Map, Function, Partial, Method,
+       Fiber, Trait, Datatype, Union, LazyVal, Env} = import "obin:lang:types"
+
+
+prefix :(- negate)
+prefix :(! !)
+prefix :(& &)
+infixr :(:= := 10)
+infixl :(<| <| 15)
+
+
+////////////////////////////////////////////////////////////
+///////////////// GENERICS /////////////////////////////////
+////////////////////////////////////////////////////////////
+
+defn Eq interface :(== !=)
+defn Num interface (
+     +, -, mod, negate, obin:lang:something
+)
+
+defn == generic `(x y)
+
+defn == generic `(x y) (doc="i define if two entities are equal")
+
+////////////////////////////////////////////////////////////
+///////////////// TRAITS ///////////////////////////////////
+////////////////////////////////////////////////////////////
+defn TNotEq trait () [
+    #!=, \x y -> not (x == y)
+]
+
+defn TOrd trait PartialEq {
+    < =
+      \ x y -> cmp x y == LT
+    cmp =
+        \ x y ->
+                if x == y then EQ
+                elif x <= y then LT
+                else GT
+}
+
+////////////////////////////////////////////////////////////
+///////////////// TYPES ////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+defn Ordering type :(LT GT EQ)
+defn Option type :(
+     (Some val)
+     None
+)
+
+defn ImportError type #args
+
+////////////////////////////////////////////////////////////
+///////////////// FUNCTIONS ////////////////////////////////
+////////////////////////////////////////////////////////////
+defn lookup fun default coll ->
+    try
+        at key coll
+    catch
+        | e of KeyError -> default
+        | e -> throw e
+
+
+//FUNS
+fun lookup key default coll ->
+
+fun not_elem x c -> not (elem x c)
+
+fun identity x -> x
+
+fun & func -> (obin:lang:defpartial func)
+
+fun |> x f -> f x
+fun <| f x -> f x
+fun >> f g -> lam x -> g (f x)
+fun << f g -> lam x -> f (g x)
+
+fun twice f -> f >> f
+fun flip f x y -> f y x
+fun even x -> mod x 2 == 0
+fun odd x -> not (even x)
+fun inc x -> x + 1
+fun dec x -> x - 1
+
+fst = partial at 0
+snd = partial at 1
+thrd = partial at 2
+frth = partial at 3
+fun last coll -> at ((len coll) - 1) coll

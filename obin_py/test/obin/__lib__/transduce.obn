@@ -1,14 +1,15 @@
 import io
 from var import var
 
-trait Transformer for self
-    def init self
-    def result self res
-    def step self res input
+generic
+    init self
+    result self res
+    step self res input
+
 
 type WrapTransformer fn
 
-implement Transformer for WrapTransformer
+extend WrapTransformer
     def init self -> throw NotImplementedError #init
     def result self acc -> acc
     def step self input acc ->
@@ -93,7 +94,7 @@ fun first () ->
 
 type MapTransformer f xf
 
-implement Transformer for MapTransformer
+extend MapTransformer
     def init self -> init self.xf
     def result self acc -> result self.xf acc
     def step self val acc ->
@@ -106,8 +107,7 @@ fun map f xf -> MapTransformer f xf
 -------------------------------------------
 
 type FilterTransformer predicate xf
-
-implement Transformer for FilterTransformer
+extend FilterTransformer
     def init self -> init self.xf
     def result self acc -> result self.xf acc
     def step self val acc ->
@@ -123,9 +123,8 @@ fun filter predicate xf -> FilterTransformer predicate xf
 // eliminate values.
 fun remove predicate xf -> filter (&not << &predicate) xf
 
-type CompletingTransformer cf xf
-
-implement Transformer for CompletingTransformer
+type CompletingTransformer (cf, xf)
+extend CompletingTransformer
     def init self -> init self.xf
     def result self acc -> self.cf acc
     def step self val acc -> step self.xf val acc
@@ -137,8 +136,7 @@ fun completing cf xf -> CompletingTransformer cf xf
 
 
 type TakeTransformer n xf
-
-implement Transformer for TakeTransformer
+extend TakeTransformer
     def init self -> init self.xf
     def result self acc -> result self.xf acc
     def step self val acc ->
@@ -154,8 +152,7 @@ implement Transformer for TakeTransformer
 fun take n xf -> TakeTransformer (var n) xf
 
 type TakeWhileTransformer predicate xf
-
-implement Transformer for TakeWhileTransformer
+extend TakeWhileTransformer
     def init self -> init self.xf
     def result self acc -> result self.xf acc
     def step self val acc ->
@@ -170,8 +167,7 @@ implement Transformer for TakeWhileTransformer
 fun take_while p xf -> TakeWhileTransformer p xf
 
 type TakeNthTransformer i n xf
-
-implement Transformer for TakeNthTransformer
+extend TakeNthTransformer
     def init self -> init self.xf
     def result self acc -> result self.xf acc
     def step self val acc ->
@@ -185,7 +181,7 @@ implement Transformer for TakeNthTransformer
 fun take_nth n xf -> TakeNthTransformer (var (-1)) n xf
 
 type DropTransformer n xf
-implement Transformer for DropTransformer
+extend DropTransformer
     def init self -> init self.xf
     def result self acc -> result self.xf acc
     def step self val acc ->
@@ -200,7 +196,7 @@ implement Transformer for DropTransformer
 fun drop n xf -> DropTransformer (var n) xf
 
 type DropWhileTransformer continue_dropping predicate xf
-implement Transformer for DropWhileTransformer
+extend DropWhileTransformer
     def init self -> init self.xf
     def result self acc -> result self.xf acc
     def step self val acc ->

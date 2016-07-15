@@ -158,15 +158,16 @@ def == self of MyList other
 //error here type, not defined
 def is_empty self -> is_empty self.__list
 type MyList (__list)
-extend MyList with
+
+extend MyList
     def len self -> len self.__list
     def + self other
         | self _ ->  MyList x y
         | self other of MyList -> MyList (self.__list + other.__list)
 
-    trait DummyTrait (method1, ==, !=, method2, ++, --, method3)
-    trait TNotEq
-    trait TSized (is_empty)
+    use DummyTrait (method1, ==, !=, method2, ++, --, method3)
+    use TNotEq
+    use TSized (is_empty)
 
     // define generics without trait
     def first (self) -> first(self.__list)

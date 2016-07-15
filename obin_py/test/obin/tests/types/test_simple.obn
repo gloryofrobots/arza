@@ -1,51 +1,45 @@
 import affirm
 
-type Zero
+generic
+    add self a
+    val self
 
-type Point2 x y
+type Zero
 
 type Vec2 p1 p2
 
+type Point2 x y
 
-trait Add for self
-    def add self a
-
-
-implement Add for Point2
+extend Point2
     def add self other
         | _ p2 of Point2 -> Point2 (self.x + p2.x) (self.y + p2.y)
         | _ i of Int -> Point2 (self.x + i) (self.y + i)
         | _ v of Vec2 -> add (Vec2 self self) v
 
-implement Eq for Point2
     def == self other of Point2 ->
             self.x == other.x and self.y == other.y
+
     def != self other of Point2 -> not (self == other)
 
-
-implement Add for Vec2
+extend Vec2
     def add self other
         | self v of Vec2 -> Vec2 (add self.p1 v.p1) (add self.p2 v.p2)
         | self i of Int -> Vec2 (add self.p1 i) (add self.p2 i)
         | self p of Point2 -> Vec2 (add self.p1 p) (add self.p2 p)
 
-implement Eq for Vec2
     def == self other of Vec2 -> (self.p1 == other.p1) and (self.p2 == other.p2)
-    def != self other -> not (self == other)
 
-trait Val for self
-    def val self
+    def != self other -> not (self == other)
 
 type Option
     | Some val
     | None
 
-extend Option
-    with Val
-        def val self ->
-            match self with
-                | x of Some -> x.val
-                | x of None -> x
+extend Option with
+    def val self ->
+        match self with
+            | x of Some -> x.val
+            | x of None -> x
 
 fun test () ->
     p = Point2 0 1

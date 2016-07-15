@@ -319,6 +319,7 @@ trait Ord  for x of Eq
     def max x y -> if x <= y then y else x
     def min x y -> if x <= y then x else y
 
+
 implement types:TestTrait for X
     def f a of X b c -> 42
     def f a of X b c -> 42

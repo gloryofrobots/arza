@@ -1,8 +1,9 @@
 import obin:lang:_list
 from obin:lang:_list import (tail, head)
-from datatype import TypeDerived
+import derive
 import seq
 import string
+
 
 fun range (first of Int) (last of Int) ->
     step = if last < 0 then -1 else 1
@@ -51,30 +52,31 @@ fun replicate count element ->
 ---------------------------------------------------
 
 extend List
-    with Eq
-        def == self other -> seq:equal self other
-    with Collection = TypeDerived
-    with Str
-        def str self ->
-            "[" ++ string:join_with repr self ", " ++ "]"
-    with Repr
-    with Seq
-        def first self -> _list:head self
-        def rest self -> _list:tail self
-    with Consable
-        def cons value self -> _list:cons value self
-    with Seqable
-        def to_seq self -> self
-    with Sized
-        def len self -> _list:length
-        def is_empty self -> _list:is_empty self
-    with Emptiable
-        def empty self -> []
-    with Sliceable
-        def slice first last self -> _list:slice first last self
-        def drop count self -> _list:drop count self
-        def take count self -> _list:take count self
+    use TNotEq
+    use derive:TCollection
+    use TRepr
 
+    def == self other -> seq:equal self other
 
+    def str self ->
+        "[" ++ string:join_with repr self ", " ++ "]"
 
+    def first self -> _list:head self
 
+    def rest self -> _list:tail self
+
+    def cons value self -> _list:cons value self
+
+    def to_seq self -> self
+
+    def len self -> _list:length
+
+    def is_empty self -> _list:is_empty self
+
+    def empty self -> []
+
+    def slice first last self -> _list:slice first last self
+
+    def drop count self -> _list:drop count self
+
+    def take count self -> _list:take count self

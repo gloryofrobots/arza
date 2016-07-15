@@ -1,32 +1,37 @@
 import obin:lang:_string
 import seq
-from datatype import TypeDerived
+import derive
+
+extend Symbol
 
 extend Char
-    with Eq = TypeDerived
-    with Str = TypeDerived
+    use derive:TStr
+    use derive:TEq
 
 extend String
-    with Eq = TypeDerived
-    with Str = TypeDerived
-    with Repr = TypeDerived
-    with Collection = TypeDerived
-    with Sized = TypeDerived
-    with Appendable
-        def ++ _str1 _str2 -> _string:concat _str1 _str2
-        def append value self -> _string:append value self
-    with Prependable
-        def prepend value self -> _string:prepend value self
-    with Consable
-        def cons value of Char self -> _string:append value self
-    with Seqable
-        def to_seq self -> _string:to_list self
-    with Emptiable
-        def empty self -> ""
-    with Sliceable
-        def slice first last self -> _string:slice first last self
-        def drop count self -> _string:drop count self
-        def take count self -> _string:take count self
+    use derive:TStr
+    use derive:TEq
+    use derive:TRepr
+    use derive:TCollection
+    use derive:TSized
+
+    def ++ _str1 _str2 -> _string:concat _str1 _str2
+
+    def append value self -> _string:append value self
+
+    def prepend value self -> _string:prepend value self
+
+    def cons value of Char self -> _string:append value self
+
+    def to_seq self -> _string:to_list self
+
+    def empty self -> ""
+
+    def slice first last self -> _string:slice first last self
+
+    def drop count self -> _string:drop count self
+
+    def take count self -> _string:take count self
 
 
 fun concat _str1 _str2 -> _string:concat _str1 _str2

@@ -1,13 +1,19 @@
 import affirm
 
-trait T1 for self
+generic
+    def t1 self
+    def t2 self
+
+interface T1 (t1)
+interface T2 (t2)
+
+trait Trait1
     def t1 self -> self
 
-trait T2 for self of T1
+trait Trait2 of T1
     def t2 self -> self
 
 type X x
-
 
 fun test () ->
     //EQ is auto derived

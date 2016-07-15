@@ -1,6 +1,6 @@
-from datatype import TypeDerived
+import derive
 
 extend Trait
-    with Eq = TypeDerived
-    with Str = TypeDerived
-    with Repr = TypeDerived
+    use derive:TStr
+    use derive:TRepr
+    use derive:TEq

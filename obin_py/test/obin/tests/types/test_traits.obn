@@ -1,14 +1,25 @@
 import affirm
 
-type EQ end
-type GT end
-type LT end
+type EQ
+type GT
+type LT
 
-trait Equal for x
+generic
+    eq x y
+    ne x y
+    le x y
+    lt x y
+    ge x y
+    gt x y
+    cmp x y
+    max x y
+    min x y
+
+trait Equal
     def eq x y -> not (ne x y)
     def ne x y -> not (eq x y)
 
-trait Order for x
+trait Order
     def le x y -> (cmp x y) != GT
     def lt x y -> (cmp x y) == LT
     def ge x y -> (cmp x y) != LT
@@ -31,19 +42,24 @@ type Val v
 
 type Val2 v
 
-implement Equal for Val
+extend Val with
+    trait Equal
     def eq v1 v2 -> v1.v == v2.v
 
-implement Equal for Val2
+extend Val2 with
+    trait Equal
     def ne v1 v2 -> v1.v != v2.v
 
-implement Order for Val
-    def cmp self other ->
+extend Val with trait
+   trait Order
+
+   def cmp self other ->
         if self.v == other.v then EQ
         elif self.v <= other.v then LT
         else GT
 
-implement Order for Val2
+extend Val2 with
+    trait Order
     def le self other -> self.v <= other.v
 
 fun test () ->

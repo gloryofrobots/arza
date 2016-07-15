@@ -2,14 +2,15 @@ import affirm
 
 type L l
 
-extend L
-    with Sized
-        def len self -> len self.l
-        def is_empty self ->
-            is_empty self.l
-    with Seq
-        def first self -> self
-        def rest self -> self
+extend L with
+    def len self -> len self.l
+
+    def is_empty self -> is_empty self.l
+
+    def first self -> self
+
+    def rest self -> self
+
 
 fun test () ->
     l1 = L [1,2,3,4,5]

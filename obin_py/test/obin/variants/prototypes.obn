@@ -37,8 +37,9 @@ p3 = p1 + p2
 
 type Point {a, b}
 
-extend Point with Num    
-    def + self other 
+extend Point
+    use Num
+    def + self other
         | _ i of Int -> Point (self.x + i) (self.y + i)
         | _ p of Point -> Point (self.c + p.x) (self.y + p.y)
 

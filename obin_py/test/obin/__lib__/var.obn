@@ -20,18 +20,12 @@ fun var v ->
     Var co
 
 extend Var
-    with Ref
-        def ! self ->
-            self.val #Read
-    with MutRef
-        def := self value ->
-            self.val (#Write, value)
+    def ! self -> self.val #Read
 
-    with Eq
-        def == self other ->
-            self.val == other.val
+    def := self value -> self.val (#Write, value)
 
-    with Str
-        def str self -> "Var"
-    with Repr
+    def == self other -> self.val == other.val
 
+    def str self -> "Var"
+
+    use TRepr

@@ -1,7 +1,7 @@
 from obin:lang:_fiber import (spawn, activate, coroutine)
-from datatype import TypeDerived
+import derive
 
 extend Fiber
-    with Eq = TypeDerived
-    with Str = TypeDerived
-    with Repr = TypeDerived
+    use derive:TStr
+    use derive:TRepr
+    use derive:TEq

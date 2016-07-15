@@ -1,6 +1,6 @@
-from datatype import TypeDerived
+import derive
 
 extend Vector
-    with Eq = TypeDerived
-    with Str = TypeDerived
-    with Repr
+    use derive:TStr
+    use derive:TEq
+    use TRepr

@@ -1,11 +1,16 @@
-from datatype import TypeDerived
+import derive
 
 extend Function
-    with Eq = TypeDerived
-    with Str = TypeDerived
-    with Repr = TypeDerived
+    use derive:TStr
+    use derive:TRepr
+    use derive:TEq
 
 extend Method
-    with Eq = TypeDerived
-    with Str = TypeDerived
-    with Repr = TypeDerived
+    use derive:TStr
+    use derive:TRepr
+    use derive:TEq
+
+extend Partial
+    use derive:TStr
+    use derive:TRepr
+    use derive:TEq
