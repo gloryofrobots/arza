@@ -18,6 +18,9 @@ class W_Trait(W_Hashable):
         assert space.isgeneric(generic)
         return api.at(self.methods, generic)
 
+    def to_list(self):
+        return self.methods.to_list()
+    
     def add_method(self, generic, method):
         assert space.isgeneric(generic)
         assert space.isfunction(generic)

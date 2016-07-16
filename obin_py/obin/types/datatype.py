@@ -1,5 +1,5 @@
 from obin.types.root import W_Hashable
-from obin.types import api, space, plist, pmap
+from obin.types import api, space, plist
 from obin.misc import platform
 from obin.runtime import error
 
@@ -342,55 +342,54 @@ def newunion(process, name, types):
     return _union
 
 
+def _find_constraint_generic(generic, pair):
+    return api.equal_b(pair[0], generic)
+
+
+def _get_extension_methods(_type, mixins, methods):
+    # BETTER WAY IS TO MAKE DATATYPE IMMUTABLE
+    # AND CHECK CONSTRAINTS AFTER SETTING ALL METHO
+    total = plist.empty()
+    constraints = plist.empty()
+    error.affirm_type(methods, space.islist)
+    for trait in mixins:
+        error.affirm_type(trait, space.istrait)
+        constraints = plist.concat(constraints, trait.constraints)
+        methods = trait.to_list()
+        total = plist.concat(total, methods)
+
+    total = plist.concat(total, methods)
+
+    for iface in constraints:
+        for generic in iface.generics:
+            if not plist.contains_with(total, generic,
+                                       _find_constraint_generic):
+                return error.throw_3(error.Errors.CONSTRAINT_ERROR,
+                                    _type, iface, generic,
+                                    space.newstring(
+                                        u"Dissatisfied trait constraint"))
+
+    return total
+
+
 def derive_default(process, _type):
     derived = process.std.derived.get_derived(_type)
     derive(_type, derived)
 
 
 def derive(_type, derived):
-    # print "DERIVE DEFAULT", _type, traits
-    for impl in derived:
-        methods = _normalise_implementations(impl)
-        for pair in methods:
-            generic = pair[0]
-            _type.register_derived(generic)
-        _type.add_methods(methods)
-
-
-def _normalise_implementations(implementations):
-    if space.ispmap(implementations):
-        methods = plist.empty()
-        for pair in implementations.to_l():
-            generic = pair[0]
-            method = pair[1]
-            methods = plist.cons(space.newtuple([generic, method]), methods)
-    elif space.istrait(implementations):
-        methods = implementations.methods.to_list()
-        # for pair in :
-        #     generic = pair[0]
-        #     method = pair[1]
-        #     methods = plist.cons(space.newtuple([generic, method]), methods)
-    elif space.islist(implementations):
-        methods = implementations
-    else:
-        return error.throw_2(error.Errors.TYPE_ERROR,
-                             space.newstring(u"Invalid participant in type extension."
-                                             u" Expected value of types Map|List|Trait"),
-                             implementations)
-    return methods
-
-
-def extend_type(_type, implementations):
+    error.affirm_iterable(derived, space.istrait)
     error.affirm_type(_type, space.isextendable)
-    for impl in implementations:
-        extend_type_with(_type, impl)
 
+    methods = _get_extension_methods(_type, derived, plist.empty())
+    _type.add_derived_methods(methods)
     return _type
 
 
-def extend_type_with(_type, implementations):
+def extend(_type, mixins, methods):
     error.affirm_type(_type, space.isextendable)
-    methods = _normalise_implementations(implementations)
+
+    methods = _get_extension_methods(_type, mixins, methods)
     if space.isunion(_type):
         for _t in _type.types_list:
             _t.add_methods(methods)

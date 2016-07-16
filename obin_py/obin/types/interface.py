@@ -3,8 +3,8 @@ from obin.types import api, space, plist
 from obin.misc import platform
 
 
-def find_by_name(name, method):
-    return api.equal_b(method.name, name)
+def find_by_name(name, generic):
+    return api.equal_b(generic.name, name)
 
 
 class W_Interface(W_Hashable):
