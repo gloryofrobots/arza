@@ -207,8 +207,8 @@ def __extend(process, routine):
     _type = routine.get_arg(0)
     _mixins = routine.get_arg(1)
     _methods = routine.get_arg(2)
-    _type = datatype.extend_type_with(_type, _methods)
     _type = datatype.extend_type(_type, _mixins)
+    _type = datatype.extend_type_with(_type, _methods)
 
     return _type
 

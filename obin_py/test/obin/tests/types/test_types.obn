@@ -1,14 +1,15 @@
 import tests:types:test_implement_qualified
 import tests:types:test_simple
 import tests:types:test_traits
-import tests:types:test_constraints
+// import tests:types:test_constraints
 import tests:types:test_union
 import tests:types:test_polymorphism
+import io
 
 fun test () ->
     test_simple:test()
     test_traits:test()
-    test_constraints:test()
+    // test_constraints:test()
     test_implement_qualified:test()
     test_union:test()
     test_polymorphism:test()

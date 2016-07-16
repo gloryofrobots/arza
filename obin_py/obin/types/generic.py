@@ -19,6 +19,7 @@ class W_Generic(W_Hashable):
 
         self.signature = signature
         self.hot_path = hotpath
+        self.count_call = 0
 
     def set_hotpath(self, hotpath):
         self.hot_path = HotPath(hotpath, self.arity)
@@ -41,6 +42,7 @@ class W_Generic(W_Hashable):
                 return res
 
         method = lookup_implementation(process, self, args)
+        assert method is not self
         if space.isvoid(method):
             return error.throw_2(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR, self, args)
 

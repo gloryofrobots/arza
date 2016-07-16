@@ -67,7 +67,5 @@ fun test() ->
    // log "TEST OPERATORS"
    // test_operators:test()
 
-fun add x y -> x + y
-
 fun main () ->
     test()

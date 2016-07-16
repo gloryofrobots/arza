@@ -30,9 +30,10 @@ extend LazyList
                             ", " ++ str x ++ folder (!xs)
                     else
                         ", " ++ str x ++ folder (xs)
+            end
 
+            "[" ++ (str self.head) ++ folder !self.tail ++ "]"
 
-                "[" ++ (str self.head) ++ folder !self.tail ++ "]"
     def to_seq self -> self
 
     def len self -> throw NotImplementedError ("len not defined for LazyList",)
