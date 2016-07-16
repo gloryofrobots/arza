@@ -38,7 +38,8 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.TYPE, __type, 3)
     put_lang_func(process, module, lang_names.UNION, __union, 2)
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
-    put_lang_func(process, module, lang_names.TRAIT, __trait, 2)
+    put_lang_func(process, module, lang_names.INTERFACE, __interface, 2)
+    put_lang_func(process, module, lang_names.TRAIT, __trait, 3)
     put_lang_func(process, module, lang_names.EXTEND, __extend, 3)
     put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
     put_lang_func(process, module, u"partial", __partial, -1)
@@ -183,23 +184,31 @@ def __generic(process, routine):
 
 
 @complete_native_routine
+def __interface(process, routine):
+    name = routine.get_arg(0)
+    generics = routine.get_arg(1)
+    interface = space.newinterface(name, generics)
+    return interface
+
+
+@complete_native_routine
 def __trait(process, routine):
     name = routine.get_arg(0)
     constraints = routine.get_arg(1)
+    generics = routine.get_arg(2)
     if space.istuple(constraints):
         constraints = tuples.to_list(constraints)
-    _trait = space.newtrait(name, constraints)
+    _trait = space.newtrait(name, constraints, generics)
     return _trait
 
 
 @complete_native_routine
 def __extend(process, routine):
     _type = routine.get_arg(0)
-    _methods = routine.get_arg(1)
-    _mixins = routine.get_arg(2)
-    _type = datatype.extend_type(_type, _methods)
-    for mixin in _mixins:
-        _type = datatype.extend_type(_type, mixin)
+    _mixins = routine.get_arg(1)
+    _methods = routine.get_arg(2)
+    _type = datatype.extend_type_with(_type, _methods)
+    _type = datatype.extend_type(_type, _mixins)
 
     return _type
 
@@ -316,9 +325,3 @@ def lookup(process, routine):
 def clone(process, routine):
     this = routine.get_arg(0)
     return api.clone(this)
-
-
-@complete_native_routine
-def trait(process, routine):
-    name = routine.get_arg(0)
-    return space.newtrait(name)

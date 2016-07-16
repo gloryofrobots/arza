@@ -5,15 +5,15 @@ type GT
 type LT
 
 generic
-    eq x y
-    ne x y
-    le x y
-    lt x y
-    ge x y
-    gt x y
-    cmp x y
-    max x y
-    min x y
+    eq `x y
+    ne `x y
+    le `x y
+    lt `x y
+    ge `x y
+    gt `x y
+    cmp `x y
+    max `x y
+    min `x y
 
 trait Equal
     def eq x y -> not (ne x y)

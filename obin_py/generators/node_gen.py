@@ -45,7 +45,6 @@ NODES = [
   "NT_EXPORT",
   "NT_LOAD",
   "NT_TRAIT",
-  "NT_IMPLEMENT",
   "NT_EXTEND",
   "NT_GENERIC",
   "NT_METHOD",

@@ -145,7 +145,7 @@ class W_Root:
 
     def _dispatch_(self, process, generic):
         _t = self._type_(process)
-        return _t.get_generic_implementation(generic)
+        return _t.get_method(generic)
         # return not_implemented_error(u"_dispatch_", self)
 
     def _compute_hash_(self):

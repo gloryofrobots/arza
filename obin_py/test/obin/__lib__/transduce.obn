@@ -2,10 +2,11 @@ import io
 from var import var
 
 generic
-    init self
-    result self res
-    step self res input
+    init `self
+    result `self res
+    step `self res input
 
+interface Transformer (init, result, step)
 
 type WrapTransformer fn
 

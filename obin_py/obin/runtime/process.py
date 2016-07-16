@@ -213,6 +213,8 @@ class Process(object):
                 break
             try:
                 result = self.__execute()
+            # except Exception as e:
+            #     raise
             except error.ObinError as e:
                 signal = error.convert_to_script_error(self, e)
                 result = self._catch_or_terminate(signal)

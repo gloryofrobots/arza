@@ -114,6 +114,8 @@ RULES = [
     (keyword('lam'), TT_LAMBDA),
     # (keyword('module'), TT_MODULE),
 
+    (keyword('use'), TT_USE),
+
     (keyword('trait'), TT_TRAIT),
     (keyword('implement'), TT_IMPLEMENT),
     (keyword('extend'), TT_EXTEND),
@@ -121,7 +123,6 @@ RULES = [
     (keyword('interface'), TT_INTERFACE),
     (keyword('def'), TT_DEF),
     (keyword('type'), TT_TYPE),
-    (keyword('for'), TT_FOR),
 
     (keyword('export'), TT_EXPORT),
     (keyword('import'), TT_IMPORT),

@@ -1,10 +1,12 @@
 type TestType val
+
 generic
-    test_method_1 x y a
-    test_method_2 x a y
-    test_method_3 a x y
+    test_method_1 `x y a
+
+    test_method_2 `x a y
+
+    test_method_3 a `x y
+
     test_method_4 a
 
-interface TestInterface (
-          test_method_1, test_method_2, test_method_3, test_method_4
-)
+interface TestInterface (test_method_1, test_method_2, test_method_3, test_method_4)

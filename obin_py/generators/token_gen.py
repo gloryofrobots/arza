@@ -18,7 +18,6 @@ TOKENS = [
 
   ("TT_BREAK", "break"),
   ("TT_CONTINUE", "continue"),
-  ("TT_FOR", "for"),
   ("TT_WHILE", "while"),
 
   ("TT_IMPLEMENT", "implement"),

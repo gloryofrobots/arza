@@ -1,5 +1,4 @@
 import fiber
-from datatype import TypeDerived
 type Var val
 
 fun var v ->

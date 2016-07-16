@@ -82,7 +82,11 @@
             },
             {
               "_ntype": "NT_NAME",
-              "_value": "Method"
+              "_value": "Interface"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Generic"
             },
             {
               "_ntype": "NT_NAME",
@@ -123,7 +127,7 @@
       "_value": "==",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "=="
         },
         {
@@ -161,7 +165,7 @@
       "_value": "!=",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "!="
         },
         {
@@ -199,7 +203,7 @@
       "_value": "<=",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "<="
         },
         {
@@ -237,7 +241,7 @@
       "_value": "<",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "<"
         },
         {
@@ -275,7 +279,7 @@
       "_value": ">=",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": ">="
         },
         {
@@ -313,7 +317,7 @@
       "_value": ">",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": ">"
         },
         {
@@ -351,7 +355,7 @@
       "_value": "cmp",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "cmp"
         },
         {
@@ -389,7 +393,7 @@
       "_value": "max",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "max"
         },
         {
@@ -427,7 +431,7 @@
       "_value": "min",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "min"
         },
         {
@@ -465,7 +469,7 @@
       "_value": "-",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "-"
         },
         {
@@ -503,7 +507,7 @@
       "_value": "+",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "+"
         },
         {
@@ -541,7 +545,7 @@
       "_value": "*",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "*"
         },
         {
@@ -579,7 +583,7 @@
       "_value": "/",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "/"
         },
         {
@@ -617,7 +621,7 @@
       "_value": "mod",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "mod"
         },
         {
@@ -655,7 +659,7 @@
       "_value": "negate",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "negate"
         },
         {
@@ -683,7 +687,7 @@
       "_value": "str",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "str"
         },
         {
@@ -711,7 +715,7 @@
       "_value": "repr",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "repr"
         },
         {
@@ -739,7 +743,7 @@
       "_value": "len",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "len"
         },
         {
@@ -767,7 +771,7 @@
       "_value": "is_empty",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "is_empty"
         },
         {
@@ -795,7 +799,7 @@
       "_value": "put",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "put"
         },
         {
@@ -843,7 +847,7 @@
       "_value": "at",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "at"
         },
         {
@@ -881,7 +885,7 @@
       "_value": "del",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "del"
         },
         {
@@ -919,7 +923,7 @@
       "_value": "elem",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "elem"
         },
         {
@@ -957,7 +961,7 @@
       "_value": "first",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "first"
         },
         {
@@ -985,7 +989,7 @@
       "_value": "rest",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "rest"
         },
         {
@@ -1013,7 +1017,7 @@
       "_value": "empty",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "empty"
         },
         {
@@ -1041,7 +1045,7 @@
       "_value": "cons",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "cons"
         },
         {
@@ -1079,7 +1083,7 @@
       "_value": "prepend",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "prepend"
         },
         {
@@ -1117,7 +1121,7 @@
       "_value": "++",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "++"
         },
         {
@@ -1155,7 +1159,7 @@
       "_value": "append",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "append"
         },
         {
@@ -1193,7 +1197,7 @@
       "_value": "keys",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "keys"
         },
         {
@@ -1221,7 +1225,7 @@
       "_value": "values",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "values"
         },
         {
@@ -1249,7 +1253,7 @@
       "_value": "index_of",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "index_of"
         },
         {
@@ -1287,7 +1291,7 @@
       "_value": "to_seq",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "to_seq"
         },
         {
@@ -1315,7 +1319,7 @@
       "_value": "slice",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "slice"
         },
         {
@@ -1363,7 +1367,7 @@
       "_value": "drop",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "drop"
         },
         {
@@ -1401,7 +1405,7 @@
       "_value": "take",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "take"
         },
         {
@@ -1439,7 +1443,7 @@
       "_value": "lower_bound",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "lower_bound"
         },
         {
@@ -1467,7 +1471,7 @@
       "_value": "upper_bound",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "upper_bound"
         },
         {
@@ -1495,7 +1499,7 @@
       "_value": "range",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "range"
         },
         {
@@ -1533,7 +1537,7 @@
       "_value": "range_by",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "range_by"
         },
         {
@@ -1581,7 +1585,7 @@
       "_value": "range_from",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "range_from"
         },
         {
@@ -1609,7 +1613,7 @@
       "_value": "range_from_by",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "range_from_by"
         },
         {
@@ -1647,7 +1651,7 @@
       "_value": "!",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": "!"
         },
         {
@@ -1675,7 +1679,7 @@
       "_value": ":=",
       "children": [
         {
-          "_ntype": "",
+          "_ntype": "NT_NAME",
           "_value": ":="
         },
         {
@@ -2237,14 +2241,8 @@
       [
         [
           {
-            "_ntype": "NT_SYMBOL",
-            "_value": "#",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "!="
-              }
-            ]
+            "_ntype": "NT_NAME",
+            "_value": "!="
           },
           [
             [
@@ -2327,14 +2325,8 @@
       [
         [
           {
-            "_ntype": "NT_SYMBOL",
-            "_value": "#",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "<"
-              }
-            ]
+            "_ntype": "NT_NAME",
+            "_value": "<"
           },
           [
             [
@@ -2397,14 +2389,8 @@
         ],
         [
           {
-            "_ntype": "NT_SYMBOL",
-            "_value": "#",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": ">="
-              }
-            ]
+            "_ntype": "NT_NAME",
+            "_value": ">="
           },
           [
             [
@@ -2467,14 +2453,8 @@
         ],
         [
           {
-            "_ntype": "NT_SYMBOL",
-            "_value": "#",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": ">"
-              }
-            ]
+            "_ntype": "NT_NAME",
+            "_value": ">"
           },
           [
             [
@@ -2537,14 +2517,8 @@
         ],
         [
           {
-            "_ntype": "NT_SYMBOL",
-            "_value": "#",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "cmp"
-              }
-            ]
+            "_ntype": "NT_NAME",
+            "_value": "cmp"
           },
           [
             [
@@ -2646,14 +2620,8 @@
         ],
         [
           {
-            "_ntype": "NT_SYMBOL",
-            "_value": "#",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "max"
-              }
-            ]
+            "_ntype": "NT_NAME",
+            "_value": "max"
           },
           [
             [
@@ -2727,14 +2695,8 @@
         ],
         [
           {
-            "_ntype": "NT_SYMBOL",
-            "_value": "#",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "min"
-              }
-            ]
+            "_ntype": "NT_NAME",
+            "_value": "min"
           },
           [
             [
@@ -2832,14 +2794,8 @@
       [
         [
           {
-            "_ntype": "NT_SYMBOL",
-            "_value": "#",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "is_empty"
-              }
-            ]
+            "_ntype": "NT_NAME",
+            "_value": "is_empty"
           },
           [
             [
@@ -2918,14 +2874,8 @@
       [
         [
           {
-            "_ntype": "NT_SYMBOL",
-            "_value": "#",
-            "children": [
-              {
-                "_ntype": "NT_NAME",
-                "_value": "repr"
-              }
-            ]
+            "_ntype": "NT_NAME",
+            "_value": "repr"
           },
           [
             [
@@ -4309,7 +4259,7 @@
     "children": [
       {
         "_ntype": "NT_NAME",
-        "_value": "TraitAlreadyImplementedError"
+        "_value": "ImplementationError"
       },
       {
         "_ntype": "NT_LIST",
@@ -4359,57 +4309,7 @@
     "children": [
       {
         "_ntype": "NT_NAME",
-        "_value": "TraitImplementationError"
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "[",
-        "children": [
-          [
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "#",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "args"
-                }
-              ]
-            }
-          ]
-        ]
-      },
-      [
-        [
-          {
-            "_ntype": "NT_TUPLE",
-            "_value": "end",
-            "children": [
-              [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "args"
-                }
-              ]
-            ]
-          },
-          [
-            {
-              "_ntype": "NT_FENV",
-              "_value": "___fenv"
-            }
-          ]
-        ]
-      ]
-    ]
-  },
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "TraitConstraintError"
+        "_value": "ConstraintError"
       },
       {
         "_ntype": "NT_LIST",

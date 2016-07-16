@@ -122,23 +122,25 @@ class W_Extendable(W_Hashable):
         return False
 
     def add_method(self, generic, method):
-        if self.is_generic_implemented(generic):
-            if not self.is_derived(generic):
-                return error.throw_2(error.Errors.IMPLEMENTATION_ERROR, self,
-                                     space.newstring(u"Generic has already implemented"))
-
-            self.remove_method(generic)
+        # error.affirm_type(generic, space.isgeneric)
+        # if self.is_generic_implemented(generic):
+        #     if not self.is_derived(generic):
+        #         return error.throw_3(error.Errors.IMPLEMENTATION_ERROR, self,
+        #                              space.newstring(u"Generic has already implemented"), generic)
+        #
+        #     self.remove_method(generic)
         api.put(self.methods, generic, method)
 
     def add_methods(self, implementations):
-        for impl in implementations:
-            generic = api.at_index(impl, 0)
-            if self.is_generic_implemented(generic):
-                if not self.is_derived(generic):
-                    return error.throw_2(error.Errors.IMPLEMENTATION_ERROR, self,
-                                         space.newstring(u"Generic has already implemented"))
-
-                self.remove_method(generic)
+        # for impl in implementations:
+        #     generic = api.at_index(impl, 0)
+        #     error.affirm_type(generic, space.isgeneric)
+        #     if self.is_generic_implemented(generic):
+        #         if not self.is_derived(generic):
+        #             return error.throw_3(error.Errors.IMPLEMENTATION_ERROR, self,
+        #                                  space.newstring(u"Generic has already implemented"), generic)
+        #
+        #         self.remove_method(generic)
 
         for impl in implementations:
             generic = api.at_index(impl, 0)
@@ -149,9 +151,7 @@ class W_Extendable(W_Hashable):
         return api.contains_b(self.methods, generic)
 
     def get_method(self, generic):
-        void = space.newvoid()
-        impl = api.lookup(self.methods, generic, void)
-        return impl
+        return api.lookup(self.methods, generic, space.newvoid())
 
     def remove_method(self, generic):
         api.delete(self.methods, generic)
@@ -344,6 +344,10 @@ def newunion(process, name, types):
 
 def derive_default(process, _type):
     derived = process.std.derived.get_derived(_type)
+    derive(_type, derived)
+
+
+def derive(_type, derived):
     # print "DERIVE DEFAULT", _type, traits
     for impl in derived:
         methods = _normalise_implementations(impl)
@@ -361,16 +365,17 @@ def _normalise_implementations(implementations):
             method = pair[1]
             methods = plist.cons(space.newtuple([generic, method]), methods)
     elif space.istrait(implementations):
-        methods = plist.empty()
-        for pair in implementations.methods.to_l():
-            generic = pair[0]
-            method = pair[1]
-            methods = plist.cons(space.newtuple([generic, method]), methods)
+        methods = implementations.methods.to_list()
+        # for pair in :
+        #     generic = pair[0]
+        #     method = pair[1]
+        #     methods = plist.cons(space.newtuple([generic, method]), methods)
     elif space.islist(implementations):
         methods = implementations
     else:
         return error.throw_2(error.Errors.TYPE_ERROR,
-                             space.newstring(u"Invalid trait implementation source. Expected one of Map,List,Type"),
+                             space.newstring(u"Invalid participant in type extension."
+                                             u" Expected value of types Map|List|Trait"),
                              implementations)
     return methods
 
@@ -390,4 +395,5 @@ def extend_type_with(_type, implementations):
         for _t in _type.types_list:
             _t.add_methods(methods)
 
-    return _type.add_methods(methods)
+    _type.add_methods(methods)
+    return _type

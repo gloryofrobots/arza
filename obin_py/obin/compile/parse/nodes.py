@@ -331,7 +331,7 @@ def create_list_node(basenode, items):
 
 
 def create_list_node_from_list(basenode, items):
-    assert is_list_node(items)
+    assert is_list_node(items), items
     return node_1(nt.NT_LIST, create_token_from_node(tt.TT_LSQUARE, "[", basenode), items)
 
 

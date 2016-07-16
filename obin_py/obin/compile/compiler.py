@@ -318,12 +318,12 @@ def _get_unquoted_value(node):
     return nodes.node_value_s(node)[1:len(nodes.node_value_s(node)) - 1]
 
 
-def _get_symbol_or_name_value(name):
+def get_symbol_or_name_value(name):
     ntype = node_type(name)
     if ntype == NT_SYMBOL:
         return _get_name_value(node_first(name))
     elif ntype == NT_IMPORTED_NAME:
-        return _module_path_to_string(name)
+        return imported_name_to_s(name)
     else:
         return _get_name_value(name)
 
@@ -342,7 +342,7 @@ def _get_name_value(name):
 
 
 def _get_symbol_name(compiler, name):
-    sym = _get_symbol_or_name_value(name)
+    sym = get_symbol_or_name_value(name)
     return space.newsymbol_s(compiler.process, sym)
 
 
@@ -828,9 +828,9 @@ def _compile_LOOKUP_MODULE(compiler, code, node):
     _compile_node_name_lookup(compiler, code, node)
 
 
-def _module_path_to_string(node):
+def imported_name_to_s(node):
     if node_type(node) == NT_IMPORTED_NAME:
-        return _module_path_to_string(node_first(node)) + ':' + nodes.node_value_s(node_second(node))
+        return imported_name_to_s(node_first(node)) + ':' + nodes.node_value_s(node_second(node))
     else:
         return nodes.node_value_s(node)
 
@@ -842,10 +842,10 @@ def _get_import_data_and_emit_module(compiler, code, node):
 
     if node_type(exp) == NT_AS:
         import_name = node_second(exp)
-        module_path = _module_path_to_string(node_first(exp))
+        module_path = imported_name_to_s(node_first(exp))
     elif node_type(exp) == NT_IMPORTED_NAME:
         import_name = node_second(exp)
-        module_path = _module_path_to_string(exp)
+        module_path = imported_name_to_s(exp)
     else:
         assert node_type(exp) == NT_NAME
         import_name = exp
@@ -993,19 +993,23 @@ def _compile_TYPE(compiler, code, node):
     _compile(compiler, code, simplified)
 
 
+def _compile_INTERFACE(compiler, code, node):
+    iface = simplify.simplify_interface(compiler, code, node)
+    _compile(compiler, code, iface)
+
+
+def _compile_GENERIC(compiler, code, node):
+    generic = simplify.simplify_generic(compiler, code, node)
+    _compile(compiler, code, generic)
+
+
 def _compile_TRAIT(compiler, code, node):
-    trait, methods = simplify.simplify_trait(compiler, code, node)
+    trait = simplify.simplify_trait(compiler, code, node)
     _compile(compiler, code, trait)
-    _compile(compiler, code, methods)
 
 
 def _compile_EXTEND(compiler, code, node):
     simplified = simplify.simplify_extend(compiler, code, node)
-    _compile(compiler, code, simplified)
-
-
-def _compile_IMPLEMENT(compiler, code, node):
-    simplified = simplify.simplify_implement(compiler, code, node)
     _compile(compiler, code, simplified)
 
 
@@ -1160,10 +1164,12 @@ def _compile_node(compiler, code, node):
         _compile_MODULE(compiler, code, node)
     elif NT_TRAIT == ntype:
         _compile_TRAIT(compiler, code, node)
-    elif NT_IMPLEMENT == ntype:
-        _compile_IMPLEMENT(compiler, code, node)
     elif NT_EXTEND == ntype:
         _compile_EXTEND(compiler, code, node)
+    elif NT_INTERFACE == ntype:
+        _compile_INTERFACE(compiler, code, node)
+    elif NT_GENERIC == ntype:
+        _compile_GENERIC(compiler, code, node)
     elif NT_THROW == ntype:
         _compile_THROW(compiler, code, node)
     elif NT_CALL == ntype:

@@ -434,14 +434,16 @@ def isgeneric(w):
 
 ########################################################
 
-def newtrait(name, constraints):
-    from obin.types.trait import W_Trait
+def newtrait(name, constraints, methods):
+    from obin.types.trait import trait
     from obin.runtime import error
     error.affirm_type(name, issymbol)
     error.affirm_type(constraints, islist)
-    error.affirm_iterable(constraints, istrait)
+    error.affirm_type(methods, islist)
+    error.affirm_iterable(constraints, isinterface)
+    error.affirm_iterable(methods, istuple)
 
-    return W_Trait(name, constraints)
+    return trait(name, constraints, methods)
 
 
 def istrait(w):

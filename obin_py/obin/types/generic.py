@@ -69,7 +69,7 @@ def generic_with_hotpath(name, signature, hotpath):
     if arity == 0:
         error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR, space.newstring(u"Generic arity == 0"))
     if arity == 1:
-        index = 1
+        index = 0
     else:
         index = -1
         for i, sym in enumerate(signature):
@@ -79,11 +79,11 @@ def generic_with_hotpath(name, signature, hotpath):
                     return error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR,
                                          space.newstring(u"Generic support only single dispatch signatures"))
 
-                index = i + 1
+                index = i
 
         if index == -1:
-            return error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR,
-                                 space.newstring(u"Generic type variable not determined"))
+            return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
+                                 space.newstring(u"Generic type variable not determined"), name, signature)
 
     h = HotPath(hotpath, arity) if hotpath is not None else None
     return W_Generic(name, arity, index, signature, h)

@@ -1,10 +1,7 @@
 from obin.types.root import W_Hashable
 from obin.types import api, space, plist
 from obin.misc import platform
-
-
-def find_by_name(name, method):
-    return api.equal_b(method.name, name)
+from obin.runtime import error
 
 
 class W_Trait(W_Hashable):
@@ -13,18 +10,22 @@ class W_Trait(W_Hashable):
     def __init__(self, name, constraints):
         W_Hashable.__init__(self)
         self.name = name
-        self.methods = plist.empty()
         self.constraints = constraints
 
-    def _at_(self, key):
-        return plist.find_with(self.methods, key, find_by_name)
+        self.methods = space.newmap()
 
-    def add_method(self, method):
-        assert space.isgeneric(method)
-        self.methods = plist.cons(method, self.methods)
+    def _at_(self, generic):
+        assert space.isgeneric(generic)
+        return api.at(self.methods, generic)
 
-    def has_method(self, method):
-        return plist.contains(self.methods, method)
+    def add_method(self, generic, method):
+        assert space.isgeneric(generic)
+        assert space.isfunction(generic)
+
+        api.put(self.methods, generic, method)
+
+    def has_method(self, generic):
+        return api.contains(self.methods, generic)
 
     def _type_(self, process):
         return process.std.types.Trait
@@ -41,3 +42,16 @@ class W_Trait(W_Hashable):
 
     def _equal_(self, other):
         return other is self
+
+
+def trait(name, constraints, methods):
+    _t = W_Trait(name, constraints)
+
+    error.affirm_type(methods, space.islist)
+    for data in methods:
+        error.affirm_type(data, space.istuple)
+        generic = data[0]
+        impl = data[1]
+        _t.add_method(generic, impl)
+
+    return _t

@@ -15,7 +15,7 @@ class Derived:
         self.TEq = self.find_trait(process, derive_module, u"TEq")
         self.TStr = self.find_trait(process, derive_module, u"TStr")
         self.TRepr = self.find_trait(process, derive_module, u"TRepr")
-        self.TCollection = self.find_trait(process, derive_module, u"TCollectionq")
+        self.TCollection = self.find_trait(process, derive_module, u"TCollection")
         self.TSized = self.find_trait(process, derive_module, u"TSized")
         self.TIndexed = self.find_trait(process, derive_module, u"TIndexed")
         self.TDict = self.find_trait(process, derive_module, u"TDict")
@@ -69,7 +69,8 @@ class Derived:
         for sym in symbols:
             obj = api.at(module, sym)
             if space.isextendable(obj):
-                datatype.derive_default(process, obj)
+                derived = self.get_derived(obj)
+                datatype.derive(obj, derived)
 
     def get_derived(self, _type):
         if space.isdatatype(_type):
@@ -113,7 +114,7 @@ class Types:
 class Interfaces:
     def __init__(self, process):
         prelude = process.modules.prelude
-        self.Seq = self.find_interface(process, prelude, space.newstring(u"Seq"))
+        self.Seq = self.find_interface(process, prelude, u"Seq")
 
     def _find_in(self, process, prelude, name):
         sym = space.newsymbol(process, name)

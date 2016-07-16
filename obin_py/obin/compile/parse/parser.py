@@ -535,7 +535,7 @@ def newtokenstream(source):
     return IndentationTokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = True
+PARSE_DEBUG = False
 
 
 def parse(process, env, src):

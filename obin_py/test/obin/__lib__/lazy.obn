@@ -1,4 +1,3 @@
-from datatype import TypeDerived
 from obin:lang:_lazy import (is_forced)
 import derive
 import io

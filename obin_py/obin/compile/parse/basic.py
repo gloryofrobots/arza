@@ -30,7 +30,6 @@ TERM_FUN_PATTERN = [TT_WHEN, TT_ARROW]
 TERM_FUN_SIGNATURE = [TT_ARROW, TT_CASE]
 
 TERM_CONDITION_BODY = [TT_CASE] + TERM_BLOCK
-TERM_BEFORE_FOR = [TT_FOR]
 
 TERM_BEFORE_WITH = [TT_WITH]
 
@@ -45,8 +44,8 @@ TERM_IMPL_HEADER = [TT_DEF] + TERM_BLOCK
 
 TERM_TRAIT_DEF = [TT_DEF, TT_CASE] + TERM_BLOCK
 
-TERM_EXTEND_DEF = [TT_CASE, TT_DEF, TT_TRAIT] + TERM_BLOCK
-TERM_EXTEND = [TT_DEF, TT_TRAIT] + TERM_BLOCK
+TERM_EXTEND_DEF = [TT_CASE, TT_DEF, TT_USE] + TERM_BLOCK
+TERM_EXTEND = [TT_DEF, TT_USE] + TERM_BLOCK
 
 TERM_FROM_IMPORTED = [TT_IMPORT, TT_HIDE]
 
@@ -308,6 +307,7 @@ def node_std(parser, node):
     if not handler.std:
         parse_error(parser, u"Unknown token std", node)
 
+    # print tokens.token_type_to_s(nodes.node_token_type(node))
     return handler.std(parser, handler, node)
 
 

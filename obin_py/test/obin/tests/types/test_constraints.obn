@@ -1,8 +1,8 @@
 import affirm
 
 generic
-    def t1 self
-    def t2 self
+    t1 self
+    t2 self
 
 interface T1 (t1)
 interface T2 (t2)
