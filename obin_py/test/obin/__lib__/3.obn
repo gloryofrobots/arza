@@ -1,0 +1,51 @@
+while: aCondition do: aBlock [
+
+]
+
+for: val to: limit do: block [
+
+]
+
+for: val to: limit by:step do: block [
+
+]
+
+X = {
+  _name = 1
+  _surname = 2
+
+  name [
+       _name
+  ]
+
+  newName: aName surname: aSurname [
+       return instance: self
+  ]
+
+} with: {
+  surname [
+     _surname
+  ]
+}
+extend: X with: {
+        fullname [
+                 _name + " " + _surname
+        ]
+}
+
+
+object X [
+       name = 0
+       surname = 1
+]
+
+eval [
+     x = 1
+     while: [1 + 4 - x > 0] do: [
+            x += 1
+     ]
+
+     for:1 to:10 do: [ (i)
+           print: i
+     ]
+]
