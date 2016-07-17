@@ -7,22 +7,22 @@ import list
 
 // import tests:test_operators
 
-import tests:types:test_types
-import tests:test_partial
-import tests:test_co
-import tests:test_destruct
-import tests:test_exception
-import tests:test_modify
-import tests:test_operator_override
-import tests:test_module
-import tests:test_match
-import tests:test_base
-import tests:test_bool
-import tests:test_static_refs
-import tests:test_fun
-import tests:test_var
-import tests:datastructs:test_datastructs
-import tests:test_lazy
+// import tests:types:test_types
+// import tests:test_partial
+// import tests:test_co
+// import tests:test_destruct
+// import tests:test_exception
+// import tests:test_modify
+// import tests:test_operator_override
+// import tests:test_module
+// import tests:test_match
+// import tests:test_base
+// import tests:test_bool
+// import tests:test_static_refs
+// import tests:test_fun
+// import tests:test_var
+// import tests:datastructs:test_datastructs
+// import tests:test_lazy
 
 
 fun log ...msgs ->
@@ -32,41 +32,70 @@ fun log ...msgs ->
 fun test() ->
     log "RUN TESTS"
 
-    log "TEST TYPES"
-    test_types:test()
-    log "TEST PARTIAL"
-    test_partial:test()
-    log "TEST BOOL"
-    test_bool:test()
-    log "TEST MATCH"
-    test_match:test()
-    log "TEST BASE"
-    test_base:test()
-    log "TEST DESTRUCT"
-    test_destruct:test()
-    log "TEST STATIC REFS"
-    test_static_refs:test()
-    log "TEST CO"
-    test_co:test()
-    log "TEST EXCEPTION"
-    test_exception:test()
-    log "TEST MODIFY"
-    test_modify:test()
-    log "TEST OP OVERRIDE"
-    test_operator_override:test()
-    log "TEST MODULE"
-    test_module:test()
-    log "TEST FUN"
-    test_fun:test()
-    log "TEST VAR"
-    test_var:test()
-    log "TEST DATASTRUCTS"
-    test_datastructs:test()
-    log "TEST LAZY"
-    test_lazy:test()
+    // log "TEST TYPES"
+    // test_types:test()
+    // log "TEST PARTIAL"
+    // test_partial:test()
+    // log "TEST BOOL"
+    // test_bool:test()
+    // log "TEST MATCH"
+    // test_match:test()
+    // log "TEST BASE"
+    // test_base:test()
+    // log "TEST DESTRUCT"
+    // test_destruct:test()
+    // log "TEST STATIC REFS"
+    // test_static_refs:test()
+    // log "TEST CO"
+    // test_co:test()
+    // log "TEST EXCEPTION"
+    // test_exception:test()
+    // log "TEST MODIFY"
+    // test_modify:test()
+    // log "TEST OP OVERRIDE"
+    // test_operator_override:test()
+    // log "TEST MODULE"
+    // test_module:test()
+    // log "TEST FUN"
+    // test_fun:test()
+    // log "TEST VAR"
+    // test_var:test()
+    // log "TEST DATASTRUCTS"
+    // test_datastructs:test()
+    // log "TEST LAZY"
+    // test_lazy:test()
 
     // log "TEST OPERATORS"
     // test_operators:test()
 
+fun split_seq_test() ->
+    ints = list:range 0 20
+    input = seq:map (lam x -> (x, list:range 0 x) end) ints
+
+    (evens,ods) = (seq:partition lam x
+                                    | (x, data) ->
+                                         even x
+                                 end
+                                 input)
+
+    fun _transform s ->
+        (seq:foldl lam item acc
+                            | (x, []) acc -> (x, 0) :: acc
+                            | (x, data) acc ->
+                                (x, seq:reduce &`+` data) :: acc
+                   end
+                   []
+                   s)
+
+    ods_r = _transform ods
+    evens_r = _transform evens
+
+    result_unsorted = ods_r ++ evens_r
+    (affirm:is_equal result_unsorted
+                     [(19, 171), (17, 136), (15, 105), (13, 78), (11, 55), (9, 36), (7, 21), (5, 10), (3, 3), (1, 0), (18, 153), (16, 120), (14, 91), (12, 66), (10, 45), (8, 28), (6, 15), (4, 6), (2, 1), (0, 0)])
+
+
+
 fun main () ->
-    test()
+    split_seq_test ()
+    // test()

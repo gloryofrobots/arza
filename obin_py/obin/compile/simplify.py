@@ -82,14 +82,12 @@ def simplify_extend(compiler, code, node):
     for method_data in methods:
         generic_name = method_data[0]
         impl = method_data[1]
-
         methods_list.append(
             nodes.create_tuple_node(generic_name, [
                 generic_name,
                 nodes.create_fun_node(generic_name, nodes.empty_node(), impl)
             ])
         )
-
     mixins_2_arg = nodes.create_list_node(node, mixins_list)
     methods_3_arg = nodes.create_list_node(node, methods_list)
     return nodes.create_call_node_s(node, lang_names.EXTEND, [typename_1_arg, mixins_2_arg, methods_3_arg])

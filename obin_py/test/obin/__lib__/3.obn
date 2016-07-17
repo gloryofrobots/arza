@@ -49,3 +49,137 @@ eval [
            print: i
      ]
 ]
+
+simplifyExtend:node [
+    typename_1_arg = node first.
+
+    mixins = node second.
+    methods = node third.
+    print: "SIMPLIFY".
+    print: typename_1_arg.
+    mixins_list = Vector empty.
+    methods_list = Vector empty.
+
+    mixins each: [mixin_data |
+           source = mixin_data at: 0.
+           names = mixin_data at: 1.
+           (names is_empty) ifTrue: [
+                mixins_list append: source
+           ] ifFalse: [
+                names each: [name|
+                      methods_list append:
+                          nodes create_tuple_node: name
+                                els: Vector with: name
+                                            with: nodes create_lookup_node: source
+                                                        left:source
+                                                        right:name
+                ]
+           ].
+    ].
+    methods each: [method_data|
+            generic_name = method_data at:0.
+            impl = method_data at: 0.
+            io print: "METHOD"; print: generic_name; cr.
+            methods_list append:
+                         nodes create_tuple_node: generic_name
+                               elements: Vector with: generic_name
+                                                with: nodes create_fun_node: generic_name
+                                                            name: nodes empty_node
+                                                            variants: impl.
+    ].
+    mixins_2_arg = nodes create_list_node: node list: mixins_list.
+    methods_3_arg = nodes create_list_node: node list: methods_list.
+
+    ^ nodes create_call_node_s: node
+            name: lang_names.EXTEND
+            args: (typename_1_arg, mixins_2_arg, methods_3_arg)
+]
+
+
+
+simplifyExtend:node [
+    typename_1_arg = node first.
+
+    mixins = node second.
+    methods = node third.
+    print: "SIMPLIFY".
+    print: typename_1_arg.
+    mixins_list = Vector empty.
+    methods_list = Vector empty.
+
+    foreach: mixins do: [mixin_data |
+           source = mixin_data at: 0.
+           names = mixin_data at: 1.
+           if: [names is_empty] do: [
+                mixins_list append: source
+           ] else: [
+                foreach: names do: [name|
+                      methods_list append:
+                          nodes create_tuple_node: name
+                                els: @(name, nodes create_lookup_node: source
+                                                   left:source
+                                                   right:name)
+                ]
+           ].
+    ].
+    methods each: [method_data|
+            generic_name = method_data at:0.
+            impl = method_data at: 0.
+            io print: "METHOD"; print: generic_name; cr.
+            methods_list append:
+                         nodes create_tuple_node: generic_name
+                               elements: Vector with: generic_name
+                                                with: nodes create_fun_node: generic_name
+                                                            name: nodes empty_node
+                                                            variants: impl.
+    ].
+    mixins_2_arg = nodes create_list_node: node list: mixins_list.
+    methods_3_arg = nodes create_list_node: node list: methods_list.
+
+    ^ nodes create_call_node_s: node
+            name: lang_names.EXTEND
+            args: (typename_1_arg, mixins_2_arg, methods_3_arg)
+]
+
+
+
+
+
+
+
+
+
+
+def _get_extension_methods(_type, _mixins, _methods):
+    # BETTER WAY IS TO MAKE DATATYPE IMMUTABLE
+    # AND CHECK CONSTRAINTS AFTER SETTING ALL METHO
+    total = plist.empty()
+    constraints = plist.empty()
+    error.affirm_type(_methods, space.islist)
+    for trait in _mixins:
+        error.affirm_type(trait, space.istrait)
+        constraints = plist.concat(constraints, trait.constraints)
+        trait_methods = trait.to_list()
+        total = plist.concat(trait_methods, total)
+
+    total = plist.concat(_methods, total)
+
+    for iface in constraints:
+        for generic in iface.generics:
+
+            if not plist.contains_with(total, generic,
+                                       _find_constraint_generic):
+                return error.throw_4(error.Errors.CONSTRAINT_ERROR,
+                                    _type, iface, generic,
+                                    space.newstring(
+                                        u"Dissatisfied trait constraint"))
+
+    result = plist.empty()
+    for pair in total:
+        generic = pair[0]
+        if plist.contains_with(result, generic, _find_constraint_generic):
+            continue
+
+        result = plist.cons(pair, result)
+
+    return plist.reverse(result)

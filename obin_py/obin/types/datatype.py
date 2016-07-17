@@ -147,6 +147,14 @@ class W_Extendable(W_Hashable):
             method = api.at_index(impl, 1)
             self.add_method(generic, method)
 
+    def add_derived_methods(self, implementations):
+        for impl in implementations:
+            generic = api.at_index(impl, 0)
+            method = api.at_index(impl, 1)
+
+            self.register_derived(generic)
+            self.add_method(generic, method)
+
     def is_generic_implemented(self, generic):
         return api.contains_b(self.methods, generic)
 
@@ -346,30 +354,39 @@ def _find_constraint_generic(generic, pair):
     return api.equal_b(pair[0], generic)
 
 
-def _get_extension_methods(_type, mixins, methods):
+def _get_extension_methods(_type, _mixins, _methods):
     # BETTER WAY IS TO MAKE DATATYPE IMMUTABLE
     # AND CHECK CONSTRAINTS AFTER SETTING ALL METHO
     total = plist.empty()
     constraints = plist.empty()
-    error.affirm_type(methods, space.islist)
-    for trait in mixins:
+    error.affirm_type(_methods, space.islist)
+    for trait in _mixins:
         error.affirm_type(trait, space.istrait)
         constraints = plist.concat(constraints, trait.constraints)
-        methods = trait.to_list()
-        total = plist.concat(total, methods)
+        trait_methods = trait.to_list()
+        total = plist.concat(trait_methods, total)
 
-    total = plist.concat(total, methods)
+    total = plist.concat(_methods, total)
 
     for iface in constraints:
         for generic in iface.generics:
+
             if not plist.contains_with(total, generic,
                                        _find_constraint_generic):
-                return error.throw_3(error.Errors.CONSTRAINT_ERROR,
+                return error.throw_4(error.Errors.CONSTRAINT_ERROR,
                                     _type, iface, generic,
                                     space.newstring(
                                         u"Dissatisfied trait constraint"))
 
-    return total
+    result = plist.empty()
+    for pair in total:
+        generic = pair[0]
+        if plist.contains_with(result, generic, _find_constraint_generic):
+            continue
+
+        result = plist.cons(pair, result)
+
+    return plist.reverse(result)
 
 
 def derive_default(process, _type):

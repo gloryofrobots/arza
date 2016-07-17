@@ -135,11 +135,28 @@ fun span predicate coll
         ------------------------------
 --------------------------------------------------
 
+
+fun partition predicate l ->
+    fun _partition pred l a b
+        | pred x::xs a b ->
+            if pred x then
+               _partition pred xs (x::a) b
+            else
+               _partition pred xs a (x::b)
+
+        | pred [] a b -> (reverse a, reverse b)
+
+    ----------------------------
+    _partition predicate l [] []
+-------------------------
+
+
 fun delete item coll
     | item [item, ...xs] -> xs
     | item [x, ...xs] -> x :: (delete item xs)
     | _ [] -> empty coll
 --------------------------------------------------
+
 
 fun insert index v coll
     | 0 v coll -> v::coll
