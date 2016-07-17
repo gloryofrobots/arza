@@ -71,6 +71,7 @@ TOKENS = [
   ("TT_WILDCARD", "_"),
   ("TT_GOTO", "goto"),
   ("TT_ARROW", "->"),
+  ("TT_FAT_ARROW", "=>"),
   ("TT_BACKARROW", "<-"),
   ("TT_AT_SIGN", "@"),
 

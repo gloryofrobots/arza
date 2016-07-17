@@ -462,6 +462,8 @@ def expression_parser_init(proc_data, parser):
     prefix(parser, TT_LET, prefix_let)
 
     assignment(parser, TT_ASSIGN, 10)
+
+    infix(parser, TT_FAT_ARROW, 10, infix_fat_arrow)
     infix(parser, TT_OF, 15, led_infix)
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)

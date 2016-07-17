@@ -67,7 +67,7 @@ fun test () ->
             (obin:lang:defextend
                 T3
                 [TListable]
-                [(to_seq, lam self -> [self.v1] end)]) 
+                [(to_seq, lam self -> [self.v1] end)])
         end ())
 
     (affirm:is_not_throw
@@ -75,5 +75,5 @@ fun test () ->
             (obin:lang:defextend
                 T3
                 [TListable]
-                [(to_list, lam self -> [self.v1] end)]) 
+                [(to_list, lam self -> [self.v1] end)])
         end ())

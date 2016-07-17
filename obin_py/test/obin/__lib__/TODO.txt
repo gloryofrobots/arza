@@ -1,17 +1,17 @@
 deep calls in datastructs data -> (1, record) == (1, record) NotIImplementedError in record._equal_(record)
- we need to put process in every api call it is very very big annoying job/ it is better to rewrite all interpreter in
- with this in mind
+we need to put process in every api call it is very very big annoying job/ it is better to rewrite all interpreter in
+with this in mind
 --------------------------------------------------
+
+//TODO CONTEXSTS LIKE ELA
+//TODO Symbols can also be created using symbol(),
+//TODO which takes any number of arguments and creates a new symbol by concatenating their string representations together:
 
 MAKE {} SYNTAX IN FIELDS AND CONSTRUCTING WITH KEYWORD ARGS
 --------------------------------
 
 PATTERN MATCHING NOW IS SHIT REWRITE IT
 -------------------------------------------
-
-CONTRACTS
-https://dlang.org/spec/contracts.html
------------------------------
 
 PROPER OR CASES
  match x with
@@ -92,8 +92,3 @@ trait Any for self
     def id self -> obin:unique_id self
     def type_id self -> obin:type_id self
 ---
-
-fun is_identical self other -> (id self) == (id other)
-
-
-

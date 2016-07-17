@@ -157,6 +157,7 @@ RULES = [
     # (typename, TT_TYPENAME),
     (token(name_const), TT_NAME),
 
+    (token('=>'), TT_FAT_ARROW),
     (token('\-\>'), TT_ARROW),
     # (token('\<\-'), TT_BACKARROW),
     (token('\;'), TT_END_EXPR),

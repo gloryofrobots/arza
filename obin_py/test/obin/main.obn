@@ -72,3 +72,11 @@ fun test() ->
 
 fun main () ->
     test()
+
+    (seq:reduce
+        (first [(x y => x + y), x y => x - y, (x y => x * y)])
+        (list:range 1 6))
+
+    (seq:reduce
+        (last [(x y => x + y), x y => x - y, (x y => x * y)])
+        (list:range 1 6))

@@ -115,6 +115,17 @@ def infix_backtick_name(parser, op, node, left):
 #     right = rexpression(parser, op)
 #     return nodes.create_cons_node(node, left, right)
 
+def infix_fat_arrow(parser, op, node, left):
+    if nodes.node_type(left) == NT_JUXTAPOSITION:
+        signature = flatten_juxtaposition(parser, left)
+    else:
+        signature = nodes.list_node([left])
+
+    args = nodes.create_tuple_node_from_list(left, signature)
+    exp = expression(parser, 0)
+
+    return nodes.create_lambda_node(node, args, exp)
+
 
 def infix_triple_colon(parser, op, node, left):
     right = rexpression(parser, op)
@@ -992,6 +1003,7 @@ def stmt_extend(parser, op, node):
 
     advance_end(parser)
     return nodes.node_3(NT_EXTEND, __ntok(node), type_name, list_node(mixins), list_node(defs))
+
 
 # OPERATORS
 

@@ -168,6 +168,9 @@ class W_Tuple(W_Hashable):
     def _to_repr_(self):
         return self._to_string_()
 
+    def __repr__(self):
+        return self._to_string_()
+
     def to_l(self):
         return self.elements
 
