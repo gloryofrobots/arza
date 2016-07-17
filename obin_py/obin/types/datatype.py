@@ -26,7 +26,7 @@ class W_Record(W_Hashable):
             v = api.at_index(self.values, api.to_i(i))
             res.append("%s = %s" % (api.to_s(f), api.to_s(v)))
 
-        return "%s {%s}" % (api.to_s(self.type), ", ".join(res))
+        return "<%s (%s)>" % (api.to_s(self.type), ", ".join(res))
 
     def _to_repr_(self):
         res = []
@@ -36,7 +36,7 @@ class W_Record(W_Hashable):
             v = api.at_index(self.values, api.to_i(i))
             res.append("%s = %s" % (api.to_r(f), api.to_r(v)))
 
-        return "%s {%s}" % (api.to_r(self.type), ", ".join(res))
+        return "<%s (%s)>" % (api.to_r(self.type), ", ".join(res))
 
     def _type_(self, process):
         return self.type

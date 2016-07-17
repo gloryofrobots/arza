@@ -1,0 +1,79 @@
+import seq
+import affirm
+import io
+
+type T1 (v1, v2)
+
+type T2 (v1, v2, v3)
+
+generic to_list x
+
+interface Listable (to_list)
+
+trait TListable of Listable
+    //Seq iface
+    def first self -> first (to_list self)
+    def rest self -> rest (to_list self)
+
+    //not enough for Sliceable
+    def drop count self -> seq:drop count (to_list self)
+    def take count self -> seq:take count (to_list self)
+
+type T3 v1
+
+extend T1
+    use TListable
+    def to_list self -> [self.v1, self.v2]
+
+
+extend T2
+    use TListable (drop, take)
+    def to_list self -> [self.v1, self.v2]
+    def slice _from _to self -> slice _from _to (to_list self)
+
+    def first self -> (at first TListable) self
+    def rest self -> (at rest TListable) self
+
+
+fun test () ->
+    t1 = T1 11 23
+
+    affirm:is_true (kindof t1 Seq)
+    affirm:is_true (kindof t1 Listable)
+    affirm:is_true (kindof t1 T1)
+    affirm:is_false (kindof t1 Sliceable)
+
+    // Do it one more time to check interface kindof cache
+    affirm:is_true (kindof t1 Seq)
+    affirm:is_true (kindof t1 Listable)
+    affirm:is_true (kindof t1 T1)
+    affirm:is_false (kindof t1 Sliceable)
+
+    t2 = T2 (fst (take 1 t1)) 23 45
+    affirm:is_equal (take 2 t1) (take 2 t2)
+    affirm:is_equal (first  t1) (first t2)
+
+    affirm:is_equal (first (rest t1)) (first (rest t2))
+
+    affirm:is_true (kindof t2 Seq)
+    affirm:is_true (kindof t2 Listable)
+    affirm:is_true (kindof t2 T2)
+    affirm:is_true (kindof t2 Sliceable)
+
+    // test constraint
+
+    (affirm:is_throw
+        lam () ->
+            (obin:lang:defextend
+                T3
+                [TListable]
+                [(to_seq, lam self -> [self.v1] end)]) 
+        end ())
+
+    (affirm:is_not_throw
+        lam () ->
+            (obin:lang:defextend
+                T3
+                [TListable]
+                [(to_list, lam self -> [self.v1] end)]) 
+        end ())

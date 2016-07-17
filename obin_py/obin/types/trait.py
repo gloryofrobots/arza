@@ -15,7 +15,7 @@ class W_Trait(W_Hashable):
         self.methods = space.newmap()
 
     def _at_(self, generic):
-        assert space.isgeneric(generic)
+        assert space.isgeneric(generic), generic
         return api.at(self.methods, generic)
 
     def to_list(self):

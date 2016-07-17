@@ -142,12 +142,40 @@ simplifyExtend:node [
 ]
 
 
+getExtensionMethods: _type mixins: _mixins methods: _methods (
+    total = List empty.
+    constraints = List empty.
+    error affirm_type: _methods with: space isList.
+    _mixins each: [trait|
+        error affirm_type: trait with: space isTrait.
+        constraints concat: trait constraints.
+        trait_methods = trait methods.
+        total = trait_methods + total.
+    ]
 
+    total = _methods + total.
+    constraints each: [iface|
+        iface generics each:[generic|
+              (total containsWith:[pair| pair at:0 == generic])
+                     ifFalse: [
+                        raise:
+                            (error throw: error Errors CONSTRAINT_ERROR
+                                   with: _type
+                                   with: _iface
+                                   with: generic
+                                   with: space String new: "")
 
-
-
-
-
+                     ]
+        ]
+    ].
+    result = List empty.
+    total each: [pair|
+          generic = pait at: 0.
+          (result containsWith:[p| p at:0 == generic])
+                  ifTrue:[ result push: pair].
+    ]
+    ^ result reverse
+)
 
 
 def _get_extension_methods(_type, _mixins, _methods):
@@ -183,3 +211,86 @@ def _get_extension_methods(_type, _mixins, _methods):
         result = plist.cons(pair, result)
 
     return plist.reverse(result)
+
+fun split_seq_test () ->
+    ints = list:range(0, 20)
+    input = seq:map(fun (x) ->
+                        (x, list:range(0, x))
+                    end,
+                    ints)
+
+    (evens,ods) = seq:partition(fun (x)
+                                    | (x, data) -> even x
+                                end,
+                                input)
+
+    fun _transform (s) ->
+        seq:foldl(fun (item acc)
+                            | ((x, []), acc) -> (x, 0) :: acc
+                            | ((x, data), acc) ->
+                              (x, seq:reduce &`+` data) :: acc
+                  end,
+                  [],
+                  s)
+
+    ods_r = _transform(ods)
+    evens_r = _transform(evens)
+
+    result_unsorted = ods_r ++ evens_r
+    affirm:is_equal(
+                   result_unsorted,
+                   [(19, 171), (17, 136), (15, 105), (13, 78), (11, 55), (9, 36), (7, 21), (5, 10), (3, 3), (1, 0),
+                   (18, 153), (16, 120), (14, 91), (12, 66), (10, 45), (8, 28), (6, 15), (4, 6), (2, 1), (0, 0)]
+    )
+
+fun split_seq_test() ->
+    ints = list:range 0 20
+    input = seq:map (lam x -> (x, list:range 0 x) end) ints
+
+    (evens,ods) = (seq:partition lam x
+                                    | (x, data) ->
+                                         even x
+                                 end
+                                 input)
+
+    fun _transform s ->
+        (seq:foldl lam item acc
+                            | (x, []) acc -> (x, 0) :: acc
+                            | (x, data) acc ->
+                                (x, seq:reduce &`+` data) :: acc
+                   end
+                   []
+                   s)
+
+    ods_r = _transform ods
+    evens_r = _transform evens
+
+    result_unsorted = ods_r ++ evens_r
+    (affirm:is_equal result_unsorted
+                     [(19, 171), (17, 136), (15, 105), (13, 78), (11, 55), (9, 36), (7, 21), (5, 10), (3, 3), (1, 0), (18, 153), (16, 120), (14, 91), (12, 66), (10, 45), (8, 28), (6, 15), (4, 6), (2, 1), (0, 0)])
+
+
+
+fun split_seq_test () ->
+    ints = list:range(0, 20)
+    input = seq:map((x) => (x, list:range(0, x)), ints)
+
+    (evens,ods) = seq:partition(fun (x, data) -> even x, input)
+
+    fun _transform (s) ->
+        seq:foldl(fun ((x, []), acc) -> (x, 0) :: acc
+                    | ((x, data), acc) ->
+                              (x, seq:reduce &`+` data) :: acc
+                  end
+                  [],
+                  s)
+
+    ods_r = _transform(ods)
+    evens_r = _transform(evens)
+
+    result_unsorted = ods_r ++ evens_r
+    affirm:is_equal(
+                   result_unsorted,
+                   [(19, 171), (17, 136), (15, 105), (13, 78), (11, 55), (9, 36), (7, 21), (5, 10), (3, 3), (1, 0),
+                   (18, 153), (16, 120), (14, 91), (12, 66), (10, 45), (8, 28), (6, 15), (4, 6), (2, 1), (0, 0)]
+    )
