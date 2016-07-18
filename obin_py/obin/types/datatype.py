@@ -50,6 +50,10 @@ class W_Record(W_Hashable):
             error.throw_1(error.Errors.KEY_ERROR, name)
         return api.at(self.values, idx)
 
+    def _contains_(self, key):
+        value = self._at_(key)
+        return not space.isvoid(value)
+
     def _at_index_(self, idx):
         # accessing protected method instead of api.at_index for avoiding multiple 0 < idx < length check
         return self.values._at_index_(idx)
@@ -202,6 +206,9 @@ class W_DataType(W_Extendable):
         impl = space.newvoid()
         if self.union is not None:
             impl = self.union.get_method(method)
+
+        if space.isvoid(impl) and self.is_singleton:
+            impl = self.get_method(method)
 
         if space.isvoid(impl):
             _type = api.get_type(process, self)

@@ -115,6 +115,8 @@ class Interfaces:
     def __init__(self, process):
         prelude = process.modules.prelude
         self.Seq = self.find_interface(process, prelude, u"Seq")
+        self.Dict = self.find_interface(process, prelude, u"Dict")
+        self.Indexed = self.find_interface(process, prelude, u"Indexed")
 
     def _find_in(self, process, prelude, name):
         sym = space.newsymbol(process, name)

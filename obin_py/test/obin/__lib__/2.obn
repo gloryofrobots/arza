@@ -89,3 +89,74 @@ snd = partial at 1
 thrd = partial at 2
 frth = partial at 3
 fun last coll -> at ((len coll) - 1) coll
+
+
+
+
+fun t1() ->
+    (affirm:is_equal (if x == 13 then 1 + 1
+                      elif x == 14 then
+                   2 + 2
+                      elif x == 15 then
+                           3 + 3
+                      else -> 4 + 4) 8)
+
+    (affirm:is_equal (if x == 13 then 1 + 1; 2 + 2
+                      elif x == 14 then
+                   2 + 2
+                       3 + 4
+                      elif x == 15 then
+                           3 + 5
+                      else => 4 + 4
+                           13 + 343 -
+                         345
+                         end) 8)
+    affirm:is_equal (
+        (fun _  x y z
+            | [hd::tl] (1,2,3) {x=2, y=3} -> 24
+            | [hd::tl] (1,2,3) {x=2, y=3} =>
+                       sqrt 24
+                       sin 23
+                       -2 + 4
+            | _ y z -> 23)
+         [[1,2]] (1,2,3) {x=2, y=3}) 24
+
+    affirm:is_equal (
+       fun _  x y z
+            | [hd::tl] (1,2,3) {x=2, y=3} -> 24
+            | [hd::tl] (1,2,3) {x=2, y=3} =>
+                       sqrt 24
+                       sin 23
+                       -2 + 4
+         end [[1,2]] (1,2,3) {x=2, y=3}) 24
+
+    fun sum_list_3 list
+        | [x,y,z] -> x + y + z
+
+    (affirm:is_equal
+        match (1, 2, 2) with
+            | (A, x, A)  -> (#first, A)
+            | (A, x, B)  -> (#second, A, B)
+        end (#second, 1, 2))
+
+    affirm:is_throw_expected(
+        fun _ arg1 arg2 ->
+            try
+                1/0
+            catch e ->
+                throw (arg1, arg2)
+            finally ->
+                throw e
+        end) (33, 22) (33, 22)
+
+
+    (affirm:is_equal try
+                        throw (1,2,"ERROR")
+                     catch
+                        | err @ (1, y, 3) -> #first
+                        | (1,2, "ERROR@") -> #second
+                        | err @ (1, 2, x) -> #third
+                     finally ->
+                        (#fourth, err, x)
+                     end
+                     (#fourth, (1, 2, "ERROR"), "ERROR"))

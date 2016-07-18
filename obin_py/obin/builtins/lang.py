@@ -31,7 +31,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.NOT, __not, 1)
     put_lang_func(process, module, lang_names.IS_INDEXED, is_indexed, 1)
     put_lang_func(process, module, lang_names.IS_SEQ, is_seq, 1)
-    put_lang_func(process, module, lang_names.IS_DICT, is_map, 1)
+    put_lang_func(process, module, lang_names.IS_DICT, is_dict, 1)
     put_lang_func(process, module, lang_names.IS, __is, 2)
     put_lang_func(process, module, lang_names.ISNOT, __isnot, 2)
     put_lang_func(process, module, lang_names.KINDOF, __kindof, 2)
@@ -243,9 +243,13 @@ def time(process, routine):
 @complete_native_routine
 def is_indexed(process, routine):
     v1 = routine.get_arg(0)
-    if not space.istuple(v1) and not space.isarguments(v1):
-        return space.newbool(False)
-    return space.newbool(True)
+    if space.istuple(v1) or space.isarguments(v1):
+        return space.newbool(True)
+
+    if api.kindof_b(process, v1, process.std.interfaces.Indexed):
+        return space.newbool(True)
+
+    return space.newbool(False)
 
 
 @complete_native_routine
@@ -261,11 +265,16 @@ def is_seq(process, routine):
 
 
 @complete_native_routine
-def is_map(process, routine):
+def is_dict(process, routine):
     v1 = routine.get_arg(0)
-    if not space.ispmap(v1):
-        return space.newbool(False)
-    return space.newbool(True)
+
+    if space.ispmap(v1):
+        return space.newbool(True)
+
+    if api.kindof_b(process, v1, process.std.interfaces.Dict):
+        return space.newbool(True)
+
+    return space.newbool(False)
 
 
 @complete_native_routine

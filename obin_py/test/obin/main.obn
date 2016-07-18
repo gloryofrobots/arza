@@ -68,16 +68,5 @@ fun test() ->
     // log "TEST OPERATORS"
     // test_operators:test()
 
-
-
 fun main () ->
     test()
-
-    // fun _transform s ->
-    //     (seq:foldl fun __ item acc
-    //                         | (x, []) acc -> (x, 0) :: acc
-    //                         | (x, data) acc ->
-    //                             (x, seq:reduce &`+` data) :: acc
-    //                end
-    //                []
-    //                s)

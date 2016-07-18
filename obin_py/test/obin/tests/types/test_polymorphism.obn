@@ -2,7 +2,7 @@ import affirm
 
 type L l
 
-extend L 
+extend L
     def len self -> len self.l
 
     def is_empty self -> is_empty self.l
@@ -11,8 +11,33 @@ extend L
 
     def rest self -> self
 
+----------------------------------------------------------
+
+type None
+
+type Some val
+
+generic eq `self other
+
+extend Some
+    def eq self other
+        | self (val) of Some ->
+               val == None
+
+        | self _ -> False
+
+extend None
+    def eq self other
+        | self {val} of Some ->
+               val == None
+        | self other of None -> True
 
 fun test () ->
+    s = Some None
+    affirm:is_true (None `eq` s)
+    affirm:is_false (s `eq` None)
+
+
     l1 = L [1,2,3,4,5]
     (affirm:is_equal
         match l1 with
