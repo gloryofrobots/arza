@@ -48,7 +48,7 @@ PATTERN_MATCH_ERRORS as ERRORS NOT TUPLES
 NESTED BLOCK COMMENTS
 --------------------------------------------------
 PAREN is MISSING but we got NOT ALL LAYOUT IS CLOSED  error
-    print (ts:into [] (ts:map lam x ->
+    print (ts:into [] (ts:map fun _ x ->
                                     if x > 4 ->
                                         ts:reduced x
                                     else ->

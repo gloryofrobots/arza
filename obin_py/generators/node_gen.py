@@ -29,6 +29,7 @@ NODES = [
   "NT_CASE",
 
   "NT_FUN",
+  "NT_LAMBDA",
 
   "NT_FENV",
 

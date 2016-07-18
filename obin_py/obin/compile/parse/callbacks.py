@@ -671,7 +671,7 @@ def _parse_function(parser, term_pattern, term_guard, term_case_body, term_singl
 
 def _parse_named_function(parser, node):
     init_node_layout(parser, node)
-    name = grab_name_or_operator(parser.name_parser)
+    name = parse_function_name(parser.name_parser)
     func = _parse_function(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
     advance_end(parser)
     return name, func
@@ -685,13 +685,6 @@ def prefix_fun(parser, op, node):
 def prefix_module_fun(parser, op, node):
     name, funcs = _parse_named_function(parser.expression_parser, node)
     return node_2(NT_FUN, __ntok(node), name, funcs)
-
-
-def prefix_lambda(parser, op, node):
-    init_node_layout(parser, node)
-    func = _parse_function(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
-    advance_end(parser)
-    return node_2(NT_FUN, __ntok(node), empty_node(), func)
 
 
 ###############################################################
@@ -916,6 +909,12 @@ def grab_name(parser):
     advance(parser)
     return name
 
+def parse_function_name(parser):
+    if parser.token_type == TT_WILDCARD:
+        advance(parser)
+        return nodes.empty_node()
+
+    return grab_name_or_operator(parser)
 
 def grab_name_or_operator(parser):
     check_token_types(parser, [TT_NAME, TT_OPERATOR, TT_DOUBLE_COLON])

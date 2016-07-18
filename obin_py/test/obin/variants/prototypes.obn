@@ -68,7 +68,7 @@ conn = db.open_db ()
 def fetch_db_bads conn ->
     c = conn.cursor()
     r = c.execute("SELECT word from bad_words")
-    seq:map lam record -> str record end r
+    seq:map (record => str record) r
 
 
 
@@ -87,7 +87,7 @@ fun process count ->
             test = fetch()
             [skip, bads] = 
                 seq:foldl.(
-                    lam pair acc
+                    fun _ pair acc
                         | (word, result) [skip, bads] ->
                             if result or word `elem` bads then
                                 acc

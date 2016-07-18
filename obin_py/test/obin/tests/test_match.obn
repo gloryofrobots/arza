@@ -43,7 +43,7 @@ fun test() ->
 
     affirm:is_equal LilyName2 "Lily"
     affirm:is_equal Result {age = 25, actress = "Lily", genre = "XXX"}
-    affirm:is_throw lam () -> LilyName end ()
+    affirm:is_throw (() => LilyName) ()
 
     ////////////////////////////////////////////////////////////////
 
@@ -55,7 +55,7 @@ fun test() ->
             | _ ->  #fourth
         end) (#third, (24, 25))
 
-    affirm:is_throw lam () -> Z end ()
+    affirm:is_throw (() => Z) ()
 
     ////////////////////////////////////////////////////////////////
 
@@ -68,7 +68,7 @@ fun test() ->
             | _ ->  123
         end  (2, (2, 3, 4), 8))
 
-    affirm:is_throw lam () -> [a1, b1, c1, x1, y1] end ()
+    affirm:is_throw (() => [a1, b1, c1, x1, y1])  ()
 
     ////////////////////////////////////////////////////////////////
 
@@ -149,7 +149,7 @@ fun test() ->
     fun greater_then_ten v -> v > 10 end
 
     //////////////////////////////////////////////////////
-    lam () ->
+    fun _ () ->
         A = False
         affirm:is_equal(
             match (1,2,3) with
@@ -165,7 +165,7 @@ fun test() ->
 
     //////////////////////////////////////////////////////
 
-    lam () ->
+    fun _ () ->
         (affirm:is_equal_batch(
             fun fxyz x y z
                 | x y z when z == 2 -> #first

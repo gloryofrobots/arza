@@ -72,7 +72,7 @@ fun into init_val xf coll ->
             | x of Appendable -> append
             | x of Seq -> cons
             | x of Dict ->
-                lam entry coll
+                fun _ entry coll
                     | (key, val) coll -> put key val coll
 
     transduce xf f init_val coll
@@ -87,11 +87,11 @@ fun into init_val xf coll ->
 fun to_fun xf builder
    | xf builder of Transformer ->
       rxf = xf(builder)
-      lam val acc -> step rxf val acc
+      fun _ val acc -> step rxf val acc
    | xf builder -> to_fun xf (wrap builder)
 
 fun first () ->
-    wrap lam val acc -> reduced val end
+    wrap (val acc => reduced val)
 
 type MapTransformer f xf
 

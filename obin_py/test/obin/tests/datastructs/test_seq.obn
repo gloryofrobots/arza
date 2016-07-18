@@ -27,7 +27,7 @@ fun test_zip() ->
 
     affirm:is_equal (seq:zipwith `+` (range 0 10) (range 10 100)) [10, 12, 14, 16, 18, 20, 22, 24, 26, 28]
 
-    (affirm:is_equal (seq:zipwith3 lam x y z -> x + y + z end
+    (affirm:is_equal (seq:zipwith3  (x y z => x + y + z)
                                         (range 0 10)  (range_by 0 (-10) (-1))
                                         (range_by 100 0 (-10)))
                     [100, 90, 80, 70, 60, 50, 40, 30, 20, 10])
@@ -51,7 +51,7 @@ fun test_base () ->
     affirm:is_false (seq:suffix_of [4,5,6] [1,2,3,4,6,5])
 
     affirm:is_equal (seq:drop 3 l1) [3,4,5,6,7,8,9]
-    affirm:is_equal (seq:map lam x -> x+1 end l1) [1,2,3,4,5,6,7,8,9,10]
+    affirm:is_equal (seq:map (x => x+1)  l1) [1,2,3,4,5,6,7,8,9,10]
     affirm:is_equal (seq:intersperse 0 l1) [0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0]
     affirm:is_equal (seq:scanl `+` 0 (list:range 1  11))  [0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55]
 
@@ -59,27 +59,34 @@ fun test_base () ->
     affirm:is_equal (seq:init l1) [0, 1, 2, 3, 4, 5, 6, 7, 8]
     affirm:is_equal (seq:take 3 l1) [0,1,2]
     affirm:is_equal (seq:split_at 3 l1)  ([0, 1, 2], [3, 4, 5, 6, 7, 8, 9])
-    affirm:is_equal (seq:take_while lam x -> x < 5 end l1) [0, 1, 2, 3, 4]
-    affirm:is_equal (seq:drop_while lam x -> x < 5 end l1) [5, 6, 7, 8, 9]
-    (affirm:is_equal (seq:span lam x -> x < 3 end [1,2,3,4,1,2,3,4])
+    affirm:is_equal (seq:take_while ( x => x < 5 ) l1) [0, 1, 2, 3, 4]
+    affirm:is_equal (seq:drop_while ( x => x < 5 ) l1) [5, 6, 7, 8, 9]
+    (affirm:is_equal (seq:span ( x => x < 3 ) [1,2,3,4,1,2,3,4])
                     ([1, 2], [3, 4, 1, 2, 3, 4]))
 
-    (affirm:is_equal (seq:span lam x -> x < 9 end [1,2,3])
+    (affirm:is_equal (seq:span ( x => x < 9 ) [1,2,3])
                     ([1, 2, 3], []))
 
-    (affirm:is_equal (seq:span lam x -> x < 0 end [1,2,3])
+    (affirm:is_equal (seq:span ( x => x < 0 ) [1,2,3])
                     ([], [1, 2, 3]))
 
     affirm:is_true (seq:conjunction [True, True, True, True])
     affirm:is_false (seq:conjunction [True, True, True, False])
-    affirm:is_true (seq:all lam x -> x < 7 end  [0,1,2,3,4,5,6])
-    affirm:is_false (seq:all lam x -> x < 3 end  [0,1,2,3,4,5,6])
-    affirm:is_true (seq:any lam x -> x < 7 end  [0,1,2,3,4,5,6])
-    affirm:is_true (seq:any lam x -> x < 3 end  [0,1,2,3,4,5,6])
-    affirm:is_false (seq:any lam x -> x < -1 end  [0,1,2,3,4,5,6])
+    affirm:is_true (seq:all ( x => x < 7 )  [0,1,2,3,4,5,6])
+    affirm:is_false (seq:all ( x => x < 3 )  [0,1,2,3,4,5,6])
+    affirm:is_true (seq:any ( x => x < 7 )  [0,1,2,3,4,5,6])
+    affirm:is_true (seq:any  (x => x < 3)   [0,1,2,3,4,5,6])
+    affirm:is_false (seq:any  (x => x < -1 )  [0,1,2,3,4,5,6])
 
     affirm:is_equal (seq:delete 8 l1) [0,1,2,3,4,5,6,7,9]
 
+    (affirm:is_equal
+        (seq:reduce
+            (last [(x y => x + y), x y => x - y, (x y => x * y)])
+            (list:range 1 6))  120)
+
+    (affirm:is_equal (seq:map (x => x * x) (range 0 10))
+                    [0, 1, 4, 9, 16, 25, 36, 49, 64, 81])
 
 
 fun test_equal() ->
@@ -104,16 +111,12 @@ fun test_sort() ->
 
 fun test_partial() ->
     ints = list:range 0 20
-    input = seq:map (lam x -> (x, list:range 0 x) end) ints
+    input = seq:map (( x => (x, list:range 0 x) )) ints
 
-    (evens,ods) = (seq:partition lam x
-                                    | (x, data) ->
-                                         even x
-                                 end
-                                 input)
+    (evens,ods) = seq:partition ((x,data) => even x) input
 
     fun _transform s ->
-        (seq:foldl lam item acc
+        (seq:foldl fun _folder item acc
                             | (x, []) acc -> (x, 0) :: acc
                             | (x, data) acc ->
                                 (x, seq:reduce &`+` data) :: acc

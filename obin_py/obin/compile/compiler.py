@@ -730,6 +730,20 @@ def is_simple_pattern(pattern, allow_unit):
     return False
 
 
+def _compile_LAMBDA(compiler, code, node):
+    funcs = node_first(node)
+    assert len(funcs) == 1
+
+    func = funcs[0]
+    params = func[0]
+    body = func[1]
+    if not is_simple_pattern(params, True):
+        _compile_case_function(compiler, code, node, nodes.empty_node(), funcs)
+    else:
+        _compile_func_args_and_body(compiler, code,
+                                    nodes.empty_node(), params, body)
+
+
 def _compile_FUN(compiler, code, node):
     namenode = node_first(node)
     funcname = _get_symbol_name_or_empty(compiler.process, namenode)
@@ -1140,6 +1154,8 @@ def _compile_node(compiler, code, node):
 
     elif NT_FUN == ntype:
         _compile_FUN(compiler, code, node)
+    elif NT_LAMBDA == ntype:
+        _compile_LAMBDA(compiler, code, node)
 
     elif NT_CONDITION == ntype:
         _compile_CONDITION(compiler, code, node)

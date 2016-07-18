@@ -57,12 +57,12 @@ fun t2 () ->
                 ])) +
         (sum 10
             (sum_list_3
-                [lam x -> x end 11,
-                 lam x
-                    | x -> x end (lam x -> x end 12),
-                 lam x ->
+                [(x => x)  11,
+                 fun _ x
+                    | x -> x end ((x => x)  12),
+                 fun _ x ->
                     x
-                 end (lam x -> x end (lam x -> x end 13))
+                 end ((x => x)  ((x => x)  13))
                 ]))
     affirm:is_equal V53 53
 
@@ -95,36 +95,36 @@ fun t3() ->
     affirm:is_equal (f5 ()) (42,43,44)
 
     fun f6 a b c ->
-        lam a b c -> 42 end a b c
+        (a b c => 42) a b c
 
     affirm:is_equal (f6 1 2 3) 42
 
 
 fun t4 () ->
-    l = lam x y z -> 42
+    l = x y z => 42
     affirm:is_equal (l 1 2 3) 42
 
-    l1 = lam x y z -> 42 end
+    l1 = (x y z => 42)
     affirm:is_equal (l1 1 2 3) 42
 
     l2 =
-        lam x y z | [hd::tl] (1,2,3) {x=2, y=3} -> 24
-                  | _ y z -> 23
+        fun _ x y z | [hd::tl] (1,2,3) {x=2, y=3} -> 24
+                    | _ y z -> 23
 
     affirm:is_equal (l2 [[1,2]] (1,2,3) {x=2, y=3}) 24
 
     affirm:is_equal (
-        lam x y z
+        fun _  x y z
             | [hd::tl] (1,2,3) {x=2, y=3} -> 24
             | _ y z -> 23
         end [[1,2]] (1,2,3) {x=2, y=3}) 24
 
 
-    affirm:is_equal (lam x -> x + 1 end 34) 35
+    affirm:is_equal ((x => x + 1) 34) 35
 
 
     (affirm:is_equal
-        ( lam x y z
+        ( fun _ x y z
             | 1 2 3 -> 11
             | 2 4 5 -> 22
           end
@@ -133,19 +133,19 @@ fun t4 () ->
 
                          3)  11)
     T =
-        (1,2, lam x | 1 -> 25
-                    | 2 -> 13 end, 25)
+        (1,2, fun _ x | 1 -> 25
+                      | 2 -> 13 end, 25)
 
     affirm:is_equal (T.2 2) 13
 
     T1 =
         (1,
-         lam x | 5 -> 25
-               | 6 -> 45 end,
-         lam x
+         fun _ x | 5 -> 25
+                 | 6 -> 45 end,
+         fun _ x
             | 5 -> 25
             | 6 -> 45 end,
-         lam x -> 25 end,
+         fun _ x -> 25 end,
          25)
 
     affirm:is_equal (T1.1 5) 25
@@ -161,14 +161,14 @@ fun t4 () ->
 
     T5 =
         (1
-        , lam x | 5 -> 25
-                | 6 -> 45
-        , lam x
+        , fun _ x | 5 -> 25
+                  | 6 -> 45
+        , fun _ x
             | 5 -> 25
             | 6 -> 45
-        , lam x -> x
-        //WARNING PREV LAMBDA is closed by dedent and as we inside a free block expression evaluates to call
-        // lam x -> x end 45
+        , (x => x)
+        // WARNING PREV LAMBDA is closed by dedent and as we inside a free block expression evaluates to call
+        // so third element of a tuple evaluates to (x => x) 45
         45)
 
     affirm:is_equal (T5.1 6) 45
@@ -177,14 +177,14 @@ fun t4 () ->
 
     T10 =
         (1
-        , lam x | 5 -> 25
-                | 6 -> 45
-        , lam x
+        , fun _ x | 5 -> 25
+                  | 6 -> 45
+        , fun _ x
             | 5 -> 25
             | 6 -> 45
-        , lam x -> x
+        , x => x
         //WARNING PREV LAMBDA is closed by dedent and as we inside a free block expression evaluates to call
-        // lam x -> x end 45
+        // fun _ x -> x end 45
         ,45)
 
     affirm:is_equal (T10.1 6) 45
@@ -204,9 +204,9 @@ fun t4 () ->
 
     T7 =
         (
-            lam x -> x end
+            (x => x)
             (
-                lam x ->
+                fun _ x ->
                     1
                 end
                 , 3
@@ -219,7 +219,7 @@ fun t4 () ->
 
     (affirm:is_equal
          (
-            (lam x ->
+            (fun _ x ->
                 x
              end) 3
           , 1
@@ -232,9 +232,9 @@ fun t4 () ->
         {x=1,
  x=2,
 
- l=lam x y
-    | 1 2 -> 1
-    | 2 3 -> 2 end,
+ l= fun _ x y
+        | 1 2 -> 1
+        | 2 3 -> 2 end,
     n = 1
     }
 
@@ -275,12 +275,12 @@ fun t4 () ->
     affirm:is_equal MT2 2
 
     MT3 =
-        match lam x ->
+        match fun _ x ->
                   1
               end
         with
             | Y ->
-               (lam t
+               (fun _ t
                     | (a,b) -> a + b end
                     (1 + 1, 2 + 2))
             | _ -> 2
@@ -315,7 +315,7 @@ fun t4 () ->
             ((if 0 == 1 then
                 1
               else
-                &lam x y -> x + y
+                &fun _ x y -> x + y
               end 3)
                 4)
         with

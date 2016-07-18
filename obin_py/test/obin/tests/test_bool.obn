@@ -18,20 +18,19 @@ fun test() ->
     affirm:is_same True True
 //
     //only True and False can be used in boolean operators
-    affirm:is_throw (lam x -> 1 or 0 end) ()
-    affirm:is_throw_expected (lam x -> 1 or 0 end) () (TypeError ("Bool expected", 1))
+    affirm:is_throw (x => 1 or 0) ()
+    affirm:is_throw_expected (x => 1 or 0) () (TypeError ("Bool expected", 1))
 
-    affirm:is_throw lam x -> 1 and 0 end ()
-    affirm:is_throw lam x -> not 0 end ()
-    affirm:is_throw lam x -> not {} end ()
-    affirm:is_throw lam x -> not "" end ()
-    affirm:is_throw lam x -> not [] end ()
-    affirm:is_throw lam x -> not () end ()
-    affirm:is_throw lam x -> not 1.2 end ()
-    affirm:is_throw lam x -> not #symbol end ()
+    affirm:is_throw (x => 1 and 0) ()
+    affirm:is_throw (x => not 0) ()
+    affirm:is_throw (x => not {}) ()
+    affirm:is_throw (x => not "") ()
+    affirm:is_throw (x => not []) ()
+    affirm:is_throw (x => not ()) ()
+    affirm:is_throw (x => not 1.2) ()
+    affirm:is_throw (x => not #symbol) ()
 
     x = 0
     y = 1
     affirm:is_false (x `is` y)
     affirm:is_true (x `isnot` y)
-

@@ -23,9 +23,9 @@ fun test_sequences () ->
     affirm:is_equal (obin:lang:is_seq lazy:LazyNil) True
 
     sqrs_odd_inc = sqrs
-                        |> partial lazy:filter lam x -> odd x end
-                        |> partial lazy:map lam x -> inc x end
-                        |> partial lazy:map lam x ->  x * 2 end
+                        |> partial lazy:filter (x => odd x)
+                        |> partial lazy:map (x => inc x)
+                        |> partial lazy:map (x =>  x * 2)
 
     affirm:is_equal (str sqrs_odd_inc) "[4, ...]"
     affirm:is_equal (str lazy:LazyNil) "[]"
@@ -33,9 +33,9 @@ fun test_sequences () ->
     sqrs_odd_inc_10_eager = (seq:take 10 sqrs_odd_inc)
     sqrs_odd_inc_10_eager2 = sqrs
                             |> partial seq:take 20
-                            |> partial seq:filter lam x -> odd x end
-                            |> partial lazy:map lam x -> inc x end
-                            |> partial seq:map lam x ->  x * 2 end
+                            |> partial seq:filter (x => odd x)
+                            |> partial lazy:map (x => inc x)
+                            |> partial seq:map (x =>  x * 2) 
                             |> partial seq:take 10
 
     affirm:is_equal (str sqrs_odd_inc_10) "[4, ...]"
@@ -64,11 +64,11 @@ fun test_lazy_cons () ->
     affirm:is_equal (seq:take 11 sqrs2) [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
 
     //consing with lazy lists is forbidden
-    affirm:is_throw lam () -> 1 :: 2 ::: 3 :: 4 ::: 5 :: [] end ()
+    affirm:is_throw (() => 1 :: 2 ::: 3 :: 4 ::: 5 :: [])  ()
 
     v = var:var 1
     l = 1 :: delay (2 + 2) :: delay (3 + 4)
-          :: delay (lam () -> v := !v + 1; 42 * 42 end ())
+          :: delay ( (fun _ () -> v := !v + 1; 42 * 42 end) ())
           ::: []
 
     lazy:doall l
@@ -81,11 +81,11 @@ fun test_lazy_cons () ->
 
 fun test_list_generator () ->
     v = var:var 0
-    l = lazy:list_generator lam () -> 42
+    l = lazy:list_generator (() => 42)
 
     affirm:is_equal (seq:take 5 l) [42, 42, 42, 42, 42]
 
-    l1 = lazy:list_generator lam () ->
+    l1 = lazy:list_generator fun _ () ->
                                 if !v == 5 then
                                     throw Interrupt ()
                                 else

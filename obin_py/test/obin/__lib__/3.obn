@@ -245,16 +245,16 @@ fun split_seq_test () ->
 
 fun split_seq_test() ->
     ints = list:range 0 20
-    input = seq:map (lam x -> (x, list:range 0 x) end) ints
+    input = seq:map ((x => (x, list:range 0 x))) ints
 
-    (evens,ods) = (seq:partition lam x
+    (evens,ods) = (seq:partition fun _ x
                                     | (x, data) ->
                                          even x
                                  end
                                  input)
 
     fun _transform s ->
-        (seq:foldl lam item acc
+        (seq:foldl fun _ item acc
                             | (x, []) acc -> (x, 0) :: acc
                             | (x, data) acc ->
                                 (x, seq:reduce &`+` data) :: acc

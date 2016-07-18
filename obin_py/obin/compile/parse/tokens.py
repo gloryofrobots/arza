@@ -111,7 +111,6 @@ RULES = [
     (keyword('try'), TT_TRY),
     (keyword('catch'), TT_CATCH),
     (keyword('finally'), TT_FINALLY),
-    (keyword('lam'), TT_LAMBDA),
     # (keyword('module'), TT_MODULE),
 
     (keyword('use'), TT_USE),

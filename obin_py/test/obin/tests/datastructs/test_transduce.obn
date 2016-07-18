@@ -5,9 +5,9 @@ import affirm
 
 
 fun test () ->
-    double = lam x -> x + x
-    inc = lam x -> x + 1
-    even = lam x -> mod x 2 == 0
+    double = x => x + x
+    inc = x => x + 1
+    even = x => mod x 2 == 0
 
     odd = &not << &even
     rev = partial ts:completing seq:reverse

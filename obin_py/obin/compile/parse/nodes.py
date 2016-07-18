@@ -237,7 +237,7 @@ def create_fun_simple_node(basenode, name, body):
 
 def create_lambda_node(basenode, args, exp):
     assert node_type(args) == nt.NT_TUPLE, args
-    return create_fun_node(basenode, empty_node(),
+    return node_1(nt.NT_LAMBDA, create_token_from_node(tt.TT_STR, "lambda", basenode),  
                            create_function_variants(
                                args,
                                list_node([exp])))

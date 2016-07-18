@@ -63,17 +63,17 @@ fun test () ->
     // test constraint
 
     (affirm:is_throw
-        lam () ->
+        fun _ () ->
             (obin:lang:defextend
                 T3
                 [TListable]
-                [(to_seq, lam self -> [self.v1] end)])
+                [(to_seq, (self => [self.v1]))])
         end ())
 
     (affirm:is_not_throw
-        lam () ->
+        fun _ () ->
             (obin:lang:defextend
                 T3
                 [TListable]
-                [(to_list, lam self -> [self.v1] end)])
+                [(to_list, (self => [self.v1]))])
         end ())

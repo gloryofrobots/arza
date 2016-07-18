@@ -244,8 +244,8 @@ fun & func -> (obin:lang:defpartial func)
 
 fun |> x f -> f x
 fun <| f x -> f x
-fun >> f g -> lam x -> g (f x)
-fun << f g -> lam x -> f (g x)
+fun >> f g -> (x => g (f x))
+fun << f g -> (x => f (g x))
 
 fun twice f -> f >> f
 fun flip f x y -> f y x

@@ -142,7 +142,7 @@ fun nth (count of Int) coll
 //QUERIES///////////////////////////////////////////////////
 
 fun length l of List ->
-    foldl lam _ acc -> acc + 1 end 0 l
+    foldl (_ acc => acc + 1) 0 l
 --------------------------------------------------
 
 fun last coll
@@ -231,10 +231,10 @@ fun append v coll ->
 ////QUERIES//////////////////////////////////////////////////////////////////
 
 fun conjunction l ->
-    foldr lam v acc -> v and acc end True l end
+    foldr (v acc => v and acc) True l end
 
 fun disjunction l ->
-    foldr lam v acc -> v or acc end False l end
+    foldr (v acc => v or acc) False l end
 
 fun any p l ->
     disjunction (map p l) end
@@ -243,7 +243,7 @@ fun all p l ->
     conjunction (map p l) end
 
 fun element x l ->
-    any lam v -> v == x end l end
+    any (v => v == x) l end
 
 fun contains l x ->
     element x l end
@@ -251,7 +251,7 @@ fun contains l x ->
 //BUILDERS/////////////////////////////////////////////////////////////
 
 fun concat l1 l2 ->
-    foldr lam x y -> x ::: y end l2 l1 end
+    foldr (x y => x ::: y) l2 l1 end
 
 fun uncons coll | [x, ...xs] -> (x, xs) end
 

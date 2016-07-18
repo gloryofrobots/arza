@@ -7,8 +7,8 @@ trait Trait2 for self
     def f4 self
 
 MixinTrait1 = {
-    f1 = lam x -> x
-    f2 = lam x -> x
+    f1 = fun _ x -> x
+    f2 = fun _ x -> x
 }
 
 type Type1 val1

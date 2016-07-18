@@ -7,7 +7,7 @@ fun is_equal_batch fn ...calls ->
 
 fun _batch checker fn calls ->
     calls_list = to_seq calls
-    seq:foreach lam call -> checker (apply fn call.0)  call.1 end calls_list
+    seq:foreach (call => checker (apply fn call.0) call.1) calls_list
 --------------------------------------------------
 
 

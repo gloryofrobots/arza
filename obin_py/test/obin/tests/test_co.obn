@@ -3,9 +3,9 @@ import affirm
 
 fun test () ->
     co =
-        coroutine lam yield x ->
+        coroutine fun _ yield x ->
                        _co1 =
-                            coroutine lam yield2 y ->
+                            coroutine fun _ yield2 y ->
                                            fun send () ->
                                                 yield2 (42 + y)
 
