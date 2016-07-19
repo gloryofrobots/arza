@@ -294,3 +294,61 @@ fun split_seq_test () ->
                    [(19, 171), (17, 136), (15, 105), (13, 78), (11, 55), (9, 36), (7, 21), (5, 10), (3, 3), (1, 0),
                    (18, 153), (16, 120), (14, 91), (12, 66), (10, 45), (8, 28), (6, 15), (4, 6), (2, 1), (0, 0)]
     )
+
+
+(*
+    union = (* types = [] repr = "UNION" *)
+
+    dispatch:method in_process:process = (|
+         impl = space newvoid.
+         self union ifNil: (| impl = self union get_method: method ).
+
+         if: (impl isNil && self is_singleton) do: (|
+             impl = self get_method: method.
+         ).
+
+         impl ifNil:(|
+              _type = api get_type:self in_process:process.
+              impl = _type get_method: method
+         ).
+         ^ impl
+    )
+*)
+
+{
+    union = { types = #[] repr = "UNION" }
+    ints = [* 1, 2 pow: 4, math pow:2 to:4, *]
+    dispatch:method in_process:process = [
+         impl = space newvoid.
+         self union ifNil: [ impl = self union get_method: method ].
+
+         if: (impl isNil && self is_singleton) do: [
+             impl = self get_method: method.
+         ].
+
+         impl ifNil:[
+              _type = api get_type:self in_process:process.
+              impl = _type get_method: method
+         ].
+         ^ impl
+    ]
+}
+
+{
+    union = { types = #[] repr = "UNION" }
+
+    dispatch:method in_process:process = (|
+         impl = space newvoid.
+         self union ifNil: (| impl = self union get_method: method ).
+
+         if: (impl isNil && self is_singleton) do: (|
+             impl = self get_method: method.
+         ).
+
+         impl ifNil:(|
+              _type = api get_type:self in_process:process.
+              impl = _type get_method: method
+         ).
+         ^ impl
+    )
+}
