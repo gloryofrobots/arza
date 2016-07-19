@@ -177,7 +177,7 @@ fun drop count coll
 fun take count coll
     | 0 _ -> empty coll
     | _ [] -> empty coll
-    | n [x, ...xs] -> x ::: (take (n-1)  xs)
+    | n [x, ...xs] -> x ::: (take (n - 1)  xs)
 --------------------------------------------------
 
 fun split_at (n of Int) l -> ((take n l), (drop n l)) end

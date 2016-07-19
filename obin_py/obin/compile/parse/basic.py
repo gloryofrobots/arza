@@ -206,6 +206,7 @@ class W_Operator(root.W_Hashable):
         # self.is_breaker = False
         self.layout = None
 
+        self.ambidextra = False
         self.prefix_function = None
         self.infix_function = None
 
@@ -294,7 +295,6 @@ def node_operator(parser, node):
         return parse_error(parser, u"Invalid operator", node)
     return op
 
-
 def node_nud(parser, node):
     handler = node_operator(parser, node)
     if not handler.nud:
@@ -331,9 +331,36 @@ def node_has_std(parser, node):
     return handler.std is not None
 
 
-def node_lbp(parser, node):
-    handler = node_operator(parser, node)
-    lbp = handler.lbp
+def node_lbp(parser, previous, node):
+    op = node_operator(parser, node)
+    lbp = op.lbp
+    if op.ambidextra is True:
+        # print "Ambidextra"
+        prev_pos = nodes.node_position_i(previous)
+        cur_pos = nodes.node_position_i(node)
+        # 2- - 1
+        next_tok = parser.ts.lookup_next_token()
+        if nodes.node_token_type(node) == tokens.token_type(next_tok):
+        # if tokens.is_infix_token_type(nodes.node_token_type(previous)):
+            # print '!!!!!1'
+            return lbp
+
+        prev_length = nodes.node_length(previous)
+        # 2-1 -> infix
+        if cur_pos - (prev_pos + prev_length) == 0:
+            # print '!!!!!2'
+            return lbp
+
+        # pow -1 -> infix
+        next_pos = tokens.token_position_i(next_tok)
+        cur_length = nodes.node_length(node)
+
+        if next_pos - (cur_pos + cur_length) == 0:
+            # print '!!!!!3'
+            return -1
+
+        # Anything else go to infix
+
     # if lbp < 0:
     #   parse_error(parser, u"Left binding power error", node)
 
@@ -362,9 +389,16 @@ def parser_set_layout(parser, ttype, fn):
     return h
 
 
+def __check_ambidextrity(op):
+    if op.led and op.nud:
+        op.ambidextra = True
+
+
 def parser_set_nud(parser, ttype, fn):
     h = get_or_create_operator(parser, ttype)
     h.nud = fn
+    __check_ambidextrity(h)
+
     return h
 
 
@@ -378,6 +412,7 @@ def parser_set_led(parser, ttype, lbp, fn):
     h = get_or_create_operator(parser, ttype)
     h.lbp = lbp
     h.led = fn
+    __check_ambidextrity(h)
     return h
 
 
@@ -385,12 +420,14 @@ def operator_infix(h, lbp, led, infix_fn):
     h.lbp = lbp
     h.led = led
     h.infix_function = infix_fn
+    __check_ambidextrity(h)
     return h
 
 
 def operator_prefix(h, nud, prefix_fn):
     h.nud = nud
     h.prefix_function = prefix_fn
+    __check_ambidextrity(h)
     return h
 
 
@@ -496,7 +533,7 @@ def base_expression(parser, _rbp, terminators=None):
             if parser.token_type in terminators:
                 return left
 
-        _lbp = node_lbp(parser, parser.node)
+        _lbp = node_lbp(parser, previous, parser.node)
 
         # juxtaposition support
         if _lbp < 0:

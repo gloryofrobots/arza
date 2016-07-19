@@ -1,0 +1,1 @@
+ipython targetobin.py test/obin/main.obn

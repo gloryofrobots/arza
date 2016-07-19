@@ -199,6 +199,7 @@ class Token(root.W_Hashable):
         assert space.isint(column)
         self.type = type
         self.val_s = val
+        self.length = len(val)
         self.val = space.newstring_s(val)
         self.pos = pos
         self.line = line
@@ -264,6 +265,18 @@ def token_line(token):
 
 def token_column(token):
     return token.column
+
+
+def token_length(token):
+    return token.length
+
+
+INFIX_TOKENS = [TT_DOUBLE_COLON, TT_TRIPLE_COLON, TT_COLON,
+                TT_OPERATOR, TT_DOT, TT_ASSIGN, TT_OR, TT_AND]
+
+
+def is_infix_token_type(ttype):
+    return ttype in INFIX_TOKENS
 
 
 # indentation level

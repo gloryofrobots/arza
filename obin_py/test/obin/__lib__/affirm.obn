@@ -25,6 +25,14 @@ fun is_elem el coll ->
         fail [el, "not_elem", coll]
     else True
 
+fun is_equal_all ...args ->
+    fun _reducer val1 val2 ->
+        is_equal val1 val2
+        val2
+
+    seq:reduce _reducer (to_seq args)
+--------------------------------------------------
+
 fun is_equal val1 val2
     | val1 of Float  val2 of Float -> is_equal_float val1 val2
     | val1 val2  ->
@@ -118,4 +126,3 @@ fun is_not_throw fn args
             | _ of Success ->  True
             | err -> fail ["unexpected exception", fn, err]
 --------------------------------------------------
-

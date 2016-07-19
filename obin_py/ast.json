@@ -23,53 +23,166 @@
           },
           [
             {
-              "_ntype": "NT_FUN",
-              "_value": "fun",
+              "_ntype": "NT_CALL",
+              "_value": "(",
               "children": [
                 {
-                  "empty": true
+                  "_ntype": "NT_NAME",
+                  "_value": "-"
                 },
                 [
-                  [
-                    {
-                      "_ntype": "NT_TUPLE",
-                      "_value": "(",
-                      "children": [
-                        [
-                          {
-                            "_ntype": "NT_NAME",
-                            "_value": "x"
-                          },
-                          {
-                            "_ntype": "NT_NAME",
-                            "_value": "y"
-                          }
-                        ]
-                      ]
-                    },
-                    [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "2"
+                  },
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "1"
+                  }
+                ]
+              ]
+            },
+            {
+              "_ntype": "NT_CALL",
+              "_value": "(",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "-"
+                },
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "2"
+                  },
+                  {
+                    "_ntype": "NT_CALL",
+                    "_value": "(",
+                    "children": [
                       {
-                        "_ntype": "NT_CALL",
-                        "_value": "(",
-                        "children": [
-                          {
-                            "_ntype": "NT_NAME",
-                            "_value": "+"
-                          },
-                          [
-                            {
-                              "_ntype": "NT_NAME",
-                              "_value": "x"
-                            },
-                            {
-                              "_ntype": "NT_NAME",
-                              "_value": "y"
-                            }
-                          ]
-                        ]
-                      }
+                        "_ntype": "NT_NAME",
+                        "_value": "negate"
+                      },
+                      [
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "1"
+                        }
+                      ]
                     ]
-                  ]
+                  }
+                ]
+              ]
+            },
+            {
+              "_ntype": "NT_CALL",
+              "_value": "(",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "-"
+                },
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "2"
+                  },
+                  {
+                    "_ntype": "NT_CALL",
+                    "_value": "(",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "negate"
+                      },
+                      [
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "1"
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              ]
+            },
+            {
+              "_ntype": "NT_CALL",
+              "_value": "(",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "-"
+                },
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "2"
+                  },
+                  {
+                    "_ntype": "NT_CALL",
+                    "_value": "(",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "negate"
+                      },
+                      [
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "1"
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              ]
+            },
+            {
+              "_ntype": "NT_CALL",
+              "_value": "print",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "print"
+                },
+                [
+                  {
+                    "_ntype": "NT_CALL",
+                    "_value": "(",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "negate"
+                      },
+                      [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "a"
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              ]
+            },
+            {
+              "_ntype": "NT_CALL",
+              "_value": "(",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "-"
+                },
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "2"
+                  },
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "1"
+                  }
                 ]
               ]
             }

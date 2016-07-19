@@ -1,7 +1,7 @@
 # Obin programming language
 
-Obin is a small, unpure functional programming language with immutable datastructures.
-It exists currently only as prototype written in python and I do not plan to develop it further.
+This repository contains prototype for experimental dynamically typed unpure functional language
+Main project goal is to create dynamic FP language with rich syntax and runtime
 
 ## Currently implemented features
 * Modern expressive functional syntax that resembles something between Erlang and F#.

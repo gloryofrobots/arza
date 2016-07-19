@@ -6,10 +6,6 @@ from obin.misc.fifo import Fifo
 
 LOG_INDENTER = False
 
-SKIP_NEWLINE_TOKENS = [tt.TT_DOUBLE_COLON, tt.TT_TRIPLE_COLON,
-                       tt.TT_COLON, tt.TT_OPERATOR, tt.TT_DOT, tt.TT_ASSIGN, tt.TT_OR, tt.TT_AND]
-
-
 class InvalidIndentationError(Exception):
     def __init__(self, msg, position, line, column):
         self.position = position
@@ -185,6 +181,16 @@ class IndentationTokenStream:
         # log("=*=* NEXT LOGICAL TOKEN", tokens.token_to_s(token))
         return self.attach_token(token)
 
+    def has_next_token(self):
+        return self.index < self.length
+
+    def lookup_next_token(self):
+        if not self.has_next_token():
+            return indentation_error(u"Error evaluating next token",
+                                         self.token)
+
+        return self.tokens[self.index]
+
     def next_physical(self):
         token = self.tokens[self.index]
         # log( "++++ NEXT STREAM TOKEN", tokens.token_to_s(token))
@@ -219,7 +225,7 @@ class IndentationTokenStream:
         log("----NEW LINE", level, layout, tokens.token_to_s(token))
 
         #TODO remove not layout.is_module() after implementing real pragmas ![]
-        if cur_type in SKIP_NEWLINE_TOKENS and not layout.is_module():
+        if tokens.is_infix_token_type(cur_type) and not layout.is_module():
             if level <= layout.level:
                 return indentation_error(u"Indentation level of token next to"
                                          u" operator must be bigger then of parent layout",
@@ -231,7 +237,7 @@ class IndentationTokenStream:
             return self.next_token()
 
         if level > layout.level:
-            if ttype not in SKIP_NEWLINE_TOKENS:
+            if not tokens.is_infix_token_type(ttype):
                 self.add_logical_token(tokens.create_indent_token(token))
 
             return self.next_token()

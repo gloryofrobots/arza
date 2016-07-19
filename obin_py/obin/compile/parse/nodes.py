@@ -167,8 +167,16 @@ def node_value(node):
     return tokens.token_value(node_token(node))
 
 
+def node_length(node):
+    return tokens.token_length(node_token(node))
+
+
 def node_position(node):
     return tokens.token_position(node_token(node))
+
+
+def node_position_i(node):
+    return tokens.token_position_i(node_token(node))
 
 
 def node_line(node):
