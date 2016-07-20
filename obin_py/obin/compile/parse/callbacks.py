@@ -651,12 +651,21 @@ def _parse_function_variants(parser, signature, term_pattern, term_guard, term_c
 
     func = nodes.create_fun_node(node, empty_node(), list_node(funcs))
 
+    fargs_node = nodes.create_fargs_node(node)
+
     call_list = []
-    for arg in sig_args:
+
+    for i, arg in enumerate(sig_args):
         ntype = nodes.node_type(arg)
-        if ntype == NT_OF or ntype == NT_REST:
-            arg = nodes.node_first(arg)
-        call_list.append(arg)
+
+        # special treatment of ...pattern in signature
+
+        if ntype == NT_REST:
+            arg_n = nodes.node_first(arg)
+        else:
+            arg_n = nodes.create_lookup_index_node(node, fargs_node, i)
+
+        call_list.append(arg_n)
 
     body = list_node([nodes.create_call_node(node, func, list_node(call_list))])
     main_func = nodes.create_function_variants(signature, body)

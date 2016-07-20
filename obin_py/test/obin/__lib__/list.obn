@@ -4,6 +4,7 @@ import derive
 import seq
 import string
 
+fun range_to (last of Int) -> range 0 last
 
 fun range (first of Int) (last of Int) ->
     step = if last < 0 then -1 else 1

@@ -304,6 +304,18 @@ def create_false_node(basenode):
     return node_0(nt.NT_FALSE, create_token_from_node(tt.TT_FALSE, "false", basenode))
 
 
+def create_fenv_node(basenode):
+    return node_0(nt.NT_FENV,
+                  create_token_from_node(tt.TT_NAME,
+                                         "<environment>",
+                                         basenode))
+
+
+def create_fargs_node(basenode):
+    return node_0(nt.NT_FARGS,
+                  create_token_from_node(tt.TT_NAME, "<arguments>", basenode))
+
+
 def create_void_node(basenode):
     return node_0(nt.NT_VOID, create_token_from_node(tt.TT_TRUE, "void", basenode))
 
@@ -315,11 +327,6 @@ def create_undefine_node(basenode, varname):
 def create_goto_node(label):
     return node_0(nt.NT_GOTO,
                   tokens.newtoken(tt.TT_UNKNOWN, str(label), space.newint(-1), space.newint(-1), space.newint(-1)))
-
-
-def create_fenv_node(basenode):
-    return node_0(nt.NT_FENV,
-                  create_token_from_node(tt.TT_NAME, "___fenv", basenode))
 
 
 def create_wildcard_node(basenode):
@@ -483,6 +490,10 @@ def create_drop_node(basenode, count):
 
 def create_lookup_node(basenode, left, right):
     return node_2(nt.NT_LOOKUP, create_token_from_node(tt.TT_LSQUARE, "[", basenode), left, right)
+
+
+def create_lookup_index_node(basenode, left, index):
+    return create_lookup_node(basenode, left, create_int_node(basenode, index))
 
 
 def create_bind_node(basenode, left, right):

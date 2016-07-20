@@ -5,7 +5,7 @@ import string
 import lazy
 import list
 
-import tests:test_operators
+// import tests:test_operators
 
 import tests:types:test_types
 import tests:test_partial
@@ -65,9 +65,31 @@ fun test() ->
     log "TEST LAZY"
     test_lazy:test()
 
-    log "TEST OPERATORS"
-    test_operators:test()
+    // log "TEST OPERATORS"
+    // test_operators:test()
 
 
 fun main () ->
     test()
+    fun f list
+        | x::xs ->
+             io:print list
+             io:print x
+             f xs
+        | [] -> io:print "[]"
+
+    f (list:range_to 5)
+
+    fun f2 list ->
+        fun f2 l
+            | x::xs ->
+                io:print list
+                io:print x
+                f2 xs
+            | [] -> io:print "[]"
+
+        f2 list
+
+    f2 (list:range_to 5)
+
+    --------------------------------------------------

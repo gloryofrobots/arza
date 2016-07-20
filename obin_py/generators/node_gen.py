@@ -32,6 +32,7 @@ NODES = [
   "NT_LAMBDA",
 
   "NT_FENV",
+  "NT_FARGS",
 
   "NT_CONDITION",
   "NT_WHEN",

@@ -246,9 +246,9 @@ def _get_variable_index(compiler, code, node, name):
         # HACK for late binding of internal names in prelude
 
         if not names_s.startswith(lang_names.PREFIX):
-            # for name in _current_scope(compiler).imports.keys():
-            #     print name
-            return compile_error(compiler, code, node, u"Unreachable variable `%s`" % (api.to_u(name)))
+            for name in _current_scope(compiler).imports.keys():
+                print name
+            return compile_error(compiler, code, node, u"Unreachable variable")
     else:
         _declare_static_reference(compiler, ref)
 
@@ -982,6 +982,10 @@ def _compile_FENV(compiler, code, node):
     code.emit_0(FENV, info(node))
 
 
+def _compile_FARGS(compiler, code, node):
+    code.emit_0(FARGS, info(node))
+
+
 def _compile_CONS(compiler, code, node):
     simplified = simplify.simplify_cons(compiler, code, node)
     _compile(compiler, code, simplified)
@@ -1228,6 +1232,8 @@ def _compile_node(compiler, code, node):
         _compile_UNDEFINE(compiler, code, node)
     elif NT_FENV == ntype:
         _compile_FENV(compiler, code, node)
+    elif NT_FARGS == ntype:
+        _compile_FARGS(compiler, code, node)
     else:
         compile_error(compiler, code, node, u"Unknown node")
 
