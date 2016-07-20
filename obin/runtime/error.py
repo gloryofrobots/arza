@@ -16,7 +16,7 @@ def error(process, symbol_unistr, args_tuple):
         return space.newtuple([symbol, args_tuple])
     else:
         affirm_type(err_type, space.isdatatype)
-        instance = api.call(process, err_type, args_tuple)
+        instance = api.call(process, err_type, space.newtuple([args_tuple]))
         return instance
 
 

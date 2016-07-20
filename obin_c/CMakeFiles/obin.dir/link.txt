@@ -1,1 +1,0 @@
-/usr/bin/cc  -std=c89 -gdwarf-4 -g3 -g -Wall    CMakeFiles/obin.dir/main.c.o  -o obin -rdynamic libobin.a -lm 

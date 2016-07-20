@@ -1,1 +1,0 @@
-/usr/bin/cc  -std=c89 -gdwarf-4 -g3 -g -Wall    CMakeFiles/obinepa.dir/main.c.o  -o obinepa -rdynamic libobin.a -lm 

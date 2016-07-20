@@ -1,2 +1,0 @@
-/usr/bin/ar cr libobinlang.a  CMakeFiles/obinlang.dir/core/_memory.c.o
-/usr/bin/ranlib libobinlang.a

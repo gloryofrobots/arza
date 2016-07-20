@@ -1,3 +1,0 @@
-FILE(REMOVE_RECURSE
-  "libOBIN_LIB_NAME.a"
-)

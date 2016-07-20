@@ -1,2 +1,0 @@
-/usr/bin/ar cr libOBIN_LIB_NAME.a  CMakeFiles/OBIN_LIB_NAME.dir/core/_memory.c.o
-/usr/bin/ranlib libOBIN_LIB_NAME.a
