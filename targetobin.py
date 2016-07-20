@@ -39,10 +39,10 @@ def run(script_file):
         raise RuntimeError("Invalid script path " + abs_script_path)
 
     script_dir = fs.get_dirname(fs.abspath(script_file))
-    path_lib = fs.join_and_normalise_path(script_dir, "__lib__")
+    path_lib = fs.join_and_normalise_path(script_dir, "__std__")
 
     if not fs.is_directory(path_lib):
-        raise RuntimeError("Invalid __lib__ dir path " + path_lib)
+        raise RuntimeError("Invalid __std__ dir path " + path_lib)
 
     process, error = engine.initialize([script_dir, path_lib])
     if error is not None:

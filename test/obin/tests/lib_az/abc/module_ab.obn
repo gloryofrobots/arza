@@ -1,4 +1,4 @@
-import lib_az:abc:module_c as c
+import tests:lib_az:abc:module_c as c
 
 export (f_ab, f_ab_2, CONST)
 
