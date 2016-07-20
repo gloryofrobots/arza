@@ -387,7 +387,7 @@ def _compile_VOID(compiler, code, node):
 
 
 def _compile_STR(compiler, code, node):
-    from obin.runistr import unicode_unescape, decode_str_utf8
+    from obin.misc.strutil import unicode_unescape, decode_str_utf8
 
     try:
         strval = str(nodes.node_value_s(node))
@@ -402,7 +402,7 @@ def _compile_STR(compiler, code, node):
 
 
 def _compile_CHAR(compiler, code, node):
-    from obin.runistr import unicode_unescape, decode_str_utf8
+    from obin.misc.strutil import unicode_unescape, decode_str_utf8
     try:
         strval = str(nodes.node_value_s(node))
         strval = decode_str_utf8(strval)

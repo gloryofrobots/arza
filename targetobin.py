@@ -4,7 +4,7 @@ import os
 
 def printmessage(msg):
     assert isinstance(msg, unicode)
-    from obin.runistr import encode_unicode_utf8
+    from obin.misc.strutil import encode_unicode_utf8
     os.write(1, encode_unicode_utf8(msg))
 
 

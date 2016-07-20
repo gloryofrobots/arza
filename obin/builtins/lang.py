@@ -3,7 +3,7 @@ from obin.runtime import error
 from obin.types import api, space, plist, environment, datatype, tuples, partial
 from obin.misc.timer import Timer
 
-from obin.runistr import encode_unicode_utf8
+from obin.misc.strutil import encode_unicode_utf8
 from obin.misc.platform import rstring, compute_unique_id
 from obin.misc import fs
 from obin.compile import compiler

@@ -1,8 +1,0 @@
-func test_default(x,y,z,a,b,c): x end
-func test_vargs(x,y,z,...args): args end
-COUNT_CALLS = 10000
-COUNT_TESTS = 10
-/*
-11000
-7000
-*/

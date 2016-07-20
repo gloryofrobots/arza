@@ -1,4 +1,0 @@
-x = eval("42")
-print(x)
-print("EVAL", eval("return 13 + 24"))
-eval("(fn(){111 + 222 / 18;})()")
