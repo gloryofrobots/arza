@@ -6,7 +6,7 @@ def convert_to_script_error(process, err):
 
 
 def error(process, symbol_unistr, args_tuple):
-    from obin.types import environment
+    from obin.types import environment, api
     assert space.istuple(args_tuple)
     assert isinstance(symbol_unistr, unicode)
     module = process.modules.prelude
@@ -16,8 +16,7 @@ def error(process, symbol_unistr, args_tuple):
         return space.newtuple([symbol, args_tuple])
     else:
         affirm_type(err_type, space.isdatatype)
-        m = space.newpmap([space.newsymbol(process, u"args"), args_tuple])
-        instance = err_type.create_instance(process, m)
+        instance = api.call(process, err_type, args_tuple)
         return instance
 
 

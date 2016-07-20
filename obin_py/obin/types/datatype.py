@@ -185,21 +185,6 @@ class W_DataType(W_Extendable):
         self.descriptors = descriptors(self.fields)
         self.union = None
 
-
-    def create_instance(self, process, env):
-        undef = space.newvoid()
-        values = []
-
-        for f in self.fields:
-            v = api.lookup(env, f, undef)
-            if space.isvoid(v):
-                error.throw_2(error.Errors.CONSTRUCTOR_ERROR,
-                              space.newstring(u"Missing required field. Check recursive constructor call"), f)
-            values.append(v)
-
-        return W_Record(self, space.newpvector(values))
-        # return W_Record(self, plist.plist(values))
-
     def _dispatch_(self, process, method):
         impl = space.newvoid()
         if self.union is not None:
@@ -217,7 +202,7 @@ class W_DataType(W_Extendable):
     def _call_(self, process, args):
         length = api.length_i(args)
         if length != self.arity:
-            error.throw_2(error.Errors.CONSTRUCTOR_ERROR,
+            error.throw_4(error.Errors.CONSTRUCTOR_ERROR,
                           space.newstring(u"Invalid count of data for construction of type"),
                           self,
                           api.length(self.fields),
