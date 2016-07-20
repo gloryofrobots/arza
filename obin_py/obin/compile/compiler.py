@@ -979,10 +979,6 @@ def _compile_MODULE(compiler, code, node):
     # _emit_store(compiler, code, module_name, name_node)
 
 
-def _compile_FENV(compiler, code, node):
-    code.emit_0(FENV, info(node))
-
-
 def _compile_FARGS(compiler, code, node):
     code.emit_0(FARGS, info(node))
 
@@ -1231,8 +1227,6 @@ def _compile_node(compiler, code, node):
         _compile_GOTO(compiler, code, node)
     elif NT_UNDEFINE == ntype:
         _compile_UNDEFINE(compiler, code, node)
-    elif NT_FENV == ntype:
-        _compile_FENV(compiler, code, node)
     elif NT_FARGS == ntype:
         _compile_FARGS(compiler, code, node)
     else:

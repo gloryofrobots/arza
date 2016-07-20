@@ -31,7 +31,6 @@ NODES = [
   "NT_FUN",
   "NT_LAMBDA",
 
-  "NT_FENV",
   "NT_FARGS",
 
   "NT_CONDITION",

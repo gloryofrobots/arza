@@ -170,7 +170,7 @@ class W_Extendable(W_Hashable):
 
 
 class W_DataType(W_Extendable):
-    def __init__(self, name, fields, constructor):
+    def __init__(self, name, fields):
         W_Extendable.__init__(self)
 
         self.name = name
@@ -183,11 +183,8 @@ class W_DataType(W_Extendable):
             self.is_singleton = False
 
         self.descriptors = descriptors(self.fields)
-        self.ctor = constructor
         self.union = None
 
-    def has_constructor(self):
-        return not space.isvoid(self.ctor)
 
     def create_instance(self, process, env):
         undef = space.newvoid()
@@ -217,12 +214,6 @@ class W_DataType(W_Extendable):
 
         return impl
 
-    # TODO CREATE CALLBACK OBJECT
-    def _to_routine_(self, stack, args):
-        from obin.runtime.routine.routine import create_callback_routine
-        routine = create_callback_routine(stack, self.create_instance, self.ctor, args)
-        return routine
-
     def _call_(self, process, args):
         length = api.length_i(args)
         if length != self.arity:
@@ -233,11 +224,6 @@ class W_DataType(W_Extendable):
                           args)
 
         return W_Record(self, space.newpvector(args.to_l()))
-        # if not self.has_constructor():
-        #     error.throw_2(error.Errors.CONSTRUCTOR_ERROR,
-        #                   space.newstring(u"There are no constructor for type"), self)
-
-        # process.call_object(self, args)
 
     def _type_(self, process):
         return process.std.types.Datatype
@@ -341,8 +327,8 @@ def _is_exist_implementation(method, impl):
     return api.equal_b(impl_method, method)
 
 
-def newtype(process, name, fields, constructor):
-    _datatype = W_DataType(name, fields, constructor)
+def newtype(process, name, fields):
+    _datatype = W_DataType(name, fields)
     if process.std.initialized is False:
         return _datatype
 

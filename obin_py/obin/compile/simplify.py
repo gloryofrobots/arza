@@ -15,17 +15,14 @@ def simplify_error(compiler, code, node, message):
 def simplify_type(compiler, code, node):
     name_node = node_first(node)
     fields = node_second(node)
-    constructor = node_third(node)
 
     name_1_arg = nodes.create_symbol_node(name_node, name_node)
     if is_empty_node(fields):
         fields_2_arg = nodes.create_empty_list_node(node)
-        constructor_3_arg = nodes.create_void_node(node)
     else:
         fields_2_arg = fields
-        constructor_3_arg = nodes.create_fun_node(node, nodes.empty_node(), constructor)
 
-    call_node = nodes.create_call_node_s(node, lang_names.TYPE, [name_1_arg, fields_2_arg, constructor_3_arg])
+    call_node = nodes.create_call_node_s(node, lang_names.TYPE, [name_1_arg, fields_2_arg])
     return nodes.create_assign_node(node, name_node, call_node)
 
 

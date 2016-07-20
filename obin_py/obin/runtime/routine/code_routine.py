@@ -196,9 +196,6 @@ class CodeRoutine(BaseRoutine):
             elif FSELF == tag:
                 stack.push(self._func_)
             # *************************************
-            elif FENV == tag:
-                stack.push(self.env)
-            # *************************************
             elif JUMP == tag:
                 self.pc = arg1
             # *************************************

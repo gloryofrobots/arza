@@ -35,7 +35,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.IS, __is, 2)
     put_lang_func(process, module, lang_names.ISNOT, __isnot, 2)
     put_lang_func(process, module, lang_names.KINDOF, __kindof, 2)
-    put_lang_func(process, module, lang_names.TYPE, __type, 3)
+    put_lang_func(process, module, lang_names.TYPE, __type, 2)
     put_lang_func(process, module, lang_names.UNION, __union, 2)
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
     put_lang_func(process, module, lang_names.INTERFACE, __interface, 2)
@@ -145,22 +145,11 @@ def __not(process, routine):
     return api.not_(left)
 
 
-# CURRENTLY NOT USED
-@complete_native_routine
-def __module(process, routine):
-    source = routine.get_arg(0)
-    # fenv opcode
-    env = routine.get_arg(1)
-    m = environment.create_environment(process, source, env)
-    return m
-
-
 @complete_native_routine
 def __type(process, routine):
     name = routine.get_arg(0)
     fields = routine.get_arg(1)
-    constructor = routine.get_arg(2)
-    _datatype = space.newdatatype(process, name, fields, constructor)
+    _datatype = space.newdatatype(process, name, fields)
     return _datatype
 
 

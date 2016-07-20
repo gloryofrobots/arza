@@ -16,8 +16,6 @@ OPCODES = [
 
     ("FARGS", 1),
     ("FSELF", 1),
-    ("FENV", 1),
-
 
     ("LABEL", 0),
     ("STORE_LOCAL", 0),

@@ -470,10 +470,10 @@ def isinterface(w):
 
 ########################################################
 
-def newdatatype(process, name, fields, constructor):
+def newdatatype(process, name, fields):
     from obin.types.datatype import newtype
     assert issymbol(name)
-    return newtype(process, name, fields, constructor)
+    return newtype(process, name, fields)
 
 
 def newunion(process, name, types):
@@ -487,7 +487,7 @@ def newunion(process, name, types):
 def newnativedatatype(name):
     from obin.types.datatype import W_DataType
     assert issymbol(name)
-    datatype = W_DataType(name, newlist([]), newvoid())
+    datatype = W_DataType(name, newlist([]))
     return datatype
 
 

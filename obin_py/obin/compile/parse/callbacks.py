@@ -787,13 +787,6 @@ def prefix_module_fun(parser, op, node):
 # MODULE STATEMENTS
 ###############################################################
 
-def stmt_module(parser, op, node):
-    name = expression(parser.name_parser, 0)
-    check_node_type(parser, name, NT_NAME)
-    stmts, scope = parse_module(parser, TERM_BLOCK)
-    advance_end(parser)
-    return node_3(NT_MODULE, __ntok(node), name, stmts, scope)
-
 
 def _load_path_s(node):
     if nodes.node_type(node) == NT_IMPORTED_NAME:
@@ -964,19 +957,12 @@ def _parse_union(parser, node, union_name):
 def _parse_type(parser, node, typename, term):
     if parser.token_type == TT_NAME:
         fields = juxtaposition_as_list(parser.type_parser, term)
-        args = symbol_list_to_arg_tuple(parser, parser.node, fields)
-        body = list_node([nodes.create_fenv_node(parser.node)])
-        construct_funcs = nodes.create_function_variants(args, body)
     elif parser.token_type == TT_LPAREN:
         fields = expect_expression_of(parser.type_parser, 0, NT_LIST, term)
-        args = symbol_list_to_arg_tuple(parser, parser.node, fields)
-        body = list_node([nodes.create_fenv_node(parser.node)])
-        construct_funcs = nodes.create_function_variants(args, body)
     else:
         fields = empty_node()
-        construct_funcs = empty_node()
 
-    return nodes.node_3(NT_TYPE, __ntok(node), typename, fields, construct_funcs)
+    return nodes.node_2(NT_TYPE, __ntok(node), typename, fields)
 
 
 # TODO BETTER PARSE ERRORS HERE

@@ -304,13 +304,6 @@ def create_false_node(basenode):
     return node_0(nt.NT_FALSE, create_token_from_node(tt.TT_FALSE, "false", basenode))
 
 
-def create_fenv_node(basenode):
-    return node_0(nt.NT_FENV,
-                  create_token_from_node(tt.TT_NAME,
-                                         "<environment>",
-                                         basenode))
-
-
 def create_fargs_node(basenode):
     return node_0(nt.NT_FARGS,
                   create_token_from_node(tt.TT_NAME, "<arguments>", basenode))
