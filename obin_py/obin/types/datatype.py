@@ -175,6 +175,7 @@ class W_DataType(W_Extendable):
 
         self.name = name
         self.fields = fields
+        self.arity = api.length_i(self.fields)
 
         if plist.is_empty(self.fields):
             self.is_singleton = True
@@ -223,11 +224,20 @@ class W_DataType(W_Extendable):
         return routine
 
     def _call_(self, process, args):
-        if not self.has_constructor():
+        length = api.length_i(args)
+        if length != self.arity:
             error.throw_2(error.Errors.CONSTRUCTOR_ERROR,
-                          space.newstring(u"There are no constructor for type"), self)
+                          space.newstring(u"Invalid count of data for construction of type"),
+                          self,
+                          api.length(self.fields),
+                          args)
 
-        process.call_object(self, args)
+        return W_Record(self, space.newpvector(args.to_l()))
+        # if not self.has_constructor():
+        #     error.throw_2(error.Errors.CONSTRUCTOR_ERROR,
+        #                   space.newstring(u"There are no constructor for type"), self)
+
+        # process.call_object(self, args)
 
     def _type_(self, process):
         return process.std.types.Datatype

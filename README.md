@@ -12,7 +12,7 @@ Main project goal is to create dynamic FP language with rich syntax and runtime
 * Persistant data structures (lists, vectors, maps), shamelessly stolen from [Pixie](https://github.com/pixie-lang/pixie). 
 * Pattern matching, let-in blocks, clojures, try-catch-finally, abstract data types
 * Assymetric coroutines
- 
+
 
 Syntax example
 ```
