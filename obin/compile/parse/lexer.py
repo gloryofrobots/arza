@@ -1,7 +1,8 @@
 __author__ = 'gloryofrobots'
-from rply import LexerGenerator
+from obin.compile.parse.rply.lexergenerator import LexerGenerator
 from obin.compile.parse import tokens
 from obin.types import space
+
 
 def create_generator(rules):
     lg = LexerGenerator()
@@ -16,7 +17,6 @@ class UnknownTokenError(Exception):
         self.position = position
 
 
-
 class LexerError(Exception):
     """ Lexer error exception.
 
@@ -29,7 +29,6 @@ class LexerError(Exception):
 
 
 class Lexer:
-
     def __init__(self, rules, skip_whitespace):
         assert isinstance(rules, list)
         assert isinstance(skip_whitespace, bool)
@@ -48,21 +47,21 @@ class Lexer:
             buffer matches no rule), a LexerError is raised with
             the position of the error.
         """
-        from rply.lexer import LexingError
+        from obin.compile.parse.rply.lexer import LexingError
         try:
             return self._token()
         except StopIteration:
             return None
         except LexingError as e:
             pos = e.source_pos
-            raise(UnknownTokenError(pos.idx))
+            raise (UnknownTokenError(pos.idx))
 
     def _token(self):
         t = next(self.stream)
         # print tokens.token_type_to_str(t.name), t.value
         token = tokens.newtoken(t.name, t.value,
-                             space.newint(t.source_pos.idx),
-                             space.newint(t.source_pos.lineno), space.newint(t.source_pos.colno))
+                                space.newint(t.source_pos.idx),
+                                space.newint(t.source_pos.lineno), space.newint(t.source_pos.colno))
         if tokens.token_type(token) == -1:
             return self._token()
 

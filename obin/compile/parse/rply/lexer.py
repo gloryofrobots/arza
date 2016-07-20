@@ -1,5 +1,5 @@
-from rply.errors import LexingError
-from rply.token import SourcePosition, Token
+from obin.compile.parse.rply.errors import LexingError
+from obin.compile.parse.rply.token import SourcePosition, Token
 
 
 class Lexer(object):

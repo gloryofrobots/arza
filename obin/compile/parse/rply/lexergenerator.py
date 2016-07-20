@@ -18,7 +18,7 @@
 
 rpython = None
 
-from rply.lexer import Lexer
+from obin.compile.parse.rply.lexer import Lexer
 
 
 class Rule(object):

@@ -32,19 +32,23 @@ LIST = 30
 
 # ************************************************
 
-__OPCODE_REPR__ = ["VOID", "TRUE", "FALSE", "LITERAL", "OUTER", "LOCAL", "TEMPORARY", "IMPORT_NAME", "FUNCTION", "DUP", "FARGS", "FSELF", "LABEL", "STORE_LOCAL", "STORE_TEMPORARY", "RETURN", "POP_CATCH", "CALL", "JUMP", "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "PUSH_CATCH", "JUMP_IF_TRUE", "POP", "THROW", "UNPACK_TUPLE", "VECTOR", "TUPLE", "MAP", "LIST", ]
+__OPCODE_REPR__ = ["VOID", "TRUE", "FALSE", "LITERAL", "OUTER", "LOCAL", "TEMPORARY", "IMPORT_NAME", "FUNCTION", "DUP",
+                   "FARGS", "FSELF", "LABEL", "STORE_LOCAL", "STORE_TEMPORARY", "RETURN", "POP_CATCH", "CALL", "JUMP",
+                   "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "PUSH_CATCH", "JUMP_IF_TRUE", "POP",
+                   "THROW", "UNPACK_TUPLE", "VECTOR", "TUPLE", "MAP", "LIST", ]
 
 # ************************************************
 
 __UNKNOWN_CHANGE__ = -128
 
-__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
+__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, __UNKNOWN_CHANGE__,
+                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
+
 
 # ************************************************
 
 def opcode_to_str(p):
     return __OPCODE_REPR__[p]
-
 
 
 # SOME OPCODES CHANGE STACK SIZE DEPENDING ON RUNTIME VALUES. MAXIMAL CHANGES USED FOR THIS OPCODES,
