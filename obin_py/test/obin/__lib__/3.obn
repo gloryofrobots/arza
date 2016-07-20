@@ -334,6 +334,7 @@ fun split_seq_test () ->
     ]
 }
 
+
 {
     union = { types = #[] repr = "UNION" }
 
@@ -352,3 +353,52 @@ fun split_seq_test () ->
          ^ impl
     )
 }
+
+{
+    union = { types = #[] repr = "UNION" }
+
+    dispatch:method in_process:process = (|
+         impl = space newvoid.
+         self union ifNil: (| impl = self union get_method: method ).
+
+         if: (impl isNil && self is_singleton) do: (|
+             impl = self get_method: method.
+         ).
+
+         impl ifNil:(|
+              _type = api get_type:self in_process:process.
+              impl = _type get_method: method
+         ).
+         ^ impl
+    )
+}
+
+(*
+    get_lbp: parser with_previous: previous [
+        op = self operator.
+        lpb = op lbp.
+        if true: op ambidextra do: [
+
+           io print: "Ambidextra".
+           prev_pos = previous position to_integer.
+           cur_pos = self position to_integer.
+           next_tok = parser ts lookup_next_token.
+
+           if true: self token_type == next token_type then: [
+              return lbp
+           ]
+
+           prev_length = previous length.
+           if true: cur_pos - (prev_pos + prev_length) == 0 then:[
+              return lbp
+           ]
+
+           next_pos = next_token position.
+           cur_length = self length.
+           if true: next_pos - (cur_pos + cur_length) == 1 then: [
+              return -1
+           ]
+        ]
+        return lbp
+    ]
+*)

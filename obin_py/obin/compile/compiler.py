@@ -246,9 +246,9 @@ def _get_variable_index(compiler, code, node, name):
         # HACK for late binding of internal names in prelude
 
         if not names_s.startswith(lang_names.PREFIX):
-            for name in _current_scope(compiler).imports.keys():
-                print name
-            return compile_error(compiler, code, node, u"Unreachable variable")
+            # for name in _current_scope(compiler).imports.keys():
+            #     print name
+            return compile_error(compiler, code, node, u"Unreachable variable `%s`" % (api.to_u(name)))
     else:
         _declare_static_reference(compiler, ref)
 

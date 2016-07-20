@@ -8,6 +8,9 @@ DEFAULT_STACK_SIZE = 32
 
 
 def _print_trace(device, signal, trace):
+    if api.is_empty_b(trace):
+        return
+
     builder = string.Builder().add_u(u"Traceback:").nl()
     for record in trace:
         builder.space(4).add(record).nl()
