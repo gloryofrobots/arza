@@ -365,6 +365,7 @@ def pattern_parser_init(parser):
     infix(parser, TT_DOUBLE_COLON, 60, led_infixr)
     infix(parser, TT_COLON, 100, infix_name_pair)
 
+    symbol(parser, TT_INDENT)
     symbol(parser, TT_WHEN)
     symbol(parser, TT_CASE)
     symbol(parser, TT_COMMA)
@@ -518,7 +519,6 @@ def module_parser_init(parser):
     stmt(parser, TT_INFIXL, stmt_infixl)
     stmt(parser, TT_INFIXR, stmt_infixr)
     stmt(parser, TT_PREFIX, stmt_prefix)
-    stmt(parser, TT_DEF, stmt_def)
     stmt(parser, TT_GENERIC, stmt_generic)
     stmt(parser, TT_INTERFACE, stmt_interface)
     return parser

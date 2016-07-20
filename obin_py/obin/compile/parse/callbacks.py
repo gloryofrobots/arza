@@ -585,7 +585,9 @@ def prefix_throw(parser, op, node):
 # FUNCTION STUFF################################
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
+    skip_indent(parser)
     pattern = juxtaposition_as_tuple(parser.fun_pattern_parser, arg_terminator)
+    skip_indent(parser)
     args_type = nodes.node_type(pattern)
 
     if args_type != NT_TUPLE:
@@ -599,40 +601,102 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
     return pattern
 
 
-def _parse_function_signature(parser, terminator):
+# def _parse_function_signature(parser, terminator):
+    # """
+    #     signature can be one of
+    #     arg1 arg2
+    #     arg1 . arg2 ...arg3
+    #     arg1 of T arg2 of T
+    #     ()
+    #     (arg1 arg2 of T ...arg3)
+    # """
+    # pattern = juxtaposition_as_tuple(parser, terminator)
+    # skip_indent(parser)
+    # args_type = nodes.node_type(pattern)
+    # if args_type != NT_TUPLE:
+    #     parse_error(parser, u"Invalid  syntax in function signature", pattern)
+    # return pattern
+
+
+####################################################
+
+
+def _parse_single_function(parser, signature, term_body):
     """
-        signature can be one of
-        arg1 arg2
-        arg1 . arg2 ...arg3
-        arg1 of T arg2 of T
-        ()
-        (arg1 arg2 of T ...arg3)
+    parse fun f x y z -> (body)
     """
-    pattern = juxtaposition_as_tuple(parser, terminator)
-    skip_indent(parser)
-    args_type = nodes.node_type(pattern)
-    if args_type != NT_TUPLE:
-        parse_error(parser, u"Invalid  syntax in function signature", pattern)
-    return pattern
+    check_token_type(parser, TT_ARROW)
+    advance(parser)
+    init_code_layout(parser, parser.node, term_body)
+    body = statements(parser, term_body)
+    return nodes.create_function_variants(signature, body)
 
 
-def _parse_function_variants(parser, signature, term_pattern, term_guard, term_case_body, term_single_body):
-    if parser.token_type == TT_ARROW:
-        advance(parser)
-        init_code_layout(parser, parser.node, term_single_body)
-        body = statements(parser, term_single_body)
-        return nodes.create_function_variants(signature, body)
+####################################################
 
+
+def _parse_case_function(parser, term_pattern,
+                              term_guard, term_case_body):
+    """
+    parse fun f
+        | x y z -> (body)
+        | a b c -> (body)
+    """
     # bind to different name for not confusing reading code
     # it serves as basenode for node factory functions
-    node = signature
-    check_token_type(parser, TT_CASE)
 
+    check_token_type(parser, TT_CASE)
     init_offside_layout(parser, parser.node)
 
     funcs = []
-    sig_args = nodes.node_first(signature)
-    sig_arity = api.length_i(sig_args)
+    arity = None
+    while parser.token_type == TT_CASE:
+        advance_expected(parser, TT_CASE)
+        args = _parse_func_pattern(parser, term_pattern, term_guard)
+        if nodes.node_type(args) == NT_WHEN:
+            args_sig = nodes.node_first(args)
+        else:
+            args_sig = args
+
+        current_arity = nodes.tuple_node_length(args_sig)
+        if arity is None:
+            arity = current_arity
+        elif arity != current_arity:
+            return parse_error(parser, u"Inconsistent clause arity", args)
+
+        advance_expected(parser, TT_ARROW)
+        init_code_layout(parser, parser.node, term_case_body)
+        body = statements(parser, term_case_body)
+        funcs.append(list_node([args, body]))
+
+    return list_node(funcs)
+
+
+####################################################
+
+
+def _parse_recursive_function(parser, signature, term_pattern,
+                              term_guard, term_case_body):
+    """
+    parse fun f x y z
+        | x y z -> (body)
+        | a b c -> (body)
+    """
+    # bind to different name for not confusing reading code
+    # it serves as basenode for node factory functions
+    node = signature
+
+    if nodes.node_type(signature) == NT_WHEN:
+        sig_node = nodes.node_first(signature)
+    else:
+        sig_node = signature
+    sig_arity = nodes.tuple_node_length(sig_node)
+    sig_args = nodes.node_first(sig_node)
+
+    check_token_type(parser, TT_CASE)
+    init_offside_layout(parser, parser.node)
+
+    funcs = []
 
     while parser.token_type == TT_CASE:
         advance_expected(parser, TT_CASE)
@@ -641,6 +705,7 @@ def _parse_function_variants(parser, signature, term_pattern, term_guard, term_c
             args_sig = nodes.node_first(args)
         else:
             args_sig = args
+
         if nodes.tuple_node_length(args_sig) != sig_arity:
             return parse_error(parser, u"Inconsistent clause arity with function signature", args)
 
@@ -672,9 +737,21 @@ def _parse_function_variants(parser, signature, term_pattern, term_guard, term_c
     return main_func
 
 
+####################################################
+
+
 def _parse_function(parser, term_pattern, term_guard, term_case_body, term_single_body):
-    signature = _parse_function_signature(parser.fun_signature_parser, TERM_FUN_SIGNATURE)
-    funcs = _parse_function_variants(parser, signature, term_pattern, term_guard, term_case_body, term_single_body)
+    skip_indent(parser)
+    if parser.token_type == TT_CASE:
+        funcs = _parse_case_function(parser, term_pattern, term_guard, term_case_body)
+    else:
+        signature = _parse_func_pattern(parser, TERM_FUN_SIGNATURE, term_guard)
+        if parser.token_type == TT_CASE:
+            funcs = _parse_recursive_function(parser, signature, term_pattern, term_guard, term_case_body)
+        else:
+            funcs = _parse_single_function(parser, signature, term_single_body)
+
+    # signature = _parse_function_signature(parser.fun_signature_parser, )
     return funcs
 
 
@@ -935,15 +1012,6 @@ def grab_name_or_operator(parser):
 
     advance(parser)
     return name
-
-
-def stmt_def(parser, op, node):
-    init_node_layout(parser, node)
-    name = expect_expression_of_types(parser.name_parser, 0, [NT_NAME, NT_IMPORTED_NAME])
-    signature = _parse_function_signature(parser.method_signature_parser, TERM_FUN_SIGNATURE)
-    funcs = _parse_function_variants(parser, signature, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
-    advance_end(parser)
-    return node_2(NT_METHOD, __ntok(node), name, funcs)
 
 
 def _parser_trait_header(parser, node):
