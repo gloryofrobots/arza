@@ -555,7 +555,7 @@ def parse(process, env, src):
         print scope.operators
         print "************************** AST ****************************************"
         ast = str(nodes.node_to_string(stmts))
-        f = open('ast.json', 'w')
+        f = open('debinfo/ast.json', 'w')
         f.write(ast)
         f.close()
         raise SystemExit()
