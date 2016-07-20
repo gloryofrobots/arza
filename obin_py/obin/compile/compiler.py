@@ -246,9 +246,9 @@ def _get_variable_index(compiler, code, node, name):
         # HACK for late binding of internal names in prelude
 
         if not names_s.startswith(lang_names.PREFIX):
-            for name in _current_scope(compiler).imports.keys():
-                print name
-            return compile_error(compiler, code, node, u"Unreachable variable")
+            # for name in _current_scope(compiler).imports.keys():
+            #     print name
+            return compile_error(compiler, code, node, u"Unreachable variable `%s`" % api.to_s(name))
     else:
         _declare_static_reference(compiler, ref)
 
@@ -676,8 +676,8 @@ def _compile_func_args_and_body(compiler, code, name, params, body):
         _declare_arguments(compiler, length, is_variadic)
         _compile_destruct_unpack_seq(compiler, funccode, params)
 
-    if not api.isempty(funcname):
-        _emit_fself(compiler, funccode, name, funcname)
+    # if not api.isempty(funcname):
+    #     _emit_fself(compiler, funccode, name, funcname)
 
     _compile_2(compiler, funccode, body)
     current_scope = _current_scope(compiler)
@@ -702,8 +702,8 @@ def _compile_case_function(compiler, code, node, name, cases):
 
     _declare_arguments(compiler, 0, True)
 
-    if not api.isempty(funcname):
-        _emit_fself(compiler, funccode, name, funcname)
+    # if not api.isempty(funcname):
+    #     _emit_fself(compiler, funccode, name, funcname)
 
     funccode.emit_0(FARGS, codeinfo_unknown())
     _compile_match(compiler, funccode, node, cases, error.Errors.FUNCTION_MATCH_ERROR)
@@ -748,6 +748,12 @@ def _compile_FUN(compiler, code, node):
     namenode = node_first(node)
     funcname = _get_symbol_name_or_empty(compiler.process, namenode)
 
+    if not api.isempty(funcname):
+        index = _declare_local(compiler, funcname)
+    else:
+        index = None
+
+    # index = _get_function_index(compiler, funcname)
     funcs = node_second(node)
     # single function
     if len(funcs) == 1:
@@ -762,14 +768,9 @@ def _compile_FUN(compiler, code, node):
     else:
         _compile_case_function(compiler, code, node, namenode, funcs)
 
-    if api.isempty(funcname):
-        return
-
-    # index = _get_function_index(compiler, funcname)
-    index = _declare_local(compiler, funcname)
-
-    funcname_index = _declare_symbol(compiler, funcname)
-    code.emit_2(STORE_LOCAL, index, funcname_index, info(node))
+    if index is not None:
+        funcname_index = _declare_symbol(compiler, funcname)
+        code.emit_2(STORE_LOCAL, index, funcname_index, info(node))
 
 
 def _compile_branch(compiler, code, condition, body, endif):

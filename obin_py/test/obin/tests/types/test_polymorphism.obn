@@ -20,14 +20,14 @@ type Some val
 generic eq `self other
 
 extend Some
-    def eq self other
+    def eq
         | self (val) of Some ->
                val == None
 
         | self _ -> False
 
 extend None
-    def eq self other
+    def eq
         | self {val} of Some ->
                val == None
         | self other of None -> True

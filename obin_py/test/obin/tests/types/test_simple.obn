@@ -11,10 +11,10 @@ type Vec2 p1 p2
 type Point2 x y
 
 extend Point2
-    def add self other
-        | _ p2 of Point2 -> Point2 (self.x + p2.x) (self.y + p2.y)
-        | _ i of Int -> Point2 (self.x + i) (self.y + i)
-        | _ v of Vec2 -> add (Vec2 self self) v
+    def add
+        | self p2 of Point2 -> Point2 (self.x + p2.x) (self.y + p2.y)
+        | self i of Int -> Point2 (self.x + i) (self.y + i)
+        | self v of Vec2 -> add (Vec2 self self) v
 
     def == self other of Point2 ->
             self.x == other.x and self.y == other.y
@@ -22,7 +22,7 @@ extend Point2
     def != self other of Point2 -> not (self == other)
 
 extend Vec2
-    def add self other
+    def add
         | self v of Vec2 -> Vec2 (add self.p1 v.p1) (add self.p2 v.p2)
         | self i of Int -> Vec2 (add self.p1 i) (add self.p2 i)
         | self p of Point2 -> Vec2 (add self.p1 p) (add self.p2 p)
@@ -35,7 +35,7 @@ type Option
     | Some val
     | None
 
-extend Option 
+extend Option
     def val self ->
         match self with
             | x of Some -> x.val

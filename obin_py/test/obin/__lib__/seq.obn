@@ -236,7 +236,7 @@ fun zipwith3 f seq1 seq2 seq3
 
 fun split s
     | [] -> ([], [])
-    | [x] -> (s, [])
+    | s@[x] -> (s, [])
     | x::y::xs ->
         (l, r) = split xs
         (x::l, y::r)
@@ -251,7 +251,7 @@ fun sort f s ->
 
     fun _sort s
         | [] -> []
-        | [x] -> s
+        | s @ [x] -> s
         | xs ->
             (ys, zs) = split xs
             _merge (_sort ys) (_sort zs)

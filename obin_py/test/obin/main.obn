@@ -69,68 +69,8 @@ fun test() ->
     // test_operators:test()
 
 
-fun test_recursive() ->
-    fun f list
-        | x::xs ->
-             io:print list
-             io:print x
-             f xs
-        | [] -> io:print "[]"
-
-
-    f (list:range_to 5)
-
-    fun f2 list ->
-        fun f2 l
-            | x::xs ->
-                io:print list
-                io:print x
-                f2 xs
-            | [] -> io:print "[]"
-
-        f2 list
-
-    f2 (list:range_to 5)
-
-fun test_simple () ->
-    fun f_s x y ...rest -> (x + y, rest)
-    fun f_s2 x y ...rest when x > 10 -> (x + y, rest)
-    fun f_s3 w {y, z=10} [a,b,c, ...tl] x::xs ...rest when c == 42 and y == True ->
-        {w=w, y=y, z=z, a=a, b=b, c=c, tl=tl, x=x, xs=xs, rest=rest}
-
-    affirm:is_equal (f_s 2 3 4 5 6) (5, (4, 5, 6))
-    affirm:is_equal (f_s2 12 3 4 5 6) (15, (4, 5, 6))
-    (affirm:is_equal
-        (f_s3 #w {n=12, y=True, z=10} [40, 41, 42, 43, 44, 45] (list:range 100 110) #a #b #c #d #e #f #g #h #k #l #m #n #o #p)
-        {z=10, xs=[101, 102, 103, 104, 105, 106, 107, 108, 109], x=100, y=True, w=#w, tl=[43, 44, 45], rest=("a", "b", "c", "d", "e", "f", "g", "h", "k", "l", "m", "n", "o", "p"), b=41, c=42, a=40})
-
-fun test_case () ->
-    fun f_c1
-        | a b c -> a + b + c
-
-    fun f_c2
-        | a of Bool b of String c -> #first
-        | a of Bool b c -> #second
-        | a b c -> #third
-
-    fun f_c3
-        | 0 1 c when c < 0 ->  #first
-        | a of Bool b of String c -> #second
-        | a of Bool b c when b + c == 40 -> #third
-
-    affirm:is_equal (f_c1 1 2 3) 6
-
-    affirm:is_equal (f_c2 False "" 42) #first
-    affirm:is_equal (f_c2 False 42 42) #second
-    affirm:is_equal (f_c2 42 42 42) #third
-
-    affirm:is_equal (f_c3 0 1 -3) #first
-    affirm:is_equal (f_c3 False "hello" 42) #second
-    affirm:is_equal (f_c3 False 19 21) #third
 
 
 fun main () ->
     test()
-    test_simple ()
-    test_case ()
     --------------------

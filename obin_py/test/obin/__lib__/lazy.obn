@@ -13,7 +13,7 @@ extend LazyList
     def first self -> self.head
     def rest self -> !self.tail
 
-    def str self
+    def str
         | [] -> "[]"
         | self ->
             fun folder l
@@ -38,7 +38,7 @@ extend LazyList
 
     def len self -> throw NotImplementedError ("len not defined for LazyList",)
 
-    def is_empty self
+    def is_empty
         | self of LazyNil -> True
         | _ -> False
 

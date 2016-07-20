@@ -675,7 +675,7 @@ def _parse_case_function(parser, term_pattern,
 ####################################################
 
 
-def _parse_recursive_function(parser, signature, term_pattern,
+def _parse_recursive_function(parser, name, signature, term_pattern,
                               term_guard, term_case_body):
     """
     parse fun f x y z
@@ -714,7 +714,7 @@ def _parse_recursive_function(parser, signature, term_pattern,
         body = statements(parser, term_case_body)
         funcs.append(list_node([args, body]))
 
-    func = nodes.create_fun_node(node, empty_node(), list_node(funcs))
+    func = nodes.create_fun_node(node, name, list_node(funcs))
 
     fargs_node = nodes.create_fargs_node(node)
 
@@ -739,26 +739,36 @@ def _parse_recursive_function(parser, signature, term_pattern,
 
 ####################################################
 
+def _parse_case_or_simple_function(parser, term_pattern, term_guard, term_case_body, term_single_body):
+    skip_indent(parser)
+    if parser.token_type == TT_CASE:
+        funcs = _parse_case_function(parser, term_pattern, term_guard, term_case_body)
+    else:
+        signature = _parse_func_pattern(parser, TERM_FUN_SIGNATURE, term_guard)
+        check_token_type(parser, TT_ARROW)
+        funcs = _parse_single_function(parser, signature, term_single_body)
+    return funcs
 
-def _parse_function(parser, term_pattern, term_guard, term_case_body, term_single_body):
+
+def _parse_function(parser, name, term_pattern,
+                    term_guard, term_case_body, term_single_body):
     skip_indent(parser)
     if parser.token_type == TT_CASE:
         funcs = _parse_case_function(parser, term_pattern, term_guard, term_case_body)
     else:
         signature = _parse_func_pattern(parser, TERM_FUN_SIGNATURE, term_guard)
         if parser.token_type == TT_CASE:
-            funcs = _parse_recursive_function(parser, signature, term_pattern, term_guard, term_case_body)
+            funcs = _parse_recursive_function(parser, name, signature, term_pattern, term_guard, term_case_body)
         else:
             funcs = _parse_single_function(parser, signature, term_single_body)
 
     # signature = _parse_function_signature(parser.fun_signature_parser, )
     return funcs
 
-
 def _parse_named_function(parser, node):
     init_node_layout(parser, node)
     name = parse_function_name(parser.name_parser)
-    func = _parse_function(parser, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
+    func = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
     advance_end(parser)
     return name, func
 
@@ -1034,7 +1044,7 @@ def stmt_trait(parser, op, node):
     while parser.token_type == TT_DEF:
         advance_expected(parser, TT_DEF)
         generic_name = expect_expression_of_types(parser.name_parser, 0, [NT_NAME, NT_IMPORTED_NAME])
-        funcs = _parse_function(parser.expression_parser,
+        funcs = _parse_case_or_simple_function(parser.expression_parser,
                                 TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_TRAIT_DEF, TERM_TRAIT_DEF)
         methods.append(list_node([generic_name, funcs]))
 
@@ -1069,7 +1079,7 @@ def stmt_extend(parser, op, node):
             advance_expected(parser, TT_DEF)
             method_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME)
 
-            funcs = _parse_function(parser.expression_parser,
+            funcs = _parse_case_or_simple_function(parser.expression_parser,
                                     TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_EXTEND_DEF, TERM_EXTEND_DEF)
             defs.append(list_node([method_name, funcs]))
         elif parser.token_type == TT_END:
