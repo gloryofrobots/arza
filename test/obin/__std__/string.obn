@@ -15,7 +15,9 @@ extend String
     use derive:TCollection
     use derive:TSized
 
-    def ++ _str1 _str2 -> _string:concat _str1 _str2
+    def ++
+        | (_str1 of String) (sym of Symbol) -> _string:concat _str1 (str sym)
+        | _str1 _str2 -> _string:concat _str1 _str2
 
     def append value self -> _string:append value self
 

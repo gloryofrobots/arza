@@ -9,6 +9,7 @@ trait TNum
     def / x y -> _number:div x y
     def mod x y -> _number:mod x y
     def negate x -> _number:negate x
+    def ** x y -> _number:pow x y
 
 extend Int
     use derive:TStr
@@ -16,7 +17,6 @@ extend Int
     use derive:TEq
     use TNum
     use TOrd
-
     def <= x y -> _number:le x y
 
     def range first (last of Int) ->

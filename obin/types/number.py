@@ -1,8 +1,10 @@
 __author__ = 'gloryofrobots'
 import math
+
 from obin.types import api, space
 from obin.misc.platform import rarithmetic, rfloat
 from obin.runtime import error
+
 
 # TODO error here 2 % 0
 
@@ -227,6 +229,26 @@ def le_f_f(w_x, w_y):
 
 def le(w_x, w_y):
     return ge(w_y, w_x)
+
+
+def unwind(w_x, w_y):
+    if space.isint(w_x):
+        x = api.to_i(w_x)
+    else:
+        x = api.to_f(w_x)
+
+    if space.isint(w_y):
+        y = api.to_i(w_y)
+    else:
+        y = api.to_f(w_y)
+
+    return x, y
+
+
+def power(w_x, w_y):
+    x, y = unwind(w_x, w_y)
+    r = x ** y
+    return space.newnumber(r)
 
 
 def bitand(op1_w, op2_w):

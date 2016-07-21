@@ -16,7 +16,7 @@ TPL_FOOTER = """
 TPL_FUNC = """
 @complete_native_routine
 def {{func_native_name}}(process, routine):
-    {% for arg in args %}{{arg.name}} = 
+    {% for arg in args %}{{arg.name}} =
         {%-if  arg.wrapper == ''  -%} routine.get_arg({{arg.index}}) {% else %} {{arg.wrapper}}(routine.get_arg({{arg.index}})) {% endif%}
     {%if  affirm_type != ''  -%} error.affirm_type({{arg.name}}, {{affirm_type}}) {% endif %}
     {% endfor %}
@@ -33,7 +33,7 @@ def generate(module):
     result.append(render(TPL_SETUP_HEADER, module))
     for func in module["funcs"]:
         result.append(render(TPL_INSTALL_FUNC, func))
-    
+
 
     result.append(render(TPL_FOOTER, module))
 
@@ -136,7 +136,7 @@ STRING = module("obin:lang:_string", [
     func(func_name="drop", func_native_name="drop", func_arity=2,
              source_module="string", source_function="drop",
             arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
-    
+
     func(func_name="concat", func_native_name="concat", func_arity=2,
              source_module="string", source_function="concat",
             arguments=[arg(0, 0), arg(1, 0)]),
@@ -172,7 +172,7 @@ BIT = module("obin:lang:_bit",  [
              source_module="number", source_function="bitor",
                 affirm_type='space.isint'),
 
-    
+
     func(func_name="bitxor", func_native_name="bitxor", func_arity=2,
              source_module="number", source_function="bitxor",
                 affirm_type='space.isint'),
@@ -201,7 +201,7 @@ API = module("obin:lang:_api", [
     func(func_name="is_empty", func_native_name="is_empty", func_arity=1,
              source_module="api", source_function="is_empty"),
     func(func_name="put", func_native_name="put", func_arity=3,
-             source_module="api", source_function="put", 
+             source_module="api", source_function="put",
             arguments=[arg(2,0), arg(1,1), arg(0, 0)]),
     func(func_name="at", func_native_name="at", func_arity=2,
              source_module="api", source_function="at",
@@ -224,8 +224,12 @@ API = module("obin:lang:_api", [
 ])
 
 NUMBER = module("obin:lang:_number", [
+    func(func_name="pow", func_native_name="_pow", func_arity=2,
+         source_module="number", source_function="power",
+         affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
+
     func(func_name="add", func_native_name="add", func_arity=2,
-             source_module="number", source_function="add", 
+             source_module="number", source_function="add",
              affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
     func(func_name="sub", func_native_name="sub", func_arity=2,
              source_module="number", source_function="sub",
@@ -269,10 +273,10 @@ MAP = module("obin:lang:_map", [
 # print generate(LIST)
 # print generate(API)
 # print generate(BIT)
-# print generate(NUMBER)
+print generate(NUMBER)
 # print generate(STRING)
 # print generate(MAP)
-print generate(DATATYPE)
+# print generate(DATATYPE)
 
 
 

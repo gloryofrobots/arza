@@ -464,6 +464,7 @@ def expression_parser_init(proc_data, parser):
     assignment(parser, TT_ASSIGN, 10)
 
     infix(parser, TT_FAT_ARROW, 10, infix_fat_arrow)
+    infix(parser, TT_WHEN, 10, infix_when)
     infix(parser, TT_OF, 15, led_infix)
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
@@ -573,5 +574,3 @@ def write_ast(ast):
         repr = json.dumps(ast, sort_keys=True,
                           indent=2, separators=(',', ': '))
         f.write(repr)
-
-

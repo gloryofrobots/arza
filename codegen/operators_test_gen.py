@@ -89,7 +89,7 @@ def format_result(test, evalstring=None):
         return "    affirm:is_equal (%s) (%s)" %  (test, test_result)
     except Exception as e:
         print e
-        return "    affirm:is_throw fun | () -> %s end ()" % test
+        return "    affirm:is_throw (() => %s) ()" % test
 
 
 def test_binary(py_op, obin_op, data, result):
@@ -121,6 +121,7 @@ OP_TABLE = {
   "==":"==",
   "!=":"!=",
   "+":"+",
+  "**":"**",
   "-":"-",
   "%":"%",
   "*":"*",
@@ -136,7 +137,7 @@ OP_TABLE = {
 }
 
 RESULT = []
-for op in ['-', '+', '*', '/', '<', '>', '==', '>=', '<=']:
+for op in ['-', '+', '*', '/', '<', '>', '==', '>=', '<=', '**']:
     test_binary(op, OP_TABLE[op], ARITH_TESTS, RESULT)
 
 test_call_binary(OP_TABLE['%'], 'math.fmod', ARITH_TESTS, RESULT)

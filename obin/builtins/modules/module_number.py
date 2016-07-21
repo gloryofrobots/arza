@@ -6,6 +6,7 @@ from obin.runtime import error
 def setup(process, stdlib):
     _module_name = space.newsymbol(process, u'obin:lang:_number')
     _module = space.newemptyenv(_module_name)
+    api.put_native_function(process, _module, u'pow', _pow, 2)
     api.put_native_function(process, _module, u'add', add, 2)
     api.put_native_function(process, _module, u'sub', sub, 2)
     api.put_native_function(process, _module, u'mul', mul, 2)
@@ -16,6 +17,16 @@ def setup(process, stdlib):
 
     _module.export_all()
     process.modules.add_module(_module_name, _module)
+
+
+@complete_native_routine
+def _pow(process, routine):
+    arg0 = routine.get_arg(0)
+    error.affirm_type(arg0, space.isnumber)
+    arg1 = routine.get_arg(1)
+    error.affirm_type(arg1, space.isnumber)
+
+    return number.power(arg0, arg1)
 
 
 @complete_native_routine

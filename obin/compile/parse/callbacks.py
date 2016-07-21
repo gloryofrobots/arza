@@ -111,9 +111,16 @@ def infix_backtick_name(parser, op, node, left):
     return nodes.create_call_node_2(node, funcnode, left, right)
 
 
-# def infix_double_colon(parser, op, node, left):
-#     right = rexpression(parser, op)
-#     return nodes.create_cons_node(node, left, right)
+def infix_when(parser, op, node, left):
+    branches = []
+
+    condition = expression(parser, 0, TERM_WHEN_EXPRESSION)
+    branches.append(list_node([condition, list_node([left])]))
+    advance_expected(parser, TT_ELSE)
+    false_exp = expression(parser, 0)
+    branches.append(list_node([empty_node(), list_node([false_exp])]))
+    return node_1(NT_CONDITION, __ntok(node), list_node(branches))
+
 
 def infix_fat_arrow(parser, op, node, left):
     if nodes.node_type(left) == NT_JUXTAPOSITION:

@@ -5,7 +5,7 @@ import string
 import lazy
 import list
 
-// import tests:test_operators
+import tests:test_operators
 
 import tests:types:test_types
 import tests:test_partial
@@ -65,12 +65,12 @@ fun test() ->
     log "TEST LAZY"
     test_lazy:test()
 
-    // log "TEST OPERATORS"
-    // test_operators:test()
+    log "TEST OPERATORS"
+    test_operators:test()
 
-
-
+import examples:nbn
 
 fun main () ->
     test()
+    // nbn:run ()
     --------------------

@@ -124,6 +124,14 @@ fun doall coll ->
     walk coll
 ----------------------------------------
 
+fun reverse coll ->
+    fun _reverse l result
+        | [] result -> result
+        | hd::tl result -> (_reverse tl (hd ::: result))
+    ---------------
+
+    _reverse coll (empty coll)
+----------------------------------------
 
 ///ACCESSORS//////////////////////////////////////
 
@@ -261,3 +269,40 @@ fun init coll
     | [] -> throw (ValueError "empty seq in init")
 ------------------------------
 
+fun zip seq1 seq2
+    | x::xs y::ys -> (x, y) ::: zip xs ys
+    | _ _ -> []
+--------------------------------------------------
+
+fun unzip l ->
+    fun _unzip l seq1 seq2
+        | (x, y) :: ts xs ys -> _unzip ts (x ::: xs) (y ::: ys)
+        | [] xs ys -> (reverse xs, reverse ys)
+    _unzip l [] []
+--------------------------------------------------
+
+fun zip3 s1 s2 s3
+    | x::xs y::ys z::zs -> (x, y, z) ::: zip3 xs ys zs
+    | _ _ _ -> []
+--------------------------------------------------
+
+fun unzip3 l ->
+    fun _unzip3 l acc_x acc_y acc_z
+        | [(x, y, z), ...ts] xs ys zs -> _unzip3 ts (x:::xs) (y:::ys) (z:::zs)
+        | [] xs ys zs -> (reverse xs, reverse ys, reverse zs)
+    _unzip3 l [] [] []
+
+fun zipwith f seq1 seq2
+    | f x::xs y::ys -> (f x y) ::: zipwith f xs ys
+    | _ _ _ -> []
+
+fun zipwith3 f seq1 seq2 seq3
+    | f x::xs y::ys z::zs -> (f x y z) ::: zipwith3 f xs ys zs
+    | _ _ _ _ -> []
+
+fun split s
+    | [] -> ([], [])
+    | s@[x] -> (s, [])
+    | x::y::xs ->
+        (l, r) = split xs
+        (x:::l, y:::r)

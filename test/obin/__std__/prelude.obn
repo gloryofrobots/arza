@@ -17,6 +17,7 @@ Precedence    Operator
     100           : . .{ .( .[
     95           JUXTAPOSITION
     60           :: :::
+    55           **
     50           *  /
     40           +  - ++
     35           ==  !=  <  <=  >  >=
@@ -46,11 +47,8 @@ infixl + + 40
 infixl - - 40
 infixl * * 50
 infixl / / 50
+infixl ** ** 55
 
-fun infinity () ->
-    fun _infinity () ->
-        _infinity ()
-    infinity ()
 
 ////////////////////////////////////////////////////////////
 ///////////////// TYPES ////////////////////////////////////
@@ -124,6 +122,7 @@ generic
     mod `x y
     // unary -
     negate `x
+    ** `x y
 
     str `self
     repr `self
@@ -173,6 +172,7 @@ interface
     Eq (!=, ==)
     Ord(<, <=, >, >=, cmp, max, min)
     Num (-, +, *, /, mod, negate)
+    Pow(**)
     Str (str)
     Displayed (str, repr)
     Len (len)
