@@ -1,11 +1,12 @@
 # Obin programming language
 
-This repository contains prototype for experimental dynamically typed unpure functional language
-Main project goal is to create dynamic FP language with rich syntax and runtime
+This repository contains prototype for experimental dynamically typed functional language
 
-## Currently implemented features
+
+## Features
 * Modern expressive functional syntax that resembles something between Erlang and F#.
 * Handwritten, extensible, operator precedence parser with support of indentation layouts and juxtaposition operator
+* Builtin single dispatch engine with some interesting features (separation on trait,interface, generic function; dispatch not only on first argument)
 * Polymorphism engine similar to Clojure's protocols but with possibility to dispatch not only on first argument
 * Automatic function currying with simple push and pop model
 * Stackless, stack based virtual machine

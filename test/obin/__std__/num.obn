@@ -10,6 +10,7 @@ trait TNum
     def mod x y -> _number:mod x y
     def negate x -> _number:negate x
     def ** x y -> _number:pow x y
+-------------------------------------
 
 extend Int
     use derive:TStr
@@ -44,6 +45,7 @@ extend Int
             x ::: _progression (x + step) step
 
         _progression first step
+---------------------------------------------
 
 extend Float
     use derive:TStr
@@ -52,3 +54,4 @@ extend Float
     use TNum
     use TOrd
     def <= x y -> _number:le x y
+--------------------------------------------------
