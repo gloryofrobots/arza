@@ -236,7 +236,7 @@ trait TRepr of Str
 fun lookup key default coll ->
     try
         at key coll
-    catch
+    catch 
         | e of KeyError -> default
         | e -> throw e
 
