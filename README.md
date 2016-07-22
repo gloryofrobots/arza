@@ -6,26 +6,192 @@ This repository contains prototype for experimental dynamically typed functional
 ## Features
 * Modern expressive functional syntax that resembles something between Erlang and F#.
 * Handwritten, extensible, operator precedence parser with support of indentation layouts and juxtaposition operator
+* User defined operators
 * Builtin single dispatch engine with some interesting features (separation on trait,interface, generic function; dispatch not only on first argument)
-* Polymorphism engine similar to Clojure's protocols but with possibility to dispatch not only on first argument
-* Automatic function currying with simple push and pop model
-* Stackless, stack based virtual machine
-* Persistant data structures (lists, vectors, maps), shamelessly stolen from [Pixie](https://github.com/pixie-lang/pixie). 
-* Pattern matching, let-in blocks, clojures, try-catch-finally, abstract data types
+* Support for partial application
+* Stackless virtual machine
+* Persistant data structures (lists, vectors, maps)
+* Pattern matching, user defined types, union types, let-in, if-elif-else, clojures, try-catch-finally
 * Assymetric coroutines
 
+## Syntax
+Obin uses laconic layout based syntax inspired from F# [#light] and Haskell.
+This syntax looks like Python but it is more powerful and allow you to use for example function expressions or if-else expressions inside other expressions
+in condition that indentation rules is correct
 
-Syntax example
 ```
-// Obin does not support tabs in any way
+// Call function print from module io with result of if expression
+io:print if 1 == 2 then
+            False
+         elif 2 == 3 then False
+         else
+            True
+```
+in this example if creates offside line, Once an offside line has been set, all the expressions must align
+with the line until it will be removed by dedent to previous line or special end token
+Tokens capable of creating own layouts: if, else, elif,  match, try, catch, |, let, in, fun, interface, generic, type, ->
+Tokens capable of removing layouts: end, -----[-]* (more than five dashes)
+Offside lines not working inside () {} [], so for example this function interprets without error
+```
+fun nine_billion_names_of_god_the_integer () ->
+    (string:join
+        (seq:map
+            (n => string:join_cast
+               (seq:map (g =>
+                            fun _loop n g ->
+                                if g == 1 or n < g then 1
+                                else
+                                    (seq:foldl
+                                        (
+                                            q res => res + if q > n - g then
+                                                              0
+                                                           else
+                                                            (_loop (n-g) q)
+                                        )
+                                        1
+                                        (range 2 g))
+                                end // end token removes if layout and adds readability
+                            end n g) (range 1 n)) " ") // end token terminates function layout and allows to call function with arguments (n g)
+            (range 1 25))
+         "\n")
+```
+New line in expressions outside of free layout parens ( ) terminate expressions
+except when last token in line is operator or one of(::, :::, :, ., =, or, and) 
 
-// Operators are just functions
+Obin uses juxtaposition for function application. Obin syntax often looks like lisp without first layer of parens
+
+```
+func1 arg1 arg2 (func2 arg3 (func4 arg5 arg6) arg7) arg8 arg9
+```
+
+Obin functions not curried by default (mainly because in dynamic language currying may cause a lot of annoying runtime errors)
+<!--- , shamelessly stolen from [Pixie](https://github.com/pixie-lang/pixie). --->
+
+# Big syntax Example
+
+```
+// this is comment
+// multiline string literal
+"""
+Precedence    Operator
+    100           : . .{ .( .[
+    95           JUXTAPOSITION
+    60           :: :::
+    55           **
+    50           *  /
+    40           +  - ++
+    35           ==  !=  <  <=  >  >=
+    30           and
+    25           or << >>
+    20           |>
+    15           @ as of <|
+    10           = :=
+"""
+
+// Most operators are just functions from prelude (except from . .{ .( .[ : :: ::: and or as of @)
 // keyword(prefix, infixr, infixl) operator, function name, precedence
+// Custom operators
+
+// prefix operator (operator, function_name)
+prefix - negate
+prefix & &
+
+// right associative (operator, function name, precedence)
 infixr := := 10
-infixl <| <| 15
-infixl |> |> 20
-infixl << << 25
-infixl >> >> 25
+
+// left associative
+infixl + + 40
+infixl - - 40
+infixl * * 50
+infixl / / 50
+
+// Types
+// Singleton types without fields
+
+type Nothing
+
+// Union enumeration type
+
+type Ordering
+    | LT | GT | EQ
+
+// Complex union type
+
+type Shape
+    | X x
+    | Y y
+    | Point (x, y)              // fields can be expressed as tuple 
+    | Square width height       // or juxtaposition
+    | Rect left top right bottom
+    | Line point1 point2
+    | Empty
+
+// creating type instances
+p = Point 24.5 25.7
+r = Rect p (Point 12 34) (Point 34 54) (Point 31 12)
+
+// Pattern matching on types and field access on type instances
+match p with
+ | (x, y) of Point -> x + y
+ | (left, top, right, bottom) of Rect -> left.x + right.y // . operator can access field from type instanve by field name
+
+// Generic functions
+// Generic function provides single dispatch
+
+// == is name and x y is args of generic
+// ` before x means that function will dispatch on its first argument
+generic == `x y
+
+generic max `first second
+// or you can declare them in one layout
+
+generic
+    != `x y
+    <= `x y
+    mod `x y
+    - `x y
+    + `x y
+    * `x y
+    / `x y
+
+    // dispatch argument at last position
+    put key value `self
+    at key `self
+    del obj `self
+    elem key `self
+
+// Interfaces
+// Interface determines if type implements one or more generic funtions
+// generic functions used in interface must be declared at this point
+
+// This is current list of standart prelude interfaces
+interface
+    PartialEq (==)
+    Eq (!=, ==)
+    Ord(<, <=, >, >=, cmp, max, min)
+    Num (-, +, *, /, mod, negate)
+    Pow(**)
+    Str (str)
+    Displayed (str, repr)
+    Len (len)
+    Sized (len, is_empty)
+    Collection(put, at, del, elem)
+    ReadOnlyCollection(at, elem)
+    Seq(first, rest)
+    Emptiable(empty)
+    Consable(cons)
+    Prependable(prepend)
+    Appendable(append)
+    Concatable(++)
+    Dict(keys, values, put, at, del, elem)
+    Indexed(index_of)
+    Seqable(to_seq)
+    Sliceable(slice, drop, take)
+    Bounded(lower_bound, upper_bound)
+    Ranged(range, range_by, range_from, range_from_by)
+    Ref(!)
+    MutRef(!, :=)
+
 
 //operators implementation
 //F# like currying operators

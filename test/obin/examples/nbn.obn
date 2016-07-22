@@ -52,7 +52,28 @@ fun nbn_2 () ->
             (range 1 25))
          "\n")
 
+fun nbn_3 () ->
+    (string:join
+        (seq:map
+            (n => string:join_cast
+               (seq:map (g =>
+                            fun _loop n g ->
+                                if g == 1 or n < g then 1
+                                else
+                                    (seq:foldl
+                                        (
+                                            q res => res + if q > n - g then
+                                                              0
+                                                           else
+                                                            (_loop (n-g) q)
+                                        )
+                                        1
+                                        (range 2 g))
+                                end
+                            end n g) (range 1 n)) " ")
+            (range 1 25))
+         "\n")
 
 fun run () ->
     // io:p (nbn_1 ())
-    io:p (nbn_2 ())
+    io:p (nbn_3 ())
