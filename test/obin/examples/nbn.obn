@@ -3,6 +3,10 @@ import io
 import list
 import string
 
+"""
+Nine billion names of God the Integer
+see https://rosettacode.org/wiki/9_billion_names_of_God_the_integer
+"""
 
 fun nbn_1 () ->
     fun _loop n g ->
@@ -15,6 +19,7 @@ fun nbn_1 () ->
                         x = 0
                     else
                         x = _loop (n-g) q
+                    ------
 
                     res + x
                 end
@@ -49,4 +54,5 @@ fun nbn_2 () ->
 
 
 fun run () ->
-    io:p (nbn_1 ())
+    // io:p (nbn_1 ())
+    io:p (nbn_2 ())

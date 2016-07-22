@@ -26,8 +26,10 @@ import tests:test_lazy
 
 
 fun log ...msgs ->
-    if True then apply io:print msgs
-    else ()
+    if True then
+       apply io:print msgs
+    else
+        ()
 
 fun test() ->
     log "RUN TESTS"
@@ -68,9 +70,7 @@ fun test() ->
     log "TEST OPERATORS"
     test_operators:test()
 
-import examples:nbn
 
 fun main () ->
     test()
-    // nbn:run ()
     --------------------

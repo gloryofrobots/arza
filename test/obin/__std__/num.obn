@@ -36,7 +36,6 @@ extend Int
 
 
         _progression cmp first last step
-    --------------------------------------------------
 
     def range_from first  -> range_from_by first 1
 
