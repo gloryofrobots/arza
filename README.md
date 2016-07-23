@@ -55,8 +55,8 @@ fun nine_billion_names_of_god_the_integer () ->
             (range 1 25))
          "\n")
 ```
-New line in expressions outside of free layout parens ( ) terminate expressions
-except when last token in line is operator or one of(::, :::, :, ., =, or, and) 
+New line in expressions outside of free layout parens ( ) terminates them,
+except when last token in line is user defined operator or one of ":: ::: : . = or and"
 
 Obin uses juxtaposition for function application. Obin syntax often looks like lisp without first layer of parens
 
@@ -70,52 +70,123 @@ Obin functions not curried by default (mainly because in dynamic language curryi
 ## Predefined types and literals
 ```
 // this is comment
-fun type_test () ->
-    // Bool
-    True
-    False
+// Bool
+True
+False
 
-    // Integer
-    1002020020202
+// Integer
+1002020020202
 
-    // Float
-    2.023020323
+// Float
+2.023020323
 
-    // String
-    "I am string"
+// String
+"I am string"
 
-    """
-    I am M
-    ultilin
-                e string
-    """
+"""
+I am M
+ultilin
+            e string
+"""
 
-    // Symbol
-    #atomic_string_created_onLyOnce
+// Symbol
+#atomic_string_created_onLyOnce
 
-    // Tuple
-    () (1,2,3)
+// Tuple
+() (1,2,3)
 
-    // List
-    [1,2,3,4] 1::2::3::4::[]
+// List
+[1,2,3,4] 1::2::3::4::[]
 
-    // LazyVal
-    x = delay 1 + 2
+// LazyVal
+x = delay 1 + 2
 
-    // LazyCons
-    1:::2:::3:::4:::5
+// LazyCons
+1:::2:::3:::4:::5
 
-    // Map
-    {x=(1,2), y=(2,3)}
+// Map
+{x=(1,2), y=(2,3)}
 
-    // Function
-    x y => x + y
-    fun f x y ->
-        z = x + y
-        z + x * y
+// Function
+x y => x + y
+
+fun add_and_mul x y ->
+    z = x + y
+    z + x * y
+
 ```
 
-## Functions
+### Data structures
+```
+// All of predefined data structures are persistant
+
+// accessing fields
+t = (1,2,3)
+t.0 + t.1 = 3 = t.2
+t.[0] + t.[2-1] = 3 = t.[sqrt 2]
+
+// same aplies to lists
+l = [1,2,3]
+l.0 + l.1 = 3 = l.2
+l.[0] + l.[2-1] = 3 = l.[sqrl 2]
+
+// t.0 and l.[2-1] compiles into
+(at 0 t) (at (2-1) l)
+
+m = {one=1, two=2, three=3}
+m.one + m.two = m.three
+
+// compiles into
+(at #one m) + (at #two m) = (at #three m)
+
+// creating new collection from old one
+
+m1 = m.{three=-3, four=4}
+
+M = {
+    line = {
+        data = [1,2,3,4],
+        index = 1
+    },
+
+    id = 12
+}
+
+M1 = M.{
+    line = M.line.{
+        index_2 = M.line.index + 42,
+        data = [4, 3, 2, 1]
+    },
+    id = "ID M1"
+}
+
+M1 = {line = {index = 1, index_2 = 43, data = [4, 3, 2, 1]}, id = "ID M1"}
+
+[1,2,3,4,5].{0=102, 1=103, 4=105} = [102, 103, 3, 4, 105]
+[1,2,3,4,5].{7=7}  // runtime error because of invalid index
+
+```
+
+### Immutability
+
+```
+// Variables can be bind only once
+X = 1
+X = 1 // not an error - same value
+X = 2 // runtime error
+
+// Datastructures are immutable
+
+// Mutable variables supported via := ! operators
+// current implementation is buid on top of coroutines and is extremely slow
+import var
+v = var:var 2
+!v = 2
+v := 3
+!v = 3
+```
+
+### Functions
 ```
 // Function in Obin can have one of three forms
 // simple
@@ -320,5 +391,218 @@ affirm:is_equal (
         | {x of Int, y="YY" of String} -> #second
         | {x of Int, y="YYYY" of String} -> #third
 ) #third
+
+// pattern matching can be used as left part of = expression
+(x,y,z) = (1,2,3)
+{x, y=[1, 2, (d,e) of MyType, a, b, ...rest], z @ 1=42} =
+    {x=17, y=[1,2, (MyType 3 4), 4, 5, 7, 8, 9], 1=42}
+```
+
+### Exceptions
+
+```
+// usual throw try catch finally blocks
+// Anything can be used as exception
+try
+    try
+        1/0
+    catch e1 ->
+        e1
+
+catch e2 ->
+    try
+        throw #Catch
+    catch e3 ->
+        42
+    finally ->
+        //uncatched
+        throw (e2, e3)
+
+// With pattern matching on exception value
+try
+    throw (1,2,"ERROR")
+catch
+    | err @ (1, y, 3) -> #first
+    | (1,2, "ERROR@") -> #second
+    | err @ (1, 2, x) -> #third
+finally ->
+    (#fourth, err, x)
+```
+
+### User defined types
+```
+// Singleton types without fields
+type Nothing
+
+// Union enumeration type
+type Ordering
+    | LT | GT | EQ
+
+// Complex union type
+type Shape
+    | X x
+    | Y y
+    | Point (x, y)              // fields can be expressed as tuple 
+    | Square width height       // or juxtaposition
+    | Rect left top right bottom
+    | Line point1 point2
+    | Empty
+
+// creating type instances
+p = Point 24.5 25.7
+r = Rect p (Point 12 34) (Point 34 54) (Point 31 12)
+
+// Pattern matching on types and field access on type instances
+match p with
+ | (x, y) of Point -> x + y
+ | (left, top, right, bottom) of Rect -> left.x + right.y // . operator can access field from type instance by field name
+
+```
+
+### Obin single dispatch generics
+
+```
+// Generic is a special kind of function provides single dispatch on one of it's arguments
+
+// == is name and x y is args of generic
+// ` before x means that function will dispatch on its first argument
+generic == `x y
+
+generic max `first second
+// or you can declare them in one layout
+
+// declare many generics in one layout
+generic
+    mod `x y
+    - `x y
+    + `x y
+
+    // dispatch argument at last position
+    put key value `self
+    at key `self
+    del obj `self
+    elem key `self
+
+// Interfaces
+// Interface combines one or more generic functions and can be used for type check in pattern matching 
+// generic functions must be declared at this point
+
+interface
+    PartialEq (==)
+    Eq (!=, ==)
+    Seq(first, rest)
+    Ord(<, <=, >, >=, cmp, max, min)
+    Str (str)
+    Dict(keys, values, put, at, del, elem)
+    Ref(!)
+    MutRef(!, :=)
+
+// to extend type with generic function
+
+type MyList l
+
+extend L
+    def len self -> len self.l
+
+    def is_empty self -> is_empty self.l
+
+    def first self -> self
+
+    def rest self -> self
+
+if exists interface Seq(first, rest) and Sized(len)
+it can be used in pattern matching
+mylist = MyList [1,2,3,4,5,6]
+match mylist with
+    | {l1} of Seq -> ()
+    | {l} of Seq -> l
+
+or with builtin kindof function
+mylist `kindof` MyList = True
+mylist `kindof` Number = False
+mylist `kindof` Seq = True
+mylist `kindof` Sized = True
+
+// extending every type with its own implementation of generics might be very annoying
+// to avoid problem use traits
+
+generic
+    eq `x y
+    ne `x y
+    le `x y
+    lt `x y
+    ge `x y
+    gt `x y
+
+trait Equal
+    def eq x y -> not (ne x y)
+    def ne x y -> not (eq x y)
+
+trait Order
+    def le x y -> (cmp x y) != GT
+    def lt x y -> (cmp x y) == LT
+    def ge x y -> (cmp x y) != LT
+    def gt x y -> (cmp x y) == GT
+
+extend MyList
+    // implementations of eq and ne defined in Equal trait will be attached to MyList
+    use Equal
+    // only le and ge will be attached to the type
+    use Order (le, ge)
+
+    // Trait is a simple map with generics as keys and implementation functions as values
+    def lt x y -> Order.[lt] x y
+    def gt x y -> Order.[gt] x y
+```
+
+### Partial application
+
+```
+// from prelude.obn
+
+fun partial func ...args ->
+    // primitive function
+    obin:lang:defpartial_with_arguments func args
+
+// prefix operator for partials
+fun & func ->
+    // primitive function
+    obin:lang:defpartial func
+
+// Functions inspired by F#
+fun |> x f -> f x
+fun <| f x -> f x
+fun >> f g -> (x => g (f x))
+fun << f g -> (x => f (g x))
+fun flip f x y -> f y x
+
+fun add x y -> x + y
+add1 = &add 1
+
+(add1 2) = 3
+
+// used with operators
+((&`-` 1) 2) (-1)
+// flipped operator
+((partial flip `-` 1)  2) =  1
+
+l = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+(l |> (&seq:filter) even
+   |> (&seq:map) (&`+` 1)
+   |> partial seq:map (partial flip `-` 2)) = [-1, 1, 3, 5, 7]
+
+
+square = (x => x * x)
+triple = &`*` 3
+(l  |> partial seq:filter even
+    |> partial seq:map (partial `+` 1)
+    |> partial seq:map (partial flip `-` 2)
+    |> partial seq:map (triple >> square))  = [9, 9, 81, 225, 441]
+
+((partial seq:filter even
+    >> partial seq:map (partial `+` 1)
+    >> partial seq:map (partial flip `-` 2)
+    >> partial seq:map (triple >> square)) l) =  [9, 9, 81, 225, 441]
 
 ```
