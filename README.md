@@ -1,7 +1,18 @@
 # Obin programming language
 
 This repository contains prototype for experimental dynamically typed functional language
+## Goal
+To experiment with syntax and stackless virtual machine.
+It is not a production system.
+Obin written in interpreted language Python with not many speed optimisations
 
+Running interpeter
+```
+python targetobin.py test/obin/main.obn
+```
+or better use pypy
+
+Currently, compilation via RPython toolchain not supported but it can be done with some efforts
 
 ## Features
 * Modern expressive functional syntax that resembles something between Erlang and F#.
@@ -14,7 +25,9 @@ This repository contains prototype for experimental dynamically typed functional
 * Pattern matching, user defined types, union types, let-in, if-elif-else, clojures, try-catch-finally
 * Assymetric coroutines
 
-## Syntax
+## Guide
+
+### Syntax
 Obin uses laconic layout based syntax inspired from F# [#light] and Haskell.
 This syntax looks like Python but it is more powerful and allow you to use for example function expressions or if-else expressions inside other expressions
 in condition that indentation rules is correct
@@ -67,7 +80,7 @@ func1 arg1 arg2 (func2 arg3 (func4 arg5 arg6) arg7) arg8 arg9
 Obin functions not curried by default (mainly because in dynamic language currying may cause a lot of annoying runtime errors)
 <!--- , shamelessly stolen from [Pixie](https://github.com/pixie-lang/pixie). --->
 
-## Predefined types and literals
+### Predefined types and literals
 ```
 // this is comment
 // Bool
@@ -255,6 +268,28 @@ fun scanl func accumulator coll ->
         | f acc hd::tl -> acc :: (scanl f (f hd acc) tl)
     end) func accumulator coll
 
+/// Lambda expressions
+// Lambda expression can be created with => operator
+x => x
+x y z => x + y + z
+
+// they are often used inside parens
+seq:foldl (x y => x + y) 0 [1,2,3,4,5]
+
+// on the left side of => operator can be any valid pattern
+// on the right side - single expression
+tail = hd::tl => tl
+head = [hd, ...t] => hd
+fullname = {name, surname} => name ++ " " ++ surname
+
+// if you need multiline function expression use fun instead
+// Important fun expression requires name, use _ if you don't need one
+
+seq:foldl (fun _ x y ->
+              io:print "x + y" x y
+              x + y
+           end) 0 [1,2,3,4,5]
+
 ```
 ### Operators
 
@@ -398,6 +433,31 @@ affirm:is_equal (
     {x=17, y=[1,2, (MyType 3 4), 4, 5, 7, 8, 9], 1=42}
 ```
 
+### Let in bindings
+
+```
+// Every let block creates its own lexical scope
+// It can be used to avoid limitations of variable immutability
+
+x = 1
+y = 2
+
+let
+    x = 11
+    y = 12
+in
+    affirm:is_equal x 11
+    affirm:is_equal y 12
+
+// it can be used as expression
+v = let x = 1
+        y = 2 in x + y
+
+affirm:is_equal v 3
+
+// Every let block compiles into anonymous function
+```
+
 ### Exceptions
 
 ```
@@ -460,6 +520,33 @@ match p with
 ```
 
 ### Obin single dispatch generics
+In modern functional languages popular single dispatch mechanism based on protocols 
+In such system at first you declare protocol and functions belongs to it
+At second you declare one or more types and then you implement protocol for them
+In Clojure it will look like
+```
+(defprotocol AProtocol
+  "A doc string for AProtocol abstraction"
+  (bar [a b] "bar docs")
+  (baz [a] [a b] [a b c] "baz docs"))
+
+(deftype MyType [a b c])
+
+(extend-type MyType
+  Foo
+    (bar [x y] ...)
+    (baz ([x] ...) ([x y zs] ...)))
+```
+
+It is a very simple and powerful system but it has problem of tightly bounding functions to only one protocol 
+What if we need to have one function belongs to two or more protocols at once
+For example we can have protocol for collection with methods 'at' and 'elem' and protocol for
+mutable collection with methods 'at' 'elem' 'put' 'del'
+We can, of course, provide some way of mixing or inheriting protocols, but Obin goes the other way
+In obin generic functions and protocols(interfaces) declared separatly
+and interfaces combine one or more previously declared generics.
+Type doesn't need to signal satisfaction of interface, it will be done automatically at runtime
+It only needs to implement generic functions belonging to interface
 
 ```
 // Generic is a special kind of function provides single dispatch on one of it's arguments
@@ -605,4 +692,119 @@ triple = &`*` 3
     >> partial seq:map (partial flip `-` 2)
     >> partial seq:map (triple >> square)) l) =  [9, 9, 81, 225, 441]
 
+```
+
+### Modules and main function
+Module system is very simple
+module = file and there no notion of packages
+module search path are always relative to running script and there no possibility of relative import
+
+Example if we have
+```
++-- program.obn
++-- __std__
+|   +-- seq.obn
+|   +-- lazy.obn
++-- my
+|   +-- modules
+|       +-- module1.obn
+|       +-- module2.obn
+|   +-- module1.obn
+|   +-- module3.obn
+```
+if we run Obin with
+```
+python targetobin.py program.obn
+```
+local __std__ directory automatically placed into module search path
+which already contains system variable OBINSTD
+Obin search file prelude.obn in local __std__ if it exists or in OBINSTD
+if not found one it will aborts execution
+__std__ directory must have file prelude.obn which will be first loaded file by interpreter
+All names declared in prelude would be visible in all other modules
+after loading __std__/prelude.obn interpreter loads list of predefined modules such as
+list.obn num.obn string.obn ...
+afterwards it loads program.obn and then lookups for function named 'main' and executes it
+result of 'main' function would be result of program
+
+#### Importing and exporting names
+```
+// By default all names except operators can be imported outside
+// You can limit it with
+export (f_ab, f_ab_2, CONST)
+
+fun f1 num -> ()
+fun f2 num1 num2 -> ()
+CONST = 10
+fun f3 () -> ()
+
+// to import module use it name relative to program.obn with / replaced by :
+// this modules declared in __std__, no need to specify path
+
+import seq
+import io
+
+// all exported names from this modules can be accessed with : operator
+// such name often called 'qualified name'
+
+io:print (seq:reverse [1,2,4,5])
+
+// import other module
+import my:modules:module1
+
+// all exported names binds to module1:variable_name
+// as you see only last part of the module name is used in qualified names
+
+module1:add 1 2
+
+// if there are modules with indentical names alias needs to be used
+
+import my:modules:module1 as mod1
+import my:module1 as mod1_1
+mod1:add (mod1_1:add 1 2) 3
+
+// import only required qualified names
+
+import my:module1 (f1 as f1_1, f2 as f2_1)
+module1:f1_1 ()
+module1:f2_1 ()
+
+import my:modules:module1 as mod1 (f1, f2)
+mod1:f1 ()
+mod1:f2 ()
+
+import my:module1 as mod1 (f1 as f1_1, f2 as f2_1)
+mod1:f1_1 ()
+mod1:f2_1 ()
+
+// hiding names
+
+import my:modules:module1  hiding (CONST)
+module1:f1 ()
+module1:f2 ()
+
+import my:modules:module1 as mod1 hiding (f1)
+mod1:f2 ()
+mod1:CONST
+
+import tests:lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
+
+/// UNQUALIFIED IMPORT
+
+// import specified unqualified names
+
+from my:modules:module1  import (f1, f2, CONST as const)
+f1 ()
+f2 ()
+const
+
+// import all unqualified names from module
+
+from my:modules:module1 import _
+
+// hiding specific names
+
+from my:modules:module1 hide (CONST)
+f1()
+f2()
 ```
