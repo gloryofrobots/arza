@@ -15,7 +15,7 @@ or better use pypy
 Currently, compilation via RPython toolchain not supported but it can be done with some efforts
 
 ## Features
-* Modern expressive functional syntax that resembles something between Erlang and F#.
+* Modern expressive functional syntax resembling something between Erlang and F#.
 * Handwritten, extensible, operator precedence parser with support of indentation layouts and juxtaposition operator
 * User defined operators
 * Builtin single dispatch engine with some interesting features (separation on trait,interface, generic function; dispatch not only on first argument)
