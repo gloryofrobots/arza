@@ -61,6 +61,7 @@ There are no REPL for obin at the moment
   - [Extend type](#extend)
   - [Traits](#traits)
 - [Modules and bootstrap](#modules-and-bootstrap)
+  - [Loading order](#loading-order)
   - [Import and export](#import-and-export)
 
 
@@ -1008,23 +1009,14 @@ python targetobin.py program.obn
 ```
 Module search path would look something like  [BASEDIR, STD, OBINSTD] where
 
-* BASEDIR = program.obn directory
+* BASEDIR = directory in which program.obn is located
 * STD = BASEDIR/\_\_std\_\_ - directory with user defined std modules. It will give user easy way to have custom prelude
-* OBINSTD = environment variable OBINSTD which must contain path to global stdlib 
+* OBINSTD = environment variable OBINSTD which must contain path to global stdlib. If OBINSTD is empty, all required modules must be in STD directory
 
-If OBINSTD is empty, all required modules must be in STD directory
-At first obin loads prelude.obn, if not found one it will aborts execution.
-All names declared in prelude would be visible in all other modules
-After prelude obin loads all required modules, which at the moment are
-[
-    derive.obn, bool.obn, num.obn, bit.obn, env.obn, string.obn,
-    symbol.obn, vector.obn, list.obn, function.obn,
-    fiber.obn, trait.obn, tuple.obn, map.obn,
-    seq.obn, lazy.obn, datatype.obn
-]
-
-At last interpreter loads program.obn and then searches for function named 'main' and executes it
-result of 'main' function would be result of program
+#### Loading order
+* prelude.obn. If prelude is absent execution will be terminated. All names declared in prelude would be visible in all other modules
+* stdlib modules used by runtime (derive.obn, bool.obn, num.obn, bit.obn, env.obn, string.obn, symbol.obn, vector.obn, list.obn, function.obn, fiber.obn, trait.obn, tuple.obn, map.obn, seq.obn, lazy.obn, datatype.obn)
+* running script (in our case program.obn), after loading this sript obin searches for function named 'main' and executes it. Result of 'main' function would be result of program
 
 #### Import and export
 ```
