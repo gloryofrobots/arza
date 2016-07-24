@@ -1007,14 +1007,15 @@ if we run Obin with
 python targetobin.py program.obn
 ```
 Module search path would look something like  [BASEDIR, STD, OBINSTD] where
-BASEDIR = program.obn directory
-STD = BASEDIR/__std__ - directory with user defined std modules. It will give user easy way to have custom prelude
-OBINSTD = environment variable OBINSTD which must contain path to global stdlib 
-if OBINSTD is empty, all required modules must be in STD directory
+
+* BASEDIR = program.obn directory
+* STD = BASEDIR/__std__ - directory with user defined std modules. It will give user easy way to have custom prelude
+* OBINSTD = environment variable OBINSTD which must contain path to global stdlib 
+
+If OBINSTD is empty, all required modules must be in STD directory
 At first obin loads prelude.obn, if not found one it will aborts execution.
 All names declared in prelude would be visible in all other modules
-After prelude obin loads all required modules,
-which at the moment are
+After prelude obin loads all required modules, which at the moment are
 [
     derive.obn, bool.obn, num.obn, bit.obn, env.obn, string.obn,
     symbol.obn, vector.obn, list.obn, function.obn,
