@@ -29,7 +29,7 @@ Currently, compilation via RPython toolchain does not supported but it can be do
 ## Guide
 
 - [Syntax](#syntax)
-- [Predefined types and literals](#predefined-types-and-literals]
+- [Predefined types and literals](#predefined-types-and-literals)
 
 ### Syntax
 Obin uses indentation-aware syntax inspired by F# [#light] and Haskell.
