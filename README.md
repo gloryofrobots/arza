@@ -1,7 +1,9 @@
 # Obin programming language
 
 This repository contains prototype for experimental dynamically typed functional language
+
 ## Goal
+
 To experiment with syntax and stackless virtual machine.
 It is not a production system.
 Obin written in relatively `slow` language python with not many speed optimisations
@@ -13,32 +15,62 @@ python targetobin.py test/obin/main.obn
 or better use pypy
 
 Currently, compilation via RPython toolchain does not supported but it can be done with some efforts
+There are no REPL for obin at the moment
 
 ## Features
-* Modern expressive functional syntax inspired by F#,Haskell,Elixir and Python
+
+* Indentation-aware syntax inspired by F#, Haskell, Elixir and Python
+* Persistant data structures (lists, tuples, maps)
+* Pattern matching
+* Lexical clojures and lambdas
 * User defined operators
-* Single dispatch generic functions
+* User defined types
 * Traits and interfaces
-* Powerful operator precedence parser
-* Support for partial application
+* Single dispatch generic functions
+* Partial application
 * Stackless virtual machine
-* Persistant data structures (lists, vectors, maps)
-* Pattern matching, user defined types, union types, let-in, if-elif-else, lexical clojures, try-catch-finally
 * Assymetric coroutines
+
+## TODO
+
+* Macros
+* REPL
+* Tail call optimisations
+* Total speed optimisations
+* C++ version
 
 ## Guide
 
 - [Syntax](#syntax)
 - [Predefined types and literals](#predefined-types-and-literals)
+- [Data structures](#data-structures)
+- [Immutability](#immutability)
+- [Functions](#functions)
+- [Partial application](#partial-application)
+- [Operators](#operators)
+- [Expressions](#expressions)
+  - [if-elif-else](#if-elif-else)
+  - [match-with](#match-with)
+  - [let-in](#let-in)
+  - [try-catch-finally-throw](#try-catch-finally-throw)
+- [Types](#types)
+- [Single dispatch](#single-dispatch)
+  - [Generics](#generics)
+  - [Interfaces](#interfaces)
+  - [Extend type](#extend)
+  - [Traits](#traits)
+- [Modules and bootstrap](#modules-and-bootstrap)
+  - [Import and export](#import-and-export)
+
 
 ### Syntax
-Obin uses indentation-aware syntax inspired by F# [#light] and Haskell.
-Tokens **if** **else** **elif**  **match** **try** **catch**
-**|** **let** **in** **fun** **interface** **generic** **type** **->**
-trigger offside line.
-Once an offside line has been set, all the expressions must align with the line.
-Until it be removed by dedent to previous line or by `end` token
 
+Obin uses indentation-aware syntax inspired by F# [#light] and Haskell.
+Tokens [**if** **else** **elif**  **match** **try** **catch**
+**let** **in** **fun** **interface** **generic** **type** **->** **|**]
+trigger offside line.
+Once an offside line has been set, all the expressions must align with the line,
+until it be removed by dedent to previous line or by `end` token.
 
 ```
 // Call function print from module io with result of if expression
@@ -82,6 +114,8 @@ fun nine_billion_names_of_god_the_integer () ->
          "\n")
 ```
 
+
+
 New line in expressions outside of indention-free layouts terminates them,
 except when last token in line is user defined operator or one of ":: ::: : . = or and"
 ```
@@ -98,6 +132,74 @@ func1 arg1 arg2 (func2 arg3 (func4 arg5 arg6) arg7) arg8 arg9
 ```
 
 Obin functions are not curried by default (mainly because in dynamic language currying may cause a lot of annoying runtime errors)
+
+Some extreme syntax examples which will compile without errors
+```
+x =   1
+    + 2
+    + 3
+    + 4
+
+
+y = x
+        + 3
+            + 2 +
+    5
+
+
+let x = 222
+    y = 333 in affirm:is_equal x 222
+               affirm:is_equal y 333
+
+
+match (1,2,3) with | (x,y,z) -> 2
+                    | _ -> 1
+
+
+match if 2 == 1 then
+            2
+      else
+        3
+      end
+with
+    | 2 -> 3
+    | 3 -> 2
+
+
+match fun _ x ->
+            1
+        end
+with
+    | Y ->
+        (fun _ t
+            | (a,b) -> a + b end
+            (1 + 1, 2 + 2))
+    | _ -> 2
+
+(
+    (x => x)
+    (
+        fun _ x ->
+            1
+        end
+        , 3
+        , 1
+        , 4
+        , 5
+    )
+)
+
+(1
+, fun _ x | 5 -> 25
+            | 6 -> 45
+, fun _ x
+    | 5 -> 25
+    | 6 -> 45
+, (x => x)
+// dedent terminates fun and because of the free indentation inside parens
+// third element of the tuple evaluates to ((x => x) 45)
+45)
+```
 
 ### Predefined types and literals
 ```
@@ -334,6 +436,60 @@ seq:foldl (fun _ x y ->
            end) 0 [1,2,3,4,5]
 
 ```
+
+### Partial application
+
+```
+// from prelude.obn
+
+fun partial func ...args ->
+    // primitive function
+    obin:lang:defpartial_with_arguments func args
+
+// prefix operator for partials
+fun & func ->
+    // primitive function
+    obin:lang:defpartial func
+
+// Functions inspired by F#
+fun |> x f -> f x
+fun <| f x -> f x
+fun >> f g -> (x => g (f x))
+fun << f g -> (x => f (g x))
+fun flip f x y -> f y x
+
+fun add x y -> x + y
+add1 = &add 1
+
+(add1 2) = 3
+
+// used with operators
+((&`-` 1) 2) (-1)
+// flipped operator
+((partial flip `-` 1)  2) =  1
+
+l = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+(l |> (&seq:filter) even
+   |> (&seq:map) (&`+` 1)
+   |> partial seq:map (partial flip `-` 2)) = [-1, 1, 3, 5, 7]
+
+
+square = (x => x * x)
+triple = &`*` 3
+(l  |> partial seq:filter even
+    |> partial seq:map (partial `+` 1)
+    |> partial seq:map (partial flip `-` 2)
+    |> partial seq:map (triple >> square))  = [9, 9, 81, 225, 441]
+
+((partial seq:filter even
+    >> partial seq:map (partial `+` 1)
+    >> partial seq:map (partial flip `-` 2)
+    >> partial seq:map (triple >> square)) l) =  [9, 9, 81, 225, 441]
+
+// TODO implement macroses and make |> >> and other operators smart enough to create partials automatically
+```
+
 ### Operators
 
 ```
@@ -389,7 +545,9 @@ infixl / / 50
 // Operators defined in user module are local to this module and can't be exported
 ```
 
-### if-elif-else
+
+### Expressions
+#### if-elif-else
 
 ```
 //Inspired by python but else is mandatory
@@ -406,9 +564,9 @@ if one of the branches succeeds result of it's last expression will be result of
 ```
 
 
-### Pattern matching
+#### match-with
 Obin doesn't have loops so pattern matching and recursion used for iteration
-#### Pattern matching in functions
+##### Pattern matching in functions
 
 ```
 fun <funcname> [arguments]
@@ -420,7 +578,7 @@ Function arguments are sequentially matched against patterns. If a match succeed
 the corresponding body is evaluated.
 If there is no matching pattern with a true guard sequence, runtime error occurs.
 
-#### Match expression
+##### Match expression
 ```
 match <expr> with
     | <pattern> [when guard] -> <body>
@@ -431,7 +589,7 @@ The expression <expr> is evaluated and the patterns  are sequentially matched ag
 If a match succeeds and the optional guard is true, the corresponding body is evaluated.
 If there is no matching pattern with a true guard sequence, runtime error occurs.
 
-#### Supported patterns
+##### Supported patterns
 ```
 // Patterns are the same for function clauses and match expressions
 
@@ -475,7 +633,7 @@ fun f arg1 arg2
     | a (x, y, z) when z == 4
     | a (x, y, z)
 ```
-#### Examples
+##### Examples
 
 ```
 fun count
@@ -519,7 +677,7 @@ affirm:is_equal (
     {x=17, y=[1,2, (MyType 3 4), 4, 5, 7, 8, 9], 1=42}
 ```
 
-### Let in bindings
+#### let-in
 
 ```
 let
@@ -548,7 +706,8 @@ v = let x = 1
 affirm:is_equal v 3
 ```
 
-### Exceptions
+
+#### try-catch-finally-throw
 **throw** **try** **catch** **finally**, common for many languages
 
 ```
@@ -603,7 +762,7 @@ finally ->
     (#fourth, err, x)
 ```
 
-### User defined types
+### Types
 ```
 // Fieldless singleton type
 type Nothing
@@ -646,12 +805,13 @@ match p with
 
 ```
 
-### Obin single dispatch
+### Single dispatch
 Single dispatch based on protocols(interfaces, traits) became popular in many modern languages (Clojure, Elixir, Golang. Rust)
 Such system usually consists of types and protocols. Protocols consists of one (zero) or more methods
 Protocol (all it's methods) can be implemented for specific type. Protocol methods usually dispatch on first argument.
 
-#### Clojure example
+
+**Clojure example**
 ```
 (defprotocol AProtocol
   "A doc string for AProtocol abstraction"
@@ -676,7 +836,8 @@ and interfaces combine one or more previously declared generics.
 Type doesn't need to signal implementation of interface but needs to implement all generic functions belonging to interface
 Obin generic functions can dispatch on argument in any position
 
-#### Generic example
+
+#### Generics
 ```
 // Generic provides dispatch (single) on one of it's arguments
 
@@ -714,7 +875,7 @@ generic
     elem key `self
 ```
 
-#### Interface example
+#### Interfaces
 
 ```
 interface
@@ -747,7 +908,7 @@ interface
 
 ```
 
-#### Extend example
+#### Extend
 ```
 extend <type>
     def <generic> <function_definition>
@@ -823,60 +984,7 @@ extend MyList
     def gt x y -> Order.[gt] x y
 ```
 
-### Partial application
-
-```
-// from prelude.obn
-
-fun partial func ...args ->
-    // primitive function
-    obin:lang:defpartial_with_arguments func args
-
-// prefix operator for partials
-fun & func ->
-    // primitive function
-    obin:lang:defpartial func
-
-// Functions inspired by F#
-fun |> x f -> f x
-fun <| f x -> f x
-fun >> f g -> (x => g (f x))
-fun << f g -> (x => f (g x))
-fun flip f x y -> f y x
-
-fun add x y -> x + y
-add1 = &add 1
-
-(add1 2) = 3
-
-// used with operators
-((&`-` 1) 2) (-1)
-// flipped operator
-((partial flip `-` 1)  2) =  1
-
-l = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-
-(l |> (&seq:filter) even
-   |> (&seq:map) (&`+` 1)
-   |> partial seq:map (partial flip `-` 2)) = [-1, 1, 3, 5, 7]
-
-
-square = (x => x * x)
-triple = &`*` 3
-(l  |> partial seq:filter even
-    |> partial seq:map (partial `+` 1)
-    |> partial seq:map (partial flip `-` 2)
-    |> partial seq:map (triple >> square))  = [9, 9, 81, 225, 441]
-
-((partial seq:filter even
-    >> partial seq:map (partial `+` 1)
-    >> partial seq:map (partial flip `-` 2)
-    >> partial seq:map (triple >> square)) l) =  [9, 9, 81, 225, 441]
-
-// TODO implement macroses and make |> >> and other operators smart enough to create partials automatically
-```
-
-### Modules and main function
+### Modules and bootstrap
 Module system is very simple: module = file and there are no notion of packages
 Module search path are always relative to running script and there are no possibility of relative import
 
@@ -916,7 +1024,7 @@ which at the moment are
 At last interpreter loads program.obn and then searches for function named 'main' and executes it
 result of 'main' function would be result of program
 
-#### Importing and exporting names
+#### Import and export
 ```
 // By default all names except operators can be imported outside
 // You can limit it with
