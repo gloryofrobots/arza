@@ -1016,7 +1016,7 @@ Module search path would look something like  [BASEDIR, STD, OBINSTD] where
 #### Loading order
 * prelude.obn. If prelude is absent execution will be terminated. All names declared in prelude would be visible in all other modules
 * stdlib modules used by runtime (derive.obn, bool.obn, num.obn, bit.obn, env.obn, string.obn, symbol.obn, vector.obn, list.obn, function.obn, fiber.obn, trait.obn, tuple.obn, map.obn, seq.obn, lazy.obn, datatype.obn)
-* running script (in our case program.obn), after loading this sript obin searches for function named 'main' and executes it. Result of 'main' function would be result of program
+* running script (in our case program.obn). After loading this sript obin searches for function named 'main' and executes it. Result of 'main' function would be result of program
 
 #### Import and export
 ```
