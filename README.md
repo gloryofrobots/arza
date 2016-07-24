@@ -6,7 +6,7 @@ This repository contains prototype for experimental dynamically typed functional
 
 To experiment with syntax and stackless virtual machine.
 It is not a production system.
-Obin written in relatively `slow` language python with not many speed optimisations
+Obin written in relatively 'slow' language python with not many speed optimisations.
 
 Running interpeter
 ```
@@ -14,15 +14,16 @@ python targetobin.py test/obin/main.obn
 ```
 or better use pypy
 
-Currently, compilation via RPython toolchain does not supported but it can be done with some efforts
+Currently, compilation via RPython toolchain does not supported but it can be done with some efforts.
 There are no REPL for obin at the moment
 
 ## Features
 
-* Indentation-aware syntax inspired by F#, Haskell, Elixir and Python
+* Indentation-aware syntax inspired by F#, Haskell and Python
 * Persistant data structures (lists, tuples, maps)
 * Pattern matching
 * Lexical clojures and lambdas
+* Usual number of primitives (if-else, let-in, try-catch)
 * User defined operators
 * User defined types
 * Traits and interfaces
@@ -37,7 +38,7 @@ There are no REPL for obin at the moment
 * REPL
 * Tail call optimisations
 * Total speed optimisations
-* C++ version
+* Prodaction ready C++ version
 
 ## Guide
 
@@ -70,7 +71,7 @@ Tokens [**if** **else** **elif**  **match** **try** **catch**
 **let** **in** **fun** **interface** **generic** **type** **->** **|**]
 trigger offside line.
 Once an offside line has been set, all the expressions must align with the line,
-until it be removed by dedent to previous line or by `end` token.
+until it be removed by dedent to previous line or by **end** token.
 
 ```
 // Call function print from module io with result of if expression
