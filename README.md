@@ -4,7 +4,7 @@ This repository contains prototype for experimental dynamically typed functional
 ## Goal
 To experiment with syntax and stackless virtual machine.
 It is not a production system.
-Obin written in interpreted language Python with not many speed optimisations
+Obin written in relatively `slow` language python with not many speed optimisations
 
 Running interpeter
 ```
@@ -12,25 +12,29 @@ python targetobin.py test/obin/main.obn
 ```
 or better use pypy
 
-Currently, compilation via RPython toolchain not supported but it can be done with some efforts
+Currently, compilation via RPython toolchain does not supported but it can be done with some efforts
 
 ## Features
-* Modern expressive functional syntax resembling something between Erlang and F#.
-* Handwritten, extensible, operator precedence parser with support of indentation layouts and juxtaposition operator
+* Modern expressive functional syntax inspired by F#,Haskell,Elixir and Python
 * User defined operators
-* Builtin single dispatch engine with some interesting features (separation on trait,interface, generic function; dispatch not only on first argument)
+* Single dispatch generic functions
+* Traits and interfaces
+* Powerful operator precedence parser
 * Support for partial application
 * Stackless virtual machine
 * Persistant data structures (lists, vectors, maps)
-* Pattern matching, user defined types, union types, let-in, if-elif-else, clojures, try-catch-finally
+* Pattern matching, user defined types, union types, let-in, if-elif-else, lexical clojures, try-catch-finally
 * Assymetric coroutines
 
 ## Guide
 
 ### Syntax
-Obin uses laconic layout based syntax inspired from F# [#light] and Haskell.
-This syntax looks like Python but it is more powerful and allow you to use for example function expressions or if-else expressions inside other expressions
-in condition that indentation rules is correct
+Obin uses indentation-aware syntax inspired by F# [#light] and Haskell.
+Tokens 'if else elif  match try catch | let in fun interface generic type ->'
+trigger offside line.
+Once an offside line has been set, all the expressions must align with the line.
+Until it be removed by dedent to previous line or by `end` token
+
 
 ```
 // Call function print from module io with result of if expression
@@ -39,13 +43,18 @@ io:print if 1 == 2 then
          elif 2 == 3 then False
          else
             True
+
+io:print if 1 == 2 then
+            False
+     elif 2 == 3 then False // Compile error: elif and else must align with if 
+         else
+            True
+
 ```
-in this example if creates offside line, Once an offside line has been set, all the expressions must align
-with the line until it will be removed by dedent to previous line or special end token
-Tokens capable of creating own layouts: if, else, elif,  match, try, catch, |, let, in, fun, interface, generic, type, ->
-Tokens capable of removing layouts: end, -----[-]* (more than five dashes)
-Offside lines not working inside () {} [], so for example this function interprets without error
+
+Indentation ignored inside () {} []
 ```
+// Complex expression mixing both indentation-free and indentation-aware layouts
 fun nine_billion_names_of_god_the_integer () ->
     (string:join
         (seq:map
@@ -56,7 +65,7 @@ fun nine_billion_names_of_god_the_integer () ->
                                 else
                                     (seq:foldl
                                         (
-                                            q res => res + if q > n - g then
+                                            q res => res + if q > n - g then   // even while if inside () inner expressions must be aligned
                                                               0
                                                            else
                                                             (_loop (n-g) q)
@@ -68,8 +77,15 @@ fun nine_billion_names_of_god_the_integer () ->
             (range 1 25))
          "\n")
 ```
-New line in expressions outside of free layout parens ( ) terminates them,
+
+New line in expressions outside of indention-free layouts terminates them,
 except when last token in line is user defined operator or one of ":: ::: : . = or and"
+```
+X = sqrt 4  // expression terminates on new line
+- 2        // compiles as X = (sqrt 4); -2;
+X = sqrt 4 - // compiles as  X = sqrt 4 - 2
+      2
+```
 
 Obin uses juxtaposition for function application. Obin syntax often looks like lisp without first layer of parens
 
@@ -78,7 +94,6 @@ func1 arg1 arg2 (func2 arg3 (func4 arg5 arg6) arg7) arg8 arg9
 ```
 
 Obin functions not curried by default (mainly because in dynamic language currying may cause a lot of annoying runtime errors)
-<!--- , shamelessly stolen from [Pixie](https://github.com/pixie-lang/pixie). --->
 
 ### Predefined types and literals
 ```
@@ -131,6 +146,7 @@ fun add_and_mul x y ->
 
 ### Data structures
 ```
+// Obin maps and vectors borrowed from [Pixie language](https://github.com/pixie-lang/pixie).
 // All of predefined data structures are persistant
 
 // accessing fields
@@ -190,8 +206,8 @@ X = 2 // runtime error
 
 // Datastructures are immutable
 
-// Mutable variables supported via := ! operators
-// current implementation is buid on top of coroutines and is extremely slow
+// Mutable variables supported via ':= !' operators
+// current implementation is build on top of coroutines and is extremely slow
 import var
 v = var:var 2
 !v = 2
@@ -202,11 +218,11 @@ v := 3
 ### Functions
 ```
 // Function in Obin can have one of three forms
-// simple
+// Simple
 fun function_name arg1 argn ->
     (body)
 
-// where (body) is one or more expressions separated by \n or some special cases
+// where (body) is one or more expressions separated by '\n'
 
 // Example
 fun any p l ->
@@ -215,8 +231,7 @@ fun any p l ->
 fun all p l ->
     conjunction (map p l)
 
-// case function with multiple clauses
-// all clauses must have same arity
+// Case function with multiple clauses. All clauses must have same arity.
 fun function_name
     | pattern1 pattern ->
         (body1)
@@ -237,7 +252,7 @@ fun reverse coll ->
     _reverse coll (empty coll)
 
 // Recursive two level function
-// this is special kind of form which allows to check argument types or other conditions only in first recursive call
+// This kind of function allows to check argument types or other conditions only at first step of recursion 
 fun function_name arg1 argn
     | pattern_1 pattern_n ->
         (body1)
@@ -268,22 +283,20 @@ fun scanl func accumulator coll ->
         | f acc hd::tl -> acc :: (scanl f (f hd acc) tl)
     end) func accumulator coll
 
-/// Lambda expressions
 // Lambda expression can be created with => operator
 x => x
 x y z => x + y + z
 
-// they are often used inside parens
+// they are often placed inside parens
 seq:foldl (x y => x + y) 0 [1,2,3,4,5]
 
 // on the left side of => operator can be any valid pattern
-// on the right side - single expression
 tail = hd::tl => tl
 head = [hd, ...t] => hd
 fullname = {name, surname} => name ++ " " ++ surname
 
-// if you need multiline function expression use fun instead
-// Important fun expression requires name, use _ if you don't need one
+// If you need multiple statement function, use 'fun' instead
+// fun expression requires name, use _ if you don't need one
 
 seq:foldl (fun _ x y ->
               io:print "x + y" x y
@@ -330,6 +343,7 @@ infixl / / 50
 // foldr `+` l2 l1
 // to use function as infix operator put it between `` too
 // 4 `mod` 2 = 0
+
 // There are special rules for resolving ambiguity when both prefix and infix precedence defined (subtraction and negate for -) 
 
 (2-1) =  1 // infix because no space between - and left operand
@@ -343,19 +357,42 @@ infixl / / 50
 
 // Operators defined in prelude.obn are global to all modules
 // Operators defined in user module are local to this module and can't be exported
-// This is artificial limitation
 ```
 
 ### Pattern matching
+Obin doesn't have loops so pattern matching and recursion used for iteration
+#### Pattern matching in functions
+
 ```
-// Obin doesn't has loops so pattern matching and recursion is what used most of the times
-// Pattern matching can be used in function clauses or in special match expression
+fun <funcname> [arguments]
+    | <pattern> [when guard] -> <body>
+    | <pattern1> [when guard1] -> <body1>
+    ...
+```
+Function arguments are sequentially matched against patterns. If a match succeeds and the optional guard is true, 
+the corresponding body is evaluated.
+If there is no matching pattern with a true guard sequence, runtime error occurs.
+
+#### Match expression
+```
+match <expr> with
+    | <pattern> [when guard] -> <body>
+    | <pattern1> [when guard1] -> <body>
+    ...
+```
+The expression <expr> is evaluated and the patterns  are sequentially matched against the result
+If a match succeeds and the optional guard is true, the corresponding body is evaluated.
+If there is no matching pattern with a true guard sequence, runtime error occurs.
+
+#### Supported patterns
+```
+// -> <body> part below is ommitted
 fun f arg1 arg2
     // integers floats symbols strings
     | 1 2.32323
     | "Hello" #World
 
-    // Special values
+    // Booleans
     | False True
 
     // Unit (empty tuple)
@@ -365,15 +402,15 @@ fun f arg1 arg2
     | _ _
 
     // variable name binds value to variable
-    | x y
+    | x Y
 
-    // [] destructs all types implementing Seq interface (generic functions first and rest)
+    // [] destructs all types implementing Seq interface
     // () all types implementing Indexed interface
-    // ...varname destructs rest of the collection
+    // ...varname destructs rest of the data structure
     // Sequences can also be destructed by :: operator
-    | [1,2,3,x, ...rest] (1,2,y) 
+    | [1,2,3,x, ...rest] (1,2,y)
     | 1::2::3::x::rest   (a,b,...c)
-    
+
     // {} destructs all types implementing Dict interface
     | {key1="Value", key2, key3=(1,2,3)} {key3, key4}
 
@@ -385,11 +422,13 @@ fun f arg1 arg2
     // opeator @ binds value or subexpression to variable
     | Result @ {genre, LilyName @ "actress"="Lily", age=13}  i @ 42
     // when expression can be used to specify condition for identical patterns
-    | a (x, y, z) when z == 3 and y == 2 and x == 1 and not (a `is` True)
+    | a (x, y, z) when z == 3 and y == 2 and x == 1 and not (a == True)
     | a (x, y, z) when z == 4
     | a (x, y, z)
+```
+#### Examples
 
-// Working examples
+```
 fun count
     | 1 -> #one
     | 2 -> #two
@@ -403,10 +442,8 @@ fun f_c2
 
 fun f_c3
     | 0 1 c when c < 0 ->  #first
-    | a of Bool b of String c -> #second
+    | (a of Bool) (b of String) c -> #second
     | a of Bool b c when b + c == 40 -> #third
-
-// all same rules applie to match expressions
 
 match {name="Bob", surname=("Alice", "Dou"), age=42} with
     | {age=41, names} ->  (name, age, 0)
@@ -436,9 +473,15 @@ affirm:is_equal (
 ### Let in bindings
 
 ```
-// Every let block creates its own lexical scope
-// It can be used to avoid limitations of variable immutability
+let
+    <expressions>
+in
+    <expression>
+```
+Nested, lexically-scoped, list of declarations
+The scope of the declarations is the <expressions> and the result is the <expression> evaluated in this scope
 
+```
 x = 1
 y = 2
 
@@ -454,8 +497,6 @@ v = let x = 1
         y = 2 in x + y
 
 affirm:is_equal v 3
-
-// Every let block compiles into anonymous function
 ```
 
 ### Exceptions
@@ -478,7 +519,7 @@ catch e2 ->
         //uncatched
         throw (e2, e3)
 
-// With pattern matching on exception value
+// With pattern matching in catch
 try
     throw (1,2,"ERROR")
 catch
@@ -491,18 +532,24 @@ finally ->
 
 ### User defined types
 ```
-// Singleton types without fields
+// Fieldless singleton type
 type Nothing
 
-// Union enumeration type
+// Constructor type
+Point x y
+
+// or with tuple notation
+Point (x, y)
+
+// Enumeration type
 type Ordering
     | LT | GT | EQ
 
-// Complex union type
+// Complex variant type
 type Shape
     | X x
     | Y y
-    | Point (x, y)              // fields can be expressed as tuple 
+    | Point (x, y)              // fields can be expressed as tuple
     | Square width height       // or juxtaposition
     | Rect left top right bottom
     | Line point1 point2
@@ -512,18 +559,26 @@ type Shape
 p = Point 24.5 25.7
 r = Rect p (Point 12 34) (Point 34 54) (Point 31 12)
 
+p `kindof` Point = True
+p `kindof` Shape = True
+p `kindof` Square = False
+p.x `kindof` Float = True
+
+
 // Pattern matching on types and field access on type instances
 match p with
- | (x, y) of Point -> x + y
- | (left, top, right, bottom) of Rect -> left.x + right.y // . operator can access field from type instance by field name
+ | (x, y) of Point -> x + y // as tuple
+ | (left, top, right, bottom) of Rect -> left.x + right.y // . operator can access instance field by name
+ | {right, top, left, bottom} of Rect -> left.x + right.y // as map
 
 ```
 
-### Obin single dispatch generics
-In modern functional languages popular single dispatch mechanism based on protocols 
-In such system at first you declare protocol and functions belongs to it
-At second you declare one or more types and then you implement protocol for them
-In Clojure it will look like
+### Obin single dispatch
+Single dispatch based on protocols(interfaces, traits) became popular in many modern languages (Clojure, Elixir, Golang. Rust)
+Such system usually consists of types and protocols. Protocols consists of one (zero) or more methods
+Protocol (all it's methods) can be implemented for specific type. Protocol methods usually dispatch on first argument.
+
+#### Clojure example
 ```
 (defprotocol AProtocol
   "A doc string for AProtocol abstraction"
@@ -538,57 +593,102 @@ In Clojure it will look like
     (baz ([x] ...) ([x y zs] ...)))
 ```
 
-It is a very simple and powerful system but it has problem of tightly bounding functions to only one protocol 
-What if we need to have one function belongs to two or more protocols at once
-For example we can have protocol for collection with methods 'at' and 'elem' and protocol for
-mutable collection with methods 'at' 'elem' 'put' 'del'
-We can, of course, provide some way of mixing or inheriting protocols, but Obin goes the other way
-In obin generic functions and protocols(interfaces) declared separatly
+It is simple and powerful system but it tightly bounds functions to only one protocol.
+Problem occurs when some function must belong to two or more protocols simultaneously
+For example, we can have protocol for collection with methods 'at' and 'elem' and protocol for
+mutable collection with methods 'at' 'elem' 'put' 'del'.
+Mixins or Inheritance can solve this problem but obin goes the other way.
+In obin generic functions and protocols(interfaces) declared apart from each other
 and interfaces combine one or more previously declared generics.
-Type doesn't need to signal satisfaction of interface, it will be done automatically at runtime
-It only needs to implement generic functions belonging to interface
+Type doesn't need to signal implementation of interface but needs to implement all generic functions belonging to interface
+Obin generic functions can dispatch on argument in any position
 
+#### Generic example
 ```
-// Generic is a special kind of function provides single dispatch on one of it's arguments
+// Generic provides dispatch (single) on one of it's arguments
 
-// == is name and x y is args of generic
-// ` before x means that function will dispatch on its first argument
-generic == `x y
+generic
+    <name> [`]<arg>+
+    ...
 
-generic max `first second
-// or you can declare them in one layout
+// ` before argument signals position of 'dispatch' argument (argument on which type dispatch occurs)
+// ` can be ommited on generic with only one argument
+
+generic equal `x y
+generic negate x
+
+// dispatch on last argument
+
+generic cons value `seq
+
 
 // declare many generics in one layout
+
 generic
+
     mod `x y
+
     - `x y
+
     + `x y
 
-    // dispatch argument at last position
     put key value `self
-    at key `self
-    del obj `self
-    elem key `self
 
-// Interfaces
+    at key `self
+
+    del obj `self
+
+    elem key `self
+```
+
+#### Interface example
+
+```
+interface
+    <name> (<generic>+)
+    ...
+
+
 // Interface combines one or more generic functions and can be used for type check in pattern matching 
 // generic functions must be declared at this point
 
 interface
+
     PartialEq (==)
-    Eq (!=, ==)
+
+    Eq (!=, ==) // shares same == generic
+
     Seq(first, rest)
+
     Ord(<, <=, >, >=, cmp, max, min)
+
     Str (str)
+
+    Collection(put, at, del, elem)
+
     Dict(keys, values, put, at, del, elem)
+
     Ref(!)
+
     MutRef(!, :=)
 
-// to extend type with generic function
+```
+
+#### Extend example
+```
+extend <type>
+    def <generic> <function_definition>
+
+
+// extend type with generic function
 
 type MyList l
 
 extend L
+    def + self other
+        | self other of List -> MyList (self.l + other)
+        | self other of MyList -> MyList (self.l + other.l)
+
     def len self -> len self.l
 
     def is_empty self -> is_empty self.l
@@ -597,22 +697,29 @@ extend L
 
     def rest self -> self
 
-if exists interface Seq(first, rest) and Sized(len)
-it can be used in pattern matching
+// if interfaces Seq(first, rest), Add(+) and Sized(len) exist
+// we can check if type implements them
+
 mylist = MyList [1,2,3,4,5,6]
 match mylist with
-    | {l1} of Seq -> ()
-    | {l} of Seq -> l
+    | l of Seq -> ()
+    | l of Seq -> l
 
 or with builtin kindof function
 mylist `kindof` MyList = True
 mylist `kindof` Number = False
 mylist `kindof` Seq = True
 mylist `kindof` Sized = True
+mylist `kindof` Add = True
+mylist `kindof` Sub = False
+```
 
-// extending every type with its own implementation of generics might be very annoying
-// to avoid problem use traits
+#### Traits
+Trait is unit for code reuse in obin.
+They are simple maps {generic = implementation} and can be used in extend statement 
+to share common behaviour between different types
 
+```
 generic
     eq `x y
     ne `x y
@@ -632,8 +739,9 @@ trait Order
     def gt x y -> (cmp x y) == GT
 
 extend MyList
-    // implementations of eq and ne defined in Equal trait will be attached to MyList
+    // all implementations defined in Equal trait will be attached to MyList
     use Equal
+
     // only le and ge will be attached to the type
     use Order (le, ge)
 
@@ -692,14 +800,14 @@ triple = &`*` 3
     >> partial seq:map (partial flip `-` 2)
     >> partial seq:map (triple >> square)) l) =  [9, 9, 81, 225, 441]
 
+// TODO implement macroses and make |> >> and other operators smart enough to create partials automatically
 ```
 
 ### Modules and main function
-Module system is very simple
-module = file and there no notion of packages
-module search path are always relative to running script and there no possibility of relative import
+Module system is very simple: module = file and there are no notion of packages
+Module search path are always relative to running script and there are no possibility of relative import
 
-Example if we have
+Example directory structure
 ```
 +-- program.obn
 +-- __std__
@@ -716,15 +824,23 @@ if we run Obin with
 ```
 python targetobin.py program.obn
 ```
-local __std__ directory automatically placed into module search path
-which already contains system variable OBINSTD
-Obin search file prelude.obn in local __std__ if it exists or in OBINSTD
-if not found one it will aborts execution
-__std__ directory must have file prelude.obn which will be first loaded file by interpreter
+Module search path would look something like  [BASEDIR, STD, OBINSTD] where
+BASEDIR = program.obn directory
+STD = BASEDIR/__std__ - directory with user defined std modules. It will give user easy way to have custom prelude
+OBINSTD = environment variable OBINSTD which must contain path to global stdlib 
+if OBINSTD is empty, all required modules must be in STD directory
+At first obin loads prelude.obn, if not found one it will aborts execution.
 All names declared in prelude would be visible in all other modules
-after loading __std__/prelude.obn interpreter loads list of predefined modules such as
-list.obn num.obn string.obn ...
-afterwards it loads program.obn and then lookups for function named 'main' and executes it
+After prelude obin loads all required modules,
+which at the moment are
+[
+    derive.obn, bool.obn, num.obn, bit.obn, env.obn, string.obn,
+    symbol.obn, vector.obn, list.obn, function.obn,
+    fiber.obn, trait.obn, tuple.obn, map.obn,
+    seq.obn, lazy.obn, datatype.obn
+]
+
+At last interpreter loads program.obn and then searches for function named 'main' and executes it
 result of 'main' function would be result of program
 
 #### Importing and exporting names
