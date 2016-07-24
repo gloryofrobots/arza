@@ -33,7 +33,8 @@ Currently, compilation via RPython toolchain does not supported but it can be do
 
 ### Syntax
 Obin uses indentation-aware syntax inspired by F# [#light] and Haskell.
-Tokens 'if else elif  match try catch | let in fun interface generic type ->'
+Tokens **if** **else** **elif**  **match** **try** **catch**
+**|** **let** **in** **fun** **interface** **generic** **type** **->**
 trigger offside line.
 Once an offside line has been set, all the expressions must align with the line.
 Until it be removed by dedent to previous line or by `end` token
