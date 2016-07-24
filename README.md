@@ -28,6 +28,9 @@ Currently, compilation via RPython toolchain does not supported but it can be do
 
 ## Guide
 
+- [Syntax](#syntax)
+- [Predefined types and literals](#predefined-types-and-literals]
+
 ### Syntax
 Obin uses indentation-aware syntax inspired by F# [#light] and Haskell.
 Tokens 'if else elif  match try catch | let in fun interface generic type ->'
@@ -93,22 +96,23 @@ Obin uses juxtaposition for function application. Obin syntax often looks like l
 func1 arg1 arg2 (func2 arg3 (func4 arg5 arg6) arg7) arg8 arg9
 ```
 
-Obin functions not curried by default (mainly because in dynamic language currying may cause a lot of annoying runtime errors)
+Obin functions are not curried by default (mainly because in dynamic language currying may cause a lot of annoying runtime errors)
 
 ### Predefined types and literals
 ```
 // this is comment
-// Bool
+
+// Bool type
 True
 False
 
-// Integer
+// Integer type
 1002020020202
 
-// Float
+// Float type
 2.023020323
 
-// String
+// String type
 "I am string"
 
 """
@@ -117,41 +121,52 @@ ultilin
             e string
 """
 
-// Symbol
+// Symbol type
 #atomic_string_created_onLyOnce
 
-// Tuple
+// Tuple type
 () (1,2,3)
 
-// List
+// List type
 [1,2,3,4] 1::2::3::4::[]
 
-// LazyVal
+// LazyVal type
 x = delay 1 + 2
 
-// LazyCons
+// LazyCons type
 1:::2:::3:::4:::5
 
-// Map
+// Map type
 {x=(1,2), y=(2,3)}
 
-// Function
+// Function type
 x y => x + y
 
 fun add_and_mul x y ->
     z = x + y
     z + x * y
 
+// Datatype type
+type Point x y
+
+// Union type
+type Option
+    | None
+    | Some val
+
 ```
 
 ### Data structures
 ```
-// Obin maps and vectors borrowed from [Pixie language](https://github.com/pixie-lang/pixie).
+// Many obin data structures borrowed from [Pixie language](https://github.com/pixie-lang/pixie).
 // All of predefined data structures are persistant
 
 // accessing fields
+//<variable>.<name | integer>
 t = (1,2,3)
 t.0 + t.1 = 3 = t.2
+
+//<name>.[<expression>]
 t.[0] + t.[2-1] = 3 = t.[sqrt 2]
 
 // same aplies to lists
@@ -169,6 +184,7 @@ m.one + m.two = m.three
 (at #one m) + (at #two m) = (at #three m)
 
 // creating new collection from old one
+//<varname>.{ <key>=<expression>* }
 
 m1 = m.{three=-3, four=4}
 
@@ -199,7 +215,10 @@ M1 = {line = {index = 1, index_2 = 43, data = [4, 3, 2, 1]}, id = "ID M1"}
 ### Immutability
 
 ```
-// Variables can be bind only once
+// = is not an assignment but pattern matching operator
+// so variables can be bind to values only once in lexical scope
+// you can use let-in expression if you need same variable name bind to another value
+
 X = 1
 X = 1 // not an error - same value
 X = 2 // runtime error
@@ -208,6 +227,7 @@ X = 2 // runtime error
 
 // Mutable variables supported via ':= !' operators
 // current implementation is build on top of coroutines and is extremely slow
+
 import var
 v = var:var 2
 !v = 2
@@ -216,13 +236,15 @@ v := 3
 ```
 
 ### Functions
-```
-// Function in Obin can have one of three forms
-// Simple
-fun function_name arg1 argn ->
-    (body)
 
-// where (body) is one or more expressions separated by '\n'
+```
+// Function expression in obin have three forms
+
+// Simple
+fun <function_name> <arg>+  ->
+    <expressions>
+
+// result of the function is result of last expression
 
 // Example
 fun any p l ->
@@ -232,11 +254,15 @@ fun all p l ->
     conjunction (map p l)
 
 // Case function with multiple clauses. All clauses must have same arity.
-fun function_name
-    | pattern1 pattern ->
-        (body1)
-    | pattern1 pattern ->
-        (body1)
+
+fun <function_name>
+    | <pattern>+ [when guard] ->
+        <expressions>
+    | <pattern>+ [when guard] ->
+        <expressions>
+    ...
+
+// transforms to match-with expression by the compiler
 
 // Example
 fun foldl
@@ -253,21 +279,24 @@ fun reverse coll ->
 
 // Recursive two level function
 // This kind of function allows to check argument types or other conditions only at first step of recursion 
-fun function_name arg1 argn
-    | pattern_1 pattern_n ->
-        (body1)
-    | pattern_1 pattern_n ->
-        (body1)
+
+fun <function_name> <arg>+
+    | <pattern>+ [when guard] ->
+        <expressions>
+    | <pattern>+ [when guard] ->
+        <expressions>
+    ...
 
 // this function transforms in compile time to
-fun function_name arg1 argn
-    (fun function_name
-        | pattern_1 pattern_n ->
-            (body1)
-        | pattern_1 pattern_n ->
-            (body1)
-     end) arg1 argn  // inner function call
-     // function_name now binds to inner function
+fun <function_name> <arg>+
+    (fun <function_name>
+        | <pattern>+ [when guard] ->
+            <expressions>
+        | <pattern>+ [when guard] ->
+            <expressions>
+        ...
+    ) <arg>+ // call inner function with outer function arguments
+    // inner function has the same name as outer, so if inner is recursive it can't call outer
 
 // initial arguments of outer function visible through entire recursive process
 
@@ -279,7 +308,7 @@ fun scanl func accumulator coll
 // Compiles into
 fun scanl func accumulator coll ->
     (fun scanl
-        | f acc [] -> acc::(empty coll) // coll here contains initial value from first call
+        | f acc [] -> acc::(empty coll) // coll contains initial value from first call
         | f acc hd::tl -> acc :: (scanl f (f hd acc) tl)
     end) func accumulator coll
 
@@ -290,12 +319,12 @@ x y z => x + y + z
 // they are often placed inside parens
 seq:foldl (x y => x + y) 0 [1,2,3,4,5]
 
-// on the left side of => operator can be any valid pattern
+// on the left hand side of => operator can be any valid pattern
 tail = hd::tl => tl
 head = [hd, ...t] => hd
 fullname = {name, surname} => name ++ " " ++ surname
 
-// If you need multiple statement function, use 'fun' instead
+// If you need multiple statement function in some expression, use 'fun' instead
 // fun expression requires name, use _ if you don't need one
 
 seq:foldl (fun _ x y ->
@@ -323,7 +352,7 @@ Precedence    Operator
     10           = :=
 """
 
-// Most operators are just functions from prelude (except from . .{ .( .[ : :: ::: and or as of @)
+// Most operators are just functions from prelude (except from . .{ .( .[ : :: ::: and or as of @ requiring special treatment)
 // prefix operator (operator, function_name)
 prefix - negate
 prefix & &
@@ -359,6 +388,23 @@ infixl / / 50
 // Operators defined in user module are local to this module and can't be exported
 ```
 
+### if-elif-else
+
+```
+//Inspired by python but else is mandatory
+
+if <expression> then
+    <expressions>
+*elif <expression> then
+    <expressions>
+...
+else
+    <expressions>
+
+if one of the branches succeeds result of it's last expression will be result of entire if expression
+```
+
+
 ### Pattern matching
 Obin doesn't have loops so pattern matching and recursion used for iteration
 #### Pattern matching in functions
@@ -386,6 +432,8 @@ If there is no matching pattern with a true guard sequence, runtime error occurs
 
 #### Supported patterns
 ```
+// Patterns are the same for function clauses and match expressions
+
 // -> <body> part below is ommitted
 fun f arg1 arg2
     // integers floats symbols strings
@@ -464,7 +512,7 @@ affirm:is_equal (
         | {x of Int, y="YYYY" of String} -> #third
 ) #third
 
-// pattern matching can be used as left part of = expression
+// all patterns, but without whem guard can be placed by the left hand side of = operator
 (x,y,z) = (1,2,3)
 {x, y=[1, 2, (d,e) of MyType, a, b, ...rest], z @ 1=42} =
     {x=17, y=[1,2, (MyType 3 4), 4, 5, 7, 8, 9], 1=42}
@@ -500,10 +548,34 @@ affirm:is_equal v 3
 ```
 
 ### Exceptions
+**throw** **try** **catch** **finally**, common for many languages
 
 ```
-// usual throw try catch finally blocks
-// Anything can be used as exception
+// Any value can be used as exception
+
+throw <expression>
+
+
+try
+    <expressions>
+catch <expression> ->
+    <expressions>
+*finally // finally is optional
+    <expressions>
+
+
+try
+    <expressions>
+catch
+    | <pattern> [when guard] ->
+        <expressions>
+    ...
+*finally // finally is optional
+    <expressions>
+
+
+//Examples
+
 try
     try
         1/0
@@ -516,8 +588,8 @@ catch e2 ->
     catch e3 ->
         42
     finally ->
-        //uncatched
         throw (e2, e3)
+
 
 // With pattern matching in catch
 try
@@ -565,7 +637,7 @@ p `kindof` Square = False
 p.x `kindof` Float = True
 
 
-// Pattern matching on types and field access on type instances
+// inside match expression or function clauses
 match p with
  | (x, y) of Point -> x + y // as tuple
  | (left, top, right, bottom) of Rect -> left.x + right.y // . operator can access instance field by name
