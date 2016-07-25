@@ -6,16 +6,16 @@ This repository contains prototype for experimental dynamically typed functional
 
 To experiment with syntax and stackless virtual machine.
 It is not a production system.
-Obin written in relatively 'slow' language python with not many speed optimisations.
+Obin is written in relatively 'slow' python language with not many speed optimisations.
 
-Running interpeter
+To run the interpeter:
 ```
 python targetobin.py test/obin/main.obn
 ```
 or better use pypy
 
-Currently, compilation via RPython toolchain does not supported but it can be done with some efforts.
-There are no REPL for obin at the moment
+Currently, compilation via RPython toolchain is not supported, but it can be done with some efforts.
+There are no REPL for obin at the moment.
 
 ## Features
 
@@ -23,7 +23,7 @@ There are no REPL for obin at the moment
 * Persistant data structures (lists, tuples, maps)
 * Pattern matching
 * Lexical clojures and lambdas
-* Usual number of primitives (if-else, let-in, try-catch)
+* Usual amount of primitives (if-else, let-in, try-catch)
 * User defined operators
 * User defined types
 * Traits and interfaces
@@ -38,7 +38,7 @@ There are no REPL for obin at the moment
 * REPL
 * Tail call optimisations
 * Total speed optimisations
-* Prodaction ready C++ version
+* Production ready C++ version
 
 ## Guide
 
@@ -72,7 +72,7 @@ Tokens [**if** **else** **elif**  **match** **try** **catch**
 **let** **in** **fun** **interface** **generic** **type** **->** **|**]
 trigger offside line.
 Once an offside line has been set, all the expressions must align with the line,
-until it be removed by dedent to previous line or by **end** token.
+until it is removed by dedent to previous line or by **end** token.
 
 ```
 // Call function print from module io with result of if expression
@@ -263,8 +263,8 @@ type Option
 
 ### Data structures
 ```
-// Many obin data structures borrowed from [Pixie language](https://github.com/pixie-lang/pixie).
-// All of predefined data structures are persistant
+// Many obin data structures are borrowed from [Pixie language](https://github.com/pixie-lang/pixie).
+// All of the predefined data structures are persistent
 
 // accessing fields
 //<variable>.<name | integer>
@@ -321,17 +321,17 @@ M1 = {line = {index = 1, index_2 = 43, data = [4, 3, 2, 1]}, id = "ID M1"}
 
 ```
 // = is not an assignment but pattern matching operator
-// so variables can be bind to values only once in lexical scope
-// you can use let-in expression if you need same variable name bind to another value
+// so variables can be bound to values only once in lexical scope.
+// You can use let-in expression if you need to bind same variable name to another value.
 
 X = 1
 X = 1 // not an error - same value
 X = 2 // runtime error
 
-// Datastructures are immutable
+// Data structures are immutable
 
-// Mutable variables supported via ':= !' operators
-// current implementation is build on top of coroutines and is extremely slow
+// Mutable variables are supported via ':= !' operators.
+// Current implementation is built on top of coroutines and is extremely slow.
 
 import var
 v = var:var 2
@@ -343,13 +343,13 @@ v := 3
 ### Functions
 
 ```
-// Function expression in obin have three forms
+// Function expressions in obin have three forms
 
-// Simple
+// 1) Simple
 fun <function_name> <arg>+  ->
     <expressions>
 
-// result of the function is result of last expression
+// result of the function is a result of last expression
 
 // Example
 fun any p l ->
@@ -358,7 +358,7 @@ fun any p l ->
 fun all p l ->
     conjunction (map p l)
 
-// Case function with multiple clauses. All clauses must have same arity.
+//2) Case function with multiple clauses. All clauses must have same arity.
 
 fun <function_name>
     | <pattern>+ [when guard] ->
@@ -382,7 +382,7 @@ fun reverse coll ->
 
     _reverse coll (empty coll)
 
-// Recursive two level function
+//3) Recursive two level function
 // This kind of function allows to check argument types or other conditions only at first step of recursion 
 
 fun <function_name> <arg>+
@@ -403,7 +403,7 @@ fun <function_name> <arg>+
     ) <arg>+ // call inner function with outer function arguments
     // inner function has the same name as outer, so if inner is recursive it can't call outer
 
-// initial arguments of outer function visible through entire recursive process
+// initial arguments of outer function are visible through the entire recursive process
 
 // Example
 fun scanl func accumulator coll
@@ -424,13 +424,13 @@ x y z => x + y + z
 // they are often placed inside parens
 seq:foldl (x y => x + y) 0 [1,2,3,4,5]
 
-// on the left hand side of => operator can be any valid pattern
+// on the left hand side of => operator any valid pattern is allowed
 tail = hd::tl => tl
 head = [hd, ...t] => hd
 fullname = {name, surname} => name ++ " " ++ surname
 
-// If you need multiple statement function in some expression, use 'fun' instead
-// fun expression requires name, use _ if you don't need one
+// If you need multiple statement function in some expression, use 'fun' instead.
+// Fun expression requires name, use _ if you don't need one:
 
 seq:foldl (fun _ x y ->
               io:print "x + y" x y
