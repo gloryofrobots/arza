@@ -125,6 +125,10 @@ X = sqrt 4  // expression terminates on new line
 - 2        // compiles as X = (sqrt 4); -2;
 X = sqrt 4 - // compiles as  X = sqrt 4 - 2
       2
+
+false =
+  True and
+       False
 ```
 
 Obin uses juxtaposition for function application. Obin syntax often looks like lisp without first layer of parens
