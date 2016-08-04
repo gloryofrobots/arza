@@ -35,7 +35,7 @@ fun test_sequences () ->
                             |> partial seq:take 20
                             |> partial seq:filter (x => odd x)
                             |> partial lazy:map (x => inc x)
-                            |> partial seq:map (x =>  x * 2) 
+                            |> partial seq:map (x =>  x * 2)
                             |> partial seq:take 10
 
     affirm:is_equal (str sqrs_odd_inc_10) "[4, ...]"

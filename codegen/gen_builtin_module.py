@@ -277,8 +277,3 @@ print generate(NUMBER)
 # print generate(STRING)
 # print generate(MAP)
 # print generate(DATATYPE)
-
-
-
-
-

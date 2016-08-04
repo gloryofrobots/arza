@@ -70,10 +70,31 @@ fun test() ->
     // log "TEST OPERATORS"
     // test_operators:test()
 
-import examples:nbn
-fun main () ->
+from fiber import (coroutine)
 
-    nbn:run ()
-           
-    // test()
+fun range_from num ->
+     co = (coroutine
+      (fun _ yield _from ->
+           fun _looper num ->
+               yield num
+               _looper (num + 1)
+           yield _from
+           _looper _from
+       end))
+     co num
+     co
+
+
+fun main () ->
+    // numbers = range_from 10
+    // io:print (numbers ())
+    // io:print (numbers ())
+    // io:print (numbers ())
+    co = (coroutine fun _ yield _ ->
+                        42
+                    end
+    )
+    io:print (co  `kindof`
+    // io:print (co ())
+    // io:print (co ())
     --------------------
