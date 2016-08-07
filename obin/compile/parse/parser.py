@@ -57,8 +57,8 @@ def infixr(parser, ttype, lbp):
     infix(parser, ttype, lbp, led_infixr)
 
 
-def assignment(parser, ttype, lbp):
-    infix(parser, ttype, lbp, led_infixr_assign)
+# def assignment(parser, ttype, lbp):
+#     infix(parser, ttype, lbp, led_infixr_assign)
 
 
 class BaseParser:
@@ -124,19 +124,29 @@ class ExpressionParser(BaseParser):
         self.fun_pattern_parser = fun_pattern_parser_init(BaseParser())
         self.guard_parser = guard_parser_init(proc_data, BaseParser())
         self.name_parser = name_parser_init(BaseParser())
-        expression_parser_init(proc_data, self)
+        self.let_parser = LetParser(self)
+        expression_parser_init(self)
 
     def _on_open(self, state):
         self.pattern_parser.open(state)
         self.fun_pattern_parser.open(state)
         self.guard_parser.open(state)
         self.name_parser.open(state)
+        self.let_parser.open(state)
 
     def _on_close(self):
         self.pattern_parser.close()
         self.fun_pattern_parser.close()
         self.guard_parser.close()
         self.name_parser.close()
+        self.let_parser.close()
+
+
+class LetParser(BaseParser):
+    def __init__(self, expression_parser):
+        BaseParser.__init__(self)
+        self.expression_parser = expression_parser
+        let_parser_init(self)
 
 
 class GenericParser(BaseParser):
@@ -318,7 +328,6 @@ def type_parser_init(parser):
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     infix(parser, TT_COLON, 100, infix_name_pair)
     # infix(parser, TT_CASE, 15, led_infixr)
-    # infix(parser, TT_ASSIGN, 10, led_infixr)
     symbol(parser, TT_CASE, None)
     return parser
 
@@ -370,22 +379,45 @@ def init_parser_literals(parser):
     literal(parser, TT_FLOAT)
     literal(parser, TT_CHAR)
     literal(parser, TT_STR)
-    literal(parser, TT_MULTI_STR)
-    literal(parser, TT_NAME)
     literal(parser, TT_TRUE)
     literal(parser, TT_FALSE)
+    literal(parser, TT_MULTI_STR)
+    literal(parser, TT_NAME)
     literal(parser, TT_WILDCARD)
     return parser
 
 
-def expression_parser_init(proc_data, parser):
+def let_parser_init(parser):
+    literal(parser, TT_NAME)
+    literal(parser, TT_WILDCARD)
+
+    symbol(parser, TT_RSQUARE)
+    symbol(parser, TT_RPAREN)
+    symbol(parser, TT_RCURLY)
+    symbol(parser, TT_IN)
+    symbol(parser, TT_ASSIGN)
+    # assignment(parser, TT_ASSIGN, 10)
+
+    prefix(parser, TT_LPAREN, prefix_lparen)
+    prefix(parser, TT_LSQUARE, prefix_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly)
+    prefix(parser, TT_SHARP, prefix_sharp)
+    prefix(parser, TT_ELLIPSIS, prefix_nud)
+
+    prefix(parser, TT_FUN, prefix_let_fun)
+    infix(parser, TT_COMMA, 10, infix_comma)
+    infix(parser, TT_ASSIGN, 10, led_let_assign)
+    infix(parser, TT_DOUBLE_COLON, 70, led_infixr)
+    infix(parser, TT_COLON, 100, infix_name_pair)
+    return parser
+
+
+def expression_parser_init(parser):
     parser.allow_overloading = True
-    parser.break_on_juxtaposition = True
 
     parser = init_parser_literals(parser)
 
     symbol(parser, TT_RSQUARE)
-    symbol(parser, TT_ARROW)
     symbol(parser, TT_THEN)
     symbol(parser, TT_RPAREN)
     symbol(parser, TT_RCURLY)
@@ -402,6 +434,7 @@ def expression_parser_init(proc_data, parser):
     symbol(parser, TT_WITH)
     symbol(parser, TT_COMMA)
     symbol(parser, TT_IN)
+    symbol(parser, TT_ASSIGN)
 
     prefix(parser, TT_LPAREN, prefix_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
@@ -410,14 +443,13 @@ def expression_parser_init(proc_data, parser):
     prefix(parser, TT_ELLIPSIS, prefix_nud)
     prefix(parser, TT_IF, prefix_if)
 
-    prefix(parser, TT_FUN, prefix_fun)
+    prefix(parser, TT_FUN, prefix_nameless_fun)
 
     prefix(parser, TT_MATCH, prefix_match)
     prefix(parser, TT_TRY, prefix_try)
     prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
     prefix(parser, TT_LET, prefix_let)
-
-    assignment(parser, TT_ASSIGN, 10)
+    prefix(parser, TT_THROW, prefix_throw)
 
     infix(parser, TT_FAT_ARROW, 10, infix_fat_arrow)
     infix(parser, TT_WHEN, 10, infix_when)
@@ -437,7 +469,6 @@ def expression_parser_init(proc_data, parser):
 
     # OTHER OPERATORS ARE DECLARED IN prelude.obn
 
-    stmt(parser, TT_THROW, prefix_throw)
     return parser
 
 
@@ -459,7 +490,7 @@ def module_parser_init(parser):
     prefix(parser, TT_LCURLY, prefix_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
 
-    assignment(parser, TT_ASSIGN, 10)
+    # assignment(parser, TT_ASSIGN, 10)
     infix(parser, TT_DOT, 100, infix_dot)
 
     infix(parser, TT_COMMA, 10, infix_comma)

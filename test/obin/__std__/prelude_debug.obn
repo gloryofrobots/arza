@@ -7,7 +7,7 @@
 //infixl (<<, <<, 25)
 //infixl (>>, >>, 25)
 //infixl (<, <, 35)
-//infixl (>, >, 35)
+infixl (>, >, 35)
 //infixl (>=, >=, 35)
 //infixl (<=, <=, 35)
 infixl (==, ==, 35)
@@ -19,6 +19,14 @@ infixl (==, ==, 35)
 //infixl (/, /, 50)
 //infixl (**, **, 55)
 
+//fun max_min x, y =
+//    if x > y then (
+//        (x, y)
+//        x > 1
+//    )
+//    elif x == y then (x, x)
+//    else (y, x)
+
 //fun all(p, l) =
 //    conjunction(map(p, l))
 //
@@ -27,12 +35,31 @@ infixl (==, ==, 35)
 //fun map f, coll
 //    | f, [] = empty(coll)
 //    | (f, hd::tl) = f(hd) :: map(f, tl)
+//
+//fun element(x, l) =
+//    any (fun (v) = v == x, l)
+//
+//
 
-fun element(x, l) =
-    any (fun (v) = v == x, l)
-//
-//
-//let main () =
+//fun false () = False
+
+//fun tail
+//    | [] = []
+//    | x::xs = xs
+
+//fun add(x, y) =
+//    let
+////        z = sqrt(x)
+////        (n,b) = pow(z)
+////        x::xs = tail(n)
+////        [x, y, ...r] = n
+////        fun tail
+////            | [] = []
+////            | x::xs = xs
+//        y = map(fun (x) = (x, str(x)), [])
+//    in sin(z, n, x)
+
+//fun main () =
 //    let
 //        fun tail
 //            | [] = []
@@ -40,17 +67,16 @@ fun element(x, l) =
 //
 //        numbers = enum_from(10)
 //        ys = seq:take(10,
-//                    map(fun x = (x, str(x)),
+//                    map(fun (x) = (x, str(x)),
 //                        drop(3,
 //                            filter(odd, numbers))))
 //    in (
 //        io:print(ys)
-//        x1::x2::xs = numbers
 //        io:print(x1, x2, ys)
 //    )
 //--------------------------------------------------
 //
-//let split (s)
+//fun split (s)
 //    | [] = ([], [])
 //    | s@[x] = (s, [])
 //    | x::y::xs =

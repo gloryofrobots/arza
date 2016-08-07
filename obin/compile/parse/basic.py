@@ -490,7 +490,6 @@ def expression(parser, _rbp, terminators=None):
     expr = postprocess(parser, expr)
     return expr
 
-
 # INFIXR
 def rexpression(parser, op):
     return expression(parser, op.lbp - 1)
@@ -595,14 +594,6 @@ def statements(parser, endlist):
         return parse_error(parser, u"Expected one or more expressions", parser.node)
 
     return nodes.list_node(stmts)
-
-
-# def statements(parser, endlist):
-#     return _statements(parser, statement, endlist)
-#
-#
-# def module_statements(parser, endlist):
-#     return _statements(parser, statement_no_end_expr, endlist)
 
 
 def infix(parser, ttype, lbp, led):
