@@ -208,7 +208,7 @@ def guard_parser_init(proc_data, parser):
     parser.allow_overloading = True
     parser = init_parser_literals(parser)
 
-    symbol(parser, TT_COMMA, None)
+    infix(parser, TT_COMMA, 10, infix_comma)
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_RCURLY, None)
     symbol(parser, TT_RSQUARE, None)
@@ -243,7 +243,6 @@ def pattern_parser_init(parser):
 
     symbol(parser, TT_WHEN)
     symbol(parser, TT_CASE)
-    symbol(parser, TT_COMMA)
     symbol(parser, TT_RPAREN)
     symbol(parser, TT_RCURLY)
     symbol(parser, TT_RSQUARE)
@@ -258,7 +257,6 @@ def fun_pattern_parser_init(parser):
     parser = pattern_parser_init(parser)
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     return parser
-
 
 
 def operator_name_symbol_signature_parser_init(parser):
@@ -290,7 +288,7 @@ def interface_parser_init(parser):
 def name_parser_init(parser):
     parser.break_on_juxtaposition = True
     parser.allow_unknown = True
-    symbol(parser, TT_COMMA, None)
+    # symbol(parser, TT_COMMA, None)
     symbol(parser, TT_UNKNOWN, None)
     # symbol(parser, TT_WILDCARD, None)
     symbol(parser, TT_RPAREN, None)
@@ -300,9 +298,10 @@ def name_parser_init(parser):
     symbol(parser, TT_ELLIPSIS, None)
     symbol(parser, TT_ENDSTREAM)
 
-    prefix(parser, TT_LPAREN, prefix_lparen)
+    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
     infix(parser, TT_COLON, 100, infix_name_pair)
+    infix(parser, TT_COMMA, 10, infix_comma)
     return parser
 
 
@@ -392,6 +391,7 @@ def expression_parser_init(proc_data, parser):
     symbol(parser, TT_RCURLY)
     symbol(parser, TT_COMMA)
     symbol(parser, TT_END_EXPR)
+    symbol(parser, TT_ENDSTREAM)
     symbol(parser, TT_AT_SIGN)
     symbol(parser, TT_ELSE)
     symbol(parser, TT_ELIF)
@@ -431,6 +431,7 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_COLON, 100, infix_name_pair)
     infix(parser, TT_DOT, 100, infix_dot)
 
+    infix(parser, TT_LPAREN, 100, infix_lparen)
     infix(parser, TT_INFIX_DOT_LCURLY, 100, infix_lcurly)
     infix(parser, TT_INFIX_DOT_LSQUARE, 100, infix_lsquare)
 

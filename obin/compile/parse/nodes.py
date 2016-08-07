@@ -230,10 +230,17 @@ def create_token_from_node(type, value, node):
     return tokens.newtoken(type, value, node_position(node), node_line(node), node_column(node))
 
 
-def create_function_variants(args, body):
+def create_function_variants(args, exp):
     # print "ARGS", args
     # print "BODY", body
-    return list_node([list_node([args, body])])
+    if not is_list_node(exp):
+        body = list_node([exp])
+    else:
+        body = exp
+
+    return list_node([list_node([
+            args, body
+    ])])
 
 
 def create_fun_simple_node(basenode, name, body):

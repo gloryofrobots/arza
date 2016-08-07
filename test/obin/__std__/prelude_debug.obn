@@ -1,37 +1,35 @@
-prefix (-, negate)
-prefix (!, !)
-prefix (&, &)
-infixr (:=, :=, 10)
-infixl (<|, <|, 15)
-infixl (|>, |>, 20)
-infixl (<<, <<, 25)
-infixl (>>, >>, 25)
-infixl (<, <, 35)
-infixl (>, >, 35)
-infixl (>=, >=, 35)
-infixl (<=, <=, 35)
+//prefix (-, negate)
+//prefix (!, !)
+//prefix (&, &)
+//infixr (:=, :=, 10)
+//infixl (<|, <|, 15)
+//infixl (|>, |>, 20)
+//infixl (<<, <<, 25)
+//infixl (>>, >>, 25)
+//infixl (<, <, 35)
+//infixl (>, >, 35)
+//infixl (>=, >=, 35)
+//infixl (<=, <=, 35)
 infixl (==, ==, 35)
-infixl (!=, !=, 35)
-infixl (++, ++, 40)
-infixl (+, +, 40)
-infixl (-, -, 40)
-infixl (*, *, 50)
-infixl (/, /, 50)
-infixl (**, **, 55)
+//infixl (!=, !=, 35)
+//infixl (++, ++, 40)
+//infixl (+, +, 40)
+//infixl (-, -, 40)
+//infixl (*, *, 50)
+//infixl (/, /, 50)
+//infixl (**, **, 55)
 
-False
-
-//let uncons([x, ...xs]) = (x, xs)
-//
-//let all(p, l) =
+//fun all(p, l) =
 //    conjunction(map(p, l))
 //
-//let element(x, l) =
-//    any (fun (v) = v == x, l)
-//
-//let map(f, coll)
+//fun uncons ([x, ...xs]) = (x, xs)
+
+//fun map f, coll
 //    | f, [] = empty(coll)
-//    | f, hd::tl = f(hd) :: map(f, tl)
+//    | (f, hd::tl) = f(hd) :: map(f, tl)
+
+fun element(x, l) =
+    any (fun (v) = v == x, l)
 //
 //
 //let main () =

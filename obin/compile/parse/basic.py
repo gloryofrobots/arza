@@ -286,36 +286,6 @@ def node_has_std(parser, node):
 def node_lbp(parser, previous, node):
     op = node_operator(parser, node)
     lbp = op.lbp
-    if op.ambidextra is True:
-        # print "Ambidextra"
-        prev_pos = nodes.node_position_i(previous)
-        cur_pos = nodes.node_position_i(node)
-        # 2- - 1
-        next_tok = parser.ts.lookup_next_token()
-        if nodes.node_token_type(node) == tokens.token_type(next_tok):
-        # if tokens.is_infix_token_type(nodes.node_token_type(previous)):
-            # print '!!!!!1'
-            return lbp
-
-        prev_length = nodes.node_length(previous)
-        # 2-1 -> infix
-        if cur_pos - (prev_pos + prev_length) == 0:
-            # print '!!!!!2'
-            return lbp
-
-        # pow -1 -> infix
-        next_pos = tokens.token_position_i(next_tok)
-        cur_length = nodes.node_length(node)
-
-        if next_pos - (cur_pos + cur_length) == 0:
-            # print '!!!!!3'
-            return -1
-
-        # Anything else go to infix
-
-    # if lbp < 0:
-    #   parse_error(parser, u"Left binding power error", node)
-
     return lbp
 
 
@@ -527,10 +497,9 @@ def rexpression(parser, op):
 
 
 def flatten_infix(parser, node, ntype):
-    ntype = nodes.node_type(node)
-    if ntype == ntype:
-        first = node.first()
-        second = node.second()
+    if nodes.node_type(node) == ntype:
+        first = nodes.node_first(node)
+        second = nodes.node_second(node)
         head = flatten_infix(parser, first, ntype)
         tail = flatten_infix(parser, second, ntype)
         return plist.concat(head, tail)
@@ -567,7 +536,7 @@ def postprocess(parser, node):
 
     ntype = nodes.node_type(node)
     if ntype == NT_COMMA:
-        items = commas_as_list(parser, e)
+        items = commas_as_list(parser, node)
         flatten = nodes.node_1(NT_TUPLE, nodes.node_token(node), items)
         return postprocess(parser, flatten)
     else:

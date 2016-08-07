@@ -1,6 +1,105 @@
 [
   {
-    "_ntype": "NT_FALSE",
-    "_value": "False"
+    "_ntype": "NT_FUN",
+    "_value": "fun",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "element"
+      },
+      [
+        [
+          {
+            "_ntype": "NT_TUPLE",
+            "_value": ",",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "x"
+                },
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "l"
+                }
+              ]
+            ]
+          },
+          [
+            {
+              "_ntype": "NT_CALL",
+              "_value": "(",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "any"
+                },
+                [
+                  {
+                    "_ntype": "NT_FUN",
+                    "_value": "fun",
+                    "children": [
+                      {
+                        "empty": true
+                      },
+                      [
+                        [
+                          {
+                            "_ntype": "NT_TUPLE",
+                            "_value": "(",
+                            "children": [
+                              [
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "v"
+                                }
+                              ]
+                            ]
+                          },
+                          [
+                            {
+                              "_ntype": "NT_TUPLE",
+                              "_value": ",",
+                              "children": [
+                                [
+                                  {
+                                    "_ntype": "NT_CALL",
+                                    "_value": "(",
+                                    "children": [
+                                      {
+                                        "_ntype": "NT_NAME",
+                                        "_value": "=="
+                                      },
+                                      [
+                                        {
+                                          "_ntype": "NT_NAME",
+                                          "_value": "v"
+                                        },
+                                        {
+                                          "_ntype": "NT_NAME",
+                                          "_value": "x"
+                                        }
+                                      ]
+                                    ]
+                                  },
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "l"
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      ]
+                    ]
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      ]
+    ]
   }
 ]
