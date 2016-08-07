@@ -20,6 +20,7 @@ def put_lang_func(process, module, name, func, arity):
 
 def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
+    api.put_native_function(process, module, u'breakpoint', breakpoint, -1)
     api.put_native_function(process, module, u'debug_print', _print, -1)
     api.put_native_function(process, module, u'address', _id, 1)
     api.put_native_function(process, module, u'apply', apply, 2)
@@ -92,6 +93,13 @@ def _print(process, routine):
     u_print_str = builder.build()
     print_str = encode_unicode_utf8(u_print_str)
     print print_str
+    return space.newunit()
+
+
+# here i usually put breakpoints in python debugger
+@complete_native_routine
+def breakpoint(process, routine):
+    args = routine._args.to_l()
     return space.newunit()
 
 

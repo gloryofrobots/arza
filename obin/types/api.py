@@ -102,7 +102,7 @@ def is_empty_b(obj):
     if space.islist(obj):
         return plist.is_empty(obj)
 
-    return obj._length_() == 0
+    return obj._is_empty_()
 
 
 def contains_index_b(obj, i):

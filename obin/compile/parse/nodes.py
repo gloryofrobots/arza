@@ -245,7 +245,7 @@ def create_fun_simple_node(basenode, name, body):
 
 def create_lambda_node(basenode, args, exp):
     assert node_type(args) == nt.NT_TUPLE, args
-    return node_1(nt.NT_LAMBDA, create_token_from_node(tt.TT_STR, "lambda", basenode),  
+    return node_1(nt.NT_LAMBDA, create_token_from_node(tt.TT_STR, "lambda", basenode),
                            create_function_variants(
                                args,
                                list_node([exp])))
@@ -445,14 +445,6 @@ def create_is_seq_node(basenode, val):
 
 def create_len_node(basenode, val):
     return create_call_node_s(basenode, lang_names.LEN, [val])
-
-
-def create_delay_node(basenode, exp):
-    return node_1(nt.NT_DELAY, create_token_from_node(tt.TT_DELAY, "delay", basenode), exp)
-
-
-def create_delayed_cons_node(basenode, left, right):
-    return create_cons_node(basenode, left, create_delay_node(basenode, right))
 
 
 def create_cons_node(basenode, left, right):

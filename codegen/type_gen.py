@@ -34,6 +34,7 @@ TYPES = [
     mktype("Partial", [C, A]),
     mktype("Generic", [C, A]),
     mktype("Fiber", [C, A]),
+    mktype("Coroutine", [C, A]),
 
     mktype("Trait", [A]),
     mktype("Interface", [A]),

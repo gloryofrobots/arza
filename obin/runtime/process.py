@@ -32,8 +32,13 @@ class Fiber:
         self.routine = routine
         self.routine.activate()
 
+    def is_empty(self):
+        if not self.routine:
+            return False
+
+        return self.routine.is_closed()
+
     def is_finished(self):
-        assert len(self.routines) == 0
         return self.routine.is_closed()
 
     def is_working(self):

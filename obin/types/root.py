@@ -107,6 +107,9 @@ class W_Root:
         from obin.types import space
         return not_implemented_error(u"_put_at_index_", self, space.newint(i), obj)
 
+    def _is_empty_(self):
+        return self._length_() == 0
+
     def _length_(self):
         return not_implemented_error(u"_length_", self)
 

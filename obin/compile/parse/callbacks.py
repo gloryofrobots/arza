@@ -18,7 +18,6 @@ NODE_TYPE_MAPPING = {
     TT_WILDCARD: NT_WILDCARD,
     TT_NAME: NT_NAME,
     TT_TICKNAME: NT_NAME,
-    TT_TYPENAME: NT_NAME,
     TT_IF: NT_CONDITION,
     TT_MATCH: NT_MATCH,
     TT_EXPORT: NT_EXPORT,
@@ -134,11 +133,6 @@ def infix_fat_arrow(parser, op, node, left):
     return nodes.create_lambda_node(node, args, exp)
 
 
-def infix_triple_colon(parser, op, node, left):
-    right = rexpression(parser, op)
-    return nodes.create_delayed_cons_node(node, left, right)
-
-
 def infix_juxtaposition(parser, op, node, left):
     right = base_expression(parser, op.lbp)
     return nodes.node_2(NT_JUXTAPOSITION, __ntok(node), left, right)
@@ -240,11 +234,6 @@ def _parse_symbol(parser, node):
 
 def prefix_sharp(parser, op, node):
     return _parse_symbol(parser, node)
-
-
-def prefix_delay(parser, op, node):
-    exp = expression(parser, 0)
-    return nodes.create_delay_node(node, exp)
 
 
 # def prefix_backtick(parser, op, node):
@@ -485,7 +474,6 @@ def prefix_let(parser, op, node):
     init_code_layout(parser, parser.node, TERM_LET)
     letblock = statements(parser, TERM_LET)
     advance_expected(parser, TT_IN)
-    skip_indent(parser)
     init_code_layout(parser, parser.node)
     inblock = statements(parser, TERM_BLOCK)
     advance_end(parser)
@@ -501,7 +489,6 @@ def prefix_try(parser, op, node):
 
     check_token_type(parser, TT_CATCH)
     advance(parser)
-    skip_indent(parser)
 
     if parser.token_type == TT_CASE:
         init_offside_layout(parser, parser.node)
@@ -548,10 +535,8 @@ def prefix_match(parser, op, node):
     init_code_layout(parser, parser.node, TERM_MATCH_EXPR)
 
     exp = expression_with_optional_end_of_expression(parser, 0, TERM_MATCH_PATTERN)
-    # skip_indent(parser)
     check_token_type(parser, TT_WITH)
     advance(parser)
-    skip_indent(parser)
 
     pattern_parser = parser.pattern_parser
     branches = []
@@ -592,9 +577,7 @@ def prefix_throw(parser, op, node):
 # FUNCTION STUFF################################
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
-    skip_indent(parser)
     pattern = juxtaposition_as_tuple(parser.fun_pattern_parser, arg_terminator)
-    skip_indent(parser)
     args_type = nodes.node_type(pattern)
 
     if args_type != NT_TUPLE:
@@ -618,7 +601,6 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
     #     (arg1 arg2 of T ...arg3)
     # """
     # pattern = juxtaposition_as_tuple(parser, terminator)
-    # skip_indent(parser)
     # args_type = nodes.node_type(pattern)
     # if args_type != NT_TUPLE:
     #     parse_error(parser, u"Invalid  syntax in function signature", pattern)
@@ -747,7 +729,6 @@ def _parse_recursive_function(parser, name, signature, term_pattern,
 ####################################################
 
 def _parse_case_or_simple_function(parser, term_pattern, term_guard, term_case_body, term_single_body):
-    skip_indent(parser)
     if parser.token_type == TT_CASE:
         funcs = _parse_case_function(parser, term_pattern, term_guard, term_case_body)
     else:
@@ -759,7 +740,6 @@ def _parse_case_or_simple_function(parser, term_pattern, term_guard, term_case_b
 
 def _parse_function(parser, name, term_pattern,
                     term_guard, term_case_body, term_single_body):
-    skip_indent(parser)
     if parser.token_type == TT_CASE:
         funcs = _parse_case_function(parser, term_pattern, term_guard, term_case_body)
     else:
@@ -976,7 +956,6 @@ def _parse_type(parser, node, typename, term):
 def stmt_type(parser, op, node):
     init_node_layout(parser, node)
     typename = grab_name(parser.type_parser)
-    skip_indent(parser)
 
     if parser.token_type == TT_CASE:
         return _parse_union(parser, node, typename)
@@ -1025,7 +1004,6 @@ def _parser_trait_header(parser, node):
         constraints = _parse_tuple_of_names(parser.name_parser, TERM_METHOD_CONSTRAINTS)
     else:
         constraints = nodes.create_empty_list_node(node)
-    skip_indent(parser)
     return name, constraints
 
 
@@ -1034,8 +1012,8 @@ def stmt_trait(parser, op, node):
     name, constraints = _parser_trait_header(parser, node)
     methods = []
     init_offside_layout(parser, parser.node)
-    while parser.token_type == TT_DEF:
-        advance_expected(parser, TT_DEF)
+    while parser.token_type == TT_LET:
+        advance_expected(parser, TT_LET)
         generic_name = expect_expression_of_types(parser.name_parser, 0, [NT_NAME, NT_IMPORTED_NAME])
         funcs = _parse_case_or_simple_function(parser.expression_parser,
                                 TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_TRAIT_DEF, TERM_TRAIT_DEF)
@@ -1048,7 +1026,6 @@ def stmt_trait(parser, op, node):
 def stmt_extend(parser, op, node):
     init_node_layout(parser, node)
     type_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME)
-    skip_indent(parser)
 
     defs = []
     mixins = []
@@ -1067,9 +1044,9 @@ def stmt_extend(parser, op, node):
                 names = empty_node()
             mixins.append(list_node([mixin_name, names]))
 
-        elif parser.token_type == TT_DEF:
+        elif parser.token_type == TT_LET:
             init_offside_layout(parser, parser.node)
-            advance_expected(parser, TT_DEF)
+            advance_expected(parser, TT_LET)
             method_name = expect_expression_of_types(parser.name_parser, 0, NODE_IMPLEMENT_NAME)
 
             funcs = _parse_case_or_simple_function(parser.expression_parser,
@@ -1083,12 +1060,15 @@ def stmt_extend(parser, op, node):
     advance_end(parser)
     return nodes.node_3(NT_EXTEND, __ntok(node), type_name, list_node(mixins), list_node(defs))
 
-
 # OPERATORS
 
 def stmt_prefix(parser, op, node):
-    op_node = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    func_node = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    t = expect_expression_of(parser.name_parser, 0, NT_TUPLE)
+    children = nodes.node_first(t)
+    op_node = children[0]
+    check_node_type(parser, op_node, NT_NAME)
+    func_node = children[1]
+    check_node_type(parser, func_node, NT_NAME)
 
     op_value = symbol_or_name_value(parser, op_node)
     func_value = symbol_or_name_value(parser, func_node)
@@ -1108,12 +1088,21 @@ def stmt_infixr(parser, op, node):
 
 
 def _meta_infix(parser, node, infix_function):
-    op_node = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    func_node = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    precedence_node = expect_expression_of(parser.name_parser, 0, NT_INT)
+    t = expect_expression_of(parser.name_parser, 0, NT_TUPLE)
+    children = nodes.node_first(t)
+
+    op_node = children[0]
+    check_node_type(parser, op_node, NT_NAME)
+
+    func_node = children[1]
+    check_node_type(parser, func_node, NT_NAME)
+
+    precedence_node = children[2]
+    check_node_type(parser, precedence_node, NT_INT)
 
     op_value = symbol_or_name_value(parser, op_node)
     func_value = symbol_or_name_value(parser, func_node)
+
     try:
         precedence = strutil.string_to_int(nodes.node_value_s(precedence_node))
     except:
@@ -1122,3 +1111,4 @@ def _meta_infix(parser, node, infix_function):
     op = parser_current_scope_find_operator_or_create_new(parser, op_value)
     op = operator_infix(op, precedence, infix_function, func_value)
     parser_current_scope_add_operator(parser, op_value, op)
+

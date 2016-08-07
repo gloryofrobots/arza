@@ -30,6 +30,8 @@ fun foreach f coll
     | f hd::tl -> f hd; foreach f tl
 ----------------------------------------
 
+fun traverse coll -> foreach identity coll
+
 fun intersperse val coll
     | val [] -> empty coll
     | val hd::tl  -> hd :: val :: (intersperse val tl)

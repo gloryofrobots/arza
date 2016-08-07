@@ -1,8 +1,9 @@
 from fiber import (coroutine)
 import affirm
 import io
+import seq
 
-fun test () ->
+fun test_simple () ->
     co =
         coroutine fun _ yield x ->
                        _co1 =
@@ -22,3 +23,87 @@ fun test () ->
     affirm:is_equal (co 23) 65
     affirm:is_equal (co 34) 34
     affirm:is_equal (co 44) 44
+
+fun enum_from num ->
+     co = (coroutine
+      (fun _ yield _from ->
+           fun _looper num ->
+               yield num
+               // io:print #step num
+               // throw num
+               _looper (num + 1)
+           yield _from
+           _looper _from
+       end))
+     co num
+     co
+
+fun filter predicate coll ->
+    fun _wrap yield _ ->
+        fun _filter
+            | p [] -> empty coll
+            | p x::xs ->
+                // io:print #filter_step x
+                if p x then
+                    yield x
+                    _filter p xs
+                else
+                    // io:print #filter_step3 x
+                    _filter p xs
+        _filter predicate coll
+    coroutine _wrap
+
+fun map2 fn sq ->
+    fun _wrap_map yield () ->
+        fun _map
+            | f [] -> empty sq
+            | f x::xs ->
+                yield (f x)
+                _map f xs
+        _map fn sq
+    coroutine _wrap_map
+
+fun map fn sq ->
+    fun _wrap_map yield () ->
+        (seq:foreach fun _f x ->
+                        yield (fn x)
+                     end
+                     sq)
+
+    coroutine _wrap_map
+
+fun drop count sq ->
+    fun _wrap yield () ->
+        fun _drop
+            | _ [] -> empty sq
+            | 0 s ->
+              seq:traverse (map yield s)
+            | n x::xs ->
+                _drop (n-1) xs
+        _drop count sq
+    coroutine _wrap
+
+fun each  sq ->
+    fun _wrap yield () ->
+        fun _each
+            | [] -> empty sq
+            | s ->
+              seq:traverse (map yield s)
+
+        _each sq
+    coroutine _wrap
+
+fun test () ->
+    test_simple()
+    // numbers = enum_from 10
+    // ys =
+    //    (seq:take 10
+    //     (map (x => (x, str x))
+    //          (drop 3
+    //                (filter odd numbers))))
+    // // ys = (seq:take 10
+    // //       (each numbers))
+
+    // io:print ys
+    // x1::x2::xs = numbers
+    // io:print x1 x2 ys

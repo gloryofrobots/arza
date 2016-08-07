@@ -1,30 +1,139 @@
-prefix - negate
-// prefix ~ tilda
-//prefix ! !
-//prefix & &
-//infixr := := 10
-//infixl <| <| 15
-//infixl |> |> 20
-//infixl << << 25
-//infixl >> >> 25
-//infixl < < 35
-//infixl > > 35
-//infixl >= >= 35
-//infixl <= <= 35
-//infixl == == 35
-//infixl != != 35
-//infixl ++ ++ 40
-infixl + + 40
-infixl - - 40
-//infixl * * 50
-//infixl / / 50
+prefix(-, negate)
+prefix(!, !)
+prefix(&, &)
+infixr(:=, :=, 10)
+infixl(<|, <|, 15)
+infixl(|>, |>, 20)
+infixl(<<, <<, 25)
+infixl(>>, >>, 25)
+infixl(<, <, 35)
+infixl(>, >, 35)
+infixl(>=, >=, 35)
+infixl(<=, <=, 35)
+infixl(==, ==, 35)
+infixl(!=, !=, 35)
+infixl(++, ++, 40)
+infixl(+, +, 40)
+infixl(-, -, 40)
+infixl(*, *, 50)
+infixl(/, /, 50)
+infixl(**, **, 55)
 
-fun f () ->
-     2-1
-     2- -1
-     2- - 1
-     2- -1
-     print -a
-     2 - 1
+False
 
-    // print ~a
+generic (
+    == (`x, y)
+    - (`x, y)
+    + (`x, y)
+    ! (self)
+    len (self)
+    put (key, value, `self)
+)
+
+interface (
+    PartialEq (==)
+    Eq (!=, ==)
+    Ord(<, <=, >, >=, cmp, max, min)
+    Num (-, +, *, /, mod, negate)
+    Pow(**)
+    Str (str)
+    Displayed (str, repr)
+    Len (len)
+)
+
+trait TNotEq
+    def != (x, y) = not (x == y)
+
+
+trait TOrd of PartialEq (
+    def < (<, y) = cmp x y == LT
+    def >= (x, y) = cmp x y != LT
+    def > (x, y) = cmp x y == GT
+
+    def cmp(x, y) =
+                if x == y then EQ
+                elif x <= y then LT
+                else GT
+
+    def max x y = if x <= y then y else x
+    def min x y = if x <= y then x else y
+)
+//let uncons([x, ...xs]) = (x, xs)
+//
+//let all(p, l) =
+//    conjunction(map(p, l))
+//
+//let element(x, l) =
+//    any (fun (v) = v == x, l)
+//
+//let map(f, coll)
+//    | f, [] = empty(coll)
+//    | f, hd::tl = f(hd) :: map(f, tl)
+//
+//
+//let main () =
+//    let
+//        fun tail
+//            | [] = []
+//            | x::xs = xs
+//
+//        numbers = enum_from(10)
+//        ys = seq:take(10,
+//                    map(fun x = (x, str(x)),
+//                        drop(3,
+//                            filter(odd, numbers))))
+//    in (
+//        io:print(ys)
+//        x1::x2::xs = numbers
+//        io:print(x1, x2, ys)
+//    )
+//--------------------------------------------------
+//
+//let split (s)
+//    | [] = ([], [])
+//    | s@[x] = (s, [])
+//    | x::y::xs =
+//        let
+//            (l, r) = split(xs)
+//        in (x::l, y::r)
+//--------------------------------------------------
+//
+//let range_by (first:Int, last:Int, step:Int)
+//    let
+//        fun _range_by(N, X, D, L)
+//            | N, X, D, L when N >= 4 =
+//                let
+//                    Y = X - D
+//                    Z = Y - D
+//                    W = Z - D
+//               in _range_by(N - 4, W - D, D, W::Z::Y::X::L)
+//
+//            | N, X, D, L when N >= 2 =
+//                let Y = X - D
+//                in _range_by(N - 2, Y - D, D, Y :: X :: L)
+//
+//            | 1, X, _, L = X :: L
+//
+//            | 0, _, _, L = L
+//
+//    in
+//        if step > 0 and first - step <= last or
+//                step < 0 and first - step >= last then
+//            let n = ((last - first + step) / step) - 1
+//            in _range_by(n, (step * (n - 1) + first), step, [])
+//        elif step == 0 and first == last then
+//            _range_by (1, first, step, [])
+//        else
+//            throw (#InvalidRange, first, last, step)
+//--------------------------------------------------
+//
+//fun replicate(count, element) =
+//    if count >= 0 then
+//        let _replicate
+//            | 0, _, l = l
+//            | n, x, l = _replicate(n - 1, x, x :: l)
+//
+//        in _replicate(count, element, [])
+//    else
+//        throw ValueError count
+//--------------------------------------------------

@@ -6,7 +6,7 @@ from obin.types import space, api, root, plist, environment
 from obin.runtime import error
 from obin.misc.strutil import get_line, get_line_for_position
 
-TERM_BLOCK = [TT_END]
+TERM_BLOCK = []
 TERM_EXP = [TT_END_EXPR]
 
 TERM_IF_BODY = [TT_ELSE, TT_ELIF]
@@ -37,16 +37,16 @@ TERM_BEFORE_WITH = [TT_WITH]
 TERM_TYPE_ARGS = TERM_BLOCK
 TERM_UNION_TYPE_ARGS = [TT_CASE] + TERM_BLOCK
 
-TERM_METHOD_SIG = [TT_DEF, TT_ARROW] + TERM_BLOCK
-TERM_METHOD_DEFAULT_BODY = [TT_DEF] + TERM_BLOCK
-TERM_METHOD_CONSTRAINTS = [TT_DEF] + TERM_BLOCK
-TERM_IMPL_BODY = [TT_CASE, TT_DEF] + TERM_BLOCK
-TERM_IMPL_HEADER = [TT_DEF] + TERM_BLOCK
+TERM_METHOD_SIG = [TT_LET, TT_ARROW] + TERM_BLOCK
+TERM_METHOD_DEFAULT_BODY = [TT_LET] + TERM_BLOCK
+TERM_METHOD_CONSTRAINTS = [TT_LET] + TERM_BLOCK
+TERM_IMPL_BODY = [TT_CASE, TT_LET] + TERM_BLOCK
+TERM_IMPL_HEADER = [TT_LET] + TERM_BLOCK
 
-TERM_TRAIT_DEF = [TT_DEF, TT_CASE] + TERM_BLOCK
+TERM_TRAIT_DEF = [TT_LET, TT_CASE] + TERM_BLOCK
 
-TERM_EXTEND_DEF = [TT_CASE, TT_DEF, TT_USE] + TERM_BLOCK
-TERM_EXTEND = [TT_DEF, TT_USE] + TERM_BLOCK
+TERM_EXTEND_DEF = [TT_CASE, TT_LET, TT_USE] + TERM_BLOCK
+TERM_EXTEND = [TT_LET, TT_USE] + TERM_BLOCK
 
 TERM_FROM_IMPORTED = [TT_IMPORT, TT_HIDE]
 
@@ -56,8 +56,6 @@ NODE_FOR_NAME = [NT_NAME]
 NODE_FUNC_NAME = [NT_NAME]
 NODE_DOT = [NT_NAME, NT_INT]
 NODE_IMPLEMENT_NAME = [NT_NAME, NT_IMPORTED_NAME]
-
-LOOP_CONTROL_TOKENS = [TT_END, TT_ELSE, TT_CASE]
 
 LEVELS_MATCH = TERM_MATCH_EXPR
 LEVELS_IF = [TT_ELSE, TT_ELIF]
@@ -73,20 +71,6 @@ def parser_error_unknown(parser, position):
                        space.newtuple([
                            space.newint(position),
                            space.newstring(u"Unknown Token"),
-                           space.newstring(line)
-                       ]))
-
-
-def parser_error_indentation(parser, msg, position, lineno, column):
-    print parser.ts.advanced_values()
-    print parser.ts.layouts
-    line = get_line_for_position(parser.ts.src, position)
-    return error.throw(error.Errors.PARSE_ERROR,
-                       space.newtuple([
-                           space.newint(position),
-                           space.newint(lineno),
-                           space.newint(column),
-                           space.newstring(msg),
                            space.newstring(line)
                        ]))
 
@@ -111,7 +95,6 @@ def parse_error(parser, message, node):
 
 
 def init_code_layout(parser, node, terminators=None):
-    skip_indent(parser)
     parser.ts.add_code_layout(node, terminators)
 
 
@@ -124,13 +107,7 @@ def init_node_layout(parser, node, level_tokens=None):
 
 
 def init_free_layout(parser, node, terminators):
-    skip_indent(parser)
     parser.ts.add_free_code_layout(node, terminators)
-
-
-def skip_indent(parser):
-    if parser.token_type == TT_INDENT:
-        advance(parser)
 
 
 class ParserScope(root.W_Root):

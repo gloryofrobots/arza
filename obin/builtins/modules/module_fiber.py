@@ -7,6 +7,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'spawn', _spawn, 1)
     api.put_native_function(process, _module, u'activate', _activate, 2)
     api.put_native_function(process, _module, u'coroutine', _coroutine, 1)
+    api.put_native_function(process, _module, u'is_complete_coroutine', _is_compete_coroutine, 1)
 
     _module.export_all()
     process.modules.add_module(name, _module)
@@ -31,3 +32,8 @@ def _coroutine(process, routine):
     return fiber.newcoroutine(process, fn)
     # y1, y2 = fiber.newfiber(process)
     # return space.newtuple([y1, y2])
+
+@complete_native_routine
+def _is_compete_coroutine(process, routine):
+    co = routine.get_arg(0)
+    return space.newbool(co.fiber2.is_complete())

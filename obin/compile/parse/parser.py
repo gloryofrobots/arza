@@ -1,6 +1,5 @@
 __author__ = 'gloryofrobots'
 from obin.compile.parse.tokenstream import TokenStream
-from obin.compile.parse.indenter import IndentationTokenStream, InvalidIndentationError
 from obin.compile.parse.callbacks import *
 from obin.compile.parse.lexer import UnknownTokenError
 from obin.compile.parse import tokens
@@ -110,8 +109,6 @@ class BaseParser:
     def next_token(self):
         try:
             return self.ts.next_token()
-        except InvalidIndentationError as e:
-            parser_error_indentation(self, e.msg, e.position, e.line, e.column)
         except UnknownTokenError as e:
             parser_error_unknown(self, e.position)
 
@@ -221,7 +218,6 @@ def operator_name_symbol_signature_parser_init(parser):
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     prefix(parser, TT_TICKNAME, prefix_name_as_symbol)
     prefix(parser, TT_OPERATOR, operator_as_symbol)
-    symbol(parser, TT_END)
     symbol(parser, TT_END_EXPR)
     infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
     return parser
@@ -240,7 +236,6 @@ def interface_parser_init(parser):
     symbol(parser, TT_OPERATOR, symbol_operator_name)
     symbol(parser, TT_COMMA)
     symbol(parser, TT_RPAREN)
-    symbol(parser, TT_END)
     return parser
 
 
@@ -251,7 +246,6 @@ def name_parser_init(parser):
     symbol(parser, TT_UNKNOWN, None)
     # symbol(parser, TT_WILDCARD, None)
     symbol(parser, TT_RPAREN, None)
-    symbol(parser, TT_INDENT, None)
     init_parser_literals(parser)
     symbol(parser, TT_CASE, None)
     symbol(parser, TT_ASSIGN, None)
@@ -271,7 +265,6 @@ def type_parser_init(parser):
     symbol(parser, TT_UNKNOWN)
     # literal(parser, TT_TYPENAME)
     symbol(parser, TT_COMMA)
-    symbol(parser, TT_END)
     symbol(parser, TT_RPAREN)
 
     prefix(parser, TT_LPAREN, prefix_lparen_type, layout_lparen)
@@ -286,7 +279,6 @@ def type_parser_init(parser):
 
 def method_signature_parser_init(parser):
     parser.juxtaposition_as_list = True
-    symbol(parser, TT_INDENT)
     symbol(parser, TT_ARROW)
     symbol(parser, TT_CASE)
 
@@ -365,7 +357,6 @@ def pattern_parser_init(parser):
     infix(parser, TT_DOUBLE_COLON, 60, led_infixr)
     infix(parser, TT_COLON, 100, infix_name_pair)
 
-    symbol(parser, TT_INDENT)
     symbol(parser, TT_WHEN)
     symbol(parser, TT_CASE)
     symbol(parser, TT_COMMA)
@@ -393,14 +384,13 @@ def fun_signature_parser_init(parser):
 
     prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
     symbol(parser, TT_RPAREN)
-    symbol(parser, TT_INDENT)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
 
     infix(parser, TT_OF, 15, led_infix)
     infix(parser, TT_COLON, 100, infix_name_pair)
 
     literal(parser, TT_WILDCARD)
-    symbol(parser, TT_DEF)
+    symbol(parser, TT_LET)
     symbol(parser, TT_ARROW)
     symbol(parser, TT_CASE)
     infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
@@ -414,7 +404,6 @@ def init_parser_literals(parser):
     literal(parser, TT_STR)
     literal(parser, TT_MULTI_STR)
     literal(parser, TT_NAME)
-    literal(parser, TT_TYPENAME)
     literal(parser, TT_TRUE)
     literal(parser, TT_FALSE)
     literal(parser, TT_WILDCARD)
@@ -442,10 +431,8 @@ def expression_parser_init(proc_data, parser):
     symbol(parser, TT_FINALLY)
     symbol(parser, TT_WITH)
     symbol(parser, TT_COMMA)
-    symbol(parser, TT_END)
     symbol(parser, TT_IN)
 
-    prefix(parser, TT_INDENT, prefix_indent)
     prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly, layout_lcurly)
@@ -458,7 +445,6 @@ def expression_parser_init(proc_data, parser):
     prefix(parser, TT_MATCH, prefix_match)
     prefix(parser, TT_TRY, prefix_try)
     prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
-    prefix(parser, TT_DELAY, prefix_delay)
     prefix(parser, TT_LET, prefix_let)
 
     assignment(parser, TT_ASSIGN, 10)
@@ -470,7 +456,6 @@ def expression_parser_init(proc_data, parser):
     infix(parser, TT_AND, 30, led_infix)
     infix(parser, TT_BACKTICK_NAME, 35, infix_backtick_name)
     infix(parser, TT_DOUBLE_COLON, 70, led_infixr)
-    infix(parser, TT_TRIPLE_COLON, 70, infix_triple_colon)
 
     infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     infix(parser, TT_COLON, 100, infix_name_pair)
@@ -494,11 +479,9 @@ def module_parser_init(parser):
     symbol(parser, TT_RPAREN)
     symbol(parser, TT_RCURLY)
     symbol(parser, TT_COMMA)
-    symbol(parser, TT_END)
     symbol(parser, TT_END_EXPR)
     symbol(parser, TT_ENDSTREAM)
 
-    prefix(parser, TT_INDENT, prefix_indent)
     prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
     prefix(parser, TT_LCURLY, prefix_lcurly, layout_lcurly)
@@ -533,10 +516,10 @@ def newparser(proc_data):
 def newtokenstream(source):
     lx = lexer.lexer(source)
     tokens_iter = lx.tokens()
-    return IndentationTokenStream(tokens_iter, source)
+    return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = False
+PARSE_DEBUG = True
 
 
 def parse(process, env, src):

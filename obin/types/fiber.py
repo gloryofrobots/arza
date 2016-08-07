@@ -56,6 +56,7 @@ class W_Coroutine(W_Callable):
         self.fn = fn
 
     def _call_(self, process, args):
+        self.fiber1.fiber = process.fiber
         if not self.initialised:
             new_args = tuples.concat(space.newtuple([self.fiber1]), args)
             process.activate_fiber(self.fiber2.fiber, self.fn, new_args)
@@ -73,7 +74,10 @@ class W_Coroutine(W_Callable):
         return self._to_string_()
 
     def _type_(self, process):
-        return process.std.types.Function
+        return process.std.types.Coroutine
+
+    def _is_empty_(self):
+        return self.fiber2.fiber.is_empty()
 
 
 def newfiber(process):
@@ -86,6 +90,7 @@ def newfiber(process):
 
 def activate_fiber(process, fiber_wrap, function, args):
     process.activate_fiber(fiber_wrap.fiber, function, args)
+
 
 def newcoroutine(process, fn):
     fiber1, fiber2 = newfiber(process)

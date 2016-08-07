@@ -1,6 +1,6 @@
 from obin:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                              Function, Partial, Interface,
-                             Generic, Fiber, Trait, Datatype, Union, LazyVal, Env)
+                             Generic, Fiber, Coroutine, Trait, Datatype, Union, LazyVal, Env)
 
 """
 SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW

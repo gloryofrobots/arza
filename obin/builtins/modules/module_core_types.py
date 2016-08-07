@@ -28,6 +28,7 @@ def setup_types(module, types):
     api.put(module, types.Generic.name, types.Generic)
     api.put(module, types.Interface.name, types.Interface)
     api.put(module, types.Fiber.name, types.Fiber)
+    api.put(module, types.Coroutine.name, types.Coroutine)
     api.put(module, types.Trait.name, types.Trait)
     api.put(module, types.Datatype.name, types.Datatype)
     api.put(module, types.Union.name, types.Union)

@@ -3,7 +3,7 @@ from obin.compile.parse.token_type import *
 from obin.types import space, api, root
 from obin.misc.platform import re
 
-RPLY = False
+RPLY = True
 
 if RPLY:
     def keyword(literal):
@@ -19,9 +19,7 @@ else:
     def token(literal):
         return literal
 
-## Regexes for use in tokens
-##
-##
+
 # OLD STUFF
 # simple_escape = """([a-zA-Z._~!=&\^\-\\?'"])"""
 # decimal_escape = """(\d+)"""
@@ -87,7 +85,7 @@ RULES = [
     (token('\.\('), TT_INFIX_DOT_LPAREN),
     (token('\.\['), TT_INFIX_DOT_LSQUARE),
     (token(' '), -1),
-    (token('--[-]*'), TT_END),
+    (token('--[^\n]*'), -1),
     (token('//[^\n]*'), -1),
     (token('/\*[^\*\/]*\*/'), -1),
 
@@ -100,14 +98,12 @@ RULES = [
     (keyword('match'), TT_MATCH),
     (keyword('with'), TT_WITH),
     (keyword('fun'), TT_FUN),
-    (keyword('end'), TT_END),
     (keyword('and'), TT_AND),
     (keyword('or'), TT_OR),
     (keyword('True'), TT_TRUE),
     (keyword('False'), TT_FALSE),
     # (keyword('nil'), TT_NIL),
     (keyword('throw'), TT_THROW),
-    (keyword('ensure'), TT_ENSURE),
     (keyword('try'), TT_TRY),
     (keyword('catch'), TT_CATCH),
     (keyword('finally'), TT_FINALLY),
@@ -116,11 +112,9 @@ RULES = [
     (keyword('use'), TT_USE),
 
     (keyword('trait'), TT_TRAIT),
-    (keyword('implement'), TT_IMPLEMENT),
     (keyword('extend'), TT_EXTEND),
     (keyword('generic'), TT_GENERIC),
     (keyword('interface'), TT_INTERFACE),
-    (keyword('def'), TT_DEF),
     (keyword('type'), TT_TYPE),
 
     (keyword('export'), TT_EXPORT),
@@ -133,8 +127,6 @@ RULES = [
     (keyword('as'), TT_AS),
     (keyword('let'), TT_LET),
     (keyword('when'), TT_WHEN),
-
-    (keyword('delay'), TT_DELAY),
     (keyword('in'), TT_IN),
 
     (keyword('infixl'), TT_INFIXL),
@@ -171,7 +163,6 @@ RULES = [
     (token('\.'), TT_DOT),
     (token('\.\.'), TT_DOUBLE_DOT),
     (token('@'), TT_AT_SIGN),
-    (token(':::'), TT_TRIPLE_COLON),
     (token('::'), TT_DOUBLE_COLON),
     (token('[:^:][%s]+' % operator_char), TT_OPERATOR),
     (token(':'), TT_COLON),
@@ -188,6 +179,7 @@ RULES = [
     # that can catch op
     (token(operator_const), TT_OPERATOR),
 ]
+
 
 class Token(root.W_Hashable):
     def __init__(self,type, val, pos, line, column):
@@ -271,7 +263,7 @@ def token_length(token):
     return token.length
 
 
-INFIX_TOKENS = [TT_DOUBLE_COLON, TT_TRIPLE_COLON, TT_COLON,
+INFIX_TOKENS = [TT_DOUBLE_COLON, TT_COLON,
                 TT_OPERATOR, TT_DOT, TT_ASSIGN, TT_OR, TT_AND]
 
 
