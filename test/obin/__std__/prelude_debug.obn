@@ -1,63 +1,26 @@
-prefix(-, negate)
-prefix(!, !)
-prefix(&, &)
-infixr(:=, :=, 10)
-infixl(<|, <|, 15)
-infixl(|>, |>, 20)
-infixl(<<, <<, 25)
-infixl(>>, >>, 25)
-infixl(<, <, 35)
-infixl(>, >, 35)
-infixl(>=, >=, 35)
-infixl(<=, <=, 35)
-infixl(==, ==, 35)
-infixl(!=, !=, 35)
-infixl(++, ++, 40)
-infixl(+, +, 40)
-infixl(-, -, 40)
-infixl(*, *, 50)
-infixl(/, /, 50)
-infixl(**, **, 55)
+prefix (-, negate)
+prefix (!, !)
+prefix (&, &)
+infixr (:=, :=, 10)
+infixl (<|, <|, 15)
+infixl (|>, |>, 20)
+infixl (<<, <<, 25)
+infixl (>>, >>, 25)
+infixl (<, <, 35)
+infixl (>, >, 35)
+infixl (>=, >=, 35)
+infixl (<=, <=, 35)
+infixl (==, ==, 35)
+infixl (!=, !=, 35)
+infixl (++, ++, 40)
+infixl (+, +, 40)
+infixl (-, -, 40)
+infixl (*, *, 50)
+infixl (/, /, 50)
+infixl (**, **, 55)
 
 False
 
-generic (
-    == (`x, y)
-    - (`x, y)
-    + (`x, y)
-    ! (self)
-    len (self)
-    put (key, value, `self)
-)
-
-interface (
-    PartialEq (==)
-    Eq (!=, ==)
-    Ord(<, <=, >, >=, cmp, max, min)
-    Num (-, +, *, /, mod, negate)
-    Pow(**)
-    Str (str)
-    Displayed (str, repr)
-    Len (len)
-)
-
-trait TNotEq
-    def != (x, y) = not (x == y)
-
-
-trait TOrd of PartialEq (
-    def < (<, y) = cmp x y == LT
-    def >= (x, y) = cmp x y != LT
-    def > (x, y) = cmp x y == GT
-
-    def cmp(x, y) =
-                if x == y then EQ
-                elif x <= y then LT
-                else GT
-
-    def max x y = if x <= y then y else x
-    def min x y = if x <= y then x else y
-)
 //let uncons([x, ...xs]) = (x, xs)
 //
 //let all(p, l) =
@@ -137,3 +100,59 @@ trait TOrd of PartialEq (
 //    else
 //        throw ValueError count
 //--------------------------------------------------
+//
+//generic (
+//    == (`x, y)
+//    - (`x, y)
+//    + (`x, y)
+//    ! (self)
+//    len (self)
+//    put (key, value, `self)
+//)
+//
+//interface (
+//    PartialEq (==)
+//    Eq (!=, ==)
+//    Ord(<, <=, >, >=, cmp, max, min)
+//    Num (-, +, *, /, mod, negate)
+//    Pow(**)
+//    Str (str)
+//    Displayed (str, repr)
+//    Len (len)
+//)
+//
+//trait TNotEq
+//    def != (x, y) = not (x == y)
+//
+//
+//trait TOrd of PartialEq (
+//    def < (<, y) = cmp x y == LT
+//    def >= (x, y) = cmp x y != LT
+//    def > (x, y) = cmp x y == GT
+//
+//    def cmp(x, y) =
+//                if x == y then EQ
+//                elif x <= y then LT
+//                else GT
+//
+//    def max x y = if x <= y then y else x
+//    def min x y = if x <= y then x else y
+//)
+//
+//extend List (
+//    use TNotEq
+//    use derive:TCollection
+//    use TRepr
+//
+//    def == (self, other) = seq:equal(self, other)
+//
+//    def str(self) =
+//        "[" ++ string:join_with(repr, self, ", ") ++ "]"
+//
+//    def first(self) = _list:head(self)
+//
+//    def cons(value, self) = _list:cons(value, self)
+//
+//    def slice(first, last, self) = _list:slice(first, last, self)
+//)
+

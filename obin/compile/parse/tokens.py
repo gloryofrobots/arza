@@ -79,7 +79,7 @@ string_literal = '"([^\\\"]+|\\.)*"'
 multi_string_literal = '"{3}([\s\S]*?"{3})'
 
 RULES = [
-    (token('\n'), TT_NEWLINE),
+    (token('\n'), -1),
     (token('[ ]*\.\.\.'), TT_ELLIPSIS),
     (token('\.\{'), TT_INFIX_DOT_LCURLY),
     (token('\.\('), TT_INFIX_DOT_LPAREN),
@@ -126,6 +126,7 @@ RULES = [
     (keyword('of'), TT_OF),
     (keyword('as'), TT_AS),
     (keyword('let'), TT_LET),
+    (keyword('def'), TT_DEF),
     (keyword('when'), TT_WHEN),
     (keyword('in'), TT_IN),
 

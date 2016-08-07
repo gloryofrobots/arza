@@ -7,6 +7,7 @@ from obin.runtime import error
 from obin.misc.strutil import get_line, get_line_for_position
 
 TERM_BLOCK = []
+TERM_LPAREN = [TT_RPAREN]
 TERM_EXP = [TT_END_EXPR]
 
 TERM_IF_BODY = [TT_ELSE, TT_ELIF]
@@ -37,16 +38,14 @@ TERM_BEFORE_WITH = [TT_WITH]
 TERM_TYPE_ARGS = TERM_BLOCK
 TERM_UNION_TYPE_ARGS = [TT_CASE] + TERM_BLOCK
 
-TERM_METHOD_SIG = [TT_LET, TT_ARROW] + TERM_BLOCK
-TERM_METHOD_DEFAULT_BODY = [TT_LET] + TERM_BLOCK
-TERM_METHOD_CONSTRAINTS = [TT_LET] + TERM_BLOCK
-TERM_IMPL_BODY = [TT_CASE, TT_LET] + TERM_BLOCK
-TERM_IMPL_HEADER = [TT_LET] + TERM_BLOCK
+TERM_METHOD_SIG = [TT_DEF, TT_ARROW] + TERM_BLOCK
+TERM_METHOD_DEFAULT_BODY = [TT_DEF] + TERM_BLOCK
+TERM_METHOD_CONSTRAINTS = [TT_DEF] + TERM_BLOCK
 
-TERM_TRAIT_DEF = [TT_LET, TT_CASE] + TERM_BLOCK
+TERM_TRAIT_DEF = [TT_DEF, TT_CASE] + TERM_BLOCK
 
-TERM_EXTEND_DEF = [TT_CASE, TT_LET, TT_USE] + TERM_BLOCK
-TERM_EXTEND = [TT_LET, TT_USE] + TERM_BLOCK
+TERM_EXTEND_DEF = [TT_CASE, TT_DEF, TT_USE] + TERM_BLOCK
+TERM_EXTEND = [TT_DEF, TT_USE] + TERM_BLOCK
 
 TERM_FROM_IMPORTED = [TT_IMPORT, TT_HIDE]
 
@@ -62,8 +61,6 @@ LEVELS_IF = [TT_ELSE, TT_ELIF]
 LEVELS_TRY = [TT_CATCH, TT_FINALLY]
 LEVELS_LET = [TT_IN]
 
-SKIP_JUXTAPOSITION = [TT_JUXTAPOSITION]
-
 
 def parser_error_unknown(parser, position):
     line = get_line_for_position(parser.ts.src, position)
@@ -76,8 +73,6 @@ def parser_error_unknown(parser, position):
 
 
 def parse_error(parser, message, node):
-    print parser.ts.advanced_values()
-    print parser.ts.layouts
     if nodes.node_token_type(node) == TT_ENDSTREAM:
         line = u"Unclosed top level statement"
     else:
@@ -92,22 +87,6 @@ def parse_error(parser, message, node):
                            space.newstring(message),
                            space.newstring(line)
                        ]))
-
-
-def init_code_layout(parser, node, terminators=None):
-    parser.ts.add_code_layout(node, terminators)
-
-
-def init_offside_layout(parser, node):
-    parser.ts.add_offside_layout(node)
-
-
-def init_node_layout(parser, node, level_tokens=None):
-    parser.ts.add_node_layout(node, level_tokens)
-
-
-def init_free_layout(parser, node, terminators):
-    parser.ts.add_free_code_layout(node, terminators)
 
 
 class ParserScope(root.W_Root):
@@ -294,11 +273,6 @@ def node_has_nud(parser, node):
     return handler.nud is not None
 
 
-def node_has_layout(parser, node):
-    handler = node_operator(parser, node)
-    return handler.layout is not None
-
-
 def node_has_led(parser, node):
     handler = node_operator(parser, node)
     return handler.led is not None
@@ -351,20 +325,6 @@ def node_led(parser, node, left):
         parse_error(parser, u"Unknown token led", node)
 
     return handler.led(parser, handler, node, left)
-
-
-def node_layout(parser, node):
-    handler = node_operator(parser, node)
-    if not handler.layout:
-        parse_error(parser, u"Unknown token layout", node)
-
-    return handler.layout(parser, handler, node)
-
-
-def parser_set_layout(parser, ttype, fn):
-    h = get_or_create_operator(parser, ttype)
-    h.layout = fn
-    return h
 
 
 def __check_ambidextrity(op):
@@ -478,12 +438,10 @@ def advance_end(parser):
 
 def on_endofexpression(parser):
     if parser.isend():
-        return None
-    if parser.token_type in TERM_BLOCK:
-        return parser.node
+        return
+
     if parser.token_type == TT_END_EXPR:
-        return advance(parser)
-    return False
+        advance(parser)
 
 
 def endofexpression(parser):
@@ -497,9 +455,6 @@ def endofexpression(parser):
 
 def base_expression(parser, _rbp, terminators=None):
     previous = parser.node
-    if node_has_layout(parser, previous):
-        node_layout(parser, previous)
-
     advance(parser)
 
     left = node_nud(parser, previous)
@@ -571,40 +526,34 @@ def rexpression(parser, op):
     return expression(parser, op.lbp - 1)
 
 
-def expression_with_optional_end_of_expression(parser, _rbp, terminators):
-    exp = expression(parser, _rbp, terminators)
-    skip_end_expression(parser)
-    return exp
-
-
-def juxtaposition_as_list(parser, terminators):
-    node = parser.node
-    exp = expression(parser, 0, terminators)
-    if not nodes.is_list_node(exp):
-        return nodes.create_list_node(node, [exp])
-
-    return nodes.create_list_node_from_list(node, exp)
-
-
-def juxtaposition_as_tuple(parser, terminators):
-    node = parser.node
-    exp = expression(parser, 0, terminators)
-    if not nodes.is_list_node(exp):
-        return nodes.create_tuple_node(node, [exp])
-
-    return nodes.create_tuple_node_from_list(node, exp)
-
-
-def flatten_juxtaposition(parser, node):
+def flatten_infix(parser, node, ntype):
     ntype = nodes.node_type(node)
-    if ntype == NT_JUXTAPOSITION:
-        first = nodes.node_first(node)
-        second = nodes.node_second(node)
-        head = flatten_juxtaposition(parser, first)
-        tail = flatten_juxtaposition(parser, second)
+    if ntype == ntype:
+        first = node.first()
+        second = node.second()
+        head = flatten_infix(parser, first, ntype)
+        tail = flatten_infix(parser, second, ntype)
         return plist.concat(head, tail)
     else:
         return nodes.list_node([node])
+
+
+def commas_as_list(parser, node):
+    return flatten_infix(parser, node, NT_COMMA)
+
+
+def maybe_tuple(parser, node):
+    if node.node_type == NT_COMMA:
+        els = commas_as_list(parser, node)
+        return nodes.node_1(NT_TUPLE, nodes.node_token(node), els)
+    return node
+
+
+def commas_as_list_if_commas(parser, node):
+    if nodes.node_type(node) != NT_COMMA:
+        return node
+
+    return flatten_infix(parser, node, NT_COMMA)
 
 
 def postprocess(parser, node):
@@ -617,18 +566,10 @@ def postprocess(parser, node):
         return nodes.list_node(children)
 
     ntype = nodes.node_type(node)
-    if ntype == NT_JUXTAPOSITION:
-        flatten = flatten_juxtaposition(parser, node)
-        # probably overkill
-        if len(flatten) < 2:
-            parse_error(parser, u"Invalid use of juxtaposition operator", node)
-
-        if parser.juxtaposition_as_list:
-            return postprocess(parser, flatten)
-        else:
-            caller = plist.head(flatten)
-            args = plist.tail(flatten)
-            return postprocess(parser, nodes.node_2(NT_CALL, nodes.node_token(caller), caller, args))
+    if ntype == NT_COMMA:
+        items = commas_as_list(parser, e)
+        flatten = nodes.node_1(NT_TUPLE, nodes.node_token(node), items)
+        return postprocess(parser, flatten)
     else:
         children = []
         node_children = nodes.node_children(node)
@@ -675,12 +616,10 @@ def statements(parser, endlist):
         if token_is_one_of(parser, endlist):
             break
         s = statement(parser)
-        end_exp = on_endofexpression(parser)
+        on_endofexpression(parser)
         if s is None:
             continue
         stmts.append(s)
-        if end_exp is False:
-            break
 
     length = len(stmts)
     if length == 0:
@@ -701,9 +640,8 @@ def infix(parser, ttype, lbp, led):
     parser_set_led(parser, ttype, lbp, led)
 
 
-def prefix(parser, ttype, nud, layout=None):
+def prefix(parser, ttype, nud):
     parser_set_nud(parser, ttype, nud)
-    parser_set_layout(parser, ttype, layout)
 
 
 def stmt(parser, ttype, std):
@@ -728,9 +666,7 @@ def skip(parser, ttype):
 
 
 def empty(parser, op, node):
-    print "EMPTY"
     return expression(parser, 0)
-    # return None
 
 
 def is_assignment_node(node):

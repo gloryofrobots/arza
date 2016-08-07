@@ -4,11 +4,11 @@ from obin.compile.parse.callbacks import *
 from obin.compile.parse.lexer import UnknownTokenError
 from obin.compile.parse import tokens
 from obin.types import api, space, plist, root, environment
+
 if tokens.RPLY:
     import obin.compile.parse.lexer as lexer
 else:
     import obin.compile.parse.lexer2 as lexer
-
 
 """ GOLANG PRECEDENCES. SOURCE OF INSPIRATION
 Precedence    Operator
@@ -33,6 +33,8 @@ Precedence    Operator
     15           " ."  as of <|
     10           = := @
 """
+
+
 # additional helpers
 
 
@@ -60,12 +62,11 @@ def assignment(parser, ttype, lbp):
 
 
 class BaseParser:
-
     def __init__(self):
         self.handlers = {}
         self.state = None
         self.allow_overloading = False
-        self.break_on_juxtaposition = False
+        self.break_on_juxtaposition = True
         self.allow_unknown = True
         self.juxtaposition_as_list = False
 
@@ -117,36 +118,31 @@ class BaseParser:
 
 
 class ExpressionParser(BaseParser):
-
     def __init__(self, proc_data):
         BaseParser.__init__(self)
         self.pattern_parser = pattern_parser_init(BaseParser())
         self.fun_pattern_parser = fun_pattern_parser_init(BaseParser())
         self.guard_parser = guard_parser_init(proc_data, BaseParser())
-        self.fun_signature_parser = fun_signature_parser_init(BaseParser())
         self.name_parser = name_parser_init(BaseParser())
         expression_parser_init(proc_data, self)
 
     def _on_open(self, state):
         self.pattern_parser.open(state)
         self.fun_pattern_parser.open(state)
-        self.fun_signature_parser.open(state)
         self.guard_parser.open(state)
         self.name_parser.open(state)
 
     def _on_close(self):
         self.pattern_parser.close()
         self.fun_pattern_parser.close()
-        self.fun_signature_parser.close()
         self.guard_parser.close()
         self.name_parser.close()
 
 
 class GenericParser(BaseParser):
-
     def __init__(self, proc_data):
         BaseParser.__init__(self)
-        self.generic_signature_parser =  \
+        self.generic_signature_parser = \
             operator_name_symbol_signature_parser_init(BaseParser())
         generic_parser_init(self)
 
@@ -158,7 +154,6 @@ class GenericParser(BaseParser):
 
 
 class ModuleParser(BaseParser):
-
     def __init__(self, proc_data):
         BaseParser.__init__(self)
 
@@ -168,7 +163,6 @@ class ModuleParser(BaseParser):
         self.guard_parser = guard_parser_init(proc_data, BaseParser())
 
         self.fun_pattern_parser = fun_pattern_parser_init(BaseParser())
-        self.fun_signature_parser = fun_signature_parser_init(BaseParser())
 
         self.expression_parser = ExpressionParser(proc_data)
         self.name_parser = name_parser_init(BaseParser())
@@ -188,7 +182,6 @@ class ModuleParser(BaseParser):
         self.pattern_parser.open(state)
         self.guard_parser.open(state)
         self.fun_pattern_parser.open(state)
-        self.fun_signature_parser.open(state)
 
         self.import_parser.open(state)
         self.expression_parser.open(state)
@@ -202,7 +195,6 @@ class ModuleParser(BaseParser):
         self.type_parser.close()
         self.pattern_parser.close()
         self.fun_pattern_parser.close()
-        self.fun_signature_parser.close()
         self.guard_parser.close()
         self.import_parser.close()
         self.expression_parser.close()
@@ -212,6 +204,63 @@ class ModuleParser(BaseParser):
         self.interface_parser.close()
 
 
+def guard_parser_init(proc_data, parser):
+    parser.allow_overloading = True
+    parser = init_parser_literals(parser)
+
+    symbol(parser, TT_COMMA, None)
+    symbol(parser, TT_RPAREN, None)
+    symbol(parser, TT_RCURLY, None)
+    symbol(parser, TT_RSQUARE, None)
+    symbol(parser, TT_ARROW, None)
+
+    prefix(parser, TT_LPAREN, prefix_lparen)
+    prefix(parser, TT_LSQUARE, prefix_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly)
+    prefix(parser, TT_SHARP, prefix_sharp)
+    prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
+
+    infix(parser, TT_OR, 25, led_infix)
+    infix(parser, TT_AND, 30, led_infix)
+    infix(parser, TT_BACKTICK_NAME, 35, infix_backtick_name)
+    infix(parser, TT_DOT, 100, infix_dot)
+    infix(parser, TT_COLON, 100, infix_name_pair)
+    return parser
+
+
+def pattern_parser_init(parser):
+    prefix(parser, TT_LPAREN, prefix_lparen_expression)
+    prefix(parser, TT_LSQUARE, prefix_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly_patterns)
+    prefix(parser, TT_SHARP, prefix_sharp)
+    prefix(parser, TT_ELLIPSIS, prefix_nud)
+
+    infix(parser, TT_OF, 10, led_infix)
+    infix(parser, TT_COMMA, 10, infix_comma)
+    infix(parser, TT_AT_SIGN, 10, infix_at)
+    infix(parser, TT_DOUBLE_COLON, 60, led_infixr)
+    infix(parser, TT_COLON, 100, infix_name_pair)
+
+    symbol(parser, TT_WHEN)
+    symbol(parser, TT_CASE)
+    symbol(parser, TT_COMMA)
+    symbol(parser, TT_RPAREN)
+    symbol(parser, TT_RCURLY)
+    symbol(parser, TT_RSQUARE)
+    symbol(parser, TT_ARROW)
+    symbol(parser, TT_ASSIGN)
+
+    parser = init_parser_literals(parser)
+    return parser
+
+
+def fun_pattern_parser_init(parser):
+    parser = pattern_parser_init(parser)
+    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
+    return parser
+
+
+
 def operator_name_symbol_signature_parser_init(parser):
     parser.juxtaposition_as_list = True
     parser.allow_unknown = True
@@ -219,7 +268,6 @@ def operator_name_symbol_signature_parser_init(parser):
     prefix(parser, TT_TICKNAME, prefix_name_as_symbol)
     prefix(parser, TT_OPERATOR, operator_as_symbol)
     symbol(parser, TT_END_EXPR)
-    infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
     return parser
 
 
@@ -252,27 +300,26 @@ def name_parser_init(parser):
     symbol(parser, TT_ELLIPSIS, None)
     symbol(parser, TT_ENDSTREAM)
 
-    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
+    prefix(parser, TT_LPAREN, prefix_lparen)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
     infix(parser, TT_COLON, 100, infix_name_pair)
     return parser
 
 
 def type_parser_init(parser):
-    # parser.break_on_juxtaposition = True
-    parser.juxtaposition_as_list = True
+    parser.break_on_juxtaposition = True
     parser.allow_unknown = True
+
     symbol(parser, TT_UNKNOWN)
     # literal(parser, TT_TYPENAME)
     symbol(parser, TT_COMMA)
     symbol(parser, TT_RPAREN)
 
-    prefix(parser, TT_LPAREN, prefix_lparen_type, layout_lparen)
+    prefix(parser, TT_LPAREN, prefix_lparen_type)
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     infix(parser, TT_COLON, 100, infix_name_pair)
     # infix(parser, TT_CASE, 15, led_infixr)
     # infix(parser, TT_ASSIGN, 10, led_infixr)
-    infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
     symbol(parser, TT_CASE, None)
     return parser
 
@@ -289,7 +336,6 @@ def method_signature_parser_init(parser):
 
     infix(parser, TT_OF, 15, led_infix)
     infix(parser, TT_COLON, 100, infix_name_pair)
-    infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
     return parser
 
 
@@ -300,7 +346,7 @@ def import_names_parser_init(parser):
     symbol(parser, TT_RPAREN, None)
     literal(parser, TT_NAME)
     infix(parser, TT_AS, 15, infix_name_pair)
-    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
+    prefix(parser, TT_LPAREN, prefix_lparen)
     return parser
 
 
@@ -320,83 +366,6 @@ def import_parser_init(parser):
     return parser
 
 
-def guard_parser_init(proc_data, parser):
-    parser.allow_overloading = True
-    parser = init_parser_literals(parser)
-
-    symbol(parser, TT_COMMA, None)
-    symbol(parser, TT_RPAREN, None)
-    symbol(parser, TT_RCURLY, None)
-    symbol(parser, TT_RSQUARE, None)
-    symbol(parser, TT_ARROW, None)
-
-    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
-    prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly, layout_lcurly)
-    prefix(parser, TT_SHARP, prefix_sharp)
-    prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
-
-    infix(parser, TT_OR, 25, led_infix)
-    infix(parser, TT_AND, 30, led_infix)
-    infix(parser, TT_BACKTICK_NAME, 35, infix_backtick_name)
-    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
-    infix(parser, TT_DOT, 100, infix_dot)
-    infix(parser, TT_COLON, 100, infix_name_pair)
-    return parser
-
-
-def pattern_parser_init(parser):
-    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
-    prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly_patterns, layout_lcurly)
-    prefix(parser, TT_SHARP, prefix_sharp)
-    prefix(parser, TT_ELLIPSIS, prefix_nud)
-
-    infix(parser, TT_OF, 10, led_infix)
-    infix(parser, TT_AT_SIGN, 10, infix_at)
-    infix(parser, TT_DOUBLE_COLON, 60, led_infixr)
-    infix(parser, TT_COLON, 100, infix_name_pair)
-
-    symbol(parser, TT_WHEN)
-    symbol(parser, TT_CASE)
-    symbol(parser, TT_COMMA)
-    symbol(parser, TT_RPAREN)
-    symbol(parser, TT_RCURLY)
-    symbol(parser, TT_RSQUARE)
-    symbol(parser, TT_ARROW)
-    symbol(parser, TT_ASSIGN)
-
-    parser = init_parser_literals(parser)
-    return parser
-
-
-def fun_pattern_parser_init(parser):
-    parser = pattern_parser_init(parser)
-    parser.break_on_juxtaposition = False
-    parser.juxtaposition_as_list = True
-    infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
-    return parser
-
-
-def fun_signature_parser_init(parser):
-    parser.juxtaposition_as_list = True
-    literal(parser, TT_NAME)
-
-    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
-    symbol(parser, TT_RPAREN)
-    prefix(parser, TT_ELLIPSIS, prefix_nud)
-
-    infix(parser, TT_OF, 15, led_infix)
-    infix(parser, TT_COLON, 100, infix_name_pair)
-
-    literal(parser, TT_WILDCARD)
-    symbol(parser, TT_LET)
-    symbol(parser, TT_ARROW)
-    symbol(parser, TT_CASE)
-    infix(parser, TT_JUXTAPOSITION, 5, infix_juxtaposition)
-    return parser
-
-
 def init_parser_literals(parser):
     literal(parser, TT_INT)
     literal(parser, TT_FLOAT)
@@ -412,6 +381,7 @@ def init_parser_literals(parser):
 
 def expression_parser_init(proc_data, parser):
     parser.allow_overloading = True
+    parser.break_on_juxtaposition = True
 
     parser = init_parser_literals(parser)
 
@@ -433,9 +403,9 @@ def expression_parser_init(proc_data, parser):
     symbol(parser, TT_COMMA)
     symbol(parser, TT_IN)
 
-    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
-    prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly, layout_lcurly)
+    prefix(parser, TT_LPAREN, prefix_lparen)
+    prefix(parser, TT_LSQUARE, prefix_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
     prefix(parser, TT_IF, prefix_if)
@@ -451,13 +421,13 @@ def expression_parser_init(proc_data, parser):
 
     infix(parser, TT_FAT_ARROW, 10, infix_fat_arrow)
     infix(parser, TT_WHEN, 10, infix_when)
+    infix(parser, TT_COMMA, 10, infix_comma)
+
     infix(parser, TT_OF, 15, led_infix)
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
     infix(parser, TT_BACKTICK_NAME, 35, infix_backtick_name)
     infix(parser, TT_DOUBLE_COLON, 70, led_infixr)
-
-    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     infix(parser, TT_COLON, 100, infix_name_pair)
     infix(parser, TT_DOT, 100, infix_dot)
 
@@ -473,6 +443,7 @@ def expression_parser_init(proc_data, parser):
 def module_parser_init(parser):
     parser = init_parser_literals(parser)
     parser.allow_overloading = True
+    parser.break_on_juxtaposition = True
 
     symbol(parser, TT_RSQUARE)
     symbol(parser, TT_ARROW)
@@ -482,14 +453,16 @@ def module_parser_init(parser):
     symbol(parser, TT_END_EXPR)
     symbol(parser, TT_ENDSTREAM)
 
-    prefix(parser, TT_LPAREN, prefix_lparen, layout_lparen)
-    prefix(parser, TT_LSQUARE, prefix_lsquare, layout_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly, layout_lcurly)
+    prefix(parser, TT_LPAREN, prefix_lparen)
+    prefix(parser, TT_LSQUARE, prefix_lsquare)
+    prefix(parser, TT_LCURLY, prefix_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
 
     assignment(parser, TT_ASSIGN, 10)
-    infix(parser, TT_JUXTAPOSITION, 90, infix_juxtaposition)
     infix(parser, TT_DOT, 100, infix_dot)
+
+    infix(parser, TT_COMMA, 10, infix_comma)
+
     infix(parser, TT_COLON, 100, infix_name_pair)
 
     stmt(parser, TT_FUN, prefix_module_fun)
