@@ -350,7 +350,7 @@ def guard_parser_init(parser):
 def pattern_parser_init(parser):
     prefix(parser, TT_LPAREN, prefix_lparen_expression)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly_patterns)
+    prefix(parser, TT_LCURLY, prefix_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
 

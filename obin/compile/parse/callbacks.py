@@ -396,13 +396,8 @@ def stmt_generic(parser, op, node):
 
 
 # this callback used in pattern matching
-def prefix_lcurly_patterns(parser, op, node):
-    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_MULTI_STR, TT_STR, TT_CHAR, TT_FLOAT],
-                          on_bind_node)
-
-
 def prefix_lcurly(parser, op, node):
-    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_MULTI_STR, TT_CHAR, TT_FLOAT],
+    return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_MULTI_STR, TT_STR, TT_CHAR, TT_FLOAT],
                           on_bind_node)
 
 
