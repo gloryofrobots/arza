@@ -69,6 +69,13 @@ class BaseParser:
         self.break_on_juxtaposition = True
         self.allow_unknown = True
         self.juxtaposition_as_list = False
+        symbol(self, TT_UNKNOWN)
+        symbol(self, TT_ENDSTREAM)
+        self.subparsers = []
+
+    def add_subparsers(self, parsers):
+        for parser in parsers:
+            self.subparsers.append(parser)
 
     def open(self, state):
         assert self.state is None
@@ -76,7 +83,8 @@ class BaseParser:
         self._on_open(state)
 
     def _on_open(self, state):
-        pass
+        for parser in self.subparsers:
+            parser.open(state)
 
     def close(self):
         state = self.state
@@ -85,7 +93,8 @@ class BaseParser:
         return state
 
     def _on_close(self):
-        pass
+        for parser in self.subparsers:
+            parser.close()
 
     @property
     def ts(self):
@@ -118,28 +127,22 @@ class BaseParser:
 
 
 class ExpressionParser(BaseParser):
-    def __init__(self, proc_data):
+    def __init__(self):
         BaseParser.__init__(self)
         self.pattern_parser = pattern_parser_init(BaseParser())
         self.fun_pattern_parser = fun_pattern_parser_init(BaseParser())
-        self.guard_parser = guard_parser_init(proc_data, BaseParser())
+        self.guard_parser = guard_parser_init(BaseParser())
         self.name_parser = name_parser_init(BaseParser())
         self.let_parser = LetParser(self)
+        self.add_subparsers(
+            [
+                self.pattern_parser,
+                self.fun_pattern_parser,
+                self.guard_parser,
+                self.name_parser,
+                self.let_parser,
+            ])
         expression_parser_init(self)
-
-    def _on_open(self, state):
-        self.pattern_parser.open(state)
-        self.fun_pattern_parser.open(state)
-        self.guard_parser.open(state)
-        self.name_parser.open(state)
-        self.let_parser.open(state)
-
-    def _on_close(self):
-        self.pattern_parser.close()
-        self.fun_pattern_parser.close()
-        self.guard_parser.close()
-        self.name_parser.close()
-        self.let_parser.close()
 
 
 class LetParser(BaseParser):
@@ -149,72 +152,81 @@ class LetParser(BaseParser):
         let_parser_init(self)
 
 
-class GenericParser(BaseParser):
-    def __init__(self, proc_data):
+class TraitParser(BaseParser):
+    def __init__(self):
         BaseParser.__init__(self)
-        self.generic_signature_parser = \
-            operator_name_symbol_signature_parser_init(BaseParser())
-        generic_parser_init(self)
 
-    def _on_open(self, state):
-        self.generic_signature_parser.open(state)
+        self.expression_parser = ExpressionParser()
+        self.name_parser = name_parser_init(BaseParser())
+        self.constraints_parser = name_list_parser_init(BaseParser())
 
-    def _on_close(self):
-        self.generic_signature_parser.close()
+        self.add_subparsers([
+            self.expression_parser,
+            self.name_parser,
+            self.constraints_parser
+        ])
+
+        trait_parser_init(self)
+
+
+class ExtendParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+        self.expression_parser = ExpressionParser()
+        self.name_parser = name_parser_init(BaseParser())
+        self.name_list_parser = name_list_parser_init(BaseParser())
+        self.add_subparsers([
+            self.expression_parser,
+            self.name_parser,
+            self.name_list_parser
+        ])
+
+        extend_parser_init(self)
 
 
 class ModuleParser(BaseParser):
-    def __init__(self, proc_data):
+    def __init__(self):
         BaseParser.__init__(self)
 
         self.import_parser = import_parser_init(BaseParser())
 
         self.pattern_parser = pattern_parser_init(BaseParser())
-        self.guard_parser = guard_parser_init(proc_data, BaseParser())
+        self.guard_parser = guard_parser_init(BaseParser())
 
         self.fun_pattern_parser = fun_pattern_parser_init(BaseParser())
 
-        self.expression_parser = ExpressionParser(proc_data)
+        self.expression_parser = ExpressionParser()
+
         self.name_parser = name_parser_init(BaseParser())
+        self.name_list_parser = name_list_parser_init(BaseParser())
+
         self.import_names_parser = import_names_parser_init(BaseParser())
         self.type_parser = type_parser_init(BaseParser())
-        self.method_signature_parser = method_signature_parser_init(
-            BaseParser())
-        self.generic_parser = GenericParser(proc_data)
+        self.generic_parser = generic_parser_init(BaseParser())
         self.interface_parser = interface_parser_init(BaseParser())
+        self.trait_parser = TraitParser()
+        self.extend_parser = ExtendParser()
+
+        self.add_subparsers([
+            self.import_parser,
+            self.pattern_parser,
+            self.guard_parser,
+            self.fun_pattern_parser,
+            self.expression_parser,
+            self.name_parser,
+            self.import_names_parser,
+            self.type_parser,
+            self.name_list_parser,
+            self.generic_parser,
+            self.interface_parser,
+            self.trait_parser,
+            self.extend_parser,
+        ])
 
         module_parser_init(self)
 
-    def _on_open(self, state):
-        self.method_signature_parser.open(state)
-        self.type_parser.open(state)
 
-        self.pattern_parser.open(state)
-        self.guard_parser.open(state)
-        self.fun_pattern_parser.open(state)
-
-        self.import_parser.open(state)
-        self.expression_parser.open(state)
-        self.name_parser.open(state)
-        self.import_names_parser.open(state)
-        self.generic_parser.open(state)
-        self.interface_parser.open(state)
-
-    def _on_close(self):
-        self.method_signature_parser.close()
-        self.type_parser.close()
-        self.pattern_parser.close()
-        self.fun_pattern_parser.close()
-        self.guard_parser.close()
-        self.import_parser.close()
-        self.expression_parser.close()
-        self.name_parser.close()
-        self.import_names_parser.close()
-        self.generic_parser.close()
-        self.interface_parser.close()
-
-
-def guard_parser_init(proc_data, parser):
+def guard_parser_init(parser):
     parser.allow_overloading = True
     parser = init_parser_literals(parser)
 
@@ -222,7 +234,7 @@ def guard_parser_init(proc_data, parser):
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_RCURLY, None)
     symbol(parser, TT_RSQUARE, None)
-    symbol(parser, TT_ARROW, None)
+    symbol(parser, TT_ASSIGN, None)
 
     prefix(parser, TT_LPAREN, prefix_lparen)
     prefix(parser, TT_LSQUARE, prefix_lsquare)
@@ -245,9 +257,9 @@ def pattern_parser_init(parser):
     prefix(parser, TT_SHARP, prefix_sharp)
     prefix(parser, TT_ELLIPSIS, prefix_nud)
 
-    infix(parser, TT_OF, 10, led_infix)
-    infix(parser, TT_COMMA, 10, infix_comma)
-    infix(parser, TT_AT_SIGN, 10, infix_at)
+    infix(parser, TT_OF, 5, led_infix)
+    infix(parser, TT_COMMA, 5, infix_comma)
+    infix(parser, TT_AT_SIGN, 15, infix_at)
     infix(parser, TT_DOUBLE_COLON, 60, led_infixr)
     infix(parser, TT_COLON, 100, infix_name_pair)
 
@@ -256,7 +268,6 @@ def pattern_parser_init(parser):
     symbol(parser, TT_RPAREN)
     symbol(parser, TT_RCURLY)
     symbol(parser, TT_RSQUARE)
-    symbol(parser, TT_ARROW)
     symbol(parser, TT_ASSIGN)
 
     parser = init_parser_literals(parser)
@@ -269,81 +280,72 @@ def fun_pattern_parser_init(parser):
     return parser
 
 
-def operator_name_symbol_signature_parser_init(parser):
-    parser.juxtaposition_as_list = True
-    parser.allow_unknown = True
+def generic_parser_init(parser):
+    prefix(parser, TT_LPAREN, prefix_lparen)
+    infix(parser, TT_LPAREN, 100, infix_lparen_generic)
+
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     prefix(parser, TT_TICKNAME, prefix_name_as_symbol)
     prefix(parser, TT_OPERATOR, operator_as_symbol)
-    symbol(parser, TT_END_EXPR)
+
+    infix(parser, TT_COMMA, 5, infix_comma)
+    symbol(parser, TT_RPAREN)
     return parser
 
 
-def generic_parser_init(parser):
-    parser.break_on_juxtaposition = True
-    stmt(parser, TT_NAME, stmt_generic_name)
-    stmt(parser, TT_OPERATOR, stmt_generic_name)
-
-
 def interface_parser_init(parser):
+    prefix(parser, TT_LPAREN, prefix_lparen)
     infix(parser, TT_LPAREN, 90, infix_lparen_interface)
     infix(parser, TT_COLON, 100, infix_name_pair)
     literal(parser, TT_NAME)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
-    symbol(parser, TT_COMMA)
+    infix(parser, TT_COMMA, 5, infix_comma)
     symbol(parser, TT_RPAREN)
     return parser
 
 
 def name_parser_init(parser):
-    parser.break_on_juxtaposition = True
-    parser.allow_unknown = True
-    # symbol(parser, TT_COMMA, None)
-    symbol(parser, TT_UNKNOWN, None)
-    # symbol(parser, TT_WILDCARD, None)
-    symbol(parser, TT_RPAREN, None)
-    init_parser_literals(parser)
-    symbol(parser, TT_CASE, None)
-    symbol(parser, TT_ASSIGN, None)
-    symbol(parser, TT_ELLIPSIS, None)
-    symbol(parser, TT_ENDSTREAM)
-
-    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
+    literal(parser, TT_NAME)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
     infix(parser, TT_COLON, 100, infix_name_pair)
+    return parser
+
+
+def name_list_parser_init(parser):
+    symbol(parser, TT_RPAREN, None)
+    literal(parser, TT_NAME)
+
+    # FIXME THIS IS FOR PREFIX INFIXL
+
+    literal(parser, TT_INT)
+    symbol(parser, TT_OPERATOR, symbol_operator_name)
+    infix(parser, TT_COLON, 100, infix_name_pair)
+    prefix(parser, TT_LPAREN, prefix_lparen_expression)
     infix(parser, TT_COMMA, 10, infix_comma)
     return parser
 
 
-def type_parser_init(parser):
-    parser.break_on_juxtaposition = True
-    parser.allow_unknown = True
+def trait_parser_init(parser):
+    prefix(parser, TT_DEF, prefix_trait_def)
+    prefix(parser, TT_LPAREN, prefix_lparen)
 
-    symbol(parser, TT_UNKNOWN)
-    # literal(parser, TT_TYPENAME)
+
+def extend_parser_init(parser):
+    prefix(parser, TT_DEF, prefix_extend_def)
+    prefix(parser, TT_USE, prefix_extend_use)
+    prefix(parser, TT_LPAREN, prefix_lparen)
+
+
+
+
+def type_parser_init(parser):
     symbol(parser, TT_COMMA)
     symbol(parser, TT_RPAREN)
-
     prefix(parser, TT_LPAREN, prefix_lparen_type)
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     infix(parser, TT_COLON, 100, infix_name_pair)
     # infix(parser, TT_CASE, 15, led_infixr)
     symbol(parser, TT_CASE, None)
-    return parser
-
-
-def method_signature_parser_init(parser):
-    parser.juxtaposition_as_list = True
-    symbol(parser, TT_ARROW)
-    symbol(parser, TT_CASE)
-
-    literal(parser, TT_NAME)
-    literal(parser, TT_WILDCARD)
-
-    prefix(parser, TT_NAME, prefix_name_as_symbol)
-
-    infix(parser, TT_OF, 15, led_infix)
-    infix(parser, TT_COLON, 100, infix_name_pair)
     return parser
 
 
@@ -513,8 +515,8 @@ def module_parser_init(parser):
     return parser
 
 
-def newparser(proc_data):
-    parser = ModuleParser(proc_data)
+def newparser():
+    parser = ModuleParser()
     return parser
 
 

@@ -1,23 +1,49 @@
-//prefix (-, negate)
-//prefix (!, !)
-//prefix (&, &)
-//infixr (:=, :=, 10)
-//infixl (<|, <|, 15)
-//infixl (|>, |>, 20)
-//infixl (<<, <<, 25)
-//infixl (>>, >>, 25)
-//infixl (<, <, 35)
+prefix (-, negate)
+prefix (!, !)
+prefix (&, &)
+infixr (:=, :=, 10)
+infixl (<|, <|, 15)
+infixl (|>, |>, 20)
+infixl (<<, <<, 25)
+infixl (>>, >>, 25)
+infixl (<, <, 35)
 infixl (>, >, 35)
-//infixl (>=, >=, 35)
-//infixl (<=, <=, 35)
+infixl (>=, >=, 35)
+infixl (<=, <=, 35)
 infixl (==, ==, 35)
-//infixl (!=, !=, 35)
-//infixl (++, ++, 40)
-//infixl (+, +, 40)
-//infixl (-, -, 40)
-//infixl (*, *, 50)
-//infixl (/, /, 50)
-//infixl (**, **, 55)
+infixl (!=, !=, 35)
+infixl (++, ++, 40)
+infixl (+, +, 40)
+infixl (-, -, 40)
+infixl (*, *, 50)
+infixl (/, /, 50)
+infixl (**, **, 55)
+
+//fun f () = (
+//
+//    try
+//        error()
+//    catch e1 =
+//        e1
+//    finally
+//        error2(#Finally)
+//
+//    try
+//        try
+//            error(#Catch)
+//        catch
+//            | err @ (1, y, 3) = #first
+//            | (1,2, "ERROR@") = #second
+//            | err @ (1, 2, x) = #third
+//        finally
+//            //uncatched
+//            throw (e2, e3)
+//    catch E = E
+//)
+//fun f () =
+//    match [1,2,3]
+//        | B1 @ [a, b, B2 @ c] when x == 1 = (B1, B2, a, b, c)
+//        | _ = 42
 
 //fun max_min x, y =
 //    if x > y then (
@@ -125,6 +151,7 @@ infixl (==, ==, 35)
 //        throw ValueError count
 //--------------------------------------------------
 //
+//generic == (`x, y)
 //generic (
 //    == (`x, y)
 //    - (`x, y)
@@ -134,6 +161,7 @@ infixl (==, ==, 35)
 //    put (key, value, `self)
 //)
 //
+//interface Ord(<, <=, >, >=, cmp, max, min)
 //interface (
 //    PartialEq (==)
 //    Eq (!=, ==)
@@ -145,38 +173,41 @@ infixl (==, ==, 35)
 //    Len (len)
 //)
 //
-//trait TNotEq
-//    def != (x, y) = not (x == y)
+trait TNotEq
+    def != (x, y) = not (x == y)
 //
 //
-//trait TOrd of PartialEq (
-//    def < (<, y) = cmp x y == LT
-//    def >= (x, y) = cmp x y != LT
-//    def > (x, y) = cmp x y == GT
-//
-//    def cmp(x, y) =
-//                if x == y then EQ
-//                elif x <= y then LT
-//                else GT
-//
-//    def max x y = if x <= y then y else x
-//    def min x y = if x <= y then x else y
-//)
-//
-//extend List (
-//    use TNotEq
-//    use derive:TCollection
-//    use TRepr
-//
-//    def == (self, other) = seq:equal(self, other)
-//
-//    def str(self) =
-//        "[" ++ string:join_with(repr, self, ", ") ++ "]"
-//
-//    def first(self) = _list:head(self)
-//
-//    def cons(value, self) = _list:cons(value, self)
-//
-//    def slice(first, last, self) = _list:slice(first, last, self)
-//)
+trait TOrd of (PartialEq, TSeq) (
+    def < (x, y) = cmp(x, y) == LT
+    def >= (x, y) = cmp(x, y) != LT
+)
+
+trait TOrd of PartialEq (
+    def < (x, y) = cmp(x, y) == LT
+    def >= (x, y) = cmp(x, y) != LT
+    def > (x, y) = cmp(x, y) == GT
+
+    def cmp(x, y) =
+                if x == y then EQ
+                elif x <= y then LT
+                else GT
+
+)
+
+extend List def first(self) = _list:head(self)
+
+extend List
+    use TXXX
+
+extend List (
+    use TListable (drop, take)
+    use TNotEq
+    use derive:TCollection
+
+    def == (self, other) = seq:equal(self, other)
+
+    def first(self) = _list:head(self)
+
+    def slice(first, last, self) = _list:slice(first, last, self)
+)
 

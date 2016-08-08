@@ -79,7 +79,7 @@ class ProcessData:
         self.std = std
         self.symbols = symbols
         self.io = io
-        self.parser = newparser(self)
+        self.parser = newparser()
 
 
 class IO:
