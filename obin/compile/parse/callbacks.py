@@ -80,10 +80,6 @@ def led_infixr_function(parser, op, node, left):
     return nodes.create_call_node_name(node, op.infix_function, [left, exp])
 
 
-# def led_infixr_assign(parser, op, node, left):
-#     exp = expression(parser, 9)
-#     return node_2(__ntype(node), __ntok(node), left, exp)
-
 def led_let_assign(parser, op, node, left):
     exp = expression(parser.expression_parser, 9)
     return node_2(NT_ASSIGN, __ntok(node), left, exp)
@@ -124,15 +120,9 @@ def infix_when(parser, op, node, left):
     return node_1(NT_CONDITION, __ntok(node), list_node(branches))
 
 
-def infix_fat_arrow(parser, op, node, left):
-    if nodes.node_type(left) == NT_JUXTAPOSITION:
-        signature = flatten_juxtaposition(parser, left)
-    else:
-        signature = nodes.list_node([left])
-
-    args = nodes.create_tuple_node_from_list(left, signature)
+def infix_arrow(parser, op, node, left):
+    args = ensure_tuple(left)
     exp = expression(parser, 0)
-
     return nodes.create_lambda_node(node, args, exp)
 
 
@@ -256,38 +246,11 @@ def itself(parser, op, node):
     return node_0(__ntype(node), __ntok(node))
 
 
-def _parse_name(parser):
-    if parser.token_type == TT_SHARP:
-        node = parser.node
-        advance(parser)
-        return _parse_symbol(parser, node)
-
-    check_token_types(parser, [TT_STR, TT_MULTI_STR, TT_NAME])
-    node = parser.node
-    advance(parser)
-    return node_0(__ntype(node), __ntok(node))
-
-
-def _parse_symbol(parser, node):
+def prefix_sharp(parser, op, node):
     check_token_types(parser, [TT_NAME, TT_MULTI_STR, TT_STR, TT_OPERATOR])
     exp = node_0(__ntype(parser.node), __ntok(parser.node))
     advance(parser)
     return node_1(__ntype(node), __ntok(node), exp)
-
-
-def prefix_sharp(parser, op, node):
-    return _parse_symbol(parser, node)
-
-
-# def prefix_backtick(parser, op, node):
-#     val = strutil.cat_both_ends(nodes.node_value_s(node))
-#     if not val:
-#         return parse_error(parser, u"invalid variable name", node)
-#     return nodes.create_name_node(node, val)
-
-
-def symbol_wildcard(parser, op, node):
-    return parse_error(parser, u"Invalid use of _ pattern", node)
 
 
 def prefix_lparen_tuple(parser, op, node):
@@ -298,15 +261,6 @@ def prefix_lparen_tuple(parser, op, node):
     e = expression(parser, 0, [TERM_LPAREN])
     advance_expected(parser, TT_RPAREN)
     return ensure_tuple(e)
-
-    # skip_end_expression(parser)
-    # if e.node_type == NT_COMMA:
-    #     items = commas_as_list(parser, e)
-    # else:
-    #     items = nodes.list_node([e])
-    #
-    # parser.advance_expected(TT_RPAREN)
-    # return node_1(NT_TUPLE, __ntok(node), items)
 
 
 def prefix_lparen_expression(parser, op, node):
@@ -319,6 +273,10 @@ def prefix_lparen_expression(parser, op, node):
 
 
 def prefix_lparen(parser, op, node):
+    if parser.token_type == TT_RPAREN:
+        advance_expected(parser, TT_RPAREN)
+        return nodes.create_tuple_node(node, [])
+
     exps = statements(parser, TERM_LPAREN)
     advance_expected(parser, TT_RPAREN)
 
@@ -437,11 +395,6 @@ def stmt_generic(parser, op, node):
     return nodes
 
 
-def prefix_lparen_type(parser, op, node):
-    items = _parse_comma_separated(parser, node, TT_RPAREN, [NT_SYMBOL])
-    return node_1(NT_LIST, __ntok(node), items)
-
-
 # this callback used in pattern matching
 def prefix_lcurly_patterns(parser, op, node):
     return _prefix_lcurly(parser, op, node, [TT_NAME, TT_SHARP, TT_INT, TT_MULTI_STR, TT_STR, TT_CHAR, TT_FLOAT],
@@ -528,6 +481,12 @@ def prefix_let(parser, op, node):
     return node_2(NT_LET, __ntok(node), letblock, inexp)
 
 
+def prefix_module_let(parser, op, node):
+    exp = expression(parser.expression_parser.let_parser, 0)
+    check_node_type(parser, exp, NT_ASSIGN)
+    return exp
+
+
 def prefix_try(parser, op, node):
     trybody = expression(parser, 0, TERM_TRY)
     catches = []
@@ -601,7 +560,6 @@ def prefix_throw(parser, op, node):
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
     pattern = expression(parser.fun_pattern_parser, 0, arg_terminator)
     pattern = ensure_tuple(pattern)
-    # pattern = expect_expression_of(parser.fun_pattern_parser, 0, NT_TUPLE, arg_terminator)
 
     if parser.token_type == TT_WHEN:
         advance(parser)
@@ -947,42 +905,41 @@ def _symbols_to_args(parser, node, symbols):
     return nodes.node_1(NT_TUPLE, nodes.node_token(node), list_node(args))
 
 
-# DERIVE ################################
-def _parse_union(parser, node, union_name):
-    types = []
-    check_token_type(parser, TT_CASE)
-    while parser.token_type == TT_CASE:
-        advance(parser)
-        _typename = grab_name(parser.type_parser)
-        _type = _parse_type(parser, node, _typename, TERM_UNION_TYPE_ARGS)
-        types.append(_type)
-
-    if len(types) < 2:
-        parse_error(parser, u"Union type must have at least two constructors", parser.node)
-
-    return nodes.node_2(NT_UNION, __ntok(node), union_name, nodes.list_node(types))
-
-
-def _parse_type(parser, node, typename, term):
-    if parser.token_type == TT_NAME:
-        fields = juxtaposition_as_list(parser.type_parser, term)
-    elif parser.token_type == TT_LPAREN:
-        fields = expect_expression_of(parser.type_parser, 0, NT_LIST, term)
-    else:
-        fields = empty_node()
-
-    return nodes.node_2(NT_TYPE, __ntok(node), typename, fields)
-
-
-# TODO BETTER PARSE ERRORS HERE
 def stmt_type(parser, op, node):
-    typename = grab_name(parser.type_parser)
+    nodes = ensure_list_node(expression(parser.type_parser, 0))
+    return nodes
+    # TODO cleanup
+    # typename = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    #
+    # if parser.token_type == TT_NAME or parser.token_type == TT_LPAREN:
+    #     items = tuple_to_list_node(
+    #         ensure_tuple_of_nodes(
+    #             parser.name_list_parser,
+    #             expect_expression_of_types(parser, 0, [NT_NAME, NT_TUPLE]),
+    #             [NT_NAME]
+    #         ))
+    #     fields = node_1(NT_LIST, __ntok(node), items)
+    # else:
+    #     fields = empty_node()
+    #
+    # return nodes.node_2(NT_TYPE, __ntok(node), typename, fields)
 
-    if parser.token_type == TT_CASE:
-        return _parse_union(parser, node, typename)
 
-    _t = _parse_type(parser, node, typename, TERM_TYPE_ARGS)
-    return _t
+def prefix_typename(parser, op, node):
+    typename = itself(parser, op, node)
+
+    # expect for infix_lparen_type to finish the job
+    if parser.token_type == TT_LPAREN:
+        return typename
+    # support for singleton type
+    return nodes.node_2(NT_TYPE, __ntok(node), typename, empty_node())
+
+
+def infix_lparen_type(parser, op, node, left):
+    check_node_type(parser, left, NT_NAME)
+    items = _infix_lparen(parser.name_list_parser)
+    fields = node_1(NT_LIST, __ntok(node), items)
+    return node_2(NT_TYPE, __ntok(node), left, fields)
 
 
 # TRAIT*************************
@@ -998,22 +955,6 @@ def grab_name(parser):
     return name
 
 
-def parse_function_name(parser):
-    return grab_name_or_operator(parser)
-
-
-def grab_name_or_operator(parser):
-    check_token_types(parser, [TT_NAME, TT_OPERATOR, TT_DOUBLE_COLON])
-    name = _init_default_current_0(parser)
-    if parser.token_type == TT_OPERATOR:
-        name = nodes.create_name_from_operator(name, name)
-    elif parser.token_type == TT_DOUBLE_COLON:
-        name = nodes.create_name_node_s(name, lang_names.CONS)
-
-    advance(parser)
-    return name
-
-
 def _parser_trait_header(parser, node):
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     if parser.token_type == TT_OF:
@@ -1021,7 +962,7 @@ def _parser_trait_header(parser, node):
         constraints = tuple_to_list_node(
             ensure_tuple_of_nodes(
                 parser.name_list_parser,
-                expect_expression_of_types(parser, 0, [NT_NAME, NT_IMPORTED_NAME, NT_TUPLE]),
+                expect_expression_of_types(parser.name_list_parser, 0, [NT_NAME, NT_IMPORTED_NAME, NT_TUPLE]),
                 [NT_NAME, NT_IMPORTED_NAME]
             ))
     else:

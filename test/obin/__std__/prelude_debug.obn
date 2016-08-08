@@ -19,6 +19,28 @@ infixl (*, *, 50)
 infixl (/, /, 50)
 infixl (**, **, 55)
 
+let m = () -> 42
+
+let m = (x) -> 42
+let m = (x,y,z) -> 42
+
+let m = x -> 42
+let m = x,y,z -> 42
+
+let x = 1
+let Z = (1,2,3,4)
+
+let V = fun (x) = 1
+//type (
+//    Zero
+//    Vec2 (p1, p2)
+//    Car (speed, price, model, weight)
+//)
+//
+//type Zero
+//type Vec2 (p1, p2)
+//type Car (speed, price, model, weight)
+//
 //fun f () = (
 //
 //    try
@@ -44,7 +66,7 @@ infixl (**, **, 55)
 //    match [1,2,3]
 //        | B1 @ [a, b, B2 @ c] when x == 1 = (B1, B2, a, b, c)
 //        | _ = 42
-
+//
 //fun max_min x, y =
 //    if x > y then (
 //        (x, y)
@@ -52,12 +74,12 @@ infixl (**, **, 55)
 //    )
 //    elif x == y then (x, x)
 //    else (y, x)
-
+//
 //fun all(p, l) =
 //    conjunction(map(p, l))
 //
 //fun uncons ([x, ...xs]) = (x, xs)
-
+//
 //fun map f, coll
 //    | f, [] = empty(coll)
 //    | (f, hd::tl) = f(hd) :: map(f, tl)
@@ -66,13 +88,13 @@ infixl (**, **, 55)
 //    any (fun (v) = v == x, l)
 //
 //
-
+//
 //fun false () = False
-
+//
 //fun tail
 //    | [] = []
 //    | x::xs = xs
-
+//
 //fun add(x, y) =
 //    let
 ////        z = sqrt(x)
@@ -84,7 +106,7 @@ infixl (**, **, 55)
 ////            | x::xs = xs
 //        y = map(fun (x) = (x, str(x)), [])
 //    in sin(z, n, x)
-
+//
 //fun main () =
 //    let
 //        fun tail
@@ -110,47 +132,8 @@ infixl (**, **, 55)
 //            (l, r) = split(xs)
 //        in (x::l, y::r)
 //--------------------------------------------------
-//
-//let range_by (first:Int, last:Int, step:Int)
-//    let
-//        fun _range_by(N, X, D, L)
-//            | N, X, D, L when N >= 4 =
-//                let
-//                    Y = X - D
-//                    Z = Y - D
-//                    W = Z - D
-//               in _range_by(N - 4, W - D, D, W::Z::Y::X::L)
-//
-//            | N, X, D, L when N >= 2 =
-//                let Y = X - D
-//                in _range_by(N - 2, Y - D, D, Y :: X :: L)
-//
-//            | 1, X, _, L = X :: L
-//
-//            | 0, _, _, L = L
-//
-//    in
-//        if step > 0 and first - step <= last or
-//                step < 0 and first - step >= last then
-//            let n = ((last - first + step) / step) - 1
-//            in _range_by(n, (step * (n - 1) + first), step, [])
-//        elif step == 0 and first == last then
-//            _range_by (1, first, step, [])
-//        else
-//            throw (#InvalidRange, first, last, step)
-//--------------------------------------------------
-//
-//fun replicate(count, element) =
-//    if count >= 0 then
-//        let _replicate
-//            | 0, _, l = l
-//            | n, x, l = _replicate(n - 1, x, x :: l)
-//
-//        in _replicate(count, element, [])
-//    else
-//        throw ValueError count
-//--------------------------------------------------
-//
+////
+////
 //generic == (`x, y)
 //generic (
 //    == (`x, y)
@@ -173,41 +156,40 @@ infixl (**, **, 55)
 //    Len (len)
 //)
 //
-trait TNotEq
-    def != (x, y) = not (x == y)
+//trait TNotEq
+//    def != (x, y) = not (x == y)
 //
+//trait TOrd of (PartialEq, TSeq) (
+//    def < (x, y) = cmp(x, y) == LT
+//    def >= (x, y) = cmp(x, y) != LT
+//)
 //
-trait TOrd of (PartialEq, TSeq) (
-    def < (x, y) = cmp(x, y) == LT
-    def >= (x, y) = cmp(x, y) != LT
-)
-
-trait TOrd of PartialEq (
-    def < (x, y) = cmp(x, y) == LT
-    def >= (x, y) = cmp(x, y) != LT
-    def > (x, y) = cmp(x, y) == GT
-
-    def cmp(x, y) =
-                if x == y then EQ
-                elif x <= y then LT
-                else GT
-
-)
-
-extend List def first(self) = _list:head(self)
-
-extend List
-    use TXXX
-
-extend List (
-    use TListable (drop, take)
-    use TNotEq
-    use derive:TCollection
-
-    def == (self, other) = seq:equal(self, other)
-
-    def first(self) = _list:head(self)
-
-    def slice(first, last, self) = _list:slice(first, last, self)
-)
+//trait TOrd of PartialEq (
+//    def < (x, y) = cmp(x, y) == LT
+//    def >= (x, y) = cmp(x, y) != LT
+//    def > (x, y) = cmp(x, y) == GT
+//
+//    def cmp(x, y) =
+//                if x == y then EQ
+//                elif x <= y then LT
+//                else GT
+//
+//)
+//
+//extend List def first(self) = _list:head(self)
+//
+//extend List
+//    use TXXX
+//
+//extend List (
+//    use TListable (drop, take)
+//    use TNotEq
+//    use derive:TCollection
+//
+//    def == (self, other) = seq:equal(self, other)
+//
+//    def first(self) = _list:head(self)
+//
+//    def slice(first, last, self) = _list:slice(first, last, self)
+//)
 

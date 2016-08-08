@@ -142,14 +142,86 @@ class ExpressionParser(BaseParser):
                 self.name_parser,
                 self.let_parser,
             ])
-        expression_parser_init(self)
 
+        self.allow_overloading = True
+
+        init_parser_literals(self)
+
+        symbol(self, TT_RSQUARE)
+        symbol(self, TT_THEN)
+        symbol(self, TT_RPAREN)
+        symbol(self, TT_RCURLY)
+        symbol(self, TT_COMMA)
+        symbol(self, TT_END_EXPR)
+        symbol(self, TT_ENDSTREAM)
+        symbol(self, TT_AT_SIGN)
+        symbol(self, TT_ELSE)
+        symbol(self, TT_ELIF)
+        symbol(self, TT_CASE)
+        symbol(self, TT_THEN)
+        symbol(self, TT_CATCH)
+        symbol(self, TT_FINALLY)
+        symbol(self, TT_WITH)
+        symbol(self, TT_COMMA)
+        symbol(self, TT_IN)
+        symbol(self, TT_ASSIGN)
+
+        prefix(self, TT_LPAREN, prefix_lparen)
+        prefix(self, TT_LSQUARE, prefix_lsquare)
+        prefix(self, TT_LCURLY, prefix_lcurly)
+        prefix(self, TT_SHARP, prefix_sharp)
+        prefix(self, TT_ELLIPSIS, prefix_nud)
+        prefix(self, TT_IF, prefix_if)
+
+        prefix(self, TT_FUN, prefix_nameless_fun)
+
+        prefix(self, TT_MATCH, prefix_match)
+        prefix(self, TT_TRY, prefix_try)
+        prefix(self, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
+        prefix(self, TT_LET, prefix_let)
+        prefix(self, TT_THROW, prefix_throw)
+
+        infix(self, TT_ARROW, 10, infix_arrow)
+        infix(self, TT_WHEN, 10, infix_when)
+        infix(self, TT_COMMA, 10, infix_comma)
+
+        infix(self, TT_OF, 15, led_infix)
+        infix(self, TT_OR, 25, led_infix)
+        infix(self, TT_AND, 30, led_infix)
+        infix(self, TT_BACKTICK_NAME, 35, infix_backtick_name)
+        infix(self, TT_DOUBLE_COLON, 70, led_infixr)
+        infix(self, TT_COLON, 100, infix_name_pair)
+        infix(self, TT_DOT, 100, infix_dot)
+
+        infix(self, TT_LPAREN, 100, infix_lparen)
+        infix(self, TT_INFIX_DOT_LCURLY, 100, infix_lcurly)
+        infix(self, TT_INFIX_DOT_LSQUARE, 100, infix_lsquare)
+        # OTHER OPERATORS ARE DECLARED IN prelude.obn
 
 class LetParser(BaseParser):
     def __init__(self, expression_parser):
         BaseParser.__init__(self)
         self.expression_parser = expression_parser
-        let_parser_init(self)
+        literal(self, TT_NAME)
+        literal(self, TT_WILDCARD)
+
+        symbol(self, TT_RSQUARE)
+        symbol(self, TT_RPAREN)
+        symbol(self, TT_RCURLY)
+        symbol(self, TT_IN)
+        symbol(self, TT_ASSIGN)
+
+        prefix(self, TT_LPAREN, prefix_lparen)
+        prefix(self, TT_LSQUARE, prefix_lsquare)
+        prefix(self, TT_LCURLY, prefix_lcurly)
+        prefix(self, TT_SHARP, prefix_sharp)
+        prefix(self, TT_ELLIPSIS, prefix_nud)
+
+        prefix(self, TT_FUN, prefix_let_fun)
+        infix(self, TT_COMMA, 10, infix_comma)
+        infix(self, TT_ASSIGN, 10, led_let_assign)
+        infix(self, TT_DOUBLE_COLON, 70, led_infixr)
+        infix(self, TT_COLON, 100, infix_name_pair)
 
 
 class TraitParser(BaseParser):
@@ -157,16 +229,31 @@ class TraitParser(BaseParser):
         BaseParser.__init__(self)
 
         self.expression_parser = ExpressionParser()
+        # TODO CHECK IT
         self.name_parser = name_parser_init(BaseParser())
-        self.constraints_parser = name_list_parser_init(BaseParser())
 
         self.add_subparsers([
             self.expression_parser,
             self.name_parser,
-            self.constraints_parser
         ])
 
-        trait_parser_init(self)
+        prefix(self, TT_DEF, prefix_trait_def)
+        prefix(self, TT_LPAREN, prefix_lparen)
+
+
+class TypeParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+        self.name_list_parser = name_list_parser_init(BaseParser())
+        self.add_subparsers([
+            self.name_list_parser
+        ])
+
+        symbol(self, TT_RPAREN, None)
+        infix(self, TT_LPAREN, 100, infix_lparen_type)
+        prefix(self, TT_NAME, prefix_typename)
+        prefix(self, TT_LPAREN, prefix_lparen)
+        infix(self, TT_COMMA, 10, infix_comma)
 
 
 class ExtendParser(BaseParser):
@@ -181,7 +268,9 @@ class ExtendParser(BaseParser):
             self.name_list_parser
         ])
 
-        extend_parser_init(self)
+        prefix(self, TT_DEF, prefix_extend_def)
+        prefix(self, TT_USE, prefix_extend_use)
+        prefix(self, TT_LPAREN, prefix_lparen)
 
 
 class ModuleParser(BaseParser):
@@ -189,41 +278,49 @@ class ModuleParser(BaseParser):
         BaseParser.__init__(self)
 
         self.import_parser = import_parser_init(BaseParser())
-
-        self.pattern_parser = pattern_parser_init(BaseParser())
-        self.guard_parser = guard_parser_init(BaseParser())
-
-        self.fun_pattern_parser = fun_pattern_parser_init(BaseParser())
-
         self.expression_parser = ExpressionParser()
-
         self.name_parser = name_parser_init(BaseParser())
         self.name_list_parser = name_list_parser_init(BaseParser())
 
         self.import_names_parser = import_names_parser_init(BaseParser())
-        self.type_parser = type_parser_init(BaseParser())
         self.generic_parser = generic_parser_init(BaseParser())
         self.interface_parser = interface_parser_init(BaseParser())
         self.trait_parser = TraitParser()
+        self.type_parser = TypeParser()
         self.extend_parser = ExtendParser()
 
         self.add_subparsers([
             self.import_parser,
-            self.pattern_parser,
-            self.guard_parser,
-            self.fun_pattern_parser,
             self.expression_parser,
             self.name_parser,
             self.import_names_parser,
-            self.type_parser,
             self.name_list_parser,
             self.generic_parser,
             self.interface_parser,
             self.trait_parser,
             self.extend_parser,
+            self.type_parser,
         ])
 
-        module_parser_init(self)
+        init_parser_literals(self)
+        self.allow_overloading = True
+        self.break_on_juxtaposition = True
+
+        symbol(self, TT_ENDSTREAM)
+
+        stmt(self, TT_FUN, prefix_module_fun)
+        stmt(self, TT_LET, prefix_module_let)
+        stmt(self, TT_TRAIT, stmt_trait)
+        stmt(self, TT_TYPE, stmt_type)
+        stmt(self, TT_EXTEND, stmt_extend)
+        stmt(self, TT_IMPORT, stmt_import)
+        stmt(self, TT_FROM, stmt_from)
+        stmt(self, TT_EXPORT, stmt_export)
+        stmt(self, TT_INFIXL, stmt_infixl)
+        stmt(self, TT_INFIXR, stmt_infixr)
+        stmt(self, TT_PREFIX, stmt_prefix)
+        stmt(self, TT_GENERIC, stmt_generic)
+        stmt(self, TT_INTERFACE, stmt_interface)
 
 
 def guard_parser_init(parser):
@@ -325,30 +422,6 @@ def name_list_parser_init(parser):
     return parser
 
 
-def trait_parser_init(parser):
-    prefix(parser, TT_DEF, prefix_trait_def)
-    prefix(parser, TT_LPAREN, prefix_lparen)
-
-
-def extend_parser_init(parser):
-    prefix(parser, TT_DEF, prefix_extend_def)
-    prefix(parser, TT_USE, prefix_extend_use)
-    prefix(parser, TT_LPAREN, prefix_lparen)
-
-
-
-
-def type_parser_init(parser):
-    symbol(parser, TT_COMMA)
-    symbol(parser, TT_RPAREN)
-    prefix(parser, TT_LPAREN, prefix_lparen_type)
-    prefix(parser, TT_NAME, prefix_name_as_symbol)
-    infix(parser, TT_COLON, 100, infix_name_pair)
-    # infix(parser, TT_CASE, 15, led_infixr)
-    symbol(parser, TT_CASE, None)
-    return parser
-
-
 def import_names_parser_init(parser):
     parser.allow_unknown = True
     symbol(parser, TT_UNKNOWN)
@@ -386,132 +459,6 @@ def init_parser_literals(parser):
     literal(parser, TT_MULTI_STR)
     literal(parser, TT_NAME)
     literal(parser, TT_WILDCARD)
-    return parser
-
-
-def let_parser_init(parser):
-    literal(parser, TT_NAME)
-    literal(parser, TT_WILDCARD)
-
-    symbol(parser, TT_RSQUARE)
-    symbol(parser, TT_RPAREN)
-    symbol(parser, TT_RCURLY)
-    symbol(parser, TT_IN)
-    symbol(parser, TT_ASSIGN)
-    # assignment(parser, TT_ASSIGN, 10)
-
-    prefix(parser, TT_LPAREN, prefix_lparen)
-    prefix(parser, TT_LSQUARE, prefix_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly)
-    prefix(parser, TT_SHARP, prefix_sharp)
-    prefix(parser, TT_ELLIPSIS, prefix_nud)
-
-    prefix(parser, TT_FUN, prefix_let_fun)
-    infix(parser, TT_COMMA, 10, infix_comma)
-    infix(parser, TT_ASSIGN, 10, led_let_assign)
-    infix(parser, TT_DOUBLE_COLON, 70, led_infixr)
-    infix(parser, TT_COLON, 100, infix_name_pair)
-    return parser
-
-
-def expression_parser_init(parser):
-    parser.allow_overloading = True
-
-    parser = init_parser_literals(parser)
-
-    symbol(parser, TT_RSQUARE)
-    symbol(parser, TT_THEN)
-    symbol(parser, TT_RPAREN)
-    symbol(parser, TT_RCURLY)
-    symbol(parser, TT_COMMA)
-    symbol(parser, TT_END_EXPR)
-    symbol(parser, TT_ENDSTREAM)
-    symbol(parser, TT_AT_SIGN)
-    symbol(parser, TT_ELSE)
-    symbol(parser, TT_ELIF)
-    symbol(parser, TT_CASE)
-    symbol(parser, TT_THEN)
-    symbol(parser, TT_CATCH)
-    symbol(parser, TT_FINALLY)
-    symbol(parser, TT_WITH)
-    symbol(parser, TT_COMMA)
-    symbol(parser, TT_IN)
-    symbol(parser, TT_ASSIGN)
-
-    prefix(parser, TT_LPAREN, prefix_lparen)
-    prefix(parser, TT_LSQUARE, prefix_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly)
-    prefix(parser, TT_SHARP, prefix_sharp)
-    prefix(parser, TT_ELLIPSIS, prefix_nud)
-    prefix(parser, TT_IF, prefix_if)
-
-    prefix(parser, TT_FUN, prefix_nameless_fun)
-
-    prefix(parser, TT_MATCH, prefix_match)
-    prefix(parser, TT_TRY, prefix_try)
-    prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
-    prefix(parser, TT_LET, prefix_let)
-    prefix(parser, TT_THROW, prefix_throw)
-
-    infix(parser, TT_FAT_ARROW, 10, infix_fat_arrow)
-    infix(parser, TT_WHEN, 10, infix_when)
-    infix(parser, TT_COMMA, 10, infix_comma)
-
-    infix(parser, TT_OF, 15, led_infix)
-    infix(parser, TT_OR, 25, led_infix)
-    infix(parser, TT_AND, 30, led_infix)
-    infix(parser, TT_BACKTICK_NAME, 35, infix_backtick_name)
-    infix(parser, TT_DOUBLE_COLON, 70, led_infixr)
-    infix(parser, TT_COLON, 100, infix_name_pair)
-    infix(parser, TT_DOT, 100, infix_dot)
-
-    infix(parser, TT_LPAREN, 100, infix_lparen)
-    infix(parser, TT_INFIX_DOT_LCURLY, 100, infix_lcurly)
-    infix(parser, TT_INFIX_DOT_LSQUARE, 100, infix_lsquare)
-
-    # OTHER OPERATORS ARE DECLARED IN prelude.obn
-
-    return parser
-
-
-def module_parser_init(parser):
-    parser = init_parser_literals(parser)
-    parser.allow_overloading = True
-    parser.break_on_juxtaposition = True
-
-    symbol(parser, TT_RSQUARE)
-    symbol(parser, TT_ARROW)
-    symbol(parser, TT_RPAREN)
-    symbol(parser, TT_RCURLY)
-    symbol(parser, TT_COMMA)
-    symbol(parser, TT_END_EXPR)
-    symbol(parser, TT_ENDSTREAM)
-
-    prefix(parser, TT_LPAREN, prefix_lparen)
-    prefix(parser, TT_LSQUARE, prefix_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly)
-    prefix(parser, TT_SHARP, prefix_sharp)
-
-    # assignment(parser, TT_ASSIGN, 10)
-    infix(parser, TT_DOT, 100, infix_dot)
-
-    infix(parser, TT_COMMA, 10, infix_comma)
-
-    infix(parser, TT_COLON, 100, infix_name_pair)
-
-    stmt(parser, TT_FUN, prefix_module_fun)
-    stmt(parser, TT_TRAIT, stmt_trait)
-    stmt(parser, TT_TYPE, stmt_type)
-    stmt(parser, TT_EXTEND, stmt_extend)
-    stmt(parser, TT_IMPORT, stmt_import)
-    stmt(parser, TT_FROM, stmt_from)
-    stmt(parser, TT_EXPORT, stmt_export)
-    # stmt(parser, TT_MODULE, stmt_module)
-    stmt(parser, TT_INFIXL, stmt_infixl)
-    stmt(parser, TT_INFIXR, stmt_infixr)
-    stmt(parser, TT_PREFIX, stmt_prefix)
-    stmt(parser, TT_GENERIC, stmt_generic)
-    stmt(parser, TT_INTERFACE, stmt_interface)
     return parser
 
 
