@@ -260,7 +260,7 @@ class PatternParser(BaseParser):
             self.map_key_parser
         ])
 
-        prefix(self, TT_LPAREN, prefix_lparen_expression)
+        prefix(self, TT_LPAREN, prefix_lparen_tuple)
         prefix(self, TT_LSQUARE, prefix_lsquare)
         prefix(self, TT_LCURLY, prefix_lcurly_pattern)
         prefix(self, TT_SHARP, prefix_sharp)
@@ -438,7 +438,7 @@ def name_list_parser_init(parser):
     literal(parser, TT_INT)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
     infix(parser, TT_COLON, 100, infix_name_pair)
-    prefix(parser, TT_LPAREN, prefix_lparen_expression)
+    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     infix(parser, TT_COMMA, 10, infix_comma)
     return parser
 

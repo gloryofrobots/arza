@@ -149,30 +149,46 @@ def infix_dot(parser, op, node, left):
         advance(parser)
         return node_2(NT_LOOKUP, __ntok(node), left, idx)
 
-    symbol = grab_name(parser)
+    symbol = expect_expression_of(parser, op.lbp + 1, NT_NAME)
+    # symbol = grab_name(parser)
     return node_2(NT_LOOKUP, __ntok(node), left, nodes.create_symbol_node(symbol, symbol))
 
 
 def infix_lcurly(parser, op, node, left):
     items = []
     if parser.token_type != TT_RCURLY:
-        while True:
-            # TODO check it
-            check_token_types(parser, [TT_NAME, TT_SHARP, TT_INT, TT_STR, TT_MULTI_STR, TT_CHAR, TT_FLOAT])
-            # WE NEED LBP=10 TO OVERRIDE ASSIGNMENT LBP(9)
-            key = expression(parser, 10)
+        key = expression(parser.map_key_parser, 0)
 
-            advance_expected(parser, TT_ASSIGN)
-            value = expression(parser, 0)
+        # field access
+        if parser.token_type == TT_RCURLY:
+            if nodes.node_type(key) == NT_NAME:
+                key = nodes.create_symbol_node(key, key)
 
-            items.append(list_node([key, value]))
+            advance_expected(parser, TT_RCURLY)
+            return node_2(NT_LOOKUP, __ntok(node), left, key)
 
-            if parser.token_type != TT_COMMA:
-                break
+        advance_expected(parser, TT_ASSIGN)
+        value = expression(parser, 0, [TT_COMMA])
 
+        items.append(list_node([key, value]))
+
+        if parser.token_type != TT_RCURLY:
             advance_expected(parser, TT_COMMA)
 
+            while True:
+                key = expression(parser, 0)
+                advance_expected(parser, TT_ASSIGN)
+                value = expression(parser, 0, [TT_COMMA])
+
+                items.append(list_node([key, value]))
+
+                if parser.token_type != TT_COMMA:
+                    break
+
+                advance_expected(parser, TT_COMMA)
+
     advance_expected(parser, TT_RCURLY)
+
     return node_2(NT_MODIFY, __ntok(node), left, list_node(items))
 
 
@@ -232,11 +248,6 @@ def infix_at(parser, op, node, left):
 # INFIX
 ##############################################################
 
-
-def prefix_indent(parser, op, node):
-    return parse_error(parser, u"Invalid indentation level", node)
-
-
 def prefix_nud(parser, op, node):
     exp = literal_expression(parser)
     return node_1(__ntype(node), __ntok(node), exp)
@@ -263,15 +274,6 @@ def prefix_lparen_tuple(parser, op, node):
     return ensure_tuple(e)
 
 
-def prefix_lparen_expression(parser, op, node):
-    if parser.token_type == TT_RPAREN:
-        return parse_error(parser, u"Expected expression inside parens", node)
-
-    e = expression(parser, 0, TERM_LPAREN)
-    advance_expected(parser, TT_RPAREN)
-    return e
-
-
 def prefix_lparen(parser, op, node):
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
@@ -287,35 +289,6 @@ def prefix_lparen(parser, op, node):
     return exps
 
 
-# # MOST complicated operator
-# # expressions (f 1 2 3) (2 + 3) (-1)
-# # tuples (1,2,3,4,5)
-# def prefix_lparen(parser, op, node):
-#     if parser.token_type == TT_RPAREN:
-#         advance_expected(parser, TT_RPAREN)
-#         return nodes.create_unit_node(node)
-#
-#     e = expression(parser, 0, [TT_RPAREN])
-#     skip_end_expression(parser)
-#
-#     if parser.token_type == TT_RPAREN:
-#         advance_expected(parser, TT_RPAREN)
-#         return e
-#
-#     items = [e]
-#     advance_expected(parser, TT_COMMA)
-#
-#     if parser.token_type != TT_RPAREN:
-#         while True:
-#             items.append(expression(parser, 0, [TT_COMMA]))
-#             skip_end_expression(parser)
-#             if parser.token_type == TT_RPAREN:
-#                 break
-#             advance_expected(parser, TT_COMMA)
-#
-#     advance_expected(parser, TT_RPAREN)
-#     return node_1(NT_TUPLE, __ntok(node), list_node(items))
-
 # def prefix_lsquare(parser, op, node):
 #     if parser.token_type != lex.TT_RSQUARE:
 #         expr = parser.expression(0)
@@ -326,6 +299,7 @@ def prefix_lparen(parser, op, node):
 #
 #     parser.advance_expected(lex.TT_RSQUARE)
 #     return node_1(lex.NT_LIST, __ntok(node), args)
+
 
 def prefix_lsquare(parser, op, node):
     items = []
@@ -341,24 +315,6 @@ def prefix_lsquare(parser, op, node):
 
     advance_expected(parser, TT_RSQUARE)
     return node_1(NT_LIST, __ntok(node), list_node(items))
-
-
-def _parse_comma_separated(parser, node, terminator, expected):
-    items = []
-    if parser.token_type != terminator:
-        while True:
-            e = expression(parser, 0)
-            check_node_types(parser, e, expected)
-            items.append(e)
-
-            if parser.token_type != TT_COMMA:
-                break
-
-            advance_expected(parser, TT_COMMA)
-
-    advance_expected(parser, terminator)
-    return list_node(items)
-
 
 def stmt_interface(parser, op, node):
     nodes = ensure_list_node(expression(parser.interface_parser, 0))
