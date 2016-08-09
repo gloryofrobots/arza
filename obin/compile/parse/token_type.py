@@ -87,5 +87,9 @@ __TT_REPR__ = [u"TT_ENDSTREAM", u"TT_INT", u"TT_FLOAT", u"TT_STR", u"TT_MULTI_ST
                u"TT_BACKTICK_NAME", u"TT_BACKTICK_OPERATOR", u"TT_UNKNOWN", ]
 
 
-def token_type_to_s(ttype):
+def token_type_to_u(ttype):
     return __TT_REPR__[ttype]
+
+
+def token_type_to_s(ttype):
+    return str(__TT_REPR__[ttype])

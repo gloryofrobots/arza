@@ -159,7 +159,8 @@ class W_Tuple(W_Hashable):
         return True
 
     def _to_string_(self):
-        repr = ", ".join([v._to_string_() for v in self.elements])
+        data = [v._to_string_() for v in self.elements]
+        repr = ", ".join(data)
 
         if self._length_() == 1:
             return "(%s,)" % repr

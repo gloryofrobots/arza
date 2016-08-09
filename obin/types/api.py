@@ -23,7 +23,9 @@ def to_f(obj):
 
 def to_s(obj):
     s = obj._to_string_()
-    assert isinstance(s, str)
+    if not isinstance(s, str):
+        s = obj._to_string_()
+        assert isinstance(s, str), (s, obj)
     return s
 
 

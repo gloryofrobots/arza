@@ -53,6 +53,7 @@ NODE_FUNC_NAME = [NT_NAME]
 NODE_DOT = [NT_NAME, NT_INT]
 NAME_NODES = [NT_NAME, NT_IMPORTED_NAME]
 
+
 def parser_error_unknown(parser, position):
     line = get_line_for_position(parser.ts.src, position)
     return error.throw(error.Errors.PARSE_ERROR,
@@ -243,6 +244,7 @@ def node_operator(parser, node):
         return parse_error(parser, u"Invalid operator", node)
     return op
 
+
 def node_nud(parser, node):
     handler = node_operator(parser, node)
     if not handler.nud:
@@ -346,6 +348,11 @@ def check_token_types(parser, types):
         parse_error(parser, u"Wrong token type, expected one of %s, got %s" %
                     (unicode([tokens.token_type_to_s(type) for type in types]),
                      tokens.token_type_to_s(parser.token_type)), parser.node)
+
+
+def check_list_node_type(parser, node, expected_type):
+    for child in node:
+        check_node_type(parser, child, expected_type)
 
 
 def check_list_node_types(parser, node, expected_types):
@@ -480,6 +487,7 @@ def expression(parser, _rbp, terminators=None):
     expr = base_expression(parser, _rbp, terminators)
     expr = postprocess(parser, expr)
     return expr
+
 
 # INFIXR
 def rexpression(parser, op):

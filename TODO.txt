@@ -1,3 +1,18 @@
+import (
+    affirm
+    tests:lib_az:abc:module_ab as ab
+    tests:lib_az:abc:module_ab as ab2 (f_ab, f_ab_2)
+    tests:lib_az:abc:module_ab (f_ab, f_ab_2)
+    tests:lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
+)
+
+from (
+    tests:lib_az:abc:module_ab  import (f_ab, f_ab_2, CONST as const)
+    tests:lib_az:efg:module_e import _
+    tests:lib_az:abc:module_ab import (f_ab as ab_3_f_ab)
+    tests:lib_az:abc:module_ab hide (CONST)
+)
+
 deep calls in datastructs data -> (1, record) == (1, record) NotIImplementedError in record._equal_(record)
 we need to put process in every api call it is very very big annoying job/ it is better to rewrite all interpreter in
 with this in mind

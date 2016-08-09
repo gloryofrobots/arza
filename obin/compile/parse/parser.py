@@ -129,11 +129,13 @@ class BaseParser:
 class ExpressionParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
-        self.pattern_parser = pattern_parser_init(BaseParser())
-        self.fun_pattern_parser = fun_pattern_parser_init(BaseParser())
+        self.pattern_parser = PatternParser()
+        self.fun_pattern_parser = FunPatternParser()
         self.guard_parser = guard_parser_init(BaseParser())
         self.name_parser = name_parser_init(BaseParser())
         self.let_parser = LetParser(self)
+        self.map_key_parser = map_key_parser_init(BaseParser())
+
         self.add_subparsers(
             [
                 self.pattern_parser,
@@ -141,6 +143,7 @@ class ExpressionParser(BaseParser):
                 self.guard_parser,
                 self.name_parser,
                 self.let_parser,
+                self.map_key_parser,
             ])
 
         self.allow_overloading = True
@@ -198,31 +201,6 @@ class ExpressionParser(BaseParser):
         infix(self, TT_INFIX_DOT_LSQUARE, 100, infix_lsquare)
         # OTHER OPERATORS ARE DECLARED IN prelude.obn
 
-class LetParser(BaseParser):
-    def __init__(self, expression_parser):
-        BaseParser.__init__(self)
-        self.expression_parser = expression_parser
-        literal(self, TT_NAME)
-        literal(self, TT_WILDCARD)
-
-        symbol(self, TT_RSQUARE)
-        symbol(self, TT_RPAREN)
-        symbol(self, TT_RCURLY)
-        symbol(self, TT_IN)
-        symbol(self, TT_ASSIGN)
-
-        prefix(self, TT_LPAREN, prefix_lparen)
-        prefix(self, TT_LSQUARE, prefix_lsquare)
-        prefix(self, TT_LCURLY, prefix_lcurly)
-        prefix(self, TT_SHARP, prefix_sharp)
-        prefix(self, TT_ELLIPSIS, prefix_nud)
-
-        prefix(self, TT_FUN, prefix_let_fun)
-        infix(self, TT_COMMA, 10, infix_comma)
-        infix(self, TT_ASSIGN, 10, led_let_assign)
-        infix(self, TT_DOUBLE_COLON, 70, led_infixr)
-        infix(self, TT_COLON, 100, infix_name_pair)
-
 
 class TraitParser(BaseParser):
     def __init__(self):
@@ -271,6 +249,53 @@ class ExtendParser(BaseParser):
         prefix(self, TT_DEF, prefix_extend_def)
         prefix(self, TT_USE, prefix_extend_use)
         prefix(self, TT_LPAREN, prefix_lparen)
+
+
+class PatternParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+
+        self.map_key_parser = map_key_pattern_parser_init(BaseParser())
+        self.add_subparsers([
+            self.map_key_parser
+        ])
+
+        prefix(self, TT_LPAREN, prefix_lparen_expression)
+        prefix(self, TT_LSQUARE, prefix_lsquare)
+        prefix(self, TT_LCURLY, prefix_lcurly_pattern)
+        prefix(self, TT_SHARP, prefix_sharp)
+        prefix(self, TT_ELLIPSIS, prefix_nud)
+
+        infix(self, TT_OF, 5, led_infix)
+        infix(self, TT_COMMA, 5, infix_comma)
+        infix(self, TT_AT_SIGN, 15, infix_at)
+        infix(self, TT_DOUBLE_COLON, 60, led_infixr)
+        infix(self, TT_COLON, 100, infix_name_pair)
+
+        symbol(self, TT_WHEN)
+        symbol(self, TT_CASE)
+        symbol(self, TT_RPAREN)
+        symbol(self, TT_RCURLY)
+        symbol(self, TT_RSQUARE)
+        symbol(self, TT_ASSIGN)
+
+        init_parser_literals(self)
+
+
+class LetParser(PatternParser):
+    def __init__(self, expression_parser):
+        PatternParser.__init__(self)
+        self.expression_parser = expression_parser
+        symbol(self, TT_IN)
+        prefix(self, TT_LPAREN, prefix_lparen)
+        prefix(self, TT_FUN, prefix_let_fun)
+        infix(self, TT_ASSIGN, 10, led_let_assign)
+
+
+class FunPatternParser(PatternParser):
+    def __init__(self):
+        PatternParser.__init__(self)
+        prefix(self, TT_LPAREN, prefix_lparen_tuple)
 
 
 class ModuleParser(BaseParser):
@@ -347,33 +372,29 @@ def guard_parser_init(parser):
     return parser
 
 
-def pattern_parser_init(parser):
-    prefix(parser, TT_LPAREN, prefix_lparen_expression)
-    prefix(parser, TT_LSQUARE, prefix_lsquare)
-    prefix(parser, TT_LCURLY, prefix_lcurly)
-    prefix(parser, TT_SHARP, prefix_sharp)
-    prefix(parser, TT_ELLIPSIS, prefix_nud)
-
-    infix(parser, TT_OF, 5, led_infix)
-    infix(parser, TT_COMMA, 5, infix_comma)
-    infix(parser, TT_AT_SIGN, 15, infix_at)
-    infix(parser, TT_DOUBLE_COLON, 60, led_infixr)
-    infix(parser, TT_COLON, 100, infix_name_pair)
-
-    symbol(parser, TT_WHEN)
-    symbol(parser, TT_CASE)
-    symbol(parser, TT_RPAREN)
-    symbol(parser, TT_RCURLY)
-    symbol(parser, TT_RSQUARE)
+def map_key_pattern_parser_init(parser):
+    parser = init_parser_literals(parser)
+    symbol(parser, TT_COMMA)
     symbol(parser, TT_ASSIGN)
 
-    parser = init_parser_literals(parser)
+    infix(parser, TT_OF, 5, infix_map_pattern_of)
+    infix(parser, TT_AT_SIGN, 15, infix_map_pattern_at)
     return parser
 
 
-def fun_pattern_parser_init(parser):
-    parser = pattern_parser_init(parser)
-    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
+def map_key_parser_init(parser):
+    literal(parser, TT_INT)
+    literal(parser, TT_FLOAT)
+    literal(parser, TT_CHAR)
+    literal(parser, TT_STR)
+    literal(parser, TT_TRUE)
+    literal(parser, TT_FALSE)
+    literal(parser, TT_MULTI_STR)
+    literal(parser, TT_NAME)
+
+    symbol(parser, TT_COMMA)
+    symbol(parser, TT_ASSIGN)
+
     return parser
 
 
@@ -423,9 +444,7 @@ def name_list_parser_init(parser):
 
 
 def import_names_parser_init(parser):
-    parser.allow_unknown = True
-    symbol(parser, TT_UNKNOWN)
-    symbol(parser, TT_COMMA, None)
+    infix(parser, TT_COMMA, 10, infix_comma)
     symbol(parser, TT_RPAREN, None)
     literal(parser, TT_NAME)
     infix(parser, TT_AS, 15, infix_name_pair)

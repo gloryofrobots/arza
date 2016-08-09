@@ -12,12 +12,12 @@ def newnode(ntype, token, children):
             assert is_node(child), child
         return space.newtuple([
             space.newint(ntype), token, space.newlist(children),
-            space.newstring(tt.token_type_to_s(tokens.token_type(token)))
+            space.newstring(tt.token_type_to_u(tokens.token_type(token)))
         ])
     else:
         return space.newtuple([
             space.newint(ntype), token, space.newlist([]),
-            space.newstring(tt.token_type_to_s(tokens.token_type(token)))
+            space.newstring(tt.token_type_to_u(tokens.token_type(token)))
         ])
 
 
