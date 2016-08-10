@@ -709,7 +709,7 @@ def _load_module(parser, exp):
         module_path = nodes.node_value_s(exp)
 
     state = parser.close()
-    # module = load.import_module(state.process, space.newsymbol_s(state.process, module_path))
+    module = load.import_module(state.process, space.newsymbol_s(state.process, module_path))
     parser.open(state)
 
 
@@ -879,7 +879,7 @@ def prefix_typename(parser, op, node):
 
 def infix_lparen_type(parser, op, node, left):
     check_node_type(parser, left, NT_NAME)
-    items = _infix_lparen(parser.name_list_parser)
+    items = _infix_lparen(parser.symbol_list_parser)
     fields = node_1(NT_LIST, __ntok(node), items)
     return node_2(NT_TYPE, __ntok(node), left, fields)
 

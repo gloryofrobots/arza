@@ -222,9 +222,9 @@ class TraitParser(BaseParser):
 class TypeParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
-        self.name_list_parser = name_list_parser_init(BaseParser())
+        self.symbol_list_parser = symbol_list_parser_init(BaseParser())
         self.add_subparsers([
-            self.name_list_parser
+            self.symbol_list_parser
         ])
 
         symbol(self, TT_RPAREN, None)
@@ -443,6 +443,12 @@ def name_list_parser_init(parser):
     return parser
 
 
+def symbol_list_parser_init(parser):
+    prefix(parser, TT_NAME, prefix_name_as_symbol)
+    infix(parser, TT_COMMA, 10, infix_comma)
+    return parser
+
+
 def import_names_parser_init(parser):
     infix(parser, TT_COMMA, 10, infix_comma)
     symbol(parser, TT_RPAREN, None)
@@ -492,7 +498,7 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = True
+PARSE_DEBUG = False
 
 
 def parse(process, env, src):

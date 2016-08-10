@@ -4,15 +4,6 @@ from obin:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vect
 
 """
 SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
-JUXTAPOSITION means function calls like cons 2 []
-for example
-    OBIN                                        SOME OTHER LANGUAGE WITH USUAL INFIX CALL NOTATION (JavaScript, Python, Java, ...)
-    io:print 1 2 3                              io:print(1,2,3)
-    io:print 1 -2 3                             io:print(1, (negate(2(3))) // prefix operator applies to expression 2 3. to avoid it use
-    io:print 1 (-2) 3                           io:print(1, -2, 3) // or
-    io:print 1 (sqrt x) (3 + (-5))  (pow 2 4)      io:print(1, sqrt(x), 3 + -5, pow(2,4) )
-
-
 Precedence    Operator
     100           : . .{ .( .[
     95           JUXTAPOSITION
@@ -28,73 +19,71 @@ Precedence    Operator
     10           = :=
 """
 
-prefix - negate
-prefix ! !
-prefix & &
-infixr := := 10
-infixl <| <| 15
-infixl |> |> 20
-infixl << << 25
-infixl >> >> 25
-infixl < < 35
-infixl > > 35
-infixl >= >= 35
-infixl <= <= 35
-infixl == == 35
-infixl != != 35
-infixl ++ ++ 40
-infixl + + 40
-infixl - - 40
-infixl * * 50
-infixl / / 50
-infixl ** ** 55
+prefix (-, negate)
+prefix (!, !)
+prefix (&, &)
+infixr (:=, :=, 10)
+infixl (<|, <|, 15)
+infixl (|>, |>, 20)
+infixl (<<, <<, 25)
+infixl (>>, >>, 25)
+infixl (<, <, 35)
+infixl (>, >, 35)
+infixl (>=, >=, 35)
+infixl (<=, <=, 35)
+infixl (==, ==, 35)
+infixl (!=, !=, 35)
+infixl (++, ++, 40)
+infixl (+, +, 40)
+infixl (-, -, 40)
+infixl (*, *, 50)
+infixl (/, /, 50)
+infixl (**, **, 55)
 
 
 ////////////////////////////////////////////////////////////
 ///////////////// TYPES ////////////////////////////////////
 ////////////////////////////////////////////////////////////
+type (
+    LT
+    GT
+    EQ
+    Some (val)
+    None
+)
 
-
-type Ordering
-    | LT | GT | EQ
-
-
-type Option
-    | Some val
-    | None
-
-
-//ERRORS
-//TODO MAKE THIS DECLARATION ONE MACRO
-type ImportError args
-type RuntimeError args
-type TypeError args
-type NotImplementedError args
-type ZeroDivisionError args
-type ReferenceError args
-type ConstructorError args
-type KeyError args
-type ValueError args
-type SliceError args
-type IndexError args
-type InvokeError args
-type InvalidArgCount args
-type MethodInvokeError args
-type MethodNotImplementedError args
-type MethodSpecializeError args
-type CompileError args
-type ParseError args
-type UnpackSequenceError args
-type FiberFlowError args
-type MatchError args
-type FunctionArgumentsMatchError args
-type ExceptionMatchError args
-type ExportError args
-type ImplementationError args
-type ConstraintError args
-type EmptySeqError args
-//Signal used to interrupt recursive processes
-type Interrupt result
+// Various Errors
+type (
+    ImportError(args)
+    RuntimeError(args)
+    TypeError(args)
+    NotImplementedError(args)
+    ZeroDivisionError(args)
+    ReferenceError(args)
+    ConstructorError(args)
+    KeyError(args)
+    ValueError(args)
+    SliceError(args)
+    IndexError(args)
+    InvokeError(args)
+    InvalidArgCount(args)
+    MethodInvokeError(args)
+    MethodNotImplementedError(args)
+    MethodSpecializeError(args)
+    CompileError(args)
+    ParseError(args)
+    UnpackSequenceError(args)
+    FiberFlowError(args)
+    MatchError(args)
+    FunctionArgumentsMatchError(args)
+    ExceptionMatchError(args)
+    ExportError(args)
+    ImplementationError(args)
+    ConstraintError(args)
+    EmptySeqError(args)
+    //Signal used to interrupt recursive processes
+    Interrupt(result)
+)
 
 
 ////////////////////////////////////////////////////////////
@@ -102,72 +91,72 @@ type Interrupt result
 ////////////////////////////////////////////////////////////
 
 
-generic
-    == `x y
-    != `x y
-    <= `x y
-    < `x y
-    >= `x y
-    > `x y
+generic (
+    ==(`x, y)
+    !=(`x, y)
+    <=(`x, y)
+    <(`x, y)
+    >=(`x, y)
+    >(`x, y)
 
-    cmp `first second
+    cmp(`first, second)
 
-    max `first second
-    min `first second
+    max(`first, second)
+    min(`first, second)
 
-    - `x y
-    + `x y
-    * `x y
-    / `x y
-    mod `x y
+    -(`x, y)
+    +(`x, y)
+    *(`x, y)
+    /(`x, y)
+    mod(`x, y)
     // unary -
-    negate `x
-    ** `x y
+    negate(`x)
+    **(`x, y)
 
-    str `self
-    repr `self
+    str(`self)
+    repr(`self)
 
-    len `self
-    is_empty `self
+    len(`self)
+    is_empty(`self)
 
-    put key value `self
-    at key `self
-    del obj `self
-    elem key `self
+    put(key, value, `self)
+    at(key, `self)
+    del(obj, `self)
+    elem(key, `self)
 
-    first `self
-    rest `self
+    first(`self)
+    rest(`self)
 
-    empty `self
-    cons value `self
-    prepend value `self
-    ++ `self other
-    append value `self
-    keys self
-    values self
-    index_of obj `self
-    to_seq self
+    empty(`self)
+    cons(value, `self)
+    prepend(value, `self)
+    ++(`self, other)
+    append(value, `self)
+    keys(self)
+    values(self)
+    index_of(obj, `self)
+    to_seq(self)
 
-    slice first last `self
-    drop count `self
-    take count `self
-    lower_bound `self
-    upper_bound `self
+    slice (first, last, `self)
+    drop(count, `self)
+    take(count, `self)
+    lower_bound(`self)
+    upper_bound(`self)
 
-    range `self last
-    range_by `self last step
-    range_from `self
-    range_from_by `self step
-    ! `self
-    := `self value
-
+    range(`self, last)
+    range_by (`self, last, step)
+    range_from(`self)
+    range_from_by(`self, step)
+    !(`self)
+    :=(`self, value)
+)
 
 ////////////////////////////////////////////////////////////
 ///////////////// INTERFACES ///////////////////////////////
 ////////////////////////////////////////////////////////////
 
 
-interface
+interface (
     PartialEq (==)
     Eq (!=, ==)
     Ord(<, <=, >, >=, cmp, max, min)
@@ -193,7 +182,7 @@ interface
     Ranged(range, range_by, range_from, range_from_by)
     Ref(!)
     MutRef(!, :=)
-
+)
 
 ////////////////////////////////////////////////////////////
 ///////////////// TRAITS ///////////////////////////////////
@@ -201,30 +190,29 @@ interface
 
 
 trait TNotEq
-    def != x y -> not (x == y)
+    def !=(x, y) = not (x == y)
 
 
-trait TOrd of PartialEq
-    def < x y -> cmp x y == LT
-    def >= x y -> cmp x y != LT
-    def > x y -> cmp x y == GT
+trait TOrd of PartialEq (
+    def <(x, y) = cmp(x, y) == LT
+    def >=(x, y) = cmp(x, y) != LT
+    def >(x, y) = cmp(x, y) == GT
 
-    def cmp x y ->
+    def cmp(x, y) =
                 if x == y then EQ
                 elif x <= y then LT
                 else GT
 
-    def max x y -> if x <= y then y else x
-    def min x y -> if x <= y then x else y
-
+    def max(x, y) = if x <= y then y else x
+    def min(x, y) = if x <= y then x else y
+)
 
 trait TIsEmpty of Len
-    def is_empty self -> len self == 0
+    def is_empty self = len(self) == 0
 
 
 trait TRepr of Str
-    def repr(self) -> str self
-
+    def repr(self) = str(self)
 
 
 ////////////////////////////////////////////////////////////
@@ -232,34 +220,35 @@ trait TRepr of Str
 ////////////////////////////////////////////////////////////
 
 
-//FUNS
-fun lookup key default coll ->
+fun lookup (key, default, coll) =
     try
-        at key coll
-    catch 
-        | e of KeyError -> default
-        | e -> throw e
+        at(key, coll)
+    catch
+        | e of KeyError = default
+        | e = throw e
 
-fun not_elem x c -> not (elem x c)
+fun not_elem(x, c) = not(elem (x, c))
 
-fun identity x -> x
+fun identity x = x
 
-fun & func -> (obin:lang:defpartial func)
+fun & func = obin:lang:defpartial(func)
 
-fun |> x f -> f x
-fun <| f x -> f x
-fun >> f g -> (x => g (f x))
-fun << f g -> (x => f (g x))
+fun |>(x, f) = f(x)
+fun <|(f, x) = f(x)
+fun >>(f, g) = x -> g(f(x))
+fun <<(f, g) = x -> f(g(x))
 
-fun twice f -> f >> f
-fun flip f x y -> f y x
-fun even x -> mod x 2 == 0
-fun odd x -> not (even x)
-fun inc x -> x + 1
-fun dec x -> x - 1
+fun twice f = f >> f
+fun flip (f, x, y) = f(y, x)
+fun even x = mod(x, 2) == 0
+fun odd x = not(even(x))
+fun inc x = x + 1
+fun dec x = x - 1
+fun last coll = at ((len coll) - 1) coll
 
-fst = partial at 0
-snd = partial at 1
-thrd = partial at 2
-frth = partial at 3
-fun last coll -> at ((len coll) - 1) coll
+let (
+    fst = c -> at(0, c)
+    snd = c -> at(1, c)
+    thrd = c -> at(2, c)
+    frth = c -> at(3, c)
+)
