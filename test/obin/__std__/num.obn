@@ -10,65 +10,50 @@ trait TNum (
     let mod = _number:mod
     let negate = _number:negate
     let ** =  _number:pow
-
-    let (
-        - = _number:sub
-        + = _number:add
-        * = _number:mul
-        / = _number:div
-        mod = _number:mod
-        negate = _number:negate
-        ** =  _number:pow
-    )
-//    def - x y -> _number:sub x y
-//    def + x y -> _number:add x y
-//    def * x y -> _number:mul x y
-//    def / x y -> _number:div x y
-//    def mod x y -> _number:mod x y
-//    def negate x -> _number:negate x
-//    def ** x y -> _number:pow x y
 )
 
-extend Int
+extend Int (
     use derive:TStr
     use derive:TRepr
     use derive:TEq
     use TNum
     use TOrd
-    def <= x y -> _number:le x y
 
-    def range first (last of Int) ->
-        range_by first last 1
+    let <= = _number:le x y
 
-    def range_by first (last of Int) (step of Int) ->
-        cmp =
-            if step > 0 then `>=`
-            elif step < 0 then `<=`
-            else throw ValueError ("Step can not be zero")
-
-        fun _progression _compare x last step  ->
-            if _compare x last then
-                []
-            else
-                x ::: _progression _compare (x + step) last step
-
-
-        _progression cmp first last step
-
-    def range_from first  -> range_from_by first 1
-
-    def range_from_by first (step of Int) ->
-        fun _progression x step ->
-            x ::: _progression (x + step) step
-
-        _progression first step
+//    def range(first, last of Int) ->
+//        range_by(first, last, 1)
+//
+//    def range_by(first, last of Int, step of Int) ->
+//        cmp =
+//            if step > 0 then `>=`
+//            elif step < 0 then `<=`
+//            else throw ValueError ("Step can not be zero")
+//
+//        fun _progression _compare x last step  ->
+//            if _compare x last then
+//                []
+//            else
+//                x ::: _progression _compare (x + step) last step
+//
+//
+//        _progression cmp first last step
+//
+//    def range_from first  -> range_from_by first 1
+//
+//    def range_from_by first (step of Int) ->
+//        fun _progression x step ->
+//            x ::: _progression (x + step) step
+//
+//        _progression first step
+)
 ---------------------------------------------
 
-extend Float
+extend Float (
     use derive:TStr
     use derive:TRepr
     use derive:TEq
     use TNum
     use TOrd
-    def <= x y -> _number:le x y
---------------------------------------------------
+    let <= =  _number:le
+)

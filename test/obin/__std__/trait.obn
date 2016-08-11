@@ -1,6 +1,7 @@
 import derive
 
-extend Trait
+extend Trait (
     use derive:TStr
     use derive:TRepr
     use derive:TEq
+)

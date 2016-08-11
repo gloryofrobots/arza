@@ -1,32 +1,36 @@
 import fiber
-type Var val
 
-fun var v ->
-    co = (fiber:coroutine
-            fun holder yield v ->
-                fun loop v ->
-                    msg = yield v
-                    match msg with
-                        | #Read ->
-                            loop v
-                        | (#Write, new_val) ->
-                            loop new_val
+type Var(val)
 
-                ----------
+fun var(v) =
+    let co =
+        fiber:coroutine(
+            fun holder(yield, v) =
+                let fun loop(v) =
+                    let
+                        msg = yield(v)
+                    in
+                        match msg
+                            | #Read = loop(v)
+                            | (#Write, new_val) =
+                                loop(new_val)
 
-                loop v
-            end)
+                in loop(v)
+        )
 
-    co v
-    Var co
+    in (
+        co(v)
+        Var(co)
+    )
 
-extend Var
-    def ! self -> self.val #Read
-
-    def := self value -> self.val (#Write, value)
-
-    def == self other -> self.val == other.val
-
-    def str self -> "Var"
-
+extend Var (
     use TRepr
+
+    def !(self) = self.val(#Read)
+
+    def :=(self, value) = self.val((#Write, value))
+
+    def ==(self, other) = self.val == other.val
+
+    def str(self) = "Var"
+)

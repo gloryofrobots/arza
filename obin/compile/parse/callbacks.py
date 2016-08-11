@@ -909,7 +909,7 @@ def _parser_trait_header(parser, node):
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     if parser.token_type == TT_OF:
         advance(parser)
-        #FIXME
+        # FIXME
         constraints = \
             nodes.create_list_node_from_list(node, tuple_to_list_node(
                 ensure_tuple_of_nodes(
@@ -925,6 +925,8 @@ def _parser_trait_header(parser, node):
 
 def stmt_trait(parser, op, node):
     name, constraints = _parser_trait_header(parser, node)
+    check_token_type(parser, TT_LPAREN)
+
     methods = ensure_list_node(expression(parser.trait_parser, 0))
     return nodes.node_3(NT_TRAIT, __ntok(node), name, constraints, methods)
 
@@ -936,6 +938,13 @@ def prefix_trait_def(parser, op, node):
     return node_2(NT_DEF, __ntok(node), generic_name, funcs)
 
 
+def prefix_trait_let(parser, op, node):
+    generic_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
+    advance_expected(parser, TT_ASSIGN)
+    func = expression(parser.expression_parser, 0)
+    return node_2(NT_ASSIGN, __ntok(node), generic_name, func)
+
+
 # ----------- EXTEND ----------------------------
 
 def stmt_extend(parser, op, node):
@@ -943,6 +952,8 @@ def stmt_extend(parser, op, node):
 
     defs = []
     mixins = []
+    check_token_type(parser, TT_LPAREN)
+
     extensions = ensure_list_node(expression(parser.extend_parser, 0))
     for ex in extensions:
         if nodes.node_type(ex) == NT_USE:

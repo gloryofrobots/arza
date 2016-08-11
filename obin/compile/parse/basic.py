@@ -279,6 +279,15 @@ def node_has_std(parser, node):
 def node_lbp(parser, previous, node):
     op = node_operator(parser, node)
     lbp = op.lbp
+    if op.ambidextra is True:
+        prev_line = nodes.node_line_i(previous)
+        cur_line = nodes.node_line_i(node)
+        # if tokens on the same line it's infix otherwise it's prefix
+        if prev_line == cur_line:
+            return lbp
+        else:
+            return -1
+
     return lbp
 
 

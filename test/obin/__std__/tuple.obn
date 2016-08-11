@@ -2,22 +2,20 @@ import obin:lang:_tuple
 import string
 import derive
 
-extend Tuple
+extend Tuple (
     use derive:TEq
     use derive:TCollection
     use derive:TSized
     use TRepr
 
-    def str self ->
+    let to_seq = _tuple:to_list
+    let slice = _tuple:slice
+    let drop = _tuple:drop
+    let take = _tuple:take
+
+    def str(self) =
         if len self == 1 then
-            "(" ++ repr (at 0 self) ++ ",)"
+            "(" ++ repr(at(0, self)) ++ ",)"
         else
-            "(" ++ string:join_with repr (to_seq self) ", " ++ ")"
-
-    def to_seq self -> _tuple:to_list self
-
-    def slice first last self -> _tuple:slice first last self
-
-    def drop count self -> _tuple:drop count self
-
-    def take count self -> _tuple:take count self
+            "(" ++ string:join_with(repr, to_seq(self), ", ") ++ ")"
+)

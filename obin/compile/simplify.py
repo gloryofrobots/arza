@@ -4,7 +4,7 @@ from obin.runtime import error
 from obin.types import space, api, plist, environment, symbol as symbols, string as strings
 from obin.builtins import lang_names
 
-from obin.compile.parse import nodes
+from obin.compile.parse import nodes, node_type as nt
 
 
 def simplify_error(compiler, code, node, message):
@@ -121,15 +121,25 @@ def simplify_trait(compiler, code, node):
 
     methods = []
     for method_source in method_sources:
-        generic_node = nodes.node_first(method_source)
-        impl = nodes.node_second(method_source)
+        if nodes.node_type(method_source) == nt.NT_ASSIGN:
+            generic_node = nodes.node_first(method_source)
+            impl = nodes.node_second(method_source)
+            methods.append(
+                nodes.create_tuple_node(generic_node, [
+                    generic_node,
+                    impl
+                ])
+            )
+        else:
+            generic_node = nodes.node_first(method_source)
+            impl = nodes.node_second(method_source)
 
-        methods.append(
-            nodes.create_tuple_node(generic_node, [
-                generic_node,
-                nodes.create_fun_node(generic_node, nodes.empty_node(), impl)
-            ])
-        )
+            methods.append(
+                nodes.create_tuple_node(generic_node, [
+                    generic_node,
+                    nodes.create_fun_node(generic_node, nodes.empty_node(), impl)
+                ])
+            )
     methods_3_arg = nodes.create_list_node(node, methods)
     call_node = nodes.create_call_node_s(node, lang_names.TRAIT, [trait_name_1_arg, constraints_2_arg, methods_3_arg])
     trait_node = nodes.create_assign_node(node, trait_name_node, call_node)

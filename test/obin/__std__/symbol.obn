@@ -1,6 +1,0 @@
-import derive
-
-extend Symbol
-    use derive:TStr
-    use derive:TRepr
-    use derive:TEq

@@ -216,6 +216,7 @@ class TraitParser(BaseParser):
         ])
 
         prefix(self, TT_DEF, prefix_trait_def)
+        prefix(self, TT_LET, prefix_trait_let)
         prefix(self, TT_LPAREN, prefix_lparen)
 
 
@@ -498,7 +499,7 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = True
+PARSE_DEBUG = False
 
 
 def parse(process, env, src):

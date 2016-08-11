@@ -208,7 +208,7 @@ trait TOrd of PartialEq (
 )
 
 trait TIsEmpty of Len
-    def is_empty self = len(self) == 0
+    def is_empty(self) = len(self) == 0
 
 
 trait TRepr of Str
@@ -229,23 +229,23 @@ fun lookup (key, default, coll) =
 
 fun not_elem(x, c) = not(elem (x, c))
 
-fun identity x = x
+fun identity(x) = x
 
-fun & func = obin:lang:defpartial(func)
+fun &(func) = obin:lang:defpartial(func)
 
 fun |>(x, f) = f(x)
 fun <|(f, x) = f(x)
 fun >>(f, g) = x -> g(f(x))
 fun <<(f, g) = x -> f(g(x))
 
-fun twice f = f >> f
+fun twice(f) = f >> f
 fun flip (f, x, y) = f(y, x)
-fun even x = mod(x, 2) == 0
-fun odd x = not(even(x))
-fun inc x = x + 1
-fun dec x = x - 1
+fun even(x) = mod(x, 2) == 0
+fun odd(x) = not(even(x))
+fun inc(x) = x + 1
+fun dec(x) = x - 1
 //fun last coll = at ((len coll) - 1) coll
-fun last coll = at(len(coll) - 1, coll)
+fun last(coll) = at(len(coll) - 1, coll)
 
 let (
     fst = c -> at(0, c)

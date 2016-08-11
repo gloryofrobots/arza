@@ -2,13 +2,18 @@ import obin:lang:_string
 import seq
 import derive
 
-extend Symbol
+extend Symbol (
+    use derive:TStr
+    use derive:TRepr
+    use derive:TEq
+)
 
-extend Char
+extend Char (
     use derive:TStr
     use derive:TEq
+)
 
-extend String
+extend String (
     use derive:TStr
     use derive:TEq
     use derive:TRepr
@@ -16,74 +21,68 @@ extend String
     use derive:TSized
 
     def ++
-        | (_str1 of String) (sym of Symbol) -> _string:concat _str1 (str sym)
-        | _str1 _str2 -> _string:concat _str1 _str2
+        | _str1 of String, sym of Symbol = _string:concat(_str1, str(sym))
+        | _str1, _str2 = _string:concat(_str1, _str2)
 
-    def append value self -> _string:append value self
+    let append = _string:append
+    let prepend = _string:prepend
+    let to_seq = _string:to_list
+    let slice = _string:slice
+    let drop = _string:drop
+    let take = _string:take
 
-    def prepend value self -> _string:prepend value self
+    def cons (value of Char, self) = _string:append(value, self)
+    def empty(self) = ""
+)
 
-    def cons value of Char self -> _string:append value self
+fun concat (str1 of String, str2 of String) =
+    _string:concat(str1, str2)
 
-    def to_seq self -> _string:to_list self
+fun replace_first (_old of String, _new of String, _str of String) =
+    _string:replace_first(_old, _new, _str)
 
-    def empty self -> ""
+fun replace (_old of String, _new of String, _str of String) =
+    _string:replace(_old, _new, _str)
 
-    def slice first last self -> _string:slice first last self
+fun reverse(_str) = _string:reverse(_str)
 
-    def drop count self -> _string:drop count self
-
-    def take count self -> _string:take count self
-
-
-fun concat _str1 _str2 -> _string:concat _str1 _str2
-
-fun replace_first (_old of String) (_new of String) (_str of String) ->
-    _string:replace_first _old _new _str
-
-fun replace (_old of String) (_new of String) (_str of String) ->
-    _string:replace _old _new _str
-
-fun reverse _str -> _string:reverse _str
-
-fun joiner _func _sep ->
-    fun _ s acc ->
+fun joiner(_func, _sep) =
+    (s, acc) ->
         if acc != "" then
-            acc ++ _sep ++  _func s
+            acc ++ _sep ++  _func(s)
         else
-            _func s
+            _func(s)
 
-fun join _coll _str ->
-    _seq = to_seq _coll
+fun join(_coll, _str) =
+    let _seq = to_seq(_coll)
+    in seq:foldl(joiner(identity, _str), "", _seq)
 
-    seq:foldl (joiner identity _str) "" _seq
+fun join_cast(_coll, _str) =
+    let _seq = to_seq(_coll)
+    in seq:foldl(joiner(str, _str), "", _seq)
 
-fun join_cast _coll _str ->
-    _seq = to_seq _coll
-    seq:foldl (joiner str _str) "" _seq
+fun join_with(_func, _coll, _str) =
+    seq:foldl(joiner(_func, _str), "", _coll)
 
-fun join_with _func _coll _str ->
-    seq:foldl (joiner _func _str) "" _coll
+fun split(_sep, _str) = _string:split(_sep, _str)
 
-fun split _sep _str -> _string:split _sep _str
-
-//fun count _elem _str -> throw NotImplementedError ()
+//fun count _elem _str = throw NotImplementedError ()
 //
-//fun index_of _str _other -> throw NotImplementedError ()
-//fun index_of_from _str _other _start _end -> index_of (slice _str _start _end) _other
+//fun index_of _str _other = throw NotImplementedError ()
+//fun index_of_from _str _other _start _end = index_of (slice _str _start _end) _other
 //
-//fun last_index_of _str _other -> throw NotImplementedError ()
-//fun last_index_of_from _str _other _start _end -> last_index_of (slice _str _start _end) _other
+//fun last_index_of _str _other = throw NotImplementedError ()
+//fun last_index_of_from _str _other _start _end = last_index_of (slice _str _start _end) _other
 
-//fun format _str -> throw NotImplementedError ()
+//fun format _str = throw NotImplementedError ()
 //
-//fun to_lower _str -> throw NotImplementedError ()
-//fun to_upper _str -> throw NotImplementedError ()
-//fun is_alphanum _str -> throw NotImplementedError ()
-//fun is_digit _str -> throw NotImplementedError ()
-//fun is_lower _str -> throw NotImplementedError ()
-//fun is_upper _str -> throw NotImplementedError ()
-//fun is_space _str -> throw NotImplementedError ()
+//fun to_lower _str = throw NotImplementedError ()
+//fun to_upper _str = throw NotImplementedError ()
+//fun is_alphanum _str = throw NotImplementedError ()
+//fun is_digit _str = throw NotImplementedError ()
+//fun is_lower _str = throw NotImplementedError ()
+//fun is_upper _str = throw NotImplementedError ()
+//fun is_space _str = throw NotImplementedError ()
 //
 //
 //
@@ -92,41 +91,41 @@ fun split _sep _str -> _string:split _sep _str
 ////// => "1,000.00"
 ////numberFormat(123456789.123, 5, ".", ",");
 ////// => "123,456,789.12300"
-//fun format_number _num _options -> throw NotImplementedError ()
+//fun format_number _num _options = throw NotImplementedError ()
 //
 //
 ////levenshtein("kitten", "kittah");
 ////// => 2
-//fun levenshtein _str1 _str2 -> throw NotImplementedError ()
+//fun levenshtein _str1 _str2 = throw NotImplementedError ()
 //
 //
 //
 ////capitalize("foo Bar");
 //// => "Foo Bar"
-//fun capitalize _str -> throw NotImplementedError ()
+//fun capitalize _str = throw NotImplementedError ()
 //
 ////capitalize_lrest("FOO Bar", true);
 //// => "Foo bar"
-//fun capitalize_lrest _str -> throw NotImplementedError ()
+//fun capitalize_lrest _str = throw NotImplementedError ()
 //
-//fun capitalize_words _str -> throw NotImplementedError ()
+//fun capitalize_words _str = throw NotImplementedError ()
 //
 ////decapitalize("Foo Bar");
 //// => "foo Bar"
-//fun decapitalize _str -> throw NotImplementedError ()
+//fun decapitalize _str = throw NotImplementedError ()
 //
 //
 ////chop("whitespace", 3);
 //// => ["whi", "tes", "pac", "e"]
 //
-//fun chop _step _str -> throw NotImplementedError ()
+//fun chop _step _str = throw NotImplementedError ()
 //
 ////Trim and replace multiple spaces with a single space.
 ////clean(" foo    bar   ");
 //// => "foo bar"
-//fun clean _str -> throw NotImplementedError ()
+//fun clean _str = throw NotImplementedError ()
 //
-//fun chars _str -> to_seq _str
+//fun chars _str = to_seq _str
 //
 //
 //
@@ -136,41 +135,41 @@ fun split _sep _str -> _string:split _sep _str
 ////
 ////splice("https://edtsech@bitbucket.org/edtsech/underscore.strings", 30, 7, "epeli");
 ////// => "https://edtsech@bitbucket.org/epeli/underscore.strings"
-//fun splice _str  index, howmany, substring -> throw NotImplementedError ()
+//fun splice _str  index, howmany, substring = throw NotImplementedError ()
 //
-//fun is_prefix _prefix _str -> throw NotImplementedError ()
-//fun is_suffix _suffix _str -> throw NotImplementedError ()
+//fun is_prefix _prefix _str = throw NotImplementedError ()
+//fun is_suffix _suffix _str = throw NotImplementedError ()
 //
 //trim(string, [characters]) => string
-//fun trim _characters _str -> throw NotImplementedError ()
-//fun trim_ws _str -> throw NotImplementedError ()
+//fun trim _characters _str = throw NotImplementedError ()
+//fun trim_ws _str = throw NotImplementedError ()
 //
-//fun ltrim _characters _str -> throw NotImplementedError ()
-//fun ltrim_ws _str -> throw NotImplementedError ()
+//fun ltrim _characters _str = throw NotImplementedError ()
+//fun ltrim_ws _str = throw NotImplementedError ()
 //
-//fun rtrim _characters _str -> throw NotImplementedError ()
-//fun rtrim_ws _str -> throw NotImplementedError ()
+//fun rtrim _characters _str = throw NotImplementedError ()
+//fun rtrim_ws _str = throw NotImplementedError ()
 //
 ////truncate("Hello world", 5);
 //// => "Hello..."
 ////truncate("Hello", 10);
 //// => "Hello"
-//fun truncate _truncate_str _lenght _str ->  throw NotImplementedError ()
+//fun truncate _truncate_str _lenght _str =  throw NotImplementedError ()
 //
 //
-//fun words _str -> split /\s+/ _str
+//fun words _str = split /\s+/ _str
 //
 ////lpad("1", 8, "0");
 //// => "00000001"
-//fun lpad _padstr _length _str ->  throw NotImplementedError ()
+//fun lpad _padstr _length _str =  throw NotImplementedError ()
 //
 ////rpad("1", 8, "0");
 //// => "10000000"
-//fun rpad _padstr _length _str ->  throw NotImplementedError ()
+//fun rpad _padstr _length _str =  throw NotImplementedError ()
 //
 ////pad("1", 8, "bleepblorp");
 //// => "bbbb1bbb"
-//fun pad _padstr _length _str ->  throw NotImplementedError ()
+//fun pad _padstr _length _str =  throw NotImplementedError ()
 //
 ////Parse string to number. Returns NaN if string can't be parsed to number.
 ////toNumber("2.556");
@@ -180,8 +179,8 @@ fun split _sep _str -> _string:split _sep _str
 ////toNumber("999.999", -1);
 ////// => 990
 //
-//fun to_number _str  -> throw NotImplementedError ()
-//fun to_number_decimals _decimals  _str  -> throw NotImplementedError ()
+//fun to_number _str  = throw NotImplementedError ()
+//fun to_number_decimals _decimals  _str  = throw NotImplementedError ()
 //
 //
 ////strRight(string, pattern) => string
@@ -216,16 +215,16 @@ fun split _sep _str -> _string:split _sep _str
 ////strLeftBack("This_is_a_test_string", "_");
 ////// => "This_is_a_test";
 //
-//fun repeat _count _str -> throw NotImplementedError
+//fun repeat _count _str = throw NotImplementedError
 //
 ////surround("foo", "ab");
 //// => "abfooab"
-//fun surround _wrap _str -> throw NotImplementedError
+//fun surround _wrap _str = throw NotImplementedError
 //
 ////Quotes a string. quoteChar defaults to ".
 ////quote("foo", '"');
 //// => '"foo"';
-//fun quoted _char _str -> throw NotImplementedError
+//fun quoted _char _str = throw NotImplementedError
 //
 ////unquote(string, quoteChar) => string
 ////Unquotes a string. quoteChar defaults to ".
@@ -233,6 +232,6 @@ fun split _sep _str -> _string:split _sep _str
 ////// => "foo"
 ////unquote("'foo'", "'");
 ////// => "foo"
-//fun unquoted _char _str -> throw NotImplementedError
+//fun unquoted _char _str = throw NotImplementedError
 //
 

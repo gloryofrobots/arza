@@ -183,6 +183,10 @@ def node_line(node):
     return tokens.token_line(node_token(node))
 
 
+def node_line_i(node):
+    return tokens.token_line_i(node_token(node))
+
+
 def node_column(node):
     return tokens.token_column(node_token(node))
 
