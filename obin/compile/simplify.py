@@ -121,8 +121,8 @@ def simplify_trait(compiler, code, node):
 
     methods = []
     for method_source in method_sources:
-        generic_node = method_source[0]
-        impl = method_source[1]
+        generic_node = nodes.node_first(method_source)
+        impl = nodes.node_second(method_source)
 
         methods.append(
             nodes.create_tuple_node(generic_node, [

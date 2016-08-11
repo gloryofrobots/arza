@@ -3,22 +3,23 @@ import obin:lang:_datatype
 import derive
 import seq
 
-
-extend Datatype
+extend Datatype (
     use derive:TEq
     use derive:TStr
     use derive:TRepr
+)
 
-
-extend Union
+extend Union (
     use derive:TEq
     use derive:TCollection
     use derive:TSized
 
-    def to_seq self -> _datatype:union_to_list self
+    def to_seq self =
+        _datatype:union_to_list(self)
 
-    def lower_bound self ->
-        fst (to_seq self)
+    def lower_bound(self) =
+        fst(to_seq(self))
 
-    def upper_bound self ->
-        last (to_seq self)
+    def upper_bound(self) =
+        last(to_seq(self))
+)

@@ -1,6 +1,7 @@
 import derive
 
-extend Bool
+extend Bool (
     use derive:TStr
     use derive:TRepr
     use derive:TEq
+)

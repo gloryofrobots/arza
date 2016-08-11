@@ -1,128 +1,129 @@
 import tuple
 import seq
 
-fun is_equal_batch fn ...calls ->
-    _batch is_equal fn calls
+fun is_equal_batch(fn, ...calls)=
+    _batch(is_equal, fn, calls)
 --------------------------------------------------
 
-fun _batch checker fn calls ->
-    calls_list = to_seq calls
-    seq:foreach (call => checker (apply fn call.0) call.1) calls_list
+fun _batch(checker, fn, calls) =
+    let calls_list = to_seq(calls)
+    in seq:foreach(
+        (c1, c2) = checker(apply(fn, c1), c2),
+        calls_list
+    )
 --------------------------------------------------
 
 
-fun fail error ->
+fun fail error =
     throw (#AffirmationError, error)
 --------------------------------------------------
 
-fun is_not_equal val1 val2 ->
-    if val1 == val2 then fail [val1, "==", val2]
+fun is_not_equal(val1, val2)=
+    if val1 == val2 then fail([val1, "==", val2])
     else True
 --------------------------------------------------
 
-fun is_elem el coll ->
-    if not_elem el coll then
-        fail [el, "not_elem", coll]
+fun is_elem(el, coll) =
+    if not_elem(el, coll) then
+        fail([el, "not_elem", coll])
     else True
 
-fun is_equal_all ...args ->
-    fun _reducer val1 val2 ->
-        is_equal val1 val2
-        val2
+fun is_equal_all(...args) =
+    let fun _reducer(val1, val2) =
+       let True = is_equal(val1, val2)
+       in val2
 
-    seq:reduce _reducer (to_seq args)
+    in seq:reduce(_reducer, to_seq(args))
 --------------------------------------------------
 
-fun is_equal val1 val2
-    | val1 of Float  val2 of Float -> is_equal_float val1 val2
-    | val1 val2  ->
+fun is_equal
+    | val1 of Float,  val2 of Float = is_equal_float(val1, val2)
+    | val1, val2  =
         if val1 != val2 then
-            fail [val1, "!=", val2]
+            fail([val1, "!=", val2])
         else
             True
 --------------------------------------------------
 
-fun _abs v ->
-    if v < 0 then - 1 * v
+fun _abs v =
+    if v < 0 then -v
     else v
 --------------------------------------------------
 
-fun is_equal_float val1 val2 ->
-    fun _eq_f val1 val2 delta ->
+fun is_equal_float(val1, val2) =
+    let fun _eq_f(val1, val2, delta) =
         try
-             is_true (((_abs val1) - (_abs val2)) < delta)
-        catch e ->
-            fail [val1, "!=", val2]
+             is_true((_abs(val1) - _abs(val2)) < delta)
+        catch e =
+            fail([val1, "!=", val2])
 
-    _eq_f val1  val2  0.0001
+    in _eq_f val1  val2  0.0001
 --------------------------------------------------
 
-fun is_same val1 val2 ->
-    if val1 `isnot` val2 then fail [val1, "isnot", val2]
-    else True
---------------------------------------------------
 
-fun is_kindof val1 val2 ->
-    if not (val1 `kindof` val2) then
-        fail [val1, "not kindof", val2]
+fun is_kindof(val1, val2) =
+    if not(val1 `kindof` val2) then
+        fail([val1, "not kindof", val2])
     else
         True
 --------------------------------------------------
 
-fun is_not_kindof val1 val2 ->
+fun is_not_kindof(val1, val2) =
     if val1 `kindof` val2 then
-        fail [val1, "kindof", val2]
+        fail([val1, "kindof", val2])
     else
         True
 --------------------------------------------------
 
-fun isnot_same val1 val2 ->
-    if val1 `is` val2 then fail [val1, "is", val2]
+fun isnot_same(val1, val2) =
+    if val1 `is` val2 then fail([val1, "is", val2])
     else True
 --------------------------------------------------
 
-fun is_true val1 -> is_same val1 True
+fun is_true val1 = is_equal(val1, True)
 
-fun is_false val1 -> is_same val1 False
+fun is_false val1 = is_equal(val1, False)
 
 //apply needed tuple of arguments
 // so we need to convert () to ((),)
 
 type Success val
 
-fun _is_throw fn args
-    | fn () -> _is_throw fn [()]
-    | fn args ->
+fun _is_throw
+    | fn, () = _is_throw(fn, [()])
+    | fn, args =
         match
             try
-                apply fn args
-                Success True
-            catch e ->
+                apply(fn, args)
+                Success(True)
+            catch e =
                 e
         with
-            | _ of Success -> fail ["exception expected", fn]
-            | err -> err
+            | _ of Success = fail(["exception expected", fn])
+            | err = err
 --------------------------------------------------
 
-fun is_throw fn args ->
-    _is_throw fn args
+fun is_throw(fn, args) =
+(
+    _is_throw(fn, args)
     True
+)
 --------------------------------------------------
 
-fun is_throw_expected fn args exc ->
-    is_equal (_is_throw fn args) exc
+fun is_throw_expected(fn, args, exc) =
+    is_equal(_is_throw(fn, args), exc)
 --------------------------------------------------
 
-fun is_not_throw fn args
-    | fn () -> is_not_throw fn [()]
-    | fn args ->
+fun is_not_throw(fn, args)
+    | (fn, ()) = is_not_throw(fn, [()])
+    | (fn, args) =
         match
-            try
-                apply fn args
-                Success True
-            catch e ->
-                e
+            try (
+                apply(fn, args)
+                Success(True)
+            )
+            catch e = e
         with
-            | _ of Success ->  True
-            | err -> fail ["unexpected exception", fn, err]
+            | _ of Success =  True
+            | err = fail(["unexpected exception", fn, err])
 --------------------------------------------------

@@ -244,7 +244,8 @@ fun even x = mod(x, 2) == 0
 fun odd x = not(even(x))
 fun inc x = x + 1
 fun dec x = x - 1
-fun last coll = at ((len coll) - 1) coll
+//fun last coll = at ((len coll) - 1) coll
+fun last coll = at(len(coll) - 1, coll)
 
 let (
     fst = c -> at(0, c)

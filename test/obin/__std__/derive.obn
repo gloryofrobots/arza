@@ -2,46 +2,58 @@ import obin:lang:_api
 import obin:lang:_datatype
 import seq
 
-trait TEq
-    def != x y -> not (x == y)
-    def == self other -> _api:equal other self
+trait TEq (
+    def != (x, y) = not (x == y)
+    def == (self, other) = _api:equal(other, self)
+)
 
-trait TStr
-    def str self -> _api:to_string self
+trait TStr (
+    def str(self) = _api:to_string(self)
+)
 
-trait TRepr
-    def repr self -> _api:to_repr self
+trait TRepr (
+    def repr(self) = _api:to_repr(self)
+)
 
-trait TCollection
-    def put key value self -> _api:put key value self
-    def at key self -> _api:at key self
-    def del key self -> _api:del key self
-    def elem key self -> _api:elem key self
+trait TCollection (
+    def put(key, value, self) = _api:put(key, value, self)
+    def at(key, self) = _api:at(key, self)
+    def del(key, self) = _api:del(key, self)
+    def elem(key, self) = _api:elem(key, self)
+)
 
+trait TSized (
+    def len(self) = _api:length(self)
+    def is_empty(self) = _api:is_empty(self)
+)
 
-trait TSized
-    def len self -> _api:length self
-    def is_empty self -> _api:is_empty self
+trait TIndexed (
+    def index_of(self) = _datatype:record_index_of(self)
+)
 
-trait TIndexed
-    def index_of self -> _datatype:record_index_of self
+trait TDict (
+    def keys(self) = _datatype:record_keys(self)
+    def values(self) = _datatype:record_values(self)
+)
 
-trait TDict
-    def keys self -> _datatype:record_keys self
-    def values self -> _datatype:record_values self
+trait TUnionRange (
+    def range(_from,  _to) =
+        let
+            union = _datatype:get_union _from
+        in
+            if not (kindof(_to, union)) then
+                throw ValueError("Invalid type for second argument", _to)
+            else
+                let s1 = seq:drop_while(&`!=`(_from), to_seq(union))
+                in seq:take_while(&`!=`(_to), s1)
 
-trait TUnionRange
-    def range _from  _to  ->
-        union = _datatype:get_union _from
-        if not (kindof _to union) then
-            throw ValueError("Invalid type for second argument", _to)
-        else
-            s1 = seq:drop_while (&`!=` _from) (to_seq union)
-            seq:take_while (&`!=` _to) s1
-    def range_from _from ->
-        union = _datatype:get_union _from
-        s1 = seq:drop_while (&`!=` _from) (to_seq union)
-    def range_from_by _from _by ->
+    def range_from(_from) =
+        let union = _datatype:get_union(_from)
+        in seq:drop_while(&`!=`(_from), to_seq(union))
+
+    def range_from_by(_from, _by) =
         throw NotImplementedError ("Only range from Rangeable is supported")
-    def range_by _from _to _by ->
+
+    def range_by(_from, _to, _by) =
         throw NotImplementedError ("Only range from Rangeable is supported")
+)

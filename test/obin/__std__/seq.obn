@@ -26,8 +26,11 @@ fun map f coll
 ----------------------------------------
 
 fun foreach f coll
-    | f [] -> empty coll
-    | f hd::tl -> f hd; foreach f tl
+    | f [] -> ()
+    | f hd::tl -> (
+        f hd
+        foreach f tl
+    )
 ----------------------------------------
 
 fun traverse coll -> foreach identity coll
@@ -103,7 +106,7 @@ fun take count coll
     | n [x, ...xs] -> x :: (take (n-1)  xs)
 --------------------------------------------------
 
-fun split_at (n of Int) l -> ((take n l), (drop n l)) 
+fun split_at (n of Int) l -> ((take n l), (drop n l))
 
 fun take_while predicate coll
     | p [] -> empty coll

@@ -214,11 +214,13 @@ def infix_lparen_generic(parser, op, node, left):
     check_node_type(parser, left, NT_SYMBOL)
     generic_name = nodes.create_name_node_s(left, nodes.node_value_s(nodes.node_first(left)))
     items = _infix_lparen(parser)
-    return node_2(NT_GENERIC, __ntok(node), generic_name, items)
+    args = node_1(NT_LIST, __ntok(node), items)
+    return node_2(NT_GENERIC, __ntok(node), generic_name, args)
 
 
 def infix_lparen_interface(parser, op, node, left):
     items = _infix_lparen(parser)
+    # funcs = node_1(NT_LIST, __ntok(node), items)
     return node_2(NT_INTERFACE, __ntok(node), left, items)
 
 
@@ -315,6 +317,7 @@ def prefix_lsquare(parser, op, node):
 
     advance_expected(parser, TT_RSQUARE)
     return node_1(NT_LIST, __ntok(node), list_node(items))
+
 
 def stmt_interface(parser, op, node):
     nodes = ensure_list_node(expression(parser.interface_parser, 0))
@@ -430,6 +433,10 @@ def prefix_module_let(parser, op, node):
     return exp
 
 
+def list_expression(parser, _rbp, terminators=None):
+    return ensure_list_node(expression(parser, _rbp, terminators))
+
+
 def prefix_try(parser, op, node):
     trybody = expression(parser, 0, TERM_TRY)
     catches = []
@@ -443,17 +450,17 @@ def prefix_try(parser, op, node):
             # pattern = expressions(parser.pattern_parser, 0)
             pattern = _parse_pattern(parser)
             advance_expected(parser, TT_ASSIGN)
-            body = expression(parser, 0, TERM_CATCH_CASE)
+            body = list_expression(parser, 0, TERM_CATCH_CASE)
             catches.append(list_node([pattern, body]))
     else:
         pattern = _parse_pattern(parser)
         advance_expected(parser, TT_ASSIGN)
-        body = expression(parser, 0, TERM_SINGLE_CATCH)
+        body = list_expression(parser, 0, TERM_SINGLE_CATCH)
         catches.append(list_node([pattern, body]))
 
     if parser.token_type == TT_FINALLY:
         advance_expected(parser, TT_FINALLY)
-        finallybody = expression(parser, 0)
+        finallybody = list_expression(parser, 0)
     else:
         finallybody = empty_node()
 
@@ -661,6 +668,7 @@ def _parse_function(parser, name, term_pattern,
 
 def _parse_named_function(parser, node):
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    check_token_types(parser, [TT_LPAREN, TT_CASE])
     func = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
     return name, func
 
@@ -901,12 +909,14 @@ def _parser_trait_header(parser, node):
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     if parser.token_type == TT_OF:
         advance(parser)
-        constraints = tuple_to_list_node(
-            ensure_tuple_of_nodes(
-                parser.name_list_parser,
-                expect_expression_of_types(parser.name_list_parser, 0, [NT_NAME, NT_IMPORTED_NAME, NT_TUPLE]),
-                [NT_NAME, NT_IMPORTED_NAME]
-            ))
+        #FIXME
+        constraints = \
+            nodes.create_list_node_from_list(node, tuple_to_list_node(
+                ensure_tuple_of_nodes(
+                    parser.name_list_parser,
+                    expect_expression_of_types(parser.name_list_parser, 0, [NT_NAME, NT_IMPORTED_NAME, NT_TUPLE]),
+                    [NT_NAME, NT_IMPORTED_NAME]
+                )))
     else:
         constraints = nodes.create_empty_list_node(node)
 
@@ -916,7 +926,6 @@ def _parser_trait_header(parser, node):
 def stmt_trait(parser, op, node):
     name, constraints = _parser_trait_header(parser, node)
     methods = ensure_list_node(expression(parser.trait_parser, 0))
-    assert nodes.is_list_node(methods)
     return nodes.node_3(NT_TRAIT, __ntok(node), name, constraints, methods)
 
 
@@ -924,7 +933,7 @@ def prefix_trait_def(parser, op, node):
     generic_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
     funcs = _parse_case_or_simple_function(parser.expression_parser,
                                            TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_TRAIT_DEF, TERM_TRAIT_DEF)
-    return list_node([generic_name, funcs])
+    return node_2(NT_DEF, __ntok(node), generic_name, funcs)
 
 
 # ----------- EXTEND ----------------------------

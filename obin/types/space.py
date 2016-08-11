@@ -412,7 +412,10 @@ def isenv(w):
 def newgeneric(name, signature):
     from obin.types.generic import generic
     assert issymbol(name)
-    assert islist(signature)
+    if not islist(signature):
+        assert islist(signature)
+
+    assert islist(signature), name
 
     return generic(name, signature)
 

@@ -14,8 +14,6 @@ fun test() ->
     affirm:is_true (True or False)
     affirm:is_true (False or True)
     affirm:is_false (False or False)
-    affirm:is_same False False
-    affirm:is_same True True
 //
     //only True and False can be used in boolean operators
     affirm:is_throw (x => 1 or 0) ()

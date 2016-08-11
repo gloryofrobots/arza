@@ -1,16 +1,19 @@
 import derive
 
-extend Function
+extend Function (
     use derive:TStr
     use derive:TRepr
     use derive:TEq
+)
 
-extend Generic
+extend Generic (
     use derive:TStr
     use derive:TRepr
     use derive:TEq
+)
 
-extend Partial
+extend Partial (
     use derive:TStr
     use derive:TRepr
     use derive:TEq
+)

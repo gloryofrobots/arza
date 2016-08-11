@@ -1,17 +1,19 @@
 from obin:lang:_fiber import (spawn, activate, coroutine)
 import derive
 
-extend Fiber
+extend Fiber (
     use derive:TStr
     use derive:TRepr
     use derive:TEq
+)
 
 
-extend Coroutine
+extend Coroutine (
     use derive:TSized (is_empty)
-    def len self -> throw NotImplementedError ("Coroutine can't define len")
+    def len(self) = throw NotImplementedError ("Coroutine can't define len")
 
-    def first self -> self ()
-    def rest self -> self
-    def to_seq self -> self
-    def empty self -> []
+    def first(self) = self()
+    def rest(self) = self
+    def to_seq(self) = self
+    def empty(self) = []
+)

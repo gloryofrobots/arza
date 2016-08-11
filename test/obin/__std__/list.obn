@@ -4,80 +4,87 @@ import derive
 import seq
 import string
 
-fun range_to (last of Int) -> range 0 last
 
-fun range (first of Int) (last of Int) ->
-    step = if last < 0 then -1 else 1
-    range_by first last step
+fun range_to(last of Int) = range(0, last)
 
-fun range_by (first of Int) (last of Int) (step of Int) ->
-    fun _range_by N X D L
-        | N X D L when N >= 4 ->
-            Y = X - D
-            Z = Y - D
-            W = Z - D
-            _range_by (N - 4)  (W - D)  D  (W :: Z :: Y :: X :: L)
 
-        | N X D L when N >= 2 ->
-            Y = X - D
-            _range_by (N - 2) (Y - D) D (Y :: X :: L)
+fun range(first of Int, last of Int) =
+    let step = if last < 0 then -1 else 1
+    in range_by(first, last, step)
 
-        | 1 X _ L -> X :: L
 
-        | 0 _ _ L -> L
+fun range_by (first of Int, last of Int, step of Int) =
+    let fun _range_by
+        | N, X, D, L when N >= 4 =
+            let
+                Y = X - D
+                Z = Y - D
+                W = Z - D
+            in
+                _range_by(N - 4, W - D, D, W :: Z :: Y :: X :: L)
+
+        | N, X, D, L when N >= 2 =
+            let Y = X - D
+            in _range_by(N - 2, Y - D, D, Y :: X :: L)
+
+        | 1, X, _, L = X :: L
+
+        | 0, _, _, L = L
     --------------------------------------------------
-
-    if step > 0 and first - step <= last or
+    in if step > 0 and first - step <= last or
             step < 0 and first - step >= last then
 
-        n = ((last - first + step) / step) - 1
-        _range_by n (step * (n - 1) + first) step []
+        let n = ((last - first + step) / step) - 1
+        in _range_by(n, (step * (n - 1) + first), step, [])
 
     elif step == 0 and first == last then
-        _range_by 1  first step []
+        _range_by(1, first, step, [])
     else
         throw (#InvalidRange, first, last, step)
 --------------------------------------------------
 
-fun replicate count element ->
-    if count >= 0 then
-        fun _replicate n x result
-            | 0 _ l -> l
-            | n x l -> _replicate (n - 1) x (x :: l)
-        -------------
 
-        _replicate count element []
+fun replicate count element =
+    if count >= 0 then
+        let fun _replicate(n, x, result)
+            | 0, _, l = l
+            | n, x, l = _replicate(n - 1, x, x :: l)
+
+        in _replicate(count, element, [])
     else
-        throw ValueError count
-    --------------------------------
+        throw ValueError(count)
 ---------------------------------------------------
 
-extend List
+
+extend List (
     use TNotEq
+
     use derive:TCollection
+
     use TRepr
 
-    def == self other -> seq:equal self other
+    def ==(self, other) = seq:equal(self, other)
 
-    def str self ->
-        "[" ++ string:join_with repr self ", " ++ "]"
+    def str(self) =
+        "[" ++ string:join_with(repr, self, ", ") ++ "]"
 
-    def first self -> _list:head self
+    def first(self) = _list:head(self)
 
-    def rest self -> _list:tail self
+    def rest(self) = _list:tail(self)
 
-    def cons value self -> _list:cons value self
+    def cons(value, self) = _list:cons(value, self)
 
-    def to_seq self -> self
+    def to_seq(self) = self
 
-    def len self -> _list:length
+    def len(self) = _list:length(self)
 
-    def is_empty self -> _list:is_empty self
+    def is_empty(self) = _list:is_empty(self)
 
-    def empty self -> []
+    def empty(self) = []
 
-    def slice first last self -> _list:slice first last self
+    def slice(first, last, self) = _list:slice(first, last, self)
 
-    def drop count self -> _list:drop count self
+    def drop(count, self) = _list:drop(count, self)
 
-    def take count self -> _list:take count self
+    def take(count, self) = _list:take(count, self)
+)

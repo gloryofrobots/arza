@@ -2,29 +2,31 @@ from obin:lang:_io import (write, stdout)
 import seq
 
 
-fun _write_list_items args func file ->
-    fun _walk x ->
-        file |> partial write (func x)
-             |> partial write " "
+fun _write_list_items(args, func, file) =
+    let fun _walk(x) =
+            file |> partial(write, func(x))
+                 |> partial(write, " ")
 
-    seq:foreach _walk (to_seq args)
-    ()
-
-
-fun printr ...args ->
-    out = stdout ()
-    _write_list_items args repr out
-    write "\n" out
-    ()
+    in seq:foreach(_walk, to_seq(args))
 
 
-fun print ...args ->
-    out = stdout ()
-    _write_list_items args str out
-    write "\n" out
-    ()
+fun printr(...args) =
+    let out = stdout()
+    in (
+        _write_list_items(args, repr, out)
+        write("\n", out)
+    )
 
-p = print
-pr = printr
 
+fun print ...args =
+    let out = stdout ()
+    in (
+        _write_list_items(args, str, out)
+        write("\n", out)
+    )
+
+let (
+    p = print
+    pr = printr
+)
 
