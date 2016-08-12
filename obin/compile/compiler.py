@@ -652,6 +652,7 @@ def _compile_UNIT(compiler, code, node):
 
 def _compile_LIST(compiler, code, node):
     items = node_first(node)
+    assert nodes.is_list_node(items), items
     for c in items:
         _compile(compiler, code, c)
 

@@ -494,7 +494,7 @@ def expression(parser, _rbp, terminators=None):
     if terminators is None:
         terminators = TERM_EXP
     expr = base_expression(parser, _rbp, terminators)
-    expr = postprocess(parser, expr)
+    # expr = postprocess(parser, expr)
     return expr
 
 

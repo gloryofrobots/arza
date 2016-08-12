@@ -35,9 +35,13 @@ def add_path(node, path):
 
 
 def _process_tuple(state, pattern, patterns, path):
+
     children = node_first(pattern)
     count = api.length(children)
     count_i = api.to_i(count)
+    if count_i == 0:
+        return _process_unit(state, pattern, patterns, path)
+
     last_index = count_i - 1
 
     patterns = add_pattern(patterns, ["is_indexed", _create_path_node(pattern, path)])

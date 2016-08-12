@@ -19,6 +19,8 @@ infixl (*, *, 50)
 infixl (/, /, 50)
 infixl (**, **, 55)
 
+let f = seq:map(x -> x * x, l)
+let g = seq:map((1,2,3), l)
 
 //extend Coroutine (
 //    use derive:TSized (is_empty, is_not_empty)

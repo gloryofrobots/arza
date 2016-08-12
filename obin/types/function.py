@@ -1,7 +1,6 @@
 from obin.types.root import W_Callable, W_Root
 from obin.runtime.error import *
-from obin.types import api, partial
-from obin.misc.platform import jit
+from obin.types import api
 
 
 class W_FunctionSource(W_Root):
@@ -14,6 +13,7 @@ class W_FunctionSource(W_Root):
 
     def _to_repr_(self):
         return self._to_string_()
+
 
 class W_Function(W_Callable):
     # _immutable_fields_ = ['scope',  'is_variadic', 'arity', '_name_']
@@ -29,7 +29,7 @@ class W_Function(W_Callable):
     def _to_string_(self):
         # params = ",".join([api.to_native_string(p) for p in self.bytecode.scope.arguments])
         # return "fn %s(%s){ %s }" % (self._name_.value(), params, self._bytecode_.tostring())
-        return "<func %s/%d>" % (api.to_s(self.name) ,self.arity)
+        return "<func %s/%d>" % (api.to_s(self.name), self.arity)
 
     def _to_repr_(self):
         return self._to_string_()
@@ -49,7 +49,7 @@ class W_Function(W_Callable):
         length = api.length_i(args)
         if not self.is_variadic and length != self.arity:
             return throw_5(Errors.INVOKE_ERROR, space.newstring(u"Invalid count of arguments "),
-                          self, space.newint(length), space.newint(self.arity), args)
+                           self, space.newint(length), space.newint(self.arity), args)
 
         process.call_object(self, args)
 

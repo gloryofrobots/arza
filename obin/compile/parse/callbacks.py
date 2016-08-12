@@ -267,7 +267,8 @@ def prefix_sharp(parser, op, node):
 def prefix_lparen_tuple(parser, op, node):
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
-        return node_1(NT_TUPLE, __ntok(node), list_node([]))
+        return nodes.create_unit_node(node)
+        # return nodes.create_tuple_node(node, [])
 
     e = expression(parser, 0, [TERM_LPAREN])
     advance_expected(parser, TT_RPAREN)
@@ -277,7 +278,8 @@ def prefix_lparen_tuple(parser, op, node):
 def prefix_lparen(parser, op, node):
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
-        return nodes.create_tuple_node(node, [])
+        return nodes.create_unit_node(node)
+        # return nodes.create_tuple_node(node, [])
 
     exps = statements(parser, TERM_LPAREN)
     advance_expected(parser, TT_RPAREN)
@@ -289,32 +291,15 @@ def prefix_lparen(parser, op, node):
     return exps
 
 
-# def prefix_lsquare(parser, op, node):
-#     if parser.token_type != lex.TT_RSQUARE:
-#         expr = parser.expression(0)
-#         skip_end_expression(parser)
-#         args = commas_as_list(expr)
-#     else:
-#         args = list_node([])
-#
-#     parser.advance_expected(lex.TT_RSQUARE)
-#     return node_1(lex.NT_LIST, __ntok(node), args)
-
-
 def prefix_lsquare(parser, op, node):
-    items = []
-    if parser.token_type != TT_RSQUARE:
-        while True:
-            items.append(expression(parser, 0))
-            skip_end_expression(parser)
-
-            if parser.token_type != TT_COMMA:
-                break
-
-            advance_expected(parser, TT_COMMA)
+    if parser.token_type == TT_RSQUARE:
+        items = list_node([])
+    else:
+        expr = ensure_tuple(expression(parser, 0))
+        items = tuple_to_list_node(expr)
 
     advance_expected(parser, TT_RSQUARE)
-    return node_1(NT_LIST, __ntok(node), list_node(items))
+    return node_1(NT_LIST, __ntok(node), items)
 
 
 def stmt_interface(parser, op, node):
@@ -488,7 +473,7 @@ def prefix_match(parser, op, node):
         pattern = _parse_pattern(parser)
 
         advance_expected(parser, TT_ASSIGN)
-        body = expression(parser, 0, TERM_CASE)
+        body = list_expression(parser, 0, TERM_CASE)
 
         branches.append(list_node([pattern, body]))
 
@@ -720,7 +705,8 @@ def _load_module(parser, exp):
 
 
 def ensure_tuple(t):
-    if nodes.node_type(t) != NT_TUPLE:
+    nt = nodes.node_type(t)
+    if nt != NT_TUPLE and nt != NT_UNIT:
         return nodes.create_tuple_node(t, [t])
     return t
 
@@ -744,7 +730,10 @@ def ensure_list_node_of_nodes(parser, t, types):
 
 
 def tuple_to_list_node(t):
-    return nodes.node_children(t)[0]
+    if nodes.node_type(t) == NT_UNIT:
+        return list_node([])
+    else:
+        return nodes.node_children(t)[0]
 
 
 def stmt_from(parser, op, node):

@@ -254,7 +254,7 @@ def _nth(pl, index):
 
 def nth(pl, index):
     type_check(pl)
-    error.affirm(index >= 0, u"Invalid index index < 0")
+    error.affirm(index >= 0, u"List nth: index < 0")
     return _nth(pl, index)
 
 

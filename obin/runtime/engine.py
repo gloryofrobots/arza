@@ -5,9 +5,15 @@ from obin.runtime import process_data, error
 from obin.runtime.load import import_module, evaluate_module_file
 
 PRELUDE_FILE = u"prelude"
-# PRELUDE_FILE = u"prelude_debug"
-# PRELUDE_FILE = u"syntax"
-# PRELUDE_FILE = u"affirm"
+PRELUDE_FILE = u"prelude_debug"
+
+STD_MODULES = [u"bool", u"num", u"bit", u"env",
+               u"string", u"vector",
+               u"list", u"function", u"fiber", u"trait",
+               u"tuple", u"map", u"seq",
+               u"datatype",
+               ]
+# STD_MODULES = []
 
 
 def newprocess(libdirs):
@@ -51,14 +57,7 @@ def initialize(libdirs):
     error.initialise(process)
     builtins.postsetup(process)
 
-    modules = [u"bool", u"num", u"bit", u"env",
-               u"string", u"vector",
-               u"list", u"function", u"fiber", u"trait",
-               u"tuple", u"map", u"seq",
-               u"datatype",
-               ]
-
-    for module_name in modules:
+    for module_name in STD_MODULES:
         err = load_module(process, module_name)
         if err is not None:
             return process, err
@@ -74,7 +73,7 @@ def evaluate_file(process, filename):
         return e.signal
 
     main = api.at(module, space.newsymbol(process, u"main"))
-    result = process.subprocess(main, space.newtuple([space.newunit()]))
+    result = process.subprocess(main, space.newunit())
 
     if process.is_terminated():
         # error here

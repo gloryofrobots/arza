@@ -189,6 +189,8 @@ class CodeRoutine(BaseRoutine):
                 #   args = stack.pop_n_tuple(arg1)
                 #
                 # print "ARGS-T", args.to_l()
+                if api.length_i(args) == 0:
+                    print 1
                 res = api.call(process, func, args)
                 if res is not None:
                     stack.push(res)

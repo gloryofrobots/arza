@@ -24,13 +24,13 @@ import list
 //import tests:test_lazy
 
 
-fun log ...msgs ->
+fun log(...msgs) =
     if True then
        apply(io:print, msgs)
     else
         ()
 
-fun test() ->
+fun test() =
     log("RUN TESTS")
 
 //    log "TEST TYPES"
@@ -69,6 +69,22 @@ fun test() ->
 //    log "TEST OPERATORS"
 //    test_operators:test()
 
+fun add(x, y) =
+    x + y
 
-fun main () ->
-    test()
+fun tupl(...els) =
+    els
+
+fun neg(x) = -x
+
+fun pi() = 3.14
+
+
+fun main() =
+    let
+        f = x -> x * x
+        l = [1,2,3,4,5,6]
+    in seq:map(x -> x * x, l)
+//    test()
+//    neg(25)
+//    test()

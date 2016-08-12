@@ -1,8 +1,7 @@
 import tuple
 import seq
 
-fun is_equal_batch(fn, ...calls)=
-    _batch(is_equal, fn, calls)
+fun is_equal_batch(fn, ...calls) = _batch(is_equal, fn, calls)
 
 
 fun _batch(checker, fn, calls) =

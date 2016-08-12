@@ -1,255 +1,54 @@
 [
   {
-    "_ntype": "NT_EXTEND",
-    "_value": "extend",
+    "_ntype": "NT_ASSIGN",
+    "_value": "=",
     "children": [
       {
         "_ntype": "NT_NAME",
-        "_value": "String"
+        "_value": "f"
       },
-      [],
-      [
-        [
-          {
-            "_ntype": "NT_NAME",
-            "_value": "++"
-          },
-          [
-            [
-              {
-                "_ntype": "NT_TUPLE",
-                "_value": ",",
-                "children": [
-                  [
-                    {
-                      "_ntype": "NT_OF",
-                      "_value": "of",
-                      "children": [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "_str1"
-                        },
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "String"
-                        }
-                      ]
-                    },
-                    {
-                      "_ntype": "NT_OF",
-                      "_value": "of",
-                      "children": [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "sym"
-                        },
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "Symbol"
-                        }
-                      ]
-                    }
-                  ]
-                ]
-              },
-              [
-                {
-                  "_ntype": "NT_CALL",
-                  "_value": "(",
-                  "children": [
-                    {
-                      "_ntype": "NT_IMPORTED_NAME",
-                      "_value": ":",
-                      "children": [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "_string"
-                        },
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "concat"
-                        }
-                      ]
-                    },
-                    [
-                      [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "_str1"
-                        },
-                        {
-                          "_ntype": "NT_CALL",
-                          "_value": "(",
-                          "children": [
-                            {
-                              "_ntype": "NT_NAME",
-                              "_value": "str"
-                            },
-                            [
-                              [
-                                {
-                                  "_ntype": "NT_NAME",
-                                  "_value": "sym"
-                                }
-                              ]
-                            ]
-                          ]
-                        }
-                      ]
-                    ]
-                  ]
-                }
-              ]
-            ],
-            [
-              {
-                "_ntype": "NT_TUPLE",
-                "_value": ",",
-                "children": [
-                  [
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "_str1"
-                    },
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "_str2"
-                    }
-                  ]
-                ]
-              },
-              [
-                {
-                  "_ntype": "NT_CALL",
-                  "_value": "(",
-                  "children": [
-                    {
-                      "_ntype": "NT_IMPORTED_NAME",
-                      "_value": ":",
-                      "children": [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "_string"
-                        },
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "concat"
-                        }
-                      ]
-                    },
-                    [
-                      [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "_str1"
-                        },
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "_str2"
-                        }
-                      ]
-                    ]
-                  ]
-                }
-              ]
-            ]
-          ]
-        ]
-      ],
-      []
-    ]
-  },
-  {
-    "_ntype": "NT_FUN",
-    "_value": "fun",
-    "children": [
       {
-        "_ntype": "NT_NAME",
-        "_value": "reverse"
-      },
-      [
-        [
+        "_ntype": "NT_CALL",
+        "_value": "(",
+        "children": [
           {
-            "_ntype": "NT_TUPLE",
-            "_value": "(",
+            "_ntype": "NT_IMPORTED_NAME",
+            "_value": ":",
             "children": [
-              [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "coll"
-                }
-              ]
+              {
+                "_ntype": "NT_NAME",
+                "_value": "seq"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "map"
+              }
             ]
           },
           [
             {
-              "_ntype": "NT_LET",
-              "_value": "let",
+              "_ntype": "NT_LAMBDA",
+              "_value": "lambda",
               "children": [
                 [
-                  {
-                    "_ntype": "NT_FUN",
-                    "_value": "fun",
-                    "children": [
+                  [
+                    {
+                      "_ntype": "NT_TUPLE",
+                      "_value": "(",
+                      "children": [
+                        [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "x"
+                          }
+                        ]
+                      ]
+                    },
+                    [
                       {
-                        "_ntype": "NT_NAME",
-                        "_value": "_reverse"
-                      },
-                      [
-                        [
-                          {
-                            "_ntype": "NT_TUPLE",
-                            "_value": ",",
-                            "children": [
-                              [
-                                {
-                                  "_ntype": "NT_LIST",
-                                  "_value": "[",
-                                  "children": [
-                                    []
-                                  ]
-                                },
-                                {
-                                  "_ntype": "NT_NAME",
-                                  "_value": "result"
-                                }
-                              ]
-                            ]
-                          },
-                          [
-                            {
-                              "_ntype": "NT_NAME",
-                              "_value": "result"
-                            }
-                          ]
-                        ],
-                        [
-                          {
-                            "_ntype": "NT_TUPLE",
-                            "_value": ",",
-                            "children": [
-                              [
-                                {
-                                  "_ntype": "NT_CONS",
-                                  "_value": "::",
-                                  "children": [
-                                    {
-                                      "_ntype": "NT_NAME",
-                                      "_value": "hd"
-                                    },
-                                    {
-                                      "_ntype": "NT_NAME",
-                                      "_value": "tl"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "_ntype": "NT_NAME",
-                                  "_value": "result"
-                                }
-                              ]
-                            ]
-                          },
+                        "_ntype": "NT_TUPLE",
+                        "_value": ",",
+                        "children": [
                           [
                             {
                               "_ntype": "NT_CALL",
@@ -257,81 +56,91 @@
                               "children": [
                                 {
                                   "_ntype": "NT_NAME",
-                                  "_value": "_reverse"
+                                  "_value": "*"
                                 },
-                                [
-                                  [
-                                    {
-                                      "_ntype": "NT_NAME",
-                                      "_value": "tl"
-                                    },
-                                    {
-                                      "_ntype": "NT_CONS",
-                                      "_value": "::",
-                                      "children": [
-                                        {
-                                          "_ntype": "NT_NAME",
-                                          "_value": "hd"
-                                        },
-                                        {
-                                          "_ntype": "NT_NAME",
-                                          "_value": "result"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                ]
-                              ]
-                            }
-                          ]
-                        ]
-                      ]
-                    ]
-                  }
-                ],
-                [
-                  {
-                    "_ntype": "NT_CALL",
-                    "_value": "(",
-                    "children": [
-                      {
-                        "_ntype": "NT_NAME",
-                        "_value": "_reverse"
-                      },
-                      [
-                        [
-                          {
-                            "_ntype": "NT_NAME",
-                            "_value": "coll"
-                          },
-                          {
-                            "_ntype": "NT_CALL",
-                            "_value": "(",
-                            "children": [
-                              {
-                                "_ntype": "NT_NAME",
-                                "_value": "empty"
-                              },
-                              [
                                 [
                                   {
                                     "_ntype": "NT_NAME",
-                                    "_value": "coll"
+                                    "_value": "x"
+                                  },
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "x"
                                   }
                                 ]
                               ]
-                            ]
-                          }
+                            },
+                            {
+                              "_ntype": "NT_NAME",
+                              "_value": "l"
+                            }
+                          ]
                         ]
-                      ]
+                      }
                     ]
-                  }
+                  ]
                 ]
               ]
             }
           ]
         ]
-      ]
+      }
+    ]
+  },
+  {
+    "_ntype": "NT_ASSIGN",
+    "_value": "=",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "g"
+      },
+      {
+        "_ntype": "NT_CALL",
+        "_value": "(",
+        "children": [
+          {
+            "_ntype": "NT_IMPORTED_NAME",
+            "_value": ":",
+            "children": [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "seq"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "map"
+              }
+            ]
+          },
+          [
+            {
+              "_ntype": "NT_TUPLE",
+              "_value": ",",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "1"
+                  },
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "2"
+                  },
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "3"
+                  }
+                ]
+              ]
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "l"
+            }
+          ]
+        ]
+      }
     ]
   }
 ]
