@@ -193,13 +193,7 @@ def infix_lcurly(parser, op, node, left):
 
 
 def _infix_lparen(parser):
-    if parser.token_type != TT_RPAREN:
-        expr = ensure_tuple(expression(parser, 0))
-        args = tuple_to_list_node(expr)
-    else:
-        args = list_node([])
-    assert nodes.is_list_node(args)
-    advance_expected(parser, TT_RPAREN)
+    args = _parse_comma_separated(parser, TT_RPAREN)
     return args
 
 
@@ -257,11 +251,86 @@ def itself(parser, op, node):
     return node_0(__ntype(node), __ntok(node))
 
 
+def symbol_comma_nud(parser, op, node):
+    parse_error(parser,
+                u"Invalid use of , operator. To construct tuple put expressions inside parens", node)
+    return None
+
+
 def prefix_sharp(parser, op, node):
     check_token_types(parser, [TT_NAME, TT_MULTI_STR, TT_STR, TT_OPERATOR])
     exp = node_0(__ntype(parser.node), __ntok(parser.node))
     advance(parser)
     return node_1(__ntype(node), __ntok(node), exp)
+
+
+def _parse_comma_separated(parser, terminator, expected=None, initial=None):
+    if not initial:
+        items = []
+    else:
+        items = initial
+    if parser.token_type != terminator:
+        while True:
+            e = expression(parser, 0)
+            if expected:
+                check_node_types(parser, e, expected)
+
+            items.append(e)
+            if parser.token_type != TT_COMMA:
+                break
+
+            advance_expected(parser, TT_COMMA)
+
+    advance_expected(parser, terminator)
+
+    return list_node(items)
+
+
+def _parse_comma_separated_to_one_of(parser, terminators, advance_terminator=True):
+    items = []
+    if parser.token_type not in terminators:
+        while True:
+            e = expression(parser, 0)
+            items.append(e)
+            if parser.token_type != TT_COMMA:
+                break
+
+            advance_expected(parser, TT_COMMA)
+
+    if advance_terminator:
+        advance_expected_one_of(parser, terminators)
+
+    return list_node(items)
+
+
+# most ambiguous operator,
+# it can be tuple (1,2,3)
+# single expression 2 * (2+3)
+# list of expressions ( print(data) write(file, data) )
+def prefix_lparen(parser, op, node):
+    # unit
+    if parser.token_type == TT_RPAREN:
+        advance_expected(parser, TT_RPAREN)
+        return nodes.create_unit_node(node)
+
+    # single
+    e = expression(parser, 0)
+    if parser.token_type == TT_RPAREN:
+        advance_expected(parser, TT_RPAREN)
+        return e
+
+    # tuple
+    if parser.token_type == TT_COMMA:
+        items = [e]
+        advance_expected(parser, TT_COMMA)
+        items = _parse_comma_separated(parser, TT_RPAREN, initial=items)
+        return node_1(NT_TUPLE, __ntok(node), items)
+
+    # group expression
+    rest = statements(parser, TERM_LPAREN)
+    advance_expected(parser, TT_RPAREN)
+    stmts = plist.cons(e, rest)
+    return stmts
 
 
 def prefix_lparen_tuple(parser, op, node):
@@ -270,40 +339,17 @@ def prefix_lparen_tuple(parser, op, node):
         return nodes.create_unit_node(node)
         # return nodes.create_tuple_node(node, [])
 
-    e = expression(parser, 0, [TERM_LPAREN])
-    advance_expected(parser, TT_RPAREN)
-    return ensure_tuple(e)
-
-
-def prefix_lparen(parser, op, node):
-    if parser.token_type == TT_RPAREN:
-        advance_expected(parser, TT_RPAREN)
-        return nodes.create_unit_node(node)
-        # return nodes.create_tuple_node(node, [])
-
-    exps = statements(parser, TERM_LPAREN)
-    advance_expected(parser, TT_RPAREN)
-
-    # QuickFix for tuple flattenisation
-    if len(exps) == 1:
-        return exps[0]
-
-    return exps
+    items = _parse_comma_separated(parser, TT_RPAREN)
+    return node_1(NT_TUPLE, __ntok(node), items)
 
 
 def prefix_lsquare(parser, op, node):
-    if parser.token_type == TT_RSQUARE:
-        items = list_node([])
-    else:
-        expr = ensure_tuple(expression(parser, 0))
-        items = tuple_to_list_node(expr)
-
-    advance_expected(parser, TT_RSQUARE)
+    items = _parse_comma_separated(parser, TT_RSQUARE)
     return node_1(NT_LIST, __ntok(node), items)
 
 
 def stmt_interface(parser, op, node):
-    nodes = ensure_list_node(expression(parser.interface_parser, 0))
+    nodes = list_expression(parser.interface_parser, 0)
     return nodes
 
 
@@ -491,8 +537,14 @@ def prefix_throw(parser, op, node):
 # FUNCTION STUFF################################
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
-    pattern = expression(parser.fun_pattern_parser, 0, arg_terminator)
-    pattern = ensure_tuple(pattern)
+    curnode = parser.node
+    if parser.token_type == TT_LPAREN:
+        advance(parser)
+        els = _parse_comma_separated(parser.fun_pattern_parser, TT_RPAREN)
+    else:
+        els = _parse_comma_separated_to_one_of(parser.fun_pattern_parser, arg_terminator, advance_terminator=False)
+
+    pattern = nodes.create_tuple_node_from_list(curnode, els)
 
     if parser.token_type == TT_WHEN:
         advance(parser)
@@ -505,13 +557,13 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
 ####################################################
 
 
-def _parse_single_function(parser, signature, term_body):
+def _parse_single_function(parser, signature):
     """
     fun f (x, y, z) = (exp)
     """
     check_token_type(parser, TT_ASSIGN)
     advance(parser)
-    body = expression(parser, 0, term_body)
+    body = expression(parser, 0)
     return nodes.create_function_variants(signature, body)
 
 
@@ -519,7 +571,7 @@ def _parse_single_function(parser, signature, term_body):
 
 
 def _parse_case_function(parser, term_pattern,
-                         term_guard, term_case_body):
+                         term_guard):
     """
     fun f
         | x, y, z = (exp)
@@ -547,7 +599,7 @@ def _parse_case_function(parser, term_pattern,
             return parse_error(parser, u"Inconsistent clause arity", args)
 
         advance_expected(parser, TT_ASSIGN)
-        body = expression(parser, 0, term_case_body)
+        body = expression(parser, 0)
         funcs.append(list_node([
             args, list_node([body])
         ]))
@@ -558,8 +610,7 @@ def _parse_case_function(parser, term_pattern,
 ####################################################
 
 
-def _parse_recursive_function(parser, name, signature, term_pattern,
-                              term_guard, term_case_body):
+def _parse_recursive_function(parser, name, signature, term_pattern, term_guard):
     """
     parse fun f x y z
         | x y z -> (body)
@@ -592,7 +643,7 @@ def _parse_recursive_function(parser, name, signature, term_pattern,
             return parse_error(parser, u"Inconsistent clause arity with function signature", args)
 
         advance_expected(parser, TT_ASSIGN)
-        body = expression(parser, 0, term_case_body)
+        body = expression(parser, 0)
         funcs.append(list_node([
             args, list_node([body])
         ]))
@@ -622,29 +673,28 @@ def _parse_recursive_function(parser, name, signature, term_pattern,
 
 ####################################################
 
-def _parse_case_or_simple_function(parser, term_pattern, term_guard, term_case_body, term_single_body):
+def _parse_case_or_simple_function(parser, term_pattern, term_guard):
     if parser.token_type == TT_CASE:
-        funcs = _parse_case_function(parser, term_pattern, term_guard, term_case_body)
+        funcs = _parse_case_function(parser, term_pattern, term_guard)
     else:
         signature = _parse_func_pattern(parser, TERM_FUN_SIGNATURE, term_guard)
         check_token_type(parser, TT_ASSIGN)
-        funcs = _parse_single_function(parser, signature, term_single_body)
+        funcs = _parse_single_function(parser, signature)
     return funcs
 
 
-def _parse_function(parser, name, term_pattern,
-                    term_guard, term_case_body, term_single_body):
+def _parse_function(parser, name, term_pattern, term_guard):
     if parser.token_type == TT_CASE:
-        funcs = _parse_case_function(parser, term_pattern, term_guard, term_case_body)
+        funcs = _parse_case_function(parser, term_pattern, term_guard)
     else:
         signature = _parse_func_pattern(parser, TERM_FUN_SIGNATURE, term_guard)
         if parser.token_type == TT_CASE:
             if nodes.is_empty_node(name):
                 parse_error(parser, u"Expected name for such type of function", parser.node)
 
-            funcs = _parse_recursive_function(parser, name, signature, term_pattern, term_guard, term_case_body)
+            funcs = _parse_recursive_function(parser, name, signature, term_pattern, term_guard)
         else:
-            funcs = _parse_single_function(parser, signature, term_single_body)
+            funcs = _parse_single_function(parser, signature)
 
     return funcs
 
@@ -652,7 +702,7 @@ def _parse_function(parser, name, term_pattern,
 def _parse_named_function(parser, node):
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     check_token_types(parser, [TT_LPAREN, TT_CASE])
-    func = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
+    func = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
     return name, func
 
 
@@ -662,9 +712,8 @@ def prefix_let_fun(parser, op, node):
 
 
 def prefix_nameless_fun(parser, op, node):
-    # check_token_types(parser, [TT_LPAREN, TT_CASE])
     name = empty_node()
-    funcs = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_CASE, TERM_BLOCK)
+    funcs = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
     return node_2(NT_FUN, __ntok(node), name, funcs)
 
 
@@ -717,25 +766,6 @@ def ensure_list_node(t):
     return t
 
 
-def ensure_tuple_of_nodes(parser, t, types):
-    result = ensure_tuple(t)
-    check_list_node_types(parser, nodes.node_first(result), types)
-    return result
-
-
-def ensure_list_node_of_nodes(parser, t, types):
-    result = ensure_list_node(t)
-    check_list_node_types(parser, nodes.node_first(result), types)
-    return result
-
-
-def tuple_to_list_node(t):
-    if nodes.node_type(t) == NT_UNIT:
-        return list_node([])
-    else:
-        return nodes.node_children(t)[0]
-
-
 def stmt_from(parser, op, node):
     imported = expression(parser.import_parser, 0, TERM_FROM_IMPORTED)
     check_token_types(parser, [TT_IMPORT, TT_HIDE])
@@ -754,9 +784,7 @@ def stmt_from(parser, op, node):
         names = empty_node()
         advance(parser)
     else:
-        names = expression(parser.import_names_parser, 0)
-        check_node_types(parser, names, [NT_TUPLE, NT_NAME, NT_AS])
-        names = ensure_tuple(names)
+        names = expect_expression_of(parser.import_names_parser, 0, NT_TUPLE)
         if hiding is True:
             # hiding names can't have as binding
             check_list_node_types(parser, nodes.node_first(names), [NT_NAME])
@@ -777,9 +805,7 @@ def stmt_import(parser, op, node):
         ntype = NT_IMPORT
 
     if parser.token_type == TT_LPAREN:
-        names = expression(parser.import_names_parser, 0)
-        check_node_types(parser, names, [NT_TUPLE, NT_NAME, NT_AS])
-        names = ensure_tuple(names)
+        names = expect_expression_of(parser.import_names_parser, 0, NT_TUPLE)
         if hiding is True:
             # hiding names can't have as binding
             check_list_node_types(parser, nodes.node_first(names), [NT_NAME])
@@ -794,8 +820,7 @@ def stmt_import(parser, op, node):
 
 def stmt_export(parser, op, node):
     check_token_types(parser, [TT_LPAREN, TT_NAME])
-    names = ensure_tuple(expression(parser.import_names_parser, 0))
-    check_node_types(parser, names, [NT_TUPLE, NT_NAME])
+    names = expect_expression_of(parser.import_names_parser, 0, NT_TUPLE)
     check_list_node_types(parser, nodes.node_first(names), [NT_NAME])
     return node_1(NT_EXPORT, __ntok(node), names)
 
@@ -845,21 +870,6 @@ def _symbols_to_args(parser, node, symbols):
 def stmt_type(parser, op, node):
     nodes = ensure_list_node(expression(parser.type_parser, 0))
     return nodes
-    # TODO cleanup
-    # typename = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    #
-    # if parser.token_type == TT_NAME or parser.token_type == TT_LPAREN:
-    #     items = tuple_to_list_node(
-    #         ensure_tuple_of_nodes(
-    #             parser.name_list_parser,
-    #             expect_expression_of_types(parser, 0, [NT_NAME, NT_TUPLE]),
-    #             [NT_NAME]
-    #         ))
-    #     fields = node_1(NT_LIST, __ntok(node), items)
-    # else:
-    #     fields = empty_node()
-    #
-    # return nodes.node_2(NT_TYPE, __ntok(node), typename, fields)
 
 
 def prefix_typename(parser, op, node):
@@ -897,13 +907,14 @@ def _parser_trait_header(parser, node):
     if parser.token_type == TT_OF:
         advance(parser)
         # FIXME
-        constraints = \
-            nodes.create_list_node_from_list(node, tuple_to_list_node(
-                ensure_tuple_of_nodes(
-                    parser.name_list_parser,
-                    expect_expression_of_types(parser.name_list_parser, 0, [NT_NAME, NT_IMPORTED_NAME, NT_TUPLE]),
-                    [NT_NAME, NT_IMPORTED_NAME]
-                )))
+        if parser.token_type == TT_LPAREN:
+            advance(parser)
+            constraints = _parse_comma_separated(parser.name_list_parser, TT_RPAREN, NAME_NODES)
+        else:
+            e = expect_expression_of_types(parser.name_list_parser, 0, NAME_NODES)
+            constraints = list_node([e])
+
+        constraints = nodes.create_list_node_from_list(node, constraints)
     else:
         constraints = nodes.create_empty_list_node(node)
 
@@ -914,14 +925,14 @@ def stmt_trait(parser, op, node):
     name, constraints = _parser_trait_header(parser, node)
     check_token_type(parser, TT_LPAREN)
 
-    methods = ensure_list_node(expression(parser.trait_parser, 0))
+    methods = list_expression(parser.trait_parser, 0)
     return nodes.node_3(NT_TRAIT, __ntok(node), name, constraints, methods)
 
 
 def prefix_trait_def(parser, op, node):
     generic_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
     funcs = _parse_case_or_simple_function(parser.expression_parser,
-                                           TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_TRAIT_DEF, TERM_TRAIT_DEF)
+                                           TERM_FUN_PATTERN, TERM_FUN_GUARD)
     return node_2(NT_DEF, __ntok(node), generic_name, funcs)
 
 
@@ -966,9 +977,8 @@ def prefix_extend_use(parser, op, node):
     mixin_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
 
     if parser.token_type == TT_LPAREN:
-        e = expression(parser.name_list_parser, 0)
-        t = ensure_tuple_of_nodes(parser, e, [NT_NAME, NT_IMPORTED_NAME])
-        names = tuple_to_list_node(t)
+        advance(parser)
+        names = _parse_comma_separated(parser.name_list_parser, TT_RPAREN, NAME_NODES)
     else:
         names = empty_node()
 
@@ -978,9 +988,7 @@ def prefix_extend_use(parser, op, node):
 def prefix_extend_def(parser, op, node):
     method_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
 
-    funcs = _parse_case_or_simple_function(parser.expression_parser,
-                                           TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_EXTEND_DEF,
-                                           TERM_EXTEND_DEF)
+    funcs = _parse_case_or_simple_function(parser.expression_parser, TERM_FUN_PATTERN, TERM_FUN_GUARD)
     return node_2(NT_DEF, __ntok(node), method_name, funcs)
 
 

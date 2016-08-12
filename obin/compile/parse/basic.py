@@ -6,9 +6,7 @@ from obin.types import space, api, root, plist, environment
 from obin.runtime import error
 from obin.misc.strutil import get_line, get_line_for_position
 
-TERM_BLOCK = []
 TERM_LPAREN = [TT_RPAREN]
-TERM_EXP = [TT_END_EXPR]
 
 TERM_IF_BODY = [TT_ELSE, TT_ELIF]
 TERM_IF_CONDITION = [TT_THEN]
@@ -16,11 +14,10 @@ TERM_WHEN_EXPRESSION = [TT_ELSE]
 
 TERM_FILE = [TT_ENDSTREAM]
 
-TERM_CASE = [TT_CASE] + TERM_BLOCK
-# TERM_CATCH = [TT_CATCH, TT_FINALLY] + TERM_BLOCK
+TERM_CASE = [TT_CASE]
 TERM_TRY = [TT_CATCH, TT_FINALLY]
-TERM_CATCH_CASE = [TT_CASE, TT_FINALLY] + TERM_BLOCK
-TERM_SINGLE_CATCH = [TT_FINALLY] + TERM_BLOCK
+TERM_CATCH_CASE = [TT_CASE, TT_FINALLY]
+TERM_SINGLE_CATCH = [TT_FINALLY]
 
 TERM_LET = [TT_IN]
 
@@ -29,28 +26,7 @@ TERM_FUN_GUARD = [TT_ASSIGN]
 TERM_FUN_PATTERN = [TT_WHEN, TT_ASSIGN]
 TERM_FUN_SIGNATURE = [TT_ASSIGN, TT_CASE]
 
-TERM_CONDITION_BODY = [TT_CASE] + TERM_BLOCK
-
-TERM_BEFORE_WITH = [TT_WITH]
-
-TERM_TYPE_ARGS = TERM_BLOCK
-TERM_UNION_TYPE_ARGS = [TT_CASE] + TERM_BLOCK
-
-TERM_METHOD_SIG = [TT_DEF, TT_ASSIGN] + TERM_BLOCK
-TERM_METHOD_DEFAULT_BODY = [TT_DEF] + TERM_BLOCK
-
-TERM_TRAIT_DEF = [TT_DEF, TT_CASE] + TERM_BLOCK
-
-TERM_EXTEND_DEF = [TT_CASE, TT_DEF, TT_USE] + TERM_BLOCK
-TERM_EXTEND = [TT_DEF, TT_USE] + TERM_BLOCK
-
 TERM_FROM_IMPORTED = [TT_IMPORT, TT_HIDE]
-
-TERM_CONDITION_CONDITION = [TT_ARROW]
-
-NODE_FOR_NAME = [NT_NAME]
-NODE_FUNC_NAME = [NT_NAME]
-NODE_DOT = [NT_NAME, NT_INT]
 NAME_NODES = [NT_NAME, NT_IMPORTED_NAME]
 
 
@@ -492,7 +468,7 @@ def skip_end_expression(parser):
 
 def expression(parser, _rbp, terminators=None):
     if terminators is None:
-        terminators = TERM_EXP
+        terminators = []
     expr = base_expression(parser, _rbp, terminators)
     # expr = postprocess(parser, expr)
     return expr

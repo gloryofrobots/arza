@@ -154,7 +154,6 @@ class ExpressionParser(BaseParser):
         symbol(self, TT_THEN)
         symbol(self, TT_RPAREN)
         symbol(self, TT_RCURLY)
-        symbol(self, TT_COMMA)
         symbol(self, TT_END_EXPR)
         symbol(self, TT_ENDSTREAM)
         symbol(self, TT_AT_SIGN)
@@ -165,9 +164,9 @@ class ExpressionParser(BaseParser):
         symbol(self, TT_CATCH)
         symbol(self, TT_FINALLY)
         symbol(self, TT_WITH)
-        symbol(self, TT_COMMA)
         symbol(self, TT_IN)
         symbol(self, TT_ASSIGN)
+        symbol(self, TT_COMMA, symbol_comma_nud)
 
         prefix(self, TT_LPAREN, prefix_lparen)
         prefix(self, TT_LSQUARE, prefix_lsquare)
@@ -186,7 +185,6 @@ class ExpressionParser(BaseParser):
 
         infix(self, TT_ARROW, 10, infix_arrow)
         infix(self, TT_WHEN, 10, infix_when)
-        infix(self, TT_COMMA, 10, infix_comma)
 
         infix(self, TT_OF, 15, led_infix)
         infix(self, TT_OR, 25, led_infix)
@@ -228,11 +226,11 @@ class TypeParser(BaseParser):
             self.symbol_list_parser
         ])
 
+        symbol(self, TT_COMMA, symbol_comma_nud)
         symbol(self, TT_RPAREN, None)
         infix(self, TT_LPAREN, 100, infix_lparen_type)
         prefix(self, TT_NAME, prefix_typename)
         prefix(self, TT_LPAREN, prefix_lparen)
-        infix(self, TT_COMMA, 10, infix_comma)
 
 
 class ExtendParser(BaseParser):
@@ -269,7 +267,6 @@ class PatternParser(BaseParser):
         prefix(self, TT_ELLIPSIS, prefix_nud)
 
         infix(self, TT_OF, 10, led_infix)
-        infix(self, TT_COMMA, 5, infix_comma)
         infix(self, TT_AT_SIGN, 15, infix_at)
         infix(self, TT_DOUBLE_COLON, 60, led_infixr)
         infix(self, TT_COLON, 100, infix_name_pair)
@@ -280,6 +277,7 @@ class PatternParser(BaseParser):
         symbol(self, TT_RCURLY)
         symbol(self, TT_RSQUARE)
         symbol(self, TT_ASSIGN)
+        symbol(self, TT_COMMA, symbol_comma_nud)
 
         init_parser_literals(self)
 
@@ -334,6 +332,7 @@ class ModuleParser(BaseParser):
         self.break_on_juxtaposition = True
 
         symbol(self, TT_ENDSTREAM)
+        symbol(self, TT_COMMA, symbol_comma_nud)
 
         stmt(self, TT_FUN, prefix_module_fun)
         stmt(self, TT_LET, prefix_module_let)
@@ -354,7 +353,6 @@ def guard_parser_init(parser):
     parser.allow_overloading = True
     parser = init_parser_literals(parser)
 
-    infix(parser, TT_COMMA, 10, infix_comma)
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_RCURLY, None)
     symbol(parser, TT_RSQUARE, None)
@@ -376,7 +374,7 @@ def guard_parser_init(parser):
 
 def map_key_pattern_parser_init(parser):
     parser = init_parser_literals(parser)
-    symbol(parser, TT_COMMA)
+    symbol(parser, TT_COMMA, symbol_comma_nud)
     symbol(parser, TT_ASSIGN)
 
     infix(parser, TT_OF, 5, infix_map_pattern_of)
@@ -408,7 +406,7 @@ def generic_parser_init(parser):
     prefix(parser, TT_TICKNAME, prefix_name_as_symbol)
     prefix(parser, TT_OPERATOR, operator_as_symbol)
 
-    infix(parser, TT_COMMA, 5, infix_comma)
+    symbol(parser, TT_COMMA, symbol_comma_nud)
     symbol(parser, TT_RPAREN)
     return parser
 
@@ -419,7 +417,7 @@ def interface_parser_init(parser):
     infix(parser, TT_COLON, 100, infix_name_pair)
     literal(parser, TT_NAME)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
-    infix(parser, TT_COMMA, 5, infix_comma)
+    symbol(parser, TT_COMMA, symbol_comma_nud)
     symbol(parser, TT_RPAREN)
     return parser
 
@@ -433,37 +431,38 @@ def name_parser_init(parser):
 
 def name_list_parser_init(parser):
     symbol(parser, TT_RPAREN, None)
-    literal(parser, TT_NAME)
-
-    # FIXME THIS IS FOR PREFIX INFIXL
-
-    literal(parser, TT_INT)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
-    infix(parser, TT_COLON, 100, infix_name_pair)
+    symbol(parser, TT_COMMA, symbol_comma_nud)
+
+    literal(parser, TT_NAME)
+    # FIXME THIS IS FOR PREFIX INFIXL
+    literal(parser, TT_INT)
+
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
-    infix(parser, TT_COMMA, 10, infix_comma)
+
+    infix(parser, TT_COLON, 100, infix_name_pair)
     return parser
 
 
 def symbol_list_parser_init(parser):
     prefix(parser, TT_NAME, prefix_name_as_symbol)
-    infix(parser, TT_COMMA, 10, infix_comma)
+    symbol(parser, TT_COMMA, symbol_comma_nud)
     return parser
 
 
 def import_names_parser_init(parser):
-    infix(parser, TT_COMMA, 10, infix_comma)
+    symbol(parser, TT_COMMA, symbol_comma_nud)
     symbol(parser, TT_RPAREN, None)
     literal(parser, TT_NAME)
     infix(parser, TT_AS, 15, infix_name_pair)
-    prefix(parser, TT_LPAREN, prefix_lparen)
+    prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     return parser
 
 
 def import_parser_init(parser):
     parser.allow_unknown = True
     symbol(parser, TT_UNKNOWN)
-    symbol(parser, TT_COMMA, None)
+    symbol(parser, TT_COMMA, symbol_comma_nud)
     symbol(parser, TT_LPAREN, None)
     symbol(parser, TT_HIDING, None)
     symbol(parser, TT_HIDE, None)
@@ -500,7 +499,7 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = True
+PARSE_DEBUG = False
 
 
 def parse(process, env, src):
