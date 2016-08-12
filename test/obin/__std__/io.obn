@@ -18,8 +18,8 @@ fun printr(...args) =
     )
 
 
-fun print ...args =
-    let out = stdout ()
+fun print(...args) =
+    let out = stdout()
     in (
         _write_list_items(args, str, out)
         write("\n", out)

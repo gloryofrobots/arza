@@ -44,9 +44,9 @@ fun range_by (first of Int, last of Int, step of Int) =
 --------------------------------------------------
 
 
-fun replicate count element =
+fun replicate(count, element) =
     if count >= 0 then
-        let fun _replicate(n, x, result)
+        let fun _replicate
             | 0, _, l = l
             | n, x, l = _replicate(n - 1, x, x :: l)
 

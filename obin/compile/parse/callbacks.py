@@ -195,9 +195,7 @@ def infix_lcurly(parser, op, node, left):
 def _infix_lparen(parser):
     if parser.token_type != TT_RPAREN:
         expr = ensure_tuple(expression(parser, 0))
-        args = nodes.node_children(expr)
-        # skip_end_expression(parser)
-        # args = commas_as_list(parser, expr)
+        args = tuple_to_list_node(expr)
     else:
         args = list_node([])
     assert nodes.is_list_node(args)
@@ -418,9 +416,9 @@ def prefix_if(parser, op, node):
 
 
 def prefix_let(parser, op, node):
-    letblock = statements(parser.let_parser, TERM_LET)
+    letblock = statements(parser.let_parser, TERM_LET, [NT_FUN, NT_ASSIGN])
     advance_expected(parser, TT_IN)
-    inexp = expression(parser, 0)
+    inexp = ensure_list_node(expression(parser, 0))
     return node_2(NT_LET, __ntok(node), letblock, inexp)
 
 
@@ -746,7 +744,7 @@ def ensure_list_node_of_nodes(parser, t, types):
 
 
 def tuple_to_list_node(t):
-    return nodes.node_children(t)
+    return nodes.node_children(t)[0]
 
 
 def stmt_from(parser, op, node):
@@ -950,6 +948,7 @@ def prefix_trait_let(parser, op, node):
 def stmt_extend(parser, op, node):
     type_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
 
+    lets = []
     defs = []
     mixins = []
     check_token_type(parser, TT_LPAREN)
@@ -964,20 +963,23 @@ def stmt_extend(parser, op, node):
             defs.append(list_node([
                 nodes.node_first(ex), nodes.node_second(ex)
             ]))
+        elif nodes.node_type(ex) == NT_ASSIGN:
+            lets.append(list_node([
+                nodes.node_first(ex), nodes.node_second(ex)
+            ]))
         else:
             assert False, "Should not reach here, unknown type extension"
 
-    return nodes.node_3(NT_EXTEND, __ntok(node), type_name, list_node(mixins), list_node(defs))
+    return nodes.node_4(NT_EXTEND, __ntok(node), type_name, list_node(mixins), list_node(defs), list_node(lets))
 
 
 def prefix_extend_use(parser, op, node):
     mixin_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
 
     if parser.token_type == TT_LPAREN:
-        names = tuple_to_list_node(
-            ensure_tuple_of_nodes(parser,
-                                  expression(parser.name_list_parser, 0),
-                                  [NT_NAME, NT_IMPORTED_NAME]))
+        e = expression(parser.name_list_parser, 0)
+        t = ensure_tuple_of_nodes(parser, e, [NT_NAME, NT_IMPORTED_NAME])
+        names = tuple_to_list_node(t)
     else:
         names = empty_node()
 
@@ -991,6 +993,13 @@ def prefix_extend_def(parser, op, node):
                                            TERM_FUN_PATTERN, TERM_FUN_GUARD, TERM_EXTEND_DEF,
                                            TERM_EXTEND_DEF)
     return node_2(NT_DEF, __ntok(node), method_name, funcs)
+
+
+def prefix_extend_let(parser, op, node):
+    method_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
+    advance_expected(parser, TT_ASSIGN)
+    func = expression(parser.expression_parser, 0)
+    return node_2(NT_ASSIGN, __ntok(node), method_name, func)
 
 
 # ------------------ OPERATORS ---------------------------

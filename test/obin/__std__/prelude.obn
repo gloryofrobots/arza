@@ -92,6 +92,7 @@ type (
 
 
 generic (
+    at(key, `self)
     ==(`x, y)
     !=(`x, y)
     <=(`x, y)
@@ -120,7 +121,6 @@ generic (
     is_empty(`self)
 
     put(key, value, `self)
-    at(key, `self)
     del(obj, `self)
     elem(key, `self)
 
@@ -189,8 +189,9 @@ interface (
 ////////////////////////////////////////////////////////////
 
 
-trait TNotEq
+trait TNotEq (
     def !=(x, y) = not (x == y)
+)
 
 
 trait TOrd of PartialEq (
@@ -207,13 +208,13 @@ trait TOrd of PartialEq (
     def min(x, y) = if x <= y then x else y
 )
 
-trait TIsEmpty of Len
+trait TIsEmpty of Len (
     def is_empty(self) = len(self) == 0
+)
 
-
-trait TRepr of Str
+trait TRepr of Str (
     def repr(self) = str(self)
-
+)
 
 ////////////////////////////////////////////////////////////
 ///////////////// FUNCTIONS ////////////////////////////////

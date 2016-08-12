@@ -14,7 +14,7 @@ extend Tuple (
     let take = _tuple:take
 
     def str(self) =
-        if len self == 1 then
+        if len(self) == 1 then
             "(" ++ repr(at(0, self)) ++ ",)"
         else
             "(" ++ string:join_with(repr, to_seq(self), ", ") ++ ")"

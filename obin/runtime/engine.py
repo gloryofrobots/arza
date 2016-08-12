@@ -9,6 +9,7 @@ PRELUDE_FILE = u"prelude"
 # PRELUDE_FILE = u"syntax"
 # PRELUDE_FILE = u"affirm"
 
+
 def newprocess(libdirs):
     core_prelude = space.newemptyenv(space.newstring(u"prelude"))
     proc_data = process_data.create(libdirs, core_prelude)
@@ -51,9 +52,9 @@ def initialize(libdirs):
     builtins.postsetup(process)
 
     modules = [u"bool", u"num", u"bit", u"env",
-               u"string", u"symbol", u"vector",
+               u"string", u"vector",
                u"list", u"function", u"fiber", u"trait",
-               u"tuple", u"map", u"seq", u"lazy",
+               u"tuple", u"map", u"seq",
                u"datatype",
                ]
 
@@ -61,7 +62,6 @@ def initialize(libdirs):
         err = load_module(process, module_name)
         if err is not None:
             return process, err
-
 
     print "INITIALIZED"
     return process, None

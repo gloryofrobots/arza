@@ -247,6 +247,7 @@ class ExtendParser(BaseParser):
             self.name_list_parser
         ])
 
+        prefix(self, TT_LET, prefix_extend_let)
         prefix(self, TT_DEF, prefix_extend_def)
         prefix(self, TT_USE, prefix_extend_use)
         prefix(self, TT_LPAREN, prefix_lparen)
@@ -267,7 +268,7 @@ class PatternParser(BaseParser):
         prefix(self, TT_SHARP, prefix_sharp)
         prefix(self, TT_ELLIPSIS, prefix_nud)
 
-        infix(self, TT_OF, 5, led_infix)
+        infix(self, TT_OF, 10, led_infix)
         infix(self, TT_COMMA, 5, infix_comma)
         infix(self, TT_AT_SIGN, 15, infix_at)
         infix(self, TT_DOUBLE_COLON, 60, led_infixr)

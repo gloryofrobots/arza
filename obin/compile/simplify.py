@@ -60,6 +60,8 @@ def simplify_extend(compiler, code, node):
     typename_1_arg = node_first(node)
     mixins = node_second(node)
     methods = node_third(node)
+    lets = node_fourth(node)
+
     mixins_list = []
     methods_list = []
     for mixin_data in mixins:
@@ -75,6 +77,16 @@ def simplify_extend(compiler, code, node):
                         nodes.create_lookup_node(source, source, name)
                     ])
                 )
+
+    for method_data in lets:
+        generic_name = method_data[0]
+        impl = method_data[1]
+        methods_list.append(
+            nodes.create_tuple_node(generic_name, [
+                generic_name,
+                impl
+            ])
+        )
 
     for method_data in methods:
         generic_name = method_data[0]
@@ -146,37 +158,3 @@ def simplify_trait(compiler, code, node):
 
     return trait_node
 
-#
-# First declare methods name. compiler second pass doesn`t walk through calls and assigns
-# Possible fix -> separate ast for simple and complicated assigns NT_ASSIGN, NT_ASSIGN_MATCH
-# methods = []
-# # First declare methods name. compiler second pass doesn`t walk through calls and assigns
-# # Possible fix -> separate ast for simple and complicated assigns NT_ASSIGN, NT_ASSIGN_MATCH
-# for method_source in method_sources:
-#     generic_node = method_source[0]
-#     assign_void = nodes.create_assign_node(name_node, name_node, nodes.create_void_node(name_node))
-#     methods.append(assign_void)
-#
-# for method_source in method_sources:
-#     trait_1_arg = trait_name_node
-#     name_node = method_source[0]
-#     name_2_arg = nodes.create_symbol_node(name_node, name_node)
-#
-#     sig_3_arg = method_source[1]
-#     default_impl = method_source[2]
-#
-#     if nodes.is_empty_node(default_impl):
-#         impl_4_arg = nodes.create_void_node(name_2_arg)
-#     else:
-#         impl_4_arg = nodes.create_fun_node(name_2_arg, nodes.empty_node(), default_impl)
-#
-#     method_call_node = nodes.create_call_node_s(node,
-#                                                 lang_names.GENERIC,
-#                                                 [trait_1_arg, name_2_arg, sig_3_arg, impl_4_arg])
-#     assign_node = nodes.create_assign_node(node, name_node, method_call_node)
-#     methods.append(assign_node)
-#
-# call_node = nodes.create_call_node_s(node, lang_names.TRAIT, [trait_name_1_arg, constraints_2_arg, methods_3_arg])
-# trait_node = nodes.create_assign_node(node, trait_name_node, call_node)
-#
-# return trait_node

@@ -586,12 +586,15 @@ def statement_no_end_expr(parser):
     return value
 
 
-def statements(parser, endlist):
+def statements(parser, endlist, expected_types=None):
     stmts = []
     while True:
         if token_is_one_of(parser, endlist):
             break
         s = statement(parser)
+        if expected_types is not None:
+            check_node_types(parser, s, expected_types)
+
         on_endofexpression(parser)
         if s is None:
             continue

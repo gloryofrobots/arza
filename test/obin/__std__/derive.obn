@@ -39,7 +39,7 @@ trait TDict (
 trait TUnionRange (
     def range(_from,  _to) =
         let
-            union = _datatype:get_union _from
+            union = _datatype:get_union(_from)
         in
             if not (kindof(_to, union)) then
                 throw ValueError("Invalid type for second argument", _to)
