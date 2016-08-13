@@ -116,6 +116,10 @@ class BaseParser:
     def token(self):
         return self.ts.token
 
+    @property
+    def previous_token(self):
+        return self.ts.previous
+
     def next_token(self):
         try:
             return self.ts.next_token()

@@ -252,11 +252,16 @@ def node_has_std(parser, node):
     return handler.std is not None
 
 
-def node_lbp(parser, previous, node):
+def node_lbp(parser,  node):
+
     op = node_operator(parser, node)
     lbp = op.lbp
     if op.ambidextra is True:
-        prev_line = nodes.node_line_i(previous)
+        prev = parser.previous_token
+        if not prev:
+            return lbp
+
+        prev_line = tokens.token_line_i(prev)
         cur_line = nodes.node_line_i(node)
         # if tokens on the same line it's infix otherwise it's prefix
         if prev_line == cur_line:
@@ -419,7 +424,7 @@ def base_expression(parser, _rbp, terminators=None):
             if parser.token_type in terminators:
                 return left
 
-        _lbp = node_lbp(parser, previous, parser.node)
+        _lbp = node_lbp(parser,  parser.node)
 
         # juxtaposition support
         if _lbp < 0:

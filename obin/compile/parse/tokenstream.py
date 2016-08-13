@@ -1,6 +1,5 @@
 from obin.compile.parse.token_type import TT_NEWLINE
 from obin.compile.parse import nodes
-from obin.compile.parse import tokens
 
 
 class TokenStream:
@@ -8,9 +7,11 @@ class TokenStream:
         self.tokens = _tokens
         self.node = None
         self.token = None
+        self.previous = None
         self.src = src
 
     def next_token(self):
+        self.previous = self.token
         token = self.tokens.next()
         self.token = token
         self.node = nodes.node_blank(self.token)
