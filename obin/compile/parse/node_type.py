@@ -62,8 +62,9 @@ NT_DELAY = 59
 NT_LET = 60
 NT_AND = 61
 NT_OR = 62
-NT_END_EXPR = 63
-NT_END = 64
+NT_NOT = 63
+NT_END_EXPR = 64
+NT_END = 65
 # ************************ OBIN NODES REPR *****************************
 __NT_REPR__ = ["NT_GOTO", "NT_TRUE", "NT_FALSE", "NT_VOID", "NT_INT", "NT_FLOAT", "NT_STR", "NT_MULTI_STR", "NT_CHAR",
                "NT_WILDCARD", "NT_NAME", "NT_TEMPORARY", "NT_SYMBOL", "NT_TYPE", "NT_UNION", "NT_MAP", "NT_LIST",
@@ -72,7 +73,7 @@ __NT_REPR__ = ["NT_GOTO", "NT_TRUE", "NT_FALSE", "NT_VOID", "NT_INT", "NT_FLOAT"
                "NT_IMPORT_FROM", "NT_IMPORT_FROM_HIDING", "NT_EXPORT", "NT_LOAD", "NT_TRAIT", "NT_EXTEND", "NT_USE",
                "NT_DEF", "NT_GENERIC", "NT_METHOD", "NT_INTERFACE", "NT_BIND", "NT_THROW", "NT_REST", "NT_ASSIGN",
                "NT_CALL", "NT_JUXTAPOSITION", "NT_UNDEFINE", "NT_LOOKUP", "NT_IMPORTED_NAME", "NT_HEAD", "NT_TAIL",
-               "NT_DROP", "NT_RANGE", "NT_MODIFY", "NT_OF", "NT_AS", "NT_DELAY", "NT_LET", "NT_AND", "NT_OR",
+               "NT_DROP", "NT_RANGE", "NT_MODIFY", "NT_OF", "NT_AS", "NT_DELAY", "NT_LET", "NT_AND", "NT_OR", "NT_NOT",
                "NT_END_EXPR", "NT_END", ]
 
 

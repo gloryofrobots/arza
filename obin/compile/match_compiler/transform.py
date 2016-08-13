@@ -86,7 +86,7 @@ def _history_get_var(history, exp):
 def _history_get_condition(history, condition):
     var_name, prefixes = _history_get_var(history, condition)
 
-    new_condition = create_eq_node(condition,
+    new_condition = create_eq_call(condition,
                                    var_name,
                                    create_true_node(condition))
 
@@ -106,8 +106,8 @@ def transform_body(func, methods, history, node, head, tail, variables):
 
 def _transform_is_map(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
-    _condition = create_is_node(arg_node,
-                                create_is_dict_node(arg_node, arg_node),
+    _condition = create_is_call(arg_node,
+                                create_is_dict_call(arg_node, arg_node),
                                 create_true_node(arg_node))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -116,8 +116,8 @@ def _transform_is_map(history, head, variables):
 
 def _transform_is_not_empty(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
-    _condition = create_is_node(arg_node,
-                                create_is_empty_node(arg_node, arg_node),
+    _condition = create_is_call(arg_node,
+                                create_is_empty_call(arg_node, arg_node),
                                 create_false_node(arg_node))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -126,8 +126,8 @@ def _transform_is_not_empty(history, head, variables):
 
 def _transform_is_empty(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
-    _condition = create_is_node(arg_node,
-                                create_is_empty_node(arg_node, arg_node),
+    _condition = create_is_call(arg_node,
+                                create_is_empty_call(arg_node, arg_node),
                                 create_true_node(arg_node))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -136,8 +136,8 @@ def _transform_is_empty(history, head, variables):
 
 def _transform_is_seq(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
-    _condition = create_is_node(arg_node,
-                                create_is_seq_node(arg_node, arg_node),
+    _condition = create_is_call(arg_node,
+                                create_is_seq_call(arg_node, arg_node),
                                 create_true_node(arg_node))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -146,8 +146,8 @@ def _transform_is_seq(history, head, variables):
 
 def _transform_is_indexed(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
-    _condition = create_is_node(arg_node,
-                                create_is_indexed_node(arg_node, arg_node),
+    _condition = create_is_call(arg_node,
+                                create_is_indexed_call(arg_node, arg_node),
                                 create_true_node(arg_node))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -157,8 +157,8 @@ def _transform_is_indexed(history, head, variables):
 def _transform_length_ge(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     count = head[2]
-    _condition = create_gt_node(arg_node,
-                                create_len_node(arg_node, arg_node),
+    _condition = create_gt_call(arg_node,
+                                create_len_call(arg_node, arg_node),
                                 create_int_node(arg_node, str(count)))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -168,8 +168,8 @@ def _transform_length_ge(history, head, variables):
 def _transform_length(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     count = head[2]
-    _condition = create_eq_node(arg_node,
-                                create_len_node(arg_node, arg_node),
+    _condition = create_eq_call(arg_node,
+                                create_len_call(arg_node, arg_node),
                                 create_int_node(arg_node, str(count)))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -179,14 +179,14 @@ def _transform_length(history, head, variables):
 def _transform_equal(history, head, variables):
     left, prefixes = _history_get_var(history, head[1])
     right = head[2]
-    _condition = create_eq_node(left, left, right)
+    _condition = create_eq_call(left, left, right)
     condition, prefixes1 = _history_get_condition(history, _condition)
     return left, condition, prefixes + prefixes1, variables
 
 
 def _transform_when(history, head, variables):
     guard_node, prefixes = _history_get_var(history, head[1])
-    _condition = create_is_node(guard_node,
+    _condition = create_is_call(guard_node,
                                 guard_node,
                                 create_true_node(guard_node))
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -196,7 +196,7 @@ def _transform_when(history, head, variables):
 def _transform_kindof(history, head, variables):
     left, prefixes = _history_get_var(history, head[1])
     right = head[2]
-    _condition = create_kindof_node(left, left, right)
+    _condition = create_kindof_call(left, left, right)
     condition, prefixes1 = _history_get_condition(history, _condition)
     return left, condition, prefixes + prefixes1, variables
 
@@ -204,7 +204,7 @@ def _transform_kindof(history, head, variables):
 def _transform_is(history, head, variables):
     left, prefixes = _history_get_var(history, head[1])
     right = head[2]
-    _condition = create_is_node(left, left, right)
+    _condition = create_is_call(left, left, right)
     condition, prefixes1 = _history_get_condition(history, _condition)
     return left, condition, prefixes + prefixes1, variables
 
@@ -212,7 +212,7 @@ def _transform_is(history, head, variables):
 # THIS function creates in chain for maps like if x in $$ and y in $$ and z in $$
 def _create_in_and_chain(keys, map_node):
     key, rest = plist.split(keys)
-    in_node = create_elem_node(map_node,
+    in_node = create_elem_call(map_node,
                                create_symbol_node(map_node,
                                                   create_name_node_s(
                                                       map_node,
@@ -234,7 +234,7 @@ def _transform_map(history, head, variables):
 def _transform_in(history, head, variables):
     left, prefixes = _history_get_var(history, head[1])
     right = head[2]
-    _condition = create_elem_node(left, left, right)
+    _condition = create_elem_call(left, left, right)
     condition, prefixes1 = _history_get_condition(history, _condition)
     return left, condition, prefixes + prefixes1, variables
 
@@ -242,7 +242,7 @@ def _transform_in(history, head, variables):
 def _transform_isnot(history, head, variables):
     left, prefixes = _history_get_var(history, head[1])
     right = head[2]
-    _condition = create_isnot_node(left, left, right)
+    _condition = create_isnot_call(left, left, right)
     condition, prefixes1 = _history_get_condition(history, _condition)
     return left, condition, prefixes + prefixes1, variables
 
@@ -255,7 +255,7 @@ def _transform_assign(history, head, variables):
     left = head[1]
     right, prefixes = _history_get_var(history, head[2])
     if plist.contains_with(variables, left, _is_same_var):
-        _condition = create_eq_node(left, left, right)
+        _condition = create_eq_call(left, left, right)
         condition, prefixes1 = _history_get_condition(history, _condition)
         return left, condition, prefixes + prefixes1, variables
     else:

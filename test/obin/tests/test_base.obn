@@ -125,7 +125,9 @@ fun test_small_functions_syntax() =
     let fun f3(a, b, c) | (0, 1, c) = c
     in affirm:is_equal(f3(0, 1, 42), 42)
 
-    let fun f4 (()) = ((()))
+    // TODO FIX IT
+    // there issue in parser and maybe in entire concept of function patterns
+    let fun f4 ((),) = ((()))
     in affirm:is_equal( f4(()), () )
 
     let fun f5() = ( [42,43,44]
@@ -180,7 +182,7 @@ fun test_whitespaces_in_expressions() =
         T1 = (1,
               fun | 5 = 25
                   | 6 = 45,
-              fun x
+              fun
                  | 5 = 25
                  | 6 = 45,
               fun x = 25,
@@ -201,26 +203,27 @@ fun test_whitespaces_in_expressions() =
     let
         T5 =
             (1
-            , fun  x | 5 = 25
-                     | 6 = 45
-            , fun  x
+            , fun | 5 = 25
+                  | 6 = 45
+            , fun
                 | 5 = 25
                 | 6 = 45
             // call
             , (x -> x) (
                           45)
             )
-
-    affirm:is_equal(T5.1(6), 45)
-    affirm:is_equal(T5.2(6), 45)
-    affirm:is_equal(T5.3, 45)
+    in  (
+        affirm:is_equal(T5.1(6), 45)
+        affirm:is_equal(T5.2(6), 45)
+        affirm:is_equal(T5.3, 45)
+    )
 
     let T6 =
         (1,
    2,
 3
 )
-    in affirm:is_equal T6 (1,2,3)
+    in affirm:is_equal(T6, (1,2,3))
 
 
     let T7 =
@@ -243,7 +246,7 @@ fun test_whitespaces_in_expressions() =
         {x=1,
  x=2,
 
- l= fun (x, y)
+ l= fun
         | 1, 2 = 1
         | 2, 3 = 2,
     n = 1
@@ -325,15 +328,14 @@ fun test_operators_and_newlines() =
             + 2
             + 3
             + 4
-
-    in affirm:is_equal(x, 10)
-
-    let y = x
+        y = x
             + 3
                 + 2 +
         5
-
-    in affirm:is_equal(y, 20)
+    in (
+        affirm:is_equal(x, 10)
+        affirm:is_equal(y, 20)
+    )
 )
 
 fun test_let() =
@@ -407,22 +409,22 @@ fun test_ambidextra_operators () =
         affirm:is_equal (
             //Lparen before 42 performs as  infix operator because both expressions are on the same line
             (
-                (`**`)(42)
+                (x->x-1)(42)
             ),
-            42
+            41
         )
 
         affirm:is_equal (
             //Lparen before 42 performs as  prefix operator because  expressions are on the different lines
             (
-                (`**`)
+                (x->x-1)
                 (42)
             ),
             42
         )
 
         affirm:is_equal_all (
-            f (-1, -2, -1, -2), f(-one, -two, -one, -two), (-1, -2, -1, -2)
+            f(-1, -2, -1, -2), f(-one, -two, -one, -two), (-1, -2, -1, -2)
         )
     )
 

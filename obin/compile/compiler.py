@@ -434,6 +434,11 @@ def _compile_OR(compiler, code, node):
     code.emit_1(LABEL, one, info(node))
 
 
+def _compile_NOT(compiler, code, node):
+    simplified = simplify.simplify_not(compiler, code, node)
+    _compile(compiler, code, simplified)
+
+
 #########################################################
 
 PATTERN_DATA = """
@@ -1224,6 +1229,8 @@ def _compile_node(compiler, code, node):
         _compile_AND(compiler, code, node)
     elif NT_OR == ntype:
         _compile_OR(compiler, code, node)
+    elif NT_NOT == ntype:
+        _compile_NOT(compiler, code, node)
     elif NT_GOTO == ntype:
         _compile_GOTO(compiler, code, node)
     elif NT_UNDEFINE == ntype:

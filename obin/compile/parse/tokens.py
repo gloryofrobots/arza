@@ -100,6 +100,7 @@ RULES = [
     (keyword('fun'), TT_FUN),
     (keyword('and'), TT_AND),
     (keyword('or'), TT_OR),
+    (keyword('not'), TT_NOT),
     (keyword('True'), TT_TRUE),
     (keyword('False'), TT_FALSE),
     # (keyword('nil'), TT_NIL),

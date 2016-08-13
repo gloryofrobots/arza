@@ -243,7 +243,7 @@ def create_function_variants(args, exp):
         body = exp
 
     return list_node([list_node([
-            args, body
+        args, body
     ])])
 
 
@@ -257,9 +257,9 @@ def create_fun_simple_node(basenode, name, body):
 def create_lambda_node(basenode, args, exp):
     assert node_type(args) == nt.NT_TUPLE or node_type(args) == nt.NT_UNIT, args
     return node_1(nt.NT_LAMBDA, create_token_from_node(tt.TT_STR, "lambda", basenode),
-                           create_function_variants(
-                               args,
-                               list_node([exp])))
+                  create_function_variants(
+                      args,
+                      list_node([exp])))
 
 
 def create_fun_node(basenode, name, funcs):
@@ -414,52 +414,56 @@ def create_when_no_else_node(basenode, cond, body):
 # CALL TO OPERATOR FUNCS
 # TODO MAKE IT CONSISTENT WITH OPERATOR REDECLARATION
 
-def create_eq_node(basenode, left, right):
+def create_eq_call(basenode, left, right):
     return create_call_node_s(basenode, lang_names.EQ, [left, right])
 
 
-def create_gt_node(basenode, left, right):
+def create_gt_call(basenode, left, right):
     return create_call_node_s(basenode, lang_names.GE, [left, right])
 
 
-def create_kindof_node(basenode, left, right):
+def create_kindof_call(basenode, left, right):
     return create_call_node_s(basenode, lang_names.KINDOF, [left, right])
 
 
-def create_isnot_node(basenode, left, right):
+def create_isnot_call(basenode, left, right):
     return create_call_node_s(basenode, lang_names.ISNOT, [left, right])
 
 
-def create_is_node(basenode, left, right):
+def create_is_call(basenode, left, right):
     return create_call_node_s(basenode, lang_names.IS, [left, right])
 
 
-def create_elem_node(basenode, left, right):
+def create_elem_call(basenode, left, right):
     return create_call_node_s(basenode, lang_names.ELEM, [left, right])
 
 
-def create_is_indexed_node(basenode, val):
+def create_is_indexed_call(basenode, val):
     return create_call_node_s(basenode, lang_names.IS_INDEXED, [val])
 
 
-def create_is_dict_node(basenode, val):
+def create_is_dict_call(basenode, val):
     return create_call_node_s(basenode, lang_names.IS_DICT, [val])
 
 
-def create_is_empty_node(basenode, val):
+def create_is_empty_call(basenode, val):
     return create_call_node_s(basenode, lang_names.IS_EMPTY, [val])
 
 
-def create_is_seq_node(basenode, val):
+def create_is_seq_call(basenode, val):
     return create_call_node_s(basenode, lang_names.IS_SEQ, [val])
 
 
-def create_len_node(basenode, val):
+def create_len_call(basenode, val):
     return create_call_node_s(basenode, lang_names.LEN, [val])
 
 
-def create_cons_node(basenode, left, right):
+def create_cons_call(basenode, left, right):
     return create_call_node_s(basenode, lang_names.CONS, [left, right])
+
+
+def create_not_call(basenode, left):
+    return create_call_node_s(basenode, lang_names.NOT, [left])
 
 
 ##############################

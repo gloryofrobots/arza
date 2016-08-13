@@ -177,6 +177,7 @@ class ExpressionParser(BaseParser):
         prefix(self, TT_LCURLY, prefix_lcurly)
         prefix(self, TT_SHARP, prefix_sharp)
         prefix(self, TT_ELLIPSIS, prefix_nud)
+        prefix(self, TT_NOT, prefix_not)
         prefix(self, TT_IF, prefix_if)
 
         prefix(self, TT_FUN, prefix_nameless_fun)

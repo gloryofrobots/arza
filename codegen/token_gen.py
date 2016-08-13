@@ -30,6 +30,7 @@ TOKENS = [
   ("TT_AS", "as"),
   ("TT_AND", "and"),
   ("TT_OR", "or"),
+  ("TT_NOT", "not"),
   ("TT_TRUE", "true"),
   ("TT_FALSE", "false"),
   ("TT_TRY", "try"),
@@ -108,11 +109,14 @@ for name,pattern in TOKENS:
     S += "%s, " % str(("u\"%s\"" % name))
 S += "]"
 print S
-print
-print
-print "def token_type_to_s(ttype):"
-print "    return __TT_REPR__[ttype]"
+print """
+def token_type_to_u(ttype):
+    return __TT_REPR__[ttype]
 
+
+def token_type_to_s(ttype):
+    return str(__TT_REPR__[ttype])
+"""
 
 # print "# ************************ COMPILE SWITCH*****************************"
 # for number, token in enumerate(TOKENS):

@@ -27,11 +27,14 @@ fun is_elem(el, coll) =
 
 
 fun is_equal_all(...args) =
-    let fun _reducer(val1, val2) =
-       let True = is_equal(val1, val2)
-       in val2
-
-    in seq:reduce(_reducer, to_seq(args))
+    let
+        fun _reducer(val1, val2) =
+           let True = is_equal(val1, val2)
+           in val2
+    in (
+        seq:reduce(_reducer, to_seq(args))
+        True
+    )
 
 
 fun is_equal

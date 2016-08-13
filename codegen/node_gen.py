@@ -81,6 +81,7 @@ NODES = [
 
   "NT_AND",
   "NT_OR",
+  "NT_NOT",
 
   "NT_END_EXPR",
   "NT_END",

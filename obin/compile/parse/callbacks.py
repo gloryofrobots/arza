@@ -264,6 +264,11 @@ def prefix_sharp(parser, op, node):
     return node_1(__ntype(node), __ntok(node), exp)
 
 
+def prefix_not(parser, op, node):
+    exp = expression(parser, 0)
+    return node_1(NT_NOT, __ntok(node), exp)
+
+
 def _parse_comma_separated(parser, terminator, expected=None, initial=None):
     if not initial:
         items = []

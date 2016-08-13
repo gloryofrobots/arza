@@ -34,10 +34,15 @@ def simplify_let(compiler, code, node):
     return nodes.create_call_node_1(node, func, nodes.create_unit_node(node))
 
 
+def simplify_not(compiler, code, node):
+    left = node_first(node)
+    return nodes.create_not_call(node, left )
+
+
 def simplify_cons(compiler, code, node):
     left = node_first(node)
     right = node_second(node)
-    return nodes.create_cons_node(node, left, right)
+    return nodes.create_cons_call(node, left, right)
 
 
 def simplify_delay(compiler, code, node):
@@ -157,4 +162,3 @@ def simplify_trait(compiler, code, node):
     trait_node = nodes.create_assign_node(node, trait_name_node, call_node)
 
     return trait_node
-
