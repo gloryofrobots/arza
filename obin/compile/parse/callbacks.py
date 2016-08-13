@@ -286,8 +286,12 @@ def _parse_comma_separated(parser, terminator, expected=None, initial=None):
     return list_node(items)
 
 
-def _parse_comma_separated_to_one_of(parser, terminators, advance_terminator=True):
-    items = []
+def _parse_comma_separated_to_one_of(parser, terminators, initial=None, advance_terminator=True):
+    if not initial:
+        items = []
+    else:
+        items = initial
+
     if parser.token_type not in terminators:
         while True:
             e = expression(parser, 0)
@@ -341,6 +345,28 @@ def prefix_lparen_tuple(parser, op, node):
 
     items = _parse_comma_separated(parser, TT_RPAREN)
     return node_1(NT_TUPLE, __ntok(node), items)
+
+
+def prefix_lparen_expression(parser, op, node):
+    # unit
+    if parser.token_type == TT_RPAREN:
+        advance_expected(parser, TT_RPAREN)
+        return nodes.create_unit_node(node)
+
+    # single
+    e = expression(parser, 0)
+    if parser.token_type == TT_RPAREN:
+        advance_expected(parser, TT_RPAREN)
+        return e
+
+    # tuple
+    if parser.token_type == TT_COMMA:
+        items = [e]
+        advance_expected(parser, TT_COMMA)
+        items = _parse_comma_separated(parser, TT_RPAREN, initial=items)
+        return node_1(NT_TUPLE, __ntok(node), items)
+
+    parse_error(parser, u"Invalid syntax inside parenthesis. Expect () (<exp>) or (<exp> , ...<exp>)", parser.node)
 
 
 def prefix_lsquare(parser, op, node):
@@ -538,18 +564,23 @@ def prefix_throw(parser, op, node):
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
     curnode = parser.node
-    if parser.token_type == TT_LPAREN:
-        advance(parser)
-        els = _parse_comma_separated(parser.fun_pattern_parser, TT_RPAREN)
-    else:
-        els = _parse_comma_separated_to_one_of(parser.fun_pattern_parser, arg_terminator, advance_terminator=False)
+    e = expression(parser.fun_pattern_parser, 0)
 
-    pattern = nodes.create_tuple_node_from_list(curnode, els)
+    if parser.token_type == TT_COMMA:
+        els = [e]
+        advance_expected(parser, TT_COMMA)
+        els = _parse_comma_separated_to_one_of(parser.fun_pattern_parser, arg_terminator, initial=els,
+                                               advance_terminator=False)
+        pattern = nodes.create_tuple_node_from_list(curnode, els)
+    else:
+        pattern = ensure_tuple(e)
 
     if parser.token_type == TT_WHEN:
         advance(parser)
         guard = expression(parser.guard_parser, 0, guard_terminator)
         pattern = node_2(NT_WHEN, __ntok(guard), pattern, guard)
+    else:
+        check_token_types(parser, arg_terminator)
 
     return pattern
 
@@ -907,6 +938,7 @@ def _parser_trait_header(parser, node):
     if parser.token_type == TT_OF:
         advance(parser)
         # FIXME
+
         if parser.token_type == TT_LPAREN:
             advance(parser)
             constraints = _parse_comma_separated(parser.name_list_parser, TT_RPAREN, NAME_NODES)

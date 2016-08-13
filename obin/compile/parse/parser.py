@@ -260,7 +260,7 @@ class PatternParser(BaseParser):
             self.map_key_parser
         ])
 
-        prefix(self, TT_LPAREN, prefix_lparen_tuple)
+        prefix(self, TT_LPAREN, prefix_lparen_expression)
         prefix(self, TT_LSQUARE, prefix_lsquare)
         prefix(self, TT_LCURLY, prefix_lcurly_pattern)
         prefix(self, TT_SHARP, prefix_sharp)
@@ -295,7 +295,7 @@ class LetParser(PatternParser):
 class FunPatternParser(PatternParser):
     def __init__(self):
         PatternParser.__init__(self)
-        prefix(self, TT_LPAREN, prefix_lparen_tuple)
+        prefix(self, TT_LPAREN, prefix_lparen_expression)
 
 
 class ModuleParser(BaseParser):
