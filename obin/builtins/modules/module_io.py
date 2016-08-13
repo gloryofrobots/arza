@@ -6,9 +6,9 @@ from obin.runtime.routine.routine import complete_native_routine
 def setup(process, stdlib):
     name = space.newsymbol(process, u'obin:lang:_io')
     _module = space.newemptyenv(name)
-    api.put_native_function(process, _module, u'stdin', _stdin, 1)
-    api.put_native_function(process, _module, u'stdout', _stdout, 1)
-    api.put_native_function(process, _module, u'stderr', _stderr, 1)
+    api.put_native_function(process, _module, u'stdin', _stdin, 0)
+    api.put_native_function(process, _module, u'stdout', _stdout, 0)
+    api.put_native_function(process, _module, u'stderr', _stderr, 0)
     api.put_native_function(process, _module, u'write', _write, 2)
     _module.export_all()
     process.modules.add_module(name, _module)
@@ -35,4 +35,4 @@ def _write(process, routine):
     io = routine.get_arg(1)
     error.affirm_type(io, space.isiodevice)
     io.write(val)
-    return io
+    return space.newunit()

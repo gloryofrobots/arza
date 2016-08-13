@@ -249,9 +249,6 @@ class Process(object):
         fiber = self.fiber
         routine = fiber.routine
         assert routine
-        if not routine.is_inprocess():
-
-            print 1
         assert routine.is_inprocess()
         routine.execute(self)
         if self.is_terminated():

@@ -4,8 +4,10 @@ import seq
 
 fun _write_list_items(args, func, file) =
     let fun _walk(x) =
-            file |> partial(write, func(x))
-                 |> partial(write, " ")
+            (
+                write(func(x), file)
+                write(" ", file)
+            )
 
     in seq:foreach(_walk, to_seq(args))
 
