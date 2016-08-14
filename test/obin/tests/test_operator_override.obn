@@ -1,58 +1,13 @@
 import affirm
 
-infixl * / 60
-infixl - + 60
+infixl (*, /, 60)
+infixl (-, +, 60)
 
-fun sub x y -> x - y end
-fun mul x y -> x * y end
+fun sub(x, y) = x - y
+fun mul(x, y) = x * y
 
 
-//module sub_override
-//    module not_change_anything_in_parent_module
-//        @infixl(`*`, `+`, 60)
-//        @infixl(`-`, `/`, 60)
-//        def sub(x,y) ->
-//            x - y
-//        end
-//        def mul(x, y) ->
-//            x * y
-//        end
-//    end
-//
-//    @infixl(`-`, `+`, 60)
-//
-//    def sub(x,y) ->
-//        x - y
-//    end
-//
-//    def mul(x, y) ->
-//        x * y
-//    end
-//
-//    module and_mul_override
-//        @infixl(`*`, `/`, 60)
-//
-//        def sub(x,y) ->
-//            x - y
-//        end
-//        def mul(x, y) ->
-//            x / y
-//        end
-//    end
-//end
-//
-//module sub_not_override
-//    def sub(x,y) ->
-//        x - y
-//    end
-//end
-
-fun test () ->
-    affirm:is_equal (sub 1 2) 3
-    affirm:is_equal (mul 4 2) 2
-//    affirm:is_equal (sub_override.sub(1,2), 3)
-//    affirm:is_equal (sub_override.mul(4,2), 8)
-//    affirm:is_equal (sub_override.and_mul_override.sub(1,2), 3)
-//    affirm:is_equal (sub_override.and_mul_override.mul(4,2), 2)
-//
-//    affirm:is_equal(sub_not_override.sub(1,2), -1)
+fun test () =
+(
+    affirm:is_equal(sub(1, 2), 3)
+)

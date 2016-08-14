@@ -196,6 +196,9 @@ def is_wildcard_node(n):
 
 
 def tuple_node_length(n):
+    if node_type(n) == nt.NT_UNIT:
+        return 0
+
     assert node_type(n) == nt.NT_TUPLE, nt.node_type_to_s(node_type(n))
     return api.length_i(node_first(n))
 

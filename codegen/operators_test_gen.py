@@ -86,10 +86,10 @@ def format_result(test, evalstring=None):
             test_result = "False"
         else:
             test_result = str(value)
-        return "    affirm:is_equal (%s) (%s)" %  (test, test_result)
+        return "    affirm:is_equal(%s, %s)" %  (test, test_result)
     except Exception as e:
         print e
-        return "    affirm:is_throw (() => %s) ()" % test
+        return "    affirm:is_throw(() -> %s, ())" % test
 
 
 def test_binary(py_op, obin_op, data, result):

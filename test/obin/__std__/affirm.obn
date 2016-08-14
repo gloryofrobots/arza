@@ -1,5 +1,6 @@
 import tuple
 import seq
+import io
 
 fun is_equal_batch(fn, ...calls) = _batch(is_equal, fn, calls)
 
@@ -7,7 +8,10 @@ fun is_equal_batch(fn, ...calls) = _batch(is_equal, fn, calls)
 fun _batch(checker, fn, calls) =
     let calls_list = to_seq(calls)
     in seq:foreach(
-            ((c1, c2),) -> checker(apply(fn, c1), c2),
+            fun
+                | ((c1, c2),) = checker(apply(fn, c1), c2)
+                | ([c1, c2]) = checker(apply(fn, c1), c2)
+            ,
             calls_list
         )
 

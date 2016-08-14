@@ -1,12 +1,10 @@
 import tests:lib_az:abc:module_c as c
-
 export (f_ab, f_ab_2, CONST)
 
-fun f_ab num ->
-    num + (c:f_c num) end
+fun f_ab(num) = num + c:f_c(num)
 
-fun f_ab_2 num1 num2 -> num1 + num2 end
+fun f_ab_2(num1, num2) = num1 + num2
 
-CONST = 10
+let CONST = 10
 
-fun f_ab_3 () -> 0 end
+fun f_ab_3 () = 0

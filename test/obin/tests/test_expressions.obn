@@ -1,4 +1,48 @@
 import affirm
+import io
+from io import (print)
+
+
+fun test_bool() =
+(
+    affirm:is_equal(False, False)
+    affirm:is_equal(True, True)
+    affirm:is_not_equal(True, False)
+    affirm:is_not_equal(False, True)
+    affirm:is_equal(not False, True)
+    affirm:is_equal(not True, False)
+    affirm:is_true(True and True)
+    affirm:is_false(False and True)
+    affirm:is_false(False and False)
+    affirm:is_false(True and False)
+    affirm:is_true(True or False)
+    affirm:is_true(False or True)
+    affirm:is_false(False or False)
+//
+    //only True and False can be used in boolean operators
+    affirm:is_throw(x -> 1 or 0, ())
+    affirm:is_throw_expected(
+        () -> 1 or 0, (), TypeError(("Bool expected", 1))
+    )
+
+    affirm:is_throw(() -> 1 and 0, ())
+    affirm:is_throw(() -> not 0, ())
+    affirm:is_throw(() -> not {}, ())
+    affirm:is_throw(() -> not "", ())
+    affirm:is_throw(() -> not [], ())
+    affirm:is_throw(() -> not (), ())
+    affirm:is_throw(() -> not 1.2, ())
+    affirm:is_throw(() -> not #symbol, ())
+
+    let
+        x = 0
+        y = 1
+    in (
+        affirm:is_false (x `is` y)
+        affirm:is_true (x `isnot` y)
+    )
+)
+
 
 fun test_base_expressions() =
 (
@@ -429,14 +473,68 @@ fun test_ambidextra_operators () =
     )
 
 
+fun test_modify() =
+(
+    let
+        M = {
+            line = {
+                data = [1,2,3,4],
+                index = 1
+            },
+
+            id = 12
+        }
+
+        M1 = M.{
+            line = M.line.{
+                index_2 = M.line.index + 42,
+                data = [4, 3, 2, 1]
+            },
+            id = "ID M1"
+        }
+
+    in
+    (
+        affirm:is_equal(M, {line = {index = 1, data = [1, 2, 3, 4]}, id = 12})
+        affirm:is_equal(M1, {line = {index = 1, index_2 = 43, data = [4, 3, 2, 1]}, id = "ID M1"})
+    )
+
+    let
+        common = {height=187, weight=60}
+        alice = common.{age = 28, name="Alice"}
+        bob = common.{age = 29, name="Bob", height=225}
+    in
+    (
+        affirm:is_equal(common, {weight = 60, height = 187})
+        affirm:is_equal(alice, {name = "Alice", weight = 60, age = 28, height = 187})
+        affirm:is_equal(bob, {name = "Bob", weight = 60, age = 29, height = 225})
+    )
+
+    let l1 = [1,2,3,4,5].{0=102, 1=103, 4=105}
+    in affirm:is_equal(l1, [102, 103, 3, 4, 105])
+)
+
+
 fun test () =
 (
+//    print("TESTING BOOLEAN EXPRESSIONS")
+    test_bool()
+//    print("TESTING REST BASIC EXPRESSIONS")
     test_base_expressions()
+//    print("TESTING WHITESPACES IN EXPRESSIONS")
     test_whitespaces_in_expressions()
+//    print("TESTING CONDITIONS")
     test_conditions()
+//    print("TESTING CALL SYNTAX")
     test_call_syntax()
+//    print("TESTING OPERATORS AND NEWLINES")
     test_operators_and_newlines()
+//    print("TESTING ELEMENTAL FUNCTIONS")
     test_small_functions_syntax()
+//    print("TESTING LET IN")
     test_let()
+//    print("TESTING AMBIDEXTRA OPERATORS")
     test_ambidextra_operators()
+//    print("TESTING MODIFY OPERATORS")
+    test_modify()
 )

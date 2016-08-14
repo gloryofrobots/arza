@@ -2,41 +2,36 @@
 fun foldl
     | f, acc, [] = acc
     | f, acc, hd::tl = foldl(f, f(hd, acc), tl)
-----------------------------------------
 
 
 fun foldr
     | f, acc, [] = acc
     | f, acc, hd::tl = f(hd, foldr(f, acc, tl))
---------------------------------------------------
 
 
 fun reduce(f, sq)
     | f, x::xs = foldl(f, x, xs)
     | f, [] = throw EmptySeqError(sq)
---------------------------------------------------
 
 
 fun scanl(func, accumulator, coll)
     | f, acc, [] = acc :: empty(coll)
     | f, acc, hd::tl = acc :: scanl(f, f(hd, acc), tl)
---------------------------------------------------
 
 
 //LOOPS ////////////////////////
 fun map(f, coll)
     | f, [] = empty(coll)
     | f, hd::tl = f(hd) :: map(f, tl)
-----------------------------------------
 
 
 fun foreach(f, coll)
     | f, [] = empty(coll)
-    | f, hd::tl = (
+    | f, hd::tl =
+    (
       f(hd)
       foreach(f, tl)
     )
-----------------------------------------
 
 
 fun traverse(coll) = foreach(identity, coll)
@@ -45,7 +40,6 @@ fun traverse(coll) = foreach(identity, coll)
 fun intersperse(val, coll)
     | val, [] = empty(coll)
     | val, hd::tl  = hd :: val :: intersperse(val, tl)
---------------------------------------------------
 
 
 fun reverse(coll) =
@@ -68,20 +62,18 @@ fun nth_tail
     | 0, l = l
     | 1, [_, ...t] = t
     | n, [_, ...t] when n >= 0 = nth_tail(n - 1, t)
---------------------------------------------------
 
 
 fun nth
     | 0, l = l
     | 1, [h, ...t] = h
     | n, [h, ...t] when n >= 0 = nth(n - 1, t)
---------------------------------------------------
+
 
 //QUERIES///////////////////////////////////////////////////
 
 fun length(l) =
     foldl((_, acc) -> acc + 1, 0, l)
---------------------------------------------------
 
 
 fun last (x::xs) =
@@ -90,14 +82,12 @@ fun last (x::xs) =
             | x, [] = x
 
     in _last(x, xs)
---------------------------------------------------
 
 
 fun prefix_of
     | [hd, ...pre_tail], [hd, ...tail] = prefix_of(pre_tail, tail)
     | [], s = True
     | [_, ..._], s = False
---------------------------------------------------
 
 
 fun suffix_of(suf, s) =

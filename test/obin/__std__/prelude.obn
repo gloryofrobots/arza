@@ -59,6 +59,7 @@ type (
     TypeError(args)
     NotImplementedError(args)
     ZeroDivisionError(args)
+    MathDomainError(args)
     ReferenceError(args)
     ConstructorError(args)
     KeyError(args)
@@ -81,6 +82,7 @@ type (
     ImplementationError(args)
     ConstraintError(args)
     EmptySeqError(args)
+    OverflowError(args)
     //Signal used to interrupt recursive processes
     Interrupt(result)
 )

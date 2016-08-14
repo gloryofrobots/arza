@@ -1,0 +1,73 @@
+fun map(f, coll)
+    | f, [] = empty(coll)
+    | f, hd::tl = f(hd) :: map(f, tl)
+
+fun map
+    | f, [] = empty(coll)
+    | f, hd::tl = f(hd) :: map(f, tl)
+
+fun map
+    case (f, []) = empty(coll)
+    case (f, hd::tl) = f(hd) :: map(f, tl)
+
+fun map
+    | (f, []) = empty(coll)
+    | (f, hd::tl) = f(hd) :: map(f, tl)
+
+fun map (f, []) = empty(coll)
+    map (f, hd::tl) = f(hd) :: map(f, tl)
+
+map f [] = []
+map f hd::tl = f hd :: map f tl
+
+
+let map f coll =
+    ((fun | f [] = empty coll
+          | f hd::tl = f hd  :: map f tl) f coll)
+
+
+let filter predicate coll =
+    let _wrap yield =
+        let
+            _filter p [] = empty coll
+            _filter p x::xs =
+            {
+                if p x then
+                {
+                    yield x
+                    (io.print
+                        match x
+                            | 0 = #null
+                            | 1 = #one
+                            | (a, b, c) = a + b + c)
+                    _filter p xs
+                }
+                else
+                {
+                    io.print x
+                    _filter p xs
+                }
+            }
+        in _filter predicate coll
+    in coroutine _wrap
+
+fun filter(predicate, coll) =
+    let _wrap(yield) =
+        let _filter
+            | p, [] = empty(coll)
+            | p, x::xs =
+                if p x then (
+                    yield(x)
+                    io.print(
+                        match x
+                            | 0 = #null
+                            | 1 = #one
+                            | (a, b, c) = a + b + c
+                    )
+                    _filter(p, xs)
+                ) else (
+                    io.print(x)
+                    _filter(p, xs)
+                )
+        in _filter(predicate, coll)
+    in coroutine(_wrap)

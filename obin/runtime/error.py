@@ -121,6 +121,8 @@ class Errors:
     COMPILE_ERROR = u"CompileError"
     PARSE_ERROR = u"ParseError"
     ZERO_DIVISION_ERROR = u"ZeroDivisionError"
+    OVERFLOW_ERROR = u"OverflowError"
+    MATH_DOMAIN_ERROR = u"MathDomainError"
     UNPACK_SEQUENCE_ERROR = u"UnpackSequenceError"
     FIBER_FLOW_ERROR = u"FiberFlowError"
     NOT_IMPLEMENTED_ERROR = u"NotImplementedError"

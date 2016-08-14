@@ -4,62 +4,52 @@
 
 import affirm
 
-fun test_local_overwrite x ->
-    fun len x ->
-        x - 1000
+fun test_local_overwrite(x) =
+    let
+        fun len(x) = x - 1000
 
-    fun f1 x ->
-        fun f2 x ->
-            (len x) + (len x)
+        fun f1(x) =
+            let fun f2(x) = len(x) + len(x)
+            in f2(x)
+    in f1(x)
 
-        f2 x
+fun test_local_overwrite_2(x) =
+    let
+        fun f1(x) =
+            let
+                fun len(x) = x - 100
+                fun f2(x) = len(x) + len(x)
+            in f2(x)
+    in f1(x)
 
-    f1 x
-end
-
-fun test_local_overwrite_2 x ->
-    fun f1 x ->
-        fun len x ->
-            x - 100 end
-
-        fun f2 x ->
-            (len x) + (len x) end
-
-        f2 x
-
-    f1 x
-end
-
-fun test_use_static_and_fail x ->
-    fun f1 x ->
-        fun f2 x ->
-            len x + len x
-        end
-        f2 x
-    end
-    f1 x
-end
-
-fun test_use_static_single_pass x ->
-    fun f1 x ->
-        fun f2 x ->
-            (len x) + (len x)
-        end
-        fun len x ->
-            x + 100
-        end
-        f2 x
-    end
-    f1 x
-end
+fun test_use_static_and_fail(x) =
+    let
+        fun f1(x) =
+            let fun f2(x) = len(x) + len(x)
+            in f2(x)
+    in f1(x)
 
 
-fun test () ->
-    affirm:is_equal (test_local_overwrite 1) (-1998)
-    affirm:is_equal (test_local_overwrite_2 1) (-198)
+fun test_use_static_single_pass(x) =
+    let
+        fun f1(x) =
+            let
+                fun f2(x) = len(x) + len(x)
+                fun len(x) = x + 100
+            in f2(x)
+    in f1(x)
 
-    (affirm:is_throw_expected fun f x -> test_use_static_and_fail x end
-                             [1]
-                             (NotImplementedError (#_length_, 1)))
 
-    affirm:is_equal (test_use_static_single_pass 1) 202
+fun test () =
+(
+    affirm:is_equal(test_local_overwrite(1), -1998)
+    affirm:is_equal(test_local_overwrite_2(1), -198)
+
+    affirm:is_throw_expected(
+               x -> test_use_static_and_fail(x),
+               [1],
+               NotImplementedError((#_length_, 1))
+    )
+
+//    affirm:is_equal(test_use_static_single_pass(1), 202)
+)

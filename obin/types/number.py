@@ -23,6 +23,7 @@ w_POSITIVE_INFINITY = space.newnumber(rfloat.INFINITY)
 # 15.7.3.6
 w_NEGATIVE_INFINITY = space.newnumber(-rfloat.INFINITY)
 
+
 def add_i_i(l, r):
     ileft = api.to_i(l)
     iright = api.to_i(r)
@@ -247,8 +248,18 @@ def unwind(w_x, w_y):
 
 def power(w_x, w_y):
     x, y = unwind(w_x, w_y)
-    r = x ** y
-    return space.newnumber(r)
+    try:
+        r = x ** y
+        return space.newnumber(r)
+    except ZeroDivisionError as e:
+        return error.throw_3(error.Errors.ZERO_DIVISION_ERROR,
+                             space.newstring(u"0.0 cannot be raised to a negative power"), w_x, w_y)
+    except OverflowError as e:
+        return error.throw_3(error.Errors.OVERFLOW_ERROR,
+                             space.newstring(u"Power overflow"), w_x, w_y)
+    except Exception as e:
+        return error.throw_3(error.Errors.MATH_DOMAIN_ERROR,
+                             space.newstring_s(str(e)), w_x, w_y)
 
 
 def bitand(op1_w, op2_w):
@@ -306,5 +317,3 @@ def lsh(lval, rval):
     # res = lnum << shift_count
 
     return space.newnumber(res)
-
-

@@ -1,2 +1,1 @@
-
-fun fourty_two () -> 42 end
+fun fourty_two () = 42
