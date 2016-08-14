@@ -29,6 +29,7 @@ NODE_TYPE_MAPPING = {
     TT_OF: NT_OF,
     TT_AS: NT_AS,
     TT_AND: NT_AND,
+    TT_NOT: NT_NOT,
     TT_OR: NT_OR,
     TT_DOUBLE_DOT: NT_RANGE,
     TT_SHARP: NT_SYMBOL,
@@ -265,7 +266,7 @@ def prefix_sharp(parser, op, node):
 
 
 def prefix_not(parser, op, node):
-    exp = expression(parser, 0)
+    exp = expression(parser, 90)
     return node_1(NT_NOT, __ntok(node), exp)
 
 
@@ -434,7 +435,7 @@ def _prefix_lcurly(parser, key_parser):
 
 def infix_map_pattern_of(parser, op, node, left):
     typename = expression(parser, 0, [TT_ASSIGN, TT_COMMA])
-    return nodes.create_of_node(node, node, typename)
+    return nodes.create_of_node(node, left, typename)
 
 
 def infix_map_pattern_at(parser, op, node, left):

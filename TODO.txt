@@ -1,3 +1,10 @@
+// SERIOUS ERROR. 1 is on the stack
+io:print("====", "---",
+    match 1
+        | x when (not (A `is` True)) and greater_then_ten(9) = #one
+        | x when greater_then_ten(11) = #two
+        )
+
 FIX IT
 fun f4 ((),) = ((()))
 

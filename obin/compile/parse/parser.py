@@ -176,8 +176,9 @@ class ExpressionParser(BaseParser):
         prefix(self, TT_LSQUARE, prefix_lsquare)
         prefix(self, TT_LCURLY, prefix_lcurly)
         prefix(self, TT_SHARP, prefix_sharp)
+        # TODO DELETE IT
         prefix(self, TT_ELLIPSIS, prefix_nud)
-        prefix(self, TT_NOT, prefix_not)
+        prefix(self, TT_NOT, prefix_nud)
         prefix(self, TT_IF, prefix_if)
 
         prefix(self, TT_FUN, prefix_nameless_fun)
@@ -368,17 +369,23 @@ def guard_parser_init(parser):
     prefix(parser, TT_LCURLY, prefix_lcurly)
     prefix(parser, TT_SHARP, prefix_sharp)
     prefix(parser, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
+    prefix(parser, TT_NOT, prefix_nud)
 
     infix(parser, TT_OR, 25, led_infix)
     infix(parser, TT_AND, 30, led_infix)
     infix(parser, TT_BACKTICK_NAME, 35, infix_backtick_name)
     infix(parser, TT_DOT, 100, infix_dot)
     infix(parser, TT_COLON, 100, infix_name_pair)
+    infix(parser, TT_LPAREN, 100, infix_lparen)
+    infix(parser, TT_INFIX_DOT_LCURLY, 100, infix_lcurly)
+    infix(parser, TT_INFIX_DOT_LSQUARE, 100, infix_lsquare)
     return parser
 
 
 def map_key_pattern_parser_init(parser):
     parser = init_parser_literals(parser)
+    # prefix(parser, TT_NAME, prefix_name_as_symbol)
+    prefix(parser, TT_SHARP, prefix_sharp)
     symbol(parser, TT_COMMA, symbol_comma_nud)
     symbol(parser, TT_ASSIGN)
 
