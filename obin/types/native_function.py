@@ -34,6 +34,11 @@ class W_NativeFunction(W_Callable):
         return routine
 
     def _call_(self, process, args):
+        if self.arity != -1:
+            length = api.length_i(args)
+            if length < self.arity:
+                return partial.newfunction_partial(self, args)
+
         process.call_object(self, args)
 
     def _equal_(self, other):

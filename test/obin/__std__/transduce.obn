@@ -122,7 +122,7 @@ fun filter predicate xf -> FilterTransformer predicate xf
 
 // Similar to filter except the predicate is used to
 // eliminate values.
-fun remove predicate xf -> filter (&not << &predicate) xf
+fun remove predicate xf -> filter (not << predicate) xf
 
 type CompletingTransformer (cf, xf)
 extend CompletingTransformer

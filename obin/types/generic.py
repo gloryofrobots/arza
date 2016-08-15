@@ -1,6 +1,6 @@
 from obin.types.root import W_Hashable
 from obin.runtime import error
-from obin.types import api, space
+from obin.types import api, space, partial
 from obin.misc import platform
 from obin.builtins.hotpath import HotPath
 
@@ -32,7 +32,10 @@ class W_Generic(W_Hashable):
 
     def _call_(self, process, args):
         arity = api.length_i(args)
-        if arity != self.arity:
+        if arity < self.arity:
+            return partial.newfunction_partial(self, args)
+
+        elif arity > self.arity:
             return error.throw_3(error.Errors.INVALID_ARG_COUNT_ERROR, space.newstring(u"Invalid count of arguments "),
                                  space.newint(arity), space.newint(self.arity))
 

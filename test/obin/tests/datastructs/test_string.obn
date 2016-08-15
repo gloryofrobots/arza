@@ -18,19 +18,19 @@ fun test () ->
     affirm:is_equal (string:split "xy-1" "Axy-1Fxy-1Exy-1Dxy-1CBAAAA") ["A", "F", "E", "D", "CBAAAA"]
     affirm:is_equal (string:split "x" "x1x2x3x4x5") ["", "1", "2", "3", "4", "5"]
 
-    &affirm:is_equal <| string:join ["x", "y", "1", "Z", "V"] "" <| "xy1ZV"
-    &affirm:is_equal <| string:join ["x", "y", "1", "Z", "V"] "<><>" <| "x<><>y<><>1<><>Z<><>V"
+    affirm:is_equal <| string:join ["x", "y", "1", "Z", "V"] "" <| "xy1ZV"
+    affirm:is_equal <| string:join ["x", "y", "1", "Z", "V"] "<><>" <| "x<><>y<><>1<><>Z<><>V"
 
-    &affirm:is_equal <| string:join_cast [1,2, ["1", 2,3,4], (1,2,"ABC")] "---"
+    affirm:is_equal <| string:join_cast [1,2, ["1", 2,3,4], (1,2,"ABC")] "---"
                     <| """1---2---["1", 2, 3, 4]---(1, 2, "ABC")"""
 
-    &affirm:is_elem <| str {x=1, y=2} <| ["{x=1, y=2}", "{y=2, x=1}"]
-    &affirm:is_equal <| str {x=1} <| "{x=1}"
-    &affirm:is_equal <| str {} <| "{}"
+    affirm:is_elem <| str {x=1, y=2} <| ["{x=1, y=2}", "{y=2, x=1}"]
+    affirm:is_equal <| str {x=1} <| "{x=1}"
+    affirm:is_equal <| str {} <| "{}"
 
-    &affirm:is_equal <| str (1,2,3,4) <| "(1, 2, 3, 4)"
-    &affirm:is_equal <| str (1,) <| "(1,)"
-    &affirm:is_equal <| str () <| "()"
-    &affirm:is_equal <| str [1,2,3,4] <| "[1, 2, 3, 4]"
-    &affirm:is_equal <| str [1] <| "[1]"
-    &affirm:is_equal <| str [] <| "[]"
+    affirm:is_equal <| str (1,2,3,4) <| "(1, 2, 3, 4)"
+    affirm:is_equal <| str (1,) <| "(1,)"
+    affirm:is_equal <| str () <| "()"
+    affirm:is_equal <| str [1,2,3,4] <| "[1, 2, 3, 4]"
+    affirm:is_equal <| str [1] <| "[1]"
+    affirm:is_equal <| str [] <| "[]"

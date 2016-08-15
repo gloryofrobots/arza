@@ -1,7 +1,6 @@
 prefix - negate
 // prefix ~ tilda
 //prefix ! !
-//prefix & &
 //infixr := := 10
 //infixl <| <| 15
 //infixl |> |> 20

@@ -5,13 +5,13 @@ import lazy
 
 fun test_zip() ->
     l1 = [1,2,3,4,5,6,7,8,9,10]
-    l2 = seq:map (&`*` 4) l1
+    l2 = seq:map (`*` 4) l1
     (affirm:is_equal (seq:zip l1 l2)
         [(1, 4), (2, 8), (3, 12), (4, 16), (5, 20), (6, 24), (7, 28), (8, 32), (9, 36), (10, 40)])
 
     l4 = seq:take 5 l2
     affirm:is_equal (seq:zip l1 l4) [(1, 4), (2, 8), (3, 12), (4, 16), (5, 20)]
-    l6 = seq:map (&`-` 42) l1
+    l6 = seq:map (`-` 42) l1
     (affirm:is_equal (seq:zip3 l1 l2 l6)
             [(1, 4, 41), (2, 8, 40), (3, 12, 39), (4, 16, 38), (5, 20, 37),
              (6, 24, 36), (7, 28, 35), (8, 32, 34), (9, 36, 33), (10, 40, 32)])
@@ -99,10 +99,10 @@ fun test_equal() ->
     affirm:is_false (seq:equal l1 (1:::2:::3:::4:::5:::lazy:LazyNil))
 
 fun test_sort() ->
-    affirm:is_equal (&seq:split <| range_by (-100) 0 (10)) ([-100, -80, -60, -40, -20], [-90, -70, -50, -30, -10])
+    affirm:is_equal (seq:split <| range_by (-100) 0 (10)) ([-100, -80, -60, -40, -20], [-90, -70, -50, -30, -10])
     affirm:is_equal (seq:split [1,2,3,4,5,6,7,8,9]) ([1, 3, 5, 7, 9], [2, 4, 6, 8])
 
-    &affirm:is_equal <| seq:sort_asc ([1, 4, 0, 0, 1, -10, -10, -25, -456, 2, 489, 128])
+    affirm:is_equal <| seq:sort_asc ([1, 4, 0, 0, 1, -10, -10, -25, -456, 2, 489, 128])
                      <| [-456, -25, -10, -10, 0, 0, 1, 1, 2, 4, 128, 489]
 
 
@@ -119,7 +119,7 @@ fun test_partial() ->
         (seq:foldl fun _folder item acc
                             | (x, []) acc -> (x, 0) :: acc
                             | (x, data) acc ->
-                                (x, seq:reduce &`+` data) :: acc
+                                (x, seq:reduce `+` data) :: acc
                    end
                    []
                    s)

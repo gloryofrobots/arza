@@ -23,20 +23,20 @@ fun test_sequences () ->
     affirm:is_equal (obin:lang:is_seq lazy:LazyNil) True
 
     sqrs_odd_inc = sqrs
-                        |> partial lazy:filter (x => odd x)
-                        |> partial lazy:map (x => inc x)
-                        |> partial lazy:map (x =>  x * 2)
+                        |> lazy:filter (x => odd x)
+                        |> lazy:map (x => inc x)
+                        |> lazy:map (x =>  x * 2)
 
     affirm:is_equal (str sqrs_odd_inc) "[4, ...]"
     affirm:is_equal (str lazy:LazyNil) "[]"
     sqrs_odd_inc_10 =  lazy:take 10 sqrs_odd_inc
     sqrs_odd_inc_10_eager = (seq:take 10 sqrs_odd_inc)
     sqrs_odd_inc_10_eager2 = sqrs
-                            |> partial seq:take 20
-                            |> partial seq:filter (x => odd x)
-                            |> partial lazy:map (x => inc x)
-                            |> partial seq:map (x =>  x * 2) 
-                            |> partial seq:take 10
+                            |> seq:take 20
+                            |> seq:filter (x => odd x)
+                            |> lazy:map (x => inc x)
+                            |> seq:map (x =>  x * 2)
+                            |> seq:take 10
 
     affirm:is_equal (str sqrs_odd_inc_10) "[4, ...]"
     lazy:doall sqrs_odd_inc_10

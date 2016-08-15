@@ -47,7 +47,7 @@ There are no REPL for obin at the moment.
 - [Data structures](#data-structures)
 - [Immutability](#immutability)
 - [Functions](#functions)
-- [Partial application](#partial-application)
+- [Currying](#currying)
 - [Operators](#operators)
 - [Expressions](#expressions)
   - [if-elif-else](#if-elif-else)
@@ -84,7 +84,7 @@ io:print if 1 == 2 then
 
 io:print if 1 == 2 then
             False
-     elif 2 == 3 then False // Compile error: elif and else must align with if 
+     elif 2 == 3 then False // Compile error: elif and else must align with if
          else
             True
 
@@ -387,7 +387,7 @@ fun reverse coll ->
     _reverse coll (empty coll)
 
 //3) Recursive two level function
-// This kind of function allows to check argument types or other conditions only at first step of recursion 
+// This kind of function allows to check argument types or other conditions only at first step of recursion
 
 fun <function_name> <arg>+
     | <pattern>+ [when guard] ->
@@ -443,55 +443,44 @@ seq:foldl (fun _ x y ->
 
 ```
 
-### Partial application
-
+### Currying
+Obin functions are curried by default
 ```
-// from prelude.obn
-
-fun partial func ...args ->
-    // primitive function
-    obin:lang:defpartial_with_arguments func args
-
-// prefix operator for partials
-fun & func ->
-    // primitive function
-    obin:lang:defpartial func
-
 // Functions inspired by F#
 fun |> x f -> f x
 fun <| f x -> f x
-fun >> f g -> (x => g (f x))
-fun << f g -> (x => f (g x))
+fun >> f g x -> g (f x)
+fun << f g x ->  f (g x)
+fun twice f -> f >> f
 fun flip f x y -> f y x
 
 fun add x y -> x + y
-add1 = &add 1
-
+add1 = add 1
 (add1 2) = 3
 
 // used with operators
-((&`-` 1) 2) (-1)
+((`-` 1) 2) (-1)
 // flipped operator
-((partial flip `-` 1)  2) =  1
+((flip `-` 1)  2) =  1
 
 l = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-(l |> (&seq:filter) even
-   |> (&seq:map) (&`+` 1)
-   |> partial seq:map (partial flip `-` 2)) = [-1, 1, 3, 5, 7]
+(l |> (seq:filter) even
+   |> (seq:map) (`+` 1)
+   |> seq:map (flip `-` 2)) = [-1, 1, 3, 5, 7]
 
 
 square = (x => x * x)
-triple = &`*` 3
-(l  |> partial seq:filter even
-    |> partial seq:map (partial `+` 1)
-    |> partial seq:map (partial flip `-` 2)
-    |> partial seq:map (triple >> square))  = [9, 9, 81, 225, 441]
+triple = `*` 3
+(l  |> seq:filter even
+    |> seq:map (`+` 1)
+    |> seq:map (flip `-` 2)
+    |> seq:map (triple >> square))  = [9, 9, 81, 225, 441]
 
-((partial seq:filter even
-    >> partial seq:map (partial `+` 1)
-    >> partial seq:map (partial flip `-` 2)
-    >> partial seq:map (triple >> square)) l) =  [9, 9, 81, 225, 441]
+((seq:filter even
+    >> seq:map (`+` 1)
+    >> seq:map (flip `-` 2)
+    >> seq:map (triple >> square)) l) =  [9, 9, 81, 225, 441]
 
 // TODO implement macroses and make |> >> and other operators smart enough to create partials automatically
 ```
@@ -518,7 +507,7 @@ Precedence    Operator
 // Most operators are just functions from prelude (except from . .{ .( .[ : :: ::: and or as of @ requiring special treatment)
 // prefix operator (operator, function_name)
 prefix - negate
-prefix & &
+prefix ! !
 
 // right associative (operator, function name, precedence)
 infixr := := 10
@@ -536,7 +525,7 @@ infixl / / 50
 // to use function as infix operator put it between `` too
 // 4 `mod` 2 = 0
 
-// There are special rules for resolving ambiguity when both prefix and infix precedence defined (subtraction and negate for -) 
+// There are special rules for resolving ambiguity when both prefix and infix precedence defined (subtraction and negate for -)
 
 (2-1) =  1 // infix because no space between - and left operand
 (2 - 1) = 1 // infix because space between both operands
@@ -580,7 +569,7 @@ fun <funcname> [arguments]
     | <pattern1> [when guard1] -> <body1>
     ...
 ```
-Function arguments are sequentially matched against patterns. If a match succeeds and the optional guard is true, 
+Function arguments are sequentially matched against patterns. If a match succeeds and the optional guard is true,
 the corresponding body is evaluated.
 If there is no matching pattern with a true guard sequence, runtime error occurs.
 
@@ -889,7 +878,7 @@ interface
     ...
 
 
-// Interface combines one or more generic functions and can be used for type check in pattern matching 
+// Interface combines one or more generic functions and can be used for type check in pattern matching
 // generic functions must be declared at this point
 
 interface
@@ -956,7 +945,7 @@ mylist `kindof` Sub = False
 
 #### Traits
 Trait is unit for code reuse in obin.
-They are simple maps {generic = implementation} and can be used in extend statement 
+They are simple maps {generic = implementation} and can be used in extend statement
 to share common behaviour between different types
 
 ```
