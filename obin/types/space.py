@@ -479,14 +479,6 @@ def newdatatype(process, name, fields):
     return newtype(process, name, fields)
 
 
-def newunion(process, name, types):
-    from obin.types.datatype import newunion
-    assert issymbol(name)
-    assert islist(types)
-
-    return newunion(process, name, types)
-
-
 def newnativedatatype(name):
     from obin.types.datatype import W_DataType
     assert issymbol(name)
@@ -497,12 +489,6 @@ def newnativedatatype(name):
 def isdatatype(w):
     from obin.types.datatype import W_DataType
     return isinstance(w, W_DataType)
-
-
-def isunion(w):
-    from obin.types.datatype import W_Union
-    return isinstance(w, W_Union)
-
 
 def isextendable(w):
     from obin.types.datatype import W_Extendable

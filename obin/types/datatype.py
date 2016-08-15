@@ -12,10 +12,6 @@ class W_Record(W_Hashable):
 
     def _dispatch_(self, process, generic):
         impl = self.type.get_method(generic)
-
-        if space.isvoid(impl) and self.type.union is not None:
-            impl = self.type.union.get_method(generic)
-
         return impl
 
     def _to_string_(self):
@@ -183,14 +179,10 @@ class W_DataType(W_Extendable):
             self.is_singleton = False
 
         self.descriptors = descriptors(self.fields)
-        self.union = None
 
     def _dispatch_(self, process, method):
         impl = space.newvoid()
-        if self.union is not None:
-            impl = self.union.get_method(method)
-
-        if space.isvoid(impl) and self.is_singleton:
+        if self.is_singleton:
             impl = self.get_method(method)
 
         if space.isvoid(impl):
@@ -227,71 +219,6 @@ class W_DataType(W_Extendable):
         return other is self
 
 
-class W_Union(W_Extendable):
-    def __init__(self, name, types):
-        W_Extendable.__init__(self)
-        self.name = name
-        self.types_list = types
-        self.types_map = space.newpmap([])
-        for _t in self.types_list:
-            self.types_map = api.put(self.types_map, _t.name, _t)
-
-        self.length = api.length_i(self.types_list)
-
-    def _at_(self, key):
-        return api.at(self.types_map, key)
-
-    def _length_(self):
-        return self.length
-
-    def has_type(self, _type):
-        return plist.contains(self.types_list, _type)
-
-    def _dispatch_(self, process, generic):
-        # print "UNION DISPATCH", method
-        impl = self.get_method(generic)
-        # print "UNION IMPL1", impl
-        if space.isvoid(impl):
-            _type = self._type_(process)
-            impl = _type.get_method(generic)
-            # print "UNION IMPL2", impl
-        return impl
-
-    def _type_(self, process):
-        return process.std.types.Union
-
-    def _compute_hash_(self):
-        return int((1 - platform.random()) * 10000000)
-
-    def _to_string_(self):
-        return "<type %s>" % api.to_s(self.name)
-
-    def _to_repr_(self):
-        return self._to_string_()
-
-    def _equal_(self, other):
-        return other is self
-
-    def to_list(self):
-        return self.types_list
-
-
-def union_to_list(union):
-    error.affirm_type(union, space.isunion)
-    return union.to_list()
-
-
-def get_union(process, w):
-    if not space.isdatatype(w):
-        _t = api.get_type(process, w)
-    else:
-        _t = w
-
-    if _t.union is not None:
-        return _t.union
-    return error.throw_2(error.Errors.TYPE_ERROR, space.newstring(u"Type is not part of any union"), _t)
-
-
 def record_index_of(record, obj):
     error.affirm_type(record, space.isrecord)
     return record.index_of(obj)
@@ -319,24 +246,6 @@ def newtype(process, name, fields):
 
     derive_default(process, _datatype)
     return _datatype
-
-
-def newunion(process, name, types):
-    error.affirm_type(name, space.issymbol)
-    error.affirm_type(types, space.islist)
-    for _t in types:
-        if _t.union is not None:
-            return error.throw_3(error.Errors.TYPE_ERROR, _t, _t.union,
-                                 space.newstring(u"Type already exists in union"))
-    _union = W_Union(name, types)
-    for _t in types:
-        _t.union = _union
-
-    if process.std.initialized is False:
-        return _union
-    derive_default(process, _union)
-    return _union
-
 
 def _find_constraint_generic(generic, pair):
     return api.equal_b(pair[0], generic)
@@ -395,9 +304,5 @@ def extend(_type, mixins, methods):
     error.affirm_type(_type, space.isextendable)
 
     methods = _get_extension_methods(_type, mixins, methods)
-    if space.isunion(_type):
-        for _t in _type.types_list:
-            _t.add_methods(methods)
-
     _type.add_methods(methods)
     return _type

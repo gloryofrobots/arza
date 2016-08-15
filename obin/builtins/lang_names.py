@@ -19,7 +19,6 @@ GENERIC = PREFIX + "defgeneric"
 INTERFACE = PREFIX + "definterface"
 TRAIT = PREFIX + "deftrait"
 EXTEND = PREFIX + "defextend"
-UNION = PREFIX + "defunion"
 
 PARTIAL = PREFIX + "defpartial"
 

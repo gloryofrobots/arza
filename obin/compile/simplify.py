@@ -51,16 +51,6 @@ def simplify_delay(compiler, code, node):
     return nodes.create_call_node_s(node, lang_names.DELAY, [fun_1_arg])
 
 
-def simplify_union(compiler, code, node):
-    name_node = node_first(node)
-    types = node_second(node)
-    name_1_arg = nodes.create_symbol_node(name_node, name_node)
-    types_2_arg = nodes.create_list_node_from_list(node, types)
-
-    call_node = nodes.create_call_node_s(node, lang_names.UNION, [name_1_arg, types_2_arg])
-    return nodes.create_assign_node(node, name_node, call_node)
-
-
 def simplify_extend(compiler, code, node):
     typename_1_arg = node_first(node)
     mixins = node_second(node)

@@ -39,7 +39,6 @@ TYPES = [
     mktype("Trait", [A]),
     mktype("Interface", [A]),
     mktype("Datatype", [A]),
-    mktype("Union", [A]),
     mktype("LazyVal", [A]),
     mktype("Env", [A]),
 ]

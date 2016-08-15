@@ -252,10 +252,6 @@ NUMBER = module("obin:lang:_number", [
              affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
 ])
 DATATYPE = module("obin:lang:_datatype", [
-    func(func_name="union_to_list", func_native_name="union_to_list", func_arity=1,
-             source_module="datatype", source_function="union_to_list"),
-    func(func_name="get_union", func_native_name="get_union", func_arity=1,
-             source_module="datatype", source_function="get_union", process=True,),
     func(func_name="record_keys", func_native_name="record_keys", func_arity=1,
              source_module="datatype", source_function="record_keys"),
     func(func_name="record_values", func_native_name="record_values", func_arity=1,

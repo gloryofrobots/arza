@@ -19,7 +19,6 @@ class Derived:
         self.TSized = self.find_trait(process, derive_module, u"TSized")
         self.TIndexed = self.find_trait(process, derive_module, u"TIndexed")
         self.TDict = self.find_trait(process, derive_module, u"TDict")
-        self.TUnionRange = self.find_trait(process, derive_module, u"TUnionRange")
 
         self.derived_for_singleton = [
             self.TEq, self.TStr, self.TRepr
@@ -30,22 +29,8 @@ class Derived:
             self.TCollection, self.TSized, self.TIndexed, self.TDict
         ]
 
-        self.derived_for_union = [self.TUnionRange]
-
         self.postderive(process, prelude)
         # TODO REMOVE IT
-        # self.TEq = None
-        # self.TStr = None
-        # self.TRepr = None
-        # self.TCollection = None
-        # self.TSized = None
-        # self.TIndexed = None
-        # self.TDict = None
-        # self.TUnionRange = None
-        #
-        # self.derived_for_singleton = None
-        # self.derived_for_union = None
-        # self.derived_for_type = None
 
     def _find_in(self, process, prelude, name):
         sym = space.newsymbol(process, name)
@@ -78,10 +63,8 @@ class Derived:
                 return self.derived_for_singleton
             else:
                 return self.derived_for_type
-        elif space.isunion(_type):
-            return self.derived_for_union
         else:
-            return error.throw_2(error.Errors.TYPE_ERROR, space.newstring(u"Type or Union Expected"), _type)
+            return error.throw_2(error.Errors.TYPE_ERROR, space.newstring(u"Type Expected"), _type)
 
 
 class Types:
@@ -107,7 +90,6 @@ class Types:
         self.Trait = newtype(_s(u"Trait"))
         self.Interface = newtype(_s(u"Interface"))
         self.Datatype = newtype(_s(u"Datatype"))
-        self.Union = newtype(_s(u"Union"))
         self.LazyVal = newtype(_s(u"LazyVal"))
         self.Env = newtype(_s(u"Env"))
 

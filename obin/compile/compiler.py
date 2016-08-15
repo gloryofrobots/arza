@@ -1004,11 +1004,6 @@ def _compile_LET(compiler, code, node):
     _compile(compiler, code, simplified)
 
 
-def _compile_UNION(compiler, code, node):
-    simplified = simplify.simplify_union(compiler, code, node)
-    _compile(compiler, code, simplified)
-
-
 def _compile_TYPE(compiler, code, node):
     simplified = simplify.simplify_type(compiler, code, node)
     _compile(compiler, code, simplified)

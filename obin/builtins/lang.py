@@ -37,7 +37,6 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.ISNOT, __isnot, 2)
     put_lang_func(process, module, lang_names.KINDOF, __kindof, 2)
     put_lang_func(process, module, lang_names.TYPE, __type, 2)
-    put_lang_func(process, module, lang_names.UNION, __union, 2)
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
     put_lang_func(process, module, lang_names.INTERFACE, __interface, 2)
     put_lang_func(process, module, lang_names.TRAIT, __trait, 3)
@@ -159,17 +158,6 @@ def __type(process, routine):
     fields = routine.get_arg(1)
     _datatype = space.newdatatype(process, name, fields)
     return _datatype
-
-
-@complete_native_routine
-def __union(process, routine):
-    name = routine.get_arg(0)
-    types = routine.get_arg(1)
-    error.affirm_type(name, space.issymbol)
-    error.affirm_type(types, space.islist)
-    error.affirm_iterable(types, space.isdatatype)
-    union = space.newunion(process, name, types)
-    return union
 
 
 @complete_native_routine

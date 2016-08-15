@@ -202,8 +202,6 @@ def kindof_b(process, obj, kind):
         return interface_b(process, obj, kind)
     elif space.isdatatype(kind):
         return typeof_b(process, obj, kind)
-    elif space.isunion(kind):
-        return is_part_of_union_b(process, obj, kind)
     else:
         return error.throw_3(error.Errors.TYPE_ERROR, obj, kind, space.newstring(u"Wrong kindof argument"))
 
@@ -219,15 +217,6 @@ def interface_b(process, obj, iface):
     if space.isdatatype(obj) and obj.is_singleton:
         return obj.is_interface_implemented(iface)
 
-    return False
-
-
-def is_part_of_union_b(process, obj, union):
-    if space.isdatatype(obj):
-        return union.has_type(obj)
-    if space.isrecord(obj):
-        t = get_type(process, obj)
-        return union.has_type(t)
     return False
 
 

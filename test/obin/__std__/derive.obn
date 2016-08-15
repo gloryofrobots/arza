@@ -36,24 +36,3 @@ trait TDict (
     def values(self) = _datatype:record_values(self)
 )
 
-trait TUnionRange (
-    def range(_from,  _to) =
-        let
-            union = _datatype:get_union(_from)
-        in
-            if not (kindof(_to, union)) then
-                throw ValueError("Invalid type for second argument", _to)
-            else
-                let s1 = seq:drop_while(&`!=`(_from), to_seq(union))
-                in seq:take_while(&`!=`(_to), s1)
-
-    def range_from(_from) =
-        let union = _datatype:get_union(_from)
-        in seq:drop_while(&`!=`(_from), to_seq(union))
-
-    def range_from_by(_from, _by) =
-        throw NotImplementedError ("Only range from Rangeable is supported")
-
-    def range_by(_from, _to, _by) =
-        throw NotImplementedError ("Only range from Rangeable is supported")
-)

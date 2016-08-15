@@ -61,7 +61,6 @@ class W_Generic(W_Hashable):
 
 def lookup_implementation(process, generic, args):
     dispatch_arg = api.at_index(args, generic.dispatch_arg_index)
-    # print "DISPATCH", method, dispatch_arg, space.isunion(dispatch_arg)
     impl = api.dispatch(process, dispatch_arg, generic)
     return impl
 
