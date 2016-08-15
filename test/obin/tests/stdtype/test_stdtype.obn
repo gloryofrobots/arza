@@ -1,0 +1,17 @@
+import tests:stdtype:test_list
+import tests:stdtype:test_map
+import tests:stdtype:test_tuple
+import tests:stdtype:test_string
+import tests:stdtype:test_bool
+//import tests:stdtype:test_num
+
+
+fun test () =
+(
+    test_list:test()
+    test_map:test ()
+    test_tuple:test ()
+    test_string:test()
+    test_bool:test()
+//    test_num:test()
+)

@@ -9,7 +9,8 @@ extend Map (
     use TRepr
 
     def str(self) =
-        let fun _joiner((fst, snd)) =
+        // TODO REMOVE THIS NONSESNSE
+        let fun _joiner((fst, snd),) =
             str(fst) ++ "=" ++ repr(snd)
         in "{"
                 ++ string:join_with(_joiner, to_seq(self), ", ") ++

@@ -1,0 +1,52 @@
+import affirm
+
+fun test () =
+(
+    let m = {
+                name = "Alice", surname="Bob",
+                child={
+                    little_name="Sweetie",
+                    toy={
+                        model="SXR 123344#44332"
+                    }
+                 }
+            }
+    in
+    (
+        affirm:is_equal(m.name, "Alice")
+        affirm:is_equal(m.[#child].[#toy].model, "SXR 123344#44332")
+        affirm:is_equal(m.[#child].[#toy].[#model], m.child.toy.model)
+
+        affirm:is_equal(m.["child"].["toy"].["model"], m.child.toy.model)
+
+        affirm:is_true(#name `elem` m)
+        affirm:is_true(#surname `elem` m)
+        affirm:is_true(#little_name `elem` m.child)
+        affirm:is_false(#serial `elem` m.child.toy)
+    )
+
+    /////////////////////////////////
+
+    let
+        l = [1,2,3,{a="AA", b={c=(42, 422, 423)}}]
+    in
+    (
+        affirm:is_equal(l.2, l.[2])
+        affirm:is_equal(l.2, 3)
+
+        affirm:is_equal(l.3.a, l.[3].[#a])
+        let
+            A_1 = "a"
+            A_2 = #a
+            B = "b"
+        in
+        (
+            affirm:is_equal(l.[3].["a"], l.[3].[A_1])
+            affirm:is_equal(l.3.["a"], l.[3].[A_2])
+            affirm:is_equal(l.3.a, "AA")
+
+            affirm:is_equal(l.3.b, {c = (42, 422, 423)})
+            affirm:is_equal(l.3.[B].["c"].2, 423)
+        )
+    )
+)

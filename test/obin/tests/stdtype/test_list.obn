@@ -1,0 +1,31 @@
+import affirm
+import list
+
+fun test () =
+(
+    let a1 = [1, 2, #three, 4, 5, #six]
+    in
+    (
+        affirm:is_equal(len(a1), 6)
+        affirm:is_true(#three `elem` a1)
+        affirm:is_true(#six `elem` a1)
+        affirm:is_true(#six `elem` a1)
+        affirm:is_true(#two `not_elem` a1)
+        affirm:is_false(#two `elem` a1)
+    )
+
+    let l = list:range(1, 9)
+    in
+    (
+        affirm:is_equal(cons(0, l), [0,1,2,3,4,5,6,7,8])
+        affirm:is_equal(cons(-1, cons(0, l)), [-1,0,1,2,3,4,5,6,7,8])
+        affirm:is_equal(list:tail(l), [2,3,4,5,6,7,8])
+        affirm:is_equal(list:tail(list:tail(l)), [3,4,5,6,7,8])
+
+        affirm:is_equal(list:tail(list:tail([1,2])), [])
+        affirm:is_true(is_empty([]))
+        affirm:is_false(is_empty([1,2]))
+        affirm:is_equal(empty([1,2,3,4,5]), [])
+        affirm:is_equal(list:replicate(5, 42), [42, 42, 42, 42, 42])
+    )
+)

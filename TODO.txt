@@ -1,3 +1,7 @@
+# TODO if is_fals here you can reproduce reverted traceback error
+in test_tuple
+affirm:is_fals(#two `elem` a1)
+
 // SERIOUS ERROR. 1 is on the stack
 io:print("====", "---",
     match 1
@@ -7,6 +11,11 @@ io:print("====", "---",
 
 FIX IT
 fun f4 ((),) = ((()))
+let fun _joiner((fst, snd),) =
+    str(fst) ++ "=" ++ repr(snd)
+in "{"
+        ++ string:join_with(_joiner, to_seq(self), ", ") ++
+   "}"
 
 //MAKE FUNCTION MATCHING ERRORS USABLE
 
