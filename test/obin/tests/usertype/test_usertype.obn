@@ -1,13 +1,15 @@
-import tests:types:test_implement_qualified
-import tests:types:test_simple
-import tests:types:test_traits
-import tests:types:test_polymorphism
-import tests:types:test_interface
+import tests:usertype:test_implement_qualified
+import tests:usertype:test_simple
+import tests:usertype:test_traits
+import tests:usertype:test_polymorphism
+import tests:usertype:test_interface
 import io
 
-fun test () ->
+fun test () =
+(
     test_interface:test()
     test_simple:test()
     test_traits:test()
     test_implement_qualified:test()
     test_polymorphism:test()
+)

@@ -1,46 +1,59 @@
 import affirm
 
-type L l
+type
+(
+    L(l)
+    None
+    Some(val)
+)
+
+generic eq(`self, other)
 
 extend L
-    def len self -> len self.l
+(
+    def len(self) = len(self.l)
 
-    def is_empty self -> is_empty self.l
+    def is_empty(self) = is_empty(self.l)
 
-    def first self -> self
+    def first(self) = self
 
-    def rest self -> self
+    def rest(self) = self
+)
 
-----------------------------------------------------------
-
-type None
-
-type Some val
-
-generic eq `self other
 
 extend Some
+(
     def eq
-        | self (val) of Some ->
-               val == None
-
-        | self _ -> False
+        | self, val of Some = val == None
+        | self, _ = False
+)
 
 extend None
+(
     def eq
-        | self {val} of Some ->
-               val == None
-        | self other of None -> True
+        | self, {val} of Some = val == None
+        | self, _ of None = True
+)
 
-fun test () ->
-    s = Some None
-    affirm:is_true (None `eq` s)
-    affirm:is_false (s `eq` None)
+fun test () =
+(
+    let
+        s = Some(None)
+    in
+    (
+        affirm:is_true(None `eq` s)
+        affirm:is_false(s `eq` None)
+    )
 
 
-    l1 = L [1,2,3,4,5]
-    (affirm:is_equal
-        match l1 with
-            | [] -> #empty
-            | e -> #not_empty
-        end  #not_empty)
+    let
+        l1 = L([1,2,3,4,5])
+    in
+        affirm:is_equal(
+            match l1
+                | [] = #empty
+                | e = #not_empty
+            ,
+            #not_empty
+        )
+)

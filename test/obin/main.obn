@@ -56,7 +56,7 @@ fun test() =
     test_stdtype:test()
 
     log("TEST TYPES")
-    usertype:test()
+    test_usertype:test()
 
 //    log "TEST CO"
 //    test_co:test()

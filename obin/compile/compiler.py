@@ -1204,8 +1204,6 @@ def _compile_node(compiler, code, node):
 
     elif NT_TYPE == ntype:
         _compile_TYPE(compiler, code, node)
-    elif NT_UNION == ntype:
-        _compile_UNION(compiler, code, node)
     elif NT_DELAY == ntype:
         _compile_DELAY(compiler, code, node)
     elif NT_CONS == ntype:

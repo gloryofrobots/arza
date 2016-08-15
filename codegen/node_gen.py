@@ -19,7 +19,6 @@ NODES = [
   "NT_SYMBOL",
 
   "NT_TYPE",
-  "NT_UNION",
   "NT_MAP",
   "NT_LIST",
   "NT_TUPLE",
