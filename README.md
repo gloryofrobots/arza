@@ -446,13 +446,15 @@ seq:foldl (fun _ x y ->
 ### Currying
 Obin functions are curried by default
 ```
-// Functions inspired by F#
+// Prelude functions inspired by F#
 fun |> x f -> f x
 fun <| f x -> f x
 fun >> f g x -> g (f x)
 fun << f g x ->  f (g x)
 fun twice f -> f >> f
 fun flip f x y -> f y x
+
+// Usage
 
 fun add x y -> x + y
 add1 = add 1
@@ -481,8 +483,6 @@ triple = `*` 3
     >> seq:map (`+` 1)
     >> seq:map (flip `-` 2)
     >> seq:map (triple >> square)) l) =  [9, 9, 81, 225, 441]
-
-// TODO implement macroses and make |> >> and other operators smart enough to create partials automatically
 ```
 
 ### Operators
