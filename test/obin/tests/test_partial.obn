@@ -2,73 +2,85 @@ import affirm
 import list
 import seq
 
-fun add x y -> x + y
-fun mul x y -> x * y
+fun add(x, y) = x + y
+fun mul(x, y) = x * y
 
-fun one () -> 1
-
-
-fun test_partial() ->
-    affirm:is_equal ((&`-` 1) 2) (-1)
-    affirm:is_equal ((partial flip `-` 1)  2) 1
-    add1 = &add 1
-    affirm:is_equal (add1 2) 3
-    affirm:is_equal ((&add 1) 2) 3
-
-fun test_composition() ->
-    add1_mul2 =  &add 1 >>  &mul 2
-
-    affirm:is_equal (add1_mul2 4) 10
-
-    mul2_add1 = partial add 1 << partial mul 2
-    affirm:is_equal (mul2_add1 4) 9
-
-    add_1_twice = twice (&add 1)
-    affirm:is_equal (add_1_twice 9) 11
-
-fun test_pipe() ->
-    l = list:range 0 10
-
-    affirm:is_equal (
-        l |> (&seq:filter) even
-     ) [0, 2, 4, 6, 8]
-
-    affirm:is_equal (
-        l |> (&seq:filter) even
-          |> (&seq:map) (&`+` 1)
-     ) [1, 3, 5, 7, 9]
-
-    affirm:is_equal (
-        l |> (&seq:filter) even
-          |> (&seq:map) (&`+` 1)
-          |> partial seq:map (partial flip `-` 2)
-     ) [-1, 1, 3, 5, 7]
+fun one () = 1
 
 
-    square = (x => x * x)
-    triple = &`*` 3
-    affirm:is_equal (
-        l |> partial seq:filter even
-          |> partial seq:map (partial `+` 1)
-          |> partial seq:map (partial flip `-` 2)
-          |> partial seq:map (triple >> square)
-     )  [9, 9, 81, 225, 441]
+fun test_partial() =
+(
+    affirm:is_equal( &`-`(1)(2), (-1) )
 
-    affirm:is_equal (
-         (partial seq:filter even
-          >> partial seq:map (partial `+` 1)
-          >> partial seq:map (partial flip `-` 2)
-          >> partial seq:map (triple >> square)) l
-     )  [9, 9, 81, 225, 441]
+    affirm:is_equal(
+                flip(&`-`(1))(2),
+                1
+    )
+    let add1 = &add(1)
+    in
+    (
+        affirm:is_equal(add1(2), 3)
+        affirm:is_equal(&add(1)(2), 3)
+    )
+)
 
-    affirm:is_equal (
-        l |> partial seq:filter even
-          >> partial seq:map (partial `+` 1)
-          >> partial seq:map (partial flip `-` 2)
-          >> partial seq:map (triple >> square)
-     )  [9, 9, 81, 225, 441]
+fun test_composition() =
+    let
+        add1_mul2 =  &add(1) >>  &mul(2)
+        mul2_add1 = partial(add, 1) << partial(mul, 2)
+        add_1_twice = twice(&add(1))
+    in
+    (
+        affirm:is_equal(add1_mul2(4), 10)
+        affirm:is_equal(mul2_add1(4), 9)
+        affirm:is_equal(add_1_twice(9), 11)
+    )
 
-fun test () ->
+//fun test_pipe() =
+//    l = list:range 0 10
+//
+//    affirm:is_equal (
+//        l |> (&seq:filter) even
+//     ) [0, 2, 4, 6, 8]
+//
+//    affirm:is_equal (
+//        l |> (&seq:filter) even
+//          |> (&seq:map) (&`+` 1)
+//     ) [1, 3, 5, 7, 9]
+//
+//    affirm:is_equal (
+//        l |> (&seq:filter) even
+//          |> (&seq:map) (&`+` 1)
+//          |> partial seq:map (partial flip `-` 2)
+//     ) [-1, 1, 3, 5, 7]
+//
+//
+//    square = (x => x * x)
+//    triple = &`*` 3
+//    affirm:is_equal (
+//        l |> partial seq:filter even
+//          |> partial seq:map (partial `+` 1)
+//          |> partial seq:map (partial flip `-` 2)
+//          |> partial seq:map (triple >> square)
+//     )  [9, 9, 81, 225, 441]
+//
+//    affirm:is_equal (
+//         (partial seq:filter even
+//          >> partial seq:map (partial `+` 1)
+//          >> partial seq:map (partial flip `-` 2)
+//          >> partial seq:map (triple >> square)) l
+//     )  [9, 9, 81, 225, 441]
+//
+//    affirm:is_equal (
+//        l |> partial seq:filter even
+//          >> partial seq:map (partial `+` 1)
+//          >> partial seq:map (partial flip `-` 2)
+//          >> partial seq:map (triple >> square)
+//     )  [9, 9, 81, 225, 441]
+
+fun test () =
+(
     test_partial()
     test_composition()
-    test_pipe()
+//    test_pipe()
+)
