@@ -56,7 +56,8 @@ fun replicate(count, element) =
 ---------------------------------------------------
 
 
-extend List (
+extend List
+(
     use TNotEq
 
     use derive:TCollection

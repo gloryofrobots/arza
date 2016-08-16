@@ -30,6 +30,7 @@ fun test_use_static_and_fail(x) =
     in f1(x)
 
 
+// TODO FIX IT
 fun test_use_static_single_pass(x) =
     let
         fun f1(x) =
@@ -51,5 +52,6 @@ fun test () =
                NotImplementedError((#_length_, 1))
     )
 
+// TODO FIX IT
 //    affirm:is_equal(test_use_static_single_pass(1), 202)
 )

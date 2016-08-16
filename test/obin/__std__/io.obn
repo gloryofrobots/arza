@@ -4,10 +4,10 @@ import seq
 
 fun _write_list_items(args, func, file) =
     let fun _walk(x) =
-            (
-                write(func(x), file)
-                write(" ", file)
-            )
+        (
+            write(func(x), file)
+            write(" ", file)
+        )
 
     in seq:foreach(_walk, to_seq(args))
 
