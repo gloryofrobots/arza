@@ -1063,6 +1063,18 @@ def _compile_LOOKUP(compiler, code, node):
     _emit_call(compiler, code, node, 2, lang_names.AT)
 
 
+def _compile_CURRIED_CALL(compiler, code, node):
+    func = node_first(node)
+    args = node_second(node)
+
+    for arg in args:
+        _compile(compiler, code, arg)
+
+    _compile(compiler, code, func)
+    _emit_call(compiler, code, node, 1, lang_names.PARTIAL)
+    code.emit_1(CALL, len(args), info(node))
+
+
 def _compile_CALL(compiler, code, node):
     func = node_first(node)
     args = node_second(node)
@@ -1192,6 +1204,8 @@ def _compile_node(compiler, code, node):
         _compile_THROW(compiler, code, node)
     elif NT_CALL == ntype:
         _compile_CALL(compiler, code, node)
+    elif NT_CURRIED_CALL == ntype:
+        _compile_CURRIED_CALL(compiler, code, node)
 
     elif NT_LIST == ntype:
         _compile_LIST(compiler, code, node)

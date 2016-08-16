@@ -285,9 +285,10 @@ def __check_ambidextrity(op):
         op.ambidextra = True
 
 
-def parser_set_nud(parser, ttype, fn):
+def parser_set_nud(parser, ttype, fn, pbp=0):
     h = get_or_create_operator(parser, ttype)
     h.nud = fn
+    h.pbp = pbp
     __check_ambidextrity(h)
 
     return h
@@ -315,8 +316,9 @@ def operator_infix(h, lbp, led, infix_fn):
     return h
 
 
-def operator_prefix(h, nud, prefix_fn):
+def operator_prefix(h, pbp, nud, prefix_fn):
     h.nud = nud
+    h.pbp = pbp
     h.prefix_function = prefix_fn
     __check_ambidextrity(h)
     return h
@@ -542,7 +544,7 @@ def postprocess(parser, node):
 def literal_expression(parser):
     # Override most operators in literals
     # because of prefix operators
-    return expression(parser, 97)
+    return expression(parser, 70)
 
 
 def statement(parser):
@@ -592,8 +594,8 @@ def infix(parser, ttype, lbp, led):
     parser_set_led(parser, ttype, lbp, led)
 
 
-def prefix(parser, ttype, nud):
-    parser_set_nud(parser, ttype, nud)
+def prefix(parser, ttype, nud, pbp=0):
+    parser_set_nud(parser, ttype, nud, pbp)
 
 
 def stmt(parser, ttype, std):

@@ -6,7 +6,7 @@ from obin:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vect
 SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
 Precedence    Operator
     100           : . .{ .( .[
-    95           JUXTAPOSITION
+    95           x()
     60           :: :::
     55           **
     50           *  /
@@ -19,9 +19,6 @@ Precedence    Operator
     10           = :=
 """
 
-prefix (-, negate)
-prefix (!, !)
-prefix (&, &)
 infixr (:=, :=, 10)
 infixl (<|, <|, 15)
 infixl (|>, |>, 20)
@@ -38,8 +35,11 @@ infixl (+, +, 40)
 infixl (-, -, 40)
 infixl (*, *, 50)
 infixl (/, /, 50)
-infixl (**, **, 55)
-
+prefix (-, negate, 55)
+infixl (**, **, 60)
+prefix (!, !, 70)
+infixl (.., .., 95)
+prefix (&, &, 96)
 
 ////////////////////////////////////////////////////////////
 ///////////////// TYPES ////////////////////////////////////
@@ -235,6 +235,7 @@ fun not_elem(x, c) = not(elem (x, c))
 fun identity(x) = x
 
 fun &(func) = obin:lang:defpartial(func)
+fun ..(f, g) = obin:lang:defpartial(f)(g)
 
 fun |>(x, f) = f(x)
 fun <|(f, x) = f(x)

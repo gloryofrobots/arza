@@ -19,6 +19,7 @@ NODES = [
   "NT_SYMBOL",
 
   "NT_TYPE",
+  "NT_UNION",
   "NT_MAP",
   "NT_LIST",
   "NT_TUPLE",
@@ -81,7 +82,7 @@ NODES = [
   "NT_AND",
   "NT_OR",
   "NT_NOT",
-
+  "NT_CURRIED_CALL",
   "NT_END_EXPR",
   "NT_END",
 ]

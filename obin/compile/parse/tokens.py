@@ -16,6 +16,7 @@ else:
     def keyword(literal):
         return '\\b%s\\b' % literal
 
+
     def token(literal):
         return literal
 
@@ -39,7 +40,7 @@ else:
 # valid  identifiers (K&R2: A.2.3), plus '$' (supported by some compilers)
 name_const = '[a-zA-Z_][0-9a-zA-Z_]*'
 typename = '[A-Z][0-9a-zA-Z_]*'
-operator_char = '^\s\,\.\@\#\)\(\]\[\}\{\;\w"`\''
+operator_char = '^\s\,\@\#\)\(\]\[\}\{\;\w"`\''
 operator_const = '[%s]+' % operator_char
 
 hex_prefix = '0[xX]'
@@ -162,8 +163,8 @@ RULES = [
     (token('\)'), TT_RPAREN),
     (token('\['), TT_LSQUARE),
     (token('\]'), TT_RSQUARE),
+    (token('\.[\.]+'), TT_OPERATOR),
     (token('\.'), TT_DOT),
-    (token('\.\.'), TT_DOUBLE_DOT),
     (token('@'), TT_AT_SIGN),
     (token('::'), TT_DOUBLE_COLON),
     (token('[:^:][%s]+' % operator_char), TT_OPERATOR),
@@ -184,7 +185,7 @@ RULES = [
 
 
 class Token(root.W_Hashable):
-    def __init__(self,type, val, pos, line, column):
+    def __init__(self, type, val, pos, line, column):
         root.W_Hashable.__init__(self)
         assert isinstance(type, int)
         assert isinstance(val, str)
@@ -198,7 +199,6 @@ class Token(root.W_Hashable):
         self.pos = pos
         self.line = line
         self.column = column
-
 
     def _compute_hash_(self):
         from obin.misc.platform import rarithmetic
@@ -290,19 +290,11 @@ def token_column_i(token):
     return api.to_i(token_column(token))
 
 
-def create_end_token(token):
-    return newtoken(TT_END, "end",
-                    token_position(token),
-                    token_line(token),
-                    token_column(token))
-
-
 def create_end_expression_token(token):
     return newtoken(TT_END_EXPR, ";",
                     token_position(token),
                     token_line(token),
                     token_column(token))
-
 
 
 def token_to_s(token):

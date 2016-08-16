@@ -31,7 +31,6 @@ NODE_TYPE_MAPPING = {
     TT_AND: NT_AND,
     TT_NOT: NT_NOT,
     TT_OR: NT_OR,
-    TT_DOUBLE_DOT: NT_RANGE,
     TT_SHARP: NT_SYMBOL,
     TT_OPERATOR: NT_NAME,
     TT_DOUBLE_COLON: NT_CONS,
@@ -66,8 +65,7 @@ def led_infixr(parser, op, node, left):
 
 
 def prefix_nud_function(parser, op, node):
-    exp = literal_expression(parser)
-    # exp = expression(parser, 100)
+    exp = expression(parser, op.pbp)
     return nodes.create_call_node_name(node, op.prefix_function, [exp])
 
 
@@ -198,6 +196,11 @@ def _infix_lparen(parser):
     return args
 
 
+def infix_dot_lparen(parser, op, node, left):
+    args = _infix_lparen(parser)
+    return node_2(NT_CURRIED_CALL, __ntok(node), left, args)
+
+
 def infix_lparen(parser, op, node, left):
     args = _infix_lparen(parser)
     return node_2(NT_CALL, __ntok(node), left, args)
@@ -244,7 +247,7 @@ def infix_at(parser, op, node, left):
 ##############################################################
 
 def prefix_nud(parser, op, node):
-    exp = literal_expression(parser)
+    exp = expression(parser, op.pbp)
     return node_1(__ntype(node), __ntok(node), exp)
 
 
@@ -1041,17 +1044,30 @@ def prefix_extend_let(parser, op, node):
 
 def stmt_prefix(parser, op, node):
     t = expect_expression_of(parser.name_list_parser, 0, NT_TUPLE)
+
+    length = nodes.tuple_node_length(t)
+    if length != 3:
+        return parse_error(parser, u"Expected tuple of 3 elements", node)
+
     children = nodes.node_first(t)
     op_node = children[0]
     check_node_type(parser, op_node, NT_NAME)
     func_node = children[1]
     check_node_type(parser, func_node, NT_NAME)
 
+    precedence_node = children[2]
+    check_node_type(parser, precedence_node, NT_INT)
+
     op_value = symbol_or_name_value(parser, op_node)
     func_value = symbol_or_name_value(parser, func_node)
 
+    try:
+        precedence = strutil.string_to_int(nodes.node_value_s(precedence_node))
+    except:
+        return parse_error(parser, u"Invalid infix operator precedence", precedence_node)
+
     op = parser_current_scope_find_operator_or_create_new(parser, op_value)
-    op = operator_prefix(op, prefix_nud_function, func_value)
+    op = operator_prefix(op, precedence, prefix_nud_function, func_value)
 
     parser_current_scope_add_operator(parser, op_value, op)
 
@@ -1067,6 +1083,10 @@ def stmt_infixr(parser, op, node):
 def _meta_infix(parser, node, infix_function):
     t = expect_expression_of(parser.name_list_parser, 0, NT_TUPLE)
     children = nodes.node_first(t)
+
+    length = nodes.tuple_node_length(t)
+    if length != 3:
+        return parse_error(parser, u"Expected tuple of 3 elements", node)
 
     op_node = children[0]
     check_node_type(parser, op_node, NT_NAME)
