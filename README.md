@@ -101,7 +101,7 @@ fun f(x,y) =
         in k + x + y
     )
 ```
-Most of the functions can be written with such *let-in* technics
+Most of the functions can be written with such *let-in* technique
 
 There are three main kinds of expressions
 * Top level expressions (import, export, from, fun, let, trait, interface, generic, type, prefix, infixl, infixr)
@@ -120,15 +120,16 @@ fun f () =
 f() == 4
 
 ```
-However this technique creates problem with ambidextra operators (operator which have both prefix and infix binding powers)
-Such operators in Lalan are - and (
-To resolve conflicts in parsing Lalan uses new lines as terminators
+However this technique creates problem with ambidextra operators
+(operator having have both prefix and infix binding powers)
+Examples of such operators are *-* and *(*
+To resolve parsing conflicts Lalan uses new lines as terminators
 ```
 fun f() =
 (
     //lambda expression
-    ((x, y) -> x + y)
-    // parser treats `(` as prefix expression
+    ((x, y) = x + y)
+    // parser treats `(` as prefix expression because of new line
     (1, 41)
 )
 f() == (1, 41)
@@ -136,9 +137,174 @@ f() == (1, 41)
 fun f2() =
 (
     // parser treats `(` as infix expression and interprets this expression as call to lambda with arguments (1, 41)
-    ((x, y) -> x + y)(1, 41)
+    ((x, y) = x + y)(1, 41)
 )
 f2() == 42
+```
+
+### Modules and bootstrap
+Module system is very simple: module = file and there are no notion of packages
+Module search path are always relative to running script and there are no possibility of relative import
+
+Example directory structure
+```
++-- program.lal
++-- __std__
+|   +-- seq.lal
+|   +-- lazy.lal
++-- my
+|   +-- modules
+|       +-- module1.lal
+|       +-- module2.lal
+|   +-- module1.lal
+|   +-- module3.lal
+```
+if we run Lalan with
+```
+python targetlalan.py program.lal
+```
+Module search path would look something like  [BASEDIR, STD, LALANSTD] where
+
+* BASEDIR = directory in which program.lal is located
+* STD = BASEDIR/\_\_std\_\_ - directory with user defined std modules. It will give user easy way to have custom prelude
+* LALANSTD = environment variable LALANSTD which must contain path to global stdlib. If LALANSTD is empty, all required modules must be in STD directory
+
+#### Loading order
+* prelude.lal. If prelude is absent execution will be terminated. All names declared in prelude would be visible in all other modules
+* stdlib modules used by runtime (derive.lal, bool.lal, num.lal, bit.lal, env.lal, string.lal, symbol.lal, vector.lal, list.lal, function.lal, fiber.lal, trait.lal, tuple.lal, map.lal, seq.lal, lazy.lal, datatype.lal)
+* running script (in our case program.lal). After loading this sript lalan searches for function named 'main' and executes it. Result of 'main' function would be result of program
+
+#### Import and export
+```
+// Import and export is a top level module expression only
+
+// By default all names except operators can be imported outside
+// You can limit it with
+export (f_ab, f_ab_2, CONST)
+
+fun f1(num) = ()
+fun f2(num1, num2) = ()
+CONST = 10
+fun f3 () = ()
+
+// to import module use it name relative to program.lal with / replaced by :
+// this modules declared in __std__, no need to specify path
+
+import seq
+import io
+
+// all exported names from this modules can be accessed with : operator
+// such name often called 'qualified name'
+
+io:print(seq:reverse([1,2,4,5]))
+
+// import other module
+import my:modules:module1
+
+// all exported names binds to module1:variable_name
+// as you see only last part of the module name is used in qualified names
+
+module1:add(1, 2)
+
+// use aliases to resolve name conflicts
+
+import my:modules:module1 as mod1
+import my:module1 as mod1_1
+mod1:add(mod1_1:add(1, 2), 3)
+
+// import only required qualified names
+
+import my:module1 (f1 as f1_1, f2 as f2_1)
+module1:f1_1()
+module1:f2_1()
+
+import my:modules:module1 as mod1 (f1, f2)
+mod1:f1()
+mod1:f2()
+
+import my:module1 as mod1 (f1 as f1_1, f2 as f2_1)
+mod1:f1_1()
+mod1:f2_1()
+
+// hiding names
+
+import my:modules:module1  hiding (CONST)
+module1:f1()
+module1:f2()
+
+import my:modules:module1 as mod1 hiding (f1)
+mod1:f2()
+mod1:CONST
+
+import tests:lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
+
+/// UNQUALIFIED IMPORT
+
+// import specified unqualified names
+
+from my:modules:module1  import (f1, f2, CONST as const)
+f1()
+f2()
+const
+
+// import all unqualified names from module
+
+from my:modules:module1 import _
+
+// hiding specific names
+
+from my:modules:module1 hide (CONST)
+f1()
+f2()
+```
+
+#### Operators
+
+```
+// real code from prelude.lal
+// operators noted in comments defined internally for special treatment
+// operator_type(operator_symbol, function_name, binding_power)
+
+infixr (:=, :=, 10)
+// infix @ as of -> 15
+infixl (<|, <|, 15)
+infixl (|>, |>, 20)
+// infix or -> 25
+infixl (<<, <<, 25)
+infixl (>>, >>, 25)
+// infix and -> 30
+infixl (<, <, 35)
+infixl (>, >, 35)
+infixl (>=, >=, 35)
+infixl (<=, <=, 35)
+infixl (==, ==, 35)
+infixl (!=, !=, 35)
+infixl (++, ++, 40)
+infixl (+, +, 40)
+infixl (-, -, 40)
+infixl (*, *, 50)
+infixl (/, /, 50)
+prefix (-, negate, 55)
+// infix :: -> 60
+infixl (**, **, 60)
+// prefix # -> 70
+prefix (!, !, 70)
+infixl (.., .., 95)
+// infix ( .( .{ .[ -> 95
+prefix (&, &, 96)
+// infix . : -> 100
+
+// when parser transforms expressions with operators to call expressions
+2 - 2 -> -(2, 2)
+-2 -> negate(2)
+
+// to use operator as prefix function put it between ``
+// foldr(`+`, l2, l1)
+// to use function as infix operator put it between `` too
+// 4 `mod` 2 = 0
+
+// Operators defined in prelude.lal are global to all modules
+// Operators defined in user module are local to this module and can't be exported
 ```
 
 ### Predefined types and literals
@@ -185,7 +351,7 @@ x = delay 1 + 2
 // Function type
 x y => x + y
 
-fun add_and_mul x y ->
+fun add_and_mul x y =
     z = x + y
     z + x * y
 
@@ -284,24 +450,24 @@ v := 3
 // Function expression in lalan have three forms
 
 // Simple
-fun <function_name> <arg>+  ->
+fun <function_name> <arg>+  =
     <expressions>
 
 // result of the function is result of last expression
 
 // Example
-fun any p l ->
+fun any p l =
     disjunction (map p l)
 
-fun all p l ->
+fun all p l =
     conjunction (map p l)
 
 // Case function with multiple clauses. All clauses must have same arity.
 
 fun <function_name>
-    | <pattern>+ [when guard] ->
+    | <pattern>+ [when guard] =
         <expressions>
-    | <pattern>+ [when guard] ->
+    | <pattern>+ [when guard] =
         <expressions>
     ...
 
@@ -309,14 +475,14 @@ fun <function_name>
 
 // Example
 fun foldl
-    | f acc [] -> acc
-    | f acc hd::tl -> foldl f (f hd acc) tl
+    | f acc [] = acc
+    | f acc hd::tl = foldl f (f hd acc) tl
 
 
-fun reverse coll ->
+fun reverse coll =
     fun _reverse
-        | [] result -> result
-        | hd::tl result -> (_reverse tl (hd :: result))
+        | [] result = result
+        | hd::tl result = (_reverse tl (hd :: result))
 
     _reverse coll (empty coll)
 
@@ -324,18 +490,18 @@ fun reverse coll ->
 // This kind of function allows to check argument types or other conditions only at first step of recursion
 
 fun <function_name> <arg>+
-    | <pattern>+ [when guard] ->
+    | <pattern>+ [when guard] =
         <expressions>
-    | <pattern>+ [when guard] ->
+    | <pattern>+ [when guard] =
         <expressions>
     ...
 
 // this function transforms in compile time to
 fun <function_name> <arg>+
     (fun <function_name>
-        | <pattern>+ [when guard] ->
+        | <pattern>+ [when guard] =
             <expressions>
-        | <pattern>+ [when guard] ->
+        | <pattern>+ [when guard] =
             <expressions>
         ...
     ) <arg>+ // call inner function with outer function arguments
@@ -345,14 +511,14 @@ fun <function_name> <arg>+
 
 // Example
 fun scanl func accumulator coll
-    | f acc [] -> acc :: empty coll
-    | f acc hd::tl -> acc :: scanl f (f hd acc) tl)
+    | f acc [] = acc :: empty coll
+    | f acc hd::tl = acc :: scanl f (f hd acc) tl)
 
 // Compiles into
-fun scanl func accumulator coll ->
+fun scanl func accumulator coll =
     (fun scanl
-        | f acc [] -> acc::(empty coll) // coll contains initial value from first call
-        | f acc hd::tl -> acc :: (scanl f (f hd acc) tl)
+        | f acc [] = acc::(empty coll) // coll contains initial value from first call
+        | f acc hd::tl = acc :: (scanl f (f hd acc) tl)
     end) func accumulator coll
 
 // Lambda expression can be created with => operator
@@ -370,7 +536,7 @@ fullname = {name, surname} => name ++ " " ++ surname
 // If you need multiple statement function in some expression, use 'fun' instead
 // fun expression requires name, use _ if you don't need one
 
-seq:foldl (fun _ x y ->
+seq:foldl (fun _ x y =
               io:print "x + y" x y
               x + y
            end) 0 [1,2,3,4,5]
@@ -380,25 +546,25 @@ seq:foldl (fun _ x y ->
 ### Partial application
 
 ```
-// from prelude.obn
+// from prelude.lal
 
-fun partial func ...args ->
+fun partial func ...args =
     // primitive function
     lalan:lang:defpartial_with_arguments func args
 
 // prefix operator for partials
-fun & func ->
+fun & func =
     // primitive function
     lalan:lang:defpartial func
 
 // Functions inspired by F#
-fun |> x f -> f x
-fun <| f x -> f x
-fun >> f g -> (x => g (f x))
-fun << f g -> (x => f (g x))
-fun flip f x y -> f y x
+fun |> x f = f x
+fun <| f x = f x
+fun >> f g = (x => g (f x))
+fun << f g = (x => f (g x))
+fun flip f x y = f y x
 
-fun add x y -> x + y
+fun add x y = x + y
 add1 = &add 1
 
 (add1 2) = 3
@@ -430,60 +596,6 @@ triple = &`*` 3
 // TODO implement macroses and make |> >> and other operators smart enough to create partials automatically
 ```
 
-### Operators
-
-```
-"""
-Precedence    Operator
-    100           : . .{ .( .[
-    95           JUXTAPOSITION
-    60           :: :::
-    55           **
-    50           *  /
-    40           +  - ++
-    35           ==  !=  <  <=  >  >=
-    30           and
-    25           or << >>
-    20           |>
-    15           @ as of <|
-    10           = :=
-"""
-
-// Most operators are just functions from prelude (except from . .{ .( .[ : :: ::: and or as of @ requiring special treatment)
-// prefix operator (operator, function_name)
-prefix - negate
-prefix & &
-
-// right associative (operator, function name, precedence)
-infixr := := 10
-
-// left associative
-infixl + + 40
-infixl - - 40
-infixl * * 50
-infixl / / 50
-
-// Almost all operators have lower precedence than function application
-// sqrt 4 + 6 = (sqrt 4) + 6
-// to use operator as prefix function put it between ``
-// foldr `+` l2 l1
-// to use function as infix operator put it between `` too
-// 4 `mod` 2 = 0
-
-// There are special rules for resolving ambiguity when both prefix and infix precedence defined (subtraction and negate for -)
-
-(2-1) =  1 // infix because no space between - and left operand
-(2 - 1) = 1 // infix because space between both operands
-
-(2- -1) =  3 // prefix because previous token is operator and afterwards infix
-(2- - 1) =  3 // same rule applies
-(2 - - 1) = 3 // same rule applies
-
-(identity -1) = -1 // prefix because no space between operator and operand
-
-// Operators defined in prelude.obn are global to all modules
-// Operators defined in user module are local to this module and can't be exported
-```
 
 
 ### Expressions
@@ -510,8 +622,8 @@ Lalan doesn't have loops so pattern matching and recursion used for iteration
 
 ```
 fun <funcname> [arguments]
-    | <pattern> [when guard] -> <body>
-    | <pattern1> [when guard1] -> <body1>
+    | <pattern> [when guard] = <body>
+    | <pattern1> [when guard1] = <body1>
     ...
 ```
 Function arguments are sequentially matched against patterns. If a match succeeds and the optional guard is true,
@@ -521,8 +633,8 @@ If there is no matching pattern with a true guard sequence, runtime error occurs
 ##### Match expression
 ```
 match <expr> with
-    | <pattern> [when guard] -> <body>
-    | <pattern1> [when guard1] -> <body>
+    | <pattern> [when guard] = <body>
+    | <pattern1> [when guard1] = <body>
     ...
 ```
 The expression <expr> is evaluated and the patterns  are sequentially matched against the result
@@ -533,7 +645,7 @@ If there is no matching pattern with a true guard sequence, runtime error occurs
 ```
 // Patterns are the same for function clauses and match expressions
 
-// -> <body> part below is ommitted
+// = <body> part below is ommitted
 fun f arg1 arg2
     // integers floats symbols strings
     | 1 2.32323
@@ -577,38 +689,38 @@ fun f arg1 arg2
 
 ```
 fun count
-    | 1 -> #one
-    | 2 -> #two
-    | 3 -> #three
-    | 4 -> #four
+    | 1 = #one
+    | 2 = #two
+    | 3 = #three
+    | 4 = #four
 
 fun f_c2
-    | a of Bool b of String c -> #first
-    | a of Bool b c -> #second
-    | a b c -> #third
+    | a of Bool b of String c = #first
+    | a of Bool b c = #second
+    | a b c = #third
 
 fun f_c3
-    | 0 1 c when c < 0 ->  #first
-    | (a of Bool) (b of String) c -> #second
-    | a of Bool b c when b + c == 40 -> #third
+    | 0 1 c when c < 0 =  #first
+    | (a of Bool) (b of String) c = #second
+    | a of Bool b c when b + c == 40 = #third
 
 match {name="Bob", surname=("Alice", "Dou"), age=42} with
-    | {age=41, names} ->  (name, age, 0)
-    | {name, age=42} ->  (name, age, 1)
-    | {age=42} ->  (age, 2)
-    | _ ->  42
+    | {age=41, names} =  (name, age, 0)
+    | {name, age=42} =  (name, age, 1)
+    | {age=42} =  (age, 2)
+    | _ =  42
 
 match (1, 2, 1) with
-    | (A, x, A)  -> (#first, A)
-    | (A, x, B)  -> (#second, A, B)
-    | (3, A) -> #third
+    | (A, x, A)  = (#first, A)
+    | (A, x, B)  = (#second, A, B)
+    | (3, A) = #third
 
 //from test suite
 affirm:is_equal (
     match {x=1, y="YYYY"} with
-        | {x of String, y of Int} -> #first
-        | {x of Int, y="YY" of String} -> #second
-        | {x of Int, y="YYYY" of String} -> #third
+        | {x of String, y of Int} = #first
+        | {x of Int, y="YY" of String} = #second
+        | {x of Int, y="YYYY" of String} = #third
 ) #third
 
 // all patterns, but without whem guard can be placed by the left hand side of = operator
@@ -658,7 +770,7 @@ throw <expression>
 
 try
     <expressions>
-catch <expression> ->
+catch <expression> =
     <expressions>
 *finally // finally is optional
     <expressions>
@@ -667,7 +779,7 @@ catch <expression> ->
 try
     <expressions>
 catch
-    | <pattern> [when guard] ->
+    | <pattern> [when guard] =
         <expressions>
     ...
 *finally // finally is optional
@@ -679,15 +791,15 @@ catch
 try
     try
         1/0
-    catch e1 ->
+    catch e1 =
         e1
 
-catch e2 ->
+catch e2 =
     try
         throw #Catch
-    catch e3 ->
+    catch e3 =
         42
-    finally ->
+    finally =
         throw (e2, e3)
 
 
@@ -695,10 +807,10 @@ catch e2 ->
 try
     throw (1,2,"ERROR")
 catch
-    | err @ (1, y, 3) -> #first
-    | (1,2, "ERROR@") -> #second
-    | err @ (1, 2, x) -> #third
-finally ->
+    | err @ (1, y, 3) = #first
+    | (1,2, "ERROR@") = #second
+    | err @ (1, 2, x) = #third
+finally =
     (#fourth, err, x)
 ```
 
@@ -739,9 +851,9 @@ p.x `kindof` Float = True
 
 // inside match expression or function clauses
 match p with
- | (x, y) of Point -> x + y // as tuple
- | (left, top, right, bottom) of Rect -> left.x + right.y // . operator can access instance field by name
- | {right, top, left, bottom} of Rect -> left.x + right.y // as map
+ | (x, y) of Point = x + y // as tuple
+ | (left, top, right, bottom) of Rect = left.x + right.y // . operator can access instance field by name
+ | {right, top, left, bottom} of Rect = left.x + right.y // as map
 
 ```
 
@@ -860,24 +972,24 @@ type MyList l
 
 extend L
     def + self other
-        | self other of List -> MyList (self.l + other)
-        | self other of MyList -> MyList (self.l + other.l)
+        | self other of List = MyList (self.l + other)
+        | self other of MyList = MyList (self.l + other.l)
 
-    def len self -> len self.l
+    def len self = len self.l
 
-    def is_empty self -> is_empty self.l
+    def is_empty self = is_empty self.l
 
-    def first self -> self
+    def first self = self
 
-    def rest self -> self
+    def rest self = self
 
 // if interfaces Seq(first, rest), Add(+) and Sized(len) exist
 // we can check if type implements them
 
 mylist = MyList [1,2,3,4,5,6]
 match mylist with
-    | l of Seq -> ()
-    | l of Seq -> l
+    | l of Seq = ()
+    | l of Seq = l
 
 or with builtin kindof function
 mylist `kindof` MyList = True
@@ -903,14 +1015,14 @@ generic
     gt `x y
 
 trait Equal
-    def eq x y -> not (ne x y)
-    def ne x y -> not (eq x y)
+    def eq x y = not (ne x y)
+    def ne x y = not (eq x y)
 
 trait Order
-    def le x y -> (cmp x y) != GT
-    def lt x y -> (cmp x y) == LT
-    def ge x y -> (cmp x y) != LT
-    def gt x y -> (cmp x y) == GT
+    def le x y = (cmp x y) != GT
+    def lt x y = (cmp x y) == LT
+    def ge x y = (cmp x y) != LT
+    def gt x y = (cmp x y) == GT
 
 extend MyList
     // all implementations defined in Equal trait will be attached to MyList
@@ -920,120 +1032,7 @@ extend MyList
     use Order (le, ge)
 
     // Trait is a simple map with generics as keys and implementation functions as values
-    def lt x y -> Order.[lt] x y
-    def gt x y -> Order.[gt] x y
+    def lt x y = Order.[lt] x y
+    def gt x y = Order.[gt] x y
 ```
 
-### Modules and bootstrap
-Module system is very simple: module = file and there are no notion of packages
-Module search path are always relative to running script and there are no possibility of relative import
-
-Example directory structure
-```
-+-- program.obn
-+-- __std__
-|   +-- seq.obn
-|   +-- lazy.obn
-+-- my
-|   +-- modules
-|       +-- module1.obn
-|       +-- module2.obn
-|   +-- module1.obn
-|   +-- module3.obn
-```
-if we run Lalan with
-```
-python targetlalan.py program.obn
-```
-Module search path would look something like  [BASEDIR, STD, OBINSTD] where
-
-* BASEDIR = directory in which program.obn is located
-* STD = BASEDIR/\_\_std\_\_ - directory with user defined std modules. It will give user easy way to have custom prelude
-* OBINSTD = environment variable OBINSTD which must contain path to global stdlib. If OBINSTD is empty, all required modules must be in STD directory
-
-#### Loading order
-* prelude.obn. If prelude is absent execution will be terminated. All names declared in prelude would be visible in all other modules
-* stdlib modules used by runtime (derive.obn, bool.obn, num.obn, bit.obn, env.obn, string.obn, symbol.obn, vector.obn, list.obn, function.obn, fiber.obn, trait.obn, tuple.obn, map.obn, seq.obn, lazy.obn, datatype.obn)
-* running script (in our case program.obn). After loading this sript lalan searches for function named 'main' and executes it. Result of 'main' function would be result of program
-
-#### Import and export
-```
-// By default all names except operators can be imported outside
-// You can limit it with
-export (f_ab, f_ab_2, CONST)
-
-fun f1 num -> ()
-fun f2 num1 num2 -> ()
-CONST = 10
-fun f3 () -> ()
-
-// to import module use it name relative to program.obn with / replaced by :
-// this modules declared in __std__, no need to specify path
-
-import seq
-import io
-
-// all exported names from this modules can be accessed with : operator
-// such name often called 'qualified name'
-
-io:print (seq:reverse [1,2,4,5])
-
-// import other module
-import my:modules:module1
-
-// all exported names binds to module1:variable_name
-// as you see only last part of the module name is used in qualified names
-
-module1:add 1 2
-
-// if there are modules with indentical names alias needs to be used
-
-import my:modules:module1 as mod1
-import my:module1 as mod1_1
-mod1:add (mod1_1:add 1 2) 3
-
-// import only required qualified names
-
-import my:module1 (f1 as f1_1, f2 as f2_1)
-module1:f1_1 ()
-module1:f2_1 ()
-
-import my:modules:module1 as mod1 (f1, f2)
-mod1:f1 ()
-mod1:f2 ()
-
-import my:module1 as mod1 (f1 as f1_1, f2 as f2_1)
-mod1:f1_1 ()
-mod1:f2_1 ()
-
-// hiding names
-
-import my:modules:module1  hiding (CONST)
-module1:f1 ()
-module1:f2 ()
-
-import my:modules:module1 as mod1 hiding (f1)
-mod1:f2 ()
-mod1:CONST
-
-import tests:lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
-
-/// UNQUALIFIED IMPORT
-
-// import specified unqualified names
-
-from my:modules:module1  import (f1, f2, CONST as const)
-f1 ()
-f2 ()
-const
-
-// import all unqualified names from module
-
-from my:modules:module1 import _
-
-// hiding specific names
-
-from my:modules:module1 hide (CONST)
-f1()
-f2()
-```
