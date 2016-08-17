@@ -1,4 +1,4 @@
-# Obin programming language
+# Lalan programming language
 
 This repository contains prototype for experimental dynamically typed functional language
 
@@ -6,21 +6,21 @@ This repository contains prototype for experimental dynamically typed functional
 
 To experiment with syntax and stackless virtual machine.
 It is not a production system.
-Obin written in relatively 'slow' language python with not many speed optimisations.
+Lalan written in relatively 'slow' language python with not many speed optimisations.
 
 Running interpeter
 ```
-python targetobin.py test/obin/main.obn
+python targetlalan.py test/lalan/main.lal
 ```
 or better use pypy
 
 Currently, compilation via RPython toolchain does not supported but it can be done with some efforts.
-There are no REPL for obin at the moment
+There are no REPL for lalan at the moment
 
 ## Features
 
-* Indentation-aware syntax inspired by F#, Haskell and Python
-* Persistant data structures (lists, tuples, maps)
+* Original and clean syntax inspired by Lua and OCaml
+* Persistent data structures (lists, tuples, maps)
 * Pattern matching
 * Lexical clojures and lambdas
 * Usual number of primitives (if-else, let-in, try-catch)
@@ -28,9 +28,9 @@ There are no REPL for obin at the moment
 * User defined types
 * Traits and interfaces
 * Single dispatch generic functions
-* Partial application
+* Special syntax and custom operator for partial application
 * Stackless virtual machine
-* Assymetric coroutines
+* Asymmetric coroutines
 
 ## TODO
 
@@ -38,7 +38,7 @@ There are no REPL for obin at the moment
 * REPL
 * Tail call optimisations
 * Total speed optimisations
-* Prodaction ready C++ version
+* Production ready C++ version
 
 ## Guide
 
@@ -67,140 +67,78 @@ There are no REPL for obin at the moment
 
 ### Syntax
 
-Obin uses indentation-aware syntax inspired by F# [#light] and Haskell.
-Tokens [**if** **else** **elif**  **match** **try** **catch**
-**let** **in** **fun** **interface** **generic** **type** **->** **|**]
-trigger offside line.
-Once an offside line has been set, all the expressions must align with the line,
-until it be removed by dedent to previous line or by **end** token.
-
+Lalan uses original syntax inspired by Lua and OCaml
+Expression syntax similar to convenient scripting languages with infix and prefix operators and
+function calls via ```f(...)```. But instead of using some kind of block separators ({} or begin end)
+Lalan allows one or more expressions inside parens (exp1 exp2 expe).
+Result of such group expression will be the result of last expression.
+This simple rule provides organic coexistence of serial and single expressions.
 ```
-// Call function print from module io with result of if expression
-io:print if 1 == 2 then
-            False
-         elif 2 == 3 then False
-         else
-            True
-
-io:print if 1 == 2 then
-            False
-     elif 2 == 3 then False // Compile error: elif and else must align with if 
-         else
-            True
-
-```
-
-Indentation ignored inside () {} []
-```
-// Complex expression mixing both indentation-free and indentation-aware layouts
-fun nine_billion_names_of_god_the_integer () ->
-    (string:join
-        (seq:map
-            (n => string:join_cast
-               (seq:map (g =>
-                            fun _loop n g ->
-                                if g == 1 or n < g then 1
-                                else
-                                    (seq:foldl
-                                        (
-                                            q res => res + if q > n - g then   // even while if inside () inner expressions must be aligned
-                                                              0
-                                                           else
-                                                            (_loop (n-g) q)
-                                        )
-                                        1
-                                        (range 2 g))
-                                end // end token removes if layout and adds readability
-                            end n g) (range 1 n)) " ") // end token terminates function layout and allows to call function with arguments (n g)
-            (range 1 25))
-         "\n")
-```
-
-
-
-New line in expressions outside of indention-free layouts terminates them,
-except when last token in line is user defined operator or one of ":: ::: : . = or and"
-```
-X = sqrt 4  // expression terminates on new line
-- 2        // compiles as X = (sqrt 4); -2;
-X = sqrt 4 - // compiles as  X = sqrt 4 - 2
-      2
-```
-
-Obin uses juxtaposition for function application. Obin syntax often looks like lisp without first layer of parens
-
-```
-func1 arg1 arg2 (func2 arg3 (func4 arg5 arg6) arg7) arg8 arg9
-```
-
-Obin functions are not curried by default (mainly because in dynamic language currying may cause a lot of annoying runtime errors)
-
-Some extreme syntax examples which will compile without errors
-```
-x =   1
-    + 2
-    + 3
-    + 4
-
-
-y = x
-        + 3
-            + 2 +
-    5
-
-
-let x = 222
-    y = 333 in affirm:is_equal x 222
-               affirm:is_equal y 333
-
-
-match (1,2,3) with | (x,y,z) -> 2
-                   | _ -> 1
-
-
-match if 2 == 1 then
-            2
-      else
-        3
-      end
-with
-    | 2 -> 3
-    | 3 -> 2
-
-
-match fun _ x ->
-            1
-        end
-with
-    | Y ->
-        (fun _ t
-            | (a,b) -> a + b end
-            (1 + 1, 2 + 2))
-    | _ -> 2
-
+fun add(x,y) = x + y
+fun add_and_print(x,y) =
 (
-    (x => x)
-    (
-        fun _ x ->
-            1
-        end
-        , 3
-        , 1
-        , 4
-        , 5
-    )
+    io:print("x + y", x + y)
+    x + y
 )
+```
 
-(1
-, fun _ x | 5 -> 25
-            | 6 -> 45
-, fun _ x
-    | 5 -> 25
-    | 6 -> 45
-, (x => x)
-// dedent terminates fun and because of the free indentation inside parens
-// third element of the tuple evaluates to ((x => x) 45)
-45)
+Name binding can be done only inside *let-in* statement, I believe it pushes programmer to good code quality
+```
+fun f(x,y) =
+    let z = x + y
+    in z + x + y
+
+// series of expressions inside let and in
+
+fun f(x,y) =
+    let
+        z = x + y
+        w = read_from_file()
+    in
+    (
+        io:print("z and w", z, w)
+        let k = w / z
+        in k + x + y
+    )
+```
+Most of the functions can be written with such *let-in* technics
+
+There are three main kinds of expressions
+* Top level expressions (import, export, from, fun, let, trait, interface, generic, type, prefix, infixl, infixr)
+* Pattern matching expressions inside function signature, after let expression or in match expression
+* Value expressions usually occur after = token and always evaluates to some value
+
+There are no end of expression token in Lalan.
+Parser grabs expressions one by one from stream of tokens.
+Every expression terminates by lack of left binding power.
+This idea comes from Lua language.
+```
+fun f () =
+(
+    1 + 1  2 + 2
+)
+f() == 4
+
+```
+However this technique creates problem with ambidextra operators (operator which have both prefix and infix binding powers)
+Such operators in Lalan are - and (
+To resolve conflicts in parsing Lalan uses new lines as terminators
+```
+fun f() =
+(
+    //lambda expression
+    ((x, y) -> x + y)
+    // parser treats `(` as prefix expression
+    (1, 41)
+)
+f() == (1, 41)
+
+fun f2() =
+(
+    // parser treats `(` as infix expression and interprets this expression as call to lambda with arguments (1, 41)
+    ((x, y) -> x + y)(1, 41)
+)
+f2() == 42
 ```
 
 ### Predefined types and literals
@@ -263,7 +201,7 @@ type Option
 
 ### Data structures
 ```
-// Many obin data structures borrowed from [Pixie language](https://github.com/pixie-lang/pixie).
+// Many lalan data structures borrowed from [Pixie language](https://github.com/pixie-lang/pixie).
 // All of predefined data structures are persistant
 
 // accessing fields
@@ -343,7 +281,7 @@ v := 3
 ### Functions
 
 ```
-// Function expression in obin have three forms
+// Function expression in lalan have three forms
 
 // Simple
 fun <function_name> <arg>+  ->
@@ -383,7 +321,7 @@ fun reverse coll ->
     _reverse coll (empty coll)
 
 // Recursive two level function
-// This kind of function allows to check argument types or other conditions only at first step of recursion 
+// This kind of function allows to check argument types or other conditions only at first step of recursion
 
 fun <function_name> <arg>+
     | <pattern>+ [when guard] ->
@@ -446,12 +384,12 @@ seq:foldl (fun _ x y ->
 
 fun partial func ...args ->
     // primitive function
-    obin:lang:defpartial_with_arguments func args
+    lalan:lang:defpartial_with_arguments func args
 
 // prefix operator for partials
 fun & func ->
     // primitive function
-    obin:lang:defpartial func
+    lalan:lang:defpartial func
 
 // Functions inspired by F#
 fun |> x f -> f x
@@ -532,7 +470,7 @@ infixl / / 50
 // to use function as infix operator put it between `` too
 // 4 `mod` 2 = 0
 
-// There are special rules for resolving ambiguity when both prefix and infix precedence defined (subtraction and negate for -) 
+// There are special rules for resolving ambiguity when both prefix and infix precedence defined (subtraction and negate for -)
 
 (2-1) =  1 // infix because no space between - and left operand
 (2 - 1) = 1 // infix because space between both operands
@@ -567,7 +505,7 @@ if one of the branches succeeds result of it's last expression will be result of
 
 
 #### match-with
-Obin doesn't have loops so pattern matching and recursion used for iteration
+Lalan doesn't have loops so pattern matching and recursion used for iteration
 ##### Pattern matching in functions
 
 ```
@@ -576,7 +514,7 @@ fun <funcname> [arguments]
     | <pattern1> [when guard1] -> <body1>
     ...
 ```
-Function arguments are sequentially matched against patterns. If a match succeeds and the optional guard is true, 
+Function arguments are sequentially matched against patterns. If a match succeeds and the optional guard is true,
 the corresponding body is evaluated.
 If there is no matching pattern with a true guard sequence, runtime error occurs.
 
@@ -832,11 +770,11 @@ It is simple and powerful system but it tightly bounds functions to only one pro
 Problem occurs when some function must belong to two or more protocols simultaneously
 For example, we can have protocol for collection with methods 'at' and 'elem' and protocol for
 mutable collection with methods 'at' 'elem' 'put' 'del'.
-Mixins or Inheritance can solve this problem but obin goes the other way.
-In obin generic functions and protocols(interfaces) declared apart from each other
+Mixins or Inheritance can solve this problem but lalan goes the other way.
+In lalan generic functions and protocols(interfaces) declared apart from each other
 and interfaces combine one or more previously declared generics.
 Type doesn't need to signal implementation of interface but needs to implement all generic functions belonging to interface
-Obin generic functions can dispatch on argument in any position
+Lalan generic functions can dispatch on argument in any position
 
 
 #### Generics
@@ -885,7 +823,7 @@ interface
     ...
 
 
-// Interface combines one or more generic functions and can be used for type check in pattern matching 
+// Interface combines one or more generic functions and can be used for type check in pattern matching
 // generic functions must be declared at this point
 
 interface
@@ -951,8 +889,8 @@ mylist `kindof` Sub = False
 ```
 
 #### Traits
-Trait is unit for code reuse in obin.
-They are simple maps {generic = implementation} and can be used in extend statement 
+Trait is unit for code reuse in lalan.
+They are simple maps {generic = implementation} and can be used in extend statement
 to share common behaviour between different types
 
 ```
@@ -1003,9 +941,9 @@ Example directory structure
 |   +-- module1.obn
 |   +-- module3.obn
 ```
-if we run Obin with
+if we run Lalan with
 ```
-python targetobin.py program.obn
+python targetlalan.py program.obn
 ```
 Module search path would look something like  [BASEDIR, STD, OBINSTD] where
 
@@ -1016,7 +954,7 @@ Module search path would look something like  [BASEDIR, STD, OBINSTD] where
 #### Loading order
 * prelude.obn. If prelude is absent execution will be terminated. All names declared in prelude would be visible in all other modules
 * stdlib modules used by runtime (derive.obn, bool.obn, num.obn, bit.obn, env.obn, string.obn, symbol.obn, vector.obn, list.obn, function.obn, fiber.obn, trait.obn, tuple.obn, map.obn, seq.obn, lazy.obn, datatype.obn)
-* running script (in our case program.obn). After loading this sript obin searches for function named 'main' and executes it. Result of 'main' function would be result of program
+* running script (in our case program.obn). After loading this sript lalan searches for function named 'main' and executes it. Result of 'main' function would be result of program
 
 #### Import and export
 ```
