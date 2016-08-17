@@ -95,49 +95,43 @@ fun filter(predicate, coll) =
         in _filter(predicate, coll)
     in coroutine(_wrap)
 
-fun test_partial() =
-(
-    affirm:is_equal( &`-`(1)(2), (-1) )
-    affirm:is_equal(`-`.(1)(2), (-1) )
 
-    affirm:is_equal(
-                &flip(`-`, 1)(2),
-                1
-    )
+fun var (v) =
+    let co =
+        coroutine(
+            fun (yield, v) =
+                let fun loop(v) =
+                    let
+                        msg = yield(v)
+                    in
+                        match msg
+                            | #Read = loop(v)
+                            | (#Write, new_val) =
+                                loop(new_val)
 
-    affirm:is_equal(
-                flip.(`-`, 1)(2),
-                1
-    )
+                in loop(v)
+        )
 
-    affirm:is_equal(
-                (flip .. `-` .. 1)(2),
-                1
-    )
-
-    let add1 = &add(1)
     in
     (
-        affirm:is_equal(add1(2), 3)
-        affirm:is_equal(add.(1)(2), 3)
-    )
-)
-
-fun test_composition() =
-    let
-        add1_mul2 =  add(1) >>  mul(2)
-        mul2_add1 = add(1) << mul(2)
-        add_1_twice = twice(add .. 1)
-    in
-    (
-        affirm:is_equal(add1_mul2(4), 10)
-        affirm:is_equal(mul2_add1(4), 9)
-        affirm:is_equal(add_1_twice(9), 11)
+        co(v)
+        Var(co)
     )
 
-fun test () =
-(
-    test_partial()
-    test_composition()
-//    test_pipe()
+(fun var (v) =
+    co = coroutine(
+            (fun (yield, v) =
+                (fun loop(v) =
+                    msg = yield(v)
+                    (match msg
+                        | #Read = loop(v)
+                        | (#Write, new_val) =
+                            loop(new_val)
+                    )
+                )
+            )
+        )
+
+    co(v)
+    Var(co)
 )
