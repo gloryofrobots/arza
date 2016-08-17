@@ -1,0 +1,226 @@
+import coro
+import affirm
+import io
+import seq
+import tuple
+import list
+
+fun test_simple () =
+    let co =
+        coro:spawn(
+             (yield, x) ->
+                let _co1 =
+                    coro:spawn(
+                         (yield2, y) ->
+                            let
+                                fun send() = yield2(42 + y)
+                            in  send()
+                    )
+                in
+                (
+                   affirm:is_equal(x, 23)
+
+                   let
+                        x1 = yield(_co1(x))
+                        x2 = yield(x1)
+                   in
+                   (
+                       affirm:is_equal(x1, 34)
+                       affirm:is_equal(x2, 44)
+                       x2
+                   )
+                )
+        )
+    in
+    (
+        affirm:is_equal(co(23), 65)
+        affirm:is_equal(co(34), 34)
+        affirm:is_equal(co(44), 44)
+    )
+
+
+
+fun test_seq (enum) =
+    let
+        fun filter(predicate, coll) =
+            coro:spawn(
+                fun (yield) =
+                    let
+                        fun _filter
+                            | (p, []) = empty(coll)
+                            | (p, x::xs) =
+                                if p(x) then
+                                (
+                                    yield(x)
+                                    _filter(p, xs)
+                                )
+                                else _filter(p, xs)
+
+                     in _filter(predicate, coll)
+            )
+
+        fun map2(fn, sq) =
+            let
+                fun _wrap_map (yield) =
+                    let fun _map
+                        | f, [] = empty(sq)
+                        | f, x::xs =
+                        (
+                            yield(f(x))
+                            _map(f, xs)
+                        )
+                    in _map(fn, sq)
+            in coro:spawn(_wrap_map)
+
+        fun map(fn, sq) =
+            coro:spawn(
+                fun (yield) =
+                    seq:foreach(
+                        fun (x) = yield(fn(x)),
+                        sq
+                    )
+            )
+
+        fun drop(count, sq) =
+            coro:spawn(
+                fun (yield) =
+                    let fun _drop
+                            | _, [] =
+                                empty(sq)
+                            | 0, s =
+                                seq:traverse(map(yield, s))
+                            | n, x::xs =
+                                _drop(n-1, xs)
+
+                    in _drop(count, sq)
+            )
+
+        fun each(sq) =
+            coro:spawn(
+                fun (yield) =
+                    (fun | [] = empty(sq)
+                         | s = seq:traverse(
+                                 map(yield, s)
+                               )
+                    )(sq)
+
+            )
+        numbers = enum(10)
+        ys =
+            seq:take(10,
+                map(x -> (x, str(x)),
+                    drop(3,
+                         filter(odd, numbers))))
+
+         x1::x2::xs = numbers
+    in
+    (
+        affirm:is_equal(
+            ys,
+            [(17, "17"), (19, "19"), (21, "21"), (23, "23"), (25, "25"), (27, "27"), (29, "29"), (31, "31"), (33, "33"), (35, "35")]
+        )
+        affirm:is_equal(x1, 36)
+        affirm:is_equal(x2, 37)
+    )
+
+fun test_ref() =
+    let
+        v = coro:ref(2)
+    in
+    (
+        affirm:is_equal(!v, 2)
+        affirm:is_equal(!v, 2)
+        affirm:is_equal(!v, 2)
+        v := 3
+        affirm:is_equal(!v, 3)
+        affirm:is_equal(!v, 3)
+        affirm:is_equal(!v, 3)
+    )
+
+fun test_basic () =
+    let co =
+        coro:spawn(
+            fun(yield, q) =
+                let
+                    _ = io:print("spawned function start")
+                    x = yield(q + 1)
+                    _ = io:print(#x, x)
+                    y = yield(1 + x)
+                    _ = io:print(#y, y)
+                    z = yield(1 + y)
+                    _ = io:print(#z, z)
+                in
+                (
+                    io:print(#xyz, x, y, z)
+                    x + y + z
+                )
+        )
+    in
+    (
+        let
+            _ = io:print("normal flow")
+            a = co(10)
+            _ = _p_(#a, a)
+            b = co(a)
+            _ = _p_(#b, b)
+            c = co(b)
+            _ = _p_(#c, c)
+            d = co(c)
+            _ = _p_(#d, c)
+        in
+            io:print(#abcd, a,b,c, d)
+    )
+fun enum_from(num) =
+    let co = coro:spawn(
+        fun(yield, _from) =
+            let
+                fun _looper(num) =
+                (
+                   yield(num)
+                   _looper(num + 1)
+                )
+            in
+            (
+                yield(_from)
+                _looper(_from)
+            )
+        )
+    in
+    (
+        co(num)
+        co
+    )
+
+fun enum_from_2(num) =
+    coro:loop(
+        (looper) ->
+             num -> looper(num + 1)
+    ,
+    num)
+
+fun test_enum() =
+    let
+        numbers = enum_from_2(10)
+        x::x1::x2::xs = numbers
+    in
+    (
+        io:print(x,x1,x2,xs)
+
+        io:p(
+            seq:map(x ->
+                     let x::xs = numbers
+                     in (x)
+                    ,list:range(0, 10)
+            )
+        )
+    )
+
+fun test () =
+(
+    test_basic()
+    test_simple()
+    test_enum()
+    test_seq(enum_from)
+    test_seq(enum_from_2)
+    test_ref()
+)
