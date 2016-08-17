@@ -541,6 +541,8 @@ def _compile_ASSIGN(compiler, code, node):
     ntype = node_type(left)
     if ntype == NT_NAME:
         # print "NAME ASSIGN"
+        symbol = _get_symbol_name_or_empty(compiler.process, left)
+        _declare_local(compiler, symbol)
         _compile(compiler, code, exp)
         _emit_store_name(compiler, code, left)
     elif is_simple_pattern(left, False):

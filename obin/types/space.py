@@ -490,6 +490,7 @@ def isdatatype(w):
     from obin.types.datatype import W_DataType
     return isinstance(w, W_DataType)
 
+
 def isextendable(w):
     from obin.types.datatype import W_Extendable
     return isinstance(w, W_Extendable)
@@ -513,6 +514,20 @@ def isoperator(w):
 
 
 ############################################################
+
+def newcoroutine(process, fn):
+    from obin.types.coroutine import newcoroutine
+    assert isfunction(fn)
+    return newcoroutine(process, fn)
+
+
+def iscoroutine(co):
+    from obin.types.coroutine import W_Coroutine
+    return isinstance(co, W_Coroutine)
+
+
+############################################################
+
 
 def safe_w(obj):
     if not isany(obj):

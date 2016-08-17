@@ -191,6 +191,14 @@ def concat(tupl1, tupl2):
     return W_Tuple(tupl1.elements + tupl2.elements)
 
 
+def prepend(tupl, val):
+    type_check(tupl)
+    if space.isunit(tupl):
+        return space.newtuple([val])
+
+    return W_Tuple([val] + tupl.elements)
+
+
 def to_list(t):
     type_check(t)
     if space.isrealtuple(t):

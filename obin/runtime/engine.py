@@ -9,7 +9,7 @@ PRELUDE_FILE = u"prelude"
 
 STD_MODULES = [u"bool", u"num", u"bit", u"env",
                u"string", u"vector",
-               u"list", u"function", u"fiber", u"trait",
+               u"list", u"function", u"coro", u"trait",
                u"tuple", u"map", u"seq",
                u"datatype",
                ]

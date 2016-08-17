@@ -32,20 +32,30 @@ class Fiber:
         self.routine = routine
         self.routine.activate()
 
-    def is_empty(self):
+    def is_complete(self):
         if not self.routine:
             return False
-
-        return self.routine.is_closed()
+        return self.routine.is_complete()
 
     def is_finished(self):
+        if not self.routine:
+            return False
         return self.routine.is_closed()
 
-    def is_working(self):
-        return not self.routine.is_closed()
-
-    def is_waiting(self):
+    def is_passive(self):
+        if not self.routine:
+            return True
         return self.routine.is_suspended()
+
+    def is_active(self):
+        if not self.routine:
+            return False
+        return self.routine.is_inprocess()
+
+    def is_terminated(self):
+        if not self.routine:
+            return False
+        return self.routine.is_terminated()
 
     def push_into_stack(self, val):
         self.routine.stack.push(val)
@@ -199,7 +209,7 @@ class Process(object):
 
     def switch_to_fiber(self, fiber, result):
         assert fiber is not self.fiber
-        assert self.fiber.is_working()
+        assert not self.fiber.is_finished()
 
         assert fiber.routine.is_suspended()
 
@@ -310,7 +320,7 @@ class Process(object):
         self.fiber = None
         self.fibers = []
 
-    def __terminate_with_signal(self , signal, trace):
+    def __terminate_with_signal(self, signal, trace):
         _print_trace(self.io.stderr, signal, trace)
         self.__terminate()
 

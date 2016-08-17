@@ -85,7 +85,7 @@ class Types:
         self.Function = newtype(_s(u"Function"))
         self.Partial = newtype(_s(u"Partial"))
         self.Generic = newtype(_s(u"Generic"))
-        self.Fiber = newtype(_s(u"Fiber"))
+        self.FiberChannel = newtype(_s(u"FiberChannel"))
         self.Coroutine = newtype(_s(u"Coroutine"))
         self.Trait = newtype(_s(u"Trait"))
         self.Interface = newtype(_s(u"Interface"))
