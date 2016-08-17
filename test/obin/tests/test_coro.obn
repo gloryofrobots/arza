@@ -63,8 +63,8 @@ fun test_seq (enum) =
             let
                 fun _wrap_map (yield) =
                     let fun _map
-                        | f, [] = empty(sq)
-                        | f, x::xs =
+                        | (f, []) = empty(sq)
+                        | (f, x::xs) =
                         (
                             yield(f(x))
                             _map(f, xs)
@@ -85,11 +85,11 @@ fun test_seq (enum) =
             coro:spawn(
                 fun (yield) =
                     let fun _drop
-                            | _, [] =
+                            | (_, []) =
                                 empty(sq)
-                            | 0, s =
+                            | (0, s) =
                                 seq:traverse(map(yield, s))
-                            | n, x::xs =
+                            | (n, x::xs) =
                                 _drop(n-1, xs)
 
                     in _drop(count, sq)
@@ -142,33 +142,25 @@ fun test_basic () =
         coro:spawn(
             fun(yield, q) =
                 let
-                    _ = io:print("spawned function start")
                     x = yield(q + 1)
-                    _ = io:print(#x, x)
                     y = yield(1 + x)
-                    _ = io:print(#y, y)
                     z = yield(1 + y)
-                    _ = io:print(#z, z)
                 in
                 (
-                    io:print(#xyz, x, y, z)
                     x + y + z
                 )
         )
     in
     (
         let
-            _ = io:print("normal flow")
             a = co(10)
-            _ = _p_(#a, a)
             b = co(a)
-            _ = _p_(#b, b)
             c = co(b)
-            _ = _p_(#c, c)
             d = co(c)
-            _ = _p_(#d, c)
         in
-            io:print(#abcd, a,b,c, d)
+        (
+            affirm:is_equal((a,b,c,d), (11, 12, 13, 36))
+        )
     )
 fun enum_from(num) =
     let co = coro:spawn(
@@ -204,14 +196,15 @@ fun test_enum() =
         x::x1::x2::xs = numbers
     in
     (
-        io:print(x,x1,x2,xs)
+        affirm:is_equal((x,x1,x2), (11, 12, 13))
 
-        io:p(
+        affirm:is_equal(
             seq:map(x ->
                      let x::xs = numbers
                      in (x)
                     ,list:range(0, 10)
-            )
+            ),
+            [14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
         )
     )
 

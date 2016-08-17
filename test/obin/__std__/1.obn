@@ -135,3 +135,21 @@ fun var (v) =
     co(v)
     Var(co)
 )
+
+(fun loop(...a) =
+        let (init_fn, args) = tuple:split(a)
+        co = spawn(
+            (fun (yield) =
+                let fn = init_fn(
+                    (fun (...args) =
+                        apply(yield, args)
+                        apply(fn,  args)
+                    )
+                )
+                yield()
+                apply(fn,  args)
+            )
+        )
+   co()
+   co
+)

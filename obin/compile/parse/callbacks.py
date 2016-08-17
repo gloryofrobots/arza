@@ -573,15 +573,20 @@ def prefix_throw(parser, op, node):
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
     curnode = parser.node
-    e = expression(parser.fun_pattern_parser, 0)
-
-    if parser.token_type == TT_COMMA:
-        els = [e]
-        advance_expected(parser, TT_COMMA)
-        els = _parse_comma_separated_to_one_of(parser.fun_pattern_parser, arg_terminator, initial=els,
-                                               advance_terminator=False)
-        pattern = nodes.create_tuple_node_from_list(curnode, els)
+    if parser.token_type == TT_LPAREN:
+        advance_expected(parser, TT_LPAREN)
+        if parser.token_type == TT_RPAREN:
+            pattern = nodes.create_unit_node(curnode)
+        else:
+            els = _parse_comma_separated_to_one_of(parser.fun_pattern_parser, arg_terminator,
+                                                   advance_terminator=False)
+            pattern = nodes.create_tuple_node_from_list(curnode, els)
+        advance_expected(parser, TT_RPAREN)
     else:
+        e = expression(parser.fun_pattern_parser, 0)
+        if parser.token_type == TT_COMMA:
+            parse_error(parser, u"Expected function arguments enclosed in parenthesis", curnode)
+
         pattern = ensure_tuple(e)
 
     if parser.token_type == TT_WHEN:
@@ -592,6 +597,39 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
         check_token_types(parser, arg_terminator)
 
     return pattern
+
+# def _parse_func_pattern(parser, arg_terminator, guard_terminator):
+#     curnode = parser.node
+#     if parser.token_type == TT_LPAREN:
+#         advance_expected(parser, TT_LPAREN)
+#         if parser.token_type == TT_RPAREN:
+#             pattern = nodes.create_unit_node(curnode)
+#         else:
+#             pattern = expression(parser.fun_pattern_parser, 0)
+#         advance_expected(parser, TT_RPAREN)
+#     else:
+#         pattern = expression(parser.fun_pattern_parser, 0)
+#         if parser.token_type == TT_COMMA:
+#             parse_error(parser, u"ty match expression", node)
+#
+#
+#     if parser.token_type == TT_COMMA:
+#         els = [e]
+#         advance_expected(parser, TT_COMMA)
+#         els = _parse_comma_separated_to_one_of(parser.fun_pattern_parser, arg_terminator, initial=els,
+#                                                advance_terminator=False)
+#         pattern = nodes.create_tuple_node_from_list(curnode, els)
+#     else:
+#         pattern = ensure_tuple(e)
+#
+#     if parser.token_type == TT_WHEN:
+#         advance(parser)
+#         guard = expression(parser.guard_parser, 0, guard_terminator)
+#         pattern = node_2(NT_WHEN, __ntok(guard), pattern, guard)
+#     else:
+#         check_token_types(parser, arg_terminator)
+#
+#     return pattern
 
 
 ####################################################

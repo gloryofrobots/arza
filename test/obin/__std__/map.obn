@@ -10,7 +10,7 @@ extend Map (
 
     def str(self) =
         // TODO REMOVE THIS NONSESNSE
-        let fun _joiner((fst, snd),) =
+        let fun _joiner((fst, snd)) =
             str(fst) ++ "=" ++ repr(snd)
         in "{"
                 ++ string:join_with(_joiner, to_seq(self), ", ") ++

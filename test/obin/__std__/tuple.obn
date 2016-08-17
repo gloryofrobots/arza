@@ -23,5 +23,5 @@ extend Tuple (
 )
 
 fun split
-    | ((x,),) = (x, ())
-    | ((x, ...rest),) = (x, rest)
+    | ((x)) = (x, ())
+    | ((x, ...rest)) = (x, rest)

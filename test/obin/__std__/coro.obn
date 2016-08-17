@@ -38,7 +38,6 @@ fun loop(...a) =
         (init_fn, args) = tuple:split(a)
         co = spawn(
             fun (yield) =
-            (
                 let
                     fn = init_fn(
                         fun (...args) =
@@ -53,39 +52,12 @@ fun loop(...a) =
 //                    let v = yield() in io:p(#v, v)
                     apply(fn,  args)
                 )
-            )
         )
     in
     (
        co()
        co
     )
-
-//// spawns and starts coroutine
-//fun run(...args) =
-//    let
-//        (fn, real_args) =
-//            match args
-//                | (fn of Function,) = (fn,())
-//                | (fn of Function, ..._args) = (fn, _args)
-//
-//        fun _run(yield) =
-//        (
-//            _p_("--- wrapper start")
-//            let v = yield() in (_p_(#v, v) yield(v))
-//
-//
-//            _p_("--- 0", fn, real_args)
-//            apply(fn, prepend(yield, real_args))
-//        )
-//        co = spawn(_run)
-//    in
-//    (
-//       _p_("--- start", fn, real_args)
-//       co()
-//       co
-//    )
-
 
 ///////////////////////////////////////////////////////
 

@@ -9,7 +9,7 @@ fun _batch(checker, fn, calls) =
     let calls_list = to_seq(calls)
     in seq:foreach(
             fun
-                | ((c1, c2),) = checker(apply(fn, c1), c2)
+                | ((c1, c2)) = checker(apply(fn, c1), c2)
                 | ([c1, c2]) = checker(apply(fn, c1), c2)
             ,
             calls_list
@@ -42,8 +42,8 @@ fun is_equal_all(...args) =
 
 
 fun is_equal
-    | val1 of Float,  val2 of Float = is_equal_float(val1, val2)
-    | val1, val2  =
+    | (val1 of Float,  val2 of Float) = is_equal_float(val1, val2)
+    | (val1, val2)  =
         if val1 != val2 then
             fail([val1, "!=", val2])
         else

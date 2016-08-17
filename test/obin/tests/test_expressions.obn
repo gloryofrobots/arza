@@ -129,9 +129,7 @@ fun test_small_functions_syntax() =
     let fun f3(a, b, c) | (0, 1, c) = c
     in affirm:is_equal(f3(0, 1, 42), 42)
 
-    // TODO FIX IT
-    // there issue in parser and maybe in entire concept of function patterns
-    let fun f4 ((),) = ((()))
+    let fun f4 (()) = ((()))
     in affirm:is_equal( f4(()), () )
 
     let fun f5() = ( [42,43,44]
@@ -152,8 +150,8 @@ fun test_whitespaces_in_expressions() =
 
     let l2 =
         fun
-            | [hd::tl], (1,2,3), {x=2, y=3} = 24
-            | _, y, z = 23
+            | ([hd::tl], (1,2,3), {x=2, y=3}) = 24
+            | (_, y, z) = 23
 
     in affirm:is_equal(
         l2([[1,2]], (1,2,3), {x=2, y=3}),
@@ -161,8 +159,8 @@ fun test_whitespaces_in_expressions() =
     )
 
     affirm:is_equal (
-        (fun | [hd::tl], (1,2,3), {x=2, y=3} = 24
-             | _, y, z = 23)(
+        (fun | ([hd::tl], (1,2,3), {x=2, y=3}) = 24
+             | (_, y, z) = 23)(
                 [[1,2]], (1,2,3), {x=2, y=3}),
         24
     )
@@ -171,8 +169,8 @@ fun test_whitespaces_in_expressions() =
 
     affirm:is_equal(
          (fun
-            | 1, 2, 3 = 11
-            | 2, 4, 5 = 22) (
+            | (1, 2, 3) = 11
+            | (2, 4, 5) = 22) (
                     1,
                         2,
 
@@ -251,8 +249,8 @@ fun test_whitespaces_in_expressions() =
  x=2,
 
  l= fun
-        | 1, 2 = 1
-        | 2, 3 = 2,
+        | (1, 2) = 1
+        | (2, 3) = 2,
     n = 1
     }
     in (

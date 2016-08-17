@@ -8,7 +8,7 @@ fun ++++/() = 42
 fun ++>>(x, y) = 42
 fun ++-+(x, y) = 42
 fun ++---^--^(x, y)
-    | x, y = 42
+    | (x, y) = 42
 
 
 // compiler single pass problem example
@@ -75,17 +75,17 @@ fun test_simple () =
 fun test_case () =
 let
     fun f_c1
-        | a, b, c = a + b + c
+        | (a, b, c) = a + b + c
 
     fun f_c2
-        | a of Bool, b of String, c = #first
-        | a of Bool, b, c = #second
-        | a, b, c = #third
+        | (a of Bool, b of String, c) = #first
+        | (a of Bool, b, c) = #second
+        | (a, b, c) = #third
 
     fun f_c3
-        | 0, 1, c when c < 0 =  #first
-        | a of Bool, b of String, c = #second
-        | a of Bool, b, c when b + c == 40 = #third
+        | (0, 1, c) when c < 0 =  #first
+        | (a of Bool, b of String, c) = #second
+        | (a of Bool, b, c) when b + c == 40 = #third
 in
 (
     affirm:is_equal(f_c1(1, 2, 3), 6)
@@ -123,7 +123,7 @@ fun test_base () =
     //////////////////////////////////////////////////////////////////////////
 
     let fun f5 (a1, a2, a3, a4, a5, ...rest)
-        | x, (y,z), a, b, {name=name, age=(years, month)}, _ =
+        | (x, (y,z), a, b, {name=name, age=(years, month)}, _) =
             (x, y, z, a, b, name, years, month, rest)
 
     in affirm:is_equal(
@@ -145,8 +145,8 @@ fun test_base () =
 
     let
         fun func1(a1, a2, a3, a4, a5, a6, a7, a8, ...a9)
-            | 1, 2, 3, 4, 5, var0, var1, var2, var4 = (var0, var1, var2, var4)
-            | _, _, _, _, _, _, _, {key1, var1 @ key2, key3=25},  ([var2, #second, var3 @ #third, ...var4],) =
+            | (1, 2, 3, 4, 5, var0, var1, var2, var4) = (var0, var1, var2, var4)
+            | (_, _, _, _, _, _, _, {key1, var1 @ key2, key3=25},  ([var2, #second, var3 @ #third, ...var4])) =
                 (var1, var2, var3, var4)
 
     in
@@ -171,7 +171,8 @@ fun test_base () =
     let fun func3(arg)
         | 1 = #first
         | 42 = #second
-        | ((),) = #third
+        // previous cases are tuples of 1 argument, so single () will cause error
+        | (()) = #third
 
     in affirm:is_equal_batch(
         func3,
@@ -193,11 +194,11 @@ fun test_base () =
     let
         //destruct func
         fun fn_simple1(a1, a2, a3, ...a4)
-            | arg1, arg2, {key1, key2}, rest = (arg1, arg2, key1, key2, rest)
+            | (arg1, arg2, {key1, key2}, rest) = (arg1, arg2, key1, key2, rest)
 
         //case func
         fun fn_case1(arg1, arg2, a3, ...rest)
-            | _,  _, { var1 @ key1=2, key2} of Map, _ = (arg1, arg2, var1, key2, rest)
+            | (_,  _, { var1 @ key1=2, key2} of Map, _) = (arg1, arg2, var1, key2, rest)
 
         //case func 2
         fun fn_case2(arg1, arg2, a3 of Map, ...rest) =
@@ -279,7 +280,7 @@ fun test_base () =
     ////////////////////////////////////////////////
     let
         fun f3 (x, l)
-           | _, [a, b] = x + a + b
+           | (_, [a, b]) = x + a + b
         f4_1 = (x, [a, b]) -> x + a + b
     in
     (

@@ -24,15 +24,15 @@ extend L
 extend Some
 (
     def eq
-        | self, val of Some = val == None
-        | self, _ = False
+        | (self, val of Some) = val == None
+        | (self, _) = False
 )
 
 extend None
 (
     def eq
-        | self, {val} of Some = val == None
-        | self, _ of None = True
+        | (self, {val} of Some) = val == None
+        | (self, _ of None) = True
 )
 
 fun test () =

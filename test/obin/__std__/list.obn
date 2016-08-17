@@ -15,7 +15,7 @@ fun range(first of Int, last of Int) =
 
 fun range_by (first of Int, last of Int, step of Int) =
     let fun _range_by
-        | N, X, D, L when N >= 4 =
+        | (N, X, D, L) when N >= 4 =
             let
                 Y = X - D
                 Z = Y - D
@@ -23,13 +23,13 @@ fun range_by (first of Int, last of Int, step of Int) =
             in
                 _range_by(N - 4, W - D, D, W :: Z :: Y :: X :: L)
 
-        | N, X, D, L when N >= 2 =
+        | (N, X, D, L) when N >= 2 =
             let Y = X - D
             in _range_by(N - 2, Y - D, D, Y :: X :: L)
 
-        | 1, X, _, L = X :: L
+        | (1, X, _, L) = X :: L
 
-        | 0, _, _, L = L
+        | (0, _, _, L) = L
     --------------------------------------------------
     in if step > 0 and first - step <= last or
             step < 0 and first - step >= last then
@@ -47,8 +47,8 @@ fun range_by (first of Int, last of Int, step of Int) =
 fun replicate(count, element) =
     if count >= 0 then
         let fun _replicate
-            | 0, _, l = l
-            | n, x, l = _replicate(n - 1, x, x :: l)
+            | (0, _, l) = l
+            | (n, x, l) = _replicate(n - 1, x, x :: l)
 
         in _replicate(count, element, [])
     else
