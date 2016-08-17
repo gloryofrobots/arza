@@ -1,0 +1,127 @@
+from obin:lang:_coro import (spawn, is_complete, is_initialised,
+                            is_terminated, is_active, is_passive,
+                            is_finished)
+import derive
+import tuple
+import io
+
+
+extend Coroutine
+(
+    use derive:TSized (is_empty)
+    def len(self) = throw NotImplementedError ("Coroutine can't define len")
+
+    def first(self) = self()
+    def rest(self) = self
+    def to_seq(self) = self
+    def empty(self) = []
+)
+
+///////////////////////////////////////////////////////
+
+// helper for creating looping generators
+// example
+// Infinite increment
+//fun enum_from_2(num) =
+//    coro:loop(
+          // first function remembers looper
+//        (looper) ->
+               // second function sends data to looper
+//             num -> looper(num + 1)
+//    )
+// instead of yield it gets looper function which do actual yielding back to receiver
+// WARNING expects function as first argument which returns actual worker
+// TASK of first function is to remember looper in its scope, so worker can access it
+
+fun loop(...a) =
+    let
+        (init_fn, args) = tuple:split(a)
+        co = spawn(
+            fun (yield) =
+            (
+                let
+                    fn = init_fn(
+                        fun (...args) =
+                        (
+                            apply(yield, args)
+                            apply(fn,  args)
+                        )
+                    )
+                in
+                (
+                    yield()
+//                    let v = yield() in io:p(#v, v)
+                    apply(fn,  args)
+                )
+            )
+        )
+    in
+    (
+       co()
+       co
+    )
+
+//// spawns and starts coroutine
+//fun run(...args) =
+//    let
+//        (fn, real_args) =
+//            match args
+//                | (fn of Function,) = (fn,())
+//                | (fn of Function, ..._args) = (fn, _args)
+//
+//        fun _run(yield) =
+//        (
+//            _p_("--- wrapper start")
+//            let v = yield() in (_p_(#v, v) yield(v))
+//
+//
+//            _p_("--- 0", fn, real_args)
+//            apply(fn, prepend(yield, real_args))
+//        )
+//        co = spawn(_run)
+//    in
+//    (
+//       _p_("--- start", fn, real_args)
+//       co()
+//       co
+//    )
+
+
+///////////////////////////////////////////////////////
+
+
+type Ref(val)
+
+fun ref(v) =
+    let co =
+       spawn(
+            fun (yield, v) =
+                let fun loop(v) =
+                    let
+                        msg = yield(v)
+                    in
+                        match msg
+                            | #Read = loop(v)
+                            | (#Write, new_val) =
+                                loop(new_val)
+
+                in loop(v)
+        )
+    in
+    (
+        co(v)
+        Ref(co)
+    )
+
+extend Ref
+(
+    use TRepr
+
+    def !(self) = self.val(#Read)
+
+    def :=(self, value) = self.val((#Write, value))
+
+    def ==(self, other) = self.val == other.val
+
+    def str(self) = "Var"
+)

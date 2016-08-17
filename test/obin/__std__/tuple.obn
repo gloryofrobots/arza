@@ -8,6 +8,8 @@ extend Tuple (
     use derive:TSized
     use TRepr
 
+    let ++ = _tuple:concat
+    let prepend = _tuple:prepend
     let to_seq = _tuple:to_list
     let slice = _tuple:slice
     let drop = _tuple:drop
@@ -19,3 +21,7 @@ extend Tuple (
         else
             "(" ++ string:join_with(repr, to_seq(self), ", ") ++ ")"
 )
+
+fun split
+    | ((x,),) = (x, ())
+    | ((x, ...rest),) = (x, rest)
