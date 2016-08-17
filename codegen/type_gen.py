@@ -33,7 +33,7 @@ TYPES = [
     mktype("Function", [C, A]),
     mktype("Partial", [C, A]),
     mktype("Generic", [C, A]),
-    mktype("Fiber", [C, A]),
+    mktype("FiberChannel", [C, A]),
     mktype("Coroutine", [C, A]),
 
     mktype("Trait", [A]),

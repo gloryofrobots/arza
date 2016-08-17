@@ -15,8 +15,8 @@ def presetup(process, module, stdlib):
     import obin.builtins.modules.module_tuple
     obin.builtins.modules.module_tuple.setup(process, stdlib)
 
-    import obin.builtins.modules.module_fiber
-    obin.builtins.modules.module_fiber.setup(process, stdlib)
+    import obin.builtins.modules.module_coro
+    obin.builtins.modules.module_coro.setup(process, stdlib)
 
     import obin.builtins.modules.module_bit
     obin.builtins.modules.module_bit.setup(process, stdlib)

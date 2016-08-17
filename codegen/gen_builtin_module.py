@@ -105,19 +105,30 @@ LIST = module("obin:lang:_list", [
     ])
 
 TUPLES = module("obin:lang:_tuple", [
+    func(func_name="to_list", func_native_name="_to_list", func_arity=1,
+             source_module="tuples", source_function="to_list"),
+
     func(func_name="slice", func_native_name="slice", func_arity=3,
              source_module="tuples", source_function="slice",
             arguments=[arg(2,0), arg(1,1, wrapper='api.to_i'), arg(0, 0, wrapper='api.to_i')]),
+
     func(func_name="take", func_native_name="take", func_arity=2,
              source_module="tuples", source_function="take",
             arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
+
     func(func_name="drop", func_native_name="drop", func_arity=2,
              source_module="tuples", source_function="drop",
             arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
 
-    func(func_name="to_list", func_native_name="_to_list", func_arity=1,
-             source_module="tuples", source_function="to_list"),
-    ])
+    func(func_name="prepend", func_native_name="prepend", func_arity=2,
+             source_module="tuples", source_function="prepend",
+            arguments=[arg(1, 0), arg(0, 0)]),
+
+    func(func_name="concat", func_native_name="concat", func_arity=2,
+             source_module="tuples", source_function="concat",
+            arguments=[arg(0, 1), arg(1, 1)]),
+    ]
+)
 
 STRING = module("obin:lang:_string", [
 
@@ -252,6 +263,10 @@ NUMBER = module("obin:lang:_number", [
              affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
 ])
 DATATYPE = module("obin:lang:_datatype", [
+    func(func_name="union_to_list", func_native_name="union_to_list", func_arity=1,
+             source_module="datatype", source_function="union_to_list"),
+    func(func_name="get_union", func_native_name="get_union", func_arity=1,
+             source_module="datatype", source_function="get_union", process=True,),
     func(func_name="record_keys", func_native_name="record_keys", func_arity=1,
              source_module="datatype", source_function="record_keys"),
     func(func_name="record_values", func_native_name="record_values", func_arity=1,
@@ -265,11 +280,11 @@ MAP = module("obin:lang:_map", [
              source_module="pmap", source_function="to_list"),
     ])
 
-# print generate(TUPLES)
+print generate(TUPLES)
 # print generate(LIST)
 # print generate(API)
 # print generate(BIT)
-print generate(NUMBER)
+# print generate(NUMBER)
 # print generate(STRING)
 # print generate(MAP)
 # print generate(DATATYPE)

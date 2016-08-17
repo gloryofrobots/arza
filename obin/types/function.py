@@ -49,7 +49,7 @@ class W_Function(W_Callable):
         length = api.length_i(args)
         if not self.is_variadic and length != self.arity:
             return throw_5(Errors.INVOKE_ERROR, space.newstring(u"Invalid count of arguments "),
-                           self, space.newint(length), space.newint(self.arity), args)
+                           self, space.newint(self.arity), space.newint(length), args)
 
         process.call_object(self, args)
 
