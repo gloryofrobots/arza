@@ -1,4 +1,4 @@
-# My experimental pregramming languages prototypes
+## My experimental programming languages
 
 - [Lalan](#lalan)
 - [Obin](#obin)
@@ -17,7 +17,7 @@ They share many common features and code base with differences mainly in parser 
 * Dynamic
 * Experimental and unique syntaxes (at least not known by me before)
 * Persistent data structures (lists, tuples, maps)
-* Pattern matching inspired by Erlang
+* Pattern matching inspired by Erlang and ML
 * Lexical clojures and lambdas
 * Usual number of primitives (if-else, let-in, try-catch)
 * User defined operators
@@ -30,7 +30,7 @@ They share many common features and code base with differences mainly in parser 
 
 ### List of languages
 
-#### [Obin](https://github.com/gloryofrobots/langs/tree/obin)
+#### Obin
 
 * Indentation-aware syntax inspired by F#, Haskell and Python
 * Juxtaposition used for function application
@@ -38,6 +38,8 @@ They share many common features and code base with differences mainly in parser 
 * Union types (like ADT, but in dynamic language their usefulness somewhat diminished)
 * Lazy evaluation via special syntax
 * Smart way of handling ambidextra operators
+
+#####[Repository](https://github.com/gloryofrobots/langs/tree/obin)
 
 ##### Example
 ```
@@ -99,7 +101,7 @@ fun nine_billion_names_of_god_the_integer () ->
 --------------------------
 ```
 
-#### [Lalan](https://github.com/gloryofrobots/langs/tree/lalan)
+#### Lalan
 * Original and clean syntax inspired by Lua and OCaml
 * Whitespace unaware parser
 * Widely known syntax for expressions
@@ -108,6 +110,7 @@ fun nine_billion_names_of_god_the_integer () ->
 * Custom operators
 * Name binding only via let-in expression
 
+#####[Repository](https://github.com/gloryofrobots/langs/tree/lalan)
 
 ##### Example
 
