@@ -52,7 +52,7 @@ def initialize(libdirs):
         return process, err
 
     # HERE ORDER IS IMPORTANT!!!!!
-    # imports derive.obn
+    # imports derive.lal
     process.std.postsetup(process)
     error.initialise(process)
     builtins.postsetup(process)

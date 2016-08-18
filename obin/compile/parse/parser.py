@@ -204,7 +204,7 @@ class ExpressionParser(BaseParser):
         infix(self, TT_INFIX_DOT_LPAREN, 95, infix_dot_lparen)
         infix(self, TT_INFIX_DOT_LCURLY, 95, infix_lcurly)
         infix(self, TT_INFIX_DOT_LSQUARE, 95, infix_lsquare)
-        # OTHER OPERATORS ARE DECLARED IN prelude.obn
+        # OTHER OPERATORS ARE DECLARED IN prelude.lal
 
 
 class TraitParser(BaseParser):

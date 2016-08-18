@@ -36,7 +36,7 @@ def load_module(process, name):
     modules = process.modules
     modules.before_load(name)
     raw = api.to_s(name)
-    path = "%s.obn" % raw.replace(":", os.sep)
+    path = "%s.lal" % raw.replace(":", os.sep)
 
     filename = find_module_file(path, modules.path)
 

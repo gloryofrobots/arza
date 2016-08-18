@@ -149,7 +149,7 @@ test_unary('~', OP_TABLE["~"], BIT_SHIFT_TESTS, RESULT)
 
 
 
-F = open("test_operators.obn", "w")
+F = open("test_operators.lal", "w")
 T =\
 """
 fun test() ->

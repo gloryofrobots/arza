@@ -244,7 +244,7 @@ Generation is not automatic, I manually run some script and copy paste it's stdo
 To run interpreter
 ```
 cd obin_py 
-python targetobin.py test/obin/main.obn
+python targetobin.py test/obin/main.lal
 ```
 Program will run painfully slowly with stock python so I recomend using pypy instead
 You may need pypy toolchain in the path. Look at ```obin_py/runobin.sh``` for details.
