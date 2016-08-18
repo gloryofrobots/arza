@@ -1,1 +1,0 @@
-this folder contains scripts where i draft some diviations from current syntax

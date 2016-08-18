@@ -1,7 +1,0 @@
-from obin:lang:_fiber import (spawn, activate, coroutine)
-import derive
-
-extend Fiber
-    use derive:TStr
-    use derive:TRepr
-    use derive:TEq

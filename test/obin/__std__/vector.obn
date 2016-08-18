@@ -1,6 +1,0 @@
-import derive
-
-extend Vector
-    use derive:TStr
-    use derive:TEq
-    use TRepr

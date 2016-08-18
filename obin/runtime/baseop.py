@@ -1,4 +1,0 @@
-
-""" Base operations implementations
-"""
-
