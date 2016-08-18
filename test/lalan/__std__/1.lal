@@ -1,122 +1,43 @@
 affirm:is_equal(add(v1, v2), Vec2(Point2(10, 12), Point2(14, 16)))
 
-affirm:is_equal (add v1 v2) (Vec2 (Point2 10 12)  (Point2 14 16))
-
-affirm:is_equal ~ add(v1, v2) ~ Vec2(Point2 ~ 10 ~ 12, Point2 ~ 14 ~ 16))
 
 affirm:is_equal(
-    add(v1, v2),
+    (fun (x, y) =
+        print(x, y)
+        z = x + sqrt(x)
+        transpose(x, y, sum((x,y,z)))
+    ),
     Vec2(
         Point2(10, 12),
         Point2(14, 16)
    )
-)
 
-(affirm:is_equal
-    (add v1 v2)
-    (Vec2
-        (Point2 10 12)
-        (Point2 14 16)))
-
-
-fun map(f, coll)
-    | f, [] = empty(coll)
-    | f, hd::tl = f(hd) :: map(f, tl)
-
-fun map
-    | f, [] = empty(coll)
-    | f, hd::tl = f(hd) :: map(f, tl)
-
-fun map
-    case (f, []) = empty(coll)
-    case (f, hd::tl) = f(hd) :: map(f, tl)
-
-fun map
-    | (f, []) = empty(coll)
-    | (f, hd::tl) = f(hd) :: map(f, tl)
-
-fun map (f, []) = empty(coll)
-    map (f, hd::tl) = f(hd) :: map(f, tl)
-
-map f [] = []
-map f hd::tl = f hd :: map f tl
-
-
-map f coll =
-    let map =
-        fun
-            | f [] = empty coll
-            | f hd::tl = f hd  :: map f tl) f coll
-
-
-fun filter <predicate coll> =
-    let fun _wrap <yield> =
-        let fun _filter
-            | p [] = empty coll
-            | p x::xs =
-            (:
-                if p x then
-                (:
-                    yield x
-                    (io.print
-                        match x
-                            | 0 = #null
-                            | 1 = #one
-                            | (a, b, c) = a + b + c)
-                    _filter p xs
-                :)
-                else
-                (:
-                    io.print x
-                    _filter p xs
-                :)
-            :)
-        in _filter predicate coll
-    in coroutine _wrap
-
-fun filter(predicate, coll) =
-    let _wrap(yield) =
-        let _filter
-            | p, [] = empty(coll)
-            | p, x::xs =
-                if p x then (
+(fun filter(predicate, coll) =
+    (fun _wrap(yield) =
+        (fun _filter
+            | (p, []) = empty(coll)
+            | (p, x::xs) =
+                (if p x then
                     yield(x)
                     io.print(
-                        match x
+                        (match x
                             | 0 = #null
                             | 1 = #one
                             | (a, b, c) = a + b + c
+                        )
                     )
                     _filter(p, xs)
-                ) else (
+                else
                     io.print(x)
                     _filter(p, xs)
                 )
-        in _filter(predicate, coll)
-    in coroutine(_wrap)
-
-
-fun var (v) =
-    let co =
-        coroutine(
-            fun (yield, v) =
-                let fun loop(v) =
-                    let
-                        msg = yield(v)
-                    in
-                        match msg
-                            | #Read = loop(v)
-                            | (#Write, new_val) =
-                                loop(new_val)
-
-                in loop(v)
         )
-
-    in
-    (
-        co(v)
-        Var(co)
+        _filter(predicate, coll)
     )
+    coroutine(_wrap)
+)
+
+
 
 (fun var (v) =
     co = coroutine(
@@ -153,3 +74,101 @@ fun var (v) =
    co()
    co
 )
+
+(fun nbn_1 () =
+    (fun _loop (n, g) =
+        (if g == 1 or n < g then
+           1
+        else
+            seq:foldl(
+                (fun _folder(q, res) =
+                    (if q > n - g then
+                        x = 0
+                    else
+                        x = _loop(n-g, q)
+                    )
+
+                    res + x
+                ),
+                1,
+                list:range(2, g)
+            )
+         )
+    )
+    string:join(
+        seq:map(
+            n => string:join_cast(
+               seq:map(
+                  (g => _loop n g)
+                  (list:range 1 n)
+               ),
+               " "
+            ),
+            list:range(1, 25)
+        ),
+        "\n"
+    )
+)
+
+(fun nbn_3 () =
+    string:join(
+        seq:map(
+            (fun(n) =
+                string:join_cast(
+                   seq:map(
+                        (fun (g) =
+                                (fun _loop (n, g) =
+                                    (if g == 1 or n < g then 1
+                                    else
+                                        seq:foldl(
+                                            (fun (q, res) =
+                                                res + 0 if q > n - g else _loop(n-g, q)
+                                            ),
+                                            1,
+                                            range(2, g)
+                                        )
+                                    )
+                                )
+                                _loop(n, g)
+                        ),
+                        range(1, n),
+                   ),
+                   " "
+                )
+           ),
+           range(1, 25),
+        )
+        "\n"
+    )
+)
+
+fun nbn_3 () =
+    string:join(
+        seq:map(
+            fun(n) =
+                string:join_cast(
+                   seq:map(
+                        fun (g) =
+                                let fun _loop (n, g) =
+                                        if g == 1 or n < g then 1
+                                        else
+                                            seq:foldl(
+                                                (fun (q, res) =
+                                                    res + 0 if q > n - g else _loop(n-g, q)
+                                                ),
+                                                1,
+                                                range(2, g)
+                                            )
+
+                                in _loop(n, g)
+                        ,
+                        range(1, n),
+                   ),
+                   " "
+                )
+           ,
+           range(1, 25),
+        )
+        "\n"
+    )
+
