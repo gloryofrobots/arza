@@ -103,6 +103,44 @@ fun f(x,y) =
 ```
 Most of the functions can be written with such *let-in* technique
 
+##### Scary cryptic example (Nine billion names of God the Integer)
+```
+fun nbn () =
+    string:join(
+        seq:map(
+            fun(n) =
+                string:join_cast(
+                   seq:map(
+                        (fun (g) =
+                            let
+                                fun _loop (n, g) =
+                                    if g == 1 or n < g then 1
+                                    else
+                                        seq:foldl(
+                                            (fun (q, res) =
+                                                if q > n - g  then
+                                                    res
+                                                else
+                                                    res + _loop(n-g, q)
+                                            ),
+                                            1,
+                                            list:range(2, g)
+                                        )
+
+                            in _loop(n, g)
+                        ),
+                        list:range(1, n)
+                   ),
+                   " "
+                )
+           ,
+           list:range(1, 25)
+        ),
+        "\n"
+    )
+```
+
+
 There are three main kinds of expressions
 * Top level expressions (import, export, from, fun, let, trait, interface, generic, type, prefix, infixl, infixr)
 * Pattern matching expressions inside function signature, after let expression or in match expression
@@ -1151,4 +1189,5 @@ Module search path would look something like  [BASEDIR, STD, LALANSTD] where
 * prelude.lal. If prelude is absent execution will be terminated. All names declared in prelude would be visible in all other modules
 * stdlib modules used by runtime (derive.lal, bool.lal, num.lal, bit.lal, env.lal, string.lal, symbol.lal, vector.lal, list.lal, function.lal, fiber.lal, trait.lal, tuple.lal, map.lal, seq.lal, lazy.lal, datatype.lal)
 * running script (in our case program.lal). After loading this sript lalan searches for function named 'main' and executes it. Result of 'main' function would be result of program
+
 
