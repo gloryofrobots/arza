@@ -1,4 +1,4 @@
-import obin:lang:_tuple
+import lalan:lang:_tuple
 import string
 import derive
 

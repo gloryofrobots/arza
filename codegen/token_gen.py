@@ -97,12 +97,12 @@ for name,pattern in TOKENS:
 
 """
 ## FOR PYTHON LEXER
-print "# ************************ OBIN TOKENS*****************************"
+print "# ************************ LALAN TOKENS*****************************"
 for number, token in enumerate(TOKENS):
     print "%s = %d" % (token[0],number)
 
 
-print "# ************************ OBIN TOKENS REPR *****************************"
+print "# ************************ LALAN TOKENS REPR *****************************"
 S = "__TT_REPR__ = ["
 for name,pattern in TOKENS:
     S += "%s, " % str(("u\"%s\"" % name))

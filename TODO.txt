@@ -139,8 +139,4 @@ match (1,2)
     | b1 -> a1.1
 
 --------------------------------
-
-trait Any for self
-    def id self -> obin:unique_id self
-    def type_id self -> obin:type_id self
 ---

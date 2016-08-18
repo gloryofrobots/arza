@@ -78,7 +78,7 @@ def module(module_name, funcs):
         funcs=funcs
     )
 
-LIST = module("obin:lang:_list", [
+LIST = module("lalan:lang:_list", [
     func(func_name="length", func_native_name="length", func_arity=1,
              source_module="plist", source_function="length"),
     func(func_name="is_empty", func_native_name="_is_empty", func_arity=1,
@@ -104,7 +104,7 @@ LIST = module("obin:lang:_list", [
             arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
     ])
 
-TUPLES = module("obin:lang:_tuple", [
+TUPLES = module("lalan:lang:_tuple", [
     func(func_name="to_list", func_native_name="_to_list", func_arity=1,
              source_module="tuples", source_function="to_list"),
 
@@ -130,7 +130,7 @@ TUPLES = module("obin:lang:_tuple", [
     ]
 )
 
-STRING = module("obin:lang:_string", [
+STRING = module("lalan:lang:_string", [
 
     func(func_name="to_list", func_native_name="to_list", func_arity=1,
              source_module="string", source_function="to_list"),
@@ -174,7 +174,7 @@ STRING = module("obin:lang:_string", [
     ])
 
 
-BIT = module("obin:lang:_bit",  [
+BIT = module("lalan:lang:_bit",  [
     func(func_name="bitnot", func_native_name="bitnot", func_arity=1,
              source_module="number", source_function="bitnot",
                 affirm_type='space.isint'),
@@ -206,7 +206,7 @@ BIT = module("obin:lang:_bit",  [
     ])
 
 
-API = module("obin:lang:_api", [
+API = module("lalan:lang:_api", [
     func(func_name="length", func_native_name="length", func_arity=1,
              source_module="api", source_function="length"),
     func(func_name="is_empty", func_native_name="is_empty", func_arity=1,
@@ -234,7 +234,7 @@ API = module("obin:lang:_api", [
             arguments=[arg(0, 0)]),
 ])
 
-NUMBER = module("obin:lang:_number", [
+NUMBER = module("lalan:lang:_number", [
     func(func_name="pow", func_native_name="_pow", func_arity=2,
          source_module="number", source_function="power",
          affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
@@ -262,7 +262,7 @@ NUMBER = module("obin:lang:_number", [
              source_module="number", source_function="le",
              affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
 ])
-DATATYPE = module("obin:lang:_datatype", [
+DATATYPE = module("lalan:lang:_datatype", [
     func(func_name="union_to_list", func_native_name="union_to_list", func_arity=1,
              source_module="datatype", source_function="union_to_list"),
     func(func_name="get_union", func_native_name="get_union", func_arity=1,
@@ -275,7 +275,7 @@ DATATYPE = module("obin:lang:_datatype", [
              source_module="datatype", source_function="record_index_of",
              arguments=[arg(1, 0), arg(0, 0)]),
     ])
-MAP = module("obin:lang:_map", [
+MAP = module("lalan:lang:_map", [
     func(func_name="to_list", func_native_name="_to_list", func_arity=1,
              source_module="pmap", source_function="to_list"),
     ])

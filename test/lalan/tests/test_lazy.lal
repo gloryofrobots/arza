@@ -19,8 +19,8 @@ fun test_sequences () ->
     lazy:doall (lazy:take 10 sqrs)
     affirm:is_equal (str sqrs) "[1, 4, 9, 16, 25, 36, 49, 64, 81, 100, ...]"
 
-    affirm:is_equal (obin:lang:is_seq sqrs) True
-    affirm:is_equal (obin:lang:is_seq lazy:LazyNil) True
+    affirm:is_equal (lalan:lang:is_seq sqrs) True
+    affirm:is_equal (lalan:lang:is_seq lazy:LazyNil) True
 
     sqrs_odd_inc = sqrs
                         |> partial lazy:filter (x => odd x)

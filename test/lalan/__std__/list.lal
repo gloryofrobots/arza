@@ -1,5 +1,5 @@
-import obin:lang:_list
-from obin:lang:_list import (tail, head)
+import lalan:lang:_list
+from lalan:lang:_list import (tail, head)
 import derive
 import seq
 import string

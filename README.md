@@ -769,9 +769,9 @@ let
 )
 // Also there are two operators in prelude responsible for creating curried functions
 // prefix
-fun &(func) = obin:lang:defpartial(func)
+fun &(func) = lalan:lang:defpartial(func)
 // infix
-fun ..(f, g) = obin:lang:defpartial(f)(g)
+fun ..(f, g) = lalan:lang:defpartial(f)(g)
 let
 (
    n = seq:map(&`+`(2), [1,2,3])

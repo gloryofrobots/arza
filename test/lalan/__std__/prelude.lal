@@ -1,4 +1,4 @@
-from obin:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+from lalan:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                              Function, Partial, Interface,
                              Generic, FiberChannel, Coroutine, Trait, Datatype, LazyVal, Env)
 
@@ -240,8 +240,8 @@ fun not_elem(x, c) = not(elem (x, c))
 
 fun identity(x) = x
 
-fun &(func) = obin:lang:defpartial(func)
-fun ..(f, g) = obin:lang:defpartial(f)(g)
+fun &(func) = lalan:lang:defpartial(func)
+fun ..(f, g) = lalan:lang:defpartial(f)(g)
 
 fun |>(x, f) = f(x)
 fun <|(f, x) = f(x)

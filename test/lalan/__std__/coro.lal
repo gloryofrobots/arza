@@ -1,4 +1,4 @@
-from obin:lang:_coro import (spawn, is_complete, is_initialised,
+from lalan:lang:_coro import (spawn, is_complete, is_initialised,
                             is_terminated, is_active, is_passive,
                             is_finished)
 import derive

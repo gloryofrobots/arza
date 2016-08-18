@@ -1,4 +1,4 @@
-import obin:lang:_map
+import lalan:lang:_map
 import string
 import derive
 

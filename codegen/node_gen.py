@@ -92,12 +92,12 @@ NODES = [
 
 
 ## FOR PYTHON LEXER
-print "# ************************ OBIN NODES*****************************"
+print "# ************************ LALAN NODES*****************************"
 for number, token in enumerate(NODES):
     print "%s = %d" % (token, number)
 
 
-print "# ************************ OBIN NODES REPR *****************************"
+print "# ************************ LALAN NODES REPR *****************************"
 S = "__NT_REPR__ = ["
 for name in NODES:
     S += "%s, " % str(("\"%s\"" % name))
@@ -108,7 +108,7 @@ print
 print "def node_type_to_s(ntype):"
 print "    return __NT_REPR__[ntype]"
 
-# print "# ************************ OBIN NODES MAPPING *****************************"
+# print "# ************************ LALAN NODES MAPPING *****************************"
 # for name in NODES:
 #     print "%s: %s," % (name.replace("NT_", "TT_"), name)
 

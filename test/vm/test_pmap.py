@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
-from obin.types import pmap, space, api
-from obin.runtime.error import ObinError
+from lalan.types import pmap, space, api
+from lalan.runtime.error import LalanError
 import unittest
 
 class PMapTestCase(unittest.TestCase):
@@ -18,7 +18,7 @@ class PMapTestCase(unittest.TestCase):
         self.assertEqual(api.at(m2, S(u"surname")), S(u"Alice"))
         self.assertEqual(api.lookup(m2, S(u"age"), undef), S(u"42"))
         self.assertNotEqual(api.lookup(m2, S(u"age"), undef), S(u"43"))
-        self.assertRaises(ObinError, api.at, m2, S(u"surname1"))
+        self.assertRaises(LalanError, api.at, m2, S(u"surname1"))
 
 def suite():
     # tests = ['test_pmap']

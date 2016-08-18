@@ -78,7 +78,7 @@ fun test () =
 
     affirm:is_throw(
         () ->
-            obin:lang:defextend(
+            lalan:lang:defextend(
                 T3,
                 [TListable],
                 [(to_seq, (self -> [self.v1]))]),
@@ -87,7 +87,7 @@ fun test () =
 
     affirm:is_not_throw(
         () ->
-            obin:lang:defextend(
+            lalan:lang:defextend(
                 T3,
                 [TListable],
                 [(to_list, (self -> [self.v1]))]),

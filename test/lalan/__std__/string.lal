@@ -1,4 +1,4 @@
-import obin:lang:_string
+import lalan:lang:_string
 import seq
 import derive
 

@@ -1,4 +1,4 @@
-from obin:lang:_bit import (bitand, bitor, bitxor, bitnot, lshift, rshift)
+from lalan:lang:_bit import (bitand, bitor, bitxor, bitnot, lshift, rshift)
 export (bitand, bitor, bitxor, bitnot, lshift, rshift)
 
 

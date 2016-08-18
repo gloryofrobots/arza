@@ -79,7 +79,7 @@ def gen_export():
     lines = [", ".join(line) for line in type_chunks]
     exports = ",\n                             ".join(lines)
 
-    TPL = "from obin:lang:_types import ({{exports}})"
+    TPL = "from lalan:lang:_types import ({{exports}})"
     print render(TPL, dict(exports=exports))
 
 gen_declaration()

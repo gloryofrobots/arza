@@ -1,5 +1,5 @@
-import obin:lang:_api
-import obin:lang:_datatype
+import lalan:lang:_api
+import lalan:lang:_datatype
 import derive
 import seq
 

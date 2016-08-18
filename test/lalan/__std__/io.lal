@@ -1,4 +1,4 @@
-from obin:lang:_io import (write, stdout)
+from lalan:lang:_io import (write, stdout)
 import seq
 
 

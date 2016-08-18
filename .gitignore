@@ -1,5 +1,4 @@
 .cproject
-obin_i*
 CMakeFiles/*
 .project
 CMakeCache.txt

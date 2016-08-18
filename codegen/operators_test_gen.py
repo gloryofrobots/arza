@@ -92,22 +92,22 @@ def format_result(test, evalstring=None):
         return "    affirm:is_throw(() -> %s, ())" % test
 
 
-def test_binary(py_op, obin_op, data, result):
+def test_binary(py_op, lalan_op, data, result):
     for x,y in pairwise(data):
-        test_str = "%s %s %s" % (str(x), obin_op, str(y))
+        test_str = "%s %s %s" % (str(x), lalan_op, str(y))
         eval_str = "%s %s %s" % (str(x), py_op, str(y))
         result.append(format_result(test_str, eval_str))
 
-def test_call_binary(obin_op, fn, data, result):
+def test_call_binary(lalan_op, fn, data, result):
     for x,y in pairwise(data):
-        test_str = "%s %s %s" % (str(x), obin_op, str(y))
+        test_str = "%s %s %s" % (str(x), lalan_op, str(y))
         eval_str = "%s(%s , %s)" % (fn, str(x), str(y))
         result.append(format_result(test_str, eval_str))
 
 
-def test_unary(py_op, obin_op, data, result):
+def test_unary(py_op, lalan_op, data, result):
     for x in data:
-        test_str = "%s (%s)" % (obin_op, str(x))
+        test_str = "%s (%s)" % (lalan_op, str(x))
         eval_str = "%s %s" % (py_op, str(x))
         result.append(format_result(test_str, eval_str))
 
