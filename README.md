@@ -616,10 +616,12 @@ extend MyList
     let lt = Order.[lt]
     def gt(x, y) = Order.[gt](x, y)
 )
+```
 
 ### Value expressions
 
 #### Literals
+
 ```
 fun f() =
 (
