@@ -8,7 +8,7 @@ To experiment with syntax and stackless virtual machine.
 It is not a production system.
 Lalan written in relatively 'slow' language python with not many speed optimisations.
 
-Running interpeter
+## Running
 ```
 python targetlalan.py test/lalan/main.lal
 ```
@@ -42,31 +42,31 @@ There are no REPL for lalan at the moment
 
 ## Guide
 
-- [Syntax](#syntax)
-- [Predefined types and literals](#predefined-types-and-literals)
-- [Data structures](#data-structures)
-- [Immutability](#immutability)
-- [Functions](#functions)
-- [Partial application](#partial-application)
-- [Operators](#operators)
-- [Expressions](#expressions)
-  - [if-elif-else](#if-elif-else)
-  - [match-with](#match-with)
-  - [let-in](#let-in)
-  - [try-catch-finally-throw](#try-catch-finally-throw)
-- [Types](#types)
+- [Syntax overview](#syntax-overview)
+- [Import and export](#import-and-export)
+- [Defining operators](#defining-operators)
+- [Module let expression](#module-let-expression)
+- [Function expression](#function-expression)
+- [Type expression](#type-expression)
 - [Single dispatch](#single-dispatch)
-  - [Generics](#generics)
-  - [Interfaces](#interfaces)
-  - [Extend type](#extend)
-  - [Traits](#traits)
+  - [Generic expression](#generic-expression)
+  - [Interface expression](#interface-expression)
+  - [Extend expression](#extend-expression)
+  - [Trait expression](#trait-expression)
+
+- [Value expressions](#value-expressions)
+  - [Literals](#literals)
+  - [Access and update operators](#access-and-update-operators)
+  - [Partial application](#partial-application)
+  - [if-elif-else expression](#if-elif-else)
+  - [Pattern matching](#pattern-matching)
+  - [let-in expression](#let-in)
+  - [try-catch-finally and throw expressions](#try-catch-finally-throw)
+
 - [Modules and bootstrap](#modules-and-bootstrap)
   - [Loading order](#loading-order)
-  - [Import and export](#import-and-export)
 
-
-### Syntax
-
+### Syntax overview
 Lalan uses original syntax inspired by Lua and OCaml
 Expression syntax similar to convenient scripting languages with infix and prefix operators and
 function calls via ```f(...)```. But instead of using some kind of block separators ({} or begin end)
@@ -142,7 +142,7 @@ fun f2() =
 f2() == 42
 ```
 
-#### Import and export
+### Import and export
 
 ```
 // this is comment
@@ -217,7 +217,7 @@ from my:modules:module1 hide (CONST)
 let x = f1() * f2()
 ```
 
-#### Operators
+### Defining operators
 
 ```
 // real code from prelude.lal
@@ -265,7 +265,9 @@ prefix (&, &, 96)
 // Operators defined in prelude.lal are global to all modules and environments
 // Operators defined in other module are local to this module and can't be exported
 ```
-#### Module let expression
+
+### Module let expression
+
 In Lalan *let* is the only way to bind name to variable.
 But except for that let expression actually performs pattern matching
 Value can be bind to name only once.
@@ -297,7 +299,7 @@ let
 )
 ```
 
-#### Function expression
+### Function expression
 ```
 //simple function
 fun <name> `(`{arg_pattern}`)` [ when  <value_expression>]= <value_expression> |
@@ -382,7 +384,7 @@ fun scanl(func, accumulator, coll) =
 
 ```
 
-#### Type expression
+### Type expression
 ```
 type <name> {field `,`} |
 type ( {<name> {field `,`}} )
@@ -419,7 +421,7 @@ match p with
 
 ```
 
-### Single dispatch (generic, trait, extend) expressions
+### Single dispatch
 Single dispatch based on protocols(interfaces, traits) became popular in many modern languages (Clojure, Elixir, Golang. Rust)
 Such system usually consists of types and protocols. Protocols consists of one (zero) or more methods
 Protocol (all it's methods) can be implemented for specific type. Protocol methods usually dispatch on first argument.
@@ -451,7 +453,7 @@ Type doesn't need to signal implementation of interface but needs to implement a
 Lalan generic functions can dispatch on argument in any position
 
 
-##### Generics
+#### Generic expression
 ```
 // Generic provides dispatch (single) on one of it's arguments
 
@@ -481,7 +483,7 @@ generic
 
 ```
 
-#### Interfaces
+#### Interface expression
 
 ```
 interface <name> '('{generic_name} ')' |
@@ -513,7 +515,7 @@ interface
 )
 ```
 
-#### Extend
+#### Extend expression
 ```
 extend <type>
 '('
@@ -564,7 +566,7 @@ let (
 )
 ```
 
-#### Traits
+#### Trait expression
 Trait is code reuse unit in lalan.
 They are simple maps {generic = implementation} and can be used in extend statement
 to share common behaviour between different types
@@ -615,11 +617,10 @@ extend MyList
     def gt(x, y) = Order.[gt](x, y)
 )
 
-#### Value expressions
+### Value expressions
 
-##### Basic expressions
+#### Literals
 ```
-
 fun f() =
 (
     // Booleans
@@ -678,12 +679,9 @@ fun f() =
     seq:fold((x, y) -> x + y, 0, [1,2,3,4,5])
 
 )
-
-
-
 ```
 
-##### Data structure operators
+#### Access and update operators
 
 Many lalan data structures borrowed from [Pixie language](https://github.com/pixie-lang/pixie).
 All of predefined data structures are immutable
@@ -752,9 +750,7 @@ let
 
 ```
 
-
-
-##### Partial application
+#### Partial application
 
 ```
 Lalan provides special syntax for partial application via .( operator
@@ -821,7 +817,7 @@ let
 )
 ```
 
-##### if-elif-else
+#### if-elif-else
 
 ```
 // If condition must have else branch and might have zero or many elif branches
@@ -854,7 +850,7 @@ let I2 =
 ```
 
 
-##### Pattern Matching
+#### Pattern Matching
 
 Pattern matching is a central element in Lalan design
 It used in function clauses, let bindings before = token, lambda functions before -> token and
