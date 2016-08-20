@@ -43,18 +43,19 @@ affirm:is_equal (add v1 v2) (Vec2 (Point2 10 12)  (Point2 14 16))
  , 1, 2]
 (fun loop (...a) =
         (init_fn, args) = tuple:split a
-        (co =
-            spawn
-                fun (yield) =
+        (co = spawn
+                (fun (yield) =
                     (fn = init_fn
-                        fun (...args) =
+                        (fun (...args) =
                             apply yield args
                             apply fn args
+                        )
                     )
                     yield ()
                     apply fn args
-
+                )
         )
+
    co ()
    co
 )
