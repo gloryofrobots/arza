@@ -11,6 +11,7 @@ affirm:is_equal(
         Point2(10, 12),
         Point2(14, 16)
    )
+)
 
 (fun filter(predicate, coll) =
     (fun _wrap(yield) =
@@ -76,23 +77,40 @@ fun foldl
 )
 
 (fun loop(...a) =
-        (init_fn, args) = tuple:split(a)
-        co = spawn(
-            (fun (yield) =
-                fn = init_fn(
-                    (fun (...args) =
-                        apply(yield, args)
-                        apply(fn,  args)
-                    )
+    let (init_fn, args) = tuple:split(a)
+    let co = spawn(
+        (fun (yield) =
+            let fn = init_fn(
+                (fun (...args) =
+                    apply(yield, args)
+                    apply(fn,  args)
                 )
-                yield()
-                apply(fn,  args)
             )
+            yield()
+            apply(fn,  args)
         )
+   )
    co()
    co
 )
 
+fun loop(...a) {
+    (init_fn, args) = tuple:split(a)
+    co = spawn(
+        fun (yield) {
+            fn = init_fn(
+                fun (...args) {
+                    apply(yield, args)
+                    apply(fn,  args)
+                }
+            )
+            yield()
+            apply(fn,  args)
+        }
+   )
+   co()
+   co
+}
 
 (fun nbn_3 () =
     string:join(

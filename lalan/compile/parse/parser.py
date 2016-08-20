@@ -293,7 +293,7 @@ class LetParser(PatternParser):
         self.expression_parser = expression_parser
         symbol(self, TT_IN)
         prefix(self, TT_LPAREN, prefix_lparen)
-        prefix(self, TT_FUN, prefix_let_fun)
+        prefix(self, TT_FUN, prefix_let_fun, as_block=True)
         infix(self, TT_ASSIGN, 10, led_let_assign)
 
 
