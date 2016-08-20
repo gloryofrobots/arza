@@ -1,0 +1,266 @@
+from lalan:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+                               Function, Partial, Interface,
+                               Generic, FiberChannel, Coroutine, Trait, Datatype, LazyVal, Env)
+
+"""
+SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
+Precedence    Operator
+    100           : . .{ .( .[
+    95           x()
+    60           :: :::
+    55           **
+    50           *  /
+    40           +  - ++
+    35           ==  !=  <  <=  >  >=
+    30           and
+    25           or << >>
+    20           |>
+    15           " ." @ as of <|
+    10           = :=
+"""
+
+infixr (:=, :=, 10)
+// infix @ as of -> 15
+infixl (<|, <|, 15)
+infixl (|>, |>, 20)
+// infix or -> 25
+infixl (<<, <<, 25)
+infixl (>>, >>, 25)
+// infix and -> 30
+infixl (<, <, 35)
+infixl (>, >, 35)
+infixl (>=, >=, 35)
+infixl (<=, <=, 35)
+infixl (==, ==, 35)
+infixl (!=, !=, 35)
+infixl (++, ++, 40)
+infixl (+, +, 40)
+infixl (-, -, 40)
+infixl (*, *, 50)
+infixl (/, /, 50)
+prefix (-, negate, 55)
+// infix :: -> 60
+infixl (**, **, 60)
+// prefix # -> 70
+prefix (!, !, 70)
+infixl (.., .., 95)
+// infix ( .( .{ .[ -> 95
+prefix (&, &, 96)
+// infix . : -> 100
+////////////////////////////////////////////////////////////
+///////////////// TYPES ////////////////////////////////////
+////////////////////////////////////////////////////////////
+(type
+    LT
+    GT
+    EQ
+    Some (val)
+    None
+)
+
+// Various Errors
+(type
+    ImportError(args)
+    RuntimeError(args)
+    TypeError(args)
+    NotImplementedError(args)
+    ZeroDivisionError(args)
+    MathDomainError(args)
+    ReferenceError(args)
+    ConstructorError(args)
+    KeyError(args)
+    ValueError(args)
+    SliceError(args)
+    IndexError(args)
+    InvokeError(args)
+    InvalidArgCount(args)
+    MethodInvokeError(args)
+    MethodNotImplementedError(args)
+    MethodSpecializeError(args)
+    CompileError(args)
+    ParseError(args)
+    UnpackSequenceError(args)
+    FiberFlowError(args)
+    MatchError(args)
+    FunctionArgumentsMatchError(args)
+    ExceptionMatchError(args)
+    ExportError(args)
+    ImplementationError(args)
+    ConstraintError(args)
+    EmptySeqError(args)
+    OverflowError(args)
+    //Signal used to interrupt recursive processes
+    Interrupt(result)
+)
+
+
+////////////////////////////////////////////////////////////
+///////////////// GENERICS /////////////////////////////////
+////////////////////////////////////////////////////////////
+
+
+(generic
+    at(key, `self)
+    ==(`x, y)
+    !=(`x, y)
+    <=(`x, y)
+    <(`x, y)
+    >=(`x, y)
+    >(`x, y)
+
+    cmp(`first, second)
+
+    max(`first, second)
+    min(`first, second)
+
+    -(`x, y)
+    +(`x, y)
+    *(`x, y)
+    /(`x, y)
+    mod(`x, y)
+    // unary -
+    negate(`x)
+    **(`x, y)
+
+    str(`self)
+    repr(`self)
+
+    len(`self)
+    is_empty(`self)
+
+    put(key, value, `self)
+    del(obj, `self)
+    elem(key, `self)
+
+    first(`self)
+    rest(`self)
+
+    empty(`self)
+    cons(value, `self)
+    prepend(value, `self)
+    ++(`self, other)
+    append(value, `self)
+    keys(self)
+    values(self)
+    index_of(obj, `self)
+    to_seq(self)
+
+    slice (first, last, `self)
+    drop(count, `self)
+    take(count, `self)
+    lower_bound(`self)
+    upper_bound(`self)
+
+    range(`self, last)
+    range_by (`self, last, step)
+    range_from(`self)
+    range_from_by(`self, step)
+    !(`self)
+    :=(`self, value)
+)
+
+////////////////////////////////////////////////////////////
+///////////////// INTERFACES ///////////////////////////////
+////////////////////////////////////////////////////////////
+
+
+(interface
+    PartialEq (==)
+    Eq (!=, ==)
+    Ord(<, <=, >, >=, cmp, max, min)
+    Num (-, +, *, /, mod, negate)
+    Pow(**)
+    Str (str)
+    Displayed (str, repr)
+    Len (len)
+    Sized (len, is_empty)
+    Collection(put, at, del, elem)
+    ReadOnlyCollection(at, elem)
+    Seq(first, rest)
+    Emptiable(empty)
+    Consable(cons)
+    Prependable(prepend)
+    Appendable(append)
+    Concatable(++)
+    Dict(keys, values, put, at, del, elem)
+    Indexed(index_of)
+    Seqable(to_seq)
+    Sliceable(slice, drop, take)
+    Bounded(lower_bound, upper_bound)
+    Ranged(range, range_by, range_from, range_from_by)
+    Ref(!)
+    MutRef(!, :=)
+)
+
+////////////////////////////////////////////////////////////
+///////////////// TRAITS ///////////////////////////////////
+////////////////////////////////////////////////////////////
+
+
+(trait TNotEq
+    def !=(x, y) = not (x == y)
+)
+
+
+(trait TOrd of PartialEq
+    def <(x, y) = cmp(x, y) == LT
+    def >=(x, y) = cmp(x, y) != LT
+    def >(x, y) = cmp(x, y) == GT
+
+    def cmp(x, y) =
+                if x == y then EQ
+                elif x <= y then LT
+                else GT
+
+    def max(x, y) = if x <= y then y else x
+    def min(x, y) = if x <= y then x else y
+)
+
+(trait TIsEmpty of Len
+    def is_empty(self) = len(self) == 0
+)
+
+(trait TRepr of Str
+    def repr(self) = str(self)
+)
+
+////////////////////////////////////////////////////////////
+///////////////// FUNCTIONS ////////////////////////////////
+////////////////////////////////////////////////////////////
+
+
+fun lookup (key, default, coll) =
+    try
+        at(key, coll)
+    catch
+        | e of KeyError = default
+        | e = throw e
+
+
+fun not_elem(x, c) = not(elem (x, c))
+
+fun identity(x) = x
+
+fun &(func) = lalan:lang:defpartial(func)
+fun ..(f, g) = lalan:lang:defpartial(f)(g)
+
+fun |>(x, f) = f(x)
+fun <|(f, x) = f(x)
+fun >>(f, g) = x -> g(f(x))
+fun <<(f, g) = x -> f(g(x))
+
+fun twice(f) = f >> f
+fun flip (f, x, y) = f(y, x)
+fun even(x) = mod(x, 2) == 0
+fun odd(x) = not(even(x))
+fun inc(x) = x + 1
+fun dec(x) = x - 1
+//fun last coll = at ((len coll) - 1) coll
+fun last(coll) = at(len(coll) - 1, coll)
+
+(let
+    fst = c -> at(0, c)
+    snd = c -> at(1, c)
+    thrd = c -> at(2, c)
+    frth = c -> at(3, c)
+)

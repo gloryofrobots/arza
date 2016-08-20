@@ -37,18 +37,36 @@ affirm:is_equal(
     coroutine(_wrap)
 )
 
+//Nil
+fun foldl
+    | (f, acc, []) = acc
+    | (f, acc, hd::tl) = foldl(f, f(hd, acc), tl)
 
+(fun f() =
+    fun t () = 1
+    3
+)
+
+//Nil
+(fun f () =
+        //RP
+        [
+            //RS
+            fun () = print(2) 42
+        ]
+        //RP
+)
 
 (fun var (v) =
     co = coroutine(
             (fun (yield, v) =
                 (fun loop(v) =
                     msg = yield(v)
-                    (match msg
+                    match msg
                         | #Read = loop(v)
                         | (#Write, new_val) =
                             loop(new_val)
-                    )
+
                 )
             )
         )
@@ -58,10 +76,10 @@ affirm:is_equal(
 )
 
 (fun loop(...a) =
-        let (init_fn, args) = tuple:split(a)
+        (init_fn, args) = tuple:split(a)
         co = spawn(
             (fun (yield) =
-                let fn = init_fn(
+                fn = init_fn(
                     (fun (...args) =
                         apply(yield, args)
                         apply(fn,  args)
@@ -75,40 +93,6 @@ affirm:is_equal(
    co
 )
 
-(fun nbn_1 () =
-    (fun _loop (n, g) =
-        (if g == 1 or n < g then
-           1
-        else
-            seq:foldl(
-                (fun _folder(q, res) =
-                    (if q > n - g then
-                        x = 0
-                    else
-                        x = _loop(n-g, q)
-                    )
-
-                    res + x
-                ),
-                1,
-                list:range(2, g)
-            )
-         )
-    )
-    string:join(
-        seq:map(
-            n => string:join_cast(
-               seq:map(
-                  (g => _loop n g)
-                  (list:range 1 n)
-               ),
-               " "
-            ),
-            list:range(1, 25)
-        ),
-        "\n"
-    )
-)
 
 (fun nbn_3 () =
     string:join(
@@ -142,33 +126,101 @@ affirm:is_equal(
     )
 )
 
-fun nbn_3 () =
+
+(fun nbn_1 () =
+    (fun _loop (n, g) =
+        (if g == 1 or n < g then
+           1
+        else
+            seq:foldl(
+                (fun _folder(q, res) =
+                    (if q > n - g then
+                        x = 0
+                    else
+                        x = _loop(n-g, q)
+                    )
+
+                    res + x
+                ),
+                1,
+                list:range(2, g)
+            )
+         )
+    )
     string:join(
         seq:map(
-            fun(n) =
-                string:join_cast(
-                   seq:map(
-                        fun (g) =
-                                let fun _loop (n, g) =
-                                        if g == 1 or n < g then 1
-                                        else
-                                            seq:foldl(
-                                                (fun (q, res) =
-                                                    res + 0 if q > n - g else _loop(n-g, q)
-                                                ),
-                                                1,
-                                                range(2, g)
-                                            )
-
-                                in _loop(n, g)
-                        ,
-                        range(1, n),
-                   ),
-                   " "
-                )
-           ,
-           range(1, 25),
-        )
+            (fun(n) =
+              string:join_cast(
+                seq:map(
+                    g -> _loop(n, g),
+                    list:range(1, n)
+                ),
+                " "
+              )
+            ),
+            list:range(1, 25)
+        ),
         "\n"
     )
+)
 
+(fun test_pipe() =
+    l = list:range(0, 10)
+    affirm:is_equal (
+        l |> seq:filter.(even),
+        [0, 2, 4, 6, 8]
+    )
+
+    affirm:is_equal(
+        l |> seq:filter .. even
+          |> seq:map .. (`+` .. 1),
+         [1, 3, 5, 7, 9]
+    )
+
+    affirm:is_equal (
+        l |> seq:filter(even, _)
+          |> seq:map.(`+` .. 1)
+          |> seq:map.(flip .. `-` .. 2),
+        [-1, 1, 3, 5, 7]
+    )
+
+    affirm:is_equal(
+        l |> seq:filter .. (even)
+          |> seq:map .. (`+` .. 1)
+          |> seq:map .. (flip .. `-` .. 2),
+        [-1, 1, 3, 5, 7]
+    )
+
+    affirm:is_equal(
+        l |> seq:filter.(even)
+          |> seq:map.(`+`.(1))
+          |> seq:map.(flip.(`-`, 2)),
+        [-1, 1, 3, 5, 7]
+    )
+
+    square = (x -> x * x)
+    triple = `*` .. 3
+    affirm:is_equal (
+        l |> seq:filter.(even)
+          |> seq:map.(`+` .. 1)
+          |> seq:map.(flip .. `-` .. 2)
+          |> seq:map.(triple >> square),
+        [9, 9, 81, 225, 441]
+    )
+
+    affirm:is_equal (
+         (seq:filter.(even)
+             >> seq:map.(`+`.(1))
+             >> seq:map.(flip.(`-`,2))
+             >> seq:map.(triple >> square))(l),
+         [9, 9, 81, 225, 441]
+    )
+
+    affirm:is_equal (
+        l |> seq:filter.(even)
+          >> &seq:map(`+` .. 1)
+          >> seq:map.(flip.(`-`, 2))
+          >> &seq:map(triple >> square),
+        [9, 9, 81, 225, 441]
+    )
+)

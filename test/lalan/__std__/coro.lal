@@ -46,15 +46,12 @@ fun loop(...a) =
                             apply(fn,  args)
                         )
                     )
-                in
-                (
+                in (
                     yield()
-//                    let v = yield() in io:p(#v, v)
                     apply(fn,  args)
                 )
         )
-    in
-    (
+    in (
        co()
        co
     )

@@ -69,5 +69,6 @@ fun test() =
 
 fun main() =
 (
+    nbn:run()
     test()
 )

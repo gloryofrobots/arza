@@ -34,20 +34,26 @@ affirm:is_equal (add v1 v2) (Vec2 (Point2 10 12)  (Point2 14 16))
     )
     coroutine _wrap
 )
+[fun (s)
+    | [] = []
+    | x :: xs =
+        (x,xs)
+    yield w
 
+ , 1, 2]
 (fun loop (...a) =
         (init_fn, args) = tuple:split a
-        (co = spawn
-            (fun (yield) =
-                (fn = init_fn
-                    (fun (...args) =
-                        apply yield args
-                        apply fn args
+        (co =
+            spawn
+                fun (yield) =
+                    (fn = init_fn
+                        fun (...args) =
+                            apply yield args
+                            apply fn args
                     )
-                )
-                yield ()
-                apply fn args
-            )
+                    yield ()
+                    apply fn args
+
         )
    co ()
    co
@@ -59,11 +65,9 @@ affirm:is_equal (add v1 v2) (Vec2 (Point2 10 12)  (Point2 14 16))
             (fun (yield v) =
                 (fun loop(v) =
                     msg = yield v
-                    (match msg
+                    match msg
                         | #Read = loop(v)
-                        | (#Write, new_val) =
-                            loop new_val
-                    )
+                        | (#Write, new_val) = loop new_val
                 )
             )
         )
@@ -71,35 +75,6 @@ affirm:is_equal (add v1 v2) (Vec2 (Point2 10 12)  (Point2 14 16))
     Var co
 )
 
-(fun nbn_1 () =
-    (fun _loop (n g) =
-        (if g == 1 or n < g then
-           1
-        else
-            (seq:foldl
-                (fun _folder(q res) =
-                    (if q > n - g then
-                        x = 0
-                    else
-                        x = _loop (n-g) q
-                    )
-
-                    res + x
-                )
-                1
-                (list:range 2 g)
-            )
-         )
-    )
-    (string:join
-        (seq:map
-            (n => string:join_cast
-               (seq:map (g => _loop n g)
-                        (list:range 1 n))
-               " ")
-            (list:range 1 25))
-         "\n")
-)
 
 (fun nbn_3 () =
     (string:join
@@ -127,3 +102,128 @@ affirm:is_equal (add v1 v2) (Vec2 (Point2 10 12)  (Point2 14 16))
         "\n"
     )
 )
+
+
+
+
+
+
+
+
+(fun nbn_1() =
+    (fun _loop(n g) =
+        if g == 1 or n < g then
+           1
+        else
+            (seq:foldl
+                (fun(q res) =
+                    if q > n - g then
+                         x = 0
+                    else
+                        x = _loop (n-g) q
+
+                    res + x
+                )
+                1
+                (list:range 2 g)
+            )
+    )
+
+    (string:join
+        (seq:map
+            (fun (n) =
+                (string:join_cast
+                   (seq:map
+                        (g -> _loop n g)
+                        (list:range 1 n)
+                   )
+                   " "
+                )
+             )
+             (list:range 1 25)
+         )
+         "\n"
+    )
+)
+
+(fun test_partial() =
+    affirm:is_equal ((&`-` 1) 2) -1
+
+    affirm:is_equal (partial flip `-` 1)(2) 1
+
+    add1 = &add 1
+    affirm:is_equal (add1 2) 3
+
+)
+
+(fun test_composition() =
+        add1_mul2 =  &add 1 >> &mul 2
+        mul2_add1 = partial add 1 << partial mul 2
+        add_1_twice = twice (&add 1)
+)
+
+(fun test_pipe() =
+    l = list:range 0 10
+
+    (affirm:is_equal
+        l |> seq:filter even
+          |> seq:map .. (&`+` 1)
+          |> seq:map .. (&flip `-` 2)
+          |> seq:map .. (&triple >> square)
+     )  [9, 9, 81, 225, 441]
+
+    affirm:is_equal (
+        l |> seq:filter even _
+          |> seq:map (`+` 1 _)
+          |> seq:map (flip `-` 2 _) _
+          |> seq:map (triple >> square) _
+     )  [9, 9, 81, 225, 441]
+
+    affirm:is_equal (
+        l |> seq:filter(even, _)
+          |> seq:map(`+`(1, _), _)
+          |> seq:map(flip(`-`, 2, _), _)
+          |> seq:map(triple >> square, _)
+     )  [9, 9, 81, 225, 441]
+
+
+    (affirm:is_equal
+       (l |> seq:filter .. even)
+        [0, 2, 4, 6, 8]
+    )
+
+    affirm:is_equal (
+        l |> seq:filter .. even
+          |> seq:map .. (`+` .. 1)
+     ) [1, 3, 5, 7, 9]
+
+    affirm:is_equal (
+        l |> seq:filter .. even
+          |> seq:map .. (`+` .. 1)
+          |> seq:map .. (flip .. `-` .. 2)
+     ) [-1, 1, 3, 5, 7]
+
+    square = (x => x * x)
+    triple = `*` .. 3
+    affirm:is_equal (
+        l |> seq:filter even
+          |> seq:map .. (&`+` 1)
+          |> seq:map .. (&flip `-` 2)
+          |> seq:map .. (&triple >> square)
+     )  [9, 9, 81, 225, 441]
+
+
+    affirm:is_equal (
+         (seq:filter even
+          >> &seq:map (&`+` 1)
+          >> &seq:map (&flip `-` 2)
+          >> &seq:map (&triple >> &square)) l
+     )  [9, 9, 81, 225, 441]
+
+    affirm:is_equal (
+        l |> &seq:filter even
+          >> &seq:map (`+` 1)
+          >> &seq:map (&flip `-` 2)
+          >> &seq:map (&triple >> square)
+     )  [9, 9, 81, 225, 441]
+

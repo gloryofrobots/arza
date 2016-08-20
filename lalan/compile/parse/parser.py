@@ -181,7 +181,7 @@ class ExpressionParser(BaseParser):
         prefix(self, TT_NOT, prefix_nud, 35)
         prefix(self, TT_IF, prefix_if)
 
-        prefix(self, TT_FUN, prefix_nameless_fun)
+        prefix(self, TT_FUN, prefix_expression_fun)
 
         prefix(self, TT_MATCH, prefix_match)
         prefix(self, TT_TRY, prefix_try)
@@ -302,7 +302,6 @@ class LetParser(PatternParser):
 class FunPatternParser(PatternParser):
     def __init__(self):
         PatternParser.__init__(self)
-        # prefix(self, TT_LPAREN, prefix_lparen_expression)
 
 
 class ModuleParser(BaseParser):
@@ -341,19 +340,20 @@ class ModuleParser(BaseParser):
         symbol(self, TT_ENDSTREAM)
         symbol(self, TT_COMMA, symbol_comma_nud)
 
-        stmt(self, TT_FUN, prefix_module_fun)
-        stmt(self, TT_LET, prefix_module_let)
-        stmt(self, TT_TRAIT, stmt_trait)
-        stmt(self, TT_TYPE, stmt_type)
-        stmt(self, TT_EXTEND, stmt_extend)
-        stmt(self, TT_IMPORT, stmt_import)
-        stmt(self, TT_FROM, stmt_from)
-        stmt(self, TT_EXPORT, stmt_export)
-        stmt(self, TT_INFIXL, stmt_infixl)
-        stmt(self, TT_INFIXR, stmt_infixr)
-        stmt(self, TT_PREFIX, stmt_prefix)
-        stmt(self, TT_GENERIC, stmt_generic)
-        stmt(self, TT_INTERFACE, stmt_interface)
+        prefix(self, TT_LPAREN, prefix_lparen)
+        prefix(self, TT_FUN, prefix_module_fun)
+        prefix(self, TT_LET, prefix_module_let)
+        prefix(self, TT_TRAIT, stmt_trait)
+        prefix(self, TT_TYPE, stmt_type)
+        prefix(self, TT_EXTEND, stmt_extend)
+        prefix(self, TT_IMPORT, stmt_import)
+        prefix(self, TT_FROM, stmt_from)
+        prefix(self, TT_EXPORT, stmt_export)
+        prefix(self, TT_INFIXL, stmt_infixl)
+        prefix(self, TT_INFIXR, stmt_infixr)
+        prefix(self, TT_PREFIX, stmt_prefix)
+        prefix(self, TT_GENERIC, stmt_generic)
+        prefix(self, TT_INTERFACE, stmt_interface)
 
 
 def guard_parser_init(parser):
@@ -513,7 +513,7 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = False
+PARSE_DEBUG = True
 
 
 def parse(process, env, src):
@@ -524,6 +524,8 @@ def parse(process, env, src):
     parser.next_token()
     stmts, scope = parse_module(parser, TERM_FILE)
     assert plist.is_empty(parser.state.scopes)
+    assert encloser_token(parser) == TT_ENDSTREAM, encloser_token(parser)
+
     check_token_type(parser, TT_ENDSTREAM)
 
     parser.close()

@@ -21,10 +21,19 @@ TERM_SINGLE_CATCH = [TT_FINALLY]
 
 TERM_LET = [TT_IN]
 
+TERM_DEFAULT = []
 TERM_PATTERN = [TT_WHEN]
 TERM_FUN_GUARD = [TT_ASSIGN]
-TERM_FUN_PATTERN = [TT_WHEN, TT_ASSIGN]
+TERM_FUN_PATTERN = [TT_WHEN, TT_ASSIGN, TT_CASE]
 TERM_FUN_SIGNATURE = [TT_ASSIGN, TT_CASE]
+TERM_FUN_CASE_BODY = [TT_CASE]
+TERM_FUN_SINGLE_BODY = TERM_DEFAULT
+
+TERM_TRAIT_DEF_BODY = [TT_DEF, TT_USE, TT_LET]
+TERM_TRAIT_DEF_CASE_BODY = [TT_DEF, TT_USE, TT_LET, TT_CASE]
+
+TERM_EXTEND_DEF_BODY = [TT_DEF, TT_USE, TT_LET]
+TERM_EXTEND_CASE_DEF_BODY = [TT_DEF, TT_USE, TT_LET, TT_CASE]
 
 TERM_FROM_IMPORTED = [TT_IMPORT, TT_HIDE]
 NAME_NODES = [NT_NAME, NT_IMPORTED_NAME]
@@ -69,6 +78,37 @@ class ParseState:
         self.process = process
         self.env = env
         self.scopes = plist.empty()
+
+
+#################
+# Enclosers
+#####################
+
+def push_encloser(parser, token):
+    parser.ts.push_encloser(token)
+
+
+def pop_encloser(parser):
+    parser.ts.pop_encloser()
+
+
+def increment_level(parser):
+    parser.ts.increment_encloser_level()
+
+
+def decrement_level(parser):
+    parser.ts.decrement_encloser_level()
+
+
+def encloser_level(parser):
+    return parser.ts.get_encloser_level()
+
+
+def encloser_token(parser):
+    return parser.ts.get_encloser()
+
+
+# ###################################333
 
 
 def parser_enter_scope(parser):
@@ -252,8 +292,7 @@ def node_has_std(parser, node):
     return handler.std is not None
 
 
-def node_lbp(parser,  node):
-
+def node_lbp(parser, node):
     op = node_operator(parser, node)
     lbp = op.lbp
     if op.ambidextra is True:
@@ -377,6 +416,12 @@ def advance(parser):
     return node
 
 
+def advance_and_pop(parser, ttype):
+    check_token_type(parser, ttype)
+    pop_encloser(parser)
+    return advance(parser)
+
+
 def advance_expected(parser, ttype):
     check_token_type(parser, ttype)
 
@@ -390,10 +435,6 @@ def advance_expected_one_of(parser, ttypes):
         return None
 
     return parser.next_token()
-
-
-def advance_end(parser):
-    advance_expected_one_of(parser, TERM_BLOCK)
 
 
 def on_endofexpression(parser):
@@ -426,7 +467,7 @@ def base_expression(parser, _rbp, terminators=None):
             if parser.token_type in terminators:
                 return left
 
-        _lbp = node_lbp(parser,  parser.node)
+        _lbp = node_lbp(parser, parser.node)
 
         # juxtaposition support
         if _lbp < 0:
@@ -452,7 +493,9 @@ def base_expression(parser, _rbp, terminators=None):
 
             left = node_led(parser, previous, left)
 
-    assert left is not None
+    if left is None:
+        parse_error(parser, u"Expressions missing", parser.node)
+    # assert left is not None
     return left
 
 
@@ -567,6 +610,63 @@ def statement_no_end_expr(parser):
 
     value = expression(parser, 0)
     return value
+
+
+def ensure_tuple(t):
+    nt = nodes.node_type(t)
+    if nt != NT_TUPLE and nt != NT_UNIT:
+        return nodes.create_tuple_node(t, [t])
+    return t
+
+
+def ensure_list_node(t):
+    if not nodes.is_list_node(t):
+        return nodes.list_node([t])
+    return t
+
+
+def list_expression(parser, _rbp, terminators=None):
+    return ensure_list_node(expression(parser, _rbp, terminators))
+
+
+# def prefix_level_node(func):
+#     def func_wrapper(parser, op, node):
+#         increment_level(parser)
+#         node = func(parser, op, node)
+#         decrement_level(parser)
+#         return node
+#
+#     return func_wrapper
+
+
+def expressions(parser, terminators, expected_types=None):
+    level = encloser_level(parser)
+    if level > 1:
+        return list_expression(parser, 0, terminators)
+
+    encloser = encloser_token(parser)
+    stmts = []
+    while True:
+        if parser.token_type == encloser:
+            break
+
+        if token_is_one_of(parser, terminators):
+            break
+
+        s = statement(parser)
+        if expected_types is not None:
+            check_node_types(parser, s, expected_types)
+
+        on_endofexpression(parser)
+        if s is None:
+            continue
+        stmts.append(s)
+
+    length = len(stmts)
+    if length == 0:
+        return parse_error(parser, u"Expected one or more expressions", parser.node)
+
+    return nodes.list_node(stmts)
 
 
 def statements(parser, endlist, expected_types=None):
