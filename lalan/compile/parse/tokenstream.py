@@ -20,13 +20,19 @@ class TokenStream:
         self.enclosers = [[TT_ENDSTREAM, True]]
 
     def push_encloser(self, token):
-        self.enclosers.append([token, 0])
+        self.enclosers.append([token, False])
         log("push_encloser %s ", self.enclosers)
 
     def pop_encloser(self):
+        assert self.get_encloser_level() == 0, self.get_encloser_level()
         self.enclosers.pop()
         log("pop_encloser %s ", self.enclosers)
 
+    # def mark_encloser(self):
+    #     m = self.enclosers[-1][1]
+    #     if not m:
+    #         self.enclosers[-1][1] = True
+    #     return m
 
     def increment_encloser_level(self):
         self.enclosers[-1][1] += 1

@@ -179,14 +179,14 @@ class ExpressionParser(BaseParser):
         # TODO DELETE IT
         prefix(self, TT_ELLIPSIS, prefix_nud, 70)
         prefix(self, TT_NOT, prefix_nud, 35)
-        prefix(self, TT_IF, prefix_if)
+        prefix(self, TT_IF, prefix_if, as_block=True)
 
-        prefix(self, TT_FUN, prefix_expression_fun)
+        prefix(self, TT_FUN, prefix_expression_fun, as_block=True)
 
-        prefix(self, TT_MATCH, prefix_match)
-        prefix(self, TT_TRY, prefix_try)
+        prefix(self, TT_MATCH, prefix_match, as_block=True)
+        prefix(self, TT_TRY, prefix_try, as_block=True)
         prefix(self, TT_BACKTICK_OPERATOR, prefix_backtick_operator)
-        prefix(self, TT_LET, prefix_let)
+        prefix(self, TT_LET, prefix_let, as_block=True)
         prefix(self, TT_THROW, prefix_throw)
 
         infix(self, TT_ARROW, 10, infix_arrow)
@@ -221,7 +221,6 @@ class TraitParser(BaseParser):
         ])
 
         prefix(self, TT_DEF, prefix_trait_def)
-        prefix(self, TT_LET, prefix_trait_let)
         prefix(self, TT_LPAREN, prefix_lparen)
 
 
@@ -252,7 +251,6 @@ class ExtendParser(BaseParser):
             self.name_list_parser
         ])
 
-        prefix(self, TT_LET, prefix_extend_let)
         prefix(self, TT_DEF, prefix_extend_def)
         prefix(self, TT_USE, prefix_extend_use)
         prefix(self, TT_LPAREN, prefix_lparen)
@@ -333,7 +331,7 @@ class ModuleParser(BaseParser):
             self.type_parser,
         ])
 
-        init_parser_literals(self)
+        # init_parser_literals(self)
         self.allow_overloading = True
         self.break_on_juxtaposition = True
 
@@ -341,19 +339,20 @@ class ModuleParser(BaseParser):
         symbol(self, TT_COMMA, symbol_comma_nud)
 
         prefix(self, TT_LPAREN, prefix_lparen)
-        prefix(self, TT_FUN, prefix_module_fun)
-        prefix(self, TT_LET, prefix_module_let)
-        prefix(self, TT_TRAIT, stmt_trait)
-        prefix(self, TT_TYPE, stmt_type)
-        prefix(self, TT_EXTEND, stmt_extend)
-        prefix(self, TT_IMPORT, stmt_import)
-        prefix(self, TT_FROM, stmt_from)
-        prefix(self, TT_EXPORT, stmt_export)
-        prefix(self, TT_INFIXL, stmt_infixl)
-        prefix(self, TT_INFIXR, stmt_infixr)
-        prefix(self, TT_PREFIX, stmt_prefix)
-        prefix(self, TT_GENERIC, stmt_generic)
-        prefix(self, TT_INTERFACE, stmt_interface)
+        prefix(self, TT_FUN, prefix_module_fun, as_block=True)
+        prefix(self, TT_LET, prefix_module_let, as_block=True)
+        prefix(self, TT_TRAIT, stmt_trait, as_block=True)
+        prefix(self, TT_TYPE, stmt_type, as_block=True)
+        prefix(self, TT_EXTEND, stmt_extend, as_block=True)
+        prefix(self, TT_EXPORT, stmt_export, as_block=True)
+        prefix(self, TT_GENERIC, stmt_generic, as_block=True)
+        prefix(self, TT_INTERFACE, stmt_interface, as_block=True)
+
+        stmt(self, TT_INFIXL, stmt_infixl)
+        stmt(self, TT_INFIXR, stmt_infixr)
+        stmt(self, TT_PREFIX, stmt_prefix)
+        stmt(self, TT_IMPORT, stmt_import)
+        stmt(self, TT_FROM, stmt_from)
 
 
 def guard_parser_init(parser):

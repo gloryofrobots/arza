@@ -367,7 +367,7 @@ def prefix_lsquare(parser, op, node):
 
 
 def stmt_interface(parser, op, node):
-    nodes = list_expression(parser.interface_parser, 0)
+    nodes = expressions(parser.interface_parser)
     return nodes
 
 
@@ -377,7 +377,7 @@ def operator_as_symbol(parser, op, node):
 
 
 def stmt_generic(parser, op, node):
-    nodes = ensure_list_node(expression(parser.generic_parser, 0))
+    nodes = expressions(parser.generic_parser)
     return nodes
 
 
@@ -441,8 +441,7 @@ def prefix_if(parser, op, node):
     cond = expression(parser, 0, TERM_IF_CONDITION)
     advance_expected_one_of(parser, TERM_IF_CONDITION)
 
-    # TODO CHECK IF HERE LISTNODE REQUIRED
-    body = expression(parser, 0, TERM_IF_BODY)
+    body = expressions(parser, TERM_IF_BODY)
 
     branches.append(list_node([cond, body]))
     check_token_types(parser, TERM_IF_BODY)
@@ -453,35 +452,41 @@ def prefix_if(parser, op, node):
         cond = expression(parser, 0, TERM_IF_CONDITION)
         advance_expected_one_of(parser, TERM_IF_CONDITION)
 
-        body = expression(parser, 0, TERM_IF_BODY)
+        body = expressions(parser, 0, TERM_IF_BODY)
         check_token_types(parser, TERM_IF_BODY)
         branches.append(list_node([cond, body]))
 
     advance_expected(parser, TT_ELSE)
 
-    body = expression(parser, 0)
+    body = expressions(parser)
     branches.append(list_node([empty_node(), body]))
     return node_1(NT_CONDITION, __ntok(node), list_node(branches))
 
 
 def prefix_let(parser, op, node):
-    letblock = statements(parser.let_parser, TERM_LET, [NT_FUN, NT_ASSIGN])
-    advance_expected(parser, TT_IN)
-    inexp = ensure_list_node(expression(parser, 0))
-    return node_2(NT_LET, __ntok(node), letblock, inexp)
+    letblock = expressions(parser.let_parser, TERM_LET, [NT_FUN, NT_ASSIGN])
+    if parser.token_type == TT_IN:
+        advance_expected(parser, TT_IN)
+        inexp = expressions(parser)
+        return node_2(NT_LET, __ntok(node), letblock, inexp)
+    else:
+        if len(letblock) == 1:
+            return letblock[0]
+
+        return letblock
 
 
 def prefix_module_let(parser, op, node):
-    exp = expression(parser.expression_parser.let_parser, 0)
-    if nodes.is_list_node(exp):
-        check_list_node_type(parser, exp, NT_ASSIGN)
-    else:
-        check_node_type(parser, exp, NT_ASSIGN)
+    exp = expressions(parser.expression_parser.let_parser, 0, [NT_ASSIGN])
+    # if nodes.is_list_node(exp):
+    #     check_list_node_type(parser, exp, NT_ASSIGN)
+    # else:
+    #     check_node_type(parser, exp, NT_ASSIGN)
     return exp
 
 
 def prefix_try(parser, op, node):
-    trybody = expression(parser, 0, TERM_TRY)
+    trybody = expressions(parser, TERM_TRY)
     catches = []
 
     check_token_type(parser, TT_CATCH)
@@ -493,17 +498,17 @@ def prefix_try(parser, op, node):
             # pattern = expressions(parser.pattern_parser, 0)
             pattern = _parse_pattern(parser)
             advance_expected(parser, TT_ASSIGN)
-            body = list_expression(parser, 0, TERM_CATCH_CASE)
+            body = expressions(parser, TERM_CATCH_CASE)
             catches.append(list_node([pattern, body]))
     else:
         pattern = _parse_pattern(parser)
         advance_expected(parser, TT_ASSIGN)
-        body = list_expression(parser, 0, TERM_SINGLE_CATCH)
+        body = expressions(parser, TERM_SINGLE_CATCH)
         catches.append(list_node([pattern, body]))
 
     if parser.token_type == TT_FINALLY:
         advance_expected(parser, TT_FINALLY)
-        finallybody = list_expression(parser, 0)
+        finallybody = expressions(parser)
     else:
         finallybody = empty_node()
 
@@ -514,7 +519,7 @@ def _parse_pattern(parser):
     pattern = expression(parser.pattern_parser, 0, TERM_PATTERN)
     if parser.token_type == TT_WHEN:
         advance(parser)
-        guard = expression(parser.guard_parser, 0, TERM_FUN_GUARD)
+        guard = expression(parser.guard_parser, 0, TERM_GUARD)
         pattern = node_2(NT_WHEN, __ntok(guard), pattern, guard)
 
     return pattern
@@ -533,7 +538,7 @@ def prefix_match(parser, op, node):
         pattern = _parse_pattern(parser)
 
         advance_expected(parser, TT_ASSIGN)
-        body = list_expression(parser, 0, TERM_CASE)
+        body = expressions(parser, TERM_CASE)
 
         branches.append(list_node([pattern, body]))
 
@@ -726,7 +731,7 @@ def _parse_function(parser, name, term_pattern, term_guard, term_single_body, te
 def _parse_named_function(parser, node):
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     check_token_types(parser, [TT_LPAREN, TT_CASE])
-    func = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD,
+    func = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_GUARD,
                            TERM_FUN_SINGLE_BODY, TERM_FUN_CASE_BODY)
     return name, func
 
@@ -739,7 +744,7 @@ def prefix_let_fun(parser, op, node):
 def prefix_expression_fun(parser, op, node):
     if parser.token_type == TT_LPAREN or parser.token_type == TT_CASE:
         name = empty_node()
-        funcs = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD,
+        funcs = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_GUARD,
                                 TERM_FUN_SINGLE_BODY, TERM_FUN_CASE_BODY)
     else:
         name, funcs = _parse_named_function(parser, node)
@@ -786,7 +791,7 @@ def _load_module(parser, exp):
         module_path = nodes.node_value_s(exp)
 
     state = parser.close()
-    module = load.import_module(state.process, space.newsymbol_s(state.process, module_path))
+    # module = load.import_module(state.process, space.newsymbol_s(state.process, module_path))
     parser.open(state)
 
 
@@ -892,7 +897,7 @@ def _symbols_to_args(parser, node, symbols):
 
 
 def stmt_type(parser, op, node):
-    nodes = ensure_list_node(expression(parser.type_parser, 0))
+    nodes = expressions(parser.type_parser)
     return nodes
 
 
@@ -950,23 +955,21 @@ def stmt_trait(parser, op, node):
     name, constraints = _parser_trait_header(parser, node)
     check_token_type(parser, TT_LPAREN)
 
-    methods = list_expression(parser.trait_parser, 0)
+    methods = expressions(parser.trait_parser)
     return nodes.node_3(NT_TRAIT, __ntok(node), name, constraints, methods)
 
 
 def prefix_trait_def(parser, op, node):
     generic_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
+    if parser.token_type == TT_ASSIGN:
+        advance_expected(parser, TT_ASSIGN)
+        func = expression(parser.expression_parser, 0)
+        return node_2(NT_ASSIGN, __ntok(node), generic_name, func)
+
     funcs = _parse_case_or_simple_function(parser.expression_parser,
-                                           TERM_FUN_PATTERN, TERM_FUN_GUARD,
+                                           TERM_FUN_PATTERN, TERM_GUARD,
                                            TERM_TRAIT_DEF_BODY, TERM_TRAIT_DEF_CASE_BODY)
     return node_2(NT_DEF, __ntok(node), generic_name, funcs)
-
-
-def prefix_trait_let(parser, op, node):
-    generic_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
-    advance_expected(parser, TT_ASSIGN)
-    func = expression(parser.expression_parser, 0)
-    return node_2(NT_ASSIGN, __ntok(node), generic_name, func)
 
 
 # ----------- EXTEND ----------------------------
@@ -977,9 +980,8 @@ def stmt_extend(parser, op, node):
     lets = []
     defs = []
     mixins = []
-    check_token_type(parser, TT_LPAREN)
 
-    extensions = ensure_list_node(expression(parser.extend_parser, 0))
+    extensions = expressions(parser.extend_parser)
     for ex in extensions:
         if nodes.node_type(ex) == NT_USE:
             mixins.append(list_node([
@@ -1013,19 +1015,17 @@ def prefix_extend_use(parser, op, node):
 
 def prefix_extend_def(parser, op, node):
     method_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
+    if parser.token_type == TT_ASSIGN:
+        advance_expected(parser, TT_ASSIGN)
+        func = expression(parser.expression_parser, 0)
+        return node_2(NT_ASSIGN, __ntok(node), method_name, func)
 
     funcs = _parse_case_or_simple_function(parser.expression_parser,
-                                           TERM_FUN_PATTERN, TERM_FUN_GUARD,
+                                           TERM_FUN_PATTERN, TERM_GUARD,
                                            TERM_EXTEND_DEF_BODY, TERM_EXTEND_CASE_DEF_BODY)
 
     return node_2(NT_DEF, __ntok(node), method_name, funcs)
 
-
-def prefix_extend_let(parser, op, node):
-    method_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
-    advance_expected(parser, TT_ASSIGN)
-    func = expression(parser.expression_parser, 0)
-    return node_2(NT_ASSIGN, __ntok(node), method_name, func)
 
 
 # ------------------ OPERATORS ---------------------------

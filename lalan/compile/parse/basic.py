@@ -23,7 +23,7 @@ TERM_LET = [TT_IN]
 
 TERM_DEFAULT = []
 TERM_PATTERN = [TT_WHEN]
-TERM_FUN_GUARD = [TT_ASSIGN]
+TERM_GUARD = [TT_ASSIGN]
 TERM_FUN_PATTERN = [TT_WHEN, TT_ASSIGN, TT_CASE]
 TERM_FUN_SIGNATURE = [TT_ASSIGN, TT_CASE]
 TERM_FUN_CASE_BODY = [TT_CASE]
@@ -90,6 +90,10 @@ def push_encloser(parser, token):
 
 def pop_encloser(parser):
     parser.ts.pop_encloser()
+
+
+# def mark_encloser(parser):
+#     return parser.ts.mark_encloser()
 
 
 def increment_level(parser):
@@ -170,7 +174,7 @@ class W_Operator(root.W_Hashable):
         self.lbp = -1
         # self.is_breaker = False
         self.layout = None
-
+        self.as_block = False
         self.ambidextra = False
         self.prefix_function = None
         self.infix_function = None
@@ -265,6 +269,13 @@ def node_nud(parser, node):
     handler = node_operator(parser, node)
     if not handler.nud:
         parse_error(parser, u"Unknown token nud", node)
+
+    if handler.as_block is True:
+        increment_level(parser)
+        n = handler.nud(parser, handler, node)
+        decrement_level(parser)
+        return n
+
     return handler.nud(parser, handler, node)
 
 
@@ -324,10 +335,11 @@ def __check_ambidextrity(op):
         op.ambidextra = True
 
 
-def parser_set_nud(parser, ttype, fn, pbp=0):
+def parser_set_nud(parser, ttype, fn, pbp=0, as_block=False):
     h = get_or_create_operator(parser, ttype)
     h.nud = fn
     h.pbp = pbp
+    h.as_block = as_block
     __check_ambidextrity(h)
 
     return h
@@ -639,7 +651,10 @@ def list_expression(parser, _rbp, terminators=None):
 #     return func_wrapper
 
 
-def expressions(parser, terminators, expected_types=None):
+def expressions(parser, terminators=None, expected_types=None):
+    if not terminators:
+        terminators = TERM_DEFAULT
+
     level = encloser_level(parser)
     if level > 1:
         return list_expression(parser, 0, terminators)
@@ -694,8 +709,8 @@ def infix(parser, ttype, lbp, led):
     parser_set_led(parser, ttype, lbp, led)
 
 
-def prefix(parser, ttype, nud, pbp=0):
-    parser_set_nud(parser, ttype, nud, pbp)
+def prefix(parser, ttype, nud, pbp=0, as_block=False):
+    parser_set_nud(parser, ttype, nud, pbp, as_block)
 
 
 def stmt(parser, ttype, std):

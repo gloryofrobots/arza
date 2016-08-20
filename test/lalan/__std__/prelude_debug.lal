@@ -49,29 +49,70 @@ prefix (!, !, 70)
 infixl (.., .., 95)
 prefix (&, &, 96)
 
+
+
+fun f () =
+    (fun t () =
+        match 1
+            | 1 = 2
+            | 3 = 3
+        42
+    )
+
 (fun f () =
     fun t () =
         match 1
             | 1 = 2
             | 3 = 3
-         42
+        42
+)
+fun f () =
+    fun t () =
+        match 1
+            | 1 = 2
+            | 3 = 3
+  let x = 42
+
+
+fun f
+    | x = 1
+    | y = 2
+//
+(fun f
+    | x = 1
+        1
+        print (3)
+    | y =
+        (fun () =
+            print(1)
+            2 + 2
+        )
+        12
 )
 
-//fun f
-//    | x = 1
-//    | y = 2
-//
-//(fun f
-//    | x = 1
-//        1
-//        print (3)
-//    | y =
-//        (fun () =
-//            print(1)
-//            2 + 2
-//        )
-//        12
-//)
+fun f
+    | x = 1
+    | y =
+        (fun () =
+            print(1)
+            2 + 2
+        )
+
+fun f
+    | x =
+        (if x then
+            fun () =
+                print(1)
+             24
+        else
+          12
+        )
+    | y =
+        fun () =
+            print(1)
+   let z = 2 + 2
+
+
 
 
 //(fun map (f, coll)
@@ -367,7 +408,16 @@ prefix (&, &, 96)
 //    def slice(first, last, self) = _list:slice(first, last, self)
 //)
 ////
+//(extend Tuple
+//    use derive:TEq
 //
+//    def ++ = _tuple:concat
+//    def prepend = _tuple:prepend
 //
+//    (def f() =
+//            42
+//            13
+//    )
 //
-
+//    def f1() = 56
+//)
