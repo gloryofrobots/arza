@@ -334,7 +334,6 @@ class ModuleParser(BaseParser):
         # init_parser_literals(self)
         self.allow_overloading = True
         self.break_on_juxtaposition = True
-
         symbol(self, TT_ENDSTREAM)
         symbol(self, TT_COMMA, symbol_comma_nud)
 

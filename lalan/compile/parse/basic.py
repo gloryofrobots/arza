@@ -456,6 +456,9 @@ def on_endofexpression(parser):
     if parser.isend():
         return
 
+    while parser.token_type == TT_NEWLINE:
+        advance(parser)
+
     if parser.token_type == TT_END_EXPR:
         advance(parser)
 

@@ -95,6 +95,11 @@ def led_expression_assign(parser, op, node, left):
     return node_2(NT_ASSIGN, __ntok(node), left, exp)
 
 
+def prefix_newline(parser, op, node):
+    while parser.token_type == TT_NEWLINE:
+        advance(parser)
+    return None
+
 def prefix_backtick_operator(parser, op, node):
     opname_s = strutil.cat_both_ends(nodes.node_value_s(node))
     if opname_s == "::":

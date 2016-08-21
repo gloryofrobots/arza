@@ -49,15 +49,19 @@ prefix (!, !, 70)
 infixl (.., .., 95)
 prefix (&, &, 96)
 
+let x = spawn(
+         (fun(y) =
+            1)
+     )
 
-(fun f () =
-    let x = get()
-    yield(2)
-    call(3)
-    let y = get()
-    yield(6+x)
-    call(6)
-)
+//(fun f () =
+//    let x = get()
+//    yield(2)
+//    call(3)
+//    let y = get()
+//    yield(6+x)
+//    call(6)
+//)
 
 (fun loop(...a) =
     let (init_fn, args) = tuple:split(a)
@@ -76,6 +80,7 @@ prefix (&, &, 96)
    co()
    co
 )
+
 
 (fun f () =
     (let

@@ -242,3 +242,72 @@ fun loop(...a) {
         [9, 9, 81, 225, 441]
     )
 )
+
+Seq =
+(object
+    fun foldl
+        | ([], acc, f) = acc
+        | (hd::tl, acc, f) = foldl(tl, f(hd, acc), f)
+
+    fun map(self, f)
+        | ([], f) = empty(self)
+        | (hd::tl, f) = f(hd) :: map(tl, f)
+
+    (fun foreach(self, f)
+        | ([], f) = empty(self)
+        | (hd::tl, f) =
+
+          f(hd)
+          foreach(f, tl)
+    )
+
+    fun drop
+        | (l, 0) = l
+        | (hd::tl, count) = drop(tl, count - 1)
+
+    fun take
+        | (self @ _, 0) = empty(self)
+        | (self @ [], _) = empty(self)
+        | ([x, ...xs], n) = x :: take(n - 1, xs)
+
+    fun filter
+        | (self @ [], p) = empty(coll)
+        | (x::xs, p) =
+            if p(x) then
+                x :: filter(p, xs)
+            else
+                filter(p, xs)
+)
+List.specify({
+    rest =
+})
+
+List = {}
+
+List . mutator ()
+     .(became Seq)
+
+
+List.mutator().became(Seq)
+
+
+l . filter even . map (`+` .. 1) . map (flip .. `-` .. 2) . map (triple >> square)
+l.filter(even).map(`+` .. 1).map(flip .. `-` .. 2).map(triple >> square)
+
+m . f m . f1 m () . f1 (24 + 12) ()
+m.f(m).f1(m, ()).f1(24 + 12, ())
+
+
+l |> seq:filter.(even)
+  |> seq:map.(`+` .. 1)
+  |> seq:map.(flip .. `-` .. 2)
+  |> seq:map.(triple >> square),
+
+
+
+
+
+
+
+
+

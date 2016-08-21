@@ -18,6 +18,7 @@ class TokenStream:
         self.previous = None
         self.src = src
         self.enclosers = [[TT_ENDSTREAM, True]]
+        self.is_newline_occurred = False
 
     def push_encloser(self, token):
         self.enclosers.append([token, False])
@@ -51,6 +52,18 @@ class TokenStream:
     def next_token(self):
         self.previous = self.token
         token = self.tokens.next()
+
+        if token.type == TT_NEWLINE:
+            # print "NEW LINE"
+            self.is_newline_occurred = True
+            while token.type == TT_NEWLINE:
+                token = self.tokens.next()
+        else:
+            # print "TOKEN"
+            self.is_newline_occurred = False
+
+        # print token
         self.token = token
         self.node = nodes.node_blank(self.token)
         return self.node
+
