@@ -4,6 +4,9 @@ from lalan:lang:_coro import (spawn, is_complete, is_initialised,
 import derive
 import tuple
 import io
+import seq
+
+//////////////////////////////////////
 
 
 extend Coroutine
@@ -17,51 +20,7 @@ extend Coroutine
     def empty(self) = []
 )
 
-///////////////////////////////////////////////////////
-
-// helper for creating looping generators
-// example
-// Infinite increment
-//fun enum_from_2(num) =
-//    coro:loop(
-          // first function remembers looper
-//        (looper) ->
-               // second function sends data to looper
-//             num -> looper(num + 1)
-//    )
-// instead of yield it gets looper function which do actual yielding back to receiver
-// WARNING expects function as first argument which returns actual worker
-// TASK of first function is to remember looper in its scope, so worker can access it
-
-fun loop(...a) =
-    let
-        (init_fn, args) = tuple:split(a)
-        co = spawn(
-            fun (yield) =
-                let
-                    fn = init_fn(
-                        fun (...args) =
-                        (
-                            apply(yield, args)
-                            apply(fn,  args)
-                        )
-                    )
-                in
-                (
-                    yield()
-//                    let v = yield() in io:p(#v, v)
-                    apply(fn,  args)
-                )
-        )
-    in
-    (
-       co()
-       co
-    )
-
-///////////////////////////////////////////////////////
-
-
+// REFS
 type Ref(val)
 
 fun ref(v) =
@@ -97,3 +56,401 @@ extend Ref
 
     def str(self) = "Var"
 )
+
+///////////////////////////////////////////////////////
+
+// helper for creating looping generators
+// example
+// Infinite increment
+//fun enum_from(num) =
+//    coro:loop(
+//        //first function remembers looper
+//        (looper) ->
+//             //second function sends data to looper each iteration
+//             num -> looper(num + 1)
+//        ,
+//        num - 1
+//    )
+// instead of yield it gets looper function which do actual yielding back to receiver
+// WARNING expects function as first argument which returns actual worker
+// TASK of first function is to remember looper in its scope, so worker can access it
+
+// common code
+fun _loop(yield_argument, init_fn, args) =
+    let
+        co = spawn(
+            fun (yield) =
+                let
+                    fn = init_fn(
+                        fun (...args) =
+                        (
+                            apply(yield, yield_argument(args))
+                            apply(fn,  args)
+                        )
+                    )
+                in
+                (
+                    yield()
+                    apply(fn, args)
+                )
+        )
+    in
+    (
+       co()
+       co
+    )
+
+fun loop(...a) =
+    let
+        (init_fn, args) = tuple:split(a)
+    in _loop(identity, init_fn, args)
+
+// the same but with reduce interface
+// useful when there are no need to yielding all looper arguments
+
+fun loop_reduce(init_fn, x, acc) =
+    _loop(fst >> tuple:ensure_tuple, init_fn, (x, acc))
+
+////////////////////////////////////////////////////
+// SEQUENCES
+////////////////////////////////////////////////////
+
+let
+(
+    take = seq:take
+    nth = seq:nth
+)
+
+fun filter(predicate, coll) =
+    spawn(
+        fun (yield) =
+            let
+                fun _filter
+                    | (p, []) = empty(coll)
+                    | (p, x::xs) =
+                        if p(x) then
+                        (
+                            yield(x)
+                            _filter(p, xs)
+                        )
+                        else _filter(p, xs)
+
+             in _filter(predicate, coll)
+    )
+
+
+fun map(fn, co) =
+    spawn(
+        fun (yield) =
+            seq:foreach(
+                fun (x) = yield(fn(x)),
+                co
+            )
+    )
+
+
+fun drop(count, co) =
+    spawn(
+        fun (yield) =
+            let fun _drop
+                    | (_, []) =
+                        empty(co)
+                    | (0, s) =
+                        seq:traverse(map(yield, s))
+                    | (n, x::xs) =
+                        _drop(n-1, xs)
+
+            in _drop(count, co)
+    )
+
+
+fun each(co) =
+    spawn(
+        fun (yield) =
+            (fun | [] = empty(co)
+                 | s = seq:traverse(
+                         map(yield, s)
+                       )
+            )(co)
+    )
+
+
+fun to_list(co) =
+    seq:map(identity, co)
+
+
+fun scanl(fn, acc, co) =
+    spawn(
+        fun (yield) =
+            let fun _scanl
+                | (f, acc, []) = empty(co)
+                | (f, acc, x::xs) =
+                (
+                    let v = f(x, acc)
+                    in (
+                        yield(v)
+                        _scanl(f, v, xs)
+                    )
+                )
+            in _scanl(fn, acc, co)
+    )
+
+
+fun intersperse(val, co) =
+    spawn(
+        fun (yield) =
+            seq:foreach(
+                fun (x) =
+                (
+                    yield(x)
+                    yield(val)
+                ),
+                co
+            )
+    )
+
+
+//
+//
+//fun reverse(coll) =
+//    let fun _reverse
+//            | ([], result) = result
+//            | (hd::tl, result) = _reverse(tl, hd :: result)
+//
+//    in _reverse(coll, empty(coll))
+//
+//
+//
+/////ACCESSORS//////////////////////////////////////
+//
+//fun nth_tail
+//    | (0, l) = l
+//    | (1, [_, ...t]) = t
+//    | (n, [_, ...t]) when n >= 0 = nth_tail(n - 1, t)
+//
+//
+//fun nth
+//    | (0, l) = l
+//    | (1, [h, ...t]) = h
+//    | (n, [h, ...t]) when n >= 0 = nth(n - 1, t)
+
+//
+////QUERIES///////////////////////////////////////////////////
+//
+//fun length(l) =
+//    foldl((_, acc) -> acc + 1, 0, l)
+//
+//
+//fun last (x::xs) =
+//    let fun _last
+//            | (_, x::xs) = _last(x, xs)
+//            | (x, []) = x
+//
+//    in _last(x, xs)
+//
+//
+//fun prefix_of
+//    | ([hd, ...pre_tail], [hd, ...tail]) = prefix_of(pre_tail, tail)
+//    | ([], s) = True
+//    | ([_, ..._], s) = False
+//
+//
+//fun suffix_of(suf, s) =
+//   let
+//       delta = len(s) - len(suf)
+//       tl = nth_tail(delta, s)
+//   in delta >= 0 and tl == suf
+//
+//
+////SUBLISTS/////////////////////////////////////////////////////////////
+//
+//fun drop
+//    | (0, l) = l
+//    | (count, hd::tl) = drop(count - 1, tl)
+//
+//
+//fun take(n, coll)
+//    | (0, _) = empty(coll)
+//    | (_, []) = empty(coll)
+//    | (n, [x, ...xs]) = x :: take(n - 1, xs)
+//
+//
+//fun split_at(n, l) =
+//    (take(n, l), drop(n, l))
+//
+//
+//fun take_while(predicate, coll)
+//    | (p, []) = empty(coll)
+//    | (p, [x, ...xs]) = if p(x) == True then x :: take_while(p, xs) else empty(coll)
+//
+//
+//fun drop_while(predicate, coll)
+//    | (p, []) = empty(coll)
+//    | (p, xs@[x, ...xs1]) = if p(x) == True then drop_while(p, xs1) else xs
+//
+//
+//fun filter(predicate, coll)
+//    | (p, []) = empty(coll)
+//    | (p, x::xs) =
+//        if p(x) then
+//            x :: filter(p, xs)
+//        else
+//            filter(p, xs)
+//
+//
+//fun span(predicate, coll)
+//    | (p, []) =
+//        let c = empty(coll)
+//        in (c, c)
+//    | (p, xs@[x, ...xs1]) =
+//        if not(p(x)) then
+//            (empty(coll), xs)
+//        else
+//            let (ys, zs) = (span p xs1)
+//            in (x::ys, zs)
+//
+//
+//fun partition(predicate, l) =
+//    let fun _partition(pred, l, a, b)
+//        | (pred, x::xs, a, b) =
+//            if pred(x) then
+//               _partition(pred, xs, x::a, b)
+//            else
+//               _partition(pred, xs, a, x::b)
+//
+//        | (pred, [], a, b) = (reverse(a), reverse(b))
+//
+//    in _partition(predicate, l, [], [])
+//
+//
+//fun delete(item, coll)
+//    | (item, [item, ...xs]) = xs
+//    | (item, [x, ...xs]) = x :: delete(item, xs)
+//    | (_, []) = empty(coll)
+//
+//
+//fun insert(index, v, coll)
+//    | (0, v, coll) = v::coll
+//    | (i, v, []) = throw IndexError (["Invalid insertion index", index, v])
+//    | (i, v, x::xs) = x :: insert(i - 1, v, xs)
+//
+//
+//fun append(v, coll) =
+//    insert(length(coll), v, coll)
+//
+//
+//////QUERIES//////////////////////////////////////////////////////////////////
+//
+//fun conjunction(l) =
+//    foldr((v, acc) -> v and acc, True, l)
+//
+//
+//fun disjunction(l) =
+//    foldr((v, acc) -> v or acc, False, l)
+//
+//
+//fun any(p, l) =
+//    disjunction(map(p, l))
+//
+//
+//fun all(p, l) =
+//    conjunction(map(p, l))
+//
+//
+//fun element(x, l) = any(v -> v == x, l)
+//
+//
+//fun contains(l, x) = element(x, l)
+//
+//
+//fun equal
+//    | (x::xs, x::ys) = equal(xs, ys)
+//    | ([], []) = True
+//    | (_, _) = False
+//
+//
+////BUILDERS/////////////////////////////////////////////////////////////
+//
+//fun concat(l1, l2) =
+//    foldr(`::`, l2, l1)
+//
+//
+//fun uncons(x::xs) = (x, xs)
+//
+//
+//fun init(coll)
+//    | [x] = empty(coll)
+//    | [x, ...xs] = x :: init(xs)
+//    | [] = throw ValueError ("empty seq in init")
+//
+//
+//fun zip(seq1, seq2)
+//    | (x::xs, y::ys) = (x, y) :: zip(xs, ys)
+//    | (_, _) = []
+//
+//
+//fun unzip(l) =
+//    let fun _unzip
+//        | ((x, y) :: ts, xs, ys) = _unzip(ts, x :: xs, y :: ys)
+//        | ([], xs, ys) = (reverse(xs), reverse(ys))
+//
+//    in _unzip(l, [], [])
+//
+//
+//fun zip3(s1, s2, s3)
+//    | (x::xs, y::ys, z::zs) = (x, y, z) :: zip3(xs, ys, zs)
+//    | (_, _, _) = []
+//
+//
+//fun unzip3(l) =
+//    let fun _unzip3(l, acc_x, acc_y, acc_z)
+//        | ([(x, y, z), ...ts], xs, ys, zs) = _unzip3(ts, x::xs, y::ys, z::zs)
+//        | ([], xs, ys, zs) = (reverse(xs), reverse(ys), reverse(zs))
+//    in _unzip3(l, [], [], [])
+//
+//
+//fun zipwith(f, seq1, seq2)
+//    | (f, x::xs, y::ys) = f(x, y) :: zipwith(f, xs, ys)
+//    | (_, _, _) = []
+//
+//
+//fun zipwith3(f, seq1, seq2, seq3)
+//    | (f, x::xs, y::ys, z::zs) = f(x, y, z) :: zipwith3(f, xs, ys, zs)
+//    | (_, _, _, _) = []
+//
+//
+//fun split
+//    | [] = ([], [])
+//    | s@[x] = (s, [])
+//    | x::y::xs =
+//        let (l, r) = split(xs)
+//        in (x::l, y::r)
+//
+//
+//fun sort(f, s) =
+//    let
+//        fun _merge
+//            | ([], ys) = ys
+//            | (xs, []) = xs
+//            | (x::xs, y::ys) =
+//                if f(x, y) then x :: _merge(xs, y::ys)
+//                else y :: _merge(x::xs, ys)
+//
+//        fun _sort
+//            | [] = []
+//            | s @ [x] = s
+//            | xs =
+//                let (ys, zs) = split(xs)
+//                in _merge(_sort(ys), _sort(zs))
+//
+//    in _sort(s)
+//
+//
+//fun sort_asc(s) = sort(`<=`, s)
+//
+//
+//fun sort_desc(s) = sort(`>=`, s)
+
+///////////////////////////////////////////////////////
+
+

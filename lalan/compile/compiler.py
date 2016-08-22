@@ -707,8 +707,8 @@ def _compile_case_function(compiler, code, node, name, cases):
     _enter_scope(compiler)
 
     funccode = newcode(compiler)
-
-    _declare_arguments(compiler, 0, True)
+    arity = nodes.pattern_length(cases[0][0])
+    _declare_arguments(compiler, arity, True)
 
     # if not api.isempty(funcname):
     #     _emit_fself(compiler, funccode, name, funcname)

@@ -32,8 +32,8 @@ class W_Partial(W_Callable):
         elif length < self.arity:
             return W_Partial(self.func, new_args)
         else:
-            error.throw_3(error.Errors.INVOKE_ERROR, space.newstring(u"Too mach arguments for partial"),
-                          space.newint(length), self.func)
+            error.throw_7(error.Errors.INVOKE_ERROR, space.newstring(u"Too mach arguments for partial"),
+                          self.func, space.newint(length), space.newint(self.arity), self.args, args, new_args)
 
     def _equal_(self, other):
         from lalan.types import space

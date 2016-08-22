@@ -128,7 +128,8 @@ def apply(process, routine):
     if space.islist(args):
         args = plist.to_tuple(args)
     elif not space.istuple(args):
-        return error.throw_1(error.Errors.TYPE_ERROR, space.newstring(u"arguments tuple expected"))
+        # args = space.newtuple([args])
+        return error.throw_1(error.Errors.TYPE_ERROR, space.newstring(u"expected tuple"))
     api.call(process, func, args)
 
 

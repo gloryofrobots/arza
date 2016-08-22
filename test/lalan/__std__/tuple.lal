@@ -22,6 +22,10 @@ extend Tuple (
             "(" ++ string:join_with(repr, to_seq(self), ", ") ++ ")"
 )
 
+fun ensure_tuple
+    | t of Tuple = t
+    | v = (v,)
+
 fun split
     | ((x)) = (x, ())
     | ((x, ...rest)) = (x, rest)

@@ -53,6 +53,14 @@ def throw_5(symbol_unistr, arg1, arg2, arg3, arg4, arg5):
     throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4, arg5]))
 
 
+def throw_6(symbol_unistr, arg1, arg2, arg3, arg4, arg5, arg6):
+    throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4, arg5, arg6]))
+
+
+def throw_7(symbol_unistr, arg1, arg2, arg3, arg4, arg5, arg6, arg7):
+    throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4, arg5, arg6, arg7]))
+
+
 def affirm_iterable(it, condition):
     for i in it:
         affirm_type(i, condition)

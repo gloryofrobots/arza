@@ -195,6 +195,13 @@ def is_wildcard_node(n):
     return node_type(n) == nt.NT_WILDCARD
 
 
+def pattern_length(n):
+    ntype = node_type(n)
+    if ntype == nt.NT_WHEN:
+        return tuple_node_length(node_first(n))
+    return tuple_node_length(n)
+
+
 def tuple_node_length(n):
     if node_type(n) == nt.NT_UNIT:
         return 0
