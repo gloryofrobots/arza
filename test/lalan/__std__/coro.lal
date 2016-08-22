@@ -118,6 +118,7 @@ fun loop_reduce(init_fn, x, acc) =
 let
 (
     take = seq:take
+    take_while = seq:take_while
     nth = seq:nth
 )
 
@@ -161,6 +162,21 @@ fun drop(count, co) =
                         _drop(n-1, xs)
 
             in _drop(count, co)
+    )
+
+fun drop_while(fn, co) =
+    spawn(
+        fun (yield) =
+            let fun _drop_while
+                    | (p, []) =
+                        empty(co)
+                    | (p, xs @ [x, ...xs1]) =
+                        if p(x) then
+                            _drop_while(p, xs1)
+                        else
+                            seq:traverse(map(yield, xs))
+
+            in _drop_while(fn, co)
     )
 
 
@@ -210,174 +226,31 @@ fun intersperse(val, co) =
     )
 
 
-//
-//
-//fun reverse(coll) =
-//    let fun _reverse
-//            | ([], result) = result
-//            | (hd::tl, result) = _reverse(tl, hd :: result)
-//
-//    in _reverse(coll, empty(coll))
-//
-//
-//
-/////ACCESSORS//////////////////////////////////////
-//
-//fun nth_tail
-//    | (0, l) = l
-//    | (1, [_, ...t]) = t
-//    | (n, [_, ...t]) when n >= 0 = nth_tail(n - 1, t)
-//
-//
-//fun nth
-//    | (0, l) = l
-//    | (1, [h, ...t]) = h
-//    | (n, [h, ...t]) when n >= 0 = nth(n - 1, t)
+fun zip(co1, co2) =
+    spawn(
+        fun (yield) =
+            let fun _zip
+//                | (x::xs, y::ys) when is_empty(xs) or is_empty(ys) =
+//                (
+//                    io:print(#aa, x, y)
+//                    (x,y)
+//                )
 
-//
-////QUERIES///////////////////////////////////////////////////
-//
-//fun length(l) =
-//    foldl((_, acc) -> acc + 1, 0, l)
-//
-//
-//fun last (x::xs) =
-//    let fun _last
-//            | (_, x::xs) = _last(x, xs)
-//            | (x, []) = x
-//
-//    in _last(x, xs)
-//
-//
-//fun prefix_of
-//    | ([hd, ...pre_tail], [hd, ...tail]) = prefix_of(pre_tail, tail)
-//    | ([], s) = True
-//    | ([_, ..._], s) = False
-//
-//
-//fun suffix_of(suf, s) =
-//   let
-//       delta = len(s) - len(suf)
-//       tl = nth_tail(delta, s)
-//   in delta >= 0 and tl == suf
-//
-//
-////SUBLISTS/////////////////////////////////////////////////////////////
-//
-//fun drop
-//    | (0, l) = l
-//    | (count, hd::tl) = drop(count - 1, tl)
-//
-//
-//fun take(n, coll)
-//    | (0, _) = empty(coll)
-//    | (_, []) = empty(coll)
-//    | (n, [x, ...xs]) = x :: take(n - 1, xs)
-//
-//
-//fun split_at(n, l) =
-//    (take(n, l), drop(n, l))
-//
-//
-//fun take_while(predicate, coll)
-//    | (p, []) = empty(coll)
-//    | (p, [x, ...xs]) = if p(x) == True then x :: take_while(p, xs) else empty(coll)
-//
-//
-//fun drop_while(predicate, coll)
-//    | (p, []) = empty(coll)
-//    | (p, xs@[x, ...xs1]) = if p(x) == True then drop_while(p, xs1) else xs
-//
-//
-//fun filter(predicate, coll)
-//    | (p, []) = empty(coll)
-//    | (p, x::xs) =
-//        if p(x) then
-//            x :: filter(p, xs)
-//        else
-//            filter(p, xs)
-//
-//
-//fun span(predicate, coll)
-//    | (p, []) =
-//        let c = empty(coll)
-//        in (c, c)
-//    | (p, xs@[x, ...xs1]) =
-//        if not(p(x)) then
-//            (empty(coll), xs)
-//        else
-//            let (ys, zs) = (span p xs1)
-//            in (x::ys, zs)
-//
-//
-//fun partition(predicate, l) =
-//    let fun _partition(pred, l, a, b)
-//        | (pred, x::xs, a, b) =
-//            if pred(x) then
-//               _partition(pred, xs, x::a, b)
-//            else
-//               _partition(pred, xs, a, x::b)
-//
-//        | (pred, [], a, b) = (reverse(a), reverse(b))
-//
-//    in _partition(predicate, l, [], [])
-//
-//
-//fun delete(item, coll)
-//    | (item, [item, ...xs]) = xs
-//    | (item, [x, ...xs]) = x :: delete(item, xs)
-//    | (_, []) = empty(coll)
-//
-//
-//fun insert(index, v, coll)
-//    | (0, v, coll) = v::coll
-//    | (i, v, []) = throw IndexError (["Invalid insertion index", index, v])
-//    | (i, v, x::xs) = x :: insert(i - 1, v, xs)
-//
-//
-//fun append(v, coll) =
-//    insert(length(coll), v, coll)
-//
-//
-//////QUERIES//////////////////////////////////////////////////////////////////
-//
-//fun conjunction(l) =
-//    foldr((v, acc) -> v and acc, True, l)
-//
-//
-//fun disjunction(l) =
-//    foldr((v, acc) -> v or acc, False, l)
-//
-//
-//fun any(p, l) =
-//    disjunction(map(p, l))
-//
-//
-//fun all(p, l) =
-//    conjunction(map(p, l))
-//
-//
-//fun element(x, l) = any(v -> v == x, l)
-//
-//
-//fun contains(l, x) = element(x, l)
-//
-//
-//fun equal
-//    | (x::xs, x::ys) = equal(xs, ys)
-//    | ([], []) = True
-//    | (_, _) = False
-//
-//
-////BUILDERS/////////////////////////////////////////////////////////////
-//
-//fun concat(l1, l2) =
-//    foldr(`::`, l2, l1)
-//
-//
-//fun uncons(x::xs) = (x, xs)
-//
-//
+                | (x::xs, y::ys) =
+                (
+                    io:print(#bb, x, y, is_empty(xs), is_empty(ys))
+                    yield((x,y))
+                    _zip(xs, ys)
+                )
+
+                | (xs, ys) = (
+                    io:print(#cc, xs, ys)
+                    []
+                 )
+            in _zip(co1, co2)
+    )
+
+
 //fun init(coll)
 //    | [x] = empty(coll)
 //    | [x, ...xs] = x :: init(xs)
@@ -385,8 +258,6 @@ fun intersperse(val, co) =
 //
 //
 //fun zip(seq1, seq2)
-//    | (x::xs, y::ys) = (x, y) :: zip(xs, ys)
-//    | (_, _) = []
 //
 //
 //fun unzip(l) =
