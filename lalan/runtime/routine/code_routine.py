@@ -260,3 +260,6 @@ class CodeRoutine(BaseRoutine):
 
     def bytecode(self):
         return self._code_
+
+    def __str__(self):
+        return "<code_routine of %s>" % str(self._func_)

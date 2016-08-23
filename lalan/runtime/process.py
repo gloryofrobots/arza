@@ -72,6 +72,7 @@ class Fiber:
             return None
 
         assert parent.routine.is_suspended()
+        print "FINALISE",  self.routine, self.routine.result
         parent.routine.resume(self.process, self.routine.result)
         return parent
 
@@ -195,7 +196,8 @@ class Process(object):
         return result
 
     def create_fiber(self):
-        fiber = Fiber(self, self.__fiber)
+        # fiber = Fiber(self, self.__fiber)
+        fiber = Fiber(self, None)
         # DEBUG ONLY
         self.fibers.append(fiber)
         return fiber

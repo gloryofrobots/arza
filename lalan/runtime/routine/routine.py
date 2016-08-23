@@ -33,9 +33,9 @@ def create_native_routine(stack, name, native, args, arity):
     return NativeRoutine(stack, name, native, args, arity)
 
 
-def create_callback_routine(stack, callback, function, args):
+def create_callback_routine(stack, on_result, on_complete, function, args):
     from lalan.runtime.routine.callback_routine import CallbackRoutine
-    return CallbackRoutine(stack, callback, function, args)
+    return CallbackRoutine(stack, on_result, on_complete, function, args)
 
 
 def create_module_routine(name, stack, code, env):
@@ -60,7 +60,7 @@ def create_function_environment(func, scope, args, outer_env):
         if args_count != declared_args_count:
             return error.throw_5(error.Errors.INVALID_ARG_COUNT_ERROR,
                                  space.newint(args_count), space.newstring(u"!="), space.newint(declared_args_count),
-                                 func.name, args)
+                                 func, args)
     if args_count < declared_args_count:
         return error.throw_5(error.Errors.INVALID_ARG_COUNT_ERROR,
                              space.newint(args_count), space.newstring(u"<"), space.newint(declared_args_count),

@@ -39,11 +39,28 @@ class W_Coroutine(W_Callable):
         self.chan2 = chan2
         self.fn = fn
 
+    def on_result(self, process, value):
+        return value
+
+    def on_complete(self, process, value):
+        # print "ON RESULT", value
+        # yield to current owner
+        if process.fiber != self.chan1.fiber:
+            process.switch_to_fiber(self.chan1.fiber, value)
+        return value
+
+    #
+    def _to_routine_(self, stack, args):
+        # print "TO ROUTINE"
+        from lalan.runtime.routine.routine import create_callback_routine
+        routine = create_callback_routine(stack, self.on_complete, None, self.fn, args)
+        return routine
+
     def _call_(self, process, args):
         self.chan1.fiber = process.fiber
         if not self.initialised:
             new_args = tuples.concat(space.newtuple([self.chan1]), args)
-            process.activate_fiber(self.chan2.fiber, self.fn, new_args)
+            process.activate_fiber(self.chan2.fiber, self, new_args)
             self.initialised = True
         else:
             api.call(process, self.chan2, args)

@@ -33,7 +33,8 @@ class W_Generic(W_Hashable):
     def _call_(self, process, args):
         arity = api.length_i(args)
         if arity != self.arity:
-            return error.throw_5(error.Errors.INVALID_ARG_COUNT_ERROR, space.newstring(u"Invalid count of arguments "),
+            return error.throw_5(error.Errors.INVALID_ARG_COUNT_ERROR,
+                                 space.newstring(u"Invalid count of arguments "),
                                  self, args, space.newint(arity), space.newint(self.arity))
 
         if self.hot_path is not None:

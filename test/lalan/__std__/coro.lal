@@ -14,8 +14,30 @@ extend Coroutine
     use derive:TSized (is_empty)
     def len(self) = throw NotImplementedError ("Coroutine can't define len")
 
-    def first(self) = self()
-    def rest(self) = self
+    def first(self) =
+    (
+        if not is_empty(self) then
+        (
+            let v = self()
+            in
+            (
+                io:print(#first, self, v)
+                v
+            )
+        )
+        else
+        (
+            throw "Coroutine is closed on first"
+        )
+
+    )
+    def rest(self) =
+    (
+        if not is_empty(self) then
+            self
+        else
+            []
+    )
     def to_seq(self) = self
     def empty(self) = []
 )
@@ -84,6 +106,7 @@ fun _loop(yield_argument, init_fn, args) =
                     fn = init_fn(
                         fun (...args) =
                         (
+                            io:print(#_loop1, args)
                             apply(yield, yield_argument(args))
                             apply(fn,  args)
                         )
@@ -91,6 +114,7 @@ fun _loop(yield_argument, init_fn, args) =
                 in
                 (
                     yield()
+                    io:print(#_loop, args)
                     apply(fn, args)
                 )
         )
@@ -228,26 +252,59 @@ fun intersperse(val, co) =
 
 fun zip(co1, co2) =
     spawn(
-        fun (yield) =
-            let fun _zip
-//                | (x::xs, y::ys) when is_empty(xs) or is_empty(ys) =
-//                (
-//                    io:print(#aa, x, y)
-//                    (x,y)
-//                )
-
-                | (x::xs, y::ys) =
+        let fun __zip (yield) =
+            let fun _zip(co1, co2) =
+            (
+                io:print(#zip, co1, co2)
+                if is_empty(co1) or is_empty(co2) then
                 (
-                    io:print(#bb, x, y, is_empty(xs), is_empty(ys))
-                    yield((x,y))
-                    _zip(xs, ys)
-                )
-
-                | (xs, ys) = (
-                    io:print(#cc, xs, ys)
+                    io:print(#S1, is_empty(co1), is_empty(co2))
                     []
-                 )
+                )
+                else
+                (
+                    let
+                        _ = io:print(#zip1)
+                        x = co1 (42)
+                        _ = io:print(#zip2)
+                        y = co2()
+                    in
+                    (
+                        if is_empty(co1) or is_empty(co2) then
+                        (
+                            io:print(#S2, is_empty(co1), is_empty(co2))
+                            (x,y)
+                        )
+                        else
+                        (
+                            io:print(#S3, x, y, is_empty(co1), is_empty(co2))
+                            yield((x,y))
+                            _zip(co1, co2)
+                        )
+                    )
+                )
+//                match (co1, co2)
+//                    | (x::xs, y::ys) =
+//                    (
+//                        io:print(#bb, x, y, is_empty(xs), is_empty(ys))
+//                        yield((x,y))
+//                        _zip(xs, ys)
+//                    )
+//                    | (xs, ys) =
+//                    (
+//                        io:print(#cc, xs, ys)
+//                        []
+//                    )
+
+            )
+////                | (x::xs, y::ys) when is_empty(xs) or is_empty(ys) =
+////                (
+////                    io:print(#aa, x, y)
+////                    (x,y)
+////                )
+//
             in _zip(co1, co2)
+        in __zip
     )
 
 
@@ -259,68 +316,10 @@ fun zip(co1, co2) =
 //
 //fun zip(seq1, seq2)
 //
-//
-//fun unzip(l) =
-//    let fun _unzip
-//        | ((x, y) :: ts, xs, ys) = _unzip(ts, x :: xs, y :: ys)
-//        | ([], xs, ys) = (reverse(xs), reverse(ys))
-//
-//    in _unzip(l, [], [])
-//
-//
-//fun zip3(s1, s2, s3)
-//    | (x::xs, y::ys, z::zs) = (x, y, z) :: zip3(xs, ys, zs)
-//    | (_, _, _) = []
-//
-//
-//fun unzip3(l) =
-//    let fun _unzip3(l, acc_x, acc_y, acc_z)
-//        | ([(x, y, z), ...ts], xs, ys, zs) = _unzip3(ts, x::xs, y::ys, z::zs)
-//        | ([], xs, ys, zs) = (reverse(xs), reverse(ys), reverse(zs))
-//    in _unzip3(l, [], [], [])
-//
-//
 //fun zipwith(f, seq1, seq2)
 //    | (f, x::xs, y::ys) = f(x, y) :: zipwith(f, xs, ys)
 //    | (_, _, _) = []
 //
-//
-//fun zipwith3(f, seq1, seq2, seq3)
-//    | (f, x::xs, y::ys, z::zs) = f(x, y, z) :: zipwith3(f, xs, ys, zs)
-//    | (_, _, _, _) = []
-//
-//
-//fun split
-//    | [] = ([], [])
-//    | s@[x] = (s, [])
-//    | x::y::xs =
-//        let (l, r) = split(xs)
-//        in (x::l, y::r)
-//
-//
-//fun sort(f, s) =
-//    let
-//        fun _merge
-//            | ([], ys) = ys
-//            | (xs, []) = xs
-//            | (x::xs, y::ys) =
-//                if f(x, y) then x :: _merge(xs, y::ys)
-//                else y :: _merge(x::xs, ys)
-//
-//        fun _sort
-//            | [] = []
-//            | s @ [x] = s
-//            | xs =
-//                let (ys, zs) = split(xs)
-//                in _merge(_sort(ys), _sort(zs))
-//
-//    in _sort(s)
-//
-//
-//fun sort_asc(s) = sort(`<=`, s)
-//
-//
-//fun sort_desc(s) = sort(`>=`, s)
 
 ///////////////////////////////////////////////////////
 
