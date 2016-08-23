@@ -45,8 +45,9 @@ class W_Coroutine(W_Callable):
     def on_complete(self, process, value):
         # print "ON RESULT", value
         # yield to current owner
-        if process.fiber != self.chan1.fiber:
-            process.switch_to_fiber(self.chan1.fiber, value)
+        # if process.fiber != self.chan1.fiber:
+        #     process.switch_to_fiber(self.chan1.fiber, value)
+        process.set_fiber_continuation(self.chan1.fiber)
         return value
 
     #

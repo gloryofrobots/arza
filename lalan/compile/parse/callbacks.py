@@ -482,7 +482,7 @@ def prefix_if(parser, op, node):
 
 
 def prefix_let(parser, op, node):
-    letblock = statements(parser.let_parser, TERM_LET, [NT_FUN, NT_ASSIGN])
+    letblock = statements(parser.let_parser, TERM_LET, [NT_TRY, NT_FUN, NT_ASSIGN])
     advance_expected(parser, TT_IN)
     inexp = ensure_list_node(expression(parser, 0))
     return node_2(NT_LET, __ntok(node), letblock, inexp)

@@ -15,7 +15,7 @@ import tests:test_import
 import tests:test_fun
 import tests:stdtype:test_stdtype
 import tests:usertype:test_usertype
-//import tests:test_coro
+import tests:test_coro
 //
 import tests:test_partial
 
@@ -57,9 +57,9 @@ fun test() =
     log("TEST TYPES")
     test_usertype:test()
 
-//    log("TEST CORO")
-//    test_coro:test()
-//
+    log("TEST CORO")
+    test_coro:test()
+
     log("TEST PARTIAL")
     test_partial:test()
 

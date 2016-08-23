@@ -18,16 +18,11 @@ extend Coroutine
     (
         if not is_empty(self) then
         (
-            let v = self()
-            in
-            (
-                io:print(#first, self, v)
-                v
-            )
+            self ()
         )
         else
         (
-            throw "Coroutine is closed on first"
+            throw FiberFlowError("Coroutine is closed")
         )
 
     )
@@ -106,7 +101,6 @@ fun _loop(yield_argument, init_fn, args) =
                     fn = init_fn(
                         fun (...args) =
                         (
-                            io:print(#_loop1, args)
                             apply(yield, yield_argument(args))
                             apply(fn,  args)
                         )
@@ -114,7 +108,6 @@ fun _loop(yield_argument, init_fn, args) =
                 in
                 (
                     yield()
-                    io:print(#_loop, args)
                     apply(fn, args)
                 )
         )
@@ -250,77 +243,45 @@ fun intersperse(val, co) =
     )
 
 
-fun zip(co1, co2) =
+fun zipwith(fn, co1, co2) =
     spawn(
         let fun __zip (yield) =
-            let fun _zip(co1, co2) =
-            (
-                io:print(#zip, co1, co2)
-                if is_empty(co1) or is_empty(co2) then
-                (
-                    io:print(#S1, is_empty(co1), is_empty(co2))
+            let fun _zip
+                | (co1, co2) when is_empty(co1) or is_empty(co2) =
                     []
-                )
-                else
-                (
-                    let
-                        _ = io:print(#zip1)
-                        x = co1 (42)
-                        _ = io:print(#zip2)
-                        y = co2()
-                    in
+                | (x::co1, y::co2) =
+                    if is_empty(co1) or is_empty(co2) then
                     (
-                        if is_empty(co1) or is_empty(co2) then
-                        (
-                            io:print(#S2, is_empty(co1), is_empty(co2))
-                            (x,y)
-                        )
-                        else
-                        (
-                            io:print(#S3, x, y, is_empty(co1), is_empty(co2))
-                            yield((x,y))
-                            _zip(co1, co2)
-                        )
+                        fn(x,y)
                     )
-                )
-//                match (co1, co2)
-//                    | (x::xs, y::ys) =
-//                    (
-//                        io:print(#bb, x, y, is_empty(xs), is_empty(ys))
-//                        yield((x,y))
-//                        _zip(xs, ys)
-//                    )
-//                    | (xs, ys) =
-//                    (
-//                        io:print(#cc, xs, ys)
-//                        []
-//                    )
-
-            )
-////                | (x::xs, y::ys) when is_empty(xs) or is_empty(ys) =
-////                (
-////                    io:print(#aa, x, y)
-////                    (x,y)
-////                )
-//
+                    else
+                    (
+                        yield(fn(x,y))
+                        _zip(co1, co2)
+                    )
             in _zip(co1, co2)
         in __zip
     )
 
-
-//fun init(coll)
-//    | [x] = empty(coll)
-//    | [x, ...xs] = x :: init(xs)
-//    | [] = throw ValueError ("empty seq in init")
-//
-//
-//fun zip(seq1, seq2)
-//
-//fun zipwith(f, seq1, seq2)
-//    | (f, x::xs, y::ys) = f(x, y) :: zipwith(f, xs, ys)
-//    | (_, _, _) = []
-//
-
+fun zip(co1, co2) =
+    spawn(
+        let fun __zip (yield) =
+            let fun _zip
+                | (co1, co2) when is_empty(co1) or is_empty(co2) =
+                    []
+                | (x::co1, y::co2) =
+                    if is_empty(co1) or is_empty(co2) then
+                    (
+                        (x,y)
+                    )
+                    else
+                    (
+                        yield((x,y))
+                        _zip(co1, co2)
+                    )
+            in _zip(co1, co2)
+        in __zip
+    )
 ///////////////////////////////////////////////////////
 
 

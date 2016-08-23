@@ -24,6 +24,7 @@ class Fiber:
         self.routines = []
         self.routine = None
         self.parent = parent
+        self.continuation_fiber = parent
         self.process = process
         self.stack = Stack(DEFAULT_STACK_SIZE)
 
@@ -67,14 +68,14 @@ class Fiber:
         self.routine.resume(self.process, result)
 
     def finalise(self):
-        parent = self.parent
-        if parent is None:
+        continuation = self.continuation_fiber
+        if continuation is None:
             return None
 
-        assert parent.routine.is_suspended()
-        print "FINALISE",  self.routine, self.routine.result
-        parent.routine.resume(self.process, self.routine.result)
-        return parent
+        assert continuation.routine.is_suspended()
+        # print "FINALISE",  self.routine, self.routine.result
+        continuation.routine.resume(self.process, self.routine.result)
+        return continuation
 
     def call_object(self, obj, args):
         routine = api.to_routine(obj, self.stack, args)
@@ -209,6 +210,10 @@ class Process(object):
         fiber.start_work(func, args)
         self.fiber = fiber
 
+    def set_fiber_continuation(self, fiber):
+        assert fiber is not self.fiber
+        self.fiber.continuation_fiber = fiber
+
     def switch_to_fiber(self, fiber, result):
         assert fiber is not self.fiber
         assert not self.fiber.is_finished()
@@ -274,13 +279,13 @@ class Process(object):
             if continuation is not None:
                 return None
 
-            parent_fiber = fiber.finalise()
+            next_fiber = fiber.finalise()
             self.__purge_fiber(fiber)
-            if not parent_fiber:
+            if not next_fiber:
                 self.__complete()
                 return routine.result
             else:
-                self.fiber = parent_fiber
+                self.fiber = next_fiber
                 return None
 
         elif routine.is_terminated():
@@ -309,11 +314,11 @@ class Process(object):
             result, trace = self.fiber.catch(signal, trace)
             if result is True:
                 return True, trace
-            parent_fiber = self.fiber.finalise()
+            next_fiber = self.fiber.finalise()
             self.__purge_fiber(self.fiber)
-            if not parent_fiber:
+            if not next_fiber:
                 return False, trace
-            self.fiber = parent_fiber
+            self.fiber = next_fiber
 
     def __set_state(self, s):
         self.__state = s
