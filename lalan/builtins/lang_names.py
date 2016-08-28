@@ -7,7 +7,7 @@ IS_EMPTY = PREFIX + "is_empty"
 
 ISNOT = PREFIX + "isnot"
 KINDOF = PREFIX + "kindof"
-NOT = PREFIX + "not"
+
 # functions used by compiler in code gen
 DERIVE = PREFIX + "derive"
 IS_INDEXED = PREFIX + "is_indexed"
@@ -37,3 +37,7 @@ CONS = PREFIX + "cons"
 
 EQ = PREFIX + "=="
 GE = PREFIX + ">="
+
+HOLE_PREFIX = "@__hole__"
+
+NEGATE = PREFIX + "negate"

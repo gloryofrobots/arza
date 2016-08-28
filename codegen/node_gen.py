@@ -82,7 +82,6 @@ NODES = [
   "NT_AND",
   "NT_OR",
   "NT_NOT",
-  "NT_CURRIED_CALL",
   "NT_END_EXPR",
   "NT_END",
 ]

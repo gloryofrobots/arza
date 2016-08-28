@@ -5,7 +5,7 @@ from lalan:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vec
 """
 SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
 Precedence    Operator
-    100           : . .{ .( .[
+    100           : . .{ .[
     95           x()
     60           :: :::
     55           **
@@ -38,13 +38,13 @@ infixl (+, +, 40)
 infixl (-, -, 40)
 infixl (*, *, 50)
 infixl (/, /, 50)
-prefix (-, negate, 55)
+prefix (-, lalan:lang:negate, 55)
 // infix :: -> 60
 infixl (**, **, 60)
 // prefix # -> 70
 prefix (!, !, 70)
 infixl (.., .., 95)
-// infix ( .( .{ .[ -> 95
+// infix (  .{ .[ -> 95
 prefix (&, &, 96)
 // infix . : -> 100
 ////////////////////////////////////////////////////////////
@@ -240,8 +240,8 @@ fun not_elem(x, c) = not(elem (x, c))
 
 fun identity(x) = x
 
-fun &(func) = lalan:lang:defpartial(func)
-fun ..(f, g) = lalan:lang:defpartial(f)(g)
+fun & (func) = lalan:lang:defpartial(func)
+fun .. (f, g) = lalan:lang:defpartial(f)(g)
 
 fun |>(x, f) = f(x)
 fun <|(f, x) = f(x)

@@ -191,19 +191,97 @@ def infix_lcurly(parser, op, node, left):
     return node_2(NT_MODIFY, __ntok(node), left, list_node(items))
 
 
-def _infix_lparen(parser):
-    args = _parse_comma_separated(parser, TT_RPAREN)
-    return args
+def _parse_comma_separated(parser, terminator, expected=None, initial=None):
+    if not initial:
+        items = []
+    else:
+        items = initial
+    if parser.token_type != terminator:
+        while True:
+            e = expression(parser, 0)
+            if expected:
+                check_node_types(parser, e, expected)
+
+            items.append(e)
+            if parser.token_type != TT_COMMA:
+                break
+
+            advance_expected(parser, TT_COMMA)
+
+    advance_expected(parser, terminator)
+
+    return list_node(items)
 
 
-def infix_dot_lparen(parser, op, node, left):
-    args = _infix_lparen(parser)
-    return node_2(NT_CURRIED_CALL, __ntok(node), left, args)
+def _parse_comma_separated_to_one_of(parser, terminators, initial=None, advance_terminator=True):
+    if not initial:
+        items = []
+    else:
+        items = initial
+
+    if parser.token_type not in terminators:
+        while True:
+            e = expression(parser, 0)
+            items.append(e)
+            if parser.token_type != TT_COMMA:
+                break
+
+            advance_expected(parser, TT_COMMA)
+
+    if advance_terminator:
+        advance_expected_one_of(parser, terminators)
+
+    return list_node(items)
+
+
+def _parse_comma_separated_with_holes(parser, terminator):
+    items = []
+    holes = []
+    index = 0
+
+    if parser.token_type != terminator:
+        while True:
+            if parser.token_type == TT_WILDCARD:
+                holes.append(index)
+                items.append(nodes.create_name_node_s(parser.node, hole_arg(index)))
+                advance(parser)
+            else:
+                e = expression(parser, 0)
+                items.append(e)
+
+            if parser.token_type != TT_COMMA:
+                break
+
+            advance_expected(parser, TT_COMMA)
+            index += 1
+
+    advance_expected(parser, terminator)
+
+    return list_node(items), holes
+
+
+def hole_arg(index):
+    return lang_names.HOLE_PREFIX + str(index)
 
 
 def infix_lparen(parser, op, node, left):
-    args = _infix_lparen(parser)
-    return node_2(NT_CALL, __ntok(node), left, args)
+    args, holes = _parse_comma_separated_with_holes(parser, TT_RPAREN)
+    if len(holes) == 0:
+        return node_2(NT_CALL, __ntok(node), left, args)
+
+    sig = nodes.create_tuple_node(
+        node,
+        [nodes.create_name_node_s(node, hole_arg(hole)) for hole in holes]
+    )
+
+    body = node_2(NT_CALL, __ntok(node), left, args)
+    func = nodes.create_lambda_node(node, sig, body)
+    return func
+
+
+def _infix_lparen(parser):
+    args = _parse_comma_separated(parser, TT_RPAREN)
+    return args
 
 
 def infix_lparen_generic(parser, op, node, left):
@@ -271,49 +349,6 @@ def prefix_sharp(parser, op, node):
 def prefix_not(parser, op, node):
     exp = expression(parser, 90)
     return node_1(NT_NOT, __ntok(node), exp)
-
-
-def _parse_comma_separated(parser, terminator, expected=None, initial=None):
-    if not initial:
-        items = []
-    else:
-        items = initial
-    if parser.token_type != terminator:
-        while True:
-            e = expression(parser, 0)
-            if expected:
-                check_node_types(parser, e, expected)
-
-            items.append(e)
-            if parser.token_type != TT_COMMA:
-                break
-
-            advance_expected(parser, TT_COMMA)
-
-    advance_expected(parser, terminator)
-
-    return list_node(items)
-
-
-def _parse_comma_separated_to_one_of(parser, terminators, initial=None, advance_terminator=True):
-    if not initial:
-        items = []
-    else:
-        items = initial
-
-    if parser.token_type not in terminators:
-        while True:
-            e = expression(parser, 0)
-            items.append(e)
-            if parser.token_type != TT_COMMA:
-                break
-
-            advance_expected(parser, TT_COMMA)
-
-    if advance_terminator:
-        advance_expected_one_of(parser, terminators)
-
-    return list_node(items)
 
 
 # most ambiguous operator,
@@ -598,39 +633,6 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
 
     return pattern
 
-# def _parse_func_pattern(parser, arg_terminator, guard_terminator):
-#     curnode = parser.node
-#     if parser.token_type == TT_LPAREN:
-#         advance_expected(parser, TT_LPAREN)
-#         if parser.token_type == TT_RPAREN:
-#             pattern = nodes.create_unit_node(curnode)
-#         else:
-#             pattern = expression(parser.fun_pattern_parser, 0)
-#         advance_expected(parser, TT_RPAREN)
-#     else:
-#         pattern = expression(parser.fun_pattern_parser, 0)
-#         if parser.token_type == TT_COMMA:
-#             parse_error(parser, u"ty match expression", node)
-#
-#
-#     if parser.token_type == TT_COMMA:
-#         els = [e]
-#         advance_expected(parser, TT_COMMA)
-#         els = _parse_comma_separated_to_one_of(parser.fun_pattern_parser, arg_terminator, initial=els,
-#                                                advance_terminator=False)
-#         pattern = nodes.create_tuple_node_from_list(curnode, els)
-#     else:
-#         pattern = ensure_tuple(e)
-#
-#     if parser.token_type == TT_WHEN:
-#         advance(parser)
-#         guard = expression(parser.guard_parser, 0, guard_terminator)
-#         pattern = node_2(NT_WHEN, __ntok(guard), pattern, guard)
-#     else:
-#         check_token_types(parser, arg_terminator)
-#
-#     return pattern
-
 
 ####################################################
 
@@ -904,7 +906,8 @@ def stmt_export(parser, op, node):
 
 
 def symbol_or_name_value(parser, name):
-    if nodes.node_type(name) == NT_SYMBOL:
+    ntype = nodes.node_type(name)
+    if ntype == NT_SYMBOL:
         data = nodes.node_first(name)
         if nodes.node_type(data) == NT_NAME:
             return nodes.node_value(data)
@@ -912,8 +915,10 @@ def symbol_or_name_value(parser, name):
             return strutil.unquote_w(nodes.node_value(data))
         else:
             assert False, "Invalid symbol"
-    elif nodes.node_type(name) == NT_NAME:
+    elif ntype == NT_NAME:
         return nodes.node_value(name)
+    elif ntype == NT_IMPORTED_NAME:
+        return nodes.imported_name_to_string(name)
     else:
         assert False, "Invalid name"
 
@@ -1091,7 +1096,7 @@ def stmt_prefix(parser, op, node):
     op_node = children[0]
     check_node_type(parser, op_node, NT_NAME)
     func_node = children[1]
-    check_node_type(parser, func_node, NT_NAME)
+    check_node_types(parser, func_node, NAME_NODES)
 
     precedence_node = children[2]
     check_node_type(parser, precedence_node, NT_INT)
@@ -1130,7 +1135,7 @@ def _meta_infix(parser, node, infix_function):
     check_node_type(parser, op_node, NT_NAME)
 
     func_node = children[1]
-    check_node_type(parser, func_node, NT_NAME)
+    check_node_types(parser, func_node, NAME_NODES)
 
     precedence_node = children[2]
     check_node_type(parser, precedence_node, NT_INT)

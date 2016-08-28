@@ -287,7 +287,7 @@ infixl (**, **, 60)
 // prefix # -> 70
 prefix (!, !, 70)
 infixl (.., .., 95)
-// infix ( .( .{ .[ -> 95
+// infix (  .{ .[ -> 95
 prefix (&, &, 96)
 // infix . : -> 100
 

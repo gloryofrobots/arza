@@ -21,7 +21,7 @@ Precedence    Operator
 """
 LALAN PRECEDENCES
 Precedence    Operator
-    100           : . .{ .(
+    100           : . .{
     95           JUXTAPOSITION
     60           :: :::
     50           *  /
@@ -201,7 +201,6 @@ class ExpressionParser(BaseParser):
         infix(self, TT_DOT, 100, infix_dot)
 
         infix(self, TT_LPAREN, 95, infix_lparen)
-        infix(self, TT_INFIX_DOT_LPAREN, 95, infix_dot_lparen)
         infix(self, TT_INFIX_DOT_LCURLY, 95, infix_lcurly)
         infix(self, TT_INFIX_DOT_LSQUARE, 95, infix_lsquare)
         # OTHER OPERATORS ARE DECLARED IN prelude.lal
@@ -379,7 +378,6 @@ def guard_parser_init(parser):
     infix(parser, TT_DOT, 100, infix_dot)
     infix(parser, TT_COLON, 110, infix_name_pair)
     infix(parser, TT_LPAREN, 95, infix_lparen)
-    infix(parser, TT_INFIX_DOT_LPAREN, 95, infix_dot_lparen)
     infix(parser, TT_INFIX_DOT_LCURLY, 95, infix_lcurly)
     infix(parser, TT_INFIX_DOT_LSQUARE, 95, infix_lsquare)
     return parser

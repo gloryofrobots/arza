@@ -3,8 +3,9 @@ from lalan.compile.code.opcode import *
 from lalan.compile.parse import parser
 from lalan.compile import simplify
 from lalan.compile.parse import nodes
-from lalan.compile.parse.nodes import (node_type, node_arity,
-                                      node_first, node_second, node_third, node_fourth, node_children, is_empty_node)
+from lalan.compile.parse.nodes import (node_type, imported_name_to_s,
+                                       node_first, node_second, node_third, node_fourth,
+                                       node_children, is_empty_node)
 from lalan.compile.parse.node_type import *
 from lalan.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
 from lalan.misc import platform, strutil
@@ -851,13 +852,6 @@ def _compile_LOOKUP_MODULE(compiler, code, node):
     _compile_node_name_lookup(compiler, code, node)
 
 
-def imported_name_to_s(node):
-    if node_type(node) == NT_IMPORTED_NAME:
-        return imported_name_to_s(node_first(node)) + ':' + nodes.node_value_s(node_second(node))
-    else:
-        return nodes.node_value_s(node)
-
-
 def _get_import_data_and_emit_module(compiler, code, node):
     from lalan.runtime import load
     exp = node_first(node)
@@ -1065,18 +1059,6 @@ def _compile_LOOKUP(compiler, code, node):
     _emit_call(compiler, code, node, 2, lang_names.AT)
 
 
-def _compile_CURRIED_CALL(compiler, code, node):
-    func = node_first(node)
-    args = node_second(node)
-
-    for arg in args:
-        _compile(compiler, code, arg)
-
-    _compile(compiler, code, func)
-    _emit_call(compiler, code, node, 1, lang_names.PARTIAL)
-    code.emit_1(CALL, len(args), info(node))
-
-
 def _compile_CALL(compiler, code, node):
     func = node_first(node)
     args = node_second(node)
@@ -1206,8 +1188,6 @@ def _compile_node(compiler, code, node):
         _compile_THROW(compiler, code, node)
     elif NT_CALL == ntype:
         _compile_CALL(compiler, code, node)
-    elif NT_CURRIED_CALL == ntype:
-        _compile_CURRIED_CALL(compiler, code, node)
 
     elif NT_LIST == ntype:
         _compile_LIST(compiler, code, node)

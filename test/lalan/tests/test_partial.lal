@@ -7,6 +7,52 @@ fun mul(x, y) = x * y
 
 fun one () = 1
 
+fun test_holes () =
+(
+    let
+        fun add3(x, y, z) = x + y + z
+        add3_0 = add3(_, 42, 24)
+        add3_1 = add3(42, _, 24)
+        add3_2 = add3(42, 24, _)
+        add3_1_2 = add3(42, _, _)
+        _add3 = add3(_, _, _)
+    in
+    (
+       affirm:is_equal_all(
+            add3_0(1024),
+            add3_1(1024),
+            add3_2(1024),
+            add3(_, 42, 24)(1024),
+            1090
+            )
+
+    )
+
+    let fun negate(x) =  -x
+    in affirm:is_equal(negate(_)(2), -2)
+
+    affirm:is_equal((x -> -2 * x)(2.3), -4.6)
+
+    let fun pi() = 3.14
+    in affirm:is_throw(
+            () -> pi(_)(),
+            ()
+       )
+
+    let fun f(x, y, z) = x - y + z
+    in
+    (
+        affirm:is_equal .. (f(_, 2, 4)(6)) .. 8
+        affirm:is_equal(f(2, _, 4)(6), 0)
+        affirm:is_equal(f(2, 4, _)(6), 4)
+
+        affirm:is_equal(f(2, _, _)(4, 6), 4)
+        affirm:is_equal( f(_, _, 4)(2, 6), 0 )
+
+        affirm:is_equal( f(_, 2, _)(4, 6), 8 )
+
+    )
+)
 
 fun test_partial() =
 (
@@ -46,7 +92,7 @@ fun test_pipe() =
     in
     (
         affirm:is_equal (
-            l |> seq:filter.(even),
+            l |> seq:filter(even, _),
             [0, 2, 4, 6, 8]
         )
 
@@ -57,9 +103,9 @@ fun test_pipe() =
         )
 
         affirm:is_equal (
-            l |> seq:filter.(even)
-              |> seq:map.(`+` .. 1)
-              |> seq:map.(flip .. `-` .. 2),
+            l |> seq:filter(even, _)
+              |> seq:map(`+` .. 1, _)
+              |> seq:map(flip .. `-` .. 2, _),
             [-1, 1, 3, 5, 7]
         )
 
@@ -71,9 +117,9 @@ fun test_pipe() =
         )
 
         affirm:is_equal(
-            l |> seq:filter.(even)
-              |> seq:map.(`+`.(1))
-              |> seq:map.(flip.(`-`, 2)),
+            l |> seq:filter(even, _)
+              |> seq:map(`+`(1, _), _)
+              |> seq:map(flip(`-`, 2, _), _),
             [-1, 1, 3, 5, 7]
         )
 
@@ -83,25 +129,25 @@ fun test_pipe() =
         in
         (
             affirm:is_equal (
-                l |> seq:filter.(even)
-                  |> seq:map.(`+` .. 1)
-                  |> seq:map.(flip .. `-` .. 2)
-                  |> seq:map.(triple >> square),
+                l |> seq:filter(even, _)
+                  |> seq:map(`+` .. 1, _)
+                  |> seq:map(flip .. `-` .. 2, _)
+                  |> seq:map(triple >> square, _),
                 [9, 9, 81, 225, 441]
             )
 
             affirm:is_equal (
-                 (seq:filter.(even)
-                     >> seq:map.(`+`.(1))
-                     >> seq:map.(flip.(`-`,2))
-                     >> seq:map.(triple >> square))(l),
+                 (seq:filter(even, _)
+                     >> seq:map(`+`(1, _), _)
+                     >> seq:map(flip(`-`, 2, _), _)
+                     >> seq:map(triple >> square, _))(l),
                  [9, 9, 81, 225, 441]
             )
 
             affirm:is_equal (
-                l |> seq:filter.(even)
+                l |> seq:filter(even, _)
                   >> &seq:map(`+` .. 1)
-                  >> seq:map.(flip.(`-`, 2))
+                  >> seq:map(flip(`-`, 2, _), _)
                   >> &seq:map(triple >> square),
                 [9, 9, 81, 225, 441]
             )
@@ -110,6 +156,7 @@ fun test_pipe() =
 
 fun test () =
 (
+    test_holes()
     test_partial()
     test_composition()
     test_pipe()

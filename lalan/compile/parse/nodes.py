@@ -210,6 +210,17 @@ def tuple_node_length(n):
     return api.length_i(node_first(n))
 
 
+def imported_name_to_s(node):
+    if node_type(node) == nt.NT_IMPORTED_NAME:
+        return imported_name_to_s(node_first(node)) + ':' + node_value_s(node_second(node))
+    else:
+        return node_value_s(node)
+
+
+def imported_name_to_string(node):
+    return space.newstring_s(imported_name_to_s(node))
+
+
 def node_to_d(node):
     if is_empty_node(node):
         return {'empty': True}

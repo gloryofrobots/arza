@@ -83,7 +83,6 @@ RULES = [
     (token('\n'), -1),
     (token('[ ]*\.\.\.'), TT_ELLIPSIS),
     (token('\.\{'), TT_INFIX_DOT_LCURLY),
-    (token('\.\('), TT_INFIX_DOT_LPAREN),
     (token('\.\['), TT_INFIX_DOT_LSQUARE),
     (token(' '), -1),
     (token('--[^\n]*'), -1),
@@ -188,7 +187,7 @@ class Token(root.W_Hashable):
     def __init__(self, type, val, pos, line, column):
         root.W_Hashable.__init__(self)
         assert isinstance(type, int)
-        assert isinstance(val, str)
+        assert isinstance(val, str), val
         assert space.isint(pos)
         assert space.isint(line)
         assert space.isint(column)

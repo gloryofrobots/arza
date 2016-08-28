@@ -21,11 +21,16 @@ fun printr(...args) =
 
 
 fun print(...args) =
+    print_list(args)
+
+
+fun print_list(items) =
     let out = stdout()
     in (
-        _write_list_items(args, str, out)
+        _write_list_items(items, str, out)
         write("\n", out)
     )
+
 
 let (
     p = print
