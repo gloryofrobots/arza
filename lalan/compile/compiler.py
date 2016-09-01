@@ -1059,6 +1059,7 @@ def _compile_LOOKUP(compiler, code, node):
     _emit_call(compiler, code, node, 2, lang_names.AT)
 
 
+
 def _compile_CALL(compiler, code, node):
     func = node_first(node)
     args = node_second(node)
@@ -1186,6 +1187,7 @@ def _compile_node(compiler, code, node):
         _compile_GENERIC(compiler, code, node)
     elif NT_THROW == ntype:
         _compile_THROW(compiler, code, node)
+
     elif NT_CALL == ntype:
         _compile_CALL(compiler, code, node)
 

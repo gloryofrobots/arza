@@ -101,14 +101,14 @@ fun _loop(yield_argument, init_fn, args) =
                     fn = init_fn(
                         fun (...args) =
                         (
-                            apply(yield, yield_argument(args))
-                            apply(fn,  args)
+                            yield(...yield_argument(args))
+                            fn(...args)
                         )
                     )
                 in
                 (
                     yield()
-                    apply(fn, args)
+                    fn(...args)
                 )
         )
     in

@@ -168,6 +168,11 @@ fun test_base () =
         #empty
     )
 
+    affirm:is_equal(
+            (() -> #empty)(...())
+        ,
+        #empty
+    )
     let fun func3(arg)
         | 1 = #first
         | 42 = #second

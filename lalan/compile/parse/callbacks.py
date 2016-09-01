@@ -234,18 +234,26 @@ def _parse_comma_separated_to_one_of(parser, terminators, initial=None, advance_
     return list_node(items)
 
 
-def _parse_comma_separated_with_holes(parser, terminator):
+def hole_arg(index):
+    return lang_names.HOLE_PREFIX + str(index)
+
+
+def infix_lparen(parser, op, node, left):
+    unpack_call = False
     items = []
     holes = []
     index = 0
 
-    if parser.token_type != terminator:
+    if parser.token_type != TT_RPAREN:
         while True:
             if parser.token_type == TT_WILDCARD:
                 holes.append(index)
                 items.append(nodes.create_name_node_s(parser.node, hole_arg(index)))
                 advance(parser)
             else:
+                if parser.token_type == TT_ELLIPSIS:
+                    unpack_call = True
+
                 e = expression(parser, 0)
                 items.append(e)
 
@@ -255,26 +263,40 @@ def _parse_comma_separated_with_holes(parser, terminator):
             advance_expected(parser, TT_COMMA)
             index += 1
 
-    advance_expected(parser, terminator)
+    advance_expected(parser, TT_RPAREN)
+    # END PARSING
+    # CREATING CALL NODE
+    # UNPACKING IS A SYNTACTIC SUGAR for apply function
+    # f(x, y, z, ...a, ...b, y) =  apply(f, [x, y, z] ++ to_seq(a)  ++ to_seq(b) ++ [x])
+    if unpack_call is False:
+        body = node_2(NT_CALL, __ntok(node), left, list_node(items))
+    else:
+        seqs = []
+        l = []
+        for item in items:
+            if nodes.node_type(item) == NT_REST:
+                if len(l) != 0:
+                    seqs.append(nodes.create_list_node(node, l))
+                    l = []
+                seq = nodes.node_first(item)
+                if nodes.node_type(seq) == NT_WILDCARD:
+                    seq = nodes.create_fargs_node(seq)
 
-    return list_node(items), holes
+                seqs.append(seq)
+            else:
+                l.append(item)
+        if len(l) != 0:
+            seqs.append(nodes.create_list_node(node, l))
+        body = nodes.create_unpack_call(node, left, list_node(seqs))
 
-
-def hole_arg(index):
-    return lang_names.HOLE_PREFIX + str(index)
-
-
-def infix_lparen(parser, op, node, left):
-    args, holes = _parse_comma_separated_with_holes(parser, TT_RPAREN)
     if len(holes) == 0:
-        return node_2(NT_CALL, __ntok(node), left, args)
+        return body
 
     sig = nodes.create_tuple_node(
         node,
         [nodes.create_name_node_s(node, hole_arg(hole)) for hole in holes]
     )
 
-    body = node_2(NT_CALL, __ntok(node), left, args)
     func = nodes.create_lambda_node(node, sig, body)
     return func
 

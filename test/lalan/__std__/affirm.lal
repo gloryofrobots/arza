@@ -9,8 +9,8 @@ fun _batch(checker, fn, calls) =
     let calls_list = to_seq(calls)
     in seq:foreach(
             fun
-                | ((c1, c2)) = checker(apply(fn, c1), c2)
-                | ([c1, c2]) = checker(apply(fn, c1), c2)
+                | ((c1, c2)) = checker(fn(...c1), c2)
+                | ([c1, c2]) = checker(fn(...c1), c2)
             ,
             calls_list
         )
@@ -97,7 +97,7 @@ type Success(val)
 fun _is_throw (fn, args) =
         match
             try (
-                apply(fn, args)
+                fn(...args)
                 Success(True)
             )
             catch e = e
@@ -120,7 +120,7 @@ fun is_throw_expected(fn, args, exc) =
 fun is_not_throw(fn, args) =
         match
             try (
-                apply(fn, args)
+                fn(...args)
                 Success(True)
             )
             catch e = e

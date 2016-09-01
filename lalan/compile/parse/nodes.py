@@ -221,6 +221,10 @@ def imported_name_to_string(node):
     return space.newstring_s(imported_name_to_s(node))
 
 
+def make_call_chain(args, func):
+    pass
+
+
 def node_to_d(node):
     if is_empty_node(node):
         return {'empty': True}
@@ -485,6 +489,22 @@ def create_cons_call(basenode, left, right):
 
 def create_not_call(basenode, left):
     return create_call_node_s(basenode, lang_names.NOT, [left])
+
+
+def create_to_seq_call(basenode, left):
+    return create_call_node_s(basenode, lang_names.TO_SEQ, [left])
+
+
+def _create_unpack_call_args(seqs):
+    seq = plist.head(seqs)
+    rest = plist.tail(seqs)
+    if plist.is_empty(rest):
+        return seq
+    return create_call_node_s(seq, lang_names.CONCAT, [seq, _create_unpack_call_args(rest)])
+
+
+def create_unpack_call(basenode, left, seqs):
+    return create_call_node_s(basenode, lang_names.APPLY, [left, _create_unpack_call_args(seqs)])
 
 
 ##############################

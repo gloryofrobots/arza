@@ -473,6 +473,50 @@ fun test_modify() =
 )
 
 
+fun test_unpack() =
+(
+    let
+        fun f(...args) = args
+        a = [1,2,3,4]
+        b = [5,6,7]
+        c = [8,9]
+        x = 0
+        y = 124
+        z = 455
+        w = 12
+    in
+    (
+        affirm:is_equal(f(x, y, z, ...a, ...b, w), apply(f, [x, y, z] ++ to_seq(a)  ++ to_seq(b) ++ [w]))
+        affirm:is_equal(f(...a), apply(f, to_seq(a)))
+        affirm:is_equal(f(...a, x, ...b), apply(f, to_seq(a) ++ [x] ++ to_seq(b)))
+        affirm:is_equal(f(x, ...b), apply(f, [x] ++ to_seq(b)))
+    )
+
+    let
+        fun f1(x, y, z) =
+        (
+            x + y + z
+        )
+        fun f2(x, y, z, w, t, r) =
+        (
+            x + y + z + w + t + r
+        )
+
+        fun f3(x, y, z) =
+        (
+            f1(..._)
+        )
+
+        fun f4(x, y, z) =
+        (
+            f1(..._) + f2(..._, ...[x + 3, y + 4, z + 5])
+        )
+    in
+    (
+        affirm:is_equal .. f1(1, 2, 3)  .. 6
+        affirm:is_equal .. f4(1, 2, 3)  .. 30
+    )
+)
 fun test () =
 (
 //    print("TESTING REST BASIC EXPRESSIONS")
@@ -493,4 +537,6 @@ fun test () =
     test_ambidextra_operators()
 //    print("TESTING MODIFY OPERATORS")
     test_modify()
+//    print("TESTING UNPACKING SEQUENCES IN FUNCTION CALL")
+    test_unpack()
 )

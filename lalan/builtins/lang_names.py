@@ -40,4 +40,7 @@ GE = PREFIX + ">="
 
 HOLE_PREFIX = "@__hole__"
 
+TO_SEQ = PREFIX + "to_seq"
+CONCAT = PREFIX + "++"
+APPLY = PREFIX + "apply"
 NEGATE = PREFIX + "negate"

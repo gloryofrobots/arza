@@ -181,6 +181,11 @@ def type_check(t):
 
 
 def concat(tupl1, tupl2):
+    if space.islist(tupl1):
+        tupl1 = plist.to_tuple(tupl1)
+    elif space.islist(tupl2):
+        tupl2 = plist.to_tuple(tupl2)
+
     type_check(tupl1)
     type_check(tupl2)
     if space.isunit(tupl1):
