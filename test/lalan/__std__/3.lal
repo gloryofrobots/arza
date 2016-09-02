@@ -1,0 +1,42 @@
+generic
+(
+    at(key, self)
+    at(key, self)
+    put(key, value, self)
+    del(obj, self)
+    elem(key, self)
+
+    cons(value, self)
+    prepend(value, self)
+    ++(self, other)
+    append(value, self)
+)
+
+interface
+(
+    Collection(put.2, at.2, del.2, elem.2)
+    ReadOnlyCollection(at.2, elem.2)
+
+    Consable(cons.2)
+    Consed(cons.1)
+    ConsedAndConsable(cons.1, cons.2)
+
+    Prependable(prepend.2)
+    Appendable(append.2)
+    Concatable(++.2)
+)
+
+extend
+(
+    cons(x:Int, l:List) =
+    (
+        io:print("int consed to list")
+        cons(x:Any, l)
+    )
+    cons(x:Int, l:Prependable) =
+    (
+        io:print("int consed to Prependable")
+        cons(x:Any, l)
+    )
+    append(x:Int, l:List) = append(x:Any, l)
+)

@@ -273,7 +273,7 @@ generic == (`x, y)
 generic (
     // ERROR
     put k v s
-    == (`x, y)
+    == (x, y)
     - (`x, y)
     + (`x, y)
     ! (self)
@@ -334,8 +334,3 @@ extend List (
 
     def slice(first, last, self) = _list:slice(first, last, self)
 )
-//
-
-
-
-

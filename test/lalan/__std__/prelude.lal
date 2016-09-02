@@ -51,7 +51,8 @@ prefix (&, &, 96)
 ////////////////////////////////////////////////////////////
 ///////////////// TYPES ////////////////////////////////////
 ////////////////////////////////////////////////////////////
-type (
+type
+(
     LT
     GT
     EQ
@@ -60,7 +61,8 @@ type (
 )
 
 // Various Errors
-type (
+type
+(
     ImportError(args)
     RuntimeError(args)
     TypeError(args)
@@ -100,8 +102,8 @@ type (
 ////////////////////////////////////////////////////////////
 
 
-generic (
-    at(key, `self)
+generic
+(
     ==(`x, y)
     !=(`x, y)
     <=(`x, y)
@@ -129,6 +131,7 @@ generic (
     len(`self)
     is_empty(`self)
 
+    at(key, `self)
     put(key, value, `self)
     del(obj, `self)
     elem(key, `self)
@@ -165,7 +168,8 @@ generic (
 ////////////////////////////////////////////////////////////
 
 
-interface (
+interface
+(
     PartialEq (==)
     Eq (!=, ==)
     Ord(<, <=, >, >=, cmp, max, min)
@@ -198,12 +202,14 @@ interface (
 ////////////////////////////////////////////////////////////
 
 
-trait TNotEq (
+trait TNotEq
+(
     def !=(x, y) = not (x == y)
 )
 
 
-trait TOrd of PartialEq (
+trait TOrd of PartialEq
+(
     def <(x, y) = cmp(x, y) == LT
     def >=(x, y) = cmp(x, y) != LT
     def >(x, y) = cmp(x, y) == GT
@@ -217,11 +223,13 @@ trait TOrd of PartialEq (
     def min(x, y) = if x <= y then x else y
 )
 
-trait TIsEmpty of Len (
+trait TIsEmpty of Len
+(
     def is_empty(self) = len(self) == 0
 )
 
-trait TRepr of Str (
+trait TRepr of Str
+(
     def repr(self) = str(self)
 )
 
@@ -258,7 +266,8 @@ fun dec(x) = x - 1
 //fun last coll = at ((len coll) - 1) coll
 fun last(coll) = at(len(coll) - 1, coll)
 
-let (
+let
+(
     fst = c -> at(0, c)
     snd = c -> at(1, c)
     thrd = c -> at(2, c)
