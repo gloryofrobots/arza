@@ -97,6 +97,7 @@ class Types:
 class Interfaces:
     def __init__(self, process):
         prelude = process.modules.prelude
+        self.Any = self.find_interface(process, prelude, u"Any")
         self.Seq = self.find_interface(process, prelude, u"Seq")
         self.Dict = self.find_interface(process, prelude, u"Dict")
         self.Indexed = self.find_interface(process, prelude, u"Indexed")

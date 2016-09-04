@@ -6,17 +6,17 @@ import list
 
 //import tests:test_operators
 //
-import tests:test_expressions
-import tests:test_match
-import tests:test_exception
-import tests:test_static_refs
-import tests:test_operator_override
-import tests:test_import
-import tests:test_fun
-import tests:stdtype:test_stdtype
-import tests:usertype:test_usertype
-import tests:test_coro
-import tests:test_partial
+//import tests:test_expressions
+//import tests:test_match
+//import tests:test_exception
+//import tests:test_static_refs
+//import tests:test_operator_override
+//import tests:test_import
+//import tests:test_fun
+//import tests:stdtype:test_stdtype
+//import tests:usertype:test_usertype
+//import tests:test_coro
+//import tests:test_partial
 
 
 fun log(...msgs) =
@@ -29,46 +29,116 @@ fun test() =
 (
     log("RUN TESTS")
 //
-    log("TEST EXPRESSIONS")
-    test_expressions:test()
-
-    log("TEST MATCH")
-    test_match:test()
-
-    log("TEST EXCEPTION")
-    test_exception:test()
-
-    log("TEST STATIC REFS")
-    test_static_refs:test()
-
-    log("TEST IMPORT")
-    test_import:test()
-
-    log ("TEST OP OVERRIDE")
-    test_operator_override:test()
-
-    log("TEST FUN")
-    test_fun:test()
-
-    log("TEST STD TYPES")
-    test_stdtype:test()
-
-    log("TEST TYPES")
-    test_usertype:test()
-
-    log("TEST CORO")
-    test_coro:test()
+//    log("TEST EXPRESSIONS")
+//    test_expressions:test()
 //
-    log("TEST PARTIAL")
-    test_partial:test()
+//    log("TEST MATCH")
+//    test_match:test()
+//
+//    log("TEST EXCEPTION")
+//    test_exception:test()
+//
+//    log("TEST STATIC REFS")
+//    test_static_refs:test()
+//
+//    log("TEST IMPORT")
+//    test_import:test()
+//
+//    log ("TEST OP OVERRIDE")
+//    test_operator_override:test()
+//
+//    log("TEST FUN")
+//    test_fun:test()
+//
+//    log("TEST STD TYPES")
+//    test_stdtype:test()
+//
+//    log("TEST TYPES")
+//    test_usertype:test()
+//
+//    log("TEST CORO")
+//    test_coro:test()
+////
+//    log("TEST PARTIAL")
+//    test_partial:test()
 ////
 //    log "TEST OPERATORS"
 //    test_operators:test()
 )
 
+fun test_binary () =
+(
+    let
+        f2 = multimethod("f", ["`x", "`y"])
+    in
+    (
+        specify(f2, (Int, Float), (x, y) -> #int_float)
+        specify(f2, (Int, Int), (x, y) -> #int_int)
+        specify(f2, (Float, Int), (x, y) -> #float_int)
+        specify(f2, (Float, Float), (x, y) -> #float_float)
+
+        specify(f2, (Int, Seq), (x, y) -> #int_seq)
+        specify(f2, (Indexed, Seq), (x, y) -> #indexed_seq)
+
+        specify(f2, (Any, Any), (x, y) -> #any_any)
+        specify(f2, (Any, Seq), (x, y) -> #any_seq)
+        specify(f2, (Int, Any), (x, y) -> #int_any)
+
+//        io:print <| f2(0, [])
+
+        affirm:is_equal(f2(1, 0.1), #int_float)
+        affirm:is_equal(f2(0.2, 0.1), #float_float)
+        affirm:is_equal(f2(0.654, 1), #float_int)
+        affirm:is_equal(f2(1, 1), #int_int)
+
+        affirm:is_equal(f2((), []), #indexed_seq)
+        affirm:is_equal(f2(0, []), #int_seq)
+
+        affirm:is_equal(f2({}, {}), #any_any)
+        affirm:is_equal(f2(f2, Any), #any_any)
+        affirm:is_equal(f2({}, []), #any_seq)
+        affirm:is_equal(f2(42, #any), #int_any)
+
+//        affirm:is_throw(fun () = f2("2", 1), [])
+    )
+)
+
+fun test_unary () =
+(
+    let f1 = multimethod("f1", ["`x", "y", "z"])
+    in
+    (
+        specify(f1, (Any,), (x, y, z) -> #any)
+        specify(f1, (Int,), (x, y, z) -> #int)
+        specify(f1, (Seq,), (x, y, z) -> #seq)
+
+        affirm:is_equal(f1(0, {}, Tuple), #int)
+        affirm:is_equal(f1(1 :: 2 :: 3 :: [], 42, ()), #seq)
+        affirm:is_equal(f1({}, 42, ()), #any)
+    )
+)
+
+fun test_triple() =
+(
+    let f6 = multimethod("f1", ["x", "`y", "`z", "a", "b", "`c"])
+    in
+    (
+        specify(f6, (Int, Float, String), (x, y, z, a, b, c) -> #int_float_string)
+        specify(f6, (Any, Any, String), (x, y, z, a, b, c) -> #any_any_string)
+        specify(f6, (String, Any, String), (x, y, z, a, b, c) -> #string_any_string)
+
+        affirm:is_equal(f6([], 0, 0.1, [], [], "string"), #int_float_string)
+        affirm:is_equal(f6([], "string1", 0.1, [], [], "string1"), #string_any_string)
+        affirm:is_equal(f6([], [], 0.1, [], [], "string1"), #any_any_string)
+    )
+
+)
+
 
 fun main() =
 (
-    log(1,2,3,4)
-    test()
+    test_unary()
+    test_binary()
+    test_triple()
+//    test()
 )

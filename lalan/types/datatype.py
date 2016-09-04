@@ -10,10 +10,6 @@ class W_Record(W_Hashable):
         self.values = values
         self.type = type
 
-    def _dispatch_(self, process, generic):
-        impl = self.type.get_method(generic)
-        return impl
-
     def _to_string_(self):
         res = []
 
@@ -23,6 +19,10 @@ class W_Record(W_Hashable):
             res.append("%s = %s" % (api.to_s(f), api.to_s(v)))
 
         return "<%s (%s)>" % (api.to_s(self.type), ", ".join(res))
+
+    def _dispatch_(self, process, generic):
+        impl = self.type.get_method(generic)
+        return impl
 
     def _to_repr_(self):
         res = []

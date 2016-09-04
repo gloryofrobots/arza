@@ -96,6 +96,9 @@ class W_Tuple(W_Hashable):
         for v in self.elements:
             yield v
 
+    def __len__(self):
+        return len(self.elements)
+
     def __getitem__(self, item):
         return self.elements[item]
 

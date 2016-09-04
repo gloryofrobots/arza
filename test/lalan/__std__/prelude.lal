@@ -170,6 +170,7 @@ generic
 
 interface
 (
+    Any ()
     PartialEq (==)
     Eq (!=, ==)
     Ord(<, <=, >, >=, cmp, max, min)

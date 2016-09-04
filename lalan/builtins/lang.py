@@ -46,6 +46,8 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, u"partial", __partial, -1)
 
     put_lang_func(process, module, u"vector", __vector, -1)
+    put_lang_func(process, module, u"multimethod", __multimethod, 2)
+    put_lang_func(process, module, u"specify", __specify, 3)
 
     ## debugging
     # if not we_are_translated():
@@ -320,3 +322,21 @@ def lookup(process, routine):
 def clone(process, routine):
     this = routine.get_arg(0)
     return api.clone(this)
+
+
+@complete_native_routine
+def __multimethod(process, routine):
+    from lalan.types.dispatch import mgeneric
+    name = routine.get_arg(0)
+    sig = routine.get_arg(1)
+    return mgeneric.generic(name, sig)
+
+
+@complete_native_routine
+def __specify(process, routine):
+    from lalan.types.dispatch import mgeneric
+    gf = routine.get_arg(0)
+    types = routine.get_arg(1)
+    method = routine.get_arg(2)
+    mgeneric.specify(process, gf, types, method)
+    return gf
