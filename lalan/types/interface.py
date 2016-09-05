@@ -1,10 +1,17 @@
 from lalan.types.root import W_Hashable
 from lalan.types import api, space, plist
 from lalan.misc import platform
+from lalan.runtime import error
 
 
-def find_by_name(name, generic):
+def find_by_name(name, record):
+    generic = api.at_index(record, 1)
     return api.equal_b(generic.name, name)
+
+
+def contains_generic(method, record):
+    generic = api.at_index(record, 1)
+    return api.equal_b(generic, method)
 
 
 class W_Interface(W_Hashable):
@@ -14,28 +21,22 @@ class W_Interface(W_Hashable):
         W_Hashable.__init__(self)
         self.name = name
         self.generics = generics
+        for record in generics:
+            generic = api.at_index(record, 0)
+            position = api.at_index(record, 1)
+            generic.register_interface(self, position)
 
-    def find_generic_by_name(self, name):
-        return plist.find_with(self.generics, name, find_by_name)
-
-    def has_generic_name(self, name):
-        return not space.isvoid(plist.find_with(self.generics, name, find_by_name))
+    # def find_generic_by_name(self, name):
+    #     return plist.find_with(self.generics, name, find_by_name)
+    #
+    # def has_generic_name(self, name):
+    #     return not space.isvoid(plist.find_with(self.generics, name, find_by_name))
+    #
+    # def has_generic(self, method):
+    #     return plist.contains_with(self.generics, method, contains_generic)
 
     def _at_(self, key):
         return plist.find_with(self.generics, key, find_by_name)
-
-    def accept_type(self, _type):
-        for generic in self.generics:
-            if not _type.is_generic_implemented(generic):
-                return False
-        return True
-
-    # def add_generic(self, method):
-    #     assert space.isgeneric(method)
-    #     self.generics = plist.cons(method, self.generics)
-
-    def has_generic(self, method):
-        return plist.contains(self.generics, method)
 
     def _type_(self, process):
         return process.std.types.Interface
@@ -52,3 +53,24 @@ class W_Interface(W_Hashable):
 
     def _equal_(self, other):
         return other is self
+
+
+def interface(name, generics):
+    result = []
+    for record in generics:
+        if space.istuple(record):
+            error.affirm_type(api.at_index(record, 0), space.isgeneric)
+            error.affirm_type(api.at_index(record, 1), space.isint)
+            result.append(record)
+        else:
+            generic = record
+            error.affirm_type(generic, space.isgeneric)
+            if len(generic.dispatch_indexes) != 1:
+                error.throw_2(error.Errors.TYPE_ERROR,
+                              space.newstring(u"Impossible to determine argument position for generic function"
+                                              u"Specify argument position for function"), generic)
+
+            position = space.newint(generic.dispatch_indexes[0])
+            result.append(space.newtuple([generic, position]))
+
+    return W_Interface(name, result)

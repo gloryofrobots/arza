@@ -192,7 +192,7 @@ def isfunction(value):
     from lalan.types.function import W_Function
     from lalan.types.native_function import W_NativeFunction
     from lalan.types.partial import W_Partial
-    from lalan.types.generic import W_Generic
+    from lalan.types.dispatch.generic import W_Generic
     return isinstance(value, W_Function) or isinstance(value, W_NativeFunction) \
            or isinstance(value, W_Partial) or isinstance(value, W_Generic)
 
@@ -410,7 +410,7 @@ def isenv(w):
 ########################################################
 
 def newgeneric(name, signature):
-    from lalan.types.generic import generic
+    from lalan.types.dispatch.generic import generic
     assert issymbol(name)
     if not islist(signature):
         assert islist(signature)
@@ -421,7 +421,7 @@ def newgeneric(name, signature):
 
 
 def newgeneric_hotpath(name, signature, hot_path):
-    from lalan.types.generic import generic_with_hotpath
+    from lalan.types.dispatch.generic import generic_with_hotpath
     assert issymbol(name)
     assert islist(signature)
     assert hot_path is not None
@@ -431,7 +431,7 @@ def newgeneric_hotpath(name, signature, hot_path):
 
 
 def isgeneric(w):
-    from lalan.types.generic import W_Generic
+    from lalan.types.dispatch.generic import W_Generic
     return isinstance(w, W_Generic)
 
 
@@ -457,13 +457,13 @@ def istrait(w):
 ########################################################
 
 def newinterface(name, generics):
-    from lalan.types.interface import W_Interface
+    from lalan.types.interface import interface
     from lalan.runtime import error
     error.affirm_type(name, issymbol)
     error.affirm_type(generics, islist)
     error.affirm_iterable(generics, isgeneric)
 
-    return W_Interface(name, generics)
+    return interface(name, generics)
 
 
 def isinterface(w):
@@ -497,13 +497,13 @@ def isextendable(w):
 
 
 def isrecord(w):
-    from lalan.types.datatype import W_Record
-    return isinstance(w, W_Record)
+    from lalan.types.datatype import W_Instance
+    return isinstance(w, W_Instance)
 
 
 def isdispatchable(w):
-    from lalan.types.datatype import W_Record, W_Extendable
-    return isinstance(w, W_Record) or isinstance(w, W_Extendable)
+    from lalan.types.datatype import W_Instance, W_Extendable
+    return isinstance(w, W_Instance) or isinstance(w, W_Extendable)
 
 
 ########################################################

@@ -4,7 +4,7 @@ from lalan.misc import platform
 from lalan.runtime import error
 
 
-class W_Record(W_Hashable):
+class W_Instance(W_Hashable):
     def __init__(self, type, values):
         W_Hashable.__init__(self)
         self.values = values
@@ -19,10 +19,6 @@ class W_Record(W_Hashable):
             res.append("%s = %s" % (api.to_s(f), api.to_s(v)))
 
         return "<%s (%s)>" % (api.to_s(self.type), ", ".join(res))
-
-    def _dispatch_(self, process, generic):
-        impl = self.type.get_method(generic)
-        return impl
 
     def _to_repr_(self):
         res = []
@@ -60,13 +56,13 @@ class W_Record(W_Hashable):
             error.throw_1(error.Errors.KEY_ERROR, name)
 
         newvalues = api.put(self.values, name, value)
-        return W_Record(self.type.descriptors, newvalues)
+        return W_Instance(self.type.descriptors, newvalues)
 
     def _length_(self):
         return api.length(self.values)
 
     def _equal_(self, other):
-        if not isinstance(other, W_Record):
+        if not isinstance(other, W_Instance):
             return False
         if not api.equal_b(self.type, other.type):
             return False
@@ -93,81 +89,35 @@ def descriptors(fields):
     return d
 
 
-class W_Extendable(W_Hashable):
+class MRO:
     def __init__(self):
-        W_Hashable.__init__(self)
-        self.interfaces = space.newmap()
-        self.methods = space.newmap()
-        self.derived_generics = plist.empty()
+        self.items = plist.empty()
+        self.interfaces_index = 0
 
-    def is_interface_implemented(self, iface):
-        flag = api.lookup(self.interfaces, iface, space.newvoid())
-        if space.isvoid(flag):
-            accepted = iface.accept_type(self)
-            api.put(self.interfaces, iface, space.newbool(accepted))
-            return accepted
-        else:
-            return api.to_b(flag)
+    def add_interface(self, interface):
+        self.items = plist.insert(self.items, self.interfaces_index, interface)
 
-    def register_derived(self, generic):
-        if self.is_derived(generic):
-            return error.throw_3(error.Errors.RUNTIME_ERROR,
-                                 space.newstring(u"Generic has already derived"), self, generic)
+    def add_type(self, type):
+        self.items = plist.cons(type, self.items)
+        self.interfaces_index += 1
 
-        self.derived_generics = plist.cons(generic, self.derived_generics)
+    def weight(self, item):
+        return plist.index(self.items, item)
 
-    def is_derived(self, generic):
-        if plist.contains(self.derived_generics, generic):
-            return True
-        return False
+    def has_type(self, type):
+        return plist.contains(plist.take(self.items, self.interfaces_index), type)
 
-    def add_method(self, generic, method):
-        # error.affirm_type(generic, space.isgeneric)
-        # if self.is_generic_implemented(generic):
-        #     if not self.is_derived(generic):
-        #         return error.throw_3(error.Errors.IMPLEMENTATION_ERROR, self,
-        #                              space.newstring(u"Generic has already implemented"), generic)
-        #
-        #     self.remove_method(generic)
-        api.put(self.methods, generic, method)
-
-    def add_methods(self, implementations):
-        # for impl in implementations:
-        #     generic = api.at_index(impl, 0)
-        #     error.affirm_type(generic, space.isgeneric)
-        #     if self.is_generic_implemented(generic):
-        #         if not self.is_derived(generic):
-        #             return error.throw_3(error.Errors.IMPLEMENTATION_ERROR, self,
-        #                                  space.newstring(u"Generic has already implemented"), generic)
-        #
-        #         self.remove_method(generic)
-
-        for impl in implementations:
-            generic = api.at_index(impl, 0)
-            method = api.at_index(impl, 1)
-            self.add_method(generic, method)
-
-    def add_derived_methods(self, implementations):
-        for impl in implementations:
-            generic = api.at_index(impl, 0)
-            method = api.at_index(impl, 1)
-
-            self.register_derived(generic)
-            self.add_method(generic, method)
-
-    def is_generic_implemented(self, generic):
-        return api.contains_b(self.methods, generic)
-
-    def get_method(self, generic):
-        return api.lookup(self.methods, generic, space.newvoid())
-
-    def remove_method(self, generic):
-        api.delete(self.methods, generic)
+    def has_interface(self, type):
+        return plist.contains(plist.drop(self.items, self.interfaces_index), type)
 
 
-class W_DataType(W_Extendable):
+class W_DataType(W_Hashable):
     def __init__(self, name, fields):
-        W_Extendable.__init__(self)
+        W_Hashable.__init__(self)
+
+        self.interfaces = space.newmap()
+        self.mro = MRO()
+        self.generics = space.newmap()
 
         self.name = name
         self.fields = fields
@@ -180,16 +130,52 @@ class W_DataType(W_Extendable):
 
         self.descriptors = descriptors(self.fields)
 
-    def _dispatch_(self, process, method):
-        impl = space.newvoid()
-        if self.is_singleton:
-            impl = self.get_method(method)
+    def register_interface(self, iface):
+        if self.is_interface_implemented(iface):
+            error.throw_3(error.Errors.IMPLEMENTATION_ERROR, space.newstring(u"Interface has already implemented"),
+                          self, iface)
 
-        if space.isvoid(impl):
-            _type = api.get_type(process, self)
-            impl = _type.get_method(method)
+        self.interfaces = plist.cons(iface, self.interfaces)
+        self.mro.add_interface(iface)
 
-        return impl
+    def is_interface_implemented(self, iface):
+        return plist.contains(self.interfaces, iface)
+
+    def _can_implement(self, iface):
+        if plist.is_empty(iface.generics):
+            return False
+
+        for record in iface.generics:
+            generic = api.at_index(record, 0)
+            position = api.at_index(record, 1)
+            if not self.is_generic_implemented(generic, position):
+                return False
+
+        return True
+
+    def register_generic(self, generic, position):
+        if not api.contains_b(self.generics, generic):
+            api.put(self.generics, generic, space.newlist([]))
+
+        api.put(
+            self.generics,
+            generic,
+            plist.cons(position, api.at(self.generics, generic))
+        )
+
+        # Check if any of interfaces is completed by the moment
+        for record in generic.interfaces:
+            interface = api.at_index(record, 0)
+            if self.is_interface_implemented(interface):
+                continue
+            if self._can_implement(interface):
+                self.register_interface(interface)
+
+    def is_generic_implemented(self, generic, position):
+        if not api.contains_b(self.generics, generic):
+            return False
+        positions = api.at(self.generics, generic)
+        return plist.contains(positions, position)
 
     def _call_(self, process, args):
         length = api.length_i(args)
@@ -200,7 +186,7 @@ class W_DataType(W_Extendable):
                           api.length(self.fields),
                           args)
 
-        return W_Record(self, space.newpvector(args.to_l()))
+        return W_Instance(self, space.newpvector(args.to_l()))
 
     def _type_(self, process):
         return process.std.types.Datatype
@@ -234,75 +220,11 @@ def record_values(record):
     return record.values()
 
 
-def _is_exist_implementation(method, impl):
-    impl_method = api.at_index(impl, 0)
-    return api.equal_b(impl_method, method)
-
-
 def newtype(process, name, fields):
-    _datatype = W_DataType(name, fields)
-    if process.std.initialized is False:
-        return _datatype
-
-    derive_default(process, _datatype)
-    return _datatype
-
-def _find_constraint_generic(generic, pair):
-    return api.equal_b(pair[0], generic)
-
-
-def _get_extension_methods(_type, _mixins, _methods):
-    # BETTER WAY IS TO MAKE DATATYPE IMMUTABLE
-    # AND CHECK CONSTRAINTS AFTER SETTING ALL METHO
-    total = plist.empty()
-    constraints = plist.empty()
-    error.affirm_type(_methods, space.islist)
-    for trait in _mixins:
-        error.affirm_type(trait, space.istrait)
-        constraints = plist.concat(constraints, trait.constraints)
-        trait_methods = trait.to_list()
-        total = plist.concat(trait_methods, total)
-
-    total = plist.concat(_methods, total)
-
-    for iface in constraints:
-        for generic in iface.generics:
-
-            if not plist.contains_with(total, generic,
-                                       _find_constraint_generic):
-                return error.throw_4(error.Errors.CONSTRAINT_ERROR,
-                                    _type, iface, generic,
-                                    space.newstring(
-                                        u"Dissatisfied trait constraint"))
-
-    result = plist.empty()
-    for pair in total:
-        generic = pair[0]
-        if plist.contains_with(result, generic, _find_constraint_generic):
-            continue
-
-        result = plist.cons(pair, result)
-
-    return plist.reverse(result)
-
-
-def derive_default(process, _type):
-    derived = process.std.derived.get_derived(_type)
-    derive(_type, derived)
-
-
-def derive(_type, derived):
-    error.affirm_iterable(derived, space.istrait)
-    error.affirm_type(_type, space.isextendable)
-
-    methods = _get_extension_methods(_type, derived, plist.empty())
-    _type.add_derived_methods(methods)
-    return _type
-
-
-def extend(_type, mixins, methods):
-    error.affirm_type(_type, space.isextendable)
-
-    methods = _get_extension_methods(_type, mixins, methods)
-    _type.add_methods(methods)
+    _type = W_DataType(name, fields)
+    _type.register_interface(process.std.interfaces.Any)
+    if _type.is_singleton:
+        _type.register_interface(process.std.interfaces.Singleton)
+    else:
+        _type.register_interface(process.std.interfaces.Instance)
     return _type

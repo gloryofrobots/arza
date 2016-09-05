@@ -177,15 +177,6 @@ def get_type(process, obj):
     return obj._type_(process)
 
 
-def dispatch(process, obj, generic):
-    impl = obj._dispatch_(process, generic)
-    if space.isvoid(impl):
-        return error.throw_3(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR,
-                             space.newstring(u"Impossible to dispatch method on obj"), obj, generic)
-
-    return impl
-
-
 def traits(process, obj):
     b = get_type(process, obj)
     return b.traits

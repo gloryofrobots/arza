@@ -1,6 +1,6 @@
-from lalan:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
-                             Function, Partial, Interface,
-                             Generic, FiberChannel, Coroutine, Trait, Datatype, LazyVal, Env)
+from obin:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+                             Function, Partial, Generic, FiberChannel, Coroutine, Trait, Interface, Datatype, Env)
+
 
 """
 SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
@@ -48,54 +48,6 @@ infixl (.., .., 90)
 // infix (  .{ .[ -> 95
 prefix (&, &, 96)
 // infix . : -> 100
-////////////////////////////////////////////////////////////
-///////////////// TYPES ////////////////////////////////////
-////////////////////////////////////////////////////////////
-type
-(
-    LT
-    GT
-    EQ
-    Some (val)
-    None
-)
-
-// Various Errors
-type
-(
-    ImportError(args)
-    RuntimeError(args)
-    TypeError(args)
-    NotImplementedError(args)
-    ZeroDivisionError(args)
-    MathDomainError(args)
-    ReferenceError(args)
-    ConstructorError(args)
-    KeyError(args)
-    ValueError(args)
-    SliceError(args)
-    IndexError(args)
-    InvokeError(args)
-    InvalidArgCount(args)
-    MethodInvokeError(args)
-    MethodNotImplementedError(args)
-    MethodSpecializeError(args)
-    CompileError(args)
-    ParseError(args)
-    UnpackSequenceError(args)
-    FiberFlowError(args)
-    MatchError(args)
-    FunctionArgumentsMatchError(args)
-    ExceptionMatchError(args)
-    ExportError(args)
-    ImplementationError(args)
-    ConstraintError(args)
-    EmptySeqError(args)
-    OverflowError(args)
-    //Signal used to interrupt recursive processes
-    Interrupt(result)
-)
-
 
 ////////////////////////////////////////////////////////////
 ///////////////// GENERICS /////////////////////////////////
@@ -161,6 +113,12 @@ generic
     range_from_by(`self, step)
     !(`self)
     :=(`self, value)
+
+    kindof(`instance, super)
+    instanceof(`instance, super)
+    implements(`instance, super)
+
+    is_singleton(`self)
 )
 
 ////////////////////////////////////////////////////////////
@@ -170,7 +128,8 @@ generic
 
 interface
 (
-    Any ()
+    Instance (kindof, instanceof, implements)
+    Singleton (is_singleton)
     PartialEq (==)
     Eq (!=, ==)
     Ord(<, <=, >, >=, cmp, max, min)
@@ -197,6 +156,55 @@ interface
     Ref(!)
     MutRef(!, :=)
 )
+
+////////////////////////////////////////////////////////////
+///////////////// TYPES ////////////////////////////////////
+////////////////////////////////////////////////////////////
+type
+(
+    LT
+    GT
+    EQ
+    Some (val)
+    None
+)
+
+// Various Errors
+type
+(
+    ImportError(args)
+    RuntimeError(args)
+    TypeError(args)
+    NotImplementedError(args)
+    ZeroDivisionError(args)
+    MathDomainError(args)
+    ReferenceError(args)
+    ConstructorError(args)
+    KeyError(args)
+    ValueError(args)
+    SliceError(args)
+    IndexError(args)
+    InvokeError(args)
+    InvalidArgCount(args)
+    MethodInvokeError(args)
+    MethodNotImplementedError(args)
+    MethodSpecializeError(args)
+    CompileError(args)
+    ParseError(args)
+    UnpackSequenceError(args)
+    FiberFlowError(args)
+    MatchError(args)
+    FunctionArgumentsMatchError(args)
+    ExceptionMatchError(args)
+    ExportError(args)
+    ImplementationError(args)
+    ConstraintError(args)
+    EmptySeqError(args)
+    OverflowError(args)
+    //Signal used to interrupt recursive processes
+    Interrupt(result)
+)
+
 
 ////////////////////////////////////////////////////////////
 ///////////////// TRAITS ///////////////////////////////////

@@ -146,11 +146,6 @@ class W_Root:
     def _type_(self, process):
         return not_implemented_error(u"_type_", self)
 
-    def _dispatch_(self, process, generic):
-        _t = self._type_(process)
-        return _t.get_method(generic)
-        # return not_implemented_error(u"_dispatch_", self)
-
     def _compute_hash_(self):
         return not_implemented_error(u"_compute_hash_", self)
 

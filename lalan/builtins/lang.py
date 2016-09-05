@@ -326,17 +326,17 @@ def clone(process, routine):
 
 @complete_native_routine
 def __multimethod(process, routine):
-    from lalan.types.dispatch import mgeneric
+    from lalan.types.dispatch import generic
     name = routine.get_arg(0)
     sig = routine.get_arg(1)
-    return mgeneric.generic(name, sig)
+    return generic.generic(name, sig)
 
 
 @complete_native_routine
 def __specify(process, routine):
-    from lalan.types.dispatch import mgeneric
+    from lalan.types.dispatch import generic
     gf = routine.get_arg(0)
     types = routine.get_arg(1)
     method = routine.get_arg(2)
-    mgeneric.specify(process, gf, types, method)
+    generic.specify(process, gf, types, method)
     return gf
