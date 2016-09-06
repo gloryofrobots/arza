@@ -57,3 +57,86 @@ extend Float (
     use TOrd
     let <= =  _number:le
 )
+
+
+////////////////////////////////////////
+extend
+    Int
+    Float
+with
+(
+    def {!=, ==} = StdBehavior
+//    def != = TEq.[!=]
+//    def == = TEq.[==]
+    def - = _number:sub
+    def + = _number:add
+    def * = _number:mul
+    def / = _number:div
+    def mod = _number:mod
+    def negate = _number:negate
+    def ** =  _number:pow
+    def <= =  _number:le
+    def == = ==.[Rational]
+    def + = +.[Rational, Double]
+)
+
+use TEq TStr TRepr for Int
+use TEq TStr TRepr for Float
+
+StdBehavior =
+{
+    [!=] = (x of T, y) -> not (x == y),
+    [==] = (self of T, other) -> _api:equal(other, self),
+    [str] = (self) -> _api:to_string(self)
+}
+
+defmap StdBehavior =
+(
+    def != (x of T, y) = not (x == y)
+    def ==  (self of T, other) = _api:equal(other, self)
+    def str (self) = _api:to_string(self)
+)
+
+
+trait TEq [T]
+(
+    def != (x of T, y) = not (x == y)
+    def == (self of T, other) = _api:equal(other, self)
+    def str [T] (self) = _api:to_string(self)
+)
+
+trait TStr [T]
+(
+    def str [T] (self) = _api:to_string(self)
+)
+
+trait TRepr
+(
+    def repr [T] (self) = _api:to_repr(self)
+)
+
+
+
+def <= [Int] =
+
+trait TNum (
+)
+
+extend Int (
+    use derive:TStr
+    use derive:TRepr
+    use derive:TEq
+    use TNum
+    use TOrd
+
+    let <= = _number:le
+)
+---------------------------------------------
+
+extend Float (
+    use derive:TStr
+    use derive:TRepr
+    use derive:TEq
+    use TNum
+    use TOrd
+)

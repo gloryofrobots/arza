@@ -1,6 +1,6 @@
 from lalan.compile.parse.basic import *
 from lalan.compile.parse.node_type import *
-from lalan.compile.parse import nodes, tokens
+from lalan.compile.parse import nodes
 from lalan.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3, list_node, empty_node)
 from lalan.types import space
 from lalan.misc import strutil
@@ -191,7 +191,11 @@ def infix_lcurly(parser, op, node, left):
     return node_2(NT_MODIFY, __ntok(node), left, list_node(items))
 
 
-def _parse_comma_separated(parser, terminator, expected=None, initial=None):
+def _parse_comma_separated(parser, terminator, expected=None, initial=None, advance_first=None, not_empty=False):
+    node = parser.node
+    if advance_first:
+        advance_expected(parser, advance_first)
+
     if not initial:
         items = []
     else:
@@ -209,6 +213,9 @@ def _parse_comma_separated(parser, terminator, expected=None, initial=None):
             advance_expected(parser, TT_COMMA)
 
     advance_expected(parser, terminator)
+
+    if not_empty and len(items) == 0:
+        parse_error(parser, u"Expected one or more expressions", node)
 
     return list_node(items)
 
@@ -314,12 +321,6 @@ def infix_lparen_generic(parser, op, node, left):
     return node_2(NT_GENERIC, __ntok(node), generic_name, args)
 
 
-def infix_lparen_interface(parser, op, node, left):
-    items = _infix_lparen(parser)
-    # funcs = node_1(NT_LIST, __ntok(node), items)
-    return node_2(NT_INTERFACE, __ntok(node), left, items)
-
-
 def infix_lsquare(parser, op, node, left):
     exp = expression(parser, 0)
     advance_expected(parser, TT_RSQUARE)
@@ -413,6 +414,12 @@ def prefix_lparen_tuple(parser, op, node):
     return node_1(NT_TUPLE, __ntok(node), items)
 
 
+def prefix_lparen_expression_only(parser, op, node):
+    e = expression(parser, 0)
+    advance_expected(parser, TT_RPAREN)
+    return e
+
+
 def prefix_lparen_expression(parser, op, node):
     # unit
     if parser.token_type == TT_RPAREN:
@@ -440,9 +447,12 @@ def prefix_lsquare(parser, op, node):
     return node_1(NT_LIST, __ntok(node), items)
 
 
-def stmt_interface(parser, op, node):
-    nodes = list_expression(parser.interface_parser, 0)
-    return nodes
+def prefix_lsquare_name_list(parser, op, node):
+    items = _parse_comma_separated(parser, TT_RSQUARE)
+    if len(items) == 0:
+        parse_error(parser, u"Expected one or more types", parser.node)
+
+    return node_1(NT_LIST, __ntok(node), items)
 
 
 def operator_as_symbol(parser, op, node):
@@ -994,7 +1004,59 @@ def infix_lparen_type(parser, op, node, left):
     return node_2(NT_TYPE, __ntok(node), left, fields)
 
 
-# TRAIT*************************
+# INTERFACE
+
+def stmt_interface(parser, op, node):
+    nodes = list_expression(parser.interface_parser, 0)
+    return nodes
+
+
+def prefix_interface_name(parser, op, node):
+    name = nodes.create_name_node(node, nodes.node_value(node))
+    items = _parse_comma_separated(parser.interface_function_parser, TT_RPAREN, advance_first=TT_LPAREN)
+    return node_2(NT_INTERFACE, __ntok(node), name, nodes.create_list_node_from_list(node, items))
+
+
+def infix_interface_dot(parser, op, node, left):
+    # supported syntax
+    check_node_types(parser, left, NAME_NODES)
+    position = expression(parser.int_parser, 0)
+    return node_1(NT_TUPLE, __ntok(node), list_node([left, position]))
+
+
+# DEF
+
+
+def _parse_def(parser, node, without_signature=False):
+    func_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
+
+    # Signature
+    if without_signature:
+        signature = nodes.create_empty_list_node(parser.node)
+        if parser.token_type == TT_LSQUARE:
+            return parse_error(parser, u"This definition of generic method could not have signature", parser.node)
+    else:
+        items = _parse_comma_separated(parser.name_parser, TT_RSQUARE, expected=NAME_NODES, advance_first=TT_LSQUARE)
+        signature = nodes.create_list_node_from_list(node, items)
+
+    if parser.token_type == TT_ASSIGN:
+        advance_expected(parser, TT_ASSIGN)
+        method = expression(parser.expression_parser, 0)
+    else:
+        funcs = _parse_case_or_simple_function(parser.expression_parser,
+                                               TERM_FUN_PATTERN, TERM_FUN_GUARD)
+        # TODO create fancy name <generic_name SIGNATURE>
+        method = node_2(NT_FUN, __ntok(node), empty_node(), funcs)
+
+    return node_3(NT_DEF, __ntok(node), func_name, signature, method)
+
+
+def stmt_def(parser, op, node):
+    return _parse_def(parser, node)
+
+
+# TRAIT
+
 def symbol_operator_name(parser, op, node):
     name = itself(parser, op, node)
     return nodes.create_name_from_operator(node, name)
@@ -1009,106 +1071,121 @@ def grab_name(parser):
 
 def _parser_trait_header(parser, node):
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    if parser.token_type == TT_OF:
-        advance(parser)
-        # FIXME
 
-        if parser.token_type == TT_LPAREN:
-            advance(parser)
-            constraints = _parse_comma_separated(parser.name_list_parser, TT_RPAREN, NAME_NODES)
+    signature = _parse_comma_separated(parser.name_parser, TT_RSQUARE, [NT_NAME], advance_first=TT_LSQUARE)
+
+    constraints = nodes.create_empty_list_node(node)
+    return name, signature, constraints
+
+
+def __signature_has_type(signature, type):
+    type_name = nodes.node_value(type)
+    for node in signature:
+        nval = nodes.node_value(node)
+        if api.equal_b(nval, type_name):
+            return True
+    return False
+
+
+def _process_trait_signature(parser, node, signature):
+    result = [nodes.create_symbol_node(node, node) for node in signature]
+    return nodes.create_list_node(node, result)
+
+
+def _process_trait_methods(parser, signature, methods):
+    new_methods = []
+    for method in methods:
+        method_name = nodes.node_first(method)
+        method_signature = nodes.list_node_items(nodes.node_second(method))
+        method_body = nodes.node_third(method)
+
+        find = False
+        new_signature = []
+        for _type in method_signature:
+            if __signature_has_type(signature, _type):
+                find = True
+                new_signature.append(nodes.create_symbol_node(_type, _type))
+            else:
+                new_signature.append(_type)
+
+        if not find:
+            return parse_error(parser, u"None of the trait types used in method", method)
         else:
-            e = expect_expression_of_types(parser.name_list_parser, 0, NAME_NODES)
-            constraints = list_node([e])
+            new_method = node_3(NT_DEF, __ntok(method),
+                                method_name,
+                                nodes.create_list_node(method, new_signature), method_body)
+            new_methods.append(new_method)
 
-        constraints = nodes.create_list_node_from_list(node, constraints)
-    else:
-        constraints = nodes.create_empty_list_node(node)
-
-    return name, constraints
+    return list_node(new_methods)
 
 
 def stmt_trait(parser, op, node):
-    name, constraints = _parser_trait_header(parser, node)
+    name, signature, constraints = _parser_trait_header(parser, node)
     check_token_type(parser, TT_LPAREN)
-
     methods = list_expression(parser.trait_parser, 0)
-    return nodes.node_3(NT_TRAIT, __ntok(node), name, constraints, methods)
+
+    new_methods = _process_trait_methods(parser, signature, methods)
+    new_signature = _process_trait_signature(parser, node, signature)
+
+    return nodes.node_4(NT_TRAIT, __ntok(node), name,
+                        new_signature,
+                        constraints, new_methods)
 
 
 def prefix_trait_def(parser, op, node):
-    generic_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
-    funcs = _parse_case_or_simple_function(parser.expression_parser,
-                                           TERM_FUN_PATTERN, TERM_FUN_GUARD)
-    return node_2(NT_DEF, __ntok(node), generic_name, funcs)
+    return _parse_def(parser, node)
 
 
-def prefix_trait_let(parser, op, node):
-    generic_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
-    advance_expected(parser, TT_ASSIGN)
-    func = expression(parser.expression_parser, 0)
-    return node_2(NT_ASSIGN, __ntok(node), generic_name, func)
+# USE
+
+def stmt_use(parser, op, node):
+    if parser.token_type == TT_LPAREN:
+        exported_items = _parse_comma_separated(parser.name_parser, TT_RPAREN,
+                                                advance_first=TT_LPAREN,
+                                                not_empty=True)
+        advance_expected(parser, TT_FROM)
+    else:
+        exported_items = list_node([])
+
+    exported = nodes.create_list_node_from_list(node, exported_items)
+
+    name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
+    types = _parse_comma_separated(parser.name_parser, TT_RSQUARE, advance_first=TT_LSQUARE, not_empty=True)
+    signature = nodes.create_list_node_from_list(node, types)
+    return node_3(NT_USE, __ntok(node), name, exported, signature)
 
 
-# ----------- EXTEND ----------------------------
+# EXTEND
 
 def stmt_extend(parser, op, node):
-    type_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
-
-    lets = []
-    defs = []
-    mixins = []
-    check_token_type(parser, TT_LPAREN)
-
-    extensions = ensure_list_node(expression(parser.extend_parser, 0))
-    for ex in extensions:
-        if nodes.node_type(ex) == NT_USE:
-            mixins.append(list_node([
-                nodes.node_first(ex), nodes.node_second(ex)
-            ]))
-        elif nodes.node_type(ex) == NT_DEF:
-            defs.append(list_node([
-                nodes.node_first(ex), nodes.node_second(ex)
-            ]))
-        elif nodes.node_type(ex) == NT_ASSIGN:
-            lets.append(list_node([
-                nodes.node_first(ex), nodes.node_second(ex)
-            ]))
-        else:
-            assert False, "Should not reach here, unknown type extension"
-
-    return nodes.node_4(NT_EXTEND, __ntok(node), type_name, list_node(mixins), list_node(defs), list_node(lets))
-
-
-def prefix_extend_use(parser, op, node):
-    mixin_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
-
-    if parser.token_type == TT_LPAREN:
-        advance(parser)
-        names = _parse_comma_separated(parser.name_list_parser, TT_RPAREN, NAME_NODES)
+    if parser.token_type == TT_LSQUARE:
+        types = _parse_comma_separated(parser.name_parser, TT_RSQUARE, advance_first=TT_LSQUARE)
     else:
-        names = empty_node()
+        types = list_node([expect_expression_of_types(parser.name_parser, 0, NAME_NODES)])
 
-    return node_2(NT_USE, __ntok(node), mixin_name, names)
+    signature = nodes.create_list_node_from_list(node, types)
+    advance_expected(parser, TT_WITH)
+    methods = list_expression(parser.extend_parser, 0)
+
+    # Inserting signature
+    result = []
+    for method in methods:
+        method_name = nodes.node_first(method)
+        method_body = nodes.node_third(method)
+        new_method = node_3(NT_DEF, __ntok(node), method_name, signature, method_body)
+        result.append(new_method)
+
+    return list_node(result)
 
 
 def prefix_extend_def(parser, op, node):
-    method_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
-
-    funcs = _parse_case_or_simple_function(parser.expression_parser, TERM_FUN_PATTERN, TERM_FUN_GUARD)
-    return node_2(NT_DEF, __ntok(node), method_name, funcs)
+    return _parse_def(parser, node, without_signature=True)
 
 
-def prefix_extend_let(parser, op, node):
-    method_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
-    advance_expected(parser, TT_ASSIGN)
-    func = expression(parser.expression_parser, 0)
-    return node_2(NT_ASSIGN, __ntok(node), method_name, func)
-
-
-# ------------------ OPERATORS ---------------------------
+# OPERATORS
 
 def stmt_prefix(parser, op, node):
-    t = expect_expression_of(parser.name_list_parser, 0, NT_TUPLE)
+    t = expect_expression_of(parser.name_tuple_parser, 0, NT_TUPLE)
 
     length = nodes.tuple_node_length(t)
     if length != 3:
@@ -1146,7 +1223,7 @@ def stmt_infixr(parser, op, node):
 
 
 def _meta_infix(parser, node, infix_function):
-    t = expect_expression_of(parser.name_list_parser, 0, NT_TUPLE)
+    t = expect_expression_of(parser.name_tuple_parser, 0, NT_TUPLE)
     children = nodes.node_first(t)
 
     length = nodes.tuple_node_length(t)

@@ -5,7 +5,7 @@ from lalan.runtime import process_data, error
 from lalan.runtime.load import import_module, evaluate_module_file
 
 PRELUDE_FILE = u"prelude"
-# PRELUDE_FILE = u"prelude_debug"
+PRELUDE_FILE = u"prelude_debug"
 
 STD_MODULES = [u"bool", u"num", u"bit", u"env",
                u"string", u"vector",
@@ -52,7 +52,6 @@ def initialize(libdirs):
         return process, err
 
     # HERE ORDER IS IMPORTANT!!!!!
-    # imports derive.lal
     process.std.postsetup(process)
     error.initialise(process)
     builtins.postsetup(process)

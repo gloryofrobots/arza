@@ -115,7 +115,7 @@ class W_DataType(W_Hashable):
     def __init__(self, name, fields):
         W_Hashable.__init__(self)
 
-        self.interfaces = space.newmap()
+        self.interfaces = plist.empty()
         self.mro = MRO()
         self.generics = space.newmap()
 

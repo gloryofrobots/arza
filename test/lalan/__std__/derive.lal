@@ -2,29 +2,36 @@ import lalan:lang:_api
 import lalan:lang:_datatype
 import seq
 
-trait TEq (
-    def != (x, y) = not (x == y)
-    def == (self, other) = _api:equal(other, self)
+
+
+trait TEq [T]
+(
+    def != (x of T, y) = not (x == y)
+    def == (self of T, other) = _api:equal(other, self)
 )
 
-trait TStr (
-    def str(self) = _api:to_string(self)
+trait TStr [T]
+(
+    def str [T] (self) = _api:to_string(self)
 )
 
-trait TRepr (
-    def repr(self) = _api:to_repr(self)
+trait TRepr
+(
+    def repr [T] (self) = _api:to_repr(self)
 )
 
-trait TCollection (
-    def put(key, value, self) = _api:put(key, value, self)
-    def at(key, self) = _api:at(key, self)
-    def del(key, self) = _api:del(key, self)
-    def elem(key, self) = _api:elem(key, self)
+trait TCollection [T]
+(
+    def put [T] (key, value, self) = _api:put(key, value, self)
+    def at [T] (key, self) = _api:at(key, self)
+    def del [T] (key, self) = _api:del(key, self)
+    def elem [T] (key, self) = _api:elem(key, self)
 )
 
-trait TSized (
-    def len(self) = _api:length(self)
-    def is_empty(self) = _api:is_empty(self)
+trait TSized [T]
+(
+    def len [T] (self) = _api:length(self)
+    def is_empty [T] (self) = _api:is_empty(self)
 )
 
 trait TIndexed (
@@ -36,3 +43,56 @@ trait TDict (
     def values(self) = _datatype:record_values(self)
 )
 
+///////////////////////////////////////////////////////////
+
+extend Function (
+    use derive:TStr
+    use derive:TRepr
+    use derive:TEq
+)
+
+extend Generic (
+    use derive:TStr
+    use derive:TRepr
+    use derive:TEq
+)
+
+extend Partial (
+    use derive:TStr
+    use derive:TRepr
+    use derive:TEq
+)
+
+///
+
+extend Datatype (
+    use derive:TEq
+    use derive:TStr
+    use derive:TRepr
+)
+
+///
+
+extend Bool (
+    use derive:TStr
+    use derive:TRepr
+    use derive:TEq
+)
+
+///
+
+extend Env (
+    use derive:TEq
+    use derive:TStr
+    use derive:TRepr
+    use derive:TCollection
+    use derive:TSized
+)
+
+///
+
+extend Trait (
+    use derive:TStr
+    use derive:TRepr
+    use derive:TEq
+)

@@ -29,7 +29,6 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'traits', traits, 1)
     api.put_native_function(process, module, u'get_type', _type, 1)
     put_lang_func(process, module, lang_names.APPLY, apply, 2)
-    put_lang_func(process, module, lang_names.DELAY, __delay, 1)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
     put_lang_func(process, module, lang_names.IS_INDEXED, is_indexed, 1)
     put_lang_func(process, module, lang_names.IS_SEQ, is_seq, 1)
@@ -40,14 +39,13 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.TYPE, __type, 2)
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
     put_lang_func(process, module, lang_names.INTERFACE, __interface, 2)
-    put_lang_func(process, module, lang_names.TRAIT, __trait, 3)
-    put_lang_func(process, module, lang_names.EXTEND, __extend, 3)
+    put_lang_func(process, module, lang_names.TRAIT, __trait, 4)
+    put_lang_func(process, module, lang_names.SPECIFY, __specify, 3)
+    put_lang_func(process, module, lang_names.USE_TRAIT, __use_trait, 3)
     put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
     put_lang_func(process, module, u"partial", __partial, -1)
 
     put_lang_func(process, module, u"vector", __vector, -1)
-    put_lang_func(process, module, u"multimethod", __multimethod, 2)
-    put_lang_func(process, module, u"specify", __specify, 3)
 
     ## debugging
     # if not we_are_translated():
@@ -143,13 +141,6 @@ def _type(process, routine):
 
 
 @complete_native_routine
-def __delay(process, routine):
-    left = routine.get_arg(0)
-    error.affirm_type(left, space.isfunction)
-    return space.newlazyval(left)
-
-
-@complete_native_routine
 def __not(process, routine):
     left = routine.get_arg(0)
     error.affirm_type(left, space.isboolean)
@@ -166,10 +157,20 @@ def __type(process, routine):
 
 @complete_native_routine
 def __generic(process, routine):
+    from lalan.types.dispatch import generic
     name = routine.get_arg(0)
-    signature = routine.get_arg(1)
-    method = space.newgeneric(name, signature)
-    return method
+    sig = routine.get_arg(1)
+    return generic.generic(name, sig)
+
+
+@complete_native_routine
+def __specify(process, routine):
+    from lalan.types.dispatch import generic
+    gf = routine.get_arg(0)
+    types = routine.get_arg(1)
+    method = routine.get_arg(2)
+    generic.specify(process, gf, types, method)
+    return gf
 
 
 @complete_native_routine
@@ -183,22 +184,24 @@ def __interface(process, routine):
 @complete_native_routine
 def __trait(process, routine):
     name = routine.get_arg(0)
-    constraints = routine.get_arg(1)
-    generics = routine.get_arg(2)
+    signature = routine.get_arg(1)
+    constraints = routine.get_arg(2)
+    generics = routine.get_arg(3)
+
     if space.istuple(constraints):
         constraints = tuples.to_list(constraints)
-    _trait = space.newtrait(name, constraints, generics)
+    _trait = space.newtrait(name, signature, constraints, generics)
     return _trait
 
 
 @complete_native_routine
-def __extend(process, routine):
-    _type = routine.get_arg(0)
-    _mixins = routine.get_arg(1)
-    _methods = routine.get_arg(2)
-    _type = datatype.extend(_type, _mixins, _methods)
-
-    return _type
+def __use_trait(process, routine):
+    from lalan.types import trait
+    trait = routine.get_arg(0)
+    exported = routine.get_arg(1)
+    types = routine.get_arg(2)
+    trait.use(process, trait, exported, types)
+    return space.newvoid()
 
 
 @complete_native_routine
@@ -322,21 +325,3 @@ def lookup(process, routine):
 def clone(process, routine):
     this = routine.get_arg(0)
     return api.clone(this)
-
-
-@complete_native_routine
-def __multimethod(process, routine):
-    from lalan.types.dispatch import generic
-    name = routine.get_arg(0)
-    sig = routine.get_arg(1)
-    return generic.generic(name, sig)
-
-
-@complete_native_routine
-def __specify(process, routine):
-    from lalan.types.dispatch import generic
-    gf = routine.get_arg(0)
-    types = routine.get_arg(1)
-    method = routine.get_arg(2)
-    generic.specify(process, gf, types, method)
-    return gf

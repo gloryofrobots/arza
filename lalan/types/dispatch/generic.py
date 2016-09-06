@@ -7,12 +7,6 @@ from signature import newsignature
 from dag import *
 
 
-class SrategyType:
-    ARITY_DISPATCH = 0
-    SINGLE_DISPATCH = 1
-    MULTIPLE_DISPATCH = 2
-
-
 def _dict_key(obj1, obj2):
     assert space.isany(obj1)
     assert space.isany(obj2)

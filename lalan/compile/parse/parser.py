@@ -206,24 +206,6 @@ class ExpressionParser(BaseParser):
         # OTHER OPERATORS ARE DECLARED IN prelude.lal
 
 
-class TraitParser(BaseParser):
-    def __init__(self):
-        BaseParser.__init__(self)
-
-        self.expression_parser = ExpressionParser()
-        # TODO CHECK IT
-        self.name_parser = name_parser_init(BaseParser())
-
-        self.add_subparsers([
-            self.expression_parser,
-            self.name_parser,
-        ])
-
-        prefix(self, TT_DEF, prefix_trait_def)
-        prefix(self, TT_LET, prefix_trait_let)
-        prefix(self, TT_LPAREN, prefix_lparen)
-
-
 class TypeParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
@@ -239,21 +221,34 @@ class TypeParser(BaseParser):
         prefix(self, TT_LPAREN, prefix_lparen)
 
 
+class TraitParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+
+        self.expression_parser = ExpressionParser()
+        # TODO CHECK IT
+        self.name_parser = name_parser_init(BaseParser())
+
+        self.add_subparsers([
+            self.expression_parser,
+            self.name_parser,
+        ])
+
+        prefix(self, TT_DEF, prefix_trait_def)
+        prefix(self, TT_LPAREN, prefix_lparen)
+
+
 class ExtendParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
         self.expression_parser = ExpressionParser()
         self.name_parser = name_parser_init(BaseParser())
-        self.name_list_parser = name_list_parser_init(BaseParser())
         self.add_subparsers([
             self.expression_parser,
             self.name_parser,
-            self.name_list_parser
         ])
 
-        prefix(self, TT_LET, prefix_extend_let)
         prefix(self, TT_DEF, prefix_extend_def)
-        prefix(self, TT_USE, prefix_extend_use)
         prefix(self, TT_LPAREN, prefix_lparen)
 
 
@@ -305,6 +300,36 @@ class FunPatternParser(PatternParser):
         # prefix(self, TT_LPAREN, prefix_lparen_expression)
 
 
+class InterfaceParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+        prefix(self, TT_NAME, prefix_interface_name)
+        prefix(self, TT_LPAREN, prefix_lparen)
+        self.interface_function_parser = InterfaceFunctionParser()
+
+        self.add_subparsers([
+            self.interface_function_parser,
+        ])
+
+
+class InterfaceFunctionParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+        self.int_parser = int_parser_init(BaseParser())
+
+        infix(self, TT_COLON, 100, infix_name_pair)
+        infix(self, TT_DOT, 90, infix_interface_dot)
+        literal(self, TT_NAME)
+        prefix(self, TT_LPAREN, prefix_lparen_expression_only)
+        symbol(self, TT_OPERATOR, symbol_operator_name)
+        symbol(self, TT_COMMA, symbol_comma_nud)
+        symbol(self, TT_RPAREN)
+
+        self.add_subparsers([
+            self.int_parser
+        ])
+
+
 class ModuleParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
@@ -312,21 +337,23 @@ class ModuleParser(BaseParser):
         self.import_parser = import_parser_init(BaseParser())
         self.expression_parser = ExpressionParser()
         self.name_parser = name_parser_init(BaseParser())
-        self.name_list_parser = name_list_parser_init(BaseParser())
+        self.name_tuple_parser = name_tuple_parser_init(BaseParser())
 
         self.import_names_parser = import_names_parser_init(BaseParser())
         self.generic_parser = generic_parser_init(BaseParser())
-        self.interface_parser = interface_parser_init(BaseParser())
+        self.interface_parser = InterfaceParser()
         self.trait_parser = TraitParser()
         self.type_parser = TypeParser()
         self.extend_parser = ExtendParser()
+        self.name_list_parser = name_list_parser_init(BaseParser())
 
         self.add_subparsers([
             self.import_parser,
             self.expression_parser,
             self.name_parser,
-            self.import_names_parser,
+            self.name_tuple_parser,
             self.name_list_parser,
+            self.import_names_parser,
             self.generic_parser,
             self.interface_parser,
             self.trait_parser,
@@ -345,6 +372,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_LET, prefix_module_let)
         stmt(self, TT_TRAIT, stmt_trait)
         stmt(self, TT_TYPE, stmt_type)
+        stmt(self, TT_USE, stmt_use)
         stmt(self, TT_EXTEND, stmt_extend)
         stmt(self, TT_IMPORT, stmt_import)
         stmt(self, TT_FROM, stmt_from)
@@ -353,6 +381,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_INFIXR, stmt_infixr)
         stmt(self, TT_PREFIX, stmt_prefix)
         stmt(self, TT_GENERIC, stmt_generic)
+        stmt(self, TT_DEF, stmt_def)
         stmt(self, TT_INTERFACE, stmt_interface)
 
 
@@ -424,14 +453,8 @@ def generic_parser_init(parser):
     return parser
 
 
-def interface_parser_init(parser):
-    prefix(parser, TT_LPAREN, prefix_lparen)
-    infix(parser, TT_LPAREN, 90, infix_lparen_interface)
-    infix(parser, TT_COLON, 100, infix_name_pair)
-    literal(parser, TT_NAME)
-    symbol(parser, TT_OPERATOR, symbol_operator_name)
-    symbol(parser, TT_COMMA, symbol_comma_nud)
-    symbol(parser, TT_RPAREN)
+def int_parser_init(parser):
+    literal(parser, TT_INT)
     return parser
 
 
@@ -442,7 +465,7 @@ def name_parser_init(parser):
     return parser
 
 
-def name_list_parser_init(parser):
+def name_tuple_parser_init(parser):
     symbol(parser, TT_RPAREN, None)
     symbol(parser, TT_OPERATOR, symbol_operator_name)
     symbol(parser, TT_COMMA, symbol_comma_nud)
@@ -457,6 +480,15 @@ def name_list_parser_init(parser):
     return parser
 
 
+def name_list_parser_init(parser):
+    symbol(parser, TT_RPAREN, None)
+    infix(parser, TT_COLON, 100, infix_name_pair)
+    symbol(parser, TT_COMMA, symbol_comma_nud)
+    literal(parser, TT_NAME)
+    prefix(parser, TT_LSQUARE, prefix_lsquare_name_list)
+    return parser
+
+
 def symbol_list_parser_init(parser):
     prefix(parser, TT_NAME, prefix_name_as_symbol)
     symbol(parser, TT_COMMA, symbol_comma_nud)
@@ -467,6 +499,7 @@ def import_names_parser_init(parser):
     symbol(parser, TT_COMMA, symbol_comma_nud)
     symbol(parser, TT_RPAREN, None)
     literal(parser, TT_NAME)
+    infix(parser, TT_COLON, 100, infix_name_pair)
     infix(parser, TT_AS, 15, infix_name_pair)
     prefix(parser, TT_LPAREN, prefix_lparen_tuple)
     return parser
@@ -512,7 +545,7 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = False
+PARSE_DEBUG = True
 
 
 def parse(process, env, src):

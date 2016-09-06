@@ -128,8 +128,6 @@ generic
 
 interface
 (
-    Instance (kindof, instanceof, implements)
-    Singleton (is_singleton)
     PartialEq (==)
     Eq (!=, ==)
     Ord(<, <=, >, >=, cmp, max, min)

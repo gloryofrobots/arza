@@ -990,11 +990,6 @@ def _compile_CONS(compiler, code, node):
     _compile(compiler, code, simplified)
 
 
-def _compile_DELAY(compiler, code, node):
-    simplified = simplify.simplify_delay(compiler, code, node)
-    _compile(compiler, code, simplified)
-
-
 def _compile_LET(compiler, code, node):
     simplified = simplify.simplify_let(compiler, code, node)
     _compile(compiler, code, simplified)
@@ -1015,14 +1010,17 @@ def _compile_GENERIC(compiler, code, node):
     _compile(compiler, code, generic)
 
 
+def _compile_USE(compiler, code, node):
+    simplified = simplify.simplify_use(compiler, code, node)
+    _compile(compiler, code, simplified)
+
+def _compile_DEF(compiler, code, node):
+    simplified = simplify.simplify_def(compiler, code, node)
+    _compile(compiler, code, simplified)
+
 def _compile_TRAIT(compiler, code, node):
     trait = simplify.simplify_trait(compiler, code, node)
     _compile(compiler, code, trait)
-
-
-def _compile_EXTEND(compiler, code, node):
-    simplified = simplify.simplify_extend(compiler, code, node)
-    _compile(compiler, code, simplified)
 
 
 def _emit_TAIL(compiler, code, node):
@@ -1057,7 +1055,6 @@ def _compile_LOOKUP(compiler, code, node):
     _compile(compiler, code, expr)
     _compile(compiler, code, obj)
     _emit_call(compiler, code, node, 2, lang_names.AT)
-
 
 
 def _compile_CALL(compiler, code, node):
@@ -1179,8 +1176,10 @@ def _compile_node(compiler, code, node):
         _compile_MODULE(compiler, code, node)
     elif NT_TRAIT == ntype:
         _compile_TRAIT(compiler, code, node)
-    elif NT_EXTEND == ntype:
-        _compile_EXTEND(compiler, code, node)
+    elif NT_USE == ntype:
+        _compile_USE(compiler, code, node)
+    elif NT_DEF == ntype:
+        _compile_DEF(compiler, code, node)
     elif NT_INTERFACE == ntype:
         _compile_INTERFACE(compiler, code, node)
     elif NT_GENERIC == ntype:
@@ -1202,8 +1201,6 @@ def _compile_node(compiler, code, node):
 
     elif NT_TYPE == ntype:
         _compile_TYPE(compiler, code, node)
-    elif NT_DELAY == ntype:
-        _compile_DELAY(compiler, code, node)
     elif NT_CONS == ntype:
         _compile_CONS(compiler, code, node)
     elif NT_LET == ntype:

@@ -27,310 +27,389 @@
 /////////////////////////////
 //////////////////////////////////////////
 
-infixr (:=, :=, 10)
-infixl (<|, <|, 15)
-infixl (|>, |>, 20)
-infixl (<<, <<, 25)
-infixl (>>, >>, 25)
-infixl (<, <, 35)
-infixl (>, >, 35)
-infixl (>=, >=, 35)
-infixl (<=, <=, 35)
-infixl (==, ==, 35)
-infixl (!=, !=, 35)
-infixl (++, ++, 40)
-infixl (+, +, 40)
-infixl (-, -, 40)
-infixl (*, *, 50)
-infixl (/, /, 50)
-prefix (-, negate, 55)
-infixl (**, **, 60)
-prefix (!, !, 70)
-infixl (.., .., 95)
-prefix (&, &, 96)
+//infixr (:=, :=, 10)
+//infixl (<|, <|, 15)
+//infixl (|>, |>, 20)
+//infixl (<<, <<, 25)
+//infixl (>>, >>, 25)
+//infixl (<, <, 35)
+//infixl (>, >, 35)
+//infixl (>=, >=, 35)
+//infixl (<=, <=, 35)
+//infixl (==, ==, 35)
+//infixl (!=, !=, 35)
+//infixl (++, ++, 40)
+//infixl (+, +, 40)
+//infixl (-, -, 40)
+//infixl (*, *, 50)
+//infixl (/, /, 50)
+//prefix (-, negate, 55)
+//infixl (**, **, 60)
+//prefix (!, !, 70)
+//infixl (.., .., 95)
+//prefix (&, &, 96)
 
 
-fun f () = 0
-fun f (()) = ((()))
-fun f4 ((),) = ((()))
+//fun f () = 0
+//fun f (()) = ((()))
+//fun f4 ((),) = ((()))
+//
+//fun f ((x,y) :: 4, 45) = 42
+//fun f (x::xs) = 42
+//fun f
+//    | x::xs = 42
+//    | [] = 24
+//
+//
+//fun f () =
+//(
+//let
+//    {a=[x,y,...z], B @ b="I am B", c of Float, D@d={e=(x,y,...zz)}} =
+//        {a=[1,2,3,4,5], b="I am B", c=3.14, d={e=(1,2,3,4,5)}}
+//in
+//    affirm:is_equal(
+//        (a, B, D, e, x, y, z, zz),
+//        ([1,2,3,4,5], "I am B", {e=(1,2,3,4,5)}, (1,2,3,4,5), 1, 2, [3,4,5], (3,4,5))
+//    )
+//)
+//
+//let x = f4(())
+//let m = (fun
+//             | x = 2)(3)
+//let x =
+//    affirm:is_equal (
+//        (fun | ([hd::tl], (1,2,3), {x=2, y=3}) = 24
+//             | (_, y, z) = 23)(
+//                [[1,2]], (1,2,3), {x=2, y=3}),
+//        24
+//    )
+//fun f
+//    | ((x,y) :: 4, 45) = 42
+//    | (x,y) = 42
+//
+//let f = seq:map(x -> x * x, l)
+//let g = seq:map((1,2,3), l)
+//
+//
+//extend Coroutine (
+//    use derive:TSized (is_empty, is_not_empty)
+//    def len(self) = throw NotImplementedError ("Coroutine can't define len")
+//)
+//
+//
+//extend String (
+//    def ++
+//        | (_str1 of String, sym of Symbol) = _string:concat(_str1, str(sym))
+//        | (_str1, _str2) = _string:concat(_str1, _str2)
+//)
+//
+//fun reverse(coll) =
+//    let fun _reverse
+//            | ([], result) = result
+//            | (hd::tl, result) = _reverse(tl, hd :: result)
+//
+//    in  _reverse(coll, empty(coll))
+//
+//
+//fun f () = (
+//        (x,y,z)
+//        (a,b,c)
+//    )
+//
+//fun f () = (
+//        (x,y,z) (a,b,c)
+//    )
+//
+//trait TNum (
+//    let - = _number:sub
+//    let + = _number:add
+//    let * = _number:mul
+//    let / = _number:div
+//    let mod = _number:mod
+//    let negate = _number:negate
+//    let ** =  _number:pow
+//)
+//
+//
+//fun f () =
+//    let
+//        v = m.x
+//        x = m.{x}
+//        y = m.{y=1, x=2}
+//        x = m.name.x()
+//        x = m.{name}.{x}
+//    in x + y
+//
+//
+//fun add(x, y) =
+//    let
+//        z = sqrt(x)
+//        (n,b) = pow(z)
+//        x::xs = tail(n)
+//        [x, y, ...r] = n
+//        fun tail
+//            | [] = []
+//            | x::xs = xs
+//        y = map(fun (x) = (x, str(x)), [])
+//    in sin(z, n, x)
+//
+//let y = map(fun x = (x, str(x)), [])
+//
+//let {R @ x=1, y = z of Int, _ = 3} = {x = 1, y = 3, "2" = 5}
+//
+//let (
+//    x = 1
+//    z = 2
+//    {R @ x=1, y = z of Int, _ = 3} = {x = 1, y = 3, "2" = 5}
+//    [1,2,3, ...rest] = [1,2,3,4,5,6,7]
+//    m = () -> 42
+//    m = (x) -> 42
+//    m = (x,y,z) -> 42
+//    m = x -> 42
+//)
+//
+//let m = () -> 42
+//let m = (x) -> 42
+//let m = (x,y,z) -> 42
+//let m = x -> 42
+//
+//let x = 1
+//let Z = (1,2,3,4)
+//
+//let V = fun (x) = 1
+//type (
+//    Zero
+//    Vec2 (p1, p2)
+//    Car (speed, price, model, weight)
+//)
+//
+//type Zero
+//type Vec2 (p1, p2)
+//type Car (speed, price, model, weight)
+//
+//fun f () = (
+//
+//    try
+//        error()
+//    catch e1 =
+//        e1
+//    finally
+//        error2(#Finally)
+//
+//    try
+//        try
+//            error(#Catch)
+//        catch
+//            | err @ (1, y, 3) = #first
+//            | (1,2, "ERROR@") = #second
+//            | err @ (1, 2, x) = #third
+//        finally
+//            //uncatched
+//            throw (e2, e3)
+//    catch E = E
+//)
+//fun f () =
+//    match [1,2,3]
+//        | B1 @ [a, b, B2 @ c] when x == 1 = (B1, B2, a, b, c)
+//        | _ = 42
+//
+//fun max_min (x, y) =
+//    if x > y then (
+//        (x, y)
+//        x > 1
+//    )
+//    elif x == y then (x, x)
+//    else (y, x)
+//
+//fun all(p, l) =
+//    conjunction(map(p, l))
+//
+//fun uncons ([x, ...xs]) = (x, xs)
+//
+//fun map (f, coll)
+//    | (f, []) = empty(coll)
+//    | (f, hd::tl) = f(hd) :: map(f, tl)
+//
+//fun element(x, l) =
+//    any (fun (v) = v == x, l)
+//
+//
+//
+//fun false () = False
+//
+//fun tail
+//    | [] = []
+//    | x::xs = xs
+//
+//
+//fun main () =
+//    let
+//        fun tail
+//            | [] = []
+//            | x::xs = xs
+//
+//        numbers = enum_from(10)
+//        ys = seq:take(10,
+//                    map(fun (x) = (x, str(x)),
+//                        drop(3,
+//                            filter(odd, numbers))))
+//    in (
+//        io:print(ys)
+//        io:print(x1, x2, ys)
+//    )
+//--------------------------------------------------
+//
+//fun split (s)
+//    | [] = ([], [])
+//    | s@[x] = (s, [])
+//    | x::y::xs =
+//        let
+//            (l, r) = split(xs)
+//        in (x::l, y::r)
+//--------------------------------------------------
+//
+//
+// TODO change ` to $, _ or []
+//generic == (`x, y)
+//generic (
+//    // ERROR
+//    put k v s
+//    == (`x, y)
+//    - (`x, y)
+//    + (`x, y)
+//    ! (self)
+//    len (self)
+//    put (key, value, `self)
+//    add(`x, `y)
+//    sub(`x, `y)
+//)
 
-fun f ((x,y) :: 4, 45) = 42
-fun f (x::xs) = 42
-fun f
-    | x::xs = 42
-    | [] = 24
+//interface Num (-, (..).0, +.0, *, /, mod.0, math:negate.0, sqrt)
+//interface (
+//    Num (-, +.0, *, /, mod.0, math:negate.0)
+//    Ord(<, <=, >.0, >=.0, math:cmp, math:sort:max, min)
+//    PartialEq (==)
+//    Pow(**)
+//    Str (str)
+//    Addend(add.0, add.1)
+//    Sub(sub.0)
+//    Subtracted(sub.1)
+//)
 
+//def != [List]
+//    | (x of List, y of List) = 0
+//    | ([] of List, y of Seq) = 0
+//    | ({x, y} of List, y) = 0
+//
+//def add [Int, Float] (x, y) =
+//(
+//    print(x, y)
+//    __add(x, y)
+//)
+//
+//
+//def radd [Int, Float]
+//    (x, y) = add(y, x)
+//
+//
+//def sub [Int, Float] = subtract
+//
 
-fun f () =
+//trait TEq [T]
+//(
+//    def != [T]
+//        | (x, y) = 0
+//        | ([], y) = 0
+//        | ({x, y}, y) = 0
+//
+//    def == [T] (x, y) = not x
+//)
+//
+//
+trait ThreeTrait [T1, T2, T3]
 (
-let
-    {a=[x,y,...z], B @ b="I am B", c of Float, D@d={e=(x,y,...zz)}} =
-        {a=[1,2,3,4,5], b="I am B", c=3.14, d={e=(1,2,3,4,5)}}
+    def f2 [T1, T2] (x, y, z) = [x, y, z]
+    def f3 [T1, T2, T3] (x, y, z) = [x, y, z]
+    def f1 [T1] = sub
+)
+
+
+use TreeTrait [List, Seq, Map]
+use (f2,f1) from TreeTrait [List, Seq, Map]
+
+extend [List, Seq] with
+(
+    def ls (l, s) = #ls
+    def lss (l, s, s1 of Seq) = #lss
+)
+
+
+class X:
+    def a = 1
+
+class Y(X):
+    def a = X.a(2)
+    def b = 2
+
+extend
+    [X, Y, Z]
+    [X, Z, Y]
 in
-    affirm:is_equal(
-        (a, B, D, e, x, y, z, zz),
-        ([1,2,3,4,5], "I am B", {e=(1,2,3,4,5)}, (1,2,3,4,5), 1, 2, [3,4,5], (3,4,5))
-    )
+(
+    use (ls, lss, f3) from [X]
+
+    def ls (l, s) = #ls
+    def lss (l, s, s1 of Seq) = #lss
 )
 
-let x = f4(())
-let m = (fun
-             | x = 2)(3)
-let x =
-    affirm:is_equal (
-        (fun | ([hd::tl], (1,2,3), {x=2, y=3}) = 24
-             | (_, y, z) = 23)(
-                [[1,2]], (1,2,3), {x=2, y=3}),
-        24
-    )
-fun f
-    | ((x,y) :: 4, 45) = 42
-    | (x,y) = 42
-
-let f = seq:map(x -> x * x, l)
-let g = seq:map((1,2,3), l)
-
-
-extend Coroutine (
-    use derive:TSized (is_empty, is_not_empty)
-    def len(self) = throw NotImplementedError ("Coroutine can't define len")
-)
-
-
-extend String (
-    def ++
-        | (_str1 of String, sym of Symbol) = _string:concat(_str1, str(sym))
-        | (_str1, _str2) = _string:concat(_str1, _str2)
-)
-
-fun reverse(coll) =
-    let fun _reverse
-            | ([], result) = result
-            | (hd::tl, result) = _reverse(tl, hd :: result)
-
-    in  _reverse(coll, empty(coll))
-
-
-fun f () = (
-        (x,y,z)
-        (a,b,c)
-    )
-
-fun f () = (
-        (x,y,z) (a,b,c)
-    )
-
-trait TNum (
-    let - = _number:sub
-    let + = _number:add
-    let * = _number:mul
-    let / = _number:div
-    let mod = _number:mod
-    let negate = _number:negate
-    let ** =  _number:pow
-)
-
-
-fun f () =
-    let
-        v = m.x
-        x = m.{x}
-        y = m.{y=1, x=2}
-        x = m.name.x()
-        x = m.{name}.{x}
-    in x + y
-
-
-fun add(x, y) =
-    let
-        z = sqrt(x)
-        (n,b) = pow(z)
-        x::xs = tail(n)
-        [x, y, ...r] = n
-        fun tail
-            | [] = []
-            | x::xs = xs
-        y = map(fun (x) = (x, str(x)), [])
-    in sin(z, n, x)
-
-let y = map(fun x = (x, str(x)), [])
-
-let {R @ x=1, y = z of Int, _ = 3} = {x = 1, y = 3, "2" = 5}
-
-let (
-    x = 1
-    z = 2
-    {R @ x=1, y = z of Int, _ = 3} = {x = 1, y = 3, "2" = 5}
-    [1,2,3, ...rest] = [1,2,3,4,5,6,7]
-    m = () -> 42
-    m = (x) -> 42
-    m = (x,y,z) -> 42
-    m = x -> 42
-)
-
-let m = () -> 42
-let m = (x) -> 42
-let m = (x,y,z) -> 42
-let m = x -> 42
-
-let x = 1
-let Z = (1,2,3,4)
-
-let V = fun (x) = 1
-type (
-    Zero
-    Vec2 (p1, p2)
-    Car (speed, price, model, weight)
-)
-
-type Zero
-type Vec2 (p1, p2)
-type Car (speed, price, model, weight)
-
-fun f () = (
-
-    try
-        error()
-    catch e1 =
-        e1
-    finally
-        error2(#Finally)
-
-    try
-        try
-            error(#Catch)
-        catch
-            | err @ (1, y, 3) = #first
-            | (1,2, "ERROR@") = #second
-            | err @ (1, 2, x) = #third
-        finally
-            //uncatched
-            throw (e2, e3)
-    catch E = E
-)
-fun f () =
-    match [1,2,3]
-        | B1 @ [a, b, B2 @ c] when x == 1 = (B1, B2, a, b, c)
-        | _ = 42
-
-fun max_min (x, y) =
-    if x > y then (
-        (x, y)
-        x > 1
-    )
-    elif x == y then (x, x)
-    else (y, x)
-
-fun all(p, l) =
-    conjunction(map(p, l))
-
-fun uncons ([x, ...xs]) = (x, xs)
-
-fun map (f, coll)
-    | (f, []) = empty(coll)
-    | (f, hd::tl) = f(hd) :: map(f, tl)
-
-fun element(x, l) =
-    any (fun (v) = v == x, l)
-
-
-
-fun false () = False
-
-fun tail
-    | [] = []
-    | x::xs = xs
-
-
-fun main () =
-    let
-        fun tail
-            | [] = []
-            | x::xs = xs
-
-        numbers = enum_from(10)
-        ys = seq:take(10,
-                    map(fun (x) = (x, str(x)),
-                        drop(3,
-                            filter(odd, numbers))))
-    in (
-        io:print(ys)
-        io:print(x1, x2, ys)
-    )
---------------------------------------------------
-
-fun split (s)
-    | [] = ([], [])
-    | s@[x] = (s, [])
-    | x::y::xs =
-        let
-            (l, r) = split(xs)
-        in (x::l, y::r)
---------------------------------------------------
+//
+//trait TAdd [T1 of (Partial, Len), T2]
+//(
+//    def add[(x of T1, y of T2) = 0
+//    def radd(x of T2, y of T1) = 0
+//)
+//
+//trait TNotEq [T]
+//(
+//    def != (x of T, y) = not (x == y)
+//)
+//
+//trait TOrd [T of (PartialEq, TSeq)]
+//(
+//    def < (x of T, y) = cmp(x, y) == LT
+//    def >= (x of T, y) = cmp(x, y) != LT
+//)
+//
+//trait TOrd [T of PartialEq]
+//(
+//    def < (x, y) = cmp(x, y) == LT
+//    def >= (x, y) = cmp(x, y) != LT
+//    def > (x, y) = cmp(x, y) == GT
+//
+//    def cmp(x, y) =
+//                if x == y then EQ
+//                elif x <= y then LT
+//                else GT
+//
+//)
 //
 //
-generic == (`x, y)
-generic (
-    // ERROR
-    put k v s
-    == (x, y)
-    - (`x, y)
-    + (`x, y)
-    ! (self)
-    len (self)
-    put (key, value, `self)
-)
-
-interface Ord(<, <=, >, >=, cmp, max, min)
-interface (
-    PartialEq (==)
-    Eq (!=, ==)
-    Ord(<, <=, >, >=, cmp, max, min)
-    Num (-, +, *, /, mod, negate)
-    Pow(**)
-    Str (str)
-    Displayed (str, repr)
-    Len (len)
-)
-
-trait TNotEq (
-    def != (x, y) = not (x == y)
-)
-
-trait TOrd of (PartialEq, TSeq) (
-    def < (x, y) = cmp(x, y) == LT
-    def >= (x, y) = cmp(x, y) != LT
-)
-
-trait TOrd of PartialEq (
-    def < (x, y) = cmp(x, y) == LT
-    def >= (x, y) = cmp(x, y) != LT
-    def > (x, y) = cmp(x, y) == GT
-
-    def cmp(x, y) =
-                if x == y then EQ
-                elif x <= y then LT
-                else GT
-
-)
-
-
-extend List (
-    def first(self) = _list:head(self)
-)
-
-extend List (
-    use TXXX
-)
-
-extend List (
-    use TListable (drop, take)
-    use TNotEq
-    use derive:TCollection
-
-    def == (self, other) = seq:equal(self, other)
-
-    def first(self) = _list:head(self)
-
-    def slice(first, last, self) = _list:slice(first, last, self)
-)
+//extend List (
+//    def first(self) = _list:head(self)
+//)
+//
+//extend List (
+//    use TXXX
+//)
+//
+//extend List (
+//    use TListable (drop, take)
+//    use TNotEq
+//    use derive:TCollection
+//
+//    def == (self, other) = seq:equal(self, other)
+//
+//    def first(self) = _list:head(self)
+//
+//    def slice(first, last, self) = _list:slice(first, last, self)
+//)

@@ -47,7 +47,7 @@ class W_Trait(W_Hashable):
         return other is self
 
 
-def trait(name, constraints, methods):
+def trait(name, constraints, signature, methods):
     _t = W_Trait(name, constraints)
 
     error.affirm_type(methods, space.islist)

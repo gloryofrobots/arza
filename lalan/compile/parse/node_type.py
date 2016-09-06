@@ -1,3 +1,4 @@
+# TODO CLEANUP AND RECOMPILE
 # ************************ OBIN NODES*****************************
 NT_GOTO = 0
 NT_TRUE = 1

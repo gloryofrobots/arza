@@ -191,6 +191,10 @@ def node_column(node):
     return tokens.token_column(node_token(node))
 
 
+def list_node_items(n):
+    return node_children(n)[0]
+
+
 def is_wildcard_node(n):
     return node_type(n) == nt.NT_WILDCARD
 
@@ -200,6 +204,10 @@ def pattern_length(n):
     if ntype == nt.NT_WHEN:
         return tuple_node_length(node_first(n))
     return tuple_node_length(n)
+
+
+def list_node_length(l):
+    return api.length_i(node_first(l))
 
 
 def tuple_node_length(n):

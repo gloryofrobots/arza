@@ -18,11 +18,11 @@ TYPE = PREFIX + "deftype"
 GENERIC = PREFIX + "defgeneric"
 INTERFACE = PREFIX + "definterface"
 TRAIT = PREFIX + "deftrait"
-EXTEND = PREFIX + "defextend"
 
 PARTIAL = PREFIX + "defpartial"
 
-DELAY = PREFIX + "delay"
+USE_TRAIT = PREFIX + "use_trait"
+SPECIFY = PREFIX + "specify"
 
 SLICE = PREFIX + "slice"
 DROP = PREFIX + "drop"

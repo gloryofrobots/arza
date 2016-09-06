@@ -30,6 +30,7 @@ TERM_FROM_IMPORTED = [TT_IMPORT, TT_HIDE]
 NAME_NODES = [NT_NAME, NT_IMPORTED_NAME]
 
 
+
 def parser_error_unknown(parser, position):
     line = get_line_for_position(parser.ts.src, position)
     return error.throw(error.Errors.PARSE_ERROR,

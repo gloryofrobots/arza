@@ -40,7 +40,7 @@ else:
 # valid  identifiers (K&R2: A.2.3), plus '$' (supported by some compilers)
 name_const = '[a-zA-Z_][0-9a-zA-Z_]*'
 typename = '[A-Z][0-9a-zA-Z_]*'
-operator_char = '^\s\,\@\#\)\(\]\[\}\{\;\w"`\''
+operator_char = '^\s\,\.\@\#\)\(\]\[\}\{\;\w"`\''
 operator_const = '[%s]+' % operator_char
 
 hex_prefix = '0[xX]'
@@ -111,9 +111,10 @@ RULES = [
     # (keyword('module'), TT_MODULE),
 
     (keyword('use'), TT_USE),
+    (keyword('extend'), TT_EXTEND),
+    (keyword('for'), TT_FOR),
 
     (keyword('trait'), TT_TRAIT),
-    (keyword('extend'), TT_EXTEND),
     (keyword('generic'), TT_GENERIC),
     (keyword('interface'), TT_INTERFACE),
     (keyword('type'), TT_TYPE),
