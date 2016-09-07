@@ -504,8 +504,8 @@ def isrecord(w):
 
 
 def isdispatchable(w):
-    from lalan.types.datatype import W_Instance, W_Extendable
-    return isinstance(w, W_Instance) or isinstance(w, W_Extendable)
+    from lalan.types.datatype import W_Instance, W_DataType
+    return isinstance(w, W_Instance) or isinstance(w, W_DataType)
 
 
 ########################################################

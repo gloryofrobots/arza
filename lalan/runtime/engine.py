@@ -5,13 +5,12 @@ from lalan.runtime import process_data, error
 from lalan.runtime.load import import_module, evaluate_module_file
 
 PRELUDE_FILE = u"prelude"
-PRELUDE_FILE = u"prelude_debug"
+# PRELUDE_FILE = u"prelude_debug"
 
-STD_MODULES = [u"bool", u"num", u"bit", u"env",
-               u"string", u"vector",
-               u"list", u"function", u"coro", u"trait",
+STD_MODULES = [u"std", u"num",
+               u"string",
+               u"list", u"coro"
                u"tuple", u"map", u"seq",
-               u"datatype",
                ]
 # STD_MODULES = []
 

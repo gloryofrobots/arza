@@ -1,5 +1,7 @@
-from obin:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+from lalan:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                              Function, Partial, Generic, FiberChannel, Coroutine, Trait, Interface, Datatype, Env)
+
+from lalan:lang:_bit import (bitand, bitor, bitxor, bitnot, lshift, rshift)
 
 
 """
@@ -130,11 +132,16 @@ interface
 (
     PartialEq (==)
     Eq (!=, ==)
+    Comparable(cmp)
+    LessEq(<=, ==)
     Ord(<, <=, >, >=, cmp, max, min)
+
     Num (-, +, *, /, mod, negate)
     Pow(**)
+
     Str (str)
     Displayed (str, repr)
+
     Len (len)
     Sized (len, is_empty)
     Collection(put, at, del, elem)
@@ -209,36 +216,7 @@ type
 ////////////////////////////////////////////////////////////
 
 
-trait TNotEq
-(
-    def !=(x, y) = not (x == y)
-)
 
-
-trait TOrd of PartialEq
-(
-    def <(x, y) = cmp(x, y) == LT
-    def >=(x, y) = cmp(x, y) != LT
-    def >(x, y) = cmp(x, y) == GT
-
-    def cmp(x, y) =
-                if x == y then EQ
-                elif x <= y then LT
-                else GT
-
-    def max(x, y) = if x <= y then y else x
-    def min(x, y) = if x <= y then x else y
-)
-
-trait TIsEmpty of Len
-(
-    def is_empty(self) = len(self) == 0
-)
-
-trait TRepr of Str
-(
-    def repr(self) = str(self)
-)
 
 ////////////////////////////////////////////////////////////
 ///////////////// FUNCTIONS ////////////////////////////////

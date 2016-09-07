@@ -1,88 +1,113 @@
 [
-  {
-    "_ntype": "NT_USE",
-    "_value": "use",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "TreeTrait"
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "[",
-        "children": [
-          []
-        ]
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "[",
-        "children": [
-          [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "List"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Seq"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Map"
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_USE",
-    "_value": "use",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "TreeTrait"
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "[",
-        "children": [
-          [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "f2"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "f1"
-            }
-          ]
-        ]
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "[",
-        "children": [
-          [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "List"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Seq"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Map"
-            }
-          ]
-        ]
-      }
-    ]
-  },
   [
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "!="
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Y"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "lalan"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Z"
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LOOKUP",
+          "_value": "[",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "StdBehavior"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "!="
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "=="
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Y"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "lalan"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Z"
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LOOKUP",
+          "_value": "[",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "StdBehavior"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "=="
+            }
+          ]
+        }
+      ]
+    },
     {
       "_ntype": "NT_DEF",
       "_value": "extend",
@@ -98,11 +123,305 @@
             [
               {
                 "_ntype": "NT_NAME",
-                "_value": "List"
+                "_value": "X"
               },
               {
                 "_ntype": "NT_NAME",
-                "_value": "Seq"
+                "_value": "Y"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "lalan"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Z"
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LOOKUP",
+          "_value": "[",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "ls"
+            },
+            {
+              "_ntype": "NT_LIST",
+              "_value": "[",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "A"
+                  },
+                  {
+                    "_ntype": "NT_IMPORTED_NAME",
+                    "_value": ":",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "math"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "B"
+                      }
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "C"
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "lss"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Y"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "lalan"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Z"
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LOOKUP",
+          "_value": "[",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "lss"
+            },
+            {
+              "_ntype": "NT_LIST",
+              "_value": "[",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "A"
+                  },
+                  {
+                    "_ntype": "NT_IMPORTED_NAME",
+                    "_value": ":",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "math"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "B"
+                      }
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "C"
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "=="
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Y"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "lalan"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Z"
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LOOKUP",
+          "_value": ".[",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "=="
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Rational"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "+"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Y"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "lalan"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Z"
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LOOKUP",
+          "_value": ".[",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "+"
+            },
+            {
+              "_ntype": "NT_LIST",
+              "_value": "[",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Rational"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Double"
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "ls"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Y"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "lalan"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Z"
+                  }
+                ]
               }
             ]
           ]
@@ -134,13 +453,43 @@
                 },
                 [
                   {
-                    "_ntype": "NT_SYMBOL",
-                    "_value": "#",
+                    "_ntype": "NT_CALL",
+                    "_value": "(",
                     "children": [
                       {
                         "_ntype": "NT_NAME",
-                        "_value": "ls"
-                      }
+                        "_value": "add"
+                      },
+                      [
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "3"
+                        },
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "4"
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_CALL",
+                    "_value": "(",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "sub"
+                      },
+                      [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "l"
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "s"
+                        }
+                      ]
                     ]
                   }
                 ]
@@ -165,11 +514,619 @@
             [
               {
                 "_ntype": "NT_NAME",
-                "_value": "List"
+                "_value": "X"
               },
               {
                 "_ntype": "NT_NAME",
-                "_value": "Seq"
+                "_value": "Y"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "lalan"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Z"
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_FUN",
+          "_value": "def",
+          "children": [
+            {
+              "empty": true
+            },
+            [
+              [
+                {
+                  "_ntype": "NT_TUPLE",
+                  "_value": "(",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "l"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "s"
+                      },
+                      {
+                        "_ntype": "NT_OF",
+                        "_value": "of",
+                        "children": [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "s1"
+                          },
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "Seq"
+                          }
+                        ]
+                      }
+                    ]
+                  ]
+                },
+                [
+                  {
+                    "_ntype": "NT_SYMBOL",
+                    "_value": "#",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "lss"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "!="
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X1"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "math"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Y1"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Z1"
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LOOKUP",
+          "_value": "[",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "StdBehavior"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "!="
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "=="
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X1"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "math"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Y1"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Z1"
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LOOKUP",
+          "_value": "[",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "StdBehavior"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "=="
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "ls"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X1"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "math"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Y1"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Z1"
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LOOKUP",
+          "_value": "[",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "ls"
+            },
+            {
+              "_ntype": "NT_LIST",
+              "_value": "[",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "A"
+                  },
+                  {
+                    "_ntype": "NT_IMPORTED_NAME",
+                    "_value": ":",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "math"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "B"
+                      }
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "C"
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "lss"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X1"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "math"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Y1"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Z1"
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LOOKUP",
+          "_value": "[",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "lss"
+            },
+            {
+              "_ntype": "NT_LIST",
+              "_value": "[",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "A"
+                  },
+                  {
+                    "_ntype": "NT_IMPORTED_NAME",
+                    "_value": ":",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "math"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "B"
+                      }
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "C"
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "=="
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X1"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "math"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Y1"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Z1"
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LOOKUP",
+          "_value": ".[",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "=="
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "Rational"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "+"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X1"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "math"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Y1"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Z1"
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LOOKUP",
+          "_value": ".[",
+          "children": [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "+"
+            },
+            {
+              "_ntype": "NT_LIST",
+              "_value": "[",
+              "children": [
+                [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Rational"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Double"
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "ls"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X1"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "math"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Y1"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Z1"
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_FUN",
+          "_value": "def",
+          "children": [
+            {
+              "empty": true
+            },
+            [
+              [
+                {
+                  "_ntype": "NT_TUPLE",
+                  "_value": "(",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "l"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "s"
+                      }
+                    ]
+                  ]
+                },
+                [
+                  {
+                    "_ntype": "NT_CALL",
+                    "_value": "(",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "add"
+                      },
+                      [
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "3"
+                        },
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "4"
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_CALL",
+                    "_value": "(",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "sub"
+                      },
+                      [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "l"
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "s"
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              ]
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DEF",
+      "_value": "extend",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "lss"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "X1"
+              },
+              {
+                "_ntype": "NT_IMPORTED_NAME",
+                "_value": ":",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "math"
+                  },
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "Y1"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Z1"
               }
             ]
           ]

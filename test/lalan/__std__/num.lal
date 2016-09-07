@@ -2,25 +2,29 @@ import derive
 import lalan:lang:_number
 import io
 
-trait TNum (
-    let - = _number:sub
-    let + = _number:add
-    let * = _number:mul
-    let / = _number:div
-    let mod = _number:mod
-    let negate = _number:negate
-    let ** =  _number:pow
+extend
+    Float
+    Int
+with
+(
+    def {==, !=, str, repr} from std:Behavior
+    def - as _number:sub
+    def + as _number:add
+    def * as _number:mul
+    def / as _number:div
+    def mod as _number:mod
+    def negate as _number:negate
+    def ** as  _number:pow
+
+    def <= as _number:le
 )
 
-extend Int (
-    use derive:TStr
-    use derive:TRepr
-    use derive:TEq
-    use TNum
-    use TOrd
 
-    let <= = _number:le
 
+//extend
+//    Int
+//with
+//(
 //    def range(first, last of Int) ->
 //        range_by(first, last, 1)
 //
@@ -46,97 +50,5 @@ extend Int (
 //            x ::: _progression (x + step) step
 //
 //        _progression first step
-)
----------------------------------------------
+//)
 
-extend Float (
-    use derive:TStr
-    use derive:TRepr
-    use derive:TEq
-    use TNum
-    use TOrd
-    let <= =  _number:le
-)
-
-
-////////////////////////////////////////
-extend
-    Int
-    Float
-with
-(
-    def {!=, ==} = StdBehavior
-//    def != = TEq.[!=]
-//    def == = TEq.[==]
-    def - = _number:sub
-    def + = _number:add
-    def * = _number:mul
-    def / = _number:div
-    def mod = _number:mod
-    def negate = _number:negate
-    def ** =  _number:pow
-    def <= =  _number:le
-    def == = ==.[Rational]
-    def + = +.[Rational, Double]
-)
-
-use TEq TStr TRepr for Int
-use TEq TStr TRepr for Float
-
-StdBehavior =
-{
-    [!=] = (x of T, y) -> not (x == y),
-    [==] = (self of T, other) -> _api:equal(other, self),
-    [str] = (self) -> _api:to_string(self)
-}
-
-defmap StdBehavior =
-(
-    def != (x of T, y) = not (x == y)
-    def ==  (self of T, other) = _api:equal(other, self)
-    def str (self) = _api:to_string(self)
-)
-
-
-trait TEq [T]
-(
-    def != (x of T, y) = not (x == y)
-    def == (self of T, other) = _api:equal(other, self)
-    def str [T] (self) = _api:to_string(self)
-)
-
-trait TStr [T]
-(
-    def str [T] (self) = _api:to_string(self)
-)
-
-trait TRepr
-(
-    def repr [T] (self) = _api:to_repr(self)
-)
-
-
-
-def <= [Int] =
-
-trait TNum (
-)
-
-extend Int (
-    use derive:TStr
-    use derive:TRepr
-    use derive:TEq
-    use TNum
-    use TOrd
-
-    let <= = _number:le
-)
----------------------------------------------
-
-extend Float (
-    use derive:TStr
-    use derive:TRepr
-    use derive:TEq
-    use TNum
-    use TOrd
-)

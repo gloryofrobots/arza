@@ -11,7 +11,7 @@ import seq
 
 extend Coroutine
 (
-    use derive:TSized (is_empty)
+    def is_empty as std:Behavior.is_empty
     def len(self) = throw NotImplementedError ("Coroutine can't define len")
 
     def first(self) =
@@ -63,7 +63,7 @@ fun ref(v) =
 
 extend Ref
 (
-    use TRepr
+    def repr(self) = str(self)
 
     def !(self) = self.val(#Read)
 

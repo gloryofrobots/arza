@@ -102,8 +102,8 @@ class W_Generic(W_Hashable):
             # print "METHOD", index, leaf
             return leaf
 
-        # groups = group_dict()
-        groups = space.newmap()
+        groups = group_dict()
+        # groups = space.newmap()
         for signature in signatures:
             arg = signature.get_argument(index)
             if arg not in groups:
@@ -145,8 +145,9 @@ def specify(process, gf, types, method):
 
     gf.add_signature(newsignature(process, types, method))
     for index, _type in zip(gf.dispatch_indexes, types):
+        if space.isinterface(_type):
+            continue
         _type.register_generic(gf, space.newint(index))
-
 
 
 def _find_constraint_generic(generic, pair):
@@ -222,3 +223,14 @@ def generic_with_hotpath(name, signature, hotpath):
 
 def generic(name, signature):
     return generic_with_hotpath(name, signature, None)
+
+
+def get_method(process, gf, types):
+    if not space.islist(types):
+        types = space.newlist([types])
+
+    if api.length_i(types) != gf.dispatch_arity:
+        return -1
+
+    method = gf.dag.evaluate(process, types)
+    return method

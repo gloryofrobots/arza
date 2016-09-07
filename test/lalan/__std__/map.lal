@@ -1,15 +1,13 @@
 import lalan:lang:_map
 import string
-import derive
+import std
 
 extend Map (
-    use derive:TEq
-    use derive:TCollection
-    use derive:TSized
-    use TRepr
+    def {==, !=, put, at, del, elem, len, is_empty} from std:Behavior
+
+    def repr(self) = str(self)
 
     def str(self) =
-        // TODO REMOVE THIS NONSESNSE
         let fun _joiner((fst, snd)) =
             str(fst) ++ "=" ++ repr(snd)
         in "{"

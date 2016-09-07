@@ -27,27 +27,27 @@
 /////////////////////////////
 //////////////////////////////////////////
 
-//infixr (:=, :=, 10)
-//infixl (<|, <|, 15)
-//infixl (|>, |>, 20)
-//infixl (<<, <<, 25)
-//infixl (>>, >>, 25)
-//infixl (<, <, 35)
-//infixl (>, >, 35)
-//infixl (>=, >=, 35)
-//infixl (<=, <=, 35)
-//infixl (==, ==, 35)
-//infixl (!=, !=, 35)
-//infixl (++, ++, 40)
-//infixl (+, +, 40)
-//infixl (-, -, 40)
-//infixl (*, *, 50)
-//infixl (/, /, 50)
-//prefix (-, negate, 55)
-//infixl (**, **, 60)
-//prefix (!, !, 70)
-//infixl (.., .., 95)
-//prefix (&, &, 96)
+infixr (:=, :=, 10)
+infixl (<|, <|, 15)
+infixl (|>, |>, 20)
+infixl (<<, <<, 25)
+infixl (>>, >>, 25)
+infixl (<, <, 35)
+infixl (>, >, 35)
+infixl (>=, >=, 35)
+infixl (<=, <=, 35)
+infixl (==, ==, 35)
+infixl (!=, !=, 35)
+infixl (++, ++, 40)
+infixl (+, +, 40)
+infixl (-, -, 40)
+infixl (*, *, 50)
+infixl (/, /, 50)
+prefix (-, negate, 55)
+infixl (**, **, 60)
+prefix (!, !, 70)
+infixl (.., .., 95)
+prefix (&, &, 96)
 
 
 //fun f () = 0
@@ -90,18 +90,6 @@
 //let f = seq:map(x -> x * x, l)
 //let g = seq:map((1,2,3), l)
 //
-//
-//extend Coroutine (
-//    use derive:TSized (is_empty, is_not_empty)
-//    def len(self) = throw NotImplementedError ("Coroutine can't define len")
-//)
-//
-//
-//extend String (
-//    def ++
-//        | (_str1 of String, sym of Symbol) = _string:concat(_str1, str(sym))
-//        | (_str1, _str2) = _string:concat(_str1, _str2)
-//)
 //
 //fun reverse(coll) =
 //    let fun _reverse
@@ -310,106 +298,50 @@
 //
 //def radd [Int, Float]
 //    (x, y) = add(y, x)
+////
+////
+//def sub [Int, Float] as subtract
 //
-//
-//def sub [Int, Float] = subtract
-//
+//{ #name = 1, #surname=2 }
+//let S = {
+//    (`==`) = 1,
+//    (2+2) = 2
+//}
 
-//trait TEq [T]
+//extend
+//    Int
+//    Float
+//with
 //(
-//    def != [T]
-//        | (x, y) = 0
-//        | ([], y) = 0
-//        | ({x, y}, y) = 0
-//
-//    def == [T] (x, y) = not x
+//    def - as _number:sub
+//    def == as ==.[Rational]
+//    def + as +.[[Rational, Double]]
+//    def add (x, y) = 42
 //)
-//
-//
-trait ThreeTrait [T1, T2, T3]
-(
-    def f2 [T1, T2] (x, y, z) = [x, y, z]
-    def f3 [T1, T2, T3] (x, y, z) = [x, y, z]
-    def f1 [T1] = sub
-)
 
-
-use TreeTrait [List, Seq, Map]
-use (f2,f1) from TreeTrait [List, Seq, Map]
-
-extend [List, Seq] with
-(
-    def ls (l, s) = #ls
-    def lss (l, s, s1 of Seq) = #lss
-)
-
-
-class X:
-    def a = 1
-
-class Y(X):
-    def a = X.a(2)
-    def b = 2
 
 extend
-    [X, Y, Z]
-    [X, Z, Y]
-in
+    [X, Y, lalan:Z]
+    [X1, math:Y1, Z1]
+with
 (
-    use (ls, lss, f3) from [X]
+    def {!=, ==} from StdBehavior
+//    def != = TEq.[!=]
+//    def == = TEq.[==]
 
-    def ls (l, s) = #ls
+    def (ls, lss) with [A, math:B, C]
+    //def ls = ls.[A, B, C]
+    //def lss = lss.[A, B, C]
+
+    def == as `==`.[Rational]
+
+    def + as `+`.[[Rational, Double]]
+
+    def ls (l, s) =
+    (
+       add(3, 4)
+       sub(l, s)
+    )
+
     def lss (l, s, s1 of Seq) = #lss
 )
-
-//
-//trait TAdd [T1 of (Partial, Len), T2]
-//(
-//    def add[(x of T1, y of T2) = 0
-//    def radd(x of T2, y of T1) = 0
-//)
-//
-//trait TNotEq [T]
-//(
-//    def != (x of T, y) = not (x == y)
-//)
-//
-//trait TOrd [T of (PartialEq, TSeq)]
-//(
-//    def < (x of T, y) = cmp(x, y) == LT
-//    def >= (x of T, y) = cmp(x, y) != LT
-//)
-//
-//trait TOrd [T of PartialEq]
-//(
-//    def < (x, y) = cmp(x, y) == LT
-//    def >= (x, y) = cmp(x, y) != LT
-//    def > (x, y) = cmp(x, y) == GT
-//
-//    def cmp(x, y) =
-//                if x == y then EQ
-//                elif x <= y then LT
-//                else GT
-//
-//)
-//
-//
-//extend List (
-//    def first(self) = _list:head(self)
-//)
-//
-//extend List (
-//    use TXXX
-//)
-//
-//extend List (
-//    use TListable (drop, take)
-//    use TNotEq
-//    use derive:TCollection
-//
-//    def == (self, other) = seq:equal(self, other)
-//
-//    def first(self) = _list:head(self)
-//
-//    def slice(first, last, self) = _list:slice(first, last, self)
-//)

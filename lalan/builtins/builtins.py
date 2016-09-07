@@ -39,8 +39,8 @@ def presetup(process, module, stdlib):
     import lalan.builtins.modules.module_datatype
     lalan.builtins.modules.module_datatype.setup(process, stdlib)
 
-    import lalan.builtins.modules.module_lazy
-    lalan.builtins.modules.module_lazy.setup(process, stdlib)
+    import lalan.builtins.modules.module_generic
+    lalan.builtins.modules.module_generic.setup(process, stdlib)
 
     module.export_all()
 

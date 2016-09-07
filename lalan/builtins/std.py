@@ -93,6 +93,9 @@ class Interfaces:
         self.Seq = self.find_interface(process, prelude, u"Seq")
         self.Dict = self.find_interface(process, prelude, u"Dict")
         self.Indexed = self.find_interface(process, prelude, u"Indexed")
+        api.put(prelude, self.Any.name, self.Any)
+        api.put(prelude, self.Instance.name, self.Instance)
+        api.put(prelude, self.Singleton.name, self.Singleton)
 
     def _find_in(self, process, prelude, name):
         sym = space.newsymbol(process, name)

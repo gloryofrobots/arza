@@ -1,12 +1,10 @@
 import lalan:lang:_tuple
 import string
-import derive
+import std
 
 extend Tuple (
-    use derive:TEq
-    use derive:TCollection
-    use derive:TSized
-    use TRepr
+
+    def {==, !=, str, repr, put, at, del, elem, len, is_empty} from std:Behavior
 
     let ++ = _tuple:concat
     let prepend = _tuple:prepend

@@ -138,7 +138,7 @@ class ExpressionParser(BaseParser):
         self.guard_parser = guard_parser_init(BaseParser())
         self.name_parser = name_parser_init(BaseParser())
         self.let_parser = LetParser(self)
-        self.map_key_parser = map_key_parser_init(BaseParser())
+        self.map_key_parser = MapKeyParser(self)
 
         self.add_subparsers(
             [
@@ -234,7 +234,7 @@ class TraitParser(BaseParser):
             self.name_parser,
         ])
 
-        prefix(self, TT_DEF, prefix_trait_def)
+        # prefix(self, TT_DEF, prefix_trait_def)
         prefix(self, TT_LPAREN, prefix_lparen)
 
 
@@ -329,6 +329,26 @@ class InterfaceFunctionParser(BaseParser):
             self.int_parser
         ])
 
+class MapKeyParser(BaseParser):
+    def __init__(self, expression_parser):
+        BaseParser.__init__(self)
+        self.int_parser = int_parser_init(BaseParser())
+        self.expression_parser = expression_parser
+        literal(self, TT_INT)
+        literal(self, TT_FLOAT)
+        literal(self, TT_CHAR)
+        literal(self, TT_STR)
+        literal(self, TT_TRUE)
+        literal(self, TT_FALSE)
+        literal(self, TT_MULTI_STR)
+        prefix(self, TT_NAME, prefix_name_as_symbol)
+        symbol(self, TT_OPERATOR, operator_as_symbol)
+        prefix(self, TT_LPAREN, prefix_lparen_map_key)
+        # literal(self, TT_NAME)
+        symbol(self, TT_COMMA)
+        symbol(self, TT_ASSIGN)
+
+
 
 class ModuleParser(BaseParser):
     def __init__(self):
@@ -370,9 +390,7 @@ class ModuleParser(BaseParser):
 
         stmt(self, TT_FUN, prefix_module_fun)
         stmt(self, TT_LET, prefix_module_let)
-        stmt(self, TT_TRAIT, stmt_trait)
         stmt(self, TT_TYPE, stmt_type)
-        stmt(self, TT_USE, stmt_use)
         stmt(self, TT_EXTEND, stmt_extend)
         stmt(self, TT_IMPORT, stmt_import)
         stmt(self, TT_FROM, stmt_from)
@@ -423,21 +441,6 @@ def map_key_pattern_parser_init(parser):
     infix(parser, TT_AT_SIGN, 15, infix_map_pattern_at)
     return parser
 
-
-def map_key_parser_init(parser):
-    literal(parser, TT_INT)
-    literal(parser, TT_FLOAT)
-    literal(parser, TT_CHAR)
-    literal(parser, TT_STR)
-    literal(parser, TT_TRUE)
-    literal(parser, TT_FALSE)
-    literal(parser, TT_MULTI_STR)
-    literal(parser, TT_NAME)
-
-    symbol(parser, TT_COMMA)
-    symbol(parser, TT_ASSIGN)
-
-    return parser
 
 
 def generic_parser_init(parser):
@@ -545,7 +548,7 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = True
+PARSE_DEBUG = False
 
 
 def parse(process, env, src):

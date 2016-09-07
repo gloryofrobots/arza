@@ -594,15 +594,6 @@ def _compile_THROW(compiler, code, node):
     code.emit_0(THROW, info(node))
 
 
-# TODO MAKE NAMES from SYMBOLS in parser
-def _emit_map_key(compiler, code, key):
-    if node_type(key) == NT_NAME:
-        # in case of names in object literal we must convert them to symbols
-        _emit_symbol_literal(compiler, code, key)
-    else:
-        _compile(compiler, code, key)
-
-
 def _transform_modify(compiler, node, func, source, modifications):
     """
     transforms modify x.{a=1, b=2, 0=4} into series of puts
@@ -630,6 +621,15 @@ def _compile_MODIFY(compiler, code, node):
                              node_second(node))
     _compile(compiler, code, call)
 
+# TODO MAKE NAMES from SYMBOLS in parser
+# def _emit_map_key(compiler, code, key):
+#     if node_type(key) == NT_NAME:
+#         # in case of names in object literal we must convert them to symbols
+#         _emit_symbol_literal(compiler, code, key)
+#     else:
+#         _compile(compiler, code, key)
+#
+#
 
 def _compile_MAP(compiler, code, node):
     items = node_first(node)
@@ -641,7 +641,8 @@ def _compile_MAP(compiler, code, node):
         else:
             _compile(compiler, code, value)
 
-        _emit_map_key(compiler, code, key)
+        _compile(compiler, code, key)
+        # _emit_map_key(compiler, code, key)
 
     code.emit_1(MAP, len(items), info(node))
 

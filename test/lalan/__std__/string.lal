@@ -1,35 +1,32 @@
 import lalan:lang:_string
 import seq
-import derive
+import std
 
-extend Symbol (
-    use derive:TStr
-    use derive:TRepr
-    use derive:TEq
+extend Symbol with
+(
+    def {==, !=, str, repr} from Behavior
 )
 
-extend Char (
-    use derive:TStr
-    use derive:TEq
+extend Char with
+(
+    def {==, !=, str} from Behavior
 )
 
-extend String (
-    use derive:TStr
-    use derive:TEq
-    use derive:TRepr
-    use derive:TCollection
-    use derive:TSized
+extend String with
+(
+
+    def {==, !=, str, repr, put, at, del, elem, len, is_empty} from std:Behavior
 
     def ++
         | (_str1 of String, sym of Symbol) = _string:concat(_str1, str(sym))
         | (_str1, _str2) = _string:concat(_str1, _str2)
 
-    let append = _string:append
-    let prepend = _string:prepend
-    let to_seq = _string:to_list
-    let slice = _string:slice
-    let drop = _string:drop
-    let take = _string:take
+    def append as _string:append
+    def prepend as _string:prepend
+    def to_seq as _string:to_list
+    def slice as _string:slice
+    def drop as _string:drop
+    def take as _string:take
 
     def cons (value of Char, self) = _string:append(value, self)
     def empty(self) = ""
