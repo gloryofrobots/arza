@@ -1,7 +1,7 @@
 from lalan:lang:_coro import (spawn, is_complete, is_initialised,
                             is_terminated, is_active, is_passive,
                             is_finished)
-import derive
+import std
 import tuple
 import io
 import seq
@@ -9,9 +9,9 @@ import seq
 //////////////////////////////////////
 
 
-extend Coroutine
+extend Coroutine with
 (
-    def is_empty as std:Behavior.is_empty
+    def is_empty as std:Behavior.[is_empty]
     def len(self) = throw NotImplementedError ("Coroutine can't define len")
 
     def first(self) =
@@ -61,7 +61,7 @@ fun ref(v) =
         Ref(co)
     )
 
-extend Ref
+extend Ref with
 (
     def repr(self) = str(self)
 

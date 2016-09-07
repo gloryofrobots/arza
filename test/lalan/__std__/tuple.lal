@@ -2,19 +2,20 @@ import lalan:lang:_tuple
 import string
 import std
 
-extend Tuple (
+extend Tuple with
+(
+    def {==, !=, put, at, del, elem, len, is_empty} from std:Behavior
 
-    def {==, !=, str, repr, put, at, del, elem, len, is_empty} from std:Behavior
+    def ++ as _tuple:concat
+    def prepend as _tuple:prepend
+    def to_seq as _tuple:to_list
+    def slice as _tuple:slice
+    def drop as _tuple:drop
+    def take as _tuple:take
 
-    let ++ = _tuple:concat
-    let prepend = _tuple:prepend
-    let to_seq = _tuple:to_list
-    let slice = _tuple:slice
-    let drop = _tuple:drop
-    let take = _tuple:take
+    def index_of as _tuple:index_of
 
-    let index_of = _tuple:index_of
-
+    def repr(self) = str(self)
     def str(self) =
         if len(self) == 1 then
             "(" ++ repr(at(0, self)) ++ ",)"

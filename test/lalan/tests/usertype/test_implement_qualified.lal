@@ -6,14 +6,9 @@ prefix(++-+*++, ++-+*++, 70)
 
 generic ++-+*++(self)
 
-trait TraitWithOp
-(
-    def ++-+*++(self) = self.val
-)
-
 type X(x)
 
-extend X
+extend X with
 (
     def types:test_method_1(a1 of X, a2 of X, self) = a1.x + a2.x + self.x
     def types:test_method_2(a1, self, a2) = a1.x + a2.x + self.x
@@ -21,12 +16,12 @@ extend X
     def types:test_method_4(self) = self.x
 )
 
-extend stuff:TestType
+extend stuff:TestType with
 (
-       use TraitWithOp
+    def ++-+*++(self) = self.val
 )
 
-extend stuff:TestType
+extend stuff:TestType with
 (
     def types:test_method_1(a1 of stuff:TestType, a2 of stuff:TestType, self) = a1.val + a2.val + self.val
     def types:test_method_2(a1, self, a2) = a1.val + a2.val + self.val

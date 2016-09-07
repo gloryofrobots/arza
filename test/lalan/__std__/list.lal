@@ -1,4 +1,5 @@
 import lalan:lang:_list
+from lalan:lang:_list import (head, tail)
 import std
 import seq
 import string
@@ -55,7 +56,7 @@ fun replicate(count, element) =
 ---------------------------------------------------
 
 
-extend List
+extend List with
 (
     def {!=, put, at, del, elem} from std:Behavior
 

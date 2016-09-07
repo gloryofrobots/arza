@@ -23,57 +23,62 @@ generic
     min(`x, y)
 )
 
-trait Equal
+let
 (
-    def eq(x, y) = not ne(x, y)
-    def ne(x, y) = not eq(x, y)
+    Equal =
+    {
+        (eq) = (x, y) -> not ne(x, y),
+        (ne) = (x, y) -> not eq(x, y)
+    }
+
+    Order =
+    {
+        (le) = (x, y) -> cmp(x, y) != GT,
+        (lt) = (x, y) -> cmp(x, y) == LT,
+        (ge) = (x, y) -> cmp(x, y) != LT,
+        (gt) = (x, y) -> cmp(x, y) == GT,
+
+
+        (cmp) = (x, y) ->
+            if eq(x, x) then EQ
+            elif le(x, y) then LT
+            else GT,
+
+        (max) = (x, y) ->
+            if x `le` y then y
+            else  y,
+
+        (min) = (x, y) ->
+            if x `le` y then x
+            else  y
+    }
 )
-trait Order
+
+
+extend Val with
 (
-    def le(x, y) = cmp(x, y) != GT
-    def lt(x, y) = cmp(x, y) == LT
-    def ge(x, y) = cmp(x, y) != LT
-    def gt(x, y) = cmp(x, y) == GT
-
-
-    def cmp(x, y) =
-        if eq(x, x) then EQ
-        elif le(x, y) then LT
-        else GT
-
-    def max(x, y) =
-        if x `le` y then y
-        else  y
-
-    def min(x, y) =
-        if x `le` y then x
-        else  y
-)
-
-
-extend Val
-(
-    use Equal
+    def {ne} from Equal
     def eq(v1, v2) = v1.v == v2.v
 )
 
-extend Val2
+extend Val2 with
 (
-    use Equal
+    def {eq} from Equal
     def ne(v1, v2) = v1.v != v2.v
 )
 
-extend Val
+extend Val with
 (
-   use Order
+   def {le, ge, gt, lt, max, min} from Order
    def cmp(self, other) =
         if self.v == other.v then EQ
         elif self.v <= other.v then LT
         else GT
 )
-extend Val2
+
+extend Val2 with
 (
-    use Order
+    def {cmp, ge, gt, lt, max, min} from Order
     def le(self, other) = self.v <= other.v
 )
 

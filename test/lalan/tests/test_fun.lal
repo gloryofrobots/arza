@@ -292,7 +292,7 @@ fun test_base () =
         affirm:is_equal(f3(1, [2, 3]), f4_1(1, [2, 3]))
         affirm:is_equal(f4_1(1, [2, 3]), 6)
         affirm:is_equal(
-            ((x, [a,b,c,...tl], {N, Z}) ->
+            (fun (x, [a,b,c,...tl], {N, Z}) =
                 (x + a + b + c + N + Z) :: tl)(
                     1,  [1, 1, 1, 33,33,33], {N=1, Z = 1}
                  )

@@ -2,7 +2,7 @@ from lalan.types.root import W_Hashable
 from lalan.misc import platform
 from lalan.builtins.hotpath import HotPath
 from lalan.runtime import error
-from lalan.types import api, space, plist
+from lalan.types import api, space, plist, tuples
 from signature import newsignature
 from dag import *
 
@@ -76,7 +76,10 @@ class W_Generic(W_Hashable):
 
         # if space.isvoid(method):
         if not method:
-            return error.throw_2(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR, self, args)
+            return error.throw_3(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR,
+                                 self,
+                                 space.newlist(self.signatures),
+                                 args)
 
         # print "METHOD CALL", method, args
         process.call_object(method, args)
@@ -125,9 +128,10 @@ class W_Generic(W_Hashable):
 
     def _make_method_node(self, signatures):
         if len(signatures) != 1:
-            return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
+            return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
                                  self,
-                                 space.newstring(u"Ambiguous method specialisation"))
+                                 space.newlist(signatures),
+                                 space.newstring(u"Ambiguous generic specialisation"))
 
         sig = signatures[0]
         return [LeafNode(sig.method)]
@@ -145,8 +149,6 @@ def specify(process, gf, types, method):
 
     gf.add_signature(newsignature(process, types, method))
     for index, _type in zip(gf.dispatch_indexes, types):
-        if space.isinterface(_type):
-            continue
         _type.register_generic(gf, space.newint(index))
 
 
@@ -226,11 +228,19 @@ def generic(name, signature):
 
 
 def get_method(process, gf, types):
+    print "GET_METHOD", gf, types
+    if space.istuple(types):
+        types = tuples.to_list(types)
+
     if not space.islist(types):
         types = space.newlist([types])
 
     if api.length_i(types) != gf.dispatch_arity:
-        return -1
+        return error.throw_3(error.Errors.KEY_ERROR,
+                             space.newstring(u"Method not specified for signature"), gf, types)
 
     method = gf.dag.evaluate(process, types)
+    if method is None:
+        return error.throw_3(error.Errors.KEY_ERROR,
+                             space.newstring(u"Method not specified for signature"), gf, types)
     return method

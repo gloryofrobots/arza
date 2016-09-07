@@ -16,7 +16,7 @@ type
 )
 
 
-extend Point2
+extend Point2 with
 (
     def add
         | (self, p2 of Point2) = Point2(self.x + p2.x, self.y + p2.y)
@@ -30,7 +30,7 @@ extend Point2
 )
 
 
-extend Vec2
+extend Vec2 with
 (
     def add
         | (self, v of Vec2) = Vec2(
@@ -47,12 +47,12 @@ extend Vec2
 )
 
 
-extend Some
+extend Some with
 (
     def val(self) = self.val
 )
 
-extend None
+extend None with
 (
     def val(self) = self
 )

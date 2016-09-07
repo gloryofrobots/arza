@@ -463,7 +463,6 @@ def newinterface(name, generics):
     from lalan.runtime import error
     error.affirm_type(name, issymbol)
     error.affirm_type(generics, islist)
-    error.affirm_iterable(generics, isgeneric)
 
     return interface(name, generics)
 
@@ -505,7 +504,8 @@ def isrecord(w):
 
 def isdispatchable(w):
     from lalan.types.datatype import W_Instance, W_DataType
-    return isinstance(w, W_Instance) or isinstance(w, W_DataType)
+    from lalan.types.dispatch.generic import W_Generic
+    return isinstance(w, W_Instance) or isinstance(w, W_DataType) or isinstance(w, W_Generic)
 
 
 ########################################################

@@ -166,11 +166,14 @@ class ArgumentType(Argument):
         return self.type._hash_()
 
 
-class Signature:
+class Signature(W_Root):
     def __init__(self, args, method):
         self.method = method
         self.args = args
         self.arity = len(args)
+
+    def _to_string_(self):
+        return "<signature %s>" % ", ".join([str(arg) for arg in self.args])
 
     def equal(self, other):
         args1 = self.args
@@ -205,7 +208,7 @@ def _get_type_predicate(process, _type, index):
     elif types.Tuple is _type:
         arg = PredicateArgument(index, space.istuple)
     elif types.Map is _type:
-        arg = PredicateArgument(index, space.ismap)
+        arg = PredicateArgument(index, space.ispmap)
     elif types.String is _type:
         arg = PredicateArgument(index, space.isstring)
     elif types.Int is _type:
@@ -214,8 +217,8 @@ def _get_type_predicate(process, _type, index):
         arg = PredicateArgument(index, space.isfloat)
     elif types.Function is _type:
         arg = PredicateArgument(index, space.isfunction)
-    elif types.Generic is _type:
-        arg = PredicateArgument(index, space.isgeneric)
+    # elif types.Generic is _type:
+    #     arg = PredicateArgument(index, space.isgeneric)
     else:
         arg = ArgumentType(index, _type)
 

@@ -138,6 +138,12 @@ class W_DataType(W_Hashable):
         self.interfaces = plist.cons(iface, self.interfaces)
         self.mro.add_interface(iface)
 
+        # register all currently implemented generics for this interface
+        for t in iface.registered_generics:
+            generic = api.at_index(t, 0)
+            position = api.at_index(t, 1)
+            self.register_generic(generic, position)
+
     def is_interface_implemented(self, iface):
         return plist.contains(self.interfaces, iface)
 
@@ -157,10 +163,15 @@ class W_DataType(W_Hashable):
         if not api.contains_b(self.generics, generic):
             api.put(self.generics, generic, space.newlist([]))
 
+        l = api.at(self.generics, generic)
+
+        if api.contains_b(l, position):
+            return
+
         api.put(
             self.generics,
             generic,
-            plist.cons(position, api.at(self.generics, generic))
+            plist.cons(position, l)
         )
 
         # Check if any of interfaces is completed by the moment

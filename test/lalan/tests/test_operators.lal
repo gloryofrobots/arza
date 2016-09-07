@@ -1,6 +1,4 @@
 import affirm
-from bit import _
-
 
 fun test() =
 (

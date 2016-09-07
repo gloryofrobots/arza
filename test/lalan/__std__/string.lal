@@ -4,12 +4,12 @@ import std
 
 extend Symbol with
 (
-    def {==, !=, str, repr} from Behavior
+    def {==, !=, str, repr} from std:Behavior
 )
 
 extend Char with
 (
-    def {==, !=, str} from Behavior
+    def {==, !=, str} from std:Behavior
 )
 
 extend String with

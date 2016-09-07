@@ -13,7 +13,10 @@ generic to_list(x)
 
 interface Listable (to_list)
 
-trait TListable of Listable
+extend
+    T1
+    T2
+with
 (
     //Seq iface
     def first(self) = first(to_list(self))
@@ -24,20 +27,15 @@ trait TListable of Listable
     def take(count, self) = seq:take(count, to_list(self))
 )
 
-extend T1
+extend T1 with
 (
-    use TListable
     def to_list(self) = [self.v1, self.v2]
 )
 
-extend T2
+extend T2 with
 (
-    use TListable (drop, take)
     def to_list(self) = [self.v1, self.v2]
     def slice(_from, _to, self) = slice(_from, _to, to_list(self))
-
-    def first(self) = at(first, TListable)(self)
-    def rest(self) = at(rest, TListable)(self)
 )
 
 fun test () =
@@ -73,24 +71,5 @@ fun test () =
         affirm:is_true(kindof(t2, Listable))
         affirm:is_true(kindof(t2, T2))
         affirm:is_true(kindof(t2, Sliceable))
-    )
-    // test constraint
-
-    affirm:is_throw(
-        () ->
-            lalan:lang:defextend(
-                T3,
-                [TListable],
-                [(to_seq, (self -> [self.v1]))]),
-        ()
-    )
-
-    affirm:is_not_throw(
-        () ->
-            lalan:lang:defextend(
-                T3,
-                [TListable],
-                [(to_list, (self -> [self.v1]))]),
-        ()
     )
 )

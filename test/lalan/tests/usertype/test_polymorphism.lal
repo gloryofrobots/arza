@@ -9,7 +9,7 @@ type
 
 generic eq(`self, other)
 
-extend L
+extend L with
 (
     def len(self) = len(self.l)
 
@@ -21,14 +21,14 @@ extend L
 )
 
 
-extend Some
+extend Some with
 (
     def eq
         | (self, val of Some) = val == None
         | (self, _) = False
 )
 
-extend None
+extend None with
 (
     def eq
         | (self, {val} of Some) = val == None

@@ -1,11 +1,11 @@
 import io
 import affirm
 import seq
-import string
 import list
 
 //import tests:test_operators
-//
+
+//import tests:test_dispatch
 //import tests:test_expressions
 //import tests:test_match
 //import tests:test_exception
@@ -28,7 +28,7 @@ fun log(...msgs) =
 fun test() =
 (
     log("RUN TESTS")
-//
+
 //    log("TEST EXPRESSIONS")
 //    test_expressions:test()
 //
@@ -52,93 +52,71 @@ fun test() =
 //
 //    log("TEST STD TYPES")
 //    test_stdtype:test()
-//
+
 //    log("TEST TYPES")
 //    test_usertype:test()
-//
+
 //    log("TEST CORO")
 //    test_coro:test()
 ////
 //    log("TEST PARTIAL")
 //    test_partial:test()
-////
+//
 //    log "TEST OPERATORS"
 //    test_operators:test()
 )
 
-fun test_binary () =
+type
 (
-    let
-        f2 = multimethod("f", ["`x", "`y"])
-    in
-    (
-        specify(f2, (Int, Float), (x, y) -> #int_float)
-        specify(f2, (Int, Int), (x, y) -> #int_int)
-        specify(f2, (Float, Int), (x, y) -> #float_int)
-        specify(f2, (Float, Float), (x, y) -> #float_float)
-
-        specify(f2, (Int, Seq), (x, y) -> #int_seq)
-        specify(f2, (Indexed, Seq), (x, y) -> #indexed_seq)
-
-        specify(f2, (Any, Any), (x, y) -> #any_any)
-        specify(f2, (Any, Seq), (x, y) -> #any_seq)
-        specify(f2, (Int, Any), (x, y) -> #int_any)
-
-//        io:print <| f2(0, [])
-
-        affirm:is_equal(f2(1, 0.1), #int_float)
-        affirm:is_equal(f2(0.2, 0.1), #float_float)
-        affirm:is_equal(f2(0.654, 1), #float_int)
-        affirm:is_equal(f2(1, 1), #int_int)
-
-        affirm:is_equal(f2((), []), #indexed_seq)
-        affirm:is_equal(f2(0, []), #int_seq)
-
-        affirm:is_equal(f2({}, {}), #any_any)
-        affirm:is_equal(f2(f2, Any), #any_any)
-        affirm:is_equal(f2({}, []), #any_seq)
-        affirm:is_equal(f2(42, #any), #int_any)
-
-//        affirm:is_throw(fun () = f2("2", 1), [])
-    )
+    Pig(weight, coolness)
+    Elephant(weight, shyness)
 )
 
-fun test_unary () =
+generic
 (
-    let f1 = multimethod("f1", ["`x", "y", "z"])
-    in
-    (
-        specify(f1, (Any,), (x, y, z) -> #any)
-        specify(f1, (Int,), (x, y, z) -> #int)
-        specify(f1, (Seq,), (x, y, z) -> #seq)
-
-        affirm:is_equal(f1(0, {}, Tuple), #int)
-        affirm:is_equal(f1(1 :: 2 :: 3 :: [], 42, ()), #seq)
-        affirm:is_equal(f1({}, 42, ()), #any)
-    )
+    made (`s1, `s2)
+    give_birth(`mother, `father)
 )
 
-fun test_triple() =
+interface
 (
-    let f6 = multimethod("f1", ["x", "`y", "`z", "a", "b", "`c"])
-    in
-    (
-        specify(f6, (Int, Float, String), (x, y, z, a, b, c) -> #int_float_string)
-        specify(f6, (Any, Any, String), (x, y, z, a, b, c) -> #any_any_string)
-        specify(f6, (String, Any, String), (x, y, z, a, b, c) -> #string_any_string)
-
-        affirm:is_equal(f6([], 0, 0.1, [], [], "string"), #int_float_string)
-        affirm:is_equal(f6([], "string1", 0.1, [], [], "string1"), #string_any_string)
-        affirm:is_equal(f6([], [], 0.1, [], [], "string1"), #any_any_string)
-    )
-
+    FirstMade(made.0)
+    SecondMade(made.1)
+    FirstMother(made.0, give_birth.0)
 )
 
+def made [Pig, Elephant] (p, e) =
+(
+    if p.coolness - e.shyness > 0 then
+        True
+    else
+        False
+)
+
+// TODO as
+//def at [Pig]
+//    | (#weight, self) = (#weight, (self as Any).weight)
+//    | (#coolness, self) = (#coolness, (self as Any).coolness)
+//    | (k, self) = throw KeyError(k)
+
+import std
+def at [Pig]
+    | (#weight, self) = (#this_is_not_my_real_weight, std:Behavior.[at](#weight, self))
+    | (key, self) = std:Behavior.[at](key, self)
+
+def made [Elephant, Pig] as flip2(made.[[Pig, Elephant]])
 
 fun main() =
 (
-    test_unary()
-    test_binary()
-    test_triple()
+    let
+        p = Pig(100, 100)
+        e = Elephant(1000, 90)
+    in
+    (
+        io:print(at.[Generic])
+        io:print(p.weight)
+        io:print(made(p, e))
+//        io:print(made(e, p))
+    )
 //    test()
 )

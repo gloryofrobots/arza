@@ -20,7 +20,11 @@ class W_Interface(W_Hashable):
     def __init__(self, name, generics):
         W_Hashable.__init__(self)
         self.name = name
+        self.registered_generics = plist.empty()
+        self.types = plist.empty()
+
         self.generics = generics
+
         for record in generics:
             generic = api.at_index(record, 0)
             position = api.at_index(record, 1)
@@ -34,6 +38,18 @@ class W_Interface(W_Hashable):
     #
     # def has_generic(self, method):
     #     return plist.contains_with(self.generics, method, contains_generic)
+
+    def register_generic(self, generic, position):
+        t = space.newtuple([generic, position])
+        if api.contains_b(self.registered_generics, t):
+            return
+
+        self.registered_generics = plist.cons(t, self.registered_generics)
+
+        # generic just defined for this interface, so we need to notify all currently implemented types about it
+        # also check datatype.py for actions when interface is implemented and all existed generics must be accounted
+        for t in self.types:
+            t.register_generic(generic, position)
 
     def _at_(self, key):
         return plist.find_with(self.generics, key, find_by_name)

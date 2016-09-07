@@ -1,0 +1,69 @@
+import io
+import affirm
+generic f2(`x, `y)
+
+def f2 [Int, Float] (x, y) = #int_float
+def f2 [Int, Int] (x, y) = #int_int
+def f2 [Float, Int] (x, y) = #float_int
+def f2 [Float, Float] (x, y) = #float_float
+def f2 [Int, Seq](x, y) = #int_seq
+def f2 [Indexed, Seq](x, y) = #indexed_seq
+def f2 [Any, Any](x, y) = #any_any
+def f2 [Any, Seq](x, y) = #any_seq
+def f2 [Int, Any](x, y) = #int_any
+
+fun test_binary () =
+(
+        affirm:is_equal(f2(1, 0.1), #int_float)
+        affirm:is_equal(f2(0.2, 0.1), #float_float)
+        affirm:is_equal(f2(0.654, 1), #float_int)
+        affirm:is_equal(f2(1, 1), #int_int)
+
+        affirm:is_equal(f2((), []), #indexed_seq)
+        affirm:is_equal(f2(0, []), #int_seq)
+
+        affirm:is_equal(f2({}, {}), #any_any)
+        affirm:is_equal(f2(f2, Any), #any_any)
+        affirm:is_equal(f2({}, []), #any_seq)
+        affirm:is_equal(f2(42, #any), #int_any)
+)
+
+/////////////////////////////////////////////
+
+generic f1(`x, y, z)
+
+def f1 [Any] (x, y, z) = #any
+def f1 [Int] (x, y, z) = #int
+def f1 [Seq] (x, y, z) = #seq
+
+fun test_unary () =
+(
+    affirm:is_equal(f1(0, {}, Tuple), #int)
+    affirm:is_equal(f1(1 :: 2 :: 3 :: [], 42, ()), #seq)
+    affirm:is_equal(f1({}, 42, ()), #any)
+)
+
+////////////////////////////////////////////////////
+
+generic f6 (x,`y, `z, a, b, `c)
+
+def f6 [Int, Float, String] (x, y, z, a, b, c) = #int_float_string
+def f6 [Any, Any, String] (x, y, z, a, b, c) = #any_any_string
+def f6 [String, Any, String] (x, y, z, a, b, c) = #string_any_string
+
+
+fun test_triple() =
+(
+    affirm:is_equal(f6([], 0, 0.1, [], [], "string"), #int_float_string)
+    affirm:is_equal(f6([], "string1", 0.1, [], [], "string1"), #string_any_string)
+    affirm:is_equal(f6([], [], 0.1, [], [], "string1"), #any_any_string)
+)
+
+////////////////////////////////////////////////////////
+
+fun test() =
+(
+    test_unary()
+    test_binary()
+    test_triple()
+)

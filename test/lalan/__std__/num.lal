@@ -1,4 +1,4 @@
-import derive
+import std
 import lalan:lang:_number
 import io
 
