@@ -1,6 +1,5 @@
 from lalan.types.root import W_Hashable
 from lalan.misc import platform
-from lalan.builtins.hotpath import HotPath
 from lalan.runtime import error
 from lalan.types import api, space, plist, tuples
 from signature import newsignature
@@ -28,7 +27,7 @@ def group_dict():
 class W_Generic(W_Hashable):
     # _immutable_fields_ = ["_name_"]
 
-    def __init__(self, name, arity, dispatch_indexes, args_signature, hotpath):
+    def __init__(self, name, arity, dispatch_indexes, args_signature):
         W_Hashable.__init__(self)
 
         self.name = name
@@ -39,15 +38,11 @@ class W_Generic(W_Hashable):
         self.dispatch_arity = len(dispatch_indexes)
         self.args_signature = args_signature
         self.signatures = []
-        self.hot_path = hotpath
         self.count_call = 0
         self.dag = None
 
     def register_interface(self, interface, position):
         self.interfaces = plist.cons(space.newtuple([interface, position]), self.interfaces)
-
-    def set_hotpath(self, hotpath):
-        self.hot_path = HotPath(hotpath, self.arity)
 
     def _to_string_(self):
         return "<generic %s %s>" % (api.to_s(self.name), api.to_s(self.args_signature))
@@ -201,7 +196,7 @@ def extend(_type, mixins, methods):
 ############################################################
 ############################################################
 
-def generic_with_hotpath(name, signature, hotpath):
+def generic_with_hotpath(name, signature):
     arity = api.length_i(signature)
 
     if arity == 0:
@@ -218,12 +213,11 @@ def generic_with_hotpath(name, signature, hotpath):
             return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
                                  space.newstring(u"Generic type variable not determined"), name, signature)
 
-    h = HotPath(hotpath, arity) if hotpath is not None else None
-    return W_Generic(name, arity, indexes, signature, h)
+    return W_Generic(name, arity, indexes, signature)
 
 
 def generic(name, signature):
-    return generic_with_hotpath(name, signature, None)
+    return generic_with_hotpath(name, signature)
 
 
 def get_method(process, gf, types):

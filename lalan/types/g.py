@@ -3,13 +3,12 @@ from lalan.types.root import W_Hashable
 from lalan.runtime import error
 from lalan.types import api, space
 from lalan.misc import platform
-from lalan.builtins.hotpath import HotPath
 
 
 class W_Generic(W_Hashable):
     # _immutable_fields_ = ["_name_"]
 
-    def __init__(self, name, arity, dispatch_arg_index, signature, hotpath):
+    def __init__(self, name, arity, dispatch_arg_index, signature):
         W_Hashable.__init__(self)
 
         self.name = name
@@ -19,11 +18,7 @@ class W_Generic(W_Hashable):
         self.arity = api.length_i(signature)
 
         self.signature = signature
-        self.hot_path = hotpath
         self.count_call = 0
-
-    def set_hotpath(self, hotpath):
-        self.hot_path = HotPath(hotpath, self.arity)
 
     def _to_string_(self):
         return "<generic %s %s>" % (api.to_s(self.name), api.to_s(self.signature))
