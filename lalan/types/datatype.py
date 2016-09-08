@@ -144,6 +144,8 @@ class W_DataType(W_Hashable):
             position = api.at_index(t, 1)
             self.register_generic(generic, position)
 
+        iface.register_type(self)
+
     def is_interface_implemented(self, iface):
         return plist.contains(self.interfaces, iface)
 

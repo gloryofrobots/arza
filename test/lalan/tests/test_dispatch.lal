@@ -1,5 +1,7 @@
 import io
 import affirm
+import generics
+
 generic f2(`x, `y)
 
 def f2 [Int, Float] (x, y) = #int_float
@@ -61,9 +63,80 @@ fun test_triple() =
 
 ////////////////////////////////////////////////////////
 
+type
+(
+    Pig(weight, coolness)
+    Elephant(weight, shyness)
+    PiggyElly(weight, coolshness)
+)
+
+generic
+(
+    made (`s1, `s2)
+    give_birth(`mother, `father)
+    regret_things(person)
+)
+
+interface
+(
+    FirstMade(made.0)
+    SecondMade(made.1)
+    Mother(give_birth.0)
+    Father(give_birth.1)
+    WisePerson(regret_things)
+)
+
+import std
+// TODO at(#weight, self as Instance)
+// or previous_method(#weight, self as Instance)
+def at [Pig]
+    | (#weight, self) = (#this_is_not_my_real_weight, std:Behavior.[at](#weight, self))
+    | (key, self) = std:Behavior.[at](key, self)
+
+
+
+def made [Pig, Elephant] (p, e) =
+(
+    if p.coolness - e.shyness > 0 then
+        #Coooool
+    else
+        #Notcoolatall
+)
+
+def made [Elephant, Pig] as generics:reverse(made, Elephant, Pig)
+
+def give_birth [Pig, Elephant] (p, e) = PiggyElly(p.weight.1 + e.weight, p.coolness + e.shyness)
+
+def regret_things [Mother] (m) = True
+
+fun test_pigs_and_elephants() =
+(
+    let
+        p = Pig(100, 100)
+        e = Elephant(1000, 90)
+        pe = give_birth(p, e)
+    in
+    (
+        affirm:is_equal(p.weight, (#this_is_not_my_real_weight, 100))
+        affirm:is_equal(made(p, e), #Coooool)
+        affirm:is_equal(made(e, p), #Coooool)
+        affirm:is_equal(pe.weight, 1100)
+        affirm:is_equal(pe.coolshness, 190)
+        affirm:is_false(p `kindof` Father)
+        affirm:is_true(p `kindof` Mother)
+
+        //Checking interface late binding
+        affirm:is_true(p `kindof` WisePerson)
+    )
+//    test()
+)
+
+/////////////////////////////////
+
 fun test() =
 (
     test_unary()
     test_binary()
     test_triple()
+    test_pigs_and_elephants()
 )

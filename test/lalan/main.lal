@@ -69,60 +69,8 @@ fun test() =
     test_operators:test()
 )
 
-type
+fun main () =
 (
-    Pig(weight, coolness)
-    Elephant(weight, shyness)
-)
-
-generic
-(
-    made (`s1, `s2)
-    give_birth(`mother, `father)
-)
-
-interface
-(
-    FirstMade(made.0)
-    SecondMade(made.1)
-    FirstMother(made.0, give_birth.0)
-)
-
-def made [Pig, Elephant] (p, e) =
-(
-    if p.coolness - e.shyness > 0 then
-        True
-    else
-        False
-)
-
-// TODO as
-//def at [Pig]
-//    | (#weight, self) = (#weight, (self as Any).weight)
-//    | (#coolness, self) = (#coolness, (self as Any).coolness)
-//    | (k, self) = throw KeyError(k)
-
-import std
-def at [Pig]
-    | (#weight, self) = (#this_is_not_my_real_weight, std:Behavior.[at](#weight, self))
-    | (key, self) = std:Behavior.[at](key, self)
-
-fun reverse_generic(gf, t1, t2) =
-    let m = gf.[[t2, t1]]
-    in (x, y) -> m(y, x)
-
-def made [Elephant, Pig] as reverse_generic(made, Elephant, Pig)
-
-fun main() =
-(
-    let
-        p = Pig(100, 100)
-        e = Elephant(1000, 90)
-    in
-    (
-        affirm:is_equal(p.weight, (#this_is_not_my_real_weight, 100))
-        affirm:is_true(made(p, e))
-        affirm:is_true(made(e, p))
-    )
     test()
 )
+
