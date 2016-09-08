@@ -79,6 +79,8 @@ extend List with
 
     def is_empty(self) = _list:is_empty(self)
 
+    def ++ (l1, l2) = seq:concat(l1, l2)
+
     def empty(self) = []
 
     def slice(first, last, self) = _list:slice(first, last, self)

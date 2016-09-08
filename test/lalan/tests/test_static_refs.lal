@@ -46,10 +46,13 @@ fun test () =
     affirm:is_equal(test_local_overwrite(1), -1998)
     affirm:is_equal(test_local_overwrite_2(1), -198)
 
-    affirm:is_throw_expected(
+    affirm:is_throw_expected_cb(
                x -> test_use_static_and_fail(x),
                [1],
-               NotImplementedError((#_length_, 1))
+               x -> match x
+                    | e of MethodNotImplementedError = True
+                    | _ = False
+
     )
 
 // TODO FIX IT

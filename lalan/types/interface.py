@@ -51,6 +51,13 @@ class W_Interface(W_Hashable):
         for t in self.types:
             t.register_generic(generic, position)
 
+    def register_type(self, type):
+        if api.contains_b(self.types, type):
+            error.throw_3(error.Errors.TYPE_ERROR,
+                          space.newstring(u"Type already registered in interface"), self, type)
+
+        self.types = plist.cons(type, self.types)
+
     def _at_(self, key):
         return plist.find_with(self.generics, key, find_by_name)
 

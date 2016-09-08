@@ -20,7 +20,9 @@ def min [LessEq] (x, y) = if x <= y then x else y
 
 import lalan:lang:_generic
 
-def at [Generic] (v, gf) = _generic:get_method(v, gf)
+def at [Map] as _api:at
+def at [Tuple] as _api:at
+def at [Generic] as _generic:get_method
 
 /////////////////////////////////////////////
 

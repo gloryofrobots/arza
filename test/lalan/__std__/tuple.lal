@@ -4,7 +4,7 @@ import std
 
 extend Tuple with
 (
-    def {==, !=, put, at, del, elem, len, is_empty} from std:Behavior
+    def {==, !=, put, del, elem, len, is_empty} from std:Behavior
 
     def ++ as _tuple:concat
     def prepend as _tuple:prepend

@@ -1,0 +1,105 @@
+def == (x, y)
+
+def == (x:Int, y:Float) = x == y
+def == (x<:Int, y<:Float) = x == y
+def == (x-:Int, y-:Float) = x == y
+def == (x::Int, y::Float) = x == y
+def == (x~Int, y~Float) = x == y
+def == (x<-Int, y<-Float) = x == y
+def == (Int x, Float y) = x == y
+def == (x Int, y Float) = x == y
+
+def == ([x, y, ...rest]:List, {x=1, y, z=(1,2, p)}:Map) = x == y
+def == ([x, y, ...rest]<:List, {x=1, y, z=(1,2, p)}<:Map) = x == y
+def == ([x, y, ...rest]-:List, {x=1, y, z=(1,2, p)}-:Map) = x == y
+def == ([x, y, ...rest]::List, {x=1, y, z=(1,2, p)}::Map) = x == y
+def == (List [x, y, ...rest], Map {x=1, y, z=(1,2, p)}) = x == y
+
+def != (List x, y)
+    | (x of List, y of List) = 0
+    | ([] of List, y of Seq) = 0
+    | ({x, y} of List, y) = 0
+
+interface SeqableDatatype (Datatype, ...Seqable)
+
+def repr (self::Any) = str(self)
+def repr (Any self) = str(self)
+
+def < [Comparable] (x, y) = cmp(x, y) == LT
+
+def < (x<:Comparable, y) = cmp(x, y) == LT
+
+with
+extend
+    [X, Y, Z] as T
+    [X1, Y1, Z1] as T2
+with
+(
+    def ==( as `==`.[Rational]
+
+    def + as `+`.[[Rational, Double]]
+
+    def ls (l, s) =
+    (
+       add(3, 4)
+       sub(l, s)
+    )
+
+    def lss (l, s, s1 of Seq) = #lss
+)
+
+use
+    Comparable as T
+in
+(
+    def < (x::T, y::T) = cmp(x, y) == LT
+    def >= (T x, T y) = cmp(x, y) != LT
+    def >= (T real_long_name, T {real_long_name=1}) = cmp(x, y) != LT
+    def >= (real_long_name::T, {real_long_name=1}::T) = cmp(x, y) != LT
+    def > (x::T, y::T) = cmp(x, y) == GT
+)
+use
+    Float as T2
+    Int as T1
+in
+(
+    def + (x::T1, y::T2) as promote(+, (T1, T2), T2)
+)
+
+def < [Comparable] (x, y) = cmp(x, y) == LT
+def >= [Comparable] (x, y) = cmp(x, y) != LT
+def > [Comparable] (x, y) = cmp(x, y) == GT
+
+use
+    LessEq as 0
+in
+(
+    def cmp (x, y) =
+                if x == y then EQ
+                elif x <= y then LT
+                else GT
+
+    def max (x, y) = if x <= y then y else x
+    def min (x, y) = if x <= y then x else y
+)
+
+
+use
+    (Float, Int) as ...
+in
+(
+)
+
+use
+    (Float, Int) as 0
+in
+(
+    def - (x, y) as _number:sub
+    def + (x, y) as _number:add
+    def * (x, y) as _number:mul
+    def / (x, y) as _number:div
+    def mod (x, y) as _number:mod
+    def negate (x, y) as _number:negate
+    def ** (x, y) as  _number:pow
+    def <= (x, y) as _number:le
+)

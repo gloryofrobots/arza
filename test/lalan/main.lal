@@ -3,20 +3,20 @@ import affirm
 import seq
 import list
 
-//import tests:test_operators
+import tests:test_operators
 
-//import tests:test_dispatch
-//import tests:test_expressions
-//import tests:test_match
-//import tests:test_exception
-//import tests:test_static_refs
-//import tests:test_operator_override
-//import tests:test_import
-//import tests:test_fun
-//import tests:stdtype:test_stdtype
-//import tests:usertype:test_usertype
-//import tests:test_coro
-//import tests:test_partial
+import tests:test_dispatch
+import tests:test_expressions
+import tests:test_match
+import tests:test_exception
+import tests:test_static_refs
+import tests:test_operator_override
+import tests:test_import
+import tests:test_fun
+import tests:stdtype:test_stdtype
+import tests:usertype:test_usertype
+import tests:test_coro
+import tests:test_partial
 
 
 fun log(...msgs) =
@@ -29,41 +29,44 @@ fun test() =
 (
     log("RUN TESTS")
 
-//    log("TEST EXPRESSIONS")
-//    test_expressions:test()
-//
-//    log("TEST MATCH")
-//    test_match:test()
-//
-//    log("TEST EXCEPTION")
-//    test_exception:test()
-//
-//    log("TEST STATIC REFS")
-//    test_static_refs:test()
-//
-//    log("TEST IMPORT")
-//    test_import:test()
-//
-//    log ("TEST OP OVERRIDE")
-//    test_operator_override:test()
-//
-//    log("TEST FUN")
-//    test_fun:test()
-//
-//    log("TEST STD TYPES")
-//    test_stdtype:test()
+    log("TEST EXPRESSIONS")
+    test_expressions:test()
 
-//    log("TEST TYPES")
-//    test_usertype:test()
+    log("TEST MATCH")
+    test_match:test()
 
-//    log("TEST CORO")
-//    test_coro:test()
-////
-//    log("TEST PARTIAL")
-//    test_partial:test()
+    log("TEST EXCEPTION")
+    test_exception:test()
+
+    log("TEST STATIC REFS")
+    test_static_refs:test()
+
+    log("TEST IMPORT")
+    test_import:test()
+
+    log ("TEST OP OVERRIDE")
+    test_operator_override:test()
+
+    log("TEST FUN")
+    test_fun:test()
+
+    log("TEST STD TYPES")
+    test_stdtype:test()
+
+    log("TEST TYPES")
+    test_usertype:test()
+
+    log("TEST CORO")
+    test_coro:test()
+
+    log("TEST PARTIAL")
+    test_partial:test()
+
+    log("TEST DISPATCH")
+    test_dispatch:test()
 //
-//    log "TEST OPERATORS"
-//    test_operators:test()
+    log("TEST OPERATORS")
+    test_operators:test()
 )
 
 type
@@ -104,7 +107,11 @@ def at [Pig]
     | (#weight, self) = (#this_is_not_my_real_weight, std:Behavior.[at](#weight, self))
     | (key, self) = std:Behavior.[at](key, self)
 
-def made [Elephant, Pig] as flip2(made.[[Pig, Elephant]])
+fun reverse_generic(gf, t1, t2) =
+    let m = gf.[[t2, t1]]
+    in (x, y) -> m(y, x)
+
+def made [Elephant, Pig] as reverse_generic(made, Elephant, Pig)
 
 fun main() =
 (
@@ -113,10 +120,9 @@ fun main() =
         e = Elephant(1000, 90)
     in
     (
-        io:print(at.[Generic])
-        io:print(p.weight)
-        io:print(made(p, e))
-//        io:print(made(e, p))
+        affirm:is_equal(p.weight, (#this_is_not_my_real_weight, 100))
+        affirm:is_true(made(p, e))
+        affirm:is_true(made(e, p))
     )
-//    test()
+    test()
 )

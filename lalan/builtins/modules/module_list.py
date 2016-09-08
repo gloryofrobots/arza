@@ -24,7 +24,7 @@ def setup(process, stdlib):
 def length(process, routine):
     arg0 = routine.get_arg(0)
 
-    return plist.length(arg0)
+    return space.newint(plist.length(arg0))
 
 
 @complete_native_routine

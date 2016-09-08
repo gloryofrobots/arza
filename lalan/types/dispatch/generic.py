@@ -62,10 +62,10 @@ class W_Generic(W_Hashable):
                                  space.newstring(u"Invalid count of arguments "),
                                  self, args, space.newint(arity), space.newint(self.arity))
 
-        if self.hot_path is not None:
-            res = self.hot_path.apply(process, args)
-            if res is not None:
-                return res
+        # if self.hot_path is not None:
+        #     res = self.hot_path.apply(process, args)
+        #     if res is not None:
+        #         return res
 
         dispatch_args = space.newtuple([args[i] for i in self.dispatch_indexes])
 
@@ -74,12 +74,11 @@ class W_Generic(W_Hashable):
         # method = lookup_implementation(process, self, args)
         assert method is not self
 
-        # if space.isvoid(method):
         if not method:
             return error.throw_3(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR,
                                  self,
-                                 space.newlist(self.signatures),
-                                 args)
+                                 args,
+                                 space.newlist(self.signatures))
 
         # print "METHOD CALL", method, args
         process.call_object(method, args)
@@ -228,7 +227,6 @@ def generic(name, signature):
 
 
 def get_method(process, gf, types):
-    print "GET_METHOD", gf, types
     if space.istuple(types):
         types = tuples.to_list(types)
 

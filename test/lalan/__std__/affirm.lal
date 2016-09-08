@@ -117,6 +117,10 @@ fun is_throw_expected(fn, args, exc) =
     is_equal(_is_throw(fn, args), exc)
 
 
+fun is_throw_expected_cb(fn, args, cb) =
+    is_true(cb(_is_throw(fn, args)))
+
+
 fun is_not_throw(fn, args) =
         match
             try (

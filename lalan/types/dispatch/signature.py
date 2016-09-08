@@ -203,24 +203,25 @@ def _get_interface_predicate(process, interface, index):
 
 def _get_type_predicate(process, _type, index):
     types = process.std.types
-    if types.List is _type:
-        arg = PredicateArgument(index, space.islist)
-    elif types.Tuple is _type:
-        arg = PredicateArgument(index, space.istuple)
-    elif types.Map is _type:
-        arg = PredicateArgument(index, space.ispmap)
-    elif types.String is _type:
-        arg = PredicateArgument(index, space.isstring)
-    elif types.Int is _type:
-        arg = PredicateArgument(index, space.isint)
-    elif types.Float is _type:
-        arg = PredicateArgument(index, space.isfloat)
-    elif types.Function is _type:
-        arg = PredicateArgument(index, space.isfunction)
+    arg = ArgumentType(index, _type)
+    # if types.List is _type:
+    #     arg = PredicateArgument(index, space.islist)
+    # elif types.Tuple is _type:
+    #     arg = PredicateArgument(index, space.istuple)
+    # elif types.Map is _type:
+    #     arg = PredicateArgument(index, space.ispmap)
+    # elif types.String is _type:
+    #     arg = PredicateArgument(index, space.isstring)
+    # elif types.Int is _type:
+    #     arg = PredicateArgument(index, space.isint)
+    # elif types.Float is _type:
+    #     arg = PredicateArgument(index, space.isfloat)
+    # elif types.Function is _type:
+    #     arg = PredicateArgument(index, space.isfunction)
     # elif types.Generic is _type:
     #     arg = PredicateArgument(index, space.isgeneric)
-    else:
-        arg = ArgumentType(index, _type)
+    # else:
+    #     arg = ArgumentType(index, _type)
 
     return arg
 
