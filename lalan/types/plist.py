@@ -323,6 +323,31 @@ def remove(pl, v):
 
 ########################################################################
 
+def count(pl, v):
+    count = 0
+    for i in pl:
+        if api.equal_b(i, v):
+            count += 1
+    return count
+
+
+def is_hetero(pl):
+    for i in pl:
+        if count(pl, i) > 1:
+            return False
+    return True
+
+
+def not_unique_item(pl):
+    for i in pl:
+        if count(pl, i) > 1:
+            return i
+    return None
+
+
+########################################################################
+
+
 def contains_with(pl, v, condition):
     type_check(pl)
     if is_empty(pl):
@@ -336,6 +361,7 @@ def contains_with(pl, v, condition):
 
 def contains(pl, v):
     return contains_with(pl, v, api.equal_b)
+
 
 ########################################################################
 
@@ -352,6 +378,7 @@ def find_with(pl, v, condition):
 
 def find(pl, v):
     return contains_with(pl, v, api.equal_b)
+
 
 ############################################################
 

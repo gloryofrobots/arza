@@ -335,9 +335,9 @@
 
 
 
-//generic == (x, y)
+generic == (x, y)
 //// not dispatchable on 0 and 2
-//generic add (_, y, _)
+generic add (_, y, _)
 generic (
     // ERROR
     == (x, y)
@@ -364,7 +364,36 @@ def add (x-:Any, y-:Any)
         | ([x, y], (x,y)) = (x, y)
         | ({x, y}, 42) = (x, y)
 
-def add (x-:Any, y-:Any)
-        | ([x, y], (x,y)) = (x, y)
-        | ({x, y}, 42) = (x, y)
+
+use
+    Float as T2
+    Int as T1
+in
+(
+    def add (x-:T1, y-:T2) as promote(add, (T1, T2), T2)
+    def add (x-:T2, y-:T1) as promote(add, T2, (T1, T2))
+)
+
+use
+    (Float, Int, Char) as 0
+in
+(
+    def str(self) = self
+)
+
+use
+    (Float, Int, Char) as 1
+in
+(
+    def f(x, y, z) = x
+    def f1(x, y, z) = x
+)
+
+use
+    (Map, Seq) as ...
+in
+(
+    def at(v, self) = self
+    def put(k, v, self) = self
+)
 

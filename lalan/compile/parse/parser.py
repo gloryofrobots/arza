@@ -394,7 +394,6 @@ class ModuleParser(BaseParser):
         self.generic_parser = GenericParser()
         self.interface_parser = InterfaceParser()
         self.type_parser = TypeParser()
-        self.extend_parser = ExtendParser()
         self.name_list_parser = name_list_parser_init(BaseParser())
         self.def_parser = DefParser()
 
@@ -407,7 +406,6 @@ class ModuleParser(BaseParser):
             self.import_names_parser,
             self.generic_parser,
             self.interface_parser,
-            self.extend_parser,
             self.type_parser,
             self.def_parser,
         ])
@@ -422,7 +420,6 @@ class ModuleParser(BaseParser):
         stmt(self, TT_FUN, prefix_module_fun)
         stmt(self, TT_LET, prefix_module_let)
         stmt(self, TT_TYPE, stmt_type)
-        stmt(self, TT_EXTEND, stmt_extend)
         stmt(self, TT_IMPORT, stmt_import)
         stmt(self, TT_FROM, stmt_from)
         stmt(self, TT_EXPORT, stmt_export)
@@ -431,6 +428,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_PREFIX, stmt_prefix)
         stmt(self, TT_GENERIC, stmt_generic)
         stmt(self, TT_DEF, stmt_def)
+        stmt(self, TT_USE, stmt_use)
         stmt(self, TT_INTERFACE, stmt_interface)
 
 
@@ -475,6 +473,15 @@ def map_key_pattern_parser_init(parser):
 
 def int_parser_init(parser):
     literal(parser, TT_INT)
+    return parser
+
+
+def use_in_alias_parser_init(parser):
+    literal(parser, TT_NAME)
+    literal(parser, TT_INT)
+    literal(parser, TT_ELLIPSIS)
+    symbol(parser, TT_OPERATOR, symbol_operator_name)
+    infix(parser, TT_COLON, 100, infix_name_pair)
     return parser
 
 

@@ -1091,7 +1091,7 @@ def stmt_def(parser, op, node):
 
 
 def stmt_generic(parser, op, node):
-    generics = ensure_list_node(expression(parser.generic_parser, 0))
+    generics = list_expression(parser.generic_parser, 0)
     return generics
 
 
@@ -1120,6 +1120,82 @@ def prefix_def_dispatch(parser, op, node):
 def infix_def_dispatch(parser, op, node, left):
     _type = expect_expression_of_types(parser, 0, NAME_NODES)
     return node_2(NT_DISPATCH, __ntok(node), left, _type)
+
+
+# USE
+def _use_replace_in_signature(parser, sig, _type, alias):
+    if space.isint(alias):
+        i = api.to_i(alias)
+        if i < 0 or i >= api.length_i(sig):
+            parse_error(parser, u"Invalid index", _type)
+        new_sig = api.put_at_index(_type, i, sig)
+
+    elif nodes.node_type(alias) == NT_REST:
+        i = api.length_i(sig) - 1
+        new_sig = api.put_at_index(_type, i, sig)
+    else:
+        els = []
+        alias_val = nodes.node_value(alias)
+        for arg in sig:
+            arg_val = nodes.node_value(arg)
+            if api.equal_b(arg_val, alias_val):
+                els.append(_type)
+            else:
+                els.append(arg)
+
+        new_sig = list_node(els)
+    return new_sig
+
+
+def _parse_use_serial_transform(parser, node, _type, alias, methods):
+    result = []
+    for method in methods:
+        # flatten
+        method_name = nodes.node_first(method)
+        method_signature = nodes.node_second(method)
+        method_body = nodes.node_third(method)
+
+        new_method = node_3(NT_DEF, __ntok(node), method_name, method_signature, method_body)
+        result.append(new_method)
+    return result
+    pass
+
+def _parse_use_serial(parser, node, types, alias):
+    methods = list_expression(parser.use_parser)
+    result = []
+    for _type in types:
+        result += _parse_use_serial_transform(parser, node, _type, alias, methods)
+
+    return list_node(result)
+
+
+def _parse_use_parallel(parser, node, types, alias):
+    pass
+
+
+def stmt_use(parser, op, node):
+    if parser.token_type == TT_LPAREN:
+        types = _parse_comma_separated(parser, TT_RPAREN, advance_first=TT_LPAREN)
+        advance_expected(parser, TT_AS)
+        alias = expression(parser.use_in_alias_parser, 0)
+        advance_expected(parser, TT_IN)
+        return _parse_use_serial(parser, node, types, alias)
+
+    types = []
+    aliases = plist.empty()
+    while parser.token_type != TT_IN:
+        type_e = expression(parser.name_parser, 0)
+        advance_expected(parser, TT_AS)
+        alias = expression(parser.use_in_alias_parser, 0)
+        types.append(type_e)
+        aliases = plist.cons(alias, aliases)
+
+    advance_expected(parser, TT_IN)
+    not_unique = plist.not_unique_item(aliases)
+    if not_unique is not None:
+        return parse_error(parser, u"Repeated type alias", not_unique)
+
+    return _parse_use_parallel(parser, node, types, aliases)
 
 
 # EXTEND
