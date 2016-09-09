@@ -27,27 +27,27 @@
 /////////////////////////////
 //////////////////////////////////////////
 
-infixr (:=, :=, 10)
-infixl (<|, <|, 15)
-infixl (|>, |>, 20)
-infixl (<<, <<, 25)
-infixl (>>, >>, 25)
-infixl (<, <, 35)
-infixl (>, >, 35)
-infixl (>=, >=, 35)
-infixl (<=, <=, 35)
-infixl (==, ==, 35)
-infixl (!=, !=, 35)
-infixl (++, ++, 40)
-infixl (+, +, 40)
-infixl (-, -, 40)
-infixl (*, *, 50)
-infixl (/, /, 50)
-prefix (-, negate, 55)
-infixl (**, **, 60)
-prefix (!, !, 70)
-infixl (.., .., 95)
-prefix (&, &, 96)
+//infixr (:=, :=, 10)
+//infixl (<|, <|, 15)
+//infixl (|>, |>, 20)
+//infixl (<<, <<, 25)
+//infixl (>>, >>, 25)
+//infixl (<, <, 35)
+//infixl (>, >, 35)
+//infixl (>=, >=, 35)
+//infixl (<=, <=, 35)
+//infixl (==, ==, 35)
+//infixl (!=, !=, 35)
+//infixl (++, ++, 40)
+//infixl (+, +, 40)
+//infixl (-, -, 40)
+//infixl (*, *, 50)
+//infixl (/, /, 50)
+//prefix (-, negate, 55)
+//infixl (**, **, 60)
+//prefix (!, !, 70)
+//infixl (.., .., 95)
+//prefix (&, &, 96)
 
 
 //fun f () = 0
@@ -258,19 +258,6 @@ prefix (&, &, 96)
 //
 //
 // TODO change ` to $, _ or []
-//generic == (`x, y)
-//generic (
-//    // ERROR
-//    put k v s
-//    == (`x, y)
-//    - (`x, y)
-//    + (`x, y)
-//    ! (self)
-//    len (self)
-//    put (key, value, `self)
-//    add(`x, `y)
-//    sub(`x, `y)
-//)
 
 //interface Num (-, (..).0, +.0, *, /, mod.0, math:negate.0, sqrt)
 //interface (
@@ -320,29 +307,64 @@ prefix (&, &, 96)
 //)
 
 
-extend
-    [X, Y, lalan:Z]
-    [X1, math:Y1, Z1]
-with
-(
-    def {!=, ==} from StdBehavior
-//    def != = TEq.[!=]
-//    def == = TEq.[==]
+//extend
+//    [X, Y, lalan:Z]
+//    [X1, math:Y1, Z1]
+//with
+//(
+//    def {!=, ==} from StdBehavior
+////    def != = TEq.[!=]
+////    def == = TEq.[==]
+//
+//    def (ls, lss) with [A, math:B, C]
+//    //def ls = ls.[A, B, C]
+//    //def lss = lss.[A, B, C]
+//
+//    def == as `==`.[Rational]
+//
+//    def + as `+`.[[Rational, Double]]
+//
+//    def ls (l, s) =
+//    (
+//       add(3, 4)
+//       sub(l, s)
+//    )
+//
+//    def lss (l, s, s1 of Seq) = #lss
+//)
 
-    def (ls, lss) with [A, math:B, C]
-    //def ls = ls.[A, B, C]
-    //def lss = lss.[A, B, C]
 
-    def == as `==`.[Rational]
 
-    def + as `+`.[[Rational, Double]]
-
-    def ls (l, s) =
-    (
-       add(3, 4)
-       sub(l, s)
-    )
-
-    def lss (l, s, s1 of Seq) = #lss
+//generic == (x, y)
+//// not dispatchable on 0 and 2
+//generic add (_, y, _)
+generic (
+    // ERROR
+    == (x, y)
+    - (x, y)
+    + (x, _)
+    ! (self)
+    len (self)
+    put (key, _, self)
+    add(x, y)
+    sub(x, _)
+    //Error
+    pow(_, _)
 )
+
+// signature [Int, Float]
+def add (x-:Int, y-:Float) = (x, y)
+// signature [_, Float]
+def add (x, y-:Float) = (x, y)
+
+// [Value(Bool), Float]
+def add (-:Bool, y-:Float) = (x, y)
+
+def add (x-:Any, y-:Any)
+        | ([x, y], (x,y)) = (x, y)
+        | ({x, y}, 42) = (x, y)
+
+def add (x-:Any, y-:Any)
+        | ([x, y], (x,y)) = (x, y)
+        | ({x, y}, 42) = (x, y)
 

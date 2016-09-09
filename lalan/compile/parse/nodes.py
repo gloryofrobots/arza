@@ -444,6 +444,9 @@ def create_when_no_else_node(basenode, cond, body):
     return node_2(nt.NT_WHEN, create_token_from_node(tt.TT_WHEN, "when", basenode), cond, body)
 
 
+def create_when_node(basenode, pattern, guard):
+    return node_2(nt.NT_WHEN, create_token_from_node(tt.TT_WHEN, "when", basenode), pattern, guard)
+
 # CALL TO OPERATOR FUNCS
 # TODO MAKE IT CONSISTENT WITH OPERATOR REDECLARATION
 
