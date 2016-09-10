@@ -1,28 +1,28 @@
 import lalan:lang:_api
 import lalan:lang:_datatype
 
-def repr [Any] (self) = str(self)
+def repr (self of Any) = str(self)
 
-def < [Comparable] (x, y) = cmp(x, y) == LT
-def >= [Comparable] (x, y) = cmp(x, y) != LT
-def > [Comparable] (x, y) = cmp(x, y) == GT
+def < (x of Comparable, y) = cmp(x, y) == LT
+def >= (x of Comparable, y) = cmp(x, y) != LT
+def > (x of Comparable, y) = cmp(x, y) == GT
 
-def cmp [LessEq] (x, y) =
+def cmp (x of LessEq, y) =
             if x == y then EQ
             elif x <= y then LT
             else GT
 
-def max [LessEq] (x, y) = if x <= y then y else x
-def min [LessEq] (x, y) = if x <= y then x else y
+def max (x of LessEq, y) = if x <= y then y else x
+def min (x of LessEq, y) = if x <= y then x else y
 
 
 /////////////////////////////
 
 import lalan:lang:_generic
 
-def at [Map] as _api:at
-def at [Tuple] as _api:at
-def at [Generic] as _generic:get_method
+def at (k, self of Map) as _api:at
+def at (el, self of Tuple) as _api:at
+def at (t, self of Generic) as _generic:get_method
 
 /////////////////////////////////////////////
 
@@ -48,25 +48,39 @@ let Behavior =
 
 /////////////////////////////////
 
-extend Instance with
+use Instance as ...
+in
 (
     def index_of (val, self) = _datatype:record_index_of(val, self)
     def keys(self) = _datatype:record_keys(self)
     def values(self) = _datatype:record_values(self)
-    def {==, !=, str, repr, put, at, del, elem, len, is_empty} from Behavior
+    def str (self) as Behavior.[str]
+    def repr (self) as Behavior.[repr]
+
+    def put (k, v, self) as Behavior.[put]
+    def at (k, self) as Behavior.[at]
+    def del (el, self) as Behavior.[del]
+    def elem (el, self) as Behavior.[elem]
+    def len (self) as Behavior.[len]
+    def is_empty (self) as Behavior.[is_empty]
 )
 
 
-extend
-    Singleton
-    Function
-    Generic
-    Partial
-    Datatype
-    Bool
-with
+use
+    (Singleton,
+     Function,
+     Generic,
+     Partial,
+     Datatype,
+     Bool,
+     Instance) as 0
+in
 (
-    def {==, !=, str, repr} from Behavior
+    def != (self, other) as Behavior.[`!=`]
+    def == (self, other) as Behavior.[`==`]
+
+    def str (self) as Behavior.[str]
+    def repr (self) as Behavior.[repr]
 )
 
 

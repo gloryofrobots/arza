@@ -55,14 +55,23 @@ fun replicate(count, element) =
         throw ValueError(count)
 ---------------------------------------------------
 
-
-extend List with
+use List as 0
+in
 (
-    def {!=, put, at, del, elem} from std:Behavior
+    def != (self, other) as std:Behavior.[`!=`]
+    def ==(self, other) = seq:equal(self, other)
+)
+
+use List as ...
+in
+(
+    def put (k, v, self) as std:Behavior.[put]
+    def at (k, self) as std:Behavior.[at]
+    def del (el, self) as std:Behavior.[del]
+    def elem (el, self) as std:Behavior.[elem]
 
     def repr(self) = str(self)
 
-    def ==(self, other) = seq:equal(self, other)
 
     def str(self) =
         "[" ++ string:join_with(repr, self, ", ") ++ "]"
@@ -79,7 +88,7 @@ extend List with
 
     def is_empty(self) = _list:is_empty(self)
 
-    def ++ (l1, l2) = seq:concat(l1, l2)
+    def ++ (l1 of List, l2) = seq:concat(l1, l2)
 
     def empty(self) = []
 

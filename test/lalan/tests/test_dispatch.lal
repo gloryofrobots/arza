@@ -2,7 +2,7 @@ import io
 import affirm
 import generics
 
-generic f2(`x, `y)
+generic f2(x, y)
 
 def f2 [Int, Float] (x, y) = #int_float
 def f2 [Int, Int] (x, y) = #int_int
@@ -32,7 +32,7 @@ fun test_binary () =
 
 /////////////////////////////////////////////
 
-generic f1(`x, y, z)
+generic f1(x, y, z)
 
 def f1 [Any] (x, y, z) = #any
 def f1 [Int] (x, y, z) = #int
@@ -47,7 +47,7 @@ fun test_unary () =
 
 ////////////////////////////////////////////////////
 
-generic f6 (x,`y, `z, a, b, `c)
+generic f6 (x, y,  z, a, b,  c)
 
 def f6 [Int, Float, String] (x, y, z, a, b, c) = #int_float_string
 def f6 [Any, Any, String] (x, y, z, a, b, c) = #any_any_string
@@ -72,8 +72,8 @@ type
 
 generic
 (
-    made (`s1, `s2)
-    give_birth(`mother, `father)
+    made (s1, s2)
+    give_birth(mother, father)
     regret_things(person)
 )
 

@@ -333,67 +333,74 @@
 //    def lss (l, s, s1 of Seq) = #lss
 //)
 
+//generic == (x, y)
+////// not dispatchable on 0 and 2
+//generic add (_, y, _)
+//generic (
+//    // ERROR
+//    == (x, y)
+//    - (x, y)
+//    + (x, _)
+//    ! (self)
+//    len (self)
+//    put (key, _, self)
+//    add(x, y)
+//    sub(x, _)
+//    //Error
+//    pow(_, _)
+//)
+//
+//// signature [Int, Float]
+//def add (x of Int, y of Float) = (x, y)
+//// signature [_, Float]
+//def add (x, y of Float) = (x, y)
+//
+//// [Value(Bool), Float]
+def add ( of Bool, y of Float) = (x, y)
+def add ( x of Bool, y of Float) as add.[[Instance]]
 
-
-generic == (x, y)
-//// not dispatchable on 0 and 2
-generic add (_, y, _)
-generic (
-    // ERROR
-    == (x, y)
-    - (x, y)
-    + (x, _)
-    ! (self)
-    len (self)
-    put (key, _, self)
-    add(x, y)
-    sub(x, _)
-    //Error
-    pow(_, _)
-)
-
-// signature [Int, Float]
-def add (x-:Int, y-:Float) = (x, y)
-// signature [_, Float]
-def add (x, y-:Float) = (x, y)
-
-// [Value(Bool), Float]
-def add (-:Bool, y-:Float) = (x, y)
-
-def add (x-:Any, y-:Any)
-        | ([x, y], (x,y)) = (x, y)
-        | ({x, y}, 42) = (x, y)
-
-
-use
-    Float as T2
-    Int as T1
-in
-(
-    def add (x-:T1, y-:T2) as promote(add, (T1, T2), T2)
-    def add (x-:T2, y-:T1) as promote(add, T2, (T1, T2))
-)
-
-use
-    (Float, Int, Char) as 0
-in
-(
-    def str(self) = self
-)
-
-use
-    (Float, Int, Char) as 1
-in
-(
-    def f(x, y, z) = x
-    def f1(x, y, z) = x
-)
-
-use
-    (Map, Seq) as ...
-in
-(
-    def at(v, self) = self
-    def put(k, v, self) = self
-)
+//
+////def add (x, y) = 0
+//
+//use
+//    Int as 0
+//    Float as 1
+//in
+//(
+//    def add (x, y) = x
+//    def add (x, y) = y
+//)
+//
+//
+//use
+//    Int as T1
+//    Float as T2
+//in
+//(
+//    def add (x of T1, y of T2) = x
+//    def add (x of T2 , y of T1) = y
+//)
+//
+//use
+//    (Float, Int, Char) as 0
+//in
+//(
+//    def f(x, y, z) = self
+//)
+//
+//use
+//    (Float, Int, Char) as 1
+//in
+//(
+//    def f(x, y, z) = x
+//    def f1(x, y, z) = x
+//)
+//
+//use
+//    (Map, Seq) as ...
+//in
+//(
+//    def at(v, self) = self
+//    def put(k, v, self) = self
+//)
 

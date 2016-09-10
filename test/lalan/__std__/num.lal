@@ -2,21 +2,25 @@ import std
 import lalan:lang:_number
 import io
 
-extend
-    Float
-    Int
-with
+use
+    (Float, Int) as 0
+in
 (
-    def {==, !=, str, repr} from std:Behavior
-    def - as _number:sub
-    def + as _number:add
-    def * as _number:mul
-    def / as _number:div
-    def mod as _number:mod
-    def negate as _number:negate
-    def ** as  _number:pow
+    def != (self, other) as std:Behavior.[`!=`]
+    def == (self, other) as std:Behavior.[`==`]
 
-    def <= as _number:le
+    def str (self) as std:Behavior.[str]
+    def repr (self) as std:Behavior.[repr]
+
+    def - (x, y) as _number:sub
+    def + (x, y) as _number:add
+    def * (x, y) as _number:mul
+    def / (x, y) as _number:div
+    def mod (x, y) as _number:mod
+    def negate (x) as _number:negate
+    def ** (x, y) as  _number:pow
+
+    def <= (x, y) as _number:le
 )
 
 

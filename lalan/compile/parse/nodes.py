@@ -3,6 +3,7 @@ from lalan.compile.parse import token_type as tt
 from lalan.compile.parse import node_type as nt
 from lalan.types import space, api, plist
 from lalan.runtime import error
+from lalan.misc import strutil
 from lalan.builtins import lang_names
 
 
@@ -218,6 +219,12 @@ def tuple_node_length(n):
     return api.length_i(node_first(n))
 
 
+def int_node_to_int(node):
+    value = strutil.string_to_int(node_value_s(node))
+    num = space.newnumber(value)
+    return num
+
+
 def imported_name_to_s(node):
     if node_type(node) == nt.NT_IMPORTED_NAME:
         return imported_name_to_s(node_first(node)) + ':' + node_value_s(node_second(node))
@@ -354,7 +361,7 @@ def create_fargs_node(basenode):
 
 
 def create_void_node(basenode):
-    return node_0(nt.NT_VOID, create_token_from_node(tt.TT_TRUE, "void", basenode))
+    return node_0(nt.NT_VOID, create_token_from_node(tt.TT_VOID, "void", basenode))
 
 
 def create_undefine_node(basenode, varname):
@@ -446,6 +453,7 @@ def create_when_no_else_node(basenode, cond, body):
 
 def create_when_node(basenode, pattern, guard):
     return node_2(nt.NT_WHEN, create_token_from_node(tt.TT_WHEN, "when", basenode), pattern, guard)
+
 
 # CALL TO OPERATOR FUNCS
 # TODO MAKE IT CONSISTENT WITH OPERATOR REDECLARATION

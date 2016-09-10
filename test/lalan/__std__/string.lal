@@ -2,31 +2,34 @@ import lalan:lang:_string
 import seq
 import std
 
-extend Symbol with
+use (String, Char, Symbol) as 0
 (
-    def {==, !=, str, repr} from std:Behavior
+    def != (self, other) as std:Behavior.[`!=`]
+    def == (self, other) as std:Behavior.[`==`]
+
+    def str (self) as std:Behavior.[str]
+    def repr (self) as std:Behavior.[repr]
 )
 
-extend Char with
+use String as ...
 (
-    def {==, !=, str} from std:Behavior
-)
-
-extend String with
-(
-
-    def {==, !=, str, repr, put, at, del, elem, len, is_empty} from std:Behavior
+    def put (k, v, self) as std:Behavior.[put]
+    def at (k, self) as std:Behavior.[at]
+    def del (el, self) as std:Behavior.[del]
+    def elem (el, self) as std:Behavior.[elem]
+    def len (self) as std:Behavior.[len]
+    def is_empty (self) as std:Behavior.[is_empty]
 
     def ++
         | (_str1 of String, sym of Symbol) = _string:concat(_str1, str(sym))
         | (_str1, _str2) = _string:concat(_str1, _str2)
 
-    def append as _string:append
-    def prepend as _string:prepend
-    def to_seq as _string:to_list
-    def slice as _string:slice
-    def drop as _string:drop
-    def take as _string:take
+    def append(v, self) as _string:append
+    def prepend(v, self) as _string:prepend
+    def to_seq(v, self) as _string:to_list
+    def slice(_from, _to, self) as _string:slice
+    def drop(x, self) as _string:drop
+    def take(x, self) as _string:take
 
     def cons (value of Char, self) = _string:append(value, self)
     def empty(self) = ""

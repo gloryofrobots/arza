@@ -86,13 +86,9 @@ def interface(name, generics):
             error.affirm_type(api.at_index(record, 1), space.isint)
             result.append(record)
         else:
+            # TODO make interface accept all positions in that case
             generic = record
             error.affirm_type(generic, space.isgeneric)
-            if len(generic.dispatch_indexes) != 1:
-                error.throw_2(error.Errors.TYPE_ERROR,
-                              space.newstring(u"Impossible to determine argument position for generic function"
-                                              u"Specify argument position for function"), generic)
-
             position = space.newint(generic.dispatch_indexes[0])
             result.append(space.newtuple([generic, position]))
 

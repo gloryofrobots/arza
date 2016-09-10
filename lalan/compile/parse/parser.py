@@ -286,8 +286,8 @@ class FunPatternParser(PatternParser):
 class DefPatternParser(PatternParser):
     def __init__(self):
         PatternParser.__init__(self)
-        infix(self, TT_DISPATCH, 5, infix_def_dispatch)
-        prefix(self, TT_DISPATCH, prefix_def_dispatch)
+        infix(self, TT_OF, 5, infix_def_of)
+        prefix(self, TT_OF, prefix_def_of)
 
         # prefix(self, TT_LPAREN, prefix_lparen_expression)
 
@@ -307,6 +307,30 @@ class DefParser(BaseParser):
             self.guard_parser,
             self.name_parser
         ])
+
+
+class UseParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+
+        self.def_parser = DefParser()
+        self.name_parser = name_parser_init(BaseParser())
+        prefix(self, TT_LPAREN, prefix_lparen)
+        prefix(self, TT_DEF, prefix_use_def)
+
+        self.add_subparsers([
+            self.def_parser,
+            self.name_parser
+        ])
+
+
+def use_in_alias_parser_init(parser):
+    literal(parser, TT_NAME)
+    literal(parser, TT_INT)
+    literal(parser, TT_ELLIPSIS)
+    symbol(parser, TT_OPERATOR, symbol_operator_name)
+    infix(parser, TT_COLON, 100, infix_name_pair)
+    return parser
 
 
 class GenericParser(BaseParser):
@@ -396,6 +420,8 @@ class ModuleParser(BaseParser):
         self.type_parser = TypeParser()
         self.name_list_parser = name_list_parser_init(BaseParser())
         self.def_parser = DefParser()
+        self.use_parser = UseParser()
+        self.use_in_alias_parser = use_in_alias_parser_init(BaseParser())
 
         self.add_subparsers([
             self.import_parser,
@@ -408,6 +434,8 @@ class ModuleParser(BaseParser):
             self.interface_parser,
             self.type_parser,
             self.def_parser,
+            self.use_in_alias_parser,
+            self.use_parser
         ])
 
         init_parser_literals(self)
@@ -473,15 +501,6 @@ def map_key_pattern_parser_init(parser):
 
 def int_parser_init(parser):
     literal(parser, TT_INT)
-    return parser
-
-
-def use_in_alias_parser_init(parser):
-    literal(parser, TT_NAME)
-    literal(parser, TT_INT)
-    literal(parser, TT_ELLIPSIS)
-    symbol(parser, TT_OPERATOR, symbol_operator_name)
-    infix(parser, TT_COLON, 100, infix_name_pair)
     return parser
 
 
@@ -572,7 +591,7 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = True
+PARSE_DEBUG = False
 
 
 def parse(process, env, src):

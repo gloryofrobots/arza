@@ -85,6 +85,9 @@ class W_PList(W_Root):
         i = api.to_i(k)
         return update(self, i, v)
 
+    def _put_at_index_(self, i, v):
+        return update(self, i, v)
+
     def _type_(self, process):
         return process.std.types.List
 

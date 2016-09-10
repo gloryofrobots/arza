@@ -12,15 +12,15 @@ type
 
 generic
 (
-    eq(`x, y)
-    ne(`x, y)
-    le(`x, y)
-    lt(`x, y)
-    ge(`x, y)
-    gt(`x, y)
-    cmp(`x, y)
-    max(`x, y)
-    min(`x, y)
+    eq(x, y)
+    ne(x, y)
+    le(x, y)
+    lt(x, y)
+    ge(x, y)
+    gt(x, y)
+    cmp(x, y)
+    max(x, y)
+    min(x, y)
 )
 
 let

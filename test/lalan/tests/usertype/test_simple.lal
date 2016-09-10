@@ -2,8 +2,8 @@ import affirm
 
 generic
 (
-    add(`self, a)
-    val(`self)
+    add(self, a)
+    val(self)
 )
 
 type

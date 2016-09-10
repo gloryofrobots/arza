@@ -2,9 +2,20 @@ import lalan:lang:_map
 import string
 import std
 
-extend Map with
+use Map as 0
+in
 (
-    def {==, !=, put,  del, elem, len, is_empty} from std:Behavior
+    def != (self, other) as std:Behavior.[`!=`]
+    def == (self, other) as std:Behavior.[`==`]
+)
+
+use Map as ...
+in
+(
+    def put (k, v, self) as std:Behavior.[put]
+    def del (el, self) as std:Behavior.[del]
+    def elem (el, self) as std:Behavior.[elem]
+    def is_empty (self) as std:Behavior.[is_empty]
 
     def repr(self) = str(self)
 

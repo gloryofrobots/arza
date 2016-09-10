@@ -27,15 +27,15 @@ def group_dict():
 class W_Generic(W_Hashable):
     # _immutable_fields_ = ["_name_"]
 
-    def __init__(self, name, arity, dispatch_indexes, args_signature):
+    def __init__(self, name, arity,  args_signature):
         W_Hashable.__init__(self)
 
         self.name = name
         self.arity = arity
-        self.dispatch_indexes = dispatch_indexes
+        self.dispatch_indexes = [i for i in range(len(args_signature))]
+        self.dispatch_arity = len(self.dispatch_indexes)
         self.interfaces = plist.empty()
         self.arity = api.length_i(args_signature)
-        self.dispatch_arity = len(dispatch_indexes)
         self.args_signature = args_signature
         self.signatures = []
         self.count_call = 0
@@ -132,6 +132,13 @@ class W_Generic(W_Hashable):
 
 
 def specify(process, gf, types, method):
+    _types = []
+    for _type in types:
+        if space.isvoid(_type):
+            _types.append(process.std.interfaces.Any)
+        else:
+            _types.append(_type)
+
     if gf.dispatch_arity != api.length_i(types):
         return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
                              gf,
@@ -141,8 +148,8 @@ def specify(process, gf, types, method):
                              gf,
                              space.newstring(u"Bad method for specialisation, inconsistent arity"))
 
-    gf.add_signature(newsignature(process, types, method))
-    for index, _type in zip(gf.dispatch_indexes, types):
+    gf.add_signature(newsignature(process, _types, method))
+    for index, _type in zip(gf.dispatch_indexes, _types):
         _type.register_generic(gf, space.newint(index))
 
 
@@ -201,19 +208,8 @@ def generic_with_hotpath(name, signature):
 
     if arity == 0:
         error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR, space.newstring(u"Generic arity == 0"))
-    if arity == 1:
-        indexes = [0]
-    else:
-        indexes = []
-        for i, sym in enumerate(signature):
-            if api.to_s(sym).startswith("`"):
-                indexes.append(i)
 
-        if len(indexes) == 0:
-            return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
-                                 space.newstring(u"Generic type variable not determined"), name, signature)
-
-    return W_Generic(name, arity, indexes, signature)
+    return W_Generic(name, arity, signature)
 
 
 def generic(name, signature):

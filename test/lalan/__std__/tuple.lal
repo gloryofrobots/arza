@@ -2,18 +2,30 @@ import lalan:lang:_tuple
 import string
 import std
 
-extend Tuple with
+use Tuple as 0
+in
 (
-    def {==, !=, put, del, elem, len, is_empty} from std:Behavior
+    def != (self, other) as std:Behavior.[`!=`]
+    def == (self, other) as std:Behavior.[`==`]
+)
 
-    def ++ as _tuple:concat
-    def prepend as _tuple:prepend
-    def to_seq as _tuple:to_list
-    def slice as _tuple:slice
-    def drop as _tuple:drop
-    def take as _tuple:take
+use Tuple as ...
+in
+(
+    def put (k, v, self) as std:Behavior.[put]
+    def del (el, self) as std:Behavior.[del]
+    def elem (el, self) as std:Behavior.[elem]
+    def len (self) as std:Behavior.[len]
+    def is_empty (self) as std:Behavior.[is_empty]
 
-    def index_of as _tuple:index_of
+    def ++ (t1, t2) as _tuple:concat
+    def prepend(v, self) as _tuple:prepend
+    def to_seq(self) as _tuple:to_list
+    def slice(first, last, self) as _tuple:slice
+    def drop(x, self) as _tuple:drop
+    def take(x, self) as _tuple:take
+
+    def index_of(el, self) as _tuple:index_of
 
     def repr(self) = str(self)
     def str(self) =

@@ -9,22 +9,18 @@ import seq
 //////////////////////////////////////
 
 
-extend Coroutine with
+use Coroutine as 0
+in
 (
-    def is_empty as std:Behavior.[is_empty]
+    def is_empty(self) as std:Behavior.[is_empty]
     def len(self) = throw NotImplementedError ("Coroutine can't define len")
 
     def first(self) =
     (
         if not is_empty(self) then
-        (
             self ()
-        )
         else
-        (
             throw FiberFlowError("Coroutine is closed")
-        )
-
     )
     def rest(self) =
     (
@@ -61,7 +57,7 @@ fun ref(v) =
         Ref(co)
     )
 
-extend Ref with
+use Ref as 0 in
 (
     def repr(self) = str(self)
 

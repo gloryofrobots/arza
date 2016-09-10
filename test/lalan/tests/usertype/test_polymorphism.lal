@@ -7,7 +7,7 @@ type
     Some(val)
 )
 
-generic eq(`self, other)
+generic eq(self, other)
 
 extend L with
 (
