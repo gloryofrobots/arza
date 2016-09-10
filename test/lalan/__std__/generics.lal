@@ -1,4 +1,5 @@
 
+// TODO as
 fun reverse(gf, t1, t2) =
     let m = gf.[[t2, t1]]
     in (x, y) -> m(y, x)

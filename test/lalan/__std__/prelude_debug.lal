@@ -356,8 +356,8 @@
 //def add (x, y of Float) = (x, y)
 //
 //// [Value(Bool), Float]
-def add ( of Bool, y of Float) = (x, y)
-def add ( x of Bool, y of Float) as add.[[Instance]]
+//def add ( of Bool, y of Float) = (x, y)
+//def add ( x of Bool, y of Float) as add.[[Instance]]
 
 //
 ////def add (x, y) = 0
@@ -404,3 +404,12 @@ def add ( x of Bool, y of Float) as add.[[Instance]]
 //    def put(k, v, self) = self
 //)
 
+use
+    String as Str
+    Symbol as Sym
+in
+(
+    def ++ (_str1 of Str, _str2 of Str) = _string:concat(_str1, _str2)
+//    def ++ (_str of Str, sym of Sym) = _string:concat(_str, str(sym))
+//    def ++ (_str of Sym, sym of Str) = _string:concat(str(sym), _str)
+)

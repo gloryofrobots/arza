@@ -4,39 +4,39 @@ import generics
 
 generic f2(x, y)
 
-def f2 [Int, Float] (x, y) = #int_float
-def f2 [Int, Int] (x, y) = #int_int
-def f2 [Float, Int] (x, y) = #float_int
-def f2 [Float, Float] (x, y) = #float_float
-def f2 [Int, Seq](x, y) = #int_seq
-def f2 [Indexed, Seq](x, y) = #indexed_seq
-def f2 [Any, Any](x, y) = #any_any
-def f2 [Any, Seq](x, y) = #any_seq
-def f2 [Int, Any](x, y) = #int_any
+def f2 (x of Int, y of Float) = #int_float
+def f2 (x of Int, y of Int) = #int_int
+def f2 (x of Float, y of Int) = #float_int
+def f2 (x of Float, y of Float) = #float_float
+def f2 (x of Int, y of Seq) = #int_seq
+def f2 (x of Indexed, y of Seq) = #indexed_seq
+def f2 (x of Any, y of Any) = #any_any
+def f2 (x of Any, y of Seq) = #any_seq
+def f2 (x of Int, y of Any) = #int_any
 
 fun test_binary () =
 (
-        affirm:is_equal(f2(1, 0.1), #int_float)
-        affirm:is_equal(f2(0.2, 0.1), #float_float)
-        affirm:is_equal(f2(0.654, 1), #float_int)
-        affirm:is_equal(f2(1, 1), #int_int)
+    affirm:is_equal(f2(1, 0.1), #int_float)
+    affirm:is_equal(f2(0.2, 0.1), #float_float)
+    affirm:is_equal(f2(0.654, 1), #float_int)
+    affirm:is_equal(f2(1, 1), #int_int)
 
-        affirm:is_equal(f2((), []), #indexed_seq)
-        affirm:is_equal(f2(0, []), #int_seq)
+    affirm:is_equal(f2((), []), #indexed_seq)
+    affirm:is_equal(f2(0, []), #int_seq)
 
-        affirm:is_equal(f2({}, {}), #any_any)
-        affirm:is_equal(f2(f2, Any), #any_any)
-        affirm:is_equal(f2({}, []), #any_seq)
-        affirm:is_equal(f2(42, #any), #int_any)
+    affirm:is_equal(f2({}, {}), #any_any)
+    affirm:is_equal(f2(f2, Any), #any_any)
+    affirm:is_equal(f2({}, []), #any_seq)
+    affirm:is_equal(f2(42, #any), #int_any)
 )
 
 /////////////////////////////////////////////
 
 generic f1(x, y, z)
 
-def f1 [Any] (x, y, z) = #any
-def f1 [Int] (x, y, z) = #int
-def f1 [Seq] (x, y, z) = #seq
+def f1 (x of Any, y, z) = #any
+def f1 (x of Int, y, z) = #int
+def f1 (x of Seq, y, z) = #seq
 
 fun test_unary () =
 (
@@ -47,11 +47,11 @@ fun test_unary () =
 
 ////////////////////////////////////////////////////
 
-generic f6 (x, y,  z, a, b,  c)
+generic f6 (x, y, z, a, b,  c)
 
-def f6 [Int, Float, String] (x, y, z, a, b, c) = #int_float_string
-def f6 [Any, Any, String] (x, y, z, a, b, c) = #any_any_string
-def f6 [String, Any, String] (x, y, z, a, b, c) = #string_any_string
+def f6 (x, y of Int, z of Float, a, b, c of String) = #int_float_string
+def f6 (x, y, z, a, b, c of String) = #any_any_string
+def f6 (x, y of String, z, a, b, c of String) = #string_any_string
 
 
 fun test_triple() =
@@ -89,13 +89,14 @@ interface
 import std
 // TODO at(#weight, self as Instance)
 // or previous_method(#weight, self as Instance)
-def at [Pig]
-    | (#weight, self) = (#this_is_not_my_real_weight, std:Behavior.[at](#weight, self))
-    | (key, self) = std:Behavior.[at](key, self)
+def at (key, self of Pig) =
+    match key
+    | #weight = (#this_is_not_my_real_weight, std:Behavior.[at](#weight, self))
+    | _ = std:Behavior.[at](key, self)
 
 
 
-def made [Pig, Elephant] (p, e) =
+def made (p of Pig, e of Elephant) =
 (
     if p.coolness - e.shyness > 0 then
         #Coooool
@@ -103,11 +104,11 @@ def made [Pig, Elephant] (p, e) =
         #Notcoolatall
 )
 
-def made [Elephant, Pig] as generics:reverse(made, Elephant, Pig)
+def made(e of Elephant, p of Pig) as generics:reverse(made, Elephant, Pig)
 
-def give_birth [Pig, Elephant] (p, e) = PiggyElly(p.weight.1 + e.weight, p.coolness + e.shyness)
+def give_birth (p of Pig, e of Elephant) = PiggyElly(p.weight.1 + e.weight, p.coolness + e.shyness)
 
-def regret_things [Mother] (m) = True
+def regret_things (m of Mother) = True
 
 fun test_pigs_and_elephants() =
 (

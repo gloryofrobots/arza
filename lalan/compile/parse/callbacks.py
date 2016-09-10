@@ -1220,7 +1220,7 @@ def stmt_use(parser, op, node):
         return _parse_use_serial(parser, node, types, alias)
 
     types = []
-    aliases = plist.empty()
+    aliases = []
     while parser.token_type != TT_IN:
         type_e = expression(parser.name_parser, 0)
         advance_expected(parser, TT_AS)
@@ -1229,7 +1229,7 @@ def stmt_use(parser, op, node):
             alias = nodes.int_node_to_int(alias)
 
         types.append(type_e)
-        aliases = plist.cons(alias, aliases)
+        aliases.append(alias)
 
     advance_expected(parser, TT_IN)
     not_unique = plist.not_unique_item(aliases)

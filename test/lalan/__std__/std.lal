@@ -54,8 +54,6 @@ in
     def index_of (val, self) = _datatype:record_index_of(val, self)
     def keys(self) = _datatype:record_keys(self)
     def values(self) = _datatype:record_values(self)
-    def str (self) as Behavior.[str]
-    def repr (self) as Behavior.[repr]
 
     def put (k, v, self) as Behavior.[put]
     def at (k, self) as Behavior.[at]
@@ -73,7 +71,8 @@ use
      Partial,
      Datatype,
      Bool,
-     Instance) as 0
+     Instance,
+     Env) as 0
 in
 (
     def != (self, other) as Behavior.[`!=`]
@@ -83,8 +82,13 @@ in
     def repr (self) as Behavior.[repr]
 )
 
-
-extend Env with
+use Env as ...
+in
 (
-    def {==, !=, str, repr, put, at, del, elem, len, is_empty} from Behavior
+    def put (k, v, self) as Behavior.[put]
+    def at (k, self) as Behavior.[at]
+    def del (el, self) as Behavior.[del]
+    def elem (el, self) as Behavior.[elem]
+    def len (self) as Behavior.[len]
+    def is_empty (self) as Behavior.[is_empty]
 )

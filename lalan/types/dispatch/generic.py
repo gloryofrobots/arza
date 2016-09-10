@@ -132,12 +132,10 @@ class W_Generic(W_Hashable):
 
 
 def specify(process, gf, types, method):
-    _types = []
-    for _type in types:
-        if space.isvoid(_type):
-            _types.append(process.std.interfaces.Any)
-        else:
-            _types.append(_type)
+    any = process.std.interfaces.Any
+    _types = space.newlist([
+         any if space.isvoid(_type) else _type for _type in types
+    ])
 
     if gf.dispatch_arity != api.length_i(types):
         return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,

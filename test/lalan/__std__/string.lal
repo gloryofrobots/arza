@@ -3,6 +3,7 @@ import seq
 import std
 
 use (String, Char, Symbol) as 0
+in
 (
     def != (self, other) as std:Behavior.[`!=`]
     def == (self, other) as std:Behavior.[`==`]
@@ -12,6 +13,7 @@ use (String, Char, Symbol) as 0
 )
 
 use String as ...
+in
 (
     def put (k, v, self) as std:Behavior.[put]
     def at (k, self) as std:Behavior.[at]
@@ -20,19 +22,28 @@ use String as ...
     def len (self) as std:Behavior.[len]
     def is_empty (self) as std:Behavior.[is_empty]
 
-    def ++
-        | (_str1 of String, sym of Symbol) = _string:concat(_str1, str(sym))
-        | (_str1, _str2) = _string:concat(_str1, _str2)
 
     def append(v, self) as _string:append
     def prepend(v, self) as _string:prepend
-    def to_seq(v, self) as _string:to_list
+    def to_seq(self) as _string:to_list
     def slice(_from, _to, self) as _string:slice
     def drop(x, self) as _string:drop
     def take(x, self) as _string:take
 
     def cons (value of Char, self) = _string:append(value, self)
     def empty(self) = ""
+)
+
+
+use
+    String as Str
+    Symbol as Sym
+in
+(
+    def ++ (s1 of Str, s2 of Str) = _string:concat(s1, s2)
+    def ++ (s1 of Str, s2 of Sym) = _string:concat(s1, str(s2))
+    def ++ (s1 of Sym, s2 of Str) = _string:concat(str(s1), s2)
+    def ++ (s1 of Sym, s2 of Sym) = symbol(_string:concat(str(s1), str(s2)))
 )
 
 fun concat (str1 of String, str2 of String) =

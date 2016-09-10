@@ -7,6 +7,7 @@ def setup(process, stdlib):
     _module_name = space.newsymbol(process, u'lalan:lang:_list')
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'length', length, 1)
+    api.put_native_function(process, _module, u'to_tuple', to_tuple, 1)
     api.put_native_function(process, _module, u'is_empty', _is_empty, 1)
     api.put_native_function(process, _module, u'empty', _empty, 0)
     api.put_native_function(process, _module, u'cons', _cons, 2)
@@ -25,6 +26,13 @@ def length(process, routine):
     arg0 = routine.get_arg(0)
 
     return space.newint(plist.length(arg0))
+
+
+@complete_native_routine
+def to_tuple(process, routine):
+    arg0 = routine.get_arg(0)
+
+    return plist.to_tuple(arg0)
 
 
 @complete_native_routine

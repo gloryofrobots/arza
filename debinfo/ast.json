@@ -1,53 +1,37 @@
 [
-  {
-    "_ntype": "NT_DEF",
-    "_value": "def",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "add"
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "[",
-        "children": [
-          [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Bool"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Float"
-            }
-          ]
-        ]
-      },
-      {
-        "_ntype": "NT_FUN",
-        "_value": "def",
-        "children": [
-          {
-            "empty": true
-          },
-          [
+  [
+    {
+      "_ntype": "NT_DEF",
+      "_value": "use",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "++"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "[",
+          "children": [
             [
               {
-                "_ntype": "NT_TUPLE",
-                "_value": "(",
-                "children": [
-                  [
-                    {
-                      "_ntype": "NT_WILDCARD",
-                      "_value": "_"
-                    },
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "y"
-                    }
-                  ]
-                ]
+                "_ntype": "NT_NAME",
+                "_value": "String"
               },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "String"
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_FUN",
+          "_value": "def",
+          "children": [
+            {
+              "empty": true
+            },
+            [
               [
                 {
                   "_ntype": "NT_TUPLE",
@@ -56,68 +40,52 @@
                     [
                       {
                         "_ntype": "NT_NAME",
-                        "_value": "x"
+                        "_value": "_str1"
                       },
                       {
                         "_ntype": "NT_NAME",
-                        "_value": "y"
+                        "_value": "_str2"
                       }
                     ]
                   ]
-                }
+                },
+                [
+                  {
+                    "_ntype": "NT_CALL",
+                    "_value": "(",
+                    "children": [
+                      {
+                        "_ntype": "NT_IMPORTED_NAME",
+                        "_value": ":",
+                        "children": [
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "_string"
+                          },
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "concat"
+                          }
+                        ]
+                      },
+                      [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "_str1"
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "_str2"
+                        }
+                      ]
+                    ]
+                  }
+                ]
               ]
             ]
           ]
-        ]
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_DEF",
-    "_value": "def",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "add"
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "[",
-        "children": [
-          [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Bool"
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "Float"
-            }
-          ]
-        ]
-      },
-      {
-        "_ntype": "NT_LOOKUP",
-        "_value": ".[",
-        "children": [
-          {
-            "_ntype": "NT_NAME",
-            "_value": "add"
-          },
-          {
-            "_ntype": "NT_LIST",
-            "_value": "[",
-            "children": [
-              [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "Instance"
-                }
-              ]
-            ]
-          }
-        ]
-      }
-    ]
-  }
+        }
+      ]
+    }
+  ]
 ]

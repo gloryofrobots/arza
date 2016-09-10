@@ -4,6 +4,10 @@ import affirm
 
 fun test () =
 (
+    affirm:is_equal("AAA" ++ #BBB, "AAABBB")
+    affirm:is_equal(#AAA ++ #BBB, #AAABBB)
+    affirm:is_equal(#AAA ++ "BBB", "AAABBB")
+
     affirm:is_equal(("AAA" ++ "BBB" ++ "CCC"), "AAABBBCCC")
     affirm:is_equal(prepend('A', "BBB"), "ABBB")
     affirm:is_equal(append('A', "BBB"), "BBBA")
