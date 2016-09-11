@@ -166,6 +166,9 @@ def isfalse(value):
 
 
 ########################################################
+def newfunc_from_source(source, env):
+    return newfunc(source.name, source.code, env)
+
 
 def newfunc(name, bytecode, scope):
     from lalan.types.function import W_Function

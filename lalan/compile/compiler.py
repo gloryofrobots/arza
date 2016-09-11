@@ -375,6 +375,12 @@ def _compile_INT(compiler, code, node):
         code.emit_1(LITERAL, idx, info(node))
 
 
+def _compile_LITERAL(compiler, code, node):
+    data = nodes.node_first(node)
+    idx = _declare_literal(compiler, data)
+    code.emit_1(LITERAL, idx, info(node))
+
+
 def _compile_TRUE(compiler, code, node):
     code.emit_0(TRUE, info(node))
 
@@ -620,6 +626,7 @@ def _compile_MODIFY(compiler, code, node):
                              node_first(node),
                              node_second(node))
     _compile(compiler, code, call)
+
 
 # TODO MAKE NAMES from SYMBOLS in parser
 # def _emit_map_key(compiler, code, key):
@@ -1015,9 +1022,11 @@ def _compile_USE(compiler, code, node):
     simplified = simplify.simplify_use(compiler, code, node)
     _compile(compiler, code, simplified)
 
+
 def _compile_DEF(compiler, code, node):
     simplified = simplify.simplify_def(compiler, code, node)
     _compile(compiler, code, simplified)
+
 
 def _compile_TRAIT(compiler, code, node):
     trait = simplify.simplify_trait(compiler, code, node)
@@ -1226,6 +1235,8 @@ def _compile_node(compiler, code, node):
         _compile_UNDEFINE(compiler, code, node)
     elif NT_FARGS == ntype:
         _compile_FARGS(compiler, code, node)
+    elif NT_LITERAL == ntype:
+        _compile_LITERAL(compiler, code, node)
     else:
         compile_error(compiler, code, node, u"Unknown node")
 
@@ -1234,7 +1245,7 @@ def newcode(compiler):
     return CodeSource(SourceInfo(compiler.source_path, compiler.source))
 
 
-def compile_ast(compiler, ast, ast_scope):
+def _compile_ast(compiler, ast, ast_scope):
     code = newcode(compiler)
     _enter_scope(compiler)
     _declare_arguments(compiler, 0, False)
@@ -1250,7 +1261,7 @@ def compile(process, env, src, sourcename):
     ast, ast_scope = parser.parse(process, env, src)
     # print ast
     compiler = Compiler(process, env, sourcename, src)
-    code = compile_ast(compiler, ast, ast_scope)
+    code = _compile_ast(compiler, ast, ast_scope)
     return code
 
 
@@ -1259,6 +1270,14 @@ def compile_env(process, parent_env, modulename, src, sourcename):
     module = space.newenvsource(modulename, code)
     return module
 
+def compile_function_ast(process, env, ast):
+    assert nodes.node_type(ast) == NT_FUN
+
+    name = space.newsymbol(process, u"")
+    compiler = Compiler(process, env, name, None)
+    code = _compile_ast(compiler, ast, parser.ParserScope())
+    fn = code.scope.get_scope_literal_value(0)
+    return fn
 
 def compile_function_source(process, parent_env, src, name):
     code = compile(process, parent_env, src, name)

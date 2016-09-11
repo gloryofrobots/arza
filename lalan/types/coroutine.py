@@ -40,9 +40,6 @@ class W_Coroutine(W_Callable):
         self.fn = fn
 
     def on_result(self, process, value):
-        return value
-
-    def on_complete(self, process, value):
         # print "ON RESULT", value
         # yield to current owner
         # if process.fiber != self.chan1.fiber:
@@ -54,7 +51,7 @@ class W_Coroutine(W_Callable):
     def _to_routine_(self, stack, args):
         # print "TO ROUTINE"
         from lalan.runtime.routine.routine import create_callback_routine
-        routine = create_callback_routine(stack, self.on_complete, None, self.fn, args)
+        routine = create_callback_routine(stack, self.on_result, None, self.fn, args)
         return routine
 
     def _call_(self, process, args):

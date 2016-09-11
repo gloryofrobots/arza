@@ -3,8 +3,9 @@ from lalan.compile.parse.nodes import (node_type, node_arity,
 from lalan.runtime import error
 from lalan.types import space, api, plist, environment, symbol as symbols, string as strings
 from lalan.builtins import lang_names
+from lalan.misc import platform
 
-from lalan.compile.parse import nodes, node_type as nt
+from lalan.compile.parse import nodes, node_type as nt, basic
 
 
 def simplify_error(compiler, code, node, message):
@@ -52,11 +53,45 @@ def simplify_use(compiler, code, node):
     return nodes.create_call_node_s(node, lang_names.USE_TRAIT, [trait_name, exported, types])
 
 
+def _random_name(name):
+    d = int((1 - platform.random()) * 10000000)
+    name_s = api.to_s(name)
+    name = space.newstring_s("%s_%d" % (name_s, d))
+    return name
+
+
+def _replace_name(node, names):
+    ntype = node_type(node)
+    # TODO IMPORTED NAMES
+    if ntype != nt.NT_NAME:
+        return None
+    for old_name, new_name in names:
+        if api.equal_b(old_name, nodes.node_value(node)):
+            return nodes.create_name_node(node, new_name)
+        return node
+
+
 def simplify_def(compiler, code, node):
     func = node_first(node)
     signature = node_second(node)
     method = node_third(node)
-    return nodes.create_call_node_s(node, lang_names.SPECIFY, [func, signature, method])
+    pattern = node_fourth(node)
+
+    if node_type(pattern) == nt.NT_WHEN:
+        args = node_first(pattern)
+        guard = node_second(pattern)
+
+        arg_names = nodes.find_names(args)
+        guard_names = nodes.find_names(guard)
+        outer_names = plist.diff(guard_names, arg_names)
+        randomized_outer_names = plist.fmap(_random_name, outer_names)
+        pairs = zip(outer_names, randomized_outer_names)
+        new_guard = basic.transform(guard, _replace_name, pairs)
+        print "NAMES", arg_names, guard_names, outer_names, randomized_outer_names
+        print "NEW_GUARD", new_guard
+
+    ast = nodes.create_literal_node(pattern, pattern)
+    return nodes.create_call_node_s(node, lang_names.SPECIFY, [func, signature, method, ast])
 
 
 def simplify_interface(compiler, code, node):

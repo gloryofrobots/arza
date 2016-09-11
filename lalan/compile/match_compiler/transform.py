@@ -6,16 +6,11 @@ from lalan.misc import platform, strutil
 from process import *
 from transform_state import *
 
-def _equal_pattern(pat1, pat2):
-    if is_single_node(pat1) and is_single_node(pat2):
-        return node_equal(pat1, pat2)
-
-    return api.equal_b(pat1, pat2)
 
 
 def _place_branch_node(tree, head, tail):
     for leaf in tree:
-        if plist.equal_with(leaf[0], head, _equal_pattern):
+        if plist.equal_with(leaf[0], head, nodes.is_equal_pattern):
             leaf[1].append(tail)
             return
 

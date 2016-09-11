@@ -3,7 +3,6 @@ from lalan:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vec
 
 from lalan:lang:_bit import (bitand, bitor, bitxor, bitnot, lshift, rshift)
 
-
 """
 SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
 Precedence    Operator
@@ -122,6 +121,7 @@ generic
 ////////////////////////////////////////////////////////////
 
 
+// TODO make interfaces attach to all gf positions if position is not given
 interface
 (
     PartialEq (==)

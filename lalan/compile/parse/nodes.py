@@ -10,7 +10,7 @@ from lalan.builtins import lang_names
 def newnode(ntype, token, children):
     if children is not None:
         for child in children:
-            assert is_node(child), child
+            assert is_node(child), (child.__class__, child)
         return space.newtuple([
             space.newint(ntype), token, space.newlist(children),
             space.newstring(tt.token_type_to_u(tokens.token_type(token)))
@@ -200,6 +200,17 @@ def is_wildcard_node(n):
     return node_type(n) == nt.NT_WILDCARD
 
 
+def is_guarded_pattern(n):
+    return node_type(n) == nt.NT_WHEN
+
+
+def is_equal_pattern(pat1, pat2):
+    if is_single_node(pat1) and is_single_node(pat2):
+        return node_equal(pat1, pat2)
+
+    return api.equal_b(pat1, pat2)
+
+
 def pattern_length(n):
     ntype = node_type(n)
     if ntype == nt.NT_WHEN:
@@ -215,7 +226,8 @@ def tuple_node_length(n):
     if node_type(n) == nt.NT_UNIT:
         return 0
 
-    assert node_type(n) == nt.NT_TUPLE, nt.node_type_to_s(node_type(n))
+    if node_type(n) != nt.NT_TUPLE:
+        assert node_type(n) == nt.NT_TUPLE, nt.node_type_to_s(node_type(n))
     return api.length_i(node_first(n))
 
 
@@ -269,6 +281,34 @@ def node_to_string(node):
     return space.newstring_s(json.dumps(d, sort_keys=True,
                                         indent=2, separators=(',', ': ')))
 
+
+def _find_names(node, names):
+    if is_empty_node(node):
+        return node
+    elif is_list_node(node):
+        for c in node:
+            _find_names(c, names)
+    else:
+        ntype = node_type(node)
+        if ntype == nt.NT_NAME or ntype == nt.NT_IMPORTED_NAME:
+            names.append(node_value(node))
+        elif ntype == nt.NT_SYMBOL:
+            return
+        else:
+            children = node_children(node)
+            if children is None:
+                return
+
+            for c in children:
+                _find_names(c, names)
+
+
+def find_names(node):
+    names = []
+    _find_names(node, names)
+    return plist.plist_unique(names)
+
+# CONSTRUCTORS
 
 def create_token_from_node(type, value, node):
     return tokens.newtoken(type, value, node_position(node), node_line(node), node_column(node))
@@ -381,8 +421,14 @@ def create_unit_node(basenode):
     return node_0(nt.NT_UNIT, create_token_from_node(tt.TT_LPAREN, "(", basenode))
 
 
+def create_literal_node(basenode, node):
+    return node_1(nt.NT_LITERAL, create_token_from_node(tt.TT_LPAREN, "(", basenode), node)
+
+
 # def create_tuple_with_unit_node(basenode):
 #     return create_tuple_node(basenode, node_0(nt.NT_UNIT, create_token_from_node(tt.TT_LPAREN, "(", basenode)))
+
+
 
 def create_tuple_node(basenode, elements):
     return node_1(nt.NT_TUPLE, create_token_from_node(tt.TT_LPAREN, "(", basenode), list_node(elements))

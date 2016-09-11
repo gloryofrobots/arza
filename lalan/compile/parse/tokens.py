@@ -193,8 +193,8 @@ class Token(root.W_Hashable):
         assert space.isint(line)
         assert space.isint(column)
         self.type = type
-        self.val_s = val
         self.length = len(val)
+        self.val_s = val
         self.val = space.newstring_s(val)
         self.pos = pos
         self.line = line

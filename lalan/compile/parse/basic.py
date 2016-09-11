@@ -255,8 +255,7 @@ def node_has_std(parser, node):
     return handler.std is not None
 
 
-def node_lbp(parser,  node):
-
+def node_lbp(parser, node):
     op = node_operator(parser, node)
     lbp = op.lbp
     if op.ambidextra is True:
@@ -429,7 +428,7 @@ def base_expression(parser, _rbp, terminators=None):
             if parser.token_type in terminators:
                 return left
 
-        _lbp = node_lbp(parser,  parser.node)
+        _lbp = node_lbp(parser, parser.node)
 
         # juxtaposition support
         if _lbp < 0:
@@ -540,6 +539,30 @@ def postprocess(parser, node):
 
         for c in node_children:
             new_child = postprocess(parser, c)
+            children.append(new_child)
+        return nodes.newnode(nodes.node_type(node), nodes.node_token(node), children)
+
+
+def transform(node, cb, args):
+    if nodes.is_empty_node(node):
+        return node
+    elif nodes.is_list_node(node):
+        children = []
+        for c in node:
+            children.append(transform(c, cb, args))
+        return nodes.list_node(children)
+
+    new_node = cb(node, args)
+    if new_node is not None:
+        return new_node
+    else:
+        children = []
+        node_children = nodes.node_children(node)
+        if node_children is None:
+            return node
+
+        for c in node_children:
+            new_child = transform(c, cb, args)
             children.append(new_child)
         return nodes.newnode(nodes.node_type(node), nodes.node_token(node), children)
 

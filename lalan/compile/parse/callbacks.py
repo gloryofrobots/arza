@@ -1,7 +1,8 @@
 from lalan.compile.parse.basic import *
 from lalan.compile.parse.node_type import *
 from lalan.compile.parse import nodes
-from lalan.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3, list_node, empty_node)
+from lalan.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3, node_4,
+                                       list_node, empty_node)
 from lalan.types import space
 from lalan.misc import strutil
 from lalan.builtins import lang_names
@@ -1047,7 +1048,12 @@ def _parse_def_signature(parser, node):
     signature = _parse_func_pattern(parser, TERM_DEF_SIGNATURE, TERM_FUN_GUARD)
     dispatch = []
     fun_signature = []
-    sig_args = nodes.node_first(signature)
+    if nodes.node_type(signature) == NT_WHEN:
+        sig_node  = nodes.node_first(signature)
+    else:
+        sig_node = signature
+    sig_args = nodes.node_first(sig_node)
+
     for arg in sig_args:
         if nodes.node_type(arg) == NT_OF:
             _subject = nodes.node_first(arg)
@@ -1064,6 +1070,9 @@ def _parse_def_signature(parser, node):
             dispatch.append(nodes.create_void_node(arg))
 
     new_signature = nodes.create_tuple_node(signature, fun_signature)
+    if nodes.node_type(signature) == NT_WHEN:
+        new_signature = nodes.create_when_node(signature, new_signature, nodes.node_second(signature))
+
     return new_signature, dispatch
 
 
@@ -1087,11 +1096,21 @@ def _parse_def(parser, op, node, allow_non_determined):
     # else:
     #     funcs = _parse_single_function(parser, signature)
     method = _parse_def_body(parser.def_parser.expression_parser, node, signature)
-    return node_3(NT_DEF, __ntok(node), func_name, dispatch_signature, method)
+    return node_4(NT_DEF, __ntok(node), func_name, dispatch_signature, method, signature)
 
 
 def stmt_def(parser, op, node):
     return _parse_def(parser, op, node, False)
+
+
+def prefix_def_of(parser, op, node):
+    _type = expect_expression_of_types(parser, 0, NAME_NODES)
+    return node_2(NT_OF, __ntok(node), empty_node(), _type)
+
+
+def infix_def_of(parser, op, node, left):
+    _type = expect_expression_of_types(parser, 0, NAME_NODES)
+    return node_2(NT_OF, __ntok(node), left, _type)
 
 
 # GENERIC
@@ -1116,16 +1135,6 @@ def _parse_generic_signature(parser, op, node, generic_name):
     items = _parse_comma_separated(parser.generic_signature_parser, TT_RPAREN, advance_first=TT_LPAREN)
     args = node_1(NT_LIST, __ntok(node), items)
     return node_2(NT_GENERIC, __ntok(node), generic_name, args)
-
-
-def prefix_def_of(parser, op, node):
-    _type = expect_expression_of_types(parser, 0, NAME_NODES)
-    return node_2(NT_OF, __ntok(node), empty_node(), _type)
-
-
-def infix_def_of(parser, op, node, left):
-    _type = expect_expression_of_types(parser, 0, NAME_NODES)
-    return node_2(NT_OF, __ntok(node), left, _type)
 
 
 # USE
@@ -1163,13 +1172,14 @@ def _parse_use_serial_transform(parser, node, _type, alias, methods):
         method_signature = nodes.node_second(method)
         old_signature = nodes.node_first(method_signature)
         method_body = nodes.node_third(method)
+        method_pattern = nodes.node_fourth(method)
 
         new_signature = nodes.create_list_node_from_list(
             method_signature,
             _use_replace_in_signature(parser, old_signature, _type, alias)
         )
 
-        new_method = node_3(NT_DEF, __ntok(node), method_name, new_signature, method_body)
+        new_method = node_4(NT_DEF, __ntok(node), method_name, new_signature, method_body, method_pattern)
         result.append(new_method)
     return result
 
@@ -1188,6 +1198,7 @@ def _parse_use_parallel_transform(parser, node, types, aliases, method):
     method_signature = nodes.node_second(method)
     signature = nodes.node_first(method_signature)
     method_body = nodes.node_third(method)
+    method_pattern = nodes.node_fourth(method)
     for _type, alias in zip(types, aliases):
         signature = _use_replace_in_signature(parser, signature, _type, alias)
 
@@ -1196,7 +1207,7 @@ def _parse_use_parallel_transform(parser, node, types, aliases, method):
         signature
     )
 
-    return node_3(NT_DEF, __ntok(node), method_name, new_signature, method_body)
+    return node_4(NT_DEF, __ntok(node), method_name, new_signature, method_body, method_pattern)
 
 
 def _parse_use_parallel(parser, node, types, aliases):

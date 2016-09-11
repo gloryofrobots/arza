@@ -1,7 +1,9 @@
-from lalan.types.root import W_Hashable
+from lalan.types.root import W_Hashable, W_Root
 from lalan.misc import platform
 from lalan.runtime import error
 from lalan.types import api, space, plist, tuples
+from lalan.compile.parse import nodes
+from lalan.compile import compiler
 from signature import newsignature
 from dag import *
 
@@ -27,7 +29,7 @@ def group_dict():
 class W_Generic(W_Hashable):
     # _immutable_fields_ = ["_name_"]
 
-    def __init__(self, name, arity,  args_signature):
+    def __init__(self, name, arity, args_signature):
         W_Hashable.__init__(self)
 
         self.name = name
@@ -75,8 +77,9 @@ class W_Generic(W_Hashable):
                                  args,
                                  space.newlist(self.signatures))
 
+        api.call(process, method, args)
         # print "METHOD CALL", method, args
-        process.call_object(method, args)
+        # process.call_object(method, args)
 
     def _type_(self, process):
         return process.std.types.Generic
@@ -87,15 +90,15 @@ class W_Generic(W_Hashable):
     def _compute_hash_(self):
         return int((1 - platform.random()) * 10000000)
 
-    def add_signature(self, signature):
+    def add_signature(self, process, signature):
         self.signatures.append(signature)
         discriminators = []
-        nodes = self._make_nodes(0, self.dispatch_arity, self.signatures, discriminators)
+        nodes = self._make_nodes(process, 0, self.dispatch_arity, self.signatures, discriminators)
         self.dag = RootNode(nodes, discriminators)
 
-    def _make_nodes(self, index, arity, signatures, discriminators):
+    def _make_nodes(self, process, index, arity, signatures, discriminators):
         if index == arity:
-            leaf = self._make_method_node(signatures)
+            leaf = self._make_method_node(process, signatures)
             # print "METHOD", index, leaf
             return leaf
 
@@ -111,7 +114,7 @@ class W_Generic(W_Hashable):
         nodes = []
         for arg, group in groups.items():
             d = arg.discriminator(discriminators)
-            children = self._make_nodes(index + 1, arity, group, discriminators)
+            children = self._make_nodes(process, index + 1, arity, group, discriminators)
             if len(children) == 1:
                 nodes.append(SingleNode(d, children[0]))
             else:
@@ -120,22 +123,71 @@ class W_Generic(W_Hashable):
         # print "NODES", index, nodes
         return nodes
 
-    def _make_method_node(self, signatures):
-        if len(signatures) != 1:
-            return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
-                                 self,
-                                 space.newlist(signatures),
-                                 space.newstring(u"Ambiguous generic specialisation"))
-
+    def _make_method_node(self, process, signatures):
         sig = signatures[0]
+        if len(signatures) != 1 or nodes.is_guarded_pattern(sig.pattern):
+            return [LeafNode(conflict_resolver(process, signatures))]
+            # return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
+            #                      self,
+            #                      space.newlist(signatures),
+            #                      space.newstring(u"Ambiguous generic specialisation"))
+
+
         return [LeafNode(sig.method)]
 
 
-def specify(process, gf, types, method):
+class ConflictResolverCallback(W_Root):
+    def __init__(self, signatures, fn, args):
+        self.fn = fn
+        self.args = args
+        self.signatures = signatures
+        self.waiting = False
+
+    def on_complete(self, process, result):
+        if self.waiting:
+            return result
+        # print "ON COMPL", result
+        idx = api.to_i(result)
+        method = self.signatures[idx].method
+        # print "COMPL", idx, method
+        self.waiting = True
+        return process.call_object(method, self.args)
+
+    def _to_routine_(self, stack, args):
+        from lalan.runtime.routine.routine import create_callback_routine
+        routine = create_callback_routine(stack, self.on_complete, None, self.fn, args)
+        return routine
+
+
+class ConflictResolver(W_Root):
+    def __init__(self, signatures, fn):
+        self.fn = fn
+        self.signatures = signatures
+
+    def _call_(self, process, args):
+        fn = space.newfunc_from_source(self.fn, process.modules.prelude)
+        process.call_object(ConflictResolverCallback(self.signatures, fn, args), args)
+
+
+def conflict_resolver(process, signatures):
+    funcs = []
+    for i, sig in enumerate(signatures):
+        body = nodes.create_int_node(sig.pattern, i)
+        # body = nodes.create_literal_node(sig.pattern, sig.method)
+
+        funcs.append(nodes.list_node([
+            sig.pattern, nodes.list_node([body])
+        ]))
+    fn_node = nodes.create_fun_node(signatures[0].pattern, nodes.empty_node(), nodes.list_node(funcs))
+    fn = compiler.compile_function_ast(process, process.modules.prelude, fn_node)
+    return ConflictResolver(signatures, fn)
+
+
+def specify(process, gf, types, method, pattern):
     any = process.std.interfaces.Any
     _types = space.newlist([
-         any if space.isvoid(_type) else _type for _type in types
-    ])
+                               any if space.isvoid(_type) else _type for _type in types
+                               ])
 
     if gf.dispatch_arity != api.length_i(types):
         return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
@@ -146,72 +198,9 @@ def specify(process, gf, types, method):
                              gf,
                              space.newstring(u"Bad method for specialisation, inconsistent arity"))
 
-    gf.add_signature(newsignature(process, _types, method))
+    gf.add_signature(process, newsignature(process, _types, method, pattern))
     for index, _type in zip(gf.dispatch_indexes, _types):
         _type.register_generic(gf, space.newint(index))
-
-
-def _find_constraint_generic(generic, pair):
-    return api.equal_b(pair[0], generic)
-
-
-def _get_extension_methods(_type, _mixins, _methods):
-    # BETTER WAY IS TO MAKE DATATYPE IMMUTABLE
-    # AND CHECK CONSTRAINTS AFTER SETTING ALL METHO
-    total = plist.empty()
-    constraints = plist.empty()
-    error.affirm_type(_methods, space.islist)
-    for trait in _mixins:
-        error.affirm_type(trait, space.istrait)
-        constraints = plist.concat(constraints, trait.constraints)
-        trait_methods = trait.to_list()
-        total = plist.concat(trait_methods, total)
-
-    total = plist.concat(_methods, total)
-
-    for iface in constraints:
-        for generic in iface.generics:
-
-            if not plist.contains_with(total, generic,
-                                       _find_constraint_generic):
-                return error.throw_4(error.Errors.CONSTRAINT_ERROR,
-                                     _type, iface, generic,
-                                     space.newstring(
-                                         u"Dissatisfied trait constraint"))
-
-    result = plist.empty()
-    for pair in total:
-        generic = pair[0]
-        if plist.contains_with(result, generic, _find_constraint_generic):
-            continue
-
-        result = plist.cons(pair, result)
-
-    return plist.reverse(result)
-
-
-def extend(_type, mixins, methods):
-    error.affirm_type(_type, space.isextendable)
-
-    methods = _get_extension_methods(_type, mixins, methods)
-    _type.add_methods(methods)
-    return _type
-
-
-############################################################
-############################################################
-
-def generic_with_hotpath(name, signature):
-    arity = api.length_i(signature)
-
-    if arity == 0:
-        error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR, space.newstring(u"Generic arity == 0"))
-
-    return W_Generic(name, arity, signature)
-
-
-def generic(name, signature):
-    return generic_with_hotpath(name, signature)
 
 
 def get_method(process, gf, types):
@@ -230,3 +219,73 @@ def get_method(process, gf, types):
         return error.throw_3(error.Errors.KEY_ERROR,
                              space.newstring(u"Method not specified for signature"), gf, types)
     return method
+
+
+
+############################################################
+############################################################
+
+def generic_with_hotpath(name, signature):
+    arity = api.length_i(signature)
+
+    if arity == 0:
+        error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR, space.newstring(u"Generic arity == 0"))
+
+    return W_Generic(name, arity, signature)
+
+
+def generic(name, signature):
+    return generic_with_hotpath(name, signature)
+
+
+
+
+
+
+# def _find_constraint_generic(generic, pair):
+#     return api.equal_b(pair[0], generic)
+#
+#
+# def _get_extension_methods(_type, _mixins, _methods):
+#     # BETTER WAY IS TO MAKE DATATYPE IMMUTABLE
+#     # AND CHECK CONSTRAINTS AFTER SETTING ALL METHO
+#     total = plist.empty()
+#     constraints = plist.empty()
+#     error.affirm_type(_methods, space.islist)
+#     for trait in _mixins:
+#         error.affirm_type(trait, space.istrait)
+#         constraints = plist.concat(constraints, trait.constraints)
+#         trait_methods = trait.to_list()
+#         total = plist.concat(trait_methods, total)
+#
+#     total = plist.concat(_methods, total)
+#
+#     for iface in constraints:
+#         for generic in iface.generics:
+#
+#             if not plist.contains_with(total, generic,
+#                                        _find_constraint_generic):
+#                 return error.throw_4(error.Errors.CONSTRAINT_ERROR,
+#                                      _type, iface, generic,
+#                                      space.newstring(
+#                                          u"Dissatisfied trait constraint"))
+#
+#     result = plist.empty()
+#     for pair in total:
+#         generic = pair[0]
+#         if plist.contains_with(result, generic, _find_constraint_generic):
+#             continue
+#
+#         result = plist.cons(pair, result)
+#
+#     return plist.reverse(result)
+#
+#
+# def extend(_type, mixins, methods):
+#     error.affirm_type(_type, space.isextendable)
+#
+#     methods = _get_extension_methods(_type, mixins, methods)
+#     _type.add_methods(methods)
+#     return _type
+#
+

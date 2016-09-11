@@ -240,7 +240,7 @@ class CodeRoutine(BaseRoutine):
             # *************************************
             elif FUNCTION == tag:
                 source = literals[arg1]
-                w_func = space.newfunc(source.name, source.code, env)
+                w_func = space.newfunc_from_source(source, env)
                 stack.push(w_func)
             # *************************************
             elif THROW == tag:

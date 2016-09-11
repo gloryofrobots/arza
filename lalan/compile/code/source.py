@@ -20,6 +20,9 @@ class SourceInfo:
         self.map = []
 
     def get_line(self, line_no):
+        if self.src is None:
+            return u""
+
         return get_line(self.src, line_no)
 
     def length(self):

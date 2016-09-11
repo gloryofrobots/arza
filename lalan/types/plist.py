@@ -520,6 +520,16 @@ def compute_hash(pl):
 
 ##############################################################
 
+def diff(pl1, pl2):
+    items = []
+    for el in pl1:
+        if not contains(pl2, el):
+            items.append(el)
+
+    return plist(items)
+
+##############################################################
+
 def plist_vec(process, vec):
     items = vec.to_l()
     return plist(items)
@@ -539,3 +549,13 @@ def plist(items):
 
 def plist1(item):
     return cons(item, empty())
+
+
+def plist_unique(items, predicate=None):
+    if not predicate:
+        predicate = api.equal_b
+    lst = empty()
+    for item in reversed(items):
+        if not contains_with(lst, item, predicate):
+            lst = cons(item, lst)
+    return lst

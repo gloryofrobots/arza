@@ -13,6 +13,7 @@ class CallbackRoutine(BaseRoutine):
         self.args = args
         self.on_result = on_result
         self.on_complete = on_complete
+        self.result = None
 
     def _info(self):
         return self.function.name

@@ -149,6 +149,9 @@ class Literals:
     def __init__(self):
         self.values = []
 
+    def at(self, idx):
+        return self.values[idx]
+
     def get(self, val):
         return ABSENT
 
@@ -287,6 +290,8 @@ class W_Scope(W_Root):
         return self.__local_references.add(name)
 
     ###########################
+    def get_scope_literal_value(self, idx):
+        return self.__literals.at(idx)
 
     def get_scope_literal(self, literal):
         return self.__literals.get(literal)
@@ -423,4 +428,3 @@ class W_Scope(W_Root):
 
     def literals(self):
         return self.__literals.values
-
