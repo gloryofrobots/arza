@@ -41,6 +41,7 @@ class W_Generic(W_Hashable):
         self.args_signature = args_signature
         self.signatures = []
         self.count_call = 0
+        self.env = space.newemptyenv(self.name)
         self.dag = None
 
     def register_interface(self, interface, position):
@@ -126,7 +127,7 @@ class W_Generic(W_Hashable):
     def _make_method_node(self, process, signatures):
         sig = signatures[0]
         if len(signatures) != 1 or nodes.is_guarded_pattern(sig.pattern):
-            return [LeafNode(conflict_resolver(process, signatures))]
+            return [LeafNode(conflict_resolver(process, self, signatures))]
             # return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
             #                      self,
             #                      space.newlist(signatures),
@@ -169,9 +170,15 @@ class ConflictResolver(W_Root):
         process.call_object(ConflictResolverCallback(self.signatures, fn, args), args)
 
 
-def conflict_resolver(process, signatures):
+def conflict_resolver(process, gf, signatures):
     funcs = []
     for i, sig in enumerate(signatures):
+        # put outers in generics compile environment
+        for t in sig.outers:
+            name = api.first(t)
+            obj = api.second(t)
+            api.put(gf.env, name, obj)
+
         body = nodes.create_int_node(sig.pattern, i)
         # body = nodes.create_literal_node(sig.pattern, sig.method)
 
@@ -179,11 +186,11 @@ def conflict_resolver(process, signatures):
             sig.pattern, nodes.list_node([body])
         ]))
     fn_node = nodes.create_fun_node(signatures[0].pattern, nodes.empty_node(), nodes.list_node(funcs))
-    fn = compiler.compile_function_ast(process, process.modules.prelude, fn_node)
+    fn = compiler.compile_function_ast(process, gf.env, fn_node)
     return ConflictResolver(signatures, fn)
 
 
-def specify(process, gf, types, method, pattern):
+def specify(process, gf, types, method, pattern, outers):
     any = process.std.interfaces.Any
     _types = space.newlist([
                                any if space.isvoid(_type) else _type for _type in types
@@ -198,7 +205,7 @@ def specify(process, gf, types, method, pattern):
                              gf,
                              space.newstring(u"Bad method for specialisation, inconsistent arity"))
 
-    gf.add_signature(process, newsignature(process, _types, method, pattern))
+    gf.add_signature(process, newsignature(process, _types, method, pattern, outers))
     for index, _type in zip(gf.dispatch_indexes, _types):
         _type.register_generic(gf, space.newint(index))
 

@@ -308,6 +308,7 @@ def find_names(node):
     _find_names(node, names)
     return plist.plist_unique(names)
 
+
 # CONSTRUCTORS
 
 def create_token_from_node(type, value, node):
@@ -376,6 +377,11 @@ def create_str_node(basenode, strval):
 
 def create_symbol_node(basenode, name):
     return node_1(nt.NT_SYMBOL, create_token_from_node(tt.TT_SHARP, "#", basenode), name)
+
+
+def create_symbol_node_string(basenode, name):
+    return node_1(nt.NT_SYMBOL, create_token_from_node(tt.TT_SHARP, "#", basenode),
+                  create_name_node(basenode, name))
 
 
 def create_symbol_node_s(basenode, name):

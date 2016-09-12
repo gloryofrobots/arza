@@ -41,7 +41,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
     put_lang_func(process, module, lang_names.INTERFACE, __interface, 2)
     put_lang_func(process, module, lang_names.TRAIT, __trait, 4)
-    put_lang_func(process, module, lang_names.SPECIFY, __specify, 4)
+    put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
     put_lang_func(process, module, lang_names.USE_TRAIT, __use_trait, 3)
     put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
     put_lang_func(process, module, u"partial", __partial, -1)
@@ -179,7 +179,8 @@ def __specify(process, routine):
     types = routine.get_arg(1)
     method = routine.get_arg(2)
     pattern = routine.get_arg(3)
-    generic.specify(process, gf, types, method, pattern)
+    outers = routine.get_arg(4)
+    generic.specify(process, gf, types, method, pattern, outers)
     return gf
 
 

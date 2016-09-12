@@ -146,6 +146,11 @@ def at_index(obj, i):
 
     return v
 
+def first(obj):
+    return at_index(obj, 0)
+
+def second(obj):
+    return at_index(obj, 1)
 
 def get_index(obj, k):
     return obj._get_index_(k)

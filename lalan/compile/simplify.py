@@ -68,7 +68,8 @@ def _replace_name(node, names):
     for old_name, new_name in names:
         if api.equal_b(old_name, nodes.node_value(node)):
             return nodes.create_name_node(node, new_name)
-        return node
+
+    return node
 
 
 def simplify_def(compiler, code, node):
@@ -81,17 +82,35 @@ def simplify_def(compiler, code, node):
         args = node_first(pattern)
         guard = node_second(pattern)
 
+        # names occurred in guard must be renamed (real name + random suffix)
+        # and saved in generic function
+
         arg_names = nodes.find_names(args)
         guard_names = nodes.find_names(guard)
         outer_names = plist.diff(guard_names, arg_names)
         randomized_outer_names = plist.fmap(_random_name, outer_names)
         pairs = zip(outer_names, randomized_outer_names)
         new_guard = basic.transform(guard, _replace_name, pairs)
-        print "NAMES", arg_names, guard_names, outer_names, randomized_outer_names
-        print "NEW_GUARD", new_guard
+
+        pattern = nodes.create_when_node(pattern, args, new_guard)
+        outers = []
+        for old_name, new_name in pairs:
+            outers.append(nodes.create_tuple_node(
+                pattern,
+                [
+                    nodes.create_symbol_node_string(pattern, new_name),
+                    nodes.create_name_node(pattern, old_name)
+                ]
+            ))
+        outers_list = nodes.create_list_node(pattern, outers)
+        #
+        # print "NAMES", arg_names, guard_names, outer_names, randomized_outer_names
+        # print "NEW_GUARD", new_guard
+    else:
+        outers_list = nodes.create_empty_list_node(pattern)
 
     ast = nodes.create_literal_node(pattern, pattern)
-    return nodes.create_call_node_s(node, lang_names.SPECIFY, [func, signature, method, ast])
+    return nodes.create_call_node_s(node, lang_names.SPECIFY, [func, signature, method, ast, outers_list])
 
 
 def simplify_interface(compiler, code, node):
