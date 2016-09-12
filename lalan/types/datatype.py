@@ -208,8 +208,7 @@ class W_DataType(W_Hashable):
         return int((1 - platform.random()) * 10000000)
 
     def _to_string_(self):
-        return api.to_s(self.name)
-        # return "<trait %s>" % (api.to_s(self.name))
+        return "<datatype %s>" % (api.to_s(self.name))
 
     def _to_repr_(self):
         return self._to_string_()

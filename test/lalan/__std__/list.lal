@@ -70,11 +70,12 @@ in
     def del (el, self) as std:Behavior.[del]
     def elem (el, self) as std:Behavior.[elem]
 
-    def repr(self) = str(self)
 
+    def repr(self) =
+        "[" ++ string:join_with(repr, self, ", ") ++ "]"
 
     def str(self) =
-        "[" ++ string:join_with(repr, self, ", ") ++ "]"
+        "[" ++ string:join_with(str, self, ", ") ++ "]"
 
     def first(self) = _list:head(self)
 

@@ -35,6 +35,7 @@ class AnyDiscriminator(Discriminator):
         Discriminator.__init__(self, position)
 
     def _evaluate(self, process, arg):
+        # print "ANY DIS"
         return 1000
 
     def __str__(self):
@@ -53,6 +54,7 @@ class PredicateDiscriminator(Discriminator):
 
     def _evaluate(self, process, arg):
         # TODO GET RID OF MAGIC NUMBERS
+        # print "PRED DIS", arg
         if self.predicate(arg):
             return 0
         else:
@@ -83,12 +85,13 @@ class InterfaceDiscriminator(Discriminator):
         i = api.get_index(t.interfaces, self.interface)
 
         if i == -1:
-            return i
+            return -1
 
+        # print "INTERFACE DIS", self, arg
         return i + self.PENALTY
 
     def __str__(self):
-        return '"%s:%s"' % (str(self.position), str(self.interface._name_))
+        return '"%s:%s"' % (str(self.position), str(self.interface.name))
 
 
 class TypeDiscriminator(Discriminator):
@@ -97,9 +100,11 @@ class TypeDiscriminator(Discriminator):
         self.type = type
 
     def _equal_(self, other):
-        return other.__class__ == self.__class__ \
+        val = other.__class__ == self.__class__ \
                and other.position == self.position \
                and other.type == self.type
+        # print "TYPE DIS", self, other
+        return val
 
     def _evaluate(self, process, arg):
         if api.typeof_b(process, arg, self.type):
@@ -108,4 +113,4 @@ class TypeDiscriminator(Discriminator):
             return -1000
 
     def __str__(self):
-        return '"%s:%s"' % (str(self.position), str(self.type._name_))
+        return '"%s:%s"' % (str(self.position), str(self.type.name))

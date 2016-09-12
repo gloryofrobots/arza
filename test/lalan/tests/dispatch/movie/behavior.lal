@@ -1,0 +1,45 @@
+import io
+
+generic
+(
+    encounter(movie, actor1, actor2)
+    kickass(movie, actor1, actor2)
+    run_away(movie, actor1, actor2)
+    scream(movie, actor1)
+    sadly_die(movie, actor)
+    interact(movie, actor, event)
+    get_name(actor)
+)
+
+interface
+(
+    Named(get_name)
+    ActionActor(encounter.1)
+)
+
+def get_name({name} of ActionActor) = name
+
+def str(a of Named) =  "<Actor:" ++ get_name(a) ++ ">"
+def repr(a of Named) =  "<Actor:" ++ get_name(a) ++ ">"
+
+
+def kickass(movie, actor1 of ActionActor, actor2 of ActionActor) =
+(
+    interact(movie, actor1, (#KICKASS, actor2)) |>
+    sadly_die(_, actor2)
+)
+
+
+fun process_event(actor, event) =
+    let (msg, objects) =
+        match event
+        | (tag, data) = (actor.lang.[tag], data)
+        | tag of Symbol = (actor.lang.[tag], ())
+    in (actor, msg, objects)
+
+
+def interact(movie, actor of Any, event) = process_event(actor, event) :: movie
+
+
+def sadly_die(movie, b of ActionActor) =
+    interact(movie, b, #DIE)

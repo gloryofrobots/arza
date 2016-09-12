@@ -1,0 +1,46 @@
+import tests:dispatch:movie:actors
+import tests:dispatch:movie:behavior
+
+
+fun pretty_enough(b) = b.prettiness > 50
+
+
+def behavior:encounter(movie, m of actors:BugEyedMonster, b of actors:InnocentBrunette) =
+    (
+        behavior:interact(movie, m, (#ENCOUNTER, b)) |>
+        behavior:kickass(_, m, b)
+    )
+
+
+def behavior:encounter(movie, b of actors:InnocentBrunette, m of actors:BugEyedMonster) =
+    (
+        behavior:interact(movie, b, (#ENCOUNTER, m)) |>
+        behavior:run_away(_, b, m)
+    )
+
+
+def behavior:kickass(movie, m of actors:BugEyedMonster, b of actors:InnocentBrunette) =
+   behavior:interact(movie, m, (#KICKASS, b)) |>
+   behavior:sadly_die(_, b)
+
+
+def behavior:run_away(movie, b of actors:InnocentBrunette, m of actors:BugEyedMonster)
+                                                when actors:can_escape_from(b, m)
+                                                and pretty_enough(b) =
+     behavior:scream(movie, b)
+
+
+def behavior:run_away(movie, b of actors:InnocentBrunette, m of actors:BugEyedMonster) =
+    behavior:scream(movie, b) |>
+    behavior:kickass(_, m, b)
+
+
+def behavior:scream(movie, b of actors:InnocentBrunette) when actors:loud_enough(b) =
+    behavior:interact(movie, b, #SCREAM)
+
+
+def behavior:scream(movie, b of actors:InnocentBrunette) =
+    behavior:interact(movie, b, #SCARED)
+
+
+

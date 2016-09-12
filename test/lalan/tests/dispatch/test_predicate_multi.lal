@@ -1,0 +1,95 @@
+import io
+import string
+import seq
+import affirm
+
+import tests:dispatch:movie:actors
+import tests:dispatch:movie:behavior
+import tests:dispatch:movie:movie
+
+fun test() =
+    let
+        monster = actors:BugEyedMonster("PussyEaterFromDeepSpace", 69, 80, 50,
+            {
+                ENCOUNTER = "Oh Yeah, common, pretty-pretty!",
+                KICKASS = "I am gonna eat some pretty pussy. ARGHHH",
+                DIE = "ARGHH WRAGHHH SQWRAKH"
+            }
+        )
+
+        merry = actors:InnocentBrunette("Merry", 70, 51, 50,
+             {
+                 ENCOUNTER = "Oh who`s there?",
+                 DIE = "I am dying, it so sad, because i am so innocent",
+                 SCREAM = "AAAAA, OH GOD AAAA, AAAA, OH GOD, HELP ME, HELP ME",
+                 SCARED = "Hysterical whisper: i am so scared, so scared, please help, anybody"
+             }
+        )
+        johanna = actors:InnocentBrunette("Johanna", 40, 40, 40,
+             {
+                 ENCOUNTER = "Hello!?",
+                 DIE = "I am dying, its not so sad, because i am not innocent and very very stupid and not even pretty enough",
+                 SCARED = "Hysterical whisper: i am so scared, so scared, please help, anybody"
+             }
+        )
+        barbarella = actors:ProtagonistBlond("Barbarella", 100, 100,
+             {
+                 ENCOUNTER = "Hey, is anybody here?",
+                 DIE = "I am not gonna die, i am too gorgeous, you fuck!",
+                 SCREAM = "Oh my Goodness! Oh my Goodness! Help me anybody!",
+                 KICKASS = "I am gonna kill your dick, you fagot!!",
+                 RUN_AWAY = "This gorgeous blondy is hopelessly running away from danger," ++
+                            "and you are trembling with worry"
+             }
+        )
+    in
+    (
+        let
+            movie =
+                behavior:encounter([], merry, monster) |>
+                behavior:encounter(_, monster, merry) |>
+
+                behavior:encounter(_, johanna, monster) |>
+
+                behavior:encounter(_, monster, barbarella) |>
+                behavior:encounter(_, barbarella, monster) |>
+
+                seq:reverse(_)
+//                string:join_cast(_, "\n")
+        in
+        (
+            let
+                event = behavior:process_event
+                test_movie = [
+                    event(merry, (#ENCOUNTER, monster)),
+                    event(merry, #SCREAM),
+
+                    event(monster, (#ENCOUNTER, merry)),
+                    event(monster, (#KICKASS, merry)),
+                    event(merry, #DIE),
+
+                    event(johanna, (#ENCOUNTER, monster)),
+                    event(johanna, #SCARED),
+                    event(monster, (#KICKASS, johanna)),
+                    event(johanna, #DIE),
+
+                    event(monster, (#ENCOUNTER, barbarella)),
+                    event(barbarella, #SCREAM),
+                    event(barbarella, (#RUN_AWAY, monster)),
+
+                    event(barbarella, (#ENCOUNTER, monster)),
+                    event(barbarella, (#KICKASS, monster)),
+                    event(monster, #DIE)
+                ]
+            in
+            (
+                affirm:is_equal(movie, test_movie)
+//                io:print(string:join_cast(movie, "\n"))
+//                io:print(movie)
+//                io:print(test_movie)
+//                io:print(movie == test_movie)
+            )
+        )
+    )
+
+

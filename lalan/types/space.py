@@ -486,7 +486,7 @@ def newdatatype(process, name, fields):
 def newnativedatatype(name):
     from lalan.types.datatype import W_DataType
     assert issymbol(name)
-    datatype = W_DataType(name, newlist([]))
+    datatype = W_DataType(name, newlist([newstring(u"...")]))
     return datatype
 
 

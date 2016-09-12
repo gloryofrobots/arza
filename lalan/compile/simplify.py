@@ -62,7 +62,12 @@ def _random_name(name):
 
 def _replace_name(node, names):
     ntype = node_type(node)
-    # TODO IMPORTED NAMES
+
+    if ntype == nt.NT_IMPORTED_NAME:
+        name = nodes.imported_name_to_string(node)
+        new_node = nodes.create_name_node(node, name)
+        return _replace_name(new_node, names)
+
     if ntype != nt.NT_NAME:
         return None
     for old_name, new_name in names:

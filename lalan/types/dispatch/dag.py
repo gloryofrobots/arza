@@ -52,7 +52,7 @@ def evaluate_decision(process, stack, nodes, args):
         rank = node.get_rank(process, args)
         if rank >= 0:
             stack.append((node, rank))
-    # print "********************"
+    # print "********************", args
     # print "1", stack
     sort_stack(stack)
     # print "2", stack

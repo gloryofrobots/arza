@@ -1,6 +1,7 @@
 import lalan:lang:_tuple
 import string
 import std
+import io
 
 use Tuple as 0
 in
@@ -27,12 +28,21 @@ in
 
     def index_of(el, self) as _tuple:index_of
 
-    def repr(self) = str(self)
-    def str(self) =
+    def repr(self) =
+    (
         if len(self) == 1 then
             "(" ++ repr(at(0, self)) ++ ",)"
         else
             "(" ++ string:join_with(repr, to_seq(self), ", ") ++ ")"
+    )
+
+    def str(self) =
+    (
+        if len(self) == 1 then
+            "(" ++ str(at(0, self)) ++ ",)"
+        else
+            "(" ++ string:join_with(str, to_seq(self), ", ") ++ ")"
+    )
 )
 
 fun ensure_tuple

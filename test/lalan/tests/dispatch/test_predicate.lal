@@ -1,0 +1,50 @@
+import affirm
+
+generic
+(
+    race_winner(v1, v2)
+    race_looser(v1, v2)
+)
+
+
+type Car (speed)
+type Plane (speed)
+
+
+fun _race_winner
+    | (c1 of Car, c2 of Car) when c1.speed < c2.speed = c2
+    | (c1 of Car, c2 of Car) when c1.speed > c2.speed = c1
+    | (c1 of Car, c2 of Car) = c1
+
+
+fun faster(v1, v2) = v1.speed > v2.speed
+
+def race_winner(c1 of Car, c2 of Car) when faster(c1, c2)  = c1
+//def race_winner(c1 of Car, c2 of Car) when c1.speed > c2.speed = c1
+def race_winner(c1 of Car, c2 of Car) when lalan:lang:at(#speed, c1) < c2.speed = c2
+def race_winner(c1 of Car, c2 of Car) when c1.speed == c2.speed = c1
+
+def race_winner({x, y = (a, b, [1,2,{c, d=t}])} of Map, z@hd::tl) when len(y) == 1 = 1
+
+fun test () =
+(
+    let
+        c1 = Car(90)
+        c2 = Car(110)
+        c3 = Car(110)
+        p = Plane(200)
+    in
+    (
+        affirm:is_equal_all(
+            race_winner(c2, c3),
+            race_winner(c2, c1),
+            race_winner(c1, c2),
+            _race_winner(c1, c2),
+            _race_winner(c2, c1),
+            _race_winner(c2, c3)
+        )
+    )
+)
+
+
+

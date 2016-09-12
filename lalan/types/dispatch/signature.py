@@ -167,15 +167,16 @@ class ArgumentType(Argument):
 
 
 class Signature(W_Root):
-    def __init__(self, args, method, pattern, outers):
+    def __init__(self, args, types, method, pattern, outers):
         self.method = method
         self.args = args
+        self.types = types
         self.arity = len(args)
         self.pattern = pattern
         self.outers = outers
 
     def _to_string_(self):
-        return "<signature %s %s>" % (", ".join([str(arg) for arg in self.args]), api.to_s(self.pattern))
+        return "<signature %s> " % (", ".join([str(arg) for arg in self.args]))
 
     def equal(self, other):
         args1 = self.args
@@ -244,6 +245,6 @@ def newsignature(process, args, method, pattern, outers):
 
         sig_args.append(arg)
 
-    return Signature(sig_args, method, pattern, outers)
+    return Signature(sig_args, args, method, pattern, outers)
 
 

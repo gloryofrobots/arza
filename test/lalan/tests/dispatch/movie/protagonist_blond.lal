@@ -1,0 +1,56 @@
+import io
+
+import tests:dispatch:movie:actors
+from tests:dispatch:movie:actors import (pretty_enough)
+
+import tests:dispatch:movie:behavior
+
+let SCREAM_THRESHOLD = 60
+
+use
+    actors:BugEyedMonster as M
+    actors:ProtagonistBlond as B
+in
+(
+    def behavior:encounter(movie, m of M, b of B)
+        when actors:is_monster_killable(b, m)
+        and b.scream_power > SCREAM_THRESHOLD
+        and actors:pretty_enough(b) =
+        (
+            behavior:interact(movie, m, (#ENCOUNTER, b)) |>
+            behavior:run_away(_, b, m)
+
+        )
+
+
+    def behavior:encounter(movie, m of M, b of B) =
+    (
+        io:print("is monster killable", actors:is_monster_killable(b, m))
+        behavior:interact(movie, m, (#ENCOUNTER, b)) |>
+        behavior:kickass(_, m, b)
+    )
+
+
+    def behavior:encounter(movie, b of B, m of M)
+        when actors:is_monster_killable(b, m) =
+    (
+        behavior:interact(movie, b, (#ENCOUNTER, m)) |>
+        behavior:kickass(_, b, m)
+    )
+
+
+    def behavior:encounter(movie, b of B, m of M) = behavior:encounter(m, b)
+
+
+    //////////////////////////////////////////////////
+
+
+    def behavior:run_away(movie, b of B, m of M) =
+        behavior:scream(movie, b) |>
+        behavior:interact(_, b, (#RUN_AWAY, m))
+
+
+    def behavior:scream(movie, b of B) =
+        behavior:interact(movie, b, #SCREAM)
+
+)

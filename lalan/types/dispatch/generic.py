@@ -44,6 +44,14 @@ class W_Generic(W_Hashable):
         self.env = space.newemptyenv(self.name)
         self.dag = None
 
+    def get_types(self):
+        types = plist.empty()
+        for sig in self.signatures:
+            if not api.contains_b(types, sig.types):
+                types = plist.cons(sig.types, types)
+
+        return plist.reverse(types)
+
     def register_interface(self, interface, position):
         self.interfaces = plist.cons(space.newtuple([interface, position]), self.interfaces)
 
@@ -66,7 +74,8 @@ class W_Generic(W_Hashable):
         #         return res
 
         dispatch_args = space.newtuple([args[i] for i in self.dispatch_indexes])
-
+        if api.to_s(self.name) == "repr":
+            print "REPR"
         method = self.dag.evaluate(process, dispatch_args)
         # print "GEN CALL", str(method)
         # method = lookup_implementation(process, self, args)

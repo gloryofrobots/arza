@@ -290,8 +290,10 @@ def _find_names(node, names):
             _find_names(c, names)
     else:
         ntype = node_type(node)
-        if ntype == nt.NT_NAME or ntype == nt.NT_IMPORTED_NAME:
+        if ntype == nt.NT_NAME:
             names.append(node_value(node))
+        elif ntype == nt.NT_IMPORTED_NAME:
+            names.append(imported_name_to_string(node))
         elif ntype == nt.NT_SYMBOL:
             return
         else:

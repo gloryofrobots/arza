@@ -274,7 +274,7 @@ def _process_pattern(state, pattern, patterns, path):
         return _process_wildcard(state, pattern, patterns, path)
     elif ntype == NT_WHEN:
         return _process_when_no_else(state, pattern, patterns, path)
-    elif ntype in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_STR, NT_CHAR, NT_SYMBOL]:
+    elif ntype in [NT_FALSE, NT_TRUE, NT_FLOAT, NT_INT, NT_STR, NT_CHAR, NT_SYMBOL, NT_MULTI_STR]:
         return _process_literal(state, pattern, patterns, path)
     else:
         transform_error(state, pattern, u"Invalid pattern syntax")

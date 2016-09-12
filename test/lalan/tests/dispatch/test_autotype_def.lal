@@ -1,0 +1,33 @@
+import io
+import affirm
+import generics
+
+generic f (x, y, z)
+type T
+
+def f({x, y}, [] of T, 1) = 42
+def f([], [], ()) = 42
+def f(x::xs, (x, y), "zzz") = 42
+def f(True, 42.042, #sym) = 42
+def f(False, """zzz""", 'x') = 42
+
+
+
+fun test() =
+(
+    let
+        types = generics:get_types(f)
+    in
+    (
+        affirm:is_equal(
+                types,
+                [
+                    [Map, T, Int],
+                    [List, List, Tuple],
+                    [List, Tuple, String],
+                    [Bool, Float, Symbol],
+                    [Bool, String, Char]
+                ]
+        )
+    )
+)

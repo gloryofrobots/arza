@@ -225,7 +225,7 @@ def typeof_b(process, obj, _type):
         return error.throw_2(error.Errors.TYPE_ERROR, _type, space.newstring(u"Datatype expected"))
 
     # if Nothing kindof Nothing
-    if space.isdatatype(obj) and space.isdatatype(_type):
+    if space.isdatatype(obj) and space.isdatatype(_type) and obj.is_singleton:
         if equal_b(obj, _type):
             return True
 

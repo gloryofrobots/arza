@@ -1055,7 +1055,8 @@ def _parse_def_signature(parser, node):
     sig_args = nodes.node_first(sig_node)
 
     for arg in sig_args:
-        if nodes.node_type(arg) == NT_OF:
+        ntype = nodes.node_type(arg)
+        if ntype == NT_OF:
             _subject = nodes.node_first(arg)
             _type = nodes.node_second(arg)
             if nodes.is_empty_node(_subject):
@@ -1066,8 +1067,34 @@ def _parse_def_signature(parser, node):
                 dispatch.append(_type)
             fun_signature.append(_fun_arg)
         else:
+
+            if ntype == NT_INT:
+                _type = lang_names.TINT
+            elif ntype == NT_FLOAT:
+                _type = lang_names.TFLOAT
+            elif ntype == NT_TRUE or ntype == NT_FALSE:
+                _type = lang_names.TBOOL
+            elif ntype == NT_CHAR:
+                _type = lang_names.TCHAR
+            elif ntype == NT_SYMBOL:
+                _type = lang_names.TSYMBOL
+            elif ntype == NT_STR or ntype == NT_MULTI_STR:
+                _type = lang_names.TSTRING
+            elif ntype == NT_LIST or ntype == NT_CONS:
+                _type = lang_names.TLIST
+            elif ntype == NT_MAP:
+                _type = lang_names.TMAP
+            elif ntype == NT_TUPLE or ntype == NT_UNIT:
+                _type = lang_names.TTUPLE
+            else:
+                _type = None
+
+            if not _type:
+                _type = nodes.create_void_node(arg)
+            else:
+                _type = nodes.create_name_node_s(node, _type)
+            dispatch.append(_type)
             fun_signature.append(arg)
-            dispatch.append(nodes.create_void_node(arg))
 
     new_signature = nodes.create_tuple_node(signature, fun_signature)
     if nodes.node_type(signature) == NT_WHEN:

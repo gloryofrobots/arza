@@ -1,0 +1,15 @@
+type
+(
+    BugEyedMonster(name, eye_count, scariness, speed,  lang)
+    InnocentBrunette(name, scream_power, prettiness, stupidity, lang)
+    ProtagonistBlond(name, scream_power, gorgeousness, lang)
+)
+
+fun is_monster_killable(b of ProtagonistBlond, m of BugEyedMonster) = b.gorgeousness > m.scariness
+fun can_escape_from(b, m) = b.stupidity < 70 and m.speed < 60
+
+fun loud_enough(b) = b.scream_power > 60
+
+fun pretty_enough
+    | b of ProtagonistBlond = b.gorgeousness > 70
+    | b of InnocentBrunette = b.prettiness > 60

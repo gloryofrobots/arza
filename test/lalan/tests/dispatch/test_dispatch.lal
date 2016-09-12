@@ -1,0 +1,13 @@
+import tests:dispatch:test_simple
+import tests:dispatch:test_predicate
+import tests:dispatch:test_autotype_def
+import tests:dispatch:test_predicate_multi
+import io
+
+fun test () =
+(
+    test_simple:test()
+    test_predicate:test()
+    test_predicate_multi:test()
+    test_autotype_def:test()
+)

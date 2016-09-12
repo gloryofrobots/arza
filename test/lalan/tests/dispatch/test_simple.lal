@@ -104,7 +104,7 @@ def made (p of Pig, e of Elephant) =
         #Notcoolatall
 )
 
-def made(e of Elephant, p of Pig) as generics:reverse(made, Elephant, Pig)
+def made(e of Elephant, p of Pig) = made(p, e)
 
 def give_birth (p of Pig, e of Elephant) = PiggyElly(p.weight.1 + e.weight, p.coolness + e.shyness)
 
