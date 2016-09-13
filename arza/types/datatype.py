@@ -138,11 +138,11 @@ class W_DataType(W_Hashable):
         self.interfaces = plist.cons(iface, self.interfaces)
         self.mro.add_interface(iface)
 
-        # register all currently implemented generics for this interface
-        for t in iface.registered_generics:
-            generic = api.at_index(t, 0)
-            position = api.at_index(t, 1)
-            self.register_generic(generic, position)
+        # # register all currently implemented generics for this interface
+        # for t in iface.registered_generics:
+        #     generic = api.at_index(t, 0)
+        #     position = api.at_index(t, 1)
+        #     self.register_generic(generic, position)
 
         iface.register_type(self)
 
@@ -185,6 +185,7 @@ class W_DataType(W_Hashable):
                 self.register_interface(interface)
 
     def is_generic_implemented(self, generic, position):
+
         if not api.contains_b(self.generics, generic):
             return False
         positions = api.at(self.generics, generic)
@@ -230,6 +231,20 @@ def record_keys(record):
 def record_values(record):
     error.affirm_type(record, space.isrecord)
     return record.values()
+
+def derive(t, interface):
+    error.affirm_type(t, space.isdatatype)
+    for r in interface.generics:
+        generic = api.first(r)
+        position = api.second(r)
+        idx = api.to_i(position)
+        if not generic.is_implemented_for(t, idx):
+            error.throw_4(error.Errors.IMPLEMENTATION_ERROR,
+                          space.newstring(u"Not implemented interface method"),
+                          interface,
+                          generic,
+                          position)
+    t.register_interface(interface)
 
 
 def newtype(process, name, fields):

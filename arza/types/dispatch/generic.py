@@ -52,6 +52,13 @@ class W_Generic(W_Hashable):
 
         return plist.reverse(types)
 
+    def is_implemented_for(self, subject, position):
+        error.affirm_type(subject, space.isdatatype)
+        for sig in self.signatures:
+            if sig.can_dispatch_on(subject, position):
+                return True
+        return False
+
     def register_interface(self, interface, position):
         self.interfaces = plist.cons(space.newtuple([interface, position]), self.interfaces)
 
@@ -213,8 +220,8 @@ def specify(process, gf, types, method, pattern, outers):
                              space.newstring(u"Bad method for specialisation, inconsistent arity"))
 
     gf.add_signature(process, newsignature(process, _types, method, pattern, outers))
-    for index, _type in zip(gf.dispatch_indexes, _types):
-        _type.register_generic(gf, space.newint(index))
+    # for index, _type in zip(gf.dispatch_indexes, _types):
+    #     _type.register_generic(gf, space.newint(index))
 
 
 def get_method(process, gf, types):

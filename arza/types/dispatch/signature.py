@@ -175,6 +175,15 @@ class Signature(W_Root):
         self.pattern = pattern
         self.outers = outers
 
+    def has_type(self, _type):
+        return api.contains_b(self.types, _type)
+
+    def can_dispatch_on(self, _type, position):
+        current = api.at_index(self.types, position)
+        if space.isinterface(current):
+            return _type.is_interface_implemented(current)
+        return api.equal_b(_type, current)
+
     def _to_string_(self):
         return "<signature %s> " % (", ".join([str(arg) for arg in self.args]))
 
