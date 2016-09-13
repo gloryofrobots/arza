@@ -10,7 +10,7 @@ def printmessage(msg):
 
 def main(argv):
     from arza.misc import timer
-    with timer.Timer("Lalan Main", True):
+    with timer.Timer("Arza Main", True):
 
         script_file = argv[1]
         if script_file == "--test":

@@ -1,4 +1,4 @@
-# Lalan programming language
+# Arza programming language
 
 This repository contains prototype for experimental dynamically typed functional language
 
@@ -6,7 +6,7 @@ This repository contains prototype for experimental dynamically typed functional
 
 To experiment with syntax and stackless virtual machine.
 It is not a production system.
-Lalan written in relatively 'slow' language python with not many speed optimisations.
+Arza written in relatively 'slow' language python with not many speed optimisations.
 
 ## Running
 ```
@@ -67,10 +67,10 @@ There are no REPL for arza at the moment
   - [Loading order](#loading-order)
 
 ### Syntax overview
-Lalan uses original syntax inspired by Lua and OCaml
+Arza uses original syntax inspired by Lua and OCaml
 Expression syntax similar to convenient scripting languages with infix and prefix operators and
 function calls via ```f(...)```. But instead of using some kind of block separators ({} or begin end)
-Lalan allows one or more expressions inside parens (exp1 exp2 expe).
+Arza allows one or more expressions inside parens (exp1 exp2 expe).
 Result of such group expression will be the result of last expression.
 This simple rule provides organic coexistence of serial and single expressions.
 ```
@@ -146,7 +146,7 @@ There are three main kinds of expressions
 * Pattern matching expressions inside function signature, after let expression or in match expression
 * Value expressions usually occur after = token and always evaluates to some value
 
-There are no end of expression token in Lalan.
+There are no end of expression token in Arza.
 Parser grabs expressions one by one from stream of tokens.
 Every expression terminates by lack of left binding power.
 This idea comes from Lua language.
@@ -161,7 +161,7 @@ f() == 4
 However this technique creates problem with ambidextra operators
 (operator having have both prefix and infix binding powers)
 Examples of such operators are *-* and *(*
-To resolve parsing conflicts Lalan uses new lines as terminators
+To resolve parsing conflicts Arza uses new lines as terminators
 ```
 fun f() =
 (
@@ -192,7 +192,7 @@ fun f_ab_2 = f_ab()
 
 export (f_ab, f_ab_2, CONST)
 
-// to import module use it's name relative to program.lal with / replaced by :
+// to import module use it's name relative to program.arza with / replaced by :
 // to import modules from __std__ directory simply use their name
 
 import seq
@@ -258,7 +258,7 @@ let x = f1() * f2()
 ### Defining operators
 
 ```
-// real code from prelude.lal
+// real code from prelude.arza
 // operators noted in comments defined internally for special treatment
 // operator_type(operator_symbol, function_name, binding_power)
 
@@ -300,13 +300,13 @@ prefix (&, &, 96)
 // to use function as infix operator put it between `` too
 // 4 `mod` 2 = 0
 
-// Operators defined in prelude.lal are global to all modules and environments
+// Operators defined in prelude.arza are global to all modules and environments
 // Operators defined in other module are local to this module and can't be exported
 ```
 
 ### Module let expression
 
-In Lalan *let* is the only way to bind name to variable.
+In Arza *let* is the only way to bind name to variable.
 But except for that let expression actually performs pattern matching
 Value can be bind to name only once.
 Top level let expression is different from let-in expression allowed in value expressions
@@ -488,7 +488,7 @@ Mixins or Inheritance can solve this problem but arza goes the other way.
 In arza generic functions and protocols(interfaces) declared apart from each other
 and interfaces combine one or more previously declared generics.
 Type doesn't need to signal implementation of interface but needs to implement all generic functions belonging to interface
-Lalan generic functions can dispatch on argument in any position
+Arza generic functions can dispatch on argument in any position
 
 
 #### Generic expression
@@ -793,7 +793,7 @@ let
 #### Partial application
 
 ```
-Lalan provides special syntax for partial application via .( operator
+Arza provides special syntax for partial application via .( operator
 
 fun sum_3(x, y, z) = x + y + z
 
@@ -892,10 +892,10 @@ let I2 =
 
 #### Pattern Matching
 
-Pattern matching is a central element in Lalan design
+Pattern matching is a central element in Arza design
 It used in function clauses, let bindings before = token, lambda functions before -> token and
 match expressions.
-Lalan doesn't have loops so pattern matching and recursion are used to create iteration
+Arza doesn't have loops so pattern matching and recursion are used to create iteration
 
 In function clauses, arguments are sequentially matched against patterns. If a match succeeds and the optional guard is true,
 the corresponding body is evaluated.
@@ -1164,30 +1164,30 @@ Module search path are always relative to startup script and there are no possib
 
 Example directory structure
 ```
-+-- program.lal
++-- program.arza
 +-- __std__
-|   +-- seq.lal
-|   +-- lazy.lal
+|   +-- seq.arza
+|   +-- lazy.arza
 +-- my
 |   +-- modules
-|       +-- module1.lal
-|       +-- module2.lal
-|   +-- module1.lal
-|   +-- module3.lal
+|       +-- module1.arza
+|       +-- module2.arza
+|   +-- module1.arza
+|   +-- module3.arza
 ```
-if we run Lalan with
+if we run Arza with
 ```
-python targetlalan.py program.lal
+python targetlalan.py program.arza
 ```
 Module search path would look something like  [BASEDIR, STD, LALANSTD] where
 
-* BASEDIR = directory in which program.lal is located
+* BASEDIR = directory in which program.arza is located
 * STD = BASEDIR/\_\_std\_\_ - directory with user defined std modules. It will give user easy way to have custom prelude
 * LALANSTD = environment variable LALANSTD which must contain path to global stdlib. If LALANSTD is empty, all required modules must be in STD directory
 
 #### Loading order
-* prelude.lal. If prelude is absent execution will be terminated. All names declared in prelude would be visible in all other modules
-* stdlib modules used by runtime (derive.lal, bool.lal, num.lal, bit.lal, env.lal, string.lal, symbol.lal, vector.lal, list.lal, function.lal, fiber.lal, trait.lal, tuple.lal, map.lal, seq.lal, lazy.lal, datatype.lal)
-* running script (in our case program.lal). After loading this sript arza searches for function named 'main' and executes it. Result of 'main' function would be result of program
+* prelude.arza. If prelude is absent execution will be terminated. All names declared in prelude would be visible in all other modules
+* stdlib modules used by runtime (derive.arza, bool.arza, num.arza, bit.arza, env.arza, string.arza, symbol.arza, vector.arza, list.arza, function.arza, fiber.arza, trait.arza, tuple.arza, map.arza, seq.arza, lazy.arza, datatype.arza)
+* running script (in our case program.arza). After loading this sript arza searches for function named 'main' and executes it. Result of 'main' function would be result of program
 
 

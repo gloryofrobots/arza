@@ -19,7 +19,7 @@ Precedence    Operator
     1             ||
 """
 """
-LALAN PRECEDENCES
+ARZA PRECEDENCES
 Precedence    Operator
     100           : . .{
     95           JUXTAPOSITION
@@ -203,7 +203,7 @@ class ExpressionParser(BaseParser):
         infix(self, TT_LPAREN, 95, infix_lparen)
         infix(self, TT_INFIX_DOT_LCURLY, 95, infix_lcurly)
         infix(self, TT_INFIX_DOT_LSQUARE, 95, infix_lsquare)
-        # OTHER OPERATORS ARE DECLARED IN prelude.lal
+        # OTHER OPERATORS ARE DECLARED IN prelude.arza
 
 
 class TypeParser(BaseParser):
