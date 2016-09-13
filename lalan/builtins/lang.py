@@ -144,7 +144,6 @@ def _type(process, routine):
 @complete_native_routine
 def _symbol(process, routine):
     _str = routine.get_arg(0)
-    print "SYMBOL", _str.__class__.__name__
     error.affirm_type(_str, space.isstring)
     return space.newsymbol_string(process, _str)
 

@@ -74,8 +74,6 @@ class W_Generic(W_Hashable):
         #         return res
 
         dispatch_args = space.newtuple([args[i] for i in self.dispatch_indexes])
-        if api.to_s(self.name) == "repr":
-            print "REPR"
         method = self.dag.evaluate(process, dispatch_args)
         # print "GEN CALL", str(method)
         # method = lookup_implementation(process, self, args)

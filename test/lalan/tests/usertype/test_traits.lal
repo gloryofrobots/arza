@@ -55,30 +55,42 @@ let
 )
 
 
-extend Val with
+use Val as 0 in
 (
-    def {ne} from Equal
+    def ne(x, y) as Equal.[ne]
     def eq(v1, v2) = v1.v == v2.v
 )
 
-extend Val2 with
+use Val2 as 0 in
 (
-    def {eq} from Equal
+    def eq(x, y) as Equal.[eq]
     def ne(v1, v2) = v1.v != v2.v
 )
 
-extend Val with
+use Val as 0 in
 (
-   def {le, ge, gt, lt, max, min} from Order
-   def cmp(self, other) =
+    def le(x, y) as Order.[le]
+    def ge(x, y) as Order.[ge]
+    def lt(x, y) as Order.[lt]
+    def gt(x, y) as Order.[gt]
+    def max(x, y) as Order.[max]
+    def min(x, y) as Order.[min]
+
+    def cmp(self, other) =
         if self.v == other.v then EQ
         elif self.v <= other.v then LT
         else GT
 )
 
-extend Val2 with
+use Val2 as 0 in
 (
-    def {cmp, ge, gt, lt, max, min} from Order
+    def cmp(x, y) as Order.[cmp]
+    def ge(x, y) as Order.[ge]
+    def lt(x, y) as Order.[lt]
+    def gt(x, y) as Order.[gt]
+    def max(x, y) as Order.[max]
+    def min(x, y) as Order.[min]
+
     def le(self, other) = self.v <= other.v
 )
 

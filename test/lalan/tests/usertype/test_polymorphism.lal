@@ -9,7 +9,7 @@ type
 
 generic eq(self, other)
 
-extend L with
+use L as ... in
 (
     def len(self) = len(self.l)
 
@@ -21,19 +21,25 @@ extend L with
 )
 
 
-extend Some with
-(
-    def eq
-        | (self, val of Some) = val == None
-        | (self, _) = False
-)
+def eq (self of Some, val of Some) = val == None
+def eq (self of Some, _) = False
 
-extend None with
-(
-    def eq
-        | (self, {val} of Some) = val == None
-        | (self, _ of None) = True
-)
+//extend Some with
+//(
+//    def eq
+//        | (self, val of Some) = val == None
+//        | (self, _) = False
+//)
+
+def eq (self of None, {val} of Some) = val == None
+def eq (self of None, _ of None) = True
+
+//extend None with
+//(
+//    def eq
+//        | (self, {val} of Some) = val == None
+//        | (self, _ of None) = True
+//)
 
 fun test () =
 (
