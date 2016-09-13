@@ -1,8 +1,8 @@
-from lalan.types.root import W_Hashable, W_Root
-from lalan.runtime import error
-from lalan.runtime.stack import Stack
-from lalan.types import api, space, plist
-from lalan.misc import platform
+from arza.types.root import W_Hashable, W_Root
+from arza.runtime import error
+from arza.runtime.stack import Stack
+from arza.types import api, space, plist
+from arza.misc import platform
 
 
 class W_Arguments(W_Root):
@@ -36,7 +36,7 @@ class W_Arguments(W_Root):
         return platform.is_absent_index(i)
 
     def _at_(self, index):
-        from lalan.types.space import newvoid, isint
+        from arza.types.space import newvoid, isint
         assert isint(index)
         i = api.to_i(index)
         if i < 0 or i > self.length - 1:
@@ -58,7 +58,7 @@ class W_Arguments(W_Root):
         return self.length
 
     # def _equal_(self, other):
-    #     from lalan.types import space
+    #     from arza.types import space
     #     if not space.istuple(other):
     #         return False
     #

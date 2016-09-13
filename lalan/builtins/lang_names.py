@@ -1,4 +1,4 @@
-PREFIX = "lalan:lang:"
+PREFIX = "arza:lang:"
 
 NOT = PREFIX + "not"
 ELEM = PREFIX + "elem"

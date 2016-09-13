@@ -1,4 +1,4 @@
-from lalan.types import space
+from arza.types import space
 
 
 def convert_to_script_error(process, err):
@@ -6,7 +6,7 @@ def convert_to_script_error(process, err):
 
 
 def error(process, symbol_unistr, args_tuple):
-    from lalan.types import environment, api
+    from arza.types import environment, api
     assert space.istuple(args_tuple)
     assert isinstance(symbol_unistr, unicode)
     module = process.modules.prelude
@@ -88,7 +88,7 @@ class LalanError(Exception):
         self.args_tuple = args_tuple
 
     def __str__(self):
-        from lalan.types import api
+        from arza.types import api
         return "%s%s" % (str(self.name), api.to_s(self.args_tuple))
 
     def __repr__(self):
@@ -100,7 +100,7 @@ class LalanSignal(Exception):
         self.signal = signal
 
     def __str__(self):
-        from lalan.types import api
+        from arza.types import api
         return api.to_s(self.signal)
 
     def __repr__(self):
@@ -143,7 +143,7 @@ class Errors:
 
 
 def initialise(process):
-    from lalan.types import api
+    from arza.types import api
     err_module = process.modules.prelude
     for key, errname in Errors.__dict__.items():
         if not key.endswith(u"_ERROR"):

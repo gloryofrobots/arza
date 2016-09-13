@@ -19,7 +19,6 @@ NODES = [
   "NT_SYMBOL",
 
   "NT_TYPE",
-  "NT_UNION",
   "NT_MAP",
   "NT_LIST",
   "NT_TUPLE",
@@ -28,8 +27,14 @@ NODES = [
   "NT_COMMA",
   "NT_CASE",
 
+  "NT_LITERAL",
+
   "NT_FUN",
+  "NT_DEF",
+  "NT_USE",
   "NT_LAMBDA",
+
+  "NT_DISPATCH",
 
   "NT_FARGS",
 
@@ -47,8 +52,6 @@ NODES = [
   "NT_LOAD",
   "NT_TRAIT",
   "NT_EXTEND",
-  "NT_USE",
-  "NT_DEF",
   "NT_GENERIC",
   "NT_METHOD",
   "NT_INTERFACE",
@@ -76,11 +79,13 @@ NODES = [
 
   "NT_OF",
   "NT_AS",
+  "NT_DELAY",
   "NT_LET",
 
+  "NT_NOT",
   "NT_AND",
   "NT_OR",
-  "NT_NOT",
+
   "NT_END_EXPR",
   "NT_END",
 ]
@@ -90,12 +95,12 @@ NODES = [
 
 
 ## FOR PYTHON LEXER
-print "# ************************ LALAN NODES*****************************"
+print "# ************************ OBIN NODES*****************************"
 for number, token in enumerate(NODES):
     print "%s = %d" % (token, number)
 
 
-print "# ************************ LALAN NODES REPR *****************************"
+print "# ************************ OBIN NODES REPR *****************************"
 S = "__NT_REPR__ = ["
 for name in NODES:
     S += "%s, " % str(("\"%s\"" % name))
@@ -106,7 +111,7 @@ print
 print "def node_type_to_s(ntype):"
 print "    return __NT_REPR__[ntype]"
 
-# print "# ************************ LALAN NODES MAPPING *****************************"
+# print "# ************************ OBIN NODES MAPPING *****************************"
 # for name in NODES:
 #     print "%s: %s," % (name.replace("NT_", "TT_"), name)
 

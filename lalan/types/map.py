@@ -1,10 +1,10 @@
-from lalan.types import api, space, plist
-from lalan.types.root import W_Root
-from lalan.misc import platform
-from lalan.runtime import error
+from arza.types import api, space, plist
+from arza.types.root import W_Root
+from arza.misc import platform
+from arza.runtime import error
 
 
-# from lalan.misc.platform import jit
+# from arza.misc.platform import jit
 
 
 
@@ -194,7 +194,7 @@ class W_Map(W_Root):
         return result
 
     def _to_string_(self):
-        from lalan.types import api
+        from arza.types import api
         res = []
         for k, i in self.slot_bindings.items():
             v = api.at_index(self.slot_values, i)
@@ -232,7 +232,7 @@ class W_Map(W_Root):
         return True
 
     def _get_index_(self, name):
-        # from lalan.objects import api
+        # from arza.objects import api
         # print "get_index", api.to_native_string(name)
         try:
             idx = self.slot_bindings.get(name)

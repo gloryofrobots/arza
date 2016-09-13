@@ -1,6 +1,6 @@
 from root import W_Callable
-from lalan.runtime import error
-from lalan.types import api, space, tuples
+from arza.runtime import error
+from arza.types import api, space, tuples
 
 
 class W_FiberChannel(W_Callable):
@@ -50,7 +50,7 @@ class W_Coroutine(W_Callable):
     #
     def _to_routine_(self, stack, args):
         # print "TO ROUTINE"
-        from lalan.runtime.routine.routine import create_callback_routine
+        from arza.runtime.routine.routine import create_callback_routine
         routine = create_callback_routine(stack, self.on_result, None, self.fn, args)
         return routine
 

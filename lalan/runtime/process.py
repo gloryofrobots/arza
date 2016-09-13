@@ -1,8 +1,8 @@
-from lalan.types import api, space, string
-from lalan.runtime.stack import Stack
-from lalan.types import plist
-from lalan.runtime import error
-from lalan.misc.timer import Timer
+from arza.types import api, space, string
+from arza.runtime.stack import Stack
+from arza.types import plist
+from arza.runtime import error
+from arza.misc.timer import Timer
 
 DEFAULT_STACK_SIZE = 32
 
@@ -120,7 +120,7 @@ class Process(object):
         TERMINATED = 4
 
     def __init__(self, data):
-        from lalan.runtime.process_data import ProcessData
+        from arza.runtime.process_data import ProcessData
         assert isinstance(data, ProcessData)
         self.__data = data
         self.__state = None

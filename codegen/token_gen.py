@@ -7,13 +7,21 @@ TOKENS = [
   ("TT_CHAR", None,),
   ("TT_NAME", None),
   ("TT_TICKNAME", None),
+  ("TT_TYPENAME", None),
   ("TT_OPERATOR", None),
+  ("TT_VOID", None),
+
   ("TT_FUN", "fun"),
+
   ("TT_MATCH", "match"),
   ("TT_WITH", "with"),
   ("TT_CASE", "|"),
 
-  ("TT_EXTEND", "extend"),
+  ("TT_BREAK", "break"),
+  ("TT_CONTINUE", "continue"),
+  ("TT_WHILE", "while"),
+
+  ("TT_DEF", "def"),
   ("TT_TYPE", "type"),
 
   ("TT_IF", "if"),
@@ -24,13 +32,12 @@ TOKENS = [
   ("TT_WHEN", "when"),
 
   ("TT_OF", "of"),
-  ("TT_DEF", "def"),
   ("TT_LET", "let"),
   ("TT_IN", "in"),
   ("TT_AS", "as"),
+  ("TT_NOT", "not"),
   ("TT_AND", "and"),
   ("TT_OR", "or"),
-  ("TT_NOT", "not"),
   ("TT_TRUE", "true"),
   ("TT_FALSE", "false"),
   ("TT_TRY", "try"),
@@ -45,17 +52,32 @@ TOKENS = [
   ("TT_EXPORT", "export"),
   ("TT_TRAIT", "trait"),
   ("TT_USE", "use"),
+  ("TT_EXTEND", "extend"),
+  ("TT_FOR", "for"),
   ("TT_GENERIC", "generic"),
   ("TT_INTERFACE", "interface"),
+
+  ("TT_END", "end"),
   ("TT_END_EXPR", ";"),
   ("TT_NEWLINE", "(newline)"),
+
+  ("TT_INFIXL", "infixl"),
+  ("TT_INFIXR", "infixr"),
+  ("TT_PREFIX", "prefix"),
+
+
   ("TT_ELLIPSIS", "..."),
   ("TT_WILDCARD", "_"),
   ("TT_GOTO", "goto"),
   ("TT_ARROW", "->"),
   ("TT_FAT_ARROW", "=>"),
+  ("TT_BACKARROW", "<-"),
+  ("TT_DISPATCH", "-:"),
   ("TT_AT_SIGN", "@"),
+
+
   ("TT_SHARP", "#"),
+
   ("TT_JUXTAPOSITION", " "),
   ("TT_LCURLY", "{"),
   ("TT_RCURLY", "}"),
@@ -66,15 +88,14 @@ TOKENS = [
   ("TT_INFIX_DOT_LSQUARE", ".["),
   ("TT_LPAREN", "("),
   ("TT_RPAREN", ")"),
-  ("TT_PREFIX", "prefix"),
-  ("TT_INFIXL", "infixl"),
-  ("TT_INFIXR", "infixr"),
 
   ("TT_LSQUARE", "["),
   ("TT_RSQUARE", "]"),
   ("TT_DOT", "."),
   ("TT_COLON", ":"),
   ("TT_DOUBLE_COLON", "::"),
+  ("TT_TRIPLE_COLON", ":::"),
+  ("TT_DOUBLE_DOT", ".."),
   ("TT_BACKTICK_NAME", "`"),
   ("TT_BACKTICK_OPERATOR", "`"),
   ("TT_UNKNOWN", None)
@@ -96,25 +117,25 @@ for name,pattern in TOKENS:
 
 """
 ## FOR PYTHON LEXER
-print "# ************************ LALAN TOKENS*****************************"
+print "# ************************ OBIN TOKENS*****************************"
 for number, token in enumerate(TOKENS):
     print "%s = %d" % (token[0],number)
 
 
-print "# ************************ LALAN TOKENS REPR *****************************"
+print "# ************************ OBIN TOKENS REPR *****************************"
 S = "__TT_REPR__ = ["
 for name,pattern in TOKENS:
     S += "%s, " % str(("u\"%s\"" % name))
 S += "]"
 print S
-print """
-def token_type_to_u(ttype):
-    return __TT_REPR__[ttype]
+print
+print
+print "def token_type_to_u(ttype):"
+print "    return __TT_REPR__[ttype]"
+print
+print "def token_type_to_s(ttype):"
+print "    return str(__TT_REPR__[ttype])"
 
-
-def token_type_to_s(ttype):
-    return str(__TT_REPR__[ttype])
-"""
 
 # print "# ************************ COMPILE SWITCH*****************************"
 # for number, token in enumerate(TOKENS):

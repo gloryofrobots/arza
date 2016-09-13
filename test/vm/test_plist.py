@@ -1,5 +1,5 @@
-from lalan.types import plist, space, api
-from lalan.runtime.error import LalanError
+from arza.types import plist, space, api
+from arza.runtime.error import LalanError
 import unittest
 
 
@@ -8,7 +8,7 @@ def make_test_data(vals):
 
 
 def inc(el):
-    from lalan.types import api, space
+    from arza.types import api, space
     return space.newint(api.to_i(el) + 1)
 
 

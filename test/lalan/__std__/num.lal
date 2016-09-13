@@ -1,5 +1,5 @@
 import std
-import lalan:lang:_number
+import arza:lang:_number
 import io
 
 use

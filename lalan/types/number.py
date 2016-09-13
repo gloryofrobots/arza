@@ -1,9 +1,9 @@
 __author__ = 'gloryofrobots'
 import math
 
-from lalan.types import api, space
-from lalan.misc.platform import rarithmetic, rfloat
-from lalan.runtime import error
+from arza.types import api, space
+from arza.misc.platform import rarithmetic, rfloat
+from arza.runtime import error
 
 
 # TODO error here 2 % 0
@@ -289,7 +289,7 @@ def ursh(lval, rval):
     lnum = api.to_i(lval)
     rnum = api.to_i(rval)
 
-    # from lalan.misc.platform.rarithmetic import ovfcheck_float_to_int
+    # from arza.misc.platform.rarithmetic import ovfcheck_float_to_int
 
     shift_count = rnum & 0x1F
     res = lnum >> shift_count
@@ -300,7 +300,7 @@ def rsh(lval, rval):
     lnum = api.to_i(lval)
     rnum = api.to_i(rval)
 
-    # from lalan.misc.platform.rarithmetic import ovfcheck_float_to_int
+    # from arza.misc.platform.rarithmetic import ovfcheck_float_to_int
 
     # shift_count = rnum & 0x1F
     # res = lnum >> shift_count

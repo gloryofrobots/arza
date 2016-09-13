@@ -1,4 +1,4 @@
-# lalan:lang:==, lalan:lang:+ parses as operators :== and :+
+# arza:lang:==, arza:lang:+ parses as operators :== and :+
 # TODO if is_fals here you can reproduce reverted traceback error
 in test_tuple
 affirm:is_fals(#two `elem` a1)

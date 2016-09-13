@@ -1,9 +1,9 @@
-from lalan.types.root import W_Hashable, W_Root
-from lalan.misc import platform
-from lalan.runtime import error
-from lalan.types import api, space, plist, tuples
-from lalan.compile.parse import nodes
-from lalan.compile import compiler
+from arza.types.root import W_Hashable, W_Root
+from arza.misc import platform
+from arza.runtime import error
+from arza.types import api, space, plist, tuples
+from arza.compile.parse import nodes
+from arza.compile import compiler
 from signature import newsignature
 from dag import *
 
@@ -22,7 +22,7 @@ def _dict_hash(obj1):
 
 # TODO REMOVE IT
 def group_dict():
-    from lalan.misc.platform import r_dict
+    from arza.misc.platform import r_dict
     return r_dict(_dict_key, _dict_hash)
 
 
@@ -162,7 +162,7 @@ class ConflictResolverCallback(W_Root):
         return process.call_object(method, self.args)
 
     def _to_routine_(self, stack, args):
-        from lalan.runtime.routine.routine import create_callback_routine
+        from arza.runtime.routine.routine import create_callback_routine
         routine = create_callback_routine(stack, self.on_complete, None, self.fn, args)
         return routine
 

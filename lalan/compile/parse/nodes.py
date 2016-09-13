@@ -1,10 +1,10 @@
-from lalan.compile.parse import tokens
-from lalan.compile.parse import token_type as tt
-from lalan.compile.parse import node_type as nt
-from lalan.types import space, api, plist
-from lalan.runtime import error
-from lalan.misc import strutil
-from lalan.builtins import lang_names
+from arza.compile.parse import tokens
+from arza.compile.parse import token_type as tt
+from arza.compile.parse import node_type as nt
+from arza.types import space, api, plist
+from arza.runtime import error
+from arza.misc import strutil
+from arza.builtins import lang_names
 
 
 def newnode(ntype, token, children):
@@ -52,7 +52,7 @@ def is_node(node):
 
 
 def is_scope_node(node):
-    from lalan.compile.parse.basic import ParserScope
+    from arza.compile.parse.basic import ParserScope
     return isinstance(node, ParserScope)
 
 

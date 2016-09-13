@@ -1,9 +1,9 @@
-from lalan.misc.platform import jit
-from lalan.types.space import isany
-from lalan.runtime import error
-from lalan.runtime.routine.code_routine import CodeRoutine
-from lalan.runtime.routine.native_routine import NativeRoutine
-from lalan.types import api, space
+from arza.misc.platform import jit
+from arza.types.space import isany
+from arza.runtime import error
+from arza.runtime.routine.code_routine import CodeRoutine
+from arza.runtime.routine.native_routine import NativeRoutine
+from arza.types import api, space
 
 
 def complete_or_interrupt_native_routine(func):
@@ -34,7 +34,7 @@ def create_native_routine(stack, name, native, args, arity):
 
 
 def create_callback_routine(stack, on_result, on_complete, function, args):
-    from lalan.runtime.routine.callback_routine import CallbackRoutine
+    from arza.runtime.routine.callback_routine import CallbackRoutine
     return CallbackRoutine(stack, on_result, on_complete, function, args)
 
 

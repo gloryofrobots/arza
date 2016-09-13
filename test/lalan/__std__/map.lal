@@ -1,4 +1,4 @@
-import lalan:lang:_map
+import arza:lang:_map
 import string
 import std
 

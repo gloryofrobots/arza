@@ -1,10 +1,10 @@
 __author__ = 'gloryofrobots'
-from lalan.types import plist, space, api
-from lalan.runtime.routine.routine import complete_native_routine
+from arza.types import plist, space, api
+from arza.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'lalan:lang:_list')
+    _module_name = space.newsymbol(process, u'arza:lang:_list')
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'length', length, 1)
     api.put_native_function(process, _module, u'to_tuple', to_tuple, 1)

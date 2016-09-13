@@ -1,4 +1,4 @@
-import lalan:lang:_string
+import arza:lang:_string
 import seq
 import std
 

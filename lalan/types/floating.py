@@ -1,7 +1,7 @@
 # TODO STRING LITERALS PROPER, CHARS, SYMBOLS
 from root import W_Number
-from lalan.types import api
-from lalan.misc import platform
+from arza.types import api
+from arza.misc import platform
 
 class W_Float(W_Number):
     # _immutable_fields_ = ['float_value']

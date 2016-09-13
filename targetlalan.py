@@ -4,12 +4,12 @@ import os
 
 def printmessage(msg):
     assert isinstance(msg, unicode)
-    from lalan.misc.strutil import encode_unicode_utf8
+    from arza.misc.strutil import encode_unicode_utf8
     os.write(1, encode_unicode_utf8(msg))
 
 
 def main(argv):
-    from lalan.misc import timer
+    from arza.misc import timer
     with timer.Timer("Lalan Main", True):
 
         script_file = argv[1]
@@ -32,8 +32,8 @@ def main(argv):
 
 
 def run(script_file):
-    from lalan.runtime import engine
-    from lalan.misc import fs
+    from arza.runtime import engine
+    from arza.misc import fs
     abs_script_path = fs.abspath(script_file)
     if not fs.is_file(abs_script_path):
         raise RuntimeError("Invalid script path " + abs_script_path)
@@ -56,7 +56,7 @@ def target(driver, args):
 
 
 def jitpolicy(driver):
-    from lalan.misc.platform import JitPolicy
+    from arza.misc.platform import JitPolicy
     return JitPolicy()
 
 

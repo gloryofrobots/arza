@@ -1,7 +1,7 @@
-from lalan:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+from arza:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                              Function, Partial, Generic, FiberChannel, Coroutine, Trait, Interface, Datatype, Env)
 
-from lalan:lang:_bit import (bitand, bitor, bitxor, bitnot, lshift, rshift)
+from arza:lang:_bit import (bitand, bitor, bitxor, bitnot, lshift, rshift)
 
 """
 SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
@@ -40,7 +40,7 @@ infixl (-, -, 40)
 infixl (*, *, 50)
 infixl (/, /, 50)
 // use qualified name to prevent infinite loops in cases of declaring local negate function using prefix -
-prefix (-, lalan:lang:negate, 55)
+prefix (-, arza:lang:negate, 55)
 // infix :: -> 60
 infixl (**, **, 60)
 // prefix # -> 70
@@ -221,8 +221,8 @@ fun not_elem(x, c) = not(elem (x, c))
 
 fun identity(x) = x
 
-fun & (func) = lalan:lang:defpartial(func)
-fun .. (f, g) = lalan:lang:defpartial(f)(g)
+fun & (func) = arza:lang:defpartial(func)
+fun .. (f, g) = arza:lang:defpartial(f)(g)
 
 fun |>(x, f) = f(x)
 fun <|(f, x) = f(x)

@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
-from lalan.compile.parse.rply.lexergenerator import LexerGenerator
-from lalan.compile.parse import tokens
-from lalan.types import space
+from arza.compile.parse.rply.lexergenerator import LexerGenerator
+from arza.compile.parse import tokens
+from arza.types import space
 
 
 def create_generator(rules):
@@ -47,7 +47,7 @@ class Lexer:
             buffer matches no rule), a LexerError is raised with
             the position of the error.
         """
-        from lalan.compile.parse.rply.lexer import LexingError
+        from arza.compile.parse.rply.lexer import LexingError
         try:
             return self._token()
         except StopIteration:

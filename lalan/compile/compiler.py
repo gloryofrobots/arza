@@ -1,17 +1,17 @@
 __author__ = 'gloryofrobots'
-from lalan.compile.code.opcode import *
-from lalan.compile.parse import parser
-from lalan.compile import simplify
-from lalan.compile.parse import nodes
-from lalan.compile.parse.nodes import (node_type, imported_name_to_s,
+from arza.compile.code.opcode import *
+from arza.compile.parse import parser
+from arza.compile import simplify
+from arza.compile.parse import nodes
+from arza.compile.parse.nodes import (node_type, imported_name_to_s,
                                        node_first, node_second, node_third, node_fourth,
                                        node_children, is_empty_node)
-from lalan.compile.parse.node_type import *
-from lalan.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
-from lalan.misc import platform, strutil
-from lalan.runtime import error
-from lalan.types import space, api, plist, environment, symbol as symbols, string as strings
-from lalan.builtins import lang_names
+from arza.compile.parse.node_type import *
+from arza.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
+from arza.misc import platform, strutil
+from arza.runtime import error
+from arza.types import space, api, plist, environment, symbol as symbols, string as strings
+from arza.builtins import lang_names
 
 
 # TODO REMOVE NIL as token and node_type
@@ -394,7 +394,7 @@ def _compile_VOID(compiler, code, node):
 
 
 def _compile_STR(compiler, code, node):
-    from lalan.misc.strutil import unicode_unescape, decode_str_utf8
+    from arza.misc.strutil import unicode_unescape, decode_str_utf8
 
     try:
         strval = str(nodes.node_value_s(node))
@@ -409,7 +409,7 @@ def _compile_STR(compiler, code, node):
 
 
 def _compile_CHAR(compiler, code, node):
-    from lalan.misc.strutil import unicode_unescape, decode_str_utf8
+    from arza.misc.strutil import unicode_unescape, decode_str_utf8
     try:
         strval = str(nodes.node_value_s(node))
         strval = decode_str_utf8(strval)
@@ -457,8 +457,8 @@ PATTERN_DATA = """
 
 
 def _compile_match(compiler, code, node, patterns, error_code):
-    from lalan.compile.match_compiler.transform import transform
-    from lalan.compile.parse.nodes import create_goto_node
+    from arza.compile.match_compiler.transform import transform
+    from arza.compile.parse.nodes import create_goto_node
     temp_idx = _declare_temporary(compiler)
     code.emit_1(STORE_TEMPORARY, temp_idx, codeinfo_unknown())
 
@@ -861,7 +861,7 @@ def _compile_LOOKUP_MODULE(compiler, code, node):
 
 
 def _get_import_data_and_emit_module(compiler, code, node):
-    from lalan.runtime import load
+    from arza.runtime import load
     exp = node_first(node)
     names = node_second(node)
 

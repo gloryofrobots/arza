@@ -6,5 +6,5 @@ class TransformState:
 
 
 def transform_error(state, node, message):
-    from lalan.compile.compiler import compile_error
+    from arza.compile.compiler import compile_error
     return compile_error(state.compiler, state.code, node, message)

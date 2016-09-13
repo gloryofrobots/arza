@@ -1,8 +1,8 @@
-from lalan.compile.parse.parser import *
-from lalan.types import plist
-from lalan.compile.parse.nodes import *
-from lalan.types import space, api
-from lalan.misc import platform, strutil
+from arza.compile.parse.parser import *
+from arza.types import plist
+from arza.compile.parse.nodes import *
+from arza.types import space, api
+from arza.misc import platform, strutil
 from process import *
 from transform_state import *
 
@@ -65,7 +65,7 @@ def _history_get_var(history, exp):
     # PROBABLY SOLUTION: BUILD TWO STEP CYCLE. IN FIRST STEP ALL CONDITION ARE INITIALISED,
     # IN SECOND SIDE EFFECTS WILL OCCUR
 
-    # from lalan.compile import MATCH_SYS_VAR
+    # from arza.compile import MATCH_SYS_VAR
     #
     # for record in history:
     #     if api.n_equal(record[0], exp):

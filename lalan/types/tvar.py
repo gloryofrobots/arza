@@ -1,6 +1,6 @@
-from lalan.types import api, space
-from lalan.types.root import W_Root
-from lalan.runtime import error
+from arza.types import api, space
+from arza.types.root import W_Root
+from arza.runtime import error
 
 
 # TODO STM

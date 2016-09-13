@@ -1,8 +1,8 @@
-from lalan.types import space, api
-from lalan.builtins import builtins
-from lalan.runtime.process import Process
-from lalan.runtime import process_data, error
-from lalan.runtime.load import import_module, evaluate_module_file
+from arza.types import space, api
+from arza.builtins import builtins
+from arza.runtime.process import Process
+from arza.runtime import process_data, error
+from arza.runtime.load import import_module, evaluate_module_file
 
 PRELUDE_FILE = u"prelude"
 # PRELUDE_FILE = u"prelude_debug"

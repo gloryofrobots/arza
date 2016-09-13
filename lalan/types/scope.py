@@ -1,8 +1,8 @@
-from lalan.types import space, plist, environment
-from lalan.types.root import W_Root
-from lalan.misc import platform
-from lalan.types import api
-from lalan.runtime import error
+from arza.types import space, plist, environment
+from arza.types.root import W_Root
+from arza.misc import platform
+from arza.types import api
+from arza.runtime import error
 
 ABSENT = platform.absent_index()
 

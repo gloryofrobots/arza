@@ -1,7 +1,7 @@
-from lalan.types.root import W_Hashable, W_Root
-from lalan.runtime import error
-from lalan.types import api, space, plist
-from lalan.misc import platform
+from arza.types.root import W_Hashable, W_Root
+from arza.runtime import error
+from arza.types import api, space, plist
+from arza.misc import platform
 
 """
  @jit.look_inside_iff(lambda self, _1: _unroll_condition(self))
@@ -106,7 +106,7 @@ class W_Tuple(W_Hashable):
         return W_Tuple(self.elements[start:end])
 
     def _compute_hash_(self):
-        from lalan.misc.platform import rarithmetic
+        from arza.misc.platform import rarithmetic
         x = 0x345678
         for item in self.elements:
             y = api.hash_i(item)
@@ -126,7 +126,7 @@ class W_Tuple(W_Hashable):
         return False
 
     def _at_(self, index):
-        from lalan.types.space import newvoid, isint
+        from arza.types.space import newvoid, isint
         assert isint(index)
         try:
             el = self.elements[api.to_i(index)]
@@ -148,7 +148,7 @@ class W_Tuple(W_Hashable):
         return len(self.elements)
 
     def _equal_(self, other):
-        from lalan.types import space
+        from arza.types import space
         if not space.istuple(other):
             return False
 

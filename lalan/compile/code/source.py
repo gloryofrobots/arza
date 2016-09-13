@@ -1,6 +1,6 @@
-from lalan.misc.platform import jit
-from lalan.compile.code.opcode import *
-from lalan.misc.strutil import get_line
+from arza.misc.platform import jit
+from arza.compile.code.opcode import *
+from arza.misc.strutil import get_line
 
 
 def estimate_stack_size(opcodes):
@@ -67,7 +67,7 @@ class CodeSource:
         return self.opcodes[-1]
 
     def emit_2(self, opcode, arg1, arg2, info):
-        # from lalan.compile.code.utils import opcode_to_str
+        # from arza.compile.code.utils import opcode_to_str
         assert isinstance(opcode, int)
         assert isinstance(arg1, int)
         assert isinstance(arg2, int)

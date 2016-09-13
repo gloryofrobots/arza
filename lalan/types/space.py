@@ -1,7 +1,7 @@
-from lalan.misc.platform import jit
-from lalan.types.boolean import W_True, W_False
-from lalan.types.void import W_Void
-from lalan.types.root import W_UniqueType
+from arza.misc.platform import jit
+from arza.types.boolean import W_True, W_False
+from arza.types.void import W_Void
+from arza.types.root import W_UniqueType
 
 w_True = W_True()
 w_False = W_False()
@@ -15,7 +15,7 @@ jit.promote(w_Interrupt)
 
 
 def isany(value):
-    from lalan.types.root import W_Root
+    from arza.types.root import W_Root
     return isinstance(value, W_Root)
 
 
@@ -24,12 +24,12 @@ def isatomictype(value):
 
 
 def isvaluetype(value):
-    from lalan.types.root import W_ValueType
+    from arza.types.root import W_ValueType
     return isinstance(value, W_ValueType)
 
 
 def isuniquetype(w):
-    from lalan.types.root import W_UniqueType
+    from arza.types.root import W_UniqueType
     return isinstance(w, W_UniqueType)
 
 
@@ -37,28 +37,28 @@ def isuniquetype(w):
 
 # TODO CHECK FOR BIGINT OVERFLOW
 def newint(i):
-    from lalan.types.integer import W_Integer
+    from arza.types.integer import W_Integer
     return W_Integer(i)
 
 
 def isint(w):
-    from lalan.types.integer import W_Integer
+    from arza.types.integer import W_Integer
     return isinstance(w, W_Integer)
 
 
 def newfloat(f):
     assert isinstance(f, float)
-    from lalan.types.floating import W_Float
+    from arza.types.floating import W_Float
     return W_Float(f)
 
 
 def isfloat(w):
-    from lalan.types.floating import W_Float
+    from arza.types.floating import W_Float
     return isinstance(w, W_Float)
 
 
 def newnumber(value):
-    from lalan.misc.platform import rarithmetic
+    from arza.misc.platform import rarithmetic
     if isinstance(value, float):
         return newfloat(value)
     try:
@@ -75,12 +75,12 @@ def isnumber(w):
 
 def newchar(c):
     assert isinstance(c, unicode)
-    from lalan.types.character import W_Char
+    from arza.types.character import W_Char
     return W_Char(ord(c))
 
 
 def ischar(w):
-    from lalan.types.character import W_Char
+    from arza.types.character import W_Char
     return isinstance(w, W_Char)
 
 
@@ -93,12 +93,12 @@ def newstring_s(s):
 
 def newstring(s):
     assert isinstance(s, unicode)
-    from lalan.types.string import W_String
+    from arza.types.string import W_String
     return W_String(s)
 
 
 def isstring(w):
-    from lalan.types.string import W_String
+    from arza.types.string import W_String
     return isinstance(w, W_String)
 
 
@@ -120,7 +120,7 @@ def newsymbol_string(process, s):
 
 
 def issymbol(w):
-    from lalan.types.symbol import W_Symbol
+    from arza.types.symbol import W_Symbol
     return isinstance(w, W_Symbol)
 
 
@@ -171,61 +171,61 @@ def newfunc_from_source(source, env):
 
 
 def newfunc(name, bytecode, scope):
-    from lalan.types.function import W_Function
+    from arza.types.function import W_Function
     assert issymbol(name)
     obj = W_Function(name, bytecode, scope)
     return obj
 
 
 def newfuncsource(name, bytecode):
-    from lalan.types.function import W_FunctionSource
+    from arza.types.function import W_FunctionSource
     assert issymbol(name)
     obj = W_FunctionSource(name, bytecode)
     return obj
 
 
 def newnativefunc(name, function, arity):
-    from lalan.types.native_function import W_NativeFunction
+    from arza.types.native_function import W_NativeFunction
     assert issymbol(name)
     obj = W_NativeFunction(name, function, arity)
     return obj
 
 
 def isfunction(value):
-    from lalan.types.function import W_Function
-    from lalan.types.native_function import W_NativeFunction
-    from lalan.types.partial import W_Partial
-    from lalan.types.dispatch.generic import W_Generic
+    from arza.types.function import W_Function
+    from arza.types.native_function import W_NativeFunction
+    from arza.types.partial import W_Partial
+    from arza.types.dispatch.generic import W_Generic
     return isinstance(value, W_Function) or isinstance(value, W_NativeFunction) \
            or isinstance(value, W_Partial) or isinstance(value, W_Generic)
 
 
 def isnativefunction(value):
-    from lalan.types.native_function import W_NativeFunction
+    from arza.types.native_function import W_NativeFunction
     return isinstance(value, W_NativeFunction)
 
 
 ########################################################
 
 def newpartial(func):
-    from lalan.types.partial import newpartial
+    from arza.types.partial import newpartial
     return newpartial(func)
 
 
 def ispartial(w):
-    from lalan.types.partial import W_Partial
+    from arza.types.partial import W_Partial
     return isinstance(w, W_Partial)
 
 
 ########################################################
 
 def newlazyval(func):
-    from lalan.types.lazyval import W_LazyVal
+    from arza.types.lazyval import W_LazyVal
     return W_LazyVal(func)
 
 
 def islazyval(w):
-    from lalan.types.lazyval import W_LazyVal
+    from arza.types.lazyval import W_LazyVal
     return isinstance(w, W_LazyVal)
 
 
@@ -233,12 +233,12 @@ def islazyval(w):
 
 
 def newiodevice(_file):
-    from lalan.types.iodevice import W_IODevice
+    from arza.types.iodevice import W_IODevice
     return W_IODevice(_file)
 
 
 def isiodevice(w):
-    from lalan.types.iodevice import W_IODevice
+    from arza.types.iodevice import W_IODevice
     return isinstance(w, W_IODevice)
 
 
@@ -246,36 +246,36 @@ def isiodevice(w):
 
 
 def newmap():
-    from lalan.types.map import create_empty_map
+    from arza.types.map import create_empty_map
     return create_empty_map()
 
 
 def ismap(value):
-    from lalan.types.map import W_Map
+    from arza.types.map import W_Map
     return isinstance(value, W_Map)
 
 
 ########################################################
 
 def newpmap(args):
-    from lalan.types.pmap import pmap
+    from arza.types.pmap import pmap
     return pmap(args)
 
 
 def ispmap(value):
-    from lalan.types.pmap import W_PMap
+    from arza.types.pmap import W_PMap
     return isinstance(value, W_PMap)
 
 
 ########################################################
 
 def newtvar(value):
-    from lalan.types.tvar import W_TVar
+    from arza.types.tvar import W_TVar
     return W_TVar(value)
 
 
 def istvar(value):
-    from lalan.types.tvar import W_TVar
+    from arza.types.tvar import W_TVar
     return isinstance(value, W_TVar)
 
 
@@ -284,13 +284,13 @@ def istvar(value):
 def newvector(items):
     assert isinstance(items, list)
     verify_list_DEBUG(items)
-    from lalan.types.vector import W_Vector
+    from arza.types.vector import W_Vector
     obj = W_Vector(items)
     return obj
 
 
 def isvector(value):
-    from lalan.types.vector import W_Vector
+    from arza.types.vector import W_Vector
     return isinstance(value, W_Vector)
 
 
@@ -299,26 +299,26 @@ def isvector(value):
 def newpvector(items):
     assert isinstance(items, list)
     verify_list_DEBUG(items)
-    from lalan.types.pvector import newpvector
+    from arza.types.pvector import newpvector
     obj = newpvector(items)
     return obj
 
 
 def ispvector(value):
-    from lalan.types.pvector import W_PVector
+    from arza.types.pvector import W_PVector
     return isinstance(value, W_PVector)
 
 
 ########################################################
 
 def newlist(items):
-    from lalan.types.plist import plist
+    from arza.types.plist import plist
     verify_list_DEBUG(items)
     return plist(items)
 
 
 def islist(value):
-    from lalan.types.plist import W_PList
+    from arza.types.plist import W_PList
     return isinstance(value, W_PList)
 
 
@@ -330,7 +330,7 @@ def verify_list_DEBUG(items):
 ########################################################
 
 def newtuple(items):
-    from lalan.types.tuples import W_Tuple
+    from arza.types.tuples import W_Tuple
     assert isinstance(items, list)
     if len(items) == 0:
         return newunit()
@@ -340,7 +340,7 @@ def newtuple(items):
 
 
 def newunit():
-    from lalan.types.tuples import W_Unit
+    from arza.types.tuples import W_Unit
     return W_Unit()
 
 
@@ -349,40 +349,40 @@ def newtupleunit():
 
 
 def isunit(w):
-    from lalan.types.tuples import W_Unit
+    from arza.types.tuples import W_Unit
     return isinstance(w, W_Unit)
 
 
 def istuple(w):
-    from lalan.types.tuples import W_Tuple, W_Unit
+    from arza.types.tuples import W_Tuple, W_Unit
     return isinstance(w, W_Tuple) or isinstance(w, W_Unit)
 
 
 def isrealtuple(w):
-    from lalan.types.tuples import W_Tuple
+    from arza.types.tuples import W_Tuple
     return isinstance(w, W_Tuple)
 
 
 #########################################################
 def newarguments(stack, index, length):
-    from lalan.types.arguments import W_Arguments
+    from arza.types.arguments import W_Arguments
     return W_Arguments(stack, index, length)
 
 
 def isarguments(w):
-    from lalan.types.arguments import W_Arguments
+    from arza.types.arguments import W_Arguments
     return isinstance(w, W_Arguments)
 
 
 #########################################################
 
 def newscope():
-    from lalan.types.scope import W_Scope
+    from arza.types.scope import W_Scope
     return W_Scope()
 
 
 def isscope(w):
-    from lalan.types.scope import W_Scope
+    from arza.types.scope import W_Scope
     return isinstance(w, W_Scope)
 
 
@@ -390,13 +390,13 @@ def isscope(w):
 
 def newenvsource(name, code):
     assert name is None or issymbol(name)
-    from lalan.types.environment import W_EnvSource
+    from arza.types.environment import W_EnvSource
     obj = W_EnvSource(name, code)
     return obj
 
 
 def newenv(name, scope, outer_environment):
-    from lalan.types.environment import W_Env
+    from arza.types.environment import W_Env
     env = W_Env(name, scope, outer_environment)
     return env
 
@@ -406,14 +406,14 @@ def newemptyenv(name):
 
 
 def isenv(w):
-    from lalan.types.environment import W_Env
+    from arza.types.environment import W_Env
     return isinstance(w, W_Env)
 
 
 ########################################################
 
 def newgeneric(name, signature):
-    from lalan.types.dispatch.generic import generic
+    from arza.types.dispatch.generic import generic
     assert issymbol(name)
     if not islist(signature):
         assert islist(signature)
@@ -424,7 +424,7 @@ def newgeneric(name, signature):
 
 
 def newgeneric_hotpath(name, signature, hot_path):
-    from lalan.types.dispatch.generic import generic_with_hotpath
+    from arza.types.dispatch.generic import generic_with_hotpath
     assert issymbol(name)
     assert islist(signature)
     assert hot_path is not None
@@ -434,15 +434,15 @@ def newgeneric_hotpath(name, signature, hot_path):
 
 
 def isgeneric(w):
-    from lalan.types.dispatch.generic import W_Generic
+    from arza.types.dispatch.generic import W_Generic
     return isinstance(w, W_Generic)
 
 
 ########################################################
 
 def newtrait(name, constraints, signature, methods):
-    from lalan.types.trait import trait
-    from lalan.runtime import error
+    from arza.types.trait import trait
+    from arza.runtime import error
     error.affirm_type(name, issymbol)
     error.affirm_type(constraints, islist)
     error.affirm_type(signature, islist)
@@ -455,15 +455,15 @@ def newtrait(name, constraints, signature, methods):
 
 
 def istrait(w):
-    from lalan.types.trait import W_Trait
+    from arza.types.trait import W_Trait
     return isinstance(w, W_Trait)
 
 
 ########################################################
 
 def newinterface(name, generics):
-    from lalan.types.interface import interface
-    from lalan.runtime import error
+    from arza.types.interface import interface
+    from arza.runtime import error
     error.affirm_type(name, issymbol)
     error.affirm_type(generics, islist)
 
@@ -471,63 +471,63 @@ def newinterface(name, generics):
 
 
 def isinterface(w):
-    from lalan.types.interface import W_Interface
+    from arza.types.interface import W_Interface
     return isinstance(w, W_Interface)
 
 
 ########################################################
 
 def newdatatype(process, name, fields):
-    from lalan.types.datatype import newtype
+    from arza.types.datatype import newtype
     assert issymbol(name)
     return newtype(process, name, fields)
 
 
 def newnativedatatype(name):
-    from lalan.types.datatype import W_DataType
+    from arza.types.datatype import W_DataType
     assert issymbol(name)
     datatype = W_DataType(name, newlist([newstring(u"...")]))
     return datatype
 
 
 def isdatatype(w):
-    from lalan.types.datatype import W_DataType
+    from arza.types.datatype import W_DataType
     return isinstance(w, W_DataType)
 
 
 def isextendable(w):
-    from lalan.types.datatype import W_Extendable
+    from arza.types.datatype import W_Extendable
     return isinstance(w, W_Extendable)
 
 
 def isrecord(w):
-    from lalan.types.datatype import W_Instance
+    from arza.types.datatype import W_Instance
     return isinstance(w, W_Instance)
 
 
 def isdispatchable(w):
-    from lalan.types.datatype import W_Instance, W_DataType
-    from lalan.types.dispatch.generic import W_Generic
+    from arza.types.datatype import W_Instance, W_DataType
+    from arza.types.dispatch.generic import W_Generic
     return isinstance(w, W_Instance) or isinstance(w, W_DataType) or isinstance(w, W_Generic)
 
 
 ########################################################
 
 def isoperator(w):
-    from lalan.compile.parse.basic import W_Operator
+    from arza.compile.parse.basic import W_Operator
     return isinstance(w, W_Operator)
 
 
 ############################################################
 
 def newcoroutine(process, fn):
-    from lalan.types.coroutine import newcoroutine
+    from arza.types.coroutine import newcoroutine
     assert isfunction(fn)
     return newcoroutine(process, fn)
 
 
 def iscoroutine(co):
-    from lalan.types.coroutine import W_Coroutine
+    from arza.types.coroutine import W_Coroutine
     return isinstance(co, W_Coroutine)
 
 

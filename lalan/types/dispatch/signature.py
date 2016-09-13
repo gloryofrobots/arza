@@ -1,8 +1,8 @@
 __author__ = 'gloryofrobots'
 from discriminator import *
-from lalan.types.root import W_Root
-from lalan.types import space, api
-from lalan.runtime import error
+from arza.types.root import W_Root
+from arza.types import space, api
+from arza.runtime import error
 
 
 class Argument(W_Root):

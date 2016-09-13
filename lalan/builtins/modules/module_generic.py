@@ -1,11 +1,11 @@
-from lalan.types import api, space
-from lalan.types.dispatch import generic
-from lalan.runtime import error
-from lalan.runtime.routine.routine import complete_native_routine
+from arza.types import api, space
+from arza.types.dispatch import generic
+from arza.runtime import error
+from arza.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):
-    name = space.newsymbol(process, u'lalan:lang:_generic')
+    name = space.newsymbol(process, u'arza:lang:_generic')
     _module = space.newemptyenv(name)
     api.put_native_function(process, _module, u'get_method', _method, 2)
     api.put_native_function(process, _module, u'get_types', _types, 1)

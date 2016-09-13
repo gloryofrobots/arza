@@ -1,6 +1,6 @@
-from lalan.types import api, space, string
-from lalan.types.root import W_Root
-from lalan.runtime import error
+from arza.types import api, space, string
+from arza.types.root import W_Root
+from arza.runtime import error
 
 
 class W_Symbol(W_Root):
@@ -25,7 +25,7 @@ class W_Symbol(W_Root):
         return self.string._hash_()
 
     def _equal_(self, other):
-        from lalan.types import space
+        from arza.types import space
         if space.issymbol(other):
             val = self.idx == other.idx
             # print "SYMBOL EQ", self, other, val

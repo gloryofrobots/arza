@@ -1,14 +1,14 @@
 __author__ = 'gloryofrobots'
-from lalan.compile.parse.tokenstream import TokenStream
-from lalan.compile.parse.callbacks import *
-from lalan.compile.parse.lexer import UnknownTokenError
-from lalan.compile.parse import tokens
-from lalan.types import api, space, plist, root, environment
+from arza.compile.parse.tokenstream import TokenStream
+from arza.compile.parse.callbacks import *
+from arza.compile.parse.lexer import UnknownTokenError
+from arza.compile.parse import tokens
+from arza.types import api, space, plist, root, environment
 
 if tokens.RPLY:
-    import lalan.compile.parse.lexer as lexer
+    import arza.compile.parse.lexer as lexer
 else:
-    import lalan.compile.parse.lexer2 as lexer
+    import arza.compile.parse.lexer2 as lexer
 
 """ GOLANG PRECEDENCES. SOURCE OF INSPIRATION
 Precedence    Operator

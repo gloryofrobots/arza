@@ -1,4 +1,4 @@
-from lalan.types import api
+from arza.types import api
 
 
 class Discriminator:

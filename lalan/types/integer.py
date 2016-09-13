@@ -1,6 +1,6 @@
 from root import W_ValueType
-from lalan.types import api, space
-from lalan.runtime import error
+from arza.types import api, space
+from arza.runtime import error
 
 
 class W_Integer(W_ValueType):

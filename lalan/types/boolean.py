@@ -1,5 +1,5 @@
 __author__ = 'gloryofrobots'
-import lalan.types.root
+import arza.types.root
 from root import W_UniqueType
 
 

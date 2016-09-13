@@ -1,6 +1,6 @@
-from lalan.misc.platform import (runicode, rarithmetic, rstring)
-from lalan.runtime import error
-from lalan.types import api, space
+from arza.misc.platform import (runicode, rarithmetic, rstring)
+from arza.runtime import error
+from arza.types import api, space
 
 
 def get_line(string, line_no):

@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
-from lalan.runtime.routine.base_routine import BaseRoutine
-from lalan.types import api, space, plist
-from lalan.runtime import error
+from arza.runtime.routine.base_routine import BaseRoutine
+from arza.types import api, space, plist
+from arza.runtime import error
 
 
 class CallbackRoutine(BaseRoutine):

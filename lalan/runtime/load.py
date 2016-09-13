@@ -1,9 +1,9 @@
-from lalan.types import api
-from lalan.runtime import error
-from lalan.misc.fs import load_file_content, is_file, join_and_normalise_path
+from arza.types import api
+from arza.runtime import error
+from arza.misc.fs import load_file_content, is_file, join_and_normalise_path
 import os
-from lalan.types import space, api
-from lalan.compile import compiler
+from arza.types import space, api
+from arza.compile import compiler
 
 
 def import_module(process, name):
@@ -47,7 +47,7 @@ def load_module(process, name):
 
 
 def evaluate_module_file(process, name, filename):
-    from lalan.builtins.lang import compile_module
+    from arza.builtins.lang import compile_module
     module = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 3),
                                 space.newtuple([space.newstring_s(filename), name, process.modules.prelude]))
 

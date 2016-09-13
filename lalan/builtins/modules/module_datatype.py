@@ -1,9 +1,9 @@
-from lalan.types import space, api, datatype
-from lalan.runtime.routine.routine import complete_native_routine
+from arza.types import space, api, datatype
+from arza.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'lalan:lang:_datatype')
+    _module_name = space.newsymbol(process, u'arza:lang:_datatype')
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'record_keys', record_keys, 1)
     api.put_native_function(process, _module, u'record_values', record_values, 1)

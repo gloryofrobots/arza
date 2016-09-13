@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
-from lalan.compile.parse.token_type import *
-from lalan.types import space, api, root
-from lalan.misc.platform import re
+from arza.compile.parse.token_type import *
+from arza.types import space, api, root
+from arza.misc.platform import re
 
 RPLY = True
 
@@ -201,7 +201,7 @@ class Token(root.W_Hashable):
         self.column = column
 
     def _compute_hash_(self):
-        from lalan.misc.platform import rarithmetic
+        from arza.misc.platform import rarithmetic
         x = 0x345678
         for item in [self.val, self.pos, self.line, self.column]:
             y = api.hash_i(item)

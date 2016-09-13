@@ -1,6 +1,6 @@
-from lalan.types.root import W_Callable
-from lalan.runtime import error
-from lalan.types import api, space, tuples
+from arza.types.root import W_Callable
+from arza.runtime import error
+from arza.types import api, space, tuples
 
 
 class W_Partial(W_Callable):
@@ -36,7 +36,7 @@ class W_Partial(W_Callable):
                           self.func, space.newint(length), space.newint(self.arity), self.args, args, new_args)
 
     def _equal_(self, other):
-        from lalan.types import space
+        from arza.types import space
         if not space.ispartial(other):
             return False
 

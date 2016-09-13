@@ -1,4 +1,4 @@
-from lalan:lang:_io import (write, stdout)
+from arza:lang:_io import (write, stdout)
 import seq
 
 

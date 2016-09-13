@@ -1,6 +1,6 @@
-from lalan.types import api, space
-from lalan.types.root import W_Root
-from lalan.runtime import error
+from arza.types import api, space
+from arza.types.root import W_Root
+from arza.runtime import error
 
 
 class W_LazyVal(W_Root):
@@ -30,7 +30,7 @@ class W_LazyVal(W_Root):
 
     def _to_routine_(self, stack, args):
         # print "TO ROUTINE"
-        from lalan.runtime.routine.routine import create_callback_routine
+        from arza.runtime.routine.routine import create_callback_routine
         routine = create_callback_routine(stack, self.on_eval, self.fn, args)
         return routine
 

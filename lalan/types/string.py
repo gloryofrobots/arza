@@ -1,6 +1,6 @@
-from lalan.types.root import W_Hashable
-from lalan.types import api, space
-from lalan.runtime import error
+from arza.types.root import W_Hashable
+from arza.types import api, space
+from arza.runtime import error
 
 
 class W_String(W_Hashable):
@@ -14,7 +14,7 @@ class W_String(W_Hashable):
 
     def _compute_hash_(self):
         """The algorithm behind compute_hash() for a string or a unicode."""
-        from lalan.misc.platform import rarithmetic
+        from arza.misc.platform import rarithmetic
         length = len(self.string_value)
         if length == 0:
             return -1
@@ -44,7 +44,7 @@ class W_String(W_Hashable):
         return self._hash_()
 
     def _equal_(self, other):
-        from lalan.types import space
+        from arza.types import space
         if space.issymbol(other):
             return self._equal_(other.string)
 
@@ -66,7 +66,7 @@ class W_String(W_Hashable):
         return self.length
 
     def _at_index_(self, i):
-        from lalan.types.space import newvoid, newchar
+        from arza.types.space import newvoid, newchar
         try:
             ch = self.string_value[i]
         except:
@@ -81,8 +81,8 @@ class W_String(W_Hashable):
             return -1
 
     def _at_(self, index):
-        from lalan.types.space import isint
-        from lalan.types import api
+        from arza.types.space import isint
+        from arza.types import api
         assert isint(index)
         return self._at_index_(api.to_i(index))
 

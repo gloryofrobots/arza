@@ -1,7 +1,7 @@
-from lalan.types import api, space, plist
-from lalan.types.root import W_Root, W_Callable
-from lalan.misc.platform import is_absent_index
-from lalan.runtime import error
+from arza.types import api, space, plist
+from arza.types.root import W_Root, W_Callable
+from arza.misc.platform import is_absent_index
+from arza.runtime import error
 
 
 class References(W_Root):
@@ -153,7 +153,7 @@ class W_EnvCompileFunction(W_Callable):
         self.env = space.newenv(self.name, self.bytecode.scope, parent_env)
 
     def _to_routine_(self, stack, args):
-        from lalan.runtime.routine.routine import create_module_routine
+        from arza.runtime.routine.routine import create_module_routine
         routine = create_module_routine(self.name, stack, self.bytecode, self.env)
         return routine
 

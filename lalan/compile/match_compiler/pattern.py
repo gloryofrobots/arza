@@ -1,8 +1,8 @@
-from lalan.compile.parse.parser import *
-from lalan.types import plist
-from lalan.compile.parse.nodes import *
-from lalan.types import space, api
-from lalan.misc import platform, strutil
+from arza.compile.parse.parser import *
+from arza.types import plist
+from arza.compile.parse.nodes import *
+from arza.types import space, api
+from arza.misc import platform, strutil
 from transform_state import *
 
 # this file created only for one function get_pattern_names

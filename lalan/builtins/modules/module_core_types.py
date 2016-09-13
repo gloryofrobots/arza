@@ -1,10 +1,10 @@
-from lalan.types import number, space, api
-from lalan.runtime.routine.routine import complete_native_routine
-from lalan.runtime import error
+from arza.types import number, space, api
+from arza.runtime.routine.routine import complete_native_routine
+from arza.runtime import error
 
 
 def setup(process, stdlib):
-    name = space.newsymbol(process, u'lalan:lang:_types')
+    name = space.newsymbol(process, u'arza:lang:_types')
     _module = space.newemptyenv(name)
     setup_types(_module, stdlib.types)
     _module.export_all()

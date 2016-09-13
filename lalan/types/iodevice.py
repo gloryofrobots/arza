@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
-from lalan.types.root import W_Root
-from lalan.types import api
+from arza.types.root import W_Root
+from arza.types import api
 
 class W_IODevice(W_Root):
     def __init__(self, fd):

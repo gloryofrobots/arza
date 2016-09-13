@@ -18,7 +18,7 @@
 
 rpython = None
 
-from lalan.compile.parse.rply.lexer import Lexer
+from arza.compile.parse.rply.lexer import Lexer
 
 
 class Rule(object):

@@ -1,7 +1,7 @@
-from lalan.types.root import W_Callable
-from lalan.runtime import error
-from lalan.types import api, space, partial
-from lalan.misc.platform import jit
+from arza.types.root import W_Callable
+from arza.runtime import error
+from arza.types import api, space, partial
+from arza.misc.platform import jit
 
 
 class W_NativeFunction(W_Callable):
@@ -22,7 +22,7 @@ class W_NativeFunction(W_Callable):
         return process.std.types.Function
 
     def _to_routine_(self, stack, args):
-        from lalan.runtime.routine.routine import create_native_routine
+        from arza.runtime.routine.routine import create_native_routine
         if self.arity != -1 and api.length_i(args) != self.arity:
             return error.throw_3(error.Errors.INVOKE_ERROR,
                                  space.newstring(u"Invalid native call wrong count of arguments"),
@@ -37,7 +37,7 @@ class W_NativeFunction(W_Callable):
         process.call_object(self, args)
 
     def _equal_(self, other):
-        from lalan.types import space
+        from arza.types import space
         if not space.isnativefunction(other):
             return False
 

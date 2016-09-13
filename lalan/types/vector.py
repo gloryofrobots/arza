@@ -1,6 +1,6 @@
-from lalan.types.root import W_Root
-from lalan.misc import platform
-from lalan.runtime import error
+from arza.types.root import W_Root
+from arza.misc import platform
+from arza.runtime import error
 
 
 
@@ -17,8 +17,8 @@ class W_Vector(W_Root):
     #     return u'W_Vector("%s")' % str(self._items)
 
     def _put_(self, k, v):
-        from lalan.types.space import isint
-        from lalan.types import api
+        from arza.types.space import isint
+        from arza.types import api
         assert isint(k)
         i = api.to_i(k)
         try:
@@ -37,8 +37,8 @@ class W_Vector(W_Root):
         return W_Vector(items)
 
     def _at_(self, index):
-        from lalan.types.space import newvoid, isint
-        from lalan.types import api
+        from arza.types.space import newvoid, isint
+        from arza.types import api
         assert isint(index)
         try:
             el = self._items[api.to_i(index)]
@@ -80,12 +80,12 @@ class W_Vector(W_Root):
         self._items += [None] * (size - l)
 
     def append(self, v):
-        from lalan.types.space import isany
+        from arza.types.space import isany
         assert isany(v)
         self._items.append(v)
 
     def append_vector_items(self, vec):
-        from lalan.types.space import isvector
+        from arza.types.space import isvector
         assert isvector(vec)
         self.append_many(vec._items)
 
@@ -93,17 +93,17 @@ class W_Vector(W_Root):
         self._items += items
 
     def prepend(self, v):
-        from lalan.types.space import isany
+        from arza.types.space import isany
         assert isany(v)
         self._items.insert(0, v)
 
     def insert(self, index, v):
-        from lalan.types.space import isany
+        from arza.types.space import isany
         assert isany(v)
         self._items.insert(index, v)
 
     def remove(self, v):
-        from lalan.types.space import isany
+        from arza.types.space import isany
         assert isany(v)
         self._items.remove(v)
 

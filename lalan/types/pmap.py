@@ -1,7 +1,7 @@
-from lalan.misc.platform import jit, rarithmetic
-from lalan.types.root import W_UniqueType, W_Root
-from lalan.types import api, space, plist
-from lalan.runtime import error
+from arza.misc.platform import jit, rarithmetic
+from arza.types.root import W_UniqueType, W_Root
+from arza.types import api, space, plist
+from arza.runtime import error
 
 MASK_32 = rarithmetic.r_uint(0xFFFFFFFF)
 

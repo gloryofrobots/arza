@@ -1,5 +1,7 @@
 from jinja2 import Template
-
+# DEPRECATED AND OBSOLETE
+# ITS BEGIN TO BE CUMBERSOME TO USE IT
+# MODIFYING PY FILES IS JUST SIMPLER
 
 TPL_SETUP_HEADER = """
 def setup(process, stdlib):
@@ -78,9 +80,11 @@ def module(module_name, funcs):
         funcs=funcs
     )
 
-LIST = module("lalan:lang:_list", [
+LIST = module("arza:lang:_list", [
     func(func_name="length", func_native_name="length", func_arity=1,
-             source_module="plist", source_function="length"),
+             source_module="plist", source_function="length", result_wrap="space.newint"),
+    func(func_name="to_tuple", func_native_name="to_tuple", func_arity=1,
+             source_module="plist", source_function="to_tuple"),
     func(func_name="is_empty", func_native_name="_is_empty", func_arity=1,
              source_module="plist", source_function="is_empty", result_wrap="space.newbool"),
 
@@ -104,33 +108,34 @@ LIST = module("lalan:lang:_list", [
             arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
     ])
 
-TUPLES = module("lalan:lang:_tuple", [
-    func(func_name="to_list", func_native_name="_to_list", func_arity=1,
-             source_module="tuples", source_function="to_list"),
-
+TUPLES = module("arza:lang:_tuple", [
     func(func_name="slice", func_native_name="slice", func_arity=3,
              source_module="tuples", source_function="slice",
             arguments=[arg(2,0), arg(1,1, wrapper='api.to_i'), arg(0, 0, wrapper='api.to_i')]),
-
     func(func_name="take", func_native_name="take", func_arity=2,
              source_module="tuples", source_function="take",
             arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
-
     func(func_name="drop", func_native_name="drop", func_arity=2,
              source_module="tuples", source_function="drop",
             arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
 
-    func(func_name="prepend", func_native_name="prepend", func_arity=2,
-             source_module="tuples", source_function="prepend",
+    func(func_name="index_of", func_native_name="get_index", func_arity=2,
+             source_module="api", source_function="get_index",
             arguments=[arg(1, 0), arg(0, 0)]),
 
     func(func_name="concat", func_native_name="concat", func_arity=2,
              source_module="tuples", source_function="concat",
-            arguments=[arg(0, 1), arg(1, 1)]),
-    ]
-)
+            arguments=[arg(0, 0), arg(1, 0)]),
 
-STRING = module("lalan:lang:_string", [
+    func(func_name="prepend", func_native_name="prepend", func_arity=2,
+             source_module="tuples", source_function="prepend",
+            arguments=[arg(1, 0), arg(0, 1)]),
+
+    func(func_name="to_list", func_native_name="_to_list", func_arity=1,
+             source_module="tuples", source_function="to_list"),
+    ])
+
+STRING = module("arza:lang:_string", [
 
     func(func_name="to_list", func_native_name="to_list", func_arity=1,
              source_module="string", source_function="to_list"),
@@ -174,7 +179,7 @@ STRING = module("lalan:lang:_string", [
     ])
 
 
-BIT = module("lalan:lang:_bit",  [
+BIT = module("arza:lang:_bit",  [
     func(func_name="bitnot", func_native_name="bitnot", func_arity=1,
              source_module="number", source_function="bitnot",
                 affirm_type='space.isint'),
@@ -206,7 +211,7 @@ BIT = module("lalan:lang:_bit",  [
     ])
 
 
-API = module("lalan:lang:_api", [
+API = module("arza:lang:_api", [
     func(func_name="length", func_native_name="length", func_arity=1,
              source_module="api", source_function="length"),
     func(func_name="is_empty", func_native_name="is_empty", func_arity=1,
@@ -234,7 +239,7 @@ API = module("lalan:lang:_api", [
             arguments=[arg(0, 0)]),
 ])
 
-NUMBER = module("lalan:lang:_number", [
+NUMBER = module("arza:lang:_number", [
     func(func_name="pow", func_native_name="_pow", func_arity=2,
          source_module="number", source_function="power",
          affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
@@ -262,7 +267,7 @@ NUMBER = module("lalan:lang:_number", [
              source_module="number", source_function="le",
              affirm_type='space.isnumber', arguments=[arg(0, 0), arg(1, 1)]),
 ])
-DATATYPE = module("lalan:lang:_datatype", [
+DATATYPE = module("arza:lang:_datatype", [
     func(func_name="union_to_list", func_native_name="union_to_list", func_arity=1,
              source_module="datatype", source_function="union_to_list"),
     func(func_name="get_union", func_native_name="get_union", func_arity=1,
@@ -280,8 +285,8 @@ MAP = module("lalan:lang:_map", [
              source_module="pmap", source_function="to_list"),
     ])
 
-print generate(TUPLES)
-# print generate(LIST)
+# print generate(TUPLES)
+print generate(LIST)
 # print generate(API)
 # print generate(BIT)
 # print generate(NUMBER)

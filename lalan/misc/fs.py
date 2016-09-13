@@ -109,9 +109,9 @@ def is_file(p):
 
 
 def load_file_content(filename):
-    from lalan.misc.platform import USE_RPYTHON
+    from arza.misc.platform import USE_RPYTHON
     if USE_RPYTHON:
-        from lalan.misc.platform import streamio
+        from arza.misc.platform import streamio
         f = streamio.open_file_as_stream(str(filename))
         src = f.readall()
         return src

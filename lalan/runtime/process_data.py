@@ -1,7 +1,7 @@
-from lalan.types import space, api, plist
-from lalan.compile.parse.parser import newparser
-from lalan.runtime import error
-from lalan.types import api
+from arza.types import space, api, plist
+from arza.compile.parse.parser import newparser
+from arza.runtime import error
+from arza.types import api
 
 class Symbols:
     def __init__(self):
@@ -21,8 +21,8 @@ class Symbols:
             symbol = self.symbols[idx]
             return symbol
         except KeyError:
-            from lalan.types.space import newstring
-            from lalan.types.symbol import W_Symbol
+            from arza.types.space import newstring
+            from arza.types.symbol import W_Symbol
             string = newstring(ustrval)
             idx = len(self.symbols)
             symbol = W_Symbol(string, idx)
@@ -91,7 +91,7 @@ class IO:
 
 
 def create(libdirs, prelude):
-    from lalan.builtins.std import Std
+    from arza.builtins.std import Std
     symbols = Symbols()
     stdlib = Std(symbols)
     modules = Modules(libdirs, prelude)

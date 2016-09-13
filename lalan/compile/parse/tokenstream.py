@@ -1,5 +1,5 @@
-from lalan.compile.parse.token_type import TT_NEWLINE
-from lalan.compile.parse import nodes
+from arza.compile.parse.token_type import TT_NEWLINE
+from arza.compile.parse import nodes
 
 
 class TokenStream:

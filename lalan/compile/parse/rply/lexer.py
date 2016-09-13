@@ -1,5 +1,5 @@
-from lalan.compile.parse.rply.errors import LexingError
-from lalan.compile.parse.rply.token import SourcePosition, Token
+from arza.compile.parse.rply.errors import LexingError
+from arza.compile.parse.rply.token import SourcePosition, Token
 
 
 class Lexer(object):

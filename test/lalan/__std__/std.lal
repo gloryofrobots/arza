@@ -1,5 +1,5 @@
-import lalan:lang:_api
-import lalan:lang:_datatype
+import arza:lang:_api
+import arza:lang:_datatype
 
 def repr (self of Any) = str(self)
 
@@ -18,7 +18,7 @@ def min (x of LessEq, y) = if x <= y then x else y
 
 /////////////////////////////
 
-import lalan:lang:_generic
+import arza:lang:_generic
 
 def at (k, self of Map) as _api:at
 def at (el, self of Tuple) as _api:at

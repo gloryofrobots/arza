@@ -1,15 +1,15 @@
-from lalan.runtime.routine.routine import complete_native_routine
-from lalan.runtime import error
-from lalan.types import api, space, plist, environment, datatype, tuples, partial
-from lalan.misc.timer import Timer
+from arza.runtime.routine.routine import complete_native_routine
+from arza.runtime import error
+from arza.types import api, space, plist, environment, datatype, tuples, partial
+from arza.misc.timer import Timer
 
-from lalan.misc.strutil import encode_unicode_utf8
-from lalan.misc.platform import rstring, compute_unique_id
-from lalan.misc import fs
-from lalan.compile import compiler
+from arza.misc.strutil import encode_unicode_utf8
+from arza.misc.platform import rstring, compute_unique_id
+from arza.misc import fs
+from arza.compile import compiler
 
-# TODO MAKE IT lalan:is_seq ...
-from lalan.builtins import lang_names
+# TODO MAKE IT arza:is_seq ...
+from arza.builtins import lang_names
 
 
 def put_lang_func(process, module, name, func, arity):
@@ -165,7 +165,7 @@ def __type(process, routine):
 
 @complete_native_routine
 def __generic(process, routine):
-    from lalan.types.dispatch import generic
+    from arza.types.dispatch import generic
     name = routine.get_arg(0)
     sig = routine.get_arg(1)
     return generic.generic(name, sig)
@@ -173,7 +173,7 @@ def __generic(process, routine):
 
 @complete_native_routine
 def __specify(process, routine):
-    from lalan.types.dispatch import generic
+    from arza.types.dispatch import generic
     gf = routine.get_arg(0)
     types = routine.get_arg(1)
     method = routine.get_arg(2)
@@ -206,7 +206,7 @@ def __trait(process, routine):
 
 @complete_native_routine
 def __use_trait(process, routine):
-    from lalan.types import trait
+    from arza.types import trait
     trait = routine.get_arg(0)
     exported = routine.get_arg(1)
     types = routine.get_arg(2)
@@ -230,7 +230,7 @@ def __partial(process, routine):
 
 @complete_native_routine
 def concat_tuples(process, routine):
-    from lalan.types.tuples import concat
+    from arza.types.tuples import concat
     v1 = routine.get_arg(0)
     v2 = routine.get_arg(1)
     return concat(v1, v2)
@@ -256,7 +256,7 @@ def is_indexed(process, routine):
 
 @complete_native_routine
 def is_seq(process, routine):
-    from lalan.types.space import islist, newbool
+    from arza.types.space import islist, newbool
     v1 = routine.get_arg(0)
     if islist(v1):
         return newbool(True)

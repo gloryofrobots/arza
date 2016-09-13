@@ -1,7 +1,7 @@
-from lalan.types.root import W_Root
-from lalan.types import space
-from lalan.types import api
-from lalan.runtime import error
+from arza.types.root import W_Root
+from arza.types import space
+from arza.types import api
+from arza.runtime import error
 
 
 class W_PList(W_Root):
@@ -37,7 +37,7 @@ class W_PList(W_Root):
         return str(els)
 
     def _to_string_(self):
-        from lalan.types import api
+        from arza.types import api
         els = []
         cur = self
         while True:
@@ -80,7 +80,7 @@ class W_PList(W_Root):
         return nth(self, int_index)
 
     def _put_(self, k, v):
-        from lalan.types import api
+        from arza.types import api
         error.affirm_type(k, space.isint)
         i = api.to_i(k)
         return update(self, i, v)
@@ -247,7 +247,7 @@ def slice(pl, start, end):
 ##############################################
 
 def _nth(pl, index):
-    from lalan.types.space import newvoid
+    from arza.types.space import newvoid
     if index == 0:
         return head(pl)
     if is_empty(pl):
@@ -264,7 +264,7 @@ def nth(pl, index):
 ##############################################
 
 def _nth_tail(pl, index):
-    from lalan.types.space import newvoid
+    from arza.types.space import newvoid
     if index == 0:
         return tail(pl)
     if is_empty(pl):
@@ -314,7 +314,7 @@ def remove_all(pl, v):
 
 def remove(pl, v):
     type_check(pl)
-    from lalan.types import api
+    from arza.types import api
     if is_empty(pl):
         return error.throw_1(error.Errors.VALUE_ERROR, space.newint(v))
 
@@ -507,8 +507,8 @@ def reverse(pl):
 ##############################################################
 
 def _hash(el, acc):
-    from lalan.types import api
-    from lalan.misc.platform import rarithmetic
+    from arza.types import api
+    from arza.misc.platform import rarithmetic
     y = api.hash_i(el)
     return rarithmetic.intmask((1000003 * acc) ^ y)
 

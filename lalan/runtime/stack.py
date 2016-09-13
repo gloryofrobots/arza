@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
-from lalan.misc.platform import jit
-from lalan.types import plist, space
-from lalan.runtime import error
+from arza.misc.platform import jit
+from arza.types import plist, space
+from arza.runtime import error
 # TODO proper stack operations
 
 class Stack:
@@ -46,7 +46,7 @@ class Stack:
         return len(self.data)
 
     def push(self, element):
-        from lalan.types.space import isany
+        from arza.types.space import isany
         if not isany(element):
             raise RuntimeError(u"Not Any product", element)
 

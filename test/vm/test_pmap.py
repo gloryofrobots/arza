@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
-from lalan.types import pmap, space, api
-from lalan.runtime.error import LalanError
+from arza.types import pmap, space, api
+from arza.runtime.error import LalanError
 import unittest
 
 class PMapTestCase(unittest.TestCase):

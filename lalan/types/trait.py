@@ -1,7 +1,7 @@
-from lalan.types.root import W_Hashable
-from lalan.types import api, space, plist
-from lalan.misc import platform
-from lalan.runtime import error
+from arza.types.root import W_Hashable
+from arza.types import api, space, plist
+from arza.misc import platform
+from arza.runtime import error
 
 
 class W_Trait(W_Hashable):

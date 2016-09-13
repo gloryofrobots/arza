@@ -1,6 +1,6 @@
 import re
-from lalan.types import space
-from lalan.compile.parse import tokens
+from arza.types import space
+from arza.compile.parse import tokens
 
 class UnknownTokenError(Exception):
     def __init__(self, position):

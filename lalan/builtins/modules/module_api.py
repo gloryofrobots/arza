@@ -1,10 +1,10 @@
-from lalan.types import api, space
-from lalan.runtime import error
-from lalan.runtime.routine.routine import complete_native_routine
+from arza.types import api, space
+from arza.runtime import error
+from arza.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'lalan:lang:_api')
+    _module_name = space.newsymbol(process, u'arza:lang:_api')
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'length', length, 1)
     api.put_native_function(process, _module, u'is_empty', is_empty, 1)

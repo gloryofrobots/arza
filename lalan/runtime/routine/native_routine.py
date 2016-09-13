@@ -1,14 +1,14 @@
 __author__ = 'gloryofrobots'
-from lalan.runtime.routine.base_routine import BaseRoutine
-from lalan.types import api
-from lalan.types import space
+from arza.runtime.routine.base_routine import BaseRoutine
+from arza.types import api
+from arza.types import space
 
 class NativeRoutine(BaseRoutine):
     # _immutable_fields_ = ['_name_', '_function_']
 
     def __init__(self, stack, name, function, args, arity):
         BaseRoutine.__init__(self, stack)
-        from lalan.types.space import issymbol
+        from arza.types.space import issymbol
         assert issymbol(name)
         self._name_ = name
         self.native_func = function

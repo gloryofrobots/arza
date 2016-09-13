@@ -1,8 +1,8 @@
 __author__ = 'gloryofrobots'
 # TODO REMOVE UNNECESSARRY ASSERTS OR REPLACE THEM WITH DEBUG MODE
 
-from lalan.types import space
-from lalan.runtime import error
+from arza.types import space
+from arza.runtime import error
 
 
 # *************************
@@ -100,7 +100,7 @@ def is_empty(obj):
 
 
 def is_empty_b(obj):
-    from lalan.types import plist
+    from arza.types import plist
     if space.islist(obj):
         return plist.is_empty(obj)
 

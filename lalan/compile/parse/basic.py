@@ -1,10 +1,10 @@
-from lalan.compile.parse.token_type import *
-from lalan.compile.parse.node_type import *
-from lalan.compile.parse import nodes
-from lalan.compile.parse import tokens
-from lalan.types import space, api, root, plist, environment
-from lalan.runtime import error
-from lalan.misc.strutil import get_line, get_line_for_position
+from arza.compile.parse.token_type import *
+from arza.compile.parse.node_type import *
+from arza.compile.parse import nodes
+from arza.compile.parse import tokens
+from arza.types import space, api, root, plist, environment
+from arza.runtime import error
+from arza.misc.strutil import get_line, get_line_for_position
 
 TERM_LPAREN = [TT_RPAREN]
 
@@ -629,7 +629,7 @@ def stmt(parser, ttype, std):
 
 
 def literal(parser, ttype):
-    from lalan.compile.parse.callbacks import itself
+    from arza.compile.parse.callbacks import itself
     parser_set_nud(parser, ttype, itself)
 
 

@@ -10,12 +10,12 @@ Lalan written in relatively 'slow' language python with not many speed optimisat
 
 ## Running
 ```
-python targetlalan.py test/lalan/main.lal
+python targetarza.py test/arza/main.cns
 ```
 or better use pypy
 
 Currently, compilation via RPython toolchain does not supported but it can be done with some efforts.
-There are no REPL for lalan at the moment
+There are no REPL for arza at the moment
 
 ## Features
 
@@ -351,7 +351,7 @@ fun <name> `(`{arg_pattern}`)`
     {`|` `(`{arg_pattern}`)` [ when  <value_expression>] = <value_expression>}
 
 
-// Function expression in lalan have three forms
+// Function expression in arza have three forms
 //
 // Simple
 fun <name> `(`[arg_pattern]`)` [ when  <value_expression>]= <value_expression> |
@@ -484,8 +484,8 @@ It is simple and powerful system but it tightly bounds functions to only one pro
 Problem occurs when some function must belong to two or more protocols simultaneously
 For example, we can have protocol for collection with methods 'at' and 'elem' and protocol for
 mutable collection with methods 'at' 'elem' 'put' 'del'.
-Mixins or Inheritance can solve this problem but lalan goes the other way.
-In lalan generic functions and protocols(interfaces) declared apart from each other
+Mixins or Inheritance can solve this problem but arza goes the other way.
+In arza generic functions and protocols(interfaces) declared apart from each other
 and interfaces combine one or more previously declared generics.
 Type doesn't need to signal implementation of interface but needs to implement all generic functions belonging to interface
 Lalan generic functions can dispatch on argument in any position
@@ -605,7 +605,7 @@ let (
 ```
 
 #### Trait expression
-Trait is code reuse unit in lalan.
+Trait is code reuse unit in arza.
 They are simple maps {generic = implementation} and can be used in extend statement
 to share common behaviour between different types
 
@@ -723,7 +723,7 @@ fun f() =
 
 #### Access and update operators
 
-Many lalan data structures borrowed from [Pixie language](https://github.com/pixie-lang/pixie).
+Many arza data structures borrowed from [Pixie language](https://github.com/pixie-lang/pixie).
 All of predefined data structures are immutable
 
 ```
@@ -807,9 +807,9 @@ let
 )
 // Also there are two operators in prelude responsible for creating curried functions
 // prefix
-fun &(func) = lalan:lang:defpartial(func)
+fun &(func) = arza:lang:defpartial(func)
 // infix
-fun ..(f, g) = lalan:lang:defpartial(f)(g)
+fun ..(f, g) = arza:lang:defpartial(f)(g)
 let
 (
    n = seq:map(&`+`(2), [1,2,3])
@@ -1188,6 +1188,6 @@ Module search path would look something like  [BASEDIR, STD, LALANSTD] where
 #### Loading order
 * prelude.lal. If prelude is absent execution will be terminated. All names declared in prelude would be visible in all other modules
 * stdlib modules used by runtime (derive.lal, bool.lal, num.lal, bit.lal, env.lal, string.lal, symbol.lal, vector.lal, list.lal, function.lal, fiber.lal, trait.lal, tuple.lal, map.lal, seq.lal, lazy.lal, datatype.lal)
-* running script (in our case program.lal). After loading this sript lalan searches for function named 'main' and executes it. Result of 'main' function would be result of program
+* running script (in our case program.lal). After loading this sript arza searches for function named 'main' and executes it. Result of 'main' function would be result of program
 
 

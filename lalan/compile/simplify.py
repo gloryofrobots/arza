@@ -1,15 +1,15 @@
-from lalan.compile.parse.nodes import (node_type, node_arity,
+from arza.compile.parse.nodes import (node_type, node_arity,
                                        node_first, node_second, node_third, node_fourth, node_children, is_empty_node)
-from lalan.runtime import error
-from lalan.types import space, api, plist, environment, symbol as symbols, string as strings
-from lalan.builtins import lang_names
-from lalan.misc import platform
+from arza.runtime import error
+from arza.types import space, api, plist, environment, symbol as symbols, string as strings
+from arza.builtins import lang_names
+from arza.misc import platform
 
-from lalan.compile.parse import nodes, node_type as nt, basic
+from arza.compile.parse import nodes, node_type as nt, basic
 
 
 def simplify_error(compiler, code, node, message):
-    from lalan.compile.compiler import compile_error
+    from arza.compile.compiler import compile_error
     return compile_error(compiler, code, node, message)
 
 

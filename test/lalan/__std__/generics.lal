@@ -1,1 +1,1 @@
-from lalan:lang:_generic import (get_method, get_types)
+from arza:lang:_generic import (get_method, get_types)

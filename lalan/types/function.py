@@ -1,6 +1,6 @@
-from lalan.types.root import W_Callable, W_Root
-from lalan.runtime.error import *
-from lalan.types import api
+from arza.types.root import W_Callable, W_Root
+from arza.runtime.error import *
+from arza.types import api
 
 
 class W_FunctionSource(W_Root):
@@ -41,7 +41,7 @@ class W_Function(W_Callable):
     #     return 'Function %s' % self._tostring_()
 
     def _to_routine_(self, stack, args):
-        from lalan.runtime.routine.routine import create_function_routine
+        from arza.runtime.routine.routine import create_function_routine
         routine = create_function_routine(stack, self, args, self.env)
         return routine
 
@@ -54,7 +54,7 @@ class W_Function(W_Callable):
         process.call_object(self, args)
 
     def _equal_(self, other):
-        from lalan.types import space
+        from arza.types import space
         if not space.isfunction(other):
             return False
 

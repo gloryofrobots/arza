@@ -1,1 +1,1 @@
-pypy -m cProfile -o debinfo/lalan_profile.prof targetlalan.py test/lalan/main.lal 
+pypy -m cProfile -o debinfo/lalan_profile.prof targetlalan.py test/arza/main.lal 

@@ -1,11 +1,11 @@
-from lalan.compile.parse.basic import *
-from lalan.compile.parse.node_type import *
-from lalan.compile.parse import nodes
-from lalan.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3, node_4,
+from arza.compile.parse.basic import *
+from arza.compile.parse.node_type import *
+from arza.compile.parse import nodes
+from arza.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3, node_4,
                                        list_node, empty_node)
-from lalan.types import space
-from lalan.misc import strutil
-from lalan.builtins import lang_names
+from arza.types import space
+from arza.misc import strutil
+from arza.builtins import lang_names
 
 NODE_TYPE_MAPPING = {
     TT_COLON: NT_IMPORTED_NAME,
@@ -848,7 +848,7 @@ def _load_path_s(node):
 
 
 def _load_module(parser, exp):
-    from lalan.runtime import load
+    from arza.runtime import load
 
     if nodes.node_type(exp) == NT_AS:
         import_name = nodes.node_second(exp)

@@ -5,8 +5,8 @@ def check_implementation_0(operation_name):
             try:
                 return f(self)
             except NotImplementedError:
-                from lalan.runtime import error
-                from lalan.types import space
+                from arza.runtime import error
+                from arza.types import space
                 return error.throw_2(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(unicode(operation_name)), self)
 
         return wrapper
@@ -20,8 +20,8 @@ def check_implementation_1(operation_name):
             try:
                 return f(self, arg1)
             except NotImplementedError:
-                from lalan.runtime import error
-                from lalan.types import space
+                from arza.runtime import error
+                from arza.types import space
                 return error.throw_3(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(unicode(operation_name)), self, arg1)
 
         return wrapper
@@ -35,8 +35,8 @@ def check_implementation_2(operation_name):
             try:
                 return f(self, arg1, arg2)
             except NotImplementedError:
-                from lalan.runtime import error
-                from lalan.types import space
+                from arza.runtime import error
+                from arza.types import space
                 return error.throw_4(error.Errors.NOT_IMPLEMENTED_ERROR,
                                      space.newstring(unicode(operation_name)), self, arg1, arg2)
 
@@ -51,8 +51,8 @@ def check_implementation_3(operation_name):
             try:
                 return f(self, arg1, arg2, arg3)
             except NotImplementedError:
-                from lalan.runtime import error
-                from lalan.types import space
+                from arza.runtime import error
+                from arza.types import space
                 return error.throw_5(error.Errors.NOT_IMPLEMENTED_ERROR,
                                      space.newstring(unicode(operation_name)),
                                      self, arg1, arg2, arg3)
@@ -63,8 +63,8 @@ def check_implementation_3(operation_name):
 
 
 def not_implemented_error(name, *args):
-    from lalan.types import space
-    from lalan.runtime import error
+    from arza.types import space
+    from arza.runtime import error
     if len(args) == 1:
         return error.throw_2(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name), space.safe_w(args[0]))
     elif len(args) == 2:
@@ -97,14 +97,14 @@ class W_Root:
         return not_implemented_error(u"_contains_", self, key)
 
     def _at_index_(self, i):
-        from lalan.types import space
+        from arza.types import space
         return not_implemented_error(u"_at_index_", self, space.newint(i))
 
     def _get_index_(self, obj):
         return not_implemented_error(u"_get_index_", self, obj)
 
     def _put_at_index_(self, i, obj):
-        from lalan.types import space
+        from arza.types import space
         return not_implemented_error(u"_put_at_index_", self, space.newint(i), obj)
 
     def _is_empty_(self):

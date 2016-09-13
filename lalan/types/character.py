@@ -1,4 +1,4 @@
-from lalan.types import  space, api, root
+from arza.types import  space, api, root
 
 class W_Char(root.W_ValueType):
     def __init__(self, value):

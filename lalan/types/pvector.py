@@ -1,8 +1,8 @@
-from lalan.misc.platform import jit, rarithmetic, absent_index
-from lalan.types.root import W_UniqueType, W_Root
-from lalan.types import api, space, plist
-from lalan.runtime import error
-from lalan.misc.platform import jit, rarithmetic
+from arza.misc.platform import jit, rarithmetic, absent_index
+from arza.types.root import W_UniqueType, W_Root
+from arza.types import api, space, plist
+from arza.runtime import error
+from arza.misc.platform import jit, rarithmetic
 
 
 class Node(W_Root):
@@ -188,7 +188,7 @@ class W_PVector(W_Root):
         return True
 
     def _put_(self, k, v):
-        from lalan.types import api
+        from arza.types import api
         error.affirm_type(k, space.isint)
 
         i = api.to_i(k)
