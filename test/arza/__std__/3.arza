@@ -115,3 +115,13 @@ in
     def ** (x, y) as  _number:pow
     def <= (x, y) as _number:le
 )
+
+interface Any ()
+
+interface Sleepy(sleep.0)
+
+def sleep(self of Any)
+
+type Cat(name, prettiness)
+
+declare Cat as Sleepy
