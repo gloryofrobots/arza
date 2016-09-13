@@ -55,6 +55,7 @@ NODES = [
   "NT_GENERIC",
   "NT_METHOD",
   "NT_INTERFACE",
+  "NT_DERIVE",
 
   "NT_BIND",
 

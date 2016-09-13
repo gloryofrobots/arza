@@ -124,4 +124,3 @@ def sleep(self of Any)
 
 type Cat(name, prettiness)
 
-declare Cat as Sleepy

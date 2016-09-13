@@ -1,5 +1,5 @@
 from arza.compile.parse.nodes import (node_type, node_arity,
-                                       node_first, node_second, node_third, node_fourth, node_children, is_empty_node)
+                                      node_first, node_second, node_third, node_fourth, node_children, is_empty_node)
 from arza.runtime import error
 from arza.types import space, api, plist, environment, symbol as symbols, string as strings
 from arza.builtins import lang_names
@@ -46,11 +46,10 @@ def simplify_cons(compiler, code, node):
     return nodes.create_cons_call(node, left, right)
 
 
-def simplify_use(compiler, code, node):
-    trait_name = node_first(node)
-    exported = node_second(node)
-    types = node_third(node)
-    return nodes.create_call_node_s(node, lang_names.USE_TRAIT, [trait_name, exported, types])
+def simplify_declare(compiler, code, node):
+    _type = node_first(node)
+    interfaces = node_second(node)
+    return nodes.create_call_node_s(node, lang_names.DERIVE, [_type, interfaces])
 
 
 def _random_name(name):

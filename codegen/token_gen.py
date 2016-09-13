@@ -56,6 +56,7 @@ TOKENS = [
   ("TT_FOR", "for"),
   ("TT_GENERIC", "generic"),
   ("TT_INTERFACE", "interface"),
+  ("TT_DERIVE", "derive"),
 
   ("TT_END", "end"),
   ("TT_END_EXPR", ";"),

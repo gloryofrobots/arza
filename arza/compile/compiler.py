@@ -1002,6 +1002,10 @@ def _compile_LET(compiler, code, node):
     simplified = simplify.simplify_let(compiler, code, node)
     _compile(compiler, code, simplified)
 
+def _compile_DERIVE(compiler, code, node):
+    simplified = simplify.simplify_declare(compiler, code, node)
+    _compile(compiler, code, simplified)
+
 
 def _compile_TYPE(compiler, code, node):
     simplified = simplify.simplify_type(compiler, code, node)
@@ -1016,11 +1020,6 @@ def _compile_INTERFACE(compiler, code, node):
 def _compile_GENERIC(compiler, code, node):
     generic = simplify.simplify_generic(compiler, code, node)
     _compile(compiler, code, generic)
-
-
-def _compile_USE(compiler, code, node):
-    simplified = simplify.simplify_use(compiler, code, node)
-    _compile(compiler, code, simplified)
 
 
 def _compile_DEF(compiler, code, node):
@@ -1215,6 +1214,8 @@ def _compile_node(compiler, code, node):
         _compile_CONS(compiler, code, node)
     elif NT_LET == ntype:
         _compile_LET(compiler, code, node)
+    elif NT_DERIVE == ntype:
+        _compile_DERIVE(compiler, code, node)
 
     elif NT_LOOKUP == ntype:
         _compile_LOOKUP(compiler, code, node)

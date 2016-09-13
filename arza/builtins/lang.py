@@ -8,7 +8,6 @@ from arza.misc.platform import rstring, compute_unique_id
 from arza.misc import fs
 from arza.compile import compiler
 
-# TODO MAKE IT arza:is_seq ...
 from arza.builtins import lang_names
 
 
@@ -24,9 +23,8 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'_p_', _print, -1)
     api.put_native_function(process, module, u'address', _id, 1)
     api.put_native_function(process, module, u'apply', apply, 2)
-    api.put_native_function(process, module, u'concat', concat_tuples, 2)
+    # api.put_native_function(process, module, u'concat', concat_tuples, 2)
     api.put_native_function(process, module, u'time', time, 0)
-    api.put_native_function(process, module, u'traits', traits, 1)
     api.put_native_function(process, module, u'get_type', _type, 1)
     api.put_native_function(process, module, u'symbol', _symbol, 1)
     put_lang_func(process, module, lang_names.APPLY, apply, 2)
@@ -40,18 +38,10 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.TYPE, __type, 2)
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
     put_lang_func(process, module, lang_names.INTERFACE, __interface, 2)
-    put_lang_func(process, module, lang_names.TRAIT, __trait, 4)
     put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
-    put_lang_func(process, module, lang_names.USE_TRAIT, __use_trait, 3)
+    put_lang_func(process, module, lang_names.DERIVE, __derive, 2)
     put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
-    put_lang_func(process, module, u"partial", __partial, -1)
-
     put_lang_func(process, module, u"vector", __vector, -1)
-
-    ## debugging
-    # if not we_are_translated():
-    #     api.put_native_function(process, obj, u'pypy_repr', pypy_repr)
-    #     api.put_native_function(process, obj, u'inspect', inspect)
 
 
 # 15.1.2.2
@@ -97,7 +87,8 @@ def _print(process, routine):
     return space.newunit()
 
 
-# here i usually put breakpoints in python debugger
+# here i can put breakpoints in python debugger
+# and pause script execution
 @complete_native_routine
 def breakpoint(process, routine):
     args = routine._args.to_l()
@@ -192,26 +183,11 @@ def __interface(process, routine):
 
 
 @complete_native_routine
-def __trait(process, routine):
-    name = routine.get_arg(0)
-    signature = routine.get_arg(1)
-    constraints = routine.get_arg(2)
-    generics = routine.get_arg(3)
-
-    if space.istuple(constraints):
-        constraints = tuples.to_list(constraints)
-    _trait = space.newtrait(name, signature, constraints, generics)
-    return _trait
-
-
-@complete_native_routine
-def __use_trait(process, routine):
-    from arza.types import trait
-    trait = routine.get_arg(0)
-    exported = routine.get_arg(1)
-    types = routine.get_arg(2)
-    trait.use(process, trait, exported, types)
-    return space.newvoid()
+def __derive(process, routine):
+    _type = routine.get_arg(0)
+    interfaces = routine.get_arg(1)
+    datatype.derive(_type, interfaces)
+    return _type
 
 
 @complete_native_routine
@@ -228,12 +204,12 @@ def __partial(process, routine):
     return partial.newfunction_partial(func, args_t)
 
 
-@complete_native_routine
-def concat_tuples(process, routine):
-    from arza.types.tuples import concat
-    v1 = routine.get_arg(0)
-    v2 = routine.get_arg(1)
-    return concat(v1, v2)
+# @complete_native_routine
+# def concat_tuples(process, routine):
+#     from arza.types.tuples import concat
+#     v1 = routine.get_arg(0)
+#     v2 = routine.get_arg(1)
+#     return concat(v1, v2)
 
 
 @complete_native_routine
@@ -298,40 +274,3 @@ def __kindof(process, routine):
     left = routine.get_arg(0)
     right = routine.get_arg(1)
     return api.kindof(process, left, right)
-
-
-@complete_native_routine
-def _range(process, routine):
-    start = routine.get_arg(0)
-    end = routine.get_arg(1)
-    start = api.to_i(start)
-    end = api.to_i(end)
-    items = [space.newint(i) for i in xrange(start, end)]
-    return space.newtuple(items)
-
-
-@complete_native_routine
-def clone(process, routine):
-    origin = routine.get_arg(0)
-    clone = api.clone(origin)
-    return clone
-
-
-@complete_native_routine
-def traits(process, routine):
-    obj = routine.get_arg(0)
-    return api.traits(process, obj)
-
-
-@complete_native_routine
-def lookup(process, routine):
-    this = routine.get_arg(0)
-    key = routine.get_arg(1)
-    default = routine.get_arg(2)
-    return api.lookup(this, key, default)
-
-
-@complete_native_routine
-def clone(process, routine):
-    this = routine.get_arg(0)
-    return api.clone(this)

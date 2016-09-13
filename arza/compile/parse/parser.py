@@ -434,6 +434,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_DEF, stmt_def)
         stmt(self, TT_USE, stmt_use)
         stmt(self, TT_INTERFACE, stmt_interface)
+        stmt(self, TT_DERIVE, stmt_derive)
 
 
 def guard_parser_init(parser):

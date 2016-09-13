@@ -17,12 +17,11 @@ LEN = PREFIX + "len"
 TYPE = PREFIX + "deftype"
 GENERIC = PREFIX + "defgeneric"
 INTERFACE = PREFIX + "definterface"
-TRAIT = PREFIX + "deftrait"
 
 PARTIAL = PREFIX + "defpartial"
 
-USE_TRAIT = PREFIX + "use_trait"
 SPECIFY = PREFIX + "specify"
+DERIVE = PREFIX + "derive"
 
 SLICE = PREFIX + "slice"
 DROP = PREFIX + "drop"

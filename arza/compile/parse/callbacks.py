@@ -2,7 +2,7 @@ from arza.compile.parse.basic import *
 from arza.compile.parse.node_type import *
 from arza.compile.parse import nodes
 from arza.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3, node_4,
-                                       list_node, empty_node)
+                                      list_node, empty_node)
 from arza.types import space
 from arza.misc import strutil
 from arza.builtins import lang_names
@@ -1011,6 +1011,31 @@ def infix_lparen_type(parser, op, node, left):
     return node_2(NT_TYPE, __ntok(node), left, fields)
 
 
+# DECLARE
+def _parse_struct_or_name(parser, lterm, rterm, expected=None):
+    if parser.token_type == lterm:
+        items = _parse_comma_separated(parser, rterm, advance_first=lterm)
+    else:
+        item = expect_expression_of_types(parser, 0, expected)
+        items = list_node([item])
+    return items
+
+
+def stmt_derive(parser, op, node):
+    interfaces = nodes.create_list_node_from_list(
+        node,
+        _parse_struct_or_name(parser.name_parser, TT_LPAREN, TT_RPAREN, NAME_NODES)
+    )
+    advance_expected(parser, TT_FOR)
+    types = _parse_struct_or_name(parser.name_parser, TT_LPAREN, TT_RPAREN, NAME_NODES)
+    derives = []
+    for _type in types:
+        derive = nodes.node_2(NT_DERIVE, __ntok(node), _type, interfaces)
+        derives.append(derive)
+
+    return list_node(derives)
+
+
 # INTERFACE
 
 def stmt_interface(parser, op, node):
@@ -1049,7 +1074,7 @@ def _parse_def_signature(parser, node):
     dispatch = []
     fun_signature = []
     if nodes.node_type(signature) == NT_WHEN:
-        sig_node  = nodes.node_first(signature)
+        sig_node = nodes.node_first(signature)
     else:
         sig_node = signature
     sig_args = nodes.node_first(sig_node)
