@@ -18,6 +18,7 @@ Precedence    Operator
     2             &&
     1             ||
 """
+find . -name "*.lal" -exec rename 's/\.lal$/.arza/' '{}' \;
 """
 ARZA PRECEDENCES
 Precedence    Operator
