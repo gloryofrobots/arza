@@ -117,6 +117,7 @@ RULES = [
     (keyword('trait'), TT_TRAIT),
     (keyword('generic'), TT_GENERIC),
     (keyword('interface'), TT_INTERFACE),
+    (keyword('derive'), TT_DERIVE),
     (keyword('type'), TT_TYPE),
 
     (keyword('export'), TT_EXPORT),

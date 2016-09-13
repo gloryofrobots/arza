@@ -33,8 +33,10 @@ in
     def empty(self) = []
 )
 
+derive (Sized, Seqable, Seq, Emptiable) for Coroutine
+
 // REFS
-type Ref(val)
+type Reference(val)
 
 fun ref(v) =
     let co =
@@ -54,10 +56,10 @@ fun ref(v) =
     in
     (
         co(v)
-        Ref(co)
+        Reference(co)
     )
 
-use Ref as 0 in
+use Reference as 0 in
 (
     def repr(self) = str(self)
 
@@ -70,6 +72,7 @@ use Ref as 0 in
     def str(self) = "Var"
 )
 
+derive (Str, Displayed, Ref) for Reference
 ///////////////////////////////////////////////////////
 
 // helper for creating looping generators

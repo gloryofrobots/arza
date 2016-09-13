@@ -41,6 +41,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
     put_lang_func(process, module, lang_names.DERIVE, __derive, 2)
     put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
+    put_lang_func(process, module, u"partial", __partial, -1)
     put_lang_func(process, module, u"vector", __vector, -1)
 
 

@@ -2,6 +2,7 @@ import arza:lang:_string
 import seq
 import std
 
+
 use (String, Char, Symbol) as 0
 in
 (
@@ -11,6 +12,7 @@ in
     def str (self) as std:Behavior.[str]
     def repr (self) as std:Behavior.[repr]
 )
+
 
 use String as ...
 in
@@ -46,16 +48,33 @@ in
     def ++ (s1 of Sym, s2 of Sym) = symbol(_string:concat(str(s1), str(s2)))
 )
 
+
+derive (Eq, PartialEq, Str, Displayed) for (Symbol, Char)
+
+
+derive Concatable for Symbol
+
+
+derive (Eq, PartialEq, Str, Displayed,
+       Len, Sized, Collection, ReadOnlyCollection,
+       Prependable, Appendable, Concatable, Consable,
+       Seqable, Sliceable, Emptiable) for String
+
+
 fun concat (str1 of String, str2 of String) =
     _string:concat(str1, str2)
+
 
 fun replace_first (_old of String, _new of String, _str of String) =
     _string:replace_first(_old, _new, _str)
 
+
 fun replace (_old of String, _new of String, _str of String) =
     _string:replace(_old, _new, _str)
 
+
 fun reverse(_str) = _string:reverse(_str)
+
 
 fun joiner(_func, _sep) =
     (s, acc) ->

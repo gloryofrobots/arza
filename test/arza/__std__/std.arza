@@ -93,3 +93,13 @@ in
     def len (self) as Behavior.[len]
     def is_empty (self) as Behavior.[is_empty]
 )
+
+// derive (Dict, Sized, Len, Indexed) for Instance
+derive (Eq, PartialEq, Str, Displayed) for (
+                                            Function,
+                                            Generic,
+                                            Partial,
+                                            Datatype,
+                                            Bool,
+                                            Interface,
+                                            Env)

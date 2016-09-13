@@ -61,7 +61,6 @@ in
     def != (self, other) as std:Behavior.[`!=`]
     def ==(self, other) = seq:equal(self, other)
 )
-
 use List as ...
 in
 (
@@ -100,3 +99,9 @@ in
 
 def ++ (l1 of List, l2 of List) = seq:concat(l1, l2)
 def ++ (t of Tuple, l of List) = t ++ _list:to_tuple(l)
+
+
+derive (Eq, PartialEq, Str, Displayed,
+       Len, Sized, Collection, ReadOnlyCollection,
+       Concatable, Consable,
+       Seqable, Seq, Sliceable) for List

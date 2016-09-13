@@ -3,12 +3,14 @@ import string
 import std
 import io
 
+
 use Tuple as 0
 in
 (
     def != (self, other) as std:Behavior.[`!=`]
     def == (self, other) as std:Behavior.[`==`]
 )
+
 
 use Tuple as ...
 in
@@ -45,11 +47,18 @@ in
     )
 )
 
+
+derive (Eq, PartialEq, Str, Displayed,
+       Len, Sized, Collection, ReadOnlyCollection,
+       Prependable, Concatable, Indexed,
+       Seqable, Sliceable) for Tuple
+
+
 fun ensure_tuple
     | t of Tuple = t
     | v = (v,)
 
+
 fun split
     | ((x)) = (x, ())
     | ((x, ...rest)) = (x, rest)
-

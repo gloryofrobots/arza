@@ -52,10 +52,10 @@ class W_Generic(W_Hashable):
 
         return plist.reverse(types)
 
-    def is_implemented_for(self, subject, position):
-        error.affirm_type(subject, space.isdatatype)
+    def is_implemented_for_type(self, _type, interfaces, position):
+        error.affirm_type(_type, space.isdatatype)
         for sig in self.signatures:
-            if sig.can_dispatch_on(subject, position):
+            if sig.can_dispatch_on_type(_type, interfaces, position):
                 return True
         return False
 

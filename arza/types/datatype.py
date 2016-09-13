@@ -114,10 +114,8 @@ class MRO:
 class W_DataType(W_Hashable):
     def __init__(self, name, fields):
         W_Hashable.__init__(self)
-
         self.interfaces = plist.empty()
         self.mro = MRO()
-        self.generics = space.newmap()
 
         self.name = name
         self.fields = fields
@@ -148,48 +146,6 @@ class W_DataType(W_Hashable):
 
     def is_interface_implemented(self, iface):
         return plist.contains(self.interfaces, iface)
-
-    def _can_implement(self, iface):
-        if plist.is_empty(iface.generics):
-            return False
-
-        for record in iface.generics:
-            generic = api.at_index(record, 0)
-            position = api.at_index(record, 1)
-            if not self.is_generic_implemented(generic, position):
-                return False
-
-        return True
-
-    def register_generic(self, generic, position):
-        if not api.contains_b(self.generics, generic):
-            api.put(self.generics, generic, space.newlist([]))
-
-        l = api.at(self.generics, generic)
-
-        if api.contains_b(l, position):
-            return
-
-        api.put(
-            self.generics,
-            generic,
-            plist.cons(position, l)
-        )
-
-        # Check if any of interfaces is completed by the moment
-        for record in generic.interfaces:
-            interface = api.at_index(record, 0)
-            if self.is_interface_implemented(interface):
-                continue
-            if self._can_implement(interface):
-                self.register_interface(interface)
-
-    def is_generic_implemented(self, generic, position):
-
-        if not api.contains_b(self.generics, generic):
-            return False
-        positions = api.at(self.generics, generic)
-        return plist.contains(positions, position)
 
     def _call_(self, process, args):
         length = api.length_i(args)
@@ -232,19 +188,41 @@ def record_values(record):
     error.affirm_type(record, space.isrecord)
     return record.values()
 
-def derive(t, interface):
+
+def derive(t, interfaces):
     error.affirm_type(t, space.isdatatype)
-    for r in interface.generics:
-        generic = api.first(r)
-        position = api.second(r)
-        idx = api.to_i(position)
-        if not generic.is_implemented_for(t, idx):
-            error.throw_4(error.Errors.IMPLEMENTATION_ERROR,
-                          space.newstring(u"Not implemented interface method"),
-                          interface,
-                          generic,
-                          position)
-    t.register_interface(interface)
+    error.affirm_type(interfaces, space.islist)
+    old_interfaces = t.interfaces
+    for interface in interfaces:
+        if t.is_interface_implemented(interface):
+            error.throw_3(
+                error.Errors.IMPLEMENTATION_ERROR,
+                space.newstring(u"Interface already implemented"),
+                t,
+                interface
+            )
+
+        # derive according to future interfaces
+        new_interfaces = plist.remove(interfaces, interface)
+        maybe_interfaces = plist.concat(old_interfaces, new_interfaces)
+
+        error.affirm_type(interface, space.isinterface)
+        for r in interface.generics:
+            generic = api.first(r)
+            position = api.second(r)
+            idx = api.to_i(position)
+            if not generic.is_implemented_for_type(t, maybe_interfaces, idx):
+                error.throw_5(
+                    error.Errors.IMPLEMENTATION_ERROR,
+                    space.newstring(u"Not implemented interface method"),
+                    t,
+                    interface,
+                    generic,
+                    position
+                )
+
+    for interface in interfaces:
+        t.register_interface(interface)
 
 
 def newtype(process, name, fields):
