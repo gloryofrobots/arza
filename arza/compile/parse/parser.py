@@ -10,31 +10,6 @@ if tokens.RPLY:
 else:
     import arza.compile.parse.lexer2 as lexer
 
-""" GOLANG PRECEDENCES. SOURCE OF INSPIRATION
-Precedence    Operator
-    5             *  /  %  <<  >>  &  &^
-    4             +  -  |  ^
-    3             ==  !=  <  <=  >  >=
-    2             &&
-    1             ||
-"""
-find . -name "*.lal" -exec rename 's/\.lal$/.arza/' '{}' \;
-"""
-ARZA PRECEDENCES
-Precedence    Operator
-    100           : . .{
-    95           JUXTAPOSITION
-    60           :: :::
-    50           *  /
-    40           +  - ++
-    35           ==  !=  <  <=  >  >=
-    30           and
-    25           or << >>
-    20           |>
-    15           " ."  as of <|
-    10           = := @
-"""
-
 
 # additional helpers
 

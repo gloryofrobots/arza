@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-PYTHONPATH=../pypy pypy  targetlalan.py test/arza/main.arza
+PYTHONPATH=../pypy pypy  targetarza.py test/arza/main.arza
