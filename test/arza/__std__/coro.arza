@@ -1,7 +1,6 @@
 from arza:lang:_coro import (spawn, is_complete, is_initialised,
                             is_terminated, is_active, is_passive,
                             is_finished)
-import std
 import tuple
 import io
 import seq

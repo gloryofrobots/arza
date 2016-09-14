@@ -86,13 +86,12 @@ interface
     WisePerson(regret_things)
 )
 
-import std
 // TODO at(#weight, self as Instance)
 // or previous_method(#weight, self as Instance)
 def at (key, self of Pig) =
     match key
-    | #weight = (#this_is_not_my_real_weight, std:Behavior.[at](#weight, self))
-    | _ = std:Behavior.[at](key, self)
+    | #weight = (#this_is_not_my_real_weight, std_behavior:at(#weight, self))
+    | _ = std_behavior:at(key, self)
 
 
 

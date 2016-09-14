@@ -7,11 +7,12 @@ from arza.runtime.load import import_module, evaluate_module_file
 PRELUDE_FILE = u"prelude"
 # PRELUDE_FILE = u"prelude_debug"
 
-STD_MODULES = [u"std", u"num",
-               u"string",
+STD_MODULES = [u"std", u"string",
+               u"generics", u"seq",
                u"list", u"coro",
-               u"tuple", u"map", u"seq",
-               ]
+               u"tuple", u"map", ]
+
+
 # STD_MODULES = []
 
 

@@ -1,55 +1,68 @@
-import arza:lang:_api
-import arza:lang:_datatype
+derive (Eq, PartialEq, Str, Displayed)
+    for (
+        Function,
+        Generic,
+        Partial,
+        Datatype,
+        Bool,
+        Interface
+    )
 
-def repr (self of Any) = str(self)
+//////// NUM
+import arza:lang:_number
+import io
 
-def < (x of Comparable, y) = cmp(x, y) == LT
-def >= (x of Comparable, y) = cmp(x, y) != LT
-def > (x of Comparable, y) = cmp(x, y) == GT
+use
+    (Float, Int) as 0
+in
+(
+    def != (self, other) as std_behavior:not_equal
+    def == (self, other) as std_behavior:equal
 
-def cmp (x of LessEq, y) =
-            if x == y then EQ
-            elif x <= y then LT
-            else GT
+    def str (self) as std_behavior:str
+    def repr (self) as std_behavior:repr
 
-def max (x of LessEq, y) = if x <= y then y else x
-def min (x of LessEq, y) = if x <= y then x else y
+    def - (x, y) as _number:sub
+    def + (x, y) as _number:add
+    def * (x, y) as _number:mul
+    def / (x, y) as _number:div
+    def mod (x, y) as _number:mod
+    def negate (x) as _number:negate
+    def ** (x, y) as  _number:pow
 
+    def <= (x, y) as _number:le
+)
 
-/////////////////////////////
+derive (Comparable, LessEq, Ord, Num, Pow, Eq, PartialEq, Str, Displayed) for (Float, Int)
 
-import arza:lang:_generic
-
-def at (k, self of Map) as _api:at
-def at (el, self of Tuple) as _api:at
-def at (t, self of Generic) as _generic:get_method
-
-/////////////////////////////////////////////
-
-//let Behavior =
-//{
-//    //Eq
-//    (`!=`) = (x, y) -> not (x == y),
+//extend
+//    Int
+//with
+//(
+//    def range(first, last of Int) ->
+//        range_by(first, last, 1)
 //
-//    (`==`) = (self, other) -> _api:equal(other, self),
+//    def range_by(first, last of Int, step of Int) ->
+//        cmp =
+//            if step > 0 then `>=`
+//            elif step < 0 then `<=`
+//            else throw ValueError ("Step can not be zero")
 //
-//    (str) = (self) -> _api:to_string(self),
+//        fun _progression _compare x last step  ->
+//            if _compare x last then
+//                []
+//            else
+//                x ::: _progression _compare (x + step) last step
 //
-//    (repr) = (self) -> _api:to_repr(self),
 //
-//    (put) = (key, value, self) -> _api:put(key, value, self),
-//    (at) = (key, self) -> _api:at(key, self),
-//    (del) = (key, self) -> _api:del(key, self),
-//    (elem) = (key, self) -> _api:elem(key, self),
+//        _progression cmp first last step
 //
-//    (len) = (self) -> _api:length(self),
-//    (is_empty) = (self) -> _api:is_empty(self)
-//}
+//    def range_from first  -> range_from_by first 1
+//
+//    def range_from_by first (step of Int) ->
+//        fun _progression x step ->
+//            x ::: _progression (x + step) step
+//
+//        _progression first step
+//)
 
-derive (Eq, PartialEq, Str, Displayed) for (
-                                            Function,
-                                            Generic,
-                                            Partial,
-                                            Datatype,
-                                            Bool,
-                                            Interface)

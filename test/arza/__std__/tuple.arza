@@ -1,25 +1,24 @@
 import arza:lang:_tuple
 import string
-import std
 import io
 
 
 use Tuple as 0
 in
 (
-    def != (self, other) as std:Behavior.[`!=`]
-    def == (self, other) as std:Behavior.[`==`]
+    def != (self, other) as std_behavior:not_equal
+    def == (self, other) as std_behavior:equal
 )
 
 
 use Tuple as ...
 in
 (
-    def put (k, v, self) as std:Behavior.[put]
-    def del (el, self) as std:Behavior.[del]
-    def elem (el, self) as std:Behavior.[elem]
-    def len (self) as std:Behavior.[len]
-    def is_empty (self) as std:Behavior.[is_empty]
+    def put (k, v, self) as std_behavior:put
+    def del (el, self) as std_behavior:del
+    def elem (el, self) as std_behavior:elem
+    def is_empty (self) as std_behavior:is_empty
+    def len (self) as std_behavior:len
 
     def ++ (t1, t2) as _tuple:concat
     def prepend(v, self) as _tuple:prepend

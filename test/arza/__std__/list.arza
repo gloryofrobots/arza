@@ -1,6 +1,5 @@
 import arza:lang:_list
 from arza:lang:_list import (head, tail)
-import std
 import seq
 import string
 

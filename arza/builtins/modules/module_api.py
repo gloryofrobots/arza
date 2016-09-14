@@ -4,9 +4,9 @@ from arza.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'arza:lang:_api')
+    _module_name = space.newsymbol(process, u'arza:lang:_std_behavior')
     _module = space.newemptyenv(_module_name)
-    api.put_native_function(process, _module, u'length', length, 1)
+    api.put_native_function(process, _module, u'len', length, 1)
     api.put_native_function(process, _module, u'is_empty', is_empty, 1)
     api.put_native_function(process, _module, u'put', put, 3)
     api.put_native_function(process, _module, u'at', at, 2)
@@ -14,8 +14,8 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'del', delete, 2)
     api.put_native_function(process, _module, u'equal', equal, 2)
     api.put_native_function(process, _module, u'not_equal', not_equal, 2)
-    api.put_native_function(process, _module, u'to_string', to_string, 1)
-    api.put_native_function(process, _module, u'to_repr', to_repr, 1)
+    api.put_native_function(process, _module, u'str', to_string, 1)
+    api.put_native_function(process, _module, u'repr', to_repr, 1)
 
     _module.export_all()
     process.modules.add_module(_module_name, _module)

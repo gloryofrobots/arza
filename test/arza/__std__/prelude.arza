@@ -1,4 +1,4 @@
-import arza:lang:_api as std_behavior
+import arza:lang:_std_behavior as std_behavior
 
 from arza:lang:_datatype import (record_values, record_keys, record_index_of)
 
@@ -162,44 +162,6 @@ interface
     MutRef(!, :=)
 )
 
-/////////////////////////////////////
-/// USE AND DEF
-/////////////////////////////////////
-
-use Instance as ...
-in
-(
-    def index_of (val, self) as record_index_of
-    def keys(self) as record_keys
-    def values(self) as record_values
-
-    def put (k, v, self) as std_behavior:put
-    def at (k, self) as std_behavior:at
-    def del (el, self) as std_behavior:del
-    def elem (el, self) as std_behavior:elem
-    def len (self) as std_behavior:length
-    def is_empty (self) as std_behavior:is_empty
-)
-
-
-use
-    (Singleton,
-     Function,
-     Generic,
-     Partial,
-     Datatype,
-     Bool,
-     Instance,
-     Interface) as 0
-in
-(
-    def == (self, other) as std_behavior:equal
-    def != (self, other) as  std_behavior:not_equal
-
-    def str (self) as std_behavior:to_string
-    def repr (self) as std_behavior:to_repr
-)
-
 ////////////////////////////////////////////////////////////
 ///////////////// TYPES ////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -249,7 +211,72 @@ type
     Interrupt(result)
 )
 
+/////////////////////////////////////
+/// USE AND DEF
+/////////////////////////////////////
 
+
+def repr (self of Any) = str(self)
+
+
+def < (x of Comparable, y) = cmp(x, y) == LT
+
+
+def >= (x of Comparable, y) = cmp(x, y) != LT
+
+
+def > (x of Comparable, y) = cmp(x, y) == GT
+
+
+def cmp (x of LessEq, y) =
+            if x == y then EQ
+            elif x <= y then LT
+            else GT
+
+
+def max (x of LessEq, y) = if x <= y then y else x
+
+
+def min (x of LessEq, y) = if x <= y then x else y
+
+
+use Instance as ...
+in
+(
+    def index_of (val, self) as record_index_of
+    def keys(self) as record_keys
+    def values(self) as record_values
+
+    def put (k, v, self) as std_behavior:put
+    def at (k, self) as std_behavior:at
+    def del (el, self) as std_behavior:del
+    def elem (el, self) as std_behavior:elem
+    def len (self) as std_behavior:len
+    def is_empty (self) as std_behavior:is_empty
+)
+
+
+use
+    (Singleton,
+     Function,
+     Generic,
+     Partial,
+     Datatype,
+     Bool,
+     Instance,
+     Interface) as 0
+in
+(
+    def == (self, other) as std_behavior:equal
+    def != (self, other) as  std_behavior:not_equal
+
+    def str (self) as std_behavior:str
+    def repr (self) as std_behavior:repr
+)
+
+
+def at (k, self of Map) as std_behavior:at
+def at (el, self of Tuple) as std_behavior:at
 ////////////////////////////////////////////////////////////
 ///////////////// FUNCTIONS ////////////////////////////////
 ////////////////////////////////////////////////////////////

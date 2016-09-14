@@ -1,29 +1,27 @@
 import arza:lang:_string
 import seq
-import std
 
 
 use (String, Char, Symbol) as 0
 in
 (
-    def != (self, other) as std:Behavior.[`!=`]
-    def == (self, other) as std:Behavior.[`==`]
+    def != (self, other) as std_behavior:not_equal
+    def == (self, other) as std_behavior:equal
 
-    def str (self) as std:Behavior.[str]
-    def repr (self) as std:Behavior.[repr]
+    def str (self) as std_behavior:str
+    def repr (self) as std_behavior:repr
 )
 
 
 use String as ...
 in
 (
-    def put (k, v, self) as std:Behavior.[put]
-    def at (k, self) as std:Behavior.[at]
-    def del (el, self) as std:Behavior.[del]
-    def elem (el, self) as std:Behavior.[elem]
-    def len (self) as std:Behavior.[len]
-    def is_empty (self) as std:Behavior.[is_empty]
-
+    def at (k, self) as std_behavior:at
+    def put (k, v, self) as std_behavior:put
+    def del (el, self) as std_behavior:del
+    def elem (el, self) as std_behavior:elem
+    def is_empty (self) as std_behavior:is_empty
+    def len (self) as std_behavior:len
 
     def append(v, self) as _string:append
     def prepend(v, self) as _string:prepend
