@@ -13,6 +13,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'elem', elem, 2)
     api.put_native_function(process, _module, u'del', delete, 2)
     api.put_native_function(process, _module, u'equal', equal, 2)
+    api.put_native_function(process, _module, u'not_equal', not_equal, 2)
     api.put_native_function(process, _module, u'to_string', to_string, 1)
     api.put_native_function(process, _module, u'to_repr', to_repr, 1)
 
@@ -79,6 +80,15 @@ def equal(process, routine):
     arg0 = routine.get_arg(0)
 
     return api.equal(arg1, arg0)
+
+
+@complete_native_routine
+def not_equal(process, routine):
+    arg1 = routine.get_arg(1)
+
+    arg0 = routine.get_arg(0)
+
+    return api.not_equal(arg1, arg0)
 
 
 @complete_native_routine

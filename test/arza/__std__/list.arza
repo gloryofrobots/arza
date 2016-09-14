@@ -58,16 +58,16 @@ fun replicate(count, element) =
 use List as 0
 in
 (
-    def != (self, other) as std:Behavior.[`!=`]
+    def != (self, other) as std_behavior:not_equal
     def ==(self, other) = seq:equal(self, other)
 )
 use List as ...
 in
 (
-    def put (k, v, self) as std:Behavior.[put]
-    def at (k, self) as std:Behavior.[at]
-    def del (el, self) as std:Behavior.[del]
-    def elem (el, self) as std:Behavior.[elem]
+    def put (k, v, self) as std_behavior:put
+    def at (k, self) as std_behavior:at
+    def del (el, self) as std_behavior:del
+    def elem (el, self) as std_behavior:elem
 
 
     def repr(self) =

@@ -12,7 +12,7 @@ import seq
 use Coroutine as 0
 in
 (
-    def is_empty(self) as std:Behavior.[is_empty]
+    def is_empty(self) as std_behavior:is_empty
     def len(self) = throw NotImplementedError ("Coroutine can't define len")
 
     def first(self) =
