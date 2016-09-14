@@ -440,6 +440,27 @@ def isgeneric(w):
 
 ########################################################
 
+def newtrait(name, constraints, signature, methods):
+    from arza.types.trait import trait
+    from arza.runtime import error
+    error.affirm_type(name, issymbol)
+    error.affirm_type(constraints, islist)
+    error.affirm_type(signature, islist)
+    error.affirm_type(methods, islist)
+    error.affirm_iterable(signature, issymbol)
+    error.affirm_iterable(constraints, isinterface)
+    error.affirm_iterable(methods, istuple)
+
+    return trait(name, constraints, signature, methods)
+
+
+def istrait(w):
+    from arza.types.trait import W_Trait
+    return isinstance(w, W_Trait)
+
+
+########################################################
+
 def newinterface(name, generics):
     from arza.types.interface import interface
     from arza.runtime import error
@@ -463,20 +484,25 @@ def newdatatype(process, name, fields):
 
 
 def newnativedatatype(name):
-    from arza.types.datatype import W_DataType
+    from arza.types.datatype import newnativedatatype
     assert issymbol(name)
-    datatype = W_DataType(name, newlist([newstring(u"...")]))
+    datatype = newnativedatatype(name)
     return datatype
 
 
 def isdatatype(w):
+    from arza.types.datatype import W_DataType, W_NativeDatatype
+    return isinstance(w, W_DataType) or isinstance(w, W_NativeDatatype)
+
+
+def isuserdatatype(w):
     from arza.types.datatype import W_DataType
     return isinstance(w, W_DataType)
 
 
-def isextendable(w):
-    from arza.types.datatype import W_Extendable
-    return isinstance(w, W_Extendable)
+def isnativedatatype(w):
+    from arza.types.datatype import W_NativeDatatype
+    return isinstance(w, W_NativeDatatype)
 
 
 def isrecord(w):

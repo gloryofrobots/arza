@@ -187,7 +187,7 @@ def __interface(process, routine):
 def __derive(process, routine):
     _type = routine.get_arg(0)
     interfaces = routine.get_arg(1)
-    datatype.derive(_type, interfaces)
+    datatype.derive(process, _type, interfaces)
     return _type
 
 

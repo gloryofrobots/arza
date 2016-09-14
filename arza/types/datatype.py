@@ -111,13 +111,49 @@ class MRO:
         return plist.contains(plist.drop(self.items, self.interfaces_index), type)
 
 
-class W_DataType(W_Hashable):
-    def __init__(self, name, fields):
+class W_BaseDatatype(W_Hashable):
+    def __init__(self, name):
         W_Hashable.__init__(self)
         self.interfaces = plist.empty()
         self.mro = MRO()
-
         self.name = name
+
+    def register_interface(self, iface):
+        if self.is_interface_implemented(iface):
+            error.throw_3(error.Errors.IMPLEMENTATION_ERROR, space.newstring(u"Interface has already implemented"),
+                          self, iface)
+
+        self.interfaces = plist.cons(iface, self.interfaces)
+        self.mro.add_interface(iface)
+        iface.register_type(self)
+
+    def is_interface_implemented(self, iface):
+        return plist.contains(self.interfaces, iface)
+
+    def _compute_hash_(self):
+        return int((1 - platform.random()) * 10000000)
+
+    def _equal_(self, other):
+        return other is self
+
+
+class W_NativeDatatype(W_BaseDatatype):
+    def __init__(self, name):
+        W_BaseDatatype.__init__(self, name)
+
+    def _type_(self, process):
+        return process.std.types.Datatype
+
+    def _to_string_(self):
+        return "<datatype %s>" % (api.to_s(self.name))
+
+    def _to_repr_(self):
+        return self._to_string_()
+
+
+class W_DataType(W_BaseDatatype):
+    def __init__(self, name, fields):
+        W_BaseDatatype.__init__(self, name)
         self.fields = fields
         self.arity = api.length_i(self.fields)
 
@@ -127,25 +163,6 @@ class W_DataType(W_Hashable):
             self.is_singleton = False
 
         self.descriptors = descriptors(self.fields)
-
-    def register_interface(self, iface):
-        if self.is_interface_implemented(iface):
-            error.throw_3(error.Errors.IMPLEMENTATION_ERROR, space.newstring(u"Interface has already implemented"),
-                          self, iface)
-
-        self.interfaces = plist.cons(iface, self.interfaces)
-        self.mro.add_interface(iface)
-
-        # # register all currently implemented generics for this interface
-        # for t in iface.registered_generics:
-        #     generic = api.at_index(t, 0)
-        #     position = api.at_index(t, 1)
-        #     self.register_generic(generic, position)
-
-        iface.register_type(self)
-
-    def is_interface_implemented(self, iface):
-        return plist.contains(self.interfaces, iface)
 
     def _call_(self, process, args):
         length = api.length_i(args)
@@ -161,17 +178,11 @@ class W_DataType(W_Hashable):
     def _type_(self, process):
         return process.std.types.Datatype
 
-    def _compute_hash_(self):
-        return int((1 - platform.random()) * 10000000)
-
     def _to_string_(self):
         return "<datatype %s>" % (api.to_s(self.name))
 
     def _to_repr_(self):
         return self._to_string_()
-
-    def _equal_(self, other):
-        return other is self
 
 
 def record_index_of(record, obj):
@@ -189,18 +200,23 @@ def record_values(record):
     return record.values()
 
 
-def derive(t, interfaces):
+def derive(process, t, interfaces):
     error.affirm_type(t, space.isdatatype)
     error.affirm_type(interfaces, space.islist)
+    to_be_implemented = []
+
     old_interfaces = t.interfaces
     for interface in interfaces:
         if t.is_interface_implemented(interface):
-            error.throw_3(
-                error.Errors.IMPLEMENTATION_ERROR,
-                space.newstring(u"Interface already implemented"),
-                t,
-                interface
-            )
+            if process.std.interfaces.is_default_derivable_interface(interface):
+                continue
+            else:
+                return error.throw_3(
+                    error.Errors.IMPLEMENTATION_ERROR,
+                    space.newstring(u"Interface already implemented"),
+                    t,
+                    interface
+                )
 
         # derive according to future interfaces
         new_interfaces = plist.remove(interfaces, interface)
@@ -221,8 +237,14 @@ def derive(t, interfaces):
                     position
                 )
 
-    for interface in interfaces:
+        to_be_implemented.append(interface)
+
+    for interface in to_be_implemented:
         t.register_interface(interface)
+
+
+def newnativedatatype(name):
+    return W_NativeDatatype(name)
 
 
 def newtype(process, name, fields):
@@ -232,4 +254,8 @@ def newtype(process, name, fields):
         _type.register_interface(process.std.interfaces.Singleton)
     else:
         _type.register_interface(process.std.interfaces.Instance)
+
+    if process.std.initialized:
+        derived = process.std.interfaces.get_derived(_type)
+        derive(process, _type, derived)
     return _type

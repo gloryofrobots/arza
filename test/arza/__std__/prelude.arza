@@ -1,5 +1,7 @@
 from arza:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
-                             Function, Partial, Generic, FiberChannel, Coroutine, Trait, Interface, Datatype, Env)
+                             Function, Partial, Generic, FiberChannel, Coroutine, Interface, Datatype)
+
+from arza:lang:_interfaces import (Instance, Singleton, Any)
 
 from arza:lang:_bit import (bitand, bitor, bitxor, bitnot, lshift, rshift)
 
@@ -156,6 +158,45 @@ interface
     MutRef(!, :=)
 )
 
+import arza:lang:_api
+import arza:lang:_datatype
+
+
+/////////////////////////////////
+
+use Instance as ...
+in
+(
+    def index_of (val, self) = _datatype:record_index_of(val, self)
+    def keys(self) = _datatype:record_keys(self)
+    def values(self) = _datatype:record_values(self)
+
+    def put (k, v, self) as _api:put
+    def at (k, self) as _api:at
+    def del (el, self) as _api:del
+    def elem (el, self) as _api:elem
+    def len (self) as _api:length
+    def is_empty (self) as _api:is_empty
+)
+
+
+use
+    (Singleton,
+     Function,
+     Generic,
+     Partial,
+     Datatype,
+     Bool,
+     Instance,
+     Interface) as 0
+in
+(
+    def != (self, other) =  not (self == other)
+    def == (self, other) as _api:equal
+
+    def str (self) as _api:to_string
+    def repr (self) as _api:to_repr
+)
 ////////////////////////////////////////////////////////////
 ///////////////// TYPES ////////////////////////////////////
 ////////////////////////////////////////////////////////////

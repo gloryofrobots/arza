@@ -6,8 +6,11 @@ def presetup(process, module, stdlib):
     arza.builtins.lang.setup(process, module, stdlib)
 
     # MODULES
-    import arza.builtins.modules.module_core_types
-    arza.builtins.modules.module_core_types.setup(process, stdlib)
+    import arza.builtins.modules._module_lang_interfaces
+    arza.builtins.modules._module_lang_interfaces.setup(process, stdlib)
+
+    import arza.builtins.modules.module_lang_types
+    arza.builtins.modules.module_lang_types.setup(process, stdlib)
 
     import arza.builtins.modules.module_list
     arza.builtins.modules.module_list.setup(process, stdlib)

@@ -20,7 +20,6 @@ TYPES = [
     mktype("Generic"),
     mktype("FiberChannel"),
     mktype("Coroutine"),
-    mktype("Trait"),
     mktype("Interface"),
     mktype("Datatype"),
     mktype("Env")

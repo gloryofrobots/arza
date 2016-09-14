@@ -8,4 +8,3 @@ generic
     test_method_4(a)
 )
 
-interface TestInterface (test_method_1, test_method_2, test_method_3, test_method_4)

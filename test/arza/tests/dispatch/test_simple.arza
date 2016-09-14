@@ -110,6 +110,12 @@ def give_birth (p of Pig, e of Elephant) = PiggyElly(p.weight.1 + e.weight, p.co
 
 def regret_things (m of Mother) = True
 
+derive (FirstMade, SecondMade) for (Pig, Elephant)
+derive (Mother) for (Pig)
+derive (WisePerson) for (Pig)
+derive (Father) for (Elephant)
+
+
 fun test_pigs_and_elephants() =
 (
     let
@@ -126,7 +132,6 @@ fun test_pigs_and_elephants() =
         affirm:is_false(p `kindof` Father)
         affirm:is_true(p `kindof` Mother)
 
-        //Checking interface late binding
         affirm:is_true(p `kindof` WisePerson)
     )
 //    test()

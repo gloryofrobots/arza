@@ -2,16 +2,6 @@ from arza.types import api, space, plist
 from arza.runtime import error
 
 
-#
-# self.derived_for_singleton = [
-#     self.TEq, self.TStr, self.TRepr
-# ]
-#
-# self.derived_for_type = [
-#     self.TEq, self.TStr, self.TRepr,
-#     self.TCollection, self.TSized, self.TIndexed, self.TDict
-# ]
-
 class Types:
     def __init__(self, symbols, interfaces):
         from arza.types.space import newnativedatatype as newtype
@@ -64,9 +54,6 @@ class Types:
         self.Coroutine = newtype(_s(u"Coroutine"))
         self.Coroutine.register_interface(interfaces.Any)
 
-        self.Trait = newtype(_s(u"Trait"))
-        self.Trait.register_interface(interfaces.Any)
-
         self.Interface = newtype(_s(u"Interface"))
         self.Interface.register_interface(interfaces.Any)
 
@@ -87,15 +74,70 @@ class Interfaces:
         self.Seq = None
         self.Dict = None
         self.Indexed = None
+        self.Sized = None
+        self.Len = None
+        self.Indexed = None
+        self.Eq = None
+        self.PartialEq = None
+        self.Str = None
+        self.Displayed = None
+        self.Collection = None
+        self.instance_derived = None
+        self.singleton_derived = None
 
     def setup(self, process):
         prelude = process.modules.prelude
         self.Seq = self.find_interface(process, prelude, u"Seq")
+        self.Collection = self.find_interface(process, prelude, u"Collection")
         self.Dict = self.find_interface(process, prelude, u"Dict")
         self.Indexed = self.find_interface(process, prelude, u"Indexed")
+        self.Sized = self.find_interface(process, prelude, u"Sized")
+        self.Len = self.find_interface(process, prelude, u"Len")
+        self.Indexed = self.find_interface(process, prelude, u"Indexed")
+        self.Eq = self.find_interface(process, prelude, u"Eq")
+        self.PartialEq = self.find_interface(process, prelude, u"PartialEq")
+        self.Str = self.find_interface(process, prelude, u"Str")
+        self.Displayed = self.find_interface(process, prelude, u"Displayed")
+
+        # // derive (Dict, Sized, Len, Indexed) for Instance
+        # derive (Eq, PartialEq, Str, Displayed) for (
+
+        self.instance_derived = space.newlist([
+            self.Dict, self.Sized, self.Len, self.Indexed,
+            self.Eq, self.PartialEq, self.Str, self.Displayed
+        ])
+
+        self.singleton_derived = space.newlist([
+            self.Eq, self.PartialEq, self.Str, self.Displayed
+        ])
+
         api.put(prelude, self.Any.name, self.Any)
         api.put(prelude, self.Instance.name, self.Instance)
         api.put(prelude, self.Singleton.name, self.Singleton)
+
+        self._derive_prelude(process)
+
+    def _derive_prelude(self, process):
+        module = process.modules.prelude
+        from arza.types import api, datatype
+        symbols = module.symbols()
+        for sym in symbols:
+            obj = api.at(module, sym)
+            if space.isuserdatatype(obj):
+                derived = self.get_derived(obj)
+                datatype.derive(process, obj, derived)
+
+    def get_derived(self, _type):
+        if space.isuserdatatype(_type):
+            if _type.is_singleton:
+                return self.singleton_derived
+            else:
+                return self.instance_derived
+        else:
+            return error.throw_2(error.Errors.TYPE_ERROR, space.newstring(u"Type Expected"), _type)
+
+    def is_default_derivable_interface(self, iface):
+        return api.contains_b(self.instance_derived, iface) or api.contains_b(self.singleton_derived, iface)
 
     def _find_in(self, process, prelude, name):
         sym = space.newsymbol(process, name)
@@ -113,8 +155,8 @@ class Std:
     def __init__(self, symbols):
         self.interfaces = Interfaces(symbols)
         self.types = Types(symbols, self.interfaces)
-        # self.initialized = False
+        self.initialized = False
 
     def postsetup(self, process):
         self.interfaces.setup(process)
-        # self.initialized = True
+        self.initialized = True

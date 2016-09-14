@@ -46,60 +46,10 @@ let Behavior =
     (is_empty) = (self) -> _api:is_empty(self)
 }
 
-/////////////////////////////////
-
-use Instance as ...
-in
-(
-    def index_of (val, self) = _datatype:record_index_of(val, self)
-    def keys(self) = _datatype:record_keys(self)
-    def values(self) = _datatype:record_values(self)
-
-    def put (k, v, self) as Behavior.[put]
-    def at (k, self) as Behavior.[at]
-    def del (el, self) as Behavior.[del]
-    def elem (el, self) as Behavior.[elem]
-    def len (self) as Behavior.[len]
-    def is_empty (self) as Behavior.[is_empty]
-)
-
-
-use
-    (Singleton,
-     Function,
-     Generic,
-     Partial,
-     Datatype,
-     Bool,
-     Instance,
-     Interface,
-     Env) as 0
-in
-(
-    def != (self, other) as Behavior.[`!=`]
-    def == (self, other) as Behavior.[`==`]
-
-    def str (self) as Behavior.[str]
-    def repr (self) as Behavior.[repr]
-)
-
-use Env as ...
-in
-(
-    def put (k, v, self) as Behavior.[put]
-    def at (k, self) as Behavior.[at]
-    def del (el, self) as Behavior.[del]
-    def elem (el, self) as Behavior.[elem]
-    def len (self) as Behavior.[len]
-    def is_empty (self) as Behavior.[is_empty]
-)
-
-// derive (Dict, Sized, Len, Indexed) for Instance
 derive (Eq, PartialEq, Str, Displayed) for (
                                             Function,
                                             Generic,
                                             Partial,
                                             Datatype,
                                             Bool,
-                                            Interface,
-                                            Env)
+                                            Interface)

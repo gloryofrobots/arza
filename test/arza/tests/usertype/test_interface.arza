@@ -26,6 +26,7 @@ in
     def take(count, self) = seq:take(count, to_list(self))
 )
 
+
 def to_list(self of T1) = [self.v1, self.v2]
 
 use T2 as ... in
@@ -33,6 +34,9 @@ use T2 as ... in
     def to_list(self) = [self.v1, self.v2]
     def slice(_from, _to, self) = slice(_from, _to, to_list(self))
 )
+
+derive (Listable, Seq) for (T1, T2)
+derive (Sliceable) for T2
 
 fun test () =
 (
@@ -45,12 +49,6 @@ fun test () =
              )
     in
     (
-        affirm:is_true(kindof(t1, Seq))
-        affirm:is_true(kindof(t1, Listable))
-        affirm:is_true(kindof(t1, T1))
-        affirm:is_false(kindof(t1, Sliceable))
-
-        // Do it one more time to check interface kindof cache
         affirm:is_true(kindof(t1, Seq))
         affirm:is_true(kindof(t1, Listable))
         affirm:is_true(kindof(t1, T1))

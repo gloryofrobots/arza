@@ -1,6 +1,4 @@
-from arza.types import number, space, api
-from arza.runtime.routine.routine import complete_native_routine
-from arza.runtime import error
+from arza.types import space, api
 
 
 def setup(process, stdlib):
@@ -29,6 +27,5 @@ def setup_types(module, types):
     api.put(module, types.Interface.name, types.Interface)
     api.put(module, types.FiberChannel.name, types.FiberChannel)
     api.put(module, types.Coroutine.name, types.Coroutine)
-    api.put(module, types.Trait.name, types.Trait)
     api.put(module, types.Datatype.name, types.Datatype)
     api.put(module, types.Env.name, types.Env)
