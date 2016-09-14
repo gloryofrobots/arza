@@ -259,17 +259,22 @@
 //
 // TODO change ` to $, _ or []
 
-//interface Num (-, (..).0, +.0, *, /, mod.0, math:negate.0, sqrt)
-//interface (
-//    Num (-, +.0, *, /, mod.0, math:negate.0)
-//    Ord(<, <=, >.0, >=.0, math:cmp, math:sort:max, min)
-//    PartialEq (==)
-//    Pow(**)
-//    Str (str)
-//    Addend(add.0, add.1)
-//    Sub(sub.0)
-//    Subtracted(sub.1)
-//)
+interface Num (-, (..).0, +.0, *, /, mod.0, math:negate.0, sqrt)
+interface (
+    ReadOnlyCollection(at, elem)
+    ShrinkableCollection(del)
+    GrowableCollection(put)
+    Collection() is (ReadOnlyCollection, ShrinkableCollection, GrowableCollection)
+
+    Num (-, +.0, *, /, mod.0, math:negate.0)
+    Ord(<, <=, >.0, >=.0, math:cmp, math:sort:max, min)
+    PartialEq (==)
+    Pow(**)
+    Str (str)
+    Addend(add.0, add.1)
+    Sub(sub.0)
+    Subtracted(sub.1)
+)
 
 //def != [List]
 //    | (x of List, y of List) = 0

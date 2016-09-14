@@ -348,6 +348,18 @@ def not_unique_item(pl):
     return None
 
 
+def unique(pl, predicate=None):
+    if not predicate:
+        predicate = api.equal_b
+
+    lst = empty()
+    for item in pl:
+        if not contains_with(lst, item, predicate):
+            lst = cons(item, lst)
+
+    return reverse(lst)
+
+
 ########################################################################
 
 
@@ -527,6 +539,7 @@ def diff(pl1, pl2):
             items.append(el)
 
     return plist(items)
+
 
 ##############################################################
 

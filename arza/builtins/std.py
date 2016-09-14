@@ -67,9 +67,9 @@ class Types:
 class Interfaces:
     def __init__(self, symbols):
         _s = symbols.symbol
-        self.Any = space.newinterface(_s(u"Any"), plist.empty())
-        self.Instance = space.newinterface(_s(u"Instance"), plist.empty())
-        self.Singleton = space.newinterface(_s(u"Singleton"), plist.empty())
+        self.Any = space.newinterface(_s(u"Any"), plist.empty(), plist.empty())
+        self.Instance = space.newinterface(_s(u"Instance"), plist.empty(), plist.empty())
+        self.Singleton = space.newinterface(_s(u"Singleton"), plist.empty(), plist.empty())
 
         self.Seq = None
         self.Dict = None

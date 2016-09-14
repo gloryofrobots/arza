@@ -1046,7 +1046,14 @@ def stmt_interface(parser, op, node):
 def prefix_interface_name(parser, op, node):
     name = nodes.create_name_node(node, nodes.node_value(node))
     items = _parse_comma_separated(parser.interface_function_parser, TT_RPAREN, advance_first=TT_LPAREN)
-    return node_2(NT_INTERFACE, __ntok(node), name, nodes.create_list_node_from_list(node, items))
+    if parser.token_type == TT_IS:
+        advance_expected(parser, TT_IS)
+        subs = _parse_comma_separated(parser.name_parser, TT_RPAREN, advance_first=TT_LPAREN)
+    else:
+        subs = list_node([])
+    return node_3(NT_INTERFACE, __ntok(node), name,
+                  nodes.create_list_node_from_list(node, items),
+                  nodes.create_list_node_from_list(node, subs))
 
 
 def infix_interface_dot(parser, op, node, left):

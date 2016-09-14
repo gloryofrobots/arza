@@ -34,6 +34,7 @@ TOKENS = [
   ("TT_OF", "of"),
   ("TT_LET", "let"),
   ("TT_IN", "in"),
+  ("TT_IS", "is"),
   ("TT_AS", "as"),
   ("TT_NOT", "not"),
   ("TT_AND", "and"),

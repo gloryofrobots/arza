@@ -101,6 +101,6 @@ def ++ (t of Tuple, l of List) = t ++ _list:to_tuple(l)
 
 
 derive (Eq, PartialEq, Str, Displayed,
-       Len, Sized, Collection, ReadOnlyCollection,
+       Len, Sized, Collection,
        Concatable, Consable,
        Seqable, Seq, Sliceable) for List

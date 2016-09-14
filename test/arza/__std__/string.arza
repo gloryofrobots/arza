@@ -54,7 +54,7 @@ derive Concatable for Symbol
 
 
 derive (Eq, PartialEq, Str, Displayed,
-       Len, Sized, Collection, ReadOnlyCollection,
+       Len, Sized, Collection,
        Prependable, Appendable, Concatable, Consable,
        Seqable, Sliceable, Emptiable) for String
 

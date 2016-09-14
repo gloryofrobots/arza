@@ -122,8 +122,9 @@ def simplify_interface(compiler, code, node):
     name_1_arg = nodes.create_symbol_node(name_node, name_node)
 
     generics_2_arg = node_second(node)
+    subs_3_arg = node_third(node)
 
-    call_node = nodes.create_call_node_s(node, lang_names.INTERFACE, [name_1_arg, generics_2_arg])
+    call_node = nodes.create_call_node_s(node, lang_names.INTERFACE, [name_1_arg, generics_2_arg, subs_3_arg])
     return nodes.create_assign_node(node, name_node, call_node)
 
 

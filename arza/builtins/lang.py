@@ -37,7 +37,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.KINDOF, __kindof, 2)
     put_lang_func(process, module, lang_names.TYPE, __type, 2)
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
-    put_lang_func(process, module, lang_names.INTERFACE, __interface, 2)
+    put_lang_func(process, module, lang_names.INTERFACE, __interface, 3)
     put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
     put_lang_func(process, module, lang_names.DERIVE, __derive, 2)
     put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
@@ -179,7 +179,8 @@ def __specify(process, routine):
 def __interface(process, routine):
     name = routine.get_arg(0)
     generics = routine.get_arg(1)
-    interface = space.newinterface(name, generics)
+    sub_interfaces = routine.get_arg(2)
+    interface = space.newinterface(name, generics, sub_interfaces)
     return interface
 
 

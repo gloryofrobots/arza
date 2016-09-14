@@ -60,7 +60,6 @@ prefix (&, &, 96)
 ///////////////// GENERICS /////////////////////////////////
 ////////////////////////////////////////////////////////////
 
-
 generic
 (
     ==(x, y)
@@ -128,6 +127,7 @@ generic
 
 
 // TODO make interfaces attach to all gf positions if position is not given
+// for generics with dots use parens (..).0
 interface
 (
     PartialEq (==)
@@ -144,8 +144,13 @@ interface
 
     Len (len)
     Sized (len, is_empty)
-    Collection(put.2, at.1, del.1, elem.1)
+
+    Coll(put.2, del.1)
+    GrowableCollection(put.2)
+    ShrinkableCollection(del.1)
     ReadOnlyCollection(at.1, elem.1)
+    Collection() is (Coll, GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
+
     Seq(first, rest)
     Emptiable(empty)
     Consable(cons.1)

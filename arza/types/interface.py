@@ -17,17 +17,19 @@ def contains_generic(method, record):
 class W_Interface(W_Hashable):
     # _immutable_fields_ = ['_name_']
 
-    def __init__(self, name, generics):
+    def __init__(self, name, generics, sub_interfaces):
         W_Hashable.__init__(self)
         self.name = name
         self.types = plist.empty()
 
+        self.sub_interfaces = sub_interfaces
+
         self.generics = generics
 
-        for record in generics:
-            generic = api.at_index(record, 0)
-            position = api.at_index(record, 1)
-            generic.register_interface(self, position)
+        # for record in generics:
+        #     generic = api.at_index(record, 0)
+        #     position = api.at_index(record, 1)
+        #     generic.register_interface(self, position)
 
     def register_type(self, type):
         if api.contains_b(self.types, type):
@@ -55,18 +57,27 @@ class W_Interface(W_Hashable):
         return other is self
 
 
-def interface(name, generics):
-    result = []
+def interface(name, generics, sub_interfaces):
+    result = plist.empty()
     for record in generics:
         if space.istuple(record):
             error.affirm_type(api.at_index(record, 0), space.isgeneric)
             error.affirm_type(api.at_index(record, 1), space.isint)
-            result.append(record)
         else:
             # TODO make interface accept all positions in that case
             generic = record
             error.affirm_type(generic, space.isgeneric)
             position = space.newint(generic.dispatch_indexes[0])
-            result.append(space.newtuple([generic, position]))
+            record = space.newtuple([generic, position])
 
-    return W_Interface(name, result)
+        result = plist.cons(record, result)
+        # result.append(record)
+
+    if not api.is_empty_b(sub_interfaces):
+        print "BEFORE", result
+        for iface in sub_interfaces:
+            result = plist.concat(result, iface.generics)
+        print "AFTER", result
+
+        result = plist.unique(result)
+    return W_Interface(name, result, sub_interfaces)

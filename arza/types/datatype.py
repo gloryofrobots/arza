@@ -118,7 +118,7 @@ class W_BaseDatatype(W_Hashable):
         self.mro = MRO()
         self.name = name
 
-    def register_interface(self, iface):
+    def _register_interface(self, iface):
         if self.is_interface_implemented(iface):
             error.throw_3(error.Errors.IMPLEMENTATION_ERROR, space.newstring(u"Interface has already implemented"),
                           self, iface)
@@ -126,6 +126,11 @@ class W_BaseDatatype(W_Hashable):
         self.interfaces = plist.cons(iface, self.interfaces)
         self.mro.add_interface(iface)
         iface.register_type(self)
+
+    def register_interface(self, iface):
+        for sub in iface.sub_interfaces:
+            self._register_interface(sub)
+        self._register_interface(iface)
 
     def is_interface_implemented(self, iface):
         return plist.contains(self.interfaces, iface)

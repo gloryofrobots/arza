@@ -337,9 +337,11 @@ class InterfaceParser(BaseParser):
         prefix(self, TT_NAME, prefix_interface_name)
         prefix(self, TT_LPAREN, prefix_lparen)
         self.interface_function_parser = InterfaceFunctionParser()
+        self.name_parser = name_parser_init(BaseParser())
 
         self.add_subparsers([
             self.interface_function_parser,
+            self.name_parser
         ])
 
 

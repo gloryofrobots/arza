@@ -36,7 +36,7 @@ class W_Generic(W_Hashable):
         self.arity = arity
         self.dispatch_indexes = [i for i in range(len(args_signature))]
         self.dispatch_arity = len(self.dispatch_indexes)
-        self.interfaces = plist.empty()
+        # self.interfaces = plist.empty()
         self.arity = api.length_i(args_signature)
         self.args_signature = args_signature
         self.signatures = []
@@ -59,8 +59,8 @@ class W_Generic(W_Hashable):
                 return True
         return False
 
-    def register_interface(self, interface, position):
-        self.interfaces = plist.cons(space.newtuple([interface, position]), self.interfaces)
+    # def register_interface(self, interface, position):
+    #     self.interfaces = plist.cons(space.newtuple([interface, position]), self.interfaces)
 
     def _to_string_(self):
         return "<generic %s %s>" % (api.to_s(self.name), api.to_s(self.args_signature))

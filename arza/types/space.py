@@ -437,37 +437,16 @@ def isgeneric(w):
     from arza.types.dispatch.generic import W_Generic
     return isinstance(w, W_Generic)
 
-
 ########################################################
 
-def newtrait(name, constraints, signature, methods):
-    from arza.types.trait import trait
-    from arza.runtime import error
-    error.affirm_type(name, issymbol)
-    error.affirm_type(constraints, islist)
-    error.affirm_type(signature, islist)
-    error.affirm_type(methods, islist)
-    error.affirm_iterable(signature, issymbol)
-    error.affirm_iterable(constraints, isinterface)
-    error.affirm_iterable(methods, istuple)
-
-    return trait(name, constraints, signature, methods)
-
-
-def istrait(w):
-    from arza.types.trait import W_Trait
-    return isinstance(w, W_Trait)
-
-
-########################################################
-
-def newinterface(name, generics):
+def newinterface(name, generics, sub_interfaces):
     from arza.types.interface import interface
     from arza.runtime import error
     error.affirm_type(name, issymbol)
     error.affirm_type(generics, islist)
+    error.affirm_type(sub_interfaces, islist)
 
-    return interface(name, generics)
+    return interface(name, generics, sub_interfaces)
 
 
 def isinterface(w):

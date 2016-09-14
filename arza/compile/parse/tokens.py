@@ -128,6 +128,7 @@ RULES = [
 
     (keyword('of'), TT_OF),
     (keyword('as'), TT_AS),
+    (keyword('is'), TT_IS),
     (keyword('let'), TT_LET),
     (keyword('def'), TT_DEF),
     (keyword('when'), TT_WHEN),

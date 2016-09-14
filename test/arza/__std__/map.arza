@@ -33,5 +33,5 @@ in
 )
 
 derive (Eq, PartialEq, Str, Displayed,
-       Collection, ReadOnlyCollection,
+       Collection,
        Dict, Seqable) for Map
