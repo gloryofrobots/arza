@@ -74,10 +74,11 @@ def interface(name, generics, sub_interfaces):
         # result.append(record)
 
     if not api.is_empty_b(sub_interfaces):
-        print "BEFORE", result
+        # print "BEFORE", result
         for iface in sub_interfaces:
-            result = plist.concat(result, iface.generics)
-        print "AFTER", result
+            for record in iface.generics:
+                if not api.contains_b(result, record):
+                    result = plist.cons(record, result)
+        # print "AFTER", result
 
-        result = plist.unique(result)
     return W_Interface(name, result, sub_interfaces)

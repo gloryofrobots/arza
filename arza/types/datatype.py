@@ -129,7 +129,8 @@ class W_BaseDatatype(W_Hashable):
 
     def register_interface(self, iface):
         for sub in iface.sub_interfaces:
-            self._register_interface(sub)
+            if not self.is_interface_implemented(sub):
+                self._register_interface(sub)
         self._register_interface(iface)
 
     def is_interface_implemented(self, iface):

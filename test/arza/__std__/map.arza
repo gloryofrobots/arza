@@ -32,6 +32,6 @@ in
     def values(self) = seq:map(at .. 1, to_seq(self))
 )
 
-derive (Eq, PartialEq, Str, Displayed,
+derive (Eq, Displayed,
        Collection,
        Dict, Seqable) for Map

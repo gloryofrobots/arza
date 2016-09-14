@@ -71,7 +71,7 @@ use Reference as 0 in
     def str(self) = "Var"
 )
 
-derive (Str, Displayed, Ref) for Reference
+derive (Displayed, Ref) for Reference
 ///////////////////////////////////////////////////////
 
 // helper for creating looping generators

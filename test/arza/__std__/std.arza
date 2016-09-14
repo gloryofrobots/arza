@@ -1,4 +1,4 @@
-derive (Eq, PartialEq, Str, Displayed)
+derive (Eq, Displayed)
     for (
         Function,
         Generic,
@@ -33,7 +33,7 @@ in
     def <= (x, y) as _number:le
 )
 
-derive (Comparable, LessEq, Ord, Num, Pow, Eq, PartialEq, Str, Displayed) for (Float, Int)
+derive (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed) for (Float, Int)
 
 //extend
 //    Int

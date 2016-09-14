@@ -131,25 +131,25 @@ generic
 interface
 (
     PartialEq (==)
-    Eq (!=, ==)
+    Eq (!=) is PartialEq
     Comparable(cmp)
-    LessEq(<=, ==)
+    LessEq(<=) is PartialEq
     Ord(<, <=, >, >=, cmp, max, min)
 
     Num (-, +, *, /, mod, negate)
     Pow(**)
 
     Str (str)
-    Displayed (str, repr)
+    Displayed (repr) is Str
 
-    Len (len)
-    Sized (len, is_empty)
+    Len(len)
+    Sized (is_empty) is Len
 
     Coll(put.2, del.1)
     GrowableCollection(put.2)
     ShrinkableCollection(del.1)
     ReadOnlyCollection(at.1, elem.1)
-    Collection() is (Coll, GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
+    Collection() is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
 
     Seq(first, rest)
     Emptiable(empty)
@@ -157,7 +157,7 @@ interface
     Prependable(prepend.1)
     Appendable(append.1)
     Concatable(++.1)
-    Dict(keys, values, put.2, at.1, del.1, elem.1)
+    Dict(keys, values) is Collection
     Indexed(index_of.1)
     Seqable(to_seq)
     Sliceable(slice.2, drop.1, take.1)

@@ -1048,7 +1048,7 @@ def prefix_interface_name(parser, op, node):
     items = _parse_comma_separated(parser.interface_function_parser, TT_RPAREN, advance_first=TT_LPAREN)
     if parser.token_type == TT_IS:
         advance_expected(parser, TT_IS)
-        subs = _parse_comma_separated(parser.name_parser, TT_RPAREN, advance_first=TT_LPAREN)
+        subs = _parse_struct_or_name(parser.name_parser, TT_LPAREN, TT_RPAREN, NAME_NODES)
     else:
         subs = list_node([])
     return node_3(NT_INTERFACE, __ntok(node), name,

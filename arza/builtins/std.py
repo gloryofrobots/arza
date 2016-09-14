@@ -75,40 +75,29 @@ class Interfaces:
         self.Dict = None
         self.Indexed = None
         self.Sized = None
-        self.Len = None
         self.Indexed = None
         self.Eq = None
-        self.PartialEq = None
-        self.Str = None
         self.Displayed = None
-        self.Collection = None
         self.instance_derived = None
         self.singleton_derived = None
 
     def setup(self, process):
         prelude = process.modules.prelude
         self.Seq = self.find_interface(process, prelude, u"Seq")
-        self.Collection = self.find_interface(process, prelude, u"Collection")
         self.Dict = self.find_interface(process, prelude, u"Dict")
         self.Indexed = self.find_interface(process, prelude, u"Indexed")
         self.Sized = self.find_interface(process, prelude, u"Sized")
-        self.Len = self.find_interface(process, prelude, u"Len")
         self.Indexed = self.find_interface(process, prelude, u"Indexed")
         self.Eq = self.find_interface(process, prelude, u"Eq")
-        self.PartialEq = self.find_interface(process, prelude, u"PartialEq")
-        self.Str = self.find_interface(process, prelude, u"Str")
         self.Displayed = self.find_interface(process, prelude, u"Displayed")
 
-        # // derive (Dict, Sized, Len, Indexed) for Instance
-        # derive (Eq, PartialEq, Str, Displayed) for (
-
         self.instance_derived = space.newlist([
-            self.Dict, self.Sized, self.Len, self.Indexed,
-            self.Eq, self.PartialEq, self.Str, self.Displayed
+            self.Dict, self.Sized, self.Indexed,
+            self.Eq, self.Displayed
         ])
 
         self.singleton_derived = space.newlist([
-            self.Eq, self.PartialEq, self.Str, self.Displayed
+            self.Eq, self.Displayed
         ])
 
         api.put(prelude, self.Any.name, self.Any)

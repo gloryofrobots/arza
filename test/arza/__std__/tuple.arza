@@ -47,8 +47,8 @@ in
 )
 
 
-derive (Eq, PartialEq, Str, Displayed,
-       Len, Sized, Collection,
+derive (Eq, Displayed,
+       Sized, Collection,
        Prependable, Concatable, Indexed,
        Seqable, Sliceable) for Tuple
 
