@@ -203,15 +203,15 @@ def kindof_b(process, obj, kind):
 
 
 def interface_b(process, obj, iface):
-    if not space.isinterface(iface):
-        return error.throw_2(error.Errors.TYPE_ERROR, iface, space.newstring(u"Interface expected"))
+    error.affirm_type(iface, space.isinterface, u"<Interface>")
+    if space.issingletondatatype(obj):
+        result = obj.is_interface_implemented(iface)
+        if result:
+            return result
 
     obj_type = get_type(process, obj)
     if obj_type.is_interface_implemented(iface):
         return True
-
-    if space.isuserdatatype(obj) and obj.is_singleton:
-        return obj.is_interface_implemented(iface)
 
     return False
 
@@ -225,7 +225,7 @@ def typeof_b(process, obj, _type):
         return error.throw_2(error.Errors.TYPE_ERROR, _type, space.newstring(u"Datatype expected"))
 
     # if Nothing kindof Nothing
-    if space.isuserdatatype(obj) and space.isuserdatatype(_type) and obj.is_singleton:
+    if space.issingletondatatype(obj) and space.isuserdatatype(_type):
         if equal_b(obj, _type):
             return True
 

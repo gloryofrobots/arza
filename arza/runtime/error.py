@@ -66,9 +66,14 @@ def affirm_iterable(it, condition):
         affirm_type(i, condition)
 
 
-def affirm_type(obj, condition):
+def affirm_type(obj, condition, expected=None):
     if not condition(obj):
-        return throw_2(Errors.TYPE_ERROR, space.safe_w(obj), space.newstring(u"Wrong object type"))
+        if expected:
+            expected_str= u"expected %s" % expected
+        else:
+            expected_str = u""
+        return throw_2(Errors.TYPE_ERROR, space.safe_w(obj),
+                       space.newstring(u"Wrong object type %s" % expected_str))
     return True
 
 

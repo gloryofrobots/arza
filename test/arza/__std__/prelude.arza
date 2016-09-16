@@ -119,6 +119,7 @@ generic
     range_from_by(self, step)
     !(self)
     :=(self, value)
+    cast(to_what, self)
 )
 
 ////////////////////////////////////////////////////////////
@@ -160,6 +161,9 @@ interface
     Dict(keys, values) is Collection
     Indexed(index_of.1)
     Seqable(to_seq)
+
+    Castable(cast.1)
+
     Sliceable(slice.2, drop.1, take.1)
     Bounded(lower_bound, upper_bound)
     Ranged(range, range_by, range_from, range_from_by)
@@ -258,6 +262,7 @@ in
     def elem (el, self) as std_behavior:elem
     def len (self) as std_behavior:len
     def is_empty (self) as std_behavior:is_empty
+    def cast(to_what, self) as std_behavior:cast
 )
 
 

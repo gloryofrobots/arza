@@ -423,19 +423,10 @@ def newgeneric(name, signature):
     return generic(name, signature)
 
 
-def newgeneric_hotpath(name, signature, hot_path):
-    from arza.types.dispatch.generic import generic_with_hotpath
-    assert issymbol(name)
-    assert islist(signature)
-    assert hot_path is not None
-
-    obj = generic_with_hotpath(name, signature, hot_path)
-    return obj
-
-
 def isgeneric(w):
     from arza.types.dispatch.generic import W_Generic
     return isinstance(w, W_Generic)
+
 
 ########################################################
 
@@ -470,13 +461,18 @@ def newnativedatatype(name):
 
 
 def isdatatype(w):
-    from arza.types.datatype import W_DataType, W_NativeDatatype
-    return isinstance(w, W_DataType) or isinstance(w, W_NativeDatatype)
+    from arza.types.datatype import W_BaseDatatype
+    return isinstance(w, W_BaseDatatype)
 
 
 def isuserdatatype(w):
-    from arza.types.datatype import W_DataType
-    return isinstance(w, W_DataType)
+    from arza.types.datatype import W_DataType, W_SingletonType
+    return isinstance(w, W_DataType) or isinstance(w, W_SingletonType)
+
+
+def issingletondatatype(w):
+    from arza.types.datatype import W_SingletonType
+    return isinstance(w, W_SingletonType)
 
 
 def isnativedatatype(w):
@@ -485,14 +481,26 @@ def isnativedatatype(w):
 
 
 def isrecord(w):
-    from arza.types.datatype import W_Instance
-    return isinstance(w, W_Instance)
+    from arza.types.datatype import W_Record
+    return isinstance(w, W_Record)
 
 
 def isdispatchable(w):
-    from arza.types.datatype import W_Instance, W_DataType
-    from arza.types.dispatch.generic import W_Generic
-    return isinstance(w, W_Instance) or isinstance(w, W_DataType) or isinstance(w, W_Generic)
+    from arza.types.datatype import W_Record, W_DataType
+    return isinstance(w, W_Record) or isinstance(w, W_DataType)
+
+
+########################################################
+
+
+def newmirror(w, interfaces):
+    from arza.types.mirror import mirror
+    return mirror(w, interfaces)
+
+
+def ismirror(w):
+    from arza.types.mirror import W_Mirror
+    return isinstance(w, W_Mirror)
 
 
 ########################################################

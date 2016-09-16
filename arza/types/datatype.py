@@ -4,7 +4,7 @@ from arza.misc import platform
 from arza.runtime import error
 
 
-class W_Instance(W_Hashable):
+class W_Record(W_Hashable):
     def __init__(self, type, values):
         W_Hashable.__init__(self)
         self.values = values
@@ -56,13 +56,13 @@ class W_Instance(W_Hashable):
             error.throw_1(error.Errors.KEY_ERROR, name)
 
         newvalues = api.put(self.values, name, value)
-        return W_Instance(self.type.descriptors, newvalues)
+        return W_Record(self.type.descriptors, newvalues)
 
     def _length_(self):
         return api.length(self.values)
 
     def _equal_(self, other):
-        if not isinstance(other, W_Instance):
+        if not isinstance(other, W_Record):
             return False
         if not api.equal_b(self.type, other.type):
             return False
@@ -112,9 +112,9 @@ class MRO:
 
 
 class W_BaseDatatype(W_Hashable):
-    def __init__(self, name):
+    def __init__(self, name, interfaces):
         W_Hashable.__init__(self)
-        self.interfaces = plist.empty()
+        self.interfaces = interfaces
         self.mro = MRO()
         self.name = name
 
@@ -145,7 +145,7 @@ class W_BaseDatatype(W_Hashable):
 
 class W_NativeDatatype(W_BaseDatatype):
     def __init__(self, name):
-        W_BaseDatatype.__init__(self, name)
+        W_BaseDatatype.__init__(self, name, plist.empty())
 
     def _type_(self, process):
         return process.std.types.Datatype
@@ -157,17 +157,25 @@ class W_NativeDatatype(W_BaseDatatype):
         return self._to_string_()
 
 
+class W_SingletonType(W_BaseDatatype):
+    def __init__(self, name):
+        W_BaseDatatype.__init__(self, name, plist.empty())
+
+    def _type_(self, process):
+        return process.std.types.Datatype
+
+    def _to_string_(self):
+        return "<SingletonDatatype %s>" % (api.to_s(self.name))
+
+    def _to_repr_(self):
+        return api.to_s(self.name)
+
+
 class W_DataType(W_BaseDatatype):
     def __init__(self, name, fields):
-        W_BaseDatatype.__init__(self, name)
+        W_BaseDatatype.__init__(self, name, plist.empty())
         self.fields = fields
         self.arity = api.length_i(self.fields)
-
-        if plist.is_empty(self.fields):
-            self.is_singleton = True
-        else:
-            self.is_singleton = False
-
         self.descriptors = descriptors(self.fields)
 
     def _call_(self, process, args):
@@ -179,7 +187,7 @@ class W_DataType(W_BaseDatatype):
                           api.length(self.fields),
                           args)
 
-        return W_Instance(self, space.newpvector(args.to_l()))
+        return W_Record(self, space.newpvector(args.to_l()))
 
     def _type_(self, process):
         return process.std.types.Datatype
@@ -254,12 +262,15 @@ def newnativedatatype(name):
 
 
 def newtype(process, name, fields):
-    _type = W_DataType(name, fields)
-    _type.register_interface(process.std.interfaces.Any)
-    if _type.is_singleton:
-        _type.register_interface(process.std.interfaces.Singleton)
+    if plist.is_empty(fields):
+        _type = W_SingletonType(name)
+        _iface = process.std.interfaces.Singleton
     else:
-        _type.register_interface(process.std.interfaces.Instance)
+        _type = W_DataType(name, fields)
+        _iface = process.std.interfaces.Instance
+
+    _type.register_interface(process.std.interfaces.Any)
+    _type.register_interface(_iface)
 
     if process.std.initialized:
         derived = process.std.interfaces.get_derived(_type)

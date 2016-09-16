@@ -80,8 +80,8 @@ class W_Generic(W_Hashable):
         #     if res is not None:
         #         return res
 
-        dispatch_args = space.newtuple([args[i] for i in self.dispatch_indexes])
-        method = self.dag.evaluate(process, dispatch_args)
+        # dispatch_args = space.newtuple([args[i] for i in self.dispatch_indexes])
+        method = self.dag.evaluate(process, args)
         # print "GEN CALL", str(method)
         # method = lookup_implementation(process, self, args)
         assert method is not self
@@ -246,17 +246,14 @@ def get_method(process, gf, types):
 ############################################################
 ############################################################
 
-def generic_with_hotpath(name, signature):
+
+def generic(name, signature):
     arity = api.length_i(signature)
 
     if arity == 0:
         error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR, space.newstring(u"Generic arity == 0"))
 
     return W_Generic(name, arity, signature)
-
-
-def generic(name, signature):
-    return generic_with_hotpath(name, signature)
 
 
 
