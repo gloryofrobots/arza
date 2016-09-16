@@ -4,8 +4,8 @@ from arza.compile.parse import parser
 from arza.compile import simplify
 from arza.compile.parse import nodes
 from arza.compile.parse.nodes import (node_type, imported_name_to_s,
-                                       node_first, node_second, node_third, node_fourth,
-                                       node_children, is_empty_node)
+                                      node_first, node_second, node_third, node_fourth,
+                                      node_children, is_empty_node)
 from arza.compile.parse.node_type import *
 from arza.compile.code.source import CodeSource, codeinfo, codeinfo_unknown, SourceInfo
 from arza.misc import platform, strutil
@@ -998,9 +998,15 @@ def _compile_CONS(compiler, code, node):
     _compile(compiler, code, simplified)
 
 
+def _compile_AS(compiler, code, node):
+    simplified = simplify.simplify_as(compiler, code, node)
+    _compile(compiler, code, simplified)
+
+
 def _compile_LET(compiler, code, node):
     simplified = simplify.simplify_let(compiler, code, node)
     _compile(compiler, code, simplified)
+
 
 def _compile_DERIVE(compiler, code, node):
     simplified = simplify.simplify_declare(compiler, code, node)
@@ -1212,6 +1218,8 @@ def _compile_node(compiler, code, node):
         _compile_TYPE(compiler, code, node)
     elif NT_CONS == ntype:
         _compile_CONS(compiler, code, node)
+    elif NT_AS == ntype:
+        _compile_AS(compiler, code, node)
     elif NT_LET == ntype:
         _compile_LET(compiler, code, node)
     elif NT_DERIVE == ntype:
@@ -1271,6 +1279,7 @@ def compile_env(process, parent_env, modulename, src, sourcename):
     module = space.newenvsource(modulename, code)
     return module
 
+
 def compile_function_ast(process, env, ast):
     assert nodes.node_type(ast) == NT_FUN
 
@@ -1279,6 +1288,7 @@ def compile_function_ast(process, env, ast):
     code = _compile_ast(compiler, ast, parser.ParserScope())
     fn = code.scope.get_scope_literal_value(0)
     return fn
+
 
 def compile_function_source(process, parent_env, src, name):
     code = compile(process, parent_env, src, name)

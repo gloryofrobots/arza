@@ -43,6 +43,7 @@ TO_SEQ = PREFIX + "to_seq"
 CONCAT = PREFIX + "++"
 APPLY = PREFIX + "apply"
 NEGATE = PREFIX + "negate"
+CAST = PREFIX + "cast"
 
 
 TINT = PREFIX + "Int"

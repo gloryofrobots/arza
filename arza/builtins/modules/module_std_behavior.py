@@ -7,7 +7,6 @@ def setup(process, stdlib):
     _module_name = space.newsymbol(process, u'arza:lang:_std_behavior')
     _module = space.newemptyenv(_module_name)
     api.put_native_function(process, _module, u'len', length, 1)
-    api.put_native_function(process, _module, u'cast', cast, 2)
     api.put_native_function(process, _module, u'is_empty', is_empty, 1)
     api.put_native_function(process, _module, u'put', put, 3)
     api.put_native_function(process, _module, u'at', at, 2)
@@ -17,6 +16,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'not_equal', not_equal, 2)
     api.put_native_function(process, _module, u'str', to_string, 1)
     api.put_native_function(process, _module, u'repr', to_repr, 1)
+    api.put_native_function(process, _module, u'cast', cast, 2)
 
     _module.export_all()
     process.modules.add_module(_module_name, _module)
@@ -61,7 +61,8 @@ def cast(process, routine):
     arg1 = routine.get_arg(1)
 
     arg0 = routine.get_arg(0)
-
+    if not space.islist(arg0):
+        arg0 = space.newlist([arg0])
     return space.newmirror(arg1, arg0)
 
 
