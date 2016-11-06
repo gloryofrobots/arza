@@ -85,10 +85,6 @@ class BaseParser:
     #     return self.ts.is_newline_occurred
 
     @property
-    def node(self):
-        return self.ts.node
-
-    @property
     def token(self):
         return self.ts.token
 

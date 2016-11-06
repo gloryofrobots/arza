@@ -8,6 +8,7 @@ from arza.builtins import lang_names
 
 
 def newnode(ntype, token, children):
+    assert isinstance(token, tokens.Token)
     if children is not None:
         for child in children:
             assert is_node(child), (child.__class__, child)
@@ -94,10 +95,6 @@ def node_equal(node1, node2):
         return False
 
     return plist.equal_with(node_children(node1), node_children(node2), node_equal)
-
-
-def node_blank(token):
-    return newnode(-1, token, None)
 
 
 def node_0(ntype, token):
@@ -313,8 +310,12 @@ def find_names(node):
 
 # CONSTRUCTORS
 
-def create_token_from_node(type, value, node):
-    return tokens.newtoken(type, value, node_position(node), node_line(node), node_column(node))
+def create_token_from_token(type, value, token):
+    return tokens.newtoken(type, value,
+                           tokens.token_position(token),
+                           tokens.token_line(token),
+                           tokens.token_column(token))
+
 
 
 def create_function_variants(args, exp):
@@ -330,90 +331,89 @@ def create_function_variants(args, exp):
     ])])
 
 
-def create_fun_simple_node(basenode, name, body):
-    return create_fun_node(basenode, name,
+def create_fun_simple_node(token, name, body):
+    return create_fun_node(token, name,
                            create_function_variants(
-                               create_tuple_node(basenode, [create_unit_node(basenode)]),
+                               create_tuple_node(token, [create_unit_node(token)]),
                                body))
 
 
-def create_lambda_node(basenode, args, exp):
+def create_lambda_node(token, args, exp):
     assert node_type(args) == nt.NT_TUPLE or node_type(args) == nt.NT_UNIT, args
-    return node_1(nt.NT_LAMBDA, create_token_from_node(tt.TT_STR, "lambda", basenode),
+    return node_1(nt.NT_LAMBDA, token,
                   create_function_variants(
                       args,
                       list_node([exp])))
 
 
-def create_fun_node(basenode, name, funcs):
-    return node_2(nt.NT_FUN, create_token_from_node(tt.TT_STR, "fun", basenode), name, funcs)
+def create_fun_node(token, name, funcs):
+    return node_2(nt.NT_FUN, token, name, funcs)
 
 
-def create_partial_node(basenode, name):
-    return create_call_node_s(basenode, lang_names.PARTIAL, [name])
+def create_partial_node(token, name):
+    return create_call_node_s(token, lang_names.PARTIAL, [name])
 
 
-def create_temporary_node(basenode, idx):
-    return node_1(nt.NT_TEMPORARY, create_token_from_node(tt.TT_UNKNOWN, "", basenode), space.newint(idx))
+def create_temporary_node(token, idx):
+    return node_1(nt.NT_TEMPORARY, token, space.newint(idx))
 
 
-def create_name_from_operator(basenode, op):
-    return create_name_node_s(basenode, node_value_s(op))
+def create_name_from_operator(token, op):
+    return create_name_node_s(token, node_value_s(op))
 
 
-def create_symbol_from_operator(basenode, op):
-    return create_symbol_node(basenode, create_name_from_operator(basenode, op))
+def create_symbol_from_operator(token, op):
+    return create_symbol_node(token, create_name_from_operator(token, op))
 
 
-def create_name_node_s(basenode, name):
-    return node_0(nt.NT_NAME, create_token_from_node(tt.TT_NAME, name, basenode))
+def create_name_node_s(token, name):
+    return node_0(nt.NT_NAME, token)
 
 
-def create_name_node(basenode, name):
-    return create_name_node_s(basenode, api.to_s(name))
+def create_name_node(token, name):
+    return create_name_node_s(token, api.to_s(name))
 
 
-def create_str_node(basenode, strval):
-    return node_0(nt.NT_STR, create_token_from_node(tt.TT_STR, strval, basenode))
+def create_str_node(token, strval):
+    return node_0(nt.NT_STR, create_token_from_token(tt.TT_STR, strval, token))
 
 
-def create_symbol_node(basenode, name):
-    return node_1(nt.NT_SYMBOL, create_token_from_node(tt.TT_SHARP, "#", basenode), name)
+def create_symbol_node(token, name):
+    return node_1(nt.NT_SYMBOL, token, name)
 
 
-def create_symbol_node_string(basenode, name):
-    return node_1(nt.NT_SYMBOL, create_token_from_node(tt.TT_SHARP, "#", basenode),
-                  create_name_node(basenode, name))
+def create_symbol_node_string(token, name):
+    return node_1(nt.NT_SYMBOL, token,
+                  create_name_node(token, name))
 
 
-def create_symbol_node_s(basenode, name):
-    return node_1(nt.NT_SYMBOL, create_token_from_node(tt.TT_SHARP, "#", basenode),
-                  create_name_node_s(basenode, name))
+def create_symbol_node_s(token, name):
+    return node_1(nt.NT_SYMBOL, token,
+                  create_name_node_s(token, name))
 
 
-def create_int_node(basenode, val):
-    return node_0(nt.NT_INT, create_token_from_node(tt.TT_INT, str(val), basenode))
+def create_int_node(token, val):
+    return node_0(nt.NT_INT, create_token_from_token(tt.TT_INT, str(val), token))
 
 
-def create_true_node(basenode):
-    return node_0(nt.NT_TRUE, create_token_from_node(tt.TT_TRUE, "true", basenode))
+def create_true_node(token):
+    return node_0(nt.NT_TRUE, token)
 
 
-def create_false_node(basenode):
-    return node_0(nt.NT_FALSE, create_token_from_node(tt.TT_FALSE, "false", basenode))
+def create_false_node(token):
+    return node_0(nt.NT_FALSE, token)
 
 
-def create_fargs_node(basenode):
-    return node_0(nt.NT_FARGS,
-                  create_token_from_node(tt.TT_NAME, "<arguments>", basenode))
+def create_fargs_node(token):
+    return node_0(nt.NT_FARGS, token)
 
 
-def create_void_node(basenode):
-    return node_0(nt.NT_VOID, create_token_from_node(tt.TT_VOID, "void", basenode))
+def create_void_node(token):
+    return node_0(nt.NT_VOID, token)
 
 
-def create_undefine_node(basenode, varname):
-    return node_1(nt.NT_UNDEFINE, create_token_from_node(tt.TT_UNKNOWN, "undefine", basenode), varname)
+def create_undefine_node(token, varname):
+    return node_1(nt.NT_UNDEFINE, token, varname)
 
 
 def create_goto_node(label):
@@ -421,151 +421,146 @@ def create_goto_node(label):
                   tokens.newtoken(tt.TT_UNKNOWN, str(label), space.newint(-1), space.newint(-1), space.newint(-1)))
 
 
-def create_wildcard_node(basenode):
-    return node_0(nt.NT_WILDCARD, create_token_from_node(tt.TT_WILDCARD, "_", basenode))
+def create_wildcard_node(token):
+    return node_0(nt.NT_WILDCARD, token)
 
 
-def create_unit_node(basenode):
-    return node_0(nt.NT_UNIT, create_token_from_node(tt.TT_LPAREN, "(", basenode))
+def create_unit_node(token):
+    return node_0(nt.NT_UNIT, token)
 
 
-def create_literal_node(basenode, node):
-    return node_1(nt.NT_LITERAL, create_token_from_node(tt.TT_LPAREN, "(", basenode), node)
+def create_literal_node(token, node):
+    return node_1(nt.NT_LITERAL, token, node)
 
 
-# def create_tuple_with_unit_node(basenode):
-#     return create_tuple_node(basenode, node_0(nt.NT_UNIT, create_token_from_node(tt.TT_LPAREN, "(", basenode)))
+def create_tuple_node(token, elements):
+    return node_1(nt.NT_TUPLE, token, list_node(elements))
 
 
-
-def create_tuple_node(basenode, elements):
-    return node_1(nt.NT_TUPLE, create_token_from_node(tt.TT_LPAREN, "(", basenode), list_node(elements))
-
-
-def create_tuple_node_from_list(basenode, elements):
+def create_tuple_node_from_list(token, elements):
     assert is_list_node(elements)
-    return node_1(nt.NT_TUPLE, create_token_from_node(tt.TT_LPAREN, "(", basenode), elements)
+    return node_1(nt.NT_TUPLE, token, elements)
 
 
-def create_list_node(basenode, items):
-    return node_1(nt.NT_LIST, create_token_from_node(tt.TT_LSQUARE, "[", basenode), list_node(items))
+def create_list_node(token, items):
+    return node_1(nt.NT_LIST, token, list_node(items))
 
 
-def create_list_node_from_list(basenode, items):
+def create_list_node_from_list(token, items):
     assert is_list_node(items), items
-    return node_1(nt.NT_LIST, create_token_from_node(tt.TT_LSQUARE, "[", basenode), items)
+    return node_1(nt.NT_LIST, token, items)
 
 
-def create_empty_list_node(basenode):
-    return node_1(nt.NT_LIST, create_token_from_node(tt.TT_LSQUARE, "[", basenode), list_node([]))
+def create_empty_list_node(token):
+    return node_1(nt.NT_LIST, token, list_node([]))
 
 
-def create_empty_map_node(basenode):
-    return node_1(nt.NT_MAP, create_token_from_node(tt.TT_LCURLY, "{", basenode), list_node([]))
+def create_empty_map_node(token):
+    return node_1(nt.NT_MAP, token, list_node([]))
 
 
-def create_match_fail_node(basenode, val, idx):
-    sym = create_symbol_node_s(basenode, val)
-    return create_tuple_node(basenode, [sym, create_temporary_node(basenode, idx)])
-    # return create_call_node_s(basenode, val, [create_name_node(basenode, var)])
+def create_match_fail_node(token, val, idx):
+    sym = create_symbol_node_s(token, val)
+    return create_tuple_node(token, [sym, create_temporary_node(token, idx)])
+    # return create_call_node_s(token, val, [create_name_node(token, var)])
 
 
-def create_if_node(basenode, branches):
-    return node_1(nt.NT_CONDITION, create_token_from_node(tt.TT_IF, "if", basenode), list_node(branches))
+def create_if_node(token, branches):
+    return node_1(nt.NT_CONDITION, token, list_node(branches))
 
 
-def create_call_node(basenode, func, exps):
-    return node_2(nt.NT_CALL, create_token_from_node(tt.TT_LPAREN, "(", basenode), func, exps)
+def create_call_node(token, func, exps):
+    return node_2(nt.NT_CALL, token, func, exps)
 
 
-def create_call_node_1(basenode, func, exp):
-    return node_2(nt.NT_CALL, create_token_from_node(tt.TT_LPAREN, "(", basenode), func, list_node([exp]))
+def create_call_node_1(token, func, exp):
+    return node_2(nt.NT_CALL, token, func, list_node([exp]))
 
 
-def create_call_node_2(basenode, func, exp1, exp2):
-    return node_2(nt.NT_CALL, create_token_from_node(tt.TT_LPAREN, "(", basenode), func, list_node([exp1, exp2]))
+def create_call_node_2(token, func, exp1, exp2):
+    return node_2(nt.NT_CALL, token, func, list_node([exp1, exp2]))
 
 
-def create_call_node_3(basenode, func, exp1, exp2, exp3):
-    return node_2(nt.NT_CALL, create_token_from_node(tt.TT_LPAREN, "(", basenode), func, list_node([exp1, exp2, exp3]))
+def create_call_node_3(token, func, exp1, exp2, exp3):
+    return node_2(nt.NT_CALL, token, func, list_node([exp1, exp2, exp3]))
 
 
-def create_call_node_name(basenode, funcname, exps):
-    return create_call_node_s(basenode, api.to_s(funcname), exps)
+def create_call_node_name(token, funcname, exps):
+    return create_call_node_s(token, api.to_s(funcname), exps)
 
 
-def create_call_node_s(basenode, funcname, exps):
+def create_call_node_s(token, funcname, exps):
     return node_2(nt.NT_CALL,
-                  create_token_from_node(tt.TT_LPAREN, "(", basenode),
-                  create_name_node_s(basenode, funcname),
+                  token,
+                  create_name_node_s(token, funcname),
                   list_node(exps))
 
 
-def create_when_no_else_node(basenode, cond, body):
-    return node_2(nt.NT_WHEN, create_token_from_node(tt.TT_WHEN, "when", basenode), cond, body)
+def create_when_no_else_node(token, cond, body):
+    return node_2(nt.NT_WHEN, token, cond, body)
 
 
-def create_when_node(basenode, pattern, guard):
-    return node_2(nt.NT_WHEN, create_token_from_node(tt.TT_WHEN, "when", basenode), pattern, guard)
+def create_when_node(token, pattern, guard):
+    return node_2(nt.NT_WHEN, token, pattern, guard)
 
 
 # CALL TO OPERATOR FUNCS
 # TODO MAKE IT CONSISTENT WITH OPERATOR REDECLARATION
 
-def create_eq_call(basenode, left, right):
-    return create_call_node_s(basenode, lang_names.EQ, [left, right])
+def create_eq_call(token, left, right):
+    return create_call_node_s(token, lang_names.EQ, [left, right])
 
 
-def create_gt_call(basenode, left, right):
-    return create_call_node_s(basenode, lang_names.GE, [left, right])
+def create_gt_call(token, left, right):
+    return create_call_node_s(token, lang_names.GE, [left, right])
 
 
-def create_kindof_call(basenode, left, right):
-    return create_call_node_s(basenode, lang_names.KINDOF, [left, right])
+def create_kindof_call(token, left, right):
+    return create_call_node_s(token, lang_names.KINDOF, [left, right])
 
 
-def create_isnot_call(basenode, left, right):
-    return create_call_node_s(basenode, lang_names.ISNOT, [left, right])
+def create_isnot_call(token, left, right):
+    return create_call_node_s(token, lang_names.ISNOT, [left, right])
 
 
-def create_is_call(basenode, left, right):
-    return create_call_node_s(basenode, lang_names.IS, [left, right])
+def create_is_call(token, left, right):
+    return create_call_node_s(token, lang_names.IS, [left, right])
 
 
-def create_elem_call(basenode, left, right):
-    return create_call_node_s(basenode, lang_names.ELEM, [left, right])
+def create_elem_call(token, left, right):
+    return create_call_node_s(token, lang_names.ELEM, [left, right])
 
 
-def create_is_indexed_call(basenode, val):
-    return create_call_node_s(basenode, lang_names.IS_INDEXED, [val])
+def create_is_indexed_call(token, val):
+    return create_call_node_s(token, lang_names.IS_INDEXED, [val])
 
 
-def create_is_dict_call(basenode, val):
-    return create_call_node_s(basenode, lang_names.IS_DICT, [val])
+def create_is_dict_call(token, val):
+    return create_call_node_s(token, lang_names.IS_DICT, [val])
 
 
-def create_is_empty_call(basenode, val):
-    return create_call_node_s(basenode, lang_names.IS_EMPTY, [val])
+def create_is_empty_call(token, val):
+    return create_call_node_s(token, lang_names.IS_EMPTY, [val])
 
 
-def create_is_seq_call(basenode, val):
-    return create_call_node_s(basenode, lang_names.IS_SEQ, [val])
+def create_is_seq_call(token, val):
+    return create_call_node_s(token, lang_names.IS_SEQ, [val])
 
 
-def create_len_call(basenode, val):
-    return create_call_node_s(basenode, lang_names.LEN, [val])
+def create_len_call(token, val):
+    return create_call_node_s(token, lang_names.LEN, [val])
 
 
-def create_cons_call(basenode, left, right):
-    return create_call_node_s(basenode, lang_names.CONS, [left, right])
+def create_cons_call(token, left, right):
+    return create_call_node_s(token, lang_names.CONS, [left, right])
 
 
-def create_not_call(basenode, left):
-    return create_call_node_s(basenode, lang_names.NOT, [left])
+def create_not_call(token, left):
+    return create_call_node_s(token, lang_names.NOT, [left])
 
 
-def create_to_seq_call(basenode, left):
-    return create_call_node_s(basenode, lang_names.TO_SEQ, [left])
+def create_to_seq_call(token, left):
+    return create_call_node_s(token, lang_names.TO_SEQ, [left])
 
 
 def _create_unpack_call_args(seqs):
@@ -576,55 +571,55 @@ def _create_unpack_call_args(seqs):
     return create_call_node_s(seq, lang_names.CONCAT, [seq, _create_unpack_call_args(rest)])
 
 
-def create_unpack_call(basenode, left, seqs):
-    return create_call_node_s(basenode, lang_names.APPLY, [left, _create_unpack_call_args(seqs)])
+def create_unpack_call(token, left, seqs):
+    return create_call_node_s(token, lang_names.APPLY, [left, _create_unpack_call_args(seqs)])
 
 
 ##############################
 
-def create_and_node(basenode, left, right):
-    return node_2(nt.NT_AND, create_token_from_node(tt.TT_AND, "and", basenode), left, right)
+def create_and_node(token, left, right):
+    return node_2(nt.NT_AND, token, left, right)
 
 
-def create_assign_node(basenode, left, right):
-    return node_2(nt.NT_ASSIGN, create_token_from_node(tt.TT_ASSIGN, "=", basenode), left, right)
+def create_assign_node(token, left, right):
+    return node_2(nt.NT_ASSIGN, token, left, right)
 
 
-def create_head_node(basenode):
-    return node_0(nt.NT_HEAD, create_token_from_node(tt.TT_UNKNOWN, "", basenode))
+def create_head_node(token):
+    return node_0(nt.NT_HEAD, token)
 
 
-def create_tail_node(basenode):
-    return node_0(nt.NT_TAIL, create_token_from_node(tt.TT_UNKNOWN, "", basenode))
+def create_tail_node(token):
+    return node_0(nt.NT_TAIL, token)
 
 
-def create_drop_node(basenode, count):
-    return node_1(nt.NT_DROP, create_token_from_node(tt.TT_UNKNOWN, "..", basenode), count)
+def create_drop_node(token, count):
+    return node_1(nt.NT_DROP, token, count)
 
 
-def create_lookup_node(basenode, left, right):
-    return node_2(nt.NT_LOOKUP, create_token_from_node(tt.TT_LSQUARE, "[", basenode), left, right)
+def create_lookup_node(token, left, right):
+    return node_2(nt.NT_LOOKUP, token, left, right)
 
 
-def create_lookup_index_node(basenode, left, index):
-    return create_lookup_node(basenode, left, create_int_node(basenode, index))
+def create_lookup_index_node(token, left, index):
+    return create_lookup_node(token, left, create_int_node(token, index))
 
 
-def create_bind_node(basenode, left, right):
-    return node_2(nt.NT_BIND, create_token_from_node(tt.TT_AT_SIGN, "@", basenode), left, right)
+def create_bind_node(token, left, right):
+    return node_2(nt.NT_BIND, token, left, right)
 
 
-def create_of_node(basenode, left, right):
-    return node_2(nt.NT_OF, create_token_from_node(tt.TT_OF, "of", basenode), left, right)
+def create_of_node(token, left, right):
+    return node_2(nt.NT_OF, token, left, right)
 
 
-def create_match_node(basenode, exp, branches):
-    return node_2(nt.NT_MATCH, create_token_from_node(tt.TT_MATCH, "match", basenode), exp, list_node(branches))
+def create_match_node(token, exp, branches):
+    return node_2(nt.NT_MATCH, token, exp, list_node(branches))
 
 
-def create_try_statement_node(basenode, exp, success, fail):
+def create_try_statement_node(token, exp, success, fail):
     return node_3(nt.NT_TRY,
-                  create_token_from_node(tt.TT_TRY, "try", basenode),
+                  token,
                   list_node([exp, success]),
                   list_node([empty_node(), list_node([fail])]),
                   empty_node())

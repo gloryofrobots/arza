@@ -43,18 +43,18 @@ def parser_error_unknown(parser, position):
                        ]))
 
 
-def parse_error(parser, message, node):
-    if nodes.node_token_type(node) == TT_ENDSTREAM:
+def parse_error(parser, message, token):
+    if tokens.token_type(token) == TT_ENDSTREAM:
         line = u"Unclosed top level statement"
     else:
-        line = get_line(parser.ts.src, api.to_i(nodes.node_line(node)))
+        line = get_line(parser.ts.src, api.to_i(tokens.token_line(token)))
 
     return error.throw(error.Errors.PARSE_ERROR,
                        space.newtuple([
-                           space.newtuple([nodes.node_position(node),
-                                           nodes.node_line(node),
-                                           nodes.node_column(node)]),
-                           nodes.node_to_string(node),
+                           space.newtuple([tokens.token_position(token),
+                                           tokens.token_line(token),
+                                           tokens.token_column(token)]),
+                           # tokens.token_to_string(token),
                            space.newstring(message),
                            space.newstring(line)
                        ]))
@@ -191,11 +191,11 @@ def parser_operator(parser, ttype):
         return parser.handlers[ttype]
     except:
         if ttype == TT_UNKNOWN:
-            return parse_error(parser, u"Invalid token", parser.node)
+            return parse_error(parser, u"Invalid token", parser.token)
 
         if parser.allow_unknown is True:
             return parser_operator(parser, TT_UNKNOWN)
-        return parse_error(parser, u"Invalid token %s" % tokens.token_type_to_s(ttype), parser.node)
+        return parse_error(parser, u"Invalid token %s" % tokens.token_type_to_s(ttype), parser.token)
 
 
 def get_or_create_operator(parser, ttype):
@@ -209,8 +209,8 @@ def parser_set_operator(parser, ttype, h):
     return parser_operator(parser, ttype)
 
 
-def node_operator(parser, node):
-    ttype = nodes.node_token_type(node)
+def node_operator(parser, token):
+    ttype = tokens.token_type(token)
     if not parser.allow_overloading:
         return parser_operator(parser, ttype)
 
@@ -218,45 +218,45 @@ def node_operator(parser, node):
         return parser_operator(parser, ttype)
 
     # in case of operator
-    op = parser_find_operator(parser, nodes.node_value(node))
+    op = parser_find_operator(parser, tokens.token_value(token))
     if op is None or space.isvoid(op):
-        return parse_error(parser, u"Invalid operator", node)
+        return parse_error(parser, u"Invalid operator", token)
     return op
 
 
-def node_nud(parser, node):
-    handler = node_operator(parser, node)
+def node_nud(parser, token):
+    handler = node_operator(parser, token)
     if not handler.nud:
-        parse_error(parser, u"Unknown token nud", node)
-    return handler.nud(parser, handler, node)
+        parse_error(parser, u"Unknown token nud", token)
+    return handler.nud(parser, handler, token)
 
 
-def node_std(parser, node):
-    handler = node_operator(parser, node)
+def node_std(parser, token):
+    handler = node_operator(parser, token)
     if not handler.std:
-        parse_error(parser, u"Unknown token std", node)
+        parse_error(parser, u"Unknown token std", token)
 
     # print tokens.token_type_to_s(nodes.node_token_type(node))
-    return handler.std(parser, handler, node)
+    return handler.std(parser, handler, token)
 
 
-def node_has_nud(parser, node):
-    handler = node_operator(parser, node)
+def node_has_nud(parser, token):
+    handler = node_operator(parser, token)
     return handler.nud is not None
 
 
-def node_has_led(parser, node):
-    handler = node_operator(parser, node)
+def node_has_led(parser, token):
+    handler = node_operator(parser, token)
     return handler.led is not None
 
 
-def node_has_std(parser, node):
-    handler = node_operator(parser, node)
+def node_has_std(parser, token):
+    handler = node_operator(parser, token)
     return handler.std is not None
 
 
-def node_lbp(parser, node):
-    op = node_operator(parser, node)
+def node_lbp(parser, token):
+    op = node_operator(parser, token)
     lbp = op.lbp
     if op.ambidextra is True:
         prev = parser.previous_token
@@ -264,7 +264,7 @@ def node_lbp(parser, node):
             return lbp
 
         prev_line = tokens.token_line_i(prev)
-        cur_line = nodes.node_line_i(node)
+        cur_line = tokens.token_line_i(token)
         # if tokens on the same line it's infix otherwise it's prefix
         if prev_line == cur_line:
             return lbp
@@ -274,12 +274,12 @@ def node_lbp(parser, node):
     return lbp
 
 
-def node_led(parser, node, left):
-    handler = node_operator(parser, node)
+def node_led(parser, token, left):
+    handler = node_operator(parser, token)
     if not handler.led:
-        parse_error(parser, u"Unknown token led", node)
+        parse_error(parser, u"Unknown token led", token)
 
-    return handler.led(parser, handler, node, left)
+    return handler.led(parser, handler, token, left)
 
 
 def __check_ambidextrity(op):
@@ -334,14 +334,14 @@ def check_token_type(parser, type):
     if parser.token_type != type:
         parse_error(parser, u"Wrong token type, expected %s, got %s" % (tokens.token_type_to_s(type),
                                                                         tokens.token_type_to_s(parser.token_type)),
-                    parser.node)
+                    parser.token)
 
 
 def check_token_types(parser, types):
     if parser.token_type not in types:
         parse_error(parser, u"Wrong token type, expected one of %s, got %s" %
                     (unicode([tokens.token_type_to_s(type) for type in types]),
-                     tokens.token_type_to_s(parser.token_type)), parser.node)
+                     tokens.token_type_to_s(parser.token_type)), parser.token)
 
 
 def check_list_node_type(parser, node, expected_type):
@@ -410,13 +410,13 @@ def endofexpression(parser):
     res = on_endofexpression(parser)
     if res is False:
         parse_error(parser, u"Expected end of expression mark got '%s'" % tokens.token_value_s(parser.token),
-                    parser.node)
+                    parser.token)
 
     return res
 
 
 def base_expression(parser, _rbp, terminators=None):
-    previous = parser.node
+    previous = parser.token
     advance(parser)
 
     left = node_nud(parser, previous)
@@ -428,7 +428,7 @@ def base_expression(parser, _rbp, terminators=None):
             if parser.token_type in terminators:
                 return left
 
-        _lbp = node_lbp(parser, parser.node)
+        _lbp = node_lbp(parser, parser.token)
 
         # juxtaposition support
         if _lbp < 0:
@@ -440,7 +440,7 @@ def base_expression(parser, _rbp, terminators=None):
 
             if _rbp >= _lbp:
                 break
-            previous = parser.node
+            previous = parser.token
             # advance(parser)
             if not op.led:
                 parse_error(parser, u"Unknown token led", previous)
@@ -449,7 +449,7 @@ def base_expression(parser, _rbp, terminators=None):
         else:
             if _rbp >= _lbp:
                 break
-            previous = parser.node
+            previous = parser.token
             advance(parser)
 
             left = node_led(parser, previous, left)
@@ -574,10 +574,10 @@ def literal_expression(parser):
 
 
 def statement(parser):
-    node = parser.node
-    if node_has_std(parser, node):
+    token = parser.token
+    if node_has_std(parser, token):
         advance(parser)
-        value = node_std(parser, node)
+        value = node_std(parser, token)
         return value
 
     value = expression(parser, 0)
@@ -585,10 +585,10 @@ def statement(parser):
 
 
 def statement_no_end_expr(parser):
-    node = parser.node
-    if node_has_std(parser, node):
+    token = parser.token
+    if node_has_std(parser, token):
         advance(parser)
-        value = node_std(parser, node)
+        value = node_std(parser, token)
         return value
 
     value = expression(parser, 0)
@@ -611,7 +611,7 @@ def statements(parser, endlist, expected_types=None):
 
     length = len(stmts)
     if length == 0:
-        return parse_error(parser, u"Expected one or more expressions", parser.node)
+        return parse_error(parser, u"Expected one or more expressions", parser.token)
 
     return nodes.list_node(stmts)
 

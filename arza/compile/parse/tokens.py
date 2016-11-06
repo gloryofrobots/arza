@@ -254,13 +254,24 @@ def token_value(token):
 def token_position(token):
     return token.pos
 
+def token_position_i(token):
+    return api.to_i(token.pos)
+
 
 def token_line(token):
     return token.line
 
 
+def token_line_i(token):
+    return api.to_i(token.line)
+
+
 def token_column(token):
     return token.column
+
+
+def token_column_i(token):
+    return api.to_i(token.column)
 
 
 def token_length(token):

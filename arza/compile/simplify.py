@@ -17,45 +17,45 @@ def simplify_type(compiler, code, node):
     name_node = node_first(node)
     fields = node_second(node)
 
-    name_1_arg = nodes.create_symbol_node(name_node, name_node)
+    name_1_arg = nodes.create_symbol_node(nodes.node_token(name_node), name_node)
     if is_empty_node(fields):
-        fields_2_arg = nodes.create_empty_list_node(node)
+        fields_2_arg = nodes.create_empty_list_node(nodes.node_token(node))
     else:
         fields_2_arg = fields
 
-    call_node = nodes.create_call_node_s(node, lang_names.TYPE, [name_1_arg, fields_2_arg])
-    return nodes.create_assign_node(node, name_node, call_node)
+    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.TYPE, [name_1_arg, fields_2_arg])
+    return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
 
 
 def simplify_let(compiler, code, node):
     let_block = node_first(node)
     in_block = node_second(node)
     body = plist.concat(let_block, in_block)
-    func = nodes.create_fun_simple_node(node, nodes.empty_node(), body)
-    return nodes.create_call_node_1(node, func, nodes.create_unit_node(node))
+    func = nodes.create_fun_simple_node(nodes.node_token(node), nodes.empty_node(), body)
+    return nodes.create_call_node_1(nodes.node_token(node), func, nodes.create_unit_node(node))
 
 
 def simplify_not(compiler, code, node):
     left = node_first(node)
-    return nodes.create_not_call(node, left)
+    return nodes.create_not_call(nodes.node_token(node), left)
 
 
 def simplify_cons(compiler, code, node):
     left = node_first(node)
     right = node_second(node)
-    return nodes.create_cons_call(node, left, right)
+    return nodes.create_cons_call(nodes.node_token(node), left, right)
 
 
 def simplify_as(compiler, code, node):
     source = node_first(node)
     interfaces = node_second(node)
-    return nodes.create_call_node_s(node, lang_names.CAST, [interfaces, source])
+    return nodes.create_call_node_s(nodes.node_token(node), lang_names.CAST, [interfaces, source])
 
 
 def simplify_declare(compiler, code, node):
     _type = node_first(node)
     interfaces = node_second(node)
-    return nodes.create_call_node_s(node, lang_names.DERIVE, [_type, interfaces])
+    return nodes.create_call_node_s(nodes.node_token(node), lang_names.DERIVE, [_type, interfaces])
 
 
 def _random_name(name):
@@ -70,14 +70,14 @@ def _replace_name(node, names):
 
     if ntype == nt.NT_IMPORTED_NAME:
         name = nodes.imported_name_to_string(node)
-        new_node = nodes.create_name_node(node, name)
+        new_node = nodes.create_name_node(nodes.node_token(node), name)
         return _replace_name(new_node, names)
 
     if ntype != nt.NT_NAME:
         return None
     for old_name, new_name in names:
         if api.equal_b(old_name, nodes.node_value(node)):
-            return nodes.create_name_node(node, new_name)
+            return nodes.create_name_node(nodes.node_token(node), new_name)
 
     return node
 
@@ -102,60 +102,43 @@ def simplify_def(compiler, code, node):
         pairs = zip(outer_names, randomized_outer_names)
         new_guard = basic.transform(guard, _replace_name, pairs)
 
-        pattern = nodes.create_when_node(pattern, args, new_guard)
+        pattern = nodes.create_when_node(nodes.node_token(pattern), args, new_guard)
         outers = []
         for old_name, new_name in pairs:
             outers.append(nodes.create_tuple_node(
-                pattern,
+                nodes.node_token(pattern),
                 [
-                    nodes.create_symbol_node_string(pattern, new_name),
-                    nodes.create_name_node(pattern, old_name)
+                    nodes.create_symbol_node_string(nodes.node_token(pattern), new_name),
+                    nodes.create_name_node(nodes.node_token(pattern), old_name)
                 ]
             ))
-        outers_list = nodes.create_list_node(pattern, outers)
+        outers_list = nodes.create_list_node(nodes.node_token(pattern), outers)
         #
         # print "NAMES", arg_names, guard_names, outer_names, randomized_outer_names
         # print "NEW_GUARD", new_guard
     else:
-        outers_list = nodes.create_empty_list_node(pattern)
+        outers_list = nodes.create_empty_list_node(nodes.node_token(pattern))
 
-    ast = nodes.create_literal_node(pattern, pattern)
-    return nodes.create_call_node_s(node, lang_names.SPECIFY, [func, signature, method, ast, outers_list])
+    ast = nodes.create_literal_node(nodes.node_token(pattern), pattern)
+    return nodes.create_call_node_s(nodes.node_token(node), lang_names.SPECIFY, [func, signature, method, ast, outers_list])
 
 
 def simplify_interface(compiler, code, node):
     name_node = node_first(node)
-    name_1_arg = nodes.create_symbol_node(name_node, name_node)
+    name_1_arg = nodes.create_symbol_node(nodes.node_token(name_node), name_node)
 
     generics_2_arg = node_second(node)
     subs_3_arg = node_third(node)
 
-    call_node = nodes.create_call_node_s(node, lang_names.INTERFACE, [name_1_arg, generics_2_arg, subs_3_arg])
-    return nodes.create_assign_node(node, name_node, call_node)
+    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.INTERFACE, [name_1_arg, generics_2_arg, subs_3_arg])
+    return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
 
 
 def simplify_generic(compiler, code, node):
     name_node = node_first(node)
-    name_1_arg = nodes.create_symbol_node(name_node, name_node)
+    name_1_arg = nodes.create_symbol_node(nodes.node_token(name_node), name_node)
 
     symbols_2_arg = node_second(node)
 
-    call_node = nodes.create_call_node_s(node, lang_names.GENERIC, [name_1_arg, symbols_2_arg])
-    return nodes.create_assign_node(node, name_node, call_node)
-
-
-def simplify_trait(compiler, code, node):
-    trait_name_node = node_first(node)
-    trait_name_1_arg = nodes.create_symbol_node(trait_name_node, trait_name_node)
-    signature_2_arg = node_second(node)
-    constraints_3_arg = node_third(node)
-    methods_4_arg = node_fourth(node)
-
-    call_node = nodes.create_call_node_s(node, lang_names.TRAIT,
-                                         [trait_name_1_arg,
-                                          signature_2_arg,
-                                          constraints_3_arg,
-                                          methods_4_arg])
-
-    trait_node = nodes.create_assign_node(node, trait_name_node, call_node)
-    return trait_node
+    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.GENERIC, [name_1_arg, symbols_2_arg])
+    return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
