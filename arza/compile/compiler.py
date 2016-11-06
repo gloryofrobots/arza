@@ -260,7 +260,7 @@ def _get_variable_index(compiler, code, node, name):
 # EMIT HELPERS *******************************************
 # **************************************************
 def _emit_call(compiler, code, node, arg_count, funcname):
-    func = nodes.create_name_node_s(node, funcname)
+    func = nodes.create_name_node_s(nodes.node_token(node), funcname)
     _compile(compiler, code, func)
     code.emit_1(CALL, arg_count, info(node))
 
@@ -468,7 +468,7 @@ def _compile_match(compiler, code, node, patterns, error_code):
     _compile(compiler, code, graph)
 
     # Allocate error in case of no match
-    err_node = nodes.create_match_fail_node(node, str(error_code), temp_idx)
+    err_node = nodes.create_match_fail_node(nodes.node_token(node), str(error_code), temp_idx)
     _compile(compiler, code, err_node)
     code.emit_0(THROW, info(node))
 
@@ -559,8 +559,8 @@ def _compile_ASSIGN(compiler, code, node):
         # print " MATCH ASSIGN"
         scope = _current_scope(compiler)
         idx = scope.what_next_temporary()
-        exp_node = nodes.create_temporary_node(node, idx)
-        match = nodes.create_match_node(node, exp, [nodes.list_node(
+        exp_node = nodes.create_temporary_node(nodes.node_token(node), idx)
+        match = nodes.create_match_node(nodes.node_token(node), exp, [nodes.list_node(
             [left, nodes.list_node([exp_node])]
         )])
         _compile(compiler, code, match)
@@ -613,16 +613,16 @@ def _transform_modify(compiler, node, func, source, modifications):
     value = m[1]
 
     if node_type(key) == NT_NAME:
-        key = nodes.create_symbol_node(key, key)
+        key = nodes.create_symbol_node(nodes.node_token(key), key)
     return _transform_modify(compiler, node,
                              func,
-                             nodes.create_call_node_3(node, func, key, value, source),
+                             nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
                              tail)
 
 
 def _compile_MODIFY(compiler, code, node):
     call = _transform_modify(compiler, node,
-                             nodes.create_name_node_s(node, lang_names.PUT),
+                             nodes.create_name_node_s(nodes.node_token(node), lang_names.PUT),
                              node_first(node),
                              node_second(node))
     _compile(compiler, code, call)

@@ -151,7 +151,7 @@ def infix_dot(parser, op, token, left):
 
     symbol = expect_expression_of(parser, op.lbp + 1, NT_NAME)
     # symbol = grab_name(parser)
-    return node_2(NT_LOOKUP, token, left, nodes.create_symbol_node(symbol, symbol))
+    return node_2(NT_LOOKUP, token, left, nodes.create_symbol_node(__ntok(symbol), symbol))
 
 
 def infix_lcurly(parser, op, token, left):
@@ -162,7 +162,7 @@ def infix_lcurly(parser, op, token, left):
         # field access
         if parser.token_type == TT_RCURLY:
             if nodes.node_type(key) == NT_NAME:
-                key = nodes.create_symbol_node(key, key)
+                key = nodes.create_symbol_node(nodes.node_token(key), key)
 
             advance_expected(parser, TT_RCURLY)
             return node_2(NT_LOOKUP, token, left, key)
@@ -256,7 +256,7 @@ def infix_lparen(parser, op, token, left):
         while True:
             if parser.token_type == TT_WILDCARD:
                 holes.append(index)
-                items.append(nodes.create_name_node_s(parser.token, hole_arg(index)))
+                items.append(nodes.create_name_node_s(nodes.node_token(parser.token), hole_arg(index)))
                 advance(parser)
             else:
                 if parser.token_type == TT_ELLIPSIS:
@@ -288,7 +288,7 @@ def infix_lparen(parser, op, token, left):
                     l = []
                 seq = nodes.node_first(item)
                 if nodes.node_type(seq) == NT_WILDCARD:
-                    seq = nodes.create_fargs_node(seq)
+                    seq = nodes.create_fargs_node(nodes.node_token(seq))
 
                 seqs.append(seq)
             else:
@@ -506,9 +506,9 @@ def infix_map_pattern_at(parser, op, token, left):
     real_key = expression(parser, 0, [TT_ASSIGN, TT_COMMA])
     # allow syntax like {var1@ key}
     if nodes.node_type(real_key) == NT_NAME:
-        real_key = nodes.create_symbol_node(real_key, real_key)
+        real_key = nodes.create_symbol_node(nodes.node_token(real_key), real_key)
 
-    return nodes.create_bind_node(left, left, real_key)
+    return nodes.create_bind_node(nodes.node_token(left), left, real_key)
 
 
 # ----------------------------------
@@ -636,20 +636,20 @@ def prefix_throw(parser, op, token):
 # FUNCTION STUFF################################
 
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
-    curnode = parser.token
+    curtoken = parser.token
     if parser.token_type == TT_LPAREN:
         advance_expected(parser, TT_LPAREN)
         if parser.token_type == TT_RPAREN:
-            pattern = nodes.create_unit_node(curnode)
+            pattern = nodes.create_unit_node(curtoken)
         else:
             els = _parse_comma_separated_to_one_of(parser.fun_pattern_parser, arg_terminator,
                                                    advance_terminator=False)
-            pattern = nodes.create_tuple_node_from_list(curnode, els)
+            pattern = nodes.create_tuple_node_from_list(curtoken, els)
         advance_expected(parser, TT_RPAREN)
     else:
         e = expression(parser.fun_pattern_parser, 0)
         if parser.token_type == TT_COMMA:
-            return parse_error(parser, u"Expected function arguments enclosed in parenthesis", curnode)
+            return parse_error(parser, u"Expected function arguments enclosed in parenthesis", curtoken)
 
         pattern = ensure_tuple(e)
 
@@ -761,9 +761,9 @@ def _parse_recursive_function(parser, name, signature, term_pattern, term_guard)
             args, list_node([body])
         ]))
 
-    func = nodes.create_fun_node(node, name, list_node(funcs))
+    func = nodes.create_fun_node(nodes.node_token(node), name, list_node(funcs))
 
-    fargs_node = nodes.create_fargs_node(node)
+    fargs_node = nodes.create_fargs_node(nodes.node_token(node))
 
     call_list = []
 
@@ -775,11 +775,11 @@ def _parse_recursive_function(parser, name, signature, term_pattern, term_guard)
         if ntype == NT_REST:
             arg_n = nodes.node_first(arg)
         else:
-            arg_n = nodes.create_lookup_index_node(node, fargs_node, i)
+            arg_n = nodes.create_lookup_index_node(nodes.node_token(node), fargs_node, i)
 
         call_list.append(arg_n)
 
-    body = list_node([nodes.create_call_node(node, func, list_node(call_list))])
+    body = list_node([nodes.create_call_node(nodes.node_token(node), func, list_node(call_list))])
     main_func = nodes.create_function_variants(signature, body)
     return main_func
 
@@ -1092,7 +1092,7 @@ def _parse_def_signature(parser, token):
             _subject = nodes.node_first(arg)
             _type = nodes.node_second(arg)
             if nodes.is_empty_node(_subject):
-                _fun_arg = nodes.create_wildcard_node(_type)
+                _fun_arg = nodes.create_wildcard_node(nodes.node_token(_type))
                 dispatch.append(_type)
             else:
                 _fun_arg = _subject

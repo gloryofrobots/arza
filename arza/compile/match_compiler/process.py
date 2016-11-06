@@ -5,12 +5,12 @@ from arza.types import space, api
 from arza.misc import platform, strutil
 from transform_state import *
 
-def _create_path_node(basenode, path):
+def _create_path_node(token, path):
     head, tail = plist.split(path)
     if plist.is_empty(tail):
         return head
 
-    return create_lookup_node(basenode, _create_path_node(basenode, tail), head)
+    return create_lookup_node(token, _create_path_node(token, tail), head)
 
 
 ###################################################################################
@@ -44,13 +44,13 @@ def _process_tuple(state, pattern, patterns, path):
 
     last_index = count_i - 1
 
-    patterns = add_pattern(patterns, ["is_indexed", _create_path_node(pattern, path)])
+    patterns = add_pattern(patterns, ["is_indexed", _create_path_node(nodes.node_token(pattern), path)])
 
     last_child = children[last_index]
     if node_type(last_child) == NT_REST:
-        patterns = add_pattern(patterns, ["length_ge", _create_path_node(pattern, path), count])
+        patterns = add_pattern(patterns, ["length_ge", _create_path_node(nodes.node_token(pattern), path), count])
     else:
-        patterns = add_pattern(patterns, ["length", _create_path_node(pattern, path), count])
+        patterns = add_pattern(patterns, ["length", _create_path_node(nodes.node_token(pattern), path), count])
 
     if last_index > 0:
         for i, child in enumerate(children[0:last_index]):
@@ -59,50 +59,54 @@ def _process_tuple(state, pattern, patterns, path):
                 return transform_error(state, child, u'Invalid use of ... in tuple pattern')
 
             patterns = _process_pattern(state, child, patterns,
-                                        add_path(create_int_node(child, i), path))
+                                        add_path(create_int_node(nodes.node_token(child), i), path))
     last_child = children[last_index]
     if node_type(last_child) == NT_REST:
         last_child = node_first(last_child)
-        cur_slice = create_drop_node(last_child, create_int_node(last_child, last_index))
+        cur_slice = create_drop_node(nodes.node_token(last_child),
+                                     create_int_node(nodes.node_token(last_child), last_index))
         patterns = _process_pattern(state, last_child, patterns, add_path(cur_slice, path))
     else:
         patterns = _process_pattern(state, last_child, patterns,
-                                    add_path(create_int_node(last_child, last_index), path))
+                                    add_path(create_int_node(nodes.node_token(last_child), last_index), path))
 
     return patterns
 
 
 def _process_unit(state, pattern, patterns, path):
-    patterns = add_pattern(patterns, ["equal", _create_path_node(pattern, path), create_unit_node(pattern)])
+    patterns = add_pattern(patterns, ["equal",
+                                      _create_path_node(nodes.node_token(pattern), path),
+                                      create_unit_node(nodes.node_token(pattern))])
     return patterns
 
 
 def _process_cons(state, pattern, patterns, path):
-    patterns = add_pattern(patterns, ["is_seq", _create_path_node(pattern, path)])
+    patterns = add_pattern(patterns, ["is_seq",
+                                      _create_path_node(nodes.node_token(pattern), path)])
     head = nodes.node_first(pattern)
     tail = nodes.node_second(pattern)
-    patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(pattern, path)])
+    patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(nodes.node_token(pattern), path)])
 
-    head_path = add_path(create_head_node(head), path)
+    head_path = add_path(create_head_node(nodes.node_token(head)), path)
     patterns = _process_pattern(state, head, patterns, head_path)
 
-    tail_path = add_path(create_tail_node(tail), path)
+    tail_path = add_path(create_tail_node(nodes.node_token(tail)), path)
     patterns = _process_pattern(state, tail, patterns, tail_path)
     return patterns
 
 
 def _process_list(state, pattern, patterns, path):
-    patterns = add_pattern(patterns, ["is_seq", _create_path_node(pattern, path)])
+    patterns = add_pattern(patterns, ["is_seq", _create_path_node(nodes.node_token(pattern), path)])
 
     children = node_first(pattern)
     count = api.length(children)
     count_i = api.to_i(count)
     # list_length will not be calculated, we need this node for branch merge checker
     # so [a,b] and [a,b,c] didn`t cause the error
-    patterns = add_pattern(patterns, ["list", _create_path_node(pattern, path), count])
+    patterns = add_pattern(patterns, ["list", _create_path_node(nodes.node_token(pattern), path), count])
 
     if count_i == 0:
-        return add_pattern(patterns, ["is_empty", _create_path_node(pattern, path)])
+        return add_pattern(patterns, ["is_empty", _create_path_node(nodes.node_token(pattern), path)])
 
     # first process all args except last which might be ...rest param
     last_index = count_i - 1
@@ -112,10 +116,10 @@ def _process_list(state, pattern, patterns, path):
             if node_type(child) == NT_REST:
                 return transform_error(state, child, u'Invalid use of Rest')
 
-            patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(pattern, cur_path)])
+            patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(nodes.node_token(pattern), cur_path)])
 
-            child_path = add_path(create_head_node(child), cur_path)
-            cur_slice = create_tail_node(child)
+            child_path = add_path(create_head_node(nodes.node_token(child)), cur_path)
+            cur_slice = create_tail_node(nodes.node_token(child))
             cur_path = add_path(cur_slice, cur_path)
             patterns = _process_pattern(state, child, patterns, child_path)
 
@@ -125,16 +129,16 @@ def _process_list(state, pattern, patterns, path):
         child_path = cur_path
         patterns = _process_pattern(state, last_child, patterns, child_path)
     else:
-        patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(pattern, cur_path)])
-        child_path = add_path(create_head_node(last_child), cur_path)
+        patterns = add_pattern(patterns, ["is_not_empty", _create_path_node(nodes.node_token(pattern), cur_path)])
+        child_path = add_path(create_head_node(nodes.node_token(last_child)), cur_path)
         # process child
         patterns = _process_pattern(state, last_child, patterns, child_path)
 
         # Ensure that list is empty
         # IMPORTANT IT NEED TO BE THE LAST CHECK, OTHERWISE CACHED VARIABLES WILL NOT INITIALIZE
-        last_slice = create_tail_node(last_child)
+        last_slice = create_tail_node(nodes.node_token(last_child))
         last_path = add_path(last_slice, cur_path)
-        return add_pattern(patterns, ["is_empty", _create_path_node(pattern, last_path)])
+        return add_pattern(patterns, ["is_empty", _create_path_node(nodes.node_token(pattern), last_path)])
     return patterns
 
 
@@ -149,12 +153,13 @@ def _get_map_symbol(key_node):
 
 
 def _process_map(state, pattern, patterns, path):
-    patterns = add_pattern(patterns, ["is_map", _create_path_node(pattern, path)])
+    patterns = add_pattern(patterns, ["is_map", _create_path_node(nodes.node_token(pattern), path)])
     children = node_first(pattern)
     count = len(children)
     # empty map
     if count == 0:
-        patterns = add_pattern(patterns, ["equal", _create_path_node(pattern, path), create_empty_map_node(pattern)])
+        patterns = add_pattern(patterns, ["equal", _create_path_node(nodes.node_token(pattern), path),
+                                          create_empty_map_node(nodes.node_token(pattern))])
         return patterns
 
     items = []
@@ -166,7 +171,7 @@ def _process_map(state, pattern, patterns, path):
         key_type = node_type(key_node)
 
         if key_type == NT_NAME:
-            key = create_symbol_node(key_node, key_node)
+            key = create_symbol_node(nodes.node_token(key_node), key_node)
             var_name = key_node
             sym = _get_map_symbol(key_node)
         elif key_type == NT_SYMBOL:
@@ -183,7 +188,7 @@ def _process_map(state, pattern, patterns, path):
             sym = _get_map_symbol(key)
         elif key_type == NT_OF:
             key_node_first = node_first(key_node)
-            key = create_symbol_node(key_node_first, key_node_first)
+            key = create_symbol_node(nodes.node_token(key_node_first), key_node_first)
             var_name = key_node
             sym = _get_map_symbol(key)
         else:
@@ -195,7 +200,8 @@ def _process_map(state, pattern, patterns, path):
     # TODO implement sorting for symbols amd maps
     symbols = [space.newstring_s(symbol) for symbol in sorted(symbols)]
 
-    patterns = add_pattern(patterns, ["map", space.newlist(symbols), _create_path_node(pattern, path)])
+    patterns = add_pattern(patterns, ["map", space.newlist(symbols),
+                                      _create_path_node(nodes.node_token(pattern), path)])
 
     for item in items:
         symbol_key, varname = item[0]
@@ -212,13 +218,15 @@ def _process_map(state, pattern, patterns, path):
 def _process_bind(state, pattern, patterns, path):
     name = nodes.node_first(pattern)
     exp = nodes.node_second(pattern)
-    patterns = add_pattern(patterns, ["assign", name, _create_path_node(exp, path)])
+    patterns = add_pattern(patterns, ["assign", name,
+                                      _create_path_node(nodes.node_token(exp), path)])
     patterns = _process_pattern(state, exp, patterns, path)
     return patterns
 
 
 def _process_name(state, pattern, patterns, path):
-    patterns = add_pattern(patterns, ["assign", pattern, _create_path_node(pattern, path)])
+    patterns = add_pattern(patterns, ["assign", pattern,
+                                      _create_path_node(nodes.node_token(pattern), path)])
     return patterns
 
 
@@ -230,7 +238,8 @@ def _process_wildcard(state, pattern, patterns, path):
 def _process_of(state, pattern, patterns, path):
     element = node_first(pattern)
     trait = node_second(pattern)
-    patterns = add_pattern(patterns, ["kindof", _create_path_node(element, path), trait])
+    patterns = add_pattern(patterns, ["kindof",
+                                      _create_path_node(nodes.node_token(element), path), trait])
     patterns = _process_pattern(state, element, patterns, path)
     return patterns
 
@@ -247,7 +256,8 @@ def _process_when_no_else(state, pattern, patterns, path):
 
 
 def _process_literal(state, pattern, patterns, path):
-    patterns = add_pattern(patterns, ["equal", _create_path_node(pattern, path), pattern])
+    patterns = add_pattern(patterns, ["equal",
+                                      _create_path_node(nodes.node_token(pattern), path), pattern])
     return patterns
 
 

@@ -193,13 +193,15 @@ def conflict_resolver(process, gf, signatures):
             obj = api.second(t)
             api.put(gf.env, name, obj)
 
-        body = nodes.create_int_node(sig.pattern, i)
+        body = nodes.create_int_node(nodes.node_token(sig.pattern), i)
         # body = nodes.create_literal_node(sig.pattern, sig.method)
 
         funcs.append(nodes.list_node([
             sig.pattern, nodes.list_node([body])
         ]))
-    fn_node = nodes.create_fun_node(signatures[0].pattern, nodes.empty_node(), nodes.list_node(funcs))
+    fn_node = nodes.create_fun_node(nodes.node_token(signatures[0].pattern),
+                                    nodes.empty_node(),
+                                    nodes.list_node(funcs))
     fn = compiler.compile_function_ast(process, gf.env, fn_node)
     return ConflictResolver(signatures, fn)
 

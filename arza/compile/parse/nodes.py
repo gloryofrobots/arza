@@ -367,7 +367,7 @@ def create_symbol_from_operator(token, op):
 
 
 def create_name_node_s(token, name):
-    return node_0(nt.NT_NAME, token)
+    return node_0(nt.NT_NAME, create_token_from_token(tt.TT_STR, name, token))
 
 
 def create_name_node(token, name):

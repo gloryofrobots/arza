@@ -32,7 +32,9 @@ def simplify_let(compiler, code, node):
     in_block = node_second(node)
     body = plist.concat(let_block, in_block)
     func = nodes.create_fun_simple_node(nodes.node_token(node), nodes.empty_node(), body)
-    return nodes.create_call_node_1(nodes.node_token(node), func, nodes.create_unit_node(node))
+    return nodes.create_call_node_1(nodes.node_token(node),
+                                    func,
+                                    nodes.create_unit_node(nodes.node_token(node)))
 
 
 def simplify_not(compiler, code, node):
@@ -120,7 +122,8 @@ def simplify_def(compiler, code, node):
         outers_list = nodes.create_empty_list_node(nodes.node_token(pattern))
 
     ast = nodes.create_literal_node(nodes.node_token(pattern), pattern)
-    return nodes.create_call_node_s(nodes.node_token(node), lang_names.SPECIFY, [func, signature, method, ast, outers_list])
+    return nodes.create_call_node_s(nodes.node_token(node), lang_names.SPECIFY,
+                                    [func, signature, method, ast, outers_list])
 
 
 def simplify_interface(compiler, code, node):
@@ -130,7 +133,8 @@ def simplify_interface(compiler, code, node):
     generics_2_arg = node_second(node)
     subs_3_arg = node_third(node)
 
-    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.INTERFACE, [name_1_arg, generics_2_arg, subs_3_arg])
+    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.INTERFACE,
+                                         [name_1_arg, generics_2_arg, subs_3_arg])
     return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
 
 
