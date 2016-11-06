@@ -568,7 +568,7 @@ def _create_unpack_call_args(seqs):
     rest = plist.tail(seqs)
     if plist.is_empty(rest):
         return seq
-    return create_call_node_s(seq, lang_names.CONCAT, [seq, _create_unpack_call_args(rest)])
+    return create_call_node_s(node_token(seq), lang_names.CONCAT, [seq, _create_unpack_call_args(rest)])
 
 
 def create_unpack_call(token, left, seqs):

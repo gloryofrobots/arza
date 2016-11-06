@@ -256,7 +256,7 @@ def infix_lparen(parser, op, token, left):
         while True:
             if parser.token_type == TT_WILDCARD:
                 holes.append(index)
-                items.append(nodes.create_name_node_s(nodes.node_token(parser.token), hole_arg(index)))
+                items.append(nodes.create_name_node_s(parser.token, hole_arg(index)))
                 advance(parser)
             else:
                 if parser.token_type == TT_ELLIPSIS:
