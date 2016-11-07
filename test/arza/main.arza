@@ -88,5 +88,6 @@ fun main() =
     (
         io:print(r.battery_power)
     )
+
    test()
 )

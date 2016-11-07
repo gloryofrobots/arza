@@ -41,13 +41,10 @@ NODE_TYPE_MAPPING = {
 }
 
 
-def __ntype(token):
-    node_type = NODE_TYPE_MAPPING[tokens.token_type(token)]
-    return node_type
-
 
 def _init_default_current_0(parser):
-    return nodes.node_0(__ntype(parser.token), parser.token)
+    ntype = node_prefix_node_type(parser, parser.token)
+    return nodes.node_0(ntype, parser.token)
 
 
 ##############################################################
@@ -57,12 +54,14 @@ def _init_default_current_0(parser):
 #
 def led_infix(parser, op, token, left):
     exp = expression(parser, op.lbp)
-    return node_2(__ntype(token), token, left, exp)
+    ntype = node_infix_node_type(parser, token)
+    return node_2(ntype, token, left, exp)
 
 
 def led_infixr(parser, op, token, left):
     exp = expression(parser, op.lbp - 1)
-    return node_2(__ntype(token), token, left, exp)
+    ntype = node_infix_node_type(parser, token)
+    return node_2(ntype, token, left, exp)
 
 
 def prefix_nud_function(parser, op, token):
@@ -324,7 +323,9 @@ def infix_name_pair(parser, op, token, left):
     check_token_type(parser, TT_NAME)
     name = _init_default_current_0(parser)
     advance(parser)
-    return node_2(__ntype(token), token, left, name)
+
+    ntype = node_infix_node_type(parser, token)
+    return node_2(ntype, token, left, name)
 
 
 def infix_at(parser, op, token, left):
@@ -342,11 +343,13 @@ def infix_at(parser, op, token, left):
 
 def prefix_nud(parser, op, token):
     exp = expression(parser, op.pbp)
-    return node_1(__ntype(token), token, exp)
+    ntype = node_prefix_node_type(parser, token)
+    return node_1(ntype, token, exp)
 
 
 def itself(parser, op, token):
-    return node_0(__ntype(token), token)
+    ntype = node_prefix_node_type(parser, token)
+    return node_0(ntype, token)
 
 
 def symbol_comma_nud(parser, op, token):
@@ -357,9 +360,11 @@ def symbol_comma_nud(parser, op, token):
 
 def prefix_sharp(parser, op, token):
     check_token_types(parser, [TT_NAME, TT_MULTI_STR, TT_STR, TT_OPERATOR])
-    exp = node_0(__ntype(parser.token), parser.token)
+
+    ntype = node_prefix_node_type(parser, parser.token)
+    exp = node_0(ntype, parser.token)
     advance(parser)
-    return node_1(__ntype(token), token, exp)
+    return node_1(NT_SYMBOL, token, exp)
 
 
 def prefix_not(parser, op, token):
@@ -630,7 +635,8 @@ def prefix_match(parser, op, token):
 
 def prefix_throw(parser, op, token):
     exp = expression(parser, 0)
-    return node_1(__ntype(token), token, exp)
+    ntype = node_prefix_node_type(parser, token)
+    return node_1(ntype, token, exp)
 
 
 # FUNCTION STUFF################################

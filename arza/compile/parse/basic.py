@@ -137,6 +137,8 @@ class W_Operator(root.W_Hashable):
         self.ambidextra = False
         self.prefix_function = None
         self.infix_function = None
+        self.prefix_node_type = None
+        self.infix_node_type = None
 
     def _compute_hash_(self):
         hash = 0
@@ -155,6 +157,13 @@ class W_Operator(root.W_Hashable):
     def _equal_(self, other):
         if not isinstance(other, W_Operator):
             return False
+
+        if self.prefix_node_type != other.prefix_node_type:
+            return False
+
+        if self.infix_node_type != other.infix_node_type:
+            return False
+
         if self.nud != other.nud or self.led != other.led \
                 or self.std != other.std and self.lbp != other.lbp:
             return False
@@ -282,30 +291,49 @@ def node_led(parser, token, left):
     return handler.led(parser, handler, token, left)
 
 
+def node_prefix_node_type(parser, token):
+    handler = node_operator(parser, token)
+    if not handler.prefix_node_type:
+        parse_error(parser, u"Unknown token prefix node type ", token)
+
+    return handler.prefix_node_type
+
+
+def node_infix_node_type(parser, token):
+    handler = node_operator(parser, token)
+    if not handler.infix_node_type:
+        parse_error(parser, u"Unknown token infix node type ", token)
+
+    return handler.infix_node_type
+
+
 def __check_ambidextrity(op):
     if op.led and op.nud:
         op.ambidextra = True
 
 
-def parser_set_nud(parser, ttype, fn, pbp=0):
+def parser_set_nud(parser, ttype, ntype, fn, pbp=0):
     h = get_or_create_operator(parser, ttype)
     h.nud = fn
     h.pbp = pbp
+    h.prefix_node_type = ntype
     __check_ambidextrity(h)
 
     return h
 
 
-def parser_set_std(parser, ttype, fn):
+def parser_set_std(parser, ttype, ntype, fn):
     h = get_or_create_operator(parser, ttype)
     h.std = fn
+    h.prefix_node_type = ntype
     return h
 
 
-def parser_set_led(parser, ttype, lbp, fn):
+def parser_set_led(parser, ttype, ntype, lbp, fn):
     h = get_or_create_operator(parser, ttype)
     h.lbp = lbp
     h.led = fn
+    h.infix_node_type = ntype
     __check_ambidextrity(h)
     return h
 
@@ -314,6 +342,7 @@ def operator_infix(h, lbp, led, infix_fn):
     h.lbp = lbp
     h.led = led
     h.infix_function = infix_fn
+    h.infix_node_type = None
     __check_ambidextrity(h)
     return h
 
@@ -322,6 +351,7 @@ def operator_prefix(h, pbp, nud, prefix_fn):
     h.nud = nud
     h.pbp = pbp
     h.prefix_function = prefix_fn
+    h.prefix_node_type = None
     __check_ambidextrity(h)
     return h
 
@@ -359,7 +389,7 @@ def check_node_type(parser, node, expected_type):
     if ntype != expected_type:
         parse_error(parser, u"Wrong node type, expected  %s, got %s" %
                     (node_type_to_s(expected_type),
-                     node_type_to_s(ntype)), node)
+                     node_type_to_s(ntype)), nodes.node_token(node))
 
 
 def check_node_types(parser, node, types):
@@ -367,7 +397,7 @@ def check_node_types(parser, node, types):
     if ntype not in types:
         parse_error(parser, u"Wrong node type, expected one of %s, got %s" %
                     (unicode([node_type_to_s(type) for type in types]),
-                     node_type_to_s(ntype)), node)
+                     node_type_to_s(ntype)), nodes.node_token(node))
 
 
 def advance(parser):
@@ -616,27 +646,31 @@ def statements(parser, endlist, expected_types=None):
     return nodes.list_node(stmts)
 
 
-def infix(parser, ttype, lbp, led):
-    parser_set_led(parser, ttype, lbp, led)
+def infix(parser, ttype, infix_node_type, lbp, led):
+    parser_set_led(parser, ttype, infix_node_type, lbp, led)
 
 
-def prefix(parser, ttype, nud, pbp=0):
-    parser_set_nud(parser, ttype, nud, pbp)
+def prefix(parser, ttype, ntype, nud, pbp=0):
+    parser_set_nud(parser, ttype, ntype, nud, pbp)
 
 
-def stmt(parser, ttype, std):
-    parser_set_std(parser, ttype, std)
+def stmt(parser, ttype, ntype, std):
+    parser_set_std(parser, ttype, ntype, std)
 
 
-def literal(parser, ttype):
+def literal(parser, ttype, ntype):
     from arza.compile.parse.callbacks import itself
-    parser_set_nud(parser, ttype, itself)
+    parser_set_nud(parser, ttype, ntype, itself)
 
 
-def symbol(parser, ttype, nud=None):
+def symbol(parser, ttype):
+    return symbol_nud(parser, ttype, None, None)
+
+
+def symbol_nud(parser, ttype, ntype, nud):
     h = get_or_create_operator(parser, ttype)
     h.lbp = 0
-    parser_set_nud(parser, ttype, nud)
+    parser_set_nud(parser, ttype, ntype, nud)
     return h
 
 
