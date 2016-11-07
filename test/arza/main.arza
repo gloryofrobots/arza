@@ -52,42 +52,25 @@ fun test() =
 //
    log("TEST IMPORT")
    test_import:test()
-//
+
    log ("TEST OP OVERRIDE")
    test_operator_override:test()
-//
+
    log("TEST FUN")
    test_fun:test()
-
 
    log("TEST CORO")
    test_coro:test()
 
    log("TEST PARTIAL")
    test_partial:test()
-//
+
    log("TEST OPERATORS")
    test_operators:test()
-)
-
-type Robot(battery_power)
-//
-
-def at(#battery_power, s of Robot) =
-(
-    io:print("requesting robots battery_power")
-    (s as Instance).battery_power
 )
 
 
 fun main() =
 (
-    let
-        r = Robot(42)
-    in
-    (
-        io:print(r.battery_power)
-    )
-
    test()
 )

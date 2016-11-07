@@ -635,8 +635,7 @@ def prefix_match(parser, op, token):
 
 def prefix_throw(parser, op, token):
     exp = expression(parser, 0)
-    ntype = node_prefix_node_type(parser, token)
-    return node_1(ntype, token, exp)
+    return node_1(NT_THROW, token, exp)
 
 
 # FUNCTION STUFF################################

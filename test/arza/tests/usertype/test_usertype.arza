@@ -3,6 +3,7 @@ import tests:usertype:test_simple
 import tests:usertype:test_traits
 import tests:usertype:test_polymorphism
 import tests:usertype:test_interface
+import tests:usertype:test_cast
 import io
 
 fun test () =
@@ -12,4 +13,5 @@ fun test () =
     test_traits:test()
     test_implement_qualified:test()
     test_polymorphism:test()
+    test_cast:test()
 )
