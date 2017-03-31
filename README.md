@@ -1,7 +1,8 @@
 ## My experimental programming languages
 
-- [Lalan](#lalan)
 - [Obin](#obin)
+- [Lalan](#lalan)
+- [Arza](#arza)
 
 This repository contains prototypes for experimental programming languages
 Each language has it's own branch
@@ -180,4 +181,38 @@ fun enum_from(num) =
         co
     )
 
+```
+
+#### Lalan
+* Original and clean syntax inspired by Lua and OCaml
+* Whitespace unaware parser
+* Using parentheses for creating blocks of expression, similar to {} blocks in C or Java
+* Support for partial application via special syntax
+* Custom operators
+* Name binding only via let-in expression
+* Powerfull predicate multiple dispatch generic functions
+* Interfaces supporting multiple dispatch paradigm
+
+##### [Repository](https://github.com/gloryofrobots/langs/tree/arza)
+
+##### Example
+
+```
+type
+(
+    BugEyedMonster(name, eye_count, scariness, speed,  lang)
+    InnocentBrunette(name, scream_power, prettiness, stupidity, lang)
+    ProtagonistBlond(name, scream_power, gorgeousness, lang)
+)
+
+fun is_monster_killable(b of ProtagonistBlond, m of BugEyedMonster) = b.gorgeousness > m.scariness
+fun can_escape_from(b, m) = b.stupidity < 70 and m.speed < 60
+
+fun loud_enough(b) = b.scream_power > 60
+
+fun pretty_enough
+    | b of ProtagonistBlond = b.gorgeousness > 70
+    | b of InnocentBrunette = b.prettiness > 60
+	
+	
 ```
