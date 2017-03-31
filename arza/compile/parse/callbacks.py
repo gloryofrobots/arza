@@ -1,45 +1,11 @@
 from arza.compile.parse.basic import *
 from arza.compile.parse.node_type import *
 from arza.compile.parse import nodes
-from arza.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3, node_4,
+from arza.compile.parse.nodes import (node_token as get_node_token, node_0, node_1, node_2, node_3, node_4,
                                       list_node, empty_node)
 from arza.types import space
 from arza.misc import strutil
 from arza.builtins import lang_names
-
-NODE_TYPE_MAPPING = {
-    TT_COLON: NT_IMPORTED_NAME,
-    TT_TRUE: NT_TRUE,
-    TT_FALSE: NT_FALSE,
-    TT_INT: NT_INT,
-    TT_FLOAT: NT_FLOAT,
-    TT_STR: NT_STR,
-    TT_MULTI_STR: NT_MULTI_STR,
-    TT_CHAR: NT_CHAR,
-    TT_WILDCARD: NT_WILDCARD,
-    TT_NAME: NT_NAME,
-    TT_TICKNAME: NT_NAME,
-    TT_IF: NT_CONDITION,
-    TT_MATCH: NT_MATCH,
-    TT_EXPORT: NT_EXPORT,
-    TT_IMPORT: NT_IMPORT,
-    TT_TRAIT: NT_TRAIT,
-    TT_THROW: NT_THROW,
-    TT_ELLIPSIS: NT_REST,
-    TT_ASSIGN: NT_ASSIGN,
-    TT_OF: NT_OF,
-    TT_AS: NT_AS,
-    TT_AND: NT_AND,
-    TT_NOT: NT_NOT,
-    TT_OR: NT_OR,
-    TT_SHARP: NT_SYMBOL,
-    TT_OPERATOR: NT_NAME,
-    TT_DOUBLE_COLON: NT_CONS,
-    # TT_COMMA: NT_COMMA,
-    TT_CASE: NT_CASE,
-    # TT_END_EXPR: -100,
-}
-
 
 
 def _init_default_current_0(parser):
@@ -150,7 +116,7 @@ def infix_dot(parser, op, token, left):
 
     symbol = expect_expression_of(parser, op.lbp + 1, NT_NAME)
     # symbol = grab_name(parser)
-    return node_2(NT_LOOKUP, token, left, nodes.create_symbol_node(__ntok(symbol), symbol))
+    return node_2(NT_LOOKUP, token, left, nodes.create_symbol_node(get_node_token(symbol), symbol))
 
 
 def infix_lcurly(parser, op, token, left):
@@ -602,7 +568,7 @@ def _parse_pattern(parser):
     if parser.token_type == TT_WHEN:
         advance(parser)
         guard = expression(parser.guard_parser, 0, TERM_FUN_GUARD)
-        pattern = node_2(NT_WHEN, __ntok(guard), pattern, guard)
+        pattern = node_2(NT_WHEN, get_node_token(guard), pattern, guard)
 
     return pattern
 
@@ -665,7 +631,7 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
 
         advance(parser)
         guard = expression(parser.guard_parser, 0, guard_terminator)
-        pattern = node_2(NT_WHEN, __ntok(guard), pattern, guard)
+        pattern = node_2(NT_WHEN, get_node_token(guard), pattern, guard)
     else:
         check_token_types(parser, arg_terminator)
 
@@ -874,7 +840,7 @@ def _load_module(parser, exp):
 def ensure_tuple(t):
     nt = nodes.node_type(t)
     if nt != NT_TUPLE and nt != NT_UNIT:
-        return nodes.create_tuple_node(__ntok(t), [t])
+        return nodes.create_tuple_node(get_node_token(t), [t])
     return t
 
 
@@ -1127,7 +1093,7 @@ def _parse_def_signature(parser, token):
                 _type = None
 
             if not _type:
-                _type = nodes.create_void_node(__ntok(arg))
+                _type = nodes.create_void_node(get_node_token(arg))
             else:
                 _type = nodes.create_name_node_s(token, _type)
             dispatch.append(_type)
@@ -1240,7 +1206,7 @@ def _parse_use_serial_transform(parser, token, _type, alias, methods):
         method_pattern = nodes.node_fourth(method)
 
         new_signature = nodes.create_list_node_from_list(
-            __ntok(method_signature),
+            get_node_token(method_signature),
             _use_replace_in_signature(parser, old_signature, _type, alias)
         )
 
@@ -1268,7 +1234,7 @@ def _parse_use_parallel_transform(parser, token, types, aliases, method):
         signature = _use_replace_in_signature(parser, signature, _type, alias)
 
     new_signature = nodes.create_list_node_from_list(
-        __ntok(method_signature),
+        get_node_token(method_signature),
         signature
     )
 

@@ -111,10 +111,8 @@ RULES = [
     # (keyword('module'), TT_MODULE),
 
     (keyword('use'), TT_USE),
-    (keyword('extend'), TT_EXTEND),
     (keyword('for'), TT_FOR),
 
-    (keyword('trait'), TT_TRAIT),
     (keyword('generic'), TT_GENERIC),
     (keyword('interface'), TT_INTERFACE),
     (keyword('derive'), TT_DERIVE),
@@ -253,6 +251,7 @@ def token_value(token):
 
 def token_position(token):
     return token.pos
+
 
 def token_position_i(token):
     return api.to_i(token.pos)

@@ -1033,11 +1033,6 @@ def _compile_DEF(compiler, code, node):
     _compile(compiler, code, simplified)
 
 
-def _compile_TRAIT(compiler, code, node):
-    trait = simplify.simplify_trait(compiler, code, node)
-    _compile(compiler, code, trait)
-
-
 def _emit_TAIL(compiler, code, node):
     _compile(compiler, code, node)
     _emit_call(compiler, code, node, 1, lang_names.REST)

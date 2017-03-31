@@ -10,12 +10,12 @@ Arza written in relatively 'slow' language python with not many speed optimisati
 
 ## Running
 ```
-python targetarza.py test/arza/main.cns
+python targetarza.py test/arza/main.arza
 ```
 or better use pypy
 
 Currently, compilation via RPython toolchain does not supported but it can be done with some efforts.
-There are no REPL for arza at the moment
+There are no REPL for Arza at the moment
 
 ## Features
 
@@ -26,8 +26,8 @@ There are no REPL for arza at the moment
 * Usual number of primitives (if-else, let-in, try-catch)
 * User defined operators
 * User defined types
-* Traits and interfaces
-* Single dispatch generic functions
+* Powerfull predicate multiple dispatch generic functions
+* Interfaces supporting multiple dispatch paradigm
 * Special syntax and custom operator for partial application
 * Stackless virtual machine
 * Asymmetric coroutines
@@ -69,11 +69,12 @@ There are no REPL for arza at the moment
 ### Syntax overview
 Arza uses original syntax inspired by Lua and OCaml
 Expression syntax similar to convenient scripting languages with infix and prefix operators and
-function calls via ```f(...)```. But instead of using some kind of block separators ({} or begin end)
-Arza allows one or more expressions inside parens (exp1 exp2 expe).
+function calls via ```f(...)```. But instead of using some kind of block separators ({} or *begin end*)
+Arza allows one or more expressions inside parens (exp_1 exp_2 ... exp_n).
 Result of such group expression will be the result of last expression.
-This simple rule provides organic coexistence of serial and single expressions.
+This simple rule provides organic coexistence for serial and single expressions.
 ```
+// Single line comments after //
 fun add(x,y) = x + y
 fun add_and_print(x,y) =
 (
@@ -82,7 +83,9 @@ fun add_and_print(x,y) =
 )
 ```
 
-Name binding can be done only inside *let-in* statement, I believe it pushes programmer to good code quality
+Name binding can be done only inside *let-in* statement, I believe it pushes programmer to the path of using 
+smaller functions and patterm matching wherever it's possible
+
 ```
 fun f(x,y) =
     let z = x + y
@@ -101,7 +104,6 @@ fun f(x,y) =
         in k + x + y
     )
 ```
-Most of the functions can be written with such *let-in* technique
 
 ##### Scary cryptic example (Nine billion names of God the Integer)
 ```
@@ -142,9 +144,9 @@ fun nbn () =
 
 
 There are three main kinds of expressions
-* Top level expressions (import, export, from, fun, let, trait, interface, generic, type, prefix, infixl, infixr)
+* Top level expressions (import, export, from, fun, let, extend, use, derive, interface, generic, type, prefix, infixl, infixr)
 * Pattern matching expressions inside function signature, after let expression or in match expression
-* Value expressions usually occur after = token and always evaluates to some value
+* Value expressions usually occur after = token and always evaluate to some value
 
 There are no end of expression token in Arza.
 Parser grabs expressions one by one from stream of tokens.
@@ -166,7 +168,7 @@ To resolve parsing conflicts Arza uses new lines as terminators
 fun f() =
 (
     //lambda expression
-    ((x, y) = x + y)
+    ((x, y) -> x + y)
     // parser treats `(` as prefix expression because of new line
     (1, 41)
 )
@@ -175,7 +177,7 @@ f() == (1, 41)
 fun f2() =
 (
     // parser treats `(` as infix expression and interprets this expression as call to lambda with arguments (1, 41)
-    ((x, y) = x + y)(1, 41)
+    ((x, y) -> x + y)(1, 41)
 )
 f2() == 42
 ```
@@ -183,7 +185,6 @@ f2() == 42
 ### Import and export
 
 ```
-// this is comment
 // By default all names except operators can be imported outside
 // You can limit it with export expression
 let CONST = 41
@@ -281,15 +282,17 @@ infixl (+, +, 40)
 infixl (-, -, 40)
 infixl (*, *, 50)
 infixl (/, /, 50)
-prefix (-, negate, 55)
+// use qualified name to prevent infinite loops in cases of declaring local negate function using prefix -
+prefix (-, arza:lang:negate, 55)
 // infix :: -> 60
 infixl (**, **, 60)
 // prefix # -> 70
 prefix (!, !, 70)
-infixl (.., .., 95)
+infixl (.., .., 90)
 // infix (  .{ .[ -> 95
 prefix (&, &, 96)
 // infix . : -> 100
+
 
 // when parser transforms expressions with operators to call expressions
 2 - 2 -> -(2, 2)
@@ -459,203 +462,112 @@ match p with
 
 ```
 
-### Single dispatch
-Single dispatch based on protocols(interfaces, traits) became popular in many modern languages (Clojure, Elixir, Golang. Rust)
-Such system usually consists of types and protocols. Protocols consists of one (zero) or more methods
-Protocol (all it's methods) can be implemented for specific type. Protocol methods usually dispatch on first argument.
+### Multiple dispatch
 
+Arza uses very powerfull and rare in language design concept of predicate multiple dispatch generic functions for achieving polymorphism.
+Arza generic functions could be specialized for any arguments and also for simple predicate expressions. 
+Essentially, they resemble pattern matching functions in Erlang but with posiibility to define clauses at different places in code
 
-**Clojure example**
+** Example **
 ```
-(defprotocol AProtocol
-  "A doc string for AProtocol abstraction"
-  (bar [a b] "bar docs")
-  (baz [a] [a b] [a b c] "baz docs"))
+// declare generic function
+generic add(val1, val2)
 
-(deftype MyType [a b c])
+// declare type for complex numbers
+type Complex(real, imag)
 
-(extend-type MyType
-  Foo
-    (bar [x y] ...)
-    (baz ([x] ...) ([x y zs] ...)))
+// specialize add for Complex and Int types with def statement
+
+def add(c1 of Complex, c2 of Complex)  =
+    Complex(c1.real + c2.real, c1.imag + c2.imag)
+
+def add(i of Int, c of Complex)  =
+    Complex(i + c.real, c.imag)
+
+def add(c of Complex, i of Int) =
+	add(i, c)
+// Such definitions are not restricted to current module, you can define them anywhere, like
+
+import my_module:add
+def my_module:add(c of Complex, i of Int) =
+	add(i, c)
+
 ```
+Predicate is a special condition, which narrow the application of a specialization.
+Specialisations with predicates have more priority then simple ones
 
-It is simple and powerful system but it tightly bounds functions to only one protocol.
-Problem occurs when some function must belong to two or more protocols simultaneously
-For example, we can have protocol for collection with methods 'at' and 'elem' and protocol for
-mutable collection with methods 'at' 'elem' 'put' 'del'.
-Mixins or Inheritance can solve this problem but arza goes the other way.
-In arza generic functions and protocols(interfaces) declared apart from each other
-and interfaces combine one or more previously declared generics.
-Type doesn't need to signal implementation of interface but needs to implement all generic functions belonging to interface
-Arza generic functions can dispatch on argument in any position
-
-
-#### Generic expression
 ```
-// Generic provides dispatch (single) on one of it's arguments
+def add(c of Complex, i of Int) when i == 0 =
+	(
+		c
+	)
 
-generic <name> '('[`]{arg_name} ')' |
-generic '(' {<name> '('[`]{arg_name} ')' } ')'
+// You can use any value expression in predicate including function call
 
+generic get_favorite(c1, c2)
 
-// ` before argument signals position of 'dispatch' argument (argument on which type dispatch occurs)
-// ` might be omitted for generic with only one argument
+type Car (speed)
 
-generic equal(`x, y)
-generic negate(x)
+fun faster(v1, v2) = v1.speed > v2.speed
 
-// dispatch on last argument
-generic cons(value, `seq)
-
-// declare many generics in one layout
-generic
-(
-    mod(`x, y)
-    -(`x, y)
-    +(`x, y)
-    put(key, value, `self)
-    at(key, `self)
-    del(obj, `self)
-)
+def get_favorite(c1 of Car, c2 of Car) when faster(c1, c2)  = c1
+def get_favorite(c1 of Car, c2 of Car) = c2
 
 ```
 
 #### Interface expression
 
+But declaring each function for every type might become very tidious.
+To address this problem Arza introduces concept of interface
+
 ```
 interface <name> '('{generic_name} ')' |
 interface '(' {<name> '(' {generic_name} ')' } ')'
 
+// Interface combines one or more generic functions and can be used for type check in pattern matching 
+// and specialization of other generic functions
 
-// Interface combines one or more generic functions and can be used for type check in pattern matching
-// generic functions must be declared at this point
+generic sub(v1, v2)
 
-interface PartialEq (==)
+//for types used as first argument of sub
+interface Minuend(sub.0)
+//for types used as second  argument of sub
+interface Subtrahend(sub.1)
 
-interface
+def sub(c of Complex, i of Int) = Complex(c.real - i, c.imag) 
+
+fun test() =
+	let 
+		c = Complex(1, 2)
+		d = c - 10
+	in 
+	(
+		d of Minuend == True
+		// sub(Int, Complex) not defined yet
+		d of Subtrahend == False
+	)
+
+// Main power of interfaces come when we specialize generics for interfaces and not for types
+// from prelude
+interface 
 (
-    Eq (!=, ==) // shares same == generic
-
-    Seq(first, rest)
-
-    Ord(<, <=, >, >=, cmp, max, min)
-
-    Str (str)
-
-    Collection(put, at, del, elem)
-
-    Dict(keys, values, put, at, del, elem)
-
-    Ref(!)
-
-    MutRef(!, :=)
-)
-```
-
-#### Extend expression
-```
-extend <type>
-'('
-    {
-        let <generic_name> = <value_expression>
-        use <traitname> ['(' {generic_name} ')'] |
-        def <generic> <function_definition>
-    }
-')'
-
-
-// extend type with generic function
-
-type MyList(l)
-
-extend L
-(
-    def +(self, other)
-        | (self, other of List) = MyList(self.l + other)
-        | (self, other of MyList) = MyList(self.l + other.l)
-
-    def len(self) = len(self.l)
-
-    def is_empty(self) = is_empty(self.l)
-
-    def first(self) = self
-
-    def rest(self) = self
+    Coll(put.2, del.1)
+    GrowableCollection(put.2)
+    ShrinkableCollection(del.1)
+    ReadOnlyCollection(at.1, elem.1)
+    Collection() is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
 )
 
-// if interfaces Seq(first, rest), Add(+) and Sized(len) exist
-// we can check if type implements them
+// now we know that types implementing Collection have at.1 specialisation
+// we can specilize generic for interface
 
-let mylist = MyList([1,2,3,4,5,6])
-let _ =
-    match mylist with
-        | l of Seq = l
-        | _ = ()
+generic get_name(coll)
+def get_name(coll of Collection) = at("name", coll)
 
-or with builtin kindof function
-let (
-    True = mylist `kindof` MyList
-    False = mylist `kindof` Number
-    True = mylist `kindof` Seq
-    True = mylist `kindof` Sized
-    True = mylist `kindof` Add
-    True = mylist `kindof` Sub
-)
-```
-
-#### Trait expression
-Trait is code reuse unit in arza.
-They are simple maps {generic = implementation} and can be used in extend statement
-to share common behaviour between different types
+// any type that define Collection generics can be used in get_name 
+// for more advanced example look at test/arza/tests/dispatch/movie directory
 
 ```
-trait <name>
-'('
-    {
-        let <generic_name> = <value_expression>
-        def <generic> <function_definition>
-    }
-')'
-
-
-
-generic
-(
-    eq(`x, y)
-    ne(`x, y)
-    le(`x, y)
-    lt(`x, y)
-    ge(`x, y)
-    gt(`x, y)
-)
-trait Equal
-(
-    def eq(x, y) = not ne(x, y)
-    def ne(x, y) = not eq(x, y)
-)
-
-trait Order
-(
-    let le = (x,y) -> cmp(x, y) != GT
-    def lt(x, y) = cmp(x, y) == LT
-    def ge(x, y) = cmp(x, y) != LT
-    def gt(x, y) = cmp(x, y) == GT
-)
-extend MyList
-(
-    // all implementations defined in Equal trait will be attached to MyList
-    use Equal
-
-    // only le and ge will be attached to the type
-    use Order (le, ge)
-
-    // Trait is a simple map with generics as keys and implementation functions as values
-    let lt = Order.[lt]
-    def gt(x, y) = Order.[gt](x, y)
-)
-```
-
 ### Value expressions
 
 #### Literals
@@ -791,7 +703,7 @@ let
 ```
 
 #### Partial application
-
+ADD HOLES HERE
 ```
 Arza provides special syntax for partial application via .( operator
 
@@ -893,7 +805,7 @@ let I2 =
 #### Pattern Matching
 
 Pattern matching is a central element in Arza design
-It used in function clauses, let bindings before = token, lambda functions before -> token and
+It used in function clauses, generic function specializations, let bindings before *=* token, lambda functions before -> token and
 match expressions.
 Arza doesn't have loops so pattern matching and recursion are used to create iteration
 
@@ -1159,7 +1071,7 @@ finally =
 ```
 
 ### Modules and bootstrap
-Module system is very simple: module = file and there are no packages
+Module system is very simple: module = file without any concept of multimodule package
 Module search path are always relative to startup script and there are no possibility of relative import
 
 Example directory structure
@@ -1179,15 +1091,15 @@ if we run Arza with
 ```
 python targetlalan.py program.arza
 ```
-Module search path would look something like  [BASEDIR, STD, LALANSTD] where
+Module search path would look something like  [BASEDIR, STD, ARZASTD] where
 
 * BASEDIR = directory in which program.arza is located
 * STD = BASEDIR/\_\_std\_\_ - directory with user defined std modules. It will give user easy way to have custom prelude
-* LALANSTD = environment variable LALANSTD which must contain path to global stdlib. If LALANSTD is empty, all required modules must be in STD directory
+* ARZASTD = environment variable ARZASTD which must contain path to global stdlib. If ARZASTD is empty, all required modules must be in STD directory
 
 #### Loading order
 * prelude.arza. If prelude is absent execution will be terminated. All names declared in prelude would be visible in all other modules
 * stdlib modules used by runtime (derive.arza, bool.arza, num.arza, bit.arza, env.arza, string.arza, symbol.arza, vector.arza, list.arza, function.arza, fiber.arza, trait.arza, tuple.arza, map.arza, seq.arza, lazy.arza, datatype.arza)
-* running script (in our case program.arza). After loading this sript arza searches for function named 'main' and executes it. Result of 'main' function would be result of program
+* running script (in our case program.arza). After loading this sript arza searches for function named 'main' and executes it. Result of 'main' function would be result of the program
 
 

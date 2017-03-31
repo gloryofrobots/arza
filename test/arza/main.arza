@@ -27,7 +27,6 @@ fun log(...msgs) =
 
 fun test() =
 (
-    log("RUN TESTS")
 
    log("TEST EXPRESSIONS")
    test_expressions:test()
