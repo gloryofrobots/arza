@@ -1,4 +1,5 @@
-## My experimental programming languages
+
+# My experimental programming languages
 
 - [Obin](#obin)
 - [Lalan](#lalan)
@@ -183,7 +184,8 @@ fun enum_from(num) =
 
 ```
 
-#### Lalan
+#### Arza
+
 * Original and clean syntax inspired by Lua and OCaml
 * Whitespace unaware parser
 * Using parentheses for creating blocks of expression, similar to {} blocks in C or Java
@@ -198,21 +200,41 @@ fun enum_from(num) =
 ##### Example
 
 ```
-type
-(
-    BugEyedMonster(name, eye_count, scariness, speed,  lang)
-    InnocentBrunette(name, scream_power, prettiness, stupidity, lang)
-    ProtagonistBlond(name, scream_power, gorgeousness, lang)
-)
+// declare generic function
+generic add(val1, val2)
 
-fun is_monster_killable(b of ProtagonistBlond, m of BugEyedMonster) = b.gorgeousness > m.scariness
-fun can_escape_from(b, m) = b.stupidity < 70 and m.speed < 60
+// declare type for complex numbers
+type Complex(real, imag)
 
-fun loud_enough(b) = b.scream_power > 60
+// specialize add for Complex and Int types with def statement
 
-fun pretty_enough
-    | b of ProtagonistBlond = b.gorgeousness > 70
-    | b of InnocentBrunette = b.prettiness > 60
-	
-	
+def add(c1 of Complex, c2 of Complex)  =
+    Complex(c1.real + c2.real, c1.imag + c2.imag)
+
+def add(i of Int, c of Complex)  =
+    Complex(i + c.real, c.imag)
+
+def add(c of Complex, i of Int) =
+	add(i, c)
+// Such definitions are not restricted to current module, you can define them anywhere, like
+
+import my_module:add
+def my_module:add(c of Complex, i of Int) =
+	add(i, c)
+
+def add(c of Complex, i of Int) when i == 0 =
+	(
+		c
+	)
+
+// You can use any value expression in predicate including function call
+
+generic get_favorite(c1, c2)
+
+type Car (speed)
+
+fun faster(v1, v2) = v1.speed > v2.speed
+
+def get_favorite(c1 of Car, c2 of Car) when faster(c1, c2)  = c1
+def get_favorite(c1 of Car, c2 of Car) = c2
 ```
