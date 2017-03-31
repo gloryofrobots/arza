@@ -39,7 +39,7 @@ They share many common features and code base with differences mainly in parser 
 * Lazy evaluation via special syntax
 * Smart way of handling ambidextra operators
 
-#####[Repository](https://github.com/gloryofrobots/langs/tree/obin)
+##### [Repository](https://github.com/gloryofrobots/langs/tree/obin)
 
 ##### Example
 ```
@@ -110,7 +110,7 @@ fun nine_billion_names_of_god_the_integer () ->
 * Custom operators
 * Name binding only via let-in expression
 
-#####[Repository](https://github.com/gloryofrobots/langs/tree/lalan)
+##### [Repository](https://github.com/gloryofrobots/langs/tree/lalan)
 
 ##### Example
 
