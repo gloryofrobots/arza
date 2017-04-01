@@ -1,16 +1,13 @@
 
-# My experimental programming languages
+Prototypes for experimental programming languages 
+Most entirely new features (or such that I didn`t know about in any other language) lie in dispatch mechanics
 
-- [Obin](#obin)
-- [Lalan](#lalan)
-- [Arza](#arza)
-
-This repository contains prototypes for experimental programming languages
-Each language has it's own branch
-They share many common features and code base with differences mainly in parser and compiler
+- [Obin](https://github.com/gloryofrobots/langs/tree/obin)
+- [Lalan](https://github.com/gloryofrobots/langs/tree/lalan)
+- [Arza](https://github.com/gloryofrobots/langs/tree/arza)
 
 
-### Common features
+#### Common features
 
 * Functional
 * Unpure
@@ -24,15 +21,13 @@ They share many common features and code base with differences mainly in parser 
 * Usual number of primitives (if-else, let-in, try-catch)
 * User defined operators
 * User defined types
-* Builtin single dispatch
 * Various level of support for currying and partial application
 * Stackless virtual machine
 * Asymmetric coroutines
 * All code written in Python
 
-### List of languages
 
-#### Obin
+#### [Obin](https://github.com/gloryofrobots/langs/tree/obin)
 
 * Indentation-aware syntax inspired by F#, Haskell and Python
 * Juxtaposition used for function application
@@ -41,9 +36,6 @@ They share many common features and code base with differences mainly in parser 
 * Lazy evaluation via special syntax
 * Smart way of handling ambidextra operators
 
-##### [Repository](https://github.com/gloryofrobots/langs/tree/obin)
-
-##### Example
 ```
 fun foldl
     | f acc [] -> acc
@@ -103,7 +95,8 @@ fun nine_billion_names_of_god_the_integer () ->
 --------------------------
 ```
 
-#### Lalan
+#### [Lalan](https://github.com/gloryofrobots/langs/tree/lalan)
+
 * Original and clean syntax inspired by Lua and OCaml
 * Whitespace unaware parser
 * Widely known syntax for expressions
@@ -111,10 +104,6 @@ fun nine_billion_names_of_god_the_integer () ->
 * Support for partial application via special syntax
 * Custom operators
 * Name binding only via let-in expression
-
-##### [Repository](https://github.com/gloryofrobots/langs/tree/lalan)
-
-##### Example
 
 ```
 fun add(x,y) = x + y
@@ -184,7 +173,7 @@ fun enum_from(num) =
 
 ```
 
-#### Arza
+#### [Arza](https://github.com/gloryofrobots/langs/tree/arza)
 
 * Original and clean syntax inspired by Lua and OCaml
 * Whitespace unaware parser
@@ -195,9 +184,6 @@ fun enum_from(num) =
 * Powerfull predicate multiple dispatch generic functions
 * Interfaces supporting multiple dispatch paradigm
 
-##### [Repository](https://github.com/gloryofrobots/langs/tree/arza)
-
-##### Example
 
 ```
 // declare generic function
