@@ -48,11 +48,8 @@ There are no REPL for Arza at the moment
 - [Module let expression](#module-let-expression)
 - [Function expression](#function-expression)
 - [Type expression](#type-expression)
-- [Single dispatch](#single-dispatch)
-  - [Generic expression](#generic-expression)
+- [Multiple dispatch](#multiple-dispatch)
   - [Interface expression](#interface-expression)
-  - [Extend expression](#extend-expression)
-  - [Trait expression](#trait-expression)
 
 - [Value expressions](#value-expressions)
   - [Literals](#literals)
