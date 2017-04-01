@@ -1,6 +1,5 @@
 
-Prototypes for experimental programming languages 
-Most entirely new features (or such that I didn`t know about in any other language) lie in dispatch mechanics
+Prototypes for experimental programming languages.
 
 - [Obin](https://github.com/gloryofrobots/langs/tree/obin)
 - [Lalan](https://github.com/gloryofrobots/langs/tree/lalan)
@@ -9,6 +8,7 @@ Most entirely new features (or such that I didn`t know about in any other langua
 
 #### Common features
 
+* All code written in Python
 * Functional
 * Unpure
 * Eager
@@ -22,9 +22,9 @@ Most entirely new features (or such that I didn`t know about in any other langua
 * User defined operators
 * User defined types
 * Various level of support for currying and partial application
+* Custom operators
 * Stackless virtual machine
 * Asymmetric coroutines
-* All code written in Python
 
 
 #### [Obin](https://github.com/gloryofrobots/langs/tree/obin)
@@ -102,7 +102,6 @@ fun nine_billion_names_of_god_the_integer () ->
 * Widely known syntax for expressions
 * Using parentheses for creating blocks of expression, similar to {} blocks in C or Java
 * Support for partial application via special syntax
-* Custom operators
 * Name binding only via let-in expression
 
 ```
@@ -175,14 +174,10 @@ fun enum_from(num) =
 
 #### [Arza](https://github.com/gloryofrobots/langs/tree/arza)
 
-* Original and clean syntax inspired by Lua and OCaml
-* Whitespace unaware parser
-* Using parentheses for creating blocks of expression, similar to {} blocks in C or Java
-* Support for partial application via special syntax
-* Custom operators
-* Name binding only via let-in expression
+* Syntax almost the same as in Lalan 
 * Powerfull predicate multiple dispatch generic functions
 * Interfaces supporting multiple dispatch paradigm
+* Support for partial application via special syntax
 
 
 ```
