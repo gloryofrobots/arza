@@ -1,5 +1,10 @@
 __author__ = 'gloryofrobots'
 from arza.compile.parse.tokenstream import TokenStream
+
+from arza.compile.parse.tokenstream import TokenStream
+from arza.compile.parse.indenter import IndentationTokenStream, InvalidIndentationError
+
+
 from arza.compile.parse.callbacks import *
 from arza.compile.parse.lexer import UnknownTokenError
 from arza.compile.parse import tokens
@@ -421,6 +426,9 @@ class ModuleParser(BaseParser):
         stmt(self, TT_INTERFACE, None, stmt_interface)
         stmt(self, TT_DERIVE, None, stmt_derive)
 
+        prefix(self, TT_LPAREN, None, prefix_lparen_module)
+        symbol(self, TT_RPAREN)
+
 
 def guard_parser_init(parser):
     parser.allow_overloading = True
@@ -550,10 +558,10 @@ def newparser():
 def newtokenstream(source):
     lx = lexer.lexer(source)
     tokens_iter = lx.tokens()
-    return TokenStream(tokens_iter, source)
+    return IndentationTokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = False
+PARSE_DEBUG = True
 
 
 def parse(process, env, src):

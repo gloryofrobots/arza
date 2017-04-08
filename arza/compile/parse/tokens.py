@@ -80,7 +80,7 @@ string_literal = '"([^\\\"]+|\\.)*"'
 multi_string_literal = '"{3}([\s\S]*?"{3})'
 
 RULES = [
-    (token('\n'), -1),
+    (token('\n'), TT_NEWLINE),
     (token('[ ]*\.\.\.'), TT_ELLIPSIS),
     (token('\.\{'), TT_INFIX_DOT_LCURLY),
     (token('\.\['), TT_INFIX_DOT_LSQUARE),
@@ -290,20 +290,15 @@ def token_level(token):
     return api.to_i(token_column(token)) - 1
 
 
-def token_position_i(token):
-    return api.to_i(token_position(token))
-
-
-def token_line_i(token):
-    return api.to_i(token_line(token))
-
-
-def token_column_i(token):
-    return api.to_i(token_column(token))
-
-
 def create_end_expression_token(token):
     return newtoken(TT_END_EXPR, ";",
+                    token_position(token),
+                    token_line(token),
+                    token_column(token))
+
+
+def create_end_token(token):
+    return newtoken(TT_RPAREN, ")",
                     token_position(token),
                     token_line(token),
                     token_column(token))

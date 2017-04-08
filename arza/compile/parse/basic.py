@@ -22,6 +22,9 @@ TERM_SINGLE_CATCH = [TT_FINALLY]
 TERM_LET = [TT_IN]
 
 TERM_PATTERN = [TT_WHEN]
+TERM_BLOCK = [TT_RPAREN]
+
+TERM_CASE_FUN_BLOCK = TERM_BLOCK + [TT_CASE]
 TERM_FUN_GUARD = [TT_ASSIGN]
 TERM_FUN_PATTERN = [TT_WHEN, TT_ASSIGN]
 TERM_FUN_SIGNATURE = [TT_ASSIGN, TT_CASE]
@@ -58,6 +61,41 @@ def parse_error(parser, message, token):
                            space.newstring(message),
                            space.newstring(line)
                        ]))
+
+def parser_error_indentation(parser, msg, position, lineno, column):
+    print parser.ts.advanced_values()
+    print parser.ts.layouts
+    line = get_line_for_position(parser.ts.src, position)
+    return error.throw(error.Errors.PARSE_ERROR,
+                       space.newtuple([
+                           space.newint(position),
+                           space.newint(lineno),
+                           space.newint(column),
+                           space.newstring(msg),
+                           space.newstring(line)
+                       ]))
+
+def init_code_layout(parser, node, terminators=None):
+    skip_indent(parser)
+    parser.ts.add_code_layout(node, terminators)
+
+
+def init_offside_layout(parser, node):
+    parser.ts.add_offside_layout(node)
+
+
+def init_node_layout(parser, node, level_tokens=None):
+    parser.ts.add_node_layout(node, level_tokens)
+
+
+def init_free_layout(parser, node, terminators):
+    skip_indent(parser)
+    parser.ts.add_free_code_layout(node, terminators)
+
+
+def skip_indent(parser):
+    if parser.token_type == TT_INDENT:
+        advance(parser)
 
 
 class ParserScope(root.W_Root):
@@ -291,6 +329,20 @@ def node_led(parser, token, left):
     return handler.led(parser, handler, token, left)
 
 
+def node_layout(parser, node):
+    handler = node_operator(parser, node)
+    if not handler.layout:
+        parse_error(parser, u"Unknown token layout", node)
+
+    return handler.layout(parser, handler, node)
+
+
+def parser_set_layout(parser, ttype, fn):
+    h = get_or_create_operator(parser, ttype)
+    h.layout = fn
+    return h
+
+
 def node_prefix_node_type(parser, token):
     handler = node_operator(parser, token)
     if not handler.prefix_node_type:
@@ -424,8 +476,8 @@ def advance_expected_one_of(parser, ttypes):
     return parser.next_token()
 
 
-def advance_end(parser):
-    advance_expected_one_of(parser, TERM_BLOCK)
+def advance_end_block(parser):
+    advance_expected(parser, TT_RPAREN)
 
 
 def on_endofexpression(parser):

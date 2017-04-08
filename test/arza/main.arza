@@ -18,6 +18,16 @@ import tests:test_fun
 import tests:test_coro
 import tests:test_partial
 
+fun test() =
+(
+    let
+        x = 1
+        y = 2
+        z = f1(x + y - z, 4)
+    in z
+)
+
+
 
 fun log(...msgs) =
     if True then

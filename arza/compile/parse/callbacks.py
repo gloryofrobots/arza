@@ -343,6 +343,7 @@ def prefix_not(parser, op, token):
 # single expression 2 * (2+3)
 # list of expressions ( print(data) write(file, data) )
 def prefix_lparen(parser, op, token):
+    init_free_layout(parser, token, TERM_BLOCK)
     # unit
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
@@ -411,6 +412,11 @@ def prefix_lparen_expression(parser, op, token):
 
     parse_error(parser, u"Invalid syntax inside parenthesis. Expect () (<exp>) or (<exp> , ...<exp>)", parser.token)
 
+
+def prefix_lparen_module(parser, op, token):
+    e = statement(parser)
+    advance_expected(parser, TT_RPAREN)
+    return e
 
 def prefix_lsquare(parser, op, token):
     items = _parse_comma_separated(parser, TT_RSQUARE)
@@ -641,13 +647,15 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
 ####################################################
 
 
-def _parse_single_function(parser, signature):
+def _parse_single_function(parser, signature, term_body):
     """
     fun f (x, y, z) = (exp)
     """
     check_token_type(parser, TT_ASSIGN)
     advance(parser)
-    body = expression(parser, 0)
+    init_code_layout(parser, parser.token, term_body)
+    # body = expression(parser, 0)
+    body = statements(parser, term_body)
     return nodes.create_function_variants(signature, body)
 
 
@@ -655,7 +663,7 @@ def _parse_single_function(parser, signature):
 
 
 def _parse_case_function(parser, term_pattern,
-                         term_guard):
+                         term_guard, term_body):
     """
     fun f
         | x, y, z = (exp)
@@ -784,9 +792,11 @@ def _parse_function(parser, name, term_pattern, term_guard):
 
 
 def _parse_named_function(parser, token):
+    init_node_layout(parser, token)
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     check_token_types(parser, [TT_LPAREN, TT_CASE])
     func = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
+    advance_end_block(parser)
     return name, func
 
 
