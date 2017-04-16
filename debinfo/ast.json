@@ -1,54 +1,37 @@
 [
-  {
-    "_ntype": "NT_FUN",
-    "_value": "fun",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "f"
-      },
-      [
-        [
-          {
-            "_ntype": "NT_TUPLE",
-            "_value": "(",
-            "children": [
-              [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "n"
-                }
-              ]
+  [
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "Coll",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Coll"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "Coll",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "put"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "del"
+              }
             ]
-          },
-          [
-            {
-              "_ntype": "NT_INT",
-              "_value": "5"
-            },
-            {
-              "_ntype": "NT_CALL",
-              "_value": "(",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "f2"
-                },
-                [
-                  {
-                    "_ntype": "NT_INT",
-                    "_value": "6"
-                  },
-                  {
-                    "_ntype": "NT_INT",
-                    "_value": "7"
-                  }
-                ]
-              ]
-            }
           ]
-        ]
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "Coll",
+          "children": [
+            []
+          ]
+        }
       ]
-    ]
-  }
+    }
+  ]
 ]

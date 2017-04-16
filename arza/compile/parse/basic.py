@@ -301,6 +301,10 @@ def node_has_std(parser, token):
     handler = node_operator(parser, token)
     return handler.std is not None
 
+def node_has_layout(parser, token):
+    handler = node_operator(parser, token)
+    return handler.layout is not None
+
 
 def node_lbp(parser, token):
     op = node_operator(parser, token)
@@ -658,6 +662,8 @@ def literal_expression(parser):
 def statement(parser):
     token = parser.token
     if node_has_std(parser, token):
+        if node_has_layout(parser, token):
+            node_layout(parser, token)
         advance(parser)
         value = node_std(parser, token)
         return value

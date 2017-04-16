@@ -424,6 +424,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_DEF, None, stmt_def)
         stmt(self, TT_USE, None, stmt_use)
         stmt(self, TT_INTERFACE, None, stmt_interface)
+        parser_set_layout(self, TT_INTERFACE, layout_node)
         stmt(self, TT_DERIVE, None, stmt_derive)
 
         prefix(self, TT_LPAREN, None, prefix_lparen_module)

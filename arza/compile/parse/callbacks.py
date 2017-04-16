@@ -1019,8 +1019,13 @@ def stmt_derive(parser, op, token):
 
 # INTERFACE
 
+def layout_node(parser, op, token):
+    init_node_layout(parser, parser.token)
+
 def stmt_interface(parser, op, token):
-    nodes = list_expression(parser.interface_parser, 0)
+    init_code_layout(parser, parser.token, TERM_BLOCK)
+    nodes = statements(parser.interface_parser, TERM_BLOCK)
+    advance_end_block(parser)
     return nodes
 
 
@@ -1157,7 +1162,9 @@ def infix_def_of(parser, op, token, left):
 # GENERIC
 
 def stmt_generic(parser, op, token):
-    generics = list_expression(parser.generic_parser, 0)
+    init_node_layout(parser, token)
+    init_code_layout(parser, parser.token, TERM_BLOCK)
+    generics = statements(parser.generic_parser, TERM_BLOCK)
     return generics
 
 
