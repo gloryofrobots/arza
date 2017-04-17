@@ -49,6 +49,17 @@ def led_let_assign(parser, op, token, left):
     exp = expression(parser.expression_parser, 9)
     return node_2(NT_ASSIGN, token, left, exp)
 
+def layout_lparen(parser, op, node):
+    init_free_layout(parser, node, [TT_RPAREN])
+
+def layout_lcurly(parser, op, node):
+    init_free_layout(parser, node, [TT_RCURLY])
+
+def layout_lsquare(parser, op, node):
+    init_free_layout(parser, node, [TT_RSQUARE])
+
+def prefix_indent(parser, op, node):
+    return parse_error(parser, u"Invalid indentation level", node)
 
 def prefix_backtick_operator(parser, op, token):
     opname_s = strutil.cat_both_ends(tokens.token_value_s(token))
@@ -157,8 +168,14 @@ def infix_lcurly(parser, op, token, left):
     return node_2(NT_MODIFY, token, left, list_node(items))
 
 
-def _parse_comma_separated(parser, terminator, expected=None, initial=None, advance_first=None, not_empty=False):
+def _parse_comma_separated(parser, terminator, expected=None,
+                           initial=None, advance_first=None,
+                           not_empty=False, is_free=False):
     token = parser.token
+
+    if is_free:
+        init_free_layout(parser, token, [terminator])
+
     if advance_first:
         advance_expected(parser, advance_first)
 
@@ -217,6 +234,7 @@ def infix_lparen(parser, op, token, left):
     holes = []
     index = 0
 
+    init_free_layout(parser, node, LAYOUT_LPAREN)
     if parser.token_type != TT_RPAREN:
         while True:
             if parser.token_type == TT_WILDCARD:
@@ -343,7 +361,7 @@ def prefix_not(parser, op, token):
 # single expression 2 * (2+3)
 # list of expressions ( print(data) write(file, data) )
 def prefix_lparen(parser, op, token):
-    init_free_layout(parser, token, TERM_BLOCK)
+    init_free_layout(parser, token, LAYOUT_LPAREN)
     # unit
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
@@ -414,6 +432,7 @@ def prefix_lparen_expression(parser, op, token):
 
 
 def prefix_lparen_module(parser, op, token):
+    init_free_layout(parser, token, LAYOUT_LPAREN)
     e = statement(parser)
     advance_expected(parser, TT_RPAREN)
     return e
@@ -796,7 +815,7 @@ def _parse_named_function(parser, token):
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     check_token_types(parser, [TT_LPAREN, TT_CASE])
     func = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
-    advance_end_block(parser)
+    advance_dedent(parser)
     return name, func
 
 
@@ -1019,19 +1038,17 @@ def stmt_derive(parser, op, token):
 
 # INTERFACE
 
-def layout_node(parser, op, token):
-    init_node_layout(parser, parser.token)
-
 def stmt_interface(parser, op, token):
+    init_node_layout(parser, parser.token)
     init_code_layout(parser, parser.token, TERM_BLOCK)
-    nodes = statements(parser.interface_parser, TERM_BLOCK)
-    advance_end_block(parser)
+    nodes = statements(parser.interface_parser, [])
+    # advance_dedent(parser)
     return nodes
 
 
 def prefix_interface_name(parser, op, token):
     name = nodes.create_name_node(token, tokens.token_value(token))
-    items = _parse_comma_separated(parser.interface_function_parser, TT_RPAREN, advance_first=TT_LPAREN)
+    items = _parse_comma_separated(parser.interface_function_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
     if parser.token_type == TT_IS:
         advance_expected(parser, TT_IS)
         subs = _parse_struct_or_name(parser.name_parser, TT_LPAREN, TT_RPAREN, NAME_NODES)

@@ -297,8 +297,22 @@ def create_end_expression_token(token):
                     token_column(token))
 
 
-def create_end_token(token):
-    return newtoken(TT_RPAREN, ")",
+# def create_end_token(token):
+#     return newtoken(TT_RPAREN, ")",
+#                     token_position(token),
+#                     token_line(token),
+#                     token_column(token))
+
+
+def create_indent_token(token):
+    return newtoken(TT_INDENT, "(indent)",
+                    token_position(token),
+                    token_line(token),
+                    token_column(token))
+
+
+def create_dedent_token(token):
+    return newtoken(TT_DEDENT, "(dedent)",
                     token_position(token),
                     token_line(token),
                     token_column(token))

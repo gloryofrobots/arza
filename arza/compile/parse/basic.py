@@ -22,7 +22,7 @@ TERM_SINGLE_CATCH = [TT_FINALLY]
 TERM_LET = [TT_IN]
 
 TERM_PATTERN = [TT_WHEN]
-TERM_BLOCK = [TT_RPAREN]
+TERM_BLOCK = [TT_DEDENT]
 
 TERM_CASE_FUN_BLOCK = TERM_BLOCK + [TT_CASE]
 TERM_FUN_GUARD = [TT_ASSIGN]
@@ -34,6 +34,10 @@ TERM_DEF_SIGNATURE = [TT_CASE, TT_ASSIGN, TT_AS]
 
 NAME_NODES = [NT_NAME, NT_IMPORTED_NAME]
 DEF_ARGS_NODES = [NT_NAME, NT_WILDCARD]
+
+LAYOUT_LPAREN = [TT_RPAREN]
+LAYOUT_LCURLY = [TT_RCURLY]
+LAYOUT_LSQUARE = [TT_RSQUARE]
 
 
 def parser_error_unknown(parser, position):
@@ -480,8 +484,10 @@ def advance_expected_one_of(parser, ttypes):
     return parser.next_token()
 
 
-def advance_end_block(parser):
-    advance_expected(parser, TT_RPAREN)
+def advance_dedent(parser):
+    if parser.ts.current_layout().is_free():
+        return
+    advance_expected(parser, TT_DEDENT)
 
 
 def on_endofexpression(parser):
@@ -503,6 +509,9 @@ def endofexpression(parser):
 
 def base_expression(parser, _rbp, terminators=None):
     previous = parser.token
+    if node_has_layout(parser, previous):
+        node_layout(parser, previous)
+
     advance(parser)
 
     left = node_nud(parser, previous)
@@ -685,9 +694,19 @@ def statement_no_end_expr(parser):
 
 def statements(parser, endlist, expected_types=None):
     stmts = []
+
+    if parser.ts.current_layout().is_free():
+        terminators = endlist + parser.ts.current_layout().terminators
+    else:
+        terminators = endlist
+
     while True:
-        if token_is_one_of(parser, endlist):
+        if parser.token_type == TT_DEDENT:
+            advance(parser)
             break
+        if token_is_one_of(parser, terminators):
+            break
+
         s = statement(parser)
         if expected_types is not None:
             check_node_types(parser, s, expected_types)
@@ -708,7 +727,8 @@ def infix(parser, ttype, infix_node_type, lbp, led):
     parser_set_led(parser, ttype, infix_node_type, lbp, led)
 
 
-def prefix(parser, ttype, ntype, nud, pbp=0):
+def prefix(parser, ttype, ntype, nud, pbp=0, layout=None):
+    parser_set_layout(parser, ttype, layout)
     parser_set_nud(parser, ttype, ntype, nud, pbp)
 
 

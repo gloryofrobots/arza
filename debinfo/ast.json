@@ -32,6 +32,263 @@
           ]
         }
       ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "Dict",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Dict"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "Dict",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "keys"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "values"
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "Dict",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Collection"
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "Sliceable",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Sliceable"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "Sliceable",
+          "children": [
+            [
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": ".",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "slice"
+                    },
+                    {
+                      "_ntype": "NT_INT",
+                      "_value": "2"
+                    }
+                  ]
+                ]
+              },
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": ".",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "drop"
+                    },
+                    {
+                      "_ntype": "NT_INT",
+                      "_value": "1"
+                    }
+                  ]
+                ]
+              },
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": ".",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "take"
+                    },
+                    {
+                      "_ntype": "NT_INT",
+                      "_value": "1"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "Sliceable",
+          "children": [
+            []
+          ]
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "Coll",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Coll"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "Coll",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "put"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "del"
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "Coll",
+          "children": [
+            []
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "Dict",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Dict"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "Dict",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "keys"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "values"
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "Dict",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Collection"
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "Sliceable",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Sliceable"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "Sliceable",
+          "children": [
+            [
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": ".",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "slice"
+                    },
+                    {
+                      "_ntype": "NT_INT",
+                      "_value": "2"
+                    }
+                  ]
+                ]
+              },
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": ".",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "drop"
+                    },
+                    {
+                      "_ntype": "NT_INT",
+                      "_value": "1"
+                    }
+                  ]
+                ]
+              },
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": ".",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "take"
+                    },
+                    {
+                      "_ntype": "NT_INT",
+                      "_value": "1"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "Sliceable",
+          "children": [
+            []
+          ]
+        }
+      ]
     }
   ]
 ]

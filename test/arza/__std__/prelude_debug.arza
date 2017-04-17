@@ -2,6 +2,19 @@
 //infixl (-, -, 40)
 //infixl (*, *, 50)
 
+(interface
+    Coll(put, del)
+    Dict(keys, values) is Collection
+    Sliceable(slice.2, drop.1, take.1)
+)
+//
 interface
     Coll(put, del)
+    Dict(keys, values) is Collection
+    Sliceable(slice.2, drop.1, take.1)
 
+
+
+//fun fact(n)
+//    | 0 = 1
+//    | n = n * fact (n - 1)

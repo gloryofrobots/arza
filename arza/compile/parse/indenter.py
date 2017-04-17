@@ -161,6 +161,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
     def add_node_layout(self, node, level_tokens):
         if self.current_layout().is_free():
             return
+
         self._add_layout(node, NODE, level_tokens=level_tokens)
 
     def add_free_code_layout(self, node, terminators):
@@ -244,11 +245,13 @@ class IndentationTokenStream(tokenstream.TokenStream):
         if layout.is_free() is True:
             return self.next_token()
 
-        # if level > layout.level:
-        #     if not tokens.is_infix_token_type(ttype):
-        #         self.add_logical_token(tokens.create_indent_token(token))
+        if level > layout.level:
+            # return indentation_error(u"Invalid indentation", token)
+            # pass
+            if not tokens.is_infix_token_type(ttype):
+                self.add_logical_token(tokens.create_indent_token(token))
 
-            # return self.next_token()
+            return self.next_token()
         else:
             layouts = self.layouts
             while True:
@@ -261,16 +264,11 @@ class IndentationTokenStream(tokenstream.TokenStream):
                     return indentation_error(u"Invalid indentation level", token)
                 elif layout.level > level:
                     if layout.push_end_on_dedent is True:
-                        self.add_logical_token(tokens.create_end_token(token))
+                        self.add_logical_token(tokens.create_dedent_token(token))
                 elif layout.level == level:
                     if layout.is_node():
-                        if ttype == tt.TT_END:
-                            self.index += 1
-                            self.add_logical_token(tokens.create_end_token(token))
-                            self.pop_layout()
-
-                        elif not layout.has_level(ttype):
-                            self.add_logical_token(tokens.create_end_token(token))
+                        if not layout.has_level(ttype):
+                            self.add_logical_token(tokens.create_dedent_token(token))
                             self.pop_layout()
                     return self.next_token()
 

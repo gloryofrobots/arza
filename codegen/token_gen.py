@@ -61,6 +61,7 @@ TOKENS = [
   ("TT_END_EXPR", ";"),
   ("TT_NEWLINE", "(newline)"),
   ("TT_INDENT", "(indent)"),
+  ("TT_DEDENT", "(dedent)"),
 
   ("TT_INFIXL", "infixl"),
   ("TT_INFIXR", "infixr"),

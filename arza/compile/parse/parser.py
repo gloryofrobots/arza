@@ -52,6 +52,7 @@ class BaseParser:
         self.juxtaposition_as_list = False
         symbol(self, TT_UNKNOWN)
         symbol(self, TT_ENDSTREAM)
+        prefix(self, TT_INDENT, NT_THROW, prefix_indent)
         self.subparsers = []
 
     def add_subparsers(self, parsers):
@@ -324,6 +325,7 @@ class InterfaceParser(BaseParser):
         BaseParser.__init__(self)
         prefix(self, TT_NAME, None, prefix_interface_name)
         prefix(self, TT_LPAREN, None, prefix_lparen)
+        symbol(self, TT_RPAREN)
         self.interface_function_parser = InterfaceFunctionParser()
         self.name_parser = name_parser_init(BaseParser())
 
@@ -341,7 +343,7 @@ class InterfaceFunctionParser(BaseParser):
         infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
         infix(self, TT_DOT, None, 90, infix_interface_dot)
         literal(self, TT_NAME, NT_NAME)
-        prefix(self, TT_LPAREN, None, prefix_lparen_expression_only)
+        prefix(self, TT_LPAREN, None, prefix_lparen_expression_only, layout=layout_lparen)
         symbol_nud(self, TT_OPERATOR, NT_NAME, symbol_operator_name)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
         symbol(self, TT_RPAREN)
@@ -424,7 +426,6 @@ class ModuleParser(BaseParser):
         stmt(self, TT_DEF, None, stmt_def)
         stmt(self, TT_USE, None, stmt_use)
         stmt(self, TT_INTERFACE, None, stmt_interface)
-        parser_set_layout(self, TT_INTERFACE, layout_node)
         stmt(self, TT_DERIVE, None, stmt_derive)
 
         prefix(self, TT_LPAREN, None, prefix_lparen_module)
