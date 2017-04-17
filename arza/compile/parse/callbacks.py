@@ -49,17 +49,22 @@ def led_let_assign(parser, op, token, left):
     exp = expression(parser.expression_parser, 9)
     return node_2(NT_ASSIGN, token, left, exp)
 
+
 def layout_lparen(parser, op, node):
     init_free_layout(parser, node, [TT_RPAREN])
+
 
 def layout_lcurly(parser, op, node):
     init_free_layout(parser, node, [TT_RCURLY])
 
+
 def layout_lsquare(parser, op, node):
     init_free_layout(parser, node, [TT_RSQUARE])
 
+
 def prefix_indent(parser, op, node):
     return parse_error(parser, u"Invalid indentation level", node)
+
 
 def prefix_backtick_operator(parser, op, token):
     opname_s = strutil.cat_both_ends(tokens.token_value_s(token))
@@ -234,7 +239,7 @@ def infix_lparen(parser, op, token, left):
     holes = []
     index = 0
 
-    init_free_layout(parser, node, LAYOUT_LPAREN)
+    init_free_layout(parser, token, LAYOUT_LPAREN)
     if parser.token_type != TT_RPAREN:
         while True:
             if parser.token_type == TT_WILDCARD:
@@ -437,6 +442,7 @@ def prefix_lparen_module(parser, op, token):
     advance_expected(parser, TT_RPAREN)
     return e
 
+
 def prefix_lsquare(parser, op, token):
     items = _parse_comma_separated(parser, TT_RSQUARE)
     return node_1(NT_LIST, token, items)
@@ -516,7 +522,7 @@ def prefix_if(parser, op, token):
     advance_expected_one_of(parser, TERM_IF_CONDITION)
 
     # TODO CHECK IF HERE LISTNODE REQUIRED
-    body = expression(parser, 0, TERM_IF_BODY)
+    body = statements(parser, TERM_IF_BODY)
 
     branches.append(list_node([cond, body]))
     check_token_types(parser, TERM_IF_BODY)
@@ -527,13 +533,14 @@ def prefix_if(parser, op, token):
         cond = expression(parser, 0, TERM_IF_CONDITION)
         advance_expected_one_of(parser, TERM_IF_CONDITION)
 
-        body = expression(parser, 0, TERM_IF_BODY)
+        # init_node_layout(parser, parser.token, [])
+        body = statements(parser, TERM_IF_BODY)
         check_token_types(parser, TERM_IF_BODY)
         branches.append(list_node([cond, body]))
 
     advance_expected(parser, TT_ELSE)
-
-    body = expression(parser, 0)
+    # init_node_layout(parser, parser.token, [])
+    body = statements(parser, [])
     branches.append(list_node([empty_node(), body]))
     return node_1(NT_CONDITION, token, list_node(branches))
 
@@ -666,15 +673,15 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
 ####################################################
 
 
-def _parse_single_function(parser, signature, term_body):
+def _parse_single_function(parser, signature):
     """
     fun f (x, y, z) = (exp)
     """
     check_token_type(parser, TT_ASSIGN)
     advance(parser)
-    init_code_layout(parser, parser.token, term_body)
+    # init_code_layout(parser, parser.token, term_body)
     # body = expression(parser, 0)
-    body = statements(parser, term_body)
+    body = statements(parser, [])
     return nodes.create_function_variants(signature, body)
 
 
@@ -811,11 +818,10 @@ def _parse_function(parser, name, term_pattern, term_guard):
 
 
 def _parse_named_function(parser, token):
-    init_node_layout(parser, token)
+    # init_node_layout(parser, token)
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     check_token_types(parser, [TT_LPAREN, TT_CASE])
     func = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
-    advance_dedent(parser)
     return name, func
 
 
@@ -1037,11 +1043,14 @@ def stmt_derive(parser, op, token):
 
 
 # INTERFACE
+def layout_node(parser, op, token):
+    # init_node_layout(parser, parser.token)
+    pass
+
 
 def stmt_interface(parser, op, token):
-    init_node_layout(parser, parser.token)
-    init_code_layout(parser, parser.token, TERM_BLOCK)
-    nodes = statements(parser.interface_parser, [])
+    # init_node_layout(parser, parser.token)
+    nodes = statements(parser.interface_parser, TERM_BLOCK)
     # advance_dedent(parser)
     return nodes
 

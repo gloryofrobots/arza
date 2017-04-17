@@ -110,7 +110,10 @@ class IndentationTokenStream(tokenstream.TokenStream):
         self.produced_tokens = []
 
         level = self._find_level()
+        # self.layouts = plist.empty()
+
         self.layouts = plist.plist([Layout(-1, level, MODULE, None, None)])
+        self.invalidate = False
 
     def advanced_values(self):
         t = [tokens.token_value_s(token) for token in self.produced_tokens]
@@ -158,11 +161,11 @@ class IndentationTokenStream(tokenstream.TokenStream):
 
         self._add_layout(node, OFFSIDE)
 
-    def add_node_layout(self, node, level_tokens):
+    def add_node_layout(self, node, level_tokens, terminators):
         if self.current_layout().is_free():
             return
 
-        self._add_layout(node, NODE, level_tokens=level_tokens)
+        self._add_layout(node, NODE, level_tokens=level_tokens, terminators=terminators)
 
     def add_free_code_layout(self, node, terminators):
         # TODO layouts in operators
@@ -266,10 +269,10 @@ class IndentationTokenStream(tokenstream.TokenStream):
                     if layout.push_end_on_dedent is True:
                         self.add_logical_token(tokens.create_dedent_token(token))
                 elif layout.level == level:
-                    if layout.is_node():
-                        if not layout.has_level(ttype):
-                            self.add_logical_token(tokens.create_dedent_token(token))
-                            self.pop_layout()
+                    # if layout.is_node():
+                    #     if not layout.has_level(ttype):
+                    #         self.add_logical_token(tokens.create_dedent_token(token))
+                    #         self.pop_layout()
                     return self.next_token()
 
                 log("---- POP_LAYOUT", layout)
@@ -300,6 +303,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
         self.layouts = layouts
 
     def next_token(self):
+        self.previous = self.token
         if self.has_logic_tokens():
             return self.next_logical()
 
@@ -316,7 +320,8 @@ class IndentationTokenStream(tokenstream.TokenStream):
             self._on_end_token(token)
             return self.attach_token(token)
         elif ttype == tt.TT_ENDSTREAM:
-            if not self.current_layout().is_module():
+            if api.length_i(self.layouts) != 1:
+            # if not self.current_layout().is_module():
                 indentation_error(u"Not all layouts closed", token)
 
         layout = self.current_layout()

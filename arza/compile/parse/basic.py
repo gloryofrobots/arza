@@ -39,6 +39,9 @@ LAYOUT_LPAREN = [TT_RPAREN]
 LAYOUT_LCURLY = [TT_RCURLY]
 LAYOUT_LSQUARE = [TT_RSQUARE]
 
+LEVELS_IF = [TT_ELSE, TT_ELIF]
+LEVELS_TRY = [TT_CATCH, TT_FINALLY]
+LEVELS_LET = [TT_IN]
 
 def parser_error_unknown(parser, position):
     line = get_line_for_position(parser.ts.src, position)
@@ -66,6 +69,7 @@ def parse_error(parser, message, token):
                            space.newstring(line)
                        ]))
 
+
 def parser_error_indentation(parser, msg, position, lineno, column):
     print parser.ts.advanced_values()
     print parser.ts.layouts
@@ -79,6 +83,7 @@ def parser_error_indentation(parser, msg, position, lineno, column):
                            space.newstring(line)
                        ]))
 
+
 def init_code_layout(parser, node, terminators=None):
     skip_indent(parser)
     parser.ts.add_code_layout(node, terminators)
@@ -88,8 +93,9 @@ def init_offside_layout(parser, node):
     parser.ts.add_offside_layout(node)
 
 
-def init_node_layout(parser, node, level_tokens=None):
-    parser.ts.add_node_layout(node, level_tokens)
+def init_node_layout(parser, node, level_tokens=None, terminators=None):
+    skip_indent(parser)
+    parser.ts.add_node_layout(node, level_tokens, terminators)
 
 
 def init_free_layout(parser, node, terminators):
@@ -161,7 +167,7 @@ def parser_find_operator(parser, op_name):
 
 def parse_module(parser, termination_tokens):
     parser_enter_scope(parser)
-    stmts = statements(parser, termination_tokens)
+    stmts = module_statements(parser, termination_tokens)
     scope = parser_exit_scope(parser)
     return stmts, scope
 
@@ -304,6 +310,7 @@ def node_has_led(parser, token):
 def node_has_std(parser, token):
     handler = node_operator(parser, token)
     return handler.std is not None
+
 
 def node_has_layout(parser, token):
     handler = node_operator(parser, token)
@@ -692,14 +699,28 @@ def statement_no_end_expr(parser):
     return value
 
 
-def statements(parser, endlist, expected_types=None):
-    stmts = []
-
+def module_statements(parser, endlist, expected_types=None):
     if parser.ts.current_layout().is_free():
         terminators = endlist + parser.ts.current_layout().terminators
     else:
         terminators = endlist
 
+    return _statements(parser, terminators, expected_types)
+
+
+def statements(parser, endlist, expected_types=None):
+    if parser.ts.current_layout().is_free():
+        terminators = endlist + parser.ts.current_layout().terminators
+    else:
+        terminators = endlist
+
+    init_node_layout(parser, parser.token, None, terminators)
+    # init_code_layout(parser, parser.token, terminators)
+    return _statements(parser, terminators, expected_types)
+
+
+def _statements(parser, terminators, expected_types):
+    stmts = []
     while True:
         if parser.token_type == TT_DEDENT:
             advance(parser)
@@ -732,7 +753,8 @@ def prefix(parser, ttype, ntype, nud, pbp=0, layout=None):
     parser_set_nud(parser, ttype, ntype, nud, pbp)
 
 
-def stmt(parser, ttype, ntype, std):
+def stmt(parser, ttype, ntype, std, layout=None):
+    parser_set_layout(parser, ttype, layout)
     parser_set_std(parser, ttype, ntype, std)
 
 

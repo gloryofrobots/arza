@@ -1,20 +1,45 @@
-//infixl (+, +, 40)
+infixl (+, +, 40)
 //infixl (-, -, 40)
 //infixl (*, *, 50)
 
-(interface
-    Coll(put, del)
-    Dict(keys, values) is Collection
-    Sliceable(slice.2, drop.1, take.1)
-)
+//(interface
+//    Coll(put, del)
+//                Dict(keys, values) is Collection    Sliceable(slice.2, drop.1, take.1)
+//)
+//////
+//interface
+//    Coll(put, del)
+//    Dict(keys, values) is Collection
+//    Sliceable(slice.2, drop.1, take.1)
+
+fun f(x,y) =
+//    2 + 2
+//        + 3
+    3
+    (4)
+    if fun(x)=1 then 2
+    else 3
+//    (if True then
+//                          2
+//        elif False then
+//            3
+//            5; 4 + 5
+//                            else 5
+//    )
 //
-interface
-    Coll(put, del)
-    Dict(keys, values) is Collection
-    Sliceable(slice.2, drop.1, take.1)
+//    if True then
+//        2
+//    elif False then
+//        3
+//        5;
+//        4 + 5
+//    else
+//        5
+
 
 
 
 //fun fact(n)
 //    | 0 = 1
 //    | n = n * fact (n - 1)
+
