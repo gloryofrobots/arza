@@ -150,7 +150,7 @@ class ExpressionParser(BaseParser):
         symbol(self, TT_ASSIGN)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
-        prefix(self, TT_LPAREN, None, prefix_lparen)
+        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         prefix(self, TT_LSQUARE, None, prefix_lsquare)
         prefix(self, TT_LCURLY, None, prefix_lcurly)
         prefix(self, TT_SHARP, None, prefix_sharp)
@@ -197,7 +197,7 @@ class TypeParser(BaseParser):
         symbol(self, TT_RPAREN)
         infix(self, TT_LPAREN, None, 100, infix_lparen_type)
         prefix(self, TT_NAME, NT_NAME, prefix_typename)
-        prefix(self, TT_LPAREN, None, prefix_lparen)
+        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
 
 
 class PatternParser(BaseParser):
@@ -209,9 +209,9 @@ class PatternParser(BaseParser):
             self.map_key_parser
         ])
 
-        prefix(self, TT_LPAREN, None, prefix_lparen_tuple)
-        prefix(self, TT_LSQUARE, None, prefix_lsquare)
-        prefix(self, TT_LCURLY, None, prefix_lcurly_pattern)
+        prefix(self, TT_LPAREN, None, prefix_lparen_tuple, layout=layout_lparen)
+        prefix(self, TT_LSQUARE, None, prefix_lsquare, layout=layout_lsquare)
+        prefix(self, TT_LCURLY, None, prefix_lcurly_pattern, layout=layout_lcurly)
         prefix(self, TT_SHARP, None, prefix_sharp)
         prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
 
@@ -236,7 +236,7 @@ class LetParser(PatternParser):
         PatternParser.__init__(self)
         self.expression_parser = expression_parser
         symbol(self, TT_IN)
-        prefix(self, TT_LPAREN, None, prefix_lparen)
+        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         prefix(self, TT_TRY, None, prefix_try)
         prefix(self, TT_FUN, None, prefix_let_fun)
         infix(self, TT_ASSIGN, None, 10, led_let_assign)
@@ -280,7 +280,7 @@ class UseParser(BaseParser):
 
         self.def_parser = DefParser()
         self.name_parser = name_parser_init(BaseParser())
-        prefix(self, TT_LPAREN, None, prefix_lparen)
+        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         prefix(self, TT_DEF, None, prefix_use_def)
 
         self.add_subparsers([
@@ -305,7 +305,7 @@ class GenericParser(BaseParser):
 
         prefix(self, TT_NAME, NT_NAME, prefix_generic_name)
         prefix(self, TT_OPERATOR, NT_NAME, prefix_generic_operator)
-        prefix(self, TT_LPAREN, None, prefix_lparen)
+        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         symbol(self, TT_RPAREN)
 
         self.add_subparsers([
@@ -324,7 +324,7 @@ class InterfaceParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
         prefix(self, TT_NAME, None, prefix_interface_name)
-        prefix(self, TT_LPAREN, None, prefix_lparen)
+        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         symbol(self, TT_RPAREN)
         self.interface_function_parser = InterfaceFunctionParser()
         self.name_parser = name_parser_init(BaseParser())
@@ -428,7 +428,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_INTERFACE, None, stmt_interface, layout=layout_node)
         stmt(self, TT_DERIVE, None, stmt_derive)
 
-        prefix(self, TT_LPAREN, None, prefix_lparen_module)
+        prefix(self, TT_LPAREN, None, prefix_lparen_module, layout=layout_lparen)
         symbol(self, TT_RPAREN)
 
 
@@ -441,7 +441,7 @@ def guard_parser_init(parser):
     symbol(parser, TT_RSQUARE)
     symbol(parser, TT_ASSIGN)
 
-    prefix(parser, TT_LPAREN, None, prefix_lparen)
+    prefix(parser, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
     prefix(parser, TT_LSQUARE, None, prefix_lsquare)
     prefix(parser, TT_LCURLY, None, prefix_lcurly)
     prefix(parser, TT_SHARP, None, prefix_sharp)
@@ -492,7 +492,7 @@ def name_tuple_parser_init(parser):
     # FIXME THIS IS FOR PREFIX INFIXL
     literal(parser, TT_INT, NT_INT)
 
-    prefix(parser, TT_LPAREN, None, prefix_lparen_tuple)
+    prefix(parser, TT_LPAREN, None, prefix_lparen_tuple, layout=layout_lparen)
 
     infix(parser, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
     return parser
@@ -519,7 +519,7 @@ def import_names_parser_init(parser):
     literal(parser, TT_NAME, NT_NAME)
     infix(parser, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
     infix(parser, TT_AS, NT_AS, 15, infix_name_pair)
-    prefix(parser, TT_LPAREN, None, prefix_lparen_tuple)
+    prefix(parser, TT_LPAREN, None, prefix_lparen_tuple, layout=layout_lparen)
     return parser
 
 

@@ -47,6 +47,9 @@ class Layout(root.W_Root):
     def has_terminator(self, token_type):
         return token_type in self.terminators
 
+    def has_level_tokens(self):
+        return len(self.level_tokens) > 0
+
     @property
     def push_end_of_expression_on_new_line(self):
         return self.type == CODE or self.type == MODULE
@@ -269,6 +272,10 @@ class IndentationTokenStream(tokenstream.TokenStream):
                     if layout.push_end_on_dedent is True:
                         self.add_logical_token(tokens.create_dedent_token(token))
                 elif layout.level == level:
+                    if layout.has_level_tokens():
+                        if not layout.has_level(ttype):
+                            return indentation_error(u"Unexpected token at layout level", token)
+
                     # if layout.is_node():
                     #     if not layout.has_level(ttype):
                     #         self.add_logical_token(tokens.create_dedent_token(token))

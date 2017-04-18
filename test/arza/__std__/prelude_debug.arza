@@ -15,10 +15,22 @@ infixl (+, +, 40)
 fun f(x,y) =
 //    2 + 2
 //        + 3
-    3
-    (4)
-    if fun(x)=1 then 2
-    else 3
+//    3
+//    (4)
+//    (fun(x)=
+//        1 2)
+
+//    (if (fun(x)=1) then 2
+//    else
+//            3)
+    (match 42
+            | 42 = False
+        | 43 = True 24)
+    24
+//    match 42
+//        | B4 @ 2 = (#result1, B4)
+//        | B4 @ 42 = (#result2, B4),
+
 //    (if True then
 //                          2
 //        elif False then

@@ -208,11 +208,14 @@ def _parse_comma_separated(parser, terminator, expected=None,
     return list_node(items)
 
 
-def _parse_comma_separated_to_one_of(parser, terminators, initial=None, advance_terminator=True):
+def _parse_comma_separated_to_one_of(parser, terminators, initial=None, advance_terminator=True, is_free=False):
     if not initial:
         items = []
     else:
         items = initial
+
+    if is_free:
+        init_free_layout(parser, parser.token, terminators)
 
     if parser.token_type not in terminators:
         while True:
@@ -366,7 +369,6 @@ def prefix_not(parser, op, token):
 # single expression 2 * (2+3)
 # list of expressions ( print(data) write(file, data) )
 def prefix_lparen(parser, op, token):
-    init_free_layout(parser, token, LAYOUT_LPAREN)
     # unit
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
@@ -384,12 +386,6 @@ def prefix_lparen(parser, op, token):
         advance_expected(parser, TT_COMMA)
         items = _parse_comma_separated(parser, TT_RPAREN, initial=items)
         return node_1(NT_TUPLE, token, items)
-
-    # group expression
-    rest = statements(parser, TERM_LPAREN)
-    advance_expected(parser, TT_RPAREN)
-    stmts = plist.cons(e, rest)
-    return stmts
 
 
 def prefix_lparen_tuple(parser, op, token):
@@ -437,7 +433,6 @@ def prefix_lparen_expression(parser, op, token):
 
 
 def prefix_lparen_module(parser, op, token):
-    init_free_layout(parser, token, LAYOUT_LPAREN)
     e = statement(parser)
     advance_expected(parser, TT_RPAREN)
     return e
@@ -606,6 +601,7 @@ def _parse_pattern(parser):
 
 
 def _parse_match(parser, token, exp):
+    init_node_layout(parser, parser.token, level_tokens=[TT_CASE])
     check_token_type(parser, TT_CASE)
     pattern_parser = parser.pattern_parser
     branches = []
@@ -616,7 +612,7 @@ def _parse_match(parser, token, exp):
         pattern = _parse_pattern(parser)
 
         advance_expected(parser, TT_ASSIGN)
-        body = list_expression(parser, 0, TERM_CASE)
+        body = statements(parser, TERM_CASE)
 
         branches.append(list_node([pattern, body]))
 
@@ -646,7 +642,7 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
             pattern = nodes.create_unit_node(curtoken)
         else:
             els = _parse_comma_separated_to_one_of(parser.fun_pattern_parser, arg_terminator,
-                                                   advance_terminator=False)
+                                                   advance_terminator=False, is_free=True)
             pattern = nodes.create_tuple_node_from_list(curtoken, els)
         advance_expected(parser, TT_RPAREN)
     else:
