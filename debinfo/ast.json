@@ -27,48 +27,75 @@
           },
           [
             {
-              "_ntype": "NT_MATCH",
-              "_value": "match",
+              "_ntype": "NT_CALL",
+              "_value": "(",
               "children": [
                 {
-                  "_ntype": "NT_INT",
-                  "_value": "42"
+                  "_ntype": "NT_NAME",
+                  "_value": "f"
                 },
                 [
-                  [
-                    {
-                      "_ntype": "NT_INT",
-                      "_value": "42"
-                    },
-                    [
+                  {
+                    "_ntype": "NT_FUN",
+                    "_value": "fun",
+                    "children": [
                       {
-                        "_ntype": "NT_FALSE",
-                        "_value": "False"
-                      }
-                    ]
-                  ],
-                  [
-                    {
-                      "_ntype": "NT_INT",
-                      "_value": "43"
-                    },
-                    [
-                      {
-                        "_ntype": "NT_TRUE",
-                        "_value": "True"
+                        "empty": true
                       },
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "24"
-                      }
+                      [
+                        [
+                          {
+                            "_ntype": "NT_TUPLE",
+                            "_value": "(",
+                            "children": [
+                              [
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "x"
+                                },
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "y"
+                                }
+                              ]
+                            ]
+                          },
+                          [
+                            {
+                              "_ntype": "NT_CALL",
+                              "_value": "+",
+                              "children": [
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "+"
+                                },
+                                [
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "x"
+                                  },
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "y"
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      ]
                     ]
-                  ]
+                  },
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "1"
+                  },
+                  {
+                    "_ntype": "NT_INT",
+                    "_value": "2"
+                  }
                 ]
               ]
-            },
-            {
-              "_ntype": "NT_INT",
-              "_value": "24"
             }
           ]
         ]

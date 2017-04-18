@@ -13,6 +13,7 @@ infixl (+, +, 40)
 //    Sliceable(slice.2, drop.1, take.1)
 
 fun f(x,y) =
+    f((fun (x, y) = x + y), 1, 2)
 //    2 + 2
 //        + 3
 //    3
@@ -23,10 +24,10 @@ fun f(x,y) =
 //    (if (fun(x)=1) then 2
 //    else
 //            3)
-    (match 42
-            | 42 = False
-        | 43 = True 24)
-    24
+//    (match 42
+//            | 42 = False
+//        | 43 = True 24)
+//    24
 //    match 42
 //        | B4 @ 2 = (#result1, B4)
 //        | B4 @ 42 = (#result2, B4),

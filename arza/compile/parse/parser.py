@@ -151,8 +151,8 @@ class ExpressionParser(BaseParser):
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
-        prefix(self, TT_LSQUARE, None, prefix_lsquare)
-        prefix(self, TT_LCURLY, None, prefix_lcurly)
+        prefix(self, TT_LSQUARE, None, prefix_lsquare, layout=layout_lsquare)
+        prefix(self, TT_LCURLY, None, prefix_lcurly, layout=layout_lcurly)
         prefix(self, TT_SHARP, None, prefix_sharp)
         # TODO DELETE IT
         prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
@@ -442,8 +442,8 @@ def guard_parser_init(parser):
     symbol(parser, TT_ASSIGN)
 
     prefix(parser, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
-    prefix(parser, TT_LSQUARE, None, prefix_lsquare)
-    prefix(parser, TT_LCURLY, None, prefix_lcurly)
+    prefix(parser, TT_LSQUARE, None, prefix_lsquare, layout=layout_lsquare)
+    prefix(parser, TT_LCURLY, None, prefix_lcurly, layout=layout_lcurly)
     prefix(parser, TT_SHARP, None, prefix_sharp)
     prefix(parser, TT_BACKTICK_OPERATOR, None, prefix_backtick_operator)
     prefix(parser, TT_NOT, NT_NOT, prefix_nud, 35)
@@ -503,7 +503,7 @@ def name_list_parser_init(parser):
     infix(parser, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
     symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
     literal(parser, TT_NAME, NT_NAME)
-    prefix(parser, TT_LSQUARE, None, prefix_lsquare_name_list)
+    prefix(parser, TT_LSQUARE, None, prefix_lsquare_name_list, layout=layout_lsquare)
     return parser
 
 

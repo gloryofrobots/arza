@@ -240,7 +240,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
         log("----NEW LINE", level, layout, tokens.token_to_s(token))
 
         #TODO remove not layout.is_module() after implementing real pragmas ![]
-        if tokens.is_infix_token_type(cur_type) and not layout.is_module():
+        if tokens.is_infix_token_type(cur_type) and not (layout.is_free() or layout.is_module()):
             if level <= layout.level:
                 return indentation_error(u"Indentation level of token next to"
                                          u" operator must be bigger then of parent layout",

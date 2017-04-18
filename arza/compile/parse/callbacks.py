@@ -675,8 +675,6 @@ def _parse_single_function(parser, signature):
     """
     check_token_type(parser, TT_ASSIGN)
     advance(parser)
-    # init_code_layout(parser, parser.token, term_body)
-    # body = expression(parser, 0)
     body = statements(parser, [])
     return nodes.create_function_variants(signature, body)
 
@@ -685,7 +683,7 @@ def _parse_single_function(parser, signature):
 
 
 def _parse_case_function(parser, term_pattern,
-                         term_guard, term_body):
+                         term_guard):
     """
     fun f
         | x, y, z = (exp)
