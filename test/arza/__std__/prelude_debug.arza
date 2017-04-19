@@ -1,6 +1,7 @@
-infixl (+, +, 40)
+//infixl (+, +, 40)
 //infixl (-, -, 40)
 //infixl (*, *, 50)
+
 
 //(interface
 //    Coll(put, del)
@@ -12,8 +13,73 @@ infixl (+, +, 40)
 //    Dict(keys, values) is Collection
 //    Sliceable(slice.2, drop.1, take.1)
 
-fun f(x,y) =
-    f((fun (x, y) = x + y), 1, 2)
+
+//(fun f | 12 = 42
+//)
+//
+//
+//(fun fact(n)
+//    | 0 = 1
+//    | n =
+//        n * fact (n - 1)
+//        (match 42
+//                | 42 = False
+//            | 43 = True 24)
+//)
+
+fun fact(n)
+    | n =
+        (match 42
+          | 42 = False
+                    | 42 =
+              False
+               True
+          | 42 =
+                False
+        )
+
+        match 42
+            | 42 = False
+            | 42 =
+                False
+                True
+            | 42 =
+                False
+    | n =
+        match 42
+            | 42 = False
+            | 42 =
+                False
+                True
+            | 42 =
+                False
+
+        match 42
+            | 42 = False
+            | 42 =
+                False
+                True
+            | 42 =
+                False
+        if x then 2
+        elif x then
+                4
+        else
+            8
+
+        (if x then 2
+        elif x then
+                4
+        else
+            8)
+
+
+
+
+//
+
+//fun f(x,y) =
+//    f((fun (x, y) = x + y), 1, 2)
 //    2 + 2
 //        + 3
 //    3
@@ -52,7 +118,4 @@ fun f(x,y) =
 
 
 
-//fun fact(n)
-//    | 0 = 1
-//    | n = n * fact (n - 1)
 

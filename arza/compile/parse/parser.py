@@ -572,7 +572,7 @@ def parse(process, env, src):
     parser.open(ParseState(process, env, ts))
 
     parser.next_token()
-    stmts, scope = parse_module(parser, TERM_FILE)
+    stmts, scope = parse_module(parser)
     assert plist.is_empty(parser.state.scopes)
     check_token_type(parser, TT_ENDSTREAM)
 

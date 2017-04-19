@@ -387,6 +387,11 @@ def prefix_lparen(parser, op, token):
         items = _parse_comma_separated(parser, TT_RPAREN, initial=items)
         return node_1(NT_TUPLE, token, items)
 
+    # # group expression
+    # rest = statements(parser, TERM_LPAREN)
+    # advance_expected(parser, TT_RPAREN)
+    # stmts = plist.cons(e, rest)
+    # return stmts
 
 def prefix_lparen_tuple(parser, op, token):
     if parser.token_type == TT_RPAREN:
@@ -601,7 +606,7 @@ def _parse_pattern(parser):
 
 
 def _parse_match(parser, token, exp):
-    init_node_layout(parser, parser.token, level_tokens=[TT_CASE])
+    status = open_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
     check_token_type(parser, TT_CASE)
     pattern_parser = parser.pattern_parser
     branches = []
@@ -619,6 +624,7 @@ def _parse_match(parser, token, exp):
     if len(branches) == 0:
         parse_error(parser, u"Empty match expression", token)
 
+    close_layout(parser, status)
     return node_2(NT_MATCH, token, exp, list_node(branches))
 
 
@@ -692,6 +698,7 @@ def _parse_case_function(parser, term_pattern,
     # bind to different name for not confusing reading code
     # it serves as basenode for node factory functions
 
+    status = open_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
     check_token_type(parser, TT_CASE)
 
     funcs = []
@@ -711,11 +718,12 @@ def _parse_case_function(parser, term_pattern,
             return parse_error(parser, u"Inconsistent clause arity", args)
 
         advance_expected(parser, TT_ASSIGN)
-        body = expression(parser, 0)
+        body = statements(parser, [])
         funcs.append(list_node([
             args, list_node([body])
         ]))
 
+    close_layout(parser, status)
     return list_node(funcs)
 
 
@@ -730,6 +738,7 @@ def _parse_recursive_function(parser, name, signature, term_pattern, term_guard)
     """
     # bind to different name for not confusing reading code
     # it serves as basenode for node factory functions
+    status = open_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
     node = signature
 
     if nodes.node_type(signature) == NT_WHEN:
@@ -755,10 +764,11 @@ def _parse_recursive_function(parser, name, signature, term_pattern, term_guard)
             return parse_error(parser, u"Inconsistent clause arity with function signature", args)
 
         advance_expected(parser, TT_ASSIGN)
-        body = expression(parser, 0)
+        body = statements(parser, TERM_CASE)
         funcs.append(list_node([
             args, list_node([body])
         ]))
+
 
     func = nodes.create_fun_node(nodes.node_token(node), name, list_node(funcs))
 
@@ -780,6 +790,8 @@ def _parse_recursive_function(parser, name, signature, term_pattern, term_guard)
 
     body = list_node([nodes.create_call_node(nodes.node_token(node), func, list_node(call_list))])
     main_func = nodes.create_function_variants(signature, body)
+
+    close_layout(parser, status)
     return main_func
 
 

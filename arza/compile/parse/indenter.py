@@ -166,9 +166,11 @@ class IndentationTokenStream(tokenstream.TokenStream):
 
     def add_node_layout(self, node, level_tokens, terminators):
         if self.current_layout().is_free():
-            return
+            return False
 
+        # self._skip_indent()
         self._add_layout(node, NODE, level_tokens=level_tokens, terminators=terminators)
+        return True
 
     def add_free_code_layout(self, node, terminators):
         # TODO layouts in operators
@@ -212,6 +214,21 @@ class IndentationTokenStream(tokenstream.TokenStream):
         self.index += 1
         return token
 
+    # def _skip_indent(self):
+    #     if not self.has_logic_tokens():
+    #         return None
+    #
+    #     token = self.next_logical()
+    #     while tokens.token_type(token) == tt.TT_INDENT:
+    #         # log("++++ SKIP")
+    #         token = self.next_logical()
+    #
+    #         if not self.has_logic_tokens():
+    #             break
+    #
+    #     self.index -= 1
+    #     return token
+
     def _skip_newlines(self):
         token = self.next_physical()
         while tokens.token_type(token) == tt.TT_NEWLINE:
@@ -233,6 +250,8 @@ class IndentationTokenStream(tokenstream.TokenStream):
     def _on_newline(self):
         token = self._skip_newlines()
         ttype = tokens.token_type(token)
+        if ttype == tt.TT_ENDSTREAM:
+            print 1
         cur_type = self.current_type()
 
         layout = self.current_layout()
@@ -310,6 +329,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
         self.layouts = layouts
 
     def next_token(self):
+        log(self.advanced_values())
         self.previous = self.token
         if self.has_logic_tokens():
             return self.next_logical()
@@ -328,12 +348,11 @@ class IndentationTokenStream(tokenstream.TokenStream):
             return self.attach_token(token)
         elif ttype == tt.TT_ENDSTREAM:
             if api.length_i(self.layouts) != 1:
-            # if not self.current_layout().is_module():
                 indentation_error(u"Not all layouts closed", token)
 
         layout = self.current_layout()
 
-        if layout.has_terminator(ttype):
+        if layout.is_free() and layout.has_terminator(ttype):
             self.pop_layout()
 
         return self.attach_token(token)
