@@ -1,84 +1,105 @@
-//infixl (+, +, 40)
-//infixl (-, -, 40)
-//infixl (*, *, 50)
+infixl (+, +, 40)
+infixl (-, -, 40)
+infixl (*, *, 50)
+infixl (/, /, 50)
 
+# TODO EXPORT AS
+//export (f_ab, f_ab_2, CONST)
+//export f_ab
 
-//(interface
-//    Coll(put, del)
-//                Dict(keys, values) is Collection    Sliceable(slice.2, drop.1, take.1)
-//)
-//////
-//interface
-//    Coll(put, del)
-//    Dict(keys, values) is Collection
-//    Sliceable(slice.2, drop.1, take.1)
-
-
-//(fun f | 12 = 42
-//)
+//type GT
 //
+//type
+//    LT
+//    Some (val)
+//    Vec3(x, y, z)
 //
-//(fun fact(n)
-//    | 0 = 1
-//    | n =
-//        n * fact (n - 1)
-//        (match 42
-//                | 42 = False
-//            | 43 = True 24)
+//(type
+//    LT
+//        Some (val)
+//
+//            Vec3(x, y, z)
 //)
-
-fun fact(n)
-    | n =
-        (match 42
-          | 42 = False
-                    | 42 =
-              False
-               True
-          | 42 =
-                False
-        )
-
-        match 42
-            | 42 = False
-            | 42 =
-                False
-                True
-            | 42 =
-                False
-    | n =
-        match 42
-            | 42 = False
-            | 42 =
-                False
-                True
-            | 42 =
-                False
-
-        match 42
-            | 42 = False
-            | 42 =
-                False
-                True
-            | 42 =
-                False
-        if x then 2
-        elif x then
-                4
-        else
-            8
-
-        (if x then 2
-        elif x then
-                4
-        else
-            8)
-
-
-
-
-//
 
 //fun f(x,y) =
+
+//    try
+//        1/0
+//        x - y
+//    catch e2 =
+//        throw e2
+//    try
+//        throw (1,2,"ERROR")
+//    catch
+//        | err @ (1, y, 3) = #first
+//        | (1,2, "ERROR@") = #second
+//        | err @ (1, 2, x) = #third
+//    finally
+//        (#fourth, err, x)
+//
+//    try
+//        try
+//            1/0
+//            x - y
+//        catch e2 =
+//            throw e2
+//    catch e3 =
+//        try
+//            error(#LifeSucks)
+//        catch e4 =
+//            e4
+//    (try
+//        (try
+//                    1/0
+//                    x - y
+//                    catch e2 =
+//                        throw e2
+//        )
+//    catch e3 =
+//                (try
+//                 error(#LifeSucks)
+//                    catch e4 =
+//            e4
+//        )
+//    )
+//
+//    try
+//        throw (1,2,"ERROR")
+//    catch
+//        | err @ (1, y, 3) = #first
+//        | (1,2, "ERROR@") = #second
+//        | err @ (1, 2, x) = #third
+//    finally
+//        (#fourth, err, x)
+//
+//    affirm:is_equal((try
+//                        throw (1,2,"ERROR")
+//                     catch
+//                        | err @ (1, y, 3) = #first
+//                        | (1,2, "ERROR@") = #second
+//                        | err @ (1, 2, x) = #third
+//                     finally
+//                        (#fourth, err, x)
+//                     ),
+//                     (#fourth, (1, 2, "ERROR"), "ERROR")
+//    )
+
+
+//    let
+//        x = 1
+//        f = (x) -> 1
+//    in
+//        x + y
+//        x + f(x, x + y)
+//
+//    (let
+//        x = 1
+//                    f = (x) -> 1
+//                in
+//            x + y
+//                        x + f(x, x + y)
+//    )
+//
 //    f((fun (x, y) = x + y), 1, 2)
 //    2 + 2
 //        + 3
@@ -86,7 +107,7 @@ fun fact(n)
 //    (4)
 //    (fun(x)=
 //        1 2)
-
+//
 //    (if (fun(x)=1) then 2
 //    else
 //            3)
@@ -96,8 +117,8 @@ fun fact(n)
 //    24
 //    match 42
 //        | B4 @ 2 = (#result1, B4)
-//        | B4 @ 42 = (#result2, B4),
-
+//        | B4 @ 42 = ((#result2, B4), 2)
+//
 //    (if True then
 //                          2
 //        elif False then
@@ -118,4 +139,131 @@ fun fact(n)
 
 
 
+//let
+//    fst = c -> at(0, c)
+//    snd = c -> at(1, c)
+//    thrd = c -> at(2, c)
+//    frth = c -> at(3, c)
+//
+//(let
+//            fst = c -> at(0, c)
+//    snd = c -> at(1, c)
+//)
+//
+//let x = 2
+
+//generic
+//    +(x, y)
+//    negate(x)
+//    put(key, value, self)
+//
+//(generic
+//            +(x, y)
+//
+//        negate(x)
+//    put(key, value, self)
+//)
+//
+//(interface
+//    Coll(put, del)
+//                Dict(keys, values) is Collection    Sliceable(slice.2, drop.1, take.1)
+//)
+//////
+//interface
+//    Coll(put, del)
+//    Dict(keys, values) is Collection
+//    Sliceable(slice.2, drop.1, take.1)
+//
+//
+//(fun f | 12 = 42
+//)
+//
+//
+//(fun fact(n)
+//    | 0 = 1
+//    | n =
+//        n * fact (n - 1)
+//        (match 42
+//                | 42 = False
+//            | 43 = True 24)
+//)
+//
+//fun fact(n)
+//    | n =
+//        (match 42
+//          | 42 = False
+//                    | 42 =
+//              False
+//               True
+//          | 42 =
+//                False
+//        )
+//
+//        match 42
+//            | 42 = False
+//            | 42 =
+//                False
+//                True
+//            | 42 =
+//                False
+//    | n =
+//        match 42
+//            | 42 = False
+//            | 42 =
+//                False
+//                True
+//            | 42 =
+//                False
+//
+//        match 42
+//            | 42 = False
+//            | 42 =
+//                False
+//                True
+//            | 42 =
+//                False
+//        if x then 2
+//        elif x then
+//                4
+//        else
+//            8
+//
+//        (if x then 2
+//        elif x then
+//                4
+//        else
+//            8)
+//
+//
+//
+//
+////
+//
+
+
+
+//import affirm
+//
+//import tests:lib_az:abc:module_ab as ab
+//
+////
+//////unqualified names f_ab,f_ab_2,const
+//from tests:lib_az:abc:module_ab  import (f_ab, f_ab_2, CONST as const)
+////
+//////ab2:f_ab
+//import tests:lib_az:abc:module_ab as ab2 (f_ab, f_ab_2)
+////
+//////module_ab:f_ab, module_ab:f_ab_2
+//import tests:lib_az:abc:module_ab (f_ab, f_ab_2)
+////
+//////all exported names imported
+//from tests:lib_az:efg:module_e import _
+//
+////ab_3_f_ab
+//from tests:lib_az:abc:module_ab import (f_ab as ab_3_f_ab)
+////importing same names dont cause errors because names are equal
+//from tests:lib_az:abc:module_ab hide (CONST)
+////ab5:f_ab_2 only
+//import tests:lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
+//
 

@@ -305,7 +305,6 @@ class GenericParser(BaseParser):
 
         prefix(self, TT_NAME, NT_NAME, prefix_generic_name)
         prefix(self, TT_OPERATOR, NT_NAME, prefix_generic_operator)
-        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         symbol(self, TT_RPAREN)
 
         self.add_subparsers([

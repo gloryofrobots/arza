@@ -142,10 +142,13 @@ class IndentationTokenStream(tokenstream.TokenStream):
     def _add_layout(self, token, type, level_tokens=None, terminators=None):
         cur = self.current_layout()
         level = tokens.token_level(token)
+        # if level == cur.level:
+        #     return False
         layout = Layout(cur.level, level, type, level_tokens, terminators)
 
         log("---- ADD LAYOUT", layout)
         self.layouts = plist.cons(layout, self.layouts)
+        return True
 
     def add_code_layout(self, node, terminators):
         # # support for f x y | x y -> 1 | x y -> 3
@@ -168,14 +171,12 @@ class IndentationTokenStream(tokenstream.TokenStream):
         if self.current_layout().is_free():
             return False
 
-        # self._skip_indent()
-        self._add_layout(node, NODE, level_tokens=level_tokens, terminators=terminators)
-        return True
+        return self._add_layout(node, NODE, level_tokens=level_tokens, terminators=terminators)
 
     def add_free_code_layout(self, node, terminators):
         # TODO layouts in operators
         self._skip_newlines()
-        self._add_layout(node, FREE, terminators=terminators)
+        return self._add_layout(node, FREE, terminators=terminators)
 
     def has_layouts(self):
         return not plist.is_empty(self.layouts)

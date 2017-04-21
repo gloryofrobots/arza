@@ -51,15 +51,15 @@ def led_let_assign(parser, op, token, left):
 
 
 def layout_lparen(parser, op, node):
-    init_free_layout(parser, node, [TT_RPAREN])
+    open_free_layout(parser, node, [TT_RPAREN])
 
 
 def layout_lcurly(parser, op, node):
-    init_free_layout(parser, node, [TT_RCURLY])
+    open_free_layout(parser, node, [TT_RCURLY])
 
 
 def layout_lsquare(parser, op, node):
-    init_free_layout(parser, node, [TT_RSQUARE])
+    open_free_layout(parser, node, [TT_RSQUARE])
 
 
 def prefix_indent(parser, op, node):
@@ -179,7 +179,7 @@ def _parse_comma_separated(parser, terminator, expected=None,
     token = parser.token
 
     if is_free:
-        init_free_layout(parser, token, [terminator])
+        open_free_layout(parser, token, [terminator])
 
     if advance_first:
         advance_expected(parser, advance_first)
@@ -215,7 +215,7 @@ def _parse_comma_separated_to_one_of(parser, terminators, initial=None, advance_
         items = initial
 
     if is_free:
-        init_free_layout(parser, parser.token, terminators)
+        open_free_layout(parser, parser.token, terminators)
 
     if parser.token_type not in terminators:
         while True:
@@ -242,7 +242,7 @@ def infix_lparen(parser, op, token, left):
     holes = []
     index = 0
 
-    init_free_layout(parser, token, LAYOUT_LPAREN)
+    open_free_layout(parser, token, LAYOUT_LPAREN)
     if parser.token_type != TT_RPAREN:
         while True:
             if parser.token_type == TT_WILDCARD:
@@ -301,7 +301,7 @@ def infix_lparen(parser, op, token, left):
 
 
 def _infix_lparen(parser):
-    args = _parse_comma_separated(parser, TT_RPAREN)
+    args = _parse_comma_separated(parser, TT_RPAREN, is_free=True)
     return args
 
 
@@ -546,14 +546,14 @@ def prefix_if(parser, op, token):
 
 
 def prefix_let(parser, op, token):
-    letblock = statements(parser.let_parser, TERM_LET, [NT_TRY, NT_FUN, NT_ASSIGN])
+    letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
     advance_expected(parser, TT_IN)
-    inexp = ensure_list_node(expression(parser, 0))
+    inexp = statements(parser, [])
     return node_2(NT_LET, token, letblock, inexp)
 
 
 def prefix_module_let(parser, op, token):
-    exp = expression(parser.expression_parser.let_parser, 0)
+    exp = statements(parser.expression_parser.let_parser, [])
     if nodes.is_list_node(exp):
         check_list_node_type(parser, exp, NT_ASSIGN)
     else:
@@ -566,29 +566,33 @@ def list_expression(parser, _rbp, terminators=None):
 
 
 def prefix_try(parser, op, token):
-    trybody = expression(parser, 0, TERM_TRY)
+    trybody = statements(parser, TERM_TRY)
     catches = []
 
-    check_token_type(parser, TT_CATCH)
-    advance(parser)
+    advance_expected(parser, TT_CATCH)
+
+    # SPECIAL CASE BECAUSE CATCH MAY HAS OR MAY NOT HAS PATTERNS
+    # ALL THIS INDENT BUSINESS IS STINKY AS HELL
+    skip_indent(parser)
 
     if parser.token_type == TT_CASE:
+        status = open_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
         while parser.token_type == TT_CASE:
             advance_expected(parser, TT_CASE)
-            # pattern = expressions(parser.pattern_parser, 0)
             pattern = _parse_pattern(parser)
             advance_expected(parser, TT_ASSIGN)
-            body = list_expression(parser, 0, TERM_CATCH_CASE)
+            body = statements(parser, TERM_CATCH_CASE)
             catches.append(list_node([pattern, body]))
+        close_layout(parser, status)
     else:
         pattern = _parse_pattern(parser)
         advance_expected(parser, TT_ASSIGN)
-        body = list_expression(parser, 0, TERM_SINGLE_CATCH)
+        body = statements(parser, TERM_SINGLE_CATCH)
         catches.append(list_node([pattern, body]))
 
     if parser.token_type == TT_FINALLY:
         advance_expected(parser, TT_FINALLY)
-        finallybody = list_expression(parser, 0)
+        finallybody = statements(parser, [])
     else:
         finallybody = empty_node()
 
@@ -860,6 +864,7 @@ def _load_path_s(node):
 
 
 def _load_module(parser, exp):
+    return
     from arza.runtime import load
 
     if nodes.node_type(exp) == NT_AS:
@@ -945,7 +950,7 @@ def stmt_import(parser, op, token):
 
 def stmt_export(parser, op, token):
     check_token_types(parser, [TT_LPAREN, TT_NAME])
-    names = expect_expression_of(parser.import_names_parser, 0, NT_TUPLE)
+    names = ensure_tuple(expect_expression_of_types(parser.import_names_parser, 0, EXPORT_NODES))
     check_list_node_types(parser, nodes.node_first(names), [NT_NAME])
     return node_1(NT_EXPORT, token, names)
 
@@ -1002,7 +1007,7 @@ def _symbols_to_args(parser, token, symbols):
 
 
 def stmt_type(parser, op, token):
-    nodes = ensure_list_node(expression(parser.type_parser, 0))
+    nodes = statements(parser.type_parser, [])
     return nodes
 
 
@@ -1026,7 +1031,7 @@ def infix_lparen_type(parser, op, token, left):
 # DECLARE
 def _parse_struct_or_name(parser, lterm, rterm, expected=None):
     if parser.token_type == lterm:
-        items = _parse_comma_separated(parser, rterm, advance_first=lterm)
+        items = _parse_comma_separated(parser, rterm, advance_first=lterm, is_free=True)
     else:
         item = expect_expression_of_types(parser, 0, expected)
         items = list_node([item])
@@ -1055,9 +1060,7 @@ def layout_node(parser, op, token):
 
 
 def stmt_interface(parser, op, token):
-    # init_node_layout(parser, parser.token)
     nodes = statements(parser.interface_parser, TERM_BLOCK)
-    # advance_dedent(parser)
     return nodes
 
 
@@ -1194,8 +1197,6 @@ def infix_def_of(parser, op, token, left):
 # GENERIC
 
 def stmt_generic(parser, op, token):
-    init_node_layout(parser, token)
-    init_code_layout(parser, parser.token, TERM_BLOCK)
     generics = statements(parser.generic_parser, TERM_BLOCK)
     return generics
 
@@ -1212,7 +1213,7 @@ def prefix_generic_operator(parser, op, token):
 
 def _parse_generic_signature(parser, op, token, generic_name):
     check_node_type(parser, generic_name, NT_NAME)
-    items = _parse_comma_separated(parser.generic_signature_parser, TT_RPAREN, advance_first=TT_LPAREN)
+    items = _parse_comma_separated(parser.generic_signature_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
     args = node_1(NT_LIST, token, items)
     return node_2(NT_GENERIC, token, generic_name, args)
 
@@ -1301,7 +1302,7 @@ def _parse_use_parallel(parser, token, types, aliases):
 
 def stmt_use(parser, op, token):
     if parser.token_type == TT_LPAREN:
-        types = _parse_comma_separated(parser, TT_RPAREN, advance_first=TT_LPAREN)
+        types = _parse_comma_separated(parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
         advance_expected(parser, TT_AS)
         alias = expression(parser.use_in_alias_parser, 0)
         if nodes.node_type(alias) == NT_INT:

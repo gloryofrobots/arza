@@ -278,7 +278,10 @@ def token_length(token):
 
 
 INFIX_TOKENS = [TT_DOUBLE_COLON, TT_COLON,
-                TT_OPERATOR, TT_DOT, TT_ASSIGN, TT_OR, TT_AND]
+                TT_OPERATOR, TT_DOT, TT_OR, TT_AND,
+                # TT_ASSIGN
+
+]
 
 
 def is_infix_token_type(ttype):

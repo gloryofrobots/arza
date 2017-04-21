@@ -33,6 +33,8 @@ TERM_FROM_IMPORTED = [TT_IMPORT, TT_HIDE]
 TERM_DEF_SIGNATURE = [TT_CASE, TT_ASSIGN, TT_AS]
 
 NAME_NODES = [NT_NAME, NT_IMPORTED_NAME]
+LET_NODES = [NT_TRY, NT_FUN, NT_ASSIGN]
+EXPORT_NODES = [NT_NAME, NT_TUPLE]
 DEF_ARGS_NODES = [NT_NAME, NT_WILDCARD]
 
 LAYOUT_LPAREN = [TT_RPAREN]
@@ -112,7 +114,7 @@ def close_layout(parser, status):
     advance_expected(parser, TT_DEDENT)
 
 
-def init_free_layout(parser, node, terminators):
+def open_free_layout(parser, node, terminators):
     skip_indent(parser)
     parser.ts.add_free_code_layout(node, terminators)
 
