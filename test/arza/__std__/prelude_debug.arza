@@ -3,7 +3,34 @@ infixl (-, -, 40)
 infixl (*, *, 50)
 infixl (/, /, 50)
 
-# TODO EXPORT AS
+def len(self of Int) = len(self.l)
+
+def len(self of Int, x) =
+    len(self.l)
+    x + y
+    1/2
+
+
+(def len(self of Int, x) = len(self.l)
+        x + y
+    1/2
+)
+
+//derive (Eq, Displayed) for (Symbol, Char)
+//
+//derive Concatable for Symbol
+//
+//(derive
+//    (Eq, Displayed)
+//    for (Symbol, Char)
+//)
+//
+//(derive
+//    Concatable
+//    for Symbol)
+
+
+// TODO EXPORT AS
 //export (f_ab, f_ab_2, CONST)
 //export f_ab
 
