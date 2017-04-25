@@ -51,15 +51,15 @@ def led_let_assign(parser, op, token, left):
 
 
 def layout_lparen(parser, op, node):
-    open_free_layout(parser, node, [TT_RPAREN])
+    open_free_layout(parser, node, [TT_RPAREN], delimiter=TT_COMMA)
 
 
 def layout_lcurly(parser, op, node):
-    open_free_layout(parser, node, [TT_RCURLY])
+    open_free_layout(parser, node, [TT_RCURLY], delimiter=TT_COMMA)
 
 
 def layout_lsquare(parser, op, node):
-    open_free_layout(parser, node, [TT_RSQUARE])
+    open_free_layout(parser, node, [TT_RSQUARE], delimiter=TT_COMMA)
 
 
 def prefix_indent(parser, op, node):
@@ -179,7 +179,7 @@ def _parse_comma_separated(parser, terminator, expected=None,
     token = parser.token
 
     if is_free:
-        open_free_layout(parser, token, [terminator])
+        open_free_layout(parser, token, [terminator], delimiter=TT_COMMA)
 
     if advance_first:
         advance_expected(parser, advance_first)
@@ -215,7 +215,7 @@ def _parse_comma_separated_to_one_of(parser, terminators, initial=None, advance_
         items = initial
 
     if is_free:
-        open_free_layout(parser, parser.token, terminators)
+        open_free_layout(parser, parser.token, terminators, delimiter=TT_COMMA)
 
     if parser.token_type not in terminators:
         while True:
@@ -242,7 +242,7 @@ def infix_lparen(parser, op, token, left):
     holes = []
     index = 0
 
-    open_free_layout(parser, token, LAYOUT_LPAREN)
+    open_free_layout(parser, token, LAYOUT_LPAREN, delimiter=TT_COMMA)
     if parser.token_type != TT_RPAREN:
         while True:
             if parser.token_type == TT_WILDCARD:

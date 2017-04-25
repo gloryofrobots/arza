@@ -34,12 +34,13 @@ def log(*args):
 
 
 class Layout(root.W_Root):
-    def __init__(self, parent_level, level, type, level_tokens, terminators):
+    def __init__(self, parent_level, level, type, level_tokens, terminators, delimiter):
         self.parent_level = parent_level
         self.level = level
         self.type = type
         self.level_tokens = level_tokens if level_tokens else []
         self.terminators = terminators if terminators else []
+        self.delimiter = delimiter
 
     def has_level(self, token_type):
         return token_type in self.level_tokens
@@ -115,7 +116,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
         level = self._find_level()
         # self.layouts = plist.empty()
 
-        self.layouts = plist.plist([Layout(-1, level, MODULE, None, None)])
+        self.layouts = plist.plist([Layout(-1, level, MODULE, None, None, None)])
         self.invalidate = False
 
     def advanced_values(self):
@@ -139,12 +140,12 @@ class IndentationTokenStream(tokenstream.TokenStream):
         token = self._skip_newlines()
         return tokens.token_level(token)
 
-    def _add_layout(self, token, type, level_tokens=None, terminators=None):
+    def _add_layout(self, token, type, level_tokens=None, terminators=None, delimiter=None):
         cur = self.current_layout()
         level = tokens.token_level(token)
         # if level == cur.level:
         #     return False
-        layout = Layout(cur.level, level, type, level_tokens, terminators)
+        layout = Layout(cur.level, level, type, level_tokens, terminators, delimiter)
 
         log("---- ADD LAYOUT", layout)
         self.layouts = plist.cons(layout, self.layouts)
@@ -173,10 +174,10 @@ class IndentationTokenStream(tokenstream.TokenStream):
 
         return self._add_layout(node, NODE, level_tokens=level_tokens, terminators=terminators)
 
-    def add_free_code_layout(self, node, terminators):
+    def add_free_code_layout(self, node, terminators, delimiter):
         # TODO layouts in operators
         self._skip_newlines()
-        return self._add_layout(node, FREE, terminators=terminators)
+        return self._add_layout(node, FREE, terminators=terminators, delimiter=delimiter)
 
     def has_layouts(self):
         return not plist.is_empty(self.layouts)

@@ -126,9 +126,9 @@ def close_layout_optional(parser, status):
         advance(parser)
 
 
-def open_free_layout(parser, node, terminators):
+def open_free_layout(parser, node, terminators, delimiter=None):
     skip_indent(parser)
-    parser.ts.add_free_code_layout(node, terminators)
+    parser.ts.add_free_code_layout(node, terminators, delimiter)
 
 
 def skip_indent(parser):
@@ -752,11 +752,15 @@ def module_statements(parser):
 
 
 def statements(parser, endlist, expected_types=None):
-    if parser.ts.current_layout().is_free():
+    layout = parser.ts.current_layout()
+    if layout.is_free():
         terminators = endlist + parser.ts.current_layout().terminators
+        if layout.delimiter is not None:
+            terminators.append(layout.delimiter)
     else:
         terminators = endlist
 
+    # not using layout separators because of some issue with terminating nested blocks with same terminator
     status = open_layout(parser, parser.token, None, None)
     stmts = _statements(parser, terminators, expected_types, status)
     close_layout(parser, status)
