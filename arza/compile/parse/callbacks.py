@@ -864,7 +864,9 @@ def _load_path_s(node):
 
 
 def _load_module(parser, exp):
-    return
+    if api.PARSE_DEBUG:
+        return
+
     from arza.runtime import load
 
     if nodes.node_type(exp) == NT_AS:
@@ -1266,7 +1268,7 @@ def _parse_use_serial_transform(parser, token, _type, alias, methods):
 
 
 def _parse_use_serial(parser, token, types, alias):
-    methods = list_expression(parser.use_parser, 0)
+    methods = statements(parser.use_parser, [])
     result = []
     for _type in types:
         result += _parse_use_serial_transform(parser, token, _type, alias, methods)
@@ -1292,7 +1294,7 @@ def _parse_use_parallel_transform(parser, token, types, aliases, method):
 
 
 def _parse_use_parallel(parser, token, types, aliases):
-    methods = list_expression(parser.use_parser, 0)
+    methods = statements(parser.use_parser, [])
     result = []
     for method in methods:
         result.append(_parse_use_parallel_transform(parser, token, types, aliases, method))
@@ -1313,7 +1315,11 @@ def stmt_use(parser, op, token):
 
     types = []
     aliases = []
+
+    status = open_layout(parser, parser.token, terminators=[TT_IN])
     while parser.token_type != TT_IN:
+        if parser.token_type == TT_DEDENT:
+            break
         type_e = expression(parser.name_parser, 0)
         advance_expected(parser, TT_AS)
         alias = expression(parser.use_in_alias_parser, 0)
@@ -1323,6 +1329,8 @@ def stmt_use(parser, op, token):
         types.append(type_e)
         aliases.append(alias)
 
+    # close_layout(parser, status)
+    close_layout_optional(parser, status)
     advance_expected(parser, TT_IN)
     not_unique = plist.not_unique_item(aliases)
     if not_unique is not None:

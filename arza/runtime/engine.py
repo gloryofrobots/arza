@@ -4,8 +4,11 @@ from arza.runtime.process import Process
 from arza.runtime import process_data, error
 from arza.runtime.load import import_module, evaluate_module_file
 
-# PRELUDE_FILE = u"prelude"
-PRELUDE_FILE = u"prelude_debug"
+if api.PARSE_DEBUG:
+    PRELUDE_FILE = u"prelude_debug"
+else:
+    PRELUDE_FILE = u"prelude"
+
 
 STD_MODULES = [u"std", u"string",
                u"generics", u"seq",

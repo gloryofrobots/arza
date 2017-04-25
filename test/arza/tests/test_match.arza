@@ -2,11 +2,10 @@ import affirm
 import io
 
 fun test_match() =
-(
     affirm:is_equal(
-        match [1,2,3]
+        (match [1,2,3]
             | B1 @ [a, b, B2 @ c] = (B1, B2, a, b, c)
-            | _ = 42,
+            | _ = 42),
         ([1, 2, 3], 3, 1, 2, 3)
     )
 
@@ -16,28 +15,28 @@ fun test_match() =
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match [1,2,3]
+        (match [1,2,3]
             | [B3 @ 1, 2, 4] = (#res1, B3)
-            | [B3 @ 1, 2, 3] = (#res2, B3),
+            | [B3 @ 1, 2, 3] = (#res2, B3)),
         (#res2, 1)
     )
 
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match 42
+        (match 42
             | B4 @ 2 = (#result1, B4)
-            | B4 @ 42 = (#result2, B4),
+            | B4 @ 42 = (#result2, B4)),
         (#result2, 42)
     )
 
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match {genre = "XXX", actress="Lily", age=25}
+        (match {genre = "XXX", actress="Lily", age=25}
             | Result @ {genre, LilyName @ "actress"="Lily", age=13} = (Result, genre, 42, LilyName)
             | Result @ {genre, LilyName2 @ "actress"="Lily", age=25} = (Result, genre, "OLOLO", LilyName2, age)
-            | _ =  42,
+            | _ =  42),
         ({age = 25, actress = "Lily", genre = "XXX"}, "XXX", "OLOLO", "Lily", 25)
     )
 
@@ -48,12 +47,12 @@ fun test_match() =
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match (1, (23, (24, 25)))
+        (match (1, (23, (24, 25)))
             | (Z, (G, 1)) = 12 + Z
             | (1, 23) =  12
             | (1, (23, X)) = (#third, X)
             | _ =  #fourth
-        ,
+        ),
         (#third, (24, 25))
     )
 
@@ -62,13 +61,13 @@ fun test_match() =
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match [(1,2), (2,3,4), 5, [6,7,8]]
+        (match [(1,2), (2,3,4), 5, [6,7,8]]
             | [a1,b1,c1] =  (a1, b1, c1)
             | [a1, b1] =  (a1, b1)
             | (x1, y1, 5) =  (x1, y1)
             | [(1, X1), Y1, 5, [6,7, Z1]] =  (X1, Y1, Z1)
             | _ =  123
-        ,
+        ),
         (2, (2, 3, 4), 8)
     )
 
@@ -77,12 +76,12 @@ fun test_match() =
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match {name="Bob", surname=("Alice", "Dou"), age=42}
+        (match {name="Bob", surname=("Alice", "Dou"), age=42}
             | {name="Bob", surname="Alice"} =  (name, surname)
             | {name="Bob2", age=42} =  (name, age)
             | {name="Bob", surname=("Alice", "Dou"), age=42} =  (surname, name, age + 100)
             | _ =  42
-        ,
+        ),
         ((#Alice, #Dou), #Bob, 142)
     )
 
@@ -90,43 +89,43 @@ fun test_match() =
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match {name="Bob", surname=("Alice", "Dou"), age=42}
+        (match {name="Bob", surname=("Alice", "Dou"), age=42}
             | {age=41, names} =  (name, age, 0)
             | {name, age=42} =  (name, age, 1)
             | {age=42} =  (age, 2)
             | _ =  42
-        ,
+        ),
         ("Bob", 42, 1)
     )
 
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match (1, 2, 1)
+        (match (1, 2, 1)
             | (A, x, A)  = (#first, A)
             | (A, x, B)  = (#second, A, B)
             | (3, A) = #third
-        ,
+        ),
         (#first, 1)
     )
 
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match (1, 2, 2)
+        (match (1, 2, 2)
             | (A, x, A)  = (#first, A)
             | (A, x, B)  = (#second, A, B)
-        ,
+        ),
         (#second, 1, 2)
     )
 
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match 42
+        (match 42
             | N1 of String  = ("Is String", N1)
             | N1 of Int  = ("Is Integer", N1)
-        ,
+        ),
         ("Is Integer", 42)
     )
 
@@ -134,10 +133,10 @@ fun test_match() =
     ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
-        match (1,2,3,4,5)
+        (match (1,2,3,4,5)
             | (a, b, c, ...rest) = rest
             | _ = 42
-        ,
+        ),
         (4, 5)
     )
 
@@ -152,7 +151,7 @@ fun test_match() =
     //////////////////////////////////////////////////////
 
     affirm:is_equal(
-            try
+            (try
                 match 42
                     | 23 = #first
                     | 13 = #second
@@ -160,7 +159,7 @@ fun test_match() =
                 exc
             finally
                 [exc, exc, exc]
-            ,
+            ),
             [(#MatchError, 42), (#MatchError, 42), (#MatchError, 42)]
       )
 
@@ -170,7 +169,7 @@ fun test_match() =
     in
     (
         affirm:is_equal(
-            match (1,2,3)
+            (match (1,2,3)
                 | (x, y, z) when z == 2 = #first
                 | (x, y, z) when z == 3 and y == 3 = #second
                 | (x, y, z) when z == 3 and y == 2 and x == 3 = #third
@@ -178,19 +177,19 @@ fun test_match() =
                 | (x, y, z) when z == 3 and y == 2 and x == 1 and not (A `is` True) and greater_then_ten(9) = #fifth
                 | (x, y, z) when z == 3 and y == 2 and x == 1 and A `is` True or greater_then_ten(11) = #sixth
                 | _ = 12
-            ,
+            ),
             #sixth
         )
 
             affirm:is_equal_batch(
-                fun
+                (fun
                     | (x, y, z) when z == 2 = #first
                     | (x, y, z) when z == 3 and y == 3 = #second
                     | (x, y, z) when z == 3 and y == 2 and x == 3 = #third
                     | (x, y, z) when z == 3 and y == 2 and x == 1 and (x + y == 6 or True) = #fourth
                     | (x, y, z) when z == 3 and y == 2 and x == 2 or (A `is` True or (greater_then_ten 11)) = #fifth
                     | (_, _, _) = 12
-                ,
+                ),
                 ([1,2,2], #first),
                 ([1,3,3], #second),
                 ([3,2,3], #third),
@@ -223,9 +222,9 @@ fun test_match() =
 
     affirm:is_equal(
         match 1
-            | x of Int when 2 == 1 = #first
-            | x of Int = #second
-            | x of Int when 3 == 2 = #third
+            | x of int when 2 == 1 = #first
+            | x of int = #second
+            | x of int when 3 == 2 = #third
         ,
         #second
     )
@@ -235,10 +234,8 @@ fun test_destruct () =
 (
     let x::xs = [1,2,3,4,5]
     in
-    (
         affirm:is_equal(x, 1)
         affirm:is_equal(xs, [2,3,4,5])
-    )
 
     let (x,y,z) = (1,2,3)
     in affirm:is_equal((x,y,z), (1,2,3))
@@ -258,7 +255,6 @@ fun test_destruct () =
             author= ("James", "Corey")
         }
     in
-    (
         affirm:is_equal (
                     (metadata.title, metadata.subject, metadata.translationsUa.["title"],
                      metadata.translationsUa.translator, metadata.translationsEn.titleEn,
@@ -284,7 +280,6 @@ fun test_destruct () =
                     ("Nemesis Games", "SCIFI", "IGRU DOLI", "PILIP LUN",
                         ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU", ("James", "Corey"))
             )
-    )
     let
         {a=[x,y,...z], B @ b="I am B", c of Float, D@d={e=(x,y,...zz)}} =
             {a=[1,2,3,4,5], b="I am B", c=3.14, d={e=(1,2,3,4,5)}}
@@ -293,10 +288,7 @@ fun test_destruct () =
             (a, B, D, e, x, y, z, zz),
             ([1,2,3,4,5], "I am B", {e=(1,2,3,4,5)}, (1,2,3,4,5), 1, 2, [3,4,5], (3,4,5))
         )
-)
 
 fun test () =
-(
     test_destruct()
     test_match()
-)

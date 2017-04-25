@@ -8,7 +8,6 @@ fun mul(x, y) = x * y
 fun one () = 1
 
 fun test_holes () =
-(
     let
         fun add3(x, y, z) = x + y + z
         add3_0 = add3(_, 42, 24)
@@ -17,7 +16,6 @@ fun test_holes () =
         add3_1_2 = add3(42, _, _)
         _add3 = add3(_, _, _)
     in
-    (
        affirm:is_equal_all(
             add3_0(1024),
             add3_1(1024),
@@ -26,7 +24,6 @@ fun test_holes () =
             1090
             )
 
-    )
 
     let fun negate(x) =  -x
     in affirm:is_equal(negate(_)(2), -2)
@@ -41,7 +38,6 @@ fun test_holes () =
 
     let fun f(x, y, z) = x - y + z
     in
-    (
         affirm:is_equal .. (f(_, 2, 4)(6)) .. 8
         affirm:is_equal(f(2, _, 4)(6), 0)
         affirm:is_equal(f(2, 4, _)(6), 4)
@@ -51,11 +47,7 @@ fun test_holes () =
 
         affirm:is_equal( f(_, 2, _)(4, 6), 8 )
 
-    )
-)
-
 fun test_partial() =
-(
     affirm:is_equal( &`-`(1)(2), (-1) )
 
     affirm:is_equal(
@@ -68,11 +60,8 @@ fun test_partial() =
     )
     let add1 = &add(1)
     in
-    (
         affirm:is_equal(add1(2), 3)
         affirm:is_equal(&add(1)(2), 3)
-    )
-)
 
 fun test_composition() =
     let
@@ -80,17 +69,14 @@ fun test_composition() =
         mul2_add1 = partial(add, 1) << partial(mul, 2)
         add_1_twice = twice(&add(1))
     in
-    (
         affirm:is_equal(add1_mul2(4), 10)
         affirm:is_equal(mul2_add1(4), 9)
         affirm:is_equal(add_1_twice(9), 11)
-    )
 
 fun test_pipe() =
     let
         l = list:range(0, 10)
     in
-    (
         affirm:is_equal (
             l |> seq:filter(even, _),
             [0, 2, 4, 6, 8]
@@ -127,7 +113,6 @@ fun test_pipe() =
             square = (x -> x * x)
             triple = `*` .. 3
         in
-        (
             affirm:is_equal (
                 l |> seq:filter(even, _)
                   |> seq:map(`+` .. 1, _)
@@ -151,13 +136,9 @@ fun test_pipe() =
                   >> &seq:map(triple >> square),
                 [9, 9, 81, 225, 441]
             )
-        )
-    )
 
 fun test () =
-(
     test_holes()
     test_partial()
     test_composition()
     test_pipe()
-)

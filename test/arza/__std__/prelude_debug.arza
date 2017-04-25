@@ -3,19 +3,90 @@ infixl (-, -, 40)
 infixl (*, *, 50)
 infixl (/, /, 50)
 
-def len(self of Int) = len(self.l)
 
-def len(self of Int, x) =
-    len(self.l)
-    x + y
-    1/2
+fun f () =
+    affirm:is_equal(
+        match 1
+            | x of int = #first
+            | x of int when True = #third
+        ,
+        #second
+    )
 
-
-(def len(self of Int, x) = len(self.l)
-        x + y
-    1/2
-)
-
+//use
+//    String as Str
+//    Symbol as Sym
+//in
+//    def ++ (s1 of Str, s2 of Str) = _string:concat(s1, s2)
+//    def ++ (s1 of Str, s2 of Sym) = _string:concat(s1, str(s2))
+//    def ++ (s1 of Sym, s2 of Str) = _string:concat(str(s1), s2)
+//    def ++ (s1 of Sym, s2 of Sym) = symbol(_string:concat(str(s1), str(s2)))
+////
+//use (String, Char, Symbol) as 0 in
+//    def != (self, other) as std_behavior:not_equal
+//    def == (self, other) as std_behavior:equal
+//
+//    def str (self) as std_behavior:str
+//    def repr (self) as std_behavior:repr
+////
+////(use (String, Char, Symbol) as 0 in
+////        def != (self, other) as std_behavior:not_equal
+////        def == (self, other) as std_behavior:equal
+////
+////    def str (self) as std_behavior:str
+////    def repr (self) as std_behavior:repr
+////)
+////
+////(use
+////    String as Str
+////    Symbol as Sym
+////in
+////    (def ++ (s1 of Str, s2 of Str) =
+////        x + y
+////        _string:concat(s1, s2)
+////    )
+////
+////    (def ++ (s1 of Str, s2 of Sym) =
+////        _string:concat(s1, str(s2))
+////    )
+////)
+//use stuff:TestType as T in
+//    def types:test_method_1(a1 of stuff:TestType, a2 of stuff:TestType, self of T) =
+//        x + y
+//        a1.val + a2.val + self.val
+//
+//    def types:test_method_2(a1, self of T, a2) = a1.val + a2.val + self.val
+//    def types:test_method_3(self of T, a1, a2) = a1.val + a2.val + self.val
+//    def types:test_method_4(self of T) = self.val
+////
+//use L as ... in
+//    def len(self) = len(self.l)
+//
+//    def is_empty(self) =
+//        x + y
+//        is_empty(self.l)
+//
+//use Val2 as 0 in
+//    def le(self, other) =
+//        x + y
+//        self.v + other.v
+//    def cmp(x, y) as Order.[cmp]
+//    def ge(x, y) as Order.[ge]
+//
+//
+//def len(self of Int) = len(self.l)
+//
+//def len(self of Int, x) =
+//    len(self.l)
+//    x + y
+//    1/2
+//
+//
+//(def len(self of Int, x) = len(self.l)
+//        x + y
+//    1/2
+//)
+//
 //derive (Eq, Displayed) for (Symbol, Char)
 //
 //derive Concatable for Symbol
@@ -28,12 +99,13 @@ def len(self of Int, x) =
 //(derive
 //    Concatable
 //    for Symbol)
-
-
-// TODO EXPORT AS
+//
+//
+////// TODO EXPORT AS
+//
 //export (f_ab, f_ab_2, CONST)
 //export f_ab
-
+//
 //type GT
 //
 //type
@@ -47,9 +119,9 @@ def len(self of Int, x) =
 //
 //            Vec3(x, y, z)
 //)
-
+//
 //fun f(x,y) =
-
+//
 //    try
 //        1/0
 //        x - y
@@ -110,8 +182,8 @@ def len(self of Int, x) =
 //                     ),
 //                     (#fourth, (1, 2, "ERROR"), "ERROR")
 //    )
-
-
+//
+//
 //    let
 //        x = 1
 //        f = (x) -> 1
@@ -162,10 +234,10 @@ def len(self of Int, x) =
 //        4 + 5
 //    else
 //        5
-
-
-
-
+//
+//
+//
+//
 //let
 //    fst = c -> at(0, c)
 //    snd = c -> at(1, c)
@@ -178,7 +250,7 @@ def len(self of Int, x) =
 //)
 //
 //let x = 2
-
+//
 //generic
 //    +(x, y)
 //    negate(x)
@@ -242,13 +314,11 @@ def len(self of Int, x) =
 //            | 42 =
 //                False
 //
-//        match 42
-//            | 42 = False
-//            | 42 =
-//                False
-//                True
-//            | 42 =
-//                False
+//        match 42 | 42 = False
+//                 | 42 = False
+//                        True
+//                 | 42 = False
+//
 //        if x then 2
 //        elif x then
 //                4
@@ -261,14 +331,6 @@ def len(self of Int, x) =
 //        else
 //            8)
 //
-//
-//
-//
-////
-//
-
-
-
 //import affirm
 //
 //import tests:lib_az:abc:module_ab as ab

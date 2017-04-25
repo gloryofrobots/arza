@@ -44,6 +44,7 @@ LAYOUT_LSQUARE = [TT_RSQUARE]
 LEVELS_IF = [TT_ELSE, TT_ELIF]
 LEVELS_TRY = [TT_CATCH, TT_FINALLY]
 LEVELS_LET = [TT_IN]
+LEVELS_USE = LEVELS_LET
 LEVELS_MATCH = [TT_CASE]
 
 
@@ -111,7 +112,18 @@ def close_layout(parser, status):
     if status is False:
         return
 
-    advance_expected(parser, TT_DEDENT)
+    if parser.token_type == TT_DEDENT:
+        advance(parser)
+
+    # advance_expected(parser, TT_DEDENT)
+
+
+def close_layout_optional(parser, status):
+    if status is False:
+        return
+
+    if parser.token_type == TT_DEDENT:
+        advance(parser)
 
 
 def open_free_layout(parser, node, terminators):
@@ -745,7 +757,7 @@ def statements(parser, endlist, expected_types=None):
     else:
         terminators = endlist
 
-    status = open_layout(parser, parser.token, None, terminators)
+    status = open_layout(parser, parser.token, None, None)
     stmts = _statements(parser, terminators, expected_types, status)
     close_layout(parser, status)
     return stmts

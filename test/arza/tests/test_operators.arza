@@ -1,7 +1,6 @@
 import affirm
 
 fun test() =
-(
     affirm:is_equal(10 - 0, 10)
     affirm:is_equal(4 - 5, -1)
     affirm:is_equal(61 - 74, -13)
@@ -840,4 +839,3 @@ fun test() =
     affirm:is_equal(bitnot (46), -47)
     affirm:is_equal(bitnot (-9894), 9893)
     affirm:is_equal(bitnot (29), -30)
-)

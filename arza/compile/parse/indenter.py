@@ -5,7 +5,7 @@ from arza.compile.parse import tokenstream
 from arza.types import api, space, plist, root
 from arza.misc.fifo import Fifo
 
-LOG_INDENTER = True
+LOG_INDENTER = api.PARSE_DEBUG
 
 
 class InvalidIndentationError(Exception):
@@ -251,8 +251,10 @@ class IndentationTokenStream(tokenstream.TokenStream):
     def _on_newline(self):
         token = self._skip_newlines()
         ttype = tokens.token_type(token)
-        if ttype == tt.TT_ENDSTREAM:
-            print 1
+
+        # if ttype == tt.TT_ENDSTREAM:
+        #     1
+
         cur_type = self.current_type()
 
         layout = self.current_layout()
@@ -312,23 +314,6 @@ class IndentationTokenStream(tokenstream.TokenStream):
         self.produced_tokens.append(self.token)
         return self.token
 
-    def _on_end_token(self, token):
-        layouts = self.layouts
-        popped = []
-        while True:
-            layout = plist.head(layouts)
-            layouts = plist.tail(layouts)
-            if layout.is_node():
-                log("---- POP NODE LAYOUT ON END TOKEN")
-                log("POPPED LAYOUTS", popped)
-                log(self.advanced_values())
-                break
-            elif layout.is_module():
-                indentation_error(u"Invalid end keyword", token)
-            else:
-                popped.append(layout)
-        self.layouts = layouts
-
     def next_token(self):
         log(self.advanced_values())
         self.previous = self.token
@@ -343,17 +328,15 @@ class IndentationTokenStream(tokenstream.TokenStream):
 
         if ttype == tt.TT_NEWLINE:
             return self._on_newline()
-
-        elif ttype == tt.TT_END:
-            self._on_end_token(token)
-            return self.attach_token(token)
         elif ttype == tt.TT_ENDSTREAM:
             if api.length_i(self.layouts) != 1:
                 indentation_error(u"Not all layouts closed", token)
 
         layout = self.current_layout()
 
-        if layout.is_free() and layout.has_terminator(ttype):
+        # if layout.is_free() and layout.has_terminator(ttype):
+        #     self.pop_layout()
+        if layout.has_terminator(ttype):
             self.pop_layout()
 
         return self.attach_token(token)

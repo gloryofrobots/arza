@@ -42,7 +42,6 @@ fun test_use_static_single_pass(x) =
 
 
 fun test () =
-(
     affirm:is_equal(test_local_overwrite(1), -1998)
     affirm:is_equal(test_local_overwrite_2(1), -198)
 
@@ -57,4 +56,3 @@ fun test () =
 
 // TODO FIX IT
 //    affirm:is_equal(test_use_static_single_pass(1), 202)
-)

@@ -562,8 +562,6 @@ def newtokenstream(source):
     return IndentationTokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = True
-
 
 def parse(process, env, src):
     parser = process.parser
@@ -577,7 +575,7 @@ def parse(process, env, src):
 
     parser.close()
     # print stmts
-    if PARSE_DEBUG:
+    if api.PARSE_DEBUG:
         print "************************** OPERATORS ****************************************"
         print scope.operators
         print "************************** AST ****************************************"

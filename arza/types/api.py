@@ -4,6 +4,7 @@ __author__ = 'gloryofrobots'
 from arza.types import space
 from arza.runtime import error
 
+PARSE_DEBUG = True
 
 # *************************
 # type conversions
