@@ -8,8 +8,12 @@ fun range_to(last of Int) = range(0, last)
 
 
 fun range(first of Int, last of Int) =
-    let step = if last < 0 then -1 else 1
+    let
+        step =
+            if last < 0 then -1
+            else 1
     in range_by(first, last, step)
+--------------------------------------------------
 
 
 fun range_by (first of Int, last of Int, step of Int) =
@@ -30,16 +34,17 @@ fun range_by (first of Int, last of Int, step of Int) =
 
         | (0, _, _, L) = L
     --------------------------------------------------
-    in if step > 0 and first - step <= last or
+    in
+        if step > 0 and first - step <= last or
             step < 0 and first - step >= last then
 
-        let n = ((last - first + step) / step) - 1
-        in _range_by(n, (step * (n - 1) + first), step, [])
+            let n = ((last - first + step) / step) - 1
+            in _range_by(n, (step * (n - 1) + first), step, [])
 
-    elif step == 0 and first == last then
-        _range_by(1, first, step, [])
-    else
-        throw (#InvalidRange, first, last, step)
+        elif step == 0 and first == last then
+            _range_by(1, first, step, [])
+        else
+            throw (#InvalidRange, first, last, step)
 --------------------------------------------------
 
 
@@ -54,15 +59,12 @@ fun replicate(count, element) =
         throw ValueError(count)
 ---------------------------------------------------
 
-use List as 0
-in
-(
+use List as 0 in
     def != (self, other) as std_behavior:not_equal
     def ==(self, other) = seq:equal(self, other)
-)
-use List as ...
-in
-(
+--------------------------------------------------
+
+use List as ... in
     def put (k, v, self) as std_behavior:put
     def at (k, self) as std_behavior:at
     def del (el, self) as std_behavior:del
@@ -94,7 +96,7 @@ in
     def drop(count, self) = _list:drop(count, self)
 
     def take(count, self) = _list:take(count, self)
-)
+--------------------------------------------------
 
 def ++ (l1 of List, l2 of List) = seq:concat(l1, l2)
 def ++ (t of Tuple, l of List) = t ++ _list:to_tuple(l)

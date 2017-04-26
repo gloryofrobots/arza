@@ -4,20 +4,17 @@ import seq
 
 fun _write_list_items(args, func, file) =
     let fun _walk(x) =
-        (
             write(func(x), file)
             write(" ", file)
-        )
 
     in seq:foreach(_walk, to_seq(args))
 
 
 fun printr(...args) =
     let out = stdout()
-    in (
+    in
         _write_list_items(args, repr, out)
         write("\n", out)
-    )
 
 
 fun print(...args) =
@@ -26,14 +23,12 @@ fun print(...args) =
 
 fun print_list(items) =
     let out = stdout()
-    in (
+    in
         _write_list_items(items, str, out)
         write("\n", out)
-    )
 
 
-let (
+let
     p = print
     pr = printr
-)
 

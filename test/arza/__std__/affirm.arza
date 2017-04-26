@@ -35,10 +35,9 @@ fun is_equal_all(...args) =
         fun _reducer(val1, val2) =
            let True = is_equal(val1, val2)
            in val2
-    in (
+    in
         seq:reduce(_reducer, to_seq(args))
         True
-    )
 
 
 fun is_equal
@@ -96,21 +95,17 @@ type Success(val)
 
 fun _is_throw (fn, args) =
         match
-            try (
+            try
                 fn(...args)
                 Success(True)
-            )
             catch e = e
         | _ of Success = fail(["exception expected", fn])
         | err = err
---------------------------------------------------
 
 
 fun is_throw(fn, args) =
-(
     _is_throw(fn, args)
     True
-)
 
 
 fun is_throw_expected(fn, args, exc) =
@@ -123,10 +118,9 @@ fun is_throw_expected_cb(fn, args, cb) =
 
 fun is_not_throw(fn, args) =
         match
-            try (
+            try
                 fn(...args)
                 Success(True)
-            )
             catch e = e
         | _ of Success =  True
         | err = fail(["unexpected exception", fn, err])

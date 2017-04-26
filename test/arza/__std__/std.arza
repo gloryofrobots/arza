@@ -1,21 +1,20 @@
-derive (Eq, Displayed)
-    for (
+import arza:lang:_number
+import io
+
+derive (Eq, Displayed) for (
         Function,
         Generic,
         Partial,
         Datatype,
         Bool,
         Interface
-    )
+)
 
 //////// NUM
-import arza:lang:_number
-import io
 
 use
     (Float, Int) as 0
 in
-(
     def != (self, other) as std_behavior:not_equal
     def == (self, other) as std_behavior:equal
 
@@ -31,7 +30,7 @@ in
     def ** (x, y) as  _number:pow
 
     def <= (x, y) as _number:le
-)
+--------------------------------------------------
 
 derive (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed) for (Float, Int)
 

@@ -5,10 +5,9 @@ from io import (print)
 
 
 fun test_base_expressions() =
-(
     let
         tup1 = (1, "Hello", 35.44555)
-    in (
+    in
         affirm:is_equal(
            tup1, (1, "Hello", 35.44555)
         )
@@ -17,7 +16,6 @@ fun test_base_expressions() =
 
         affirm:is_equal(tup1.{1}, "Hello")
         affirm:is_equal(tup1.2, 35.44555)
-    )
 
     affirm:is_equal((1, "Hello", 35.44555).2, 35.44555)
 
@@ -29,16 +27,14 @@ fun test_base_expressions() =
         (1, 2, ["Alice", "Bob", (45,), 54.000000001]).2, ["Alice", "Bob", (45,), 54.000000001]
     )
 
-    let m1 = {name="XXX"}
-    in (
+    let m1 = {name="XXX"} in
         affirm:is_equal({name="XXX"}.name, "XXX")
         affirm:is_equal(m1.name, "XXX")
         affirm:is_not_equal(m1.name, "YYY")
-    )
 
     let
         t2 = ((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"})
-    in (
+    in
         affirm:is_equal(
             t2, ((1,2, ["Alice", "Bob", (45,), 54.000000001]), {name="Alice", surname= "Bob"})
         )
@@ -48,7 +44,6 @@ fun test_base_expressions() =
         )
 
         affirm:is_equal(t2, t2)
-    )
 
     affirm:is_true(if 5 > 4 then True else False)
     affirm:is_false(if 5 < 4 then True else False)
@@ -58,10 +53,9 @@ fun test_base_expressions() =
     let
         a2_4 = #four
         a2 = [0, 1, 2, a2_4]
-    in (
+    in
         affirm:is_true(#four `elem` a2)
         affirm:is_true(a2_4 `elem` a2)
-    )
 
     affirm:is_equal("name", #name)
     affirm:is_equal(#name, "name")
@@ -75,8 +69,6 @@ fun test_base_expressions() =
                         elif x == 15 then 3 + 3
                         else 4 + 4,
                         8)
-
-)
 
 fun test_call_syntax () =
     let
@@ -113,7 +105,6 @@ fun test_call_syntax () =
 
 
 fun test_small_functions_syntax() =
-(
     let fun f1
         | 0 = 1
         | 1 = 2
@@ -138,10 +129,8 @@ fun test_small_functions_syntax() =
 
     let fun f6(a, b, c) = ((a, b, c) -> 42) (a, b, c)
     in affirm:is_equal(f6(1, 2, 3), 42)
-)
 
 fun test_whitespaces_in_expressions() =
-(
     let l = (x, y, z) -> 42
     in affirm:is_equal(l(1, 2, 3), 42)
 

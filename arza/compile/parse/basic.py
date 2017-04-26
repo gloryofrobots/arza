@@ -58,6 +58,7 @@ def parser_error_unknown(parser, position):
                        ]))
 
 
+
 def parse_error(parser, message, token):
     if tokens.token_type(token) == TT_ENDSTREAM:
         line = u"Unclosed top level statement"
@@ -75,6 +76,11 @@ def parse_error(parser, message, token):
                        ]))
 
 
+def init_code_layout(parser, node, terminators=None):
+    skip_indent(parser)
+    parser.ts.add_code_layout(node, terminators)
+
+
 def parser_error_indentation(parser, msg, position, lineno, column):
     print parser.ts.advanced_values()
     print parser.ts.layouts
@@ -87,11 +93,6 @@ def parser_error_indentation(parser, msg, position, lineno, column):
                            space.newstring(msg),
                            space.newstring(line)
                        ]))
-
-
-def init_code_layout(parser, node, terminators=None):
-    skip_indent(parser)
-    parser.ts.add_code_layout(node, terminators)
 
 
 def init_offside_layout(parser, node):

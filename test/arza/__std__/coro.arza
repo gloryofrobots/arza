@@ -8,29 +8,25 @@ import seq
 //////////////////////////////////////
 
 
-use Coroutine as 0
-in
-(
+use Coroutine as 0 in
     def is_empty(self) as std_behavior:is_empty
+
     def len(self) = throw NotImplementedError ("Coroutine can't define len")
 
     def first(self) =
-    (
         if not is_empty(self) then
             self ()
         else
             throw FiberFlowError("Coroutine is closed")
-    )
+
     def rest(self) =
-    (
         if not is_empty(self) then
             self
         else
             []
-    )
+
     def to_seq(self) = self
     def empty(self) = []
-)
 
 derive (Sized, Seqable, Seq, Emptiable) for Coroutine
 
@@ -53,13 +49,10 @@ fun ref(v) =
                 in loop(v)
         )
     in
-    (
         co(v)
         Reference(co)
-    )
 
 use Reference as 0 in
-(
     def repr(self) = str(self)
 
     def !(self) = self.val(#Read)
@@ -69,7 +62,6 @@ use Reference as 0 in
     def ==(self, other) = self.val == other.val
 
     def str(self) = "Var"
-)
 
 derive (Displayed, Ref) for Reference
 ///////////////////////////////////////////////////////
@@ -98,22 +90,16 @@ fun _loop(yield_argument, init_fn, args) =
                 let
                     fn = init_fn(
                         fun (...args) =
-                        (
                             yield(...yield_argument(args))
                             fn(...args)
-                        )
                     )
                 in
-                (
                     yield()
                     fn(...args)
-                )
         )
     in
-    (
        co()
        co
-    )
 
 fun loop(...a) =
     let
@@ -131,11 +117,9 @@ fun loop_reduce(init_fn, x, acc) =
 ////////////////////////////////////////////////////
 
 let
-(
     take = seq:take
     take_while = seq:take_while
     nth = seq:nth
-)
 
 fun filter(predicate, coll) =
     spawn(
@@ -145,10 +129,8 @@ fun filter(predicate, coll) =
                     | (p, []) = empty(coll)
                     | (p, x::xs) =
                         if p(x) then
-                        (
                             yield(x)
                             _filter(p, xs)
-                        )
                         else _filter(p, xs)
 
              in _filter(predicate, coll)
@@ -216,13 +198,10 @@ fun scanl(fn, acc, co) =
             let fun _scanl
                 | (f, acc, []) = empty(co)
                 | (f, acc, x::xs) =
-                (
                     let v = f(x, acc)
-                    in (
+                    in
                         yield(v)
                         _scanl(f, v, xs)
-                    )
-                )
             in _scanl(fn, acc, co)
     )
 
@@ -232,10 +211,9 @@ fun intersperse(val, co) =
         fun (yield) =
             seq:foreach(
                 fun (x) =
-                (
                     yield(x)
                     yield(val)
-                ),
+                ,
                 co
             )
     )
@@ -249,14 +227,10 @@ fun zipwith(fn, co1, co2) =
                     []
                 | (x::co1, y::co2) =
                     if is_empty(co1) or is_empty(co2) then
-                    (
                         fn(x,y)
-                    )
                     else
-                    (
                         yield(fn(x,y))
                         _zip(co1, co2)
-                    )
             in _zip(co1, co2)
         in __zip
     )
@@ -269,14 +243,10 @@ fun zip(co1, co2) =
                     []
                 | (x::co1, y::co2) =
                     if is_empty(co1) or is_empty(co2) then
-                    (
                         (x,y)
-                    )
                     else
-                    (
                         yield((x,y))
                         _zip(co1, co2)
-                    )
             in _zip(co1, co2)
         in __zip
     )

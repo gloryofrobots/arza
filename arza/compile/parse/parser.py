@@ -103,6 +103,9 @@ class BaseParser:
             return self.ts.next_token()
         except UnknownTokenError as e:
             parser_error_unknown(self, e.position)
+        except InvalidIndentationError as e:
+            parser_error_indentation(self, e.msg, e.position, e.line, e.column)
+
 
     def isend(self):
         return self.token_type == TT_ENDSTREAM

@@ -22,7 +22,6 @@ from tests:lib_az:abc:module_ab hide (CONST)
 import tests:lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
 
 fun test() =
-(
     affirm:is_true(f_ab == f_ab)
     affirm:is_true(ab2:f_ab == ab2:f_ab)
     affirm:is_true(ab2:f_ab == f_ab)
@@ -34,4 +33,3 @@ fun test() =
     affirm:is_equal(ab:f_ab_2(32, 10), 42)
     affirm:is_equal(ab:f_ab(42), 126)
     affirm:is_equal(e:f_e(f_ab(100)), -758)
-)

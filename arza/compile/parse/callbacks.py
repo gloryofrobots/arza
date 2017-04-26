@@ -46,7 +46,9 @@ def led_infixr_function(parser, op, token, left):
 
 
 def led_let_assign(parser, op, token, left):
+    status = open_layout(parser, parser.token, None, None)
     exp = expression(parser.expression_parser, 9)
+    close_layout(parser, status)
     return node_2(NT_ASSIGN, token, left, exp)
 
 
@@ -242,8 +244,8 @@ def infix_lparen(parser, op, token, left):
     holes = []
     index = 0
 
-    open_free_layout(parser, token, LAYOUT_LPAREN, delimiter=TT_COMMA)
     if parser.token_type != TT_RPAREN:
+        open_free_layout(parser, token, LAYOUT_LPAREN, delimiter=TT_COMMA)
         while True:
             if parser.token_type == TT_WILDCARD:
                 holes.append(index)
@@ -828,8 +830,8 @@ def _parse_function(parser, name, term_pattern, term_guard):
 
 
 def _parse_named_function(parser, token):
-    # init_node_layout(parser, token)
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    skip_indent(parser)
     check_token_types(parser, [TT_LPAREN, TT_CASE])
     func = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
     return name, func
@@ -1303,6 +1305,7 @@ def _parse_use_parallel(parser, token, types, aliases):
 
 
 def stmt_use(parser, op, token):
+    skip_indent(parser)
     if parser.token_type == TT_LPAREN:
         types = _parse_comma_separated(parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
         advance_expected(parser, TT_AS)

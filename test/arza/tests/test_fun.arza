@@ -18,13 +18,10 @@ fun ++---^--^(x, y)
 //    Y(3)
 
 fun test_recursive() =
-(
     let fun f(list)
         | x::xs =
-        (
              affirm:is_equal(list, list:range_to(5))
              f(xs)
-        )
         | [] = ()
 
     in f(list:range_to(5))
@@ -33,16 +30,13 @@ fun test_recursive() =
         let _list = list
             fun f2(l)
                 | x::xs =
-                (
                     affirm:is_equal(list, _list)
                     f2(xs)
-                )
                 | [] = ()
 
          in f2(list)
 
     in f2(list:range_to(5))
-)
 
 fun test_simple () =
     let
@@ -53,7 +47,6 @@ fun test_simple () =
                 {w=w, y=y, z=z, a=a, b=b, c=c, tl=tl, x=x, xs=xs, rest=rest}
 
     in
-    (
         affirm:is_equal(f_s(2, 3, 4, 5, 6), (5, (4, 5, 6)))
         affirm:is_equal(f_s2(12, 3, 4, 5, 6), (15, (4, 5, 6)))
         affirm:is_equal(
@@ -69,39 +62,35 @@ fun test_simple () =
              rest=("a", "b", "c", "d", "e", "f", "g", "h", "k", "l", "m", "n", "o", "p"),
              b=41, c=42, a=40}
         )
-    )
 
 
 fun test_case () =
-let
-    fun f_c1
-        | (a, b, c) = a + b + c
+    let
+        fun f_c1
+            | (a, b, c) = a + b + c
 
-    fun f_c2
-        | (a of Bool, b of String, c) = #first
-        | (a of Bool, b, c) = #second
-        | (a, b, c) = #third
+        fun f_c2
+            | (a of Bool, b of String, c) = #first
+            | (a of Bool, b, c) = #second
+            | (a, b, c) = #third
 
-    fun f_c3
-        | (0, 1, c) when c < 0 =  #first
-        | (a of Bool, b of String, c) = #second
-        | (a of Bool, b, c) when b + c == 40 = #third
-in
-(
-    affirm:is_equal(f_c1(1, 2, 3), 6)
+        fun f_c3
+            | (0, 1, c) when c < 0 =  #first
+            | (a of Bool, b of String, c) = #second
+            | (a of Bool, b, c) when b + c == 40 = #third
+    in
+        affirm:is_equal(f_c1(1, 2, 3), 6)
 
-    affirm:is_equal(f_c2(False, "", 42), #first)
-    affirm:is_equal(f_c2(False, 42, 42), #second)
-    affirm:is_equal(f_c2(42, 42, 42), #third)
+        affirm:is_equal(f_c2(False, "", 42), #first)
+        affirm:is_equal(f_c2(False, 42, 42), #second)
+        affirm:is_equal(f_c2(42, 42, 42), #third)
 
-    affirm:is_equal(f_c3(0, 1, -3), #first)
-    affirm:is_equal(f_c3(False, "hello", 42), #second)
-    affirm:is_equal(f_c3(False, 19, 21), #third)
-)
+        affirm:is_equal(f_c3(0, 1, -3), #first)
+        affirm:is_equal(f_c3(False, "hello", 42), #second)
+        affirm:is_equal(f_c3(False, 19, 21), #third)
 
 
 fun test_base () =
-(
     let func_0 = fun (a, b, c) = (a, b, c)
     in affirm:is_equal(func_0(1, 2, 3), (1,2,3))
     //call fun expression
@@ -138,10 +127,8 @@ fun test_base () =
             | 0 = 1
             | n = n * fact (n - 1)
     in
-    (
         affirm:is_equal(fact(7), 5040)
         affirm:is_equal(fact(0), 1)
-    )
 
     let
         fun func1(a1, a2, a3, a4, a5, a6, a7, a8, ...a9)
@@ -150,7 +137,6 @@ fun test_base () =
                 (var1, var2, var3, var4)
 
     in
-    (
         affirm:is_equal(func1(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), (6, 7, 8, (9, 10, 11)))
 
         affirm:is_equal(
@@ -158,7 +144,6 @@ fun test_base () =
                          [#first, #second, #third, 4,5,6,7]),
                 (#key2, #first, #third, [4, 5, 6, 7])
         )
-    )
 
     affirm:is_equal(
         apply(
@@ -211,7 +196,6 @@ fun test_base () =
             in (arg1, arg2, var1, key2, rest)
 
     in
-    (
         affirm:is_equal(
             fn_simple1(0, 1, {key1=2, key2=3}, 4, 5, 6),
             fn_case1(0, 1, {key1=2, key2=3}, 4, 5, 6)
@@ -220,7 +204,6 @@ fun test_base () =
             fn_simple1(0, 1, {key1=2, key2=3}, 4, 5, 6),
             fn_case2(0, 1, {key1=2, key2=3}, 4, 5, 6)
         )
-    )
 
     ////////////////////////////////////////////////////
 
@@ -238,7 +221,6 @@ fun test_base () =
             | 3 = #three
             | 4 = #four
     in
-    (
         affirm:is_equal_batch(
                             fn_fail,
                             ([1], #one),
@@ -257,7 +239,6 @@ fun test_base () =
                      (#FunctionArgumentsMatchError, ("I am string",)),
                      (#FunctionArgumentsMatchError,("I am string",))]
         )
-    )
 
     ////////////////////////////////////////////////
     //Empty args first
@@ -288,7 +269,6 @@ fun test_base () =
            | (_, [a, b]) = x + a + b
         f4_1 = (x, [a, b]) -> x + a + b
     in
-    (
         affirm:is_equal(f3(1, [2, 3]), f4_1(1, [2, 3]))
         affirm:is_equal(f4_1(1, [2, 3]), 6)
         affirm:is_equal(
@@ -299,13 +279,9 @@ fun test_base () =
             ,
             [6, 33, 33, 33]
        )
-    )
-)
 
 fun test() =
-(
     test_simple ()
     test_case ()
     test_recursive ()
     test_base()
-)

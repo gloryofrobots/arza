@@ -28,10 +28,8 @@ fun map(f, coll)
 fun foreach(f, coll)
     | (f, []) = empty(coll)
     | (f, hd::tl) =
-    (
       f(hd)
       foreach(f, tl)
-    )
 
 
 fun traverse(coll) = foreach(identity, coll)
@@ -116,12 +114,16 @@ fun split_at(n, l) =
 
 fun take_while(predicate, coll)
     | (p, []) = empty(coll)
-    | (p, [x, ...xs]) = if p(x) == True then x :: take_while(p, xs) else empty(coll)
+    | (p, [x, ...xs]) =
+        if p(x) == True then x :: take_while(p, xs)
+        else empty(coll)
 
 
 fun drop_while(predicate, coll)
     | (p, []) = empty(coll)
-    | (p, xs@[x, ...xs1]) = if p(x) == True then drop_while(p, xs1) else xs
+    | (p, xs@[x, ...xs1]) =
+        if p(x) == True then drop_while(p, xs1)
+        else xs
 
 
 fun filter(predicate, coll)
@@ -141,7 +143,7 @@ fun span(predicate, coll)
         if not(p(x)) then
             (empty(coll), xs)
         else
-            let (ys, zs) = (span p xs1)
+            let (ys, zs) = span(p, xs1)
             in (x::ys, zs)
 
 

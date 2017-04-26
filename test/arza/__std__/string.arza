@@ -2,20 +2,15 @@ import arza:lang:_string
 import seq
 
 
-use (String, Char, Symbol) as 0
-in
-(
+use (String, Char, Symbol) as 0 in
     def != (self, other) as std_behavior:not_equal
     def == (self, other) as std_behavior:equal
 
     def str (self) as std_behavior:str
     def repr (self) as std_behavior:repr
-)
 
 
-use String as ...
-in
-(
+use String as ... in
     def at (k, self) as std_behavior:at
     def put (k, v, self) as std_behavior:put
     def del (el, self) as std_behavior:del
@@ -32,19 +27,16 @@ in
 
     def cons (value of Char, self) = _string:append(value, self)
     def empty(self) = ""
-)
 
 
 use
     String as Str
     Symbol as Sym
 in
-(
     def ++ (s1 of Str, s2 of Str) = _string:concat(s1, s2)
     def ++ (s1 of Str, s2 of Sym) = _string:concat(s1, str(s2))
     def ++ (s1 of Sym, s2 of Str) = _string:concat(str(s1), s2)
     def ++ (s1 of Sym, s2 of Sym) = symbol(_string:concat(str(s1), str(s2)))
-)
 
 
 derive (Eq, Displayed) for (Symbol, Char)
@@ -75,11 +67,12 @@ fun reverse(_str) = _string:reverse(_str)
 
 
 fun joiner(_func, _sep) =
-    (s, acc) ->
+    ((s, acc) ->
         if acc != "" then
             acc ++ _sep ++  _func(s)
         else
             _func(s)
+    )
 
 fun join(_coll, _str) =
     let _seq = to_seq(_coll)
