@@ -762,7 +762,7 @@ def statements(parser, endlist, expected_types=None):
         terminators = endlist
 
     # not using layout separators because of some issue with terminating nested blocks with same terminator
-    status = open_layout(parser, parser.token, None, None)
+    status = open_layout(parser, parser.token, None, terminators)
     stmts = _statements(parser, terminators, expected_types, status)
     close_layout(parser, status)
     return stmts

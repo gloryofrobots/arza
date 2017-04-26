@@ -5,8 +5,8 @@ infixl (/, /, 50)
 infixl (==, ==, 50)
 infixl (!=, !=, 50)
 
-fun range(first of Int, last of Int) =
-    if last then 1 else 1
+//fun range(first of Int, last of Int) =
+//    if last then 1 else 1
 //    let
 //        step = 1 + if last then 1 else 1
 //    in range_by(first, last, step)
@@ -319,7 +319,7 @@ fun range(first of Int, last of Int) =
 //            | 43 = True 24)
 //)
 //
-//fun fact(n)
+fun fact(n)
 //    | n =
 //        (match 42
 //          | 42 = False
@@ -337,20 +337,20 @@ fun range(first of Int, last of Int) =
 //                True
 //            | 42 =
 //                False
-//    | n =
-//        match 42
-//            | 42 = False
-//            | 42 =
-//                False
-//                True
-//            | 42 =
-//                False
-//
-//        match 42 | 42 = False
-//                 | 42 = False
-//                        True
-//                 | 42 = False
-//
+    | n =
+        match 42
+            | 42 = False
+            | 42 =
+                False
+                True
+            | 42 =
+                False
+
+        match 42 | 42 = False
+                 | 42 = False
+                        True
+                 | 42 = False
+
 //        if x then 2
 //        elif x then
 //                4

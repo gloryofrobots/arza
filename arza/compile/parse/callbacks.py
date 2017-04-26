@@ -636,7 +636,8 @@ def _parse_match(parser, token, exp):
 
 def prefix_match(parser, op, token):
     exp = expression(parser, 0)
-    return _parse_match(parser, token, exp)
+    m = _parse_match(parser, token, exp)
+    return m
 
 
 def prefix_throw(parser, op, token):
