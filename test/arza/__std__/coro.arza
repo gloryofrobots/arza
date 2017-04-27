@@ -35,19 +35,22 @@ type Reference(val)
 
 fun ref(v) =
     let co =
-       spawn(
-            fun (yield, v) =
-                let fun loop(v) =
-                    let
-                        msg = yield(v)
-                    in
-                        match msg
-                            | #Read = loop(v)
-                            | (#Write, new_val) =
-                                loop(new_val)
-
-                in loop(v)
-        )
+           spawn(
+                fun (yield, v) =
+                    (let
+                        (fun loop(v) =
+                            (let
+                                msg = yield(v)
+                            in
+                                match msg
+                                    | #Read = loop(v)
+                                    | (#Write, new_val) =
+                                        loop(new_val)
+                            )
+                        )
+                    in loop(v)
+                    )
+            )
     in
         co(v)
         Reference(co)

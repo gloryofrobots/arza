@@ -58,7 +58,6 @@ def parser_error_unknown(parser, position):
                        ]))
 
 
-
 def parse_error(parser, message, token):
     if tokens.token_type(token) == TT_ENDSTREAM:
         line = u"Unclosed top level statement"
@@ -95,18 +94,19 @@ def parser_error_indentation(parser, msg, position, lineno, column):
                        ]))
 
 
-def init_offside_layout(parser, node):
-    parser.ts.add_offside_layout(node)
-
-
-def init_node_layout(parser, node, level_tokens=None, terminators=None):
+def open_free_layout(parser, node, terminators, delimiter=None):
     skip_indent(parser)
-    parser.ts.add_node_layout(node, level_tokens, terminators)
+    parser.ts.add_free_layout(node, terminators, delimiter)
 
 
-def open_layout(parser, token, level_tokens=None, terminators=None):
+def open_offside_layout(parser, token, level_tokens):
     skip_indent(parser)
-    return parser.ts.add_node_layout(token, level_tokens, terminators)
+    return parser.ts.add_offside_layout(token, level_tokens)
+
+
+def open_code_layout(parser, token, level_tokens=None, terminators=None):
+    skip_indent(parser)
+    return parser.ts.add_code_layout(token, level_tokens, terminators)
 
 
 def close_layout(parser, status):
@@ -116,7 +116,7 @@ def close_layout(parser, status):
     if parser.token_type == TT_DEDENT:
         advance(parser)
 
-    # advance_expected(parser, TT_DEDENT)
+        # advance_expected(parser, TT_DEDENT)
 
 
 def close_layout_optional(parser, status):
@@ -125,11 +125,6 @@ def close_layout_optional(parser, status):
 
     if parser.token_type == TT_DEDENT:
         advance(parser)
-
-
-def open_free_layout(parser, node, terminators, delimiter=None):
-    skip_indent(parser)
-    parser.ts.add_free_code_layout(node, terminators, delimiter)
 
 
 def skip_indent(parser):
@@ -614,6 +609,13 @@ def expression(parser, _rbp, terminators=None):
     return expr
 
 
+def free_expression(parser, _rbp, terminators):
+    open_free_layout(parser, parser.token, terminators)
+    expr = base_expression(parser, _rbp, terminators)
+    # expr = postprocess(parser, expr)
+    return expr
+
+
 # INFIXR
 def rexpression(parser, op):
     return expression(parser, op.lbp - 1)
@@ -728,28 +730,29 @@ def statement_no_end_expr(parser):
     return value
 
 
-# def module_statements(parser):
-#     stmts = []
-#     while True:
-#         # if parser.token_type == TT_DEDENT:
-#         #     advance(parser)
-#         if parser.token_type == TT_ENDSTREAM:
-#             break
-#         s = statement(parser)
-#         on_endofexpression(parser)
-#         if s is None:
-#             continue
-#         stmts.append(s)
-#
-#     length = len(stmts)
-#     if length == 0:
-#         return parse_error(parser, u"Expected one or more expressions", parser.token)
-#
-#     return nodes.list_node(stmts)
-
 def module_statements(parser):
-    terminators = [TT_ENDSTREAM]
-    return _statements(parser, terminators, None, True)
+    stmts = []
+    while True:
+        # if parser.token_type == TT_DEDENT:
+        #     advance(parser)
+        if parser.token_type == TT_ENDSTREAM:
+            break
+        s = statement(parser)
+        on_endofexpression(parser)
+        if s is None:
+            continue
+        stmts.append(s)
+
+    length = len(stmts)
+    if length == 0:
+        return parse_error(parser, u"Expected one or more expressions", parser.token)
+
+    return nodes.list_node(stmts)
+
+
+# def module_statements(parser):
+#     terminators = [TT_ENDSTREAM]
+#     return _statements(parser, terminators, None, True)
 
 
 def statements(parser, endlist, expected_types=None):
@@ -762,18 +765,20 @@ def statements(parser, endlist, expected_types=None):
         terminators = endlist
 
     # not using layout separators because of some issue with terminating nested blocks with same terminator
-    status = open_layout(parser, parser.token, None, terminators)
-    stmts = _statements(parser, terminators, expected_types, status)
-    close_layout(parser, status)
+    layout = open_code_layout(parser, parser.token, None, terminators)
+    stmts = _statements(parser, terminators, expected_types, layout)
+    # close_layout(parser, layout)
     return stmts
 
 
-def _statements(parser, terminators, expected_types, status):
+def _statements(parser, terminators, expected_types, layout):
     stmts = []
     while True:
-        if status is True and parser.token_type == TT_DEDENT:
-            break
+        # if status is True and parser.token_type == TT_DEDENT:
+        #     break
         if token_is_one_of(parser, terminators):
+            break
+        if not layout.is_open():
             break
 
         s = statement(parser)

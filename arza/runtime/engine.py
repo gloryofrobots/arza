@@ -4,7 +4,7 @@ from arza.runtime.process import Process
 from arza.runtime import process_data, error
 from arza.runtime.load import import_module, evaluate_module_file
 
-if api.PARSE_DEBUG:
+if api.DEBUG_MODE:
     PRELUDE_FILE = u"prelude_debug"
 else:
     PRELUDE_FILE = u"prelude"

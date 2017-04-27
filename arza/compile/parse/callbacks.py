@@ -46,10 +46,22 @@ def led_infixr_function(parser, op, token, left):
 
 
 def led_let_assign(parser, op, token, left):
-    status = open_layout(parser, parser.token, None, None)
+    # status = open_code_layout(parser, parser.token, None, None)
     exp = expression(parser.expression_parser, 9)
-    close_layout(parser, status)
+    # close_layout(parser, status)
     return node_2(NT_ASSIGN, token, left, exp)
+
+
+def layout_match(parser, op, node):
+    open_offside_layout(parser, node, TERM_CASE)
+
+
+def layout_try(parser, op, node):
+    open_offside_layout(parser, node, TERM_TRY)
+
+
+def layout_if(parser, op, node):
+    open_offside_layout(parser, node, TERM_IF_BODY)
 
 
 def layout_lparen(parser, op, node):
@@ -389,11 +401,12 @@ def prefix_lparen(parser, op, token):
         items = _parse_comma_separated(parser, TT_RPAREN, initial=items)
         return node_1(NT_TUPLE, token, items)
 
-    # # group expression
-    # rest = statements(parser, TERM_LPAREN)
-    # advance_expected(parser, TT_RPAREN)
-    # stmts = plist.cons(e, rest)
-    # return stmts
+        # # group expression
+        # rest = statements(parser, TERM_LPAREN)
+        # advance_expected(parser, TT_RPAREN)
+        # stmts = plist.cons(e, rest)
+        # return stmts
+
 
 def prefix_lparen_tuple(parser, op, token):
     if parser.token_type == TT_RPAREN:
@@ -535,13 +548,11 @@ def prefix_if(parser, op, token):
         cond = expression(parser, 0, TERM_IF_CONDITION)
         advance_expected_one_of(parser, TERM_IF_CONDITION)
 
-        # init_node_layout(parser, parser.token, [])
         body = statements(parser, TERM_IF_BODY)
         check_token_types(parser, TERM_IF_BODY)
         branches.append(list_node([cond, body]))
 
     advance_expected(parser, TT_ELSE)
-    # init_node_layout(parser, parser.token, [])
     body = statements(parser, [])
     branches.append(list_node([empty_node(), body]))
     return node_1(NT_CONDITION, token, list_node(branches))
@@ -578,7 +589,7 @@ def prefix_try(parser, op, token):
     skip_indent(parser)
 
     if parser.token_type == TT_CASE:
-        status = open_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
+        status = open_code_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
         while parser.token_type == TT_CASE:
             advance_expected(parser, TT_CASE)
             pattern = _parse_pattern(parser)
@@ -612,7 +623,7 @@ def _parse_pattern(parser):
 
 
 def _parse_match(parser, token, exp):
-    status = open_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
+    status = open_code_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
     check_token_type(parser, TT_CASE)
     pattern_parser = parser.pattern_parser
     branches = []
@@ -635,7 +646,7 @@ def _parse_match(parser, token, exp):
 
 
 def prefix_match(parser, op, token):
-    exp = expression(parser, 0)
+    exp = free_expression(parser, 0, TERM_CASE)
     m = _parse_match(parser, token, exp)
     return m
 
@@ -705,7 +716,7 @@ def _parse_case_function(parser, term_pattern,
     # bind to different name for not confusing reading code
     # it serves as basenode for node factory functions
 
-    status = open_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
+    layout = open_offside_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
     check_token_type(parser, TT_CASE)
 
     funcs = []
@@ -730,7 +741,7 @@ def _parse_case_function(parser, term_pattern,
             args, list_node([body])
         ]))
 
-    close_layout(parser, status)
+    close_layout(parser, layout)
     return list_node(funcs)
 
 
@@ -745,7 +756,7 @@ def _parse_recursive_function(parser, name, signature, term_pattern, term_guard)
     """
     # bind to different name for not confusing reading code
     # it serves as basenode for node factory functions
-    status = open_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
+    status = open_code_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
     node = signature
 
     if nodes.node_type(signature) == NT_WHEN:
@@ -775,7 +786,6 @@ def _parse_recursive_function(parser, name, signature, term_pattern, term_guard)
         funcs.append(list_node([
             args, list_node([body])
         ]))
-
 
     func = nodes.create_fun_node(nodes.node_token(node), name, list_node(funcs))
 
@@ -867,7 +877,7 @@ def _load_path_s(node):
 
 
 def _load_module(parser, exp):
-    if api.PARSE_DEBUG:
+    if api.DEBUG_MODE:
         return
 
     from arza.runtime import load
@@ -1059,11 +1069,6 @@ def stmt_derive(parser, op, token):
 
 
 # INTERFACE
-def layout_node(parser, op, token):
-    # init_node_layout(parser, parser.token)
-    pass
-
-
 def stmt_interface(parser, op, token):
     nodes = statements(parser.interface_parser, TERM_BLOCK)
     return nodes
@@ -1320,7 +1325,7 @@ def stmt_use(parser, op, token):
     types = []
     aliases = []
 
-    status = open_layout(parser, parser.token, terminators=[TT_IN])
+    status = open_code_layout(parser, parser.token, terminators=[TT_IN])
     while parser.token_type != TT_IN:
         if parser.token_type == TT_DEDENT:
             break

@@ -160,12 +160,12 @@ class ExpressionParser(BaseParser):
         # TODO DELETE IT
         prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
         prefix(self, TT_NOT, NT_NOT, prefix_nud, 35)
-        prefix(self, TT_IF, None, prefix_if)
+        prefix(self, TT_IF, None, prefix_if, layout=layout_if)
 
         prefix(self, TT_FUN, None, prefix_nameless_fun)
 
-        prefix(self, TT_MATCH, None, prefix_match)
-        prefix(self, TT_TRY, None, prefix_try)
+        prefix(self, TT_MATCH, None, prefix_match, layout=layout_match)
+        prefix(self, TT_TRY, None, prefix_try, layout=layout_try)
         prefix(self, TT_BACKTICK_OPERATOR, None, prefix_backtick_operator)
         prefix(self, TT_LET, None, prefix_let)
         prefix(self, TT_THROW, None, prefix_throw)
@@ -427,7 +427,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_GENERIC, None, stmt_generic)
         stmt(self, TT_DEF, None, stmt_def)
         stmt(self, TT_USE, None, stmt_use)
-        stmt(self, TT_INTERFACE, None, stmt_interface, layout=layout_node)
+        stmt(self, TT_INTERFACE, None, stmt_interface)
         stmt(self, TT_DERIVE, None, stmt_derive)
 
         prefix(self, TT_LPAREN, None, prefix_lparen_module, layout=layout_lparen)
@@ -578,7 +578,7 @@ def parse(process, env, src):
 
     parser.close()
     # print stmts
-    if api.PARSE_DEBUG:
+    if api.DEBUG_MODE:
         print "************************** OPERATORS ****************************************"
         print scope.operators
         print "************************** AST ****************************************"
