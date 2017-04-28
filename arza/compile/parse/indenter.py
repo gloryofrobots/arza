@@ -7,18 +7,6 @@ from arza.misc.fifo import Fifo
 
 LOG_INDENTER = api.DEBUG_MODE
 
-
-class InvalidIndentationError(Exception):
-    def __init__(self, msg, position, line, column):
-        self.position = position
-        self.line = line
-        self.column = column
-        self.msg = msg
-
-    def __str__(self):
-        return self.msg
-
-
 MODULE = -1
 NODE = 0
 CODE = 1
@@ -32,15 +20,58 @@ def log(*args):
     print ", ".join([str(arg) for arg in args])
 
 
+def open_free_layout(parser, token, terminators, delimiter=None):
+    ts = parser.ts
+    ts.skip_newlines()
+    return ts.add_layout(token, FREE, None, terminators, delimiter, None)
+
+
+def open_offside_layout(parser, token, level_tokens, indentation_tokens):
+    ts = parser.ts
+    layout = ts.current_layout()
+    if layout.is_free():
+        return layout
+
+    return ts.add_layout(token, OFFSIDE, level_tokens, None, None, indentation_tokens)
+
+
+def open_code_layout(parser, token, level_tokens=None, terminators=None, indentation_tokens=None):
+    ts = parser.ts
+    layout = ts.current_layout()
+    if layout.is_free():
+        return layout
+        # if terminators:
+        #     return open_free_layout(parser, token, terminators, None)
+        # else:
+        #     return layout
+
+    return ts.add_layout(token, CODE, level_tokens, terminators, None, indentation_tokens)
+
+
+class InvalidIndentationError(Exception):
+    def __init__(self, msg, position, line, column):
+        self.position = position
+        self.line = line
+        self.column = column
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
+
+
 class Layout(root.W_Root):
-    def __init__(self, parent_level, level, type, level_tokens, terminators, delimiter):
+    def __init__(self, parent_level, level, type, level_tokens, terminators, delimiter, indentation_tokens):
         self.opened = True
         self.parent_level = parent_level
         self.level = level
         self.type = type
         self.level_tokens = level_tokens if level_tokens else []
+        self.indentation_tokens = indentation_tokens if indentation_tokens else []
         self.terminators = terminators if terminators else []
         self.delimiter = delimiter
+
+    def support_indentation(self, ttype):
+        return ttype in self.indentation_tokens
 
     def has_level(self, token_type):
         return token_type in self.level_tokens
@@ -50,18 +81,6 @@ class Layout(root.W_Root):
 
     def has_level_tokens(self):
         return len(self.level_tokens) > 0
-
-    @property
-    def push_end_of_expression_on_new_line(self):
-        return self.type == CODE or self.type == MODULE
-
-    @property
-    def push_end_on_dedent(self):
-        return self.type == NODE
-
-    @property
-    def push_end_of_expression_on_dedent(self):
-        return self.type == NODE
 
     def _to_string_(self):
         bt = self.type
@@ -122,7 +141,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
         level = self._find_level()
         # self.layouts = plist.empty()
 
-        self.layouts = plist.plist([Layout(-1, level, MODULE, None, None, None)])
+        self.layouts = plist.plist([Layout(-1, level, MODULE, None, None, None, None)])
         self.invalidate = False
 
     def advanced_values(self):
@@ -137,25 +156,33 @@ class IndentationTokenStream(tokenstream.TokenStream):
 
     def pop_layout(self):
         old_layout = self.current_layout()
+        self.layouts = plist.tail(self.layouts)
+        old_layout.close()
+
         log("---- POP LAYOUT", old_layout)
         log(self.advanced_values())
         log(self.layouts)
-        self.layouts = plist.tail(self.layouts)
-        old_layout.close()
+
         return self.current_layout()
 
     def _find_level(self):
-        token = self._skip_newlines()
+        token = self.skip_newlines()
         return tokens.token_level(token)
 
-    def _add_layout(self, token, type, level_tokens=None, terminators=None, delimiter=None):
+    def add_layout(self, token, type, level_tokens, terminators,
+                   delimiter, indentation_tokens):
+
         cur = self.current_layout()
         level = tokens.token_level(token)
 
-        layout = Layout(cur.level, level, type, level_tokens, terminators, delimiter)
+        layout = Layout(cur.level, level, type, level_tokens, terminators, delimiter, indentation_tokens)
+
+        self.layouts = plist.cons(layout, self.layouts)
 
         log("---- ADD LAYOUT", layout)
-        self.layouts = plist.cons(layout, self.layouts)
+        log(self.advanced_values())
+        log(self.layouts)
+
         return layout
 
     # def add_node_layout(self, node, level_tokens, terminators):
@@ -166,24 +193,6 @@ class IndentationTokenStream(tokenstream.TokenStream):
     #
     #     return self._add_layout(node, NODE, level_tokens=level_tokens, terminators=terminators)
 
-    def add_code_layout(self, node, level_tokens, terminators):
-        layout = self.current_layout()
-        if layout.is_free():
-            return layout
-
-        return self._add_layout(node, CODE, level_tokens=level_tokens, terminators=terminators)
-
-    def add_offside_layout(self, node, level_tokens):
-        layout = self.current_layout()
-        if layout.is_free():
-            return layout
-
-        return self._add_layout(node, OFFSIDE, level_tokens=level_tokens)
-
-    def add_free_layout(self, node, terminators, delimiter):
-        # TODO layouts in operators
-        self._skip_newlines()
-        return self._add_layout(node, FREE, terminators=terminators, delimiter=delimiter)
 
     def has_layouts(self):
         return not plist.is_empty(self.layouts)
@@ -237,7 +246,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
     #     self.index -= 1
     #     return token
 
-    def _skip_newlines(self):
+    def skip_newlines(self):
         token = self.next_physical()
         while tokens.token_type(token) == tt.TT_NEWLINE:
             # log("++++ SKIP")
@@ -256,11 +265,11 @@ class IndentationTokenStream(tokenstream.TokenStream):
         return tokens.token_type(self.current_physical())
 
     def _on_newline(self):
-        token = self._skip_newlines()
+        token = self.skip_newlines()
         ttype = tokens.token_type(token)
 
-        # if ttype == tt.TT_ENDSTREAM:
-        #     1
+        if ttype == tt.TT_ENDSTREAM:
+            1
 
         cur_type = self.current_type()
 
@@ -269,22 +278,29 @@ class IndentationTokenStream(tokenstream.TokenStream):
         log("----NEW LINE", level, layout, tokens.token_to_s(token))
 
         # TODO remove not layout.is_module() after implementing real pragmas ![]
-        if tokens.is_infix_token_type(cur_type) and not (layout.is_free() or layout.is_module()):
-            if level < layout.level:
-                return indentation_error(u"Indentation level of token next to"
-                                         u" operator must be bigger then of parent layout",
-                                         token)
+        if not layout.is_free() or layout.is_module():
+            if layout.support_indentation(cur_type):
+                if level < layout.level:
+                    return indentation_error(u"Indentation level of token next to"
+                                             u" operator must be bigger then of parent layout",
+                                             token)
 
-            return self.next_token()
+                return self.next_token()
+
+        # if tokens.is_infix_token_type(cur_type) and (not layout.is_free() or layout.is_module()):
+        #     if level < layout.level:
+        #         return indentation_error(u"Indentation level of token next to"
+        #                                  u" operator must be bigger then of parent layout",
+        #                                  token)
+        #
+        #     return self.next_token()
 
         if layout.is_free() is True:
             return self.next_token()
 
         if level > layout.level:
-            # return indentation_error(u"Invalid indentation", token)
-            # pass
-            if not tokens.is_infix_token_type(ttype):
-                self.add_logical_token(tokens.create_indent_token(token))
+            if not layout.support_indentation(ttype):
+                return indentation_error(u"Invalid indentation", token)
 
             return self.next_token()
         else:
@@ -296,12 +312,12 @@ class IndentationTokenStream(tokenstream.TokenStream):
                     return indentation_error(u"Indentation does not match with any of previous levels", token)
 
                 if layout.level == level:
-                    if layout.has_level_tokens():
+                    if layout.is_offside():
                         if not layout.has_level(ttype):
-                            if layout.is_code():
-                                return indentation_error(u"Unexpected token at layout level", token)
-                            elif layout.is_offside():
-                                self.pop_layout()
+                            self.pop_layout()
+                    elif layout.is_code():
+                        if not layout.has_level(ttype):
+                            return indentation_error(u"Unexpected token at layout level", token)
 
                     return self.next_token()
 

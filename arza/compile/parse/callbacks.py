@@ -52,16 +52,48 @@ def led_let_assign(parser, op, token, left):
     return node_2(NT_ASSIGN, token, left, exp)
 
 
+def layout_use(parser, op, node):
+    open_offside_layout(parser, node, LEVELS_USE, INDENTS_USE)
+
+
+def layout_type(parser, op, node):
+    open_offside_layout(parser, node, None, INDENTS_TYPE)
+
+
+def layout_generic(parser, op, node):
+    open_offside_layout(parser, node, None, INDENTS_GENERIC)
+
+
+def layout_interface(parser, op, node):
+    open_offside_layout(parser, node, None, INDENTS_INTERFACE)
+
+
+def layout_derive(parser, op, node):
+    open_offside_layout(parser, node, None, INDENTS_DERIVE)
+
+
+def layout_def(parser, op, node):
+    open_offside_layout(parser, node, None, INDENTS_DEF)
+
+
 def layout_match(parser, op, node):
-    open_offside_layout(parser, node, TERM_CASE)
+    open_offside_layout(parser, node, LEVELS_MATCH, INDENTS_MATCH)
 
 
 def layout_try(parser, op, node):
-    open_offside_layout(parser, node, TERM_TRY)
+    open_offside_layout(parser, node, LEVELS_TRY, INDENTS_TRY)
+
+
+def layout_let(parser, op, node):
+    open_offside_layout(parser, node, LEVELS_LET, INDENTS_LET)
 
 
 def layout_if(parser, op, node):
-    open_offside_layout(parser, node, TERM_IF_BODY)
+    open_offside_layout(parser, node, LEVELS_IF, INDENTS_IF)
+
+
+def layout_fun(parser, op, node):
+    open_offside_layout(parser, node, LEVELS_FUN, INDENTS_FUN)
 
 
 def layout_lparen(parser, op, node):
@@ -74,10 +106,6 @@ def layout_lcurly(parser, op, node):
 
 def layout_lsquare(parser, op, node):
     open_free_layout(parser, node, [TT_RSQUARE], delimiter=TT_COMMA)
-
-
-def prefix_indent(parser, op, node):
-    return parse_error(parser, u"Invalid indentation level", node)
 
 
 def prefix_backtick_operator(parser, op, token):
@@ -584,19 +612,14 @@ def prefix_try(parser, op, token):
 
     advance_expected(parser, TT_CATCH)
 
-    # SPECIAL CASE BECAUSE CATCH MAY HAS OR MAY NOT HAS PATTERNS
-    # ALL THIS INDENT BUSINESS IS STINKY AS HELL
-    skip_indent(parser)
-
     if parser.token_type == TT_CASE:
-        status = open_code_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
+        status = open_code_layout(parser, parser.token, level_tokens=LEVELS_MATCH, indentation_tokens=INDENTS_TRY)
         while parser.token_type == TT_CASE:
             advance_expected(parser, TT_CASE)
             pattern = _parse_pattern(parser)
             advance_expected(parser, TT_ASSIGN)
             body = statements(parser, TERM_CATCH_CASE)
             catches.append(list_node([pattern, body]))
-        close_layout(parser, status)
     else:
         pattern = _parse_pattern(parser)
         advance_expected(parser, TT_ASSIGN)
@@ -623,7 +646,8 @@ def _parse_pattern(parser):
 
 
 def _parse_match(parser, token, exp):
-    status = open_code_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
+    status = open_code_layout(parser, parser.token, level_tokens=LEVELS_MATCH,
+                              indentation_tokens=INDENTS_MATCH)
     check_token_type(parser, TT_CASE)
     pattern_parser = parser.pattern_parser
     branches = []
@@ -641,7 +665,6 @@ def _parse_match(parser, token, exp):
     if len(branches) == 0:
         parse_error(parser, u"Empty match expression", token)
 
-    close_layout(parser, status)
     return node_2(NT_MATCH, token, exp, list_node(branches))
 
 
@@ -716,7 +739,7 @@ def _parse_case_function(parser, term_pattern,
     # bind to different name for not confusing reading code
     # it serves as basenode for node factory functions
 
-    layout = open_offside_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
+    layout = open_offside_layout(parser, parser.token, LEVELS_MATCH, INDENTS_FUN)
     check_token_type(parser, TT_CASE)
 
     funcs = []
@@ -741,7 +764,6 @@ def _parse_case_function(parser, term_pattern,
             args, list_node([body])
         ]))
 
-    close_layout(parser, layout)
     return list_node(funcs)
 
 
@@ -756,7 +778,7 @@ def _parse_recursive_function(parser, name, signature, term_pattern, term_guard)
     """
     # bind to different name for not confusing reading code
     # it serves as basenode for node factory functions
-    status = open_code_layout(parser, parser.token, level_tokens=LEVELS_MATCH)
+    open_code_layout(parser, parser.token, level_tokens=LEVELS_MATCH, indentation_tokens=INDENTS_FUN)
     node = signature
 
     if nodes.node_type(signature) == NT_WHEN:
@@ -808,7 +830,6 @@ def _parse_recursive_function(parser, name, signature, term_pattern, term_guard)
     body = list_node([nodes.create_call_node(nodes.node_token(node), func, list_node(call_list))])
     main_func = nodes.create_function_variants(signature, body)
 
-    close_layout(parser, status)
     return main_func
 
 
@@ -842,7 +863,6 @@ def _parse_function(parser, name, term_pattern, term_guard):
 
 def _parse_named_function(parser, token):
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    skip_indent(parser)
     check_token_types(parser, [TT_LPAREN, TT_CASE])
     func = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
     return name, func
@@ -1311,7 +1331,6 @@ def _parse_use_parallel(parser, token, types, aliases):
 
 
 def stmt_use(parser, op, token):
-    skip_indent(parser)
     if parser.token_type == TT_LPAREN:
         types = _parse_comma_separated(parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
         advance_expected(parser, TT_AS)
@@ -1325,9 +1344,9 @@ def stmt_use(parser, op, token):
     types = []
     aliases = []
 
-    status = open_code_layout(parser, parser.token, terminators=[TT_IN])
+    layout = open_code_layout(parser, parser.token, terminators=[TT_IN])
     while parser.token_type != TT_IN:
-        if parser.token_type == TT_DEDENT:
+        if not layout.is_open():
             break
         type_e = expression(parser.name_parser, 0)
         advance_expected(parser, TT_AS)
@@ -1338,8 +1357,6 @@ def stmt_use(parser, op, token):
         types.append(type_e)
         aliases.append(alias)
 
-    # close_layout(parser, status)
-    close_layout_optional(parser, status)
     advance_expected(parser, TT_IN)
     not_unique = plist.not_unique_item(aliases)
     if not_unique is not None:

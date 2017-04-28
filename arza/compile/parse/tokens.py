@@ -277,18 +277,6 @@ def token_length(token):
     return token.length
 
 
-INFIX_TOKENS = [TT_DOUBLE_COLON, TT_COLON,
-                TT_OPERATOR, TT_DOT, TT_OR, TT_AND,
-                TT_ARROW,
-                TT_ASSIGN
-
-]
-
-
-def is_infix_token_type(ttype):
-    return ttype in INFIX_TOKENS
-
-
 # indentation level
 def token_level(token):
     return api.to_i(token_column(token)) - 1

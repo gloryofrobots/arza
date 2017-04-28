@@ -5,11 +5,80 @@ infixl (/, /, 50)
 infixl (==, ==, 50)
 infixl (!=, !=, 50)
 
+fun len(self of Int) =
+    1
+def len(self of Int) =
+    1
+
+fun fact(n)
+    | n =
+        match
+                42
+            | 42 = False
+
+
+fun ref(v) =
+    spawn(
+        (fun (yield, v) =
+            (let
+                x = 1
+            in
+                (match x
+                    | True = 1
+                )
+
+            )
+        )
+  )
+//
+fun ref(v) =
+    spawn(
+        let
+           (fun f(v) =
+                (let
+                    msg = yield(v)
+                in
+                    1
+                )
+           )
+        in
+            True and False
+            loop(v)
+    , 1
+    , fun (yield, v) =
+        let
+            x = 1
+        in
+            try
+                True
+            catch e =
+                False
+
+  )
+
+fun fact(n) =
+    try
+        try
+            1
+        catch e2 =
+            throw e2
+    catch e3 =
+        try
+            error(#LifeSucks)
+        catch e4 =
+            e4
+    if x then
+        2
+    elif x then
+        4
+    else
+        8
+
 fun range(first of Int, last of Int) =
     let
         step =
-            if last then 1
-            else 1
+                if last then 1
+                else 1
     in range_by(first, last, step)
 
 fun fact(n)
@@ -131,28 +200,28 @@ use (String, Char, Symbol) as 0 in
 
     def str (self) as std_behavior:str
     def repr (self) as std_behavior:repr
-//
-//(use (String, Char, Symbol) as 0 in
-//        def != (self, other) as std_behavior:not_equal
-//        def == (self, other) as std_behavior:equal
-//
-//    def str (self) as std_behavior:str
-//    def repr (self) as std_behavior:repr
-//)
-//
-//(use
-//    String as Str
-//    Symbol as Sym
-//in
-//    (def ++ (s1 of Str, s2 of Str) =
-//        x + y
-//        _string:concat(s1, s2)
-//    )
-//
-//    (def ++ (s1 of Str, s2 of Sym) =
-//        _string:concat(s1, str(s2))
-//    )
-//)
+
+(use (String, Char, Symbol) as 0 in
+        def != (self, other) as std_behavior:not_equal
+        def == (self, other) as std_behavior:equal
+
+    def str (self) as std_behavior:str
+    def repr (self) as std_behavior:repr
+)
+
+(use
+    String as Str
+    Symbol as Sym
+in
+    (def ++ (s1 of Str, s2 of Str) =
+        x + y
+        _string:concat(s1, s2)
+    )
+
+    (def ++ (s1 of Str, s2 of Sym) =
+        _string:concat(s1, str(s2))
+    )
+)
 use stuff:TestType as T in
     def types:test_method_1(a1 of stuff:TestType, a2 of stuff:TestType, self of T) =
         x + y
@@ -161,7 +230,7 @@ use stuff:TestType as T in
     def types:test_method_2(a1, self of T, a2) = a1.val + a2.val + self.val
     def types:test_method_3(self of T, a1, a2) = a1.val + a2.val + self.val
     def types:test_method_4(self of T) = self.val
-//
+
 use L as ... in
     def len(self) = len(self.l)
 
@@ -204,7 +273,7 @@ derive Concatable for Symbol
     for Symbol)
 
 
-//// TODO EXPORT AS
+// TODO EXPORT AS
 
 export (f_ab, f_ab_2, CONST)
 export f_ab
@@ -303,8 +372,8 @@ fun f(x,y) =
     )
 
     f((fun (x, y) = x + y), 1, 2)
-    2 + 2
-        + 3
+    2 + 2 +
+        3
     3
     (4)
     (fun(x)=
@@ -366,11 +435,11 @@ generic
     put(key, value, self)
 )
 
-(interface
-    Coll(put, del)
-                Dict(keys, values) is Collection    Sliceable(slice.2, drop.1, take.1)
+//(interface
+//    Coll(put, del)
+//                Dict(keys, values) is Collection    Sliceable(slice.2, drop.1, take.1)
 )
-////
+//
 interface
     Coll(put, del)
     Dict(keys, values) is Collection

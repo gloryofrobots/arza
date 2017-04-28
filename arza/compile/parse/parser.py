@@ -52,7 +52,6 @@ class BaseParser:
         self.juxtaposition_as_list = False
         symbol(self, TT_UNKNOWN)
         symbol(self, TT_ENDSTREAM)
-        prefix(self, TT_INDENT, NT_THROW, prefix_indent)
         self.subparsers = []
 
     def add_subparsers(self, parsers):
@@ -162,12 +161,12 @@ class ExpressionParser(BaseParser):
         prefix(self, TT_NOT, NT_NOT, prefix_nud, 35)
         prefix(self, TT_IF, None, prefix_if, layout=layout_if)
 
-        prefix(self, TT_FUN, None, prefix_nameless_fun)
+        prefix(self, TT_FUN, None, prefix_nameless_fun, layout=layout_fun)
 
         prefix(self, TT_MATCH, None, prefix_match, layout=layout_match)
         prefix(self, TT_TRY, None, prefix_try, layout=layout_try)
         prefix(self, TT_BACKTICK_OPERATOR, None, prefix_backtick_operator)
-        prefix(self, TT_LET, None, prefix_let)
+        prefix(self, TT_LET, None, prefix_let, layout=layout_let)
         prefix(self, TT_THROW, None, prefix_throw)
 
         infix(self, TT_ARROW, None, 10, infix_arrow)
@@ -240,8 +239,8 @@ class LetParser(PatternParser):
         self.expression_parser = expression_parser
         symbol(self, TT_IN)
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
-        prefix(self, TT_TRY, None, prefix_try)
-        prefix(self, TT_FUN, None, prefix_let_fun)
+        prefix(self, TT_TRY, None, prefix_try, layout=layout_try)
+        prefix(self, TT_FUN, None, prefix_let_fun, layout=layout_fun)
         infix(self, TT_ASSIGN, None, 10, led_let_assign)
 
 
@@ -415,20 +414,20 @@ class ModuleParser(BaseParser):
         symbol(self, TT_ENDSTREAM)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
-        stmt(self, TT_FUN, None, prefix_module_fun)
-        stmt(self, TT_LET, None, prefix_module_let)
-        stmt(self, TT_TYPE, None, stmt_type)
+        stmt(self, TT_FUN, None, prefix_module_fun, layout=layout_fun)
+        stmt(self, TT_TYPE, None, stmt_type, layout=layout_type)
+        stmt(self, TT_LET, None, prefix_module_let, layout=layout_let)
+        stmt(self, TT_GENERIC, None, stmt_generic, layout=layout_generic)
+        stmt(self, TT_USE, None, stmt_use, layout=layout_use)
+        stmt(self, TT_INTERFACE, None, stmt_interface, layout=layout_interface)
+        stmt(self, TT_DERIVE, None, stmt_derive, layout=layout_derive)
+        stmt(self, TT_DEF, None, stmt_def, layout=layout_def)
         stmt(self, TT_IMPORT, None, stmt_import)
         stmt(self, TT_FROM, None, stmt_from)
         stmt(self, TT_EXPORT, None, stmt_export)
         stmt(self, TT_INFIXL, None, stmt_infixl)
         stmt(self, TT_INFIXR, None, stmt_infixr)
         stmt(self, TT_PREFIX, None, stmt_prefix)
-        stmt(self, TT_GENERIC, None, stmt_generic)
-        stmt(self, TT_DEF, None, stmt_def)
-        stmt(self, TT_USE, None, stmt_use)
-        stmt(self, TT_INTERFACE, None, stmt_interface)
-        stmt(self, TT_DERIVE, None, stmt_derive)
 
         prefix(self, TT_LPAREN, None, prefix_lparen_module, layout=layout_lparen)
         symbol(self, TT_RPAREN)

@@ -1,4 +1,5 @@
 from arza.compile.parse.token_type import *
+from arza.compile.parse.indenter import (open_free_layout, open_code_layout, open_offside_layout)
 from arza.compile.parse.node_type import *
 from arza.compile.parse import nodes
 from arza.compile.parse import tokens
@@ -42,10 +43,34 @@ LAYOUT_LCURLY = [TT_RCURLY]
 LAYOUT_LSQUARE = [TT_RSQUARE]
 
 LEVELS_IF = [TT_ELSE, TT_ELIF]
+LEVELS_FUN = [TT_CASE]
 LEVELS_TRY = [TT_CATCH, TT_FINALLY]
 LEVELS_LET = [TT_IN]
 LEVELS_USE = LEVELS_LET
 LEVELS_MATCH = [TT_CASE]
+
+INDENTS_IF = [TT_IF, TT_THEN, TT_ELSE]
+INDENTS_LET = [TT_LET, TT_IN]
+INDENTS_TRY = [TT_TRY, TT_FINALLY, TT_CATCH, TT_ASSIGN]
+INDENTS_MATCH = [TT_MATCH, TT_CASE, TT_ASSIGN]
+INDENTS_USE = [TT_USE, TT_IN]
+INDENTS_FUN = [TT_FUN, TT_CASE, TT_ASSIGN]
+INDENTS_DEF = [TT_DEF, TT_ASSIGN]
+INDENTS_GENERIC = [TT_GENERIC]
+INDENTS_INTERFACE = [TT_INTERFACE]
+INDENTS_DERIVE = [TT_DERIVE]
+INDENTS_TYPE = [TT_TYPE]
+
+INDENTS_CODE = [TT_DOUBLE_COLON, TT_COLON,
+                TT_OPERATOR, TT_DOT, TT_OR, TT_AND,
+                TT_ARROW,
+                TT_ASSIGN,
+                TT_LPAREN,
+                TT_LCURLY,
+                TT_LSQUARE,
+                TT_INFIX_DOT_LCURLY,
+                TT_INFIX_DOT_LSQUARE
+                ]
 
 
 def parser_error_unknown(parser, position):
@@ -75,11 +100,6 @@ def parse_error(parser, message, token):
                        ]))
 
 
-def init_code_layout(parser, node, terminators=None):
-    skip_indent(parser)
-    parser.ts.add_code_layout(node, terminators)
-
-
 def parser_error_indentation(parser, msg, position, lineno, column):
     print parser.ts.advanced_values()
     print parser.ts.layouts
@@ -92,39 +112,6 @@ def parser_error_indentation(parser, msg, position, lineno, column):
                            space.newstring(msg),
                            space.newstring(line)
                        ]))
-
-
-def open_free_layout(parser, node, terminators, delimiter=None):
-    skip_indent(parser)
-    parser.ts.add_free_layout(node, terminators, delimiter)
-
-
-def open_offside_layout(parser, token, level_tokens):
-    skip_indent(parser)
-    return parser.ts.add_offside_layout(token, level_tokens)
-
-
-def open_code_layout(parser, token, level_tokens=None, terminators=None):
-    skip_indent(parser)
-    return parser.ts.add_code_layout(token, level_tokens, terminators)
-
-
-def close_layout(parser, status):
-    if status is False:
-        return
-
-    if parser.token_type == TT_DEDENT:
-        advance(parser)
-
-        # advance_expected(parser, TT_DEDENT)
-
-
-def close_layout_optional(parser, status):
-    if status is False:
-        return
-
-    if parser.token_type == TT_DEDENT:
-        advance(parser)
 
 
 def skip_indent(parser):
@@ -750,24 +737,18 @@ def module_statements(parser):
     return nodes.list_node(stmts)
 
 
-# def module_statements(parser):
-#     terminators = [TT_ENDSTREAM]
-#     return _statements(parser, terminators, None, True)
-
-
 def statements(parser, endlist, expected_types=None):
     layout = parser.ts.current_layout()
+
     if layout.is_free():
-        terminators = endlist + parser.ts.current_layout().terminators
+        terminators = [] + endlist + layout.terminators
         if layout.delimiter is not None:
             terminators.append(layout.delimiter)
     else:
-        terminators = endlist
+        terminators = [] + endlist
 
-    # not using layout separators because of some issue with terminating nested blocks with same terminator
-    layout = open_code_layout(parser, parser.token, None, terminators)
+    layout = open_code_layout(parser, parser.token, None, terminators, INDENTS_CODE)
     stmts = _statements(parser, terminators, expected_types, layout)
-    # close_layout(parser, layout)
     return stmts
 
 
@@ -778,6 +759,7 @@ def _statements(parser, terminators, expected_types, layout):
         #     break
         if token_is_one_of(parser, terminators):
             break
+
         if not layout.is_open():
             break
 

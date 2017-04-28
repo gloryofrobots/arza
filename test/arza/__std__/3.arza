@@ -124,3 +124,56 @@ def sleep(self of Any)
 
 type Cat(name, prettiness)
 
+
+
+
+fun ref(v) =
+    let co =
+           spawn(
+                (fun (yield, v) =
+                    (let
+                        (fun loop(v) =
+                            (let
+                                msg = yield(v)
+                            in
+                                (match msg
+                                    | #Read = loop(v)
+                                    | (#Write, new_val) =
+                                        loop(new_val)
+                                )
+                            )
+                        )
+                    in loop(v)
+                    )
+                )
+          )
+    in
+        co(v)
+        Reference(co)
+
+fun ref(v) {
+    let co =
+           spawn(
+                fun (yield, v) {
+                    let {
+                        fun loop(v) {
+                            let {
+                                msg = yield(v)
+                            } in {
+                                match msg
+                                    | #Read = loop(v)
+                                    | {x=1, y=2} {
+                                        loop(new_val)
+                                    }
+                            }
+                        }
+                    } in {
+                        loop(v)
+                    }
+                }
+          )
+    in {
+        co(v)
+        Reference(co)
+    }
+}
