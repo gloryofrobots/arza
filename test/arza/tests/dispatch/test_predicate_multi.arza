@@ -43,7 +43,6 @@ fun test() =
              }
         )
     in
-    (
         let
             movie =
                 behavior:encounter([], merry, monster) |>
@@ -57,7 +56,6 @@ fun test() =
                 seq:reverse(_)
 //                string:join_cast(_, "\n")
         in
-        (
             let
                 event = behavior:process_event
                 test_movie = [
@@ -82,14 +80,10 @@ fun test() =
                     event(monster, #DIE)
                 ]
             in
-            (
                 affirm:is_equal(movie, test_movie)
 //                io:print(string:join_cast(movie, "\n"))
 //                io:print(movie)
 //                io:print(test_movie)
 //                io:print(movie == test_movie)
-            )
-        )
-    )
 
 

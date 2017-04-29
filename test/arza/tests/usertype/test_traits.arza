@@ -2,16 +2,13 @@ import affirm
 import io
 
 type
-(
     EQ
     GT
     LT
     Val(v)
     Val2(v)
-)
 
 generic
-(
     eq(x, y)
     ne(x, y)
     le(x, y)
@@ -21,10 +18,8 @@ generic
     cmp(x, y)
     max(x, y)
     min(x, y)
-)
 
 let
-(
     Equal =
     {
         (eq) = (x, y) -> not ne(x, y),
@@ -52,23 +47,17 @@ let
             if x `le` y then x
             else  y
     }
-)
 
 
 use Val as 0 in
-(
     def ne(x, y) as Equal.[ne]
     def eq(v1, v2) = v1.v == v2.v
-)
 
 use Val2 as 0 in
-(
     def eq(x, y) as Equal.[eq]
     def ne(v1, v2) = v1.v != v2.v
-)
 
 use Val as 0 in
-(
     def le(x, y) as Order.[le]
     def ge(x, y) as Order.[ge]
     def lt(x, y) as Order.[lt]
@@ -80,10 +69,8 @@ use Val as 0 in
         if self.v == other.v then EQ
         elif self.v <= other.v then LT
         else GT
-)
 
 use Val2 as 0 in
-(
     def cmp(x, y) as Order.[cmp]
     def ge(x, y) as Order.[ge]
     def lt(x, y) as Order.[lt]
@@ -92,7 +79,6 @@ use Val2 as 0 in
     def min(x, y) as Order.[min]
 
     def le(self, other) = self.v <= other.v
-)
 
 fun test () =
     let
@@ -104,7 +90,6 @@ fun test () =
         v2_2 = Val2(1)
         v2_3 = Val2(2)
     in
-    (
         affirm:is_true(eq(v1_1, v1_2))
         affirm:is_false(ne(v1_1, v1_2))
         affirm:is_false(eq(v1_3, v1_2))
@@ -129,4 +114,3 @@ fun test () =
         affirm:is_true(le(v2_3, v2_3))
         affirm:is_false(gt(v2_3, v2_3))
         affirm:is_true(ge(v2_3, v2_3))
-    )

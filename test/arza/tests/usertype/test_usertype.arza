@@ -7,11 +7,9 @@ import tests:usertype:test_cast
 import io
 
 fun test () =
-(
     test_interface:test()
     test_simple:test()
     test_traits:test()
     test_implement_qualified:test()
     test_polymorphism:test()
     test_cast:test()
-)

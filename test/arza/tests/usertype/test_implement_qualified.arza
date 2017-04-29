@@ -15,37 +15,28 @@ def types:test_method_4(self of X) = self.x
 
 def ++-+*++(self of stuff:TestType) = self.val
 
-use stuff:TestType as T
-in
-(
+use stuff:TestType as T in
     def types:test_method_1(a1 of stuff:TestType, a2 of stuff:TestType, self of T) = a1.val + a2.val + self.val
     def types:test_method_2(a1, self of T, a2) = a1.val + a2.val + self.val
     def types:test_method_3(self of T, a1, a2) = a1.val + a2.val + self.val
     def types:test_method_4(self of T) = self.val
-)
 
 fun test () =
-(
     let
         x = X(42)
         x_2 = X(-42)
     in
-    (
         affirm:is_equal(stuff:test_method_1(x_2, x, x), 42)
         affirm:is_equal(stuff:test_method_2(x, x_2, x), 42)
         affirm:is_equal(stuff:test_method_3(x, x, x_2), 42)
         affirm:is_equal(stuff:test_method_4(x), 42)
-    )
 
     let
         t = stuff:TestType(42)
         t_2 = stuff:TestType(-42)
     in
-    (
         affirm:is_equal(stuff:test_method_1(t_2, t, t), 42)
         affirm:is_equal(stuff:test_method_2(t, t_2, t), 42)
         affirm:is_equal(stuff:test_method_3(t, t, t_2), 42)
         affirm:is_equal(stuff:test_method_4(t), 42)
         affirm:is_equal(++-+*++(t), 42)
-    )
-)

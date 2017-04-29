@@ -247,7 +247,6 @@ class LetParser(PatternParser):
 class FunPatternParser(PatternParser):
     def __init__(self):
         PatternParser.__init__(self)
-        # prefix(self, TT_LPAREN, prefix_lparen_expression)
 
 
 class DefPatternParser(PatternParser):
@@ -256,7 +255,6 @@ class DefPatternParser(PatternParser):
         infix(self, TT_OF, None, 5, infix_def_of)
         prefix(self, TT_OF, None, prefix_def_of)
 
-        # prefix(self, TT_LPAREN, prefix_lparen_expression)
 
 
 class DefParser(BaseParser):

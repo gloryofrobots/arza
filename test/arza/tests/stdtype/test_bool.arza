@@ -1,7 +1,6 @@
 import affirm
 
 fun test() =
-(
     affirm:is_equal(False, False)
     affirm:is_equal(True, True)
     affirm:is_not_equal(True, False)
@@ -34,9 +33,7 @@ fun test() =
     let
         x = 0
         y = 1
-    in (
+    in
         affirm:is_false (x `is` y)
         affirm:is_true (x `isnot` y)
-    )
-)
 

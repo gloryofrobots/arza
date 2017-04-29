@@ -1,16 +1,13 @@
 import affirm
 
 type
-(
     L(l)
     None
     Some(val)
-)
 
 generic eq(self, other)
 
 use L as ... in
-(
     def len(self) = len(self.l)
 
     def is_empty(self) = is_empty(self.l)
@@ -18,7 +15,6 @@ use L as ... in
     def first(self) = self
 
     def rest(self) = self
-)
 
 
 def eq (self of Some, val of Some) = val == None
@@ -42,14 +38,11 @@ def eq (self of None, _ of None) = True
 //)
 
 fun test () =
-(
     let
         s = Some(None)
     in
-    (
         affirm:is_true(None `eq` s)
         affirm:is_false(s `eq` None)
-    )
 
 
     let
@@ -62,4 +55,3 @@ fun test () =
             ,
             #not_empty
         )
-)

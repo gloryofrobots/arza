@@ -1,7 +1,6 @@
 import io
 
 generic
-(
     encounter(movie, actor1, actor2)
     kickass(movie, actor1, actor2)
     run_away(movie, actor1, actor2)
@@ -9,13 +8,10 @@ generic
     sadly_die(movie, actor)
     interact(movie, actor, event)
     get_name(actor)
-)
 
 interface
-(
     Named(get_name)
     ActionActor(encounter.1)
-)
 
 def get_name({name} of ActionActor) = name
 
@@ -24,10 +20,8 @@ def repr(a of Named) =  "<Actor:" ++ get_name(a) ++ ">"
 
 
 def kickass(movie, actor1 of ActionActor, actor2 of ActionActor) =
-(
     interact(movie, actor1, (#KICKASS, actor2)) |>
     sadly_die(_, actor2)
-)
 
 
 fun process_event(actor, event) =

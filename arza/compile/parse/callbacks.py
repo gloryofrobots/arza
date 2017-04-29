@@ -423,6 +423,8 @@ def prefix_lparen(parser, op, token):
         items = _parse_comma_separated(parser, TT_RPAREN, initial=items)
         return node_1(NT_TUPLE, token, items)
 
+
+    parse_error(parser, u"Invalid syntax inside parenthesis. Expect () (<exp>) or (<exp> , ...<exp>)", parser.token)
         # # group expression
         # rest = statements(parser, TERM_LPAREN)
         # advance_expected(parser, TT_RPAREN)
@@ -450,28 +452,6 @@ def prefix_lparen_expression_only(parser, op, token):
     e = expression(parser, 0)
     advance_expected(parser, TT_RPAREN)
     return e
-
-
-def prefix_lparen_expression(parser, op, token):
-    # unit
-    if parser.token_type == TT_RPAREN:
-        advance_expected(parser, TT_RPAREN)
-        return nodes.create_unit_node(token)
-
-    # single
-    e = expression(parser, 0)
-    if parser.token_type == TT_RPAREN:
-        advance_expected(parser, TT_RPAREN)
-        return e
-
-    # tuple
-    if parser.token_type == TT_COMMA:
-        items = [e]
-        advance_expected(parser, TT_COMMA)
-        items = _parse_comma_separated(parser, TT_RPAREN, initial=items)
-        return node_1(NT_TUPLE, token, items)
-
-    parse_error(parser, u"Invalid syntax inside parenthesis. Expect () (<exp>) or (<exp> , ...<exp>)", parser.token)
 
 
 def prefix_lparen_module(parser, op, token):

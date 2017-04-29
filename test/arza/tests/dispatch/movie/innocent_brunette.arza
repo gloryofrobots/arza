@@ -6,17 +6,13 @@ fun pretty_enough(b) = b.prettiness > 50
 
 
 def behavior:encounter(movie, m of actors:BugEyedMonster, b of actors:InnocentBrunette) =
-    (
         behavior:interact(movie, m, (#ENCOUNTER, b)) |>
         behavior:kickass(_, m, b)
-    )
 
 
 def behavior:encounter(movie, b of actors:InnocentBrunette, m of actors:BugEyedMonster) =
-    (
         behavior:interact(movie, b, (#ENCOUNTER, m)) |>
         behavior:run_away(_, b, m)
-    )
 
 
 def behavior:kickass(movie, m of actors:BugEyedMonster, b of actors:InnocentBrunette) =
@@ -25,8 +21,8 @@ def behavior:kickass(movie, m of actors:BugEyedMonster, b of actors:InnocentBrun
 
 
 def behavior:run_away(movie, b of actors:InnocentBrunette, m of actors:BugEyedMonster)
-                                                when actors:can_escape_from(b, m)
-                                                and pretty_enough(b) =
+                                                when actors:can_escape_from(b, m) and
+                                                pretty_enough(b) =
      behavior:scream(movie, b)
 
 

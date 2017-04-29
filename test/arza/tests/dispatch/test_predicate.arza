@@ -1,10 +1,8 @@
 import affirm
 
 generic
-(
     race_winner(v1, v2)
     race_looser(v1, v2)
-)
 
 
 type Car (speed)
@@ -27,14 +25,12 @@ def race_winner(c1 of Car, c2 of Car) when c1.speed == c2.speed = c1
 def race_winner({x, y = (a, b, [1,2,{c, d=t}])} of Map, z@hd::tl) when len(y) == 1 = 1
 
 fun test () =
-(
     let
         c1 = Car(90)
         c2 = Car(110)
         c3 = Car(110)
         p = Plane(200)
     in
-    (
         affirm:is_equal_all(
             race_winner(c2, c3),
             race_winner(c2, c1),
@@ -43,8 +39,6 @@ fun test () =
             _race_winner(c2, c1),
             _race_winner(c2, c3)
         )
-    )
-)
 
 
 

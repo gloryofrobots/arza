@@ -34,7 +34,7 @@ fun test_recursive() =
                     f2(xs)
                 | [] = ()
 
-         in f2(list)
+        in f2(list)
 
     in f2(list:range_to(5))
 

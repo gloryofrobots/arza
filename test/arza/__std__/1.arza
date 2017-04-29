@@ -204,6 +204,14 @@ import arza:lang:_map
 import string
 import seq
 
+fun f
+    | (x, y, z) when z == 2 = #first
+    | (x, y, z) when z == 3 and y == 3 = #second
+    | (x, y, z) when z == 3 and y == 2 and x == 3 = #third
+    | (x, y, z) when z == 3 and y == 2 and x == 1 and (x + y == 6 or True) = #fourth
+    | (x, y, z) when z == 3 and y == 2 and x == 2 or (A `is` True or greater_then_ten(11)) = #fifth
+    | (_, _, _) = 12
+
 use Map as 0 in
     def != (self, other) as std_behavior:not_equal
     def == (self, other) as std_behavior:equal

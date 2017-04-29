@@ -1,23 +1,18 @@
 import affirm
 
 generic
-(
     add(self, a)
     val(self)
-)
 
 type
-(
     Zero
     Vec2(p1, p2)
     Point2(x, y)
     Some(val)
     None
-)
 
 
 use Point2 as 0 in
-(
     def add (self, p2 of Point2) = Point2(self.x + p2.x, self.y + p2.y)
     def add (self, i of Int) = Point2(self.x + i, self.y + i)
     def add (self, v of Vec2) = add(Vec2(self, self), v)
@@ -26,11 +21,9 @@ use Point2 as 0 in
             self.x == other.x and self.y == other.y
 
     def != (self, other of Point2) = not (self == other)
-)
 
 
 use Vec2 as 0 in
-(
     def add (self, v of Vec2) =
         Vec2(
             add(self.p1, v.p1),
@@ -43,7 +36,6 @@ use Vec2 as 0 in
     def == (self, other of Vec2) = (self.p1 == other.p1) and (self.p2 == other.p2)
 
     def != (self, other) = not (self == other)
-)
 
 
 def val(self of Some) = self.val
@@ -51,19 +43,18 @@ def val(self of None) = self
 
 
 fun test () =
-(
     let
         p = Point2(0, 1)
         p1 = Point2(42, 42)
     in
-    (
         affirm:is_true(p == p)
         affirm:is_true(p == Point2(0, 1))
         affirm:is_false(p == p1)
         affirm:is_equal(p.0, p.x)
         affirm:is_equal(p.1, p.y)
         affirm:is_equal(p, Point2(0, 1))
-    )
+
+
     let
         v1 = Vec2(Point2(0, 1), Point2(2, 3))
         v2 = Vec2(Point2(10, 11), Point2(12, 13))
@@ -71,12 +62,10 @@ fun test () =
         affirm:is_equal(add(v1, v2), Vec2(Point2(10, 12), Point2(14, 16)))
         // This is more clear
 //        affirm:is_equal (add v1 v2) (Vec2 (Point2 10 12)  (Point2 14 16))
+
     let
         some = Some(11)
         none = None
     in
-    (
         affirm:is_equal(val(some), 11)
         affirm:is_equal(val(none), None)
-    )
-)

@@ -3,11 +3,9 @@ import affirm
 import io
 
 type
-(
     T1(v1, v2)
     T2(v1, v2, v3)
     T3(v1)
-)
 
 generic to_list(x)
 
@@ -16,7 +14,6 @@ interface Listable (to_list)
 use
     (T1, T2) as ...
 in
-(
     //Seq iface
     def first(self) = first(to_list(self))
     def rest(self) = rest(to_list(self))
@@ -24,22 +21,18 @@ in
     //not enough for Sliceable
     def drop(count, self) = seq:drop(count, to_list(self))
     def take(count, self) = seq:take(count, to_list(self))
-)
 
 
 def to_list(self of T1) = [self.v1, self.v2]
 
 use T2 as ... in
-(
     def to_list(self) = [self.v1, self.v2]
     def slice(_from, _to, self) = slice(_from, _to, to_list(self))
-)
 
 derive (Listable, Seq) for (T1, T2)
 derive (Sliceable) for T2
 
 fun test () =
-(
     let
         t1 = T1(11, 23)
         t2 = T2(
@@ -48,7 +41,6 @@ fun test () =
                 45
              )
     in
-    (
         affirm:is_true(kindof(t1, Seq))
         affirm:is_true(kindof(t1, Listable))
         affirm:is_true(kindof(t1, T1))
@@ -65,5 +57,3 @@ fun test () =
         affirm:is_true(kindof(t2, Listable))
         affirm:is_true(kindof(t2, T2))
         affirm:is_true(kindof(t2, Sliceable))
-    )
-)

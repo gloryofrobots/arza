@@ -15,7 +15,6 @@ def f2 (x of Any, y of Seq) = #any_seq
 def f2 (x of Int, y of Any) = #int_any
 
 fun test_binary () =
-(
     affirm:is_equal(f2(1, 0.1), #int_float)
     affirm:is_equal(f2(0.2, 0.1), #float_float)
     affirm:is_equal(f2(0.654, 1), #float_int)
@@ -28,7 +27,6 @@ fun test_binary () =
     affirm:is_equal(f2(f2, Any), #any_any)
     affirm:is_equal(f2({}, []), #any_seq)
     affirm:is_equal(f2(42, #any), #int_any)
-)
 
 /////////////////////////////////////////////
 
@@ -39,11 +37,9 @@ def f1 (x of Int, y, z) = #int
 def f1 (x of Seq, y, z) = #seq
 
 fun test_unary () =
-(
     affirm:is_equal(f1(0, {}, Tuple), #int)
     affirm:is_equal(f1(1 :: 2 :: 3 :: [], 42, ()), #seq)
     affirm:is_equal(f1({}, 42, ()), #any)
-)
 
 ////////////////////////////////////////////////////
 
@@ -55,36 +51,28 @@ def f6 (x, y of String, z, a, b, c of String) = #string_any_string
 
 
 fun test_triple() =
-(
     affirm:is_equal(f6([], 0, 0.1, [], [], "string"), #int_float_string)
     affirm:is_equal(f6([], "string1", 0.1, [], [], "string1"), #string_any_string)
     affirm:is_equal(f6([], [], 0.1, [], [], "string1"), #any_any_string)
-)
 
 ////////////////////////////////////////////////////////
 
 type
-(
     Pig(weight, coolness)
     Elephant(weight, shyness)
     PiggyElly(weight, coolshness)
-)
 
 generic
-(
     made (s1, s2)
     give_birth(mother, father)
     regret_things(person)
-)
 
 interface
-(
     FirstMade(made.0)
     SecondMade(made.1)
     Mother(give_birth.0)
     Father(give_birth.1)
     WisePerson(regret_things)
-)
 
 // TODO at(#weight, self as Instance)
 // or previous_method(#weight, self as Instance)
@@ -96,12 +84,10 @@ def at (key, self of Pig) =
 
 
 def made (p of Pig, e of Elephant) =
-(
     if p.coolness - e.shyness > 0 then
         #Coooool
     else
         #Notcoolatall
-)
 
 def made(e of Elephant, p of Pig) = made(p, e)
 
@@ -116,13 +102,11 @@ derive (Father) for (Elephant)
 
 
 fun test_pigs_and_elephants() =
-(
     let
         p = Pig(100, 100)
         e = Elephant(1000, 90)
         pe = give_birth(p, e)
     in
-    (
         affirm:is_equal(p.weight, (#this_is_not_my_real_weight, 100))
         affirm:is_equal(made(p, e), #Coooool)
         affirm:is_equal(made(e, p), #Coooool)
@@ -132,16 +116,12 @@ fun test_pigs_and_elephants() =
         affirm:is_true(p `kindof` Mother)
 
         affirm:is_true(p `kindof` WisePerson)
-    )
 //    test()
-)
 
 /////////////////////////////////
 
 fun test() =
-(
     test_unary()
     test_binary()
     test_triple()
     test_pigs_and_elephants()
-)

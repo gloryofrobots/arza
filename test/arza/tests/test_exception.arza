@@ -25,16 +25,18 @@ fun test_1 () =
 fun test_2 () =
     affirm:is_equal(
         try
-            try
+            (try
                 1/0
             catch e1 =
                 //result
                 e1
+            )
         catch e2 =
-            try
+            (try
                 error(#LifeSucks)
             catch e3 =
                 e3
+            )
         ,
         ZeroDivisionError((1, 0))
     )
@@ -43,19 +45,21 @@ fun test_2 () =
 fun test_3 () =
     affirm:is_equal(
         try
-            try
+            (try
                 1/0
             catch e1 =
                 e1
             finally
                 error2(#Finally)
+            )
         catch e2 =
-            try
+            (try
                 error(#Catch)
             catch e3 =
                 42
             finally
                 (e2, e3)
+            )
         ,
         ((#error, {reason=#Finally}), (#error, {reason=#Catch}))
     )
@@ -66,21 +70,22 @@ fun test_4() =
     affirm:is_throw_expected (
         () ->
             try
-                try
+                (try
                     1/0
                 catch e1 =
                     e1
                 finally
                     error2(#Finally)
-
+                )
             catch e2 =
-                try
+                (try
                     error(#Catch)
                 catch e3 =
                     42
                 finally
                     //uncatched
                     throw (e2, e3)
+                )
         ,
         (),
         ( (#error, {reason=#Finally}), (#error, {reason=#Catch}) )
@@ -117,11 +122,9 @@ fun test_6() =
 
 
 fun test () =
-(
     test_1()
     test_2()
     test_3()
     test_4()
     test_5()
     test_6()
-)

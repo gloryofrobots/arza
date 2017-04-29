@@ -9,6 +9,7 @@ DEBUG_MODE = False
 # *************************
 # type conversions
 # **************************************
+
 # PYTHON TYPES
 def to_u(obj):
     return unicode(obj._to_string_())

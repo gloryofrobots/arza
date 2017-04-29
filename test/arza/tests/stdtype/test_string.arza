@@ -3,7 +3,6 @@ import string
 import affirm
 
 fun test () =
-(
     affirm:is_equal("AAA" ++ #BBB, "AAABBB")
     affirm:is_equal(#AAA ++ #BBB, #AAABBB)
     affirm:is_equal(#AAA ++ "BBB", "AAABBB")
@@ -40,4 +39,3 @@ fun test () =
     affirm:is_equal(str([1,2,3,4]), "[1, 2, 3, 4]")
     affirm:is_equal(str([1]), "[1]")
     affirm:is_equal(str([]), "[]")
-)

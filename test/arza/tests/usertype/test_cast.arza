@@ -2,17 +2,10 @@ import affirm
 type Robot(battery_power)
 
 def at(#battery_power, s of Robot) =
-(
     (s as Instance).battery_power + 1
-)
-
 
 fun test() =
-(
     let
         r = Robot(42)
     in
-    (
         affirm:is_equal(r.battery_power, 43)
-    )
-)

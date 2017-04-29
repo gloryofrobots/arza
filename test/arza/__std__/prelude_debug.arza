@@ -1,5 +1,40 @@
-fun f () =
-    let x = 1111
-        y = 2222
-    in affirm:is_equal(x, 1111) affirm:is_equal(y, 2222)
+infixr (:=, :=, 10)
+// infix @ as of -> 15
+infixl (<|, <|, 15)
+infixl (|>, |>, 20)
+// infix or -> 25
+infixl (<<, <<, 25)
+infixl (>>, >>, 25)
+// infix and -> 30
+infixl (<, <, 35)
+infixl (>, >, 35)
+infixl (>=, >=, 35)
+infixl (<=, <=, 35)
+infixl (==, ==, 35)
+infixl (!=, !=, 35)
+infixl (++, ++, 40)
+infixl (+, +, 40)
+infixl (-, -, 40)
+infixl (*, *, 50)
+infixl (/, /, 50)
+// use qualified name to prevent infinite loops in cases of declaring local negate function using prefix -
+prefix (-, arza:lang:negate, 55)
+// infix :: -> 60
+infixl (**, **, 60)
+// prefix # -> 70
+prefix (!, !, 70)
+infixl (.., .., 90)
+// infix (  .{ .[ -> 95
+prefix (&, &, 96)
+// infix . : -> 100
+
+use
+    actors:BugEyedMonster as M
+    actors:ProtagonistBlond as B
+in
+    def behavior:encounter(movie, m of M, b of B) when actors:is_monster_killable(b, m)
+        and b.scream_power > SCREAM_THRESHOLD
+        and actors:pretty_enough(b) =
+            behavior:interact(movie, m, (#ENCOUNTER, b)) |>
+            behavior:run_away(_, b, m)
 

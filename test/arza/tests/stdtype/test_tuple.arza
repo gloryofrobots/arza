@@ -4,10 +4,8 @@ fun test () =
     let
         a1 = (1,2,#three,4,5,#six)
     in
-    (
         affirm:is_true(#three `elem` a1)
         affirm:is_true(#six `elem` a1)
         affirm:is_true(#two `not_elem` a1)
         // TODO if is_fals here you can reproduce reverted traceback error
         affirm:is_false(#two `elem` a1)
-    )
