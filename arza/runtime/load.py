@@ -7,6 +7,7 @@ from arza.compile import compiler
 
 
 def import_module(process, name):
+    # print "IMPORT MODULE", name
     if process.modules.has_module(name):
         return process.modules.get_module(name)
     else:
@@ -39,6 +40,7 @@ def load_module(process, name):
     path = "%s.arza" % raw.replace(":", os.sep)
 
     filename = find_module_file(path, modules.path)
+    # print "LOAD MODULE", name, filename
 
     if not filename:
         return error.throw_1(error.Errors.IMPORT_ERROR, name)

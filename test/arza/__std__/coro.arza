@@ -91,8 +91,8 @@ derive (Displayed, Ref) for Reference
 fun _loop(yield_argument, init_fn, args) =
     let
         co = spawn(
-            fun (yield) =
-                let
+            (fun (yield) =
+                (let
                     fn = init_fn(
                         fun (...args) =
                             yield(...yield_argument(args))
@@ -101,6 +101,8 @@ fun _loop(yield_argument, init_fn, args) =
                 in
                     yield()
                     fn(...args)
+                )
+            )
         )
     in
        co()
@@ -130,14 +132,14 @@ fun filter(predicate, coll) =
     spawn(
         fun (yield) =
             let
-                fun _filter
+                (fun _filter
                     | (p, []) = empty(coll)
                     | (p, x::xs) =
                         if p(x) then
                             yield(x)
                             _filter(p, xs)
                         else _filter(p, xs)
-
+                )
              in _filter(predicate, coll)
     )
 
@@ -155,13 +157,15 @@ fun map(fn, co) =
 fun drop(count, co) =
     spawn(
         fun (yield) =
-            let fun _drop
+            let
+                (fun _drop
                     | (_, []) =
                         empty(co)
                     | (0, s) =
                         seq:traverse(map(yield, s))
                     | (n, x::xs) =
                         _drop(n-1, xs)
+                )
 
             in _drop(count, co)
     )
@@ -169,7 +173,7 @@ fun drop(count, co) =
 fun drop_while(fn, co) =
     spawn(
         fun (yield) =
-            let fun _drop_while
+            let (fun _drop_while
                     | (p, []) =
                         empty(co)
                     | (p, xs @ [x, ...xs1]) =
@@ -177,7 +181,7 @@ fun drop_while(fn, co) =
                             _drop_while(p, xs1)
                         else
                             seq:traverse(map(yield, xs))
-
+                 )
             in _drop_while(fn, co)
     )
 
@@ -200,13 +204,14 @@ fun to_list(co) =
 fun scanl(fn, acc, co) =
     spawn(
         fun (yield) =
-            let fun _scanl
-                | (f, acc, []) = empty(co)
-                | (f, acc, x::xs) =
-                    let v = f(x, acc)
-                    in
-                        yield(v)
-                        _scanl(f, v, xs)
+            let (fun _scanl
+                    | (f, acc, []) = empty(co)
+                    | (f, acc, x::xs) =
+                        let v = f(x, acc)
+                        in
+                            yield(v)
+                            _scanl(f, v, xs)
+                )
             in _scanl(fn, acc, co)
     )
 
@@ -226,33 +231,37 @@ fun intersperse(val, co) =
 
 fun zipwith(fn, co1, co2) =
     spawn(
-        let fun __zip (yield) =
-            let fun _zip
-                | (co1, co2) when is_empty(co1) or is_empty(co2) =
-                    []
-                | (x::co1, y::co2) =
-                    if is_empty(co1) or is_empty(co2) then
-                        fn(x,y)
-                    else
-                        yield(fn(x,y))
-                        _zip(co1, co2)
+        let (fun __zip (yield) =
+            let (fun _zip
+                    | (co1, co2) when is_empty(co1) or is_empty(co2) =
+                        []
+                    | (x::co1, y::co2) =
+                        if is_empty(co1) or is_empty(co2) then
+                            fn(x,y)
+                        else
+                            yield(fn(x,y))
+                            _zip(co1, co2)
+                 )
             in _zip(co1, co2)
+            )
         in __zip
     )
 
 fun zip(co1, co2) =
     spawn(
-        let fun __zip (yield) =
-            let fun _zip
-                | (co1, co2) when is_empty(co1) or is_empty(co2) =
-                    []
-                | (x::co1, y::co2) =
-                    if is_empty(co1) or is_empty(co2) then
-                        (x,y)
-                    else
-                        yield((x,y))
-                        _zip(co1, co2)
+        let (fun __zip (yield) =
+            let (fun _zip
+                    | (co1, co2) when is_empty(co1) or is_empty(co2) =
+                        []
+                    | (x::co1, y::co2) =
+                        if is_empty(co1) or is_empty(co2) then
+                            (x,y)
+                        else
+                            yield((x,y))
+                            _zip(co1, co2)
+                 )
             in _zip(co1, co2)
+            )
         in __zip
     )
 ///////////////////////////////////////////////////////

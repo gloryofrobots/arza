@@ -49,18 +49,6 @@ LEVELS_LET = [TT_IN]
 LEVELS_USE = LEVELS_LET
 LEVELS_MATCH = [TT_CASE]
 
-INDENTS_IF = [TT_IF, TT_THEN, TT_ELSE]
-INDENTS_LET = [TT_LET, TT_IN]
-INDENTS_TRY = [TT_TRY, TT_FINALLY, TT_CATCH, TT_ASSIGN]
-INDENTS_MATCH = [TT_MATCH, TT_CASE, TT_ASSIGN]
-INDENTS_USE = [TT_USE, TT_IN]
-INDENTS_FUN = [TT_FUN, TT_CASE, TT_ASSIGN]
-INDENTS_DEF = [TT_DEF, TT_ASSIGN]
-INDENTS_GENERIC = [TT_GENERIC]
-INDENTS_INTERFACE = [TT_INTERFACE]
-INDENTS_DERIVE = [TT_DERIVE]
-INDENTS_TYPE = [TT_TYPE]
-
 INDENTS_CODE = [TT_DOUBLE_COLON, TT_COLON,
                 TT_OPERATOR, TT_DOT, TT_OR, TT_AND,
                 TT_ARROW,
@@ -71,6 +59,19 @@ INDENTS_CODE = [TT_DOUBLE_COLON, TT_COLON,
                 TT_INFIX_DOT_LCURLY,
                 TT_INFIX_DOT_LSQUARE
                 ]
+
+INDENTS_IF = [TT_IF, TT_THEN, TT_ELSE] + INDENTS_CODE
+INDENTS_LET = [TT_LET, TT_IN] + INDENTS_CODE
+INDENTS_TRY = [TT_TRY, TT_FINALLY, TT_CATCH, TT_ASSIGN] + INDENTS_CODE
+INDENTS_MATCH = [TT_MATCH, TT_CASE, TT_ASSIGN] + INDENTS_CODE
+INDENTS_USE = [TT_USE, TT_IN]
+INDENTS_FUN = [TT_FUN, TT_CASE, TT_ASSIGN]
+INDENTS_DEF = [TT_DEF, TT_ASSIGN]
+INDENTS_GENERIC = [TT_GENERIC]
+INDENTS_INTERFACE = [TT_INTERFACE]
+INDENTS_DERIVE = [TT_DERIVE]
+INDENTS_TYPE = [TT_TYPE]
+
 
 
 def parser_error_unknown(parser, position):
@@ -190,8 +191,8 @@ class W_Operator(root.W_Hashable):
         self.led = None
         self.std = None
         self.lbp = -1
-        # self.is_breaker = False
         self.layout = None
+        self.infix_layout = None
 
         self.ambidextra = False
         self.prefix_function = None
@@ -328,6 +329,11 @@ def node_has_layout(parser, token):
     return handler.layout is not None
 
 
+def node_has_infix_layout(parser, token):
+    handler = node_operator(parser, token)
+    return handler.infix_layout is not None
+
+
 def node_lbp(parser, token):
     op = node_operator(parser, token)
     lbp = op.lbp
@@ -363,9 +369,23 @@ def node_layout(parser, node):
     return handler.layout(parser, handler, node)
 
 
+def node_infix_layout(parser, node):
+    handler = node_operator(parser, node)
+    if not handler.infix_layout:
+        parse_error(parser, u"Unknown token infix layout", node)
+
+    return handler.infix_layout(parser, handler, node)
+
+
 def parser_set_layout(parser, ttype, fn):
     h = get_or_create_operator(parser, ttype)
     h.layout = fn
+    return h
+
+
+def parser_set_infix_layout(parser, ttype, fn):
+    h = get_or_create_operator(parser, ttype)
+    h.infix_layout = fn
     return h
 
 
@@ -554,15 +574,25 @@ def base_expression(parser, _rbp, terminators=None):
             if _rbp >= _lbp:
                 break
             previous = parser.token
+
             # advance(parser)
+
             if not op.led:
                 parse_error(parser, u"Unknown token led", previous)
+
+            if node_has_infix_layout(parser, previous):
+                node_infix_layout(parser, previous)
 
             left = op.led(parser, op, previous, left)
         else:
             if _rbp >= _lbp:
                 break
+
             previous = parser.token
+
+            if node_has_infix_layout(parser, previous):
+                node_infix_layout(parser, previous)
+
             advance(parser)
 
             left = node_led(parser, previous, left)
@@ -779,7 +809,8 @@ def _statements(parser, terminators, expected_types, layout):
     return nodes.list_node(stmts)
 
 
-def infix(parser, ttype, infix_node_type, lbp, led):
+def infix(parser, ttype, infix_node_type, lbp, led, layout=None):
+    parser_set_infix_layout(parser, ttype, layout)
     parser_set_led(parser, ttype, infix_node_type, lbp, led)
 
 

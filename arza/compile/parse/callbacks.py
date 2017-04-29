@@ -285,7 +285,6 @@ def infix_lparen(parser, op, token, left):
     index = 0
 
     if parser.token_type != TT_RPAREN:
-        open_free_layout(parser, token, LAYOUT_LPAREN, delimiter=TT_COMMA)
         while True:
             if parser.token_type == TT_WILDCARD:
                 holes.append(index)
@@ -340,11 +339,6 @@ def infix_lparen(parser, op, token, left):
 
     func = nodes.create_lambda_node(token, sig, body)
     return func
-
-
-def _infix_lparen(parser):
-    args = _parse_comma_separated(parser, TT_RPAREN, is_free=True)
-    return args
 
 
 def infix_lsquare(parser, op, token, left):
@@ -684,12 +678,13 @@ def prefix_throw(parser, op, token):
 def _parse_func_pattern(parser, arg_terminator, guard_terminator):
     curtoken = parser.token
     if parser.token_type == TT_LPAREN:
+        open_free_layout(parser, parser.token, LAYOUT_LPAREN, delimiter=TT_COMMA)
         advance_expected(parser, TT_LPAREN)
         if parser.token_type == TT_RPAREN:
             pattern = nodes.create_unit_node(curtoken)
         else:
             els = _parse_comma_separated_to_one_of(parser.fun_pattern_parser, arg_terminator,
-                                                   advance_terminator=False, is_free=True)
+                                                   advance_terminator=False)
             pattern = nodes.create_tuple_node_from_list(curtoken, els)
         advance_expected(parser, TT_RPAREN)
     else:
@@ -759,7 +754,7 @@ def _parse_case_function(parser, term_pattern,
             return parse_error(parser, u"Inconsistent clause arity", args)
 
         advance_expected(parser, TT_ASSIGN)
-        body = statements(parser, [])
+        body = statements(parser, TERM_CASE)
         funcs.append(list_node([
             args, list_node([body])
         ]))
@@ -1058,7 +1053,7 @@ def prefix_typename(parser, op, token):
 
 def infix_lparen_type(parser, op, token, left):
     check_node_type(parser, left, NT_NAME)
-    items = _infix_lparen(parser.symbol_list_parser)
+    items = _parse_comma_separated(parser.symbol_list_parser, TT_RPAREN)
     fields = node_1(NT_LIST, token, items)
     return node_2(NT_TYPE, token, left, fields)
 

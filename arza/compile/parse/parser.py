@@ -181,9 +181,9 @@ class ExpressionParser(BaseParser):
         infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
         infix(self, TT_DOT, None, 100, infix_dot)
 
-        infix(self, TT_LPAREN, None, 95, infix_lparen)
-        infix(self, TT_INFIX_DOT_LCURLY, None, 95, infix_lcurly)
-        infix(self, TT_INFIX_DOT_LSQUARE, None, 95, infix_lsquare)
+        infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
+        infix(self, TT_INFIX_DOT_LCURLY, None, 95, infix_lcurly, layout=layout_lcurly)
+        infix(self, TT_INFIX_DOT_LSQUARE, None, 95, infix_lsquare, layout=layout_lsquare)
         # OTHER OPERATORS ARE DECLARED IN prelude.arza
 
 
@@ -197,7 +197,7 @@ class TypeParser(BaseParser):
 
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
         symbol(self, TT_RPAREN)
-        infix(self, TT_LPAREN, None, 100, infix_lparen_type)
+        infix(self, TT_LPAREN, None, 100, infix_lparen_type, layout=layout_lparen)
         prefix(self, TT_NAME, NT_NAME, prefix_typename)
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
 
@@ -454,9 +454,9 @@ def guard_parser_init(parser):
     infix(parser, TT_BACKTICK_NAME, None, 35, infix_backtick_name)
     infix(parser, TT_DOT, None, 100, infix_dot)
     infix(parser, TT_COLON, NT_IMPORTED_NAME, 110, infix_name_pair)
-    infix(parser, TT_LPAREN, None, 95, infix_lparen)
-    infix(parser, TT_INFIX_DOT_LCURLY, None, 95, infix_lcurly)
-    infix(parser, TT_INFIX_DOT_LSQUARE, None, 95, infix_lsquare)
+    infix(parser, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
+    infix(parser, TT_INFIX_DOT_LCURLY, None, 95, infix_lcurly, layout=layout_lcurly)
+    infix(parser, TT_INFIX_DOT_LSQUARE, None, 95, infix_lsquare, layout=layout_lsquare)
     return parser
 
 

@@ -1184,10 +1184,6 @@ def _compile_node(compiler, code, node):
 
     elif NT_MODULE == ntype:
         _compile_MODULE(compiler, code, node)
-    elif NT_TRAIT == ntype:
-        _compile_TRAIT(compiler, code, node)
-    elif NT_USE == ntype:
-        _compile_USE(compiler, code, node)
     elif NT_DEF == ntype:
         _compile_DEF(compiler, code, node)
     elif NT_INTERFACE == ntype:
@@ -1262,8 +1258,10 @@ def _compile_ast(compiler, ast, ast_scope):
 
 
 def compile(process, env, src, sourcename):
+    # print "PARSE", sourcename
     ast, ast_scope = parser.parse(process, env, src)
     # print ast
+    # print "COMPILE", sourcename
     compiler = Compiler(process, env, sourcename, src)
     code = _compile_ast(compiler, ast, ast_scope)
     return code

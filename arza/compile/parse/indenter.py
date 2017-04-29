@@ -41,7 +41,7 @@ def open_code_layout(parser, token, level_tokens=None, terminators=None, indenta
     if layout.is_free():
         return layout
         # if terminators:
-        #     return open_free_layout(parser, token, terminators, None)
+        #     return open_free_layout(parser, token, terminators, layout.delimiter)
         # else:
         #     return layout
 
@@ -60,9 +60,10 @@ class InvalidIndentationError(Exception):
 
 
 class Layout(root.W_Root):
-    def __init__(self, parent_level, level, type, level_tokens, terminators, delimiter, indentation_tokens):
+    def __init__(self, parent_level, line, level, type, level_tokens, terminators, delimiter, indentation_tokens):
         self.opened = True
         self.parent_level = parent_level
+        self.line = line
         self.level = level
         self.type = type
         self.level_tokens = level_tokens if level_tokens else []
@@ -95,7 +96,7 @@ class Layout(root.W_Root):
             bt_s = "NODE"
         elif bt == OFFSIDE:
             bt_s = "OFFSIDE"
-        return "<Block pl=%d, l=%d, t=%s>" % (self.parent_level, self.level, bt_s)
+        return "<Block plvl=%d, lvl=%d, line=%d, t=%s>" % (self.parent_level, self.level, self.line, bt_s)
 
     def is_code(self):
         return self.type == CODE
@@ -128,6 +129,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
         tokenstream.TokenStream.__init__(self, _tokens, src)
 
         self.tokens = [token for token in _tokens]
+        self.length = len(self.tokens)
 
         # if LOG_INDENTER:
         #     for token in self.tokens:
@@ -141,7 +143,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
         level = self._find_level()
         # self.layouts = plist.empty()
 
-        self.layouts = plist.plist([Layout(-1, level, MODULE, None, None, None, None)])
+        self.layouts = plist.plist([Layout(-1, -1, level, MODULE, None, None, None, None)])
         self.invalidate = False
 
     def advanced_values(self):
@@ -174,8 +176,9 @@ class IndentationTokenStream(tokenstream.TokenStream):
 
         cur = self.current_layout()
         level = tokens.token_level(token)
+        line = tokens.token_line_i(token)
 
-        layout = Layout(cur.level, level, type, level_tokens, terminators, delimiter, indentation_tokens)
+        layout = Layout(cur.level, line, level, type, level_tokens, terminators, delimiter, indentation_tokens)
 
         self.layouts = plist.cons(layout, self.layouts)
 
@@ -226,6 +229,9 @@ class IndentationTokenStream(tokenstream.TokenStream):
         return self.tokens[self.index]
 
     def next_physical(self):
+        if self.index == self.length:
+            return self.tokens[self.length - 1]
+
         token = self.tokens[self.index]
         # log( "++++ NEXT STREAM TOKEN", tokens.token_to_s(token))
         self.index += 1
@@ -266,10 +272,14 @@ class IndentationTokenStream(tokenstream.TokenStream):
 
     def _on_newline(self):
         token = self.skip_newlines()
+        return self._check_layout(token)
+
+    def _check_layout(self, token):
+
         ttype = tokens.token_type(token)
 
-        if ttype == tt.TT_ENDSTREAM:
-            1
+        # if ttype == tt.TT_ENDSTREAM:
+        #     1
 
         cur_type = self.current_type()
 
@@ -315,7 +325,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
                     if layout.is_offside():
                         if not layout.has_level(ttype):
                             self.pop_layout()
-                    elif layout.is_code():
+                    elif layout.is_code() and layout.has_level_tokens():
                         if not layout.has_level(ttype):
                             return indentation_error(u"Unexpected token at layout level", token)
 
@@ -383,6 +393,9 @@ class IndentationTokenStream(tokenstream.TokenStream):
         if ttype == tt.TT_NEWLINE:
             return self._on_newline()
         elif ttype == tt.TT_ENDSTREAM:
+            prev_type = tokens.token_type(self.previous)
+            if prev_type != tt.TT_NEWLINE:
+                self._check_layout(token)
             if api.length_i(self.layouts) != 1:
                 indentation_error(u"Not all layouts closed", token)
 
