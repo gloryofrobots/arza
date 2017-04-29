@@ -8,7 +8,7 @@ import list
 //import tests:dispatch:test_dispatch
 //import tests:stdtype:test_stdtype
 //import tests:usertype:test_usertype
-//import tests:test_expressions
+import tests:test_expressions
 //import tests:test_match
 //import tests:test_exception
 //import tests:test_static_refs
@@ -28,7 +28,7 @@ fun log(...msgs) =
 
 fun test() =
     log("TEST EXPRESSIONS")
-//    test_expressions:test()
+    test_expressions:test()
 //    //
 //    log("TEST STD TYPES")
 //    test_stdtype:test()

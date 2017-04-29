@@ -1,31 +1,5 @@
-import arza:lang:_map
-import string
-import seq
+fun f () =
+    let x = 1111
+        y = 2222
+    in affirm:is_equal(x, 1111) affirm:is_equal(y, 2222)
 
-use Map as 0 in
-    def != (self, other) as std_behavior:not_equal
-    def == (self, other) as std_behavior:equal
-
-use Map as ... in
-    def put (k, v, self) as std_behavior:put
-    def del (el, self) as std_behavior:del
-    def elem (el, self) as std_behavior:elem
-    def is_empty (self) as std_behavior:is_empty
-
-    def repr(self) = str(self)
-
-    def str(self) =
-        let fun _joiner((fst, snd)) =
-            str(fst)
-        in
-            string:join_with(_joiner, to_seq(self), ", ")
-
-    def to_seq(self) = _map:to_list(self)
-
-    def keys(self) = seq:map(at , to_seq(self))
-    def values(self) = seq:map(at , to_seq(self))
---------------------------------------------------
-
-derive (Eq, Displayed,
-       Collection,
-       Dict, Seqable) for Map
