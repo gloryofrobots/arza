@@ -27,14 +27,14 @@ fun test_recursive() =
     in f(list:range_to(5))
 
     let fun f2(list) =
-        let _list = list
-            fun f2(l)
-                | x::xs =
-                    affirm:is_equal(list, _list)
-                    f2(xs)
-                | [] = ()
+            let _list = list
+                fun f2(l)
+                    | x::xs =
+                        affirm:is_equal(list, _list)
+                        f2(xs)
+                    | [] = ()
 
-        in f2(list)
+            in f2(list)
 
     in f2(list:range_to(5))
 

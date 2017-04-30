@@ -98,12 +98,7 @@ class BaseParser:
         return self.ts.previous
 
     def next_token(self):
-        try:
-            return self.ts.next_token()
-        except UnknownTokenError as e:
-            parser_error_unknown(self, e.position)
-        except InvalidIndentationError as e:
-            parser_error_indentation(self, e.msg, e.position, e.line, e.column)
+        return self.ts.next_token()
 
 
     def isend(self):
@@ -281,7 +276,7 @@ class UseParser(BaseParser):
         self.def_parser = DefParser()
         self.name_parser = name_parser_init(BaseParser())
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
-        prefix(self, TT_DEF, None, prefix_use_def)
+        prefix(self, TT_DEF, None, prefix_use_def, layout=layout_def)
 
         self.add_subparsers([
             self.def_parser,
@@ -565,28 +560,33 @@ def newtokenstream(source):
 
 def parse(process, env, src):
     parser = process.parser
-    ts = newtokenstream(src)
-    parser.open(ParseState(process, env, ts))
+    try:
+        ts = newtokenstream(src)
 
-    parser.next_token()
-    stmts, scope = parse_module(parser)
-    assert plist.is_empty(parser.state.scopes)
-    check_token_type(parser, TT_ENDSTREAM)
+        parser.open(ParseState(process, env, ts))
 
-    parser.close()
-    # print stmts
-    if api.DEBUG_MODE:
-        print "************************** OPERATORS ****************************************"
-        print scope.operators
-        print "************************** AST ****************************************"
-        ast = str(nodes.node_to_string(stmts))
-        f = open('debinfo/ast.json', 'w')
-        f.write(ast)
-        f.close()
-        raise SystemExit()
+        parser.next_token()
+        stmts, scope = parse_module(parser)
+        assert plist.is_empty(parser.state.scopes)
+        check_token_type(parser, TT_ENDSTREAM)
 
-    return stmts, scope
+        parser.close()
+        # print stmts
+        if api.DEBUG_MODE:
+            print "************************** OPERATORS ****************************************"
+            print scope.operators
+            print "************************** AST ****************************************"
+            ast = str(nodes.node_to_string(stmts))
+            f = open('debinfo/ast.json', 'w')
+            f.write(ast)
+            f.close()
+            raise SystemExit()
 
+        return stmts, scope
+    except UnknownTokenError as e:
+        parser_error_unknown(parser, e.position)
+    except InvalidIndentationError as e:
+        parser_error_indentation(parser, e.msg, e.position, e.line, e.column)
 
 def write_ast(ast):
     import json

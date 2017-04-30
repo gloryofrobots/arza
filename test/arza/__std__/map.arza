@@ -16,7 +16,7 @@ use Map as ... in
 
     def str(self) =
         let fun _joiner((fst, snd)) =
-            str(fst) ++ "=" ++ repr(snd)
+                str(fst) ++ "=" ++ repr(snd)
         in "{"
                 ++ string:join_with(_joiner, to_seq(self), ", ") ++
            "}"

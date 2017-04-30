@@ -44,6 +44,9 @@ def open_code_layout(parser, token, level_tokens=None, terminators=None, indenta
         #     return open_free_layout(parser, token, terminators, layout.delimiter)
         # else:
         #     return layout
+    level = tokens.token_level(token)
+    if level <= layout.level:
+        return indentation_error(u"Code layout must be indented", token)
 
     return ts.add_layout(token, CODE, level_tokens, terminators, None, indentation_tokens)
 

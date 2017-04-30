@@ -11,7 +11,8 @@ use
     actors:BugEyedMonster as M
     actors:ProtagonistBlond as B
 in
-    def behavior:encounter(movie, m of M, b of B) when actors:is_monster_killable(b, m)
+    def behavior:encounter(movie, m of M, b of B)
+        when actors:is_monster_killable(b, m)
         and b.scream_power > SCREAM_THRESHOLD
         and actors:pretty_enough(b) =
             behavior:interact(movie, m, (#ENCOUNTER, b)) |>

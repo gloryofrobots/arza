@@ -1,40 +1,639 @@
-infixr (:=, :=, 10)
-// infix @ as of -> 15
-infixl (<|, <|, 15)
-infixl (|>, |>, 20)
-// infix or -> 25
-infixl (<<, <<, 25)
-infixl (>>, >>, 25)
-// infix and -> 30
-infixl (<, <, 35)
-infixl (>, >, 35)
-infixl (>=, >=, 35)
-infixl (<=, <=, 35)
-infixl (==, ==, 35)
-infixl (!=, !=, 35)
-infixl (++, ++, 40)
-infixl (+, +, 40)
-infixl (-, -, 40)
-infixl (*, *, 50)
-infixl (/, /, 50)
-// use qualified name to prevent infinite loops in cases of declaring local negate function using prefix -
-prefix (-, arza:lang:negate, 55)
-// infix :: -> 60
-infixl (**, **, 60)
-// prefix # -> 70
-prefix (!, !, 70)
-infixl (.., .., 90)
-// infix (  .{ .[ -> 95
-prefix (&, &, 96)
-// infix . : -> 100
+fun f(predicate, coll) =
+(
+    let
+        (fun _f1 () =
+            1
+//            let
+//                (fun _f2 () =
+//                    1
+//                )
+//            in _f2()
+        )
+    in _f1()
+)
 
-use
-    actors:BugEyedMonster as M
-    actors:ProtagonistBlond as B
-in
-    def behavior:encounter(movie, m of M, b of B) when actors:is_monster_killable(b, m)
-        and b.scream_power > SCREAM_THRESHOLD
-        and actors:pretty_enough(b) =
-            behavior:interact(movie, m, (#ENCOUNTER, b)) |>
-            behavior:run_away(_, b, m)
 
+//infixr (:=, :=, 10)
+//// infix @ as of -> 15
+//infixl (<|, <|, 15)
+//infixl (|>, |>, 20)
+//// infix or -> 25
+//infixl (<<, <<, 25)
+//infixl (>>, >>, 25)
+//// infix and -> 30
+//infixl (<, <, 35)
+//infixl (>, >, 35)
+//infixl (>=, >=, 35)
+//infixl (<=, <=, 35)
+//infixl (==, ==, 35)
+//infixl (!=, !=, 35)
+//infixl (++, ++, 40)
+//infixl (+, +, 40)
+//infixl (-, -, 40)
+//infixl (*, *, 50)
+//infixl (/, /, 50)
+//// use qualified name to prevent infinite loops in cases of declaring local negate function using prefix -
+//prefix (-, arza:lang:negate, 55)
+//// infix :: -> 60
+//infixl (**, **, 60)
+//// prefix # -> 70
+//prefix (!, !, 70)
+//infixl (.., .., 90)
+//// infix (  .{ .[ -> 95
+//prefix (&, &, 96)
+//// infix . : -> 100
+//
+//infixl (+, +, 40)
+//infixl (-, -, 40)
+//infixl (*, *, 50)
+//infixl (/, /, 50)
+//infixl (==, ==, 50)
+//infixl (++, ++, 50)
+//infixl (.., .., 50)
+//infixl (!=, !=, 50)
+//
+//fun f
+//    | (x, y, z) when z == 2 = #first
+//    | (x, y, z) when z == 3 and y == 3 = #second
+//    | (x, y, z) when z == 3 and y == 2 and x == 3 = #third
+//    | (x, y, z) when z == 3 and y == 2 and x == 1 and (x + y == 6 or True) = #fourth
+//    | (x, y, z) when z == 3 and y == 2 and x == 2 or (A `is` True or greater_then_ten(11)) = #fifth
+//    | (_, _, _) = 12
+//
+//def behavior:run_away(movie, b of actors:InnocentBrunette, m of actors:BugEyedMonster)
+//                                                when actors:can_escape_from(b, m)
+//                                                and pretty_enough(b) =
+//     behavior:scream(movie, b)
+//use
+//    actors:BugEyedMonster as M
+//    actors:ProtagonistBlond as B
+//in
+//    def behavior:encounter(movie, m of M, b of B)
+//        when actors:is_monster_killable(b, m)
+//        and b.scream_power
+//        and actors:pretty_enough(b) =
+//            1
+//            2
+//
+//use Map as 0 in
+//    def != (self, other) as std_behavior:not_equal
+//    def == (self, other) as std_behavior:equal
+////
+//use Map as ... in
+//    def put (k, v, self) as std_behavior:put
+//    def del (el, self) as std_behavior:del
+//    def elem (el, self) as std_behavior:elem
+//    def is_empty (self) as std_behavior:is_empty
+//
+//    def repr(self) = str(self)
+//
+//    def str(self) =
+//        let fun _joiner((fst, snd)) =
+//            str(fst) ++ "=" ++ repr(snd)
+//        in "{"
+//                ++ string:join_with(_joiner, to_seq(self), ", ") ++
+//           "}"
+//
+//    def to_seq(self) = _map:to_list(self)
+//
+//    def keys(self) = seq:map(at .. 0, to_seq(self))
+//    def values(self) = seq:map(at .. 1, to_seq(self))
+//--------------------------------------------------
+//
+//derive (Eq, Displayed,
+//       Collection,
+//       Dict, Seqable) for Map
+//
+//
+//fun _loop() =
+//    let
+//        co = spawn(
+//            fun (yield) =
+//                let
+//                    x = 1
+//                in
+//                    yield()
+//                    1
+//        )
+//    in
+//       co()
+//       co
+//
+//
+//fun len() =
+//    if step  and first  or
+//        step and first then
+//        True
+//    else
+//        False
+//
+//
+//fun ref(v) =
+//    spawn(
+//        (fun (yield, v) =
+//            (let
+//                x = 1
+//            in
+//                (match x
+//                    | True = 1
+//                )
+//
+//            )
+//        )
+//  )
+////
+//fun ref(v) =
+//    spawn(
+//        let
+//           (fun f(v) =
+//                (let
+//                    msg = yield(v)
+//                in
+//                    1
+//                )
+//           )
+//        in
+//            True and False
+//            loop(v)
+//    , 1
+//    , fun (yield, v) =
+//        let
+//            x = 1
+//        in
+//            try
+//                True
+//            catch e =
+//                False
+//  )
+//
+//fun fact(n) =
+//    try
+//        try
+//            1
+//        catch e2 =
+//            throw e2
+//    catch e3 =
+//        try
+//            error(#LifeSucks)
+//        catch e4 =
+//            e4
+//    if x then
+//        2
+//    elif x then
+//        4
+//    else
+//        8
+//
+//fun range(first of Int, last of Int) =
+//    let
+//        step =
+//                if last then 1
+//                else 1
+//    in range_by(first, last, step)
+//
+//fun fact(n)
+//    | n =
+//        match
+//                42
+//            | 42 = False
+//
+//        2
+//        (match 42
+//          | 42 = False
+//                    | 42 =
+//              False
+//               True
+//          | 42 =
+//                False
+//        )
+//
+//        match 42
+//            | 42 = False
+//            | 42 =
+//                False
+//                True
+//            | 42 =
+//                False
+//    | n =
+//        match 42
+//            | 42 = False
+//            | 42 =
+//                False
+//                True
+//            | 42 =
+//                False
+//
+//
+//        if x then 2
+//        elif x then
+//                4
+//        else
+//            8
+//
+//        (if x then 2
+//        elif x then
+//                4
+//        else
+//            8)
+//fun f
+//    | n =
+//        match n
+//            | 0 = 1
+//            | 1 = 0
+//
+//        match n
+//            | 0 = 1
+//            | 1 = 0
+//    | n =
+//        match n
+//            | 0 = 1
+//            | 1 = 0
+//
+//        match n
+//            | 0 = 1
+//            | 1 = 0
+//
+//
+//fun range(first of Int, last of Int) =
+//    if last then 1 else 1
+//    let
+//        step = 1 +
+//               if last then 1 else 1
+//    in range_by(first, last, step)
+//
+//fun joiner(_func, _sep) =
+//    ((s, acc) ->
+//        if acc != "" then
+//            acc + _sep +  _func(s)
+//        else
+//            _func(s)
+//    )
+//
+//
+//fun f () =
+//    (
+//    try
+//        1
+//    catch
+//        | True = False
+//        | False =
+//            1
+//            2
+//            3
+//    ,
+//    match 1
+//        | x of int = #first
+//        | x of int when True = #third
+//    ,
+//    42)
+//
+//    affirm:is_equal(
+//        match 1
+//            | x of int = #first
+//            | x of int when True = #third
+//        ,
+//        #second
+//    )
+//
+//use
+//    String as Str
+//    Symbol as Sym
+//in
+//    def ++ (s1 of Str, s2 of Str) = _string:concat(s1, s2)
+//    def ++ (s1 of Str, s2 of Sym) = _string:concat(s1, str(s2))
+//    def ++ (s1 of Sym, s2 of Str) = _string:concat(str(s1), s2)
+//    def ++ (s1 of Sym, s2 of Sym) = symbol(_string:concat(str(s1), str(s2)))
+////
+//use (String, Char, Symbol) as 0 in
+//    def != (self, other) as std_behavior:not_equal
+//    def == (self, other) as std_behavior:equal
+//
+//    def str (self) as std_behavior:str
+//    def repr (self) as std_behavior:repr
+//
+//(use (String, Char, Symbol) as 0 in
+//        def != (self, other) as std_behavior:not_equal
+//        def == (self, other) as std_behavior:equal
+//
+//    def str (self) as std_behavior:str
+//    def repr (self) as std_behavior:repr
+//)
+//
+//(use
+//    String as Str
+//    Symbol as Sym
+//in
+//    (def ++ (s1 of Str, s2 of Str) =
+//        x + y
+//        _string:concat(s1, s2)
+//    )
+//
+//    (def ++ (s1 of Str, s2 of Sym) =
+//        _string:concat(s1, str(s2))
+//    )
+//)
+//use stuff:TestType as T in
+//    def types:test_method_1(a1 of stuff:TestType, a2 of stuff:TestType, self of T) =
+//        x + y
+//        a1.val + a2.val + self.val
+//
+//    def types:test_method_2(a1, self of T, a2) = a1.val + a2.val + self.val
+//    def types:test_method_3(self of T, a1, a2) = a1.val + a2.val + self.val
+//    def types:test_method_4(self of T) = self.val
+//
+//use L as ... in
+//    def len(self) = len(self.l)
+//
+//    def is_empty(self) =
+//        x + y
+//        is_empty(self.l)
+//
+//use Val2 as 0 in
+//    def le(self, other) =
+//        x + y
+//        self.v + other.v
+//    def cmp(x, y) as Order.[cmp]
+//    def ge(x, y) as Order.[ge]
+//
+//
+//def len(self of Int) = len(self.l)
+//
+//def len(self of Int, x) =
+//    len(self.l)
+//    x + y
+//    1/2
+//
+//
+//(def len(self of Int, x) = len(self.l)
+//        x + y
+//    1/2
+//)
+//
+//derive (Eq, Displayed) for (Symbol, Char)
+//
+//derive Concatable for Symbol
+//
+//(derive
+//    (Eq, Displayed)
+//    for (Symbol, Char)
+//)
+//
+//(derive
+//    Concatable
+//    for Symbol)
+//
+//
+//// TODO EXPORT AS
+//
+//export (f_ab, f_ab_2, CONST)
+//export f_ab
+//
+//type GT
+//
+//type
+//    LT
+//    Some (val)
+//    Vec3(x, y, z)
+//
+//(type
+//    LT
+//        Some (val)
+//
+//            Vec3(x, y, z)
+//)
+//
+//fun f(x,y) =
+//
+//    try
+//        1/0
+//        x - y
+//    catch e2 =
+//        throw e2
+//    try
+//        throw (1,2,"ERROR")
+//    catch
+//        | err @ (1, y, 3) = #first
+//        | (1,2, "ERROR@") = #second
+//        | err @ (1, 2, x) = #third
+//    finally
+//        (#fourth, err, x)
+//
+//    try
+//        try
+//            1/0
+//            x - y
+//        catch e2 =
+//            throw e2
+//    catch e3 =
+//        try
+//            error(#LifeSucks)
+//        catch e4 =
+//            e4
+//    (try
+//        (try
+//                    1/0
+//                    x - y
+//                    catch e2 =
+//                        throw e2
+//        )
+//    catch e3 =
+//                (try
+//                 error(#LifeSucks)
+//                    catch e4 =
+//            e4
+//        )
+//    )
+//
+//    try
+//        throw (1,2,"ERROR")
+//    catch
+//        | err @ (1, y, 3) = #first
+//        | (1,2, "ERROR@") = #second
+//        | err @ (1, 2, x) = #third
+//    finally
+//        (#fourth, err, x)
+//
+//    affirm:is_equal((try
+//                        throw (1,2,"ERROR")
+//                     catch
+//                        | err @ (1, y, 3) = #first
+//                        | (1,2, "ERROR@") = #second
+//                        | err @ (1, 2, x) = #third
+//                     finally
+//                        (#fourth, err, x)
+//                     ),
+//                     (#fourth, (1, 2, "ERROR"), "ERROR")
+//    )
+//
+//
+//    let
+//        x = 1
+//        f = (x) -> 1
+//    in
+//        x + y
+//        x + f(x, x + y)
+//
+//    (let
+//        x = 1
+//                    f = (x) -> 1
+//                in
+//            x + y
+//                        x + f(x, x + y)
+//    )
+//
+//    f((fun (x, y) = x + y), 1, 2)
+//    2 + 2 +
+//        3
+//    3
+//    (4)
+//    (fun(x)=
+//        1 2)
+//
+//    (if (fun(x)=1) then 2
+//    else
+//            3)
+//    (match 42
+//            | 42 = False
+//        | 43 = True 24)
+//    24
+//    match 42
+//        | B4 @ 2 = (#result1, B4)
+//        | B4 @ 42 = ((#result2, B4), 2)
+//
+//    (if True then
+//                          2
+//        elif False then
+//            3
+//            5; 4 + 5
+//                            else 5
+//    )
+//
+//    if True then
+//        2
+//    elif False then
+//        3
+//        5;
+//        4 + 5
+//    else
+//        5
+//
+//
+//
+//
+//let
+//    fst = c -> at(0, c)
+//    snd = c -> at(1, c)
+//    thrd = c -> at(2, c)
+//    frth = c -> at(3, c)
+//
+//(let
+//            fst = c -> at(0, c)
+//    snd = c -> at(1, c)
+//)
+//
+//let x = 2
+//
+//generic
+//    +(x, y)
+//    negate(x)
+//    put(key, value, self)
+//
+//(generic
+//            +(x, y)
+//
+//        negate(x)
+//    put(key, value, self)
+//)
+//
+//(interface
+//    Coll(put, del)
+//                Dict(keys, values) is Collection    Sliceable(slice.2, drop.1, take.1)
+//)
+////
+//interface
+//    Coll(put, del)
+//    Dict(keys, values) is Collection
+//    Sliceable(slice.2, drop.1, take.1)
+//
+//
+//(fun f | 12 = 42
+//)
+//
+//
+//(fun fact(n)
+//    | 0 = 1
+//    | n =
+//        n * fact (n - 1)
+//        (match 42
+//                | 42 = False
+//            | 43 = True 24)
+//)
+//
+//fun fact(n)
+//    | n =
+//        (match 42
+//          | 42 = False
+//                    | 42 =
+//              False
+//               True
+//          | 42 =
+//                False
+//        )
+//
+//        match 42
+//            | 42 = False
+//            | 42 =
+//                False
+//                True
+//            | 42 =
+//                False
+//    | n =
+//        match 42
+//            | 42 = False
+//            | 42 =
+//                False
+//                True
+//            | 42 =
+//                False
+//
+//        match 42 | 42 = False
+//                 | 42 = False
+//                        True
+//                 | 42 = False
+//
+//        if x then 2
+//        elif x then
+//                4
+//        else
+//            8
+//
+//        (if x then 2
+//        elif x then
+//                4
+//        else
+//            8)
+//
+//import affirm
+//
+//import tests:lib_az:abc:module_ab as ab
+//
+////
+//////unqualified names f_ab,f_ab_2,const
+//from tests:lib_az:abc:module_ab  import (f_ab, f_ab_2, CONST as const)
+////
+//////ab2:f_ab
+//import tests:lib_az:abc:module_ab as ab2 (f_ab, f_ab_2)
+////
+//////module_ab:f_ab, module_ab:f_ab_2
+//import tests:lib_az:abc:module_ab (f_ab, f_ab_2)
+////
+//////all exported names imported
+//from tests:lib_az:efg:module_e import _
+//
+////ab_3_f_ab
+//from tests:lib_az:abc:module_ab import (f_ab as ab_3_f_ab)
+////importing same names dont cause errors because names are equal
+//from tests:lib_az:abc:module_ab hide (CONST)
+////ab5:f_ab_2 only
+//import tests:lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
+//

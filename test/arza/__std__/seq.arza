@@ -149,13 +149,13 @@ fun span(predicate, coll)
 
 fun partition(predicate, l) =
     let fun _partition(pred, l, a, b)
-        | (pred, x::xs, a, b) =
-            if pred(x) then
-               _partition(pred, xs, x::a, b)
-            else
-               _partition(pred, xs, a, x::b)
+            | (pred, x::xs, a, b) =
+                if pred(x) then
+                   _partition(pred, xs, x::a, b)
+                else
+                   _partition(pred, xs, a, x::b)
 
-        | (pred, [], a, b) = (reverse(a), reverse(b))
+            | (pred, [], a, b) = (reverse(a), reverse(b))
 
     in _partition(predicate, l, [], [])
 
@@ -241,8 +241,8 @@ fun zip3(s1, s2, s3)
 
 fun unzip3(l) =
     let fun _unzip3(l, acc_x, acc_y, acc_z)
-        | ([(x, y, z), ...ts], xs, ys, zs) = _unzip3(ts, x::xs, y::ys, z::zs)
-        | ([], xs, ys, zs) = (reverse(xs), reverse(ys), reverse(zs))
+            | ([(x, y, z), ...ts], xs, ys, zs) = _unzip3(ts, x::xs, y::ys, z::zs)
+            | ([], xs, ys, zs) = (reverse(xs), reverse(ys), reverse(zs))
     in _unzip3(l, [], [], [])
 
 

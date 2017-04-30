@@ -423,13 +423,12 @@ def prefix_lparen(parser, op, token):
         items = _parse_comma_separated(parser, TT_RPAREN, initial=items)
         return node_1(NT_TUPLE, token, items)
 
-
     parse_error(parser, u"Invalid syntax inside parenthesis. Expect () (<exp>) or (<exp> , ...<exp>)", parser.token)
-        # # group expression
-        # rest = statements(parser, TERM_LPAREN)
-        # advance_expected(parser, TT_RPAREN)
-        # stmts = plist.cons(e, rest)
-        # return stmts
+    # # group expression
+    # rest = statements(parser, TERM_LPAREN)
+    # advance_expected(parser, TT_RPAREN)
+    # stmts = plist.cons(e, rest)
+    # return stmts
 
 
 def prefix_lparen_tuple(parser, op, token):
@@ -620,8 +619,9 @@ def _parse_pattern(parser):
 
 
 def _parse_match(parser, token, exp):
-    status = open_code_layout(parser, parser.token, level_tokens=LEVELS_MATCH,
-                              indentation_tokens=INDENTS_MATCH)
+    open_offside_layout(parser, parser.token, level_tokens=LEVELS_MATCH,
+                        indentation_tokens=INDENTS_MATCH)
+
     check_token_type(parser, TT_CASE)
     pattern_parser = parser.pattern_parser
     branches = []
@@ -675,10 +675,6 @@ def _parse_func_pattern(parser, arg_terminator, guard_terminator):
         pattern = ensure_tuple(e)
 
     if parser.token_type == TT_WHEN:
-        # TODO REMOVE
-        # if not allow_guards:
-        #     return parse_error(parser, u"Unexpected guard expression", curnode)
-
         advance(parser)
         guard = expression(parser.guard_parser, 0, guard_terminator)
         pattern = node_2(NT_WHEN, get_node_token(guard), pattern, guard)
@@ -753,7 +749,7 @@ def _parse_recursive_function(parser, name, signature, term_pattern, term_guard)
     """
     # bind to different name for not confusing reading code
     # it serves as basenode for node factory functions
-    open_code_layout(parser, parser.token, level_tokens=LEVELS_MATCH, indentation_tokens=INDENTS_FUN)
+    open_offside_layout(parser, parser.token, level_tokens=LEVELS_MATCH, indentation_tokens=INDENTS_FUN)
     node = signature
 
     if nodes.node_type(signature) == NT_WHEN:
