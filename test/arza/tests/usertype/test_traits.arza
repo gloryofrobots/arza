@@ -35,17 +35,17 @@ let
 
 
         (cmp) = (x, y) ->
-            if eq(x, x) then EQ
+            (if eq(x, x) then EQ
             elif le(x, y) then LT
-            else GT,
+            else GT),
 
         (max) = (x, y) ->
-            if x `le` y then y
-            else  y,
+            (if x `le` y then y
+            else  y),
 
         (min) = (x, y) ->
-            if x `le` y then x
-            else  y
+            (if x `le` y then x
+            else  y)
     }
 
 

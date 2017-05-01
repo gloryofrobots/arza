@@ -53,47 +53,47 @@ def led_let_assign(parser, op, token, left):
 
 
 def layout_use(parser, op, node):
-    open_offside_layout(parser, node, LEVELS_USE, INDENTS_USE)
+    open_statement_layout(parser, node, LEVELS_USE, INDENTS_USE)
 
 
 def layout_type(parser, op, node):
-    open_offside_layout(parser, node, None, INDENTS_TYPE)
+    open_statement_layout(parser, node, None, INDENTS_TYPE)
 
 
 def layout_generic(parser, op, node):
-    open_offside_layout(parser, node, None, INDENTS_GENERIC)
+    open_statement_layout(parser, node, None, INDENTS_GENERIC)
 
 
 def layout_interface(parser, op, node):
-    open_offside_layout(parser, node, None, INDENTS_INTERFACE)
+    open_statement_layout(parser, node, None, INDENTS_INTERFACE)
 
 
 def layout_derive(parser, op, node):
-    open_offside_layout(parser, node, None, INDENTS_DERIVE)
+    open_statement_layout(parser, node, None, INDENTS_DERIVE)
 
 
 def layout_def(parser, op, node):
-    open_offside_layout(parser, node, None, INDENTS_DEF)
+    open_statement_layout(parser, node, None, INDENTS_DEF)
 
 
 def layout_match(parser, op, node):
-    open_offside_layout(parser, node, LEVELS_MATCH, INDENTS_MATCH)
+    open_statement_layout(parser, node, LEVELS_MATCH, INDENTS_MATCH)
 
 
 def layout_try(parser, op, node):
-    open_offside_layout(parser, node, LEVELS_TRY, INDENTS_TRY)
+    open_statement_layout(parser, node, LEVELS_TRY, INDENTS_TRY)
 
 
 def layout_let(parser, op, node):
-    open_offside_layout(parser, node, LEVELS_LET, INDENTS_LET)
+    open_statement_layout(parser, node, LEVELS_LET, INDENTS_LET)
 
 
 def layout_if(parser, op, node):
-    open_offside_layout(parser, node, LEVELS_IF, INDENTS_IF)
+    open_statement_layout(parser, node, LEVELS_IF, INDENTS_IF)
 
 
 def layout_fun(parser, op, node):
-    open_offside_layout(parser, node, LEVELS_FUN, INDENTS_FUN)
+    open_statement_layout(parser, node, LEVELS_FUN, INDENTS_FUN)
 
 
 def layout_lparen(parser, op, node):
@@ -618,10 +618,9 @@ def _parse_pattern(parser):
     return pattern
 
 
-def _parse_match(parser, token, exp):
-    open_offside_layout(parser, parser.token, level_tokens=LEVELS_MATCH,
-                        indentation_tokens=INDENTS_MATCH)
-
+def prefix_match(parser, op, token):
+    exp = free_expression(parser, 0, TERM_CASE)
+    open_offside_layout(parser, parser.token, LEVELS_MATCH, INDENTS_MATCH)
     check_token_type(parser, TT_CASE)
     pattern_parser = parser.pattern_parser
     branches = []
@@ -640,12 +639,6 @@ def _parse_match(parser, token, exp):
         parse_error(parser, u"Empty match expression", token)
 
     return node_2(NT_MATCH, token, exp, list_node(branches))
-
-
-def prefix_match(parser, op, token):
-    exp = free_expression(parser, 0, TERM_CASE)
-    m = _parse_match(parser, token, exp)
-    return m
 
 
 def prefix_throw(parser, op, token):
@@ -710,7 +703,7 @@ def _parse_case_function(parser, term_pattern,
     # bind to different name for not confusing reading code
     # it serves as basenode for node factory functions
 
-    layout = open_offside_layout(parser, parser.token, LEVELS_MATCH, INDENTS_FUN)
+    open_offside_layout(parser, parser.token, LEVELS_MATCH, INDENTS_FUN)
     check_token_type(parser, TT_CASE)
 
     funcs = []

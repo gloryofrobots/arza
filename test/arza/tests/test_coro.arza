@@ -9,7 +9,7 @@ fun test_simple () =
     let co =
         coro:spawn(
              (yield, x) ->
-                let _co1 =
+                (let _co1 =
                     coro:spawn(
                          (yield2, y) ->
                             let
@@ -17,15 +17,17 @@ fun test_simple () =
                             in  send()
                     )
                 in
-                   affirm:is_equal(x, 23)
+                    affirm:is_equal(x, 23)
 
-                   let
+                    (let
                         x1 = yield(_co1(x))
                         x2 = yield(x1)
-                   in
-                       affirm:is_equal(x1, 34)
-                       affirm:is_equal(x2, 44)
-                       x2
+                    in
+                        affirm:is_equal(x1, 34)
+                        affirm:is_equal(x2, 44)
+                        x2
+                    )
+                )
         )
     in
         affirm:is_equal(co(23), 65)
@@ -50,12 +52,13 @@ fun test_basic () =
     let co =
         coro:spawn(
             fun(yield, q) =
-                let
+                (let
                     x = yield(q + 1)
                     y = yield(1 + x)
                     z = yield(1 + y)
                 in
                     x + y + z
+                )
         )
     in
         let
@@ -70,7 +73,7 @@ fun test_basic () =
 fun enum_from(num) =
     let co = coro:spawn(
         fun(yield, _from) =
-            let
+            (let
                 (fun _looper(num) =
                    yield(num)
                    _looper(num + 1)
@@ -78,6 +81,7 @@ fun enum_from(num) =
             in
                 yield(_from)
                 _looper(_from)
+            )
         )
     in
         co(num)
@@ -99,10 +103,13 @@ fun enum_from_to(_from, _to) when _from < _to =
        coro:loop_reduce(
             (fun (looper) =
                 (fun (num1, num2) =
-                    if num1 < num2 then
+                    (if num1 < num2 then
                         looper(num1 + 1, num2)
                     else
-                        num2 + 1)),
+                        num2 + 1
+                    )
+                )
+            ),
             _from - 1,
             _to - 2
         )

@@ -48,7 +48,7 @@ fun test_base_expressions() =
     affirm:is_true(if 5 > 4 then True else False)
     affirm:is_false(if 5 < 4 then True else False)
     affirm:is_false(if 5 == 4 then True else False)
-    affirm:is_equal(if 13 == 12 then 42 * 2 else if 13 == 14 then 12 * 2 else 1, 1)
+    affirm:is_equal((if 13 == 12 then 42 * 2 else (if 13 == 14 then 12 * 2 else 1)), 1)
 
     let
         a2_4 = #four
@@ -170,12 +170,12 @@ fun test_whitespaces_in_expressions() =
 
     let
         T1 = (1,
-              fun | 5 = 25
-                  | 6 = 45,
-              fun
+              (fun | 5 = 25
+                  | 6 = 45),
+              (fun
                  | 5 = 25
-                 | 6 = 45,
-              fun x = 25,
+                 | 6 = 45),
+              (fun x = 25),
               25)
     in
         affirm:is_equal(T1.1(5), 25)
@@ -193,11 +193,13 @@ fun test_whitespaces_in_expressions() =
     let
         T5 =
             (1
-            , fun | 5 = 25
-                  | 6 = 45
-            , fun
+            , (fun | 5 = 25
+                   | 6 = 45
+              )
+            , (fun
                 | 5 = 25
                 | 6 = 45
+              )
             // call
             , (x -> x) (
                           45)
@@ -325,12 +327,13 @@ fun test_operators_and_newlines() =
 
 fun test_let() =
     let (fun _f(x, y) =
-            let
+            (let
                 x = 11
                 y = 12
             in
                 affirm:is_equal(x, 11)
                 affirm:is_equal(y, 12)
+            )
 
         )
     in

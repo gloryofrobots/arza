@@ -1,5 +1,6 @@
 from arza.compile.parse.token_type import *
-from arza.compile.parse.indenter import (open_free_layout, open_code_layout, open_offside_layout)
+from arza.compile.parse.indenter import (open_free_layout, open_code_layout,
+                                         open_statement_layout, open_offside_layout)
 from arza.compile.parse.node_type import *
 from arza.compile.parse import nodes
 from arza.compile.parse import tokens

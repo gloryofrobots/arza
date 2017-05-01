@@ -26,6 +26,19 @@ def open_free_layout(parser, token, terminators, delimiter=None):
     return ts.add_layout(token, FREE, None, terminators, delimiter, None)
 
 
+def open_statement_layout(parser, token, level_tokens, indentation_tokens):
+    ts = parser.ts
+    layout = ts.current_layout()
+    if layout.is_free():
+        if layout.statements_count > 0:
+            return indentation_error(u"This code block must be enclosed in parentheses", token)
+
+        layout.statements_count += 1
+        return layout
+
+    return ts.add_layout(token, OFFSIDE, level_tokens, None, None, indentation_tokens)
+
+
 def open_offside_layout(parser, token, level_tokens, indentation_tokens):
     ts = parser.ts
     layout = ts.current_layout()
@@ -73,6 +86,7 @@ class Layout(root.W_Root):
         self.indentation_tokens = indentation_tokens if indentation_tokens else []
         self.terminators = terminators if terminators else []
         self.delimiter = delimiter
+        self.statements_count = 0
 
     def support_indentation(self, ttype):
         return ttype in self.indentation_tokens
