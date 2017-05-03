@@ -142,9 +142,11 @@ def indentation_error(msg, token):
 
 
 class IndentationTokenStream(tokenstream.TokenStream):
-    def __init__(self, _tokens, src):
+    def __init__(self, lexer, src):
+        _tokens = lexer.tokens()
         tokenstream.TokenStream.__init__(self, _tokens, src)
 
+        self.lexer = lexer
         self.tokens = [token for token in _tokens]
         self.length = len(self.tokens)
 
@@ -161,7 +163,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
         # self.layouts = plist.empty()
 
         self.layouts = plist.plist([Layout(-1, -1, level, MODULE, None, None, None, None)])
-        self.invalidate = False
+        self.indentation_token = None
 
     def advanced_values(self):
         t = [tokens.token_value_s(token) for token in self.produced_tokens]
@@ -191,6 +193,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
     def add_layout(self, token, type, level_tokens, terminators,
                    delimiter, indentation_tokens):
 
+        self.check_indentation_tokens(token)
         cur = self.current_layout()
         level = tokens.token_level(token)
         line = tokens.token_line_i(token)
@@ -205,13 +208,14 @@ class IndentationTokenStream(tokenstream.TokenStream):
 
         return layout
 
-    # def add_node_layout(self, node, level_tokens, terminators):
-    #     layout = self.current_layout()
-    #     if layout.is_free():
-    #         return layout
-    #         # return self._add_layout(node, FREE, terminators=terminators, delimiter=delimiter)
-    #
-    #     return self._add_layout(node, NODE, level_tokens=level_tokens, terminators=terminators)
+    def check_indentation_tokens(self, token):
+        if self.indentation_token is None:
+            self.indentation_token = self.lexer.indentation
+            return
+
+        if self.indentation_token != self.lexer.indentation:
+            return indentation_error(u"Tabs and spaces can not be used at he same time",
+                                     token)
 
 
     def has_layouts(self):
@@ -289,6 +293,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
 
     def _on_newline(self):
         token = self.skip_newlines()
+        self.check_indentation_tokens(token)
         return self._check_layout(token)
 
     def _check_layout(self, token):
@@ -410,9 +415,9 @@ class IndentationTokenStream(tokenstream.TokenStream):
         if ttype == tt.TT_NEWLINE:
             return self._on_newline()
         elif ttype == tt.TT_ENDSTREAM:
-            prev_type = tokens.token_type(self.previous)
-            if prev_type != tt.TT_NEWLINE:
-                self._check_layout(token)
+            # prev_type = tokens.token_type(self.previous)
+            # if prev_type != tt.TT_NEWLINE:
+            #     self._check_layout(token)
             if api.length_i(self.layouts) != 1:
                 indentation_error(u"Not all layouts closed", token)
 

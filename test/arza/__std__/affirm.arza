@@ -94,13 +94,13 @@ fun is_false(val1) = is_equal(val1, False)
 type Success(val)
 
 fun _is_throw (fn, args) =
-        match
-            try
-                fn(...args)
-                Success(True)
-            catch e = e
-        | _ of Success = fail(["exception expected", fn])
-        | err = err
+    match
+        try
+            fn(...args)
+            Success(True)
+        catch e = e
+    | _ of Success = fail(["exception expected", fn])
+    | err = err
 
 
 fun is_throw(fn, args) =
@@ -124,4 +124,3 @@ fun is_not_throw(fn, args) =
             catch e = e
         | _ of Success =  True
         | err = fail(["unexpected exception", fn, err])
---------------------------------------------------

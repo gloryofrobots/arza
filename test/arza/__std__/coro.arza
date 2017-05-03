@@ -200,9 +200,7 @@ fun each(co) =
     spawn(
         fun (yield) =
             (fun | [] = empty(co)
-                 | s = seq:traverse(
-                         map(yield, s)
-                       )
+                 | s = seq:traverse( map(yield, s) )
             )(co)
     )
 
@@ -214,7 +212,8 @@ fun to_list(co) =
 fun scanl(fn, acc, co) =
     spawn(
         fun (yield) =
-            (let (fun _scanl
+            (let
+                (fun _scanl
                     | (f, acc, []) = empty(co)
                     | (f, acc, x::xs) =
                         (let v = f(x, acc)
@@ -244,7 +243,7 @@ fun intersperse(val, co) =
 
 fun zipwith(fn, co1, co2) =
     spawn(
-        let (fun __zip (yield) =
+        fun (yield) =
                 (let (fun _zip
                         | (co1, co2) when is_empty(co1) or is_empty(co2) =
                             []
@@ -256,15 +255,14 @@ fun zipwith(fn, co1, co2) =
                                 _zip(co1, co2)
                             )
                      )
-                in _zip(co1, co2)
+                in
+                    _zip(co1, co2)
                 )
-            )
-        in __zip
     )
 
 fun zip(co1, co2) =
     spawn(
-        let (fun __zip (yield) =
+        fun (yield) =
                 (let (fun _zip
                         | (co1, co2) when is_empty(co1) or is_empty(co2) =
                             []
@@ -279,8 +277,6 @@ fun zip(co1, co2) =
                 in
                     _zip(co1, co2)
                 )
-            )
-        in __zip
     )
 ///////////////////////////////////////////////////////
 

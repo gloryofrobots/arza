@@ -74,13 +74,23 @@ INDENTS_DERIVE = [TT_DERIVE]
 INDENTS_TYPE = [TT_TYPE]
 
 
-
 def parser_error_unknown(parser, position):
     line = get_line_for_position(parser.ts.src, position)
     return error.throw(error.Errors.PARSE_ERROR,
                        space.newtuple([
                            space.newint(position),
                            space.newstring(u"Unknown Token"),
+                           space.newstring(line)
+                       ]))
+
+
+def parser_error_tabs_and_spaces_mixup(src, position, lineno, column):
+    line = get_line_for_position(src, position)
+    return error.throw(error.Errors.PARSE_ERROR,
+                       space.newtuple([
+                           space.newint(lineno),
+                           space.newint(column),
+                           space.newstring(u"Mixing spaces and tabs in one file is forbidden"),
                            space.newstring(line)
                        ]))
 

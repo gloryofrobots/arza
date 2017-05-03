@@ -178,6 +178,143 @@ fun nbn_3 () =
 
 
 
+ys =
+    coro:take(10,
+        coro:map(x -> (x, str(x)),
+            coro:drop(3,
+                 coro:filter(odd, numbers))))
+
+    y = (coro:take 10
+            (coro:map x->(x, str(x))
+                (coro:drop 3
+                    (coro:filter odd numbers))))
+
+
+fun zipwith(fn, co1, co2) =
+    spawn(
+        fun (yield) =
+                (let (fun _zip
+                        | (co1, co2) when is_empty(co1) or is_empty(co2) =
+                            []
+                        | (x::co1, y::co2) =
+                            (if is_empty(co1) or is_empty(co2) then
+                                fn(x,y)
+                            else
+                                yield(fn(x,y))
+                                _zip(co1, co2)
+                            )
+                     )
+                in
+                    _zip(co1, co2)
+                )
+    )
+
+
+
+fun zipwith(fn, co1, co2) =
+    spawn(
+        fun (yield)
+            let
+                fun _zip
+                    | (co1, co2) when is_empty(co1) or is_empty(co2) =
+                        []
+                    | (x::co1, y::co2) =
+                        if is_empty(co1) or is_empty(co2) then
+                            fn(x,y)
+                        else
+                            yield(fn(x,y))
+                            _zip(co1, co2)
+                        end
+                 end
+            in
+                _zip(co1, co2)
+            end
+    )
+end
+
+
+fun range_by (first of Int, last of Int, step of Int) =
+    let fun _range_by
+        | (N, X, D, L) when N >= 4 =
+            let
+                Y = X - D
+                Z = Y - D
+                W = Z - D
+            in
+                _range_by(N - 4, W - D, D, W :: Z :: Y :: X :: L)
+            end
+
+        | (N, X, D, L) when N >= 2 =
+
+            let
+                Y = X - D
+            in
+                _range_by(N - 2, Y - D, D, Y :: X :: L)
+            end
+
+        | (1, X, _, L) = X :: L
+
+        | (0, _, _, L) = L
+        end
+    in
+        if step > 0 and first - step <= last or
+            step < 0 and first - step >= last then
+
+            let
+                n = ((last - first + step) / step) - 1
+            in
+                _range_by(n, (step * (n - 1) + first), step, [])
+            end
+
+        elif step == 0 and first == last then
+            _range_by(1, first, step, [])
+        else
+            throw (#InvalidRange, first, last, step)
+        end
+    end
+end
+
+(fun range_by (first of Int, last of Int, step of Int) =
+    (let
+        (fun _range_by
+            | (N, X, D, L) when N >= 4 =
+                (let
+                    Y = X - D
+                    Z = Y - D
+                    W = Z - D
+                in
+                    _range_by(N - 4, W - D, D, W :: Z :: Y :: X :: L)
+                )
+
+            | (N, X, D, L) when N >= 2 =
+
+                (let
+                    Y = X - D
+                in
+                    _range_by(N - 2, Y - D, D, Y :: X :: L)
+                )
+
+            | (1, X, _, L) = X :: L
+
+            | (0, _, _, L) = L
+        )
+    in
+        (if step > 0 and first - step <= last or
+            step < 0 and first - step >= last then
+
+            (let
+                n = ((last - first + step) / step) - 1
+            in
+                _range_by(n, (step * (n - 1) + first), step, [])
+            )
+
+        elif step == 0 and first == last then
+            _range_by(1, first, step, [])
+        else
+            throw (#InvalidRange, first, last, step)
+        )
+    )
+)
 
 
 
