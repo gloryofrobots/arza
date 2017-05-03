@@ -124,7 +124,7 @@ class W_PMap(W_Root):
     def to_l(self):
         if not self._root:
             return []
-        pairs = self._root.reduce(_tostring, space.newvector([]))
+        pairs = self._root.reduce(_tostring, space.newarray([]))
         lst = pairs.to_l()
         return lst
 

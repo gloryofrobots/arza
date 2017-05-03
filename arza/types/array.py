@@ -3,8 +3,7 @@ from arza.misc import platform
 from arza.runtime import error
 
 
-
-class W_Vector(W_Root):
+class W_Array(W_Root):
     def __init__(self, items):
         assert isinstance(items, list)
         self._items = items
@@ -28,13 +27,13 @@ class W_Vector(W_Root):
             return False
 
     def _type_(self, process):
-        return process.std.types.Vector
+        return process.std.types.Array
 
     def _clone_(self):
         items = []
         for v in self._items:
             items.append(v)
-        return W_Vector(items)
+        return W_Array(items)
 
     def _at_(self, index):
         from arza.types.space import newvoid, isint
@@ -85,8 +84,8 @@ class W_Vector(W_Root):
         self._items.append(v)
 
     def append_vector_items(self, vec):
-        from arza.types.space import isvector
-        assert isvector(vec)
+        from arza.types.space import isarray
+        assert isarray(vec)
         self.append_many(vec._items)
 
     def append_many(self, items):
@@ -124,4 +123,4 @@ class W_Vector(W_Root):
 
 
 def concat(process, v1, v2):
-    return W_Vector(v1._items + v2._items)
+    return W_Array(v1._items + v2._items)

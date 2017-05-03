@@ -17,13 +17,6 @@ class UnknownTokenError(Exception):
         self.position = position
 
 
-class TabsAndSpacesMixupError(Exception):
-    def __init__(self, position, line, column):
-        self.position = position
-        self.line = line
-        self.column = column
-
-
 class LexerError(Exception):
     """ Lexer error exception.
 
@@ -63,30 +56,24 @@ class Lexer:
             return None
         except LexingError as e:
             pos = e.source_pos
-            raise (UnknownTokenError(pos.idx))
+            raise UnknownTokenError(pos.idx)
 
     def _token(self):
         t = next(self.stream)
         # print tokens.token_type_to_str(t.name), t.value
         _type = t.name
+
         if _type < 0:
+            # for checking mixing spaces and tabs in one script
             if _type < -1:
                 self.indentation = _type
-
-            # if _type == -2:
-            #     if self.tabs is True:
-            #         raise TabsAndSpacesMixupError(t.source_pos.idx, t.source_pos.lineno, t.source_pos.colno)
-            #     self.spaces = True
-            # elif _type == -3:
-            #     if self.spaces is True:
-            #         raise TabsAndSpacesMixupError(t.source_pos.idx, t.source_pos.lineno, t.source_pos.colno)
-            #     self.tabs = True
 
             return self._token()
 
         token = tokens.newtoken(t.name, t.value,
                                 space.newint(t.source_pos.idx),
-                                space.newint(t.source_pos.lineno), space.newint(t.source_pos.colno))
+                                space.newint(t.source_pos.lineno), space.newint(t.source_pos.colno),
+                                self.indentation)
 
         return token
 
@@ -97,8 +84,10 @@ class Lexer:
             tok = self.token()
             if tok is None:
                 # ADD FAKE NEWLINE TO SUPPORT ONE LINE SCRIPT FILES
-                yield tokens.newtoken(tokens.TT_NEWLINE, "", space.newint(-1), space.newint(-1), space.newint(1))
-                yield tokens.newtoken(tokens.TT_ENDSTREAM, "", space.newint(-1), space.newint(-1), space.newint(1))
+                yield tokens.newtoken(tokens.TT_NEWLINE, "", space.newint(-1), space.newint(-1), space.newint(1),
+                                      self.indentation)
+                yield tokens.newtoken(tokens.TT_ENDSTREAM, "", space.newint(-1), space.newint(-1), space.newint(1),
+                                      self.indentation)
                 break
             yield tok
 

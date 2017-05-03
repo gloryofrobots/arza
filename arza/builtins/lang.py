@@ -20,10 +20,8 @@ def put_lang_func(process, module, name, func, arity):
 def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
     api.put_native_function(process, module, u'breakpoint', breakpoint, -1)
-    api.put_native_function(process, module, u'_p_', _print, -1)
+    api.put_native_function(process, module, u'_p', _print, -1)
     api.put_native_function(process, module, u'address', _id, 1)
-    api.put_native_function(process, module, u'apply', apply, 2)
-    # api.put_native_function(process, module, u'concat', concat_tuples, 2)
     api.put_native_function(process, module, u'time', time, 0)
     api.put_native_function(process, module, u'get_type', _type, 1)
     api.put_native_function(process, module, u'symbol', _symbol, 1)
@@ -43,6 +41,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
     put_lang_func(process, module, u"partial", __partial, -1)
     put_lang_func(process, module, u"vector", __vector, -1)
+    put_lang_func(process, module, u"array", __array, -1)
 
 
 # 15.1.2.2
@@ -100,6 +99,12 @@ def breakpoint(process, routine):
 def __vector(process, routine):
     args = routine._args.to_l()
     return space.newpvector(args)
+
+
+@complete_native_routine
+def __array(process, routine):
+    args = routine._args.to_l()
+    return space.newarray(args)
 
 
 def _eval(process, routine):

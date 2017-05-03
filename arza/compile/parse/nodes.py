@@ -316,8 +316,7 @@ def create_token_from_token(type, value, token):
     return tokens.newtoken(type, value,
                            tokens.token_position(token),
                            tokens.token_line(token),
-                           tokens.token_column(token))
-
+                           tokens.token_column(token), tokens.token_indentation(token))
 
 
 def create_function_variants(args, exp):
@@ -420,7 +419,9 @@ def create_undefine_node(token, varname):
 
 def create_goto_node(label):
     return node_0(nt.NT_GOTO,
-                  tokens.newtoken(tt.TT_UNKNOWN, str(label), space.newint(-1), space.newint(-1), space.newint(-1)))
+                  tokens.newtoken(tt.TT_UNKNOWN, str(label), space.newint(-1),
+                                  space.newint(-1), space.newint(-1),
+                                  None))
 
 
 def create_wildcard_node(token):

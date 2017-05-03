@@ -22,7 +22,10 @@ TYPES = [
     mktype("Coroutine"),
     mktype("Interface"),
     mktype("Datatype"),
-    mktype("Env")
+    mktype("Env"),
+
+    mktype("Array"),
+    mktype("AssocArray"),
 ]
 
 def gen_declaration():

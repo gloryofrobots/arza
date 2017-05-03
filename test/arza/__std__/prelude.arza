@@ -2,8 +2,12 @@ import arza:lang:_std_behavior as std_behavior
 
 from arza:lang:_datatype import (record_values, record_keys, record_index_of)
 
+//from arza:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+//                             Function, Partial, Generic, FiberChannel, Coroutine, Interface, Datatype)
+
 from arza:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
-                             Function, Partial, Generic, FiberChannel, Coroutine, Interface, Datatype)
+                              Function, Partial, Generic, FiberChannel, Coroutine, Interface, Datatype,
+                              Env, Array, AssocArray)
 
 from arza:lang:_interfaces import (Instance, Singleton, Any)
 

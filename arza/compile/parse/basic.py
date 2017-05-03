@@ -84,17 +84,6 @@ def parser_error_unknown(parser, position):
                        ]))
 
 
-def parser_error_tabs_and_spaces_mixup(src, position, lineno, column):
-    line = get_line_for_position(src, position)
-    return error.throw(error.Errors.PARSE_ERROR,
-                       space.newtuple([
-                           space.newint(lineno),
-                           space.newint(column),
-                           space.newstring(u"Mixing spaces and tabs in one file is forbidden"),
-                           space.newstring(line)
-                       ]))
-
-
 def parse_error(parser, message, token):
     if tokens.token_type(token) == TT_ENDSTREAM:
         line = u"Unclosed top level statement"
@@ -133,8 +122,8 @@ def skip_indent(parser):
 
 class ParserScope(root.W_Root):
     def __init__(self):
-        self.operators = space.newmap()
-        self.macro = space.newmap()
+        self.operators = space.newassocarray()
+        self.macro = space.newassocarray()
 
 
 class ParseState:

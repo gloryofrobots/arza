@@ -169,7 +169,7 @@ class Bindings:
         return max(self._minsize, size // 2)
 
 
-class W_Map(W_Root):
+class W_AssocArray(W_Root):
     """
         Dict which supports access by key and by index
     """
@@ -206,7 +206,7 @@ class W_Map(W_Root):
         return self._to_string_()
 
     def _clone_(self):
-        clone = W_Map()
+        clone = W_AssocArray()
         values = self.slot_values
         if values is not None:
             clone.slot_values = api.clone(self.slot_values)
@@ -216,7 +216,7 @@ class W_Map(W_Root):
         return clone
 
     def _type_(self, process):
-        return process.std.types.Map
+        return process.std.types.AssocArray
 
     def _at_(self, name):
         idx = self._get_index_(name)
@@ -300,17 +300,17 @@ class W_Map(W_Root):
         # self.slot_bindings.delete(name)
 
 
-def _create_map(values, bindings, index):
-    map = W_Map()
+def _create_assoc_array(values, bindings, index):
+    map = W_AssocArray()
     map.slot_bindings = bindings
     map.slot_values = values
     map.index = index
     return map
 
 
-def create_map_with_size(size):
-    return _create_map(space.newvector([None] * size), Bindings(), 0)
+def create_assoc_array_with_size(size):
+    return _create_assoc_array(space.newarray([None] * size), Bindings(), 0)
 
 
-def create_empty_map():
-    return _create_map(space.newvector([]), Bindings(), 0)
+def create_empty_assoc_array():
+    return _create_assoc_array(space.newarray([]), Bindings(), 0)

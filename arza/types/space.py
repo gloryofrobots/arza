@@ -245,14 +245,14 @@ def isiodevice(w):
 ########################################################
 
 
-def newmap():
-    from arza.types.map import create_empty_map
-    return create_empty_map()
+def newassocarray():
+    from arza.types.assoc_array import create_empty_assoc_array
+    return create_empty_assoc_array()
 
 
-def ismap(value):
-    from arza.types.map import W_Map
-    return isinstance(value, W_Map)
+def isassocarray(value):
+    from arza.types.assoc_array import W_AssocArray
+    return isinstance(value, W_AssocArray)
 
 
 ########################################################
@@ -281,17 +281,17 @@ def istvar(value):
 
 ########################################################
 
-def newvector(items):
+def newarray(items):
     assert isinstance(items, list)
     verify_list_DEBUG(items)
-    from arza.types.vector import W_Vector
-    obj = W_Vector(items)
+    from arza.types.array import W_Array
+    obj = W_Array(items)
     return obj
 
 
-def isvector(value):
-    from arza.types.vector import W_Vector
-    return isinstance(value, W_Vector)
+def isarray(value):
+    from arza.types.array import W_Array
+    return isinstance(value, W_Array)
 
 
 ########################################################

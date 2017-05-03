@@ -36,6 +36,7 @@ def open_statement_layout(parser, token, level_tokens, indentation_tokens):
         layout.statements_count += 1
         return layout
 
+    ts.check_indentation_tokens(token)
     return ts.add_layout(token, OFFSIDE, level_tokens, None, None, indentation_tokens)
 
 
@@ -45,6 +46,7 @@ def open_offside_layout(parser, token, level_tokens, indentation_tokens):
     if layout.is_free():
         return layout
 
+    ts.check_indentation_tokens(token)
     return ts.add_layout(token, OFFSIDE, level_tokens, None, None, indentation_tokens)
 
 
@@ -53,14 +55,12 @@ def open_code_layout(parser, token, level_tokens=None, terminators=None, indenta
     layout = ts.current_layout()
     if layout.is_free():
         return layout
-        # if terminators:
-        #     return open_free_layout(parser, token, terminators, layout.delimiter)
-        # else:
-        #     return layout
+
     level = tokens.token_level(token)
     if level <= layout.level:
         return indentation_error(u"Code layout must be indented", token)
 
+    ts.check_indentation_tokens(token)
     return ts.add_layout(token, CODE, level_tokens, terminators, None, indentation_tokens)
 
 
@@ -193,7 +193,6 @@ class IndentationTokenStream(tokenstream.TokenStream):
     def add_layout(self, token, type, level_tokens, terminators,
                    delimiter, indentation_tokens):
 
-        self.check_indentation_tokens(token)
         cur = self.current_layout()
         level = tokens.token_level(token)
         line = tokens.token_line_i(token)
@@ -209,14 +208,14 @@ class IndentationTokenStream(tokenstream.TokenStream):
         return layout
 
     def check_indentation_tokens(self, token):
+        indentation = tokens.token_indentation(token)
         if self.indentation_token is None:
-            self.indentation_token = self.lexer.indentation
+            self.indentation_token = indentation
             return
 
-        if self.indentation_token != self.lexer.indentation:
+        if self.indentation_token != indentation:
             return indentation_error(u"Tabs and spaces can not be used at he same time",
                                      token)
-
 
     def has_layouts(self):
         return not plist.is_empty(self.layouts)
@@ -319,14 +318,6 @@ class IndentationTokenStream(tokenstream.TokenStream):
 
                 return self.next_token()
 
-        # if tokens.is_infix_token_type(cur_type) and (not layout.is_free() or layout.is_module()):
-        #     if level < layout.level:
-        #         return indentation_error(u"Indentation level of token next to"
-        #                                  u" operator must be bigger then of parent layout",
-        #                                  token)
-        #
-        #     return self.next_token()
-
         if layout.is_free() is True:
             return self.next_token()
 
@@ -367,38 +358,6 @@ class IndentationTokenStream(tokenstream.TokenStream):
         self.token = token
         self.produced_tokens.append(self.token)
         return self.token
-
-    # def next_token(self):
-    #     token = self._next_token()
-    #     ttype = tokens.token_type(token)
-    #     layout = self.current_layout()
-    #
-    #     # if layout.is_free() and layout.has_terminator(ttype):
-    #     #     self.pop_layout()
-    #     if layout.has_terminator(ttype):
-    #         self.pop_layout()
-    #
-    #     return token
-    #
-    # def _next_token(self):
-    #     log(self.advanced_values())
-    #     self.previous = self.token
-    #     if self.has_logic_tokens():
-    #         return self.next_logical()
-    #
-    #     if self.index >= self.length:
-    #         return self.token
-    #
-    #     token = self.next_physical()
-    #     ttype = tokens.token_type(token)
-    #
-    #     if ttype == tt.TT_NEWLINE:
-    #         return self._on_newline()
-    #     elif ttype == tt.TT_ENDSTREAM:
-    #         if api.length_i(self.layouts) != 1:
-    #             indentation_error(u"Not all layouts closed", token)
-    #
-    #     return self.attach_token(token)
 
     def next_token(self):
         log(self.advanced_values())

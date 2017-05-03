@@ -39,7 +39,7 @@ class Modules:
         error.affirm_type(path, space.islist)
         error.affirm_iterable(path, space.isstring)
 
-        self.modules = space.newmap()
+        self.modules = space.newassocarray()
         self.path = path
         self.prelude = prelude
 

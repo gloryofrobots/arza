@@ -6,7 +6,7 @@ from arza.compile.parse.indenter import IndentationTokenStream, InvalidIndentati
 
 
 from arza.compile.parse.callbacks import *
-from arza.compile.parse.lexer import UnknownTokenError, TabsAndSpacesMixupError
+from arza.compile.parse.lexer import UnknownTokenError
 from arza.compile.parse import tokens
 from arza.types import api, space, plist, root, environment
 
@@ -584,8 +584,6 @@ def parse(process, env, src):
         return stmts, scope
     except UnknownTokenError as e:
         parser_error_unknown(parser, e.position)
-    except TabsAndSpacesMixupError as e:
-        parser_error_tabs_and_spaces_mixup(src, e.position, e.line, e.column)
     except InvalidIndentationError as e:
         parser_error_indentation(parser, e.msg, e.position, e.line, e.column)
 

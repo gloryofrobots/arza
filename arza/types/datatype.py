@@ -82,7 +82,7 @@ class W_Record(W_Hashable):
 
 
 def descriptors(fields):
-    d = space.newmap()
+    d = space.newassocarray()
     for i in range(len(fields)):
         f = fields[i]
         d = api.put(d, f, space.newint(i))

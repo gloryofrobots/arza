@@ -24,8 +24,11 @@ def setup_types(module, types):
     api.put(module, types.Function.name, types.Function)
     api.put(module, types.Partial.name, types.Partial)
     api.put(module, types.Generic.name, types.Generic)
-    api.put(module, types.Interface.name, types.Interface)
     api.put(module, types.FiberChannel.name, types.FiberChannel)
     api.put(module, types.Coroutine.name, types.Coroutine)
+    api.put(module, types.Interface.name, types.Interface)
     api.put(module, types.Datatype.name, types.Datatype)
     api.put(module, types.Env.name, types.Env)
+    api.put(module, types.Array.name, types.Array)
+    api.put(module, types.AssocArray.name, types.AssocArray)
+

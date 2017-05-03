@@ -186,7 +186,7 @@ RULES = [
 
 
 class Token(root.W_Hashable):
-    def __init__(self, type, val, pos, line, column):
+    def __init__(self, type, val, pos, line, column, indentation):
         root.W_Hashable.__init__(self)
         assert isinstance(type, int)
         assert isinstance(val, str), val
@@ -200,6 +200,7 @@ class Token(root.W_Hashable):
         self.pos = pos
         self.line = line
         self.column = column
+        self.indentation = indentation
 
     def _compute_hash_(self):
         from arza.misc.platform import rarithmetic
@@ -230,12 +231,12 @@ class Token(root.W_Hashable):
         return token_to_s(self)
 
 
-def newtoken(type, val, pos, line, column):
-    return Token(type, val, pos, line, column)
+def newtoken(type, val, pos, line, column, indentation):
+    return Token(type, val, pos, line, column, indentation)
 
 
 def newtoken_without_meta(type, val):
-    return newtoken(type, val, space.newint(-1), space.newint(-1), space.newint(-1), )
+    return newtoken(type, val, space.newint(-1), space.newint(-1), space.newint(-1), -2)
 
 
 def token_type(token):
@@ -283,11 +284,16 @@ def token_level(token):
     return api.to_i(token_column(token)) - 1
 
 
+def token_indentation(token):
+    return token.indentation
+
+
 def create_end_expression_token(token):
     return newtoken(TT_END_EXPR, ";",
                     token_position(token),
                     token_line(token),
-                    token_column(token))
+                    token_column(token),
+                    token_indentation(token))
 
 
 # def create_end_token(token):
@@ -301,14 +307,16 @@ def create_indent_token(token):
     return newtoken(TT_INDENT, "(indent)",
                     token_position(token),
                     token_line(token),
-                    token_column(token))
+                    token_column(token),
+                    token_indentation(token))
 
 
 def create_dedent_token(token):
     return newtoken(TT_DEDENT, "(dedent)",
                     token_position(token),
                     token_line(token),
-                    token_column(token))
+                    token_column(token),
+                    token_indentation(token))
 
 
 def token_to_s(token):
