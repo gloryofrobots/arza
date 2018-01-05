@@ -700,7 +700,7 @@ let
 ```
 
 #### Partial application
-ADD HOLES HERE
+
 ```
 Arza provides special syntax for partial application via .( operator
 
