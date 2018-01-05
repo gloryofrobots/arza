@@ -1,4 +1,5 @@
 from arza.types.root import W_Root
+from arza.types import space, api
 from arza.misc import platform
 from arza.runtime import error
 
@@ -38,7 +39,7 @@ class W_Array(W_Root):
     def _at_(self, index):
         from arza.types.space import newvoid, isint
         from arza.types import api
-        assert isint(index)
+        assert isint(index), index
         try:
             el = self._items[api.to_i(index)]
         except KeyError:
@@ -49,14 +50,35 @@ class W_Array(W_Root):
     def _length_(self):
         return len(self._items)
 
-    def _delete_(self, key):
-        del self._items[key]
+    def _equal_(self, other):
+        if not space.isarray(other):
+            return False
+
+        if self._length_() != other._length_():
+            return False
+
+        for el1, el2 in zip(self._items, other._items):
+            if not api.equal_b(el1, el2):
+                return False
+
+        return True
 
     def _to_string_(self):
-        return str(self._items)
+        data = [v._to_string_() for v in self._items]
+        repr = ", ".join(data)
+
+        if self._length_() == 1:
+            return "Array(%s,)" % repr
+        return "(%s)" % repr
 
     def _to_repr_(self):
-        return repr(self._items)
+        return self._to_string_()
+
+    def __repr__(self):
+        return self._to_string_()
+
+    def _delete_(self, key):
+        del self._items[key]
 
     def _at_index_(self, i):
         return self._items[i]
@@ -70,57 +92,129 @@ class W_Array(W_Root):
         except ValueError:
             return platform.absent_index()
 
-    def ensure_size(self, size):
-        assert size > 0
-        l = self._length_()
-        if size <= l:
-            return
-
-        self._items += [None] * (size - l)
-
-    def append(self, v):
-        from arza.types.space import isany
-        assert isany(v)
-        self._items.append(v)
-
-    def append_vector_items(self, vec):
-        from arza.types.space import isarray
-        assert isarray(vec)
-        self.append_many(vec._items)
-
-    def append_many(self, items):
-        self._items += items
-
-    def prepend(self, v):
-        from arza.types.space import isany
-        assert isany(v)
-        self._items.insert(0, v)
-
-    def insert(self, index, v):
-        from arza.types.space import isany
-        assert isany(v)
-        self._items.insert(index, v)
-
-    def remove(self, v):
-        from arza.types.space import isany
-        assert isany(v)
-        self._items.remove(v)
-
     def to_l(self):
         return self._items
 
-    def pop(self):
-        return self._items.pop()
 
-    def append_value_multiple_times(self, val, times):
-        assert times > 0
-        self._items = self._items + [val] * times
-
-    def exclude_index(self, idx):
-        assert idx >= 0
-        items = self._items
-        self._items = items[:idx] + items[idx + 1:]
+def type_check(t):
+    error.affirm_type(t, space.isarray)
 
 
-def concat(process, v1, v2):
+def empty():
+    return W_Array([])
+
+
+def ensure_size(arr, size):
+    assert size > 0
+    l = arr._length_()
+    if size <= l:
+        return
+
+    arr._items += [None] * (size - l)
+    return arr
+
+
+def append(arr, v):
+    from arza.types.space import isany
+    assert isany(v)
+    arr._items.append(v)
+    return arr
+
+
+def append_vector_items(arr, vec):
+    from arza.types.space import isarray
+    assert isarray(vec)
+    arr.append_many(vec._items)
+    return arr
+
+
+def append_many(arr, items):
+    arr._items += items
+    return arr
+
+
+def prepend(arr, v):
+    from arza.types.space import isany
+    assert isany(v)
+    arr._items.insert(0, v)
+    return arr
+
+
+def insert(arr, index, v):
+    from arza.types.space import isany
+    assert isany(v)
+    arr._items.insert(index, v)
+    return arr
+
+
+def remove(arr, v):
+    from arza.types.space import isany
+    assert isany(v)
+    arr._items.remove(v)
+    return arr
+
+
+def pop(arr):
+    return arr._items.pop()
+
+
+def append_value_multiple_times(arr, val, times):
+    assert times > 0
+    arr._items = arr._items + [val] * times
+    return arr
+
+
+def exclude_index(arr, idx):
+    assert idx >= 0
+    items = arr._items
+    arr._items = items[:idx] + items[idx + 1:]
+    return arr
+
+
+def concat(v1, v2):
+    type_check(v1)
+    type_check(v2)
     return W_Array(v1._items + v2._items)
+
+
+def to_list(arr):
+    type_check(arr)
+    return space.newlist(arr._items)
+
+
+def slice(arr, first, last):
+    type_check(arr)
+    assert isinstance(first, int)
+    assert isinstance(last, int)
+    if first < 0:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"First index < 0"), space.newint(first))
+    if first >= last:
+        error.throw_3(error.Errors.SLICE_ERROR, space.newstring(u"First index >= Last index"),
+                      space.newint(first), space.newint(last))
+    if last >= arr.length:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Last index too big"), space.newint(last))
+    return W_Array(arr._items[first:last])
+
+
+def take(arr, count):
+    type_check(arr)
+    assert isinstance(count, int)
+    if count < 0:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count < 0"), space.newint(count))
+
+    if count >= arr._length_():
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count too big"), space.newint(count))
+
+    return W_Array(arr._items[:count])
+
+
+def drop(arr, count):
+    type_check(arr)
+    assert isinstance(count, int)
+    if count < 0:
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count < 0"), space.newint(count))
+
+    if count >= arr._length_():
+        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count too big"), space.newint(count))
+
+    return W_Array(arr._items[count:])

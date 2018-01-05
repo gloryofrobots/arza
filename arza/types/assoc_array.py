@@ -1,4 +1,4 @@
-from arza.types import api, space, plist
+from arza.types import api, space, plist, array
 from arza.types.root import W_Root
 from arza.misc import platform
 from arza.runtime import error
@@ -267,7 +267,7 @@ class W_AssocArray(W_Root):
             self.index += 1
 
         # print "Slots_add, IDX >>", idx
-        self.slot_values.ensure_size(idx + 1)
+        array.ensure_size(self.slot_values, idx + 1)
         self._put_at_index_(idx, value)
         return idx
 

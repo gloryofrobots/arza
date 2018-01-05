@@ -4,7 +4,7 @@ import seq
 import list
 
 import tests:test_operators
-//
+
 import tests:dispatch:test_dispatch
 import tests:stdtype:test_stdtype
 import tests:usertype:test_usertype
@@ -27,12 +27,12 @@ fun log(...msgs) =
 
 
 fun test() =
-//    log("TEST EXPRESSIONS")
-//    test_expressions:test()
-//    //
-//    log("TEST STD TYPES")
-//    test_stdtype:test()
-//    //
+    log("TEST EXPRESSIONS")
+    test_expressions:test()
+    //
+    log("TEST STD TYPES")
+    test_stdtype:test()
+    //
     log("TEST TYPES")
     test_usertype:test()
 //    //

@@ -211,7 +211,7 @@ class W_Env(W_Root):
     def set_temporary(self, idx, val):
         if not self.scope.has_temporary(idx):
             return error.throw_2(error.Errors.RUNTIME_ERROR,
-                                 space.newstring(u"Invalid temporary variable %d" % idx, val))
+                                 space.newstring(u"Invalid temporary variable %d" % idx), val)
 
         self.temps[idx] = val
 

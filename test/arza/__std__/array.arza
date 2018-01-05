@@ -1,0 +1,116 @@
+import arza:lang:_array
+import string
+import io
+
+
+use Array as 0 in
+    def != (self, other) as std_behavior:not_equal
+    def == (self, other) as std_behavior:equal
+
+
+use Array as ... in
+    def at (k, self) as std_behavior:at
+    def put (k, v, self) as std_behavior:put
+    def del (el, self) as std_behavior:del
+    def elem (el, self) as std_behavior:elem
+    def is_empty (self) as std_behavior:is_empty
+    def len (self) as std_behavior:len
+
+    def ++ (a1, a2) as _array:concat
+
+    def prepend(v, self) as _array:prepend
+    def append(v, self) as _array:append
+
+    def slice(first, last, self) as _array:slice
+    def drop(x, self) as _array:drop
+    def take(x, self) as _array:take
+
+    def index_of(el, self) as _array:index_of
+
+    def repr(self) =
+        if len(self) == 1 then
+            "(" ++ repr(at(0, self)) ++ ",)"
+        else
+            "(" ++ string:join_with(repr, to_seq(self), ", ") ++ ")"
+
+    def str(self) =
+        if len(self) == 1 then
+            "(" ++ str(at(0, self)) ++ ",)"
+        else
+            "(" ++ string:join_with(str, to_seq(self), ", ") ++ ")"
+
+
+
+--------------------------------------------------
+
+type
+    ArraySeq (arr, index)
+    ArraySeqEmpty()
+
+use ArraySeq as ... in
+    def first(self) = self.arr.index
+
+    def rest({arr, index}) =
+        let
+            l = len(arr) - index
+        in
+            if l <= 0 then
+                ArraySeqEmpty()
+            else
+                ArraySeq(arr, index + 1)
+
+
+    def is_empty({arr}) = arr.index >= len(arr)
+
+    def empty(self) = ArraySeqEmpty()
+
+    def len({arr, index}) =
+        let
+            l = len(arr) - index
+        in
+            if l < 0 then 0
+            else l
+
+
+derive (Seq, Sized, Emptiable) for (ArraySeq)
+
+--------------------------------------------------
+
+use ArraySeqEmpty as ... in
+    def first(self) = throw EmptySeqError("ArraySequence is empty")
+
+    def rest(self) =
+        throw EmptySeqError("ArraySequence is empty")
+
+    def is_empty(self) = True
+
+    def len(self) = 0
+
+derive (Seq, Sized) for ArraySeqEmpty
+
+--------------------------------------------------
+
+def to_seq(self of Array) = ArraySeq(self, 0)
+
+fun map (f, arr of Array) =
+    let
+        size = len(arr)
+        fun _map
+            | (index, result) when index >= size = result
+            | (index, result) =
+                _map(
+                    index + 1,
+                    append(f(arr.[index]), result)
+                )
+    in
+        _map(0, array())
+//
+//
+//fun map(f, coll)
+//    | (f, () of Array) = empty(coll)
+//    | (f, hd::tl) = f(hd) :: map(f, tl)
+
+derive (Eq, Displayed,
+       Sized, Collection,
+       Prependable, Appendable, Concatable, Indexed,
+       Seqable, Sliceable) for Array

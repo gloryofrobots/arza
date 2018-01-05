@@ -1,3 +1,87 @@
+module controller
+    fun init()
+
+module component
+    abstract init() 
+    abstract close()
+
+
+module authentication
+    behavior component
+
+    concrete init() "init"
+    concrete close() "close"
+
+
+
+
+
+
+
+type Robot(battery_power)
+
+def at(#battery_power, s of Robot) =
+    (s as Instance).battery_power + 1
+
+module world
+    module animal
+        fun eat(animal, food)
+        fun kill(animal, victim)
+        fun hunt(animal, victim)
+        fun run_away(animal, hunter)
+
+        interface Animal
+            """
+            basic animal actions
+            """
+
+        interface Animal
+            """
+            basic animal actions
+            """
+            eat.1
+            kill.1
+            hunt.1
+            run_away.1
+
+        interface Hunter
+            hunt.1
+            kill.1
+
+        interface Prey
+            run_away.1
+
+
+
+        fun map(f, coll)
+            | (f, []) = empty(coll)
+            | (f, hd::tl) = f(hd) :: map(f, tl)        
+
+        def map(f of Fun, coll of Complex) 
+            if is_empty(coll) then
+                empty(coll)
+            else
+                f(rest(coll))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 affirm:is_equal(add(v1, v2), Vec2(Point2(10, 12), Point2(14, 16)))
 
 

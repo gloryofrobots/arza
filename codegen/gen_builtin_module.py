@@ -284,9 +284,45 @@ MAP = module("lalan:lang:_map", [
     func(func_name="to_list", func_native_name="_to_list", func_arity=1,
              source_module="pmap", source_function="to_list"),
     ])
+ARRAY = module("arza:lang:_array", [
+    func(func_name="empty", func_native_name="_empty", func_arity=0,
+             source_module="array", source_function="empty"),
 
+
+    func(func_name="slice", func_native_name="slice", func_arity=3,
+             source_module="array", source_function="slice",
+            arguments=[arg(2,0), arg(1,1, wrapper='api.to_i'), arg(0, 0, wrapper='api.to_i')]),
+
+    func(func_name="take", func_native_name="take", func_arity=2,
+             source_module="array", source_function="take",
+            arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
+
+    func(func_name="drop", func_native_name="drop", func_arity=2,
+             source_module="array", source_function="drop",
+            arguments=[arg(1, 0), arg(0, 0, wrapper='api.to_i')]),
+
+    func(func_name="index_of", func_native_name="get_index", func_arity=2,
+             source_module="api", source_function="get_index",
+            arguments=[arg(1, 0), arg(0, 0)]),
+
+    func(func_name="concat", func_native_name="concat", func_arity=2,
+             source_module="array", source_function="concat",
+            arguments=[arg(0, 0), arg(1, 0)]),
+
+    func(func_name="append", func_native_name="append", func_arity=2,
+             source_module="array", source_function="append",
+            arguments=[arg(1, 0), arg(0, 1)]),
+
+    func(func_name="prepend", func_native_name="prepend", func_arity=2,
+             source_module="array", source_function="prepend",
+            arguments=[arg(1, 0), arg(0, 1)]),
+
+    func(func_name="to_list", func_native_name="_to_list", func_arity=1,
+             source_module="array", source_function="to_list"),
+    ])
 # print generate(TUPLES)
-print generate(LIST)
+# print generate(LIST)
+print generate(ARRAY)
 # print generate(API)
 # print generate(BIT)
 # print generate(NUMBER)

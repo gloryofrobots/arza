@@ -15,6 +15,9 @@ def presetup(process, module, stdlib):
     import arza.builtins.modules.module_list
     arza.builtins.modules.module_list.setup(process, stdlib)
 
+    import arza.builtins.modules.module_array
+    arza.builtins.modules.module_array.setup(process, stdlib)
+
     import arza.builtins.modules.module_tuple
     arza.builtins.modules.module_tuple.setup(process, stdlib)
 
