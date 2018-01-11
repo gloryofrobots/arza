@@ -1,0 +1,27 @@
+module observe
+
+interface Emitter
+    fun emit(emitter, signal, data)
+
+interface Observable as self
+    fun add_observer(self, signal, data)
+    fun remove_observer(self, signal, observer)
+    use Emitter.emit
+
+interface Observer
+    fun observe(self, signal, data)
+
+type BaseObservable
+    observers = {}
+    history = []
+
+use BaseObservable as T, Observer as O in
+    fun add_observer(self:T, signal:Any, observer:O)
+        put(self.observers, signal, observer)
+
+    fun add_observer(self:T, List(1,2), observer:O)
+        put(self.observers, signal, observer)
+
+type Connection(BaseObservable)
+     routes = []
+

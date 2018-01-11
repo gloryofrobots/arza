@@ -1,0 +1,108 @@
+module observe
+    import std
+    import list
+    import seq
+
+    interface Emitter
+        fun emit(Emitter, signal, data)
+        fun before_emit(Emitter, signal, data)
+        fun after_emit(Emitter, signal, data)
+
+    interface Observer as self
+        fun observe(self) 
+
+    interface Observable as self
+        use Emitter
+        fun add_observer(self, signal, observer)
+        fun remove_observer(self, signal, observer)
+        use std:to_str
+        use list:Listable:to_list
+
+    type
+        observers = {}
+        history = []
+
+    fun create(observers) 
+        type{observers=observers}
+
+    implement Observable 
+        fun emit(self, signal, data) 
+            before_emit(self, signal, data)
+            seq:each(self.observers[signal],
+                (fun(observer)
+                     result = observe(observer, signal, data)
+                     append(self.history, (signal, observer, result))
+                 )
+            )
+            after_emit(self, signal, data)
+
+        abstract before_emit(self, signal, data)
+        fun after_emit(self, signal, data) nil
+
+        fun add_observer(self, signal, observer)
+             self.observers[signal] = self
+
+        fun remove_observer(self, signal, observer)
+            remove(self.observers, signal)
+
+        fun to_str(self) 
+            "Observable [" + 
+                (self.observers |>
+                    seq:map(_, to_str)
+                    str:join(_, ", "))
+                + "]"
+
+        fun to_list(self)
+            to_list(self.observers)
+
+module connection
+    import observe
+
+    type Send
+    type Receive
+    
+    type
+        use observe
+        requests = []
+
+    abstract fun make(dsn)
+    
+    implement observe:Observable 
+         use observe
+
+    interface Connection as self
+       fun open(self)
+       fun close(self)
+       fun send(self, data)
+       fun _send(self, data)
+       fun receive(self, data)
+       fun _receive(self, data)
+
+    implement Connection
+        fun send(self, data)
+            observe:emit(self, Send, data)
+            _send(self,data)
+        abstract fun _send(self, data)
+
+        fun receive(self, data)
+            observe:emit(self, Receive, data)
+            _receive(self, data)
+
+        abstract fun _receive(self, data)
+               
+
+module socket_connection
+    import connection
+    import socket
+    type
+        use connection
+        pid = nil
+    
+    implement connection:Connection
+        use connection
+
+        fun _send(self, data)
+            socket:send(self, data)
+
+        fun _receive(self, data)
+            socket:receive(self, data)

@@ -1,0 +1,66 @@
+object Seq {
+  __cast__(self) = self.to_seq()
+
+  map(self, f) 
+    | [] @ self, f {
+      self.empty()
+    }
+    | hd::tl, f = recur(tl, f).append(f(hd)) 
+}
+
+
+object Array {
+   is api.Array as _Array
+   is Seq without foldl
+   is api.Str as _Str
+      with (join as join_str,
+           upper as upper_str,
+           *)
+      without (to_array)
+   to_seq(self) = self.super._Array.iterator()
+
+}
+
+
+array = Array.clone {
+      first = 1
+      second = 2
+}
+
+
+
+  map(self, f)
+    | ([], f) = empty(self)
+    | (hd::tl, f) = f(hd) :: map(f, tl)
+
+
+
+
+fun foldl
+    | (f, acc, []) = acc
+    | (f, acc, hd::tl) = foldl(f, f(hd, acc), tl)
+
+
+fun foldr
+    | (f, acc, []) = acc
+    | (f, acc, hd::tl) = f(hd, foldr(f, acc, tl))
+
+
+fun reduce(f, sq)
+    | (f, x::xs) = foldl(f, x, xs)
+    | (f, []) = throw EmptySeqError(sq)
+
+
+fun scanl(func, accumulator, coll)
+    | (f, acc, []) = acc :: empty(coll)
+    | (f, acc, hd::tl) = acc :: scanl(f, f(hd, acc), tl)
+
+
+//LOOPS ////////////////////////
+
+
+fun foreach(f, coll)
+    | (f, []) = empty(coll)
+    | (f, hd::tl) =
+      f(hd)
+      foreach(f, tl)

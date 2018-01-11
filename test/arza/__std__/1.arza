@@ -1,16 +1,156 @@
+module observe
+    import std
+    import list
+    import seq
+
+    type
+        observers = {}
+        history = []
+
+    fun Observable(observers) 
+        type{observers=observers}
+
+    interface Emitter
+        fun emit_signal(Emitter, signal, data)
+
+    interface Observable as self
+        use Emitter
+        fun add_observer(self, signal, observer)
+        fun remove_observer(self, signal, observer)
+        use std:to_str
+        use list:Listable:to_list
+
+    implement Observable for type
+        fun emit_signal(self, signal, data) 
+            seq:each(self.observers, (observer) => observer(signal, data))
+
+        fun add_observer(self, signal, observer)
+             self.observers[signal] = self
+
+        fun remove_observer(self, signal, observer)
+            remove(self.observers, signal)
+
+        fun to_str(self) 
+            "Observable [" + 
+                (self.observers |>
+                    seq:map(_, to_str)
+                    str:join(_, ", "))
+                + "]"
+
+        use list:Listable:to_list(self)
+            to_list(self.observers)
+
+
+
+
+
+
+
+module observe
+    type Observable
+        observers = {} 
+        handled_signals = []
+
+    fun add_observer(connection, controller)
+        connection.{observers = @.[observer.name] = observer}
+        connection.{observers = put(observer.name, observer, connection.observers)}
+        connection.{observers = put(observer.name, observer, @)}
+
+    fun notify_mutable(connection, signal, data)
+        observer = connection.observers.[signal]
+
+        before_observe(observer, signal, data)
+        result = observe(observer, signal, data)
+        log_observer(observer)
+
+        after_observe(connection, observer, result)
+        append(connection.handled_signals, result)
+        result
+
+    fun notify(connection, signal, data)
+        observer = connection.observers.[signal]
+
+        observer = before_observe(observer, signal, data)
+        (observer,result) = observe(observer, signal, data)
+        log_observer(observer)
+        (connection, observer, result) = after_observe(connection, observer, result)
+        connection.observers.[signal] = observer
+        new_conection = connection.{
+            handled_signals=append((signal, result), connection.handled_signals)
+            observers.{[signal] = observer}
+        }
+
+        (new_connection, result)
+
+    fun notify_2(connection, signal, data)
+        path connection.contollers.[signal] as observer
+        observer=before_observe(observer, signal, data)
+
+        put_in(connection, [#controllers, signal], )
+        connection.{
+            controllers.{
+                [signal] as observer.{
+                    let 
+                       observer_1 = before_observe(observer, signal, data)
+                       oberver_
+                    in 
+
+
+                }
+            }
+        }
+        with connection.observers.[signal] as observer
+        observer = before_observe(observer, signal, data)
+        (observer,result) = observe(observer, signal, data)
+        log_observer(observer)
+        (connection, observer, result) = after_observe(connection, observer, result)
+        connection.observers.[signal] = observer
+        (connection, result)
+
+    fun notify(connection, signal, data)
+        swap connection.observers.[signal] as observer
+            (@,result) = observe(observer, signal, data)
+            connection.observers.[signal] = observer
+
 module controller
-    fun init()
+    type Controller 
+        name = nil
+        db = property(get=get_db, set=set_db)
+        schema = notnil
+        __loops = []
+    
+
+
+    def dispatch(message, self of Controller)
+        try 
+            _dispatch(self)
+        catch Error @ e
+            io:print e
+
+    def _dispatch(message, self:Controller) 
+
+    abstract fun create_controller() 
+
+    
+module scm
+    import controller
+    type Controller
+        use controller.Controller
+
+
+
+
 
 module component
-    abstract init() 
-    abstract close()
+    abstract fun init() 
+    abstract fun close()
 
 
 module authentication
-    behavior component
+    import component with
+        fun init() "init"
+        fun close() "close"
 
-    concrete init() "init"
-    concrete close() "close"
 
 
 
