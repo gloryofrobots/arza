@@ -1,0 +1,27 @@
+import io
+
+
+generic
+    collide_with(body1, body2)
+    destroy(body1)
+    damage(body1, body2)
+
+
+type
+    Asteroid(health)
+    Spaceship(fire_power)
+
+def collide_with(a of Asteroid, s of Spaceship) =
+    "Asteroid KILLS Spaceship"
+
+def collide_with({health} of Asteroid, {fire_power} of Spaceship) when health < fire_power =
+    "Spaceship KILLS Asteroid"
+
+fun test() =
+    let
+        a = Asteroid(1)
+        s = Spaceship(2)
+    in
+        io:print(collide_with(a,s))
+
+
