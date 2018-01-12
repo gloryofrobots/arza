@@ -138,8 +138,19 @@ class W_Generic(W_Hashable):
         # print "NODES", index, nodes
         return nodes
 
+    def _sort_signatures(self, sig1, sig2):
+        guarded_1 = nodes.is_guarded_pattern(sig1.pattern)
+        guarded_2 = nodes.is_guarded_pattern(sig2.pattern)
+        if guarded_1 and not guarded_2:
+            return -1
+        elif not guarded_1 and guarded_2:
+            return 1
+        else:
+            return 0
+
     def _make_method_node(self, process, signatures):
         sig = signatures[0]
+        signatures = sorted(signatures, self._sort_signatures)
         if len(signatures) != 1 or nodes.is_guarded_pattern(sig.pattern):
             return [LeafNode(conflict_resolver(process, self, signatures))]
             # return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
@@ -149,6 +160,7 @@ class W_Generic(W_Hashable):
 
 
         return [LeafNode(sig.method)]
+
 
 
 class ConflictResolverCallback(W_Root):

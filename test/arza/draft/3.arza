@@ -15,6 +15,7 @@ type BaseObservable
     observers = {}
     history = []
 
+
 use BaseObservable as T, Observer as O in
     fun add_observer(self:T, signal:Any, observer:O)
         put(self.observers, signal, observer)

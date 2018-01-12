@@ -38,7 +38,7 @@ fun test() =
 //    //
     log("TEST DISPATCH")
     test_dispatch:test()
-    ////
+//    ////
     log("TEST MATCH")
     test_match:test()
     //
@@ -66,6 +66,8 @@ fun test() =
     log("TEST OPERATORS")
     test_operators:test()
 
+import tests:dispatch:space:space
 
 fun main() =
     test()
+    space:test()

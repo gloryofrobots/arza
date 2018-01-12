@@ -17,6 +17,7 @@ def collide_with(a of Asteroid, s of Spaceship) =
 def collide_with({health} of Asteroid, {fire_power} of Spaceship) when health < fire_power =
     "Spaceship KILLS Asteroid"
 
+
 fun test() =
     let
         a = Asteroid(1)

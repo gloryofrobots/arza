@@ -214,8 +214,8 @@ def _get_interface_predicate(process, interface, index):
 
 
 def _get_type_predicate(process, _type, index):
-    types = process.std.types
     arg = ArgumentType(index, _type)
+    # types = process.std.types
     # if types.List is _type:
     #     arg = PredicateArgument(index, space.islist)
     # elif types.Tuple is _type:
