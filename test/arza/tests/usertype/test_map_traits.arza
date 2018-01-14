@@ -49,15 +49,15 @@ let
     }
 
 
-use Val as 0 in
+use Val in
     def ne(x, y) as Equal.[ne]
     def eq(v1, v2) = v1.v == v2.v
 
-use Val2 as 0 in
+use Val2 in
     def eq(x, y) as Equal.[eq]
     def ne(v1, v2) = v1.v != v2.v
 
-use Val as 0 in
+use Val in
     def le(x, y) as Order.[le]
     def ge(x, y) as Order.[ge]
     def lt(x, y) as Order.[lt]
@@ -70,7 +70,7 @@ use Val as 0 in
         elif self.v <= other.v then LT
         else GT
 
-use Val2 as 0 in
+use Val2 in
     def cmp(x, y) as Order.[cmp]
     def ge(x, y) as Order.[ge]
     def lt(x, y) as Order.[lt]

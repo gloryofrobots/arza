@@ -286,10 +286,47 @@ class UseParser(BaseParser):
 
 def use_in_alias_parser_init(parser):
     literal(parser, TT_NAME, NT_NAME)
-    literal(parser, TT_INT, NT_INT)
     literal(parser, TT_ELLIPSIS, NT_REST)
     symbol_nud(parser, TT_OPERATOR, NT_NAME, symbol_operator_name)
     infix(parser, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
+    return parser
+
+
+class TraitParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+
+        self.def_parser = DefParser()
+        self.name_parser = name_parser_init(BaseParser())
+        self.pattern_parser = trait_signature_parser_init(BaseParser())
+        self.use_in_alias_parser = use_in_alias_parser_init(BaseParser())
+        self.use_parser = UseParser()
+
+        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
+        prefix(self, TT_DEF, None, prefix_use_def, layout=layout_def)
+        prefix(self, TT_USE, None, stmt_use, layout=layout_use)
+        infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
+        infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
+        literal(self, TT_NAME, NT_NAME)
+
+        self.add_subparsers([
+            self.def_parser,
+            self.name_parser,
+            self.pattern_parser,
+            self.use_parser,
+            self.use_in_alias_parser
+        ])
+
+
+def trait_signature_parser_init(parser):
+    infix(parser, TT_OF, NT_IS_IMPLEMENTED, 10, led_infix)
+    prefix(parser, TT_LPAREN, None, prefix_lparen_tuple, layout=layout_lparen)
+
+    symbol(parser, TT_RPAREN)
+    symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
+
+    literal(parser, TT_NAME, NT_NAME)
+    literal(parser, TT_WILDCARD, NT_WILDCARD)
     return parser
 
 
@@ -383,6 +420,7 @@ class ModuleParser(BaseParser):
         self.name_list_parser = name_list_parser_init(BaseParser())
         self.def_parser = DefParser()
         self.use_parser = UseParser()
+        self.trait_parser = TraitParser()
         self.use_in_alias_parser = use_in_alias_parser_init(BaseParser())
 
         self.add_subparsers([
@@ -397,7 +435,8 @@ class ModuleParser(BaseParser):
             self.type_parser,
             self.def_parser,
             self.use_in_alias_parser,
-            self.use_parser
+            self.use_parser,
+            self.trait_parser,
         ])
 
         init_parser_literals(self)
@@ -408,6 +447,7 @@ class ModuleParser(BaseParser):
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
         stmt(self, TT_FUN, None, prefix_module_fun, layout=layout_fun)
+        stmt(self, TT_TRAIT, None, stmt_trait, layout=layout_trait)
         stmt(self, TT_TYPE, None, stmt_type, layout=layout_type)
         stmt(self, TT_LET, None, prefix_module_let, layout=layout_let)
         stmt(self, TT_GENERIC, None, stmt_generic, layout=layout_generic)
@@ -422,6 +462,8 @@ class ModuleParser(BaseParser):
         stmt(self, TT_INFIXR, None, stmt_infixr)
         stmt(self, TT_PREFIX, None, stmt_prefix)
 
+        infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
+        infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
         prefix(self, TT_LPAREN, None, prefix_lparen_module, layout=layout_lparen)
         symbol(self, TT_RPAREN)
 

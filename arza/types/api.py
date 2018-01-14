@@ -6,6 +6,7 @@ from arza.runtime import error
 
 DEBUG_MODE = False
 
+
 # *************************
 # type conversions
 # **************************************
@@ -148,11 +149,14 @@ def at_index(obj, i):
 
     return v
 
+
 def first(obj):
     return at_index(obj, 0)
 
+
 def second(obj):
     return at_index(obj, 1)
+
 
 def get_index(obj, k):
     return obj._get_index_(k)
@@ -187,6 +191,21 @@ def get_type(process, obj):
 def traits(process, obj):
     b = get_type(process, obj)
     return b.traits
+
+
+def is_implemented(process, typ, iface):
+    # TODO REMOVE IT AFTER YOU FINISH REMOVING node_juxtaposition_list
+    assert not space.islist(typ)
+    return space.newbool(is_implemented_b(process, typ, iface))
+
+
+def is_implemented_b(process, typ, iface):
+    if not space.isinterface(iface):
+        return error.throw_2(error.Errors.TYPE_ERROR, iface, space.newstring(u"Expecting interface"))
+    if not space.isdatatype(typ):
+        return error.throw_2(error.Errors.TYPE_ERROR, typ, space.newstring(u"Expecting datatype"))
+
+    return typ.is_interface_implemented(iface)
 
 
 def kindof(process, obj, trait):

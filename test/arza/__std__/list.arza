@@ -59,7 +59,7 @@ fun replicate(count, element) =
         throw ValueError(count)
 ---------------------------------------------------
 
-use List as 0 in
+use List in
     def != (self, other) as std_behavior:not_equal
     def ==(self, other) = seq:equal(self, other)
 --------------------------------------------------

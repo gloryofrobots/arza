@@ -1,28 +1,94 @@
-module observe
+module controller
+    type Controller
+         route, schemas
 
-interface Emitter
-    fun emit(emitter, signal, data)
-
-interface Observable as self
-    fun add_observer(self, signal, data)
-    fun remove_observer(self, signal, observer)
-    use Emitter.emit
-
-interface Observer
-    fun observe(self, signal, data)
-
-type BaseObservable
-    observers = {}
-    history = []
+    fun dispatch(controller, request)
 
 
-use BaseObservable as T, Observer as O in
-    fun add_observer(self:T, signal:Any, observer:O)
-        put(self.observers, signal, observer)
+module space    
+    interface
+        Damagable
+        Attacker
+        Collidable
 
-    fun add_observer(self:T, List(1,2), observer:O)
-        put(self.observers, signal, observer)
+    generic
+        damage(Damagable, Int)
+        attack(Attacker, Damagable)
+        get_damage(Attacker)
+        collide(Collidable, Collidable)
 
-type Connection(BaseObservable)
-     routes = []
+    trait TAttack for T1, T2
+          attack(a:T1, d:T2) =
+              damage(d, get_damage(a))
+      
+
+
+module body
+    type Body 
+        health:Int
+        speed:Vec2<Float>
+        mass:Int
+
+    fun new(health, speed, mass)
+        Body{health=health, speed=speed, mass=mass}
+
+    trait TBody for T1, T2
+        def collide(b1:T1, b2:T2)
+            attack(b1, b2)
+            attack(b2, b1)
+
+module asteroid
+    type Asteroid   
+            is Body
+            density
+
+    fun new(health, speed, mass, density)
+        // Asteroid{Body = body.new(health, speed), mass, density}
+        Asteroid{health, speed, mass, density}
+
+    trait TDenseBody for T1, T2
+        def collide(b1:T1, b2:T2)
+            if T1.density(b1) > T2.density(b2) then
+                attack(b1, b2)
+            else
+                attack(b2, b1)
+
+    use TDenseBody
+        for (Asteroid, Asteroid)
+
+
+type Asteroid
+    is Body
+    mass:Float
+
+
+type Spaceship
+     is Body
+     mass:Float
+     fire_power:Float
+
+
+trait TCollide
+    for (T1:Damagable,
+         T2:Damagable)
+            mass:Float
+            fire_power:Float
+
+    def collide_with(t1:T1, t2:T2) =
+        damage(t2, t1.mass)
+        damage(t1, t2.mass)
+
+trait TDamagable 
+    for T = Body
+
+    def damage(b:T, amount:Int)
+        b.health -= amount
+        on_damage(b)
+
+use (TDamagable,TCollidable) for
+    (Spaceship, Spaceship)
+    (Spaceship, Asteroid)
+    (Asteroid, Spaceship)
+    (Asteroid, Asteroid)
+
 

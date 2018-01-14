@@ -1,3 +1,4 @@
+# ************************ OBIN NODES*****************************
 NT_GOTO = 0
 NT_TRUE = 1
 NT_FALSE = 2
@@ -58,14 +59,15 @@ NT_DROP = 56
 NT_RANGE = 57
 NT_MODIFY = 58
 NT_OF = 59
-NT_AS = 60
-NT_DELAY = 61
-NT_LET = 62
-NT_NOT = 63
-NT_AND = 64
-NT_OR = 65
-NT_END_EXPR = 66
-NT_END = 67
+NT_IS_IMPLEMENTED = 60
+NT_AS = 61
+NT_DELAY = 62
+NT_LET = 63
+NT_NOT = 64
+NT_AND = 65
+NT_OR = 66
+NT_END_EXPR = 67
+NT_END = 68
 # ************************ OBIN NODES REPR *****************************
 __NT_REPR__ = ["NT_GOTO", "NT_TRUE", "NT_FALSE", "NT_VOID", "NT_INT", "NT_FLOAT", "NT_STR", "NT_MULTI_STR", "NT_CHAR",
                "NT_WILDCARD", "NT_NAME", "NT_TEMPORARY", "NT_SYMBOL", "NT_TYPE", "NT_MAP", "NT_LIST", "NT_TUPLE",
@@ -74,8 +76,8 @@ __NT_REPR__ = ["NT_GOTO", "NT_TRUE", "NT_FALSE", "NT_VOID", "NT_INT", "NT_FLOAT"
                "NT_IMPORT_HIDING", "NT_IMPORT_FROM", "NT_IMPORT_FROM_HIDING", "NT_EXPORT", "NT_LOAD", "NT_TRAIT",
                "NT_EXTEND", "NT_GENERIC", "NT_METHOD", "NT_INTERFACE", "NT_DERIVE", "NT_BIND", "NT_THROW", "NT_REST",
                "NT_ASSIGN", "NT_CALL", "NT_JUXTAPOSITION", "NT_UNDEFINE", "NT_LOOKUP", "NT_IMPORTED_NAME", "NT_HEAD",
-               "NT_TAIL", "NT_DROP", "NT_RANGE", "NT_MODIFY", "NT_OF", "NT_AS", "NT_DELAY", "NT_LET", "NT_NOT",
-               "NT_AND", "NT_OR", "NT_END_EXPR", "NT_END", ]
+               "NT_TAIL", "NT_DROP", "NT_RANGE", "NT_MODIFY", "NT_OF", "NT_IS_IMPLEMENTED", "NT_AS", "NT_DELAY",
+               "NT_LET", "NT_NOT", "NT_AND", "NT_OR", "NT_END_EXPR", "NT_END", ]
 
 
 def node_type_to_s(ntype):

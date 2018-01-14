@@ -7,6 +7,7 @@ IS_EMPTY = PREFIX + "is_empty"
 
 ISNOT = PREFIX + "isnot"
 KINDOF = PREFIX + "kindof"
+IS_IMPLEMENTED = PREFIX + "is_implemented"
 
 # functions used by compiler in code gen
 DERIVE = PREFIX + "derive"
@@ -21,7 +22,6 @@ INTERFACE = PREFIX + "definterface"
 PARTIAL = PREFIX + "defpartial"
 
 SPECIFY = PREFIX + "specify"
-DERIVE = PREFIX + "derive"
 
 SLICE = PREFIX + "slice"
 DROP = PREFIX + "drop"

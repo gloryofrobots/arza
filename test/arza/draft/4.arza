@@ -1,0 +1,54 @@
+iface Len 
+    len(self)
+
+iface Sized(Len)
+    is_empty(self)
+
+iface Coll as C 
+    put(what, where, coll:C)
+    del(what,  coll:C)
+
+iface GrowableCollection
+    use put
+
+iface ShrinkableCollection
+    use del
+
+iface Collection(GrowableCollection, ShrinkableCollection)
+
+iface Attacker as A
+    attack(A, _)
+
+type Body
+     hp = 0
+
+type MovingObject
+     speed = 0
+
+type MovingBody(Body, MovingObject)
+
+type Shark(MovingBody)
+
+type Fish(Body, MovingCreature)
+
+type Diver(Body, MovingCreature)
+
+iface Eater
+      eat(Eater, food)
+
+extend Shark
+    with Eater
+        def eat(self, food) =
+            _on_eat(self, food)
+
+impl Attacker
+     for Shark
+         def attack(self, victim:Diver) = pass
+         def attack(self, victim:Fish) =
+             eat(self, victim)
+     for Fish
+         def attack(self, shark:Shark) = attack(shark, self)
+         def attack(self, diver:Diver) = pass
+
+type CyberShark(Shark)
+     energy = 0

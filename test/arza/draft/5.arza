@@ -1,0 +1,22 @@
+module component
+    module controller
+        module Request
+            type
+                route
+                data
+
+        interface(Controller as C)
+            dispatch(C, Request)
+            _dispatch(C, Request)
+            validate(C, Request)
+            send(C, Request)
+
+        module base
+            type BaseController
+                config
+                db
+
+            trait TBaseController
+                  for T with
+                      def _dispatch(Controller, Request)
+             

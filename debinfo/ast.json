@@ -1,22 +1,431 @@
 [
   {
     "_ntype": "NT_FUN",
-    "_value": "fun",
+    "_value": "trait",
     "children": [
       {
         "_ntype": "NT_NAME",
-        "_value": "f"
+        "_value": "Body"
       },
       [
         [
           {
-            "_ntype": "NT_UNIT",
-            "_value": "("
+            "_ntype": "NT_TUPLE",
+            "_value": "trait",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "T1"
+                },
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "T2"
+                }
+              ]
+            ]
+          },
+          [
+            [
+              {
+                "_ntype": "NT_DEF",
+                "_value": "use",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "do_something"
+                  },
+                  {
+                    "_ntype": "NT_LIST",
+                    "_value": "def",
+                    "children": [
+                      [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "T1"
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_FUN",
+                    "_value": "def",
+                    "children": [
+                      {
+                        "empty": true
+                      },
+                      [
+                        [
+                          {
+                            "_ntype": "NT_TUPLE",
+                            "_value": "(",
+                            "children": [
+                              [
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "t"
+                                }
+                              ]
+                            ]
+                          },
+                          [
+                            {
+                              "_ntype": "NT_INT",
+                              "_value": "1"
+                            }
+                          ]
+                        ]
+                      ]
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_TUPLE",
+                    "_value": "(",
+                    "children": [
+                      [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "t"
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ],
+            {
+              "_ntype": "NT_DEF",
+              "_value": "def",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "do_something"
+                },
+                {
+                  "_ntype": "NT_LIST",
+                  "_value": "def",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "T1"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "_ntype": "NT_FUN",
+                  "_value": "def",
+                  "children": [
+                    {
+                      "empty": true
+                    },
+                    [
+                      [
+                        {
+                          "_ntype": "NT_TUPLE",
+                          "_value": "(",
+                          "children": [
+                            [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "t"
+                              }
+                            ]
+                          ]
+                        },
+                        [
+                          {
+                            "_ntype": "NT_INT",
+                            "_value": "1"
+                          }
+                        ]
+                      ]
+                    ]
+                  ]
+                },
+                {
+                  "_ntype": "NT_TUPLE",
+                  "_value": "(",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "t"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "_ntype": "NT_DEF",
+              "_value": "def",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "do_something"
+                },
+                {
+                  "_ntype": "NT_LIST",
+                  "_value": "def",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "T2"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "T1"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "_ntype": "NT_FUN",
+                  "_value": "def",
+                  "children": [
+                    {
+                      "empty": true
+                    },
+                    [
+                      [
+                        {
+                          "_ntype": "NT_TUPLE",
+                          "_value": "(",
+                          "children": [
+                            [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "t"
+                              },
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "t"
+                              }
+                            ]
+                          ]
+                        },
+                        [
+                          {
+                            "_ntype": "NT_INT",
+                            "_value": "2"
+                          }
+                        ]
+                      ]
+                    ]
+                  ]
+                },
+                {
+                  "_ntype": "NT_TUPLE",
+                  "_value": "(",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "t"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "t"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        ]
+      ]
+    ]
+  },
+  {
+    "_ntype": "NT_FUN",
+    "_value": "trait",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "Body"
+      },
+      [
+        [
+          {
+            "_ntype": "NT_TUPLE",
+            "_value": "trait",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "T1"
+                },
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "T2"
+                }
+              ]
+            ]
           },
           [
             {
-              "_ntype": "NT_INT",
-              "_value": "1"
+              "_ntype": "NT_CALL",
+              "_value": "(",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "OtherTrait"
+                },
+                [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "T1"
+                  }
+                ]
+              ]
+            },
+            [
+              {
+                "_ntype": "NT_DEF",
+                "_value": "use",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "do_something"
+                  },
+                  {
+                    "_ntype": "NT_LIST",
+                    "_value": "def",
+                    "children": [
+                      [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "T1"
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_FUN",
+                    "_value": "def",
+                    "children": [
+                      {
+                        "empty": true
+                      },
+                      [
+                        [
+                          {
+                            "_ntype": "NT_TUPLE",
+                            "_value": "(",
+                            "children": [
+                              [
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "t"
+                                }
+                              ]
+                            ]
+                          },
+                          [
+                            {
+                              "_ntype": "NT_INT",
+                              "_value": "1"
+                            }
+                          ]
+                        ]
+                      ]
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_TUPLE",
+                    "_value": "(",
+                    "children": [
+                      [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "t"
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ],
+            {
+              "_ntype": "NT_DEF",
+              "_value": "def",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "do_something"
+                },
+                {
+                  "_ntype": "NT_LIST",
+                  "_value": "def",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "T2"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "T1"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "_ntype": "NT_FUN",
+                  "_value": "def",
+                  "children": [
+                    {
+                      "empty": true
+                    },
+                    [
+                      [
+                        {
+                          "_ntype": "NT_TUPLE",
+                          "_value": "(",
+                          "children": [
+                            [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "t"
+                              },
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "t"
+                              }
+                            ]
+                          ]
+                        },
+                        [
+                          {
+                            "_ntype": "NT_INT",
+                            "_value": "2"
+                          }
+                        ]
+                      ]
+                    ]
+                  ]
+                },
+                {
+                  "_ntype": "NT_TUPLE",
+                  "_value": "(",
+                  "children": [
+                    [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "t"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "t"
+                      }
+                    ]
+                  ]
+                }
+              ]
             }
           ]
         ]

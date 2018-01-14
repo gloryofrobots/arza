@@ -3,7 +3,7 @@ import string
 import io
 
 
-use Tuple as 0 in
+use Tuple in
     def != (self, other) as std_behavior:not_equal
     def == (self, other) as std_behavior:equal
 

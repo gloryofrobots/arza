@@ -1,11 +1,35 @@
-fun f() =
-        2
+(trait Body(T1, T2) =
+    (use T1 in
+        (def do_something(t of T1) = 1))
+
+    (def do_something(t of T1) = 1)
+    (def do_something(t of T2, t of T1) = 2)
+)
+
+trait Body(T1, T2) =
+    OtherTrait(T1)
+    use T1 in
+        def do_something(t of T1) = 1
+
+    def do_something(t of T2, t of T1) = 2
 
 
-		1
+//fun Body(T1, T2) =
+//    fun (x, y) = x
+//    fun (x, y, z) = z
+
+
+//use XXX as T in
+//    def xxx(self of T, val) = self.x
 
 
 
+//trait Body(T1, T2)
+//    with  T1 of (Seqable, Scalable)
+//             of type(x,y,z)
+//
+//    def do_something(t of T1) = 1
+//    def do_something(t of T2, t of T1) = 2
 //infixr (:=, :=, 10)
 //// infix @ as of -> 15
 //infixl (<|, <|, 15)

@@ -2,7 +2,7 @@ import arza:lang:_map
 import string
 import seq
 
-use Map as 0 in
+use Map in
     def != (self, other) as std_behavior:not_equal
     def == (self, other) as std_behavior:equal
 

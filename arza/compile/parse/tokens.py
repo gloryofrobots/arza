@@ -112,6 +112,7 @@ RULES = [
     # (keyword('module'), TT_MODULE),
 
     (keyword('use'), TT_USE),
+    (keyword('trait'), TT_TRAIT),
     (keyword('for'), TT_FOR),
 
     (keyword('generic'), TT_GENERIC),

@@ -79,6 +79,7 @@ NODES = [
   "NT_MODIFY",
 
   "NT_OF",
+  "NT_IS_IMPLEMENTED",
   "NT_AS",
   "NT_DELAY",
   "NT_LET",

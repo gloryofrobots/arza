@@ -2,7 +2,7 @@ import arza:lang:_string
 import seq
 
 
-use (String, Char, Symbol) as 0 in
+use (String, Char, Symbol) in
     def != (self, other) as std_behavior:not_equal
     def == (self, other) as std_behavior:equal
 

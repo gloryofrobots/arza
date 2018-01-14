@@ -33,6 +33,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.IS, __is, 2)
     put_lang_func(process, module, lang_names.ISNOT, __isnot, 2)
     put_lang_func(process, module, lang_names.KINDOF, __kindof, 2)
+    put_lang_func(process, module, lang_names.IS_IMPLEMENTED, __is_implemented, 2)
     put_lang_func(process, module, lang_names.TYPE, __type, 2)
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
     put_lang_func(process, module, lang_names.INTERFACE, __interface, 3)
@@ -281,3 +282,9 @@ def __kindof(process, routine):
     left = routine.get_arg(0)
     right = routine.get_arg(1)
     return api.kindof(process, left, right)
+
+@complete_native_routine
+def __is_implemented(process, routine):
+    left = routine.get_arg(0)
+    right = routine.get_arg(1)
+    return api.is_implemented(process, left, right)

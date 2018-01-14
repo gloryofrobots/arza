@@ -56,6 +56,10 @@ def layout_use(parser, op, node):
     open_statement_layout(parser, node, LEVELS_USE, INDENTS_USE)
 
 
+def layout_trait(parser, op, node):
+    open_statement_layout(parser, node, LEVELS_TRAIT, INDENTS_TRAIT)
+
+
 def layout_type(parser, op, node):
     open_statement_layout(parser, node, None, INDENTS_TYPE)
 
@@ -848,6 +852,18 @@ def prefix_module_fun(parser, op, token):
     return node_2(NT_FUN, token, name, funcs)
 
 
+def stmt_trait(parser, op, token):
+    name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    pattern = _parse_comma_separated(parser.trait_parser.pattern_parser, TT_RPAREN, advance_first=TT_LPAREN,
+                                     is_free=True)
+
+    signature = nodes.create_tuple_node_from_list(token, pattern)
+    advance_expected(parser, TT_ASSIGN)
+    body = statements(parser.trait_parser, [])
+    funcs = nodes.create_function_variants(signature, body)
+    return node_2(NT_FUN, token, name, funcs)
+
+
 ###############################################################
 # MODULE STATEMENTS
 ###############################################################
@@ -1214,16 +1230,18 @@ def _parse_generic_signature(parser, op, token, generic_name):
 
 # USE
 
-def _use_replace_in_signature(parser, sig, _type, alias):
+def _use_replace_in_signature(parser, token, sig, _type, alias):
+    replaced = False
     if space.isint(alias):
         i = api.to_i(alias)
         if i < 0 or i >= api.length_i(sig):
-            parse_error(parser, u"Invalid index", _type)
+            parse_error(parser, u"Invalid index", token)
         new_sig = api.put_at_index(sig, i, _type)
-
+        replaced = True
     elif nodes.node_type(alias) == NT_REST:
         i = api.length_i(sig) - 1
         new_sig = api.put_at_index(sig, i, _type)
+        replaced = True
     else:
         els = []
         alias_val = nodes.node_value(alias)
@@ -1231,16 +1249,18 @@ def _use_replace_in_signature(parser, sig, _type, alias):
             arg_val = nodes.node_value(arg)
             if api.equal_b(arg_val, alias_val):
                 els.append(_type)
+                replaced = True
             else:
                 els.append(arg)
 
         new_sig = list_node(els)
-    return new_sig
+    return new_sig, replaced
 
 
 def _parse_use_serial_transform(parser, token, _type, alias, methods):
     result = []
 
+    replaced = True
     for method in methods:
         # flatten
         method_name = nodes.node_first(method)
@@ -1248,14 +1268,17 @@ def _parse_use_serial_transform(parser, token, _type, alias, methods):
         old_signature = nodes.node_first(method_signature)
         method_body = nodes.node_third(method)
         method_pattern = nodes.node_fourth(method)
-
+        signature, _replaced = _use_replace_in_signature(parser, token, old_signature, _type, alias)
+        replaced = replaced or _replaced
         new_signature = nodes.create_list_node_from_list(
             get_node_token(method_signature),
-            _use_replace_in_signature(parser, old_signature, _type, alias)
+            signature
         )
 
         new_method = node_4(NT_DEF, token, method_name, new_signature, method_body, method_pattern)
         result.append(new_method)
+    if not replaced:
+        parse_error(parser, u"Missing type in method signature", token)
     return result
 
 
@@ -1274,14 +1297,18 @@ def _parse_use_parallel_transform(parser, token, types, aliases, method):
     signature = nodes.node_first(method_signature)
     method_body = nodes.node_third(method)
     method_pattern = nodes.node_fourth(method)
+    replaced = False
     for _type, alias in zip(types, aliases):
-        signature = _use_replace_in_signature(parser, signature, _type, alias)
+        signature, _replaced = _use_replace_in_signature(parser, token, signature, _type, alias)
+        replaced = replaced or _replaced
 
     new_signature = nodes.create_list_node_from_list(
         get_node_token(method_signature),
         signature
     )
 
+    if not replaced:
+        parse_error(parser, u"Missing type in method signature", token)
     return node_4(NT_DEF, token, method_name, new_signature, method_body, method_pattern)
 
 
@@ -1297,10 +1324,13 @@ def _parse_use_parallel(parser, token, types, aliases):
 def stmt_use(parser, op, token):
     if parser.token_type == TT_LPAREN:
         types = _parse_comma_separated(parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
-        advance_expected(parser, TT_AS)
-        alias = expression(parser.use_in_alias_parser, 0)
-        if nodes.node_type(alias) == NT_INT:
-            alias = nodes.int_node_to_int(alias)
+        if parser.token_type == TT_IN:
+            alias = space.newnumber(0)
+        # else:
+        #     check_token_type(parser, TT_ELLIPSIS)
+        else:
+            advance_expected(parser, TT_AS)
+            alias = expression(parser.use_in_alias_parser, 0)
 
         advance_expected(parser, TT_IN)
         return _parse_use_serial(parser, token, types, alias)
@@ -1313,11 +1343,11 @@ def stmt_use(parser, op, token):
         if not layout.is_open():
             break
         type_e = expression(parser.name_parser, 0)
-        advance_expected(parser, TT_AS)
-        alias = expression(parser.use_in_alias_parser, 0)
-        if nodes.node_type(alias) == NT_INT:
-            alias = nodes.int_node_to_int(alias)
-
+        if parser.token_type == TT_AS:
+            advance_expected(parser, TT_AS)
+            alias = expression(parser.use_in_alias_parser, 0)
+        else:
+            alias = space.newnumber(0)
         types.append(type_e)
         aliases.append(alias)
 

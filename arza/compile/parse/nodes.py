@@ -522,6 +522,10 @@ def create_kindof_call(token, left, right):
     return create_call_node_s(token, lang_names.KINDOF, [left, right])
 
 
+def create_is_implemented_call(token, left, right):
+    return create_call_node_s(token, lang_names.IS_IMPLEMENTED, [left, right])
+
+
 def create_isnot_call(token, left, right):
     return create_call_node_s(token, lang_names.ISNOT, [left, right])
 

@@ -1,28 +1,46 @@
 import io
 
+type
+    Asteroid(health)
+    Spaceship(health, fire_power)
+
 
 generic
     collide_with(body1, body2)
-    destroy(body1)
-    damage(body1, body2)
+    damage(body1, amount)
 
+interface Body(damage.0)
 
-type
-    Asteroid(health)
-    Spaceship(fire_power)
+let
+    BodyTrait =
+    {
+        (damage) = fun (b1, amount of Int) =
+            io:print("Damaging", b1.health - amount)
+            42
+    }
 
-def collide_with(a of Asteroid, s of Spaceship) =
-    "Asteroid KILLS Spaceship"
+use Spaceship as T in
+    def damage(s of T, amount) as BodyTrait.[damage]
+
+use Body as I in
+    def collide_with(b1 of I, b2 of I) =
+        io:print("Bodies colliding")
+derive Body for Spaceship
 
 def collide_with({health} of Asteroid, {fire_power} of Spaceship) when health < fire_power =
     "Spaceship KILLS Asteroid"
 
+def collide_with(a of Asteroid, s of Spaceship) =
+    "Asteroid KILLS Spaceship"
 
 fun test() =
     let
         a = Asteroid(1)
-        s = Spaceship(2)
+        s = Spaceship(2, 10)
     in
+        io:print(damage(s, 10))
         io:print(collide_with(a,s))
+        io:print(collide_with(s,s))
+
 
 

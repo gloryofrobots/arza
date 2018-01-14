@@ -244,6 +244,15 @@ def _process_of(state, pattern, patterns, path):
     return patterns
 
 
+def _process_is_implemented(state, pattern, patterns, path):
+    element = node_first(pattern)
+    trait = node_second(pattern)
+    patterns = add_pattern(patterns, ["is_implemented",
+                                      _create_path_node(nodes.node_token(element), path), trait])
+    patterns = _process_pattern(state, element, patterns, path)
+    return patterns
+
+
 def _process_when_no_else(state, pattern, patterns, path):
     pat = node_first(pattern)
     guard = node_second(pattern)
@@ -278,6 +287,8 @@ def _process_pattern(state, pattern, patterns, path):
         return _process_cons(state, pattern, patterns, path)
     elif ntype == NT_NAME:
         return _process_name(state, pattern, patterns, path)
+    elif ntype == NT_IS_IMPLEMENTED:
+        return _process_is_implemented(state, pattern, patterns, path)
     elif ntype == NT_OF:
         return _process_of(state, pattern, patterns, path)
     elif ntype == NT_WILDCARD:

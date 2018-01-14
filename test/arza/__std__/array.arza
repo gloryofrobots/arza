@@ -3,7 +3,7 @@ import string
 import io
 
 
-use Array as 0 in
+use Array in
     def != (self, other) as std_behavior:not_equal
     def == (self, other) as std_behavior:equal
 

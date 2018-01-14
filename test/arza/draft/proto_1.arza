@@ -1,23 +1,25 @@
-
-object Body {
+type Body {
     hp = 0
     speed = 0
 
-    damage(amount) {self.hp -= amount}
+    damage(self, amount) {self.hp -= amount}
     destroy() {}
 }
-object Collider {
-    abstract collide_with(body)
+
+type Collider {
+    collide_with(self, body)
 }
 
-object Spaceship {
+type Spaceship {
   var model = 0
   var fire_power = 0
 
   is Body
   is Collider with
-    def collide_with(body) { }
+    def collide_with(self, body) { }
 }
+
+Spaceship is Seqable
 
 object Asteroid {
 }

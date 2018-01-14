@@ -197,6 +197,14 @@ def _transform_kindof(history, head, variables):
     return left, condition, prefixes + prefixes1, variables
 
 
+def _transform_is_implemented(history, head, variables):
+    left, prefixes = _history_get_var(history, head[1])
+    right = head[2]
+    _condition = create_kindof_call(nodes.node_token(left), left, right)
+    condition, prefixes1 = _history_get_condition(history, _condition)
+    return left, condition, prefixes + prefixes1, variables
+
+
 def _transform_is(history, head, variables):
     left, prefixes = _history_get_var(history, head[1])
     right = head[2]
@@ -282,6 +290,7 @@ TRANSFORM_DISPATCH = {
     "is": _transform_is,
     "in": _transform_in,
     "kindof": _transform_kindof,
+    "is_implemented": _transform_is_implemented,
     "list": _skip_transform,
     "when": _transform_when,
     "when_dummy": _skip_transform,

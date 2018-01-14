@@ -59,7 +59,7 @@ class W_Record(W_Hashable):
         return W_Record(self.type.descriptors, newvalues)
 
     def _length_(self):
-        return api.length(self.values)
+        return api.length_i(self.values)
 
     def _equal_(self, other):
         if not isinstance(other, W_Record):

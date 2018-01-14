@@ -12,7 +12,7 @@ type
     None
 
 
-use Point2 as 0 in
+use Point2 in
     def add (self, p2 of Point2) = Point2(self.x + p2.x, self.y + p2.y)
     def add (self, i of Int) = Point2(self.x + i, self.y + i)
     def add (self, v of Vec2) = add(Vec2(self, self), v)
@@ -23,7 +23,7 @@ use Point2 as 0 in
     def != (self, other of Point2) = not (self == other)
 
 
-use Vec2 as 0 in
+use Vec2 in
     def add (self, v of Vec2) =
         Vec2(
             add(self.p1, v.p1),
