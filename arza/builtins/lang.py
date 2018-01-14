@@ -92,7 +92,9 @@ def _print(process, routine):
 # and pause script execution
 @complete_native_routine
 def breakpoint(process, routine):
-    args = routine._args.to_l()
+    _num = routine.get_arg(0)
+    error.affirm_type(_num, space.isint)
+    api.d.add_bp(api.to_i(_num))
     return space.newunit()
 
 

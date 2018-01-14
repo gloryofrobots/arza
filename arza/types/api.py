@@ -7,6 +7,37 @@ from arza.runtime import error
 DEBUG_MODE = False
 
 
+# UGLY DEBUGGING HACKS
+class Debug:
+    def __init__(self):
+        self._BREAKPOINTS = []
+
+    def pbp(self, bp, *args):
+        # print if breakpoint set
+        if not self.has_bp(bp):
+            return
+        self._p(args)
+
+    def pd(self, *args):
+        # print if debug_mode True
+        if not DEBUG_MODE:
+            return
+        self._p(args)
+
+    def _p(self, args):
+        print " ".join(map(str, args))
+
+    def add_bp(self, num):
+        self._BREAKPOINTS.append(num)
+
+    def has_bp(self, bp):
+        # if you need to enable all pbp prints set bp to 42
+        return bp in self._BREAKPOINTS or bp == 42
+
+
+d = Debug()
+
+
 # *************************
 # type conversions
 # **************************************

@@ -200,7 +200,7 @@ def _transform_kindof(history, head, variables):
 def _transform_is_implemented(history, head, variables):
     left, prefixes = _history_get_var(history, head[1])
     right = head[2]
-    _condition = create_kindof_call(nodes.node_token(left), left, right)
+    _condition = create_is_implemented_call(nodes.node_token(left), left, right)
     condition, prefixes1 = _history_get_condition(history, _condition)
     return left, condition, prefixes + prefixes1, variables
 

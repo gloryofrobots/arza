@@ -56,6 +56,7 @@ class W_Generic(W_Hashable):
         error.affirm_type(_type, space.isdatatype)
         for sig in self.signatures:
             if sig.can_dispatch_on_type(_type, interfaces, position):
+                api.d.pbp(1, "S", sig, interfaces)
                 return True
         return False
 
