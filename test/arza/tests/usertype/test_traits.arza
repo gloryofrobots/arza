@@ -1,0 +1,101 @@
+import affirm
+import io
+
+type
+    EQ
+    GT
+    LT
+    Val(v)
+    Val2(v)
+
+generic
+    eq(x, y)
+    ne(x, y)
+    le(x, y)
+    lt(x, y)
+    ge(x, y)
+    gt(x, y)
+    cmp(x, y)
+    max(x, y)
+    min(x, y)
+
+trait TEq(T1, T2) =
+    def eq (x of T1, y of T2) = not ne(x, y)
+
+trait TNe(T1, T2) =
+    def ne (x of T1, y of T2) = not eq(x, y)
+
+trait TOrder(T1, T2) =
+    def le(x of T1, y of T2) = cmp(x, y) != GT
+    def lt(x of T1, y of T2) = cmp(x, y) == LT
+    def ge(x of T1, y of T2) = cmp(x, y) != LT
+    def gt(x of T1, y of T2) = cmp(x, y) == GT
+
+trait TMaxMin(T1, T2) =
+    def max(x of T1, y of T2) =
+        if x `le` y then y
+        else  y
+
+    def min(x of T1, y of T2) =
+        if x `le` y then x
+        else y
+
+trait TCmp(T1, T2) =
+    def cmp(x of T1, y of T2) =
+        if eq(x, x) then EQ
+        elif le(x, y) then LT
+        else GT
+
+TNe(Val, Val)
+def eq(v1 of Val, v2) = v1.v == v2.v
+
+TEq(Val2, Val2)
+def ne(v1 of Val2, v2) = v1.v != v2.v
+
+TOrder(Val, Val)
+TMaxMin(Val, Val)
+
+def cmp(self of Val, other of Val) =
+    if self.v == other.v then EQ
+    elif self.v <= other.v then LT
+    else GT
+
+TOrder(Val2, Val2)
+TCmp(Val2, Val2)
+TMaxMin(Val2, Val2)
+def le(self of Val2, other of Val2) = self.v <= other.v
+
+fun test () =
+    let
+        v1_1 = Val(1)
+        v1_2 = Val(1)
+        v1_3 = Val(2)
+
+        v2_1 = Val2(1)
+        v2_2 = Val2(1)
+        v2_3 = Val2(2)
+    in
+        affirm:is_true(eq(v1_1, v1_2))
+        affirm:is_false(ne(v1_1, v1_2))
+        affirm:is_false(eq(v1_3, v1_2))
+        affirm:is_false(eq(v1_2, v1_3))
+
+        affirm:is_true(eq(v2_1, v2_2))
+        affirm:is_false(ne(v2_1, v2_2))
+        affirm:is_false(eq(v2_3, v2_2))
+        affirm:is_false(eq(v2_2, v2_3))
+
+        affirm:is_true(eq(v1_1, v2_2))
+        affirm:is_false(ne(v2_1, v1_2))
+        affirm:is_false(eq(v1_3, v2_2))
+        affirm:is_false(eq(v1_2, v2_3))
+
+        affirm:is_false(lt(v1_3, v1_3))
+        affirm:is_true(le(v1_3, v1_3))
+        affirm:is_false(gt(v1_3, v1_3))
+        affirm:is_true(ge(v1_3, v1_3))
+
+        affirm:is_false(lt(v2_3, v2_3))
+        affirm:is_true(le(v2_3, v2_3))
+        affirm:is_false(gt(v2_3, v2_3))
+        affirm:is_true(ge(v2_3, v2_3))
