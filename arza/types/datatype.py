@@ -218,8 +218,8 @@ def derive(process, t, interfaces):
     error.affirm_type(t, space.isdatatype)
     error.affirm_type(interfaces, space.islist)
     to_be_implemented = []
-    bp = 42
-    api.d.pbp(bp, "================")
+    bp = 1
+    api.d.pbp(bp, "================", t)
     api.d.pbp(bp, interfaces)
     api.d.pbp(bp, t.interfaces)
     old_interfaces = t.interfaces
@@ -238,9 +238,11 @@ def derive(process, t, interfaces):
 
         # derive according to future interfaces
         new_interfaces = plist.remove(interfaces, interface)
-        maybe_interfaces = plist.concat(old_interfaces, new_interfaces)
+        maybe_interfaces = plist.concat(new_interfaces, old_interfaces)
+        # remove Any
+        maybe_interfaces = plist.remove(maybe_interfaces, process.std.interfaces.Any)
         api.d.pbp(bp, "M", maybe_interfaces)
-        maybe_interfaces = new_interfaces
+        # maybe_interfaces = new_interfaces
 
         error.affirm_type(interface, space.isinterface)
         for r in interface.generics:

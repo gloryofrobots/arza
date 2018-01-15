@@ -66,26 +66,31 @@ import list
 //    log("TEST OPERATORS")
 //    test_operators:test()
 
-//import tests:dispatch:space:space
 type V2(x, y)
 
 generic
     eq(f, s)
     something(f, val)
+    something2(f)
 
-interface Thing(something.0)
+interface Thing(something.0, something.1)
+interface Thing2(something2.0)
 
 trait EQ(T of Thing) =
     def eq(f of T, s) = f.x == s.x
 
-def something(f, val of V2) = f.x + val
-breakpoint(1)
-derive Thing for V2
+def something2(f of V2) = f.y
+def something2(f of Thing) = f.x
 
+def something(f of Thing2, s of Thing2) = f.x + s.y
+
+breakpoint(1)
+
+derive (Thing,Thing2) for V2
 
 EQ(V2)
-def eq(f of V2, s of V2) = f.x == s.x and f.y == s.y
 
+def eq(f of V2, s of V2) = f.x == s.x and f.y == s.y
 
 fun main() =
     let
@@ -94,6 +99,6 @@ fun main() =
     in
         io:print(V2 `is_implemented` Thing)
         io:print(eq(v1, v2))
+        io:print(something2(v1))
 
 //    test()
-//    space:test()
