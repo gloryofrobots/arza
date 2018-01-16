@@ -124,7 +124,7 @@ class W_Tuple(W_Hashable):
 
     def _at_(self, index):
         from lalan.types.space import newvoid, isint
-        assert isint(index)
+        assert isint(index), index.__class__.__name__
         try:
             el = self.elements[api.to_i(index)]
         except IndexError:

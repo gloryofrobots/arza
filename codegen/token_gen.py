@@ -11,6 +11,7 @@ TOKENS = [
   ("TT_FUN", "fun"),
   ("TT_MATCH", "match"),
   ("TT_WITH", "with"),
+  ("TT_WITHOUT", "without"),
   ("TT_CASE", "|"),
 
   ("TT_EXTEND", "extend"),
@@ -44,6 +45,7 @@ TOKENS = [
   ("TT_HIDE", "hide"),
   ("TT_EXPORT", "export"),
   ("TT_TRAIT", "trait"),
+  ("TT_PROTOCOL", "protocol"),
   ("TT_USE", "use"),
   ("TT_GENERIC", "generic"),
   ("TT_INTERFACE", "interface"),

@@ -104,17 +104,6 @@ type
 
 generic
 (
-    ==(`x, y)
-    !=(`x, y)
-    <=(`x, y)
-    <(`x, y)
-    >=(`x, y)
-    >(`x, y)
-
-    cmp(`first, second)
-
-    max(`first, second)
-    min(`first, second)
 
     -(`x, y)
     +(`x, y)
@@ -167,12 +156,43 @@ generic
 ///////////////// INTERFACES ///////////////////////////////
 ////////////////////////////////////////////////////////////
 
+protocol PartialEq (
+    ==(`x, y)
+)
+
+protocol Eq (
+    use PartialEq
+    !=(`x, y)
+)
+
+protocol Comparable (
+    cmp(`first, second)
+)
+
+protocol LessEq (
+    use PartialEq
+    <=(`x, y)
+)
+
+protocol Ord (
+    use LessEq
+    use Comparable
+
+    <(`x, y)
+    >=(`x, y)
+    >(`x, y)
+
+
+    max(`first, second)
+    min(`first, second)
+)
+
 
 interface
 (
-    PartialEq (==)
-    Eq (!=, ==)
-    Ord(<, <=, >, >=, cmp, max, min)
+//    PartialEq (==)
+//    Eq (!=, ==)
+    // Ord(<, <=, >, >=, cmp, max, min)
     Num (-, +, *, /, mod, negate)
     Pow(**)
     Str (str)

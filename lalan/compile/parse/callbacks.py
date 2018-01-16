@@ -191,11 +191,14 @@ def infix_lcurly(parser, op, node, left):
     return node_2(NT_MODIFY, __ntok(node), left, list_node(items))
 
 
-def _parse_comma_separated(parser, terminator, expected=None, initial=None):
+def _parse_comma_separated(parser, terminator, expected=None, initial=None, advance_first=False):
     if not initial:
         items = []
     else:
         items = initial
+
+    if advance_first:
+        advance(parser)
     if parser.token_type != terminator:
         while True:
             e = expression(parser, 0)
@@ -312,12 +315,6 @@ def infix_lparen_generic(parser, op, node, left):
     items = _infix_lparen(parser)
     args = node_1(NT_LIST, __ntok(node), items)
     return node_2(NT_GENERIC, __ntok(node), generic_name, args)
-
-
-def infix_lparen_interface(parser, op, node, left):
-    items = _infix_lparen(parser)
-    # funcs = node_1(NT_LIST, __ntok(node), items)
-    return node_2(NT_INTERFACE, __ntok(node), left, items)
 
 
 def infix_lsquare(parser, op, node, left):
@@ -438,11 +435,6 @@ def prefix_lparen_expression(parser, op, node):
 def prefix_lsquare(parser, op, node):
     items = _parse_comma_separated(parser, TT_RSQUARE)
     return node_1(NT_LIST, __ntok(node), items)
-
-
-def stmt_interface(parser, op, node):
-    nodes = list_expression(parser.interface_parser, 0)
-    return nodes
 
 
 def operator_as_symbol(parser, op, node):
@@ -1047,6 +1039,64 @@ def prefix_trait_let(parser, op, node):
     advance_expected(parser, TT_ASSIGN)
     func = expression(parser.expression_parser, 0)
     return node_2(NT_ASSIGN, __ntok(node), generic_name, func)
+
+
+# ----------- PROTOCOL ----------------------------
+
+def stmt_interface(parser, op, node):
+    nodes = list_expression(parser.interface_parser, 0)
+    return nodes
+
+
+def infix_lparen_interface(parser, op, node, left):
+    items = _infix_lparen(parser)
+    # funcs = node_1(NT_LIST, __ntok(node), items)
+    return node_3(NT_INTERFACE, __ntok(node), left, items, list_node([]))
+
+
+def infix_lparen_protocol(parser, op, node, left):
+    check_node_type(parser, left, NT_SYMBOL)
+    generic_name = nodes.create_name_node_s(left, nodes.node_value_s(nodes.node_first(left)))
+    items = _infix_lparen(parser)
+    args = node_1(NT_LIST, __ntok(node), items)
+    return node_2(NT_GENERIC, __ntok(node), generic_name, args)
+
+
+def prefix_protocol_use(parser, op, node):
+    name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
+    if parser.token_type == TT_LPAREN:
+        generics = _parse_comma_separated(parser.symbol_list_parser, TT_RPAREN, advance_first=True)
+    else:
+        generics = list_node([])
+    return node_2(NT_USE, __ntok(node), name, nodes.create_list_node_from_list(node, generics))
+
+
+def stmt_protocol(parser, op, node):
+    check_token_type(parser, TT_NAME)
+    name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+
+    generics = []
+    generic_names = []
+    mixins = []
+    check_token_type(parser, TT_LPAREN)
+
+    extensions = ensure_list_node(expression(parser.protocol_parser, 0))
+
+    for ex in extensions:
+        if nodes.node_type(ex) == NT_USE:
+            mixins.append(nodes.create_tuple_node(ex, [
+                nodes.node_first(ex), nodes.node_second(ex)
+            ]))
+        elif nodes.node_type(ex) == NT_GENERIC:
+            generic_names.append(nodes.node_first(ex))
+            generics.append(ex)
+        else:
+            assert False, "Should not reach here, unknown type extension"
+
+    iface = nodes.node_3(NT_INTERFACE, __ntok(node), name, list_node(generic_names), list_node(mixins))
+    return list_node([list_node(generics), iface])
+    # nodes = list_expression(parser.protocol_parser, 0)
+    # return nodes
 
 
 # ----------- EXTEND ----------------------------

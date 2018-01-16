@@ -57,9 +57,9 @@ class W_Interface(W_Hashable):
 
 def _get_mixin_generics(generics, mixins):
     for pair in mixins:
-        iface = api.at(pair, 0)
+        iface = api.at_index(pair, 0)
         error.affirm_type(iface, space.isinterface)
-        gen_names = api.at(pair, 1)
+        gen_names = api.at_index(pair, 1)
         if space.isvoid(gen_names):
             generics = plist.concat(generics, iface.generics)
         else:

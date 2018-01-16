@@ -97,6 +97,7 @@ RULES = [
     (keyword('of'), TT_OF),
     (keyword('match'), TT_MATCH),
     (keyword('with'), TT_WITH),
+    (keyword('without'), TT_WITHOUT),
     (keyword('fun'), TT_FUN),
     (keyword('and'), TT_AND),
     (keyword('or'), TT_OR),
@@ -116,6 +117,7 @@ RULES = [
     (keyword('extend'), TT_EXTEND),
     (keyword('generic'), TT_GENERIC),
     (keyword('interface'), TT_INTERFACE),
+    (keyword('protocol'), TT_PROTOCOL),
     (keyword('type'), TT_TYPE),
 
     (keyword('export'), TT_EXPORT),

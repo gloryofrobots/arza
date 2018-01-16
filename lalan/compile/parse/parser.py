@@ -239,6 +239,31 @@ class TypeParser(BaseParser):
         prefix(self, TT_LPAREN, prefix_lparen)
 
 
+class ProtocolParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+        self.name_parser = name_parser_init(BaseParser())
+        self.symbol_list_parser = symbol_list_parser_init(BaseParser())
+
+        self.add_subparsers([
+            self.symbol_list_parser,
+            self.name_parser,
+        ])
+
+        prefix(self, TT_LPAREN, prefix_lparen)
+        infix(self, TT_LPAREN, 100, infix_lparen_protocol)
+
+        prefix(self, TT_NAME, prefix_name_as_symbol)
+        prefix(self, TT_TICKNAME, prefix_name_as_symbol)
+        prefix(self, TT_OPERATOR, operator_as_symbol)
+
+        symbol(self, TT_COMMA, symbol_comma_nud)
+        symbol(self, TT_RPAREN)
+
+        prefix(self, TT_USE, prefix_protocol_use)
+
+
+
 class ExtendParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
@@ -320,6 +345,7 @@ class ModuleParser(BaseParser):
         self.trait_parser = TraitParser()
         self.type_parser = TypeParser()
         self.extend_parser = ExtendParser()
+        self.protocol_parser = ProtocolParser()
 
         self.add_subparsers([
             self.import_parser,
@@ -332,6 +358,7 @@ class ModuleParser(BaseParser):
             self.trait_parser,
             self.extend_parser,
             self.type_parser,
+            self.protocol_parser,
         ])
 
         init_parser_literals(self)
@@ -354,6 +381,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_PREFIX, stmt_prefix)
         stmt(self, TT_GENERIC, stmt_generic)
         stmt(self, TT_INTERFACE, stmt_interface)
+        stmt(self, TT_PROTOCOL, stmt_protocol)
 
 
 def guard_parser_init(parser):
@@ -459,6 +487,7 @@ def name_list_parser_init(parser):
 
 def symbol_list_parser_init(parser):
     prefix(parser, TT_NAME, prefix_name_as_symbol)
+    prefix(parser, TT_OPERATOR, operator_as_symbol)
     symbol(parser, TT_COMMA, symbol_comma_nud)
     return parser
 
@@ -512,9 +541,6 @@ def newtokenstream(source):
     return TokenStream(tokens_iter, source)
 
 
-PARSE_DEBUG = False
-
-
 def parse(process, env, src):
     parser = process.parser
     ts = newtokenstream(src)
@@ -527,7 +553,7 @@ def parse(process, env, src):
 
     parser.close()
     # print stmts
-    if PARSE_DEBUG:
+    if api.DEBUG_MODE:
         print "************************** OPERATORS ****************************************"
         print scope.operators
         print "************************** AST ****************************************"
