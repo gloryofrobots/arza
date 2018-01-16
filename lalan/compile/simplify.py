@@ -104,14 +104,14 @@ def simplify_interface(compiler, code, node):
     generics_node = node_second(node)
     generics_2_arg = nodes.create_list_node_from_list(node, generics_node)
 
-    call_node = nodes.create_call_node_s(node, lang_names.INTERFACE, [name_1_arg, generics_2_arg])
+    mixins_arg = nodes.create_void_node(name_node)
+    call_node = nodes.create_call_node_s(node, lang_names.INTERFACE, [name_1_arg, generics_2_arg, mixins_arg])
     return nodes.create_assign_node(node, name_node, call_node)
 
 
 def simplify_generic(compiler, code, node):
     name_node = node_first(node)
     name_1_arg = nodes.create_symbol_node(name_node, name_node)
-
     symbols_2_arg = node_second(node)
 
     call_node = nodes.create_call_node_s(node, lang_names.GENERIC, [name_1_arg, symbols_2_arg])

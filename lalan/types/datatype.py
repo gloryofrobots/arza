@@ -122,25 +122,25 @@ class W_Extendable(W_Hashable):
         return False
 
     def add_method(self, generic, method):
-        # error.affirm_type(generic, space.isgeneric)
-        # if self.is_generic_implemented(generic):
-        #     if not self.is_derived(generic):
-        #         return error.throw_3(error.Errors.IMPLEMENTATION_ERROR, self,
-        #                              space.newstring(u"Generic has already implemented"), generic)
-        #
-        #     self.remove_method(generic)
+        error.affirm_type(generic, space.isgeneric)
+        if self.is_generic_implemented(generic):
+            if not self.is_derived(generic):
+                return error.throw_3(error.Errors.IMPLEMENTATION_ERROR, self,
+                                     space.newstring(u"Generic has already implemented"), generic)
+
+            self.remove_method(generic)
         api.put(self.methods, generic, method)
 
     def add_methods(self, implementations):
-        # for impl in implementations:
-        #     generic = api.at_index(impl, 0)
-        #     error.affirm_type(generic, space.isgeneric)
-        #     if self.is_generic_implemented(generic):
-        #         if not self.is_derived(generic):
-        #             return error.throw_3(error.Errors.IMPLEMENTATION_ERROR, self,
-        #                                  space.newstring(u"Generic has already implemented"), generic)
-        #
-        #         self.remove_method(generic)
+        for impl in implementations:
+            generic = api.at_index(impl, 0)
+            error.affirm_type(generic, space.isgeneric)
+            if self.is_generic_implemented(generic):
+                if not self.is_derived(generic):
+                    return error.throw_3(error.Errors.IMPLEMENTATION_ERROR, self,
+                                         space.newstring(u"Generic has already implemented"), generic)
+
+                self.remove_method(generic)
 
         for impl in implementations:
             generic = api.at_index(impl, 0)
@@ -246,6 +246,7 @@ def newtype(process, name, fields):
 
     derive_default(process, _datatype)
     return _datatype
+
 
 def _find_constraint_generic(generic, pair):
     return api.equal_b(pair[0], generic)

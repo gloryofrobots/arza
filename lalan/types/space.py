@@ -456,14 +456,18 @@ def istrait(w):
 
 ########################################################
 
-def newinterface(name, generics):
-    from lalan.types.interface import W_Interface
+def newinterface_extended(name, generics, mixins):
+    from lalan.types.interface import newinterface
     from lalan.runtime import error
     error.affirm_type(name, issymbol)
     error.affirm_type(generics, islist)
     error.affirm_iterable(generics, isgeneric)
 
-    return W_Interface(name, generics)
+    return newinterface(name, generics, mixins)
+
+
+def newinterface(name, generics):
+    return newinterface_extended(name, generics, newvoid())
 
 
 def isinterface(w):

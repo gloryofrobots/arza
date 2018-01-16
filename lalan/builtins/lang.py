@@ -8,7 +8,6 @@ from lalan.misc.platform import rstring, compute_unique_id
 from lalan.misc import fs
 from lalan.compile import compiler
 
-# TODO MAKE IT lalan:is_seq ...
 from lalan.builtins import lang_names
 
 
@@ -19,27 +18,24 @@ def put_lang_func(process, module, name, func, arity):
 
 
 def setup(process, module, stdlib):
-    api.put_native_function(process, module, u'eval', _eval, 1)
-    api.put_native_function(process, module, u'breakpoint', breakpoint, -1)
-    api.put_native_function(process, module, u'_p_', _print, -1)
-    api.put_native_function(process, module, u'address', _id, 1)
-    api.put_native_function(process, module, u'apply', apply, 2)
-    api.put_native_function(process, module, u'concat', concat_tuples, 2)
-    api.put_native_function(process, module, u'time', time, 0)
-    api.put_native_function(process, module, u'traits', traits, 1)
-    api.put_native_function(process, module, u'get_type', _type, 1)
-    put_lang_func(process, module, lang_names.APPLY, apply, 2)
+    api.put_native_function(process, module, u'eval', __eval, 1)
+    api.put_native_function(process, module, u'breakpoint', __breakpoint, -1)
+    api.put_native_function(process, module, u'pl', __print, -1)
+    api.put_native_function(process, module, u'address', __id, 1)
+    api.put_native_function(process, module, u'time', __time, 0)
+    api.put_native_function(process, module, u'get_type', __type, 1)
+    put_lang_func(process, module, lang_names.APPLY, __apply, 2)
     put_lang_func(process, module, lang_names.DELAY, __delay, 1)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
-    put_lang_func(process, module, lang_names.IS_INDEXED, is_indexed, 1)
-    put_lang_func(process, module, lang_names.IS_SEQ, is_seq, 1)
-    put_lang_func(process, module, lang_names.IS_DICT, is_dict, 1)
+    put_lang_func(process, module, lang_names.IS_INDEXED, __is_indexed, 1)
+    put_lang_func(process, module, lang_names.IS_SEQ, __is_seq, 1)
+    put_lang_func(process, module, lang_names.IS_DICT, __is_dict, 1)
     put_lang_func(process, module, lang_names.IS, __is, 2)
     put_lang_func(process, module, lang_names.ISNOT, __isnot, 2)
     put_lang_func(process, module, lang_names.KINDOF, __kindof, 2)
     put_lang_func(process, module, lang_names.TYPE, __type, 2)
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
-    put_lang_func(process, module, lang_names.INTERFACE, __interface, 2)
+    put_lang_func(process, module, lang_names.INTERFACE, __interface, 3)
     put_lang_func(process, module, lang_names.TRAIT, __trait, 3)
     put_lang_func(process, module, lang_names.EXTEND, __extend, 3)
     put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
@@ -47,13 +43,6 @@ def setup(process, module, stdlib):
 
     put_lang_func(process, module, u"vector", __vector, -1)
 
-    ## debugging
-    # if not we_are_translated():
-    #     api.put_native_function(process, obj, u'pypy_repr', pypy_repr)
-    #     api.put_native_function(process, obj, u'inspect', inspect)
-
-
-# 15.1.2.2
 
 @complete_native_routine
 def compile_module(process, routine):
@@ -72,13 +61,13 @@ def compile_module(process, routine):
 
 
 @complete_native_routine
-def _id(process, routine):
+def __id(process, routine):
     this = routine.get_arg(0)
     return space.newstring(unicode(hex(compute_unique_id(this))))
 
 
 @complete_native_routine
-def _print(process, routine):
+def __print(process, routine):
     args = routine._args.to_l()
     if len(args) == 0:
         return space.newunit()
@@ -98,7 +87,7 @@ def _print(process, routine):
 
 # here i usually put breakpoints in python debugger
 @complete_native_routine
-def breakpoint(process, routine):
+def __breakpoint(process, routine):
     args = routine._args.to_l()
     return space.newunit()
 
@@ -109,7 +98,7 @@ def __vector(process, routine):
     return space.newpvector(args)
 
 
-def _eval(process, routine):
+def __eval(process, routine):
     x = routine.get_arg(0)
 
     assert space.issymbol(x)
@@ -123,7 +112,7 @@ def _eval(process, routine):
     api.call(process, func, args)
 
 
-def apply(process, routine):
+def __apply(process, routine):
     func = routine.get_arg(0)
     args = routine.get_arg(1)
     if space.islist(args):
@@ -135,7 +124,7 @@ def apply(process, routine):
 
 
 @complete_native_routine
-def _type(process, routine):
+def __type(process, routine):
     left = routine.get_arg(0)
     return api.get_type(process, left)
 
@@ -174,7 +163,8 @@ def __generic(process, routine):
 def __interface(process, routine):
     name = routine.get_arg(0)
     generics = routine.get_arg(1)
-    interface = space.newinterface(name, generics)
+    mixins = routine.get_arg(2)
+    interface = space.newinterface_extended(name, generics, mixins)
     return interface
 
 
@@ -214,21 +204,13 @@ def __partial(process, routine):
 
 
 @complete_native_routine
-def concat_tuples(process, routine):
-    from lalan.types.tuples import concat
-    v1 = routine.get_arg(0)
-    v2 = routine.get_arg(1)
-    return concat(v1, v2)
-
-
-@complete_native_routine
-def time(process, routine):
+def __time(process, routine):
     import time
     return space.newfloat(time.time())
 
 
 @complete_native_routine
-def is_indexed(process, routine):
+def __is_indexed(process, routine):
     v1 = routine.get_arg(0)
     if space.istuple(v1) or space.isarguments(v1):
         return space.newbool(True)
@@ -240,7 +222,7 @@ def is_indexed(process, routine):
 
 
 @complete_native_routine
-def is_seq(process, routine):
+def __is_seq(process, routine):
     from lalan.types.space import islist, newbool
     v1 = routine.get_arg(0)
     if islist(v1):
@@ -252,7 +234,7 @@ def is_seq(process, routine):
 
 
 @complete_native_routine
-def is_dict(process, routine):
+def __is_dict(process, routine):
     v1 = routine.get_arg(0)
 
     if space.ispmap(v1):
@@ -283,40 +265,3 @@ def __kindof(process, routine):
     left = routine.get_arg(0)
     right = routine.get_arg(1)
     return api.kindof(process, left, right)
-
-
-@complete_native_routine
-def _range(process, routine):
-    start = routine.get_arg(0)
-    end = routine.get_arg(1)
-    start = api.to_i(start)
-    end = api.to_i(end)
-    items = [space.newint(i) for i in xrange(start, end)]
-    return space.newtuple(items)
-
-
-@complete_native_routine
-def clone(process, routine):
-    origin = routine.get_arg(0)
-    clone = api.clone(origin)
-    return clone
-
-
-@complete_native_routine
-def traits(process, routine):
-    obj = routine.get_arg(0)
-    return api.traits(process, obj)
-
-
-@complete_native_routine
-def lookup(process, routine):
-    this = routine.get_arg(0)
-    key = routine.get_arg(1)
-    default = routine.get_arg(2)
-    return api.lookup(this, key, default)
-
-
-@complete_native_routine
-def clone(process, routine):
-    this = routine.get_arg(0)
-    return api.clone(this)

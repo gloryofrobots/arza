@@ -1,6 +1,7 @@
 from lalan.types.root import W_Hashable
 from lalan.types import api, space, plist
 from lalan.misc import platform
+from lalan.runtime import error
 
 
 def find_by_name(name, generic):
@@ -52,3 +53,29 @@ class W_Interface(W_Hashable):
 
     def _equal_(self, other):
         return other is self
+
+
+def _get_mixin_generics(generics, mixins):
+    for pair in mixins:
+        iface = api.at(pair, 0)
+        error.affirm_type(iface, space.isinterface)
+        gen_names = api.at(pair, 1)
+        if space.isvoid(gen_names):
+            generics = plist.concat(generics, iface.generics)
+        else:
+            for gen_name in gen_names:
+                gen = iface.find_generic_by_name(gen_name)
+                if space.isvoid(gen):
+                    return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
+                                         iface, gen_name,
+                                         space.newstring(
+                                             u"Interface does not have this generic"))
+                generics = plist.cons(generics, gen)
+
+    return generics
+
+
+def newinterface(name, generics, mixins):
+    if not space.isvoid(mixins):
+        generics = _get_mixin_generics(generics, mixins)
+    return W_Interface(name, generics)
