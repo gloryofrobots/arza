@@ -9,9 +9,9 @@ type
     T3(v1)
 )
 
-generic to_list(x)
-
-interface Listable (to_list)
+protocol Listable (
+    to_list(x)
+)
 
 trait TListable of Listable
 (

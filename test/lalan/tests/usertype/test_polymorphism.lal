@@ -7,7 +7,9 @@ type
     Some(val)
 )
 
-generic eq(`self, other)
+protocol Eq (
+    eq(`self, other)
+)
 
 extend L
 (

@@ -309,14 +309,6 @@ def _infix_lparen(parser):
     return args
 
 
-def infix_lparen_generic(parser, op, node, left):
-    check_node_type(parser, left, NT_SYMBOL)
-    generic_name = nodes.create_name_node_s(left, nodes.node_value_s(nodes.node_first(left)))
-    items = _infix_lparen(parser)
-    args = node_1(NT_LIST, __ntok(node), items)
-    return node_2(NT_GENERIC, __ntok(node), generic_name, args)
-
-
 def infix_lsquare(parser, op, node, left):
     exp = expression(parser, 0)
     advance_expected(parser, TT_RSQUARE)
@@ -440,11 +432,6 @@ def prefix_lsquare(parser, op, node):
 def operator_as_symbol(parser, op, node):
     name = itself(parser, op, node)
     return nodes.create_symbol_from_operator(node, name)
-
-
-def stmt_generic(parser, op, node):
-    nodes = ensure_list_node(expression(parser.generic_parser, 0))
-    return nodes
 
 
 # ------------------------- MAPS
@@ -1043,17 +1030,6 @@ def prefix_trait_let(parser, op, node):
 
 # ----------- PROTOCOL ----------------------------
 
-def stmt_interface(parser, op, node):
-    nodes = list_expression(parser.interface_parser, 0)
-    return nodes
-
-
-def infix_lparen_interface(parser, op, node, left):
-    items = _infix_lparen(parser)
-    # funcs = node_1(NT_LIST, __ntok(node), items)
-    return node_3(NT_INTERFACE, __ntok(node), left, items, list_node([]))
-
-
 def infix_lparen_protocol(parser, op, node, left):
     check_node_type(parser, left, NT_SYMBOL)
     generic_name = nodes.create_name_node_s(left, nodes.node_value_s(nodes.node_first(left)))
@@ -1095,8 +1071,6 @@ def stmt_protocol(parser, op, node):
 
     iface = nodes.node_3(NT_INTERFACE, __ntok(node), name, list_node(generic_names), list_node(mixins))
     return list_node([list_node(generics), iface])
-    # nodes = list_expression(parser.protocol_parser, 0)
-    # return nodes
 
 
 # ----------- EXTEND ----------------------------

@@ -263,7 +263,6 @@ class ProtocolParser(BaseParser):
         prefix(self, TT_USE, prefix_protocol_use)
 
 
-
 class ExtendParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
@@ -340,8 +339,6 @@ class ModuleParser(BaseParser):
         self.name_list_parser = name_list_parser_init(BaseParser())
 
         self.import_names_parser = import_names_parser_init(BaseParser())
-        self.generic_parser = generic_parser_init(BaseParser())
-        self.interface_parser = interface_parser_init(BaseParser())
         self.trait_parser = TraitParser()
         self.type_parser = TypeParser()
         self.extend_parser = ExtendParser()
@@ -353,8 +350,6 @@ class ModuleParser(BaseParser):
             self.name_parser,
             self.import_names_parser,
             self.name_list_parser,
-            self.generic_parser,
-            self.interface_parser,
             self.trait_parser,
             self.extend_parser,
             self.type_parser,
@@ -368,6 +363,8 @@ class ModuleParser(BaseParser):
         symbol(self, TT_ENDSTREAM)
         symbol(self, TT_COMMA, symbol_comma_nud)
 
+        infix(self, TT_LPAREN, 95, infix_lparen)
+
         stmt(self, TT_FUN, prefix_module_fun)
         stmt(self, TT_LET, prefix_module_let)
         stmt(self, TT_TRAIT, stmt_trait)
@@ -379,8 +376,6 @@ class ModuleParser(BaseParser):
         stmt(self, TT_INFIXL, stmt_infixl)
         stmt(self, TT_INFIXR, stmt_infixr)
         stmt(self, TT_PREFIX, stmt_prefix)
-        stmt(self, TT_GENERIC, stmt_generic)
-        stmt(self, TT_INTERFACE, stmt_interface)
         stmt(self, TT_PROTOCOL, stmt_protocol)
 
 
@@ -436,30 +431,6 @@ def map_key_parser_init(parser):
     symbol(parser, TT_COMMA)
     symbol(parser, TT_ASSIGN)
 
-    return parser
-
-
-def generic_parser_init(parser):
-    prefix(parser, TT_LPAREN, prefix_lparen)
-    infix(parser, TT_LPAREN, 100, infix_lparen_generic)
-
-    prefix(parser, TT_NAME, prefix_name_as_symbol)
-    prefix(parser, TT_TICKNAME, prefix_name_as_symbol)
-    prefix(parser, TT_OPERATOR, operator_as_symbol)
-
-    symbol(parser, TT_COMMA, symbol_comma_nud)
-    symbol(parser, TT_RPAREN)
-    return parser
-
-
-def interface_parser_init(parser):
-    prefix(parser, TT_LPAREN, prefix_lparen)
-    infix(parser, TT_LPAREN, 90, infix_lparen_interface)
-    infix(parser, TT_COLON, 100, infix_name_pair)
-    literal(parser, TT_NAME)
-    symbol(parser, TT_OPERATOR, symbol_operator_name)
-    symbol(parser, TT_COMMA, symbol_comma_nud)
-    symbol(parser, TT_RPAREN)
     return parser
 
 

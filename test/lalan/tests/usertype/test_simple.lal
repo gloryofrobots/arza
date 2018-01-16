@@ -1,10 +1,10 @@
 import affirm
 
-generic
-(
+protocol AddVal (
     add(`self, a)
     val(`self)
 )
+
 
 type
 (

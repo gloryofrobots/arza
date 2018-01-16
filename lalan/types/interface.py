@@ -70,7 +70,7 @@ def _get_mixin_generics(generics, mixins):
                                          iface, gen_name,
                                          space.newstring(
                                              u"Interface does not have this generic"))
-                generics = plist.cons(generics, gen)
+                generics = plist.cons(gen, generics)
 
     return generics
 

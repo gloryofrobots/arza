@@ -89,6 +89,8 @@ def __print(process, routine):
 @complete_native_routine
 def __breakpoint(process, routine):
     args = routine._args.to_l()
+    bp = args[0]
+    api.d.add_bp(api.to_i(bp))
     return space.newunit()
 
 

@@ -4,7 +4,9 @@ import tests:usertype:types as stuff
 
 prefix(++-+*++, ++-+*++, 70)
 
-generic ++-+*++(self)
+protocol Op (
+    ++-+*++(self)
+)
 
 trait TraitWithOp
 (

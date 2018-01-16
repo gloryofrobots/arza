@@ -10,8 +10,7 @@ type
     Val2(v)
 )
 
-generic
-(
+protocol Ordered (
     eq(`x, y)
     ne(`x, y)
     le(`x, y)

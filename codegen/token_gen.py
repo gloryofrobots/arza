@@ -47,7 +47,6 @@ TOKENS = [
   ("TT_TRAIT", "trait"),
   ("TT_PROTOCOL", "protocol"),
   ("TT_USE", "use"),
-  ("TT_GENERIC", "generic"),
   ("TT_INTERFACE", "interface"),
   ("TT_END_EXPR", ";"),
   ("TT_NEWLINE", "(newline)"),
