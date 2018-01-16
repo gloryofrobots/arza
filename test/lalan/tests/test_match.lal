@@ -167,8 +167,7 @@ fun test_match() =
     let
         fun greater_then_ten(v) = v > 10
         A = False
-    in
-    (
+    in (
         affirm:is_equal(
             match (1,2,3)
                 | (x, y, z) when z == 2 = #first
@@ -234,8 +233,7 @@ fun test_match() =
 fun test_destruct () =
 (
     let x::xs = [1,2,3,4,5]
-    in
-    (
+    in (
         affirm:is_equal(x, 1)
         affirm:is_equal(xs, [2,3,4,5])
     )
@@ -257,8 +255,7 @@ fun test_destruct () =
             translationsEn={ titleEn=("GAMES OF NEMESIS", "NEMESIS GAMES"), translatorEn="Jhon DOU" },
             author= ("James", "Corey")
         }
-    in
-    (
+    in (
         affirm:is_equal (
                     (metadata.title, metadata.subject, metadata.translationsUa.["title"],
                      metadata.translationsUa.translator, metadata.translationsEn.titleEn,

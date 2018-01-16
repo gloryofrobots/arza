@@ -1,7 +1,6 @@
 import affirm
 
-type
-(
+type (
     L(l)
     None
     Some(val)
@@ -11,8 +10,7 @@ protocol Eq (
     eq(`self, other)
 )
 
-extend L
-(
+extend L (
     def len(self) = len(self.l)
 
     def is_empty(self) = is_empty(self.l)
@@ -23,15 +21,13 @@ extend L
 )
 
 
-extend Some
-(
+extend Some (
     def eq
         | (self, val of Some) = val == None
         | (self, _) = False
 )
 
-extend None
-(
+extend None (
     def eq
         | (self, {val} of Some) = val == None
         | (self, _ of None) = True
@@ -41,8 +37,7 @@ fun test () =
 (
     let
         s = Some(None)
-    in
-    (
+    in (
         affirm:is_true(None `eq` s)
         affirm:is_false(s `eq` None)
     )

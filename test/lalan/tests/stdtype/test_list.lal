@@ -4,8 +4,7 @@ import list
 fun test () =
 (
     let a1 = [1, 2, #three, 4, 5, #six]
-    in
-    (
+    in (
         affirm:is_equal(len(a1), 6)
         affirm:is_true(#three `elem` a1)
         affirm:is_true(#six `elem` a1)
@@ -15,8 +14,7 @@ fun test () =
     )
 
     let l = list:range(1, 9)
-    in
-    (
+    in (
         affirm:is_equal(cons(0, l), [0,1,2,3,4,5,6,7,8])
         affirm:is_equal(cons(-1, cons(0, l)), [-1,0,1,2,3,4,5,6,7,8])
         affirm:is_equal(list:tail(l), [2,3,4,5,6,7,8])

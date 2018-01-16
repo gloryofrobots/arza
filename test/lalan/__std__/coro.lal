@@ -9,8 +9,7 @@ import seq
 //////////////////////////////////////
 
 
-extend Coroutine
-(
+extend Coroutine (
     use derive:TSized (is_empty)
     def len(self) = throw NotImplementedError ("Coroutine can't define len")
 
@@ -55,14 +54,12 @@ fun ref(v) =
 
                 in loop(v)
         )
-    in
-    (
+    in (
         co(v)
         Ref(co)
     )
 
-extend Ref
-(
+extend Ref (
     use TRepr
 
     def !(self) = self.val(#Read)
@@ -111,8 +108,7 @@ fun _loop(yield_argument, init_fn, args) =
                     fn(...args)
                 )
         )
-    in
-    (
+    in (
        co()
        co
     )
@@ -132,8 +128,7 @@ fun loop_reduce(init_fn, x, acc) =
 // SEQUENCES
 ////////////////////////////////////////////////////
 
-let
-(
+let (
     take = seq:take
     take_while = seq:take_while
     nth = seq:nth

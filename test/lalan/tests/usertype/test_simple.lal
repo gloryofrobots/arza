@@ -16,8 +16,7 @@ type
 )
 
 
-extend Point2
-(
+extend Point2 (
     def add
         | (self, p2 of Point2) = Point2(self.x + p2.x, self.y + p2.y)
         | (self, i of Int) = Point2(self.x + i, self.y + i)
@@ -30,8 +29,7 @@ extend Point2
 )
 
 
-extend Vec2
-(
+extend Vec2 (
     def add
         | (self, v of Vec2) = Vec2(
                                 add(self.p1, v.p1),
@@ -47,13 +45,11 @@ extend Vec2
 )
 
 
-extend Some
-(
+extend Some (
     def val(self) = self.val
 )
 
-extend None
-(
+extend None (
     def val(self) = self
 )
 
@@ -63,8 +59,7 @@ fun test () =
     let
         p = Point2(0, 1)
         p1 = Point2(42, 42)
-    in
-    (
+    in (
         affirm:is_true(p == p)
         affirm:is_true(p == Point2(0, 1))
         affirm:is_false(p == p1)
@@ -82,8 +77,7 @@ fun test () =
     let
         some = Some(11)
         none = None
-    in
-    (
+    in (
         affirm:is_equal(val(some), 11)
         affirm:is_equal(val(none), None)
     )

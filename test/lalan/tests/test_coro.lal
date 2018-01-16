@@ -16,15 +16,13 @@ fun test_simple () =
                                 fun send() = yield2(42 + y)
                             in  send()
                     )
-                in
-                (
+                in (
                    affirm:is_equal(x, 23)
 
                    let
                         x1 = yield(_co1(x))
                         x2 = yield(x1)
-                   in
-                   (
+                   in (
                        affirm:is_equal(x1, 34)
                        affirm:is_equal(x2, 44)
                        x2
@@ -62,20 +60,17 @@ fun test_basic () =
                     x = yield(q + 1)
                     y = yield(1 + x)
                     z = yield(1 + y)
-                in
-                (
+                in (
                     x + y + z
                 )
         )
-    in
-    (
+    in (
         let
             a = co(10)
             b = co(a)
             c = co(b)
             d = co(c)
-        in
-        (
+        in (
             affirm:is_equal((a,b,c,d), (11, 12, 13, 36))
         )
     )
@@ -90,14 +85,12 @@ fun enum_from(num) =
                    yield(num)
                    _looper(num + 1)
                 )
-            in
-            (
+            in (
                 yield(_from)
                 _looper(_from)
             )
         )
-    in
-    (
+    in (
         co(num)
         co
     )
@@ -138,8 +131,7 @@ fun test_seq (enum) =
                          coro:filter(odd, numbers))))
 
          x1::x2::xs = numbers
-    in
-    (
+    in (
         affirm:is_equal(
             ys,
             [(17, "17"), (19, "19"), (21, "21"), (23, "23"), (25, "25"), (27, "27"), (29, "29"), (31, "31"), (33, "33"), (35, "35")]
@@ -154,8 +146,7 @@ fun test_seq (enum) =
                 |> coro:scanl .. `+` .. 0
                 |> coro:take .. 10
 
-    in
-    (
+    in (
         affirm:is_equal(ys, [0, 1, 3, 6, 10, 15, 21, 28, 36, 45])
     )
 
@@ -170,8 +161,7 @@ fun test_seq (enum) =
                 |> coro:intersperse .. 42
                 |> coro:take .. 10
 
-    in
-    (
+    in (
         affirm:is_equal(ys, [1, 43, 2, 43, 3, 43, 4, 43, 5, 43])
         affirm:is_equal(ys1, [1, 42, 2, 42, 3, 42, 4, 42, 5, 42])
     )
@@ -194,8 +184,7 @@ fun test_enum() =
     let
         numbers = enum_from_2(10)
         x::x1::x2::xs = numbers
-    in
-    (
+    in (
         affirm:is_equal((x,x1,x2), (10, 11, 12))
 
         affirm:is_equal(
@@ -210,8 +199,7 @@ fun test_enum() =
     let
         numbers = enum_from_to(0, 10)
         l = coro:to_list(numbers)
-    in
-    (
+    in (
         affirm:is_equal(l, [0,1,2,3,4,5,6,7,8,9])
     )
 
@@ -230,8 +218,7 @@ fun test_enum() =
                             )
                         in __en
                     )
-            in
-            (
+            in (
                 co
             )
         )
@@ -239,8 +226,7 @@ fun test_enum() =
         es1 = en(42)
         es2 = en(24)
         es3 = coro:to_list(coro:zip(es1, es2))
-    in
-    (
+    in (
         affirm:is_equal .. es3 .. [(42, 24)]
     )
 
@@ -252,8 +238,7 @@ fun test_enum() =
         rs1 = enum_from_to(10, 11)
         rs2 = enum_from_to(20, 30)
         rs3 = coro:to_list(coro:zip(rs1, rs2))
-    in
-    (
+    in (
         affirm:is_equal .. rs3 .. [(10, 20)]
         affirm:is_equal .. ns3 .. [(10, 20), (11, 21), (12, 22)]
     )
@@ -266,8 +251,7 @@ fun test_enum() =
         rs1 = enum_from_to(10, 11)
         rs2 = enum_from_to(20, 30)
         rs3 = coro:to_list(coro:zipwith((x,y) -> (x+42, y+42), rs1, rs2))
-    in
-    (
+    in (
         affirm:is_equal .. rs3 .. [(52, 62)]
         affirm:is_equal .. ns3 .. [(52, 62), (53, 63), (54, 64)]
     )

@@ -52,8 +52,7 @@ fun test_simple () =
             when c == 42 and y == True =
                 {w=w, y=y, z=z, a=a, b=b, c=c, tl=tl, x=x, xs=xs, rest=rest}
 
-    in
-    (
+    in (
         affirm:is_equal(f_s(2, 3, 4, 5, 6), (5, (4, 5, 6)))
         affirm:is_equal(f_s2(12, 3, 4, 5, 6), (15, (4, 5, 6)))
         affirm:is_equal(
@@ -86,8 +85,7 @@ let
         | (0, 1, c) when c < 0 =  #first
         | (a of Bool, b of String, c) = #second
         | (a of Bool, b, c) when b + c == 40 = #third
-in
-(
+in (
     affirm:is_equal(f_c1(1, 2, 3), 6)
 
     affirm:is_equal(f_c2(False, "", 42), #first)
@@ -137,8 +135,7 @@ fun test_base () =
         fun fact(n)
             | 0 = 1
             | n = n * fact (n - 1)
-    in
-    (
+    in (
         affirm:is_equal(fact(7), 5040)
         affirm:is_equal(fact(0), 1)
     )
@@ -149,8 +146,7 @@ fun test_base () =
             | (_, _, _, _, _, _, _, {key1, var1 @ key2, key3=25},  ([var2, #second, var3 @ #third, ...var4])) =
                 (var1, var2, var3, var4)
 
-    in
-    (
+    in (
         affirm:is_equal(func1(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), (6, 7, 8, (9, 10, 11)))
 
         affirm:is_equal(
@@ -210,8 +206,7 @@ fun test_base () =
             let { var1 @ key1=2, key2} = a3
             in (arg1, arg2, var1, key2, rest)
 
-    in
-    (
+    in (
         affirm:is_equal(
             fn_simple1(0, 1, {key1=2, key2=3}, 4, 5, 6),
             fn_case1(0, 1, {key1=2, key2=3}, 4, 5, 6)
@@ -237,8 +232,7 @@ fun test_base () =
             | 2 = #two
             | 3 = #three
             | 4 = #four
-    in
-    (
+    in (
         affirm:is_equal_batch(
                             fn_fail,
                             ([1], #one),
@@ -287,8 +281,7 @@ fun test_base () =
         fun f3 (x, l)
            | (_, [a, b]) = x + a + b
         f4_1 = (x, [a, b]) -> x + a + b
-    in
-    (
+    in (
         affirm:is_equal(f3(1, [2, 3]), f4_1(1, [2, 3]))
         affirm:is_equal(f4_1(1, [2, 3]), 6)
         affirm:is_equal(

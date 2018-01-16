@@ -3,8 +3,7 @@ import affirm
 fun test () =
     let
         a1 = (1,2,#three,4,5,#six)
-    in
-    (
+    in (
         affirm:is_true(#three `elem` a1)
         affirm:is_true(#six `elem` a1)
         affirm:is_true(#two `not_elem` a1)

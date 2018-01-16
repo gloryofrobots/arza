@@ -16,8 +16,7 @@ fun test_holes () =
         add3_2 = add3(42, 24, _)
         add3_1_2 = add3(42, _, _)
         _add3 = add3(_, _, _)
-    in
-    (
+    in (
        affirm:is_equal_all(
             add3_0(1024),
             add3_1(1024),
@@ -40,8 +39,7 @@ fun test_holes () =
        )
 
     let fun f(x, y, z) = x - y + z
-    in
-    (
+    in (
         affirm:is_equal .. (f(_, 2, 4)(6)) .. 8
         affirm:is_equal(f(2, _, 4)(6), 0)
         affirm:is_equal(f(2, 4, _)(6), 4)
@@ -67,8 +65,7 @@ fun test_partial() =
                 1
     )
     let add1 = &add(1)
-    in
-    (
+    in (
         affirm:is_equal(add1(2), 3)
         affirm:is_equal(&add(1)(2), 3)
     )
@@ -79,8 +76,7 @@ fun test_composition() =
         add1_mul2 =  &add(1) >>  &mul(2)
         mul2_add1 = partial(add, 1) << partial(mul, 2)
         add_1_twice = twice(&add(1))
-    in
-    (
+    in (
         affirm:is_equal(add1_mul2(4), 10)
         affirm:is_equal(mul2_add1(4), 9)
         affirm:is_equal(add_1_twice(9), 11)
@@ -89,8 +85,7 @@ fun test_composition() =
 fun test_pipe() =
     let
         l = list:range(0, 10)
-    in
-    (
+    in (
         affirm:is_equal (
             l |> seq:filter(even, _),
             [0, 2, 4, 6, 8]
@@ -126,8 +121,7 @@ fun test_pipe() =
         let
             square = (x -> x * x)
             triple = `*` .. 3
-        in
-        (
+        in (
             affirm:is_equal (
                 l |> seq:filter(even, _)
                   |> seq:map(`+` .. 1, _)

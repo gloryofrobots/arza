@@ -188,7 +188,7 @@ protocol Seq(
 
 protocol Emptiable (
     empty(`self)
-) 
+)
 
 protocol Consable (
     cons(value, `self)
@@ -245,14 +245,12 @@ protocol MutRef (
 ////////////////////////////////////////////////////////////
 
 
-trait TNotEq
-(
+trait TNotEq (
     def !=(x, y) = not (x == y)
 )
 
 
-trait TOrd of PartialEq
-(
+trait TOrd of PartialEq (
     def <(x, y) = cmp(x, y) == LT
     def >=(x, y) = cmp(x, y) != LT
     def >(x, y) = cmp(x, y) == GT
@@ -266,13 +264,11 @@ trait TOrd of PartialEq
     def min(x, y) = if x <= y then x else y
 )
 
-trait TIsEmpty of Len
-(
+trait TIsEmpty of Len (
     def is_empty(self) = len(self) == 0
 )
 
-trait TRepr of Str
-(
+trait TRepr of Str (
     def repr(self) = str(self)
 )
 

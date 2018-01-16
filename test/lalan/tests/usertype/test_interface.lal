@@ -13,8 +13,7 @@ protocol Listable (
     to_list(x)
 )
 
-trait TListable of Listable
-(
+trait TListable of Listable (
     //Seq iface
     def first(self) = first(to_list(self))
     def rest(self) = rest(to_list(self))
@@ -24,14 +23,12 @@ trait TListable of Listable
     def take(count, self) = seq:take(count, to_list(self))
 )
 
-extend T1
-(
+extend T1 (
     use TListable
     def to_list(self) = [self.v1, self.v2]
 )
 
-extend T2
-(
+extend T2 (
     use TListable (drop, take)
     def to_list(self) = [self.v1, self.v2]
     def slice(_from, _to, self) = slice(_from, _to, to_list(self))
@@ -49,8 +46,7 @@ fun test () =
                 23,
                 45
              )
-    in
-    (
+    in (
         affirm:is_true(kindof(t1, Seq))
         affirm:is_true(kindof(t1, Listable))
         affirm:is_true(kindof(t1, T1))

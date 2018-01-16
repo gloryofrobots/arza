@@ -22,13 +22,12 @@ protocol Ordered (
     min(`x, y)
 )
 
-trait Equal
-(
+trait Equal (
     def eq(x, y) = not ne(x, y)
     def ne(x, y) = not eq(x, y)
 )
-trait Order
-(
+
+trait Order (
     def le(x, y) = cmp(x, y) != GT
     def lt(x, y) = cmp(x, y) == LT
     def ge(x, y) = cmp(x, y) != LT
@@ -50,28 +49,25 @@ trait Order
 )
 
 
-extend Val
-(
+extend Val (
     use Equal
     def eq(v1, v2) = v1.v == v2.v
 )
 
-extend Val2
-(
+extend Val2 (
     use Equal
     def ne(v1, v2) = v1.v != v2.v
 )
 
-extend Val
-(
+extend Val (
    use Order
    def cmp(self, other) =
         if self.v == other.v then EQ
         elif self.v <= other.v then LT
         else GT
 )
-extend Val2
-(
+
+extend Val2 (
     use Order
     def le(self, other) = self.v <= other.v
 )
@@ -85,8 +81,7 @@ fun test () =
         v2_1 = Val2(1)
         v2_2 = Val2(1)
         v2_3 = Val2(2)
-    in
-    (
+    in (
         affirm:is_true(eq(v1_1, v1_2))
         affirm:is_false(ne(v1_1, v1_2))
         affirm:is_false(eq(v1_3, v1_2))

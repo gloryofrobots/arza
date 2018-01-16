@@ -11,8 +11,7 @@ fun test () =
                     }
                  }
             }
-    in
-    (
+    in (
         affirm:is_equal(m.name, "Alice")
         affirm:is_equal(m.[#child].[#toy].model, "SXR 123344#44332")
         affirm:is_equal(m.[#child].[#toy].[#model], m.child.toy.model)
@@ -29,8 +28,7 @@ fun test () =
 
     let
         l = [1,2,3,{a="AA", b={c=(42, 422, 423)}}]
-    in
-    (
+    in (
         affirm:is_equal(l.2, l.[2])
         affirm:is_equal(l.2, 3)
 
@@ -39,8 +37,7 @@ fun test () =
             A_1 = "a"
             A_2 = #a
             B = "b"
-        in
-        (
+        in (
             affirm:is_equal(l.[3].["a"], l.[3].[A_1])
             affirm:is_equal(l.3.["a"], l.[3].[A_2])
             affirm:is_equal(l.3.a, "AA")
