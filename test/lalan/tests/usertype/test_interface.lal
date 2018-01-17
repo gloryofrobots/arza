@@ -2,12 +2,9 @@ import seq
 import affirm
 import io
 
-type
-(
-    T1(v1, v2)
-    T2(v1, v2, v3)
-    T3(v1)
-)
+type T1(v1 v2)
+type T2(v1 v2 v3)
+type T3(v1)
 
 protocol Listable (
     to_list(x)

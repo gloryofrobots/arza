@@ -924,12 +924,7 @@ def symbol_or_name_value(parser, name):
         assert False, "Invalid name"
 
 
-# TYPES ************************
-def prefix_name_as_symbol(parser, op, node):
-    name = itself(parser, op, node)
-    return nodes.create_symbol_node(name, name)
-
-
+# DEPRECATED
 def symbol_list_to_arg_tuple(parser, node, symbols):
     args = []
     children = nodes.node_first(symbols)
@@ -941,6 +936,7 @@ def symbol_list_to_arg_tuple(parser, node, symbols):
     return nodes.node_1(NT_TUPLE, nodes.node_token(node), list_node(args))
 
 
+# DEPRECATED
 def _symbols_to_args(parser, node, symbols):
     args = []
     for child in symbols:
@@ -949,28 +945,6 @@ def _symbols_to_args(parser, node, symbols):
         args.append(name)
 
     return nodes.node_1(NT_TUPLE, nodes.node_token(node), list_node(args))
-
-
-def stmt_type(parser, op, node):
-    nodes = ensure_list_node(expression(parser.type_parser, 0))
-    return nodes
-
-
-def prefix_typename(parser, op, node):
-    typename = itself(parser, op, node)
-
-    # expect for infix_lparen_type to finish the job
-    if parser.token_type == TT_LPAREN:
-        return typename
-    # support for singleton type
-    return nodes.node_2(NT_TYPE, __ntok(node), typename, empty_node())
-
-
-def infix_lparen_type(parser, op, node, left):
-    check_node_type(parser, left, NT_NAME)
-    items = _infix_lparen(parser.symbol_list_parser)
-    fields = node_1(NT_LIST, __ntok(node), items)
-    return node_2(NT_TYPE, __ntok(node), left, fields)
 
 
 # TRAIT*************************
@@ -1028,6 +1002,62 @@ def prefix_trait_let(parser, op, node):
     return node_2(NT_ASSIGN, __ntok(node), generic_name, func)
 
 
+# ------------------- TYPE -----------------------------------
+def prefix_name_as_symbol(parser, op, node):
+    name = itself(parser, op, node)
+    return nodes.create_symbol_node(name, name)
+
+
+def _stmt_type(parser, op, node):
+    nodes = ensure_list_node(expression(parser.type_parser, 0))
+    return nodes
+
+
+def _prefix_typename(parser, op, node):
+    typename = itself(parser, op, node)
+
+    # expect for infix_lparen_type to finish the job
+    if parser.token_type == TT_LPAREN:
+        return typename
+    # support for singleton type
+    return nodes.node_2(NT_TYPE, __ntok(node), typename, empty_node())
+
+
+def _infix_lparen_type(parser, op, node, left):
+    check_node_type(parser, left, NT_NAME)
+    items = _infix_lparen(parser.symbol_list_parser)
+    fields = node_1(NT_LIST, __ntok(node), items)
+    return node_2(NT_TYPE, __ntok(node), left, fields)
+
+
+########################################################
+
+def prefix_type_use(parser, op, node):
+    name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
+    return node_1(NT_USE, __ntok(node), name)
+
+
+def stmt_type(parser, op, node):
+    check_token_type(parser, TT_NAME)
+    name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    if parser.token_type == TT_LPAREN:
+        vars = ensure_list_node(expression(parser.type_parser, 0))
+        mixins = []
+        symbols = []
+        for var in vars:
+            if nodes.node_type(var) == NT_USE:
+                mixins.append(nodes.node_first(var))
+            elif nodes.node_type(var) == NT_SYMBOL:
+                symbols.append(var)
+            else:
+                return parse_error(parser, u"Syntax error", var)
+                # assert False, (str(var), "Should not reach here, unknown type extension")
+
+        return nodes.node_3(NT_TYPE, __ntok(node), name, list_node(symbols), list_node(mixins))
+    else:
+        return nodes.node_3(NT_TYPE, __ntok(node), name, empty_node(), list_node([]))
+
+
 # ----------- PROTOCOL ----------------------------
 
 def infix_lparen_protocol(parser, op, node, left):
@@ -1067,7 +1097,8 @@ def stmt_protocol(parser, op, node):
             generic_names.append(nodes.node_first(ex))
             generics.append(ex)
         else:
-            assert False, "Should not reach here, unknown type extension"
+            return parse_error(parser, u"Syntax error", ex)
+            # assert False, "Should not reach here, unknown type extension"
 
     iface = nodes.node_3(NT_INTERFACE, __ntok(node), name, list_node(generic_names), list_node(mixins))
     return list_node([list_node(generics), iface])

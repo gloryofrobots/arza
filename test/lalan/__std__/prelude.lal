@@ -51,50 +51,44 @@ prefix (&, &, 96)
 ////////////////////////////////////////////////////////////
 ///////////////// TYPES ////////////////////////////////////
 ////////////////////////////////////////////////////////////
-type
-(
-    LT
-    GT
-    EQ
-    Some (val)
-    None
-)
+type LT
+type GT
+type EQ
+type Some(val)
+type None
 
 // Various Errors
-type
-(
-    ImportError(args)
-    RuntimeError(args)
-    TypeError(args)
-    NotImplementedError(args)
-    ZeroDivisionError(args)
-    MathDomainError(args)
-    ReferenceError(args)
-    ConstructorError(args)
-    KeyError(args)
-    ValueError(args)
-    SliceError(args)
-    IndexError(args)
-    InvokeError(args)
-    InvalidArgCount(args)
-    MethodInvokeError(args)
-    MethodNotImplementedError(args)
-    MethodSpecializeError(args)
-    CompileError(args)
-    ParseError(args)
-    UnpackSequenceError(args)
-    FiberFlowError(args)
-    MatchError(args)
-    FunctionArgumentsMatchError(args)
-    ExceptionMatchError(args)
-    ExportError(args)
-    ImplementationError(args)
-    ConstraintError(args)
-    EmptySeqError(args)
-    OverflowError(args)
-    //Signal used to interrupt recursive processes
-    Interrupt(result)
-)
+type ImportError(args)
+type RuntimeError(args)
+type TypeError(args)
+type NotImplementedError(args)
+type ZeroDivisionError(args)
+type MathDomainError(args)
+type ReferenceError(args)
+type ConstructorError(args)
+type KeyError(args)
+type ValueError(args)
+type SliceError(args)
+type IndexError(args)
+type InvokeError(args)
+type InvalidArgCount(args)
+type MethodInvokeError(args)
+type MethodNotImplementedError(args)
+type MethodSpecializeError(args)
+type CompileError(args)
+type ParseError(args)
+type UnpackSequenceError(args)
+type FiberFlowError(args)
+type MatchError(args)
+type FunctionArgumentsMatchError(args)
+type ExceptionMatchError(args)
+type ExportError(args)
+type ImplementationError(args)
+type ConstraintError(args)
+type EmptySeqError(args)
+type OverflowError(args)
+//Signal used to interrupt recursive processes
+type Interrupt(result)
 
 
 ////////////////////////////////////////////////////////////

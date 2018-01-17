@@ -239,7 +239,29 @@ def _is_exist_implementation(method, impl):
     return api.equal_b(impl_method, method)
 
 
-def newtype(process, name, fields):
+def newtype(process, name, fields, mixins):
+    if api.length_i(fields) != 0:
+        for mixin in mixins:
+            for mixin_field in mixin.fields:
+                if plist.contains(fields, mixin_field):
+                    return error.throw_3(error.Errors.CONSTRUCTOR_ERROR,
+                                         mixin_field, mixin,
+                                         space.newstring(
+                                             u"Duplicated name in type declaration from mixin"))
+
+            fields = plist.concat(fields, mixin.fields)
+
+        # checking all fields for uniqueness
+        tail = fields
+        while not plist.is_empty(tail):
+            head = plist.head(tail)
+            tail = plist.tail(tail)
+            if plist.contains(tail, head):
+                return error.throw_2(error.Errors.CONSTRUCTOR_ERROR,
+                                     head,
+                                     space.newstring(
+                                         u"Duplicated name in type declaration"))
+
     _datatype = W_DataType(name, fields)
     if process.std.initialized is False:
         return _datatype

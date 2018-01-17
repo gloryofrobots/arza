@@ -1,27 +1,23 @@
-protocol Something (
-    use Eq
-    use api:std:Displayed(repr, +, str)
-    len(x)
-    put(key, value, `self)
-    le_ge(val1, `val2, self)
-)
-//generic (
-//    // ERROR
-//    put k v s
-//    == (x, y)
-//    - (`x, y)
-//    + (`x, y)
-//    ! (self)
-//    len (self)
-//)
-//interface (
-//    PartialEq (==)
-//    Eq (!=, ==)
-//    Ord(<, <=, >, >=, cmp, max, min)
-//    Num (-, +, *, /, mod, negate)
-//    Pow(**)
-//    Str (str)
-//    Displayed (str, repr)
-//    Len (len)
-//)
+type None
 
+type Val(v)
+
+type Vec2 (
+    x y
+)
+
+type Vec5 (
+    z
+    use Vec2
+    w s
+    use Some
+    t
+)
+
+//protocol Something (
+//    use Eq
+//    use api:std:Displayed(repr, +, str)
+//    len(x)
+//    put(key, value, `self)
+//    le_ge(val1, `val2, self)
+//)

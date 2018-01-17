@@ -227,41 +227,40 @@ class TraitParser(BaseParser):
 class TypeParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
-        self.symbol_list_parser = symbol_list_parser_init(BaseParser())
+        self.name_parser = name_parser_init(BaseParser())
         self.add_subparsers([
-            self.symbol_list_parser
+            self.name_parser
         ])
 
-        symbol(self, TT_COMMA, symbol_comma_nud)
         symbol(self, TT_RPAREN, None)
-        infix(self, TT_LPAREN, 100, infix_lparen_type)
-        prefix(self, TT_NAME, prefix_typename)
+
+        prefix(self, TT_NAME, prefix_name_as_symbol)
         prefix(self, TT_LPAREN, prefix_lparen)
+        prefix(self, TT_USE, prefix_type_use)
 
 
 class ProtocolParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
-        self.name_parser = name_parser_init(BaseParser())
         self.symbol_list_parser = symbol_list_parser_init(BaseParser())
+        self.name_parser = name_parser_init(BaseParser())
 
         self.add_subparsers([
             self.symbol_list_parser,
             self.name_parser,
         ])
 
+        symbol(self, TT_COMMA, symbol_comma_nud)
+        symbol(self, TT_RPAREN)
+
         prefix(self, TT_LPAREN, prefix_lparen)
-        infix(self, TT_LPAREN, 100, infix_lparen_protocol)
 
         prefix(self, TT_NAME, prefix_name_as_symbol)
         prefix(self, TT_TICKNAME, prefix_name_as_symbol)
         prefix(self, TT_OPERATOR, operator_as_symbol)
-
-        symbol(self, TT_COMMA, symbol_comma_nud)
-        symbol(self, TT_RPAREN)
-
         prefix(self, TT_USE, prefix_protocol_use)
 
+        infix(self, TT_LPAREN, 100, infix_lparen_protocol)
 
 class ExtendParser(BaseParser):
     def __init__(self):
