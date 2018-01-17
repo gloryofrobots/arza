@@ -119,6 +119,10 @@ def newsymbol_string(process, s):
     return process.symbols.symbol_string(s)
 
 
+def istypefield(w):
+    return issymbol(w) or isdatatype(w)
+
+
 def issymbol(w):
     from lalan.types.symbol import W_Symbol
     return isinstance(w, W_Symbol)
@@ -477,14 +481,13 @@ def isinterface(w):
 
 ########################################################
 
-def newdatatype(process, name, fields, mixins):
+def newdatatype(process, name, fields):
     from lalan.types.datatype import newtype
     from lalan.runtime import error
     error.affirm_type(name, issymbol)
     error.affirm_type(fields, islist)
-    error.affirm_iterable(fields, issymbol)
-    error.affirm_iterable(mixins, isdatatype)
-    return newtype(process, name, fields, mixins)
+    error.affirm_iterable(fields, istypefield)
+    return newtype(process, name, fields)
 
 
 def newnativedatatype(name):

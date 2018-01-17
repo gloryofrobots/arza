@@ -23,7 +23,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'pl', __print, -1)
     api.put_native_function(process, module, u'address', __id, 1)
     api.put_native_function(process, module, u'time', __time, 0)
-    api.put_native_function(process, module, u'get_type', __type, 1)
+    api.put_native_function(process, module, u'get_type', __get_type, 1)
     put_lang_func(process, module, lang_names.APPLY, __apply, 2)
     put_lang_func(process, module, lang_names.DELAY, __delay, 1)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
@@ -33,7 +33,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.IS, __is, 2)
     put_lang_func(process, module, lang_names.ISNOT, __isnot, 2)
     put_lang_func(process, module, lang_names.KINDOF, __kindof, 2)
-    put_lang_func(process, module, lang_names.TYPE, __type, 3)
+    put_lang_func(process, module, lang_names.TYPE, __type, 2)
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
     put_lang_func(process, module, lang_names.INTERFACE, __interface, 3)
     put_lang_func(process, module, lang_names.TRAIT, __trait, 3)
@@ -126,7 +126,7 @@ def __apply(process, routine):
 
 
 @complete_native_routine
-def __type(process, routine):
+def __get_type(process, routine):
     left = routine.get_arg(0)
     return api.get_type(process, left)
 
@@ -149,8 +149,7 @@ def __not(process, routine):
 def __type(process, routine):
     name = routine.get_arg(0)
     fields = routine.get_arg(1)
-    mixins = routine.get_arg(2)
-    _datatype = space.newdatatype(process, name, fields, mixins)
+    _datatype = space.newdatatype(process, name, fields)
     return _datatype
 
 

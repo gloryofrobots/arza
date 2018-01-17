@@ -1,0 +1,61 @@
+import io
+import affirm
+
+type Vec2 (
+    x
+    y
+)
+
+type Vec3 (
+    use Vec2
+    z
+)
+
+type BC (b c)
+
+type Bundle (
+    a
+    use BC
+    t w
+    use Vec3
+    u
+)
+
+extend Vec2 (
+    def +
+        | (v1, v2 of Vec2) = Vec2(v1.x + v2.x, v1.y + v2.y)
+        | (v1, v2 of Vec3) = Vec3(v1.x + v2.x, v1.y + v2.y, v2.z)
+)
+
+extend Vec3 (
+    def +
+        | (v1, v2 of Vec3) = Vec3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z)
+        | (v1, v2 of Vec2) = `+` (v2, v1)
+)
+
+fun test () =
+(
+    let
+        v1 = Vec2(1, 2)
+        v2 = Vec3(10, 20, 30)
+        bndl = Bundle(1, 2, 3, 4, 5, 6, 7, 8, 9)
+    in (
+
+        let
+            (a, b, c, t, w, x, y, z, u) of Bundle = bndl
+        in (
+            affirm:is_equal(
+                (a, b, c, t, w, x, y, z, u),
+                 (1, 2, 3, 4, 5, 6, 7, 8, 9)
+            )
+        )
+
+        io:print(v1 + v2)
+        io:print(v2 + v1)
+        io:print(bndl)
+        affirm:is_equal(
+             (v1 + v2),
+             (v2 + v1)
+        )
+    )
+)

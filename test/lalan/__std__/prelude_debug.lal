@@ -3,7 +3,7 @@ type None
 type Val(v)
 
 type Vec2 (
-    x y
+    x, y
 )
 
 type Vec5 (

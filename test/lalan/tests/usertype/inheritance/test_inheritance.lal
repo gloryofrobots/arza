@@ -1,0 +1,7 @@
+import tests:usertype:inheritance:test_structural
+import io
+
+fun test () =
+(
+    test_structural:test()
+)

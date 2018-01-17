@@ -233,9 +233,11 @@ class TypeParser(BaseParser):
         ])
 
         symbol(self, TT_RPAREN, None)
+        # symbol(self, TT_LPAREN, None)
 
+        symbol(self, TT_COMMA, symbol_comma_type)
         prefix(self, TT_NAME, prefix_name_as_symbol)
-        prefix(self, TT_LPAREN, prefix_lparen)
+        prefix(self, TT_LPAREN, prefix_lparen_group)
         prefix(self, TT_USE, prefix_type_use)
 
 

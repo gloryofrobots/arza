@@ -1,6 +1,6 @@
 from lalan.compile.parse.basic import *
 from lalan.compile.parse.node_type import *
-from lalan.compile.parse import nodes, tokens
+from lalan.compile.parse import nodes
 from lalan.compile.parse.nodes import (node_token as __ntok, node_0, node_1, node_2, node_3, list_node, empty_node)
 from lalan.types import space
 from lalan.misc import strutil
@@ -362,10 +362,20 @@ def prefix_not(parser, op, node):
     return node_1(NT_NOT, __ntok(node), exp)
 
 
+def prefix_lparen_group(parser, op, node):
+    if parser.token_type == TT_RPAREN:
+        return parse_error(parser, u"Expected one or more expressions inside parenthesis", parser.node)
+
+    els = statements(parser, TERM_LPAREN)
+    advance_expected(parser, TT_RPAREN)
+    return els
+
+
 # most ambiguous operator,
 # it can be tuple (1,2,3)
 # single expression 2 * (2+3)
 # list of expressions ( print(data) write(file, data) )
+
 def prefix_lparen(parser, op, node):
     # unit
     if parser.token_type == TT_RPAREN:
@@ -1008,54 +1018,38 @@ def prefix_name_as_symbol(parser, op, node):
     return nodes.create_symbol_node(name, name)
 
 
-def _stmt_type(parser, op, node):
-    nodes = ensure_list_node(expression(parser.type_parser, 0))
-    return nodes
+def symbol_comma_type(parser, op, node):
+    return None
 
-
-def _prefix_typename(parser, op, node):
-    typename = itself(parser, op, node)
-
-    # expect for infix_lparen_type to finish the job
-    if parser.token_type == TT_LPAREN:
-        return typename
-    # support for singleton type
-    return nodes.node_2(NT_TYPE, __ntok(node), typename, empty_node())
-
-
-def _infix_lparen_type(parser, op, node, left):
-    check_node_type(parser, left, NT_NAME)
-    items = _infix_lparen(parser.symbol_list_parser)
-    fields = node_1(NT_LIST, __ntok(node), items)
-    return node_2(NT_TYPE, __ntok(node), left, fields)
-
-
-########################################################
 
 def prefix_type_use(parser, op, node):
     name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
-    return node_1(NT_USE, __ntok(node), name)
+    return name
+    # return node_1(NT_USE, __ntok(node), name)
 
 
 def stmt_type(parser, op, node):
     check_token_type(parser, TT_NAME)
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     if parser.token_type == TT_LPAREN:
-        vars = ensure_list_node(expression(parser.type_parser, 0))
-        mixins = []
-        symbols = []
-        for var in vars:
-            if nodes.node_type(var) == NT_USE:
-                mixins.append(nodes.node_first(var))
-            elif nodes.node_type(var) == NT_SYMBOL:
-                symbols.append(var)
-            else:
-                return parse_error(parser, u"Syntax error", var)
-                # assert False, (str(var), "Should not reach here, unknown type extension")
+        # advance(parser)
+        # vars = statements(parser, TERM_LPAREN)
+        # advance_expected(parser, TT_RPAREN)
 
-        return nodes.node_3(NT_TYPE, __ntok(node), name, list_node(symbols), list_node(mixins))
+        fields = ensure_list_node(expression(parser.type_parser, 0))
+        # fields = []
+        # for var in vars:
+        #     if nodes.node_type(var) == NT_USE:
+        #         mixins.append(nodes.node_first(var))
+        #     elif nodes.node_type(var) == NT_SYMBOL:
+        #         symbols.append(var)
+        #     else:
+        #         return parse_error(parser, u"Syntax error", var)
+        #         # assert False, (str(var), "Should not reach here, unknown type extension")
+
+        return nodes.node_2(NT_TYPE, __ntok(node), name, fields)
     else:
-        return nodes.node_3(NT_TYPE, __ntok(node), name, empty_node(), list_node([]))
+        return nodes.node_2(NT_TYPE, __ntok(node), name, empty_node())
 
 
 # ----------- PROTOCOL ----------------------------

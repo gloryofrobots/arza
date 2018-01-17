@@ -63,7 +63,7 @@ class W_Record(W_Hashable):
         return W_Record(self.type.descriptors, newvalues)
 
     def _length_(self):
-        return api.length(self.values)
+        return api.length_i(self.values)
 
     def _equal_(self, other):
         if not isinstance(other, W_Record):
@@ -239,30 +239,33 @@ def _is_exist_implementation(method, impl):
     return api.equal_b(impl_method, method)
 
 
-def newtype(process, name, fields, mixins):
+def _get_mixin_symbols(fields, mixin):
+    for mixin_field in mixin.fields:
+        if plist.contains(fields, mixin_field):
+            return error.throw_3(error.Errors.CONSTRUCTOR_ERROR,
+                                 mixin_field, mixin,
+                                 space.newstring(
+                                     u"Duplicated name in type declaration from mixin"))
+
+    return plist.concat(fields, mixin.fields)
+
+
+def newtype(process, name, fields):
+    symbols = plist.empty()
     if api.length_i(fields) != 0:
-        for mixin in mixins:
-            for mixin_field in mixin.fields:
-                if plist.contains(fields, mixin_field):
-                    return error.throw_3(error.Errors.CONSTRUCTOR_ERROR,
-                                         mixin_field, mixin,
+        for field in fields:
+            if space.isdatatype(field):
+                symbols = _get_mixin_symbols(symbols, field)
+            else:
+                if plist.contains(symbols, field):
+                    return error.throw_2(error.Errors.CONSTRUCTOR_ERROR,
+                                         field,
                                          space.newstring(
-                                             u"Duplicated name in type declaration from mixin"))
+                                             u"Duplicated name in type declaration"))
+                symbols = plist.append(symbols, field)
 
-            fields = plist.concat(fields, mixin.fields)
-
-        # checking all fields for uniqueness
-        tail = fields
-        while not plist.is_empty(tail):
-            head = plist.head(tail)
-            tail = plist.tail(tail)
-            if plist.contains(tail, head):
-                return error.throw_2(error.Errors.CONSTRUCTOR_ERROR,
-                                     head,
-                                     space.newstring(
-                                         u"Duplicated name in type declaration"))
-
-    _datatype = W_DataType(name, fields)
+        # symbols = plist.reverse(symbols)
+    _datatype = W_DataType(name, symbols)
     if process.std.initialized is False:
         return _datatype
 

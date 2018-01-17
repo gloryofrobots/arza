@@ -7,7 +7,7 @@ class W_Integer(W_ValueType):
     # _immutable_fields_ = ['int_value']
 
     def __init__(self, value):
-        assert isinstance(value, int), value
+        assert (isinstance(value, int) or isinstance(value, long)), value.__class__.__name__
         self.int_value = value
 
     def _hash_(self):
