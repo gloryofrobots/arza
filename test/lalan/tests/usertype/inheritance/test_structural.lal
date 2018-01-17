@@ -39,20 +39,13 @@ fun test () =
         v1 = Vec2(1, 2)
         v2 = Vec3(10, 20, 30)
         bndl = Bundle(1, 2, 3, 4, 5, 6, 7, 8, 9)
+        (a, b, c, t, w, x, y, z, u) of Bundle = bndl
     in (
-
-        let
-            (a, b, c, t, w, x, y, z, u) of Bundle = bndl
-        in (
-            affirm:is_equal(
-                (a, b, c, t, w, x, y, z, u),
-                 (1, 2, 3, 4, 5, 6, 7, 8, 9)
-            )
+        affirm:is_equal(
+            (a, b, c, t, w, x, y, z, u),
+             (1, 2, 3, 4, 5, 6, 7, 8, 9)
         )
 
-        io:print(v1 + v2)
-        io:print(v2 + v1)
-        io:print(bndl)
         affirm:is_equal(
              (v1 + v2),
              (v2 + v1)

@@ -264,6 +264,7 @@ class ProtocolParser(BaseParser):
 
         infix(self, TT_LPAREN, 100, infix_lparen_protocol)
 
+
 class ExtendParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)

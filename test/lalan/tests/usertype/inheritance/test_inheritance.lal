@@ -1,7 +1,9 @@
 import tests:usertype:inheritance:test_structural
+import tests:usertype:inheritance:test_behavioral
 import io
 
 fun test () =
 (
     test_structural:test()
+    test_behavioral:test()
 )

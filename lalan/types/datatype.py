@@ -123,29 +123,33 @@ class W_Extendable(W_Hashable):
 
     def add_method(self, generic, method):
         error.affirm_type(generic, space.isgeneric)
-        if self.is_generic_implemented(generic):
-            if not self.is_derived(generic):
-                return error.throw_3(error.Errors.IMPLEMENTATION_ERROR, self,
-                                     space.newstring(u"Generic has already implemented"), generic)
-
-            self.remove_method(generic)
+        # if self.is_generic_implemented(generic):
+        #     if not self.is_derived(generic):
+        #         return error.throw_3(error.Errors.IMPLEMENTATION_ERROR, self,
+        #                              space.newstring(u"Generic has already implemented"), generic)
+        #
+        #     self.remove_method(generic)
         api.put(self.methods, generic, method)
 
     def add_methods(self, implementations):
         for impl in implementations:
             generic = api.at_index(impl, 0)
             error.affirm_type(generic, space.isgeneric)
-            if self.is_generic_implemented(generic):
-                if not self.is_derived(generic):
-                    return error.throw_3(error.Errors.IMPLEMENTATION_ERROR, self,
-                                         space.newstring(u"Generic has already implemented"), generic)
-
-                self.remove_method(generic)
+            # if self.is_generic_implemented(generic):
+            #     if not self.is_derived(generic):
+            #         return error.throw_3(error.Errors.IMPLEMENTATION_ERROR, self,
+            #                              space.newstring(u"Generic has already implemented"), generic)
+            #
+            #     self.remove_method(generic)
 
         for impl in implementations:
             generic = api.at_index(impl, 0)
             method = api.at_index(impl, 1)
             self.add_method(generic, method)
+
+    def _at_(self, key):
+        error.affirm_type(key, space.isgeneric)
+        return api.at(self.methods, key)
 
     def add_derived_methods(self, implementations):
         for impl in implementations:
@@ -163,6 +167,9 @@ class W_Extendable(W_Hashable):
 
     def remove_method(self, generic):
         api.delete(self.methods, generic)
+
+    def get_method_list(self):
+        return self.methods.to_list()
 
 
 class W_DataType(W_Extendable):
@@ -279,15 +286,24 @@ def _find_constraint_generic(generic, pair):
 
 def _get_extension_methods(_type, _mixins, _methods):
     # BETTER WAY IS TO MAKE DATATYPE IMMUTABLE
-    # AND CHECK CONSTRAINTS AFTER SETTING ALL METHO
+    # AND CHECK CONSTRAINTS AFTER SETTING ALL METHODS
     total = plist.empty()
     constraints = plist.empty()
     error.affirm_type(_methods, space.islist)
-    for trait in _mixins:
-        error.affirm_type(trait, space.istrait)
-        constraints = plist.concat(constraints, trait.constraints)
-        trait_methods = trait.to_list()
-        total = plist.concat(trait_methods, total)
+    for mixin in _mixins:
+        if space.istrait(mixin):
+            constraints = plist.concat(constraints, mixin.constraints)
+            trait_methods = mixin.to_list()
+            total = plist.concat(trait_methods, total)
+        elif space.isdatatype(mixin):
+            type_methods = mixin.get_method_list()
+            total = plist.concat(type_methods, total)
+            pass
+        else:
+            return error.throw_2(error.Errors.TYPE_ERROR,
+                                 mixin,
+                                 space.newstring(
+                                     u"Type or trait expected"))
 
     total = plist.concat(_methods, total)
 

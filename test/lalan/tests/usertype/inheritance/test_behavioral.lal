@@ -1,0 +1,53 @@
+import io
+import affirm
+import string
+
+protocol PairProtocol (
+    all(pair)
+)
+
+type Pair (
+    first
+    second
+)
+
+trait PairRepr of PairProtocol (
+    def repr(p) = all(p)
+)
+
+extend Pair (
+    def str(p) = string:join(["<Pair ", str(p.first), ", ", str(p.second), ">"], "")
+    def all(p) = p.first ++ p.second
+    def repr(p) = str(p)
+)
+
+type PairInt (
+    use Pair
+)
+
+extend PairInt (
+    use Pair
+    use PairRepr
+    def all(p) = p.first + p.second
+)
+
+fun test() =
+(
+    let
+        p1 = Pair("__first__", "__second__")
+        p2 = PairInt(1, 2)
+    in (
+
+        p1 |> str |> affirm:is_equal(_, "<Pair __first__, __second__>")
+        p2 |> str |> affirm:is_equal(_, "<Pair 1, 2>")
+        p1 |> repr |> affirm:is_equal(_, "<Pair __first__, __second__>")
+        p2 |> repr |> affirm:is_equal(_, 3)
+        p1 |> all |> affirm:is_equal(_, "__first____second__")
+        p2 |> all |> affirm:is_equal(_, 3)
+
+//        affirm:is_equal(
+//             (v1 + v2),
+//             (v2 + v1)
+//        )
+    )
+)
