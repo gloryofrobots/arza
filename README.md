@@ -22,12 +22,11 @@ There are no REPL for lalan at the moment
 * Original and clean syntax inspired by Lua and OCaml
 * Persistent data structures (lists, tuples, maps)
 * Pattern matching
-* Lexical clojures and lambdas
+* Lexical closures and lambdas
 * Usual number of primitives (if-else, let-in, try-catch)
 * User defined operators
 * User defined types
-* Traits and interfaces
-* Single dispatch generic functions
+* Protocols, single dispatch generic functions, traits
 * Special syntax and custom operator for partial application
 * Stackless virtual machine
 * Asymmetric coroutines
@@ -49,10 +48,6 @@ There are no REPL for lalan at the moment
 - [Function expression](#function-expression)
 - [Type expression](#type-expression)
 - [Single dispatch](#single-dispatch)
-  - [Generic expression](#generic-expression)
-  - [Interface expression](#interface-expression)
-  - [Extend expression](#extend-expression)
-  - [Trait expression](#trait-expression)
 
 - [Value expressions](#value-expressions)
   - [Literals](#literals)
@@ -142,7 +137,7 @@ fun nbn () =
 
 
 There are three main kinds of expressions
-* Top level expressions (import, export, from, fun, let, trait, interface, generic, type, prefix, infixl, infixr)
+* Top level expressions (import, export, from, fun, let, trait, protocol, type, prefix, infixl, infixr)
 * Pattern matching expressions inside function signature, after let expression or in match expression
 * Value expressions usually occur after = token and always evaluates to some value
 
@@ -424,21 +419,20 @@ fun scanl(func, accumulator, coll) =
 
 ### Type expression
 ```
-type <name> {field `,`} |
-type ( {<name> {field `,`}} )
+type <singleton_name> | <name> '(' {field} | use <mixin_type> ')'
 
 type Name
 // Fieldless singleton type
 type Nothing
 // Constructor type
-type Point(x, y)
+type Point(x y)
 
-//group expression
-type
-(
-    Point (x, y)
-    Square(width, height)
-    Rect(left, top, right, bottom)
+// using all Point names
+// this is not an inheritance, types Point2 and Point3 does not relate to each other
+// but partly have the same structure
+type Point3(
+    use Point
+    z
 )
 
 // creating type instances
@@ -460,9 +454,10 @@ match p with
 ```
 
 ### Single dispatch
-Single dispatch based on protocols(interfaces, traits) became popular in many modern languages (Clojure, Elixir, Golang. Rust)
-Such system usually consists of types and protocols. Protocols consists of one (zero) or more methods
-Protocol (all it's methods) can be implemented for specific type. Protocol methods usually dispatch on first argument.
+Single dispatch based on protocols(interfaces, traits) became popular in many modern languages (Clojure, Elixir, Golang, Rust)
+Such system usually consists of types and protocols. Protocols consists of one (zero) or more generic functions
+Protocol (all it's generics) can be implemented for specific type. One such implementation called method.
+Protocol methods usually dispatch on first argument.
 
 
 **Clojure example**
@@ -480,98 +475,100 @@ Protocol (all it's methods) can be implemented for specific type. Protocol metho
     (baz ([x] ...) ([x y zs] ...)))
 ```
 
-It is simple and powerful system but it tightly bounds functions to only one protocol.
-Problem occurs when some function must belong to two or more protocols simultaneously
-For example, we can have protocol for collection with methods 'at' and 'elem' and protocol for
-mutable collection with methods 'at' 'elem' 'put' 'del'.
-Mixins or Inheritance can solve this problem but lalan goes the other way.
-In lalan generic functions and protocols(interfaces) declared apart from each other
-and interfaces combine one or more previously declared generics.
-Type doesn't need to signal implementation of interface but needs to implement all generic functions belonging to interface
-Lalan generic functions can dispatch on argument in any position
-
-
-#### Generic expression
+It is simple and powerful dynamic dispatch system very similar to single dispatch in OOP
+In Lalan you can write example above as
 ```
-// Generic provides dispatch (single) on one of it's arguments
-
-generic <name> '('[`]{arg_name} ')' |
-generic '(' {<name> '('[`]{arg_name} ')' } ')'
-
-
-// ` before argument signals position of 'dispatch' argument (argument on which type dispatch occurs)
-// ` might be omitted for generic with only one argument
-
-generic equal(`x, y)
-generic negate(x)
-
-// dispatch on last argument
-generic cons(value, `seq)
-
-// declare many generics in one layout
-generic
-(
-    mod(`x, y)
-    -(`x, y)
-    +(`x, y)
-    put(key, value, `self)
-    at(key, `self)
-    del(obj, `self)
+// variable marked by ` is variable on which type dispatch will be performed
+protocol Foo (
+    bar (`a, b)
+    baz (`a, b, c)
 )
 
+type MyType (a b c)
+
+extend MyType (
+    def bar(a, b) = a + b
+    def baz(a, b, c) = a + b + c
+)
+
+// checking if MyType supports protocol
+let m = MyType(1, 2, 3)
+in m `kindof` Foo
 ```
 
-#### Interface expression
+Protocol can define one or more generic functions but they does not strictly bind to protocol
+Type can support only one protocol function, and while it will not support full protocol
+you can still use this generic function with this type
 
 ```
-interface <name> '('{generic_name} ')' |
-interface '(' {<name> '(' {generic_name} ')' } ')'
+protocol Foo (
+    bar(`a)
+    baz(`a, b, c)
+)
 
+extend MyType(
+    def bar(a) = a
+)
 
-// Interface combines one or more generic functions and can be used for type check in pattern matching
-// generic functions must be declared at this point
-
-interface PartialEq (==)
-
-interface
-(
-    Eq (!=, ==) // shares same == generic
-
-    Seq(first, rest)
-
-    Ord(<, <=, >, >=, cmp, max, min)
-
-    Str (str)
-
-    Collection(put, at, del, elem)
-
-    Dict(keys, values, put, at, del, elem)
-
-    Ref(!)
-
-    MutRef(!, :=)
+let m = MyType(1, 2, 3)
+in (
+     m `kindof` Foo //False
+     bar(m) == m //True
 )
 ```
 
-#### Extend expression
+Also protocol can reuse generic functions from other protocol
 ```
-extend <type>
-'('
-    {
-        let <generic_name> = <value_expression>
-        use <traitname> ['(' {generic_name} ')'] |
-        def <generic> <function_definition>
+protocol PartialEq (
+    ==(`x, y)
+)
+
+protocol Eq (
+    use PartialEq
+    // or specify which generics to use
+    // use PartialEq(==)
+    !=(`x, y)
+)
+```
+
+This is not strictly speaking an inheritance, because PartialEq and Eq just share same generic function `==`,
+but any type supporting Eq will support PartialEq as well because to do so it must support `==` function
+This design decision allows us to create small protocols based on each other and provide
+flexible architecture for programmer.
+
+```
+// Protocol syntax
+protocol <name> '(' {
+    <generic_name> '('[`]{arg_name} ')' |
+    use  <protocol_name> | <protocol_name> '(' {used_generics} ')'
     }
 ')'
 
+```
+
+```
+// Extend Syntax
+
+extend <type>
+'('
+    {
+        let <generic_name> = <value_expression> |
+        use <traitname> ['(' {generic_name} ')'] |
+        use <typename> |
+        def <generic> <function_definition> |
+        def+ <generic> <function_definition>
+    }
+')'
+
+```
 
 // extend type with generic function
 
 type MyList(l)
 
-extend L
+extend MyList
 (
-    def +(self, other)
+    def add(self, other)
         | (self, other of List) = MyList(self.l + other)
         | (self, other of MyList) = MyList(self.l + other.l)
 
@@ -583,8 +580,21 @@ extend L
 
     def rest(self) = self
 )
+type MyList2(l)
 
-// if interfaces Seq(first, rest), Add(+) and Sized(len) exist
+extend MyList2 (
+    // inherit all MyList generics
+    use MyList
+    // overrides MyList len method without access to parent method
+    def len(self) = len(self.l) + 1
+
+    // overrides MyList add method with access to parent method
+    def+ add(self, other)
+        | (self, other of String) = super(self, string:to_list(other)
+        | (self, other) = super(self, other)
+)
+
+// if protocol Seq(first, rest), Add(add) and Sized(len) exist
 // we can check if type implements them
 
 let mylist = MyList([1,2,3,4,5,6])
@@ -604,9 +614,8 @@ let (
 )
 ```
 
-#### Trait expression
-Trait is code reuse unit in lalan.
-They are simple maps {generic = implementation} and can be used in extend statement
+Traits are abstract units for code reuse in Lalan.
+Beneath they are simple maps {generic = implementation} and can be used in extend statement
 to share common behaviour between different types
 
 ```
@@ -619,9 +628,7 @@ trait <name>
 ')'
 
 
-
-generic
-(
+protocol Ord (
     eq(`x, y)
     ne(`x, y)
     le(`x, y)
@@ -629,28 +636,27 @@ generic
     ge(`x, y)
     gt(`x, y)
 )
-trait Equal
-(
+
+trait Equal (
     def eq(x, y) = not ne(x, y)
     def ne(x, y) = not eq(x, y)
 )
 
-trait Order
-(
+trait Order (
     let le = (x,y) -> cmp(x, y) != GT
     def lt(x, y) = cmp(x, y) == LT
     def ge(x, y) = cmp(x, y) != LT
     def gt(x, y) = cmp(x, y) == GT
 )
-extend MyList
-(
+
+extend MyList (
     // all implementations defined in Equal trait will be attached to MyList
     use Equal
 
     // only le and ge will be attached to the type
     use Order (le, ge)
 
-    // Trait is a simple map with generics as keys and implementation functions as values
+    // Trait is a simple map with generics as keys and methods as values
     let lt = Order.[lt]
     def gt(x, y) = Order.[gt](x, y)
 )
@@ -936,8 +942,8 @@ match some_function()
     | x
     | SomeLONG_NAME
 
-    // [] destructs all types implementing Seq interface
-    // () destructs all types implementing Indexed interface
+    // [] destructs all types implementing Seq protocol
+    // () destructs all types implementing Indexed protocol
     // ... destructs rest of the data structure
 
     // tuples and others implementing Indexed
@@ -952,12 +958,12 @@ match some_function()
     | x::xs
     | 1::2::3::x::rest
 
-    // {} destructs all types implementing Dict interface
+    // {} destructs all types implementing Dict protocol
     | {}
     | {x}
     | {x="some value", y, z=42}
 
-    // operator `of` restricts value to type or interface
+    // operator `of` restricts value to type or protocol
 
     | x of Int
     | _ of List
