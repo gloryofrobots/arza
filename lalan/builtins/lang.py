@@ -24,6 +24,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'address', __id, 1)
     api.put_native_function(process, module, u'time', __time, 0)
     api.put_native_function(process, module, u'get_type', __get_type, 1)
+    api.put_native_function(process, module, u'method', __method, 2)
     put_lang_func(process, module, lang_names.APPLY, __apply, 2)
     put_lang_func(process, module, lang_names.DELAY, __delay, 1)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
@@ -129,6 +130,20 @@ def __apply(process, routine):
 def __get_type(process, routine):
     left = routine.get_arg(0)
     return api.get_type(process, left)
+
+
+@complete_native_routine
+def __method(process, routine):
+    generic = routine.get_arg(0)
+    typ = routine.get_arg(1)
+    error.affirm_type(generic, space.isgeneric)
+    error.affirm_type(typ, space.isdatatype)
+
+    method = typ.get_method(generic)
+    if space.isvoid(method):
+        return error.throw_3(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR, method, typ,
+                             space.newstring(u"Unknown generic method"))
+    return method
 
 
 @complete_native_routine

@@ -128,6 +128,7 @@ RULES = [
     (keyword('of'), TT_OF),
     (keyword('as'), TT_AS),
     (keyword('let'), TT_LET),
+    (token('def[\+]'), TT_DEF_PLUS),
     (keyword('def'), TT_DEF),
     (keyword('when'), TT_WHEN),
     (keyword('in'), TT_IN),

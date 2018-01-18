@@ -1,18 +1,26 @@
-type None
+extend Int (
+    def+ add(x, y) = x
+//    def+ add
+//        | (x of List, y) = x
+//        | (_, _) = x
 
-type Val(v)
-
-type Vec2 (
-    x, y
 )
-
-type Vec5 (
-    z
-    use Vec2
-    w s
-    use Some
-    t
-)
+//let l = (super) -> 1
+//type None
+//
+//type Val(v)
+//
+//type Vec2 (
+//    x, y
+//)
+//
+//type Vec5 (
+//    z
+//    use Vec2
+//    w s
+//    use Some
+//    t
+//)
 
 //protocol Something (
 //    use Eq

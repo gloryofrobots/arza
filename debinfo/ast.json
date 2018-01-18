@@ -1,133 +1,48 @@
 [
   {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
+    "_ntype": "NT_EXTEND",
+    "_value": "extend",
     "children": [
       {
         "_ntype": "NT_NAME",
-        "_value": "None"
+        "_value": "Int"
       },
-      {
-        "empty": true
-      },
-      []
-    ]
-  },
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "Val"
-      },
+      [],
+      [],
+      [],
       [
-        {
-          "_ntype": "NT_SYMBOL",
-          "_value": "#",
-          "children": [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "v"
-            }
+        [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "add"
+          },
+          [
+            [
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": "(",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "x"
+                    },
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "y"
+                    }
+                  ]
+                ]
+              },
+              [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "x"
+                }
+              ]
+            ]
           ]
-        }
-      ],
-      []
-    ]
-  },
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "Vec2"
-      },
-      [
-        {
-          "_ntype": "NT_SYMBOL",
-          "_value": "#",
-          "children": [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "x"
-            }
-          ]
-        },
-        {
-          "_ntype": "NT_SYMBOL",
-          "_value": "#",
-          "children": [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "y"
-            }
-          ]
-        }
-      ],
-      []
-    ]
-  },
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "Vec5"
-      },
-      [
-        {
-          "_ntype": "NT_SYMBOL",
-          "_value": "#",
-          "children": [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "z"
-            }
-          ]
-        },
-        {
-          "_ntype": "NT_SYMBOL",
-          "_value": "#",
-          "children": [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "w"
-            }
-          ]
-        },
-        {
-          "_ntype": "NT_SYMBOL",
-          "_value": "#",
-          "children": [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "s"
-            }
-          ]
-        },
-        {
-          "_ntype": "NT_SYMBOL",
-          "_value": "#",
-          "children": [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "t"
-            }
-          ]
-        }
-      ],
-      [
-        {
-          "_ntype": "NT_NAME",
-          "_value": "Vec2"
-        },
-        {
-          "_ntype": "NT_NAME",
-          "_value": "Some"
-        }
+        ]
       ]
     ]
   }

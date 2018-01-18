@@ -49,6 +49,7 @@ NODES = [
   "NT_EXTEND",
   "NT_USE",
   "NT_DEF",
+  "NT_DEF_PLUS",
   "NT_GENERIC",
   "NT_METHOD",
   "NT_INTERFACE",

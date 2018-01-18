@@ -6,6 +6,10 @@ protocol PairProtocol (
     all(pair)
 )
 
+protocol PairIntProtocol (
+    sum(`p1, p2)
+)
+
 type Pair (
     first
     second
@@ -29,6 +33,26 @@ extend PairInt (
     use Pair
     use PairRepr
     def all(p) = p.first + p.second
+    def sum(p1, p2) = PairInt(p1.first + p2.first, p1.second + p2.second)
+)
+
+
+extend PairInt (
+    // manual override
+    let sum = override(
+        sum,
+        PairInt,
+        fun (super) =
+             fun | (p1, val of Int) = PairInt(p1.first + val, p1.second + val)
+                 | (p1, p2) = super(p1, p2)
+    )
+)
+
+extend Int (
+    // override syntax
+    def+ +
+         | (val of Int, p of PairInt) = PairInt(p.first + val, p.second + val)
+         | (val1, val2) = super(val1, val2)
 )
 
 fun test() =
@@ -36,6 +60,7 @@ fun test() =
     let
         p1 = Pair("__first__", "__second__")
         p2 = PairInt(1, 2)
+        p3 = PairInt(10, 20)
     in (
         p1 |> str |> affirm:is_equal(_, "<Pair __first__, __second__>")
         p2 |> str |> affirm:is_equal(_, "<Pair 1, 2>")
@@ -43,5 +68,10 @@ fun test() =
         p2 |> repr |> affirm:is_equal(_, 3)
         p1 |> all |> affirm:is_equal(_, "__first____second__")
         p2 |> all |> affirm:is_equal(_, 3)
+        p2 |> sum(_, p3) |> io:print
+        p2 |> sum(_, 30) |> io:print
+
+        p2 |> `+`(40, _) |> io:print
+        io:print(1 + 3)
     )
 )

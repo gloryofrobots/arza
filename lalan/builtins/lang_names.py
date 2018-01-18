@@ -1,3 +1,5 @@
+SUPER_NAME = "super"
+
 PREFIX = "lalan:lang:"
 
 NOT = PREFIX + "not"
@@ -44,3 +46,5 @@ TO_SEQ = PREFIX + "to_seq"
 CONCAT = PREFIX + "++"
 APPLY = PREFIX + "apply"
 NEGATE = PREFIX + "negate"
+
+OVERRIDE = PREFIX + "override"

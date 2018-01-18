@@ -279,8 +279,9 @@ class ExtendParser(BaseParser):
 
         prefix(self, TT_LET, prefix_extend_let)
         prefix(self, TT_DEF, prefix_extend_def)
+        prefix(self, TT_DEF_PLUS, prefix_extend_def_plus)
         prefix(self, TT_USE, prefix_extend_use)
-        prefix(self, TT_LPAREN, prefix_lparen)
+        prefix(self, TT_LPAREN, prefix_lparen_group)
 
 
 class PatternParser(BaseParser):

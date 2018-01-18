@@ -36,7 +36,7 @@ def list_node(items):
     return space.newlist(items)
 
 
-# TODO THIS IS SILLY IMPLEMENT IT AS WRAPS
+# TODO THIS IS SILLY. IMPLEMENT IT AS WRAPS
 def is_list_node(node):
     return space.islist(node)
 
@@ -119,6 +119,10 @@ def node_4(ntype, token, child1, child2, child3, child4):
     return newnode(ntype, token, [child1, child2, child3, child4])
 
 
+def node_5(ntype, token, child1, child2, child3, child4, child5):
+    return newnode(ntype, token, [child1, child2, child3, child4, child5])
+
+
 def node_type(node):
     return api.to_i(api.at_index(node, 0))
 
@@ -157,6 +161,10 @@ def node_third(node):
 
 def node_fourth(node):
     return node_getchild(node, 3)
+
+
+def node_fifth(node):
+    return node_getchild(node, 4)
 
 
 def node_value_s(node):
@@ -272,10 +280,17 @@ def create_function_variants(args, exp):
     ])])
 
 
-def create_fun_simple_node(basenode, name, body):
+def create_fun_0_node(basenode, name, body):
     return create_fun_node(basenode, name,
                            create_function_variants(
                                create_tuple_node(basenode, [create_unit_node(basenode)]),
+                               body))
+
+
+def create_fun_1_node(basenode, name, arg, body):
+    return create_fun_node(basenode, name,
+                           create_function_variants(
+                               create_tuple_node(basenode, [arg]),
                                body))
 
 

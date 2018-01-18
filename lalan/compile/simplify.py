@@ -1,5 +1,6 @@
 from lalan.compile.parse.nodes import (node_type, node_arity,
-                                      node_first, node_second, node_third, node_fourth, node_children, is_empty_node)
+                                       node_first, node_second, node_third, node_fourth, node_fifth, node_children,
+                                       is_empty_node)
 from lalan.runtime import error
 from lalan.types import space, api, plist, environment, symbol as symbols, string as strings
 from lalan.builtins import lang_names
@@ -30,13 +31,13 @@ def simplify_let(compiler, code, node):
     let_block = node_first(node)
     in_block = node_second(node)
     body = plist.concat(let_block, in_block)
-    func = nodes.create_fun_simple_node(node, nodes.empty_node(), body)
+    func = nodes.create_fun_0_node(node, nodes.empty_node(), body)
     return nodes.create_call_node_1(node, func, nodes.create_unit_node(node))
 
 
 def simplify_not(compiler, code, node):
     left = node_first(node)
-    return nodes.create_not_call(node, left )
+    return nodes.create_not_call(node, left)
 
 
 def simplify_cons(compiler, code, node):
@@ -47,7 +48,7 @@ def simplify_cons(compiler, code, node):
 
 def simplify_delay(compiler, code, node):
     exp = node_first(node)
-    fun_1_arg = nodes.create_fun_simple_node(node, nodes.empty_node(), nodes.list_node([exp]))
+    fun_1_arg = nodes.create_fun_0_node(node, nodes.empty_node(), nodes.list_node([exp]))
     return nodes.create_call_node_s(node, lang_names.DELAY, [fun_1_arg])
 
 
@@ -56,6 +57,7 @@ def simplify_extend(compiler, code, node):
     mixins = node_second(node)
     methods = node_third(node)
     lets = node_fourth(node)
+    overrides = node_fifth(node)
 
     mixins_list = []
     methods_list = []
@@ -80,6 +82,23 @@ def simplify_extend(compiler, code, node):
             nodes.create_tuple_node(generic_name, [
                 generic_name,
                 impl
+            ])
+        )
+
+    for method_data in overrides:
+        generic_name = method_data[0]
+        impl = method_data[1]
+        func = nodes.create_fun_node(generic_name, nodes.empty_node(), impl)
+        wrapper = nodes.create_fun_1_node(
+            generic_name, nodes.empty_node(),
+            nodes.create_name_node_s(generic_name, lang_names.SUPER_NAME),
+            func
+        )
+        call_override = nodes.create_call_node_s(node, lang_names.OVERRIDE, [generic_name, typename_1_arg, wrapper])
+        methods_list.append(
+            nodes.create_tuple_node(generic_name, [
+                generic_name,
+                call_override
             ])
         )
 

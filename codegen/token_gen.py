@@ -26,6 +26,7 @@ TOKENS = [
 
   ("TT_OF", "of"),
   ("TT_DEF", "def"),
+  ("TT_DEF_PLUS", "def+"),
   ("TT_LET", "let"),
   ("TT_IN", "in"),
   ("TT_AS", "as"),

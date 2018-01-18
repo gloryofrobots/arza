@@ -299,6 +299,8 @@ fun dec(x) = x - 1
 //fun last coll = at ((len coll) - 1) coll
 fun last(coll) = at(len(coll) - 1, coll)
 
+fun override(generic, _type, func) = func(method(generic, _type))
+
 let
 (
     fst = c -> at(0, c)
