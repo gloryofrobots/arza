@@ -561,8 +561,6 @@ extend <type>
     }
 ')'
 
-```
-
 // extend type with generic function
 
 type MyList(l)
@@ -581,6 +579,7 @@ extend MyList
 
     def rest(self) = self
 )
+
 type MyList2(l)
 
 extend MyList2 (
