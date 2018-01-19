@@ -137,7 +137,7 @@ Obin uses juxtaposition for function application. Obin syntax often looks like l
 func1 arg1 arg2 (func2 arg3 (func4 arg5 arg6) arg7) arg8 arg9
 ```
 
-Obin functions are not curried by default (mainly because in dynamic language currying may cause a lot of annoying runtime errors)
+Obin functions are curried by default.
 
 Some extreme syntax examples which will compile without errors
 ```
