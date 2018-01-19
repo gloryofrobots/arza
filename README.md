@@ -62,12 +62,12 @@ There are no REPL for lalan at the moment
   - [Loading order](#loading-order)
 
 ### Syntax overview
-Lalan uses original syntax inspired by Lua and OCaml
-Expression syntax similar to convenient scripting languages with infix and prefix operators and
-function calls via ```f(...)```. But instead of using some kind of block separators ({} or begin end)
-Lalan allows one or more expressions inside parens (exp1 exp2 expe).
-Result of such group expression will be the result of last expression.
+Lalan uses syntax similar to convenient scripting languages with infix and prefix operators and
+function calls via ```f(...)```. But instead of using some kind of block separators ({} or begin end) 
+for multiexpression statements Lalan allows one or more expressions inside parens (exp1 exp2 expe).
+Result of such group expression will be the result of the last expression.
 This simple rule provides organic coexistence of serial and single expressions.
+
 ```
 fun add(x,y) = x + y
 fun add_and_print(x,y) =
@@ -78,6 +78,7 @@ fun add_and_print(x,y) =
 ```
 
 Name binding can be done only inside *let-in* statement, I believe it pushes programmer to good code quality
+
 ```
 fun f(x,y) =
     let z = x + y
@@ -136,10 +137,10 @@ fun nbn () =
 ```
 
 
-There are three main kinds of expressions
+Lalan expressions devided into three main kinds:
 * Top level expressions (import, export, from, fun, let, trait, protocol, type, prefix, infixl, infixr)
 * Pattern matching expressions inside function signature, after let expression or in match expression
-* Value expressions usually occur after = token and always evaluates to some value
+* Value expressions which usually occure after = token and always evaluate to some value
 
 There are no end of expression token in Lalan.
 Parser grabs expressions one by one from stream of tokens.
@@ -161,7 +162,7 @@ To resolve parsing conflicts Lalan uses new lines as terminators
 fun f() =
 (
     //lambda expression
-    ((x, y) = x + y)
+    ((x, y) -> x + y)
     // parser treats `(` as prefix expression because of new line
     (1, 41)
 )
@@ -170,7 +171,7 @@ f() == (1, 41)
 fun f2() =
 (
     // parser treats `(` as infix expression and interprets this expression as call to lambda with arguments (1, 41)
-    ((x, y) = x + y)(1, 41)
+    ((x, y) -> x + y)(1, 41)
 )
 f2() == 42
 ```
@@ -475,7 +476,7 @@ Protocol methods usually dispatch on first argument.
     (baz ([x] ...) ([x y zs] ...)))
 ```
 
-It is simple and powerful dynamic dispatch system very similar to single dispatch in OOP
+It is simple but powerful dynamic dispatch system very similar to single dispatch in OOP
 In Lalan you can write example above as
 ```
 // variable marked by ` is variable on which type dispatch will be performed
