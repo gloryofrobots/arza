@@ -20,6 +20,10 @@ trait PairRepr of PairProtocol (
 )
 
 extend Pair (
+    def ==
+        | (self, other of Pair) = self.first  == other.first and self.second == other.second
+        | (self, (first, second)) = self.first  == first and self.second == second
+
     def str(p) = string:join(["<Pair ", str(p.first), ", ", str(p.second), ">"], "")
     def all(p) = p.first ++ p.second
     def repr(p) = str(p)
@@ -68,10 +72,12 @@ fun test() =
         p2 |> repr |> affirm:is_equal(_, 3)
         p1 |> all |> affirm:is_equal(_, "__first____second__")
         p2 |> all |> affirm:is_equal(_, 3)
-        p2 |> sum(_, p3) |> io:print
-        p2 |> sum(_, 30) |> io:print
 
-        p2 |> `+`(40, _) |> io:print
-        io:print(1 + 3)
+        p2 |> sum(_, p3) |> affirm:is_equal(_, Pair(11, 22))
+        p2 |> sum(_, 30) |> affirm:is_equal(_, Pair(31, 32))
+
+        p2 |> `+`(40, _) |> affirm:is_equal(_, Pair(41, 42))
+        // Check if Int working after subtype
+        affirm:is_equal(1 + 3, 4)
     )
 )
