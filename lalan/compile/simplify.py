@@ -88,10 +88,11 @@ def simplify_extend(compiler, code, node):
     for method_data in overrides:
         generic_name = method_data[0]
         impl = method_data[1]
+        super_name = method_data[2]
         func = nodes.create_fun_node(generic_name, nodes.empty_node(), impl)
         wrapper = nodes.create_fun_1_node(
             generic_name, nodes.empty_node(),
-            nodes.create_name_node_s(generic_name, lang_names.SUPER_NAME),
+            super_name,
             func
         )
         call_override = nodes.create_call_node_s(node, lang_names.OVERRIDE, [generic_name, typename_1_arg, wrapper])

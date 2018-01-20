@@ -1,8 +1,8 @@
 extend Int (
-    def+ add(x, y) = x
-//    def+ add
-//        | (x of List, y) = x
-//        | (_, _) = x
+    def+(super) add(x, y) = x
+    def+(_) add
+        | (x of List, y) = x
+        | (_, _) = x
 
 )
 //let l = (super) -> 1

@@ -1121,7 +1121,7 @@ def stmt_extend(parser, op, node):
             ]))
         elif nodes.node_type(ex) == NT_DEF_PLUS:
             overrides.append(list_node([
-                nodes.node_first(ex), nodes.node_second(ex)
+                nodes.node_first(ex), nodes.node_second(ex), nodes.node_third(ex)
             ]))
         elif nodes.node_type(ex) == NT_ASSIGN:
             lets.append(list_node([
@@ -1155,9 +1155,12 @@ def prefix_extend_def(parser, op, node):
 
 
 def prefix_extend_def_plus(parser, op, node):
+    advance_expected(parser, TT_LPAREN)
+    super_name = expect_expression_of_types(parser.super_name_parser, 0, SUPER_NODES)
+    advance_expected(parser, TT_RPAREN)
     method_name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
     funcs = _parse_case_or_simple_function(parser.expression_parser, TERM_FUN_PATTERN, TERM_FUN_GUARD)
-    return node_2(NT_DEF_PLUS, __ntok(node), method_name, funcs)
+    return node_3(NT_DEF_PLUS, __ntok(node), method_name, funcs, super_name)
 
 
 def prefix_extend_let(parser, op, node):

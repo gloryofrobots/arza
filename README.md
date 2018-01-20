@@ -557,7 +557,7 @@ extend <type>
         use <traitname> ['(' {generic_name} ')'] |
         use <typename> |
         def <generic> <function_definition> |
-        def+ <generic> <function_definition>
+        def+'('<super_name>')' <generic> <function_definition>
     }
 ')'
 
@@ -589,7 +589,8 @@ extend MyList2 (
     def len(self) = len(self.l) + 1
 
     // overrides MyList add method with access to parent method
-    def+ add(self, other)
+    // super will contain overrided method
+    def+(super) add(self, other)
         | (self, other of String) = super(self, string:to_list(other)
         | (self, other) = super(self, other)
 )

@@ -43,6 +43,7 @@ extend PairInt (
 
 extend PairInt (
     // manual override
+
     let sum = override(
         sum,
         PairInt,
@@ -54,7 +55,7 @@ extend PairInt (
 
 extend Int (
     // override syntax
-    def+ +
+    def+(super) +
          | (val of Int, p of PairInt) = PairInt(p.first + val, p.second + val)
          | (val1, val2) = super(val1, val2)
 )

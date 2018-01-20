@@ -270,18 +270,25 @@ class ExtendParser(BaseParser):
         BaseParser.__init__(self)
         self.expression_parser = ExpressionParser()
         self.name_parser = name_parser_init(BaseParser())
+        self.super_name_parser = extend_super_name_parser_init(BaseParser())
         self.name_list_parser = name_list_parser_init(BaseParser())
         self.add_subparsers([
             self.expression_parser,
             self.name_parser,
-            self.name_list_parser
+            self.name_list_parser,
+            self.super_name_parser,
         ])
 
         prefix(self, TT_LET, prefix_extend_let)
         prefix(self, TT_DEF, prefix_extend_def)
-        prefix(self, TT_DEF_PLUS, prefix_extend_def_plus)
         prefix(self, TT_USE, prefix_extend_use)
+        prefix(self, TT_DEF_PLUS, prefix_extend_def_plus)
         prefix(self, TT_LPAREN, prefix_lparen_group)
+
+
+def extend_super_name_parser_init(parser):
+    literal(parser, TT_NAME)
+    return parser
 
 
 class PatternParser(BaseParser):

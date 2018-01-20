@@ -1,5 +1,3 @@
-SUPER_NAME = "super"
-
 PREFIX = "lalan:lang:"
 
 NOT = PREFIX + "not"
