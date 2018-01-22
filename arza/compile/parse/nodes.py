@@ -367,6 +367,13 @@ def create_symbol_from_operator(token, op):
     return create_symbol_node(token, create_name_from_operator(token, op))
 
 
+def create_random_name(token):
+    import random
+    index = random.random()
+    name = "%s_%2.10f" % (lang_names.RANDOM_NAME_PREFIX, index)
+    return create_name_node_s(token, name)
+
+
 def create_name_node_s(token, name):
     return node_0(nt.NT_NAME, create_token_from_token(tt.TT_STR, name, token))
 

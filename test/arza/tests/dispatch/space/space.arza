@@ -19,14 +19,14 @@ let
             42
     }
 
-use Spaceship as T in
+trait TSpaceship(T) for Spaceship =
     def damage(s of T, amount) as BodyTrait.[damage]
 
-use Body as I in
+trait TBody(I) for Body =
     def collide_with(b1 of I, b2 of I) =
         io:print("Bodies colliding")
 
-describe Spaceship as Body 
+describe Spaceship as Body
 
 def collide_with({health} of Asteroid, {fire_power} of Spaceship) when health < fire_power =
     "Spaceship KILLS Asteroid"

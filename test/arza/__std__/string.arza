@@ -3,12 +3,12 @@ import std
 import seq
 
 
-use (String, Char, Symbol) as T in
+trait __TStringEq(T) for [String, Char, Symbol] =
     std:TEq(T)
     std:TStr(T)
 
 
-use String as S in
+trait __TString(S) for String =
     def at (k, self of S) as std_behavior:at
     def put (k, v, self of S) as std_behavior:put
     def del (el, self of S) as std_behavior:del
@@ -27,10 +27,7 @@ use String as S in
     def empty(self of S) = ""
 
 
-use
-    String as Str
-    Symbol as Sym
-in
+trait __TStringConcat(Str, Sym) for (String, Symbol) =
     def ++ (s1 of Str, s2 of Str) = _string:concat(s1, s2)
     def ++ (s1 of Str, s2 of Sym) = _string:concat(s1, str(s2))
     def ++ (s1 of Sym, s2 of Str) = _string:concat(str(s1), s2)

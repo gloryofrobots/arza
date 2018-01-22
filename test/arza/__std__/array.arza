@@ -1,45 +1,41 @@
 import arza:lang:_array
 import string
 import io
+import std
 
 
-use Array in
-    def != (self, other) as std_behavior:not_equal
-    def == (self, other) as std_behavior:equal
+trait TArray(A) for Array =
+    std:TEq(A)
 
-
-use Array as ... in
-    def at (k, self) as std_behavior:at
-    def put (k, v, self) as std_behavior:put
-    def del (el, self) as std_behavior:del
-    def elem (el, self) as std_behavior:elem
-    def is_empty (self) as std_behavior:is_empty
-    def len (self) as std_behavior:len
+    def at (k, self of A) as std_behavior:at
+    def put (k, v, self of A) as std_behavior:put
+    def del (el, self of A) as std_behavior:del
+    def elem (el, self of A) as std_behavior:elem
+    def is_empty (self of A) as std_behavior:is_empty
+    def len (self of A) as std_behavior:len
 
     def ++ (a1, a2) as _array:concat
 
-    def prepend(v, self) as _array:prepend
-    def append(v, self) as _array:append
+    def prepend(v, self of A) as _array:prepend
+    def append(v, self of A) as _array:append
 
-    def slice(first, last, self) as _array:slice
-    def drop(x, self) as _array:drop
-    def take(x, self) as _array:take
+    def slice(first, last, self of A) as _array:slice
+    def drop(x, self of A) as _array:drop
+    def take(x, self of A) as _array:take
 
-    def index_of(el, self) as _array:index_of
+    def index_of(el, self of A) as _array:index_of
 
-    def repr(self) =
+    def repr(self of A) =
         if len(self) == 1 then
             "(" ++ repr(at(0, self)) ++ ",)"
         else
             "(" ++ string:join_with(repr, to_seq(self), ", ") ++ ")"
 
-    def str(self) =
+    def str(self of A) =
         if len(self) == 1 then
             "(" ++ str(at(0, self)) ++ ",)"
         else
             "(" ++ string:join_with(str, to_seq(self), ", ") ++ ")"
-
-
 
 --------------------------------------------------
 
@@ -47,10 +43,10 @@ type
     ArraySeq (arr, index)
     ArraySeqEmpty()
 
-use ArraySeq as ... in
-    def first(self) = self.arr.index
+trait TArraySeq(A) for ArraySeq =
+    def first(self of A) = self.arr.index
 
-    def rest({arr, index}) =
+    def rest({arr, index} of A) =
         let
             l = len(arr) - index
         in
@@ -60,11 +56,11 @@ use ArraySeq as ... in
                 ArraySeq(arr, index + 1)
 
 
-    def is_empty({arr}) = arr.index >= len(arr)
+    def is_empty({arr} of A) = arr.index >= len(arr)
 
-    def empty(self) = ArraySeqEmpty()
+    def empty(self of A) = ArraySeqEmpty()
 
-    def len({arr, index}) =
+    def len({arr, index} of A) =
         let
             l = len(arr) - index
         in
@@ -76,13 +72,13 @@ describe ArraySeq as (Seq, Sized, Emptiable)
 
 --------------------------------------------------
 
-use ArraySeqEmpty as ... in
-    def first(self) = throw EmptySeqError("ArraySequence is empty")
+trait TArraySeqEmpty(A) for ArraySeqEmpty =
+    def first(self of A) = throw EmptySeqError("ArraySequence is empty")
 
-    def rest(self) =
+    def rest(self of A) =
         throw EmptySeqError("ArraySequence is empty")
 
-    def is_empty(self) = True
+    def is_empty(self of A) = True
 
     def len(self) = 0
 

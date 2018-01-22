@@ -1,30 +1,29 @@
 import arza:lang:_map
 import string
 import seq
+import std
 
-use Map in
-    def != (self, other) as std_behavior:not_equal
-    def == (self, other) as std_behavior:equal
+trait TMap(M) for Map =
+    std:TEq(M)
 
-use Map as ... in
-    def put (k, v, self) as std_behavior:put
-    def del (el, self) as std_behavior:del
-    def elem (el, self) as std_behavior:elem
-    def is_empty (self) as std_behavior:is_empty
+    def put (k, v, self of M) as std_behavior:put
+    def del (el, self of M) as std_behavior:del
+    def elem (el, self of M) as std_behavior:elem
+    def is_empty (self of M) as std_behavior:is_empty
 
-    def repr(self) = str(self)
+    def repr(self of M) = str(self)
 
-    def str(self) =
+    def str(self of M) =
         let fun _joiner((fst, snd)) =
                 str(fst) ++ "=" ++ repr(snd)
         in "{"
                 ++ string:join_with(_joiner, to_seq(self), ", ") ++
            "}"
 
-    def to_seq(self) = _map:to_list(self)
+    def to_seq(self of M) = _map:to_list(self)
 
-    def keys(self) = seq:map(at .. 0, to_seq(self))
-    def values(self) = seq:map(at .. 1, to_seq(self))
+    def keys(self of M) = seq:map(at .. 0, to_seq(self))
+    def values(self of M) = seq:map(at .. 1, to_seq(self))
 --------------------------------------------------
 
 describe Map as (Eq, Displayed, Collection, Dict, Seqable)

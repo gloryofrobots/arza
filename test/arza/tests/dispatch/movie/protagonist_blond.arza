@@ -7,10 +7,7 @@ import tests:dispatch:movie:behavior
 
 let SCREAM_THRESHOLD = 60
 
-use
-    actors:BugEyedMonster as M
-    actors:ProtagonistBlond as B
-in
+trait __TPB(M, B) for (actors:BugEyedMonster, actors:ProtagonistBlond) =
     def behavior:encounter(movie, m of M, b of B)
         when actors:is_monster_killable(b, m)
         and b.scream_power > SCREAM_THRESHOLD

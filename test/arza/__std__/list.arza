@@ -2,6 +2,7 @@ import arza:lang:_list
 from arza:lang:_list import (head, tail)
 import seq
 import string
+import std
 
 
 fun range_to(last of Int) = range(0, last)
@@ -59,43 +60,41 @@ fun replicate(count, element) =
         throw ValueError(count)
 ---------------------------------------------------
 
-use List in
-    def != (self, other) as std_behavior:not_equal
-    def ==(self, other) = seq:equal(self, other)
---------------------------------------------------
+trait TList(T) for List =
+    def != (self of T, other) as std_behavior:not_equal
+    def ==(self of T, other) = seq:equal(self, other)
 
-use List as ... in
-    def put (k, v, self) as std_behavior:put
-    def at (k, self) as std_behavior:at
-    def del (el, self) as std_behavior:del
-    def elem (el, self) as std_behavior:elem
+    def put (k, v, self of T) as std_behavior:put
+    def at (k, self of T) as std_behavior:at
+    def del (el, self of T) as std_behavior:del
+    def elem (el, self of T) as std_behavior:elem
 
 
-    def repr(self) =
+    def repr(self of T) =
         "[" ++ string:join_with(repr, self, ", ") ++ "]"
 
-    def str(self) =
+    def str(self of T) =
         "[" ++ string:join_with(str, self, ", ") ++ "]"
 
-    def first(self) = _list:head(self)
+    def first(self of T) = _list:head(self)
 
-    def rest(self) = _list:tail(self)
+    def rest(self of T) = _list:tail(self)
 
-    def cons(value, self) = _list:cons(value, self)
+    def cons(value, self of T) = _list:cons(value, self)
 
-    def to_seq(self) = self
+    def to_seq(self of T) = self
 
-    def len(self) = _list:length(self)
+    def len(self of T) = _list:length(self)
 
-    def is_empty(self) = _list:is_empty(self)
+    def is_empty(self of T) = _list:is_empty(self)
 
-    def empty(self) = []
+    def empty(self of T) = []
 
-    def slice(first, last, self) = _list:slice(first, last, self)
+    def slice(first, last, self of T) = _list:slice(first, last, self)
 
-    def drop(count, self) = _list:drop(count, self)
+    def drop(count, self of T) = _list:drop(count, self)
 
-    def take(count, self) = _list:take(count, self)
+    def take(count, self of T) = _list:take(count, self)
 --------------------------------------------------
 
 def ++ (l1 of List, l2 of List) = seq:concat(l1, l2)

@@ -8,25 +8,25 @@ import seq
 //////////////////////////////////////
 
 
-use Coroutine in
-    def is_empty(self) as std_behavior:is_empty
+trait TCoro(C) for Coroutine =
+    def is_empty(self of C) as std_behavior:is_empty
 
-    def len(self) = throw NotImplementedError ("Coroutine can't define len")
+    def len(self of C) = throw NotImplementedError ("Coroutine can't define len")
 
-    def first(self) =
+    def first(self of C) =
         if not is_empty(self) then
             self ()
         else
             throw FiberFlowError("Coroutine is closed")
 
-    def rest(self) =
+    def rest(self of C) =
         if not is_empty(self) then
             self
         else
             []
 
-    def to_seq(self) = self
-    def empty(self) = []
+    def to_seq(self of C) = self
+    def empty(self of C) = []
 
 describe Coroutine as (Sized, Seqable, Seq, Emptiable)
 
@@ -57,16 +57,16 @@ fun ref(v) =
         co(v)
         Reference(co)
 
-use Reference in
-    def repr(self) = str(self)
+trait TReference(R) for Reference =
+    def repr(self of R) = str(self)
 
-    def !(self) = self.val(#Read)
+    def !(self of R) = self.val(#Read)
 
-    def :=(self, value) = self.val((#Write, value))
+    def :=(self of R, value) = self.val((#Write, value))
 
-    def ==(self, other) = self.val == other.val
+    def ==(self of R, other) = self.val == other.val
 
-    def str(self) = "Var"
+    def str(self of R) = "Var"
 
 describe Reference as (Displayed, Ref)
 ///////////////////////////////////////////////////////

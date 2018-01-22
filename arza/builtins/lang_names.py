@@ -38,6 +38,7 @@ EQ = PREFIX + "=="
 GE = PREFIX + ">="
 
 HOLE_PREFIX = "@__hole__"
+RANDOM_NAME_PREFIX = "@__rn__"
 
 TO_SEQ = PREFIX + "to_seq"
 CONCAT = PREFIX + "++"
