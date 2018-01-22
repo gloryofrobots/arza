@@ -25,7 +25,8 @@ use Spaceship as T in
 use Body as I in
     def collide_with(b1 of I, b2 of I) =
         io:print("Bodies colliding")
-derive Body for Spaceship
+
+describe Spaceship as Body 
 
 def collide_with({health} of Asteroid, {fire_power} of Spaceship) when health < fire_power =
     "Spaceship KILLS Asteroid"

@@ -95,10 +95,10 @@ def give_birth (p of Pig, e of Elephant) = PiggyElly(p.weight.1 + e.weight, p.co
 
 def regret_things (m of Mother) = True
 
-derive (FirstMade, SecondMade) for (Pig, Elephant)
-derive (Mother) for (Pig)
-derive (WisePerson) for (Pig)
-derive (Father) for (Elephant)
+describe (Pig, Elephant) as (FirstMade, SecondMade) 
+describe Pig as (Mother) for (Pig)
+describe Pig as (WisePerson) for (Pig)
+describe Elephant as (Father)
 
 
 fun test_pigs_and_elephants() =

@@ -1008,8 +1008,8 @@ def _compile_LET(compiler, code, node):
     _compile(compiler, code, simplified)
 
 
-def _compile_DERIVE(compiler, code, node):
-    simplified = simplify.simplify_declare(compiler, code, node)
+def _compile_DESCRIBE(compiler, code, node):
+    simplified = simplify.simplify_describe(compiler, code, node)
     _compile(compiler, code, simplified)
 
 
@@ -1213,8 +1213,8 @@ def _compile_node(compiler, code, node):
         _compile_AS(compiler, code, node)
     elif NT_LET == ntype:
         _compile_LET(compiler, code, node)
-    elif NT_DERIVE == ntype:
-        _compile_DERIVE(compiler, code, node)
+    elif NT_DESCRIBE == ntype:
+        _compile_DESCRIBE(compiler, code, node)
 
     elif NT_LOOKUP == ntype:
         _compile_LOOKUP(compiler, code, node)

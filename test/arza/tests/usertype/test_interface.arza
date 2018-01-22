@@ -29,8 +29,8 @@ use T2 as ... in
     def to_list(self) = [self.v1, self.v2]
     def slice(_from, _to, self) = slice(_from, _to, to_list(self))
 
-derive (Listable, Seq) for (T1, T2)
-derive (Sliceable) for T2
+describe (T1, T2) as (Listable, Seq)
+describe T2 as Sliceable 
 
 fun test () =
     let

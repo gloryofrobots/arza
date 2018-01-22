@@ -38,7 +38,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
     put_lang_func(process, module, lang_names.INTERFACE, __interface, 3)
     put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
-    put_lang_func(process, module, lang_names.DERIVE, __derive, 2)
+    put_lang_func(process, module, lang_names.DESCRIBE, __describe, 2)
     put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
     put_lang_func(process, module, u"partial", __partial, -1)
     put_lang_func(process, module, u"interfaces", __interfaces, 1)
@@ -194,7 +194,7 @@ def __interface(process, routine):
 
 
 @complete_native_routine
-def __derive(process, routine):
+def __describe(process, routine):
     _type = routine.get_arg(0)
     interfaces = routine.get_arg(1)
     datatype.derive_strict(process, _type, interfaces)

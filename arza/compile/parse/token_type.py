@@ -49,7 +49,7 @@ TT_TRAIT = 46
 TT_FOR = 47
 TT_GENERIC = 48
 TT_INTERFACE = 49
-TT_DERIVE = 50
+TT_DESCRIBE = 50
 TT_END = 51
 TT_END_EXPR = 52
 TT_NEWLINE = 53
@@ -93,7 +93,7 @@ __TT_REPR__ = [u"TT_ENDSTREAM", u"TT_INT", u"TT_FLOAT", u"TT_STR", u"TT_MULTI_ST
                u"TT_ELSE", u"TT_THEN", u"TT_WHEN", u"TT_OF", u"TT_LET", u"TT_IN", u"TT_IS", u"TT_AS", u"TT_NOT",
                u"TT_AND", u"TT_OR", u"TT_TRUE", u"TT_FALSE", u"TT_TRY", u"TT_THROW", u"TT_CATCH", u"TT_FINALLY",
                u"TT_MODULE", u"TT_IMPORT", u"TT_FROM", u"TT_HIDING", u"TT_HIDE", u"TT_EXPORT", u"TT_USE", u"TT_TRAIT",
-               u"TT_FOR", u"TT_GENERIC", u"TT_INTERFACE", u"TT_DERIVE", u"TT_END", u"TT_END_EXPR", u"TT_NEWLINE",
+               u"TT_FOR", u"TT_GENERIC", u"TT_INTERFACE", u"TT_DESCRIBE", u"TT_END", u"TT_END_EXPR", u"TT_NEWLINE",
                u"TT_INDENT", u"TT_DEDENT", u"TT_INFIXL", u"TT_INFIXR", u"TT_PREFIX", u"TT_ELLIPSIS", u"TT_WILDCARD",
                u"TT_GOTO", u"TT_ARROW", u"TT_FAT_ARROW", u"TT_BACKARROW", u"TT_DISPATCH", u"TT_AT_SIGN", u"TT_SHARP",
                u"TT_JUXTAPOSITION", u"TT_LCURLY", u"TT_RCURLY", u"TT_COMMA", u"TT_ASSIGN", u"TT_INFIX_DOT_LCURLY",

@@ -37,10 +37,10 @@ use Tuple as ... in
             "(" ++ string:join_with(str, to_seq(self), ", ") ++ ")"
 
 
-derive (Eq, Displayed,
+describe Tuple as (Eq, Displayed,
        Sized, Collection,
        Prependable, Concatable, Indexed,
-       Seqable, Sliceable) for Tuple
+       Seqable, Sliceable)
 
 
 fun ensure_tuple

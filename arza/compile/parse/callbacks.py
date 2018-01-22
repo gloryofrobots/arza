@@ -76,6 +76,10 @@ def layout_derive(parser, op, node):
     open_statement_layout(parser, node, None, INDENTS_DERIVE)
 
 
+def layout_describe(parser, op, node):
+    open_statement_layout(parser, node, None, INDENTS_DESCRIBE)
+
+
 def layout_def(parser, op, node):
     open_statement_layout(parser, node, None, INDENTS_DEF)
 
@@ -1053,16 +1057,18 @@ def _parse_struct_or_name(parser, lterm, rterm, expected=None):
     return items
 
 
-def stmt_derive(parser, op, token):
+def stmt_describe(parser, op, token):
+    types = _parse_struct_or_name(parser.name_parser, TT_LPAREN, TT_RPAREN, NAME_NODES)
+
+    advance_expected(parser, TT_AS)
     interfaces = nodes.create_list_node_from_list(
         token,
         _parse_struct_or_name(parser.name_parser, TT_LPAREN, TT_RPAREN, NAME_NODES)
     )
-    advance_expected(parser, TT_FOR)
-    types = _parse_struct_or_name(parser.name_parser, TT_LPAREN, TT_RPAREN, NAME_NODES)
+
     derives = []
     for _type in types:
-        derive = nodes.node_2(NT_DERIVE, token, _type, interfaces)
+        derive = nodes.node_2(NT_DESCRIBE, token, _type, interfaces)
         derives.append(derive)
 
     return list_node(derives)

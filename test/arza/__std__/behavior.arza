@@ -25,26 +25,26 @@ trait TRecord(T) =
 trait TRepr(T) =
     def repr (self of T) = str(self)
 
-trait TOrder(T1 of Comparable, T2) = 
+trait TOrder(T1, T2) =
     def < (x of T1, y of T2) = cmp(x, y) == LT
 
     def >= (x of T1, y of T2) = cmp(x, y) != LT
 
     def > (x of T1, y of T2) = cmp(x, y) == GT
 
-trait TCmp(T1 of LessEq, T2) = 
+trait TCmp(T1, T2) =
     def cmp (x of T1, y of T2) =
         if x == y then EQ
         elif x <= y then LT
         else GT
 
-trait TMinMax(T of LessEq, T2) =
-    def max (x of T, y of T2) =
+trait TMinMax(T1, T2) =
+    def max (x of T1, y of T2) =
         if x <= y then y
         else x
 
 
-    def min (x of T, y of T2) =
+    def min (x of T1, y of T2) =
         if x <= y then x
         else y
 

@@ -10,7 +10,7 @@ KINDOF = PREFIX + "kindof"
 IS_IMPLEMENTED = PREFIX + "is_implemented"
 
 # functions used by compiler in code gen
-DERIVE = PREFIX + "derive"
+DESCRIBE = PREFIX + "describe"
 IS_INDEXED = PREFIX + "is_indexed"
 IS_SEQ = PREFIX + "is_seq"
 IS_DICT = PREFIX + "is_dict"

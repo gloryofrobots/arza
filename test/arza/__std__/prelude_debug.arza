@@ -1,18 +1,21 @@
-(trait Body(T1, T2) =
-    (use T1 in
-        (def do_something(t of T1) = 1))
+describe Int as (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed)
+describe (Int, Float) as (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed)
 
-    (def do_something(t of T1) = 1)
-    (def do_something(t of T2, t of T1) = 2)
-)
-
-trait Body(T1, T2) =
-    OtherTrait(T1)
-    use T1 in
-        def do_something(t of T1) = 1
-
-    def do_something(t of T2, t of T1) = 2
-
+//(trait Body(T1, T2) =
+//    (use T1 in
+//        (def do_something(t of T1) = 1))
+//
+//    (def do_something(t of T1) = 1)
+//    (def do_something(t of T2, t of T1) = 2)
+//)
+//
+//trait Body(T1, T2) =
+//    OtherTrait(T1)
+//    use T1 in
+//        def do_something(t of T1) = 1
+//
+//    def do_something(t of T2, t of T1) = 2
+//
 
 //fun Body(T1, T2) =
 //    fun (x, y) = x
@@ -117,9 +120,9 @@ trait Body(T1, T2) =
 //    def values(self) = seq:map(at .. 1, to_seq(self))
 //--------------------------------------------------
 //
-//derive (Eq, Displayed,
+//describe Map as (Eq, Displayed,
 //       Collection,
-//       Dict, Seqable) for Map
+//       Dict, Seqable) 
 //
 //
 //fun _loop() =
@@ -392,18 +395,16 @@ trait Body(T1, T2) =
 //    1/2
 //)
 //
-//derive (Eq, Displayed) for (Symbol, Char)
+//describe (Symbol, Char) as (Eq, Displayed) 
 //
-//derive Concatable for Symbol
+//describe Symbol as Concatable 
 //
-//(derive
+//(describe (Symbol, Char) as
 //    (Eq, Displayed)
-//    for (Symbol, Char)
 //)
 //
-//(derive
-//    Concatable
-//    for Symbol)
+//(describe Symbol as
+//    Concatable )
 //
 //
 //// TODO EXPORT AS

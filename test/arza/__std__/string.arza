@@ -39,16 +39,16 @@ in
     def ++ (s1 of Sym, s2 of Sym) = symbol(_string:concat(str(s1), str(s2)))
 
 
-derive (Eq, Displayed) for (Symbol, Char)
+describe (Symbol, Char) as (Eq, Displayed)
 
 
-derive Concatable for Symbol
+describe Symbol as  Concatable
 
 
-derive (Eq, Displayed,
+describe String as (Eq, Displayed,
        Sized, Collection,
        Prependable, Appendable, Concatable, Consable,
-       Seqable, Sliceable, Emptiable) for String
+       Seqable, Sliceable, Emptiable)
 
 
 fun concat (str1 of String, str2 of String) =

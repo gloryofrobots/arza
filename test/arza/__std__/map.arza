@@ -27,6 +27,4 @@ use Map as ... in
     def values(self) = seq:map(at .. 1, to_seq(self))
 --------------------------------------------------
 
-derive (Eq, Displayed,
-       Collection,
-       Dict, Seqable) for Map
+describe Map as (Eq, Displayed, Collection, Dict, Seqable)

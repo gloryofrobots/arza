@@ -2,15 +2,15 @@ import arza:lang:_number
 import io
 import behavior
 
-
-derive (Eq, Displayed) for (
+describe (
         Function,
         Generic,
         Partial,
         Datatype,
         Bool,
         Interface
-)
+) as (Eq, Displayed)
+
 
 //////// NUM
 
@@ -31,16 +31,29 @@ trait TNum(T) =
 TNum(Float)
 TNum(Int)
 
-derive (LessEq) for (Float, Int)
-
 behavior:TCmp(Int, Any)
 behavior:TCmp(Float, Any)
 
-derive (Comparable) for (Float, Int)
 behavior:TMinMax(Int, Any)
 behavior:TMinMax(Float, Any)
 
 behavior:TOrder(Float, Any)
 behavior:TOrder(Int, Any)
 
-derive (Ord, Num, Pow, Eq, Displayed) for (Float, Int)
+describe (Int, Float) as (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed)
+
+//use
+//    (Float, Int) as T
+//in
+//    behavior:TCmp(T, Any)
+//    behavior:TMinMax(T, Any)
+//    behavior:TOrder(T, Any)
+//
+//derive (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed) for (Float, Int)
+
+//extend (Float, Int) as T for (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed) with
+//    behavior:TCmp(T, Any)
+//    behavior:TMinMax(T, Any)
+//    behavior:TOrder(T, Any)
+//
+

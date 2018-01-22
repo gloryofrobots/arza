@@ -1,133 +1,144 @@
 [
-  {
-    "_ntype": "NT_FUN",
-    "_value": "trait",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "EQ"
-      },
-      [
-        [
-          {
-            "_ntype": "NT_TUPLE",
-            "_value": "trait",
-            "children": [
-              [
-                {
-                  "_ntype": "NT_IS_IMPLEMENTED",
-                  "_value": "of",
-                  "children": [
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "T"
-                    },
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "Thing"
-                    }
-                  ]
-                }
-              ]
+  [
+    {
+      "_ntype": "NT_DESCRIBE",
+      "_value": "describe",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Int"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "describe",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Comparable"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "LessEq"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Ord"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Num"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Pow"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Eq"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Displayed"
+              }
             ]
-          },
-          [
-            {
-              "_ntype": "NT_DEF",
-              "_value": "def",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "eq"
-                },
-                {
-                  "_ntype": "NT_LIST",
-                  "_value": "def",
-                  "children": [
-                    [
-                      {
-                        "_ntype": "NT_NAME",
-                        "_value": "T"
-                      },
-                      {
-                        "_ntype": "NT_VOID",
-                        "_value": "s"
-                      }
-                    ]
-                  ]
-                },
-                {
-                  "_ntype": "NT_FUN",
-                  "_value": "def",
-                  "children": [
-                    {
-                      "empty": true
-                    },
-                    [
-                      [
-                        {
-                          "_ntype": "NT_TUPLE",
-                          "_value": "(",
-                          "children": [
-                            [
-                              {
-                                "_ntype": "NT_NAME",
-                                "_value": "f"
-                              },
-                              {
-                                "_ntype": "NT_NAME",
-                                "_value": "s"
-                              }
-                            ]
-                          ]
-                        },
-                        [
-                          {
-                            "_ntype": "NT_LOOKUP",
-                            "_value": ".",
-                            "children": [
-                              {
-                                "_ntype": "NT_NAME",
-                                "_value": "f"
-                              },
-                              {
-                                "_ntype": "NT_SYMBOL",
-                                "_value": "x",
-                                "children": [
-                                  {
-                                    "_ntype": "NT_NAME",
-                                    "_value": "x"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      ]
-                    ]
-                  ]
-                },
-                {
-                  "_ntype": "NT_TUPLE",
-                  "_value": "(",
-                  "children": [
-                    [
-                      {
-                        "_ntype": "NT_NAME",
-                        "_value": "f"
-                      },
-                      {
-                        "_ntype": "NT_NAME",
-                        "_value": "s"
-                      }
-                    ]
-                  ]
-                }
-              ]
-            }
           ]
-        ]
+        }
       ]
-    ]
-  }
+    }
+  ],
+  [
+    {
+      "_ntype": "NT_DESCRIBE",
+      "_value": "describe",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Int"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "describe",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Comparable"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "LessEq"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Ord"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Num"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Pow"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Eq"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Displayed"
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_DESCRIBE",
+      "_value": "describe",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Float"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "describe",
+          "children": [
+            [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Comparable"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "LessEq"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Ord"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Num"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Pow"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Eq"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Displayed"
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  ]
 ]

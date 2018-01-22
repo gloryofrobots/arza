@@ -72,7 +72,7 @@ use ArraySeq as ... in
             else l
 
 
-derive (Seq, Sized, Emptiable) for (ArraySeq)
+describe ArraySeq as (Seq, Sized, Emptiable)
 
 --------------------------------------------------
 
@@ -86,7 +86,7 @@ use ArraySeqEmpty as ... in
 
     def len(self) = 0
 
-derive (Seq, Sized) for ArraySeqEmpty
+describe ArraySeqEmpty as (Seq, Sized)
 
 --------------------------------------------------
 
@@ -110,7 +110,7 @@ fun map (f, arr of Array) =
 //    | (f, () of Array) = empty(coll)
 //    | (f, hd::tl) = f(hd) :: map(f, tl)
 
-derive (Eq, Displayed,
+describe Array as (Eq, Displayed,
        Sized, Collection,
        Prependable, Appendable, Concatable, Indexed,
-       Seqable, Sliceable) for Array
+       Seqable, Sliceable)

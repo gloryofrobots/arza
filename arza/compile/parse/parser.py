@@ -453,7 +453,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_GENERIC, None, stmt_generic, layout=layout_generic)
         stmt(self, TT_USE, None, stmt_use, layout=layout_use)
         stmt(self, TT_INTERFACE, None, stmt_interface, layout=layout_interface)
-        stmt(self, TT_DERIVE, None, stmt_derive, layout=layout_derive)
+        stmt(self, TT_DESCRIBE, None, stmt_describe, layout=layout_describe)
         stmt(self, TT_DEF, None, stmt_def, layout=layout_def)
         stmt(self, TT_IMPORT, None, stmt_import)
         stmt(self, TT_FROM, None, stmt_from)

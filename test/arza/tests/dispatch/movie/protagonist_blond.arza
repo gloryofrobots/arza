@@ -46,4 +46,4 @@ in
         behavior:interact(movie, b, #SCREAM)
 
 
-derive (behavior:Named, behavior:ActionActor) for (actors:ProtagonistBlond, actors:BugEyedMonster)
+describe (actors:ProtagonistBlond, actors:BugEyedMonster) as (behavior:Named, behavior:ActionActor)

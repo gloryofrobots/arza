@@ -90,7 +90,7 @@ fun test() =
 //
 ////breakpoint(2)
 //
-//derive (Add, Sub, Neg) for V
+//describe V as (Add, Sub, Neg)
 
 fun main() =
 //    let

@@ -28,7 +28,7 @@ use Coroutine in
     def to_seq(self) = self
     def empty(self) = []
 
-derive (Sized, Seqable, Seq, Emptiable) for Coroutine
+describe Coroutine as (Sized, Seqable, Seq, Emptiable)
 
 // REFS
 type Reference(val)
@@ -68,7 +68,7 @@ use Reference in
 
     def str(self) = "Var"
 
-derive (Displayed, Ref) for Reference
+describe Reference as (Displayed, Ref)
 ///////////////////////////////////////////////////////
 
 // helper for creating looping generators

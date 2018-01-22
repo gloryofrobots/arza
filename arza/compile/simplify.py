@@ -54,10 +54,10 @@ def simplify_as(compiler, code, node):
     return nodes.create_call_node_s(nodes.node_token(node), lang_names.CAST, [interfaces, source])
 
 
-def simplify_declare(compiler, code, node):
+def simplify_describe(compiler, code, node):
     _type = node_first(node)
     interfaces = node_second(node)
-    return nodes.create_call_node_s(nodes.node_token(node), lang_names.DERIVE, [_type, interfaces])
+    return nodes.create_call_node_s(nodes.node_token(node), lang_names.DESCRIBE, [_type, interfaces])
 
 
 def _random_name(name):

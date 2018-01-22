@@ -39,4 +39,4 @@ def behavior:scream(movie, b of actors:InnocentBrunette) =
     behavior:interact(movie, b, #SCARED)
 
 
-derive (behavior:Named, behavior:ActionActor) for actors:InnocentBrunette
+describe actors:InnocentBrunette as (behavior:Named, behavior:ActionActor)
