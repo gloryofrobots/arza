@@ -12,25 +12,25 @@ generic to_list(x)
 interface Listable (to_list)
 
 use
-    (T1, T2) as ...
+    (T1, T2) as T
 in
     //Seq iface
-    def first(self) = first(to_list(self))
-    def rest(self) = rest(to_list(self))
+    def first(self of T) = first(to_list(self))
+    def rest(self of T) = rest(to_list(self))
 
     //not enough for Sliceable
-    def drop(count, self) = seq:drop(count, to_list(self))
-    def take(count, self) = seq:take(count, to_list(self))
+    def drop(count, self of T) = seq:drop(count, to_list(self))
+    def take(count, self of T) = seq:take(count, to_list(self))
 
 
 def to_list(self of T1) = [self.v1, self.v2]
 
-use T2 as ... in
-    def to_list(self) = [self.v1, self.v2]
-    def slice(_from, _to, self) = slice(_from, _to, to_list(self))
+use T2 as T in
+    def to_list(self of T) = [self.v1, self.v2]
+    def slice(_from, _to, self of T) = slice(_from, _to, to_list(self))
 
 describe (T1, T2) as (Listable, Seq)
-describe T2 as Sliceable 
+describe T2 as Sliceable
 
 fun test () =
     let

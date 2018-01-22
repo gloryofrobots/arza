@@ -1,32 +1,30 @@
 import arza:lang:_string
+import std
 import seq
 
 
-use (String, Char, Symbol) in
-    def != (self, other) as std_behavior:not_equal
-    def == (self, other) as std_behavior:equal
-
-    def str (self) as std_behavior:str
-    def repr (self) as std_behavior:repr
+use (String, Char, Symbol) as T in
+    std:TEq(T)
+    std:TStr(T)
 
 
-use String as ... in
-    def at (k, self) as std_behavior:at
-    def put (k, v, self) as std_behavior:put
-    def del (el, self) as std_behavior:del
-    def elem (el, self) as std_behavior:elem
-    def is_empty (self) as std_behavior:is_empty
-    def len (self) as std_behavior:len
+use String as S in
+    def at (k, self of S) as std_behavior:at
+    def put (k, v, self of S) as std_behavior:put
+    def del (el, self of S) as std_behavior:del
+    def elem (el, self of S) as std_behavior:elem
+    def is_empty (self of S) as std_behavior:is_empty
+    def len (self of S) as std_behavior:len
 
-    def append(v, self) as _string:append
-    def prepend(v, self) as _string:prepend
-    def to_seq(self) as _string:to_list
-    def slice(_from, _to, self) as _string:slice
-    def drop(x, self) as _string:drop
-    def take(x, self) as _string:take
+    def append(v, self of S) as _string:append
+    def prepend(v, self of S) as _string:prepend
+    def to_seq(self of S) as _string:to_list
+    def slice(_from, _to, self of S) as _string:slice
+    def drop(x, self of S) as _string:drop
+    def take(x, self of S) as _string:take
 
-    def cons (value of Char, self) = _string:append(value, self)
-    def empty(self) = ""
+    def cons (value of Char, self of S) = _string:append(value, self)
+    def empty(self of S) = ""
 
 
 use

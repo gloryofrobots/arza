@@ -49,36 +49,36 @@ let
     }
 
 
-use Val in
-    def ne(x, y) as Equal.[ne]
-    def eq(v1, v2) = v1.v == v2.v
+use Val as T in
+    def ne(x of T, y) as Equal.[ne]
+    def eq(v1 of T, v2) = v1.v == v2.v
 
-use Val2 in
-    def eq(x, y) as Equal.[eq]
-    def ne(v1, v2) = v1.v != v2.v
+use Val2 as T in
+    def eq(x of T, y) as Equal.[eq]
+    def ne(v1 of T, v2) = v1.v != v2.v
 
-use Val in
-    def le(x, y) as Order.[le]
-    def ge(x, y) as Order.[ge]
-    def lt(x, y) as Order.[lt]
-    def gt(x, y) as Order.[gt]
-    def max(x, y) as Order.[max]
-    def min(x, y) as Order.[min]
+use Val as T in
+    def le(x of T, y) as Order.[le]
+    def ge(x of T, y) as Order.[ge]
+    def lt(x of T, y) as Order.[lt]
+    def gt(x of T, y) as Order.[gt]
+    def max(x of T, y) as Order.[max]
+    def min(x of T, y) as Order.[min]
 
-    def cmp(self, other) =
+    def cmp(self of T, other) =
         if self.v == other.v then EQ
         elif self.v <= other.v then LT
         else GT
 
-use Val2 in
-    def cmp(x, y) as Order.[cmp]
-    def ge(x, y) as Order.[ge]
-    def lt(x, y) as Order.[lt]
-    def gt(x, y) as Order.[gt]
-    def max(x, y) as Order.[max]
-    def min(x, y) as Order.[min]
+use Val2 as T in
+    def cmp(x of T, y) as Order.[cmp]
+    def ge(x of T, y) as Order.[ge]
+    def lt(x of T, y) as Order.[lt]
+    def gt(x of T, y) as Order.[gt]
+    def max(x of T, y) as Order.[max]
+    def min(x of T, y) as Order.[min]
 
-    def le(self, other) = self.v <= other.v
+    def le(self of T, other) = self.v <= other.v
 
 fun test () =
     let

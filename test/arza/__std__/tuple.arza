@@ -3,34 +3,34 @@ import string
 import io
 
 
-use Tuple in
-    def != (self, other) as std_behavior:not_equal
-    def == (self, other) as std_behavior:equal
+use Tuple as T in
+    def != (self of T, other) as std_behavior:not_equal
+    def == (self of T, other) as std_behavior:equal
 
 
-use Tuple as ... in
-    def put (k, v, self) as std_behavior:put
-    def del (el, self) as std_behavior:del
-    def elem (el, self) as std_behavior:elem
-    def is_empty (self) as std_behavior:is_empty
-    def len (self) as std_behavior:len
+use Tuple as T in
+    def put (k, v, self of T) as std_behavior:put
+    def del (el, self of T) as std_behavior:del
+    def elem (el, self of T) as std_behavior:elem
+    def is_empty (self of T) as std_behavior:is_empty
+    def len (self of T) as std_behavior:len
 
-    def ++ (t1, t2) as _tuple:concat
-    def prepend(v, self) as _tuple:prepend
-    def to_seq(self) as _tuple:to_list
-    def slice(first, last, self) as _tuple:slice
-    def drop(x, self) as _tuple:drop
-    def take(x, self) as _tuple:take
+    def ++ (t1 of T, t2 of T) as _tuple:concat
+    def prepend(v, self of T) as _tuple:prepend
+    def to_seq(self of T) as _tuple:to_list
+    def slice(first, last, self of T) as _tuple:slice
+    def drop(x, self of T) as _tuple:drop
+    def take(x, self of T) as _tuple:take
 
-    def index_of(el, self) as _tuple:index_of
+    def index_of(el, self of T) as _tuple:index_of
 
-    def repr(self) =
+    def repr(self of T) =
         if len(self) == 1 then
             "(" ++ repr(at(0, self)) ++ ",)"
         else
             "(" ++ string:join_with(repr, to_seq(self), ", ") ++ ")"
 
-    def str(self) =
+    def str(self of T) =
         if len(self) == 1 then
             "(" ++ str(at(0, self)) ++ ",)"
         else

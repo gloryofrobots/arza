@@ -1,5 +1,14 @@
-describe Int as (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed)
-describe (Int, Float) as (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed)
+trait __T0(T) for api:String =
+    def f0(s of T) = 1
+
+trait __T1(T) for [String, api:Char, Symbol] =
+    def f1(s of T) = 1
+
+trait __T2(T1, T2) for (String, Char) =
+    def f2(s of T1) = 1
+
+trait __T3(T1, T2) for [(S, V), (api:A, B)] =
+    def f3(s of T1) = 1
 
 //(trait Body(T1, T2) =
 //    (use T1 in
@@ -122,7 +131,7 @@ describe (Int, Float) as (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed)
 //
 //describe Map as (Eq, Displayed,
 //       Collection,
-//       Dict, Seqable) 
+//       Dict, Seqable)
 //
 //
 //fun _loop() =
@@ -395,9 +404,9 @@ describe (Int, Float) as (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed)
 //    1/2
 //)
 //
-//describe (Symbol, Char) as (Eq, Displayed) 
+//describe (Symbol, Char) as (Eq, Displayed)
 //
-//describe Symbol as Concatable 
+//describe Symbol as Concatable
 //
 //(describe (Symbol, Char) as
 //    (Eq, Displayed)

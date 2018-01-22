@@ -1,23 +1,44 @@
-import arza:lang:_number
 import io
-import behavior
+import arza:lang:_number
+import arza:lang:_std_behavior as std_behavior
+import arza:lang:_datatype as datatype
 
-describe (
-        Function,
-        Generic,
-        Partial,
-        Datatype,
-        Bool,
-        Interface
-) as (Eq, Displayed)
+trait TEq(T) =
+    def == (self of T, other) as std_behavior:equal
+    def != (self of T, other) as  std_behavior:not_equal
+
+trait TStr(T) =
+    def str (self of T) as std_behavior:str
+    def repr (self of T) as std_behavior:repr
+
+trait TRepr(T) =
+    def repr (self of T) = str(self)
+
+trait TOrder(T1, T2) =
+    def < (x of T1, y of T2) = cmp(x, y) == LT
+
+    def >= (x of T1, y of T2) = cmp(x, y) != LT
+
+    def > (x of T1, y of T2) = cmp(x, y) == GT
+
+trait TCmp(T1, T2) =
+    def cmp (x of T1, y of T2) =
+        if x == y then EQ
+        elif x <= y then LT
+        else GT
+
+trait TMinMax(T1, T2) =
+    def max (x of T1, y of T2) =
+        if x <= y then y
+        else x
 
 
-//////// NUM
+    def min (x of T1, y of T2) =
+        if x <= y then x
+        else y
 
-trait TNum(T) =
-    behavior:TEq(T)
-    behavior:TStr(T)
 
+trait TNum(T) for [Float, Int] =
     def - (x of T, y) as _number:sub
     def + (x of T, y) as _number:add
     def * (x of T, y) as _number:mul
@@ -28,32 +49,13 @@ trait TNum(T) =
 
     def <= (x of T, y) as _number:le
 
-TNum(Float)
-TNum(Int)
+    TEq(T)
+    TStr(T)
+    TCmp(T, Any)
+    TMinMax(T, Any)
+    TOrder(T, Any)
 
-behavior:TCmp(Int, Any)
-behavior:TCmp(Float, Any)
+describe (Float, Int) as (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed)
 
-behavior:TMinMax(Int, Any)
-behavior:TMinMax(Float, Any)
-
-behavior:TOrder(Float, Any)
-behavior:TOrder(Int, Any)
-
-describe (Int, Float) as (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed)
-
-//use
-//    (Float, Int) as T
-//in
-//    behavior:TCmp(T, Any)
-//    behavior:TMinMax(T, Any)
-//    behavior:TOrder(T, Any)
-//
-//derive (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed) for (Float, Int)
-
-//extend (Float, Int) as T for (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed) with
-//    behavior:TCmp(T, Any)
-//    behavior:TMinMax(T, Any)
-//    behavior:TOrder(T, Any)
-//
+describe (Function, Generic, Partial, Datatype, Bool, Interface) as (Eq, Displayed)
 

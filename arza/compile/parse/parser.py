@@ -4,7 +4,6 @@ from arza.compile.parse.tokenstream import TokenStream
 from arza.compile.parse.tokenstream import TokenStream
 from arza.compile.parse.indenter import IndentationTokenStream, InvalidIndentationError
 
-
 from arza.compile.parse.callbacks import *
 from arza.compile.parse.lexer import UnknownTokenError
 from arza.compile.parse import tokens
@@ -99,7 +98,6 @@ class BaseParser:
 
     def next_token(self):
         return self.ts.next_token()
-
 
     def isend(self):
         return self.token_type == TT_ENDSTREAM
@@ -251,7 +249,6 @@ class DefPatternParser(PatternParser):
         prefix(self, TT_OF, None, prefix_def_of)
 
 
-
 class DefParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
@@ -275,8 +272,15 @@ class UseParser(BaseParser):
 
         self.def_parser = DefParser()
         self.name_parser = name_parser_init(BaseParser())
+
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         prefix(self, TT_DEF, None, prefix_use_def, layout=layout_def)
+        # prefix(self, TT_DESCRIBE, None, stmt_describe, layout=layout_describe)
+
+        # applying trait
+        infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
+        infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
+        literal(self, TT_NAME, NT_NAME)
 
         self.add_subparsers([
             self.def_parser,
@@ -292,6 +296,19 @@ def use_in_alias_parser_init(parser):
     return parser
 
 
+class TraitForParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+        self.name_parser = name_parser_init(BaseParser())
+        self.add_subparsers([
+            self.name_parser,
+        ])
+
+        prefix(self, TT_LPAREN, None, prefix_lparen_trait_for, layout=layout_lparen)
+        infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
+        literal(self, TT_NAME, NT_NAME)
+
+
 class TraitParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
@@ -299,22 +316,25 @@ class TraitParser(BaseParser):
         self.def_parser = DefParser()
         self.name_parser = name_parser_init(BaseParser())
         self.pattern_parser = trait_signature_parser_init(BaseParser())
-        self.use_in_alias_parser = use_in_alias_parser_init(BaseParser())
-        self.use_parser = UseParser()
+        self.for_parser = TraitForParser()
+        # self.use_in_alias_parser = use_in_alias_parser_init(BaseParser())
+        # self.use_parser = UseParser()
 
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         prefix(self, TT_DEF, None, prefix_use_def, layout=layout_def)
-        prefix(self, TT_USE, None, stmt_use, layout=layout_use)
+        # prefix(self, TT_USE, None, stmt_use, layout=layout_use)
         infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
         infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
         literal(self, TT_NAME, NT_NAME)
+        symbol(self, TT_FOR)
 
         self.add_subparsers([
             self.def_parser,
             self.name_parser,
             self.pattern_parser,
-            self.use_parser,
-            self.use_in_alias_parser
+            self.for_parser
+            # self.use_parser,
+            # self.use_in_alias_parser
         ])
 
 
@@ -598,7 +618,6 @@ def newtokenstream(source):
     return IndentationTokenStream(lx, source)
 
 
-
 def parse(process, env, src):
     parser = process.parser
     try:
@@ -628,6 +647,7 @@ def parse(process, env, src):
         parser_error_unknown(parser, e.position)
     except InvalidIndentationError as e:
         parser_error_indentation(parser, e.msg, e.position, e.line, e.column)
+
 
 def write_ast(ast):
     import json

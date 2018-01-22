@@ -7,14 +7,14 @@ type
 
 generic eq(self, other)
 
-use L in
-    def len(self) = len(self.l)
+use L as T in
+    def len(self of T) = len(self.l)
 
-    def is_empty(self) = is_empty(self.l)
+    def is_empty(self of T) = is_empty(self.l)
 
-    def first(self) = self
+    def first(self of T) = self
 
-    def rest(self) = self
+    def rest(self of T) = self
 
 
 def eq (self of Some, val of Some) = val == None

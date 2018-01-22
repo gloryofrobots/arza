@@ -12,30 +12,30 @@ type
     None
 
 
-use Point2 in
-    def add (self, p2 of Point2) = Point2(self.x + p2.x, self.y + p2.y)
-    def add (self, i of Int) = Point2(self.x + i, self.y + i)
-    def add (self, v of Vec2) = add(Vec2(self, self), v)
+use Point2 as T in
+    def add (self of T, p2 of Point2) = Point2(self.x + p2.x, self.y + p2.y)
+    def add (self of T, i of Int) = Point2(self.x + i, self.y + i)
+    def add (self of T, v of Vec2) = add(Vec2(self, self), v)
 
-    def == (self, other of Point2) =
+    def == (self of T, other of Point2) =
             self.x == other.x and self.y == other.y
 
-    def != (self, other of Point2) = not (self == other)
+    def != (self of T, other of Point2) = not (self == other)
 
 
-use Vec2 in
-    def add (self, v of Vec2) =
+use Vec2 as T in
+    def add (self of T, v of Vec2) =
         Vec2(
             add(self.p1, v.p1),
             add(self.p2, v.p2)
         )
 
-    def add  (self, i of Int) = Vec2 (add(self.p1, i), add(self.p2, i))
-    def add  (self, p of Point2) = Vec2 (add(self.p1, p), add(self.p2, p))
+    def add(self of T, i of Int) = Vec2 (add(self.p1, i), add(self.p2, i))
+    def add(self of T, p of Point2) = Vec2 (add(self.p1, p), add(self.p2, p))
 
-    def == (self, other of Vec2) = (self.p1 == other.p1) and (self.p2 == other.p2)
+    def == (self of T, other of Vec2) = (self.p1 == other.p1) and (self.p2 == other.p2)
 
-    def != (self, other) = not (self == other)
+    def != (self of T, other) = not (self == other)
 
 
 def val(self of Some) = self.val
