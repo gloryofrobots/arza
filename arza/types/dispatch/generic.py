@@ -52,12 +52,12 @@ class W_Generic(W_Hashable):
 
         return plist.reverse(types)
 
-    def is_implemented_for_type(self, _type, interfaces, position):
+    def is_implemented_for_type(self, _type, interfaces, position, strictmode=False):
         error.affirm_type(_type, space.isdatatype)
         for sig in self.signatures:
-            if sig.can_dispatch_on_type(_type, interfaces, position):
-                api.d.pbp(1, "S", sig, interfaces)
+            if sig.can_dispatch_on_type(_type, interfaces, position, strictmode):
                 return True
+
         return False
 
     # def register_interface(self, interface, position):
@@ -159,9 +159,7 @@ class W_Generic(W_Hashable):
             #                      space.newlist(signatures),
             #                      space.newstring(u"Ambiguous generic specialisation"))
 
-
         return [LeafNode(sig.method)]
-
 
 
 class ConflictResolverCallback(W_Root):
@@ -257,7 +255,6 @@ def get_method(process, gf, types):
     return method
 
 
-
 ############################################################
 ############################################################
 
@@ -269,7 +266,3 @@ def generic(name, signature):
         error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR, space.newstring(u"Generic arity == 0"))
 
     return W_Generic(name, arity, signature)
-
-
-
-

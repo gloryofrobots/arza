@@ -9,11 +9,10 @@ if api.DEBUG_MODE:
 else:
     PRELUDE_FILE = u"prelude"
 
-
-STD_MODULES = [u"std", u"string",
+STD_MODULES = [u"tuple", u"list",
+               u"std", u"string",
                u"generics", u"seq",
-               u"list", u"coro",
-               u"tuple", u"map", ]
+               u"coro", u"map", ]
 
 
 # STD_MODULES = []

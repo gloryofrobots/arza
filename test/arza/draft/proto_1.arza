@@ -1,3 +1,16 @@
+define Seq {
+  __cast__(self) = self.to_seq()
+
+  map(self, f) 
+    case ([] @ self, f) {
+      self.empty()
+    }
+    case (hd::tl, f) = map(tl, f).append(f(hd)) 
+}
+
+
+
+
 type Body {
     hp = 0
     speed = 0

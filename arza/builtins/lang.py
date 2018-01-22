@@ -41,6 +41,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.DERIVE, __derive, 2)
     put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
     put_lang_func(process, module, u"partial", __partial, -1)
+    put_lang_func(process, module, u"interfaces", __interfaces, 1)
     put_lang_func(process, module, u"vector", __vector, -1)
     put_lang_func(process, module, u"array", __array, -1)
 
@@ -196,7 +197,7 @@ def __interface(process, routine):
 def __derive(process, routine):
     _type = routine.get_arg(0)
     interfaces = routine.get_arg(1)
-    datatype.derive(process, _type, interfaces)
+    datatype.derive_strict(process, _type, interfaces)
     return _type
 
 
@@ -290,3 +291,12 @@ def __is_implemented(process, routine):
     left = routine.get_arg(0)
     right = routine.get_arg(1)
     return api.is_implemented(process, left, right)
+
+@complete_native_routine
+def __interfaces(process, routine):
+    obj = routine.get_arg(0)
+    if space.isdatatype(obj):
+        return datatype.get_interfaces(process, obj)
+    else:
+        return datatype.get_interfaces(process, api.get_type(process, obj))
+

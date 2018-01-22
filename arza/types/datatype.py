@@ -215,6 +215,14 @@ def record_values(record):
 
 
 def derive(process, t, interfaces):
+    _derive(process, t, interfaces, False)
+
+
+def derive_strict(process, t, interfaces):
+    _derive(process, t, interfaces, True)
+
+
+def _derive(process, t, interfaces, strictmode):
     error.affirm_type(t, space.isdatatype)
     error.affirm_type(interfaces, space.islist)
     to_be_implemented = []
@@ -250,7 +258,7 @@ def derive(process, t, interfaces):
             position = api.second(r)
             idx = api.to_i(position)
             api.d.pbp(bp, "G", generic, idx, maybe_interfaces)
-            if not generic.is_implemented_for_type(t, maybe_interfaces, idx):
+            if not generic.is_implemented_for_type(t, maybe_interfaces, idx, strictmode):
                 error.throw_5(
                     error.Errors.IMPLEMENTATION_ERROR,
                     space.newstring(u"Not implemented interface method"),
@@ -285,3 +293,8 @@ def newtype(process, name, fields):
         derived = process.std.interfaces.get_derived(_type)
         derive(process, _type, derived)
     return _type
+
+
+def get_interfaces(process, t):
+    error.affirm_type(t, space.isdatatype)
+    return t.interfaces

@@ -1,9 +1,7 @@
 import arza:lang:_number
 import io
+import behavior
 
-trait TEqNe(T1, T2) =
-    def != (self of T1, other of T2) as std_behavior:not_equal
-    def == (self of T1, other of T2) as std_behavior:equal
 
 derive (Eq, Displayed) for (
         Function,
@@ -17,11 +15,8 @@ derive (Eq, Displayed) for (
 //////// NUM
 
 trait TNum(T) =
-    def != (self of T, other) as std_behavior:not_equal
-    def == (self of T, other) as std_behavior:equal
-
-    def str (self of T) as std_behavior:str
-    def repr (self of T) as std_behavior:repr
+    behavior:TEq(T)
+    behavior:TStr(T)
 
     def - (x of T, y) as _number:sub
     def + (x of T, y) as _number:add
@@ -36,56 +31,16 @@ trait TNum(T) =
 TNum(Float)
 TNum(Int)
 
-//use
-//    (Float, Int) as 0
-//in
-//    def != (self, other) as std_behavior:not_equal
-//    def == (self, other) as std_behavior:equal
-//
-//    def str (self) as std_behavior:str
-//    def repr (self) as std_behavior:repr
-//
-//    def - (x, y) as _number:sub
-//    def + (x, y) as _number:add
-//    def * (x, y) as _number:mul
-//    def / (x, y) as _number:div
-//    def mod (x, y) as _number:mod
-//    def negate (x) as _number:negate
-//    def ** (x, y) as  _number:pow
-//
-//    def <= (x, y) as _number:le
-//--------------------------------------------------
+derive (LessEq) for (Float, Int)
 
-derive (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed) for (Float, Int)
+behavior:TCmp(Int, Any)
+behavior:TCmp(Float, Any)
 
-//extend
-//    Int
-//with
-//(
-//    def range(first, last of Int) ->
-//        range_by(first, last, 1)
-//
-//    def range_by(first, last of Int, step of Int) ->
-//        cmp =
-//            if step > 0 then `>=`
-//            elif step < 0 then `<=`
-//            else throw ValueError ("Step can not be zero")
-//
-//        fun _progression _compare x last step  ->
-//            if _compare x last then
-//                []
-//            else
-//                x ::: _progression _compare (x + step) last step
-//
-//
-//        _progression cmp first last step
-//
-//    def range_from first  -> range_from_by first 1
-//
-//    def range_from_by first (step of Int) ->
-//        fun _progression x step ->
-//            x ::: _progression (x + step) step
-//
-//        _progression first step
-//)
+derive (Comparable) for (Float, Int)
+behavior:TMinMax(Int, Any)
+behavior:TMinMax(Float, Any)
 
+behavior:TOrder(Float, Any)
+behavior:TOrder(Int, Any)
+
+derive (Ord, Num, Pow, Eq, Displayed) for (Float, Int)

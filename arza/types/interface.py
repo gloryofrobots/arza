@@ -48,7 +48,7 @@ class W_Interface(W_Hashable):
         return int((1 - platform.random()) * 10000000)
 
     def _to_string_(self):
-        return "<interface %s>" % (api.to_s(self.name))
+        return "<I: %s>" % (api.to_s(self.name))
 
     def _to_repr_(self):
         return self._to_string_()

@@ -178,9 +178,11 @@ class Signature(W_Root):
     def has_type(self, _type):
         return api.contains_b(self.types, _type)
 
-    def can_dispatch_on_type(self, _type, interfaces, position):
+    def can_dispatch_on_type(self, _type, interfaces, position, strictmode=False):
         current = api.at_index(self.types, position)
         if space.isinterface(current):
+            if strictmode:
+                return False
             return api.contains_b(interfaces, current)
         return api.equal_b(_type, current)
 

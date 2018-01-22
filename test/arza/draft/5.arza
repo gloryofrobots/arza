@@ -1,22 +1,55 @@
 module component
-    module controller
-        module Request
-            type
-                route
-                data
+    module observe
+        interface Emitter
+            emit(`self, signal, data)
+            register(`self, signal)
+        
 
-        interface(Controller as C)
-            dispatch(C, Request)
-            _dispatch(C, Request)
-            validate(C, Request)
-            send(C, Request)
+        interface Observable 
+            use Emitter(emit)
+            use Emitter without (register)
+            //all funcs
+            // use Emitter
+            connect(`self, signal, observer)
+
+           
+    module controller
+        interface Request 
+             get_route(r)
+             get_data(r)
+        
+        interface Response 
+            send(r, data)
+        
+        interface Controller(Observable)
+            dispatch(c, r)
+            send(c, r)
+
 
         module base
-            type BaseController
-                config
-                db
+            type Request(route, data) 
 
-            trait TBaseController
-                  for T with
-                      def _dispatch(Controller, Request)
-             
+            extend Request
+                   with controller.Request
+                        def get_route(r) = r.route
+                        def get_data(r) = r.data
+              
+                   
+            type Controller(route, data, observers) 
+
+            trait TController(Controller)
+                def dispatch(self, r of Request) = emit(self, get_route(r))
+                def send(self, r of Response) = send_response(r)
+
+            extend Controller
+                with TController
+                    def emit(self, signal, data) = 42
+                    def connect(self, signal, observer) = 42
+            
+      module sockjs
+            type Controller(use base.Controller, sockjs)
+
+            extend Controller
+                   with base.TController
+                        def emit(self, signal, data) = 42
+                        def connect(self, signal, observer) = 42
