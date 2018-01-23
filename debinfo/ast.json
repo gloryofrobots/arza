@@ -16,8 +16,18 @@
               "children": [
                 [
                   {
-                    "_ntype": "NT_NAME",
-                    "_value": "T"
+                    "_ntype": "NT_IS_IMPLEMENTED",
+                    "_value": "of",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "T"
+                      },
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "I"
+                      }
+                    ]
                   }
                 ]
               ]
@@ -58,8 +68,21 @@
                             "children": [
                               [
                                 {
-                                  "_ntype": "NT_NAME",
-                                  "_value": "s"
+                                  "_ntype": "NT_MAP",
+                                  "_value": "{",
+                                  "children": [
+                                    [
+                                      [
+                                        {
+                                          "_ntype": "NT_NAME",
+                                          "_value": "name"
+                                        },
+                                        {
+                                          "empty": true
+                                        }
+                                      ]
+                                    ]
+                                  ]
                                 }
                               ]
                             ]
@@ -80,8 +103,21 @@
                     "children": [
                       [
                         {
-                          "_ntype": "NT_NAME",
-                          "_value": "s"
+                          "_ntype": "NT_MAP",
+                          "_value": "{",
+                          "children": [
+                            [
+                              [
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "name"
+                                },
+                                {
+                                  "empty": true
+                                }
+                              ]
+                            ]
+                          ]
                         }
                       ]
                     ]

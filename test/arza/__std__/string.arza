@@ -27,11 +27,10 @@ trait __TString(S) for String =
     def empty(self of S) = ""
 
 
-trait __TStringConcat(Str, Sym) for (String, Symbol) =
-    def ++ (s1 of Str, s2 of Str) = _string:concat(s1, s2)
-    def ++ (s1 of Str, s2 of Sym) = _string:concat(s1, str(s2))
-    def ++ (s1 of Sym, s2 of Str) = _string:concat(str(s1), s2)
-    def ++ (s1 of Sym, s2 of Sym) = symbol(_string:concat(str(s1), str(s2)))
+def ++ (s1 of String, s2 of String) = _string:concat(s1, s2)
+def ++ (s1 of String, s2 of Symbol) = _string:concat(s1, str(s2))
+def ++ (s1 of Symbol, s2 of String) = _string:concat(str(s1), s2)
+def ++ (s1 of Symbol, s2 of Symbol) = symbol(_string:concat(str(s1), str(s2)))
 
 
 describe (Symbol, Char) as (Eq, Displayed)

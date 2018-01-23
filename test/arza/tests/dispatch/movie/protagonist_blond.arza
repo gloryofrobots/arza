@@ -15,8 +15,6 @@ trait __TPB(M, B) for (actors:BugEyedMonster, actors:ProtagonistBlond) =
             behavior:interact(movie, m, (#ENCOUNTER, b)) |>
             behavior:run_away(_, b, m)
 
-
-
     def behavior:encounter(movie, m of M, b of B) =
         io:print("is monster killable", actors:is_monster_killable(b, m))
         behavior:interact(movie, m, (#ENCOUNTER, b)) |>
@@ -39,8 +37,8 @@ trait __TPB(M, B) for (actors:BugEyedMonster, actors:ProtagonistBlond) =
         behavior:interact(_, b, (#RUN_AWAY, m))
 
 
-    def behavior:scream(movie, b of B) =
-        behavior:interact(movie, b, #SCREAM)
+def behavior:scream(movie, b of actors:ProtagonistBlond) =
+    behavior:interact(movie, b, #SCREAM)
 
 
 describe (actors:ProtagonistBlond, actors:BugEyedMonster) as behavior:ActionActor

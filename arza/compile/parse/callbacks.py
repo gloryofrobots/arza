@@ -1049,6 +1049,11 @@ def prefix_trait_def(parser, op, token):
     return _parse_def(parser, op, token, True)
 
 
+def infix_trait_signature_of(parser, op, token, left):
+    exp = expression(parser.name_parser, op.lbp)
+    return node_2(NT_IS_IMPLEMENTED, token, left, exp)
+
+
 def prefix_lparen_trait_for(parser, op, token):
     return _parse_comma_separated(parser.name_parser, TT_RPAREN)
 
@@ -1122,12 +1127,23 @@ def _check_trait_statements(parser, token, aliases, body):
             _check_trait_type_any(parser, check_token, aliases, args)
 
 
+def _get_trait_aliases(parser, signature):
+    aliases = []
+    for node in signature:
+        if nodes.node_type(node) == NT_IS_IMPLEMENTED:
+            aliases.append(nodes.node_first(node))
+        else:
+            aliases.append(node)
+    return list_node(aliases)
+
+
 def _parse_trait_body(parser, token, name, signature):
     advance_expected(parser, TT_ASSIGN)
 
     body = statements(parser.trait_parser, [])
 
-    _check_trait_statements(parser, token, signature, body)
+    aliases = _get_trait_aliases(parser, signature)
+    _check_trait_statements(parser, token, aliases, body)
 
     args = nodes.create_tuple_node_from_list(token, signature)
     funcs = nodes.create_function_variants(args, body)
@@ -1140,7 +1156,7 @@ def stmt_trait(parser, op, token):
     else:
         name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     signature = _parse_comma_separated(parser.trait_parser.pattern_parser, TT_RPAREN, advance_first=TT_LPAREN,
-                                     is_free=True)
+                                       is_free=True)
     if parser.token_type == TT_FOR:
         return _parser_trait_for(parser, token, name, signature)
     return _parse_trait_body(parser, token, name, signature)

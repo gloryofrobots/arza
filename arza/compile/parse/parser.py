@@ -302,7 +302,7 @@ class TraitParser(BaseParser):
 
         self.def_parser = DefParser()
         self.name_parser = name_parser_init(BaseParser())
-        self.pattern_parser = trait_signature_parser_init(BaseParser())
+        self.pattern_parser = TraitSignatureParser()
         self.for_parser = TraitForParser()
 
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
@@ -334,16 +334,19 @@ class TraitForParser(BaseParser):
         literal(self, TT_NAME, NT_NAME)
 
 
-def trait_signature_parser_init(parser):
-    infix(parser, TT_OF, NT_IS_IMPLEMENTED, 10, led_infix)
-    prefix(parser, TT_LPAREN, None, prefix_lparen_tuple, layout=layout_lparen)
+class TraitSignatureParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+        self.name_parser = name_parser_init(BaseParser())
+        self.add_subparsers([
+            self.name_parser,
+        ])
 
-    symbol(parser, TT_RPAREN)
-    symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
-
-    literal(parser, TT_NAME, NT_NAME)
-    literal(parser, TT_WILDCARD, NT_WILDCARD)
-    return parser
+        infix(self, TT_OF, None, 10, infix_trait_signature_of)
+        # prefix(self, TT_LPAREN, None, prefix_lparen_tuple, layout=layout_lparen)
+        # symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
+        # symbol(self, TT_RPAREN)
+        literal(self, TT_NAME, NT_NAME)
 
 
 class GenericParser(BaseParser):

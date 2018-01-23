@@ -1,5 +1,5 @@
-trait __T0(T) for api:String =
-    def f0(s of T) = 1
+trait __T0(T of I) for api:String =
+    def f0({name} of T) = 1
 
 trait __T1(T) for [String, api:Char, Symbol] =
     def f1(s of T) = 1
