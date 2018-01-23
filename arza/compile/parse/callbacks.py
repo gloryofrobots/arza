@@ -905,7 +905,10 @@ def _parse_trait_body(parser, token, name, signature):
 
 
 def stmt_trait(parser, op, token):
-    name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    if parser.token_type == TT_LPAREN:
+        name = nodes.create_random_trait_name(token)
+    else:
+        name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     pattern = _parse_comma_separated(parser.trait_parser.pattern_parser, TT_RPAREN, advance_first=TT_LPAREN,
                                      is_free=True)
     signature = nodes.create_tuple_node_from_list(token, pattern)

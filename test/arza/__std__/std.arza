@@ -38,7 +38,7 @@ trait TMinMax(T1, T2) =
         else y
 
 
-trait TNum(T) for [Float, Int] =
+trait (T) for [Float, Int] =
     def - (x of T, y) as _number:sub
     def + (x of T, y) as _number:add
     def * (x of T, y) as _number:mul
