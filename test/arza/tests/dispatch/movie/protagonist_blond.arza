@@ -43,4 +43,10 @@ trait __TPB(M, B) for (actors:BugEyedMonster, actors:ProtagonistBlond) =
         behavior:interact(movie, b, #SCREAM)
 
 
-describe (actors:ProtagonistBlond, actors:BugEyedMonster) as (behavior:Named, behavior:ActionActor)
+describe (actors:ProtagonistBlond, actors:BugEyedMonster) as behavior:ActionActor
+behavior:TNamed(actors:ProtagonistBlond)
+behavior:TNamed(actors:BugEyedMonster)
+describe (actors:ProtagonistBlond, actors:BugEyedMonster) as behavior:Named
+behavior:TStr(actors:ProtagonistBlond)
+behavior:TStr(actors:BugEyedMonster)
+

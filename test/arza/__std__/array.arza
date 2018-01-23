@@ -14,7 +14,7 @@ trait TArray(A) for Array =
     def is_empty (self of A) as std_behavior:is_empty
     def len (self of A) as std_behavior:len
 
-    def ++ (a1, a2) as _array:concat
+    def ++ (a1 of A, a2 of A) as _array:concat
 
     def prepend(v, self of A) as _array:prepend
     def append(v, self of A) as _array:append
@@ -80,7 +80,7 @@ trait TArraySeqEmpty(A) for ArraySeqEmpty =
 
     def is_empty(self of A) = True
 
-    def len(self) = 0
+    def len(self of A) = 0
 
 describe ArraySeqEmpty as (Seq, Sized)
 

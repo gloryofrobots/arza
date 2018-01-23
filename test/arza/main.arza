@@ -2,11 +2,12 @@ import io
 import affirm
 import seq
 import list
-//
+import array
+
 import tests:test_operators
 
-//import tests:dispatch:test_dispatch
-//import tests:usertype:test_usertype
+import tests:dispatch:test_dispatch
+import tests:usertype:test_usertype
 import tests:stdtype:test_stdtype
 import tests:test_expressions
 import tests:test_match
@@ -17,8 +18,7 @@ import tests:test_import
 import tests:test_fun
 import tests:test_coro
 import tests:test_partial
-//
-//
+
 fun log(...msgs) =
     if True then
         io:print(...msgs)
@@ -29,25 +29,25 @@ fun log(...msgs) =
 fun test() =
     log("TEST EXPRESSIONS")
     test_expressions:test()
-    //
+
     log("TEST STD TYPES")
     test_stdtype:test()
-    //
-//    log("TEST TYPES")
-//    test_usertype:test()
-//    //
-//    log("TEST DISPATCH")
-//    test_dispatch:test()
-//    ////
+
+    log("TEST TYPES")
+    test_usertype:test()
+
+    log("TEST DISPATCH")
+    test_dispatch:test()
+
     log("TEST MATCH")
     test_match:test()
-    //
+
     log("TEST EXCEPTION")
     test_exception:test()
-    //
+
     log("TEST STATIC REFS")
     test_static_refs:test()
-    //
+
     log("TEST IMPORT")
     test_import:test()
 

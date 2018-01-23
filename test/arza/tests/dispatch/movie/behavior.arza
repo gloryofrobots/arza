@@ -13,10 +13,12 @@ interface
     Named(get_name)
     ActionActor(encounter.1)
 
-def get_name({name} of ActionActor) = name
+trait TNamed(T of ActionActor) =
+    def get_name({name} of T) = name
 
-def str(a of Named) =  "<Actor:" ++ get_name(a) ++ ">"
-def repr(a of Named) =  "<Actor:" ++ get_name(a) ++ ">"
+trait TStr(T of Named) =
+    def str(a of T) =  "<Actor:" ++ get_name(a) ++ ">"
+    def repr(a of T) =  "<Actor:" ++ get_name(a) ++ ">"
 
 
 def kickass(movie, actor1 of ActionActor, actor2 of ActionActor) =
