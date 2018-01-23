@@ -317,6 +317,10 @@
                         {
                           "_ntype": "NT_NAME",
                           "_value": "T1"
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "T2"
                         }
                       ]
                     ]
@@ -338,6 +342,10 @@
                                 {
                                   "_ntype": "NT_NAME",
                                   "_value": "s"
+                                },
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "v"
                                 }
                               ]
                             ]
@@ -360,6 +368,87 @@
                         {
                           "_ntype": "NT_NAME",
                           "_value": "s"
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "v"
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_DEF",
+                "_value": "def",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "f2_1"
+                  },
+                  {
+                    "_ntype": "NT_LIST",
+                    "_value": "def",
+                    "children": [
+                      [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "T1"
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "T2"
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_FUN",
+                    "_value": "def",
+                    "children": [
+                      {
+                        "empty": true
+                      },
+                      [
+                        [
+                          {
+                            "_ntype": "NT_TUPLE",
+                            "_value": "(",
+                            "children": [
+                              [
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "s"
+                                },
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "v"
+                                }
+                              ]
+                            ]
+                          },
+                          [
+                            {
+                              "_ntype": "NT_INT",
+                              "_value": "2"
+                            }
+                          ]
+                        ]
+                      ]
+                    ]
+                  },
+                  {
+                    "_ntype": "NT_TUPLE",
+                    "_value": "(",
+                    "children": [
+                      [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "s"
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "v"
                         }
                       ]
                     ]

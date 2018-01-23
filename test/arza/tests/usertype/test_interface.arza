@@ -11,9 +11,8 @@ generic to_list(x)
 
 interface Listable (to_list)
 
-use
-    (T1, T2) as T
-in
+
+trait(T) for [T1, T2] =
     //Seq iface
     def first(self of T) = first(to_list(self))
     def rest(self of T) = rest(to_list(self))
@@ -25,7 +24,7 @@ in
 
 def to_list(self of T1) = [self.v1, self.v2]
 
-use T2 as T in
+trait(T) for T2 =
     def to_list(self of T) = [self.v1, self.v2]
     def slice(_from, _to, self of T) = slice(_from, _to, to_list(self))
 

@@ -7,7 +7,7 @@ type
 
 generic eq(self, other)
 
-use L as T in
+trait(T) for L =
     def len(self of T) = len(self.l)
 
     def is_empty(self of T) = is_empty(self.l)

@@ -12,7 +12,7 @@ type
     None
 
 
-use Point2 as T in
+trait(T) for Point2 =
     def add (self of T, p2 of Point2) = Point2(self.x + p2.x, self.y + p2.y)
     def add (self of T, i of Int) = Point2(self.x + i, self.y + i)
     def add (self of T, v of Vec2) = add(Vec2(self, self), v)
@@ -23,7 +23,7 @@ use Point2 as T in
     def != (self of T, other of Point2) = not (self == other)
 
 
-use Vec2 as T in
+trait(T) for Vec2 =
     def add (self of T, v of Vec2) =
         Vec2(
             add(self.p1, v.p1),

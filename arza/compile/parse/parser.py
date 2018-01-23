@@ -296,6 +296,31 @@ def use_in_alias_parser_init(parser):
     return parser
 
 
+class TraitParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+
+        self.def_parser = DefParser()
+        self.name_parser = name_parser_init(BaseParser())
+        self.pattern_parser = trait_signature_parser_init(BaseParser())
+        self.for_parser = TraitForParser()
+
+        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
+        prefix(self, TT_DEF, None, prefix_trait_def, layout=layout_def)
+        infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
+        infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
+        literal(self, TT_NAME, NT_NAME)
+
+        self.add_subparsers([
+            self.def_parser,
+            self.name_parser,
+            self.pattern_parser,
+            self.for_parser
+            # self.use_parser,
+            # self.use_in_alias_parser
+        ])
+
+
 class TraitForParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
@@ -307,35 +332,6 @@ class TraitForParser(BaseParser):
         prefix(self, TT_LPAREN, None, prefix_lparen_trait_for, layout=layout_lparen)
         infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
         literal(self, TT_NAME, NT_NAME)
-
-
-class TraitParser(BaseParser):
-    def __init__(self):
-        BaseParser.__init__(self)
-
-        self.def_parser = DefParser()
-        self.name_parser = name_parser_init(BaseParser())
-        self.pattern_parser = trait_signature_parser_init(BaseParser())
-        self.for_parser = TraitForParser()
-        # self.use_in_alias_parser = use_in_alias_parser_init(BaseParser())
-        # self.use_parser = UseParser()
-
-        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
-        prefix(self, TT_DEF, None, prefix_use_def, layout=layout_def)
-        # prefix(self, TT_USE, None, stmt_use, layout=layout_use)
-        infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
-        infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
-        literal(self, TT_NAME, NT_NAME)
-        symbol(self, TT_FOR)
-
-        self.add_subparsers([
-            self.def_parser,
-            self.name_parser,
-            self.pattern_parser,
-            self.for_parser
-            # self.use_parser,
-            # self.use_in_alias_parser
-        ])
 
 
 def trait_signature_parser_init(parser):
@@ -471,7 +467,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_TYPE, None, stmt_type, layout=layout_type)
         stmt(self, TT_LET, None, prefix_module_let, layout=layout_let)
         stmt(self, TT_GENERIC, None, stmt_generic, layout=layout_generic)
-        stmt(self, TT_USE, None, stmt_use, layout=layout_use)
+        # stmt(self, TT_USE, None, stmt_use, layout=layout_use)
         stmt(self, TT_INTERFACE, None, stmt_interface, layout=layout_interface)
         stmt(self, TT_DESCRIBE, None, stmt_describe, layout=layout_describe)
         stmt(self, TT_DEF, None, stmt_def, layout=layout_def)

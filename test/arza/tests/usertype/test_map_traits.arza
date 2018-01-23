@@ -49,15 +49,15 @@ let
     }
 
 
-use Val as T in
+trait (T) for Val =
     def ne(x of T, y) as Equal.[ne]
     def eq(v1 of T, v2) = v1.v == v2.v
 
-use Val2 as T in
+trait (T) for Val2 =
     def eq(x of T, y) as Equal.[eq]
     def ne(v1 of T, v2) = v1.v != v2.v
 
-use Val as T in
+trait (T) for Val =
     def le(x of T, y) as Order.[le]
     def ge(x of T, y) as Order.[ge]
     def lt(x of T, y) as Order.[lt]
@@ -70,7 +70,7 @@ use Val as T in
         elif self.v <= other.v then LT
         else GT
 
-use Val2 as T in
+trait (T) for Val2 =
     def cmp(x of T, y) as Order.[cmp]
     def ge(x of T, y) as Order.[ge]
     def lt(x of T, y) as Order.[lt]
