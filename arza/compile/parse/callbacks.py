@@ -855,6 +855,7 @@ def prefix_module_fun(parser, op, token):
     name, funcs = _parse_named_function(parser.expression_parser, token)
     return node_2(NT_FUN, token, name, funcs)
 
+
 # USE
 
 def _use_replace_in_list_node(parser, token, sig, _type, alias):
@@ -1033,7 +1034,9 @@ def stmt_use(parser, op, token):
 def prefix_use_def(parser, op, token):
     return _parse_def(parser, op, token, True)
 
+
 # TRAIT
+
 
 def _trait_for_ensure_tuple(node):
     if not nodes.is_list_node(node):
@@ -1080,10 +1083,54 @@ def _parser_trait_for(parser, token, name, signature):
     return list_node(result)
 
 
+def has_name_in_list_node(parser, token, sig, alias):
+    alias_val = nodes.node_value(alias)
+    for arg in sig:
+        arg_val = nodes.node_value(arg)
+        if api.equal_b(arg_val, alias_val):
+            return True
+    return False
+
+
+def _check_trait_type(parser, token, aliases, sig):
+    for alias in aliases:
+        if not has_name_in_list_node(parser, token, sig, alias):
+            parse_error(parser, u"Missing type in method signature", token)
+
+
+def _check_trait_type_any(parser, token, aliases, sig):
+    for alias in aliases:
+        if has_name_in_list_node(parser, token, sig, alias):
+            return
+    parse_error(parser, u"Missing type in method signature", token)
+
+
+def _check_trait_statements(parser, token, aliases, body):
+    for exp in body:
+        if nodes.is_list_node(exp):
+            _check_trait_statements(parser, token, aliases, exp)
+            continue
+
+        check_token = nodes.node_token(exp)
+        ntype = nodes.node_type(exp)
+        if ntype == NT_DEF:
+            method_signature = nodes.node_second(exp)
+            sig = nodes.node_first(method_signature)
+            _check_trait_type(parser, check_token, aliases, sig)
+        elif ntype == NT_CALL:
+            args = nodes.node_second(exp)
+            _check_trait_type_any(parser, check_token, aliases, args)
+
+
 def _parse_trait_body(parser, token, name, signature):
     advance_expected(parser, TT_ASSIGN)
+
     body = statements(parser.trait_parser, [])
-    funcs = nodes.create_function_variants(signature, body)
+
+    _check_trait_statements(parser, token, signature, body)
+
+    args = nodes.create_tuple_node_from_list(token, signature)
+    funcs = nodes.create_function_variants(args, body)
     return node_2(NT_FUN, token, name, funcs)
 
 
@@ -1092,9 +1139,8 @@ def stmt_trait(parser, op, token):
         name = nodes.create_random_trait_name(token)
     else:
         name = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    pattern = _parse_comma_separated(parser.trait_parser.pattern_parser, TT_RPAREN, advance_first=TT_LPAREN,
+    signature = _parse_comma_separated(parser.trait_parser.pattern_parser, TT_RPAREN, advance_first=TT_LPAREN,
                                      is_free=True)
-    signature = nodes.create_tuple_node_from_list(token, pattern)
     if parser.token_type == TT_FOR:
         return _parser_trait_for(parser, token, name, signature)
     return _parse_trait_body(parser, token, name, signature)

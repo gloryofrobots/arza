@@ -525,6 +525,10 @@
                         {
                           "_ntype": "NT_NAME",
                           "_value": "T1"
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "T2"
                         }
                       ]
                     ]
@@ -546,6 +550,10 @@
                                 {
                                   "_ntype": "NT_NAME",
                                   "_value": "s"
+                                },
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "s2"
                                 }
                               ]
                             ]
@@ -568,6 +576,10 @@
                         {
                           "_ntype": "NT_NAME",
                           "_value": "s"
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "s2"
                         }
                       ]
                     ]

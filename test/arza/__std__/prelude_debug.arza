@@ -9,7 +9,7 @@ trait __T2(T1, T2) for (String, Char) =
     def f2_1(s of T1, v of T2) = 2
 
 trait __T3(T1, T2) for [(S, V), (api:A, B)] =
-    def f3(s of T1) = 1
+    def f3(s of T1, s2 of T2) = 1
 
 //(trait Body(T1, T2) =
 //    (use T1 in
