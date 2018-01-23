@@ -6,6 +6,15 @@ v3)
 type T3
     (v1, v2, v3)
 
+type T4
+(v1, v2, v3)
+
+(   type
+T5
+(v1,
+    v2,
+     v3))
+
 //trait __T0(T of I) for api:String =
 //    def f0({name} of T) = 1
 //
@@ -40,17 +49,7 @@ type T3
 //    fun (x, y, z) = z
 
 
-//use XXX as T in
-//    def xxx(self of T, val) = self.x
 
-
-
-//trait Body(T1, T2)
-//    with  T1 of (Seqable, Scalable)
-//             of type(x,y,z)
-//
-//    def do_something(t of T1) = 1
-//    def do_something(t of T2, t of T1) = 2
 //infixr (:=, :=, 10)
 //// infix @ as of -> 15
 //infixl (<|, <|, 15)
@@ -338,67 +337,6 @@ type T3
 //        #second
 //    )
 //
-//use
-//    String as Str
-//    Symbol as Sym
-//in
-//    def ++ (s1 of Str, s2 of Str) = _string:concat(s1, s2)
-//    def ++ (s1 of Str, s2 of Sym) = _string:concat(s1, str(s2))
-//    def ++ (s1 of Sym, s2 of Str) = _string:concat(str(s1), s2)
-//    def ++ (s1 of Sym, s2 of Sym) = symbol(_string:concat(str(s1), str(s2)))
-////
-//use (String, Char, Symbol) as 0 in
-//    def != (self, other) as std_behavior:not_equal
-//    def == (self, other) as std_behavior:equal
-//
-//    def str (self) as std_behavior:str
-//    def repr (self) as std_behavior:repr
-//
-//(use (String, Char, Symbol) as 0 in
-//    (def != (self, other) as std_behavior:not_equal)
-//    (def == (self, other) as std_behavior:equal)
-//
-//    (def str (self) as std_behavior:str)
-//    (def repr (self) as std_behavior:repr)
-//)
-//
-//(use
-//    String as Str
-//    Symbol as Sym
-//in
-//    (def ++ (s1 of Str, s2 of Str) =
-//        x + y
-//        _string:concat(s1, s2)
-//    )
-//
-//    (def ++ (s1 of Str, s2 of Sym) =
-//        _string:concat(s1, str(s2))
-//    )
-//)
-//
-//use stuff:TestType as T in
-//    def types:test_method_1(a1 of stuff:TestType, a2 of stuff:TestType, self of T) =
-//        x + y
-//        a1.val + a2.val + self.val
-//
-//    def types:test_method_2(a1, self of T, a2) = a1.val + a2.val + self.val
-//    def types:test_method_3(self of T, a1, a2) = a1.val + a2.val + self.val
-//    def types:test_method_4(self of T) = self.val
-//
-//use L as ... in
-//    def len(self) = len(self.l)
-//
-//    def is_empty(self) =
-//        x + y
-//        is_empty(self.l)
-//
-//use Val2 as 0 in
-//    def le(self, other) =
-//        x + y
-//        self.v + other.v
-//    def cmp(x, y) as Order.[cmp]
-//    def ge(x, y) as Order.[ge]
-//
 //
 //def len(self of Int) = len(self.l)
 //
@@ -430,19 +368,6 @@ type T3
 //export (f_ab, f_ab_2, CONST)
 //export f_ab
 //
-//type GT
-//
-//type
-//    LT
-//    Some (val)
-//    Vec3(x, y, z)
-//
-//(type
-//    LT
-//        Some (val)
-//
-//            Vec3(x, y, z)
-//)
 //
 //fun f(x,y) =
 //
