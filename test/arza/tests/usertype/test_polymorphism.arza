@@ -1,9 +1,8 @@
 import affirm
 
-type
-    L(l)
-    None
-    Some(val)
+type L(l)
+type None
+type Some(val)
 
 generic eq(self, other)
 

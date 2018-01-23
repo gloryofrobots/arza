@@ -1,8 +1,7 @@
 import io
 
-type
-    Asteroid(health)
-    Spaceship(health, fire_power)
+type Asteroid(health)
+type Spaceship(health, fire_power)
 
 
 generic

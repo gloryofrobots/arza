@@ -1,12 +1,11 @@
 import affirm
 import io
 
-type
-    EQ
-    GT
-    LT
-    Val(v)
-    Val2(v)
+type EQ
+type GT
+type LT
+type Val(v)
+type Val2(v)
 
 generic
     eq(x, y)

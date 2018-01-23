@@ -4,12 +4,11 @@ generic
     add(self, a)
     val(self)
 
-type
-    Zero
-    Vec2(p1, p2)
-    Point2(x, y)
-    Some(val)
-    None
+type Zero
+type Vec2(p1, p2)
+type Point2(x, y)
+type Some(val)
+type None
 
 
 trait(T) for Point2 =

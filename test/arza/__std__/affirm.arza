@@ -4,6 +4,7 @@ import io
 
 fun is_equal_batch(fn, ...calls) = _batch(is_equal, fn, calls)
 
+type Success(val)
 
 fun _batch(checker, fn, calls) =
     let calls_list = to_seq(calls)
@@ -90,8 +91,6 @@ fun is_false(val1) = is_equal(val1, False)
 
 //apply needed tuple of arguments
 // so we need to convert () to ((),)
-
-type Success(val)
 
 fun _is_throw (fn, args) =
     match

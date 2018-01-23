@@ -39,9 +39,8 @@ trait TArray(A) for Array =
 
 --------------------------------------------------
 
-type
-    ArraySeq (arr, index)
-    ArraySeqEmpty()
+type ArraySeq (arr, index)
+type ArraySeqEmpty()
 
 trait TArraySeq(A) for ArraySeq =
     def first(self of A) = self.arr.index

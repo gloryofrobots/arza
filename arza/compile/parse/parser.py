@@ -183,16 +183,8 @@ class ExpressionParser(BaseParser):
 class TypeParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
-        self.symbol_list_parser = symbol_list_parser_init(BaseParser())
-        self.add_subparsers([
-            self.symbol_list_parser
-        ])
-
+        prefix(self, TT_NAME, NT_NAME, prefix_name_as_symbol)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
-        symbol(self, TT_RPAREN)
-        infix(self, TT_LPAREN, None, 100, infix_lparen_type, layout=layout_lparen)
-        prefix(self, TT_NAME, NT_NAME, prefix_typename)
-        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
 
 
 class PatternParser(BaseParser):
@@ -264,36 +256,6 @@ class DefParser(BaseParser):
             self.guard_parser,
             self.name_parser
         ])
-
-
-class UseParser(BaseParser):
-    def __init__(self):
-        BaseParser.__init__(self)
-
-        self.def_parser = DefParser()
-        self.name_parser = name_parser_init(BaseParser())
-
-        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
-        prefix(self, TT_DEF, None, prefix_use_def, layout=layout_def)
-        # prefix(self, TT_DESCRIBE, None, stmt_describe, layout=layout_describe)
-
-        # applying trait
-        infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
-        infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
-        literal(self, TT_NAME, NT_NAME)
-
-        self.add_subparsers([
-            self.def_parser,
-            self.name_parser
-        ])
-
-
-def use_in_alias_parser_init(parser):
-    literal(parser, TT_NAME, NT_NAME)
-    literal(parser, TT_ELLIPSIS, NT_REST)
-    symbol_nud(parser, TT_OPERATOR, NT_NAME, symbol_operator_name)
-    infix(parser, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
-    return parser
 
 
 class TraitParser(BaseParser):
@@ -438,9 +400,7 @@ class ModuleParser(BaseParser):
         self.type_parser = TypeParser()
         self.name_list_parser = name_list_parser_init(BaseParser())
         self.def_parser = DefParser()
-        self.use_parser = UseParser()
         self.trait_parser = TraitParser()
-        self.use_in_alias_parser = use_in_alias_parser_init(BaseParser())
 
         self.add_subparsers([
             self.import_parser,
@@ -453,8 +413,6 @@ class ModuleParser(BaseParser):
             self.interface_parser,
             self.type_parser,
             self.def_parser,
-            self.use_in_alias_parser,
-            self.use_parser,
             self.trait_parser,
         ])
 
@@ -470,7 +428,6 @@ class ModuleParser(BaseParser):
         stmt(self, TT_TYPE, None, stmt_type, layout=layout_type)
         stmt(self, TT_LET, None, prefix_module_let, layout=layout_let)
         stmt(self, TT_GENERIC, None, stmt_generic, layout=layout_generic)
-        # stmt(self, TT_USE, None, stmt_use, layout=layout_use)
         stmt(self, TT_INTERFACE, None, stmt_interface, layout=layout_interface)
         stmt(self, TT_DESCRIBE, None, stmt_describe, layout=layout_describe)
         stmt(self, TT_DEF, None, stmt_def, layout=layout_def)
@@ -559,12 +516,6 @@ def name_list_parser_init(parser):
     symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
     literal(parser, TT_NAME, NT_NAME)
     prefix(parser, TT_LSQUARE, None, prefix_lsquare_name_list, layout=layout_lsquare)
-    return parser
-
-
-def symbol_list_parser_init(parser):
-    prefix(parser, TT_NAME, NT_NAME, prefix_name_as_symbol)
-    symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
     return parser
 
 
