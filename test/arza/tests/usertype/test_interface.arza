@@ -8,8 +8,8 @@ type T3(v1)
 
 generic to_list(x)
 
-interface Listable (to_list)
-
+interface Listable =
+    use to_list(x)
 
 trait(T) for [T1, T2] =
     //Seq iface

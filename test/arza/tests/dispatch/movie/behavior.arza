@@ -9,9 +9,11 @@ generic
     interact(movie, actor, event)
     get_name(actor)
 
-interface
-    Named(get_name)
-    ActionActor(encounter.1)
+interface Named =
+    use get_name(actor)
+
+interface ActionActor =
+    use encounter(movie, @actor1, actor2)
 
 trait TNamed(T of ActionActor) =
     def get_name({name} of T) = name

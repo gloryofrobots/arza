@@ -340,6 +340,7 @@ class InterfaceParser(BaseParser):
         self.function_parser = InterfaceFunctionParser()
         self.name_parser = name_parser_init(BaseParser())
 
+        symbol(self, TT_LPAREN)
         self.add_subparsers([
             self.function_parser,
             self.name_parser

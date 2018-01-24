@@ -8,7 +8,8 @@ generic
     collide_with(body1, body2)
     damage(body1, amount)
 
-interface Body(damage.0)
+interface Body =
+    use damage(@body1, amount)
 
 let
     BodyTrait =

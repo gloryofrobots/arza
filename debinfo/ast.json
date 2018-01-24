@@ -1,4 +1,41 @@
 [
+  {
+    "_ntype": "NT_INTERFACE",
+    "_value": "interface",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "Collection"
+      },
+      {
+        "_ntype": "NT_LIST",
+        "_value": "interface",
+        "children": [
+          []
+        ]
+      },
+      {
+        "_ntype": "NT_LIST",
+        "_value": "interface",
+        "children": [
+          [
+            {
+              "_ntype": "NT_NAME",
+              "_value": "GrowableCollection"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "ShrinkableCollection"
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "ReadOnlyCollection"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   [
     [
       {
@@ -97,7 +134,7 @@
               },
               {
                 "_ntype": "NT_TUPLE",
-                "_value": "0",
+                "_value": "1",
                 "children": [
                   [
                     {
@@ -106,7 +143,7 @@
                     },
                     {
                       "_ntype": "NT_INT",
-                      "_value": "0"
+                      "_value": "1"
                     }
                   ]
                 ]

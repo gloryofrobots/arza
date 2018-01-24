@@ -1,6 +1,8 @@
+interface Collection is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
+
 interface Coll =
     fun put(@key, value, @coll)
-    use at(@key, coll)
+    use at(key, @coll)
 
 //interface ShrinkableCollection  =
 //    fun del(Key, @coll)

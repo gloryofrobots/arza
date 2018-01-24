@@ -1166,6 +1166,12 @@ def _parse_interface_fun_indexes(parser, sig):
             args.append(arg)
         index += 1
 
+    if len(indexes) == 0:
+        if len(sig) == 1:
+            indexes.append(nodes.create_int_node(nodes.node_token(args[0]), 0))
+        else:
+            parse_error(parser, u"Missing interface role in method", nodes.node_token(args[0]))
+
     args_l = list_node(args)
     indexes_l = list_node(indexes)
     return list_node([args_l, indexes_l])
@@ -1183,6 +1189,11 @@ def stmt_interface(parser, op, token):
         subs = _parse_struct_or_name(parser.name_parser, TT_LPAREN, TT_RPAREN, NAME_NODES)
     else:
         subs = list_node([])
+    if parser.token_type != TT_ASSIGN:
+        return node_3(NT_INTERFACE, token, name,
+                           nodes.create_list_node(token, []),
+                           nodes.create_list_node_from_list(token, subs))
+
     advance_expected(parser, TT_ASSIGN)
     funcs = statements(parser.interface_parser, TERM_BLOCK)
     new_generics = []
@@ -1206,7 +1217,10 @@ def stmt_interface(parser, op, token):
     interface = node_3(NT_INTERFACE, token, name,
                        nodes.create_list_node(token, generics),
                        nodes.create_list_node_from_list(token, subs))
-    return list_node([list_node(new_generics), interface])
+    if len(new_generics) == 0:
+        return interface
+    else:
+        return list_node([list_node(new_generics), interface])
 
 
 # def prefix_interface_name(parser, op, token):

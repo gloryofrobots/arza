@@ -126,48 +126,120 @@ generic
 ///////////////// INTERFACES ///////////////////////////////
 ////////////////////////////////////////////////////////////
 
+interface PartialEq =
+    use ==(@x, y)
 
-// TODO make interfaces attach to all gf positions if position is not given
-// for generics with dots use parens (..).0
-interface
-    PartialEq (==)
-    Eq (!=) is PartialEq
-    Comparable(cmp)
-    LessEq(<=) is PartialEq
-    Ord(<, <=, >, >=, cmp, max, min)
+interface Eq is PartialEq =
+    use !=(@x, y)
 
-    Num (-, +, *, /, mod, negate)
-    Pow(**)
+interface Comparable =
+    use cmp(@first, second)
 
-    Str (str)
-    Displayed (repr) is Str
+interface LessEq is PartialEq =
+    use <=(@first, second)
 
-    Len(len)
-    Sized (is_empty) is Len
+interface Ord =
+    use <(@first, second)
+    use <=(@first, second)
+    use >=(@first, second)
+    use >(@first, second)
+    use cmp(@first, second)
+    use max(@first, second)
+    use min(@first, second)
 
-    Coll(put.2, del.1)
-    GrowableCollection(put.2)
-    ShrinkableCollection(del.1)
-    ReadOnlyCollection(at.1, elem.1)
-    Collection() is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
+interface Num =
+    use -(@x, y)
+    use +(@x, y)
+    use *(@x, y)
+    use /(@x, y)
+    use mod(@x, y)
+    // unary -
+    use negate(x)
 
-    Seq(first, rest)
-    Emptiable(empty)
-    Consable(cons.1)
-    Prependable(prepend.1)
-    Appendable(append.1)
-    Concatable(++.1)
-    Dict(keys, values) is Collection
-    Indexed(index_of.1)
-    Seqable(to_seq)
+interface Pow =
+    use **(@x, y)
 
-    Castable(cast.1)
+interface Str =
+    use str(self)
 
-    Sliceable(slice.2, drop.1, take.1)
-    Bounded(lower_bound, upper_bound)
-    Ranged(range, range_by, range_from, range_from_by)
-    Ref(!)
-    MutRef(!, :=)
+interface Displayed is Str =
+    use repr(self)
+
+interface Len =
+    use len(self)
+
+interface Sized is Len =
+    use is_empty(self)
+
+interface Coll =
+    use put(key, value, @self)
+    use del(obj, @self)
+
+interface GrowableCollection =
+    use put(key, value, @self)
+
+interface ShrinkableCollection =
+    use del(obj, @self)
+
+interface ReadOnlyCollection =
+    use at(key, @self)
+    use elem(key, @self)
+
+interface Collection is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
+
+interface Seq =
+    use first(self)
+    use rest(self)
+
+interface Emptiable =
+    use empty(self)
+
+interface Consable =
+    use cons(value, @self)
+
+interface Prependable =
+    use prepend(value, @self)
+
+interface Appendable =
+    use append(value, @self)
+
+interface Concatable =
+    use ++(self, @other)
+
+interface Dict is Collection =
+    use keys(self)
+    use values(self)
+
+interface Indexed =
+    use index_of(obj, @self)
+
+interface Seqable =
+    use to_seq(self)
+
+interface Castable =
+    use cast(to_what, @self)
+
+interface Sliceable =
+    use slice (first, last, @self)
+    use drop(count, @self)
+    use take(count, @self)
+
+interface Bounded =
+    use lower_bound(self)
+    use upper_bound(self)
+
+interface Ranged =
+    use range(@self, last)
+    use range_by (@self, last, step)
+    use range_from(@self)
+    use range_from_by(@self, step)
+
+interface Ref =
+    use !(self)
+
+interface MutRef =
+    use !(self)
+    use :=(@self, value)
 
 ////////////////////////////////////////////////////////////
 ///////////////// TYPES ////////////////////////////////////
