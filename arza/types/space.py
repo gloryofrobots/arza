@@ -485,6 +485,10 @@ def isrecord(w):
     return isinstance(w, W_Record)
 
 
+def isspecializable(w):
+    return isinterface(w) or isdatatype(w)
+
+
 def isdispatchable(w):
     from arza.types.datatype import W_Record, W_DataType
     return isinstance(w, W_Record) or isinstance(w, W_DataType)

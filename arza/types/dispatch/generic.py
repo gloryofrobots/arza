@@ -112,6 +112,18 @@ class W_Generic(W_Hashable):
         nodes = self._make_nodes(process, 0, self.dispatch_arity, self.signatures, discriminators)
         self.dag = RootNode(nodes, discriminators)
 
+    def get_method_types(self):
+        types = []
+        for sig in self.signatures:
+            types.append(sig.types)
+        return types
+
+    def get_method(self, types):
+        for sig in self.signatures:
+            if sig.consists_of(types):
+                return sig.method
+        return space.newvoid()
+
     def _make_nodes(self, process, index, arity, signatures, discriminators):
         if index == arity:
             leaf = self._make_method_node(process, signatures)
@@ -238,21 +250,31 @@ def specify(process, gf, types, method, pattern, outers):
 
 
 def get_method(process, gf, types):
-    if space.istuple(types):
-        types = tuples.to_list(types)
-
-    if not space.islist(types):
-        types = space.newlist([types])
-
-    if api.length_i(types) != gf.dispatch_arity:
+    method = gf.get_method(types)
+    if space.isvoid(method):
         return error.throw_3(error.Errors.KEY_ERROR,
                              space.newstring(u"Method not specified for signature"), gf, types)
 
-    method = gf.dag.evaluate(process, types)
-    if method is None:
-        return error.throw_3(error.Errors.KEY_ERROR,
-                             space.newstring(u"Method not specified for signature"), gf, types)
     return method
+    # if space.istuple(types):
+    #     types = tuples.to_list(types)
+    #
+    # if not space.islist(types):
+    #     types = space.newlist([types])
+    #
+    # if api.length_i(types) != gf.dispatch_arity:
+    #     return error.throw_3(error.Errors.KEY_ERROR,
+    #                          space.newstring(u"Method not specified for signature"), gf, types)
+    #
+    # method = gf.dag.evaluate(process, types)
+    # if method is None:
+    #     return error.throw_3(error.Errors.KEY_ERROR,
+    #                          space.newstring(u"Method not specified for signature"), gf, types)
+    # return method
+
+
+def signatures(process, gf):
+    return space.newlist(gf.get_method_types())
 
 
 ############################################################

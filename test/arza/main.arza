@@ -3,7 +3,11 @@ import affirm
 import seq
 import list
 import array
-import tests:tests
+//import tests:tests
 
 fun main() =
-    tests:run()
+    io:print ..
+        signatures(`+`)
+    io:print ..
+        method(`+`, [Int, Any])
+//    tests:run()

@@ -1,6 +1,7 @@
 from arza.runtime.routine.routine import complete_native_routine
 from arza.runtime import error
 from arza.types import api, space, plist, environment, datatype, tuples, partial
+from arza.types.dispatch import generic
 from arza.misc.timer import Timer
 
 from arza.misc.strutil import encode_unicode_utf8
@@ -24,6 +25,8 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'address', _id, 1)
     api.put_native_function(process, module, u'time', time, 0)
     api.put_native_function(process, module, u'get_type', _type, 1)
+    api.put_native_function(process, module, u'method', __method, 2)
+    api.put_native_function(process, module, u'signatures', __signatures, 1)
     api.put_native_function(process, module, u'symbol', _symbol, 1)
     put_lang_func(process, module, lang_names.APPLY, apply, 2)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
@@ -166,7 +169,6 @@ def __type(process, routine):
 
 @complete_native_routine
 def __generic(process, routine):
-    from arza.types.dispatch import generic
     name = routine.get_arg(0)
     sig = routine.get_arg(1)
     return generic.generic(name, sig)
@@ -174,7 +176,6 @@ def __generic(process, routine):
 
 @complete_native_routine
 def __specify(process, routine):
-    from arza.types.dispatch import generic
     gf = routine.get_arg(0)
     types = routine.get_arg(1)
     method = routine.get_arg(2)
@@ -191,6 +192,23 @@ def __interface(process, routine):
     sub_interfaces = routine.get_arg(2)
     interface = space.newinterface(name, generics, sub_interfaces)
     return interface
+
+
+@complete_native_routine
+def __method(process, routine):
+    fn = routine.get_arg(0)
+    types = routine.get_arg(1)
+    error.affirm_type(fn, space.isgeneric)
+    error.affirm_type(types, space.islist)
+    error.affirm_iterable(types, space.isspecializable)
+    return generic.get_method(process, fn, types)
+
+
+@complete_native_routine
+def __signatures(process, routine):
+    fn = routine.get_arg(0)
+    error.affirm_type(fn, space.isgeneric)
+    return generic.signatures(process, fn)
 
 
 @complete_native_routine
@@ -286,11 +304,13 @@ def __kindof(process, routine):
     right = routine.get_arg(1)
     return api.kindof(process, left, right)
 
+
 @complete_native_routine
 def __is_implemented(process, routine):
     left = routine.get_arg(0)
     right = routine.get_arg(1)
     return api.is_implemented(process, left, right)
+
 
 @complete_native_routine
 def __interfaces(process, routine):
@@ -299,4 +319,3 @@ def __interfaces(process, routine):
         return datatype.get_interfaces(process, obj)
     else:
         return datatype.get_interfaces(process, api.get_type(process, obj))
-

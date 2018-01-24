@@ -1,7 +1,7 @@
 __author__ = 'gloryofrobots'
 from discriminator import *
 from arza.types.root import W_Root
-from arza.types import space, api
+from arza.types import space, api, plist
 from arza.runtime import error
 
 
@@ -188,6 +188,19 @@ class Signature(W_Root):
 
     def _to_string_(self):
         return "<signature %s> " % (", ".join([str(arg) for arg in self.args]))
+
+    def consists_of(self, types):
+        if len(types) != len(self.types):
+            return False
+
+        for i in range(0, len(self.types)):
+            arg1 = self.types[i]
+            arg2 = types[i]
+
+            if not api.equal_b(arg1, arg2):
+                return False
+
+        return True
 
     def equal(self, other):
         args1 = self.args
