@@ -64,10 +64,6 @@ def layout_type(parser, op, node):
     open_statement_layout(parser, node, None, INDENTS_TYPE)
 
 
-def layout_generic(parser, op, node):
-    open_statement_layout(parser, node, None, INDENTS_GENERIC)
-
-
 def layout_interface(parser, op, node):
     open_statement_layout(parser, node, None, INDENTS_INTERFACE)
 
@@ -1139,7 +1135,7 @@ def infix_def_of(parser, op, token, left):
 
 # INTERFACE
 
-def prefix_generic_fun(parser, op, token):
+def prefix_interface_generic_fun(parser, op, token):
     generic_name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     items = _parse_comma_separated(parser.generic_signature_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
     args = node_1(NT_LIST, token, items)

@@ -324,7 +324,7 @@ class GenericParser(BaseParser):
         self.generic_signature_parser = generic_signature_parser_init(BaseParser())
         self.name_parser = name_parser_init(BaseParser())
 
-        prefix(self, TT_FUN, None, prefix_generic_fun)
+        prefix(self, TT_FUN, None, prefix_interface_generic_fun)
         symbol(self, TT_RPAREN)
 
         self.add_subparsers([
