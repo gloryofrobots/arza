@@ -82,8 +82,10 @@ class W_Generic(W_Hashable):
         #         return res
 
         # dispatch_args = space.newtuple([args[i] for i in self.dispatch_indexes])
+        # print "####", str(self.name)
+        # print "####", args
         method = self.dag.evaluate(process, args)
-        # print "GEN CALL", str(method)
+        # print "----", method
         # method = lookup_implementation(process, self, args)
         assert method is not self
 
@@ -94,8 +96,6 @@ class W_Generic(W_Hashable):
                                  space.newlist(self.signatures))
 
         api.call(process, method, args)
-        # print "METHOD CALL", method, args
-        # process.call_object(method, args)
 
     def _type_(self, process):
         return process.std.types.Generic
@@ -153,13 +153,13 @@ class W_Generic(W_Hashable):
         sig = signatures[0]
         signatures = sorted(signatures, self._sort_signatures)
         if len(signatures) != 1 or nodes.is_guarded_pattern(sig.pattern):
-            return [LeafNode(conflict_resolver(process, self, signatures))]
+            return [LeafNode(sig, conflict_resolver(process, self, signatures))]
             # return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
             #                      self,
             #                      space.newlist(signatures),
             #                      space.newstring(u"Ambiguous generic specialisation"))
 
-        return [LeafNode(sig.method)]
+        return [LeafNode(sig, sig.method)]
 
 
 class ConflictResolverCallback(W_Root):

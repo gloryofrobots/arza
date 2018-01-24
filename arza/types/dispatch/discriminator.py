@@ -34,7 +34,7 @@ class Discriminator:
                and other.position == self.position
 
     def __str__(self):
-        return "<Discriminator %s %s>" % (str(self.position), str(self.status))
+        return "<D - %s %s>" % (str(self.position), str(self.status))
 
 
 class AnyDiscriminator(Discriminator):
@@ -46,7 +46,7 @@ class AnyDiscriminator(Discriminator):
         return WEIGHT_ANY
 
     def __str__(self):
-        return '"Any"'
+        return '<Any>'
 
 
 class PredicateDiscriminator(Discriminator):
@@ -67,7 +67,7 @@ class PredicateDiscriminator(Discriminator):
             return WEIGHT_NOT_FOUND
 
     def __str__(self):
-        return '"%s:%s"' % (str(self.position), str(self.predicate))
+        return '<P %s:%s>' % (str(self.position), str(self.predicate))
 
 
 class InterfaceDiscriminator(Discriminator):
@@ -95,10 +95,11 @@ class InterfaceDiscriminator(Discriminator):
         # print "INTERFACE DIS", self, arg
 
         # return i + self.PENALTY
-        return WEIGHT_INTERFACE - i
+        # return WEIGHT_INTERFACE - i
+        return WEIGHT_INTERFACE
 
     def __str__(self):
-        return '"%s:%s"' % (str(self.position), str(self.interface.name))
+        return '<I - %s:%s>' % (str(self.position), str(self.interface.name))
 
 
 class TypeDiscriminator(Discriminator):
@@ -120,4 +121,4 @@ class TypeDiscriminator(Discriminator):
             return WEIGHT_NOT_FOUND
 
     def __str__(self):
-        return '"%s:%s"' % (str(self.position), str(self.type.name))
+        return '<T - %s:%s>' % (str(self.position), str(self.type.name))

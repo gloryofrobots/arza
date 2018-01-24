@@ -1,3 +1,7 @@
+from arza.runtime import error
+from arza.types import api, space
+
+
 class DAGNode:
     def evaluate(self, process, args):
         raise NotImplementedError()
@@ -17,6 +21,10 @@ class SingleNode(DAGNode):
 
     def get_rank(self, process, args):
         return self.discriminator.evaluate(process, args)
+
+    # for reporting ambiguous dispatch errors
+    def get_method_node(self):
+        return self.nextnode.get_method_node()
 
     def evaluate(self, process, args):
         rank = self.nextnode.get_rank(process, args)
@@ -47,16 +55,45 @@ def sort_stack(stack):
             break
 
 
+def extract_signature(process, dag):
+    leaf = dag.get_method_node()
+    return leaf.signature
+
+
+def _check_ambiguous_methods(process, stack):
+    if len(stack) <= 1:
+        return
+
+    first = stack[0]
+    second = stack[1]
+    best_rank = first[1]
+    if best_rank != second[1]:
+        return
+
+    sig1 = extract_signature(process, first[0])
+    errors = [sig1]
+
+    for i in range(1, len(stack)):
+        node = stack[i]
+        if best_rank != node[1]:
+            break
+        sig = extract_signature(process, node[0])
+        errors.append(sig)
+
+    return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
+                         space.newstring(u"Ambiguous method specialisation"), space.newlist(errors))
+
+
 def evaluate_decision(process, stack, nodes, args):
     for node in nodes:
         rank = node.get_rank(process, args)
         if rank >= 0:
             stack.append((node, rank))
-    # print "********************", args
     # print "1", stack
     sort_stack(stack)
-    # print "2", stack
+    _check_ambiguous_methods(process, stack)
     # stack.sort(key=itemgetter(1))
+    # print "2", stack
     # print "3", stack
 
     for ranked_node in stack:
@@ -110,14 +147,18 @@ class RootNode(DAGNode):
 
 
 class LeafNode(DAGNode):
-    def __init__(self, method):
+    def __init__(self, signature, method):
+        self.signature = signature
         self.method = method
 
     def get_rank(self, process, args):
         return 0
 
+    def get_method_node(self):
+        return self
+
     def evaluate(self, process, args):
         return self.method
 
     def __str__(self):
-        return '"Method"'
+        return '[Method]'

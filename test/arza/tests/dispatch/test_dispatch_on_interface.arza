@@ -1,39 +1,46 @@
 import affirm
 
-type V(val)
+type Val(val)
 
-interface Add =
-    fun add(@v1, v2)
+interface Pos =
+    fun pos(v)
 
-interface Sub =
-    fun sub(@v1, v2)
+interface Neg =
+    fun neg(v)
 
-interface Value is (Add, Sub) =
-    fun val(v)
+interface Abs is (Pos, Neg) =
+    fun abs(v)
 
-def add(v1 of V, v2 of V) = v1.val +  v2.val
-def sub(v1 of V, v2 of V) = v1.val - v2.val
+def neg(v of Val) = -v.val
+def pos(v of Val) = v.val
 
-def val(v of Sub) = v.val - 1000
-def val(v of Add) = v.val + 1000
-def val(v of V) = v.val
+def abs(v of Neg) = -42
+def abs(v of Pos) = 42
+def abs(v of Val) =
+    if v.val < 0 then
+        -v.val
+    else
+        v.val
 
-def +(v1 of Int, v2 of Value) = val(v2) + v1
-def +(v1 of Int, v2 of Add) = v1
+def +(v1 of Int, v2 of Val) = abs(v2) + v1
+def +(v1 of Int, v2 of Abs) = abs(v2) + v1
+def +(v1 of Int, v2 of Pos) = 42
+def +(v1 of Int, v2 of Neg) = -42
 
-def +(v1 of Sub, v2 of Int) = val(v1) + v2 + 10
-def +(v1 of Add, v2 of Int) = val(v1) + v2 + 1000
+//def +(v1 of Sub, v2 of Int) = abs(v1) + v2 + 10
+def +(v1 of Abs, v2 of Int) = abs(v1) + v2 + 100
+//def +(v1 of Val, v2 of Int) = abs(v1) + v2
+//def +(v1 of Val, v2 of Int) = abs(v1) + v2
 
-describe V as (Add, Sub, Value)
+describe Val as (Abs, Pos, Neg)
 
 fun test() =
     let
-        v1 = V(1)
-        v2 = V(10)
+        v1 = Val(-1)
     in
-        affirm:is_true(V `is_implemented` Add)
-        affirm:is_true(V `is_implemented` Sub)
-        affirm:is_true(V `is_implemented` Value)
-        affirm:is_equal(val(v1), 1)
+        affirm:is_true(Val `is_implemented` Abs)
+        affirm:is_true(Val `is_implemented` Pos)
+        affirm:is_true(Val `is_implemented` Neg)
+        affirm:is_equal(abs(v1), 1)
         affirm:is_equal(1 + v1, 2)
-        affirm:is_equal(v1 + 1, 1002)
+        affirm:is_equal(v1 + 1, 102)
