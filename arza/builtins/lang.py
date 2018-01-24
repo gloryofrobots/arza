@@ -19,7 +19,7 @@ def put_lang_func(process, module, name, func, arity):
 
 def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
-    api.put_native_function(process, module, u'breakpoint', breakpoint, -1)
+    api.put_native_function(process, module, u'dmark', __dmark, -1)
     api.put_native_function(process, module, u'_p', _print, -1)
     api.put_native_function(process, module, u'address', _id, 1)
     api.put_native_function(process, module, u'time', time, 0)
@@ -92,7 +92,7 @@ def _print(process, routine):
 # here i can put breakpoints in python debugger
 # and pause script execution
 @complete_native_routine
-def breakpoint(process, routine):
+def __dmark(process, routine):
     _num = routine.get_arg(0)
     error.affirm_type(_num, space.isint)
     api.d.add_bp(api.to_i(_num))

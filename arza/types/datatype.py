@@ -237,12 +237,13 @@ def _derive(process, t, interfaces, strictmode):
             if process.std.interfaces.is_default_derivable_interface(interface):
                 continue
             else:
-                return error.throw_3(
-                    error.Errors.IMPLEMENTATION_ERROR,
-                    space.newstring(u"Interface already implemented"),
-                    t,
-                    interface
-                )
+                continue
+                # return error.throw_3(
+                #     error.Errors.IMPLEMENTATION_ERROR,
+                #     space.newstring(u"Interface already implemented"),
+                #     t,
+                #     interface
+                # )
 
         # derive according to future interfaces
         new_interfaces = plist.remove(interfaces, interface)

@@ -1,21 +1,28 @@
 from arza.types import api
 
+# TODO GET RID OF MAGIC NUMBERS
+
+WEIGHT_NOT_FOUND = -1000
+WEIGHT_UNKNOWN = -2000
+WEIGHT_ANY = 1000
+WEIGHT_FOUND = 0
+WEIGHT_INTERFACE = WEIGHT_ANY - 1
 
 class Discriminator:
     def __init__(self, position):
         self.position = position
-        self.status = -2000
+        self.status = WEIGHT_UNKNOWN
 
     def reset(self):
-        self.status = -2000
+        self.status = WEIGHT_UNKNOWN
 
     def evaluate(self, process, args):
         arg = api.at_index(args, self.position)
 
-        if self.status == -2000:
+        if self.status == WEIGHT_UNKNOWN:
             self.status = self._evaluate(process, arg)
             # print "STATUS", self.status
-            assert self.status != -2000
+            assert self.status != WEIGHT_UNKNOWN
 
         return self.status
 
@@ -36,7 +43,7 @@ class AnyDiscriminator(Discriminator):
 
     def _evaluate(self, process, arg):
         # print "ANY DIS"
-        return 1000
+        return WEIGHT_ANY
 
     def __str__(self):
         return '"Any"'
@@ -53,20 +60,17 @@ class PredicateDiscriminator(Discriminator):
                and other.predicate == self.predicate
 
     def _evaluate(self, process, arg):
-        # TODO GET RID OF MAGIC NUMBERS
         # print "PRED DIS", arg
         if self.predicate(arg):
-            return 0
+            return WEIGHT_FOUND
         else:
-            return -1000
+            return WEIGHT_NOT_FOUND
 
     def __str__(self):
         return '"%s:%s"' % (str(self.position), str(self.predicate))
 
 
 class InterfaceDiscriminator(Discriminator):
-    PENALTY = 1
-
     def __init__(self, position, interface):
         Discriminator.__init__(self, position)
         self.interface = interface
@@ -82,13 +86,16 @@ class InterfaceDiscriminator(Discriminator):
         if not api.interface_b(process, arg, self.interface):
             return -1000
 
-        i = api.get_index(t.interfaces, self.interface)
+        #i = api.get_index(t.interfaces, self.interface)
+        i = self.interface.count_generics()
 
         if i == -1:
             return -1
 
         # print "INTERFACE DIS", self, arg
-        return i + self.PENALTY
+
+        # return i + self.PENALTY
+        return WEIGHT_INTERFACE - i
 
     def __str__(self):
         return '"%s:%s"' % (str(self.position), str(self.interface.name))
@@ -108,9 +115,9 @@ class TypeDiscriminator(Discriminator):
 
     def _evaluate(self, process, arg):
         if api.typeof_b(process, arg, self.type):
-            return 0
+            return WEIGHT_FOUND
         else:
-            return -1000
+            return WEIGHT_NOT_FOUND
 
     def __str__(self):
         return '"%s:%s"' % (str(self.position), str(self.type.name))

@@ -31,6 +31,12 @@ class W_Interface(W_Hashable):
         #     position = api.at_index(record, 1)
         #     generic.register_interface(self, position)
 
+    def count_generics(self):
+        count = api.length_i(self.generics)
+        for sub in self.sub_interfaces:
+            count += sub.count_generics()
+        return count
+
     def register_type(self, type):
         if api.contains_b(self.types, type):
             error.throw_3(error.Errors.TYPE_ERROR,
@@ -79,6 +85,6 @@ def interface(name, generics, sub_interfaces):
             for record in iface.generics:
                 if not api.contains_b(result, record):
                     result = plist.cons(record, result)
-        # print "AFTER", result
+                    # print "AFTER", result
 
     return W_Interface(name, result, sub_interfaces)
