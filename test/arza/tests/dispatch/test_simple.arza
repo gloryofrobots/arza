@@ -4,7 +4,10 @@ import generics
 
 /////////////////////////////////////////////
 
-generic f1(x, y, z)
+interface =
+    fun f1(x, y, z)
+    fun f2(x, y)
+    fun f6 (x, y, z, a, b,  c)
 
 def f1 (x of Any, y, z) = #any
 def f1 (x of Int, y, z) = #int
@@ -14,9 +17,6 @@ fun test_unary () =
     affirm:is_equal(f1(0, {}, Tuple), #int)
     affirm:is_equal(f1(1 :: 2 :: 3 :: [], 42, ()), #seq)
     affirm:is_equal(f1({}, 42, ()), #any)
-
-
-generic f2(x, y)
 
 def f2 (x of Int, y of Float) = #int_float
 def f2 (x of Int, y of Int) = #int_int
@@ -44,7 +44,6 @@ fun test_binary () =
 
 ////////////////////////////////////////////////////
 
-generic f6 (x, y, z, a, b,  c)
 
 def f6 (x, y of Int, z of Float, a, b, c of String) = #int_float_string
 def f6 (x, y, z, a, b, c of String) = #any_any_string

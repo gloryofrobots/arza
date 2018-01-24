@@ -2,7 +2,10 @@ import io
 import affirm
 import generics
 
-generic f (x, y, z)
+
+interface =
+    fun f (x, y, z)
+
 type T
 
 def f({x, y}, [] of T, 1) = 42

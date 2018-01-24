@@ -4,7 +4,8 @@ type L(l)
 type None
 type Some(val)
 
-generic eq(self, other)
+interface =
+    fun eq(self, other)
 
 trait(T) for L =
     def len(self of T) = len(self.l)

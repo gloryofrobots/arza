@@ -115,7 +115,6 @@ RULES = [
     (keyword('trait'), TT_TRAIT),
     (keyword('for'), TT_FOR),
 
-    (keyword('generic'), TT_GENERIC),
     (keyword('interface'), TT_INTERFACE),
     (keyword('describe'), TT_DESCRIBE),
     (keyword('type'), TT_TYPE),

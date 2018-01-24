@@ -59,121 +59,57 @@ prefix (&, &, 96)
 // infix . : -> 100
 
 ////////////////////////////////////////////////////////////
-///////////////// GENERICS /////////////////////////////////
-////////////////////////////////////////////////////////////
-
-generic
-    ==(x, y)
-    !=(x, y)
-    <=(x, y)
-    <(x, y)
-    >=(x, y)
-    >(x, y)
-
-    cmp(first, second)
-
-    max(first, second)
-    min(first, second)
-
-    -(x, y)
-    +(x, y)
-    *(x, y)
-    /(x, y)
-    mod(x, y)
-    // unary -
-    negate(x)
-    **(x, y)
-
-    str(self)
-    repr(self)
-
-    len(self)
-    is_empty(self)
-
-    at(key, self)
-    put(key, value, self)
-    del(obj, self)
-    elem(key, self)
-
-    first(self)
-    rest(self)
-
-    empty(self)
-    cons(value, self)
-    prepend(value, self)
-    ++(self, other)
-    append(value, self)
-    keys(self)
-    values(self)
-    index_of(obj, self)
-    to_seq(self)
-
-    slice (first, last, self)
-    drop(count, self)
-    take(count, self)
-    lower_bound(self)
-    upper_bound(self)
-
-    range(self, last)
-    range_by (self, last, step)
-    range_from(self)
-    range_from_by(self, step)
-    !(self)
-    :=(self, value)
-    cast(to_what, self)
-
-////////////////////////////////////////////////////////////
 ///////////////// INTERFACES ///////////////////////////////
 ////////////////////////////////////////////////////////////
 
 interface PartialEq =
-    use ==(@x, y)
+    fun ==(@x, y)
 
 interface Eq is PartialEq =
-    use !=(@x, y)
+    fun !=(@x, y)
 
 interface Comparable =
-    use cmp(@first, second)
+    fun cmp(@first, second)
 
 interface LessEq is PartialEq =
-    use <=(@first, second)
+    fun <=(@first, second)
 
 interface Ord =
-    use <(@first, second)
     use <=(@first, second)
-    use >=(@first, second)
-    use >(@first, second)
     use cmp(@first, second)
-    use max(@first, second)
-    use min(@first, second)
+    fun <(@first, second)
+    fun >=(@first, second)
+    fun >(@first, second)
+    fun max(@first, second)
+    fun min(@first, second)
 
 interface Num =
-    use -(@x, y)
-    use +(@x, y)
-    use *(@x, y)
-    use /(@x, y)
-    use mod(@x, y)
+    fun -(@x, y)
+    fun +(@x, y)
+    fun *(@x, y)
+    fun /(@x, y)
+    fun mod(@x, y)
     // unary -
-    use negate(x)
+    fun negate(x)
 
 interface Pow =
-    use **(@x, y)
+    fun **(@x, y)
 
 interface Str =
-    use str(self)
+    fun str(self)
 
 interface Displayed is Str =
-    use repr(self)
+    fun repr(self)
 
 interface Len =
-    use len(self)
+    fun len(self)
 
 interface Sized is Len =
-    use is_empty(self)
+    fun is_empty(self)
 
 interface Coll =
-    use put(key, value, @self)
-    use del(obj, @self)
+    fun put(key, value, @self)
+    fun del(obj, @self)
 
 interface GrowableCollection =
     use put(key, value, @self)
@@ -182,64 +118,64 @@ interface ShrinkableCollection =
     use del(obj, @self)
 
 interface ReadOnlyCollection =
-    use at(key, @self)
-    use elem(key, @self)
+    fun at(key, @self)
+    fun elem(key, @self)
 
 interface Collection is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
 
+interface Dict is Collection =
+    fun keys(self)
+    fun values(self)
+
 interface Seq =
-    use first(self)
-    use rest(self)
+    fun first(self)
+    fun rest(self)
 
 interface Emptiable =
-    use empty(self)
+    fun empty(self)
 
 interface Consable =
-    use cons(value, @self)
+    fun cons(value, @self)
 
 interface Prependable =
-    use prepend(value, @self)
+    fun prepend(value, @self)
 
 interface Appendable =
-    use append(value, @self)
+    fun append(value, @self)
 
 interface Concatable =
-    use ++(self, @other)
-
-interface Dict is Collection =
-    use keys(self)
-    use values(self)
+    fun ++(self, @other)
 
 interface Indexed =
-    use index_of(obj, @self)
+    fun index_of(obj, @self)
 
 interface Seqable =
-    use to_seq(self)
+    fun to_seq(self)
 
 interface Castable =
-    use cast(to_what, @self)
+    fun cast(to_what, @self)
 
 interface Sliceable =
-    use slice (first, last, @self)
-    use drop(count, @self)
-    use take(count, @self)
+    fun slice (first, last, @self)
+    fun drop(count, @self)
+    fun take(count, @self)
 
 interface Bounded =
-    use lower_bound(self)
-    use upper_bound(self)
+    fun lower_bound(self)
+    fun upper_bound(self)
 
 interface Ranged =
-    use range(@self, last)
-    use range_by (@self, last, step)
-    use range_from(@self)
-    use range_from_by(@self, step)
+    fun range(@self, last)
+    fun range_by (@self, last, step)
+    fun range_from(@self)
+    fun range_from_by(@self, step)
 
 interface Ref =
-    use !(self)
+    fun !(self)
 
 interface MutRef =
     use !(self)
-    use :=(@self, value)
+    fun :=(@self, value)
 
 ////////////////////////////////////////////////////////////
 ///////////////// TYPES ////////////////////////////////////

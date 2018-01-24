@@ -160,5 +160,93 @@
         }
       ]
     }
+  ],
+  [
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "fun",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "put"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "fun",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "key",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "key"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "value",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "value"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "coll",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "coll"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "_ntype": "NT_GENERIC",
+      "_value": "fun",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "at"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "fun",
+          "children": [
+            [
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "key",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "key"
+                  }
+                ]
+              },
+              {
+                "_ntype": "NT_SYMBOL",
+                "_value": "coll",
+                "children": [
+                  {
+                    "_ntype": "NT_NAME",
+                    "_value": "coll"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    }
   ]
 ]

@@ -311,20 +311,6 @@ class TraitSignatureParser(BaseParser):
         literal(self, TT_NAME, NT_NAME)
 
 
-class GenericParser(BaseParser):
-    def __init__(self):
-        BaseParser.__init__(self)
-        self.generic_signature_parser = generic_signature_parser_init(BaseParser())
-
-        prefix(self, TT_NAME, NT_NAME, prefix_generic_name)
-        prefix(self, TT_OPERATOR, NT_NAME, prefix_generic_operator)
-        symbol(self, TT_RPAREN)
-
-        self.add_subparsers([
-            self.generic_signature_parser,
-        ])
-
-
 def generic_signature_parser_init(parser):
     prefix(parser, TT_NAME, NT_NAME, prefix_name_as_symbol)
     literal(parser, TT_WILDCARD, NT_WILDCARD)
@@ -332,17 +318,34 @@ def generic_signature_parser_init(parser):
     return parser
 
 
+class GenericParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+        self.generic_signature_parser = generic_signature_parser_init(BaseParser())
+        self.name_parser = name_parser_init(BaseParser())
+
+        prefix(self, TT_FUN, None, prefix_generic_fun)
+        symbol(self, TT_RPAREN)
+
+        self.add_subparsers([
+            self.name_parser,
+            self.generic_signature_parser,
+        ])
+
+
 class InterfaceParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
         prefix(self, TT_FUN, None, prefix_interface_fun)
         prefix(self, TT_USE, None, prefix_interface_use)
+        self.generic_parser = GenericParser()
         self.function_parser = InterfaceFunctionParser()
         self.name_parser = name_parser_init(BaseParser())
 
         symbol(self, TT_LPAREN)
         self.add_subparsers([
             self.function_parser,
+            self.generic_parser,
             self.name_parser
         ])
 
@@ -401,7 +404,6 @@ class ModuleParser(BaseParser):
         self.name_tuple_parser = name_tuple_parser_init(BaseParser())
 
         self.import_names_parser = import_names_parser_init(BaseParser())
-        self.generic_parser = GenericParser()
         self.interface_parser = InterfaceParser()
         self.type_parser = TypeParser()
         self.name_list_parser = name_list_parser_init(BaseParser())
@@ -415,7 +417,6 @@ class ModuleParser(BaseParser):
             self.name_tuple_parser,
             self.name_list_parser,
             self.import_names_parser,
-            self.generic_parser,
             self.interface_parser,
             self.type_parser,
             self.def_parser,
@@ -433,7 +434,6 @@ class ModuleParser(BaseParser):
         stmt(self, TT_TRAIT, None, stmt_trait, layout=layout_trait)
         stmt(self, TT_TYPE, None, stmt_type, layout=layout_type)
         stmt(self, TT_LET, None, prefix_module_let, layout=layout_let)
-        stmt(self, TT_GENERIC, None, stmt_generic, layout=layout_generic)
         stmt(self, TT_INTERFACE, None, stmt_interface, layout=layout_interface)
         stmt(self, TT_DESCRIBE, None, stmt_describe, layout=layout_describe)
         stmt(self, TT_DEF, None, stmt_def, layout=layout_def)

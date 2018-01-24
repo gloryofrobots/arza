@@ -4,6 +4,10 @@ interface Coll =
     fun put(@key, value, @coll)
     use at(key, @coll)
 
+interface =
+    fun put(key, value, coll)
+    fun at(key, coll)
+
 //interface ShrinkableCollection  =
 //    fun del(Key, @coll)
 //

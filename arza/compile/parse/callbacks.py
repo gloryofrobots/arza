@@ -1139,6 +1139,13 @@ def infix_def_of(parser, op, token, left):
 
 # INTERFACE
 
+def prefix_generic_fun(parser, op, token):
+    generic_name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    items = _parse_comma_separated(parser.generic_signature_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
+    args = node_1(NT_LIST, token, items)
+    return node_2(NT_GENERIC, token, generic_name, args)
+
+
 def prefix_interface_fun(parser, op, token):
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     args = _parse_comma_separated(parser.function_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
@@ -1183,6 +1190,9 @@ def prefix_interface_atsign(parser, op, token):
 
 
 def stmt_interface(parser, op, token):
+    if parser.token_type == TT_ASSIGN:
+        advance_expected(parser, TT_ASSIGN)
+        return statements(parser.interface_parser.generic_parser, TERM_BLOCK)
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     if parser.token_type == TT_IS:
         advance_expected(parser, TT_IS)
@@ -1191,8 +1201,8 @@ def stmt_interface(parser, op, token):
         subs = list_node([])
     if parser.token_type != TT_ASSIGN:
         return node_3(NT_INTERFACE, token, name,
-                           nodes.create_list_node(token, []),
-                           nodes.create_list_node_from_list(token, subs))
+                      nodes.create_list_node(token, []),
+                      nodes.create_list_node_from_list(token, subs))
 
     advance_expected(parser, TT_ASSIGN)
     funcs = statements(parser.interface_parser, TERM_BLOCK)
@@ -1362,30 +1372,6 @@ def stmt_trait(parser, op, token):
     if parser.token_type == TT_FOR:
         return _parser_trait_for(parser, token, name, signature)
     return _parse_trait_body(parser, token, name, signature)
-
-
-# GENERIC
-
-def stmt_generic(parser, op, token):
-    generics = statements(parser.generic_parser, TERM_BLOCK)
-    return generics
-
-
-def prefix_generic_name(parser, op, token):
-    name = itself(parser, op, token)
-    return _parse_generic_signature(parser, op, token, name)
-
-
-def prefix_generic_operator(parser, op, token):
-    name = symbol_operator_name(parser, op, token)
-    return _parse_generic_signature(parser, op, token, name)
-
-
-def _parse_generic_signature(parser, op, token, generic_name):
-    check_node_type(parser, generic_name, NT_NAME)
-    items = _parse_comma_separated(parser.generic_signature_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
-    args = node_1(NT_LIST, token, items)
-    return node_2(NT_GENERIC, token, generic_name, args)
 
 
 # OPERATORS

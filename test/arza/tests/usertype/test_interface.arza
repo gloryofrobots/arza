@@ -6,10 +6,8 @@ type T1(v1, v2)
 type T2(v1, v2, v3)
 type T3(v1)
 
-generic to_list(x)
-
 interface Listable =
-    use to_list(x)
+    fun to_list(@x)
 
 trait(T) for [T1, T2] =
     //Seq iface

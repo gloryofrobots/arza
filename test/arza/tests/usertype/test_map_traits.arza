@@ -7,16 +7,16 @@ type LT
 type Val(v)
 type Val2(v)
 
-generic
-    eq(x, y)
-    ne(x, y)
-    le(x, y)
-    lt(x, y)
-    ge(x, y)
-    gt(x, y)
-    cmp(x, y)
-    max(x, y)
-    min(x, y)
+interface =
+    fun eq(x, y)
+    fun ne(x, y)
+    fun le(x, y)
+    fun lt(x, y)
+    fun ge(x, y)
+    fun gt(x, y)
+    fun cmp(x, y)
+    fun max(x, y)
+    fun min(x, y)
 
 let
     Equal =

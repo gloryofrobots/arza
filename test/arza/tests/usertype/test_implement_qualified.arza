@@ -4,7 +4,8 @@ import tests:usertype:types as stuff
 
 prefix(++-+*++, ++-+*++, 70)
 
-generic ++-+*++(self)
+interface =
+    fun ++-+*++(self)
 
 type X(x)
 

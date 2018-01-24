@@ -4,9 +4,9 @@ type Asteroid(health)
 type Spaceship(health, fire_power)
 
 
-generic
-    collide_with(body1, body2)
-    damage(body1, amount)
+interface =
+    fun collide_with(body1, body2)
+    fun damage(body1, amount)
 
 interface Body =
     use damage(@body1, amount)
