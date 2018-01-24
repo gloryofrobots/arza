@@ -92,8 +92,9 @@ def descriptors(fields):
 class W_BaseDatatype(W_Hashable):
     def __init__(self, name, interfaces):
         W_Hashable.__init__(self)
-        # list of all interfaces
+        # list of all known interfaces
         self.interfaces = space.newlist([])
+        # 'is_implemented' lookup cache
         self.interfaces_table = space.newassocarray()
         self.name = name
         for interface in interfaces:
@@ -102,8 +103,6 @@ class W_BaseDatatype(W_Hashable):
     def _register_interface(self, iface):
         if self._has_interface(iface):
             return
-            # error.throw_3(error.Errors.IMPLEMENTATION_ERROR, space.newstring(u"Interface has already implemented"),
-            #               self, iface)
 
         api.put(self.interfaces_table, iface, space.newbool(True))
         self.interfaces = plist.cons(iface, self.interfaces)
@@ -119,7 +118,6 @@ class W_BaseDatatype(W_Hashable):
         return plist.contains(self.interfaces, iface)
 
     def is_interface_implemented(self, iface):
-        # return plist.contains(self.interfaces, iface)
         old = api.lookup(self.interfaces_table, iface, space.newvoid())
         if space.isvoid(old):
             status = self._can_implement(iface)
@@ -233,31 +231,34 @@ def _derive(process, t, interfaces, strictmode):
     error.affirm_type(t, space.isdatatype)
     error.affirm_type(interfaces, space.islist)
     to_be_implemented = []
-    bp = 1
-    api.d.pbp(bp, "================", t)
-    api.d.pbp(bp, interfaces)
-    api.d.pbp(bp, t.interfaces)
+    # bp = 1
+    # api.d.pbp(bp, "================", t)
+    # api.d.pbp(bp, interfaces)
+    # api.d.pbp(bp, t.interfaces)
     old_interfaces = t.interfaces
     for interface in interfaces:
-        api.d.pbp(bp, "I", interface)
+        # api.d.pbp(bp, "I", interface)
         if t.is_interface_implemented(interface):
             if process.std.interfaces.is_default_derivable_interface(interface):
                 continue
             else:
-                continue
-                # return error.throw_3(
-                #     error.Errors.IMPLEMENTATION_ERROR,
-                #     space.newstring(u"Interface already implemented"),
-                #     t,
-                #     interface
-                # )
+                if strictmode:
+                    continue
+                else:
+                    # INTERNAL CHECK
+                    return error.throw_3(
+                        error.Errors.IMPLEMENTATION_ERROR,
+                        space.newstring(u"Interface already implemented"),
+                        t,
+                        interface
+                    )
 
         # derive according to future interfaces
         new_interfaces = plist.remove(interfaces, interface)
         maybe_interfaces = plist.concat(new_interfaces, old_interfaces)
         # remove Any
         maybe_interfaces = plist.remove(maybe_interfaces, process.std.interfaces.Any)
-        api.d.pbp(bp, "M", maybe_interfaces)
+        # api.d.pbp(bp, "M", maybe_interfaces)
         # maybe_interfaces = new_interfaces
 
         error.affirm_type(interface, space.isinterface)
@@ -265,7 +266,7 @@ def _derive(process, t, interfaces, strictmode):
             generic = api.first(r)
             position = api.second(r)
             idx = api.to_i(position)
-            api.d.pbp(bp, "G", generic, idx, maybe_interfaces)
+            # api.d.pbp(bp, "G", generic, idx, maybe_interfaces)
             if not generic.is_implemented_for_type(t, maybe_interfaces, idx, strictmode):
                 error.throw_5(
                     error.Errors.IMPLEMENTATION_ERROR,

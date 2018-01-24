@@ -7,6 +7,9 @@ import tests:dispatch:movie:behavior
 
 let SCREAM_THRESHOLD = 60
 
+def behavior:scream(movie, b of actors:ProtagonistBlond) =
+    behavior:interact(movie, b, #SCREAM)
+
 trait __TPB(M, B) for (actors:BugEyedMonster, actors:ProtagonistBlond) =
     def behavior:encounter(movie, m of M, b of B)
         when actors:is_monster_killable(b, m)
@@ -31,20 +34,15 @@ trait __TPB(M, B) for (actors:BugEyedMonster, actors:ProtagonistBlond) =
 
     //////////////////////////////////////////////////
 
-
     def behavior:run_away(movie, b of B, m of M) =
         behavior:scream(movie, b) |>
         behavior:interact(_, b, (#RUN_AWAY, m))
 
+    behavior:TNamed(M)
+    behavior:TNamed(B)
+    behavior:TStr(M)
+    behavior:TStr(B)
 
-def behavior:scream(movie, b of actors:ProtagonistBlond) =
-    behavior:interact(movie, b, #SCREAM)
 
-
-describe (actors:ProtagonistBlond, actors:BugEyedMonster) as behavior:ActionActor
-behavior:TNamed(actors:ProtagonistBlond)
-behavior:TNamed(actors:BugEyedMonster)
-describe (actors:ProtagonistBlond, actors:BugEyedMonster) as behavior:Named
-behavior:TStr(actors:ProtagonistBlond)
-behavior:TStr(actors:BugEyedMonster)
+describe (actors:ProtagonistBlond, actors:BugEyedMonster) as (behavior:ActionActor, behavior:Named)
 
