@@ -24,15 +24,11 @@ class W_Interface(W_Hashable):
 
         self.sub_interfaces = sub_interfaces
 
+        # generics already have all values from sub_interfaces
         self.generics = generics
-
-        for sub in self.sub_interfaces:
-            self.generics = plist.concat(self.generics, sub.generics)
 
     def count_generics(self):
         count = api.length_i(self.generics)
-        for sub in self.sub_interfaces:
-            count += sub.count_generics()
         return count
 
     def register_type(self, type):
@@ -64,18 +60,11 @@ class W_Interface(W_Hashable):
 def interface(name, generics, sub_interfaces):
     result = plist.empty()
     for record in generics:
-        if space.istuple(record):
-            error.affirm_type(api.at_index(record, 0), space.isgeneric)
-            error.affirm_type(api.at_index(record, 1), space.isint)
-        else:
-            # TODO make interface accept all positions in that case
-            generic = record
-            error.affirm_type(generic, space.isgeneric)
-            position = space.newint(generic.dispatch_indexes[0])
-            record = space.newtuple([generic, position])
+        error.affirm_type(record, space.istuple)
+        error.affirm_type(api.at_index(record, 0), space.isgeneric)
+        error.affirm_type(api.at_index(record, 1), space.isint)
 
         result = plist.cons(record, result)
-        # result.append(record)
 
     if not api.is_empty_b(sub_interfaces):
         # print "BEFORE", result
