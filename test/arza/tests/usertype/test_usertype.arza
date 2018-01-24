@@ -4,12 +4,14 @@ import tests:usertype:test_map_traits
 import tests:usertype:test_traits
 import tests:usertype:test_polymorphism
 import tests:usertype:test_interface
+import tests:usertype:test_interface_inference
 import tests:usertype:test_cast
 import io
 
 fun test () =
     test_traits:test()
     test_interface:test()
+    test_interface_inference:test()
     test_simple:test()
     test_map_traits:test()
     test_implement_qualified:test()

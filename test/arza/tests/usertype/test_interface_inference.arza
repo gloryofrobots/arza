@@ -1,0 +1,53 @@
+import affirm
+
+type T1(val)
+type T2(val)
+type T3(val)
+
+interface I1 =
+    fun f1(v)
+
+interface I2 is I1 =
+    fun f2(v)
+
+interface I3 is I1 =
+    fun f3(v)
+
+trait F1(T) =
+    def f1(v of T) = v.val
+
+trait F2(T) =
+    def f2(v of T) = v.val + 1
+
+trait F3(T) =
+    def f3(v of T) = v.val + 2
+
+F1(T1)
+
+F1(T2)
+F2(T2)
+
+F1(T3)
+F3(T3)
+
+fun test () =
+    let
+        v1 = T1(1)
+        v2 = T2(1)
+        v3 = T3(1)
+    in
+        affirm:is_true(kindof(v1, I1))
+
+        affirm:is_true(kindof(v2, I1))
+        affirm:is_true(kindof(v2, I2))
+
+        affirm:is_true(kindof(v3, I1))
+        affirm:is_true(kindof(v3, I3))
+
+        affirm:is_true(is_implemented(T1, I1))
+
+        affirm:is_true(is_implemented(T2, I1))
+        affirm:is_true(is_implemented(T2, I2))
+
+        affirm:is_true(is_implemented(T3, I1))
+        affirm:is_true(is_implemented(T3, I3))

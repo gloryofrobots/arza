@@ -27,12 +27,8 @@ def +(v1 of Int, v2 of Abs) = abs(v2) + v1
 def +(v1 of Int, v2 of Pos) = 42
 def +(v1 of Int, v2 of Neg) = -42
 
-//def +(v1 of Sub, v2 of Int) = abs(v1) + v2 + 10
 def +(v1 of Abs, v2 of Int) = abs(v1) + v2 + 100
 //def +(v1 of Val, v2 of Int) = abs(v1) + v2
-//def +(v1 of Val, v2 of Int) = abs(v1) + v2
-
-describe Val as (Abs, Pos, Neg)
 
 fun test() =
     let
