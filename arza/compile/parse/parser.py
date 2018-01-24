@@ -335,14 +335,13 @@ def generic_signature_parser_init(parser):
 class InterfaceParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
-        prefix(self, TT_NAME, None, prefix_interface_name)
-        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
-        symbol(self, TT_RPAREN)
-        self.interface_function_parser = InterfaceFunctionParser()
+        prefix(self, TT_FUN, None, prefix_interface_fun)
+        prefix(self, TT_USE, None, prefix_interface_use)
+        self.function_parser = InterfaceFunctionParser()
         self.name_parser = name_parser_init(BaseParser())
 
         self.add_subparsers([
-            self.interface_function_parser,
+            self.function_parser,
             self.name_parser
         ])
 
@@ -350,19 +349,25 @@ class InterfaceParser(BaseParser):
 class InterfaceFunctionParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
-        self.int_parser = int_parser_init(BaseParser())
 
-        infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
-        infix(self, TT_DOT, None, 90, infix_interface_dot)
-        literal(self, TT_NAME, NT_NAME)
-        prefix(self, TT_LPAREN, None, prefix_lparen_expression_only, layout=layout_lparen)
-        symbol_nud(self, TT_OPERATOR, NT_NAME, symbol_operator_name)
+        prefix(self, TT_NAME, NT_NAME, prefix_name_as_symbol)
+        prefix(self, TT_AT_SIGN, None, prefix_interface_atsign)
+        literal(self, TT_WILDCARD, NT_WILDCARD)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
-        symbol(self, TT_RPAREN)
 
-        self.add_subparsers([
-            self.int_parser
-        ])
+        # self.int_parser = int_parser_init(BaseParser())
+        #
+        # infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
+        # infix(self, TT_DOT, None, 90, infix_interface_dot)
+        # literal(self, TT_NAME, NT_NAME)
+        # prefix(self, TT_LPAREN, None, prefix_lparen_expression_only, layout=layout_lparen)
+        # symbol_nud(self, TT_OPERATOR, NT_NAME, symbol_operator_name)
+        # symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
+        # symbol(self, TT_RPAREN)
+        #
+        # self.add_subparsers([
+        #     self.int_parser
+        # ])
 
 
 class MapKeyParser(BaseParser):

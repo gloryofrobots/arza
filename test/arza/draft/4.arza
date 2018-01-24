@@ -12,23 +12,19 @@ interface
     ReadOnlyCollection(at.1, elem.1)
     Collection() is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
 
-role (Key, Value, Put, Del, At, Elem) =
-    put(Key, Value, Put)
-    del(Key, Del)
-    at(Key, At)
-    elem(Key, Elem)
 
-role GrowColl =
-    in put(_, _, GrowColl)
+role GrowableColl =
+    fun put(key, value, @coll)
 
-
-
-role Del =
+role ShrinkableCollection  = 
+    del(Key, @coll)
 
 role Coll
-    in put(_, _, Coll)
-    in del(_, Coll)
+     in put(_, _, @coll)
+     in del(_, @coll)
 
-type Map[K, V]
+role ReadOnlyCollection =
+    at(key, @coll)
+    elem(key, @coll)
 
-
+role Collection is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)

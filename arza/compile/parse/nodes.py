@@ -36,7 +36,7 @@ def is_empty_node(n):
 def list_node(items):
     assert isinstance(items, list)
     for item in items:
-        assert is_node(item), item
+        assert is_node(item), item.__class__.__name__
     return space.newlist(items)
 
 

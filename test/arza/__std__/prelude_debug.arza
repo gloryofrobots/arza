@@ -1,19 +1,27 @@
-type T1(v1, v2, v3)
-type T2(v1,
-                        v2,
-v3)
+interface Coll =
+    fun put(@key, value, @coll)
+    use at(@key, coll)
 
-type T3
-    (v1, v2, v3)
+//interface ShrinkableCollection  =
+//    fun del(Key, @coll)
+//
 
-type T4
-(v1, v2, v3)
-
-(   type
-T5
-(v1,
-    v2,
-     v3))
+//type T1(v1, v2, v3)
+//type T2(v1,
+//                        v2,
+//v3)
+//
+//type T3
+//    (v1, v2, v3)
+//
+//type T4
+//(v1, v2, v3)
+//
+//(   type
+//T5
+//(v1,
+//    v2,
+//     v3))
 
 //trait __T0(T of I) for api:String =
 //    def f0({name} of T) = 1

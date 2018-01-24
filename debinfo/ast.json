@@ -1,242 +1,127 @@
 [
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
+  [
+    [
       {
-        "_ntype": "NT_NAME",
-        "_value": "T1"
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "type",
+        "_ntype": "NT_GENERIC",
+        "_value": "interface",
         "children": [
-          [
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v1",
-              "children": [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "put"
+          },
+          {
+            "_ntype": "NT_LIST",
+            "_value": "interface",
+            "children": [
+              [
                 {
-                  "_ntype": "NT_NAME",
-                  "_value": "v1"
+                  "_ntype": "NT_SYMBOL",
+                  "_value": "key",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "key"
+                    }
+                  ]
+                },
+                {
+                  "_ntype": "NT_SYMBOL",
+                  "_value": "value",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "value"
+                    }
+                  ]
+                },
+                {
+                  "_ntype": "NT_SYMBOL",
+                  "_value": "coll",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "coll"
+                    }
+                  ]
                 }
               ]
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v2",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v2"
-                }
-              ]
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v3",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v3"
-                }
-              ]
-            }
-          ]
+            ]
+          }
         ]
       }
-    ]
-  },
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "T2"
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "type",
-        "children": [
-          [
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v1",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v1"
-                }
-              ]
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v2",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v2"
-                }
-              ]
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v3",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v3"
-                }
-              ]
-            }
+    ],
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "interface",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "Coll"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "interface",
+          "children": [
+            [
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": "0",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "put"
+                    },
+                    {
+                      "_ntype": "NT_INT",
+                      "_value": "0"
+                    }
+                  ]
+                ]
+              },
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": "2",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "put"
+                    },
+                    {
+                      "_ntype": "NT_INT",
+                      "_value": "2"
+                    }
+                  ]
+                ]
+              },
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": "0",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "at"
+                    },
+                    {
+                      "_ntype": "NT_INT",
+                      "_value": "0"
+                    }
+                  ]
+                ]
+              }
+            ]
           ]
-        ]
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "T3"
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "type",
-        "children": [
-          [
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v1",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v1"
-                }
-              ]
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v2",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v2"
-                }
-              ]
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v3",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v3"
-                }
-              ]
-            }
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "interface",
+          "children": [
+            []
           ]
-        ]
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "T4"
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "type",
-        "children": [
-          [
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v1",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v1"
-                }
-              ]
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v2",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v2"
-                }
-              ]
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v3",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v3"
-                }
-              ]
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  {
-    "_ntype": "NT_TYPE",
-    "_value": "type",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "T5"
-      },
-      {
-        "_ntype": "NT_LIST",
-        "_value": "type",
-        "children": [
-          [
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v1",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v1"
-                }
-              ]
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v2",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v2"
-                }
-              ]
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "v3",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "v3"
-                }
-              ]
-            }
-          ]
-        ]
-      }
-    ]
-  }
+        }
+      ]
+    }
+  ]
 ]
