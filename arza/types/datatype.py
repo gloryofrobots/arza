@@ -92,15 +92,20 @@ def descriptors(fields):
 class W_BaseDatatype(W_Hashable):
     def __init__(self, name, interfaces):
         W_Hashable.__init__(self)
-        self.interfaces = interfaces
+        # list of all interfaces
+        self.interfaces = space.newlist([])
+        self.interfaces_table = space.newassocarray()
         self.name = name
+        for interface in interfaces:
+            self.register_interface(interface)
 
     def _register_interface(self, iface):
-        if self.is_interface_implemented(iface):
+        if self._has_interface(iface):
             return
             # error.throw_3(error.Errors.IMPLEMENTATION_ERROR, space.newstring(u"Interface has already implemented"),
             #               self, iface)
 
+        api.put(self.interfaces_table, iface, space.newbool(True))
         self.interfaces = plist.cons(iface, self.interfaces)
         iface.register_type(self)
 
@@ -110,8 +115,33 @@ class W_BaseDatatype(W_Hashable):
                 self._register_interface(sub)
         self._register_interface(iface)
 
-    def is_interface_implemented(self, iface):
+    def _has_interface(self, iface):
         return plist.contains(self.interfaces, iface)
+
+    def is_interface_implemented(self, iface):
+        # return plist.contains(self.interfaces, iface)
+        old = api.lookup(self.interfaces_table, iface, space.newvoid())
+        if space.isvoid(old):
+            status = self._can_implement(iface)
+            api.put(self.interfaces_table, iface, space.newbool(status))
+            if status:
+                self.register_interface(iface)
+            return status
+        else:
+            return api.to_b(old)
+
+    def _can_implement(self, interface):
+        if interface.count_generics() == 0:
+            return False
+
+        interfaces = space.newlist([])
+        for r in interface.generics:
+            generic = api.first(r)
+            position = api.second(r)
+            idx = api.to_i(position)
+            if not generic.is_implemented_for_type(self, interfaces, idx, True):
+                return False
+        return True
 
     def _compute_hash_(self):
         return int((1 - platform.random()) * 10000000)
@@ -197,17 +227,6 @@ def derive(process, t, interfaces):
 
 def derive_strict(process, t, interfaces):
     _derive(process, t, interfaces, True)
-
-
-def _can_implement(t, interface):
-    interfaces = space.newlist([])
-    for r in interface.generics:
-        generic = api.first(r)
-        position = api.second(r)
-        idx = api.to_i(position)
-        if not generic.is_implemented_for_type(t, interfaces, idx, True):
-            return False
-    return True
 
 
 def _derive(process, t, interfaces, strictmode):
