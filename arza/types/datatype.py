@@ -89,33 +89,10 @@ def descriptors(fields):
     return d
 
 
-class MRO:
-    def __init__(self):
-        self.items = plist.empty()
-        self.interfaces_index = 0
-
-    def add_interface(self, interface):
-        self.items = plist.insert(self.items, self.interfaces_index, interface)
-
-    def add_type(self, type):
-        self.items = plist.cons(type, self.items)
-        self.interfaces_index += 1
-
-    def weight(self, item):
-        return plist.index(self.items, item)
-
-    def has_type(self, type):
-        return plist.contains(plist.take(self.items, self.interfaces_index), type)
-
-    def has_interface(self, type):
-        return plist.contains(plist.drop(self.items, self.interfaces_index), type)
-
-
 class W_BaseDatatype(W_Hashable):
     def __init__(self, name, interfaces):
         W_Hashable.__init__(self)
         self.interfaces = interfaces
-        self.mro = MRO()
         self.name = name
 
     def _register_interface(self, iface):
@@ -125,7 +102,6 @@ class W_BaseDatatype(W_Hashable):
             #               self, iface)
 
         self.interfaces = plist.cons(iface, self.interfaces)
-        self.mro.add_interface(iface)
         iface.register_type(self)
 
     def register_interface(self, iface):
@@ -221,6 +197,17 @@ def derive(process, t, interfaces):
 
 def derive_strict(process, t, interfaces):
     _derive(process, t, interfaces, True)
+
+
+def _can_implement(t, interface):
+    interfaces = space.newlist([])
+    for r in interface.generics:
+        generic = api.first(r)
+        position = api.second(r)
+        idx = api.to_i(position)
+        if not generic.is_implemented_for_type(t, interfaces, idx, True):
+            return False
+    return True
 
 
 def _derive(process, t, interfaces, strictmode):

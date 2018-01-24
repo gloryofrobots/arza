@@ -311,34 +311,12 @@ class TraitSignatureParser(BaseParser):
         literal(self, TT_NAME, NT_NAME)
 
 
-def generic_signature_parser_init(parser):
-    prefix(parser, TT_NAME, NT_NAME, prefix_name_as_symbol)
-    literal(parser, TT_WILDCARD, NT_WILDCARD)
-    symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
-    return parser
-
-
-class GenericParser(BaseParser):
-    def __init__(self):
-        BaseParser.__init__(self)
-        self.generic_signature_parser = generic_signature_parser_init(BaseParser())
-        self.name_parser = name_parser_init(BaseParser())
-
-        prefix(self, TT_FUN, None, prefix_interface_generic_fun)
-        symbol(self, TT_RPAREN)
-
-        self.add_subparsers([
-            self.name_parser,
-            self.generic_signature_parser,
-        ])
-
-
 class InterfaceParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
         prefix(self, TT_FUN, None, prefix_interface_fun)
         prefix(self, TT_USE, None, prefix_interface_use)
-        self.generic_parser = GenericParser()
+        self.generic_parser = InterfaceGenericParser()
         self.function_parser = InterfaceFunctionParser()
         self.name_parser = name_parser_init(BaseParser())
 
@@ -359,19 +337,27 @@ class InterfaceFunctionParser(BaseParser):
         literal(self, TT_WILDCARD, NT_WILDCARD)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
-        # self.int_parser = int_parser_init(BaseParser())
-        #
-        # infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
-        # infix(self, TT_DOT, None, 90, infix_interface_dot)
-        # literal(self, TT_NAME, NT_NAME)
-        # prefix(self, TT_LPAREN, None, prefix_lparen_expression_only, layout=layout_lparen)
-        # symbol_nud(self, TT_OPERATOR, NT_NAME, symbol_operator_name)
-        # symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
-        # symbol(self, TT_RPAREN)
-        #
-        # self.add_subparsers([
-        #     self.int_parser
-        # ])
+
+def interface_generic_signature_parser_init(parser):
+    prefix(parser, TT_NAME, NT_NAME, prefix_name_as_symbol)
+    literal(parser, TT_WILDCARD, NT_WILDCARD)
+    symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
+    return parser
+
+
+class InterfaceGenericParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+        self.generic_signature_parser = interface_generic_signature_parser_init(BaseParser())
+        self.name_parser = name_parser_init(BaseParser())
+
+        prefix(self, TT_FUN, None, prefix_interface_generic_fun)
+        symbol(self, TT_RPAREN)
+
+        self.add_subparsers([
+            self.name_parser,
+            self.generic_signature_parser,
+        ])
 
 
 class MapKeyParser(BaseParser):

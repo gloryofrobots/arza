@@ -26,10 +26,8 @@ class W_Interface(W_Hashable):
 
         self.generics = generics
 
-        # for record in generics:
-        #     generic = api.at_index(record, 0)
-        #     position = api.at_index(record, 1)
-        #     generic.register_interface(self, position)
+        for sub in self.sub_interfaces:
+            self.generics = plist.concat(self.generics, sub.generics)
 
     def count_generics(self):
         count = api.length_i(self.generics)
