@@ -292,8 +292,12 @@ def newtype(process, name, fields, mixins):
         _type = W_SingletonType(name)
         _iface = process.std.interfaces.Singleton
     else:
-        for mixin in mixins:
-            fields = plist.concat(fields, mixin.fields)
+        if not plist.is_empty(mixins):
+            mixin_fields = plist.empty()
+            for mixin in mixins:
+                mixin_fields = plist.concat(mixin_fields, mixin.fields)
+            fields = plist.concat(mixin_fields, fields)
+            # print "FIELDS", mixin_fields, fields
 
         if not plist.is_hetero(fields):
             error.throw_2(

@@ -989,6 +989,7 @@ def _parse_type_fields(parser, token):
     fields = nodes.create_list_node_from_list(token, items)
     return fields
 
+
 def stmt_type(parser, op, token):
     """
     complicated operator, possible syntaxes
@@ -1158,12 +1159,16 @@ def infix_def_of(parser, op, token, left):
 
 # DEFPLUS
 
-def stmt_def_plus(parser, op, token):
+def _parse_defplus(parser, op, token, allow_non_determined=False):
     advance_expected(parser, TT_LPAREN)
     super_name = expression(parser.def_parser.def_plus_super_parser, 0)
     advance_expected(parser, TT_RPAREN)
-    method = _parse_def(parser, op, token, False)
+    method = _parse_def(parser, op, token, allow_non_determined)
     return nodes.node_2(NT_DEF_PLUS, token, super_name, method)
+
+
+def stmt_def_plus(parser, op, token):
+    return _parse_defplus(parser, op, token, False)
 
 
 # INTERFACE
@@ -1284,6 +1289,10 @@ def _trait_for_ensure_tuple(node):
         return list_node([node])
     else:
         return node
+
+
+def prefix_trait_def_plus(parser, op, token):
+    return _parse_defplus(parser, op, token, True)
 
 
 def prefix_trait_def(parser, op, token):

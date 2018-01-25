@@ -277,6 +277,7 @@ class TraitParser(BaseParser):
 
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         prefix(self, TT_DEF, None, prefix_trait_def, layout=layout_def)
+        prefix(self, TT_DEF_PLUS, None, stmt_def_plus, layout=layout_def)
         infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
         infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
         literal(self, TT_NAME, NT_NAME)
