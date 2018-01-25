@@ -287,11 +287,21 @@ def newnativedatatype(name):
     return W_NativeDatatype(name)
 
 
-def newtype(process, name, fields):
+def newtype(process, name, fields, mixins):
     if plist.is_empty(fields):
         _type = W_SingletonType(name)
         _iface = process.std.interfaces.Singleton
     else:
+        for mixin in mixins:
+            fields = plist.concat(fields, mixin.fields)
+
+        if not plist.is_hetero(fields):
+            error.throw_2(
+                error.Errors.COMPILE_ERROR,
+                space.newstring(u"Dublicated fields in type declaration"),
+                fields,
+            )
+
         _type = W_DataType(name, fields)
         _iface = process.std.interfaces.Instance
 

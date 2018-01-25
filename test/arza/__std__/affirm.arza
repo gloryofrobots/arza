@@ -4,7 +4,7 @@ import io
 
 fun is_equal_batch(fn, ...calls) = _batch(is_equal, fn, calls)
 
-type Success(val)
+type Success = (val)
 
 fun _batch(checker, fn, calls) =
     let calls_list = to_seq(calls)

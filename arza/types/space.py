@@ -447,10 +447,16 @@ def isinterface(w):
 
 ########################################################
 
-def newdatatype(process, name, fields):
+def newdatatype(process, name, fields, mixins):
     from arza.types.datatype import newtype
-    assert issymbol(name)
-    return newtype(process, name, fields)
+    from arza.runtime import error
+
+    error.affirm_type(name, issymbol)
+    error.affirm_type(fields, islist)
+    error.affirm_type(mixins, islist)
+    error.affirm_iterable(mixins, isdatatype)
+    error.affirm_iterable(fields, issymbol)
+    return newtype(process, name, fields, mixins)
 
 
 def newnativedatatype(name):

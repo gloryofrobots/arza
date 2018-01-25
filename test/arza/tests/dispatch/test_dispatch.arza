@@ -4,6 +4,7 @@ import tests:dispatch:test_autotype_def
 import tests:dispatch:test_predicate_multi
 import tests:dispatch:test_dispatch_on_interface
 import tests:dispatch:test_def_override
+import tests:dispatch:inheritance:test_inheritance
 import io
 
 fun test () =
@@ -13,3 +14,5 @@ fun test () =
     test_autotype_def:test()
     test_dispatch_on_interface:test()
     test_def_override:test()
+    test_inheritance:test()
+

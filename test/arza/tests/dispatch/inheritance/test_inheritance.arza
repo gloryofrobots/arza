@@ -1,0 +1,4 @@
+import tests:dispatch:inheritance:test_structural
+
+fun test () =
+    test_structural:test()

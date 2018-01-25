@@ -1,0 +1,40 @@
+import io
+import affirm
+
+// Vecs
+
+type Vec2 (x, y)
+type Vec3 is Vec2  = (z)
+
+def + (v1 of Vec2, v2 of Vec2) = Vec2(v1.x + v2.x, v1.y + v2.y)
+def + (v1 of Vec2, v2 of Vec3) = Vec3(v1.x + v2.x, v1.y + v2.y, v2.z)
+
+def + (v1 of Vec3, v2 of Vec3) = Vec3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z)
+def + (v1 of Vec3, v2 of Vec2) = `+` (v2, v1)
+
+// alphabet
+
+type AB(a, b)
+type C(c)
+type DE(d, e)
+type FGH(f, g, h)
+
+type Alphabet is (AB, C, DE, FGH) = (i, j, k)
+
+//
+
+fun test () =
+    let
+        v1 = Vec2(1, 2)
+        v2 = Vec3(10, 20, 30)
+        alpha = Alphabet(#a, #b, #c, #d, #e, #f, #g, #h, #i, #j, #k)
+        (x, y, z) of Vec3 = v2
+
+        (a, b, c, d, e, f, g, h, i, j, k) of Alphabet = alpha
+    in
+        affirm:is_equal([x, y, z], [10, 20, 30])
+        affirm:is_equal([a, b, c, d, e, f, g, h, i, j, k], [#a, #b, #c, #d, #e, #f, #g, #h, #i, #j, #k])
+        affirm:is_equal(
+             (v1 + v2),
+             (v2 + v1)
+        )
