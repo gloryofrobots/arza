@@ -1,0 +1,29 @@
+import io
+import affirm
+
+interface =
+    fun f1(v)
+
+def f1(1) = #one
+def f1(i of Int) = i
+
+def+(_) f1(i of Int) = 21
+def+(super) f1(i of Int) = super(i) + 21
+
+def+(super) f1(i of Int) = super(i) + 42
+
+
+type Val(val)
+
+def + (v1 of Val, v2 of Val) = v1.val + v2.val
+def+(super) + (v1 of Val, v2 of Val) = super(v1, v2) * 2
+
+fun test() =
+    affirm:is_equal(signatures(f1), [[Int]])
+    affirm:is_equal_all(f1(1), f1(0), f1(10000), f1(-1223), 84)
+
+    let
+        v1 = Val(1)
+        v2 = Val(2)
+    in
+        affirm:is_equal .. (v1 + v2) .. 6

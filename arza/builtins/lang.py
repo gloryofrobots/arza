@@ -41,6 +41,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
     put_lang_func(process, module, lang_names.INTERFACE, __interface, 3)
     put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
+    put_lang_func(process, module, lang_names.OVERRIDE, __override, 5)
     put_lang_func(process, module, lang_names.DESCRIBE, __describe, 2)
     put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
     put_lang_func(process, module, u"partial", __partial, -1)
@@ -172,6 +173,17 @@ def __generic(process, routine):
     name = routine.get_arg(0)
     sig = routine.get_arg(1)
     return generic.generic(name, sig)
+
+
+@complete_native_routine
+def __override(process, routine):
+    gf = routine.get_arg(0)
+    types = routine.get_arg(1)
+    method = routine.get_arg(2)
+    pattern = routine.get_arg(3)
+    outers = routine.get_arg(4)
+    generic.override(process, gf, types, method, pattern, outers)
+    return gf
 
 
 @complete_native_routine

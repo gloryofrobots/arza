@@ -241,6 +241,12 @@ class DefPatternParser(PatternParser):
         prefix(self, TT_OF, None, prefix_def_of)
 
 
+def def_plus_super_parser_init(parser):
+    literal(parser, TT_NAME, NT_NAME)
+    literal(parser, TT_WILDCARD, NT_WILDCARD)
+    return parser
+
+
 class DefParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
@@ -249,12 +255,14 @@ class DefParser(BaseParser):
         self.fun_pattern_parser = DefPatternParser()
         self.guard_parser = guard_parser_init(BaseParser())
         self.name_parser = name_parser_init(BaseParser())
+        self.def_plus_super_parser = def_plus_super_parser_init(BaseParser())
 
         self.add_subparsers([
             self.expression_parser,
             self.fun_pattern_parser,
             self.guard_parser,
-            self.name_parser
+            self.name_parser,
+            self.def_plus_super_parser
         ])
 
 
@@ -423,6 +431,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_INTERFACE, None, stmt_interface, layout=layout_interface)
         stmt(self, TT_DESCRIBE, None, stmt_describe, layout=layout_describe)
         stmt(self, TT_DEF, None, stmt_def, layout=layout_def)
+        stmt(self, TT_DEF_PLUS, None, stmt_def_plus, layout=layout_def)
         stmt(self, TT_IMPORT, None, stmt_import)
         stmt(self, TT_FROM, None, stmt_from)
         stmt(self, TT_EXPORT, None, stmt_export)

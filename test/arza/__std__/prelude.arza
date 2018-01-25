@@ -280,6 +280,8 @@ fun dec(x) = x - 1
 //fun last coll = at ((len coll) - 1) coll
 fun last(coll) = at(len(coll) - 1, coll)
 
+fun __override__(generic, types, func) = func(method(generic, types))
+
 let
     fst = c -> at(0, c)
     snd = c -> at(1, c)

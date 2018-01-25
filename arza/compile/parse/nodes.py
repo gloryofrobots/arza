@@ -119,6 +119,10 @@ def node_4(ntype, token, child1, child2, child3, child4):
     return newnode(ntype, token, [child1, child2, child3, child4])
 
 
+def node_5(ntype, token, child1, child2, child3, child4, child5):
+    return newnode(ntype, token, [child1, child2, child3, child4, child5])
+
+
 def node_type(node):
     return api.to_i(api.at_index(node, 0))
 
@@ -332,10 +336,17 @@ def create_function_variants(args, exp):
     ])])
 
 
-def create_fun_simple_node(token, name, body):
+def create_fun_0_node(token, name, body):
     return create_fun_node(token, name,
                            create_function_variants(
                                create_tuple_node(token, [create_unit_node(token)]),
+                               body))
+
+
+def create_fun_1_node(token, name, arg, body):
+    return create_fun_node(token, name,
+                           create_function_variants(
+                               create_tuple_node(token, [arg]),
                                body))
 
 

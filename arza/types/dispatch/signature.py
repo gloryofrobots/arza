@@ -166,28 +166,12 @@ class ArgumentType(Argument):
         return self.type._hash_()
 
 
-class Signature(W_Root):
-    def __init__(self, args, types, method, pattern, outers):
+class UniqueSignature(W_Root):
+    def __init__(self, args, types, method):
         self.method = method
         self.args = args
         self.types = types
         self.arity = len(args)
-        self.pattern = pattern
-        self.outers = outers
-
-    def has_type(self, _type):
-        return api.contains_b(self.types, _type)
-
-    def can_dispatch_on_type(self, _type, interfaces, position, strictmode=False):
-        current = api.at_index(self.types, position)
-        if space.isinterface(current):
-            if strictmode:
-                return False
-            return api.contains_b(interfaces, current)
-        return api.equal_b(_type, current)
-
-    def _to_string_(self):
-        return "<signature %s> " % (", ".join([str(arg) for arg in self.args]))
 
     def consists_of(self, types):
         if len(types) != len(self.types):
@@ -215,6 +199,30 @@ class Signature(W_Root):
 
     def get_argument(self, index):
         return self.args[index]
+
+    def has_type(self, _type):
+        return api.contains_b(self.types, _type)
+
+    def can_dispatch_on_type(self, _type, interfaces, position, strictmode=False):
+        current = api.at_index(self.types, position)
+        if space.isinterface(current):
+            if strictmode:
+                return False
+            return api.contains_b(interfaces, current)
+        return api.equal_b(_type, current)
+
+    def _to_string_(self):
+        return "<unique signature %s> " % (", ".join([str(arg) for arg in self.args]))
+
+
+class Signature(UniqueSignature):
+    def __init__(self, args, types, method, pattern, outers):
+        UniqueSignature.__init__(self, args, types, method)
+        self.pattern = pattern
+        self.outers = outers
+
+    def _to_string_(self):
+        return "<signature %s> " % (", ".join([str(arg) for arg in self.args]))
 
 
 def _get_interface_predicate(process, interface, index):
@@ -253,7 +261,7 @@ def _get_type_predicate(process, _type, index):
     return arg
 
 
-def newsignature(process, args, method, pattern, outers):
+def _get_sigargs(process, args):
     arity = api.length_i(args)
     sig_args = []
 
@@ -268,7 +276,13 @@ def newsignature(process, args, method, pattern, outers):
                                  space.newstring(u"Invalid signature type. Expected type or interface"), kind)
 
         sig_args.append(arg)
+    return sig_args
 
+
+def newuniquesignature(process, sig, method):
+    return UniqueSignature(sig.args, sig.types, method)
+
+
+def newsignature(process, args, method, pattern, outers):
+    sig_args = _get_sigargs(process, args)
     return Signature(sig_args, args, method, pattern, outers)
-
-

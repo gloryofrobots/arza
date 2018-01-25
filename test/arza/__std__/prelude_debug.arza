@@ -1,12 +1,13 @@
-interface Collection is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
-
-interface Coll =
-    fun put(@key, value, @coll)
-    use at(key, @coll)
-
-interface =
-    fun put(key, value, coll)
-    fun at(key, coll)
+def+(super) f(i of Int) = 1
+//interface Collection is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
+//
+//interface Coll =
+//    fun put(@key, value, @coll)
+//    use at(key, @coll)
+//
+//interface =
+//    fun put(key, value, coll)
+//    fun at(key, coll)
 
 //interface ShrinkableCollection  =
 //    fun del(Key, @coll)

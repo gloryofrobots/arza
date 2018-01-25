@@ -4,7 +4,7 @@ from arza.runtime import error
 from arza.types import api, space, plist, tuples
 from arza.compile.parse import nodes
 from arza.compile import compiler
-from signature import newsignature
+from signature import newsignature, newuniquesignature
 from dag import *
 
 
@@ -40,6 +40,7 @@ class W_Generic(W_Hashable):
         self.arity = api.length_i(args_signature)
         self.args_signature = args_signature
         self.signatures = []
+        self.unique_signatures = []
         self.count_call = 0
         self.env = space.newemptyenv(self.name)
         self.dag = None
@@ -106,7 +107,17 @@ class W_Generic(W_Hashable):
     def _compute_hash_(self):
         return int((1 - platform.random()) * 10000000)
 
+    def override_signature(self, process, signature):
+        new_signatures = []
+        for sig in self.signatures:
+            if not signature.equal(sig):
+                new_signatures.append(sig)
+
+        self.signatures = new_signatures
+        self.add_signature(process, signature)
+
     def add_signature(self, process, signature):
+        self.unique_signatures = []
         self.signatures.append(signature)
         discriminators = []
         nodes = self._make_nodes(process, 0, self.dispatch_arity, self.signatures, discriminators)
@@ -114,12 +125,12 @@ class W_Generic(W_Hashable):
 
     def get_method_types(self):
         types = []
-        for sig in self.signatures:
+        for sig in self.unique_signatures:
             types.append(sig.types)
         return types
 
     def get_method(self, types):
-        for sig in self.signatures:
+        for sig in self.unique_signatures:
             if sig.consists_of(types):
                 return sig.method
         return space.newvoid()
@@ -161,17 +172,21 @@ class W_Generic(W_Hashable):
         else:
             return 0
 
-    def _make_method_node(self, process, signatures):
+    def _make_method_node(self, process, sigs):
+        signatures = sorted(sigs, self._sort_signatures)
         sig = signatures[0]
-        signatures = sorted(signatures, self._sort_signatures)
         if len(signatures) != 1 or nodes.is_guarded_pattern(sig.pattern):
-            return [LeafNode(sig, conflict_resolver(process, self, signatures))]
-            # return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
-            #                      self,
-            #                      space.newlist(signatures),
-            #                      space.newstring(u"Ambiguous generic specialisation"))
+            method = conflict_resolver(process, self, signatures)
+        else:
+            method = sig.method
 
-        return [LeafNode(sig, sig.method)]
+        # return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
+        #                      self,
+        #                      space.newlist(signatures),
+        #                      space.newstring(u"Ambiguous generic specialisation"))
+        unique = newuniquesignature(process, sig, method)
+        self.unique_signatures.append(unique)
+        return [LeafNode(sig, method)]
 
 
 class ConflictResolverCallback(W_Root):
@@ -229,7 +244,7 @@ def conflict_resolver(process, gf, signatures):
     return ConflictResolver(signatures, fn)
 
 
-def specify(process, gf, types, method, pattern, outers):
+def _make_signature(process, gf, types, method, pattern, outers):
     any = process.std.interfaces.Any
     _types = space.newlist([
                                any if space.isvoid(_type) else _type for _type in types
@@ -243,10 +258,19 @@ def specify(process, gf, types, method, pattern, outers):
         return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
                              gf,
                              space.newstring(u"Bad method for specialisation, inconsistent arity"))
+    return newsignature(process, _types, method, pattern, outers)
 
-    gf.add_signature(process, newsignature(process, _types, method, pattern, outers))
+
+def specify(process, gf, types, method, pattern, outers):
+    sig = _make_signature(process, gf, types, method, pattern, outers)
+    gf.add_signature(process, sig)
     # for index, _type in zip(gf.dispatch_indexes, _types):
     #     _type.register_generic(gf, space.newint(index))
+
+
+def override(process, gf, types, method, pattern, outers):
+    sig = _make_signature(process, gf, types, method, pattern, outers)
+    gf.override_signature(process, sig)
 
 
 def get_method(process, gf, types):

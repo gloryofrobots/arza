@@ -31,7 +31,7 @@ def simplify_let(compiler, code, node):
     let_block = node_first(node)
     in_block = node_second(node)
     body = plist.concat(let_block, in_block)
-    func = nodes.create_fun_simple_node(nodes.node_token(node), nodes.empty_node(), body)
+    func = nodes.create_fun_0_node(nodes.node_token(node), nodes.empty_node(), body)
     return nodes.create_call_node_1(nodes.node_token(node),
                                     func,
                                     nodes.create_unit_node(nodes.node_token(node)))
@@ -84,7 +84,31 @@ def _replace_name(node, names):
     return node
 
 
+def simplify_def_plus(compiler, code, node):
+    super_name = nodes.node_first(node)
+    def_method = nodes.node_second(node)
+    func, signature, method, ast, outers_list = _simplify_def(compiler, code, def_method)
+
+    token = nodes.node_token(node)
+    # f1 = nodes.create_fun_node(token, nodes.empty_node(), method)
+    f1 = method
+    wrapper = nodes.create_fun_1_node(
+        token, nodes.empty_node(),
+        super_name,
+        f1
+    )
+    call_override = nodes.create_call_node_s(token, lang_names.OVERRIDE_HELPER, [func, signature, wrapper])
+    return nodes.create_call_node_s(token, lang_names.OVERRIDE,
+                                    [func, signature, call_override, ast, outers_list])
+
+
 def simplify_def(compiler, code, node):
+    func, signature, method, ast, outers_list = _simplify_def(compiler, code, node)
+    return nodes.create_call_node_s(nodes.node_token(node), lang_names.SPECIFY,
+                                    [func, signature, method, ast, outers_list])
+
+
+def _simplify_def(compiler, code, node):
     func = node_first(node)
     signature = node_second(node)
     method = node_third(node)
@@ -122,8 +146,7 @@ def simplify_def(compiler, code, node):
         outers_list = nodes.create_empty_list_node(nodes.node_token(pattern))
 
     ast = nodes.create_literal_node(nodes.node_token(pattern), pattern)
-    return nodes.create_call_node_s(nodes.node_token(node), lang_names.SPECIFY,
-                                    [func, signature, method, ast, outers_list])
+    return func, signature, method, ast, outers_list
 
 
 def simplify_interface(compiler, code, node):

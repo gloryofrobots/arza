@@ -1133,6 +1133,16 @@ def infix_def_of(parser, op, token, left):
     return node_2(NT_OF, token, left, _type)
 
 
+# DEFPLUS
+
+def stmt_def_plus(parser, op, token):
+    advance_expected(parser, TT_LPAREN)
+    super_name = expression(parser.def_parser.def_plus_super_parser, 0)
+    advance_expected(parser, TT_RPAREN)
+    method = _parse_def(parser, op, token, False)
+    return nodes.node_2(NT_DEF_PLUS, token, super_name, method)
+
+
 # INTERFACE
 
 def prefix_interface_generic_fun(parser, op, token):

@@ -22,6 +22,8 @@ INTERFACE = PREFIX + "definterface"
 PARTIAL = PREFIX + "defpartial"
 
 SPECIFY = PREFIX + "specify"
+OVERRIDE = PREFIX + "override"
+OVERRIDE_HELPER = PREFIX + "__override__"
 
 SLICE = PREFIX + "slice"
 DROP = PREFIX + "drop"
