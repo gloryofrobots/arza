@@ -3,27 +3,8 @@ import affirm
 import seq
 import list
 import array
-//import tests:tests
-
-type A(a)
-
-interface =
-    fun f(v)
-
-trait T_A(T) for A =
-    def f(v of T) = v.a
-
-type AB is A = (b)
-
-trait T_B(T) for AB =
-    T_A(T)
-    def+(super) f(v of T) = super(v) ++ v.b
+import tests:tests
 
 
 fun main() =
-    let
-        a = A(#a)
-        ab = AB(#a, #b)
-    in
-        io:print(f(a), f(ab), ab.a, ab.b)
-//    tests:run()
+    tests:run()

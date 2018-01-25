@@ -1,0 +1,25 @@
+import affirm
+
+type A(a)
+
+interface =
+    fun f(v)
+
+trait T_A(T) for A =
+    def f(v of T) = v.a
+
+type AB is A = (b)
+
+trait T_B(T) for AB =
+    T_A(T)
+    def+(super) f(v of T) = super(v) ++ v.b
+
+
+fun test() =
+    let
+        a = A(#a)
+        ab = AB(#a, #b)
+    in
+        affirm:is_equal(f(a), #a)
+        affirm:is_equal(f(ab), #ab)
+        affirm:is_equal(ab.a, #a)
