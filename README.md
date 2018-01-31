@@ -974,10 +974,8 @@ fun f() =
         y = 2
         z = sqrt(4)
     in
-    (
        io:print("x y z", x, y, z)
        sqrt(z + y + z)
-    )
 
 // Lexical scopes in Let-in
 fun f() =
@@ -985,19 +983,15 @@ fun f() =
         x = 1
         y = 2
     in
-    (
         let
             x = 11
             y = 12
         in
-        (
             affirm:is_equal(x, 11)
             affirm:is_equal(y, 12)
-        )
 
         affirm:is_equal(x, 1)
         affirm:is_equal(y, 2)
-    )
 
 // let evaluates to value as all value expressions
 v = let x = 1
