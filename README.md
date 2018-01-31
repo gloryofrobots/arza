@@ -803,7 +803,7 @@ let I2 =
 Pattern matching is a central element in Arza design
 It used in function clauses, generic function specializations, let bindings before *=* token, lambda functions before -> token and
 match expressions.
-Arza doesn't have loops so pattern matching and recursion are used to create iteration
+Arza doesn't have loops so pattern matching and recursion are used to create iterative and recursive calculations
 
 In function clauses, arguments are sequentially matched against patterns. If a match succeeds and the optional guard is true,
 the corresponding body is evaluated.
@@ -822,7 +822,7 @@ If there is no matching pattern with a true guard sequence, runtime error occurs
 // Pattern syntax overview
 match some_function()
     // underscore binds to anything
-    | _ = something() // bodies are omitted below for clarity
+    | _ = something() // right sides are omitted below for clarity
 
     // integers
     | 1
