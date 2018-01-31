@@ -163,11 +163,11 @@ class W_Generic(W_Hashable):
         return nodes
 
     def _sort_signatures(self, sig1, sig2):
-        guarded_1 = nodes.is_guarded_pattern(sig1.pattern)
-        guarded_2 = nodes.is_guarded_pattern(sig2.pattern)
-        if guarded_1 and not guarded_2:
+        w1 = sig1.get_weight()
+        w2 = sig2.get_weight()
+        if w1 > w2:
             return -1
-        elif not guarded_1 and guarded_2:
+        elif w2 > w1:
             return 1
         else:
             return 0

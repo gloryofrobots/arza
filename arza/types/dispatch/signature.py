@@ -3,6 +3,8 @@ from discriminator import *
 from arza.types.root import W_Root
 from arza.types import space, api, plist
 from arza.runtime import error
+from arza.compile.parse import nodes
+from arza.compile.parse import node_type as nt
 
 
 class Argument(W_Root):
@@ -215,6 +217,25 @@ class UniqueSignature(W_Root):
         return "<unique signature %s> " % (", ".join([str(arg) for arg in self.args]))
 
 
+DEFAULT_RANK = 1
+GUARD_RANK = 2
+LITERAL_RANK = 10
+WILDCARD_RANK = -5
+RANKS = {
+    nt.NT_INT: LITERAL_RANK,
+    nt.NT_FLOAT: LITERAL_RANK,
+    nt.NT_STR: LITERAL_RANK,
+    nt.NT_CHAR: LITERAL_RANK,
+    nt.NT_MULTI_STR: LITERAL_RANK,
+    nt.NT_TRUE: LITERAL_RANK,
+    nt.NT_FALSE: LITERAL_RANK,
+    nt.NT_LIST: LITERAL_RANK,
+    nt.NT_MAP: LITERAL_RANK,
+    nt.NT_TUPLE: LITERAL_RANK,
+    nt.NT_UNIT: LITERAL_RANK,
+}
+
+
 class Signature(UniqueSignature):
     def __init__(self, args, types, method, pattern, outers):
         UniqueSignature.__init__(self, args, types, method)
@@ -223,6 +244,20 @@ class Signature(UniqueSignature):
 
     def _to_string_(self):
         return "<signature %s> " % (", ".join([str(arg) for arg in self.args]))
+
+    def get_weight(self):
+        weight = 0
+        pattern = self.pattern
+        if nodes.is_guarded_pattern(self.pattern):
+            weight += GUARD_RANK
+            pattern = nodes.node_first(self.pattern)
+
+        args = nodes.tuple_node_to_list(pattern)
+        for arg in args:
+            ntype = nodes.node_type(arg)
+            weight = RANKS.get(ntype, DEFAULT_RANK)
+
+        return weight
 
 
 def _get_interface_predicate(process, interface, index):

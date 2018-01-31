@@ -1,12 +1,7 @@
 # Arza programming language
 
-This repository contains prototype for experimental dynamically typed functional language
-
-## Goal
-
-To experiment with syntax and stackless virtual machine.
-It is not a production system.
-Arza written in relatively 'slow' language python with not many speed optimisations.
+Arza is an experimental programming language supporting multiple dispatch and immutable data out of the box.
+This is a prototype built in relatively 'slow' language python and is not ready for productin in any way.
 
 ## Running
 ```
@@ -15,11 +10,11 @@ python targetarza.py test/arza/main.arza
 or better use pypy
 
 Currently, compilation via RPython toolchain does not supported but it can be done with some efforts.
-There are no REPL for Arza at the moment
+There are no working REPL at the moment
 
 ## Features
 
-* Original and clean syntax inspired by Lua and OCaml
+* Original whitespace based syntax inspired by F#, Python and Lisp
 * Persistent data structures (lists, tuples, maps)
 * Pattern matching
 * Lexical clojures and lambdas
@@ -28,6 +23,7 @@ There are no REPL for Arza at the moment
 * User defined types
 * Powerfull predicate multiple dispatch generic functions
 * Interfaces supporting multiple dispatch paradigm
+* Tools for code reuse - traits and type mixins
 * Special syntax and custom operator for partial application
 * Stackless virtual machine
 * Asymmetric coroutines
@@ -38,18 +34,18 @@ There are no REPL for Arza at the moment
 * REPL
 * Tail call optimisations
 * Total speed optimisations
-* Production ready C++ version
+* Production ready native version
 
 ## Guide
 
 - [Syntax overview](#syntax-overview)
+- [Multiple dispatch](#multiple-dispatch)
+  - [Interface expression](#interface-expression)
 - [Import and export](#import-and-export)
 - [Defining operators](#defining-operators)
 - [Module let expression](#module-let-expression)
 - [Function expression](#function-expression)
 - [Type expression](#type-expression)
-- [Multiple dispatch](#multiple-dispatch)
-  - [Interface expression](#interface-expression)
 
 - [Value expressions](#value-expressions)
   - [Literals](#literals)
@@ -64,24 +60,131 @@ There are no REPL for Arza at the moment
   - [Loading order](#loading-order)
 
 ### Syntax overview
-Arza uses original syntax inspired by Lua and OCaml
-Expression syntax similar to convenient scripting languages with infix and prefix operators and
-function calls via ```f(...)```. But instead of using some kind of block separators ({} or *begin end*)
-Arza allows one or more expressions inside parens (exp_1 exp_2 ... exp_n).
-Result of such group expression will be the result of last expression.
-This simple rule provides organic coexistence for serial and single expressions.
+Arza syntax very similar to F# light syntax where indentation 
+used as statement and expression delimiter but instead of using simple 
+dedents and indents like in Python, Arza uses code layouts 
+to determine block borders
+
 ```
-// Single line comments after //
-fun add(x,y) = x + y
-fun add_and_print(x,y) =
-(
-    io:print("x + y", x + y)
-    x + y
-)
+// layout is similar to pythons four space indent
+fun f(x) =
+    1
+    2
+         
+// layout begins straight after = token 
+fun f(x) = 1
+           2
+
+// this would be a syntax error
+fun f(x) = 1
+    2
 ```
 
-Name binding can be done only inside *let-in* statement, I believe it pushes programmer to the path of using 
-smaller functions and patterm matching wherever it's possible
+Most times layouts created with = token
+There are special rules for operators to continue expressions from line above,
+which differs from F# syntax and more similar to Ruby syntax
+
+```
+fun f() =
+    1 +
+    2 +
+    3
+// returns 6
+```
+
+However this technique creates problem with ambidextra operators
+(operator having have both prefix and infix binding powers)
+Examples of such operators are *-* and *(*
+To resolve parsing conflicts Arza uses new lines as terminators
+
+```
+fun f() =
+    //lambda expression
+    ((x, y) -> x + y)
+    // parser treats `(` as prefix expression because of new line
+    (1, 41)
+
+f() == (1, 41)
+
+fun f2() =
+    // parser treats `(` as infix expression and interprets this expression as call to lambda with arguments (1, 41)
+    ((x, y) -> x + y)(1, 41)
+
+f2() == 42
+```
+
+If you do not like to use indentation aware syntax at all, you can
+enclose any block in ( and )
+This as I am aware is the most innovative feature of Arza syntax. 
+You can enclose in ( and ) almost any syntax construct and use  free code layout
+without worrying about whitespaces. 
+
+```
+(fun f() = 
+        1
+ +
+  2 + 3)
+  
+(interface Map
+    fun put
+        (key, value, @map)
+ fun at
+     (key,
+      @map)
+) 
+```
+
+If you need to use nested statements inside such free layout you must enclose each of them in ()
+
+```
+// Nine billion names of God the Integer
+fun nbn () =
+    string:join(
+        seq:map(
+            fun(n) =
+                string:join_cast(
+                   seq:map(
+                        (fun (g) =
+                            //let in block enclosed in ()
+                            (let
+                                (fun _loop (n, g) =
+                                    // if block enclosed in ()
+                                    (if g == 1 or n < g then 1
+                                    else
+                                        seq:foldl(
+                                            // fun block enclosed in ()
+                                            (fun (q, res) =
+                                                // if block enclosed in ()
+                                                (if q > n - g  then
+                                                    res
+                                                else
+                                                    res + _loop(n-g, q)
+                                                )
+                                            ),
+                                            1,
+                                            list:range(2, g)
+                                        )
+                                    )
+                                )
+                            in _loop(n, g)
+                            )
+                        ),
+                        list:range(1, n)
+                   ),
+                   " "
+                ),
+           list:range(1, 25)
+        ),
+        "\n"
+    )
+```
+
+There are three main kinds of expressions in Arza
+* Top level expressions (import, export, from, fun, let, extend,  describe, interface, type, prefix, infixl, infixr)
+* Pattern matching expressions inside function signature, after let expression or in match expression
+* Value expressions usually occur after = token and always evaluate to some value
+
+Name binding can be done only inside *let-in* statement
 
 ```
 fun f(x,y) =
@@ -95,89 +198,121 @@ fun f(x,y) =
         z = x + y
         w = read_from_file()
     in
-    (
         io:print("z and w", z, w)
         let k = w / z
-        in k + x + y
-    )
-```
-
-##### Scary cryptic example (Nine billion names of God the Integer)
-```
-fun nbn () =
-    string:join(
-        seq:map(
-            fun(n) =
-                string:join_cast(
-                   seq:map(
-                        (fun (g) =
-                            let
-                                fun _loop (n, g) =
-                                    if g == 1 or n < g then 1
-                                    else
-                                        seq:foldl(
-                                            (fun (q, res) =
-                                                if q > n - g  then
-                                                    res
-                                                else
-                                                    res + _loop(n-g, q)
-                                            ),
-                                            1,
-                                            list:range(2, g)
-                                        )
-
-                            in _loop(n, g)
-                        ),
-                        list:range(1, n)
-                   ),
-                   " "
-                )
-           ,
-           list:range(1, 25)
-        ),
-        "\n"
-    )
+        in k +
+           x +
+           y
 ```
 
 
-There are three main kinds of expressions
-* Top level expressions (import, export, from, fun, let, extend, use, derive, interface, generic, type, prefix, infixl, infixr)
-* Pattern matching expressions inside function signature, after let expression or in match expression
-* Value expressions usually occur after = token and always evaluate to some value
+### Multiple dispatch
 
-There are no end of expression token in Arza.
-Parser grabs expressions one by one from stream of tokens.
-Every expression terminates by lack of left binding power.
-This idea comes from Lua language.
+Arza provides predicate multiple dispatch for polymorphism. This concept is comperativly rare in languge design.
+In recent years more limited approach was implemented in Julia language.
+Arza generic functions could be specialized for any arguments and also for simple predicate expressions. 
+Essentially, they resemble pattern matching functions in Erlang
+but with posiibility to define clauses at different places in code.
+Most novative concept in Arza is that programmer can define interfaces along side generic functions.
+
+** Example **
 ```
-fun f () =
-(
-    1 + 1  2 + 2
-)
-f() == 4
+interface CargoRobot =
+    //@robot - tells interpreter that all types used as first argument in this generic function will implement
+    // CargoRobot interface
+    fun move_cargo(@robot, cargo)
+
+    // here type must me used as second arguments
+    fun recharge(amount, @robot)
+    
+// Now declaring Cargo interface
+interface Cargo
+    // this function has been already declared in CargoRobot interface
+    // but Cargo types must be used as second arguments instead of first
+    use move_cargo(robot, @cargo)
+
+// Interfaces do not create namespaces. 
+
+fun move(robot, cargo) = 
+    move_cargo(robot, cargo)
+    recharge(100, robot)
+    
+// Now define some types
+type BaseRobot = (model)
+
+// mixin this type in another
+type RobotActual(BaseRobot) = (energy_level)
+
+// this not an inheritance and methods defined for first type do not automatically support second type
+
+type Cargo(type, weight, moved)
+
+// defining methods
+
+def move_cargo(robot of RobotActual, cargo of Cargo) =
+    // data is imutable this is operator for creating shared copies 
+    // there are no return statement
+    // last expression returns automatically
+    io:print("moving cargo")
+
+    
+    //returning tuple with moved cargo and slightly exosted robot
+    (cargo.{moved = True}, 
+        // I will implement shortcut for -= in future
+        robot.{battery=robot.battery-10})
+    
+    
+
+def recharge(r of Robot) = 
+    r.{battery=100}
+
+//Some more examples
+interface Add =
+    fun add(val1, val2)
+
+// declare type for complex numbers
+type Complex(real, imag)
+
+// specialize add for Complex and Int types with def statement
+
+def add(c1 of Complex, c2 of Complex)  =
+    Complex(c1.real + c2.real, c1.imag + c2.imag)
+
+def add(i of Int, c of Complex)  =
+    Complex(i + c.real, c.imag)
+
+def add(c of Complex, i of Int) =
+	add(i, c)
+// Such definitions are not restricted to current module, you can define them anywhere, like
+
+import my_module:add
+def my_module:add(c of Complex, i of Int) =
+	add(i, c)
 
 ```
-However this technique creates problem with ambidextra operators
-(operator having have both prefix and infix binding powers)
-Examples of such operators are *-* and *(*
-To resolve parsing conflicts Arza uses new lines as terminators
-```
-fun f() =
-(
-    //lambda expression
-    ((x, y) -> x + y)
-    // parser treats `(` as prefix expression because of new line
-    (1, 41)
-)
-f() == (1, 41)
 
-fun f2() =
-(
-    // parser treats `(` as infix expression and interprets this expression as call to lambda with arguments (1, 41)
-    ((x, y) -> x + y)(1, 41)
-)
-f2() == 42
+Predicate is a special condition, which narrow the application of a specialization.
+Specialisations with predicates have more priority then simple ones
+
 ```
+def add(c of Complex, i of Int) when i == 0 =
+	c
+
+// You can use any normal expression in predicate including function calls
+
+interface Fav =
+    fun get_favorite(c1, c2)
+
+type Car (speed)
+
+fun faster(v1, v2) = v1.speed > v2.speed
+
+def get_favorite(c1 of Car, c2 of Car) when faster(c1, c2)  = c1
+def get_favorite(c1 of Car, c2 of Car) = c2
+
+```
+
+
 
 ### Import and export
 
@@ -311,9 +446,6 @@ But except for that let expression actually performs pattern matching
 Value can be bind to name only once.
 Top level let expression is different from let-in expression allowed in value expressions
 ```
-// grammar
-// let <pattern> = <value_expression>
-// let `(` {<pattern> = <value_expression>} `)`
 
 // single expression
 let x = 1
@@ -329,32 +461,18 @@ let x::xs = [1,2,3,4,5]
 // group expression
 
 let
-(
     x = 1
     _ = f()
     () = io:print(42)
     x::xs = [1,2,3,4,5]
-)
 ```
 
 ### Function expression
 ```
-//simple function
-fun <name> `(`{arg_pattern}`)` [ when  <value_expression>]= <value_expression> |
-
-// case function with multiple signatures
-fun <name>
-    {`|` `(`{arg_pattern}`)` [ when  <value_expression>] = <value_expression>}
-
-// compound single - case function, see below for explanation
-fun <name> `(`{arg_pattern}`)`
-    {`|` `(`{arg_pattern}`)` [ when  <value_expression>] = <value_expression>}
-
-
-// Function expression in arza have three forms
+// Function expression in arza has three possible forms
 //
 // Simple
-fun <name> `(`[arg_pattern]`)` [ when  <value_expression>]= <value_expression> |
+fun <name> `(`[arg_pattern]`)` [ when  <value_expression>]= <code_block> 
 
 fun any(p, l) =
     disjunction(map(p, l))
@@ -363,15 +481,13 @@ fun all(p, l) =
     conjunction(map(p, l))
 
 fun print_2_if_greater(val1, val2) when val1 > val2 =
-(
     io:print("first", val1)
     io:print("second", val2)
-)
 
 // Case function with multiple clauses. All clauses required to have the same arity.
 
 fun <name>
-    {`|` `(`{arg_pattern}`)` [ when  <value_expression>] = <value_expression>}
+    {`|` `(`{arg_pattern}`)` [ when  <value_expression>] = <code_block>}
 
 // Examples
 fun foldl
@@ -392,7 +508,7 @@ fun to_str
 // This kind of function allows to check argument types or other conditions only at first step of recursion
 
 fun <name> `(`{arg_pattern}`)`
-    {`|` `(`{arg_pattern}`)` [ when  <value_expression>] = <value_expression>}
+    {`|` `(`{arg_pattern}`)` [ when  <value_expression>] = <code_block>}
 
 
 // this function transforms in compile time to
@@ -400,7 +516,7 @@ fun <name> `(`{arg_pattern}`)` =
     let
         // inner case - function
         fun <name>
-            {`|` `(`{arg_pattern}`)` [ when  <value_expression>] = <value_expression>}
+            {`|` `(`{arg_pattern}`)` [ when  <value_expression>] = <code_block>}
     in
         // call inner function with outer function arguments
         <name>`(`{arg_pattern}`)`
@@ -433,13 +549,10 @@ type Nothing
 // Constructor type
 type Point(x, y)
 
-//group expression
-type
-(
-    Point (x, y)
-    Square(width, height)
-    Rect(left, top, right, bottom)
-)
+type Square (width, height)
+
+// alternative syntax used when type has mixins
+type Rect(Square) = (left, top, right, bottom)
 
 // creating type instances
 let p = Point(24.5, 25.7)
@@ -454,117 +567,12 @@ let True = p.x `kindof` Float
 // type instances inside match expression or function clauses
 match p with
  | (x, y) of Point = x + y // as tuple
- | (left, top, right, bottom) of Rect = left.x + right.y // . operator can access instance field by name
- | {right, top, left, bottom} of Rect = left.x + right.y // as map
+ | (left, top, right, bottom) of Rect = left.x + right.y // unpacking type like tuple
+ | {right, top, left, bottom} of Rect = left.x + right.y // unpacking type like map
 
 ```
 
-### Multiple dispatch
 
-Arza uses very powerfull and rare in language design concept of predicate multiple dispatch generic functions for achieving polymorphism.
-Arza generic functions could be specialized for any arguments and also for simple predicate expressions. 
-Essentially, they resemble pattern matching functions in Erlang but with posiibility to define clauses at different places in code
-
-** Example **
-```
-// declare generic function
-generic add(val1, val2)
-
-// declare type for complex numbers
-type Complex(real, imag)
-
-// specialize add for Complex and Int types with def statement
-
-def add(c1 of Complex, c2 of Complex)  =
-    Complex(c1.real + c2.real, c1.imag + c2.imag)
-
-def add(i of Int, c of Complex)  =
-    Complex(i + c.real, c.imag)
-
-def add(c of Complex, i of Int) =
-	add(i, c)
-// Such definitions are not restricted to current module, you can define them anywhere, like
-
-import my_module:add
-def my_module:add(c of Complex, i of Int) =
-	add(i, c)
-
-```
-Predicate is a special condition, which narrow the application of a specialization.
-Specialisations with predicates have more priority then simple ones
-
-```
-def add(c of Complex, i of Int) when i == 0 =
-	(
-		c
-	)
-
-// You can use any value expression in predicate including function call
-
-generic get_favorite(c1, c2)
-
-type Car (speed)
-
-fun faster(v1, v2) = v1.speed > v2.speed
-
-def get_favorite(c1 of Car, c2 of Car) when faster(c1, c2)  = c1
-def get_favorite(c1 of Car, c2 of Car) = c2
-
-```
-
-#### Interface expression
-
-But declaring each function for every type might become very tidious.
-To address this problem Arza introduces concept of interface
-
-```
-interface <name> '('{generic_name} ')' |
-interface '(' {<name> '(' {generic_name} ')' } ')'
-
-// Interface combines one or more generic functions and can be used for type check in pattern matching 
-// and specialization of other generic functions
-
-generic sub(v1, v2)
-
-//for types used as first argument of sub
-interface Minuend(sub.0)
-//for types used as second  argument of sub
-interface Subtrahend(sub.1)
-
-def sub(c of Complex, i of Int) = Complex(c.real - i, c.imag) 
-
-fun test() =
-	let 
-		c = Complex(1, 2)
-		d = c - 10
-	in 
-	(
-		d of Minuend == True
-		// sub(Int, Complex) not defined yet
-		d of Subtrahend == False
-	)
-
-// Main power of interfaces come when we specialize generics for interfaces and not for types
-// from prelude
-interface 
-(
-    Coll(put.2, del.1)
-    GrowableCollection(put.2)
-    ShrinkableCollection(del.1)
-    ReadOnlyCollection(at.1, elem.1)
-    Collection() is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
-)
-
-// now we know that types implementing Collection have at.1 specialisation
-// we can specilize generic for interface
-
-generic get_name(coll)
-def get_name(coll of Collection) = at("name", coll)
-
-// any type that define Collection generics can be used in get_name 
-// for more advanced example look at test/arza/tests/dispatch/movie directory
-
-```
 ### Value expressions
 
 #### Literals
@@ -612,10 +620,8 @@ fun f() =
     // Functions in value expressions are always anonymous
     // To create named function use let-in expression
     fun (x, y) =
-    (
         io:print(x + y)
         z + x * y
-    )
 
     // Lambda expressions
     (x, y, z) -> x + y + z
@@ -639,27 +645,22 @@ All of predefined data structures are immutable
 // accessing fields
 // via field name
 let
-(
     m = {x = 1, y = 2}
     v = m.x + m.y
-)
 // via index
 let
-(
     t = (1,2,3)
     v = t.0 + t.1
-)
+    
 // calculating index or field
 let v = t.[0] + t.[2-1]
 
 // same applies to lists
 let
-(
     l = [1,2,3]
     v = l.0 + l.1
     v1 = l.[0] + l.[2-1]
     v2 = l.[sqrt(4)]
-)
 
 // t.0 and l.[2-1] compiles into at(0, t) and  at((2-1), l)
 // m.one compiles into at(#one, m)
@@ -668,7 +669,6 @@ let
 // creating new collection from old one via .{ operator
 
 let
-(
     m = {one=1, two=2, three=-3}
 
     // m1 will share it's one an two fields with m
@@ -700,33 +700,29 @@ let
 ```
 
 #### Partial application
-ADD HOLES HERE
 ```
 Arza provides special syntax for partial application via .( operator
 
 fun sum_3(x, y, z) = x + y + z
 
 let
-(
     add_to_1 = sum_3.(1)
     add_to_3_and_4 = sum_3.(3, 4)
     v = add_to_1(1, 2)
     v = add_to_1(1)(2)
     s = add_to_3_and_4(1)
-)
+    
 // Also there are two operators in prelude responsible for creating curried functions
 // prefix
 fun &(func) = arza:lang:defpartial(func)
 // infix
 fun ..(f, g) = arza:lang:defpartial(f)(g)
 let
-(
    n = seq:map(&`+`(2), [1,2,3])
    // n = [3, 4, 5]
     add_to_1 = sum_3 .. 1
     add_to_3_and_4 = sum_3 .. 3 .. 4
 
-)
 
 // combined with pipe and composition operators currying might be extremely useful
 fun |>(x, f) = f(x)
@@ -738,8 +734,6 @@ fun twice(f) = f >> f
 fun flip (f, x, y) = f(y, x)
 
 let
-(
-
     l = list:range(0, 10)
     square = (x -> x * x)
     triple = `*` .. 3
@@ -763,7 +757,12 @@ let
           >> &seq:map(triple >> square)
 
     // l1 = [9, 9, 81, 225, 441]
-)
+    
+    // Using _ holes to create partial application
+    l2 = l |> seq:filter(even, _)
+    
+    put_at_1 = put(1, _, _)
+    m1 = put_at_1(42, {})
 ```
 
 #### if-elif-else
@@ -772,9 +771,9 @@ let
 // If condition must have else branch and might have zero or many elif branches
 // if one of the branches succeeds result of it's last expression will be result of entire if expression
 
-if <value_expression> then <value_expression>
-[{elif <value_expression> then <value_expression>}]
-else <value_expression>
+if <value_expression> then <code_block>
+[{elif <value_expression> then <code_block>}]
+else <code_block>
 
 fun f() =
     // si
@@ -812,8 +811,8 @@ If there is no matching pattern with a true guard sequence, runtime error occurs
 
 In match expressions
 match <value_expression>
- '|' <pattern>[when guard] = <value_expression>
-{'|' <pattern>[when guard] = <value_expression> }
+ '|' <pattern>[when guard] = <code_block>
+{'|' <pattern>[when guard] = <code_block> }
 
 the expression  is evaluated and the patterns  are sequentially matched against the result
 If a match succeeds and the optional guard is true, the corresponding body is evaluated.
@@ -949,7 +948,7 @@ let
         <pattern> = <value_expression>  |
         <function_declaration>
     }
-in <value_expression>
+in <code_block>
 
 Let-in is the only way to create named functions in local function scope
 
@@ -1015,14 +1014,14 @@ v = let x = 1
 throw <value_expression>
 
 try <value_expression>
-catch <pattern> = <value_expression>
-[finally <value_expression>]  |
+catch <pattern> = <code_block>
+[finally <code_block>]  |
 
 try <value_expression>
 catch
-    | <pattern> [when guard] = <value_expression>
-    [{ <pattern> [when guard] = <value_expression> }]
-[finally <value_expression>]
+    | <pattern> [when guard] = <code_block>
+    [{ <pattern> [when guard] = <code_block> }]
+[finally <code_block>]
 
 
 //Examples
@@ -1033,10 +1032,8 @@ try
     catch e1 = e1
 catch e2 =
     try
-    (
         something()
         something_else()
-    )
     catch e3 =
         e3
 
@@ -1045,10 +1042,8 @@ try
         1/0
     catch e1 = e1
     finally
-    (
         something()
         something_else()
-    )
 catch e2 =
     try
         error(#Catch)
@@ -1086,7 +1081,7 @@ Example directory structure
 ```
 if we run Arza with
 ```
-python targetlalan.py program.arza
+python targetarza.py program.arza
 ```
 Module search path would look something like  [BASEDIR, STD, ARZASTD] where
 

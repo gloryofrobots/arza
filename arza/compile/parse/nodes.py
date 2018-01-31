@@ -11,8 +11,6 @@ def newnode(ntype, token, children):
     assert isinstance(token, tokens.Token)
     if children is not None:
         for child in children:
-            if child is None:
-                print 1
             assert is_node(child), (child.__class__, child)
         return space.newtuple([
             space.newint(ntype), token, space.newlist(children),
@@ -452,6 +450,10 @@ def create_unit_node(token):
 
 def create_literal_node(token, node):
     return node_1(nt.NT_LITERAL, token, node)
+
+
+def tuple_node_to_list(node):
+    return node_first(node)
 
 
 def create_tuple_node(token, elements):

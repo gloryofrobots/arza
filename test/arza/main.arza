@@ -3,6 +3,7 @@ import affirm
 import seq
 import list
 import array
+import string
 import tests:tests
 
 

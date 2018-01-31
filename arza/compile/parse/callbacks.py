@@ -1068,6 +1068,9 @@ def _parse_def_signature(parser, token):
         sig_node = nodes.node_first(signature)
     else:
         sig_node = signature
+
+    if nodes.node_type(sig_node) == NT_UNIT:
+        parse_error(parser, u"Missing method arguments", token)
     sig_args = nodes.node_first(sig_node)
 
     for arg in sig_args:
