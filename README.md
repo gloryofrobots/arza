@@ -107,7 +107,8 @@ fun f() =
 f() == (1, 41)
 
 fun f2() =
-    // parser treats `(` as infix expression and interprets this expression as call to lambda with arguments (1, 41)
+    // parser treats `(` as infix expression and interprets
+    // this expression as call to lambda with arguments (1, 41)
     ((x, y) -> x + y)(1, 41)
 
 f2() == 42
@@ -115,7 +116,7 @@ f2() == 42
 
 If you do not like to use indentation aware syntax at all, you can
 enclose any block in ( and )
-This as I am aware is the most innovative feature of Arza syntax. 
+
 You can enclose in ( and ) almost any syntax construct and use  free code layout
 without worrying about whitespaces. 
 
@@ -215,7 +216,6 @@ Essentially, they resemble pattern matching functions in Erlang
 but with posiibility to define clauses at different places in code.
 Most novative concept in Arza is that programmer can define interfaces along side generic functions.
 
-** Example **
 ```
 interface CargoRobot =
     //@robot - tells interpreter that all types used as first argument in this generic function will implement
@@ -258,7 +258,7 @@ def move_cargo(robot of RobotActual, cargo of Cargo) =
     
     //returning tuple with moved cargo and slightly exosted robot
     (cargo.{moved = True}, 
-        // I will implement shortcut for -= in future
+        // I will implement shortcut for persistent -= operation in future
         robot.{battery=robot.battery-10})
     
     
