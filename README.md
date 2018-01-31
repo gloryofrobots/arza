@@ -781,10 +781,8 @@ fun f() =
     elif something_else() == True then
     // series of expressions inside ()
     // equivalent to {} in C or Java
-    (
         io:print("I am here")
         nothing()
-    )
     else
         42
 
