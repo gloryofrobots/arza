@@ -174,21 +174,21 @@ fun enum_from(num) =
 
 #### [Arza](https://github.com/gloryofrobots/langs/tree/arza)
 
-* Syntax almost the same as in Lalan 
+* Laconic indentation aware syntax inspired by F# light, Python and Lisp 
 * Powerfull predicate multiple dispatch generic functions
 * Interfaces supporting multiple dispatch paradigm
 * Support for partial application via special syntax
 
 
 ```
-// declare generic function
-generic add(val1, val2)
+// declare interface with generic functions
+interface Add =
+    fun add(val1, val2)
 
 // declare type for complex numbers
 type Complex(real, imag)
 
 // specialize add for Complex and Int types with def statement
-
 def add(c1 of Complex, c2 of Complex)  =
     Complex(c1.real + c2.real, c1.imag + c2.imag)
 
@@ -196,21 +196,18 @@ def add(i of Int, c of Complex)  =
     Complex(i + c.real, c.imag)
 
 def add(c of Complex, i of Int) =
-	add(i, c)
-// Such definitions are not restricted to current module, you can define them anywhere, like
+    add(i, c)
 
+// Such definitions are not restricted to current module, you can define them anywhere, like
 import my_module:add
 def my_module:add(c of Complex, i of Int) =
-	add(i, c)
+    add(i, c)
 
-def add(c of Complex, i of Int) when i == 0 =
-	(
-		c
-	)
-
+def add(c of Complex, i of Int) when i == 0 = c
+	
 // You can use any value expression in predicate including function call
-
-generic get_favorite(c1, c2)
+interface Fav =
+    get_favorite(c1, c2)
 
 type Car (speed)
 
