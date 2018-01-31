@@ -924,7 +924,6 @@ match {x=1, y="YYYY"} with
 
 
 let
-(
     // all patterns, but without when guard can be placed by the left hand side of = operator
     (x,y,z) = (1,2,3)
 
@@ -934,7 +933,6 @@ let
     split = x::xs -> (x, xs)
 
     get_name = {name} -> name
-)
 ```
 
 #### let-in
