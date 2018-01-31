@@ -777,10 +777,11 @@ else <code_block>
 
 fun f() =
     // si
-    if something() then anything()
+    if something() then 
+        anything()
     elif something_else() == True then
-    // series of expressions inside ()
-    // equivalent to {} in C or Java
+        // series of expressions inside ()
+        // equivalent to {} in C or Java
         io:print("I am here")
         nothing()
     else
