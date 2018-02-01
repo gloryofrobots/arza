@@ -1,24 +1,38 @@
-type T1 is (T4, T5) = (v1, v2, v3)
-type T1 = (v1, v2, v3)
-type T1
-
-
-type T1 = (v1, v2, v3)
-type T2 = (v1,
-                        v2,
-v3)
-
-type T3
-    (v1, v2, v3)
-
-type T4
-(v1, v2, v3)
-
-(   type
-T5
-(v1,
-  v2,
-     v3))
+let d1 = d.{
+    s1 = d.s1.{
+        s2 = d.s1.s2.{
+            x = 1
+        }
+    },
+    s1 = d.s1.{
+        s2 = d.s1.s2
+    }
+}
+let d1 = d.{
+    s1.s2.x = 1,
+    s1.s2 = @
+}
+//type T1 is (T4, T5) = (v1, v2, v3)
+//type T1 = (v1, v2, v3)
+//type T1
+//
+//
+//type T1 = (v1, v2, v3)
+//type T2 = (v1,
+//                        v2,
+//v3)
+//
+//type T3
+//    (v1, v2, v3)
+//
+//type T4
+//(v1, v2, v3)
+//
+//(   type
+//T5
+//(v1,
+//  v2,
+//     v3))
 
 //def+(super) f(i of Int) = 1
 //interface Collection is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)

@@ -1,105 +1,91 @@
-module Observable
-    import std
-    import list
-    import seq
+d = {
+    s1 = {
+        s2 = {
+            x = 1,
+            s3 = {
+                y = 2,
+                s4 ={
+                    z = 3
+                }
+            }
+        }
+    },
+    a = 0
+}
+d1 = d.{
+    s1 = d.s1.{
+        s2 = d.s1.s2.{
+            x = d.s1.s2.x + 1,
+            s3=d.s1.s2.s3.{
+                y = d.s1.s2.s3.y + 1,
+                s4 = d.s1.s2.s3.s4.{
+                        z = d.s1.s2.s3.s4.z + 1,
+                        xyz = d.s1.s2.x + d.s1.s2.s3.y + d.s1.s2.s3.s4.z
+                }
 
-    interface Emitter
-        fun emit(Emitter, signal, data)
-        fun before_emit(Emitter, signal, data)
-        fun after_emit(Emitter, signal, data)
+            }
+        }
+    }
+}
 
-    interface Observer as self
-        fun observe(self) 
+d1 = d.{
+    a = @ + 1,
+    s1.s2.x = @ + 1,
+    s1.s2.s3 = @.{
+        y = @ + 1,
+        s4 = @.
+    }
+}
 
-    type
-        observers = {}
-        history = []
+d1 = d.{
+    a = @ + 1,
+    s1.s2 = @.{
+        x = @ + 1,
+        s3 = @.{
+            y = @ + 1,
+            s4 = @.{
+                z = @ + 1,
+                s5 = @.{
+                    z = @ + 2
+                },
+                xyz = d.s1.s2.x + d.s1.s2.s3.y + d.s1.s2.s3.s4.z
+            }
+        }
+    }
+}
 
-    fun create(observers) 
-        type{observers=observers}
+d1 = d.{
+    a = @ + 1,
+    s1.s2 = @.{
+        x = @ + 1,
+        s3 = @.{
+            y = @ + 1,
+            s4 = @.{
+                z = @ + 1,
+                s5 = @.{
+                    z = @ + 2
+                },
+                xyz = d.s1.s2.x + d.s1.s2.s3.y + d.s1.s2.s3.s4.z
+            }
+        }
+    }
+}
 
-    interface as self
-        use Emitter as self with
-            fun emit(self, signal, data) 
-                before_emit(self, signal, data)
-                seq:each(self.observers[signal],
-                    (fun(observer)
-                        result = observe(observer, signal, data)
-                        append(self.history, (signal, observer, result))
-                    )
-                )
-                after_emit(self, signal, data)
+d1 = d.{
+    a.{ @ + 1 },
+    s1.s2.{
+        x.{ @ + 1 },
+        s3.{
+            y.{@ + 1},
+            s4.{
+                z.{@ + 1},
+                s5 = @.{
+                    z.{@ + 2}
+                },
+                xyz.{d.s1.s2.x + d.s1.s2.s3.y + d.s1.s2.s3.s4.z}
+            }
+        }
+    }
+}
 
-            expect before_emit(self, signal, data)
-            fun after_emit(self, signal, data) nil
 
-        fun add_observer(self, signal, observer)
-             self.observers[signal] = self
-
-        fun remove_observer(self, signal, observer)
-            remove(self.observers, signal)
-
-        use std:to_str with
-            fun (self) 
-                "Observable [" + 
-                    (self.observers |>
-                        seq:map(_, to_str)
-                        str:join(_, ", "))
-                    + "]"
-        use list:Listable:to_list
-
-    implement Observable 
-        fun to_list(self)
-            to_list(self.observers)
-
-module connection
-    import Observable
-    import OrderedMap
-
-    type Send
-    type Receive
-    
-    type
-        use Observale with
-            observers = OrderedMap({})
-        requests = []
-
-    implement Observable as self 
-         use Observable with
-             before_emit(self, signal, data) nil
-    
-    interface
-       fun open(self)
-       fun close(self)
-       fun send(self, data)
-            observe:emit(self, Send, data)
-            _send(self,data)
-       expect fun _send(self, data)
-
-       fun receive(self, data)
-            observe:emit(self, Receive, data)
-            _receive(self, data)
-
-       expect fun _receive(self, data)
-
-               
-
-module socket_connection
-    import connection
-    import socket
-    type
-        use Connection
-        pid = nil
-    
-    fun make(dsn, observers):
-        pid = socket:open(dsn)
-        type(pid=pid, observers=observers)
-
-    implement Connection
-        use connection
-
-        fun _send(self, data)
-            socket:send(self, data)
-
-        fun _receive(self, data)
-            socket:receive(self, data)

@@ -1,4 +1,4 @@
-from arza.compile.parse.nodes import (node_type, node_arity,
+from arza.compile.parse.nodes import (node_type, node_arity, node_token, list_node,
                                       node_first, node_second, node_third, node_fourth, node_children, is_empty_node)
 from arza.runtime import error
 from arza.types import space, api, plist, environment, symbol as symbols, string as strings
@@ -29,7 +29,8 @@ def simplify_type(compiler, code, node):
     else:
         mixins_3_arg = mixins
 
-    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.TYPE, [name_1_arg, fields_2_arg, mixins_3_arg])
+    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.TYPE,
+                                         [name_1_arg, fields_2_arg, mixins_3_arg])
     return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
 
 
@@ -175,3 +176,131 @@ def simplify_generic(compiler, code, node):
 
     call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.GENERIC, [name_1_arg, symbols_2_arg])
     return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
+
+
+###############################
+# def _transform_modifications(compiler, path, modifications, result):
+#     if plist.is_empty(modifications):
+#         return
+#     m, tail = plist.split(modifications)
+#     key = m[0]
+#     value = m[1]
+#
+#     if node_type(key) == nt.NT_NAME:
+#         key = nodes.create_symbol_node(nodes.node_token(key), key)
+#     return _transform_modify(compiler, node,
+#                              func,
+#                              nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
+#                              tail)
+
+
+def simplify_modify(compiler, code, node):
+    source = nodes.node_first(node)
+    modifications = nodes.node_second(node)
+
+    # path = plist.plist([source])
+    # transformed = []
+    # _transform_modifications(compiler, path, modifications, transformed)
+    return _transform_modify(compiler, node,
+                             nodes.create_name_node_s(nodes.node_token(node), lang_names.PUT),
+                             source,
+                             modifications
+                             )
+
+
+def _create_path_node(path):
+    result, tail = plist.split(path)
+    for node in result:
+        result = nodes.create_lookup_node(node_token(result), result, node)
+    return result
+
+"""
+let d1 = d.{
+    s1 = d.s1.{
+        s2 = d.s1.s2.{
+            x = 1
+        }
+    },
+    s1 = d.s1.{
+        s2 = d.s1.s2
+    }
+}
+let d1 = d.{
+    s1.s2.x = 1,
+    s1.s2 = @
+}
+"""
+
+
+def _transform_modify(compiler, node, func, source, modifications):
+    """
+    transforms modify x.{a=1, b=2, 0=4} into series of puts
+    put 0 4 (put b 2 (put a 1 x))
+    """
+    if plist.is_empty(modifications):
+        return source
+
+    m, tail = plist.split(modifications)
+    key = m[0]
+    value = m[1]
+    """
+    let d1 = d.{
+        s1.s2.x = 1,
+    }
+
+    let d1 = d.{
+        s1 = d.s1.{
+            s2 = d.s1.s2.{
+                x = 1
+            }
+        },
+    }
+    """
+    # path_node = _create_path_node(path)
+    k_type = node_type(key)
+    if k_type == nt.NT_LOOKUP:
+        keys = basic.flatten_infix(key, nt.NT_LOOKUP)
+        first = node_first(key)
+        other_keys = node_second(key)
+        new_key = nodes.ensure_symbol_node_from_name(node_token(key), first)
+
+        new_pair = list_node([other_keys, value])
+        new_source = nodes.create_lookup_node(node_token(new_key), source, new_key)
+        new_value = nodes.create_modify_node(node_token(new_key), new_source, list_node([new_pair]))
+
+        return _transform_modify(compiler, node,
+                                 func,
+                                 nodes.create_call_node_3(nodes.node_token(node), func, new_key, new_value, source),
+                                 tail)
+        # _transform_modify(compiler, node,
+        #                     func,
+        #                     path,
+        #                     nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
+        #                     tail)
+
+    if k_type == nt.NT_NAME:
+        key = nodes.create_symbol_node(nodes.node_token(key), key)
+
+    return _transform_modify(compiler, node,
+                             func,
+                             nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
+                             tail)
+
+# def _transform_modify(compiler, node, func, source, modifications):
+#     """
+#     transforms modify x.{a=1, b=2, 0=4} into series of puts
+#     put 0 4 (put b 2 (put a 1 x))
+#     """
+#     if plist.is_empty(modifications):
+#         return source
+#
+#     m, tail = plist.split(modifications)
+#     key = m[0]
+#     value = m[1]
+#
+#     if node_type(key) == nt.NT_NAME:
+#         key = nodes.create_symbol_node(nodes.node_token(key), key)
+#     return _transform_modify(compiler, node,
+#                              func,
+#                              nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
+#                              tail)

@@ -395,6 +395,14 @@ def create_str_node(token, strval):
     return node_0(nt.NT_STR, create_token_from_token(tt.TT_STR, strval, token))
 
 
+def ensure_symbol_node_from_name(token, node):
+    t = node_type(node)
+    if t == nt.NT_NAME:
+        return create_symbol_node(token, node)
+    assert t == nt.NT_SYMBOL, t
+    return node
+
+
 def create_symbol_node(token, name):
     return node_1(nt.NT_SYMBOL, token, name)
 
@@ -642,6 +650,10 @@ def create_of_node(token, left, right):
 
 def create_match_node(token, exp, branches):
     return node_2(nt.NT_MATCH, token, exp, list_node(branches))
+
+
+def create_modify_node(token, source, items):
+    return node_2(nt.NT_MODIFY, token, source, items)
 
 
 def create_try_statement_node(token, exp, success, fail):

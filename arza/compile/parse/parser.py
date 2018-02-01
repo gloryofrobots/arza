@@ -112,6 +112,7 @@ class ExpressionParser(BaseParser):
         self.name_parser = name_parser_init(BaseParser())
         self.let_parser = LetParser(self)
         self.map_key_parser = MapKeyParser(self)
+        self.modify_key_parser = ModifyKeyParser()
 
         self.add_subparsers(
             [
@@ -121,6 +122,7 @@ class ExpressionParser(BaseParser):
                 self.name_parser,
                 self.let_parser,
                 self.map_key_parser,
+                self.modify_key_parser
             ])
 
         self.allow_overloading = True
@@ -133,7 +135,7 @@ class ExpressionParser(BaseParser):
         symbol(self, TT_RCURLY)
         symbol(self, TT_END_EXPR)
         symbol(self, TT_ENDSTREAM)
-        symbol(self, TT_AT_SIGN)
+        # symbol(self, TT_AT_SIGN)
         symbol(self, TT_ELSE)
         symbol(self, TT_ELIF)
         symbol(self, TT_CASE)
@@ -149,8 +151,11 @@ class ExpressionParser(BaseParser):
         prefix(self, TT_LSQUARE, None, prefix_lsquare, layout=layout_lsquare)
         prefix(self, TT_LCURLY, None, prefix_lcurly, layout=layout_lcurly)
         prefix(self, TT_SHARP, None, prefix_sharp)
-        # TODO DELETE IT
+
+        # TODO DELETE IT, BAD PARSER COMPOSITION. EXPRESSIONS DOES NOT NEED THEM
         prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
+        literal(self, TT_AT_SIGN, NT_BIND)
+
         prefix(self, TT_NOT, NT_NOT, prefix_nud, 35)
         prefix(self, TT_IF, None, prefix_if, layout=layout_if)
 
@@ -369,6 +374,24 @@ class InterfaceGenericParser(BaseParser):
         ])
 
 
+class ModifyKeyParser(BaseParser):
+    def __init__(self):
+        BaseParser.__init__(self)
+        literal(self, TT_INT, NT_INT)
+        literal(self, TT_FLOAT, NT_FLOAT)
+        literal(self, TT_CHAR, NT_CHAR)
+        literal(self, TT_STR, NT_STR)
+        literal(self, TT_TRUE, NT_TRUE)
+        literal(self, TT_FALSE, NT_FALSE)
+        literal(self, TT_MULTI_STR, NT_MULTI_STR)
+        # literal(self, TT_NAME, NT_NAME)
+        prefix(self, TT_NAME, NT_NAME, prefix_name_as_symbol)
+        # symbol_nud(self, TT_OPERATOR, NT_NAME, operator_as_symbol)
+        symbol(self, TT_COMMA)
+        symbol(self, TT_ASSIGN)
+        # infix(self, TT_DOT, None, 100, infix_lcurly_dot)
+        infix(self, TT_DOT, NT_LOOKUP, 70, led_infixr)
+
 class MapKeyParser(BaseParser):
     def __init__(self, expression_parser):
         BaseParser.__init__(self)
@@ -382,9 +405,8 @@ class MapKeyParser(BaseParser):
         literal(self, TT_FALSE, NT_FALSE)
         literal(self, TT_MULTI_STR, NT_MULTI_STR)
         prefix(self, TT_NAME, NT_NAME, prefix_name_as_symbol)
-        symbol_nud(self, TT_OPERATOR, NT_NAME, operator_as_symbol)
         prefix(self, TT_LPAREN, None, prefix_lparen_map_key)
-        # literal(self, TT_NAME)
+        symbol_nud(self, TT_OPERATOR, NT_NAME, operator_as_symbol)
         symbol(self, TT_COMMA)
         symbol(self, TT_ASSIGN)
 

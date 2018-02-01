@@ -600,31 +600,20 @@ def _compile_THROW(compiler, code, node):
     code.emit_0(THROW, info(node))
 
 
-def _transform_modify(compiler, node, func, source, modifications):
-    """
-    transforms modify x.{a=1, b=2, 0=4} into series of puts
-    put 0 4 (put b 2 (put a 1 x))
-    """
-    if plist.is_empty(modifications):
-        return source
 
-    m, tail = plist.split(modifications)
-    key = m[0]
-    value = m[1]
+def _log_ast(name, ast):
+    ast_str = str(nodes.node_to_string(ast))
+    f = open('debinfo/%s.json' % name, 'w')
+    f.write(ast_str)
+    f.close()
 
-    if node_type(key) == NT_NAME:
-        key = nodes.create_symbol_node(nodes.node_token(key), key)
-    return _transform_modify(compiler, node,
-                             func,
-                             nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
-                             tail)
-
+COUNT_MODIFIES = 0
 
 def _compile_MODIFY(compiler, code, node):
-    call = _transform_modify(compiler, node,
-                             nodes.create_name_node_s(nodes.node_token(node), lang_names.PUT),
-                             node_first(node),
-                             node_second(node))
+    global COUNT_MODIFIES
+    call = simplify.simplify_modify(compiler, code, node)
+    _log_ast("modify_" + str(COUNT_MODIFIES), call)
+    COUNT_MODIFIES += 1
     _compile(compiler, code, call)
 
 

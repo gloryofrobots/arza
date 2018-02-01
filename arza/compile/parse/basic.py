@@ -645,19 +645,19 @@ def rexpression(parser, op):
     return expression(parser, op.lbp - 1)
 
 
-def flatten_infix(parser, node, ntype):
+def flatten_infix(node, ntype):
     if nodes.node_type(node) == ntype:
         first = nodes.node_first(node)
         second = nodes.node_second(node)
-        head = flatten_infix(parser, first, ntype)
-        tail = flatten_infix(parser, second, ntype)
+        head = flatten_infix(first, ntype)
+        tail = flatten_infix(second, ntype)
         return plist.concat(head, tail)
     else:
         return nodes.list_node([node])
 
 
 def commas_as_list(parser, node):
-    return flatten_infix(parser, node, NT_COMMA)
+    return flatten_infix(node, NT_COMMA)
 
 
 def maybe_tuple(parser, node):
@@ -671,7 +671,7 @@ def commas_as_list_if_commas(parser, node):
     if nodes.node_type(node) != NT_COMMA:
         return node
 
-    return flatten_infix(parser, node, NT_COMMA)
+    return flatten_infix(node, NT_COMMA)
 
 
 def postprocess(parser, node):

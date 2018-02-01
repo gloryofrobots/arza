@@ -177,10 +177,21 @@ def infix_dot(parser, op, token, left):
     return node_2(NT_LOOKUP, token, left, nodes.create_symbol_node(get_node_token(symbol), symbol))
 
 
+def infix_lcurly_dot(parser, op, token, left):
+    if parser.token_type == TT_INT:
+        idx = _init_default_current_0(parser)
+        advance(parser)
+        return node_2(NT_LOOKUP, token, left, idx)
+
+    exp = expression(parser, op.lbp - 1)
+    # symbol = grab_name(parser)
+    return node_2(NT_LOOKUP, token, left, nodes.create_symbol_node(get_node_token(exp), exp))
+
+
 def infix_lcurly(parser, op, token, left):
     items = []
     if parser.token_type != TT_RCURLY:
-        key = expression(parser.map_key_parser, 0)
+        key = expression(parser.modify_key_parser, 0)
 
         # field access
         if parser.token_type == TT_RCURLY:
@@ -199,7 +210,7 @@ def infix_lcurly(parser, op, token, left):
             advance_expected(parser, TT_COMMA)
 
             while True:
-                key = expression(parser, 0)
+                key = expression(parser.modify_key_parser, 0)
                 advance_expected(parser, TT_ASSIGN)
                 value = expression(parser, 0, [TT_COMMA])
 
