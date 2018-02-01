@@ -117,6 +117,7 @@ def __array(process, routine):
 
 
 def _exit(process, routine):
+    print routine._args.to_l()
     raise SystemExit
 
 

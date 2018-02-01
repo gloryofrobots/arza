@@ -399,7 +399,6 @@ def ensure_symbol_node_from_name(token, node):
     t = node_type(node)
     if t == nt.NT_NAME:
         return create_symbol_node(token, node)
-    assert t == nt.NT_SYMBOL, t
     return node
 
 

@@ -6,30 +6,46 @@
       "children": [
         {
           "_ntype": "NT_NAME",
-          "_value": "d1"
+          "_value": "d"
         },
         {
-          "_ntype": "NT_MODIFY",
-          "_value": ".{",
+          "_ntype": "NT_MAP",
+          "_value": "{",
           "children": [
-            {
-              "_ntype": "NT_NAME",
-              "_value": "d"
-            },
             [
               [
                 {
-                  "_ntype": "NT_LOOKUP",
-                  "_value": ".",
+                  "_ntype": "NT_SYMBOL",
+                  "_value": "y",
                   "children": [
                     {
-                      "_ntype": "NT_LOOKUP",
-                      "_value": ".",
-                      "children": [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "s1"
-                        },
+                      "_ntype": "NT_NAME",
+                      "_value": "y"
+                    }
+                  ]
+                },
+                {
+                  "_ntype": "NT_FLOAT",
+                  "_value": "18.0"
+                }
+              ],
+              [
+                {
+                  "_ntype": "NT_SYMBOL",
+                  "_value": "s1",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "s1"
+                    }
+                  ]
+                },
+                {
+                  "_ntype": "NT_MAP",
+                  "_value": "{",
+                  "children": [
+                    [
+                      [
                         {
                           "_ntype": "NT_SYMBOL",
                           "_value": "s2",
@@ -39,50 +55,102 @@
                               "_value": "s2"
                             }
                           ]
-                        }
-                      ]
-                    },
-                    {
-                      "_ntype": "NT_SYMBOL",
-                      "_value": "x",
-                      "children": [
+                        },
                         {
-                          "_ntype": "NT_NAME",
-                          "_value": "x"
+                          "_ntype": "NT_MAP",
+                          "_value": "{",
+                          "children": [
+                            [
+                              [
+                                {
+                                  "_ntype": "NT_SYMBOL",
+                                  "_value": "z",
+                                  "children": [
+                                    {
+                                      "_ntype": "NT_NAME",
+                                      "_value": "z"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "_ntype": "NT_INT",
+                                  "_value": "24"
+                                }
+                              ],
+                              [
+                                {
+                                  "_ntype": "NT_SYMBOL",
+                                  "_value": "x",
+                                  "children": [
+                                    {
+                                      "_ntype": "NT_NAME",
+                                      "_value": "x"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "_ntype": "NT_INT",
+                                  "_value": "24"
+                                }
+                              ],
+                              [
+                                {
+                                  "_ntype": "NT_SYMBOL",
+                                  "_value": "s3",
+                                  "children": [
+                                    {
+                                      "_ntype": "NT_NAME",
+                                      "_value": "s3"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "_ntype": "NT_MAP",
+                                  "_value": "{",
+                                  "children": [
+                                    [
+                                      [
+                                        {
+                                          "_ntype": "NT_SYMBOL",
+                                          "_value": "b",
+                                          "children": [
+                                            {
+                                              "_ntype": "NT_NAME",
+                                              "_value": "b"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "_ntype": "NT_INT",
+                                          "_value": "20"
+                                        }
+                                      ],
+                                      [
+                                        {
+                                          "_ntype": "NT_SYMBOL",
+                                          "_value": "a",
+                                          "children": [
+                                            {
+                                              "_ntype": "NT_NAME",
+                                              "_value": "a"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "_ntype": "NT_INT",
+                                          "_value": "20"
+                                        }
+                                      ]
+                                    ]
+                                  ]
+                                }
+                              ]
+                            ]
+                          ]
                         }
                       ]
-                    }
+                    ]
                   ]
-                },
-                {
-                  "_ntype": "NT_INT",
-                  "_value": "1"
-                }
-              ],
-              [
-                {
-                  "_ntype": "NT_LOOKUP",
-                  "_value": ".",
-                  "children": [
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "s1"
-                    },
-                    {
-                      "_ntype": "NT_SYMBOL",
-                      "_value": "s2",
-                      "children": [
-                        {
-                          "_ntype": "NT_NAME",
-                          "_value": "s2"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "_ntype": "NT_BIND",
-                  "_value": "@"
                 }
               ]
             ]

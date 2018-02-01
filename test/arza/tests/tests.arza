@@ -16,6 +16,7 @@ import tests:test_import
 import tests:test_fun
 import tests:test_coro
 import tests:test_partial
+import tests:test_modify
 
 
 fun log(...msgs) =
@@ -61,7 +62,11 @@ fun run() =
 
     log("TEST PARTIAL")
     test_partial:test()
-//
+
+    log("TEST MODIFY")
+    test_modify:test()
+
     log("TEST OPERATORS")
     test_operators:test()
+
 

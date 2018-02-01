@@ -1,4 +1,3 @@
-__author__ = 'gloryofrobots'
 # TODO REMOVE UNNECESSARRY ASSERTS OR REPLACE THEM WITH DEBUG MODE
 
 from arza.types import space

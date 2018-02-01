@@ -112,7 +112,7 @@ class ExpressionParser(BaseParser):
         self.name_parser = name_parser_init(BaseParser())
         self.let_parser = LetParser(self)
         self.map_key_parser = MapKeyParser(self)
-        self.modify_key_parser = ModifyKeyParser()
+        self.modify_key_parser = ModifyKeyParser(self)
 
         self.add_subparsers(
             [
@@ -375,8 +375,9 @@ class InterfaceGenericParser(BaseParser):
 
 
 class ModifyKeyParser(BaseParser):
-    def __init__(self):
+    def __init__(self, expression_parser):
         BaseParser.__init__(self)
+        self.expression_parser = expression_parser
         literal(self, TT_INT, NT_INT)
         literal(self, TT_FLOAT, NT_FLOAT)
         literal(self, TT_CHAR, NT_CHAR)
@@ -384,6 +385,7 @@ class ModifyKeyParser(BaseParser):
         literal(self, TT_TRUE, NT_TRUE)
         literal(self, TT_FALSE, NT_FALSE)
         literal(self, TT_MULTI_STR, NT_MULTI_STR)
+        prefix(self, TT_LPAREN, None, prefix_lparen_map_key)
         # literal(self, TT_NAME, NT_NAME)
         prefix(self, TT_NAME, NT_NAME, prefix_name_as_symbol)
         # symbol_nud(self, TT_OPERATOR, NT_NAME, operator_as_symbol)
@@ -391,6 +393,7 @@ class ModifyKeyParser(BaseParser):
         symbol(self, TT_ASSIGN)
         # infix(self, TT_DOT, None, 100, infix_lcurly_dot)
         infix(self, TT_DOT, NT_LOOKUP, 70, led_infixr)
+
 
 class MapKeyParser(BaseParser):
     def __init__(self, expression_parser):

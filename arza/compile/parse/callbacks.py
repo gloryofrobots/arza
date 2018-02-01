@@ -208,8 +208,7 @@ def infix_lcurly(parser, op, token, left):
 
         if parser.token_type != TT_RCURLY:
             advance_expected(parser, TT_COMMA)
-
-            while True:
+            while parser.token_type != TT_RCURLY:
                 key = expression(parser.modify_key_parser, 0)
                 advance_expected(parser, TT_ASSIGN)
                 value = expression(parser, 0, [TT_COMMA])

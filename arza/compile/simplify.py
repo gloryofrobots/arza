@@ -74,13 +74,13 @@ def _random_name(name):
     return name
 
 
-def _replace_name(node, names):
+def _replace_name(node, level, names):
     ntype = node_type(node)
 
     if ntype == nt.NT_IMPORTED_NAME:
         name = nodes.imported_name_to_string(node)
         new_node = nodes.create_name_node(nodes.node_token(node), name)
-        return _replace_name(new_node, names)
+        return _replace_name(new_node, level, names)
 
     if ntype != nt.NT_NAME:
         return None
@@ -179,74 +179,20 @@ def simplify_generic(compiler, code, node):
 
 
 ###############################
-# def _transform_modifications(compiler, path, modifications, result):
-#     if plist.is_empty(modifications):
-#         return
-#     m, tail = plist.split(modifications)
-#     key = m[0]
-#     value = m[1]
-#
-#     if node_type(key) == nt.NT_NAME:
-#         key = nodes.create_symbol_node(nodes.node_token(key), key)
-#     return _transform_modify(compiler, node,
-#                              func,
-#                              nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
-#                              tail)
 
 
 def simplify_modify(compiler, code, node):
-    source = nodes.node_first(node)
-    modifications = nodes.node_second(node)
-
-    # path = plist.plist([source])
-    # transformed = []
-    # _transform_modifications(compiler, path, modifications, transformed)
-    return _transform_modify(compiler, node,
-                             nodes.create_name_node_s(nodes.node_token(node), lang_names.PUT),
-                             source,
-                             modifications
-                             )
-
-
-def _create_path_node(path):
-    result, tail = plist.split(path)
-    for node in result:
-        result = nodes.create_lookup_node(node_token(result), result, node)
-    return result
-
-"""
-let d1 = d.{
-    s1 = d.s1.{
-        s2 = d.s1.s2.{
-            x = 1
-        }
-    },
-    s1 = d.s1.{
-        s2 = d.s1.s2
-    }
-}
-let d1 = d.{
-    s1.s2.x = 1,
-    s1.s2 = @
-}
-"""
-
-
-def _transform_modify(compiler, node, func, source, modifications):
     """
-    transforms modify x.{a=1, b=2, 0=4} into series of puts
-    put 0 4 (put b 2 (put a 1 x))
-    """
-    if plist.is_empty(modifications):
-        return source
+    Complicated transformation
 
-    m, tail = plist.split(modifications)
-    key = m[0]
-    value = m[1]
-    """
+    this expression :
     let d1 = d.{
         s1.s2.x = 1,
+        s1.s2 = @,
+        y = @ + f(@)
     }
+
+    will be transformed into
 
     let d1 = d.{
         s1 = d.s1.{
@@ -254,33 +200,103 @@ def _transform_modify(compiler, node, func, source, modifications):
                 x = 1
             }
         },
+        s1 = d.s1.{
+            s2 = d.s1.s2
+        },
+        y = d.y + f(d.y)
     }
     """
-    # path_node = _create_path_node(path)
+    # print "------------SIMPLIFY"
+    source = nodes.node_first(node)
+    modifications = nodes.node_second(node)
+    return _transform_modify(compiler, node,
+                             nodes.create_name_node_s(nodes.node_token(node), lang_names.PUT),
+                             source,
+                             modifications
+                             )
+
+
+def _transfom_binds_callback(node, level, state):
+    """
+    callback used for transforming @ nodes into lookup chains (state["path"])
+    state[stop_level] will store level after which @ nodes will not be processed
+    this is necessarry because lookup information for deep nested @ nodes have not been calculated yet
+    """
+    stop_level = state["stop_level"]
+    # print "0: ", level, stop_level, node_type(node)
+    if stop_level > 0 and stop_level < level:
+        # print "1: ", level, stop_level
+        return None
+
+    t = node_type(node)
+    if t == nt.NT_MODIFY and stop_level < 0:
+        state["stop_level"] = level + 1
+        # print "2: ", level, data["stop_level"]
+
+    if t != nt.NT_BIND:
+        return None
+
+    return state["path"]
+
+
+def _transform_modify(compiler, node, func, source, modifications):
+    """
+    transforms modify x.{a=1, b=2, 0=4} into series of puts
+    put 0 4 (put b 2 (put a 1 x))
+
+    and
+    let d1 = d.{
+        s1.s2.x = 1,
+    }
+    transforms into
+    let d1 = d.{
+        s1 = d.s1.{
+            s2 = d.s1.s2.{
+                x = 1
+            }
+        },
+    }
+    Algo is somewhat convoluted
+    This is recursive function. Instead of transforming all expression at once it transforms
+    only its first level and stores information for next level in generated nodes
+    then it returns generated nodes to the compiler that will call this transfromation again for the next level after
+    it compiles simplified first
+    Also all @ tokens will be replaced by appropriate lookup chains
+    """
+    if plist.is_empty(modifications):
+        # end of recursion. processed all nodes from this levels into call chain
+        return source
+
+    m, tail = plist.split(modifications)
+    key = m[0]
+    value = m[1]
+
     k_type = node_type(key)
     if k_type == nt.NT_LOOKUP:
-        keys = basic.flatten_infix(key, nt.NT_LOOKUP)
+        # This means we need to create modify node and store path to this node in its first child (source)
         first = node_first(key)
         other_keys = node_second(key)
-        new_key = nodes.ensure_symbol_node_from_name(node_token(key), first)
 
-        new_pair = list_node([other_keys, value])
+        # creating path
+        new_key = nodes.ensure_symbol_node_from_name(node_token(key), first)
         new_source = nodes.create_lookup_node(node_token(new_key), source, new_key)
+
+        # creating modify node
+        new_pair = list_node([other_keys, value])
         new_value = nodes.create_modify_node(node_token(new_key), new_source, list_node([new_pair]))
 
         return _transform_modify(compiler, node,
                                  func,
                                  nodes.create_call_node_3(nodes.node_token(node), func, new_key, new_value, source),
                                  tail)
-        # _transform_modify(compiler, node,
-        #                     func,
-        #                     path,
-        #                     nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
-        #                     tail)
 
-    if k_type == nt.NT_NAME:
-        key = nodes.create_symbol_node(nodes.node_token(key), key)
+    else:
+        # ensure symbol
+        key = nodes.ensure_symbol_node_from_name(node_token(key), key)
 
+    # transform all @ nodes to proper paths
+    transformed_bind = nodes.create_lookup_node(node_token(key), source, key)
+    value = basic.transform(value, _transfom_binds_callback, dict(path=transformed_bind, stop_level=-1))
     return _transform_modify(compiler, node,
                              func,
                              nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),

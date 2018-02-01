@@ -7,9 +7,14 @@
 //        }
 //    }
 //    d1 = d.{
-//         s1.s2.x = 2
+//        s1.s2.x = @
+////         s1.s2 = @.{
+////            s3 = @.{
+////                y = 1
+////            }
+////         }
 //    }
-//    _ = _p(d1)
+
 import arza:lang:_std_behavior as std_behavior
 
 from arza:lang:_datatype import (record_values, record_keys, record_index_of)

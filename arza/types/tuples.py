@@ -251,3 +251,8 @@ def drop(t, count):
         error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count too big"), space.newint(count))
     return W_Tuple(t.elements[count:])
 
+
+# USED ONLY IN COMPILER FOR REPLACING @ in map modify expression
+# IT JUST VERY HARD IN CURRENT DESIGN TO REPLACE EXPRESSION
+def modify_tuple(t, index, val):
+    t.elements[index] = val

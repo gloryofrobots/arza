@@ -78,6 +78,7 @@ INDENTS_DESCRIBE = [TT_DESCRIBE]
 INDENTS_TYPE = [TT_TYPE, TT_LPAREN]
 INDENTS_TRAIT = [TT_TRAIT, TT_FOR, TT_ASSIGN]
 
+
 # if you want to remove ASSIGN
 # INDENTS_TRAIT = [TT_TRAIT, TT_NAME, TT_DEF, TT_USE]
 
@@ -701,15 +702,19 @@ def postprocess(parser, node):
 
 
 def transform(node, cb, args):
+    return _transform(node, cb, 0, args)
+
+
+def _transform(node, cb, level, args):
     if nodes.is_empty_node(node):
         return node
     elif nodes.is_list_node(node):
         children = []
         for c in node:
-            children.append(transform(c, cb, args))
+            children.append(_transform(c, cb, level + 1, args))
         return nodes.list_node(children)
 
-    new_node = cb(node, args)
+    new_node = cb(node, level, args)
     if new_node is not None:
         return new_node
     else:
@@ -719,7 +724,7 @@ def transform(node, cb, args):
             return node
 
         for c in node_children:
-            new_child = transform(c, cb, args)
+            new_child = _transform(c, cb, level + 1, args)
             children.append(new_child)
         return nodes.newnode(nodes.node_type(node), nodes.node_token(node), children)
 

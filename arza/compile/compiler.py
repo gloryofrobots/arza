@@ -610,10 +610,10 @@ def _log_ast(name, ast):
 COUNT_MODIFIES = 0
 
 def _compile_MODIFY(compiler, code, node):
-    global COUNT_MODIFIES
     call = simplify.simplify_modify(compiler, code, node)
-    _log_ast("modify_" + str(COUNT_MODIFIES), call)
-    COUNT_MODIFIES += 1
+    # global COUNT_MODIFIES
+    # _log_ast("modify_" + str(COUNT_MODIFIES), call)
+    # COUNT_MODIFIES += 1
     _compile(compiler, code, call)
 
 

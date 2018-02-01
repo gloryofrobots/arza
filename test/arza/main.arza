@@ -4,54 +4,8 @@ import seq
 import list
 import array
 import string
-//import tests:tests
+import tests:tests
 
 
 fun main() =
-    let
-        d = {
-            s1 = {
-                s2 = {
-                    x = 1
-                }
-            }
-        }
-        d1 = d.{
-             s1.s2.x = 2
-        }
-        _ = _p(d1)
-    in
-        io:print(d1)
-//    let
-//        d = {
-//            s1 = {
-//                s2 = {
-//                    x = 1,
-//                    s3 = {
-//                        y = 2,
-//                        s4 ={
-//                            z = 3
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        d1 = d.{
-//            s1 = d.s1.{
-//                s2 = d.s1.s2.{
-//                    x = d.s1.s2.x + 1,
-//                    s3=d.s1.s2.s3.{
-//                        y = d.s1.s2.s3.y + 1,
-//                        s4 = d.s1.s2.s3.s4.{
-//                                z = d.s1.s2.s3.s4.z + 1,
-//                                xyz = d.s1.s2.x + d.s1.s2.s3.y + d.s1.s2.s3.s4.z
-//                        }
-//
-//                    }
-//                }
-//            }
-//        }
-//
-//    in
-//        io:print(d, d1)
-//    tests:run()
+    tests:run()

@@ -172,7 +172,8 @@ RULES = [
     (token('[:^:][%s]+' % operator_char), TT_OPERATOR),
     (token(':'), TT_COLON),
     (token('[%s][=]+' % operator_char), TT_OPERATOR),
-    (token('[=][%s]+' % operator_char), TT_OPERATOR),
+    # prevent x=-1 in maps treated as operator =-
+    # (token('[=][%s]+' % operator_char), TT_OPERATOR),
     (token('[%s][|]+' % operator_char), TT_OPERATOR),
     (token('[|][%s]+' % operator_char), TT_OPERATOR),
     # (token('[%s][:]+' % operator_char), TT_OPERATOR),
