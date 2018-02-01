@@ -34,7 +34,6 @@ fun test_map() =
                   seq:reduce(`+`, [@, @, @])
                   ) + `*`(@, @)
         }
-        _ = _p(d1)
     in
         affirm:is_equal(d1, {y=18.0, s1={s2={z=24, x=-24, s3={b=20, a=-20}}, (True)=True}})
 
