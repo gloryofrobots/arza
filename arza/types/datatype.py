@@ -1,5 +1,5 @@
 from arza.types.root import W_Hashable
-from arza.types import api, space, plist
+from arza.types import api, space, plist, tuples
 from arza.misc import platform
 from arza.runtime import error
 
@@ -9,6 +9,10 @@ class W_Record(W_Hashable):
         W_Hashable.__init__(self)
         self.values = values
         self.type = type
+
+    def _call_(self, process, args):
+        new_args = space.newtuple([self, args])
+        api.call(process, process.std.functions.call, new_args)
 
     def _to_string_(self):
         res = []

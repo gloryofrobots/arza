@@ -37,6 +37,8 @@ trait (L) for Lense =
             at(key, branch)
 
     def str(l of L) = str(get_branch(l))
-    def repr(l of L) = "<Lense:" ++ str(l) ++" >"
+    def repr(l of L) = "<Lense:" ++ str(l) ++ " >"
 
-describe Lense as (Collection, Channel, Extract, Ref, Displayed)
+    def call(l of L, (value)) = l <- value
+
+describe Lense as (Collection, Channel, Extract, Ref, Displayed, Callable)

@@ -2,6 +2,13 @@ from arza.types import api, space, plist
 from arza.runtime import error
 
 
+def find_in_module(process, prelude, name):
+    sym = space.newsymbol(process, name)
+    if not api.contains(prelude, sym):
+        error.throw_1(error.Errors.KEY_ERROR, space.newstring(u"Missing internal trait %s in prelude" % name))
+    return api.at(prelude, sym)
+
+
 class Types:
     def __init__(self, symbols, interfaces):
         from arza.types.space import newnativedatatype as newtype
@@ -69,6 +76,19 @@ class Types:
         self.AssocArray.register_interface(interfaces.Any)
 
 
+class Functions:
+    def __init__(self):
+        self.call = None
+
+    def setup(self, process):
+        prelude = process.modules.prelude
+        self.call = self.find_function(process, prelude, u"call")
+
+    def find_function(self, process, module, name):
+        _fun = find_in_module(process, module, name)
+        error.affirm_type(_fun, space.isfunction)
+        return _fun
+
 
 class Interfaces:
     def __init__(self, symbols):
@@ -84,6 +104,7 @@ class Interfaces:
         self.Indexed = None
         self.Eq = None
         self.Displayed = None
+        self.Callable = None
         self.instance_derived = None
         self.singleton_derived = None
 
@@ -96,6 +117,7 @@ class Interfaces:
         self.Indexed = self.find_interface(process, prelude, u"Indexed")
         self.Eq = self.find_interface(process, prelude, u"Eq")
         self.Displayed = self.find_interface(process, prelude, u"Displayed")
+        self.Callable = self.find_interface(process, prelude, u"Callable")
 
         self.instance_derived = space.newlist([
             self.Dict, self.Sized, self.Indexed,
@@ -134,24 +156,20 @@ class Interfaces:
     def is_default_derivable_interface(self, iface):
         return api.contains_b(self.instance_derived, iface) or api.contains_b(self.singleton_derived, iface)
 
-    def _find_in(self, process, prelude, name):
-        sym = space.newsymbol(process, name)
-        if not api.contains(prelude, sym):
-            error.throw_1(error.Errors.KEY_ERROR, space.newstring(u"Missing internal trait %s in prelude" % name))
-        return api.at(prelude, sym)
-
     def find_interface(self, process, module, name):
-        _interface = self._find_in(process, module, name)
+        _interface = find_in_module(process, module, name)
         error.affirm_type(_interface, space.isinterface)
         return _interface
 
 
 class Std:
     def __init__(self, symbols):
+        self.functions = Functions()
         self.interfaces = Interfaces(symbols)
         self.types = Types(symbols, self.interfaces)
         self.initialized = False
 
     def postsetup(self, process):
         self.interfaces.setup(process)
+        self.functions.setup(process)
         self.initialized = True
