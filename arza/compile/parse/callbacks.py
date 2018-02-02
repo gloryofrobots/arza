@@ -396,6 +396,17 @@ def symbol_comma_nud(parser, op, token):
     return None
 
 
+def prefix_dollar(parser, op, token):
+    advance_expected(parser, TT_LPAREN)
+    check_token_type(parser, TT_NAME)
+    exp = expect_expression_of(parser.modify_key_parser, 0, NT_LOOKUP, TERM_LPAREN)
+    advance_expected(parser, TT_RPAREN)
+    name_symbol = nodes.node_first(exp)
+    name = nodes.node_first(name_symbol)
+    path = nodes.node_second(exp)
+    return node_2(NT_LENSE, token, name, path)
+
+
 def prefix_sharp(parser, op, token):
     check_token_types(parser, [TT_NAME, TT_MULTI_STR, TT_STR, TT_OPERATOR])
 

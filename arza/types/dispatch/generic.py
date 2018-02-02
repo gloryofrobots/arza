@@ -91,8 +91,9 @@ class W_Generic(W_Hashable):
         assert method is not self
 
         if not method:
-            return error.throw_3(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR,
+            return error.throw_4(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR,
                                  self,
+                                 tuples.types_tuple(process, args),
                                  args,
                                  space.newlist(self.signatures))
 

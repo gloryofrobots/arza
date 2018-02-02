@@ -1,3 +1,4 @@
+import io
 import affirm
 import seq
 
@@ -67,8 +68,7 @@ fun test_lenses() =
                 }
             }
         }
-        l1 = lense(d, (fun(source) = source.s1.s2),
-                     (fun(value, source) = source.{s1.s2 = value}))
+        l1 = $(d.s1.s2)
         l2 = l1.{x = 0, z = 4}
         l3 = l2.{a=42}
         l4 = l1 <- {a=1, b=2, c=3}
@@ -81,6 +81,9 @@ fun test_lenses() =
         affirm:is_equal(!!l3, {z=4, x=0, y=2, a=42})
         affirm:is_equal(!!l5, {w=15, t=16})
         affirm:is_equal(l5(), {w=15, t=16})
+        // Lenses can be created only for subbranches not for atomic properties
+        affirm:is_throw_kindof(() -> $(d.s1.s2.x), (), TypeError)
+
 
 fun test() =
     test_map()

@@ -178,6 +178,49 @@ def simplify_generic(compiler, code, node):
     return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
 
 
+########################3
+
+def create_infix_lookup(path):
+    result, tail = plist.split(path)
+    if plist.is_empty(tail):
+        return result
+
+    return nodes.create_lookup_node(nodes.node_token(result), create_infix_lookup(tail), result)
+
+
+def simplify_lense(compiler, code, node):
+    """
+    transforms
+    $(d.s1.s2)
+    into
+    arza:lang:lense(d, (source) -> source.s1.s2, (value, source) -> source.{s1.s2 = value})
+    """
+
+    source = node_first(node)
+    setter_path = node_second(node)
+    token = node_token(source)
+    source_name = nodes.create_name_node_s(token, "source")
+    value_name = nodes.create_name_node_s(token, "value")
+
+    ## GETTER
+    getter_path = nodes.create_lookup_node(token, source_name, setter_path)
+    getter_path_list = basic.flatten_infix(getter_path, nt.NT_LOOKUP)
+    getter_path_list = plist.reverse(getter_path_list)
+    getter_body = create_infix_lookup(getter_path_list)
+
+    getter = nodes.create_lambda_node(token, nodes.create_tuple_node(token, [source_name]),
+                                      getter_body)
+
+    ## SETTER
+    pair = list_node([setter_path, value_name])
+    setter_body = nodes.create_modify_node(token, source_name, list_node([pair]))
+    setter = nodes.create_lambda_node(token, nodes.create_tuple_node(token, [value_name, source_name]),
+                                      setter_body)
+
+    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.LENSE,
+                                         [source, getter, setter])
+    return call_node
+
 ###############################
 
 

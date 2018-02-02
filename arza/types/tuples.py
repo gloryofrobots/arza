@@ -256,3 +256,13 @@ def drop(t, count):
 # IT JUST VERY HARD IN CURRENT DESIGN TO REPLACE EXPRESSION
 def modify_tuple(t, index, val):
     t.elements[index] = val
+
+
+def types_tuple(process, t):
+    error.affirm_type(t, space.isrealtuple)
+    types = []
+    for el in t.elements:
+        _type = api.get_type(process, el)
+        types.append(_type)
+
+    return W_Tuple(types)

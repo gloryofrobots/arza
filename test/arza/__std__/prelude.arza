@@ -1,19 +1,4 @@
-//let
-//    d = {
-//        s1 = {
-//            s2 = {
-//                x = 1
-//            }
-//        }
-//    }
-//    d1 = d.{
-//        s1.s2.x = @
-////         s1.s2 = @.{
-////            s3 = @.{
-////                y = 1
-////            }
-////         }
-//    }
+//let _ = $(d.s1.s2)
 
 import arza:lang:_std_behavior as std_behavior
 
@@ -31,8 +16,8 @@ from arza:lang:_bit import (bitand, bitor, bitxor, bitnot, lshift, rshift)
 """
 SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
 Precedence    Operator
-    100           : . .{ .[
-    95           x()
+    100           : .
+    95           x() .{ .[ ->
     60           :: :::
     55           **
     50           *  /
@@ -41,13 +26,13 @@ Precedence    Operator
     30           and
     25           or << >>
     20           |>
-    15           " ." @ as of <|
+    15           " ." @ as of <| <-
     10           = :=
 """
 
 infixr (:=, :=, 10)
-infixr (<-, <-, 15)
 // infix @ as of -> 15
+infixr (<-, <-, 15)
 infixl (<|, <|, 15)
 infixl (|>, |>, 20)
 // infix or -> 25

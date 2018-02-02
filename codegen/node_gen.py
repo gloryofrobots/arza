@@ -27,6 +27,8 @@ NODES = [
   "NT_COMMA",
   "NT_CASE",
 
+  "NT_LENSE",
+
   "NT_LITERAL",
 
   "NT_FUN",

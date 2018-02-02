@@ -600,14 +600,15 @@ def _compile_THROW(compiler, code, node):
     code.emit_0(THROW, info(node))
 
 
-
 def _log_ast(name, ast):
     ast_str = str(nodes.node_to_string(ast))
     f = open('debinfo/%s.json' % name, 'w')
     f.write(ast_str)
     f.close()
 
+
 COUNT_MODIFIES = 0
+
 
 def _compile_MODIFY(compiler, code, node):
     call = simplify.simplify_modify(compiler, code, node)
@@ -617,15 +618,11 @@ def _compile_MODIFY(compiler, code, node):
     _compile(compiler, code, call)
 
 
-# TODO MAKE NAMES from SYMBOLS in parser
-# def _emit_map_key(compiler, code, key):
-#     if node_type(key) == NT_NAME:
-#         # in case of names in object literal we must convert them to symbols
-#         _emit_symbol_literal(compiler, code, key)
-#     else:
-#         _compile(compiler, code, key)
-#
-#
+def _compile_LENSE(compiler, code, node):
+    call = simplify.simplify_lense(compiler, code, node)
+    # _log_ast("lense_" + str(0), call)
+    _compile(compiler, code, call)
+
 
 def _compile_MAP(compiler, code, node):
     items = node_first(node)
@@ -1219,6 +1216,8 @@ def _compile_node(compiler, code, node):
 
     elif NT_MODIFY == ntype:
         _compile_MODIFY(compiler, code, node)
+    elif NT_LENSE == ntype:
+        _compile_LENSE(compiler, code, node)
     elif NT_AND == ntype:
         _compile_AND(compiler, code, node)
     elif NT_OR == ntype:

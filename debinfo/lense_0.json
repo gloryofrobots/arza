@@ -1,0 +1,180 @@
+{
+  "_ntype": "NT_CALL",
+  "_value": "$",
+  "children": [
+    {
+      "_ntype": "NT_NAME",
+      "_value": "arza:lang:lense"
+    },
+    [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "d"
+      },
+      {
+        "_ntype": "NT_LAMBDA",
+        "_value": "d",
+        "children": [
+          [
+            [
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": "d",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "source"
+                    }
+                  ]
+                ]
+              },
+              [
+                {
+                  "_ntype": "NT_LOOKUP",
+                  "_value": "x",
+                  "children": [
+                    {
+                      "_ntype": "NT_LOOKUP",
+                      "_value": "s2",
+                      "children": [
+                        {
+                          "_ntype": "NT_LOOKUP",
+                          "_value": "s1",
+                          "children": [
+                            {
+                              "_ntype": "NT_NAME",
+                              "_value": "source"
+                            },
+                            {
+                              "_ntype": "NT_SYMBOL",
+                              "_value": "s1",
+                              "children": [
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "s1"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "_ntype": "NT_SYMBOL",
+                          "_value": "s2",
+                          "children": [
+                            {
+                              "_ntype": "NT_NAME",
+                              "_value": "s2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "_ntype": "NT_SYMBOL",
+                      "_value": "x",
+                      "children": [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "x"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          ]
+        ]
+      },
+      {
+        "_ntype": "NT_LAMBDA",
+        "_value": "d",
+        "children": [
+          [
+            [
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": "d",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "value"
+                    },
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "source"
+                    }
+                  ]
+                ]
+              },
+              [
+                {
+                  "_ntype": "NT_MODIFY",
+                  "_value": "d",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "source"
+                    },
+                    [
+                      [
+                        {
+                          "_ntype": "NT_LOOKUP",
+                          "_value": ".",
+                          "children": [
+                            {
+                              "_ntype": "NT_SYMBOL",
+                              "_value": "s1",
+                              "children": [
+                                {
+                                  "_ntype": "NT_NAME",
+                                  "_value": "s1"
+                                }
+                              ]
+                            },
+                            {
+                              "_ntype": "NT_LOOKUP",
+                              "_value": ".",
+                              "children": [
+                                {
+                                  "_ntype": "NT_SYMBOL",
+                                  "_value": "s2",
+                                  "children": [
+                                    {
+                                      "_ntype": "NT_NAME",
+                                      "_value": "s2"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "_ntype": "NT_SYMBOL",
+                                  "_value": "x",
+                                  "children": [
+                                    {
+                                      "_ntype": "NT_NAME",
+                                      "_value": "x"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "value"
+                        }
+                      ]
+                    ]
+                  ]
+                }
+              ]
+            ]
+          ]
+        ]
+      }
+    ]
+  ]
+}

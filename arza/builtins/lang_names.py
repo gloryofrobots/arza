@@ -19,6 +19,8 @@ TYPE = PREFIX + "deftype"
 GENERIC = PREFIX + "defgeneric"
 INTERFACE = PREFIX + "definterface"
 
+LENSE = PREFIX + "lense"
+
 PARTIAL = PREFIX + "defpartial"
 
 SPECIFY = PREFIX + "specify"

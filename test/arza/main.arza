@@ -4,11 +4,9 @@ import seq
 import list
 import array
 import string
-//import tests:tests
-import tests:test_modify
+import tests:tests
 
 
 
 fun main() =
-//    tests:run()
-    test_modify:test()
+    tests:run()

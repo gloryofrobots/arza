@@ -152,10 +152,9 @@ RULES = [
     # (typename, TT_TYPENAME),
     (token(name_const), TT_NAME),
 
+    (token('\$'), TT_DOLLAR),
     (token('=>'), TT_FAT_ARROW),
     (token('\-\>'), TT_ARROW),
-    # (token('\<\-'), TT_BACKARROW),
-    (token('\-\:'), TT_DISPATCH),
     (token('\;'), TT_END_EXPR),
     (token('#'), TT_SHARP),
     (token('\{'), TT_LCURLY),
@@ -172,7 +171,7 @@ RULES = [
     (token('[:^:][%s]+' % operator_char), TT_OPERATOR),
     (token(':'), TT_COLON),
     (token('[%s][=]+' % operator_char), TT_OPERATOR),
-    # prevent x=-1 in maps treated as operator =-
+    # commented below to prevent x=-1 in maps treated as operator =-
     # (token('[=][%s]+' % operator_char), TT_OPERATOR),
     (token('[%s][|]+' % operator_char), TT_OPERATOR),
     (token('[|][%s]+' % operator_char), TT_OPERATOR),
