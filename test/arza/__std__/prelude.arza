@@ -46,6 +46,7 @@ Precedence    Operator
 """
 
 infixr (:=, :=, 10)
+infixr (<-, <-, 15)
 // infix @ as of -> 15
 infixl (<|, <|, 15)
 infixl (|>, |>, 20)
@@ -70,6 +71,7 @@ prefix (-, arza:lang:negate, 55)
 infixl (**, **, 60)
 // prefix # -> 70
 prefix (!, !, 70)
+prefix (!!, !!, 70)
 infixl (.., .., 90)
 // infix (  .{ .[ -> 95
 prefix (&, &, 96)
@@ -194,6 +196,11 @@ interface MutRef =
     use !(self)
     fun :=(@self, value)
 
+interface Channel =
+    fun <- (@self, value)
+
+interface Extract =
+    fun !!(self)
 
 ////////////////////////////////////////////////////////////
 ///////////////// TYPES ////////////////////////////////////
@@ -265,10 +272,22 @@ trait TSingleton(T)
 
 def at (k, self of Map) as std_behavior:at
 def at (el, self of Tuple) as std_behavior:at
+
+
 ////////////////////////////////////////////////////////////
 ///////////////// FUNCTIONS ////////////////////////////////
 ////////////////////////////////////////////////////////////
 
+type Lense(source, getter, setter)
+
+fun lense(source, getter, setter) =
+    let
+        branch = getter(source)
+    in
+        if not kindof(branch, Collection) then
+            throw TypeError("Branch is not a Collection")
+        else
+            Lense(source, getter, setter)
 
 fun lookup (key, default, coll) =
     try
@@ -299,6 +318,8 @@ fun dec(x) = x - 1
 fun last(coll) = at(len(coll) - 1, coll)
 
 fun __override__(generic, types, func) = func(method(generic, types))
+
+fun downcast(any of Instance) = any as Instance
 
 let
     fst = c -> at(0, c)

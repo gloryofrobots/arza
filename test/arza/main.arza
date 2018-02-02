@@ -4,55 +4,10 @@ import seq
 import list
 import array
 import string
-//import tests:tests
+import tests:tests
 
-type Lense(source, getter, setter)
-
-def !(l of Lense) = (l as Instance).source
-
-def :=(l of Lense, value) =
-    let
-        {source, getter, setter} = l as Instance
-        new_source = setter(value, source)
-    in Lense(new_source, getter, setter)
-
-def put(key, value, l of Lense) =
-    let
-        {source, getter, setter} = l as Instance
-        branch = getter(source)
-        new_value = put(key, value, branch)
-        new_source = setter(new_value, source)
-    in
-        Lense(new_source, getter, setter)
-
-def at(key, l of Lense) =
-    let
-        {source, getter, setter} = l as Instance
-        branch = getter(source)
-    in
-        at(key, branch)
 
 
 fun main() =
-    let
-        d = {
-            s1 = {
-                s2 = {
-                    x = 1,
-                    y = 2
-                }
-            }
-
-        }
-        l1 = Lense(d, (fun(source) = source.s1.s2),
-                     (fun(value, source) = source.{s1.s2 = value}))
-        l2 = l1.{x = 0, z = 4}
-        l3 = l2.{a=42}
-        l4 = l1 := {a=1, b=2, c=3}
-    in
-        io:print(!l4, l4.a, l4.b, l4.c)
-        io:print(!l3, l3.a)
-        io:print(!l2)
-        io:print(!l1)
-//    tests:run()
+    tests:run()
     ()

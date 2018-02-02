@@ -1,0 +1,42 @@
+//////////////////////////////////////////////////
+// Lense
+//////////////////////////////////////////////////
+
+fun get_branch(l of Lense) =
+    let
+        {source, getter} = __unpack(l)
+    in getter(source)
+
+fun __unpack(l) =
+    match downcast(l)
+        | result @ {source, getter, setter} = result
+
+trait (L) for Lense =
+    def !(l of L) = downcast(l).source
+    def !!(l of L) = get_branch(l)
+
+    def <-(l of L, value) =
+        let
+            {source, getter, setter} = __unpack(l)
+            new_source = setter(value, source)
+        in L(new_source, getter, setter)
+
+    def put(key, value, l of L) =
+        let
+            {source, getter, setter} = __unpack(l)
+            branch = get_branch(l)
+            new_value = put(key, value, branch)
+        in
+            l <- new_value
+
+    def at(key, l of L) =
+        let
+            {source, getter, setter} = __unpack(l)
+            branch = get_branch(l)
+        in
+            at(key, branch)
+
+    def str(l of L) = str(get_branch(l))
+    def repr(l of L) = "<Lense:" ++ str(l) ++" >"
+
+describe Lense as (Collection, Channel, Extract, Ref, Displayed)

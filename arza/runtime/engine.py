@@ -10,9 +10,10 @@ else:
     PRELUDE_FILE = u"prelude"
 
 STD_MODULES = [u"std", u"tuple",
-               u"list", u"string",
-               u"generics", u"seq",
-               u"coro", u"map", ]
+               u"lense", u"list",
+               u"string", u"generics",
+               u"seq", u"coro",
+               u"map", ]
 
 
 # STD_MODULES = []
