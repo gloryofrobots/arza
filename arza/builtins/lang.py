@@ -300,6 +300,9 @@ def is_dict(process, routine):
     if api.kindof_b(process, v1, process.std.interfaces.Dict):
         return space.newbool(True)
 
+    if api.kindof_b(process, v1, process.std.interfaces.Instance):
+        return space.newbool(True)
+
     return space.newbool(False)
 
 
