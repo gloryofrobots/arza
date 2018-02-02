@@ -80,6 +80,7 @@ fun test_lenses() =
         affirm:is_equal(!l1, {s1={s2={x=1, y=2}}})
         affirm:is_equal(!!l3, {z=4, x=0, y=2, a=42})
         affirm:is_equal(!!l5, {w=15, t=16})
+        affirm:is_equal(l5(), {w=15, t=16})
 
 fun test() =
     test_map()

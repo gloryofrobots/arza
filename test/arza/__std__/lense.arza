@@ -40,5 +40,6 @@ trait (L) for Lense =
     def repr(l of L) = "<Lense:" ++ str(l) ++ " >"
 
     def call(l of L, (value)) = l <- value
+    def call(l of L, ()) = !!l
 
 describe Lense as (Collection, Channel, Extract, Ref, Displayed, Callable)
