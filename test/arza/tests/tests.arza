@@ -5,9 +5,9 @@ import seq
 import tests:test_operators
 
 import tests:test_modify
-import tests:dispatch:test_dispatch
-import tests:usertype:test_usertype
-import tests:stdtype:test_stdtype
+import tests:test_dispatch
+import tests:test_usertype
+import tests:test_stdtype
 import tests:test_expressions
 import tests:test_match
 import tests:test_exception

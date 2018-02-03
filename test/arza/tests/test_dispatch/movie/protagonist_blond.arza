@@ -1,9 +1,9 @@
 import io
 
-import tests:dispatch:movie:actors
-from tests:dispatch:movie:actors import (pretty_enough)
+import tests:test_dispatch:movie:actors
+from tests:test_dispatch:movie:actors import (pretty_enough)
 
-import tests:dispatch:movie:behavior
+import tests:test_dispatch:movie:behavior
 
 let SCREAM_THRESHOLD = 60
 

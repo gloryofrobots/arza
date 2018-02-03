@@ -1,6 +1,6 @@
 import affirm
-import tests:usertype:types
-import tests:usertype:types as stuff
+import tests:test_usertype:types
+import tests:test_usertype:types as stuff
 
 prefix(++-+*++, ++-+*++, 70)
 

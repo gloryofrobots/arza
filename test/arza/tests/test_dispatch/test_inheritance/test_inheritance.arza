@@ -1,0 +1,7 @@
+import tests:test_dispatch:test_inheritance:test_structural
+import tests:test_dispatch:test_inheritance:test_behavioral
+
+
+fun test () =
+    test_structural:test()
+    test_behavioral:test()

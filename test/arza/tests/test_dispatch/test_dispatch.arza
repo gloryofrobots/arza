@@ -1,0 +1,18 @@
+import tests:test_dispatch:test_simple
+import tests:test_dispatch:test_predicate
+import tests:test_dispatch:test_autotype_def
+import tests:test_dispatch:test_predicate_multi
+import tests:test_dispatch:test_dispatch_on_interface
+import tests:test_dispatch:test_def_override
+import tests:test_dispatch:test_inheritance
+import io
+
+fun test () =
+    test_simple:test()
+    test_predicate:test()
+    test_predicate_multi:test()
+    test_autotype_def:test()
+    test_dispatch_on_interface:test()
+    test_def_override:test()
+    test_inheritance:test()
+

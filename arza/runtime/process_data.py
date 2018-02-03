@@ -66,6 +66,7 @@ class Modules:
         error.affirm_type(name, space.issymbol)
         m = api.at(self.modules, name)
         if space.isint(m):
+            assert False, name
             error.throw_2(error.Errors.IMPORT_ERROR, u"Cross reference import", name)
         return m
 

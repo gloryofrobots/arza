@@ -3,9 +3,9 @@ import string
 import seq
 import affirm
 
-import tests:dispatch:movie:actors
-import tests:dispatch:movie:behavior
-import tests:dispatch:movie:movie
+import tests:test_dispatch:movie:actors
+import tests:test_dispatch:movie:behavior
+import tests:test_dispatch:movie:movie
 
 fun test() =
     let

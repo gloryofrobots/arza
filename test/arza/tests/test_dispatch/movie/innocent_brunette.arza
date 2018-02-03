@@ -1,5 +1,5 @@
-import tests:dispatch:movie:actors
-import tests:dispatch:movie:behavior
+import tests:test_dispatch:movie:actors
+import tests:test_dispatch:movie:behavior
 
 
 fun pretty_enough(b) = b.prettiness > 50
