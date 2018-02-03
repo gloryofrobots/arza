@@ -20,6 +20,7 @@ def import_module_by_name(process, script_name):
         return result
     return None
 
+
 def find_module_file(path, dirs):
     # print "DIRS", dirs
     for directory in dirs:
@@ -41,6 +42,16 @@ def load_module(process, name):
 
     filename = find_module_file(path, modules.path)
     # print "LOAD MODULE", name, filename
+
+    if not filename:
+        # in case import xxx:yyy:zzz
+        # if zzz is dir then file
+        # xxx/yyy/zzz/zzz.arza would be imported instead
+
+        raw_list = raw.split(":")
+        last_name = raw_list[len(raw_list)-1]
+        path = "%s%s%s.arza" % (raw.replace(":", os.sep), os.sep, last_name)
+        filename = find_module_file(path, modules.path)
 
     if not filename:
         return error.throw_1(error.Errors.IMPORT_ERROR, name)

@@ -4,7 +4,7 @@ import seq
 import list
 import array
 import string
-import tests:tests
+import tests
 
 
 
