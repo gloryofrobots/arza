@@ -4,7 +4,7 @@ Each language exists in separate branch instead of separate repository and the m
 Also each branch has it's own README with more detailed language description.
 For more information you can go to ```./test/{LANGNAME}/``` and examine tests and some simple programs. 
 
-Arza is latest and most developed language from others. I intent to write native interpreter for Arza or for some of it's descendants.
+Arza is my latest and most developed language at this moment. I intent to write native interpreter for Arza or for one of it's descendants later.
 
 - [Arza](https://github.com/gloryofrobots/langs/tree/arza) 
 - [Obin](https://github.com/gloryofrobots/langs/tree/obin)
