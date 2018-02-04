@@ -154,7 +154,7 @@ def get_favorite(c1 of Car, c2 of Car) = c2
 * Union types (like ADT, but in dynamic language their usefulness somewhat diminished)
 * Lazy evaluation via special syntax
 * Smart way of handling ambidextra operators
-
+* Single dispatch polymorphism with ability to create interfaces and open methods separatly from each other
 ```
 fun foldl
     | f acc [] -> acc
@@ -220,6 +220,7 @@ fun nine_billion_names_of_god_the_integer () ->
 * Using parentheses for creating blocks of expression, similar to {} blocks in C or Java
 * Support for partial application via special syntax
 * Name binding only via let-in expression
+* Single dispatch based on protocols, with ability to reuse methods from one protocol in definition of other
 
 ```
 fun add(x,y) = x + y
