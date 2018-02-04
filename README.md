@@ -1,6 +1,9 @@
 
 Prototypes for experimental programming languages.
 Each language exists in separate branch instead of separate repository.
+Each branch has it's own README with more detailed language description.
+For more information you can go to ```root/test/{LANGNAME}/``` and examine tests and some simple programs. 
+
 Arza is latest and most developed language from others.
 
 - [Arza](https://github.com/gloryofrobots/langs/tree/arza) 
