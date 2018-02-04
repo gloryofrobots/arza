@@ -1,10 +1,10 @@
 
 Prototypes for experimental programming languages.
-Each language exists in separate branch instead of separate repository.
-Each branch has it's own README with more detailed language description.
-For more information you can go to ```root/test/{LANGNAME}/``` and examine tests and some simple programs. 
+Each language exists in separate branch instead of separate repository and the master branch contains only this README.
+Also each branch has it's own README with more detailed language description.
+For more information you can go to ```./test/{LANGNAME}/``` and examine tests and some simple programs. 
 
-Arza is latest and most developed language from others.
+Arza is latest and most developed language from others. I intent to write native interpreter for Arza or for some of it's descendants.
 
 - [Arza](https://github.com/gloryofrobots/langs/tree/arza) 
 - [Obin](https://github.com/gloryofrobots/langs/tree/obin)
@@ -13,7 +13,7 @@ Arza is latest and most developed language from others.
 
 #### Common features for all branches
 
-* All code written in Python
+* All code written in Python (the result is easy to experiment with but very slow interpreter)
 * Functional
 * Unpure
 * Eager
