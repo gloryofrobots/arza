@@ -1,12 +1,14 @@
 
 Prototypes for experimental programming languages.
+Each language exists in separate branch instead of separate repository.
+Arza is latest and most developed language from others.
 
+- [Arza](https://github.com/gloryofrobots/langs/tree/arza) 
 - [Obin](https://github.com/gloryofrobots/langs/tree/obin)
 - [Lalan](https://github.com/gloryofrobots/langs/tree/lalan)
-- [Arza](https://github.com/gloryofrobots/langs/tree/arza)
 
 
-#### Common features
+#### Common features for all branches
 
 * All code written in Python
 * Functional
@@ -14,7 +16,7 @@ Prototypes for experimental programming languages.
 * Eager
 * Immutable
 * Dynamic
-* Experimental and unique syntaxes (at least not known by me before)
+* Experimental syntaxes
 * Persistent data structures (lists, tuples, maps)
 * Pattern matching inspired by Erlang and ML
 * Lexical clojures and lambdas
@@ -26,6 +28,120 @@ Prototypes for experimental programming languages.
 * Stackless virtual machine
 * Asymmetric coroutines
 
+
+#### [Arza](https://github.com/gloryofrobots/langs/tree/arza)
+
+* Laconic indentation aware syntax inspired by F# light, Python and Lisp 
+* Powerfull predicate multiple dispatch generic functions
+* Interfaces supporting multiple dispatch paradigm
+* Support for partial application via special syntax
+
+
+```
+// some seq module functions 
+fun span(predicate, coll)
+    | (p, []) =
+        let c = empty(coll)
+        in (c, c)
+    | (p, xs@[x, ...xs1]) =
+        if not(p(x)) then
+            (empty(coll), xs)
+        else
+            let (ys, zs) = span(p, xs1)
+            in (x::ys, zs)
+
+fun sort(f, s) =
+    let
+        fun _merge
+            | ([], ys) = ys
+            | (xs, []) = xs
+            | (x::xs, y::ys) =
+                if f(x, y) then x :: _merge(xs, y::ys)
+                else y :: _merge(x::xs, ys)
+
+        fun _sort
+            | [] = []
+            | s @ [x] = s
+            | xs =
+                let (ys, zs) = split(xs)
+                in _merge(_sort(ys), _sort(zs))
+
+    in _sort(s)
+
+
+fun sort_asc(s) = sort(`<=`, s)
+
+fun sort_desc(s) = sort(`>=`, s)
+
+// list range_by 
+
+fun range_by (first of Int, last of Int, step of Int) =
+    let fun _range_by
+        | (N, X, D, L) when N >= 4 =
+            let
+                Y = X - D
+                Z = Y - D
+                W = Z - D
+            in
+                _range_by(N - 4, W - D, D, W :: Z :: Y :: X :: L)
+
+        | (N, X, D, L) when N >= 2 =
+            let Y = X - D
+            in _range_by(N - 2, Y - D, D, Y :: X :: L)
+
+        | (1, X, _, L) = X :: L
+
+        | (0, _, _, L) = L
+    --------------------------------------------------
+    in
+        if step > 0 and first - step <= last or
+            step < 0 and first - step >= last then
+
+            let n = ((last - first + step) / step) - 1
+            in _range_by(n, (step * (n - 1) + first), step, [])
+
+        elif step == 0 and first == last then
+            _range_by(1, first, step, [])
+        else
+            throw (#InvalidRange, first, last, step)
+
+// Arza generic functions and interfaces
+// declare interface with generic functions
+
+interface Add =
+    fun add(val1, val2)
+
+// declare type for complex numbers
+type Complex(real, imag)
+
+// specialize add for Complex and Int types with def statement
+def add(c1 of Complex, c2 of Complex)  =
+    Complex(c1.real + c2.real, c1.imag + c2.imag)
+
+def add(i of Int, c of Complex)  =
+    Complex(i + c.real, c.imag)
+
+def add(c of Complex, i of Int) =
+    add(i, c)
+
+// Such definitions are not restricted to current module, you can define them anywhere, like
+import my_module:add
+def my_module:add(c of Complex, i of Int) =
+    add(i, c)
+
+def add(c of Complex, i of Int) when i == 0 = c
+	
+// You can use any value expression in predicate including function call
+interface Fav =
+    get_favorite(c1, c2)
+
+type Car (speed)
+
+fun faster(v1, v2) = v1.speed > v2.speed
+
+def get_favorite(c1 of Car, c2 of Car) when faster(c1, c2)  = c1
+def get_favorite(c1 of Car, c2 of Car) = c2
+```
 
 #### [Obin](https://github.com/gloryofrobots/langs/tree/obin)
 
@@ -97,9 +213,7 @@ fun nine_billion_names_of_god_the_integer () ->
 
 #### [Lalan](https://github.com/gloryofrobots/langs/tree/lalan)
 
-* Original and clean syntax inspired by Lua and OCaml
-* Whitespace unaware parser
-* Widely known syntax for expressions
+* Clean syntax inspired by Lua and OCaml (whitespace unaware, common syntax for basic expressions)
 * Using parentheses for creating blocks of expression, similar to {} blocks in C or Java
 * Support for partial application via special syntax
 * Name binding only via let-in expression
@@ -172,47 +286,4 @@ fun enum_from(num) =
 
 ```
 
-#### [Arza](https://github.com/gloryofrobots/langs/tree/arza)
 
-* Laconic indentation aware syntax inspired by F# light, Python and Lisp 
-* Powerfull predicate multiple dispatch generic functions
-* Interfaces supporting multiple dispatch paradigm
-* Support for partial application via special syntax
-
-
-```
-// declare interface with generic functions
-interface Add =
-    fun add(val1, val2)
-
-// declare type for complex numbers
-type Complex(real, imag)
-
-// specialize add for Complex and Int types with def statement
-def add(c1 of Complex, c2 of Complex)  =
-    Complex(c1.real + c2.real, c1.imag + c2.imag)
-
-def add(i of Int, c of Complex)  =
-    Complex(i + c.real, c.imag)
-
-def add(c of Complex, i of Int) =
-    add(i, c)
-
-// Such definitions are not restricted to current module, you can define them anywhere, like
-import my_module:add
-def my_module:add(c of Complex, i of Int) =
-    add(i, c)
-
-def add(c of Complex, i of Int) when i == 0 = c
-	
-// You can use any value expression in predicate including function call
-interface Fav =
-    get_favorite(c1, c2)
-
-type Car (speed)
-
-fun faster(v1, v2) = v1.speed > v2.speed
-
-def get_favorite(c1 of Car, c2 of Car) when faster(c1, c2)  = c1
-def get_favorite(c1 of Car, c2 of Car) = c2
-```
