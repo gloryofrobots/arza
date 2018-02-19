@@ -524,6 +524,13 @@ def iscoroutine(co):
 ############################################################
 
 
+def ispid(value):
+    from arza.types.pid import W_PID
+    return isinstance(value, W_PID)
+
+
+############################################################
+
 def safe_w(obj):
     if not isany(obj):
         s = "<PyObj type:%s, repr:%s>" % (type(obj), repr(obj))

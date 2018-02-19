@@ -29,6 +29,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'method', __method, 2)
     api.put_native_function(process, module, u'signatures', __signatures, 1)
     api.put_native_function(process, module, u'symbol', _symbol, 1)
+    api.put_native_function(process, module, u'process', __process, 2)
     put_lang_func(process, module, lang_names.APPLY, apply, 2)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
     put_lang_func(process, module, lang_names.IS_INDEXED, is_indexed, 1)
@@ -222,6 +223,12 @@ def __method(process, routine):
     error.affirm_iterable(types, space.isspecializable)
     return generic.get_method(process, fn, types)
 
+
+@complete_native_routine
+def __process(process, routine):
+    fn = routine.get_arg(0)
+    args = routine.get_arg(1)
+    return process.sheduler.spawn(fn, args)
 
 @complete_native_routine
 def __signatures(process, routine):

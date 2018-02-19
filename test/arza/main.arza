@@ -4,9 +4,10 @@ import seq
 import list
 import array
 import string
-import tests
+//import tests
 
 
 
 fun main() =
-    tests:run()
+    1
+//    tests:run()

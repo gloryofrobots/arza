@@ -75,7 +75,8 @@ class Modules:
 
 
 class ProcessData:
-    def __init__(self, modules, std, symbols, io):
+    def __init__(self, scheduler, modules, std, symbols, io):
+        self.scheduler = scheduler
         self.modules = modules
         self.std = std
         self.symbols = symbols
@@ -91,10 +92,10 @@ class IO:
         self.stdin = space.newiodevice(sys.stdin)
 
 
-def create(libdirs, prelude):
+def create(scheduler, libdirs, prelude):
     from arza.builtins.std import Std
     symbols = Symbols()
     stdlib = Std(symbols)
     modules = Modules(libdirs, prelude)
     io = IO()
-    return ProcessData(modules, stdlib, symbols, io)
+    return ProcessData(scheduler, modules, stdlib, symbols, io)

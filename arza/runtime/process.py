@@ -5,6 +5,7 @@ from arza.runtime import error
 from arza.misc.timer import Timer
 
 DEFAULT_STACK_SIZE = 32
+INFINITE_LOOP = -42
 
 
 def _print_trace(device, signal, trace):
@@ -118,20 +119,29 @@ class Process(object):
         ACTIVE = 2
         COMPLETE = 3
         TERMINATED = 4
+        AWAITING = 5
+        PROCESSING = 6
 
     def __init__(self, data):
         from arza.runtime.process_data import ProcessData
         assert isinstance(data, ProcessData)
+        self.id = -1
         self.__data = data
         self.__state = None
         self.fibers = []
         self.__fiber = None
+        self.result = None
+        self.child = None
 
         self.__idle()
 
     """
     PUBLIC API
     """
+
+    @property
+    def scheduler(self):
+        return self.__data.scheduler
 
     @property
     def modules(self):
@@ -177,24 +187,42 @@ class Process(object):
     def is_idle(self):
         return self.state == Process.State.IDLE
 
+    def is_processing(self):
+        return self.state == Process.State.PROCESSING
+
+    def is_awaiting(self):
+        return self.state == Process.State.AWAITING
+
     def call_object(self, obj, args):
         self.fiber.call_object(obj, args)
 
-    def run(self, func, args):
+    def run_cycles(self, func, args, cycles):
         assert self.is_idle()
         assert not self.fiber
         self.fiber = self.create_fiber()
         self.fiber.start_work(func, args)
         # with Timer("Process run"):
-        result = self.__run()
-        return result
+        assert self.is_idle()
+        self.__active()
+        self.iterate(cycles)
+        return self.result
+
+    def run_cold(self, func, args):
+        return self.run_cycles(func, args, 1)
+
+    def run(self, func, args):
+        return self.run_cycles(func, args, INFINITE_LOOP)
+
+    def spawn(self):
+        child = Process(self.__data)
+        return child
 
     def subprocess(self, func, args):
-        child = Process(self.__data)
-        result = child.run(func, args)
+        child = self.spawn()
+        child.run(func, args)
         if child.is_terminated():
-            return self._catch_or_terminate(result)
-        return result
+            return self._catch_or_terminate(child.result)
+        return child.result
 
     def create_fiber(self):
         # fiber = Fiber(self, self.__fiber)
@@ -228,12 +256,10 @@ class Process(object):
     PRIVATE API
     """
 
-    def __run(self):
+    def iterate(self, cycles):
         # print "RUN"
-        assert self.is_idle()
-        self.__active()
         result = None
-        while True:
+        while cycles == INFINITE_LOOP or cycles > 0:
             if not self.is_active():
                 break
             try:
@@ -252,10 +278,15 @@ class Process(object):
                 # return e
                 raise
 
-        assert len(self.fibers) == 0
-        assert self.fiber is None
-        # self.__idle()
-        return result
+            if cycles != INFINITE_LOOP:
+                cycles -= 1
+
+        if self.is_complete() or self.is_terminated():
+            # print "COMPLETE", result
+            assert len(self.fibers) == 0
+            assert self.fiber is None
+            # self.__idle()
+            self.result = result
 
     def __purge_fiber(self, fiber):
         assert fiber.is_finished()
@@ -331,6 +362,10 @@ class Process(object):
         _print_trace(self.io.stderr, signal, trace)
         self.__terminate()
 
+    def exit(self, reason):
+        self.__terminate()
+        self.result = reason
+
     def __terminate(self):
         self.__close()
         self.__set_state(Process.State.TERMINATED)
@@ -341,6 +376,12 @@ class Process(object):
 
     def __active(self):
         self.__set_state(Process.State.ACTIVE)
+
+    def __await(self):
+        self.__set_state(Process.State.AWAITING)
+
+    def __process(self):
+        self.__set_state(Process.State.PROCESSING)
 
     def __idle(self):
         self.__set_state(Process.State.IDLE)

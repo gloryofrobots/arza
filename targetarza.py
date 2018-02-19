@@ -32,7 +32,7 @@ def main(argv):
 
 
 def run(script_file):
-    from arza.runtime import engine
+    from arza.runtime import scheduler
     from arza.misc import fs
     abs_script_path = fs.abspath(script_file)
     if not fs.is_file(abs_script_path):
@@ -44,10 +44,14 @@ def run(script_file):
     if not fs.is_directory(path_lib):
         raise RuntimeError("Invalid __std__ dir path " + path_lib)
 
-    process, error = engine.initialize([script_dir, path_lib])
-    if error is not None:
-        return error
-    return engine.evaluate_file(process, script_file)
+    vm = scheduler.Scheduler()
+    vm.start([script_dir, path_lib])
+    vm.run(script_file)
+    return vm.result
+    # process, error = engine.initialize([script_dir, path_lib])
+    # if error is not None:
+    #     return error
+    # return engine.evaluate_file(process, script_file)
 
 # # _____ Define and setup target ___
 def target(driver, args):
