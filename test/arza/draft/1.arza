@@ -44,3 +44,21 @@ interface C =
 
 
 type MapInt as Map[Int, Int]
+
+def::Int -> Int -> Int
+   add(x,y) = 
+
+def [Int, Int, Int]
+   add(x,y) = 
+
+def [Int, Int] = Int 
+   add(x,y) = 
+
+def (Int, Int) = Int
+   add(x,y) = 
+
+for [Int, Int] = Int 
+    def add(x,y) = 
+
+:: [Int, Int] = Int 
+    def add(x,y) = 
