@@ -6,8 +6,16 @@ import array
 import string
 //import tests
 
+fun f1() =
+    seq:foreach(x -> _p(x), list:range(0, 10))
 
+fun f2() =
+    seq:foreach(x -> _p(x), list:range(10, 20))
 
 fun main() =
-    1
+    let
+        p1 = process(f1, ())
+        p2 = process(f2, ())
+    in
+        ()
 //    tests:run()

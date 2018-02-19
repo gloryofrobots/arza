@@ -75,6 +75,8 @@ class Types:
         self.AssocArray = newtype(_s(u"AssocArray"))
         self.AssocArray.register_interface(interfaces.Any)
 
+        self.PID = newtype(_s(u"PID"))
+        self.PID.register_interface(interfaces.Any)
 
 class Functions:
     def __init__(self):

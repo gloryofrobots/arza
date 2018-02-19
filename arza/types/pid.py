@@ -15,10 +15,10 @@ class W_PID(W_Callable):
         return self._to_string_()
 
     def _type_(self, process):
-        return process.std.types.Function
+        return process.std.types.PID
 
     def _call_(self, process, args):
-        self.process.receive(args)
+        self.process.receive(api.at_index(args, 0))
 
     def _equal_(self, other):
         from arza.types import space

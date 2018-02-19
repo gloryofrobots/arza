@@ -228,7 +228,7 @@ def __method(process, routine):
 def __process(process, routine):
     fn = routine.get_arg(0)
     args = routine.get_arg(1)
-    return process.sheduler.spawn(fn, args)
+    return process.scheduler.spawn(fn, args)
 
 @complete_native_routine
 def __signatures(process, routine):

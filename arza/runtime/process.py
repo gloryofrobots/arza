@@ -132,12 +132,32 @@ class Process(object):
         self.__fiber = None
         self.result = None
         self.child = None
+        self.mailbox = space.newlist([])
+        self.receiver = None
 
         self.__idle()
 
     """
     PUBLIC API
     """
+
+    def set_receiver(self, receiver):
+        self.receiver = receiver
+
+    def receive(self, message):
+        if self.is_awaiting():
+            self.__receive(message)
+        else:
+            self.mailbox = plist.append(self.mailbox, message)
+
+    def has_messages(self):
+        return len(self.mailbox) > 0
+
+    def __receive(self, message):
+        self.run_cold(self.receiver, message)
+
+    def set_id(self, id):
+        self.id = id
 
     @property
     def scheduler(self):
@@ -208,7 +228,7 @@ class Process(object):
         return self.result
 
     def run_cold(self, func, args):
-        return self.run_cycles(func, args, 1)
+        return self.run_cycles(func, args, 0)
 
     def run(self, func, args):
         return self.run_cycles(func, args, INFINITE_LOOP)
@@ -287,6 +307,14 @@ class Process(object):
             assert self.fiber is None
             # self.__idle()
             self.result = result
+
+            if self.is_complete():
+                if self.receiver is None:
+                    return
+                if self.has_messages():
+                    message, self.mailbox = plist.split(self.mailbox)
+                    self.__receive(message)
+                self.__await()
 
     def __purge_fiber(self, fiber):
         assert fiber.is_finished()
@@ -380,7 +408,7 @@ class Process(object):
     def __await(self):
         self.__set_state(Process.State.AWAITING)
 
-    def __process(self):
+    def __processing(self):
         self.__set_state(Process.State.PROCESSING)
 
     def __idle(self):

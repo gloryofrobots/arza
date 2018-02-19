@@ -1,4 +1,4 @@
-from arza.types import space, api
+from arza.types import space, api, pid
 from arza.builtins import builtins
 from arza.runtime.process import Process
 from arza.runtime import process_data, error
@@ -43,6 +43,7 @@ class Scheduler:
         self.root = None
         self.processes = []
         self.new_processes = []
+        self.waiting = []
 
     def create_root(self, libdirs):
         core_prelude = space.newemptyenv(space.newstring(u"prelude"))
@@ -109,15 +110,23 @@ class Scheduler:
 
     def update_processes(self, process):
         self.processes.remove(process)
+        if process.is_awaiting():
+            self.waiting.append(process)
+
+    def wakeup(self, process):
+        assert process in self.waiting
+        self.waiting.remove(process)
+        self.new_processes.append(process)
 
     def spawn(self, func, args):
         process = self.root.spawn()
-        process.id = random.randrange(0, MAX_ID)
+        id = random.randrange(0, MAX_ID)
+        process.set_id(id)
 
         self.processes.append(process)
         process.run_cold(func, args)
+        return pid.newpid(process)
 
     @property
     def result(self):
-        print self.root.is_complete()
         return self.root.result
