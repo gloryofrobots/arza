@@ -12,6 +12,7 @@ def import_module(process, name):
     else:
         return load_module(process, name)
 
+
 def import_module_by_name(process, script_name):
     result = import_module(process, space.newsymbol(process, script_name))
     if process.is_terminated():
@@ -48,7 +49,7 @@ def load_module(process, name):
         # xxx/yyy/zzz/zzz.arza would be imported instead
 
         raw_list = raw.split(":")
-        last_name = raw_list[len(raw_list)-1]
+        last_name = raw_list[len(raw_list) - 1]
         path = "%s%s%s.arza" % (raw.replace(":", os.sep), os.sep, last_name)
         filename = find_module_file(path, modules.path)
 

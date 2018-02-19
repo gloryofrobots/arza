@@ -219,18 +219,6 @@ def ispartial(w):
 
 ########################################################
 
-def newlazyval(func):
-    from arza.types.lazyval import W_LazyVal
-    return W_LazyVal(func)
-
-
-def islazyval(w):
-    from arza.types.lazyval import W_LazyVal
-    return isinstance(w, W_LazyVal)
-
-
-########################################################
-
 
 def newiodevice(_file):
     from arza.types.iodevice import W_IODevice
