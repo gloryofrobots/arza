@@ -1,4 +1,17 @@
 
+process p(x, y) =
+    receive
+        | 1 = 2
+        | x = 1
+    x = 1
+    y = 2
+    fun f () =
+        receive
+            | 1 = 2
+            | x = 1
+    f()
+
+
 &&d.s1.s2
 %d.s1.s2
 

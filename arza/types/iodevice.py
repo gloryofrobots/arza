@@ -1,6 +1,7 @@
 __author__ = 'gloryofrobots'
 from arza.types.root import W_Root
 from arza.types import api
+import sys
 
 class W_IODevice(W_Root):
     def __init__(self, fd):
@@ -9,6 +10,7 @@ class W_IODevice(W_Root):
     def write(self, obj):
         ustr = api.to_u(obj)
         self.file.write(ustr)
+        self.file.flush()
 
     def _to_string_(self):
         return "<iodevice>"

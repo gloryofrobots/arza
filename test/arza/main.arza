@@ -1,21 +1,26 @@
-import io
-import affirm
-import seq
-import list
-import array
-import string
+//import io
+//import affirm
+//import seq
+//import list
+//import array
+//import string
 //import tests
 
-fun f1() =
-    seq:foreach(x -> _p(x), list:range(0, 10))
+fun r(x)
+    | 1 = PL(#one)
+    | 2 = PL(#two)
 
-fun f2() =
-    seq:foreach(x -> _p(x), list:range(10, 20))
+fun f1() =
+    receive(r)
+    f1()
+
+
 
 fun main() =
     let
         p1 = process(f1, ())
-        p2 = process(f2, ())
     in
-        ()
+        p1(1)
+        p1(2)
+//        p1(1)
 //    tests:run()

@@ -22,7 +22,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
     api.put_native_function(process, module, u'_exit', _exit, -1)
     api.put_native_function(process, module, u'dmark', __dmark, -1)
-    api.put_native_function(process, module, u'_p', _print, -1)
+    api.put_native_function(process, module, u'PL', _print, -1)
     api.put_native_function(process, module, u'address', _id, 1)
     api.put_native_function(process, module, u'time', time, 0)
     api.put_native_function(process, module, u'get_type', _type, 1)
@@ -30,6 +30,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'signatures', __signatures, 1)
     api.put_native_function(process, module, u'symbol', _symbol, 1)
     api.put_native_function(process, module, u'process', __process, 2)
+    api.put_native_function(process, module, u'receive', __receive, 1)
     put_lang_func(process, module, lang_names.APPLY, apply, 2)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
     put_lang_func(process, module, lang_names.IS_INDEXED, is_indexed, 1)
@@ -229,6 +230,14 @@ def __process(process, routine):
     fn = routine.get_arg(0)
     args = routine.get_arg(1)
     return process.scheduler.spawn(fn, args)
+
+
+@complete_native_routine
+def __receive(process, routine):
+    fn = routine.get_arg(0)
+    process.awaiting(fn)
+    return space.newunit()
+
 
 @complete_native_routine
 def __signatures(process, routine):

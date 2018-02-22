@@ -1,4 +1,3 @@
-import io
 import arza:lang:_number
 import arza:lang:_std_behavior as std_behavior
 import arza:lang:_datatype as datatype

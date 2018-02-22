@@ -316,7 +316,7 @@ def remove(pl, v):
     type_check(pl)
     from arza.types import api
     if is_empty(pl):
-        return error.throw_1(error.Errors.VALUE_ERROR, space.newint(v))
+        return error.throw_1(error.Errors.VALUE_ERROR, pl)
 
     if api.equal_b(v, head(pl)):
         return tail(pl)

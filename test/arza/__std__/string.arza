@@ -77,7 +77,8 @@ fun join_cast(_coll, _str) =
     in seq:foldl(joiner(str, _str), "", _seq)
 
 fun join_with(_func, _coll, _str) =
-    seq:foldl(joiner(_func, _str), "", _coll)
+    let _seq = to_seq(_coll)
+    in seq:foldl(joiner(_func, _str), "", _seq)
 
 fun split(_sep, _str) = _string:split(_sep, _str)
 

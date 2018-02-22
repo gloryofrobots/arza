@@ -1,4 +1,4 @@
-from arza.types import api, space, string
+from arza.types import api, space, string, root
 from arza.runtime.stack import Stack
 from arza.types import plist
 from arza.runtime import error
@@ -113,7 +113,7 @@ class Fiber:
         return True, trace
 
 
-class Process(object):
+class Process(root.W_Root):
     class State:
         IDLE = 1
         ACTIVE = 2
@@ -141,20 +141,38 @@ class Process(object):
     PUBLIC API
     """
 
-    def set_receiver(self, receiver):
+    def awaiting(self, receiver):
+        print "awaiting", self.__state
+        if self.receiver is not None:
+            error.throw_1(error.Errors.RUNTIME_ERROR, u"Multiple receivers not allowed")
         self.receiver = receiver
+        self.__await()
+        self.scheduler.wait(self)
 
     def receive(self, message):
+        print "rec", self, message, self.__state
         if self.is_awaiting():
             self.__receive(message)
-        else:
-            self.mailbox = plist.append(self.mailbox, message)
+            return
+
+        self.mailbox = plist.append(self.mailbox, message)
 
     def has_messages(self):
         return len(self.mailbox) > 0
 
     def __receive(self, message):
-        self.run_cold(self.receiver, message)
+        receiver = self.receiver
+        self.receiver = None
+        args = space.newtuple([message])
+        self.scheduler.wakeup(self)
+        self.__active()
+        # print "call", receiver, args, self.id
+        print "_r", message
+        api.call(self, receiver, args)
+        # if self.fiber:
+        #     self.fiber.call_object(receiver, args)
+        # else:
+        #     self.activate(receiver, args)
 
     def set_id(self, id):
         self.id = id
@@ -217,18 +235,18 @@ class Process(object):
         self.fiber.call_object(obj, args)
 
     def run_cycles(self, func, args, cycles):
-        assert self.is_idle()
+        self.activate(func, args)
+        self.scheduler.activate(self)
+        self.iterate(cycles)
+        return self.result
+
+    def activate(self, func, args):
+        assert self.is_idle() or self.is_awaiting()
         assert not self.fiber
         self.fiber = self.create_fiber()
         self.fiber.start_work(func, args)
         # with Timer("Process run"):
-        assert self.is_idle()
         self.__active()
-        self.iterate(cycles)
-        return self.result
-
-    def run_cold(self, func, args):
-        return self.run_cycles(func, args, 0)
 
     def run(self, func, args):
         return self.run_cycles(func, args, INFINITE_LOOP)
@@ -277,6 +295,8 @@ class Process(object):
     """
 
     def iterate(self, cycles):
+        # if self.id == 42:
+        #     print "42", self.__state
         # print "RUN"
         result = None
         while cycles == INFINITE_LOOP or cycles > 0:
@@ -308,13 +328,13 @@ class Process(object):
             # self.__idle()
             self.result = result
 
-            if self.is_complete():
-                if self.receiver is None:
-                    return
-                if self.has_messages():
-                    message, self.mailbox = plist.split(self.mailbox)
-                    self.__receive(message)
-                self.__await()
+            # if self.is_complete():
+            #     if self.receiver is None:
+            #         return
+            #     if self.has_messages():
+            #         message, self.mailbox = plist.split(self.mailbox)
+            #         self.__receive(message)
+            #     self.__await()
 
     def __purge_fiber(self, fiber):
         assert fiber.is_finished()
@@ -385,6 +405,7 @@ class Process(object):
     def __close(self):
         self.fiber = None
         self.fibers = []
+        self.scheduler.unactivate(self)
 
     def __terminate_with_signal(self, signal, trace):
         _print_trace(self.io.stderr, signal, trace)
@@ -413,3 +434,9 @@ class Process(object):
 
     def __idle(self):
         self.__set_state(Process.State.IDLE)
+
+    def _to_string_(self):
+        return "<Process %d>" % self.id
+
+    def _equal_(self, other):
+        return self is other
