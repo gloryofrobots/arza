@@ -1,8 +1,7 @@
 from arza.runtime.routine.routine import complete_native_routine
 from arza.runtime import error
-from arza.types import api, space, plist, environment, datatype, tuples, partial
+from arza.types import api, space, plist, environment, datatype, partial
 from arza.types.dispatch import generic
-from arza.misc.timer import Timer
 
 from arza.misc.strutil import encode_unicode_utf8
 from arza.misc.platform import rstring, compute_unique_id
@@ -30,7 +29,10 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'signatures', __signatures, 1)
     api.put_native_function(process, module, u'symbol', _symbol, 1)
     api.put_native_function(process, module, u'process', __process, 2)
-    api.put_native_function(process, module, u'receive', __receive, 1)
+    api.put_native_function(process, module, u'__pop__', __pop, 1)
+    api.put_native_function(process, module, u'__wait__', __wait, 1)
+    api.put_native_function(process, module, u'__has__', __has, 1)
+    api.put_native_function(process, module, u'self', __self, 0)
     put_lang_func(process, module, lang_names.APPLY, apply, 2)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
     put_lang_func(process, module, lang_names.IS_INDEXED, is_indexed, 1)
@@ -233,9 +235,28 @@ def __process(process, routine):
 
 
 @complete_native_routine
-def __receive(process, routine):
-    fn = routine.get_arg(0)
-    process.awaiting(fn)
+def __self(process, routine):
+    return process
+
+
+@complete_native_routine
+def __has(process, routine):
+    p = routine.get_arg(0)
+    res = not p.mailbox.empty()
+    return space.newbool(res)
+
+
+@complete_native_routine
+def __pop(process, routine):
+    p = routine.get_arg(0)
+    msg = p.mailbox.pop()
+    return msg
+
+
+@complete_native_routine
+def __wait(process, routine):
+    p = routine.get_arg(0)
+    p.wait()
     return space.newunit()
 
 

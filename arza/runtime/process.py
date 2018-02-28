@@ -113,6 +113,21 @@ class Fiber:
         return True, trace
 
 
+class Mailbox():
+    def __init__(self):
+        self.messages = plist.empty()
+
+    def push(self, msg):
+        self.messages = plist.append(self.messages, msg)
+
+    def pop(self):
+        msg, self.messages = plist.split(self.messages)
+        return msg
+
+    def empty(self):
+        return plist.is_empty(self.messages)
+
+
 class Process(root.W_Root):
     class State:
         IDLE = 1
@@ -132,8 +147,7 @@ class Process(root.W_Root):
         self.__fiber = None
         self.result = None
         self.child = None
-        self.mailbox = space.newlist([])
-        self.receiver = None
+        self.mailbox = Mailbox()
 
         self.__idle()
 
@@ -141,44 +155,18 @@ class Process(root.W_Root):
     PUBLIC API
     """
 
-    def awaiting(self, receiver):
-        print "awaiting", self.__state, self.fiber.is_complete()
-        if self.receiver is not None:
-            error.throw_1(error.Errors.RUNTIME_ERROR, u"Multiple receivers not allowed")
-        self.receiver = receiver
-        if not self.has_messages():
-            self.__await()
-            self.scheduler.wait(self)
-        else:
-            message, self.mailbox = plist.split(self.mailbox)
-            self.__receive(receiver, message)
+    def wait(self):
+        assert self.is_active(), self.__state
+        self.__await()
+        self.scheduler.wait(self)
 
     def receive(self, message):
-        print "@@@@REC", self, message, self.__state
-        if self.is_awaiting():
-            self.scheduler.wakeup(self)
-            receiver = self.receiver
-            self.receiver = None
-            self.__active()
-            self.__receive(receiver, message)
+        self.mailbox.push(message)
+        if not self.is_awaiting():
             return
 
-        self.mailbox = plist.append(self.mailbox, message)
-
-    def has_messages(self):
-        return len(self.mailbox) > 0
-
-    def __receive(self, receiver, message):
-        args = space.newtuple([message])
-        # print "call", receiver, args, self.id
-        print "@@@@__REC", message
-        # api.call(self, receiver, args)
-        if self.fiber:
-            print "@@FIB COMPL", self.fiber.is_complete()
-            # self.fiber.push_into_stack(message)
-            self.fiber.call_object(receiver, args)
-        else:
-            self.activate(receiver, args)
+        self.scheduler.wakeup(self)
+        self.__active()
 
     def set_id(self, id):
         self.id = id
@@ -310,8 +298,8 @@ class Process(root.W_Root):
                 break
             try:
                 result = self.__execute()
-            # except Exception as e:
-            #     raise
+            except Exception as e:
+                raise
             except error.LalanError as e:
                 signal = error.convert_to_script_error(self, e)
                 result = self._catch_or_terminate(signal)

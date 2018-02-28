@@ -66,6 +66,7 @@ def not_implemented_error(name, *args):
     from arza.types import space
     from arza.runtime import error
     if len(args) == 1:
+        print name, args[0].__class__.__name__
         return error.throw_2(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name), space.safe_w(args[0]))
     elif len(args) == 2:
         return error.throw_3(error.Errors.NOT_IMPLEMENTED_ERROR, space.newstring(name),

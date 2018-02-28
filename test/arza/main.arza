@@ -6,14 +6,21 @@
 //import string
 //import tests
 
+fun receive(fn) =
+    if __has__(self()) == False then
+        __wait__(self())
+        receive(fn)
+    else
+        let msg = __pop__(self())
+        in fn(msg)
+
 fun r(x)
     | 1 = PL(#one)
     | 2 = PL(#two)
 
 fun f1() =
     receive(r)
-    receive(r)
-//    f1()
+    f1()
 
 
 
@@ -24,5 +31,9 @@ fun main() =
         DMARK(21)
         p1(1)
         p1(2)
+        p1(1)
+        p1(1)
+        p1(2)
+        p1(3)
 //        p1(1)
 //    tests:run()
