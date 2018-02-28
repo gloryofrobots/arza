@@ -7,7 +7,7 @@ from arza.types import api, space, string, environment, datatype
 
 class CodeRoutine(BaseRoutine):
     # _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
-
+    BP = 1
     def __init__(self, func, stack, args, name, code, env):
         BaseRoutine.__init__(self, stack)
 
@@ -51,8 +51,14 @@ class CodeRoutine(BaseRoutine):
         pass
 
     def _print_code(self, opcode):
-        print u"_____________________________"
-        print u'%s %3d' % (opcode_info(self, opcode), self.pc)
+        api.d.pbp(self.BP, u"_____________________________")
+        api.d.pbp(self.BP, u'%s %3d' % (opcode_info(self, opcode), self.pc))
+
+    def _print_stack(self):
+        api.d.pbp(self.BP, u"_________STACK______________")
+        api.d.pbp(self.BP, self.stack.data[self.return_pointer:self.stack.pointer()])
+        for s in self.stack.data[self.return_pointer:self.stack.pointer()]:
+            api.d.pbp(self.BP, unicode(s))
 
     def _catch(self, signal):
         assert self.is_suspended() or self.is_terminated()
@@ -79,10 +85,10 @@ class CodeRoutine(BaseRoutine):
 
             literals = env.literals
 
-            # print "_execute", opcode
-            # print "------ routine ----", api.to_s(self._name_)
-            # self._print_stack()
-            # self._print_code(opcode)
+            api.d.pbp(self.BP, "_execute", opcode)
+            api.d.pbp(self.BP, "------ routine ----", api.to_s(self._name_), process)
+            self._print_stack()
+            self._print_code(opcode)
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
             self.pc += 1
             # *************************************

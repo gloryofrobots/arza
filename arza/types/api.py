@@ -30,8 +30,8 @@ class Debug:
         self._BREAKPOINTS.append(num)
 
     def has_bp(self, bp):
-        # if you need to enable all pbp prints set bp to 42
-        return bp in self._BREAKPOINTS or bp == 42
+        # if you need to enable all pbp prints set bp to -1
+        return bp in self._BREAKPOINTS or bp == -1
 
 
 d = Debug()

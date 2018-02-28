@@ -27,7 +27,7 @@ class BaseRoutine:
 
     def resume(self, process, value):
         # print "RESUME", value
-        assert self.is_suspended()
+        assert self.is_suspended(), (self._state, self.result, process)
         self._state = BaseRoutine.State.INPROCESS
         self._on_resume(process, value)
 
@@ -96,8 +96,3 @@ class BaseRoutine:
         return self._state == BaseRoutine.State.COMPLETE \
                or self._state == BaseRoutine.State.TERMINATED
 
-    def _print_stack(self):
-        print u"_________STACK______________"
-        print self.stack.data[self.return_pointer:self.stack.pointer()]
-        for s in self.stack.data[self.return_pointer:self.stack.pointer()]:
-            print unicode(s)

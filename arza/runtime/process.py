@@ -142,17 +142,25 @@ class Process(root.W_Root):
     """
 
     def awaiting(self, receiver):
-        print "awaiting", self.__state
+        print "awaiting", self.__state, self.fiber.is_complete()
         if self.receiver is not None:
             error.throw_1(error.Errors.RUNTIME_ERROR, u"Multiple receivers not allowed")
         self.receiver = receiver
-        self.__await()
-        self.scheduler.wait(self)
+        if not self.has_messages():
+            self.__await()
+            self.scheduler.wait(self)
+        else:
+            message, self.mailbox = plist.split(self.mailbox)
+            self.__receive(receiver, message)
 
     def receive(self, message):
-        print "rec", self, message, self.__state
+        print "@@@@REC", self, message, self.__state
         if self.is_awaiting():
-            self.__receive(message)
+            self.scheduler.wakeup(self)
+            receiver = self.receiver
+            self.receiver = None
+            self.__active()
+            self.__receive(receiver, message)
             return
 
         self.mailbox = plist.append(self.mailbox, message)
@@ -160,19 +168,17 @@ class Process(root.W_Root):
     def has_messages(self):
         return len(self.mailbox) > 0
 
-    def __receive(self, message):
-        receiver = self.receiver
-        self.receiver = None
+    def __receive(self, receiver, message):
         args = space.newtuple([message])
-        self.scheduler.wakeup(self)
-        self.__active()
         # print "call", receiver, args, self.id
-        print "_r", message
-        api.call(self, receiver, args)
-        # if self.fiber:
-        #     self.fiber.call_object(receiver, args)
-        # else:
-        #     self.activate(receiver, args)
+        print "@@@@__REC", message
+        # api.call(self, receiver, args)
+        if self.fiber:
+            print "@@FIB COMPL", self.fiber.is_complete()
+            # self.fiber.push_into_stack(message)
+            self.fiber.call_object(receiver, args)
+        else:
+            self.activate(receiver, args)
 
     def set_id(self, id):
         self.id = id

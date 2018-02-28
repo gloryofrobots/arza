@@ -46,19 +46,44 @@ interface C =
 type MapInt as Map[Int, Int]
 
 def::Int -> Int -> Int
-   add(x,y) = 
+   add(x,y) =
 
 def [Int, Int, Int]
-   add(x,y) = 
+   add(x,y) =
 
-def [Int, Int] = Int 
-   add(x,y) = 
+def [Int, Int] = Int
+   add(x,y) =
 
 def (Int, Int) = Int
-   add(x,y) = 
+   add(x,y) =
 
-for [Int, Int] = Int 
-    def add(x,y) = 
+for [Int, Int] = Int
+    def add(x,y) =
 
-:: [Int, Int] = Int 
-    def add(x,y) = 
+:: [Int, Int] = Int
+    def add(x,y) =
+
+
+def add (a, a) =
+    a + a
+
+protocol Add(a) =
+    fun add(a, a)
+
+protocol Sub(a) =
+    fun sub(a, a)
+
+impl Sub(Int) =
+    def sub(x, y) = x - y
+
+trait S(Var) =
+    use Add
+
+    impl Sub(Var) =
+        def sub(x, y) = x - y
+
+    impl Sub(Var) =
+        def sub(x, y) = x - y
+
+
+

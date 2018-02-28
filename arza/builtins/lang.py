@@ -21,7 +21,7 @@ def put_lang_func(process, module, name, func, arity):
 def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
     api.put_native_function(process, module, u'_exit', _exit, -1)
-    api.put_native_function(process, module, u'dmark', __dmark, -1)
+    api.put_native_function(process, module, u'DMARK', __dmark, -1)
     api.put_native_function(process, module, u'PL', _print, -1)
     api.put_native_function(process, module, u'address', _id, 1)
     api.put_native_function(process, module, u'time', time, 0)
