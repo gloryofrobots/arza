@@ -5,7 +5,7 @@ import string
 
 fun _write_list_items(args, func, file, ends) =
     let
-        s1 = string:join_with(func, args, " ") ++ ends
+        s1 = string:join_with(func, args, " ")
         s2 = s1 ++ ends
 
     in
