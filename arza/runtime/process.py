@@ -117,6 +117,9 @@ class Mailbox():
     def __init__(self):
         self.messages = plist.empty()
 
+    def __str__(self):
+        return str(self.messages)
+
     def push(self, msg):
         self.messages = plist.append(self.messages, msg)
 
@@ -155,18 +158,26 @@ class Process(root.W_Root):
     PUBLIC API
     """
 
-    def wait(self):
+    def pause(self):
         assert self.is_active(), self.__state
+        if not self.mailbox.empty():
+            return
+        # print "PAUSED", self, self.mailbox
         self.__await()
         self.scheduler.wait(self)
+
+    def resume(self):
+        assert self.is_awaiting(), self.__state
+        # print "RESUMED", self, self.mailbox
+        self.scheduler.wakeup(self)
+        self.__active()
 
     def receive(self, message):
         self.mailbox.push(message)
         if not self.is_awaiting():
             return
 
-        self.scheduler.wakeup(self)
-        self.__active()
+        self.resume()
 
     def set_id(self, id):
         self.id = id
@@ -298,12 +309,15 @@ class Process(root.W_Root):
                 break
             try:
                 result = self.__execute()
-            except Exception as e:
-                raise
+            # except Exception as e:
+            #     # print "catching some", e
+            #     raise
             except error.LalanError as e:
+                # print "catching error", e
                 signal = error.convert_to_script_error(self, e)
                 result = self._catch_or_terminate(signal)
             except error.LalanSignal as e:
+                # print "catching signal", e
                 result = self._catch_or_terminate(e.signal)
             except Exception as e:
                 # TODO IF WE ARE TRANSLATED

@@ -1008,6 +1008,9 @@ def _compile_INTERFACE(compiler, code, node):
     iface = simplify.simplify_interface(compiler, code, node)
     _compile(compiler, code, iface)
 
+def _compile_RECEIVE(compiler, code, node):
+    generic = simplify.simplify_receive(compiler, code, node)
+    _compile(compiler, code, generic)
 
 def _compile_GENERIC(compiler, code, node):
     generic = simplify.simplify_generic(compiler, code, node)
@@ -1183,6 +1186,8 @@ def _compile_node(compiler, code, node):
         _compile_INTERFACE(compiler, code, node)
     elif NT_GENERIC == ntype:
         _compile_GENERIC(compiler, code, node)
+    elif NT_RECEIVE == ntype:
+        _compile_RECEIVE(compiler, code, node)
     elif NT_THROW == ntype:
         _compile_THROW(compiler, code, node)
 

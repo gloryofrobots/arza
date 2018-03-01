@@ -45,6 +45,7 @@ NODES = [
   "NT_WHEN",
   "NT_MATCH",
   "NT_TRY",
+  "NT_RECEIVE",
 
   "NT_MODULE",
   "NT_IMPORT",

@@ -57,6 +57,8 @@ TOKENS = [
   ("TT_FOR", "for"),
   ("TT_INTERFACE", "interface"),
   ("TT_DESCRIBE", "describe"),
+  ("TT_RECEIVE", "receive"),
+  ("TT_AFTER", "after"),
 
   ("TT_END", "end"),
   ("TT_END_EXPR", ";"),

@@ -523,6 +523,10 @@ def iscoroutine(co):
 
 ############################################################
 
+def newpid(process):
+    from arza.types import pid
+    return pid.newpid(process)
+
 
 def ispid(value):
     from arza.types.pid import W_PID

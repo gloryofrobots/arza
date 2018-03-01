@@ -356,6 +356,10 @@ def create_lambda_node(token, args, exp):
                       list_node([exp])))
 
 
+def create_nameless_fun(token, funcs):
+    return create_fun_node(token, empty_node(), funcs)
+
+
 def create_fun_node(token, name, funcs):
     return node_2(nt.NT_FUN, token, name, funcs)
 

@@ -80,6 +80,10 @@ def layout_match(parser, op, node):
     open_statement_layout(parser, node, LEVELS_MATCH, INDENTS_MATCH)
 
 
+def layout_receive(parser, op, node):
+    open_statement_layout(parser, node, LEVELS_MATCH, INDENTS_MATCH)
+
+
 def layout_try(parser, op, node):
     open_statement_layout(parser, node, LEVELS_TRY, INDENTS_TRY)
 
@@ -639,6 +643,27 @@ def _parse_pattern(parser):
     return pattern
 
 
+def _parse_match_branches(parser, token, levels, indents):
+    open_offside_layout(parser, parser.token, levels, indents)
+    check_token_type(parser, TT_CASE)
+    pattern_parser = parser.pattern_parser
+    branches = []
+
+    # TODO COMMON PATTERN MAKE ONE FUNC with try/fun/match
+    while pattern_parser.token_type == TT_CASE:
+        advance_expected(pattern_parser, TT_CASE)
+        pattern = _parse_pattern(parser)
+        advance_expected(parser, TT_ASSIGN)
+        body = statements(parser, TERM_CASE)
+
+        branches.append(list_node([pattern, body]))
+
+    if len(branches) == 0:
+        parse_error(parser, u"Expected one or more patterns", token)
+
+    return list_node(branches)
+
+
 def prefix_match(parser, op, token):
     exp = free_expression(parser, 0, TERM_CASE)
     open_offside_layout(parser, parser.token, LEVELS_MATCH, INDENTS_MATCH)
@@ -650,16 +675,37 @@ def prefix_match(parser, op, token):
     while pattern_parser.token_type == TT_CASE:
         advance_expected(pattern_parser, TT_CASE)
         pattern = _parse_pattern(parser)
-
         advance_expected(parser, TT_ASSIGN)
         body = statements(parser, TERM_CASE)
 
         branches.append(list_node([pattern, body]))
 
     if len(branches) == 0:
-        parse_error(parser, u"Empty match expression", token)
+        parse_error(parser, u"Expected one or more patterns", token)
 
     return node_2(NT_MATCH, token, exp, list_node(branches))
+
+
+def prefix_receive(parser, op, token):
+    open_offside_layout(parser, parser.token, LEVELS_RECEIVE, INDENTS_RECEIVE)
+    check_token_type(parser, TT_CASE)
+    pattern_parser = parser.pattern_parser
+    branches = []
+
+    # TODO COMMON PATTERN MAKE ONE FUNC with try/fun/match
+    while pattern_parser.token_type == TT_CASE:
+        advance_expected(pattern_parser, TT_CASE)
+        pattern = _parse_pattern(parser)
+        pattern = nodes.create_tuple_node(parser.token, [pattern])
+        advance_expected(parser, TT_ASSIGN)
+        body = statements(parser, TERM_CASE)
+
+        branches.append(list_node([pattern, body]))
+
+    if len(branches) == 0:
+        parse_error(parser, u"Expected one or more patterns", token)
+
+    return node_1(NT_RECEIVE, token, list_node(branches))
 
 
 def prefix_throw(parser, op, token):

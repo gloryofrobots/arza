@@ -26,6 +26,7 @@ PARTIAL = PREFIX + "defpartial"
 SPECIFY = PREFIX + "specify"
 OVERRIDE = PREFIX + "override"
 OVERRIDE_HELPER = PREFIX + "__override__"
+RECEIVE_HELPER = PREFIX + "__receive__"
 
 SLICE = PREFIX + "slice"
 DROP = PREFIX + "drop"

@@ -85,10 +85,10 @@ class CodeRoutine(BaseRoutine):
 
             literals = env.literals
 
-            api.d.pbp(self.BP, "_execute", opcode)
-            api.d.pbp(self.BP, "------ routine ----", api.to_s(self._name_), process)
-            self._print_stack()
-            self._print_code(opcode)
+            # api.d.pbp(self.BP, "_execute", opcode)
+            # api.d.pbp(self.BP, "------ routine ----", api.to_s(self._name_), process)
+            # self._print_stack()
+            # self._print_code(opcode)
             # print(getattr(self, "_name_", None), str(hex(id(self))), d)
             self.pc += 1
             # *************************************

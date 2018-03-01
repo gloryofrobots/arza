@@ -13,10 +13,10 @@ else:
     PRELUDE_FILE = u"prelude"
 
 STD_MODULES = [u"std", u"tuple",
-               # u"lense", u"list",
-               # u"string", u"generics",
-               # u"seq", u"coro",
-               # u"map",
+               u"lense", u"list",
+               u"string", u"generics",
+               u"seq", u"coro",
+               u"map",
                ]
 
 
@@ -40,6 +40,7 @@ def load_module(process, script_name):
 
 class Scheduler:
     def __init__(self):
+        self.count = 0
         self.root = None
         self.active = plist.empty()
         # self.new = plist.empty()
@@ -129,8 +130,10 @@ class Scheduler:
 
     def spawn(self, func, args):
         process = self.root.spawn()
-        id = random.randrange(0, MAX_ID)
-        id = 42
+        # id = random.randrange(0, MAX_ID)
+        # id = 42
+        self.count += 1
+        id = self.count
         process.set_id(id)
         self.activate(process)
         process.activate(func, args)

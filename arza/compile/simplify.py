@@ -168,6 +168,13 @@ def simplify_interface(compiler, code, node):
     return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
 
 
+def simplify_receive(compiler, code, node):
+    branches = node_first(node)
+    fun_node = nodes.create_nameless_fun(node_token(node), branches)
+
+    return nodes.create_call_node_s(nodes.node_token(node), lang_names.RECEIVE_HELPER, [fun_node])
+
+
 def simplify_generic(compiler, code, node):
     name_node = node_first(node)
     name_1_arg = nodes.create_symbol_node(nodes.node_token(name_node), name_node)
@@ -220,6 +227,7 @@ def simplify_lense(compiler, code, node):
     call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.LENSE,
                                          [source, getter, setter])
     return call_node
+
 
 ###############################
 

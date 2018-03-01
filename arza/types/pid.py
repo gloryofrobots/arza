@@ -18,6 +18,7 @@ class W_PID(W_Callable):
         return process.std.types.PID
 
     def _call_(self, process, args):
+        # print "PID CALL", self.process, args
         process.fiber.push_into_stack(space.newunit())
         self.process.receive(api.at_index(args, 0))
 

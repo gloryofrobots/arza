@@ -232,6 +232,7 @@ type EmptySeqError(args)
 type OverflowError(args)
 //Signal used to interrupt recursive processes
 type Interrupt(result)
+type MessageMatchError(args)
 
 // Bootstrap interfaces behavior
 
@@ -305,7 +306,6 @@ fun dec(x) = x - 1
 //fun last coll = at ((len coll) - 1) coll
 fun last(coll) = at(len(coll) - 1, coll)
 
-fun __override__(generic, types, func) = func(method(generic, types))
 
 fun downcast(any of Instance) = any as Instance
 
@@ -314,3 +314,24 @@ let
     snd = c -> at(1, c)
     thrd = c -> at(2, c)
     frth = c -> at(3, c)
+
+fun __override__(generic, types, func) = func(method(generic, types))
+
+fun __receive__(fn) =
+    let
+        proc = self()
+        fun _loop() =
+            if __has__(proc) == False then
+                __pause__(proc)
+                _loop()
+            else
+                let
+                    msg = __pop__(proc)
+                in
+    //                PL("@@POP", msg, __mailbox__(proc))
+                    try
+                        fn(msg)
+                    catch (#FunctionArgumentsMatchError, args) =
+                        throw MessageMatchError(args)
+    in
+        _loop()

@@ -1,39 +1,36 @@
-//import io
-//import affirm
-//import seq
-//import list
-//import array
-//import string
-//import tests
-
-fun receive(fn) =
-    if __has__(self()) == False then
-        __wait__(self())
-        receive(fn)
-    else
-        let msg = __pop__(self())
-        in fn(msg)
-
-fun r(x)
-    | 1 = PL(#one)
-    | 2 = PL(#two)
-
-fun f1() =
-    receive(r)
-    f1()
+import io
+import affirm
+import seq
+import list
+import array
+import string
+import tests
 
 
+
+fun ping
+    | (0, pong_pid) =
+        pong_pid(#finished)
+        PL("ping finished")
+    | (n, pong_pid) =
+        pong_pid((#ping, self()))
+        receive
+            | #pong  = PL("ping received pong")
+        ping(n-1, pong_pid)
+
+
+fun pong() =
+    receive
+        | #finished = PL("pong finished")
+        | (#ping, ping_pid) =
+            PL("pong received ping")
+            ping_pid(#pong)
+            pong()
 
 fun main() =
-    let
-        p1 = process(f1, ())
-    in
-        DMARK(21)
-        p1(1)
-        p1(2)
-        p1(1)
-        p1(1)
-        p1(2)
-        p1(3)
-//        p1(1)
-//    tests:run()
+//    let
+//        pong_pid = process(pong, ())
+//        ping_pid = process(ping, (3, pong_pid))
+//    in
+//        ()
+    tests:run()

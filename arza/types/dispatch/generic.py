@@ -222,6 +222,9 @@ class ConflictResolver(W_Root):
         fn = space.newfunc_from_source(self.fn, process.modules.prelude)
         process.call_object(ConflictResolverCallback(self.signatures, fn, args), args)
 
+    def _to_string_(self):
+        return api.to_s(self.fn)
+
 
 def conflict_resolver(process, gf, signatures):
     funcs = []

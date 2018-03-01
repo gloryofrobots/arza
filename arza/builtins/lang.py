@@ -29,8 +29,11 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'signatures', __signatures, 1)
     api.put_native_function(process, module, u'symbol', _symbol, 1)
     api.put_native_function(process, module, u'process', __process, 2)
+    api.put_native_function(process, module, u'__mailbox__', __mailbox, 1)
     api.put_native_function(process, module, u'__pop__', __pop, 1)
-    api.put_native_function(process, module, u'__wait__', __wait, 1)
+    api.put_native_function(process, module, u'__push__', __push, 2)
+    api.put_native_function(process, module, u'__pause__', __pause, 1)
+    api.put_native_function(process, module, u'__resume__', __resume, 1)
     api.put_native_function(process, module, u'__has__', __has, 1)
     api.put_native_function(process, module, u'self', __self, 0)
     put_lang_func(process, module, lang_names.APPLY, apply, 2)
@@ -236,27 +239,49 @@ def __process(process, routine):
 
 @complete_native_routine
 def __self(process, routine):
-    return process
+    return space.newpid(process)
 
 
 @complete_native_routine
 def __has(process, routine):
-    p = routine.get_arg(0)
-    res = not p.mailbox.empty()
+    pid = routine.get_arg(0)
+    res = not pid.process.mailbox.empty()
     return space.newbool(res)
 
 
 @complete_native_routine
+def __mailbox(process, routine):
+    pid = routine.get_arg(0)
+    return pid.process.mailbox.messages
+
+
+@complete_native_routine
 def __pop(process, routine):
-    p = routine.get_arg(0)
-    msg = p.mailbox.pop()
+    pid = routine.get_arg(0)
+    msg = pid.process.mailbox.pop()
     return msg
 
 
 @complete_native_routine
-def __wait(process, routine):
-    p = routine.get_arg(0)
-    p.wait()
+def __push(process, routine):
+    msg = routine.get_arg(0)
+    pid = routine.get_arg(1)
+    # p.mailbox.push(msg)
+    pid.process.receive(msg)
+    return space.newunit()
+
+
+@complete_native_routine
+def __resume(process, routine):
+    pid = routine.get_arg(0)
+    pid.process.resume()
+    return space.newunit()
+
+
+@complete_native_routine
+def __pause(process, routine):
+    pid = routine.get_arg(0)
+    pid.process.pause()
     return space.newunit()
 
 

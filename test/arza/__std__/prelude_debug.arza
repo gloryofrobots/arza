@@ -1,4 +1,9 @@
-let _ = d.s1.s2
+fun f() =
+    receive
+        | x = 1
+        | (x, y, z) = 2
+        | [1,2,(a,b)] = 5
+
 //let d = {
 //    x = 1,
 //    y = -1
