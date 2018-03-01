@@ -5,40 +5,9 @@ import list
 import array
 import string
 import process
-//import tests
+import tests
 
-
-
-
-fun ping(n, pong_pid, store) =
-    if n == 0 then
-        pong_pid ! #finished
-        PL("ping finished", store)
-        store
-    else
-        pong_pid ! (#ping, self())
-        receive
-            | #pong  =
-                ping(n-1, pong_pid, #pong :: store)
-
-fun pong(store) =
-    receive
-        | #finished =
-            PL("pong finished", store)
-            store
-            throw ValueError(store)
-
-        | (#ping, ping_pid) =
-            ping_pid!#pong
-            pong(#ping :: store)
 
 fun main() =
-    let
-        pong_pid = spawn(pong, ([],))
-        ping_pid = spawn(ping, (3, pong_pid, []))
-    in
-        process:wait_for([pong_pid, ping_pid])
-//        PL(process:get_active_processes(self()))
-//        PL("MAIN")
-//        ()
-//    tests:run()
+//    test_simple()
+    tests:run()

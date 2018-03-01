@@ -8,17 +8,17 @@ def printmessage(msg):
     os.write(1, encode_unicode_utf8(msg))
 
 
-def main(argv):
+def main(script_file):
     from arza.misc import timer
-    with timer.Timer("Arza Main", True):
+    from arza.types import api
 
-        script_file = argv[1]
+    with timer.Timer("Arza Main", True):
         if script_file == "--test":
             from test.vm import tests
             return tests.run()
 
         result = run(script_file)
-        print ">>>", result
+        print ">>>", api.to_string(result)
     # try:
     #     run(script_file)
     # except SystemExit:
@@ -65,7 +65,10 @@ def jitpolicy(driver):
 
 
 def entry_point(argv):
-    return main(argv)
+    if len(argv) < 2:
+        print "Usage python targetarza.py {path_to_script}"
+        return
+    return main(argv[1])
 
 
 # class writer(object):

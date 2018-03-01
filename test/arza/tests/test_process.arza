@@ -1,0 +1,34 @@
+import affirm
+
+fun ping(n, pong_pid, store) =
+    if n == 0 then
+        pong_pid ! #finished
+        store
+    else
+        pong_pid ! (#ping, self())
+        receive
+            | #pong  =
+                ping(n-1, pong_pid, #pong :: store)
+
+fun pong(store) =
+    receive
+        | #finished =
+            store
+            throw ValueError(store)
+
+        | (#ping, ping_pid) =
+            ping_pid!#pong
+            pong(#ping :: store)
+
+fun test_simple() =
+    let
+        pong_pid = spawn(pong, ([],))
+        ping_pid = spawn(ping, (3, pong_pid, []))
+        result = process:wait_for([pong_pid, ping_pid])
+    in
+        affirm:is_equal(result.[ping_pid], [#pong, #pong, #pong])
+        affirm:is_equal(result.[pong_pid], ValueError([#ping, #ping, #ping]))
+
+
+fun test() =
+    test_simple()
