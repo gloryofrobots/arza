@@ -13,6 +13,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'div', div, 2)
     api.put_native_function(process, _module, u'mod', mod, 2)
     api.put_native_function(process, _module, u'negate', negate, 1)
+    api.put_native_function(process, _module, u'abs', modulo, 1)
     api.put_native_function(process, _module, u'le', le, 2)
 
     _module.export_all()
@@ -86,6 +87,12 @@ def negate(process, routine):
 
     return number.negate(arg0)
 
+@complete_native_routine
+def modulo(process, routine):
+    arg0 = routine.get_arg(0)
+    error.affirm_type(arg0, space.isnumber)
+
+    return number.modulo(arg0)
 
 @complete_native_routine
 def le(process, routine):

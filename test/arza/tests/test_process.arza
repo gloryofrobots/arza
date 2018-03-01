@@ -10,9 +10,8 @@ fun test_simple() =
                 store
             else
                 pong_pid ! (#ping, self())
-                receive
-                    | #pong  =
-                        ping(n-1, pong_pid, #pong :: store)
+                receive #pong  =
+                    ping(n-1, pong_pid, #pong :: store)
 
         fun pong(store) =
             receive

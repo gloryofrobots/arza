@@ -171,6 +171,15 @@ def negate(obj):
     return negate_f(obj)
 
 
+def modulo(obj):
+    if space.isint(obj):
+        intval = api.to_i(obj)
+        return space.newint(abs(intval))
+
+    floatval = api.to_f(obj)
+    return space.newfloat(abs(floatval))
+
+
 def gt_i_i(w_x, w_y):
     x = api.to_i(w_x)
     y = api.to_i(w_y)

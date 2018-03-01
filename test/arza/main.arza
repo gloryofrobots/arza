@@ -6,34 +6,36 @@ import array
 import string
 import process
 //import tests
-import tests:test_process
+//import tests:test_process
 
 
-fun coro(fn, ...args) =
+fun coro(args, fn) =
     let
         proc1 = self()
         proc2 = process:create()
-        fun return() =
-            let
-                result = fn()
-            in
-                process:resume(proc1)
 
-        fun yield(val) =
-            process:pause(proc2)
+        fun chan1(val) =
+            proc2 ! val
+            receive msg = msg
+
+        fun chan2(val) =
             proc1 ! val
-            process:resume(proc1)
+            receive msg = msg
 
-        fun _coro(val) =
-            process:pause(proc1)
-            if process:is_idle(proc2) then
-               process:start(proc2, return, args)
-            elif process:is_finished(proc2) then
-                process:result(proc2)
-            else
-                process:resume(proc2)
+    in
+        process:start(proc2, fn, args ++ chan2)
+        chan1
 
 fun main() =
+    let
+        c = coro((fun(a, yield) =
+            yield(a)
+            yield(1)
+            yield(2)
+        ))
+    in
+        io:print .. c(42)
+        io:print .. c(43)
     ()
 //    test_process:test()
 //    test_simple()

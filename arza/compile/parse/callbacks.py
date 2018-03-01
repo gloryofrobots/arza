@@ -686,21 +686,28 @@ def prefix_match(parser, op, token):
     return node_2(NT_MATCH, token, exp, list_node(branches))
 
 
+def _parse_receive_branch(parser):
+    pattern = _parse_pattern(parser)
+    pattern = nodes.create_tuple_node(parser.token, [pattern])
+    advance_expected(parser, TT_ASSIGN)
+    body = statements(parser, TERM_CASE)
+    return list_node([pattern, body])
+
+
 def prefix_receive(parser, op, token):
     open_offside_layout(parser, parser.token, LEVELS_RECEIVE, INDENTS_RECEIVE)
-    check_token_type(parser, TT_CASE)
-    pattern_parser = parser.pattern_parser
     branches = []
+    if parser.token_type != TT_CASE:
+        branch = _parse_receive_branch(parser)
+        branches.append(branch)
+    else:
+        check_token_type(parser, TT_CASE)
 
-    # TODO COMMON PATTERN MAKE ONE FUNC with try/fun/match
-    while pattern_parser.token_type == TT_CASE:
-        advance_expected(pattern_parser, TT_CASE)
-        pattern = _parse_pattern(parser)
-        pattern = nodes.create_tuple_node(parser.token, [pattern])
-        advance_expected(parser, TT_ASSIGN)
-        body = statements(parser, TERM_CASE)
-
-        branches.append(list_node([pattern, body]))
+        # TODO COMMON PATTERN MAKE ONE FUNC with try/fun/match
+        while parser.token_type == TT_CASE:
+            advance_expected(parser, TT_CASE)
+            branch = _parse_receive_branch(parser)
+            branches.append(branch)
 
     if len(branches) == 0:
         parse_error(parser, u"Expected one or more patterns", token)

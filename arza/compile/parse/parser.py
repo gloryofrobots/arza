@@ -410,7 +410,7 @@ class MapKeyParser(BaseParser):
         literal(self, TT_FALSE, NT_FALSE)
         literal(self, TT_MULTI_STR, NT_MULTI_STR)
         prefix(self, TT_NAME, NT_NAME, prefix_name_as_symbol)
-        prefix(self, TT_LSQUARE, None, prefix_lparen_map_key)
+        prefix(self, TT_LPAREN, None, prefix_lparen_map_key)
         symbol_nud(self, TT_OPERATOR, NT_NAME, operator_as_symbol)
         symbol(self, TT_COMMA)
         symbol(self, TT_ASSIGN)

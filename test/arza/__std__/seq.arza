@@ -32,6 +32,28 @@ fun foreach(f, coll)
       foreach(f, tl)
 
 
+fun enum_to(last of Int, fn) = enum(0, last, fn)
+
+
+fun enum(first of Int, last of Int, fn) =
+    let
+        step =
+            if last < 0 then -1
+            else 1
+    in enum_by(first, last, step, fn)
+
+
+fun enum_by (first of Int, last of Int, step of Int, fn) =
+    let
+        fun _enum_by
+            | (f, l) when l == f = ()
+            | (f, l) =
+                fn(f)
+                _enum_by(f+step, l)
+    in
+        _enum_by(first, last)
+
+
 fun traverse(coll) = foreach(identity, coll)
 
 
