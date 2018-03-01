@@ -4,16 +4,16 @@ fun wait_for(procs of List) =
     let
         fun _loop(_procs, _results)
             | ([], results) =
-                PL(">>finished", results, _procs)
+//                PL(">>finished", results, _procs)
                 results
             | (tl::hd, results) =
-                PL(">>working", results, _procs)
+//                PL(">>working", results, _procs)
 //                PL(tl, is_finished(tl))
                 if is_finished(tl) then
                     let
                         res = result(tl)
                     in
-                        PL(">>proc end", results, hd)
+//                        PL(">>proc end", results, hd)
                         _loop(hd, results.{(tl) = res})
                 else
                     _loop(procs, results)

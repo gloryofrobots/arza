@@ -113,7 +113,7 @@ class Fiber:
         return True, trace
 
 
-class Mailbox():
+class Mailbox:
     def __init__(self):
         self.messages = plist.empty()
 
@@ -148,7 +148,6 @@ class Process(root.W_Root):
         self.fibers = []
         self.__fiber = None
         self.result = None
-        self.child = None
         self.mailbox = Mailbox()
 
         self.__idle()
@@ -163,7 +162,7 @@ class Process(root.W_Root):
             return
         # print "PAUSED", self, self.mailbox
         self.__await()
-        self.scheduler.wait(self)
+        self.scheduler.unactivate(self)
 
     def resume(self):
         assert self.is_awaiting(), self.__state
@@ -412,7 +411,7 @@ class Process(root.W_Root):
     def __close(self):
         self.fiber = None
         self.fibers = []
-        self.scheduler.unactivate(self)
+        self.scheduler.close(self)
 
     def __terminate_with_signal(self, signal, trace):
         _print_trace(self.io.stderr, signal, trace)

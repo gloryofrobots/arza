@@ -5,6 +5,10 @@ from arza.runtime.routine.routine import complete_native_routine
 def setup(process, stdlib):
     _module_name = space.newsymbol(process, u'arza:lang:_process')
     _module = space.newemptyenv(_module_name)
+    api.put_native_function(process, _module, u'spawn', __process, 2)
+    api.put_native_function(process, _module, u'self', __self, 0)
+    api.put_native_function(process, _module, u'create', create, 0)
+    api.put_native_function(process, _module, u'start', start, 3)
     api.put_native_function(process, _module, u'is_idle', is_idle, 1)
     api.put_native_function(process, _module, u'is_active', is_active, 1)
     api.put_native_function(process, _module, u'is_complete', is_complete, 1)
@@ -15,12 +19,39 @@ def setup(process, stdlib):
 
     api.put_native_function(process, _module, u'mailbox', mailbox, 1)
     api.put_native_function(process, _module, u'pop', pop, 1)
+    api.put_native_function(process, _module, u'send', send_message, 2)
     api.put_native_function(process, _module, u'push', push, 2)
     api.put_native_function(process, _module, u'pause', pause, 1)
     api.put_native_function(process, _module, u'resume', resume, 1)
     api.put_native_function(process, _module, u'is_empty', is_empty, 1)
     _module.export_all()
     process.modules.add_module(_module_name, _module)
+
+
+@complete_native_routine
+def create(process, routine):
+    p = process.scheduler.create()
+    return space.newpid(p)
+
+
+@complete_native_routine
+def start(process, routine):
+    pid = routine.get_arg(0)
+    fn = routine.get_arg(1)
+    args = routine.get_arg(2)
+    return pid.process.scheduler.enter_process(fn, args)
+
+
+@complete_native_routine
+def __process(process, routine):
+    fn = routine.get_arg(0)
+    args = routine.get_arg(1)
+    return process.scheduler.spawn(fn, args)
+
+
+@complete_native_routine
+def __self(process, routine):
+    return space.newpid(process)
 
 
 @complete_native_routine
@@ -87,6 +118,15 @@ def pop(process, routine):
     pid = routine.get_arg(0)
     msg = pid.process.mailbox.pop()
     return msg
+
+
+@complete_native_routine
+def send_message(process, routine):
+    pid = routine.get_arg(0)
+    msg = routine.get_arg(1)
+    # p.mailbox.push(msg)
+    pid.receive(process, msg)
+    return space.newunit()
 
 
 @complete_native_routine

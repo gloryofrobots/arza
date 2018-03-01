@@ -306,7 +306,6 @@ fun dec(x) = x - 1
 //fun last coll = at ((len coll) - 1) coll
 fun last(coll) = at(len(coll) - 1, coll)
 
-
 fun downcast(any of Instance) = any as Instance
 
 let
@@ -315,7 +314,11 @@ let
     thrd = c -> at(2, c)
     frth = c -> at(3, c)
 
-fun __send__ (p of PID, msg) = p(msg)
+let
+    self = _process:self
+    spawn = _process:spawn
+
+fun __send__ (p of PID, msg) = _process:send(p, msg)
 
 def <- (p of PID, msg) as __send__
 

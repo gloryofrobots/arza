@@ -77,7 +77,7 @@ class Scheduler:
         if err is not None:
             return error
 
-        self.__add_active(self.root)
+        self.activate(self.root)
 
     def __add_active(self, p):
         # print "aa", p
@@ -85,6 +85,45 @@ class Scheduler:
 
     def __add_waiting(self, p):
         self.waiting = plist.cons(p, self.waiting)
+
+    def is_unactive(self):
+        return plist.is_empty(self.active)
+
+    def close(self, p):
+        if self.is_unactive():
+            return
+
+        # print "unactivate", p, self.active
+        self.active = plist.remove(self.active, p)
+
+    def activate(self, p):
+        self.__add_active(p)
+
+    def unactivate(self, p):
+        self.close(p)
+        self.__add_waiting(p)
+
+    def wakeup(self, process):
+        assert process in self.waiting
+        self.waiting = plist.remove(self.waiting, process)
+        self.activate(process)
+        # print "wakeup", len(self.active)
+
+    def create(self):
+        process = self.root.spawn()
+        self.count += 1
+        process.set_id(self.count)
+        return process
+
+    def enter_process(self, process, func, args):
+        assert process.is_idle()
+        self.activate(process)
+        process.activate(func, args)
+        return pid.newpid(process)
+
+    def spawn(self, func, args):
+        process = self.create()
+        return self.enter_process(process, func, args)
 
     def run(self, filename):
         try:
@@ -108,38 +147,6 @@ class Scheduler:
         for p in proceses:
             if p.is_active():
                 p.iterate(cycles)
-
-    def is_unactive(self):
-        return plist.is_empty(self.active)
-
-    def unactivate(self, p):
-        if self.is_unactive():
-            return
-
-        # print "unactivate", p
-        self.active = plist.remove(self.active, p)
-
-    def activate(self, p):
-        self.__add_active(p)
-
-    def wait(self, p):
-        self.unactivate(p)
-        self.__add_waiting(p)
-
-    def wakeup(self, process):
-        assert process in self.waiting
-        self.waiting = plist.remove(self.waiting, process)
-        self.__add_active(process)
-        # print "wakeup", len(self.active)
-
-    def spawn(self, func, args):
-        process = self.root.spawn()
-        self.count += 1
-        id = self.count
-        process.set_id(id)
-        self.activate(process)
-        process.activate(func, args)
-        return pid.newpid(process)
 
     @property
     def result(self):

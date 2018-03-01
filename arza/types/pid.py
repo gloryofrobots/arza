@@ -19,10 +19,10 @@ class W_PID(W_Callable):
     def _hash_(self):
         return id(self)
 
-    def _call_(self, process, args):
+    def receive(self, sender_process, message):
         # print "PID CALL", self.process, args
-        process.fiber.push_into_stack(space.newunit())
-        self.process.receive(api.at_index(args, 0))
+        # process.fiber.push_into_stack(space.newunit())
+        self.process.receive(message)
 
     def _equal_(self, other):
         from arza.types import space
