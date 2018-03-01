@@ -15,114 +15,84 @@
           },
           [
             {
-              "_ntype": "NT_RECEIVE",
-              "_value": "receive",
+              "_ntype": "NT_LET",
+              "_value": "let",
               "children": [
                 [
-                  [
-                    {
-                      "_ntype": "NT_TUPLE",
-                      "_value": "=",
-                      "children": [
+                  {
+                    "_ntype": "NT_ASSIGN",
+                    "_value": "=",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "d"
+                      },
+                      {
+                        "_ntype": "NT_MAP",
+                        "_value": "{",
+                        "children": [
+                          [
+                            [
+                              {
+                                "_ntype": "NT_SYMBOL",
+                                "_value": "tl",
+                                "children": [
+                                  {
+                                    "_ntype": "NT_NAME",
+                                    "_value": "tl"
+                                  }
+                                ]
+                              },
+                              {
+                                "_ntype": "NT_INT",
+                                "_value": "1"
+                              }
+                            ]
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                [
+                  {
+                    "_ntype": "NT_MODIFY",
+                    "_value": ".{",
+                    "children": [
+                      {
+                        "_ntype": "NT_NAME",
+                        "_value": "d"
+                      },
+                      [
                         [
                           {
                             "_ntype": "NT_NAME",
-                            "_value": "x"
+                            "_value": "tl"
+                          },
+                          {
+                            "_ntype": "NT_INT",
+                            "_value": "2"
                           }
-                        ]
-                      ]
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "1"
-                      }
-                    ]
-                  ],
-                  [
-                    {
-                      "_ntype": "NT_TUPLE",
-                      "_value": "=",
-                      "children": [
+                        ],
                         [
                           {
-                            "_ntype": "NT_TUPLE",
-                            "_value": "(",
+                            "_ntype": "NT_SYMBOL",
+                            "_value": "tl",
                             "children": [
-                              [
-                                {
-                                  "_ntype": "NT_NAME",
-                                  "_value": "x"
-                                },
-                                {
-                                  "_ntype": "NT_NAME",
-                                  "_value": "y"
-                                },
-                                {
-                                  "_ntype": "NT_NAME",
-                                  "_value": "z"
-                                }
-                              ]
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "tl"
+                              }
                             ]
-                          }
-                        ]
-                      ]
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "2"
-                      }
-                    ]
-                  ],
-                  [
-                    {
-                      "_ntype": "NT_TUPLE",
-                      "_value": "=",
-                      "children": [
-                        [
+                          },
                           {
-                            "_ntype": "NT_LIST",
-                            "_value": "[",
-                            "children": [
-                              [
-                                {
-                                  "_ntype": "NT_INT",
-                                  "_value": "1"
-                                },
-                                {
-                                  "_ntype": "NT_INT",
-                                  "_value": "2"
-                                },
-                                {
-                                  "_ntype": "NT_TUPLE",
-                                  "_value": "(",
-                                  "children": [
-                                    [
-                                      {
-                                        "_ntype": "NT_NAME",
-                                        "_value": "a"
-                                      },
-                                      {
-                                        "_ntype": "NT_NAME",
-                                        "_value": "b"
-                                      }
-                                    ]
-                                  ]
-                                }
-                              ]
-                            ]
+                            "_ntype": "NT_INT",
+                            "_value": "2"
                           }
                         ]
                       ]
-                    },
-                    [
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "5"
-                      }
                     ]
-                  ]
+                  }
                 ]
               ]
             }

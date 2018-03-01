@@ -9,6 +9,9 @@ def presetup(process, module, stdlib):
     import arza.builtins.modules._module_lang_interfaces
     arza.builtins.modules._module_lang_interfaces.setup(process, stdlib)
 
+    import arza.builtins.modules.module_process
+    arza.builtins.modules.module_process.setup(process, stdlib)
+
     import arza.builtins.modules.module_lang_types
     arza.builtins.modules.module_lang_types.setup(process, stdlib)
 
@@ -64,5 +67,3 @@ def create_lang_names(process):
         new_name = symbol.concat_2(process, lang_prefix, name)
         val = api.at(prelude, name)
         api.put(prelude, new_name, val)
-
-

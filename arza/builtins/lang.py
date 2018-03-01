@@ -28,13 +28,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'method', __method, 2)
     api.put_native_function(process, module, u'signatures', __signatures, 1)
     api.put_native_function(process, module, u'symbol', _symbol, 1)
-    api.put_native_function(process, module, u'process', __process, 2)
-    api.put_native_function(process, module, u'__mailbox__', __mailbox, 1)
-    api.put_native_function(process, module, u'__pop__', __pop, 1)
-    api.put_native_function(process, module, u'__push__', __push, 2)
-    api.put_native_function(process, module, u'__pause__', __pause, 1)
-    api.put_native_function(process, module, u'__resume__', __resume, 1)
-    api.put_native_function(process, module, u'__has__', __has, 1)
+    api.put_native_function(process, module, u'spawn', __process, 2)
     api.put_native_function(process, module, u'self', __self, 0)
     put_lang_func(process, module, lang_names.APPLY, apply, 2)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
@@ -243,49 +237,6 @@ def __self(process, routine):
 
 
 @complete_native_routine
-def __has(process, routine):
-    pid = routine.get_arg(0)
-    res = not pid.process.mailbox.empty()
-    return space.newbool(res)
-
-
-@complete_native_routine
-def __mailbox(process, routine):
-    pid = routine.get_arg(0)
-    return pid.process.mailbox.messages
-
-
-@complete_native_routine
-def __pop(process, routine):
-    pid = routine.get_arg(0)
-    msg = pid.process.mailbox.pop()
-    return msg
-
-
-@complete_native_routine
-def __push(process, routine):
-    msg = routine.get_arg(0)
-    pid = routine.get_arg(1)
-    # p.mailbox.push(msg)
-    pid.process.receive(msg)
-    return space.newunit()
-
-
-@complete_native_routine
-def __resume(process, routine):
-    pid = routine.get_arg(0)
-    pid.process.resume()
-    return space.newunit()
-
-
-@complete_native_routine
-def __pause(process, routine):
-    pid = routine.get_arg(0)
-    pid.process.pause()
-    return space.newunit()
-
-
-@complete_native_routine
 def __signatures(process, routine):
     fn = routine.get_arg(0)
     error.affirm_type(fn, space.isgeneric)
@@ -312,14 +263,6 @@ def __partial(process, routine):
     func = args[0]
     args_t = space.newtuple(args[1:])
     return partial.newfunction_partial(func, args_t)
-
-
-# @complete_native_routine
-# def concat_tuples(process, routine):
-#     from arza.types.tuples import concat
-#     v1 = routine.get_arg(0)
-#     v2 = routine.get_arg(1)
-#     return concat(v1, v2)
 
 
 @complete_native_routine

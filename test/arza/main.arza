@@ -4,33 +4,41 @@ import seq
 import list
 import array
 import string
-import tests
+import process
+//import tests
 
 
 
-fun ping
-    | (0, pong_pid) =
-        pong_pid(#finished)
-        PL("ping finished")
-    | (n, pong_pid) =
-        pong_pid((#ping, self()))
+
+fun ping(n, pong_pid, store) =
+    if n == 0 then
+        pong_pid ! #finished
+        PL("ping finished", store)
+        store
+    else
+        pong_pid ! (#ping, self())
         receive
-            | #pong  = PL("ping received pong")
-        ping(n-1, pong_pid)
+            | #pong  =
+                ping(n-1, pong_pid, #pong :: store)
 
-
-fun pong() =
+fun pong(store) =
     receive
-        | #finished = PL("pong finished")
+        | #finished =
+            PL("pong finished", store)
+            store
+            throw ValueError(store)
+
         | (#ping, ping_pid) =
-            PL("pong received ping")
-            ping_pid(#pong)
-            pong()
+            ping_pid!#pong
+            pong(#ping :: store)
 
 fun main() =
-//    let
-//        pong_pid = process(pong, ())
-//        ping_pid = process(ping, (3, pong_pid))
-//    in
+    let
+        pong_pid = spawn(pong, ([],))
+        ping_pid = spawn(ping, (3, pong_pid, []))
+    in
+        process:wait_for([pong_pid, ping_pid])
+//        PL(process:get_active_processes(self()))
+//        PL("MAIN")
 //        ()
-    tests:run()
+//    tests:run()

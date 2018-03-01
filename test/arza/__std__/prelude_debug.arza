@@ -1,9 +1,13 @@
 fun f() =
-    receive
-        | x = 1
-        | (x, y, z) = 2
-        | [1,2,(a,b)] = 5
-
+    let
+        d = {
+            tl = 1
+        }
+    in
+        d.{
+            (tl) = 2,
+            tl = 2
+        }
 //let d = {
 //    x = 1,
 //    y = -1

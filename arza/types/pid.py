@@ -4,18 +4,20 @@ from arza.types import api, space
 
 
 class W_PID(W_Callable):
-
     def __init__(self, process):
         self.process = process
 
     def _to_string_(self):
-        return "<PID %d>" % self.process.id
+        return "<PID %d:%d>" % (self.process.id, self.process.state)
 
     def _to_repr_(self):
         return self._to_string_()
 
     def _type_(self, process):
         return process.std.types.PID
+
+    def _hash_(self):
+        return id(self)
 
     def _call_(self, process, args):
         # print "PID CALL", self.process, args

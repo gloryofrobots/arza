@@ -5,8 +5,6 @@ from arza.runtime import process_data, error
 from arza.runtime.load import import_module, evaluate_module_file
 import random
 
-MAX_ID = 4294967295
-
 if api.DEBUG_MODE:
     PRELUDE_FILE = u"prelude_debug"
 else:
@@ -100,7 +98,7 @@ class Scheduler:
     def loop(self, main_func):
         self.root.activate(main_func, space.newunit())
         while True:
-            if len(self.active) == 0:
+            if self.is_unactive():
                 return
 
             self._loop(self.active)
@@ -111,7 +109,13 @@ class Scheduler:
             if p.is_active():
                 p.iterate(cycles)
 
+    def is_unactive(self):
+        return plist.is_empty(self.active)
+
     def unactivate(self, p):
+        if self.is_unactive():
+            return
+
         # print "unactivate", p
         self.active = plist.remove(self.active, p)
 
@@ -130,8 +134,6 @@ class Scheduler:
 
     def spawn(self, func, args):
         process = self.root.spawn()
-        # id = random.randrange(0, MAX_ID)
-        # id = 42
         self.count += 1
         id = self.count
         process.set_id(id)

@@ -349,7 +349,7 @@ def call(process, obj, args):
 
 
 def to_routine(obj, stack, args):
-    assert space.istuple(args) or space.isarguments(args)
+    assert space.istuple(args) or space.isarguments(args), (args, args.__class__.__name__)
     return obj._to_routine_(stack, args)
 
 

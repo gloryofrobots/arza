@@ -31,4 +31,5 @@ def setup_types(module, types):
     api.put(module, types.Env.name, types.Env)
     api.put(module, types.Array.name, types.Array)
     api.put(module, types.AssocArray.name, types.AssocArray)
+    api.put(module, types.PID.name, types.PID)
 

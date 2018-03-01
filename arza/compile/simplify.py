@@ -329,7 +329,8 @@ def _transform_modify(compiler, node, func, source, modifications):
         other_keys = node_second(key)
 
         # creating path
-        new_key = nodes.ensure_symbol_node_from_name(node_token(key), first)
+        # new_key = nodes.ensure_symbol_node_from_name(node_token(key), first)
+        new_key = first
         new_source = nodes.create_lookup_node(node_token(new_key), source, new_key)
 
         # creating modify node
@@ -341,9 +342,9 @@ def _transform_modify(compiler, node, func, source, modifications):
                                  nodes.create_call_node_3(nodes.node_token(node), func, new_key, new_value, source),
                                  tail)
 
-    else:
-        # ensure symbol
-        key = nodes.ensure_symbol_node_from_name(node_token(key), key)
+    # else:
+    #     # ensure symbol
+    #     key = nodes.ensure_symbol_node_from_name(node_token(key), key)
 
     # transform all @ nodes to proper paths
     transformed_bind = nodes.create_lookup_node(node_token(key), source, key)

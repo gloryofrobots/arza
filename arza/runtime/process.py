@@ -135,10 +135,9 @@ class Process(root.W_Root):
     class State:
         IDLE = 1
         ACTIVE = 2
-        COMPLETE = 3
-        TERMINATED = 4
-        AWAITING = 5
-        PROCESSING = 6
+        AWAITING = 3
+        COMPLETE = 4
+        TERMINATED = 5
 
     def __init__(self, data):
         from arza.runtime.process_data import ProcessData
@@ -218,6 +217,9 @@ class Process(root.W_Root):
     def state(self):
         return self.__state
 
+    def is_finished(self):
+        return self.is_complete() or self.is_terminated()
+
     def is_complete(self):
         return self.state == Process.State.COMPLETE
 
@@ -229,9 +231,6 @@ class Process(root.W_Root):
 
     def is_idle(self):
         return self.state == Process.State.IDLE
-
-    def is_processing(self):
-        return self.state == Process.State.PROCESSING
 
     def is_awaiting(self):
         return self.state == Process.State.AWAITING
@@ -436,9 +435,6 @@ class Process(root.W_Root):
 
     def __await(self):
         self.__set_state(Process.State.AWAITING)
-
-    def __processing(self):
-        self.__set_state(Process.State.PROCESSING)
 
     def __idle(self):
         self.__set_state(Process.State.IDLE)

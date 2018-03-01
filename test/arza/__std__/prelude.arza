@@ -1,5 +1,3 @@
-//let _ = $(d.s1.s2)
-
 import arza:lang:_std_behavior as std_behavior
 
 from arza:lang:_datatype import (record_values, record_keys, record_index_of)
@@ -7,11 +5,12 @@ from arza:lang:_datatype import (record_values, record_keys, record_index_of)
 
 from arza:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                               Function, Partial, Generic, FiberChannel, Coroutine, Interface, Datatype,
-                              Env, Array, AssocArray)
+                              Env, Array, AssocArray, PID)
 
 from arza:lang:_interfaces import (Instance, Singleton, Any)
 
 from arza:lang:_bit import (bitand, bitor, bitxor, bitnot, lshift, rshift)
+import arza:lang:_process
 
 """
 SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
@@ -33,6 +32,7 @@ Precedence    Operator
 infixr (:=, :=, 10)
 // infix @ as of -> 15
 infixr (<-, <-, 15)
+infixr (!, __send__, 15)
 infixl (<|, <|, 15)
 infixl (|>, |>, 20)
 // infix or -> 25
@@ -315,23 +315,24 @@ let
     thrd = c -> at(2, c)
     frth = c -> at(3, c)
 
+fun __send__ (p of PID, msg) = p(msg)
+
+def <- (p of PID, msg) as __send__
+
 fun __override__(generic, types, func) = func(method(generic, types))
 
 fun __receive__(fn) =
     let
         proc = self()
         fun _loop() =
-            if __has__(proc) == False then
-                __pause__(proc)
+            if not _process:is_empty(proc) == False then
+                _process:pause(proc)
                 _loop()
             else
                 let
-                    msg = __pop__(proc)
+                    msg = _process:pop(proc)
                 in
-    //                PL("@@POP", msg, __mailbox__(proc))
-                    try
-                        fn(msg)
-                    catch (#FunctionArgumentsMatchError, args) =
-                        throw MessageMatchError(args)
+    //                PL("@@POP", msg, process:mailbox(proc))
+                    fn(msg)
     in
         _loop()
