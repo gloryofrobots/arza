@@ -47,7 +47,7 @@ def run(script_file):
     vm = scheduler.Scheduler()
     vm.start([script_dir, path_lib])
     vm.run(script_file)
-    print "WAITING", vm.waiting, vm.active
+    print "WM QUEUES ACTIVE ", vm.active, " WAITING ", vm.waiting
     return vm.result
     # process, error = engine.initialize([script_dir, path_lib])
     # if error is not None:

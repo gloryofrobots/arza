@@ -235,6 +235,7 @@ type OverflowError(args)
 type Interrupt(result)
 type MessageMatchError(args)
 type RangeError(args)
+type CoroutineEmpty(args)
 
 // Bootstrap interfaces behavior
 

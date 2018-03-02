@@ -25,3 +25,52 @@ fun wait_for(procs of List) =
     in _loop(procs, {})
 
 
+fun coro(fn) =
+    let
+        proc1 = self()
+        proc2 = create()
+
+        fun make_chan(pid) =
+            fun (...args) =
+//                PL(#PROCS, pid, [proc1, proc2])
+                if is_finished(pid) then
+//                    PL(#FINISHED, result(pid))
+                    throw CoroutineEmpty(result(pid))
+//                    result(pid)
+                else
+                    match args
+                        | () = pid ! ()
+                        | (m) = pid ! m
+                    receive msg = msg
+        chan1 = make_chan(proc2)
+        chan2 = make_chan(proc1)
+
+        fun wrapper(...args) =
+            let
+                res = fn(...args)
+            in
+                proc1 ! res
+//                PL(#WRAP_END, mailbox(proc1), mailbox(proc2))
+                res
+
+        fun _coro(...args) =
+//            PL(mailbox(proc1), mailbox(proc2))
+            if is_idle(proc2) then
+                start(proc2, wrapper, (chan2,) ++ args)
+//                wait_while_working(proc2)
+                receive msg = msg
+//                let finished = wait_while_working(proc2)
+//                in
+////                    PL(#fin, finished)
+//                    if finished then
+//                        result(proc2)
+//                    else
+////                        PL(#MAIL, process:mailbox(proc1))
+//                        receive msg =
+////                            PL(#INITIAL_MSG, msg)
+//                            msg
+            else
+//                PL(#CHAN1, args)
+                chan1(...args)
+    in
+        _coro

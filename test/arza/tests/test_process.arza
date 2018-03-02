@@ -30,6 +30,31 @@ fun test_simple() =
         affirm:is_equal(result.[ping_pid], [#pong, #pong, #pong])
         affirm:is_equal(result.[pong_pid], ValueError([#ping, #ping, #ping]))
 
+fun test_coro() =
+    let
+        fun test1() =
+            let
+                c = process:coro((fun(yield, start) =
+                    (let
+                        x = yield(start)
+                    in
+                        yield(x)
+                    )
+                ))
+                c1 = process:coro((yield) -> #zero)
+            in
+                affirm:is_equal .. c1() .. #zero
+                affirm:is_throw(c1, ())
+
+                affirm:is_equal .. c(#first) .. #first
+                affirm:is_equal .. c(#second) .. #second
+                affirm:is_equal .. c(#last) .. #last
+                affirm:is_throw(c, ())
+                affirm:is_throw(c, ())
+    in
+        test1()
+
 
 fun test() =
+    test_coro()
     test_simple()
