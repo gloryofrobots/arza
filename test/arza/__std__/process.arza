@@ -47,7 +47,12 @@ fun coro(fn) =
 
         fun wrapper(...args) =
             let
-                res = fn(...args)
+                (res =
+                    (try
+                        fn(...args)
+                    catch e = e
+                    )
+                )
             in
                 proc1 ! res
 //                PL(#WRAP_END, mailbox(proc1), mailbox(proc2))

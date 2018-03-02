@@ -149,6 +149,7 @@ class Process(root.W_Root):
         self.__fiber = None
         self.result = None
         self.mailbox = Mailbox()
+        self.error_print_enabled = True
 
         self.__idle()
 
@@ -221,6 +222,9 @@ class Process(root.W_Root):
     @property
     def state(self):
         return self.__state
+
+    def set_error_print_enabled(self, val):
+        self.error_print_enabled = val
 
     def is_finished(self):
         return self.is_complete() or self.is_terminated()
@@ -420,7 +424,8 @@ class Process(root.W_Root):
         self.scheduler.close(self)
 
     def __terminate_with_signal(self, signal, trace):
-        _print_trace(self.io.stderr, signal, trace)
+        if self.error_print_enabled:
+            _print_trace(self.io.stderr, signal, trace)
         self.__terminate()
 
     def exit(self, reason):

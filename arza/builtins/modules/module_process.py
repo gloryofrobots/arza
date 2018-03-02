@@ -15,6 +15,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'is_terminated', is_terminated, 1)
     api.put_native_function(process, _module, u'is_finished', is_finished, 1)
     api.put_native_function(process, _module, u'is_waiting', is_waiting, 1)
+    api.put_native_function(process, _module, u'set_error_print_enabled', set_error_print_enabled, 2)
     api.put_native_function(process, _module, u'get_active_processes', get_active_processes, 1)
     api.put_native_function(process, _module, u'result', result, 1)
 
@@ -121,6 +122,16 @@ def pop(process, routine):
     pid = routine.get_arg(0)
     msg = pid.process.mailbox.pop()
     return msg
+
+
+@complete_native_routine
+def set_error_print_enabled(process, routine):
+    pid = routine.get_arg(0)
+    val = routine.get_arg(1)
+    val_b = api.to_b(val)
+    pid.process.set_error_print_enabled(val_b)
+    # p.mailbox.push(msg)
+    return space.newunit()
 
 
 @complete_native_routine

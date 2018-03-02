@@ -24,6 +24,7 @@ fun test_simple() =
                     pong(#ping :: store)
 
         pong_pid = spawn .. pong .. ([],)
+        _ = process:set_error_print_enabled(pong_pid, False)
         ping_pid = spawn .. ping .. (3, pong_pid, [])
         result = process:wait_for([pong_pid, ping_pid])
     in
