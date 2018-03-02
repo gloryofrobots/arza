@@ -292,6 +292,13 @@ def hole_arg(index):
     return lang_names.HOLE_PREFIX + str(index)
 
 
+def infix_lparen_pattern(parser, op, token, left):
+    # right = _parse_lparen_tuple(parser, token)
+    items = _prefix_lcurly(parser, parser.map_key_parser, TT_RPAREN)
+    right = node_1(NT_MAP, token, items)
+    return node_2(NT_OF, token, right, left)
+
+
 def infix_lparen(parser, op, token, left):
     unpack_call = False
     items = []
@@ -457,6 +464,10 @@ def prefix_lparen(parser, op, token):
 
 
 def prefix_lparen_tuple(parser, op, token):
+    return _parse_lparen_tuple(parser, token)
+
+
+def _parse_lparen_tuple(parser, token):
     if parser.token_type == TT_RPAREN:
         advance_expected(parser, TT_RPAREN)
         return nodes.create_unit_node(token)
@@ -515,14 +526,14 @@ def prefix_lcurly(parser, op, token):
     return node_1(NT_MAP, token, items)
 
 
-def _prefix_lcurly(parser, key_parser):
+def _prefix_lcurly(parser, key_parser, terminator=TT_RCURLY):
     items = []
-    if parser.token_type != TT_RCURLY:
+    if parser.token_type != terminator:
         while True:
             key = expression(key_parser, 0, [TT_ASSIGN, TT_COMMA])
             if parser.token_type == TT_COMMA:
                 value = empty_node()
-            elif parser.token_type == TT_RCURLY:
+            elif parser.token_type == terminator:
                 value = empty_node()
             elif parser.token_type == TT_ASSIGN:
                 advance_expected(parser, TT_ASSIGN)
@@ -536,7 +547,7 @@ def _prefix_lcurly(parser, key_parser):
 
             advance_expected(parser, TT_COMMA)
 
-    advance_expected(parser, TT_RCURLY)
+    advance_expected(parser, terminator)
     return list_node(items)
 
 

@@ -11,7 +11,7 @@ process p(x, y) =
             | x = 1
     f()
 
-
+fun f1(x, y, {x or 1, y or 4, z})
 
 &&d.s1.s2
 %d.s1.s2

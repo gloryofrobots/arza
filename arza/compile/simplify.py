@@ -341,7 +341,6 @@ def _transform_modify(compiler, node, func, source, modifications):
                                  func,
                                  nodes.create_call_node_3(nodes.node_token(node), func, new_key, new_value, source),
                                  tail)
-
     # else:
     #     # ensure symbol
     #     key = nodes.ensure_symbol_node_from_name(node_token(key), key)
@@ -354,21 +353,3 @@ def _transform_modify(compiler, node, func, source, modifications):
                              nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
                              tail)
 
-# def _transform_modify(compiler, node, func, source, modifications):
-#     """
-#     transforms modify x.{a=1, b=2, 0=4} into series of puts
-#     put 0 4 (put b 2 (put a 1 x))
-#     """
-#     if plist.is_empty(modifications):
-#         return source
-#
-#     m, tail = plist.split(modifications)
-#     key = m[0]
-#     value = m[1]
-#
-#     if node_type(key) == nt.NT_NAME:
-#         key = nodes.create_symbol_node(nodes.node_token(key), key)
-#     return _transform_modify(compiler, node,
-#                              func,
-#                              nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
-#                              tail)

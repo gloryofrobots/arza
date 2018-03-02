@@ -210,6 +210,7 @@ class PatternParser(BaseParser):
         prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
 
         infix(self, TT_OF, NT_OF, 10, led_infix)
+        infix(self, TT_LPAREN, None, 95, infix_lparen_pattern, layout=layout_lparen)
         infix(self, TT_AT_SIGN, None, 15, infix_at)
         infix(self, TT_DOUBLE_COLON, NT_CONS, 60, led_infixr)
         infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
@@ -393,6 +394,7 @@ class ModifyKeyParser(BaseParser):
         # symbol_nud(self, TT_OPERATOR, NT_NAME, operator_as_symbol)
         symbol(self, TT_COMMA)
         symbol(self, TT_ASSIGN)
+        symbol(self, TT_OR)
         # infix(self, TT_DOT, None, 100, infix_lcurly_dot)
         infix(self, TT_DOT, NT_LOOKUP, 70, led_infixr)
 

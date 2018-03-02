@@ -1,13 +1,5 @@
-fun f() =
-    let
-        d = {
-            tl = 1
-        }
-    in
-        d.{
-            (tl) = 2,
-            tl = 2
-        }
+
+let d = d.{x or 1, y=3}
 //let d = {
 //    x = 1,
 //    y = -1
