@@ -300,7 +300,7 @@ fun test_conditions() =
             if 0 == 1 then
                 1
             else
-                (&fun (x, y) = x + y)(
+                (~fun (x, y) = x + y)(
                     3
                  )(
                     4

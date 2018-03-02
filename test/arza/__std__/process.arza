@@ -36,7 +36,6 @@ fun coro(fn) =
                 if is_finished(pid) then
 //                    PL(#FINISHED, result(pid))
                     throw CoroutineEmpty(result(pid))
-//                    result(pid)
                 else
                     match args
                         | () = pid ! ()
@@ -64,16 +63,6 @@ fun coro(fn) =
                 start(proc2, wrapper, (chan2,) ++ args)
 //                wait_while_working(proc2)
                 receive msg = msg
-//                let finished = wait_while_working(proc2)
-//                in
-////                    PL(#fin, finished)
-//                    if finished then
-//                        result(proc2)
-//                    else
-////                        PL(#MAIL, process:mailbox(proc1))
-//                        receive msg =
-////                            PL(#INITIAL_MSG, msg)
-//                            msg
             else
 //                PL(#CHAN1, args)
                 chan1(...args)

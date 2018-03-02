@@ -365,7 +365,7 @@ def create_fun_node(token, name, funcs):
 
 
 def create_partial_node(token, name):
-    return create_call_node_s(token, lang_names.PARTIAL, [name])
+    return create_call_node_s(token, lang_names.CURRY, [name])
 
 
 def create_temporary_node(token, idx):

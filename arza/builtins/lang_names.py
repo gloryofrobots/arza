@@ -21,7 +21,7 @@ INTERFACE = PREFIX + "definterface"
 
 LENSE = PREFIX + "lense"
 
-PARTIAL = PREFIX + "defpartial"
+CURRY = PREFIX + "curry"
 
 SPECIFY = PREFIX + "specify"
 OVERRIDE = PREFIX + "override"

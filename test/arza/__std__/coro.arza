@@ -60,7 +60,7 @@ fun ref(v) =
 trait TReference(R) for Reference =
     def repr(self of R) = str(self)
 
-    def !(self of R) = self.val(#Read)
+    def &(self of R) = self.val(#Read)
 
     def :=(self of R, value) = self.val((#Write, value))
 

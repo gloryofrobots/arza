@@ -35,13 +35,13 @@ fun test_coro() =
     let
         fun test1() =
             let
-                c = process:coro((fun(yield, start) =
+                c = process:coro(fun(yield, start) =
                     (let
                         x = yield(start)
                     in
                         yield(x)
                     )
-                ))
+                )
                 c1 = process:coro((yield) -> #zero)
             in
                 affirm:is_equal .. c1() .. #zero
@@ -52,8 +52,16 @@ fun test_coro() =
                 affirm:is_equal .. c(#last) .. #last
                 affirm:is_throw(c, ())
                 affirm:is_throw(c, ())
+
+        fun test2() =
+            let
+                c = process:coro(fun(yield) = throw 1)
+            in
+                affirm:is_equal .. c() .. 1
+                affirm:is_throw(c, ())
     in
         test1()
+        test2()
 
 
 fun test() =

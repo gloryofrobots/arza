@@ -74,12 +74,12 @@ fun test_lenses() =
         l4 = l1 <- {a=1, b=2, c=3}
         l5 = l1({w=15, t=16})
     in
-        affirm:is_equal([!l4, l4.a, l4.b, l4.c], [{s1={s2={b=2, c=3, a=1}}}, 1, 2, 3 ])
-        affirm:is_equal([!l3, l3.a], [{s1={s2={z=4, x=0, y=2, a=42}}}, 42])
-        affirm:is_equal(!l2, {s1={s2={z=4, x=0, y=2}}})
-        affirm:is_equal(!l1, {s1={s2={x=1, y=2}}})
-        affirm:is_equal(!!l3, {z=4, x=0, y=2, a=42})
-        affirm:is_equal(!!l5, {w=15, t=16})
+        affirm:is_equal([&l4, l4.a, l4.b, l4.c], [{s1={s2={b=2, c=3, a=1}}}, 1, 2, 3 ])
+        affirm:is_equal([&l3, l3.a], [{s1={s2={z=4, x=0, y=2, a=42}}}, 42])
+        affirm:is_equal(&l2, {s1={s2={z=4, x=0, y=2}}})
+        affirm:is_equal(&l1, {s1={s2={x=1, y=2}}})
+        affirm:is_equal(&&l3, {z=4, x=0, y=2, a=42})
+        affirm:is_equal(&&l5, {w=15, t=16})
         affirm:is_equal(l5(), {w=15, t=16})
         // Lenses can be created only for subbranches not for atomic properties
         affirm:is_throw_kindof(() -> $(d.s1.s2.x), (), TypeError)

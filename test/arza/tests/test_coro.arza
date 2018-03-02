@@ -39,13 +39,13 @@ fun test_ref() =
     let
         v = coro:ref(2)
     in
-        affirm:is_equal(!v, 2)
-        affirm:is_equal(!v, 2)
-        affirm:is_equal(!v, 2)
+        affirm:is_equal(&v, 2)
+        affirm:is_equal(&v, 2)
+        affirm:is_equal(&v, 2)
         v := 3
-        affirm:is_equal(!v, 3)
-        affirm:is_equal(!v, 3)
-        affirm:is_equal(!v, 3)
+        affirm:is_equal(&v, 3)
+        affirm:is_equal(&v, 3)
+        affirm:is_equal(&v, 3)
 
 
 fun test_basic () =

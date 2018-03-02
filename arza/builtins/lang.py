@@ -43,7 +43,8 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
     put_lang_func(process, module, lang_names.OVERRIDE, __override, 5)
     put_lang_func(process, module, lang_names.DESCRIBE, __describe, 2)
-    put_lang_func(process, module, lang_names.PARTIAL, __defpartial, 1)
+    # put_lang_func(process, module, lang_names.CURRY, __curry, 1)
+    put_lang_func(process, module, u"curry", __curry, 1)
     put_lang_func(process, module, u"partial", __partial, -1)
     put_lang_func(process, module, u"interfaces", __interfaces, 1)
     put_lang_func(process, module, u"vector", __vector, -1)
@@ -238,7 +239,7 @@ def __describe(process, routine):
 
 
 @complete_native_routine
-def __defpartial(process, routine):
+def __curry(process, routine):
     func = routine.get_arg(0)
     return space.newpartial(func)
 

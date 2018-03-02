@@ -714,9 +714,9 @@ let
     
 // Also there are two operators in prelude responsible for creating curried functions
 // prefix
-fun &(func) = arza:lang:defpartial(func)
+fun &(func) = arza:lang:curry(func)
 // infix
-fun ..(f, g) = arza:lang:defpartial(f)(g)
+fun ..(f, g) = arza:lang:curry(f)(g)
 let
    n = seq:map(&`+`(2), [1,2,3])
    // n = [3, 4, 5]

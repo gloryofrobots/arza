@@ -48,26 +48,26 @@ fun test_holes () =
         affirm:is_equal( f(_, 2, _)(4, 6), 8 )
 
 fun test_partial() =
-    affirm:is_equal( &`-`(1)(2), (-1) )
+    affirm:is_equal( ~`-`(1)(2), (-1) )
 
     affirm:is_equal(
                 partial(flip, `-`, 1)(2),
                 1
     )
     affirm:is_equal(
-                &flip(`-`, 1)(2),
+                ~flip(`-`, 1)(2),
                 1
     )
-    let add1 = &add(1)
+    let add1 = ~add(1)
     in
         affirm:is_equal(add1(2), 3)
-        affirm:is_equal(&add(1)(2), 3)
+        affirm:is_equal(~add(1)(2), 3)
 
 fun test_composition() =
     let
-        add1_mul2 =  &add(1) >>  &mul(2)
+        add1_mul2 =  ~add(1) >>  ~mul(2)
         mul2_add1 = partial(add, 1) << partial(mul, 2)
-        add_1_twice = twice(&add(1))
+        add_1_twice = twice(~add(1))
     in
         affirm:is_equal(add1_mul2(4), 10)
         affirm:is_equal(mul2_add1(4), 9)
@@ -131,9 +131,9 @@ fun test_pipe() =
 
             affirm:is_equal (
                 l |> seq:filter(even, _)
-                  >> &seq:map(`+` .. 1)
+                  >> ~seq:map(`+` .. 1)
                   >> seq:map(flip(`-`, 2, _), _)
-                  >> &seq:map(triple >> square),
+                  >> ~seq:map(triple >> square),
                 [9, 9, 81, 225, 441]
             )
 
