@@ -14,6 +14,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'is_complete', is_complete, 1)
     api.put_native_function(process, _module, u'is_terminated', is_terminated, 1)
     api.put_native_function(process, _module, u'is_finished', is_finished, 1)
+    api.put_native_function(process, _module, u'is_waiting', is_waiting, 1)
     api.put_native_function(process, _module, u'get_active_processes', get_active_processes, 1)
     api.put_native_function(process, _module, u'result', result, 1)
 
@@ -64,6 +65,12 @@ def is_idle(process, routine):
 def is_active(process, routine):
     pid = routine.get_arg(0)
     return space.newbool(pid.process.is_active())
+
+
+@complete_native_routine
+def is_waiting(process, routine):
+    pid = routine.get_arg(0)
+    return space.newbool(pid.process.is_waiting())
 
 
 @complete_native_routine

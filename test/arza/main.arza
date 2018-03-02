@@ -16,43 +16,67 @@ fun coro(fn) =
 
         fun make_chan(pid) =
             fun (...args) =
-//                io:print(pid)
+//                io:print(#PROCS, pid, [proc1, proc2])
                 if process:is_finished(pid) then
-//                    io:print("FINISHED", process:result(pid))
+//                    io:print(#FINISHED, process:result(pid))
                     process:result(pid)
                 else
                     match args
                         | () = pid ! ()
                         | (m) = pid ! m
                     receive msg = msg
-
         chan1 = make_chan(proc2)
         chan2 = make_chan(proc1)
+
+        fun wrapper(...args) =
+            let
+                res = fn(...args)
+            in
+                proc1 ! res
+                res
+
+        fun _coro(...args) =
+            if process:is_idle(proc2) then
+                process:start(proc2, wrapper, (chan2,) ++ args)
+                let finished = process:wait_while_working(proc2)
+                in
+//                    io:print(#fin, finished)
+                    if finished then
+                        process:result(proc2)
+                    else
+//                        io:print(#MAIL, process:mailbox(proc1))
+                        receive msg =
+                            io:print(#INITIAL_MSG, msg)
+                            msg
+            else
+//                io:print(#CHAN1, args)
+                chan1(...args)
     in
-        process:start(proc2, fn, (chan2,))
-        chan1
+        _coro
 
 
 fun main() =
     let
-        c = coro((fun(yield) =
+        c = coro((fun(yield, start) =
             (let
-                x = yield(1)
-                y = yield(2)
+                x = yield(start)
             in
-                yield(x + 10)
-//                PL(#first)
-                yield(y + 10)
-//                PL(#second)
+                yield(x)
             )
         ))
+        c1 = coro((yield) -> 42)
     in
-        io:print .. c(1)
-        io:print .. c(2)
-        io:print .. c(3)
-        io:print .. c(#last)
-        io:print .. c()
-        io:print .. c(#endtest)
+        io:print(">>>>>>>", 1, c1())
+        io:print(">>>>>>>", 2, c1())
+        io:print(">>>>>>>", 3, c1())
+
+        io:print(">>>>>>>", 1, c(#first))
+        io:print(">>>>>>>", 2, c(#second))
+        io:print(">>>>>>>", 3, c(#last))
+        io:print(">>>>>>>", 4, c(#last))
+        io:print(">>>>>>>", 5, c(#last))
+//        io:print(">>>>>>>", 4, c())
+        io:print(">>>>>>>", 6, #endtest)
 
     #endprogram
 //    test_process:test()

@@ -329,6 +329,7 @@ fun __override__(generic, types, func) = func(method(generic, types))
 fun __receive__(fn) =
     let
         proc = self()
+//        _ = PL("__RECEIVE__", proc)
         fun _loop() =
             if not _process:is_empty(proc) == False then
                 _process:pause(proc)
@@ -337,7 +338,7 @@ fun __receive__(fn) =
                 let
                     msg = _process:pop(proc)
                 in
-    //                PL("@@POP", msg, process:mailbox(proc))
+//                    PL("@@POP", proc, msg, _process:mailbox(proc))
                     fn(msg)
     in
         _loop()

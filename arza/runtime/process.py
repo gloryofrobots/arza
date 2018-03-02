@@ -135,7 +135,7 @@ class Process(root.W_Root):
     class State:
         IDLE = 1
         ACTIVE = 2
-        AWAITING = 3
+        WAITING = 3
         COMPLETE = 4
         TERMINATED = 5
 
@@ -165,14 +165,14 @@ class Process(root.W_Root):
         self.scheduler.unactivate(self)
 
     def resume(self):
-        assert self.is_awaiting(), self.__state
+        assert self.is_waiting(), self.__state
         # print "RESUMED", self, self.mailbox
         self.scheduler.wakeup(self)
         self.__active()
 
     def receive(self, message):
         self.mailbox.push(message)
-        if not self.is_awaiting():
+        if not self.is_waiting():
             return
 
         self.resume()
@@ -237,8 +237,8 @@ class Process(root.W_Root):
     def is_idle(self):
         return self.state == Process.State.IDLE
 
-    def is_awaiting(self):
-        return self.state == Process.State.AWAITING
+    def is_waiting(self):
+        return self.state == Process.State.WAITING
 
     def call_object(self, obj, args):
         self.fiber.call_object(obj, args)
@@ -250,7 +250,7 @@ class Process(root.W_Root):
         return self.result
 
     def activate(self, func, args):
-        assert self.is_idle() or self.is_awaiting()
+        assert self.is_idle() or self.is_waiting()
         assert not self.fiber
         self.fiber = self.create_fiber()
         self.fiber.start_work(func, args)
@@ -439,13 +439,13 @@ class Process(root.W_Root):
         self.__set_state(Process.State.ACTIVE)
 
     def __await(self):
-        self.__set_state(Process.State.AWAITING)
+        self.__set_state(Process.State.WAITING)
 
     def __idle(self):
         self.__set_state(Process.State.IDLE)
 
     def _to_string_(self):
-        return "<Process %d>" % self.id
+        return "<Process %d %s>" % (self.id, str(self.mailbox))
 
     def _equal_(self, other):
         return self is other

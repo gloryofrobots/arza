@@ -1,5 +1,10 @@
 from arza:lang:_process  import _
 
+fun wait_while_working(pid) =
+    if is_finished(pid) then True
+    elif is_waiting(pid) then False
+    else wait_while_working(pid)
+
 fun wait_for(procs of List) =
     let
         fun _loop(_procs, _results)
