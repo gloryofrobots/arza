@@ -48,6 +48,7 @@ class Scheduler:
         core_prelude = space.newemptyenv(space.newstring(u"prelude"))
         proc_data = process_data.create(self, libdirs, core_prelude)
         process = Process(proc_data)
+        process.set_id(0)
         builtins.presetup(process, core_prelude, process.std)
         return process
 
@@ -150,4 +151,4 @@ class Scheduler:
 
     @property
     def result(self):
-        return self.root.result
+        return self.root.result_safe()

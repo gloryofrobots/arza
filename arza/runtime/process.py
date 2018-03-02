@@ -177,6 +177,12 @@ class Process(root.W_Root):
 
         self.resume()
 
+    def result_safe(self):
+        if self.result is None:
+            return space.newunit()
+
+        return self.result
+
     def set_id(self, id):
         self.id = id
 

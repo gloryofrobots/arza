@@ -695,12 +695,12 @@ def _parse_receive_branch(parser):
 
 
 def prefix_receive(parser, op, token):
-    open_offside_layout(parser, parser.token, LEVELS_RECEIVE, INDENTS_RECEIVE)
     branches = []
     if parser.token_type != TT_CASE:
         branch = _parse_receive_branch(parser)
         branches.append(branch)
     else:
+        open_offside_layout(parser, parser.token, LEVELS_RECEIVE, INDENTS_RECEIVE)
         check_token_type(parser, TT_CASE)
 
         # TODO COMMON PATTERN MAKE ONE FUNC with try/fun/match

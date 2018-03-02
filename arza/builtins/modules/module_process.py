@@ -39,7 +39,7 @@ def start(process, routine):
     pid = routine.get_arg(0)
     fn = routine.get_arg(1)
     args = routine.get_arg(2)
-    return pid.process.scheduler.enter_process(fn, args)
+    return pid.process.scheduler.enter_process(pid.process, fn, args)
 
 
 @complete_native_routine
@@ -100,11 +100,7 @@ def __status(process, routine):
 @complete_native_routine
 def result(process, routine):
     pid = routine.get_arg(0)
-    res = pid.process.result
-    if res is None:
-        return space.newunit()
-
-    return pid.process.result
+    return pid.process.result_safe()
 
 
 @complete_native_routine

@@ -48,7 +48,8 @@ def _process_tuple(state, pattern, patterns, path):
 
     last_child = children[last_index]
     if node_type(last_child) == NT_REST:
-        patterns = add_pattern(patterns, ["length_ge", _create_path_node(nodes.node_token(pattern), path), count])
+        min_length = space.newint(last_index)
+        patterns = add_pattern(patterns, ["length_ge", _create_path_node(nodes.node_token(pattern), path), min_length])
     else:
         patterns = add_pattern(patterns, ["length", _create_path_node(nodes.node_token(pattern), path), count])
 

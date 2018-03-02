@@ -9,34 +9,77 @@ import process
 //import tests:test_process
 
 
-fun coro(args, fn) =
+fun coro(fn) =
     let
         proc1 = self()
         proc2 = process:create()
 
-        fun chan1(val) =
-            proc2 ! val
-            receive msg = msg
+        fun make_chan(pid) =
+            fun (...args) =
+                io:print(pid)
+                if process:is_finished(pid) then
+                    io:print("FINISHED", process:result(pid))
+                    process:result(pid)
+                else
+                    match args
+                        | () = pid ! ()
+                        | (m) = pid ! m
+                    receive msg = msg
 
-        fun chan2(val) =
-            proc1 ! val
-            receive msg = msg
+        chan1 = make_chan(proc2)
+        chan2 = make_chan(proc1)
 
+//        fun start() =
+//            receive msg =
+//                apply(fn, (chan2, msg))
     in
-        process:start(proc2, fn, args ++ chan2)
+        process:start(proc2, start, ())
         chan1
+
 
 fun main() =
     let
-        c = coro((fun(a, yield) =
-            yield(a)
-            yield(1)
-            yield(2)
+        c = coro((fun(yield) =
+            (let
+                x = yield(1)
+                y = yield(2)
+                (fun yld (val) =
+                    (let
+                        (fun _f1() =
+                            (let
+                                (fun _f2() =
+                                    yield(val)
+                                )
+                            in _f2()
+                            )
+                        )
+                    in _f1()
+                    )
+                )
+            in
+                yld(x)
+//                PL(#first)
+                yld(y)
+//                PL(#second)
+            )
         ))
     in
+        io:print .. c(1)
         io:print .. c(42)
         io:print .. c(43)
-    ()
+//        io:print .. c()
+        io:print .. #calling
+        io:print .. c()
+        io:print .. c()
+//        io:print .. c()
+//        io:print .. (c(), 100)
+        io:print .. 100
+
+//        affirm:is_equal .. c(1) .. 1
+//        affirm:is_equal .. c(42) .. 1
+//        affirm:is_equal .. c(43) .. 2
+//        affirm:is_equal .. c() .. 42
+//        affirm:is_equal .. c() .. 43
+    (#end)
 //    test_process:test()
-//    test_simple()
 //    tests:run()

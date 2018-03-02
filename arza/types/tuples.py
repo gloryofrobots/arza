@@ -242,13 +242,16 @@ def take(t, count):
 
 
 def drop(t, count):
-    error.affirm_type(t, space.isrealtuple)
+    error.affirm_type(t, space.istuple)
+    if space.isunit(t):
+        return t
     assert isinstance(count, int)
     if count < 0:
         error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count < 0"), space.newint(count))
 
     if count >= t.length:
-        error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count too big"), space.newint(count))
+        return space.newunit()
+        # error.throw_2(error.Errors.SLICE_ERROR, space.newstring(u"Count too big"), space.newint(count))
     return W_Tuple(t.elements[count:])
 
 
