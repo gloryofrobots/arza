@@ -79,6 +79,7 @@ TOKENS = [
   ("TT_BACKARROW", "<-"),
   ("TT_DISPATCH", "-:"),
   ("TT_AT_SIGN", "@"),
+  ("TT_DOUBLE_AT", "@@"),
   ("TT_DOLLAR", "$"),
 
 

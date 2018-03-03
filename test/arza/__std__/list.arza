@@ -99,6 +99,7 @@ trait TList(T) for List =
 
 def ++ (l1 of List, l2 of List) = seq:concat(l1, l2)
 def ++ (t of Tuple, l of List) = t ++ _list:to_tuple(l)
+def ++ (l of List, t of Tuple) = _list:to_tuple(l) ++ t
 
 
 describe List as  (Eq, Displayed,

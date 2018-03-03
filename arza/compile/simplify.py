@@ -301,8 +301,10 @@ def _choose_modify_func(ntype, funcs):
     else:
         return funcs[1]
 
+
 def _create_modify_item(ntype, token, key, value):
     return nodes.node_2(ntype, token, key, value)
+
 
 def _transform_modify(compiler, node, funcs, source, modifications):
     """
@@ -371,3 +373,63 @@ def _transform_modify(compiler, node, funcs, source, modifications):
                              funcs,
                              nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
                              tail)
+
+
+###################################################
+## DECORATOR
+###################################################
+
+def _flatten_decorators(node, result):
+    decorated = node_third(node)
+    if node_type(decorated) == nt.NT_DECORATOR:
+        return _flatten_decorators(decorated, plist.cons(node, result))
+    else:
+        return decorated, plist.reverse(plist.cons(node, result))
+
+
+def _make_decorator_call_chain(subj, decorators):
+    dec, tl = plist.split(decorators)
+    name = node_first(dec)
+    args = node_second(dec)
+
+    if plist.is_empty(tl):
+        args = plist.cons(subj, args)
+    else:
+        args = plist.cons(_make_decorator_call_chain(subj, tl), args)
+
+    return nodes.create_call_node(node_token(name), name, args)
+
+
+def simplify_decorator(compiler, code, node):
+    """
+    @f1(1, 2)
+    @f2(3)
+    fun f() =1
+
+    f = f1(f2(f, 3), 1, 2)
+    """
+
+    decorated, decorators = _flatten_decorators(node, plist.empty())
+    if node_type(decorated) == nt.NT_FUN:
+        return _decorate_fun(decorated, decorators)
+    if node_type(decorated) == nt.NT_DEF:
+        return _decorate_def(decorated, decorators)
+    else:
+        assert False
+
+
+def _decorate_def(subj, decorators):
+    func = node_first(subj)
+    signature = node_second(subj)
+    method = node_third(subj)
+    pattern = node_fourth(subj)
+    decorator_call = _make_decorator_call_chain(method, decorators)
+    return nodes.node_4(nt.NT_DEF, node_token(subj), func, signature, decorator_call, pattern)
+
+
+def _decorate_fun(subj, decorators):
+    subj_name = nodes.node_first(subj)
+    decorator_call = _make_decorator_call_chain(subj_name, decorators)
+    # overwrite decorated function here
+    assign = nodes.node_2(nt.NT_ASSIGN_FORCE, node_token(subj), subj_name, decorator_call)
+    return list_node([subj, assign])

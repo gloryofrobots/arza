@@ -100,6 +100,10 @@ def layout_fun(parser, op, node):
     open_statement_layout(parser, node, LEVELS_FUN, INDENTS_FUN)
 
 
+def layout_decorator(parser, op, node):
+    open_statement_layout(parser, node, LEVELS_DECORATOR, INDENTS_DECORATOR)
+
+
 def layout_lparen(parser, op, node):
     open_free_layout(parser, node, [TT_RPAREN], delimiter=TT_COMMA)
 
@@ -941,6 +945,23 @@ def prefix_nameless_fun(parser, op, token):
 def prefix_module_fun(parser, op, token):
     name, funcs = _parse_named_function(parser.expression_parser, token)
     return node_2(NT_FUN, token, name, funcs)
+
+
+def prefix_decorator(parser, op, token):
+    decname = expect_expression_of_types(parser.expression_parser.name_parser, 0, NAME_NODES)
+    if parser.token_type == TT_LPAREN:
+        args = _parse_comma_separated(parser, TT_RPAREN, advance_first=TT_LPAREN)
+    else:
+        args = list_node([])
+
+    decorated = statement(parser)
+    check_node_types(parser, decorated, [NT_FUN, NT_DEF, NT_DEF_PLUS, NT_DECORATOR])
+    # decorated = expect_expression_of_types(parser, 0, [NT_FUN, NT_DEF, NT_DEF_PLUS, NT_DECORATOR])
+    # if parser.token_type in [TT_DEF, TT_FUN, TT_AT_SIGN]:
+    #     name, funcs = _parse_named_function(parser.expression_parser, token)
+    #
+    #     pass
+    return nodes.node_3(NT_DECORATOR, token, decname, args, decorated)
 
 
 ###############################################################

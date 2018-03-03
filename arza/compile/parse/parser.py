@@ -157,6 +157,7 @@ class ExpressionParser(BaseParser):
         prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
         literal(self, TT_AT_SIGN, NT_BIND)
 
+        prefix(self, TT_DOUBLE_AT, None, prefix_decorator, layout=layout_fun)
         prefix(self, TT_NOT, NT_NOT, prefix_nud, 35)
         prefix(self, TT_IF, None, prefix_if, layout=layout_if)
 
@@ -233,6 +234,7 @@ class LetParser(PatternParser):
         symbol(self, TT_IN)
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         prefix(self, TT_TRY, None, prefix_try, layout=layout_try)
+        prefix(self, TT_DOUBLE_AT, None, prefix_decorator, layout=layout_decorator)
         prefix(self, TT_FUN, None, prefix_let_fun, layout=layout_fun)
         infix(self, TT_ASSIGN, None, 10, led_let_assign)
 
@@ -454,6 +456,7 @@ class ModuleParser(BaseParser):
         symbol(self, TT_ENDSTREAM)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
+        stmt(self, TT_DOUBLE_AT, None, prefix_decorator, layout=layout_decorator)
         stmt(self, TT_FUN, None, prefix_module_fun, layout=layout_fun)
         stmt(self, TT_TRAIT, None, stmt_trait, layout=layout_trait)
         stmt(self, TT_TYPE, None, stmt_type, layout=layout_type)

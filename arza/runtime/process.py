@@ -317,9 +317,9 @@ class Process(root.W_Root):
                 break
             try:
                 result = self.__execute()
-            # except Exception as e:
-            #     # print "catching some", e
-            #     raise
+            except Exception as e:
+                # print "catching some", e
+                raise
             except error.LalanError as e:
                 # print "catching error", e
                 signal = error.convert_to_script_error(self, e)

@@ -46,6 +46,7 @@ NODES = [
   "NT_MATCH",
   "NT_TRY",
   "NT_RECEIVE",
+  "NT_DECORATOR",
 
   "NT_MODULE",
   "NT_IMPORT",
@@ -67,6 +68,7 @@ NODES = [
 
   "NT_REST",
   "NT_ASSIGN",
+  "NT_ASSIGN_FORCE",
   "NT_CALL",
   "NT_JUXTAPOSITION",
 

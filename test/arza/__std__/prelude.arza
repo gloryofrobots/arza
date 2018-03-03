@@ -1,4 +1,3 @@
-//let d = d.{x or 1, y = 1}
 import arza:lang:_std_behavior as std_behavior
 
 from arza:lang:_datatype import (record_values, record_keys, record_index_of)

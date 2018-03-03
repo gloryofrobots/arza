@@ -1,92 +1,86 @@
 [
   {
-    "_ntype": "NT_FUN",
-    "_value": "fun",
+    "_ntype": "NT_DECORATOR",
+    "_value": "@",
     "children": [
       {
         "_ntype": "NT_NAME",
-        "_value": "f"
+        "_value": "dec1"
       },
-      [
-        [
+      {
+        "_ntype": "NT_TUPLE",
+        "_value": "@",
+        "children": [
+          [
+            {
+              "_ntype": "NT_INT",
+              "_value": "42"
+            }
+          ]
+        ]
+      },
+      {
+        "_ntype": "NT_DECORATOR",
+        "_value": "@",
+        "children": [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "dec2"
+          },
           {
             "_ntype": "NT_TUPLE",
-            "_value": "(",
+            "_value": "@",
             "children": [
               [
                 {
-                  "_ntype": "NT_OF",
-                  "_value": "(",
-                  "children": [
-                    {
-                      "_ntype": "NT_MAP",
-                      "_value": "(",
-                      "children": [
-                        [
-                          [
-                            {
-                              "_ntype": "NT_NAME",
-                              "_value": "x"
-                            },
-                            {
-                              "empty": true
-                            }
-                          ],
-                          [
-                            {
-                              "_ntype": "NT_NAME",
-                              "_value": "y"
-                            },
-                            {
-                              "empty": true
-                            }
-                          ]
-                        ]
-                      ]
-                    },
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "Vec"
-                    }
-                  ]
-                },
-                {
-                  "_ntype": "NT_OF",
-                  "_value": "of",
-                  "children": [
-                    {
-                      "_ntype": "NT_TUPLE",
-                      "_value": "(",
-                      "children": [
-                        [
-                          {
-                            "_ntype": "NT_NAME",
-                            "_value": "x"
-                          },
-                          {
-                            "_ntype": "NT_NAME",
-                            "_value": "y"
-                          }
-                        ]
-                      ]
-                    },
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "Vec"
-                    }
-                  ]
+                  "_ntype": "NT_INT",
+                  "_value": "42"
                 }
               ]
             ]
           },
-          [
-            {
-              "_ntype": "NT_INT",
-              "_value": "1"
-            }
-          ]
+          {
+            "_ntype": "NT_FUN",
+            "_value": "fun",
+            "children": [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "f1"
+              },
+              [
+                [
+                  {
+                    "_ntype": "NT_TUPLE",
+                    "_value": "(",
+                    "children": [
+                      [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "x"
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "y"
+                        },
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "z"
+                        }
+                      ]
+                    ]
+                  },
+                  [
+                    {
+                      "_ntype": "NT_INT",
+                      "_value": "100"
+                    }
+                  ]
+                ]
+              ]
+            ]
+          }
         ]
-      ]
+      }
     ]
   }
 ]

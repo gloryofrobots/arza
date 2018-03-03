@@ -1,5 +1,8 @@
 
-let d = d.{x or 1, y=3}
+@dec1(42)
+@dec2(42)
+fun f1(x, y, z) = 100
+
 //let d = {
 //    x = 1,
 //    y = -1

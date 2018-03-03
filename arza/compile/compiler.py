@@ -275,7 +275,7 @@ def _emit_store(compiler, code, name, namenode):
     index = _declare_local(compiler, name)
 
     name_index = _declare_symbol(compiler, name)
-    code.emit_2(STORE_LOCAL, index, name_index, info(namenode))
+    code.emit_2(STORE_LOCAL_CONST, index, name_index, info(namenode))
 
 
 def _emit_pop(code):
@@ -541,6 +541,21 @@ def _compile_destruct_unpack_seq(compiler, code, node):
 
 ################################################################################
 
+# THIS OPCODE WILL NOT CHECK FOR VALUES EQUALITY ON ASSIGMENT
+
+def _compile_ASSIGN_FORCE(compiler, code, node):
+    left = node_first(node)
+    exp = node_second(node)
+    symbol = _get_symbol_name_or_empty(compiler.process, left)
+    _declare_local(compiler, symbol)
+    _compile(compiler, code, exp)
+
+    name = _get_symbol_name(compiler, left)
+    index = _declare_local(compiler, name)
+    name_index = _declare_symbol(compiler, name)
+    code.emit_2(STORE_LOCAL_VAR, index, name_index, info(left))
+
+
 def _compile_ASSIGN(compiler, code, node):
     left = node_first(node)
     exp = node_second(node)
@@ -615,6 +630,12 @@ def _compile_MODIFY(compiler, code, node):
     # _log_ast("modify_" + str(COUNT_MODIFIES), call)
     # COUNT_MODIFIES += 1
     call = simplify.simplify_modify(compiler, code, node)
+    _compile(compiler, code, call)
+
+
+def _compile_DECORATOR(compiler, code, node):
+    call = simplify.simplify_decorator(compiler, code, node)
+    # _log_ast("lense_" + str(0), call)
     _compile(compiler, code, call)
 
 
@@ -773,7 +794,7 @@ def _compile_FUN(compiler, code, node):
 
     if index is not None:
         funcname_index = _declare_symbol(compiler, funcname)
-        code.emit_2(STORE_LOCAL, index, funcname_index, info(node))
+        code.emit_2(STORE_LOCAL_CONST, index, funcname_index, info(node))
 
 
 def _compile_branch(compiler, code, condition, body, endif):
@@ -1151,6 +1172,9 @@ def _compile_node(compiler, code, node):
     elif NT_TEMPORARY == ntype:
         _compile_TEMPORARY(compiler, code, node)
 
+    elif NT_ASSIGN_FORCE == ntype:
+        _compile_ASSIGN_FORCE(compiler, code, node)
+
     elif NT_ASSIGN == ntype:
         _compile_ASSIGN(compiler, code, node)
 
@@ -1225,6 +1249,8 @@ def _compile_node(compiler, code, node):
         _compile_MODIFY(compiler, code, node)
     elif NT_LENSE == ntype:
         _compile_LENSE(compiler, code, node)
+    elif NT_DECORATOR == ntype:
+        _compile_DECORATOR(compiler, code, node)
     elif NT_AND == ntype:
         _compile_AND(compiler, code, node)
     elif NT_OR == ntype:

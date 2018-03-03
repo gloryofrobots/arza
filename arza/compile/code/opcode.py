@@ -11,38 +11,40 @@ DUP = 9
 FARGS = 10
 FSELF = 11
 LABEL = 12
-STORE_LOCAL = 13
-STORE_TEMPORARY = 14
-RETURN = 15
-POP_CATCH = 16
-CALL = 17
-JUMP = 18
-JUMP_IF_FALSE_NOPOP = 19
-JUMP_IF_TRUE_NOPOP = 20
-JUMP_IF_FALSE = 21
-PUSH_CATCH = 22
-JUMP_IF_TRUE = 23
-POP = 24
-THROW = 25
-UNPACK_TUPLE = 26
-VECTOR = 27
-TUPLE = 28
-MAP = 29
-LIST = 30
+STORE_LOCAL_CONST = 13
+STORE_LOCAL_VAR = 14
+STORE_TEMPORARY = 15
+RETURN = 16
+POP_CATCH = 17
+CALL = 18
+JUMP = 19
+JUMP_IF_FALSE_NOPOP = 20
+JUMP_IF_TRUE_NOPOP = 21
+JUMP_IF_FALSE = 22
+PUSH_CATCH = 23
+JUMP_IF_TRUE = 24
+POP = 25
+THROW = 26
+UNPACK_TUPLE = 27
+VECTOR = 28
+TUPLE = 29
+MAP = 30
+LIST = 31
 
 # ************************************************
 
 __OPCODE_REPR__ = ["VOID", "TRUE", "FALSE", "LITERAL", "OUTER", "LOCAL", "TEMPORARY", "IMPORT_NAME", "FUNCTION", "DUP",
-                   "FARGS", "FSELF", "LABEL", "STORE_LOCAL", "STORE_TEMPORARY", "RETURN", "POP_CATCH", "CALL", "JUMP",
-                   "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE", "PUSH_CATCH", "JUMP_IF_TRUE", "POP",
-                   "THROW", "UNPACK_TUPLE", "VECTOR", "TUPLE", "MAP", "LIST", ]
+                   "FARGS", "FSELF", "LABEL", "STORE_LOCAL_CONST", "STORE_LOCAL_VAR", "STORE_TEMPORARY", "RETURN",
+                   "POP_CATCH", "CALL", "JUMP", "JUMP_IF_FALSE_NOPOP", "JUMP_IF_TRUE_NOPOP", "JUMP_IF_FALSE",
+                   "PUSH_CATCH", "JUMP_IF_TRUE", "POP", "THROW", "UNPACK_TUPLE", "VECTOR", "TUPLE", "MAP", "LIST", ]
 
 # ************************************************
 
 __UNKNOWN_CHANGE__ = -128
 
-__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, __UNKNOWN_CHANGE__,
-                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, ]
+__STACK_CHANGES__ = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1,
+                     __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__, __UNKNOWN_CHANGE__,
+                     __UNKNOWN_CHANGE__, ]
 
 
 # ************************************************
@@ -98,7 +100,7 @@ def opcode_info(routine, opcode):
         literal = routine.env.literals[arg1]
         return 'LITERAL %s (%d)' % (literal, arg1)
     # ********************************
-    elif tag == STORE_LOCAL:
+    elif tag == STORE_LOCAL_CONST:
         literal = routine.env.literals[arg2]
         return 'STORE_LOCAL %s (%d)' % (literal, arg1)
     # ********************************
