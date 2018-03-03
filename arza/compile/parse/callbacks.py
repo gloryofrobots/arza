@@ -192,6 +192,20 @@ def infix_lcurly_dot(parser, op, token, left):
     return node_2(NT_LOOKUP, token, left, nodes.create_symbol_node(get_node_token(exp), exp))
 
 
+def _parse_modify_value(parser, key):
+    if parser.token_type == TT_OR:
+        advance_expected(parser, TT_OR)
+        ntype = NT_OR
+        if nodes.node_type(key) == NT_LOOKUP:
+            parse_error(parser, u"default values are not supported for branch keys", nodes.node_token(key))
+    else:
+        advance_expected(parser, TT_ASSIGN)
+        ntype = NT_ASSIGN
+
+    value = expression(parser, 0, TERM_COMMA)
+    return nodes.node_2(ntype, nodes.node_token(value), key, value)
+
+
 def infix_lcurly(parser, op, token, left):
     items = []
     if parser.token_type != TT_RCURLY:
@@ -205,19 +219,15 @@ def infix_lcurly(parser, op, token, left):
             advance_expected(parser, TT_RCURLY)
             return node_2(NT_LOOKUP, token, left, key)
 
-        advance_expected(parser, TT_ASSIGN)
-        value = expression(parser, 0, [TT_COMMA])
-
-        items.append(list_node([key, value]))
+        item = _parse_modify_value(parser, key)
+        items.append(item)
 
         if parser.token_type != TT_RCURLY:
             advance_expected(parser, TT_COMMA)
             while parser.token_type != TT_RCURLY:
                 key = expression(parser.modify_key_parser, 0)
-                advance_expected(parser, TT_ASSIGN)
-                value = expression(parser, 0, [TT_COMMA])
-
-                items.append(list_node([key, value]))
+                item = _parse_modify_value(parser, key)
+                items.append(item)
 
                 if parser.token_type != TT_COMMA:
                     break

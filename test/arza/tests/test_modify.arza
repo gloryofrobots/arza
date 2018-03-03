@@ -2,6 +2,21 @@ import io
 import affirm
 import seq
 
+fun test_default_values() =
+    let
+        v = {x=1, y=2}
+        v1 = v.{x or 42, z or 42, y = 42}
+        l = [0, 1, 2, 3]
+        l1 = l.{0 or 5}
+        d = {x=1, m={t={y=2, z=0}}}
+        dl = $(d.m.t)
+        d1 = dl.{y = 100, a or 200}
+    in
+        affirm:is_equal(v1, {y = 42, x = 1, z = 42})
+        affirm:is_equal(l1, l)
+        affirm:is_equal(&&d1, {z=0, y=100, a=200})
+        affirm:is_equal(&d1, {x=1, m={t={z=0, y=100, a=200}}})
+
 fun test_map() =
     let
         d = {
@@ -89,5 +104,6 @@ fun test() =
     test_map()
     test_list()
     test_lenses()
+    test_default_values()
 
 

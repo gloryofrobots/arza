@@ -142,6 +142,8 @@ def node_arity(node):
 
 
 def node_getchild(node, index):
+    # if space.isvoid(node_children(node)):
+    #     print "~~~~~~~~~~~~~", node.__class__.__name__, node_children(node), node_type(node), node_to_string(node)
     return node_children(node)[index]
 
 

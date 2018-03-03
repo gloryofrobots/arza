@@ -219,7 +219,8 @@ def simplify_lense(compiler, code, node):
                                       getter_body)
 
     ## SETTER
-    pair = list_node([setter_path, value_name])
+    # pair = list_node([setter_path, value_name])
+    pair = _create_modify_item(nt.NT_ASSIGN, node_token(setter_path), setter_path, value_name)
     setter_body = nodes.create_modify_node(token, source_name, list_node([pair]))
     setter = nodes.create_lambda_node(token, nodes.create_tuple_node(token, [value_name, source_name]),
                                       setter_body)
@@ -260,8 +261,12 @@ def simplify_modify(compiler, code, node):
     # print "------------SIMPLIFY"
     source = nodes.node_first(node)
     modifications = nodes.node_second(node)
+
+    funcs = (nodes.create_name_node_s(nodes.node_token(node), lang_names.PUT),
+             nodes.create_name_node_s(nodes.node_token(node), lang_names.PUT_DEFAULT),
+             )
     return _transform_modify(compiler, node,
-                             nodes.create_name_node_s(nodes.node_token(node), lang_names.PUT),
+                             funcs,
                              source,
                              modifications
                              )
@@ -290,7 +295,16 @@ def _transfom_binds_callback(node, level, state):
     return state["path"]
 
 
-def _transform_modify(compiler, node, func, source, modifications):
+def _choose_modify_func(ntype, funcs):
+    if ntype == nt.NT_ASSIGN:
+        return funcs[0]
+    else:
+        return funcs[1]
+
+def _create_modify_item(ntype, token, key, value):
+    return nodes.node_2(ntype, token, key, value)
+
+def _transform_modify(compiler, node, funcs, source, modifications):
     """
     transforms modify x.{a=1, b=2, 0=4} into series of puts
     put 0 4 (put b 2 (put a 1 x))
@@ -317,10 +331,12 @@ def _transform_modify(compiler, node, func, source, modifications):
     if plist.is_empty(modifications):
         # end of recursion. processed all nodes from this levels into call chain
         return source
-
+    # for m in modifications:
+    #     assert not space.islist(m)
     m, tail = plist.split(modifications)
-    key = m[0]
-    value = m[1]
+    key = node_first(m)
+    value = node_second(m)
+    ntype = node_type(m)
 
     k_type = node_type(key)
     if k_type == nt.NT_LOOKUP:
@@ -334,11 +350,13 @@ def _transform_modify(compiler, node, func, source, modifications):
         new_source = nodes.create_lookup_node(node_token(new_key), source, new_key)
 
         # creating modify node
-        new_pair = list_node([other_keys, value])
+        # new_pair = list_node([other_keys, value])
+        new_pair = _create_modify_item(ntype, node_token(new_key), other_keys, value)
         new_value = nodes.create_modify_node(node_token(new_key), new_source, list_node([new_pair]))
 
+        func = _choose_modify_func(ntype, funcs)
         return _transform_modify(compiler, node,
-                                 func,
+                                 funcs,
                                  nodes.create_call_node_3(nodes.node_token(node), func, new_key, new_value, source),
                                  tail)
     # else:
@@ -348,8 +366,8 @@ def _transform_modify(compiler, node, func, source, modifications):
     # transform all @ nodes to proper paths
     transformed_bind = nodes.create_lookup_node(node_token(key), source, key)
     value = basic.transform(value, _transfom_binds_callback, dict(path=transformed_bind, stop_level=-1))
+    func = _choose_modify_func(ntype, funcs)
     return _transform_modify(compiler, node,
-                             func,
+                             funcs,
                              nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
                              tail)
-

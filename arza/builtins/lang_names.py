@@ -34,6 +34,7 @@ TAKE = PREFIX + "take"
 
 AT = PREFIX + "at"
 PUT = PREFIX + "put"
+PUT_DEFAULT = PREFIX + "put_default"
 
 REST = PREFIX + "rest"
 FIRST = PREFIX + "first"

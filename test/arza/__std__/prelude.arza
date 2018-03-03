@@ -1,3 +1,4 @@
+//let d = d.{x or 1, y = 1}
 import arza:lang:_std_behavior as std_behavior
 
 from arza:lang:_datatype import (record_values, record_keys, record_index_of)
@@ -269,6 +270,11 @@ def at (el, self of Tuple) as std_behavior:at
 ////////////////////////////////////////////////////////////
 ///////////////// FUNCTIONS ////////////////////////////////
 ////////////////////////////////////////////////////////////
+fun put_default(key, default, coll) =
+    if elem(key, coll) then
+        coll
+    else
+        put(key, default, coll)
 
 type Lense(source, getter, setter)
 

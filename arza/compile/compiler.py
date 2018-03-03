@@ -611,10 +611,10 @@ COUNT_MODIFIES = 0
 
 
 def _compile_MODIFY(compiler, code, node):
-    call = simplify.simplify_modify(compiler, code, node)
     # global COUNT_MODIFIES
     # _log_ast("modify_" + str(COUNT_MODIFIES), call)
     # COUNT_MODIFIES += 1
+    call = simplify.simplify_modify(compiler, code, node)
     _compile(compiler, code, call)
 
 
@@ -1008,9 +1008,11 @@ def _compile_INTERFACE(compiler, code, node):
     iface = simplify.simplify_interface(compiler, code, node)
     _compile(compiler, code, iface)
 
+
 def _compile_RECEIVE(compiler, code, node):
     generic = simplify.simplify_receive(compiler, code, node)
     _compile(compiler, code, generic)
+
 
 def _compile_GENERIC(compiler, code, node):
     generic = simplify.simplify_generic(compiler, code, node)

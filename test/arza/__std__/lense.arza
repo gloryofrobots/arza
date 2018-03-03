@@ -36,6 +36,13 @@ trait (L) for Lense =
         in
             at(key, branch)
 
+    def elem(key, l of L) =
+        let
+            {source, getter, setter} = __unpack(l)
+            branch = get_branch(l)
+        in
+            elem(key, branch)
+
     def str(l of L) = str(get_branch(l))
     def repr(l of L) = "<Lense:" ++ str(l) ++ " >"
 

@@ -9,6 +9,7 @@ from arza.runtime import error
 from arza.misc.strutil import get_line, get_line_for_position
 
 TERM_LPAREN = [TT_RPAREN]
+TERM_COMMA = [TT_COMMA]
 
 TERM_IF_BODY = [TT_ELSE, TT_ELIF]
 TERM_IF_CONDITION = [TT_THEN]
