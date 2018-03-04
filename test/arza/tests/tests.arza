@@ -18,6 +18,7 @@ import tests:test_fun
 import tests:test_coro
 import tests:test_partial
 import tests:test_process
+import tests:test_decorators
 
 
 fun log(...msgs) =
@@ -28,6 +29,9 @@ fun log(...msgs) =
 
 
 fun run() =
+    log("TEST DECORATORS")
+    test_decorators:test()
+
     log("TEST PROCESS")
     test_process:test()
 

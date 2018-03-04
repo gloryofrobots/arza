@@ -948,9 +948,9 @@ def prefix_module_fun(parser, op, token):
 
 
 def prefix_decorator(parser, op, token):
-    decname = expect_expression_of_types(parser.expression_parser.name_parser, 0, NAME_NODES)
+    decname = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
     if parser.token_type == TT_LPAREN:
-        args = _parse_comma_separated(parser, TT_RPAREN, advance_first=TT_LPAREN)
+        args = _parse_comma_separated(parser.expression_parser, TT_RPAREN, advance_first=TT_LPAREN)
     else:
         args = list_node([])
 

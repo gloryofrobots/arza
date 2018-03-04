@@ -157,7 +157,6 @@ class ExpressionParser(BaseParser):
         prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
         literal(self, TT_AT_SIGN, NT_BIND)
 
-        prefix(self, TT_DOUBLE_AT, None, prefix_decorator, layout=layout_fun)
         prefix(self, TT_NOT, NT_NOT, prefix_nud, 35)
         prefix(self, TT_IF, None, prefix_if, layout=layout_if)
 
@@ -231,6 +230,11 @@ class LetParser(PatternParser):
     def __init__(self, expression_parser):
         PatternParser.__init__(self)
         self.expression_parser = expression_parser
+        self.name_parser = name_parser_init(BaseParser())
+        self.add_subparsers([
+            self.name_parser,
+        ])
+
         symbol(self, TT_IN)
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         prefix(self, TT_TRY, None, prefix_try, layout=layout_try)
@@ -277,14 +281,16 @@ class DefParser(BaseParser):
 
 
 class TraitParser(BaseParser):
-    def __init__(self):
+    def __init__(self, expression_parser):
         BaseParser.__init__(self)
 
+        self.expression_parser = expression_parser
         self.def_parser = DefParser()
         self.name_parser = name_parser_init(BaseParser())
         self.pattern_parser = TraitSignatureParser()
         self.for_parser = TraitForParser()
 
+        stmt(self, TT_DOUBLE_AT, None, prefix_decorator, layout=layout_decorator)
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         prefix(self, TT_DEF, None, prefix_trait_def, layout=layout_def)
         prefix(self, TT_DEF_PLUS, None, stmt_def_plus, layout=layout_def)
@@ -297,8 +303,6 @@ class TraitParser(BaseParser):
             self.name_parser,
             self.pattern_parser,
             self.for_parser
-            # self.use_parser,
-            # self.use_in_alias_parser
         ])
 
 
@@ -434,7 +438,7 @@ class ModuleParser(BaseParser):
         self.type_parser = TypeParser()
         self.name_list_parser = name_list_parser_init(BaseParser())
         self.def_parser = DefParser()
-        self.trait_parser = TraitParser()
+        self.trait_parser = TraitParser(self.expression_parser)
 
         self.add_subparsers([
             self.import_parser,

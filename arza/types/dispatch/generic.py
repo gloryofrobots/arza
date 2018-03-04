@@ -259,6 +259,7 @@ def _make_signature(process, gf, types, method, pattern, outers):
                              gf,
                              space.newstring(u"Generic function arity inconsistent with specialisation arguments"))
     if gf.arity != method.arity:
+        print gf, method, gf.arity, method.arity
         return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
                              gf,
                              space.newstring(u"Bad method for specialisation, inconsistent arity"))

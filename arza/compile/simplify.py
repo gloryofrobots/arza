@@ -412,8 +412,10 @@ def simplify_decorator(compiler, code, node):
     decorated, decorators = _flatten_decorators(node, plist.empty())
     if node_type(decorated) == nt.NT_FUN:
         return _decorate_fun(decorated, decorators)
-    if node_type(decorated) == nt.NT_DEF:
+    elif node_type(decorated) == nt.NT_DEF:
         return _decorate_def(decorated, decorators)
+    elif node_type(decorated) == nt.NT_DEF_PLUS:
+        return _decorate_def_plus(decorated, decorators)
     else:
         assert False
 
@@ -425,6 +427,14 @@ def _decorate_def(subj, decorators):
     pattern = node_fourth(subj)
     decorator_call = _make_decorator_call_chain(method, decorators)
     return nodes.node_4(nt.NT_DEF, node_token(subj), func, signature, decorator_call, pattern)
+
+
+def _decorate_def_plus(decorated, decorators):
+    super_name = node_first(decorated)
+    subj = node_second(decorated)
+
+    method = _decorate_def(subj, decorators)
+    return nodes.node_2(nt.NT_DEF_PLUS, node_token(decorated), super_name, method)
 
 
 def _decorate_fun(subj, decorators):
