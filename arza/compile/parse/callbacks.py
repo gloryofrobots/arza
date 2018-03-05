@@ -610,18 +610,23 @@ def prefix_if(parser, op, token):
 
 
 # if you want to allow optional TT_IN
-# def prefix_let_optional_in(parser, op, token):
+# uncomment this and comment/delete func below
+# you also need to implemente safguard against code like
+# io:print(let x = 1 y = 2)
+# but making let-in a statement not an option
+# but let without in must be a statement
+# may be something like parser.expression_level variable
+# def prefix_let(parser, op, token):
+#     letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
+#     if parser.token_type == TT_IN:
+#         advance_expected(parser, TT_IN)
+#         inexp = statements(parser, [])
+#         return node_2(NT_LET, token, letblock, inexp)
+#     else:
+#         return letblock
+
+
 def prefix_let(parser, op, token):
-    letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
-    if parser.token_type == TT_IN:
-        advance_expected(parser, TT_IN)
-        inexp = statements(parser, [])
-        return node_2(NT_LET, token, letblock, inexp)
-    else:
-        return letblock
-
-
-def __prefix_let(parser, op, token):
     letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
     advance_expected(parser, TT_IN)
     inexp = statements(parser, [])

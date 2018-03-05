@@ -14,77 +14,31 @@
             "_value": "("
           },
           [
-            [
-              {
-                "_ntype": "NT_ASSIGN",
-                "_value": "=",
-                "children": [
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "x"
-                  },
-                  {
-                    "_ntype": "NT_INT",
-                    "_value": "1"
-                  }
-                ]
-              }
-            ],
-            [
-              {
-                "_ntype": "NT_ASSIGN",
-                "_value": "=",
-                "children": [
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "y"
-                  },
-                  {
-                    "_ntype": "NT_INT",
-                    "_value": "2"
-                  }
-                ]
-              },
-              {
-                "_ntype": "NT_ASSIGN",
-                "_value": "=",
-                "children": [
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "z"
-                  },
-                  {
-                    "_ntype": "NT_INT",
-                    "_value": "3"
-                  }
-                ]
-              }
-            ],
             {
-              "_ntype": "NT_LET",
-              "_value": "let",
+              "_ntype": "NT_CALL",
+              "_value": "(",
               "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "print"
+                },
                 [
-                  {
-                    "_ntype": "NT_ASSIGN",
-                    "_value": "=",
-                    "children": [
-                      {
-                        "_ntype": "NT_NAME",
-                        "_value": "t"
-                      },
-                      {
-                        "_ntype": "NT_INT",
-                        "_value": "4"
-                      }
-                    ]
-                  }
-                ],
-                [
-                  {
-                    "_ntype": "NT_NAME",
-                    "_value": "t"
-                  }
+                  [
+                    {
+                      "_ntype": "NT_ASSIGN",
+                      "_value": "=",
+                      "children": [
+                        {
+                          "_ntype": "NT_NAME",
+                          "_value": "x"
+                        },
+                        {
+                          "_ntype": "NT_INT",
+                          "_value": "1"
+                        }
+                      ]
+                    }
+                  ]
                 ]
               ]
             }
