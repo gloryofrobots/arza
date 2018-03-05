@@ -609,7 +609,19 @@ def prefix_if(parser, op, token):
     return node_1(NT_CONDITION, token, list_node(branches))
 
 
+# if you want to allow optional TT_IN
+# def prefix_let_optional_in(parser, op, token):
 def prefix_let(parser, op, token):
+    letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
+    if parser.token_type == TT_IN:
+        advance_expected(parser, TT_IN)
+        inexp = statements(parser, [])
+        return node_2(NT_LET, token, letblock, inexp)
+    else:
+        return letblock
+
+
+def __prefix_let(parser, op, token):
     letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
     advance_expected(parser, TT_IN)
     inexp = statements(parser, [])

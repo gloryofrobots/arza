@@ -1,7 +1,11 @@
-
-@dec1(42)
-@dec2(42)
-fun f1(x, y, z) = 100
+fun f () =
+    let x = 1
+    let
+        y = 2
+        z = 3
+    let
+        t = 4
+    in t
 
 //let d = {
 //    x = 1,
