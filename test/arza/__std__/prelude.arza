@@ -67,38 +67,38 @@ prefix (~, ~, 96)
 ///////////////// INTERFACES ///////////////////////////////
 ////////////////////////////////////////////////////////////
 
-interface PartialEq =
-    fun ==(@x, y)
+interface PartialEq(I) =
+    fun ==(x of I, y)
 
-interface Eq is PartialEq =
-    fun !=(@x, y)
+interface Eq(I) is PartialEq =
+    fun !=(x of I, y)
 
-interface Comparable =
-    fun cmp(@first, second)
+interface Comparable(I) =
+    fun cmp(first of I, second)
 
-interface LessEq is PartialEq =
-    fun <=(@first, second)
+interface LessEq(I) is PartialEq =
+    fun <=(first of I, second)
 
-interface Ord =
-    use <=(@first, second)
-    use cmp(@first, second)
-    fun <(@first, second)
-    fun >=(@first, second)
-    fun >(@first, second)
-    fun max(@first, second)
-    fun min(@first, second)
+interface Ord(I) =
+    use <=(first of I, second)
+    use cmp(first of I, second)
+    fun <(first of I, second)
+    fun >=(first of I, second)
+    fun >(first of I, second)
+    fun max(first of I, second)
+    fun min(first of I, second)
 
-interface Num =
-    fun -(@x, y)
-    fun +(@x, y)
-    fun *(@x, y)
-    fun /(@x, y)
-    fun mod(@x, y)
+interface Num(I) =
+    fun -(x of I, y)
+    fun +(x of I, y)
+    fun *(x of I, y)
+    fun /(x of I, y)
+    fun mod(x of I, y)
     // unary -
-    fun negate(x)
+    fun negate(x of I)
 
-interface Pow =
-    fun **(@x, y)
+interface Pow(I) =
+    fun **(x of I, y)
 
 interface Str =
     fun str(self)
@@ -112,84 +112,84 @@ interface Len =
 interface Sized is Len =
     fun is_empty(self)
 
-interface Coll =
-    fun put(key, value, @self)
-    fun del(obj, @self)
+interface Coll(I) =
+    fun put(key, value, I)
+    fun del(obj, I)
 
-interface GrowableCollection =
-    use put(key, value, @self)
+interface GrowableCollection(I) =
+    use put(key, value, I)
 
-interface ShrinkableCollection =
-    use del(obj, @self)
+interface ShrinkableCollection(I) =
+    use del(obj, I)
 
-interface ReadOnlyCollection =
-    fun at(key, @self)
-    fun elem(key, @self)
+interface ReadOnlyCollection(I) =
+    fun at(key, I)
+    fun elem(key, I)
 
 interface Collection is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
 
-interface Dict is Collection =
-    fun keys(self)
-    fun values(self)
+interface Dict(I) is Collection =
+    fun keys(self of I)
+    fun values(I)
 
 interface Seq =
     fun first(self)
     fun rest(self)
 
-interface Emptiable =
+interface Emptiable(I) =
     fun empty(self)
 
-interface Consable =
-    fun cons(value, @self)
+interface Consable(I) =
+    fun cons(value, I)
 
-interface Prependable =
-    fun prepend(value, @self)
+interface Prependable(I) =
+    fun prepend(value, I)
 
-interface Appendable =
-    fun append(value, @self)
+interface Appendable(I) =
+    fun append(value, I)
 
-interface Concatable =
-    fun ++(self, @other)
+interface Concatable(I) =
+    fun ++(self, I)
 
-interface Indexed =
-    fun index_of(obj, @self)
+interface Indexed(I) =
+    fun index_of(obj, I)
 
-interface Seqable =
+interface Seqable(I) =
     fun to_seq(self)
 
-interface Castable =
-    fun cast(to_what, @self)
+interface Castable(I) =
+    fun cast(to_what, I)
 
-interface Sliceable =
-    fun slice (first, last, @self)
-    fun drop(count, @self)
-    fun take(count, @self)
+interface Sliceable(I) =
+    fun slice (first, last, I)
+    fun drop(count, I)
+    fun take(count, I)
 
-interface Bounded =
+interface Bounded(I) =
     fun lower_bound(self)
     fun upper_bound(self)
 
-interface Ranged =
-    fun range(@self, last)
-    fun range_by (@self, last, step)
-    fun range_from(@self)
-    fun range_from_by(@self, step)
+interface Ranged(I) =
+    fun range(I, last)
+    fun range_by (I, last, step)
+    fun range_from(I)
+    fun range_from_by(I, step)
 
-interface Ref =
+interface Ref(I) =
     fun &(self)
 
-interface MutRef =
+interface MutRef(I) =
     use &(self)
-    fun :=(@self, value)
+    fun :=(I, value)
 
-interface Channel =
-    fun <- (@self, value)
+interface Channel(I) =
+    fun <- (I, value)
 
-interface Extract =
+interface Extract(I) =
     fun &&(self)
 
-interface Callable =
-    fun call(@callable, args)
+interface Callable(I) =
+    fun call(I, args)
 
 ////////////////////////////////////////////////////////////
 ///////////////// TYPES ////////////////////////////////////

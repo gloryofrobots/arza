@@ -344,6 +344,7 @@ class InterfaceParser(BaseParser):
         self.name_parser = name_parser_init(BaseParser())
 
         symbol(self, TT_LPAREN)
+        symbol(self, TT_RPAREN)
         self.add_subparsers([
             self.function_parser,
             self.generic_parser,
@@ -356,8 +357,8 @@ class InterfaceFunctionParser(BaseParser):
         BaseParser.__init__(self)
 
         prefix(self, TT_NAME, NT_NAME, prefix_name_as_symbol)
-        prefix(self, TT_AT_SIGN, None, prefix_interface_atsign)
-        literal(self, TT_WILDCARD, NT_WILDCARD)
+        infix(self, TT_OF, None, 5, infix_interface_of)
+        # literal(self, TT_WILDCARD, NT_WILDCARD)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
 

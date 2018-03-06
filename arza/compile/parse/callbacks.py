@@ -1319,28 +1319,34 @@ def prefix_interface_generic_fun(parser, op, token):
 def prefix_interface_fun(parser, op, token):
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     args = _parse_comma_separated(parser.function_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
-    meta = _parse_interface_fun_indexes(parser, args)
-    return node_2(NT_GENERIC, token, name, meta)
+    return node_2(NT_GENERIC, token, name, args)
 
 
 def prefix_interface_use(parser, op, token):
     name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
     args = _parse_comma_separated(parser.function_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
-    meta = _parse_interface_fun_indexes(parser, args)
-    return node_2(NT_USE, token, name, meta)
+    return node_2(NT_USE, token, name, args)
 
 
-def _parse_interface_fun_indexes(parser, sig):
+def _parse_interface_fun_indexes(parser, alias, sig):
     args = []
     indexes = []
     index = 0
     for arg in sig:
         if nodes.is_list_node(arg):
-            arg_val = arg[0]
-            indexes.append(nodes.create_int_node(nodes.node_token(arg_val), index))
-            args.append(arg_val)
+            name = arg[0]
+            typename = arg[1]
+            if api.equal_b(nodes.node_value(typename), alias):
+                indexes.append(nodes.create_int_node(nodes.node_token(name), index))
+                args.append(name)
+            else:
+                args.append(name)
         else:
+            if api.equal_b(nodes.node_value(arg), alias):
+                indexes.append(nodes.create_int_node(nodes.node_token(arg), index))
+
             args.append(arg)
+
         index += 1
 
     if len(indexes) == 0:
@@ -1351,24 +1357,36 @@ def _parse_interface_fun_indexes(parser, sig):
 
     args_l = list_node(args)
     indexes_l = list_node(indexes)
-    return list_node([args_l, indexes_l])
+    return args_l, indexes_l
 
 
-def prefix_interface_atsign(parser, op, token):
-    name = expect_expression_of(parser, 0, NT_SYMBOL)
-    return list_node([name])
+def infix_interface_of(parser, op, token, left):
+    typename = expect_expression_of(parser, 0, NT_SYMBOL)
+    return list_node([left, typename])
 
 
 def stmt_interface(parser, op, token):
     if parser.token_type == TT_ASSIGN:
         advance_expected(parser, TT_ASSIGN)
         return statements(parser.interface_parser.generic_parser, TERM_BLOCK)
+
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+
+    if parser.token_type == TT_LPAREN:
+        advance(parser)
+        alias = expect_expression_of(parser.name_parser, 0, NT_NAME)
+        advance_expected(parser, TT_RPAREN)
+    else:
+        alias = name
+
+    alias = nodes.node_value(alias)
+
     if parser.token_type == TT_IS:
         advance_expected(parser, TT_IS)
         subs = _parse_struct_or_name(parser.name_parser, TT_LPAREN, TT_RPAREN, NAME_NODES)
     else:
         subs = list_node([])
+
     if parser.token_type != TT_ASSIGN:
         return node_3(NT_INTERFACE, token, name,
                       nodes.create_list_node(token, []),
@@ -1381,14 +1399,14 @@ def stmt_interface(parser, op, token):
 
     for func in funcs:
         generic_name = nodes.node_first(func)
-        meta = nodes.node_second(func)
-        indexes = meta[1]
+        func_args = nodes.node_second(func)
+        args, indexes = _parse_interface_fun_indexes(parser, alias, func_args)
+
         for index in indexes:
             item = node_1(NT_TUPLE, nodes.node_token(index), list_node([generic_name, index]))
             generics.append(item)
 
         if nodes.node_type(func) == NT_GENERIC:
-            args = meta[0]
             new_generics.append(
                 node_2(NT_GENERIC,
                        token, generic_name,
@@ -1401,22 +1419,6 @@ def stmt_interface(parser, op, token):
         return interface
     else:
         return list_node([list_node(new_generics), interface])
-
-
-# def prefix_interface_name(parser, op, token):
-#     name = nodes.create_name_node(token, tokens.token_value(token))
-#     items = _parse_comma_separated(parser.interface_function_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
-#     return node_3(NT_INTERFACE, token, name,
-#                   nodes.create_list_node_from_list(token, items),
-#                   nodes.create_list_node_from_list(token, subs))
-
-
-# def infix_interface_dot(parser, op, token, left):
-#     # supported syntax
-#     check_node_types(parser, left, NAME_NODES)
-#     position = expression(parser.int_parser, 0)
-#     return node_1(NT_TUPLE, token, list_node([left, position]))
-
 
 # TRAIT
 

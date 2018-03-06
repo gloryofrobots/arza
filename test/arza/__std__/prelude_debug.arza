@@ -1,5 +1,6 @@
-fun f () =
-    print(let x = 1)
+interface ReadOnlyCollection(I) is (I2, I3) =
+    fun at(key, self of I)
+    fun elem(I, t)
 
 //let d = {
 //    x = 1,
