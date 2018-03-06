@@ -10,8 +10,8 @@ fun add2(fn, v1, v2) =
         fn(x+v1, y+v2)
 
 interface I =
-    fun add(@x, y)
-    fun sub(@x, y)
+    fun add(I, y)
+    fun sub(I, y)
 
 @@add1(10)
 @@add2(0.1, 0.2)

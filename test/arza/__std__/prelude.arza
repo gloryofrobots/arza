@@ -112,9 +112,9 @@ interface Len =
 interface Sized is Len =
     fun is_empty(self)
 
-interface Coll(I) =
-    fun put(key, value, I)
-    fun del(obj, I)
+interface Coll =
+    fun put(key, value, Coll)
+    fun del(obj, c of Coll)
 
 interface GrowableCollection(I) =
     use put(key, value, I)
