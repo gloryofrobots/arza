@@ -320,11 +320,11 @@ class Process(root.W_Root):
             # except Exception as e:
             #     # print "catching some", e
             #     raise
-            except error.LalanError as e:
+            except error.ArzaError as e:
                 # print "catching error", e
                 signal = error.convert_to_script_error(self, e)
                 result = self._catch_or_terminate(signal)
-            except error.LalanSignal as e:
+            except error.ArzaSignal as e:
                 # print "catching signal", e
                 result = self._catch_or_terminate(e.signal)
             except Exception as e:

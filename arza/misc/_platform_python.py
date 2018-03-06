@@ -107,8 +107,8 @@ def absent_index():
 
 
 JitPolicy = object()
-lalan_hash = compute_identity_hash
-lalan_id = compute_unique_id
+arza_hash = compute_identity_hash
+arza_id = compute_unique_id
 
 
 class _r_dictkey(object):

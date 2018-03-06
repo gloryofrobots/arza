@@ -108,7 +108,7 @@ class W_PMap(W_Root):
         try:
             self._root.reduce(_equal, other)
             return True
-        except error.LalanError as e:
+        except error.ArzaError as e:
             return False
 
     def to_list(self):

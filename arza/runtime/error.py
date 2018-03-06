@@ -22,11 +22,11 @@ def error(process, symbol_unistr, args_tuple):
 
 def signal(err):
     assert space.isany(err)
-    raise LalanSignal(err)
+    raise ArzaSignal(err)
 
 
 def throw(symbol_unistr, args_tuple):
-    raise LalanError(symbol_unistr, args_tuple)
+    raise ArzaError(symbol_unistr, args_tuple)
 
 
 def throw_0(symbol_unistr):
@@ -87,7 +87,7 @@ def affirm(condition, message):
     return True
 
 
-class LalanError(Exception):
+class ArzaError(Exception):
     def __init__(self, name, args_tuple):
         self.name = name
         self.args_tuple = args_tuple
@@ -100,7 +100,7 @@ class LalanError(Exception):
         return self.__str__()
 
 
-class LalanSignal(Exception):
+class ArzaSignal(Exception):
     def __init__(self, signal):
         self.signal = signal
 

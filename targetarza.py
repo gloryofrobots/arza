@@ -56,7 +56,7 @@ def run(script_file):
 
 # # _____ Define and setup target ___
 def target(driver, args):
-    driver.exe_name = 'lalan_i'
+    driver.exe_name = 'arza_i'
     return entry_point, None
 
 

@@ -31,10 +31,10 @@ def absent_index():
 
 
 @specialize.argtype(0)
-def lalan_hash(obj):
+def arza_hash(obj):
     return compute_identity_hash(obj)
 
 
 @specialize.argtype(0)
-def lalan_id(obj):
+def arza_id(obj):
     return compute_unique_id(obj)

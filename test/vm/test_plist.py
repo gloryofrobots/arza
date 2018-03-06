@@ -1,5 +1,5 @@
 from arza.types import plist, space, api
-from arza.runtime.error import LalanError
+from arza.runtime.error import ArzaError
 import unittest
 
 

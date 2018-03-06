@@ -129,7 +129,7 @@ class Scheduler:
     def run(self, filename):
         try:
             module = evaluate_module_file(self.root, space.newsymbol(self.root, u"__main__"), filename)
-        except error.LalanSignal as e:
+        except error.ArzaSignal as e:
             return e.signal
 
         main = api.at(module, space.newsymbol(self.root, u"main"))

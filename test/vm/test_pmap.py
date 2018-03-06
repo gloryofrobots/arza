@@ -1,6 +1,6 @@
 __author__ = 'gloryofrobots'
 from arza.types import pmap, space, api
-from arza.runtime.error import LalanError
+from arza.runtime.error import ArzaError
 import unittest
 
 class PMapTestCase(unittest.TestCase):
@@ -18,7 +18,7 @@ class PMapTestCase(unittest.TestCase):
         self.assertEqual(api.at(m2, S(u"surname")), S(u"Alice"))
         self.assertEqual(api.lookup(m2, S(u"age"), undef), S(u"42"))
         self.assertNotEqual(api.lookup(m2, S(u"age"), undef), S(u"43"))
-        self.assertRaises(LalanError, api.at, m2, S(u"surname1"))
+        self.assertRaises(ArzaError, api.at, m2, S(u"surname1"))
 
 def suite():
     # tests = ['test_pmap']

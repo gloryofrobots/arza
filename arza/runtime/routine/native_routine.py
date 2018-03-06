@@ -24,7 +24,7 @@ class NativeRoutine(BaseRoutine):
         pass
 
     def _info(self):
-        return space.newstring(u"lalan.%s %s" %
+        return space.newstring(u"arza:%s %s" %
                                (api.to_u(self._name_), api.to_u(self._args)))
 
     def args(self):

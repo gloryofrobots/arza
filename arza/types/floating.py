@@ -11,7 +11,7 @@ class W_Float(W_Number):
         self.float_value = value
 
     def _hash_(self):
-        return platform.lalan_hash(self.float_value)
+        return platform.arza_hash(self.float_value)
 
     def _to_integer_(self):
         return int(self.float_value)

@@ -280,7 +280,7 @@ DATATYPE = module("arza:lang:_datatype", [
              source_module="datatype", source_function="record_index_of",
              arguments=[arg(1, 0), arg(0, 0)]),
     ])
-MAP = module("lalan:lang:_map", [
+MAP = module("arza:lang:_map", [
     func(func_name="to_list", func_native_name="_to_list", func_arity=1,
              source_module="pmap", source_function="to_list"),
     ])
