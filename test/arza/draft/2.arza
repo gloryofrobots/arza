@@ -5,6 +5,26 @@ object P
     __init__(s) = self.s = s
     name() = self.s
 
+class List[T]
+    init() =
+        self.a = []:T
+
+class Empty:
+    pass
+
+class List:
+    __init__(head, tail):
+        self.head = head
+        self.tail = tail
+
+    cons(val):
+        List(val, self)
+
+let l = List(1, Empty)
+
+
+
+
 object A is P
     s:String
     x:Int

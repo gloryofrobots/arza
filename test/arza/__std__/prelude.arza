@@ -101,16 +101,16 @@ interface Pow(I) =
     fun **(x of I, y)
 
 interface Str =
-    fun str(self)
+    fun str(Str)
 
-interface Displayed is Str =
-    fun repr(self)
+interface Displayed(I) is Str =
+    fun repr(I)
 
 interface Len =
-    fun len(self)
+    fun len(Len)
 
 interface Sized is Len =
-    fun is_empty(self)
+    fun is_empty(Sized)
 
 interface Coll =
     fun put(key, value, Coll)
@@ -133,11 +133,11 @@ interface Dict(I) is Collection =
     fun values(I)
 
 interface Seq =
-    fun first(self)
-    fun rest(self)
+    fun first(Seq)
+    fun rest(Seq)
 
 interface Emptiable(I) =
-    fun empty(self)
+    fun empty(I)
 
 interface Consable(I) =
     fun cons(value, I)
@@ -149,13 +149,13 @@ interface Appendable(I) =
     fun append(value, I)
 
 interface Concatable(I) =
-    fun ++(self, I)
+    fun ++(I, other)
 
 interface Indexed(I) =
     fun index_of(obj, I)
 
 interface Seqable(I) =
-    fun to_seq(self)
+    fun to_seq(I)
 
 interface Castable(I) =
     fun cast(to_what, I)
@@ -166,8 +166,8 @@ interface Sliceable(I) =
     fun take(count, I)
 
 interface Bounded(I) =
-    fun lower_bound(self)
-    fun upper_bound(self)
+    fun lower_bound(I)
+    fun upper_bound(I)
 
 interface Ranged(I) =
     fun range(I, last)
@@ -176,17 +176,17 @@ interface Ranged(I) =
     fun range_from_by(I, step)
 
 interface Ref(I) =
-    fun &(self)
+    fun &(I)
 
 interface MutRef(I) =
-    use &(self)
+    use &(I)
     fun :=(I, value)
 
-interface Channel(I) =
+interface Replace(I) =
     fun <- (I, value)
 
 interface Extract(I) =
-    fun &&(self)
+    fun &&(I)
 
 interface Callable(I) =
     fun call(I, args)

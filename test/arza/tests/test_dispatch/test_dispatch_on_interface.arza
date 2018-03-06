@@ -3,13 +3,13 @@ import affirm
 type Val(val)
 
 interface Pos =
-    fun pos(v)
+    fun pos(Pos)
 
 interface Neg =
-    fun neg(v)
+    fun neg(Neg)
 
 interface Abs is (Pos, Neg) =
-    fun abs(v)
+    fun abs(Abs)
 
 def neg(v of Val) = -v.val
 def pos(v of Val) = v.val

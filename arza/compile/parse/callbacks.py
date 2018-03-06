@@ -1350,10 +1350,7 @@ def _parse_interface_fun_indexes(parser, alias, sig):
         index += 1
 
     if len(indexes) == 0:
-        if len(sig) == 1:
-            indexes.append(nodes.create_int_node(nodes.node_token(args[0]), 0))
-        else:
-            parse_error(parser, u"Missing interface role in method", nodes.node_token(args[0]))
+        parse_error(parser, u"Missing interface role in method", nodes.node_token(args[0]))
 
     args_l = list_node(args)
     indexes_l = list_node(indexes)

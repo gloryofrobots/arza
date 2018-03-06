@@ -10,7 +10,7 @@ interface =
     fun get_name(actor)
 
 interface Named =
-    use get_name(actor)
+    use get_name(actor of Named)
 
 interface ActionActor(I) =
     use encounter(movie, actor1 of I, actor2 of I)
