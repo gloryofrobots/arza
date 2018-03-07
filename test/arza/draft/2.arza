@@ -17,6 +17,7 @@ class List:
         self.head = head
         self.tail = tail
 
+
     cons(val):
         List(val, self)
 
@@ -25,10 +26,11 @@ let l = List(1, Empty)
 
 
 
-object A is P
+class A is P
     s:String
     x:Int
     y:Int
+
 
     __init__(self, x, y) =
         self.x = x

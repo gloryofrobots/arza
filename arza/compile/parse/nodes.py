@@ -575,6 +575,10 @@ def create_is_indexed_call(token, val):
     return create_call_node_s(token, lang_names.IS_INDEXED, [val])
 
 
+def create_is_tuple_call(token, val):
+    return create_call_node_s(token, lang_names.IS_TUPLE, [val])
+
+
 def create_is_dict_call(token, val):
     return create_call_node_s(token, lang_names.IS_DICT, [val])
 

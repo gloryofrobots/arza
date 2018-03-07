@@ -23,9 +23,10 @@ class W_Array(W_Root):
         i = api.to_i(k)
         try:
             self._items[i] = v
-            return True
         except IndexError:
-            return False
+            return error.throw_2(error.Errors.INDEX_ERROR, space.newstring(u"Invalid index"))
+
+        return self
 
     def _type_(self, process):
         return process.std.types.Array
@@ -85,6 +86,7 @@ class W_Array(W_Root):
 
     def _put_at_index_(self, i, obj):
         self._items[i] = obj
+        return self
 
     def _get_index_(self, obj):
         try:

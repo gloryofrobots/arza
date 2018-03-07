@@ -12,6 +12,7 @@ IS_IMPLEMENTED = PREFIX + "is_implemented"
 # functions used by compiler in code gen
 DESCRIBE = PREFIX + "describe"
 IS_INDEXED = PREFIX + "is_indexed"
+IS_TUPLE = PREFIX + "is_tuple"
 IS_SEQ = PREFIX + "is_seq"
 IS_DICT = PREFIX + "is_dict"
 LEN = PREFIX + "len"

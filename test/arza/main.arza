@@ -1,16 +1,10 @@
 import io
 import affirm
 import seq
-import list
-import array
-import string
-import process
 import tests
 //import tests:test_process
 
-
 fun main() =
-
     tests:run()
 //    test_process:test()
     #endprogram

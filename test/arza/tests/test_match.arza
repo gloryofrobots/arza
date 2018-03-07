@@ -1,7 +1,23 @@
 import affirm
 import io
 
+type V(x,y)
+
 fun test_match() =
+    // records are not tuples
+    let
+        vec = V(1,2)
+    in
+        affirm:is_equal(
+            (match vec
+                | (1, 2) = #one
+                | (a, b) = #two
+                | V(x, y) = #three
+            ),
+            #three
+        )
+        affirm:is_equal((x, y), (1, 2))
+
     affirm:is_equal(
         (match [1,2,3]
             | B1 @ [a, b, B2 @ c] = (B1, B2, a, b, c)

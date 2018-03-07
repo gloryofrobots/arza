@@ -28,7 +28,7 @@ fun test () =
         v1 = Vec2(1, 2)
         v2 = Vec3(10, 20, 30)
         alpha = Alphabet(#a, #b, #c, #d, #e, #f, #g, #h, #i, #j, #k)
-        (x, y, z) of Vec3 = v2
+        Vec3(x, y, z) = v2
 
 //        (a, b, c, d, e, f, g, h, i, j, k) of Alphabet = alpha
         {a, b, c, d, e, f, g, h, i, j, k} of Alphabet = alpha

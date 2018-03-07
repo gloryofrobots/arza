@@ -44,7 +44,7 @@ def _process_tuple(state, pattern, patterns, path):
 
     last_index = count_i - 1
 
-    patterns = add_pattern(patterns, ["is_indexed", _create_path_node(nodes.node_token(pattern), path)])
+    patterns = add_pattern(patterns, ["is_tuple", _create_path_node(nodes.node_token(pattern), path)])
 
     last_child = children[last_index]
     if node_type(last_child) == NT_REST:

@@ -31,6 +31,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.APPLY, apply, 2)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
     put_lang_func(process, module, lang_names.IS_INDEXED, is_indexed, 1)
+    put_lang_func(process, module, lang_names.IS_TUPLE, is_tuple, 1)
     put_lang_func(process, module, lang_names.IS_SEQ, is_seq, 1)
     put_lang_func(process, module, lang_names.IS_DICT, is_dict, 1)
     put_lang_func(process, module, lang_names.IS, __is, 2)
@@ -256,6 +257,15 @@ def __partial(process, routine):
 def time(process, routine):
     import time
     return space.newfloat(time.time())
+
+
+@complete_native_routine
+def is_tuple(process, routine):
+    v1 = routine.get_arg(0)
+    if space.istuple(v1) or space.isarguments(v1):
+        return space.newbool(True)
+
+    return space.newbool(False)
 
 
 @complete_native_routine

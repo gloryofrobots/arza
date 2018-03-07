@@ -8,7 +8,6 @@ from match_process import *
 from transform_state import *
 
 
-
 def _place_branch_node(tree, head, tail):
     for leaf in tree:
         if plist.equal_with(leaf[0], head, nodes.is_equal_pattern):
@@ -26,7 +25,7 @@ def _group_branches(state, branches):
             assert empty_pattern(tail)
             if len(branches) != 1:
                 return transform_error(state, state.node,
-                                u"Invalid match/case transformation: at least two branches are overlapped")
+                                       u"Invalid match/case transformation: at least two branches are overlapped")
 
             groups.append([head, None])
             break
@@ -144,6 +143,16 @@ def _transform_is_indexed(history, head, variables):
     arg_node, prefixes = _history_get_var(history, head[1])
     _condition = create_is_call(nodes.node_token(arg_node),
                                 create_is_indexed_call(nodes.node_token(arg_node), arg_node),
+                                create_true_node(nodes.node_token(arg_node)))
+
+    condition, prefixes1 = _history_get_condition(history, _condition)
+    return arg_node, condition, prefixes + prefixes1, variables
+
+
+def _transform_is_tuple(history, head, variables):
+    arg_node, prefixes = _history_get_var(history, head[1])
+    _condition = create_is_call(nodes.node_token(arg_node),
+                                create_is_tuple_call(nodes.node_token(arg_node), arg_node),
                                 create_true_node(nodes.node_token(arg_node)))
 
     condition, prefixes1 = _history_get_condition(history, _condition)
@@ -279,6 +288,7 @@ TRANSFORM_DISPATCH = {
     "is_empty": _transform_is_empty,
     "is_not_empty": _transform_is_not_empty,
     "is_indexed": _transform_is_indexed,
+    "is_tuple": _transform_is_tuple,
     "is_seq": _transform_is_seq,
     "is_map": _transform_is_map,
     "length": _transform_length,
