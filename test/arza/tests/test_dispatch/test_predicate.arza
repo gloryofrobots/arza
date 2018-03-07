@@ -22,7 +22,7 @@ def race_winner(c1 of Car, c2 of Car) when faster(c1, c2)  = c1
 def race_winner(c1 of Car, c2 of Car) when arza:lang:at(#speed, c1) < c2.speed = c2
 def race_winner(c1 of Car, c2 of Car) when c1.speed == c2.speed = c1
 
-def race_winner({x, y = (a, b, [1,2,{c, d=t}])} of Map, z@hd::tl) when len(y) == 1 = 1
+def race_winner({x, y = (a, b, [1,2,{c, d=t}])} of Map, hd::tl as z) when len(y) == 1 = 1
 
 fun test () =
     let

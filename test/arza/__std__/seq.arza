@@ -143,7 +143,7 @@ fun take_while(predicate, coll)
 
 fun drop_while(predicate, coll)
     | (p, []) = empty(coll)
-    | (p, xs@[x, ...xs1]) =
+    | (p, [x, ...xs1] as xs) =
         if p(x) == True then drop_while(p, xs1)
         else xs
 
@@ -161,7 +161,7 @@ fun span(predicate, coll)
     | (p, []) =
         let c = empty(coll)
         in (c, c)
-    | (p, xs@[x, ...xs1]) =
+    | (p, [x, ...xs1] as xs) =
         if not(p(x)) then
             (empty(coll), xs)
         else
@@ -280,7 +280,7 @@ fun zipwith3(f, seq1, seq2, seq3)
 
 fun split
     | [] = ([], [])
-    | s@[x] = (s, [])
+    | [x] as s = (s, [])
     | x::y::xs =
         let (l, r) = split(xs)
         in (x::l, y::r)
@@ -297,7 +297,7 @@ fun sort(f, s) =
 
         fun _sort
             | [] = []
-            | s @ [x] = s
+            | [x] as s = s
             | xs =
                 let (ys, zs) = split(xs)
                 in _merge(_sort(ys), _sort(zs))

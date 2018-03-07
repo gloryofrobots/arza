@@ -211,7 +211,7 @@ class PatternParser(BaseParser):
 
         infix(self, TT_OF, NT_OF, 10, led_infix)
         infix(self, TT_LPAREN, None, 95, infix_lparen_pattern, layout=layout_lparen)
-        infix(self, TT_AT_SIGN, None, 15, infix_at)
+        infix(self, TT_AS, None, 15, infix_bind)
         infix(self, TT_DOUBLE_COLON, NT_CONS, 60, led_infixr)
         infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
 
@@ -518,7 +518,7 @@ def map_key_pattern_parser_init(parser):
     symbol(parser, TT_ASSIGN)
 
     infix(parser, TT_OF, None, 5, infix_map_pattern_of)
-    infix(parser, TT_AT_SIGN, None, 15, infix_map_pattern_at)
+    infix(parser, TT_AS, None, 15, infix_map_pattern_as)
     return parser
 
 

@@ -18,9 +18,13 @@ fun test_match() =
         )
         affirm:is_equal((x, y), (1, 2))
 
+
+    ////////////////////////////////////////////////////////////////
+
+
     affirm:is_equal(
         (match [1,2,3]
-            | B1 @ [a, b, B2 @ c] = (B1, B2, a, b, c)
+            | [a, b, c as B2] as B1 = (B1, B2, a, b, c)
             | _ = 42),
         ([1, 2, 3], 3, 1, 2, 3)
     )
@@ -32,8 +36,8 @@ fun test_match() =
 
     affirm:is_equal(
         (match [1,2,3]
-            | [B3 @ 1, 2, 4] = (#res1, B3)
-            | [B3 @ 1, 2, 3] = (#res2, B3)),
+            | [1 as B3, 2, 4] = (#res1, B3)
+            | [1 as B3, 2, 3] = (#res2, B3)),
         (#res2, 1)
     )
 
@@ -41,8 +45,8 @@ fun test_match() =
 
     affirm:is_equal(
         (match 42
-            | B4 @ 2 = (#result1, B4)
-            | B4 @ 42 = (#result2, B4)),
+            | 2 as B4 = (#result1, B4)
+            | 42 as B4 = (#result2, B4)),
         (#result2, 42)
     )
 
@@ -50,8 +54,8 @@ fun test_match() =
 
     affirm:is_equal(
         match {genre = "XXX", actress="Lily", age=25}
-            | Result @ {genre, LilyName @ "actress"="Lily", age=13} = (Result, genre, 42, LilyName)
-            | Result @ {genre, LilyName2 @ "actress"="Lily", age=25} = (Result, genre, "OLOLO", LilyName2, age)
+            | {genre, "actress"="Lily" as LilyName, age=13} as Result = (Result, genre, 42, LilyName)
+            | {genre, "actress"="Lily" as LilyName2, age=25} as Result = (Result, genre, "OLOLO", LilyName2, age)
             | _ =  42,
         ({age = 25, actress = "Lily", genre = "XXX"}, "XXX", "OLOLO", "Lily", 25)
     )
@@ -293,7 +297,7 @@ fun test_destruct () =
                         ("GAMES OF NEMESIS", "NEMESIS GAMES"), "Jhon DOU", ("James", "Corey"))
             )
     let
-        {a=[x,y,...z], B @ b="I am B", c of Float, D@d={e=(x,y,...zz)}} =
+        {a=[x,y,...z], b="I am B" as B, c of Float, d={e=(x,y,...zz)} as D} =
             {a=[1,2,3,4,5], b="I am B", c=3.14, d={e=(1,2,3,4,5)}}
     in
         affirm:is_equal(

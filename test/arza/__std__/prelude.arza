@@ -26,7 +26,7 @@ Precedence    Operator
     30           and
     25           or << >>
     20           |>
-    15           " ." @ as of <| <-
+    15           " ." as of <| <-
     10           = :=
 """
 

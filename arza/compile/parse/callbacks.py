@@ -391,13 +391,12 @@ def infix_name_pair(parser, op, token, left):
     return node_2(ntype, token, left, name)
 
 
-def infix_at(parser, op, token, left):
-    ltype = nodes.node_token_type(left)
-    if ltype != TT_NAME:
-        parse_error(parser, u"Bad lvalue in pattern binding", left)
+def infix_bind(parser, op, token, left):
+    name = expression(parser, 9)
+    if nodes.node_token_type(name) != TT_NAME:
+        parse_error(parser, u"Bad right value in pattern binding. Name expected", name)
 
-    exp = expression(parser, 9)
-    return node_2(NT_BIND, token, left, exp)
+    return node_2(NT_BIND, token, name, left)
 
 
 ##############################################################
@@ -570,13 +569,13 @@ def infix_map_pattern_of(parser, op, token, left):
     return nodes.create_of_node(token, left, typename)
 
 
-def infix_map_pattern_at(parser, op, token, left):
-    real_key = expression(parser, 0, [TT_ASSIGN, TT_COMMA])
-    # allow syntax like {var1@ key}
-    if nodes.node_type(real_key) == NT_NAME:
-        real_key = nodes.create_symbol_node(nodes.node_token(real_key), real_key)
+def infix_map_pattern_as(parser, op, token, left):
+    # allow syntax like {key as var1}
+    if nodes.node_type(left) == NT_NAME:
+        left = nodes.create_symbol_node(nodes.node_token(left), left)
 
-    return nodes.create_bind_node(nodes.node_token(left), left, real_key)
+    name = expression(parser, 0, [TT_ASSIGN, TT_COMMA])
+    return nodes.create_bind_node(nodes.node_token(left), name, left)
 
 
 # ----------------------------------
@@ -1416,6 +1415,7 @@ def stmt_interface(parser, op, token):
         return interface
     else:
         return list_node([list_node(new_generics), interface])
+
 
 # TRAIT
 

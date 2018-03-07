@@ -111,9 +111,9 @@ fun test_6() =
     affirm:is_equal( try
                         throw (1,2,"ERROR")
                      catch
-                        | err @ (1, y, 3) = #first
+                        | (1, y, 3) as err = #first
                         | (1,2, "ERROR@") = #second
-                        | err @ (1, 2, x) = #third
+                        | (1, 2, x) as err = #third
                      finally
                         (#fourth, err, x)
                      ,

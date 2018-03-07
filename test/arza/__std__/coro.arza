@@ -183,7 +183,7 @@ fun drop_while(fn, co) =
                 (fun _drop_while
                     | (p, []) =
                         empty(co)
-                    | (p, xs @ [x, ...xs1]) =
+                    | (p, [x, ...xs1] as xs) =
                         (if p(x) then
                             _drop_while(p, xs1)
                         else
