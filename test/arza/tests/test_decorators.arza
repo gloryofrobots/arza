@@ -13,29 +13,29 @@ interface I =
     fun add(I, y)
     fun sub(I, y)
 
-@@add1(10)
-@@add2(0.1, 0.2)
+@add1(10)
+@add2(0.1, 0.2)
 def add(x of Int, y of Int) = x + y
 
 def sub(x of Int, y of Int) =  x - y
 
-@@add1(10)
+@add1(10)
 def+(super) sub(x of Int, y of Int) =  super(x, y) + super(x, y)
 
 
 trait Add(T) for Float =
-    @@add1(0.1)
-    @@add1(0.01)
+    @add1(0.1)
+    @add1(0.01)
     def add(x of T, y of T) = x + y
 
-    @@add2(0.001, 0.0001)
+    @add2(0.001, 0.0001)
     def+ (super) add(x of T, y of T) = super(x, y) * -1
 
 
 fun test_simple() =
     let
-        @@add1(10)
-        @@add2(0.1, 0.2)
+        @add1(10)
+        @add2(0.1, 0.2)
         fun f(x, y) = x + y
     in
         affirm:is_equal_all(f(1,2), add(1,2), 13.3)

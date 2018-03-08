@@ -2,9 +2,10 @@ import io
 import affirm
 import seq
 import tests
-//import tests:test_process
 
+//fun f(x, y, z) = [x, y, z]
 fun main() =
+//    f(0, 1, (_, 3))(2)
     tests:run()
-//    test_process:test()
     #endprogram
+

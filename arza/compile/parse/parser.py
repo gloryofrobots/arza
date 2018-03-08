@@ -135,7 +135,6 @@ class ExpressionParser(BaseParser):
         symbol(self, TT_RCURLY)
         symbol(self, TT_END_EXPR)
         symbol(self, TT_ENDSTREAM)
-        # symbol(self, TT_AT_SIGN)
         symbol(self, TT_ELSE)
         symbol(self, TT_ELIF)
         symbol(self, TT_CASE)
@@ -238,7 +237,9 @@ class LetParser(PatternParser):
         symbol(self, TT_IN)
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         prefix(self, TT_TRY, None, prefix_try, layout=layout_try)
-        prefix(self, TT_DOUBLE_AT, None, prefix_decorator, layout=layout_decorator)
+
+        prefix(self, TT_AT_SIGN, None, prefix_decorator, layout=layout_decorator)
+
         prefix(self, TT_FUN, None, prefix_let_fun, layout=layout_fun)
         infix(self, TT_ASSIGN, None, 10, led_let_assign)
 
@@ -290,7 +291,8 @@ class TraitParser(BaseParser):
         self.pattern_parser = TraitSignatureParser()
         self.for_parser = TraitForParser()
 
-        stmt(self, TT_DOUBLE_AT, None, prefix_decorator, layout=layout_decorator)
+        stmt(self, TT_AT_SIGN, None, prefix_decorator, layout=layout_decorator)
+
         prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
         prefix(self, TT_DEF, None, prefix_trait_def, layout=layout_def)
         prefix(self, TT_DEF_PLUS, None, stmt_def_plus, layout=layout_def)
@@ -461,7 +463,8 @@ class ModuleParser(BaseParser):
         symbol(self, TT_ENDSTREAM)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
-        stmt(self, TT_DOUBLE_AT, None, prefix_decorator, layout=layout_decorator)
+        stmt(self, TT_AT_SIGN, None, prefix_decorator, layout=layout_decorator)
+
         stmt(self, TT_FUN, None, prefix_module_fun, layout=layout_fun)
         stmt(self, TT_TRAIT, None, stmt_trait, layout=layout_trait)
         stmt(self, TT_TYPE, None, stmt_type, layout=layout_type)
