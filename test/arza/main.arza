@@ -1,12 +1,18 @@
 import io
 import affirm
 import seq
-import tests
+import array
+//import tests
 
 
 //fun f(x, y, z) = [x, y, z]
 fun main() =
+    let
+        a = array(1,2,3,4)
+        a2 = seq:map(fun(x) = x * 2, to_seq(a))
+    in
+        PL(&&a2)
 //    f(0, 1, (_, 3))(2)
-    tests:run()
+//    tests:run()
     #endprogram
 

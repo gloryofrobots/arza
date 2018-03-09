@@ -332,7 +332,10 @@ class Process(root.W_Root):
                 # print e
                 # self.__terminate()
                 # return e
-                raise
+                ae = error.build(error.Errors.RUNTIME_ERROR, [space.newstring(unicode(e))])
+                signal = error.convert_to_script_error(self, ae)
+                result = self._catch_or_terminate(signal)
+                # raise
 
             if cycles != INFINITE_LOOP:
                 cycles -= 1

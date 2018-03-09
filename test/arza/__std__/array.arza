@@ -39,25 +39,25 @@ trait TArray(A) for Array =
 
 --------------------------------------------------
 
-type ArraySeq = (arr, index)
-type ArraySeqEmpty = ()
+type ArraySeq = (arr, index, dest)
+type ArraySeqEmpty = (dest)
 
 trait TArraySeq(A) for ArraySeq =
-    def first(self of A) = self.arr.index
+    def first({arr, index} of A) = arr.[index]
 
-    def rest({arr, index} of A) =
+    def rest(A(arr, index, dest)) =
         let
             l = len(arr) - index
         in
             if l <= 0 then
-                ArraySeqEmpty()
+                ArraySeqEmpty(dest)
             else
-                ArraySeq(arr, index + 1)
+                A(arr, index + 1, dest)
 
 
-    def is_empty({arr} of A) = arr.index >= len(arr)
+    def is_empty({arr, index} of A) = index >= len(arr)
 
-    def empty(self of A) = ArraySeqEmpty()
+    def empty(self of A) = ArraySeqEmpty(self.dest)
 
     def len({arr, index} of A) =
         let
@@ -66,6 +66,10 @@ trait TArraySeq(A) for ArraySeq =
             if l < 0 then 0
             else l
 
+    def cons(v, A(arr, index, dest)) =
+        A(arr, index+1, prepend(v, dest))
+
+    def &&(self of A) = self.dest
 
 describe ArraySeq as (Seq, Sized, Emptiable)
 
@@ -81,11 +85,17 @@ trait TArraySeqEmpty(A) for ArraySeqEmpty =
 
     def len(self of A) = 0
 
+    def cons(v, self of A) =
+        prepend(v, self.dest)
+        self
+
+    def &&(self of A) = self.dest
+
 describe ArraySeqEmpty as (Seq, Sized)
 
 --------------------------------------------------
 
-def to_seq(self of Array) = ArraySeq(self, 0)
+def to_seq(self of Array) = ArraySeq(self, 0, array())
 
 fun map (f, arr of Array) =
     let

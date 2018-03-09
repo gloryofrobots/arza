@@ -40,7 +40,7 @@ class W_Array(W_Root):
     def _at_(self, index):
         from arza.types.space import newvoid, isint
         from arza.types import api
-        assert isint(index), index
+        assert isint(index), (index.__class__.__name__, api.to_s(index))
         try:
             el = self._items[api.to_i(index)]
         except KeyError:
