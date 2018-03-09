@@ -1,3 +1,77 @@
+define Seq:
+    expect(to_seq)
+    expect:
+        fun to_seq(self)
+        var x
+        var y
+    export:
+         fun map(self, func) = ...
+    export(filter, range, nth)
+
+
+define Obj
+    import seq with:
+        fun to_seq(self): self
+        var x = 1
+        var y = 2
+
+
+    import affirm
+    import tests:lib_az:abc:module_ab as ab
+
+    import tests:lib_az:efg:module_e as e
+    //
+    //
+    ////ab2:f_ab
+    import tests:lib_az:abc:module_ab as ab2 (f_ab, f_ab_2)
+
+    ////module_ab:f_ab, module_ab:f_ab_2
+    import tests:lib_az:abc:module_ab (f_ab, f_ab_2)
+
+    ////unqualified names f_ab,f_ab_2,const
+    use (f_ab, f_ab_2, CONST as const) from tests:lib_az:abc:module_ab
+
+    ////all exported names imported
+    use tests:lib_az:efg:module_e
+
+    //ab_3_f_ab
+    use (f_ab as ab_3_f_ab) from tests:lib_az:abc:module_ab
+    //importing same names dont cause errors because names are equal
+    use tests:lib_az:abc:module_ab  hiding (CONST)
+
+    import tests:lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
+    // binding funcs from two modules to same name
+    import tests:lib_az:abc:ts:module_s as s
+    import tests:lib_az:abc:ts:module_t as s
+
+    let D = [A, S, B, D]
+
+    construct(x, y, z) = x + y + z
+
+    fun f(x, y) =
+        let z = x - y
+        x + y + z
+
+let o = Obj()
+
+
+
+
+affirm:is_equal(
+    l |> seq:filter(even, _)
+      |> seq:map(`+`(1, _), _)
+      |> seq:map(flip(`-`, 2, _), _),
+
+seq:filter(even, _) <| l
+
+affirm:is_equal(
+    l -> seq:filter(even, _)
+      -> seq:map(`+`(1, _), _)
+      -> seq:map(flip(`-`, 2, _), _),
+
+seq:filter(even, _) <- l
+
+
 object P
     s:String
     i:Int32
