@@ -1,4 +1,4 @@
-from arza.types import api
+from arza.types import api, space
 
 # TODO GET RID OF MAGIC NUMBERS
 
@@ -7,6 +7,8 @@ WEIGHT_UNKNOWN = -2000
 WEIGHT_ANY = 1000
 WEIGHT_FOUND = 0
 WEIGHT_INTERFACE = WEIGHT_ANY - 1
+WEIGHT_EMPTY_INTERFACE = -1
+
 
 class Discriminator:
     def __init__(self, position):
@@ -49,6 +51,27 @@ class AnyDiscriminator(Discriminator):
         return '<Any>'
 
 
+class ValueDiscriminator(Discriminator):
+    def __init__(self, position, value):
+        Discriminator.__init__(self, position)
+        self.value = value
+
+    def _equal_(self, other):
+        return other.__class__ == self.__class__ \
+               and other.position == self.position \
+               and api.equal_b(other.value, self.value)
+
+    def _evaluate(self, process, arg):
+        # print "PRED DIS", arg
+        if api.equal_b(arg, self.value):
+            return WEIGHT_FOUND
+        else:
+            return WEIGHT_NOT_FOUND
+
+    def __str__(self):
+        return '<V %s:%s>' % (str(self.position), str(self.value))
+
+
 class PredicateDiscriminator(Discriminator):
     def __init__(self, position, predicate):
         Discriminator.__init__(self, position)
@@ -82,15 +105,24 @@ class InterfaceDiscriminator(Discriminator):
 
     def _evaluate(self, process, arg):
         t = api.get_type(process, arg)
+        api.d.pbp(10, "type", space.isinterface(arg), t, t.interfaces, t.interfaces_table, self.interface)
+
+        if space.isinterface(arg):
+            if api.equal_b(arg, self.interface):
+                api.d.pbp(10, "Interface weight")
+                return WEIGHT_INTERFACE
+            else:
+                return WEIGHT_NOT_FOUND
 
         if not api.interface_b(process, arg, self.interface):
-            return -1000
+            return WEIGHT_NOT_FOUND
 
-        #i = api.get_index(t.interfaces, self.interface)
+        # i = api.get_index(t.interfaces, self.interface)
         i = self.interface.count_generics()
+        api.d.pbp(10, "count gen", i)
 
         if i == -1:
-            return -1
+            return WEIGHT_EMPTY_INTERFACE
 
         # print "INTERFACE DIS", self, arg
 
@@ -109,8 +141,8 @@ class TypeDiscriminator(Discriminator):
 
     def _equal_(self, other):
         val = other.__class__ == self.__class__ \
-               and other.position == self.position \
-               and other.type == self.type
+              and other.position == self.position \
+              and other.type == self.type
         # print "TYPE DIS", self, other
         return val
 

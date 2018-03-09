@@ -70,7 +70,7 @@ class W_Array(W_Root):
 
         if self._length_() == 1:
             return "Array(%s,)" % repr
-        return "(%s)" % repr
+        return "Array(%s)" % repr
 
     def _to_repr_(self):
         return self._to_string_()

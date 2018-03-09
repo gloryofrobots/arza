@@ -157,6 +157,9 @@ interface Indexed(I) =
 interface Seqable(I) =
     fun to_seq(I)
 
+interface FromSeq(I) =
+    fun from_seq(I)
+
 interface Castable(I) =
     fun cast(to_what, I)
 

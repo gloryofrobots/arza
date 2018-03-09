@@ -2,19 +2,17 @@ from arza:lang:_io import (write, stdout)
 import seq
 import string
 
+fun out() = stdout()
 
-fun _write_list_items(args, func, file, ends) =
+fun _write_list_items(args, func, file, sep, ends) =
     let
-        s = string:join_with(func, args, " ") ++ ends
+        s = string:join_with(func, args, sep) ++ ends
     in
         write(s, file)
 
 
 fun printr(...args) =
-    let
-        out = stdout()
-    in
-        _write_list_items(args, repr, out, "\n")
+    _write_list_items(args, repr, out(), " ", "\n")
 
 
 fun print(...args) =
@@ -22,13 +20,15 @@ fun print(...args) =
 
 
 fun print_list(items) =
-    let
-        out = stdout()
-    in
-        _write_list_items(items, str, out, "\n")
+    _write_list_items(items, str, out(), " ", "\n")
+
+
+fun println(...args) =
+    _write_list_items(args, str, out(), "\n", "\n")
 
 
 let
     p = print
+    pln = println
     pr = printr
 

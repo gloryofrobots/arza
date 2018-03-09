@@ -27,22 +27,26 @@ trait TArray(A) for Array =
 
     def repr(self of A) =
         if len(self) == 1 then
-            "(" ++ repr(at(0, self)) ++ ",)"
+            "Array(" ++ repr(at(0, self)) ++ ",)"
         else
-            "(" ++ string:join_with(repr, to_seq(self), ", ") ++ ")"
+            "Array(" ++ string:join_with(repr, to_seq(self), ", ") ++ ")"
 
     def str(self of A) =
         if len(self) == 1 then
-            "(" ++ str(at(0, self)) ++ ",)"
+            "Array(" ++ str(at(0, self)) ++ ",)"
         else
-            "(" ++ string:join_with(str, to_seq(self), ", ") ++ ")"
+            "Array(" ++ string:join_with(str, to_seq(self), ", ") ++ ")"
 
+//    def cast(Seq, self of A) = to_seq(self)
 --------------------------------------------------
 
 type ArraySeq = (arr, index, dest)
 type ArraySeqEmpty = (dest)
 
 trait TArraySeq(A) for ArraySeq =
+
+    def to_seq(self of A) = self
+
     def first({arr, index} of A) = arr.[index]
 
     def rest(A(arr, index, dest)) =
@@ -69,17 +73,19 @@ trait TArraySeq(A) for ArraySeq =
     def cons(v, A(arr, index, dest)) =
         A(arr, index+1, prepend(v, dest))
 
-    def &&(self of A) = self.dest
 
 describe ArraySeq as (Seq, Sized, Emptiable)
 
 --------------------------------------------------
 
 trait TArraySeqEmpty(A) for ArraySeqEmpty =
+    def to_seq(self of A) = self
     def first(self of A) = throw EmptySeqError("ArraySequence is empty")
 
     def rest(self of A) =
         throw EmptySeqError("ArraySequence is empty")
+
+    def empty(self of A) = self
 
     def is_empty(self of A) = True
 
@@ -89,7 +95,7 @@ trait TArraySeqEmpty(A) for ArraySeqEmpty =
         prepend(v, self.dest)
         self
 
-    def &&(self of A) = self.dest
+    def from_seq(self of A) = self.dest
 
 describe ArraySeqEmpty as (Seq, Sized)
 
@@ -109,11 +115,6 @@ fun map (f, arr of Array) =
                 )
     in
         _map(0, array())
-//
-//
-//fun map(f, coll)
-//    | (f, () of Array) = empty(coll)
-//    | (f, hd::tl) = f(hd) :: map(f, tl)
 
 describe Array as (Eq, Displayed,
        Sized, Collection,

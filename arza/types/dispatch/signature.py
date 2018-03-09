@@ -131,6 +131,42 @@ class ArgumentInterface(Argument):
         return self.interface._hash_()
 
 
+class ArgumentValue(Argument):
+    def __init__(self, position, value):
+        Argument.__init__(self, position)
+        self.value = value
+
+    def find_old_discriminator(self, discriminators):
+        position = self.position
+        value = self.value
+        for d in discriminators:
+            if isinstance(d, ValueDiscriminator) \
+                    and d.position == position \
+                    and api.equal_b(d.value, value):
+                return d
+
+        return None
+
+    def make_discriminator(self):
+        return ValueDiscriminator(self.position, self.value)
+
+    def _equal_(self, other):
+        if other.__class__ is self.__class__ \
+                and api.equal_b(other.value, self.value) \
+                and other.position == self.position:
+            return True
+        return False
+
+    def __repr__(self):
+        return str(self.value)
+
+    def __str__(self):
+        return self.__repr__()
+
+    def _hash_(self):
+        return api.hash_i(self.value)
+
+
 class ArgumentType(Argument):
     def __init__(self, position, type):
         Argument.__init__(self, position)
@@ -260,6 +296,10 @@ class Signature(UniqueSignature):
         return weight
 
 
+def _get_value_predicate(process, value, index):
+    return ArgumentValue(index, value)
+
+
 def _get_interface_predicate(process, interface, index):
     interfaces = process.std.interfaces
 
@@ -306,6 +346,9 @@ def _get_sigargs(process, args):
             arg = _get_interface_predicate(process, kind, index)
         elif space.isdatatype(kind):
             arg = _get_type_predicate(process, kind, index)
+        elif space.istuple(kind) and api.length_i(kind) == 1:
+            kind = api.at_index(kind, 0)
+            arg = _get_value_predicate(process, kind, index)
         else:
             return error.throw_2(error.Errors.TYPE_ERROR,
                                  space.newstring(u"Invalid signature type. Expected type or interface"), kind)

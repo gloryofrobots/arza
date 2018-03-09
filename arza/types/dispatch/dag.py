@@ -87,11 +87,14 @@ def _check_ambiguous_methods(process, stack):
 def evaluate_decision(process, stack, nodes, args):
     for node in nodes:
         rank = node.get_rank(process, args)
+        api.d.pbp(10, "rank", rank, node)
         if rank >= 0:
             stack.append((node, rank))
+    api.d.pbp(10, ">>before sort", stack, args)
     # print "1", stack
     sort_stack(stack)
     _check_ambiguous_methods(process, stack)
+    api.d.pbp(10, ">>after sort", stack, args)
     # stack.sort(key=itemgetter(1))
     # print "2", stack
     # print "3", stack

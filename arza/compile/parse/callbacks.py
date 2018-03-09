@@ -552,7 +552,7 @@ def _prefix_lcurly(parser, key_parser, terminator=TT_RCURLY):
                 advance_expected(parser, TT_ASSIGN)
                 value = expression(parser, 0, [TT_COMMA])
             else:
-                return parse_error(parser, u"Invalid map syntax", parser.token)
+                return parse_error(parser, u"Invalid syntax", parser.token)
 
             items.append(list_node([key, value]))
             if parser.token_type != TT_COMMA:
@@ -1217,6 +1217,12 @@ def _parse_def_signature(parser, token):
                 _fun_arg = _subject
                 dispatch.append(_type)
             fun_signature.append(_fun_arg)
+        elif ntype == NT_INTERFACE:
+            inter = nodes.node_first(arg)
+            fun_signature.append(inter)
+            # tuple in generic function mean value arg
+            tok = nodes.node_token(inter)
+            dispatch.append(nodes.create_tuple_node(tok, [inter]))
         else:
 
             if ntype == NT_INT:

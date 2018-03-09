@@ -83,6 +83,7 @@ trait TList(T) for List =
     def cons(value, self of T) = _list:cons(value, self)
 
     def to_seq(self of T) = self
+    def from_seq(self of T) = self
 
     def len(self of T) = _list:length(self)
 

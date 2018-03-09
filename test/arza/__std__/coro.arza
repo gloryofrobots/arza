@@ -26,6 +26,7 @@ trait TCoro(C) for Coroutine =
             []
 
     def to_seq(self of C) = self
+    def from_seq(self of C) = self
     def empty(self of C) = []
 
 describe Coroutine as (Sized, Seqable, Seq, Emptiable)

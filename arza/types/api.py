@@ -239,13 +239,14 @@ def is_implemented_b(process, typ, iface):
 
 
 def kindof(process, obj, trait):
-    # TODO REMOVE IT AFTER YOU FINISH REMOVING node_juxtaposition_list
     assert not space.islist(trait)
     return space.newbool(kindof_b(process, obj, trait))
 
 
 def kindof_b(process, obj, kind):
     if space.isinterface(kind):
+        if space.isinterface(obj):
+            return equal_b(obj, kind)
         return interface_b(process, obj, kind)
     elif space.isdatatype(kind):
         return typeof_b(process, obj, kind)

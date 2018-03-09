@@ -5,6 +5,7 @@ from arza.types import space, api
 from arza.misc import platform, strutil
 from transform_state import *
 
+
 def _create_path_node(token, path):
     head, tail = plist.split(path)
     if plist.is_empty(tail):
@@ -35,7 +36,6 @@ def add_path(node, path):
 
 
 def _process_tuple(state, pattern, patterns, path):
-
     children = node_first(pattern)
     count = api.length(children)
     count_i = api.to_i(count)
@@ -231,6 +231,13 @@ def _process_name(state, pattern, patterns, path):
     return patterns
 
 
+def _process_interface(state, pattern, patterns, path):
+    name = nodes.node_first(pattern)
+    patterns = add_pattern(patterns, ["equal",
+                                      _create_path_node(nodes.node_token(pattern), path), name])
+    return patterns
+
+
 def _process_wildcard(state, pattern, patterns, path):
     patterns = add_pattern(patterns, ["wildcard"])
     return patterns
@@ -288,6 +295,8 @@ def _process_pattern(state, pattern, patterns, path):
         return _process_cons(state, pattern, patterns, path)
     elif ntype == NT_NAME:
         return _process_name(state, pattern, patterns, path)
+    elif ntype == NT_INTERFACE:
+        return _process_interface(state, pattern, patterns, path)
     elif ntype == NT_IS_IMPLEMENTED:
         return _process_is_implemented(state, pattern, patterns, path)
     elif ntype == NT_OF:

@@ -1,3 +1,19 @@
+(:
+     def Array[T] (:
+        struct X {
+            T* data
+            T++
+        }
+    :)
+
+    def abs[val1, val2] {:
+        abs(val1, val2)
+    :}
+    let FloatArray = Array(float)
+:)
+
+
+
 define Seq:
     expect(to_seq)
     expect:

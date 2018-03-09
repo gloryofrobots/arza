@@ -20,6 +20,11 @@ fun scanl(func, accumulator, coll)
 
 
 //LOOPS ////////////////////////
+// possible casting solution
+//fun ensure_seq(fn) =
+//    fun (f, coll) =
+//        from_seq(fn(f, to_seq(coll)))
+
 fun map(f, coll)
     | (f, []) = empty(coll)
     | (f, hd::tl) = f(hd) :: map(f, tl)
