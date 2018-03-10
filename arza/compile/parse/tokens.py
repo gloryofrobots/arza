@@ -133,6 +133,7 @@ RULES = [
     (token('def\+'), TT_DEF_PLUS),
     (keyword('def'), TT_DEF),
     (keyword('when'), TT_WHEN),
+    (keyword('valueof'), TT_VALUEOF),
     (keyword('in'), TT_IN),
 
     (keyword('infixl'), TT_INFIXL),

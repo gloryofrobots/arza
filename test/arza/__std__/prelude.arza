@@ -160,9 +160,6 @@ interface Seqable(I) =
 interface FromSeq(I) =
     fun from_seq(I)
 
-interface Castable(I) =
-    fun cast(to_what, I)
-
 interface Sliceable(I) =
     fun slice (first, last, I)
     fun drop(count, I)
@@ -193,6 +190,9 @@ interface Extract(I) =
 
 interface Callable(I) =
     fun call(I, args)
+
+interface Castable(I) =
+    fun cast(valueof to_what, I)
 
 ////////////////////////////////////////////////////////////
 ///////////////// TYPES ////////////////////////////////////

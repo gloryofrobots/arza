@@ -29,9 +29,8 @@ def group_dict():
 class W_Generic(W_Hashable):
     # _immutable_fields_ = ["_name_"]
 
-    def __init__(self, name, arity, args_signature):
+    def __init__(self, name, arity, args_signature, cache_mask):
         W_Hashable.__init__(self)
-
         self.name = name
         self.arity = arity
         self.dispatch_indexes = [i for i in range(len(args_signature))]
@@ -43,6 +42,7 @@ class W_Generic(W_Hashable):
         self.unique_signatures = []
         self.count_call = 0
         self.env = space.newemptyenv(self.name)
+        self.cache_mask = cache_mask
         self.dag = None
 
     def get_types(self):
@@ -250,6 +250,7 @@ def conflict_resolver(process, gf, signatures):
 
 def _make_signature(process, gf, types, method, pattern, outers):
     any = process.std.interfaces.Any
+
     _types = space.newlist([
                                any if space.isvoid(_type) else _type for _type in types
                                ])
@@ -258,8 +259,9 @@ def _make_signature(process, gf, types, method, pattern, outers):
         return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
                              gf,
                              space.newstring(u"Generic function arity inconsistent with specialisation arguments"))
+
     if gf.arity != method.arity:
-        print gf, method, gf.arity, method.arity
+        # print gf, method, gf.arity, method.arity
         return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
                              gf,
                              space.newstring(u"Bad method for specialisation, inconsistent arity"))
@@ -316,4 +318,17 @@ def generic(name, signature):
     if arity == 0:
         error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR, space.newstring(u"Generic arity == 0"))
 
-    return W_Generic(name, arity, signature)
+    cache_mask = []
+    args = []
+    for arg in signature:
+        if space.istuple(arg):
+            argcache = 1
+            real_arg = api.at_index(arg, 0)
+        else:
+            argcache = 0
+            real_arg = arg
+
+        args.append(real_arg)
+        cache_mask.append(argcache)
+
+    return W_Generic(name, arity, space.newlist(args), cache_mask)

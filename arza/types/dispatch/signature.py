@@ -339,7 +339,6 @@ def _get_type_predicate(process, _type, index):
 def _get_sigargs(process, args):
     arity = api.length_i(args)
     sig_args = []
-
     for index in range(arity):
         kind = api.at_index(args, index)
         if space.isinterface(kind):

@@ -338,6 +338,9 @@ class TraitSignatureParser(BaseParser):
         literal(self, TT_NAME, NT_NAME)
 
 
+# two parser mechanics intermingled here, one for interface with name
+# and other for (interface = ) statement
+
 class InterfaceParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
@@ -360,6 +363,7 @@ class InterfaceFunctionParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
 
+        prefix(self, TT_VALUEOF, None, prefix_interface_valueof)
         prefix(self, TT_NAME, NT_NAME, prefix_name_as_symbol)
         infix(self, TT_OF, None, 5, infix_interface_of)
         # literal(self, TT_WILDCARD, NT_WILDCARD)
@@ -367,12 +371,14 @@ class InterfaceFunctionParser(BaseParser):
 
 
 def interface_generic_signature_parser_init(parser):
+    prefix(parser, TT_VALUEOF, None, prefix_interface_valueof)
     prefix(parser, TT_NAME, NT_NAME, prefix_name_as_symbol)
     literal(parser, TT_WILDCARD, NT_WILDCARD)
     symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
     return parser
 
 
+# interface = statement
 class InterfaceGenericParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)

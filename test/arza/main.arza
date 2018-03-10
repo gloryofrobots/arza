@@ -2,7 +2,7 @@ import io
 import affirm
 import seq
 import array
-//import tests
+import tests
 
 def cast (interface Eq, a of Array) = 24
 def cast (interface Collection, a of Array) = 42
@@ -32,6 +32,6 @@ fun main() =
 ////        PL(a2)
 //        io:print(a as Seq, a)
 //    f(0, 1, (_, 3))(2)
-//    tests:run()
+    tests:run()
     #endprogram
 

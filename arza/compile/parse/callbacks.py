@@ -1314,6 +1314,11 @@ def stmt_def_plus(parser, op, token):
 
 # INTERFACE
 
+def prefix_interface_valueof(parser, op, token):
+    name = expect_expression_of(parser, 0, NT_SYMBOL)
+    return node_1(NT_TUPLE, token, list_node([name]))
+
+
 def prefix_interface_generic_fun(parser, op, token):
     generic_name = expect_expression_of(parser.name_parser, 0, NT_NAME)
     items = _parse_comma_separated(parser.generic_signature_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
