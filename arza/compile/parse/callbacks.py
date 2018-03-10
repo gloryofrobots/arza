@@ -1217,7 +1217,7 @@ def _parse_def_signature(parser, token):
                 _fun_arg = _subject
                 dispatch.append(_type)
             fun_signature.append(_fun_arg)
-        elif ntype == NT_INTERFACE:
+        elif ntype == NT_INTERFACE or ntype == NT_TYPE:
             inter = nodes.node_first(arg)
             fun_signature.append(inter)
             # tuple in generic function mean value arg

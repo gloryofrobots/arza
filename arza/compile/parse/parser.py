@@ -210,6 +210,7 @@ class PatternParser(BaseParser):
 
         infix(self, TT_OF, NT_OF, 10, led_infix)
         prefix(self, TT_INTERFACE, NT_INTERFACE, prefix_nud, 100)
+        prefix(self, TT_TYPE, NT_TYPE, prefix_nud, 100)
 
         infix(self, TT_LPAREN, None, 95, infix_lparen_pattern, layout=layout_lparen)
         infix(self, TT_AS, None, 15, infix_bind)

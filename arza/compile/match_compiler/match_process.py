@@ -231,6 +231,13 @@ def _process_name(state, pattern, patterns, path):
     return patterns
 
 
+def _process_type(state, pattern, patterns, path):
+    name = nodes.node_first(pattern)
+    patterns = add_pattern(patterns, ["equal",
+                                      _create_path_node(nodes.node_token(pattern), path), name])
+    return patterns
+
+
 def _process_interface(state, pattern, patterns, path):
     name = nodes.node_first(pattern)
     patterns = add_pattern(patterns, ["equal",
@@ -297,6 +304,8 @@ def _process_pattern(state, pattern, patterns, path):
         return _process_name(state, pattern, patterns, path)
     elif ntype == NT_INTERFACE:
         return _process_interface(state, pattern, patterns, path)
+    elif ntype == NT_TYPE:
+        return _process_type(state, pattern, patterns, path)
     elif ntype == NT_IS_IMPLEMENTED:
         return _process_is_implemented(state, pattern, patterns, path)
     elif ntype == NT_OF:

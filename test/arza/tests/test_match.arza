@@ -21,6 +21,21 @@ fun test_match() =
 
     ////////////////////////////////////////////////////////////////
 
+    affirm:is_equal(
+        match Eq
+            | interface Eq = 1
+            | x = 2
+        , 1
+    )
+
+    affirm:is_equal(
+        match Int
+            | type Int = 2
+            | x = 1
+        , 2
+    )
+
+    ////////////////////////////////////////////////////////////////
 
     affirm:is_equal(
         (match [1,2,3]

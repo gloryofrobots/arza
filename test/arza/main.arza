@@ -4,25 +4,7 @@ import seq
 import array
 import tests
 
-def cast (interface Eq, a of Array) = 24
-def cast (interface Collection, a of Array) = 42
-//fun f((2, 1, 2)) = x
-//fun f(x, y, z) = [x, y, z]
 fun main() =
-//    let interface Eq = Eq
-//    in Eq
-//
-//    io:print(
-//        match Eq
-//            | interface Eq = 1
-//            | x = 2
-//        )
-    let a = array(1,2,3,4,5,6,7)
-    in
-        io:p(kindof(Eq, Eq))
-        io:print(signatures(cast))
-        io:print(a as Eq, a as Collection)
-//        io:pln(a as Int, a as Seq, a as Collection)
 //    let
 //        a = array(1,2,3,4)
 ////        a2 =

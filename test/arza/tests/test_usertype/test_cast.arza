@@ -1,11 +1,23 @@
 import affirm
+
 type Robot(battery_power)
+
+def cast(type Int, r of Robot) = r.battery_power
+
+def cast(interface Seq, r of Robot) = [r as Int]
+
+def cast(interface Str, r of Robot) = "Robot"
 
 def at(#battery_power, s of Robot) =
     (s as Instance).battery_power + 1
+
 
 fun test() =
     let
         r = Robot(42)
     in
         affirm:is_equal(r.battery_power, 43)
+        affirm:is_equal(r as Int, 43)
+        affirm:is_equal(r as Seq, [43])
+        affirm:is_equal(r as Str, "Robot")
+
