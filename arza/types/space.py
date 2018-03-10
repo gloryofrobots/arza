@@ -400,7 +400,7 @@ def isenv(w):
 
 ########################################################
 
-def newgeneric(name, signature):
+def newgeneric(process, name, signature):
     from arza.types.dispatch.generic import generic
     assert issymbol(name)
     if not islist(signature):
@@ -408,7 +408,7 @@ def newgeneric(name, signature):
 
     assert islist(signature), name
 
-    return generic(name, signature)
+    return generic(process, name, signature)
 
 
 def isgeneric(w):

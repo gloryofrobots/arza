@@ -1,6 +1,7 @@
 from arza.types.root import W_Hashable, W_Root
 from arza.misc import platform
 from arza.runtime import error
+from arza.builtins import lang_names
 from arza.types import api, space, plist, tuples
 from arza.compile.parse import nodes
 from arza.compile import compiler
@@ -312,7 +313,7 @@ def signatures(process, gf):
 ############################################################
 
 
-def generic(name, signature):
+def generic(process, name, signature):
     arity = api.length_i(signature)
 
     if arity == 0:
@@ -322,8 +323,12 @@ def generic(name, signature):
     args = []
     for arg in signature:
         if space.istuple(arg):
-            argcache = 1
-            real_arg = api.at_index(arg, 0)
+            argtype = api.at_index(arg, 0)
+            real_arg = api.at_index(arg, 1)
+            if api.equal_b(argtype, space.newsymbol_s(process, lang_names.SVALUEOF)):
+                argcache = 1
+            else:
+                return error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR, space.newstring(u"Invalid generic signature param"))
         else:
             argcache = 0
             real_arg = arg

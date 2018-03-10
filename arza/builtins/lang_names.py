@@ -65,3 +65,5 @@ TTUPLE = PREFIX + "Tuple"
 TMAP = PREFIX + "Map"
 TAny = PREFIX + "Any"
 TDatatype = PREFIX + "Datatype"
+
+SVALUEOF = "VALUEOF"

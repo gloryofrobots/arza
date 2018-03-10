@@ -5,6 +5,7 @@ from arza.types import space, api, plist
 from arza.runtime import error
 from arza.compile.parse import nodes
 from arza.compile.parse import node_type as nt
+from arza.builtins import lang_names
 
 
 class Argument(W_Root):
@@ -345,9 +346,15 @@ def _get_sigargs(process, args):
             arg = _get_interface_predicate(process, kind, index)
         elif space.isdatatype(kind):
             arg = _get_type_predicate(process, kind, index)
-        elif space.istuple(kind) and api.length_i(kind) == 1:
-            kind = api.at_index(kind, 0)
-            arg = _get_value_predicate(process, kind, index)
+        elif space.istuple(kind) and api.length_i(kind) == 2:
+
+            argtype = api.at_index(kind, 0)
+            if not api.equal_b(argtype, space.newsymbol_s(process, lang_names.SVALUEOF)):
+                return error.throw_2(error.Errors.TYPE_ERROR,
+                                     space.newstring(u"Invalid signature type. Expected (#VALUEOF, value)"), kind)
+
+            value = api.at_index(kind, 1)
+            arg = _get_value_predicate(process, value, index)
         else:
             return error.throw_2(error.Errors.TYPE_ERROR,
                                  space.newstring(u"Invalid signature type. Expected type or interface"), kind)

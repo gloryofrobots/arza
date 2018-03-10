@@ -180,7 +180,7 @@ def __type(process, routine):
 def __generic(process, routine):
     name = routine.get_arg(0)
     sig = routine.get_arg(1)
-    return generic.generic(name, sig)
+    return generic.generic(process, name, sig)
 
 
 @complete_native_routine

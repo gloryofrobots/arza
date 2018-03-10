@@ -1222,7 +1222,8 @@ def _parse_def_signature(parser, token):
             fun_signature.append(inter)
             # tuple in generic function mean value arg
             tok = nodes.node_token(inter)
-            dispatch.append(nodes.create_tuple_node(tok, [inter]))
+            sym = nodes.create_symbol_node_s(tok, lang_names.SVALUEOF)
+            dispatch.append(nodes.create_tuple_node(tok, [sym, inter]))
         else:
 
             if ntype == NT_INT:
@@ -1316,7 +1317,8 @@ def stmt_def_plus(parser, op, token):
 
 def prefix_interface_valueof(parser, op, token):
     name = expect_expression_of(parser, 0, NT_SYMBOL)
-    return node_1(NT_TUPLE, token, list_node([name]))
+    sym = nodes.create_symbol_node_s(token, lang_names.SVALUEOF)
+    return node_1(NT_TUPLE, token, list_node([sym, name]))
 
 
 def prefix_interface_generic_fun(parser, op, token):
