@@ -3,9 +3,11 @@ import tests:test_usertype:types
 import tests:test_usertype:types as stuff
 
 prefix(++-+*++, ++-+*++, 70)
+infixl (+--, +--, 50)
 
 interface =
     fun ++-+*++(self)
+    fun +--(v1, v2)
 
 type X(x)
 
@@ -13,6 +15,8 @@ def types:test_method_1(a1 of X, a2 of X, self of X) = a1.x + a2.x + self.x
 def types:test_method_2(a1, self of X, a2) = a1.x + a2.x + self.x
 def types:test_method_3(self of X, a1, a2) = a1.x + a2.x + self.x
 def types:test_method_4(self of X) = self.x
+
+def +--(x1 of X, x2 of X) = x1.x + x2.x
 
 def ++-+*++(self of stuff:TestType) = self.val
 
@@ -27,6 +31,7 @@ fun test () =
         x = X(42)
         x_2 = X(-42)
     in
+        affirm:is_equal(x +-- x_2, 0)
         affirm:is_equal(stuff:test_method_1(x_2, x, x), 42)
         affirm:is_equal(stuff:test_method_2(x, x_2, x), 42)
         affirm:is_equal(stuff:test_method_3(x, x, x_2), 42)
