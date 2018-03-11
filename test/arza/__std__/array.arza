@@ -5,7 +5,7 @@ import std
 
 
 trait TArray(A) for Array =
-    std:TEq(A)
+    instance std:TEq(A)
 
     def at (k, self of A) as std_behavior:at
     def put (k, v, self of A) as std_behavior:put

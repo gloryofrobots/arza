@@ -45,23 +45,24 @@ trait TCmp(T1, T2) =
         elif le(x, y) then LT
         else GT
 
-TNe(Val, Val)
+instance TNe(Val, Val)
 def eq(v1 of Val, v2) = v1.v == v2.v
 
-TEq(Val2, Val2)
+instance TEq(Val2, Val2)
 def ne(v1 of Val2, v2) = v1.v != v2.v
 
-TOrder(Val, Val)
-TMaxMin(Val, Val)
+instance TOrder(Val, Val)
+instance TMaxMin(Val, Val)
 
 def cmp(self of Val, other of Val) =
     if self.v == other.v then EQ
     elif self.v <= other.v then LT
     else GT
 
-TOrder(Val2, Val2)
-TCmp(Val2, Val2)
-TMaxMin(Val2, Val2)
+instance TOrder(Val2, Val2)
+instance TCmp(Val2, Val2)
+instance TMaxMin(Val2, Val2)
+
 def le(self of Val2, other of Val2) = self.v <= other.v
 
 fun test () =

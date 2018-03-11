@@ -48,11 +48,11 @@ trait (T) for [Float, Int] =
 
     def <= (x of T, y) as _number:le
 
-    TEq(T)
-    TStr(T)
-    TCmp(T, Any)
-    TMinMax(T, Any)
-    TOrder(T, Any)
+    instance TEq(T)
+    instance TStr(T)
+    instance TCmp(T, Any)
+    instance TMinMax(T, Any)
+    instance TOrder(T, Any)
 
 describe (Float, Int) as (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed)
 

@@ -95,7 +95,7 @@ class Scheduler:
             return
 
         # print "unactivate", p, self.active
-        self.active = plist.remove(self.active, p)
+        self.active = plist.remove_silent(self.active, p)
 
     def activate(self, p):
         self.__add_active(p)

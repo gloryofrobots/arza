@@ -38,10 +38,10 @@ trait __TPB(M, B) for (actors:BugEyedMonster, actors:ProtagonistBlond) =
         behavior:scream(movie, b) |>
         behavior:interact(_, b, (#RUN_AWAY, m))
 
-    behavior:TNamed(M)
-    behavior:TNamed(B)
-    behavior:TStr(M)
-    behavior:TStr(B)
+    instance behavior:TNamed(M)
+    instance behavior:TNamed(B)
+    instance behavior:TStr(M)
+    instance behavior:TStr(B)
 
 
 describe (actors:ProtagonistBlond, actors:BugEyedMonster) as (behavior:ActionActor, behavior:Named)

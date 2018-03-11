@@ -55,9 +55,11 @@ TOKENS = [
   ("TT_VALUEOF", "valueof"),
   ("TT_USE", "use"),
   ("TT_TRAIT", "trait"),
+  ("TT_INSTANCE", "instance"),
   ("TT_FOR", "for"),
   ("TT_INTERFACE", "interface"),
   ("TT_DESCRIBE", "describe"),
+
   ("TT_RECEIVE", "receive"),
   ("TT_AFTER", "after"),
 

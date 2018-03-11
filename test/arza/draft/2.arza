@@ -12,9 +12,11 @@
     let FloatArray = Array(float)
 :)
 
+@@(a -> a -> a)
+fun f(x, y, z) = 1
 
 
-define Seq:
+unit Seq:
     expect(to_seq)
     expect:
         fun to_seq(self)
@@ -25,7 +27,7 @@ define Seq:
     export(filter, range, nth)
 
 
-define Obj
+unit Obj
     import seq with:
         fun to_seq(self): self
         var x = 1

@@ -1,6 +1,5 @@
-interface ReadOnlyCollection(I) is (I2, I3) =
-    fun at(key, self of I)
-    fun elem(I, t)
+trait (T) for [Float, Int] =
+    instance TEq(T)
 
 //let d = {
 //    x = 1,

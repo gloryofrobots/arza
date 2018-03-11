@@ -4,8 +4,8 @@ import seq
 
 
 trait __TStringEq(T) for [String, Char, Symbol] =
-    std:TEq(T)
-    std:TStr(T)
+    instance std:TEq(T)
+    instance std:TStr(T)
 
 
 trait __TString(S) for String =

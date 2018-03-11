@@ -324,6 +324,18 @@ def remove(pl, v):
     return W_PList(head(pl), remove(tail(pl), v))
 
 
+def remove_silent(pl, v):
+    type_check(pl)
+    from arza.types import api
+    if is_empty(pl):
+        return empty()
+
+    if api.equal_b(v, head(pl)):
+        return tail(pl)
+
+    return W_PList(head(pl), remove_silent(tail(pl), v))
+
+
 ########################################################################
 
 def count(pl, v):

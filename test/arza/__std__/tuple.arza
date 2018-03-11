@@ -5,7 +5,7 @@ import io
 
 
 trait __Tuple(T) for Tuple =
-    std:TEq(T)
+    instance std:TEq(T)
 
     def put (k, v, self of T) as std_behavior:put
     def del (el, self of T) as std_behavior:del

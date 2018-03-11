@@ -4,7 +4,7 @@ import seq
 import std
 
 trait TMap(M) for Map =
-    std:TEq(M)
+    instance std:TEq(M)
 
     def put (k, v, self of M) as std_behavior:put
     def del (el, self of M) as std_behavior:del

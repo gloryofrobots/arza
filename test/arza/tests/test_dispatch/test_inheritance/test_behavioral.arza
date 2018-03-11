@@ -11,7 +11,7 @@ trait T_A(T) for A =
 type AB is A = (b)
 
 trait T_B(T) for AB =
-    T_A(T)
+    instance T_A(T)
     def+(super) f(v of T) = super(v) ++ v.b
 
 

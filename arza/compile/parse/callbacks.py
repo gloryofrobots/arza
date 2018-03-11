@@ -312,6 +312,8 @@ def infix_lparen_pattern(parser, op, token, left):
     right = node_1(NT_MAP, token, items)
     return node_2(NT_OF, token, right, left)
 
+def infix_lparen_forbidden(parser, op, token, left):
+    parse_error(parser, u"You cannot call functions amongst top level declatations", token)
 
 def infix_lparen(parser, op, token, left):
     unpack_call = False
@@ -1431,6 +1433,11 @@ def stmt_interface(parser, op, token):
 
 
 # TRAIT
+
+def prefix_instance(parser, op, token):
+    call = expect_expression_of(parser.expression_parser, 0, NT_CALL)
+    return call
+
 
 def _trait_for_ensure_tuple(node):
     if not nodes.is_list_node(node):

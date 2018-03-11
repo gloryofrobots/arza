@@ -40,5 +40,5 @@ def behavior:scream(movie, b of actors:InnocentBrunette) =
 
 
 describe actors:InnocentBrunette as (behavior:ActionActor)
-behavior:TNamed(actors:InnocentBrunette)
+instance behavior:TNamed(actors:InnocentBrunette)
 describe actors:InnocentBrunette as (behavior:Named)

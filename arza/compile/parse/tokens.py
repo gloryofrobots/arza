@@ -114,6 +114,7 @@ RULES = [
 
     (keyword('use'), TT_USE),
     (keyword('trait'), TT_TRAIT),
+    (keyword('instance'), TT_INSTANCE),
     (keyword('for'), TT_FOR),
 
     (keyword('interface'), TT_INTERFACE),
