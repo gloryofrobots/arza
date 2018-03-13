@@ -1,7 +1,6 @@
 from arza.compile.code.opcode import *
 from arza.runtime import error
 from arza.runtime.routine.base_routine import BaseRoutine
-from arza.runtime.load import import_module
 from arza.types import api, space, string, environment, datatype
 
 

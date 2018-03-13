@@ -18,17 +18,17 @@ STD_MODULES = [u"std", u"tuple",
                ]
 
 
-def load_prelude(process, script_name):
+def _load_prelude(process, script_name):
     result = import_module(process, space.newsymbol(process, script_name))
     if process.is_terminated():
         # error here
         return result
 
-    process.modules.set_prelude(result)
+    process.modules.set_prelude(result.env)
     return None
 
 
-def load_module(process, script_name):
+def _load_module(process, script_name):
     result = import_module(process, space.newsymbol(process, script_name))
     if process.is_terminated():
         # error here
@@ -56,7 +56,7 @@ class Scheduler:
         path = space.newlist([space.newstring_s(p) for p in libdirs])
 
         process = self.create_root(path)
-        err = load_prelude(process, PRELUDE_FILE)
+        err = _load_prelude(process, PRELUDE_FILE)
         if err is not None:
             return process, err
 
@@ -66,7 +66,7 @@ class Scheduler:
         builtins.postsetup(process)
 
         for module_name in STD_MODULES:
-            err = load_module(process, module_name)
+            err = _load_module(process, module_name)
             if err is not None:
                 return process, err
 

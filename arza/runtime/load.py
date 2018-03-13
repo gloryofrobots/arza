@@ -34,13 +34,12 @@ def find_module_file(path, dirs):
     return None
 
 
-def load_module(process, name):
-    modules = process.modules
-    modules.before_load(name)
+def get_module_filename(process, name):
     raw = api.to_s(name)
     path = "%s.arza" % raw.replace(":", os.sep)
 
-    filename = find_module_file(path, modules.path)
+    modules_path = process.modules.path
+    filename = find_module_file(path, modules_path)
     # print "LOAD MODULE", name, filename
 
     if not filename:
@@ -51,19 +50,32 @@ def load_module(process, name):
         raw_list = raw.split(":")
         last_name = raw_list[len(raw_list) - 1]
         path = "%s%s%s.arza" % (raw.replace(":", os.sep), os.sep, last_name)
-        filename = find_module_file(path, modules.path)
+        filename = find_module_file(path, modules_path)
 
     if not filename:
         return error.throw_1(error.Errors.IMPORT_ERROR, name)
+
+    return filename
+
+
+def load_module(process, name):
+    process.modules.before_load(name)
+    filename = get_module_filename(process, name)
     return evaluate_module_file(process, name, filename)
 
 
-def evaluate_module_file(process, name, filename):
+def __evaluate_module_env(process, name, filename):
     from arza.builtins.lang import compile_module
-    module = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 3),
-                                space.newtuple([space.newstring_s(filename), name, process.modules.prelude]))
+    env = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 3),
+                             space.newtuple([space.newstring_s(filename), name, process.modules.prelude]))
 
     if process.is_terminated():
-        error.signal(module)
-    process.modules.add_env(module)
+        error.signal(env)
+    return env
+
+
+def evaluate_module_file(process, name, filename):
+    env = __evaluate_module_env(process, name, filename)
+
+    module = process.modules.add_env(env)
     return module

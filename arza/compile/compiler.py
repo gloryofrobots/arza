@@ -944,9 +944,9 @@ def _compile_IMPORT(compiler, code, node):
 
         i += 1
 
-    module_literal = _declare_literal(compiler, module)
-    code.emit_1(LITERAL, module_literal, info(node))
-    _emit_store(compiler, code, import_name, node)
+    # module_literal = _declare_literal(compiler, module)
+    # code.emit_1(LITERAL, module_literal, info(node))
+    # _emit_store(compiler, code, import_name, node)
 
 
 def _compile_IMPORT_FROM(compiler, code, node):

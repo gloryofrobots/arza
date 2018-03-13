@@ -134,10 +134,6 @@ class Interfaces:
             self.Eq, self.Displayed
         ])
 
-        api.put(prelude, self.Any.name, self.Any)
-        api.put(prelude, self.Instance.name, self.Instance)
-        api.put(prelude, self.Singleton.name, self.Singleton)
-
         self._derive_prelude(process)
 
     def _derive_prelude(self, process):

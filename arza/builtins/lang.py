@@ -44,6 +44,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
     put_lang_func(process, module, lang_names.OVERRIDE, __override, 5)
     put_lang_func(process, module, lang_names.DESCRIBE, __describe, 2)
+    put_lang_func(process, module, lang_names.LOAD_MODULE, load_module, 1)
     # put_lang_func(process, module, lang_names.CURRY, __curry, 1)
     put_lang_func(process, module, u"curry", __curry, 1)
     put_lang_func(process, module, u"partial", __partial, -1)
@@ -237,6 +238,18 @@ def __describe(process, routine):
     interfaces = routine.get_arg(1)
     datatype.derive_strict(process, _type, interfaces)
     return _type
+
+
+@complete_native_routine
+def load_module(process, routine):
+    from arza.runtime import load
+    module_path = routine.get_arg(0)
+    if space.isstring(module_path):
+        module_path = space.newsymbol_string(process, module_path)
+
+    error.affirm_type(module_path, space.issymbol)
+    module = load.import_module(process, module_path)
+    return module
 
 
 @complete_native_routine

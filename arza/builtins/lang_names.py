@@ -4,6 +4,7 @@ NOT = PREFIX + "not"
 ELEM = PREFIX + "elem"
 IS = PREFIX + "is"
 IS_EMPTY = PREFIX + "is_empty"
+LOAD_MODULE = PREFIX + "load_module"
 
 ISNOT = PREFIX + "isnot"
 KINDOF = PREFIX + "kindof"

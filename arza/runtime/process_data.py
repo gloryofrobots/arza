@@ -51,6 +51,7 @@ class Modules:
     def add_env(self, env):
         module = space.newmodule(env)
         self.add_module(module)
+        return module
 
     def add_module(self, module):
         error.affirm_type(module.name, space.issymbol)
