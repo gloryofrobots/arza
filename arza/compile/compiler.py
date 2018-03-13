@@ -190,11 +190,11 @@ def _declare_import(compiler, name, func):
     assert space.issymbol(name)
     assert not api.isempty(name)
     scope = _current_scope(compiler)
-    idx = scope.get_imported_index(name)
+    idx = scope.get_import_index(name)
     if not platform.is_absent_index(idx):
         return idx
 
-    idx = scope.add_imported(name, func)
+    idx = scope.add_import(name, func)
     assert not platform.is_absent_index(idx)
     return idx
 
@@ -882,7 +882,7 @@ def _get_import_data_and_emit_module(compiler, code, node):
         assert node_type(exp) == NT_NAME
         import_name = exp
         module_path = nodes.node_value_s(exp)
-
+    scope = _current_scope(compiler)
     import_name_s = _get_symbol_name(compiler, import_name)
     module = load.import_module(compiler.process, space.newsymbol_s(compiler.process, module_path))
     var_names = []
@@ -912,6 +912,14 @@ def _get_import_data_and_emit_module(compiler, code, node):
     return module, import_name_s, var_names
 
 
+def _need_import(compiler, bind_name):
+    scope = _current_scope(compiler)
+    if not scope.has_imported_name(bind_name):
+        # print "SKIPPING", bind_name
+        return False
+    return True
+
+
 def _emit_imported(compiler, code, node, module, var_name, bind_name, is_pop):
     func = api.at(module, var_name)
     idx = _declare_import(compiler, bind_name, func)
@@ -929,13 +937,17 @@ def _compile_IMPORT(compiler, code, node):
     last_index = len(var_names) - 1
     for var_name, bind_name in var_names:
         full_bind_name = symbols.concat_3(compiler.process, import_name, colon, bind_name)
-        need_pop = False if i == last_index else True
-        _emit_imported(compiler, code, node, module, var_name, full_bind_name, need_pop)
+
+        if _need_import(compiler, full_bind_name):
+            need_pop = False if i == last_index else True
+            _emit_imported(compiler, code, node, module, var_name, full_bind_name, need_pop)
+
         i += 1
 
     module_literal = _declare_literal(compiler, module)
     code.emit_1(LITERAL, module_literal, info(node))
     _emit_store(compiler, code, import_name, node)
+
 
 def _compile_IMPORT_FROM(compiler, code, node):
     module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
@@ -967,8 +979,11 @@ def _compile_IMPORT_HIDING(compiler, code, node):
     last_index = len(var_names) - 1
     for var_name in var_names:
         bind_name = symbols.concat_3(compiler.process, import_name, colon, var_name)
-        need_pop = False if i == last_index else True
-        _emit_imported(compiler, code, node, module, var_name, bind_name, need_pop)
+
+        if _need_import(compiler, bind_name):
+            need_pop = False if i == last_index else True
+            _emit_imported(compiler, code, node, module, var_name, bind_name, need_pop)
+
         i += 1
 
 
@@ -1102,6 +1117,31 @@ def _compile_CALL(compiler, code, node):
 ######################################
 ##FIRST PASS
 #######################################
+SKIP = [NT_IMPORT, NT_IMPORT_FROM, NT_IMPORT_FROM_HIDING, NT_IMPORT_HIDING]
+
+
+def _compile_0(compiler, code, ast):
+    if is_empty_node(ast):
+        return
+
+    if nodes.is_list_node(ast):
+        for node in ast:
+            _compile_0(compiler, code, node)
+    else:
+        ntype = node_type(ast)
+        if ntype in SKIP:
+            return
+        if ntype == NT_IMPORTED_NAME:
+            sym = nodes.imported_name_to_symbol(compiler.process, ast)
+            scope = _current_scope(compiler)
+            if scope.has_imported_name(sym):
+                return
+            scope.add_imported_name(sym)
+            # print "IMPORTED", sym
+
+        _compile_0(compiler, code, node_children(ast))
+
+
 def _compile_1(compiler, code, ast):
     if is_empty_node(ast):
         return
@@ -1119,6 +1159,10 @@ def _compile_1(compiler, code, ast):
                 # _declare_function(compiler, code, name)
         else:
             return
+            # elif ntype == NT_IMPORTED_NAME:
+            #     sym = imported_name_to_s(ast)
+            #     print "IMPORTED", sym
+            #     return
 
 
 # compiler second_pass
@@ -1130,6 +1174,7 @@ def _compile(compiler, code, ast):
 
 
 def _compile_2(compiler, code, ast):
+    _compile_0(compiler, code, ast)
     _compile_1(compiler, code, ast)
     _compile(compiler, code, ast)
 

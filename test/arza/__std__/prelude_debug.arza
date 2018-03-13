@@ -1,4 +1,6 @@
-trait (T) for [Float, Int] =
+let x = arza:lang:zero
+
+trait (T) for [arza:Float, Int] =
     instance TEq(T)
 
 //let d = {

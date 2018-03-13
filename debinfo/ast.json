@@ -1,12 +1,48 @@
 [
   [
     {
+      "_ntype": "NT_ASSIGN",
+      "_value": "=",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "x"
+        },
+        {
+          "_ntype": "NT_IMPORTED_NAME",
+          "_value": ":",
+          "children": [
+            {
+              "_ntype": "NT_IMPORTED_NAME",
+              "_value": ":",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "arza"
+                },
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "lang"
+                }
+              ]
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "zero"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  [
+    {
       "_ntype": "NT_FUN",
       "_value": "trait",
       "children": [
         {
           "_ntype": "NT_NAME",
-          "_value": "@__trait___633986"
+          "_value": "@__trait___297846"
         },
         [
           [
@@ -50,12 +86,22 @@
       "children": [
         {
           "_ntype": "NT_NAME",
-          "_value": "@__trait___633986"
+          "_value": "@__trait___297846"
         },
         [
           {
-            "_ntype": "NT_NAME",
-            "_value": "Float"
+            "_ntype": "NT_IMPORTED_NAME",
+            "_value": ":",
+            "children": [
+              {
+                "_ntype": "NT_NAME",
+                "_value": "arza"
+              },
+              {
+                "_ntype": "NT_NAME",
+                "_value": "Float"
+              }
+            ]
           }
         ]
       ]
@@ -66,7 +112,7 @@
       "children": [
         {
           "_ntype": "NT_NAME",
-          "_value": "@__trait___633986"
+          "_value": "@__trait___297846"
         },
         [
           {

@@ -208,6 +208,8 @@ class W_Scope(W_Root):
         self.__static_references = plist.empty()
 
         self.imports = space.newassocarray()
+        self.imported_names = space.newassocarray()
+
         self.functions = space.newassocarray()
         self.arg_count = -1
         self.references = None
@@ -239,13 +241,26 @@ class W_Scope(W_Root):
 
     ###########################
 
-    def add_imported(self, name, func):
+    def add_imported_name(self, name):
         assert space.issymbol(name)
-        assert platform.is_absent_index(self.get_imported_index(name))
+        assert platform.is_absent_index(api.get_index(self.imported_names, name))
+        return self.imported_names.insert(name, space.newunit())
+
+    def has_imported_name(self, name):
+        return api.contains_b(self.imported_names, name)
+
+    ###########################
+
+    def add_import(self, name, func):
+        assert space.issymbol(name)
+        assert platform.is_absent_index(self.get_import_index(name))
         return self.imports.insert(name, func)
 
-    def get_imported_index(self, name):
+    def get_import_index(self, name):
         return api.get_index(self.imports, name)
+
+    def has_import(self, name):
+        return api.contains_b(self.imports, name)
 
     ###########################
 

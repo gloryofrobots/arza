@@ -251,6 +251,10 @@ def imported_name_to_string(node):
     return space.newstring_s(imported_name_to_s(node))
 
 
+def imported_name_to_symbol(process, node):
+    return space.newsymbol_s(process, imported_name_to_s(node))
+
+
 def make_call_chain(args, func):
     pass
 
