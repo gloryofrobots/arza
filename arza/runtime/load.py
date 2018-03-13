@@ -65,5 +65,5 @@ def evaluate_module_file(process, name, filename):
 
     if process.is_terminated():
         error.signal(module)
-    process.modules.add_module(module)
+    process.modules.add_env(module)
     return module

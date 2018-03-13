@@ -40,14 +40,20 @@ class W_Module(W_Root):
     def _contains_(self, key):
         return self.data._contains_(key)
 
+    def _equal_(self, other):
+        if not isinstance(other, W_Module):
+            return False
+        # print "EQ", self, other
+        return api.equal_b(self.name, other.name) and api.equal_b(self.data, other.data)
+
     def _to_string_(self):
-        return "<Module: %s>" % self.data._to_string_()
+        return "<Module %s: %s>" % (self.name, self.data._to_string_())
 
     def _to_repr_(self):
         return self._to_string_()
 
 
-def newmodule_from_env(process, env):
+def newmodule(env):
     name = env.name
     values = env.exported_values()
     return W_Module(name, values)

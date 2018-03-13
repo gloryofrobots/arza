@@ -5,7 +5,7 @@ from arza:lang:_datatype import (record_values, record_keys, record_index_of)
 
 from arza:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                               Function, Partial, Generic, FiberChannel, Coroutine, Interface, Datatype,
-                              Env, Array, AssocArray, PID)
+                              Module, Array, AssocArray, PID)
 
 from arza:lang:_interfaces import (Instance, Singleton, Any)
 
@@ -257,7 +257,7 @@ trait TInstance(T) for Instance =
 
 trait TSingleton(T)
     for [Singleton, Function, Generic, Partial,
-        Datatype, Bool, Instance, Interface, PID, Env] =
+        Datatype, Bool, Instance, Interface, PID, Module] =
 
     def == (self of T, other) as std_behavior:equal
     def != (self of T, other) as  std_behavior:not_equal

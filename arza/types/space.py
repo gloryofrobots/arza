@@ -400,6 +400,19 @@ def isenv(w):
 
 ########################################################
 
+def newmodule(env):
+    from arza.types.module import newmodule as new
+    module = new(env)
+    return module
+
+
+def ismodule(w):
+    from arza.types.module import W_Module
+    return isinstance(w, W_Module)
+
+
+########################################################
+
 def newgeneric(process, name, signature):
     from arza.types.dispatch.generic import generic
     assert issymbol(name)

@@ -6,7 +6,7 @@ def setup(process, stdlib):
     _module = space.newemptyenv(name)
     setup_types(_module, stdlib.types)
     _module.export_all()
-    process.modules.add_module(_module)
+    process.modules.add_env(_module)
 
 
 def setup_types(module, types):
@@ -29,6 +29,7 @@ def setup_types(module, types):
     api.put(module, types.Interface.name, types.Interface)
     api.put(module, types.Datatype.name, types.Datatype)
     api.put(module, types.Env.name, types.Env)
+    api.put(module, types.Module.name, types.Module)
     api.put(module, types.Array.name, types.Array)
     api.put(module, types.AssocArray.name, types.AssocArray)
     api.put(module, types.PID.name, types.PID)

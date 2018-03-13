@@ -3,6 +3,7 @@ from arza.compile.parse.parser import newparser
 from arza.runtime import error
 from arza.types import api
 
+
 class Symbols:
     def __init__(self):
         self.symbols = []
@@ -47,9 +48,13 @@ class Modules:
         error.affirm_type(path, space.isstring)
         self.path = plist.cons(path, self.path)
 
+    def add_env(self, env):
+        module = space.newmodule(env)
+        self.add_module(module)
+
     def add_module(self, module):
         error.affirm_type(module.name, space.issymbol)
-        error.affirm_type(module, space.isenv)
+        error.affirm_type(module, space.ismodule)
         api.put(self.modules, module.name, module)
 
     def before_load(self, name):

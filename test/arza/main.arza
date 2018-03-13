@@ -4,6 +4,8 @@ import seq
 import array
 import tests
 import tests:test_usertype:test_cast
+//import tests:lib_az:abc:ts:module_s as s
+//import tests:lib_az:abc:ts:module_t as s
 
 fun main() =
 //    let
@@ -16,6 +18,6 @@ fun main() =
 //        io:print(a as Seq, a)
 //    f(0, 1, (_, 3))(2)
     tests:run()
-//    io:print(test_cast)
+    io:print(test_cast)
     #endprogram
 
