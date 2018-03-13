@@ -7,9 +7,10 @@ from arza.runtime import error
 class W_Module(W_Root):
     _immutable_fields_ = ['name', 'data']
 
-    def __init__(self, name, data):
+    def __init__(self, name, data, env):
         self.name = name
         self.data = data
+        self.env = env
 
     def can_export(self, symbol):
         return api.contains_b(self.data, symbol)
@@ -56,7 +57,7 @@ class W_Module(W_Root):
 def newmodule(env):
     name = env.name
     values = env.exported_values()
-    return W_Module(name, values)
+    return W_Module(name, values, env)
 
 
 def submodule(process, module, names):
@@ -67,4 +68,4 @@ def submodule(process, module, names):
 
     subsymbol = space.newsymbol(process, u".sub")
     module_name = symbol.concat_2(process, subsymbol, module.name)
-    return W_Module(module_name, data)
+    return W_Module(module_name, data, module.env)
