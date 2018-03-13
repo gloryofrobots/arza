@@ -242,7 +242,7 @@ type CoroutineEmpty(args)
 
 // Bootstrap interfaces behavior
 
-trait TInstance(T) for Instance =
+trait (T) for Instance =
     def index_of (val, self of T) as record_index_of
     def keys(self of T) as record_keys
     def values(self of T) as record_values
@@ -255,7 +255,7 @@ trait TInstance(T) for Instance =
     def is_empty (self of T) as std_behavior:is_empty
     def cast(to_what, self of T) as std_behavior:cast
 
-trait TSingleton(T)
+trait (T)
     for [Singleton, Function, Generic, Partial,
         Datatype, Bool, Instance, Interface, PID, Module] =
 

@@ -18,6 +18,9 @@ class W_String(W_Hashable):
     def endswith_s(self, strval):
         return self.string_value.endswith(strval)
 
+    def index_s(self, strval):
+        return self.string_value.find(strval)
+
     def contains_s(self, strval):
         return strval in self.string_value
 

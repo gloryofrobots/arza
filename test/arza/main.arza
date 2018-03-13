@@ -18,7 +18,7 @@ fun main() =
 //    f(0, 1, (_, 3))(2)
     tests:run()
     let
-        m = load_module("tests:test_usertype:test_cast")
+        m = load_module("prelude")
     in
         io:print(m)
 

@@ -3,6 +3,7 @@ from arza.types.root import W_Root
 from arza.misc import platform
 from arza.types import api
 from arza.runtime import error
+from arza.builtins import lang_names
 
 ABSENT = platform.absent_index()
 
@@ -404,14 +405,22 @@ class W_Scope(W_Root):
 
     def _create_exports(self):
         if plist.is_empty(self.__declared_exports):
-            SKIPPED = "_"
+            # somewhat dirty hacks here for auto export
+            # cant think of anything better unfortunately
+            skip_start = lang_names.SKIP_ON_AUTO_EXPORT_START
+            skip_middle = lang_names.SKIP_ON_AUTO_EXPORT_MIDDLE
             syms = []
             keys = self.__locals.keys_list()
 
             for key in keys:
-                if key.string.startswith_s(SKIPPED) and not key.string.endswith_s(SKIPPED):
+                keyval = key.string
+                # avoid exporting _name but enable _name_
+                if keyval.startswith_s(skip_start) and not keyval.endswith_s(skip_start):
                     continue
-                if key.string.contains_s(":"):
+
+                index_colon = keyval.index_s(skip_middle)
+                # so operators like := will be exported but names arza:lang:foo will not
+                if index_colon > 1:
                     continue
 
                 syms.append(key)

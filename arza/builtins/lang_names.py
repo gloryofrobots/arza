@@ -1,3 +1,4 @@
+
 PREFIX = "arza:lang:"
 
 NOT = PREFIX + "not"
@@ -68,3 +69,6 @@ TAny = PREFIX + "Any"
 TDatatype = PREFIX + "Datatype"
 
 SVALUEOF = "VALUEOF"
+
+SKIP_ON_AUTO_EXPORT_START = "_"
+SKIP_ON_AUTO_EXPORT_MIDDLE = ":"
