@@ -257,7 +257,7 @@ trait TInstance(T) for Instance =
 
 trait TSingleton(T)
     for [Singleton, Function, Generic, Partial,
-        Datatype, Bool, Instance, Interface, PID] =
+        Datatype, Bool, Instance, Interface, PID, Env] =
 
     def == (self of T, other) as std_behavior:equal
     def != (self of T, other) as  std_behavior:not_equal

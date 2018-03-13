@@ -2,7 +2,8 @@ import io
 import affirm
 import seq
 import array
-import tests
+//import tests
+import tests:test_usertype:test_cast
 
 fun main() =
 //    let
@@ -14,6 +15,7 @@ fun main() =
 ////        PL(a2)
 //        io:print(a as Seq, a)
 //    f(0, 1, (_, 3))(2)
-    tests:run()
+//    tests:run()
+    io:print(test_cast)
     #endprogram
 

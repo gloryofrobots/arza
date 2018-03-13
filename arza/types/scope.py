@@ -389,7 +389,15 @@ class W_Scope(W_Root):
 
     def _create_exports(self):
         if plist.is_empty(self.__declared_exports):
-            return self.__locals.keys_list()
+            SKIPPED = "_"
+            syms = []
+            keys = self.__locals.keys_list()
+
+            for key in keys:
+                if key.string.startswith_s(SKIPPED):
+                    continue
+                syms.append(key)
+            return space.newlist(syms)
 
         for exported in self.__declared_exports:
             if not self.has_local(exported):
