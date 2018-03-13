@@ -1,3 +1,4 @@
+
 from arza.types import api, space, plist
 from arza.types.root import W_Root, W_Callable
 from arza.misc.platform import is_absent_index
@@ -182,6 +183,8 @@ class W_Env(W_Root):
         self.temps = scope.create_temporaries()
         self.imports = scope.imports
         self.data = scope.create_env_bindings()
+
+        self.exported_names = scope.exports
         # TODO MAKE TEST FOR CORRECT STATIC REFS SOMEHOW
         # print "--------------------------ENV------------------------------"
         # print self.refs
@@ -195,6 +198,13 @@ class W_Env(W_Root):
 
     def exports(self):
         return self.exported_names
+
+    def exported_values(self):
+        data = space.newassocarray()
+        for name in self.exported_names:
+            value = self.data._at_(name)
+            data._put_(name, value)
+        return data
 
     def get_import(self, index):
         return api.at_index(self.imports, index)
@@ -242,7 +252,7 @@ class W_Env(W_Root):
         return self.data._contains_(key)
 
     def _to_string_(self):
-        return self.data._to_string_()
+        return "<Env :%s>" % self.data._to_string_()
 
     def _to_repr_(self):
         return self._to_string_()

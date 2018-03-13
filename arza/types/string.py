@@ -15,6 +15,9 @@ class W_String(W_Hashable):
     def startswith_s(self, strval):
         return self.string_value.startswith(strval)
 
+    def endswith_s(self, strval):
+        return self.string_value.endswith(strval)
+
     def _compute_hash_(self):
         """The algorithm behind compute_hash() for a string or a unicode."""
         from arza.misc.platform import rarithmetic

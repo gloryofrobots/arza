@@ -104,6 +104,15 @@ class List[T]
 class Empty:
     pass
 
+(object A
+    origin = [B,C,D,F,G]
+    name() = 1
+    surname() = 2
+    __call() = 3
+)
+
+
+
 class List:
     __init__(head, tail):
         self.head = head

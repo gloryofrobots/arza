@@ -394,7 +394,7 @@ class W_Scope(W_Root):
             keys = self.__locals.keys_list()
 
             for key in keys:
-                if key.string.startswith_s(SKIPPED):
+                if key.string.startswith_s(SKIPPED) and not key.string.endswith_s(SKIPPED):
                     continue
                 syms.append(key)
             return space.newlist(syms)

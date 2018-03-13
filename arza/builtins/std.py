@@ -78,6 +78,10 @@ class Types:
         self.PID = newtype(_s(u"PID"))
         self.PID.register_interface(interfaces.Any)
 
+        self.Module = newtype(_s(u"Module"))
+        self.Module.register_interface(interfaces.Any)
+
+
 class Functions:
     def __init__(self):
         self.call = None

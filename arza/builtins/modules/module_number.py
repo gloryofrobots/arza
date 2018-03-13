@@ -17,7 +17,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'le', le, 2)
 
     _module.export_all()
-    process.modules.add_module(_module_name, _module)
+    process.modules.add_module(_module)
 
 
 @complete_native_routine

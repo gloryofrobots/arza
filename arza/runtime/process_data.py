@@ -47,10 +47,10 @@ class Modules:
         error.affirm_type(path, space.isstring)
         self.path = plist.cons(path, self.path)
 
-    def add_module(self, name, module):
-        error.affirm_type(name, space.issymbol)
+    def add_module(self, module):
+        error.affirm_type(module.name, space.issymbol)
         error.affirm_type(module, space.isenv)
-        api.put(self.modules, name, module)
+        api.put(self.modules, module.name, module)
 
     def before_load(self, name):
         error.affirm_type(name, space.issymbol)
@@ -66,7 +66,6 @@ class Modules:
         error.affirm_type(name, space.issymbol)
         m = api.at(self.modules, name)
         if space.isint(m):
-            assert False, name
             error.throw_2(error.Errors.IMPORT_ERROR, u"Cross reference import", name)
         return m
 
