@@ -138,7 +138,6 @@ class ParserScope(root.W_Root):
     def __init__(self):
         self.operators = space.newassocarray()
         self.macro = space.newassocarray()
-        self.imported_names = space.newassocarray()
 
 
 class ParseState:
@@ -161,13 +160,6 @@ def parser_exit_scope(parser):
 
 def parser_current_scope(parser):
     return plist.head(parser.state.scopes)
-
-
-def parser_current_scope_add_imported_name(parser, name):
-    cur_scope = parser_current_scope(parser)
-    if api.contains_b(cur_scope.imported_names, name):
-        return
-    api.put(cur_scope.imported_name, name, space.newunit())
 
 
 def parser_current_scope_add_operator(parser, op_name, op):

@@ -944,6 +944,7 @@ def _compile_IMPORT(compiler, code, node):
 
         i += 1
 
+    # if you need to load imported module here
     # module_literal = _declare_literal(compiler, module)
     # code.emit_1(LITERAL, module_literal, info(node))
     # _emit_store(compiler, code, import_name, node)

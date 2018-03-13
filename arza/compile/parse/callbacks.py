@@ -393,14 +393,6 @@ def infix_name_pair(parser, op, token, left):
     return node_2(ntype, token, left, name)
 
 
-def infix_imported_name(parser, op, token, left):
-    path = expression(parser.name_parser, 0)
-    node = nodes.node_2(NT_IMPORTED_NAME, token, left, path)
-    imported = nodes.imported_name_to_symbol(parser.state.process, node)
-    print "IMPORTED", imported
-    return node
-
-
 def infix_bind(parser, op, token, left):
     name = expression(parser, 9)
     if nodes.node_token_type(name) != TT_NAME:
