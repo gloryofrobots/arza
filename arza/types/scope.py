@@ -396,6 +396,9 @@ class W_Scope(W_Root):
             for key in keys:
                 if key.string.startswith_s(SKIPPED) and not key.string.endswith_s(SKIPPED):
                     continue
+                if key.string.contains_s(":"):
+                    continue
+
                 syms.append(key)
             return space.newlist(syms)
 

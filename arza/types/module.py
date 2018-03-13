@@ -48,7 +48,7 @@ class W_Module(W_Root):
         return api.equal_b(self.name, other.name) and api.equal_b(self.data, other.data)
 
     def _to_string_(self):
-        return "<Module %s: %s>" % (self.name, self.data._to_string_())
+        return "<Module %s %s>" % (self.name, self.data._to_string_())
 
     def _to_repr_(self):
         return self._to_string_()
