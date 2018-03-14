@@ -389,7 +389,7 @@ def create_symbol_from_operator(token, op):
 def create_random_trait_name(token):
     import random
     index = random.randint(0, 1000000)
-    name = "%s_%d" % (lang_names.RANDOM_TRAIT_NAME_PREFIX, index)
+    name = "%s%d" % (lang_names.RANDOM_TRAIT_NAME_PREFIX, index)
     return create_name_node_s(token, name)
 
 

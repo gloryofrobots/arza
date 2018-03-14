@@ -3,6 +3,7 @@ from arza.compile.code.opcode import *
 from arza.compile.parse import parser
 from arza.compile import simplify
 from arza.compile.parse import nodes
+from arza.compile.parse.basic import IMPORT_NODES
 from arza.compile.parse.nodes import (node_type, imported_name_to_s,
                                       node_first, node_second, node_third, node_fourth,
                                       node_children, is_empty_node)
@@ -1118,8 +1119,6 @@ def _compile_CALL(compiler, code, node):
 ######################################
 ##FIRST PASS
 #######################################
-SKIP = [NT_IMPORT, NT_IMPORT_FROM, NT_IMPORT_FROM_HIDING, NT_IMPORT_HIDING]
-
 
 def _compile_0(compiler, code, ast):
     if is_empty_node(ast):
@@ -1130,7 +1129,7 @@ def _compile_0(compiler, code, ast):
             _compile_0(compiler, code, node)
     else:
         ntype = node_type(ast)
-        if ntype in SKIP:
+        if ntype in IMPORT_NODES:
             return
         if ntype == NT_IMPORTED_NAME:
             sym = nodes.imported_name_to_symbol(compiler.process, ast)
