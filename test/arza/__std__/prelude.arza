@@ -67,6 +67,7 @@ prefix (~, ~, 96)
 ///////////////// INTERFACES ///////////////////////////////
 ////////////////////////////////////////////////////////////
 
+
 interface PartialEq(I) =
     fun ==(x of I, y)
 
@@ -125,6 +126,7 @@ interface ShrinkableCollection(I) =
 interface ReadOnlyCollection(I) =
     fun at(key, I)
     fun elem(key, I)
+
 
 interface Collection is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
 
@@ -242,6 +244,7 @@ type CoroutineEmpty(args)
 
 // Bootstrap interfaces behavior
 
+
 trait (T) for Instance =
     def index_of (val, self of T) as record_index_of
     def keys(self of T) as record_keys
@@ -328,6 +331,9 @@ let
 let
     self = _process:self
     spawn = _process:spawn
+
+// special __at__ method which can be used for default access in case of overloading at
+let __at__ = std_behavior:at
 
 fun __send__ (p of PID, msg) = _process:send(p, msg)
 

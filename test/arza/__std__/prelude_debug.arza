@@ -3,6 +3,19 @@ let x = arza:lang:zero
 trait (T) for [arza:Float, Int] =
     instance TEq(T)
 
+//    let
+//        a = array(1,2,3,4)
+////        a2 =
+////            a |> seq:map(fun(x) = x * 2, _)
+////              |> seq:map(fun(x) = x + 100, _)
+//    in
+////        PL(a2)
+//        io:print(a as Seq, a)
+//    f(0, 1, (_, 3))(2)
+//    let
+//        m = load_module("prelude")
+//    in
+//        io:print(m)
 //let d = {
 //    x = 1,
 //    y = -1

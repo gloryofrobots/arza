@@ -22,8 +22,8 @@ from tests:lib_az:abc:module_ab hide (CONST)
 import tests:lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
 
 // binding funcs from two modules to same name
-//import tests:lib_az:abc:ts:module_s as s
-//import tests:lib_az:abc:ts:module_t as s
+import tests:lib_az:abc:ts:module_s as s
+import tests:lib_az:abc:ts:module_t as s
 
 fun test() =
     affirm:is_true(f_ab == f_ab)
@@ -38,5 +38,5 @@ fun test() =
     affirm:is_equal(ab:f_ab(42), 126)
     affirm:is_equal(e:f_e(f_ab(100)), -758)
 
-//    affirm:is_equal(s:t(), #T)
-//    affirm:is_equal(s:s(), #S)
+    affirm:is_equal(s:t(), #T)
+    affirm:is_equal(s:s(), #S)

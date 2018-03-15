@@ -3,24 +3,9 @@ import affirm
 import seq
 import array
 import tests
-//import tests:lib_az:abc:ts:module_s as s
-//import tests:lib_az:abc:ts:module_t as s
+
 
 fun main() =
-//    let
-//        a = array(1,2,3,4)
-////        a2 =
-////            a |> seq:map(fun(x) = x * 2, _)
-////              |> seq:map(fun(x) = x + 100, _)
-//    in
-////        PL(a2)
-//        io:print(a as Seq, a)
-//    f(0, 1, (_, 3))(2)
     tests:run()
-    let
-        m = load_module("prelude")
-    in
-        io:print(m)
-
     #endprogram
 

@@ -6,6 +6,7 @@ import tests:test_usertype:test_polymorphism
 import tests:test_usertype:test_interface
 import tests:test_usertype:test_interface_inference
 import tests:test_usertype:test_cast
+import tests:test_usertype:test_object
 import io
 
 fun test () =
@@ -17,3 +18,4 @@ fun test () =
     test_implement_qualified:test()
     test_polymorphism:test()
     test_cast:test()
+    test_object:test()
