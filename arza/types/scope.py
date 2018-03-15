@@ -210,6 +210,7 @@ class W_Scope(W_Root):
 
         self.imports = space.newassocarray()
         self.imported_names = space.newassocarray()
+        self.imported_modules = space.newassocarray()
 
         self.functions = space.newassocarray()
         self.arg_count = -1
@@ -239,6 +240,16 @@ class W_Scope(W_Root):
     def has_export(self, name):
         assert space.issymbol(name)
         return plist.contains(self.__declared_exports, name)
+
+    ###########################
+
+    def add_imported_module(self, name):
+        assert space.issymbol(name)
+        assert platform.is_absent_index(api.get_index(self.imported_modules, name))
+        return self.imported_modules.insert(name, space.newunit())
+
+    def has_imported_module(self, name):
+        return api.contains_b(self.imported_modules, name)
 
     ###########################
 

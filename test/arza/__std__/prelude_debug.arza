@@ -1,7 +1,5 @@
 let x = arza:lang:zero
 
-trait (T) for [arza:Float, Int] =
-    instance TEq(T)
 
 //    let
 //        a = array(1,2,3,4)

@@ -251,6 +251,17 @@ def imported_name_to_string(node):
     return space.newstring_s(imported_name_to_s(node))
 
 
+def imported_module_name(node):
+    if node_type(node) == nt.NT_IMPORTED_NAME:
+        return imported_module_name(node_first(node))
+    else:
+        return node_value_s(node)
+
+
+def imported_module_name_symbol(process, node):
+    return space.newsymbol_s(process, imported_module_name(node))
+
+
 def imported_name_to_symbol(process, node):
     return space.newsymbol_s(process, imported_name_to_s(node))
 
@@ -410,6 +421,10 @@ def ensure_symbol_node_from_name(token, node):
     if t == nt.NT_NAME:
         return create_symbol_node(token, node)
     return node
+
+
+def node_symbol_to_symbol(process, node):
+    space.newsymbol_s(process, node_value_s(node_first(node)))
 
 
 def create_symbol_node(token, name):

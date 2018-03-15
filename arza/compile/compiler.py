@@ -912,8 +912,15 @@ def _get_import_data_and_emit_module(compiler, code, node):
     code.emit_1(LITERAL, module_literal, info(node))
     return module, import_name_s, var_names
 
+def _is_module_used(compiler, module_name):
+    scope = _current_scope(compiler)
+    if not scope.has_imported_module(module_name):
+        # print "UNUSED Module", module_name
+        return False
+    return True
 
-def _need_import(compiler, bind_name):
+
+def _is_imported_name_used(compiler, bind_name):
     scope = _current_scope(compiler)
     if not scope.has_imported_name(bind_name):
         # print "SKIPPING", bind_name
@@ -932,14 +939,18 @@ def _emit_imported(compiler, code, node, module, var_name, bind_name, is_pop):
 
 
 def _compile_IMPORT(compiler, code, node):
-    colon = space.newsymbol(compiler.process, u":")
     module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
+    if not _is_module_used(compiler, import_name):
+        return
+
+    colon = space.newsymbol(compiler.process, u":")
+
     i = 0
     last_index = len(var_names) - 1
     for var_name, bind_name in var_names:
         full_bind_name = symbols.concat_3(compiler.process, import_name, colon, bind_name)
 
-        if _need_import(compiler, full_bind_name):
+        if _is_imported_name_used(compiler, full_bind_name):
             need_pop = False if i == last_index else True
             _emit_imported(compiler, code, node, module, var_name, full_bind_name, need_pop)
 
@@ -982,7 +993,7 @@ def _compile_IMPORT_HIDING(compiler, code, node):
     for var_name in var_names:
         bind_name = symbols.concat_3(compiler.process, import_name, colon, var_name)
 
-        if _need_import(compiler, bind_name):
+        if _is_imported_name_used(compiler, bind_name):
             need_pop = False if i == last_index else True
             _emit_imported(compiler, code, node, module, var_name, bind_name, need_pop)
 
@@ -1133,12 +1144,17 @@ def _compile_0(compiler, code, ast):
         if ntype in IMPORT_NODES:
             return
         if ntype == NT_IMPORTED_NAME:
-            sym = nodes.imported_name_to_symbol(compiler.process, ast)
             scope = _current_scope(compiler)
+
+            sym = nodes.imported_name_to_symbol(compiler.process, ast)
             if scope.has_imported_name(sym):
                 return
+
             scope.add_imported_name(sym)
-            # print "IMPORTED", sym
+
+            module_name = nodes.imported_module_name_symbol(compiler.process, ast)
+            if not scope.has_imported_module(module_name):
+                scope.add_imported_module(module_name)
 
         _compile_0(compiler, code, node_children(ast))
 
