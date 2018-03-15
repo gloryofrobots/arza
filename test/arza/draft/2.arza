@@ -15,13 +15,25 @@
 @@(a -> a -> a)
 fun f(x, y, z) = 1
 
-class Animal(Vec2, Vec3)
+module list
+    type List(x, y, z)
+
+    fun foldl(self, fn)
+    | ([], fn) = []
+    | (x:xs, fn) = xs.foldl(fn).cons(fn(x))
+    | (x:xs, fn) = (xs.foldl fn).cons((fn x))
+    | (x:xs, fn) = fn(x) :: foldl(xs, fn)
+
+
+l = list:List(x, y, z)
+l.foldl(x -> x)
+
+
+type Animal(x, y) =
     provide(Type1, Type2, Type3)
-    let
-        x = null
-        y = null
-        z = null
-        {v1, v2, v3} = OtherType
+
+    val (x, y, z)
+    let {v1, v2, v3} = OtherType
 
     fun f(self) =
         1

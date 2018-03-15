@@ -312,8 +312,10 @@ def infix_lparen_pattern(parser, op, token, left):
     right = node_1(NT_MAP, token, items)
     return node_2(NT_OF, token, right, left)
 
+
 def infix_lparen_forbidden(parser, op, token, left):
     parse_error(parser, u"You cannot call functions amongst top level declatations", token)
+
 
 def infix_lparen(parser, op, token, left):
     unpack_call = False
