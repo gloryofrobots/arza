@@ -15,6 +15,22 @@
 @@(a -> a -> a)
 fun f(x, y, z) = 1
 
+class Animal(Vec2, Vec3)
+    provide(Type1, Type2, Type3)
+    let
+        x = null
+        y = null
+        z = null
+        {v1, v2, v3} = OtherType
+
+    fun f(self) =
+        1
+
+    fun t(self, other) =
+        self + other
+
+    fun el(self, x) = self.x
+
 
 unit Seq:
     expect(to_seq)

@@ -15,6 +15,11 @@ def at(key, obj of Object ) =
                 fun (...args) = method(...prepend(obj, args))
             | _ = slot
 
+def put(key, val, obj of Object) =
+    let
+        data = __at__(#data, obj)
+    in Object(data.{(key) = val})
+
 fun test() =
     let
         o = new({
@@ -24,6 +29,9 @@ fun test() =
             get_x = (self) -> self.x,
             x = 24
         })
+        o1 = o.{x = -24, f=((self,x) -> @(x) + 100)}
     in
         affirm:is_equal(o.f(24), 48)
+        affirm:is_equal(o1.f(24), 100)
+        affirm:is_equal(o1.get_x(), -24)
 

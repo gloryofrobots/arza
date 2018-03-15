@@ -22,7 +22,7 @@ def _print_trace(device, signal, trace):
 
 class Fiber:
     def __init__(self, process, parent):
-        self.routines = []
+        self.call_stack = []
         self.routine = None
         self.parent = parent
         self.continuation_fiber = parent
@@ -81,22 +81,27 @@ class Fiber:
     def call_object(self, obj, args):
         routine = api.to_routine(obj, self.stack, args)
         self.routine.suspend()
-        self.routines.append(self.routine)
+        self.call_stack.append(self.routine)
         self.routine = routine
         routine.activate()
 
-    def __pop(self):
-        if len(self.routines) == 0:
+    def previous_routine(self):
+        if len(self.call_stack) == 0:
             return None
-        self.routine = self.routines.pop()
+        return self.call_stack[len(self.call_stack) - 1]
+
+    def __pop(self):
+        if len(self.call_stack) == 0:
+            return None
+        self.routine = self.call_stack.pop()
         return self.routine
 
     def next_routine(self):
-        if len(self.routines) == 0:
+        if len(self.call_stack) == 0:
             return None
 
         result = self.routine.result
-        self.routine = self.routines.pop()
+        self.routine = self.call_stack.pop()
         self.routine.resume(self.process, result)
         return self.routine
 
@@ -317,9 +322,9 @@ class Process(root.W_Root):
                 break
             try:
                 result = self.__execute()
-            # except Exception as e:
-            #     # print "catching some", e
-            #     raise
+            except Exception as e:
+                # print "catching some", e
+                raise
             except error.ArzaError as e:
                 # print "catching error", e
                 signal = error.convert_to_script_error(self, e)

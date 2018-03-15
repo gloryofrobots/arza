@@ -868,7 +868,7 @@ def _compile_LOOKUP_MODULE(compiler, code, node):
     _compile_node_name_lookup(compiler, code, node)
 
 
-def _get_import_data_and_emit_module(compiler, code, node):
+def _load_module(compiler, code, node):
     from arza.runtime import load
     exp = node_first(node)
     names = node_second(node)
@@ -883,11 +883,12 @@ def _get_import_data_and_emit_module(compiler, code, node):
         assert node_type(exp) == NT_NAME
         import_name = exp
         module_path = nodes.node_value_s(exp)
-    scope = _current_scope(compiler)
+
     import_name_s = _get_symbol_name(compiler, import_name)
     module = load.import_module(compiler.process, space.newsymbol_s(compiler.process, module_path))
     var_names = []
     exports = module.exports()
+
     if is_empty_node(names):
         _var_names = exports
         for _name in _var_names:
@@ -908,9 +909,14 @@ def _get_import_data_and_emit_module(compiler, code, node):
                               % api.to_u(_name))
             var_names.append((_name, _bind_name))
 
+    _emit_module(compiler, code, module, node)
+    return module, import_name_s, var_names
+
+
+def _emit_module(compiler, code, module, node):
     module_literal = _declare_literal(compiler, module)
     code.emit_1(LITERAL, module_literal, info(node))
-    return module, import_name_s, var_names
+
 
 def _is_module_used(compiler, module_name):
     scope = _current_scope(compiler)
@@ -939,10 +945,9 @@ def _emit_imported(compiler, code, node, module, var_name, bind_name, is_pop):
 
 
 def _compile_IMPORT(compiler, code, node):
-    module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
+    module, import_name, var_names = _load_module(compiler, code, node)
     if not _is_module_used(compiler, import_name):
         return
-
     colon = space.newsymbol(compiler.process, u":")
 
     i = 0
@@ -956,14 +961,9 @@ def _compile_IMPORT(compiler, code, node):
 
         i += 1
 
-    # if you need to load imported module here
-    # module_literal = _declare_literal(compiler, module)
-    # code.emit_1(LITERAL, module_literal, info(node))
-    # _emit_store(compiler, code, import_name, node)
-
 
 def _compile_IMPORT_FROM(compiler, code, node):
-    module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
+    module, import_name, var_names = _load_module(compiler, code, node)
     i = 0
     last_index = len(var_names) - 1
     for var_name, bind_name in var_names:
@@ -985,8 +985,11 @@ def _delete_hiding_names(compiler, code, node, module, var_names):
 
 
 def _compile_IMPORT_HIDING(compiler, code, node):
+    module, import_name, var_names = _load_module(compiler, code, node)
+    if not _is_module_used(compiler, import_name):
+        return
+
     colon = space.newsymbol(compiler.process, u":")
-    module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
     var_names = _delete_hiding_names(compiler, code, node, module, var_names)
     i = 0
     last_index = len(var_names) - 1
@@ -1001,7 +1004,7 @@ def _compile_IMPORT_HIDING(compiler, code, node):
 
 
 def _compile_IMPORT_FROM_HIDING(compiler, code, node):
-    module, import_name, var_names = _get_import_data_and_emit_module(compiler, code, node)
+    module, import_name, var_names = _load_module(compiler, code, node)
     var_names = _delete_hiding_names(compiler, code, node, module, var_names)
     i = 0
     last_index = len(var_names) - 1

@@ -20,6 +20,7 @@ def put_lang_func(process, module, name, func, arity):
 def setup(process, module, stdlib):
     api.put_native_function(process, module, u'eval', _eval, 1)
     api.put_native_function(process, module, u'_exit', _exit, -1)
+    api.put_native_function(process, module, u'__env__', __env, 0)
     api.put_native_function(process, module, u'DMARK', __dmark, -1)
     api.put_native_function(process, module, u'PL', _print, -1)
     api.put_native_function(process, module, u'address', _id, 1)
@@ -94,6 +95,16 @@ def _print(process, routine):
     print_str = encode_unicode_utf8(u_print_str)
     print print_str
     return space.newunit()
+
+
+@complete_native_routine
+def __env(process, routine):
+    from arza.runtime.routine.code_routine import CodeRoutine
+    prev = process.fiber.previous_routine()
+    if not isinstance(prev, CodeRoutine):
+        return space.newunit()
+
+    return prev.env
 
 
 # here i can put breakpoints in python debugger
