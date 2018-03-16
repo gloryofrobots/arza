@@ -29,7 +29,7 @@ trait TCoro(C) for Coroutine =
     def from_seq(self of C) = self
     def empty(self of C) = []
 
-describe Coroutine as (Sized, Seqable, Seq, Emptiable)
+describe Coroutine as (Len, ToSeq, Seq, Empty)
 
 // REFS
 type Reference = (val)
@@ -69,7 +69,7 @@ trait TReference(R) for Reference =
 
     def str(self of R) = "Var"
 
-describe Reference as (Displayed, Ref)
+describe Reference as (Repr, Ref)
 ///////////////////////////////////////////////////////
 
 // helper for creating looping generators

@@ -1,11 +1,11 @@
 define Seq {
   __cast__(self) = self.to_seq()
 
-  map(self, f) 
+  map(self, f)
     case ([] @ self, f) {
       self.empty()
     }
-    case (hd::tl, f) = map(tl, f).append(f(hd)) 
+    case (hd::tl, f) = map(tl, f).append(f(hd))
 }
 
 
@@ -32,7 +32,7 @@ type Spaceship {
     def collide_with(self, body) { }
 }
 
-Spaceship is Seqable
+Spaceship is ToSeq
 
 object Asteroid {
 }
@@ -54,11 +54,11 @@ def Spaceship.collide_with(body:Spaceship) {
 object Seq {
   __cast__(self) = self.to_seq()
 
-  map(self, f) 
+  map(self, f)
     case ([] @ self, f) {
       self.empty()
     }
-    case (hd::tl, f) = recur(tl, f).append(f(hd)) 
+    case (hd::tl, f) = recur(tl, f).append(f(hd))
 }
 
 

@@ -35,10 +35,10 @@ trait __Tuple(T) for Tuple =
             "(" ++ string:join_with(str, to_seq(self), ", ") ++ ")"
 
 
-describe Tuple as (Eq, Displayed,
-       Sized, Collection,
-       Prependable, Concatable, Indexed,
-       Seqable, Sliceable)
+describe Tuple as (Eq, Repr,
+       Len, Coll,
+       Prepend, Concat, Indexed,
+       ToSeq, Slice)
 
 
 fun ensure_tuple

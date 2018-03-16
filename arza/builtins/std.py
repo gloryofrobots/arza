@@ -106,11 +106,11 @@ class Interfaces:
         self.Seq = None
         self.Dict = None
         self.Indexed = None
-        self.Sized = None
+        self.Len = None
         self.Indexed = None
         self.Eq = None
-        self.Displayed = None
-        self.Callable = None
+        self.Repr = None
+        self.Call = None
         self.instance_derived = None
         self.singleton_derived = None
 
@@ -119,19 +119,18 @@ class Interfaces:
         self.Seq = self.find_interface(process, prelude, u"Seq")
         self.Dict = self.find_interface(process, prelude, u"Dict")
         self.Indexed = self.find_interface(process, prelude, u"Indexed")
-        self.Sized = self.find_interface(process, prelude, u"Sized")
-        self.Indexed = self.find_interface(process, prelude, u"Indexed")
+        self.Len = self.find_interface(process, prelude, u"Len")
         self.Eq = self.find_interface(process, prelude, u"Eq")
-        self.Displayed = self.find_interface(process, prelude, u"Displayed")
-        self.Callable = self.find_interface(process, prelude, u"Callable")
+        self.Repr = self.find_interface(process, prelude, u"Repr")
+        self.Call = self.find_interface(process, prelude, u"Call")
 
         self.instance_derived = space.newlist([
-            self.Dict, self.Sized, self.Indexed,
-            self.Eq, self.Displayed
+            self.Dict, self.Len, self.Indexed,
+            self.Eq, self.Repr
         ])
 
         self.singleton_derived = space.newlist([
-            self.Eq, self.Displayed
+            self.Eq, self.Repr
         ])
 
         self._derive_prelude(process)

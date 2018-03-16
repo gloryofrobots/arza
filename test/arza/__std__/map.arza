@@ -26,4 +26,4 @@ trait TMap(M) for Map =
     def values(self of M) = seq:map(at .. 1, to_seq(self))
 --------------------------------------------------
 
-describe Map as (Eq, Displayed, Collection, Dict, Seqable)
+describe Map as (Eq, Repr, Coll, Dict, ToSeq)

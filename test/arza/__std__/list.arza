@@ -103,7 +103,7 @@ def ++ (t of Tuple, l of List) = t ++ _list:to_tuple(l)
 def ++ (l of List, t of Tuple) = _list:to_tuple(l) ++ t
 
 
-describe List as  (Eq, Displayed,
-       Sized, Collection,
-       Concatable, Consable,
-       Seqable, Seq, Sliceable)
+describe List as  (Eq, Repr,
+       Len, Coll,
+       Concat, Cons,
+       ToSeq, Seq, Slice)

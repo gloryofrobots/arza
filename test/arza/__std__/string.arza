@@ -33,16 +33,16 @@ def ++ (s1 of Symbol, s2 of String) = _string:concat(str(s1), s2)
 def ++ (s1 of Symbol, s2 of Symbol) = symbol(_string:concat(str(s1), str(s2)))
 
 
-describe (Symbol, Char) as (Eq, Displayed)
+describe (Symbol, Char) as (Eq, Repr)
 
 
-describe Symbol as  Concatable
+describe Symbol as  Concat
 
 
-describe String as (Eq, Displayed,
-       Sized, Collection,
-       Prependable, Appendable, Concatable, Consable,
-       Seqable, Sliceable, Emptiable)
+describe String as (Eq, Repr,
+       Len, Coll,
+       Prepend, Append, Concat, Cons,
+       ToSeq, Slice, Empty)
 
 
 fun concat (str1 of String, str2 of String) =

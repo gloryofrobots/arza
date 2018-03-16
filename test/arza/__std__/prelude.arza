@@ -104,33 +104,29 @@ interface Pow(I) =
 interface Str =
     fun str(Str)
 
-interface Displayed(I) is Str =
+interface Repr(I) is Str =
     fun repr(I)
 
 interface Len =
     fun len(Len)
 
-interface Sized is Len =
-    fun is_empty(Sized)
+interface IsEmpty(I) =
+    fun is_empty(I)
 
-interface Coll =
-    fun put(key, value, Coll)
-    fun del(obj, c of Coll)
 
-interface GrowableCollection(I) =
-    use put(key, value, I)
+interface Put(I) =
+    fun put(key, value, I)
 
-interface ShrinkableCollection(I) =
-    use del(obj, I)
+interface Del(I) =
+    fun del(obj, I)
 
-interface ReadOnlyCollection(I) =
+interface At(I) =
     fun at(key, I)
     fun elem(key, I)
 
+interface Coll is (Put, At, Del)
 
-interface Collection is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
-
-interface Dict(I) is Collection =
+interface Dict(I) is Coll =
     fun keys(self of I)
     fun values(I)
 
@@ -138,40 +134,40 @@ interface Seq =
     fun first(Seq)
     fun rest(Seq)
 
-interface Emptiable(I) =
+interface Empty(I) =
     fun empty(I)
 
-interface Consable(I) =
+interface Cons(I) =
     fun cons(value, I)
 
-interface Prependable(I) =
+interface Prepend(I) =
     fun prepend(value, I)
 
-interface Appendable(I) =
+interface Append(I) =
     fun append(value, I)
 
-interface Concatable(I) =
+interface Concat(I) =
     fun ++(I, other)
 
 interface Indexed(I) =
     fun index_of(obj, I)
 
-interface Seqable(I) =
+interface ToSeq(I) =
     fun to_seq(I)
 
 interface FromSeq(I) =
     fun from_seq(I)
 
-interface Sliceable(I) =
+interface Slice(I) =
     fun slice (first, last, I)
     fun drop(count, I)
     fun take(count, I)
 
-interface Bounded(I) =
+interface Bound(I) =
     fun lower_bound(I)
     fun upper_bound(I)
 
-interface Ranged(I) =
+interface Range(I) =
     fun range(I, last)
     fun range_by (I, last, step)
     fun range_from(I)
@@ -190,10 +186,10 @@ interface Replace(I) =
 interface Extract(I) =
     fun &&(I)
 
-interface Callable(I) =
+interface Call(I) =
     fun call(I, args)
 
-interface Castable(I) =
+interface Cast(I) =
     fun cast(valueof to_what, I)
 
 ////////////////////////////////////////////////////////////
@@ -287,8 +283,8 @@ fun lense(source, getter, setter) =
     let
         branch = getter(source)
     in
-        if not kindof(branch, Collection) then
-            throw TypeError("Branch is not a Collection")
+        if not kindof(branch, Coll) then
+            throw TypeError("Branch is not a Coll")
         else
             Lense(source, getter, setter)
 
@@ -320,7 +316,7 @@ fun dec(x) = x - 1
 
 fun last(coll) = at(len(coll) - 1, coll)
 
-fun downcast(any of Instance) = any as Instance
+fun downcast(any) = any as Instance
 
 let
     fst = c -> at(0, c)

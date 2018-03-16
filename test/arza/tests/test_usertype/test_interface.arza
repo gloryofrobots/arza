@@ -14,7 +14,7 @@ trait(T) for [T1, T2] =
     def first(self of T) = first(to_list(self))
     def rest(self of T) = rest(to_list(self))
 
-    //not enough for Sliceable
+    //not enough for Slice
     def drop(count, self of T) = seq:drop(count, to_list(self))
     def take(count, self of T) = seq:take(count, to_list(self))
 
@@ -26,7 +26,7 @@ trait(T) for T2 =
     def slice(_from, _to, self of T) = slice(_from, _to, to_list(self))
 
 describe (T1, T2) as (Listable, Seq)
-describe T2 as Sliceable
+describe T2 as Slice
 
 fun test () =
     let
@@ -40,7 +40,7 @@ fun test () =
         affirm:is_true(kindof(t1, Seq))
         affirm:is_true(kindof(t1, Listable))
         affirm:is_true(kindof(t1, T1))
-        affirm:is_false(kindof(t1, Sliceable))
+        affirm:is_false(kindof(t1, Slice))
 
         ///////////////////////////////////////////
 
@@ -52,4 +52,4 @@ fun test () =
         affirm:is_true(kindof(t2, Seq))
         affirm:is_true(kindof(t2, Listable))
         affirm:is_true(kindof(t2, T2))
-        affirm:is_true(kindof(t2, Sliceable))
+        affirm:is_true(kindof(t2, Slice))

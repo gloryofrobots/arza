@@ -49,4 +49,4 @@ trait (L) for Lense =
     def call(l of L, (value)) = l <- value
     def call(l of L, ()) = &&l
 
-describe Lense as (Collection, Replace, Extract, Ref, Displayed, Callable)
+describe Lense as (Coll, Replace, Extract, Ref, Repr, Call)

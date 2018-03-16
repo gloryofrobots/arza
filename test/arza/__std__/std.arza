@@ -54,7 +54,7 @@ trait (T) for [Float, Int] =
     instance TMinMax(T, Any)
     instance TOrder(T, Any)
 
-describe (Float, Int) as (Comparable, LessEq, Ord, Num, Pow, Eq, Displayed)
+describe (Float, Int) as (Comparable, LessEq, Ord, Num, Pow, Eq, Repr)
 
-describe (Function, Generic, Partial, Datatype, Bool, Interface) as (Eq, Displayed)
+describe (Function, Generic, Partial, Datatype, Bool, Interface) as (Eq, Repr)
 

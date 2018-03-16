@@ -12,6 +12,72 @@
     let FloatArray = Array(float)
 :)
 
+import lang:iter:A
+
+@addsomething
+class S(Seq) =
+    val x, y, z
+
+    def +(self, other)
+        | (self, i of Int)
+        | (self, i of Vec2)
+
+    let f = A:f
+
+    @dispatch:binary
+    def +(self, other)
+
+    construct(self, x, y) =
+        self.{x=x, y=y}
+
+class Num
+    poly + (self, @other)
+    def + (self, other of Int) =
+    def + (self, other of Vector) =
+
+
+class Vec2
+    Num.+ (num, other of Vec2) =
+    + (self, n of Num) =
+
+
+class Parser
+    fun+ eval(self, *exp)
+
+
+def Parser.eval(self, e of ValExpression)
+def Parser.eval(self, e of IfExpression)
+
+interface Cast(I) =
+    fun cast(valueof what, I)
+
+interface CastedTo(I)
+    use cast(valueof I, data)
+
+interface Dict(I) is Coll =
+    fun keys(self of I)
+    fun values(I)
+
+
+interface Num(I) =
+    fun -(I, I)
+    fun +(I, I)
+    fun *(I, I)
+    fun /(I, I)
+    fun mod(I, I)
+    // unary -
+    fun negate(I)
+
+
+type Seq =
+    fun foldl(self, f, acc)
+        | ([], f, acc) = acc
+        | (hd::tl, f, acc) = foldl(tl, f, f(hd, acc))
+
+
+extend List
+    with Seq
+
 @@(a -> a -> a)
 fun f(x, y, z) = 1
 

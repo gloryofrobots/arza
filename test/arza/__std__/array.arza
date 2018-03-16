@@ -74,7 +74,7 @@ trait TArraySeq(A) for ArraySeq =
         A(arr, index+1, prepend(v, dest))
 
 
-describe ArraySeq as (Seq, Sized, Emptiable)
+describe ArraySeq as (Seq, Len, Empty)
 
 --------------------------------------------------
 
@@ -97,7 +97,7 @@ trait TArraySeqEmpty(A) for ArraySeqEmpty =
 
     def from_seq(self of A) = self.dest
 
-describe ArraySeqEmpty as (Seq, Sized)
+describe ArraySeqEmpty as (Seq, Len)
 
 --------------------------------------------------
 
@@ -116,7 +116,7 @@ fun map (f, arr of Array) =
     in
         _map(0, array())
 
-describe Array as (Eq, Displayed,
-       Sized, Collection,
-       Prependable, Appendable, Concatable, Indexed,
-       Seqable, Sliceable)
+describe Array as (Eq, Repr,
+       Len, Coll,
+       Prepend, Append, Concat, Indexed,
+       ToSeq, Slice)

@@ -3,12 +3,11 @@ let x = arza:lang:zero
 
 //    let
 //        a = array(1,2,3,4)
-////        a2 =
-////            a |> seq:map(fun(x) = x * 2, _)
-////              |> seq:map(fun(x) = x + 100, _)
+//        a2 =
+//            a |> seq:map(fun(x) = x * 2, _)
+//              |> seq:map(fun(x) = x + 100, _)
 //    in
-////        PL(a2)
-//        io:print(a as Seq, a)
+//        PL(a2)
 //    f(0, 1, (_, 3))(2)
 //    let
 //        m = load_module("prelude")
@@ -55,7 +54,7 @@ let x = arza:lang:zero
 //     v3))
 
 //def+(super) f(i of Int) = 1
-//interface Collection is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
+//interface Coll is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
 //
 //interface Coll =
 //    fun put(@key, value, @coll)
@@ -192,9 +191,9 @@ let x = arza:lang:zero
 //    def values(self) = seq:map(at .. 1, to_seq(self))
 //--------------------------------------------------
 //
-//describe Map as (Eq, Displayed,
-//       Collection,
-//       Dict, Seqable)
+//describe Map as (Eq, Repr,
+//       Coll,
+//       Dict, ToSeq)
 //
 //
 //fun _loop() =
@@ -406,16 +405,16 @@ let x = arza:lang:zero
 //    1/2
 //)
 //
-//describe (Symbol, Char) as (Eq, Displayed)
+//describe (Symbol, Char) as (Eq, Repr)
 //
-//describe Symbol as Concatable
+//describe Symbol as Concat
 //
 //(describe (Symbol, Char) as
-//    (Eq, Displayed)
+//    (Eq, Repr)
 //)
 //
 //(describe Symbol as
-//    Concatable )
+//    Concat )
 //
 //
 //// TODO EXPORT AS
@@ -569,13 +568,13 @@ let x = arza:lang:zero
 //
 //(interface
 //    Coll(put, del)
-//                Dict(keys, values) is Collection    Sliceable(slice.2, drop.1, take.1)
+//                Dict(keys, values) is Coll    Slice(slice.2, drop.1, take.1)
 //)
 ////
 //interface
 //    Coll(put, del)
-//    Dict(keys, values) is Collection
-//    Sliceable(slice.2, drop.1, take.1)
+//    Dict(keys, values) is Coll
+//    Slice(slice.2, drop.1, take.1)
 //
 //
 //(fun f | 12 = 42

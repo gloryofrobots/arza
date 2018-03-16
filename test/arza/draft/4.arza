@@ -10,13 +10,13 @@ interface
     GrowableCollection(put.2)
     ShrinkableCollection(del.1)
     ReadOnlyCollection(at.1, elem.1)
-    Collection() is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
+    Coll() is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
 
 
 role GrowableColl =
     fun put(key, value, @coll)
 
-role ShrinkableCollection  = 
+role ShrinkableCollection  =
     del(Key, @coll)
 
 role Coll
@@ -27,4 +27,4 @@ role ReadOnlyCollection =
     at(key, @coll)
     elem(key, @coll)
 
-role Collection is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
+role Coll is (GrowableCollection, ShrinkableCollection, ReadOnlyCollection)
