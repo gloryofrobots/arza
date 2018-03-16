@@ -1140,8 +1140,11 @@ def stmt_type(parser, op, token):
         advance_expected(parser, TT_IS)
         mixins_list = _parse_struct_or_name(parser.name_parser, TT_LPAREN, TT_RPAREN, NAME_NODES)
         mixins = nodes.create_list_node_from_list(token, mixins_list)
-        advance_expected(parser, TT_ASSIGN)
-        fields = _parse_type_fields(parser, token)
+        if parser.token_type == TT_ASSIGN:
+            advance_expected(parser, TT_ASSIGN)
+            fields = _parse_type_fields(parser, token)
+        else:
+            fields = nodes.create_list_node(token, [])
     else:
         mixins = empty_node()
         if parser.token_type == TT_ASSIGN:

@@ -6,8 +6,10 @@ module y
 
     expect (T, N, P)
 
-    for [T, N, P]
-        def (x of T, y of N) = 1
+    extend (T, N, P) with
+        def f(x, y) = 1
 
     interface I
-        fun f(x, y, z)
+        fun f(I, y, z)
+        use z
+        use s:f1(I, y, z)

@@ -199,40 +199,41 @@ type Some (val)
 type None
 
 // Various Errors
-type ImportError(args)
-type RuntimeError(args)
-type TypeError(args)
-type NotImplementedError(args)
-type ZeroDivisionError(args)
-type MathDomainError(args)
-type ReferenceError(args)
-type ConstructorError(args)
-type KeyError(args)
-type ValueError(args)
-type SliceError(args)
-type IndexError(args)
-type InvokeError(args)
-type InvalidArgCount(args)
-type MethodInvokeError(args)
-type MethodNotImplementedError(args)
-type MethodSpecializeError(args)
-type CompileError(args)
-type ParseError(args)
-type UnpackSequenceError(args)
-type FiberFlowError(args)
-type MatchError(args)
-type FunctionArgumentsMatchError(args)
-type ExceptionMatchError(args)
-type ExportError(args)
-type ImplementationError(args)
-type ConstraintError(args)
-type EmptySeqError(args)
-type OverflowError(args)
+type Error(args)
+type ImportError is Error
+type RuntimeError is Error
+type TypeError is Error
+type NotImplementedError is Error
+type ZeroDivisionError is Error
+type MathDomainError is Error
+type ReferenceError is Error
+type ConstructorError is Error
+type KeyError is Error
+type ValueError is Error
+type SliceError is Error
+type IndexError is Error
+type InvokeError is Error
+type InvalidArgCount is Error
+type MethodInvokeError is Error
+type MethodNotImplementedError is Error
+type MethodSpecializeError is Error
+type CompileError is Error
+type ParseError is Error
+type UnpackSequenceError is Error
+type FiberFlowError is Error
+type MatchError is Error
+type FunctionArgumentsMatchError is Error
+type ExceptionMatchError is Error
+type ExportError is Error
+type ImplementationError is Error
+type ConstraintError is Error
+type EmptySeqError is Error
+type OverflowError is Error
 //Signal used to interrupt recursive processes
-type Interrupt(result)
-type MessageMatchError(args)
-type RangeError(args)
-type CoroutineEmpty(args)
+type Interrupt is Error
+type MessageMatchError is Error
+type RangeError is Error
+type CoroutineEmpty is Error
 
 // Bootstrap interfaces behavior
 
@@ -250,6 +251,7 @@ trait (T) for Instance =
     def is_empty (self of T) as std_behavior:is_empty
     def cast(to_what, self of T) as std_behavior:cast
 
+
 trait (T)
     for [Singleton, Function, Generic, Partial,
         Datatype, Bool, Instance, Interface, PID, Module] =
@@ -259,6 +261,7 @@ trait (T)
 
     def str (self of T) as std_behavior:str
     def repr (self of T) as std_behavior:repr
+
 
 def at (k, self of Map) as std_behavior:at
 def at (el, self of Tuple) as std_behavior:at

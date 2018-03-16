@@ -2,6 +2,7 @@ import arza:lang:_number
 import arza:lang:_std_behavior as std_behavior
 import arza:lang:_datatype as datatype
 
+
 trait TEq(T) =
     def == (self of T, other) as std_behavior:equal
     def != (self of T, other) as  std_behavior:not_equal

@@ -292,17 +292,17 @@ def newnativedatatype(name):
 
 
 def newtype(process, name, fields, mixins):
+    if not plist.is_empty(mixins):
+        mixin_fields = plist.empty()
+        for mixin in mixins:
+            mixin_fields = plist.concat(mixin_fields, mixin.fields)
+        fields = plist.concat(mixin_fields, fields)
+        # print "FIELDS", mixin_fields, fields
+
     if plist.is_empty(fields):
         _type = W_SingletonType(name)
         _iface = process.std.interfaces.Singleton
     else:
-        if not plist.is_empty(mixins):
-            mixin_fields = plist.empty()
-            for mixin in mixins:
-                mixin_fields = plist.concat(mixin_fields, mixin.fields)
-            fields = plist.concat(mixin_fields, fields)
-            # print "FIELDS", mixin_fields, fields
-
         if not plist.is_hetero(fields):
             error.throw_2(
                 error.Errors.COMPILE_ERROR,
