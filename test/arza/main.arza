@@ -3,11 +3,8 @@ import affirm
 import seq
 import array
 import tests
-//import tests:test_usertype:test_object
 
 fun main() =
-//        io:print(a as Seq, a)
-//    test_objet:test()
     tests:run()
     #endprogram
 

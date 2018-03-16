@@ -34,10 +34,15 @@ def simplify_type(compiler, code, node):
     return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
 
 
-def simplify_let(compiler, code, node):
+def collapse_let(node):
     let_block = node_first(node)
     in_block = node_second(node)
     body = plist.concat(let_block, in_block)
+    return body
+
+
+def simplify_let(compiler, code, node):
+    body = collapse_let(node)
     func = nodes.create_fun_0_node(nodes.node_token(node), nodes.empty_node(), body)
     return nodes.create_call_node_1(nodes.node_token(node),
                                     func,

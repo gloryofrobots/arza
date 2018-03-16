@@ -1,94 +1,13 @@
-module controller
-    type Controller
-         route, schemas
+module y
+    import y:z
+    import t:n:s
 
-    fun dispatch(controller, request)
+    use f:g:h (x, y, z)
 
+    expect (T, N, P)
 
-module space    
-    interface
-        Damagable
-        Attacker
-        Collidable
+    for [T, N, P]
+        def (x of T, y of N) = 1
 
-    generic
-        damage(Damagable, Int)
-        attack(Attacker, Damagable)
-        get_damage(Attacker)
-        collide(Collidable, Collidable)
-
-    trait TAttack for T1, T2
-          attack(a:T1, d:T2) =
-              damage(d, get_damage(a))
-      
-
-
-module body
-    type Body 
-        health:Int
-        speed:Vec2<Float>
-        mass:Int
-
-    fun new(health, speed, mass)
-        Body{health=health, speed=speed, mass=mass}
-
-    trait TBody for T1, T2
-        def collide(b1:T1, b2:T2)
-            attack(b1, b2)
-            attack(b2, b1)
-
-module asteroid
-    type Asteroid   
-            is Body
-            density
-
-    fun new(health, speed, mass, density)
-        // Asteroid{Body = body.new(health, speed), mass, density}
-        Asteroid{health, speed, mass, density}
-
-    trait TDenseBody for T1, T2
-        def collide(b1:T1, b2:T2)
-            if T1.density(b1) > T2.density(b2) then
-                attack(b1, b2)
-            else
-                attack(b2, b1)
-
-    use TDenseBody
-        for (Asteroid, Asteroid)
-
-
-type Asteroid
-    is Body
-    mass:Float
-
-
-type Spaceship
-     is Body
-     mass:Float
-     fire_power:Float
-
-
-trait TCollide
-    for (T1:Damagable,
-         T2:Damagable)
-            mass:Float
-            fire_power:Float
-
-    def collide_with(t1:T1, t2:T2) =
-        damage(t2, t1.mass)
-        damage(t1, t2.mass)
-
-trait TDamagable 
-    for T = Body
-
-    def damage(b:T, amount:Int)
-        b.health -= amount
-        on_damage(b)
-
-use (TDamagable,TCollidable) for
-    (Spaceship, Spaceship)
-    (Spaceship, Asteroid)
-    (Asteroid, Spaceship)
-    (Asteroid, Asteroid)
-
-
+    interface I
+        fun f(x, y, z)
