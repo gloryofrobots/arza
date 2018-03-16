@@ -67,17 +67,14 @@ prefix (~, ~, 96)
 ///////////////// INTERFACES ///////////////////////////////
 ////////////////////////////////////////////////////////////
 
-
-interface PartialEq(I) =
+interface Eq(I) =
     fun ==(x of I, y)
-
-interface Eq(I) is PartialEq =
     fun !=(x of I, y)
 
 interface Comparable(I) =
     fun cmp(first of I, second)
 
-interface LessEq(I) is PartialEq =
+interface LessEq(I) is Eq =
     fun <=(first of I, second)
 
 interface Ord(I) =
@@ -112,7 +109,6 @@ interface Len =
 
 interface IsEmpty(I) =
     fun is_empty(I)
-
 
 interface Put(I) =
     fun put(key, value, I)
