@@ -1,4 +1,4 @@
-let x = arza:lang:zero
+type T(x,y,...T2, z, w, ...T3)
 
 
 //    let

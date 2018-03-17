@@ -1,3 +1,32 @@
+
+object Airship(self, speed) =
+    self.{speed=speed}
+
+object Fighter(self, speed, ammo) =
+    super(Airship, speed).{ammo=ammo}
+
+
+type Airship(speed) with (self, speed) =
+    self.{speed=speed}
+
+type Fighter(speed, ammo) with (self, speed, ammo) =
+    construct(Airship, self, speed).{ammo=ammo}
+
+
+module airship
+    type Airship(speed)
+
+    fun new(speed) =
+        let a = Airship(speed)
+        in init(a)
+    fun init(a) = a
+
+module fighter
+    type Fighter(speed, ammo)
+
+    fun new
+
+
 (:
      def Array[T] (:
         struct X {

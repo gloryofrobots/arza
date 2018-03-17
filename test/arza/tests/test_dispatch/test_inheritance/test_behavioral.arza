@@ -8,7 +8,7 @@ interface =
 trait T_A(T) for A =
     def f(v of T) = v.a
 
-type AB is A = (b)
+type AB(...A, b)
 
 trait T_B(T) for AB =
     instance T_A(T)

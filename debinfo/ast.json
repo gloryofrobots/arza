@@ -1,38 +1,71 @@
 [
-  [
-    {
-      "_ntype": "NT_ASSIGN",
-      "_value": "=",
-      "children": [
-        {
-          "_ntype": "NT_NAME",
-          "_value": "x"
-        },
-        {
-          "_ntype": "NT_IMPORTED_NAME",
-          "_value": ":",
-          "children": [
+  {
+    "_ntype": "NT_TYPE",
+    "_value": "type",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "T"
+      },
+      {
+        "_ntype": "NT_LIST",
+        "_value": "type",
+        "children": [
+          [
             {
-              "_ntype": "NT_IMPORTED_NAME",
-              "_value": ":",
+              "_ntype": "NT_SYMBOL",
+              "_value": "x",
               "children": [
                 {
                   "_ntype": "NT_NAME",
-                  "_value": "arza"
-                },
+                  "_value": "x"
+                }
+              ]
+            },
+            {
+              "_ntype": "NT_SYMBOL",
+              "_value": "y",
+              "children": [
                 {
                   "_ntype": "NT_NAME",
-                  "_value": "lang"
+                  "_value": "y"
                 }
               ]
             },
             {
               "_ntype": "NT_NAME",
-              "_value": "zero"
+              "_value": "T2"
+            },
+            {
+              "_ntype": "NT_SYMBOL",
+              "_value": "z",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "z"
+                }
+              ]
+            },
+            {
+              "_ntype": "NT_SYMBOL",
+              "_value": "w",
+              "children": [
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "w"
+                }
+              ]
+            },
+            {
+              "_ntype": "NT_NAME",
+              "_value": "T3"
             }
           ]
-        }
-      ]
-    }
-  ]
+        ]
+      },
+      {
+        "empty": true
+      }
+    ]
+  }
 ]

@@ -200,40 +200,40 @@ type None
 
 // Various Errors
 type Error(args)
-type ImportError is Error
-type RuntimeError is Error
-type TypeError is Error
-type NotImplementedError is Error
-type ZeroDivisionError is Error
-type MathDomainError is Error
-type ReferenceError is Error
-type ConstructorError is Error
-type KeyError is Error
-type ValueError is Error
-type SliceError is Error
-type IndexError is Error
-type InvokeError is Error
-type InvalidArgCount is Error
-type MethodInvokeError is Error
-type MethodNotImplementedError is Error
-type MethodSpecializeError is Error
-type CompileError is Error
-type ParseError is Error
-type UnpackSequenceError is Error
-type FiberFlowError is Error
-type MatchError is Error
-type FunctionArgumentsMatchError is Error
-type ExceptionMatchError is Error
-type ExportError is Error
-type ImplementationError is Error
-type ConstraintError is Error
-type EmptySeqError is Error
-type OverflowError is Error
-//Signal used to interrupt recursive processes
-type Interrupt is Error
-type MessageMatchError is Error
-type RangeError is Error
-type CoroutineEmpty is Error
+type ImportError(...Error)
+type RuntimeError(...Error)
+type TypeError(...Error)
+type NotImplementedError(...Error)
+type ZeroDivisionError(...Error)
+type MathDomainError(...Error)
+type ReferenceError(...Error)
+type ConstructorError(...Error)
+type KeyError(...Error)
+type ValueError(...Error)
+type SliceError(...Error)
+type IndexError(...Error)
+type InvokeError(...Error)
+type InvalidArgCount(...Error)
+type MethodInvokeError(...Error)
+type MethodNotImplementedError(...Error)
+type MethodSpecializeError(...Error)
+type CompileError(...Error)
+type ParseError(...Error)
+type UnpackSequenceError(...Error)
+type FiberFlowError(...Error)
+type MatchError(...Error)
+type FunctionArgumentsMatchError(...Error)
+type ExceptionMatchError(...Error)
+type ExportError(...Error)
+type ImplementationError(...Error)
+type ConstraintError(...Error)
+type EmptySeqError(...Error)
+type OverflowError(...Error)
+//Signal(...d) to interrupt recursive processes
+type Interrupt(...Error)
+type MessageMatchError(...Error)
+type RangeError(...Error)
+type CoroutineEmpty(...Error)
 
 // Bootstrap interfaces behavior
 

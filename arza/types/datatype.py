@@ -291,13 +291,22 @@ def newnativedatatype(name):
     return W_NativeDatatype(name)
 
 
-def newtype(process, name, fields, mixins):
-    if not plist.is_empty(mixins):
-        mixin_fields = plist.empty()
-        for mixin in mixins:
-            mixin_fields = plist.concat(mixin_fields, mixin.fields)
-        fields = plist.concat(mixin_fields, fields)
-        # print "FIELDS", mixin_fields, fields
+def newtype(process, name, fields):
+    real_fields = []
+    for f in fields:
+        if space.issymbol(f):
+            real_fields.append(f)
+        elif space.isrecorddatatype(f):
+            for mf in f.fields:
+                real_fields.append(mf)
+        else:
+            error.throw_2(
+                error.Errors.COMPILE_ERROR,
+                space.newstring(u"Invalid type mixin"),
+                fields,
+            )
+
+    fields = space.newlist(real_fields)
 
     if plist.is_empty(fields):
         _type = W_SingletonType(name)

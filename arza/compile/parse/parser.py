@@ -189,7 +189,14 @@ class ExpressionParser(BaseParser):
 class TypeParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
+        self.name_parser = name_parser_init(BaseParser())
+
+        self.add_subparsers([
+            self.name_parser
+        ])
+
         prefix(self, TT_NAME, NT_NAME, prefix_name_as_symbol)
+        prefix(self, TT_ELLIPSIS, NT_REST, prefix_type_mixin, 70)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
 

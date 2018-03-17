@@ -1126,36 +1126,29 @@ def _parse_type_fields(parser, token):
     return fields
 
 
+def prefix_type_mixin(parser, op, token):
+    name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
+    return name
+
+
 def stmt_type(parser, op, token):
     """
     complicated operator, possible syntaxes
-    type T1 is (T4, T5) = (v1, v2, v3)
-    type T1 = (v1, v2, v3)
-    type T1 (v1, v2, v3)
+    type T1(v1, ...T2, v3)
     type T1
     """
     check_token_type(parser, TT_NAME)
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    if parser.token_type == TT_IS:
-        advance_expected(parser, TT_IS)
-        mixins_list = _parse_struct_or_name(parser.name_parser, TT_LPAREN, TT_RPAREN, NAME_NODES)
-        mixins = nodes.create_list_node_from_list(token, mixins_list)
-        if parser.token_type == TT_ASSIGN:
-            advance_expected(parser, TT_ASSIGN)
-            fields = _parse_type_fields(parser, token)
-        else:
-            fields = nodes.create_list_node(token, [])
+    mixins = empty_node()
+    if parser.token_type == TT_ASSIGN:
+        advance_expected(parser, TT_ASSIGN)
+        fields = _parse_type_fields(parser, token)
+    elif parser.token_type == TT_LPAREN:
+        fields = _parse_type_fields(parser, token)
     else:
-        mixins = empty_node()
-        if parser.token_type == TT_ASSIGN:
-            advance_expected(parser, TT_ASSIGN)
-            fields = _parse_type_fields(parser, token)
-        elif parser.token_type == TT_LPAREN:
-            fields = _parse_type_fields(parser, token)
-        else:
-            fields = empty_node()
+        fields = empty_node()
 
-    return nodes.node_3(NT_TYPE, token, name, fields, mixins)
+    return nodes.node_2(NT_TYPE, token, name, fields)
 
 
 # DERIVE

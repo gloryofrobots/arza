@@ -1,11 +1,14 @@
 import io
 import affirm
 import seq
-import array
 import tests
 
+type T(x, y)
+
+type T2(a, b, ...T, z)
 
 fun main() =
+    io:print(T2(1,2,3,4,5))
     tests:run()
     #endprogram
 
