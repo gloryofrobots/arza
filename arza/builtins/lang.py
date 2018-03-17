@@ -39,7 +39,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.ISNOT, __isnot, 2)
     put_lang_func(process, module, lang_names.KINDOF, __kindof, 2)
     put_lang_func(process, module, lang_names.IS_IMPLEMENTED, __is_implemented, 2)
-    put_lang_func(process, module, lang_names.TYPE, __type, 2)
+    put_lang_func(process, module, lang_names.TYPE, __type, 3)
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
     put_lang_func(process, module, lang_names.INTERFACE, __interface, 3)
     put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
@@ -183,7 +183,8 @@ def __not(process, routine):
 def __type(process, routine):
     name = routine.get_arg(0)
     fields = routine.get_arg(1)
-    _datatype = space.newdatatype(process, name, fields)
+    construct = routine.get_arg(2)
+    _datatype = space.newdatatype(process, name, fields, construct)
     return _datatype
 
 

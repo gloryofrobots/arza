@@ -181,11 +181,12 @@ class W_SingletonType(W_BaseDatatype):
 
 
 class W_DataType(W_BaseDatatype):
-    def __init__(self, name, fields):
+    def __init__(self, name, fields, construct):
         W_BaseDatatype.__init__(self, name, plist.empty())
         self.fields = fields
         self.arity = api.length_i(self.fields)
         self.descriptors = descriptors(self.fields)
+        self.construct = construct
 
     def _call_(self, process, args):
         length = api.length_i(args)
@@ -196,7 +197,12 @@ class W_DataType(W_BaseDatatype):
                           api.length(self.fields),
                           args)
 
-        return W_Record(self, space.newpvector(args.to_l()))
+        if self.construct is None:
+            return W_Record(self, space.newpvector(args.to_l()))
+        units = space.newpvector([space.newunit() for _ in range(api.length_i(self.fields))])
+        record = W_Record(self, units)
+        new_args = tuples.prepend(args, record)
+        api.call(process, self.construct, new_args)
 
     def _type_(self, process):
         return process.std.types.Datatype
@@ -291,7 +297,7 @@ def newnativedatatype(name):
     return W_NativeDatatype(name)
 
 
-def newtype(process, name, fields):
+def newtype(process, name, fields, construct):
     real_fields = []
     for f in fields:
         if space.issymbol(f):
@@ -319,7 +325,7 @@ def newtype(process, name, fields):
                 fields,
             )
 
-        _type = W_DataType(name, fields)
+        _type = W_DataType(name, fields, construct)
         _iface = process.std.interfaces.Instance
 
     _type.register_interface(process.std.interfaces.Any)

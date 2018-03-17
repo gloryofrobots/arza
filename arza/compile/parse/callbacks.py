@@ -1139,16 +1139,18 @@ def stmt_type(parser, op, token):
     """
     check_token_type(parser, TT_NAME)
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    mixins = empty_node()
-    if parser.token_type == TT_ASSIGN:
-        advance_expected(parser, TT_ASSIGN)
+    construct = empty_node()
+
+    if parser.token_type == TT_LPAREN:
         fields = _parse_type_fields(parser, token)
-    elif parser.token_type == TT_LPAREN:
-        fields = _parse_type_fields(parser, token)
+        if parser.token_type == TT_WITH:
+            advance_expected(parser, TT_WITH)
+            check_token_types(parser, [TT_LPAREN, TT_CASE])
+            construct = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
     else:
         fields = empty_node()
 
-    return nodes.node_2(NT_TYPE, token, name, fields)
+    return nodes.node_3(NT_TYPE, token, name, fields, construct)
 
 
 # DERIVE

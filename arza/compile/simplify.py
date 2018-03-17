@@ -16,7 +16,7 @@ def simplify_error(compiler, code, node, message):
 def simplify_type(compiler, code, node):
     name_node = node_first(node)
     fields = node_second(node)
-    mixins = node_third(node)
+    construct = node_third(node)
 
     name_1_arg = nodes.create_symbol_node(nodes.node_token(name_node), name_node)
     if is_empty_node(fields):
@@ -24,8 +24,13 @@ def simplify_type(compiler, code, node):
     else:
         fields_2_arg = fields
 
+    if is_empty_node(construct):
+        construct_3_arg = nodes.create_unit_node(nodes.node_token(node))
+    else:
+        construct_3_arg = construct
+
     call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.TYPE,
-                                         [name_1_arg, fields_2_arg])
+                                         [name_1_arg, fields_2_arg, construct_3_arg])
     return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
 
 

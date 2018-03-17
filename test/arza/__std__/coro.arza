@@ -32,7 +32,7 @@ trait TCoro(C) for Coroutine =
 describe Coroutine as (Len, ToSeq, Seq, Empty)
 
 // REFS
-type Reference = (val)
+type Reference (val)
 
 fun ref(v) =
     let co =
