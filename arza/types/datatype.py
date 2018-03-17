@@ -192,9 +192,6 @@ class W_DataType(W_BaseDatatype):
         self.descriptors = descriptors(self.fields)
         self.construct = None
 
-    def set_constructor(self, fn):
-        self.construct = fn
-
     def validate(self, process, record):
         if not space.isrecord(record) or record.type is not self:
             error.throw_4(error.Errors.CONSTRUCTOR_ERROR,
@@ -235,6 +232,30 @@ class W_DataType(W_BaseDatatype):
 
     def _to_repr_(self):
         return self._to_string_()
+
+
+def get_constructor(t):
+    error.affirm_type(t, space.isrecorddatatype)
+    if t.construct is None:
+        error.throw_2(error.Errors.TYPE_ERROR,
+                      space.newstring(u"Type constructor not set"),
+                      t)
+    return t.construct
+
+
+def has_constructor(t):
+    error.affirm_type(t, space.isrecorddatatype)
+    return t.construct is not None
+
+
+def set_constructor(t, fn):
+    error.affirm_type(t, space.isrecorddatatype)
+    if t.construct is not None:
+        error.throw_2(error.Errors.TYPE_ERROR,
+                      space.newstring(u"Type constructor already set"),
+                      fn)
+
+    t.construct = fn
 
 
 def record_index_of(record, obj):

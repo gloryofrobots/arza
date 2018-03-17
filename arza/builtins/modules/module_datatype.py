@@ -8,9 +8,24 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'record_keys', record_keys, 1)
     api.put_native_function(process, _module, u'record_values', record_values, 1)
     api.put_native_function(process, _module, u'record_index_of', record_index_of, 2)
+    api.put_native_function(process, _module, u'has_consructor', has_constructor, 1)
+    api.put_native_function(process, _module, u'get_consructor', get_constructor, 1)
 
     _module.export_all()
     process.modules.add_env(_module)
+
+
+@complete_native_routine
+def has_constructor(process, routine):
+    _type = routine.get_arg(0)
+    return datatype.has_constructor(_type)
+
+
+@complete_native_routine
+def get_constructor(process, routine):
+    _type = routine.get_arg(0)
+
+    return datatype.get_constructor(_type)
 
 
 @complete_native_routine

@@ -266,7 +266,7 @@ def __set_construct(process, routine):
     construct = routine.get_arg(1)
     error.affirm_type(_type, space.isdatatype)
     error.affirm_type(construct, space.isfunction)
-    _type.set_constructor(construct)
+    datatype.set_constructor(_type, construct)
     return _type
 
 

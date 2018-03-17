@@ -1,7 +1,7 @@
 import io
 import affirm
 import seq
-//import tests
+import tests
 
 type N(x, y)
 
@@ -20,6 +20,6 @@ fun main() =
 
 //    io:print(T(24))
 //    io:print(T2(1,2,3,4,5))
-//    tests:run()
+    tests:run()
     #endprogram
 
