@@ -5,8 +5,7 @@ import tests
 
 type N(x, y)
 
-type T(x, y) construct (self, x) =
-    self.{x=x, y=24}
+
 
 
 fun main() =
@@ -20,6 +19,6 @@ fun main() =
 
 //    io:print(T(24))
 //    io:print(T2(1,2,3,4,5))
-    tests:run()
+//    tests:run()
     #endprogram
 

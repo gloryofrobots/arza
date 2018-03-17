@@ -99,6 +99,9 @@ def layout_if(parser, op, node):
 def layout_fun(parser, op, node):
     open_statement_layout(parser, node, LEVELS_FUN, INDENTS_FUN)
 
+def layout_construct(parser, op, node):
+    open_statement_layout(parser, node, LEVELS_CONSTRUCT, INDENTS_CONSTRUCT)
+
 
 def layout_decorator(parser, op, node):
     open_statement_layout(parser, node, LEVELS_DECORATOR, INDENTS_DECORATOR)
@@ -1121,7 +1124,7 @@ def symbol_operator_name(parser, op, token):
 # TYPE ************************
 
 def _parse_type_fields(parser, token):
-    items = _parse_comma_separated(parser.type_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
+    items = _parse_comma_separated(parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
     fields = nodes.create_list_node_from_list(token, items)
     return fields
 
@@ -1129,6 +1132,14 @@ def _parse_type_fields(parser, token):
 def prefix_type_mixin(parser, op, token):
     name = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
     return name
+
+
+def prefix_type_construct(parser, op, token):
+    check_token_types(parser, [TT_LPAREN, TT_CASE])
+    name = nodes.empty_node()
+    func = _parse_function(parser.expression_parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
+    construct = nodes.create_nameless_fun(token, func)
+    return construct
 
 
 def stmt_type(parser, op, token):
@@ -1142,12 +1153,14 @@ def stmt_type(parser, op, token):
 
     construct = empty_node()
     if parser.token_type == TT_LPAREN:
-        fields = _parse_type_fields(parser, token)
+        fields = _parse_type_fields(parser.type_parser, token)
         if parser.token_type == TT_CONSTRUCT:
-            advance_expected(parser, TT_CONSTRUCT)
-            check_token_types(parser, [TT_LPAREN, TT_CASE])
-            func = _parse_function(parser.expression_parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
-            construct = nodes.create_nameless_fun(token, func)
+            # construct = statement(parser.type_parser.construct_parser)
+            construct = expect_expression_of(parser.type_parser.construct_parser, 0, NT_FUN)
+            # advance_expected(parser, TT_CONSTRUCT)
+            # check_token_types(parser, [TT_LPAREN, TT_CASE])
+            # func = _parse_function(parser.expression_parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
+            # construct = nodes.create_nameless_fun(token, func)
     else:
         fields = empty_node()
 

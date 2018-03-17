@@ -1,4 +1,44 @@
 
+type Error(x, y, z)
+
+type Error
+    val (x, y, z)
+    fun (self, x, y, z) =
+        self.{
+            x=x,
+            y=y
+            z=z
+        }
+
+type Error
+    val x
+    val y
+    val z
+    construct(self, x, y, z) =
+        self.{
+            x=x,
+            y=y,
+            z=z
+        }
+
+
+type Error(args)
+construct (self, ...args) =
+    self.{args = args}
+
+type ZeroDivisionError(...Error, i1, i2)
+construct(self, i1, i2, ...args) =
+    super(Error, self, ...args).{i1=i1, i2=i2)
+
+type(args)
+as Error(self, ...args) =
+    self.{args = args}
+
+type(...Error, i1, i2)
+as ZeroDivisionError (self, i1, i2, ...args) =
+    super(Error, self, ...args).{i1=i1, i2=i2)
+
+
 object Airship(self, speed) =
     self.{speed=speed}
 

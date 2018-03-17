@@ -31,41 +31,13 @@
                   "_value": "y"
                 }
               ]
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "T2"
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "z",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "z"
-                }
-              ]
-            },
-            {
-              "_ntype": "NT_SYMBOL",
-              "_value": "w",
-              "children": [
-                {
-                  "_ntype": "NT_NAME",
-                  "_value": "w"
-                }
-              ]
-            },
-            {
-              "_ntype": "NT_NAME",
-              "_value": "T3"
             }
           ]
         ]
       },
       {
         "_ntype": "NT_FUN",
-        "_value": "type",
+        "_value": "construct",
         "children": [
           {
             "empty": true
@@ -84,14 +56,6 @@
                     {
                       "_ntype": "NT_NAME",
                       "_value": "x"
-                    },
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "y"
-                    },
-                    {
-                      "_ntype": "NT_NAME",
-                      "_value": "z"
                     }
                   ]
                 ]
@@ -128,7 +92,7 @@
                       },
                       {
                         "_ntype": "NT_ASSIGN",
-                        "_value": "y",
+                        "_value": "24",
                         "children": [
                           {
                             "_ntype": "NT_SYMBOL",
@@ -141,33 +105,21 @@
                             ]
                           },
                           {
-                            "_ntype": "NT_NAME",
-                            "_value": "y"
-                          }
-                        ]
-                      },
-                      {
-                        "_ntype": "NT_ASSIGN",
-                        "_value": "z",
-                        "children": [
-                          {
-                            "_ntype": "NT_SYMBOL",
-                            "_value": "z",
-                            "children": [
-                              {
-                                "_ntype": "NT_NAME",
-                                "_value": "z"
-                              }
-                            ]
-                          },
-                          {
-                            "_ntype": "NT_NAME",
-                            "_value": "z"
+                            "_ntype": "NT_INT",
+                            "_value": "24"
                           }
                         ]
                       }
                     ]
                   ]
+                },
+                {
+                  "_ntype": "NT_NAME",
+                  "_value": "self"
+                },
+                {
+                  "_ntype": "NT_INT",
+                  "_value": "42"
                 }
               ]
             ]

@@ -186,13 +186,22 @@ class ExpressionParser(BaseParser):
         # OTHER OPERATORS ARE DECLARED IN prelude.arza
 
 
-class TypeParser(BaseParser):
-    def __init__(self):
+class TypeConstructParser(BaseParser):
+    def __init__(self, expression_parser):
         BaseParser.__init__(self)
+        self.expression_parser = expression_parser
+        prefix(self, TT_CONSTRUCT, NT_FUN, prefix_type_construct, layout=layout_construct)
+
+
+class TypeParser(BaseParser):
+    def __init__(self, expression_parser):
+        BaseParser.__init__(self)
+        self.construct_parser = TypeConstructParser(expression_parser)
         self.name_parser = name_parser_init(BaseParser())
 
         self.add_subparsers([
-            self.name_parser
+            self.name_parser,
+            self.construct_parser,
         ])
 
         prefix(self, TT_NAME, NT_NAME, prefix_name_as_symbol)
@@ -455,7 +464,7 @@ class ModuleParser(BaseParser):
 
         self.import_names_parser = import_names_parser_init(BaseParser())
         self.interface_parser = InterfaceParser()
-        self.type_parser = TypeParser()
+        self.type_parser = TypeParser(self.expression_parser)
         self.name_list_parser = name_list_parser_init(BaseParser())
         self.def_parser = DefParser()
         self.trait_parser = TraitParser(self.expression_parser)
