@@ -1,14 +1,25 @@
 import io
 import affirm
 import seq
-import tests
+//import tests
 
-type T(x, y)
+type N(x, y)
 
-type T2(a, b, ...T, z)
+type T(x, y) construct (self, x) =
+    self.{x=x, y=24}
+
 
 fun main() =
-    io:print(T2(1,2,3,4,5))
-    tests:run()
+    PL(T(24))
+//    let
+//        t = T(1, 2)
+////        t1 = t.{x=3}
+//    in
+//        PL(put(#x, 1, t))
+////        io:print(t1)
+
+//    io:print(T(24))
+//    io:print(T2(1,2,3,4,5))
+//    tests:run()
     #endprogram
 

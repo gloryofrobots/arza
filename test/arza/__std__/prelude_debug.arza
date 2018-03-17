@@ -1,5 +1,6 @@
-type T(x,y,...T2, z, w, ...T3)
 
+interface X =
+    fun t(x, X)
 
 //    let
 //        a = array(1,2,3,4)

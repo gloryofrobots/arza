@@ -22,7 +22,7 @@ class W_Record(W_Hashable):
             v = api.at_index(self.values, api.to_i(i))
             res.append("%s = %s" % (api.to_s(f), api.to_s(v)))
 
-        return "<%s (%s)>" % (api.to_s(self.type), ", ".join(res))
+        return "<record: %s (%s)>" % (api.to_s(self.type), ", ".join(res))
 
     def _to_repr_(self):
         res = []
@@ -32,7 +32,7 @@ class W_Record(W_Hashable):
             v = api.at_index(self.values, api.to_i(i))
             res.append("%s = %s" % (api.to_r(f), api.to_r(v)))
 
-        return "<%s (%s)>" % (api.to_r(self.type), ", ".join(res))
+        return "<record: %s (%s)>" % (api.to_r(self.type), ", ".join(res))
 
     def _type_(self, process):
         return self.type
@@ -46,8 +46,12 @@ class W_Record(W_Hashable):
             error.throw_1(error.Errors.KEY_ERROR, name)
         return api.at(self.values, idx)
 
-    def _contains_(self, key):
-        value = self._at_(key)
+    def _contains_(self, name):
+        if space.isint(name):
+            return self._at_index_(api.to_i(name))
+
+        idx = api.lookup(self.type.descriptors, name, space.newvoid())
+        value = api.lookup(self.values, idx, space.newvoid())
         return not space.isvoid(value)
 
     def _at_index_(self, idx):
@@ -59,8 +63,8 @@ class W_Record(W_Hashable):
         if space.isvoid(idx):
             error.throw_1(error.Errors.KEY_ERROR, name)
 
-        newvalues = api.put(self.values, name, value)
-        return W_Record(self.type.descriptors, newvalues)
+        newvalues = api.put(self.values, idx, value)
+        return W_Record(self.type, newvalues)
 
     def _length_(self):
         return api.length_i(self.values)
@@ -181,25 +185,44 @@ class W_SingletonType(W_BaseDatatype):
 
 
 class W_DataType(W_BaseDatatype):
-    def __init__(self, name, fields, construct):
+    def __init__(self, name, fields):
         W_BaseDatatype.__init__(self, name, plist.empty())
         self.fields = fields
         self.arity = api.length_i(self.fields)
         self.descriptors = descriptors(self.fields)
-        self.construct = construct
+        self.construct = None
+
+    def set_constructor(self, fn):
+        self.construct = fn
+
+    def validate(self, process, record):
+        if not space.isrecord(record) or record.type is not self:
+            error.throw_4(error.Errors.CONSTRUCTOR_ERROR,
+                          space.newstring(u"Constructor must return record of type"),
+                          self,
+                          space.newstring(u"instead got"),
+                          api.get_type(process, record))
+
+        for f in self.fields:
+            if not api.contains_b(record, f):
+                error.throw_2(error.Errors.CONSTRUCTOR_ERROR,
+                              space.newstring(u"Uninitialized record field"),
+                              f)
+        return record
 
     def _call_(self, process, args):
-        length = api.length_i(args)
-        if length != self.arity:
-            error.throw_4(error.Errors.CONSTRUCTOR_ERROR,
-                          space.newstring(u"Invalid count of data for construction of type"),
-                          self,
-                          api.length(self.fields),
-                          args)
-
         if self.construct is None:
+            length = api.length_i(args)
+            if length != self.arity:
+                error.throw_4(error.Errors.CONSTRUCTOR_ERROR,
+                              space.newstring(u"Invalid count of data for construction of type"),
+                              self,
+                              api.length(self.fields),
+                              args)
+
             return W_Record(self, space.newpvector(args.to_l()))
-        units = space.newpvector([space.newunit() for _ in range(api.length_i(self.fields))])
+
+        units = space.newpvector([space.newvoid() for _ in range(api.length_i(self.fields))])
         record = W_Record(self, units)
         new_args = tuples.prepend(args, record)
         api.call(process, self.construct, new_args)
@@ -297,7 +320,7 @@ def newnativedatatype(name):
     return W_NativeDatatype(name)
 
 
-def newtype(process, name, fields, construct):
+def newtype(process, name, fields):
     real_fields = []
     for f in fields:
         if space.issymbol(f):
@@ -325,7 +348,7 @@ def newtype(process, name, fields, construct):
                 fields,
             )
 
-        _type = W_DataType(name, fields, construct)
+        _type = W_DataType(name, fields)
         _iface = process.std.interfaces.Instance
 
     _type.register_interface(process.std.interfaces.Any)

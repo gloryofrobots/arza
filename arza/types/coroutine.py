@@ -47,7 +47,6 @@ class W_Coroutine(W_Callable):
         process.set_fiber_continuation(self.chan1.fiber)
         return value
 
-    #
     def _to_routine_(self, stack, args):
         # print "TO ROUTINE"
         from arza.runtime.routine.routine import create_callback_routine
@@ -57,7 +56,7 @@ class W_Coroutine(W_Callable):
     def _call_(self, process, args):
         self.chan1.fiber = process.fiber
         if not self.initialised:
-            new_args = tuples.concat(space.newtuple([self.chan1]), args)
+            new_args = tuples.prepend(self.chan1, args)
             process.activate_fiber(self.chan2.fiber, self, new_args)
             self.initialised = True
         else:

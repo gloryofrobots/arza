@@ -61,7 +61,7 @@ def layout_trait(parser, op, node):
 
 
 def layout_type(parser, op, node):
-    open_statement_layout(parser, node, None, INDENTS_TYPE)
+    open_statement_layout(parser, node, LEVELS_TYPE, INDENTS_TYPE)
 
 
 def layout_interface(parser, op, node):
@@ -1139,14 +1139,15 @@ def stmt_type(parser, op, token):
     """
     check_token_type(parser, TT_NAME)
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    construct = empty_node()
 
+    construct = empty_node()
     if parser.token_type == TT_LPAREN:
         fields = _parse_type_fields(parser, token)
-        if parser.token_type == TT_WITH:
-            advance_expected(parser, TT_WITH)
+        if parser.token_type == TT_CONSTRUCT:
+            advance_expected(parser, TT_CONSTRUCT)
             check_token_types(parser, [TT_LPAREN, TT_CASE])
-            construct = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
+            func = _parse_function(parser.expression_parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
+            construct = nodes.create_nameless_fun(token, func)
     else:
         fields = empty_node()
 

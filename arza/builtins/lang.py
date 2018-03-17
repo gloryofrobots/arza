@@ -39,12 +39,14 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.ISNOT, __isnot, 2)
     put_lang_func(process, module, lang_names.KINDOF, __kindof, 2)
     put_lang_func(process, module, lang_names.IS_IMPLEMENTED, __is_implemented, 2)
-    put_lang_func(process, module, lang_names.TYPE, __type, 3)
     put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
     put_lang_func(process, module, lang_names.INTERFACE, __interface, 3)
     put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
     put_lang_func(process, module, lang_names.OVERRIDE, __override, 5)
     put_lang_func(process, module, lang_names.DESCRIBE, __describe, 2)
+    put_lang_func(process, module, lang_names.TYPE, __type, 2)
+    put_lang_func(process, module, lang_names.SET_CONSTRUCT, __set_construct, 2)
+    put_lang_func(process, module, lang_names.CHECK_RECORD, __check_record, 2)
     put_lang_func(process, module, lang_names.LOAD_MODULE, load_module, 1)
     # put_lang_func(process, module, lang_names.CURRY, __curry, 1)
     put_lang_func(process, module, u"curry", __curry, 1)
@@ -183,8 +185,7 @@ def __not(process, routine):
 def __type(process, routine):
     name = routine.get_arg(0)
     fields = routine.get_arg(1)
-    construct = routine.get_arg(2)
-    _datatype = space.newdatatype(process, name, fields, construct)
+    _datatype = space.newdatatype(process, name, fields)
     return _datatype
 
 
@@ -248,6 +249,24 @@ def __describe(process, routine):
     _type = routine.get_arg(0)
     interfaces = routine.get_arg(1)
     datatype.derive_strict(process, _type, interfaces)
+    return _type
+
+
+@complete_native_routine
+def __check_record(process, routine):
+    _type = routine.get_arg(0)
+    record = routine.get_arg(1)
+    _type.validate(process, record)
+    return record
+
+
+@complete_native_routine
+def __set_construct(process, routine):
+    _type = routine.get_arg(0)
+    construct = routine.get_arg(1)
+    error.affirm_type(_type, space.isdatatype)
+    error.affirm_type(construct, space.isfunction)
+    _type.set_constructor(construct)
     return _type
 
 

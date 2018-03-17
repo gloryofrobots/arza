@@ -64,8 +64,199 @@
         ]
       },
       {
-        "empty": true
+        "_ntype": "NT_FUN",
+        "_value": "type",
+        "children": [
+          {
+            "empty": true
+          },
+          [
+            [
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": "(",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "self"
+                    },
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "x"
+                    },
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "y"
+                    },
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "z"
+                    }
+                  ]
+                ]
+              },
+              [
+                {
+                  "_ntype": "NT_MODIFY",
+                  "_value": ".{",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "self"
+                    },
+                    [
+                      {
+                        "_ntype": "NT_ASSIGN",
+                        "_value": "x",
+                        "children": [
+                          {
+                            "_ntype": "NT_SYMBOL",
+                            "_value": "x",
+                            "children": [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "x"
+                              }
+                            ]
+                          },
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "x"
+                          }
+                        ]
+                      },
+                      {
+                        "_ntype": "NT_ASSIGN",
+                        "_value": "y",
+                        "children": [
+                          {
+                            "_ntype": "NT_SYMBOL",
+                            "_value": "y",
+                            "children": [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "y"
+                              }
+                            ]
+                          },
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "y"
+                          }
+                        ]
+                      },
+                      {
+                        "_ntype": "NT_ASSIGN",
+                        "_value": "z",
+                        "children": [
+                          {
+                            "_ntype": "NT_SYMBOL",
+                            "_value": "z",
+                            "children": [
+                              {
+                                "_ntype": "NT_NAME",
+                                "_value": "z"
+                              }
+                            ]
+                          },
+                          {
+                            "_ntype": "NT_NAME",
+                            "_value": "z"
+                          }
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          ]
+        ]
       }
     ]
-  }
+  },
+  [
+    [
+      {
+        "_ntype": "NT_GENERIC",
+        "_value": "interface",
+        "children": [
+          {
+            "_ntype": "NT_NAME",
+            "_value": "t"
+          },
+          {
+            "_ntype": "NT_LIST",
+            "_value": "interface",
+            "children": [
+              [
+                {
+                  "_ntype": "NT_SYMBOL",
+                  "_value": "x",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "x"
+                    }
+                  ]
+                },
+                {
+                  "_ntype": "NT_SYMBOL",
+                  "_value": "X",
+                  "children": [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "X"
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    {
+      "_ntype": "NT_INTERFACE",
+      "_value": "interface",
+      "children": [
+        {
+          "_ntype": "NT_NAME",
+          "_value": "X"
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "interface",
+          "children": [
+            [
+              {
+                "_ntype": "NT_TUPLE",
+                "_value": "1",
+                "children": [
+                  [
+                    {
+                      "_ntype": "NT_NAME",
+                      "_value": "t"
+                    },
+                    {
+                      "_ntype": "NT_INT",
+                      "_value": "1"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "_ntype": "NT_LIST",
+          "_value": "interface",
+          "children": [
+            []
+          ]
+        }
+      ]
+    }
+  ]
 ]

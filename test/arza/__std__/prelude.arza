@@ -13,6 +13,17 @@ from arza:lang:_bit import (bitand, bitor, bitxor, bitnot, lshift, rshift)
 from arza:lang:_number import (abs)
 import arza:lang:_process
 
+
+"""
+super BUG
+io:print(
+    #b,
+    match 2
+        | x = #c
+  )
+"""
+
+
 """
 SOME OF THE OPERATORS DEFINED INTERNALLY AND SOME BELOW
 Precedence    Operator
@@ -62,6 +73,7 @@ infixl (.., .., 90)
 // infix (  .{ .[ -> 95
 prefix (~, ~, 96)
 // infix . : -> 100
+
 
 ////////////////////////////////////////////////////////////
 ///////////////// INTERFACES ///////////////////////////////
@@ -327,6 +339,13 @@ let
     self = _process:self
     spawn = _process:spawn
 
+// DATATYPE HELPER
+fun __check_constructed_record__(_type of Datatype, fn) =
+    fun (...args) =
+        let record = fn(...args)
+        in arza:lang:__checkrecord__(_type, record)
+
+
 // special __at__ method which can be used for default access in case of overloading at
 let __at__ = std_behavior:at
 
@@ -335,6 +354,7 @@ fun __send__ (p of PID, msg) = _process:send(p, msg)
 def <- (p of PID, msg) as __send__
 
 fun __override__(generic, types, func) = func(method(generic, types))
+
 
 fun __receive__(fn) =
     let

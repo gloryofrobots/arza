@@ -448,19 +448,15 @@ def isinterface(w):
 
 ########################################################
 
-def newdatatype(process, name, fields, construct):
+def newdatatype(process, name, fields):
     from arza.types.datatype import newtype
     from arza.runtime import error
 
     error.affirm_type(name, issymbol)
     error.affirm_type(fields, islist)
-    if isunit(construct):
-        construct = None
-    else:
-        error.affirm_type(construct, isfunction)
 
     error.affirm_iterable(fields, lambda x: issymbol(x) or isrecorddatatype(x))
-    return newtype(process, name, fields, construct)
+    return newtype(process, name, fields)
 
 
 def newnativedatatype(name):
