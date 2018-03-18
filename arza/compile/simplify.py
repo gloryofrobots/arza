@@ -32,13 +32,13 @@ def simplify_type(compiler, code, node):
     call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.TYPE,
                                          [name_1_arg, fields_2_arg, construct_3_arg])
     assign_node = nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
-
-    if is_empty_node(construct):
-        return assign_node
-
-    construct_update_init_call = nodes.create_call_node_s(nodes.node_token(node), lang_names.UPDATE_INIT_HELPER,
-                                                          [name_node])
-    return list_node([assign_node, construct_update_init_call])
+    return assign_node
+    # if is_empty_node(construct):
+    #     return assign_node
+    #
+    # construct_update_init_call = nodes.create_call_node_s(nodes.node_token(node), lang_names.UPDATE_INIT_HELPER,
+    #                                                       [name_node])
+    # return list_node([assign_node, construct_update_init_call])
 
 
 def collapse_let(node):

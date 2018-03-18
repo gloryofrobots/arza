@@ -2,7 +2,7 @@ import io
 import affirm
 import seq
 //import tests
-
+//
 type N(a, b)
     init (self, a, b) =
         self.{a=a, b=b}
@@ -12,6 +12,9 @@ type T (...N, x, y)
     init (self, a, x) =
         super(N, self, a, 42).{x=x, y=42}
 
+type T1(x, y)
+    init(self, x, y) =
+        self.{x=x, y=y}
 
 fun main() =
     PL(T(1, 2))

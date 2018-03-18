@@ -214,11 +214,21 @@ class W_RecordType(W_BaseDatatype):
                               f)
         return record
 
+    def on_result(self, process, value):
+        self.validate(process, value)
+        return value
+
+    def _to_routine_(self, stack, args):
+        # print "TO ROUTINE"
+        from arza.runtime.routine.routine import create_callback_routine
+        routine = create_callback_routine(stack, self.on_result, None, self.initializer, args)
+        return routine
+
     def _call_(self, process, args):
-        if not self.finalized:
-            error.throw_1(error.Errors.TYPE_ERROR,
-                          space.newstring(u"Type is uninitialized"),
-                          )
+        # if not self.finalized:
+        #     error.throw_1(error.Errors.TYPE_ERROR,
+        #                   space.newstring(u"Type is uninitialized"),
+        #                   )
 
         if self.initializer is None:
             length = api.length_i(args)
@@ -234,7 +244,9 @@ class W_RecordType(W_BaseDatatype):
         units = space.newpvector([space.newvoid() for _ in range(api.length_i(self.fields))])
         record = W_Record(self, units)
         new_args = tuples.prepend(args, record)
-        api.call(process, self.initializer, new_args)
+        # new_args = tuples.concat(space.newtuple([self, record]), args)
+        process.call_object(self, new_args)
+        # api.call(process, self.initializer, new_args)
 
     def _type_(self, process):
         return process.std.types.Datatype
