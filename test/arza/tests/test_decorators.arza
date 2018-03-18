@@ -92,17 +92,26 @@ type ABC()
 type AB(a)
     init (self, a) = self.{a=a}
 
+type Sum(v)
+    init (self, x, y) =
+        self.{v = x + y}
+
+@extends(Sum)
+type Sum2
+
 
 fun test_types() =
     let
         xyz = XYZ(1, 2, 3)
         abc = ABC(1, 2, 3)
         ab = AB(#a)
+        sum1 = Sum(1,2)
+        sum2 = Sum(1, 2)
     in
         affirm:is_equal_to_map(xyz, {x=1, y=2, z=3})
         affirm:is_equal_to_map(abc, {a=1, b=2, c=3})
         affirm:is_equal_to_map(ab, {a=#ac, b=#b})
-
+        affirm:is_equal_all(sum1.v, sum2.v, 3)
 
 fun test() =
     test_simple()

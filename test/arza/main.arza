@@ -2,10 +2,6 @@ import io
 import affirm
 import seq
 import tests
-//
-
-//fun extends((fields, fn) as typedata, ..._types) =
-
 
 
 fun main() =

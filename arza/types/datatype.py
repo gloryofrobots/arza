@@ -253,6 +253,11 @@ class W_RecordType(W_BaseDatatype):
         return self._to_string_()
 
 
+def get_fields(t):
+    error.affirm_type(t, space.isrecordtype)
+    return t.fields
+
+
 def get_init(t):
     error.affirm_type(t, space.isrecordtype)
     if t.initializer is None:
