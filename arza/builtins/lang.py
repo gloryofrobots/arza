@@ -44,8 +44,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
     put_lang_func(process, module, lang_names.OVERRIDE, __override, 5)
     put_lang_func(process, module, lang_names.DESCRIBE, __describe, 2)
-    put_lang_func(process, module, lang_names.TYPE, __type, 2)
-    put_lang_func(process, module, lang_names.SET_CONSTRUCT, __set_construct, 2)
+    put_lang_func(process, module, lang_names.TYPE, __type, 3)
     put_lang_func(process, module, lang_names.CHECK_RECORD, __check_record, 2)
     put_lang_func(process, module, lang_names.LOAD_MODULE, load_module, 1)
     # put_lang_func(process, module, lang_names.CURRY, __curry, 1)
@@ -185,7 +184,8 @@ def __not(process, routine):
 def __type(process, routine):
     name = routine.get_arg(0)
     fields = routine.get_arg(1)
-    _datatype = space.newdatatype(process, name, fields)
+    construct = routine.get_arg(2)
+    _datatype = space.newdatatype(process, name, fields, construct)
     return _datatype
 
 
@@ -260,14 +260,6 @@ def __check_record(process, routine):
     return record
 
 
-@complete_native_routine
-def __set_construct(process, routine):
-    _type = routine.get_arg(0)
-    construct = routine.get_arg(1)
-    error.affirm_type(_type, space.isdatatype)
-    error.affirm_type(construct, space.isfunction)
-    datatype.set_constructor(_type, construct)
-    return _type
 
 
 @complete_native_routine

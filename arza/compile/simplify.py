@@ -24,18 +24,21 @@ def simplify_type(compiler, code, node):
     else:
         fields_2_arg = fields
 
-    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.TYPE, [name_1_arg, fields_2_arg])
+    if is_empty_node(construct):
+        construct_3_arg = nodes.create_unit_node(nodes.node_token(node))
+    else:
+        construct_3_arg = construct
+
+    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.TYPE,
+                                         [name_1_arg, fields_2_arg, construct_3_arg])
     assign_node = nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
 
     if is_empty_node(construct):
         return assign_node
 
-    construct_arg = construct
-    construct_check_call = nodes.create_call_node_s(nodes.node_token(node), lang_names.CHECK_CONSTRUCTED_RECORD_HELPER,
-                                                    [name_node, construct_arg])
-    construct_call = nodes.create_call_node_s(nodes.node_token(node), lang_names.SET_CONSTRUCT,
-                                              [name_node, construct_check_call])
-    return list_node([assign_node, construct_call])
+    construct_update_init_call = nodes.create_call_node_s(nodes.node_token(node), lang_names.UPDATE_INIT_HELPER,
+                                                          [name_node])
+    return list_node([assign_node, construct_update_init_call])
 
 
 def collapse_let(node):

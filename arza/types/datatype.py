@@ -58,10 +58,16 @@ class W_Record(W_Hashable):
         # accessing protected method instead of api.at_index for avoiding multiple 0 < idx < length check
         return self.values._at_index_(idx)
 
-    def _put_(self, name, value):
-        idx = api.lookup(self.type.descriptors, name, space.newvoid())
-        if space.isvoid(idx):
-            error.throw_1(error.Errors.KEY_ERROR, name)
+    def _put_(self, key, value):
+        if space.isint(key):
+            key_i = api.to_i(key)
+            if key_i < 0 or key_i > api.length_i(self.values):
+                error.throw_1(error.Errors.KEY_ERROR, key)
+            idx = key
+        else:
+            idx = api.lookup(self.type.descriptors, key, space.newvoid())
+            if space.isvoid(idx):
+                error.throw_1(error.Errors.KEY_ERROR, key)
 
         newvalues = api.put(self.values, idx, value)
         return W_Record(self.type, newvalues)
@@ -184,13 +190,14 @@ class W_SingletonType(W_BaseDatatype):
         return api.to_s(self.name)
 
 
-class W_DataType(W_BaseDatatype):
+class W_RecordType(W_BaseDatatype):
     def __init__(self, name, fields):
         W_BaseDatatype.__init__(self, name, plist.empty())
         self.fields = fields
         self.arity = api.length_i(self.fields)
         self.descriptors = descriptors(self.fields)
-        self.construct = None
+        self.initializer = None
+        self.finalized = False
 
     def validate(self, process, record):
         if not space.isrecord(record) or record.type is not self:
@@ -208,11 +215,16 @@ class W_DataType(W_BaseDatatype):
         return record
 
     def _call_(self, process, args):
-        if self.construct is None:
+        if not self.finalized:
+            error.throw_1(error.Errors.TYPE_ERROR,
+                          space.newstring(u"Type is uninitialized"),
+                          )
+
+        if self.initializer is None:
             length = api.length_i(args)
             if length != self.arity:
                 error.throw_4(error.Errors.CONSTRUCTOR_ERROR,
-                              space.newstring(u"Invalid count of data for construction of type"),
+                              space.newstring(u"Invalid count of data for initialization of type"),
                               self,
                               api.length(self.fields),
                               args)
@@ -222,7 +234,7 @@ class W_DataType(W_BaseDatatype):
         units = space.newpvector([space.newvoid() for _ in range(api.length_i(self.fields))])
         record = W_Record(self, units)
         new_args = tuples.prepend(args, record)
-        api.call(process, self.construct, new_args)
+        api.call(process, self.initializer, new_args)
 
     def _type_(self, process):
         return process.std.types.Datatype
@@ -234,28 +246,33 @@ class W_DataType(W_BaseDatatype):
         return self._to_string_()
 
 
-def get_constructor(t):
+def get_init(t):
     error.affirm_type(t, space.isrecorddatatype)
-    if t.construct is None:
+    if t.initializer is None:
         error.throw_2(error.Errors.TYPE_ERROR,
-                      space.newstring(u"Type constructor not set"),
+                      space.newstring(u"Type initializeror not set"),
                       t)
-    return t.construct
+    return t.initializer
 
 
-def has_constructor(t):
+def has_init(t):
     error.affirm_type(t, space.isrecorddatatype)
-    return t.construct is not None
+    return t.initializer is not None
 
 
-def set_constructor(t, fn):
+def set_init(t, fn):
     error.affirm_type(t, space.isrecorddatatype)
-    if t.construct is not None:
+    if t.finalized:
         error.throw_2(error.Errors.TYPE_ERROR,
-                      space.newstring(u"Type constructor already set"),
+                      space.newstring(u"Type initializeror already set"),
                       fn)
 
-    t.construct = fn
+    t.initializer = fn
+
+def finalize_type(t):
+    error.affirm_type(t, space.isrecorddatatype)
+    t.finalized = True
+
 
 
 def record_index_of(record, obj):
@@ -341,7 +358,7 @@ def newnativedatatype(name):
     return W_NativeDatatype(name)
 
 
-def newtype(process, name, fields):
+def newtype(process, name, fields, initializer):
     real_fields = []
     for f in fields:
         if space.issymbol(f):
@@ -369,7 +386,10 @@ def newtype(process, name, fields):
                 fields,
             )
 
-        _type = W_DataType(name, fields)
+        _type = W_RecordType(name, fields)
+        if not space.isunit(initializer):
+            set_init(_type, initializer)
+
         _iface = process.std.interfaces.Instance
 
     _type.register_interface(process.std.interfaces.Any)

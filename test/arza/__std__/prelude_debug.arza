@@ -1,9 +1,8 @@
 
+@
 type T (x, y)
     construct (self, x) =
         self.{x=x, y=24}
-        self
-        42
 
 
 interface X =

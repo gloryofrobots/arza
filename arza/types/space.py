@@ -448,15 +448,16 @@ def isinterface(w):
 
 ########################################################
 
-def newdatatype(process, name, fields):
+def newdatatype(process, name, fields, init):
     from arza.types.datatype import newtype
     from arza.runtime import error
 
     error.affirm_type(name, issymbol)
     error.affirm_type(fields, islist)
+    error.affirm_type(init, lambda x: isfunction(init) or isunit(init), u"Expected Callable or ()")
 
     error.affirm_iterable(fields, lambda x: issymbol(x) or isrecorddatatype(x))
-    return newtype(process, name, fields)
+    return newtype(process, name, fields, init)
 
 
 def newnativedatatype(name):
@@ -472,13 +473,13 @@ def isdatatype(w):
 
 
 def isrecorddatatype(w):
-    from arza.types.datatype import W_DataType
-    return isinstance(w, W_DataType)
+    from arza.types.datatype import W_RecordType
+    return isinstance(w, W_RecordType)
 
 
 def isuserdatatype(w):
-    from arza.types.datatype import W_DataType, W_SingletonType
-    return isinstance(w, W_DataType) or isinstance(w, W_SingletonType)
+    from arza.types.datatype import W_RecordType, W_SingletonType
+    return isinstance(w, W_RecordType) or isinstance(w, W_SingletonType)
 
 
 def issingletondatatype(w):
@@ -501,8 +502,8 @@ def isspecializable(w):
 
 
 def isdispatchable(w):
-    from arza.types.datatype import W_Record, W_DataType
-    return isinstance(w, W_Record) or isinstance(w, W_DataType)
+    from arza.types.datatype import W_Record, W_RecordType
+    return isinstance(w, W_Record) or isinstance(w, W_RecordType)
 
 
 ########################################################
