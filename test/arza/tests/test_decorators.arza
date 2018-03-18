@@ -42,7 +42,69 @@ fun test_simple() =
         affirm:is_equal(sub(100, 1), 218)
         affirm:is_equal(add(1.0, 2.0), -3.1111)
 
+/////////////////////////////////////////////////////////
+//TYPES ///////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+
+fun add_y(t) = add_field(t, #y)
+
+fun add_field ((fields, _init) as typedata, field) =
+    if not elem(field, fields) then
+        (append(field, fields), _init)
+    else
+        typedata
+
+fun init_field_with((fields, _init), field, value, fn) =
+    let
+        fun _wrap(...args) =
+            let
+                data = _init(...args)
+            in
+                data.{(field) = fn(@, value)}
+    in
+        (fields, _wrap)
+
+
+fun init_field((fields, _init), field, value) =
+    let
+        fun _wrap(...args) =
+            let
+                data = _init(...args)
+            in
+                data.{(field) = value}
+    in
+        (fields, _wrap)
+
+
+@add_field(#z)
+@add_y
+type XYZ(x)
+
+@add_field(#c)
+@add_field(#b)
+@add_field(#a)
+type ABC()
+
+
+@init_field(#b, #b)
+@init_field_with(0, #c, (x, y) -> x ++ y)
+@add_field(#b)
+type AB(a)
+    init (self, a) = self.{a=a}
+
+
+fun test_types() =
+    let
+        xyz = XYZ(1, 2, 3)
+        abc = ABC(1, 2, 3)
+        ab = AB(#a)
+    in
+        affirm:is_equal_to_map(xyz, {x=1, y=2, z=3})
+        affirm:is_equal_to_map(abc, {a=1, b=2, c=3})
+        affirm:is_equal_to_map(ab, {a=#ac, b=#b})
+
 
 fun test() =
     test_simple()
+    test_types()
 

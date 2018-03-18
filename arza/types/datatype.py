@@ -256,9 +256,8 @@ class W_RecordType(W_BaseDatatype):
 def get_init(t):
     error.affirm_type(t, space.isrecordtype)
     if t.initializer is None:
-        error.throw_2(error.Errors.TYPE_ERROR,
-                      space.newstring(u"Type does not have initializer"),
-                      t)
+        return space.newunit()
+
     return t.initializer
 
 

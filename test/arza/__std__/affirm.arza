@@ -40,6 +40,18 @@ fun is_equal_all(...args) =
         seq:reduce(_reducer, to_seq(args))
         True
 
+fun is_equal_keys_vals(obj, keys)
+    | (obj, []) = True
+    | (obj, (key, value)::xs) =
+       if obj.[key] != value then
+            fail([obj, key, "!=", value])
+       else
+            is_equal_keys_vals(obj, xs)
+
+
+fun is_equal_to_map(obj, map) =
+    is_equal_keys_vals(obj, to_seq(map))
+
 
 fun is_equal
     | (val1 of Float,  val2 of Float) = is_equal_float(val1, val2)
