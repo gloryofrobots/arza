@@ -45,7 +45,6 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.OVERRIDE, __override, 5)
     put_lang_func(process, module, lang_names.DESCRIBE, __describe, 2)
     put_lang_func(process, module, lang_names.TYPE, __type, 3)
-    put_lang_func(process, module, lang_names.CHECK_RECORD, __check_record, 2)
     put_lang_func(process, module, lang_names.LOAD_MODULE, load_module, 1)
     # put_lang_func(process, module, lang_names.CURRY, __curry, 1)
     put_lang_func(process, module, u"curry", __curry, 1)
@@ -250,15 +249,6 @@ def __describe(process, routine):
     interfaces = routine.get_arg(1)
     datatype.derive_strict(process, _type, interfaces)
     return _type
-
-
-@complete_native_routine
-def __check_record(process, routine):
-    _type = routine.get_arg(0)
-    record = routine.get_arg(1)
-    _type.validate(process, record)
-    return record
-
 
 
 

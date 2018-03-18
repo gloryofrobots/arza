@@ -31,9 +31,6 @@ OVERRIDE = PREFIX + "override"
 OVERRIDE_HELPER = PREFIX + "__override__"
 RECEIVE_HELPER = PREFIX + "__receive__"
 
-SET_CONSTRUCT = PREFIX + "__set_construct__"
-CHECK_RECORD = PREFIX + "__checkrecord__"
-UPDATE_INIT_HELPER = PREFIX + "__update_init__"
 
 SLICE = PREFIX + "slice"
 DROP = PREFIX + "drop"

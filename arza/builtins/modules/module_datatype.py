@@ -11,8 +11,6 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'record_index_of', record_index_of, 2)
     api.put_native_function(process, _module, u'has_init', has_init, 1)
     api.put_native_function(process, _module, u'get_init', get_init, 1)
-    api.put_native_function(process, _module, u'set_init', set_init, 2)
-    api.put_native_function(process, _module, u'finalize_type', finalize_type, 1)
 
     _module.export_all()
     process.modules.add_env(_module)
@@ -30,24 +28,6 @@ def get_init(process, routine):
 
     return datatype.get_init(_type)
 
-
-@complete_native_routine
-def set_init(process, routine):
-    _type = routine.get_arg(0)
-    construct = routine.get_arg(1)
-    error.affirm_type(_type, space.isdatatype)
-    error.affirm_type(construct, space.isfunction)
-    datatype.set_init(_type, construct)
-    return _type
-
-
-
-@complete_native_routine
-def finalize_type(process, routine):
-    _type = routine.get_arg(0)
-    error.affirm_type(_type, space.isdatatype)
-    datatype.finalize_type(_type)
-    return _type
 
 @complete_native_routine
 def record_keys(process, routine):

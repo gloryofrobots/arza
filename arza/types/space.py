@@ -456,7 +456,7 @@ def newdatatype(process, name, fields, init):
     error.affirm_type(fields, islist)
     error.affirm_type(init, lambda x: isfunction(init) or isunit(init), u"Expected Callable or ()")
 
-    error.affirm_iterable(fields, lambda x: issymbol(x) or isrecorddatatype(x))
+    error.affirm_iterable(fields, lambda x: issymbol(x) or isrecordtype(x))
     return newtype(process, name, fields, init)
 
 
@@ -472,7 +472,7 @@ def isdatatype(w):
     return isinstance(w, W_BaseDatatype)
 
 
-def isrecorddatatype(w):
+def isrecordtype(w):
     from arza.types.datatype import W_RecordType
     return isinstance(w, W_RecordType)
 

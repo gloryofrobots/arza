@@ -212,6 +212,7 @@ type None
 
 // Various Errors
 type Error(args)
+    init(self, args) = self.{args=args}
 type ImportError(...Error)
 type RuntimeError(...Error)
 type TypeError(...Error)
@@ -338,21 +339,6 @@ let
 let
     self = _process:self
     spawn = _process:spawn
-
-// DATATYPE HELPER
-fun __update_init__(_type) =
-    if _datatype:has_init(_type) then
-        let
-            construct = _datatype:get_init(_type)
-            fun _new_init(...args) =
-                let record = construct(...args)
-                in arza:lang:__checkrecord__(_type, record)
-        in
-            _datatype:set_init(_type, _new_init)
-            _datatype:finalize_type(_type)
-    else
-        _datatype:finalize_type(_type)
-
 
 fun super(_type, obj, ...args) =
     if _datatype:has_init(_type) then

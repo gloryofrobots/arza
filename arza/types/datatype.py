@@ -191,13 +191,12 @@ class W_SingletonType(W_BaseDatatype):
 
 
 class W_RecordType(W_BaseDatatype):
-    def __init__(self, name, fields):
+    def __init__(self, name, fields, initializer):
         W_BaseDatatype.__init__(self, name, plist.empty())
         self.fields = fields
         self.arity = api.length_i(self.fields)
         self.descriptors = descriptors(self.fields)
-        self.initializer = None
-        self.finalized = False
+        self.initializer = initializer
 
     def validate(self, process, record):
         if not space.isrecord(record) or record.type is not self:
@@ -225,10 +224,6 @@ class W_RecordType(W_BaseDatatype):
         return routine
 
     def _call_(self, process, args):
-        # if not self.finalized:
-        #     error.throw_1(error.Errors.TYPE_ERROR,
-        #                   space.newstring(u"Type is uninitialized"),
-        #                   )
 
         if self.initializer is None:
             length = api.length_i(args)
@@ -259,32 +254,17 @@ class W_RecordType(W_BaseDatatype):
 
 
 def get_init(t):
-    error.affirm_type(t, space.isrecorddatatype)
+    error.affirm_type(t, space.isrecordtype)
     if t.initializer is None:
         error.throw_2(error.Errors.TYPE_ERROR,
-                      space.newstring(u"Type initializeror not set"),
+                      space.newstring(u"Type does not have initializer"),
                       t)
     return t.initializer
 
 
 def has_init(t):
-    error.affirm_type(t, space.isrecorddatatype)
+    error.affirm_type(t, space.isrecordtype)
     return t.initializer is not None
-
-
-def set_init(t, fn):
-    error.affirm_type(t, space.isrecorddatatype)
-    if t.finalized:
-        error.throw_2(error.Errors.TYPE_ERROR,
-                      space.newstring(u"Type initializeror already set"),
-                      fn)
-
-    t.initializer = fn
-
-def finalize_type(t):
-    error.affirm_type(t, space.isrecorddatatype)
-    t.finalized = True
-
 
 
 def record_index_of(record, obj):
@@ -375,7 +355,7 @@ def newtype(process, name, fields, initializer):
     for f in fields:
         if space.issymbol(f):
             real_fields.append(f)
-        elif space.isrecorddatatype(f):
+        elif space.isrecordtype(f):
             for mf in f.fields:
                 real_fields.append(mf)
         else:
@@ -398,9 +378,9 @@ def newtype(process, name, fields, initializer):
                 fields,
             )
 
-        _type = W_RecordType(name, fields)
-        if not space.isunit(initializer):
-            set_init(_type, initializer)
+        if space.isunit(initializer):
+            initializer = None
+        _type = W_RecordType(name, fields, initializer)
 
         _iface = process.std.interfaces.Instance
 
