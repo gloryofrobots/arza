@@ -190,7 +190,7 @@ class TypeConstructParser(BaseParser):
     def __init__(self, expression_parser):
         BaseParser.__init__(self)
         self.expression_parser = expression_parser
-        prefix(self, TT_CONSTRUCT, NT_FUN, prefix_type_construct, layout=layout_construct)
+        prefix(self, TT_INIT, NT_FUN, prefix_type_init, layout=layout_init)
 
 
 class TypeParser(BaseParser):

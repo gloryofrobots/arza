@@ -3,7 +3,7 @@
 from arza.types import space
 from arza.runtime import error
 
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 
 # UGLY DEBUGGING HACKS

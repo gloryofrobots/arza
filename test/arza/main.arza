@@ -1,11 +1,14 @@
 import io
 import affirm
 import seq
-import tests
+//import tests
 
 type N(x, y)
 
 
+type T (x, y)
+    init (self, x) =
+        self.{x=x, y=24}
 
 
 fun main() =

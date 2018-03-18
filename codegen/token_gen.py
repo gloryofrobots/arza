@@ -15,7 +15,7 @@ TOKENS = [
 
   ("TT_MATCH", "match"),
   ("TT_WITH", "with"),
-  ("TT_CONSTRUCT", "construct"),
+  ("TT_INIT", "init"),
   ("TT_CASE", "|"),
 
   ("TT_BREAK", "break"),

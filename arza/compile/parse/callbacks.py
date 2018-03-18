@@ -99,8 +99,9 @@ def layout_if(parser, op, node):
 def layout_fun(parser, op, node):
     open_statement_layout(parser, node, LEVELS_FUN, INDENTS_FUN)
 
-def layout_construct(parser, op, node):
-    open_statement_layout(parser, node, LEVELS_CONSTRUCT, INDENTS_CONSTRUCT)
+
+def layout_init(parser, op, node):
+    open_statement_layout(parser, node, LEVELS_INIT, INDENTS_INIT)
 
 
 def layout_decorator(parser, op, node):
@@ -1134,7 +1135,7 @@ def prefix_type_mixin(parser, op, token):
     return name
 
 
-def prefix_type_construct(parser, op, token):
+def prefix_type_init(parser, op, token):
     check_token_types(parser, [TT_LPAREN, TT_CASE])
     name = nodes.empty_node()
     func = _parse_function(parser.expression_parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
@@ -1154,7 +1155,7 @@ def stmt_type(parser, op, token):
     construct = empty_node()
     if parser.token_type == TT_LPAREN:
         fields = _parse_type_fields(parser.type_parser, token)
-        if parser.token_type == TT_CONSTRUCT:
+        if parser.token_type == TT_INIT:
             # construct = statement(parser.type_parser.construct_parser)
             construct = expect_expression_of(parser.type_parser.construct_parser, 0, NT_FUN)
             # advance_expected(parser, TT_CONSTRUCT)

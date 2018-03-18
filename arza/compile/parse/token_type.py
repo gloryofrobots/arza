@@ -13,7 +13,7 @@ TT_VOID = 10
 TT_FUN = 11
 TT_MATCH = 12
 TT_WITH = 13
-TT_CONSTRUCT = 14
+TT_INIT = 14
 TT_CASE = 15
 TT_BREAK = 16
 TT_CONTINUE = 17
@@ -96,15 +96,15 @@ TT_UNKNOWN = 93
 # ************************ OBIN TOKENS REPR *****************************
 __TT_REPR__ = [u"TT_ENDSTREAM", u"TT_INT", u"TT_FLOAT", u"TT_STR", u"TT_MULTI_STR", u"TT_CHAR", u"TT_NAME",
                u"TT_TICKNAME", u"TT_TYPENAME", u"TT_OPERATOR", u"TT_VOID", u"TT_FUN", u"TT_MATCH", u"TT_WITH",
-               u"TT_CONSTRUCT", u"TT_CASE", u"TT_BREAK", u"TT_CONTINUE", u"TT_WHILE", u"TT_DEF", u"TT_DEF_PLUS",
-               u"TT_TYPE", u"TT_IF", u"TT_ELIF", u"TT_ELSE", u"TT_THEN", u"TT_WHEN", u"TT_OF", u"TT_LET", u"TT_IN",
-               u"TT_IS", u"TT_AS", u"TT_NOT", u"TT_AND", u"TT_OR", u"TT_TRUE", u"TT_FALSE", u"TT_TRY", u"TT_THROW",
-               u"TT_CATCH", u"TT_FINALLY", u"TT_MODULE", u"TT_IMPORT", u"TT_FROM", u"TT_HIDING", u"TT_HIDE",
-               u"TT_EXPORT", u"TT_VALUEOF", u"TT_USE", u"TT_TRAIT", u"TT_INSTANCE", u"TT_FOR", u"TT_INTERFACE",
-               u"TT_DESCRIBE", u"TT_RECEIVE", u"TT_AFTER", u"TT_END", u"TT_END_EXPR", u"TT_NEWLINE", u"TT_INDENT",
-               u"TT_DEDENT", u"TT_INFIXL", u"TT_INFIXR", u"TT_PREFIX", u"TT_ELLIPSIS", u"TT_WILDCARD", u"TT_GOTO",
-               u"TT_ARROW", u"TT_FAT_ARROW", u"TT_BACKARROW", u"TT_DISPATCH", u"TT_AT_SIGN", u"TT_DOUBLE_AT",
-               u"TT_DOLLAR", u"TT_SHARP", u"TT_JUXTAPOSITION", u"TT_LCURLY", u"TT_RCURLY", u"TT_COMMA", u"TT_ASSIGN",
+               u"TT_INIT", u"TT_CASE", u"TT_BREAK", u"TT_CONTINUE", u"TT_WHILE", u"TT_DEF", u"TT_DEF_PLUS", u"TT_TYPE",
+               u"TT_IF", u"TT_ELIF", u"TT_ELSE", u"TT_THEN", u"TT_WHEN", u"TT_OF", u"TT_LET", u"TT_IN", u"TT_IS",
+               u"TT_AS", u"TT_NOT", u"TT_AND", u"TT_OR", u"TT_TRUE", u"TT_FALSE", u"TT_TRY", u"TT_THROW", u"TT_CATCH",
+               u"TT_FINALLY", u"TT_MODULE", u"TT_IMPORT", u"TT_FROM", u"TT_HIDING", u"TT_HIDE", u"TT_EXPORT",
+               u"TT_VALUEOF", u"TT_USE", u"TT_TRAIT", u"TT_INSTANCE", u"TT_FOR", u"TT_INTERFACE", u"TT_DESCRIBE",
+               u"TT_RECEIVE", u"TT_AFTER", u"TT_END", u"TT_END_EXPR", u"TT_NEWLINE", u"TT_INDENT", u"TT_DEDENT",
+               u"TT_INFIXL", u"TT_INFIXR", u"TT_PREFIX", u"TT_ELLIPSIS", u"TT_WILDCARD", u"TT_GOTO", u"TT_ARROW",
+               u"TT_FAT_ARROW", u"TT_BACKARROW", u"TT_DISPATCH", u"TT_AT_SIGN", u"TT_DOUBLE_AT", u"TT_DOLLAR",
+               u"TT_SHARP", u"TT_JUXTAPOSITION", u"TT_LCURLY", u"TT_RCURLY", u"TT_COMMA", u"TT_ASSIGN",
                u"TT_INFIX_DOT_LCURLY", u"TT_INFIX_DOT_LSQUARE", u"TT_LPAREN", u"TT_RPAREN", u"TT_LSQUARE",
                u"TT_RSQUARE", u"TT_DOT", u"TT_COLON", u"TT_DOUBLE_COLON", u"TT_TRIPLE_COLON", u"TT_DOUBLE_DOT",
                u"TT_BACKTICK_NAME", u"TT_BACKTICK_OPERATOR", u"TT_UNKNOWN", ]

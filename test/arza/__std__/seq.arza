@@ -242,10 +242,10 @@ fun concat(l1, l2) =
 fun uncons(x::xs) = (x, xs)
 
 
-fun init(coll)
+fun initial(coll)
     | [x] = empty(coll)
-    | [x, ...xs] = x :: init(xs)
-    | [] = throw ValueError ("empty seq in init")
+    | [x, ...xs] = x :: initial(xs)
+    | [] = throw ValueError ("empty seq in initial")
 
 
 fun zip(seq1, seq2)
