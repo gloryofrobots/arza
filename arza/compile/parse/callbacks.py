@@ -979,7 +979,7 @@ def prefix_decorator(parser, op, token):
         args = list_node([])
 
     decorated = statement(parser)
-    check_node_types(parser, decorated, [NT_FUN, NT_DEF, NT_DEF_PLUS, NT_DECORATOR])
+    check_node_types(parser, decorated, [NT_TYPE, NT_FUN, NT_DEF, NT_DEF_PLUS, NT_DECORATOR])
     # decorated = expect_expression_of_types(parser, 0, [NT_FUN, NT_DEF, NT_DEF_PLUS, NT_DECORATOR])
     # if parser.token_type in [TT_DEF, TT_FUN, TT_AT_SIGN]:
     #     name, funcs = _parse_named_function(parser.expression_parser, token)
@@ -1147,6 +1147,8 @@ def stmt_type(parser, op, token):
     """
     complicated operator, possible syntaxes
     type T1(v1, ...T2, v3)
+        init(x, y, ...) =
+            ...
     type T1
     """
     check_token_type(parser, TT_NAME)
@@ -1156,12 +1158,7 @@ def stmt_type(parser, op, token):
     if parser.token_type == TT_LPAREN:
         fields = _parse_type_fields(parser.type_parser, token)
         if parser.token_type == TT_INIT:
-            # construct = statement(parser.type_parser.construct_parser)
             construct = expect_expression_of(parser.type_parser.construct_parser, 0, NT_FUN)
-            # advance_expected(parser, TT_CONSTRUCT)
-            # check_token_types(parser, [TT_LPAREN, TT_CASE])
-            # func = _parse_function(parser.expression_parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
-            # construct = nodes.create_nameless_fun(token, func)
     else:
         fields = empty_node()
 

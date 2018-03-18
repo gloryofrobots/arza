@@ -212,7 +212,6 @@ type None
 
 // Various Errors
 type Error(args)
-    init(self, args) = self.{args=args}
 type ImportError(...Error)
 type RuntimeError(...Error)
 type TypeError(...Error)

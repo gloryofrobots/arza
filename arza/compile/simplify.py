@@ -29,9 +29,13 @@ def simplify_type(compiler, code, node):
     else:
         construct_3_arg = construct
 
-    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.TYPE,
+    return _generate_type_call(nodes.node_token(node), name_node, name_1_arg, fields_2_arg, construct_3_arg)
+
+
+def _generate_type_call(token, name_node, name_1_arg, fields_2_arg, construct_3_arg):
+    call_node = nodes.create_call_node_s(token, lang_names.TYPE,
                                          [name_1_arg, fields_2_arg, construct_3_arg])
-    assign_node = nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
+    assign_node = nodes.create_assign_node(token, name_node, call_node)
     return assign_node
 
 
@@ -416,14 +420,44 @@ def simplify_decorator(compiler, code, node):
     """
 
     decorated, decorators = _flatten_decorators(node, plist.empty())
-    if node_type(decorated) == nt.NT_FUN:
+    ntype = node_type(decorated)
+    if ntype == nt.NT_FUN:
         return _decorate_fun(decorated, decorators)
-    elif node_type(decorated) == nt.NT_DEF:
+    elif ntype == nt.NT_DEF:
         return _decorate_def(decorated, decorators)
-    elif node_type(decorated) == nt.NT_DEF_PLUS:
+    elif ntype == nt.NT_DEF_PLUS:
         return _decorate_def_plus(decorated, decorators)
+    elif ntype == nt.NT_TYPE:
+        return _decorate_type(decorated, decorators)
     else:
         assert False
+
+
+def _decorate_type(subj, decorators):
+    name_node = nodes.node_first(subj)
+    fields = nodes.node_second(subj)
+    init = nodes.node_third(subj)
+
+    if is_empty_node(fields):
+        fields = nodes.create_empty_list_node(nodes.node_token(subj))
+
+    if is_empty_node(init):
+        init = nodes.create_unit_node(nodes.node_token(subj))
+
+    token = node_token(subj)
+    dec_arg = nodes.create_tuple_node(token, [fields, init])
+
+    decorator_call = _make_decorator_call_chain(dec_arg, decorators)
+    temp_name = nodes.create_random_type_decorator_name(token)
+    checked_call = nodes.create_call_node_s(token, lang_names.AFFIRM_TYPE_DECORATOR,
+                                            [decorator_call])
+    assign = nodes.create_assign_node(token, temp_name, checked_call)
+
+    name_1_arg = nodes.create_symbol_node(nodes.node_token(name_node), name_node)
+    fields_2_arg = nodes.create_lookup_index_node(token, temp_name, 0)
+    construct_3_arg = nodes.create_lookup_index_node(token, temp_name, 1)
+    type_call = _generate_type_call(token, name_node, name_1_arg, fields_2_arg, construct_3_arg)
+    return list_node([assign, type_call])
 
 
 def _decorate_def(subj, decorators):

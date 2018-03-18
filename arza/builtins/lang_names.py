@@ -31,6 +31,7 @@ OVERRIDE = PREFIX + "override"
 OVERRIDE_HELPER = PREFIX + "__override__"
 RECEIVE_HELPER = PREFIX + "__receive__"
 
+AFFIRM_TYPE_DECORATOR = PREFIX + "__affirm_type_decorator__"
 
 SLICE = PREFIX + "slice"
 DROP = PREFIX + "drop"
@@ -49,6 +50,7 @@ GE = PREFIX + ">="
 
 HOLE_PREFIX = "@__hole__"
 RANDOM_TRAIT_NAME_PREFIX = "@__trait__"
+RANDOM_TYPE_DEC_NAME_PREFIX = "@__type_dec__"
 
 TO_SEQ = PREFIX + "to_seq"
 CONCAT = PREFIX + "++"

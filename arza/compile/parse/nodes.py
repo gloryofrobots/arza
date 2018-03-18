@@ -404,6 +404,13 @@ def create_random_trait_name(token):
     return create_name_node_s(token, name)
 
 
+def create_random_type_decorator_name(token):
+    import random
+    index = random.randint(0, 1000000)
+    name = "%s%d" % (lang_names.RANDOM_TYPE_DEC_NAME_PREFIX, index)
+    return create_name_node_s(token, name)
+
+
 def create_name_node_s(token, name):
     return node_0(nt.NT_NAME, create_token_from_token(tt.TT_STR, name, token))
 

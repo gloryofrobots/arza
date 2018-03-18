@@ -96,6 +96,8 @@ trait TList(T) for List =
     def drop(count, self of T) = _list:drop(count, self)
 
     def take(count, self of T) = _list:take(count, self)
+
+    def append(val, self of T) as seq:append
 --------------------------------------------------
 
 def ++ (l1 of List, l2 of List) = seq:concat(l1, l2)

@@ -46,6 +46,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.DESCRIBE, __describe, 2)
     put_lang_func(process, module, lang_names.TYPE, __type, 3)
     put_lang_func(process, module, lang_names.LOAD_MODULE, load_module, 1)
+    put_lang_func(process, module, lang_names.AFFIRM_TYPE_DECORATOR, __affirm_type_decorator, 1)
     # put_lang_func(process, module, lang_names.CURRY, __curry, 1)
     put_lang_func(process, module, u"curry", __curry, 1)
     put_lang_func(process, module, u"partial", __partial, -1)
@@ -250,6 +251,13 @@ def __describe(process, routine):
     datatype.derive_strict(process, _type, interfaces)
     return _type
 
+
+@complete_native_routine
+def __affirm_type_decorator(process, routine):
+    data = routine.get_arg(0)
+
+    error.affirm_type(data, lambda x: space.istuple(x) and api.length_i(data) == 2, u"Tuple(type_fields, type_init)")
+    return data
 
 
 @complete_native_routine
