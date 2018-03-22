@@ -500,7 +500,7 @@ class ModuleParser(BaseParser):
         stmt(self, TT_DEF, None, stmt_def, layout=layout_def)
         stmt(self, TT_DEF_PLUS, None, stmt_def_plus, layout=layout_def)
         stmt(self, TT_IMPORT, None, stmt_import)
-        stmt(self, TT_FROM, None, stmt_from)
+        stmt(self, TT_INCLUDE, None, stmt_include)
         stmt(self, TT_EXPORT, None, stmt_export)
         stmt(self, TT_INFIXL, None, stmt_infixl)
         stmt(self, TT_INFIXR, None, stmt_infixr)

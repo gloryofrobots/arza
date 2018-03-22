@@ -3,7 +3,7 @@ import tests:lib_az:abc:module_ab as ab
 import tests:lib_az:efg:module_e as e
 //
 ////unqualified names f_ab,f_ab_2,const
-from tests:lib_az:abc:module_ab  import (f_ab, f_ab_2, CONST as const)
+include tests:lib_az:abc:module_ab (f_ab, f_ab_2, CONST as const)
 //
 ////ab2:f_ab
 import tests:lib_az:abc:module_ab as ab2 (f_ab, f_ab_2)
@@ -12,12 +12,12 @@ import tests:lib_az:abc:module_ab as ab2 (f_ab, f_ab_2)
 import tests:lib_az:abc:module_ab (f_ab, f_ab_2)
 //
 ////all exported names imported
-from tests:lib_az:efg:module_e import _
+include tests:lib_az:efg:module_e
 
 //ab_3_f_ab
-from tests:lib_az:abc:module_ab import (f_ab as ab_3_f_ab)
+include tests:lib_az:abc:module_ab  (f_ab as ab_3_f_ab)
 //importing same names dont cause errors because names are equal
-from tests:lib_az:abc:module_ab hide (CONST)
+include tests:lib_az:abc:module_ab hiding (CONST)
 //ab5:f_ab_2 only
 import tests:lib_az:abc:module_ab as ab5 hiding (f_ab, CONST)
 

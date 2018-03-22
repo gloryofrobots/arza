@@ -1,7 +1,7 @@
 import io
 
 import tests:test_dispatch:movie:actors
-from tests:test_dispatch:movie:actors import (pretty_enough)
+include tests:test_dispatch:movie:actors (pretty_enough)
 
 import tests:test_dispatch:movie:behavior
 

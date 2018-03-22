@@ -1,5 +1,5 @@
 import arza:lang:_list
-from arza:lang:_list import (head, tail)
+include arza:lang:_list (head, tail)
 import seq
 import string
 import std

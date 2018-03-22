@@ -1,2 +1,2 @@
-from arza:lang:_generic import (get_method, get_types)
+include arza:lang:_generic (get_method, get_types)
 def at (t, self of Generic) as get_method

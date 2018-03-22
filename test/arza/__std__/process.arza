@@ -1,4 +1,4 @@
-from arza:lang:_process  import _
+include arza:lang:_process
 
 fun wait_while_working(pid) =
     if is_finished(pid) then True

@@ -1,17 +1,17 @@
+include arza:lang:_interfaces (Instance, Singleton, Any)
 import arza:lang:_std_behavior as std_behavior
 
 import arza:lang:_datatype
 
+import arza:lang:_process
 
-from arza:lang:_types import (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+include arza:lang:_types (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                               Function, Partial, Generic, FiberChannel, Coroutine, Interface, Datatype,
                               Module, Array, AssocArray, PID)
 
-from arza:lang:_interfaces import (Instance, Singleton, Any)
 
-from arza:lang:_bit import (bitand, bitor, bitxor, bitnot, lshift, rshift)
-from arza:lang:_number import (abs)
-import arza:lang:_process
+include arza:lang:_bit (bitand, bitor, bitxor, bitnot, lshift, rshift)
+include arza:lang:_number (abs)
 
 
 """

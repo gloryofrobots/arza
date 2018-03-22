@@ -124,6 +124,7 @@ RULES = [
 
     (keyword('export'), TT_EXPORT),
     (keyword('import'), TT_IMPORT),
+    (keyword('include'), TT_INCLUDE),
     (keyword('from'), TT_FROM),
     (keyword('hiding'), TT_HIDING),
     (keyword('hide'), TT_HIDE),

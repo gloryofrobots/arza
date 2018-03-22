@@ -49,6 +49,7 @@ TOKENS = [
   ("TT_FINALLY", "finally"),
   ("TT_MODULE", "module"),
   ("TT_IMPORT", "import"),
+  ("TT_INCLUDE", "include"),
   ("TT_FROM", "from"),
   ("TT_HIDING", "hiding"),
   ("TT_HIDE", "hide"),

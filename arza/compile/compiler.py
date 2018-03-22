@@ -962,7 +962,7 @@ def _compile_IMPORT(compiler, code, node):
         i += 1
 
 
-def _compile_IMPORT_FROM(compiler, code, node):
+def _compile_INCLUDE(compiler, code, node):
     module, import_name, var_names = _load_module(compiler, code, node)
     i = 0
     last_index = len(var_names) - 1
@@ -1003,7 +1003,7 @@ def _compile_IMPORT_HIDING(compiler, code, node):
         i += 1
 
 
-def _compile_IMPORT_FROM_HIDING(compiler, code, node):
+def _compile_INCLUDE_HIDING(compiler, code, node):
     module, import_name, var_names = _load_module(compiler, code, node)
     var_names = _delete_hiding_names(compiler, code, node, module, var_names)
     i = 0
@@ -1265,10 +1265,10 @@ def _compile_node(compiler, code, node):
         _compile_IMPORT(compiler, code, node)
     elif NT_IMPORT_HIDING == ntype:
         _compile_IMPORT_HIDING(compiler, code, node)
-    elif NT_IMPORT_FROM == ntype:
-        _compile_IMPORT_FROM(compiler, code, node)
-    elif NT_IMPORT_FROM_HIDING == ntype:
-        _compile_IMPORT_FROM_HIDING(compiler, code, node)
+    elif NT_INCLUDE == ntype:
+        _compile_INCLUDE(compiler, code, node)
+    elif NT_INCLUDE_HIDING == ntype:
+        _compile_INCLUDE_HIDING(compiler, code, node)
 
     elif NT_MODULE == ntype:
         _compile_MODULE(compiler, code, node)
