@@ -351,6 +351,17 @@ fun extends((fields, _init), parent) =
         (_datatype:get_fields(parent) ++ fields, new_init)
 
 
+fun setfield((fields, _init), field, value) =
+    let
+        fun _wrap(...args) =
+            let
+                data = _init(...args)
+            in
+                data.{(field) = value}
+    in
+        (fields, _wrap)
+
+
 fun super(_type, obj, ...args) =
     if _datatype:has_init(_type) then
         let _init = _datatype:get_init(_type)

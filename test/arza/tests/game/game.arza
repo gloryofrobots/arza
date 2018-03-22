@@ -1,7 +1,4 @@
-import io
-import affirm
 import seq
-//import tests
 
 type Creature(name, health, id)
     init(self, name, health) =
@@ -44,7 +41,4 @@ fun main() =
             |> remove_creature(_, g2)
     in
         io:print(game)
-
-//    tests:run()
-    #endprogram
 

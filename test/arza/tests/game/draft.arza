@@ -1,0 +1,21 @@
+@extends(Creature)
+type Monster
+
+@extends(Monster)
+type Zombie
+
+@extends(Monster)
+type Goblin
+
+@extends(Monster)
+type Dragon
+
+@extends(Creature)
+type Hero
+
+@extends(Hero)
+type Cleric
+
+@extends(Hero)
+type Warrior
+

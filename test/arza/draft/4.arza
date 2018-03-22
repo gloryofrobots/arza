@@ -15,6 +15,17 @@ type T {
     x = nil
 }
 
+type X:
+    use T (a as n, b as t, c)
+    use T (a as n) hiding (a, b, c)
+    provide(t)
+    provide(z)
+
+    fun f(a, b, c) = a
+
+    init(self, other) =
+        self.x = x
+        self.y = y
 
 (fun trait_x(T1)
     (def T1.add3 func (x, y, z)
@@ -27,3 +38,12 @@ fun trait_x(T1) {
         return x + y + z
     }
 }
+
+class XYZ(X):
+    init(x, y, z):
+        super(x)
+        self.z = z
+
+
+
+

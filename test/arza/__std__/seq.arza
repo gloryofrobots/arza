@@ -80,6 +80,16 @@ fun list(coll) =
         foldl(cons, [], coll)
     )
 
+fun find_with(fn, default, coll)
+    | (fn, d, []) = default
+    | (fn, d, x::xs) =
+        if fn(x) == True then
+            x
+        else
+            find_with(fn, default, xs)
+
+fun find(default, coll) =
+    find_with(`==`, default, coll)
 
 ///ACCESSORS//////////////////////////////////////
 
