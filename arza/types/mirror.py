@@ -9,6 +9,9 @@ class W_MirrorType(datatype.W_BaseDatatype):
     def _type_(self, process):
         return process.std.types.Datatype
 
+    def _to_string_(self):
+        return self.name._to_string_()
+
 
 class W_Mirror(root.W_Root):
     def __init__(self, source, interfaces):

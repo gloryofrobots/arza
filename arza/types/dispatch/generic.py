@@ -45,6 +45,7 @@ class W_Generic(W_Hashable):
         self.env = space.newemptyenv(self.name)
         self.cache_mask = cache_mask
         self.dag = None
+        self.cache = space.newassocarray()
 
     def get_types(self):
         types = plist.empty()
@@ -77,27 +78,35 @@ class W_Generic(W_Hashable):
             return error.throw_5(error.Errors.INVALID_ARG_COUNT_ERROR,
                                  space.newstring(u"Invalid count of arguments "),
                                  self, args, space.newint(arity), space.newint(self.arity))
-
         # if self.hot_path is not None:
         #     res = self.hot_path.apply(process, args)
         #     if res is not None:
         #         return res
+        _types = []
+        for i in range(len(args)):
+            arg = args[i]
+            cache_mask = self.cache_mask[i]
+            if cache_mask == 0:
+                _type = api.get_type(process, arg)
+            else:
+                _type = arg
+            _types.append(_type)
+        cache_req = space.newtuple(_types)
+        cache_method = api.lookup(self.cache, cache_req, space.newvoid())
 
-        # dispatch_args = space.newtuple([args[i] for i in self.dispatch_indexes])
-        # print "####", str(self.name)
-        # print "####", args
-        method = self.dag.evaluate(process, args)
-        # print "----", method
-        # method = lookup_implementation(process, self, args)
+        if space.isvoid(cache_method):
+            method = self.dag.evaluate(process, args)
+            if not method:
+                return error.throw_4(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR,
+                                     self,
+                                     tuples.types_tuple(process, args),
+                                     args,
+                                     space.newlist(self.signatures))
+            api.put(self.cache, cache_req, method)
+        else:
+            method = cache_method
+
         assert method is not self
-
-        if not method:
-            return error.throw_4(error.Errors.METHOD_NOT_IMPLEMENTED_ERROR,
-                                 self,
-                                 tuples.types_tuple(process, args),
-                                 args,
-                                 space.newlist(self.signatures))
-
         api.call(process, method, args)
 
     def _type_(self, process):
@@ -119,6 +128,7 @@ class W_Generic(W_Hashable):
         self.add_signature(process, signature)
 
     def add_signature(self, process, signature):
+        self.cache = space.newassocarray()
         self.unique_signatures = []
         self.signatures.append(signature)
         discriminators = []
@@ -328,7 +338,8 @@ def generic(process, name, signature):
             if api.equal_b(argtype, space.newsymbol_s(process, lang_names.SVALUEOF)):
                 argcache = 1
             else:
-                return error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR, space.newstring(u"Invalid generic signature param"))
+                return error.throw_1(error.Errors.METHOD_SPECIALIZE_ERROR,
+                                     space.newstring(u"Invalid generic signature param"))
         else:
             argcache = 0
             real_arg = arg
