@@ -1,0 +1,27 @@
+//if you class  has self arg it is object else it is static
+
+class X(Z):
+    include T (a as n, b as t, c)
+    include T (a as n) hiding (a, b, c)
+
+    // simple import
+    import T
+
+    implements (A, B, C)
+
+    //static
+    fun f(a, b, c): a
+
+    //object
+    fun f2(self, a, b, c): a
+    init(self, other):
+        self.x = x
+        self.y = y
+
+    fun f3(self, t):
+        //error self does not in constructor
+        self.t = t
+
+    fun f4(self, t):
+        //works for static funcs
+        f(t)

@@ -17,7 +17,7 @@ fun create_creature({id_count} as game, _type, ...args) =
     let creature = _type(...args).{id=id_count}
     in creature
 
-fun add_creature(, creature) =
+fun add_creature(game, creature) =
     game.{
         id_count = id_count + 1,
         creatures = @.{

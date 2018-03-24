@@ -53,6 +53,8 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, u"interfaces", __interfaces, 1)
     put_lang_func(process, module, u"vector", __vector, -1)
     put_lang_func(process, module, u"array", __array, -1)
+    put_lang_func(process, module, u"__dispatch", __newdispatch, 2)
+    put_lang_func(process, module, u"__register", __newregister, 3)
 
 
 # 15.1.2.2
@@ -236,7 +238,6 @@ def __method(process, routine):
     error.affirm_iterable(types, space.isspecializable)
     return generic.get_method(process, fn, types)
 
-
 @complete_native_routine
 def __signatures(process, routine):
     fn = routine.get_arg(0)
@@ -376,3 +377,20 @@ def __interfaces(process, routine):
         return datatype.get_interfaces(process, obj)
     else:
         return datatype.get_interfaces(process, api.get_type(process, obj))
+
+@complete_native_routine
+def __newregister(process, routine):
+    method = routine.get_arg(0)
+    types = routine.get_arg(1)
+    fn = routine.get_arg(2)
+    method.register(process, types, fn)
+    return fn
+
+@complete_native_routine
+def __newdispatch(process, routine):
+    from arza.types.protocol import newmethod
+    fn = routine.get_arg(0)
+    indexes = routine.get_arg(1)
+    error.affirm_type(fn, space.isfunction)
+    return newmethod(process, fn, indexes)
+
