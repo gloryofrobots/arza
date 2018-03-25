@@ -39,33 +39,44 @@ fun trait_x(T1) {
     }
 }
 
-
-
 protocol Eq(F, S) =
-    ...PartialEq
+    PartialEq._
+    PartialEq.(eq, ne, ge)
+    Num.+
     ==(F, S)
     !=(F, S)
 
-type X = (a,b,c,d,e,f)
+type X (...A, a,b,c,d,e,f)
+    init(self, B, C) =
+        self.b = B
+        self.c = C
+
+    instance A
+    instance Eq(_, B)
+    def index_of (val, self of T) as _datatype:record_index_of
+    def keys(self) as _datatype:record_keys
+    def values(self) as _datatype:record_values
+
 
 trait TRecord(T) =
     def index_of (val, self of T) as _datatype:record_index_of
-    def keys(self of T) as _datatype:record_keys
-    def values(self of T) as _datatype:record_values
+    def keys(self) as _datatype:record_keys
+    def values(self) as _datatype:record_values
 
-    def put (k, v, self of T) as std_behavior:put
-    def at (k, self of T) as std_behavior:at
-    def del (el, self of T) as std_behavior:del
-    def elem (el, self of T) as std_behavior:elem
-    def len (self of T) as std_behavior:len
-    def is_empty (self of T) as std_behavior:is_empty
-    def cast(to_what, self of T) as std_behavior:cast
+    def put (k, v, self) as std_behavior:put
+    def at (k, self) as std_behavior:at
+    def del (el, self) as std_behavior:del
+    def elem (el, self) as std_behavior:elem
+    def len (self) as std_behavior:len
+    def is_empty (self) as std_behavior:is_empty
+    def cast(to_what, self) as std_behavior:cast
 
 
-trait TSingletonEq(T1, T2) =
-    def == (self of T, other) as std_behavior:equal
-    def != (self of T, other) as  std_behavior:not_equal
+trait TEq(T1, T2) =
+    def == (self, other) as std_behavior:equal
+    def != (self, other) as  std_behavior:not_equal
 
+trait TStr(T) =
     def str (self of T) as std_behavior:str
     def repr (self of T) as std_behavior:repr
 
