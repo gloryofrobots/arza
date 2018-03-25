@@ -1,11 +1,14 @@
 //if you class  has self arg it is object else it is static
 
+import T
+extends T
 class X(Z):
     include T (a as n, b as t, c)
     include T (a as n) hiding (a, b, c)
 
     // simple import
     import T
+    extends T
 
     implements (A, B, C)
 
@@ -14,6 +17,7 @@ class X(Z):
 
     //object
     fun f2(self, a, b, c): a
+
     init(self, other):
         self.x = x
         self.y = y
