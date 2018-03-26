@@ -1,5 +1,26 @@
+include Lang
 
-class Object extends Meta:
-    def __call__(...args) =
-       obj = new(...args)
+class Object extends Any:
+    def __at__(self, name):
+        __at__(self, name)
+
+    def __str__(self):
+        __str__(self)
+
+    def __eq__(self, other):
+        __eq__(self, other)
+
+class Behavior extends Object:
+    def __call__(self, ...args) =
+       obj = __make__(self)
+       obj.__init__(...args)
+       return obj
+
+
+class Array:
+    nil
+
+Array.__class__ == Behavior
+
+
 
