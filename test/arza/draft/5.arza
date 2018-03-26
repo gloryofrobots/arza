@@ -4,7 +4,7 @@ import T
 extends T
 class X(Z):
     include T (a as n, b as t, c)
-    include T (a as n) hiding (a, b, c)
+    include (T) (a as n) hiding (a, b, c)
 
     // simple import
     import T

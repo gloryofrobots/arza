@@ -1,4 +1,4 @@
-include Lang
+import Lang
 
 class Object extends Any:
     def __at__(self, name):

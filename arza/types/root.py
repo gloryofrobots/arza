@@ -141,6 +141,9 @@ class W_Root:
     def _compare_(self, other):
         return not_implemented_error(u"_compare_", self, other)
 
+    def _call_from_(self, process, receiver, args):
+        return not_implemented_error(u"_call_from_", self, receiver, args)
+
     def _call_(self, process, args):
         return not_implemented_error(u"_call_", self, args)
 
