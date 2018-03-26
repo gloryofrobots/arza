@@ -1,70 +1,10 @@
 import io
 import affirm
 import seq
-//import tests
+import tests
 
-fun dispatch(fn, ...indexes) =
-    __dispatch(fn, indexes)
-
-fun register(fn, method, ...types) =
-    __register(method, types, fn)
-
-@dispatch(0)
-fun tostr(v) = v
-
-@register(tostr, Int)
-fun tostr_i(v) =
-    "<int>"
-
-@register(tostr, Float)
-fun tostr_f(v) =
-    "<float>"
-
-
-
-@dispatch(0, 1)
-fun add(x, y) = ()
-
-@register(add, Int, Int)
-fun add_i_i(x, y) =
-    "i + i"
-
-@register(add, Int, Float)
-fun add_i_f(x, y) =
-    "i + f"
-
-@register(add, Float, Int)
-fun add_f_i(x, y) =
-    "f + i"
-
-@register(add, Float, Float)
-fun add_f_f(x, y) =
-    "f + f"
-
-@register(add, Int, String)
-fun add_i_s(x, y) =
-    "i + s"
-
-@register(add, String, Int)
-fun add_s_i(x, y) =
-    "s + i"
-
-@register(add, String, Float)
-fun add_s_f(x, y) =
-    "s + f"
 
 fun main() =
-    io:print(tostr(1))
-    io:print(tostr(1.0))
-    io:println(
-        add(1, 1),
-        add(1, 1.0),
-        add(1.0, 1),
-        add(1.0, 1.0),
-        add(1, "1"),
-        add("1", 1),
-        add("1", 1.0)
-    )
-//    tests:run()
+    tests:run()
     #endprogram
 

@@ -99,6 +99,70 @@ type Sum(v)
 @extends(Sum)
 type Sum2
 
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+
+fun dispatch(fn, ...indexes) =
+    __dispatch(fn, indexes)
+
+fun register(fn, method, ...types) =
+    __register(method, types, fn)
+
+@dispatch(0)
+fun tostr(v) = v
+
+@register(tostr, Int)
+fun tostr_i(v) =
+    "<int>"
+
+@register(tostr, Float)
+fun tostr_f(v) =
+    "<float>"
+
+@dispatch(0, 1)
+fun plus(x, y) = ()
+
+@register(plus, Int, Int)
+fun plus_i_i(x, y) =
+    "i + i"
+
+@register(plus, Int, Float)
+fun plus_i_f(x, y) =
+    "i + f"
+
+@register(plus, Float, Int)
+fun plus_f_i(x, y) =
+    "f + i"
+
+@register(plus, Float, Float)
+fun plus_f_f(x, y) =
+    "f + f"
+
+@register(plus, Int, String)
+fun plus_i_s(x, y) =
+    "i + s"
+
+@register(plus, String, Int)
+fun plus_s_i(x, y) =
+    "s + i"
+
+@register(plus, String, Float)
+fun plus_s_f(x, y) =
+    "s + f"
+
+fun test_register() =
+    io:print(tostr(1))
+    io:print(tostr(1.0))
+    io:println(
+        plus(1, 1),
+        plus(1, 1.0),
+        plus(1.0, 1),
+        plus(1.0, 1.0),
+        plus(1, "1"),
+        plus("1", 1),
+        plus("1", 1.0)
+    )
 
 fun test_types() =
     let
