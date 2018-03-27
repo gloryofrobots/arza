@@ -616,28 +616,9 @@ def prefix_if(parser, op, token):
     return node_1(NT_CONDITION, token, list_node(branches))
 
 
-# if you want to allow optional TT_IN
-# uncomment this and comment/delete func below
-# you also need to implemente safguard against code like
-# io:print(let x = 1 y = 2)
-# but making let-in a statement not an option
-# but let without in must be a statement
-# may be something like parser.expression_level variable
-# def prefix_let(parser, op, token):
-#     letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
-#     if parser.token_type == TT_IN:
-#         advance_expected(parser, TT_IN)
-#         inexp = statements(parser, [])
-#         return node_2(NT_LET, token, letblock, inexp)
-#     else:
-#         return letblock
-
-
 def prefix_let(parser, op, token):
     letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
-    advance_expected(parser, TT_IN)
-    inexp = statements(parser, [])
-    return node_2(NT_LET, token, letblock, inexp)
+    return letblock
 
 
 def prefix_module_let(parser, op, token):
@@ -955,19 +936,14 @@ def _parse_named_function(parser, token):
     return name, func
 
 
-def prefix_let_fun(parser, op, token):
-    name, funcs = _parse_named_function(parser.expression_parser, token)
+def prefix_fun(parser, op, token):
+    name, funcs = _parse_named_function(parser, token)
     return node_2(NT_FUN, token, name, funcs)
 
 
 def prefix_nameless_fun(parser, op, token):
     name = empty_node()
     funcs = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
-    return node_2(NT_FUN, token, name, funcs)
-
-
-def prefix_module_fun(parser, op, token):
-    name, funcs = _parse_named_function(parser.expression_parser, token)
     return node_2(NT_FUN, token, name, funcs)
 
 
@@ -994,10 +970,7 @@ def prefix_decorator(parser, op, token):
 
 
 def _load_path_s(node):
-    if nodes.node_type(node) == NT_IMPORTED_NAME:
-        return _load_path_s(nodes.node_first(node)) + ':' + nodes.node_value_s(nodes.node_second(node))
-    else:
-        return nodes.node_value_s(node)
+    return nodes.node_value_s(node)
 
 
 def _load_module(parser, exp):
@@ -1009,16 +982,13 @@ def _load_module(parser, exp):
     if nodes.node_type(exp) == NT_AS:
         import_name = nodes.node_second(exp)
         module_path = _load_path_s(nodes.node_first(exp))
-    elif nodes.node_type(exp) == NT_IMPORTED_NAME:
-        import_name = nodes.node_second(exp)
-        module_path = _load_path_s(exp)
     else:
         assert nodes.node_type(exp) == NT_NAME
         import_name = exp
         module_path = nodes.node_value_s(exp)
 
     state = parser.close()
-    module = load.import_module(state.process, space.newsymbol_s(state.process, module_path))
+    module = load.import_class(state.process, space.newsymbol_s(state.process, module_path))
     parser.open(state)
 
 
@@ -1104,8 +1074,6 @@ def symbol_or_name_value(parser, name):
             assert False, "Invalid symbol"
     elif ntype == NT_NAME:
         return nodes.node_value(name)
-    elif ntype == NT_IMPORTED_NAME:
-        return nodes.imported_name_to_string(name)
     else:
         assert False, "Invalid name"
 
@@ -1386,12 +1354,24 @@ def infix_interface_of(parser, op, token, left):
     return list_node([left, typename])
 
 
+def prefix_class(parser, op, token):
+    name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    if parser.token_type == TT_EXTENDS:
+        advance_expected(parser, TT_EXTENDS)
+        parent = expression(parser, 0)
+    else:
+        parent = nodes.empty_node()
+
+    advance_expected(parser, TT_ASSIGN)
+    code = statements(parser, TERM_BLOCK)
+    return nodes.node_3(NT_CLASS, token, name, parent, code)
+
+
 def stmt_interface(parser, op, token):
     if parser.token_type == TT_ASSIGN:
         advance_expected(parser, TT_ASSIGN)
         return statements(parser.interface_parser.generic_parser, TERM_BLOCK)
 
-    name = expect_expression_of(parser.name_parser, 0, NT_NAME)
 
     if parser.token_type == TT_LPAREN:
         advance(parser)

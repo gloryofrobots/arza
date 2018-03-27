@@ -10,7 +10,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'get_method', _method, 2)
     api.put_native_function(process, _module, u'get_types', _types, 1)
     _module.export_all()
-    process.modules.add_env(_module)
+    process.classes.add_env(_module)
 
 
 @complete_native_routine

@@ -200,7 +200,7 @@ class W_Env(W_Root):
         return self.exported_names
 
     def exported_values(self):
-        data = space.newassocarray()
+        data = space.new_empty_assoc_array()
         for name in self.exported_names:
             value = self.data._at_(name)
             data._put_(name, value)
@@ -229,7 +229,7 @@ class W_Env(W_Root):
         return self.data.keys()
 
     def _type_(self, process):
-        return process.std.types.Env
+        return process.std.classes.Env
 
     def _put_at_index_(self, idx, v):
         return self.data._put_at_index_(idx, v)

@@ -19,7 +19,7 @@ class W_NativeFunction(W_Callable):
         return self._to_string_()
 
     def _type_(self, process):
-        return process.std.types.Function
+        return process.std.classes.Function
 
     def _to_routine_(self, stack, args):
         from arza.runtime.routine.routine import create_native_routine

@@ -260,8 +260,9 @@ def _get_variable_index(compiler, code, node, name):
 # *******************************************************
 # EMIT HELPERS *******************************************
 # **************************************************
-def _emit_call(compiler, code, node, arg_count, funcname):
-    func = nodes.create_name_node_s(nodes.node_token(node), funcname)
+def _emit_method_call(compiler, code, node, arg_count, funcname):
+    sym = nodes.create_symbol_node_s(nodes.node_token(node), funcname)
+    lookup = nodes.create_lookup_node(nodes.node_token(node), funcname)
     _compile(compiler, code, func)
     code.emit_1(CALL, arg_count, info(node))
 
@@ -324,8 +325,6 @@ def get_symbol_or_name_value(name):
     ntype = node_type(name)
     if ntype == NT_SYMBOL:
         return _get_name_value(node_first(name))
-    elif ntype == NT_IMPORTED_NAME:
-        return imported_name_to_s(name)
     else:
         return _get_name_value(name)
 
@@ -448,14 +447,6 @@ def _compile_NOT(compiler, code, node):
 
 
 #########################################################
-
-PATTERN_DATA = """
-    match (1,2)
-        case (a, b) -> a + b
-        case (x, y) -> a - b
-    end
-"""
-
 
 def _compile_match(compiler, code, node, patterns, error_code):
     from arza.compile.match_compiler.transform import transform
@@ -640,8 +631,8 @@ def _compile_DECORATOR(compiler, code, node):
     _compile(compiler, code, call)
 
 
-def _compile_LENSE(compiler, code, node):
-    call = simplify.simplify_lense(compiler, code, node)
+def _compile_CLASS(compiler, code, node):
+    call = simplify.simplify_class(compiler, code, node)
     # _log_ast("lense_" + str(0), call)
     _compile(compiler, code, call)
 
@@ -876,16 +867,13 @@ def _load_module(compiler, code, node):
     if node_type(exp) == NT_AS:
         import_name = node_second(exp)
         module_path = imported_name_to_s(node_first(exp))
-    elif node_type(exp) == NT_IMPORTED_NAME:
-        import_name = node_second(exp)
-        module_path = imported_name_to_s(exp)
     else:
         assert node_type(exp) == NT_NAME
         import_name = exp
         module_path = nodes.node_value_s(exp)
 
     import_name_s = _get_symbol_name(compiler, import_name)
-    module = load.import_module(compiler.process, space.newsymbol_s(compiler.process, module_path))
+    module = load.import_class(compiler.process, space.newsymbol_s(compiler.process, module_path))
     var_names = []
     exports = module.exports()
 
@@ -1044,61 +1032,34 @@ def _compile_AS(compiler, code, node):
     _compile(compiler, code, simplified)
 
 
-def _compile_LET(compiler, code, node):
-    simplified = simplify.simplify_let(compiler, code, node)
-    _compile(compiler, code, simplified)
-
-
-def _compile_DESCRIBE(compiler, code, node):
-    simplified = simplify.simplify_describe(compiler, code, node)
-    _compile(compiler, code, simplified)
-
-
-def _compile_TYPE(compiler, code, node):
-    simplified = simplify.simplify_type(compiler, code, node)
-    _compile(compiler, code, simplified)
-
-
-def _compile_INTERFACE(compiler, code, node):
-    iface = simplify.simplify_interface(compiler, code, node)
-    _compile(compiler, code, iface)
-
-
 def _compile_RECEIVE(compiler, code, node):
     generic = simplify.simplify_receive(compiler, code, node)
     _compile(compiler, code, generic)
 
 
-def _compile_GENERIC(compiler, code, node):
-    generic = simplify.simplify_generic(compiler, code, node)
-    _compile(compiler, code, generic)
-
-
-def _compile_DEF_PLUS(compiler, code, node):
-    simplified = simplify.simplify_def_plus(compiler, code, node)
-    _compile(compiler, code, simplified)
-
-
-def _compile_DEF(compiler, code, node):
-    simplified = simplify.simplify_def(compiler, code, node)
-    _compile(compiler, code, simplified)
-
-
 def _emit_TAIL(compiler, code, node):
-    _compile(compiler, code, node)
-    _emit_call(compiler, code, node, 1, lang_names.REST)
+    token = nodes.node_token(node)
+    sym = nodes.create_symbol_node(token, lang_names.REST)
+    lookup = nodes.create_lookup_node(token, node, sym)
+    call = nodes.create_call_node_0(token, lookup)
+    _compile(compiler, code, call)
 
 
 def _emit_HEAD(compiler, code, node):
-    _compile(compiler, code, node)
-    _emit_call(compiler, code, node, 1, lang_names.FIRST)
+    token = nodes.node_token(node)
+    sym = nodes.create_symbol_node(token, lang_names.FIRST)
+    lookup = nodes.create_lookup_node(token, node, sym)
+    call = nodes.create_call_node_0(token, lookup)
+    _compile(compiler, code, call)
 
 
 def _emit_DROP(compiler, code, node, drop):
     count = node_first(drop)
-    _compile(compiler, code, count)
-    _compile(compiler, code, node)
-    _emit_call(compiler, code, node, 2, lang_names.DROP)
+    token = nodes.node_token(node)
+    sym = nodes.create_symbol_node(token, lang_names.DROP)
+    lookup = nodes.create_lookup_node(token, node, sym)
+    call = nodes.create_call_node_1(token, lookup, count)
+    _compile(compiler, code, call)
 
 
 def _compile_LOOKUP(compiler, code, node):
@@ -1114,13 +1075,16 @@ def _compile_LOOKUP(compiler, code, node):
     elif expr_type == NT_DROP:
         return _emit_DROP(compiler, code, obj, expr)
 
-    _compile(compiler, code, expr)
     _compile(compiler, code, obj)
-    _emit_call(compiler, code, node, 2, lang_names.AT)
+    _compile(compiler, code, expr)
+
+    code.emit_0(LOOKUP, info(node))
+    _emit_method_call(compiler, code, node, 2, lang_names.AT)
 
 
 def _compile_CALL(compiler, code, node):
     func = node_first(node)
+
     args = node_second(node)
 
     for arg in args:
@@ -1134,33 +1098,6 @@ def _compile_CALL(compiler, code, node):
 ######################################
 ##FIRST PASS
 #######################################
-
-def _compile_0(compiler, code, ast):
-    if is_empty_node(ast):
-        return
-
-    if nodes.is_list_node(ast):
-        for node in ast:
-            _compile_0(compiler, code, node)
-    else:
-        ntype = node_type(ast)
-        if ntype in IMPORT_NODES:
-            return
-        if ntype == NT_IMPORTED_NAME:
-            scope = _current_scope(compiler)
-
-            sym = nodes.imported_name_to_symbol(compiler.process, ast)
-            if scope.has_imported_name(sym):
-                return
-
-            scope.add_imported_name(sym)
-
-            module_name = nodes.imported_module_name_symbol(compiler.process, ast)
-            if not scope.has_imported_module(module_name):
-                scope.add_imported_module(module_name)
-
-        _compile_0(compiler, code, node_children(ast))
-
 
 def _compile_1(compiler, code, ast):
     if is_empty_node(ast):
@@ -1194,7 +1131,6 @@ def _compile(compiler, code, ast):
 
 
 def _compile_2(compiler, code, ast):
-    _compile_0(compiler, code, ast)
     _compile_1(compiler, code, ast)
     _compile(compiler, code, ast)
 
@@ -1270,16 +1206,6 @@ def _compile_node(compiler, code, node):
     elif NT_INCLUDE_HIDING == ntype:
         _compile_INCLUDE_HIDING(compiler, code, node)
 
-    elif NT_MODULE == ntype:
-        _compile_MODULE(compiler, code, node)
-    elif NT_DEF == ntype:
-        _compile_DEF(compiler, code, node)
-    elif NT_DEF_PLUS == ntype:
-        _compile_DEF_PLUS(compiler, code, node)
-    elif NT_INTERFACE == ntype:
-        _compile_INTERFACE(compiler, code, node)
-    elif NT_GENERIC == ntype:
-        _compile_GENERIC(compiler, code, node)
     elif NT_RECEIVE == ntype:
         _compile_RECEIVE(compiler, code, node)
     elif NT_THROW == ntype:
@@ -1297,26 +1223,18 @@ def _compile_node(compiler, code, node):
     elif NT_MAP == ntype:
         _compile_MAP(compiler, code, node)
 
-    elif NT_TYPE == ntype:
-        _compile_TYPE(compiler, code, node)
+    elif NT_CLASS == ntype:
+        _compile_CLASS(compiler, code, node)
     elif NT_CONS == ntype:
         _compile_CONS(compiler, code, node)
     elif NT_AS == ntype:
         _compile_AS(compiler, code, node)
     elif NT_LET == ntype:
         _compile_LET(compiler, code, node)
-    elif NT_DESCRIBE == ntype:
-        _compile_DESCRIBE(compiler, code, node)
-
     elif NT_LOOKUP == ntype:
         _compile_LOOKUP(compiler, code, node)
-    elif NT_IMPORTED_NAME == ntype:
-        _compile_LOOKUP_MODULE(compiler, code, node)
-
     elif NT_MODIFY == ntype:
         _compile_MODIFY(compiler, code, node)
-    elif NT_LENSE == ntype:
-        _compile_LENSE(compiler, code, node)
     elif NT_DECORATOR == ntype:
         _compile_DECORATOR(compiler, code, node)
     elif NT_AND == ntype:

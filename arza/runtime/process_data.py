@@ -35,12 +35,12 @@ class Symbols:
         return self.symbols[idx]
 
 
-class Modules:
+class Classes:
     def __init__(self, path, prelude):
         error.affirm_type(path, space.islist)
         error.affirm_iterable(path, space.isstring)
 
-        self.modules = space.newassocarray()
+        self.classes = space.new_empty_assoc_array()
         self.path = path
         self.prelude = prelude
 
@@ -48,29 +48,29 @@ class Modules:
         error.affirm_type(path, space.isstring)
         self.path = plist.cons(path, self.path)
 
-    def add_env(self, env):
-        module = space.newmodule(env)
-        self.add_module(module)
+    def add_env(self, base, metaclass, env):
+        module = space.newcompiledclass(base, metaclass, env)
+        self.add_class(module)
         return module
 
-    def add_module(self, module):
-        error.affirm_type(module.name, space.issymbol)
-        error.affirm_type(module, space.ismodule)
-        api.put(self.modules, module.name, module)
+    def add_class(self, _class):
+        error.affirm_type(_class.name, space.issymbol)
+        error.affirm_type(_class, space.isclass)
+        api.put(self.classes, _class.name, _class)
 
     def before_load(self, name):
         error.affirm_type(name, space.issymbol)
 
-        assert not api.contains_b(self.modules, name)
-        api.put(self.modules, name, space.newint(0))
+        assert not api.contains_b(self.classes, name)
+        api.put(self.classes, name, space.newint(0))
 
     def has_module(self, name):
         error.affirm_type(name, space.issymbol)
-        return api.contains_b(self.modules, name)
+        return api.contains_b(self.classes, name)
 
-    def get_module(self, name):
+    def get_class(self, name):
         error.affirm_type(name, space.issymbol)
-        m = api.at(self.modules, name)
+        m = api.at(self.classes, name)
         if space.isint(m):
             error.throw_2(error.Errors.IMPORT_ERROR, u"Cross reference import", name)
         return m
@@ -82,7 +82,7 @@ class Modules:
 class ProcessData:
     def __init__(self, scheduler, modules, std, symbols, io):
         self.scheduler = scheduler
-        self.modules = modules
+        self.classes = modules
         self.std = std
         self.symbols = symbols
         self.io = io
@@ -101,6 +101,6 @@ def create(scheduler, libdirs, prelude):
     from arza.builtins.std import Std
     symbols = Symbols()
     stdlib = Std(symbols)
-    modules = Modules(libdirs, prelude)
+    classes = Classes(libdirs, prelude)
     io = IO()
-    return ProcessData(scheduler, modules, stdlib, symbols, io)
+    return ProcessData(scheduler, classes, stdlib, symbols, io)

@@ -14,7 +14,7 @@ class W_PID(W_Callable):
         return self._to_string_()
 
     def _type_(self, process):
-        return process.std.types.PID
+        return process.std.classes.PID
 
     def _hash_(self):
         return id(self)

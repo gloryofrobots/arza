@@ -241,8 +241,8 @@ def int_node_to_int(node):
 
 
 def imported_name_to_s(node):
-    if node_type(node) == nt.NT_IMPORTED_NAME:
-        return imported_name_to_s(node_first(node)) + ':' + node_value_s(node_second(node))
+    if node_type(node) == nt.NT_LOOKUP:
+        return imported_name_to_s(node_first(node)) + '.' + node_value_s(node_second(node))
     else:
         return node_value_s(node)
 
@@ -252,7 +252,7 @@ def imported_name_to_string(node):
 
 
 def imported_module_name(node):
-    if node_type(node) == nt.NT_IMPORTED_NAME:
+    if node_type(node) == nt.NT_LOOKUP:
         return imported_module_name(node_first(node))
     else:
         return node_value_s(node)
@@ -533,6 +533,10 @@ def create_if_node(token, branches):
 
 def create_call_node(token, func, exps):
     return node_2(nt.NT_CALL, token, func, exps)
+
+
+def create_call_node_0(token, func):
+    return node_2(nt.NT_CALL, token, func, list_node([]))
 
 
 def create_call_node_1(token, func, exp):

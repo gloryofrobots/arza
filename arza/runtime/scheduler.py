@@ -2,7 +2,7 @@ from arza.types import space, api, pid, plist
 from arza.builtins import builtins
 from arza.runtime.process import Process
 from arza.runtime import process_data, error
-from arza.runtime.load import import_module, evaluate_module_file
+from arza.runtime.load import import_class, evaluate_class_file
 import random
 
 if api.DEBUG_MODE:
@@ -10,26 +10,18 @@ if api.DEBUG_MODE:
 else:
     PRELUDE_FILE = u"prelude"
 
-STD_MODULES = [u"std", u"tuple",
-               u"lense", u"list",
-               u"string", u"generics",
-               u"seq", u"coro",
-               u"map",
-               ]
-
-
 def _load_prelude(process, script_name):
-    result = import_module(process, space.newsymbol(process, script_name))
+    result = import_class(process, space.newsymbol(process, script_name))
     if process.is_terminated():
         # error here
         return result
 
-    process.modules.set_prelude(result.env)
+    process.classes.set_prelude(result.env)
     return None
 
 
 def _load_module(process, script_name):
-    result = import_module(process, space.newsymbol(process, script_name))
+    result = import_class(process, space.newsymbol(process, script_name))
     if process.is_terminated():
         # error here
         return result
@@ -128,7 +120,7 @@ class Scheduler:
 
     def run(self, filename):
         try:
-            module = evaluate_module_file(self.root, space.newsymbol(self.root, u"__main__"), filename)
+            module = evaluate_class_file(self.root, space.newsymbol(self.root, u"__main__"), filename)
         except error.ArzaSignal as e:
             return e.signal
 

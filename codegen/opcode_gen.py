@@ -13,6 +13,7 @@ OPCODES = [
     ("IMPORT_NAME", 1),
     ("FUNCTION", 1),
     ("DUP", 1),
+    ("LOOKUP", -1),
 
     ("FARGS", 1),
     ("FSELF", 1),
@@ -25,7 +26,7 @@ OPCODES = [
     ("POP_CATCH", 0),
 
     ("CALL", 0),
-    
+
     ("JUMP", 0),
     ("JUMP_IF_FALSE_NOPOP", 0),
     ("JUMP_IF_TRUE_NOPOP", 0),

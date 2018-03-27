@@ -7,6 +7,7 @@ from arza.types import api, space, string, environment, datatype
 class CodeRoutine(BaseRoutine):
     # _immutable_fields_ = ['_code_', '_name_', '_stack_size_', '_symbol_size_']
     BP = 1
+
     def __init__(self, func, stack, args, name, code, env):
         BaseRoutine.__init__(self, stack)
 
@@ -195,7 +196,7 @@ class CodeRoutine(BaseRoutine):
                 # if arg1 < 0:
                 #     args = space.newunit()
                 # else:
-                    # args = space.newarguments(stack, stack.pointer(), arg1)
+                # args = space.newarguments(stack, stack.pointer(), arg1)
                 #   print "ARGS-A", args.to_l()
                 #   args = stack.pop_n_tuple(arg1)
                 #
@@ -238,6 +239,12 @@ class CodeRoutine(BaseRoutine):
                 else:
                     stack.pop()
             # *************************************
+            elif LOOKUP == tag:
+                key = stack.pop()
+                obj = stack.pop()
+                val = api.at(obj, key)
+                stack.push(val)
+            # *************************************
             elif MAP == tag:
                 args = []
                 for _ in xrange(arg1):
@@ -246,7 +253,7 @@ class CodeRoutine(BaseRoutine):
                     args.append(name)
                     args.append(w_elem)
 
-                obj = space.newpmap(args)
+                obj = space.new_assoc_array(args)
                 stack.push(obj)
             # *************************************
             elif FUNCTION == tag:

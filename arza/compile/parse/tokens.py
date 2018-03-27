@@ -113,14 +113,10 @@ RULES = [
     # (keyword('module'), TT_MODULE),
 
     (keyword('use'), TT_USE),
-    (keyword('trait'), TT_TRAIT),
-    (keyword('instance'), TT_INSTANCE),
-    (keyword('init'), TT_INIT),
+    (keyword('class'), TT_CLASS),
+    (keyword('extends'), TT_EXTENDS),
     (keyword('for'), TT_FOR),
 
-    (keyword('interface'), TT_INTERFACE),
-    (keyword('describe'), TT_DESCRIBE),
-    (keyword('type'), TT_TYPE),
 
     (keyword('export'), TT_EXPORT),
     (keyword('import'), TT_IMPORT),
@@ -133,10 +129,8 @@ RULES = [
     (keyword('as'), TT_AS),
     (keyword('is'), TT_IS),
     (keyword('let'), TT_LET),
-    (token('def\+'), TT_DEF_PLUS),
     (keyword('def'), TT_DEF),
     (keyword('when'), TT_WHEN),
-    (keyword('valueof'), TT_VALUEOF),
     (keyword('in'), TT_IN),
 
     (keyword('infixl'), TT_INFIXL),
@@ -218,7 +212,7 @@ class Token(root.W_Hashable):
         return x
 
     def _type_(self, process):
-        return process.std.types.Tuple
+        return process.std.classes.Tuple
 
     def _equal_(self, other):
         if not isinstance(other, Token):

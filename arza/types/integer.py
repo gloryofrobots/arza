@@ -41,4 +41,4 @@ class W_Integer(W_ValueType):
         return self._to_string_()
 
     def _type_(self, process):
-        return process.std.types.Int
+        return process.std.classes.Int

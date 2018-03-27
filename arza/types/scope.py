@@ -192,7 +192,7 @@ def _find_function(symbol, record):
 
 class W_Scope(W_Root):
     def __init__(self):
-        self.__locals = space.newassocarray()
+        self.__locals = space.new_empty_assoc_array()
 
         self.__temp_index = 0
 
@@ -204,15 +204,15 @@ class W_Scope(W_Root):
         self.__symbols = Symbols(self.__literals)
 
         self.__local_references = ScopeSet()
-        self.__operators = space.newassocarray()
+        self.__operators = space.new_empty_assoc_array()
         self.__declared_exports = plist.empty()
         self.__static_references = plist.empty()
 
-        self.imports = space.newassocarray()
-        self.imported_names = space.newassocarray()
-        self.imported_modules = space.newassocarray()
+        self.imports = space.new_empty_assoc_array()
+        self.imported_names = space.new_empty_assoc_array()
+        self.imported_modules = space.new_empty_assoc_array()
 
-        self.functions = space.newassocarray()
+        self.functions = space.new_empty_assoc_array()
         self.arg_count = -1
         self.references = None
         self.is_variadic = None

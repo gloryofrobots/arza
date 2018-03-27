@@ -1,25 +1,25 @@
+
 from arza.types import api, space
 from arza.runtime import error
 from arza.runtime.routine.routine import complete_native_routine
 
 
 def setup(process, stdlib):
-    _module_name = space.newsymbol(process, u'arza:lang:_std_behavior')
-    _module = space.newemptyenv(_module_name)
-    api.put_native_function(process, _module, u'len', length, 1)
-    api.put_native_function(process, _module, u'is_empty', is_empty, 1)
-    api.put_native_function(process, _module, u'put', put, 3)
-    api.put_native_function(process, _module, u'at', at, 2)
-    api.put_native_function(process, _module, u'elem', elem, 2)
-    api.put_native_function(process, _module, u'del', delete, 2)
-    api.put_native_function(process, _module, u'equal', equal, 2)
-    api.put_native_function(process, _module, u'not_equal', not_equal, 2)
-    api.put_native_function(process, _module, u'str', to_string, 1)
-    api.put_native_function(process, _module, u'repr', to_repr, 1)
-    api.put_native_function(process, _module, u'cast', cast, 2)
+    _class = stdlib.classes.Object
+    setup_class(process, _class)
 
-    _module.export_all()
-    process.classes.add_env(_module)
+def setup_class(process, _class):
+    api.put_native_function(process, _class, u'__len__', length, 1)
+    api.put_native_function(process, _class, u'__is_empty__', is_empty, 1)
+    api.put_native_function(process, _class, u'__put__', put, 3)
+    api.put_native_function(process, _class, u'__at__', at, 2)
+    api.put_native_function(process, _class, u'__elem__', elem, 2)
+    api.put_native_function(process, _class, u'__del__', delete, 2)
+    api.put_native_function(process, _class, u'__eq__', equal, 2)
+    api.put_native_function(process, _class, u'__ne__', not_equal, 2)
+    api.put_native_function(process, _class, u'__str__', to_string, 1)
+    api.put_native_function(process, _class, u'__repr__', to_repr, 1)
+
 
 
 @complete_native_routine
@@ -54,16 +54,6 @@ def at(process, routine):
     arg0 = routine.get_arg(0)
 
     return api.at(arg1, arg0)
-
-
-@complete_native_routine
-def cast(process, routine):
-    arg1 = routine.get_arg(1)
-
-    arg0 = routine.get_arg(0)
-    if not space.islist(arg0):
-        arg0 = space.newlist([arg0])
-    return space.newmirror(arg1, arg0)
 
 
 @complete_native_routine

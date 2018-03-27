@@ -38,7 +38,7 @@ TERM_TRAIT_GUARD = [TT_ASSIGN]
 TERM_FROM_IMPORTED = [TT_IMPORT, TT_HIDE]
 TERM_DEF_SIGNATURE = [TT_CASE, TT_ASSIGN, TT_AS]
 
-NAME_NODES = [NT_NAME, NT_IMPORTED_NAME]
+NAME_NODES = [NT_NAME]
 IMPORT_NODES = [NT_IMPORT, NT_INCLUDE, NT_INCLUDE_HIDING, NT_IMPORT_HIDING]
 LET_NODES = [NT_DECORATOR, NT_TRY, NT_FUN, NT_ASSIGN]
 EXPORT_NODES = [NT_NAME, NT_TUPLE]
@@ -140,8 +140,8 @@ def skip_indent(parser):
 
 class ParserScope(root.W_Root):
     def __init__(self):
-        self.operators = space.newassocarray()
-        self.macro = space.newassocarray()
+        self.operators = space.new_empty_assoc_array()
+        self.macro = space.new_empty_assoc_array()
 
 
 class ParseState:

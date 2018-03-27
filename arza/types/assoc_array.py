@@ -216,7 +216,7 @@ class W_AssocArray(W_Root):
         return clone
 
     def _type_(self, process):
-        return process.std.types.AssocArray
+        return process.std.classes.AssocArray
 
     def _at_(self, name):
         idx = self._get_index_(name)
@@ -314,3 +314,19 @@ def create_assoc_array_with_size(size):
 
 def create_empty_assoc_array():
     return _create_assoc_array(space.newarray([]), Bindings(), 0)
+
+
+def create_assoc_array(args):
+    assert len(args) & 0x1 == 0, u"hashmap requires even number of args"
+
+    idx = 0
+    acc = create_empty_assoc_array()
+    while idx < len(args):
+        key = args[idx]
+        val = args[idx + 1]
+
+        acc._put_(key, val)
+
+        idx += 2
+
+    return acc

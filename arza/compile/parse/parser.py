@@ -154,19 +154,21 @@ class ExpressionParser(BaseParser):
 
         # TODO DELETE IT, BAD PARSER COMPOSITION. EXPRESSIONS DOES NOT NEED THEM
         prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
-        literal(self, TT_AT_SIGN, NT_BIND)
+        prefix(self, TT_AT_SIGN, None, prefix_decorator, layout=layout_decorator)
 
         prefix(self, TT_NOT, NT_NOT, prefix_nud, 35)
         prefix(self, TT_IF, None, prefix_if, layout=layout_if)
 
-        prefix(self, TT_FUN, None, prefix_nameless_fun, layout=layout_fun)
+        prefix(self, TT_FUN, None, prefix_fun, layout=layout_fun)
 
         prefix(self, TT_MATCH, None, prefix_match, layout=layout_match)
         prefix(self, TT_RECEIVE, None, prefix_receive, layout=layout_receive)
         prefix(self, TT_TRY, None, prefix_try, layout=layout_try)
         prefix(self, TT_BACKTICK_OPERATOR, None, prefix_backtick_operator)
-        prefix(self, TT_LET, None, prefix_let, layout=layout_let)
         prefix(self, TT_THROW, None, prefix_throw)
+        prefix(self, TT_CLASS, None, prefix_class)
+
+        prefix(self, TT_LET, None, prefix_let, layout=layout_let)
 
         infix(self, TT_ARROW, None, 10, infix_arrow)
         infix(self, TT_WHEN, None, 10, infix_when)
@@ -177,36 +179,12 @@ class ExpressionParser(BaseParser):
         infix(self, TT_AND, NT_AND, 30, led_infix)
         infix(self, TT_BACKTICK_NAME, None, 35, infix_backtick_name)
         infix(self, TT_DOUBLE_COLON, NT_CONS, 70, led_infixr)
-        infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
         infix(self, TT_DOT, None, 100, infix_dot)
 
         infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
         infix(self, TT_INFIX_DOT_LCURLY, None, 95, infix_lcurly, layout=layout_lcurly)
         infix(self, TT_INFIX_DOT_LSQUARE, None, 95, infix_lsquare, layout=layout_lsquare)
         # OTHER OPERATORS ARE DECLARED IN prelude.arza
-
-
-class TypeConstructParser(BaseParser):
-    def __init__(self, expression_parser):
-        BaseParser.__init__(self)
-        self.expression_parser = expression_parser
-        prefix(self, TT_INIT, NT_FUN, prefix_type_init, layout=layout_init)
-
-
-class TypeParser(BaseParser):
-    def __init__(self, expression_parser):
-        BaseParser.__init__(self)
-        self.construct_parser = TypeConstructParser(expression_parser)
-        self.name_parser = name_parser_init(BaseParser())
-
-        self.add_subparsers([
-            self.name_parser,
-            self.construct_parser,
-        ])
-
-        prefix(self, TT_NAME, NT_NAME, prefix_name_as_symbol)
-        prefix(self, TT_ELLIPSIS, NT_REST, prefix_type_mixin, 70)
-        symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
 
 class PatternParser(BaseParser):
@@ -225,13 +203,10 @@ class PatternParser(BaseParser):
         prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
 
         infix(self, TT_OF, NT_OF, 10, led_infix)
-        prefix(self, TT_INTERFACE, NT_INTERFACE, prefix_nud, 100)
-        prefix(self, TT_TYPE, NT_TYPE, prefix_nud, 100)
 
         infix(self, TT_LPAREN, None, 95, infix_lparen_pattern, layout=layout_lparen)
         infix(self, TT_AS, None, 15, infix_bind)
         infix(self, TT_DOUBLE_COLON, NT_CONS, 60, led_infixr)
-        infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
 
         symbol(self, TT_WHEN)
         symbol(self, TT_CASE)
@@ -239,6 +214,7 @@ class PatternParser(BaseParser):
         symbol(self, TT_RCURLY)
         symbol(self, TT_RSQUARE)
         symbol(self, TT_ASSIGN)
+        symbol(self, TT_COLON)
         symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
 
         init_parser_literals(self)
@@ -252,164 +228,12 @@ class LetParser(PatternParser):
         self.add_subparsers([
             self.name_parser,
         ])
-
-        symbol(self, TT_IN)
-        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
-        prefix(self, TT_TRY, None, prefix_try, layout=layout_try)
-
-        prefix(self, TT_AT_SIGN, None, prefix_decorator, layout=layout_decorator)
-
-        prefix(self, TT_FUN, None, prefix_let_fun, layout=layout_fun)
         infix(self, TT_ASSIGN, None, 10, led_let_assign)
 
 
 class FunPatternParser(PatternParser):
     def __init__(self):
         PatternParser.__init__(self)
-
-
-class DefPatternParser(PatternParser):
-    def __init__(self):
-        PatternParser.__init__(self)
-        infix(self, TT_OF, None, 5, infix_def_of)
-        prefix(self, TT_OF, None, prefix_def_of)
-
-
-def def_plus_super_parser_init(parser):
-    literal(parser, TT_NAME, NT_NAME)
-    literal(parser, TT_WILDCARD, NT_WILDCARD)
-    return parser
-
-
-class DefParser(BaseParser):
-    def __init__(self):
-        BaseParser.__init__(self)
-
-        self.expression_parser = ExpressionParser()
-        self.fun_pattern_parser = DefPatternParser()
-        self.guard_parser = guard_parser_init(BaseParser())
-        self.name_parser = name_parser_init(BaseParser())
-        self.def_plus_super_parser = def_plus_super_parser_init(BaseParser())
-
-        self.add_subparsers([
-            self.expression_parser,
-            self.fun_pattern_parser,
-            self.guard_parser,
-            self.name_parser,
-            self.def_plus_super_parser
-        ])
-
-
-class TraitParser(BaseParser):
-    def __init__(self, expression_parser):
-        BaseParser.__init__(self)
-
-        self.expression_parser = expression_parser
-        self.def_parser = DefParser()
-        self.name_parser = name_parser_init(BaseParser())
-        self.pattern_parser = TraitSignatureParser()
-        self.for_parser = TraitForParser()
-
-        stmt(self, TT_AT_SIGN, None, prefix_decorator, layout=layout_decorator)
-
-        prefix(self, TT_LPAREN, None, prefix_lparen, layout=layout_lparen)
-        prefix(self, TT_DEF, None, prefix_trait_def, layout=layout_def)
-        prefix(self, TT_DEF_PLUS, None, stmt_def_plus, layout=layout_def)
-        prefix(self, TT_INSTANCE, None, prefix_instance)
-        # infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
-        infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
-        # literal(self, TT_NAME, NT_NAME)
-
-        self.add_subparsers([
-            self.def_parser,
-            self.name_parser,
-            self.pattern_parser,
-            self.for_parser
-        ])
-
-
-class TraitForParser(BaseParser):
-    def __init__(self):
-        BaseParser.__init__(self)
-        self.name_parser = name_parser_init(BaseParser())
-        self.add_subparsers([
-            self.name_parser,
-        ])
-
-        prefix(self, TT_LPAREN, None, prefix_lparen_trait_for, layout=layout_lparen)
-        infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
-        literal(self, TT_NAME, NT_NAME)
-
-
-class TraitSignatureParser(BaseParser):
-    def __init__(self):
-        BaseParser.__init__(self)
-        self.name_parser = name_parser_init(BaseParser())
-        self.add_subparsers([
-            self.name_parser,
-        ])
-
-        infix(self, TT_OF, None, 10, infix_trait_signature_of)
-        # prefix(self, TT_LPAREN, None, prefix_lparen_tuple, layout=layout_lparen)
-        # symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
-        # symbol(self, TT_RPAREN)
-        literal(self, TT_NAME, NT_NAME)
-
-
-# two parser mechanics intermingled here, one for interface with name
-# and other for (interface = ) statement
-
-class InterfaceParser(BaseParser):
-    def __init__(self):
-        BaseParser.__init__(self)
-        prefix(self, TT_FUN, None, prefix_interface_fun)
-        prefix(self, TT_USE, None, prefix_interface_use)
-        self.generic_parser = InterfaceGenericParser()
-        self.function_parser = InterfaceFunctionParser()
-        self.name_parser = name_parser_init(BaseParser())
-
-        symbol(self, TT_LPAREN)
-        symbol(self, TT_RPAREN)
-        self.add_subparsers([
-            self.function_parser,
-            self.generic_parser,
-            self.name_parser
-        ])
-
-
-class InterfaceFunctionParser(BaseParser):
-    def __init__(self):
-        BaseParser.__init__(self)
-
-        prefix(self, TT_VALUEOF, None, prefix_interface_valueof)
-        prefix(self, TT_NAME, NT_NAME, prefix_name_as_symbol)
-        infix(self, TT_OF, None, 5, infix_interface_of)
-        # literal(self, TT_WILDCARD, NT_WILDCARD)
-        symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
-
-
-def interface_generic_signature_parser_init(parser):
-    prefix(parser, TT_VALUEOF, None, prefix_interface_valueof)
-    prefix(parser, TT_NAME, NT_NAME, prefix_name_as_symbol)
-    literal(parser, TT_WILDCARD, NT_WILDCARD)
-    symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
-    return parser
-
-
-# interface = statement
-class InterfaceGenericParser(BaseParser):
-    def __init__(self):
-        BaseParser.__init__(self)
-        self.generic_signature_parser = interface_generic_signature_parser_init(BaseParser())
-        self.name_parser = name_parser_init(BaseParser())
-
-        prefix(self, TT_FUN, None, prefix_interface_generic_fun)
-        symbol(self, TT_RPAREN)
-
-        self.add_subparsers([
-            self.name_parser,
-            self.generic_signature_parser,
-        ])
 
 
 class ModifyKeyParser(BaseParser):
@@ -453,64 +277,36 @@ class MapKeyParser(BaseParser):
         symbol(self, TT_ASSIGN)
 
 
-class ModuleParser(BaseParser):
+class ModuleParser(ExpressionParser):
     def __init__(self):
-        BaseParser.__init__(self)
+        ExpressionParser.__init__(self)
 
         self.import_parser = import_parser_init(BaseParser())
-        self.expression_parser = ExpressionParser()
         self.name_parser = name_parser_init(BaseParser())
         self.name_tuple_parser = name_tuple_parser_init(BaseParser())
 
         self.import_names_parser = import_names_parser_init(BaseParser())
-        self.interface_parser = InterfaceParser()
-        self.type_parser = TypeParser(self.expression_parser)
         self.name_list_parser = name_list_parser_init(BaseParser())
-        self.def_parser = DefParser()
-        self.trait_parser = TraitParser(self.expression_parser)
 
         self.add_subparsers([
             self.import_parser,
-            self.expression_parser,
             self.name_parser,
             self.name_tuple_parser,
             self.name_list_parser,
             self.import_names_parser,
-            self.interface_parser,
-            self.type_parser,
-            self.def_parser,
-            self.trait_parser,
         ])
 
         init_parser_literals(self)
         self.allow_overloading = True
         self.break_on_juxtaposition = True
 
-        symbol(self, TT_ENDSTREAM)
-        symbol_nud(self, TT_COMMA, None, symbol_comma_nud)
-
-        stmt(self, TT_AT_SIGN, None, prefix_decorator, layout=layout_decorator)
-
-        stmt(self, TT_FUN, None, prefix_module_fun, layout=layout_fun)
-        stmt(self, TT_TRAIT, None, stmt_trait, layout=layout_trait)
-        stmt(self, TT_TYPE, None, stmt_type, layout=layout_type)
-        stmt(self, TT_LET, None, prefix_module_let, layout=layout_let)
-        stmt(self, TT_INTERFACE, None, stmt_interface, layout=layout_interface)
-        stmt(self, TT_DESCRIBE, None, stmt_describe, layout=layout_describe)
-        stmt(self, TT_DEF, None, stmt_def, layout=layout_def)
-        stmt(self, TT_DEF_PLUS, None, stmt_def_plus, layout=layout_def)
-        stmt(self, TT_IMPORT, None, stmt_import)
-        stmt(self, TT_INCLUDE, None, stmt_include)
-        stmt(self, TT_EXPORT, None, stmt_export)
         stmt(self, TT_INFIXL, None, stmt_infixl)
         stmt(self, TT_INFIXR, None, stmt_infixr)
         stmt(self, TT_PREFIX, None, stmt_prefix)
-
-        infix(self, TT_LPAREN, None, 95, infix_lparen_forbidden, layout=layout_lparen)
-        infix(self, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
-        prefix(self, TT_LPAREN, None, prefix_lparen_module, layout=layout_lparen)
-        prefix(self, TT_INSTANCE, None, prefix_instance)
-        symbol(self, TT_RPAREN)
+        stmt(self, TT_IMPORT, None, stmt_import)
+        stmt(self, TT_INCLUDE, None, stmt_include)
+        stmt(self, TT_EXPORT, None, stmt_export)
+        symbol(self, TT_ENDSTREAM)
 
 
 def guard_parser_init(parser):
@@ -533,7 +329,6 @@ def guard_parser_init(parser):
     infix(parser, TT_AND, NT_AND, 30, led_infix)
     infix(parser, TT_BACKTICK_NAME, None, 35, infix_backtick_name)
     infix(parser, TT_DOT, None, 100, infix_dot)
-    infix(parser, TT_COLON, NT_IMPORTED_NAME, 110, infix_name_pair)
     infix(parser, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
     infix(parser, TT_INFIX_DOT_LCURLY, None, 95, infix_lcurly, layout=layout_lcurly)
     infix(parser, TT_INFIX_DOT_LSQUARE, None, 95, infix_lsquare, layout=layout_lsquare)
@@ -560,7 +355,6 @@ def int_parser_init(parser):
 def name_parser_init(parser):
     literal(parser, TT_NAME, NT_NAME)
     symbol_nud(parser, TT_OPERATOR, NT_NAME, symbol_operator_name)
-    infix(parser, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
     return parser
 
 
@@ -575,13 +369,11 @@ def name_tuple_parser_init(parser):
 
     prefix(parser, TT_LPAREN, None, prefix_lparen_tuple, layout=layout_lparen)
 
-    infix(parser, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
     return parser
 
 
 def name_list_parser_init(parser):
     symbol(parser, TT_RPAREN)
-    infix(parser, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
     symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
     literal(parser, TT_NAME, NT_NAME)
     prefix(parser, TT_LSQUARE, None, prefix_lsquare_name_list, layout=layout_lsquare)
@@ -592,7 +384,6 @@ def import_names_parser_init(parser):
     symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
     symbol(parser, TT_RPAREN)
     literal(parser, TT_NAME, NT_NAME)
-    infix(parser, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
     infix(parser, TT_AS, NT_AS, 15, infix_name_pair)
     prefix(parser, TT_LPAREN, None, prefix_lparen_tuple, layout=layout_lparen)
     return parser
@@ -607,7 +398,6 @@ def import_parser_init(parser):
     symbol(parser, TT_HIDE)
     symbol(parser, TT_IMPORT)
     symbol(parser, TT_WILDCARD)
-    infix(parser, TT_COLON, NT_IMPORTED_NAME, 100, infix_name_pair)
     infix(parser, TT_AS, NT_AS, 15, infix_name_pair)
     literal(parser, TT_NAME, NT_NAME)
 

@@ -29,7 +29,7 @@ class W_Array(W_Root):
         return self
 
     def _type_(self, process):
-        return process.std.types.Array
+        return process.std.classes.Array
 
     def _clone_(self):
         items = []

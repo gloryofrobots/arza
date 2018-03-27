@@ -1,5 +1,6 @@
 import Lang
 
+
 class Object extends Any:
     def __at__(self, name):
         __at__(self, name)

@@ -1,14 +1,16 @@
 from arza.misc.platform import jit
 from arza.types.boolean import W_True, W_False
-from arza.types.void import W_Void
+from arza.types.void import W_Void, W_Nil
 from arza.types.root import W_UniqueType
 
 w_True = W_True()
 w_False = W_False()
 w_Interrupt = W_UniqueType()
 w_Void = W_Void()
+w_Nil = W_Nil()
 
 jit.promote(w_True)
+jit.promote(w_Nil)
 jit.promote(w_False)
 jit.promote(w_Void)
 jit.promote(w_Interrupt)
@@ -146,6 +148,16 @@ def isvoid(value):
 
 ########################################################
 
+def newnil():
+    return w_Nil
+
+
+def isnil(value):
+    return value is w_Nil
+
+
+########################################################
+
 def newbool(val):
     assert isinstance(val, bool)
     if val:
@@ -192,12 +204,11 @@ def newnativefunc(name, function, arity):
 
 
 def isfunction(value):
-    from arza.types.function import W_Function
+    from arza.types.function import W_Function, W_Method
     from arza.types.native_function import W_NativeFunction
     from arza.types.partial import W_Partial
-    from arza.types.dispatch.generic import W_Generic
     return isinstance(value, W_Function) or isinstance(value, W_NativeFunction) \
-           or isinstance(value, W_Partial) or isinstance(value, W_Generic)
+           or isinstance(value, W_Partial) or isinstance(value, W_Method)
 
 
 def isnativefunction(value):
@@ -232,8 +243,11 @@ def isiodevice(w):
 
 ########################################################
 
+def new_assoc_array(args):
+    from arza.types.assoc_array import create_assoc_array
+    return create_assoc_array(args)
 
-def newassocarray():
+def new_empty_assoc_array():
     from arza.types.assoc_array import create_empty_assoc_array
     return create_empty_assoc_array()
 
@@ -257,17 +271,6 @@ def ispmap(value):
 
 ########################################################
 
-def newtvar(value):
-    from arza.types.tvar import W_TVar
-    return W_TVar(value)
-
-
-def istvar(value):
-    from arza.types.tvar import W_TVar
-    return isinstance(value, W_TVar)
-
-
-########################################################
 
 def newarray(items):
     assert isinstance(items, list)
@@ -352,6 +355,7 @@ def isrealtuple(w):
 
 
 #########################################################
+
 def newarguments(stack, index, length):
     from arza.types.arguments import W_Arguments
     return W_Arguments(stack, index, length)
@@ -400,123 +404,22 @@ def isenv(w):
 
 ########################################################
 
-def newmodule(env):
-    from arza.types.module import newmodule as new
-    module = new(env)
-    return module
+def newclass(name, base, metaclass, slots):
+    from arza.types.obj import newclass
+    return newclass(name, base, metaclass, slots)
+
+def newemptyclass(name, base ,metaclass):
+    return newclass(name, base, metaclass, new_empty_assoc_array())
 
 
-def ismodule(w):
-    from arza.types.module import W_Module
-    return isinstance(w, W_Module)
+def newcompiledclass(base, metaclass, env):
+    from arza.types.obj import new_compiled_class
+    return new_compiled_class(base, metaclass, env)
 
 
-########################################################
-
-def newgeneric(process, name, signature):
-    from arza.types.dispatch.generic import generic
-    assert issymbol(name)
-    if not islist(signature):
-        assert islist(signature)
-
-    assert islist(signature), name
-
-    return generic(process, name, signature)
-
-
-def isgeneric(w):
-    from arza.types.dispatch.generic import W_Generic
-    return isinstance(w, W_Generic)
-
-
-########################################################
-
-def newinterface(name, generics, sub_interfaces):
-    from arza.types.interface import interface
-    from arza.runtime import error
-    error.affirm_type(name, issymbol)
-    error.affirm_type(generics, islist)
-    error.affirm_type(sub_interfaces, islist)
-
-    return interface(name, generics, sub_interfaces)
-
-
-def isinterface(w):
-    from arza.types.interface import W_Interface
-    return isinstance(w, W_Interface)
-
-
-########################################################
-
-def newdatatype(process, name, fields, init):
-    from arza.types.datatype import newtype
-    from arza.runtime import error
-
-    error.affirm_type(name, issymbol)
-    error.affirm_type(fields, islist)
-    error.affirm_type(init, lambda x: isfunction(init) or isunit(init), u"Expected Callable or ()")
-
-    error.affirm_iterable(fields, lambda x: issymbol(x) or isrecordtype(x))
-    return newtype(process, name, fields, init)
-
-
-def newnativedatatype(name):
-    from arza.types.datatype import newnativedatatype
-    assert issymbol(name)
-    datatype = newnativedatatype(name)
-    return datatype
-
-
-def isdatatype(w):
-    from arza.types.datatype import W_BaseDatatype
-    return isinstance(w, W_BaseDatatype)
-
-
-def isrecordtype(w):
-    from arza.types.datatype import W_RecordType
-    return isinstance(w, W_RecordType)
-
-
-def isuserdatatype(w):
-    from arza.types.datatype import W_RecordType, W_SingletonType
-    return isinstance(w, W_RecordType) or isinstance(w, W_SingletonType)
-
-
-def issingletondatatype(w):
-    from arza.types.datatype import W_SingletonType
-    return isinstance(w, W_SingletonType)
-
-
-def isnativedatatype(w):
-    from arza.types.datatype import W_NativeDatatype
-    return isinstance(w, W_NativeDatatype)
-
-
-def isrecord(w):
-    from arza.types.datatype import W_Record
-    return isinstance(w, W_Record)
-
-
-def isspecializable(w):
-    return isinterface(w) or isdatatype(w)
-
-
-def isdispatchable(w):
-    from arza.types.datatype import W_Record, W_RecordType
-    return isinstance(w, W_Record) or isinstance(w, W_RecordType)
-
-
-########################################################
-
-
-def newmirror(w, interfaces):
-    from arza.types.mirror import mirror
-    return mirror(w, interfaces)
-
-
-def ismirror(w):
-    from arza.types.mirror import W_Mirror
-    return isinstance(w, W_Mirror)
+def isclass(_class):
+    from arza.types.obj import W_Class
+    return isinstance(_class, W_Class)
 
 
 ########################################################

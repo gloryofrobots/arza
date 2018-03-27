@@ -17,7 +17,10 @@ class W_Object(W_Hashable):
     def _at_(self, key):
         val = api.lookup(self.slots, key, space.newvoid())
         if space.isvoid(val):
-            return self.cls._at_(key)
+            return self.cls.get(key)
+
+    def set_class(self, cls):
+        self.cls = cls
 
     def _put_(self, k, v):
         return self.slots._put_(k, v)
@@ -39,16 +42,22 @@ class W_Object(W_Hashable):
 
 
 class W_Class(W_Object):
-    def __init__(self, metaclass, slots, name):
+    def __init__(self, name, base, metaclass, slots):
         W_Object.__init__(self, metaclass, slots)
         self.name = name
         self.slots = slots
+        self.base = base
 
-    # def instance(self):
-    #     obj = W_Object(self,
-
-    def _compute_hash_(self):
-        return int((1 - platform.random()) * 10000000)
+    def lookup_symbol(self, key):
+        cls = self
+        while True:
+            val = api.lookup(cls.slots, key, space.newvoid())
+            if not space.isvoid(val):
+                return val
+            cls = cls.base
+            if space.isnil(cls):
+                break
+        return space.newvoid()
 
     def _equal_(self, other):
         return other is self
@@ -60,15 +69,15 @@ class W_Class(W_Object):
         return self._to_string_()
 
 
-def instance(process, _class):
-    return W_Object(_class, space.newassocarray())
+def newinstance(process, _class):
+    return W_Object(_class, space.new_empty_assoc_array())
 
 
-def new_compiled_class(metaclass, env):
+def new_compiled_class(base, metaclass, env):
     name = env.name
     slots = env.data()
-    return W_Class(metaclass, slots, name)
+    return W_Class(name, base, metaclass, slots)
 
 
-def newclass(metaclass, slots, name):
-    return W_Class(metaclass, slots, name)
+def newclass(name, base, metaclass, slots):
+    return W_Class(name, base, metaclass, slots)

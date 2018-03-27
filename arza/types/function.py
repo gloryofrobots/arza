@@ -35,7 +35,7 @@ class W_Function(W_Callable):
         return self._to_string_()
 
     def _type_(self, process):
-        return process.std.types.Function
+        return process.std.classes.Function
 
     # def __str__(self):
     #     return 'Function %s' % self._tostring_()

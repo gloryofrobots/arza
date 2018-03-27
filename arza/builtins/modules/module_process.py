@@ -27,7 +27,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'resume', resume, 1)
     api.put_native_function(process, _module, u'is_empty', is_empty, 1)
     _module.export_all()
-    process.modules.add_env(_module)
+    process.classes.add_env(_module)
 
 
 @complete_native_routine

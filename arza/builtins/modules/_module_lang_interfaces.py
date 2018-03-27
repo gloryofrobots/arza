@@ -6,7 +6,7 @@ def setup(process, stdlib):
     _module = space.newemptyenv(name)
     setup_interfaces(_module, stdlib.interfaces)
     _module.export_all()
-    process.modules.add_env(_module)
+    process.classes.add_env(_module)
 
 
 def setup_interfaces(module, interfaces):

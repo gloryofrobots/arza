@@ -42,7 +42,7 @@ class W_Float(W_Number):
         return self._to_string_()
 
     def _type_(self, process):
-        return process.std.types.Float
+        return process.std.classes.Float
 
 
 

@@ -66,7 +66,7 @@ class W_Symbol(W_Root):
         return self.string._at_index_(i)
 
     def _type_(self, process):
-        return process.std.types.Symbol
+        return process.std.classes.Symbol
 
 
 def concat_2(process, sym1, sym2):

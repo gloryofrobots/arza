@@ -179,7 +179,7 @@ class W_PVector(W_Root):
                           space.newstring(u"index out of range"), space.newint(idx))
 
     def _type_(self, process):
-        return process.std.types.Vector
+        return process.std.classes.Vector
 
     def _contains_(self, obj):
         for i in self.data_range():

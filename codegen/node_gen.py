@@ -18,7 +18,7 @@ NODES = [
   "NT_TEMPORARY",
   "NT_SYMBOL",
 
-  "NT_TYPE",
+  "NT_CLASS",
   "NT_MAP",
   "NT_LIST",
   "NT_TUPLE",
@@ -26,18 +26,11 @@ NODES = [
   "NT_CONS",
   "NT_COMMA",
   "NT_CASE",
-
-  "NT_LENSE",
-
   "NT_LITERAL",
 
   "NT_FUN",
-  "NT_DEF",
-  "NT_DEF_PLUS",
   "NT_USE",
   "NT_LAMBDA",
-
-  "NT_DISPATCH",
 
   "NT_FARGS",
 
@@ -48,19 +41,14 @@ NODES = [
   "NT_RECEIVE",
   "NT_DECORATOR",
 
-  "NT_MODULE",
   "NT_IMPORT",
   "NT_IMPORT_HIDING",
   "NT_INCLUDE",
   "NT_INCLUDE_HIDING",
   "NT_EXPORT",
   "NT_LOAD",
-  "NT_TRAIT",
   "NT_EXTEND",
-  "NT_GENERIC",
   "NT_METHOD",
-  "NT_INTERFACE",
-  "NT_DESCRIBE",
 
   "NT_BIND",
 
@@ -75,7 +63,6 @@ NODES = [
   "NT_UNDEFINE",
 
   "NT_LOOKUP",
-  "NT_IMPORTED_NAME",
 
   "NT_HEAD",
   "NT_TAIL",

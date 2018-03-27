@@ -53,7 +53,7 @@ class W_Unit(W_Root):
         raise RuntimeError("Unit has no elements")
 
     def _type_(self, process):
-        return process.std.types.Tuple
+        return process.std.classes.Tuple
 
     def _contains_(self, key):
         return False
@@ -114,7 +114,7 @@ class W_Tuple(W_Hashable):
         return x
 
     def _type_(self, process):
-        return process.std.types.Tuple
+        return process.std.classes.Tuple
 
     def _clone_(self):
         return W_Tuple(self.elements)

@@ -197,8 +197,8 @@ class Process(root.W_Root):
         return self.__data.scheduler
 
     @property
-    def modules(self):
-        return self.__data.modules
+    def classes(self):
+        return self.__data.classes
 
     @property
     def std(self):

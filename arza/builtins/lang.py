@@ -1,7 +1,6 @@
 from arza.runtime.routine.routine import complete_native_routine
 from arza.runtime import error
 from arza.types import api, space, plist, environment, datatype, partial
-from arza.types.dispatch import generic
 
 from arza.misc.strutil import encode_unicode_utf8
 from arza.misc.platform import rstring, compute_unique_id
@@ -25,9 +24,6 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'PL', _print, -1)
     api.put_native_function(process, module, u'address', _id, 1)
     api.put_native_function(process, module, u'time', time, 0)
-    api.put_native_function(process, module, u'get_type', _type, 1)
-    api.put_native_function(process, module, u'method', __method, 2)
-    api.put_native_function(process, module, u'signatures', __signatures, 1)
     api.put_native_function(process, module, u'symbol', _symbol, 1)
     put_lang_func(process, module, lang_names.APPLY, apply, 2)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
@@ -37,24 +33,10 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.IS_DICT, is_dict, 1)
     put_lang_func(process, module, lang_names.IS, __is, 2)
     put_lang_func(process, module, lang_names.ISNOT, __isnot, 2)
-    put_lang_func(process, module, lang_names.KINDOF, __kindof, 2)
-    put_lang_func(process, module, lang_names.IS_IMPLEMENTED, __is_implemented, 2)
-    put_lang_func(process, module, lang_names.GENERIC, __generic, 2)
-    put_lang_func(process, module, lang_names.INTERFACE, __interface, 3)
-    put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
-    put_lang_func(process, module, lang_names.OVERRIDE, __override, 5)
-    put_lang_func(process, module, lang_names.DESCRIBE, __describe, 2)
-    put_lang_func(process, module, lang_names.TYPE, __type, 3)
+    put_lang_func(process, module, lang_names.DEFCLASS, __class, 3)
     put_lang_func(process, module, lang_names.LOAD_MODULE, load_module, 1)
-    put_lang_func(process, module, lang_names.AFFIRM_TYPE_DECORATOR, __affirm_type_decorator, 1)
-    # put_lang_func(process, module, lang_names.CURRY, __curry, 1)
-    put_lang_func(process, module, u"curry", __curry, 1)
-    put_lang_func(process, module, u"partial", __partial, -1)
-    put_lang_func(process, module, u"interfaces", __interfaces, 1)
     put_lang_func(process, module, u"vector", __vector, -1)
     put_lang_func(process, module, u"array", __array, -1)
-    put_lang_func(process, module, u"__dispatch", __newdispatch, 2)
-    put_lang_func(process, module, u"__register", __newregister, 3)
 
 
 # 15.1.2.2
@@ -183,11 +165,12 @@ def __not(process, routine):
 
 
 @complete_native_routine
-def __type(process, routine):
+def __class(process, routine):
     name = routine.get_arg(0)
-    fields = routine.get_arg(1)
-    construct = routine.get_arg(2)
-    _datatype = space.newdatatype(process, name, fields, construct)
+    baseclass = routine.get_arg(1)
+    metaclass = process.std.classes.Class
+    slots = routine.get_arg(2)
+    _datatype = space.newclass(process, name, fields, construct)
     return _datatype
 
 
@@ -269,7 +252,7 @@ def load_module(process, routine):
         module_path = space.newsymbol_string(process, module_path)
 
     error.affirm_type(module_path, space.issymbol)
-    module = load.import_module(process, module_path)
+    module = load.import_class(process, module_path)
     return module
 
 
@@ -305,11 +288,9 @@ def is_tuple(process, routine):
 @complete_native_routine
 def is_indexed(process, routine):
     v1 = routine.get_arg(0)
-    if space.istuple(v1) or space.isarguments(v1):
+    if space.istuple(v1) or space.isarguments(v1) or space.isarray(v1):
         return space.newbool(True)
 
-    if api.kindof_b(process, v1, process.std.interfaces.Indexed):
-        return space.newbool(True)
 
     return space.newbool(False)
 
@@ -320,8 +301,6 @@ def is_seq(process, routine):
     v1 = routine.get_arg(0)
     if islist(v1):
         return newbool(True)
-    if api.kindof_b(process, v1, process.std.interfaces.Seq):
-        return newbool(True)
 
     return newbool(False)
 
@@ -330,13 +309,7 @@ def is_seq(process, routine):
 def is_dict(process, routine):
     v1 = routine.get_arg(0)
 
-    if space.ispmap(v1):
-        return space.newbool(True)
-
-    if api.kindof_b(process, v1, process.std.interfaces.Dict):
-        return space.newbool(True)
-
-    if api.kindof_b(process, v1, process.std.interfaces.Instance):
+    if space.isassocarray(v1):
         return space.newbool(True)
 
     return space.newbool(False)

@@ -14,7 +14,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'get_fields', get_fields, 1)
 
     _module.export_all()
-    process.modules.add_env(_module)
+    process.classes.add_env(_module)
 
 
 @complete_native_routine

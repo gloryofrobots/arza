@@ -96,7 +96,7 @@ class W_Record(W_Hashable):
 
 
 def descriptors(fields):
-    d = space.newassocarray()
+    d = space.new_empty_assoc_array()
     for i in range(len(fields)):
         f = fields[i]
         d = api.put(d, f, space.newint(i))
@@ -109,7 +109,7 @@ class W_BaseDatatype(W_Hashable):
         # list of all known interfaces
         self.interfaces = space.newlist([])
         # 'is_implemented' lookup cache
-        self.interfaces_table = space.newassocarray()
+        self.interfaces_table = space.new_empty_assoc_array()
         self.name = name
         for interface in interfaces:
             self.register_interface(interface)
@@ -167,7 +167,7 @@ class W_NativeDatatype(W_BaseDatatype):
         W_BaseDatatype.__init__(self, name, plist.empty())
 
     def _type_(self, process):
-        return process.std.types.Datatype
+        return process.std.classes.Datatype
 
     def _to_string_(self):
         return "<datatype %s>" % (api.to_s(self.name))
@@ -181,7 +181,7 @@ class W_SingletonType(W_BaseDatatype):
         W_BaseDatatype.__init__(self, name, plist.empty())
 
     def _type_(self, process):
-        return process.std.types.Datatype
+        return process.std.classes.Datatype
 
     def _to_string_(self):
         return "<SingletonDatatype %s>" % (api.to_s(self.name))
@@ -244,7 +244,7 @@ class W_RecordType(W_BaseDatatype):
         # api.call(process, self.initializer, new_args)
 
     def _type_(self, process):
-        return process.std.types.Datatype
+        return process.std.classes.Datatype
 
     def _to_string_(self):
         return "<datatype %s>" % (api.to_s(self.name))

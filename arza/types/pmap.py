@@ -58,7 +58,7 @@ class W_PMap(W_Root):
         return self._to_string_()
 
     def _type_(self, process):
-        return process.std.types.Map
+        return process.std.classes.Map
 
     def _length_(self):
         return self._cnt

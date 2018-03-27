@@ -99,7 +99,7 @@ class W_String(W_Hashable):
         return self._at_index_(api.to_i(index))
 
     def _type_(self, process):
-        return process.std.types.String
+        return process.std.classes.String
 
     def to_l(self):
         return [space.newchar(c) for c in self.string_value]

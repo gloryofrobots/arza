@@ -24,7 +24,7 @@ class W_Method(W_Hashable):
 
         self.default = default
         self.dag = None
-        self.methods = space.newassocarray()
+        self.methods = space.new_empty_assoc_array()
 
     def _to_string_(self):
         return "<method %s/%s>" % (api.to_s(self.name), api.to_s(self.arity))
@@ -35,7 +35,7 @@ class W_Method(W_Hashable):
     def register_double(self, process, type_1, type_2, fn):
         lookup = api.lookup(self.methods, type_1, space.newvoid())
         if space.isvoid(lookup):
-            lookup = space.newassocarray()
+            lookup = space.new_empty_assoc_array()
             api.put(self.methods, type_1, lookup)
         api.put(lookup, type_2, fn)
 
@@ -94,7 +94,7 @@ class W_Method(W_Hashable):
             return self._dispatch_single(process, args)
 
     def _type_(self, process):
-        return process.std.types.Function
+        return process.std.classes.Function
 
     def _equal_(self, other):
         return self is other

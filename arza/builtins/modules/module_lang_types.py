@@ -6,7 +6,7 @@ def setup(process, stdlib):
     _module = space.newemptyenv(name)
     setup_types(_module, stdlib.types)
     _module.export_all()
-    process.modules.add_env(_module)
+    process.classes.add_env(_module)
 
 
 def setup_types(module, types):

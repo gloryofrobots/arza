@@ -15,7 +15,6 @@ TOKENS = [
 
   ("TT_MATCH", "match"),
   ("TT_WITH", "with"),
-  ("TT_INIT", "init"),
   ("TT_CASE", "|"),
 
   ("TT_BREAK", "break"),
@@ -23,8 +22,8 @@ TOKENS = [
   ("TT_WHILE", "while"),
 
   ("TT_DEF", "def"),
-  ("TT_DEF_PLUS", "def+"),
-  ("TT_TYPE", "type"),
+  ("TT_CLASS", "class"),
+  ("TT_EXTENDS", "extends"),
 
   ("TT_IF", "if"),
   ("TT_ELIF", "elif"),
@@ -47,25 +46,18 @@ TOKENS = [
   ("TT_THROW", "throw"),
   ("TT_CATCH", "catch"),
   ("TT_FINALLY", "finally"),
-  ("TT_MODULE", "module"),
   ("TT_IMPORT", "import"),
   ("TT_INCLUDE", "include"),
   ("TT_FROM", "from"),
   ("TT_HIDING", "hiding"),
   ("TT_HIDE", "hide"),
   ("TT_EXPORT", "export"),
-  ("TT_VALUEOF", "valueof"),
   ("TT_USE", "use"),
-  ("TT_TRAIT", "trait"),
-  ("TT_INSTANCE", "instance"),
   ("TT_FOR", "for"),
-  ("TT_INTERFACE", "interface"),
-  ("TT_DESCRIBE", "describe"),
 
   ("TT_RECEIVE", "receive"),
   ("TT_AFTER", "after"),
 
-  ("TT_END", "end"),
   ("TT_END_EXPR", ";"),
   ("TT_NEWLINE", "(newline)"),
   ("TT_INDENT", "(indent)"),

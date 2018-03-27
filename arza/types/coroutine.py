@@ -14,7 +14,7 @@ class W_FiberChannel(W_Callable):
         return self._to_string_()
 
     def _type_(self, process):
-        return process.std.types.FiberChannel
+        return process.std.classes.FiberChannel
 
     def _call_(self, process, args):
         if not self.fiber.is_passive():
@@ -73,7 +73,7 @@ class W_Coroutine(W_Callable):
         return self._to_string_()
 
     def _type_(self, process):
-        return process.std.types.Coroutine
+        return process.std.classes.Coroutine
 
     def _is_empty_(self):
         return self.is_finished()

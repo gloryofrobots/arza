@@ -89,7 +89,7 @@ class W_PList(W_Root):
         return update(self, i, v)
 
     def _type_(self, process):
-        return process.std.types.List
+        return process.std.classes.List
 
     def _equal_(self, other):
         if not space.islist(other):

@@ -6,22 +6,22 @@ from arza.types import space, api
 from arza.compile import compiler
 
 
-def import_module(process, name):
-    if process.modules.has_module(name):
-        return process.modules.get_module(name)
+def import_class(process, name):
+    if process.classes.has_module(name):
+        return process.classes.get_class(name)
     else:
-        return load_module(process, name)
+        return load_class(process, name)
 
 
-def import_module_by_name(process, script_name):
-    result = import_module(process, space.newsymbol(process, script_name))
+def import_class_by_name(process, script_name):
+    result = import_class(process, space.newsymbol(process, script_name))
     if process.is_terminated():
         # error here
         return result
     return None
 
 
-def find_module_file(path, dirs):
+def find_class_file(path, dirs):
     # print "DIRS", dirs
     for directory in dirs:
         dir_s = api.to_s(directory)
@@ -34,12 +34,12 @@ def find_module_file(path, dirs):
     return None
 
 
-def get_module_filename(process, name):
+def get_class_filename(process, name):
     raw = api.to_s(name)
     path = "%s.arza" % raw.replace(":", os.sep)
 
-    modules_path = process.modules.path
-    filename = find_module_file(path, modules_path)
+    modules_path = process.classes.path
+    filename = find_class_file(path, modules_path)
     # print "LOAD MODULE", name, filename
 
     if not filename:
@@ -50,7 +50,7 @@ def get_module_filename(process, name):
         raw_list = raw.split(":")
         last_name = raw_list[len(raw_list) - 1]
         path = "%s%s%s.arza" % (raw.replace(":", os.sep), os.sep, last_name)
-        filename = find_module_file(path, modules_path)
+        filename = find_class_file(path, modules_path)
 
     if not filename:
         return error.throw_1(error.Errors.IMPORT_ERROR, name)
@@ -58,24 +58,24 @@ def get_module_filename(process, name):
     return filename
 
 
-def load_module(process, name):
-    process.modules.before_load(name)
-    filename = get_module_filename(process, name)
-    return evaluate_module_file(process, name, filename)
+def load_class(process, name):
+    process.classes.before_load(name)
+    filename = get_class_filename(process, name)
+    return evaluate_class_file(process, name, filename)
 
 
-def __evaluate_module_env(process, name, filename):
+def __evaluate_class_env(process, name, filename):
     from arza.builtins.lang import compile_module
     env = process.subprocess(space.newnativefunc(space.newsymbol(process, u"compile_module"), compile_module, 3),
-                             space.newtuple([space.newstring_s(filename), name, process.modules.prelude]))
+                             space.newtuple([space.newstring_s(filename), name, process.classes.prelude]))
 
     if process.is_terminated():
         error.signal(env)
     return env
 
 
-def evaluate_module_file(process, name, filename):
-    env = __evaluate_module_env(process, name, filename)
+def evaluate_class_file(process, name, filename):
+    env = __evaluate_class_env(process, name, filename)
 
-    module = process.modules.add_env(env)
+    module = process.classes.add_env(env)
     return module

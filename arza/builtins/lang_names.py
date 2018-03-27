@@ -1,5 +1,5 @@
 
-PREFIX = "arza:lang:"
+PREFIX = "arza_"
 
 NOT = PREFIX + "not"
 ELEM = PREFIX + "elem"
@@ -18,10 +18,7 @@ IS_TUPLE = PREFIX + "is_tuple"
 IS_SEQ = PREFIX + "is_seq"
 IS_DICT = PREFIX + "is_dict"
 LEN = PREFIX + "len"
-TYPE = PREFIX + "deftype"
-GENERIC = PREFIX + "defgeneric"
-INTERFACE = PREFIX + "definterface"
-
+DEFCLASS = PREFIX + "defclass"
 LENSE = PREFIX + "lense"
 
 CURRY = PREFIX + "curry"
@@ -33,27 +30,27 @@ RECEIVE_HELPER = PREFIX + "__receive__"
 
 AFFIRM_TYPE_DECORATOR = PREFIX + "__affirm_type_decorator__"
 
-SLICE = PREFIX + "slice"
-DROP = PREFIX + "drop"
-TAKE = PREFIX + "take"
+SLICE = "__slice__"
+DROP = "__drop__"
+TAKE = "__take__"
 
-AT = PREFIX + "at"
-PUT = PREFIX + "put"
-PUT_DEFAULT = PREFIX + "put_default"
+AT = "__at__"
+PUT = "__put__"
+PUT_DEFAULT = "__put_default__"
 
-REST = PREFIX + "rest"
-FIRST = PREFIX + "first"
-CONS = PREFIX + "cons"
+REST = "__rest__"
+FIRST = "__first__"
+CONS = "__cons__"
 
-EQ = PREFIX + "=="
-GE = PREFIX + ">="
+EQ = "=="
+GE = ">="
 
 HOLE_PREFIX = "@__hole__"
 RANDOM_TRAIT_NAME_PREFIX = "@__trait__"
 RANDOM_TYPE_DEC_NAME_PREFIX = "@__type_dec__"
 
 TO_SEQ = PREFIX + "to_seq"
-CONCAT = PREFIX + "++"
+CONCAT = "++"
 APPLY = PREFIX + "apply"
 NEGATE = PREFIX + "negate"
 CAST = PREFIX + "cast"
@@ -70,6 +67,8 @@ TTUPLE = PREFIX + "Tuple"
 TMAP = PREFIX + "Map"
 TAny = PREFIX + "Any"
 TDatatype = PREFIX + "Datatype"
+Object = PREFIX + "Object"
+ENV = PREFIX + "__ENV__"
 
 SVALUEOF = "VALUEOF"
 

@@ -87,11 +87,6 @@ def _random_name(name):
 def _replace_name(node, level, names):
     ntype = node_type(node)
 
-    if ntype == nt.NT_IMPORTED_NAME:
-        name = nodes.imported_name_to_string(node)
-        new_node = nodes.create_name_node(nodes.node_token(node), name)
-        return _replace_name(new_node, level, names)
-
     if ntype != nt.NT_NAME:
         return None
     for old_name, new_name in names:
@@ -194,6 +189,22 @@ def simplify_generic(compiler, code, node):
     call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.GENERIC, [name_1_arg, symbols_2_arg])
     return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
 
+def simplify_class(compiler, code, node):
+    token = nodes.node_token(node)
+    name_node = node_first(node)
+    parent_node = node_second(node)
+    code = node_third(node)
+    body = plist.append(code, nodes.create_call_node_s(token, lang_names.ENV, []))
+
+    func = nodes.create_fun_0_node(token, nodes.empty_node(), body)
+    env_call = nodes.create_call_node_0(token, func)
+
+    name_1_arg = nodes.create_symbol_node(nodes.node_token(name_node), name_node)
+
+    symbols_2_arg = node_second(node)
+
+    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.GENERIC, [name_1_arg, symbols_2_arg])
+    return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
 
 ########################3
 

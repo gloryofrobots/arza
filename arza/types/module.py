@@ -19,7 +19,7 @@ class W_Module(W_Root):
         return self.data.keys_list()
 
     def _type_(self, process):
-        return process.std.types.Module
+        return process.std.classes.Module
 
     def has(self, n):
         return self.data._contains_(n)

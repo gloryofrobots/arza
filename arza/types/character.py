@@ -32,5 +32,5 @@ class W_Char(root.W_ValueType):
             return 0
 
     def _type_(self, process):
-        return process.std.types.Char
+        return process.std.classes.Char
 

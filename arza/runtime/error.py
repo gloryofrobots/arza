@@ -9,7 +9,7 @@ def error(process, symbol_unistr, args_tuple):
     from arza.types import environment, api
     assert space.istuple(args_tuple)
     assert isinstance(symbol_unistr, unicode)
-    module = process.modules.prelude
+    module = process.classes.prelude
     symbol = space.newsymbol(process, symbol_unistr)
     err_type = environment.get_value(module, symbol)
     if space.isvoid(err_type):
@@ -154,7 +154,7 @@ class Errors:
 
 def initialise(process):
     from arza.types import api
-    err_module = process.modules.prelude
+    err_module = process.classes.prelude
     for key, errname in Errors.__dict__.items():
         if not key.endswith(u"_ERROR"):
             continue
