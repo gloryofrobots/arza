@@ -168,80 +168,13 @@ def __not(process, routine):
 def __class(process, routine):
     name = routine.get_arg(0)
     baseclass = routine.get_arg(1)
+    if space.isnil(baseclass):
+        baseclass = process.std.classes.Object
+
     metaclass = process.std.classes.Class
-    slots = routine.get_arg(2)
-    _datatype = space.newclass(process, name, fields, construct)
-    return _datatype
-
-
-@complete_native_routine
-def __generic(process, routine):
-    name = routine.get_arg(0)
-    sig = routine.get_arg(1)
-    return generic.generic(process, name, sig)
-
-
-@complete_native_routine
-def __override(process, routine):
-    gf = routine.get_arg(0)
-    types = routine.get_arg(1)
-    method = routine.get_arg(2)
-    pattern = routine.get_arg(3)
-    outers = routine.get_arg(4)
-    generic.override(process, gf, types, method, pattern, outers)
-    return gf
-
-
-@complete_native_routine
-def __specify(process, routine):
-    gf = routine.get_arg(0)
-    types = routine.get_arg(1)
-    method = routine.get_arg(2)
-    pattern = routine.get_arg(3)
-    outers = routine.get_arg(4)
-    generic.specify(process, gf, types, method, pattern, outers)
-    return gf
-
-
-@complete_native_routine
-def __interface(process, routine):
-    name = routine.get_arg(0)
-    generics = routine.get_arg(1)
-    sub_interfaces = routine.get_arg(2)
-    interface = space.newinterface(name, generics, sub_interfaces)
-    return interface
-
-
-@complete_native_routine
-def __method(process, routine):
-    fn = routine.get_arg(0)
-    types = routine.get_arg(1)
-    error.affirm_type(fn, space.isgeneric)
-    error.affirm_type(types, space.islist)
-    error.affirm_iterable(types, space.isspecializable)
-    return generic.get_method(process, fn, types)
-
-@complete_native_routine
-def __signatures(process, routine):
-    fn = routine.get_arg(0)
-    error.affirm_type(fn, space.isgeneric)
-    return generic.signatures(process, fn)
-
-
-@complete_native_routine
-def __describe(process, routine):
-    _type = routine.get_arg(0)
-    interfaces = routine.get_arg(1)
-    datatype.derive_strict(process, _type, interfaces)
-    return _type
-
-
-@complete_native_routine
-def __affirm_type_decorator(process, routine):
-    data = routine.get_arg(0)
-
-    error.affirm_type(data, lambda x: space.istuple(x) and api.length_i(data) == 2, u"Tuple(type_fields, type_init)")
-    return data
+    env = routine.get_arg(2)
+    _class = space.newcompiledclass(name, baseclass, metaclass, env)
+    return _class
 
 
 @complete_native_routine
@@ -342,14 +275,6 @@ def __is_implemented(process, routine):
     right = routine.get_arg(1)
     return api.is_implemented(process, left, right)
 
-
-@complete_native_routine
-def __interfaces(process, routine):
-    obj = routine.get_arg(0)
-    if space.isdatatype(obj):
-        return datatype.get_interfaces(process, obj)
-    else:
-        return datatype.get_interfaces(process, api.get_type(process, obj))
 
 @complete_native_routine
 def __newregister(process, routine):

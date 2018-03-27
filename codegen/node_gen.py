@@ -7,6 +7,7 @@ NODES = [
   # code nodes
   "NT_TRUE",
   "NT_FALSE",
+  "NT_NIL",
   "NT_VOID",
   "NT_INT",
   "NT_FLOAT",

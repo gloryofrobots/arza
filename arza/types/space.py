@@ -408,13 +408,14 @@ def newclass(name, base, metaclass, slots):
     from arza.types.obj import newclass
     return newclass(name, base, metaclass, slots)
 
+
 def newemptyclass(name, base ,metaclass):
     return newclass(name, base, metaclass, new_empty_assoc_array())
 
 
-def newcompiledclass(base, metaclass, env):
-    from arza.types.obj import new_compiled_class
-    return new_compiled_class(base, metaclass, env)
+def newcompiledclass(name, base, metaclass, env):
+    from arza.types.obj import newcompiledclass
+    return newcompiledclass(name, base, metaclass, env)
 
 
 def isclass(_class):

@@ -486,6 +486,9 @@ def create_wildcard_node(token):
 def create_unit_node(token):
     return node_0(nt.NT_UNIT, token)
 
+def create_nil_node(token):
+    return node_0(nt.NT_NIL, token)
+
 
 def create_literal_node(token, node):
     return node_1(nt.NT_LITERAL, token, node)

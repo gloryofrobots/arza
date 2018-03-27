@@ -260,12 +260,6 @@ def _get_variable_index(compiler, code, node, name):
 # *******************************************************
 # EMIT HELPERS *******************************************
 # **************************************************
-def _emit_method_call(compiler, code, node, arg_count, funcname):
-    sym = nodes.create_symbol_node_s(nodes.node_token(node), funcname)
-    lookup = nodes.create_lookup_node(nodes.node_token(node), funcname)
-    _compile(compiler, code, func)
-    code.emit_1(CALL, arg_count, info(node))
-
 
 def _emit_store_name(compiler, code, namenode):
     name = _get_symbol_name(compiler, namenode)
@@ -391,6 +385,9 @@ def _compile_FALSE(compiler, code, node):
 
 def _compile_VOID(compiler, code, node):
     code.emit_0(VOID, info(node))
+
+def _compile_NIL(compiler, code, node):
+    code.emit_0(NIL, info(node))
 
 
 def _compile_STR(compiler, code, node):
@@ -1079,7 +1076,6 @@ def _compile_LOOKUP(compiler, code, node):
     _compile(compiler, code, expr)
 
     code.emit_0(LOOKUP, info(node))
-    _emit_method_call(compiler, code, node, 2, lang_names.AT)
 
 
 def _compile_CALL(compiler, code, node):
@@ -1155,6 +1151,8 @@ def _compile_node(compiler, code, node):
 
     if NT_TRUE == ntype:
         _compile_TRUE(compiler, code, node)
+    elif NT_NIL == ntype:
+        _compile_NIL(compiler, code, node)
     elif NT_VOID == ntype:
         _compile_VOID(compiler, code, node)
     elif NT_FALSE == ntype:
@@ -1229,8 +1227,6 @@ def _compile_node(compiler, code, node):
         _compile_CONS(compiler, code, node)
     elif NT_AS == ntype:
         _compile_AS(compiler, code, node)
-    elif NT_LET == ntype:
-        _compile_LET(compiler, code, node)
     elif NT_LOOKUP == ntype:
         _compile_LOOKUP(compiler, code, node)
     elif NT_MODIFY == ntype:

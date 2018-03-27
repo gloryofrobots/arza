@@ -180,31 +180,25 @@ def simplify_receive(compiler, code, node):
     return nodes.create_call_node_s(nodes.node_token(node), lang_names.RECEIVE_HELPER, [fun_node])
 
 
-def simplify_generic(compiler, code, node):
-    name_node = node_first(node)
-    name_1_arg = nodes.create_symbol_node(nodes.node_token(name_node), name_node)
-
-    symbols_2_arg = node_second(node)
-
-    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.GENERIC, [name_1_arg, symbols_2_arg])
-    return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
-
 def simplify_class(compiler, code, node):
     token = nodes.node_token(node)
     name_node = node_first(node)
     parent_node = node_second(node)
     code = node_third(node)
-    body = plist.append(code, nodes.create_call_node_s(token, lang_names.ENV, []))
-
-    func = nodes.create_fun_0_node(token, nodes.empty_node(), body)
-    env_call = nodes.create_call_node_0(token, func)
-
     name_1_arg = nodes.create_symbol_node(nodes.node_token(name_node), name_node)
+    if nodes.is_empty_node(parent_node):
+        parent_1_arg = nodes.create_nil_node(token)
+    else:
+        parent_1_arg = parent_node
 
-    symbols_2_arg = node_second(node)
+    body = plist.append(code, nodes.create_call_node_s(token, lang_names.ENV, []))
+    func = nodes.create_fun_0_node(token, nodes.empty_node(), body)
+    env_call_3_arg = nodes.create_call_node_0(token, func)
 
-    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.GENERIC, [name_1_arg, symbols_2_arg])
+    call_node = nodes.create_call_node_s(nodes.node_token(node), lang_names.DEFCLASS,
+                                         [name_1_arg, parent_1_arg, env_call_3_arg])
     return nodes.create_assign_node(nodes.node_token(node), name_node, call_node)
+
 
 ########################3
 

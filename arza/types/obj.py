@@ -73,8 +73,9 @@ def newinstance(process, _class):
     return W_Object(_class, space.new_empty_assoc_array())
 
 
-def new_compiled_class(base, metaclass, env):
-    name = env.name
+def newcompiledclass(name, base, metaclass, env):
+    if space.isnil(name):
+        name = env.name
     slots = env.data()
     return W_Class(name, base, metaclass, slots)
 

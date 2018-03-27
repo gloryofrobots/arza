@@ -95,6 +95,9 @@ class CodeRoutine(BaseRoutine):
             if VOID == tag:
                 stack.push(space.newvoid())
             # *************************************
+            elif NIL == tag:
+                stack.push(space.newnil())
+            # *************************************
             elif FARGS == tag:
                 stack.push(self.args)
             # *************************************

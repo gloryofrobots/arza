@@ -68,7 +68,7 @@ TMAP = PREFIX + "Map"
 TAny = PREFIX + "Any"
 TDatatype = PREFIX + "Datatype"
 Object = PREFIX + "Object"
-ENV = PREFIX + "__ENV__"
+ENV = PREFIX + "__env__"
 
 SVALUEOF = "VALUEOF"
 

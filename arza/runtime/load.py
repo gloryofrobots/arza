@@ -76,6 +76,7 @@ def __evaluate_class_env(process, name, filename):
 
 def evaluate_class_file(process, name, filename):
     env = __evaluate_class_env(process, name, filename)
-
-    module = process.classes.add_env(env)
+    base = process.std.classes.Object
+    metaclass = process.std.classes.Class
+    module = process.classes.add_env(base, metaclass, env)
     return module

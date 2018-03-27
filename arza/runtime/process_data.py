@@ -49,7 +49,7 @@ class Classes:
         self.path = plist.cons(path, self.path)
 
     def add_env(self, base, metaclass, env):
-        module = space.newcompiledclass(base, metaclass, env)
+        module = space.newcompiledclass(space.newnil(), base, metaclass, env)
         self.add_class(module)
         return module
 
