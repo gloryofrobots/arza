@@ -2,15 +2,8 @@ import Lang
 
 fun f(): 1
 
-class T(Object):
-    nil
-
-
-
-class Array:
-    nil
-
-Array.__class__ == Behavior
+class T extends Object =
+    fun n() = 42
 
 
 
