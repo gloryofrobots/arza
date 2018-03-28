@@ -1,15 +1,77 @@
-module y
-    import y:z
-    import t:n:s
+protocol Ord(T1, T2) =
+    ensure Eq(T1, T2)
 
-    use f:g:h (x, y, z)
+    cmp(x of T1, y of T2) =
+        if x == y then EQ
+        elif x <= y then LT
+        else GT
 
-    expect (T, N, P)
+    < (x of T1, y of T2) = cmp(x, y) == LT
+    >= (x of T1, y of T2) = cmp(x, y) != LT
+    > (x of T1, y of T2) = cmp(x, y) == GT
+    <= (T1, T2)
 
-    extend (T, N, P) with
-        def f(x, y) = 1
 
-    interface I
-        fun f(I, y, z)
-        use z
-        use s:f1(I, y, z)
+instance Ord(Int, Float) =
+    def <=(x,y) as _number:lt
+    def cmp(x of T1, y of T2) =
+        if x == y then EQ
+        elif x <= y then LT
+        else GT
+
+   /////////////////////////////////////
+
+
+protocol Ord(T1, T2) =
+    ensure Eq(T1, T2)
+    cmp(T1, T2)
+    < (T1, T2)
+    >= (T1, T2)
+    > (T1, T2)
+    <=(T1, T2)
+
+
+
+trait TOrd(T1, T2) =
+    def cmp(x of T1, y of T2) =
+        if x == y then EQ
+        elif x <= y then LT
+        else GT
+
+    def < (x of T1, y of T2) = cmp(x, y) == LT
+    def >=(x of T1, y of T2) = cmp(x, y) != LT
+    def > (x of T1, y of T2) = cmp(x, y) == GT
+
+instance TOrd(Int, Int)
+def <=(x of Int, y of Int) as _number:lt
+
+/////////////////////////////////////////////////
+
+protocol Ord(T1, T2) =
+    ensure Eq(T1, T2)
+    cmp(x of T1, y of T2)
+    < (x of T1, y of T2)
+    >= (x of T1, y of T2)
+    > (x of T1, y of T2)
+    <=(T1, T2)
+
+
+fun TOrd(T1, T2, lt) =
+    def cmp(x of T1, y of T2) =
+        if x == y then EQ
+        elif x <= y then LT
+        else GT
+
+    def < (x of T1, y of T2) = cmp(x, y) == LT
+    def >=(x of T1, y of T2) = cmp(x, y) != LT
+    def > (x of T1, y of T2) = cmp(x, y) == GT
+    def <=(x of T1,y of T2) as lt
+    ensure Ord(T1, T2)
+//    describe (T1, T2) as Ord
+
+Int ensures Ord(_, Int)
+
+instance TOrd(Int, Int)
+
+
+

@@ -52,6 +52,13 @@ fun is_equal_keys_vals(obj, keys)
 fun is_equal_to_map(obj, map) =
     is_equal_keys_vals(obj, to_seq(map))
 
+fun is_equal_pairs(pairs)
+    | ([]) = True
+    | ((f, s)::xs) =
+       if f != s then
+            fail([f, "!=", s])
+       else
+            is_equal_pairs(xs)
 
 fun is_equal
     | (val1 of Float,  val2 of Float) = is_equal_float(val1, val2)

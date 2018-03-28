@@ -1,12 +1,14 @@
 import io
 import affirm
 import seq
-import tests
+//import tests
 //import tests:test_coro
+import tests:test_register
 
 
 fun main() =
-    tests:run()
+//    tests:run()
+    test_register:test_register()
 //    test_coro:test()
     #endprogram
 
