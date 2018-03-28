@@ -9,6 +9,8 @@ def setup(process, stdlib):
     setup_class(process, _class)
 
 def setup_class(process, _class):
+    api.put_native_function(process, _class, u'__not__', _not, 1)
+    api.put_native_function(process, _class, u'__is__', _is, 2)
     api.put_native_function(process, _class, u'__len__', length, 1)
     api.put_native_function(process, _class, u'__is_empty__', is_empty, 1)
     api.put_native_function(process, _class, u'__put__', put, 3)
@@ -20,6 +22,18 @@ def setup_class(process, _class):
     api.put_native_function(process, _class, u'__str__', to_string, 1)
     api.put_native_function(process, _class, u'__repr__', to_repr, 1)
 
+
+
+@complete_native_routine
+def _is(process, routine):
+    arg0 = routine.get_arg(0)
+    arg1 = routine.get_arg(1)
+    return space.newbool(arg0 is arg1)
+
+@complete_native_routine
+def _not(process, routine):
+    arg0 = routine.get_arg(0)
+    return api.not_(arg0)
 
 
 @complete_native_routine

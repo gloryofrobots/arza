@@ -92,7 +92,9 @@ class W_Root:
         return self._to_string_()
 
     def _at_(self, key):
-        return not_implemented_error(u"_at_", self, key)
+        from arza.types import space
+        # return not_implemented_error(u"_at_", self, key)
+        return space.newvoid()
 
     def _contains_(self, key):
         return not_implemented_error(u"_contains_", self, key)

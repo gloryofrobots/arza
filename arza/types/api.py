@@ -3,7 +3,7 @@
 from arza.types import space
 from arza.runtime import error
 
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 
 # UGLY DEBUGGING HACKS
@@ -126,6 +126,18 @@ def lookup(obj, k, default):
     if space.isvoid(v):
         return default
     return v
+
+
+def lookup_symbol(process, obj, k):
+    if space.isobject(obj):
+        val = at(obj, k)
+        return val
+
+    _type = get_type(process, obj)
+    val = _type.lookup_symbol(k)
+    if space.isvoid(val):
+        return error.throw_2(error.Errors.KEY_ERROR, k, obj)
+    return val
 
 
 def is_empty(obj):

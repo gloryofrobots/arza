@@ -45,6 +45,12 @@ class Stack:
     def size(self):
         return len(self.data)
 
+    def swap(self):
+        i = self.top_index()
+        x = self.data[i]
+        self.data[i] = self.data[i-1]
+        self.data[i-1] = x
+
     def push(self, element):
         from arza.types.space import isany
         if not isany(element):

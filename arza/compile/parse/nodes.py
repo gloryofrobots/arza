@@ -486,6 +486,7 @@ def create_wildcard_node(token):
 def create_unit_node(token):
     return node_0(nt.NT_UNIT, token)
 
+
 def create_nil_node(token):
     return node_0(nt.NT_NIL, token)
 
@@ -575,33 +576,49 @@ def create_when_node(token, pattern, guard):
 
 # CALL TO OPERATOR FUNCS
 # TODO MAKE IT CONSISTENT WITH OPERATOR REDECLARATION
+def create_lookup_call_s(token, receiver, symbol_s, args):
+    symbol = create_symbol_node_s(token, symbol_s)
+    return create_lookup_call(token, receiver, symbol, args)
+
+
+def create_lookup_call(token, receiver, symbol, args):
+    lookup = create_lookup_node(token, receiver, symbol)
+    if not is_list_node(args):
+        args = list_node(args)
+    call = create_call_node(token, lookup, args)
+    return call
+
 
 def create_eq_call(token, left, right):
-    return create_call_node_s(token, lang_names.EQ, [left, right])
+    return create_lookup_call_s(token, left, lang_names.EQ, [right])
 
 
 def create_gt_call(token, left, right):
-    return create_call_node_s(token, lang_names.GE, [left, right])
+    return create_lookup_call_s(token, left, lang_names.GE, [right])
 
 
 def create_kindof_call(token, left, right):
-    return create_call_node_s(token, lang_names.KINDOF, [left, right])
+    return create_lookup_call_s(token, left, lang_names.KINDOF, [right])
 
 
 def create_is_implemented_call(token, left, right):
-    return create_call_node_s(token, lang_names.IS_IMPLEMENTED, [left, right])
+    return create_lookup_call_s(token, left, lang_names.IS_IMPLEMENTED, [right])
 
 
 def create_isnot_call(token, left, right):
-    return create_call_node_s(token, lang_names.ISNOT, [left, right])
+    return create_lookup_call_s(token, left, lang_names.ISNOT, [right])
 
 
 def create_is_call(token, left, right):
-    return create_call_node_s(token, lang_names.IS, [left, right])
+    return create_lookup_call_s(token, left, lang_names.IS, [right])
 
 
 def create_elem_call(token, left, right):
-    return create_call_node_s(token, lang_names.ELEM, [left, right])
+    return create_lookup_call_s(token, left, lang_names.ELEM, [right])
+
+def create_len_call(token, val):
+    return create_lookup_call_s(token, val, lang_names.LEN, [])
+
 
 
 def create_is_indexed_call(token, val):
@@ -622,10 +639,6 @@ def create_is_empty_call(token, val):
 
 def create_is_seq_call(token, val):
     return create_call_node_s(token, lang_names.IS_SEQ, [val])
-
-
-def create_len_call(token, val):
-    return create_call_node_s(token, lang_names.LEN, [val])
 
 
 def create_cons_call(token, left, right):

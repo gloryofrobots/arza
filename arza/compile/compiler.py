@@ -1078,8 +1078,29 @@ def _compile_LOOKUP(compiler, code, node):
     code.emit_0(LOOKUP, info(node))
 
 
+def _compile_CALL_METHOD(compiler, code, node):
+    func = node_first(node)
+    lookup = node_first(func)
+    sym = node_second(func)
+
+    _compile(compiler, code, lookup)
+    _emit_dup(code)
+    _compile(compiler, code, sym)
+    code.emit_0(LOOKUP, info(node))
+    code.emit_0(SWAP, info(node))
+
+    args = node_second(node)
+    for arg in args:
+        _compile(compiler, code, arg)
+
+    code.emit_1(METHOD_CALL, len(args) + 1, info(node))
+    pass
+
+
 def _compile_CALL(compiler, code, node):
     func = node_first(node)
+    if node_type(func) == NT_LOOKUP:
+        return _compile_CALL_METHOD(compiler, code, node)
 
     args = node_second(node)
 

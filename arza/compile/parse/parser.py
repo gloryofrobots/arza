@@ -150,7 +150,6 @@ class ExpressionParser(BaseParser):
         prefix(self, TT_LSQUARE, None, prefix_lsquare, layout=layout_lsquare)
         prefix(self, TT_LCURLY, None, prefix_lcurly, layout=layout_lcurly)
         prefix(self, TT_SHARP, None, prefix_sharp)
-        prefix(self, TT_DOLLAR, None, prefix_dollar)
 
         # TODO DELETE IT, BAD PARSER COMPOSITION. EXPRESSIONS DOES NOT NEED THEM
         prefix(self, TT_ELLIPSIS, NT_REST, prefix_nud, 70)
@@ -166,7 +165,7 @@ class ExpressionParser(BaseParser):
         prefix(self, TT_TRY, None, prefix_try, layout=layout_try)
         prefix(self, TT_BACKTICK_OPERATOR, None, prefix_backtick_operator)
         prefix(self, TT_THROW, None, prefix_throw)
-        prefix(self, TT_CLASS, None, prefix_class)
+        prefix(self, TT_CLASS, None, prefix_class, layout=layout_fun)
 
         prefix(self, TT_LET, None, prefix_let, layout=layout_let)
 

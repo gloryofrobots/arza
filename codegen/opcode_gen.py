@@ -20,6 +20,7 @@ OPCODES = [
     ("FSELF", 1),
 
     ("LABEL", 0),
+    ("SWAP", 0),
     ("STORE_LOCAL_CONST", 0),
     ("STORE_LOCAL_VAR", 0),
     ("STORE_TEMPORARY", 0),
@@ -27,6 +28,7 @@ OPCODES = [
     ("POP_CATCH", 0),
 
     ("CALL", 0),
+    ("METHOD_CALL", 0),
 
     ("JUMP", 0),
     ("JUMP_IF_FALSE_NOPOP", 0),

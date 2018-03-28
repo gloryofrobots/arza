@@ -247,6 +247,7 @@ def new_assoc_array(args):
     from arza.types.assoc_array import create_assoc_array
     return create_assoc_array(args)
 
+
 def new_empty_assoc_array():
     from arza.types.assoc_array import create_empty_assoc_array
     return create_empty_assoc_array()
@@ -409,7 +410,7 @@ def newclass(name, base, metaclass, slots):
     return newclass(name, base, metaclass, slots)
 
 
-def newemptyclass(name, base ,metaclass):
+def newemptyclass(name, base, metaclass):
     return newclass(name, base, metaclass, new_empty_assoc_array())
 
 
@@ -421,6 +422,11 @@ def newcompiledclass(name, base, metaclass, env):
 def isclass(_class):
     from arza.types.obj import W_Class
     return isinstance(_class, W_Class)
+
+
+def isobject(_obj):
+    from arza.types.obj import W_Object
+    return isinstance(_obj, W_Object)
 
 
 ########################################################

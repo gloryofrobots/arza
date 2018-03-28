@@ -1,15 +1,16 @@
 
 PREFIX = "arza_"
 
-NOT = PREFIX + "not"
-ELEM = PREFIX + "elem"
-IS = PREFIX + "is"
-IS_EMPTY = PREFIX + "is_empty"
+LEN = "__len__"
+NOT = "__not__"
+ELEM = "__elem__"
+IS = "__is__"
+IS_EMPTY = "__is_empty__"
 LOAD_MODULE = PREFIX + "load_module"
 
-ISNOT = PREFIX + "isnot"
-KINDOF = PREFIX + "kindof"
-IS_IMPLEMENTED = PREFIX + "is_implemented"
+ISNOT = "__isnot__"
+KINDOF = "__kindof__"
+IS_IMPLEMENTED = "__is_implemented__"
 
 # functions used by compiler in code gen
 DESCRIBE = PREFIX + "describe"
@@ -17,7 +18,6 @@ IS_INDEXED = PREFIX + "is_indexed"
 IS_TUPLE = PREFIX + "is_tuple"
 IS_SEQ = PREFIX + "is_seq"
 IS_DICT = PREFIX + "is_dict"
-LEN = PREFIX + "len"
 DEFCLASS = PREFIX + "defclass"
 LENSE = PREFIX + "lense"
 
@@ -42,15 +42,15 @@ REST = "__rest__"
 FIRST = "__first__"
 CONS = "__cons__"
 
-EQ = "=="
-GE = ">="
+EQ = "__eq__"
+GE = "__ge__"
 
 HOLE_PREFIX = "@__hole__"
 RANDOM_TRAIT_NAME_PREFIX = "@__trait__"
 RANDOM_TYPE_DEC_NAME_PREFIX = "@__type_dec__"
 
 TO_SEQ = PREFIX + "to_seq"
-CONCAT = "++"
+CONCAT = "__concat__"
 APPLY = PREFIX + "apply"
 NEGATE = PREFIX + "negate"
 CAST = PREFIX + "cast"
