@@ -28,7 +28,29 @@ trait(T) for T2 =
 describe (T1, T2) as (Listable, Seq)
 describe T2 as Slice
 
+////////////////////////////////////////////////////////////////////////////////////////
+
+interface E =
+    fun e(E, E)
+
+type X(x)
+
+def e(x of X, y of Int) = x.x + y
+def e(x of X, y of X) = x.x + y.x
+
+fun test_multiple_args() =
+    let
+        x1 = X(1)
+        x2 = X(2)
+    affirm:is_true(isimplemented(X, E))
+    affirm:is_equal(e(x1, 1), 2)
+    affirm:is_equal(e(x1, x2), 3)
+
+////////////////////////////////////////////////////////////////////////////////////////
+
 fun test () =
+    test_multiple_args()
+
     let
         t1 = T1(11, 23)
         t2 = T2(

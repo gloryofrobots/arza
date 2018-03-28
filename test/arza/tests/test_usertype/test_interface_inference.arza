@@ -44,10 +44,10 @@ fun test () =
         affirm:is_true(kindof(v3, I1))
         affirm:is_true(kindof(v3, I3))
 
-        affirm:is_true(is_implemented(T1, I1))
+        affirm:is_true(isimplemented(T1, I1))
 
-        affirm:is_true(is_implemented(T2, I1))
-        affirm:is_true(is_implemented(T2, I2))
+        affirm:is_true(isimplemented(T2, I1))
+        affirm:is_true(isimplemented(T2, I2))
 
-        affirm:is_true(is_implemented(T3, I1))
-        affirm:is_true(is_implemented(T3, I3))
+        affirm:is_true(isimplemented(T3, I1))
+        affirm:is_true(isimplemented(T3, I3))

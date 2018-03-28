@@ -9,7 +9,7 @@ LOAD_MODULE = PREFIX + "load_module"
 
 ISNOT = PREFIX + "isnot"
 KINDOF = PREFIX + "kindof"
-IS_IMPLEMENTED = PREFIX + "is_implemented"
+IS_IMPLEMENTED = PREFIX + "isimplemented"
 
 # functions used by compiler in code gen
 DESCRIBE = PREFIX + "describe"
