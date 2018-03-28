@@ -8,7 +8,7 @@ type Success (val)
 
 fun _batch(checker, fn, calls) =
     let calls_list = to_seq(calls)
-    in seq:foreach(
+    seq:foreach(
             fun
                 | ((c1, c2)) = checker(fn(...c1), c2)
                 | ([c1, c2]) = checker(fn(...c1), c2)

@@ -175,7 +175,7 @@ fun test_whitespaces_in_expressions() =
               (fun
                  | 5 = 25
                  | 6 = 45),
-              (fun x = 25),
+              (fun (x) = 25),
               25)
     in
         affirm:is_equal(T1.1(5), 25)

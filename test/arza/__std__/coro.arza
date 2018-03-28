@@ -35,28 +35,21 @@ describe Coroutine as (Len, ToSeq, Seq, Empty)
 type Reference (val)
 
 fun ref(v) =
-    let co =
-           spawn(
+    let co = spawn(
                 (fun (yield, v) =
-                    (let
-                        (fun loop(v) =
-                            (let
-                                msg = yield(v)
-                            in
-                                (match msg
-                                    | #Read = loop(v)
-                                    | (#Write, new_val) =
-                                        loop(new_val)
-                                )
+                    (fun loop(v) =
+                            (let msg = yield(v))
+                            (match msg
+                                | #Read = loop(v)
+                                | (#Write, new_val) =
+                                    loop(new_val)
                             )
-                        )
-                    in loop(v)
                     )
+                    loop(v)
                 )
           )
-    in
-        co(v)
-        Reference(co)
+    co(v)
+    Reference(co)
 
 trait TReference(R) for Reference =
     def repr(self of R) = str(self)
@@ -132,20 +125,17 @@ let
 fun filter(predicate, coll) =
     spawn(
         fun (yield) =
-            (let
-                (fun _filter
-                    | (p, []) = empty(coll)
-                    | (p, x::xs) =
-                        (if p(x) then
-                            yield(x)
-                            _filter(p, xs)
-                        else
-                            _filter(p, xs)
-                        )
-                )
-            in
-                _filter(predicate, coll)
+            (fun _filter
+                | (p, []) = empty(coll)
+                | (p, x::xs) =
+                    (if p(x) then
+                        yield(x)
+                        _filter(p, xs)
+                    else
+                        _filter(p, xs)
+                    )
             )
+            _filter(predicate, coll)
     )
 
 
@@ -264,7 +254,7 @@ fun zipwith(fn, co1, co2) =
 fun zip(co1, co2) =
     spawn(
         fun (yield) =
-                (let (fun _zip
+                (fun _zip
                         | (co1, co2) when is_empty(co1) or is_empty(co2) =
                             []
                         | (x::co1, y::co2) =
@@ -275,9 +265,7 @@ fun zip(co1, co2) =
                                 _zip(co1, co2)
                             )
                      )
-                in
-                    _zip(co1, co2)
-                )
+                _zip(co1, co2)
     )
 ///////////////////////////////////////////////////////
 

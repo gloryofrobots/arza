@@ -623,21 +623,21 @@ def prefix_if(parser, op, token):
 # but making let-in a statement not an option
 # but let without in must be a statement
 # may be something like parser.expression_level variable
-# def prefix_let(parser, op, token):
-#     letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
-#     if parser.token_type == TT_IN:
-#         advance_expected(parser, TT_IN)
-#         inexp = statements(parser, [])
-#         return node_2(NT_LET, token, letblock, inexp)
-#     else:
-#         return letblock
-
-
 def prefix_let(parser, op, token):
     letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
-    advance_expected(parser, TT_IN)
-    inexp = statements(parser, [])
-    return node_2(NT_LET, token, letblock, inexp)
+    if parser.token_type == TT_IN:
+        advance_expected(parser, TT_IN)
+        inexp = statements(parser, [])
+        return node_2(NT_LET, token, letblock, inexp)
+    else:
+        return letblock
+
+
+# def prefix_let(parser, op, token):
+#     letblock = statements(parser.let_parser, TERM_LET, LET_NODES)
+#     advance_expected(parser, TT_IN)
+#     inexp = statements(parser, [])
+#     return node_2(NT_LET, token, letblock, inexp)
 
 
 def prefix_module_let(parser, op, token):
@@ -963,6 +963,16 @@ def prefix_let_fun(parser, op, token):
 def prefix_nameless_fun(parser, op, token):
     name = empty_node()
     funcs = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
+    return node_2(NT_FUN, token, name, funcs)
+
+
+def prefix_expression_fun(parser, op, token):
+    if parser.token_type == TT_NAME:
+        name, funcs = _parse_named_function(parser, token)
+    else:
+        name = empty_node()
+        funcs = _parse_function(parser, name, TERM_FUN_PATTERN, TERM_FUN_GUARD)
+
     return node_2(NT_FUN, token, name, funcs)
 
 

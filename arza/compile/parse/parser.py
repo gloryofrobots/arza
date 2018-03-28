@@ -159,7 +159,7 @@ class ExpressionParser(BaseParser):
         prefix(self, TT_NOT, NT_NOT, prefix_nud, 35)
         prefix(self, TT_IF, None, prefix_if, layout=layout_if)
 
-        prefix(self, TT_FUN, None, prefix_nameless_fun, layout=layout_fun)
+        prefix(self, TT_FUN, None, prefix_expression_fun, layout=layout_fun)
 
         prefix(self, TT_MATCH, None, prefix_match, layout=layout_match)
         prefix(self, TT_RECEIVE, None, prefix_receive, layout=layout_receive)
