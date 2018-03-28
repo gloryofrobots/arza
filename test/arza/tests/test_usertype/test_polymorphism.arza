@@ -1,7 +1,7 @@
 import affirm
 
 type L(l)
-type None
+type Nil
 type Some(val)
 
 interface =
@@ -17,7 +17,7 @@ trait(T) for L =
     def rest(self of T) = self
 
 
-def eq (self of Some, val of Some) = val == None
+def eq (self of Some, val of Some) = val == Nil
 def eq (self of Some, _) = False
 
 //extend Some with
@@ -27,8 +27,8 @@ def eq (self of Some, _) = False
 //        | (self, _) = False
 //)
 
-def eq (self of None, {val} of Some) = val == None
-def eq (self of None, _ of None) = True
+def eq (self of Nil, {val} of Some) = val == Nil
+def eq (self of Nil, _ of Nil) = True
 
 //extend None with
 //(
@@ -39,10 +39,10 @@ def eq (self of None, _ of None) = True
 
 fun test () =
     let
-        s = Some(None)
+        s = Some(Nil)
     in
-        affirm:is_true(None `eq` s)
-        affirm:is_false(s `eq` None)
+        affirm:is_true(Nil `eq` s)
+        affirm:is_false(s `eq` Nil)
 
 
     let

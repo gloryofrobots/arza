@@ -58,6 +58,7 @@ type X (...A, a,b,c,d,e,f)
     def values(self) as _datatype:record_values
 
 
+
 trait TRecord(T) =
     def index_of (val, self of T) as _datatype:record_index_of
     def keys(self) as _datatype:record_keys
@@ -84,6 +85,8 @@ trait TRe
 trait T
 
 
+type Error(args)
+    behavior Instance
 
 instance T(X)
 

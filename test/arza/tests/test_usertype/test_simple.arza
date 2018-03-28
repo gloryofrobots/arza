@@ -8,7 +8,7 @@ type Zero
 type Vec2(p1, p2)
 type Point2(x, y)
 type Some(val)
-type None
+type Nil
 
 
 trait(T) for Point2 =
@@ -38,7 +38,7 @@ trait(T) for Vec2 =
 
 
 def val(self of Some) = self.val
-def val(self of None) = self
+def val(self of Nil) = self
 
 
 fun test () =
@@ -64,7 +64,7 @@ fun test () =
 
     let
         some = Some(11)
-        none = None
+        none = Nil
     in
         affirm:is_equal(val(some), 11)
-        affirm:is_equal(val(none), None)
+        affirm:is_equal(val(none), Nil)
