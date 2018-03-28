@@ -83,6 +83,8 @@ trait TStr(T) =
 trait TRe
 trait T
 
+
+
 instance T(X)
 
 type Y()
@@ -93,32 +95,5 @@ trait T(T1, T2)
         def !=(x, y) =
 
 
-
-
-def ==(x of Int, y of Float) =
-    type1 = type(y)
-    type2 = type(y)
-    sym = Symmeric(type2)
-    arg2[sym] = `==`
-    type1[generic] = Symetric
-
-def == (x of Int, y of Char)
-    sym = Symmeric(arg)
-    arg2[sym] = `==`
-    Int[generic] = Symetric
-
-class X(Z,T) =
-    include Y
-    import T
-    fun add(x, y) = x + y
-    let X = 1
-    let Z = 2
-
-    __init__(x, y) =
-        self.x = x
-        self.y = y
-
-    __call__(x, y) =
-        return self.x + x + self.y + y
 
 

@@ -20,7 +20,7 @@ fun _batch(checker, fn, calls) =
 fun fail(error) = throw (#AffirmationError, error)
 
 
-fun is_not_equal(val1, val2)=
+fun is_not_equal(val1, val2) =
     if val1 == val2 then fail([val1, "==", val2])
     else True
 
