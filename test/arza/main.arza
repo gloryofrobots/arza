@@ -2,11 +2,11 @@ import io
 import affirm
 import seq
 //import tests
-import tests:test_coro
+//import tests:test_coro
 
 
 fun main() =
 //    tests:run()
-    test_coro:test()
+//    test_coro:test()
     #endprogram
 
