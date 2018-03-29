@@ -8,7 +8,7 @@ trait TArray(A) for Array =
     instance std:TEq(A)
 
     def at (self of A, k) as std_behavior:at
-    def put (k, v, self of A) as std_behavior:put
+    def put (self of A, k, v) as std_behavior:put
     def del (el, self of A) as std_behavior:del
     def has (self of A, el) as std_behavior:has
     def is_empty (self of A) as std_behavior:is_empty

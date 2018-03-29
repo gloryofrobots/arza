@@ -369,7 +369,7 @@ def _transform_modify(compiler, node, funcs, source, modifications):
         func = _choose_modify_func(ntype, funcs)
         return _transform_modify(compiler, node,
                                  funcs,
-                                 nodes.create_call_node_3(nodes.node_token(node), func, new_key, new_value, source),
+                                 nodes.create_call_node_3(nodes.node_token(node), func, source, new_key, new_value),
                                  tail)
     # else:
     #     # ensure symbol
@@ -381,7 +381,7 @@ def _transform_modify(compiler, node, funcs, source, modifications):
     func = _choose_modify_func(ntype, funcs)
     return _transform_modify(compiler, node,
                              funcs,
-                             nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
+                             nodes.create_call_node_3(nodes.node_token(node), func, source, key, value),
                              tail)
 
 

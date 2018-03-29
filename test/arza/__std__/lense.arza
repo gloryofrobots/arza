@@ -21,11 +21,11 @@ trait (L) for Lense =
             new_source = setter(value, source)
         in L(new_source, getter, setter)
 
-    def put(key, value, l of L) =
+    def put(l of L, key, value) =
         let
             {source, getter, setter} = __unpack(l)
             branch = get_branch(l)
-            new_value = put(key, value, branch)
+            new_value = put(branch, key, value)
         in
             l <- new_value
 

@@ -123,7 +123,7 @@ interface IsEmpty(I) =
     fun is_empty(I)
 
 interface Put(I) =
-    fun put(key, value, I)
+    fun put(I, key, value)
 
 interface Del(I) =
     fun del(obj, I)
@@ -208,7 +208,7 @@ trait (T) for Instance =
     def keys(self of T) as _datatype:record_keys
     def values(self of T) as _datatype:record_values
 
-    def put (k, v, self of T) as std_behavior:put
+    def put (self of T, k, v) as std_behavior:put
     def at (self of T, k) as std_behavior:at
     def del (el, self of T) as std_behavior:del
     def has (self of T, el) as std_behavior:has
@@ -283,11 +283,11 @@ type CoroutineEmpty(...Error)
 ///////////////// FUNCTIONS ////////////////////////////////
 ////////////////////////////////////////////////////////////
 
-fun put_default(key, default, coll) =
+fun put_default(coll, key, default) =
     if has(coll, key) then
         coll
     else
-        put(key, default, coll)
+        put(coll, key, default)
 
 type Lense(source, getter, setter)
 

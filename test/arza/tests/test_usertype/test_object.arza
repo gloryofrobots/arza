@@ -15,7 +15,7 @@ def at(obj of Object , key) =
                 fun (...args) = method(...prepend(obj, args))
             | _ = slot
 
-def put(key, val, obj of Object) =
+def put(obj of Object, key, val) =
     let
         data = __at__(obj, #data)
     in Object(data.{(key) = val})

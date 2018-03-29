@@ -6,7 +6,7 @@ import std
 trait TMap(M) for Map =
     instance std:TEq(M)
 
-    def put (k, v, self of M) as std_behavior:put
+    def put (self of M, k, v) as std_behavior:put
     def del (el, self of M) as std_behavior:del
     def has (self of M, el) as std_behavior:has
     def is_empty (self of M) as std_behavior:is_empty

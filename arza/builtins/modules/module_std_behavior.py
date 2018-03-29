@@ -44,7 +44,7 @@ def put(process, routine):
 
     arg0 = routine.get_arg(0)
 
-    return api.put(arg2, arg0, arg1)
+    return api.put(arg0, arg1, arg2)
 
 
 @complete_native_routine
