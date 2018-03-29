@@ -167,9 +167,9 @@ interface FromSeq(I) =
     fun from_seq(I)
 
 interface Slice(I) =
-    fun slice (first, last, I)
-    fun drop(count, I)
-    fun take(count, I)
+    fun slice (I, first, last)
+    fun drop(I, count)
+    fun take(I, count)
 
 interface Bound(I) =
     fun lower_bound(I)
@@ -322,7 +322,8 @@ fun <<(f, g) = x -> f(g(x))
 
 
 fun twice(f) = f >> f
-fun flip (f, x, y) = f(y, x)
+fun flip(f) = (x, y) -> f(y, x)
+
 fun even(x) = mod(x, 2) == 0
 fun odd(x) = not even(x)
 fun inc(x) = x + 1

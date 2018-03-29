@@ -16,9 +16,9 @@ trait __Tuple(T) for Tuple =
     def ++ (t1 of T, t2 of T) as _tuple:concat
     def prepend(v, self of T) as _tuple:prepend
     def to_seq(self of T) as _tuple:to_list
-    def slice(first, last, self of T) as _tuple:slice
-    def drop(x, self of T) as _tuple:drop
-    def take(x, self of T) as _tuple:take
+    def slice(self of T, first, last) as _tuple:slice
+    def drop(self of T, x) as _tuple:drop
+    def take(self of T, x) as _tuple:take
 
     def index_of(el, self of T) as _tuple:index_of
 

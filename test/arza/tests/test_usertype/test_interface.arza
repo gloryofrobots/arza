@@ -15,15 +15,15 @@ trait(T) for [T1, T2] =
     def rest(self of T) = rest(to_list(self))
 
     //not enough for Slice
-    def drop(count, self of T) = seq:drop(count, to_list(self))
-    def take(count, self of T) = seq:take(count, to_list(self))
+    def drop(self of T, count) = seq:drop(count, to_list(self))
+    def take(self of T, count) = seq:take(count, to_list(self))
 
 
 def to_list(self of T1) = [self.v1, self.v2]
 
 trait(T) for T2 =
     def to_list(self of T) = [self.v1, self.v2]
-    def slice(_from, _to, self of T) = slice(_from, _to, to_list(self))
+    def slice(self of T, _from, _to) = slice(to_list(self), _from, _to)
 
 describe (T1, T2) as (Listable, Seq)
 describe T2 as Slice
@@ -54,7 +54,7 @@ fun test () =
     let
         t1 = T1(11, 23)
         t2 = T2(
-                fst(take(1, t1)),
+                fst(take(t1, 1)),
                 23,
                 45
              )
@@ -66,7 +66,7 @@ fun test () =
 
         ///////////////////////////////////////////
 
-        affirm:is_equal(take(2, t1), take(2, t2))
+        affirm:is_equal(take(t1, 2), take(t2, 2))
         affirm:is_equal(first(t1), first(t2))
 
         affirm:is_equal(first(rest(t1)), first(rest(t2)))

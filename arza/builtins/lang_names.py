@@ -37,10 +37,8 @@ AT = PREFIX + "at"
 PUT = PREFIX + "put"
 PUT_DEFAULT = PREFIX + "put_default"
 
-SLICE = PREFIX + "slice"
 DROP = PREFIX + "drop"
 TAKE = PREFIX + "take"
-
 REST = PREFIX + "rest"
 FIRST = PREFIX + "first"
 CONS = PREFIX + "cons"

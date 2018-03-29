@@ -12,9 +12,9 @@ fun test () =
     affirm:is_equal(append('A', "BBB"), "BBBA")
     affirm:is_equal(cons('A', "BBB"), "BBBA")
     affirm:is_equal(to_seq("ABCDEFG"), ['A', 'B', 'C', 'D', 'E', 'F', 'G'])
-    affirm:is_equal(slice(2,6,"ABCDEFGH"), "CDEF")
-    affirm:is_equal(drop(2, "ABCDEFGH"), "CDEFGH")
-    affirm:is_equal(take(2, "ABCDEFGH"), "AB")
+    affirm:is_equal(slice("ABCDEFGH", 2, 6), "CDEF")
+    affirm:is_equal(drop("ABCDEFGH", 2), "CDEFGH")
+    affirm:is_equal(take("ABCDEFGH", 2), "AB")
     affirm:is_equal(string:reverse("ABCDEFGH"), "HGFEDCBA")
 
     affirm:is_equal(string:split("x", "AxBxAxCxAx"), ["A", "B", "A", "C", "A", ""])

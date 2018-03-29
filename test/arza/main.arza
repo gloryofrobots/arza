@@ -1,6 +1,7 @@
 import io
 import affirm
 import seq
+import list
 import tests
 //import tests:test_coro
 //import tests:test_register

@@ -19,9 +19,9 @@ trait __TString(S) for String =
     def append(v, self of S) as _string:append
     def prepend(v, self of S) as _string:prepend
     def to_seq(self of S) as _string:to_list
-    def slice(_from, _to, self of S) as _string:slice
-    def drop(x, self of S) as _string:drop
-    def take(x, self of S) as _string:take
+    def slice(self of S, _from, _to) as _string:slice
+    def drop(self of S, x) as _string:drop
+    def take(self of S, x) as _string:take
 
     def cons (value of Char, self of S) = _string:append(value, self)
     def empty(self of S) = ""

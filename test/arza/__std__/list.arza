@@ -91,11 +91,11 @@ trait TList(T) for List =
 
     def empty(self of T) = []
 
-    def slice(first, last, self of T) = _list:slice(first, last, self)
+    def slice(self of T, first, last) as _list:slice
 
-    def drop(count, self of T) = _list:drop(count, self)
+    def drop(self of T, count) as _list:drop
 
-    def take(count, self of T) = _list:take(count, self)
+    def take(self of T, count) as _list:take
 
     def append(val, self of T) as seq:append
 --------------------------------------------------
