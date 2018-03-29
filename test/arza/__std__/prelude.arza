@@ -158,7 +158,7 @@ interface Concat(I) =
     fun ++(I, other)
 
 interface Indexed(I) =
-    fun index_of(obj, I)
+    fun index_of(I, obj)
 
 interface ToSeq(I) =
     fun to_seq(I)
@@ -204,7 +204,7 @@ interface Cast(I) =
 
 
 trait (T) for Instance =
-    def index_of (val, self of T) as _datatype:record_index_of
+    def index_of (self of T, val) as _datatype:record_index_of
     def keys(self of T) as _datatype:record_keys
     def values(self of T) as _datatype:record_values
 

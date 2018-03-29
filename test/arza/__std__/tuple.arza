@@ -4,7 +4,7 @@ import std
 import io
 
 
-trait __Tuple(T) for Tuple =
+trait (T) for Tuple =
     instance std:TEq(T)
 
     def put (self of T, k, v) as std_behavior:put
@@ -21,7 +21,7 @@ trait __Tuple(T) for Tuple =
     def drop(self of T, x) as _tuple:drop
     def take(self of T, x) as _tuple:take
 
-    def index_of(el, self of T) as _tuple:index_of
+    def index_of(self of T, el) as _tuple:index_of
 
     def repr(self of T) =
         if len(self) == 1 then

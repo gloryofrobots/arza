@@ -23,7 +23,7 @@ trait TArray(A) for Array =
     def drop(self of A, x) as _array:drop
     def take(self of A, x) as _array:take
 
-    def index_of(el, self of A) as _array:index_of
+    def index_of(self of A, el) as _array:index_of
 
     def repr(self of A) =
         if len(self) == 1 then
