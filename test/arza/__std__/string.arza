@@ -16,14 +16,14 @@ trait __TString(S) for String =
     def is_empty (self of S) as std_behavior:is_empty
     def len (self of S) as std_behavior:len
 
-    def append(v, self of S) as _string:append
-    def prepend(v, self of S) as _string:prepend
+    def append(self of S, v) as _string:append
+    def prepend(self of S, v) as _string:prepend
     def to_seq(self of S) as _string:to_list
     def slice(self of S, _from, _to) as _string:slice
     def drop(self of S, x) as _string:drop
     def take(self of S, x) as _string:take
 
-    def cons (value of Char, self of S) = _string:append(value, self)
+    def cons (value of Char, self of S) = _string:append(self, value)
     def empty(self of S) = ""
 
 
@@ -49,12 +49,12 @@ fun concat (str1 of String, str2 of String) =
     _string:concat(str1, str2)
 
 
-fun replace_first (_old of String, _new of String, _str of String) =
-    _string:replace_first(_old, _new, _str)
+fun replace_first (_str of String, _old of String, _new of String) =
+    _string:replace_first(_str, _old, _new)
 
 
-fun replace (_old of String, _new of String, _str of String) =
-    _string:replace(_old, _new, _str)
+fun replace (_str of String, _old of String, _new of String) =
+    _string:replace(_str, _old, _new)
 
 
 fun reverse(_str) = _string:reverse(_str)
@@ -80,7 +80,7 @@ fun join_with(_func, _coll, _str) =
     let _seq = to_seq(_coll)
     in seq:foldl(joiner(_func, _str), "", _seq)
 
-fun split(_sep, _str) = _string:split(_sep, _str)
+fun split(_str, _sep) = _string:split(_str, _sep)
 
 //fun count _has _str = throw NotImplementedError ()
 //

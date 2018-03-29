@@ -149,10 +149,10 @@ interface Cons(I) =
     fun cons(value, I)
 
 interface Prepend(I) =
-    fun prepend(value, I)
+    fun prepend(I, value)
 
 interface Append(I) =
-    fun append(value, I)
+    fun append(I, value)
 
 interface Concat(I) =
     fun ++(I, other)

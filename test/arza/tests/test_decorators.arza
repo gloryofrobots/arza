@@ -50,7 +50,7 @@ fun add_y(t) = add_field(t, #y)
 
 fun add_field ((fields, _init) as typedata, field) =
     if not has(fields, field) then
-        (append(field, fields), _init)
+        (append(fields, field), _init)
     else
         typedata
 

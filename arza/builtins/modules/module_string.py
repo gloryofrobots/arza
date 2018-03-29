@@ -72,48 +72,41 @@ def concat(process, routine):
 
 @complete_native_routine
 def append(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return string.append(arg1, arg0)
+    return string.append(arg0, arg1)
 
 
 @complete_native_routine
 def prepend(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return string.prepend(arg1, arg0)
+    return string.prepend(arg0, arg1)
 
 
 @complete_native_routine
 def split(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return string.split(arg1, arg0)
+    return string.split(arg0, arg1)
 
 
 @complete_native_routine
 def replace(process, routine):
+    arg0 = routine.get_arg(0)
+    arg1 = routine.get_arg(1)
     arg2 = routine.get_arg(2)
 
-    arg1 = routine.get_arg(1)
-
-    arg0 = routine.get_arg(0)
-
-    return string.replace(arg2, arg0, arg1)
+    return string.replace(arg0, arg1, arg2)
 
 
 @complete_native_routine
 def replace_first(process, routine):
+    arg0 = routine.get_arg(0)
+    arg1 = routine.get_arg(1)
     arg2 = routine.get_arg(2)
 
-    arg1 = routine.get_arg(1)
-
-    arg0 = routine.get_arg(0)
-
-    return string.replace_first(arg2, arg0, arg1)
+    return string.replace_first(arg0, arg1, arg2)

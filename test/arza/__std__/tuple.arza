@@ -14,8 +14,8 @@ trait __Tuple(T) for Tuple =
     def len (self of T) as std_behavior:len
 
     def ++ (t1 of T, t2 of T) as _tuple:concat
-    def prepend(v, self of T) as _tuple:prepend
-    def append(v, self of T) as _tuple:append
+    def prepend(self of T, v) as _tuple:prepend
+    def append(self of T, v) as _tuple:append
     def to_seq(self of T) as _tuple:to_list
     def slice(self of T, first, last) as _tuple:slice
     def drop(self of T, x) as _tuple:drop

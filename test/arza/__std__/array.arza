@@ -16,8 +16,8 @@ trait TArray(A) for Array =
 
     def ++ (a1 of A, a2 of A) as _array:concat
 
-    def prepend(v, self of A) as _array:prepend
-    def append(v, self of A) as _array:append
+    def prepend(self of A, v) as _array:prepend
+    def append(self of A, v) as _array:append
 
     def slice(self of A, first, last) as _array:slice
     def drop(self of A, x) as _array:drop
@@ -71,7 +71,7 @@ trait TArraySeq(A) for ArraySeq =
             else l
 
     def cons(v, A(arr, index, dest)) =
-        A(arr, index+1, prepend(v, dest))
+        A(arr, index+1, prepend(dest, v))
 
 
 describe ArraySeq as (Seq, Len, Empty)
@@ -92,7 +92,7 @@ trait TArraySeqEmpty(A) for ArraySeqEmpty =
     def len(self of A) = 0
 
     def cons(v, self of A) =
-        prepend(v, self.dest)
+        prepend(self.dest, v)
         self
 
     def from_seq(self of A) = self.dest
@@ -111,7 +111,7 @@ fun map (f, arr of Array) =
             | (index, result) =
                 _map(
                     index + 1,
-                    append(f(arr.[index]), result)
+                    append(result, f(arr.[index]))
                 )
     in
         _map(0, array())

@@ -12,7 +12,7 @@ def at(obj of Object , key) =
     in
         match slot
             | method of Function =
-                fun (...args) = method(...prepend(obj, args))
+                fun (...args) = method(...prepend(args, obj))
             | _ = slot
 
 def put(obj of Object, key, val) =
