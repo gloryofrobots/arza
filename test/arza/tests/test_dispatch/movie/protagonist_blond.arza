@@ -12,24 +12,22 @@ def behavior:scream(movie, b of actors:ProtagonistBlond) =
 
 trait __TPB(M, B) for (actors:BugEyedMonster, actors:ProtagonistBlond) =
     def behavior:encounter(movie, m of M, b of B)
-        when actors:is_monster_killable(b, m)
-        and b.scream_power > SCREAM_THRESHOLD
-        and actors:pretty_enough(b) =
+        | (movie, m, b) when actors:is_monster_killable(b, m)
+                            and b.scream_power > SCREAM_THRESHOLD
+                            and actors:pretty_enough(b) =
+
             behavior:interact(movie, m, (#ENCOUNTER, b)) |>
             behavior:run_away(_, b, m)
+        | (movie, m, b) =
+            behavior:interact(movie, m, (#ENCOUNTER, b)) |>
+            behavior:kickass(_, m, b)
 
-    def behavior:encounter(movie, m of M, b of B) =
-        io:print("is monster killable", actors:is_monster_killable(b, m))
-        behavior:interact(movie, m, (#ENCOUNTER, b)) |>
-        behavior:kickass(_, m, b)
-
-
-    def behavior:encounter(movie, b of B, m of M) when actors:is_monster_killable(b, m) =
-        behavior:interact(movie, b, (#ENCOUNTER, m)) |>
-        behavior:kickass(_, b, m)
-
-
-    def behavior:encounter(movie, b of B, m of M) = behavior:encounter(m, b)
+    def behavior:encounter(movie, b of B, m of M) =
+        if actors:is_monster_killable(b, m) then
+            behavior:interact(movie, b, (#ENCOUNTER, m)) |>
+            behavior:kickass(_, b, m)
+        else
+            behavior:encounter(m, b)
 
 
     //////////////////////////////////////////////////

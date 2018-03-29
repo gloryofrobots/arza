@@ -4,8 +4,9 @@ import affirm
 interface =
     fun f1(v)
 
-def f1(1) = #one
-def f1(i of Int) = i
+def f1(i of Int)
+    | 1 = #one
+    | i = i
 
 def+(_) f1(i of Int) = 21
 def+(super) f1(i of Int) = super(i) + 21

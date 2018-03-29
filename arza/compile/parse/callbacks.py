@@ -932,6 +932,7 @@ def _parse_case_or_simple_function(parser, term_pattern, term_guard):
     return funcs
 
 
+
 def _parse_function(parser, name, term_pattern, term_guard):
     if parser.token_type == TT_CASE:
         funcs = _parse_case_function(parser, term_pattern, term_guard)
@@ -1209,7 +1210,11 @@ def _parse_def_body(parser, token, signature):
         advance_expected(parser, TT_AS)
         method = expression(parser, 0)
     else:
-        funcs = _parse_single_function(parser, signature)
+        # funcs = _parse_single_function(parser, signature)
+        if parser.token_type == TT_CASE:
+            funcs = _parse_recursive_function(parser, nodes.empty_node(), signature, TERM_FUN_PATTERN, TERM_FUN_GUARD)
+        else:
+            funcs = _parse_single_function(parser, signature)
         method = node_2(NT_FUN, token, empty_node(), funcs)
     return method
 

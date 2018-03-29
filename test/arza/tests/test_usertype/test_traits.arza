@@ -63,7 +63,7 @@ instance TOrder(Val2, Val2)
 instance TCmp(Val2, Val2)
 instance TMaxMin(Val2, Val2)
 
-def le(self of Val2, other of Val2) = self.v <= other.v
+def+(_) le(self of Val2, other of Val2) = self.v <= other.v
 
 fun test () =
     let

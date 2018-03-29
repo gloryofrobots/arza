@@ -187,15 +187,15 @@ class W_Generic(W_Hashable):
     def _make_method_node(self, process, sigs):
         signatures = sorted(sigs, self._sort_signatures)
         sig = signatures[0]
-        if len(signatures) != 1 or nodes.is_guarded_pattern(sig.pattern):
-            method = conflict_resolver(process, self, signatures)
+        if len(signatures) != 1 # or nodes.is_guarded_pattern(sig.pattern):
+            return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
+                                 self,
+                                 space.newlist(signatures),
+                                 space.newstring(u"Ambiguous generic specialisation"))
+            # method = conflict_resolver(process, self, signatures)
         else:
             method = sig.method
 
-        # return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
-        #                      self,
-        #                      space.newlist(signatures),
-        #                      space.newstring(u"Ambiguous generic specialisation"))
         unique = newuniquesignature(process, sig, method)
         self.unique_signatures.append(unique)
         return [LeafNode(sig, method)]
