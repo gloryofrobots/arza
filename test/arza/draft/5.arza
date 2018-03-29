@@ -1,4 +1,16 @@
+Collection = Object subclass (
+        :context = nil
+            whileFalse:
+               (context handles:aSignal)
+                    ifTrue:
+                        context handle (aSignal).
+                        ^ true
+                    ifFalse:
+                        context := context parent
+
+)
 Object subclass: Collection
+
     raise: aSignal [
         | context |
         context := signalerContext.
