@@ -29,26 +29,28 @@ fun nbn_1() =
 
     in
         string:join(
+            "\n",
             seq:map(
                 fun (n) =
                     string:join_cast(
+                       " ",
                        seq:map(
                             g -> _loop(n, g),
                             list:range(1, n)
-                       ),
-                       " "
+                       )
                     ),
                  list:range(1, 25)
-             ),
-             "\n"
+             )
         )
 
 
 fun nbn_2 () =
     string:join(
+        "\n",
         seq:map(
             fun(n) =
                 string:join_cast(
+                   " ",
                    seq:map(
                         (fun (g) =
                             let
@@ -69,13 +71,11 @@ fun nbn_2 () =
                             in _loop(n, g)
                         ),
                         list:range(1, n)
-                   ),
-                   " "
+                   )
                 )
            ,
            list:range(1, 25)
-        ),
-        "\n"
+        )
     )
 
 fun run () =

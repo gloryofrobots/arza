@@ -21,11 +21,11 @@ fun test () =
     affirm:is_equal(string:split("Axy-1Fxy-1Exy-1Dxy-1CBAAAA", "xy-1"), ["A", "F", "E", "D", "CBAAAA"])
     affirm:is_equal(string:split("x1x2x3x4x5", "x"), ["", "1", "2", "3", "4", "5"])
 
-    affirm:is_equal(string:join(["x", "y", "1", "Z", "V"], ""), "xy1ZV")
-    affirm:is_equal(string:join(["x", "y", "1", "Z", "V"], "<><>"), "x<><>y<><>1<><>Z<><>V")
+    affirm:is_equal(string:join("", ["x", "y", "1", "Z", "V"]), "xy1ZV")
+    affirm:is_equal(string:join("<><>", ["x", "y", "1", "Z", "V"]), "x<><>y<><>1<><>Z<><>V")
 
     affirm:is_equal(
-        string:join_cast([1,2, ["1", 2,3,4], (1,2,"ABC")], "---"),
+        string:join_cast("---", [1,2, ["1", 2,3,4], (1,2,"ABC")]),
         """1---2---[1, 2, 3, 4]---(1, 2, ABC)"""
     )
 

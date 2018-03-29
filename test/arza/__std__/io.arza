@@ -6,7 +6,7 @@ fun out() = stdout()
 
 fun _write_list_items(args, func, file, sep, ends) =
     let
-        s = string:join_with(func, args, sep) ++ ends
+        s = string:join_with(sep, args, func) ++ ends
     in
         write(s, file)
 

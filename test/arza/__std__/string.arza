@@ -60,7 +60,7 @@ fun replace (_str of String, _old of String, _new of String) =
 fun reverse(_str) = _string:reverse(_str)
 
 
-fun joiner(_func, _sep) =
+fun joiner(_sep, _func) =
     ((s, acc) ->
         if acc != "" then
             acc ++ _sep ++  _func(s)
@@ -68,17 +68,17 @@ fun joiner(_func, _sep) =
             _func(s)
     )
 
-fun join(_coll, _str) =
+fun join(_str, _coll) =
     let _seq = to_seq(_coll)
-    in seq:foldl(joiner(identity, _str), "", _seq)
+    in seq:foldl(joiner(_str, identity), "", _seq)
 
-fun join_cast(_coll, _str) =
+fun join_cast(_str, _coll) =
     let _seq = to_seq(_coll)
-    in seq:foldl(joiner(str, _str), "", _seq)
+    in seq:foldl(joiner(_str, str), "", _seq)
 
-fun join_with(_func, _coll, _str) =
+fun join_with(_str, _coll, _func) =
     let _seq = to_seq(_coll)
-    in seq:foldl(joiner(_func, _str), "", _seq)
+    in seq:foldl(joiner(_str, _func), "", _seq)
 
 fun split(_str, _sep) = _string:split(_str, _sep)
 

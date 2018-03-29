@@ -71,10 +71,10 @@ trait TList(T) for List =
 
 
     def repr(self of T) =
-        "[" ++ string:join_with(repr, self, ", ") ++ "]"
+        "[" ++ string:join_with(", ", self, repr) ++ "]"
 
     def str(self of T) =
-        "[" ++ string:join_with(str, self, ", ") ++ "]"
+        "[" ++ string:join_with(", ", self, str) ++ "]"
 
     def first(self of T) = _list:head(self)
 

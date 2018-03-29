@@ -17,7 +17,7 @@ trait TMap(M) for Map =
         let fun _joiner((fst, snd)) =
                 str(fst) ++ "=" ++ repr(snd)
         in "{"
-                ++ string:join_with(_joiner, to_seq(self), ", ") ++
+                ++ string:join_with(", ", to_seq(self), _joiner) ++
            "}"
 
     def to_seq(self of M) = _map:to_list(self)

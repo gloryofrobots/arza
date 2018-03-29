@@ -27,13 +27,13 @@ trait (T) for Tuple =
         if len(self) == 1 then
             "(" ++ repr(at(self, 0)) ++ ",)"
         else
-            "(" ++ string:join_with(repr, to_seq(self), ", ") ++ ")"
+            "(" ++ string:join_with(", ", to_seq(self), repr) ++ ")"
 
     def str(self of T) =
         if len(self) == 1 then
             "(" ++ str(at(self, 0)) ++ ",)"
         else
-            "(" ++ string:join_with(str, to_seq(self), ", ") ++ ")"
+            "(" ++ string:join_with(", ", to_seq(self), str) ++ ")"
 
 
 describe Tuple as (Eq, Repr,
