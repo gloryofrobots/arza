@@ -66,7 +66,7 @@ trait TList(T) for List =
 
     def put (self of T, k, v) as std_behavior:put
     def at (self of T, k) as std_behavior:at
-    def del (el, self of T) as std_behavior:del
+    def del (self of T, el) as std_behavior:del
     def has (self of T, el) as std_behavior:has
 
 

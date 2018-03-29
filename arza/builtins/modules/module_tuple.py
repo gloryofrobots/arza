@@ -12,6 +12,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'index_of', get_index, 2)
     api.put_native_function(process, _module, u'concat', concat, 2)
     api.put_native_function(process, _module, u'prepend', prepend, 2)
+    api.put_native_function(process, _module, u'append', append, 2)
     api.put_native_function(process, _module, u'to_list', _to_list, 1)
 
     _module.export_all()
@@ -45,11 +46,10 @@ def drop(process, routine):
 
 @complete_native_routine
 def get_index(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.get_index(arg1, arg0)
+    return api.get_index(arg0, arg1)
 
 
 @complete_native_routine
@@ -63,11 +63,18 @@ def concat(process, routine):
 
 @complete_native_routine
 def prepend(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
+    return tuples.prepend(arg0, arg1)
 
-    return tuples.prepend(arg1, arg0)
+
+@complete_native_routine
+def append(process, routine):
+    arg0 = routine.get_arg(0)
+    arg1 = routine.get_arg(1)
+
+    return tuples.append(arg0, arg1)
 
 
 @complete_native_routine

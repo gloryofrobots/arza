@@ -52,11 +52,10 @@ def drop(process, routine):
 
 @complete_native_routine
 def get_index(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.get_index(arg1, arg0)
+    return api.get_index(arg0, arg1)
 
 
 @complete_native_routine
@@ -70,20 +69,19 @@ def concat(process, routine):
 
 @complete_native_routine
 def append(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
 
-    return array.append(arg1, arg0)
+    return array.append(arg0, arg1)
 
 
 @complete_native_routine
 def prepend(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return array.prepend(arg1, arg0)
+    return array.prepend(arg0, arg1)
 
 
 @complete_native_routine

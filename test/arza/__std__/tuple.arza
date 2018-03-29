@@ -8,13 +8,14 @@ trait __Tuple(T) for Tuple =
     instance std:TEq(T)
 
     def put (self of T, k, v) as std_behavior:put
-    def del (el, self of T) as std_behavior:del
+    def del (self of T, el) as std_behavior:del
     def has (self of T, el) as std_behavior:has
     def is_empty (self of T) as std_behavior:is_empty
     def len (self of T) as std_behavior:len
 
     def ++ (t1 of T, t2 of T) as _tuple:concat
     def prepend(v, self of T) as _tuple:prepend
+    def append(v, self of T) as _tuple:append
     def to_seq(self of T) as _tuple:to_list
     def slice(self of T, first, last) as _tuple:slice
     def drop(self of T, x) as _tuple:drop

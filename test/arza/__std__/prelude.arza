@@ -126,7 +126,7 @@ interface Put(I) =
     fun put(I, key, value)
 
 interface Del(I) =
-    fun del(obj, I)
+    fun del(I, obj)
 
 interface At(I) =
     fun at(I, key)
@@ -210,7 +210,7 @@ trait (T) for Instance =
 
     def put (self of T, k, v) as std_behavior:put
     def at (self of T, k) as std_behavior:at
-    def del (el, self of T) as std_behavior:del
+    def del (self of T, el) as std_behavior:del
     def has (self of T, el) as std_behavior:has
     def len (self of T) as std_behavior:len
     def is_empty (self of T) as std_behavior:is_empty

@@ -68,8 +68,8 @@ trait TRecord(T) =
     def values(self) as _datatype:record_values
 
     def put (k, v, self) as std_behavior:put
-    def at (k, self) as std_behavior:at
-    def del (el, self) as std_behavior:del
+    def at (self, k) as std_behavior:at
+    def del (self, el) as std_behavior:del
     def elem (el, self) as std_behavior:elem
     def len (self) as std_behavior:len
     def is_empty (self) as std_behavior:is_empty

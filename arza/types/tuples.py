@@ -207,6 +207,14 @@ def prepend(tupl, val):
     return W_Tuple([val] + tupl.elements)
 
 
+def append(tupl, val):
+    type_check(tupl)
+    if space.isunit(tupl):
+        return space.newtuple([val])
+
+    return W_Tuple(tupl.elements + [val])
+
+
 def to_list(t):
     type_check(t)
     if space.isrealtuple(t):

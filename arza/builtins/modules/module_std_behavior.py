@@ -38,11 +38,9 @@ def is_empty(process, routine):
 
 @complete_native_routine
 def put(process, routine):
-    arg2 = routine.get_arg(2)
-
-    arg1 = routine.get_arg(1)
-
     arg0 = routine.get_arg(0)
+    arg1 = routine.get_arg(1)
+    arg2 = routine.get_arg(2)
 
     return api.put(arg0, arg1, arg2)
 
@@ -57,9 +55,9 @@ def at(process, routine):
 
 @complete_native_routine
 def cast(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
     if not space.islist(arg1):
         arg1 = space.newlist([arg1])
     return space.newmirror(arg0, arg1)
@@ -75,29 +73,26 @@ def has(process, routine):
 
 @complete_native_routine
 def delete(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.delete(arg1, arg0)
+    return api.delete(arg0, arg1)
 
 
 @complete_native_routine
 def equal(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.equal(arg1, arg0)
+    return api.equal(arg0, arg1)
 
 
 @complete_native_routine
 def not_equal(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.not_equal(arg1, arg0)
+    return api.not_equal(arg0, arg1)
 
 
 @complete_native_routine
