@@ -1114,8 +1114,8 @@ def _compile_LOOKUP(compiler, code, node):
     elif expr_type == NT_DROP:
         return _emit_DROP(compiler, code, obj, expr)
 
-    _compile(compiler, code, expr)
     _compile(compiler, code, obj)
+    _compile(compiler, code, expr)
     _emit_call(compiler, code, node, 2, lang_names.AT)
 
 

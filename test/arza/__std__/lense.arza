@@ -29,12 +29,12 @@ trait (L) for Lense =
         in
             l <- new_value
 
-    def at(key, l of L) =
+    def at(l of L, key) =
         let
             {source, getter, setter} = __unpack(l)
             branch = get_branch(l)
         in
-            at(key, branch)
+            at(branch, key)
 
     def has(l of L, key) =
         let

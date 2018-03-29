@@ -24,13 +24,13 @@ trait __Tuple(T) for Tuple =
 
     def repr(self of T) =
         if len(self) == 1 then
-            "(" ++ repr(at(0, self)) ++ ",)"
+            "(" ++ repr(at(self, 0)) ++ ",)"
         else
             "(" ++ string:join_with(repr, to_seq(self), ", ") ++ ")"
 
     def str(self of T) =
         if len(self) == 1 then
-            "(" ++ str(at(0, self)) ++ ",)"
+            "(" ++ str(at(self, 0)) ++ ",)"
         else
             "(" ++ string:join_with(str, to_seq(self), ", ") ++ ")"
 

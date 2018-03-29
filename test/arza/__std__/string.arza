@@ -9,7 +9,7 @@ trait __TStringEq(T) for [String, Char, Symbol] =
 
 
 trait __TString(S) for String =
-    def at (k, self of S) as std_behavior:at
+    def at (self of S, k) as std_behavior:at
     def put (k, v, self of S) as std_behavior:put
     def del (el, self of S) as std_behavior:del
     def has (self of S, el) as std_behavior:has

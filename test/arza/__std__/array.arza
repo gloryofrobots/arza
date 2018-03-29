@@ -7,7 +7,7 @@ import std
 trait TArray(A) for Array =
     instance std:TEq(A)
 
-    def at (k, self of A) as std_behavior:at
+    def at (self of A, k) as std_behavior:at
     def put (k, v, self of A) as std_behavior:put
     def del (el, self of A) as std_behavior:del
     def has (self of A, el) as std_behavior:has
@@ -27,13 +27,13 @@ trait TArray(A) for Array =
 
     def repr(self of A) =
         if len(self) == 1 then
-            "Array(" ++ repr(at(0, self)) ++ ",)"
+            "Array(" ++ repr(at(self, 0)) ++ ",)"
         else
             "Array(" ++ string:join_with(repr, to_seq(self), ", ") ++ ")"
 
     def str(self of A) =
         if len(self) == 1 then
-            "Array(" ++ str(at(0, self)) ++ ",)"
+            "Array(" ++ str(at(self, 0)) ++ ",)"
         else
             "Array(" ++ string:join_with(str, to_seq(self), ", ") ++ ")"
 

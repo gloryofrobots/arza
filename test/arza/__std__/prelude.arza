@@ -129,7 +129,7 @@ interface Del(I) =
     fun del(obj, I)
 
 interface At(I) =
-    fun at(key, I)
+    fun at(I, key)
     fun has(I, key)
 
 interface Coll is (Put, At, Del)
@@ -209,7 +209,7 @@ trait (T) for Instance =
     def values(self of T) as _datatype:record_values
 
     def put (k, v, self of T) as std_behavior:put
-    def at (k, self of T) as std_behavior:at
+    def at (self of T, k) as std_behavior:at
     def del (el, self of T) as std_behavior:del
     def has (self of T, el) as std_behavior:has
     def len (self of T) as std_behavior:len
@@ -228,8 +228,8 @@ trait (T)
     def repr (self of T) as std_behavior:repr
 
 
-def at (k, self of Map) as std_behavior:at
-def at (el, self of Tuple) as std_behavior:at
+def at (self of Map, k) as std_behavior:at
+def at (self of Tuple, el) as std_behavior:at
 
 
 ////////////////////////////////////////////////////////////
@@ -302,7 +302,7 @@ fun lense(source, getter, setter) =
 
 fun lookup (key, default, coll) =
     try
-        at(key, coll)
+        at(coll, key)
     catch
         | e of KeyError = default
         | e = throw e
@@ -328,15 +328,15 @@ fun odd(x) = not even(x)
 fun inc(x) = x + 1
 fun dec(x) = x - 1
 
-fun last(coll) = at(len(coll) - 1, coll)
+fun last(coll) = at(coll, len(coll) - 1)
 
 fun downcast(any) = any as Instance
 
 let
-    fst = c -> at(0, c)
-    snd = c -> at(1, c)
-    thrd = c -> at(2, c)
-    frth = c -> at(3, c)
+    fst = at(_, 0)
+    snd = at(_, 1)
+    thrd = at(_, 2)
+    frth = at(_, 3)
 
 let
     self = _process:self

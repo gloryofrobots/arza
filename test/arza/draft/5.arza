@@ -1,0 +1,33 @@
+Object subclass: Collection [
+    raise: aSignal [
+        | context |
+        context := signalerContext.
+        [context = nil]
+            whileFalse:
+               [ (context handles:aSignal)
+                    ifTrue: [ context handle:aSignal. ^ true]
+                    ifFalse: [ context := context parent. ] ].
+        'Unhandled signal ' print.
+        self print. '\n' print.
+        signalerContext die.
+    ]
+
+    printOn: aStream [
+        | tooMany |
+        tooMany := aStream position + self maxPrint.
+        aStream
+            print: self class;
+            nextPutAll: ' ('.
+
+        self do: [ :ea |
+            aStream position > tooMany
+                ifTrue: [
+                    aStream nextPutAll: '...etc...)'.
+                    ^self ].
+            ea == self
+                ifTrue: [ '...' printOn: aStream ]
+                ifFalse: [ ea printOn: aStream ].
+            aStream space ].
+        aStream nextPut: $)
+    ]
+]

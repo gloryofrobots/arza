@@ -22,8 +22,8 @@ trait TMap(M) for Map =
 
     def to_seq(self of M) = _map:to_list(self)
 
-    def keys(self of M) = seq:map(at .. 0, to_seq(self))
-    def values(self of M) = seq:map(at .. 1, to_seq(self))
+    def keys(self of M) = seq:map(at(_, 0), to_seq(self))
+    def values(self of M) = seq:map(at(_, 1), to_seq(self))
 --------------------------------------------------
 
 describe Map as (Eq, Repr, Coll, Dict, ToSeq)

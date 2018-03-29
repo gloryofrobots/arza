@@ -6,9 +6,9 @@ type Object(data)
 fun new(data) =
     Object(data)
 
-def at(key, obj of Object ) =
+def at(obj of Object , key) =
     let
-        slot = __at__(#data, obj).[key]
+        slot = __at__(obj, #data).[key]
     in
         match slot
             | method of Function =
@@ -17,7 +17,7 @@ def at(key, obj of Object ) =
 
 def put(key, val, obj of Object) =
     let
-        data = __at__(#data, obj)
+        data = __at__(obj, #data)
     in Object(data.{(key) = val})
 
 fun test() =

@@ -49,11 +49,10 @@ def put(process, routine):
 
 @complete_native_routine
 def at(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.at(arg1, arg0)
+    return api.at(arg0, arg1)
 
 
 @complete_native_routine

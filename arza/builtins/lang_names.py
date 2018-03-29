@@ -33,13 +33,13 @@ RECEIVE_HELPER = PREFIX + "__receive__"
 
 AFFIRM_TYPE_DECORATOR = PREFIX + "__affirm_type_decorator__"
 
-SLICE = PREFIX + "slice"
-DROP = PREFIX + "drop"
-TAKE = PREFIX + "take"
-
 AT = PREFIX + "at"
 PUT = PREFIX + "put"
 PUT_DEFAULT = PREFIX + "put_default"
+
+SLICE = PREFIX + "slice"
+DROP = PREFIX + "drop"
+TAKE = PREFIX + "take"
 
 REST = PREFIX + "rest"
 FIRST = PREFIX + "first"

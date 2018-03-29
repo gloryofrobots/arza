@@ -65,7 +65,7 @@ trait TList(T) for List =
     def ==(self of T, other) = seq:equal(self, other)
 
     def put (k, v, self of T) as std_behavior:put
-    def at (k, self of T) as std_behavior:at
+    def at (self of T, k) as std_behavior:at
     def del (el, self of T) as std_behavior:del
     def has (self of T, el) as std_behavior:has
 
