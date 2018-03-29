@@ -2,11 +2,11 @@ import affirm
 
 type Robot(battery_power)
 
-def cast(type Int, r of Robot) = r.battery_power
+def cast(r of Robot, type Int) = r.battery_power
 
-def cast(interface Seq, r of Robot) = [r as Int]
+def cast(r of Robot, interface Seq) = [r as Int]
 
-def cast(interface Str, r of Robot) = "Robot"
+def cast(r of Robot, interface Str) = "Robot"
 
 def at(#battery_power, s of Robot) =
     (s as Instance).battery_power + 1

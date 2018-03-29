@@ -68,7 +68,7 @@ def simplify_cons(compiler, code, node):
 def simplify_as(compiler, code, node):
     source = node_first(node)
     interfaces = node_second(node)
-    return nodes.create_call_node_s(nodes.node_token(node), lang_names.CAST, [interfaces, source])
+    return nodes.create_call_node_s(nodes.node_token(node), lang_names.CAST, [source, interfaces])
 
 
 def simplify_describe(compiler, code, node):

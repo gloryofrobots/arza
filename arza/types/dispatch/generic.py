@@ -174,23 +174,12 @@ class W_Generic(W_Hashable):
         # print "NODES", index, nodes
         return nodes
 
-    def _sort_signatures(self, sig1, sig2):
-        w1 = sig1.get_weight()
-        w2 = sig2.get_weight()
-        if w1 > w2:
-            return -1
-        elif w2 > w1:
-            return 1
-        else:
-            return 0
-
     def _make_method_node(self, process, sigs):
-        signatures = sorted(sigs, self._sort_signatures)
-        sig = signatures[0]
-        if len(signatures) != 1 # or nodes.is_guarded_pattern(sig.pattern):
+        sig = sigs[0]
+        if len(sigs) != 1:
             return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
                                  self,
-                                 space.newlist(signatures),
+                                 space.newlist(sigs),
                                  space.newstring(u"Ambiguous generic specialisation"))
             # method = conflict_resolver(process, self, signatures)
         else:
@@ -199,64 +188,6 @@ class W_Generic(W_Hashable):
         unique = newuniquesignature(process, sig, method)
         self.unique_signatures.append(unique)
         return [LeafNode(sig, method)]
-
-
-class ConflictResolverCallback(W_Root):
-    def __init__(self, signatures, fn, args):
-        self.fn = fn
-        self.args = args
-        self.signatures = signatures
-        self.waiting = False
-
-    def on_complete(self, process, result):
-        if self.waiting:
-            return result
-        # print "ON COMPL", result
-        idx = api.to_i(result)
-        method = self.signatures[idx].method
-        # print "COMPL", idx, method
-        self.waiting = True
-        return process.call_object(method, self.args)
-
-    def _to_routine_(self, stack, args):
-        from arza.runtime.routine.routine import create_callback_routine
-        routine = create_callback_routine(stack, self.on_complete, None, self.fn, args)
-        return routine
-
-
-class ConflictResolver(W_Root):
-    def __init__(self, signatures, fn):
-        self.fn = fn
-        self.signatures = signatures
-
-    def _call_(self, process, args):
-        fn = space.newfunc_from_source(self.fn, process.modules.prelude)
-        process.call_object(ConflictResolverCallback(self.signatures, fn, args), args)
-
-    def _to_string_(self):
-        return api.to_s(self.fn)
-
-
-def conflict_resolver(process, gf, signatures):
-    funcs = []
-    for i, sig in enumerate(signatures):
-        # put outers in generics compile environment
-        for t in sig.outers:
-            name = api.first(t)
-            obj = api.second(t)
-            api.put(gf.env, name, obj)
-
-        body = nodes.create_int_node(nodes.node_token(sig.pattern), i)
-        # body = nodes.create_literal_node(sig.pattern, sig.method)
-
-        funcs.append(nodes.list_node([
-            sig.pattern, nodes.list_node([body])
-        ]))
-    fn_node = nodes.create_fun_node(nodes.node_token(signatures[0].pattern),
-                                    nodes.empty_node(),
-                                    nodes.list_node(funcs))
-    fn = compiler.compile_function_ast(process, gf.env, fn_node)
-    return ConflictResolver(signatures, fn)
 
 
 def _make_signature(process, gf, types, method, pattern, outers):

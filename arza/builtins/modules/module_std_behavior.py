@@ -61,9 +61,9 @@ def cast(process, routine):
     arg1 = routine.get_arg(1)
 
     arg0 = routine.get_arg(0)
-    if not space.islist(arg0):
-        arg0 = space.newlist([arg0])
-    return space.newmirror(arg1, arg0)
+    if not space.islist(arg1):
+        arg1 = space.newlist([arg1])
+    return space.newmirror(arg0, arg1)
 
 
 @complete_native_routine

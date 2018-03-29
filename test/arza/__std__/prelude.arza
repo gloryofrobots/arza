@@ -198,7 +198,7 @@ interface Call(I) =
     fun call(I, args)
 
 interface Cast(I) =
-    fun cast(valueof to_what, I)
+    fun cast(I, valueof to_what)
 
 // Bootstrap interfaces behavior
 
@@ -214,7 +214,7 @@ trait (T) for Instance =
     def elem (el, self of T) as std_behavior:elem
     def len (self of T) as std_behavior:len
     def is_empty (self of T) as std_behavior:is_empty
-    def cast(to_what, self of T) as std_behavior:cast
+    def cast(self of T, to_what) as std_behavior:cast
 
 
 trait (T)
