@@ -10,7 +10,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'is_empty', is_empty, 1)
     api.put_native_function(process, _module, u'put', put, 3)
     api.put_native_function(process, _module, u'at', at, 2)
-    api.put_native_function(process, _module, u'elem', elem, 2)
+    api.put_native_function(process, _module, u'has', has, 2)
     api.put_native_function(process, _module, u'del', delete, 2)
     api.put_native_function(process, _module, u'equal', equal, 2)
     api.put_native_function(process, _module, u'not_equal', not_equal, 2)
@@ -67,12 +67,11 @@ def cast(process, routine):
 
 
 @complete_native_routine
-def elem(process, routine):
+def has(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.contains(arg1, arg0)
+    return api.contains(arg0, arg1)
 
 
 @complete_native_routine

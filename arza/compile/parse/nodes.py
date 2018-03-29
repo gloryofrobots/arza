@@ -593,8 +593,8 @@ def create_is_call(token, left, right):
     return create_call_node_s(token, lang_names.IS, [left, right])
 
 
-def create_elem_call(token, left, right):
-    return create_call_node_s(token, lang_names.ELEM, [left, right])
+def create_elem_has(token, left, right):
+    return create_call_node_s(token, lang_names.HAS, [left, right])
 
 
 def create_is_indexed_call(token, val):

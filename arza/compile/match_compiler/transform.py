@@ -225,12 +225,12 @@ def _transform_is(history, head, variables):
 # THIS function creates in chain for maps like if x in $$ and y in $$ and z in $$
 def _create_in_and_chain(keys, map_node):
     key, rest = plist.split(keys)
-    in_node = create_elem_call(nodes.node_token(map_node),
+    in_node = create_elem_has(nodes.node_token(map_node),
+                               map_node,
                                create_symbol_node(nodes.node_token(map_node),
                                                   create_name_node_s(
                                                       nodes.node_token(map_node),
-                                                      api.to_s(key))),
-                               map_node)
+                                                      api.to_s(key))))
     if plist.is_empty(rest):
         return in_node
 
@@ -245,9 +245,9 @@ def _transform_map(history, head, variables):
 
 
 def _transform_in(history, head, variables):
-    left, prefixes = _history_get_var(history, head[1])
-    right = head[2]
-    _condition = create_elem_call(nodes.node_token(left), left, right)
+    right, prefixes = _history_get_var(history, head[1])
+    left = head[2]
+    _condition = create_elem_has(nodes.node_token(left), left, right)
     condition, prefixes1 = _history_get_condition(history, _condition)
     return left, condition, prefixes + prefixes1, variables
 

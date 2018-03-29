@@ -8,7 +8,7 @@ trait TMap(M) for Map =
 
     def put (k, v, self of M) as std_behavior:put
     def del (el, self of M) as std_behavior:del
-    def elem (el, self of M) as std_behavior:elem
+    def has (self of M, el) as std_behavior:has
     def is_empty (self of M) as std_behavior:is_empty
 
     def repr(self of M) = str(self)

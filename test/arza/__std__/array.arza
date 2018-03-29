@@ -10,7 +10,7 @@ trait TArray(A) for Array =
     def at (k, self of A) as std_behavior:at
     def put (k, v, self of A) as std_behavior:put
     def del (el, self of A) as std_behavior:del
-    def elem (el, self of A) as std_behavior:elem
+    def has (self of A, el) as std_behavior:has
     def is_empty (self of A) as std_behavior:is_empty
     def len (self of A) as std_behavior:len
 
@@ -37,6 +37,7 @@ trait TArray(A) for Array =
         else
             "Array(" ++ string:join_with(str, to_seq(self), ", ") ++ ")"
 
+//    def cast(Seq, self of A) = to_seq(self)
 --------------------------------------------------
 
 type ArraySeq (arr, index, dest)

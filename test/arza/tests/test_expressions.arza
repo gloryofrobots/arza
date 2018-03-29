@@ -54,8 +54,8 @@ fun test_base_expressions() =
         a2_4 = #four
         a2 = [0, 1, 2, a2_4]
     in
-        affirm:is_true(#four `elem` a2)
-        affirm:is_true(a2_4 `elem` a2)
+        affirm:is_true(a2 `has` #four)
+        affirm:is_true(a2 `has` a2_4)
 
     affirm:is_equal("name", #name)
     affirm:is_equal(#name, "name")

@@ -49,13 +49,13 @@ fun range_by (first of Int, last of Int, step of Int) =
 --------------------------------------------------
 
 
-fun replicate(count, element) =
+fun replicate(count, hasent) =
     if count >= 0 then
         let fun _replicate
             | (0, _, l) = l
             | (n, x, l) = _replicate(n - 1, x, x :: l)
 
-        in _replicate(count, element, [])
+        in _replicate(count, hasent, [])
     else
         throw ValueError(count)
 ---------------------------------------------------
@@ -67,7 +67,7 @@ trait TList(T) for List =
     def put (k, v, self of T) as std_behavior:put
     def at (k, self of T) as std_behavior:at
     def del (el, self of T) as std_behavior:del
-    def elem (el, self of T) as std_behavior:elem
+    def has (self of T, el) as std_behavior:has
 
 
     def repr(self of T) =

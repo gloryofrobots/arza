@@ -12,7 +12,7 @@ trait __TString(S) for String =
     def at (k, self of S) as std_behavior:at
     def put (k, v, self of S) as std_behavior:put
     def del (el, self of S) as std_behavior:del
-    def elem (el, self of S) as std_behavior:elem
+    def has (self of S, el) as std_behavior:has
     def is_empty (self of S) as std_behavior:is_empty
     def len (self of S) as std_behavior:len
 
@@ -82,7 +82,7 @@ fun join_with(_func, _coll, _str) =
 
 fun split(_sep, _str) = _string:split(_sep, _str)
 
-//fun count _elem _str = throw NotImplementedError ()
+//fun count _has _str = throw NotImplementedError ()
 //
 //fun index_of _str _other = throw NotImplementedError ()
 //fun index_of_from _str _other _start _end = index_of (slice _str _start _end) _other

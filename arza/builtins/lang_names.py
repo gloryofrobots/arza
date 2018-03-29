@@ -2,7 +2,7 @@
 PREFIX = "arza:lang:"
 
 NOT = PREFIX + "not"
-ELEM = PREFIX + "elem"
+HAS = PREFIX + "has"
 IS = PREFIX + "is"
 IS_EMPTY = PREFIX + "is_empty"
 LOAD_MODULE = PREFIX + "load_module"

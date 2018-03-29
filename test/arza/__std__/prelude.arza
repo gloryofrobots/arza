@@ -130,7 +130,7 @@ interface Del(I) =
 
 interface At(I) =
     fun at(key, I)
-    fun elem(key, I)
+    fun has(I, key)
 
 interface Coll is (Put, At, Del)
 
@@ -211,7 +211,7 @@ trait (T) for Instance =
     def put (k, v, self of T) as std_behavior:put
     def at (k, self of T) as std_behavior:at
     def del (el, self of T) as std_behavior:del
-    def elem (el, self of T) as std_behavior:elem
+    def has (self of T, el) as std_behavior:has
     def len (self of T) as std_behavior:len
     def is_empty (self of T) as std_behavior:is_empty
     def cast(self of T, to_what) as std_behavior:cast
@@ -284,7 +284,7 @@ type CoroutineEmpty(...Error)
 ////////////////////////////////////////////////////////////
 
 fun put_default(key, default, coll) =
-    if elem(key, coll) then
+    if has(coll, key) then
         coll
     else
         put(key, default, coll)
@@ -307,6 +307,7 @@ fun lookup (key, default, coll) =
         | e of KeyError = default
         | e = throw e
 
+fun elem(el, coll) = has(coll, el)
 fun not_elem(x, c) = not elem(x, c)
 
 fun identity(x) = x
