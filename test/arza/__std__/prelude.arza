@@ -319,6 +319,7 @@ fun <|(f, x) = f(x)
 fun >>(f, g) = x -> g(f(x))
 fun <<(f, g) = x -> f(g(x))
 
+
 fun twice(f) = f >> f
 fun flip (f, x, y) = f(y, x)
 fun even(x) = mod(x, 2) == 0

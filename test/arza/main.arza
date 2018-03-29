@@ -8,17 +8,9 @@ import tests
 interface =
     fun f(x, y, z)
 
-//def f(x of Int, y of Int, z) when z >= 2
-//    | (1, 2, z) when z < 10 = 1
-//    | (_, _, z) when z == 2 = 2
 
 fun main() =
-//    io:print(f(1, 2, 4))
-//    io:print(f(3, 4, 2))
-//    try
-//        io:print(f(3,3, 10))
-//    catch e =
-//        io:print(e)
+
     tests:run()
 //    test_register:test_register()
 //    test_coro:test()

@@ -73,6 +73,38 @@ fun test_composition() =
         affirm:is_equal(mul2_add1(4), 9)
         affirm:is_equal(add_1_twice(9), 11)
 
+
+fun test_point_free() =
+    let
+        fun foldr
+            | ([], acc, f) = acc
+            | (hd::tl, acc, f) = f(hd, foldr(tl, acc, f))
+
+        sum = foldr(_, 0, `+`)
+    in
+        affirm:is_equal(sum([1,2,3,4,5]), 15)
+
+
+    //let fn = f . g . h than to write let fn x = f (g (h x)).
+
+    let
+        fun add (x,y) =
+            x + y
+
+        fun neg(x) =
+            -x
+
+        fun addmul(x,y,z) =
+            (x + y) * z
+
+        anm = add(_, 2) >> neg(_) >> addmul(_, 1, 2)
+        anm_r = add(_, 2) << neg(_) << addmul(_, 1, 2)
+    in
+        affirm:is_equal(anm(1), -4)
+        affirm:is_equal(anm_r(1), -2)
+
+
+
 fun test_pipe() =
     let
         l = list:range(0, 10)
@@ -141,4 +173,5 @@ fun test () =
     test_holes()
     test_partial()
     test_composition()
+    test_point_free()
     test_pipe()
