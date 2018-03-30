@@ -88,9 +88,6 @@ trait TRe
 trait T
 
 
-type Error(args)
-    behavior Instance
-
 instance T(X)
 
 type Y()
@@ -101,5 +98,85 @@ trait T(T1, T2)
         def !=(x, y) =
 
 
+type Instance
+
+type Error <: Instance
+    (x, y, z)
+
+type Error
+    behavior(Instance, Any)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+X = clone Y (
+    m = fun x y z (
+        + x y (- x z);
+        [x y z].map fun i (i + 1)
+        :map [x y z] fun i (i + 1)
+        :map (list x y z) [i| i + 1]
+    )
+)
+
+X = class Y (
+  defun m (x y z) (
+
+  )
+)
+
+x = :new X;
+m = :m x 1 2 3
+
+X <: Y (
+    f = fun (x y z) (
+
+    )
+)
+
+X = class Y (
+    m = fun x y z (
+        + x y (- x z);
+    )
+)
+
+set builtin_amake fun size (
+    val_check size int;
+    set s (val_int size);
+    set a (alloc_array s);
+    foreach 0 s fun (i) (
+        :put (val_array_ptr a) i vall_null;
+    );
+    return a;
+)
+
+defun builtin_amake (size) (
+    val_check size int.
+    s = val_int size.
+    a = alloc_array s.
+    foreach 0 s fun (i) (
+        :put val_array_ptr a, i vall_null.
+    ).
+    return a.
+)
+
+static value builtin_amake( value size ) {
+	value a;
+	int i,s;
+	val_check(size,int);
+	s = val_int(size);
+	a = alloc_array(s);
+	for(i=0;i<s;i++)
+		val_array_ptr(a)[i] = val_null;
+	return a;
+}

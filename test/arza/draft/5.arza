@@ -1,12 +1,46 @@
+
 Collection = Object subclass (
-        :context = nil
-            whileFalse:
-               (context handles:aSignal)
-                    ifTrue:
-                        context handle (aSignal).
-                        ^ true
-                    ifFalse:
-                        context := context parent
+    to: stop do: aBlock =
+        "Do aBlock from self to stop. Pass the counter to aBlock"
+        self to: stop by: self unity do: aBlock
+    to(stop) do(aBlock) =
+        "Do aBlock from self to stop. Pass the counter to aBlock"
+        self to(stop) by(self unity) do(aBlock)
+
+
+    to(stop) by(step) do(aBlock) =
+        "Do aBlock increasing self to stop stepping by step. Pass the counter to aBlock"
+        | i |
+        i := self.
+        step >= 0
+        ifTrue: (
+            :( i <= stop ) whileTrue:(
+                aBlock value: i.
+                i := i + step
+            )
+        ) ifFalse:(
+            :( i >= stop ) whileTrue:(
+                    aBlock value: i.
+                    i := i + step
+            )
+        )
+
+    raise: aSignal =
+        context := signalerContext.
+        while context == nil:
+            if context handles(aSignal):
+                context handle (aSignal).
+                ^ true
+            else:
+               context := context parent
+    raise: aSignal =
+        context := signalerContext.
+        while context == nil:
+            if context handles: aSignal then
+                context handle: aSignal).
+                ^ true
+            else
+               context := context parent
 
 )
 Object subclass: Collection
@@ -76,5 +110,48 @@ Object subclass: Collection [
                 ifFalse: [ ea printOn: aStream ].
             aStream space ].
         aStream nextPut: $)
+    ]
+    radix: base [
+        "Returns a string representing the integer with the given base.
+         The base must be between 2 and 16"
+        | stream num |
+        base isInteger & (base between: 2 and: 16)
+        ifFalse: [ self error: 'Argument must be an integer between 2 and 16' ].
+        self isZero
+        ifTrue: [ ^'0' ].
+        stream := WriteStream on: String new.
+        num := self abs.
+        [ num ~= 0 ]
+        whileTrue: [
+            | cp |
+            cp := $0 asciiValue + (num \\ base).
+            cp > $9 asciiValue
+                ifTrue: [ cp := cp + $A asciiValue - $9 asciiValue - 1 ].
+            stream nextPut: (Character value: cp).
+            num := num // base ].
+        self negative
+        ifTrue: [ stream nextPut: $- ].
+        ^stream contents reverse
+    ]
+     to: stop do: aBlock [
+        "Do aBlock from self to stop. Pass the counter to aBlock"
+
+        self to: stop by: self unity do: aBlock
+    ]
+
+
+    to: stop by: step do: aBlock [
+        "Do aBlock increasing self to stop stepping by step. Pass the counter to aBlock"
+        | i |
+        i := self.
+        step >= 0
+        ifTrue: [
+            [ i <= stop ]
+            whileTrue: [ aBlock value: i.
+                     i := i + step ] ]
+        ifFalse: [
+            [ i >= stop ]
+            whileTrue: [ aBlock value: i.
+                     i := i + step ] ]
     ]
 ]

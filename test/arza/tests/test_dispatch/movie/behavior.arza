@@ -1,13 +1,13 @@
 import io
 
 interface =
-    fun encounter(movie, actor1, actor2)
-    fun kickass(movie, actor1, actor2)
-    fun run_away(movie, actor1, actor2)
-    fun scream(movie, actor1)
-    fun sadly_die(movie, actor)
-    fun interact(movie, actor, event)
-    fun get_name(actor)
+    encounter(movie, actor1, actor2)
+    kickass(movie, actor1, actor2)
+    run_away(movie, actor1, actor2)
+    scream(movie, actor1)
+    sadly_die(movie, actor)
+    interact(movie, actor, event)
+    get_name(actor)
 
 interface Named =
     use get_name(actor of Named)

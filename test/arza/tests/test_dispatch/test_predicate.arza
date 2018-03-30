@@ -1,8 +1,8 @@
 import affirm
 
 interface =
-    fun race_winner(v1, v2)
-    fun race_looser(v1, v2)
+    race_winner(v1, v2)
+    race_looser(v1, v2)
 
 
 type Car (speed)

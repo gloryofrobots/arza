@@ -80,125 +80,125 @@ prefix (~, ~, 96)
 ////////////////////////////////////////////////////////////
 
 interface Eq(I) =
-    fun ==(x of I, y)
-    fun !=(x of I, y)
+    ==(x of I, y)
+    !=(x of I, y)
 
 interface Comparable(I) =
-    fun cmp(first of I, second)
+    cmp(first of I, second)
 
 interface LessEq(I) is Eq =
-    fun <=(first of I, second)
+    <=(first of I, second)
 
 interface Ord(I) =
     use <=(first of I, second)
     use cmp(first of I, second)
-    fun <(first of I, second)
-    fun >=(first of I, second)
-    fun >(first of I, second)
-    fun max(first of I, second)
-    fun min(first of I, second)
+    <(first of I, second)
+    >=(first of I, second)
+    >(first of I, second)
+    max(first of I, second)
+    min(first of I, second)
 
 interface Num(I) =
-    fun -(x of I, y)
-    fun +(x of I, y)
-    fun *(x of I, y)
-    fun /(x of I, y)
-    fun mod(x of I, y)
+    -(x of I, y)
+    +(x of I, y)
+    *(x of I, y)
+    /(x of I, y)
+    mod(x of I, y)
     // unary -
-    fun negate(x of I)
+    negate(x of I)
 
 interface Pow(I) =
-    fun **(x of I, y)
+    **(x of I, y)
 
 interface Str =
-    fun str(Str)
+    str(Str)
 
 interface Repr(I) is Str =
-    fun repr(I)
+    repr(I)
 
 interface Len =
-    fun len(Len)
+    len(Len)
 
 interface IsEmpty(I) =
-    fun is_empty(I)
+    is_empty(I)
 
 interface Put(I) =
-    fun put(I, key, value)
+    put(I, key, value)
 
 interface Del(I) =
-    fun del(I, obj)
+    del(I, obj)
 
 interface At(I) =
-    fun at(I, key)
-    fun has(I, key)
+    at(I, key)
+    has(I, key)
 
 interface Coll is (Put, At, Del)
 
 interface Dict(I) is Coll =
-    fun keys(self of I)
-    fun values(I)
+    keys(self of I)
+    values(I)
 
 interface Seq =
-    fun first(Seq)
-    fun rest(Seq)
+    first(Seq)
+    rest(Seq)
 
 interface Empty(I) =
-    fun empty(I)
+    empty(I)
 
 interface Cons(I) =
-    fun cons(value, I)
+    cons(value, I)
 
 interface Prepend(I) =
-    fun prepend(I, value)
+    prepend(I, value)
 
 interface Append(I) =
-    fun append(I, value)
+    append(I, value)
 
 interface Concat(I) =
-    fun ++(I, other)
+    ++(I, other)
 
 interface Indexed(I) =
-    fun index_of(I, obj)
+    index_of(I, obj)
 
 interface ToSeq(I) =
-    fun to_seq(I)
+    to_seq(I)
 
 interface FromSeq(I) =
-    fun from_seq(I)
+    from_seq(I)
 
 interface Slice(I) =
-    fun slice (I, first, last)
-    fun drop(I, count)
-    fun take(I, count)
+    slice (I, first, last)
+    drop(I, count)
+    take(I, count)
 
 interface Bound(I) =
-    fun lower_bound(I)
-    fun upper_bound(I)
+    lower_bound(I)
+    upper_bound(I)
 
 interface Range(I) =
-    fun range(I, last)
-    fun range_by (I, last, step)
-    fun range_from(I)
-    fun range_from_by(I, step)
+    range(I, last)
+    range_by (I, last, step)
+    range_from(I)
+    range_from_by(I, step)
 
 interface Ref(I) =
-    fun &(I)
+    &(I)
 
 interface MutRef(I) =
     use &(I)
-    fun :=(I, value)
+    :=(I, value)
 
 interface Replace(I) =
-    fun <- (I, value)
+    <- (I, value)
 
 interface Extract(I) =
-    fun &&(I)
+    &&(I)
 
 interface Call(I) =
-    fun call(I, args)
+    call(I, args)
 
 interface Cast(I) =
-    fun cast(I, valueof to_what)
+    cast(I, valueof to_what)
 
 // Bootstrap interfaces behavior
 

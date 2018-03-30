@@ -5,13 +5,13 @@ type T2(val)
 type T3(val)
 
 interface I1 =
-    fun f1(I1)
+    f1(I1)
 
 interface I2 is I1 =
-    fun f2(I2)
+    f2(I2)
 
 interface I3 is I1 =
-    fun f3(I3)
+    f3(I3)
 
 trait F1(T) =
     def f1(v of T) = v.val

@@ -5,8 +5,8 @@ type Spaceship(health, fire_power)
 
 
 interface =
-    fun collide_with(body1, body2)
-    fun damage(body1, amount)
+    collide_with(body1, body2)
+    damage(body1, amount)
 
 interface Body(I) =
     use damage(body of I, amount)

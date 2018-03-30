@@ -2,7 +2,7 @@ import io
 import affirm
 
 interface =
-    fun f1(v)
+    f1(v)
 
 def f1(i of Int)
     | 1 = #one

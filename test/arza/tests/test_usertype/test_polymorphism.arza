@@ -5,7 +5,7 @@ type Nil
 type Some(val)
 
 interface =
-    fun eq(self, other)
+    eq(self, other)
 
 trait(T) for L =
     def len(self of T) = len(self.l)
@@ -20,22 +20,10 @@ trait(T) for L =
 def eq (self of Some, val of Some) = val == Nil
 def eq (self of Some, _) = False
 
-//extend Some with
-//(
-//    def eq
-//        | (self, val of Some) = val == None
-//        | (self, _) = False
-//)
 
 def eq (self of Nil, {val} of Some) = val == Nil
 def eq (self of Nil, _ of Nil) = True
 
-//extend None with
-//(
-//    def eq
-//        | (self, {val} of Some) = val == None
-//        | (self, _ of None) = True
-//)
 
 fun test () =
     let

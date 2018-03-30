@@ -1,12 +1,4 @@
 
-@
-type T (x, y)
-    construct (self, x) =
-        self.{x=x, y=24}
-
-
-interface X =
-    fun t(x, X)
 
 //    let
 //        a = array(1,2,3,4)

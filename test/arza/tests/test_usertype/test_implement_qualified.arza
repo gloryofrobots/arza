@@ -6,8 +6,8 @@ prefix(++-+*++, ++-+*++, 70)
 infixl (+--, +--, 50)
 
 interface =
-    fun ++-+*++(self)
-    fun +--(v1, v2)
+    ++-+*++(self)
+    +--(v1, v2)
 
 type X(x)
 

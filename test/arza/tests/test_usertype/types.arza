@@ -1,8 +1,8 @@
 type TestType(val)
 
 interface =
-    fun test_method_1(x, y, a)
-    fun test_method_2(x, a, y)
-    fun test_method_3(a, x, y)
-    fun test_method_4(a)
+    test_method_1(x, y, a)
+    test_method_2(x, a, y)
+    test_method_3(a, x, y)
+    test_method_4(a)
 

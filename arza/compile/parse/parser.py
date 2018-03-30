@@ -362,7 +362,9 @@ class TraitSignatureParser(BaseParser):
 class InterfaceParser(BaseParser):
     def __init__(self):
         BaseParser.__init__(self)
-        prefix(self, TT_FUN, None, prefix_interface_fun)
+        prefix(self, TT_NAME, NT_NAME, prefix_interface_fun)
+        prefix(self, TT_OPERATOR, NT_NAME, prefix_interface_fun)
+
         prefix(self, TT_USE, None, prefix_interface_use)
         self.generic_parser = InterfaceGenericParser()
         self.function_parser = InterfaceFunctionParser()
@@ -403,7 +405,8 @@ class InterfaceGenericParser(BaseParser):
         self.generic_signature_parser = interface_generic_signature_parser_init(BaseParser())
         self.name_parser = name_parser_init(BaseParser())
 
-        prefix(self, TT_FUN, None, prefix_interface_generic_fun)
+        prefix(self, TT_NAME, NT_NAME, prefix_interface_generic)
+        prefix(self, TT_OPERATOR, NT_NAME, prefix_interface_generic)
         symbol(self, TT_RPAREN)
 
         self.add_subparsers([

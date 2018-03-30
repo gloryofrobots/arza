@@ -932,7 +932,6 @@ def _parse_case_or_simple_function(parser, term_pattern, term_guard):
     return funcs
 
 
-
 def _parse_function(parser, name, term_pattern, term_guard):
     if parser.token_type == TT_CASE:
         funcs = _parse_case_function(parser, term_pattern, term_guard)
@@ -1348,15 +1347,15 @@ def prefix_interface_valueof(parser, op, token):
     return node_1(NT_TUPLE, token, list_node([sym, name]))
 
 
-def prefix_interface_generic_fun(parser, op, token):
-    generic_name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+def prefix_interface_generic(parser, op, token):
+    name = itself(parser, op, token)
     items = _parse_comma_separated(parser.generic_signature_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
     args = node_1(NT_LIST, token, items)
-    return node_2(NT_GENERIC, token, generic_name, args)
+    return node_2(NT_GENERIC, token, name, args)
 
 
 def prefix_interface_fun(parser, op, token):
-    name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    name = itself(parser, op, token)
     args = _parse_comma_separated(parser.function_parser, TT_RPAREN, advance_first=TT_LPAREN, is_free=True)
     return node_2(NT_GENERIC, token, name, args)
 

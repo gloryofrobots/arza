@@ -3,7 +3,7 @@ import affirm
 type A(a)
 
 interface =
-    fun f(v)
+    f(v)
 
 trait T_A(T) for A =
     def f(v of T) = v.a
