@@ -48,13 +48,13 @@ fun test_simple() =
 
 fun add_y(t) = add_field(t, #y)
 
-fun add_field ((fields, _init) as typedata, field) =
+fun add_field ((supertype, fields, _init) as typedata, field) =
     if not has(fields, field) then
-        (append(fields, field), _init)
+        (supertype, append(fields, field), _init)
     else
         typedata
 
-fun init_field_with((fields, _init), field, value, fn) =
+fun init_field_with((supertype, fields, _init), field, value, fn) =
     let
         fun _wrap(...args) =
             let
@@ -62,10 +62,10 @@ fun init_field_with((fields, _init), field, value, fn) =
             in
                 data.{(field) = fn(@, value)}
     in
-        (fields, _wrap)
+        (supertype, fields, _wrap)
 
 
-fun init_field((fields, _init), field, value) =
+fun init_field((supertype, fields, _init), field, value) =
     let
         fun _wrap(...args) =
             let
@@ -73,7 +73,7 @@ fun init_field((fields, _init), field, value) =
             in
                 data.{(field) = value}
     in
-        (fields, _wrap)
+        (supertype, fields, _wrap)
 
 
 @add_field(#z)

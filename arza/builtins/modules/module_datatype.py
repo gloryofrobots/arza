@@ -12,6 +12,7 @@ def setup(process, stdlib):
     api.put_native_function(process, _module, u'has_init', has_init, 1)
     api.put_native_function(process, _module, u'get_init', get_init, 1)
     api.put_native_function(process, _module, u'get_fields', get_fields, 1)
+    api.put_native_function(process, _module, u'supertype', supertype, 1)
 
     _module.export_all()
     process.modules.add_env(_module)
@@ -29,11 +30,19 @@ def get_init(process, routine):
 
     return datatype.get_init(_type)
 
+
 @complete_native_routine
 def get_fields(process, routine):
     _type = routine.get_arg(0)
 
     return datatype.get_fields(_type)
+
+
+@complete_native_routine
+def supertype(process, routine):
+    _type = routine.get_arg(0)
+
+    return datatype.get_supertype(_type)
 
 
 @complete_native_routine

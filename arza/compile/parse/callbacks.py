@@ -1170,7 +1170,7 @@ def stmt_type(parser, op, token):
     else:
         fields = empty_node()
 
-    return nodes.node_3(NT_TYPE, token, name, fields, construct)
+    return nodes.node_4(NT_TYPE, token, name, empty_node(), fields, construct)
 
 
 # DERIVE

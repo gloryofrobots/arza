@@ -448,22 +448,23 @@ def isinterface(w):
 
 ########################################################
 
-def newdatatype(process, name, fields, init):
+def newdatatype(process, name, supertype, fields, init):
     from arza.types.datatype import newtype
     from arza.runtime import error
 
     error.affirm_type(name, issymbol)
     error.affirm_type(fields, islist)
     error.affirm_type(init, lambda x: isfunction(init) or isunit(init), u"Expected Callable or ()")
+    error.affirm_type(supertype, lambda x: isdatatype(supertype) or isunit(supertype), u"Expected Datatype or ()")
 
     error.affirm_iterable(fields, lambda x: issymbol(x) or isrecordtype(x))
-    return newtype(process, name, fields, init)
+    return newtype(process, name, supertype, fields, init)
 
 
-def newnativedatatype(name):
+def newnativedatatype(name, supertype):
     from arza.types.datatype import newnativedatatype
     assert issymbol(name)
-    datatype = newnativedatatype(name)
+    datatype = newnativedatatype(name, supertype)
     return datatype
 
 
@@ -508,18 +509,6 @@ def isdispatchable(w):
 
 ########################################################
 
-
-def newmirror(w, interfaces):
-    from arza.types.mirror import mirror
-    return mirror(w, interfaces)
-
-
-def ismirror(w):
-    from arza.types.mirror import W_Mirror
-    return isinstance(w, W_Mirror)
-
-
-########################################################
 
 def isoperator(w):
     from arza.compile.parse.basic import W_Operator

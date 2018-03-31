@@ -44,7 +44,7 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, lang_names.SPECIFY, __specify, 5)
     put_lang_func(process, module, lang_names.OVERRIDE, __override, 5)
     put_lang_func(process, module, lang_names.DESCRIBE, __describe, 2)
-    put_lang_func(process, module, lang_names.TYPE, __type, 3)
+    put_lang_func(process, module, lang_names.TYPE, __type, 4)
     put_lang_func(process, module, lang_names.LOAD_MODULE, load_module, 1)
     put_lang_func(process, module, lang_names.AFFIRM_TYPE_DECORATOR, __affirm_type_decorator, 1)
     # put_lang_func(process, module, lang_names.CURRY, __curry, 1)
@@ -56,6 +56,9 @@ def setup(process, module, stdlib):
     put_lang_func(process, module, u"__dispatch", __newdispatch, 2)
     put_lang_func(process, module, u"__register", __newregister, 3)
 
+    api.put_symbol_s(process, module, lang_names.TABSTRACT, process.std.types.Abstract)
+    api.put_symbol_s(process, module, lang_names.TRECORD, process.std.types.Record)
+    api.put_symbol_s(process, module, lang_names.TANY, process.std.types.Any)
 
 # 15.1.2.2
 
@@ -185,9 +188,10 @@ def __not(process, routine):
 @complete_native_routine
 def __type(process, routine):
     name = routine.get_arg(0)
-    fields = routine.get_arg(1)
-    construct = routine.get_arg(2)
-    _datatype = space.newdatatype(process, name, fields, construct)
+    supertype = routine.get_arg(1)
+    fields = routine.get_arg(2)
+    construct = routine.get_arg(3)
+    _datatype = space.newdatatype(process, name, supertype, fields, construct)
     return _datatype
 
 
@@ -257,7 +261,7 @@ def __describe(process, routine):
 def __affirm_type_decorator(process, routine):
     data = routine.get_arg(0)
 
-    error.affirm_type(data, lambda x: space.istuple(x) and api.length_i(data) == 2, u"Tuple(type_fields, type_init)")
+    error.affirm_type(data, lambda x: space.istuple(x) and api.length_i(data) == 3, u"Tuple(supertype, type_fields, type_init)")
     return data
 
 
@@ -336,7 +340,7 @@ def is_dict(process, routine):
     if api.kindof_b(process, v1, process.std.interfaces.Dict):
         return space.newbool(True)
 
-    if api.kindof_b(process, v1, process.std.interfaces.Instance):
+    if api.kindof_b(process, v1, process.std.types.Record):
         return space.newbool(True)
 
     return space.newbool(False)

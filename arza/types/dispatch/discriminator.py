@@ -147,10 +147,20 @@ class TypeDiscriminator(Discriminator):
         return val
 
     def _evaluate(self, process, arg):
-        if api.typeof_b(process, arg, self.type):
-            return WEIGHT_FOUND
-        else:
-            return WEIGHT_NOT_FOUND
+        _type = self.type
+
+        i = 0
+        t = api.get_type(process, arg)
+        n = api.to_s(t.name)
+        while space.isdatatype(_type):
+            if api.typeof_exact_b(process, arg, _type):
+                print "FOUND", n, i, _type
+                return WEIGHT_FOUND + i
+            _type = _type.supertype
+            i += 1
+
+        print "NOTFOUND", n, self.type
+        return WEIGHT_NOT_FOUND
 
     def __str__(self):
         return '<T - %s:%s>' % (str(self.position), str(self.type.name))

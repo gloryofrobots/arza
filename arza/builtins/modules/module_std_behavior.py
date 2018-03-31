@@ -57,10 +57,9 @@ def at(process, routine):
 def cast(process, routine):
     arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
-
-    if not space.islist(arg1):
-        arg1 = space.newlist([arg1])
-    return space.newmirror(arg0, arg1)
+    error.affirm_type(arg0, space.isrecord(arg0))
+    error.affirm_type(arg0, space.isdatatype(arg1))
+    return api.cast(arg0, arg1)
 
 
 @complete_native_routine

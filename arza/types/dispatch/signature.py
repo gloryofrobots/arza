@@ -269,18 +269,15 @@ def _get_value_predicate(process, value, index):
 
 
 def _get_interface_predicate(process, interface, index):
-    interfaces = process.std.interfaces
-
-    if interfaces.Any is interface:
-        arg = ArgumentAny(index)
-    else:
-        arg = ArgumentInterface(index, interface)
-
+    arg = ArgumentInterface(index, interface)
     return arg
 
 
 def _get_type_predicate(process, _type, index):
-    arg = ArgumentType(index, _type)
+    if process.std.types.Any is _type:
+        arg = ArgumentAny(index)
+    else:
+        arg = ArgumentType(index, _type)
     # types = process.std.types
     # if types.List is _type:
     #     arg = PredicateArgument(index, space.islist)

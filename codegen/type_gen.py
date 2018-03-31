@@ -1,14 +1,18 @@
 from tpl import render
 
-def mktype(name):
-    t = dict(name=name)
+def mktype(name, super="self.Any"):
+    t = dict(name=name, super=super)
     return t
 
 TYPES = [
+    mktype("Any", "space.newunit()"),
+    mktype("Abstract"),
+    mktype("Record"),
+    mktype("Number"),
     mktype("Bool"),
     mktype("Char"),
-    mktype("Int"),
-    mktype("Float"),
+    mktype("Int", "self.Number"),
+    mktype("Float", "self.Number"),
     mktype("Symbol"),
     mktype("String"),
     mktype("List"),
@@ -35,10 +39,7 @@ def gen_declaration():
 
     DT_TPL = \
     """
-    self.{{name}} = newtype(_s(u"{{name}}"))
-    self.{{name}}.register_interface(interfaces.Any)"""
-    CT_TPL = \
-    """    self.{{name}} = newctor(_s(u"{{name}}"), self.{{union.name}})"""
+    self.{{name}} = newtype(_s(u"{{name}}"), {{super}})"""
     for t in TYPES:
         print render(DT_TPL, t)
 

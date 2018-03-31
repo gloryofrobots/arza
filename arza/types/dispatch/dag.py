@@ -60,7 +60,7 @@ def extract_signature(process, dag):
     return leaf.signature
 
 
-def _check_ambiguous_methods(process, stack):
+def _check_ambiguous_methods(process, args, stack):
     if len(stack) <= 1:
         return
 
@@ -80,8 +80,8 @@ def _check_ambiguous_methods(process, stack):
         sig = extract_signature(process, node[0])
         errors.append(sig)
 
-    return error.throw_2(error.Errors.METHOD_SPECIALIZE_ERROR,
-                         space.newstring(u"Ambiguous method specialisation"), space.newlist(errors))
+    return error.throw_3(error.Errors.METHOD_SPECIALIZE_ERROR,
+                         space.newstring(u"Ambiguous method resolution"), args, space.newlist(errors))
 
 
 def evaluate_decision(process, stack, nodes, args):
@@ -93,7 +93,7 @@ def evaluate_decision(process, stack, nodes, args):
     api.d.pbp(10, ">>before sort", stack, args)
     # print "1", stack
     sort_stack(stack)
-    _check_ambiguous_methods(process, stack)
+    _check_ambiguous_methods(process, args, stack)
     api.d.pbp(10, ">>after sort", stack, args)
     # stack.sort(key=itemgetter(1))
     # print "2", stack

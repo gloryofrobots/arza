@@ -272,7 +272,7 @@ def typeof(process, obj, _type):
     return typeof_b(process, obj, _type)
 
 
-def typeof_b(process, obj, _type):
+def typeof_exact_b(process, obj, _type):
     if not space.isdatatype(_type):
         return error.throw_2(error.Errors.TYPE_ERROR, _type, space.newstring(u"Datatype expected"))
 
@@ -283,6 +283,25 @@ def typeof_b(process, obj, _type):
 
     obj_type = get_type(process, obj)
     return equal_b(obj_type, _type)
+
+
+def typeof_b(process, obj, _type):
+    if not space.isdatatype(_type):
+        return error.throw_2(error.Errors.TYPE_ERROR, _type, space.newstring(u"Datatype expected"))
+
+    # if Nothing kindof Nothing
+    if space.issingletondatatype(obj) and space.isuserdatatype(_type):
+        if equal_b(obj, _type):
+            return True
+
+    obj_type = get_type(process, obj)
+    while space.isdatatype(obj_type):
+        if equal_b(obj_type, _type):
+            return True
+
+        obj_type = obj_type.supertype
+
+    return False
 
 
 """
@@ -326,6 +345,10 @@ def not_equal(obj, other):
     return space.newbool(not v)
 
 
+def cast(obj, _type):
+    return obj._cast_(_type)
+
+
 # def compare(process, obj, other):
 #     if space.isuniquetype(obj):
 #         return error.throw_2(error.Errors.TYPE, obj, space.newstring(u"Unique expected"))
@@ -361,6 +384,10 @@ put helpers
 
 def put_symbol(process, obj, k, v):
     put(obj, space.newsymbol(process, k), v)
+
+
+def put_symbol_s(process, obj, k, v):
+    put(obj, space.newsymbol(process, unicode(k)), v)
 
 
 def put_native_function(process, obj, name, func, arity):

@@ -66,8 +66,10 @@ TSTRING = PREFIX + "String"
 TLIST = PREFIX + "List"
 TTUPLE = PREFIX + "Tuple"
 TMAP = PREFIX + "Map"
-TAny = PREFIX + "Any"
-TDatatype = PREFIX + "Datatype"
+TANY = PREFIX + "Any"
+TRECORD = PREFIX + "Record"
+TABSTRACT = PREFIX + "Abstract"
+TDATATYPE = PREFIX + "Datatype"
 
 SVALUEOF = "VALUEOF"
 

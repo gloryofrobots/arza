@@ -3,15 +3,24 @@ import affirm
 import seq
 import list
 //import tests
+//include tests (run as run_tests)
+//include tests:test_modify (test as run_tests)
 //import tests:test_coro
 //import tests:test_register
 
-type X
-    (x, y, z)
 
 fun main() =
-    io:print(X(1,2,3))
-//    tests:run()
+    let l = {x={y=1}}
+    let l1 = $(l.x)
+    l1.{z=3}
+//    io:print(signatures(put))
+//    io:print(supertype(Lense))
+//    io:print(l1 `kindof` Lense)
+//    io:print(l1 `kindof` Record)
+//    io:print(Lense `kindof` Record)
+//    io:print(Lense `kindof` Abstract)
+//    io:print(Lense `kindof` Datatype)
+//    run_tests()
 //    test_register:test_register()
 //    test_coro:test()
     #endprogram

@@ -191,7 +191,7 @@ class W_Generic(W_Hashable):
 
 
 def _make_signature(process, gf, types, method, pattern, outers):
-    any = process.std.interfaces.Any
+    any = process.std.types.Any
 
     _types = space.newlist([
                                any if space.isvoid(_type) else _type for _type in types

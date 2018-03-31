@@ -9,7 +9,7 @@ def cast(r of Robot, interface Seq) = [r as Int]
 def cast(r of Robot, interface Str) = "Robot"
 
 def at(s of Robot, #battery_power) =
-    (s as Instance).battery_power + 1
+    (s as Record).battery_power + 1
 
 
 fun test() =

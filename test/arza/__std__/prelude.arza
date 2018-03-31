@@ -1,11 +1,11 @@
-include arza:lang:_interfaces (Instance, Singleton, Any)
 import arza:lang:_std_behavior as std_behavior
 
 import arza:lang:_datatype
+include arza:lang:_datatype(supertype)
 
 import arza:lang:_process
 
-include arza:lang:_types (Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
+include arza:lang:_types (Any, Abstract, Record, Number, Bool, Char, Int, Float, Symbol, String, List, Vector, Tuple, Map,
                               Function, Partial, Generic, FiberChannel, Coroutine, Interface, Datatype,
                               Module, Array, AssocArray, PID)
 
@@ -203,7 +203,7 @@ interface Cast(I) =
 // Bootstrap interfaces behavior
 
 
-trait (T) for Instance =
+trait (T) for Record =
     def index_of (self of T, val) as _datatype:record_index_of
     def keys(self of T) as _datatype:record_keys
     def values(self of T) as _datatype:record_values
@@ -218,8 +218,8 @@ trait (T) for Instance =
 
 
 trait (T)
-    for [Singleton, Function, Generic, Partial,
-        Datatype, Bool, Instance, Interface, PID, Module] =
+    for [Abstract, Function, Generic, Partial,
+        Datatype, Bool, Record, Interface, PID, Module] =
 
     def == (self of T, other) as std_behavior:equal
     def != (self of T, other) as  std_behavior:not_equal
@@ -331,7 +331,7 @@ fun dec(x) = x - 1
 
 fun last(coll) = at(coll, len(coll) - 1)
 
-fun downcast(any) = any as Instance
+fun downcast(any) = any as Record
 
 let
     fst = at(_, 0)
@@ -344,17 +344,21 @@ let
     spawn = _process:spawn
 
 
-fun extends((fields, _init), parent) =
+fun extends((supertype, fields, _init), parent) =
     let
         new_init =
             match _init
             | () = _datatype:get_init(parent)
             | fn = fn
+        new_super =
+            match supertype
+            | type Abstract = Record
+            | _ = supertype
     in
-        (_datatype:get_fields(parent) ++ fields, new_init)
+        (new_super, _datatype:get_fields(parent) ++ fields, new_init)
 
 
-fun setfield((fields, _init), field, value) =
+fun setfield((supertype, fields, _init), field, value) =
     let
         fun _wrap(...args) =
             let
@@ -362,7 +366,7 @@ fun setfield((fields, _init), field, value) =
             in
                 data.{(field) = value}
     in
-        (fields, _wrap)
+        (supertype, fields, _wrap)
 
 
 fun super(_type, obj, ...args) =
