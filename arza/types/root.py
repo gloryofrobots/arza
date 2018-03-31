@@ -96,8 +96,9 @@ class W_Root:
     def _contains_(self, key):
         return not_implemented_error(u"_contains_", self, key)
 
-    def _cast_(self, _type):
-        return not_implemented_error(u"_cast_", self, _type)
+    def _cast_(self, process, _type):
+        from arza.types import space
+        return not_implemented_error(u"_cast_", self, _type, space.newstring(unicode(self.__class__.__name__)))
 
     def _at_index_(self, i):
         from arza.types import space

@@ -479,13 +479,13 @@ def isrecordtype(w):
 
 
 def isuserdatatype(w):
-    from arza.types.datatype import W_RecordType, W_SingletonType
-    return isinstance(w, W_RecordType) or isinstance(w, W_SingletonType)
+    from arza.types.datatype import W_RecordType, W_AbstractType
+    return isinstance(w, W_RecordType) or isinstance(w, W_AbstractType)
 
 
-def issingletondatatype(w):
-    from arza.types.datatype import W_SingletonType
-    return isinstance(w, W_SingletonType)
+def isabstracttype(w):
+    from arza.types.datatype import W_AbstractType
+    return isinstance(w, W_AbstractType)
 
 
 def isnativedatatype(w):
@@ -503,8 +503,8 @@ def isspecializable(w):
 
 
 def isdispatchable(w):
-    from arza.types.datatype import W_Record, W_RecordType
-    return isinstance(w, W_Record) or isinstance(w, W_RecordType)
+    from arza.types.datatype import W_AbstractType, W_RecordType
+    return isinstance(w, W_AbstractType) or isinstance(w, W_RecordType)
 
 
 ########################################################

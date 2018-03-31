@@ -256,7 +256,7 @@ def kindof_b(process, obj, kind):
 
 def interface_b(process, obj, iface):
     error.affirm_type(iface, space.isinterface, u"<Interface>")
-    if space.issingletondatatype(obj):
+    if space.isabstracttype(obj):
         result = obj.is_interface_implemented(iface)
         if result:
             return result
@@ -272,25 +272,12 @@ def typeof(process, obj, _type):
     return typeof_b(process, obj, _type)
 
 
-def typeof_exact_b(process, obj, _type):
-    if not space.isdatatype(_type):
-        return error.throw_2(error.Errors.TYPE_ERROR, _type, space.newstring(u"Datatype expected"))
-
-    # if Nothing kindof Nothing
-    if space.issingletondatatype(obj) and space.isuserdatatype(_type):
-        if equal_b(obj, _type):
-            return True
-
-    obj_type = get_type(process, obj)
-    return equal_b(obj_type, _type)
-
-
 def typeof_b(process, obj, _type):
     if not space.isdatatype(_type):
         return error.throw_2(error.Errors.TYPE_ERROR, _type, space.newstring(u"Datatype expected"))
 
     # if Nothing kindof Nothing
-    if space.issingletondatatype(obj) and space.isuserdatatype(_type):
+    if space.isabstracttype(obj) and space.isuserdatatype(_type):
         if equal_b(obj, _type):
             return True
 
@@ -345,8 +332,8 @@ def not_equal(obj, other):
     return space.newbool(not v)
 
 
-def cast(obj, _type):
-    return obj._cast_(_type)
+def cast(process, obj, _type):
+    return obj._cast_(process, _type)
 
 
 # def compare(process, obj, other):

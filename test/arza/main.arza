@@ -3,16 +3,16 @@ import affirm
 import seq
 import list
 //import tests
-//include tests (run as run_tests)
-//include tests:test_modify (test as run_tests)
+include tests (run as test)
+//include tests:test_modify (test)
 //import tests:test_coro
 //import tests:test_register
 
 
 fun main() =
-    let l = {x={y=1}}
-    let l1 = $(l.x)
-    l1.{z=3}
+//    let l = {x={y=1}}
+//    let l1 = $(l.x)
+//    l1.{z=3}
 //    io:print(signatures(put))
 //    io:print(supertype(Lense))
 //    io:print(l1 `kindof` Lense)
@@ -20,8 +20,7 @@ fun main() =
 //    io:print(Lense `kindof` Record)
 //    io:print(Lense `kindof` Abstract)
 //    io:print(Lense `kindof` Datatype)
-//    run_tests()
-//    test_register:test_register()
+    test()
 //    test_coro:test()
     #endprogram
 

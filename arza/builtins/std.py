@@ -127,7 +127,7 @@ class Interfaces:
 
     def get_derived(self, _type):
         if space.isuserdatatype(_type):
-            if space.issingletondatatype(_type):
+            if space.isabstracttype(_type):
                 return self.singleton_derived
             else:
                 return self.instance_derived

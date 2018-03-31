@@ -57,9 +57,9 @@ def at(process, routine):
 def cast(process, routine):
     arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
-    error.affirm_type(arg0, space.isrecord(arg0))
-    error.affirm_type(arg0, space.isdatatype(arg1))
-    return api.cast(arg0, arg1)
+    error.affirm_type(arg0, lambda x: space.isrecord(x) or space.isabstracttype(x))
+    error.affirm_type(arg1, space.isdatatype)
+    return api.cast(process, arg0, arg1)
 
 
 @complete_native_routine

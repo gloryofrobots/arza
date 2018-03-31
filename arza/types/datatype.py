@@ -35,7 +35,7 @@ class W_Record(W_Hashable):
 
         return "<record: %s (%s)>" % (api.to_r(self.type), ", ".join(res))
 
-    def cast(self, _type):
+    def _cast_(self, process, _type):
         if api.equal_b(self.type, _type):
             # do not return self because current_type may be downcasted
             return W_Record(self.type, self.values)
@@ -202,7 +202,7 @@ class W_NativeDatatype(W_BaseDatatype):
         return self._to_string_()
 
 
-class W_SingletonType(W_BaseDatatype):
+class W_AbstractType(W_BaseDatatype):
     def __init__(self, name, supertype):
         W_BaseDatatype.__init__(self, name, supertype, plist.empty())
 
@@ -399,7 +399,7 @@ def newtype(process, name, supertype, fields, initializer):
     fields = space.newlist(real_fields)
 
     if plist.is_empty(fields):
-        _type = W_SingletonType(name, supertype)
+        _type = W_AbstractType(name, supertype)
     else:
         if not plist.is_hetero(fields):
             error.throw_2(
