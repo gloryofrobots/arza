@@ -66,9 +66,9 @@ def throw_7(symbol_unistr, arg1, arg2, arg3, arg4, arg5, arg6, arg7):
     throw(symbol_unistr, space.newtuple([arg1, arg2, arg3, arg4, arg5, arg6, arg7]))
 
 
-def affirm_iterable(it, condition):
+def affirm_iterable(it, condition, expected=None):
     for i in it:
-        affirm_type(i, condition)
+        affirm_type(i, condition, expected)
 
 
 def affirm_type(obj, condition, expected=None):

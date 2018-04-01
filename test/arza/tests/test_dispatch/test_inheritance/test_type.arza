@@ -20,6 +20,9 @@ type Vec3 is Vec
     init (self, x, y, z) =
         super(Vec2, self, x, y).{z=z}
 
+type Vec3Float is Vec3
+    init (self, x of Float, y of Float, z of Float) =
+        super(Vec3, self, x, y, z)
 
 def size(v of Vec) = _size(v)
 def _size(v of Vec) = throw NotImplementedError(#_size)
@@ -31,6 +34,9 @@ fun test() =
     let
         v2 = Vec2(1, 2)
         v3 = Vec3(3, 4, 5)
+        v3f = Vec3Float(3.0, 4.0, 5.0)
 
     affirm:is_equal(size(v2), 2)
     affirm:is_equal(size(v3), 3)
+    affirm:is_equal(size(v3f), 3)
+    affirm:is_throw(Vec3Float, [1, 0, #c])

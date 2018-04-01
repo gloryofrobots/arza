@@ -1167,17 +1167,18 @@ def stmt_type(parser, op, token):
     else:
         supertype = empty_node()
 
-    construct = empty_node()
     if parser.token_type == TT_LPAREN:
         fields = _parse_type_fields(parser.type_parser, token)
         # allows to replace type X is Record to type X ()
         if nodes.is_empty_node(supertype) and api.length_i(fields) == 0:
             supertype = nodes.create_name_node_s(token, lang_names.TRECORD)
-
-        if parser.token_type == TT_INIT:
-            construct = expect_expression_of(parser.type_parser.construct_parser, 0, NT_FUN)
     else:
         fields = empty_node()
+
+    if parser.token_type == TT_INIT:
+        construct = expect_expression_of(parser.type_parser.construct_parser, 0, NT_FUN)
+    else:
+        construct = empty_node()
 
     return nodes.node_4(NT_TYPE, token, name, supertype, fields, construct)
 

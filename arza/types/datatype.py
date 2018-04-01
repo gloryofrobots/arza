@@ -400,15 +400,9 @@ def newabstractdatatype(name, supertype):
 
 def newtype(process, name, supertype, fields, initializer):
     real_fields = []
-    if not space.isabstracttype(supertype):
-        error.throw_2(
-            error.Errors.COMPILE_ERROR,
-            space.newstring(u"Supertype must be abstract"),
-            supertype,
-        )
-    # if space.isrecordtype(supertype):
-    #     for f in supertype.fields:
-    #         real_fields.append(f)
+    if space.isrecordtype(supertype):
+        for f in supertype.fields:
+            real_fields.append(f)
 
     for f in fields:
         if space.issymbol(f):
@@ -426,6 +420,12 @@ def newtype(process, name, supertype, fields, initializer):
     fields = space.newlist(real_fields)
 
     if plist.is_empty(fields):
+        if not space.isabstracttype(supertype):
+            error.throw_2(
+                error.Errors.COMPILE_ERROR,
+                space.newstring(u"Supertype must be abstract"),
+                supertype,
+            )
         _type = W_AbstractType(name, supertype)
     else:
         if not plist.is_hetero(fields):
