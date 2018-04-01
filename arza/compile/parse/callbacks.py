@@ -1154,23 +1154,32 @@ def prefix_type_init(parser, op, token):
 def stmt_type(parser, op, token):
     """
     complicated operator, possible syntaxes
-    type T1(v1, ...T2, v3)
+    type T1 is T2 (v1, ...T2, v3)
         init(x, y, ...) =
             ...
     type T1
     """
     check_token_type(parser, TT_NAME)
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
+    if parser.token_type == TT_IS:
+        advance_expected(parser, TT_IS)
+        supertype = expect_expression_of_types(parser.name_parser, 0, NAME_NODES)
+    else:
+        supertype = empty_node()
 
     construct = empty_node()
     if parser.token_type == TT_LPAREN:
         fields = _parse_type_fields(parser.type_parser, token)
+        # allows to replace type X is Record to type X ()
+        if nodes.is_empty_node(supertype) and api.length_i(fields) == 0:
+            supertype = nodes.create_name_node_s(token, lang_names.TRECORD)
+
         if parser.token_type == TT_INIT:
             construct = expect_expression_of(parser.type_parser.construct_parser, 0, NT_FUN)
     else:
         fields = empty_node()
 
-    return nodes.node_4(NT_TYPE, token, name, empty_node(), fields, construct)
+    return nodes.node_4(NT_TYPE, token, name, supertype, fields, construct)
 
 
 # DERIVE

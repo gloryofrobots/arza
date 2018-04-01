@@ -11,7 +11,8 @@ def find_in_module(process, prelude, name):
 
 class Types:
     def __init__(self, symbols):
-        from arza.types.space import newnativedatatype as newtype
+        # from arza.types.space import newnativedatatype as newtype
+        from arza.types.space import newabstractdatatype as newtype
         _s = symbols.symbol
 
         self.Any = newtype(_s(u"Any"), space.newunit())

@@ -248,7 +248,7 @@ class UniqueSignature(W_Root):
             if strictmode:
                 return False
             return api.contains_b(interfaces, current)
-        return api.equal_b(_type, current)
+        return _type.is_subtype_of(current)
 
     def _to_string_(self):
         return "<unique signature %s> " % (", ".join([str(arg) for arg in self.args]))

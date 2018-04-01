@@ -1,0 +1,36 @@
+import io
+import affirm
+
+interface =
+    add(x, y)
+
+interface Size(I) =
+    size(I)
+    _size(I)
+
+type Vec()
+
+type Vec2 is Vec
+    (x, y)
+    init(self, x, y) =
+        self.{x=x, y=y}
+
+type Vec3 is Vec
+    (...Vec2, z)
+    init (self, x, y, z) =
+        super(Vec2, self, x, y).{z=z}
+
+
+def size(v of Vec) = _size(v)
+def _size(v of Vec) = throw NotImplementedError(#_size)
+
+def _size(v of Vec2) = 2
+def _size(v of Vec3) = 3
+
+fun test() =
+    let
+        v2 = Vec2(1, 2)
+        v3 = Vec3(3, 4, 5)
+
+    affirm:is_equal(size(v2), 2)
+    affirm:is_equal(size(v3), 3)

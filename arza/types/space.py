@@ -461,6 +461,13 @@ def newdatatype(process, name, supertype, fields, init):
     return newtype(process, name, supertype, fields, init)
 
 
+def newabstractdatatype(name, supertype):
+    from arza.types.datatype import newabstractdatatype
+    assert issymbol(name)
+    datatype = newabstractdatatype(name, supertype)
+    return datatype
+
+
 def newnativedatatype(name, supertype):
     from arza.types.datatype import newnativedatatype
     assert issymbol(name)

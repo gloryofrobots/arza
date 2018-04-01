@@ -132,6 +132,19 @@ class W_BaseDatatype(W_Hashable):
         for interface in interfaces:
             self.register_interface(interface)
 
+    def is_subtype_of(self, _type):
+        if api.equal_b(self, _type):
+            return True
+
+        supertype = self.supertype
+        while space.isdatatype(supertype):
+            if api.equal_b(supertype, _type):
+                return True
+
+            supertype = supertype.supertype
+
+        return False
+
     def _register_interface(self, iface):
         if self._has_interface(iface):
             return
@@ -196,7 +209,7 @@ class W_NativeDatatype(W_BaseDatatype):
         return process.std.types.Datatype
 
     def _to_string_(self):
-        return "<datatype %s>" % (api.to_s(self.name))
+        return "<native type %s>" % (api.to_s(self.name))
 
     def _to_repr_(self):
         return self._to_string_()
@@ -210,7 +223,7 @@ class W_AbstractType(W_BaseDatatype):
         return process.std.types.Datatype
 
     def _to_string_(self):
-        return "<SingletonDatatype %s>" % (api.to_s(self.name))
+        return "<abstract type %s>" % (api.to_s(self.name))
 
     def _to_repr_(self):
         return api.to_s(self.name)
@@ -381,8 +394,22 @@ def newnativedatatype(name, supertype):
     return W_NativeDatatype(name, supertype)
 
 
+def newabstractdatatype(name, supertype):
+    return W_AbstractType(name, supertype)
+
+
 def newtype(process, name, supertype, fields, initializer):
     real_fields = []
+    if not space.isabstracttype(supertype):
+        error.throw_2(
+            error.Errors.COMPILE_ERROR,
+            space.newstring(u"Supertype must be abstract"),
+            supertype,
+        )
+    # if space.isrecordtype(supertype):
+    #     for f in supertype.fields:
+    #         real_fields.append(f)
+
     for f in fields:
         if space.issymbol(f):
             real_fields.append(f)
