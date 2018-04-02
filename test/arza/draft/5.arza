@@ -13,13 +13,13 @@ Collection = Object subclass (
         | i |
         i := self.
         step >= 0
-        ifTrue: (
-            :( i <= stop ) whileTrue:(
+        ifTrue (:
+            (: i <= stop ) whileTrue(:
                 aBlock value: i.
                 i := i + step
             )
-        ) ifFalse:(
-            :( i >= stop ) whileTrue:(
+        ) ifFalse(:
+            (: i >= stop ) whileTrue(:
                     aBlock value: i.
                     i := i + step
             )

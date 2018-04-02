@@ -2,8 +2,8 @@ import io
 import affirm
 import seq
 import list
-//include tests (run as test)
-include tests:test_dispatch:test_inheritance:test_type (test as test)
+include tests (run as test)
+//include tests:test_dispatch:test_inheritance:test_type (test as test)
 
 fun main() =
 //    io:print(signatures(put))

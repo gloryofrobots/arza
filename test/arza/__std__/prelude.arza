@@ -273,8 +273,6 @@ type ImplementationError(...Error)
 type ConstraintError(...Error)
 type EmptySeqError(...Error)
 type OverflowError(...Error)
-//Signal(...d) to interrupt recursive processes
-type Interrupt(...Error)
 type MessageMatchError(...Error)
 type RangeError(...Error)
 type CoroutineEmpty(...Error)

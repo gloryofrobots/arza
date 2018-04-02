@@ -107,6 +107,11 @@ type Error
     behavior(Instance, Any)
 
 
+{: x=1, y=2 :}
+
+{% x=1, y=2 %}
+
+{~ x=1, y=2 ~}
 
 
 
@@ -115,17 +120,23 @@ type Error
 
 
 
+fun foreach(f coll)
+    | (f [])  empty coll;
+    | (f hd::tl) (
+        f hd;
+        foreach f tl;
+    )
 
 
 
 
 
 X = clone Y (
-    m = fun x y z (
+    m = fun (x y z) (
         + x y (- x z);
-        [x y z].map fun i (i + 1)
-        :map [x y z] fun i (i + 1)
-        :map (list x y z) [i| i + 1]
+        [x y z].map fun i (i + 1);
+        :map [x y z] fun i (i + 1);
+        :map (list x y z) [i| i + 1];
     )
 )
 
@@ -165,7 +176,7 @@ defun builtin_amake (size) (
     s = val_int size.
     a = alloc_array s.
     foreach 0 s fun (i) (
-        :put val_array_ptr a, i vall_null.
+        :put val_array_ptr a .. i vall_null.
     ).
     return a.
 )
