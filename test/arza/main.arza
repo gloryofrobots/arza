@@ -1,6 +1,5 @@
 import lib.math
 
-PL(__env__())
 
 class Pair =
     fun __init__(self, first, second) =
@@ -18,9 +17,11 @@ class Pair =
 fun main() =
 
     let p = Pair(1, 2)
-    PL(p.sum())
+    print(p.sum())
     p.{x = 1}
-    PL(p.x)
+    print(p.x)
 
 
     __env__()
+
+PL(__env__())

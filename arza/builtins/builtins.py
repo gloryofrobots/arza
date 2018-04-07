@@ -40,6 +40,8 @@ def setup_classes(module, classes):
     api.put(module, classes.Env.name, classes.Env)
     api.put(module, classes.Array.name, classes.Array)
     api.put(module, classes.PID.name, classes.PID)
+    api.put(module, classes.IO.name, classes.IO)
+    api.put(module, classes.File.name, classes.File)
 
 
 def postsetup(process):

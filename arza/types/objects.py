@@ -7,21 +7,21 @@ from arza.misc.platform import is_absent_index
 from arza.runtime import error
 
 
-class W_Instance(W_Hashable):
-    def __init__(self, cls, slots):
+class W_Object(W_Hashable):
+    def __init__(self, _type, slots):
         W_Hashable.__init__(self)
         # list of all known interfaces
-        self.cls = cls
+        self.behavior = _type
         self.slots = slots
 
     def _at_(self, key):
         val = api.lookup(self.slots, key, space.newvoid())
         if space.isvoid(val):
-            return self.cls.lookup_symbol(key)
+            return self.behavior.lookup_symbol(key)
         return val
 
-    def set_class(self, cls):
-        self.cls = cls
+    def retype(self, cls):
+        self.behavior = cls
 
     def _put_(self, k, v):
         self.slots._put_(k, v)
@@ -34,10 +34,10 @@ class W_Instance(W_Hashable):
         return other is self
 
     def _type_(self, process):
-        return self.cls
+        return self.behavior
 
     def _to_string_(self):
-        return "<instance %s %s>" % (api.to_s(self.cls), api.to_s(self.slots))
+        return "<instance %s %s>" % (api.to_s(self.behavior), api.to_s(self.slots))
 
     def _to_repr_(self):
         return self._to_string_()
@@ -58,12 +58,11 @@ class W_Constructor(W_Callable):
         return routine
 
 
-class W_Class(W_Instance):
-    def __init__(self, name, base, metaclass, slots, env):
-        W_Instance.__init__(self, metaclass, slots)
+class W_Class(W_Object):
+    def __init__(self, name, base, slots, env):
+        W_Object.__init__(self, base, slots)
         self.name = name
         self.slots = slots
-        self.base = base
         self.env = env
         if env is not None:
             self.exports = env.exports()
@@ -77,13 +76,16 @@ class W_Class(W_Instance):
             val = api.lookup(cls.slots, key, space.newvoid())
             if not space.isvoid(val):
                 return val
-            cls = cls.base
+            cls = cls.behavior
             if space.isnil(cls):
                 break
         return space.newvoid()
 
+    def _type_(self, process):
+        return process.classes.Class
+
     def _call_(self, process, args):
-        obj = W_Instance(self, space.new_empty_assoc_array())
+        obj = W_Object(self, space.new_empty_assoc_array())
         ctor = self.lookup_symbol(process.symbols.init)
         if space.isvoid(ctor):
             return obj
@@ -101,12 +103,12 @@ class W_Class(W_Instance):
         return self._to_string_()
 
 
-def newcompiledclass(name, base, metaclass, env):
+def newcompiledclass(name, base, env):
     if space.isnil(name):
         name = env.name
     slots = env.data
-    return W_Class(name, base, metaclass, slots, env)
+    return W_Class(name, base, slots, env)
 
 
-def newclass(name, base, metaclass, slots):
-    return W_Class(name, base, metaclass, slots, None)
+def newclass(name, base, slots):
+    return W_Class(name, base, slots, None)

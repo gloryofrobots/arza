@@ -1,4 +1,3 @@
-
 from arza.types import api, space
 from arza.runtime import error
 from arza.runtime.routine.routine import complete_native_routine
@@ -8,7 +7,10 @@ def setup(process, stdlib):
     _class = stdlib.classes.Object
     setup_class(process, _class)
 
+
 def setup_class(process, _class):
+    api.put_native_function(process, _class, u'type', _type, 1)
+    api.put_native_function(process, _class, u'super', _type, 1)
     api.put_native_function(process, _class, u'__not__', _not, 1)
     api.put_native_function(process, _class, u'__is__', _is, 2)
     api.put_native_function(process, _class, u'__len__', length, 1)
@@ -23,12 +25,27 @@ def setup_class(process, _class):
     api.put_native_function(process, _class, u'__repr__', to_repr, 1)
 
 
-
 @complete_native_routine
 def _is(process, routine):
     arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
     return space.newbool(arg0 is arg1)
+
+
+@complete_native_routine
+def _type(process, routine):
+    arg0 = routine.get_arg(0)
+    return api.get_type(process, arg0)
+
+@complete_native_routine
+def _super(process, routine):
+    arg0 = routine.get_arg(0)
+    t = api.get_type(process, arg0)
+    if not space.isclass(t):
+        return space.newnil()
+    else:
+        return t.behavior
+
 
 @complete_native_routine
 def _not(process, routine):

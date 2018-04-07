@@ -9,20 +9,20 @@ def find_in_module(process, prelude, name):
     return api.at(prelude, sym)
 
 
-def newclass(name, baseclass, metaclass):
+def newclass(name, baseclass):
     from arza.types.space import newemptyclass
-    return newemptyclass(name, baseclass, metaclass)
+    return newemptyclass(name, baseclass)
 
 
 class StdClasses:
     def __init__(self, symbols):
         _s = symbols.symbol
-        self.Object = newclass(_s(u"Object"), space.newnil(), space.newnil())
-        self.Class = newclass(_s(u"Class"), self.Object, space.newnil())
-        self.Object.set_class(self.Class)
+        self.Object = newclass(_s(u"Object"), space.newnil())
+        self.Class = newclass(_s(u"Class"), self.Object)
+        self.Object.retype(self.Class)
 
-        newtype = lambda name: newclass(name, self.Object, self.Class)
-        newtype_2 = lambda name, parent: newclass(name, parent, self.Class)
+        newtype = lambda name: newclass(name, self.Object)
+        newtype_2 = lambda name, parent: newclass(name, parent)
 
         self.Bool = newtype(_s(u"Bool"))
 
@@ -51,6 +51,10 @@ class StdClasses:
         self.Function = newtype(_s(u"Function"))
 
         self.FiberChannel = newtype(_s(u"FiberChannel"))
+
+        self.File = newtype(_s(u"File"))
+
+        self.IO = newtype(_s(u"IO"))
 
         self.Coroutine = newtype(_s(u"Coroutine"))
 

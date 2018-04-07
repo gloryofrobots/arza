@@ -12,6 +12,9 @@ class W_IODevice(W_Root):
         self.file.write(ustr)
         self.file.flush()
 
+    def _type_(self, process):
+        return process.classes.File
+
     def _to_string_(self):
         return "<iodevice>"
 

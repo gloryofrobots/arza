@@ -50,8 +50,8 @@ class Classes:
         error.affirm_type(path, space.isstring)
         self.path = plist.cons(path, self.path)
 
-    def add_env(self, base, metaclass, env):
-        module = space.newcompiledclass(space.newnil(), base, metaclass, env)
+    def add_env(self, base, env):
+        module = space.newcompiledclass(space.newnil(), base, env)
         self.add_class(module)
         return module
 

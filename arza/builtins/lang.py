@@ -172,9 +172,8 @@ def __class(process, routine):
     if space.isnil(baseclass):
         baseclass = process.std.classes.Object
 
-    metaclass = process.std.classes.Class
     env = routine.get_arg(2)
-    _class = space.newcompiledclass(name, baseclass, metaclass, env)
+    _class = space.newcompiledclass(name, baseclass, env)
     return _class
 
 
