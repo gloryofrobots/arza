@@ -1,4 +1,3 @@
-//x.y.z(1)
 infixl (<, __lt__, 35)
 infixl (>, __gt__, 35)
 infixl (>=, __ge__, 35)
@@ -7,22 +6,24 @@ infixl (==, __eq__, 35)
 infixl (!=, __ne__, 35)
 infixl (++, __concat__, 40)
 infixl (+, __add__, 40)
+infixl (||, __bor__, 40)
+infixl (^, __bitxor__, 40)
 infixl (-, __sub__, 40)
 infixl (*, __mul__, 50)
 infixl (/, __div__, 50)
+infixl (&, __band__, 50)
+infixl (>>, __brsh__, 50)
+infixl (<<, __blsh__, 50)
 // use qualified name to prevent infinite loops in cases of declaring local negate function using prefix -
-prefix (-, __negate__, 55)
 // infix :: -> 60
 infixl (**, __pow__, 60)
+prefix (-, __neg__, 70)
+prefix (~, __bnot__, 70)
 // prefix # -> 70
 // infix (  .{ .[ -> 95
 // infix . : -> 100
 
+//fun __new__(obj, args) =
+//    obj.__init__(...args)
+//    obj
 
-fun f() =  1
-
-class T extends Object =
-    fun n() = 42
-
-
-PL(T)

@@ -513,7 +513,6 @@ def _is_optimizable_unpack_seq_pattern(node):
             return False
     return True
 
-
 def _compile_destruct_unpack_seq(compiler, code, node):
     _emit_dup(code)
     names = node_first(node)
@@ -864,6 +863,9 @@ def _load_module(compiler, code, node):
     if node_type(exp) == NT_AS:
         import_name = node_second(exp)
         module_path = imported_name_to_s(node_first(exp))
+    elif node_type(exp) == NT_LOOKUP:
+        import_name = node_second(exp)
+        module_path = imported_name_to_s(exp)
     else:
         assert node_type(exp) == NT_NAME
         import_name = exp
@@ -872,7 +874,7 @@ def _load_module(compiler, code, node):
     import_name_s = _get_symbol_name(compiler, import_name)
     module = load.import_class(compiler.process, space.newsymbol_s(compiler.process, module_path))
     var_names = []
-    exports = module.exports()
+    exports = module.exports
 
     if is_empty_node(names):
         _var_names = exports
@@ -931,21 +933,9 @@ def _emit_imported(compiler, code, node, module, var_name, bind_name, is_pop):
 
 def _compile_IMPORT(compiler, code, node):
     module, import_name, var_names = _load_module(compiler, code, node)
-    if not _is_module_used(compiler, import_name):
-        return
-    colon = space.newsymbol(compiler.process, u":")
-
-    i = 0
-    last_index = len(var_names) - 1
-    for var_name, bind_name in var_names:
-        full_bind_name = symbols.concat_3(compiler.process, import_name, colon, bind_name)
-
-        if _is_imported_name_used(compiler, full_bind_name):
-            need_pop = False if i == last_index else True
-            _emit_imported(compiler, code, node, module, var_name, full_bind_name, need_pop)
-
-        i += 1
-
+    module_literal = _declare_literal(compiler, module)
+    code.emit_1(LITERAL, module_literal, info(node))
+    _emit_store(compiler, code, import_name, node)
 
 def _compile_INCLUDE(compiler, code, node):
     module, import_name, var_names = _load_module(compiler, code, node)
@@ -967,25 +957,6 @@ def _delete_hiding_names(compiler, code, node, module, var_names):
             continue
         imported.append(name)
     return imported
-
-
-def _compile_IMPORT_HIDING(compiler, code, node):
-    module, import_name, var_names = _load_module(compiler, code, node)
-    if not _is_module_used(compiler, import_name):
-        return
-
-    colon = space.newsymbol(compiler.process, u":")
-    var_names = _delete_hiding_names(compiler, code, node, module, var_names)
-    i = 0
-    last_index = len(var_names) - 1
-    for var_name in var_names:
-        bind_name = symbols.concat_3(compiler.process, import_name, colon, var_name)
-
-        if _is_imported_name_used(compiler, bind_name):
-            need_pop = False if i == last_index else True
-            _emit_imported(compiler, code, node, module, var_name, bind_name, need_pop)
-
-        i += 1
 
 
 def _compile_INCLUDE_HIDING(compiler, code, node):

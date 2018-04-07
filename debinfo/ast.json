@@ -1,29 +1,5 @@
 [
   {
-    "_ntype": "NT_FUN",
-    "_value": "fun",
-    "children": [
-      {
-        "_ntype": "NT_NAME",
-        "_value": "f"
-      },
-      [
-        [
-          {
-            "_ntype": "NT_UNIT",
-            "_value": "("
-          },
-          [
-            {
-              "_ntype": "NT_INT",
-              "_value": "1"
-            }
-          ]
-        ]
-      ]
-    ]
-  },
-  {
     "_ntype": "NT_CLASS",
     "_value": "class",
     "children": [
@@ -302,6 +278,30 @@
             ]
           ]
         }
+      ]
+    ]
+  },
+  {
+    "_ntype": "NT_FUN",
+    "_value": "fun",
+    "children": [
+      {
+        "_ntype": "NT_NAME",
+        "_value": "f"
+      },
+      [
+        [
+          {
+            "_ntype": "NT_UNIT",
+            "_value": "("
+          },
+          [
+            {
+              "_ntype": "NT_INT",
+              "_value": "1"
+            }
+          ]
+        ]
       ]
     ]
   },

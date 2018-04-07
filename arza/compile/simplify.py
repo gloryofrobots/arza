@@ -277,8 +277,8 @@ def simplify_modify(compiler, code, node):
     source = nodes.node_first(node)
     modifications = nodes.node_second(node)
 
-    funcs = (nodes.create_name_node_s(nodes.node_token(node), lang_names.PUT),
-             nodes.create_name_node_s(nodes.node_token(node), lang_names.PUT_DEFAULT),
+    funcs = (nodes.create_symbol_node_s(nodes.node_token(node), lang_names.PUT),
+             nodes.create_symbol_node_s(nodes.node_token(node), lang_names.PUT_DEFAULT),
              )
     return _transform_modify(compiler, node,
                              funcs,
@@ -372,9 +372,11 @@ def _transform_modify(compiler, node, funcs, source, modifications):
         new_value = nodes.create_modify_node(node_token(new_key), new_source, list_node([new_pair]))
 
         func = _choose_modify_func(ntype, funcs)
+        # put = nodes.create_call_node_3(nodes.node_token(node), func, new_key, new_value, source),
+        put = nodes.create_lookup_call(nodes.node_token(node), source, func, [new_key, new_value])
         return _transform_modify(compiler, node,
                                  funcs,
-                                 nodes.create_call_node_3(nodes.node_token(node), func, new_key, new_value, source),
+                                 put,
                                  tail)
     # else:
     #     # ensure symbol
@@ -384,9 +386,11 @@ def _transform_modify(compiler, node, funcs, source, modifications):
     transformed_bind = nodes.create_lookup_node(node_token(key), source, key)
     value = basic.transform(value, _transfom_binds_callback, dict(path=transformed_bind, stop_level=-1))
     func = _choose_modify_func(ntype, funcs)
+    # put = nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
+    put = nodes.create_lookup_call(nodes.node_token(node), source, func, [key, value])
     return _transform_modify(compiler, node,
                              funcs,
-                             nodes.create_call_node_3(nodes.node_token(node), func, key, value, source),
+                             put,
                              tail)
 
 

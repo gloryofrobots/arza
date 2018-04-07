@@ -37,7 +37,7 @@ class Scheduler:
         self.waiting = plist.empty()
 
     def create_root(self, libdirs):
-        core_prelude = space.newemptyenv(space.newstring(u"prelude"))
+        core_prelude = space.newemptyenv(space.newstring(u"arza"))
         proc_data = process_data.create(self, libdirs, core_prelude)
         process = Process(proc_data)
         process.set_id(0)
@@ -57,10 +57,10 @@ class Scheduler:
         error.initialise(process)
         builtins.postsetup(process)
 
-        for module_name in STD_MODULES:
-            err = _load_module(process, module_name)
-            if err is not None:
-                return process, err
+        # for module_name in STD_MODULES:
+        #     err = _load_module(process, module_name)
+        #     if err is not None:
+        #         return process, err
 
         print "INITIALIZED"
         return process, None

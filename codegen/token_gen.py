@@ -10,6 +10,7 @@ TOKENS = [
   ("TT_TYPENAME", None),
   ("TT_OPERATOR", None),
   ("TT_VOID", None),
+  ("TT_NIL", None),
 
   ("TT_FUN", "fun"),
 

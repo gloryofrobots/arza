@@ -36,7 +36,7 @@ def find_class_file(path, dirs):
 
 def get_class_filename(process, name):
     raw = api.to_s(name)
-    path = "%s.arza" % raw.replace(":", os.sep)
+    path = "%s.arza" % raw.replace(".", os.sep)
 
     modules_path = process.classes.path
     filename = find_class_file(path, modules_path)
@@ -47,9 +47,9 @@ def get_class_filename(process, name):
         # if zzz is dir then file
         # xxx/yyy/zzz/zzz.arza would be imported instead
 
-        raw_list = raw.split(":")
+        raw_list = raw.split(".")
         last_name = raw_list[len(raw_list) - 1]
-        path = "%s%s%s.arza" % (raw.replace(":", os.sep), os.sep, last_name)
+        path = "%s%s%s.arza" % (raw.replace(".", os.sep), os.sep, last_name)
         filename = find_class_file(path, modules_path)
 
     if not filename:

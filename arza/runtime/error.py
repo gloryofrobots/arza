@@ -153,6 +153,7 @@ class Errors:
 
 
 def initialise(process):
+    return
     from arza.types import api
     err_module = process.classes.prelude
     for key, errname in Errors.__dict__.items():

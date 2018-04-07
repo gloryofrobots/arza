@@ -22,14 +22,17 @@ class StdClasses:
         self.Object.set_class(self.Class)
 
         newtype = lambda name: newclass(name, self.Object, self.Class)
+        newtype_2 = lambda name, parent: newclass(name, parent, self.Class)
 
         self.Bool = newtype(_s(u"Bool"))
 
         self.Char = newtype(_s(u"Char"))
 
-        self.Int = newtype(_s(u"Int"))
+        self.Number = newtype(_s(u"Number"))
 
-        self.Float = newtype(_s(u"Float"))
+        self.Int = newtype_2(_s(u"Int"), self.Number)
+
+        self.Float = newtype_2(_s(u"Float"), self.Number)
 
         self.Symbol = newtype(_s(u"Symbol"))
 
@@ -56,28 +59,26 @@ class StdClasses:
         self.PID = newtype(_s(u"PID"))
 
 
-# class Functions:
-#     def __init__(self):
-#         self.call = None
-#
-#     def setup(self, process):
-#         prelude = process.modules.prelude
-#         self.call = self.find_function(process, prelude, u"call")
-#
-#     def find_function(self, process, module, name):
-#         _fun = find_in_module(process, module, name)
-#         error.affirm_type(_fun, space.isfunction)
-#         return _fun
+class Functions:
+    def __init__(self):
+        self.new = None
+
+    def setup(self, process):
+        prelude = process.classes.prelude
+        self.new = self.find_function(process, prelude, u"__new__")
+
+    def find_function(self, process, module, name):
+        _fun = find_in_module(process, module, name)
+        error.affirm_type(_fun, space.isfunction)
+        return _fun
 
 
 class Std:
     def __init__(self, symbols):
         # self.functions = Functions()
-        # self.interfaces = Interfaces(symbols)
         self.classes = StdClasses(symbols)
         self.initialized = False
 
     def postsetup(self, process):
-        # self.interfaces.setup(process)
         # self.functions.setup(process)
         self.initialized = True

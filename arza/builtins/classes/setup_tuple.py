@@ -1,5 +1,5 @@
 
-from arza.types import api, space, obj
+from arza.types import api, space, objects
 from arza.runtime import error
 from arza.runtime.routine.routine import complete_native_routine
 
@@ -16,4 +16,4 @@ def setup_class(process, _class):
 @complete_native_routine
 def instance(process, routine):
     arg0 = routine.get_arg(0)
-    return obj.newinstance(process, arg0)
+    return objects.newinstance(process, arg0)

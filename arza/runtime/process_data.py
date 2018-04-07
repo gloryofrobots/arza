@@ -8,6 +8,8 @@ class Symbols:
     def __init__(self):
         self.symbols = []
         self.bindings = {}
+        self.init = self.symbol(u"__init__")
+        self.dot = self.symbol(u".")
 
     def symbol_s(self, strval):
         return self.symbol(unicode(strval))

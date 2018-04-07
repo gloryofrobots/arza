@@ -58,52 +58,47 @@ def put(process, routine):
 
     arg0 = routine.get_arg(0)
 
-    return api.put(arg2, arg0, arg1)
+    return api.put(arg0, arg1, arg2)
 
 
 @complete_native_routine
 def at(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.at(arg1, arg0)
+    return api.at(arg0, arg1)
 
 
 @complete_native_routine
 def elem(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.contains(arg1, arg0)
+    return api.contains(arg0, arg1)
 
 
 @complete_native_routine
 def delete(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.delete(arg1, arg0)
+    return api.delete(arg0, arg1)
 
 
 @complete_native_routine
 def equal(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.equal(arg1, arg0)
+    return api.equal(arg0, arg1)
 
 
 @complete_native_routine
 def not_equal(process, routine):
+    arg0 = routine.get_arg(0)
     arg1 = routine.get_arg(1)
 
-    arg0 = routine.get_arg(0)
-
-    return api.not_equal(arg1, arg0)
+    return api.not_equal(arg0, arg1)
 
 
 @complete_native_routine

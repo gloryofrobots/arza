@@ -406,7 +406,7 @@ def isenv(w):
 ########################################################
 
 def newclass(name, base, metaclass, slots):
-    from arza.types.obj import newclass
+    from arza.types.objects import newclass
     return newclass(name, base, metaclass, slots)
 
 
@@ -415,18 +415,18 @@ def newemptyclass(name, base, metaclass):
 
 
 def newcompiledclass(name, base, metaclass, env):
-    from arza.types.obj import newcompiledclass
+    from arza.types.objects import newcompiledclass
     return newcompiledclass(name, base, metaclass, env)
 
 
 def isclass(_class):
-    from arza.types.obj import W_Class
+    from arza.types.objects import W_Class
     return isinstance(_class, W_Class)
 
 
 def isobject(_obj):
-    from arza.types.obj import W_Object
-    return isinstance(_obj, W_Object)
+    from arza.types.objects import W_Instance
+    return isinstance(_obj, W_Instance)
 
 
 ########################################################

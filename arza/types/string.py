@@ -177,6 +177,10 @@ def concat(l, r):
     return W_String(sleft + sright)
 
 
+def concat3(x, y, z):
+    return concat(concat(x, y), z)
+
+
 def split(s, sep):
     error.affirm_type(s, space.isstring)
     error.affirm_type(sep, space.isstring)

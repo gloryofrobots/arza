@@ -7,7 +7,7 @@ from arza.misc.fifo import Fifo
 
 LOG_INDENTER = api.DEBUG_MODE
 
-MODULE = -1
+TOPLEVEL = -1
 NODE = 0
 CODE = 1
 OFFSIDE = 2
@@ -107,8 +107,8 @@ class Layout(root.W_Root):
             bt_s = "CODE"
         elif bt == FREE:
             bt_s = "FREE"
-        elif bt == MODULE:
-            bt_s = "MODULE"
+        elif bt == TOPLEVEL:
+            bt_s = "TOPLEVEL"
         elif bt == NODE:
             bt_s = "NODE"
         elif bt == OFFSIDE:
@@ -125,7 +125,7 @@ class Layout(root.W_Root):
         return self.type == FREE
 
     def is_module(self):
-        return self.type == MODULE
+        return self.type == TOPLEVEL
 
     def is_open(self):
         return self.opened
@@ -162,7 +162,7 @@ class IndentationTokenStream(tokenstream.TokenStream):
         level = self._find_level()
         # self.layouts = plist.empty()
 
-        self.layouts = plist.plist([Layout(-1, -1, level, MODULE, None, None, None, None)])
+        self.layouts = plist.plist([Layout(-1, -1, level, TOPLEVEL, None, None, None, None)])
         self.indentation_token = None
 
     def advanced_values(self):

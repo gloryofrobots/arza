@@ -39,8 +39,8 @@ def prefix_nud_function(parser, op, token):
 
 def led_infix_function(parser, op, token, left):
     exp = expression(parser, op.lbp)
-    sym = nodes.create_symbol_node_s(token, op.infix_function)
-    lookup = nodes.create_lookup_index_node(token, left, sym)
+    sym = nodes.create_symbol_node_s(token, api.to_s(op.infix_function))
+    lookup = nodes.create_lookup_node(token, left, sym)
     return nodes.create_call_node_1(token, lookup, exp)
 
 
@@ -947,9 +947,11 @@ def prefix_decorator(parser, op, token):
 # MODULE STATEMENTS
 ###############################################################
 
-
 def _load_path_s(node):
-    return nodes.node_value_s(node)
+    if nodes.node_type(node) == NT_LOOKUP:
+        return _load_path_s(nodes.node_first(node)) + '.' + nodes.node_value_s(nodes.node_second(node))
+    else:
+        return nodes.node_value_s(node)
 
 
 def _load_module(parser, exp):
@@ -961,6 +963,9 @@ def _load_module(parser, exp):
     if nodes.node_type(exp) == NT_AS:
         import_name = nodes.node_second(exp)
         module_path = _load_path_s(nodes.node_first(exp))
+    elif nodes.node_type(exp) == NT_LOOKUP:
+        import_name = nodes.node_second(exp)
+        module_path = _load_path_s(exp)
     else:
         assert nodes.node_type(exp) == NT_NAME
         import_name = exp
@@ -1101,9 +1106,10 @@ def _parse_struct_or_name(parser, lterm, rterm, expected=None):
 
 def prefix_class(parser, op, token):
     name = expect_expression_of(parser.name_parser, 0, NT_NAME)
-    if parser.token_type == TT_EXTENDS:
-        advance_expected(parser, TT_EXTENDS)
+    if parser.token_type == TT_LPAREN:
+        advance_expected(parser, TT_LPAREN)
         parent = expression(parser, 0)
+        advance_expected(parser, TT_RPAREN)
     else:
         parent = nodes.empty_node()
 
@@ -1141,6 +1147,7 @@ def stmt_prefix(parser, op, token):
     op = operator_prefix(op, precedence, prefix_nud_function, func_value)
 
     parser_current_scope_add_operator(parser, op_value, op)
+    return nodes.create_nil_node(token)
 
 
 def stmt_infixl(parser, op, token):
@@ -1179,3 +1186,4 @@ def _meta_infix(parser, token, infix_function):
     op = parser_current_scope_find_operator_or_create_new(parser, op_value)
     op = operator_infix(op, precedence, infix_function, func_value)
     parser_current_scope_add_operator(parser, op_value, op)
+    return nodes.create_nil_node(token)

@@ -197,7 +197,6 @@ class CodeRoutine(BaseRoutine):
                 stack.push(lst)
             # *************************************
             elif METHOD_CALL == tag:
-                self._print_stack()
                 args = stack.pop_n_tuple(arg1)
                 func = stack.pop()
                 res = api.call(process, func, args)

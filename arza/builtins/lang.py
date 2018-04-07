@@ -26,6 +26,7 @@ def setup(process, module, stdlib):
     api.put_native_function(process, module, u'time', time, 0)
     api.put_native_function(process, module, u'symbol', _symbol, 1)
     put_lang_func(process, module, lang_names.APPLY, apply, 2)
+    put_lang_func(process, module, lang_names.ENV, __env, 0)
     put_lang_func(process, module, lang_names.NOT, __not, 1)
     put_lang_func(process, module, lang_names.IS_INDEXED, is_indexed, 1)
     put_lang_func(process, module, lang_names.IS_TUPLE, is_tuple, 1)

@@ -1,5 +1,4 @@
 __author__ = 'gloryofrobots'
-from arza.compile.parse.tokenstream import TokenStream
 
 from arza.compile.parse.tokenstream import TokenStream
 from arza.compile.parse.indenter import IndentationTokenStream, InvalidIndentationError
@@ -398,6 +397,7 @@ def import_parser_init(parser):
     symbol(parser, TT_IMPORT)
     symbol(parser, TT_WILDCARD)
     infix(parser, TT_AS, NT_AS, 15, infix_name_pair)
+    infix(parser, TT_DOT, NT_LOOKUP, 100, led_infix)
     literal(parser, TT_NAME, NT_NAME)
 
     return parser
@@ -409,6 +409,7 @@ def init_parser_literals(parser):
     literal(parser, TT_CHAR, NT_CHAR)
     literal(parser, TT_STR, NT_STR)
     literal(parser, TT_TRUE, NT_TRUE)
+    literal(parser, TT_NIL, NT_NIL)
     literal(parser, TT_FALSE, NT_FALSE)
     literal(parser, TT_MULTI_STR, NT_MULTI_STR)
     literal(parser, TT_NAME, NT_NAME)

@@ -11,6 +11,10 @@ def presetup(process, module, stdlib):
 
     import arza.builtins.classes.setup_class
     arza.builtins.classes.setup_class.setup(process, stdlib)
+
+    import arza.builtins.classes.setup_number
+    arza.builtins.classes.setup_number.setup(process, stdlib)
+
     setup_classes(module, stdlib.classes)
 
     module.export_all()

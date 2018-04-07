@@ -1,5 +1,5 @@
 
-from arza.types import api, space, plist
+from arza.types import api, space, plist, string
 from arza.types.root import W_Root, W_Callable
 from arza.misc.platform import is_absent_index
 from arza.runtime import error
@@ -171,8 +171,13 @@ class W_Env(W_Root):
 
     def __init__(self, name, scope, parent_environment):
         assert isinstance(parent_environment, W_Env) or parent_environment is None
-        self.name = name
         self.parent_env = parent_environment
+        self.name = name
+        # if self.parent_env is None:
+        #     self.qual_name = self.name
+        # else:
+        #     self.qual_name = string.concat3(api.to_string(self.parent_env.name), space.newstring(u"."), api.to_string(self.name))
+        # self.qual_name = self.__qual_name()
         self.scope = scope
 
         self.literals = scope.literals()
@@ -189,6 +194,19 @@ class W_Env(W_Root):
         # print "--------------------------ENV------------------------------"
         # print self.refs
         # print scope.reference_names
+
+    def __qual_name(self):
+        names = []
+        env = self.parent_env
+        while env is not None:
+            names.append(api.to_s(env.name))
+            env = env.parent_env
+
+        names = list(reversed(names))
+        names.append(api.to_s(self.name))
+        name = ".".join(names)
+        return name
+
 
     def export_all(self):
         self.exported_names = self.data.keys_list()
