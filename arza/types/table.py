@@ -286,8 +286,8 @@ class W_AssocArray(W_Root):
     def items(self):
         return self.slot_bindings.items()
 
-    def keys_list(self):
-        return space.newlist(self.keys())
+    def keys_array(self):
+        return space.newarray(self.keys())
 
     def _delete_(self, name):
         self._put_(name, space.newvoid())

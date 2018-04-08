@@ -186,7 +186,6 @@ class W_Env(W_Root):
         self.exported_names = scope.exports
         self.refs = scope.create_references()
         self.temps = scope.create_temporaries()
-        self.imports = scope.imports
         self.data = scope.create_env_bindings()
 
         self.exported_names = scope.exports
@@ -209,7 +208,7 @@ class W_Env(W_Root):
 
 
     def export_all(self):
-        self.exported_names = self.data.keys_list()
+        self.exported_names = self.data.keys_array()
 
     def can_export(self, symbol):
         return plist.contains(self.exported_names, symbol)

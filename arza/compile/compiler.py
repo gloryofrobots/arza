@@ -3,7 +3,6 @@ from arza.compile.code.opcode import *
 from arza.compile.parse import parser
 from arza.compile import simplify
 from arza.compile.parse import nodes
-from arza.compile.parse.basic import IMPORT_NODES
 from arza.compile.parse.nodes import (node_type, imported_name_to_s,
                                       node_first, node_second, node_third, node_fourth,
                                       node_children, is_empty_node)
@@ -69,14 +68,6 @@ def _previous_scope(compiler):
         return None
 
     return compiler.scopes[-2]
-
-
-def _is_modifiable_binding(compiler, name):
-    scope = _current_scope(compiler)
-    if not platform.is_absent_index(scope.get_scope_local_index(name)):
-        return True
-
-    return False
 
 
 def _declare_arguments(compiler, args_count, varargs):
@@ -306,11 +297,6 @@ def _emit_fself(compiler, code, node, name):
 # EXTRACTORS ***********************************************
 # ************************************************
 
-def _get_unquoted_value(node):
-    # REMOVE BACKTICKS `xxx`
-    return nodes.node_value_s(node)[1:len(nodes.node_value_s(node)) - 1]
-
-
 def get_symbol_or_name_value(name):
     ntype = node_type(name)
     if ntype == NT_SYMBOL:
@@ -323,8 +309,6 @@ def _get_name_value(name):
     ntype = node_type(name)
     if ntype == NT_SYMBOL:
         return _get_name_value(node_first(name))
-    elif ntype == NT_STR:
-        value = _get_unquoted_value(name)
     elif ntype == NT_NAME:
         value = nodes.node_value_s(name)
     else:
@@ -381,6 +365,7 @@ def _compile_FALSE(compiler, code, node):
 
 def _compile_VOID(compiler, code, node):
     code.emit_0(VOID, info(node))
+
 
 def _compile_NIL(compiler, code, node):
     code.emit_0(NIL, info(node))
@@ -483,6 +468,7 @@ def _is_optimizable_unpack_seq_pattern(node):
         if node_type(child) != NT_NAME:
             return False
     return True
+
 
 def _compile_destruct_unpack_seq(compiler, code, node):
     _emit_dup(code)
@@ -659,7 +645,6 @@ def _compile_func_args_and_body(compiler, code, name, params, body):
     code.emit_1(FUNCTION, source_index, info(name))
 
 
-
 def is_simple_pattern(pattern, allow_unit):
     ntype = node_type(pattern)
     if ntype == NT_ARRAY:
@@ -673,10 +658,7 @@ def is_simple_pattern(pattern, allow_unit):
 
 
 def _compile_LAMBDA(compiler, code, node):
-    funcs = node_first(node)
-    assert len(funcs) == 1
-
-    func = funcs[0]
+    func = node_first(node)
     params = func[0]
     body = func[1]
     _compile_func_args_and_body(compiler, code,
@@ -693,20 +675,15 @@ def _compile_FUN(compiler, code, node):
         index = None
 
     # index = _get_function_index(compiler, funcname)
-    funcs = node_second(node)
-    # single function
-    if len(funcs) == 1:
-        func = funcs[0]
-        params = func[0]
-        body = func[1]
-        if not is_simple_pattern(params, True):
-            assert False, "Implement DESTRUCT"
-            # _compile_case_function(compiler, code, node, namenode, funcs)
-        else:
-            # print "SIMPLE FUNC", funcname
-            _compile_func_args_and_body(compiler, code, namenode, params, body)
-    else:
+    func = node_second(node)
+    params = func[0]
+    body = func[1]
+    if not is_simple_pattern(params, True):
         assert False, "Implement DESTRUCT"
+        # _compile_case_function(compiler, code, node, namenode, funcs)
+    else:
+        # print "SIMPLE FUNC", funcname
+        _compile_func_args_and_body(compiler, code, namenode, params, body)
 
     if index is not None:
         funcname_index = _declare_symbol(compiler, funcname)
@@ -768,20 +745,9 @@ def _compile_TRY(compiler, code, node):
         _compile(compiler, code, finallynode)
 
 
-def _compile_EXPORT(compiler, code, node):
-    name_node = node_first(node)
-    names = node_first(name_node)
-    for name in names:
-        _declare_export(compiler, code, name)
-
-
 ############################
 # IMPORT
 #############################
-
-def _compile_LOOKUP_MODULE(compiler, code, node):
-    _compile_node_name_lookup(compiler, code, node)
-
 
 def _load_module(compiler, code, node):
     from arza.runtime import load
@@ -833,22 +799,6 @@ def _emit_module(compiler, code, module, node):
     code.emit_1(LITERAL, module_literal, info(node))
 
 
-def _is_module_used(compiler, module_name):
-    scope = _current_scope(compiler)
-    if not scope.has_imported_module(module_name):
-        # print "UNUSED Module", module_name
-        return False
-    return True
-
-
-def _is_imported_name_used(compiler, bind_name):
-    scope = _current_scope(compiler)
-    if not scope.has_imported_name(bind_name):
-        # print "SKIPPING", bind_name
-        return False
-    return True
-
-
 def _emit_imported(compiler, code, node, module, var_name, bind_name, is_pop):
     func = api.at(module, var_name)
     idx = _declare_import(compiler, bind_name, func)
@@ -864,6 +814,7 @@ def _compile_IMPORT(compiler, code, node):
     module_literal = _declare_literal(compiler, module)
     code.emit_1(LITERAL, module_literal, info(node))
     _emit_store(compiler, code, import_name, node)
+
 
 def _compile_INCLUDE(compiler, code, node):
     module, import_name, var_names = _load_module(compiler, code, node)
@@ -897,40 +848,13 @@ def _compile_INCLUDE_HIDING(compiler, code, node):
         _emit_imported(compiler, code, node, module, var_name, var_name, need_pop)
         i += 1
 
-
-def _compile_MODULE(compiler, code, node):
-    raise DeprecationWarning("inner modules not supported")
-    # name_node = node_first(node)
-    # body = node_second(node)
-    # parse_scope = node_third(node)
-    #
-    # compiled_code = compile_ast(compiler, body, parse_scope)
-    #
-    # module_name = _get_symbol_name(compiler, name_node)
-    # module = space.newenvsource(module_name, compiled_code)
-    # module_index = _declare_literal(compiler, module)
-    # code.emit_1(MODULE, module_index, info(node))
-    #
-    # _emit_store(compiler, code, module_name, name_node)
-
-
 def _compile_FARGS(compiler, code, node):
     code.emit_0(FARGS, info(node))
-
-
-def _compile_CONS(compiler, code, node):
-    simplified = simplify.simplify_cons(compiler, code, node)
-    _compile(compiler, code, simplified)
 
 
 def _compile_AS(compiler, code, node):
     simplified = simplify.simplify_as(compiler, code, node)
     _compile(compiler, code, simplified)
-
-
-def _compile_RECEIVE(compiler, code, node):
-    generic = simplify.simplify_receive(compiler, code, node)
-    _compile(compiler, code, generic)
 
 
 def _emit_TAIL(compiler, code, node):
@@ -1111,8 +1035,6 @@ def _compile_node(compiler, code, node):
         _compile_WHEN_NO_ELSE(compiler, code, node)
     elif NT_TRY == ntype:
         _compile_TRY(compiler, code, node)
-    elif NT_EXPORT == ntype:
-        _compile_EXPORT(compiler, code, node)
     elif NT_IMPORT == ntype:
         _compile_IMPORT(compiler, code, node)
     elif NT_INCLUDE == ntype:

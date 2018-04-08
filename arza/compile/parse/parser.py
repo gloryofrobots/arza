@@ -153,7 +153,6 @@ class ExpressionParser(BaseParser):
         prefix(self, TT_FUN, None, prefix_fun, layout=layout_fun)
 
         prefix(self, TT_TRY, None, prefix_try, layout=layout_try)
-        prefix(self, TT_BACKTICK_OPERATOR, None, prefix_backtick_operator)
         prefix(self, TT_THROW, None, prefix_throw)
         prefix(self, TT_CLASS, None, prefix_class, layout=layout_fun)
 
@@ -165,7 +164,6 @@ class ExpressionParser(BaseParser):
         infix(self, TT_AS, NT_AS, 20, led_infix)
         infix(self, TT_OR, NT_OR, 25, led_infix)
         infix(self, TT_AND, NT_AND, 30, led_infix)
-        infix(self, TT_BACKTICK_NAME, None, 35, infix_backtick_name)
         infix(self, TT_DOT, None, 100, infix_dot)
 
         infix(self, TT_LPAREN, None, 95, infix_lparen, layout=layout_lparen)
@@ -241,13 +239,11 @@ class ModuleParser(ExpressionParser):
         self.name_tuple_parser = name_tuple_parser_init(BaseParser())
 
         self.import_names_parser = import_names_parser_init(BaseParser())
-        self.name_list_parser = name_list_parser_init(BaseParser())
 
         self.add_subparsers([
             self.import_parser,
             self.name_parser,
             self.name_tuple_parser,
-            self.name_list_parser,
             self.import_names_parser,
         ])
 
@@ -297,14 +293,6 @@ def name_tuple_parser_init(parser):
 
     prefix(parser, TT_LPAREN, None, prefix_lparen_tuple, layout=layout_lparen)
 
-    return parser
-
-
-def name_list_parser_init(parser):
-    symbol(parser, TT_RPAREN)
-    symbol_nud(parser, TT_COMMA, None, symbol_comma_nud)
-    literal(parser, TT_NAME, NT_NAME)
-    prefix(parser, TT_LSQUARE, None, prefix_lsquare_name_list, layout=layout_lsquare)
     return parser
 
 

@@ -346,9 +346,9 @@ def create_function_variants(args, exp):
     else:
         body = exp
 
-    return list_node([list_node([
+    return list_node([
         args, body
-    ])])
+    ])
 
 
 def create_fun_0_node(token, name, body):

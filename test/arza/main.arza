@@ -23,13 +23,14 @@ class Pair =
 
 
 fun main() =
+    X.x(1)
+    print(X)
     x = X()
     print(X.type())
     print(X.parent())
     print(x.type())
     print(x.parent())
 
-    X.x(1)
 //    print(x.type())
 //    print(Y)
 //    print(Y._x)

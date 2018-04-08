@@ -205,12 +205,7 @@ class W_Scope(W_Root):
 
         self.__local_references = ScopeSet()
         self.__operators = space.newemptytable()
-        self.__declared_exports = plist.empty()
         self.__static_references = plist.empty()
-
-        self.imports = space.newemptytable()
-        self.imported_names = space.newemptytable()
-        self.imported_modules = space.newemptytable()
 
         self.functions = space.newemptytable()
         self.arg_count = -1
@@ -229,50 +224,6 @@ class W_Scope(W_Root):
 
     def what_next_temporary(self):
         return self.__temp_index
-
-    ###########################
-
-    def add_export(self, name):
-        assert space.issymbol(name)
-        assert not self.has_export(name)
-        self.__declared_exports = plist.cons(name, self.__declared_exports)
-
-    def has_export(self, name):
-        assert space.issymbol(name)
-        return plist.contains(self.__declared_exports, name)
-
-    ###########################
-
-    def add_imported_module(self, name):
-        assert space.issymbol(name)
-        assert platform.is_absent_index(api.get_index(self.imported_modules, name))
-        return self.imported_modules.insert(name, space.newnil())
-
-    def has_imported_module(self, name):
-        return api.contains_b(self.imported_modules, name)
-
-    ###########################
-
-    def add_imported_name(self, name):
-        assert space.issymbol(name)
-        assert platform.is_absent_index(api.get_index(self.imported_names, name))
-        return self.imported_names.insert(name, space.newnil())
-
-    def has_imported_name(self, name):
-        return api.contains_b(self.imported_names, name)
-
-    ###########################
-
-    def add_import(self, name, func):
-        assert space.issymbol(name)
-        assert platform.is_absent_index(self.get_import_index(name))
-        return self.imports.insert(name, func)
-
-    def get_import_index(self, name):
-        return api.get_index(self.imports, name)
-
-    def has_import(self, name):
-        return api.contains_b(self.imports, name)
 
     ###########################
 
@@ -415,33 +366,26 @@ class W_Scope(W_Root):
         return refs
 
     def _create_exports(self):
-        if plist.is_empty(self.__declared_exports):
-            # somewhat dirty hacks here for auto export
-            # cant think of anything better unfortunately
-            skip_start = lang_names.SKIP_ON_AUTO_EXPORT_START
-            skip_middle = lang_names.SKIP_ON_AUTO_EXPORT_MIDDLE
-            syms = []
-            keys = self.__locals.keys_list()
+        # somewhat dirty hacks here for auto export
+        # cant think of anything better unfortunately
+        skip_start = lang_names.SKIP_ON_AUTO_EXPORT_START
+        skip_middle = lang_names.SKIP_ON_AUTO_EXPORT_MIDDLE
+        syms = []
+        keys = self.__locals.keys_array()
 
-            for key in keys:
-                keyval = key.string
-                # avoid exporting _name but enable _name_
-                if keyval.startswith_s(skip_start) and not keyval.endswith_s(skip_start):
-                    continue
+        for key in keys:
+            keyval = key.string
+            # avoid exporting _name but enable _name_
+            if keyval.startswith_s(skip_start) and not keyval.endswith_s(skip_start):
+                continue
 
-                index_colon = keyval.index_s(skip_middle)
-                # so operators like := will be exported but names arza:lang:foo will not
-                if index_colon > 1:
-                    continue
+            index_colon = keyval.index_s(skip_middle)
+            # so operators like := will be exported but names arza:lang:foo will not
+            if index_colon > 1:
+                continue
 
-                syms.append(key)
-            return space.newlist(syms)
-
-        for exported in self.__declared_exports:
-            if not self.has_local(exported):
-                error.throw_2(error.Errors.EXPORT_ERROR, space.newstring(u"Unreachable export variable"), exported)
-
-        return self.__declared_exports
+            syms.append(key)
+        return space.newarray(syms)
 
     def finalize(self, previous_scope, parse_scope):
         if parse_scope is not None:
