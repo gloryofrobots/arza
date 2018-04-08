@@ -674,17 +674,6 @@ def create_of_node(token, left, right):
     return node_2(nt.NT_OF, token, left, right)
 
 
-def create_match_node(token, exp, branches):
-    return node_2(nt.NT_MATCH, token, exp, list_node(branches))
-
-
 def create_modify_node(token, source, items):
     return node_2(nt.NT_MODIFY, token, source, items)
 
-
-def create_try_statement_node(token, exp, success, fail):
-    return node_3(nt.NT_TRY,
-                  token,
-                  list_node([exp, success]),
-                  list_node([empty_node(), list_node([fail])]),
-                  empty_node())
